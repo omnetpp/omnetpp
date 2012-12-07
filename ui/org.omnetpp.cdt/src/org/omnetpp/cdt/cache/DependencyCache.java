@@ -20,18 +20,14 @@ import java.util.regex.Pattern;
 
 import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorIncludeStatement;
-import org.eclipse.cdt.core.index.IIndexFile;
-import org.eclipse.cdt.core.index.IIndexFileLocation;
 import org.eclipse.cdt.core.index.IIndexInclude;
 import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.parser.FileContent;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICDescriptionDelta;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionListener;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.cdt.internal.core.parser.scanner.InternalFileContent;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -340,7 +336,6 @@ public class DependencyCache {
     /**
      * Collect #includes from a C++ source file or a msg file
      */
-    @SuppressWarnings("restriction")
     protected static List<Include> collectFileIncludes(IFile file) throws CoreException {
         //Debug.println("Collect includes from " + file.getLocation());
 

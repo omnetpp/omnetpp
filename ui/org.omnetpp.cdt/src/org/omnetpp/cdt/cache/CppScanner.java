@@ -7,6 +7,7 @@ import java.util.Stack;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
+import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorIncludeStatement;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorMacroDefinition;
@@ -29,6 +30,7 @@ import org.eclipse.cdt.internal.core.parser.scanner.AbstractCharArray;
 import org.eclipse.cdt.internal.core.parser.scanner.CPreprocessor;
 import org.eclipse.cdt.internal.core.parser.scanner.ILocationCtx;
 import org.eclipse.cdt.internal.core.parser.scanner.ILocationResolver;
+import org.eclipse.cdt.internal.core.parser.scanner.ImageLocationInfo;
 import org.eclipse.cdt.internal.core.parser.scanner.InternalFileContent;
 import org.eclipse.cdt.internal.core.parser.scanner.LocationMap;
 import org.eclipse.cdt.internal.core.parser.scanner.MacroExpander;
@@ -194,6 +196,15 @@ class CppScanner {
             return ctx;
         }
 
+
+        @Override
+        public ILocationCtx pushMacroExpansion(int nameOffset, int nameEndOffset, int endOffset, int contextLength, IMacroBinding macro,
+                                                IASTName[] implicitMacroReferences, ImageLocationInfo[] imageLocations) {
+            ILocationCtx ctx = super.pushMacroExpansion(nameOffset, nameEndOffset, endOffset, contextLength, macro, implicitMacroReferences, imageLocations);
+            indexer.handleMacroExpansion(macro, implicitMacroReferences);
+            return ctx;
+        }
+
         /**
          * Called when the preprocessor finished the scanning of
          * - an included file
@@ -240,6 +251,30 @@ class CppScanner {
                                         int endOffset, char[] name, boolean isActive) {
             super.encounterPoundUndef(definition, startOffset, nameOffset, nameEndOffset, endOffset, name, isActive);
             indexer.handleUndef(getLastDirective(IASTPreprocessorUndefStatement.class));
+        }
+
+        @Override
+        public void encounterPoundIfdef(int startOffset, int condOffset, int condEndOffset, int endOffset, boolean taken, IMacroBinding macro) {
+            super.encounterPoundIfdef(startOffset, condOffset, condEndOffset, endOffset, taken, macro);
+            indexer.handleIfdef(macro, taken);
+        }
+
+        @Override
+        public void encounterPoundIfndef(int startOffset, int condOffset, int condEndOffset, int endOffset, boolean taken, IMacroBinding macro) {
+            super.encounterPoundIfndef(startOffset, condOffset, condEndOffset, endOffset, taken, macro);
+            indexer.handleIfndef(macro, taken);
+        }
+
+        @Override
+        public void encounterPoundIf(int startOffset, int condOffset, int condEndOffset, int endOffset, boolean isActive, IASTName[] macrosInDefinedExpression) {
+            super.encounterPoundIf(startOffset, condOffset, condEndOffset, endOffset, isActive, macrosInDefinedExpression);
+            indexer.handleIf(macrosInDefinedExpression, isActive);
+        }
+
+        @Override
+        public void encounterPoundElif(int startOffset, int condOffset, int condEndOffset, int endOffset, boolean isActive, IASTName[] macrosInDefinedExpression) {
+            super.encounterPoundElif(startOffset, condOffset, condEndOffset, endOffset, isActive, macrosInDefinedExpression);
+            indexer.handleElif(macrosInDefinedExpression, isActive);
         }
     }
 }

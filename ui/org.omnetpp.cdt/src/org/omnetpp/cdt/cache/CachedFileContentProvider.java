@@ -59,15 +59,38 @@ public class CachedFileContentProvider extends InternalFileContentProvider {
     // standard headers are always skipped
     protected static final Set<String> standardHeaders = new HashSet<String>(Arrays.asList(MakefileTools.ALL_STANDARD_HEADERS.trim().split(" +")));
 
+    static interface IMacroValueProvider {
+        String getValue(String name);
+    }
+
     static class CachedData {
         InternalFileContent sourceContent;
         InternalFileContent indexContent;
+        IndexFile indexFile;
 
         public CachedData(InternalFileContent sourceContent) {
             this.sourceContent = sourceContent;
         }
-        public InternalFileContent getContent(boolean allowIndex) {
-            return indexContent != null && allowIndex ? indexContent : sourceContent;
+
+        public InternalFileContent getSourceContent() {
+            return sourceContent;
+        }
+
+        public InternalFileContent getContent(IMacroValueProvider macroValues) {
+            // no index file: return source
+            if (indexContent == null)
+                return sourceContent;
+
+            // indexed file is not compatible with macros: drop index file, return source
+            if (macroValues != null && !indexFile.isCompatibleWithMacroValues(macroValues)) {
+                // indexContent = null;
+                // indexFile = null;
+                // XXX remove from index
+                return sourceContent;
+            }
+
+            // ok to use the indexed file
+            return indexContent;
         }
     }
 
@@ -78,6 +101,9 @@ public class CachedFileContentProvider extends InternalFileContentProvider {
     // files included into the current translation unit
     // their path is mapped to a skipped content (kind == SKIP_FILE)
     Map<String, InternalFileContent> includedFiles = new HashMap<String, InternalFileContent>();
+
+    // TODO set value
+    IMacroValueProvider currentMacroValueProvider;
 
     // listeners to be notified if a file content changed
     ListenerList listeners = new ListenerList();
@@ -110,7 +136,7 @@ public class CachedFileContentProvider extends InternalFileContentProvider {
     public InternalFileContent getContentForTranslationUnit(String path) {
         //Debug.println("Processing " + path);
         includedFiles.clear();
-        return getFileContent(path, false); // XXX get rid of this flag, no need to parse if it is indexed
+        return getFileContent(path);
     }
 
     @Override
@@ -119,7 +145,7 @@ public class CachedFileContentProvider extends InternalFileContentProvider {
         if (content != null)
             return content;
 
-        content = getFileContent(path, true);
+        content = getFileContent(path);
 
         if (content != null)
             includedFiles.put(path, new InternalFileContent(path, InclusionKind.SKIP_FILE));
@@ -131,6 +157,7 @@ public class CachedFileContentProvider extends InternalFileContentProvider {
         CachedData data = cache.get(path);
         Assert.isTrue(data != null);
 
+        data.indexFile = indexFile;
         data.indexContent = indexFile == null ? null :
                             new InternalFileContent(indexFile.absolutePath,
                                                     Arrays.asList(indexFile.getMacros()),
@@ -143,10 +170,10 @@ public class CachedFileContentProvider extends InternalFileContentProvider {
         throw new UnsupportedOperationException();
     }
 
-    private InternalFileContent getFileContent(String path, boolean allowIndex) {
+    private InternalFileContent getFileContent(String path) {
         if (cache.containsKey(path)) {
             CachedData data = cache.get(path);
-            return data != null ? data.getContent(allowIndex) : null;
+            return data != null ? data.getContent(currentMacroValueProvider) : null;
         }
 
         InternalFileContent fileContent = null;
@@ -199,10 +226,15 @@ public class CachedFileContentProvider extends InternalFileContentProvider {
         return new CharArray(sb.toString());
     }
 
+    /*
+     * Drop indexed content when the project description changed.
+     */
     protected void projectDescriptionChanged(CProjectDescriptionEvent e) {
         Debug.println("CachedFileContentProvider: project description changed, discarding indexed content");
         for (Map.Entry<String,CachedData> entry : cache.entrySet()) {
-            entry.getValue().indexContent = null;
+            CachedData data = entry.getValue();
+            data.indexContent = null;
+            data.indexFile = null;
         }
     }
 
@@ -229,8 +261,8 @@ public class CachedFileContentProvider extends InternalFileContentProvider {
                             }
                             else if (kind==IResourceDelta.CHANGED && (flags&IResourceDelta.CONTENT)!=0) {
                                 CachedData data = cache.get(path);
-                                if (data != null && data.getContent(false).getKind() == InclusionKind.USE_SOURCE) {
-                                    AbstractCharArray oldContent = data.getContent(false).getSource();
+                                if (data != null && data.getSourceContent().getKind() == InclusionKind.USE_SOURCE) {
+                                    AbstractCharArray oldContent = data.getSourceContent().getSource();
                                     AbstractCharArray newContent = readAndCompressFileContent(path);
                                     boolean contentChanged = oldContent.getLength() != newContent.getLength() ||
                                                              oldContent.getContentsHash() != newContent.getContentsHash();

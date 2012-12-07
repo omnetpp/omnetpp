@@ -9,10 +9,12 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.dom.ILinkage;
 import org.eclipse.cdt.core.dom.ast.DOMException;
 import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
+import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorIncludeStatement;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorUndefStatement;
 import org.eclipse.cdt.core.dom.ast.IMacroBinding;
@@ -25,6 +27,7 @@ import org.eclipse.cdt.core.index.IIndexInclude;
 import org.eclipse.cdt.core.index.IIndexMacro;
 import org.eclipse.cdt.core.index.IIndexName;
 import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.parser.util.CharArrayMap;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionListener;
 import org.eclipse.cdt.internal.core.index.IndexFileLocation;
@@ -33,6 +36,7 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.cdt.Activator;
+import org.omnetpp.cdt.cache.CachedFileContentProvider.IMacroValueProvider;
 import org.omnetpp.cdt.cache.CachedFileContentProvider.ISourceFileChangeListener;
 import org.omnetpp.common.Debug;
 
@@ -247,12 +251,38 @@ public class Index {
             }
         }
 
-        protected IIndexFile resolveInclude(IIndexInclude include) {
-            String path = ((IndexInclude)include).getPath();
-            if (path != null) {
-                return Index.this.resolve(path);
+        public void handleIfdef(IMacroBinding macro, boolean isActive) {
+            if (macro != null) {
+                addMacroReference(macro);
             }
-            return null;
+        }
+
+        public void handleIfndef(IMacroBinding macro, boolean isActive) {
+            if (macro != null) {
+                addMacroReference(macro);
+            }
+        }
+
+        public void handleIf(IASTName[] refs, boolean isActive) {
+            for (IASTName ref : refs) {
+                if (ref.getBinding() instanceof IMacroBinding)
+                    addMacroReference((IMacroBinding)ref.getBinding());
+            }
+        }
+
+        public void handleElif(IASTName[] refs, boolean isActive) {
+            for (IASTName ref : refs) {
+                if (ref.getBinding() instanceof IMacroBinding)
+                    addMacroReference((IMacroBinding)ref.getBinding());
+            }
+        }
+
+        public void handleMacroExpansion(IMacroBinding outerMacro, IASTName[] implicitMacroReferences) {
+            addMacroReference(outerMacro);
+            for (IASTName ref : implicitMacroReferences) {
+                if (ref.getBinding() instanceof IMacroBinding)
+                    addMacroReference((IMacroBinding)ref.getBinding());
+            }
         }
 
         protected IIndexFile resolveInclude(IASTPreprocessorIncludeStatement include) {
@@ -282,6 +312,15 @@ public class Index {
                 withinOmnetpph--;
         }
 
+        protected void addMacroReference(IMacroBinding macro) {
+            Assert.isTrue(!activeIndexFiles.isEmpty());
+            activeIndexFiles.peek().addReferencedMacro(macro);
+//            for (IndexFile file : activeIndexFiles) {
+//                Assert.isTrue(!file.isComplete);
+//                file.addReferencedMacro(macro);
+//            }
+        }
+
         private boolean debug = false;
         private void println(String msg) {
             if (debug) {
@@ -289,15 +328,15 @@ public class Index {
               Debug.println(msg);
             }
         }
-
     }
 
     static class IndexFile implements IIndexFile {
 
         boolean isComplete;
         String absolutePath;
-        List<IIndexMacro> macros = new ArrayList<IIndexMacro>();
         List<IIndexInclude> includes = new ArrayList<IIndexInclude>();
+        List<IIndexMacro> definedMacros = new ArrayList<IIndexMacro>();
+        Map<String, String> referencedMacros;
 
         public IndexFile(String path) {
             this.absolutePath = path;
@@ -305,12 +344,12 @@ public class Index {
 
         public void addDefine(IMacroBinding macrodef) {
             Assert.isTrue(!isComplete);
-            macros.add(new IndexMacro(macrodef));
+            definedMacros.add(new IndexMacro(macrodef));
         }
 
         public void addUndef(IASTPreprocessorUndefStatement undef) {
             Assert.isTrue(!isComplete);
-            macros.add(new IndexUndef(undef));
+            definedMacros.add(new IndexUndef(undef));
         }
 
         public boolean addInclude(IASTPreprocessorIncludeStatement include, IIndexFile includedBy) {
@@ -323,8 +362,29 @@ public class Index {
                 return false;
         }
 
+        public void addReferencedMacro(IMacroBinding macrodef) {
+            if (referencedMacros == null)
+                referencedMacros = new HashMap<String,String>();
+            String name = macrodef.getName();
+            if (!referencedMacros.containsKey(name)) {
+                String expansion = macrodef.getExpansion() != null ? new String(macrodef.getExpansion()) : null;
+                referencedMacros.put(name, expansion);
+            }
+        }
+
         public void freeze() {
             isComplete = true;
+        }
+
+        public boolean isCompatibleWithMacroValues(IMacroValueProvider definedMacros) {
+            if (referencedMacros == null)
+                return true;
+
+            for (Map.Entry<String,String> entry : referencedMacros.entrySet()) {
+                if (!ObjectUtils.equals(entry.getValue(), definedMacros.getValue(entry.getKey())))
+                    return false;
+            }
+            return true;
         }
 
         @Override
@@ -341,7 +401,7 @@ public class Index {
         @Override
         public IIndexMacro[] getMacros() {
             Assert.isTrue(isComplete);
-            return macros.toArray(new IIndexMacro[macros.size()]);
+            return definedMacros.toArray(new IIndexMacro[definedMacros.size()]);
         }
 
         @Override
@@ -396,14 +456,29 @@ public class Index {
 
         public void dumpToDebug() {
             Debug.println("Index file " + absolutePath);
-            for (IIndexInclude include : includes)
-                ((IndexInclude)include).dumpToDebug();
-            for (IIndexMacro macro : macros) {
-                if (macro instanceof IndexMacro)
-                    ((IndexMacro)macro).dumpToDebug();
-                else if (macro instanceof IndexUndef)
-                    ((IndexUndef)macro).dumpToDebug();
+            if (referencedMacros != null) {
+                Debug.print("  dependencies: ");
+                StringBuilder sb = new StringBuilder();
+                boolean first = true;
+                for (Map.Entry<String,String> entry : referencedMacros.entrySet()) {
+                    if (first)
+                        first = false;
+                    else
+                        sb.append(",");
+                    sb.append(entry.getKey());
+                    if (entry.getValue() != null)
+                        sb.append("(").append(entry.getValue()).append(")");
+                }
+                Debug.println(sb.toString());
             }
+//            for (IIndexInclude include : includes)
+//                ((IndexInclude)include).dumpToDebug();
+//            for (IIndexMacro macro : definedMacros) {
+//                if (macro instanceof IndexMacro)
+//                    ((IndexMacro)macro).dumpToDebug();
+//                else if (macro instanceof IndexUndef)
+//                    ((IndexUndef)macro).dumpToDebug();
+//            }
         }
     }
 
