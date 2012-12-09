@@ -18,8 +18,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
-import org.eclipse.cdt.core.dom.ast.IASTPreprocessorIncludeStatement;
 import org.eclipse.cdt.core.index.IIndexInclude;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
@@ -28,6 +26,8 @@ import org.eclipse.cdt.core.settings.model.ICDescriptionDelta;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionListener;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
+import org.eclipse.cdt.internal.core.parser.scanner.InternalFileContent;
+import org.eclipse.cdt.internal.core.parser.scanner.InternalFileContent.InclusionKind;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -46,7 +46,7 @@ import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.build.MakefileBuilder;
 import org.omnetpp.cdt.build.MakefileTools;
-import org.omnetpp.cdt.cache.CachedFileContentProvider.ISourceFileChangeListener;
+import org.omnetpp.cdt.cache.FileCache.ISourceFileChangeListener;
 import org.omnetpp.cdt.cache.Index.IndexFile;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
@@ -79,6 +79,7 @@ import org.omnetpp.common.util.StringUtils;
  */
 // Note: we may need to factor out a getNonTransitiveFolderDependencies() too
 // when we write a "Cross-folder Dependencies View" (using DOT to render the graph?)
+@SuppressWarnings("restriction")
 public class DependencyCache {
     private static Pattern INCLUDE_DIRECTIVE_PATTERN = Pattern.compile("(?m)^[ \t]*#\\s*include[ \t]+([\"<])(.*?)[\">].*$");
 
@@ -165,13 +166,13 @@ public class DependencyCache {
 
     public void hookListeners() {
         //ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener);
-        Activator.getFileContentProvider().addFileChangeListener(sourceFileChangeListener);
+        Activator.getFileCache().addFileChangeListener(sourceFileChangeListener);
         CoreModel.getDefault().addCProjectDescriptionListener(projectDescriptionListener, CProjectDescriptionEvent.APPLIED);
     }
 
     public void unhookListeners() {
         //ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
-        Activator.getFileContentProvider().removeFileChangeListener(sourceFileChangeListener);
+        Activator.getFileCache().removeFileChangeListener(sourceFileChangeListener);
         CoreModel.getDefault().removeCProjectDescriptionListener(projectDescriptionListener);
     }
 
@@ -294,7 +295,9 @@ public class DependencyCache {
 
         // collect #includes using the index, or (for msg files) by directly parsing the file
         Debug.println("DependencyCache: collecting #includes in project " + project.getName());
-        long start = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
+        int startCachedFiles = Activator.getFileCache().getNumberOfFiles();
+        int startIndexedFiles = Activator.getIndex().getNumberOfFiles();
         final int[] count = new int[1];
 
         // collect active #includes from all C++ source files; also warn for linked-in files
@@ -329,7 +332,14 @@ public class DependencyCache {
             }
         });
 
-        Debug.println("  parsed " + count[0] + " files in " + (System.currentTimeMillis() - start) + "ms");
+        long endTime = System.currentTimeMillis();
+        int endCachedFiles = Activator.getFileCache().getNumberOfFiles();
+        int endIndexedFiles = Activator.getIndex().getNumberOfFiles();
+        Debug.format("  processed %d files in %dms (cached: %d/%d, indexed: %d/%d)\n",
+                            count[0], endTime - startTime,
+                            endCachedFiles - startCachedFiles, endCachedFiles,
+                            endIndexedFiles - startIndexedFiles, endIndexedFiles);
+        //Activator.getIndex().dumpToDebug();
         return result;
     }
 
@@ -342,32 +352,26 @@ public class DependencyCache {
         List<Include> result = new ArrayList<Include>();
         if (MakefileTools.isCppFile(file) || MakefileTools.isMsgFile(file)) {
             try {
-                String filePath = file.getLocation().toOSString();
-                IndexFile indexFile = Activator.getIndex().resolve(filePath);
+                Index index = Activator.getIndex();
+                FileContentProvider fileContentProvider = new FileContentProvider(file);
+                InternalFileContent translationUnit = fileContentProvider.getContentForTranslationUnit();
+                // scan if not indexed
+                if (translationUnit.getKind() == InclusionKind.USE_SOURCE) {
+                    CppScanner scanner = new CppScanner(fileContentProvider, index.getIndexer());
+                    scanner.scanFully();
+                }
+                // find includes in the indexed file
+                IndexFile indexFile = index.resolve(file.getLocation().toOSString());
                 if (indexFile != null) {
                     for (IIndexInclude include : indexFile.getIncludes()) {
                         if (include.isActive()) {
                             //Debug.println("    includes " + (include.isResolved() ? "+" : "-") +include.getName());
-                            if (include.getIncludedBy() == indexFile);
-                                result.add(new Include(file, -1, include.getFullName(), include.isSystemInclude()));
-                        }
-                    }
-                }
-                else {
-                    CppScanner scanner = new CppScanner(file);
-                    scanner.scanFully();
-                    for (IASTPreprocessorIncludeStatement include : scanner.getIncludeDirectives()) {
-                        if (include.isActive()) {
-                            IASTFileLocation location = scanner.getIncludeLocation(include);
-                            if (location != null && location.getFileName().equals(filePath)) {
-                                //Debug.println("    includes " + (include.isResolved() ? "+" : "-") +include.getName().toString() + " at " + location.getStartingLineNumber());
 
-                                // XXX because the scanner receives file contents that contains only the preprocessor directives,
-                                //     the line numbers in the location will be wrong. They cannot be cured by adding #line directives
-                                //     to the generated file contents, because CPreprocessor ignores them. So we did not fill the line
-                                //     numbers here. The line number can be computed by getLineForInclude() when needed.
-                                result.add(new Include(file, -1/*location.getStartingLineNumber()*/, include.getName().toString(), include.isSystemInclude()));
-                            }
+                            // XXX because the scanner receives file contents that contains only the preprocessor directives,
+                            //     the line numbers in the AST will be wrong. They cannot be cured by adding #line directives
+                            //     to the generated file contents, because CPreprocessor ignores them. So we did not fill the line
+                            //     numbers here. The line number can be computed by getLineForInclude() when needed.
+                            result.add(new Include(file, -1, include.getFullName(), include.isSystemInclude()));
                         }
                     }
                 }

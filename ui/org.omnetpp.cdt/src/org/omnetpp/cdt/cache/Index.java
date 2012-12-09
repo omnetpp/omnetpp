@@ -1,8 +1,10 @@
 package org.omnetpp.cdt.cache;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,7 +17,13 @@ import org.eclipse.cdt.core.dom.ILinkage;
 import org.eclipse.cdt.core.dom.ast.DOMException;
 import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
 import org.eclipse.cdt.core.dom.ast.IASTName;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorElifStatement;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorFunctionStyleMacroDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorIfStatement;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorIfdefStatement;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorIfndefStatement;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorIncludeStatement;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorMacroDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorUndefStatement;
 import org.eclipse.cdt.core.dom.ast.IMacroBinding;
 import org.eclipse.cdt.core.dom.ast.IScope;
@@ -27,29 +35,41 @@ import org.eclipse.cdt.core.index.IIndexInclude;
 import org.eclipse.cdt.core.index.IIndexMacro;
 import org.eclipse.cdt.core.index.IIndexName;
 import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.parser.util.CharArrayMap;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionListener;
+import org.eclipse.cdt.internal.core.dom.parser.ASTNode;
 import org.eclipse.cdt.internal.core.index.IndexFileLocation;
 import org.eclipse.cdt.utils.UNCPathConverter;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
-import org.omnetpp.cdt.cache.CachedFileContentProvider.IMacroValueProvider;
-import org.omnetpp.cdt.cache.CachedFileContentProvider.ISourceFileChangeListener;
+import org.omnetpp.cdt.cache.CppScanner.IScannerEventListener;
+import org.omnetpp.cdt.cache.FileCache.ISourceFileChangeListener;
+import org.omnetpp.cdt.cache.FileContentProvider.IMacroValueProvider;
 import org.omnetpp.common.Debug;
 
+/**
+ * This class implements some of the structures in the CDT index,
+ * that can be fed into the CPreprocessor as input. The content
+ * of the index is automatically invalidated when the source files
+ * or the project descriptions change.
+ * <p>
+ * It also contains a builder, that generates these structures from
+ * preprocessor events.
+ *
+ * @author tomi
+ */
 @SuppressWarnings("restriction")
 public class Index {
 
-    Map<String,IndexFile> files = new HashMap<String,IndexFile>();
-    Indexer indexer = new Indexer();
-    CachedFileContentProvider fileContentProvider;
+    private Map<String,IndexFile> files = new HashMap<String,IndexFile>();
+    private Indexer indexer = new Indexer();
 
     private ISourceFileChangeListener sourceFileChangeListener = new ISourceFileChangeListener() {
         public void sourceFileChanged(IResourceDelta delta) {
-            Index.this.sourceFileChanged(delta);
+            Index.this.sourceFileChanged(delta, false);
         }
     };
 
@@ -59,59 +79,22 @@ public class Index {
         }
     };
 
-    public Index(CachedFileContentProvider fileContentProvider) {
-        this.fileContentProvider = fileContentProvider;
-    }
-
     public void hookListeners() {
-        Activator.getFileContentProvider().addFileChangeListener(sourceFileChangeListener);
+        Activator.getFileCache().addFileChangeListener(sourceFileChangeListener);
         CoreModel.getDefault().addCProjectDescriptionListener(projectDescriptionListener, CProjectDescriptionEvent.APPLIED);
     }
 
     public void unhookListeners() {
-        Activator.getFileContentProvider().removeFileChangeListener(sourceFileChangeListener);
+        Activator.getFileCache().removeFileChangeListener(sourceFileChangeListener);
         CoreModel.getDefault().removeCProjectDescriptionListener(projectDescriptionListener);
     }
 
-    private boolean purgeAll = false;
-    private void sourceFileChanged(IResourceDelta delta) {
-        if (purgeAll) {
-            Debug.format("Index: source file changed, discarding index\n");
-            Set<String> keys = new HashSet<String>(files.keySet());
-            for (String key : keys)
-                removeFromIndex(files.get(key));
-        }
-        else {
-            IndexFile indexFile = resolve(delta.getResource().getLocation().toOSString());
-            if (indexFile != null) {
-                removeFromIndex(indexFile);
-                Debug.format("Index: source file %s changed, discarding index\n", indexFile.absolutePath);
-                int count = 1;
-                for (IndexFile file : findIncludedBy(indexFile)) {
-                    removeFromIndex(file);
-                    count++;
-                }
-                Debug.format("  removed %d/%d files\n", count, count+files.size());
-            }
-        }
-    }
-
-    private void projectDescriptionChanged(CProjectDescriptionEvent e) {
-        Debug.println("Index: project description changed, discarding index");
-        clear();
+    public int getNumberOfFiles() {
+        return files.size();
     }
 
     public Indexer getIndexer() {
         return indexer;
-    }
-
-    public void clear() {
-        files.clear();
-    }
-
-    public void removeFromIndex(IndexFile file) {
-        files.remove(file.absolutePath);
-        fileContentProvider.setIndexFile(file.absolutePath, null);
     }
 
     public IndexFile resolve(String path) {
@@ -128,165 +111,160 @@ public class Index {
         return includedFiles;
     }
 
-    public List<IndexFile> findIncludedBy(IndexFile indexFile) {
-        List<IndexFile> result = new ArrayList<IndexFile>();
-        for (Map.Entry<String,IndexFile> entry : files.entrySet()) {
-            IndexFile file = entry.getValue();
-            for (IIndexInclude include : file.includes) {
-                String path = ((IndexInclude)include).getPath();
-                if (path != null && path.equals(indexFile.absolutePath)) {
-                    result.add(file);
-                    break;
-                }
-            }
-        }
+    public List<IndexInclude> findIncludedBy(IndexFile file) {
+        List<IndexInclude> result= new ArrayList<IndexInclude>();
+        findIncludedBy(Collections.singletonList(file), result, new HashSet<IIndexFileLocation>());
         return result;
     }
 
-    public void dumpToDebug() {
-        Set<String> keys = new TreeSet<String>(files.keySet());
-        for (String key : keys) {
-            if (key.contains("networklayer/contract")) {
-                IndexFile file = files.get(key);
-                file.dumpToDebug();
+    private void findIncludedBy(List<IndexFile> in, List<IndexInclude> out, Set<IIndexFileLocation> handled) {
+        List<IndexFile> currentFiles = in;
+        while (!currentFiles.isEmpty()) {
+            List<IndexFile> nextLevel= new LinkedList<IndexFile>();
+            for (IndexFile file : currentFiles) {
+                for (IndexFile indexFile : files.values()) {
+                    for (IndexInclude include : indexFile.findIncludes(file)) {
+                        if (handled.add(include.getIncludedByLocation())) {
+                            out.add(include);
+                            nextLevel.add((IndexFile)include.getIncludedBy());
+                        }
+                    }
+                }
+            }
+            currentFiles = nextLevel;
+        }
+    }
+
+    private void sourceFileChanged(IResourceDelta delta, boolean purgeAll) {
+        if (purgeAll) {
+            Debug.format("Index: source file changed, discarding index\n");
+            files.clear();
+        }
+        else {
+            IndexFile indexFile = resolve(delta.getResource().getLocation().toOSString());
+            if (indexFile != null) {
+                Debug.format("Index: source file %s changed, discarding index\n", indexFile.absolutePath);
+                removeFromIndex(indexFile);
+                int count = 1;
+                for (IndexInclude include : findIncludedBy(indexFile)) {
+                    removeFromIndex((IndexFile)include.getIncludedBy());
+                    count++;
+                }
+                Debug.format("  removed %d/%d files\n", count, count+files.size());
             }
         }
     }
 
-    class Indexer {
-        Stack<IndexFile> activeIndexFiles = new Stack<IndexFile>();
-        int withinOmnetpph = 0;
+    private void projectDescriptionChanged(CProjectDescriptionEvent e) {
+        Debug.println("Index: project description changed, discarding index");
+        files.clear();
+    }
 
-        /**
-         * Called before the CPreprocessor starts scanning a toplevel source file.
-         */
-        public void handleTranslationUnitStart(String filename) {
+    private void removeFromIndex(IndexFile file) {
+        files.remove(file.absolutePath);
+    }
+
+    public void dumpToDebug() {
+        Debug.format("Index contains %d files\n", files.size());
+        Set<String> keys = new TreeSet<String>(files.keySet());
+        for (String key : keys) {
+            IndexFile file = files.get(key);
+            file.dumpToDebug();
+        }
+    }
+
+    /**
+     * TODO
+     */
+    class Indexer implements IScannerEventListener {
+        private IndexFile currentIndexFile;
+        private Stack<IndexFile> activeIndexFiles = new Stack<IndexFile>();
+        private int withinOmnetpph = 0;
+
+        public void startTranslationUnit(String filename) {
             println("Start "+filename);
             Assert.isTrue(activeIndexFiles.isEmpty());
             Assert.isTrue(withinOmnetpph == 0);
             startIndexing(filename);
         }
 
-        /**
-         * Called when the CPreprocessor finished the scanning of a toplevel source file.
-         */
-        public void handleTranslationUnitEnd(String filename) {
+        public void endTranslationUnit(String filename) {
             endIndexing(filename);
             println("End "+filename);
             Assert.isTrue(activeIndexFiles.isEmpty());
             Assert.isTrue(withinOmnetpph == 0);
         }
 
-        /**
-         * Called before the CPreprocessor starts scanning of an included file.
-         */
-        public void handleInclusionStart(IASTPreprocessorIncludeStatement include) {
+        public void startInclusion(IASTPreprocessorIncludeStatement include) {
             Assert.isTrue(include.isActive());
             println("start of "+include.getPath());
-            for (IndexFile file : activeIndexFiles) {
-                Assert.isTrue(!file.isComplete);
-                file.addInclude(include, activeIndexFiles.peek());
-            }
+            currentIndexFile.addInclude(include);
             startIndexing(include.getPath());
         }
 
-        /**
-         * Called when the CPreprocessor finished the scanning of an included file.
-         */
-        public void handleInclusionEnd(String filename) {
-            endIndexing(filename);
-            println("end of "+filename);
+        public void endInclusion(IASTPreprocessorIncludeStatement include) {
+            endIndexing(include.getPath());
+            println("end of "+include.getPath());
         }
 
-        /**
-         * Called when the CPreprocessor start processing of an include, that is
-         * - skipped because it is a known system include
-         * - skipped because it is already included into the current translation unit
-         * - processed from the index, because it content has already been scanned
-         */
-        public void handleSkippedInclusion(IASTPreprocessorIncludeStatement include) {
+        public void encounterInclude(IASTPreprocessorIncludeStatement include) {
             if (include.isActive()) {
                 println("#include "+include.getPath());
-                IndexFile includedFile = (IndexFile)resolveInclude(include);
-
-                for (IndexFile file : activeIndexFiles) {
-                    Assert.isTrue(!file.isComplete);
-                    boolean added = file.addInclude(include, activeIndexFiles.peek());
-                    if (added) {
-                        if (includedFile != null && includedFile.isComplete) {
-                            for (IIndexMacro macro : includedFile.getMacros())
-                                if (macro instanceof IndexMacro)
-                                    file.addDefine(((IndexMacro)macro).getMacroDef());
-                                else if (macro instanceof IndexUndef)
-                                    file.addUndef(((IndexUndef)macro).getUndefStatement());
-                        }
-                    }
-                }
+                currentIndexFile.addInclude(include);
             }
         }
 
-        /**
-         * Called when the CPreprocessor encounters a macro definition.
-         */
-        public void handleDefine(IMacroBinding macrodef, boolean isActive) {
-            if (isActive /*&& (withinOmnetpph == 0 || macrodef.getName().equals("OMNETPP_VERSION"))*/) {
-                println("#define "+macrodef.getName()+(macrodef.isFunctionStyle()?"(...) " : " ")+new String(macrodef.getExpansion()));
-                for (IndexFile file : activeIndexFiles) {
-                    Assert.isTrue(!file.isComplete);
-                    file.addDefine(macrodef);
-                }
+        public void encounterDefine(IASTPreprocessorMacroDefinition macrodef) {
+            if (macrodef.isActive() /*&& (withinOmnetpph == 0 || macrodef.getName().equals("OMNETPP_VERSION"))*/) {
+                println("#define "+macrodef.getName()+(macrodef instanceof IASTPreprocessorFunctionStyleMacroDefinition?"(...) " : " ")+new String(macrodef.getExpansion()));
+                currentIndexFile.addDefine(macrodef);
             }
         }
 
-        /**
-         * Called when the CPreprocessor encounters a #undef.
-         */
-        public void handleUndef(IASTPreprocessorUndefStatement undef) {
+        public void encounterUndef(IASTPreprocessorUndefStatement undef) {
             if (undef.isActive() && withinOmnetpph == 0) {
                 println("#undef "+undef.getMacroName().toString());
-                for (IndexFile file : activeIndexFiles) {
-                    Assert.isTrue(!file.isComplete);
-                    file.addUndef(undef);
-                }
+                currentIndexFile.addUndef(undef);
             }
         }
 
-        public void handleIfdef(IMacroBinding macro, boolean isActive) {
-            if (macro != null) {
-                addMacroReference(macro);
+        public void encounterIfdef(IASTPreprocessorIfdefStatement ifdef) {
+            IASTName macroRef = ifdef.getMacroReference();
+            if (macroRef != null) {
+                currentIndexFile.addReferencedMacro((IMacroBinding)macroRef.getBinding());
             }
         }
 
-        public void handleIfndef(IMacroBinding macro, boolean isActive) {
-            if (macro != null) {
-                addMacroReference(macro);
+        public void encounterIfndef(IASTPreprocessorIfndefStatement ifndef) {
+            IASTName macroRef = ifndef.getMacroReference();
+            if (macroRef != null) {
+                currentIndexFile.addReferencedMacro((IMacroBinding)macroRef.getBinding());
             }
         }
 
-        public void handleIf(IASTName[] refs, boolean isActive) {
+        public void encounterIf(IASTPreprocessorIfStatement if_, IASTName[] refs) {
             for (IASTName ref : refs) {
                 if (ref.getBinding() instanceof IMacroBinding)
-                    addMacroReference((IMacroBinding)ref.getBinding());
+                    currentIndexFile.addReferencedMacro((IMacroBinding)ref.getBinding());
             }
         }
 
-        public void handleElif(IASTName[] refs, boolean isActive) {
+        public void encounterElif(IASTPreprocessorElifStatement elif, IASTName[] refs) {
             for (IASTName ref : refs) {
                 if (ref.getBinding() instanceof IMacroBinding)
-                    addMacroReference((IMacroBinding)ref.getBinding());
+                    currentIndexFile.addReferencedMacro((IMacroBinding)ref.getBinding());
             }
         }
 
-        public void handleMacroExpansion(IMacroBinding outerMacro, IASTName[] implicitMacroReferences) {
-            addMacroReference(outerMacro);
+        public void encounterMacroExpansion(IMacroBinding outerMacro, IASTName[] implicitMacroReferences) {
+            currentIndexFile.addReferencedMacro(outerMacro);
             for (IASTName ref : implicitMacroReferences) {
                 if (ref.getBinding() instanceof IMacroBinding)
-                    addMacroReference((IMacroBinding)ref.getBinding());
+                    currentIndexFile.addReferencedMacro((IMacroBinding)ref.getBinding());
             }
         }
 
         protected IIndexFile resolveInclude(IASTPreprocessorIncludeStatement include) {
-            println("Resolving "+include.getPath());
             if (include.isResolved()) {
                 Assert.isTrue(!StringUtils.isEmpty(include.getPath()));
                 return Index.this.resolve(include.getPath());
@@ -296,9 +274,9 @@ public class Index {
 
         protected void startIndexing(String filename) {
             Assert.isTrue(!files.containsKey(filename));
-            IndexFile indexFile = new IndexFile(filename);
-            files.put(filename, indexFile);
-            activeIndexFiles.push(indexFile);
+            currentIndexFile = new IndexFile(filename);
+            files.put(filename, currentIndexFile);
+            activeIndexFiles.push(currentIndexFile);
             if (filename.endsWith("omnetpp.h"))
                 withinOmnetpph++;
         }
@@ -307,18 +285,9 @@ public class Index {
             Assert.isTrue(!activeIndexFiles.isEmpty() && activeIndexFiles.peek().absolutePath.equals(filename));
             IndexFile file = activeIndexFiles.pop();
             file.freeze();
-            fileContentProvider.setIndexFile(filename, file);
+            currentIndexFile = activeIndexFiles.isEmpty() ? null : activeIndexFiles.peek();
             if (filename.endsWith("omnetpp.h"))
                 withinOmnetpph--;
-        }
-
-        protected void addMacroReference(IMacroBinding macro) {
-            Assert.isTrue(!activeIndexFiles.isEmpty());
-            activeIndexFiles.peek().addReferencedMacro(macro);
-//            for (IndexFile file : activeIndexFiles) {
-//                Assert.isTrue(!file.isComplete);
-//                file.addReferencedMacro(macro);
-//            }
         }
 
         private boolean debug = false;
@@ -332,30 +301,32 @@ public class Index {
 
     static class IndexFile implements IIndexFile {
 
-        boolean isComplete;
-        String absolutePath;
-        List<IIndexInclude> includes = new ArrayList<IIndexInclude>();
-        List<IIndexMacro> definedMacros = new ArrayList<IIndexMacro>();
-        Map<String, String> referencedMacros;
+        private final String absolutePath;
+        private boolean isFrozen;
+        private List<IndexInclude> includes = new ArrayList<IndexInclude>();
+        private List<Object> preprocessingDirectives = new ArrayList<Object>(); // includes + macros
+        private Map<String, String> referencedMacros;
 
         public IndexFile(String path) {
             this.absolutePath = path;
         }
 
-        public void addDefine(IMacroBinding macrodef) {
-            Assert.isTrue(!isComplete);
-            definedMacros.add(new IndexMacro(macrodef));
+        public void addDefine(IASTPreprocessorMacroDefinition macrodef) {
+            Assert.isTrue(!isFrozen);
+            preprocessingDirectives.add(new IndexMacro(macrodef));
         }
 
         public void addUndef(IASTPreprocessorUndefStatement undef) {
-            Assert.isTrue(!isComplete);
-            definedMacros.add(new IndexUndef(undef));
+            Assert.isTrue(!isFrozen);
+            preprocessingDirectives.add(new IndexUndef(undef));
         }
 
-        public boolean addInclude(IASTPreprocessorIncludeStatement include, IIndexFile includedBy) {
-            Assert.isTrue(!isComplete);
+        public boolean addInclude(IASTPreprocessorIncludeStatement include) {
+            Assert.isTrue(!isFrozen);
             if (findInclude(include) == null) {
-                includes.add(new IndexInclude(include, includedBy));
+                IndexInclude indexInclude = new IndexInclude(include, this);
+                includes.add(indexInclude);
+                preprocessingDirectives.add(indexInclude);
                 return true;
             }
             else
@@ -373,7 +344,96 @@ public class Index {
         }
 
         public void freeze() {
-            isComplete = true;
+            isFrozen = true;
+        }
+
+        public String getPath() {
+            return absolutePath;
+        }
+
+        public List<Object> getPreprocessingDirectives() {
+            Assert.isTrue(isFrozen);
+            return preprocessingDirectives;
+        }
+
+        @Override
+        public IIndexFileLocation getLocation() {
+            return new IndexFileLocation(UNCPathConverter.getInstance().toURI(absolutePath), null);
+        }
+
+        @Override
+        public IIndexInclude[] getIncludes() {
+            Assert.isTrue(isFrozen);
+            return includes.toArray(new IIndexInclude[includes.size()]);
+        }
+
+        @Override
+        public IIndexMacro[] getMacros() {
+            Assert.isTrue(isFrozen);
+            IIndexMacro[] result = new IIndexMacro[preprocessingDirectives.size() - includes.size()];
+            int i = 0;
+            for (Object directive : preprocessingDirectives)
+                if (directive instanceof IIndexMacro)
+                    result[i++] = (IIndexMacro)directive;
+            return result;
+        }
+
+        @Override
+        public ICPPUsingDirective[] getUsingDirectives() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public long getTimestamp() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public long getContentsHash() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int getScannerConfigurationHashcode() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int getEncodingHashcode() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public IIndexName[] findNames(int offset, int length) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public IIndexInclude getParsedInContext() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int getLinkageID() {
+            throw new UnsupportedOperationException();
+        }
+
+        public IndexInclude findInclude(IASTPreprocessorIncludeStatement includeStatement) {
+            for (IndexInclude include : includes) {
+                if (include.getFullName().equals(includeStatement.getName().toString()))
+                    return include;
+            }
+            return null;
+        }
+
+        public List<IndexInclude> findIncludes(IndexFile includedFile) {
+            List<IndexInclude> result = new ArrayList<IndexInclude>();
+            for (IndexInclude include : includes) {
+                    String path = include.getPath();
+                    if (path != null && path.equals(includedFile.absolutePath))
+                        result.add(include);
+            }
+            return result;
         }
 
         public boolean isCompatibleWithMacroValues(IMacroValueProvider definedMacros) {
@@ -385,73 +445,6 @@ public class Index {
                     return false;
             }
             return true;
-        }
-
-        @Override
-        public IIndexFileLocation getLocation() throws CoreException {
-            return new IndexFileLocation(UNCPathConverter.getInstance().toURI(absolutePath), null);
-        }
-
-        @Override
-        public IIndexInclude[] getIncludes() {
-            Assert.isTrue(isComplete);
-            return includes.toArray(new IIndexInclude[includes.size()]);
-        }
-
-        @Override
-        public IIndexMacro[] getMacros() {
-            Assert.isTrue(isComplete);
-            return definedMacros.toArray(new IIndexMacro[definedMacros.size()]);
-        }
-
-        @Override
-        public ICPPUsingDirective[] getUsingDirectives() throws CoreException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public long getTimestamp() throws CoreException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public long getContentsHash() throws CoreException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getScannerConfigurationHashcode() throws CoreException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getEncodingHashcode() throws CoreException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public IIndexName[] findNames(int offset, int length) throws CoreException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public IIndexInclude getParsedInContext() throws CoreException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getLinkageID() throws CoreException {
-            throw new UnsupportedOperationException();
-        }
-
-        public IIndexInclude findInclude(IASTPreprocessorIncludeStatement includeStatement) {
-            for (IIndexInclude include : includes) {
-                try {
-                    if (include.getFullName().equals(includeStatement.getName().toString()))
-                        return include;
-                } catch (CoreException e) {}
-            }
-            return null;
         }
 
         public void dumpToDebug() {
@@ -471,22 +464,28 @@ public class Index {
                 }
                 Debug.println(sb.toString());
             }
-//            for (IIndexInclude include : includes)
-//                ((IndexInclude)include).dumpToDebug();
-//            for (IIndexMacro macro : definedMacros) {
-//                if (macro instanceof IndexMacro)
-//                    ((IndexMacro)macro).dumpToDebug();
-//                else if (macro instanceof IndexUndef)
-//                    ((IndexUndef)macro).dumpToDebug();
-//            }
+            for (Object directive : preprocessingDirectives) {
+                if (directive instanceof IndexInclude)
+                    ((IndexInclude)directive).dumpToDebug();
+                else if (directive instanceof IndexMacro)
+                    ((IndexMacro)directive).dumpToDebug();
+                else if (directive instanceof IndexUndef)
+                    ((IndexUndef)directive).dumpToDebug();
+            }
         }
     }
 
     static class IndexMacro implements IIndexMacro {
-        IMacroBinding macrodef;
+        private final IASTPreprocessorMacroDefinition define;
+        private final IMacroBinding macrodef;
 
-        public IndexMacro(IMacroBinding macrodef) {
-            this.macrodef = macrodef;
+        public IndexMacro(IASTPreprocessorMacroDefinition define) {
+            this.define = define;
+            this.macrodef = (IMacroBinding)define.getName().getBinding();
+        }
+
+        public IASTPreprocessorMacroDefinition getDefineStatement() {
+            return define;
         }
 
         public IMacroBinding getMacroDef() {
@@ -553,7 +552,7 @@ public class Index {
         }
 
         @Override
-        public Object getAdapter(Class adapter) {
+        public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
             return macrodef.getAdapter(adapter);
         }
 
@@ -573,25 +572,24 @@ public class Index {
         }
 
         @Override
-        public IASTFileLocation getFileLocation() throws CoreException {
-            // throw new UnsupportedOperationException();
-            return null;
+        public IASTFileLocation getFileLocation() {
+            return define.getFileLocation();
         }
 
         @Override
-        public IIndexFile getFile() throws CoreException {
+        public IIndexFile getFile() {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public IIndexName getDefinition() throws CoreException {
+        public IIndexName getDefinition() {
             throw new UnsupportedOperationException();
         }
     }
 
     static class IndexUndef implements IIndexMacro {
 
-        IASTPreprocessorUndefStatement undef;
+        private final IASTPreprocessorUndefStatement undef;
 
         public IndexUndef(IASTPreprocessorUndefStatement undef) {
             this.undef = undef;
@@ -661,7 +659,7 @@ public class Index {
         }
 
         @Override
-        public Object getAdapter(Class adapter) {
+        public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
             throw new UnsupportedOperationException();
         }
 
@@ -671,102 +669,98 @@ public class Index {
         }
 
         @Override
-        public boolean isFileLocal() throws CoreException {
+        public boolean isFileLocal() {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public IIndexFile getLocalToFile() throws CoreException {
+        public IIndexFile getLocalToFile() {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public IASTFileLocation getFileLocation() throws CoreException {
-            //throw new UnsupportedOperationException();
-            return null;
+        public IASTFileLocation getFileLocation() {
+            return undef.getFileLocation();
         }
 
         @Override
-        public IIndexFile getFile() throws CoreException {
+        public IIndexFile getFile() {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public IIndexName getDefinition() throws CoreException {
+        public IIndexName getDefinition() {
             throw new UnsupportedOperationException();
         }
     }
 
     static class IndexInclude implements IIndexInclude {
 
-        IASTPreprocessorIncludeStatement include;
-        IIndexFile includedBy;
+        private final IASTPreprocessorIncludeStatement include;
+        private final IndexFile includedBy;
 
-        public IndexInclude(IASTPreprocessorIncludeStatement include, IIndexFile includedBy) {
+        public IndexInclude(IASTPreprocessorIncludeStatement include, IndexFile includedBy) {
             this.include = include;
             this.includedBy = includedBy;
         }
 
         public void dumpToDebug() {
-            try {
-            Debug.println("#include "+(isSystemInclude()?"<" : "\"")+getName()+(isSystemInclude()?">" : "\""));
-            } catch (CoreException e) {
-                throw new RuntimeException(e);
-            }
+            Debug.println("#include "+(isSystemInclude()?"<" : "\"")+getFullName()+(isSystemInclude()?">" : "\""));
         }
 
         @Override
-        public IIndexFile getIncludedBy() throws CoreException {
+        public IIndexFile getIncludedBy() {
             return includedBy;
         }
 
         @Override
-        public IIndexFileLocation getIncludedByLocation() throws CoreException {
+        public IIndexFileLocation getIncludedByLocation() {
+            return includedBy.getLocation();
+        }
+
+        @Override
+        public IIndexFileLocation getIncludesLocation() {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public IIndexFileLocation getIncludesLocation() throws CoreException {
-            throw new UnsupportedOperationException();
+        public String getName() {
+            Path path = new Path(getFullName());
+            return path.lastSegment();
         }
 
         @Override
-        public String getName() throws CoreException {
-            return include.getName().toString(); // XXX
-        }
-
-        @Override
-        public String getFullName() throws CoreException {
+        public String getFullName() {
             return include.getName().toString();
         }
 
         @Override
-        public int getNameOffset() throws CoreException {
-            throw new UnsupportedOperationException();
+        public int getNameOffset() {
+            return ((ASTNode)include.getName()).getOffset();
         }
 
         @Override
-        public int getNameLength() throws CoreException {
-            throw new UnsupportedOperationException();
+        public int getNameLength() {
+            return ((ASTNode)include.getName()).getLength();
         }
 
         @Override
-        public boolean isSystemInclude() throws CoreException {
+        public boolean isSystemInclude() {
             return include.isSystemInclude();
         }
 
         @Override
-        public boolean isActive() throws CoreException {
+        public boolean isActive() {
             return include.isActive();
         }
 
         @Override
-        public boolean isResolved() throws CoreException {
+        public boolean isResolved() {
             return include.isResolved();
         }
 
         @Override
-        public boolean isResolvedByHeuristics() throws CoreException {
+        public boolean isResolvedByHeuristics() {
             return include.isResolvedByHeuristics();
         }
 
