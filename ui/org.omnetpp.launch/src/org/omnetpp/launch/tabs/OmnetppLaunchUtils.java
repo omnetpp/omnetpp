@@ -34,6 +34,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
@@ -223,11 +224,29 @@ public class OmnetppLaunchUtils {
     }
 
     /**
+     * Adds required configuration parameters to the launch's configuration. They are required
+     * because built-in launch delegates will fail without them.
+     *
+     * @see createUpdatedLaunchConfig
+     */
+    public static void updateLaunchConfigurationWithProgramAttributes(String mode, ILaunch launch)
+                throws CoreException {
+        ILaunchConfigurationWorkingCopy newConfig = createUpdatedLaunchConfig(launch.getLaunchConfiguration(), mode);
+        // the ILaunchConfiguration object in 'launch' is immutable so we have to create a mutable
+        // ILaunchConfigurationWorkingCopy, update it with the required additional attributes and then
+        // we MUST set this configuration on the 'launch' object. This is required because some launchers
+        // notably the GdbLaunchDelegate uses the configuration INSIDE the launch object to set up the
+        // launched process.
+        ReflectionUtils.setFieldValue(launch, "fConfiguration", newConfig);
+    }
+
+    /**
      * Creates a new temporary configuration from a simulation config type that is compatible with CDT.
-     * When an error happens during conversion, throws a CoreException.
+	 * It adds ATTR_PROJECT_NAME, ATTR_PROGRAM_NAME and ATTR_PROGRAM_ARGUMENTS. They are
+	 * required to start a program correctly with a debugger launch delegate.
      */
     @SuppressWarnings("unchecked")
-    public static ILaunchConfigurationWorkingCopy convertLaunchConfig(ILaunchConfiguration config, String mode) throws CoreException {
+    public static ILaunchConfigurationWorkingCopy createUpdatedLaunchConfig(ILaunchConfiguration config, String mode) throws CoreException {
         ILaunchConfigurationWorkingCopy newCfg = config.copy("opp_run temporary configuration");
         newCfg.setAttributes(CollectionUtils.getDeepCopyOf(newCfg.getAttributes())); // otherwise attrs that are Collections themselves are not copied
 
@@ -691,7 +710,7 @@ public class OmnetppLaunchUtils {
         try {
             // launch the program
             long startTime = System.currentTimeMillis();
-            configuration = convertLaunchConfig(configuration, ILaunchManager.RUN_MODE);
+			configuration = createUpdatedLaunchConfig(configuration, ILaunchManager.RUN_MODE);
             Process proc = OmnetppLaunchUtils.startSimulationProcess(configuration, createCommandLine(configuration, ""), true);
 
             // read its standard output

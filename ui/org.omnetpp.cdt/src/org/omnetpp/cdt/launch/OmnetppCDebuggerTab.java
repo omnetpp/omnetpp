@@ -7,15 +7,17 @@
 
 package org.omnetpp.cdt.launch;
 
-import org.eclipse.cdt.launch.ui.CDebuggerTab;
+import org.eclipse.cdt.dsf.gdb.internal.ui.launching.LocalApplicationCDebuggerTab;
+
 
 /**
- * A Debugger tab with default constructor. Allows to be contributed via the extension registry.
+ * A Debugger tab with default constructor. Left here only that we detect if it is removed.
+ * (because it is an internal class)
  *
  */
-public class OmnetppCDebuggerTab extends CDebuggerTab {
+public class OmnetppCDebuggerTab extends LocalApplicationCDebuggerTab {
 
     public OmnetppCDebuggerTab() {
-        super(false);
+		super();
     }
 }

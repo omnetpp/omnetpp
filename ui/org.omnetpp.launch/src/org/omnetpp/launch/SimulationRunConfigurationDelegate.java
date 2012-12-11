@@ -36,22 +36,23 @@ import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
  */
 public class SimulationRunConfigurationDelegate extends LaunchConfigurationDelegate {
 
-    public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
+    public void launch(ILaunchConfiguration oldConfig, String mode, ILaunch launch, IProgressMonitor monitor)
             throws CoreException {
-        // check if program name is not provided in this case we should use opp_run as the executable
-        configuration = OmnetppLaunchUtils.convertLaunchConfig(configuration, mode);
+        OmnetppLaunchUtils.updateLaunchConfigurationWithProgramAttributes(mode, launch);
+        // we must use the updated configuration in 'launch' instead the original passed to us
+        ILaunchConfiguration newConfig = launch.getLaunchConfiguration();
 
         if (monitor == null) {
             monitor = new NullProgressMonitor();
         }
         monitor.beginTask("Launching Simulation", 1);
 
-        int runs[] = OmnetppLaunchUtils.parseRuns(configuration.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, ""),
-                                                OmnetppLaunchUtils.getMaxNumberOfRuns(configuration));
+        int runs[] = OmnetppLaunchUtils.parseRuns(newConfig.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, ""),
+                                                OmnetppLaunchUtils.getMaxNumberOfRuns(newConfig));
         Assert.isTrue(runs != null && runs.length > 0);
 
         // show the debug view if option is checked
-        if (configuration.getAttribute(IOmnetppLaunchConstants.OPP_SHOWDEBUGVIEW, false)) {
+        if (newConfig.getAttribute(IOmnetppLaunchConstants.OPP_SHOWDEBUGVIEW, false)) {
             Display.getDefault().asyncExec(new Runnable() {
                 public void run() {
                     IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
@@ -64,14 +65,14 @@ public class SimulationRunConfigurationDelegate extends LaunchConfigurationDeleg
             });
         }
 
-        int numProcesses = configuration.getAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
-        boolean reportProgress = StringUtils.contains(configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, ""), "-u Cmdenv");
+        int numProcesses = newConfig.getAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
+        boolean reportProgress = StringUtils.contains(newConfig.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, ""), "-u Cmdenv");
         // start a single or batched launch job
         Job job;
         if (runs.length == 1 )
-            job = new SimulationLauncherJob(configuration, launch, runs[0], reportProgress);
+            job = new SimulationLauncherJob(newConfig, launch, runs[0], reportProgress);
         else
-            job = new BatchedSimulationLauncherJob(configuration, launch, runs, numProcesses);
+            job = new BatchedSimulationLauncherJob(newConfig, launch, runs, numProcesses);
 
         job.schedule();
         monitor.done();
@@ -81,7 +82,7 @@ public class SimulationRunConfigurationDelegate extends LaunchConfigurationDeleg
     protected IProject[] getProjectsForProblemSearch(ILaunchConfiguration configuration, String mode) throws CoreException {
         // NOTE: we need to do this twice: here and in launch() which is kind of superfluous
         //       but it is unclear whether those two incoming configurations are the same or not
-        configuration = OmnetppLaunchUtils.convertLaunchConfig(configuration, mode);
+        configuration = OmnetppLaunchUtils.createUpdatedLaunchConfig(configuration, mode);
         String projectName = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, "");
 
         if (StringUtils.isEmpty(projectName))

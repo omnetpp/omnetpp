@@ -318,7 +318,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "");
 
         // minimal CDT specific attributes required to start without errors
-        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_ID, "org.eclipse.cdt.debug.mi.core.CDebuggerNew");
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_ID, "gdb");
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_STOP_AT_MAIN, true);
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_STOP_AT_MAIN_SYMBOL, "main");
     }

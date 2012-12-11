@@ -22,9 +22,8 @@ public class SimulationValgrindProfileLaunchDelegate extends ValgrindLaunchConfi
     @Override
     public void launch(ILaunchConfiguration config, String mode,
             ILaunch launch, IProgressMonitor monitor) throws CoreException {
-        // check if program name is not provided in this case we should use opp_run as the executable
-        config = OmnetppLaunchUtils.convertLaunchConfig(config, mode);
-
-        super.launch(config, mode, launch, monitor);
+        OmnetppLaunchUtils.updateLaunchConfigurationWithProgramAttributes(mode, launch);
+        // we must use the updated configuration in 'launch' instead the original passed to us
+        super.launch(launch.getLaunchConfiguration(), mode, launch, monitor);
     }
 }
