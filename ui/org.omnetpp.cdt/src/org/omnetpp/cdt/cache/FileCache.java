@@ -3,9 +3,7 @@ package org.omnetpp.cdt.cache;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,6 +21,7 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
@@ -43,8 +42,24 @@ import org.omnetpp.cdt.build.MakefileTools;
 @SuppressWarnings("restriction")
 public class FileCache {
 
-    // standard headers are always skipped
-    protected static final Set<String> standardHeaders = new HashSet<String>(Arrays.asList(MakefileTools.ALL_STANDARD_HEADERS.trim().split(" +")));
+    // relative paths of standard headers grouped by their last segment
+    protected static final Map<String,IPath[]> standardHeaders;
+    static {
+        standardHeaders = new HashMap<String,IPath[]>();
+        for (String header : Arrays.asList(MakefileTools.ALL_STANDARD_HEADERS.trim().split(" +"))) {
+            IPath path = new Path(header);
+            IPath[] oldGroup = standardHeaders.get(path.lastSegment());
+            IPath[] group;
+            if (oldGroup == null)
+                group = new IPath[] { path };
+            else {
+                group = new IPath[oldGroup.length + 1];
+                System.arraycopy(oldGroup, 0, group, 0, oldGroup.length);
+                group[group.length-1] = path;
+            }
+            standardHeaders.put(path.lastSegment(), group);
+        }
+    }
 
 
     // map of file locations to file content
@@ -75,13 +90,34 @@ public class FileCache {
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
     }
 
+    public static boolean isStandardHeader(String path) {
+        IPath headerPath = new Path(path);
+        IPath[] standardHeaderPaths = standardHeaders.get(headerPath.lastSegment());
+        if (standardHeaderPaths != null) {
+            for (IPath standardHeaderPath : standardHeaderPaths) {
+                // check that headerPath ends with the segments of standardHeaderPath.
+                // we know that the last segments are equal, so they are not compared
+                int offset = headerPath.segmentCount() - standardHeaderPath.segmentCount();
+                if (offset >= 0) {
+                    int i;
+                    for (i = standardHeaderPath.segmentCount() - 2; i >= 0; --i)
+                        if (!standardHeaderPath.segment(i).equals(headerPath.segment(i+offset)))
+                            break;
+                    if (i < 0)
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public InternalFileContent getFileContent(String path) {
         if (cache.containsKey(path)) {
             return cache.get(path);
         }
 
         InternalFileContent fileContent = null;
-        if (standardHeaders.contains(new Path(path).lastSegment()))
+        if (isStandardHeader(path))
             fileContent = new InternalFileContent(path, InclusionKind.SKIP_FILE);
 
         if (fileContent == null) {
