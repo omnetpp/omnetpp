@@ -1,9 +1,12 @@
 package org.omnetpp.cdt.cache;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPUsingDirective;
@@ -17,6 +20,7 @@ import org.eclipse.core.resources.IFile;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.cache.Index.IndexFile;
 import org.omnetpp.cdt.cache.Index.IndexInclude;
+import org.omnetpp.common.util.Pair;
 
 /**
  * This class provides the preprocessor with the content of source files.
@@ -41,15 +45,18 @@ class FileContentProvider extends InternalFileContentProvider {
     // files included into the current translation unit
     private Set<String> includedFiles = new HashSet<String>();
 
-    // TODO set value
     private IMacroValueProvider currentMacroValues;
 
     static interface IMacroValueProvider {
-        String getValue(String name);
+        char[] getMacroValue(String name);
     }
 
     public FileContentProvider(IFile translationUnit) {
         this.translationUnit = translationUnit;
+    }
+
+    public void setMacroValueProvider(IMacroValueProvider provider) {
+        this.currentMacroValues = provider;
     }
 
     public IFile getTranslationUnit() {
@@ -81,21 +88,23 @@ class FileContentProvider extends InternalFileContentProvider {
     private InternalFileContent getFileContent(String path) {
         // check index
         IndexFile indexFile = index.resolve(path);
-        if (indexFile != null && (currentMacroValues == null || indexFile.isCompatibleWithMacroValues(currentMacroValues))) {
+        if (indexFile != null) {
             try {
+                Map<String,char[]> macroValues = new HashMap<String,char[]>();
                 List<IIndexFile> files= new ArrayList<IIndexFile>();
                 List<IIndexMacro> macros= new ArrayList<IIndexMacro>();
                 Set<String> processedFiles= new HashSet<String>();
-                collectFileContent(indexFile, processedFiles, files, macros, false);
+                collectFileContent(indexFile, processedFiles, files, macros, macroValues, false);
                 // add included files only, if no exception was thrown
                 for (String filename : processedFiles) {
                     if (!includedFiles.contains(filename))
                         includedFiles.add(filename);
                 }
                 return new InternalFileContent(path, macros, Collections.<ICPPUsingDirective>emptyList(), files);
-            } catch (Exception e) {
+            } catch (IncompatibleMacroValuesException e) {
                 // TODO message dialog?
-                Activator.logError(e);
+                //Activator.logError(e);
+                //Debug.println(e.getMessage());
             }
         }
 
@@ -103,7 +112,22 @@ class FileContentProvider extends InternalFileContentProvider {
         return fileCache.getFileContent(path);
     }
 
-    private void collectFileContent(IndexFile file, Set<String> processedFiles, List<IIndexFile> files, List<IIndexMacro> macros, boolean checkIncluded) {
+    class IncompatibleMacroValuesException extends Exception {
+        private static final long serialVersionUID = 1L;
+
+        public IncompatibleMacroValuesException() {
+            super();
+        }
+
+        public IncompatibleMacroValuesException(String message) {
+            super(message);
+        }
+    }
+
+    private void collectFileContent(IndexFile file, Set<String> processedFiles, List<IIndexFile> files,
+                                    List<IIndexMacro> macros, Map<String,char[]> macroValues, boolean checkIncluded)
+        throws IncompatibleMacroValuesException
+    {
         if (!processedFiles.add(file.getPath()) || (checkIncluded && includedFiles.contains(file.getPath()))) {
             return;
         }
@@ -111,13 +135,27 @@ class FileContentProvider extends InternalFileContentProvider {
         files.add(file);
 
         for (Object d : file.getPreprocessingDirectives()) {
-            if (d instanceof IIndexMacro) {
-                macros.add((IIndexMacro) d);
+            if (d instanceof Pair) {
+                if (currentMacroValues != null) {
+                    @SuppressWarnings("unchecked")
+                    Pair<String,char[]> ref = (Pair<String,char[]>)d;
+                    String name = ref.first;
+                    char[] expectedValue = ref.second;
+                    char[] foundValue = macroValues.containsKey(name) ? macroValues.get(name) :currentMacroValues.getMacroValue(name);
+                    if (!Arrays.equals(expectedValue, foundValue))
+                        throw new IncompatibleMacroValuesException(String.format("file: %s macro: %s expected: %s found: %s",
+                                file.getPath(), name, expectedValue != null ? new String(expectedValue) : null, foundValue != null ? new String(foundValue) : foundValue));
+                }
+            }
+            else if (d instanceof IIndexMacro) {
+                IIndexMacro macro = (IIndexMacro)d;
+                char[] expansion = macro.getExpansion();
+                macros.add(macro);
+                macroValues.put(macro.getName(), expansion);
             } else if (d instanceof IndexInclude) {
                 IndexFile includedFile = index.resolve(((IndexInclude) d).getPath());
                 if (includedFile != null) {
-                    // TODO check macro dependencies
-                    collectFileContent(includedFile, processedFiles, files, macros, true);
+                    collectFileContent(includedFile, processedFiles, files, macros, macroValues, true);
                 }
             }
         }

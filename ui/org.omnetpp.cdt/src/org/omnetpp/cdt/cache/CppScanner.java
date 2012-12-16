@@ -28,6 +28,7 @@ import org.eclipse.cdt.core.parser.IncludeFileContentProvider;
 import org.eclipse.cdt.core.parser.ParserFactory;
 import org.eclipse.cdt.core.parser.ParserLanguage;
 import org.eclipse.cdt.core.parser.ScannerInfo;
+import org.eclipse.cdt.core.parser.util.CharArrayMap;
 import org.eclipse.cdt.internal.core.parser.scanner.AbstractCharArray;
 import org.eclipse.cdt.internal.core.parser.scanner.CPreprocessor;
 import org.eclipse.cdt.internal.core.parser.scanner.ILocationCtx;
@@ -37,6 +38,7 @@ import org.eclipse.cdt.internal.core.parser.scanner.LocationMap;
 import org.eclipse.cdt.internal.core.parser.scanner.MacroExpander;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
+import org.omnetpp.cdt.cache.FileContentProvider.IMacroValueProvider;
 import org.omnetpp.common.util.ReflectionUtils;
 
 /**
@@ -47,7 +49,7 @@ import org.omnetpp.common.util.ReflectionUtils;
  * @author tomi
  */
 @SuppressWarnings("restriction")
-class CppScanner {
+class CppScanner implements IMacroValueProvider {
 
     interface IScannerEventListener {
         /**
@@ -138,12 +140,23 @@ class CppScanner {
         return new ScannerInfo(null, null);
     }
 
+
+    @Override
+    public char[] getMacroValue(String name) {
+        if (scanner == null)
+            return null;
+        CharArrayMap<IMacroBinding> macroDictionary = scanner.getDefinedMacros();
+        IMacroBinding binding = macroDictionary.get(name.toCharArray());
+        return binding != null ? binding.getExpansion() : null;
+    }
+
     /**
      * Extends CPreprocessor with notifications about the start/end of processing a translation unit.
      */
     private static class Scanner extends CPreprocessor {
         String filePath;
         IScannerEventListener listener;
+        Field fMacroDictionaryField;
 
         public Scanner(FileContent fileContent, IScannerInfo info, ParserLanguage language, IParserLogService log,
                         IScannerExtensionConfiguration configuration, IncludeFileContentProvider readerFactory,
@@ -151,6 +164,8 @@ class CppScanner {
             super(fileContent, info, language, log, configuration, readerFactory);
             this.filePath = ((InternalFileContent)fileContent).getFileLocation();
             this.listener = listener;
+            this.fMacroDictionaryField = ReflectionUtils.getField(getClass(), "fMacroDictionary", false);
+            ReflectionUtils.setAccessible(this.fMacroDictionaryField);
 
             // replace fLocationMap field with our customized version
             LocationMap oldLocationMap = (LocationMap)getLocationResolver();
@@ -158,6 +173,11 @@ class CppScanner {
             MacroExpander macroExpander = (MacroExpander)ReflectionUtils.getFieldValue(this, "fMacroExpander");
             ReflectionUtils.setFieldValue(this, "fLocationMap", newLocationMap);
             ReflectionUtils.setFieldValue(macroExpander, "fLocationMap", newLocationMap);
+        }
+
+        @SuppressWarnings("unchecked")
+        public CharArrayMap<IMacroBinding> getDefinedMacros() {
+            return (CharArrayMap<IMacroBinding>)ReflectionUtils.getFieldValue(fMacroDictionaryField, this);
         }
 
         public void scanFully() {

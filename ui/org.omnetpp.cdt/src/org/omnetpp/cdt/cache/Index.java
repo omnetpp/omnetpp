@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.dom.ILinkage;
 import org.eclipse.cdt.core.dom.ast.DOMException;
@@ -47,8 +46,8 @@ import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.cache.CppScanner.IScannerEventListener;
 import org.omnetpp.cdt.cache.FileCache.ISourceFileChangeListener;
-import org.omnetpp.cdt.cache.FileContentProvider.IMacroValueProvider;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.util.Pair;
 
 /**
  * This class implements some of the structures in the CDT index,
@@ -231,36 +230,36 @@ public class Index {
         public void encounterIfdef(IASTPreprocessorIfdefStatement ifdef) {
             IASTName macroRef = ifdef.getMacroReference();
             if (macroRef != null) {
-                currentIndexFile.addReferencedMacro((IMacroBinding)macroRef.getBinding());
+                addReferencedMacro((IMacroBinding)macroRef.getBinding());
             }
         }
 
         public void encounterIfndef(IASTPreprocessorIfndefStatement ifndef) {
             IASTName macroRef = ifndef.getMacroReference();
             if (macroRef != null) {
-                currentIndexFile.addReferencedMacro((IMacroBinding)macroRef.getBinding());
+                addReferencedMacro((IMacroBinding)macroRef.getBinding());
             }
         }
 
         public void encounterIf(IASTPreprocessorIfStatement if_, IASTName[] refs) {
             for (IASTName ref : refs) {
                 if (ref.getBinding() instanceof IMacroBinding)
-                    currentIndexFile.addReferencedMacro((IMacroBinding)ref.getBinding());
+                    addReferencedMacro((IMacroBinding)ref.getBinding());
             }
         }
 
         public void encounterElif(IASTPreprocessorElifStatement elif, IASTName[] refs) {
             for (IASTName ref : refs) {
                 if (ref.getBinding() instanceof IMacroBinding)
-                    currentIndexFile.addReferencedMacro((IMacroBinding)ref.getBinding());
+                    addReferencedMacro((IMacroBinding)ref.getBinding());
             }
         }
 
         public void encounterMacroExpansion(IMacroBinding outerMacro, IASTName[] implicitMacroReferences) {
-            currentIndexFile.addReferencedMacro(outerMacro);
+            addReferencedMacro(outerMacro);
             for (IASTName ref : implicitMacroReferences) {
                 if (ref.getBinding() instanceof IMacroBinding)
-                    currentIndexFile.addReferencedMacro((IMacroBinding)ref.getBinding());
+                    addReferencedMacro((IMacroBinding)ref.getBinding());
             }
         }
 
@@ -273,9 +272,10 @@ public class Index {
         }
 
         protected void startIndexing(String filename) {
-            Assert.isTrue(!files.containsKey(filename));
+            //Assert.isTrue(!files.containsKey(filename));
             currentIndexFile = new IndexFile(filename);
-            files.put(filename, currentIndexFile);
+            if (!files.containsKey(filename))
+                files.put(filename, currentIndexFile);
             activeIndexFiles.push(currentIndexFile);
             if (filename.endsWith("omnetpp.h"))
                 withinOmnetpph++;
@@ -288,6 +288,10 @@ public class Index {
             currentIndexFile = activeIndexFiles.isEmpty() ? null : activeIndexFiles.peek();
             if (filename.endsWith("omnetpp.h"))
                 withinOmnetpph--;
+        }
+
+        protected void addReferencedMacro(IMacroBinding ref) {
+            currentIndexFile.addReferencedMacro(ref);
         }
 
         private boolean debug = false;
@@ -304,8 +308,8 @@ public class Index {
         private final String absolutePath;
         private boolean isFrozen;
         private List<IndexInclude> includes = new ArrayList<IndexInclude>();
-        private List<Object> preprocessingDirectives = new ArrayList<Object>(); // includes + macros
-        private Map<String, String> referencedMacros;
+        private List<Object> preprocessingDirectives = new ArrayList<Object>(); // includes + defines + references
+        private int countOfMacros;
 
         public IndexFile(String path) {
             this.absolutePath = path;
@@ -314,11 +318,13 @@ public class Index {
         public void addDefine(IASTPreprocessorMacroDefinition macrodef) {
             Assert.isTrue(!isFrozen);
             preprocessingDirectives.add(new IndexMacro(macrodef));
+            countOfMacros++;
         }
 
         public void addUndef(IASTPreprocessorUndefStatement undef) {
             Assert.isTrue(!isFrozen);
             preprocessingDirectives.add(new IndexUndef(undef));
+            countOfMacros++;
         }
 
         public boolean addInclude(IASTPreprocessorIncludeStatement include) {
@@ -334,13 +340,8 @@ public class Index {
         }
 
         public void addReferencedMacro(IMacroBinding macrodef) {
-            if (referencedMacros == null)
-                referencedMacros = new HashMap<String,String>();
-            String name = macrodef.getName();
-            if (!referencedMacros.containsKey(name)) {
-                String expansion = macrodef.getExpansion() != null ? new String(macrodef.getExpansion()) : null;
-                referencedMacros.put(name, expansion);
-            }
+            Assert.isTrue(!isFrozen);
+            preprocessingDirectives.add(new Pair<String,char[]>(macrodef.getName(), macrodef.getExpansion()));
         }
 
         public void freeze() {
@@ -370,7 +371,7 @@ public class Index {
         @Override
         public IIndexMacro[] getMacros() {
             Assert.isTrue(isFrozen);
-            IIndexMacro[] result = new IIndexMacro[preprocessingDirectives.size() - includes.size()];
+            IIndexMacro[] result = new IIndexMacro[countOfMacros];
             int i = 0;
             for (Object directive : preprocessingDirectives)
                 if (directive instanceof IIndexMacro)
@@ -436,31 +437,23 @@ public class Index {
             return result;
         }
 
-        public boolean isCompatibleWithMacroValues(IMacroValueProvider definedMacros) {
-            if (referencedMacros == null)
-                return true;
-
-            for (Map.Entry<String,String> entry : referencedMacros.entrySet()) {
-                if (!ObjectUtils.equals(entry.getValue(), definedMacros.getValue(entry.getKey())))
-                    return false;
-            }
-            return true;
-        }
-
         public void dumpToDebug() {
             Debug.println("Index file " + absolutePath);
-            if (referencedMacros != null) {
+            if (preprocessingDirectives.size() > countOfMacros + includes.size()) {
                 Debug.print("  dependencies: ");
                 StringBuilder sb = new StringBuilder();
                 boolean first = true;
-                for (Map.Entry<String,String> entry : referencedMacros.entrySet()) {
-                    if (first)
-                        first = false;
-                    else
-                        sb.append(",");
-                    sb.append(entry.getKey());
-                    if (entry.getValue() != null)
-                        sb.append("(").append(entry.getValue()).append(")");
+                for (Object directive : preprocessingDirectives) {
+                    if (directive instanceof IMacroBinding) {
+                        IMacroBinding ref = (IMacroBinding)directive;
+                        if (first)
+                            first = false;
+                        else
+                            sb.append(",");
+                        sb.append(ref.getName());
+                        if (ref.getExpansion() != null)
+                            sb.append("(").append(ref.getExpansion()).append(")");
+                    }
                 }
                 Debug.println(sb.toString());
             }

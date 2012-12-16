@@ -358,6 +358,7 @@ public class DependencyCache {
                 // scan if not indexed
                 if (translationUnit.getKind() == InclusionKind.USE_SOURCE) {
                     CppScanner scanner = new CppScanner(fileContentProvider, index.getIndexer());
+                    fileContentProvider.setMacroValueProvider(scanner);
                     scanner.scanFully();
                 }
                 // find includes in the indexed file
