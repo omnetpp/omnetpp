@@ -321,6 +321,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_ID, "gdb");
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_STOP_AT_MAIN, true);
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_STOP_AT_MAIN_SYMBOL, "main");
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_GDB_INIT, IOmnetppLaunchConstants.OPP_GDB_INIT_FILE);
     }
 
     protected static String getDefaultExeName(String defWorkDir) {

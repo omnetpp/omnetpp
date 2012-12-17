@@ -18,6 +18,7 @@ public interface IOmnetppLaunchConstants {
     public static final String SIMULATION_LAUNCH_CONFIGURATION_TYPE = "org.omnetpp.launch.simulationLaunchConfigurationType";
     public static final String CDT_LAUNCH_ID = "org.eclipse.cdt.launch";
     public static final String CDT_DEBUG_CORE_ID ="org.eclipse.cdt.debug.mi.core";
+    public static final String CDT_DSF_GDB_ID ="org.eclipse.cdt.dsf.gdb";
     public static final String OMNETPP_LAUNCH_ID = "org.omnetpp.launch";
 
     /**
@@ -55,6 +56,7 @@ public interface IOmnetppLaunchConstants {
     public static final String ATTR_DEBUGGER_ID = CDT_LAUNCH_ID + ".DEBUGGER_ID";
     public static final String ATTR_DEBUGGER_STOP_AT_MAIN = CDT_LAUNCH_ID + ".DEBUGGER_STOP_AT_MAIN";
     public static final String ATTR_DEBUGGER_STOP_AT_MAIN_SYMBOL = CDT_LAUNCH_ID + ".DEBUGGER_STOP_AT_MAIN_SYMBOL";
+    public static final String ATTR_DEBUGGER_GDB_INIT = CDT_DSF_GDB_ID + ".GDB_INIT";
 
     // ========================================================================================
 
@@ -128,4 +130,9 @@ public interface IOmnetppLaunchConstants {
      * Additional hand specified arguments
      */
     public static final String OPP_ADDITIONAL_ARGS = OMNETPP_LAUNCH_ID + ".ADDITIONAL_ARG";
+
+    /**
+     * The default value for the gdbinit file (containing pretty printers)
+     */
+    public static final String OPP_GDB_INIT_FILE = "${opp_root}/misc/gdb/gdbinit.py";
 }

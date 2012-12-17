@@ -300,6 +300,9 @@ public class OmnetppLaunchUtils {
             String runStr = config.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER_FOR_DEBUG, "").trim();
             if (StringUtils.isNotEmpty(runStr))
                 args += " -r "+runStr;
+            // expand the GDB init file path so we can use also variables there (if needed)
+            String expandedGdbInitFile = StringUtils.substituteVariables(config.getAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_GDB_INIT, ""));
+            newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_GDB_INIT, expandedGdbInitFile);
         }
 
         String pathSep = System.getProperty("path.separator");
@@ -368,22 +371,8 @@ public class OmnetppLaunchUtils {
             // if the path was not set by hand, generate automatically
             if (StringUtils.isBlank(ldLibPath))
                 envir.put(ldLibPathVar, StringUtils.substituteVariables("${opp_lib_dir}"+pathSep) +
-                    StringUtils.substituteVariables("${opp_ld_library_path_loc:"+workingdirStr+"}"+pathSep) +
-                        StringUtils.substituteVariables("${env_var:"+ldLibPathVar+"}"));
-        }
-
-        // gdb is using Python for pretty printing. On Windows we have to add the HOME
-        // environment variable so gdb can find the .gdbinit file in the OMNETPP_ROOT directory.
-        // NOTE: the path must be provided using forward slashes otherwise gdb cannot use it.
-        // on Linux HOME is always present and the user has to create this file manually in
-        // her HOME directory.
-        if (Platform.getOS().equals(Platform.OS_WIN32)){
-            String homePath = envir.get("HOME");
-            if (StringUtils.isBlank(homePath)) {
-                homePath = OmnetppMainPlugin.getOmnetppRootDir();
-                if (StringUtils.isNotBlank(homePath))
-                    envir.put("HOME", homePath.replace('\\', '/'));
-            }
+                          StringUtils.substituteVariables("${opp_ld_library_path_loc:"+workingdirStr+"}"+pathSep) +
+                          StringUtils.substituteVariables("${env_var:"+ldLibPathVar+"}"));
         }
 
         String imagePath = envir.get("OMNETPP_IMAGE_PATH");

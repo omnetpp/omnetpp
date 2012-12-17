@@ -584,6 +584,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         wc.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, exeFile==null ? "" : exeFile.getFullPath().toString());
         wc.setAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, iniFile.getParent().getFullPath().toString());
         wc.setAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, iniFile.getName());
+        wc.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_GDB_INIT, IOmnetppLaunchConstants.OPP_GDB_INIT_FILE);
         if (configName != null)
             wc.setAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, configName);
         if (resourceToAssociateWith != null)
