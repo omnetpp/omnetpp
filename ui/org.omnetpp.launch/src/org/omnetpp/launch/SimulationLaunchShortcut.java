@@ -34,6 +34,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
@@ -584,7 +585,8 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         wc.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, exeFile==null ? "" : exeFile.getFullPath().toString());
         wc.setAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, iniFile.getParent().getFullPath().toString());
         wc.setAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, iniFile.getName());
-        wc.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_GDB_INIT, IOmnetppLaunchConstants.OPP_GDB_INIT_FILE);
+        if (!Platform.getOS().equals(Platform.OS_MACOSX))
+            wc.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_GDB_INIT, IOmnetppLaunchConstants.OPP_GDB_INIT_FILE);
         if (configName != null)
             wc.setAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, configName);
         if (resourceToAssociateWith != null)
