@@ -45,7 +45,6 @@ import org.omnetpp.common.util.ReflectionUtils;
  * Scanner of C++ source and header files.
  * This class allows to register a listener for preprocessor directives.
  * <p>
- * Warning:
  * @author tomi
  */
 @SuppressWarnings("restriction")
@@ -103,7 +102,6 @@ class CppScanner implements IMacroValueProvider {
         /**
          * Called after the scanner performed a macro expansion.
          */
-        //void encounterMacroExpansion(IASTPreprocessorMacroExpansion expansion);
         void encounterMacroExpansion(IMacroBinding outerMacro, IASTName[] implicitMacroReferences);
     }
 
@@ -139,7 +137,6 @@ class CppScanner implements IMacroValueProvider {
 
         return new ScannerInfo(null, null);
     }
-
 
     @Override
     public char[] getMacroValue(String name) {
@@ -252,7 +249,6 @@ class CppScanner implements IMacroValueProvider {
                 listener.startInclusion(include);
             return ctx;
         }
-
 
         @Override
         public ILocationCtx pushMacroExpansion(int nameOffset, int nameEndOffset, int endOffset, int contextLength, IMacroBinding macro,

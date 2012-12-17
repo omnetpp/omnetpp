@@ -50,7 +50,7 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.Pair;
 
 /**
- * This class implements some of the structures in the CDT index,
+ * This class implements some of the structures of the CDT index,
  * that can be fed into the CPreprocessor as input. The content
  * of the index is automatically invalidated when the source files
  * or the project descriptions change.
@@ -63,7 +63,9 @@ import org.omnetpp.common.util.Pair;
 @SuppressWarnings("restriction")
 public class Index {
 
+    // maps file paths to index files
     private Map<String,IndexFile> files = new HashMap<String,IndexFile>();
+    // builds index files from preprocessor events
     private Indexer indexer = new Indexer();
 
     private ISourceFileChangeListener sourceFileChangeListener = new ISourceFileChangeListener() {
