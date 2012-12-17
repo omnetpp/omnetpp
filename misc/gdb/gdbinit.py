@@ -30,7 +30,7 @@ else:
 # source the temporary init file written out by the IDE (if exists)
 # this file is used to include additional project specific init scripts
 
-initfile = tempfile.gettempdir() + '/initgdb.py'
+initfile = tempfile.gettempdir() + '/gdbinit.tmp'
 if os.path.isfile(initfile):
     execfile(initfile)
     os.remove(initfile)

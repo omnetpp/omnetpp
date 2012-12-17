@@ -45,6 +45,7 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.CollectionUtils;
+import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
@@ -262,6 +263,7 @@ public class OmnetppLaunchUtils {
         // executable name
         String exeName = config.getAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, "");
 
+        IProject project;
         if (StringUtils.isEmpty(exeName)) {  // this means opp_run
             exeName = OmnetppMainPlugin.getOmnetppBinDir()+"/opp_run";
             // detect if the current executable is release or debug
@@ -269,7 +271,7 @@ public class OmnetppLaunchUtils {
             if (isOppRunReleaseRequired(workingdirStr))
                 exeName += "_release";
             // A CDT project is required for the launcher in debug mode to start the application (using gdb).
-            IProject project = findFirstRelatedCDTProject(workingdirStr);
+            project = findFirstRelatedCDTProject(workingdirStr);
             newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, project != null ? project.getName() : null);
             if (mode.equals(ILaunchManager.DEBUG_MODE) && project == null)
                 throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot launch simulation in debug mode: no related open C++ project"));
@@ -278,7 +280,7 @@ public class OmnetppLaunchUtils {
             String projectName = new Path(exeName).segment(0);
             newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, projectName);
             exeName = new Path(exeName).removeFirstSegments(1).toString(); // project-relative path
-            IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+            project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
             if (mode.equals(ILaunchManager.DEBUG_MODE) && (!project.exists() || !project.hasNature(CDT_CC_NATURE_ID)))
                 throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot launch simulation in debug mode: the executable's project ("+projectName+") is not an open C++ project"));
         }
@@ -303,6 +305,8 @@ public class OmnetppLaunchUtils {
             // expand the GDB init file path so we can use also variables there (if needed)
             String expandedGdbInitFile = StringUtils.substituteVariables(config.getAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_GDB_INIT, ""));
             newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_GDB_INIT, expandedGdbInitFile);
+
+            createGDBInitTmpFile(project);
         }
 
         String pathSep = System.getProperty("path.separator");
@@ -396,6 +400,26 @@ public class OmnetppLaunchUtils {
         // do we need this ??? : configuration.setAttribute("org.eclipse.debug.core.appendEnvironmentVariables", true);
 
         return newCfg;
+    }
+
+    /**
+     * Creates a file in the tmp folder that sources all gdbinit.py files in the root of
+     * all the referencing projects (including the project itself)
+     * This temp file is actually sourced by the main gdbinit.py file (in misc/gdb)
+     */
+    private static void createGDBInitTmpFile(IProject project) {
+        try {
+            IProject[] projects = ProjectUtils.getAllReferencedProjects(project, true, true);
+            String tmpGDBInit ="";
+            for (IProject p : projects)
+                tmpGDBInit += "execfile('"+p.getLocation().addTrailingSeparator().append("gdbinit.py")+"')\n";
+            String tmpDir = System.getProperty("java.io.tmpdir");
+            FileUtils.writeTextFile(tmpDir+"/gdbinit.tmp", tmpGDBInit, null);  // NOTE: the file name must match with the file name in misc/gdb/gdbinit.py
+        } catch (CoreException e) {
+            LaunchPlugin.logError(e);
+        } catch (IOException e) {
+            LaunchPlugin.logError(e);
+        }
     }
 
     /**
