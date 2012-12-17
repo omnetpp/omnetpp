@@ -473,10 +473,12 @@ public class Index {
     static class IndexMacro implements IIndexMacro {
         private final IASTPreprocessorMacroDefinition define;
         private final IMacroBinding macrodef;
+        private final char[] expansion;
 
         public IndexMacro(IASTPreprocessorMacroDefinition define) {
             this.define = define;
             this.macrodef = (IMacroBinding)define.getName().getBinding();
+            this.expansion = macrodef.getExpansion();
         }
 
         public IASTPreprocessorMacroDefinition getDefineStatement() {
@@ -508,7 +510,7 @@ public class Index {
 
         @Override
         public char[] getExpansion() {
-            return macrodef.getExpansion();
+            return expansion;
         }
 
         @Override
