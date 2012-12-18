@@ -175,12 +175,22 @@ public class Index {
     }
 
     /**
-     * TODO
+     * This class handles the preprocessor events and builds the index files.
+     * <p>
+     * If the {@code ignoreOmnetppDefines} flag set to true, then the only effect
+     * of {@code #include <omnetpp.h>} is defining the {@code OMNETPP_VERSION} macro.
      */
     class Indexer implements IScannerEventListener {
-        private IndexFile currentIndexFile;
+        // the index files that are currently built, bottom is the translation unit, top is the current include
         private Stack<IndexFile> activeIndexFiles = new Stack<IndexFile>();
+        // top of the above stack
+        private IndexFile currentIndexFile;
+        // experimental flag, set to true to ignore all defines that comes from omnetpp.h except (OMNETPP_VERSION)
+        private final boolean ignoreOmnetppDefines = false;
+        // positive if omnetpp.h is active
         private int withinOmnetpph = 0;
+        // set to true for tracing the events to the console
+        private final boolean tracing = false;
 
         public void startTranslationUnit(String filename) {
             println("Start "+filename);
@@ -216,7 +226,7 @@ public class Index {
         }
 
         public void encounterDefine(IASTPreprocessorMacroDefinition macrodef) {
-            if (macrodef.isActive() /*&& (withinOmnetpph == 0 || macrodef.getName().equals("OMNETPP_VERSION"))*/) {
+            if (macrodef.isActive() && (!ignoreOmnetppDefines || withinOmnetpph == 0 || macrodef.getName().equals("OMNETPP_VERSION"))) {
                 println("#define "+macrodef.getName()+(macrodef instanceof IASTPreprocessorFunctionStyleMacroDefinition?"(...) " : " ")+new String(macrodef.getExpansion()));
                 currentIndexFile.addDefine(macrodef);
             }
@@ -279,7 +289,7 @@ public class Index {
             if (!files.containsKey(filename))
                 files.put(filename, currentIndexFile);
             activeIndexFiles.push(currentIndexFile);
-            if (filename.endsWith("omnetpp.h"))
+            if (ignoreOmnetppDefines && filename.endsWith("omnetpp.h"))
                 withinOmnetpph++;
         }
 
@@ -288,7 +298,7 @@ public class Index {
             IndexFile file = activeIndexFiles.pop();
             file.freeze();
             currentIndexFile = activeIndexFiles.isEmpty() ? null : activeIndexFiles.peek();
-            if (filename.endsWith("omnetpp.h"))
+            if (ignoreOmnetppDefines && filename.endsWith("omnetpp.h"))
                 withinOmnetpph--;
         }
 
@@ -296,9 +306,8 @@ public class Index {
             currentIndexFile.addReferencedMacro(ref);
         }
 
-        private boolean debug = false;
         private void println(String msg) {
-            if (debug) {
+            if (tracing) {
               Debug.print(StringUtils.leftPad("", 2*activeIndexFiles.size()));
               Debug.println(msg);
             }

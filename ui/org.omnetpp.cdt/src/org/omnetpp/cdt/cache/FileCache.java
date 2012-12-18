@@ -36,6 +36,13 @@ import org.omnetpp.cdt.build.MakefileTools;
  * The cache is updated when the resource is changed. This class can notify
  * listeners about resource changes, which caused a change in the compressed
  * format of the file.
+ * <p>
+ * Paths of non-existing files are also cached. When the CPreprocessor resolves
+ * the includes, it tries to load the file from each direcory in the include path.
+ * Therefore it generates a lot of query with non-existing files, and we can spare
+ * the time of File.exists() calls if we cache the results.
+ * <p>
+ * Warning: changes outside the workspace are unnoticed.
  *
  * @author tomi
  */
