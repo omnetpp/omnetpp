@@ -105,7 +105,7 @@ class FileContentProvider extends InternalFileContentProvider {
                 List<IIndexFile> files= new ArrayList<IIndexFile>();
                 List<IIndexMacro> macros= new ArrayList<IIndexMacro>();
                 Set<String> processedFiles= new HashSet<String>();
-                collectFileContent(indexFile, processedFiles, files, macros, macroValues);
+                collectFileContent(indexFile, processedFiles, files, macros, macroValues, 0);
                 // add included files only, if no exception was thrown
                 for (String filename : processedFiles) {
                     if (!includedFiles.contains(filename))
@@ -113,9 +113,11 @@ class FileContentProvider extends InternalFileContentProvider {
                 }
                 return new InternalFileContent(path, macros, Collections.<ICPPUsingDirective>emptyList(), files);
             } catch (MacroValueChangedException e) {
-                // TODO message dialog?
-                //Activator.logError(e);
-                Debug.println(e.getMessage());
+                if (e.depth == 0) {
+                    // TODO message dialog?
+                    //Activator.logError(e);
+                    Debug.println(e.getMessage());
+                }
             }
         }
 
@@ -123,10 +125,12 @@ class FileContentProvider extends InternalFileContentProvider {
         return fileCache.getFileContent(path);
     }
 
-    class MacroValueChangedException extends Exception {
+    private class MacroValueChangedException extends Exception {
         private static final long serialVersionUID = 1L;
-        public MacroValueChangedException(String message) {
+        int depth;
+        public MacroValueChangedException(int depth, String message) {
             super(message);
+            this.depth = depth;
         }
     }
 
@@ -143,7 +147,7 @@ class FileContentProvider extends InternalFileContentProvider {
      * @throws MacroValueChangedException
      */
     private void collectFileContent(IndexFile file, Set<String> processedFiles, List<IIndexFile> files,
-                                    List<IIndexMacro> macros, Map<String,char[]> macroValues)
+                                    List<IIndexMacro> macros, Map<String,char[]> macroValues, int depth)
         throws MacroValueChangedException
     {
         if (!processedFiles.add(file.getPath()) || includedFiles.contains(file.getPath())) {
@@ -162,7 +166,7 @@ class FileContentProvider extends InternalFileContentProvider {
                     char[] expectedValue = ref.second;
                     char[] foundValue = macroValues.containsKey(name) ? macroValues.get(name) :currentMacroValues.getMacroValue(name);
                     if (!Arrays.equals(expectedValue, foundValue))
-                        throw new MacroValueChangedException(String.format("Index mismatch: file: %s macro: %s expected: %s found: %s",
+                        throw new MacroValueChangedException(depth, String.format("Index mismatch: file: %s macro: %s expected: %s found: %s",
                                 file.getPath(), name, expectedValue != null ? new String(expectedValue) : null, foundValue != null ? new String(foundValue) : foundValue));
                 }
             }
@@ -176,7 +180,7 @@ class FileContentProvider extends InternalFileContentProvider {
                 // recurse on included file
                 IndexFile includedFile = index.resolve(((IndexInclude) d).getPath());
                 if (includedFile != null) {
-                    collectFileContent(includedFile, processedFiles, files, macros, macroValues);
+                    collectFileContent(includedFile, processedFiles, files, macros, macroValues, depth+1);
                 }
             }
         }
