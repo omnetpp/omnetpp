@@ -79,7 +79,7 @@ public class CommandlineUtils {
         args = getFilenameArgs(args);
         args = removeNonexistentFilenameArgs(args);
         if (args.length == 0)
-        	return true;
+            return true;
         if (!ensureFilesAreAvailableInWorkspace(args))
             return false;
         return openFiles(args);
@@ -91,7 +91,11 @@ public class CommandlineUtils {
     public static String[] getFilenameArgs(String[] args) {
         List<String> fileArgs = new ArrayList<String>();
         for (int i = 0; i < args.length; i++) {
-            if (args[i].startsWith("--"))
+            // NOTE this is not necessarily a good solution to filter out the file names
+            // we assume that -- is used for options with an additional argument while
+            // - is used for standalone otions.
+            // Exceptions to this rule (like "-product prodid" must be hand processed.)
+            if (args[i].startsWith("--") || args[i].startsWith("-product"))
                 i++;  // skip next one, too
             else if (!args[i].startsWith("-"))
                 fileArgs.add(args[i]);
@@ -108,7 +112,7 @@ public class CommandlineUtils {
             if (!new File(args[i]).isFile())
                 nonexistentFileArgs.add(args[i]);
         if (!nonexistentFileArgs.isEmpty()) {
-            MessageDialog.openWarning(getParentShell(), "Warning", 
+            MessageDialog.openWarning(getParentShell(), "Warning",
             		(nonexistentFileArgs.size() == 1 ? "File does not exist, ignoring: " : "File(s) do not exist, ignoring:\n  ")
             		+ StringUtils.join(nonexistentFileArgs, "\n  "));
             for (String arg : nonexistentFileArgs)
