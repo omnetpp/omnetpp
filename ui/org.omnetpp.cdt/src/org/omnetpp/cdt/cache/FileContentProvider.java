@@ -73,6 +73,11 @@ class FileContentProvider extends InternalFileContentProvider {
         return translationUnit;
     }
 
+    @Override
+    public boolean getInclusionExists(String path) {
+        return fileCache.isFileExists(path);
+    }
+
     public InternalFileContent getContentForTranslationUnit() {
         InternalFileContent content = getFileContent(translationUnit.getLocation().toOSString());
         if (content != null)

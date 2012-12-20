@@ -118,6 +118,12 @@ public class FileCache {
         return false;
     }
 
+    public boolean isFileExists(String path) {
+        if(cache.containsKey(path))
+            return cache.get(path) != null;
+        return new File(path).isFile();
+    }
+
     public InternalFileContent getFileContent(String path) {
         if (cache.containsKey(path)) {
             return cache.get(path);
