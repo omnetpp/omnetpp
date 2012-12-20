@@ -2,7 +2,7 @@ package org.omnetpp.cdt.cache;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Stack;
 
 import org.eclipse.cdt.core.CCorePlugin;
@@ -94,11 +94,15 @@ class CppScanner implements IMacroValueProvider {
         /**
          * Called after the scanner executed a #if directive.
          */
-        void encounterIf(IASTPreprocessorIfStatement if_, IASTName[] macroReferences);
+        void encounterIf(IASTPreprocessorIfStatement if_);
         /**
          * Called after the scanner executed a #elif directive.
          */
-        void encounterElif(IASTPreprocessorElifStatement elif, IASTName[] macroReferences);
+        void encounterElif(IASTPreprocessorElifStatement elif);
+        /**
+         * Called on each reference of macros when expanding the condition of #if/#elif directives.
+         */
+        void encounterMacroReference(IASTName macroReference);
         /**
          * Called after the scanner performed a macro expansion.
          */
@@ -191,19 +195,63 @@ class CppScanner implements IMacroValueProvider {
     }
 
     private static class NotifyingLocationMap extends LocationMap {
-        private static class IncludeContext {
-            final ILocationCtx locationCtx;
-            final IASTPreprocessorIncludeStatement include;
+        Stack<ILocationCtx> includeContexts = new Stack<ILocationCtx>();
+        IScannerEventListener listener;
+        boolean isFollowedInclusion;
 
-            public IncludeContext(ILocationCtx locationCtx, IASTPreprocessorIncludeStatement include) {
-                this.locationCtx = locationCtx;
-                this.include = include;
+        private class NotifyingDirectivesList extends ArrayList<Object> {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public boolean add(Object e) {
+                boolean result = super.add(e);
+                if (listener != null) {
+                    if (e instanceof IASTPreprocessorIncludeStatement) {
+                        if (!isFollowedInclusion)
+                            listener.encounterInclude((IASTPreprocessorIncludeStatement)e);
+                    }
+                    else if (e instanceof IASTPreprocessorMacroDefinition) {
+                        listener.encounterDefine((IASTPreprocessorMacroDefinition)e);
+                    }
+                    else if (e instanceof IASTPreprocessorUndefStatement) {
+                        listener.encounterUndef((IASTPreprocessorUndefStatement)e);
+                    }
+                    else if (e instanceof IASTPreprocessorIfdefStatement) {
+                        listener.encounterIfdef((IASTPreprocessorIfdefStatement)e);
+                    }
+                    else if (e instanceof IASTPreprocessorIfndefStatement) {
+                        listener.encounterIfndef((IASTPreprocessorIfndefStatement)e);
+                    }
+                    else if (e instanceof IASTPreprocessorIfStatement) {
+                        listener.encounterIf((IASTPreprocessorIfStatement)e);
+                    }
+                    else if (e instanceof IASTPreprocessorElifStatement) {
+                        listener.encounterElif((IASTPreprocessorElifStatement)e);
+                    }
+                }
+                return result;
             }
         }
 
-        Stack<IncludeContext> includeContexts = new Stack<IncludeContext>();
-        IScannerEventListener listener;
-        Field fDirectivesField;
+        private class NotifyingReferenceList extends ArrayList<Object> {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public boolean add(Object e) {
+                boolean result = super.add(e);
+                if (listener != null && e != null) {
+                    IASTName name = (IASTName)e;
+                    IASTNode parent = name.getParent();
+                    if (parent instanceof IASTPreprocessorIfStatement) {
+                        listener.encounterMacroReference(name);
+                    }
+                    else if (parent instanceof IASTPreprocessorElifStatement) {
+                        listener.encounterMacroReference(name);
+                    }
+                }
+                return result;
+            }
+        }
 
         public NotifyingLocationMap(LocationMap other, IScannerEventListener listener) {
             super(other.getLexerOptions());
@@ -220,34 +268,27 @@ class CppScanner implements IMacroValueProvider {
                 }
                 clazz = clazz.getSuperclass();
             }
+            // replace fDirectives and fMacroReferences
+            ReflectionUtils.setFieldValue(this, "fDirectives", new NotifyingDirectivesList());
+            ReflectionUtils.setFieldValue(this, "fMacroReferences", new NotifyingReferenceList());
             // initialize our fields
             this.listener = listener;
-            this.fDirectivesField = ReflectionUtils.getField(getClass(), "fDirectives", false);
-            ReflectionUtils.setAccessible(this.fDirectivesField);
-        }
-
-        /**
-         * Returns the last processed preprocessor directive.
-         * The directive must have the specified type.
-         */
-        @SuppressWarnings("unchecked")
-        private <T> T getLastDirective(Class<T> clazz) {
-            List<IASTNode> fDirectives = (List<IASTNode>)ReflectionUtils.getFieldValue(fDirectivesField, this);
-            Assert.isTrue(!fDirectives.isEmpty());
-            IASTNode lastDirective = fDirectives.get(fDirectives.size()-1);
-            Assert.isTrue(clazz.isInstance(lastDirective));
-            return (T)lastDirective;
         }
 
         @Override
         public ILocationCtx pushInclusion(int startOffset, int nameOffset, int nameEndOffset, int endOffset, AbstractCharArray buffer,
                                           String filename, char[] name, boolean userInclude, boolean heuristic, boolean isSource) {
-            ILocationCtx ctx = super.pushInclusion(startOffset, nameOffset, nameEndOffset, endOffset, buffer, filename, name, userInclude, heuristic, isSource);
-            IASTPreprocessorIncludeStatement include = getLastDirective(IASTPreprocessorIncludeStatement.class);
-            includeContexts.push(new IncludeContext(ctx, include));
-            if (listener != null)
-                listener.startInclusion(include);
-            return ctx;
+            try {
+                isFollowedInclusion = true;
+                ILocationCtx ctx = super.pushInclusion(startOffset, nameOffset, nameEndOffset, endOffset, buffer, filename, name, userInclude, heuristic, isSource);
+                includeContexts.push(ctx);
+                if (listener != null)
+                    listener.startInclusion(ctx.getInclusionStatement());
+                return ctx;
+            }
+            finally {
+                isFollowedInclusion = false;
+            }
         }
 
         @Override
@@ -262,66 +303,14 @@ class CppScanner implements IMacroValueProvider {
         @Override
         public void popContext(ILocationCtx ctx) {
             if (!includeContexts.isEmpty()) {
-                IncludeContext context = includeContexts.peek();
-                if (context.locationCtx == ctx) {
+                ILocationCtx context = includeContexts.peek();
+                if (context == ctx) {
                     includeContexts.pop();
                     if (listener != null)
-                        listener.endInclusion(context.include);
+                        listener.endInclusion(context.getInclusionStatement());
                 }
             }
             super.popContext(ctx);
-        }
-
-        @Override
-        public void encounterPoundInclude(int startOffset, int nameOffset, int nameEndOffset, int endOffset, char[] name,
-                                          String filename, boolean userInclude, boolean active, boolean heuristic) {
-            super.encounterPoundInclude(startOffset, nameOffset, nameEndOffset, endOffset, name, filename, userInclude, active, heuristic);
-            if (listener != null)
-                listener.encounterInclude(getLastDirective(IASTPreprocessorIncludeStatement.class));
-        }
-
-        @Override
-        public void encounterPoundDefine(int startOffset, int nameOffset, int nameEndOffset, int expansionOffset, int endOffset,
-                                         boolean isActive, IMacroBinding macrodef) {
-            super.encounterPoundDefine(startOffset, nameOffset, nameEndOffset, expansionOffset, endOffset, isActive, macrodef);
-            if (listener != null)
-                listener.encounterDefine(getLastDirective(IASTPreprocessorMacroDefinition.class));
-        }
-
-        @Override
-        public void encounterPoundUndef(IMacroBinding definition, int startOffset, int nameOffset, int nameEndOffset,
-                                        int endOffset, char[] name, boolean isActive) {
-            super.encounterPoundUndef(definition, startOffset, nameOffset, nameEndOffset, endOffset, name, isActive);
-            if (listener != null)
-                listener.encounterUndef(getLastDirective(IASTPreprocessorUndefStatement.class));
-        }
-
-        @Override
-        public void encounterPoundIfdef(int startOffset, int condOffset, int condEndOffset, int endOffset, boolean taken, IMacroBinding macro) {
-            super.encounterPoundIfdef(startOffset, condOffset, condEndOffset, endOffset, taken, macro);
-            if (listener != null)
-                listener.encounterIfdef(getLastDirective(IASTPreprocessorIfdefStatement.class));
-        }
-
-        @Override
-        public void encounterPoundIfndef(int startOffset, int condOffset, int condEndOffset, int endOffset, boolean taken, IMacroBinding macro) {
-            super.encounterPoundIfndef(startOffset, condOffset, condEndOffset, endOffset, taken, macro);
-            if (listener != null)
-                listener.encounterIfndef(getLastDirective(IASTPreprocessorIfndefStatement.class));
-        }
-
-        @Override
-        public void encounterPoundIf(int startOffset, int condOffset, int condEndOffset, int endOffset, boolean isActive, IASTName[] macrosInDefinedExpression) {
-            super.encounterPoundIf(startOffset, condOffset, condEndOffset, endOffset, isActive, macrosInDefinedExpression);
-            if (listener != null)
-                listener.encounterIf(getLastDirective(IASTPreprocessorIfStatement.class), macrosInDefinedExpression);
-        }
-
-        @Override
-        public void encounterPoundElif(int startOffset, int condOffset, int condEndOffset, int endOffset, boolean isActive, IASTName[] macrosInDefinedExpression) {
-            super.encounterPoundElif(startOffset, condOffset, condEndOffset, endOffset, isActive, macrosInDefinedExpression);
-            if (listener != null)
-                listener.encounterElif(getLastDirective(IASTPreprocessorElifStatement.class), macrosInDefinedExpression);
         }
     }
 }

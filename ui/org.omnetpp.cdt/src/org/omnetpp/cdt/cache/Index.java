@@ -34,6 +34,7 @@ import org.eclipse.cdt.core.index.IIndexInclude;
 import org.eclipse.cdt.core.index.IIndexMacro;
 import org.eclipse.cdt.core.index.IIndexName;
 import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.parser.ISignificantMacros;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionListener;
 import org.eclipse.cdt.internal.core.dom.parser.ASTNode;
@@ -253,18 +254,15 @@ public class Index {
             }
         }
 
-        public void encounterIf(IASTPreprocessorIfStatement if_, IASTName[] refs) {
-            for (IASTName ref : refs) {
-                if (ref.getBinding() instanceof IMacroBinding)
-                    addReferencedMacro((IMacroBinding)ref.getBinding());
-            }
+        public void encounterIf(IASTPreprocessorIfStatement if_) {
         }
 
-        public void encounterElif(IASTPreprocessorElifStatement elif, IASTName[] refs) {
-            for (IASTName ref : refs) {
-                if (ref.getBinding() instanceof IMacroBinding)
-                    addReferencedMacro((IMacroBinding)ref.getBinding());
-            }
+        public void encounterElif(IASTPreprocessorElifStatement elif) {
+        }
+
+        public void encounterMacroReference(IASTName ref) {
+            if (ref.getBinding() instanceof IMacroBinding)
+                addReferencedMacro((IMacroBinding)ref.getBinding());
         }
 
         public void encounterMacroExpansion(IMacroBinding outerMacro, IASTName[] implicitMacroReferences) {
@@ -438,6 +436,26 @@ public class Index {
             return null;
         }
 
+        @Override
+        public ISignificantMacros getSignificantMacros() throws CoreException {
+            return ISignificantMacros.NONE; // XXX
+        }
+
+        @Override
+        public boolean hasPragmaOnceSemantics() throws CoreException {
+            return true; // XXX
+        }
+
+        @Override
+        public long getSourceReadTime() throws CoreException {
+            throw new UnsupportedOperationException(); // XXX
+        }
+
+        @Override
+        public String toDebugString() {
+            throw new UnsupportedOperationException(); // XXX
+        }
+
         public List<IndexInclude> findIncludes(IndexFile includedFile) {
             List<IndexInclude> result = new ArrayList<IndexInclude>();
             for (IndexInclude include : includes) {
@@ -543,7 +561,7 @@ public class Index {
         }
 
         @Override
-        public ILinkage getLinkage() throws CoreException {
+        public ILinkage getLinkage() {
             return macrodef.getLinkage();
         }
 
@@ -650,7 +668,7 @@ public class Index {
         }
 
         @Override
-        public ILinkage getLinkage() throws CoreException {
+        public ILinkage getLinkage() {
             throw new UnsupportedOperationException();
         }
 

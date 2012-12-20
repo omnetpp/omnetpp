@@ -128,7 +128,7 @@ public class FileCache {
             fileContent = new InternalFileContent(path, InclusionKind.SKIP_FILE);
 
         if (fileContent == null) {
-            AbstractCharArray content = readAndCompressFileContent(path);
+            CharArray content = readAndCompressFileContent(path);
             if (content != null)
                 fileContent = new InternalFileContent(path, content);
         }
@@ -137,7 +137,7 @@ public class FileCache {
         return fileContent;
     }
 
-    public AbstractCharArray readAndCompressFileContent(String path) {
+    public CharArray readAndCompressFileContent(String path) {
         if (!new File(path).exists())
             return null;
 
@@ -153,7 +153,7 @@ public class FileCache {
     private final static Pattern preprocessorDirective = Pattern.compile("^[ \t]*#[ \t]*([a-zA-Z_]+)[ \t]*?(.*)$", Pattern.MULTILINE);
     private final static Pattern blockComment = Pattern.compile("/\\*(.*?)\\*/", Pattern.DOTALL);
 
-    private AbstractCharArray compressFileContent(AbstractCharArray content) {
+    private CharArray compressFileContent(AbstractCharArray content) {
         char[] chars = new char[content.getLength()];
         content.arraycopy(0, chars, 0, chars.length);
         String str = new String(chars);
@@ -184,7 +184,7 @@ public class FileCache {
                             int flags = delta.getFlags();
                             String path = resource.getLocation().toOSString(); // XXX normalized?
                             if (kind == IResourceDelta.ADDED) {
-                                AbstractCharArray content = readAndCompressFileContent(path);
+                                CharArray content = readAndCompressFileContent(path);
                                 cache.put(path, new InternalFileContent(path, content));
                                 fireFileContentChanged(delta);
                             }
@@ -197,7 +197,7 @@ public class FileCache {
                                 InternalFileContent data = cache.get(path);
                                 if (data != null && data.getKind() == InclusionKind.USE_SOURCE) {
                                     AbstractCharArray oldContent = data.getSource();
-                                    AbstractCharArray newContent = readAndCompressFileContent(path);
+                                    CharArray newContent = readAndCompressFileContent(path);
                                     boolean contentChanged = oldContent.getLength() != newContent.getLength() ||
                                                              oldContent.getContentsHash() != newContent.getContentsHash();
                                     if (!contentChanged) {

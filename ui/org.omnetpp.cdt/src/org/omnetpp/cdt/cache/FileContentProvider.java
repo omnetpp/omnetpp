@@ -13,7 +13,9 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPUsingDirective;
 import org.eclipse.cdt.core.index.IIndexFile;
 import org.eclipse.cdt.core.index.IIndexFileLocation;
 import org.eclipse.cdt.core.index.IIndexMacro;
+import org.eclipse.cdt.internal.core.parser.IMacroDictionary;
 import org.eclipse.cdt.internal.core.parser.scanner.InternalFileContent;
+import org.eclipse.cdt.internal.core.parser.scanner.InternalFileContent.FileVersion;
 import org.eclipse.cdt.internal.core.parser.scanner.InternalFileContent.InclusionKind;
 import org.eclipse.cdt.internal.core.parser.scanner.InternalFileContentProvider;
 import org.eclipse.core.resources.IFile;
@@ -79,7 +81,7 @@ class FileContentProvider extends InternalFileContentProvider {
     }
 
     @Override
-    public InternalFileContent getContentForInclusion(String path) {
+    public InternalFileContent getContentForInclusion(String path, IMacroDictionary macroDictionary/*XXX*/) {
         if (includedFiles.contains(path))
             return new InternalFileContent(path, InclusionKind.SKIP_FILE);
 
@@ -111,7 +113,7 @@ class FileContentProvider extends InternalFileContentProvider {
                     if (!includedFiles.contains(filename))
                         includedFiles.add(filename);
                 }
-                return new InternalFileContent(path, macros, Collections.<ICPPUsingDirective>emptyList(), files);
+                return new InternalFileContent(path, macros, Collections.<ICPPUsingDirective>emptyList(), files, Collections.<FileVersion>emptyList()/*XXX*/);
             } catch (MacroValueChangedException e) {
                 if (e.depth == 0) {
                     // TODO message dialog?
