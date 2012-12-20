@@ -233,6 +233,10 @@ public class OmnetppLaunchUtils {
     public static void updateLaunchConfigurationWithProgramAttributes(String mode, ILaunch launch)
                 throws CoreException {
         ILaunchConfigurationWorkingCopy newConfig = createUpdatedLaunchConfig(launch.getLaunchConfiguration(), mode);
+        setConfigurationInLaunch(launch, newConfig);
+    }
+
+    public static void setConfigurationInLaunch(ILaunch launch, ILaunchConfiguration newConfig) {
         // the ILaunchConfiguration object in 'launch' is immutable so we have to create a mutable
         // ILaunchConfigurationWorkingCopy, update it with the required additional attributes and then
         // we MUST set this configuration on the 'launch' object. This is required because some launchers
