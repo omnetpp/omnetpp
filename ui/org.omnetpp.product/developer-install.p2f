@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?p2f version='1.0.0'?>
+<p2f version='1.0.0'>
+  <ius size='16'>
+    <iu id='org.eclipse.cdt.sdk.feature.group' name='C/C++ Development Tools SDK' version='8.1.1.201209170703'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/releases/juno'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.linuxtools.cdt.libhover.feature.feature.group' name='C/C++ Library API Documentation Hover Help' version='1.0.0.201209191645'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/releases/juno'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.cdt.msw.feature.group' name='CDT Visual C++ Support' version='1.0.0.201209170703'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/releases/juno'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.linuxtools.changelog.feature.group' name='ChangeLog Management Tools' version='2.8.0.201209191645'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/releases/juno'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.linuxtools.changelog.c.feature.group' name='ChangeLog Management Tools for C/C++' version='2.8.0.201209191645'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/releases/juno'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.linuxtools.changelog.java.feature.group' name='ChangeLog Management Tools for Java' version='2.8.0.201209191645'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/releases/juno'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.egit.feature.group' name='Eclipse EGit' version='2.1.0.201209190230-r'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/releases/juno'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.jgit.feature.group' name='Eclipse JGit' version='2.1.0.201209190230-r'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/releases/juno'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.jgit.pgm.feature.group' name='Eclipse JGit Command Line Interface' version='2.1.0.201209190230-r'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/releases/juno'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.sdk.ide' name='Eclipse SDK' version='3.8.1.M20120914-1540'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/eclipse/updates/3.8'/>
+        <repository location='http://download.eclipse.org/releases/juno'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.epp.package.common.feature.feature.group' name='EPP Common Package Feature' version='1.5.1.20121004-1506'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/releases/juno'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.gef.sdk.feature.group' name='Graphical Editing Framework GEF SDK' version='3.9.0.201208201742'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/releases/juno'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.zest.sdk.feature.group' name='Graphical Editing Framework Zest Visualization Toolkit SDK' version='1.5.0.201208201742'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/releases/juno'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.gmf.feature.group' name='Graphical Modeling Framework (GMF) Runtime' version='1.6.0.v20120517-1809-7d9X7FFYnmMJUVOKcqPSgIiK281V'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/releases/juno'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.gmf.runtime.thirdparty.feature.group' name='Third-Party Components for GMF Runtime' version='1.6.0.v20120517-1809-7P8W6FHV2CYnrDgDtz-JNaw31221'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/releases/juno'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.linuxtools.valgrind.feature.group' name='Valgrind Tools Integration' version='1.0.0.201209191645'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/releases/juno'/>
+      </repositories>
+    </iu>
+  </ius>
+</p2f>
