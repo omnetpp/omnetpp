@@ -17,7 +17,7 @@ else:
     register_libstdcxx_printers(None)
     print 'Pretty printers initialized: libstdc++'
 
-# register omnet specific pretty printers
+# register OMNeT++-specific pretty printers
 if 'register_omnetpp_printers' in dir():
     print 'omnetpp pretty printers already initialized.'
 else:
@@ -26,9 +26,9 @@ else:
     print 'Pretty printers initialized: omnetpp'
 
 # source the temporary init file written out by the IDE (if exists)
-# this file is used to include additional project specific init scripts
+# this file is used to include additional project-specific init scripts
 
 initfile = tempfile.gettempdir() + '/gdbinit.tmp'
 if os.path.isfile(initfile):
     execfile(initfile)
-    os.remove(initfile)
+
