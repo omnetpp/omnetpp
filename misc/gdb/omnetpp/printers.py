@@ -18,6 +18,49 @@ try:
 except ImportError:
     _use_gdb_pp = False
 
+##############################################
+
+omnetpp_printer_debug = False #or True
+def debug(s):
+    global omnetpp_printer_debug
+    if omnetpp_printer_debug:
+        print s
+
+
+##############################################
+
+class cPrinterBase:
+    "Base class for OMNeT++ pretty printers"
+
+    def __init__ (self, val):
+        self.val = val
+        self.addr = long(self.val.address)
+        if (self.addr < 0x1000):
+            self.addr = 0
+
+    def to_string(self):
+        return None
+
+    @staticmethod
+    def cast_pointer_to_array(pointer, length):
+        debug("cast_pointer_to_array: %s[%d]" % (pointer.dereference().type.tag, length))
+        if length > 0:
+            return pointer.cast(pointer.dereference().type.array(length-1).pointer()).dereference()
+        return pointer
+
+    def xchildren(self):
+        for fld in self.val.type.fields():
+            try:
+                if fld.is_base_class:
+                    yield(fld.name, self.val.cast(fld.type))
+                else:
+                    yield(fld.name, self.val[fld.name])
+            except Exception as e:
+                print '<ERROR %s>' % e
+                yield(fld.name, '<ERROR %s>' % e)
+
+
+##############################################
 
 class SimTimePrinter:
     "Print a SimTime"
@@ -33,324 +76,76 @@ class SimTimePrinter:
         return str(s) + "s"
 
 
-class cObjectPrinter:
+##############################################
+
+class cObjectPrinter(cPrinterBase):
     "Print a cObject"
 
     def __init__ (self, val):
-        self.val = val
-        self.addr = long(self.val.address)
-        if (self.addr < 0x1000):
-            self.addr = 0
+        cPrinterBase.__init__(self, val)
 
     def getFullPath(self):
         global gdb
         if (self.addr == 0):
-            return '<NULL>'
+            return None
         try:
-            path = gdb.parse_and_eval("((::cObject *)0x%x)->getFullPath()" % (self.addr))
-            path = path['_M_dataplus']['_M_p'].string('','replace')
+            path = gdb.parse_and_eval("((::cObject *)%s)->getFullPath()" % str(self.addr))
         except Exception as e:
-            # print 'Error in getFullPath: %s' % e
-            path = '<ERROR>'
+            print 'Error in getFullPath: %s' % e
+            path = None
         return path
 
     def getFullName(self):
         global gdb
         if (self.addr == 0):
-            return '<NULL>'
+            return None
         try:
-            name = gdb.parse_and_eval("((::cObject *)0x%x)->getFullName()" % (self.addr))
-            name = name.string('','replace')
+            name = gdb.parse_and_eval("((::cObject *)%s)->getFullName()" % str(self.addr))
         except Exception as e:
-            # print 'Error in getFullName: %s' % e
-            name = '<ERROR>'
+            print 'Error in getFullName: %s' % e
+            name = None
         return name
 
     def getOwner(self):
         global gdb
         if (self.addr == 0):
-            return '<NULL>'
+            return None
         try:
-            owner = gdb.parse_and_eval("((::cObject *)0x%x)->getOwner()" % (self.addr))
+            owner = gdb.parse_and_eval("((::cObject *)%s)->getOwner()" % str(self.addr))
         except Exception as e:
-            # print 'Error in getOwner: %s' % e
-            owner = 0
+            print 'Error in getOwner: %s' % e
+            owner = None
         return owner
 
-    def children(self):
+    def getInfo(self):
         global gdb
-
-        # ### for testing only:
-        # print "TYPE='%s'" % self.val.dynamic_type.tag
-        # yield('addr', long(self.val.address))
-        # yield('type', self.val.type.tag)
-        # yield('dyn-type', self.val.dynamic_type.tag)
-
         if (self.addr == 0):
-            return
+            return None
+        try:
+            info = gdb.parse_and_eval("((::cObject *)%s)->info()" % str(self.addr))
+        except Exception as e:
+            print 'Error in getInfo: %s' % e
+            info = None
+        return info
 
+    def to_string(self):
+        if (self.addr == 0):
+            return 'addr=0x0'
         name = self.getFullName()
         path = self.getFullPath()
-        owner = self.getOwner()
-
-        # ### for testing only
-        # yield('name', name)
-        # yield('path', path)
-        # yield('owner', owner)
-
-        if (name == ''):
-            yield('addr', '0x%x' % self.addr)
-        else:
-            if (long(owner) == 0):
-                yield('name', '"%s"' % name)
-            else:
-                yield('path', '"%s"' % path)
-
-    def to_string (self):
-        return None
-
-
-class cNamedObjectPrinter(cObjectPrinter):
-    "Print a cNamedObject"
-
-    def __init__(self, val):
-        cObjectPrinter.__init__(self, val)
-
-
-class cOwnedObjectPrinter(cNamedObjectPrinter):
-    "Print a cOwnedObject/cNoncopyableOwnedObject"
-
-    def __init__(self, val):
-        cNamedObjectPrinter.__init__(self, val)
-
-    def children(self):
-        for x in cNamedObjectPrinter.children(self):
-            yield(x)
-        #yield('owner', self.val['ownerp'])     # unnecessary, showed in path
-        #yield('pos', self.val['pos'])
-
-
-class cNoncopyableOwnedObjectPrinter(cOwnedObjectPrinter):
-    "Print a cNoncopyableOwnedObject"
-
-    def __init__(self, val):
-        cOwnedObjectPrinter.__init__(self, val)
-
-
-class cDefaultListPrinter(cNoncopyableOwnedObjectPrinter):
-    "Print a cDefaultList"
-
-    def __init__(self, val):
-        cNoncopyableOwnedObjectPrinter.__init__(self, val)
-
-
-class cComponentPrinter(cDefaultListPrinter):
-    "Print a cComponent"
-
-    def __init__(self, val):
-        cDefaultListPrinter.__init__(self, val)
-
-
-class cModulePrinter(cComponentPrinter):
-    "Print a cModule"
-
-    def __init__(self, val):
-        cComponentPrinter.__init__(self, val)
-
-    def children(self):
-        for x in cComponentPrinter.children(self):
-            yield(x)
-        yield('id', self.val['mod_id'])
-
-
-class cCompoundModulePrinter(cModulePrinter):
-    "Print a cCompoundModule"
-
-    def __init__(self, val):
-        cModulePrinter.__init__(self, val)
-
-
-class cSimpleModulePrinter(cModulePrinter):
-    "Print a cSimpleModule"
-
-    def __init__(self, val):
-        cModulePrinter.__init__(self, val)
-
-
-class cParPrinter(cObjectPrinter):
-    "Print a cPar"
-
-    def __init__(self, val):
-        cObjectPrinter.__init__(self, val)
-
-    def children(self):
-        for x in cObjectPrinter.children(self):
-            yield(x)
-        yield('impl', self.val['p'])
-
-
-class cParImplPrinter(cNamedObjectPrinter):
-    "Print a cParimpl"
-
-    def __init__(self, val):
-        cNamedObjectPrinter.__init__(self, val)
-
-    def getType(self):
-        global gdb
-        if (self.addr == 0):
-            return '<NULL>'
-        try:
-            ret = gdb.parse_and_eval("((::cParImpl *)0x%x)->getType()" % (self.addr))
-        except Exception as e:
-            # print 'Error in getType(): %s' % (e)
-            ret = '<ERROR>'
+        #owner = self.getOwner()
+        info = self.getInfo()
+        ret = 'type "%s"' % self.val.dynamic_type.tag
+        if path:
+            ret = ret + ' path %s' % path
+        elif name:
+            ret = ret + ' name %s' % name
+        if info:
+            ret = ret + ' info %s' % info
         return ret
 
-    def children(self):
-        global gdb
-        if (self.addr == 0):
-            return
 
-        for x in cNamedObjectPrinter.children(self):
-            yield(x)
-
-        if (long(self.val['unitp']) != 0):
-            yield('@unit', '"%s"' % (self.val['unitp'].string()))
-        type_ = self.getType()
-        yield('type', type_)
-
-        flags = long(self.val['flags'])
-        if ((flags & 96) == 96):        # FL_CONTAINSVALUE + FL_ISSET
-            flaglist = ()
-            if (flags & 4): flaglist.append('volatile')
-            if (flags & 8): flaglist.append('expr')
-            if (len(flaglist)):
-                yield('flags', ' '.join(flaglist))
-
-
-class cGatePrinter(cObjectPrinter):
-    "Print a cGate"
-
-    def __init__(self, val):
-        cObjectPrinter.__init__(self, val)
-
-    def children(self):
-        for x in cObjectPrinter.children(self):
-            yield(x)
-        pos = int(self.val['pos'])
-        yield('type', 'output' if (pos&1) else 'input')
-        yield('deliver', 'start' if (pos&2) else 'end')
-        if (pos >= 0):
-            yield('pos', pos >> 2)
-
-
-class cQueuePrinter(cOwnedObjectPrinter):
-    "Print a cQueue"
-
-    def __init__(self, val):
-        cOwnedObjectPrinter.__init__(self, val)
-
-    def children(self):
-        for x in cOwnedObjectPrinter.children(self):
-            yield(x)
-        yield('tkownership', self.val['tkownership'])
-        length = long(self.val['n'])
-        yield('length', length)
-        if (length == 0):
-            return
-
-        limit = 5
-        skipto = length - limit
-        if (skipto <= limit):
-            limit = length
-            skipto = length
-        # print queue items: [0]..[limit-1]   '...'   [skipto] .. [length-1]
-        p = self.val['frontp']
-        i = 0
-        while (long(p) != 0 and i < limit):
-            p = p.dereference()
-            yield('[%d]' % i, p['obj'])
-            p = p['next']
-            i += 1
-        if (i == length):
-            return
-
-        # skip items
-        if (skipto <= 2*limit):
-            while (long(p) != 0 and i < skipto):
-                p = p.dereference()
-                p = p['next']
-                i += 1
-        else:
-            p = self.val['backp']
-            i = length-1
-            while (long(p) != 0 and i > skipto):
-                p = p.dereference()
-                p = p['prev']
-                i -= 1
-
-        if (limit == skipto-1):
-            yield('[%d]' % limit, '...')
-        else:
-            yield('[%d .. %d]' % (limit,skipto-1), '...')
-
-        while (long(p) != 0 and i < length):
-            p = p.dereference()
-            yield('[%d]' % i, p['obj'])
-            p = p['next']
-            i += 1
-
-
-class cChannelPrinter(cComponentPrinter):
-    "Print a cModule"
-
-    def __init__(self, val):
-        cComponentPrinter.__init__(self, val)
-
-    def callFunc(self, func):
-        global gdb
-        if (self.addr == 0):
-            return '<NULL>'
-        try:
-            ret = gdb.parse_and_eval("((::cChannel *)0x%x)->%s" % (self.addr, func))
-        except Exception as e:
-            # print 'Error in %s: %s' % (func, e)
-            ret = '<ERROR>'
-        return ret
-
-    def children(self):
-        global gdb
-        if (self.addr == 0):
-            return
-        for x in cComponentPrinter.children(self):
-            yield(x)
-        srcgate = self.val['srcgatep']
-        srcgatename = '<NULL>'
-        destgatename = '<NULL>'
-        if (long(srcgate) != 0):
-            srcgate = srcgate.dereference()
-            srcgatename = cGatePrinter(srcgate).getFullPath()
-            yield('srcgate', '"%s"' % srcgatename)
-            destgate = srcgate['nextgatep']
-            if (long(destgate) != 0):
-                destgatename = cGatePrinter(destgate.dereference()).getFullPath()
-                yield('destgate', '"%s"' % destgatename)
-
-        isTr = self.callFunc("isTransmissionChannel()")
-        datarate = self.callFunc("getNominalDatarate()")
-        yield('datarate', datarate)
-        isBusy = self.callFunc("isBusy()")
-        yield('busy', isBusy)
-        info = self.callFunc("info()")
-        yield('info', info)
-
-        # ### trFinishTime disabled, see GDB BUG 13403: http://sourceware.org/bugzilla/show_bug.cgi?id=13403
-        # trFinishTime = self.callFunc("getTransmissionFinishTime()")
-        # yield('trFinishTime', trFinishTime)
-
-    def to_string (self):
-        return None
-
+##############################################
 
 class typeinfoPrinter:
     "Print the type of a value"
@@ -393,6 +188,7 @@ class OppPrinter(object):
     @staticmethod
     def get_basic_type(type):
         # If it points to a reference, get the reference.
+        #if type.code == gdb.TYPE_CODE_REF:
         if type.code == gdb.TYPE_CODE_REF or type.code == gdb.TYPE_CODE_PTR:
             type = type.target()
 
@@ -403,19 +199,22 @@ class OppPrinter(object):
 
     def __call__(self, val):
         typename = self.get_basic_type(val.type)
-        #print "BASIC TYPE OF '%s' type IS '%s'" % (val.type, typename)
+        debug("BASIC TYPE OF '%s' type IS '%s'" % (val.type, typename))
         if not typename:
             return None
 
-        #print "lookup printer for '%s' type" % (typename)
+        debug(" lookup printer for '%s' type" % (typename))
         if typename in self.lookup:
             if val.type.code == gdb.TYPE_CODE_REF or val.type.code == gdb.TYPE_CODE_PTR:
+                debug("---pointer--- %d" % long(val))
                 if (long(val) == 0):
                     return None
                 val = val.dereference()
+            debug(" +printer found for '%s' type" % (typename))
             return self.lookup[typename].invoke(val)
 
         # Cannot find a pretty printer.  Return None.
+        debug(" -printer not found for '%s' type" % (typename))
         return None
 
 
@@ -443,21 +242,9 @@ def build_omnetpp_dictionary():
 
     omnetpp_printer.add('SimTime', SimTimePrinter)
     omnetpp_printer.add('cObject', cObjectPrinter)
-    omnetpp_printer.add('cNamedObject', cNamedObjectPrinter)
-    omnetpp_printer.add('cOwnedObject', cOwnedObjectPrinter)
-    omnetpp_printer.add('cNoncopyableOwnedObject', cNoncopyableOwnedObjectPrinter)
-    omnetpp_printer.add('cDefaultList', cDefaultListPrinter)
-    omnetpp_printer.add('cComponent', cComponentPrinter)
-    omnetpp_printer.add('cModule', cModulePrinter)
-    omnetpp_printer.add('cCompoundModule', cCompoundModulePrinter)
-    omnetpp_printer.add('cSimpleModule', cSimpleModulePrinter)
-    omnetpp_printer.add('cPar', cParPrinter)
-    omnetpp_printer.add('cParImpl', cParImplPrinter)
-    omnetpp_printer.add('cGate', cGatePrinter)
-    omnetpp_printer.add('cQueue', cQueuePrinter)
-    omnetpp_printer.add('cChannel', cChannelPrinter)
 
 
 build_omnetpp_dictionary()
 
 # end
+
