@@ -173,8 +173,10 @@ class FileContentProvider extends InternalFileContentProvider {
                     char[] expectedValue = ref.second;
                     char[] foundValue = macroValues.containsKey(name) ? macroValues.get(name) :currentMacroValues.getMacroValue(name);
                     if (!Arrays.equals(expectedValue, foundValue))
-                        throw new MacroValueChangedException(depth, String.format("Index mismatch: file: %s macro: %s expected: %s found: %s",
-                                file.getPath(), name, expectedValue != null ? new String(expectedValue) : null, foundValue != null ? new String(foundValue) : foundValue));
+                        throw new MacroValueChangedException(depth, String.format("Index mismatch: in file %s the macro %s was %s, now it is %s",
+                                file.getPath(), name,
+                                expectedValue != null ? "'"+new String(expectedValue)+"'" : "<undefined>",
+                                foundValue != null ? "'" + new String(foundValue) + "'" : "<undefined>"));
                 }
             }
             else if (d instanceof IIndexMacro) {
