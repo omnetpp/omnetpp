@@ -41,7 +41,9 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.build.MakefileBuilder;
@@ -250,29 +252,50 @@ public class DependencyCache {
      * Note: this method is reentrant: only uses local variables, and no data member of the class
      */
     protected CachedData computeCachedData(IProgressMonitor monitor) throws CoreException {
-        ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(MakefileBuilder.MARKER_ID);
-
         IProject[] projects = ProjectUtils.getOmnetppProjects();
-
-        // Register all source files (including excluded ones!) in the marker synchronizer;
-        // we need to register all, because the "excluded" state of a folder may change
-        // over time, and we don't want to leave stale problem markers around.
-        // Also, ignore referenced projects, as they are processed on their own right
+        int countOfFiles = 0;
         for (IProject project : projects)
-            registerAllFilesInMarkerSynchronizer(project, markerSync);
+            countOfFiles += countSourceFilesInProject(project);
 
-        // collect list of #include directives per file in all open projects; cover .msg files but NOT _m.cc/h files
-        Map<IFile,List<Include>> fileIncludes = new HashMap<IFile, List<Include>>();
-        for (IProject project : projects)
-            fileIncludes.putAll(collectIncludes(project, markerSync, monitor));
+        try {
+            if (monitor != null)
+                monitor.beginTask("Computing Dependency Info", countOfFiles + projects.length);
 
-        // resolve includes and compute dependencies
-        CachedData data = new CachedData();
-        for (IProject project : projects)
-            data.projectDependencyDataMap.put(project, computeDependencies(project, fileIncludes, markerSync));
+            // Register all source files (including excluded ones!) in the marker synchronizer;
+            // we need to register all, because the "excluded" state of a folder may change
+            // over time, and we don't want to leave stale problem markers around.
+            // Also, ignore referenced projects, as they are processed on their own right
+            ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(MakefileBuilder.MARKER_ID);
+            for (IProject project : projects)
+                registerAllFilesInMarkerSynchronizer(project, markerSync);
 
-        markerSync.runAsWorkspaceJob();
-        return data;
+            // collect list of #include directives per file in all open projects; cover .msg files but NOT _m.cc/h files
+            if (monitor != null)
+                monitor.subTask("Collecting Includes");
+            Map<IFile,List<Include>> fileIncludes = new HashMap<IFile, List<Include>>();
+            for (IProject project : projects)
+                fileIncludes.putAll(collectIncludes(project, markerSync, monitor));
+
+            // resolve includes and compute dependencies
+            if (monitor != null)
+                monitor.subTask("Computing Dependencies");
+            CachedData data = new CachedData();
+            for (IProject project : projects) {
+                data.projectDependencyDataMap.put(project, computeDependencies(project, fileIncludes, markerSync));
+                if (monitor != null)
+                    monitor.worked(1);
+            }
+
+            markerSync.runAsWorkspaceJob();
+            return data;
+        }
+        catch (OperationCanceledException e) {
+            throw new CoreException(Status.CANCEL_STATUS);
+        }
+        finally {
+            if (monitor != null)
+                monitor.done();
+        }
     }
 
     protected void registerAllFilesInMarkerSynchronizer(IProject project, final ProblemMarkerSynchronizer markerSync) {
@@ -291,29 +314,16 @@ public class DependencyCache {
         }
     }
 
-    protected Map<IFile, List<Include>> collectIncludes(IProject project, final ProblemMarkerSynchronizer markerSync, IProgressMonitor monitor) throws CoreException {
-
-        // collect #includes using the index, or (for msg files) by directly parsing the file
-        Debug.println("DependencyCache: collecting #includes in project " + project.getName());
-        long startTime = System.currentTimeMillis();
-        int startCachedFiles = Activator.getFileCache().getNumberOfFiles();
-        int startIndexedFiles = Activator.getIndex().getNumberOfFiles();
-        final int[] count = new int[1];
-
-        // collect active #includes from all C++ source files; also warn for linked-in files
+    protected void visitNonGeneratedSourceFiles(IProject project, final IResourceVisitor visitor) throws CoreException {
         ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
         ICConfigurationDescription cfg = prjDesc==null ? null : prjDesc.getActiveConfiguration();
         final ICSourceEntry[] sourceEntries = cfg==null ? new ICSourceEntry[0] : cfg.getSourceEntries();
-        final Map<IFile, List<Include>> result = new HashMap<IFile, List<Include>>();
         project.accept(new IResourceVisitor() {
             // variables for caching CDTUtils.isExcluded(), which is expensive
             IContainer lastFolder = null;
             boolean lastFolderIsExcluded = false;
 
             public boolean visit(IResource resource) throws CoreException {
-                // warn for linked resources
-                if (resource.isLinked())
-                    addMarker(markerSync, resource, IMarker.SEVERITY_ERROR, "Linked resources are not supported by Makefiles");
                 if (resource instanceof IFile) {
                     IFile file = (IFile) resource;
                     IContainer folder = file.getParent();
@@ -323,12 +333,52 @@ public class DependencyCache {
                     }
                     if (!lastFolderIsExcluded) {
                         if (MakefileTools.isNonGeneratedCppFile(file) || MakefileTools.isMsgFile(file)) {
-                            result.put(file, collectFileIncludes(file));
-                            count[0]++;
+                            visitor.visit(file);
                         }
                     }
                 }
                 return MakefileTools.isGoodFolder(resource);
+            }
+        });
+    }
+
+    protected int countSourceFilesInProject(IProject project) throws CoreException {
+        final int[] count = new int[1];
+        visitNonGeneratedSourceFiles(project, new IResourceVisitor() {
+            public boolean visit(IResource resource) throws CoreException {
+                count[0]++;
+                return false;
+            }
+        });
+        return count[0];
+    }
+
+    protected Map<IFile, List<Include>> collectIncludes(IProject project, final ProblemMarkerSynchronizer markerSync, final IProgressMonitor monitor) throws CoreException {
+
+        // collect #includes using the index, or (for msg files) by directly parsing the file
+        Debug.println("DependencyCache: collecting #includes in project " + project.getName());
+        long startTime = System.currentTimeMillis();
+        int startCachedFiles = Activator.getFileCache().getNumberOfFiles();
+        int startIndexedFiles = Activator.getIndex().getNumberOfFiles();
+        final int[] count = new int[1];
+
+        // collect active #includes from all C++ source files; also warn for linked-in files
+        final Map<IFile, List<Include>> result = new HashMap<IFile, List<Include>>();
+        visitNonGeneratedSourceFiles(project, new IResourceVisitor() {
+            public boolean visit(IResource resource) throws CoreException {
+                if (monitor != null && monitor.isCanceled())
+                    throw new OperationCanceledException();
+                // warn for linked resources
+                if (resource.isLinked())
+                    addMarker(markerSync, resource, IMarker.SEVERITY_ERROR, "Linked resources are not supported by Makefiles");
+                if (resource instanceof IFile) {
+                    IFile file = (IFile) resource;
+                    result.put(file, collectFileIncludes(file));
+                    count[0]++;
+                    if (monitor != null)
+                        monitor.worked(1);
+                }
+                return true;
             }
         });
 
