@@ -71,8 +71,10 @@ public class MSVCPreferenceInitializer extends AbstractPreferenceInitializer {
             return sdkDir;
 
         WindowsRegistry reg = WindowsRegistry.getRegistry();
-        if (reg == null)
+        if (reg == null) {
+            Activator.logError("Cannot access Windows registry", new RuntimeException());
             return null;
+        }
 
         for (int i = 0; i < SDK_VERSIONS.length; ++i) {
             sdkDir = reg.getLocalMachineValue(SDK_VERSIONS[i], "InstallationFolder");
