@@ -8,8 +8,8 @@ in the 'Linux' chapter.
 
 The following Ubuntu releases are covered:
 
-* Ubuntu 10.04 LTS
-* Ubuntu 11.04
+* Ubuntu 12.04 LTS
+* Ubuntu 12.10
 
 They were tested on the following architectures:
 

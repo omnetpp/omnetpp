@@ -8,7 +8,7 @@ in the 'Linux' chapter.
 
 The following openSUSE releases are covered:
 
-* openSUSE 11.4
+* openSUSE 12.2
 
 They were tested on the following architectures:
 
@@ -60,7 +60,7 @@ in front of the names, and pick the latest version of each package.
 
 The packages:
 
-* make, gcc, gcc-c++, bison, flex, perl, tcl-devel, tk-devel, 
+* make, gcc, gcc-c++, bison, flex, perl, tcl-devel, tk-devel,
 libxml2-devel, zlib-devel, java-1_6_0-openjdk, doxygen, graphviz,
 openmpi-devel, libpcap-devel
 

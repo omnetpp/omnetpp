@@ -3,8 +3,14 @@
 === Supported Windows Versions
 
 The supported Windows versions are the Intel 32-bit versions of Windows XP,
-and later Windows versions such as Vista and Windows 7.
+and later versions such as Windows 7 and 8.
 
+[NOTE]
+===============================================================
+64-bit Windows versions are also supported, but the bundled software
+is compiled for 32-bit code only so the resulting simulation
+will also run in a 32-bit process.
+===============================================================
 
 === Installing @OMNETPP@
 
@@ -148,7 +154,7 @@ to the `lib/` and `bin/` subdirs.
 === Portability Issues
 
 @OMNETPP@ has been tested with the MinGW gcc compiler. The current distribution
-contains gcc version 4.6.
+contains gcc version 4.7.
 
 Microsoft Visual C++ is not supported in the Academic Edition.
 
@@ -178,9 +184,9 @@ that you use Linux, OS X, or another unix-like platform.
 
 ==== PCAP
 
-The optional WinPcap library allows simulation models to capture and 
-transmit network packets bypassing the operating system's protocol stack. 
-It is not used directly by @OMNETPP@, but @OMNETPP@ detects the necessary 
+The optional WinPcap library allows simulation models to capture and
+transmit network packets bypassing the operating system's protocol stack.
+It is not used directly by @OMNETPP@, but @OMNETPP@ detects the necessary
 compiler and linker options for models in case they need it.
 
 ==== Akaroa

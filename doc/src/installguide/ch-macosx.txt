@@ -1,4 +1,4 @@
-== Mac OS X 
+== Mac OS X
 
 === Supported Releases
 
@@ -7,28 +7,18 @@ Mac OS X.
 
 The following releases are covered:
 
-* Mac OS X 10.6 ('Snow Leopard')
 * Mac OS X 10.7 ('Lion')
-
-They were tested on the following architectures:
-
-* Intel 32/64-bit
+* Mac OS X 10.8 ('Mountain Lion')
 
 === Installing the Prerequisite Packages
 
-Mac OS X 10.6 (Snow Leopard)
-
- * Install Xcode 3.2.x on your machine. It can be downloaded from
-   http://developer.apple.com/xcode/.
-
-Mac OS X 10.7 (Lion)
-
- * Install Xcode 4.3 or later on your machine. It can be downloaded from the App Store.
- * You must activate command line support by starting XCode and installing 
-   'Command Line Tools' from 'Xcode > Preferences > Downloads > Components'.
- * Install the Java Runtime from http://support.apple.com/kb/DL1421 , because
-   OS X Lion does not provide it by default.
-
+ * Install the Java Runtime from http://support.apple.com/kb/DL1572 , because
+   OS X does not provide it by default.
+ * Install the command line developer tools (gcc, gdb etc.) for OS X from
+   http://developer.apple.com/downloads/index.action?=Command%20Line%20Tools
+   (you will need a free Apple Developer Account for the download.)
+ * Install the quartz project from http://xquartz.macosforge.org/ .
+   Quartz will provide some X headers required by the simulation runtime environment.
 
 Installing additional packages will enable more functionality in @OMNETPP@; see
 the 'Additional packages' section at the end of this chapter.
@@ -188,10 +178,9 @@ nice gui windows and dialogs.
 
 === Starting the IDE
 
-@OMNETPP@ comes with an Eclipse-based Simulation IDE. Mac OS X 10.6 already has
-Java installed, so you do not need to install it. On Mac OS X 10.7 (Lion), the
-Java Runtime must be installed (see prerequisites) before you can use the
-IDE. Start the IDE by typing:
+@OMNETPP@ comes with an Eclipse-based Simulation IDE. On Mac OS X 10.7 (Lion) and
+10.8 (Mountain Lion), the Java Runtime must be installed (see prerequisites)
+before you can use the IDE. Start the IDE by typing:
 
     $ @omnetpp@
 
@@ -276,15 +265,13 @@ and are working on the solution.
 
 ==== OpenMPI
 
- * OpenMPI is already bundled with OS X 10.6, so you do not need to
-   manually install it.
- * OS X 10.7 does not come with OpenMPI, so you must install it manually.
-   Download it from http://open-mpi.org and follow the installation instructions.
-   Alternatively, you can install it from the MacPorts repo by typing
-   `sudo port install openmpi`. In this case, you have to manually set
-   the MPI_CFLAGS and MPI_LIBS variables in `configure.user` and re-run
-   `./configure`. Please note that we do not provide support
-   for OpenMPI installed from the MacPorts repository.
+OS X does not come with OpenMPI, so you must install it manually.
+Download it from http://open-mpi.org and follow the installation instructions.
+Alternatively, you can install it from the MacPorts repo by typing
+`sudo port install openmpi`. In this case, you have to manually set
+the MPI_CFLAGS and MPI_LIBS variables in `configure.user` and re-run
+`./configure`. Please note that we do not provide support
+for OpenMPI installed from the MacPorts repository.
 
 [NOTE]
 ===============================================================

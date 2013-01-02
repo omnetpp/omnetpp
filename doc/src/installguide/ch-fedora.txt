@@ -1,4 +1,4 @@
-== Fedora 15 and 16
+== Fedora 16 and 17
 
 === Supported Releases
 
@@ -8,7 +8,7 @@ in the 'Linux' chapter.
 
 The following Fedora releases are covered:
 
-* Fedora 15 and 16
+* Fedora 16 and 17
 
 They were tested on the following architectures:
 
@@ -33,13 +33,13 @@ To install the required packages, type in the terminal:
 
 then follow the instruction on the console.
 
-Note that 'openmpi' will not be available by default, it needs to be 
+Note that 'openmpi' will not be available by default, it needs to be
 activated in every session with the
 
   $ module load openmpi-<arch>
 
 command, where `<arch>` is your architecture (usually `i386` or `x86_64`).
-When in doubt, use `module avail` to display the list of available 
+When in doubt, use `module avail` to display the list of available
 modules. If you need MPI in every session, you may add the `module load`
 command to your startup script (`.bashrc`).
 
