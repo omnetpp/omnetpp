@@ -340,8 +340,28 @@
       Batch (and parallel) execution is not possible in this launch type, so you may
       specify only a single run number.
     </warning>
+    <sect2>
+      <title>Using pretty printers during debugging</title>
+      <para>In C++, certain data structures may be very cryptic and hard to understand. On Windows
+        and Linux machines, CDT allows you to use "pretty printers" that display the values
+        of these structures in a human readable form. Pretty printers are actually small
+        scripts written in python programming language and they are initialized when the
+        debugger starts.
+      </para>
+      <para>By default, the &Omnetpp; IDE comes with pretty printers for containers in the
+          standard C++ library and also for certain &Omnetpp; specific data types like
+          ``cModule'', ``simtime_t'' etc. The default gdb initialization script
+          (``${opp_root}/misc/gdb/gdbinit.py'') is used automatically for each new
+          launch configuration on the ``Debugger'' tab for the ``GDB command file'' field.
+          The IDE will offer you using this initialization file automatically if the launch
+          configuration was created with &Omnetpp; 4.2 or earlier. The default script will
+          initialize the pretty printers also look into the debugger project (and all
+          projects it depends on) and will try to invoke the ``.gdbinit.py'' file from the
+          root folder of the project, if it exists. This mechanism allows you to write project
+          specific pretty printers for complex data structures.
+      </para>
+    </sect2>
   </sect1>
-
   <sect1>
     <title>Profiling a Simulation on Linux</title>
     <para>
@@ -375,7 +395,7 @@
       launch, check the Show Debug View on Launch in the run configuration dialog, or
       select ``Window | Show View... | Other... | Debug | Debug''.
       Select a process and click the terminate button to stop a specific simulation run
-      or use the context menu for more options to control the process execution.  
+      or use the context menu for more options to control the process execution.
     </para>
     <picture file="pictures/Launch-DebugView.png">Debug View</picture>
     <tip>
