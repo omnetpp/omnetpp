@@ -49,13 +49,13 @@ using std::ostream;
  *
  * When H=0: nonvector gate
  *     L/2 = descIndex
- *     L&1 = 0: inputgate, 1: outputgate
+ *     L&1 = 0: input.gate, 1: output.gate
  *   note: this allows ~500,000 scalar gates
  *
  * When H>0: vector gate
  *     H = descIndex+1  (so that H>0)
  *     bit19 of L = input (0) or output (1)
- *     bits0..18 of L = array index into inputgate[] or outputgate[]
+ *     bits0..18 of L = array index into input.gate[] or output.gate[]
  *   note: gateId must not be negative (for historical reasons, -1 is used as "none"),
  *         so H is effectively 11 bits, allowing ~2046 vector gates max.
  *   note2: 19 bits allow a maximum vector size of ~500,000

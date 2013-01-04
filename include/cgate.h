@@ -94,7 +94,7 @@ class SIM_API cGate : public cObject, noncopyable
     // Internal data structure, only public for technical reasons (GateIterator).
     // One instance per module and per gate vector/gate pair/gate.
     // Note: gate name and type are factored out to a global pool.
-    // Note2: to reduce sizeof(Desc), "size" might be stored in inputgatev[0],
+    // Note2: to reduce sizeof(Desc), "size" might be stored in input.gatev[0],
     // although it might not be worthwhile the extra complication and CPU cycles.
     //
     struct Desc
@@ -102,10 +102,11 @@ class SIM_API cGate : public cObject, noncopyable
         cModule *ownerp;
         Name *namep;  // pooled (points into cModule::namePool)
         int size; // gate vector size, or -1 if scalar gate; actually allocated size is capacityFor(size)
-        union { cGate *inputgate; cGate **inputgatev; };
-        union { cGate *outputgate; cGate **outputgatev; };
+        union Gates { cGate *gate; cGate **gatev; };
+        Gates input;
+        Gates output;
 
-        Desc() {ownerp=NULL; size=-1; namep=NULL; inputgate=outputgate=NULL;}
+        Desc() {ownerp=NULL; size=-1; namep=NULL; input.gate=output.gate=NULL;}
         bool inUse() const {return namep!=NULL;}
         Type getType() const {return namep->type;}
         bool isVector() const {return size>=0;}
@@ -116,10 +117,10 @@ class SIM_API cGate : public cObject, noncopyable
         bool isInput(const cGate *g) const {return (g->pos&1)==0;}
         bool isOutput(const cGate *g) const {return (g->pos&1)==1;}
         int gateSize() const {return size>=0 ? size : 1;}
-        void setInputGate(cGate *g) {ASSERT(getType()!=OUTPUT && !isVector()); inputgate=g; g->desc=this; g->pos=(-1<<2);}
-        void setOutputGate(cGate *g) {ASSERT(getType()!=INPUT && !isVector()); outputgate=g; g->desc=this; g->pos=(-1<<2)|1;}
-        void setInputGate(cGate *g, int index) {ASSERT(getType()!=OUTPUT && isVector()); inputgatev[index]=g; g->desc=this; g->pos=(index<<2);}
-        void setOutputGate(cGate *g, int index) {ASSERT(getType()!=INPUT && isVector()); outputgatev[index]=g; g->desc=this; g->pos=(index<<2)|1;}
+        void setInputGate(cGate *g) {ASSERT(getType()!=OUTPUT && !isVector()); input.gate=g; g->desc=this; g->pos=(-1<<2);}
+        void setOutputGate(cGate *g) {ASSERT(getType()!=INPUT && !isVector()); output.gate=g; g->desc=this; g->pos=(-1<<2)|1;}
+        void setInputGate(cGate *g, int index) {ASSERT(getType()!=OUTPUT && isVector()); input.gatev[index]=g; g->desc=this; g->pos=(index<<2);}
+        void setOutputGate(cGate *g, int index) {ASSERT(getType()!=INPUT && isVector()); output.gatev[index]=g; g->desc=this; g->pos=(index<<2)|1;}
         static int capacityFor(int size) {return size<8 ? (size+1)&~1 : size<32 ? (size+3)&~3 : size<256 ? (size+15)&~15 : (size+63)&~63;}
     };
 
