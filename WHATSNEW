@@ -50,16 +50,26 @@ NED:
        }
 Sim:
 
+  - Added the cPatternMatcher and cMatchExpression utility classes to the API.
+    cPatternMatcher is a glob-style pattern matching class, adopted to special
+    OMNeT++ requirements. It recognizes wildcards (?, *, **), numeric ranges
+    ({5..10}), numeric index ranges ([5..10]), and supports options such as
+    case sensitive and whole string match. cMatchExpression builds on top of
+    cPatternMatcher and lets you combine patterns with AND, OR, NOT for
+    matching fields of arbitrary objects.
+
   - Added hasEncapsulatedPacket() to cPacket.
 
   - Implemented calculateWeightedSingleShortestPathsTo() in cTopology.
 
-  - Signals implementation now allows static initialization of simsignal_t variables
+  - Signals implementation now allows static initialization of simsignal_t
+    variables.
 
     Signal registration table is no longer cleared between runs, so you
     can write things like:
 
     simsignal_t PPP::txBeginSignal = cComponent::registerSignal("txBegin");
+
   - fixed a bug in Expression where '-2m' was evaluated to '2' (meter was lost)
 
 Tools:

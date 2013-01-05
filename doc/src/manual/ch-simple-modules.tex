@@ -3864,11 +3864,6 @@ performance-critical situations it is possible to arrange that frequently
 emitted signals (e.g. \ttt{"txBegin"}) get the ``fast'' signal IDs, while
 infrequent signals (like e.g. \ttt{"routerDown"}) get the rest.
 
-The easiest way to ensure that frequently used signals get ``fast'' signal IDs
-is to register them in stage 0 initialization, and register the others
-in later stages. (Multi-stage initialization is described in
-\ref{sec:simple-modules:multi-stage-init}.)
-
 
 \subsection{The Signals Mechanism}
 \label{sec:simple-modules:signals-api}
@@ -3897,10 +3892,11 @@ const char *signalName = getSignalName(lengthSignalId); // --> "length"
 \end{cpp}
 
 \begin{note}
-  There is some significance to the order of \ffunc{registerSignal()} calls: the
-  first 64 signal names registered have somewhat better notification
-  performance characteristics than later signals, so it is advised to
-  register frequently emitted signals first.
+  Since {\opp} 4.3, the lifetime of signal IDs is the entire program, and
+  it is possible to call \ffunc{registerSignal()} from initializers of
+  global variables, e.g. static class members. In earlier versions,
+  signal IDs were usually allocated in \ffunc{initialize()}, and were
+  only valid for that simulation run.
 \end{note}
 
 \subsubsection{Emitting Signals}
@@ -3921,8 +3917,8 @@ When there are no listeners, the runtime cost of \ttt{emit()} is usually minimal
 However, if producing a value has a significant runtime cost, then the
 \ffunc{mayHaveListeners()} or \ffunc{hasListeners()} method can be used
 to check beforehand whether the given signal has any listeners at all --
-if not, emitting the signal can be skipped. For some signals (the first 64
-in {\opp} 4.1), the information whether it has listeners is cached per
+if not, emitting the signal can be skipped. For some signals (in {\opp} 4.3,
+the first 64 signals used), the information whether it has listeners is cached per
 component, and can be produced in constant time.
 
 Example usage:

@@ -1,5 +1,18 @@
 2012-12-04  ------ omnetpp-4.3b1 released ------
 
+2012-10-03  Andras Varga
+
+	* fix in Expression: '-2m' was evaluated to '2' (meter was lost)
+
+2012-01-14  Andras Varga
+
+	* MatchExpression: OR operator made optional.
+	E.g. now "Host" or "Router" or "Switch" can be written as "Host Router Switch",
+	which is more natural at places (code that so far took a space-separated
+	list of possible items, like node selectors in INET's configurator,
+	can now be naturally extended to have more power by using
+	MatchExpression, without affecting existing users or making OR mandatory).
+
 2012-03-13  ------ omnetpp-4.2.2 released ------
 
 2012-01-17  ------ omnetpp-4.2.1 released ------

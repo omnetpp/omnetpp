@@ -1,5 +1,22 @@
 2012-12-04  ------ omnetpp-4.3b1 released ------
 
+2012-01-31  Andras Varga
+
+	* Signals implementation now allows static initialization of simsignal_t
+	variables. (See include/ChangeLog for more details)
+
+2012-01-18  Zoltan Bojthe
+
+	* Added calculateWeightedSingleShortestPathsTo() to cTopology
+
+2012-01-18  Andras Varga
+
+	* Added hasEncapsulatedPacket() to cPacket
+
+2012-01-14  Andras Varga
+
+	* Added the implementation of cPatternMatcher and cMatchExpression
+
 2012-03-13  ------ omnetpp-4.2.2 released ------
 
 2012-01-17  ------ omnetpp-4.2.1 released ------

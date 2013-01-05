@@ -1418,7 +1418,6 @@ output gate glued together. These sub-gates can also be addressed (and
 connected) individually if needed, as \ttt{port\$i} and \ttt{port\$o} (or
 for vector gates, as \ttt{port\$i[$k$]} and \ttt{port\$o[$k$]}).
 
-
 %% XXX explain ++
 
 Gates are specified as \textit{modulespec.gatespec} (to connect a submodule),
@@ -1443,7 +1442,7 @@ after the last gate is connected, \ttt{++} will stop with an error.
 
 When the \ttt{++} operator is used with \ttt{\$i} or \ttt{\$o}
 (e.g. \ttt{g\$i++} or \ttt{g\$o++}, see later), it will actually add
-a gate pair (input+output) to maintain equal gate size for the two
+a gate pair (input+output) to maintain equal gate sizes for the two
 directions.
 
 %% XXX examples
@@ -1528,6 +1527,62 @@ connections you want to configure. If connection objects could be given
 names to override the default name ``\ttt{channel}'', that would make it
 easier to identify connections in patterns. This feature is planned for
 future {\opp} releases.
+
+
+\subsubsection{Channel Names}
+
+The default name given to channel objects is \ttt{"channel"}. Since {\opp} 4.3
+it is possible to specify the name explicitly, and also to specify to override
+the default name per channel type. The purpose of custom channel names is to make
+addressing easier when channel parameters are assigned from ini files.
+
+The syntax for naming a channel in a connection is similar to submodule syntax:
+\textit{name: type}. Since both \textit{name} and \textit{type} are optional,
+the colon must be there after \textit{name} even if \textit{type} is missing,
+in order to remove the ambiguity.
+
+Examples:
+
+\begin{ned}
+r1.pppg++ <--> eth1: EthernetChannel <--> r2.pppg++;
+a.out --> foo: {delay=1ms;} --> b.in;
+a.out --> bar: --> b.in;
+\end{ned}
+
+In the absence of an explicit name, the channel name comes from the
+\ttt{@defaultname} property of the channel type if that exists.
+
+\begin{ned}
+channel Eth10G extends ned.DatarateChannel like IEth {
+    @defaultname(eth10G);
+}
+\end{ned}
+
+There's a catch with \ttt{@defaultname} though: if the channel type is
+specified with a \ttt{**.$channel\-name$.liketype=} line in an ini file, then
+the channel type's \ttt{@defaultname} cannot be used as \textit{channelname}
+in that configuration line, because the channel type would only be known as a
+result of using that very configuration line. To illustrate the problem,
+consider the above \ttt{Eth10G} channel, and a compound module containing the
+following connection:
+
+\begin{ned}
+r1.pppg++ <--> <> like IEth <--> r2.pppg++;
+\end{ned}
+
+Then consider the following inifile:
+
+\begin{inifile}
+**.eth10G.typename = "Eth10G"   # Won't match! The eth10G name would come from
+                                #   the Eth10G type - catch-22!
+**.channel.typename = "Eth10G"  # OK, as lookup assumes the name "channel"
+**.eth10G.datarate = 10.01Gbps  # OK, channel already exists with name "eth10G"
+\end{inifile}
+
+The anomaly can be avoided by using an explicit channel name in the connection,
+not using \ttt{@defaultname}, or by specifying the type via a module parameter
+(e.g. writing \ttt{<param> like ...} instead of \ttt{<> like ...}).
+
 
 
 \section{Multiple Connections}

@@ -1073,9 +1073,9 @@ a node or edge in the topology graph.
 
 One usage of \ffunc{disable()} is when you want to determine in how many
 hops the target node can be reached from our node \textit{through
-a particular output gate}. To calculate this, you calculate the
-shortest paths to the target \textit{from the neighbor node}, but
-you must disable the current node to prevent the shortest paths
+a particular output gate}. To compute this, you compute the
+shortest paths to the target \textit{from the neighbor node} while
+disabling the current node to prevent the shortest paths
 from going through it:
 
 \begin{cpp}
@@ -1102,6 +1102,234 @@ weightedMultiShortestPathsTo(cTopology::Node *target);
 
 
 
+\section{Pattern Matching}
+
+Since version 4.3, {\opp} contains two utility classes for pattern
+matching, \cclass{cPatternMatcher} and \cclass{cMatchExpression}.
+
+\cclass{cPatternMatcher} is a glob-style pattern matching class, adopted to
+special {\opp} requirements. It recognizes wildcards, character ranges and
+numeric ranges, and supports options such as case sensitive and whole
+string matching. \cclass{cMatchExpression} builds on top of
+\cclass{cPatternMatcher} and extends it in two ways: first, it lets you
+combine patterns with AND, OR, NOT into boolean expressions, and second, it
+applies the pattern expressions to \textit{objects} instead of text. These
+classes are especially useful for making model-specific configuration files
+more concise or more powerful by introducing patterns.
+
+% See \ref{sec:ch-config-sim:wildcards} too.
+
+
+\subsection{cPatternMatcher}
+
+\cclass{cPatternMatcher} holds a pattern string and several option flags, and has
+a boolean \ffunc{matches()} function that lets you check whether the string passed as argument
+matches the pattern with the given flags. The pattern and the flags can be set
+via the constructor or by calling the \ffunc{setPattern()} member function.
+
+The pattern syntax is a variation on Unix \textit{glob}-style patterns. The
+most apparent differences to globbing rules are the distinction between
+\ttt{*} and \ttt{**}, and that character ranges should be written with
+curly braces instead of square brackets; that is, \textit{any-letter} is
+expressed as \ttt{\{a-zA-Z\}} and not as \ttt{[a-zA-Z]}, because square
+brackets are reserved for the notation of module vector indices.
+
+The following option flags are supported:
+
+\begin{itemize}
+  \item \textit{dottedpath}: controls whether some wildcards (\ttt{?}, \ttt{*}) will match dots
+  \item \textit{fullstring}: controls whether to do full string or substring match.
+  \item \textit{casesensitive}: whether matching is case sensitive or case insensitive
+\end{itemize}
+
+Patterns may contain the following elements:
+
+\begin{itemize}
+  \item \textit{question mark}, \ttt{?} : matches any character (except dot if \textit{dottedpath}=true)
+  \item \textit{asterisk}, \ttt{*} : matches zero or more characters (except dots if \textit{dottedpath}=true)
+  \item \textit{double asterisk}, \ttt{**} : matches zero or more characters, including dots
+  \item \textit{set}, e.g. \ttt{\{a-zA-Z\}} : matches any character that is contained in the set
+  \item \textit{negated set}, e.g. \ttt{\{{\textasciicircum}a-z\}}: matches any character that is NOT contained in the set
+  \item \textit{numeric range}, e.g. \ttt{\{38..150\}} : matches any number (i.e. sequence of digits) in the given range
+  \item \textit{numeric index range}, e.g. \ttt{[38..150]} : matches any number in square brackets in the given range
+  \item \textit{backslash}, {\textbackslash} : takes away the special meaning of the subsequent character
+\end{itemize}
+
+\begin{note}
+The \textit{dottedpath} option was introduced to make matching {\opp}
+module paths more powerful. When it is off (\textit{dottedpath}=false),
+there is no difference between \ttt{*} and \ttt{**}, they both match any
+character sequence. However, when matching {\opp} module paths or other
+strings where dot is a separator character, it is useful to turn on the
+dottedpath mode (\textit{dottedpath}=true). In that mode, \ttt{*}, not
+being able to cross a dot, can match only a single path component (or part
+of it), and \ttt{**} can match multiple path components.
+\end{note}
+
+Sets and negated sets can contain several character ranges and also
+enumeration of characters, for example \ttt{\{\_a-zA-Z0-9\}} or
+\ttt{\{xyzc-f\}}. To include a hyphen in the set, place it at a position
+where it cannot be interpreted as character range, for example
+\ttt{\{a-z-\}} or \ttt{\{-a-z\}}. If you want to include a close brace in
+the set, it must be the first character: \ttt{\{\}a-z\}}, or for a negated
+set: \ttt{\{\textasciicircum\}a-z\}}. A backslash is always taken as
+literal backslash (and NOT as escape character) within set definitions.
+When doing case-insensitive match, avoid ranges that include both alpha and
+non-alpha characters, because they might cause funny results.
+
+For numeric ranges and numeric index ranges, ranges are inclusive, and both
+the start and the end of the range are optional; that is, \ttt{\{10..\}},
+\ttt{\{..99\}} and \ttt{\{..\}} are all valid numeric ranges (the last one
+matches any number). Only nonnegative integers can be matched. Caveat:
+\ttt{\{17..19\}} will match \ttt{"a17"}, \ttt{"117"} and also \ttt{"963217"}!
+
+The \cclass{cPatternMatcher} constructor and the \ffunc{setPattern()} member
+function have similar signatures:
+
+\begin{cpp}
+cPatternMatcher(const char *pattern, bool dottedpath, bool fullstring,
+                bool casesensitive);
+void setPattern(const char *pattern, bool dottedpath, bool fullstring,
+                bool casesensitive);
+\end{cpp}
+
+The matcher function:
+
+\begin{cpp}
+bool matches(const char *text);
+\end{cpp}
+
+There are also some more utility functions for printing the pattern,
+determining whether a pattern contains wildcards, etc.
+
+Example:
+
+\begin{cpp}
+cPatternMatcher matcher("**.host[*]", true, true, true);
+ev << matcher.matches("Net.host[0]") << endl;  // -> true
+ev << matcher.matches("Net.area1.host[0]") << endl;  // -> true
+ev << matcher.matches("Net.host") << endl;  // -> false
+ev << matcher.matches("Net.host[0].tcp") << endl;  // -> false
+\end{cpp}
+
+
+\subsection{cMatchExpression}
+
+The \cclass{cMatchExpression} class builds on top of
+\cclass{cPatternMatcher}, and lets you determine whether an \textit{object}
+matches a given pattern expression.
+
+A pattern expression consists of elements in the
+\textit{fieldname(pattern)} syntax; they check whether the string
+representation of the given field of the object matches the pattern. For
+example, \ttt{srcAddr(192.168.0.*)} will match if the \textit{srcAddr}
+field of the object starts with \ttt{192.168.0.} A naked pattern (without
+field name and parens) is also accepted, and it will be matched against the
+\textit{default field} of the object, which will usually be its name.
+
+These elements can be combined with the AND, OR, NOT operators, accepted in
+both lowercase and uppercase. AND has higher precedence than OR, but
+parentheses can be used to change the evaluation order.
+
+Pattern examples:
+
+\begin{itemize}
+ \item \ttt{"node*"}
+ \item \ttt{"node* or host*"}
+ \item \ttt{"packet-* and className(PPPFrame)"}
+ \item \ttt{"className(TCPSegment) and byteLength(\{4096..\})"}
+ \item \ttt{"className(TCPSegment) and (SYN or DATA-*) and not kind(\{0..2\})"}
+\end{itemize}
+
+The \cclass{cMatchExpression} class has a constructor and \ffunc{setPattern()}
+method similar to those of \cclass{cPatternMatcher}:
+
+\begin{cpp}
+cMatchExpression(const char *pattern, bool dottedpath, bool fullstring,
+                bool casesensitive);
+void setPattern(const char *pattern, bool dottedpath, bool fullstring,
+                bool casesensitive);
+\end{cpp}
+
+However, the matcher function takes a \cclass{cMatchExpression::Matchable}
+instead of string:
+
+\begin{cpp}
+bool matches(const Matchable *object);
+\end{cpp}
+
+This means that objects to be matched must either be subclassed from
+\cclass{cMatchExpression::Matchable}, or be wrapped into some adapter class
+that does. \cclass{cMatchExpression::Matchable} is a small abstract class
+with only a few pure virtual functions:
+
+\begin{cpp}
+/**
+ * Objects to be matched must implement this interface
+ */
+class SIM_API Matchable
+{
+  public:
+    /**
+     * Return the default string to match. The returned pointer will not
+     * be cached by the caller, so it is OK to return a pointer to an
+     * internal buffer which is overwritten by subsequent
+     * getDefaultAttribute() / getAttribute() calls.
+     */
+    virtual const char *getDefaultAttribute() const = 0;
+
+    /**
+     * Return the default string to match. Should return NULL if the attribute
+     * doesn't exist. The returned pointer will not be cached by the caller,
+     * so it is OK to return a pointer to an internal buffer which is
+     * overwritten by subsequent getDefaultAttribute() / getAttribute() calls.
+     */
+    virtual const char *getAttribute(const char *name) const = 0;
+
+    /**
+     * Virtual destructor.
+     */
+    virtual ~Matchable() {}
+};
+\end{cpp}
+
+To be able to match instances of an existing class that is not already a
+\ttt{Matchable}, you need to write an adapter class. An adapter class that
+we can look at as an example is \cclass{cMatchableString}. \cclass{cMatchableString}
+makes it possible to match strings with a \cclass{cMatchExpression}, and is part
+of {\opp}:
+
+\begin{cpp}
+/**
+ * Wrapper to make a string matchable with cMatchExpression.
+ */
+class cMatchableString : public cMatchExpression::Matchable
+{
+  private:
+    std::string str;
+  public:
+    cMatchableString(const char *s) {str = s;}
+    virtual const char *getDefaultAttribute() const {return str.c_str();}
+    virtual const char *getAttribute(const char *name) const {return NULL;}
+};
+\end{cpp}
+
+An example:
+
+\begin{cpp}
+cMatchExpression expr("foo* or bar*", true, true, true);
+cMatchableString str1("this is a foo");
+cMatchableString str2("something else");
+ev << expr.matches(&str1) << endl; // -> true
+ev << expr.matches(&str2) << endl; // -> false
+\end{cpp}
+
+Or, by using temporaries:
+
+\begin{cpp}
+ev << expr.matches(&cMatchableString("this is a foo")) << endl; // -> true
+ev << expr.matches(&cMatchableString("something else")) << endl; // -> false
+\end{cpp}
 
 
 
@@ -1523,8 +1751,8 @@ Member functions:
 %
 
 \begin{cpp}
-void setCritFunc(KSplitCritFunc _critfunc, double *_critdata);
-void setDivFunc(KSplitDivFunc \_divfunc, double *\_divdata);
+void setCritFunc(KSplitCritFunc critfunc, double *critdata);
+void setDivFunc(KSplitDivFunc divfunc, double *divdata);
 void rangeExtension( bool enabled );
 \end{cpp}
 
@@ -2109,7 +2337,7 @@ byte patterns in the stack area, so it is also subject to the above
 effect with local variables.
 
 
-\section{Defining New NED Functions\new}
+\section{Defining New NED Functions}
 \label{sec:ch-sim-lib:defining-ned-functions}
 
 It is possible to extend the NED language with new functions beyond the

@@ -1,5 +1,42 @@
 2012-12-04  ------ omnetpp-4.3b1 released ------
 
+2012-01-31  Andras Varga
+
+	* Signals implementation now allows static initialization of simsignal_t
+	variables. The signal registration table is no longer cleared between
+	runs, so you can write things like
+
+	  simsignal_t PPP::txBeginSignal = cComponent::registerSignal("txBegin");
+
+	The "first 64 signals are faster" thing has been resolved by introducing
+	an indirection: bit indices are allocated to signals at the first usage
+	(first emit() or subscribe()). This allocation table *is* cleared between
+	runs, so only the signals actually used will have bits allocated to them.
+
+2012-01-18  Zoltan Bojthe
+
+	* Added calculateWeightedSingleShortestPathsTo() to cTopology
+
+2012-01-18  Andras Varga
+
+	* Added hasEncapsulatedPacket() to cPacket
+
+2012-01-14  Andras Varga
+
+	* cModule now caches fullPath string in debug mode; this makes it
+	easier to identify modules while debugging [suggested by Jes Jones]
+
+2012-01-14  Andras Varga
+
+	* Added the cPatternMatcher and cMatchExpression utility classes
+	to the API. cPatternMatcher is a glob-style pattern matching class,
+	adopted to special OMNeT++ requirements. It recognizes wildcards
+	(?, *, **), numeric ranges ({5..10}), numeric index ranges ([5..10]),
+	and supports options such as case sensitive and whole string match.
+	cMatchExpression builds on top of cPatternMatcher and lets you
+	combine patterns with AND, OR, NOT for matching fields of arbitrary
+	objects.
+
 2012-03-13  ------ omnetpp-4.2.2 released ------
 
 2012-01-17  ------ omnetpp-4.2.1 released ------

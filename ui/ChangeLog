@@ -1,5 +1,165 @@
 2012-12-04  ------ omnetpp-4.3b1 released ------
 
+2012-12-17  Rudolf Hornig
+
+	Debugging: the default gdbinit file is now ${opp_root}/misc/gdb/gdbinit.py
+	when a new launch configuration is created.
+
+	Also added support for project-specific gdbinit files: the gdbinit.py
+	script in the project root is now automatically sourced by gdb.
+	Project-specific gdbinit files can be used to initialize pretty printers
+	specific to the project.
+
+2011-11-15  Rudolf Hornig
+
+	Launcher: for the running program, the configuration name is now
+	correctly displayed in the Console view.
+
+2012-12-11  Rudolf Hornig
+
+	Debugging: switched over to the newer DSF debugger framework of CDT.
+
+2012-11-30  Rudolf Hornig, Andras Varga
+
+	IDE: Added support for opening files from the command line, i.e. the command
+
+	  $ omnetpp Aloha.ned Aloha.cc
+
+	will work as expected (opens these files on startup). If necessary,
+	the IDE will open the containing projects if they are closed, and will
+	even offer creating/importing a project if the files are outside all
+	workspace projects.
+
+2012-11-21  Levente Meszaros
+
+	EventLog, Sequence Chart: better error reporting
+
+2012-11-13  Rudolf Hornig
+
+	CDT: disabled Code Analysis by default. It displayed tons of bogus
+	"Semantic Errors" that totally confused novice users.
+
+2012-11-06  Rudolf Hornig
+
+	Command line: the build output is now less verbose (for gcc/mingw).
+	Only the file names are printed when building, not whole command lines.
+
+2012-10-24  Rudolf Hornig
+
+	Productizing: updated to Eclipse 3.8.1, removed our own linuxtools
+	feature, changed to Cocoa framework from Carbon on OS X, moved to Java
+	1.6 as a minimum requirement.
+
+2012-10-16  Levente Meszaros
+
+	Common: avoid showing a hover why any mouse button is pressed
+
+2012-10-15  Tamas Borbely
+
+	Scave: BaseLineChartEditForm: no loss of settings when clicking on lines
+	without pressing Apply first
+
+	The content of the controls are saved temporarily as properties of the
+	selected lines.
+
+2012-10-15  Tamas Borbely
+
+	Scave: fix #604: display names were reset after setting another line
+	property in the Properties dialog
+
+2012-10-10  Tamas Borbely
+
+	Scave: use set display names on legend of scatter charts
+
+2012-10-07  Andras Varga
+
+	IDE: registered "Small font" (appears in the Preferences dialog)
+
+2012-10-11  Andras Varga
+
+	Scave: remember last open tab of Chart Properties dialog
+
+2012-10-13  Andras Varga
+
+	Launcher: fix NPE
+
+2012-08-29  Andras Varga
+
+	Launcher: dialog: fix NPE when processing an omnetpp.ini without section header
+	Launcher: dialog main page: cosmetics on labels
+
+2012-10-09  Levente Meszaros, Andras Varga
+
+	IDE: use StyledText instead of Browser for HTML hover information
+
+	Motivation: The Browser widget is not always available on all platforms
+	(constant xulrunner problems on Linux, etc).
+
+2012-10-09  Levente Meszaros
+
+	IDE: added Full Screen menu item, bound to Ctrl+Shift+F11
+
+2012-07-17  Tamas Borbely
+
+	Scave: major feature: implementation of computed scalars
+
+2012-07-09  Tamas Borbely
+
+	Scave: fix #754: user defined chart area (minX/maxX/minY/maxY) can now
+	be larger than the plot area computed from the data
+
+2012-07-09  Tamas Borbely
+
+	Scave: fix #573/2: added hot keys for switching between the Vectors,
+	Scalars, Histograms, All pages in the Browse Data page
+
+	For switching between Inputs/Browse Data/Dataset pages, Alt+PgUp/PgDown
+	can be used.
+
+2012-07-09  Tamas Borbely
+
+	Scave: fix #573: do not switch to VectorBrowser/Dataset view on page
+	changes in the Browse Data page
+
+2012-06-27  Tamas Borbely
+
+	Scave: add 'logarithmic X axis' option to scatter chart (bug #573)
+
+2012-10-03  Rudolf Hornig
+
+	SeqChart: better error messages for the Goto Simulation Time dialog
+
+2012-03-28  Andras Varga
+
+	IDE: launcher: fix ".cc file cannot be launched" bug. Now we interpret
+	it that as if the file's parent folder was selected.
+
+2012-01-15  Andras Varga
+
+	IDE: added named connections support to:
+	- Property View
+	- Properties Dialog in graphical mode
+	- content assist in NED editor
+
+	TODO: inifile editor
+
+2012-03-26  Andras Varga
+
+	IDE: fix: change remaining KB/MB to KiB/MiB
+
+2012-03-13  Rudolf Hornig
+
+	Scave: removed export support for Matlab script output.
+	The generated script was syntactically incorrect, plus Matlab uses only
+	the first 63 chars as identifiers, and this causes collisions between names.
+
+	CSV should be used as data export for Matlab.
+
+2012-03-12  Rudolf Hornig
+
+	CDT: fix #532: Makemake and Project Features pages are now displayed
+	only if the project is both OMNeT++ and CDT project
+
 2012-03-13  ------ omnetpp-4.2.2 released ------
 
 2012-01-17  ------ omnetpp-4.2.1 released ------
@@ -10,359 +170,366 @@
 
 2011-05-27 Rudolf Hornig
 
-   * Before running a simulation, the IDE will show the command line in
-     the console view to help you execute the same simulation from the
-     command line.
+	* Before running a simulation, the IDE will show the command line in
+	 the console view to help you execute the same simulation from the
+	 command line.
 
-   * CTRL-TAB now works on freshly opened NED files even if you do not explicitly
-     select a simple module. In this case the IDE opens the .h and .cc files
-     associated with the first simple module in the NED file.
+	* CTRL-TAB now works on freshly opened NED files even if you do not explicitly
+	 select a simple module. In this case the IDE opens the .h and .cc files
+	 associated with the first simple module in the NED file.
 
 2011-05-05  ------ omnetpp-4.2b2 released ------
 
 2011-05-03 Levente Meszaros
 
-   * Animator preview: Updated animator plugin. Heavy changes since last version.
+	* Animator preview: Updated animator plugin. Heavy changes since last version.
 
 2011-05-03 Andras Varga
 
-   * Fixes #289: Problem with syntax highlight of xml tags in NED comments
+	* Fixes #289: Problem with syntax highlight of xml tags in NED comments
 
 2011-04-30 Andras Varga
 
-   * Added "Export BuildTester makefile" to the project properties dialog to halp testing projects
-     that define several "Project Features" (i.e. INET-Framework)
+	* Added "Export BuildTester makefile" to the project properties dialog to halp testing projects
+	 that define several "Project Features" (i.e. INET-Framework)
 
 2011-04-21 Andras Varga
 
-   * Ini editor: rearranged tree and default page on the form editor.
-   * Fixed #282, #283. Source/sink example generated by the new project wizard was incorrect.
+	* Ini editor: rearranged tree and default page on the form editor.
+	* Fixed #282, #283. Source/sink example generated by the new project wizard was incorrect.
 
 2011-04-20 Tamas Borbely
 
-   * Ini file editor performance enhancements.
-   * Ini editor: a new INI edior opens with the same page (text/form) that was used last time
+	* Ini file editor performance enhancements.
+	* Ini editor: a new INI edior opens with the same page (text/form) that was used last time
 
 2011-04-14 Andras Varga
 
-   * Makefile Wizard Template fixes
-   * Added support for the new xml() NED function
+	* Makefile Wizard Template fixes
+	* Added support for the new xml() NED function
 
 2011-04-08 Andras Varga
 
-   * Implemented conditional submodule support (including content assist)
+	* Implemented conditional submodule support (including content assist)
 
 2011-04-02 Andras Varga
 
-   * NED Editor: Supporting default values for parametric module and channel types.
-   * Added support for excluding NED packages
-   * Implemented "Project Features" feature.
+	* NED Editor: Supporting default values for parametric module and channel types.
+	* Added support for excluding NED packages
+	* Implemented "Project Features" feature.
 
 2011-04-01 Levente Meszaros
 
-   * EventLog and Tkenv: several fixes to support the new animation component.
-   * EventLogView: changed some wording, addes additional fields to be displayed in the table
+	* EventLog and Tkenv: several fixes to support the new animation component.
+	* EventLogView: changed some wording, addes additional fields to be displayed in the table
 
 2011-03-31 Andras Varga
 
-   * Fixes on Project Property Makamake page. Apply button now works correctly.
+	* Fixes on Project Property Makamake page. Apply button now works correctly.
 
 2011-03-29 Tamas Borbely
 
-   * Analysis tool: when double-clicking on an item on the InputsPage, filter will be set to 'All'
+	* Analysis tool: when double-clicking on an item on the InputsPage, filter will be set to 'All'
 
 2011-03-28 Levente Meszaros
 
-   * NED Editor: Double-click now opens the NED type instead of the Properties dialog.
+	* NED Editor: Double-click now opens the NED type instead of the Properties dialog.
 
 2011-03-24 Levente Meszaros
 
-   * SequenceChart filter dialog enhancements
+	* SequenceChart filter dialog enhancements
 
 2011-03-17 Levente Meszaros
 
-   * Layouter in IDE and in Tkenv now produces the same result.
+	* Layouter in IDE and in Tkenv now produces the same result.
 
 2011-03-04 Tamas Borbely
 
-   * Ini file lines now contain links also to modules, not just to the parameters
-   * Copy action added to the Module Parameters View
+	* Ini file lines now contain links also to modules, not just to the parameters
+	* Copy action added to the Module Parameters View
 
 2011-03-04 Rudolf Hornig
 
-   * IDE Updated to Eclipse 3.6.2
+	* IDE Updated to Eclipse 3.6.2
 
 2011-03-04 Levente Meszaros
 
-   * EventLog format changes for animation support.
+	* EventLog format changes for animation support.
 
 2011-02-23  ------ omnetpp-4.2b1 released ------
 
 2011-02-05 Andras Varga
 
-   * Several performance optimizations for the NED Editor. It must be able to open networks containing
-     around 10.000 submodules.
+	* Several performance optimizations for the NED Editor. It must be able to open networks containing
+	around 10.000 submodules.
 
-   * Performance: NED validation is done now in a background thread
+	* Performance: NED validation is done now in a background thread
 
 2011-02-03 Rudolf Hornig
 
-   * Graphical editor: Figure borders and outlines now correctly follow the zoom level.
+	* Graphical editor: Figure borders and outlines now correctly follow the zoom level.
 
-   * Graphical editor: The resize/move feedback figures have been changed to transparent blue from a simple outline.
+	* Graphical editor: The resize/move feedback figures have been changed to transparent blue from a simple outline.
 
 2011-02-03 Levente Meszaros
 
-   * Added Technology Preview version of the network animator. It works only on .elog files smaller than
-     10Mb. You can open it by right clicking on an .elog file and selection "Open with...".
-     This implementation is NOT optimized for larger files.
+	* Added Technology Preview version of the network animator. It works only on .elog files
+	smaller than 10Mb. You can open it by right clicking on an .elog file and selection "Open with...".
+	This implementation is NOT optimized for larger files.
 
 2011-02-01 Rudolf Hornig
 
-   * NED Files are refreshed now before opening. No more "file is out of sync" message if the opened
-     ned file was modified outside of the IDE.
+	* NED Files are refreshed now before opening. No more "file is out of sync" message if the opened
+	NED file was modified outside of the IDE.
 
 2011-02-01 Andras Varga
 
-   * Simulation launcher: Size of the popup information tooltip is limited when displaying all the runs.
-     (i.e. whan the parameter space is too big)
+	* Simulation launcher: Size of the popup information tooltip is limited when displaying all the runs.
+	(i.e. whan the parameter space is too big)
 
 2011-01-31 Levente Meszaros
 
-   * Added the possibility to go to a specific simulation time in event log view by specifying
-     relative values (+-) in the dialog (units are supported)
+	* Added the possibility to go to a specific simulation time in event log view by specifying
+	relative values (+-) in the dialog (units are supported)
 
-   * In sequence chart added 'Goto simulation time' and 'Goto event number' in the context menu
+	* In sequence chart added 'Goto simulation time' and 'Goto event number' in the context menu
 
-   * Sequence chart: the current position is shown in the gutter
+	* Sequence chart: the current position is shown in the gutter
 
-   * Completion proposals in inner types after @ are working properly in ned text editor
+	* Completion proposals in inner types after @ are working properly in ned text editor
 
 2011-01-28 Andras Varga
 
-   * Ned type selection dialog now optionally shows the defining projects for the types.
+	* NED type selection dialog now optionally shows the defining projects for the types.
 
 2011-01-24 Rudolf Hornig
 
-   * Context menu in graphical editor is reorganized for better and easier access of the
-     most used functions.
+	* Context menu in graphical editor is reorganized for better and easier access of the
+	 most used functions.
 
-   * Linux tools now included in the build. It allows to profile the simulation using VALGRIND
-     on LINUX systems. (Windows and Mac builds does not have this capability). Use the "Profile as"
-     menu item in the context menu of the project directory.
+	* Linux tools now included in the build. It allows to profile the simulation using Valgrind
+	on Linux systems. (Windows and Mac builds does not have this capability). Use the "Profile as"
+	menu item in the context menu of the project directory.
 
 2011-01-21 Rudolf Hornig
 
-   * Go to C++ definiton (CTRL-TAB) now correctly finds the appropriate C++ class even if the
-     NED type is extending another type or it is using the @class property. (bug #238)
+	* Go to C++ definiton (CTRL-TAB) now correctly finds the appropriate C++ class even if the
+	NED type is extending another type or it is using the @class property. (bug #238)
 
 2011-01-20 Rudolf Hornig
 
-   * In graphical editor the previous action used with double click (go to type or supertype)
-     has ben moved to the F3 key. It is also available from the context menu.
+	* In graphical editor the previous action used with double click (go to type or supertype)
+	has ben moved to the F3 key. It is also available from the context menu.
 
 2011-01-20 Andras Varga
 
-   * Added a brand new Property dialog that can be accessed by double clicking on the module or type.
-     Type, name, vector size and graphical properties are supported. A preview is shown at the bottom
-     of the dialog.
+	* Added a brand new Property dialog that can be accessed by double clicking on the module or type.
+	Type, name, vector size and graphical properties are supported. A preview is shown at the bottom
+	of the dialog.
 
-   * Enhanced Ned Type Selection dialog (CTRL-SHIFT-N)
+	* Enhanced Ned Type Selection dialog (CTRL-SHIFT-N)
 
 2011-01-18 Rudolf Hornig
 
-   * The package name for the ned file is shown at the top in the graphical editor
+	* The package name for the ned file is shown at the top in the graphical editor
 
-   * Support for self connections in graphical editor as an arch in the upper right corner
+	* Support for displaying self-connections in the graphical editor as
+	an arch in the upper right corner
 
 2011-01-13 Rudolf Hornig
 
-   * Connections in graphical editor now have an error marker to show possible problems.
+	* Connections in graphical editor now have an error marker to show possible problems.
 
-   * Validator used when entering type names (in property view) now correctly support inner types and packages
+	* Validator used for entering type names (in the Property View) now correctly
+	supports inner types and packages
 
 2011-01-07 Rudolf Hornig
 
-   * NED Editor now suppoerts the drag and drop operations of inner types (move an inner type to top level
-     or the other way around). Types droppend inside the submodule area create a submodule with that type.
-     Types dropped on the title area of the compound module create an inner type.
+	* NED Editor now supports drag-and-drop operations of inner types (moving
+	an inner type to top level, or the other way around). Types dropped inside
+	the submodule area create a submodule with that type. Types dropped on the
+	title area of the compound module create an inner type.
 
 2011-01-06 Andras Varga
 
-   * Unit name now can be set in property editor for compound modules
+	* Unit name now can be set in property editor for compound modules
 
 2011-01-04 Andras Varga
 
-   * Compound module border now can be set to 0 width
+	* Compound module border now can be set to 0 width
 
 2011-01-04 Rudolf Hornig
 
-   * In graphical editor inner types can be created by dropping a NED Type on the title of the compound module
+	* In the graphical editor, inner types can now be created by dropping
+	a NED type on the title of the compound module
 
 2011-01-03 Rudolf Hornig
 
-   * The simulation process is now started by using relative paths. The command line displayed in the console
-   when the process start has failed is much readeble now.
+	* The simulation process is now started by using relative paths. The
+	command line displayed in the console when the process start has
+	failed is much more readable now.
 
 2010-12-22 Rudolf Hornig
 
-   * Property cell editors for type, liketype, extends properties on simple modules, compound modules, channels
-   submodules and connections are now displaying all the possible types correctly. Cells contents are validated
-   so no-existent types cannot be used.
+	* Property cell editors for type, liketype, extends properties on simple
+	modules, compound modules, channels, submodules and connections are now
+	displaying all the possible types correctly. Cells contents are validated
+	so nonexistent types cannot be used.
 
 2010-12-17 Rudolf Hornig
 
-   * Fixed #230. The values for Type, Like and Extends property on a submodule/connections/or ned type (top-level or inner) 
-   are initialized correctly. They contain correct values according to the current lookup context.
+	* Fixed #230. The values for Type, Like and Extends property on a submodule/connections/or
+	NED type (top-level or inner) are initialized correctly. They contain correct values according
+	to the current lookup context.
 
-   * Cloning or creating new inner types using the graphical editor now generates unique names correctly
+	* Cloning or creating new inner types using the graphical editor now generates unique names correctly
 
 2010-12-16 Rudolf Hornig
 
-   * Changed the palette entry ordering in NED editor to include inner types in the current file on the top.
+	* Changed the palette entry ordering in NED editor to include inner types in the current file on the top.
 
 2010-12-15 Rudolf Hornig
 
-   * Fixed #229. In NED Editor: Inherited display property values can be cleared now using "-" as a value.
-   It is possible now to remove an icon even if the ancestor specified one.
+	* Fixed #229. In NED Editor: Inherited display property values can be cleared now using "-" as a value.
+	It is possible now to remove an icon even if the ancestor specified one.
 
 2010-12-14 Rudolf Hornig
 
-   * Fixed the tooltip of the "Display property" in the properties view. No longer displays null[0]
+	* Fixed the tooltip of the "Display property" in the properties view. No longer displays null[0]
 
 2010-12-13 Rudolf Hornig
 
-   * Fixed bug#224. NPEs when cloning submodules with connections which are defined in an ancestor module.
-   * Fixed bug#227. NPE on upinning a submodule
+	* Fixed bug#224. NPEs when cloning submodules with connections which are defined in an ancestor module.
+	* Fixed bug#227. NPE on upinning a submodule
 
-2010-12-11 Rudolf Hornig 
+2010-12-11 Rudolf Hornig
 
-    * Added plugin customization to force workspace refresh on IDE startup.
+	* Added plugin customization to force workspace refresh on IDE startup.
 
-2010-12-11 Rudolf Hornig 
+2010-12-11 Rudolf Hornig
 
-    * Fixed bug#213. NPE occurred in NedEditorLauncher if the filesystem and the workspace got out of sync.
+	* Fixed bug#213. NPE occurred in NedEditorLauncher if the filesystem and the workspace got out of sync.
 
-2010-12-11 Andras Varga 
+2010-12-11 Andras Varga
 
-    * IDE: fix of bug #145: Open NED Type dialog comes up empty on first invocation
-    NedTypeSelectionDialog now contains a INedChangeListener, and any NED
-    change triggers a delayed update of the displayed list.
+	* IDE: fix of bug #145: Open NED Type dialog comes up empty on first invocation
+	NedTypeSelectionDialog now contains a INedChangeListener, and any NED
+	change triggers a delayed update of the displayed list.
 
-    * IDE: fix for bug #223: bogus "X seems to be a hand-written makefile" message
-    when the makefile was deleted from the disk behind the IDE's back
+	* IDE: fix for bug #223: bogus "X seems to be a hand-written makefile" message
+	when the makefile was deleted from the disk behind the IDE's back
 
-2010-12-10 Rudolf Hornig 
+2010-12-10 Rudolf Hornig
 
-    * Changed the default OMNeT++ source code formatter profile to match the current INET coding convention.
-    Profile is using only spaces instead of tabs for indentation.
+	* Changed the default OMNeT++ source code formatter profile to match the current INET coding convention.
+	Profile is using only spaces instead of tabs for indentation.
 
-2010-12-10 Andras Varga 
+2010-12-10 Andras Varga
 
-    * IDE: fix for bug #222: Chinese comments become gibberish in NED files.
-    Solution: wherever possible, save files in the file's own encoding
-    (i.e. charset), using content.getBytes(ifile.getCharset()).
+	* IDE: fix for bug #222: Chinese comments become gibberish in NED files.
+	Solution: wherever possible, save files in the file's own encoding
+	(i.e. charset), using content.getBytes(ifile.getCharset()).
 
-2010-12-06 Rudolf Hornig 
+2010-12-06 Rudolf Hornig
 
-    * IDE: Added a "Clean Selected Projects" menuitem to the project explorer context menu. 
-    This item DOES NOT clean referred projects.
+	* IDE: Added a "Clean Selected Projects" menuitem to the project explorer context menu.
+	This item DOES NOT clean referred projects.
 
-2010-11-10 Rudolf Hornig 
+2010-11-10 Rudolf Hornig
 
-    * Support for Profiling (in addition to Debug and Run modes). (enable to use linuxtools with valgrind)
+	* Support for Profiling (in addition to Debug and Run modes). (enable to use linuxtools with valgrind)
 
-2010-10-19 Rudolf Hornig 
+2010-10-19 Rudolf Hornig
 
-    * MachO64 parser support added for new CDT projects. Updated error parsers provided by CDT 7.x.
+	* MachO64 parser support added for new CDT projects. Updated error parsers provided by CDT 7.x.
 
-2010-09-30 Rudolf Hornig 
+2010-09-30 Rudolf Hornig
 
-    * Updated the base system to Eclipse 3.6.1
+	* Updated the base system to Eclipse 3.6.1
 
-2010-09-22 Andras Varga 
+2010-09-22 Andras Varga
 
-    * IDE: fixed resolution of parametric submodule types in NedTreeTraversal
+	* IDE: fixed resolution of parametric submodule types in NedTreeTraversal
 
-    * IDE: refined the resolution of parametric submodule types
-    The actual type needs to be resolved in the project of the inifile,
-    not in the project of the compound module that contains the submodule
-    (for example, udpApp's type need not be in StandardHost's project INET,
-    it may also come from a project that has INET as dependency)
-
-2010-07-13 Tamas Borbely
-
-   * Scave: Line type on vector chart did get reflected in the Chart Properties dialog (issue 182).
-   When the line property has the same value for each selected line in the Properties dialog,
-   then that value is displayed in the control, instead of 'No change'.
-
-   * Scave: Empty chart if refreshing a temp chart after re-running simulation (issue 186).
-   When creating a temp chart, runs was identified by runname, now they are identified
-   by file/configname/runnumber. 'Add Selected Data to Dataset' and 'Convert to Dataset'
-   actions also use the file/configname/runnumber fields for consistency.
-
-2010-07-19 Levente Meszaros 
-
-    * SeqChart: Fixed a NPE.
-
-    * SeqChart: fix handling show/hide [self] message reuses toggle buttons
-    There was some confusion between those buttons, now they toggle showing/hidign
-    only for those arrows that they represent.
-
-    * SeqChart: fix message reuse arrows when affected by a module method call
-    The end point for a message reuse was wrong. It used the event's module of
-    the begin send entry instead of the context module to determine the Y coordinate.
+	* IDE: refined the resolution of parametric submodule types
+	The actual type needs to be resolved in the project of the inifile,
+	not in the project of the compound module that contains the submodule
+	(for example, udpApp's type need not be in StandardHost's project INET,
+	it may also come from a project that has INET as dependency)
 
 2010-07-13 Tamas Borbely
 
-    * fix issue 180: fixed assert when double coordinate is +-Infinite
+	* Scave: Line type on vector chart did get reflected in the Chart Properties dialog (issue 182).
+	When the line property has the same value for each selected line in the Properties dialog,
+	then that value is displayed in the control, instead of 'No change'.
 
-    * fix issue 196: use file/configname/runnumber to identify runs of temp chart data
+	* Scave: Empty chart if refreshing a temp chart after re-running simulation (issue 186).
+	When creating a temp chart, runs was identified by runname, now they are identified
+	by file/configname/runnumber. 'Add Selected Data to Dataset' and 'Convert to Dataset'
+	actions also use the file/configname/runnumber fields for consistency.
+
+2010-07-19 Levente Meszaros
+
+	* SeqChart: Fixed a NPE.
+
+	* SeqChart: fix handling show/hide [self] message reuses toggle buttons
+	There was some confusion between those buttons, now they toggle showing/hidign
+	only for those arrows that they represent.
+
+	* SeqChart: fix message reuse arrows when affected by a module method call
+	The end point for a message reuse was wrong. It used the event's module of
+	the begin send entry instead of the context module to determine the Y coordinate.
 
 2010-07-13 Tamas Borbely
 
-    * BaseLineChartEditForm: fix issue 182
-    When the line property has the same value for each selected line,
-    then that value is displayed in the control instead of 'No change'.
+	* fix issue 180: fixed assert when double coordinate is +-Infinite
+
+	* fix issue 196: use file/configname/runnumber to identify runs of temp chart data
+
+2010-07-13 Tamas Borbely
+
+	* BaseLineChartEditForm: fix issue 182
+	When the line property has the same value for each selected line,
+	then that value is displayed in the control instead of 'No change'.
 
 2010-07-12 Tamas Borbely
 
-    * small layout fix in BaseLineChartEditForm
+	* small layout fix in BaseLineChartEditForm
 
-2010-07-08 Andras Varga 
+2010-07-08 Andras Varga
 
-    * Scave: fix focus problems (bug #188) by using the new FocusManager class
+	* Scave: fix focus problems (bug #188) by using the new FocusManager class
 
-2010-07-07 Andras Varga 
+2010-07-07 Andras Varga
 
-    * Scave: drawing timeouts come now from preferences
+	* Scave: drawing timeouts come now from preferences
 
-    * Scave: time limit facility for line chart plotting
+	* Scave: time limit facility for line chart plotting
 
-    * Scave: removed smartMode in LinePlot as it was responsible for bug #181
-    Turning off symbols for DOTS line type resulted in empty chart.
-    http://dev.omnetpp.org/bugs/view.php?id=181
+	* Scave: removed smartMode in LinePlot as it was responsible for bug #181
+	Turning off symbols for DOTS line type resulted in empty chart.
+	http://dev.omnetpp.org/bugs/view.php?id=181
 
-    * SeqChart: axis ordering dialog layout improved: buttons move to the right
+	* SeqChart: axis ordering dialog layout improved: buttons move to the right
 
-    * SeqChart: fix: "Show self-messages" button (blue arched arrow) also toggled 
-    self-reuse (green) arrows on the chart
+	* SeqChart: fix: "Show self-messages" button (blue arched arrow) also toggled
+	self-reuse (green) arrows on the chart
 
-2010-06-23 Levente Meszaros 
+2010-06-23 Levente Meszaros
 
-    * Sequence Chart: Fix for find text bug. Find text did not work in filtered eventlogs.
+	* Sequence Chart: Fix for find text bug. Find text did not work in filtered eventlogs.
 
-    * Cleanup the show/hide flags related to message send/reuse arrows.
-    A couple of renames and minor tweaks, namely arrows are categorized along
-    two axes: reuse/send, self/other.
+	* Cleanup the show/hide flags related to message send/reuse arrows.
+	A couple of renames and minor tweaks, namely arrows are categorized along
+	two axes: reuse/send, self/other.
 
-2010-06-22 Andras Varga 
+2010-06-22 Andras Varga
 
-    * Scave: fix unreadable (black-on-black) filter combo dropdown on ubuntu 10.04
-    in Ubuntu 10.04: in the default theme, combo editfield is black-on-white
-    and dropdown list is white-on-black, so calling setForeground() on the combo
-    will inevitably make one of them unreadable. Workaround: do NOT call
-    getForeground().
+	* Scave: fix unreadable (black-on-black) filter combo dropdown on ubuntu 10.04
+	in Ubuntu 10.04: in the default theme, combo editfield is black-on-white
+	and dropdown list is white-on-black, so calling setForeground() on the combo
+	will inevitably make one of them unreadable. Workaround: do NOT call
+	getForeground().
 
 2010-06-11  ------ omnetpp-4.1 released ------
 
@@ -374,36 +541,36 @@
 
 2009-08-03  Levente Meszaros
 
-    * Connection chooser brings up channel chooser when using the default connection tool and there are matching labels between the connected gates and an available channel type.
-    * Palette shows NED types in two distinct groups: the first contains those which are related to the current editor ordered by score, the second contains all available types ordered by name
+	* Connection chooser brings up channel chooser when using the default connection tool and there are matching labels between the connected gates and an available channel type.
+	* Palette shows NED types in two distinct groups: the first contains those which are related to the current editor ordered by score, the second contains all available types ordered by name
 
 2009-07-17  Levente Meszaros
 
-    * Text editor provides new context menu items to infer/distribute gate labels.
+	* Text editor provides new context menu items to infer/distribute gate labels.
 
 2009-07-15  Levente Meszaros
 
-    * Palette provides regexp based substring filtering for qualified NED type names and @label properties.
-    * Palette sorts submodules based on what is actually already used, what could be connected and @contains properties.
+	* Palette provides regexp based substring filtering for qualified NED type names and @label properties.
+	* Palette sorts submodules based on what is actually already used, what could be connected and @contains properties.
 
 2009-07-14  Levente Meszaros
 
-    * Added support for matching @labels properties of gates in the connection chooser popup menu.
+	* Added support for matching @labels properties of gates in the connection chooser popup menu.
 
 2009-07-13  Levente Meszaros
 
-    * Added validation to parameters dialog, reserved NED words cannot be parameter names, and parameter values must be valid expressions.
+	* Added validation to parameters dialog, reserved NED words cannot be parameter names, and parameter values must be valid expressions.
 
 2009-06-09  Levente Meszaros
 
-    * SEQCHART: Added sequence chart support to display module method calls as vertical orange arrows.
-    The arrow's label is the method's name, tooltips are also available.
+	* SEQCHART: Added sequence chart support to display module method calls as vertical orange arrows.
+	The arrow's label is the method's name, tooltips are also available.
 
-    * Some message send arrows were drawn incorrectly from the caller module due to not taking
-    into consideration module method calls. From now on these kind of arrows might start from
-    any point on a module's axis, even if there was no event at that simulation time in the
-    callee module.
+	* Some message send arrows were drawn incorrectly from the caller module due to not taking
+	into consideration module method calls. From now on these kind of arrows might start from
+	any point on a module's axis, even if there was no event at that simulation time in the
+	callee module.
 
-    * Store various show/hide flags in sequence chart eventlog configuration files.
+	* Store various show/hide flags in sequence chart eventlog configuration files.
 
 2009-03-12  ------ omnetpp-4.0 released ------

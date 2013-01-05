@@ -21,6 +21,20 @@ Legend:
 (i)     information
 
 
+OMNeT++ 4.3
+~~~~~~~~~~~
+
+(+)     Signals implementation now allows static initialization of simsignal_t
+        variables, i.e. the signal registration table is no longer cleared
+        between simulation runs.
+
+(+)     cTopology: added calculateWeightedSingleShortestPathsTo()
+
+(+)     cPacket: added hasEncapsulatedPacket()
+
+(+)     cPatternMatcher, cMatchExpression: new utility classes
+
+
 OMNeT++ 4.2
 ~~~~~~~~~~~
 

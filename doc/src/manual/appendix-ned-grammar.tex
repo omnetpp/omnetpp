@@ -616,9 +616,14 @@ channelspec
         ;
 
 channelspec\_header
+        : opt\_channelname
+        | opt\_channelname dottedname
+        | opt\_channelname likeexpr LIKE dottedname
+        ;
+
+opt\_channelname
         :
-        | dottedname
-        | likeexpr LIKE dottedname
+        | NAME ':'
         ;
 
 condition

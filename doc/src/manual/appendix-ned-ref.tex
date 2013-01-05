@@ -334,6 +334,8 @@ subclassed from \cclass{cChannel}. The way of associating the
 NED type with the C++ class is described in section
 \ref{ch-ned-ref:sec:resolving-cpp-class}.
 
+The \ttt{@defaultname} property of a channel type determines the default name
+of the channel object when used in a connection.
 
 
 \subsection{Module Interfaces}
@@ -981,6 +983,12 @@ statically or parametrically.
 
 A connection may have a body (a curly brace delimited block) for setting
 properties and/or parameters of the channel.
+
+A connection syntax allows one to specify a name for the channel object.
+When not specified, the channel name will be taken from the \ttt{@defaultname}
+property of the channel type; when there is no such property, it will be
+\ttt{"channel"}. Custom connection names can be useful for easier addressing of
+channel objects when assigning parameters using patterns.
 
 See subsequent sections for details.
 
