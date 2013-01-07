@@ -19,6 +19,8 @@
 .project
 .cproject
 lex.*yy.cc
+/msys
+/mingw
 /config.log
 /config.status
 autom4te.cache/
