@@ -15,7 +15,7 @@
 # and http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=144087&SiteID=1&mode=1
 #
 
-$quiet = 0;
+$quiet = 1;
 $verbose = 0;
 
 $DUMPBIN = "dumpbin";

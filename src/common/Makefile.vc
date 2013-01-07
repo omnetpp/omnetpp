@@ -54,7 +54,7 @@ COPTS= $(COPTS) -DCOMMON_EXPORT
 .SUFFIXES : .cc
 
 {.}.cc{$O}.obj:
-	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+	$(Q)$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
 
 #
@@ -63,42 +63,50 @@ COPTS= $(COPTS) -DCOMMON_EXPORT
 all : $O/$(LIBNAME)$(LIB_SUFFIX)
 
 $O/$(LIBNAME).lib : $(OBJS) $L
-	$(AR) /out:"$@" $(OBJS)
-	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
-	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
+	@echo Creating LIB: $@
+	$(Q)$(AR) /out:"$@" $(OBJS)
+	$(Q)copy $(O:/=\)\$(LIBNAME).lib $(L:/=\) 1>nul
+	-$(Q)copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 1>nul
 
 $O/$(LIBNAME).dll : $(OBJS) $L
-	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS) $(LDFLAGS)
-	copy $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\)
-	-copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
-	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
-	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
+	@echo Creating DLL: $@
+	$(Q)$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS) $(LDFLAGS)
+	$(Q)copy $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\) 1>nul
+	-$(Q)copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 1>nul
+	$(Q)copy $(O:/=\)\$(LIBNAME).lib $(L:/=\) 1>nul
+	-$(Q)copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 1>nul
 
 expression.tab.hh expression.tab.cc : expression.y
-	$(YACC:/=\) -o expression.tab.cc -p expressionyy -d expression.y
+	$(qecho) YACC: $@
+	$(Q)$(YACC:/=\) -o expression.tab.cc -p expressionyy -d expression.y
 
 lex.expressionyy.cc: expression.lex
-	$(LEX:/=\) -olex.expressionyy.cc -Pexpressionyy expression.lex
-	$(FIXFLEX) lex.expressionyy.cc
+	$(qecho) LEX: $@
+	$(Q)$(LEX:/=\) -olex.expressionyy.cc -Pexpressionyy expression.lex
+	$(Q)$(FIXFLEX) lex.expressionyy.cc
 
 matchexpression.tab.hh matchexpression.tab.cc : matchexpression.y
-	$(YACC:/=\) -o matchexpression.tab.cc --no-lines -p matchexpressionyy -d matchexpression.y
+	$(qecho) YACC: $@
+	$(Q)$(YACC:/=\) -o matchexpression.tab.cc --no-lines -p matchexpressionyy -d matchexpression.y
 
 $(OBJS): $O
 
 $O $L:
-	md $(@:/=\)
+	@md $(@:/=\)
 
 doc:
-	$(DOXYGEN:/=\) doxy.cfg
+	@echo Generating documentation...
+	$(Q)$(DOXYGEN:/=\) doxy.cfg
 
 depend: $(GENERATED_SOURCES)
-	$(MAKEDEPEND) -I. -fMakefile.vc -P^$O/ -- *.cc
+	$(qecho) Creating dependencies...
+	$(Q)$(MAKEDEPEND) -I. -fMakefile.vc -P^$O/ -- *.cc
 
 clean:
-	-del $(GENERATED_SOURCES) 2>nul
-	-rmdir /s /q $(O:/=\) 2>nul
-	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
+	$(qecho) Cleaning...
+	-$(Q)del /q $(GENERATED_SOURCES) 2>nul
+	-$(Q)rmdir /s /q $(O:/=\) 2>nul
+	-$(Q)del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/bigdecimal.obj: bigdecimal.cc \

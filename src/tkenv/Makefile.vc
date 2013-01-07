@@ -44,10 +44,10 @@ TKENV_EMBED_SUFFIX=
 .SUFFIXES : .cc .c
 
 {.}.cc{$O}.obj:
-	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+	$(Q)$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
 {.}.c{$O}.obj:
-	$(CXX) /Fo"$@" $(COPTS) /c $<
+	$(Q)$(CXX) /Fo"$@" $(COPTS) /c $<
 
 #
 # Targets
@@ -57,42 +57,47 @@ all: $(TKENV_IF_POSSIBLE)
 tkenv : $O/$(LIBNAME)$(LIB_SUFFIX)
 
 $O/$(LIBNAME).lib : $(OBJS) $L
-	$(AR) /out:"$@" $(OBJS)
-	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
-	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
+	@echo Creating LIB: $@
+	$(Q)$(AR) /out:"$@" $(OBJS)
+	$(Q)copy $(O:/=\)\$(LIBNAME).lib $(L:/=\) 1>nul
+	-$(Q)copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 1>nul
 
 $O/$(LIBNAME).dll : $(OBJS) $L
-	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS) $(LDFLAGS)
-	copy $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\)
-	-copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
-	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
-	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
+	@echo Creating DLL: $@
+	$(Q)$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS) $(LDFLAGS)
+	$(Q)copy $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\) 1>nul
+	-$(Q)copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 1>nul
+	$(Q)copy $(O:/=\)\$(LIBNAME).lib $(L:/=\) 1>nul
+	-$(Q)copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 1>nul
 
 $O/tkenv.obj : tkenv.cc
-	$(CXX) -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR:\=/)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH:\=/)\"" $(COPTS) /c /Fo"$@" /Tp tkenv.cc
+	$(Q)$(CXX) -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR:\=/)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH:\=/)\"" $(COPTS) /c /Fo"$@" /Tp tkenv.cc
 
 $O/tkenv-e.obj : tkenv.cc tclcode.cc
-	$(CXX) -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH:\=/)\"" $(COPTS) /c /Fo"$@" /Tp tkenv.cc
+	$(Q)$(CXX) -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH:\=/)\"" $(COPTS) /c /Fo"$@" /Tp tkenv.cc
 
 tclcode.cc : *.tcl tcl2c.pl
-	$(PERL) tcl2c.pl tclcode.cc *.tcl
+	$(qecho) Running tcl2c.pl
+	$(Q)$(PERL) tcl2c.pl tclcode.cc *.tcl
 
 $(OBJS): $O
 
 $O $L:
-	md $(@:/=\)
+	@md $(@:/=\)
 
 missing-dependency:
 	@echo '  *** No Tcl/Tk installation found -- skipping Tkenv.'
 	@echo '  *** Install it, and edit configuser.vc accordingly.'
 
 depend:
-	$(MAKEDEPEND) -I../../include -fMakefile.vc -P^$O/ -- *.cc *.c
+	$(qecho) Creating dependencies...
+	$(Q)$(MAKEDEPEND) -I../../include -fMakefile.vc -P^$O/ -- *.cc *.c
 
 clean:
-	-del tclcode.cc
-	-rmdir /s /q $(O:/=\) 2>nul
-	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
+	$(qecho) Cleaning...
+	-$(Q)del tclcode.cc 2>nul
+	-$(Q)rmdir /s /q $(O:/=\) 2>nul
+	-$(Q)del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/arrow.obj: arrow.cc \

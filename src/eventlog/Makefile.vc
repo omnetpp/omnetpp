@@ -41,7 +41,7 @@ COPTS= $(COPTS) -DEVENTLOG_EXPORT
 .SUFFIXES : .cc
 
 {.}.cc{$O}.obj:
-	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+	$(Q)$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
 #
 # Targets
@@ -49,42 +49,48 @@ COPTS= $(COPTS) -DEVENTLOG_EXPORT
 all : eventlogentries.cc $O/$(LIBNAME)$(LIB_SUFFIX) $O/eventlogtool.exe
 
 eventlogentries.cc eventlogentries.h eventlogfactory.cc : eventlogentries.txt eventlogentries.pl
-	$(PERL) eventlogentries.pl >nul
+	$(qecho) Running eventlogentries.pl
+	$(Q)$(PERL) eventlogentries.pl >nul
 
 $O/$(LIBNAME).lib : $(OBJS) $L
-	$(AR) /out:"$@" $(OBJS)
-	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
-	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
+	@echo Creating LIB: $@
+	$(Q)$(AR) /out:"$@" $(OBJS)
+	$(Q)copy $(O:/=\)\$(LIBNAME).lib $(L:/=\) 1>nul
+	-$(Q)copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 1>nul
 
 $O/$(LIBNAME).dll : $(OBJS) $L
-	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS) $(LDFLAGS)
-	copy $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\)
-	-copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
-	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
-	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
+	@echo Creating DLL: $@
+	$(Q)$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS) $(LDFLAGS)
+	$(Q)copy $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\) 1>nul
+	-$(Q)copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 1>nul
+	$(Q)copy $(O:/=\)\$(LIBNAME).lib $(L:/=\) 1>nul
+	-$(Q)copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 1>nul
 
 $O/eventlogtool.exe : $O/eventlogtool.obj $O/$(LIBNAME)$(LIB_SUFFIX)
-	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/eventlogtool.obj $(O:/=\)\$(LIBNAME).lib $(IMPLIBS)
-	copy $(O:/=\)\eventlogtool.exe $(OMNETPP_BIN_DIR:/=\)
-	-copy $(O:/=\)\eventlogtool.exe.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
+	@echo Creating EXE: $@
+	$(Q)$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/eventlogtool.obj $(O:/=\)\$(LIBNAME).lib $(IMPLIBS)
+	$(Q)copy $(O:/=\)\eventlogtool.exe $(OMNETPP_BIN_DIR:/=\) 1>nul
+	-$(Q)copy $(O:/=\)\eventlogtool.exe.manifest $(OMNETPP_BIN_DIR:/=\) 1>nul
 
 $O/eventlogtool.obj : eventlogtool.cc $O
 	@: Note: not in OBJS because eventlogtool.cc must be compiled *without* -DEVENTLOG_EXPORT
-	$(CXX) $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /c /Fo"$@" /Tp eventlogtool.cc
+	$(Q)$(CXX) $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /c /Fo"$@" /Tp eventlogtool.cc
 
 $(OBJS) : $O
 
 $O $L:
-	md $(@:/=\)
+	@md $(@:/=\)
 
 depend: $(GENERATED_SOURCES)
-	$(MAKEDEPEND) -I. -fMakefile.vc -P^$O/ -- *.cc
+	$(qecho) Creating dependencies...
+	$(Q)$(MAKEDEPEND) -I. -fMakefile.vc -P^$O/ -- *.cc
 
 clean:
-	-del -f $(GENERATED_SOURCES) 2>nul
-	-rmdir /s /q $(O:/=\) 2>nul
-	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
-	-cd $(OMNETPP_BIN_DIR:/=\) && del /q eventlogtool.exe* 2>nul
+	$(qecho) Cleaning...
+	-$(Q)del -f $(GENERATED_SOURCES) 2>nul
+	-$(Q)rmdir /s /q $(O:/=\) 2>nul
+	-$(Q)del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
+	-$(Q)cd $(OMNETPP_BIN_DIR:/=\) && del /q eventlogtool.exe* 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/event.obj: event.cc \
