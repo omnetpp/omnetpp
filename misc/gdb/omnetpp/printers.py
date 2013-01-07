@@ -18,6 +18,9 @@ try:
 except ImportError:
     _use_gdb_pp = False
 
+# initially enabled/disabled the omnetpp pretty printers
+omnetpp_pp_enabled = True
+
 ##############################################
 
 omnetpp_printer_debug = False #or True
@@ -162,10 +165,11 @@ class typeinfoPrinter:
 # "SubPrettyPrinter" protocol from gdb.printing.
 class OppSubPrinter(object):
     def __init__(self, name, function):
+        global omnetpp_pp_enabled
         super(OppSubPrinter, self).__init__()
         self.name = name
         self.function = function
-        self.enabled = True
+        self.enabled = omnetpp_pp_enabled
 
     def invoke(self, value):
         if not self.enabled:
@@ -176,13 +180,16 @@ class OppSubPrinter(object):
 # gdb.printing.  It can also be used directly as an old-style printer.
 class OppPrinter(object):
     def __init__(self, name):
+        global omnetpp_pp_enabled
         super(OppPrinter, self).__init__()
         self.name = name
+        self.subprinters = []   # used by 'gdb command: info pretty-printer'
         self.lookup = {}
-        self.enabled = True
+        self.enabled = omnetpp_pp_enabled
 
     def add(self, name, function):
         printer = OppSubPrinter(name, function)
+        self.subprinters.append(printer)
         self.lookup[name] = printer
 
     @staticmethod
