@@ -23,22 +23,21 @@ fi
 
 #set default language so GCC will report errors in english. see bug #3
 export LANG=en_US.UTF-8
+# arguments needed to initially correctly show  the default 'samples' workspace
+DEFAULT_WORKSPACE_ARGS="-vmargs -Dosgi.instance.area.default=$IDEDIR/../samples"
 
 case $PLATFORM in
 *MINGW*)
-	$IDEDIR/${LAUNCHER}.exe $* 2>$IDEDIR/error.log &
-        ;;
-*Linux*x86_64*)
-	$IDEDIR/${LAUNCHER} $* 2>$IDEDIR/error.log &
+	$IDEDIR/${LAUNCHER}.exe $* $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log &
         ;;
 *Linux*)
-	$IDEDIR/$LAUNCHER $* 2>$IDEDIR/error.log &
+	$IDEDIR/${LAUNCHER} $* $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log &
         ;;
 *Darwin*)
-	open $IDEDIR/${LAUNCHER}.app $* 2>$IDEDIR/error.log
+	open $IDEDIR/${LAUNCHER}.app $* $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log
         ;;
 *)
-	echo OMNEST IDE is supported only on: Linux, Windows and MacOS X Intel
+	echo OMNEST IDE is supported only on: Linux, Windows and MacOS X
 	exit 1
         ;;
 esac
