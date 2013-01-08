@@ -73,5 +73,25 @@ Click 'Apply', then in the 'Apply the following changes?' window, click 'Apply' 
 In the 'Changes applied' window, click 'Close'.
 
 
+==== Post-Installation Steps
+
+The default tooltip background color in Ubuntu is black, which causes certain tooltips
+in the @OMNETPP@ IDE to become unreadable (black-on-black). This annoyance can be resolved
+by changing the tooltip colors in Ubuntu.
+
+image::pictures/ubuntu-black-tooltips.png[title="Black-on-black text in tooltips",align="center",scaledwidth="75%"]
+
+Install 'gnome-color-chooser':
+
+ $ sudo apt-get install gnome-color-chooser
+
+Run it:
+
+ $ gnome-color-chooser
+
+Find the 'Tooltips' group on the 'Specific' tab, and change the settings to black foreground over
+pale yellow background. Click Apply.
+
+image::pictures/ubuntu-gnome-color-chooser.png[title="Fixing the tooltip color issue",align="center",scaledwidth="50%"]
 
 

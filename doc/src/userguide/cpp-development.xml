@@ -165,6 +165,10 @@
           Hovering the mouse over an identifier will display its declaration and the documentation comment
           in a "tooltip" window. The window can be made persistent by hitting <keycap>F2</keycap>.
         </para>
+        <tip>
+            <para>If you are on Ubuntu and you see all-black tooltips, you need to change the tooltip colors
+            in Ubuntu; see the Ubuntu chapter of the ``&Omnetpp; Installation Guide'' for details.</para>
+        </tip>
       </sect3>
       <sect3>
         <title>Content Assist</title>
@@ -287,8 +291,8 @@
           </para>
         </sect3>
 	<note>
-	  During the build process, the makefile will print out only the names of the compiled files. 
-	  If you want to see the full command line used to compile each file, specify 
+	  During the build process, the makefile will print out only the names of the compiled files.
+	  If you want to see the full command line used to compile each file, specify
 	  [[V=1]] (verbose on) on the make command line. To add this option,
 	  open ``Project Properties | C/C++ Build | Behavior (tab)'' and replace [[all]] with [[all V=1]]
 	  on the ``Build'' target line.

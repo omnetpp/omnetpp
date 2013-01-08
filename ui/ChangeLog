@@ -52,7 +52,7 @@
 
 2012-10-16  Levente Meszaros
 
-	Common: avoid showing a hover why any mouse button is pressed
+	Common: avoid showing a hover while any mouse button is pressed
 
 2012-10-15  Tamas Borbely
 

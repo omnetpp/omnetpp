@@ -7,9 +7,8 @@ and later versions such as Windows 7 and 8.
 
 [NOTE]
 ===============================================================
-64-bit Windows versions are also supported, but the bundled software
-is compiled for 32-bit code only so the resulting simulation
-will also run in a 32-bit process.
+64-bit Windows versions are also supported, but be aware that binaries bundled
+with @OMNETPP@ are 32-bit ones, and simulations will also be compiled in 32-bit mode.
 ===============================================================
 
 === Installing @OMNETPP@
