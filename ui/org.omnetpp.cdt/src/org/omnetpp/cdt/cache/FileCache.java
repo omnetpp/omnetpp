@@ -1,6 +1,5 @@
 package org.omnetpp.cdt.cache;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -71,7 +70,7 @@ public class FileCache {
 
     // map of file locations to file content
     // if the value is null, then the file does not exists in the file system
-    protected Map<String, InternalFileContent> cache = new HashMap<String, InternalFileContent>();
+    protected Map<Path, InternalFileContent> cache = new HashMap<Path, InternalFileContent>();
 
     // listeners to be notified if a file content changed
     private ListenerList listeners = new ListenerList();
@@ -97,8 +96,7 @@ public class FileCache {
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
     }
 
-    public static boolean isStandardHeader(String path) {
-        IPath headerPath = new Path(path);
+    public static boolean isStandardHeader(Path headerPath) {
         IPath[] standardHeaderPaths = standardHeaders.get(headerPath.lastSegment());
         if (standardHeaderPaths != null) {
             for (IPath standardHeaderPath : standardHeaderPaths) {
@@ -118,39 +116,39 @@ public class FileCache {
         return false;
     }
 
-    public boolean isFileExists(String path) {
+    public boolean isFileExists(Path path) {
         if(cache.containsKey(path))
             return cache.get(path) != null;
-        return new File(path).isFile();
+        return path.toFile().isFile();
     }
 
-    public InternalFileContent getFileContent(String path) {
+    public InternalFileContent getFileContent(Path path) {
         if (cache.containsKey(path)) {
             return cache.get(path);
         }
 
         InternalFileContent fileContent = null;
         if (isStandardHeader(path))
-            fileContent = new InternalFileContent(path, InclusionKind.SKIP_FILE);
+            fileContent = new InternalFileContent(path.toOSString(), InclusionKind.SKIP_FILE);
 
         if (fileContent == null) {
             CharArray content = readAndCompressFileContent(path);
             if (content != null)
-                fileContent = new InternalFileContent(path, content);
+                fileContent = new InternalFileContent(path.toOSString(), content);
         }
 
         cache.put(path, fileContent);
         return fileContent;
     }
 
-    public CharArray readAndCompressFileContent(String path) {
-        if (!new File(path).exists())
+    public CharArray readAndCompressFileContent(IPath path) {
+        if (!path.toFile().exists())
             return null;
 
-        IResource file = ParserUtil.getResourceForFilename(path);
+        IResource file = ParserUtil.getResourceForFilename(path.toOSString());
         FileContent content = file instanceof IFile ?
                               FileContent.create((IFile) file) :
-                              FileContent.createForExternalFileLocation(path);
+                              FileContent.createForExternalFileLocation(path.toOSString());
 
         return content instanceof InternalFileContent ?
                compressFileContent(((InternalFileContent)content).getSource()) : null;
@@ -188,10 +186,10 @@ public class FileCache {
                         if (MakefileTools.isCppFile(resource) || MakefileTools.isMsgFile(resource)) {
                             int kind = delta.getKind();
                             int flags = delta.getFlags();
-                            String path = resource.getLocation().toOSString(); // XXX normalized?
+                            Path path = (Path)resource.getLocation();
                             if (kind == IResourceDelta.ADDED) {
                                 CharArray content = readAndCompressFileContent(path);
-                                cache.put(path, new InternalFileContent(path, content));
+                                cache.put(path, new InternalFileContent(path.toOSString(), content));
                                 fireFileContentChanged(delta);
                             }
                             else if (kind == IResourceDelta.REMOVED) {
@@ -215,7 +213,7 @@ public class FileCache {
                                         }
                                     }
                                     if (contentChanged) {
-                                        cache.put(path, new InternalFileContent(path, newContent));
+                                        cache.put(path, new InternalFileContent(path.toOSString(), newContent));
                                         fireFileContentChanged(delta);
                                     }
                                 }

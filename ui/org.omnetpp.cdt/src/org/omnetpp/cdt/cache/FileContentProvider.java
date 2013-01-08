@@ -19,6 +19,7 @@ import org.eclipse.cdt.internal.core.parser.scanner.InternalFileContent.FileVers
 import org.eclipse.cdt.internal.core.parser.scanner.InternalFileContent.InclusionKind;
 import org.eclipse.cdt.internal.core.parser.scanner.InternalFileContentProvider;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.cache.Index.IndexFile;
 import org.omnetpp.cdt.cache.Index.IndexInclude;
@@ -52,7 +53,7 @@ class FileContentProvider extends InternalFileContentProvider {
     private IFile translationUnit;
 
     // files already included into the current translation unit
-    private Set<String> includedFiles = new HashSet<String>();
+    private Set<Path> includedFiles = new HashSet<Path>();
 
     // values of macros accessible from the scanner
     private IMacroValueProvider currentMacroValues;
@@ -75,20 +76,23 @@ class FileContentProvider extends InternalFileContentProvider {
 
     @Override
     public boolean getInclusionExists(String path) {
-        return fileCache.isFileExists(path);
+        return fileCache.isFileExists(new Path(path));
     }
 
     public InternalFileContent getContentForTranslationUnit() {
-        InternalFileContent content = getFileContent(translationUnit.getLocation().toOSString());
+        Path path = (Path)translationUnit.getLocation();
+        InternalFileContent content = getFileContent(path);
         if (content != null)
-            includedFiles.add(content.getFileLocation()); // to prevent a .h to include itself
+            includedFiles.add(path); // to prevent a .h to include itself
         return content;
     }
 
     @Override
-    public InternalFileContent getContentForInclusion(String path, IMacroDictionary macroDictionary/*XXX*/) {
+    public InternalFileContent getContentForInclusion(String absolutePath, IMacroDictionary macroDictionary/*XXX*/) {
+        Path path = new Path(absolutePath);
+
         if (includedFiles.contains(path))
-            return new InternalFileContent(path, InclusionKind.SKIP_FILE);
+            return new InternalFileContent(path.toOSString(), InclusionKind.SKIP_FILE);
 
         InternalFileContent content = getFileContent(path);
 
@@ -103,7 +107,7 @@ class FileContentProvider extends InternalFileContentProvider {
         throw new UnsupportedOperationException();
     }
 
-    private InternalFileContent getFileContent(String path) {
+    private InternalFileContent getFileContent(Path path) {
         // check index
         IndexFile indexFile = index.resolve(path);
         if (indexFile != null) {
@@ -111,14 +115,13 @@ class FileContentProvider extends InternalFileContentProvider {
                 Map<String,char[]> macroValues = new HashMap<String,char[]>();
                 List<IIndexFile> files= new ArrayList<IIndexFile>();
                 List<IIndexMacro> macros= new ArrayList<IIndexMacro>();
-                Set<String> processedFiles= new HashSet<String>();
+                Set<Path> processedFiles= new HashSet<Path>();
                 collectFileContent(indexFile, processedFiles, files, macros, macroValues, 0);
                 // add included files only, if no exception was thrown
-                for (String filename : processedFiles) {
-                    if (!includedFiles.contains(filename))
-                        includedFiles.add(filename);
+                for (Path file : processedFiles) {
+                    includedFiles.add(file);
                 }
-                return new InternalFileContent(path, macros, Collections.<ICPPUsingDirective>emptyList(), files, Collections.<FileVersion>emptyList()/*XXX*/);
+                return new InternalFileContent(path.toOSString(), macros, Collections.<ICPPUsingDirective>emptyList(), files, Collections.<FileVersion>emptyList()/*XXX*/);
             } catch (MacroValueChangedException e) {
                 if (e.depth == 0) {
                     // TODO message dialog?
@@ -153,7 +156,7 @@ class FileContentProvider extends InternalFileContentProvider {
      * @param macroValues values of macros defined during the traversal
      * @throws MacroValueChangedException
      */
-    private void collectFileContent(IndexFile file, Set<String> processedFiles, List<IIndexFile> files,
+    private void collectFileContent(IndexFile file, Set<Path> processedFiles, List<IIndexFile> files,
                                     List<IIndexMacro> macros, Map<String,char[]> macroValues, int depth)
         throws MacroValueChangedException
     {
@@ -174,7 +177,7 @@ class FileContentProvider extends InternalFileContentProvider {
                     char[] foundValue = macroValues.containsKey(name) ? macroValues.get(name) :currentMacroValues.getMacroValue(name);
                     if (!Arrays.equals(expectedValue, foundValue))
                         throw new MacroValueChangedException(depth, String.format("Index mismatch: in file %s the macro %s was %s, now it is %s",
-                                file.getPath(), name,
+                                file.getPath().toOSString(), name,
                                 expectedValue != null ? "'"+new String(expectedValue)+"'" : "<undefined>",
                                 foundValue != null ? "'" + new String(foundValue) + "'" : "<undefined>"));
                 }
@@ -187,9 +190,12 @@ class FileContentProvider extends InternalFileContentProvider {
                 macroValues.put(macro.getName(), expansion);
             } else if (d instanceof IndexInclude) {
                 // recurse on included file
-                IndexFile includedFile = index.resolve(((IndexInclude) d).getPath());
-                if (includedFile != null) {
-                    collectFileContent(includedFile, processedFiles, files, macros, macroValues, depth+1);
+                Path includedFilePath = ((IndexInclude) d).getPath();
+                if (includedFilePath != null) {
+                    IndexFile includedFile = index.resolve(includedFilePath);
+                    if (includedFile != null) {
+                        collectFileContent(includedFile, processedFiles, files, macros, macroValues, depth+1);
+                    }
                 }
             }
         }

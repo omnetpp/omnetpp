@@ -412,7 +412,7 @@ public class DependencyCache {
                     scanner.scanFully();
                 }
                 // find includes in the indexed file
-                IndexFile indexFile = index.resolve(file.getLocation().toOSString());
+                IndexFile indexFile = index.resolve(file.getLocation());
                 if (indexFile != null) {
                     for (IIndexInclude include : indexFile.getIncludes()) {
                         if (include.isActive()) {

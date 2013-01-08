@@ -2,6 +2,7 @@ package org.omnetpp.cdt.cache;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -9,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.dom.ILinkage;
@@ -43,6 +43,7 @@ import org.eclipse.cdt.utils.UNCPathConverter;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.cache.CppScanner.IScannerEventListener;
@@ -65,7 +66,7 @@ import org.omnetpp.common.util.Pair;
 public class Index {
 
     // maps file paths to index files
-    private Map<String,IndexFile> files = new HashMap<String,IndexFile>();
+    private Map<Path,IndexFile> files = new HashMap<Path,IndexFile>();
     // builds index files from preprocessor events
     private Indexer indexer = new Indexer();
 
@@ -99,16 +100,20 @@ public class Index {
         return indexer;
     }
 
-    public IndexFile resolve(String path) {
+    public IndexFile resolve(IPath path) {
+        Assert.isTrue(path instanceof Path);
         return files.get(path);
     }
 
     public List<IIndexFile> findIncludedFiles(IndexFile indexFile) {
         List<IIndexFile> includedFiles = new ArrayList<IIndexFile>();
         for (IIndexInclude include : indexFile.getIncludes()) {
-            IndexFile includedFile = resolve(((IndexInclude)include).getPath());
-            if (includedFile != null)
-                includedFiles.add(includedFile);
+            Path includedFilePath = ((IndexInclude)include).getPath();
+            if (includedFilePath != null) {
+                IndexFile includedFile = resolve(includedFilePath);
+                if (includedFile != null)
+                    includedFiles.add(includedFile);
+            }
         }
         return includedFiles;
     }
@@ -143,7 +148,7 @@ public class Index {
             files.clear();
         }
         else {
-            IndexFile indexFile = resolve(delta.getResource().getLocation().toOSString());
+            IndexFile indexFile = resolve(delta.getResource().getLocation());
             if (indexFile != null) {
                 Debug.format("Index: source file %s changed, discarding index\n", indexFile.absolutePath);
                 removeFromIndex(indexFile);
@@ -168,8 +173,13 @@ public class Index {
 
     public void dumpToDebug() {
         Debug.format("Index contains %d files\n", files.size());
-        Set<String> keys = new TreeSet<String>(files.keySet());
-        for (String key : keys) {
+        List<Path> keys = new ArrayList<Path>(files.keySet());
+        Collections.sort(keys, new Comparator<Path>() {
+            @Override public int compare(Path o1, Path o2) {
+                return o1.toOSString().compareTo(o2.toOSString());
+            }
+        });
+        for (Path key : keys) {
             IndexFile file = files.get(key);
             file.dumpToDebug();
         }
@@ -273,30 +283,32 @@ public class Index {
             }
         }
 
-        protected IIndexFile resolveInclude(IASTPreprocessorIncludeStatement include) {
-            if (include.isResolved()) {
-                Assert.isTrue(!StringUtils.isEmpty(include.getPath()));
-                return Index.this.resolve(include.getPath());
-            }
-            return null;
-        }
+//        protected IIndexFile resolveInclude(IASTPreprocessorIncludeStatement include) {
+//            if (include.isResolved()) {
+//                Assert.isTrue(!StringUtils.isEmpty(include.getPath()));
+//                return Index.this.resolve(include.getPath());
+//            }
+//            return null;
+//        }
 
         protected void startIndexing(String filename) {
-            //Assert.isTrue(!files.containsKey(filename));
-            currentIndexFile = new IndexFile(filename);
-            if (!files.containsKey(filename))
-                files.put(filename, currentIndexFile);
+            Path path = new Path(filename);
+            //Assert.isTrue(!files.containsKey(path));
+            currentIndexFile = new IndexFile(path);
+            if (!files.containsKey(path))
+                files.put(path, currentIndexFile);
             activeIndexFiles.push(currentIndexFile);
-            if (ignoreOmnetppDefines && filename.endsWith("omnetpp.h"))
+            if (ignoreOmnetppDefines && path.lastSegment().equals("omnetpp.h"))
                 withinOmnetpph++;
         }
 
         protected void endIndexing(String filename) {
-            Assert.isTrue(!activeIndexFiles.isEmpty() && activeIndexFiles.peek().absolutePath.equals(filename));
+            Path path = new Path(filename);
+            Assert.isTrue(!activeIndexFiles.isEmpty() && activeIndexFiles.peek().absolutePath.equals(path));
             IndexFile file = activeIndexFiles.pop();
             file.freeze();
             currentIndexFile = activeIndexFiles.isEmpty() ? null : activeIndexFiles.peek();
-            if (ignoreOmnetppDefines && filename.endsWith("omnetpp.h"))
+            if (ignoreOmnetppDefines && path.lastSegment().equals("omnetpp.h"))
                 withinOmnetpph--;
         }
 
@@ -314,13 +326,13 @@ public class Index {
 
     static class IndexFile implements IIndexFile {
 
-        private final String absolutePath;
+        private final Path absolutePath;
         private boolean isFrozen;
         private List<IndexInclude> includes = new ArrayList<IndexInclude>();
         private List<Object> preprocessingDirectives = new ArrayList<Object>(); // includes + defines + references
         private int countOfMacros;
 
-        public IndexFile(String path) {
+        public IndexFile(Path path) {
             this.absolutePath = path;
         }
 
@@ -357,7 +369,7 @@ public class Index {
             isFrozen = true;
         }
 
-        public String getPath() {
+        public Path getPath() {
             return absolutePath;
         }
 
@@ -459,7 +471,7 @@ public class Index {
         public List<IndexInclude> findIncludes(IndexFile includedFile) {
             List<IndexInclude> result = new ArrayList<IndexInclude>();
             for (IndexInclude include : includes) {
-                    String path = include.getPath();
+                    Path path = include.getPath();
                     if (path != null && path.equals(includedFile.absolutePath))
                         result.add(include);
             }
@@ -721,10 +733,12 @@ public class Index {
     static class IndexInclude implements IIndexInclude {
 
         private final IASTPreprocessorIncludeStatement include;
+        private final Path resolvedPath;
         private final IndexFile includedBy;
 
         public IndexInclude(IASTPreprocessorIncludeStatement include, IndexFile includedBy) {
             this.include = include;
+            this.resolvedPath = include.isResolved() && include.getPath() != null ? new Path(include.getPath()) : null;
             this.includedBy = includedBy;
         }
 
@@ -788,8 +802,8 @@ public class Index {
             return include.isResolvedByHeuristics();
         }
 
-        public String getPath() {
-            return include.isResolved() ? include.getPath() : null;
+        public Path getPath() {
+            return resolvedPath;
         }
     }
 }
