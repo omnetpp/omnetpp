@@ -520,6 +520,10 @@ public class DependencyCache {
                     IFile[] f = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(includeFileLocation);
                     if (f.length == 0 || !f[0].exists())
                         addMarker(markerSync, include, IMarker.SEVERITY_WARNING, "Makefile autodeps: cannot resolve #include with '..' unless it is relative to the current dir");
+                    else {
+                        List<IFile> includeTargets = new ArrayList<IFile>(Arrays.asList(f));
+                        includeResolutions.put(include, includeTargets);
+                    }
                 }
                 else {
                     List<IFile> includeTargets = new ArrayList<IFile>(); // will contain ideally 1 element, but 0 (unresolved #include) or >1 (ambiguous #include) are also possible
@@ -599,14 +603,20 @@ public class DependencyCache {
             for (Include include : cppSourceFiles.get(file)) {
                 if (includeResolutions.containsKey(include)) {
                     for (IFile includedFile : includeResolutions.get(include)) {
-                        IContainer dependency = includedFile.getParent();
-                        int numSubdirs = StringUtils.countMatches(include.filename, "/");
-                        for (int i=0; i<numSubdirs && !(dependency instanceof IWorkspaceRoot); i++)
-                            dependency = dependency.getParent();
+                        IContainer dependency;
+                        if (include.filename.contains("..")) {
+                            // includes containing ".." are always resolved relative to the parent of the file
+                            dependency = container.getParent();
+                        }
+                        else {
+                            dependency = includedFile.getParent();
+                            int numSubdirs = StringUtils.countMatches(include.filename, "/");
+                            for (int i=0; i<numSubdirs && !(dependency instanceof IWorkspaceRoot); i++)
+                                dependency = dependency.getParent();
+                            Assert.isTrue(dependency.getLocation().toString().equals(StringUtils.removeEnd(includedFile.getLocation().toString(), "/"+include.filename)));
+                        }
                         if (dependency instanceof IWorkspaceRoot)
                             addMarker(markerSync, include, IMarker.SEVERITY_WARNING, "Makefile generation: cannot represent included directory in the workspace: it is higher than project root: " + include.toString());
-                        Assert.isTrue(dependency.getLocation().toString().equals(StringUtils.removeEnd(includedFile.getLocation().toString(), "/"+include.filename)));
-
                         // add folder to the dependent folders
                         if (dependency != container && !currentDeps.contains(dependency))
                             currentDeps.add(dependency);
