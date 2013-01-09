@@ -45,6 +45,7 @@ IDE:
   - Updated to Eclipse 3.8.1; the IDE now requires Java 1.6+.
 
 NED:
+
   - Added named channels support, e.g. "...<--> eth1: EthernetChannel <-->...",
     with the purpose of making it easier to address channel objects when
     assigning parameters from ini files. Channel definitions can now specify
