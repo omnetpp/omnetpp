@@ -5,10 +5,10 @@
 	Debugging: the default gdbinit file is now ${opp_root}/misc/gdb/gdbinit.py
 	when a new launch configuration is created.
 
-	Also added support for project-specific gdbinit files: the gdbinit.py
-	script in the project root is now automatically sourced by gdb.
-	Project-specific gdbinit files can be used to initialize pretty printers
-	specific to the project.
+	Also added support for project-specific gdbinit files: the .gdbinit.py
+	script in the project root is now automatically sourced by the default
+	init script. Project-specific gdbinit files can be used to initialize 
+	pretty printers specific to the project.
 
 2011-11-15  Rudolf Hornig
 
