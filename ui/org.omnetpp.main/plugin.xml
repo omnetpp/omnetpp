@@ -45,7 +45,7 @@
     </property>
     <property
           name="aboutImage"
-          value="platform:/plugin/org.omnetpp.main.omnetpp/icons/about-image.png">
+          value="icons/about-image.png">
     </property>
     <property
           name="windowImages"
