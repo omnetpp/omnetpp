@@ -5,58 +5,57 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
-OMNeT++ 4.3b1 (Dec 2012)
+OMNeT++ 4.3b1 (Jan 2013)
 ------------------------
 
 IDE:
 
-  - Updated to Eclipse 3.8.1.
+  - Analysis tool: added support for computed scalars. Read the updated the
+    User Guide for further details.
 
-  - The IDE now required Java 1.6+
-
-  - The C++ code analyzer has been turned off as it was reporting
-    too many false positives.
-
-  - Usability improvements in the analysis tool.
-
-  - Computed scalars: The analysis tool now supports the creation of
-    scalar values from other scalars. Read the updated the User Guide
-    for further details.
-
-  - Added 'logarithmic X axis' option to scatter chart.
+  - Analysis tool: added 'Logarithmic X axis' option to scatter chart.
 
   - Added NED editor support for named channels.
 
-  - Added full screen mode (Ctrl-Shift-F11)
+  - Added support for opening files from the command line, i.e. use:
+    $ omnetpp Aloha.ned
+
+  - Added full screen mode (Ctrl-Shift-F11).
+
+  - Usability improvements in the Analysis Tool.
 
   - Better error reporting in the Sequence Chart and Event Log views.
 
-  - Added support for opening files from the command line. i.e. use:
-    $ omnetpp Aloha.ned
+  - The CDT C++ code analyzer has been turned off as it was reporting
+    too many false positives.
 
-  - Updated MinGW files (GCC, linker and GDB)
+  - The IDE has been switched over to use CDT's DSF debugger instead of 
+    the older CDI.
+
+  - The IDE no longer runs the C/C++ Indexer before build (the code now
+    collects the information for makefile dependency generation by other
+    means)
+
+  - Added pretty printing of STL containers (std::map, etc), simtime_t
+    and other objects to the debugger; see the updated User Guide for
+    details. 
+
+  - Updated the bundled MinGW (GCC, linker and GDB).
+
+  - Updated to Eclipse 3.8.1; the IDE now requires Java 1.6+.
 
 NED:
-  - Channel name syntax in connections; @defaultname(Foo) attribute for channel types
+  - Added named channels support, e.g. "...<--> eth1: EthernetChannel <-->...",
+    with the purpose of making it easier to address channel objects when
+    assigning parameters from ini files. Channel definitions can now specify
+    a default name (via the @defaultname property), too.
 
-    Syntax:
-       r1.pppg++ <--> eth1: EthernetChannel <--> r2.pppg++;
-       a.out --> foo: {delay=1ms;} --> b.in;
-       a.out --> bar: --> b.in;
-
-    Default name may also come from @defaultname of the channel type:
-       channel Eth_100M like IEth {
-           @defaultname(eth100);
-       }
 Sim:
 
   - Added the cPatternMatcher and cMatchExpression utility classes to the API.
-    cPatternMatcher is a glob-style pattern matching class, adopted to special
-    OMNeT++ requirements. It recognizes wildcards (?, *, **), numeric ranges
-    ({5..10}), numeric index ranges ([5..10]), and supports options such as
-    case sensitive and whole string match. cMatchExpression builds on top of
-    cPatternMatcher and lets you combine patterns with AND, OR, NOT for
-    matching fields of arbitrary objects.
+    cPatternMatcher is a glob-style pattern matching class. cMatchExpression 
+    builds on top of cPatternMatcher and lets you combine patterns with AND, 
+    OR, NOT for matching fields of arbitrary objects.
 
   - Added hasEncapsulatedPacket() to cPacket.
 
@@ -65,26 +64,24 @@ Sim:
   - Signals implementation now allows static initialization of simsignal_t
     variables.
 
-    Signal registration table is no longer cleared between runs, so you
-    can write things like:
-
-    simsignal_t PPP::txBeginSignal = cComponent::registerSignal("txBegin");
-
-  - fixed a bug in Expression where '-2m' was evaluated to '2' (meter was lost)
+  - Fixed a bug in Expression where '-2m' was evaluated to '2' (meter was lost)
 
 Tools:
 
-  - The simulator now supports MAC OS X 10.8 (as long as you have installed the quartz library
-    because 10.8 no longer supports X directly.)
+  - The simulator now supports Mac OS X 10.8 (you need to install XQuartz; see
+    the Install Guide)
 
-  - Simplified makefile output: Makefiles now output only the filenames to the console instead of
-    the whole command line. This makes the build process less "noisy'. If you need the old behavior,
-    use the 'V=1' (verbose on) option on the make command line.
+  - Simplified makefile output: Makefiles now output only the filenames to the 
+    console instead of whole commands. This makes the build output less noisy. 
+    If you need the old behavior, use the 'V=1' (verbose on) option on 
+    the make command line.
+
 
 OMNeT++ 4.2.2 (March 2012)
 --------------------------
 
 Bugs fixed: http://tinyurl.com/omnetpp422-fixes
+
 
 OMNeT++ 4.2.1 (Jan 2012)
 ------------------------
