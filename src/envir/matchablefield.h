@@ -41,8 +41,8 @@ class ENVIR_API MatchableFieldAdapter : public MatchExpression::Matchable
     MatchableFieldAdapter(cObject *object = NULL, int fieldIndex = -1);
     void setField(cObject *object, int fieldIndex);
     void setField(cObject *object, const char *fieldName);
-    virtual const char *getDefaultAttribute() const;
-    virtual const char *getAttribute(const char *name) const;
+    virtual const char *getAsString() const;
+    virtual const char *getAsString(const char *attribute) const;
 };
 
 NAMESPACE_END

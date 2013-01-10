@@ -84,13 +84,13 @@ bool MatchExpression::matches(const Matchable *object)
           case Elem::PATTERN:
             if (tos>=stksize-1)
                 throw opp_runtime_error("MatchExpression: malformed expression: stack overflow");
-            attr = object->getDefaultAttribute();
+            attr = object->getAsString();
             stk[++tos] = attr==NULL ? false : e.pattern->matches(attr);
             break;
           case Elem::FIELDPATTERN:
             if (tos>=stksize-1)
                 throw opp_runtime_error("MatchExpression: malformed expression: stack overflow");
-            attr = object->getAttribute(e.fieldname.c_str());
+            attr = object->getAsString(e.fieldname.c_str());
             stk[++tos] = attr==NULL ? false : e.pattern->matches(attr);
             break;
           case Elem::OR:

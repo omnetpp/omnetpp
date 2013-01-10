@@ -33,7 +33,7 @@ void MatchableObjectAdapter::setObject(cObject *obj)
     desc = NULL;
 }
 
-const char *MatchableObjectAdapter::getDefaultAttribute() const
+const char *MatchableObjectAdapter::getAsString() const
 {
     switch (attr)
     {
@@ -44,37 +44,37 @@ const char *MatchableObjectAdapter::getDefaultAttribute() const
     }
 }
 
-void MatchableObjectAdapter::splitIndex(char *fieldname, int& index)
+void MatchableObjectAdapter::splitIndex(char *indexedName, int& index)
 {
     index = 0;
-    char *startbracket = strchr(fieldname, '[');
+    char *startbracket = strchr(indexedName, '[');
     if (startbracket)
     {
-        char *lastcharp = fieldname + strlen(fieldname) - 1;
+        char *lastcharp = indexedName + strlen(indexedName) - 1;
         if (*lastcharp != ']')
             throw opp_runtime_error("unmatched '['");
         *startbracket = '\0';
         char *end;
         index = strtol(startbracket+1, &end, 10);
-        if (end!=lastcharp)
+        if (end != lastcharp)
             throw opp_runtime_error("brackets [] must contain numeric index");
     }
 }
 
-bool MatchableObjectAdapter::findDescriptorField(cClassDescriptor *desc, cObject *obj, char *fieldname, int& fieldId, int& index)
+bool MatchableObjectAdapter::findDescriptorField(cClassDescriptor *desc, cObject *obj, const char *attribute, int& fieldId, int& index)
 {
-    // chop off possible bracketed index from field name
-    splitIndex(fieldname, index);
+    // attribute may be in the form "fieldName[index]"; split the two
+    char *fieldNameBuf = new char[strlen(attribute)+1];
+    strcpy(fieldNameBuf, attribute);
+    splitIndex(fieldNameBuf, index);
 
     // find field by name
-    int n = desc->getFieldCount(obj);
-    for (int i=0; i<n; i++)
-        if (!strcmp(fieldname, desc->getFieldName(obj, i)))
-            {fieldId = i; return true;}
-    return false;
+    fieldId = desc->findField(obj, fieldNameBuf);
+    delete [] fieldNameBuf;
+    return fieldId != -1;
 }
 
-const char *MatchableObjectAdapter::getAttribute(const char *name) const
+const char *MatchableObjectAdapter::getAsString(const char *attribute) const
 {
     if (!desc)
     {
@@ -85,7 +85,7 @@ const char *MatchableObjectAdapter::getAttribute(const char *name) const
 
 /*FIXME TBD
     // start tokenizing the path
-    cStringTokenizer tokenizer(name, ".");
+    cStringTokenizer tokenizer(attribute, ".");
     const char *token;
     void *currentObj = obj;
     cClassDescriptor *currentDesc = desc;
@@ -99,9 +99,7 @@ const char *MatchableObjectAdapter::getAttribute(const char *name) const
 
     int fieldId;
     int index;
-    char *name2 = new char[strlen(name)+1];
-    strcpy(name2, name);
-    bool found = findDescriptorField(desc, obj, name2, fieldId, index);
+    bool found = findDescriptorField(desc, obj, attribute, fieldId, index);
     if (!found)
         return NULL;
 

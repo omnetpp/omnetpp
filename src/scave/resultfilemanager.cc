@@ -729,8 +729,8 @@ class MatchableResultItem : public MatchExpression::Matchable
 
     public:
         MatchableResultItem(const ResultItem& item) : item(item) {}
-        virtual const char *getDefaultAttribute() const;
-        virtual const char *getAttribute(const char *name) const;
+        virtual const char *getAsString() const;
+        virtual const char *getAsString(const char *attribute) const;
     private:
         const char *getName() const { return item.nameRef->c_str(); }
         const char *getModuleName() const { return item.moduleNameRef->c_str(); }
@@ -741,27 +741,27 @@ class MatchableResultItem : public MatchExpression::Matchable
         const char *getModuleParam(const char *paramName) const { return item.fileRunRef->runRef->getModuleParam(paramName); }
 };
 
-const char *MatchableResultItem::getDefaultAttribute() const
+const char *MatchableResultItem::getAsString() const
 {
     return getName();
 }
 
-const char *MatchableResultItem::getAttribute(const char *name) const
+const char *MatchableResultItem::getAsString(const char *attribute) const
 {
-    if (strcasecmp("name", name) == 0)
+    if (strcasecmp("name", attribute) == 0)
         return getName();
-    else if (strcasecmp("module", name) == 0)
+    else if (strcasecmp("module", attribute) == 0)
         return getModuleName();
-    else if (strcasecmp("file", name) == 0)
+    else if (strcasecmp("file", attribute) == 0)
         return getFileName();
-    else if (strcasecmp("run", name) == 0)
+    else if (strcasecmp("run", attribute) == 0)
         return getRunName();
-    else if (strncasecmp("attr:", name, 5) == 0)
-        return getRunAttribute(name+5);
-    else if (strncasecmp("param:", name, 6) == 0)
-        return getModuleParam(name+6);
+    else if (strncasecmp("attr:", attribute, 5) == 0)
+        return getRunAttribute(attribute+5);
+    else if (strncasecmp("param:", attribute, 6) == 0)
+        return getModuleParam(attribute+6);
     else
-        return getResultItemAttribute(name);
+        return getResultItemAttribute(attribute);
 }
 
 IDList ResultFileManager::filterIDList(const IDList &idlist, const char *pattern) const

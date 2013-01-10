@@ -45,8 +45,8 @@ class Wrapper : public MatchExpression::Matchable
     const cMatchExpression::Matchable *impl;
   public:
     Wrapper(const cMatchExpression::Matchable *p) {impl = p;}
-    virtual const char *getDefaultAttribute() const {return impl->getDefaultAttribute();}
-    virtual const char *getAttribute(const char *name) const {return impl->getAttribute(name);}
+    virtual const char *getAsString() const {return impl->getAsString();}
+    virtual const char *getAsString(const char *attribute) const {return impl->getAsString(attribute);}
 };
 
 bool cMatchExpression::matches(const Matchable *object)
@@ -54,3 +54,4 @@ bool cMatchExpression::matches(const Matchable *object)
     Wrapper wrapper(object);
     return impl->matches(&wrapper);
 }
+

@@ -252,11 +252,11 @@ const std::vector<const char *> EventLogMessageEntry::getAttributeNames() const
     return names;
 }
 
-const char *EventLogMessageEntry::getAttribute(const char *name) const
+const char *EventLogMessageEntry::getAsString(const char *attribute) const
 {
-    if (!strcmp(name, "type"))
+    if (!strcmp(attribute, "type"))
         return "-";
-    else if (!strcmp(name, "-"))
+    else if (!strcmp(attribute, "-"))
         return text;
     else
         return NULL;

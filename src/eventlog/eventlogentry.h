@@ -56,8 +56,8 @@ class EVENTLOG_API EventLogEntry : public MatchExpression::Matchable
         int getEntryIndex() { return entryIndex; }
 
         virtual const std::vector<const char *> getAttributeNames() const = 0;
-        virtual const char *getDefaultAttribute() const = 0;
-        virtual const char *getAttribute(const char *name) const = 0;
+        virtual const char *getAsString() const = 0;
+        virtual const char *getAsString(const char *attribute) const = 0;
 
         static EventLogEntry *parseEntry(EventLog *eventLog, Event *event, int entryIndex, file_offset_t offset, char *line, int length);
         static eventnumber_t parseEventNumber(const char *str);
@@ -101,8 +101,8 @@ class EVENTLOG_API EventLogMessageEntry : public EventLogEntry
         virtual const char *getClassName() { return "EventLogMessageEntry"; }
 
         virtual const std::vector<const char *> getAttributeNames() const;
-        virtual const char *getDefaultAttribute() const { return "-"; }
-        virtual const char *getAttribute(const char *name) const;
+        virtual const char *getAsString() const { return "-"; }
+        virtual const char *getAsString(const char *attribute) const;
 };
 
 NAMESPACE_END

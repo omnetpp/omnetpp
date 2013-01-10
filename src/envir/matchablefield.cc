@@ -48,21 +48,21 @@ void MatchableFieldAdapter::setField(cObject *object, const char *fieldName)
     Assert(fieldIndex != -1);
 }
 
-const char *MatchableFieldAdapter::getDefaultAttribute() const
+const char *MatchableFieldAdapter::getAsString() const
 {
     Assert(object && classDescriptor);
     return classDescriptor->getFieldName(object, fieldIndex);
 }
 
-const char *MatchableFieldAdapter::getAttribute(const char *name) const
+const char *MatchableFieldAdapter::getAsString(const char *attribute) const
 {
     Assert(object && classDescriptor);
 
-    if (!strcmp("name", name))
+    if (!strcmp("name", attribute))
         return classDescriptor->getFieldName(object, fieldIndex);
-    else if (!strcmp("type", name))
+    else if (!strcmp("type", attribute))
         return classDescriptor->getFieldTypeString(object, fieldIndex);
-    else if (!strcmp("declaredOn", name))
+    else if (!strcmp("declaredOn", attribute))
         return classDescriptor->getFieldDeclaredOn(object, fieldIndex);
     else
         return NULL;

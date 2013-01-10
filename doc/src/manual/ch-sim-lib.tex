@@ -1215,9 +1215,9 @@ ev << matcher.matches("Net.host[0].tcp") << endl;  // -> false
 
 \subsection{cMatchExpression}
 
-The \cclass{cMatchExpression} class builds on top of
-\cclass{cPatternMatcher}, and lets you determine whether an \textit{object}
-matches a given pattern expression.
+The \cclass{cMatchExpression} class builds on top of \cclass{cPatternMatcher},
+and lets you determine whether an \textit{object} matches a given pattern
+expression.
 
 A pattern expression consists of elements in the
 \textit{fieldname(pattern)} syntax; they check whether the string
@@ -1271,20 +1271,17 @@ class SIM_API Matchable
 {
   public:
     /**
-     * Return the default string to match. The returned pointer will not
-     * be cached by the caller, so it is OK to return a pointer to an
-     * internal buffer which is overwritten by subsequent
-     * getDefaultAttribute() / getAttribute() calls.
+     * Return the default string to match. The returned pointer will not be
+     * cached by the caller, so it is OK to return a pointer to a static buffer.
      */
-    virtual const char *getDefaultAttribute() const = 0;
+    virtual const char *getAsString() const = 0;
 
     /**
-     * Return the default string to match. Should return NULL if the attribute
-     * doesn't exist. The returned pointer will not be cached by the caller,
-     * so it is OK to return a pointer to an internal buffer which is
-     * overwritten by subsequent getDefaultAttribute() / getAttribute() calls.
+     * Return the string value of the given attribute, or NULL if the object
+     * doesn't have an attribute with that name. The returned pointer will not
+     * be cached by the caller, so it is OK to return a pointer to a static buffer.
      */
-    virtual const char *getAttribute(const char *name) const = 0;
+    virtual const char *getAsString(const char *attribute) const = 0;
 
     /**
      * Virtual destructor.
@@ -1309,8 +1306,8 @@ class cMatchableString : public cMatchExpression::Matchable
     std::string str;
   public:
     cMatchableString(const char *s) {str = s;}
-    virtual const char *getDefaultAttribute() const {return str.c_str();}
-    virtual const char *getAttribute(const char *name) const {return NULL;}
+    virtual const char *getAsString() const {return str.c_str();}
+    virtual const char *getAsString(const char *name) const {return NULL;}
 };
 \end{cpp}
 

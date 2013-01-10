@@ -203,9 +203,9 @@ class EVENTLOG_API $class->{NAME} : public $class->{SUPER}
       virtual void parse(char **tokens, int numTokens);
       virtual void print(FILE *file);
       virtual int getClassIndex() { return $index; }
-      virtual const char *getDefaultAttribute() const { return \"$class->{CODE}\"; }
+      virtual const char *getAsString() const { return \"$class->{CODE}\"; }
       virtual const std::vector<const char *> getAttributeNames() const;
-      virtual const char *getAttribute(const char *name) const; // BEWARE: Returns pointer into a static buffer which gets overwritten with each call!
+      virtual const char *getAsString(const char *attribute) const; // BEWARE: Returns pointer into a static buffer which gets overwritten with each call!
       virtual const char *getClassName() { return \"$class->{NAME}\"; }
 };
 ";
@@ -398,7 +398,7 @@ foreach $class (@classes)
 
       print ENTRIES_CC_FILE "    std::vector<const char *> superNames = $class->{SUPER}::getAttributeNames();\n";
       print ENTRIES_CC_FILE "    names.insert(names.begin(), superNames.begin(), superNames.end());\n";
-   }  
+   }
    foreach $field (@{ $class->{FIELDS} })
    {
       print ENTRIES_CC_FILE "    names.push_back(\"$field->{CODE}\");\n";
@@ -406,14 +406,14 @@ foreach $class (@classes)
    print ENTRIES_CC_FILE "    return names;\n";
    print ENTRIES_CC_FILE "}\n\n";
 
-   # getAttribute
-   print ENTRIES_CC_FILE "const char *$className\::getAttribute(const char *name) const\n";
+   # getAsString()
+   print ENTRIES_CC_FILE "const char *$className\::getAsString(const char *attribute) const\n";
    print ENTRIES_CC_FILE "{\n";
    print ENTRIES_CC_FILE "    if (false);\n";
 
    foreach $field (@{ $class->{FIELDS} })
    {
-      print ENTRIES_CC_FILE "    else if (!strcmp(name, \"$field->{CODE}\"))\n";
+      print ENTRIES_CC_FILE "    else if (!strcmp(attribute, \"$field->{CODE}\"))\n";
       if ($field->{TYPE} eq "string")
       {
          print ENTRIES_CC_FILE "        return $field->{NAME};\n";
@@ -438,7 +438,7 @@ foreach $class (@classes)
    }
    else
    {
-      print ENTRIES_CC_FILE "        return $class->{SUPER}::getAttribute(name);\n";
+      print ENTRIES_CC_FILE "        return $class->{SUPER}::getAsString(attribute);\n";
    }
    print ENTRIES_CC_FILE "}\n\n";
 }

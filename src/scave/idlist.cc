@@ -396,37 +396,37 @@ void IDList::sortVectorsByVectorId(ResultFileManager *mgr, bool ascending)
 
 void IDList::sortVectorsByLength(ResultFileManager *mgr, bool ascending)
 {
-	VectorCountLess compare(mgr);
+    VectorCountLess compare(mgr);
     sortVectorsBy(mgr, ascending, compare);
 }
 
 void IDList::sortVectorsByMean(ResultFileManager *mgr, bool ascending)
 {
-	VectorMeanLess compare(mgr);
+    VectorMeanLess compare(mgr);
     sortVectorsBy(mgr, ascending, compare);
 }
 
 void IDList::sortVectorsByStdDev(ResultFileManager *mgr, bool ascending)
 {
-	VectorStddevLess compare(mgr);
+    VectorStddevLess compare(mgr);
     sortVectorsBy(mgr, ascending, compare);
 }
 
 void IDList::sortVectorsByMin(ResultFileManager *mgr, bool ascending)
 {
-	VectorMinLess compare(mgr);
+    VectorMinLess compare(mgr);
     sortVectorsBy(mgr, ascending, compare);
 }
 
 void IDList::sortVectorsByMax(ResultFileManager *mgr, bool ascending)
 {
-	VectorMaxLess compare(mgr);
+    VectorMaxLess compare(mgr);
     sortVectorsBy(mgr, ascending, compare);
 }
 
 void IDList::sortVectorsByVariance(ResultFileManager *mgr, bool ascending)
 {
-	VectorVarianceLess compare(mgr);
+    VectorVarianceLess compare(mgr);
     sortVectorsBy(mgr, ascending, compare);
 }
 
@@ -444,37 +444,37 @@ void IDList::sortVectorsByEndTime(ResultFileManager *mgr, bool ascending)
 
 void IDList::sortHistogramsByLength(ResultFileManager *mgr, bool ascending)
 {
-	HistogramCountLess compare(mgr);
+    HistogramCountLess compare(mgr);
     sortHistogramsBy(mgr, ascending, compare);
 }
 
 void IDList::sortHistogramsByMean(ResultFileManager *mgr, bool ascending)
 {
-	HistogramMeanLess compare(mgr);
+    HistogramMeanLess compare(mgr);
     sortHistogramsBy(mgr, ascending, compare);
 }
 
 void IDList::sortHistogramsByStdDev(ResultFileManager *mgr, bool ascending)
 {
-	HistogramStddevLess compare(mgr);
+    HistogramStddevLess compare(mgr);
     sortHistogramsBy(mgr, ascending, compare);
 }
 
 void IDList::sortHistogramsByMin(ResultFileManager *mgr, bool ascending)
 {
-	HistogramMinLess compare(mgr);
+    HistogramMinLess compare(mgr);
     sortHistogramsBy(mgr, ascending, compare);
 }
 
 void IDList::sortHistogramsByMax(ResultFileManager *mgr, bool ascending)
 {
-	HistogramMaxLess compare(mgr);
+    HistogramMaxLess compare(mgr);
     sortHistogramsBy(mgr, ascending, compare);
 }
 
 void IDList::sortHistogramsByVariance(ResultFileManager *mgr, bool ascending)
 {
-	HistogramVarianceLess compare(mgr);
+    HistogramVarianceLess compare(mgr);
     sortHistogramsBy(mgr, ascending, compare);
 }
 

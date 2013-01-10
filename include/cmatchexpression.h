@@ -58,20 +58,17 @@ class SIM_API cMatchExpression
     {
       public:
         /**
-         * Return the default string to match. The returned pointer will not
-         * be cached by the caller, so it is OK to return a pointer to some
-         * internal buffer which gets overwritten by subsequent
-         * getDefaultAttribute() / getAttribute() calls.
+         * Return the default string to match. The returned pointer will not be
+         * cached by the caller, so it is OK to return a pointer to a static buffer.
          */
-        virtual const char *getDefaultAttribute() const = 0;
+        virtual const char *getAsString() const = 0;
 
         /**
-         * Return the default string to match. Should return NULL if attribute
-         * doesn't exist. The returned pointer will not be cached by the caller,
-         * so it is OK to return a pointer to some internal buffer which gets
-         * overwritten by subsequent getDefaultAttribute() / getAttribute() calls.
+         * Return the string value of the given attribute, or NULL if the object
+         * doesn't have an attribute with that name. The returned pointer will not
+         * be cached by the caller, so it is OK to return a pointer to a static buffer.
          */
-        virtual const char *getAttribute(const char *name) const = 0;
+        virtual const char *getAsString(const char *attribute) const = 0;
 
         /**
          * Virtual destructor, for good manners...
@@ -122,8 +119,8 @@ class SIM_API cMatchableString : public cMatchExpression::Matchable
     std::string str;
   public:
     cMatchableString(const char *s) {str = s;}
-    virtual const char *getDefaultAttribute() const {return str.c_str();}
-    virtual const char *getAttribute(const char *name) const {return NULL;}
+    virtual const char *getAsString() const {return str.c_str();}
+    virtual const char *getAsString(const char *attribute) const {return NULL;}
 };
 
 NAMESPACE_END

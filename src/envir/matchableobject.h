@@ -29,7 +29,7 @@ class cClassDescriptor;
 
 /**
  * Wrapper around a cObject to make it matchable with MatchExpression.
- * The default attribute is either getFullName() or getFullPath().
+ * The default match string is either getFullName() or getFullPath().
  */
 class ENVIR_API MatchableObjectAdapter : public MatchExpression::Matchable
 {
@@ -41,14 +41,14 @@ class ENVIR_API MatchableObjectAdapter : public MatchExpression::Matchable
     mutable cClassDescriptor *desc;
     mutable std::string tmp;
   protected:
-    static void splitIndex(char *fieldname, int& index);
-    static bool findDescriptorField(cClassDescriptor *desc, cObject *obj, char *fieldname, int& fieldId, int& index);
+    static void splitIndex(char *indexedName, int& index);
+    static bool findDescriptorField(cClassDescriptor *desc, cObject *obj, const char *attribute, int& fieldId, int& index);
   public:
     MatchableObjectAdapter(DefaultAttribute attr=FULLPATH, cObject *obj=NULL);
     void setObject(cObject *obj);
     void setDefaultAttribute(DefaultAttribute attr) {this->attr = attr;}
-    virtual const char *getDefaultAttribute() const;
-    virtual const char *getAttribute(const char *name) const;
+    virtual const char *getAsString() const;
+    virtual const char *getAsString(const char *attribute) const;
 };
 
 NAMESPACE_END
