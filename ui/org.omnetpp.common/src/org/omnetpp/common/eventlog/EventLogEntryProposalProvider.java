@@ -82,7 +82,7 @@ public class EventLogEntryProposalProvider extends MatchExpressionContentProposa
             EventLogEntry eventLogEntry = (EventLogEntry)clazz.newInstance();
 
             // default proposal
-            String defaultField = eventLogEntry.getDefaultAttribute();
+            String defaultField = eventLogEntry.getAsString();
             classToDefaultFieldProposalMap.put(clazz, new ContentProposal(defaultField));
             defaultFieldToClassMap.put(defaultField, clazz);
 

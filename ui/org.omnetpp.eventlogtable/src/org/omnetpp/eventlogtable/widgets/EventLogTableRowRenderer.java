@@ -622,7 +622,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
     private void drawRawEntry(EventLogEntry eventLogEntry) {
 
         if (!(eventLogEntry instanceof EventLogMessageEntry)) {
-            drawText(eventLogEntry.getDefaultAttribute() + " ", CONSTANT_TEXT_COLOR, true);
+            drawText(eventLogEntry.getAsString() + " ", CONSTANT_TEXT_COLOR, true);
         }
 
         PStringVector stringVector = eventLogEntry.getAttributeNames();
@@ -630,7 +630,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
         {
             String name = stringVector.get(i);
             drawText(name + " ", CONSTANT_TEXT_COLOR);
-            String value = eventLogEntry.getAttribute(name);
+            String value = eventLogEntry.getAsString(name);
             if (StringUtils.isEmpty(value))
                 drawText("\"\" ", RAW_VALUE_COLOR);
             else

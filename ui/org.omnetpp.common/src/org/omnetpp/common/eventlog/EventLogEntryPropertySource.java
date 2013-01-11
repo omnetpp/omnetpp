@@ -37,7 +37,7 @@ public class EventLogEntryPropertySource implements IPropertySource {
     }
 
     public Object getPropertyValue(Object id) {
-        return eventLogEntry.getAttribute((String)id);
+        return eventLogEntry.getAsString((String)id);
     }
 
     public void setPropertyValue(Object id, Object value) {
