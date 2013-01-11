@@ -1,7 +1,5 @@
 2013-01-11  ------ omnetpp-4.3rc1 released ------
 
-2013-01-09  ------ omnetpp-4.3b1 released ------
-
 2012-03-13  ------ omnetpp-4.2.2 released ------
 
 2012-01-17  ------ omnetpp-4.2.1 released ------
@@ -16,9 +14,9 @@
 
 2010-12-11  Andras Varga
 
-	* platdep/timeutil.h (and thus, omnetpp.h) no longer includes 
-	winsock.h/winsock2.h, because its definitions sometimes conflicted 
-	with model code. Now the only header that includes winsock.h is 
+	* platdep/timeutil.h (and thus, omnetpp.h) no longer includes
+	winsock.h/winsock2.h, because its definitions sometimes conflicted
+	with model code. Now the only header that includes winsock.h is
 	platdep/sockets.h, but it is NOT under omnetpp.h (code that uses it
 	has to include it separately).
 

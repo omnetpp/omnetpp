@@ -1,7 +1,5 @@
 2013-01-11  ------ omnetpp-4.3rc1 released ------
 
-2013-01-09  ------ omnetpp-4.3b1 released ------
-
 2012-12-17  Rudolf Hornig
 
 	Debugging: the default gdbinit file is now ${opp_root}/misc/gdb/gdbinit.py
@@ -9,7 +7,7 @@
 
 	Also added support for project-specific gdbinit files: the .gdbinit.py
 	script in the project root is now automatically sourced by the default
-	init script. Project-specific gdbinit files can be used to initialize 
+	init script. Project-specific gdbinit files can be used to initialize
 	pretty printers specific to the project.
 
 2011-11-15  Rudolf Hornig

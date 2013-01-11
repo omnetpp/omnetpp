@@ -1,7 +1,5 @@
 2013-01-11  ------ omnetpp-4.3rc1 released ------
 
-2013-01-09  ------ omnetpp-4.3b1 released ------
-
 2012-03-13  ------ omnetpp-4.2.2 released ------
 
 2012-01-17  ------ omnetpp-4.2.1 released ------
@@ -17,8 +15,8 @@
 2011-02-18  Andras Varga
 
 	* in the layouter external interface (GraphLayouter), changed cModule*
-	pointers to int nodeId as a means of identifying nodes, because 
-	using cModule* was not very convenient with the SWIG JNI wrapper 
+	pointers to int nodeId as a means of identifying nodes, because
+	using cModule* was not very convenient with the SWIG JNI wrapper
 	(nativelibs library).
 
 	* added BasicGraphLayouterEnvironment, for use from the IDE
@@ -27,7 +25,7 @@
 
 2011-02-15  Andras Varga
 
-	* In the external interface of layouters (GraphLayouter class), 
+	* In the external interface of layouters (GraphLayouter class),
 	changed "int" to "double" for coordinates and distances. Internally
 	they all already calculated everything in floating point.
 

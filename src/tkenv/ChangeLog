@@ -1,7 +1,5 @@
 2013-01-11  ------ omnetpp-4.3rc1 released ------
 
-2013-01-09  ------ omnetpp-4.3b1 released ------
-
 2012-03-13  ------ omnetpp-4.2.2 released ------
 
 2012-01-17  ------ omnetpp-4.2.1 released ------
@@ -40,7 +38,7 @@
 2010-02-12  Andras Varga
 
 	* Improved font handling:
-	- the generic UI font and the font used in graphics are now 
+	- the generic UI font and the font used in graphics are now
 	  configurable from the Simulation Options dialog
 	- on Linux, Tkenv now detects and uses the Ubuntu, Arial,
 	  Verdana, etc. fonts in this preference order (see full list
@@ -54,9 +52,9 @@
 
 2010-01-27  Rudolf Hornig
 
-	* Tkenv: fixed #245: if one of the ini file parameters had a syntax 
-	error, Tkenv failed to display the module that uses that parameter 
-	and showed "Cannot access display string yet: parameters not yet set 
+	* Tkenv: fixed #245: if one of the ini file parameters had a syntax
+	error, Tkenv failed to display the module that uses that parameter
+	and showed "Cannot access display string yet: parameters not yet set
 	up" errors.
 
 2010-12-09  Andras Varga
@@ -73,9 +71,9 @@
 
 2010-07-29  Andras Varga
 
-	* fix for bug #195: broadcast animation crashes if msg gets deleted 
+	* fix for bug #195: broadcast animation crashes if msg gets deleted
 	by the end of event processing.
-    
+
 2010-06-11  ------ omnetpp-4.1 released ------
 
 2010-06-11  Andras Varga

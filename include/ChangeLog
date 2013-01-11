@@ -1,13 +1,11 @@
 2013-01-11  ------ omnetpp-4.3rc1 released ------
 
-2013-01-09  ------ omnetpp-4.3b1 released ------
-
 2013-01-09  Andras Varga
 
 	* Renamed methods of cMatchExpression::Matchable:
 	  getDefaultAttribute() -> getAsString()
 	  getAttribute(const char *name) -> getAsString(const char *attribute)
-  
+
 2012-01-31  Andras Varga
 
 	* Signals implementation now allows static initialization of simsignal_t

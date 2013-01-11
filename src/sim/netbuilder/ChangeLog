@@ -1,7 +1,5 @@
 2013-01-11  ------ omnetpp-4.3rc1 released ------
 
-2013-01-09  ------ omnetpp-4.3b1 released ------
-
 2012-03-13  ------ omnetpp-4.2.2 released ------
 
 2012-01-17  ------ omnetpp-4.2.1 released ------
@@ -15,7 +13,7 @@
 2011-04-20  Andras Varga
 
 	* "type-name" per-object config option has been renamed to "typename",
-	for consistency with NED. (It is now an exception to the rule that 
+	for consistency with NED. (It is now an exception to the rule that
 	all per-object options have a hyphen in their names.)
 
 2011-04-19  Andras Varga
@@ -35,7 +33,7 @@
 
 	Example:
 	  network Net {
-	      parameters: 
+	      parameters:
 	          server.tcp.typename = "TCP_NSC";
 	          host*.tcp.typename = default("TCP_lwIP");
 	      submodule:

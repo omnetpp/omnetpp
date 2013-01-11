@@ -1,7 +1,5 @@
 2013-01-11  ------ omnetpp-4.3rc1 released ------
 
-2013-01-09  ------ omnetpp-4.3b1 released ------
-
 2013-01-07  Rudolf Hornig
 
 	Visual C++ makefiles are now printing only the name of the compiled
@@ -9,7 +7,7 @@
 
 2012-10-27  Rudolf Hornig
 
-	GNU Makefiles now print only the name of the compiled 
+	GNU Makefiles now print only the name of the compiled
 	file, but not the whole command line. This makes the build output
 	a bit less verbose. Verbose mode can be turned on by specifying V=1
 	as a parameter for make.
@@ -30,7 +28,7 @@
 
 2011-05-25  Andras Varga
 
-	* opp_msvcver.pl: fix #75: Chinese version of Visual C++ was not 
+	* opp_msvcver.pl: fix #75: Chinese version of Visual C++ was not
 	recognized, because the words "bit" and "version" have also been
 	translated in the cl.exe logo output.
 
@@ -42,7 +40,7 @@
 
 2010-06-09  Andras Varga
 
-	* opp_makemake: in generated makefiles, ln -sf, mkdir -p and 
+	* opp_makemake: in generated makefiles, ln -sf, mkdir -p and
 	opp_shlib_postprocess are now referred to via Makefile.inc variables
 	(LN, MKPATH, SHLIB_POSTPROCESS).
 
@@ -62,9 +60,9 @@
 
 2010-04-01  Andras Varga
 
-	* opp_makemake: support long linker lines (>32K) on Windows, via using 
-	temp files for arguments (edit: actually it still does not work, 
-	because g++ internally attempts to launch its inferior processes with 
+	* opp_makemake: support long linker lines (>32K) on Windows, via using
+	temp files for arguments (edit: actually it still does not work,
+	because g++ internally attempts to launch its inferior processes with
 	a >32K command line, and fails... There seems to be no other solution
 	than splitting up the project's sources to multiple libs..
 

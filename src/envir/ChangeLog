@@ -1,7 +1,5 @@
 2013-01-11  ------ omnetpp-4.3rc1 released ------
 
-2013-01-09  ------ omnetpp-4.3b1 released ------
-
 2012-03-27 Tamas Borbely
 
     Fix bug #555: Memory leak in output vector recording.
@@ -19,7 +17,7 @@
 2011-07-17 Rudolf Hornig
 
     * opp_run: Changed how opp_run is used to start debug and release models.
-    
+
     There are two programs now to start models built as shared libs:
     - 'opp_run_release' is built using release opp libraries and starts any release
       model directly by invoking evMain.
@@ -27,23 +25,23 @@
       into the address space dynamically and check for the simbol __is_release_opp_sim__
       (that is present only in release builds). If it does not find it, the
       model is debug and proceeds normally by invoking evMain. If it decides that
-      the model is 'release', it reloads the whole simulation by exec-ing it using 
+      the model is 'release', it reloads the whole simulation by exec-ing it using
       'opp_run_release'.
-    
+
       The simulation IDE also detects whether release or debug version of the model is
-      started and it launches it with either 'opp_run' or 'opp_run_release'. This is 
-      required because on Windows, 'opp_run_release' is started as a different process 
-      and the IDE would not be able to control/kill the 'opp_run_release' process if 
+      started and it launches it with either 'opp_run' or 'opp_run_release'. This is
+      required because on Windows, 'opp_run_release' is started as a different process
+      and the IDE would not be able to control/kill the 'opp_run_release' process if
       it would be started by opp_run.
 
       Note: The detection process does not work if the shared models libs are specified
       in the INI file.
 
-      Note2: Because of the above changes the main() function moved from the oppenvir 
-      library to a sparate statically linked library (oppmain). This library must be linked 
+      Note2: Because of the above changes the main() function moved from the oppenvir
+      library to a sparate statically linked library (oppmain). This library must be linked
       with executable simulation models. This requires changes in the makefiles.
       opp_makemake generates corract makefiles but the the makefiles *MUST* be recreated
-      when upgrading to OMNeT++ 4.2 and working on the command line. (The IDE automatically 
+      when upgrading to OMNeT++ 4.2 and working on the command line. (The IDE automatically
       recreates the makefiles, so in this case no further action is needed)
 
 2011-06-25  Andras Varga
@@ -95,7 +93,7 @@
 	    **.bar = ${"Hi $i", "Hi ${i}hn"}  # -> Hi Jo /John
 
 	(However, string constants outside ${..} are a little different: e.g.
-	in **.baz="Hello $i" the variable won't be substituted, you need to 
+	in **.baz="Hello $i" the variable won't be substituted, you need to
 	write **.baz="Hello ${i}".)
 
 	CAUTION: Because of textual substitution, similarly to C/C++ macros,
