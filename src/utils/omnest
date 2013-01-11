@@ -34,7 +34,7 @@ case $PLATFORM in
 	$IDEDIR/${LAUNCHER} $* $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log &
         ;;
 *Darwin*)
-	open $IDEDIR/${LAUNCHER}.app $* $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log
+	open -a $IDEDIR/${LAUNCHER}.app --args $* $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log
         ;;
 *)
 	echo OMNEST IDE is supported only on: Linux, Windows and MacOS X
