@@ -201,7 +201,7 @@ record-eventlog = true
 
 %contains: results/General-0.elog
 E # 0 t 0 m 1 ce -1 msg -1
-SB v 1026 rid SOME_RUN_ID b 1000
+SB v 1027 rid SOME_RUN_ID b 1000
 KF p -1 c "" s ""
 MC id 1 c cCompoundModule t Test n Test cm 1
 MS id 1 d ""

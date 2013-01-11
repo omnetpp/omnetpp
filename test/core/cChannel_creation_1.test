@@ -50,11 +50,11 @@ module Test: Test {
     submodules:
         module Test.creator: Creator {
             gates:
-                out: --> sink.in, testlib.TestChannel
+                out: --> sink.in, (testlib.TestChannel)ch
         }
         module Test.sink: testlib.Sink {
             gates:
-                in: <-- creator.out, testlib.TestChannel
+                in: <-- creator.out, (testlib.TestChannel)ch
         }
 }
 
