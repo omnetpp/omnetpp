@@ -5,7 +5,7 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
-OMNeT++ 4.3b1 (Jan 2013)
+OMNeT++ 4.3rc1 (Jan 2013)
 ------------------------
 
 IDE:
