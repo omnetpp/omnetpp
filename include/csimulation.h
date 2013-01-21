@@ -318,18 +318,13 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * doOneEvent() call. Includes initialization of the modules,
      * that is, invokes callInitialize() on the system module.
      */
-    void startRun();
+    void callInitialize();
 
     /**
      * Recursively calls finish() on the modules of the network.
      * This method simply invokes callfinish() on the system module.
      */
     void callFinish();
-
-    /**
-     * Should be called at the end of a simulation run.
-     */
-    void endRun();
 
     /**
      * Cleans up the network currently set up. This involves deleting

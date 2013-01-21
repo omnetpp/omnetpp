@@ -72,7 +72,7 @@ void simulate(const char *networkName, simtime_t limit)
     simulation.setupNetwork(networkType); //XXX may throw exception
 
     // prepare for running it
-    simulation.startRun();
+    simulation.callInitialize();
 
     // run the simulation
     bool ok = true;
@@ -96,7 +96,6 @@ void simulate(const char *networkName, simtime_t limit)
         simulation.callFinish();  //XXX may throw exception
 
     // finish the simulation and clean up the network
-    simulation.endRun();
     simulation.deleteNetwork();
 }
 

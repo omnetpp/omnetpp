@@ -375,7 +375,7 @@ void cSimulation::setupNetwork(cModuleType *network)
     //printf("setupNetwork finished, cParImpl objects in use: %ld\n", cParImpl::getLiveParImplObjectCount());
 }
 
-void cSimulation::startRun()
+void cSimulation::callInitialize()
 {
     checkActive();
 
@@ -419,11 +419,6 @@ void cSimulation::callFinish()
         systemmodp->callFinish();
         ev.notifyListeners(LF_POST_NETWORK_FINISH);
     }
-}
-
-void cSimulation::endRun()  //TODO remove this? (also startRun())
-{
-    checkActive();
 }
 
 void cSimulation::deleteNetwork()

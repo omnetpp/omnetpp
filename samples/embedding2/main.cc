@@ -113,7 +113,7 @@ double simulateAloha(simtime_t limit, int numHosts, double iaMean)
     sim->setupNetwork(networkType); //XXX may throw exception
 
     // prepare for running it
-    sim->startRun();
+    sim->callInitialize();
 
     // run the simulation
     bool ok = true;
@@ -138,7 +138,6 @@ double simulateAloha(simtime_t limit, int numHosts, double iaMean)
         sim->callFinish();  //XXX may throw exception
 
     // finish the simulation and clean up the network
-    sim->endRun();
     sim->deleteNetwork();
 
     // get the channel utilization from the simulation

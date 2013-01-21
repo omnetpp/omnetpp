@@ -824,13 +824,12 @@ void EnvirBase::setupNetwork(cModuleType *network)
 void EnvirBase::startRun()
 {
     resetClock();
-    simulation.startRun();
+    simulation.callInitialize();
     flushLastLine();
 }
 
 void EnvirBase::endRun()  //FIXME eliminate???
 {
-    simulation.endRun();
     notifyListeners(LF_ON_RUN_END);
 }
 
