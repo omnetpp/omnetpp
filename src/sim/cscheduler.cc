@@ -46,6 +46,15 @@ void cScheduler::setSimulation(cSimulation *_sim)
     sim = _sim;
 }
 
+void cScheduler::lifetimeEvent(SimulationLifetimeEventType eventType, cObject *details)
+{
+    switch (eventType) {
+        case LF_PRE_NETWORK_INITIALIZE: startRun(); break;
+        case LF_ON_RUN_END: endRun(); break;
+        case LF_ON_SIMULATION_RESUME: executionResumed(); break;
+    }
+}
+
 //-----
 
 Register_Class(cSequentialScheduler);

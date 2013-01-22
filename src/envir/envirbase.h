@@ -121,6 +121,9 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     // Data for getUniqueNumber()
     unsigned long nextuniquenumber;
 
+    // lifetime listeners
+    std::vector<cISimulationLifetimeListener*> listeners;
+
     timeval simbegtime;  // real time when sim. started
     timeval simendtime;  // real time when sim. ended
     timeval laststarted; // real time from where sim. was last cont'd
@@ -223,6 +226,10 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual int getParsimNumPartitions() const;
     virtual unsigned long getUniqueNumber();
     virtual bool idle();
+
+    virtual void addListener(cISimulationLifetimeListener *listener);
+    virtual void removeListener(cISimulationLifetimeListener *listener);
+    virtual void notifyListeners(SimulationLifetimeEventType eventType, cObject *details=NULL);
     //@}
 
   protected:

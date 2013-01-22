@@ -34,10 +34,10 @@ OBJS_STD=\
     $O/cenum.o $O/cexception.o $O/cfsm.o $O/cnedmathfunction.o $O/cgate.o $O/chistogram.o \
     $O/cksplit.o $O/clcg32.o $O/clinkedlist.o $O/clistener.o $O/clongparimpl.o $O/cmersennetwister.o \
     $O/cmessage.o $O/cmsgpar.o $O/cmodule.o $O/cmessageheap.o $O/chasher.o $O/ctimestampedvalue.o \
-    $O/cmatchexpression.o $O/cpatternmatcher.o \
+    $O/cmatchexpression.o $O/cpatternmatcher.o $O/cnullenvir.o $O/envirext.o \
     $O/cnedfunction.o $O/cnedvalue.o $O/cobject.o $O/coutvector.o $O/cnamedobject.o \
     $O/cpar.o $O/cparimpl.o $O/cownedobject.o $O/cproperties.o $O/cproperty.o \
-    $O/cresultfilter.o $O/cresultlistener.o $O/cresultrecorder.o \
+    $O/cresultfilter.o $O/cresultlistener.o $O/cresultrecorder.o $O/clifetimelistener.o \
     $O/cpsquare.o $O/cqueue.o $O/cpacketqueue.o $O/cscheduler.o $O/csimplemodule.o \
     $O/csimulation.o $O/cstatistic.o $O/cstddev.o $O/cstlwatch.o $O/cstringparimpl.o \
     $O/cstringpool.o $O/cstringtokenizer.o $O/cclassdescriptor.o $O/ctopology.o $O/cvarhist.o \

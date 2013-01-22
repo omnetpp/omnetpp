@@ -58,6 +58,8 @@ Register_PerRunConfigOption(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-mes
 Register_PerRunConfigOption(CFGID_EVENTLOG_RECORDING_INTERVALS, "eventlog-recording-intervals", CFG_CUSTOM, NULL, "Simulation time interval(s) when events should be recorded. Syntax: [<from>]..[<to>],... That is, both start and end of an interval are optional, and intervals are separated by comma. Example: ..10.2, 22.2..100, 233.3..");
 Register_PerObjectConfigOption(CFGID_MODULE_EVENTLOG_RECORDING, "module-eventlog-recording", KIND_SIMPLE_MODULE, CFG_BOOL, "true", "Enables recording events on a per module basis. This is meaningful for simple modules only. \nExample:\n **.router[10..20].**.module-eventlog-recording = true\n **.module-eventlog-recording = false");
 
+extern cConfigOption *CFGID_RECORD_EVENTLOG;
+
 static bool compareMessageEventNumbers(cMessage *message1, cMessage *message2)
 {
     return message1->getPreviousEventNumber() < message2->getPreviousEventNumber();
@@ -90,6 +92,7 @@ static ObjectPrinterRecursionControl recurseIntoMessageFields(void *object, cCla
 
 EventlogFileManager::EventlogFileManager()
 {
+    recordEventlog = false;
     feventlog = NULL;
     objectPrinter = NULL;
     recordingIntervals = NULL;
@@ -120,6 +123,9 @@ void EventlogFileManager::clearInternalState()
 
 void EventlogFileManager::configure()
 {
+    // main switch
+    recordEventlog = ev.getConfig()->getAsBool(CFGID_RECORD_EVENTLOG);
+
     // setup eventlog object printer
     delete objectPrinter;
     objectPrinter = NULL;
@@ -137,6 +143,28 @@ void EventlogFileManager::configure()
     // setup filename
     filename = ev.getConfig()->getAsFilename(CFGID_EVENTLOG_FILE).c_str();
     dynamic_cast<EnvirBase *>(&ev)->processFileName(filename);
+}
+
+void EventlogFileManager::lifetimeEvent(SimulationLifetimeEventType eventType, cObject *details)
+{
+    switch (eventType) {
+        case LF_PRE_NETWORK_SETUP:
+            if (recordEventlog) {      //FIXME flag is duplicate!!!
+                open();
+                startRun();
+            }
+            else {
+                remove();
+            }
+            break;
+        case LF_ON_RUN_END:
+            close();
+            break;
+        case LF_ON_SIMULATION_PAUSE:
+            flush();
+            break;
+    }
+
 }
 
 void EventlogFileManager::open()

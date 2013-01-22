@@ -23,6 +23,7 @@
 #include "opp_string.h"
 #include "objectprinter.h"
 #include "intervals.h"
+#include "clifetimelistener.h"
 
 class cComponent;
 class cModule;
@@ -35,7 +36,7 @@ NAMESPACE_BEGIN
 /**
  * Responsible for writing the eventlog file.
  */
-class ENVIR_API EventlogFileManager
+class ENVIR_API EventlogFileManager : public cISimulationLifetimeListener
 {
   private:
     opp_string filename;
@@ -46,6 +47,7 @@ class ENVIR_API EventlogFileManager
     int entryIndex;
     int keyframeBlockSize;
     file_offset_t previousKeyframeFileOffset;
+    bool recordEventlog;
     bool isEventLogRecordingEnabled;
     bool isModuleEventLogRecordingEnabled;
     bool isIntervalEventLogRecordingEnabled;
@@ -97,6 +99,12 @@ class ENVIR_API EventlogFileManager
     std::map<cModule *, EventLogEntryReference> moduleToModuleDisplayStringChangedEntryReferenceMap;
     std::map<cChannel *, EventLogEntryReference> channelToConnectionDisplayStringChangedEntryReferenceMap;
     std::map<cMessage *, EventLogEntryReference> messageToBeginSendEntryReferenceMap;
+
+  protected:
+    /**
+     * A cISimulationLifetimeListener method. Delegates to startRun() and endRun(); override if needed.
+     */
+    virtual void lifetimeEvent(SimulationLifetimeEventType eventType, cObject *details);
 
   public:
     EventlogFileManager();

@@ -19,6 +19,7 @@
 #include <assert.h>
 #include <fstream>
 #include <set>
+#include <algorithm>
 
 #include "args.h"
 #include "envirbase.h"
@@ -212,6 +213,11 @@ EnvirBase::EnvirBase()
 
 EnvirBase::~EnvirBase()
 {
+    while (!listeners.empty()) {
+        listeners.back()->listenerRemoved();
+        listeners.pop_back();
+    }
+
     delete args;
     delete cfg;
     delete xmlcache;
@@ -363,15 +369,19 @@ bool EnvirBase::setup()
 
         // install eventlog manager
         eventlogmgr = new EventlogFileManager();
+        addListener(eventlogmgr);
 
         // install output vector manager
         CREATE_BY_CLASSNAME(outvectormgr, opt_outputvectormanager_class.c_str(), cIOutputVectorManager, "output vector manager");
+        addListener(outvectormgr);
 
         // install output scalar manager
         CREATE_BY_CLASSNAME(outscalarmgr, opt_outputscalarmanager_class.c_str(), cIOutputScalarManager, "output scalar manager");
+        addListener(outscalarmgr);
 
         // install snapshot manager
         CREATE_BY_CLASSNAME(snapshotmgr, opt_snapshotmanager_class.c_str(), cISnapshotManager, "snapshot manager");
+        addListener(snapshotmgr);
 
         // set up for sequential or distributed execution
         if (!opt_parsim)
@@ -389,6 +399,7 @@ bool EnvirBase::setup()
             parsimpartition = new cParsimPartition();
             cParsimSynchronizer *parsimsynchronizer;
             CREATE_BY_CLASSNAME(parsimsynchronizer, opt_parsimsynch_class.c_str(), cParsimSynchronizer, "parallel simulation synchronization layer");
+            addListener(parsimpartition);
 
             // wire them together (note: 'parsimsynchronizer' is also the scheduler for 'simulation')
             parsimpartition->setContext(&simulation, parsimcomm, parsimsynchronizer);
@@ -429,6 +440,9 @@ bool EnvirBase::setup()
             }
         }
         simulation.doneLoadingNedFiles();
+
+        // notify listeners when global setup is complete
+        notifyListeners(LF_ON_STARTUP);
     }
     catch (std::exception& e)
     {
@@ -794,10 +808,7 @@ void EnvirBase::shutdown()
     try
     {
         simulation.deleteNetwork();
-#ifdef WITH_PARSIM
-        if (opt_parsim && parsimpartition)
-            parsimpartition->shutdown();
-#endif
+        ev.notifyListeners(LF_ON_SHUTDOWN);
     }
     catch (std::exception& e)
     {
@@ -807,43 +818,20 @@ void EnvirBase::shutdown()
 
 void EnvirBase::setupNetwork(cModuleType *network)
 {
-    if (record_eventlog)
-        eventlogmgr->startRun();
-    else
-        eventlogmgr->remove();
     simulation.setupNetwork(network);
 }
 
 void EnvirBase::startRun()
 {
     resetClock();
-    outvectormgr->startRun();
-    outscalarmgr->startRun();
-    snapshotmgr->startRun();
-    if (opt_parsim)
-    {
-#ifdef WITH_PARSIM
-        parsimpartition->startRun();
-#endif
-    }
     simulation.startRun();
     flushLastLine();
 }
 
-void EnvirBase::endRun()
+void EnvirBase::endRun()  //FIXME eliminate???
 {
-    // reverse order as startRun()
     simulation.endRun();
-    if (opt_parsim)
-    {
-#ifdef WITH_PARSIM
-        parsimpartition->endRun();
-#endif
-    }
-    eventlogmgr->close();
-    snapshotmgr->endRun();
-    outscalarmgr->endRun();
-    outvectormgr->endRun();
+    notifyListeners(LF_ON_RUN_END);
 }
 
 //-------------------------------------------------------------
@@ -1536,14 +1524,12 @@ void EnvirBase::readPerRunOptions()
     // Note: in startRun() it would be too late, because modules are created earlier
     eventlogmgr->configure();
     record_eventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
-    if (record_eventlog)
-        eventlogmgr->open();
 }
 
 void EnvirBase::setEventlogRecording(bool enabled)
 {
     // NOTE: eventlogmgr must be non-NULL when record_eventlog is true
-    if (enabled && !record_eventlog) {
+    if (enabled && !record_eventlog) {   //FIXME not good!!!!
         eventlogmgr->open();
         eventlogmgr->recordSimulation();
     }
@@ -1711,6 +1697,41 @@ char **EnvirBase::getArgVector() const
 {
     return args->getArgVector();
 }
+
+void EnvirBase::addListener(cISimulationLifetimeListener *listener)
+{
+    std::vector<cISimulationLifetimeListener*>::iterator it = std::find(listeners.begin(), listeners.end(), listener);
+    if (it == listeners.end()) {
+        listeners.push_back(listener);
+        listener->listenerAdded();
+    }
+}
+
+void EnvirBase::removeListener(cISimulationLifetimeListener *listener)
+{
+    std::vector<cISimulationLifetimeListener*>::iterator it = std::find(listeners.begin(), listeners.end(), listener);
+    if (it != listeners.end()) {
+        listeners.erase(it);
+        listener->listenerRemoved();
+    }
+}
+
+void EnvirBase::notifyListeners(SimulationLifetimeEventType eventType, cObject *details)
+{
+    // make a copy of the listener list, to avoid problems from listeners
+    // getting added/removed during notification
+    std::vector<cISimulationLifetimeListener*> copy = listeners;
+    for (int i = 0; i < (int)copy.size(); i++) {
+        try {
+            copy[i]->lifetimeEvent(eventType, details);
+        }
+        catch (std::exception& e) {  //XXX perhaps we shouldn't hide the exception!!!! just re-throw? then all notifyListeners() calls MUST be surrounded with try-catch!!!!
+            const char *eventName = cISimulationLifetimeListener::getSimulationLifetimeEventName(eventType);
+            printfmsg("Error in %s listener: %s", eventName, e.what());
+        }
+    }
+}
+
 
 //-------------------------------------------------------------
 

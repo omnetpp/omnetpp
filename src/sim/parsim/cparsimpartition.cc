@@ -61,6 +61,15 @@ void cParsimPartition::setContext(cSimulation *simul, cParsimCommunications *com
     synch = sync;
 }
 
+void cParsimPartition::lifetimeEvent(SimulationLifetimeEventType eventType, cObject *details)
+{
+    switch (eventType) {
+        case LF_PRE_NETWORK_INITIALIZE: startRun(); break;
+        case LF_ON_RUN_END: endRun(); break;
+        case LF_ON_SHUTDOWN: shutdown(); break;
+    }
+}
+
 void cParsimPartition::startRun()
 {
     connectRemoteGates();

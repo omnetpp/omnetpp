@@ -23,6 +23,9 @@
 #include <iostream>
 #include "simkerneldefs.h"
 #include "cobject.h"
+#include "simtime_t.h"
+#include "opp_string.h"
+#include "clifetimelistener.h"
 
 NAMESPACE_BEGIN
 
@@ -50,12 +53,18 @@ class cStatistic;
  *
  * @ingroup EnvirExtensions
  */
-class SIM_API cIOutputVectorManager : public cObject
+class SIM_API cIOutputVectorManager : public cObject, public cISimulationLifetimeListener
 {
   private:
     // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented
     cIOutputVectorManager(const cIOutputVectorManager&);
     cIOutputVectorManager& operator=(const cIOutputVectorManager&);
+
+  protected:
+    /**
+     * A cISimulationLifetimeListener method. Delegates to startRun(), endRun() and flush(); override if needed.
+     */
+    virtual void lifetimeEvent(SimulationLifetimeEventType eventType, cObject *details);
 
   public:
     /** @name Constructor, destructor */
@@ -148,12 +157,18 @@ class SIM_API cIOutputVectorManager : public cObject
  *
  * @ingroup EnvirExtensions
  */
-class SIM_API cIOutputScalarManager : public cObject
+class SIM_API cIOutputScalarManager : public cObject, public cISimulationLifetimeListener
 {
   private:
     // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented
     cIOutputScalarManager(const cIOutputScalarManager&);
     cIOutputScalarManager& operator=(const cIOutputScalarManager&);
+
+  protected:
+    /**
+     * A cISimulationLifetimeListener method. Delegates to startRun(), endRun() and flush(); override if needed.
+     */
+    virtual void lifetimeEvent(SimulationLifetimeEventType eventType, cObject *details);
 
   public:
     /** @name Constructor, destructor */
@@ -231,12 +246,18 @@ class SIM_API cIOutputScalarManager : public cObject
  *
  * @ingroup EnvirExtensions
  */
-class SIM_API cISnapshotManager : public cObject
+class SIM_API cISnapshotManager : public cObject, public cISimulationLifetimeListener
 {
   private:
     // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented
     cISnapshotManager(const cISnapshotManager&);
     cISnapshotManager& operator=(const cISnapshotManager&);
+
+  protected:
+    /**
+     * A cISimulationLifetimeListener method. Delegates to startRun() and endRun(); override if needed.
+     */
+    virtual void lifetimeEvent(SimulationLifetimeEventType eventType, cObject *details);
 
   public:
     /** @name Constructor, destructor */
@@ -286,6 +307,7 @@ class SIM_API cISnapshotManager : public cObject
     virtual const char *getFileName() const = 0;
     //@}
 };
+
 
 NAMESPACE_END
 

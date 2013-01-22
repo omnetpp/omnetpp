@@ -61,6 +61,7 @@ class SIM_API cNullEnvir : public cEnvir
     cConfiguration *cfg;
     cRNG *rng;
     unsigned long lastnum;
+    std::vector<cISimulationLifetimeListener*> listeners;
 
   protected:
     void unsupported() const {throw cRuntimeError("cNullEnvir: unsupported method called");}
@@ -71,8 +72,8 @@ class SIM_API cNullEnvir : public cEnvir
 
   public:
     // constructor, destructor
-    cNullEnvir(int ac, char **av, cConfiguration *c) {argc=ac; argv=av; cfg=c; rng=new cMersenneTwister(); lastnum=0;}
-    virtual ~cNullEnvir() {delete cfg; delete rng;}
+    cNullEnvir(int ac, char **av, cConfiguration *c);
+    virtual ~cNullEnvir();
 
     // eventlog callback interface
     virtual void objectDeleted(cObject *object) {}
@@ -145,6 +146,11 @@ class SIM_API cNullEnvir : public cEnvir
     virtual int getParsimNumPartitions() const {return 1;}
     virtual unsigned long getUniqueNumber()  {return ++lastnum;}
     virtual bool idle()  {return false;}
+
+    // lifetime listeners
+    virtual void addListener(cISimulationLifetimeListener *listener);
+    virtual void removeListener(cISimulationLifetimeListener *listener);
+    virtual void notifyListeners(SimulationLifetimeEventType eventType, cObject *details);
 };
 
 

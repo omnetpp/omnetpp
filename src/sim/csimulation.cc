@@ -24,7 +24,6 @@
 
 #include <string.h>
 #include <stdio.h>
-#include <algorithm>
 #include "stringutil.h"
 #include "cmodule.h"
 #include "csimplemodule.h"
@@ -39,6 +38,7 @@
 #include "chasher.h"
 #include "cconfiguration.h"
 #include "ccoroutine.h"
+#include "clifetimelistener.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -100,9 +100,9 @@ cSimulation::~cSimulation()
 
     deleteNetwork();
 
+    delete ownEvPtr;
     delete hasherp;
     delete schedulerp;
-    delete ownEvPtr;
     drop(&msgQueue);
 }
 
@@ -213,9 +213,15 @@ void cSimulation::setScheduler(cScheduler *sch)
         throw cRuntimeError(this, "setScheduler(): cannot switch schedulers when a network is already set up");
     if (!sch)
         throw cRuntimeError(this, "setScheduler(): scheduler pointer is NULL");
-    delete schedulerp;
+
+    if (schedulerp) {
+        ev.removeListener(schedulerp);
+        delete schedulerp;
+    }
+
     schedulerp = sch;
     schedulerp->setSimulation(this);
+    ev.addListener(schedulerp);
 }
 
 int cSimulation::loadNedSourceFolder(const char *folder)
@@ -346,9 +352,11 @@ void cSimulation::setupNetwork(cModuleType *network)
     {
         // set up the network by instantiating the toplevel module
         cContextTypeSwitcher tmp(CTX_BUILD);
+        ev.notifyListeners(LF_PRE_NETWORK_SETUP);
         cModule *mod = networktype->create(networktype->getName(), NULL);
         mod->finalizeParameters();
         mod->buildInside();
+        ev.notifyListeners(LF_POST_NETWORK_SETUP);
     }
     catch (std::exception& e)
     {
@@ -378,9 +386,6 @@ void cSimulation::startRun()
 
     simulationstage = CTX_INITIALIZE;
 
-    // init the scheduler. Note this may insert events into the FES (see e.g. cNullMessageProtocol)
-    getScheduler()->startRun();
-
     // prepare simple modules for simulation run:
     //    1. create starter message for all modules,
     //    2. then call initialize() for them (recursively)
@@ -391,7 +396,9 @@ void cSimulation::startRun()
     {
         cContextSwitcher tmp(systemmodp);
         systemmodp->scheduleStart(0);
+        ev.notifyListeners(LF_PRE_NETWORK_INITIALIZE);
         systemmodp->callInitialize();
+        ev.notifyListeners(LF_POST_NETWORK_INITIALIZE);
     }
 
     event_num = 1; // events are numbered from 1
@@ -408,14 +415,15 @@ void cSimulation::callFinish()
     // call user-defined finish() functions for all modules recursively
     if (systemmodp)
     {
+        ev.notifyListeners(LF_PRE_NETWORK_FINISH);
         systemmodp->callFinish();
+        ev.notifyListeners(LF_POST_NETWORK_FINISH);
     }
 }
 
-void cSimulation::endRun()
+void cSimulation::endRun()  //TODO remove this? (also startRun())
 {
     checkActive();
-    getScheduler()->endRun();
 }
 
 void cSimulation::deleteNetwork()
@@ -427,6 +435,8 @@ void cSimulation::deleteNetwork()
         throw cRuntimeError("Attempt to delete network during simulation");
 
     simulationstage = CTX_CLEANUP;
+
+    ev.notifyListeners(LF_PRE_NETWORK_DELETE);
 
     // delete all modules recursively
     systemmodp->deleteModule();
@@ -445,6 +455,8 @@ void cSimulation::deleteNetwork()
 
     //FIXME todo delete cParImpl caches too (cParImplCache, cParImplCache2)
     cModule::clearNamePools();
+
+    ev.notifyListeners(LF_POST_NETWORK_DELETE);
 
     // clear remaining messages (module dtors may have cancelled & deleted some of them)
     msgQueue.clear();
@@ -809,6 +821,11 @@ class StaticEnv : public cEnvir
     virtual int getParsimNumPartitions() const {return 1;}
     virtual unsigned long getUniqueNumber()  {unsupported(); return 0;}
     virtual bool idle()  {return false;}
+
+    // lifetime listeners
+    virtual void addListener(cISimulationLifetimeListener *listener) {}
+    virtual void removeListener(cISimulationLifetimeListener *listener) {}
+    virtual void notifyListeners(SimulationLifetimeEventType eventType, cObject *details) {}
 };
 
 void StaticEnv::undisposedObject(cObject *obj)

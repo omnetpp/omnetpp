@@ -335,7 +335,7 @@ void Tkenv::doOneStep()
 
     simstate = SIM_RUNNING;
     startClock();
-    simulation.getScheduler()->executionResumed();
+    notifyListeners(LF_ON_SIMULATION_RESUME);
     try
     {
         cSimpleModule *mod = simulation.selectNextModule();
@@ -350,21 +350,20 @@ void Tkenv::doOneStep()
         updateNextModuleDisplay();
         updateInspectors();
         simstate = SIM_READY;
-        outvectormgr->flush();
-        outscalarmgr->flush();
-        if (eventlogmgr)
-            eventlogmgr->flush();
+        notifyListeners(LF_ON_SIMULATION_PAUSE);
     }
     catch (cTerminationException& e)
     {
         simstate = SIM_TERMINATED;
         stoppedWithTerminationException(e);
+        notifyListeners(LF_ON_SIMULATION_SUCCESS);
         displayException(e);
     }
     catch (std::exception& e)
     {
         simstate = SIM_ERROR;
         stoppedWithException(e);
+        notifyListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
     }
     stopClock();
@@ -402,7 +401,7 @@ void Tkenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
 
     simstate = SIM_RUNNING;
     startClock();
-    simulation.getScheduler()->executionResumed();
+    notifyListeners(LF_ON_SIMULATION_RESUME);
     try
     {
         // funky while loop to handle switching to and from EXPRESS mode....
@@ -415,21 +414,20 @@ void Tkenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
                 cont = doRunSimulation();
         }
         simstate = SIM_READY;
-        outvectormgr->flush();
-        outscalarmgr->flush();
-        if (eventlogmgr)
-            eventlogmgr->flush();
+        notifyListeners(LF_ON_SIMULATION_PAUSE);
     }
     catch (cTerminationException& e)
     {
         simstate = SIM_TERMINATED;
         stoppedWithTerminationException(e);
+        notifyListeners(LF_ON_SIMULATION_SUCCESS);
         displayException(e);
     }
     catch (std::exception& e)
     {
         simstate = SIM_ERROR;
         stoppedWithException(e);
+        notifyListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
     }
     stopClock();
@@ -673,6 +671,7 @@ void Tkenv::finishSimulation()
     catch (std::exception& e)
     {
         stoppedWithException(e);
+        notifyListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
     }
 
@@ -683,6 +682,7 @@ void Tkenv::finishSimulation()
     }
     catch (std::exception& e)
     {
+        notifyListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
     }
     simstate = SIM_FINISHCALLED;
@@ -735,6 +735,7 @@ void Tkenv::newNetwork(const char *networkname)
     }
     catch (std::exception& e)
     {
+        notifyListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
         simstate = SIM_ERROR;
     }
@@ -784,6 +785,7 @@ void Tkenv::newRun(const char *configname, int runnumber)
     }
     catch (std::exception& e)
     {
+        notifyListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
         simstate = SIM_ERROR;
     }

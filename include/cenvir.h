@@ -23,6 +23,7 @@
 #include "simtime_t.h"
 #include "opp_string.h"
 #include "csimulation.h"
+#include "clifetimelistener.h"
 
 NAMESPACE_BEGIN
 
@@ -106,7 +107,7 @@ class SIM_API cEnvir
     bool disable_tracing;
 
     // Indicates whether eventlog recording is currently enabled
-    bool record_eventlog;
+    bool record_eventlog;  //FIXME remove!!!! use flag inside eventlogmgr
 
     // Internal flag. When set to true, the simulation kernel MAY omit calling
     // the following cEnvir methods: messageScheduled(), messageCancelled(),
@@ -717,6 +718,23 @@ class SIM_API cEnvir
      * abort waiting (e.g. pushed the Stop button).
      */
     virtual bool idle() = 0;
+    //@}
+
+    /** @name Lifetime listeners */
+    //@{
+    /**
+     * Adds a listener that will be notified about simulation lifetime events.
+     * The listeners will NOT be deleted when the program exits.
+     */
+    virtual void addListener(cISimulationLifetimeListener *listener) = 0;
+
+    /**
+     * Removes the given listener.
+     */
+    virtual void removeListener(cISimulationLifetimeListener *listener) = 0;
+
+    // internal
+    virtual void notifyListeners(SimulationLifetimeEventType eventType, cObject *details=NULL) = 0;
     //@}
 };
 

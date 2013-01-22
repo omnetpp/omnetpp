@@ -272,6 +272,7 @@ void Cmdenv::run()
 
             // simulate() should only throw exception if error occurred and
             // finish() should not be called.
+            notifyListeners(LF_ON_SIMULATION_START);
             simulate();
             disable_tracing = false;
 
@@ -281,12 +282,15 @@ void Cmdenv::run()
             flushLastLine();
 
             checkFingerprint();
+
+            notifyListeners(LF_ON_SIMULATION_SUCCESS);
         }
         catch (std::exception& e)
         {
             had_error = true;
             disable_tracing = false;
             stoppedWithException(e);
+            notifyListeners(LF_ON_SIMULATION_ERROR);
             displayException(e);
         }
 
@@ -314,6 +318,7 @@ void Cmdenv::run()
             catch (std::exception& e)
             {
                 had_error = true;
+                notifyListeners(LF_ON_SIMULATION_ERROR);
                 displayException(e);
             }
         }
