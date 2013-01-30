@@ -57,6 +57,11 @@ class SIM_API opp_string
     /**
      * Constructor.
      */
+    opp_string(const char *s, int n)  {str = new char[n+1]; strncpy(str, s?s:"", n); str[n] = '\0';}
+
+    /**
+     * Constructor.
+     */
     opp_string(const std::string& s)  {str = opp_strdup(s.c_str());}
 
     /**

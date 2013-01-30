@@ -1,3 +1,9 @@
+2013-01-29  Andras Varga
+
+	* cModule: implemented the new getModuleByPath() method, and slightly
+	updated the deprecated getModuleByRelativePath() and cSimulation's
+	getModuleByPath().
+
 2013-01-11  ------ omnetpp-4.3rc1 released ------
 
 2012-01-31  Andras Varga

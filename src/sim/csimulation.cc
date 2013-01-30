@@ -314,41 +314,10 @@ void cSimulation::setSystemModule(cModule *p)
 
 cModule *cSimulation::getModuleByPath(const char *path) const
 {
-    if (opp_isempty(path))
-        return NULL;
-
-    // start tokenizing the path
-    opp_string pathbuf(path);
-    char *s = strtok(pathbuf.buffer(),".");
-
-    // search starts from system module
     cModule *modp = getSystemModule();
-    if (!modp)
+    if (!modp || !path || !path[0] || path[0] == '.' || path[0] == '^')
         return NULL;
-
-    // 1st component in the path may be the system module, skip it then
-    if (modp->isName(s))
-        s = strtok(NULL,".");
-
-    // match components of the path
-    while (s && modp)
-    {
-        char *b;
-        if ((b=strchr(s,'['))==NULL)
-        {
-            modp = modp->getSubmodule(s);  // no index given
-        }
-        else
-        {
-            if (s[strlen(s)-1]!=']')
-                throw cRuntimeError("getModuleByPath(): syntax error in path `%s'", path);
-            *b='\0';
-            modp = modp->getSubmodule(s,atoi(b+1));
-        }
-        s = strtok(NULL,".");
-    }
-
-    return modp;  // NULL if not found
+    return modp->getModuleByPath(path);
 }
 
 void cSimulation::setupNetwork(cModuleType *network)

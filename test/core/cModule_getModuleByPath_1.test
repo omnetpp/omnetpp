@@ -1,0 +1,195 @@
+%description:
+Test cModule::getModuleByPath()
+
+%file: test.ned
+simple Tester {
+}
+
+module Box {
+}
+
+module NetworkLayer {
+    submodules:
+        ip: Box;
+        arp: Box;
+}
+
+module Host {
+    submodules:
+        tcpApp[1]: Box;
+        tcp: Box;
+        networkLayer: NetworkLayer;
+        nic[3]: Box;
+}
+
+network Test {
+    submodules:
+        server: Host;
+        host[3]: Host;
+        tester: Tester;
+}
+
+%file: tester.cc
+#include <omnetpp.h>
+namespace @TESTNAME@ {
+
+class Tester : public cSimpleModule
+{
+  public:
+    Tester() : cSimpleModule(16384) { }
+    void test(cModule *base, const char *path);
+    void sep() {ev << "---\n";}
+    void activity();
+};
+
+Define_Module(Tester);
+
+void Tester::test(cModule *base, const char *path)
+{
+    cModule *result = base->getModuleByPath(path);
+    EV << base->getFullPath() << " + " << (path ? path : "NULL") << " = " <<  (result ? result->getFullPath() : "NULL") << endl;
+}
+
+void Tester::activity()
+{
+    cModule *root = simulation.getSystemModule();
+    cModule *host0 = root->getSubmodule("host",0);
+    cModule *host0tcp = host0->getSubmodule("tcp");
+
+    // absolute
+    test(root, "server");
+    test(root, "host[2]");
+    test(root, "server.tcp");
+    test(root, "host[2].nic[2]");
+    test(root, "missing");
+    test(root, "host[2].missing");
+    sep();
+
+    // absolute w/ network name
+    test(root, "Test");
+    test(root, "Test.server");
+    test(root, "Test.host[2]");
+    test(root, "Test.server.tcp");
+    test(root, "Test.host[2].nic[2]");
+    test(root, "Test.missing");
+    test(root, "Test.host[2].missing");
+    sep();
+
+    // relative to root
+    test(root, ".server");
+    test(root, ".host[2]");
+    test(root, ".server.tcp");
+    test(root, ".host[2].nic[2]");
+    test(root, ".missing");
+    test(root, ".host[2].missing");
+    sep();
+
+    // absolute from host0
+    test(host0, "server.tcp");
+    test(host0, "Test.server.tcp");
+    sep();
+
+    // relative to host0
+    test(host0, ".tcp");
+    test(host0, ".networkLayer.ip");
+    test(host0, "^");
+    test(host0, "^.host[1]");
+    test(host0, "^.host[1].tcp");
+    test(host0, ".^");
+    test(host0, ".^.host[1]");
+    test(host0, ".^.host[1].tcp");
+    test(host0, ".missing");
+    test(host0, ".^.missing");
+    test(host0, ".^.host[1].missing");
+    sep();
+
+    // corner cases at root
+    test(root, NULL);
+    test(root, "");
+    test(root, ".");
+    test(root, "^");
+    test(root, "^.");
+    test(root, ".^");
+    test(root, "^.^");
+    test(root, ".^.^");
+    sep();
+
+    // corner cases at host0
+    test(host0, NULL);
+    test(host0, "");
+    test(host0, ".");
+    test(host0, "^.");
+    test(host0, ".tcp.");
+    test(host0, "Test.");
+    test(host0, ".^.");
+    test(host0, "^...host[1]...tcp..");
+    sep();
+
+}
+
+};
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+
+%exitcode: 0
+
+%contains: stdout
+Test + server = Test.server
+Test + host[2] = Test.host[2]
+Test + server.tcp = Test.server.tcp
+Test + host[2].nic[2] = Test.host[2].nic[2]
+Test + missing = NULL
+Test + host[2].missing = NULL
+---
+Test + Test = Test
+Test + Test.server = Test.server
+Test + Test.host[2] = Test.host[2]
+Test + Test.server.tcp = Test.server.tcp
+Test + Test.host[2].nic[2] = Test.host[2].nic[2]
+Test + Test.missing = NULL
+Test + Test.host[2].missing = NULL
+---
+Test + .server = Test.server
+Test + .host[2] = Test.host[2]
+Test + .server.tcp = Test.server.tcp
+Test + .host[2].nic[2] = Test.host[2].nic[2]
+Test + .missing = NULL
+Test + .host[2].missing = NULL
+---
+Test.host[0] + server.tcp = Test.server.tcp
+Test.host[0] + Test.server.tcp = Test.server.tcp
+---
+Test.host[0] + .tcp = Test.host[0].tcp
+Test.host[0] + .networkLayer.ip = Test.host[0].networkLayer.ip
+Test.host[0] + ^ = Test
+Test.host[0] + ^.host[1] = Test.host[1]
+Test.host[0] + ^.host[1].tcp = Test.host[1].tcp
+Test.host[0] + .^ = Test
+Test.host[0] + .^.host[1] = Test.host[1]
+Test.host[0] + .^.host[1].tcp = Test.host[1].tcp
+Test.host[0] + .missing = NULL
+Test.host[0] + .^.missing = NULL
+Test.host[0] + .^.host[1].missing = NULL
+---
+Test + NULL = NULL
+Test +  = NULL
+Test + . = Test
+Test + ^ = NULL
+Test + ^. = NULL
+Test + .^ = NULL
+Test + ^.^ = NULL
+Test + .^.^ = NULL
+---
+Test.host[0] + NULL = NULL
+Test.host[0] +  = NULL
+Test.host[0] + . = Test.host[0]
+Test.host[0] + ^. = Test
+Test.host[0] + .tcp. = Test.host[0].tcp
+Test.host[0] + Test. = Test
+Test.host[0] + .^. = Test
+Test.host[0] + ^...host[1]...tcp.. = Test.host[1].tcp
+---
+

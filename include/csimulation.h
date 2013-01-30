@@ -200,8 +200,9 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     int getLastModuleId() const    {return last_id;}
 
     /**
-     * Finds a module by its path. Inclusion of the name of the toplevel module
-     * in the path is optional. Returns NULL if not found.
+     * Finds a module by its path. The path is a string of module names
+     * separated by dots. Inclusion of the toplevel module's name in the
+     * path is optional. Returns NULL if the module is not found.
      */
     cModule *getModuleByPath(const char *modulepath) const;
 

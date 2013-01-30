@@ -533,12 +533,33 @@ class SIM_API cModule : public cComponent //implies noncopyable
     cModule *getSubmodule(const char *submodname, int idx=-1);
 
     /**
-     * Finds a submodule potentially several levels deeper, given with
-     * its relative path from this module. (The path is a string of module
-     * full names separated by dots). If the submodule was not found,
-     * returns NULL.
+     * Finds a module in this module's subtree, given with its relative path.
+     * The path is a string of module names separated by dots. Returns NULL
+     * if the module was not found.
+     *
+     * Deprecated: please use the more powerful getModuleByPath() instead.
      */
-    cModule *getModuleByRelativePath(const char *path);
+    _OPPDEPRECATED cModule *getModuleByRelativePath(const char *path);
+
+    /**
+     * Finds a module in the module tree, given by its absolute or relative path.
+     * The path is a string of module names separated by dots; the special
+     * module name ^ (caret) stands for the parent module. If the path starts
+     * with a dot or caret, it is understood as relative to this module,
+     * otherwise it is taken to mean an absolute path. For absolute paths,
+     * inclusion of the toplevel module's name in the path is optional.
+     * Returns NULL if the module was not found.
+     *
+     * Examples:
+     *   ".sink" means the sink submodule;
+     *   ".queue[2].srv" means the srv submodule of the queue[2] submodule;
+     *   "^.host2" or ".^.host2" means the host2 sibling module;
+     *   "src" or "Net.src" means the top src module (provided the network is called Net);
+     *   "." means this module.
+     *
+     *  @see cSimulation::getModuleByPath()
+     */
+    cModule *getModuleByPath(const char *path);
     //@}
 
     /** @name Gates. */

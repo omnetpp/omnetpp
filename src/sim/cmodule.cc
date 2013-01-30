@@ -1040,28 +1040,81 @@ cModule *cModule::getSubmodule(const char *submodname, int idx)
     return NULL;
 }
 
+// Note: this is a less powerful version of getModuleByPath(), deprecated and waiting to be removed
 cModule *cModule::getModuleByRelativePath(const char *path)
 {
-    // start tokenizing the path
-    opp_string pathbuf(path);
-    char *s = strtok(pathbuf.buffer(),".");
-
     // search starts from this module
     cModule *modp = this;
 
     // match components of the path
-    do {
-        char *b;
-        if ((b=strchr(s,'['))==NULL)
-            modp = modp->getSubmodule(s);  // no index given
+    opp_string pathbuf(path);
+    char *token = strtok(pathbuf.buffer(), ".");
+    while (token && modp)
+    {
+        char *lbracket;
+        if ((lbracket=strchr(token,'[')) == NULL)
+            modp = modp->getSubmodule(token);  // no index given
         else
         {
-            if (s[strlen(s)-1]!=']')
-                throw cRuntimeError(this,"getModuleByRelativePath(): syntax error in path `%s'", path);
-            *b='\0';
-            modp = modp->getSubmodule(s,atoi(b+1));
+            if (token[strlen(token)-1] != ']')
+                throw cRuntimeError(this, "getModuleByRelativePath(): syntax error (unmatched bracket?) in path `%s'", path);
+            int index = atoi(lbracket+1);
+            *lbracket = '\0'; // cut off [index]
+            modp = modp->getSubmodule(token, index);
         }
-    } while ((s=strtok(NULL,"."))!=NULL && modp!=NULL);
+        token = strtok(NULL,".");
+    }
+
+    return modp;  // NULL if not found
+}
+
+inline char *nextToken(char *&rest)
+{
+    if (!rest) return NULL;
+    char *token = rest;
+    rest = strchr(rest, '.');
+    if (rest) *rest++ = '\0';
+    return token;
+}
+
+cModule *cModule::getModuleByPath(const char *path)
+{
+    if (!path || !path[0])
+        return NULL;
+
+    // determine starting point
+    bool isrelative = (path[0] == '.' || path[0] == '^');
+    cModule *modp = isrelative ? this : simulation.getSystemModule();
+    if (path[0] == '.')
+        path++; // skip initial dot
+
+    // match components of the path
+    opp_string pathbuf(path);
+    char *rest = pathbuf.buffer();
+    char *token = nextToken(rest);
+    bool isfirst = true;
+    while (token && modp)
+    {
+        char *lbracket;
+        if (!token[0])
+            ; /*skip empty path component*/
+        else if (!isrelative && isfirst && modp->isName(token))
+            /*ignore network name*/;
+        else if (token[0] == '^' && token[1] == '\0')
+            modp = modp->getParentModule(); // if modp is the root, return NULL
+        else if ((lbracket=strchr(token,'[')) == NULL)
+            modp = modp->getSubmodule(token);
+        else
+        {
+            if (token[strlen(token)-1] != ']')
+                throw cRuntimeError(this, "getModuleByPath(): syntax error (unmatched bracket?) in path `%s'", path);
+            int index = atoi(lbracket+1);
+            *lbracket = '\0'; // cut off [index]
+            modp = modp->getSubmodule(token, index);
+        }
+        token = nextToken(rest);
+        isfirst = false;
+    }
 
     return modp;  // NULL if not found
 }
