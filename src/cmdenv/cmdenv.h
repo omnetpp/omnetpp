@@ -57,7 +57,7 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual void sputn(const char *s, int n);
      virtual void putsmsg(const char *s);
      virtual bool askyesno(const char *question);
-     virtual void printEventBanner(cSimpleModule *mod);
+     virtual void printEventBanner(cEvent *event);
      virtual void doStatusUpdate(Speedometer& speedometer);
 
    public:
@@ -68,7 +68,7 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual void componentInitBegin(cComponent *component, int stage);
      virtual void moduleCreated(cModule *newmodule);
      virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate);
-     virtual void simulationEvent(cMessage *msg);
+     virtual void simulationEvent(cEvent *event);
      virtual bool isGUI() const {return false;}
      virtual cEnvir& flush();
      virtual std::string gets(const char *prompt, const char *defaultReply);

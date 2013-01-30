@@ -77,7 +77,7 @@ class SIM_API cNullEnvir : public cEnvir
 
     // eventlog callback interface
     virtual void objectDeleted(cObject *object) {}
-    virtual void simulationEvent(cMessage *msg)  {}
+    virtual void simulationEvent(cEvent *event)  {}
     virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=NULL)  {}
     virtual void messageScheduled(cMessage *msg)  {}
     virtual void messageCancelled(cMessage *msg)  {}

@@ -19,7 +19,7 @@
 *--------------------------------------------------------------*/
 
 #include "cscheduler.h"
-#include "cmessage.h"
+#include "cevent.h"
 #include "csimulation.h"
 #include "cmessageheap.h"
 #include "globals.h"
@@ -59,17 +59,36 @@ void cScheduler::lifetimeEvent(SimulationLifetimeEventType eventType, cObject *d
 
 Register_Class(cSequentialScheduler);
 
-cMessage *cSequentialScheduler::getNextEvent()
+cEvent *cSequentialScheduler::guessNextEvent()
 {
-    cMessage *msg = sim->msgQueue.peekFirst();
-    if (!msg)
-        throw cTerminationException(eENDEDOK);
-    return msg;
+    return sim->msgQueue.peekFirst();
+}
+
+cEvent *cSequentialScheduler::takeNextEvent()
+{
+    for (;;)
+    {
+        cEvent *event = sim->msgQueue.removeFirst();
+        if (!event)
+            throw cTerminationException(eENDEDOK);
+        if (event->isStale())
+            delete event;
+        else
+            return event;
+    }
 }
 
 //-----
 
 Register_Class(cRealTimeScheduler);
+
+cRealTimeScheduler::cRealTimeScheduler() : cScheduler()
+{
+}
+
+cRealTimeScheduler::~cRealTimeScheduler()
+{
+}
 
 void cRealTimeScheduler::startRun()
 {
@@ -79,10 +98,6 @@ void cRealTimeScheduler::startRun()
     doScaling = (factor!=0);
 
     gettimeofday(&baseTime, NULL);
-}
-
-void cRealTimeScheduler::endRun()
-{
 }
 
 void cRealTimeScheduler::executionResumed()
@@ -113,14 +128,19 @@ bool cRealTimeScheduler::waitUntil(const timeval& targetTime)
     return true;
 }
 
-cMessage *cRealTimeScheduler::getNextEvent()
+cEvent *cRealTimeScheduler::guessNextEvent()
 {
-    cMessage *msg = sim->msgQueue.peekFirst();
-    if (!msg)
+    return sim->msgQueue.peekFirst();
+}
+
+cEvent *cRealTimeScheduler::takeNextEvent()
+{
+    cEvent *event = sim->msgQueue.peekFirst();
+    if (!event)
         throw cTerminationException(eENDEDOK);
 
     // calculate target time
-    simtime_t eventSimtime = msg->getArrivalTime();
+    simtime_t eventSimtime = event->getArrivalTime();
     timeval targetTime = timeval_add(baseTime, SIMTIME_DBL(doScaling ? factor*eventSimtime : eventSimtime));
 
     // if needed, wait until that time arrives
@@ -137,8 +157,10 @@ cMessage *cRealTimeScheduler::getNextEvent()
         // if we're too much behind, or modify basetime to accept the skew
     }
 
-    // ok, return the message
-    return msg;
+    // remove event from FES and return it
+    cEvent *tmp = sim->msgQueue.removeFirst();
+    ASSERT(tmp==event);
+    return event;
 }
 
 

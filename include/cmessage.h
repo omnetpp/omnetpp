@@ -3,9 +3,7 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//
-//  Declaration of the following classes:
-//    cMessage : message and event object
+//  Author: Andras Varga
 //
 //==========================================================================
 
@@ -20,7 +18,7 @@
 #ifndef __CMESSAGE_H
 #define __CMESSAGE_H
 
-#include "cownedobject.h"
+#include "cevent.h"
 #include "carray.h"
 #include "cmsgpar.h"
 #include "csimulation.h"
@@ -96,7 +94,6 @@ enum eMessageKind
  * \code
  * message Job
  * {
- *    fields:
  *        string label;
  *        int color = -1;
  * }
@@ -106,15 +103,11 @@ enum eMessageKind
  *
  * @ingroup SimCore
  */
-//XXX note: sizeof(cMessage) could be made a little smaller: the fields created, frommod, fromgate are rarely used by models (note: sendtime and tstamp *do* get used in practice)
-class SIM_API cMessage : public cOwnedObject
+class SIM_API cMessage : public cEvent
 {
-    friend class cMessageHeap;
-
   private:
     // note: fields are in an order that maximizes packing (minimizes sizeof(cMessage))
     short msgkind;             // message kind -- 0>= user-defined meaning, <0 reserved
-    short prior;               // priority -- used for scheduling msgs with equal times
     short srcprocid;           // reserved for use by parallel execution: id of source partition
     cArray *parlistp;          // ptr to list of parameters
     cObject *ctrlp;            // ptr to "control info"
@@ -123,13 +116,8 @@ class SIM_API cMessage : public cOwnedObject
     int frommod, fromgate;     // source module and gate IDs -- set internally
     int tomod, togate;         // dest. module and gate IDs -- set internally
     simtime_t created;         // creation time -- set be constructor
-    simtime_t sent,delivd;     // time of sending & delivery -- set internally
+    simtime_t sent;            // time of sending -- set internally
     simtime_t tstamp;          // time stamp -- user-defined meaning
-
-    int heapindex;             // used by cMessageHeap (-1 if not on heap; all other values, including negative ones, means "on the heap")
-    unsigned long insertordr;  // used by cMessageHeap
-
-    eventnumber_t prev_event_num; // event number of the last time envir was notified about this message (e.g. creating/cloning/sending/scheduling/deleting this message)
 
     long msgid;                // a unique message identifier assigned upon message creation
     long msgtreeid;            // a message identifier that is inherited by dup, if non dupped it is msgid
@@ -146,16 +134,6 @@ class SIM_API cMessage : public cOwnedObject
     void copy(const cMessage& msg);
 
   public:
-    // internal: returns the event number which scheduled this event, or the event in which
-    // this message was last delivered to a module. Stored for recording into the event log file.
-    eventnumber_t getPreviousEventNumber() const {return prev_event_num;}
-
-    // internal: sets previousEventNumber.
-    void setPreviousEventNumber(eventnumber_t num) {prev_event_num = num;}
-
-    // internal: used by cMessageHeap.
-    unsigned long getInsertOrder() const {return insertordr;}
-
     // internal: called by the simulation kernel as part of the send(),
     // scheduleAt() calls to set the values returned by the
     // getSenderModuleId(), getSenderGate(), getSendingTime() methods.
@@ -171,15 +149,25 @@ class SIM_API cMessage : public cOwnedObject
     // by the getArrivalModuleId(), getArrivalGate(), getArrivalTime() methods.
     void setArrival(cModule *module, int gate, simtime_t_cref t);
 
-    // internal: called by the simulation kernel to set the value returned
-    // by the getArrivalTime() method
-    void setArrivalTime(simtime_t t);
-
     // internal: used by the parallel simulation kernel.
     void setSrcProcId(int procId) {srcprocid = (short)procId;}
 
     // internal: used by the parallel simulation kernel.
-    int getSrcProcId() const {return srcprocid;}
+    virtual int getSrcProcId() const {return srcprocid;}
+
+  private: // hide cEvent methods from the cMessage API
+
+    // overridden from cEvent: return true
+    virtual bool isMessage() const {return true;}
+
+    // overridden from cEvent: return true of the target module is still alive and well
+    virtual bool isStale();
+
+    // overridden from cEvent: return the arrival module
+    virtual cObject *getTargetObject() const;
+
+    // overridden from cEvent
+    virtual void execute();
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -261,20 +249,12 @@ class SIM_API cMessage : public cOwnedObject
 
     /** @name Message attributes. */
     //@{
-
     /**
      * Sets the message kind. Nonnegative values can be freely used by
      * the user; negative values are reserved by OMNeT++ for internal
      * purposes.
      */
     void setKind(short k)  {msgkind=k;}
-
-    /**
-     * Sets event scheduling priority of the message. The priority member is
-     * used when the simulator inserts messages into the future events set
-     * (FES), to order messages with identical arrival time values.
-     */
-    void setSchedulingPriority(short p)  {prior=p;}
 
     /**
      * Sets the message's time stamp to the current simulation time.
@@ -324,11 +304,6 @@ class SIM_API cMessage : public cOwnedObject
      * Returns the message kind.
      */
     short getKind() const  {return msgkind;}
-
-    /**
-     * Returns the event scheduling priority.
-     */
-    short getSchedulingPriority() const  {return prior;}
 
     /**
      * Returns the message's time stamp.
@@ -511,11 +486,6 @@ class SIM_API cMessage : public cOwnedObject
     bool isSelfMessage() const {return togate==-1;}
 
     /**
-     * Return true if message is among future events.
-     */
-    bool isScheduled() const {return heapindex!=-1;}
-
-    /**
      * Returns a pointer to the sender module. It returns NULL if the message
      * has not been sent/scheduled yet, or if the sender module got deleted
      * in the meantime.
@@ -604,6 +574,7 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see getDuration()
      */
+    // note: overridden to provide more specific documentation
     simtime_t_cref getArrivalTime()  const {return delivd;}
 
     /**

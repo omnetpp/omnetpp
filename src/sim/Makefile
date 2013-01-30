@@ -31,7 +31,7 @@ OBJS_STD=\
     $O/cobjectfactory.o $O/ccomponent.o $O/ccomponenttype.o $O/cconfiguration.o $O/cconfigoption.o \
     $O/ccompoundmodule.o $O/ccoroutine.o $O/cdefaultlist.o $O/cdensityestbase.o \
     $O/cdetect.o $O/cdisplaystring.o $O/cdoubleparimpl.o $O/cdynamicexpression.o $O/cenvir.o \
-    $O/cenum.o $O/cexception.o $O/cfsm.o $O/cnedmathfunction.o $O/cgate.o $O/chistogram.o \
+    $O/cenum.o $O/cevent.o $O/cexception.o $O/cfsm.o $O/cnedmathfunction.o $O/cgate.o $O/chistogram.o \
     $O/cksplit.o $O/clcg32.o $O/clinkedlist.o $O/clistener.o $O/clongparimpl.o $O/cmersennetwister.o \
     $O/cmessage.o $O/cmsgpar.o $O/cmodule.o $O/cmessageheap.o $O/chasher.o $O/ctimestampedvalue.o \
     $O/cmatchexpression.o $O/cpatternmatcher.o $O/cnullenvir.o $O/envirext.o \
@@ -57,7 +57,7 @@ OBJS_NETBUILDER=\
 OBJS_PARSIM=\
     $O/parsim/cmemcommbuffer.o \
     $O/parsim/cparsimpartition.o $O/parsim/cplaceholdermod.o $O/parsim/cproxygate.o \
-    $O/parsim/cparsimprotocolbase.o $O/parsim/cnosynchronization.o \
+    $O/parsim/cparsimsynchr.o $O/parsim/cparsimprotocolbase.o $O/parsim/cnosynchronization.o \
     $O/parsim/cnullmessageprot.o $O/parsim/clinkdelaylookahead.o \
     $O/parsim/cidealsimulationprot.o $O/parsim/cispeventlogger.o \
     $O/parsim/ccommbufferbase.o $O/parsim/cfilecomm.o \

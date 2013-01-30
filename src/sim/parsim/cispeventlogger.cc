@@ -74,25 +74,25 @@ void cISPEventLogger::processOutgoingMessage(cMessage *msg, int procId, int modu
     cParsimProtocolBase::processOutgoingMessage(msg, procId, moduleId, gateId, data);
 }
 
-cMessage *cISPEventLogger::getNextEvent()
+cEvent *cISPEventLogger::takeNextEvent()
 {
-    cMessage *msg = cNullMessageProtocol::getNextEvent();
+    cEvent *event = cNullMessageProtocol::takeNextEvent();
 
-    if (msg->getSrcProcId()!=-1)  // received from another partition
+    if (event->getSrcProcId()!=-1)  // received from another partition
     {
         // restore original priority
-        msg->setSchedulingPriority(0);
+        event->setSchedulingPriority(0);
 
         // log event to file
         cIdealSimulationProtocol::ExternalEvent e;
-        e.t = msg->getArrivalTime();
-        e.srcProcId = msg->getSrcProcId();
+        e.t = event->getArrivalTime();
+        e.srcProcId = event->getSrcProcId();
 
         if (fwrite(&e, sizeof(cIdealSimulationProtocol::ExternalEvent), 1, fout)<1)
             throw cRuntimeError("cISPEventLogger error: file write failed (disk full?)");
     }
 
-    return msg;
+    return event;
 }
 
 

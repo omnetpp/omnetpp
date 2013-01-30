@@ -81,7 +81,7 @@ class SIM_API cISPEventLogger : public cNullMessageProtocol
      * Scheduler function. The addition to the base class is
      * recording the event to the file.
      */
-    virtual cMessage *getNextEvent();
+    virtual cEvent *takeNextEvent();
 };
 
 NAMESPACE_END

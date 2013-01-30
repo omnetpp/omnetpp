@@ -824,6 +824,8 @@ void EnvirBase::setupNetwork(cModuleType *network)
 void EnvirBase::startRun()
 {
     resetClock();
+    if (opt_simtimelimit > 0)
+        simulation.setSimulationTimeLimit(opt_simtimelimit);
     simulation.callInitialize();
     flushLastLine();
 }
@@ -1255,10 +1257,10 @@ void EnvirBase::objectDeleted(cObject *object)
     // TODO?
 }
 
-void EnvirBase::simulationEvent(cMessage *msg)
+void EnvirBase::simulationEvent(cEvent *event)
 {
     if (record_eventlog)
-        eventlogmgr->simulationEvent(msg);
+        eventlogmgr->simulationEvent(event);
 }
 
 void EnvirBase::beginSend(cMessage *msg)
@@ -1763,8 +1765,6 @@ timeval EnvirBase::totalElapsed()
 
 void EnvirBase::checkTimeLimits()
 {
-    if (opt_simtimelimit!=0 && simulation.getSimTime()>=opt_simtimelimit)
-         throw cTerminationException(eSIMTIME);
     if (opt_cputimelimit==0) // no limit
          return;
     if (disable_tracing && (simulation.getEventNumber()&0xFF)!=0) // optimize: in Express mode, don't call gettimeofday() on every event

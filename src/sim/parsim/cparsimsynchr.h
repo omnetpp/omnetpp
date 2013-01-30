@@ -42,9 +42,9 @@ class cParsimCommunications;
  * local event.
  *
  * Synchronizer integrates into the simulation kernel via the
- * getNextEvent() and processOutgoingMessage() functions:
+ * takeNextEvent() and processOutgoingMessage() functions:
  *
- * - getNextEvent() is the scheduler function (comes from cScheduler)
+ * - takeNextEvent() is the scheduler function (comes from cScheduler)
  *
  * - processOutgoingMessage() is invoked when messages are sent
  * out of the partition, from gates (see cProxyGate) of placeholder modules
@@ -86,9 +86,14 @@ class SIM_API cParsimSynchronizer : public cScheduler
     virtual void endRun() = 0;
 
     /**
+     * Returns the first event in the Future Event Set.
+     */
+    virtual cEvent *guessNextEvent();
+
+    /**
      * Scheduler function -- it comes from cScheduler interface.
      */
-    virtual cMessage *getNextEvent() =0;
+    virtual cEvent *takeNextEvent() = 0;
 
     /**
      * Hook, called when a cMessage is sent out of the partition.

@@ -79,15 +79,15 @@ proc redraw_timeline {} {
     set minlabelx -1000
     set minlabelx2 -1000
     set labelssuppressed 0
-    set msgs [opp_fesmsgs $config(timeline-maxnumevents) \
-                          $config(timeline-wantselfmsgs) \
-                          $config(timeline-wantnonselfmsgs) \
-                          $config(timeline-msgnamepattern) \
-                          $config(timeline-msgclassnamepattern)]
-
-    foreach msgptr $msgs {
+    set events [opp_fesevents $config(timeline-maxnumevents) \
+                              $config(timeline-wantevents) \
+                              $config(timeline-wantselfmsgs) \
+                              $config(timeline-wantnonselfmsgs) \
+                              $config(timeline-msgnamepattern) \
+                              $config(timeline-msgclassnamepattern)]
+    foreach eventptr $events {
         # calculate position
-        set dt [opp_msgarrtimefromnow $msgptr]
+        set dt [opp_eventarrtimefromnow $eventptr]
         if {$dt < $dtmin} {
             set anchor "sw"
             set x 10
@@ -97,26 +97,29 @@ proc redraw_timeline {} {
         }
 
         # display ball
-        if [opp_getsimoption animation_msgcolors] {
-           set msgkind [opp_getobjectfield $msgptr kind]
-           set color [lindex {red green blue white yellow cyan magenta black} [expr $msgkind % 8]]
+        if [opp_instanceof $eventptr cMessage] {
+            if [opp_getsimoption animation_msgcolors] {
+               set msgkind [opp_getobjectfield $eventptr kind]
+               set color [lindex {red green blue white yellow cyan magenta black} [expr $msgkind % 8]]
+            } else {
+                set color red
+            }
+            set ball [$c create oval -2 -3 2 4 -fill $color -outline $color -tags "dx tooltip msg $eventptr"]
         } else {
-            set color red
+            set ball [$c create oval -2 -3 2 4 -fill "" -outline red -tags "dx tooltip msg $eventptr"]
         }
-        set ball [$c create oval -2 -3 2 4 -fill $color -outline $color -tags "dx tooltip msg $msgptr"]
         $c move $ball $x 29
 
-        # print msg name, if it's not too close to previous label
-        # label for only those msgs past this label's right edge will be displayed
-        set msglabel [opp_getobjectfullname $msgptr]
-        if {$msglabel!=""} {
-            set estlabelx [expr $x-3*[string length $msglabel]]
+        # print event name, if it's not too close to previous label (they do not overlap)
+        set eventlabel [opp_getobjectfullname $eventptr]
+        if {$eventlabel!=""} {
+            set estlabelx [expr $x-3*[string length $eventlabel]]
             if {$estlabelx>=$minlabelx} {
-                set labelid [$c create text $x 27 -text $msglabel -anchor $anchor -font $fonts(timeline) -tags "dx tooltip msgname $msgptr"]
+                set labelid [$c create text $x 27 -text $eventlabel -anchor $anchor -font $fonts(timeline) -tags "dx tooltip msgname $eventptr"]
                 set minlabelx [lindex [$c bbox $labelid] 2]
                 set labelssuppressed 0
             } elseif {$estlabelx>=$minlabelx2} {
-                set labelid [$c create text $x 17 -text $msglabel -anchor $anchor -font $fonts(timeline) -tags "dx tooltip msgname $msgptr"]
+                set labelid [$c create text $x 17 -text $eventlabel -anchor $anchor -font $fonts(timeline) -tags "dx tooltip msgname $eventptr"]
                 $c create line $x 24 $x 14 -fill "#808080" -width 1 -tags "h"
                 set minlabelx2 [lindex [$c bbox $labelid] 2]
                 set labelssuppressed 0

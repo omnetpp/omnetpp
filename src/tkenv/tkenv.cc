@@ -338,12 +338,12 @@ void Tkenv::doOneStep()
     notifyListeners(LF_ON_SIMULATION_RESUME);
     try
     {
-        cSimpleModule *mod = simulation.selectNextModule();
-        if (mod)  // selectNextModule() not interrupted
+        cEvent *event = simulation.takeNextEvent();
+        if (event)  // takeNextEvent() not interrupted
         {
             if (opt_event_banners)
-               printEventBanner(simulation.msgQueue.peekFirst(), mod);
-            simulation.doOneEvent(mod);
+                printEventBanner(event);
+            simulation.executeEvent(event);
             performAnimations();
         }
         updateSimtimeDisplay();
@@ -508,21 +508,24 @@ bool Tkenv::doRunSimulation()
     struct timeval last_update;
     gettimeofday(&last_update, NULL);
 
-    while(1)
+    while (true)
     {
         if (runmode==RUNMODE_EXPRESS)
             return true;  // should continue, but in a different mode
 
         // query which module will execute the next event
-        cSimpleModule *mod = simulation.selectNextModule();
-        if (!mod) break; // selectNextModule() interrupted (parsim)
+        cEvent *event = simulation.takeNextEvent();
+        if (!event)
+            break; // takeNextEvent() interrupted (parsim)
 
         // "run until message": stop if desired event was reached
-        if (rununtil_msg && simulation.msgQueue.peekFirst()==rununtil_msg) break;
+        if (rununtil_msg && event==rununtil_msg)
+            break;
 
         // if stepping locally in module, we stop both immediately
         // *before* and *after* executing the event in that module,
         // but we always execute at least one event
+        cModule *mod = event->isMessage() ? static_cast<cMessage*>(event)->getArrivalModule() : NULL;
         bool untilmodule_reached = rununtil_module && moduleContains(rununtil_module,mod);
         if (untilmodule_reached && !firstevent)
             break;
@@ -535,9 +538,8 @@ bool Tkenv::doRunSimulation()
 
         // do a simulation step
         if (opt_event_banners)
-            printEventBanner(simulation.msgQueue.peekFirst(), mod);
-
-        simulation.doOneEvent(mod);
+            printEventBanner(event);
+        simulation.executeEvent(event);
         performAnimations();
 
         // flush so that output from different modules don't get mixed
@@ -607,15 +609,17 @@ bool Tkenv::doRunSimulationExpress()
 
     do
     {
-        cSimpleModule *mod = simulation.selectNextModule();
-        if (!mod) break; // selectNextModule() interrupted (parsim)
+        cEvent *event = simulation.takeNextEvent();
+        if (!event)
+            break; // takeNextEvent() interrupted (parsim)
 
         // "run until message": stop if desired event was reached
-        if (rununtil_msg && simulation.msgQueue.peekFirst()==rununtil_msg) break;
+        if (rununtil_msg && event==rununtil_msg)
+            break;
 
         speedometer.addEvent(simulation.getSimTime());
 
-        simulation.doOneEvent(mod);
+        simulation.executeEvent(event);
 
         if ((simulation.getEventNumber()&0xff)==0 && elapsed(opt_updatefreq_express, last_update))
         {
@@ -1008,29 +1012,50 @@ void Tkenv::clearPerformanceDisplay()
     CHK(Tcl_VarEval(interp, EVENTSPERSIMSEC_LABEL " config -text {Ev/simsec: n/a}", NULL));
 }
 
-void Tkenv::printEventBanner(cMessage *msg, cSimpleModule *module)
+void Tkenv::printEventBanner(cEvent *event)
 {
+    cObject *target = event->getTargetObject();
+    cMessage *msg = event->isMessage() ? static_cast<cMessage*>(event) : NULL;
+    cModule *module = msg ? msg->getArrivalModule() : NULL;
+
     // produce banner text
     char banner[2*MAX_OBJECTFULLPATH+2*MAX_CLASSNAME+60];
+    char *p = banner;
+    p += sprintf(p, "{** Event #%"LL"d  T=%s  ",
+            simulation.getEventNumber(),
+            SIMTIME_STR(simulation.getSimTime()));
+
     if (opt_short_banners)
-        sprintf(banner,"{** Event #%"LL"d  T=%s  %s, on `%s'\n}",
-                simulation.getEventNumber(),
-                SIMTIME_STR(simulation.getSimTime()),
-                module->getFullPath().c_str(),
-                TclQuotedString(msg->getFullName()).get()
-              );
+    {
+        // just object names
+        if (target)
+            p += sprintf(p, "%s ", TclQuotedString(target->getFullPath().c_str()).get());
+        p += sprintf(p, "on %s", TclQuotedString(event->getFullName()).get());
+    }
     else
-        sprintf(banner,"{** Event #%"LL"d  T=%s  %s (%s, id=%d), on %s`%s' (%s, id=%ld)\n}",
-                simulation.getEventNumber(),
-                SIMTIME_STR(simulation.getSimTime()),
-                module->getFullPath().c_str(),
-                module->getComponentType()->getName(),
-                module->getId(),
-                (msg->isSelfMessage() ? "selfmsg " : ""),
-                TclQuotedString(msg->getFullName()).get(),
-                msg->getClassName(),
-                msg->getId()
-              );
+    {
+        // print event and module type names and IDs, too
+        if (module)
+            p += sprintf(p, "%s (%s, id=%d) ",
+                    module->getFullPath().c_str(),
+                    module->getComponentType()->getName(),
+                    module->getId());
+        else if (target)
+            p += sprintf(p, "%s (%s) ",
+                    TclQuotedString(target->getFullPath().c_str()).get(),
+                    target->getClassName());
+        if (msg)
+            p += sprintf(p, " on %s%s (%s, id=%d)",
+                    msg->isSelfMessage() ? "selfmsg " : "",
+                    TclQuotedString(msg->getFullName()).get(),
+                    msg->getClassName(),
+                    msg->getId());
+        else
+            p += sprintf(p, " on %s (%s)",
+                    TclQuotedString(event->getFullName()).get(),
+                    event->getClassName());
+    }
+    strcpy(p, "\n}");
 
     // insert into log buffer
     logBuffer.addEvent(simulation.getEventNumber(), simulation.getSimTime(), module, banner);
@@ -1261,23 +1286,24 @@ void Tkenv::objectDeleted(cObject *object)
     }
 }
 
-void Tkenv::simulationEvent(cMessage *msg)
+void Tkenv::simulationEvent(cEvent *event)
 {
-    EnvirBase::simulationEvent(msg);
+    EnvirBase::simulationEvent(event);
 
     // display in message window
     if (hasmessagewindow)
         CHK(Tcl_VarEval(interp,
             "catch {\n"
-            " .messagewindow.main.text insert end {DELIVD:\t (",msg->getClassName(),")",msg->getFullName(),"}\n"
-            " .messagewindow.main.text insert end ",TclQuotedString(msg->info().c_str()).get(),"\n"
+            " .messagewindow.main.text insert end {DELIVD:\t (",event->getClassName(),")",event->getFullName(),"}\n"
+            " .messagewindow.main.text insert end ",TclQuotedString(event->info().c_str()).get(),"\n"
             " .messagewindow.main.text insert end {\n}\n"
             " .messagewindow.main.text see end\n"
             "}\n",
             NULL));
 
-    if (animating && opt_animation_enabled)
+    if (animating && opt_animation_enabled && event->isMessage())
     {
+        cMessage *msg = static_cast<cMessage*>(event);
         cGate *arrivalGate = msg->getArrivalGate();
         if (!arrivalGate)
             return;

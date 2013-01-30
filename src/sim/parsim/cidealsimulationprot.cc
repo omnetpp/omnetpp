@@ -84,38 +84,42 @@ void cIdealSimulationProtocol::processReceivedMessage(cMessage *msg, int destMod
     cParsimProtocolBase::processReceivedMessage(msg, destModuleId, destGateId, sourceProcId);
 }
 
-cMessage *cIdealSimulationProtocol::getNextEvent()
+cEvent *cIdealSimulationProtocol::takeNextEvent()
 {
     // if no more local events, wait for something to come from other partitions
     while (sim->msgQueue.isEmpty())
         if (!receiveBlocking())
             return NULL;
 
-    cMessage *msg = sim->msgQueue.peekFirst();
-    simtime_t msgTime = msg->getArrivalTime();
+    cEvent *event = sim->msgQueue.peekFirst();
+    simtime_t eventTime = event->getArrivalTime();
 
     // if we aren't at the next external even yet --> nothing special to do
-    if (msgTime < nextExternalEvent.t)
+    if (eventTime < nextExternalEvent.t)
     {
-        ASSERT(msg->getSrcProcId()==-1); // must be local message
-        return msg;
+        ASSERT(event->getSrcProcId()==-1); // must be local message
+        return event;
     }
 
     // if we reached the next external event in the log file, do it
-    if (msg->getSrcProcId()==nextExternalEvent.srcProcId && msgTime==nextExternalEvent.t)
+    if (event->getSrcProcId()==nextExternalEvent.srcProcId && eventTime==nextExternalEvent.t)
     {
-        if (debug) ev << "expected external event (srcProcId=" << msg->getSrcProcId()
+        if (debug) ev << "expected external event (srcProcId=" << event->getSrcProcId()
                       << " t=" << nextExternalEvent.t << ") has already arrived, good!\n";
         readNextRecordedEvent();
-        msg->setSchedulingPriority(0);
-        return msg;
+        event->setSchedulingPriority(0);
+
+        // remove event from FES and return it
+        cEvent *tmp = sim->msgQueue.removeFirst();
+        ASSERT(tmp==event);
+        return event;
     }
 
     // next external event not yet here, we have to wait until we've received it
-    ASSERT(msgTime > nextExternalEvent.t);
+    ASSERT(eventTime > nextExternalEvent.t);
     if (debug)
     {
-        ev << "next local event at " << msgTime << " is PAST the next external event "
+        ev << "next local event at " << eventTime << " is PAST the next external event "
               "expected for t=" << nextExternalEvent.t << " -- waiting...\n";
     }
 
@@ -123,23 +127,27 @@ cMessage *cIdealSimulationProtocol::getNextEvent()
     {
         if (!receiveBlocking())
             return NULL;
-        msg = sim->msgQueue.peekFirst();
-        msgTime = msg->getArrivalTime();
+        event = sim->msgQueue.peekFirst();
+        eventTime = event->getArrivalTime();
     }
-    while (msg->getSrcProcId()!=nextExternalEvent.srcProcId || msgTime > nextExternalEvent.t);
+    while (event->getSrcProcId()!=nextExternalEvent.srcProcId || eventTime > nextExternalEvent.t);
 
-    if (msgTime < nextExternalEvent.t)
+    if (eventTime < nextExternalEvent.t)
     {
         throw cRuntimeError("cIdealSimulationProtocol: event trace does not match actual events: "
                             "expected event with timestamp %s from proc=%d, and got one with timestamp %s",
-                            SIMTIME_STR(nextExternalEvent.t), nextExternalEvent.srcProcId, SIMTIME_STR(msgTime));
+                            SIMTIME_STR(nextExternalEvent.t), nextExternalEvent.srcProcId, SIMTIME_STR(eventTime));
     }
 
     // we have the next external event we wanted, return it
-    ASSERT(msgTime==nextExternalEvent.t);
+    ASSERT(eventTime==nextExternalEvent.t);
     readNextRecordedEvent();
-    msg->setSchedulingPriority(0);
-    return msg;
+    event->setSchedulingPriority(0);
+
+    // remove event from FES and return it
+    cEvent *tmp = sim->msgQueue.removeFirst();
+    ASSERT(tmp==event);
+    return event;
 }
 
 void cIdealSimulationProtocol::readNextRecordedEvent()

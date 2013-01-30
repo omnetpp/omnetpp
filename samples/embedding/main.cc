@@ -70,6 +70,7 @@ void simulate(const char *networkName, simtime_t limit)
         return;
     }
     simulation.setupNetwork(networkType); //XXX may throw exception
+    simulation.setSimulationTimeLimit(limit);
 
     // prepare for running it
     simulation.callInitialize();
@@ -77,11 +78,11 @@ void simulate(const char *networkName, simtime_t limit)
     // run the simulation
     bool ok = true;
     try {
-        while (simulation.getSimTime() < limit) {
-            cSimpleModule *mod = simulation.selectNextModule();
-            if (!mod)
+        while (true) {
+            cEvent *event = simulation.takeNextEvent();
+            if (!event)
                 break;  //XXX
-            simulation.doOneEvent(mod);
+            simulation.executeEvent(event);
         }
     }
     catch (cTerminationException& e) {

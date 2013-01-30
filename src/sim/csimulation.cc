@@ -24,6 +24,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <limits.h>
 #include "stringutil.h"
 #include "cmodule.h"
 #include "csimplemodule.h"
@@ -58,6 +59,21 @@ extern std::set<cOwnedObject*> objectlist;
 void printAllObjects();
 #endif
 
+/**
+ * Stops the simulation at the time it is scheduled for.
+ * Used internally by cSimulation.
+ */
+class SIM_API cEndSimulationEvent : public cEvent, public noncopyable
+{
+    public:
+        cEndSimulationEvent(const char *name, simtime_t simTimeLimit) : cEvent(name) {
+            setArrivalTime(simTimeLimit);
+            setSchedulingPriority(SHRT_MAX);  // lowest priority
+        }
+        virtual cEvent *dup() const {copyNotSupported(); return NULL;}
+        virtual cObject *getTargetObject() const {return NULL;}
+        virtual void execute() {throw cTerminationException(eSIMTIME);}
+};
 
 cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, false)
 {
@@ -222,6 +238,11 @@ void cSimulation::setScheduler(cScheduler *sch)
     schedulerp = sch;
     schedulerp->setSimulation(this);
     ev.addListener(schedulerp);
+}
+
+void cSimulation::setSimulationTimeLimit(simtime_t simTimeLimit)
+{
+    getMessageQueue().insert(new cEndSimulationEvent("endsimulation", simTimeLimit));
 }
 
 int cSimulation::loadNedSourceFolder(const char *folder)
@@ -465,53 +486,37 @@ void cSimulation::deleteNetwork()
 
 }
 
-cSimpleModule *cSimulation::selectNextModule()
+cEvent *cSimulation::takeNextEvent()
 {
     // determine next event. Normally (with sequential simulation),
     // the scheduler just returns msgQueue->peekFirst().
-    cMessage *msg = schedulerp->getNextEvent();
-    if (!msg)
-        return NULL; // scheduler got interrupted while waiting
+    cEvent *event = schedulerp->takeNextEvent();
+    if (!event)
+        return NULL;
 
-    // check if destination module exists and is still running
-    cSimpleModule *modp = (cSimpleModule *)vect[msg->getArrivalModuleId()];
-    if (!modp || modp->isTerminated())
-    {
-        // Deleted/ended modules may have self-messages and sent messages
-        // pending for them. Here we choose just to ignore them (delete them without
-        // any error or warning). Rationale: if we thew an error here, it would
-        // be very difficult to delete compound modules in which simple modules
-        // send messages to one another -- each and every simple module
-        // would have to be notified in advance that they're "shutting down",
-        // and even then, deletion could progress only after waiting the maximum
-        // propagation delay to elapse.
-        delete msgQueue.removeFirst();
-        return selectNextModule();
-    }
+    ASSERT(!event->isStale()); // it's the scheduler's task to discard stale events
 
     // advance simulation time
-    sim_time = msg->getArrivalTime();
+    sim_time = event->getArrivalTime();
 
-    return modp;
+    return event;
 }
 
-cMessage *cSimulation::guessNextEvent()
+cEvent *cSimulation::guessNextEvent()
 {
-    // determine the probable next event. No call to cSheduler!
-    // TBD if this event is "not good" (no module or module ended),
-    // we might look for another event, but this is not done right now.
-    return msgQueue.peekFirst();
+    return schedulerp->guessNextEvent();
 }
 
 simtime_t cSimulation::guessNextSimtime()
 {
-    cMessage *msg = guessNextEvent();
-    return msg==NULL ? -1 : msg->getArrivalTime();
+    cEvent *event = guessNextEvent();
+    return event==NULL ? -1 : event->getArrivalTime();
 }
 
 cSimpleModule *cSimulation::guessNextModule()
 {
-    cMessage *msg = guessNextEvent();
+    cEvent *event = guessNextEvent();
+    cMessage *msg = dynamic_cast<cMessage *>(event);
     if (!msg)
         return NULL;
 
@@ -526,7 +531,7 @@ cSimpleModule *cSimulation::guessNextModule()
 
 void cSimulation::transferTo(cSimpleModule *modp)
 {
-    if (modp==NULL)
+    if (!modp)
         throw cRuntimeError("transferTo(): attempt to transfer to NULL");
 
     // switch to activity() of the simple module
@@ -575,53 +580,34 @@ void cSimulation::transferTo(cSimpleModule *modp)
     }
 }
 
-void cSimulation::doOneEvent(cSimpleModule *mod)
+void cSimulation::executeEvent(cEvent *event)
 {
 #ifndef NDEBUG
     checkActive();
 #endif
+
+    setContextType(CTX_EVENT);
+
+    // notify the environment about the event (writes eventlog, etc.)
+    EVCB.simulationEvent(event);
+
+    // store arrival event number of this message; it is useful input for the
+    // sequence chart tool if the message doesn't get immediately deleted or
+    // sent out again
+    event->setPreviousEventNumber(event_num);
+
+    cSimpleModule *mod = NULL;
     try
     {
-        // switch to the module's context
-        setContext(mod);
-        setContextType(CTX_EVENT);
-
-        if (getHasher())
+        if (event->isMessage())
         {
-            // note: there's no value in adding getEventNumber()
-            getHasher()->add(SIMTIME_RAW(simTime()));
-            getHasher()->add(mod->getId());
-        }
-
-        // get event to be handled (note: it becomes owned by the target module)
-        cMessage *msg = msgQueue.removeFirst();
-
-        // notify the environment about the event (writes eventlog, etc.)
-        EVCB.simulationEvent(msg);
-
-        // store arrival event number of this message; it is useful input for the
-        // sequence chart tool if the message doesn't get immediately deleted or
-        // sent out again
-        msg->setPreviousEventNumber(event_num);
-
-        if (!mod->initialized())
-            throw cRuntimeError(mod, "Module not initialized (did you forget to invoke "
-                                     "callInitialize() for a dynamically created module?)");
-
-        if (mod->usesActivity())
-        {
-            // switch to the coroutine of the module's activity(). We'll get back control
-            // when the module executes a receive() or wait() call.
-            // If there was an error during simulation, the call will throw an exception
-            // (which originally occurred inside activity()).
-            msg_for_activity = msg;
-            transferTo(mod);
+            cMessage *msg = static_cast<cMessage*>(event);
+            mod = static_cast<cSimpleModule *>(msg->getArrivalModule());  // existence and simpleness is asserted in cMessage::isStale()
+            doMessageEvent(msg, mod);
         }
         else
         {
-            // if there was an error during simulation, handleMessage() will come back
-            // with an exception
-            mod->handleMessage(msg);
+            event->execute();
         }
     }
     catch (cDeleteModuleException& e)
@@ -649,12 +635,48 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
     // increment event count
     event_num++;
 
-    // Note: simulation time (as read via simTime() from modules) is updated
-    // in selectNextModule()) called right before the next doOneEvent().
-    // It must not be updated here, because it will interfere with parallel
+    // Note: simulation time (as read via simTime() from modules) will be updated
+    // in takeNextEvent(), called right before the next executeEvent().
+    // Simtime must NOT be updated here, because it would interfere with parallel
     // simulation (cIdealSimulationProtocol, etc) that relies on simTime()
     // returning the time of the last executed event. If Tkenv wants to display
     // the time of the next event, it should call guessNextSimtime().
+}
+
+void cSimulation::doMessageEvent(cMessage *msg, cSimpleModule *mod)
+{
+    // switch to the module's context
+    setContext(mod);
+
+    // give msg to mod (set ownership)
+    mod->take(msg);
+
+    if (getHasher())
+    {
+        // note: there's no value in adding getEventNumber()
+        getHasher()->add(SIMTIME_RAW(simTime()));
+        getHasher()->add(mod->getId());
+    }
+
+    if (!mod->initialized())
+        throw cRuntimeError(mod, "Module not initialized (did you forget to invoke "
+                "callInitialize() for a dynamically created module?)");
+
+    if (mod->usesActivity())
+    {
+        // switch to the coroutine of the module's activity(). We'll get back control
+        // when the module executes a receive() or wait() call.
+        // If there was an error during simulation, the call will throw an exception
+        // (which originally occurred inside activity()).
+        msg_for_activity = msg;
+        transferTo(mod);
+    }
+    else
+    {
+        // if there was an error during simulation, handleMessage() will come back
+        // with an exception
+        mod->handleMessage(msg);
+    }
 }
 
 void cSimulation::transferToMain()
@@ -700,10 +722,10 @@ void cSimulation::setHasher(cHasher *hasher)
     hasherp = hasher;
 }
 
-void cSimulation::insertMsg(cMessage *msg)
+void cSimulation::insertEvent(cEvent *event)
 {
-    msg->setPreviousEventNumber(event_num);
-    simulation.msgQueue.insert(msg);
+    event->setPreviousEventNumber(event_num);
+    simulation.msgQueue.insert(event);
 }
 
 
@@ -747,7 +769,7 @@ class StaticEnv : public cEnvir
 
     // eventlog callback interface
     virtual void objectDeleted(cObject *object) {}
-    virtual void simulationEvent(cMessage *msg)  {}
+    virtual void simulationEvent(cEvent *event)  {}
     virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=NULL)  {}
     virtual void messageScheduled(cMessage *msg)  {}
     virtual void messageCancelled(cMessage *msg)  {}

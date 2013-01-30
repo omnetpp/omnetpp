@@ -230,7 +230,7 @@ void cNullMessageProtocol::processReceivedEIT(int sourceProcId, simtime_t eit)
     rescheduleEvent(eitMsg, eit);
 }
 
-cMessage *cNullMessageProtocol::getNextEvent()
+cEvent *cNullMessageProtocol::takeNextEvent()
 {
     // our EIT and resendEOT messages are always scheduled, so the FES can
     // only be empty if there are no other partitions at all -- "no events" then
@@ -245,20 +245,21 @@ cMessage *cNullMessageProtocol::getNextEvent()
     // deadlock.
     //receiveNonblocking();
 
-    cMessage *msg;
+    cEvent *event;
     while (true)
     {
-        msg = sim->msgQueue.peekFirst();
-        if (msg->getKind() == MK_PARSIM_RESENDEOT)
+        event = sim->msgQueue.peekFirst();
+        cMessage *msg = event->isMessage() ? static_cast<cMessage *>(event) : NULL;
+        if (msg && msg->getKind() == MK_PARSIM_RESENDEOT)
         {
             // send null messages if window closed for a partition
             int procId = (long) msg->getContextPointer();  // khmm...
-            sendNullMessage(procId, msg->getArrivalTime());
+            sendNullMessage(procId, event->getArrivalTime());
         }
-        else if (msg->getKind() == MK_PARSIM_EIT)
+        else if (msg && msg->getKind() == MK_PARSIM_EIT)
         {
             // wait until it gets out of the way (i.e. we get a higher EIT)
-            {if (debug) ev.printf("blocking on EIT event `%s'\n", msg->getName());}
+            {if (debug) ev.printf("blocking on EIT event `%s'\n", event->getName());}
             if (!receiveBlocking())
                 return NULL;
         }
@@ -268,7 +269,11 @@ cMessage *cNullMessageProtocol::getNextEvent()
             break;
         }
     }
-    return msg;
+
+    // remove event from FES and return it
+    cEvent *tmp = sim->msgQueue.removeFirst();
+    ASSERT(tmp==event);
+    return event;
 }
 
 void cNullMessageProtocol::sendNullMessage(int procId, simtime_t now)

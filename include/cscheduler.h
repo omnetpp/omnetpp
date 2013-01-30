@@ -28,12 +28,12 @@
 NAMESPACE_BEGIN
 
 // forward declarations
+class cEvent;
 class cSimulation;
-class cMessage;
 
 /**
  * Abstract class to encapsulate event scheduling. See description
- * of getNextEvent() for more info.
+ * of takeNextEvent() for more info.
  *
  * To switch to your own scheduler class (reasons you'd like to do that
  * include real-time simulation, hardware-in-the-loop simulation,
@@ -44,7 +44,7 @@ class cMessage;
  *
  * <pre>
  * [General]
- * scheduler-class="MyClass"
+ * scheduler-class = "MyClass"
  * </pre>
  *
  * @ingroup EnvirExtensions
@@ -81,36 +81,49 @@ class SIM_API cScheduler : public cObject, public cISimulationLifetimeListener
     /**
      * Called at the beginning of a simulation run.
      */
-    virtual void startRun() = 0;
+    virtual void startRun() {}
 
     /**
      * Called at the end of a simulation run.
      */
-    virtual void endRun() = 0;
+    virtual void endRun() {}
 
     /**
      * Called every time the user hits the Run button in Tkenv.
-     * Real-time schedulers (e.g. cRealTimeScheduler) may make use
+     * Real-time schedulers (e.g. cRealTimeScheduler) may make use of
      * this callback to pin current simulation time to current
      * wall clock time.
      */
-    virtual void executionResumed()  {}
+    virtual void executionResumed() {}
 
     /**
-     * The scheduler function -- it should return the next event
-     * to be processed. Normally (with sequential execution) it just
-     * returns msgQueue.peekFirst(). With parallel and/or real-time
-     * simulation, it is also the scheduler's task to synchronize
-     * with real time and/or with other partitions.
+     * Return the likely next event in the simulation. This method is for UI
+     * purposes, it does not play any role in the simulation. A basic
+     * implementation would just return a pointer to the first event in the FES,
+     * which is accurate for sequential simulation; with parallel, distributed or
+     * real-time simulation there might be other events coming from other processes
+     * with a yet smaller timestamp.
      *
-     * If there is no more event, it throws cTerminationException.
-     *
-     * A NULL return value means that there is no error but execution
-     * was stopped by the user (e.g. with STOP button on the GUI)
-     * while getNextEvent() was waiting for external synchronization.
+     * This method should not have side effects, except for discarding stale events
+     * from the FES.
      */
-    virtual cMessage *getNextEvent() = 0;
+    virtual cEvent *guessNextEvent() = 0;
+
+    /**
+     * Return the next event to be processed. Normally (with sequential execution),
+     * it just returns the first event in the FES. With parallel and/or real-time
+     * simulation, it is also the scheduler's task to synchronize with real time
+     * and/or with other partitions.
+     *
+     * If there's no more event, it throws cTerminationException.
+     *
+     * A NULL return value means that there's no error but execution
+     * was stopped by the user (e.g. with STOP button on the GUI)
+     * while takeNextEvent() was waiting for external synchronization.
+     */
+    virtual cEvent *takeNextEvent() = 0;
 };
+
 
 /**
  * Event scheduler for sequential simulation.
@@ -126,30 +139,24 @@ class SIM_API cSequentialScheduler : public cScheduler
     cSequentialScheduler() {}
 
     /**
-     * Called at the beginning of a simulation run.
+     * Returns the first event in the Future Event Set.
      */
-    virtual void startRun() {}
+    virtual cEvent *guessNextEvent();
 
     /**
-     * Called at the end of a simulation run.
+     * Removes the first event from the Future Event Set, and returns it.
      */
-    virtual void endRun() {}
-
-    /**
-     * Returns the first event in the Future Event Set (that is,
-     * msgQueue.peekFirst()).
-     */
-    virtual cMessage *getNextEvent();
+    virtual cEvent *takeNextEvent();
 };
 
 
 /**
  * Real-time scheduler class. When installed as scheduler using the scheduler-class
- * omnetpp.ini entry, it will syncronize simulation execution to real (wall clock)
+ * omnetpp.ini entry, it will synchronize simulation execution to real (wall clock)
  * time.
  *
  * Operation: a "base time" is determined when startRun() is called. Later on,
- * the scheduler object calls usleep() from getNextEvent() to synchronize the
+ * the scheduler object calls usleep() from takeNextEvent() to synchronize the
  * simulation time to real time, that is, to wait until
  * the current time minus base time becomes equal to the simulation time.
  * Should the simulation lag behind real time, this scheduler will try to catch up
@@ -161,6 +168,7 @@ class SIM_API cSequentialScheduler : public cScheduler
  *
  * @ingroup Internals
  */
+//TODO soft realtime, hard realtime (that is: tries to catch up, or resynchronizes on each event)
 class SIM_API cRealTimeScheduler : public cScheduler
 {
   protected:
@@ -171,28 +179,20 @@ class SIM_API cRealTimeScheduler : public cScheduler
     // state:
     timeval baseTime;
 
+  protected:
+    virtual void startRun();
     bool waitUntil(const timeval& targetTime);
 
   public:
     /**
      * Constructor.
      */
-    cRealTimeScheduler() : cScheduler()  {}
+    cRealTimeScheduler();
 
     /**
      * Destructor.
      */
-    virtual ~cRealTimeScheduler() {}
-
-    /**
-     * Called at the beginning of a simulation run.
-     */
-    virtual void startRun();
-
-    /**
-     * Called at the end of a simulation run.
-     */
-    virtual void endRun();
+    virtual ~cRealTimeScheduler();
 
     /**
      * Recalculates "base time" from current wall clock time.
@@ -200,11 +200,17 @@ class SIM_API cRealTimeScheduler : public cScheduler
     virtual void executionResumed();
 
     /**
-     * Scheduler function -- it comes from cScheduler interface.
-     * This function synchronizes to real time: it waits (usleep()) until
-     * the real time reaches the time of the next simulation event.
+     * Returns the first event in the Future Event Set.
      */
-    virtual cMessage *getNextEvent();
+    virtual cEvent *guessNextEvent();
+
+    /**
+     * Scheduler function -- it comes from cScheduler interface.
+     * This function synchronizes to real time: before returning the
+     * first event from the FES, it waits (using usleep()) until
+     * the real time reaches the time of that simulation event.
+     */
+    virtual cEvent *takeNextEvent();
 };
 
 NAMESPACE_END

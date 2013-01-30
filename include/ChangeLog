@@ -1,3 +1,38 @@
+2013-01-28  Andras Varga
+
+	* Introduced cEvent as a base class of cMessage. cEvent allows scheduling
+	of arbitrary code for a simulation time that runs independent of modules.
+	Override the execute() method of cEvent to specify the code. cEvent is
+	not intended for use in simulation models; the primary motivation is
+	implementing simulation time limit with a "end-simulation" event,
+	and to encapsulate foreign events (e.g. SystemC events and crunching)
+	for seemless integration with the simulation event loop.
+
+	* Revised cScheduler interface. The main methods in cScheduler are now
+	takeNextEvent() and guessNextEvent().
+
+2013-01-28  Andras Varga
+
+	* Implemented simulation lifecycle listeners. The listener class is
+	cISimulationLifetimeListener; listeners can be installed/removed
+	with Envir's addListener()/removeListener() methods. Event type
+	constants are in the SimulationLifetimeEventType enum: LF_ON_STARTUP,
+	LF_PRE_NETWORK_SETUP, LF_POST_NETWORK_SETUP, etc; see the full list
+	in the source.
+
+	* Output scalar/vector/snapshot managers, schedulers and cParsimPartition
+	have been changed to use lifecycle events: the old startRun()/endRun()/etc
+	methods remain but are now invoked from lifecycle events:
+	- startRun() -> LF_POST_NETWORK_INITIALIZE
+	- endRun() -> LF_ON_RUN_END
+	- flush() -> LF_ON_SIMULATION_PAUSE
+
+2013-01-28  Andras Varga
+
+	* envirext.h: renamed cOutputVectorManager, cOutputScalarManager and
+	cSnapshotManager to include an "I" (for interface) ->
+	cIOutputVectorManager, cIOutputScalarManager, cSnapshotManager.
+
 2013-02-08  ------ omnetpp-4.3rc1 released ------
 
 2013-02-07  Andras Varga

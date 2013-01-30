@@ -227,8 +227,12 @@ void EventlogFileManager::recordInitialize()
 void EventlogFileManager::recordMessages()
 {
     std::vector<cMessage *> messages;
-    for (cMessageHeap::Iterator it = cMessageHeap::Iterator(simulation.getMessageQueue()); !it.end(); it++)
-        messages.push_back(it());
+    for (cMessageHeap::Iterator it = cMessageHeap::Iterator(simulation.getMessageQueue()); !it.end(); it++) {
+        cEvent *event = it();
+        cMessage *msg = dynamic_cast<cMessage*>(event);
+        if (msg)
+            messages.push_back(msg);  //TODO record non-message cEvents too!
+    }
     std::stable_sort(messages.begin(), messages.end(), compareMessageEventNumbers);
     eventnumber_t oldEventNumber = eventNumber;
     for (std::vector<cMessage *>::iterator it = messages.begin(); it != messages.end(); it++) {
@@ -344,19 +348,25 @@ void EventlogFileManager::flush()
         fflush(feventlog);
 }
 
-void EventlogFileManager::simulationEvent(cMessage *msg)
+void EventlogFileManager::simulationEvent(cEvent *event)
 {
-    cModule *mod = simulation.getContextModule();
-    isModuleEventLogRecordingEnabled = simulation.getContextModule()->isRecordEvents();
-    isIntervalEventLogRecordingEnabled = !recordingIntervals || recordingIntervals->contains(simulation.getSimTime());
-    isEventLogRecordingEnabled = isModuleEventLogRecordingEnabled && isIntervalEventLogRecordingEnabled;
-    if (isEventLogRecordingEnabled) {
-        eventNumber = simulation.getEventNumber();
-        fprintf(feventlog, "\n");
-        EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog, eventNumber, simulation.getSimTime(), mod->getId(), msg->getPreviousEventNumber(), msg->getId());
-        entryIndex = 0;
-        removeBeginSendEntryReference(msg);
-        recordKeyframe();
+    if (event->isMessage()) {
+        cMessage *msg = static_cast<cMessage*>(event);
+        cModule *mod = msg->getArrivalModule();
+        isModuleEventLogRecordingEnabled = mod->isRecordEvents();
+        isIntervalEventLogRecordingEnabled = !recordingIntervals || recordingIntervals->contains(simulation.getSimTime());
+        isEventLogRecordingEnabled = isModuleEventLogRecordingEnabled && isIntervalEventLogRecordingEnabled;
+        if (isEventLogRecordingEnabled) {
+            eventNumber = simulation.getEventNumber();
+            fprintf(feventlog, "\n");
+            EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog, eventNumber, simulation.getSimTime(), mod->getId(), msg->getPreviousEventNumber(), msg->getId());
+            entryIndex = 0;
+            removeBeginSendEntryReference(msg);
+            recordKeyframe();
+        }
+    }
+    else {
+        //TODO record non-message event
     }
 }
 

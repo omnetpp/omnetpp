@@ -176,7 +176,7 @@ class SIM_API cEnvir
      * implementation may use the notification to animate the message on a
      * network diagram, to write a log entry, etc.
      */
-    virtual void simulationEvent(cMessage *msg) = 0;
+    virtual void simulationEvent(cEvent *event) = 0;
 
     /**
      * Notifies the environment that a message was sent. Details can be

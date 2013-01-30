@@ -1,11 +1,7 @@
 //========================================================================
 //  CMESSAGE.CC - part of
-//
 //                 OMNeT++/OMNEST
 //              Discrete System Simulation in C++
-//
-//   Member functions of
-//    cMessage       : the message class
 //
 //  Author: Andras Varga
 //
@@ -19,7 +15,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>  // sprintf
 #include <sstream>
 #include "globals.h"
 #include "cmodule.h"
@@ -52,7 +47,7 @@ long cMessage::total_msgs = 0;
 long cMessage::live_msgs = 0;
 
 
-cMessage::cMessage(const cMessage& msg) : cOwnedObject(msg)
+cMessage::cMessage(const cMessage& msg) : cEvent(msg)
 {
     parlistp = NULL;
     ctrlp = NULL;
@@ -71,11 +66,10 @@ cMessage::cMessage(const cMessage& msg) : cOwnedObject(msg)
     nonConstMsg->prev_event_num = prev_event_num = simulation.getEventNumber();
 }
 
-cMessage::cMessage(const char *name, short k) : cOwnedObject(name, false)
+cMessage::cMessage(const char *name, short k) : cEvent(name)
 {
     // name pooling is off for messages by default, as unique names are quite common
     msgkind = k;
-    prior = 0;
     parlistp = NULL;
     contextptr = NULL;
     ctrlp = NULL;
@@ -84,8 +78,7 @@ cMessage::cMessage(const char *name, short k) : cOwnedObject(name, false)
     frommod = fromgate = -1;
     tomod = togate = -1;
     created = simulation.getSimTime();
-    sent = delivd = tstamp = 0;
-    heapindex = -1;
+    sent = tstamp = 0;
 
     msgtreeid = msgid = next_id++;
     total_msgs++;
@@ -110,7 +103,7 @@ cMessage::~cMessage()
 
     if (ctrlp) {
         if (ctrlp->isOwnedObject())
-            dropAndDelete(static_cast<cOwnedObject *>(ctrlp));
+            dropAndDelete((cOwnedObject *)ctrlp);
         else
             delete ctrlp;
     }
@@ -125,10 +118,11 @@ std::string cMessage::info() const
     std::stringstream out;
     const char *deletedstr = "<deleted module>";
 
-    if (delivd > simulation.getSimTime())
+    simtime_t t = getArrivalTime();
+    if (t > simulation.getSimTime())
     {
         // if it arrived in the past, dt is usually unimportant, don't print it
-        out << "at T=" << delivd << ", in dt=" << (delivd - simulation.getSimTime()) << "; ";
+        out << "at T=" << t << ", in dt=" << (t - simulation.getSimTime()) << "; ";
     }
 
 #define MODNAME(modp) ((modp) ? (modp)->getFullPath().c_str() : deletedstr)
@@ -178,24 +172,19 @@ void cMessage::parsimPack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cOwnedObject::parsimPack(buffer);
+    cEvent::parsimPack(buffer);
 
     if (contextptr || ctrlp)
         throw cRuntimeError(this,"parsimPack(): cannot pack object with contextPointer or controlInfo set");
 
     buffer->pack(msgkind);
-    buffer->pack(prior);
     buffer->pack(tstamp);
-
     buffer->pack(frommod);
     buffer->pack(fromgate);
     buffer->pack(tomod);
     buffer->pack(togate);
     buffer->pack(created);
     buffer->pack(sent);
-    buffer->pack(delivd);
-    buffer->pack(heapindex);
-    buffer->pack(insertordr);
 
     // note: do not pack msgid and treeid, because they'd conflict
     // with ids assigned at the destination partition
@@ -210,21 +199,16 @@ void cMessage::parsimUnpack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cOwnedObject::parsimUnpack(buffer);
+    cEvent::parsimUnpack(buffer);
 
     buffer->unpack(msgkind);
-    buffer->unpack(prior);
     buffer->unpack(tstamp);
-
     buffer->unpack(frommod);
     buffer->unpack(fromgate);
     buffer->unpack(tomod);
     buffer->unpack(togate);
     buffer->unpack(created);
     buffer->unpack(sent);
-    buffer->unpack(delivd);
-    buffer->unpack(heapindex);
-    buffer->unpack(insertordr);
 
     if (buffer->checkFlag())
         take(parlistp = (cArray *) buffer->unpackObject());
@@ -234,7 +218,7 @@ void cMessage::parsimUnpack(cCommBuffer *buffer)
 cMessage& cMessage::operator=(const cMessage& msg)
 {
     if (this==&msg) return *this;
-    cOwnedObject::operator=(msg);
+    cEvent::operator=(msg);
     copy(msg);
     return *this;
 }
@@ -242,7 +226,6 @@ cMessage& cMessage::operator=(const cMessage& msg)
 void cMessage::copy(const cMessage& msg)
 {
     msgkind = msg.msgkind;
-    prior = msg.prior;
     tstamp = msg.tstamp;
     srcprocid = msg.srcprocid;
 
@@ -262,7 +245,6 @@ void cMessage::copy(const cMessage& msg)
     togate = msg.togate;
 
     sent = msg.sent;
-    delivd = msg.delivd;
 
     msgtreeid = msg.msgtreeid;
 }
@@ -279,7 +261,7 @@ void cMessage::setControlInfo(cObject *p)
         throw cRuntimeError(this,"setControlInfo(): pointer is NULL");
     if (ctrlp)
         throw cRuntimeError(this,"setControlInfo(): message already has control info attached");
-    if (dynamic_cast<cOwnedObject *>(p))
+    if (p->isOwnedObject())
         take((cOwnedObject *)p);
     ctrlp = p;
 }
@@ -288,9 +270,14 @@ cObject *cMessage::removeControlInfo()
 {
     cObject *p = ctrlp;
     ctrlp = NULL;
-    if (dynamic_cast<cOwnedObject *>(p))
+    if (p->isOwnedObject())
         drop((cOwnedObject *)p);
     return p;
+}
+
+cObject *cMessage::getTargetObject() const
+{
+    return getArrivalModule();
 }
 
 cMsgPar& cMessage::par(int n)
@@ -362,7 +349,7 @@ void cMessage::setArrival(cModule *module, int gateId, simtime_t_cref t)
 {
     tomod = module ? module->getId() : -1;
     togate = gateId;
-    delivd = t;
+    setArrivalTime(t);
 }
 
 void cMessage::setArrival(cModule *module, int gateId)
@@ -371,9 +358,16 @@ void cMessage::setArrival(cModule *module, int gateId)
     togate = gateId;
 }
 
-void cMessage::setArrivalTime(simtime_t t)
+bool cMessage::isStale()
 {
-    delivd = t;
+    // check that destination module still exists and is alive
+    cSimpleModule *modp = dynamic_cast<cSimpleModule *>(simulation.getModule(tomod));
+    return !modp || modp->isTerminated();
+}
+
+void cMessage::execute()
+{
+    throw new cRuntimeError("illegal call to cMessage::execute()");
 }
 
 //----

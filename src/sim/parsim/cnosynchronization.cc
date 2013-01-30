@@ -53,7 +53,7 @@ void cNoSynchronization::endRun()
 }
 
 
-cMessage *cNoSynchronization::getNextEvent()
+cEvent *cNoSynchronization::takeNextEvent()
 {
     // if no more local events, wait for something to come from other partitions
     if (sim->msgQueue.isEmpty())
@@ -66,8 +66,9 @@ cMessage *cNoSynchronization::getNextEvent()
     {
         receiveNonblocking();
     }
-    cMessage *msg = sim->msgQueue.peekFirst();
-    return msg;
+
+    cEvent *event = sim->msgQueue.removeFirst();
+    return event;
 }
 
 

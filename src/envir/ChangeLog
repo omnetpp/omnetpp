@@ -1,10 +1,28 @@
+2013-01-28  Andras Varga
+
+	* Follow through with the introduction of cEvent; see related ChangeLog
+	entry in include/.
+
+2013-01-28  Andras Varga
+
+	* cSimulation: startRun() renamed to callInitialize(), endRun() removed
+
+2013-01-28  Andras Varga
+
+	* Make use of simulation lifecycle listeners; see related ChangeLog
+	entry in include/.
+
+2013-01-28  Andras Varga
+
+	* Followed cOutputVectorManager/cOutputScalarManager/cSnapshotManager
+	renaming in sim/ (they became cIOutputVectorManager, etc.)
+
 2013-02-08  ------ omnetpp-4.3rc1 released ------
 
 2012-03-27 Tamas Borbely
 
-    Fix bug #555: Memory leak in output vector recording.
-    When the output vector was deleted, its buffer was
-    not freed. [From David Eckhoff]
+	* Fix bug #555: Memory leak in output vector recording. When the output
+	vector was deleted, its buffer was not freed. [From David Eckhoff]
 
 2012-03-13  ------ omnetpp-4.2.2 released ------
 
@@ -22,8 +40,8 @@
     - 'opp_run_release' is built using release opp libraries and starts any release
       model directly by invoking evMain.
     - 'opp_run' is linked against debug opp libs. It first loads all libraries
-      into the address space dynamically and check for the simbol __is_release_opp_sim__
-      (that is present only in release builds). If it does not find it, the
+	  into the address space dynamically and checks for the symbol __is_release_opp_sim__
+	  (it is present only in release builds). If it does not find it, the
       model is debug and proceeds normally by invoking evMain. If it decides that
       the model is 'release', it reloads the whole simulation by exec-ing it using
       'opp_run_release'.
@@ -32,17 +50,17 @@
       started and it launches it with either 'opp_run' or 'opp_run_release'. This is
       required because on Windows, 'opp_run_release' is started as a different process
       and the IDE would not be able to control/kill the 'opp_run_release' process if
-      it would be started by opp_run.
+	  it was started by opp_run.
 
       Note: The detection process does not work if the shared models libs are specified
       in the INI file.
 
-      Note2: Because of the above changes the main() function moved from the oppenvir
+	  Note2: Because of the above changes, the main() function was moved from the oppenvir
       library to a sparate statically linked library (oppmain). This library must be linked
       with executable simulation models. This requires changes in the makefiles.
-      opp_makemake generates corract makefiles but the the makefiles *MUST* be recreated
+	  opp_makemake generates correct makefiles, but the the makefiles *MUST* be recreated
       when upgrading to OMNeT++ 4.2 and working on the command line. (The IDE automatically
-      recreates the makefiles, so in this case no further action is needed)
+	  recreates the makefiles, so if you use the IDE, no further action is needed.)
 
 2011-06-25  Andras Varga
 

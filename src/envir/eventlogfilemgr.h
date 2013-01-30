@@ -28,6 +28,7 @@
 class cComponent;
 class cModule;
 class cChannel;
+class cEvent;
 class cMessage;
 class cGate;
 
@@ -130,7 +131,7 @@ class ENVIR_API EventlogFileManager : public cISimulationLifetimeListener
 
     /** @name Functions called from cEnvir's similar functions */
     //@{
-    virtual void simulationEvent(cMessage *msg);
+    virtual void simulationEvent(cEvent *event);
     virtual void bubble(cComponent *component, const char *text);
     virtual void messageScheduled(cMessage *msg);
     virtual void messageCancelled(cMessage *msg);

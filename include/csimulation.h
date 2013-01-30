@@ -28,6 +28,7 @@
 NAMESPACE_BEGIN
 
 //=== classes mentioned:
+class  cEvent;
 class  cMessage;
 class  cGate;
 class  cModule;
@@ -105,6 +106,9 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
   private:
     // internal
     void checkActive()  {if (getActiveSimulation()!=this) throw cRuntimeError(this, eWRONGSIM);}
+
+    // helper for executeEvent()
+    void doMessageEvent(cMessage *msg, cSimpleModule *mod);
 
   public:
     // internal: FES
@@ -309,13 +313,19 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cScheduler *getScheduler() const  {return schedulerp;}
 
     /**
+     * Sets the simulation stop time be scheduling an appropriate
+     * "end-simulation" event. May only be called once per run.
+     */
+    void setSimulationTimeLimit(simtime_t simTimeLimit);
+
+    /**
      * Builds a new network.
      */
     void setupNetwork(cModuleType *networkType);
 
     /**
      * Should be called after setupNetwork(), but before the first
-     * doOneEvent() call. Includes initialization of the modules,
+     * executeEvent() call. Includes initialization of the modules,
      * that is, invokes callInitialize() on the system module.
      */
     void callInitialize();
@@ -384,72 +394,51 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     void setWarmupPeriod(simtime_t t)  {warmup_period = t;}
     //@}
 
-    /** @name Scheduling and context switching during simulation. */
+    /** @name Scheduling and simulation execution. */
     //@{
+    /**
+     * Returns the likely next event in the simulation. Intended to be called
+     * from a user interface library for displaying simulation status information.
+     * Delegates to cScheduler::guessNextEvent().
+     */
+    cEvent *guessNextEvent();
 
     /**
-     * The scheduler function. Returns the module to which the
-     * next event (lowest timestamp event in the FES) belongs.
+     * Returns the module associated with the likely next event, or NULL if
+     * there is no such module. Based on guessNextEvent(); see further
+     * comments there.
+     */
+    cSimpleModule *guessNextModule();
+
+    /**
+     * Returns the simulation time of the likely next event, or -1 if there is
+     * none. Based on guessNextEvent(); see further comments there.
+     */
+    simtime_t guessNextSimtime();
+
+    /**
+     * The scheduler function. Returns the next event from the FES, and
+     * also advances the simulation time to the time of that event.
      *
      * If there is no more event (FES is empty), it throws cTerminationException.
      *
      * A NULL return value means that there is no error but execution
      * was stopped by the user (e.g. with STOP button on the GUI)
-     * while selectNextModule() --or rather, the installed cScheduler object--
-     * was waiting for external synchronization.
-     */
-    cSimpleModule *selectNextModule();
-
-    /**
-     * To be called between events from the environment of the simulation
-     * (e.g. from Tkenv), this function returns a pointer to the event
-     * at the head of the FES. It is only guaranteed to be the next event
-     * with sequential simulation; with parallel, distributed or real-time
-     * simulation there might be another event coming from other processes
-     * with a yet smaller timestamp.
+     * while the scheduler object was waiting for external synchronization.
      *
-     * This method is careful not to change anything. It never throws
-     * an exception, and especially, it does NOT invoke the scheduler
-     * (see cScheduler) because e.g. its parallel simulation incarnations
-     * might do subtle things to keep events synchronized in various
-     * partitions of the parallel simulation.
+     * Delegates to cScheduler::takeNextEvent().
      */
-    cMessage *guessNextEvent();
+    cEvent *takeNextEvent();
 
     /**
-     * To be called between events from the environment of the simulation
-     * (e.g. from Tkenv), this function returns the module associated
-     * with the event at the head of the FES. It returns NULL if the
-     * FES is empty, there is no module associated with the event, or
-     * the module has already finished.
-     *
-     * Based on guessNextEvent(); see further comments there.
+     * Executes an event as part of the simulation. Also increments the event
+     * number (see getEventNumber()).
      */
-    cSimpleModule *guessNextModule();
+    void executeEvent(cEvent *event);
 
     /**
-     * To be called between events from the environment of the simulation
-     * (e.g. Tkenv), this function returns the simulation time of the event
-     * at the head of the FES. In contrast, simTime() returns the time of the
-     * last executed (or currently executing) event. Returns a negative value
-     * if the FES is empty.
-     *
-     * Based on guessNextEvent(); see further comments there.
-     */
-    simtime_t guessNextSimtime();
-
-    /**
-     * Executes one event. The argument should be the module
-     * returned by selectNextModule(); that is, the module
-     * to which the next event (lowest timestamp event in
-     * the FES) belongs. Also increments the event number
-     * (returned by getEventNumber()).
-     */
-    void doOneEvent(cSimpleModule *m);
-
-    /**
-     * Switches to simple module's coroutine. This method is invoked
-     * from doOneEvent() for activity()-based modules.
+     * Switches to the given simple module's coroutine. This method is invoked
+     * from executeEvent() for activity()-based modules.
      */
     void transferTo(cSimpleModule *p);
 
@@ -459,11 +448,11 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     void transferToMain();
 
     /**
-     * Inserts the given message into the future events queue while assigning
+     * Inserts the given event into the future events queue while assigning
      * the current event to its scheduling event. Used internally by
      * cSimpleModule::scheduleAt() and various other cSimpleModule methods.
      */
-    void insertMsg(cMessage *msg);
+    void insertEvent(cEvent *event);
 
     /**
      * Sets the component (module or channel) in context. Used internally.

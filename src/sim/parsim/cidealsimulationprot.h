@@ -91,7 +91,7 @@ class SIM_API cIdealSimulationProtocol : public cParsimProtocolBase
     /**
      * Scheduler function.
      */
-    virtual cMessage *getNextEvent();
+    virtual cEvent *takeNextEvent();
 };
 
 NAMESPACE_END

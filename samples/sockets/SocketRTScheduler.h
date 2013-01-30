@@ -107,9 +107,14 @@ class cSocketRTScheduler : public cScheduler
                                     char *recvBuffer, int recvBufferSize, int *numBytesPtr);
 
     /**
-     * Scheduler function -- it comes from cScheduler interface.
+     * Returns the first event in the Future Event Set.
      */
-    virtual cMessage *getNextEvent();
+    virtual cEvent *guessNextEvent();
+
+    /**
+     * Scheduler function -- it comes from the cScheduler interface.
+     */
+    virtual cEvent *takeNextEvent();
 
     /**
      * Send on the currently open connection

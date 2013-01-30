@@ -149,7 +149,7 @@ class TKENV_API Tkenv : public EnvirBase
 
       virtual void objectDeleted(cObject *object); // notify environment
       virtual void componentInitBegin(cComponent *component, int stage);
-      virtual void simulationEvent(cMessage *msg);
+      virtual void simulationEvent(cEvent *event);
       virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate);
       virtual void messageScheduled(cMessage *msg);
       virtual void messageCancelled(cMessage *msg);
@@ -248,7 +248,7 @@ class TKENV_API Tkenv : public EnvirBase
                        const char *checkboxLabel, const char *defaultValue,
                        std::string& outResult, bool& inoutCheckState);
 
-      void printEventBanner(cMessage *msg, cSimpleModule *mod);
+      void printEventBanner(cEvent *event);
       void animateSend(cMessage *msg, cGate *fromgate, cGate *togate);
       void animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate);
       void animateDelivery(cMessage *msg);

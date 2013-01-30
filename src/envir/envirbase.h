@@ -34,6 +34,7 @@
 #include "cconfiguration.h"
 #include "timeutil.h"
 #include "cresultlistener.h"
+#include "cevent.h"
 
 NAMESPACE_BEGIN
 
@@ -157,7 +158,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
 
     // eventlog callback interface
     virtual void objectDeleted(cObject *object);
-    virtual void simulationEvent(cMessage *msg);
+    virtual void simulationEvent(cEvent *event);
     // leave to subclasses: virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=NULL);
     virtual void messageScheduled(cMessage *msg);
     virtual void messageCancelled(cMessage *msg);

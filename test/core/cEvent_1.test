@@ -1,0 +1,64 @@
+%description:
+Basic test for cEvent.
+
+%module: Module
+
+class SayHelloEvent : public cEvent
+{
+  public:
+    SayHelloEvent(const char *name, simtime_t t);
+    virtual cEvent *dup() const {copyNotSupported(); return NULL;}
+    virtual cObject *getTargetObject() const {return NULL;}
+    virtual void execute();
+};
+
+SayHelloEvent::SayHelloEvent(const char *name, simtime_t t) : cEvent(name)
+{
+    setArrivalTime(t);
+}
+
+void SayHelloEvent::execute()
+{
+    ev << getName() << " at " << simTime() << "s" << endl;
+    delete this;
+}
+
+class Module : public cSimpleModule
+{
+  public:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+    virtual void finish();
+};
+
+Define_Module(Module);
+
+void Module::initialize()
+{
+    scheduleAt(5.0, new cMessage("msg1"));
+    simulation.insertEvent(new SayHelloEvent("hello", 5.0));
+    scheduleAt(5.0, new cMessage("msg2"));
+}
+void Module::handleMessage(cMessage *msg)
+{
+    ev << msg->getName() << " at " << simTime() << "s" << endl;
+    delete msg;
+}
+
+void Module::finish()
+{
+   ev << "finish at " << simTime() << "s" << endl;
+   ev << "-" << endl;
+}
+
+%inifile: test.ini
+[General]
+network = Module
+cmdenv-express-mode = false
+
+%contains-regex: stdout
+.*msg1 at 5s
+.*hello at 5s
+.*msg2 at 5s
+.*finish at 5s
+-

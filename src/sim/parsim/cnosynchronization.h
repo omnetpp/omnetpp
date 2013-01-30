@@ -66,7 +66,7 @@ class SIM_API cNoSynchronization : public cParsimProtocolBase
      * with other partitions, so incausalities may occur which stop the
      * simulation with an error (see also class comment).
      */
-    virtual cMessage *getNextEvent();
+    virtual cEvent *takeNextEvent();
 };
 
 NAMESPACE_END

@@ -106,6 +106,7 @@ int getMessageShortInfoString_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectOwner_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectField_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectBaseClass_cmd(ClientData, Tcl_Interp *, int, const char **);
+int instanceof_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectId_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getComponentTypeObject_cmd(ClientData, Tcl_Interp *, int, const char **);
 int hasSubmodules_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -130,9 +131,9 @@ int getModulePar_cmd(ClientData, Tcl_Interp *, int, const char **);
 int setModulePar_cmd(ClientData, Tcl_Interp *, int, const char **);
 int moduleByPath_cmd(ClientData, Tcl_Interp *, int, const char **);
 int checkPattern_cmd(ClientData, Tcl_Interp *, int, const char **);
-int fesMsgs_cmd(ClientData, Tcl_Interp *, int, const char **);
+int fesEvents_cmd(ClientData, Tcl_Interp *, int, const char **);
 int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *, int, const char **);
-int msgArrTimeFromNow_cmd(ClientData, Tcl_Interp *, int, const char **);
+int eventArrTimeFromNow_cmd(ClientData, Tcl_Interp *, int, const char **);
 int patmatch_cmd(ClientData, Tcl_Interp *, int, const char **);
 int setMsgWindowExists_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getMainWindowExcludedModuleIds_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -212,6 +213,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getobjectshorttypename",getObjectShortTypeName_cmd  }, // args: <pointer>  ret: getClassName() or NED simple name
    { "opp_getobjectfulltypename",getObjectFullTypeName_cmd }, // args: <pointer>  ret: getClassName() or NED qualified name
    { "opp_getobjectbaseclass",getObjectBaseClass_cmd  }, // args: <pointer>  ret: a base class
+   { "opp_instanceof",       instanceof_cmd           }, // args: <pointer> <classname>  ret: 0 or 1
    { "opp_getobjectid",      getObjectId_cmd          }, // args: <pointer>  ret: object ID (if object has one) or ""
    { "opp_getobjectowner",   getObjectOwner_cmd       }, // args: <pointer>  ret: <ownerptr>
    { "opp_getobjectinfostring",getObjectInfoString_cmd}, // args: <pointer>  ret: info()
@@ -240,9 +242,9 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getmodulepar",     getModulePar_cmd         }, // args: <modptr> <parname> ret: value
    { "opp_setmodulepar",     setModulePar_cmd         }, // args: <modptr> <parname> <value>
    { "opp_checkpattern",     checkPattern_cmd         }, // args: <pattern>
-   { "opp_fesmsgs",          fesMsgs_cmd              }, // args: <maxnum> <wantSelfMsgs> <wantNonSelfMsgs> <namePattern> <classNamePattern>
+   { "opp_fesevents",        fesEvents_cmd            }, // args: <maxnum> <wantEvents> <wantSelfMsgs> <wantNonSelfMsgs> <namePattern> <classNamePattern>
    { "opp_sortfesandgetrange",sortFesAndGetRange_cmd  }, // args: -  ret: {minDeltaT maxDeltaT}
-   { "opp_msgarrtimefromnow",msgArrTimeFromNow_cmd    }, // args: <modptr>
+   { "opp_eventarrtimefromnow",eventArrTimeFromNow_cmd}, // args: <eventptr>
    { "opp_patmatch",         patmatch_cmd             }, // args: <string> <pattern>
    { "opp_setmsgwindowexists", setMsgWindowExists_cmd }, // args: 0 or 1
    { "opp_getmainwindowexcludedmoduleids", getMainWindowExcludedModuleIds_cmd }, // args: - ret: module id list
@@ -835,6 +837,24 @@ int getObjectBaseClass_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
        Tcl_SetResult(interp, TCLCONST("cWatchBase"), TCL_STATIC);
    else
        Tcl_SetResult(interp, TCLCONST(object->getClassName()), TCL_VOLATILE); // return itself as base class
+   return TCL_OK;
+}
+
+int instanceof_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   cObject *object = strToPtr(argv[1]);
+   const char *classname = argv[2];
+   bool result;
+   if (!strcmp(classname, "cMessage"))
+       result = dynamic_cast<cMessage*>(object) != NULL;
+   else if (!strcmp(classname, "cEvent"))
+       result = dynamic_cast<cEvent*>(object) != NULL;
+   else if (!strcmp(classname, "cPacket"))
+       result = dynamic_cast<cPacket*>(object) != NULL;
+   else
+       {Tcl_SetResult(interp, TCLCONST("class unsupported by this function"), TCL_STATIC); return TCL_ERROR;}
+   Tcl_SetResult(interp, TCLCONST(result ? "1" : "0"), TCL_STATIC);
    return TCL_OK;
 }
 
@@ -1499,15 +1519,16 @@ int checkPattern_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    E_CATCH
 }
 
-int fesMsgs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+int fesEvents_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    E_TRY
-   if (argc!=6) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   if (argc!=7) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    int maxNum = atoi(argv[1]);
-   bool wantSelfMsgs = atoi(argv[2])!=0;
-   bool wantNonSelfMsgs = atoi(argv[3])!=0;
-   const char *namePattern = argv[4];
-   const char *classNamePattern = argv[5];
+   bool wantEvents = atoi(argv[2])!=0;
+   bool wantSelfMsgs = atoi(argv[3])!=0;
+   bool wantNonSelfMsgs = atoi(argv[4])!=0;
+   const char *namePattern = argv[5];
+   const char *classNamePattern = argv[6];
 
    if (!*namePattern) namePattern = "*";
    MatchExpression nameMatcher(namePattern, false, true, true);
@@ -1518,11 +1539,18 @@ int fesMsgs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
    for (cMessageHeap::Iterator it(simulation.msgQueue); maxNum>0 && !it.end(); it++, maxNum--)
    {
-       cMessage *msg = it();
-       if (msg->isSelfMessage() ? !wantSelfMsgs : !wantNonSelfMsgs)
-           continue;
+       cEvent *event = it();
+       if (!event->isMessage()) {
+           if (!wantEvents)
+               continue;
+       }
+       else {
+           cMessage *msg = (cMessage*)event;
+           if (msg->isSelfMessage() ? !wantSelfMsgs : !wantNonSelfMsgs)
+               continue;
+       }
 
-       MatchableObjectAdapter msgAdapter(MatchableObjectAdapter::FULLNAME, msg);
+       MatchableObjectAdapter msgAdapter(MatchableObjectAdapter::FULLNAME, event);
        if (namePattern[0] && !nameMatcher.matches(&msgAdapter))
            continue;
 
@@ -1530,7 +1558,7 @@ int fesMsgs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
        if (classNamePattern[0] && !classNameMatcher.matches(&msgAdapter))
            continue;
 
-       Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(ptrToStr(msg), -1));
+       Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(ptrToStr(event), -1));
    }
    Tcl_SetObjResult(interp, listobj);
    return TCL_OK;
@@ -1560,12 +1588,12 @@ int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    return TCL_OK;
 }
 
-int msgArrTimeFromNow_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+int eventArrTimeFromNow_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   cMessage *msg = dynamic_cast<cMessage *>(strToPtr( argv[1] ));
-   if (!msg) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
-   simtime_t dt = msg->getArrivalTime()-simulation.getSimTime();
+   cEvent *event = dynamic_cast<cEvent *>(strToPtr( argv[1] ));
+   if (!event) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
+   simtime_t dt = event->getArrivalTime() - simulation.getSimTime();
    Tcl_SetObjResult(interp, Tcl_NewDoubleObj(SIMTIME_DBL(dt)));
    return TCL_OK;
 }

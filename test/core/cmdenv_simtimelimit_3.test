@@ -1,0 +1,46 @@
+%description:
+If there are several messages scheduled for the end-time, all of them
+are processed before simulation stops.
+
+%module: Module
+
+class Module : public cSimpleModule
+{
+  public:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+    virtual void finish();
+};
+
+Define_Module(Module);
+
+void Module::initialize()
+{
+    scheduleAt(5.0, new cMessage("msg1"));
+    scheduleAt(5.0, new cMessage("msg2"));
+    scheduleAt(5.0, new cMessage("msg3"));
+}
+void Module::handleMessage(cMessage *msg)
+{
+    ev << msg->getName() << " at " << simTime() << "s" << endl;
+    delete msg;
+}
+
+void Module::finish()
+{
+   ev << "finish at " << simTime() << "s" << endl;
+   ev << "-" << endl;
+}
+
+%inifile: test.ini
+[General]
+network = Module
+cmdenv-express-mode = false
+sim-time-limit = 5s
+
+%contains-regex: stdout
+.*msg1 at 5s
+.*msg2 at 5s
+.*msg3 at 5s
+.*finish at 5s
+-

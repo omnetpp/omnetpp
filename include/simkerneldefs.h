@@ -59,9 +59,18 @@
 #endif
 
 #ifndef NDEBUG
+/**
+ * The \opp version of C's assert() macro. If expr evaluates to false, an exception
+ * will be thrown with file/line/function information.
+ */
 #define ASSERT(expr) \
   ((void) ((expr) ? 0 : (opp_error("ASSERT: condition %s false in function %s, %s line %d", \
                                    #expr, __FUNCTION__, __FILE__, __LINE__), 0)))
+
+/**
+ * The \opp version of C's assert() macro. If expr evaluates to false, an exception
+ * will be thrown with file/line/function information and the given text.
+ */
 #define ASSERT2(expr,text) \
   ((void) ((expr) ? 0 : (opp_error("ASSERT: %s in function %s, %s line %d", \
                                    text, __FUNCTION__, __FILE__, __LINE__), 0)))
@@ -71,8 +80,13 @@
 #endif
 
 
+/**
+ * Sequence number of events during the simulation. Events are numbered from one.
+ * (Event number zero is reserved for network setup and initialization.)
+ *
+ * @ingroup EnumsTypes
+ */
 typedef int64 eventnumber_t;
-
 
 /**
  * Prototype for functions that are called by some objects (cMsgPar, cLinkedList)

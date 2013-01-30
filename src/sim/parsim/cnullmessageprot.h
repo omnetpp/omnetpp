@@ -123,7 +123,7 @@ class SIM_API cNullMessageProtocol : public cParsimProtocolBase
     /**
      * Scheduler function. The null message algorithm is embedded here.
      */
-    virtual cMessage *getNextEvent();
+    virtual cEvent *takeNextEvent();
 
     /**
      * In addition to its normal task (sending out the cMessage to the

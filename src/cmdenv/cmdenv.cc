@@ -363,13 +363,14 @@ void Cmdenv::simulate()
             disable_tracing = false;
             while (true)
             {
-                cSimpleModule *mod = simulation.selectNextModule();
-                if (!mod)
+                cEvent *event = simulation.takeNextEvent();
+                if (!event)
                     throw cTerminationException("scheduler interrupted while waiting");
 
-                // print event banner if neccessary
-                if (opt_eventbanners && mod->isEvEnabled())
-                    printEventBanner(mod);
+                // print event banner if necessary
+                if (opt_eventbanners)
+                    if (!event->isMessage() || static_cast<cMessage*>(event)->getArrivalModule()->isEvEnabled())
+                        printEventBanner(event);
 
                 // flush *between* printing event banner and event processing, so that
                 // if event processing crashes, it can be seen which event it was
@@ -377,7 +378,7 @@ void Cmdenv::simulate()
                     ::fflush(fout);
 
                 // execute event
-                simulation.doOneEvent(mod);
+                simulation.executeEvent(event);
 
                 // flush so that output from different modules don't get mixed
                 flushLastLine();
@@ -399,8 +400,8 @@ void Cmdenv::simulate()
 
             while (true)
             {
-                cSimpleModule *mod = simulation.selectNextModule();
-                if (!mod)
+                cEvent *event = simulation.takeNextEvent();
+                if (!event)
                     throw cTerminationException("scheduler interrupted while waiting");
 
                 speedometer.addEvent(simulation.getSimTime()); //XXX potential performance hog
@@ -410,7 +411,7 @@ void Cmdenv::simulate()
                     doStatusUpdate(speedometer);
 
                 // execute event
-                simulation.doOneEvent(mod);
+                simulation.executeEvent(event);
 
                 checkTimeLimits();  //XXX potential performance hog (maybe check every 256 events, unless "cmdenv-strict-limits" is on?)
                 if (sigint_received)
@@ -448,16 +449,30 @@ void Cmdenv::simulate()
     deinstallSignalHandler();
 }
 
-void Cmdenv::printEventBanner(cSimpleModule *mod)
+void Cmdenv::printEventBanner(cEvent *event)
 {
-    ::fprintf(fout, "** Event #%"LL"d  T=%s%s   %s (%s, id=%d)\n",
+    ::fprintf(fout, "** Event #%"LL"d  T=%s%s   ",
             simulation.getEventNumber(),
             SIMTIME_STR(simulation.getSimTime()),
-            progressPercentage(), // note: IDE launcher uses this to track progress
-            mod->getFullPath().c_str(),
-            mod->getComponentType()->getName(),
-            mod->getId()
-          );
+            progressPercentage()); // note: IDE launcher uses this to track progress
+    if (event->isMessage()) {
+        cModule *mod = static_cast<cMessage*>(event)->getArrivalModule();
+        ::fprintf(fout, "%s (%s, id=%d)\n",
+                mod->getFullPath().c_str(),
+                mod->getComponentType()->getName(),
+                mod->getId());
+    }
+    else if (event->getTargetObject())
+    {
+        cObject *target = event->getTargetObject();
+        ::fprintf(fout, "%s (%s)\n",
+                target->getFullPath().c_str(),
+                target->getClassName());
+    }
+//TODO:
+//    ::fprintf(fout, "on %s (%s)\n",
+//            event->getName(),
+//            event->getClassName());
     if (opt_eventbanner_details)
     {
         ::fprintf(fout, "   Elapsed: %s   Messages: created: %ld  present: %ld  in FES: %d\n",
@@ -655,13 +670,13 @@ void Cmdenv::messageSent_OBSOLETE(cMessage *msg, cGate *)
     }
 }
 
-void Cmdenv::simulationEvent(cMessage *msg)
+void Cmdenv::simulationEvent(cEvent *event)
 {
-    EnvirBase::simulationEvent(msg);
+    EnvirBase::simulationEvent(event);
 
     if (!opt_expressmode && opt_messagetrace)
     {
-        ::fprintf(fout, "DELIVD: %s\n", msg->info().c_str());  //TODO can go out!
+        ::fprintf(fout, "DELIVD: %s\n", event->info().c_str());  //TODO can go out!
         if (opt_autoflush)
             ::fflush(fout);
     }

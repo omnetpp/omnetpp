@@ -1,3 +1,14 @@
+2013-01-28  Andras Varga
+
+	* Implemented cEvent; see related ChangeLog entry in include/. Changes
+	affect cSimulation, cMessage, cMessageHeap, cScheduler and subclasses,
+	the parsim classes, etc.
+
+2013-01-28  Andras Varga
+
+	* Implemented simulation lifecycle listeners; see the ChangeLog in
+	include/.
+
 2013-02-08  ------ omnetpp-4.3rc1 released ------
 
 2013-01-29  Andras Varga

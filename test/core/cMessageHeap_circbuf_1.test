@@ -81,7 +81,7 @@ void Test::removeRandomMessages(int n)
         int k = intuniform(0, shadow.size()-1);
         cMessage *msg = shadow[k];
         if (k==0 && intuniform(0,1)==0) {
-            cMessage *first = fes.removeFirst();
+            cEvent *first = fes.removeFirst();
             ASSERT(first==msg);
         } else {
             fes.remove(msg);

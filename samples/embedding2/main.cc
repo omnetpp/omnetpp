@@ -111,6 +111,7 @@ double simulateAloha(simtime_t limit, int numHosts, double iaMean)
     if (!networkType)
         throw cRuntimeError("Aloha network not found");
     sim->setupNetwork(networkType); //XXX may throw exception
+    sim->setSimulationTimeLimit(limit);
 
     // prepare for running it
     sim->callInitialize();
@@ -118,11 +119,11 @@ double simulateAloha(simtime_t limit, int numHosts, double iaMean)
     // run the simulation
     bool ok = true;
     try {
-        while (sim->getSimTime() < limit) {
-            cSimpleModule *mod = sim->selectNextModule();
-            if (!mod)
+        while (true) {
+            cEvent *event = sim->takeNextEvent();
+            if (!event)
                 break;  //XXX
-            sim->doOneEvent(mod);
+            sim->executeEvent(event);
         }
         printf("Finished.\n");
     }

@@ -24,7 +24,7 @@
 
 NAMESPACE_BEGIN
 
-class cMessage;
+class cEvent;
 
 
 /**
@@ -62,13 +62,13 @@ class SIM_API cMessageHeap : public cOwnedObject
         /**
          * Returns the current object.
          */
-        cMessage *operator()()  {return q->peek(pos);}
+        cEvent *operator()()  {return q->peek(pos);}
 
         /**
          * Returns the current object, then moves the iterator to the next item.
          * If the iterator has reached the end of the list, NULL is returned.
          */
-        cMessage *operator++(int)  {return end() ? NULL : q->peek(pos++);}
+        cEvent *operator++(int)  {return end() ? NULL : q->peek(pos++);}
 
         /**
          * Returns true if the iterator has reached the end of the list.
@@ -80,13 +80,13 @@ class SIM_API cMessageHeap : public cOwnedObject
 
   private:
     // heap data structure
-    cMessage **h;             // pointer to the 'heap'  (h[0] always empty)
+    cEvent **h;               // pointer to the 'heap'  (h[0] always empty)
     int n;                    // number of elements in the heap
     int size;                 // size of allocated h array
     unsigned long insertcntr; // counts insertions
 
     // circular buffer for events scheduled for the current simtime (quite frequent)
-    cMessage **cb;            // size of the circular buffer
+    cEvent **cb;              // size of the circular buffer
     int cbsize;               // always power of 2
     int cbhead, cbtail;       // cbhead is inclusive, cbtail is exclusive
 
@@ -97,7 +97,7 @@ class SIM_API cMessageHeap : public cOwnedObject
     void shiftup(int from=1);
 
     int cblength() const  {return (cbtail-cbhead) & (cbsize-1);}
-    cMessage *cbget(int k)  {return cb[(cbhead+k) & (cbsize-1)];}
+    cEvent *cbget(int k)  {return cb[(cbhead+k) & (cbsize-1)];}
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -153,35 +153,35 @@ class SIM_API cMessageHeap : public cOwnedObject
     //@{
 
     /**
-     * Insert a new message into the heap.
+     * Insert a new event into the heap.
      */
-    void insert(cMessage *event);
+    void insert(cEvent *event);
 
     /**
-     * Peek the first message in the heap (the one with the smallest timestamp.)
+     * Peek the first event in the heap (the one with the smallest timestamp.)
      * If the heap is empty, it returns NULL.
      */
-    cMessage *peekFirst() const;
+    cEvent *peekFirst() const;
 
     /**
-     * Returns the mth message in the heap if 0 <= m < getLength(), and NULL
-     * otherwise. Note that iteration does not necessarily return messages
+     * Returns the mth event in the heap if 0 <= m < getLength(), and NULL
+     * otherwise. Note that iteration does not necessarily return events
      * in increasing timestamp (getArrivalTime()) order unless you called
      * sort() before.
      */
-    cMessage *peek(int m);
+    cEvent *peek(int m);
 
     /**
-     * Removes and return the first message in the heap (the one
+     * Removes and return the first event in the heap (the one
      * with the smallest timestamp.) If the heap is empty, it returns NULL.
      */
-    cMessage *removeFirst();
+    cEvent *removeFirst();
 
     /**
-     * Removes and returns the given message in the heap. If the message is
+     * Removes and returns the given event in the heap. If the event is
      * not in the heap, returns NULL.
      */
-    cMessage *remove(cMessage *event);
+    cEvent *remove(cEvent *event);
 
     /**
      * Sorts the contents of the heap. This is only necessary if one wants
@@ -190,12 +190,12 @@ class SIM_API cMessageHeap : public cOwnedObject
     void sort();
 
     /**
-     * Deletes all messages in the heap.
+     * Deletes all events in the heap.
      */
     void clear();
 
     /**
-     * Returns the number of messages in the heap.
+     * Returns the number of events in the heap.
      */
     int getLength() const {return cblength() + n;}
 

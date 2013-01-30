@@ -566,7 +566,7 @@ proc rununtil_dialog {time_var event_var msg_var mode_var} {
 
     # collect FES messages for combo
     set msglabels {""}
-    set msgptrs [opp_fesmsgs 1000 1 1 "" ""]
+    set msgptrs [opp_fesevents 1000 0 1 1 "" ""]  ;# messages only (opp_fesevents is called with wantEvents=0)
     foreach ptr $msgptrs {
         set msglabel "[opp_getobjectfullname $ptr] ([opp_getobjectshorttypename $ptr]), [opp_getobjectinfostring $ptr] -- $ptr"
         lappend msglabels $msglabel

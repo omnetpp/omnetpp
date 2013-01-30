@@ -695,19 +695,23 @@ void TGraphicalModWindow::redrawMessages()
        return;
 
    // loop through all messages in the event queue and display them
-   for (cMessageHeap::Iterator msg(simulation.msgQueue); !msg.end(); msg++)
+   for (cMessageHeap::Iterator it(simulation.msgQueue); !it.end(); it++)
    {
-      char msgptr[32];
-      ptrToStr(msg(),msgptr);
+      cEvent *event = it();
+      if (!event->isMessage())
+          continue;
+      cMessage *msg = (cMessage*)event;
 
-      cModule *arrivalmod = simulation.getModule( msg()->getArrivalModuleId() );
+      cModule *arrivalmod = msg->getArrivalModule();
       if (arrivalmod &&
           arrivalmod->getParentModule()==static_cast<cModule *>(object) &&
-          msg()->getArrivalGateId()>=0)
+          msg->getArrivalGateId()>=0)
       {
-         cGate *arrivalGate = msg()->getArrivalGate();
+         char msgptr[32];
+         ptrToStr(msg, msgptr);
+         cGate *arrivalGate = msg->getArrivalGate();
 
-         // if arrivalgate is connected, msg arrived on a connection, otherwise via sendDirect()
+         // if arrivalGate is connected, msg arrived on a connection, otherwise via sendDirect()
          if (arrivalGate->getPreviousGate())
          {
              cGate *gate = arrivalGate->getPreviousGate();
@@ -1245,20 +1249,26 @@ void TGraphicalGateWindow::update()
    // loop through all messages in the event queue
    CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", NULL));
    cGate *destgate = gate->getPathEndGate();
-   for (cMessageHeap::Iterator msg(simulation.msgQueue); !msg.end(); msg++)
+   for (cMessageHeap::Iterator it(simulation.msgQueue); !it.end(); it++)
    {
-      char gateptr[32], msgptr[32];
-      ptrToStr(msg(),msgptr);
+      cEvent *event = it();
+      if (!event->isMessage())
+         continue;
+      cMessage *msg = (cMessage*)event;
 
-      if (msg()->getArrivalGate()== destgate)
+      if (msg->getArrivalGate()== destgate)
       {
-         cGate *gate = msg()->getArrivalGate();
-         if (gate) gate = gate->getPreviousGate();
+         cGate *gate = msg->getArrivalGate();
+         if (gate)
+             gate = gate->getPreviousGate();
          if (gate)
          {
+             char gateptr[32], msgptr[32];
+             ptrToStr(msg, msgptr);
+             ptrToStr(gate, gateptr);
              CHK(Tcl_VarEval(interp, "graphmodwin_draw_message_on_gate ",
                              canvas, " ",
-                             ptrToStr(gate,gateptr), " ",
+                             gateptr, " ",
                              msgptr,
                              NULL));
          }

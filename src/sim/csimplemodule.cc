@@ -322,7 +322,7 @@ void cSimpleModule::scheduleStart(simtime_t t)
 
         // use timeoutmsg as the activation message; insert it into the FES
         EVCB.messageScheduled(timeoutmsg);
-        simulation.insertMsg(timeoutmsg);
+        simulation.insertEvent(timeoutmsg);
     }
 
     for (SubmoduleIterator submod(this); !submod.end(); submod++)
@@ -337,7 +337,7 @@ void cSimpleModule::deleteModule()
     // by activate(), and handled in cSimulation::transferTo().
     // execution must be immediately suspended in activity() and handleMessage()
     // if deleteModule() is called (i.e. we are deleting ourselves)
-    // the exception will be handled in the doOneEvent loop and the module
+    // the exception will be handled in the executeEvent loop and the module
     // will be deleted from the globalContext
     if (simulation.getContextModule()==this)
         throw cDeleteModuleException();
@@ -567,7 +567,7 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
     msg->setArrival(this, -1, t);
     EVCB.messageSent_OBSOLETE( msg ); //XXX obsolete but needed for Tkenv
     EVCB.messageScheduled(msg);
-    simulation.insertMsg(msg);
+    simulation.insertEvent(msg);
     return 0;
 }
 
@@ -614,7 +614,7 @@ void cSimpleModule::arrived(cMessage *msg, cGate *ongate, simtime_t t)
     else {
         msg->setArrivalTime(t);
     }
-    simulation.insertMsg(msg);
+    simulation.insertEvent(msg);
 }
 
 void cSimpleModule::wait(simtime_t t)
@@ -626,7 +626,7 @@ void cSimpleModule::wait(simtime_t t)
 
     timeoutmsg->setArrivalTime(simTime()+t);
     EVCB.messageScheduled(timeoutmsg);
-    simulation.insertMsg(timeoutmsg);
+    simulation.insertEvent(timeoutmsg);
 
     simulation.transferToMain();
     if (stack_cleanup_requested)
@@ -651,7 +651,7 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
 
     timeoutmsg->setArrivalTime(simTime()+t);
     EVCB.messageScheduled(timeoutmsg);
-    simulation.insertMsg(timeoutmsg);
+    simulation.insertEvent(timeoutmsg);
 
     for(;;)
     {
@@ -692,7 +692,7 @@ cMessage *cSimpleModule::receive(simtime_t t)
 
     timeoutmsg->setArrivalTime(simTime()+t);
     EVCB.messageScheduled(timeoutmsg);
-    simulation.insertMsg(timeoutmsg);
+    simulation.insertEvent(timeoutmsg);
 
     simulation.transferToMain();
     if (stack_cleanup_requested)

@@ -44,6 +44,7 @@ set config(display-timeline) 1
 set config(timeline-maxnumevents) 1000
 #set config(timeline-includemsgkinds) {*}
 #set config(timeline-excludemsgkinds) {}
+set config(timeline-wantevents) 1
 set config(timeline-wantselfmsgs) 1
 set config(timeline-wantnonselfmsgs) 1
 set config(timeline-msgnamepattern) "*"
