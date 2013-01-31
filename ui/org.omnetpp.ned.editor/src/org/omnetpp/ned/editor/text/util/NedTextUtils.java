@@ -138,11 +138,18 @@ public class NedTextUtils {
                 // gate names are often the same on both side of the conn ("a.port++ <--> b.port++;"),
                 // so we need to parse a bit where the user was hovering exactly
                 IRegion connRegion = getElementRegion(doc, element);
+                int wordEndOffset = wordRegion.getOffset() + wordRegion.getLength();
+                int connEndOffset = connRegion.getOffset() + connRegion.getLength();
                 String textBeforeWord = TextEditorUtil.get(textViewer, new Region(connRegion.getOffset(), wordRegion.getOffset() - connRegion.getOffset()));
+                String textAfterWord = TextEditorUtil.get(textViewer, new Region(wordEndOffset, connEndOffset - wordEndOffset));
 
-                if (!textBeforeWord.contains("--") && word.equals(conn.getSrcGate()))
+                boolean isInLeftGateRegion = !textBeforeWord.contains("--");
+                boolean isInRightGateRegion = !textAfterWord.contains("--");
+                boolean isInSrcGateRegion = (isInLeftGateRegion && conn.getIsForwardArrow()) || (isInRightGateRegion && !conn.getIsForwardArrow());
+                boolean isInDestGateRegion = (isInRightGateRegion && conn.getIsForwardArrow()) || (isInLeftGateRegion && !conn.getIsForwardArrow());
+                if (isInSrcGateRegion && word.equals(conn.getSrcGate()))
                     return createInfo(element, wordRegion, lookupGate(compoundModule, conn.getSrcModule(), conn.getSrcGate()));
-                if (textBeforeWord.contains("--") && word.equals(conn.getDestGate()))
+                if (isInDestGateRegion && word.equals(conn.getDestGate()))
                     return createInfo(element, wordRegion, lookupGate(compoundModule, conn.getDestModule(), conn.getDestGate()));
 
                 if (dottedWord.equals(conn.getEffectiveType())) {
