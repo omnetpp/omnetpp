@@ -38,7 +38,7 @@ USING_NAMESPACE
 #elif defined _WIN32 and defined __GNUC__
 #define DEBUG_TRAP  asm("int $3\n")  // MinGW or Cygwin: debug interrupt with gnu syntax
 #else
-#define DEBUG_TRAP  raise(6)  // SIGABRT
+#define DEBUG_TRAP  raise(2)  // SIGINT
 #endif
 
 
