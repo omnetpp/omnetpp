@@ -1765,6 +1765,10 @@ timeval EnvirBase::totalElapsed()
 
 void EnvirBase::checkTimeLimits()
 {
+#ifdef USE_OMNETPP4x_FINGERPRINTS
+    if (opt_simtimelimit!=0 && simulation.getSimTime()>=opt_simtimelimit)
+         throw cTerminationException(eSIMTIME);
+#endif
     if (opt_cputimelimit==0) // no limit
          return;
     if (disable_tracing && (simulation.getEventNumber()&0xFF)!=0) // optimize: in Express mode, don't call gettimeofday() on every event

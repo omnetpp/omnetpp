@@ -1,3 +1,13 @@
+2013-02-05  Andras Varga
+
+	* cSimulation: changed fingerprint computation, so that the result
+	becomes insensitive to module IDs, and sensitive to module path,
+	message kind/length, message class name, control info class name,
+	etc.
+
+	Old computation mode can be restored with by defining USE_OMNETPP4x_-
+	FINGERPRINTS (both when compiling OMNeT++ and models).
+
 2013-01-28  Andras Varga
 
 	* Implemented cEvent; see related ChangeLog entry in include/. Changes

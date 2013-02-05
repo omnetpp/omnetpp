@@ -1,3 +1,12 @@
+2013-02-05  Andras Varga
+
+	* SimTime: conversion from double now uses rounding instead of truncation
+	(plain C-style cast). Motivation: some small time constants given as
+	doubles ended up with lots of trailing 9's after conversion to simtime_t.
+
+	This change alters simulation fingerprints, so it is not done in
+	fingerprint compatibility mode (USE_OMNETPP4x_FINGERPRINTS).
+
 2013-01-28  Andras Varga
 
 	* Introduced cEvent as a base class of cMessage. cEvent allows scheduling

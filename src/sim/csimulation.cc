@@ -242,7 +242,11 @@ void cSimulation::setScheduler(cScheduler *sch)
 
 void cSimulation::setSimulationTimeLimit(simtime_t simTimeLimit)
 {
+#ifndef USE_OMNETPP4x_FINGERPRINTS
     getMessageQueue().insert(new cEndSimulationEvent("endsimulation", simTimeLimit));
+#else
+    // In 4.x fingerprints mode, we check simTimeLimit manually in EnvirBase::checkTimeLimits()
+#endif
 }
 
 int cSimulation::loadNedSourceFolder(const char *folder)
@@ -654,8 +658,19 @@ void cSimulation::doMessageEvent(cMessage *msg, cSimpleModule *mod)
     if (getHasher())
     {
         // note: there's no value in adding getEventNumber()
-        getHasher()->add(SIMTIME_RAW(simTime()));
-        getHasher()->add(mod->getId());
+        cHasher *hasher = getHasher();
+        hasher->add(SIMTIME_RAW(simTime()));
+#ifdef USE_OMNETPP4x_FINGERPRINTS
+        hasher->add(mod->getId());
+#else
+        hasher->add(mod->getFullPath().c_str());
+        hasher->add(msg->getClassName());
+        hasher->add(msg->getKind());
+        if (msg->getControlInfo())
+            hasher->add(msg->getControlInfo()->getClassName());
+        if (msg->isPacket())
+            hasher->add(((cPacket *)msg)->getBitLength());
+#endif
     }
 
     if (!mod->initialized())
