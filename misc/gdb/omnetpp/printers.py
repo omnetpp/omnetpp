@@ -248,8 +248,9 @@ def build_omnetpp_dictionary():
     omnetpp_printer = OppPrinter("omnetpp")
 
     omnetpp_printer.add('SimTime', SimTimePrinter)
-    omnetpp_printer.add('cObject', cObjectPrinter)
-
+# As of GDB 7.5 and CDT 3.8.1, GDB often crashes during pretty printing
+# a cObject pointer so the cObject pretty printer routines are disabled for now.
+#    omnetpp_printer.add('cObject', cObjectPrinter)
 
 build_omnetpp_dictionary()
 
