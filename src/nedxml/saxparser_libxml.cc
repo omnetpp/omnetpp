@@ -48,7 +48,7 @@ void SAXParser::setHandler(SAXHandler *sh)
 static int nodeLine;  // line number of current node
 static xmlParserCtxtPtr ctxt; // parser context
 
-static void dontPrintError(void *, xmlErrorPtr) {} // an xmlStructuredErrorFunc
+// static void dontPrintError(void *, xmlErrorPtr) {} // an xmlStructuredErrorFunc
 
 static void generateSAXEvents(xmlNode *node, SAXHandler *sh)
 {

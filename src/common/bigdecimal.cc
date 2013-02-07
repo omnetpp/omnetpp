@@ -383,7 +383,6 @@ const BigDecimal BigDecimal::parse(const char *s)
 const BigDecimal BigDecimal::parse(const char *s, const char *&endp)
 {
     int64 intVal = 0;
-    int digit;
     int digits = 0;
     int scale = 0;
     int sign = 1;

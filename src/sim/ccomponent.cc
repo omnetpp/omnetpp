@@ -469,7 +469,7 @@ void cComponent::emit(simsignal_t signalID, cObject *obj)
 
 uint64 cComponent::getSignalMask(simsignal_t signalID)
 {
-    if ((unsigned)signalID > lastSignalID)
+    if (signalID > lastSignalID)
         throw cRuntimeError("emit()/hasListeners(): not a valid signal: signalID=%d", signalID);
 
     uint64 mask = signalMasks[signalID];
@@ -536,7 +536,7 @@ void cComponent::fireFinish()
 void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
 {
     // check that the signal exits
-    if ((unsigned)signalID > lastSignalID)
+    if (signalID > lastSignalID)
         throw cRuntimeError("subscribe(): not a valid signal: signalID=%d", signalID);
 
     // add to local listeners
@@ -583,7 +583,7 @@ void cComponent::signalListenerAdded(simsignal_t signalID, uint64 mask)
 void cComponent::unsubscribe(simsignal_t signalID, cIListener *listener)
 {
     // check that the signal exits
-    if ((unsigned)signalID > lastSignalID)
+    if (signalID > lastSignalID)
         throw cRuntimeError("unsubscribe(): not a valid signal: signalID=%d", signalID);
 
     // remove from local listeners list
@@ -690,7 +690,7 @@ std::vector<cIListener*> cComponent::getLocalSignalListeners(simsignal_t signalI
 
 void cComponent::checkLocalSignalConsistency() const
 {
-    ASSERT(signalMasks.size() == lastSignalID+1);
+    ASSERT((int)signalMasks.size() == lastSignalID+1);
     for (simsignal_t signalID=0; signalID<=lastSignalID; signalID++)
     {
         // determine from the listener lists whether this signal has local and ancestor listeners

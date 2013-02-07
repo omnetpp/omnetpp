@@ -698,8 +698,6 @@ IDList ResultFileManager::filterIDList(const IDList &idlist, const char *runName
     // we can exploit the fact that ResultFileManager contains the data in the order
     // they were read from file, i.e. grouped by runs
     IDList result;
-    FileRun *lastFileRunRef = NULL;
-    bool lastFileRunMatched = false;
     int sz = idlist.size();
     for (int i=0; i<sz; i++)
     {
