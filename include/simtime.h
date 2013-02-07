@@ -28,6 +28,18 @@ class cPar;
 // the most positive int64 value, represented as double
 #define INT64_MAX_DBL  9.22337203685e18
 
+/**
+ * Enum for simulation time base-10 exponents.
+ */
+enum SimTimeUnit
+{
+    SIMTIME_S  =  0,
+    SIMTIME_MS = -3,
+    SIMTIME_US = -6,
+    SIMTIME_NS = -9,
+    SIMTIME_PS = -12,
+    SIMTIME_FS = -15
+};
 
 /**
  * int64-based, fixed-point simulation time. Precision is determined by a scale
@@ -91,23 +103,66 @@ class SIM_API SimTime
     void overflowSubstracting(const SimTime& x);
 
   public:
-    static const int SCALEEXP_S  =  0;
-    static const int SCALEEXP_MS = -3;
-    static const int SCALEEXP_US = -6;
-    static const int SCALEEXP_NS = -9;
-    static const int SCALEEXP_PS = -12;
-    static const int SCALEEXP_FS = -15;
+    // renamed constants (use SIMTIME_x instead)
+    _OPPDEPRECATED static const int SCALEEXP_S;
+    _OPPDEPRECATED static const int SCALEEXP_MS;
+    _OPPDEPRECATED static const int SCALEEXP_US;
+    _OPPDEPRECATED static const int SCALEEXP_NS;
+    _OPPDEPRECATED static const int SCALEEXP_PS;
+    _OPPDEPRECATED static const int SCALEEXP_FS;
+
     static const int SCALEEXP_UNINITIALIZED = 0xffff;
 
+    /** @name Constructors */
+    //@{
     /**
      * Constructor initializes to zero.
      */
     SimTime() {t=0;}
+
+    /**
+     * Initialize simulation time from a double-precision number. This constructor
+     * is recommended if the value is the result of some computation done in
+     * <tt>double</tt>. For integer-based computations and time constants, the
+     * <tt>SimTime(int64 x, int exponent)</tt> constructor is usually a better
+     * choice, because it does not have rounding errors caused by double-to-integer
+     * conversion.
+     */
     SimTime(double d) {operator=(d);}
+
+    /**
+     * Initialize simulation time from a module or channel parameter. It uses
+     * conversion to <tt>double</tt>. It currently does not check the measurement
+     * unit of the parameter (@unit property), although this may change in
+     * future releases.
+     */
     SimTime(cPar& d) {operator=(d);}
-    SimTime(const SimTime& x) {operator=(x);}
-    // note: template ctor is not a good idea -- often causes surprises
+
+    // Note: a generic template constructor (commented out below) is not a good idea -- often causes surprises
     // template<typename T> SimTime(T d) {operator=(d);}
+
+    /**
+     * Initialize simulation time from a significand and a base-10 exponent.
+     * The purpose of this constructor is to allow one to specify precise
+     * constants, i.e. without conversion errors incurred by the <tt>double</tt>
+     * constructor. Use an integer (-3 for millisec, etc) or elements of the
+     * SimTimeUnit enum (SIMTIME_S, SIMTIME_MS, etc) for the exponent. An error
+     * will be thrown if the resulting value cannot be represented (overflow)
+     * or it cannot be represented precisely (precision loss) with the current
+     * scale exponent.
+     *
+     * Examples:
+     *   Simtime(152, SIMTIME_MS) -> 0.152s;
+     *   Simtime(100, -5) -> 0.001s;
+     *   Simtime(5, 2) -> 500s;
+     */
+    SimTime(int64 significand, int exponent);
+
+    /**
+     * Copy constructor.
+     */
+    SimTime(const SimTime& x) {operator=(x);}
+    //@}
 
     /** @name Arithmetic operations */
     //@{
@@ -156,6 +211,56 @@ class SIM_API SimTime
      * cause ambiguities during compilation.
      */
     double dbl() const  {return t*invfscale;}
+
+    /**
+     * Converts the simulation time to the time unit given with its base-10
+     * exponent, and returns the result as an integer. If the conversion
+     * results in precision loss, the result will be truncated. Use an integer
+     * (-3 for millisec, etc.) or elements of the SimTimeUnit enum (SIMTIME_S,
+     * SIMTIME_MS, etc) for the exponent. If the return type is not wide enough
+     * to hold the result, an error will be thrown.
+     *
+     * Examples:
+     *   1.7ms in us --> 1700;
+     *   3.8ms in s --> 3;
+     *   -3.8ms in s --> -3;
+     *   999ms in s --> 0
+     *   261ms in 100ms --> 2;
+     */
+    int64 inUnit(int exponent) const;
+
+    /**
+     * Returns a new simulation time that is truncated to the precision of the
+     * unit specified by the base-10 exponent parameter. Use an integer
+     * (-3 for millisec, etc.) or elements of the SimTimeUnit enum (SIMTIME_S,
+     * SIMTIME_MS, etc) for the exponent.
+     *
+     * Examples:
+     *   3750ms truncated to s --> 3;
+     *   -3750ms truncated to s --> -3
+     */
+    SimTime trunc(int exponent) const  {return SimTime(inUnit(exponent), exponent);}
+
+    /**
+     * Returns a simtime that is the difference between the simulation time and
+     * its truncated value (see trunc()).
+     *
+     * That is, t == t.trunc(exp) + t.remainderforUnit(exp) for any exp.
+     */
+    SimTime remainderForUnit(int exponent) const  {return (*this) - trunc(exponent);}
+
+    /**
+     * Convenience method: splits the simulation time into a whole and a
+     * fractional part with regard to a time unit, specified with its base-10
+     * exponent. <tt>t.split(exponent, outValue, outRemainder)</tt>
+     * is equivalent to:
+     *
+     * <pre>
+     * outValue = t.inUnit(exponent);
+     * outRemainder = t.remainderForUnit(exponent);
+     * </pre>
+     */
+    void split(int exponent, int64& outValue, SimTime& outRemainder) const;
 
     /**
      * Converts to string.

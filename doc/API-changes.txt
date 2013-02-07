@@ -34,7 +34,13 @@ OMNeT++ 4.3
 
 (+)     cPatternMatcher, cMatchExpression: new utility classes
 
-(+)	cGate: added getBaseId()
+(+)     cGate: added getBaseId()
+
+(+)     SimTime: added SimTime(int64 value, int base10exponent) constructor
+        to allow specifying precise constants
+
+(+)     SimTime: added functions for getting the value out in various time
+        units (sec, msec, etc): inUnit(), trunc(), remainderForUnit(), split()
 
 
 OMNeT++ 4.2

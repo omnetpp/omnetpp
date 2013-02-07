@@ -19,14 +19,23 @@
 #include "cexception.h"
 #include "unitconversion.h"
 #include "cpar.h"
+#include "onstartup.h"
 
 USING_NAMESPACE
 
+#define LL  INT64_PRINTF_FORMAT
 
 int SimTime::scaleexp = SimTime::SCALEEXP_UNINITIALIZED;
 int64 SimTime::dscale;
 double SimTime::fscale;
 double SimTime::invfscale;
+
+const int SimTime::SCALEEXP_S  = SIMTIME_S;
+const int SimTime::SCALEEXP_MS = SIMTIME_MS;
+const int SimTime::SCALEEXP_US = SIMTIME_US;
+const int SimTime::SCALEEXP_NS = SIMTIME_NS;
+const int SimTime::SCALEEXP_PS = SIMTIME_PS;
+const int SimTime::SCALEEXP_FS = SIMTIME_FS;
 
 void SimTime::setScaleExp(int e)
 {
@@ -83,7 +92,73 @@ void SimTime::overflowSubstracting(const SimTime& x)
                         x.str().c_str(), str().c_str(), range().c_str(), scaleexp);
 }
 
-//XXX inline, at the end of simtime.h, just after #include "cpar.h" ?
+#define MAX_POWER_OF_TEN  18
+static int64 powersOfTen[MAX_POWER_OF_TEN];
+
+EXECUTE_ON_STARTUP(
+    int64 power = 1;
+    for (int i = 0; i <= MAX_POWER_OF_TEN; i++) {
+        powersOfTen[i] = power;
+        power *= 10;
+    }
+);
+
+inline int64 exp10(int exponent)
+{
+    if (exponent < 0 || exponent > MAX_POWER_OF_TEN)
+        return -1; // error
+    return powersOfTen[exponent];
+}
+
+SimTime::SimTime(int64 significand, int exponent)
+{
+    t = significand;
+    int expdiff = exponent - scaleexp;
+    if (expdiff < 0)
+    {
+        int64 mul = exp10(-expdiff);
+        int64 tmp = t / mul;
+        if (mul == -1 || tmp*mul != t)
+            throw cRuntimeError("simtime_t error: %" LL "d*10^%d cannot be represented precisely using the current scale exponent %d, "
+                    "increase resolution by configuring a smaller scale exponent or use 'double' conversion",
+                    significand, exponent, scaleexp);
+        t = tmp;
+    }
+    else if (expdiff > 0)
+    {
+        int64 mul = exp10(expdiff);
+        if (mul == -1 || (t<0?-t:t) >= INT64_MAX / mul)
+            throw cRuntimeError("simtime_t overflow: cannot represent %" LL "d*10^%d, out of range %s allowed by scale exponent %d",
+                    significand, exponent, range().c_str(), scaleexp);
+        t *= mul;
+    }
+}
+
+int64 SimTime::inUnit(int exponent) const
+{
+    int64 x = t;
+    int expdiff = exponent - scaleexp;
+    if (expdiff > 0)
+    {
+        int64 mul = exp10(expdiff);
+        x = (mul == -1) ? 0 : x / mul;
+    }
+    else if (expdiff < 0)
+    {
+        int64 mul = exp10(-expdiff);
+        if (mul == -1 || (x<0?-x:x) >= INT64_MAX / mul)
+            throw cRuntimeError("simtime: inUnits(): overflow: cannot represent %s in units of 10^%ds", str().c_str(), exponent);
+        x *= mul;
+    }
+    return x;
+}
+
+void SimTime::split(int exponent, int64& outValue, SimTime& outRemainder) const
+{
+    outValue = inUnit(exponent);
+    outRemainder = *this - SimTime(outValue, exponent);
+}
+
 const SimTime& SimTime::operator=(const cPar& p)
 {
     return operator=((double)p);

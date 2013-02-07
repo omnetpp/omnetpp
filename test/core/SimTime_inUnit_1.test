@@ -1,0 +1,120 @@
+%description:
+SimTime: test inUnit()
+
+%includes:
+#include <math.h>
+
+%global:
+
+inline double trunc(double d)
+{
+    return d > 0 ? floor(d) : ceil(d);
+}
+
+void test(simtime_t t, int exponent)
+{
+    double d = trunc(t.dbl() / pow(10.0, exponent));
+    ev << t << "s in units of 10^" << exponent << "s = ~" << d << " -> ";
+    try {
+        int64 x = t.inUnit(exponent);
+        bool nearlyEqual = (x==0 && d==0) || fabs(x/d-1.0) < 0.001;
+        ev << x << " " << (nearlyEqual?"ok":"WRONG") << "\n";
+    } catch (std::exception& e) {
+        ev << "ERROR: " << e.what() << "\n";
+    }
+}
+
+%activity:
+ASSERT(SimTime::getScaleExp()==SIMTIME_NS);
+
+simtime_t t = 3000.0 / 7.0;
+for (int exp = -20; exp < 15; exp++)
+    test(t, exp);
+
+t = -t;
+for (int exp = -20; exp < 15; exp++)
+    test(t, exp);
+
+ev << ".\n";
+
+%inifile: omnetpp.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+simtime-scale = -9
+
+%subst: /e\+0/e+/
+%subst: /e\-0/e-/
+
+%contains: stdout
+428.571428571s in units of 10^-20s = ~4.28571e+22 -> ERROR: simtime: inUnits(): overflow: cannot represent 428.571428571 in units of 10^-20s
+428.571428571s in units of 10^-19s = ~4.28571e+21 -> ERROR: simtime: inUnits(): overflow: cannot represent 428.571428571 in units of 10^-19s
+428.571428571s in units of 10^-18s = ~4.28571e+20 -> ERROR: simtime: inUnits(): overflow: cannot represent 428.571428571 in units of 10^-18s
+428.571428571s in units of 10^-17s = ~4.28571e+19 -> ERROR: simtime: inUnits(): overflow: cannot represent 428.571428571 in units of 10^-17s
+428.571428571s in units of 10^-16s = ~4.28571e+18 -> 4285714285710000000 ok
+428.571428571s in units of 10^-15s = ~4.28571e+17 -> 428571428571000000 ok
+428.571428571s in units of 10^-14s = ~4.28571e+16 -> 42857142857100000 ok
+428.571428571s in units of 10^-13s = ~4.28571e+15 -> 4285714285710000 ok
+428.571428571s in units of 10^-12s = ~4.28571e+14 -> 428571428571000 ok
+428.571428571s in units of 10^-11s = ~4.28571e+13 -> 42857142857100 ok
+428.571428571s in units of 10^-10s = ~4.28571e+12 -> 4285714285710 ok
+428.571428571s in units of 10^-9s = ~4.28571e+11 -> 428571428571 ok
+428.571428571s in units of 10^-8s = ~4.28571e+10 -> 42857142857 ok
+428.571428571s in units of 10^-7s = ~4.28571e+09 -> 4285714285 ok
+428.571428571s in units of 10^-6s = ~4.28571e+08 -> 428571428 ok
+428.571428571s in units of 10^-5s = ~4.28571e+07 -> 42857142 ok
+428.571428571s in units of 10^-4s = ~4.28571e+06 -> 4285714 ok
+428.571428571s in units of 10^-3s = ~428571 -> 428571 ok
+428.571428571s in units of 10^-2s = ~42857 -> 42857 ok
+428.571428571s in units of 10^-1s = ~4285 -> 4285 ok
+428.571428571s in units of 10^0s = ~428 -> 428 ok
+428.571428571s in units of 10^1s = ~42 -> 42 ok
+428.571428571s in units of 10^2s = ~4 -> 4 ok
+428.571428571s in units of 10^3s = ~0 -> 0 ok
+428.571428571s in units of 10^4s = ~0 -> 0 ok
+428.571428571s in units of 10^5s = ~0 -> 0 ok
+428.571428571s in units of 10^6s = ~0 -> 0 ok
+428.571428571s in units of 10^7s = ~0 -> 0 ok
+428.571428571s in units of 10^8s = ~0 -> 0 ok
+428.571428571s in units of 10^9s = ~0 -> 0 ok
+428.571428571s in units of 10^10s = ~0 -> 0 ok
+428.571428571s in units of 10^11s = ~0 -> 0 ok
+428.571428571s in units of 10^12s = ~0 -> 0 ok
+428.571428571s in units of 10^13s = ~0 -> 0 ok
+428.571428571s in units of 10^14s = ~0 -> 0 ok
+-428.571428571s in units of 10^-20s = ~-4.28571e+22 -> ERROR: simtime: inUnits(): overflow: cannot represent -428.571428571 in units of 10^-20s
+-428.571428571s in units of 10^-19s = ~-4.28571e+21 -> ERROR: simtime: inUnits(): overflow: cannot represent -428.571428571 in units of 10^-19s
+-428.571428571s in units of 10^-18s = ~-4.28571e+20 -> ERROR: simtime: inUnits(): overflow: cannot represent -428.571428571 in units of 10^-18s
+-428.571428571s in units of 10^-17s = ~-4.28571e+19 -> ERROR: simtime: inUnits(): overflow: cannot represent -428.571428571 in units of 10^-17s
+-428.571428571s in units of 10^-16s = ~-4.28571e+18 -> -4285714285710000000 ok
+-428.571428571s in units of 10^-15s = ~-4.28571e+17 -> -428571428571000000 ok
+-428.571428571s in units of 10^-14s = ~-4.28571e+16 -> -42857142857100000 ok
+-428.571428571s in units of 10^-13s = ~-4.28571e+15 -> -4285714285710000 ok
+-428.571428571s in units of 10^-12s = ~-4.28571e+14 -> -428571428571000 ok
+-428.571428571s in units of 10^-11s = ~-4.28571e+13 -> -42857142857100 ok
+-428.571428571s in units of 10^-10s = ~-4.28571e+12 -> -4285714285710 ok
+-428.571428571s in units of 10^-9s = ~-4.28571e+11 -> -428571428571 ok
+-428.571428571s in units of 10^-8s = ~-4.28571e+10 -> -42857142857 ok
+-428.571428571s in units of 10^-7s = ~-4.28571e+09 -> -4285714285 ok
+-428.571428571s in units of 10^-6s = ~-4.28571e+08 -> -428571428 ok
+-428.571428571s in units of 10^-5s = ~-4.28571e+07 -> -42857142 ok
+-428.571428571s in units of 10^-4s = ~-4.28571e+06 -> -4285714 ok
+-428.571428571s in units of 10^-3s = ~-428571 -> -428571 ok
+-428.571428571s in units of 10^-2s = ~-42857 -> -42857 ok
+-428.571428571s in units of 10^-1s = ~-4285 -> -4285 ok
+-428.571428571s in units of 10^0s = ~-428 -> -428 ok
+-428.571428571s in units of 10^1s = ~-42 -> -42 ok
+-428.571428571s in units of 10^2s = ~-4 -> -4 ok
+-428.571428571s in units of 10^3s = ~-0 -> 0 ok
+-428.571428571s in units of 10^4s = ~-0 -> 0 ok
+-428.571428571s in units of 10^5s = ~-0 -> 0 ok
+-428.571428571s in units of 10^6s = ~-0 -> 0 ok
+-428.571428571s in units of 10^7s = ~-0 -> 0 ok
+-428.571428571s in units of 10^8s = ~-0 -> 0 ok
+-428.571428571s in units of 10^9s = ~-0 -> 0 ok
+-428.571428571s in units of 10^10s = ~-0 -> 0 ok
+-428.571428571s in units of 10^11s = ~-0 -> 0 ok
+-428.571428571s in units of 10^12s = ~-0 -> 0 ok
+-428.571428571s in units of 10^13s = ~-0 -> 0 ok
+-428.571428571s in units of 10^14s = ~-0 -> 0 ok
+.

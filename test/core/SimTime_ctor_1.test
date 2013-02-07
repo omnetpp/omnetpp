@@ -1,0 +1,113 @@
+%description:
+SimTime: test the two-arg constructor
+
+%includes:
+#include <math.h>
+
+%global:
+
+void test(int64 value, int exponent)
+{
+    double d = value * pow(10.0, exponent);
+    ev << value << "*10^" << exponent << " = ~" << d << " -> ";
+    try {
+        SimTime t(value, exponent);
+        bool nearlyEqual = fabs(t/d-1.0) < 0.001;
+        ev << t << " (int64:" << t.raw() << ") " << (nearlyEqual?"ok":"WRONG") << "\n";
+    } catch (std::exception& e) {
+        ev << "ERROR: " << e.what() << "\n";
+    }
+}
+
+%activity:
+ASSERT(SimTime::getScaleExp()==SIMTIME_NS);
+
+for (int exp = -20; exp < 15; exp++)
+    test(96000, exp);
+for (int exp = -20; exp < 15; exp++)
+    test(-96000, exp);
+
+ev << ".\n";
+
+%inifile: omnetpp.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+simtime-scale = -9
+
+%subst: /e\+0/e+/
+%subst: /e\-0/e-/
+
+%contains: stdout
+96000*10^-20 = ~9.6e-16 -> ERROR: simtime_t error: 96000*10^-20 cannot be represented precisely using the current scale exponent -9, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+96000*10^-19 = ~9.6e-15 -> ERROR: simtime_t error: 96000*10^-19 cannot be represented precisely using the current scale exponent -9, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+96000*10^-18 = ~9.6e-14 -> ERROR: simtime_t error: 96000*10^-18 cannot be represented precisely using the current scale exponent -9, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+96000*10^-17 = ~9.6e-13 -> ERROR: simtime_t error: 96000*10^-17 cannot be represented precisely using the current scale exponent -9, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+96000*10^-16 = ~9.6e-12 -> ERROR: simtime_t error: 96000*10^-16 cannot be represented precisely using the current scale exponent -9, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+96000*10^-15 = ~9.6e-11 -> ERROR: simtime_t error: 96000*10^-15 cannot be represented precisely using the current scale exponent -9, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+96000*10^-14 = ~9.6e-10 -> ERROR: simtime_t error: 96000*10^-14 cannot be represented precisely using the current scale exponent -9, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+96000*10^-13 = ~9.6e-09 -> ERROR: simtime_t error: 96000*10^-13 cannot be represented precisely using the current scale exponent -9, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+96000*10^-12 = ~9.6e-08 -> 0.000000096 (int64:96) ok
+96000*10^-11 = ~9.6e-07 -> 0.00000096 (int64:960) ok
+96000*10^-10 = ~9.6e-06 -> 0.0000096 (int64:9600) ok
+96000*10^-9 = ~9.6e-05 -> 0.000096 (int64:96000) ok
+96000*10^-8 = ~0.00096 -> 0.00096 (int64:960000) ok
+96000*10^-7 = ~0.0096 -> 0.0096 (int64:9600000) ok
+96000*10^-6 = ~0.096 -> 0.096 (int64:96000000) ok
+96000*10^-5 = ~0.96 -> 0.96 (int64:960000000) ok
+96000*10^-4 = ~9.6 -> 9.6 (int64:9600000000) ok
+96000*10^-3 = ~96 -> 96 (int64:96000000000) ok
+96000*10^-2 = ~960 -> 960 (int64:960000000000) ok
+96000*10^-1 = ~9600 -> 9600 (int64:9600000000000) ok
+96000*10^0 = ~96000 -> 96000 (int64:96000000000000) ok
+96000*10^1 = ~960000 -> 960000 (int64:960000000000000) ok
+96000*10^2 = ~9.6e+06 -> 9600000 (int64:9600000000000000) ok
+96000*10^3 = ~9.6e+07 -> 96000000 (int64:96000000000000000) ok
+96000*10^4 = ~9.6e+08 -> 960000000 (int64:960000000000000000) ok
+96000*10^5 = ~9.6e+09 -> ERROR: simtime_t overflow: cannot represent 96000*10^5, out of range (-9223372036.854775807,9223372036.854775807) allowed by scale exponent -9
+96000*10^6 = ~9.6e+10 -> ERROR: simtime_t overflow: cannot represent 96000*10^6, out of range (-9223372036.854775807,9223372036.854775807) allowed by scale exponent -9
+96000*10^7 = ~9.6e+11 -> ERROR: simtime_t overflow: cannot represent 96000*10^7, out of range (-9223372036.854775807,9223372036.854775807) allowed by scale exponent -9
+96000*10^8 = ~9.6e+12 -> ERROR: simtime_t overflow: cannot represent 96000*10^8, out of range (-9223372036.854775807,9223372036.854775807) allowed by scale exponent -9
+96000*10^9 = ~9.6e+13 -> ERROR: simtime_t overflow: cannot represent 96000*10^9, out of range (-9223372036.854775807,9223372036.854775807) allowed by scale exponent -9
+96000*10^10 = ~9.6e+14 -> ERROR: simtime_t overflow: cannot represent 96000*10^10, out of range (-9223372036.854775807,9223372036.854775807) allowed by scale exponent -9
+96000*10^11 = ~9.6e+15 -> ERROR: simtime_t overflow: cannot represent 96000*10^11, out of range (-9223372036.854775807,9223372036.854775807) allowed by scale exponent -9
+96000*10^12 = ~9.6e+16 -> ERROR: simtime_t overflow: cannot represent 96000*10^12, out of range (-9223372036.854775807,9223372036.854775807) allowed by scale exponent -9
+96000*10^13 = ~9.6e+17 -> ERROR: simtime_t overflow: cannot represent 96000*10^13, out of range (-9223372036.854775807,9223372036.854775807) allowed by scale exponent -9
+96000*10^14 = ~9.6e+18 -> ERROR: simtime_t overflow: cannot represent 96000*10^14, out of range (-9223372036.854775807,9223372036.854775807) allowed by scale exponent -9
+-96000*10^-20 = ~-9.6e-16 -> ERROR: simtime_t error: -96000*10^-20 cannot be represented precisely using the current scale exponent -9, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+-96000*10^-19 = ~-9.6e-15 -> ERROR: simtime_t error: -96000*10^-19 cannot be represented precisely using the current scale exponent -9, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+-96000*10^-18 = ~-9.6e-14 -> ERROR: simtime_t error: -96000*10^-18 cannot be represented precisely using the current scale exponent -9, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+-96000*10^-17 = ~-9.6e-13 -> ERROR: simtime_t error: -96000*10^-17 cannot be represented precisely using the current scale exponent -9, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+-96000*10^-16 = ~-9.6e-12 -> ERROR: simtime_t error: -96000*10^-16 cannot be represented precisely using the current scale exponent -9, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+-96000*10^-15 = ~-9.6e-11 -> ERROR: simtime_t error: -96000*10^-15 cannot be represented precisely using the current scale exponent -9, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+-96000*10^-14 = ~-9.6e-10 -> ERROR: simtime_t error: -96000*10^-14 cannot be represented precisely using the current scale exponent -9, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+-96000*10^-13 = ~-9.6e-09 -> ERROR: simtime_t error: -96000*10^-13 cannot be represented precisely using the current scale exponent -9, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+-96000*10^-12 = ~-9.6e-08 -> -0.000000096 (int64:-96) ok
+-96000*10^-11 = ~-9.6e-07 -> -0.00000096 (int64:-960) ok
+-96000*10^-10 = ~-9.6e-06 -> -0.0000096 (int64:-9600) ok
+-96000*10^-9 = ~-9.6e-05 -> -0.000096 (int64:-96000) ok
+-96000*10^-8 = ~-0.00096 -> -0.00096 (int64:-960000) ok
+-96000*10^-7 = ~-0.0096 -> -0.0096 (int64:-9600000) ok
+-96000*10^-6 = ~-0.096 -> -0.096 (int64:-96000000) ok
+-96000*10^-5 = ~-0.96 -> -0.96 (int64:-960000000) ok
+-96000*10^-4 = ~-9.6 -> -9.6 (int64:-9600000000) ok
+-96000*10^-3 = ~-96 -> -96 (int64:-96000000000) ok
+-96000*10^-2 = ~-960 -> -960 (int64:-960000000000) ok
+-96000*10^-1 = ~-9600 -> -9600 (int64:-9600000000000) ok
+-96000*10^0 = ~-96000 -> -96000 (int64:-96000000000000) ok
+-96000*10^1 = ~-960000 -> -960000 (int64:-960000000000000) ok
+-96000*10^2 = ~-9.6e+06 -> -9600000 (int64:-9600000000000000) ok
+-96000*10^3 = ~-9.6e+07 -> -96000000 (int64:-96000000000000000) ok
+-96000*10^4 = ~-9.6e+08 -> -960000000 (int64:-960000000000000000) ok
+-96000*10^5 = ~-9.6e+09 -> ERROR: simtime_t overflow: cannot represent -96000*10^5, out of range (-9223372036.854775807,9223372036.854775807) allowed by scale exponent -9
+-96000*10^6 = ~-9.6e+10 -> ERROR: simtime_t overflow: cannot represent -96000*10^6, out of range (-9223372036.854775807,9223372036.854775807) allowed by scale exponent -9
+-96000*10^7 = ~-9.6e+11 -> ERROR: simtime_t overflow: cannot represent -96000*10^7, out of range (-9223372036.854775807,9223372036.854775807) allowed by scale exponent -9
+-96000*10^8 = ~-9.6e+12 -> ERROR: simtime_t overflow: cannot represent -96000*10^8, out of range (-9223372036.854775807,9223372036.854775807) allowed by scale exponent -9
+-96000*10^9 = ~-9.6e+13 -> ERROR: simtime_t overflow: cannot represent -96000*10^9, out of range (-9223372036.854775807,9223372036.854775807) allowed by scale exponent -9
+-96000*10^10 = ~-9.6e+14 -> ERROR: simtime_t overflow: cannot represent -96000*10^10, out of range (-9223372036.854775807,9223372036.854775807) allowed by scale exponent -9
+-96000*10^11 = ~-9.6e+15 -> ERROR: simtime_t overflow: cannot represent -96000*10^11, out of range (-9223372036.854775807,9223372036.854775807) allowed by scale exponent -9
+-96000*10^12 = ~-9.6e+16 -> ERROR: simtime_t overflow: cannot represent -96000*10^12, out of range (-9223372036.854775807,9223372036.854775807) allowed by scale exponent -9
+-96000*10^13 = ~-9.6e+17 -> ERROR: simtime_t overflow: cannot represent -96000*10^13, out of range (-9223372036.854775807,9223372036.854775807) allowed by scale exponent -9
+-96000*10^14 = ~-9.6e+18 -> ERROR: simtime_t overflow: cannot represent -96000*10^14, out of range (-9223372036.854775807,9223372036.854775807) allowed by scale exponent -9
+.
+

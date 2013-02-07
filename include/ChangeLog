@@ -1,5 +1,13 @@
 2013-02-07  Andras Varga
 
+	* SimTime: added SimTime(int64 value, int base10exponent) constructor
+	to allow specifying precise constants.
+
+	SimTime: added functions for getting the value out in various time
+	units (sec, msec, etc): inUnit(), trunc(), remainderForUnit(), split()
+
+2013-02-07  Andras Varga
+
 	* cGate: added the getBaseId() method that returns the id of gate [0]
 	in the same gate vector. It is useful for checking whether a message
 	arrived on a gate of a given module vector, without string lookups.
