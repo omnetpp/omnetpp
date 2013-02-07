@@ -31,7 +31,7 @@ simple ResourceBasedQueue
         bool fifo = default(true);     // whether the module works as a queue (fifo=true) or a stack (fifo=false)
         volatile double serviceTime @unit(s);
 
-        string resourceModuleName = default("");  // the name of the ResourcePool block to provide the resources
+        string resourceModuleName = default("");  // the ResourcePool block to allocate from (absolute module path or relative to the parent module in ".modulename" form)
         int resourceAmount = default(1);          // the amount of resource needed for servicing a job
         int resourcePriority = default(0);        // the priority used during resource allocation (smaller number means higher priority)
 

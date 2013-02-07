@@ -17,7 +17,7 @@ simple Deallocate
 {
     parameters:
         @display("i=block/departure");
-        string resourceModuleName;         // the name of the ResourcePool block to release resources to
+        string resourceModuleName;         // the ResourcePool block to release resources to (absolute module path or relative to the parent module in ".modulename" form)
         int resourceAmount = default(1);   // the amount of resource to deallocate
     gates:
         input in[];

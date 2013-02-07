@@ -28,7 +28,7 @@ simple Allocate
         int capacity = default(-1);    // negative capacity means unlimited queue
         bool fifo = default(true);     // whether the module works as a queue (fifo=true) or a stack (fifo=false)
 
-        string resourceModuleName;         // the name of the ResourcePool block to allocate from
+        string resourceModuleName;         // the ResourcePool block to allocate from (absolute module path or relative to the parent module in ".modulename" form)
         int resourceAmount = default(1);   // the amount of resource allocated
         int resourcePriority = default(0); // the priority used during resource allocation (smaller number means higher priority)
 

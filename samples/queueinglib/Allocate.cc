@@ -37,7 +37,7 @@ void Allocate::initialize()
     resourcePriority = par("resourcePriority");
 
     const char *resourceName = par("resourceModuleName");
-    cModule *mod = getParentModule()->getModuleByRelativePath(resourceName);
+    cModule *mod = getParentModule()->getModuleByPath(resourceName);
     if (!mod)
         throw cRuntimeError("Cannot find resource pool module `%s'", resourceName);
     resourcePool = check_and_cast<IResourcePool*>(mod);
