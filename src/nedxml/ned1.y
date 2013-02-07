@@ -1350,7 +1350,7 @@ NEDElement *doParseNED1(NEDParser *p, const char *nedtext)
     // alloc buffer
     struct yy_buffer_state *handle = yy_scan_string(nedtext);
     if (!handle)
-        {np->getErrors()->addError("", "unable to allocate work memory"); return false;}
+        {np->getErrors()->addError("", "unable to allocate work memory"); return NULL;}
 
     // create parser state and NEDFileElement
     resetParserState();
@@ -1376,7 +1376,7 @@ NEDElement *doParseNED1(NEDParser *p, const char *nedtext)
     {
         yyerror((std::string("error during parsing: ")+e.what()).c_str());
         yy_delete_buffer(handle);
-        return 0;
+        return NULL;
     }
 
     yy_delete_buffer(handle);
