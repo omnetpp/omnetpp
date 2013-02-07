@@ -3,7 +3,11 @@
 # Toplevel makefile for OMNeT++ libraries and programs
 #
 # platform: Windows (9x versions not supported)
-# compiler: Microsoft Visual C++ 7.0 or later
+# compiler: Microsoft Visual C++ 10.0 or later
+#
+# Use MODE=release or MODE=debug on the command line to build only
+# release or debug mode binaries.
+# Use V=1 to print all commands executed by the makefile.
 #
 #=====================================================================
 

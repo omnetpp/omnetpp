@@ -1,6 +1,10 @@
 #
 # Toplevel makefile for OMNeT++ libraries and programs
 #
+# Use MODE=release or MODE=debug on the command line to build only
+# release or debug mode binaries.
+# Use V=1 to print all commands executed by the makefile.
+#
 #=====================================================================
 
 #=====================================================================
