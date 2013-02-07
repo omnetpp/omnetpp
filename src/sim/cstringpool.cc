@@ -75,7 +75,7 @@ const char *cStringPool::get(const char *s)
 const char *cStringPool::peek(const char *s) const
 {
     if (!cStaticFlag::isSet())
-        {fprintf(stderr, "ERROR: cStringPool::peek(\"%s\") invoked outside main() -- please do not use cStringPool from global objects", s); return false;}
+        {fprintf(stderr, "ERROR: cStringPool::peek(\"%s\") invoked outside main() -- please do not use cStringPool from global objects", s); return NULL;}
     if (!s)
         return NULL;
 
