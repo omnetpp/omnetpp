@@ -34,6 +34,8 @@ OMNeT++ 4.3
 
 (+)     cPatternMatcher, cMatchExpression: new utility classes
 
+(+)	cGate: added getBaseId()
+
 
 OMNeT++ 4.2
 ~~~~~~~~~~~

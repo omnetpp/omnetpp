@@ -1,3 +1,15 @@
+2013-02-07  Andras Varga
+
+	* cGate: added the getBaseId() method that returns the id of gate [0]
+	in the same gate vector. It is useful for checking whether a message
+	arrived on a gate of a given module vector, without string lookups.
+
+	  int transportInGateBaseId = gateBaseId("transportIn");
+	  ...
+	  if (msg->getArrivalGate()->getBaseId() == transportInGateBaseId) {
+	      // message arrived on transportIn[]
+	  }
+
 2013-01-29  Andras Varga
 
 	* cModule: deprecated getModuleByRelativePath() and added a more

@@ -204,6 +204,18 @@ int cGate::getId() const
     return id;
 }
 
+int cGate::getBaseId() const
+{
+    int descIndex = desc - desc->ownerp->descv;
+    int id;
+    if (!desc->isVector())
+        id = (descIndex<<1)|(pos&1);
+    else
+        // note: we use descIndex+1 otherwise h could remain zero after <<LBITS
+        id = ((descIndex+1)<<GATEID_LBITS) | ((pos&1)<<(GATEID_LBITS-1));
+    return id;
+}
+
 const char *cGate::getTypeName(Type t)
 {
     switch (t) {

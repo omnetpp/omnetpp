@@ -294,6 +294,12 @@ class SIM_API cGate : public cObject, noncopyable
     bool isVector() const  {return desc->isVector();}
 
     /**
+     * If the gate is part of a gate vector, returns the ID of the first
+     * element in the gate vector. Otherwise, it returns the gate's ID.
+     */
+    int getBaseId() const;
+
+    /**
      * If the gate is part of a gate vector, returns the gate's index in the vector.
      * Otherwise, it returns 0.
      */

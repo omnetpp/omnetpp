@@ -1,0 +1,84 @@
+%description:
+Test cGate::getBaseId()
+
+%file: test.ned
+
+simple Tester {
+    gates:
+        output dummy;
+        input in;
+        input inv[5];
+        output out;
+        output outv[7];
+        inout g;
+        inout gv[3];
+}
+
+network Test {
+    submodules:
+        tester: Tester;
+    connections allowunconnected:
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class Tester : public cSimpleModule
+{
+  public:
+    Tester() {}
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg) {}
+    virtual void test(const char *name, int index=-1);
+};
+
+Define_Module(Tester);
+
+void Tester::test(const char *name, int index)
+{
+    ev << name;
+    if (index != -1)
+        ev << "[" << index << "]";
+    ev << ": ";
+    try {
+        int baseId1 = (index==-1) ? gate(name)->getBaseId() : gate(name,index)->getBaseId();
+        int baseId2 = (index==-1) ? gate(name)->getId() : gate(name,0)->getId();
+        ev << (baseId1 == baseId2 ? "ok" : "WRONG") << "\n";
+    }
+    catch (std::exception& e) {
+        ev << "ERROR: " << e.what() << "\n";
+    }
+}
+
+void Tester::initialize()
+{
+    test("in");
+    test("inv",2);
+    test("out");
+    test("outv",2);
+    test("g$i");
+    test("gv$i",2);
+    test("g$o");
+    test("gv$o",2);
+    test("g");
+    test("gv",2);
+    ev << ".\n";
+}
+
+}; //namespace
+
+%contains: stdout
+in: ok
+inv[2]: ok
+out: ok
+outv[2]: ok
+g$i: ok
+gv$i[2]: ok
+g$o: ok
+gv$o[2]: ok
+g: ERROR: Inout gate `g' cannot be referenced without $i/$o suffix
+gv[2]: ERROR: Inout gate `gv' cannot be referenced without $i/$o suffix
+.
