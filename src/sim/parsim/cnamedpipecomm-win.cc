@@ -26,7 +26,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <io.h>   // _sleep()
 #include <string>
 #include <iostream>
 
@@ -46,9 +45,6 @@ Register_Class(cNamedPipeCommunications);
 
 Register_GlobalConfigOption(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX, "parsim-namedpipecommunications-prefix", CFG_STRING, "omnetpp", "When cNamedPipeCommunications is selected as parsim communications class: selects the name prefix for Windows named pipes created.");
 
-
-#define sleep(x)  _sleep((x)*1000)
-#define usleep(x) _sleep((x)/1000)
 
 #define PIPE_INBUFFERSIZE  (1024*1024) /*1MB*/
 
@@ -142,7 +138,7 @@ void cNamedPipeCommunications::init()
             wpipes[i] = CreateFile(fname, GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
             if (wpipes[i]!=INVALID_HANDLE_VALUE)
                 break;
-            sleep(1);
+            usleep(1000000); //1s
         }
         if (wpipes[i] == INVALID_HANDLE_VALUE)
             throw cRuntimeError("cNamedPipeCommunications: CreateFile operation failed: %s", getWindowsError().c_str());

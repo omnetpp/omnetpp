@@ -27,20 +27,18 @@
 #include <direct.h>
 #include <stdlib.h> // _MAX_PATH
 
-#define getpid _getpid
-#define getcwd _getcwd
-#define chdir  _chdir
-#define mkdir(x,y) _mkdir(x)
-#define gcvt _gcvt
-
-// unistd.h contains usleep only on mingw 4.4 or later (minor version 16)
-#if __MINGW32_MINOR_VERSION >= 16
-#include <unistd.h>  // getpid(), getcwd(), etc
-#else
-#define usleep(x) _sleep((x)/1000)
+#if defined(__MINGW32__)
+#include <unistd.h>  // getpid(), getcwd(), usleep() etc.
 #endif
 
-#else
+#define mkdir(x,y) _mkdir(x)
+
+// unistd.h contains usleep only on mingw 4.4 or later (minor version 16), otherwise use Windows.h Sleep()
+#if defined(_MSC_VER) || __MINGW32_MINOR_VERSION < 16
+#define usleep(x) Sleep((x)/1000)
+#endif
+
+#else // !_WIN32
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -50,7 +48,7 @@
 #include <dlfcn.h>
 #endif
 
-#endif
+#endif // _WIN32
 
 #include <exception>
 #include <stdexcept>
@@ -60,6 +58,12 @@
 #define strcasecmp _stricmp
 #define strncasecmp _strnicmp
 #define unlink _unlink
+#define putenv _putenv
+#define fileno _fileno
+#define getpid _getpid
+#define getcwd _getcwd
+#define chdir  _chdir
+#define gcvt _gcvt
 #endif
 
 //
@@ -121,36 +125,12 @@ inline char *gcvt(double value, int ndigit, char *buf)
 
 typedef int64 file_offset_t;  // off_t on Linux
 
-/*
 #if defined _MSC_VER
-# define opp_ftell _ftelli64
-# define opp_fseek _fseeki64
-# if _MSC_VER < 1400
-   // Kludge: in Visual C++ 7.1, 64-bit fseek/ftell is not part of the public
-   // API, but the functions are there in the CRT. Declare them here.
-   int __cdecl _fseeki64 (FILE *str, __int64 offset, int whence);
-   __int64 __cdecl _ftelli64 (FILE *stream);
-# endif
-#else
-# define opp_ftell ftello64
-# define opp_fseek fseeko64
-#endif
-*/
-
-//FIXME replace this with the above code!!! once it compiles with 7.1
-#if defined _MSC_VER && (_MSC_VER >= 1400)
   #define opp_ftell _ftelli64
   #define opp_fseek _fseeki64
   #define opp_stat_t __stat64 // name of the struct
   #define opp_stat _stat64    // name of the function
   #define opp_fstat _fstati64
-#elif defined _MSC_VER 
-// for Visual C++ 7.1, fall back to 32-bit functions
-  #define opp_ftell ftell
-  #define opp_fseek fseek
-  #define opp_stat_t stat
-  #define opp_stat stat
-  #define opp_fstat fstat
 #elif defined __MINGW32__
   #define opp_ftell ftello64
   #define opp_fseek fseeko64
