@@ -1,3 +1,5 @@
+2013-02-08  ------ omnetpp-4.3rc1 released ------
+
 2013-02-07  Andras Varga
 
 	* SimTime: added SimTime(int64 value, int base10exponent) constructor
@@ -23,8 +25,6 @@
 	* cModule: deprecated getModuleByRelativePath() and added a more
 	powerful version, getModuleByPath(), that understands both relative
 	and absolute paths, and also has notation for parent module (caret, ^).
-
-2013-01-11  ------ omnetpp-4.3rc1 released ------
 
 2013-01-09  Andras Varga
 
