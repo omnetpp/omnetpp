@@ -43,8 +43,8 @@ network = Test
 cmdenv-express-mode = false
 simtime-scale = -9
 
-%subst: /e\+0/e+/
-%subst: /e\-0/e-/
+%subst: /e\+0(\d\d)/e+$1/
+%subst: /e\-0(\d\d)/e-$1/
 
 %contains: stdout
 428.571428571s in units of 10^-20s = ~4.28571e+22 -> ERROR: simtime: inUnits(): overflow: cannot represent 428.571428571 in units of 10^-20s

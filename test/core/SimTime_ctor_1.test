@@ -35,8 +35,8 @@ network = Test
 cmdenv-express-mode = false
 simtime-scale = -9
 
-%subst: /e\+0/e+/
-%subst: /e\-0/e-/
+%subst: /e\+0(\d\d)/e+$1/
+%subst: /e\-0(\d\d)/e-$1/
 
 %contains: stdout
 96000*10^-20 = ~9.6e-16 -> ERROR: simtime_t error: 96000*10^-20 cannot be represented precisely using the current scale exponent -9, increase resolution by configuring a smaller scale exponent or use 'double' conversion
