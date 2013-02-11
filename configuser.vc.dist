@@ -105,18 +105,6 @@ PCAP_DIR=$(TOOLS_DIR)/WpdPack
 #USE_PTHREADS_STATIC_LIB=yes
 
 #
-# If you want to build .lib files instead of .dlls, specify "no" below.
-# The default is "yes".
-#
-#!if "$(BUILDING_UILIBS)"=="yes"
-#SHARED_LIBS=no
-#OUTPUT_PREFIX=ui-
-#!else
-#SHARED_LIBS=yes
-#OUTPUT_PREFIX=
-#!endif
-
-#
 # If you don't want to build some of the components below, substitute
 # missing-dependency.
 #
@@ -306,6 +294,11 @@ SYS_LIBS = wsock32.lib
 #
 !ifndef SHARED_LIBS
 SHARED_LIBS=yes
+!endif
+
+!if "$(BUILDING_UILIBS)"=="yes"
+SHARED_LIBS=no
+OUTPUT_PREFIX=ui-
 !endif
 
 !if "$(SHARED_LIBS)"=="yes"

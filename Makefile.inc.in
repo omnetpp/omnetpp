@@ -52,14 +52,6 @@ CFLAGS=$(CFLAGS_RELEASE)
 D=
 endif
 
-ifeq ($(BUILDING_UILIBS),yes)
-SHARED_LIBS=no
-OUTPUT_PREFIX=ui-
-else
-SHARED_LIBS=yes
-OUTPUT_PREFIX=
-endif
-
 #
 # Control verbosity. Specifiying V=1 will make the build output verbose. You can use:
 # $(Q) to hide commands only in quiet mode
@@ -116,6 +108,12 @@ LIB_PREFIX = @LIB_PREFIX@
 ifeq ("$(SHARED_LIBS)", "")
 SHARED_LIBS = @SHARED_LIBS@
 endif
+
+ifeq ($(BUILDING_UILIBS),yes)
+SHARED_LIBS=no
+OUTPUT_PREFIX=ui-
+endif
+
 SHARED_LIB_SUFFIX = @SHARED_LIB_SUFFIX@
 
 SYSTEMC= @SYSTEMC@
