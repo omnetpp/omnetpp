@@ -93,7 +93,7 @@ void SimTime::overflowSubstracting(const SimTime& x)
 }
 
 #define MAX_POWER_OF_TEN  18
-static int64 powersOfTen[MAX_POWER_OF_TEN];
+static int64 powersOfTen[MAX_POWER_OF_TEN+1];
 
 EXECUTE_ON_STARTUP(
     int64 power = 1;
