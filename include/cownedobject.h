@@ -298,48 +298,9 @@ SIM_API std::ostream& operator<< (std::ostream& os, const cOwnedObject& o);
 inline std::ostream& operator<< (std::ostream& os, cOwnedObject *p) {
     return os << (const cOwnedObject *)p;
 }
-
+			
 inline std::ostream& operator<< (std::ostream& os, cOwnedObject& o) {
     return os << (const cOwnedObject&)o;
-}
-
-
-/**
- * Cast an object pointer to the given C++ type and throw exception if fails.
- * The method calls dynamic_cast\<T\>(p) where T is a type you supplied;
- * if the result is NULL (which indicates incompatible types), an exception
- * is thrown.
- *
- * In the following example, MyPacket is a subclass of cMessage, and we want
- * to assert that the message received is actually a MyPacket. If not,
- * the simulation stops with an error message as the result of the exception.
- * <pre>
- *   cMessage *msg = receive();
- *   MyPacket *pkt = check_and_cast\<MyPacket *\>(msg);
- * </pre>
- *
- * @ingroup Functions
- */
-// Note: this function cannot be put into utils.h (circular dependencies)
-template<class T>
-T check_and_cast(cObject *p)
-{
-    if (!p)
-        throw cRuntimeError("check_and_cast(): cannot cast NULL pointer to type '%s'",opp_typename(typeid(T)));
-    T ret = dynamic_cast<T>(p);
-    if (!ret)
-        throw cRuntimeError("check_and_cast(): cannot cast (%s *)%s to type '%s'",p->getClassName(),p->getFullPath().c_str(),opp_typename(typeid(T)));
-    return ret;
-}
-
-/**
- * The 'const' version of check_and_cast\<\>().
- * @ingroup Functions
- */
-template<class T>
-const T check_and_cast(const cObject *p)
-{
-    return check_and_cast<T>(const_cast<cObject *>(p));
 }
 
 NAMESPACE_END

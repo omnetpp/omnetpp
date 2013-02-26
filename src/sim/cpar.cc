@@ -121,7 +121,8 @@ void cPar::operator=(const cPar& other)
 
 cProperties *cPar::getProperties() const
 {
-    cComponent *component = check_and_cast<cComponent *>(getOwner());
+    cComponent *component = dynamic_cast<cComponent *>(getOwner());
+    ASSERT(component != NULL);
     cComponentType *componentType = component->getComponentType();
     cProperties *props = componentType->getParamProperties(getName());
     return props;

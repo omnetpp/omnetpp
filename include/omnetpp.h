@@ -42,6 +42,7 @@
 #include "cexception.h"
 #include "cexpression.h"
 #include "chasher.h"
+#include "checkandcast.h"
 #include "cfsm.h"
 #include "cgate.h"
 #include "chistogram.h"

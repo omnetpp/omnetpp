@@ -1,3 +1,11 @@
+2013-02-26  Andras Varga
+
+	* check_and_cast: fixed two issues:
+	    (1) only accepted cObject* pointers as input
+	    (2) silently discarded const modifier from the pointer
+
+	* added check_and_cast_nullable that accepts NULL pointer as input
+
 2013-02-05  Andras Varga
 
 	* SimTime: conversion from double now uses rounding instead of truncation

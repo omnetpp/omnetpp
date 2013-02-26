@@ -228,7 +228,8 @@ const char *cGate::getTypeName(Type t)
 
 cProperties *cGate::getProperties() const
 {
-    cComponent *component = check_and_cast<cComponent *>(getOwner());
+    cComponent *component = dynamic_cast<cComponent *>(getOwner());
+    ASSERT(component != NULL);
     cComponentType *componentType = component->getComponentType();
     cProperties *props = componentType->getGateProperties(getBaseName());
     return props;

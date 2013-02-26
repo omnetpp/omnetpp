@@ -503,7 +503,8 @@ void EnvirBase::printHelp()
     {
         // instantiate the ui, call printUISpecificHelp(), then dispose.
         // note: their ctors are not supposed to do anything but trivial member initializations
-        cOmnetAppRegistration *appreg = check_and_cast<cOmnetAppRegistration *>(table->get(i));
+        cOmnetAppRegistration *appreg = dynamic_cast<cOmnetAppRegistration *>(table->get(i));
+        ASSERT(appreg != NULL);
         cEnvir *app = appreg->createOne();
         if (dynamic_cast<EnvirBase *>(app))
             ((EnvirBase *)app)->printUISpecificHelp();
