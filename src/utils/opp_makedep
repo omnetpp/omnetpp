@@ -29,6 +29,9 @@ where possible options are:
   --msgsuffix <msg-file-suffix>
   --msghsuffix <msg-header-file-suffix>
   --msgccsuffix <msg-cc-file-suffix>
+  --smsuffix <sm-file-suffix>
+  --smsuffix <sm-header-file-suffix>
+  --smsuffix <sm-cc-file-suffix>
   --srcdir <source-directory>
   --objdirtree
   -v
@@ -48,6 +51,8 @@ where possible options are:
    prefix is usually a directory prefix (for example "$(OBJDIR)/").
  --objsuffix sets the suffix of the object filename. It defaults to ".o".
  --msgsuffix, --msghsuffix, --msgccsuffix  specify the suffixes for .msg
+   files and the files generated from them.
+ --smsuffix, --smsuffix, --smsuffix  specify the suffixes for .sm
    files and the files generated from them.
  --srcdir specifies the directory for the source files.
  --objdirtree the object files are assumed to be in a similar directory
@@ -83,6 +88,11 @@ $ObjSuffix = ".o";
 $MsgSuffix = ".msg";
 $MsgHSuffix = "_m.h";
 $MsgCCSuffix = "_m.cc";
+
+# State Machine file suffix, and suffix of the files generated from them
+$SmSuffix = ".sm";
+$SmHSuffix = "_sm.h";
+$SmCCSuffix = "_sm.cc";
 
 # Source directory
 $SourceDirectory = "";
@@ -196,6 +206,18 @@ while (@ARGV)
     elsif ($arg eq "--msgccsuffix")
     {
         $MsgCCSuffix = shift @ARGV;
+    }
+    elsif ($arg eq "--smsuffix")
+    {
+        $SmSuffix = shift @ARGV;
+    }
+    elsif ($arg eq "--smhsuffix")
+    {
+        $SmHSuffix = shift @ARGV;
+    }
+    elsif ($arg eq "--smccsuffix")
+    {
+        $SmCCSuffix = shift @ARGV;
     }
     elsif ($arg eq "--objdirtree")
     {
@@ -410,6 +432,17 @@ sub exists {
        $msgfilename =~ s/${MsgCCSuffix}$/${MsgSuffix}/;
        return 1 if (-f $msgfilename);
    }
+   # ditto for *_sm.h files: pretend that the file exists if the corresponding .sm file exists
+   elsif ($filename =~ /${SmHSuffix}$/) {
+       my $smfilename = $filename;
+       $smfilename =~ s/${SmHSuffix}$/${SmSuffix}/;
+       return 1 if (-f $smfilename);
+   }
+   elsif ($filename =~ /${SmCCSuffix}$/) {
+       my $smfilename = $filename;
+       $smfilename =~ s/${SmCCSuffix}$/${SmSuffix}/;
+       return 1 if (-f $smfilename);
+   }
    return 0;
 }
 
@@ -438,6 +471,26 @@ sub read_file {
                my $msgheaderfile = $filename;
                $msgheaderfile =~ s/${MsgCCSuffix}$/${MsgHSuffix}/;
                return "#include <$msgheaderfile>\n";
+           }
+           else {
+               return "-";
+           }
+       }
+       elsif ($filename =~ /${SmHSuffix}$/) {
+           # for *_sm.h files, return the corresponding .sm file contents (which will be parsed for includes)
+           my $smfilename = $filename;
+           $smfilename =~ s/${SmHSuffix}$/${SmSuffix}/;
+           open(INFILE, $smfilename) || return "-";
+           $filename = $smfilename;
+       }
+       elsif ($filename =~ /${smCCSuffix}$/) {
+           # for *_sm.cc files, pretend it exists and includes its header file
+           my $smfilename = $filename;
+           $smfilename =~ s/${SmCCSuffix}$/${SmSuffix}/;
+           if (-e $smfilename) {
+               my $smheaderfile = $filename;
+               $smheaderfile =~ s/${SmCCSuffix}$/${SmHSuffix}/;
+               return "#include <$smheaderfile>\n";
            }
            else {
                return "-";

@@ -1,3 +1,10 @@
+2013-02-07  Andras Varga
+
+	* added opp_smc: State Machine Compiler version 6.1.0. Source code,
+	license (Mozilla Public License) and documentation are available
+	from the SMC project web site, http://smc.sourceforge.net.
+	statemap.h, part of SMC, has also been added under omnetpp/include.
+
 2013-02-08  ------ omnetpp-4.3rc1 released ------
 
 2013-01-07  Rudolf Hornig

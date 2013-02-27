@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 #
 # Creates a makefile for a given OMNeT++/OMNEST model.
-# Assumes that .ned, .msg, .cc and .h files are in one directory.
+# Assumes that .ned, .msg, .cc and .h files are in one directory (or directory tree).
 # The name of the program defaults to the name of the directory ('myproject').
 #
 # Author: Andras Varga
@@ -365,6 +365,9 @@ sub makemake()
     @msgfiles = ();
     @msgccfiles = ();
     @msghfiles = ();
+    @smfiles = ();
+    @smccfiles = ();
+    @smhfiles = ();
     @sourceDirs = ();
     @backslashedSourceDirs = ();
 
@@ -458,6 +461,7 @@ sub makemake()
         push(@ccfiles,  glob("$ff*.cc"));
         push(@cppfiles, glob("$ff*.cpp"));
         push(@msgfiles, glob("$ff*.msg"));
+        push(@smfiles, glob("$ff*.sm"));
         push(@nedfiles, glob("$ff*.ned"));
     }
 
@@ -559,14 +563,17 @@ sub makemake()
     push(@sources, @ccfiles) if ($ccExt eq "cc");
     push(@sources, @cppfiles) if ($ccExt eq "cpp");
     push(@sources, @msgfiles);
+    push(@sources, @smfiles);
     push(@sources, @nedfiles) if (!$ignoreNedFiles);
     foreach $i (@sources)
     {
         $i =~ s/\*[^ ]*//g;
         $i =~ s/[^ ]*_n\.$ccExt$//g;
         $i =~ s/[^ ]*_m\.$ccExt$//g;
+        $i =~ s/[^ ]*_sm\.$ccExt$//g;
         $i =~ s/\.ned$/_n.$objExt/g;
         $i =~ s/\.msg$/_m.$objExt/g;
+        $i =~ s/\.sm$/_sm.$objExt/g;
         $i =~ s/\.$ccExt$/.$objExt/g;
         if ($i ne '') {
             push(@objs, "\$O/$i");
@@ -579,6 +586,14 @@ sub makemake()
         push(@generatedHeaders, $h);
         push(@msgccfiles, $cc);
         push(@msghfiles, $h);
+    }
+
+    foreach $i (@smfiles) {
+        $h = $i; $h =~ s/\.sm$/_sm.h/;
+        $cc = $i; $cc =~ s/\.sm$/_sm.$ccExt/;
+        push(@generatedHeaders, $h);
+        push(@smccfiles, $cc);
+        push(@smhfiles, $h);
     }
 
     $makefrags = "";
@@ -649,6 +664,9 @@ sub makemake()
         "msgccfiles" =>  \@msgccfiles,
         "msghfiles" =>  \@msghfiles,
         "msgfiles" =>  \@msgfiles,
+        "smccfiles" =>  \@smccfiles,
+        "smhfiles" =>  \@smhfiles,
+        "smfiles" =>  \@smfiles,
         "objs" =>  quoteJoin(\@objs),
         "submakedirs" =>  \@submakeDirs,
         "submakenames" =>  \@submakeNames,
@@ -1123,12 +1141,16 @@ PROJECT_OUTPUT_DIR = {outdir}
 PROJECTRELATIVE_PATH = {subpath}
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
-{sourcedirs:}# Object files for local .{cc} and .msg files
+{sourcedirs:}# Object files for local .{cc}, .msg and .sm files
 {sourcedirs:}OBJS = {objs}
 {sourcedirs:}
 {sourcedirs:}# Message files
 {sourcedirs:}MSGFILES ={@msg:msgfiles} \
 {sourcedirs:}    {msg}{/@}
+{sourcedirs:}
+{sourcedirs:}# SM files
+{sourcedirs:}SMFILES ={@sm:smfiles} \
+{sourcedirs:}    {sm}{/@}
 {sourcedirs:}
 {defaultmode:}# Default mode (-M option); can be overridden with {nmake?n}make MODE=debug (or =release)
 {defaultmode:}{nmake?!}ifndef MODE
@@ -1191,6 +1213,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 {sourcedirs:}COPTS = $(CFLAGS) {defines} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 {sourcedirs:}MSGCOPTS = $(INCLUDE_PATH){dllsymbol? -P}{dllsymbol}{dllsymbol?_API}
+{sourcedirs:}SMCOPTS =
 {sourcedirs:}
 {~nmake:}# we want to recompile everything if COPTS changes,
 {~nmake:}# so we store COPTS into $COPTS_FILE and have object
@@ -1245,7 +1268,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 ### the *_dir targets), and does not print "Entering"/"Leaving" messages like gnu make.
 {submakedirs:}submakedirs: {@i:submakenames} {i}_dir{/@}
 {submakedirs:}
-{~nmake:}.PHONY: all clean cleanall depend msgheaders {@i:submakenames} {i}{/@}
+{~nmake:}.PHONY: all clean cleanall depend msgheaders smheaders {@i:submakenames} {i}{/@}
 {~nmake:}{@i:submakenames}{i}: {i}_dir
 {~nmake:}{/@}
 {submakedirs:}
@@ -1283,10 +1306,26 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 {nmake:}	$(qecho) MSGC: $@
 {nmake:}	$(Q)$(MSGC:/=\) -s _m.{cc} $(MSGCOPTS) {msg}
 {/@}
+### Pattern rules for sm files. For gnu make one rule is enough,
+### nmake needs per-file rules
+{sourcedirs:}{~nmake:}%_sm.{cc} %_sm.h: %.sm
+{sourcedirs:}{~nmake:}	$(qecho) SMC: $<
+{sourcedirs:}{~nmake:}	$(Q)$(SMC) -c++ -suffix {cc} $(SMCOPTS) $?
+{sourcedirs:}{~nmake:}
+{@sm:smfiles,sm_cc:smccfiles,sm_h:smhfiles}
+{nmake:}{sm_cc} {sm_h} : {sm}
+{nmake:}	$(qecho) SMC: $@
+{nmake:}	$(Q)$(SMC:/=\) -c++ -suffix{cc} $(SMCOPTS) {sm}
+{/@}
 
 ### Utility target for running opp_msgc; otherwise unused by this makefile
 msgheaders: {sourcedirs?$(MSGFILES:.msg=_m.h)}
 {@i:submakedirs}	$(Q)cd {i} && $(MAKE) msgheaders
+{/@}
+
+### Utility target for running the SMC compiler; otherwise unused by this makefile
+smheaders: {sourcedirs?$(SMFILES:.sm=_sm.h)}
+{@i:submakedirs}	$(Q)cd {i} && $(MAKE) smheaders
 {/@}
 
 ### clean, depend, etc.
@@ -1300,9 +1339,9 @@ clean:
 {nmake:}{nolink:}	-$(Q)del {target}.exe {target}.dll {target}.lib 2>nul
 {~nmake:}	$(Q)-rm -rf $O  ### must be done separately, because it fails on MinGW ('rm' is bogus)
 {~nmake:}	$(Q)-rm -f {target} {target}.exe lib{target}.so lib{target}.a lib{target}.dll lib{target}.dylib
-{~nmake:}{@dir:sourcedirs}	$(Q)-rm -f {dir}/*_m.{cc} {dir}/*_m.h
+{~nmake:}{@dir:sourcedirs}	$(Q)-rm -f {dir}/*_m.{cc} {dir}/*_m.h {dir}/*_sm.{cc} {dir}/*_sm.h
 {~nmake:}{/@}
-{nmake:}{@bsdir:backslashedsourcedirs}	-$(Q)del {bsdir}\*_m.{cc} {bsdir}\*_m.h 2>nul
+{nmake:}{@bsdir:backslashedsourcedirs}	-$(Q)del {bsdir}\*_m.{cc} {bsdir}\*_m.h {bsdir}\*_sm.{cc} {bsdir}\*_sm.h 2>nul
 {nmake:}{/@}
 {@i:submakedirs}	-$(Q)cd {i} && $(MAKE) clean
 {/@}
@@ -1313,7 +1352,7 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-{sourcedirs:}	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile{nmake?.vc} -P{nmake?^}{~nmake?\$}$O/ -- $(MSG_CC_FILES) {@d:sourcedirs} {d}/*.{cc}{/@}
+{sourcedirs:}	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile{nmake?.vc} -P{nmake?^}{~nmake?\$}$O/ -- $(MSG_CC_FILES) $(SM_CC_FILES) {@d:sourcedirs} {d}/*.{cc}{/@}
 {@i:submakedirs}{nmake:}	-cd {i} && if exist Makefile.vc $(MAKE) depend
 {~nmake:}	$(Q)-cd {i} && if [ -f Makefile ]; then $(MAKE) depend; fi
 {/@}

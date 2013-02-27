@@ -482,6 +482,15 @@ public class DependencyCache {
                     mccIncludes.add(new Include(mccFile, -1, mhFile.getName(), false));
                     cppSourceFiles.put(mccFile, mccIncludes);
                 }
+                else if (file.getFileExtension().equals("sm")) {
+                    // treat sm files similarly to msg files
+                    IFile smhFile = file.getParent().getFile(new Path(file.getName().replaceFirst("\\.sm$", "_sm.h")));
+                    IFile smccFile = file.getParent().getFile(new Path(file.getName().replaceFirst("\\.sm$", "_sm.cc")));
+                    cppSourceFiles.put(smhFile, fileIncludes.get(file));
+                    List<Include> smccIncludes = new ArrayList<Include>();
+                    smccIncludes.add(new Include(smccFile, -1, smhFile.getName(), false));
+                    cppSourceFiles.put(smccFile, smccIncludes);
+                }
                 else {
                     cppSourceFiles.put(file, fileIncludes.get(file));
                 }

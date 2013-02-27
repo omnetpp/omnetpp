@@ -636,6 +636,7 @@ SHLIB_LD
 AR
 AS
 NEDTOOL
+SMC
 MSGC
 MYPWD
 TOOLCHAIN_NAME
@@ -2361,6 +2362,7 @@ WHOLE_ARCHIVE_OFF=
 
 MSGC=${MSGC:-opp_msgc}
 NEDTOOL=${NEDTOOL:-nedtool}
+SMC=${SMC:-opp_smc}
 MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
 LN=${LN:-ln -sf}
 MKPATH=${MKPATH:-mkdir -p}
@@ -6521,6 +6523,7 @@ ac_config_files="$ac_config_files Makefile.inc test/core/runtest"
 #----------------------
 # Substitutions.
 #----------------------
+
 
 
 

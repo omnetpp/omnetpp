@@ -129,6 +129,9 @@ public class Makemake {
         List<String> msgfiles = new ArrayList<String>();
         List<String> msgccfiles = new ArrayList<String>();
         List<String> msghfiles = new ArrayList<String>();
+        List<String> smfiles = new ArrayList<String>();
+        List<String> smccfiles = new ArrayList<String>();
+        List<String> smhfiles = new ArrayList<String>();
         List<String> sourceDirs = new ArrayList<String>();
         List<String> backslashedSourceDirs = new ArrayList<String>();
         List<String> includeDirs = new ArrayList<String>();
@@ -180,6 +183,7 @@ public class Makemake {
             ccfiles.addAll(glob(i, "*.cc"));
             cppfiles.addAll(glob(i, "*.cpp"));
             msgfiles.addAll(glob(i, "*.msg"));
+            smfiles.addAll(glob(i, "*.sm"));
             nedfiles.addAll(glob(i, "*.ned"));
         }
 
@@ -273,6 +277,7 @@ public class Makemake {
         if (ccExt.equals("cpp"))
             sources.addAll(cppfiles);
         sources.addAll(msgfiles);
+        sources.addAll(smfiles);
         if (!options.ignoreNedFiles)
             sources.addAll(nedfiles);
 
@@ -280,8 +285,10 @@ public class Makemake {
             i = i.replaceAll("\\*[^ ]*", "");
             i = i.replaceAll("[^ ]*_n\\." + ccExt + "$", "");
             i = i.replaceAll("[^ ]*_m\\." + ccExt + "$", "");
+            i = i.replaceAll("[^ ]*_sm\\." + ccExt + "$", "");
             i = i.replaceAll("\\.ned$", "_n." + objExt);
             i = i.replaceAll("\\.msg$", "_m." + objExt);
+            i = i.replaceAll("\\.sm$", "_sm." + objExt);
             i = i.replaceAll("\\." + ccExt + "$", "." + objExt);
             if (!i.equals(""))
                 objs.add("$O/" + i);
@@ -292,6 +299,13 @@ public class Makemake {
             String cc = i.replaceAll("\\.msg$", "_m." + ccExt);
             msgccfiles.add(cc);
             msghfiles.add(h);
+        }
+
+        for (String i : smfiles) {
+            String h = i.replaceAll("\\.sm$", "_sm.h");
+            String cc = i.replaceAll("\\.sm$", "_sm." + ccExt);
+            smccfiles.add(cc);
+            smhfiles.add(h);
         }
 
         String makefrags = "";
@@ -386,6 +400,9 @@ public class Makemake {
         m.put("msgccfiles", msgccfiles);
         m.put("msghfiles", msghfiles);
         m.put("msgfiles", msgfiles);
+        m.put("smccfiles", smccfiles);
+        m.put("smhfiles", smhfiles);
+        m.put("smfiles", smfiles);
         m.put("objs", quoteJoin(objs));
         m.put("submakedirs", submakeDirs);
         m.put("submakenames", submakeNames);
