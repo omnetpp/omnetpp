@@ -496,7 +496,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         dialog.setInitialSelections(objects.toArray());
 
         if (dialog.open() == Window.OK)
-            return (List<cObject>)(List)Arrays.asList(dialog.getResult());
+            return (List)Arrays.asList(dialog.getResult());
         return null;
     }
 

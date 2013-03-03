@@ -3,7 +3,6 @@ package org.omnetpp.simulation.inspectors;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
@@ -14,6 +13,7 @@ import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.figures.IInspectorFigure;
 import org.omnetpp.simulation.figures.InfoTextInspectorFigure;
+import org.omnetpp.simulation.inspectors.actions.CloseAction;
 import org.omnetpp.simulation.inspectors.actions.InspectAsObjectAction;
 import org.omnetpp.simulation.inspectors.actions.InspectParentAction;
 import org.omnetpp.simulation.model.cObject;
@@ -65,14 +65,8 @@ public class InfoTextInspectorPart extends AbstractInspectorPart {
         return false;
     }
 
-    @Override
     public void populateContextMenu(MenuManager contextMenuManager, Point p) {
-        contextMenuManager.add(new Action("Close") {
-            @Override
-            public void run() {
-                getContainer().close(InfoTextInspectorPart.this);
-            }
-        });
+        contextMenuManager.add(my(new CloseAction()));
     }
 
     @Override

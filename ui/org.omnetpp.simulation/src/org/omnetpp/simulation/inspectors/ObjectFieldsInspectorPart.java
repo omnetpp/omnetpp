@@ -2,9 +2,16 @@ package org.omnetpp.simulation.inspectors;
 
 import java.util.List;
 
-import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.draw2d.FocusEvent;
+import org.eclipse.draw2d.FocusListener;
+import org.eclipse.draw2d.GridData;
+import org.eclipse.draw2d.GridLayout;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.LineBorder;
+import org.eclipse.draw2d.Panel;
+import org.eclipse.draw2d.PositionConstants;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
@@ -16,55 +23,83 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
-import org.omnetpp.common.color.ColorFactory;
+import org.eclipse.swt.widgets.Display;
+import org.omnetpp.figures.TooltipFigure;
 import org.omnetpp.simulation.canvas.IInspectorContainer;
 import org.omnetpp.simulation.canvas.SelectionItem;
 import org.omnetpp.simulation.canvas.SelectionUtils;
 import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.figures.FigureUtils;
+import org.omnetpp.simulation.figures.IInspectorFigure;
+import org.omnetpp.simulation.figures.ObjectFieldsViewerFigure;
+import org.omnetpp.simulation.inspectors.actions.CloseAction;
 import org.omnetpp.simulation.inspectors.actions.InspectParentAction;
 import org.omnetpp.simulation.inspectors.actions.SetModeAction;
 import org.omnetpp.simulation.inspectors.actions.SortAction;
 import org.omnetpp.simulation.model.cObject;
-import org.omnetpp.simulation.ui.ObjectFieldsViewer;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer.Mode;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer.Ordering;
 
 /**
  *
- * @author Andras
+ * @author Andras, Tomi
  */
 //TODO adaptive label: display the most useful info that fits in the available space
-public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
-    private Composite frame;
+public class ObjectFieldsInspectorPart extends AbstractInspectorPart {
+    private InspectorFigure frame;
     private Label label;
-    private ObjectFieldsViewer viewer;
+    private ObjectFieldsViewerFigure viewer;
 
     public ObjectFieldsInspectorPart(InspectorDescriptor descriptor, IInspectorContainer parent, cObject object) {
         super(descriptor, parent, object);
     }
 
+    private class InspectorFigure extends Panel implements IInspectorFigure {
+
+        public InspectorFigure() {
+            setRequestFocusEnabled(true);
+        }
+
+        @Override
+        public Dimension getPreferredSize(int wHint, int hHint) {
+            Dimension size = getSize();
+            if (size != null)
+                return size;
+            return super.getPreferredSize(wHint, hHint);
+        }
+
+        @Override
+        public Dimension getMinimumSize(int wHint, int hHint) {
+            return new Dimension(100, 100);
+        }
+    }
+
     @Override
-    protected Control createControl(Composite parent) {
-        frame = new Composite(parent, SWT.BORDER);
+    protected IInspectorFigure createFigure() {
+        frame = new InspectorFigure();
+        frame.setLayoutManager(new GridLayout(1, false));
         frame.setSize(300, 200);
-        frame.setLayout(new GridLayout(1, false));
+        frame.setBorder(new LineBorder(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BORDER)));
 
-        label = new Label(frame, SWT.NONE);
-        label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        label = new Label();
+        label.setLabelAlignment(PositionConstants.LEFT);
+        frame.add(label);
+        frame.setConstraint(label, new GridData(GridData.FILL, GridData.FILL, true, false));
 
-        viewer = new ObjectFieldsViewer(frame, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
-        viewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        viewer.setMode(ObjectFieldsViewer.getPreferredMode(object));
+        viewer = new ObjectFieldsViewerFigure();
+        viewer.setMode(ObjectFieldsViewerFigure.getPreferredMode(object));
         viewer.setInput(object);
+        frame.add(viewer);
+        frame.setConstraint(viewer, new GridData(GridData.FILL, GridData.FILL, true, true));
+
+        frame.addFocusListener(new FocusListener.Stub() {
+            @Override public void focusGained(FocusEvent event) {
+                viewer.requestFocus();
+            }
+        });
 
         // double-click to inspect
-        viewer.getTree().addSelectionListener(new SelectionAdapter() {
+        viewer.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetDefaultSelected(SelectionEvent e) {
                 // inspect the selected object(s)
@@ -86,21 +121,7 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
             }
         });
 
-        // add context menu
-        final MenuManager menuManager = new MenuManager("#PopupMenu");
-        viewer.getTree().setMenu(menuManager.createContextMenu(viewer.getTree()));
-        menuManager.setRemoveAllWhenShown(true);
-        menuManager.addMenuListener(new IMenuListener() {
-            @Override
-            public void menuAboutToShow(IMenuManager manager) {
-                getContainer().populateContextMenu(menuManager, viewer.getSelection());
-            }
-        });
-
-        frame.layout();
-
         getContainer().addMoveResizeSupport(frame);
-        getContainer().addMoveResizeSupport(label);
 
         return frame;
     }
@@ -130,6 +151,7 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
 
     @Override
     public void populateContextMenu(MenuManager contextMenuManager, Point p) {
+        contextMenuManager.add(my(new CloseAction()));
     }
 
     @Override
@@ -155,12 +177,16 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
                 object.loadIfUnfilled();
                 String text = "(" + object.getShortTypeName() + ") " + object.getFullPath() + " - " + object.getInfo();
                 label.setText(text);
-                label.setToolTipText(text); // because label text is usually not fully visible
+                TooltipFigure tooltipFigure = new TooltipFigure();
+                tooltipFigure.setText(text);
+                label.setToolTip(tooltipFigure);  // because label text is usually not fully visible
             }
             catch (CommunicationException e) {
                 String text = "(" + object.getClass().getSimpleName() + "?) n/a";
                 label.setText(text);
-                label.setToolTipText(text);
+                TooltipFigure tooltipFigure = new TooltipFigure();
+                tooltipFigure.setText(text);
+                label.setToolTip(tooltipFigure);
             }
 
             viewer.refresh();
@@ -168,17 +194,16 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
     }
 
     @Override
-    public int getDragOperation(Control control, int x, int y) {
-        Point size = control.getSize();
-        if (control == getSWTControl())
-            return FigureUtils.getBorderResizeInsideMoveDragOperation(x, y, new Rectangle(0, 0, size.x, size.y));
-        if (control == label)
-            return FigureUtils.getMoveOnlyDragOperation(x, y, new Rectangle(0, 0, size.x, size.y));
+    public int getDragOperation(IFigure figure, int x, int y) {
+        if (figure == frame)
+            return FigureUtils.getBorderResizeInsideMoveDragOperation(x, y, figure.getBounds());
+        if (figure == label || figure == viewer)
+            return FigureUtils.getMoveOnlyDragOperation(x, y, figure.getBounds());
         return 0;
     }
 
+    @Override
     protected void setSelectionMark(boolean isSelected) {
         super.setSelectionMark(isSelected);
-        label.setBackground(isSelected ? ColorFactory.GREY50 : null);
     }
 }

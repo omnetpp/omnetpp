@@ -17,6 +17,8 @@ import org.omnetpp.simulation.model.cObject;
  *
  * @author Andras
  */
+//TODO this has a lot of code in common with ObjectFieldsViewerFigure, they will have to be factored out into some 3rd util class --
+// like: IMG_*, Mode, Ordering, getPreferredMode(), getImageDescriptorFor(Mode mode), getActionTooltipFor(Mode mode), etc.
 public class ObjectFieldsViewer {
     public enum Mode { PACKET, ESSENTIALS, CHILDREN, GROUPED, INHERITANCE, FLAT }; //TODO ESSENTIALS should incorporate PACKET eventually
     public enum Ordering { NATURAL, ALPHABETICAL };

@@ -71,6 +71,7 @@ public class MoveResizeSupport {
                     simulationCanvas.select(inspector, true);
 
                 inspector.raiseToTop();
+                inspector.getFigure().requestFocus();
 
                 // By default draw2d updates canvas bounds continually while dragging, which
                 // results in a weird effect: when dragging up an inspector from near the bottom
