@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.FocusEvent;
 import org.eclipse.draw2d.FocusListener;
 import org.eclipse.draw2d.GridData;
@@ -20,21 +21,32 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.Debug;
+import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.figures.TreeItemFigure.ToggleFigure;
 
 // TODO styles: SINGLE, MULTI, CHECK, FULL_SELECTION, VIRTUAL, NO_SCROLL
-public class TreeFigure extends ScrollPane {
+public class TreeFigure extends ScrollPane implements ISelectionProvider {
 
     private static final Cursor CURSOR_ARROW = new Cursor(Display.getDefault(), SWT.CURSOR_ARROW);
 
     private static TreeFigureTheme theme;  // static because tree items have no back pointer
+
+    private ListenerList selectionListeners = new ListenerList();
+    private ListenerList selectionChangedListeners = new ListenerList();
 
     // panel containing TreeItemFigures
     class ContentsPanel extends Panel {
@@ -67,6 +79,10 @@ public class TreeFigure extends ScrollPane {
         @Override
         public void mousePressed(MouseEvent event) {
             handleMousePressedOnItem(event);
+        }
+        @Override
+        public void mouseDoubleClicked(MouseEvent event) {
+            handleMouseDoubleClickedOnItem(event);
         }
     };
 
@@ -151,6 +167,14 @@ public class TreeFigure extends ScrollPane {
         if (theme == null)
             theme = new TreeFigureTheme();
         return theme;
+    }
+
+    public void addSelectionListener(SelectionListener listener) { //TODO may need to replace SWT listener+event with own (draw2d) one
+        selectionListeners.add(listener);
+    }
+
+    public void removeSelectionListener(SelectionListener listener) {
+        selectionListeners.remove(listener);
     }
 
     protected void rebuild() {
@@ -265,6 +289,7 @@ public class TreeFigure extends ScrollPane {
     protected void toggleSelection(TreeItemFigure item) {
         lastSelectedItem = item;
         item.setSelected(!item.isSelected());
+        fireSelectionChanged();
     }
 
     protected void extendSelection(TreeItemFigure item) {
@@ -279,6 +304,7 @@ public class TreeFigure extends ScrollPane {
                     TreeItemFigure ithItem = (TreeItemFigure)items.get(i);
                     ithItem.setSelected(start <= i && i <= end);
                 }
+                fireSelectionChanged();
             }
             lastSelectedItem = item;
         }
@@ -289,9 +315,17 @@ public class TreeFigure extends ScrollPane {
 
     protected void setSelection(TreeItemFigure item) {
         lastSelectedItem = item;
+        boolean changed = false;
         for (IFigure child : getItems()) {
-            ((TreeItemFigure)child).setSelected(child == item);
+            TreeItemFigure childItem = (TreeItemFigure)child;
+            boolean selected = childItem == item;
+            if (childItem.isSelected() != selected) {
+                childItem.setSelected(selected);
+                changed = true;
+            }
         }
+        if (changed)
+            fireSelectionChanged();
     }
 
     protected void collapseCurrentItem() {
@@ -357,7 +391,13 @@ public class TreeFigure extends ScrollPane {
             else if ((state & SWT.ALT) == 0) {
                 setSelection(item);
             }
+            fireWidgetSelected(item);
         }
+    }
+
+    protected void handleMouseDoubleClickedOnItem(MouseEvent event) {
+        Assert.isTrue(event.getSource() == lastSelectedItem);
+        fireWidgetDefaultSelected(lastSelectedItem);
     }
 
     protected void handleKeyPressedEvent(KeyEvent event) {
@@ -378,8 +418,12 @@ public class TreeFigure extends ScrollPane {
         case SWT.ARROW_UP:
             handleKeyUp(shift, ctrl);
             break;
-        case ' ':
+        case SWT.SPACE:
             toggleCurrentItem();  // seems to be Linux only, but there's not harm doing it on all platforms
+            fireWidgetSelected(lastSelectedItem);
+            break;
+        case SWT.CR:
+            fireWidgetDefaultSelected(lastSelectedItem);
             break;
         }
     }
@@ -399,6 +443,7 @@ public class TreeFigure extends ScrollPane {
                 prevItem.setSelected(true);
                 lastSelectedItem = prevItem;
                 showItem(prevItem);
+                fireSelectionChanged();
             }
         }
         else {
@@ -425,6 +470,7 @@ public class TreeFigure extends ScrollPane {
                 nextItem.setSelected(true);
                 lastSelectedItem = nextItem;
                 showItem(nextItem);
+                fireSelectionChanged();
             }
         }
         else {
@@ -444,5 +490,72 @@ public class TreeFigure extends ScrollPane {
     protected void handleFocusLostEvent(FocusEvent event) {
         Debug.println("Focus lost.");
         repaint();
+    }
+
+    protected void fireWidgetSelected(TreeItemFigure item) {
+        for (Object listener : selectionListeners.getListeners()) {
+            try {
+                ((SelectionListener)listener).widgetSelected(null /*FIXME*/);
+            } catch (Exception e) {
+                SimulationPlugin.logError(e);
+            }
+        }
+    }
+
+    protected void fireWidgetDefaultSelected(TreeItemFigure item) {
+        for (Object listener : selectionListeners.getListeners()) {
+            try {
+                ((SelectionListener)listener).widgetDefaultSelected(null /*FIXME*/);
+            } catch (Exception e) {
+                SimulationPlugin.logError(e);
+            }
+        }
+    }
+
+    @Override
+    public ISelection getSelection() {
+        List<Object> selectedObjects = new ArrayList<Object>();
+        for (IFigure child : getItems()) {
+            TreeItemFigure item = (TreeItemFigure)child;
+            if (item.isSelected())
+                selectedObjects.add(item.getContent());
+        }
+        return new StructuredSelection(selectedObjects);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void setSelection(ISelection selection) {
+        if (selection instanceof IStructuredSelection) {
+            List<Object> selectedObjects = ((IStructuredSelection)selection).toList();
+
+            //FIXME it's more complicated then this. If an object is inside a collapsed tree branch, we must expand the branch so the item appears and can be selected!
+            for (IFigure child : getItems()) {
+                TreeItemFigure item = (TreeItemFigure)child;
+                item.setSelected(selectedObjects.contains(item.getContent()));
+            }
+            fireSelectionChanged(); //TODO only if something actually changed (apart from order of items in the selection!)
+        }
+    }
+
+    @Override
+    public void addSelectionChangedListener(ISelectionChangedListener listener) {
+        selectionChangedListeners.add(listener);
+    }
+
+    @Override
+    public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+        selectionChangedListeners.remove(listener);
+    }
+
+    protected void fireSelectionChanged() {
+        SelectionChangedEvent event = new SelectionChangedEvent(this, getSelection());
+        for (Object listener : selectionChangedListeners.getListeners()) {
+            try {
+                ((ISelectionChangedListener)listener).selectionChanged(event);
+            } catch (Exception e) {
+                SimulationPlugin.logError(e);
+            }
+        }
     }
 }
