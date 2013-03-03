@@ -21,9 +21,9 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
+import org.eclipse.jface.viewers.IInputSelectionProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -34,12 +34,11 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
-import org.omnetpp.common.Debug;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.figures.TreeItemFigure.ToggleFigure;
 
 // TODO styles: SINGLE, MULTI
-public class TreeFigure extends ScrollPane implements ISelectionProvider {
+public class TreeFigure extends ScrollPane implements IInputSelectionProvider {
 
     private static final Cursor CURSOR_ARROW = new Cursor(Display.getDefault(), SWT.CURSOR_ARROW);
 
@@ -255,7 +254,7 @@ public class TreeFigure extends ScrollPane implements ISelectionProvider {
         return index > 0 ? (TreeItemFigure)items.get(index-1) : null;
     }
 
-    protected void collapseItem(TreeItemFigure item) {
+    protected void collapseItem(TreeItemFigure item, boolean refresh) {
         Assert.isTrue(item.getParent() == contentsPane && !item.isExpanded());
         int level = item.getLevel();
         List<IFigure> children = getItems();
@@ -271,11 +270,13 @@ public class TreeFigure extends ScrollPane implements ISelectionProvider {
         for (IFigure descendant : descendants)
             contentsPane.remove(descendant);
 
-        revalidate();
-        repaint();
+        if (refresh) {
+            revalidate();
+            repaint();
+        }
     }
 
-    protected void expandItem(TreeItemFigure item) {
+    protected void expandItem(TreeItemFigure item, boolean refresh) {
         Assert.isTrue(item.getParent() == contentsPane && item.isExpanded());
         Object content = item.getContent();
         int level = item.getLevel();
@@ -285,8 +286,10 @@ public class TreeFigure extends ScrollPane implements ISelectionProvider {
             boolean hasChildren = contentProvider.hasChildren(child);
             addTreeItem(child, level+1, hasChildren, ++index);
         }
-        revalidate();
-        repaint();
+        if (refresh) {
+            revalidate();
+            repaint();
+        }
     }
 
     protected void toggleSelection(TreeItemFigure item) {
@@ -333,14 +336,14 @@ public class TreeFigure extends ScrollPane implements ISelectionProvider {
     protected void collapseCurrentItem() {
         if (activeItem != null && activeItem.isExpandable() && activeItem.isExpanded()) {
             activeItem.setExpanded(false);
-            collapseItem(activeItem);
+            collapseItem(activeItem, true);
         }
     }
 
     protected void expandCurrentItem() {
         if (activeItem != null && activeItem.isExpandable() && !activeItem.isExpanded()) {
             activeItem.setExpanded(true);
-            expandItem(activeItem);
+            expandItem(activeItem, true);
         }
     }
 
@@ -373,9 +376,9 @@ public class TreeFigure extends ScrollPane implements ISelectionProvider {
         if (event.getSource() instanceof ToggleFigure && event.button == 1) {
             TreeItemFigure item = (TreeItemFigure)((ToggleFigure)event.getSource()).getParent();
             if (item.isExpanded())
-                expandItem(item);
+                expandItem(item, true);
             else
-                collapseItem(item);
+                collapseItem(item, true);
         }
     }
 
@@ -529,18 +532,69 @@ public class TreeFigure extends ScrollPane implements ISelectionProvider {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void setSelection(ISelection selection) {
-        if (selection instanceof IStructuredSelection) {
-            List<Object> selectedObjects = ((IStructuredSelection)selection).toList();
+        setSelection(selection, true);
+    }
 
-            //FIXME it's more complicated then this. If an object is inside a collapsed tree branch, we must expand the branch so the item appears and can be selected!
-            for (IFigure child : getItems()) {
-                TreeItemFigure item = (TreeItemFigure)child;
-                item.setSelected(selectedObjects.contains(item.getContent()));
+    // XXX if the same content appears several times in the tree, only the first one will be selected
+    public void setSelection(ISelection selection, boolean refresh) {
+        if (selection instanceof IStructuredSelection) {
+            // clear selection
+            for (IFigure child : getItems())
+                ((TreeItemFigure)child).setSelected(false);
+            // set selection of items
+            boolean selectionChanged = false;
+            List<?> selectedObjects = ((IStructuredSelection)selection).toList();
+            for (Object object : selectedObjects) {
+                TreeItemFigure item = findOrCreateItem(object);
+                if (item != null && !item.isSelected()) {
+                    item.setSelected(true);
+                    selectionChanged = true;
+                }
             }
-            fireSelectionChanged(); //TODO only if something actually changed (apart from order of items in the selection!)
+            if (selectionChanged)
+                fireSelectionChanged();
+            if (refresh) {
+                revalidate();
+                repaint();
+            }
         }
+    }
+
+    private TreeItemFigure findOrCreateItem(Object content) {
+        List<Object> ancestors = new ArrayList<Object>();
+        TreeItemFigure item = null;
+        // find an ancestor whose item exists
+        while (content != null) {
+            item = findItem(content);
+            if (item != null)
+                break;
+            ancestors.add(content);
+            content = contentProvider.getParent(content);
+        }
+        // content not in this tree?
+        if (item == null)
+            return null;
+        // create ancestors below item
+        for (int i = ancestors.size() - 1; i >= 0; i--) {
+            Object ancestor = ancestors.get(i);
+            Assert.isTrue(item.isExpandable() && !item.isExpanded());
+            item.setExpanded(true);
+            expandItem(item, false);
+            item = findItem(ancestor);
+            if (item == null)
+                break;
+        }
+        return item;
+    }
+
+    private TreeItemFigure findItem(Object content) {
+        for (IFigure child : getItems()) {
+            TreeItemFigure item = (TreeItemFigure)child;
+            if (content.equals(item.getContent()))
+                return item;
+        }
+        return null;
     }
 
     @Override
