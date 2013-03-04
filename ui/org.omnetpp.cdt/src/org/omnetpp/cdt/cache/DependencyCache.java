@@ -302,7 +302,7 @@ public class DependencyCache {
         try {
             project.accept(new IResourceVisitor() {
                 public boolean visit(IResource resource) throws CoreException {
-                    if (MakefileTools.isCppFile(resource) || MakefileTools.isMsgFile(resource))
+                    if (MakefileTools.isCppFile(resource) || MakefileTools.isMsgFile(resource) || MakefileTools.isSmFile(resource))
                         markerSync.register(resource);
                     return true;
                 }
@@ -332,7 +332,7 @@ public class DependencyCache {
                         lastFolderIsExcluded = CDTUtils.isExcluded(folder, sourceEntries);
                     }
                     if (!lastFolderIsExcluded) {
-                        if (MakefileTools.isNonGeneratedCppFile(file) || MakefileTools.isMsgFile(file)) {
+                        if (MakefileTools.isNonGeneratedCppFile(file) || MakefileTools.isMsgFile(file) || MakefileTools.isSmFile(file)) {
                             visitor.visit(file);
                         }
                     }
@@ -400,7 +400,7 @@ public class DependencyCache {
         //Debug.println("Collect includes from " + file.getLocation());
 
         List<Include> result = new ArrayList<Include>();
-        if (MakefileTools.isCppFile(file) || MakefileTools.isMsgFile(file)) {
+        if (MakefileTools.isCppFile(file) || MakefileTools.isMsgFile(file) || MakefileTools.isSmFile(file)) {
             try {
                 Index index = Activator.getIndex();
                 FileContentProvider fileContentProvider = new FileContentProvider(file);

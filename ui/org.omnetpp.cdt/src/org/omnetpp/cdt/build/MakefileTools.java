@@ -94,6 +94,13 @@ public class MakefileTools {
     }
 
     /**
+     * Returns true if the given resource is a file with "sm" extension.
+     */
+    public static boolean isSmFile(IResource resource) {
+        return resource instanceof IFile && "sm".equals(((IFile)resource).getFileExtension());
+    }
+
+    /**
      * Returns true if the resource is a potential source folder
      * (not team private or backups folder). Does NOT check whether
      * folder is marked as excluded in CDT.
