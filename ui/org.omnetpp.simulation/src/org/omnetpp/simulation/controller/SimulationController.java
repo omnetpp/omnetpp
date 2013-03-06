@@ -62,6 +62,7 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
     private Job launcherJob; // we want to be notified when the launcher job exits (== simulation process exits); may be null
     private IJobChangeListener jobChangeListener;
     private boolean cancelJobOnDispose;  // whether to kill the simulation launcher job when the controller is disposed
+    private boolean connectDone = false;  // whether we have at least once successfully talked to the process via socket
     private boolean isProcessSuspended;  // whether the simulation process is suspended (in the debugger)
     private DelayedJob resumableStateDelayedJob = null;
     private DelayedJob reconnectDelayedJob = null;
@@ -262,7 +263,8 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
     public void connect() {
         // wait until the simulation process starts to respond to HTTP requests.
         // Meanwhile, all actions should be disabled.
-        Assert.isTrue(getConnectionState() == ConnState.INIT);
+        Assert.isTrue(getConnectionState() == ConnState.INIT || getConnectionState() == ConnState.RESUMABLE);
+        Assert.isTrue(!connectDone);
         setConnectionState(ConnState.CONNECTING);
         tryConnect();
     }
@@ -276,6 +278,7 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
 
             // ping successful:
             Debug.println("OK");
+            connectDone = true;
             setConnectionState(ConnState.ONLINE);
         }
         catch (IOException e) {
@@ -726,8 +729,12 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
         reconnectDelayedJob = new DelayedJob(2000) {
             @Override
             public void run() {
-                if (!isDisposed() && getConnectionState() == ConnState.RESUMABLE)
-                    goOnline();
+                if (!isDisposed() && getConnectionState() == ConnState.RESUMABLE) {
+                    if (!connectDone)
+                        connect();  // resume after stopping in main() -- need to wait until process opens the socket
+                    else
+                        goOnline();
+                }
             }
         };
     }
