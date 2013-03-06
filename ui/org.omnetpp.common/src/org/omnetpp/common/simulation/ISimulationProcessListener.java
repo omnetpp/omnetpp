@@ -6,7 +6,8 @@ package org.omnetpp.common.simulation;
  *
  * @author andras
  */
-public interface ISuspendResumeListener {
-	void simulationProcessSuspended();
-	void simulationProcessResumed();
+public interface ISimulationProcessListener {
+    void simulationProcessSuspended();
+    void simulationProcessResumed();
+    void simulationProcessTerminated();
 }

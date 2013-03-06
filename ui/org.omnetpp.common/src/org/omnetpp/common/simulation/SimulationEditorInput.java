@@ -1,7 +1,5 @@
 package org.omnetpp.common.simulation;
 
-import org.eclipse.core.runtime.ListenerList;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
@@ -11,28 +9,25 @@ import org.eclipse.ui.IPersistableElement;
  *
  * @author Andras
  */
-public class SimulationEditorInput implements IEditorInput, ISuspendResume {
+public class SimulationEditorInput implements IEditorInput {
     // mandatory fields
     private String name; // display name
     private String hostName;
     private int portNumber;
+    private ISimulationProcess simulationProcess;
 
     // only if simulation was started via a launch configuration (and not attached to)
-    private Job launcherJob;
     private String launchConfigurationName;
-
-    // for facilitating cooperation with the C++ debugger
-    private ListenerList listeners = new ListenerList();
 
     public SimulationEditorInput(String name, String hostName, int portNumber) {
         this(name, hostName, portNumber, null, null);
     }
 
-    public SimulationEditorInput(String name, String hostName, int portNumber, Job launcherJob, String launchConfigurationName) {
+    public SimulationEditorInput(String name, String hostName, int portNumber, ISimulationProcess simulationProcess, String launchConfigurationName) {
         this.name = name;
         this.hostName = hostName;
         this.portNumber = portNumber;
-        this.launcherJob = launcherJob;
+        this.simulationProcess = simulationProcess;
         this.launchConfigurationName = launchConfigurationName;
     }
 
@@ -65,8 +60,8 @@ public class SimulationEditorInput implements IEditorInput, ISuspendResume {
         return portNumber;
     }
 
-    public Job getLauncherJob() {
-        return launcherJob;
+    public ISimulationProcess getSimulationProcess() {
+        return simulationProcess;
     }
 
     public String getLaunchConfigurationName() {
@@ -84,25 +79,4 @@ public class SimulationEditorInput implements IEditorInput, ISuspendResume {
     public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
         return null;
     }
-
-    @Override
-    public void addSuspendResumeListener(ISuspendResumeListener listener) {
-        listeners.add(listener);
-    }
-
-    @Override
-    public void removeSuspendResumeListener(ISuspendResumeListener listener) {
-        listeners.remove(listener);
-    }
-
-    protected void fireSimulationProcessSuspended() {
-        for (Object o : listeners.getListeners())
-            ((ISuspendResumeListener) o).simulationProcessSuspended();
-    }
-
-    protected void fireSimulationProcessResumed() {
-        for (Object o : listeners.getListeners())
-            ((ISuspendResumeListener) o).simulationProcessResumed();
-    }
-
 }

@@ -6,16 +6,12 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
-import org.eclipse.core.runtime.jobs.IJobChangeEvent;
-import org.eclipse.core.runtime.jobs.IJobChangeListener;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.BigDecimal;
-import org.omnetpp.common.simulation.ISuspendResume;
-import org.omnetpp.common.simulation.ISuspendResumeListener;
+import org.omnetpp.common.simulation.ISimulationProcess;
+import org.omnetpp.common.simulation.ISimulationProcessListener;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -44,7 +40,7 @@ import org.omnetpp.simulation.model.cModule;
 //TODO process info dialog: add connState
 //TODO rename SimState.NONE to UNKNOWN?
 //TODO rewrite refreshUntil() to use DelayedJob
-public class SimulationController implements ISimulationCallback, ISuspendResumeListener {
+public class SimulationController implements ISimulationCallback, ISimulationProcessListener {
     /**
      * State of the connection to the simulation process
      */
@@ -59,11 +55,9 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
     }
 
     private ConnState connState;  // connection state
-    private Job launcherJob; // we want to be notified when the launcher job exits (== simulation process exits); may be null
-    private IJobChangeListener jobChangeListener;
+    private ISimulationProcess simulationProcess; // we want to be notified when the launcher job exits (== simulation process exits); may be null
     private boolean cancelJobOnDispose;  // whether to kill the simulation launcher job when the controller is disposed
     private boolean connectDone = false;  // whether we have at least once successfully talked to the process via socket
-    private boolean isProcessSuspended;  // whether the simulation process is suspended (in the debugger)
     private DelayedJob resumableStateDelayedJob = null;
     private DelayedJob reconnectDelayedJob = null;
     private boolean isDisposed = false;
@@ -81,35 +75,17 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
     private ISimulationUICallback simulationUICallback;
     private ListenerList simulationChangeListeners = new ListenerList();
 
-    public SimulationController(String hostName, int portNumber, Job theLauncherJob, ISuspendResume suspendResume) {
-        this.launcherJob = theLauncherJob;
-        this.cancelJobOnDispose = launcherJob != null;
+    public SimulationController(String hostName, int portNumber, ISimulationProcess simulationProcess) {
+        this.simulationProcess = simulationProcess;
+        this.cancelJobOnDispose = simulationProcess != null;
         this.connState = ConnState.INIT;
 
         this.simulation = new Simulation(hostName, portNumber);
         simulation.setSimulationCallback(this);
         simulation.setOnline(false);
 
-        // if simulation was launched via a local launcher job (see SimulationLauncherJob),
-        // set up simulationProcessExited() to be called when the launcher job exits
-        if (launcherJob != null) {
-            Job.getJobManager().addJobChangeListener(jobChangeListener = new JobChangeAdapter() {
-                @Override
-                public void done(IJobChangeEvent event) {
-                    if (event.getJob() == launcherJob) {
-                        Job.getJobManager().removeJobChangeListener(jobChangeListener);
-                        launcherJob = null;
-                        jobChangeListener = null;
-                        simulationProcessExited();
-                    }
-                }
-            });
-        }
-
-        // get notified about process suspend/resume
-        if (suspendResume != null) {
-            suspendResume.addSuspendResumeListener(this);
-        }
+        // get notified about process suspend/resume/termination
+        simulationProcess.addListener(this);
     }
 
     public Simulation getSimulation() {
@@ -249,15 +225,14 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
     }
 
     public boolean canCancelLaunch() {
-        return launcherJob != null && launcherJob.getState() != Job.NONE;
+        return simulationProcess.canCancel();
     }
 
     /**
      * Terminates the simulation; may only be called if canCancelLaunch() returns true
      */
     public void cancelLaunch() {
-        if (launcherJob != null)
-            launcherJob.cancel();
+        simulationProcess.cancel();
     }
 
     public void connect() {
@@ -286,7 +261,7 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
             Display.getCurrent().timerExec(1000, new Runnable() {
                 @Override
                 public void run() {
-                    if (!isDisposed() && !isProcessSuspended)
+                    if (!isDisposed() && !simulationProcess.isSuspended())
                         tryConnect();
                 }
             });
@@ -657,10 +632,15 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
 
     public void goOnline() {
         Assert.isTrue(connState == ConnState.OFFLINE || connState == ConnState.RESUMABLE);
-        setConnectionState(ConnState.ONLINE);
-        try {
-            refreshStatus();
-        } catch (CommunicationException e) { }
+        if (!connectDone) {
+            connect(); // if we've never had a successful ping, we may need to wait until process starts up and opens socket
+        }
+        else {
+            setConnectionState(ConnState.ONLINE);
+            try {
+                refreshStatus();
+            } catch (CommunicationException e) { }
+        }
     }
 
     @Override
@@ -681,14 +661,10 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
         setConnectionState(ConnState.DISCONNECTED);
     }
 
-    protected void simulationProcessExited() {
-        setConnectionState(ConnState.DISCONNECTED);
-    }
-
     @Override
     public void simulationProcessSuspended() {
-        if (!isDisposed() && !isProcessSuspended) {
-            isProcessSuspended = true;
+        Debug.println("Process suspended");
+        if (!isDisposed()) {
             simulation.abortOngoingHttpRequest();
             setConnectionState(ConnState.SUSPENDED);
             if (resumableStateDelayedJob != null)
@@ -700,17 +676,21 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
 
     @Override
     public void simulationProcessResumed() {
-        if (!isDisposed() && isProcessSuspended) {
-            // note: just set the flag. We must wait with actually trying to contact the simulation process
-            // again, because this Resume may be immediately followed by a Suspend; this occurs e.g. when
-            // the user single-steps through the code in the debugger.
-            isProcessSuspended = false;
-
-            // enter RESUMABLE after a delay
+        Debug.println("Process resumed");
+        if (!isDisposed()) {
+            // enter RESUMABLE after a delay. We must wait with actually trying to contact 
+            // the simulation process again, because this Resume may be immediately followed 
+            // by a Suspend; this occurs e.g. when the user single-steps through the code 
+            // in the debugger.
             if (resumableStateDelayedJob == null)
                 createDelayedJobs();
             resumableStateDelayedJob.restartTimer();
         }
+    }
+
+    @Override
+    public void simulationProcessTerminated() {
+        setConnectionState(ConnState.DISCONNECTED);
     }
 
     protected void createDelayedJobs() {
@@ -729,24 +709,18 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
         reconnectDelayedJob = new DelayedJob(2000) {
             @Override
             public void run() {
-                if (!isDisposed() && getConnectionState() == ConnState.RESUMABLE) {
-                    if (!connectDone)
-                        connect();  // resume after stopping in main() -- need to wait until process opens the socket
-                    else
-                        goOnline();
-                }
+                if (!isDisposed() && getConnectionState() == ConnState.RESUMABLE)
+                    goOnline();
             }
         };
     }
 
     public void dispose() {
         //TODO try sendQuitCommand() first
-        if (launcherJob != null) {
-            Job.getJobManager().removeJobChangeListener(jobChangeListener);
-            if (cancelJobOnDispose && launcherJob.getState() != Job.NONE)
-                launcherJob.cancel();
-        }
-
+        if (cancelJobOnDispose && simulationProcess.canCancel())
+            simulationProcess.cancel();
+        simulationProcess.removeListener(this);
+        simulationChangeListeners = null;
         isDisposed = true;
         //TODO cancel timers, etc.
     }

@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -34,6 +33,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.IConstants;
+import org.omnetpp.common.simulation.AbstractSimulationProcess;
+import org.omnetpp.common.simulation.ISimulationProcess;
 import org.omnetpp.common.simulation.SimulationEditorInput;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
@@ -46,23 +47,54 @@ import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
 public class SimulationDebugLaunchDelegate extends GdbLaunchDelegate {
     private static final String PREF_DONT_OFFER_CONFIG_UPGRADE = "org.omnetpp.cdt.launch.DoNotOfferUpgradingConfig";
 
-    public static class DsfSimulationEditorInput extends SimulationEditorInput {
-        public DsfSimulationEditorInput(String name, String hostName, int portNumber, Job launcherJob, String launchConfigurationName, DsfSession dsfSession) {
-            super(name, hostName, portNumber, launcherJob, launchConfigurationName);
-            if (dsfSession != null)
-                dsfSession.addServiceEventListener(this, null); // no need for removeListener because DsfSession only lives during the debug session
+    public static class DsfSimulationProcess extends AbstractSimulationProcess {
+        private boolean isSuspended;
+        private boolean isTerminated;
+
+        public DsfSimulationProcess(DsfSession dsfSession) {
+            isSuspended = false; // supposedly
+            isTerminated = false;
+            dsfSession.addServiceEventListener(this, null); // no need for removeListener because DsfSession only lives during the debug session
         }
 
         @DsfServiceEventHandler
         public void handleEvent(IRunControl.ISuspendedDMEvent event) {
             // Note: apparently these listener methods are invoked in a background thread,
             // and not necessarily in pairs (RESUME is often repeated)
+            isSuspended = true;
             fireSimulationProcessSuspended();
         }
 
         @DsfServiceEventHandler
         public void handleEvent(IRunControl.IResumedDMEvent event) {
+            isSuspended = false;
             fireSimulationProcessResumed();
+        }
+
+        @DsfServiceEventHandler
+        public void handleEvent(IRunControl.IExitedDMEvent event) {
+            isTerminated = true;
+            fireSimulationProcessTerminated();
+        }
+
+        @Override
+        public boolean canCancel() {
+            return false;
+        }
+
+        @Override
+        public void cancel() {
+            throw new RuntimeException("cancel not supported");
+        }
+
+        @Override
+        public boolean isSuspended() {
+            return isSuspended;
+        }
+
+        @Override
+        public boolean isTerminated() {
+            return isTerminated;
         }
     };
 
@@ -97,6 +129,7 @@ public class SimulationDebugLaunchDelegate extends GdbLaunchDelegate {
                 Activator.log(IMarker.SEVERITY_WARNING,
                         "SimulationDebugLaunchDelegate: launch object is not a GdbLaunch (or contains no DsfSession), unable to notify " +
                         "Simulation Front-end about process suspend/resume events during the debug session. Please report this error!");
+            final ISimulationProcess simulationProcess = new DsfSimulationProcess(dsfSession);
 
             Display.getDefault().asyncExec(new Runnable() {
                 public void run() {
@@ -104,7 +137,7 @@ public class SimulationDebugLaunchDelegate extends GdbLaunchDelegate {
                     IWorkbenchPage workbenchPage = workbenchWindow.getActivePage();
                     try {
                         // open the editor
-                        IEditorInput input = new DsfSimulationEditorInput(launchConfigurationName, "localhost", portNumber, null, launchConfigurationName, dsfSession);
+                        IEditorInput input = new SimulationEditorInput(launchConfigurationName, "localhost", portNumber, simulationProcess, launchConfigurationName);
                         IDE.openEditor(workbenchPage, input, IConstants.SIMULATION_EDITOR_ID);
                     }
                     catch (PartInitException e) {

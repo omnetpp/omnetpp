@@ -616,7 +616,7 @@ public class Simulation {
         // process response; objects not in the response no longer exist, purge them from the cache
         List<Long> garbage = new ArrayList<Long>();
         for (cObject obj: objects) {
-            Map jsonObjectInfo = (Map) ((Map) json).get(String.valueOf(obj.getObjectId()));
+            Map jsonObjectInfo = json==null ? null : (Map) ((Map) json).get(String.valueOf(obj.getObjectId()));
             if (jsonObjectInfo == null) {
                 garbage.add(obj.getObjectId()); // calling remove() here would cause ConcurrentModificationException
                 obj.markAsDisposed();

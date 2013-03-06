@@ -17,7 +17,10 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
@@ -37,6 +40,7 @@ import org.eclipse.ui.ide.IDE;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.project.ProjectUtils;
+import org.omnetpp.common.simulation.AbstractSimulationProcess;
 import org.omnetpp.common.simulation.SimulationEditorInput;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
@@ -49,6 +53,42 @@ import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
  */
 public class SimulationRunConfigurationDelegate extends LaunchConfigurationDelegate {
     public static final String PREF_SWITCH_TO_SIMULATE_PERSPECTIVE = "org.omnetpp.launch.SwitchToSimulatePerspective";  //TODO add a way to clear this preference!
+
+    public static class JobSimulationProcess extends AbstractSimulationProcess {
+        private Job job;
+        private IJobChangeListener jobChangeListener;
+
+        public JobSimulationProcess(Job job) {
+            this.job = job;
+            Job.getJobManager().addJobChangeListener(jobChangeListener = new JobChangeAdapter() {
+                @Override
+                public void done(IJobChangeEvent event) {
+                    if (event.getJob() == JobSimulationProcess.this.job) {
+                        Job.getJobManager().removeJobChangeListener(jobChangeListener);
+                        fireSimulationProcessTerminated();
+                    }
+                }
+            });
+        }
+
+        public boolean canCancel() {
+            return !isTerminated();
+        }
+
+        public void cancel() {
+            job.cancel();
+        }
+
+        @Override
+        public boolean isSuspended() {
+            return false;
+        }
+
+        @Override
+        public boolean isTerminated() {
+            return job.getState() == Job.NONE;
+        }
+    };
 
     public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 
@@ -130,7 +170,7 @@ public class SimulationRunConfigurationDelegate extends LaunchConfigurationDeleg
                         }
 
                         // open the editor
-                        IEditorInput input = new SimulationEditorInput(launchConfigurationName, "localhost", portNumber, launcherjob, launchConfigurationName);
+                        IEditorInput input = new SimulationEditorInput(launchConfigurationName, "localhost", portNumber, new JobSimulationProcess(launcherjob), launchConfigurationName);
                         IDE.openEditor(workbenchPage, input, IConstants.SIMULATION_EDITOR_ID);
                     }
                     catch (PartInitException e) {

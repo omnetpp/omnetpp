@@ -112,7 +112,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         ((IContextService)getSite().getService(IContextService.class)).activateContext(CONTEXT_SIMULATION);
 
         SimulationEditorInput simInput = (SimulationEditorInput)input;
-        simulationController = new SimulationController(simInput.getHostName(), simInput.getPortNumber(), simInput.getLauncherJob(), simInput);
+        simulationController = new SimulationController(simInput.getHostName(), simInput.getPortNumber(), simInput.getSimulationProcess());
         simulationController.setSimulationUICallback(this);
 
         getSite().setSelectionProvider(new DelegatingSelectionProvider());  // must do it now, because 'editor opened' notification goes right after init() returns
@@ -523,38 +523,6 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         l.horizontalSpacing = l.verticalSpacing = l.marginHeight = l.marginWidth = 0;
         return l;
     }
-
-//TODO: move in Simulation class
-//    @Override
-//    public void simulationProcessSuspended() {
-//        Debug.println("PROCESS SUSPENDED");
-//        //TODO move this into SimulationController; also add flag
-//        Display.getDefault().asyncExec(new Runnable() {
-//            @Override
-//            public void run() {
-//                simulationController.getSimulation().enterFailureMode(); //TODO rename failure mode to offline mode
-//            }
-//        });
-//
-//        //TODO: if process is suspended, HTTPClient should not even try!!!!-
-//
-//        //XXX experimental: also try to kill ongoing http request.
-//        // according to http://book.javanb.com/java-threads-3rd/jthreads3-CHP-12-SECT-3.html,
-//        // this will only interrupt the http (blocking I/O) on unix, but not on windows!
-//        // on windows, we apparently have to close the socket, and *that* will immediately cause an IOException.
-//        Thread uiThread = Display.getDefault().getThread();
-//        if (Thread.currentThread() != uiThread) {
-//            System.out.println("INTERRUPTING UI THREAD");
-//            uiThread.interrupt(); // getPageContent() will check this
-//            simulationController.getSimulation().abortOngoingHttpRequest();
-//        }
-//    }
-//
-//    @Override
-//    public void simulationProcessResumed() {
-//        Debug.println("PROCESS RESUMED");
-//        // TODO Auto-generated method stub
-//    }
 
     @Override
     public void dispose() {
