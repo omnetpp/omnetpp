@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <locale.h>
+#include "platmisc.h"
 #include "commonutil.h"
 
 USING_NAMESPACE
