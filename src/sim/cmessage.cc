@@ -270,7 +270,7 @@ cObject *cMessage::removeControlInfo()
 {
     cObject *p = ctrlp;
     ctrlp = NULL;
-    if (p->isOwnedObject())
+    if (p && p->isOwnedObject())
         drop((cOwnedObject *)p);
     return p;
 }
