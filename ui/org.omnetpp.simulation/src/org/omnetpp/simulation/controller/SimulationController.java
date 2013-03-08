@@ -373,7 +373,8 @@ public class SimulationController implements ISimulationCallback, ISimulationPro
                 @Override
                 public void run() {
                     try {
-                        doRun();
+                        if (!isDisposed())
+                            doRun();
                     }
                     catch (CommunicationException e) {
                         // nothing -- error dialog and logging is already taken care of in the lower layers

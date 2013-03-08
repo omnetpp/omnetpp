@@ -526,6 +526,9 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
 
     @Override
     public void dispose() {
+        if (simulationController == null)
+            return;  // not yet initialized, or already disposed
+
         try {
             saveInspectorList();
         }

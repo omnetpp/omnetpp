@@ -20,11 +20,32 @@ public class SimulationEditorInput implements IEditorInput {
     // only if simulation was started via a launch configuration (and not attached to)
     private String launchConfigurationName;
 
+    private static class DummySimulationProcess extends AbstractSimulationProcess {
+        @Override
+        public boolean isTerminated() {
+            return false;
+        }
+
+        @Override
+        public boolean isSuspended() {
+            return false;
+        }
+
+        @Override
+        public void cancel() {
+        }
+
+        @Override
+        public boolean canCancel() {
+            return false;
+        }
+    };
+
     /**
      * Constructor typically used when attaching to a process.
      */
     public SimulationEditorInput(String name, String hostName, int portNumber) {
-        this(name, hostName, portNumber, null, null, false);
+        this(name, hostName, portNumber, new DummySimulationProcess(), null, false);
     }
 
     /**

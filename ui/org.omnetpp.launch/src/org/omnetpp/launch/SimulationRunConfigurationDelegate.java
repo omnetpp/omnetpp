@@ -170,7 +170,7 @@ public class SimulationRunConfigurationDelegate extends LaunchConfigurationDeleg
                         }
 
                         // open the editor
-                        IEditorInput input = new SimulationEditorInput(launchConfigurationName, "localhost", portNumber, new JobSimulationProcess(launcherjob), launchConfigurationName);
+                        IEditorInput input = new SimulationEditorInput(launchConfigurationName, "localhost", portNumber, new JobSimulationProcess(launcherjob), launchConfigurationName, true);
                         IDE.openEditor(workbenchPage, input, IConstants.SIMULATION_EDITOR_ID);
                     }
                     catch (PartInitException e) {
