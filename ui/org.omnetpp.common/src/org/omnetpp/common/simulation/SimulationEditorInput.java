@@ -15,20 +15,28 @@ public class SimulationEditorInput implements IEditorInput {
     private String hostName;
     private int portNumber;
     private ISimulationProcess simulationProcess;
+    private boolean cancelJobOnDispose;
 
     // only if simulation was started via a launch configuration (and not attached to)
     private String launchConfigurationName;
 
+    /**
+     * Constructor typically used when attaching to a process.
+     */
     public SimulationEditorInput(String name, String hostName, int portNumber) {
-        this(name, hostName, portNumber, null, null);
+        this(name, hostName, portNumber, null, null, false);
     }
 
-    public SimulationEditorInput(String name, String hostName, int portNumber, ISimulationProcess simulationProcess, String launchConfigurationName) {
+    /**
+     * Constructor typically used when simulation was launched as a Run or Debug session.
+     */
+    public SimulationEditorInput(String name, String hostName, int portNumber, ISimulationProcess simulationProcess, String launchConfigurationName, boolean cancelJobOnDispose) {
         this.name = name;
         this.hostName = hostName;
         this.portNumber = portNumber;
         this.simulationProcess = simulationProcess;
         this.launchConfigurationName = launchConfigurationName;
+        this.cancelJobOnDispose = cancelJobOnDispose;
     }
 
     @Override
@@ -60,12 +68,27 @@ public class SimulationEditorInput implements IEditorInput {
         return portNumber;
     }
 
+    /**
+     * Allows listening on simulation process termination / suspend / resume events.
+     */
     public ISimulationProcess getSimulationProcess() {
         return simulationProcess;
     }
 
+    /**
+     * Name of the launch configuration used to start the simulation; only informational
+     * (currently used as resource key for storing the editor state).
+     */
     public String getLaunchConfigurationName() {
         return launchConfigurationName;
+    }
+
+    /**
+     * Whether to kill the simulation process when the simulation front-end 
+     * (the editor) is closed.
+     */
+    public boolean getCancelJobOnDispose() {
+        return cancelJobOnDispose;
     }
 
     public IPersistableElement getPersistable() {

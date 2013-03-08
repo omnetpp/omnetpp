@@ -55,7 +55,7 @@ public class SimulationController implements ISimulationCallback, ISimulationPro
     }
 
     private ConnState connState;  // connection state
-    private ISimulationProcess simulationProcess; // we want to be notified when the launcher job exits (== simulation process exits); may be null
+    private ISimulationProcess simulationProcess; // we want to be notified when the simulation process exits, is suspended or resumed
     private boolean cancelJobOnDispose;  // whether to kill the simulation launcher job when the controller is disposed
     private boolean connectDone = false;  // whether we have at least once successfully talked to the process via socket
     private DelayedJob resumableStateDelayedJob = null;
@@ -75,9 +75,11 @@ public class SimulationController implements ISimulationCallback, ISimulationPro
     private ISimulationUICallback simulationUICallback;
     private ListenerList simulationChangeListeners = new ListenerList();
 
-    public SimulationController(String hostName, int portNumber, ISimulationProcess simulationProcess) {
+    public SimulationController(String hostName, int portNumber, ISimulationProcess simulationProcess, boolean cancelJobOnDispose) {
+        Assert.isNotNull(hostName);
+        Assert.isNotNull(simulationProcess);
         this.simulationProcess = simulationProcess;
-        this.cancelJobOnDispose = simulationProcess != null;
+        this.cancelJobOnDispose = cancelJobOnDispose;
         this.connState = ConnState.INIT;
 
         this.simulation = new Simulation(hostName, portNumber);

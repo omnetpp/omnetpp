@@ -137,7 +137,7 @@ public class SimulationDebugLaunchDelegate extends GdbLaunchDelegate {
                     IWorkbenchPage workbenchPage = workbenchWindow.getActivePage();
                     try {
                         // open the editor
-                        IEditorInput input = new SimulationEditorInput(launchConfigurationName, "localhost", portNumber, simulationProcess, launchConfigurationName);
+                        IEditorInput input = new SimulationEditorInput(launchConfigurationName, "localhost", portNumber, simulationProcess, launchConfigurationName, true);
                         IDE.openEditor(workbenchPage, input, IConstants.SIMULATION_EDITOR_ID);
                     }
                     catch (PartInitException e) {

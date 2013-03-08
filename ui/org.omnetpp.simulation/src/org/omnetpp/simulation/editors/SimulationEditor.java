@@ -112,7 +112,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         ((IContextService)getSite().getService(IContextService.class)).activateContext(CONTEXT_SIMULATION);
 
         SimulationEditorInput simInput = (SimulationEditorInput)input;
-        simulationController = new SimulationController(simInput.getHostName(), simInput.getPortNumber(), simInput.getSimulationProcess());
+        simulationController = new SimulationController(simInput.getHostName(), simInput.getPortNumber(), simInput.getSimulationProcess(), simInput.getCancelJobOnDispose());
         simulationController.setSimulationUICallback(this);
 
         getSite().setSelectionProvider(new DelegatingSelectionProvider());  // must do it now, because 'editor opened' notification goes right after init() returns
