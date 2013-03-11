@@ -24,7 +24,7 @@ L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
 COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../common -I../envir /Fd"$O/$(LIBNAME).pdb"
 IMPLIBS= $O/../sim/oppsim$D.lib $O/../envir/oppenvir$D.lib $O/../common/oppcommon$D.lib
 
-OBJS= $O/cmdenv.obj
+OBJS= $O/cmdenv.obj $O/serializer.obj
 
 !if "$(LIB_SUFFIX)"==".dll"
 COPTS= $(COPTS) -DCMDENV_EXPORT

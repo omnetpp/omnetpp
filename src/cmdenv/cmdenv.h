@@ -22,6 +22,7 @@
 #include "csimulation.h"
 #include "envirbase.h"
 #include "httpserver.h"
+#include "serializer.h"
 #include "json.h"
 
 NAMESPACE_BEGIN
@@ -129,6 +130,8 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      StoppingReason stoppingReason; // why the last Run command finished
      bool isConfigRun;            // true after newRun(), and false after newConfig()
 
+     Serializer *serializer;      // JSON serializer and object-to-id mapping
+
      bool collectJsonLog;
      JsonArray *jsonLog;          // animLog entries from the last event
 
@@ -143,11 +146,6 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
 
      bool stopSimulationFlag;     // indicates that the simulation should be stopped (STOP button pressed in the UI)
      timeval idleLastUICheck;     // gettimeofday() time when idle() last run the Tk "update" command  XXX comment
-
-     // object<->id mapping (we don't want to return pointer values to our HTTP client)
-     std::map<cObject*,long> objectToIdMap;
-     std::map<long,cObject*> idToObjectMap;
-     long lastObjectId;
 
      struct {
          UserInputState state;
@@ -173,6 +171,7 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      virtual bool askyesno(const char *question);
      virtual void printEventBanner(cEvent *event);
      virtual void doStatusUpdate(Speedometer& speedometer);
+     JsonNode *jsonWrapObjectId(cObject *obj) {return jsonWrap(serializer->getIdStringForObject(obj));}
 
    public:
      Cmdenv();
@@ -240,16 +239,6 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      virtual bool doRunSimulationExpress();
      virtual void finishSimulation(); // wrapper around simulation.callFinish() and simulation.endRun()
 
-     cObject *getObjectById(long id);
-     long getIdForObject(cObject *obj);
-     std::string getIdStringForObject(cObject *obj);
-
-     JsonObject *serializeObject(cObject *obj, JsonObject *jObject, int64 lastRefreshSerial);
-     JsonObject *serializeObjectChildren(cObject *obj, JsonObject *jObject, int64 lastRefreshSerial);
-     JsonObject *serializeObjectFields(cObject *obj, JsonObject *jObject, int64 lastRefreshSerial);
-     const char *getKnownBaseClass(cObject *object);
-
-     // new functions:
      void help();
      void simulate();
      const char *progressPercentage();

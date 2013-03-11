@@ -26,7 +26,7 @@ COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../common 
 
 IMPLIBS= -L$L -loppsim$D -loppenvir$D -loppcommon$D
 
-OBJS = $O/cmdenv.o
+OBJS = $O/cmdenv.o $O/serializer.o
 
 #
 # Automatic rules
