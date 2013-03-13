@@ -116,7 +116,7 @@ class ENVIR_API JsonArray : public JsonNode, public std::vector<JsonNode*>
 {
     public:
         virtual void printOn(std::ostream& out);
-        void clear() { size_t n = size(); for (int i = 0; i < n; i++) delete (*this)[i]; }
+        void clear() { size_t n = size(); for (unsigned int i = 0; i < n; i++) delete (*this)[i]; }
         virtual ~JsonArray() { clear(); }
 };
 

@@ -1045,7 +1045,7 @@ void Tkenv::printEventBanner(cEvent *event)
                     TclQuotedString(target->getFullPath().c_str()).get(),
                     target->getClassName());
         if (msg)
-            p += sprintf(p, " on %s%s (%s, id=%d)",
+            p += sprintf(p, " on %s%s (%s, id=%ld)",
                     msg->isSelfMessage() ? "selfmsg " : "",
                     TclQuotedString(msg->getFullName()).get(),
                     msg->getClassName(),

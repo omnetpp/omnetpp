@@ -627,7 +627,7 @@ bool Cmdenv::handleHttpRequest(cHttpRequest *request)
             jconfig->put("numRuns", jsonWrap(cfg->getNumRunsInConfig(configName.c_str())));
             JsonArray *jbaseConfigs = new JsonArray();
             std::vector<std::string> baseConfigs = cfg->getBaseConfigs(configName.c_str());
-            for (int j = 0; (int)j < baseConfigs.size(); j++)
+            for (unsigned int j = 0; j < baseConfigs.size(); j++)
                 jbaseConfigs->push_back(jsonWrap(baseConfigs[j]));
             jconfig->put("extends", jbaseConfigs);
             result->push_back(jconfig);

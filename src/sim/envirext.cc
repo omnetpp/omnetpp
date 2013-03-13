@@ -25,6 +25,7 @@ void cIOutputVectorManager::lifetimeEvent(SimulationLifetimeEventType eventType,
         case LF_PRE_NETWORK_INITIALIZE: startRun(); break;
         case LF_ON_RUN_END: endRun(); break;
         case LF_ON_SIMULATION_PAUSE: flush(); break;
+        default: break;
     }
 }
 
@@ -34,6 +35,7 @@ void cIOutputScalarManager::lifetimeEvent(SimulationLifetimeEventType eventType,
         case LF_PRE_NETWORK_INITIALIZE: startRun(); break;
         case LF_ON_RUN_END: endRun(); break;
         case LF_ON_SIMULATION_PAUSE: flush(); break;
+        default: break;
     }
 }
 
@@ -42,6 +44,7 @@ void cISnapshotManager::lifetimeEvent(SimulationLifetimeEventType eventType, cOb
     switch (eventType) {
         case LF_PRE_NETWORK_INITIALIZE: startRun(); break;
         case LF_ON_RUN_END: endRun(); break;
+        default: break;
     }
 }
 

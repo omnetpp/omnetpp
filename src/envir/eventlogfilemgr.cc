@@ -163,6 +163,7 @@ void EventlogFileManager::lifetimeEvent(SimulationLifetimeEventType eventType, c
         case LF_ON_SIMULATION_PAUSE:
             flush();
             break;
+        default: break;
     }
 
 }

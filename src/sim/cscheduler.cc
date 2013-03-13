@@ -52,6 +52,7 @@ void cScheduler::lifetimeEvent(SimulationLifetimeEventType eventType, cObject *d
         case LF_PRE_NETWORK_INITIALIZE: startRun(); break;
         case LF_ON_RUN_END: endRun(); break;
         case LF_ON_SIMULATION_RESUME: executionResumed(); break;
+        default: break;
     }
 }
 

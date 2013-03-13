@@ -67,6 +67,7 @@ void cParsimPartition::lifetimeEvent(SimulationLifetimeEventType eventType, cObj
         case LF_PRE_NETWORK_INITIALIZE: startRun(); break;
         case LF_ON_RUN_END: endRun(); break;
         case LF_ON_SHUTDOWN: shutdown(); break;
+        default: break;
     }
 }
 

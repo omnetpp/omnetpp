@@ -43,7 +43,7 @@ void JsonArray::printOn(std::ostream& out)
 {
     out << "[ ";
     size_t n = size();
-    for (int i = 0; i < n; i++)
+    for (unsigned int i = 0; i < n; i++)
     {
         if (i != 0)
             out << ", ";
