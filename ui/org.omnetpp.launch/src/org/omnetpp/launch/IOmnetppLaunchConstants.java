@@ -165,5 +165,5 @@ public interface IOmnetppLaunchConstants {
     /**
      * If OPP_USER_INTERFACE is empty (missing, "", or all whitespace), use this value instead
      */
-    public static final String UI_FALLBACKVALUE = UI_IDE;
+    public static final String UI_FALLBACKVALUE = UI_DEFAULTEXTERNAL; //UI_IDE; <-- TODO restore this once IDE simfrontend becomes fully usable
 }
