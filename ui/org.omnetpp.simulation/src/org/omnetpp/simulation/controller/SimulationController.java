@@ -111,7 +111,8 @@ public class SimulationController implements ISimulationCallback, ISimulationPro
             DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
                 @Override
                 public void run() {
-                    fireSimulationStateChanged(new SimulationChangeEvent(Reason.CONNSTATE_CHANGE, oldState, connState));
+                    if (!isDisposed())
+                        fireSimulationStateChanged(new SimulationChangeEvent(Reason.CONNSTATE_CHANGE, oldState, connState));
                 }
             });
         }

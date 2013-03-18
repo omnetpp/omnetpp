@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -50,10 +51,12 @@ public class SimulationDebugLaunchDelegate extends GdbLaunchDelegate {
     public static class DsfSimulationProcess extends AbstractSimulationProcess {
         private boolean isSuspended;
         private boolean isTerminated;
+        private ILaunch launch;
 
-        public DsfSimulationProcess(DsfSession dsfSession) {
+        public DsfSimulationProcess(DsfSession dsfSession, ILaunch launch) {
             isSuspended = false; // supposedly
             isTerminated = false;
+            this.launch = launch;
             dsfSession.addServiceEventListener(this, null); // no need for removeListener because DsfSession only lives during the debug session
         }
 
@@ -79,12 +82,16 @@ public class SimulationDebugLaunchDelegate extends GdbLaunchDelegate {
 
         @Override
         public boolean canCancel() {
-            return false;
+            return true;
         }
 
         @Override
         public void cancel() {
-            throw new RuntimeException("cancel not supported");
+            try {
+                launch.terminate();
+            } catch (DebugException e) {
+                LaunchPlugin.logError(e);
+            }
         }
 
         @Override
@@ -129,7 +136,7 @@ public class SimulationDebugLaunchDelegate extends GdbLaunchDelegate {
                 Activator.log(IMarker.SEVERITY_WARNING,
                         "SimulationDebugLaunchDelegate: launch object is not a GdbLaunch (or contains no DsfSession), unable to notify " +
                         "Simulation Front-end about process suspend/resume events during the debug session. Please report this error!");
-            final ISimulationProcess simulationProcess = new DsfSimulationProcess(dsfSession);
+            final ISimulationProcess simulationProcess = new DsfSimulationProcess(dsfSession, launch);
 
             Display.getDefault().asyncExec(new Runnable() {
                 public void run() {
