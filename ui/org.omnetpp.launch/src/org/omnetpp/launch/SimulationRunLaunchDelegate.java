@@ -51,7 +51,7 @@ import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
  *
  * @author rhornig, andras
  */
-public class SimulationRunConfigurationDelegate extends LaunchConfigurationDelegate {
+public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
     public static final String PREF_SWITCH_TO_SIMULATE_PERSPECTIVE = "org.omnetpp.launch.SwitchToSimulatePerspective";  //TODO add a way to clear this preference!
 
     public static class JobSimulationProcess extends AbstractSimulationProcess {
