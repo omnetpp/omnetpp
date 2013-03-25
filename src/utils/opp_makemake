@@ -1315,7 +1315,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 {@sm:smfiles,sm_cc:smccfiles,sm_h:smhfiles}
 {nmake:}{sm_cc} {sm_h} : {sm}
 {nmake:}	$(qecho) SMC: $@
-{nmake:}	$(Q)$(SMC:/=\) -c++ -suffix{cc} $(SMCOPTS) {sm}
+{nmake:}	$(Q)$(SMC:/=\) -c++ -suffix {cc} $(SMCOPTS) {sm}
 {/@}
 
 ### Utility target for running opp_msgc; otherwise unused by this makefile
