@@ -62,6 +62,7 @@ import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.editors.datatable.ChooseTableColumnsAction;
+import org.omnetpp.scave.editors.datatable.CopySelectionToClipboardAction;
 import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.DataTree;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
@@ -109,6 +110,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
     private IAction selectAllAction;
     private IAction toggleFilterAction;
     private SetFilterAction2 setFilterAction;
+    private IAction copyToClipboardAction;
 
     private ISelectionListener selectionChangedListener;
     private IPartListener partListener;
@@ -198,8 +200,11 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
         toggleFilterAction.setChecked(isFilterVisible());
         setFilterAction = new SetFilterAction2();
         selectAllAction = new SelectAllAction();
+        copyToClipboardAction = new CopySelectionToClipboardAction(tabFolder);
         IActionBars actionBars = getViewSite().getActionBars();
         actionBars.setGlobalActionHandler(ActionFactory.SELECT_ALL.getId(), selectAllAction);
+        actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(), copyToClipboardAction);
+        actionBars.updateActionBars();
     }
 
     private void createToolbarButtons() {
@@ -212,6 +217,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
         IDataControl control = panel.getDataControl();
         IMenuManager menuManager = control.getContextMenuManager();
         menuManager.add(setFilterAction);
+        menuManager.add(copyToClipboardAction);
         if (control instanceof DataTable)
             menuManager.add(new ChooseTableColumnsAction((DataTable)control));
         if (control instanceof DataTree)
