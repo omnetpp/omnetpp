@@ -1063,7 +1063,8 @@ bool Cmdenv::doRunSimulation()
             break; // scheduler interrupted (parsim)
 
         // "run until message": stop if desired event was reached
-        if (runUntil.msg && simulation.msgQueue.peekFirst() == runUntil.msg) {
+        if (runUntil.msg && event == runUntil.msg) {
+            simulation.putBackEvent(event);
             stoppingReason = STOP_UNTILMESSAGE;
             break;
         }
@@ -1074,6 +1075,7 @@ bool Cmdenv::doRunSimulation()
         cModule *mod = event->isMessage() ? static_cast<cMessage*>(event)->getArrivalModule() : NULL;
         bool untilmodule_reached = runUntil.module && moduleContains(runUntil.module,mod);
         if (untilmodule_reached && !isFirstEvent) {
+            simulation.putBackEvent(event);
             stoppingReason = STOP_UNTILMODULE;
             break;
         }
@@ -1170,10 +1172,12 @@ bool Cmdenv::doRunSimulationExpress()
     while (true)
     {
         cEvent *event = simulation.takeNextEvent();
-        if (!event) break; // scheduler interrupted (parsim)
+        if (!event)
+            break; // scheduler interrupted (parsim)
 
         // "run until message": stop if desired event was reached
-        if (runUntil.msg && simulation.msgQueue.peekFirst() == runUntil.msg) {
+        if (runUntil.msg && event==runUntil.msg) {
+            simulation.putBackEvent(event);
             stoppingReason = STOP_UNTILMESSAGE;
             break;
         }

@@ -245,6 +245,11 @@ cEvent *cSocketRTScheduler::takeNextEvent()
     return event;
 }
 
+void cSocketRTScheduler::putBackEvent(cEvent *event)
+{
+    sim->msgQueue.putBackFirst(event);
+}
+
 void cSocketRTScheduler::sendBytes(const char *buf, size_t numBytes)
 {
     if (connSocket==INVALID_SOCKET)

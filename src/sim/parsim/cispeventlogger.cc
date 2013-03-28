@@ -89,10 +89,15 @@ cEvent *cISPEventLogger::takeNextEvent()
         e.srcProcId = event->getSrcProcId();
 
         if (fwrite(&e, sizeof(cIdealSimulationProtocol::ExternalEvent), 1, fout)<1)
-            throw cRuntimeError("cISPEventLogger error: file write failed (disk full?)");
+            throw cRuntimeError("cISPEventLogger: file write failed (disk full?)");
     }
 
     return event;
 }
 
+void cISPEventLogger::putBackEvent(cEvent *event)
+{
+    throw cRuntimeError("cISPEventLogger: \"Run Until Event/Module\" functionality cannot be "
+                        "used with this scheduler (putBackEvent() not implemented)");
+}
 

@@ -168,3 +168,9 @@ void cIdealSimulationProtocol::readNextRecordedEvent()
                   << " t=" << nextExternalEvent.t << "\n";
 }
 
+void cIdealSimulationProtocol::putBackEvent(cEvent *event)
+{
+    throw cRuntimeError("cIdealSimulationProtocol: \"Run Until Event/Module\" functionality "
+                        "cannot be used with this scheduler (putBackEvent() not implemented)");
+}
+

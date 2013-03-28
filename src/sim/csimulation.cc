@@ -509,6 +509,11 @@ cEvent *cSimulation::takeNextEvent()
     return event;
 }
 
+void cSimulation::putBackEvent(cEvent *event)
+{
+    schedulerp->putBackEvent(event);
+}
+
 cEvent *cSimulation::guessNextEvent()
 {
     return schedulerp->guessNextEvent();

@@ -98,6 +98,7 @@ class SIM_API cMessageHeap : public cOwnedObject
 
     int cblength() const  {return (cbtail-cbhead) & (cbsize-1);}
     cEvent *cbget(int k)  {return cb[(cbhead+k) & (cbsize-1)];}
+    void cbgrow();
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -172,10 +173,15 @@ class SIM_API cMessageHeap : public cOwnedObject
     cEvent *peek(int m);
 
     /**
-     * Removes and return the first event in the heap (the one
-     * with the smallest timestamp.) If the heap is empty, it returns NULL.
+     * Removes and return the first event in the heap (the one with the
+     * smallest timestamp.) If the heap is empty, it returns NULL.
      */
     cEvent *removeFirst();
+
+    /**
+     * Undo for removeFirst(): it puts back an event to the front of the FES.
+     */
+    void putBackFirst(cEvent *event);
 
     /**
      * Removes and returns the given event in the heap. If the event is

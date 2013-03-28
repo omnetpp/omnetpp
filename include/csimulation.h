@@ -433,6 +433,11 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cEvent *takeNextEvent();
 
     /**
+     * Undo for takeNextEvent(); see cScheduler's similar method for details.
+     */
+    void putBackEvent(cEvent *event);
+
+    /**
      * Executes an event as part of the simulation. Also increments the event
      * number (see getEventNumber()).
      */

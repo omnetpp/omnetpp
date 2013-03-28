@@ -126,6 +126,11 @@ class SIM_API cNullMessageProtocol : public cParsimProtocolBase
     virtual cEvent *takeNextEvent();
 
     /**
+     * Undo takeNextEvent() -- it comes from the cScheduler interface.
+     */
+    virtual void putBackEvent(cEvent *event);
+
+    /**
      * In addition to its normal task (sending out the cMessage to the
      * given partition), it also does lookahead calculation and optional
      * piggybacking of null message on the cMessage.

@@ -67,6 +67,11 @@ class SIM_API cNoSynchronization : public cParsimProtocolBase
      * simulation with an error (see also class comment).
      */
     virtual cEvent *takeNextEvent();
+
+    /**
+     * Undo takeNextEvent() -- it comes from the cScheduler interface.
+     */
+    virtual void putBackEvent(cEvent *event);
 };
 
 NAMESPACE_END

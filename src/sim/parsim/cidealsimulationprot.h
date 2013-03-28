@@ -92,6 +92,11 @@ class SIM_API cIdealSimulationProtocol : public cParsimProtocolBase
      * Scheduler function.
      */
     virtual cEvent *takeNextEvent();
+
+    /**
+     * Undo takeNextEvent() -- it comes from the cScheduler interface.
+     */
+    virtual void putBackEvent(cEvent *event);
 };
 
 NAMESPACE_END

@@ -79,6 +79,11 @@ cEvent *cSequentialScheduler::takeNextEvent()
     }
 }
 
+void cSequentialScheduler::putBackEvent(cEvent *event)
+{
+    sim->msgQueue.putBackFirst(event);
+}
+
 //-----
 
 Register_Class(cRealTimeScheduler);
@@ -164,5 +169,9 @@ cEvent *cRealTimeScheduler::takeNextEvent()
     return event;
 }
 
+void cRealTimeScheduler::putBackEvent(cEvent *event)
+{
+    sim->msgQueue.putBackFirst(event);
+}
 
 

@@ -117,6 +117,11 @@ class cSocketRTScheduler : public cScheduler
     virtual cEvent *takeNextEvent();
 
     /**
+     * Undo takeNextEvent() -- it comes from the cScheduler interface.
+     */
+    virtual void putBackEvent(cEvent *event);
+
+    /**
      * Send on the currently open connection
      */
     virtual void sendBytes(const char *buf, size_t numBytes);

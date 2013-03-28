@@ -276,6 +276,12 @@ cEvent *cNullMessageProtocol::takeNextEvent()
     return event;
 }
 
+void cNullMessageProtocol::putBackEvent(cEvent *event)
+{
+    throw cRuntimeError("cNullMessageProtocol: \"Run Until Event/Module\" functionality "
+                        "cannot be used with this scheduler (putBackEvent() not implemented)");
+}
+
 void cNullMessageProtocol::sendNullMessage(int procId, simtime_t now)
 {
     // calculate EOT and sending of next null message

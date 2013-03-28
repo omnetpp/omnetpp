@@ -35,6 +35,7 @@ Register_Class(cMessageHeap);
 
 #define CBHEAPINDEX(i) (-2-(i))
 #define CBINC(i)       ((i)=((i)+1)&(cbsize-1))
+#define CBDEC(i)       ((i)=((i)-1)&(cbsize-1))
 
 
 inline bool operator > (cEvent& a, cEvent& b)
@@ -192,18 +193,7 @@ void cMessageHeap::insert(cEvent *event)
         event->heapindex = CBHEAPINDEX(cbtail);
         CBINC(cbtail);
         if (cbtail==cbhead)
-        {
-            // reallocate
-            int newsize = 2*cbsize; // cbsize MUST be power of 2
-            cEvent **newcb = new cEvent*[newsize];
-            for (int i=0; i<cbsize; i++)
-                (newcb[i] = cb[(cbhead+i)&(cbsize-1)])->heapindex = CBHEAPINDEX(i);
-            delete [] cb;
-            cb = newcb;
-            cbhead = 0;
-            cbtail = cbsize;
-            cbsize = newsize;
-        }
+            cbgrow();
     }
     else
     {
@@ -232,6 +222,20 @@ void cMessageHeap::insert(cEvent *event)
         }
         (h[j]=event)->heapindex=j;
     }
+}
+
+void cMessageHeap::cbgrow()
+{
+    int newsize = 2*cbsize; // cbsize MUST be power of 2
+    cEvent **newcb = new cEvent*[newsize];
+    for (int i=0; i<cbsize; i++)
+        (newcb[i] = cb[(cbhead+i)&(cbsize-1)])->heapindex = CBHEAPINDEX(i);
+    delete [] cb;
+
+    cb = newcb;
+    cbhead = 0;
+    cbtail = cbsize;
+    cbsize = newsize;
 }
 
 void cMessageHeap::shiftup(int from)
@@ -302,7 +306,7 @@ cEvent *cMessageHeap::remove(cEvent *event)
         int iminus1 = i; CBINC(i);
         for (/**/; i!=cbtail; iminus1=i, CBINC(i))
             (cb[iminus1] = cb[i])->heapindex = CBHEAPINDEX(iminus1);
-        cbtail = (cbtail-1)&(cbsize-1);
+        CBDEC(cbtail);
     }
     else
     {
@@ -328,3 +332,14 @@ cEvent *cMessageHeap::remove(cEvent *event)
     return event;
 }
 
+void cMessageHeap::putBackFirst(cEvent *event)
+{
+    take(event);
+
+    CBDEC(cbhead);
+    cb[cbhead] = event;
+    event->heapindex = CBHEAPINDEX(cbhead);
+
+    if (cbtail==cbhead)
+        cbgrow();
+}

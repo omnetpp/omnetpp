@@ -519,16 +519,20 @@ bool Tkenv::doRunSimulation()
             break; // takeNextEvent() interrupted (parsim)
 
         // "run until message": stop if desired event was reached
-        if (rununtil_msg && event==rununtil_msg)
+        if (rununtil_msg && event==rununtil_msg) {
+            simulation.putBackEvent(event);
             break;
+        }
 
         // if stepping locally in module, we stop both immediately
         // *before* and *after* executing the event in that module,
         // but we always execute at least one event
         cModule *mod = event->isMessage() ? static_cast<cMessage*>(event)->getArrivalModule() : NULL;
         bool untilmodule_reached = rununtil_module && moduleContains(rununtil_module,mod);
-        if (untilmodule_reached && !firstevent)
+        if (untilmodule_reached && !firstevent) {
+            simulation.putBackEvent(event);
             break;
+        }
         firstevent = false;
 
         animating = (runmode==RUNMODE_NORMAL) || (runmode==RUNMODE_SLOW) || untilmodule_reached;
@@ -614,8 +618,10 @@ bool Tkenv::doRunSimulationExpress()
             break; // takeNextEvent() interrupted (parsim)
 
         // "run until message": stop if desired event was reached
-        if (rununtil_msg && event==rununtil_msg)
+        if (rununtil_msg && event==rununtil_msg) {
+            simulation.putBackEvent(event);
             break;
+        }
 
         speedometer.addEvent(simulation.getSimTime());
 

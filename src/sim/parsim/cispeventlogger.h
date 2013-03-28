@@ -82,6 +82,11 @@ class SIM_API cISPEventLogger : public cNullMessageProtocol
      * recording the event to the file.
      */
     virtual cEvent *takeNextEvent();
+
+    /**
+     * Undo takeNextEvent() -- it comes from the cScheduler interface.
+     */
+    virtual void putBackEvent(cEvent *event);
 };
 
 NAMESPACE_END

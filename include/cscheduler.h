@@ -122,6 +122,25 @@ class SIM_API cScheduler : public cObject, public cISimulationLifetimeListener
      * while takeNextEvent() was waiting for external synchronization.
      */
     virtual cEvent *takeNextEvent() = 0;
+
+    /**
+     * Undo for takeNextEvent(), approximately: if an event was obtained from
+     * takeNextEvent() but was not yet processed, it is possible to temporarily
+     * put it back to the FES.
+     *
+     * The scheduler class must guarantee that removing the event via
+     * takeNextEvent() again does NOT repeat the side effects of the
+     * first takeNextEvent()! That is, the sequence
+     *
+     * <pre>
+     * e = takeNextEvent();
+     * putBackEvent(e);
+     * e = takeNextEvent();
+     * </pre>
+     *
+     * should be equivalent to a single takeNextEvent() call.
+     */
+    virtual void putBackEvent(cEvent *event) = 0;
 };
 
 
@@ -147,6 +166,11 @@ class SIM_API cSequentialScheduler : public cScheduler
      * Removes the first event from the Future Event Set, and returns it.
      */
     virtual cEvent *takeNextEvent();
+
+    /**
+     * Puts back the event into the Future Event Set.
+     */
+    virtual void putBackEvent(cEvent *event);
 };
 
 
@@ -211,6 +235,11 @@ class SIM_API cRealTimeScheduler : public cScheduler
      * the real time reaches the time of that simulation event.
      */
     virtual cEvent *takeNextEvent();
+
+    /**
+     * Puts back the event into the Future Event Set.
+     */
+    virtual void putBackEvent(cEvent *event);
 };
 
 NAMESPACE_END

@@ -71,4 +71,9 @@ cEvent *cNoSynchronization::takeNextEvent()
     return event;
 }
 
+void cNoSynchronization::putBackEvent(cEvent *event)
+{
+    sim->msgQueue.putBackFirst(event);
+}
+
 
