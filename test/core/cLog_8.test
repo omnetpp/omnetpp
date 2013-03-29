@@ -1,0 +1,25 @@
+%description:
+
+Test conditional compilation of log statement arguments.
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+**.log-level = trace
+
+%activity:
+
+cLogLevel::globalRuntimeLoglevel = cLogLevel::LOGLEVEL_TRACE;
+#undef GLOBAL_COMPILETIME_LOGLEVEL
+#define GLOBAL_COMPILETIME_LOGLEVEL cLogLevel::LOGLEVEL_FATAL
+
+EV_FATAL << printf("Hello") << endl;
+EV_ERROR << printf("Omitted") << endl;
+
+%contains: stdout
+Hello
+
+%not-contains: stdout
+Omitted
+

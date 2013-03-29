@@ -1,0 +1,21 @@
+%description:
+
+Test using the global log stream directly.
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+
+%activity:
+
+EV_DEBUG << "Hello";
+cLogStream::globalStream << " " << "World\n";
+cLogStream::globalStream << "Hello World" << endl;
+cLogStream::globalStream << "Hello World";
+EV_DEBUG << endl;
+
+%contains: stdout
+[DEBUG]	: Hello World
+[DEBUG]	: Hello World
+[DEBUG]	: Hello World

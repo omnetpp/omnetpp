@@ -1,0 +1,74 @@
+%description:
+
+Test per module runtime log level setting.
+
+%inifile: test.ini
+[General]
+network = TestNetwork
+cmdenv-express-mode = false
+**.fatal.log-level = fatal
+**.error.log-level = error
+**.warn.log-level = warn
+**.info.log-level = info
+**.debug.log-level = debug
+**.trace.log-level = trace
+
+%file: test.ned
+
+simple Test
+{
+}
+
+network TestNetwork
+{
+    submodules:
+        fatal: Test;
+        error: Test;
+        warn: Test;
+        info: Test;
+        debug: Test;
+        trace: Test;
+}
+
+%activity:
+
+#undef GLOBAL_COMPILETIME_LOGLEVEL
+#define GLOBAL_COMPILETIME_LOGLEVEL cLogLevel::LOGLEVEL_TRACE
+cLogLevel::globalRuntimeLoglevel = cLogLevel::LOGLEVEL_TRACE;
+
+EV_FATAL << "Hello" << endl;
+EV_ERROR << "Hello" << endl;
+EV_WARN << "Hello" << endl;
+EV_INFO << "Hello" << endl;
+EV_DEBUG << "Hello" << endl;
+EV_TRACE << "Hello" << endl;
+
+%contains: stdout
+** Event #1  T=0   TestNetwork.fatal (Test, id=2)
+[FATAL]	: Hello
+** Event #2  T=0   TestNetwork.error (Test, id=3)
+[FATAL]	: Hello
+[ERROR]	: Hello
+** Event #3  T=0   TestNetwork.warn (Test, id=4)
+[FATAL]	: Hello
+[ERROR]	: Hello
+[WARN]	: Hello
+** Event #4  T=0   TestNetwork.info (Test, id=5)
+[FATAL]	: Hello
+[ERROR]	: Hello
+[WARN]	: Hello
+[INFO]	: Hello
+** Event #5  T=0   TestNetwork.debug (Test, id=6)
+[FATAL]	: Hello
+[ERROR]	: Hello
+[WARN]	: Hello
+[INFO]	: Hello
+[DEBUG]	: Hello
+** Event #6  T=0   TestNetwork.trace (Test, id=7)
+[FATAL]	: Hello
+[ERROR]	: Hello
+[WARN]	: Hello
+[INFO]	: Hello
+[DEBUG]	: Hello
+[TRACE]	: Hello
+

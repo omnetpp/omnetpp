@@ -1,0 +1,30 @@
+%description:
+
+Test all log macro variants.
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+
+%activity:
+
+EV_DEBUG << "Hello World " << 1 << endl;
+EV_DEBUG_S << "Hello World " << 2 << endl;
+EV_DEBUG_C("Test") << "Hello World " << 3 << endl;
+EV_DEBUG_SC("Test") << "Hello World " << 4 << endl;
+EV_DEBUG_P("%s %d\n", "Hello World", 5);
+EV_DEBUG_PS("%s %d\n", "Hello World", 6);
+EV_DEBUG_PC("Test", "%s %d\n", "Hello World", 7);
+EV_DEBUG_PSC("Test", "%s %d\n", "Hello World", 8);
+
+%contains: stdout
+[DEBUG]	: Hello World 1
+[DEBUG]	: Hello World 2
+[DEBUG]	Test: Hello World 3
+[DEBUG]	Test: Hello World 4
+[DEBUG]	: Hello World 5
+[DEBUG]	: Hello World 6
+[DEBUG]	Test: Hello World 7
+[DEBUG]	Test: Hello World 8
+

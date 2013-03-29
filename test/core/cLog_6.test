@@ -1,0 +1,26 @@
+%description:
+
+Test sequence and nesting of log statements.
+
+%activity:
+
+{
+    EV_DEBUG << "1" << endl;
+    EV_DEBUG << "2" << endl;
+}
+
+{
+    EV_DEBUG << "3" << endl;
+    {
+        EV_DEBUG << "4" << endl;
+    }
+    EV_DEBUG << "5" << endl;
+}
+
+%contains: stdout
+[DEBUG]	: 1
+[DEBUG]	: 2
+[DEBUG]	: 3
+[DEBUG]	: 4
+[DEBUG]	: 5
+

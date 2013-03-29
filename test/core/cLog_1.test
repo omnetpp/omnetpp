@@ -1,0 +1,22 @@
+%description:
+
+Test the default log format and log level settings.
+
+%activity:
+EV_FATAL << "Hello" << endl;
+EV_ERROR << "Hello" << endl;
+EV_WARN << "Hello" << endl;
+EV_INFO << "Hello" << endl;
+EV_DEBUG << "Hello" << endl;
+EV_TRACE << "Hello" << endl;
+
+%contains: stdout
+[FATAL]	: Hello
+[ERROR]	: Hello
+[WARN]	: Hello
+[INFO]	: Hello
+[DEBUG]	: Hello
+
+%not-contains: stdout
+[TRACE]	: Hello
+

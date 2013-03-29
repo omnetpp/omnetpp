@@ -1,0 +1,80 @@
+%description:
+
+Test logging class name.
+
+%inifile: test.ini
+[General]
+network = TestModule
+cmdenv-express-mode = false
+debugger-attach-on-error = true
+log-format = "%b %z"
+
+%file: test.ned
+
+simple TestModule
+{
+    parameters:
+        @isNetwork;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+static void testNonClassFunction() {
+    EV_DEBUG_S << endl;
+}
+
+class NonObject {
+    public:
+        void test() {
+            EV_DEBUG << endl;
+        }
+};
+
+class Object : public cObject {
+    public:
+        void test() {
+            EV_DEBUG << endl;
+        }
+
+    protected:
+        virtual const char *getName() const { return "objectName"; }
+        virtual const char *getClassName() const { return "Object"; }
+};
+
+class TestModule : public cSimpleModule {
+    public:
+        TestModule() : cSimpleModule(16384) { }
+
+        void testNonStaticMemberFunction() {
+            EV_DEBUG << endl;
+        }
+
+        static void testStaticMemberFunction() {
+            EV_DEBUG_S << endl;
+        }
+
+    protected:
+        virtual void activity() {
+            setName("testModuleName");
+            testNonClassFunction();
+            testStaticMemberFunction();
+            testNonStaticMemberFunction();
+            Object object;
+            object.test();
+            NonObject nonObject;
+            nonObject.test();
+        }
+};
+
+Define_Module(TestModule);
+
+}
+
+%contains: stdout
+testModuleName TestModule
+objectName Object
+ cLog_12::NonObject

@@ -1,0 +1,16 @@
+%description:
+
+Test log format characters.
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+log-format = "text %% l='%l' c='%c' e='%e' t='%t' v='%v' m='%m' a='%a' n='%n' p='%p' o='%o' s='%s' q='%q' N='%N' P='%P' O='%O' S='%S' Q='%Q' G='%G' R='%R' X='%X' Y='%Y' Z='%Z' *='%*' b='%b' d='%d' x='%x' y='%y' f='%f' i='%i' z='%z' u='%u' w='%w' W='%W' H='%H' I='%I' "
+
+%activity:
+
+EV_DEBUG_C("Test") << "Hello" << endl;
+
+%contains-regex: stdout
+text % l='DEBUG' c='Test' e='1' t='0' v='starter-1' m='starter-1' a='cMessage' n='Test' p='Test' o='cLog_5::Test' s='Test' q='Test' N='Test' P='Test' O='cLog_5::Test' S='Test' Q='Test' G='General' R='0' X='cLog_5::Test' Y='Test' Z='Test' \*='[0x0-9a-fA-F]+' b='Test' d='Test' x='Test' y='Test' f='cLog_5/test.cc' i='22' z='Test' u='activity' w='[0-9.]+' W='.*' H='[a-zA-Z]+' I='[0-9]+' Hello

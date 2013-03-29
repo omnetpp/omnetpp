@@ -1,0 +1,86 @@
+%description:
+
+Test global runtime log level setting.
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+**.log-level = trace
+
+%activity:
+
+#undef GLOBAL_COMPILETIME_LOGLEVEL
+#define GLOBAL_COMPILETIME_LOGLEVEL cLogLevel::LOGLEVEL_TRACE
+
+cLogLevel::globalRuntimeLoglevel = cLogLevel::LOGLEVEL_FATAL;
+EV_FATAL << "Hello" << endl;
+EV_ERROR << "Hello" << endl;
+EV_WARN << "Hello" << endl;
+EV_INFO << "Hello" << endl;
+EV_DEBUG << "Hello" << endl;
+EV_TRACE << "Hello" << endl;
+
+cLogLevel::globalRuntimeLoglevel = cLogLevel::LOGLEVEL_ERROR;
+EV_FATAL << "Hello" << endl;
+EV_ERROR << "Hello" << endl;
+EV_WARN << "Hello" << endl;
+EV_INFO << "Hello" << endl;
+EV_DEBUG << "Hello" << endl;
+EV_TRACE << "Hello" << endl;
+
+cLogLevel::globalRuntimeLoglevel = cLogLevel::LOGLEVEL_WARN;
+EV_FATAL << "Hello" << endl;
+EV_ERROR << "Hello" << endl;
+EV_WARN << "Hello" << endl;
+EV_INFO << "Hello" << endl;
+EV_DEBUG << "Hello" << endl;
+EV_TRACE << "Hello" << endl;
+
+cLogLevel::globalRuntimeLoglevel = cLogLevel::LOGLEVEL_INFO;
+EV_FATAL << "Hello" << endl;
+EV_ERROR << "Hello" << endl;
+EV_WARN << "Hello" << endl;
+EV_INFO << "Hello" << endl;
+EV_DEBUG << "Hello" << endl;
+EV_TRACE << "Hello" << endl;
+
+cLogLevel::globalRuntimeLoglevel = cLogLevel::LOGLEVEL_DEBUG;
+EV_FATAL << "Hello" << endl;
+EV_ERROR << "Hello" << endl;
+EV_WARN << "Hello" << endl;
+EV_INFO << "Hello" << endl;
+EV_DEBUG << "Hello" << endl;
+EV_TRACE << "Hello" << endl;
+
+cLogLevel::globalRuntimeLoglevel = cLogLevel::LOGLEVEL_TRACE;
+EV_FATAL << "Hello" << endl;
+EV_ERROR << "Hello" << endl;
+EV_WARN << "Hello" << endl;
+EV_INFO << "Hello" << endl;
+EV_DEBUG << "Hello" << endl;
+EV_TRACE << "Hello" << endl;
+
+%contains: stdout
+[FATAL]	: Hello
+[FATAL]	: Hello
+[ERROR]	: Hello
+[FATAL]	: Hello
+[ERROR]	: Hello
+[WARN]	: Hello
+[FATAL]	: Hello
+[ERROR]	: Hello
+[WARN]	: Hello
+[INFO]	: Hello
+[FATAL]	: Hello
+[ERROR]	: Hello
+[WARN]	: Hello
+[INFO]	: Hello
+[DEBUG]	: Hello
+[FATAL]	: Hello
+[ERROR]	: Hello
+[WARN]	: Hello
+[INFO]	: Hello
+[DEBUG]	: Hello
+[TRACE]	: Hello
+

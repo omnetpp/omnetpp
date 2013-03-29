@@ -1,0 +1,20 @@
+%description:
+
+Test automatic log output flushing between events and after simulation end.
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+
+%activity:
+
+EV_DEBUG << "Hello";
+wait(1);
+EV_DEBUG << "World";
+
+%contains: stdout
+** Event #1  T=0   Test (Test, id=1)
+[DEBUG]	: Hello
+** Event #2  T=1   Test (Test, id=1)
+[DEBUG]	: World
