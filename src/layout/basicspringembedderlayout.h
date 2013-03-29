@@ -147,25 +147,25 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
     // set layouter paramaters
     void setDefaultEdgeLength(int edgeLength) {
 #ifdef TRACE_LAYOUTER
-        TRACE("BasicSpringEmbedderLayout::setDefaultEdgeLength(edgeLength: %d)", edgeLength);
+        TRACE_CALL("BasicSpringEmbedderLayout::setDefaultEdgeLength(edgeLength: %d)", edgeLength);
 #endif
         defaultEdgeLen = edgeLength;
     }
     void setMaxIterations(int iterations) {
 #ifdef TRACE_LAYOUTER
-        TRACE("BasicSpringEmbedderLayout::setMaxIterations(iterations: %d)", iterations);
+        TRACE_CALL("BasicSpringEmbedderLayout::setMaxIterations(iterations: %d)", iterations);
 #endif
         maxIterations = iterations;
     }
     void setRepulsiveForce(double force) {
 #ifdef TRACE_LAYOUTER
-        TRACE("BasicSpringEmbedderLayout::setRepulsiveForce(force: %g)", force);
+        TRACE_CALL("BasicSpringEmbedderLayout::setRepulsiveForce(force: %g)", force);
 #endif
         repulsiveForce = force;
     }
     void setAttractionForce(double force) {
 #ifdef TRACE_LAYOUTER
-        TRACE("BasicSpringEmbedderLayout::setAttractionForce(force: %g)", force);
+        TRACE_CALL("BasicSpringEmbedderLayout::setAttractionForce(force: %g)", force);
 #endif
         attractionForce = force;
     }

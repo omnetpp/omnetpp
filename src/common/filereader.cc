@@ -48,7 +48,7 @@ FileReader::FileReader(const char *fileName, size_t bufferSize)
      lastSavedBufferEnd(lastSavedBufferBegin + bufferSize)
 {
 #ifdef TRACE_FILEREADER
-	TRACE("FileReader::FileReader(%s, %d)", fileName, bufferSize);
+	TRACE_CALL("FileReader::FileReader(%s, %d)", fileName, bufferSize);
 #endif
 	lastSavedSize = -1;
     file = NULL;
@@ -68,7 +68,7 @@ FileReader::FileReader(const char *fileName, size_t bufferSize)
 FileReader::~FileReader()
 {
 #ifdef TRACE_FILEREADER
-    TRACE("FileReader::~FileReader(%s)", fileName.c_str());
+    TRACE_CALL("FileReader::~FileReader(%s)", fileName.c_str());
 #endif
     delete [] bufferBegin;
     delete [] lastSavedBufferBegin;
@@ -193,7 +193,7 @@ void FileReader::fillBuffer(bool forward)
     checkConsistency();
 #endif
 #ifdef TRACE_FILEREADER
-    TRACE("FileReader::fillBuffer %s", forward ? "forward" : "backward");
+    TRACE_CALL("FileReader::fillBuffer %s", forward ? "forward" : "backward");
 #endif
 
     char *dataPointer;
@@ -310,7 +310,7 @@ bool FileReader::isLineStart(char *s) {
 char *FileReader::findNextLineStart(char *start, bool bufferFilled)
 {
 #ifdef TRACE_FILEREADER
-	TRACE("FileReader::findNextLineStart(start: %p)", start);
+	TRACE_CALL("FileReader::findNextLineStart(start: %p)", start);
 #endif
 
 	char *s = start;
@@ -364,7 +364,7 @@ char *FileReader::findNextLineStart(char *start, bool bufferFilled)
 char *FileReader::findPreviousLineStart(char *start, bool bufferFilled)
 {
 #ifdef TRACE_FILEREADER
-	TRACE("FileReader::findPreviousLineStart(start: %p)", start);
+	TRACE_CALL("FileReader::findPreviousLineStart(start: %p)", start);
 #endif
 
     char *s = start - 1;
@@ -425,7 +425,7 @@ char *FileReader::getNextLineBufferPointer()
     Assert(currentDataPointer);
 
 #ifdef TRACE_FILEREADER
-    TRACE("FileReader::Reading in next line at file offset: %" LL "d", pointerToFileOffset(currentDataPointer));
+    TRACE_CALL("FileReader::Reading in next line at file offset: %" LL "d", pointerToFileOffset(currentDataPointer));
 #endif
 
     // read forward if needed
@@ -474,7 +474,7 @@ char *FileReader::getPreviousLineBufferPointer()
     Assert(currentDataPointer);
 
 #ifdef TRACE_FILEREADER
-    TRACE("FileReader::Reading in previous line at file offset: %" LL "d", pointerToFileOffset(currentDataPointer));
+    TRACE_CALL("FileReader::Reading in previous line at file offset: %" LL "d", pointerToFileOffset(currentDataPointer));
 #endif
 
     // read backward if needed
@@ -573,7 +573,7 @@ int64 FileReader::getFileSizeInternal()
 void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeAround)
 {
 #ifdef TRACE_FILEREADER
-    TRACE("FileReader::seekTo seeking to file offset: %" LL "d", fileOffset);
+    TRACE_CALL("FileReader::seekTo seeking to file offset: %" LL "d", fileOffset);
 #endif
 #ifndef NDEBUG
     checkConsistency();

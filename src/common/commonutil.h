@@ -77,19 +77,19 @@ COMMON_API const char *opp_gethostname();
 
 /**
  * Debugging aid: prints a message on entering/leaving methods; message
- * gets indented according to call depth. See TRACE macro.
+ * gets indented according to call depth. See TRACE_CALL macro.
  */
 template <class T> struct ToString;
 
-class COMMON_API DebugCall
+class COMMON_API CallTracer
 {
   private:
     static int depth;
     std::string funcname;
     std::string result;
   public:
-    DebugCall(const char *fmt,...);
-    ~DebugCall();
+    CallTracer(const char *fmt,...);
+    ~CallTracer();
     static void printf(const char *fmt, ...);
     template <class T> void setResult(T x) { result = ToString<T>::toString(x); };
 };
@@ -107,9 +107,9 @@ template <class T> struct ToString<T*>
     static std::string toString(const T* x) { std::ostringstream s; s << ((void*)x); return s.str(); }
 };
 
-#define TRACE  DebugCall __x
+#define TRACE_CALL  CallTracer __x
 
-#define TPRINTF DebugCall::printf
+#define TPRINTF CallTracer::printf
 
 #define RETURN(x) { __x.setResult(x); return x; }
 

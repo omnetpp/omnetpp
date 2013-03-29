@@ -59,9 +59,9 @@ const char *opp_gethostname()
 
 //----
 
-int DebugCall::depth;
+int CallTracer::depth;
 
-DebugCall::DebugCall(const char *fmt,...)
+CallTracer::CallTracer(const char *fmt,...)
 {
     char buf[1024];
     VSNPRINTF(buf, 1024, fmt);
@@ -69,7 +69,7 @@ DebugCall::DebugCall(const char *fmt,...)
     std::cout << std::setw(depth++*2) << "" << " ++ " << funcname << std::endl;
 }
 
-DebugCall::~DebugCall()
+CallTracer::~CallTracer()
 {
     std::cout << std::setw(--depth*2) << "" << " -- " << funcname;
     if (!result.empty())
@@ -77,7 +77,7 @@ DebugCall::~DebugCall()
     std::cout << std::endl;
 }
 
-void DebugCall::printf(const char *fmt, ...)
+void CallTracer::printf(const char *fmt, ...)
 {
     char buf[1024];
     VSNPRINTF(buf, 1024, fmt);

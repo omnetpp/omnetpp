@@ -326,7 +326,7 @@ bool cPar::hasChangedSince(int64 lastRefreshSerial)
 
 void cPar::read()
 {
-    //TRACE("read() of par=%s", getFullPath().c_str());
+    //TRACE_CALL("read() of par=%s", getFullPath().c_str());
 
     // obtain value if parameter is not set yet
     if (!p->isSet())

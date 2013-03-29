@@ -149,7 +149,7 @@ class LAYOUT_API GraphLayouter
      */
     void setSeed(int32 seed) { 
 #ifdef TRACE_LAYOUTER
-        TRACE("GraphLayouter::setSeed(seed: %d)", seed);
+        TRACE_CALL("GraphLayouter::setSeed(seed: %d)", seed);
 #endif
         lcgRandom.setSeed(seed);
     }
@@ -160,7 +160,7 @@ class LAYOUT_API GraphLayouter
     int32 getSeed() {
         int32 seed = lcgRandom.getSeed();
 #ifdef TRACE_LAYOUTER
-        TRACE("GraphLayouter::getSeed(): %d", seed);
+        TRACE_CALL("GraphLayouter::getSeed(): %d", seed);
 #endif
         return seed;
     }

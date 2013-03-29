@@ -72,7 +72,7 @@ BasicSpringEmbedderLayout::Node *BasicSpringEmbedderLayout::findNode(int nodeId)
 void BasicSpringEmbedderLayout::addMovableNode(int nodeId, double width, double height)
 {
 #ifdef TRACE_LAYOUTER
-    TRACE("BasicSpringEmbedderLayout::addMovableNode(nodeId: %d, width: %g, height: %g)", nodeId, width, height);
+    TRACE_CALL("BasicSpringEmbedderLayout::addMovableNode(nodeId: %d, width: %g, height: %g)", nodeId, width, height);
 #endif
     Assert(findNode(nodeId)==NULL);
 
@@ -92,7 +92,7 @@ void BasicSpringEmbedderLayout::addMovableNode(int nodeId, double width, double 
 void BasicSpringEmbedderLayout::addFixedNode(int nodeId, double x, double y, double width, double height)
 {
 #ifdef TRACE_LAYOUTER
-    TRACE("BasicSpringEmbedderLayout::addFixedNode(nodeId: %d, x: %g, y: %g, width: %g, height: %g)", nodeId, x, y, width, height);
+    TRACE_CALL("BasicSpringEmbedderLayout::addFixedNode(nodeId: %d, x: %g, y: %g, width: %g, height: %g)", nodeId, x, y, width, height);
 #endif
     Assert(findNode(nodeId)==NULL);
 
@@ -115,7 +115,7 @@ void BasicSpringEmbedderLayout::addFixedNode(int nodeId, double x, double y, dou
 void BasicSpringEmbedderLayout::addAnchoredNode(int nodeId, const char *anchorname, double offx, double offy, double width, double height)
 {
 #ifdef TRACE_LAYOUTER
-    TRACE("BasicSpringEmbedderLayout::addAnchoredNode(nodeId: %d, anchorname: %s, offx: %g, offy: %g, width: %g, height: %g)", nodeId, anchorname, offy, offx, width, height);
+    TRACE_CALL("BasicSpringEmbedderLayout::addAnchoredNode(nodeId: %d, anchorname: %s, offx: %g, offy: %g, width: %g, height: %g)", nodeId, anchorname, offy, offx, width, height);
 #endif
     Assert(findNode(nodeId)==NULL);
 
@@ -186,7 +186,7 @@ void BasicSpringEmbedderLayout::getNodePosition(int nodeId, double& x, double& y
 void BasicSpringEmbedderLayout::execute()
 {
 #ifdef TRACE_LAYOUTER
-    TRACE("BasicSpringEmbedderLayout::execute()");
+    TRACE_CALL("BasicSpringEmbedderLayout::execute()");
 #endif
     Assert(environment!=NULL);
 

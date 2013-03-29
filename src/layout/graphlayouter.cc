@@ -65,7 +65,7 @@ GraphLayouter::GraphLayouter()
 void GraphLayouter::setSize(double w, double h, double bd)
 {
 #ifdef TRACE_LAYOUTER
-    TRACE("GraphLayouter::setSize(w: %g, h: %g, bd: %g)", w, h, bd);
+    TRACE_CALL("GraphLayouter::setSize(w: %g, h: %g, bd: %g)", w, h, bd);
 #endif
     width = w; height = h; border = bd;
 

@@ -49,7 +49,7 @@
 #include "cnedloader.h"
 #include "cexpressionbuilder.h"
 #include "nedsupport.h"
-#include "commonutil.h"  // TRACE()
+#include "commonutil.h"  // TRACE_CALL()
 #include "stringutil.h"
 #include "patternmatcher.h"
 
