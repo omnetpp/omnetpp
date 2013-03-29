@@ -326,6 +326,27 @@ class SIM_API cEnvir
     virtual void undisposedObject(cObject *obj) {}
     //@}
 
+    /** @name Methods called by the logging mechanism to query the current state. */
+    //@{
+    /**
+     * Returns the name of the event current being processed by the simulation
+     * kernel or NULL if unknown.
+     */
+    virtual const char *getCurrentEventName() { return NULL; }
+
+    /**
+     * Returns the class name of the event currently being processed by the
+     * simulation kernel or NULL if unknown.
+     */
+    virtual const char *getCurrentEventClassName() { return NULL; }
+
+    /**
+     * Returns the module that is processing the current event or NULL. Calling
+     * this function after the module has been already deleted returns NULL.
+     */
+    virtual cModule *getCurrentEventModule() { return NULL; }
+    //@}
+
     /** @name Methods called by the simulation kernel to access configuration settings. */
     //@{
 

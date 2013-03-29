@@ -196,6 +196,9 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual void undisposedObject(cObject *obj);
     virtual void log(cLogEntry *entry);
 
+    virtual const char *getCurrentEventName() { return logFormatUsesEventName ? currentEventName.c_str() : NULL; }
+    virtual const char *getCurrentEventClassName() { return currentEventClassName; }
+    virtual cModule *getCurrentEventModule() { return currentModuleId != -1 ? simulation.getModule(currentModuleId) : NULL; }
 
     // configuration, model parameters
     virtual void configure(cComponent *component);

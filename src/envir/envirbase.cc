@@ -34,6 +34,7 @@
 #include "random.h"
 #include "crng.h"
 #include "cmodule.h"
+#include "cmessage.h"
 #include "ccomponenttype.h"
 #include "cxmlelement.h"
 #include "cxmldoccache.h"
@@ -1322,6 +1323,10 @@ void EnvirBase::objectDeleted(cObject *object)
 
 void EnvirBase::simulationEvent(cEvent *event)
 {
+    if (logFormatUsesEventName)
+        currentEventName = event->getFullName();
+    currentEventClassName = event->getClassName();
+    currentModuleId = event->isMessage() ? (static_cast<cMessage *>(event))->getArrivalModule()->getId() : -1;
     if (record_eventlog)
         eventlogmgr->simulationEvent(event);
 }
