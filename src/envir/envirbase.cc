@@ -1444,6 +1444,14 @@ void EnvirBase::sputn(const char *s, int n)
         eventlogmgr->sputn(s, n);
 }
 
+void EnvirBase::log(cLogEntry *entry)
+{
+    std::stringstream stream;
+    logFormatter.formatEntry(stream, entry);
+    const std::string& text = stream.str();
+    sputn(text.c_str(), text.size());
+}
+
 void EnvirBase::undisposedObject(cObject *obj)
 {
     if (opt_print_undisposed)

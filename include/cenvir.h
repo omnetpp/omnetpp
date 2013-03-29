@@ -29,6 +29,7 @@ NAMESPACE_BEGIN
 
 class cObject;
 class cOwnedObject;
+class cLogEntry;
 class cMessage;
 class cPar;
 class cGate;
@@ -556,6 +557,11 @@ class SIM_API cEnvir
      */
     // note: non-virtual, delegates to sputn()
     virtual int printf(const char *fmt,...);
+
+    /**
+     * Writes the provided log statement to the standard output.
+     */
+    virtual void log(cLogEntry *entry) = 0;
 
     /**
      * Flushes the output buffer of ev.printf() and ev<< operations.

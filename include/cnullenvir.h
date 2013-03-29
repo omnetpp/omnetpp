@@ -100,6 +100,7 @@ class SIM_API cNullEnvir : public cEnvir
     virtual void connectionDeleted(cGate *srcgate)  {}
     virtual void displayStringChanged(cComponent *component)  {}
     virtual void undisposedObject(cObject *obj) {}
+    virtual void log(cLogEntry *entry) {}
 
     // configuration, model parameters
     virtual void configure(cComponent *component) {}
