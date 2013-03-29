@@ -22,6 +22,7 @@
 #ifndef __ENVIRBASE_H
 #define __ENVIRBASE_H
 
+#include "log.h"
 #include "carray.h"
 #include "ccomponent.h"
 #include "globals.h"
@@ -112,6 +113,13 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     // Random number generators. Module RNG's map to these RNG objects.
     int num_rngs;
     cRNG **rngs;
+
+    // log related
+    cLogFormatter logFormatter;
+    bool logFormatUsesEventName;
+    std::string currentEventName;
+    const char *currentEventClassName;
+    int currentModuleId;
 
     // Output file managers
     EventlogFileManager *eventlogmgr;  // NULL if no eventlog is being written, must be non NULL if record_eventlog is true
