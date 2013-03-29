@@ -58,7 +58,6 @@ Register_PerObjectConfigOption(CFGID_VECTOR_MAX_BUFFERED_VALUES, "vector-max-buf
 #endif
 
 #define CHECK(fprintf, fname)    if (fprintf<0) throw cRuntimeError("Cannot write output file `%s'", fname.c_str())
-#define WARN(msg)       fprintf(stderr,msg)
 
 
 Register_Class(cIndexedFileOutputVectorManager);
