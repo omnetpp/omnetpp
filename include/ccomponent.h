@@ -24,6 +24,7 @@
 #include "simtime.h"
 #include "cenvir.h"
 #include "clistener.h"
+#include "clog.h"
 
 NAMESPACE_BEGIN
 
@@ -50,11 +51,12 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
 
   private:
     enum {
-      FL_PARAMSFINALIZED = 4,   // whether finalizeParameters() has been called
-      FL_INITIALIZED = 8,       // whether initialize() has been called
-      FL_EVLOGENABLED = 16,     // whether logging via ev<< is enabled
-      FL_DISPSTR_CHECKED = 32,  // for hasDisplayString(): whether the FL_DISPSTR_NOTEMPTY flag is valid
-      FL_DISPSTR_NOTEMPTY = 64, // for hasDisplayString(): whether the display string is not empty
+      FL_PARAMSFINALIZED  = 1 << 2, // whether finalizeParameters() has been called
+      FL_INITIALIZED      = 1 << 3, // whether initialize() has been called
+      FL_EVLOGENABLED     = 1 << 4, // whether logging via ev<< is enabled
+      FL_DISPSTR_CHECKED  = 1 << 5, // for hasDisplayString(): whether the FL_DISPSTR_NOTEMPTY flag is valid
+      FL_DISPSTR_NOTEMPTY = 1 << 6, // for hasDisplayString(): whether the display string is not empty
+      FL_LOGLEVEL_SHIFT   = 7,      // 3 bits wide (loglevel + 1), because 0 means unspecified (note: don't use << here)
     };
 
   private:
@@ -122,6 +124,14 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     // internal: currently used by Cmdenv
     void setEvEnabled(bool e)  {setFlag(FL_EVLOGENABLED,e);}
     bool isEvEnabled() const  {return flags&FL_EVLOGENABLED;}
+
+    // internal: used by log mechanism
+    cLogLevel::LogLevel getLoglevel() const { return (cLogLevel::LogLevel)(((flags >> FL_LOGLEVEL_SHIFT) & 0x7) - 1); }
+    void setLoglevel(cLogLevel::LogLevel loglevel) {
+        ASSERT(0 <= loglevel && loglevel <= 6);
+        flags &= ~(0x7 << FL_LOGLEVEL_SHIFT);
+        flags |= (loglevel + 1) << FL_LOGLEVEL_SHIFT;
+    }
 
     // internal: invoked from within cEnvir::getRNGMappingFor(component)
     void setRNGMap(short size, int *map) {rngmapsize=size; rngmap=map;}
