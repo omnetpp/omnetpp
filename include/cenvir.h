@@ -71,23 +71,6 @@ using std::endl;
 
 
 /**
- * <tt>EV&lt;&lt;</tt> can be used instead of <tt>ev&lt;&lt;</tt> to make
- * logging more efficient. An example:
- * <pre>
- * EV << "Packet " << msg->getName() << " received\n";
- * </pre>
- *
- * <tt>EV</tt> utilizes cEnvir::isDisabled() to check whether the logged text
- * is going to be printed/stored anywhere, or just gets discarded; in the
- * latter case the <tt>&lt;&lt;</tt> operators do not get evaluated at all,
- * making the log statement effectively a zero cost operation.
- *
- * @ingroup Envir
- */
-#define EV  ev.isDisabled()?ev:ev   /*Note: deliberately NO parens*/
-
-
-/**
  * cEnvir represents the "environment" of the simulation. cEnvir
  * is a common facade for the Cmdenv and Tkenv user interfaces (and any
  * other future user interface). The cEnvir object can be accessed
