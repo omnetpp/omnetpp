@@ -264,6 +264,7 @@ cRuntimeError::cRuntimeError(const cObject *where, const char *msgformat...)
     va_start(va, msgformat);
     init(where, eCUSTOM, msgformat, va);
     va_end(va);
+
     breakIntoDebuggerIfRequested();
 }
 
@@ -271,6 +272,9 @@ void cRuntimeError::breakIntoDebuggerIfRequested()
 {
     if (ev.debug_on_errors)
     {
+#ifdef NDEBUG
+        printf("\n[Warning: Program was compiled without debug info, ignoring debug-on-error=true setting.]\n");
+#else
         printf("\n"
                "RUNTIME ERROR. A cRuntimeError exception is about to be thrown, and you\n"
                "requested (by setting debug-on-errors=true in the ini file) that errors\n"
@@ -283,7 +287,7 @@ void cRuntimeError::breakIntoDebuggerIfRequested()
                "the error in the \"Call stack\" debug view.\n\n"
 #else
                "You should now probably be running the simulation under gdb or another\n"
-               "debugger. The simulation kernel will now raise a SIGABRT signal which will\n"
+               "debugger. The simulation kernel will now raise a SIGINT signal which will\n"
                "get you into the debugger. If you are not running under a debugger, you can\n"
                "still use the core dump for post-mortem debugging. Once in the debugger,\n"
                "view the call stack (in gdb: \"bt\" command) to see the context of the\n"
@@ -297,7 +301,6 @@ void cRuntimeError::breakIntoDebuggerIfRequested()
 
         // cause debugger interrupt or signal
         DEBUG_TRAP;
+#endif
     }
 }
-
-
