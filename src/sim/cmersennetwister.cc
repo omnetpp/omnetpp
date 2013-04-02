@@ -16,6 +16,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "clog.h"
 #include "cenvir.h"
 #include "simutil.h"
 #include "cexception.h"

@@ -50,6 +50,7 @@
 #include "clcg32.h"
 #include "clinkedlist.h"
 #include "clistener.h"
+#include "clog.h"
 #include "clongparimpl.h"
 #include "cmersennetwister.h"
 #include "simtime.h"

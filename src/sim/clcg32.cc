@@ -17,6 +17,7 @@
 *--------------------------------------------------------------*/
 
 #include "clcg32.h"
+#include "clog.h"
 #include "simutil.h"
 #include "cenvir.h"
 #include "cexception.h"
