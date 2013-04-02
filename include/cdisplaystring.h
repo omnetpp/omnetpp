@@ -52,7 +52,7 @@ NAMESPACE_BEGIN
  *   dispstr.setTagArg("x",0,"joe");
  *   dispstr.setTagArg("x",2,"jim");
  *   dispstr.setTagArg("p",0,"beta");
- *   ev << dispstr.str();  // result: "x=joe,,jim;a=1,2;p=beta,,3"
+ *   EV << dispstr.str();  // result: "x=joe,,jim;a=1,2;p=beta,,3"
  * </pre>
  *
  * Limitation: a tag may have at most 16 arguments.

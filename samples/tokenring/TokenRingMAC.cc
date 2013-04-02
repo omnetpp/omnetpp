@@ -365,13 +365,13 @@ void TokenRingMAC::endReceiveFrame(cMessage *data)
 
 void TokenRingMAC::finish()
 {
-    ev << "Module: " << getFullPath() << endl;
-    ev << "Total packets received from higher layer: " << numPacketsToSend << endl;
-    ev << "Higher layer still in queue: " << sendQueue.length() << endl;
-    ev << "Higher layer packets dropped: " << numPacketsToSendDropped << endl;
+    EV << "Module: " << getFullPath() << endl;
+    EV << "Total packets received from higher layer: " << numPacketsToSend << endl;
+    EV << "Higher layer still in queue: " << sendQueue.length() << endl;
+    EV << "Higher layer packets dropped: " << numPacketsToSendDropped << endl;
     if (numPacketsToSend>sendQueue.length())
-        ev << "Percentage dropped: " << (100*numPacketsToSendDropped/(numPacketsToSend-sendQueue.length())) << "%" << endl;
-    ev << endl;
+        EV << "Percentage dropped: " << (100*numPacketsToSendDropped/(numPacketsToSend-sendQueue.length())) << "%" << endl;
+    EV << endl;
 }
 
 

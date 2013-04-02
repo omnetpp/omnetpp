@@ -52,7 +52,7 @@ void cMersenneTwister::initialize(int seedSet, int rngId, int numRngs,
         else
         {
             if (cfg->getConfigValue(key)!=NULL)
-                ev << "Warning: cMersenneTwister: ignoring config key " << key << "=<seed>"
+                EV << "Warning: cMersenneTwister: ignoring config key " << key << "=<seed>"
                    << " for parallel simulation -- please use partition-specific variant "
                    << key2 << "=<seed>\n";
             seed = (seedSet*numRngs + rngId)*MAX_PARSIM_PARTITIONS + parsimProcId;

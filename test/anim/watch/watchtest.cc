@@ -160,7 +160,7 @@ void WatchTest::activity()
 
 void WatchTest::handleParameterChange(const char *parname)
 {
-    ev << "handleParameterChange(): " << parname << "\n";
+    EV << "handleParameterChange(): " << parname << "\n";
     new cMessage("dummymsg"); // test that this module will be the owner
 }
 

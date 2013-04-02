@@ -78,7 +78,7 @@ void Tester::activity()
             cModule *parent = k==(int)nodes.size() ? simulation.getSystemModule() : nodes[k];
             ASSERT(parent!=NULL);
             std::string name = stringf("node%d",i);
-            ev << "CREATING NODE " << parent->getFullPath() << "." << name << "\n";
+            EV << "CREATING NODE " << parent->getFullPath() << "." << name << "\n";
             cModule *node = type->createScheduleInit(name.c_str(), parent);
             nodes.push_back(node);
         }
@@ -87,7 +87,7 @@ void Tester::activity()
         {
             // delete a node
             int k = intuniform(0, nodes.size()-1);
-            ev << "DELETING NODE " << nodes[k]->getFullPath() << "\n";
+            EV << "DELETING NODE " << nodes[k]->getFullPath() << "\n";
             nodes[k]->deleteModule();
         }
 
@@ -101,7 +101,7 @@ void Tester::activity()
             for (cModule *pAnc = nodes[p]; pAnc; pAnc = pAnc->getParentModule())
                 if (pAnc == nodes[m])
                     {int tmp = m; m = p; p = tmp; break;}
-            ev << "REPARENTING NODE " << nodes[m]->getFullPath() << ", new parent: " << nodes[p]->getFullPath() << "\n";
+            EV << "REPARENTING NODE " << nodes[m]->getFullPath() << ", new parent: " << nodes[p]->getFullPath() << "\n";
             // node must be disconnected for reparenting
             for (cModule::GateIterator i(nodes[m]); !i.end(); i++)
                 if (i()->isConnectedOutside())
@@ -115,7 +115,7 @@ void Tester::activity()
             int s = intuniform(0, nodes.size()-1);
             int t = intuniform(0, nodes.size()-2);
             if (t>=s) t++;
-            ev << "CREATING CONNECTION " << nodes[s]->getFullPath() << "-->" << nodes[t]->getFullPath() << "\n";
+            EV << "CREATING CONNECTION " << nodes[s]->getFullPath() << "-->" << nodes[t]->getFullPath() << "\n";
             cGate *gs = nodes[s]->addGate(stringf("gate%do",i).c_str(), cGate::OUTPUT);
             cGate *gt = nodes[t]->addGate(stringf("gate%di",i).c_str(), cGate::INPUT);
             gs->connectTo(gt, cDatarateChannel::create("channel"));
@@ -126,7 +126,7 @@ void Tester::activity()
         {
             // delete connection (delete gates as well, to facilitate reparent!)
             int k = intuniform(0, connections.size()-1);
-            ev << "REMOVING CONNECTION " << connections[k]->getFullPath() << " --> ...\n";
+            EV << "REMOVING CONNECTION " << connections[k]->getFullPath() << " --> ...\n";
             connections[k]->disconnect();
         }
 
@@ -136,7 +136,7 @@ void Tester::activity()
             int k = intuniform(0, nodes.size()+connections.size()-1);
             cComponent *c = k<(int)nodes.size() ? (cComponent*)nodes[k] : (cComponent*)(connections[k-nodes.size()]->getChannel());
             simsignal_t signalID = signalIDs[intuniform(0,numSignalIDs-1)];
-            ev << "SUBSCRIBING MODULE/CHANNEL " << c->getFullPath() << " to signal " << signalID << "\n";
+            EV << "SUBSCRIBING MODULE/CHANNEL " << c->getFullPath() << " to signal " << signalID << "\n";
             c->subscribe(signalID, new cListener());
         }
 
@@ -150,7 +150,7 @@ void Tester::activity()
                 simsignal_t signalID = signals[intrand(signals.size())];
                 std::vector<cIListener*> listeners = c->getLocalSignalListeners(signalID);
                 cIListener *listener = listeners[intrand(listeners.size())];
-                ev << "UNSUBSCRIBING MODULE/CHANNEL " << c->getFullPath() << " from signal " << signalID << "\n";
+                EV << "UNSUBSCRIBING MODULE/CHANNEL " << c->getFullPath() << " from signal " << signalID << "\n";
                 c->unsubscribe(signalID, listener);
                 delete listener;
             }

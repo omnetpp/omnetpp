@@ -17,12 +17,12 @@ void Node::initialize()
 void Node::handleMessage(cMessage *msg)
 {
     if (msg->isSelfMessage()) {
-        ev << "Sending...\n";
+        EV << "Sending...\n";
         scheduleAt(simTime()+0.1, msg);
         send(new cPacket("pkt"), "g$o");
     }
     else {
-        ev << "Received " << msg->getName() << "\n";
+        EV << "Received " << msg->getName() << "\n";
         delete msg;
     }
 }

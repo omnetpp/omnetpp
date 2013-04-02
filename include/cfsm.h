@@ -173,7 +173,7 @@ NAMESPACE_BEGIN
  * @see FSM_Switch
  */
 #define FSM_Print(fsm,exiting) \
-    (ev << "FSM " << (fsm).getName() \
+    (EV << "FSM " << (fsm).getName() \
         << ((exiting) ? ": leaving state  " : ": entering state ") \
         << (fsm).getStateName() << endl)
 // this may also be useful as third line:

@@ -16,11 +16,11 @@ void TestNode::activity()
     int crunchSignal = registerSignal("crunch");
     while (true)
     {
-        ev << "beep...\n";
+        EV << "beep...\n";
         emit(beepSignal, 1L);
         wait(exponential(1.0));
 
-        ev << "crunch...\n";
+        EV << "crunch...\n";
         emit(crunchSignal, "grr");
         wait(exponential(1.0));
     }

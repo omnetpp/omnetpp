@@ -15,19 +15,19 @@ Define_Channel(TestChannel);
 
 void TestChannel::initialize()
 {
-    ev << "Initializing TestChannel " << getFullPath() << "\n";
+    EV << "Initializing TestChannel " << getFullPath() << "\n";
     numPackets = 0;
 }
 
 void TestChannel::processMessage(cMessage *msg, simtime_t at, result_t& result)
 {
     numPackets++;
-    ev << "TestChannel delivering msg: " << msg->getName() << "\n";
+    EV << "TestChannel delivering msg: " << msg->getName() << "\n";
     cIdealChannel::processMessage(msg, at, result);
 }
 
 void TestChannel::finish()
 {
-    ev << "TestChannel finishing, msgs: " << numPackets << "\n";
+    EV << "TestChannel finishing, msgs: " << numPackets << "\n";
 }
 

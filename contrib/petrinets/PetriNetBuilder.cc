@@ -93,8 +93,8 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
 
     std::map<std::string,cModule*> id2mod;
 
-    ev << "module PetriNet {\n";
-    ev << "    submodules:\n";
+    EV << "module PetriNet {\n";
+    EV << "    submodules:\n";
 
     // create places
     cXMLElementList places = net->getChildrenByTagName("place");
@@ -117,12 +117,12 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
 
         id2mod[id] = placeModule;
 
-        ev << "        " << placeModule->getFullName() << " : " << placeModuleType->getFullName() << " {\n";
+        EV << "        " << placeModule->getFullName() << " : " << placeModuleType->getFullName() << " {\n";
         if (*xPos || *yPos)
-            ev << "            @display(\"p=" << xPos << "," << yPos << "\")\n";
+            EV << "            @display(\"p=" << xPos << "," << yPos << "\")\n";
         if (marking)
-            ev << "            numInitialTokens = " << marking << ";\n";
-        ev << "        }\n";
+            EV << "            numInitialTokens = " << marking << ";\n";
+        EV << "        }\n";
     }
 
     // create transitions
@@ -142,14 +142,14 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
 
         id2mod[id] = transitionModule;
 
-        ev << "        " << transitionModule->getFullName() << " : " << transitionModuleType->getFullName() << " {\n";
+        EV << "        " << transitionModule->getFullName() << " : " << transitionModuleType->getFullName() << " {\n";
         if (*xPos || *yPos)
-            ev << "            @display(\"p=" << xPos << "," << yPos << "\")\n";
-        ev << "        }\n";
+            EV << "            @display(\"p=" << xPos << "," << yPos << "\")\n";
+        EV << "        }\n";
     }
 
     // create arcs
-    ev << "    connections:\n";
+    EV << "    connections:\n";
     cXMLElementList arcs = net->getChildrenByTagName("arc");
     for (int i=0; i<(int)arcs.size(); i++)
     {
@@ -167,12 +167,12 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
         cChannel *arcChannel = arcChannelType->create(name);
         sourceGate->connectTo(targetGate, arcChannel, true);
 
-        ev << "        " << sourceModule->getFullName() << ".out++"
+        EV << "        " << sourceModule->getFullName() << ".out++"
            << " --> " << arcChannelType->getName() << " --> "
            << targetModule->getFullName() << ".in++\n";
     }
 
-    ev << "}\n";
+    EV << "}\n";
 
     std::map<std::string,cModule *>::iterator it;
 

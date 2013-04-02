@@ -1444,7 +1444,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
             // ascent
             cModule *mod = i->from;
             cModule *enclosingmod = mod->getParentModule();
-            //ev << "DBG: animate ascent inside " << enclosingmod->getFullPath()
+            //EV << "DBG: animate ascent inside " << enclosingmod->getFullPath()
             //   << " from " << mod->getFullPath() << endl;
             TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
             if (insp)
@@ -1466,7 +1466,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
             // animate descent towards destmod
             cModule *mod = i->to;
             cModule *enclosingmod = mod->getParentModule();
-            //ev << "DBG: animate descent in " << enclosingmod->getFullPath() <<
+            //EV << "DBG: animate descent in " << enclosingmod->getFullPath() <<
             //   " to " << mod->getFullPath() << endl;
 
             TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);

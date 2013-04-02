@@ -75,7 +75,7 @@ void cNullMessageProtocol::setContext(cSimulation *sim, cParsimPartition *seg, c
 
 void cNullMessageProtocol::startRun()
 {
-    ev << "starting Null Message Protocol...\n";
+    EV << "starting Null Message Protocol...\n";
 
     delete [] segInfo;
 
@@ -99,7 +99,7 @@ void cNullMessageProtocol::startRun()
     // otherwise we'd end up sitting blocked on an EIT event forever!
 
     // create "resend-EOT" events and schedule them to zero (1st thing to do)
-    ev << "  scheduling 'resend-EOT' events...\n";
+    EV << "  scheduling 'resend-EOT' events...\n";
     for (i=0; i<numSeg; i++)
     {
         if (i!=myProcId)
@@ -113,7 +113,7 @@ void cNullMessageProtocol::startRun()
     }
 
     // create EIT events and schedule them to zero (null msgs will bump them)
-    ev << "  scheduling 'EIT' events...\n";
+    EV << "  scheduling 'EIT' events...\n";
     for (i=0; i<numSeg; i++)
     {
         if (i!=myProcId)
@@ -128,7 +128,7 @@ void cNullMessageProtocol::startRun()
     // start lookahead calculator too
     lookaheadcalc->startRun();
 
-    ev << "  setup done.\n";
+    EV << "  setup done.\n";
 
 }
 

@@ -320,7 +320,7 @@ std::string cXMLElement::detailedInfo() const
 
 void cXMLElement::debugDump() const
 {
-    ev << detailedInfo();
+    EV << detailedInfo();
 }
 
 //---------------

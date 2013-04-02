@@ -44,7 +44,7 @@ cModule* StressDirect::getRandomModule()
 
 void StressDirect::handleMessage(cMessage *msg)
 {
-	ev << "Sending direct message: "  << msg << "\n";;
+	EV << "Sending direct message: "  << msg << "\n";;
 	cModule *randomModule = getRandomModule();
     msg->setName("Direct");
 	sendDirect(msg,

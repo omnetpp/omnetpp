@@ -16,7 +16,7 @@ void Target::handleMessage(cMessage *msg)
 void Target::doWhatever(int x)
 {
     Enter_Method("doWhatever(%d)",x);
-    ev << "x = " << x << endl;
+    EV << "x = " << x << endl;
 }
 
 Define_Module(Target);
@@ -49,15 +49,15 @@ void Mod::activity()
 
 void Mod::callPrintX(const char *modname)
 {
-    ev << "Calling doWhatever() of module " << modname << endl;
+    EV << "Calling doWhatever() of module " << modname << endl;
     Target *target = dynamic_cast<Target *>(simulation.getModuleByPath(modname));
     if (!target) error("target module not found");
 
     wait(0);
 
-    ev << "Calling now:\n";
+    EV << "Calling now:\n";
     target->doWhatever(ctr++);
-    ev << "Back again in caller\n";
+    EV << "Back again in caller\n";
 
     wait(1);
 }

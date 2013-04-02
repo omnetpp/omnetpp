@@ -17,11 +17,11 @@ void StressNode::handleMessage(cMessage *msg)
 {
     cGate *outGate = gate("out", par("outGateIndex"));
     if (outGate->getTransmissionChannel()->isBusy()) {
-        ev << "Output channel is busy, dropping message: " << msg << "\n";
+        EV << "Output channel is busy, dropping message: " << msg << "\n";
         delete msg;
     }
     else {
-        ev << "Sending out message: "  << msg << "\n";;
+        EV << "Sending out message: "  << msg << "\n";;
         msg->setName("Forwarded");
         send(msg, outGate);
     }

@@ -99,7 +99,7 @@ void cParsimPartition::connectRemoteGates()
     // Step 1: broadcast list of all "normal" input gates that may have corresponding
     // proxy gates in other partitions (as they need to redirect here)
     //
-    ev << "connecting remote gates: step 1 - broadcasting input gates...\n";
+    EV << "connecting remote gates: step 1 - broadcasting input gates...\n";
     for (int modId=0; modId<=sim->getLastModuleId(); modId++)
     {
         cModule *mod = sim->getModule(modId);
@@ -133,7 +133,7 @@ void cParsimPartition::connectRemoteGates()
     //
     // Step 2: collect info broadcast by others, and use it to fill in output cProxyGates
     //
-    ev << "connecting remote gates: step 2 - collecting broadcasts sent by others...\n";
+    EV << "connecting remote gates: step 2 - collecting broadcasts sent by others...\n";
     for (int i=0; i<comm->getNumPartitions()-1; i++)
     {
         // receive:
@@ -143,7 +143,7 @@ void cParsimPartition::connectRemoteGates()
             throw cRuntimeError("connectRemoteGates() interrupted by user");
         ASSERT(tag==TAG_SETUP_LINKS);
 
-        ev << "  processing msg from procId=" << remoteProcId << "...\n";
+        EV << "  processing msg from procId=" << remoteProcId << "...\n";
 
         // process what we got:
         while(true)
@@ -169,14 +169,14 @@ void cParsimPartition::connectRemoteGates()
             cGate *g = !m ? NULL : gateIndex==-1 ? m->gate(gateName) : m->gate(gateName,gateIndex);
             cProxyGate *pg = dynamic_cast<cProxyGate *>(g);
 
-            ev << "    gate: " << moduleFullPath << "." << gateName;
+            EV << "    gate: " << moduleFullPath << "." << gateName;
             if (gateIndex>=0)
-                ev << "["  << gateIndex << "]";
-             ev << " - ";
+                EV << "["  << gateIndex << "]";
+             EV << " - ";
             if (!pg)
-                ev << "not here\n";
+                EV << "not here\n";
             else
-                ev << "points to (procId=" << remoteProcId << " moduleId=" << remoteModId << " gateId=" << remoteGateId << ")\n";
+                EV << "points to (procId=" << remoteProcId << " moduleId=" << remoteModId << " gateId=" << remoteGateId << ")\n";
 
             if (pg)
             {
@@ -189,7 +189,7 @@ void cParsimPartition::connectRemoteGates()
         }
         buffer->assertBufferEmpty();
     }
-    ev << "  done.\n";
+    EV << "  done.\n";
     comm->recycleCommBuffer(buffer);
 
     // verify that all gates have been connected
@@ -212,7 +212,7 @@ void cParsimPartition::connectRemoteGates()
 
 void cParsimPartition::processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data)
 {
-    if (debug) ev << "sending message '" << msg->getFullName() << "' (for T="
+    if (debug) EV << "sending message '" << msg->getFullName() << "' (for T="
                   << msg->getArrivalTime() << " to procId=" << procId << ")\n";
 
     synch->processOutgoingMessage(msg, procId, moduleId, gateId, data);

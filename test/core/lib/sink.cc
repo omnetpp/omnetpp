@@ -14,20 +14,20 @@ Define_Module(Sink);
 
 void Sink::initialize()
 {
-    ev << "Initializing Sink " << getFullPath() << "\n";
+    EV << "Initializing Sink " << getFullPath() << "\n";
     numPackets = 0;
 }
 
 void Sink::handleMessage(cMessage *msg)
 {
-    ev << "Sink received msg " << msg->getName() << "\n";
+    EV << "Sink received msg " << msg->getName() << "\n";
     numPackets++;
     delete msg;
 }
 
 void Sink::finish()
 {
-    ev << "Sink finishing, received msgs: " << numPackets << "\n";
+    EV << "Sink finishing, received msgs: " << numPackets << "\n";
 }
 
 

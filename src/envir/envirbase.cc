@@ -1110,11 +1110,11 @@ void EnvirBase::dumpResultRecorders(cComponent *component)
         for (unsigned int j = 0; j < listeners.size(); j++) {
             if (dynamic_cast<cResultListener*>(listeners[j])) {
                 if (!componentPathPrinted) {
-                    ev << component->getFullPath() << " (" << component->getNedTypeName() << "):\n";
+                    EV << component->getFullPath() << " (" << component->getNedTypeName() << "):\n";
                     componentPathPrinted = true;
                 }
                 if (!signalNamePrinted) {
-                    ev << "    \"" << cComponent::getSignalName(signalID) << "\" (signalID="  << signalID << "):\n";
+                    EV << "    \"" << cComponent::getSignalName(signalID) << "\" (signalID="  << signalID << "):\n";
                     signalNamePrinted = true;
                 }
                 dumpResultRecorderChain((cResultListener *)listeners[j], 0);
@@ -1126,11 +1126,11 @@ void EnvirBase::dumpResultRecorders(cComponent *component)
 void EnvirBase::dumpResultRecorderChain(cResultListener *listener, int depth)
 {
     for (int i = 0; i < depth+2; i++)
-        ev << "    ";
-    ev << listener->str();
+        EV << "    ";
+    EV << listener->str();
     if (dynamic_cast<cResultRecorder*>(listener))
-        ev << " ==> " << ((cResultRecorder*)listener)->getResultName();
-    ev << "\n";
+        EV << " ==> " << ((cResultRecorder*)listener)->getResultName();
+    EV << "\n";
 
     if (dynamic_cast<cResultFilter *>(listener))
     {

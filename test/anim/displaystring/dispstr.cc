@@ -44,7 +44,7 @@ void Gen::activity()
 
 void Gen::icons()
 {
-    ev << "ICONS -- valid values only:\n";
+    EV << "ICONS -- valid values only:\n";
     getDisplayString().setTagArg("i", 0, "block/app");  show();
     getDisplayString().setTagArg("i", 0, "block/app_s");  show();
     getDisplayString().setTagArg("i", 0, "block/app_vs");  show();
@@ -61,7 +61,7 @@ void Gen::icons()
 
 void Gen::boxes()
 {
-    ev << "BOXES -- valid values only:\n";
+    EV << "BOXES -- valid values only:\n";
     const char *shape[] =  {"", "rect", "oval", NULL};
     const char *width[] =  {"", "0", "1", "20", "40", "80", NULL};
     const char *height[] = {"", "0", "1", "20", "40", "80", NULL};
@@ -83,7 +83,7 @@ void Gen::boxes()
 
 void Gen::options()
 {
-    ev << "OPTIONS -- valid values only:\n";
+    EV << "OPTIONS -- valid values only:\n";
     getDisplayString().setTagArg("b",0,"50");
     getDisplayString().setTagArg("b",1,"50");
     getDisplayString().setTagArg("b",2,"oval");
@@ -109,7 +109,7 @@ void Gen::options()
 
 void Gen::hue()
 {
-    ev << "HSB hue -- valid values only:\n";
+    EV << "HSB hue -- valid values only:\n";
     for (int i=0; i<255; i+=8)
     {
         char buf[10];
@@ -121,7 +121,7 @@ void Gen::hue()
 
 void Gen::saturation()
 {
-    ev << "HSB saturation -- valid values only:\n";
+    EV << "HSB saturation -- valid values only:\n";
     for (int i=0; i<255; i+=8)
     {
         char buf[10];
@@ -133,7 +133,7 @@ void Gen::saturation()
 
 void Gen::brightness()
 {
-    ev << "HSB brightness -- valid values only:\n";
+    EV << "HSB brightness -- valid values only:\n";
     for (int i=0; i<255; i+=8)
     {
         char buf[10];
@@ -145,7 +145,7 @@ void Gen::brightness()
 
 void Gen::show()
 {
-    ev << "display string: \"" << getDisplayString().str() << "\"" << endl;
+    EV << "display string: \"" << getDisplayString().str() << "\"" << endl;
     wait(0);
 }
 

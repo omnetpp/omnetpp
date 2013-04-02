@@ -509,23 +509,23 @@ void cKSplit::printGrids() const
 {
     if (!isTransformed())
     {
-        ev << "collecting initial observations; no grids yet.\n";
+        EV << "collecting initial observations; no grids yet.\n";
         return;
     }
-    ev << "Range: " << rangemin << "..." << rangemax << "\n";
-    ev << "Root grid: #" << rootgrid << "\n";
+    EV << "Range: " << rangemin << "..." << rangemax << "\n";
+    EV << "Root grid: #" << rootgrid << "\n";
     for (int i = 1; i <= lastgrid; i++)
     {
-        ev << "grid #" << i << ": parent=#" << gridv[i].parent;
-        ev << "  total=" << gridv[i].total;
-        ev << "  mother=" << gridv[i].mother << "  (";
+        EV << "grid #" << i << ": parent=#" << gridv[i].parent;
+        EV << "  total=" << gridv[i].total;
+        EV << "  mother=" << gridv[i].mother << "  (";
 
         for (int j=0; j<K; j++)
            if (gridv[i].cells[j] < 0)
-              ev << " " << gridv[i].cells[j];
+              EV << " " << gridv[i].cells[j];
            else
-              ev << " " << gridv[i].cells[j];
-        ev << ")\n";
+              EV << " " << gridv[i].cells[j];
+        EV << ")\n";
     }
 }
 

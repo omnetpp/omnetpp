@@ -52,7 +52,7 @@ class COMMON_API StringTokenizerException : public opp_runtime_error
  * const char *str = "This 'string contains' {a lot} (of {[{irritating}]}) 'parentheses: {,[ and ('";
  * StringTokenizer tokenizer(str, " ", "()[]{}", "'");
  * while (tokenizer.hasMoreTokens())
- *     ev << tokenizer.nextToken() << "\n";
+ *     EV << tokenizer.nextToken() << "\n";
  * </pre>
  *
  * Output:
@@ -70,7 +70,7 @@ class COMMON_API StringTokenizerException : public opp_runtime_error
  * const char *str = "\\\\ \\  \\{ \\} \\( \\) \\[ \\] \\' \\n";
  * StringTokenizer tokenizer(str, " ", "()[]{}", "'");
  * while (tokenizer.hasMoreTokens())
- *     ev << tokenizer.nextToken() << "|";
+ *     EV << tokenizer.nextToken() << "|";
  * </pre>
  *
  * Output:

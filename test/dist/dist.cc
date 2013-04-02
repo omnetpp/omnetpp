@@ -34,7 +34,7 @@ void Dist::activity()
     excel = excel_str.c_str();
 
     std::string distname = variate.str();
-    ev << "running: " << distname << endl;
+    EV << "running: " << distname << endl;
 
     // generate histogram
     cHistogramBase *h;
@@ -63,7 +63,7 @@ void Dist::activity()
         filename = buf;
     }
 
-    ev << "writing file: " << filename << endl;
+    EV << "writing file: " << filename << endl;
 
     // write file
     FILE *f = fopen(filename, "w");

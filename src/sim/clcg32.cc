@@ -46,7 +46,7 @@ void cLCG32::initialize(int seedSet, int rngId, int numRngs,
     {
         int autoSeedIndex = seedSet*numRngs + rngId;
         if (autoSeedIndex>=256)
-            ev << "Warning: LCG32: out of the 256 auto seed values, wrapping around "
+            EV << "Warning: LCG32: out of the 256 auto seed values, wrapping around "
                   "-- decrease num-rngs=" << numRngs << " value or run numbers, "
                   "or use a different RNG class like Mersenne Twister\n";
         autoSeedIndex = autoSeedIndex % 256;

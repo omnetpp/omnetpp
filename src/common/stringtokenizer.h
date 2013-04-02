@@ -45,7 +45,7 @@ NAMESPACE_BEGIN
  * const char *str = "one two three four";
  * StringTokenizer tokenizer(str);
  * while (tokenizer.hasMoreTokens())
- *     ev << " [" << tokenizer.nextToken() << "]";
+ *     EV << " [" << tokenizer.nextToken() << "]";
  * </pre>
  *
  * Example 2:

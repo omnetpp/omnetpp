@@ -52,7 +52,7 @@ void Queue_1::activity()
 
 void Queue_1::finish()
 {
-    ev << "T=" << 1000000*tmr.get()/repCount << " us per cycle\n";
+    EV << "T=" << 1000000*tmr.get()/repCount << " us per cycle\n";
 }
 
 //---------------
@@ -87,7 +87,7 @@ void SelectNextModule_1::activity()
 
 void SelectNextModule_1::finish()
 {
-    ev << "T=" << 1000000*tmr.get()/repCount << " us per cycle\n";
+    EV << "T=" << 1000000*tmr.get()/repCount << " us per cycle\n";
 }
 
 //---------------
@@ -124,7 +124,7 @@ void Schedule_1::handleMessage(cMessage *msg)
 void Schedule_1::finish()
 {
     tmr.stop();
-    ev << "T=" << 1000000*tmr.get()/repCount << " us per cycle\n";
+    EV << "T=" << 1000000*tmr.get()/repCount << " us per cycle\n";
 }
 
 //--------------
@@ -163,7 +163,7 @@ void Send_1::handleMessage(cMessage *msg)
 void Send_1::finish()
 {
     tmr.stop();
-    ev << "T=" << 1000000*tmr.get()/repCount << " us per cycle\n";
+    EV << "T=" << 1000000*tmr.get()/repCount << " us per cycle\n";
 }
 
 //---------------
@@ -200,7 +200,7 @@ void ScheduledEvents_1::finish()
 {
     tmr.stop();
     double evPerSec = simulation.getEventNumber() / tmr.get();
-    ev << evPerSec << " event/sec\n";
+    EV << evPerSec << " event/sec\n";
 }
 
 //---------------
@@ -244,5 +244,5 @@ void ScheduleAndCancel_1::finish()
 {
     tmr.stop();
     double evPerSec = simulation.getEventNumber() / tmr.get();
-    ev << evPerSec << " event/sec\n";
+    EV << evPerSec << " event/sec\n";
 }

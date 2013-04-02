@@ -86,7 +86,7 @@ class TKENV_API Tkenv : public EnvirBase
       bool opt_init_banners;       // print "initializing..." banners
       bool opt_event_banners;      // print event banners
       bool opt_short_banners;      // controls detail of event banners
-      bool opt_use_mainwindow;     // dump modules' ev << ... stuff into main window
+      bool opt_use_mainwindow;     // dump modules' EV << ... stuff into main window
       bool opt_animation_enabled;  // msg animation
       bool opt_nexteventmarkers;   // display next event marker (red frame around modules)
       bool opt_senddirect_arrows;  // flash arrows when doing sendDirect() animation

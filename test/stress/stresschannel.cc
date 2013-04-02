@@ -21,7 +21,7 @@ bool StressChannel::deliver(cMessage *msg, simtime_t at)
 {
     // drop if ongoing transmission
 	if (getTransmissionFinishTime() > at) {
-		ev << "Deleting message in channel due to ongoing transmission: " << msg << "\n";;
+		EV << "Deleting message in channel due to ongoing transmission: " << msg << "\n";;
 		return false;
 	}
     else {

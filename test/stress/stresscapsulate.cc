@@ -18,7 +18,7 @@ void StressCapsulate::handleMessage(cMessage *msg)
     cPacket *packet = check_and_cast<cPacket *>(msg);
 
     if (packet->getEncapsulatedMsg() && uniform(0, 1) < par("decapsulateProbability").doubleValue()) {
-        ev << "Decapsulating message: "  << packet << "\n";;
+        EV << "Decapsulating message: "  << packet << "\n";;
         cPacket *decapsulatedPacket = packet->decapsulate();
         decapsulatedPacket->setName("Decapsulated");
         delete packet;
@@ -26,7 +26,7 @@ void StressCapsulate::handleMessage(cMessage *msg)
     }
 
     if (uniform(0, 1) < par("encapsulateProbability").doubleValue()) {
-        ev << "Encapsulating message: "  << packet << "\n";;
+        EV << "Encapsulating message: "  << packet << "\n";;
         StressPacket *encapsulatedPacket = new StressPacket();
         encapsulatedPacket->setName("Encapsulated");
         encapsulatedPacket->setBitLength((long)exponential(par("messageLength").doubleValue()));
@@ -36,11 +36,11 @@ void StressCapsulate::handleMessage(cMessage *msg)
 
     cGate *outGate = gate("out", intrand(gateSize("out")));
     if (outGate->getTransmissionChannel()->isBusy()) {
-        ev << "Output channel is busy, dropping message: " << packet << "\n";
+        EV << "Output channel is busy, dropping message: " << packet << "\n";
         delete packet;
     }
     else {
-        ev << "Sending out message: "  << packet << "\n";;
+        EV << "Sending out message: "  << packet << "\n";;
         send(packet, outGate);
     }
 }

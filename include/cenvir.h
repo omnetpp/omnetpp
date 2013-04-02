@@ -56,8 +56,8 @@ using std::endl;
  * messages, e.g.:
  *
  * <pre>
- * ev << "Received packet " << msg->getName() << ", length " << msg->getBitLength()/8 << " bytes\n";
- * ev << "Sending up to higher layer\n";
+ * EV << "Received packet " << msg->getName() << ", length " << msg->getBitLength()/8 << " bytes\n";
+ * EV << "Sending up to higher layer\n";
  * </pre>
  *
  * Other useful methods are cEnvir::isGUI() and cEnvir::isDisabled().
@@ -511,7 +511,7 @@ class SIM_API cEnvir
      * not printed or logged anywhere but discarded. Model code may make <tt>ev&lt;&lt;</tt>
      * statements conditional on this flag to save CPU cycles. For example:
      * <pre>
-     *     if (!ev.isDisabled())  ev << "Packet " << msg->getName() << " received";
+     *     if (!ev.isDisabled())  EV << "Packet " << msg->getName() << " received";
      * </pre>
      *
      * which can be abbreviated with the <tt>EV</tt> macro:

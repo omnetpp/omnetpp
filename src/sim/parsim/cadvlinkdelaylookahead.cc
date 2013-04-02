@@ -51,7 +51,7 @@ cAdvancedLinkDelayLookahead::~cAdvancedLinkDelayLookahead()
 
 void cAdvancedLinkDelayLookahead::startRun()
 {
-    ev << "starting Link Delay Lookahead...\n";
+    EV << "starting Link Delay Lookahead...\n";
 
     delete [] segInfo;
 
@@ -66,7 +66,7 @@ void cAdvancedLinkDelayLookahead::startRun()
     }
 
     // fill numLinks and links[]
-    ev << "  collecting links...\n";
+    EV << "  collecting links...\n";
 
     // step 1: count gates
     for (int modId=0; modId<=sim->getLastModuleId(); modId++)
@@ -126,13 +126,13 @@ void cAdvancedLinkDelayLookahead::startRun()
                     link->lookahead = linkDelay;
                     link->eot = 0.0;
 
-                    ev << "    link " << k << " to procId=" << procId << " on gate `" << fromg->getFullPath() <<"': delay=" << linkDelay << "\n";
+                    EV << "    link " << k << " to procId=" << procId << " on gate `" << fromg->getFullPath() <<"': delay=" << linkDelay << "\n";
                 }
             }
         }
     }
 
-    ev << "  setup done.\n";
+    EV << "  setup done.\n";
 }
 
 void cAdvancedLinkDelayLookahead::endRun()

@@ -21,7 +21,7 @@ void FF1Generator::activity()
         char msgName[32];
         sprintf( msgName, "job-%d", i++);
 
-        ev << "Generating " << msgName << endl;
+        EV << "Generating " << msgName << endl;
 
         cMessage *msg = new cMessage(msgName,msgKind);
         msg->setTimestamp();
