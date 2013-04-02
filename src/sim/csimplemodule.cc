@@ -470,7 +470,7 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t dura
         throw cRuntimeError("sendDirect(): module must have dedicated gate(s) for receiving via sendDirect()"
                             " (\"from\" side of dest. gate `%s' should NOT be connected)",togate->getFullPath().c_str());
     if (propdelay<0 || duration<0)
-        throw cRuntimeError("sendDirect(): the propagation and duration parameters cannot be negative");
+        throw cRuntimeError("sendDirect(): the propagation time and duration parameters cannot be negative");
     if (msg==NULL)
         throw cRuntimeError("sendDirect(): message pointer is NULL");
     if (msg->getOwner()!=this)
