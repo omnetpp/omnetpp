@@ -1,4 +1,4 @@
-== Fedora 16 and 17
+== Fedora 18
 
 === Supported Releases
 
@@ -6,11 +6,11 @@ This chapter provides additional information for installing @OMNETPP@ on
 Fedora installations. The overall installation procedure is described
 in the 'Linux' chapter.
 
-The following Fedora releases are covered:
+The following Fedora release is covered:
 
-* Fedora 16 and 17
+* Fedora 18
 
-They were tested on the following architectures:
+It was tested on the following architectures:
 
 * Intel 32-bit and 64-bit
 
@@ -29,7 +29,7 @@ To install the required packages, type in the terminal:
 
   $ su -c 'yum install make gcc gcc-c++ bison flex perl \
       tcl-devel tk-devel blt libxml2-devel zlib-devel \
-      java-1.6.0-openjdk doxygen graphviz openmpi-devel libpcap-devel'
+      java doxygen graphviz webkitgtk openmpi-devel libpcap-devel'
 
 then follow the instruction on the console.
 
@@ -56,7 +56,7 @@ in front of the names, and pick the latest version of each package.
 The packages:
 
 * bison, gcc, gcc-c++, flex, perl, tcl-devel, tk-devel, blt, libxml2-devel,
-zlib-devel, xulrunner, make, java-1.6.0-openjdk,
+zlib-devel, webkitgtk, make, java,
 doxygen, graphviz, openmpi-devel, libpcap-devel
 
 Click 'Apply', then follow the instructions.

@@ -8,11 +8,11 @@ is described in the 'Linux' chapter.
 
 The following Red Hat release is covered:
 
-* Red Hat Enterprise Linux Desktop Workstation 5.5
+* Red Hat Enterprise Linux Desktop Workstation 6.4
 
 It was tested on the following architectures:
 
-* Intel 32-bit
+* Intel 32-bit and 64-bit
 
 === Opening a Terminal
 
@@ -33,11 +33,38 @@ The 'Desktop Client' version does not contain development tools.
 
 To install the required packages, type in the terminal:
 
-  $ su -c 'yum install make gcc gcc-c++ bison flex perl \
+  $ su -c 'yum install make devtoolset-1.1 bison flex perl \
       tcl-devel tk-devel libxml2-devel zlib-devel \
-      java-1.6.0-openjdk doxygen openmpi-devel libpcap-devel'
+      java doxygen graphviz openmpi-devel libpcap'
 
-then follow the instruction on the console.
+After installing the 'devtoolset-1.1' package you must make it available to
+@OMNETPP@:
+
+  $ scl enable devtoolset-1.1 'bash'
+
+Follow the instructions on the console and use only this console for further work.
+
+[NOTE]
+==============================================================
+You MUST activate the devtoolset in the terminal each time when
+you work with @OMNETPP@ and you must start the IDE from that
+terminal.
+==============================================================
+
+[NOTE]
+==============================================================
+You may opt to use the system deafult GCC toolchain (older version)
+instead of using the latest 'devtoolset' package by installing the 'gcc'
+and 'gcc-c++' packages instead of 'devtools-1.1'. In this case
+you don't have to use the above 'scl' command as the system GCC is
+available by default, bou may encounter compatibility issues
+with third party model libraries.
+==============================================================
+
+To install additional (optional) packages for parallel simulation and
+packet capture support, type:
+
+  $ su -c 'yum install openmpi-devel libpcap'
 
 Note that 'openmpi' will not be available by default, it needs to be
 activated in every session with the
@@ -60,15 +87,6 @@ Alternatively you may search for binary RPM packages using
 `http://rpm.pbone.net`
 ===============================================================
 
-[NOTE]
-===============================================================
-GraphViz packages for RHEL can be installed from graphviz.org,
-see http://www.graphviz.org/Download_linux_rhel.php. GraphViz is
-an optional package for @OMNETPP@; you only need it if you plan
-to generate HTML documentation from NED files, and would like
-the resulting documentation to contain diagrams.
-===============================================================
-
 
 ==== Graphical Installation
 
@@ -80,8 +98,8 @@ in front of the names, and pick the latest version of each package.
 
 The packages:
 
-* gcc, gcc-c++, bison, flex, perl, tcl-devel, tk-devel, libxml2-devel,
-zlib-devel, make, java-1.6.0-openjdk, doxygen, openmpi-devel, libpcap-devel
+* devtoolset-1.1, bison, flex, perl, tcl-devel, tk-devel, libxml2-devel,
+zlib-devel, make, java, doxygen, graphviz, openmpi-devel, libpcap-devel
 
 Click 'Apply', then follow the instructions.
 

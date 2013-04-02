@@ -41,7 +41,7 @@ LibXML2 or Expat::
   Either one of these XML parsers are needed for @OMNETPP@ to be able
   to read XML files. The 'devel' packages (that include the header files)
   are needed. LibXML2 is the preferred one.
-SUN JRE or OpenJDK, version 5.0 or later::
+SUN JRE or OpenJDK, version 6.0 or later::
   The Java runtime is required to run the Eclipse-based Simulation IDE.
   Other implementations, for example Kaffe, have been found to have problems
   running the IDE. You do not need this package if you do not plan
