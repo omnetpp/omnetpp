@@ -22,7 +22,7 @@ you may need to adjust the instructions accordingly.
 
 === Opening a Terminal
 
-Type 'terminal' into the Dash and click on the Terminal icon.
+Type 'terminal' in Dash and click on the Terminal icon.
 
 === Installing the Prerequisite Packages
 

@@ -42,23 +42,24 @@ After installing the 'devtoolset-1.1' package you must make it available to
 
   $ scl enable devtoolset-1.1 'bash'
 
-Follow the instructions on the console and use only this console for further work.
+This command will open a new shell configured to use the newest available version
+of the GCC toolchain. Follow the general Linux installation instructions
+using this shell.
 
 [NOTE]
 ==============================================================
-You MUST activate the devtoolset in the terminal each time when
-you work with @OMNETPP@ and you must start the IDE from that
-terminal.
+Activate the devtoolset package in the terminal each time when
+you work with @OMNETPP@ and start the IDE from that shell.
 ==============================================================
 
 [NOTE]
 ==============================================================
-You may opt to use the system deafult GCC toolchain (older version)
-instead of using the latest 'devtoolset' package by installing the 'gcc'
-and 'gcc-c++' packages instead of 'devtools-1.1'. In this case
-you don't have to use the above 'scl' command as the system GCC is
-available by default, bou may encounter compatibility issues
-with third party model libraries.
+RedHat contains two separate GCC toolchains. The 'devtoolset' package
+contains the latest available version of GCC while the system default 
+'gcc' and 'gcc-c++' packages are using a much older version.
+You may opt to use the system default GCC toolchain by installing the 
+'gcc' and 'gcc-c++' packages instead of 'devtools-1.1'. In this case
+you don't have to use the above 'scl' command.
 ==============================================================
 
 To install additional (optional) packages for parallel simulation and
@@ -99,7 +100,7 @@ in front of the names, and pick the latest version of each package.
 The packages:
 
 * devtoolset-1.1, bison, flex, perl, tcl-devel, tk-devel, libxml2-devel,
-zlib-devel, make, java, doxygen, graphviz, openmpi-devel, libpcap-devel
+zlib-devel, make, java, doxygen, graphviz, openmpi-devel, libpcap
 
 Click 'Apply', then follow the instructions.
 
