@@ -44,24 +44,23 @@ Register_Class(cTopology);
 
 cTopology::LinkIn *cTopology::Node::getLinkIn(int i)
 {
-    if (i<0 || i>=num_in_links)
+    if (i<0 || i>=(int)inLinks.size())
         throw cRuntimeError("cTopology::Node::getLinkIn: invalid link index %d", i);
-    return (cTopology::LinkIn *)in_links[i];
+    return (cTopology::LinkIn *)inLinks[i];
 }
 
 cTopology::LinkOut *cTopology::Node::getLinkOut(int i)
 {
-    if (i<0 || i>=num_out_links)
+    if (i<0 || i>=(int)outLinks.size())
         throw cRuntimeError("cTopology::Node::getLinkOut: invalid index %d", i);
-    return (cTopology::LinkOut *)(out_links+i);
+    return (cTopology::LinkOut *)outLinks[i];
 }
 
 //----
 
 cTopology::cTopology(const char *name) : cOwnedObject(name)
 {
-    num_nodes = 0;
-    nodev = NULL;
+    target = NULL;
 }
 
 cTopology::cTopology(const cTopology& topo) : cOwnedObject(topo)
@@ -77,7 +76,7 @@ cTopology::~cTopology()
 std::string cTopology::info() const
 {
     std::stringstream out;
-    out << "n=" << num_nodes;
+    out << "n=" << nodes.size();
     return out.str();
 }
 
@@ -98,15 +97,13 @@ cTopology& cTopology::operator=(const cTopology&)
 
 void cTopology::clear()
 {
-    for (int i=0; i<num_nodes; i++)
+    for (int i=0; i<(int)nodes.size(); i++)
     {
-        delete [] nodev[i].in_links;
-        delete [] nodev[i].out_links;
+        for (int j=0; j<(int)nodes[i]->outLinks.size(); j++)
+            delete nodes[i]->outLinks[j];  // delete links from their source side
+        delete nodes[i];
     }
-    delete [] nodev;
-
-    num_nodes = 0;
-    nodev = NULL;
+    nodes.clear();
 }
 
 //---
@@ -186,52 +183,29 @@ void cTopology::extractFromNetwork(Predicate *predicate)
     extractFromNetwork(selectByPredicate, (void *)predicate);
 }
 
-void cTopology::extractFromNetwork(bool (*selfunc)(cModule *,void *), void *data)
+void cTopology::extractFromNetwork(bool (*predicate)(cModule *,void *), void *data)
 {
     clear();
 
-    Node *temp_nodev = new Node[simulation.getLastModuleId()];
-
-    // Loop through all modules and find those which have the required
-    // parameter with the (optionally) required value.
-    int k=0;
-    for (int mod_id=0; mod_id<=simulation.getLastModuleId(); mod_id++)
+    // Loop through all modules and find those that satisfy the criteria
+    for (int modId=0; modId<=simulation.getLastModuleId(); modId++)
     {
-        cModule *mod = simulation.getModule(mod_id);
-        if (mod && selfunc(mod,data))
-        {
-            // ith module is OK, insert into nodev[]
-            temp_nodev[k].module_id = mod_id;
-            temp_nodev[k].wgt = 0;
-            temp_nodev[k].enabl = true;
-
-            // init auxiliary variables
-            temp_nodev[k].dist = INFINITY;
-            temp_nodev[k].out_path = NULL;
-
-            // create in_links[] arrays (big enough...)
-            temp_nodev[k].num_in_links = 0;
-            temp_nodev[k].in_links = new cTopology::Link *[mod->gateCount()];
-
-            k++;
+        cModule *module = simulation.getModule(modId);
+        if (module && predicate(module, data)) {
+            Node *node = createNode(module);
+            nodes.push_back(node);
         }
     }
-    num_nodes = k;
-
-    nodev = new Node[num_nodes];
-    memcpy(nodev, temp_nodev, num_nodes*sizeof(Node));
-    delete [] temp_nodev;
 
     // Discover out neighbors too.
-    for (int k=0; k<num_nodes; k++)
+    for (int k=0; k<(int)nodes.size(); k++)
     {
         // Loop through all its gates and find those which come
         // from or go to modules included in the topology.
 
-        cModule *mod = simulation.getModule(nodev[k].module_id);
-        cTopology::Link *temp_out_links = new cTopology::Link[mod->gateCount()];
+        Node *node = nodes[k];
+        cModule *mod = simulation.getModule(node->moduleId);
 
-        int n_out=0;
         for (cModule::GateIterator i(mod); !i.end(); i++)
         {
             cGate *gate = i();
@@ -239,65 +213,159 @@ void cTopology::extractFromNetwork(bool (*selfunc)(cModule *,void *), void *data
                 continue;
 
             // follow path
-            cGate *src_gate = gate;
+            cGate *srcGate = gate;
             do {
                 gate = gate->getNextGate();
             }
-            while(gate && !selfunc(gate->getOwnerModule(),data));
+            while(gate && !predicate(gate->getOwnerModule(),data));
 
             // if we arrived at a module in the topology, record it.
             if (gate)
             {
-                temp_out_links[n_out].src_node = nodev+k;
-                temp_out_links[n_out].src_gate = src_gate->getId();
-                temp_out_links[n_out].dest_node = getNodeFor(gate->getOwnerModule());
-                temp_out_links[n_out].dest_gate = gate->getId();
-                temp_out_links[n_out].wgt = 1.0;
-                temp_out_links[n_out].enabl = true;
-                n_out++;
+                Link *link = createLink();
+                link->srcNode = node;
+                link->srcGateId = srcGate->getId();
+                link->destNode = getNodeFor(gate->getOwnerModule());
+                link->destGateId = gate->getId();
+                node->outLinks.push_back(link);
             }
         }
-        nodev[k].num_out_links = n_out;
-
-        nodev[k].out_links = new cTopology::Link[n_out];
-        memcpy(nodev[k].out_links, temp_out_links, n_out*sizeof(cTopology::Link));
-        delete [] temp_out_links;
     }
 
-    // fill in_links[] arrays
-    for (int k=0; k<num_nodes; k++)
+    // fill inLinks vectors
+    for (int k=0; k<(int)nodes.size(); k++)
     {
-        for (int l=0; l<nodev[k].num_out_links; l++)
+        for (int l=0; l<(int)nodes[k]->outLinks.size(); l++)
         {
-            cTopology::Link *link = &nodev[k].out_links[l];
-            link->dest_node->in_links[link->dest_node->num_in_links++] = link;
+            cTopology::Link *link = nodes[k]->outLinks[l];
+            link->destNode->inLinks.push_back(link);
         }
     }
 }
 
+int cTopology::addNode(Node *node)
+{
+    if (node->moduleId == -1)
+    {
+        // elements without module ID are stored at the end
+        nodes.push_back(node);
+        return nodes.size() - 1;
+    }
+    else
+    {
+        // must find an insertion point because nodes[] is ordered by module ID
+        std::vector<Node*>::iterator it = std::lower_bound(nodes.begin(), nodes.end(), node, lessByModuleId);
+        it = nodes.insert(it, node);
+        return it - nodes.begin();
+    }
+}
+
+void cTopology::deleteNode(Node *node)
+{
+    // remove outgoing links
+    for (int i=0; i<(int)node->outLinks.size(); i++) {
+        Link *link = node->outLinks[i];
+        unlinkFromDestNode(link);
+        delete link;
+    }
+    node->outLinks.clear();
+
+    // remove incoming links
+    for (int i=0; i<(int)node->inLinks.size(); i++) {
+        Link *link = node->inLinks[i];
+        unlinkFromSourceNode(link);
+        delete link;
+    }
+    node->inLinks.clear();
+
+    // remove from nodes[]
+    std::vector<Node*>::iterator it = std::find(nodes.begin(), nodes.end(), node);
+    ASSERT(it != nodes.end());
+    nodes.erase(it);
+
+    delete node;
+}
+
+void cTopology::addLink(Link *link, Node *srcNode, Node *destNode)
+{
+    // remove from graph if it's already in
+    if (link->srcNode)
+        unlinkFromSourceNode(link);
+    if (link->destNode)
+        unlinkFromDestNode(link);
+
+    // insert
+    if (link->srcNode != srcNode)
+        link->srcGateId = -1;
+    if (link->destNode != destNode)
+        link->destGateId = -1;
+    link->srcNode = srcNode;
+    link->destNode = destNode;
+    srcNode->outLinks.push_back(link);
+    destNode->inLinks.push_back(link);
+}
+
+void cTopology::addLink(Link *link, cGate *srcGate, cGate *destGate)
+{
+    // remove from graph if it's already in
+    if (link->srcNode)
+        unlinkFromSourceNode(link);
+    if (link->destNode)
+        unlinkFromDestNode(link);
+
+    // insert
+    Node *srcNode = getNodeFor(srcGate->getOwnerModule());
+    Node *destNode = getNodeFor(destGate->getOwnerModule());
+    if (!srcNode)
+        throw cRuntimeError("cTopology::addLink: module of source gate \"%s\" is not in the graph", srcGate->getFullPath().c_str());
+    if (!destNode)
+        throw cRuntimeError("cTopology::addLink: module of destination gate \"%s\" is not in the graph", destGate->getFullPath().c_str());
+    link->srcNode = srcNode;
+    link->destNode = destNode;
+    link->srcGateId = srcGate->getId();
+    link->destGateId = destGate->getId();
+    srcNode->outLinks.push_back(link);
+    destNode->inLinks.push_back(link);
+}
+
+void cTopology::deleteLink(Link *link)
+{
+    unlinkFromSourceNode(link);
+    unlinkFromDestNode(link);
+    delete link;
+}
+
+void cTopology::unlinkFromSourceNode(Link *link)
+{
+    std::vector<Link*>& srcOutLinks = link->srcNode->outLinks;
+    std::vector<Link*>::iterator it = std::find(srcOutLinks.begin(), srcOutLinks.end(), link);
+    ASSERT(it != srcOutLinks.end());
+    srcOutLinks.erase(it);
+}
+
+void cTopology::unlinkFromDestNode(Link *link)
+{
+    std::vector<Link*>& destInLinks = link->destNode->inLinks;
+    std::vector<Link*>::iterator it = std::find(destInLinks.begin(), destInLinks.end(), link);
+    ASSERT(it != destInLinks.end());
+    destInLinks.erase(it);
+}
+
+
 cTopology::Node *cTopology::getNode(int i)
 {
-    if (i<0 || i>=num_nodes)
+    if (i<0 || i>=(int)nodes.size())
         throw cRuntimeError(this,"invalid node index %d",i);
-    return nodev+i;
+    return nodes[i];
 }
 
 cTopology::Node *cTopology::getNodeFor(cModule *mod)
 {
-    // binary search can be done because nodev[] is ordered
-
-    int lo, up, index;
-    for ( lo=0, up=num_nodes, index=(lo+up)/2;
-          lo<index;
-          index=(lo+up)/2 )
-    {
-        // cycle invariant: nodev[lo].mod_id <= mod->getId() < nodev[up].mod_id
-        if (mod->getId() < nodev[index].module_id)
-             up = index;
-        else
-             lo = index;
-    }
-    return (mod->getId() == nodev[index].module_id) ? nodev+index : NULL;
+    // binary search because nodes[] is ordered by module ID
+    Node tmpNode(mod->getId());
+    std::vector<Node*>::iterator it = std::lower_bound(nodes.begin(), nodes.end(), &tmpNode, lessByModuleId);
+//TODO: this does not compile with VC9 (VC10 is OK): std::vector<Node*>::iterator it = std::lower_bound(nodes.begin(), nodes.end(), mod->getId(), isModuleIdLess);
+    return it==nodes.end() || (*it)->moduleId != mod->getId() ? NULL : *it;
 }
 
 void cTopology::calculateUnweightedSingleShortestPathsTo(Node *_target)
@@ -308,10 +376,10 @@ void cTopology::calculateUnweightedSingleShortestPathsTo(Node *_target)
         throw cRuntimeError(this,"..ShortestPathTo(): target node is NULL");
     target = _target;
 
-    for (int i=0; i<num_nodes; i++)
+    for (int i=0; i<(int)nodes.size(); i++)
     {
-       nodev[i].dist = INFINITY;
-       nodev[i].out_path = NULL;
+       nodes[i]->dist = INFINITY;
+       nodes[i]->outPath = NULL;
     }
     target->dist = 0;
 
@@ -325,17 +393,19 @@ void cTopology::calculateUnweightedSingleShortestPathsTo(Node *_target)
        q.pop_front();
 
        // for each w adjacent to v...
-       for (int i=0; i<v->num_in_links; i++)
+       for (int i=0; i<(int)v->inLinks.size(); i++)
        {
-           if (!(v->in_links[i]->enabl)) continue;
+           if (!v->inLinks[i]->enabled)
+               continue;
 
-           Node *w = v->in_links[i]->src_node;
-           if (!w->enabl) continue;
+           Node *w = v->inLinks[i]->srcNode;
+           if (!w->enabled)
+               continue;
 
            if (w->dist == INFINITY)
            {
                w->dist = v->dist + 1;
-               w->out_path = v->in_links[i];
+               w->outPath = v->inLinks[i];
                q.push_back(w);
            }
        }
@@ -349,10 +419,10 @@ void cTopology::calculateWeightedSingleShortestPathsTo(Node *_target)
     target = _target;
 
     // clean path infos
-    for (int i=0; i<num_nodes; i++)
+    for (int i=0; i<(int)nodes.size(); i++)
     {
-       nodev[i].dist = INFINITY;
-       nodev[i].out_path = NULL;
+       nodes[i]->dist = INFINITY;
+       nodes[i]->outPath = NULL;
     }
 
     target->dist = 0;
@@ -371,10 +441,12 @@ void cTopology::calculateWeightedSingleShortestPathsTo(Node *_target)
         // for each w adjacent to v...
         for (int i=0; i < dest->getNumInLinks(); i++)
         {
-            if (!(dest->getLinkIn(i)->isEnabled())) continue;
+            if (!(dest->getLinkIn(i)->isEnabled()))
+                continue;
 
             Node *src = dest->getLinkIn(i)->getRemoteNode();
-            if (!src->isEnabled()) continue;
+            if (!src->isEnabled())
+                continue;
 
             double linkWeight = dest->getLinkIn(i)->getWeight();
             ASSERT(linkWeight > 0.0);
@@ -387,7 +459,7 @@ void cTopology::calculateWeightedSingleShortestPathsTo(Node *_target)
                 if (src->dist != INFINITY)
                     q.remove(src);   // src is in the queue
                 src->dist = newdist;
-                src->out_path = dest->in_links[i];
+                src->outPath = dest->inLinks[i];
 
                 // insert src node to ordered list
                 std::list<Node*>::iterator it;

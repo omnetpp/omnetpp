@@ -57,6 +57,14 @@ class cPar;
  * @ingroup SimSupport
  * @see cTopology::Node, cTopology::Link, cTopology::LinkIn, cTopology::LinkOut
  */
+
+//TODO terminology change: rename Link to Edge
+//TODO document: graph may be modified by hand; graph nodes/links may or may not correspond to modules/gates
+//TODO add notes: manually added nodes/links may not have cModule*/cGate* pointers (getModule() etc may be NULL)
+//TODO make more methods virtual
+//TODO inconsistency: Node takes cModule* in ctor, but Link's srcGate/destGate are set in addLink()!!!
+//TODO weight: how to compute automatically from link datarate?
+
 class SIM_API cTopology : public cOwnedObject
 {
   public:
@@ -71,63 +79,66 @@ class SIM_API cTopology : public cOwnedObject
     {
         friend class cTopology;
 
-      private:
-        int module_id;
-        double wgt;
-        bool enabl;
-
-        int num_in_links;
-        Link **in_links;
-        int num_out_links;
-        Link *out_links;
+      protected:
+        int moduleId;
+        double weight;
+        bool enabled;
+        std::vector<Link*> inLinks;
+        std::vector<Link*> outLinks;
 
         // variables used by the shortest-path algorithms
         double dist;
-        Link *out_path;
+        Link *outPath;
 
       public:
+        /**
+         * Constructor
+         */
+        Node(int moduleId=-1) {this->moduleId=moduleId; weight=0; enabled=true; dist=INFINITY; outPath=NULL;}
+        virtual ~Node() {}
+
         /** @name Node attributes: weight, enabled state, correspondence to modules. */
         //@{
 
         /**
          * Returns the ID of the network module to which this node corresponds.
          */
-        int getModuleId() const  {return module_id;}
+        int getModuleId() const  {return moduleId;}
 
         /**
          * Returns the pointer to the network module to which this node corresponds.
          */
-        cModule *getModule() const  {return simulation.getModule(module_id);}
+        cModule *getModule() const  {return simulation.getModule(moduleId);}
 
         /**
          * Returns the weight of this node. Weight is used with the
          * weighted shortest path finder methods of cTopology.
          */
-        double getWeight() const  {return wgt;}
+        double getWeight() const  {return weight;}
 
         /**
          * Sets the weight of this node. Weight is used with the
          * weighted shortest path finder methods of cTopology.
          */
-        void setWeight(double d)  {wgt=d;}
+        void setWeight(double d)  {weight=d;}
 
         /**
          * Returns true of this node is enabled. This has significance
          * with the shortest path finder methods of cTopology.
          */
-        bool isEnabled() const  {return enabl;}
+        bool isEnabled() const  {return enabled;}
 
         /**
          * Enable this node. This has significance with the shortest path
          * finder methods of cTopology.
          */
-        void enable()  {enabl=true;}
+        void enable()  {enabled=true;}
 
         /**
          * Disable this node. This has significance with the shortest path
          * finder methods of cTopology.
          */
-        void disable()  {enabl=false;}
+        void disable()  {enabled=false;}
         //@}
 
         /** @name Node connectivity. */
@@ -136,7 +147,7 @@ class SIM_API cTopology : public cOwnedObject
         /**
          * Returns the number of incoming links to this graph node.
          */
-        int getNumInLinks() const  {return num_in_links;}
+        int getNumInLinks() const  {return inLinks.size();}
 
         /**
          * Returns ith incoming link of graph node.
@@ -146,7 +157,7 @@ class SIM_API cTopology : public cOwnedObject
         /**
          * Returns the number of outgoing links from this graph node.
          */
-        int getNumOutLinks() const  {return num_out_links;}
+        int getNumOutLinks() const  {return outLinks.size();}
 
         /**
          * Returns ith outgoing link of graph node.
@@ -166,14 +177,14 @@ class SIM_API cTopology : public cOwnedObject
          * Returns the number of shortest paths towards the target node.
          * (There may be several paths with the same length.)
          */
-        int getNumPaths() const  {return out_path?1:0;}
+        int getNumPaths() const  {return outPath?1:0;}
 
         /**
          * Returns the next link in the ith shortest paths towards the
          * target node. (There may be several paths with the same
          * length.)
          */
-        LinkOut *getPath(int) const  {return (LinkOut *)out_path;}
+        LinkOut *getPath(int) const  {return (LinkOut *)outPath;}
         //@}
     };
 
@@ -186,43 +197,49 @@ class SIM_API cTopology : public cOwnedObject
         friend class cTopology;
 
       protected:
-        Node *src_node;
-        int src_gate;
-        Node *dest_node;
-        int dest_gate;
-        double wgt;
-        bool enabl;
+        Node *srcNode;
+        int srcGateId;
+        Node *destNode;
+        int destGateId;
+        double weight;
+        bool enabled;
 
       public:
+        /**
+         * Constructor.
+         */
+        Link(double weight=1) {srcNode=destNode=NULL; srcGateId=destGateId=-1; this->weight=weight; enabled=true;}
+        virtual ~Link() {}
+
         /**
          * Returns the weight of this link. Weight is used with the
          * weighted shortest path finder methods of cTopology.
          */
-        double getWeight() const  {return wgt;}
+        double getWeight() const  {return weight;}
 
         /**
          * Sets the weight of this link. Weight is used with the
          * weighted shortest path finder methods of cTopology.
          */
-        void setWeight(double d)  {wgt=d;}
+        void setWeight(double d)  {weight=d;}
 
         /**
          * Returns true of this link is enabled. This has significance
          * with the shortest path finder methods of cTopology.
          */
-        bool isEnabled() const  {return enabl;}
+        bool isEnabled() const  {return enabled;}
 
         /**
          * Enables this link. This has significance with the shortest path
          * finder methods of cTopology.
          */
-        void enable()  {enabl=true;}
+        void enable()  {enabled=true;}
 
         /**
          * Disables this link. This has significance with the shortest path
          * finder methods of cTopology.
          */
-        void disable()  {enabl=false;}
+        void disable()  {enabled=false;}
     };
 
 
@@ -239,32 +256,33 @@ class SIM_API cTopology : public cOwnedObject
       public:
         /**
          * Returns the node at the remote end of this connection.
-         *
-         * Note: There is no corresponding localNode() method: the local node of
-         * this connection is the Node object whose method returned
-         * this LinkIn object.
          */
-        Node *getRemoteNode() const  {return src_node;}
+        Node *getRemoteNode() const  {return srcNode;}
+
+        /**
+         * Returns the node at the local end of this connection.
+         */
+        Node *getLocalNode() const  {return destNode;}
 
         /**
          * Returns the gate ID at the remote end of this connection.
          */
-        int getRemoteGateId() const  {return src_gate;}
+        int getRemoteGateId() const  {return srcGateId;}
 
         /**
          * Returns the gate ID at the local end of this connection.
          */
-        int getLocalGateId() const  {return dest_gate;}
+        int getLocalGateId() const  {return destGateId;}
 
         /**
          * Returns the gate at the remote end of this connection.
          */
-        cGate *getRemoteGate() const  {return src_node->getModule()->gate(src_gate);}
+        cGate *getRemoteGate() const  {return srcNode->getModule()->gate(srcGateId);}
 
         /**
          * Returns the gate at the local end of this connection.
          */
-        cGate *getLocalGate() const  {return dest_node->getModule()->gate(dest_gate);}
+        cGate *getLocalGate() const  {return destNode->getModule()->gate(destGateId);}
     };
 
 
@@ -281,32 +299,33 @@ class SIM_API cTopology : public cOwnedObject
       public:
         /**
          * Returns the node at the remote end of this connection.
-         *
-         * Note: There is no corresponding localNode() method: the local node of
-         * this connection is the Node object whose method returned
-         * this LinkIn object.
          */
-        Node *getRemoteNode() const  {return dest_node;}
+        Node *getRemoteNode() const  {return destNode;}
+
+        /**
+         * Returns the node at the local end of this connection.
+         */
+        Node *getLocalNode() const  {return srcNode;}
 
         /**
          * Returns the gate ID at the remote end of this connection.
          */
-        int getRemoteGateId() const  {return dest_gate;}
+        int getRemoteGateId() const  {return destGateId;}
 
         /**
          * Returns the gate ID at the local end of this connection.
          */
-        int getLocalGateId() const  {return src_gate;}
+        int getLocalGateId() const  {return srcGateId;}
 
         /**
          * Returns the gate at the remote end of this connection.
          */
-        cGate *getRemoteGate() const  {return dest_node->getModule()->gate(dest_gate);}
+        cGate *getRemoteGate() const  {return destNode->getModule()->gate(destGateId);}
 
         /**
          * Returns the gate at the local end of this connection.
          */
-        cGate *getLocalGate() const  {return src_node->getModule()->gate(src_gate);}
+        cGate *getLocalGate() const  {return srcNode->getModule()->gate(srcGateId);}
     };
 
     /**
@@ -322,9 +341,15 @@ class SIM_API cTopology : public cOwnedObject
     };
 
   protected:
-    int num_nodes;
-    Node *nodev;
+    std::vector<Node*> nodes;
     Node *target;
+
+    // note: the purpose of the (unsigned int) cast is that nodes with moduleId==-1 are inserted at the end of the vector
+    static bool lessByModuleId(Node *a, Node *b) { return (unsigned int)a->moduleId < (unsigned int)b->moduleId; }
+    static bool isModuleIdLess(Node *a, int moduleId) { return (unsigned int)a->moduleId < (unsigned int)moduleId; }
+
+    void unlinkFromSourceNode(Link *link);
+    void unlinkFromDestNode(Link *link);
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -460,6 +485,45 @@ class SIM_API cTopology : public cOwnedObject
     void clear();
     //@}
 
+    /** @name Manipulating the graph.
+     */
+    //@{
+    /**
+     * Adds the given node to the graph. Returns the index of the new graph node
+     * (see getNode(int)). Indices of existing graph nodes may change.
+     */
+    int addNode(Node *node);
+
+    /**
+     * Removes the given node from the graph, together with all of its links.
+     * Indices of existing graph nodes may change.
+     */
+    void deleteNode(Node *node);
+
+    /**
+     * Adds the given link to the graph, between the specified nodes.
+     * If the link is already part of the graph it is removed first,
+     * i.e. this method also serves as reconnectLink().
+     */
+    void addLink(Link *link, Node *srcNode, Node *destNode);
+
+    /**
+     * Adds the given link to the graph, between the nodes that correspond
+     * to the specified gates. It is an error if the modules that contain
+     * the gates are not parts of the graph. If the link is already part 
+     * of the graph it is removed first, i.e. this method also serves as
+     * reconnectLink().
+     */
+    void addLink(Link *link, cGate *srcGate, cGate *destGate);
+
+    /**
+     * Removes the given link from the graph. Indices of existing links in the
+     * source and destination nodes may change.
+     */
+    void deleteLink(Link *link);
+    //@}
+
+
     /** @name Functions to examine topology by hand.
      *
      * Users also need to rely on Node and Link member functions
@@ -470,7 +534,7 @@ class SIM_API cTopology : public cOwnedObject
     /**
      * Returns the number of nodes in the graph.
      */
-    int getNumNodes() const  {return num_nodes;}
+    int getNumNodes() const  {return nodes.size();}
 
     /**
      * Returns pointer to the ith node in the graph. Node's methods
@@ -515,9 +579,19 @@ class SIM_API cTopology : public cOwnedObject
      */
     Node *getTargetNode() const {return target;}
     //@}
+
+  protected:
+    /**
+     * Node factory.
+     */
+    virtual Node *createNode(cModule *module) { return new Node(module->getId()); }
+
+    /**
+     * Link factory.
+     */
+    virtual Link *createLink() { return new Link(); }
 };
 
 NAMESPACE_END
-
 
 #endif
