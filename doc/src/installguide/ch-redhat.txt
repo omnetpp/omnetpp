@@ -56,9 +56,9 @@ you work with @OMNETPP@ and start the IDE from that shell.
 ==============================================================
 RedHat contains two separate GCC toolchains. The 'devtoolset' package
 contains the latest available version of GCC while the system default 
-'gcc' and 'gcc-c++' packages are using a much older version.
+gcc and gcc-c++ packages are using a much older version.
 You may opt to use the system default GCC toolchain by installing the 
-'gcc' and 'gcc-c++' packages instead of 'devtools-1.1'. In this case
+gcc and gcc-c++ packages instead of 'devtools-1.1'. In this case
 you don't have to use the above 'scl' command.
 ==============================================================
 
