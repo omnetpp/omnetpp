@@ -861,6 +861,7 @@ class StaticEnv : public cEnvir
     virtual int getParsimNumPartitions() const {return 1;}
     virtual unsigned long getUniqueNumber()  {unsupported(); return 0;}
     virtual bool idle()  {return false;}
+    virtual void attachDebugger() {}
     virtual void addHttpRequestHandler(cHttpRequestHandler *p) {}
     virtual void removeHttpRequestHandler(cHttpRequestHandler *p) {}
 

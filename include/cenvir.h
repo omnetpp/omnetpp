@@ -118,8 +118,9 @@ class SIM_API cEnvir
     // connectionDeleted(), displayStringChanged().
     bool suppress_notifications;
 
-    // Internal flag. When set, cRuntimeError constructor to raises an exception.
+    // Internal flags. When set, cRuntimeError constructor executes a debug trap/launches debugger
     bool debug_on_errors;
+    bool attach_debugger_on_errors;
 
   protected:
     // further internal vars
@@ -719,6 +720,12 @@ class SIM_API cEnvir
      * abort waiting (e.g. pushed the Stop button).
      */
     virtual bool idle() = 0;
+
+    /**
+     * Starts an external debugger program and attaches it to this process.
+     * The command line to start the debugger can be configured.
+     */
+    virtual void attachDebugger() = 0;
 
     /**
      * FIXME
