@@ -299,14 +299,14 @@ void Tkenv::doRun()
 
 void Tkenv::printUISpecificHelp()
 {
-    ev << "Tkenv-specific options:\n";
-    ev << "  -c <configname>\n";
-    ev << "                Select a given configuration for execution. With inifile-based\n";
-    ev << "                configuration database, this selects the [Config <configname>]\n";
-    ev << "                section; the default is the [General] section.\n";
-    ev << "                See also: -r.\n";
-    ev << "  -r <run>      Set up the specified run number in the configuration selected with\n";
-    ev << "                the -c option\n";
+    std::cout << "Tkenv-specific options:\n";
+    std::cout << "  -c <configname>\n";
+    std::cout << "                Select a given configuration for execution. With inifile-based\n";
+    std::cout << "                configuration database, this selects the [Config <configname>]\n";
+    std::cout << "                section; the default is the [General] section.\n";
+    std::cout << "                See also: -r.\n";
+    std::cout << "  -r <run>      Set up the specified run number in the configuration selected with\n";
+    std::cout << "                the -c option\n";
 }
 
 void Tkenv::rebuildSim()

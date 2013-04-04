@@ -1939,25 +1939,25 @@ void Cmdenv::displayStringChanged(cComponent *component)
 
 void Cmdenv::printUISpecificHelp()
 {
-    ev << "Cmdenv-specific options:\n";
-    ev << "  -w            Wait for commands over HTTP instead of starting a simulation\n";
-    ev << "                interactively. Overrides -c, -r, -a, -x, -g, -G, -X options.\n";
-    ev << "  -c <configname>\n";
-    ev << "                Select a given configuration for execution. With inifile-based\n";
-    ev << "                configuration database, this selects the [Config <configname>]\n";
-    ev << "                section; the default is the [General] section.\n";
-    ev << "                See also: -r.\n";
-    ev << "  -r <runs>     Execute the specified runs in the configuration selected with the\n";
-    ev << "                -c option. <runs> is a comma-separated list of run numbers or\n";
-    ev << "                run number ranges, for example 1,2,5-10. When not present, all\n" ;
-    ev << "                runs of that configuration will be executed.\n" ;
-    ev << "  -a            Print all config names and number of runs it them, and exit.\n";
-    ev << "  -x <configname>\n";
-    ev << "                Print the number of runs in the given configuration, and exit.\n";
-    ev << "  -g, -G        Make -x verbose: print the unrolled configuration, iteration\n";
-    ev << "                variables, etc. -G provides more details than -g.\n";
-    ev << "  -X <configname>\n";
-    ev << "                Print the fallback chain of the given configuration, and exit.\n";
+    std::cout << "Cmdenv-specific options:\n";
+    std::cout << "  -w            Wait for commands over HTTP instead of starting a simulation\n";
+    std::cout << "                interactively. Overrides -c, -r, -a, -x, -g, -G, -X options.\n";
+    std::cout << "  -c <configname>\n";
+    std::cout << "                Select a given configuration for execution. With inifile-based\n";
+    std::cout << "                configuration database, this selects the [Config <configname>]\n";
+    std::cout << "                section; the default is the [General] section.\n";
+    std::cout << "                See also: -r.\n";
+    std::cout << "  -r <runs>     Execute the specified runs in the configuration selected with the\n";
+    std::cout << "                -c option. <runs> is a comma-separated list of run numbers or\n";
+    std::cout << "                run number ranges, for example 1,2,5-10. When not present, all\n" ;
+    std::cout << "                runs of that configuration will be executed.\n" ;
+    std::cout << "  -a            Print all config names and number of runs it them, and exit.\n";
+    std::cout << "  -x <configname>\n";
+    std::cout << "                Print the number of runs in the given configuration, and exit.\n";
+    std::cout << "  -g, -G        Make -x verbose: print the unrolled configuration, iteration\n";
+    std::cout << "                variables, etc. -G provides more details than -g.\n";
+    std::cout << "  -X <configname>\n";
+    std::cout << "                Print the fallback chain of the given configuration, and exit.\n";
 }
 
 unsigned Cmdenv::getExtraStackForEnvir() const
