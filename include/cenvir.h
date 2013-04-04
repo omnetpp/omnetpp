@@ -116,9 +116,6 @@ class SIM_API cEnvir
     // internal: ask a yes/no question, throws exception if cancelled; askYesNo() delegates here
     virtual bool askyesno(const char *msg) = 0;
 
-    // internal: flushes the internal stream buffer by terminating last line if needed
-    void flushLastLine();
-
   public:
     /** @name Constructor, destructor. */
     //@{

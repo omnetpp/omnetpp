@@ -42,14 +42,6 @@ cConfigurationEx *cEnvir::getConfigEx()
     return cfg;
 }
 
-// note: exploits the fact that evbuf does sync() on "\n"'s
-void cEnvir::flushLastLine()
-{
-    evbuf *buf = (evbuf *)out.rdbuf();
-    if (!buf->isempty())
-        buf->sputn("\n",1);
-}
-
 //
 // Temp buffer for vararg functions below.
 // Note: using a static buffer reduces stack usage of activity() modules;

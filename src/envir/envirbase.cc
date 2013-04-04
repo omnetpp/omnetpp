@@ -891,7 +891,7 @@ void EnvirBase::startRun()
     if (opt_simtimelimit > SIMTIME_ZERO)
         simulation.setSimulationTimeLimit(opt_simtimelimit);
     simulation.callInitialize();
-    flushLastLine();
+    cLogStream::globalStream.flushLastLine();
 }
 
 void EnvirBase::endRun()  //FIXME eliminate???

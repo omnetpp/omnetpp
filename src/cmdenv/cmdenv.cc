@@ -368,7 +368,7 @@ void Cmdenv::doRun()
                 ::fprintf(fout, "\nCalling finish() at end of Run #%d...\n", runNumber);
                 ::fflush(fout);
                 simulation.callFinish();
-                flushLastLine();
+                cLogStream::globalStream.flushLastLine();
 
                 checkFingerprint();
 
@@ -1096,7 +1096,7 @@ bool Cmdenv::doRunSimulation()
         simulation.executeEvent(event);
 
         // flush so that output from different modules don't get mixed
-        flushLastLine();
+        cLogStream::globalStream.flushLastLine();
 
         // display update
         if (frequentUpdates || ((simulation.getEventNumber()&0x0f)==0 && elapsed(opt_updatefreq_fast, lastUpdateTime)))
@@ -1246,7 +1246,7 @@ void Cmdenv::finishSimulation()
     try
     {
         simulation.callFinish();
-        flushLastLine();
+        cLogStream::globalStream.flushLastLine();
 
         checkFingerprint();
     }
@@ -1314,7 +1314,7 @@ void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesti
                 simulation.executeEvent(event);
 
                 // flush so that output from different modules don't get mixed
-                flushLastLine();
+                cLogStream::globalStream.flushLastLine();
 
                 checkTimeLimits();
                 if (sigintReceived)
