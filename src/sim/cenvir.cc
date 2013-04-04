@@ -51,7 +51,7 @@ class evbuf : public std::basic_stringbuf<char>
 
 //----
 
-cEnvir::cEnvir() : out(new evbuf())
+cEnvir::cEnvir()
 {
     disable_tracing = false;
     debug_on_errors = false;
@@ -106,7 +106,7 @@ int cEnvir::printf(const char *fmt,...)
     va_end(va);
 
     // route it through streambuf to preserve ordering
-    out.rdbuf()->sputn(staticbuf, len);
+    sputn(staticbuf, len);
     return len;
 }
 

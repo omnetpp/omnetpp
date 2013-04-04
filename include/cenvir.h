@@ -124,10 +124,6 @@ class SIM_API cEnvir
     bool attach_debugger_on_errors;
 
   protected:
-    // further internal vars
-    std::ostream out;
-
-  protected:
     // internal: ev.printf() and ev<< eventually ends up here; write the first n characters of string s
     virtual void sputn(const char *s, int n) = 0;
 
@@ -521,38 +517,6 @@ class SIM_API cEnvir
      * </pre>
      */
     bool isDisabled() const {return disable_tracing && !record_eventlog;}
-
-    /**
-     * Overloaded << operator to make cEnvir behave like an ostream.
-     * @see getOStream()
-     */
-    // implementation note: needed because otherwise the templated version
-    // would cause ambiguity errors in some cases
-    cEnvir& operator<<(const std::string& t) {out << t; return *this;}
-
-    /**
-     * Overloaded << operator to make cEnvir behave like an ostream.
-     *
-     * This method can be used by modules and channels to display debugging output.
-     * It is up to the user interface implementation to display the text in
-     * the way it wants. The text is usually associated with the module or channel
-     * in context (see cSimulation::getContext()), and may get displayed in the
-     * module's debug window, or enabled/disabled per module.
-     *
-     * @see getOStream()
-     */
-    template<typename T> cEnvir& operator<<(const T& t) {out << t; return *this;}
-
-    /**
-     * Overloaded << operator to handle stream manipulators such as <tt>endl</tt>.
-     */
-    cEnvir& operator<<(std::ostream& (t)(std::ostream&)) {out << t; return *this;}
-
-    /**
-     * Returns the std::ostream instance where '<<' operators delegate.
-     * Writes will be eventually delegated to cEnvir::sputn(), after buffering.
-     */
-    std::ostream& getOStream() {return out;}
 
     /**
      * In graphical user interfaces (Tkenv), it pops up a "bubble" over the
