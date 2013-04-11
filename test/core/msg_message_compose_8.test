@@ -17,8 +17,8 @@ message MyMessage
 
 %activity:
 
-#define PRINT(X) ev << #X << ":" << X << endl
-#define PRINTOBJ(X)  ev << #X << ":" << X.getClassName() << ":" << X.getName() << ":" \
+#define PRINT(X) EV << #X << ":" << X << endl
+#define PRINTOBJ(X)  EV << #X << ":" << X.getClassName() << ":" << X.getName() << ":" \
                         << (X.getOwner()==&x ? "owned" : "not owned") << ":" \
                         << X.length() << endl;
 
@@ -32,7 +32,7 @@ x.getQ(2).setName("q2"); x.getQ(2).insert(new cMessage());x.getQ(2).insert(new c
 PRINTOBJ(x.getQ(0));
 PRINTOBJ(x.getQ(1));
 PRINTOBJ(x.getQ(2));
-ev << "-" << endl;
+EV << "-" << endl;
 
 // assignment (doesn't copy object name, but contents must be transferred)
 x.setQ(0,x.getQ(2));

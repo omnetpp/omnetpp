@@ -41,7 +41,7 @@ iter2--;
 CHECK(iter2.end());
 CHECK(iter2()==NULL);
 
-ev << "OK!\n";
+EV << "OK!\n";
 
 %contains: stdout
 OK!

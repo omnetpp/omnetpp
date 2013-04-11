@@ -28,25 +28,25 @@ int numrepl=10000;
 // uniform(a,b): m=(a+b)/2
 MEAN_AND_VARIANCE(uniform(0,1,rng));   // m=0.5
 MEAN_AND_VARIANCE(uniform(-5,5,rng));  // m=0
-ev << endl;
+EV << endl;
 
 // exponential(mean)
 MEAN_AND_VARIANCE(exponential(1.0,rng));  // m: same as arg.
 MEAN_AND_VARIANCE(exponential(0.01,rng));
 MEAN_AND_VARIANCE(exponential(5.0,rng));
-ev << endl;
+EV << endl;
 
 // normal(mean,stddev): variance=sqrt(stddev)
 MEAN_AND_VARIANCE(normal(0,1,rng));
 MEAN_AND_VARIANCE(normal(0,4,rng));
 MEAN_AND_VARIANCE(normal(-1,4,rng));
-ev << endl;
+EV << endl;
 
 MEAN_AND_VARIANCE(truncnormal(0,1,rng));
 MEAN_AND_VARIANCE(truncnormal(0,4,rng));
 MEAN_AND_VARIANCE(truncnormal(100,1,rng));
 MEAN_AND_VARIANCE(truncnormal(-1,1,rng));
-ev << endl;
+EV << endl;
 
 // TBD:  gamma_d (double alpha, double beta, int rng=0)
 // TBD:  beta (double alpha1, double alpha2, int rng=0)
@@ -58,7 +58,7 @@ MEAN_AND_VARIANCE(erlang_k(1,5));     // same as exponential
 MEAN_AND_VARIANCE(erlang_k(2,1));
 MEAN_AND_VARIANCE(erlang_k(5,1));
 MEAN_AND_VARIANCE(erlang_k(5,10));
-ev << endl;
+EV << endl;
 
 // TBD:  chi_square (unsigned int k, int rng=0)
 // TBD:  student_t (unsigned int i, int rng=0)
@@ -71,7 +71,7 @@ MEAN_AND_VARIANCE(triang(0,1,1));
 MEAN_AND_VARIANCE(triang(0,0.1,1));
 MEAN_AND_VARIANCE(triang(0,0.9,1));
 MEAN_AND_VARIANCE(triang(-1,4,5));
-ev << endl;
+EV << endl;
 
 // TBD:  lognormal (double m, double s, int rng=0)
 MEAN_AND_VARIANCE(lognormal(0,1));

@@ -4,10 +4,10 @@ Should pass both on 32 and 64 bit architectures
 
 %activity:
 
-unsigned int x = 0xffffffff; ev<<"x="<<x<<"\n";
-long ll = (int)x;            ev<<"ll="<<ll<<"\n";
-int64 i64 = ll;              ev<<"i64="<<i64<<"\n";
-uint64 ui64 = i64;           ev<<"ui64="<<ui64<<"\n";
+unsigned int x = 0xffffffff; EV<<"x="<<x<<"\n";
+long ll = (int)x;            EV<<"ll="<<ll<<"\n";
+int64 i64 = ll;              EV<<"i64="<<i64<<"\n";
+uint64 ui64 = i64;           EV<<"ui64="<<ui64<<"\n";
 
 %contains: stdout
 x=4294967295

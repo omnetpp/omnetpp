@@ -6,14 +6,14 @@ simulation.
 class Noisy
 {
   public:
-    Noisy() {ev << "Noisy ctor!\n";}
-    virtual ~Noisy() {ev << "Noisy dtor!\n";}
+    Noisy() {EV << "Noisy ctor!\n";}
+    virtual ~Noisy() {EV << "Noisy dtor!\n";}
 };
 
 
 
 %activity:
-ev << "begin\n";
+EV << "begin\n";
 Noisy x;
 wait(1000);
 wait(1000);

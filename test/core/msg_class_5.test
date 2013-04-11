@@ -24,8 +24,8 @@ class MyClass
 
 %activity:
 
-#define PRINTA(X)  ev << #X << ":" << X(0) << ":" << X(1) << ":" << X ## ArraySize() << endl;
-#define PRINTA1(X) ev << #X << ":" << X(0) << ":" << (int)X(1) << ":" << X ## ArraySize() << endl;
+#define PRINTA(X)  EV << #X << ":" << X(0) << ":" << X(1) << ":" << X ## ArraySize() << endl;
+#define PRINTA1(X) EV << #X << ":" << X(0) << ":" << (int)X(1) << ":" << X ## ArraySize() << endl;
 
 MyClass x;
 

@@ -47,7 +47,7 @@ Define_Channel(ChannelWithNamespace);
 
 void ChannelWithNamespace::processMessage(cMessage *msg, simtime_t t, result_t& result)
 {
-    ev << "ChannelWithNamespace\n";
+    EV << "ChannelWithNamespace\n";
     cIdealChannel::processMessage(msg, t, result);
 }
 

@@ -72,17 +72,17 @@ for (int i=0; i<FIRSTVALS+10; i++)
 {
     if (i==0 || i==1 || i==FIRSTVALS-1 || i==FIRSTVALS || i==FIRSTVALS+5) {
         // print range
-        ev << i << " observations:\n";
+        EV << i << " observations:\n";
         for (int k=0; k<nh; k++) {
-            ev << " h[" << k << "] " << std::setw(k<10?23:22) << h[k]->getName() << ": ";
+            EV << " h[" << k << "] " << std::setw(k<10?23:22) << h[k]->getName() << ": ";
             if (!h[k]->isTransformed())
-                ev << "collecting\n";
+                EV << "collecting\n";
             else {
                 int nc = h[k]->getNumCells();
-                ev << std::setw(2) << nc << " cells, " << h[k]->getBasepoint(0) << ".." << h[k]->getBasepoint(nc) << "\n";
+                EV << std::setw(2) << nc << " cells, " << h[k]->getBasepoint(0) << ".." << h[k]->getBasepoint(nc) << "\n";
             }
         }
-        ev << "\n";
+        EV << "\n";
     }
 
     // test info() and detailedInfo()
@@ -94,7 +94,7 @@ for (int i=0; i<FIRSTVALS+10; i++)
     // collect values
     int intvalue = 5 + (i%20);              // range: 5..25
     double doublevalue = 15 + (i%20)/10.0;  // range: 15..16.9
-    //ev << i << " --> " << intvalue << ", " << doublevalue << "\n";
+    //EV << i << " --> " << intvalue << ", " << doublevalue << "\n";
     for (int k=0; k<nih; k++)
         h[k]->collect(intvalue);
     for (int k=nih; k<nh; k++)

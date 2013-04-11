@@ -22,12 +22,12 @@ void Module::handleMessage(cMessage *msg)
 {
     scheduleAt(simTime()+1.0, msg);
     endSimulation();
-    ev << "after endSimulation\n";
+    EV << "after endSimulation\n";
 }
 
 void Module::finish()
 {
-    ev << "finish called\n";
+    EV << "finish called\n";
 }
 
 %contains: stdout

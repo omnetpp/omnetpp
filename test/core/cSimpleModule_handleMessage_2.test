@@ -15,18 +15,18 @@ Define_Module(Module);
 
 void Module::initialize()
 {
-   ev << "initialize()\n";
+   EV << "initialize()\n";
 }
 
 void Module::handleMessage(cMessage *msg)
 {
-   ev << "handleMessage()\n";
+   EV << "handleMessage()\n";
    delete msg;
 }
 
 void Module::finish()
 {
-   ev << "finish()\n";
+   EV << "finish()\n";
 }
 
 %contains-regex: stdout

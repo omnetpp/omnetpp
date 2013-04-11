@@ -12,9 +12,9 @@ Omit abstract classes and classes without default constructor.
       ((cNamedObject&)a).setName(#class); \
    class b = a; \
    if (dynamic_cast<cNamedObject*>(&a) && strcmp(((cNamedObject&)a).getName(), ((cNamedObject&)b).getName())) \
-      ev << "FAIL name: "#class << endl; \
+      EV << "FAIL name: "#class << endl; \
    if (dynamic_cast<cObject*>(&a) && ((cObject&)a).info() != ((cObject&)b).info()) \
-      ev << "FAIL info: "#class << endl; \
+      EV << "FAIL info: "#class << endl; \
 }
 
 // abstract class TD(cAccuracyDetection)

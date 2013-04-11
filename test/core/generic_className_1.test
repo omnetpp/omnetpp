@@ -10,7 +10,7 @@ cStatistic, cModuleType, cChannelType, cWatch, cPar, etc...
 
 %activity:
 
-#define PRINT_CLASSNAME(T) {T a##T; ev << #T ": " << a##T.getClassName() << endl;}
+#define PRINT_CLASSNAME(T) {T a##T; EV << #T ": " << a##T.getClassName() << endl;}
 
 PRINT_CLASSNAME( cArray )
 PRINT_CLASSNAME( cTDExpandingWindows )

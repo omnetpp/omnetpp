@@ -87,11 +87,11 @@ void Node2::activity()
 void Node2::finish()
 {
     double erate = numErrors / (double)NUM_MSGS;
-    ev << "error rate: measured: " << erate << ", expected: " << PACKET_ERROR_RATE << endl;
+    EV << "error rate: measured: " << erate << ", expected: " << PACKET_ERROR_RATE << endl;
 
     if (fabs(erate-PACKET_ERROR_RATE) > PACKET_ERROR_RATE/10)
         throw cRuntimeError("wrong packet error rate");
-    ev << "OK\n";
+    EV << "OK\n";
 }
 
 }; //namespace

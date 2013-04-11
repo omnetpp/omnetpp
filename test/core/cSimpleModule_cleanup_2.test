@@ -6,13 +6,13 @@ should be properly disposed of at the end of the simulation.
 class Noisy : public cOwnedObject
 {
   public:
-    Noisy() {ev << "Noisy ctor!\n";}
-    virtual ~Noisy() {ev << "Noisy dtor!\n";}
+    Noisy() {EV << "Noisy ctor!\n";}
+    virtual ~Noisy() {EV << "Noisy dtor!\n";}
 };
 
 %activity:
 setPerformFinalGC(true);
-ev << "begin\n";
+EV << "begin\n";
 new Noisy;
 
 %inifile: test.ini

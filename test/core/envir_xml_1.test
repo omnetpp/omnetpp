@@ -16,9 +16,9 @@ Note: path expr testing is in cXMLElement_1.test.
 
 cXMLElement *node = ev.getXMLDocument("test.xml");
 if (!node)
-    ev << "NULL\n";
+    EV << "NULL\n";
 else
-    ev << node->getTagName() << " from " << node->getSourceLocation() << "\n";
+    EV << node->getTagName() << " from " << node->getSourceLocation() << "\n";
 
 %contains: stdout
 foo from test.xml:2

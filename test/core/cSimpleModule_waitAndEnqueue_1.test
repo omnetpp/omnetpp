@@ -17,23 +17,23 @@ cQueue queue("queue");
 waitAndEnqueue(3, &queue);
 
 // dump queue
-ev << "queue contents after waitAndEnqueue:\n";
+EV << "queue contents after waitAndEnqueue:\n";
 cMessage *msg;
 while (!queue.empty())
 {
     msg = (cMessage *) queue.pop();
-    ev << "  " << msg->getName() << endl;
+    EV << "  " << msg->getName() << endl;
     delete msg;
 }
 
 // receive remaining messages
-ev << "receiving further messages:\n";
+EV << "receiving further messages:\n";
 msg = receive();
-ev << "  " << msg->getName() << endl;
+EV << "  " << msg->getName() << endl;
 delete msg;
 
 msg = receive();
-ev << "  " << msg->getName() << endl;
+EV << "  " << msg->getName() << endl;
 delete msg;
 
 %contains-regex: stdout

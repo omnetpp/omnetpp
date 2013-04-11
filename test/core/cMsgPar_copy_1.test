@@ -7,7 +7,7 @@ Tests assignment operator (copying a cMsgPar to another cMsgPar) for basic data 
 %activity:
 cMsgPar p, q;
 
-#define PRINT(X)  ev << q.getType() << ":" << q.isNumeric() << ":" << X << endl
+#define PRINT(X)  EV << q.getType() << ":" << q.isNumeric() << ":" << X << endl
 
 p = false; q = p; PRINT(q.boolValue());
 p = true; q = p; PRINT(q.boolValue());
@@ -26,7 +26,7 @@ p = buf; buf[0]='\0'; q = p; PRINT(q.stringValue());
 strcpy(buf,"12345678901234567890123456789012345678901234567890"); // long string
 p = buf; buf[0]='\0'; q = p; PRINT(q.stringValue());
 
-ev << "." << endl;
+EV << "." << endl;
 
 %contains: stdout
 B:1:0

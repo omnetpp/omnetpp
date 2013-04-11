@@ -36,7 +36,7 @@ Define_Module(SuperClass);
 
 void SuperClass::activity()
 {
-    ev << "SuperClass\n";
+    EV << "SuperClass\n";
 }
 
 };

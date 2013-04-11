@@ -53,7 +53,7 @@ Define_Module(Tester);
 
 const char *_(const char *s) {return s ? s : "NULL";}
 
-#define P(x)  ev << #x << ": " << (x) << "\n"
+#define P(x)  EV << #x << ": " << (x) << "\n"
 
 void Tester::activity()
 {

@@ -37,7 +37,7 @@ Register_Class(SomePacket);
 %activity:
 
 SomePacket *msg = new SomePacket("some", 99);
-ev << ObjectPrinter().printObjectToString(msg);
+EV << ObjectPrinter().printObjectToString(msg);
 delete msg;
 
 %contains: stdout

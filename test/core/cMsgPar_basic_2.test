@@ -7,7 +7,7 @@ Tests cMsgPar's conversions to basic types (operator long(), operator double(), 
 %activity:
 cMsgPar p;
 
-#define PRINT(X)  ev << p.getType() << ":" << p.isNumeric() << ":" << X << endl
+#define PRINT(X)  EV << p.getType() << ":" << p.isNumeric() << ":" << X << endl
 
 p.setBoolValue(false); PRINT((bool)p);
 p.setBoolValue(true); PRINT((bool)p);
@@ -26,7 +26,7 @@ p.setStringValue(buf); buf[0]='\0'; PRINT((const char *)p);
 strcpy(buf,"12345678901234567890123456789012345678901234567890"); // long string
 p.setStringValue(buf); buf[0]='\0'; PRINT((const char *)p);
 
-ev << "." << endl;
+EV << "." << endl;
 
 %contains: stdout
 B:1:0

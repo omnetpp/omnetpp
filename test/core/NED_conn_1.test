@@ -58,27 +58,27 @@ void Gen::activity()
 {
     for (int i=0; i<gateSize("out"); i++)
     {
-        ev << i << ":";
+        EV << i << ":";
         cGate *g = gate("out",i);
         cChannel *ch = g->getChannel();
         if (ch)
-            ev << ch->getClassName();
+            EV << ch->getClassName();
         if (dynamic_cast<cDelayChannel *>(ch))
         {
             cDelayChannel *sch = check_and_cast<cDelayChannel *>(ch);
-            ev << " disabled=" << sch->isDisabled();
-            if (sch->getDelay() != 0)  ev << " delay=" << sch->getDelay();
+            EV << " disabled=" << sch->isDisabled();
+            if (sch->getDelay() != 0)  EV << " delay=" << sch->getDelay();
         }
         if (dynamic_cast<cDatarateChannel *>(ch))
         {
             cDatarateChannel *sch = check_and_cast<cDatarateChannel *>(ch);
-            ev << " disabled=" << sch->isDisabled();
-            if (sch->getDelay() != 0)  ev << " delay=" << sch->getDelay();
-            if (sch->getDatarate())  ev << " datarate=" << sch->getDatarate();
-            if (sch->getBitErrorRate())  ev << " ber=" << sch->getBitErrorRate();
-            if (sch->getPacketErrorRate())  ev << " per=" << sch->getPacketErrorRate();
+            EV << " disabled=" << sch->isDisabled();
+            if (sch->getDelay() != 0)  EV << " delay=" << sch->getDelay();
+            if (sch->getDatarate())  EV << " datarate=" << sch->getDatarate();
+            if (sch->getBitErrorRate())  EV << " ber=" << sch->getBitErrorRate();
+            if (sch->getPacketErrorRate())  EV << " per=" << sch->getPacketErrorRate();
         }
-        ev << endl;
+        EV << endl;
     }
 }
 

@@ -4,7 +4,7 @@ Tests if wrong (illegal) parameter values are detected by the distributions.
 %activity:
 
 #define TEST_ERROR(f) \
- try {ev << #f << ": "; f; ev << "no error\n";} catch (std::exception& e) {ev << e.what() << endl;}
+ try {EV << #f << ": "; f; EV << "no error\n";} catch (std::exception& e) {EV << e.what() << endl;}
 
 TEST_ERROR(gamma_d(0,1));
 TEST_ERROR(gamma_d(1,0));

@@ -13,7 +13,7 @@ class Sender : public cSimpleModule
 
 Define_Module(Sender);
 
-#define PRINT(g)   ev << #g << ":" << ((g) ? (g)->getFullName() : "NULL") << endl
+#define PRINT(g)   EV << #g << ":" << ((g) ? (g)->getFullName() : "NULL") << endl
 
 cChannel *Sender::createChannel(double delay)
 {
@@ -68,7 +68,7 @@ void Sender::activity()
    out->reconnectWith(NULL);
    PRINT(out->getChannel());
 
-   ev << "done\n";
+   EV << "done\n";
 }
 
 %module_b: Receiver
@@ -87,7 +87,7 @@ void Receiver::activity()
     while (true)
     {
         cMessage *msg = receive();
-        ev << msg->getName() << " arrived at " << simTime() << endl;
+        EV << msg->getName() << " arrived at " << simTime() << endl;
         delete msg;
     }
 }

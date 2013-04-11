@@ -30,7 +30,7 @@ Define_Module(Simple);
 
 void Simple::activity()
 {
-    ev << "hello" << endl;
+    EV << "hello" << endl;
 }
 
 }; //namespace

@@ -38,7 +38,7 @@ Define_Module(OverrideClass);
 
 void OverrideClass::activity()
 {
-    ev << "OverrideClass\n";
+    EV << "OverrideClass\n";
 }
 
 }; //namespace

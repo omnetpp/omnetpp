@@ -23,14 +23,14 @@ message MyMessage
 
 %activity:
 
-#define PRINT(X) ev << #X << ":" << X << endl
+#define PRINT(X) EV << #X << ":" << X << endl
 
 MyMessage x("msg");
 
 // test it's really subclassed from cMessage
 (void)(cMessage *)&x;
-ev << (dynamic_cast<cMessage *>(&x)!=0 ? "cMessage" : "generic") << endl;
-ev << x.getClassName() << ":" << x.getName() << endl;
+EV << (dynamic_cast<cMessage *>(&x)!=0 ? "cMessage" : "generic") << endl;
+EV << x.getClassName() << ":" << x.getName() << endl;
 
 // fields must initialize to zero
 PRINT(x.getB());
@@ -42,7 +42,7 @@ PRINT(x.getUi());
 PRINT(x.getL());
 PRINT(x.getUl());
 PRINT(x.getD());
-ev << "--\n";
+EV << "--\n";
 
 // scalar fields
 x.setB(true); PRINT(x.getB());

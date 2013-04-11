@@ -7,8 +7,8 @@ const char *str = " 34 42 13 46 72 41 ";
 std::vector<int> v = cStringTokenizer(str).asIntVector();
 
 for (int i=0; i<(int)v.size(); i++)
-    ev << (i?" ":"") << v[i];
-ev << "\n.\n";
+    EV << (i?" ":"") << v[i];
+EV << "\n.\n";
 
 %contains: stdout
 34 42 13 46 72 41

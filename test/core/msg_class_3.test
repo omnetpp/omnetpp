@@ -17,14 +17,14 @@ class MyClass
 %activity:
 
 MyClass x;
-ev << "s1:" << x.getS1() << endl;
-ev << "s2:" << x.getS2() << endl;
+EV << "s1:" << x.getS1() << endl;
+EV << "s2:" << x.getS2() << endl;
 
 char *p = "alice";
 x.setS1(p);
 x.setS2(p);
-ev << "s1:" << x.getS1() << ":" << (x.getS1()==p ? "shallow" : "deep") << endl;
-ev << "s2:" << x.getS2() << ":" << (x.getS2()==p ? "shallow" : "deep") << endl;
+EV << "s1:" << x.getS1() << ":" << (x.getS1()==p ? "shallow" : "deep") << endl;
+EV << "s2:" << x.getS2() << ":" << (x.getS2()==p ? "shallow" : "deep") << endl;
 
 %contains: stdout
 s1:

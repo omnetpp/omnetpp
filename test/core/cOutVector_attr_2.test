@@ -6,7 +6,7 @@ enum Colors { RED=1; GREEN=2; BLUE=3; };
 
 %activity:
 
-#define TRY(code)  try { code; } catch(std::exception& e) {ev << "ERROR:" << e.what() << "\n";}
+#define TRY(code)  try { code; } catch(std::exception& e) {EV << "ERROR:" << e.what() << "\n";}
 
 cOutVector intVec;
 

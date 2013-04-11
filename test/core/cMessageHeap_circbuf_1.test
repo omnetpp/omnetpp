@@ -61,7 +61,7 @@ void Test::verifyFES()
 
 void Test::insertMessages(int n)
 {
-    ev << "len=" << fes.length() << "; adding " << n << " events\n";
+    EV << "len=" << fes.length() << "; adding " << n << " events\n";
     verifyFES();
     for (int i=0; i<n; i++)
     {
@@ -74,7 +74,7 @@ void Test::insertMessages(int n)
 
 void Test::removeRandomMessages(int n)
 {
-    ev << "len=" << fes.length() << "; randomly removing max " << n << " events\n";
+    EV << "len=" << fes.length() << "; randomly removing max " << n << " events\n";
     verifyFES();
     for (int i=0; i<n && !shadow.empty(); i++)
     {
@@ -121,7 +121,7 @@ void Test::initialize()
         removeRandomMessages(intuniform(0,10));
     }
 
-    ev << "done\n";
+    EV << "done\n";
 }
 
 }; //namespace

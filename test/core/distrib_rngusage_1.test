@@ -68,7 +68,7 @@ for (int rng=0; rng<=2; rng++)
     CHECKNUMDRAWN(poisson(1.0, rng));
     CHECKNUMDRAWN(poisson(35.0, rng));
 }
-ev << "finished\n";
+EV << "finished\n";
 
 %inifile: test.ini
 [General]

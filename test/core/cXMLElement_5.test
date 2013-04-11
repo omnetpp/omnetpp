@@ -31,10 +31,10 @@ static void getElements(const char *tagname)
     cXMLElement *rootelement = ev.getXMLDocument("test.xml", NULL);
     cXMLElementList list = rootelement->getChildrenByTagName(tagname);
 
-    ev << tagname << ":";
+    EV_S << tagname << ":";
     for (cXMLElementList::iterator i=list.begin(); i!=list.end(); i++)
-        ev << " " << (*i)->getAttribute("id");
-    ev << ".\n";
+        EV_S << " " << (*i)->getAttribute("id");
+    EV_S << ".\n";
 }
 
 %activity:

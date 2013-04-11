@@ -3,8 +3,8 @@ Tests cProperty keys and values
 
 %global:
 #include <string.h>
-#define PRINTINFO     ev << prop->info() << "\n";
-#define PRINTKEY(k)   ev << "key(" << k << "): has=" << (prop->containsKey(k)?"yes":"no") << " len=" << (prop->containsKey(k) ? prop->getNumValues(k) : -1) << "\n";
+#define PRINTINFO     EV << prop->info() << "\n";
+#define PRINTKEY(k)   EV << "key(" << k << "): has=" << (prop->containsKey(k)?"yes":"no") << " len=" << (prop->containsKey(k) ? prop->getNumValues(k) : -1) << "\n";
 
 %activity:
 //__asm int 3;
@@ -50,7 +50,7 @@ PRINTKEY("fookey");
 
 delete prop;
 
-ev << "." << endl;
+EV << "." << endl;
 
 %contains: stdout
 @foo

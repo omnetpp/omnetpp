@@ -16,14 +16,14 @@ message MyMessage
 %activity:
 
 #define TRYPRINT(X)  try { \
-                       ev << #X << ":";  ev << X << endl; \
+                       EV << #X << ":";  EV << X << endl; \
                      } catch (std::exception& e) { \
-                       ev << "OOPS!" << endl; \
+                       EV << "OOPS!" << endl; \
                      }
 #define TRY(X)       try { \
-                       ev << #X << ":";  X;  ev << "OK" << endl; \
+                       EV << #X << ":";  X;  EV << "OK" << endl; \
                      } catch (std::exception& e) { \
-                       ev << "OOPS!" << endl; \
+                       EV << "OOPS!" << endl; \
                      }
 
 MyMessage x;

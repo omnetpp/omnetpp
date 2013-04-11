@@ -18,13 +18,13 @@ void Module::activity()
    for(int i=1; i<100; i++)
    {
       wait(1); // don't test with 0.1 which suffers from rounding errors
-      ev << "time: " << simTime() << "s\n";
+      EV << "time: " << simTime() << "s\n";
    }
 }
 
 void Module::finish()
 {
-   ev << "finish() at " << simTime() << "s\n";
+   EV << "finish() at " << simTime() << "s\n";
 }
 
 %inifile: test.ini

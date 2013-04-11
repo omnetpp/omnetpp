@@ -9,7 +9,7 @@ The rest is inconsistent:
 
 %activity:
 
-#define PRINT(x) {d=(double)x; l=(long)d; ul=(unsigned long)d; ev << "d=" << d << ", l=" << l << ", ul=" << ul << endl;}
+#define PRINT(x) {d=(double)x; l=(long)d; ul=(unsigned long)d; EV << "d=" << d << ", l=" << l << ", ul=" << ul << endl;}
 
 double d;
 long l;

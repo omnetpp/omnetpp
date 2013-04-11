@@ -9,13 +9,13 @@ SimTime: test the two-arg constructor
 void test(int64 value, int exponent)
 {
     double d = value * pow(10.0, exponent);
-    ev << value << "*10^" << exponent << " = ~" << d << " -> ";
+    EV_S << value << "*10^" << exponent << " = ~" << d << " -> ";
     try {
         SimTime t(value, exponent);
         bool nearlyEqual = fabs(t/d-1.0) < 0.001;
-        ev << t << " (int64:" << t.raw() << ") " << (nearlyEqual?"ok":"WRONG") << "\n";
+        EV_S << t << " (int64:" << t.raw() << ") " << (nearlyEqual?"ok":"WRONG") << "\n";
     } catch (std::exception& e) {
-        ev << "ERROR: " << e.what() << "\n";
+        EV_S << "ERROR: " << e.what() << "\n";
     }
 }
 
@@ -27,7 +27,7 @@ for (int exp = -20; exp < 15; exp++)
 for (int exp = -20; exp < 15; exp++)
     test(-96000, exp);
 
-ev << ".\n";
+EV << ".\n";
 
 %inifile: omnetpp.ini
 [General]

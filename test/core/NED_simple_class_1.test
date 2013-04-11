@@ -34,7 +34,7 @@ Define_Module(ClassWithoutNamespace);
 
 void ClassWithoutNamespace::activity()
 {
-    ev << "ClassWithoutNamespace\n";
+    EV << "ClassWithoutNamespace\n";
 }
 
 %contains: stdout

@@ -35,12 +35,12 @@ Define_Module(Simple);
 void Simple::activity()
 {
     ASSERT(cSimulation::getActiveSimulation()->getActivityModule() == this);
-    ev << "hello from " << getFullName() << endl;
+    EV << "hello from " << getFullName() << endl;
     wait(1);
     cModuleType::get("Shadow")->createScheduleInit("b", getParentModule());
-    ev << "module 'b' created from " << getFullName() << endl;
+    EV << "module 'b' created from " << getFullName() << endl;
     wait(2);
-    ev << "good bye from " << getFullName() << endl;
+    EV << "good bye from " << getFullName() << endl;
     receive();
 }
 
@@ -55,9 +55,9 @@ Define_Module(Shadow);
 void Shadow::activity()
 {
     ASSERT(cSimulation::getActiveSimulation()->getActivityModule() == this);
-    ev << "hello from " << getFullName() << endl;
+    EV << "hello from " << getFullName() << endl;
     wait(3);
-    ev << "good bye from " << getFullName() << endl;
+    EV << "good bye from " << getFullName() << endl;
     receive();
 }
 

@@ -4,19 +4,19 @@ Tests cPacket.addBitLength().
 %activity:
 cPacket pkt("pkt");
 
-ev << pkt.getBitLength() << endl;
+EV << pkt.getBitLength() << endl;
 
 pkt.addBitLength(100);
-ev << pkt.getBitLength() << endl;
+EV << pkt.getBitLength() << endl;
 
 pkt.addBitLength(50);
-ev << pkt.getBitLength() << endl;
+EV << pkt.getBitLength() << endl;
 
 pkt.addBitLength(-10);
-ev << pkt.getBitLength() << endl;
+EV << pkt.getBitLength() << endl;
 
 pkt.addBitLength(-300);
-ev << pkt.getBitLength() << endl;
+EV << pkt.getBitLength() << endl;
 
 %exitcode: 1
 

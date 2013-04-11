@@ -21,7 +21,7 @@ message MyMessage
 
 MyMessage x;
 
-#define PRINT(X)  ev << #X << ":" << (int)(X) << endl
+#define PRINT(X)  EV << #X << ":" << (int)(X) << endl
 
 PRINT(x.getFooArraySize());
 x.setFooArraySize(3);

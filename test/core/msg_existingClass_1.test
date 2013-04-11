@@ -61,9 +61,9 @@ struct Point
 // if the test compiles, that's already half the test passed
 // (i.e. no "duplicate code for class Foo" linker errors)
 
-ev << cClassDescriptor::getDescriptorFor("@TESTNAME@::Foo")->getClassName() << "\n";
-ev << cClassDescriptor::getDescriptorFor("@TESTNAME@::Point")->getClassName() << "\n";
-ev << ".\n";
+EV << cClassDescriptor::getDescriptorFor("@TESTNAME@::Foo")->getClassName() << "\n";
+EV << cClassDescriptor::getDescriptorFor("@TESTNAME@::Point")->getClassName() << "\n";
+EV << ".\n";
 
 %contains: stdout
 @TESTNAME@::FooDescriptor

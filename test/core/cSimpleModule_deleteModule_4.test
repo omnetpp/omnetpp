@@ -42,7 +42,7 @@ void NodeA::initialize()
 
 void NodeA::handleMessage(cMessage *msg)
 {
-    ev << "NodeA " << getFullPath() << " at t=" << simTime() << endl;
+    EV << "NodeA " << getFullPath() << " at t=" << simTime() << endl;
     scheduleAt(simTime()+1, msg);
 }
 
@@ -59,13 +59,13 @@ void Deleter::activity()
 {
     wait(3);
 
-    ev << "Deleting nodeA at t=" << simTime() << endl;
+    EV << "Deleting nodeA at t=" << simTime() << endl;
     cModule *nodeA = getParentModule()->getSubmodule("nodeA");
     nodeA->deleteModule();
-    ev << "Deleted" << endl;
+    EV << "Deleted" << endl;
 
     wait(2);
-    ev << "Still here at t=" << simTime() << endl;
+    EV << "Still here at t=" << simTime() << endl;
 }
 
 }; //namespace

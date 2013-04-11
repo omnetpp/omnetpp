@@ -20,15 +20,15 @@ void Module::activity()
 
     endSimulation();
 
-    ev << "after endSimulation\n";
+    EV << "after endSimulation\n";
 
     wait(1.0);
-    ev << "event after endSimulation\n";
+    EV << "event after endSimulation\n";
 }
 
 void Module::finish()
 {
-    ev << "finish called\n";
+    EV << "finish called\n";
 }
 
 %contains: stdout

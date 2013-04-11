@@ -1,29 +1,29 @@
 %description:
-Test ev<<. Since cEnvir is now not an std::ostream itself, we have to test
+Test EV<<. Since cEnvir is now not an std::ostream itself, we have to test
 we don't get "ambiguous method invocation" etc errors.
 
 %activity:
 
-ev << 0 << 1 << -1 << endl;
-ev << true << false << endl;
-ev << "foo" << endl;
-ev << (std::string("a")+"b") << endl;
+EV << 0 << 1 << -1 << endl;
+EV << true << false << endl;
+EV << "foo" << endl;
+EV << (std::string("a")+"b") << endl;
 
-ev << (char)65 << endl;
-ev << (unsigned char)65 << endl;
-ev << (signed char)65 << endl;
-ev << (short)42 << endl;
-ev << (unsigned short)42 << endl;
-ev << (int)1111 << endl;
-ev << (unsigned int)1111 << endl;
-ev << (1L << 30) << endl;
-ev << (1UL << 31) << endl;
-ev << ((int64)1 << 62) << endl;
-ev << ((uint64)1 << 63) << endl;
+EV << (char)65 << endl;
+EV << (unsigned char)65 << endl;
+EV << (signed char)65 << endl;
+EV << (short)42 << endl;
+EV << (unsigned short)42 << endl;
+EV << (int)1111 << endl;
+EV << (unsigned int)1111 << endl;
+EV << (1L << 30) << endl;
+EV << (1UL << 31) << endl;
+EV << ((int64)1 << 62) << endl;
+EV << ((uint64)1 << 63) << endl;
 
-ev << (float)1.23 << endl;
-ev << 1.23 << endl;
-ev << ".\n";
+EV << (float)1.23 << endl;
+EV << 1.23 << endl;
+EV << ".\n";
 
 
 %contains: stdout

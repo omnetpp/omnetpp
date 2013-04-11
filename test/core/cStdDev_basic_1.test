@@ -4,11 +4,11 @@ basic use of cStdDev
 %global:
 void print(cStdDev& s)
 {
-    ev << "n=" << s.getCount() << ":w=" << s.getWeights()
-       << ":S=" << s.getSum() << ":SS=" << s.getSqrSum()
-       << ":min=" << s.getMin() << ":max=" << s.getMax()
-       << ":mean=" << s.getMean() << ":stddev=" << s.getStddev()
-       << ":var=" << s.getVariance() << endl;
+    EV_S << "n=" << s.getCount() << ":w=" << s.getWeights()
+         << ":S=" << s.getSum() << ":SS=" << s.getSqrSum()
+         << ":min=" << s.getMin() << ":max=" << s.getMax()
+         << ":mean=" << s.getMean() << ":stddev=" << s.getStddev()
+         << ":var=" << s.getVariance() << endl;
 }
 
 %activity:
@@ -21,20 +21,20 @@ sd.collect(4);  print(sd);
 sd.collect(3);  print(sd);
 sd.collect(2);  print(sd);
 sd.collect(1);  print(sd);
-ev << "-" << endl;
+EV << "-" << endl;
 
 sd.clearResult(); print(sd);
 sd.collect(5);    print(sd);
 sd.collect(5);    print(sd);
 sd.collect(5);    print(sd);
-ev << "-" << endl;
+EV << "-" << endl;
 
 sd.clearResult();  print(sd);
 sd.collect(1.23);  print(sd);
 sd.collect(4.52);  print(sd);
 sd.collect(-3.64); print(sd);
 sd.collect(-12.2); print(sd);
-ev << "-" << endl;
+EV << "-" << endl;
 
 %subst: /-?1\.#INF/inf/
 %subst: /-?1\.#IND/nan/

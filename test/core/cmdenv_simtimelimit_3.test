@@ -22,14 +22,14 @@ void Module::initialize()
 }
 void Module::handleMessage(cMessage *msg)
 {
-    ev << msg->getName() << " at " << simTime() << "s" << endl;
+    EV << msg->getName() << " at " << simTime() << "s" << endl;
     delete msg;
 }
 
 void Module::finish()
 {
-   ev << "finish at " << simTime() << "s" << endl;
-   ev << "-" << endl;
+   EV << "finish at " << simTime() << "s" << endl;
+   EV << "-" << endl;
 }
 
 %inifile: test.ini

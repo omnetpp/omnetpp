@@ -15,7 +15,7 @@ Define_Module(SomeModule);
 
 void SomeModule::activity()
 {
-    ev << "'" << getClassName() << "'" << endl;
+    EV << "'" << getClassName() << "'" << endl;
 }
 
 %exitcode: 0

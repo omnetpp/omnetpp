@@ -4,7 +4,7 @@ with "no more events"
 
 %global:
 class Noisy {
-  public: ~Noisy() {ev << "Noisy destructor called\n";}
+  public: ~Noisy() {EV << "Noisy destructor called\n";}
 };
 
 %activity:

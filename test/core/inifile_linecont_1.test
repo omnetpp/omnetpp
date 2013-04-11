@@ -27,8 +27,8 @@ Define_Module(Simple);
 
 void Simple::activity()
 {
-    ev << "\"" <<(const char *)par("str") << "\"" << endl;
-    ev << "." << endl;
+    EV << "\"" <<(const char *)par("str") << "\"" << endl;
+    EV << "." << endl;
 }
 
 }; //namespace

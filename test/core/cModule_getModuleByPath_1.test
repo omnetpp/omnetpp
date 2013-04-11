@@ -38,7 +38,7 @@ class Tester : public cSimpleModule
   public:
     Tester() : cSimpleModule(16384) { }
     void test(cModule *base, const char *path);
-    void sep() {ev << "---\n";}
+    void sep() {EV << "---\n";}
     void activity();
 };
 

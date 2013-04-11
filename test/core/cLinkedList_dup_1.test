@@ -27,10 +27,10 @@ void Llist::fillLlist(cLinkedList& ll)
 
 void Llist::output(cLinkedList& ll)
 {
-  ev << ll.getName() << ":";
+  EV << ll.getName() << ":";
   while (!ll.isEmpty())
-    ev << " " << *((int*) ll.pop());
-  ev << endl;
+    EV << " " << *((int*) ll.pop());
+  EV << endl;
 }
 
 void Llist::activity()

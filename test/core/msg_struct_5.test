@@ -24,7 +24,7 @@ struct MyStruct
 %activity:
 
 // print everything as number because who knows how '\0' in cc[] is treated by <<
-#define PRINTA(X) ev << #X << ":" << (double)X[0] << ":" << (double)X[1] << ":" << (double)X[2] << endl;
+#define PRINTA(X) EV << #X << ":" << (double)X[0] << ":" << (double)X[1] << ":" << (double)X[2] << endl;
 
 MyStruct x;
 

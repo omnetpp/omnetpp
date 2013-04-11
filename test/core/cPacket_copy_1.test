@@ -31,7 +31,7 @@ copies[2]->setName(msg->getName()); // op= doesn't copy name string
 
 for (int i=0; i<3; i++)
 {
-    ev << i << endl;
+    EV << i << endl;
     cPacket *cc = copies[i];
 
     CHECK(!strcmp(cc->getName(), msg->getName()));
@@ -45,7 +45,7 @@ for (int i=0; i<3; i++)
     delete cc;
 }
 
-ev << "OK!\n";
+EV << "OK!\n";
 
 %contains: stdout
 OK!

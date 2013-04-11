@@ -64,10 +64,10 @@ class Msg3 extends Base {
 ::@TESTNAME@::Msg2 msg2;
 ::@TESTNAME@::Msg3 msg3;
 
-ev << ObjectPrinter().printObjectToString(&msg1);
-ev << ObjectPrinter().printObjectToString(&msg2);
-ev << ObjectPrinter().printObjectToString(&msg3);
-ev << ".\n";
+EV << ObjectPrinter().printObjectToString(&msg1);
+EV << ObjectPrinter().printObjectToString(&msg2);
+EV << ObjectPrinter().printObjectToString(&msg3);
+EV << ".\n";
 
 %contains: stdout
 class @TESTNAME@::Msg1 {

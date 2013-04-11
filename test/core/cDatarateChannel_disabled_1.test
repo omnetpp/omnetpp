@@ -60,7 +60,7 @@ void Node1::activity()
         send(pkt, "out");
         wait(1);
     }
-    ev << "done\n";
+    EV << "done\n";
 }
 
 class Node2 : public cSimpleModule
@@ -75,7 +75,7 @@ Define_Module(Node2);
 
 void Node2::handleMessage(cMessage *msg)
 {
-    ev << "received " << msg->getName() << "\n";
+    EV << "received " << msg->getName() << "\n";
     delete msg;
 }
 

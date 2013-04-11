@@ -36,7 +36,7 @@ Define_Module(SimpleClass);
 
 void SimpleClass::activity()
 {
-    ev << "SimpleClass\n";
+    EV << "SimpleClass\n";
 }
 
 }; //namespace

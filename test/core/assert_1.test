@@ -8,11 +8,11 @@ in effect (macro is defined to be empty).
 
 ASSERT(true); // should pass
 ASSERT(1); // should pass
-ev << "checkpoint\n";
+EV << "checkpoint\n";
 
 ASSERT(false); // should fail
-ev << "fell through\n";
-ev << "NOTE: debug must be ON for this test to pass!\n";
+EV << "fell through\n";
+EV << "NOTE: debug must be ON for this test to pass!\n";
 
 %exitcode: 1
 

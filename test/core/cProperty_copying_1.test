@@ -17,12 +17,12 @@ prop->addKey("barkey");
 prop->addKey("bazkey");
 
 cProperty *prop2 = prop->dup();
-ev << prop->info() << " --> " << prop2->info() << "\n";
+EV << prop->info() << " --> " << prop2->info() << "\n";
 
 delete prop;
 delete prop2;
 
-ev << "." << endl;
+EV << "." << endl;
 
 %contains: stdout
 @foo[iii](,,zwei,,vier;fookey=zero,eins,;barkey=;bazkey=) --> @foo[iii](,,zwei,,vier;fookey=zero,eins,;barkey=;bazkey=)

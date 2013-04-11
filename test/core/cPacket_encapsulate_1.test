@@ -8,7 +8,7 @@ cPacket *frame = new cPacket;
 frame->encapsulate(payload);
 cPacket *payload2 = frame->decapsulate();
 
-ev << "payload==payload2: " << (payload==payload2) << endl;
+EV << "payload==payload2: " << (payload==payload2) << endl;
 
 %contains: stdout
 payload==payload2: 1

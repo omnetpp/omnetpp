@@ -4,11 +4,11 @@ SimTime: check overflow detection
 %activity:
 
 #define TRY(code) \
-    ev << #code << " -> "; \
+    EV << #code << " -> "; \
     try { \
-        code; ev << "OK\n"; \
+        code; EV << "OK\n"; \
     } catch (std::exception& e) { \
-        ev << e.what() << endl; \
+        EV << e.what() << endl; \
     }
 
 SimTime t,t2;
@@ -47,7 +47,7 @@ TRY( t=1; t = t / -1e-100; )
 
 // note: other operations all work via the ones above
 
-ev << ".\n";
+EV << ".\n";
 
 %contains-regex: stdout
 t=dmax; -> OK

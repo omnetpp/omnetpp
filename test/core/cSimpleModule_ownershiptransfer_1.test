@@ -51,11 +51,11 @@ void First::activity()
 {
    Second *other = check_and_cast<Second *>(getParentModule()->getSubmodule("second"));
    cMessage *msg = new cMessage("hello");
-   ev << "before:  " << msg->getFullPath() << endl;
-   ev << "  owner: " << msg->getOwner()->getFullPath() << endl;
+   EV << "before:  " << msg->getFullPath() << endl;
+   EV << "  owner: " << msg->getOwner()->getFullPath() << endl;
    other->accept(msg);
-   ev << "after:   " << msg->getFullPath() << endl;
-   ev << "  owner: " << msg->getOwner()->getFullPath() << endl;
+   EV << "after:   " << msg->getFullPath() << endl;
+   EV << "  owner: " << msg->getOwner()->getFullPath() << endl;
 }
 
 void Second::accept(cMessage *msg)
@@ -67,8 +67,8 @@ void Second::accept(cMessage *msg)
 void Second::activity()
 {
    wait(1.0); // until accept() surely takes place
-   ev << "receivedMsg: " << receivedMsg->getFullPath() << endl;
-   ev << "      owner: " << receivedMsg->getOwner()->getFullPath() << endl;
+   EV << "receivedMsg: " << receivedMsg->getFullPath() << endl;
+   EV << "      owner: " << receivedMsg->getOwner()->getFullPath() << endl;
 }
 
 }; //namespace

@@ -8,12 +8,12 @@ const cOwnedObject *msg = new cMessage();
 
 // this should succeed
 const cMessage *p1 = check_and_cast<const cMessage *>(msg);
-ev << "p1:" << (p1!=NULL) << endl;
+EV << "p1:" << (p1!=NULL) << endl;
 
 // and this one not
 const cQueue *p2 = check_and_cast<const cQueue *>(msg);
 (void)p2;
-ev << "fell through" << endl;
+EV << "fell through" << endl;
 
 %exitcode: 1
 

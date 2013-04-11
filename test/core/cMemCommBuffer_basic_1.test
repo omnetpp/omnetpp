@@ -7,8 +7,8 @@ Tests cMemCommBuffer.
 
 %activity:
 
-#define PRINT_AND_PACK(VAR)     {ev << #VAR ":" << VAR << endl; b->pack(VAR);}
-#define UNPACK_AND_PRINT(VAR)   {VAR=0; b->unpack(VAR); ev << #VAR ":" << VAR << endl;}
+#define PRINT_AND_PACK(VAR)     {EV << #VAR ":" << VAR << endl; b->pack(VAR);}
+#define UNPACK_AND_PRINT(VAR)   {VAR=0; b->unpack(VAR); EV << #VAR ":" << VAR << endl;}
 
 cMemCommBuffer *b = new cMemCommBuffer();
 
@@ -27,7 +27,7 @@ long double t12 = 0.3242;
 const char *t13 = "Hello";
 opp_string t14("checckking");
 
-ev << "Packing:\n";
+EV << "Packing:\n";
 PRINT_AND_PACK(t1);
 PRINT_AND_PACK(t2);
 PRINT_AND_PACK(t3);
@@ -43,7 +43,7 @@ PRINT_AND_PACK(t12);
 PRINT_AND_PACK(t13);
 PRINT_AND_PACK(t14);
 
-ev << "Unpacking:\n";
+EV << "Unpacking:\n";
 UNPACK_AND_PRINT(t1);
 UNPACK_AND_PRINT(t2);
 UNPACK_AND_PRINT(t3);
@@ -59,7 +59,7 @@ UNPACK_AND_PRINT(t12);
 UNPACK_AND_PRINT(t13);
 UNPACK_AND_PRINT(t14);
 
-ev << "isBufferEmpty:" << b->isBufferEmpty() << endl;
+EV << "isBufferEmpty:" << b->isBufferEmpty() << endl;
 
 %contains: stdout
 Packing:

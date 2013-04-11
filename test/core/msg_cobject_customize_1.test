@@ -36,17 +36,17 @@ Register_Class(MyClass);
 
 %activity:
 
-#define PRINT(X) ev << #X << ":" << X << endl
+#define PRINT(X) EV << #X << ":" << X << endl
 
 MyClass x("myclass");
 
-ev << (dynamic_cast<cOwnedObject *>(&x)!=0 ? "cOwnedObject" : "generic") << endl;
-ev << x.getClassName() << ": " << x.getName() << endl;
+EV << (dynamic_cast<cOwnedObject *>(&x)!=0 ? "cOwnedObject" : "generic") << endl;
+EV << x.getClassName() << ": " << x.getName() << endl;
 
 x.setB(5); PRINT(x.getB());
 x.setI(11); PRINT(x.getI());
 
-ev << ObjectPrinter().printObjectToString(&x);
+EV << ObjectPrinter().printObjectToString(&x);
 
 %contains: stdout
 cOwnedObject

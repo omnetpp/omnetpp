@@ -15,7 +15,7 @@ ev.printf("using nanosecond precision: scale=%I64d\n", SimTime::getScale());
 SimTime t, t2, tmp;
 
 // basic arithmetic
-#define P(x) {ev << #x << " -> " << (x) << "\n";}
+#define P(x) {EV << #x << " -> " << (x) << "\n";}
 t=1;
 t2=1.0/3.0;
 P(t);
@@ -35,7 +35,7 @@ P(3*t);
 #undef P
 
 // assignments
-#define P(x) {t=1; t2=1.0/3.0; tmp=(x); ev << #x << " -> " << tmp << ", t=" << t << "\n";}
+#define P(x) {t=1; t2=1.0/3.0; tmp=(x); EV << #x << " -> " << tmp << ", t=" << t << "\n";}
 P(t=5);
 P(t=t2);
 
@@ -55,7 +55,7 @@ P(t/=3);
 #undef P
 
 // comparison
-#define P(x) {ev << #x << " -> " << (x) << "\n";}
+#define P(x) {EV << #x << " -> " << (x) << "\n";}
 t=1;
 t2=1.0/3.0;
 P(t==1);
@@ -80,7 +80,7 @@ P(t<=t2);
 P(t>t2);
 P(t>=t2);
 
-ev << ".\n";
+EV << ".\n";
 
 %contains: stdout
 t -> 1

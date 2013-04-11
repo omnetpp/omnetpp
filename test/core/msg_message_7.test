@@ -24,9 +24,9 @@ class MyClass
 
 %activity:
 
-#define PRINT(X)   ev << #X << ":" << X << endl
-#define PRINTA(X)  ev << #X << ":" << X(0) << ":" << X(1) << ":" << X ## ArraySize() << endl;
-#define PRINTA1(X) ev << #X << ":" << X(0) << ":" << (int)X(1) << ":" << X ## ArraySize() << endl;
+#define PRINT(X)   EV << #X << ":" << X << endl
+#define PRINTA(X)  EV << #X << ":" << X(0) << ":" << X(1) << ":" << X ## ArraySize() << endl;
+#define PRINTA1(X) EV << #X << ":" << X(0) << ":" << (int)X(1) << ":" << X ## ArraySize() << endl;
 
 MyClass x;
 
@@ -41,7 +41,7 @@ PRINT(x.getLlArraySize());
 PRINT(x.getUllArraySize());
 PRINT(x.getDdArraySize());
 PRINT(x.getStrArraySize());
-ev << "--" << endl;
+EV << "--" << endl;
 
 // allocate array, fill in element 0 (element 1 must be zero from initialization)
 x.setBbArraySize(11);  x.setBb(0,true); PRINTA(x.getBb);
@@ -54,7 +54,7 @@ x.setLlArraySize(17);  x.setLl(0,-10);  PRINTA(x.getLl);
 x.setUllArraySize(18); x.setUll(0,10);  PRINTA(x.getUll);
 x.setDdArraySize(19);  x.setDd(0,3.14); PRINTA(x.getDd);
 x.setStrArraySize(20); x.setStr(0,"test"); PRINTA(x.getStr);
-ev << "--" << endl;
+EV << "--" << endl;
 
 // reallocate array, fill in element 1 -- element 0 should be preserved
 x.setBbArraySize(31);  x.setBb(1,false); PRINTA(x.getBb);

@@ -33,7 +33,7 @@ message TestMessage {
 
 %activity:
 
-#define PRINT(X)  ev << #X << ":" << (X) << endl
+#define PRINT(X)  EV << #X << ":" << (X) << endl
 
 TestMessage msg("msg");
 
@@ -55,27 +55,27 @@ msg.parsimPack(buffer);
 
 TestMessage msg2("tmp");
 msg2.parsimUnpack(buffer);
-ev << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
+EV << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
 
-ev << "v:";
+EV << "v:";
 for (IntVector::iterator it=msg2.getV().begin(); it!=msg2.getV().end(); it++)
-    ev << " " << *it;
-ev << "\n";
+    EV << " " << *it;
+EV << "\n";
 
-ev << "l:";
+EV << "l:";
 for (IntList::iterator it=msg2.getL().begin(); it!=msg2.getL().end(); it++)
-    ev << " " << *it;
-ev << "\n";
+    EV << " " << *it;
+EV << "\n";
 
-ev << "s:";
+EV << "s:";
 for (IntSet::iterator it=msg2.getS().begin(); it!=msg2.getS().end(); it++)
-    ev << " " << *it;
-ev << "\n";
+    EV << " " << *it;
+EV << "\n";
 
-ev << "m:";
+EV << "m:";
 for (IntDoubleMap::iterator it=msg2.getM().begin(); it!=msg2.getM().end(); it++)
-    ev << " " << it->first << ":" << it->second;
-ev << "\n";
+    EV << " " << it->first << ":" << it->second;
+EV << "\n";
 
 %contains: stdout
 isBufferEmpty:1

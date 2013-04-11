@@ -27,10 +27,10 @@ void Queues::fillQueue(cQueue& q)
 
 void Queues::output(cQueue& q, const char *label)
 {
-    ev << label << q.getName() << ": len=" << q.length() << ", contents:";
+    EV << label << q.getName() << ": len=" << q.length() << ", contents:";
     while (!q.empty())
-        ev << " " << q.pop()->getName();
-    ev << endl;
+        EV << " " << q.pop()->getName();
+    EV << endl;
 }
 
 void Queues::activity()
@@ -50,7 +50,7 @@ void Queues::activity()
     copy.clear();
     delete dupped;
 
-    ev << ".\n";
+    EV << ".\n";
 }
 
 %contains: stdout

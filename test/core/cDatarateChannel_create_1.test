@@ -39,9 +39,9 @@ Define_Module(Node1);
 
 static void dumpParams(const char *label, cComponent *c)
 {
-    EV << label << ":\n";
+    EV_S << label << ":\n";
     for (int i=0; i<c->getNumParams(); i++)
-        EV << " " << c->par(i).getFullName() << "=" << c->par(i).info() << "\n";
+        EV_S << " " << c->par(i).getFullName() << "=" << c->par(i).info() << "\n";
 }
 
 void Node1::activity()

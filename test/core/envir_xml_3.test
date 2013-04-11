@@ -13,9 +13,9 @@ ev.getXMLDocument(): parse error (incomplete XML doc)
 
 cXMLElement *node = ev.getXMLDocument("test.xml");
 if (!node)
-    ev << "NULL\n";
+    EV << "NULL\n";
 else
-    ev << node->getTagName() << " from " << node->getSourceLocation() << "\n";
+    EV << node->getTagName() << " from " << node->getSourceLocation() << "\n";
 
 %exitcode: 1
 

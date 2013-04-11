@@ -21,7 +21,7 @@ void Module::activity()
 
 void Module::finish()
 {
-    ev << "finish called\n";
+    EV << "finish called\n";
 }
 
 %exitcode: 1

@@ -6,12 +6,12 @@ static void printValues(const char *configName, const char *iterationVariable)
 {
     cConfigurationEx *config = ev.getConfigEx();
     int n = config->getNumRunsInConfig(configName);
-    ev << iterationVariable << "\n";
+    EV_S << iterationVariable << "\n";
     for (int i = 0; i < n; ++i)
     {
         config->activateConfig(configName, i);
         const char *value = config->getVariable(iterationVariable);
-        ev << "  " << value << "\n";
+        EV_S << "  " << value << "\n";
     }
 }
 
@@ -20,7 +20,7 @@ printValues("A", "common");
 printValues("B", "quotes");
 printValues("C", "parens");
 printValues("D", "escape");
-ev << ".\n";
+EV << ".\n";
 
 %file: test.ned
 simple Test

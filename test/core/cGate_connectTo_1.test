@@ -12,7 +12,7 @@ class Sender : public cSimpleModule
 
 Define_Module(Sender);
 
-#define PRINT(g)   ev << #g << ":" << ((g) ? (g)->getFullName() : "NULL") << endl
+#define PRINT(g)   EV << #g << ":" << ((g) ? (g)->getFullName() : "NULL") << endl
 
 void Sender::activity()
 {
@@ -64,7 +64,7 @@ Define_Module(Receiver);
 void Receiver::activity()
 {
     cMessage *msg = receive();
-    ev << "arrived:" << msg->getName() << endl;
+    EV << "arrived:" << msg->getName() << endl;
     delete msg;
 }
 

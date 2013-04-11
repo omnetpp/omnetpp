@@ -4,11 +4,11 @@ merging two cStdDev objects
 %global:
 void print(cStdDev& s)
 {
-    ev << s.getName() << " n=" << s.getCount() << " w=" << s.getWeights()
-       << " S=" << s.getSum() << " SS=" << s.getSqrSum()
-       << " min=" << s.getMin() << " max=" << s.getMax()
-       << " mean=" << s.getMean() << " stddev=" << s.getStddev()
-       << " var=" << s.getVariance() << endl;
+    EV_S << s.getName() << " n=" << s.getCount() << " w=" << s.getWeights()
+         << " S=" << s.getSum() << " SS=" << s.getSqrSum()
+         << " min=" << s.getMin() << " max=" << s.getMax()
+         << " mean=" << s.getMean() << " stddev=" << s.getStddev()
+         << " var=" << s.getVariance() << endl;
 }
 
 void collect(int na, int nb)
@@ -35,7 +35,7 @@ void collect(int na, int nb)
     a.merge(&b); a.setName("a+b");
     print(a);
     print(s);
-    ev << "---\n";
+    EV_S << "---\n";
 }
 
 %activity:

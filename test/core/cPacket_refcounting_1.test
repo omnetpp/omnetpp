@@ -3,32 +3,32 @@ Tests reference counting of encapsulated messages.
 
 %activity:
 cPacket *payload = new cPacket;
-ev << "sharecount=" << payload->getShareCount() << "\n";
+EV << "sharecount=" << payload->getShareCount() << "\n";
 
 // encapsulate
 cPacket *pkt0 = new cPacket;
 pkt0->encapsulate(payload);
-ev << "after encap: sharecount=" << payload->getShareCount() << "\n";
+EV << "after encap: sharecount=" << payload->getShareCount() << "\n";
 
 // duplicate pkt three times: this must result in sharecount=3
 cPacket *pkt1 = pkt0->dup();
-ev << "after dup: sharecount=" << payload->getShareCount() << "\n";
+EV << "after dup: sharecount=" << payload->getShareCount() << "\n";
 
 cPacket *pkt2 = pkt1->dup();
-ev << "after dup: sharecount=" << payload->getShareCount() << "\n";
+EV << "after dup: sharecount=" << payload->getShareCount() << "\n";
 
 cPacket *pkt3 = pkt0->dup();
-ev << "after dup: sharecount=" << payload->getShareCount() << "\n";
+EV << "after dup: sharecount=" << payload->getShareCount() << "\n";
 
 // decapsulate: this should cause an own (non-shared) copy to be made
 cPacket *decappkt = pkt1->decapsulate();
-ev << "after decap: sharecount=" << payload->getShareCount() << ", "
+EV << "after decap: sharecount=" << payload->getShareCount() << ", "
    << (payload==decappkt ? "same" : "different") << ", "
    << "decappkt.sharecount=" << decappkt->getShareCount() << "\n";
 
 // test encapsulatedMsg:  this should cause an own (non-shared) copy to be made
 cPacket *encappkt = pkt2->getEncapsulatedMsg();
-ev << "after encappkt: sharecount=" << payload->getShareCount() << ", "
+EV << "after encappkt: sharecount=" << payload->getShareCount() << ", "
    << (payload==encappkt ? "same" : "different") << ", "
    << "encappkt.sharecount=" << encappkt->getShareCount() << "\n";
 
@@ -37,7 +37,7 @@ delete pkt2;
 
 // test delete with sharecount>0
 delete pkt3;
-ev << "after delete: sharecount=" << payload->getShareCount() << "\n";
+EV << "after delete: sharecount=" << payload->getShareCount() << "\n";
 
 delete pkt0;
 

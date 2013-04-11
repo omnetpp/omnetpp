@@ -43,9 +43,9 @@ msg.parsimPack(buffer);
 // unpack and print
 TestMessage msg2("tmp");
 msg2.parsimUnpack(buffer);
-ev << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
+EV << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
 
-ev << ObjectPrinter(NULL, "*:declaredOn(@TESTNAME@::TestMessage)").printObjectToString(&msg2);
+EV << ObjectPrinter(NULL, "*:declaredOn(@TESTNAME@::TestMessage)").printObjectToString(&msg2);
 
 %contains: stdout
 isBufferEmpty:1

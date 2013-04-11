@@ -110,18 +110,18 @@ void Gen::activity()
 {
     for (int i=0; i<gateSize("out"); i++)
     {
-        ev << i << ":";
+        EV << i << ":";
         cGate *g = gate("out",i);
         cChannel *ch = g->getChannel();
         if (ch)
         {
             cDatarateChannel *sch = check_and_cast<cDatarateChannel *>(ch);
-            if (sch->getDelay() != 0)  ev << "delay=" << sch->getDelay() << ":";
-            if (sch->getDatarate())  ev << "datarate=" << sch->getDatarate() << ":";
-            if (sch->getBitErrorRate())  ev << "ber=" << sch->getBitErrorRate() << ":";
-            if (sch->getPacketErrorRate())  ev << "per=" << sch->getPacketErrorRate() << ":";
+            if (sch->getDelay() != 0)  EV << "delay=" << sch->getDelay() << ":";
+            if (sch->getDatarate())  EV << "datarate=" << sch->getDatarate() << ":";
+            if (sch->getBitErrorRate())  EV << "ber=" << sch->getBitErrorRate() << ":";
+            if (sch->getPacketErrorRate())  EV << "per=" << sch->getPacketErrorRate() << ":";
         }
-        ev << endl;
+        EV << endl;
     }
 }
 

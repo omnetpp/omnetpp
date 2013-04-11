@@ -28,7 +28,7 @@ Define_Module(Test);
 
 void Test::activity()
 {
-   ev << "This should not be printed: " << par("p1").doubleValue() << "\n";
+   EV << "This should not be printed: " << par("p1").doubleValue() << "\n";
 }
 
 }; //namespace

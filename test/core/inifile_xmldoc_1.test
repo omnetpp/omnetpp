@@ -49,11 +49,11 @@ void Simple::activity()
 {
     cXMLElement *node1 = par("xmlconfig1");
     ASSERT(node1);
-    ev << "<" << node1->getTagName() << " id='" << node1->getAttribute("id") << "'>\n";
+    EV << "<" << node1->getTagName() << " id='" << node1->getAttribute("id") << "'>\n";
 
     cXMLElement *node2 = par("xmlconfig2");
     ASSERT(node2);
-    ev << "<" << node2->getTagName() << " id='" << node2->getAttribute("id") << "'>\n";
+    EV << "<" << node2->getTagName() << " id='" << node2->getAttribute("id") << "'>\n";
 }
 
 }; //namespace

@@ -25,15 +25,15 @@ Check cXMLElement attributes and node content
 
 static void printNode(cXMLElement *node)
 {
-    ev << node->getTagName() << ":";
-    ev << "\"" << node->getNodeValue() << "\",";
-    ev << (node->hasAttributes() ? "has attrs" : "no attrs") << ",";
+    EV_S << node->getTagName() << ":";
+    EV_S << "\"" << node->getNodeValue() << "\",";
+    EV_S << (node->hasAttributes() ? "has attrs" : "no attrs") << ",";
     cXMLAttributeMap map = node->getAttributes();
     for (cXMLAttributeMap::iterator i=map.begin(); i!=map.end(); i++)
-        ev << " " << i->first << "=\"" << i->second << "\"/\""
+        EV_S << " " << i->first << "=\"" << i->second << "\"/\""
            << node->getAttribute(i->first.c_str()) << "\"";
-    ev << " nothing=" << (!node->getAttribute("nothing") ? "NULL" : node->getAttribute("nothing"));
-    ev << ".\n";
+    EV_S << " nothing=" << (!node->getAttribute("nothing") ? "NULL" : node->getAttribute("nothing"));
+    EV_S << ".\n";
 }
 
 %activity:

@@ -8,25 +8,25 @@ class Ctrl : public cOwnedObject
 {
   public:
     Ctrl() : cOwnedObject() { }
-    ~Ctrl() {ev << "control info deleted\n";}
+    ~Ctrl() {EV << "control info deleted\n";}
 };
 
 %activity:
 cMessage *msg = new cMessage("msg");
 Ctrl *ctrl = new Ctrl();
-ev << "1. owner:" << ctrl->getOwner()->getName() << "\n";
+EV << "1. owner:" << ctrl->getOwner()->getName() << "\n";
 
 msg->setControlInfo(ctrl);
-ev << "2. owner:" << ctrl->getOwner()->getName() << "\n";
+EV << "2. owner:" << ctrl->getOwner()->getName() << "\n";
 
 msg->removeControlInfo();
-ev << "3. owner:" << ctrl->getOwner()->getName() << "\n";
+EV << "3. owner:" << ctrl->getOwner()->getName() << "\n";
 
 msg->setControlInfo(ctrl);
-ev << "4. owner:" << ctrl->getOwner()->getName() << "\n";
+EV << "4. owner:" << ctrl->getOwner()->getName() << "\n";
 delete msg;
 
-ev << "done\n";
+EV << "done\n";
 
 %contains: stdout
 1. owner:Test

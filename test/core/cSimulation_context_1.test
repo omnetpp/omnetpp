@@ -37,20 +37,20 @@ class TestChannel: public cIdealChannel
     virtual void initialize() {
         ASSERT(simulation.getContext() == this);
         ASSERT(simulation.getContextType() == CTX_INITIALIZE);
-        ev << "- " << getFullPath() << " initialize\n";
+        EV << "- " << getFullPath() << " initialize\n";
     }
 
     virtual void processMessage(cMessage *msg, simtime_t t, result_t& result) {
         //FIXME this fails: ASSERT(simulation.getContext() == this);
         ASSERT(simulation.getContextType() == CTX_EVENT);
-        ev << "- " << getFullPath() << " process: \"" << msg->getName() << "\"\n";
+        EV << "- " << getFullPath() << " process: \"" << msg->getName() << "\"\n";
         cIdealChannel::processMessage(msg, t, result);
     }
 
     virtual void finish() {
         ASSERT(simulation.getContext() == this);
         ASSERT(simulation.getContextType() == CTX_FINISH);
-        ev << "- " << getFullPath() << " finish\n";
+        EV << "- " << getFullPath() << " finish\n";
     }
 };
 
@@ -65,14 +65,14 @@ class Node : public cSimpleModule
     virtual void initialize() {
         ASSERT(simulation.getContext() == this);
         ASSERT(simulation.getContextType() == CTX_INITIALIZE);
-        ev << "- " << getFullPath() << " initialize\n";
+        EV << "- " << getFullPath() << " initialize\n";
         scheduleAt(1, new cMessage("timer"));
     }
 
     virtual void handleMessage(cMessage *msg) {
         ASSERT(simulation.getContext() == this);
         ASSERT(simulation.getContextType() == CTX_EVENT);
-        ev << "- " << getFullPath() << " handleMessage: \"" << msg->getName() << "\"\n";
+        EV << "- " << getFullPath() << " handleMessage: \"" << msg->getName() << "\"\n";
         if (msg->isSelfMessage())
             send(new cMessage("packet"), "g$o");
         delete msg;
@@ -81,7 +81,7 @@ class Node : public cSimpleModule
     virtual void finish() {
         ASSERT(simulation.getContext() == this);
         ASSERT(simulation.getContextType() == CTX_FINISH);
-        ev << "- " << getFullPath() << " finish\n";
+        EV << "- " << getFullPath() << " finish\n";
     }
 };
 

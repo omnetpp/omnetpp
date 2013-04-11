@@ -39,17 +39,17 @@ Define_Module(Tester);
 
 void Tester::test(const char *name, int index)
 {
-    ev << name;
+    EV << name;
     if (index != -1)
-        ev << "[" << index << "]";
-    ev << ": ";
+        EV << "[" << index << "]";
+    EV << ": ";
     try {
         int baseId1 = (index==-1) ? gate(name)->getBaseId() : gate(name,index)->getBaseId();
         int baseId2 = (index==-1) ? gate(name)->getId() : gate(name,0)->getId();
-        ev << (baseId1 == baseId2 ? "ok" : "WRONG") << "\n";
+        EV << (baseId1 == baseId2 ? "ok" : "WRONG") << "\n";
     }
     catch (std::exception& e) {
-        ev << "ERROR: " << e.what() << "\n";
+        EV << "ERROR: " << e.what() << "\n";
     }
 }
 
@@ -65,7 +65,7 @@ void Tester::initialize()
     test("gv$o",2);
     test("g");
     test("gv",2);
-    ev << ".\n";
+    EV << ".\n";
 }
 
 }; //namespace

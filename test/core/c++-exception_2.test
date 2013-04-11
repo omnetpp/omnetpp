@@ -5,21 +5,21 @@ Test if exception handling works.
 class Noisy
 {
   public:
-    Noisy() {ev << "ctor!\n";}
-    virtual ~Noisy() {ev << "dtor!\n";}
+    Noisy() {EV << "ctor!\n";}
+    virtual ~Noisy() {EV << "dtor!\n";}
 };
 
 
 
 %activity:
 try {
-    ev << "begin\n";
+    EV << "begin\n";
     Noisy x;
     throw 42;
-    ev << "after throw???\n";
+    EV << "after throw???\n";
     Noisy y;
 } catch (int i) {
-    ev << "caught " << i << "!\n";
+    EV << "caught " << i << "!\n";
 }
 
 %contains: stdout

@@ -8,7 +8,7 @@ to their gcc equivalent.
 static bool isNaN(double d) { return d != d; }
 
 %activity:
-#define PRINT(x) ev << #x << ":" << (x) << endl;
+#define PRINT(x) EV << #x << ":" << (x) << endl;
 double zero = 0;
 double nan = zero/zero;
 
@@ -27,7 +27,7 @@ PRINT(nan<nan);
 PRINT(nan>nan);
 PRINT(nan<=nan);
 PRINT(nan>=nan);
-ev << ".\n";
+EV << ".\n";
 
 %subst: /-?1\.#IND/nan/
 %subst: /-?1\.#QNAN/nan/

@@ -9,13 +9,13 @@ Tests the BigDecimal::parse() method
 
 static void parseAndPrint(const char *text)
 {
-    ev << "'" << text << "'";
-    ev << " ==> ";
+    EV << "'" << text << "'";
+    EV << " ==> ";
     try {
         BigDecimal d = BigDecimal::parse(text);
-        ev << "intVal=" << d.getIntValue() << ", scale=" << d.getScale() <<"\n";
+        EV << "intVal=" << d.getIntValue() << ", scale=" << d.getScale() <<"\n";
     } catch (std::exception& e) {
-        ev << "ERROR: " << e.what() << "\n";
+        EV << "ERROR: " << e.what() << "\n";
     }
 }
 
@@ -23,7 +23,7 @@ static void parseAndPrint(const char *text)
 
 #define T(x) parseAndPrint(x)
 
-ev << "\n";
+EV << "\n";
 
 // positive cases
 T("123456789012345678");
@@ -55,7 +55,7 @@ T("12345678901234567890"); // overflow
 T("");
 T("  ");
 
-ev << ".\n";
+EV << ".\n";
 
 
 %contains: stdout

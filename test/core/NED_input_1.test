@@ -76,7 +76,7 @@ Define_Module(Simple);
 void Simple::activity()
 {
     for (int i=0; i<getNumParams(); i++)
-        ev << getFullName() << "." << par(i).getName() << "=" << (double)par(i) << endl;
+        EV << getFullName() << "." << par(i).getName() << "=" << (double)par(i) << endl;
 }
 
 }; //namespace

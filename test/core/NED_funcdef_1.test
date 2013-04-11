@@ -41,7 +41,7 @@ class Test : public cSimpleModule
 
 Define_Module(Test);
 
-#define PRINT_PARAMETER(x) ev << #x << " = " << (double)par(#x) << endl;
+#define PRINT_PARAMETER(x) EV << #x << " = " << (double)par(#x) << endl;
 
 void Test::activity()
 {

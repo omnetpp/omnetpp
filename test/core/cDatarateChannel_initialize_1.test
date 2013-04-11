@@ -67,7 +67,7 @@ Define_Module(Node2);
 
 void Node2::handleMessage(cMessage *msg)
 {
-    ev << "msg arrived at T=" << simTime();
+    EV << "msg arrived at T=" << simTime();
     delete msg;
 }
 

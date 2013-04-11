@@ -34,7 +34,7 @@ Check cXMLElement::getElementByPath() basic functionality: absolute path; ".."
 static void getElement(cXMLElement *ctx, cXMLElement *root, const char *pathexpr)
 {
     cXMLElement *node = ctx->getElementByPath(pathexpr, root, NULL);
-    ev << (!pathexpr ? "''" : pathexpr) << ": " << (!node ? "null" : node->getAttribute("id")) << "\n";
+    EV_S << (!pathexpr ? "''" : pathexpr) << ": " << (!node ? "null" : node->getAttribute("id")) << "\n";
 }
 
 %activity:

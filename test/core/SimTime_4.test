@@ -7,7 +7,7 @@ SimTime: test math functions: ceil(), floor(), fabs(), fmod(), getMax(), getMin(
 %activity:
 SimTime t, t2;
 
-#define P(x) {ev << #x << " -> " << (x) << "\n";}
+#define P(x) {EV << #x << " -> " << (x) << "\n";}
 
 // floor(t)
 P((t=1.862, floor(t)));
@@ -57,7 +57,7 @@ P((t=1, t2=-2, std::min(t,t2)));
 P((t=1, t2=2, std::max(t,t2)));
 P((t=1, t2=-2, std::max(t,t2)));
 
-ev << ".\n";
+EV << ".\n";
 
 %contains: stdout
 (t=1.862, floor(t)) -> 1

@@ -23,12 +23,12 @@ struct Struct
 ::@TESTNAME@::Struct y;
 
 // check descriptor full name
-ev << x.getDescriptor()->getFullName() << "\n";
+EV << x.getDescriptor()->getFullName() << "\n";
 
 // yet again
-ev << cClassDescriptor::getDescriptorFor("@TESTNAME@::Foo")->getClassName() << "\n";
-ev << cClassDescriptor::getDescriptorFor("@TESTNAME@::Struct")->getClassName() << "\n";
-ev << ".\n";
+EV << cClassDescriptor::getDescriptorFor("@TESTNAME@::Foo")->getClassName() << "\n";
+EV << cClassDescriptor::getDescriptorFor("@TESTNAME@::Struct")->getClassName() << "\n";
+EV << ".\n";
 
 %contains: stdout
 @TESTNAME@::Foo

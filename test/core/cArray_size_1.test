@@ -3,7 +3,7 @@ cArray: if you remove items at the end of the container, size() decreases accord
 
 %activity:
 
-#define REMOVE(i)  a.remove(i); ev << "removed " << i << ", size=" << a.size() << "\n";
+#define REMOVE(i)  a.remove(i); EV << "removed " << i << ", size=" << a.size() << "\n";
 cArray a;
 
 int i;
@@ -23,7 +23,7 @@ REMOVE(3);
 REMOVE(2);
 REMOVE(1);
 
-ev << ".";
+EV << ".";
 
 %contains: stdout
 removed 0, size=10

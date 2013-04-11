@@ -6,21 +6,21 @@ test assignment operator and copy constructor
 const char *str = "one two three four five six  ";
 
 cStringTokenizer t(str);
-ev << t.nextToken() << "\n";
-ev << t.nextToken() << "\n";
-ev << t.nextToken() << "\n";
+EV << t.nextToken() << "\n";
+EV << t.nextToken() << "\n";
+EV << t.nextToken() << "\n";
 
 cStringTokenizer t2(t);
 
-ev << "\n";
+EV << "\n";
 while (t.hasMoreTokens())
-    ev << t.nextToken() << "\n";
+    EV << t.nextToken() << "\n";
 
-ev << "\n";
+EV << "\n";
 while (t2.hasMoreTokens())
-    ev << t2.nextToken() << "\n";
+    EV << t2.nextToken() << "\n";
 
-ev << ".";
+EV << ".";
 
 %contains: stdout
 one

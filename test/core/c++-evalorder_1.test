@@ -25,7 +25,7 @@ int x=0;
 int f() {return ++x;}
 
 %activity:
-ev << f() << " " << f() << endl;
+EV << f() << " " << f() << endl;
 
 %contains-regex: stdout
 (1 2)|(2 1)

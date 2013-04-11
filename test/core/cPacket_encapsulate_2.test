@@ -9,12 +9,12 @@ cPacket *frame = new cPacket;
 frame->setBitLength(32);
 
 frame->encapsulate(payload);
-ev << frame->getBitLength() << endl;
+EV << frame->getBitLength() << endl;
 
 frame->decapsulate();
-ev << frame->getBitLength() << endl;
+EV << frame->getBitLength() << endl;
 
-ev << payload->getBitLength() << endl;
+EV << payload->getBitLength() << endl;
 
 %contains: stdout
 160

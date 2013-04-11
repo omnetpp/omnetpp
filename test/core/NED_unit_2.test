@@ -27,7 +27,7 @@ Define_Module(Test);
 
 void Test::activity()
 {
-   ev << "p1=" << par("p1").doubleValue() << "\n";
+   EV << "p1=" << par("p1").doubleValue() << "\n";
 }
 
 }; //namespace

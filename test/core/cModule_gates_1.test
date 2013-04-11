@@ -59,7 +59,7 @@ Define_Module(Node);
 
 void Node::createTestGate(const char *gatename, cGate::Type type, bool isVector)
 {
-    ev << "creating " << gatename << (isVector?"[]":"") << "\n";
+    EV << "creating " << gatename << (isVector?"[]":"") << "\n";
 
     addGate(gatename, type, isVector);
 
@@ -140,7 +140,7 @@ void Node::deleteRandomGate()
 
 void Node::deleteTestGate(const char *gatename)
 {
-    ev << "deleting " << gatename << (isGateVector(gatename)?"[]":"") << "\n";
+    EV << "deleting " << gatename << (isGateVector(gatename)?"[]":"") << "\n";
 
     int size = isGateVector(gatename) ? gateSize(gatename) : 1;
     numGates -= size * (gateType(gatename)==cGate::INOUT ? 2 : 1);
@@ -167,7 +167,7 @@ void Node::setRandomGateSize()
 
 void Node::setTestGateSize(const char *gatename, int size)
 {
-    ev << "resizing " << gatename << "[" << gateSize(gatename) << "] to [" << size << "]\n";
+    EV << "resizing " << gatename << "[" << gateSize(gatename) << "] to [" << size << "]\n";
 
     cGate::Type type = gateType(gatename);
     int oldSize = gateSize(gatename);
@@ -213,7 +213,7 @@ void Node::checkAllGateIds()
     //  2. when a gate was deleted, no gate should be accesible at its ID (ie IDs must not be reused)
     //
 
-    //ev <<"checking " << gateIds.size() << " gates\n";
+    //EV <<"checking " << gateIds.size() << " gates\n";
     std::map<std::string,int>::iterator it;
     for (it=gateIds.begin(); it!=gateIds.end(); it++)
     {
@@ -260,7 +260,7 @@ void Node::activity()
         testGateIterator();
         checkAllGateIds();
     }
-    ev << "done.\n";
+    EV << "done.\n";
 }
 
 

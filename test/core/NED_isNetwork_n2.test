@@ -24,7 +24,7 @@ Define_Module(Test);
 
 void Test::activity()
 {
-    ev << "Hello\n";
+    EV << "Hello\n";
 }
 
 }; //namespace

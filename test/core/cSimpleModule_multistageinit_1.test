@@ -50,7 +50,7 @@ int Module::numInitStages() const
 
 void Module::initialize(int stage)
 {
-    ev << "   " << getFullPath() << ": initialize stage=" << stage << " called" << endl;
+    EV << "   " << getFullPath() << ": initialize stage=" << stage << " called" << endl;
     if (stage==2)
     {
         cMessage *msg = new cMessage();
@@ -60,7 +60,7 @@ void Module::initialize(int stage)
 
 void Module::handleMessage(cMessage *msg)
 {
-   ev << "handleMessage() at " << simTime() << endl;
+   EV << "handleMessage() at " << simTime() << endl;
    delete msg;
 }
 

@@ -16,15 +16,15 @@ Define_Module(Module);
 void Module::activity()
 {
     wait(2);
-    ev << "time: " << simTime() << endl;
+    EV << "time: " << simTime() << endl;
     wait(3);
-    ev << "time: " << simTime() << endl;
+    EV << "time: " << simTime() << endl;
 }
 
 void Module::finish()
 {
-   ev << "finish() at " << simTime() << endl;
-   ev << "-" << endl;
+   EV << "finish() at " << simTime() << endl;
+   EV << "-" << endl;
 }
 
 %inifile: test.ini

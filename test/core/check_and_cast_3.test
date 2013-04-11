@@ -8,7 +8,7 @@ cOwnedObject *msg = new cMessage("msg");
 
 // we shouldn't be able to cast it to a derived type which it is actually not
 check_and_cast<cQueue *>(msg);
-ev << "fell through\n" << endl;
+EV << "fell through\n" << endl;
 
 %exitcode: 1
 

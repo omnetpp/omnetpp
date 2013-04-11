@@ -50,11 +50,11 @@ void Test::activity()
 {
     cXMLElement *node1 = par("xmlconfig1");
     ASSERT(node1);
-    ev << node1->getTagName() << " at " << node1->getSourceLocation() << endl;
+    EV << node1->getTagName() << " at " << node1->getSourceLocation() << endl;
 
     cXMLElement *node2 = par("xmlconfig2");
     ASSERT(node2);
-    ev << node2->getTagName() << " at " << node2->getSourceLocation() << endl;
+    EV << node2->getTagName() << " at " << node2->getSourceLocation() << endl;
 }
 
 }; //namespace

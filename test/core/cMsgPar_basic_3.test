@@ -7,7 +7,7 @@ Tests cMsgPar's operator=() methods for basic data types (string,bool,long,doubl
 %activity:
 cMsgPar p;
 
-#define PRINT(X)  ev << p.getType() << ":" << p.isNumeric() << ":" << X << endl
+#define PRINT(X)  EV << p.getType() << ":" << p.isNumeric() << ":" << X << endl
 
 p = false; PRINT(p.boolValue());
 p = true; PRINT(p.boolValue());
@@ -26,7 +26,7 @@ p = buf; buf[0]='\0'; PRINT(p.stringValue());
 strcpy(buf,"12345678901234567890123456789012345678901234567890"); // long string
 p = buf; buf[0]='\0'; PRINT(p.stringValue());
 
-ev << "." << endl;
+EV << "." << endl;
 
 %contains: stdout
 B:1:0

@@ -97,7 +97,7 @@ void Simple::activity()
     for (int i=0; i<getNumParams(); i++)
     {
         cXMLElement *node = par(i).xmlValue();
-        ev << par(i).getName() << ": <" << node->getTagName() << " id='"<< node->getAttribute("id") << "'>" << endl;
+        EV << par(i).getName() << ": <" << node->getTagName() << " id='"<< node->getAttribute("id") << "'>" << endl;
     }
 }
 

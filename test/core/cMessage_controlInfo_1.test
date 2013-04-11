@@ -7,7 +7,7 @@ class Ctrl : public cPolymorphic
 {
   public:
     Ctrl() : cPolymorphic() { }
-    ~Ctrl() {ev << "control info deleted\n";}
+    ~Ctrl() {EV << "control info deleted\n";}
 };
 
 %activity:

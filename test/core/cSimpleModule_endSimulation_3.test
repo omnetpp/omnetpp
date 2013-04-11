@@ -17,18 +17,18 @@ void Module::initialize()
 {
     scheduleAt(1.0, new cMessage("msg"));
     endSimulation();
-    ev << "after endSimulation\n";
+    EV << "after endSimulation\n";
 }
 
 void Module::handleMessage(cMessage *msg)
 {
     scheduleAt(simTime()+1.0, msg);
-    ev << "event after endSimulation\n";
+    EV << "event after endSimulation\n";
 }
 
 void Module::finish()
 {
-    ev << "finish called\n";
+    EV << "finish called\n";
 }
 
 %exitcode: 1

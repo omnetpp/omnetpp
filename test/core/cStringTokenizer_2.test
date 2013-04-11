@@ -9,14 +9,14 @@ const char *token;
 
 cStringTokenizer tok1(str, "- ");
 while ((token = tok1.nextToken())!=NULL)
-    ev << ":" << token;
-ev << ".\n";
+    EV << ":" << token;
+EV << ".\n";
 
 cStringTokenizer tok2(str);
 tok2.setDelimiter("- ");
 while ((token = tok2.nextToken())!=NULL)
-    ev << ":" << token;
-ev << ".\n";
+    EV << ":" << token;
+EV << ".\n";
 
 // change delimiter along the way
 cStringTokenizer tok3(str);
@@ -25,8 +25,8 @@ tok3.nextToken();
 tok3.nextToken();
 tok3.setDelimiter("/");
 while ((token = tok3.nextToken())!=NULL)
-    ev << ":" << token;
-ev << ".\n";
+    EV << ":" << token;
+EV << ".\n";
 
 %contains: stdout
 :a:b:c:/:d/:e.

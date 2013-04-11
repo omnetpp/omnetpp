@@ -15,7 +15,7 @@ void test(const char *expr)
     } catch (std::exception& e) {
         result = e.what();
     }
-    ev << expr << " ==> " << result << "\n";
+    EV_S << expr << " ==> " << result << "\n";
 }
 
 void test(const char *s1, const std::string& s2, const char *s3)
@@ -31,18 +31,18 @@ test("2 meters");
 test("3km");
 test("3 kilometer");
 test("3 kilometers");
-ev << "\n";
+EV << "\n";
 
 // unary operators
 test("-(1+1)");
 test("-(1m+1m)");
 test("-(1km+1km)");
-ev << "\n";
+EV << "\n";
 
 test("~(1+1)");
 test("~(1m+1m)");
 test("~(1km+1km)");
-ev << "\n";
+EV << "\n";
 
 // binary operators
 std::vector<std::string> ops = cStringTokenizer("+ - * / % ^  & | # << >> == != > >= < <=").asVector();
@@ -56,7 +56,7 @@ for (int i=0; i<(int)ops.size(); i++)
     test("3",  op, "2m");
     test("3m", op, "2");
     test("3m", op, "2s");
-    ev << "\n";
+    EV << "\n";
 }
 
 // tertiary operators
@@ -68,12 +68,12 @@ test("true ? 2 : 3m");
 test("true ? 2m : 3");
 test("true ? 2m : 3s");
 
-ev << "\n";
+EV << "\n";
 
 test("3km == 3000m");
 test("3km != 3000m");
 
-ev << ".\n";
+EV << ".\n";
 
 %subst: /4\.294\d*e\+0*9/_maxlong_/
 %subst: /1\.844\d*e\+0*19/_maxlong_/

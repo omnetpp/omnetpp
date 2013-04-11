@@ -23,8 +23,8 @@ struct MyStruct
 
 %activity:
 
-#define PRINT(X) ev << #X << ":" << X << endl
-#define PRINTA(X) ev << #X << ":" << X[0] << ":" << sizeof(X)/sizeof(X[0]) << endl;
+#define PRINT(X) EV << #X << ":" << X << endl
+#define PRINTA(X) EV << #X << ":" << X[0] << ":" << sizeof(X)/sizeof(X[0]) << endl;
 
 MyStruct x;
 

@@ -15,20 +15,20 @@ Define_Module(Module);
 
 void Module::initialize()
 {
-   ev << "initialize() at " << simTime() << endl;
+   EV << "initialize() at " << simTime() << endl;
    cMessage *msg = new cMessage();
    scheduleAt(15.0, msg);
 }
 
 void Module::handleMessage(cMessage *msg)
 {
-   ev << "handleMessage() at " << simTime() << endl;
+   EV << "handleMessage() at " << simTime() << endl;
    delete msg;
 }
 
 void Module::finish()
 {
-   ev << "finish() at " << simTime() << endl;
+   EV << "finish() at " << simTime() << endl;
 }
 
 %contains-regex: stdout

@@ -4,7 +4,7 @@ SimTime: test *= and /= operators specifically
 %activity:
 SimTime t, t2;
 
-#define P(x) {ev << #x << " -> " << (x) << "\n";}
+#define P(x) {EV << #x << " -> " << (x) << "\n";}
 
 double dmax = floor(SimTime::getMaxTime().dbl());
 
@@ -24,7 +24,7 @@ P((t=0.99, t/=-1e6, t));
 P((t=0.99, t/=(1/dmax), t));
 P((t=0.99, t/=-(1/dmax), t));
 
-ev << ".\n";
+EV << ".\n";
 
 %contains: stdout
 (t=0.99, t*=2.5, t) -> 2.475

@@ -4,7 +4,7 @@ Tests cProperty name and index.
 %global:
 #include <string.h>
 
-#define PRINTNAMES(p) ev << "name='" << (p)->getName() \
+#define PRINTNAMES(p) EV << "name='" << (p)->getName() \
                          << "' index='" << ((p)->getIndex() ? (p)->getIndex() : "NULL") \
                          << "' fullName='" << (p)->getFullName() \
                          << "' fullPath='" << (p)->getFullPath() << "'\n";
@@ -20,7 +20,7 @@ prop->setIndex("jk"); PRINTNAMES(prop);
 prop->setIndex(NULL); PRINTNAMES(prop);
 prop->setIndex("lm"); PRINTNAMES(prop);
 
-ev << "." << endl;
+EV << "." << endl;
 
 %contains: stdout
 name='' index='NULL' fullName='' fullPath=''

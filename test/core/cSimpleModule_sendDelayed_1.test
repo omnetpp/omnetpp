@@ -33,7 +33,7 @@ void Receiver::activity()
 {
    cMessage *msg = receive();
    simtime_t diff = simTime() - msg->getTimestamp();
-   ev << "diff: " << diff << endl;
+   EV << "diff: " << diff << endl;
 }
 
 %contains: stdout

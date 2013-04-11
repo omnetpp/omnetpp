@@ -7,8 +7,8 @@ const char *str = " 34.13 -0.11 3.1415 ";
 std::vector<double> v = cStringTokenizer(str).asDoubleVector();
 
 for (double i=0; i<v.size(); i++)
-    ev << (i?" ":"") << v[i];
-ev << "\n.\n";
+    EV << (i?" ":"") << v[i];
+EV << "\n.\n";
 
 %contains: stdout
 34.13 -0.11 3.1415

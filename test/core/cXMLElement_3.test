@@ -31,7 +31,7 @@ static void getElement(const char *id)
     cXMLElement *rootelement = ev.getXMLDocument("test.xml", NULL);
     cXMLElement *node = rootelement->getElementById(id);
 
-    ev << id << ": " << (!node ? "null" : node->getAttribute("id")) << "\n";
+    EV_S << id << ": " << (!node ? "null" : node->getAttribute("id")) << "\n";
 }
 
 %activity:

@@ -48,7 +48,7 @@ void Node::activity()
 {
     for (int i=0; i<10; i++)
     {
-        ev << "Node " << getFullPath() << " at t=" << simTime() << endl;
+        EV << "Node " << getFullPath() << " at t=" << simTime() << endl;
         wait(1);
     }
 }
@@ -66,13 +66,13 @@ void Deleter::activity()
 {
     wait(3);
 
-    ev << "Deleting compound t=" << simTime() << endl;
+    EV << "Deleting compound t=" << simTime() << endl;
     cModule *node = getParentModule()->getSubmodule("compound");
     node->deleteModule();
-    ev << "Deleted" << endl;
+    EV << "Deleted" << endl;
 
     wait(2);
-    ev << "Still here at t=" << simTime() << endl;
+    EV << "Still here at t=" << simTime() << endl;
 }
 
 }; //namespace

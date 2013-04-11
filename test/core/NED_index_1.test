@@ -63,9 +63,9 @@ Define_Module(Simple);
 void Simple::activity()
 {
     for (int i=0; i<getNumParams(); i++)
-        ev << getFullName() << "." << par(i).getName() << "=" << (double)par(i) << endl;
-    ev << getFullName() << ".in1[] size=" << gateSize("in1") << endl;
-    ev << getFullName() << ".in2[] size=" << gateSize("in2") << endl;
+        EV << getFullName() << "." << par(i).getName() << "=" << (double)par(i) << endl;
+    EV << getFullName() << ".in1[] size=" << gateSize("in1") << endl;
+    EV << getFullName() << ".in2[] size=" << gateSize("in2") << endl;
 }
 
 }; //namespace

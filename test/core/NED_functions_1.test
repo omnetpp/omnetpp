@@ -14,7 +14,7 @@ void test(const char *expr)
     } catch (std::exception& e) {
         result = e.what();
     }
-    ev << expr << " ==> " << result << "\n";
+    EV_S << expr << " ==> " << result << "\n";
 }
 
 #define P(expr)  test(#expr)
@@ -26,7 +26,7 @@ P( min(3m, 2km));
 P( min(2km, 3m));
 P( min(1m, 1));
 P( min(1m, 1s));
-ev << "\n";
+EV << "\n";
 
 P( max(3, 2));
 P( max(3m, 2m));
@@ -34,43 +34,43 @@ P( max(3m, 2km));
 P( max(2km, 3m));
 P( max(1m, 1));
 P( max(1m, 1s));
-ev << "\n";
+EV << "\n";
 
 P( convertUnit(1.5h, "s"));
 P( convertUnit(1.5h, ""));
 P( convertUnit(1.5h, "kg"));
-ev << "\n";
+EV << "\n";
 
 P( replaceUnit(1.5h, "s"));
 P( replaceUnit(1.5h, "kg"));
 P( replaceUnit(1.5h, ""));
-ev << "\n";
+EV << "\n";
 
 P( dropUnit(1.5h));
 P( dropUnit(1.5));
-ev << "\n";
+EV << "\n";
 
 P( unitOf(1km));
 P( unitOf(5 kilometers));
-ev << "\n";
+EV << "\n";
 
 P( length(""));
 P( length("Hello"));
-ev << "\n";
+EV << "\n";
 
 P( contains("", ""));
 P( contains("", "bubu"));
 P( contains("Hello", ""));
 P( contains("Hello", "ell"));
 P( contains("Hello", "bubu"));
-ev << "\n";
+EV << "\n";
 
 P( substring("Hello", 0));
 P( substring("Hello", 3));
 P( substring("Hello", 5));
 P( substring("Hello", -1));
 P( substring("Hello", 6));
-ev << "\n";
+EV << "\n";
 
 P( substring("Hello", 0, 2));
 P( substring("Hello", 1, 3));
@@ -79,36 +79,36 @@ P( substring("Hello", 1, 10));
 P( substring("Hello", 1, -1));
 P( substring("Hello", -1, 3));
 P( substring("Hello", -1, 10));
-ev << "\n";
+EV << "\n";
 
 P( substringBefore("this and this and that", "and"));  // note: two "and"'s
 P( substringBefore("this and this and that", "XXX"));
 P( substringAfter("this and this and that", "and"));
 P( substringAfter("this and this and that", "XXX"));
-ev << "\n";
+EV << "\n";
 
 P( substringBeforeLast("this and this and that", "and"));
 P( substringBeforeLast("this and this and that", "XXX"));
 P( substringAfterLast("this and this and that", "and"));
 P( substringAfterLast("this and this and that", "XXX"));
-ev << "\n";
+EV << "\n";
 
 P( startsWith("", ""));
 P( startsWith("Hello", ""));
 P( startsWith("Hello", "He"));
 P( startsWith("Hello", "ell"));
-ev << "\n";
+EV << "\n";
 
 P( endsWith("", ""));
 P( endsWith("Hello", ""));
 P( endsWith("Hello", "lo"));
 P( endsWith("Hello", "ell"));
-ev << "\n";
+EV << "\n";
 
 P( tail("Hello", 0));
 P( tail("Hello", 2));
 P( tail("Hello", 100));
-ev << "\n";
+EV << "\n";
 
 P( replace("Hello", "ell", "******"));
 P( replace("Hello", "ell", ""));
@@ -117,32 +117,32 @@ P( replace("Hello", "l", "x"));
 P( replace("Hello", "e", "e"));
 P( replace("Hello", "e", ""));
 P( replace("Hello", "", "x"));
-ev << "\n";
+EV << "\n";
 
 P( replaceFirst("Hello", "l", "(_)"));
 P( replaceFirst("Hello", "X", "(_)"));
-ev << "\n";
+EV << "\n";
 
 P( indexOf("", ""));
 P( indexOf("Hello", ""));
 P( indexOf("Hello", "ell"));
 P( indexOf("Hello", "bubu"));
-ev << "\n";
+EV << "\n";
 
 P( toUpper("Hello"));
 P( toLower("HeLLo"));
-ev << "\n";
+EV << "\n";
 
 P( trim("  \tfoo \n "));
 P( trim("foo"));
-ev << "\n";
+EV << "\n";
 
 P( choose(0, "Zero One Two Three"));
 P( choose(2, "Zero One Two Three"));
 P( choose(3, "Zero One Two Three"));
 P( choose(-1, "Zero One Two Three"));
 P( choose(4, "Zero One Two Three"));
-ev << "\n";
+EV << "\n";
 
 P( int(true));
 P( int(3.14));
@@ -158,7 +158,7 @@ P( string(false));
 P( string(13));
 P( string(4.72));
 P( string(-4.72));
-ev << ".\n";
+EV << ".\n";
 
 %contains: stdout
 min(3, 2) ==> 2

@@ -11,8 +11,8 @@ while (tokenizer.hasMoreTokens())
     out.push_back(atoi(tokenizer.nextToken()));
 
 for (int i=0; i<(int)out.size(); i++)
-    ev << (i?" ":"") << out[i];
-ev << "\n.\n";
+    EV << (i?" ":"") << out[i];
+EV << "\n.\n";
 
 %contains: stdout
 34 42 13 46 72 41

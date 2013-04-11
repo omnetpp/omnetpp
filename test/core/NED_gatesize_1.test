@@ -51,7 +51,7 @@ class GenMod : public cSimpleModule
 
 Define_Module(GenMod);
 
-#define PRINT(name)  ev << name << (isGateVector(name) ? "[]" : "") << ":" \
+#define PRINT(name)  EV << name << (isGateVector(name) ? "[]" : "") << ":" \
                         << gateSize(name) << "," << gateSize(name) << "\n"
 
 void GenMod::activity()

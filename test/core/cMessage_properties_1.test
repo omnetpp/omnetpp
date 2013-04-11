@@ -13,12 +13,12 @@ msg.setBitError(true);
 msg.setTimestamp(2.434);
 msg.setContextPointer(&dummy);
 
-ev << "kind: " << msg.getKind() << endl;
-ev << "priority: " << msg.getSchedulingPriority() << endl;
-ev << "length: " << msg.getBitLength() << endl;
-ev << "bitError: " << msg.hasBitError() << endl;
-ev << "timestamp: " << msg.getTimestamp() << endl;
-ev << "contextPointer ok: " << (msg.getContextPointer() == &dummy) << endl;
+EV << "kind: " << msg.getKind() << endl;
+EV << "priority: " << msg.getSchedulingPriority() << endl;
+EV << "length: " << msg.getBitLength() << endl;
+EV << "bitError: " << msg.hasBitError() << endl;
+EV << "timestamp: " << msg.getTimestamp() << endl;
+EV << "contextPointer ok: " << (msg.getContextPointer() == &dummy) << endl;
 
 %contains: stdout
 kind: 10

@@ -23,7 +23,7 @@ for (int i=-18; i<=0; i++)
     if (SimTime::getScaleExp()==SimTime::SCALEEXP_FS) u = "fs";
     ev.printf("%d: scale=%"INT64_PRINTF_FORMAT"d %s\n", i, SimTime::getScale(), u);
 }
-ev << ".\n";
+EV << ".\n";
 
 %contains: stdout
 -18: scale=1000000000000000000

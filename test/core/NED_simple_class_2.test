@@ -36,7 +36,7 @@ Define_Module(ClassWithNamespace);
 
 void ClassWithNamespace::activity()
 {
-    ev << "ClassWithNamespace\n";
+    EV << "ClassWithNamespace\n";
 }
 
 }; //namespace
