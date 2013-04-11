@@ -244,12 +244,8 @@ typedef std::map<std::string,std::string> StringMap;
 static StringMap demangledNames;
 #endif
 
-const char *opp_typename(const std::type_info& t)
+const char *opp_demangle_typename(const char *mangledName)
 {
-    if (t == typeid(std::string))
-        return "std::string"; // otherwise we'd get "std::basic_string<........>"
-
-    const char *mangledName = t.name();
     const char *s = mangledName;
 
 #ifdef __GNUC__
@@ -371,6 +367,13 @@ const char *opp_typename(const std::type_info& t)
         s+=5;
     return s;
 #endif
+}
+
+const char *opp_typename(const std::type_info& t)
+{
+    if (t == typeid(std::string))
+        return "std::string"; // otherwise we'd get "std::basic_string<........>"
+    return opp_demangle_typename(t.name());
 }
 
 //----

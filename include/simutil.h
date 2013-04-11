@@ -188,6 +188,9 @@ SIM_API void opp_terminate(const char *msg,...);
 //@}
 
 // INTERNAL: returns the name of a C++ type, correcting the quirks of various compilers.
+SIM_API const char *opp_demangle_typename(const char *mangledName);
+
+// INTERNAL: returns the name of a C++ type, correcting the quirks of various compilers.
 SIM_API const char *opp_typename(const std::type_info& t);
 
 
