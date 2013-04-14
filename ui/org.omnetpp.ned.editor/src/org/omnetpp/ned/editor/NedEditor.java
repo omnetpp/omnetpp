@@ -57,10 +57,10 @@ import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.notification.INedChangeListener;
 import org.omnetpp.ned.model.notification.NedFileRemovedEvent;
 import org.omnetpp.ned.model.notification.NedModelEvent;
-import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
  * Multi-page NED editor.
@@ -84,10 +84,12 @@ public class NedEditor
     private TextualNedEditor textEditor;
     private final ResourceTracker resourceListener = new ResourceTracker();
 
-    // we should store the currentPage so we can figure out whether text or the grahical editor is the active one
+    // we should store the currentPage so we can figure out whether text or the graphical editor is the active one
     private int currentPageIndex;
     private int graphPageIndex;
     private int textPageIndex;
+
+    private static Mode mostRecentlyUsedMode = Mode.GRAPHICAL;  // TEXT or GRAPHICAL
 
     protected IPartListener partListener = new IPartListener() {
         public void partOpened(IWorkbenchPart part) {
@@ -99,6 +101,8 @@ public class NedEditor
         public void partActivated(IWorkbenchPart part) {
             Debug.println(part.toString()+" activated");
             if (part == NedEditor.this) {
+                mostRecentlyUsedMode = (currentPageIndex == graphPageIndex) ? Mode.GRAPHICAL : Mode.TEXT;
+
                 if (getEditorInput() != null && NedResourcesPlugin.getNedResources().containsNedFileElement(getFile())) {
                     // when switching from another MultiPageNedEditor to this one for the same file
                     // we need to immediately pull the changes, because editing in this editor
@@ -261,7 +265,7 @@ public class NedEditor
             setPageText(textPageIndex,"Source");
 
             // switch to graphics mode initially if there's no error in the file
-            setActivePage(maySwitchToGraphicalEditor() ? graphPageIndex : textPageIndex);
+            setActivePage(maySwitchToGraphicalEditor() && mostRecentlyUsedMode==Mode.GRAPHICAL ? graphPageIndex : textPageIndex);
 
         }
         catch (PartInitException e) {
@@ -298,6 +302,8 @@ public class NedEditor
     @Override
     protected void pageChange(int newPageIndex) {
         super.pageChange(newPageIndex);
+
+        mostRecentlyUsedMode = (newPageIndex == graphPageIndex) ? Mode.GRAPHICAL : Mode.TEXT;
 
         // XXX Kludge: currently the workbench do not send a partActivated/deactivated messages
         // for embedded editors in a MultiPageEditor. (This is a missing unimplemented feature,
@@ -472,8 +478,13 @@ public class NedEditor
     }
 
     public void showInEditor(INedElement model, Mode mode) {
+        Assert.isTrue(mostRecentlyUsedMode != Mode.AUTOMATIC);
+
         if (mode == Mode.AUTOMATIC) {
-            mode = model instanceof INedTypeElement || model instanceof SubmoduleElement ? Mode.GRAPHICAL : Mode.TEXT;
+            if (model instanceof INedTypeElement || model instanceof ISubmoduleOrConnection) // has graphical representation
+                mode = mostRecentlyUsedMode;
+            else
+                mode = Mode.TEXT;
         }
 
         if (mode == Mode.GRAPHICAL) {
@@ -489,8 +500,7 @@ public class NedEditor
                     int endLine = model.getSourceRegion().getEndLine();
                     int startOffset = document.getLineOffset(startLine-1)+model.getSourceRegion().getStartColumn();
                     int endOffset = document.getLineOffset(endLine-1)+model.getSourceRegion().getEndColumn();
-                    textEditor.setHighlightRange(startOffset, endOffset - startOffset,
-                                                 true);
+                    textEditor.setHighlightRange(startOffset, endOffset - startOffset, true);
 
                 } catch (Exception e) {
                 }
