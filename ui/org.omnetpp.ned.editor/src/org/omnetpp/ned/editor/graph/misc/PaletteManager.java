@@ -547,7 +547,7 @@ public class PaletteManager {
         ConnectionCreationToolEntry toolEntry = new ConnectionCreationToolEntry(
                 getLabelFor(typeElement.getNedTypeInfo()),
                 NedCommentFormatter.makeBriefDocu(typeElement.getComment(), 300),
-                new ModelFactory(NedElementTags.NED_CONNECTION, "n/a", fullyQualifiedTypeName, typeElement instanceof ChannelInterfaceElement),
+                new ModelFactory(NedElementTags.NED_CONNECTION, "", fullyQualifiedTypeName, typeElement instanceof ChannelInterfaceElement),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)
         );
