@@ -9,7 +9,7 @@ in the 'Linux' chapter.
 The following Ubuntu releases are covered:
 
 * Ubuntu 12.04 LTS
-* Ubuntu 12.10
+* Ubuntu 13.04
 
 They were tested on the following architectures:
 
@@ -22,9 +22,7 @@ you may need to adjust the instructions accordingly.
 
 === Opening a Terminal
 
-Choose 'Applications > Accessories > Terminal' from the menu.
-
-This only applies if you use the Gnome Desktop (default).
+Type 'terminal' in Dash and click on the Terminal icon.
 
 === Installing the Prerequisite Packages
 
@@ -41,8 +39,8 @@ Type in the terminal:
 To install the required packages, type in the terminal:
 
  $ sudo apt-get install build-essential gcc g++ bison flex perl \
-       tcl-dev tk-dev blt libxml2-dev zlib1g-dev openjdk-6-jre \
-       doxygen graphviz openmpi-bin libopenmpi-dev libpcap-dev
+       tcl-dev tk-dev blt libxml2-dev zlib1g-dev default-jre \
+       doxygen graphviz libwebkitgtk-1.0-0 openmpi-bin libopenmpi-dev libpcap-dev
 
 At the confirmation questions ('Do you want to continue? [Y/N]'), answer 'Y'.
 
@@ -65,7 +63,8 @@ If the 'Mark additional required changes?' dialog comes up, choose the 'Mark' bu
 The packages:
 
 * build-essential, gcc, g++, bison, flex, perl, tcl-dev, tk-dev, blt, libxml2-dev,
-zlib1g-dev, openjdk-6-jre, doxygen, graphviz, openmpi-bin, libopenmpi-dev, libpcap-dev
+zlib1g-dev, default-jre, doxygen, graphviz, libwebkitgtk-1.0-0, openmpi-bin,
+libopenmpi-dev, libpcap-dev
 
 image::pictures/ubuntu-synaptic.png[title="Synaptic Package Manager",align="center",scaledwidth="75%"]
 

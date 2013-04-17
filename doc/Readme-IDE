@@ -4,7 +4,7 @@ The OMNeT++ IDE
 
 Overview
 --------
-OMNeT++ 4.2 comes with a powerful integrated environment, based on Eclipse.
+OMNeT++ comes with a powerful integrated environment, based on Eclipse.
 To get a quick overview of the IDE features, watch the screencast at:
 
     http://www.omnest.com/webdemo/ide
@@ -13,13 +13,13 @@ or read
 
     doc/IDE-Overview.pdf
 
-in your OMNeT++ 4.2 installation.
+in your OMNeT++ installation.
 
 
 Requirements and compilation
 ----------------------------
-The IDE is Java-based, it requires the Java 5 or Java 6 JRE to be installed
-on the computer. We recommend the Sun JRE.
+The IDE is Java-based, it requires the Java 6 or later to be installed
+on the computer. We recommend the Oracle JRE.
 
 The IDE does not need to be built by the user, it is ready to run right after
 unpacking the tarball. Native (C++) parts of the IDE have been pre-compiled
@@ -29,7 +29,7 @@ under src/.
 The IDE is supported on the following platforms:
  - Windows
  - Linux 
- - Mac OS X 10.6/7
+ - Mac OS X 10.7+
 
 
 Note: while the IDE does not need to be built, you'll still need "./configure"

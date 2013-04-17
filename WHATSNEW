@@ -5,8 +5,23 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
-OMNeT++ 4.3rc1 (Jan 2013)
+OMNeT++ 4.3 (March 2013)
 ------------------------
+
+IDE:
+
+  - Updated to Eclipse 3.8.2.
+
+  - The CDT debugger no longer stops at the main() function by default.
+
+  - The budnled gdb is downgraded to 7.4
+
+Tools:
+
+  - The configure script now correctly detects the X headers on Mac OS X 10.8.
+
+OMNeT++ 4.3rc1 (Jan 2013)
+-------------------------
 
 IDE:
 

@@ -143,7 +143,7 @@ Type in the terminal:
 
 [TIP]
 ===============================================================
-To take advantage of multiple processor cores, add the `-j2` option to the
+To take advantage of multiple processor cores, add the `-j4` option to the
 `make` command line.
 ===============================================================
 

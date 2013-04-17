@@ -1,3 +1,5 @@
+2013-04-02  ------ omnetpp-4.3 released ------
+
 2013-02-08  ------ omnetpp-4.3rc1 released ------
 
 2012-03-13  ------ omnetpp-4.2.2 released ------
@@ -20,7 +22,8 @@
 
 2010-03-14  ------ omnetpp-4.1b3 released ------
 
-2009-11-09
+2009-11-09  Levente Meszaros
+
 	* Fixed handling eventlog-recording-intervals, recording stopped at the first non recorded
 	event and did not start afterwards.
 

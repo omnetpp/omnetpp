@@ -16,9 +16,9 @@
    <launcherArgs>
       <programArgs>-name
 &quot;OMNeT++ IDE&quot;</programArgs>
-      <vmArgs>-Xms128m
--Xmx512m
--XX:MaxPermSize=192m</vmArgs>
+      <vmArgs>-Xms256m
+-Xmx1024m
+-XX:MaxPermSize=320m</vmArgs>
    </launcherArgs>
 
    <windowImages i16="/org.omnetpp.main/icons/logo16.png" i32="/org.omnetpp.main/icons/logo32.png" i48="/org.omnetpp.main/icons/logo48.png" i64="/org.omnetpp.main/icons/logo64.png" i128="/org.omnetpp.main/icons/logo128.png"/>

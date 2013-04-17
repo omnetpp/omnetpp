@@ -162,7 +162,7 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
 
         // switch to the requested page
         String defaultPage = formParameters==null ? null : (String) formParameters.get(PROP_DEFAULT_TAB);
-        if (formParameters.get(PARAM_SELECTED_OBJECT) instanceof ChartLine)
+        if (formParameters != null && formParameters.get(PARAM_SELECTED_OBJECT) instanceof ChartLine)
             defaultPage = BaseLineChartEditForm.TAB_LINES; // when editing a line, open with the "Lines" tab
         if (defaultPage == null)
             defaultPage = getDialogSettings().get(PROP_DEFAULT_TAB);

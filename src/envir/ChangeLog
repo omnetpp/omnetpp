@@ -17,6 +17,8 @@
 	* Followed cOutputVectorManager/cOutputScalarManager/cSnapshotManager
 	renaming in sim/ (they became cIOutputVectorManager, etc.)
 
+2013-04-02  ------ omnetpp-4.3 released ------
+
 2013-02-08  ------ omnetpp-4.3rc1 released ------
 
 2012-03-27 Tamas Borbely
@@ -34,33 +36,33 @@
 
 2011-07-17 Rudolf Hornig
 
-    * opp_run: Changed how opp_run is used to start debug and release models.
+      * opp_run: Changed how opp_run is used to start debug and release models.
 
-    There are two programs now to start models built as shared libs:
-    - 'opp_run_release' is built using release opp libraries and starts any release
-      model directly by invoking evMain.
-    - 'opp_run' is linked against debug opp libs. It first loads all libraries
-	  into the address space dynamically and checks for the symbol __is_release_opp_sim__
-	  (it is present only in release builds). If it does not find it, the
-      model is debug and proceeds normally by invoking evMain. If it decides that
-      the model is 'release', it reloads the whole simulation by exec-ing it using
-      'opp_run_release'.
+      There are two programs now to start models built as shared libs:
+      - 'opp_run_release' is built using release opp libraries and starts any release
+	model directly by invoking evMain.
+      - 'opp_run' is linked against debug opp libs. It first loads all libraries
+	into the address space dynamically and check for the simbol __is_release_opp_sim__
+	(that is present only in release builds). If it does not find it, the
+	model is debug and proceeds normally by invoking evMain. If it decides that
+	the model is 'release', it reloads the whole simulation by exec-ing it using
+	'opp_run_release'.
 
-      The simulation IDE also detects whether release or debug version of the model is
-      started and it launches it with either 'opp_run' or 'opp_run_release'. This is
-      required because on Windows, 'opp_run_release' is started as a different process
-      and the IDE would not be able to control/kill the 'opp_run_release' process if
-	  it was started by opp_run.
+	The simulation IDE also detects whether release or debug version of the model is
+	started and it launches it with either 'opp_run' or 'opp_run_release'. This is
+	required because on Windows, 'opp_run_release' is started as a different process
+	and the IDE would not be able to control/kill the 'opp_run_release' process if
+	it would be started by opp_run.
 
-      Note: The detection process does not work if the shared models libs are specified
-      in the INI file.
+	Note: The detection process does not work if the shared models libs are specified
+	in the INI file.
 
-	  Note2: Because of the above changes, the main() function was moved from the oppenvir
-      library to a sparate statically linked library (oppmain). This library must be linked
-      with executable simulation models. This requires changes in the makefiles.
-	  opp_makemake generates correct makefiles, but the the makefiles *MUST* be recreated
-      when upgrading to OMNeT++ 4.2 and working on the command line. (The IDE automatically
-	  recreates the makefiles, so if you use the IDE, no further action is needed.)
+	Note2: Because of the above changes the main() function moved from the oppenvir
+	library to a sparate statically linked library (oppmain). This library must be linked
+	with executable simulation models. This requires changes in the makefiles.
+	opp_makemake generates corract makefiles but the the makefiles *MUST* be recreated
+	when upgrading to OMNeT++ 4.2 and working on the command line. (The IDE automatically
+	recreates the makefiles, so in this case no further action is needed)
 
 2011-06-25  Andras Varga
 
@@ -313,10 +315,10 @@
 2009-05-13  Levente Meszaros
 
 	* changed EnvirBase to include hostname and pid by default in output file
-          names when parallel simulation is enabled.
+	  names when parallel simulation is enabled.
 
-        * bugfix: insert hostname and pid into before default file extension instead
-          of appending it at the end.
+	* bugfix: insert hostname and pid into before default file extension instead
+	  of appending it at the end.
 
 2009-03-12  ------ omnetpp-4.0 released ------
 
