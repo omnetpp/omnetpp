@@ -52,7 +52,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
         std::string key;
         std::string value;
         KeyValue1() {basedirRef = &nullbasedir;}
-        KeyValue1(const std::string *bd, const char *k, const char *v) {basedirRef = bd?bd:&nullbasedir; key = k; value = v;}
+        KeyValue1(const std::string *bd, const char *k, const char *v) {basedirRef = bd; key = k; value = v;}
 
         // virtual functions implementing the KeyValue interface
         virtual const char *getKey() const   {return key.c_str();}
@@ -191,9 +191,9 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     std::string substituteVariables(const char *text, int sectionId, int entryId) const;
     bool isPredefinedVariable(const char *varname) const;
     void setupVariables(const char *configName, int runNumber, Scenario *scenario, const std::vector<int>& sectionChain);
-    KeyValue1 convert(int sectionId, int entryId);
     static bool isIgnorableConfigKey(const char *ignoredKeyPatterns, const char *key);
     static cConfigOption *lookupConfigOption(const char *key);
+    const std::string *getPooledBaseDir(const char *basedir);
 
   public:
     SectionBasedConfiguration();
@@ -215,9 +215,11 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
      * are global (effective for all configs), cannot be per-object options,
      * and take precedence over the ones read from the ini file (i.e. from
      * cConfigurationReader). This method immediately validates the option
-     * names, and thows an error for unrecogized/unacceptable ones.
+     * names, and throws an error for unrecognized/unacceptable ones.
+     * The baseDir parameter is going to be used for resolving filename
+     * options that contain relative paths.
      */
-    virtual void setCommandLineConfigOptions(const std::map<std::string,std::string>& options);
+    virtual void setCommandLineConfigOptions(const std::map<std::string,std::string>& options, const char *baseDir);
 
     /** @name Methods that implement the cConfiguration(Ex) interface. */
     //@{
@@ -228,7 +230,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     virtual void activateConfig(const char *configName, int runNumber=0);
     virtual std::string getConfigDescription(const char *configName) const;
     virtual std::vector<std::string> getBaseConfigs(const char *configName) const;
-    virtual std::vector<std::string> getConfigChain(const char * configName) const;
+    virtual std::vector<std::string> getConfigChain(const char *configName) const;
     virtual int getNumRunsInConfig(const char *configName) const;
     virtual std::vector<std::string> unrollConfig(const char *configName, bool detailed) const;
     virtual const char *getActiveConfigName() const;

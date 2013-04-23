@@ -118,7 +118,7 @@ int setupUserInterface(int argc, char *argv[])
         // activate [General] section so that we can read global settings from it
         bootconfig = new SectionBasedConfiguration();
         bootconfig->setConfigurationReader(inifile);
-        bootconfig->setCommandLineConfigOptions(args->getLongOptions());
+        bootconfig->setCommandLineConfigOptions(args->getLongOptions(), getWorkingDir().c_str());
         bootconfig->activateConfig("General", 0);
 
         //
