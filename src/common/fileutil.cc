@@ -213,6 +213,12 @@ static std::string removeTrailingSlash(const char *pathname)
 }
 */
 
+std::string getWorkingDir()
+{
+    char wd[1024];
+    return std::string(getcwd(wd,1024));
+}
+
 bool fileExists(const char *pathname)
 {
     // Note: stat("foo/") ==> error, even when "foo" exists and is a directory!

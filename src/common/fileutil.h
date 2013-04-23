@@ -56,6 +56,11 @@ COMMON_API std::string toAbsolutePath(const char *pathname);
 COMMON_API std::string concatDirAndFile(const char *basedir, const char *pathname);
 
 /**
+ * Returns the current working directory
+ */
+COMMON_API std::string getWorkingDir();
+
+/**
  * Returns true if given file or directory exists
  */
 COMMON_API bool fileExists(const char *pathname);
