@@ -100,9 +100,10 @@ void SectionBasedConfiguration::setConfigurationReader(cConfigurationReader *ini
     sectionChains.assign(ini->getNumSections(), std::vector<int>());
 }
 
-void SectionBasedConfiguration::setCommandLineConfigOptions(const std::map<std::string,std::string>& options)
+void SectionBasedConfiguration::setCommandLineConfigOptions(const std::map<std::string,std::string>& options, const char *baseDir)
 {
     commandLineOptions.clear();
+    const std::string *basedirRef = getPooledBaseDir(baseDir);
     for (StringMap::const_iterator it=options.begin(); it!=options.end(); it++)
     {
         // validate the key, then store the option
@@ -120,7 +121,7 @@ void SectionBasedConfiguration::setCommandLineConfigOptions(const std::map<std::
             key = (tmp=std::string("**.")+key).c_str(); // prepend with "**." (XXX this should be done in inifile contents too)
         if (!value[0])
             throw cRuntimeError("Missing value for command-line configuration option --%s", key);
-        commandLineOptions.push_back(KeyValue1(NULL, key, value));
+        commandLineOptions.push_back(KeyValue1(basedirRef, key, value));
     }
 }
 
@@ -317,7 +318,10 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
     // Note: entries added first will have precedence over those added later.
     for (int i=0; i < (int)commandLineOptions.size(); i++)
     {
-        addEntry(commandLineOptions[i]);
+        KeyValue1& e = commandLineOptions[i];
+        std::string value = substituteVariables(e.getValue());
+        const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
+        addEntry(KeyValue1(basedirRef, e.getKey(), value.c_str()));
     }
     for (int i=0; i < (int)sectionChain.size(); i++)
     {
@@ -325,7 +329,10 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
         for (int entryId=0; entryId<ini->getNumEntries(sectionId); entryId++)
         {
             // add entry to our tables
-            addEntry(convert(sectionId, entryId));
+            const cConfigurationReader::KeyValue& e = ini->getEntry(sectionId, entryId);
+            std::string value = substituteVariables(e.getValue(), sectionId, entryId);
+            const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
+            addEntry(KeyValue1(basedirRef, e.getKey(), value.c_str()));
         }
     }
 }
@@ -919,18 +926,15 @@ void SectionBasedConfiguration::splitKey(const char *key, std::string& outOwnerN
     }
 }
 
-SectionBasedConfiguration::KeyValue1 SectionBasedConfiguration::convert(int sectionId, int entryId)
+const std::string *SectionBasedConfiguration::getPooledBaseDir(const char *basedir)
 {
-    const cConfigurationReader::KeyValue& e = ini->getEntry(sectionId, entryId);
-    std::string value = substituteVariables(e.getValue(), sectionId, entryId);
-
-    StringSet::iterator it = basedirs.find(e.getBaseDirectory());
+    StringSet::iterator it = basedirs.find(basedir);
     if (it == basedirs.end()) {
-        basedirs.insert(e.getBaseDirectory());
-        it = basedirs.find(e.getBaseDirectory());
+        basedirs.insert(basedir);
+        it = basedirs.find(basedir);
     }
     const std::string *basedirRef = &(*it);
-    return KeyValue1(basedirRef, e.getKey(), value.c_str());
+    return basedirRef;
 }
 
 int SectionBasedConfiguration::internalFindSection(const char *section) const
