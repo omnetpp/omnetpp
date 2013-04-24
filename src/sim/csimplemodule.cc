@@ -582,6 +582,9 @@ cMessage *cSimpleModule::cancelEvent(cMessage *msg)
     {
         if (!msg->isSelfMessage())
             throw cRuntimeError("cancelEvent(): message (%s)%s is not a self-message", msg->getClassName(), msg->getFullName());
+        if (msg->getArrivalModuleId() != getId())
+            throw cRuntimeError("cancelEvent(): cannot cancel another module's self-message");
+
         simulation.msgQueue.remove(msg);
         EVCB.messageCancelled(msg);
         msg->setPreviousEventNumber(simulation.getEventNumber());
