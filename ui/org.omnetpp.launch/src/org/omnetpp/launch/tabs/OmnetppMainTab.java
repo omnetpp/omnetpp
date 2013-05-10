@@ -106,9 +106,10 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
     protected Button fEventLogYesButton;
     protected Button fEventLogNoButton;
 
-    protected Button fDbgOnErrDefaultButton;
-    protected Button fDbgOnErrYesButton;
-    protected Button fDbgOnErrNoButton;
+    protected Button fDebugOnErrorDefaultButton;
+    protected Button fDebugOnErrorYesButton;
+    protected Button fDebugOnErrorNoButton;
+    protected Button fDebugOnErrorAutoButton;
 
     private ILaunchConfiguration config;
     private boolean updateDialogStateInProgress = false;
@@ -196,13 +197,18 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
             String recordEventlogArg = config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, "");
             fEventLogDefaultButton.setSelection(recordEventlogArg.equals(""));
             fEventLogNoButton.setSelection(recordEventlogArg.equals("false"));
-            fEventLogYesButton.setSelection(!fEventLogDefaultButton.getSelection() && !fEventLogNoButton.getSelection());
+            fEventLogYesButton.setSelection(recordEventlogArg.equals("true"));
+            if (!fEventLogDefaultButton.getSelection() && !fEventLogNoButton.getSelection() && !fEventLogYesButton.getSelection())
+                fEventLogDefaultButton.setSelection(true);
 
-            // update debug on error radio buttons  (anything that's not "false" will count as "true")
-            String dbgOnErrArg = config.getAttribute(IOmnetppLaunchConstants.OPP_DEBUG_ON_ERRORS, "");
-            fDbgOnErrDefaultButton.setSelection(dbgOnErrArg.equals(""));
-            fDbgOnErrNoButton.setSelection(dbgOnErrArg.equals("false"));
-            fDbgOnErrYesButton.setSelection(!fDbgOnErrDefaultButton.getSelection() && !fDbgOnErrNoButton.getSelection());
+            // update debug on error radio buttons
+            String dbgOnErrArg = config.getAttribute(IOmnetppLaunchConstants.OPP_DEBUG_ON_ERRORS, "auto");
+            fDebugOnErrorDefaultButton.setSelection(dbgOnErrArg.equals(""));
+            fDebugOnErrorNoButton.setSelection(dbgOnErrArg.equals("false"));
+            fDebugOnErrorYesButton.setSelection(dbgOnErrArg.equals("true"));
+            fDebugOnErrorAutoButton.setSelection(dbgOnErrArg.equals("auto"));
+            if (!fDebugOnErrorDefaultButton.getSelection() && !fDebugOnErrorNoButton.getSelection() && !fDebugOnErrorYesButton.getSelection() && !fDebugOnErrorAutoButton.getSelection())
+                fDebugOnErrorAutoButton.setSelection(true);
 
             fLibraryText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "").trim());
             fNedPathText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, "").trim());
@@ -259,10 +265,12 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         else
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, "");
 
-        if (fDbgOnErrYesButton.getSelection())
+        if (fDebugOnErrorYesButton.getSelection())
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_DEBUG_ON_ERRORS, "true");
-        else if (fDbgOnErrNoButton.getSelection())
+        else if (fDebugOnErrorNoButton.getSelection())
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_DEBUG_ON_ERRORS, "false");
+        else if (fDebugOnErrorAutoButton.getSelection())
+            configuration.setAttribute(IOmnetppLaunchConstants.OPP_DEBUG_ON_ERRORS, "auto");
         else
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_DEBUG_ON_ERRORS, "");
 
@@ -775,7 +783,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         SWTFactory.createLabel(composite, "Ini file(s):", 1);
 
         fInifileText = SWTFactory.createSingleText(composite, 2);
-        fInifileText.setToolTipText("The INI file(s) defining parameters and configuration blocks (relative to the working directory)");
+        fInifileText.setToolTipText("Ini file (or files), relative to the working directory");
         fInifileText.addModifyListener(this);
 
         Button browseInifileButton = SWTFactory.createPushButton(composite, "Browse...", null);
@@ -789,7 +797,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         SWTFactory.createLabel(composite, "Config name:",1);
 
         fConfigCombo = SWTFactory.createCombo(composite, SWT.BORDER | SWT.READ_ONLY, 3, new String[] {});
-        fConfigCombo.setToolTipText("The configuration from the INI file that should be executed");
+        fConfigCombo.setToolTipText("The configuration from the ini file");
         fConfigCombo.setVisibleItemCount(10);
         fConfigCombo.addModifyListener(this);
 
@@ -862,7 +870,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
 
         SWTFactory.createLabel(composite, "NED Source Path:", 1);
         fNedPathText = SWTFactory.createSingleText(composite, 2);
-        fNedPathText.setToolTipText("Directories where NED files are read from (relative to the first selected INI file). " +
+        fNedPathText.setToolTipText("Directories where NED files are read from (relative to the first selected ini file). " +
         "Use ${opp_ned_path:/workingdir} for automatic setting.");
         fNedPathText.addModifyListener(this);
 
@@ -891,7 +899,6 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         fIDEEnvButton = createRadioButton(comp, "IDE");
         SWTFactory.createLabel(comp, "  External: ", 1);
         fDefaultExternalEnvButton = createRadioButton(comp, "Default");
-        fDefaultExternalEnvButton.setSelection(true);
         fCmdenvButton = createRadioButton(comp, "Cmdenv");
         fTkenvButton = createRadioButton(comp, "Tkenv");
         fOtherEnvButton = createRadioButton(comp, "Other:");
@@ -899,14 +906,13 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         fOtherEnvText.addModifyListener(this);
 
         fIDEEnvButton.setToolTipText("Launch a Cmdenv simulation and let the IDE connect to it");
-        fDefaultExternalEnvButton.setToolTipText("Launches the simulation without a -u option");
-        fCmdenvButton.setToolTipText("Launches the simulation with the -u Cmdenv option");
-        fTkenvButton.setToolTipText("Launches the simulation with the -u Tkenv option");
-        fOtherEnvButton.setToolTipText("Specify the custom environment name");
+        fDefaultExternalEnvButton.setToolTipText("Let the ini file setting or the default take effect");
+        fCmdenvButton.setToolTipText("Launch the simulation with the -u Cmdenv option");
+        fTkenvButton.setToolTipText("Launch the simulation with the -u Tkenv option");
+        fOtherEnvButton.setToolTipText("Launch the simulation with the -u <custom> option");
     }
 
     protected void createRecordEventlogRadioButtons(Composite parent, int colSpan) {
-
         Composite comp = SWTFactory.createComposite(parent, 6, colSpan, GridData.FILL_HORIZONTAL);
         ((GridLayout)comp.getLayout()).marginWidth = 0;
         ((GridLayout)comp.getLayout()).marginHeight = 0;
@@ -914,9 +920,12 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         SWTFactory.createLabel(comp, "Record eventlog:", 1);
 
         fEventLogDefaultButton = createRadioButton(comp, "Default");
-        fEventLogDefaultButton.setSelection(true);
         fEventLogYesButton = createRadioButton(comp, "Yes");
         fEventLogNoButton = createRadioButton(comp, "No");
+
+        fEventLogDefaultButton.setToolTipText("Let the ini file setting take effect");
+        fEventLogYesButton.setToolTipText("Override ini file setting");
+        fEventLogNoButton.setToolTipText("Override ini file setting");
     }
 
     protected void createDbgOnErrRadioButtons(Composite parent, int colSpan) {
@@ -927,10 +936,15 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
 
         SWTFactory.createLabel(comp, "Debug on errors:", 1);
 
-        fDbgOnErrDefaultButton = createRadioButton(comp, "Default");
-        fDbgOnErrDefaultButton.setSelection(true);
-        fDbgOnErrYesButton = createRadioButton(comp, "Yes");
-        fDbgOnErrNoButton = createRadioButton(comp, "No");
+        fDebugOnErrorDefaultButton = createRadioButton(comp, "Default");
+        fDebugOnErrorYesButton = createRadioButton(comp, "Yes");
+        fDebugOnErrorNoButton = createRadioButton(comp, "No");
+        fDebugOnErrorAutoButton = createRadioButton(comp, "Auto");
+
+        fDebugOnErrorDefaultButton.setToolTipText("Let the ini file setting take effect");
+        fDebugOnErrorYesButton.setToolTipText("Override ini file setting");
+        fDebugOnErrorNoButton.setToolTipText("Override ini file setting");
+        fDebugOnErrorAutoButton.setToolTipText("Only for Debug launches");
     }
 
 
