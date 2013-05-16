@@ -201,7 +201,7 @@ JsonObject *Serializer::serializeObject(cObject *obj, JsonObject *jObject, int64
         jObject->put("bitError", jsonWrap(msg->hasBitError()));
         jObject->put("duration", jsonWrap(msg->getDuration()));
         jObject->put("isReceptionStart", jsonWrap(msg->isReceptionStart()));
-        jObject->put("encapsulatedPacket", jsonWrap(getIdStringForObject(msg->getEncapsulatedPacket())));
+        jObject->put("encapsulatedPacket", jsonWrap(getIdStringForObject(msg->_getEncapMsg())));
         jObject->put("encapsulationId", jsonWrap(msg->getEncapsulationId()));
         jObject->put("encapsulationTreeId", jsonWrap(msg->getEncapsulationTreeId()));
     }

@@ -711,6 +711,8 @@ class SIM_API cPacket : public cMessage
     // or itself if there is no encapsulated message
     long getEncapsulationTreeId() const;
 
+    cPacket *_getEncapMsg() { return encapmsg; }
+
     // internal: if encapmsg is shared (sharecount>0), creates a private copy for this packet,
     // and in any case it sets encapmsg's owner to be this object. This method
     // has to be called before any operation on encapmsg, to prevent trouble
