@@ -378,6 +378,7 @@ bool EnvirBase::setup()
             signal(SIGSEGV, crashHandler);
             signal(SIGILL, crashHandler);
             signal(SIGBUS, crashHandler);
+            signal(SIGUSR1, crashHandler);
         }
 
         // initialize coroutine library
