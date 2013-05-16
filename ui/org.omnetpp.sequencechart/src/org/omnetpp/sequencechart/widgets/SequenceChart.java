@@ -1736,20 +1736,20 @@ public class SequenceChart
             }
         }
         // check potentially visible module method calls
-        extraClipping = getExtraClippingForEvents();
-        eventPtrRange = getFirstLastEventPtrForViewportRange(-extraClipping, getViewportWidth() + extraClipping);
-        startEventPtr = eventPtrRange[0];
-        endEventPtr = eventPtrRange[1];
-        if (startEventPtr != 0 && endEventPtr != 0) {
-            if (debug)
-                Debug.println("Collecting axis modules for module method calls using event range: " + sequenceChartFacade.IEvent_getEventNumber(startEventPtr) + " -> " + sequenceChartFacade.IEvent_getEventNumber(endEventPtr));
-
-            PtrVector moduleMethodBeginEntries = sequenceChartFacade.getModuleMethodBeginEntries(startEventPtr, endEventPtr);
-
-            for (int i = 0; i < moduleMethodBeginEntries.size(); i++) {
-                long moduleMethodCallPtr = moduleMethodBeginEntries.get(i);
-                axisModuleIds.add(sequenceChartFacade.ModuleMethodBeginEntry_getFromModuleId(moduleMethodCallPtr));
-                axisModuleIds.add(sequenceChartFacade.ModuleMethodBeginEntry_getToModuleId(moduleMethodCallPtr));
+        if (showModuleMethodCalls) {
+            extraClipping = getExtraClippingForEvents();
+            eventPtrRange = getFirstLastEventPtrForViewportRange(-extraClipping, getViewportWidth() + extraClipping);
+            startEventPtr = eventPtrRange[0];
+            endEventPtr = eventPtrRange[1];
+            if (startEventPtr != 0 && endEventPtr != 0) {
+                if (debug)
+                    Debug.println("Collecting axis modules for module method calls using event range: " + sequenceChartFacade.IEvent_getEventNumber(startEventPtr) + " -> " + sequenceChartFacade.IEvent_getEventNumber(endEventPtr));
+                PtrVector moduleMethodBeginEntries = sequenceChartFacade.getModuleMethodBeginEntries(startEventPtr, endEventPtr);
+                for (int i = 0; i < moduleMethodBeginEntries.size(); i++) {
+                    long moduleMethodCallPtr = moduleMethodBeginEntries.get(i);
+                    axisModuleIds.add(sequenceChartFacade.ModuleMethodBeginEntry_getFromModuleId(moduleMethodCallPtr));
+                    axisModuleIds.add(sequenceChartFacade.ModuleMethodBeginEntry_getToModuleId(moduleMethodCallPtr));
+                }
             }
         }
         if (debug)
@@ -4459,7 +4459,7 @@ public class SequenceChart
                         }
 
                         // check module method calls
-                        if (calls != null) {
+                        if (showModuleMethodCalls && calls != null) {
                             long[] eventPtrRange = getFirstLastEventPtrForViewportRange(0, getViewportWidth());
                             long startEventPtr = eventPtrRange[0];
                             long endEventPtr = eventPtrRange[1];
