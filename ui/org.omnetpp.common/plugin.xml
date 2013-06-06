@@ -102,4 +102,14 @@
          </fontValue>
       </fontDefinition>
    </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.omnetpp.common.editor.WebBrowserEditor"
+            default="true"
+            extensions="html"
+            id="org.omnetpp.common.editor.WebBrowserEditor"
+            name="OMNeT++ Web Browser">
+      </editor>
+   </extension>
 </plugin>

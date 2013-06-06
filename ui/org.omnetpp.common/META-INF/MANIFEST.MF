@@ -113,3 +113,4 @@ Bundle-ClassPath: .,
 Bundle-Vendor: OpenSim Ltd.
 Bundle-Activator: org.omnetpp.common.CommonPlugin
 Eclipse-LazyStart: true
+Import-Package: org.eclipse.ui.internal.browser
