@@ -10,6 +10,7 @@ package org.omnetpp.ide;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
+import org.eclipse.ui.console.IConsoleConstants;
 import org.eclipse.ui.progress.IProgressConstants;
 import org.omnetpp.common.IConstants;
 
@@ -50,6 +51,7 @@ public class PerspectiveFactory implements IPerspectiveFactory {
         bottomFolder.addPlaceholder(IConstants.NEW_VERSION_VIEW_ID);
         bottomFolder.addPlaceholder(IPageLayout.ID_TASK_LIST);
         bottomFolder.addPlaceholder(IPageLayout.ID_BOOKMARKS);
+        bottomFolder.addPlaceholder(IConsoleConstants.ID_CONSOLE_VIEW);
         bottomFolder.addPlaceholder(IProgressConstants.PROGRESS_VIEW_ID);
 
         // actionsets
