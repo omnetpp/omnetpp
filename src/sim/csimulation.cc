@@ -420,7 +420,7 @@ void cSimulation::callInitialize()
     if (systemmodp)
     {
         cContextSwitcher tmp(systemmodp);
-        systemmodp->scheduleStart(0);
+        systemmodp->scheduleStart(SIMTIME_ZERO);
         ev.notifyListeners(LF_PRE_NETWORK_INITIALIZE);
         systemmodp->callInitialize();
         ev.notifyListeners(LF_POST_NETWORK_INITIALIZE);

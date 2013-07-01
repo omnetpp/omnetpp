@@ -883,7 +883,7 @@ void EnvirBase::setupNetwork(cModuleType *network)
 void EnvirBase::startRun()
 {
     resetClock();
-    if (opt_simtimelimit > 0)
+    if (opt_simtimelimit > SIMTIME_ZERO)
         simulation.setSimulationTimeLimit(opt_simtimelimit);
     simulation.callInitialize();
     flushLastLine();
@@ -950,7 +950,7 @@ void EnvirBase::addResultRecorders(cComponent *component)
             // add source
             bool hasSourceKey = statisticProperty->getNumValues("source") > 0;
             const char *sourceSpec = hasSourceKey ? statisticProperty->getValue("source",0) : statisticName;
-            SignalSource source = doStatisticSource(component, statisticName, sourceSpec, opt_warmupperiod!=0);
+            SignalSource source = doStatisticSource(component, statisticName, sourceSpec, opt_warmupperiod!=SIMTIME_ZERO);
 
             // add result recorders
             for (int j = 0; j < (int)modes.size(); j++)
@@ -1876,7 +1876,7 @@ timeval EnvirBase::totalElapsed()
 void EnvirBase::checkTimeLimits()
 {
 #ifdef USE_OMNETPP4x_FINGERPRINTS
-    if (opt_simtimelimit!=0 && simulation.getSimTime()>=opt_simtimelimit)
+    if (opt_simtimelimit!=SIMTIME_ZERO && simulation.getSimTime()>=opt_simtimelimit)
          throw cTerminationException(eSIMTIME);
 #endif
     if (opt_cputimelimit==0) // no limit

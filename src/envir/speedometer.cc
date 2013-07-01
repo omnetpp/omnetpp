@@ -82,7 +82,7 @@ void Speedometer::beginNewInterval()
 
         last_eventspersec = events / elapsed_sec;
         last_simsecpersec = SIMTIME_DBL(elapsed_simsec) / elapsed_sec;
-        last_eventspersimsec = (elapsed_simsec==0) ? 0 : (events / SIMTIME_DBL(elapsed_simsec));
+        last_eventspersimsec = (elapsed_simsec==SIMTIME_ZERO) ? 0 : (events / SIMTIME_DBL(elapsed_simsec));
     }
     events = 0;
     intvstart_walltime = now;

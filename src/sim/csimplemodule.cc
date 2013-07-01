@@ -317,7 +317,7 @@ void cSimpleModule::scheduleStart(simtime_t t)
         timeoutmsg = new cMessage(buf,MK_STARTER);
 
         // initialize message fields
-        timeoutmsg->setSentFrom(NULL, -1, 0);
+        timeoutmsg->setSentFrom(NULL, -1, SIMTIME_ZERO);
         timeoutmsg->setArrival(this, -1, t);
 
         // use timeoutmsg as the activation message; insert it into the FES
@@ -402,14 +402,14 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
                                 msg->getClassName(), msg->getName(), msg->getOwner()->getClassName(),
                                 msg->getOwner()->getFullPath().c_str());
     }
-    if (delay < 0)
+    if (delay < SIMTIME_ZERO)
         throw cRuntimeError("sendDelayed(): negative delay %s", SIMTIME_STR(delay));
 
     // set message parameters and send it
     simtime_t delayEndTime = simTime()+delay;
     msg->setSentFrom(this, outgate->getId(), delayEndTime);
     if (msg->isPacket())
-        ((cPacket *)msg)->setDuration(0);
+        ((cPacket *)msg)->setDuration(SIMTIME_ZERO);
 
     EVCB.beginSend(msg);
     bool keepit = outgate->deliver(msg, delayEndTime);
@@ -469,7 +469,7 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t dura
     if (togate->getPreviousGate())
         throw cRuntimeError("sendDirect(): module must have dedicated gate(s) for receiving via sendDirect()"
                             " (\"from\" side of dest. gate `%s' should NOT be connected)",togate->getFullPath().c_str());
-    if (propdelay<0 || duration<0)
+    if (propdelay<SIMTIME_ZERO || duration<SIMTIME_ZERO)
         throw cRuntimeError("sendDirect(): the propagation time and duration parameters cannot be negative");
     if (msg==NULL)
         throw cRuntimeError("sendDirect(): message pointer is NULL");
@@ -624,7 +624,7 @@ void cSimpleModule::wait(simtime_t t)
 {
     if (!usesActivity())
         throw cRuntimeError(eNORECV);
-    if (t<0)
+    if (t<SIMTIME_ZERO)
         throw cRuntimeError(eNEGTIME);
 
     timeoutmsg->setArrivalTime(simTime()+t);
@@ -647,7 +647,7 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
 {
     if (!usesActivity())
         throw cRuntimeError(eNORECV);
-    if (t<0)
+    if (t<SIMTIME_ZERO)
         throw cRuntimeError(eNEGTIME);
     if (!queue)
         throw cRuntimeError("waitAndEnqueue(): queue pointer is NULL");
@@ -690,7 +690,7 @@ cMessage *cSimpleModule::receive(simtime_t t)
 {
     if (!usesActivity())
         throw cRuntimeError(eNORECV);
-    if (t<0)
+    if (t<SIMTIME_ZERO)
         throw cRuntimeError(eNEGTOUT);
 
     timeoutmsg->setArrivalTime(simTime()+t);

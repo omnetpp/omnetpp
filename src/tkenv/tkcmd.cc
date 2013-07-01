@@ -429,7 +429,7 @@ int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    int mode = resolveRunMode(argv[1]);
    if (mode==-1) {Tcl_SetResult(interp, TCLCONST("wrong mode argument, should be slow, normal, fast or express"), TCL_STATIC);return TCL_ERROR;}
 
-   simtime_t until_time = 0;
+   simtime_t until_time = SIMTIME_ZERO;
    eventnumber_t until_eventnum = 0;
    cMessage *until_msg = NULL;
    if (argc==5)

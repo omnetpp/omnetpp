@@ -79,7 +79,7 @@ void cDatarateChannel::rereadPars()
     ber = par("ber");
     per = par("per");
 
-    if (delay < 0)
+    if (delay < SIMTIME_ZERO)
         throw cRuntimeError(this, "negative delay %s", SIMTIME_STR(delay));
     if (datarate < 0)
         throw cRuntimeError(this, "negative datarate %g", datarate);
@@ -89,7 +89,7 @@ void cDatarateChannel::rereadPars()
         throw cRuntimeError(this, "wrong packet error rate %g", per);
 
     setFlag(FL_ISDISABLED, par("disabled"));
-    setFlag(FL_DELAY_NONZERO, delay!=0);
+    setFlag(FL_DELAY_NONZERO, delay!=SIMTIME_ZERO);
     setFlag(FL_DATARATE_NONZERO, datarate!=0);
     setFlag(FL_BER_NONZERO, ber!=0);
     setFlag(FL_PER_NONZERO, per!=0);

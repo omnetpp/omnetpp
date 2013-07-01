@@ -67,6 +67,9 @@ class SIM_API SimTime
     static double fscale;    // 10^-scaleexp, that is 1 or 1000 or 1000000...
     static double invfscale; // 1/fscale; we store it because floating-point multiplication is faster than division
 
+  public:
+    static const SimTime ZERO;
+
   protected:
     static void resetScale() {scaleexp = SCALEEXP_UNINITIALIZED;} // for unit tests only
 
@@ -164,7 +167,7 @@ class SIM_API SimTime
     /**
      * Copy constructor.
      */
-    SimTime(const SimTime& x) {operator=(x);}
+    SimTime(const SimTime& x) { t=x.t; }
     //@}
 
     /** @name Arithmetic operations */

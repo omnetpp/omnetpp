@@ -37,6 +37,8 @@ const int SimTime::SCALEEXP_NS = SIMTIME_NS;
 const int SimTime::SCALEEXP_PS = SIMTIME_PS;
 const int SimTime::SCALEEXP_FS = SIMTIME_FS;
 
+const SimTime SimTime::ZERO;
+
 void SimTime::setScaleExp(int e)
 {
     if (e == scaleexp)

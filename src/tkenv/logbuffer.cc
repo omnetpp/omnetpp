@@ -79,7 +79,7 @@ void LogBuffer::addLogLine(const char *text)
     if (entries.empty())
     {
         // this is likely the initialize() phase -- hence no banner
-        addEvent(0, 0, NULL, "{}");
+        addEvent(0, SIMTIME_ZERO, NULL, "{}");
         Entry& entry = entries.back();
         entry.moduleIds = new int[1]; // add empty array, to distinguish entry from an info entry
         entry.moduleIds[0] = 0;
@@ -99,7 +99,7 @@ void LogBuffer::addInfo(const char *text)
 {
     entries.push_back(Entry());
     numEntries++;
-    fillEntry(entries.back(), 0, 0, NULL, text);
+    fillEntry(entries.back(), 0, SIMTIME_ZERO, NULL, text);
     totalStrings++;
     totalChars += entries.back().numChars;
     discardIfMemoryLimitExceeded();

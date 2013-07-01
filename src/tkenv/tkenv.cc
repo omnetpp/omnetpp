@@ -566,7 +566,7 @@ bool Tkenv::doRunSimulation()
         // exit conditions
         if (untilmodule_reached) break;
         if (stopsimulation_flag) break;
-        if (rununtil_time>0 && simulation.guessNextSimtime()>=rununtil_time) break;
+        if (rununtil_time>SIMTIME_ZERO && simulation.guessNextSimtime()>=rununtil_time) break;
         if (rununtil_eventnum>0 && simulation.getEventNumber()>=rununtil_eventnum) break;
 
         // delay loop for slow simulation
@@ -645,7 +645,7 @@ bool Tkenv::doRunSimulationExpress()
         checkTimeLimits();
     }
     while( !stopsimulation_flag &&
-           (rununtil_time<=0 || simulation.guessNextSimtime() < rununtil_time) &&
+           (rununtil_time<=SIMTIME_ZERO || simulation.guessNextSimtime() < rununtil_time) &&
            (rununtil_eventnum<=0 || simulation.getEventNumber() < rununtil_eventnum)
          );
     return false;
