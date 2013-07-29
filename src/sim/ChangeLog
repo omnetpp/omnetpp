@@ -1,3 +1,7 @@
+2013-07-29  Rudolf Hornig
+
+	* Increased the maximum number of NED function parameters from 4 to 10.
+
 2013-04-02  ------ omnetpp-4.3 released ------
 
 2013-02-08  ------ omnetpp-4.3rc1 released ------

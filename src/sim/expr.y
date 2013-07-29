@@ -222,6 +222,18 @@ expr
                 { addFunction($1,3); delete [] $1; }
         | funcname '(' expr ',' expr ',' expr ',' expr ')'
                 { addFunction($1,4); delete [] $1; }
+        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { addFunction($1,5); delete [] $1; }
+        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { addFunction($1,6); delete [] $1; }
+        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { addFunction($1,7); delete [] $1; }
+        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { addFunction($1,8); delete [] $1; }
+        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { addFunction($1,9); delete [] $1; }
+        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { addFunction($1,10); delete [] $1; }
          ;
 
 simple_expr
