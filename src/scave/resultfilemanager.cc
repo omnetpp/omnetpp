@@ -1462,6 +1462,23 @@ static void replaceDigitsWithWildcard(std::string &str)
     }
 }
 
+static bool replaceIndexWithWildcard(std::string &str)
+{
+    bool changed = false;
+    std::string::iterator start = str.begin();
+    while ((start=std::find_if(start, str.end(), opp_isdigit))!=str.end())
+    {
+        std::string::iterator end = std::find_if(start, str.end(), std::not1(std::ptr_fun(opp_isdigit)));
+        if (start != str.begin() && end != str.end() && *(start-1)=='[' && *end==']')
+        {
+            str.replace(start, end, 1, '*');
+            changed = true;
+        }
+        start = end;
+    }
+    return changed;
+}
+
 StringVector *ResultFileManager::getFileAndRunNumberFilterHints(const IDList& idlist) const
 {
     READER_MUTEX
@@ -1540,9 +1557,11 @@ StringVector *ResultFileManager::getModuleFilterHints(const IDList& idlist) cons
         const char *prefix = "";
         const char *suffix = ".*";
         while (tokenizer.hasMoreTokens()) {
-            const char *token = tokenizer.nextToken();
+            std::string token = tokenizer.nextToken();
             if (!tokenizer.hasMoreTokens()) suffix = "";
             coll.add(std::string(prefix)+token+suffix);
+            if (replaceIndexWithWildcard(token)) // add [*] version too
+                coll.add(std::string(prefix)+token+suffix);
             prefix = "*.";
         }
     }
