@@ -11,6 +11,10 @@ import static org.omnetpp.scave.model2.FilterField.MODULE;
 import static org.omnetpp.scave.model2.FilterField.NAME;
 import static org.omnetpp.scave.model2.FilterField.RUN;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StackLayout;
@@ -23,6 +27,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.ui.FilterCombo;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.model2.FilterField;
 import org.omnetpp.scave.model2.FilterHints;
 
 /**
@@ -32,6 +37,10 @@ import org.omnetpp.scave.model2.FilterHints;
  * @author andras
  */
 public class FilteringPanel extends Composite {
+
+    private final List<FilterField> simpleFilterFields = Collections.unmodifiableList(
+                                                            Arrays.asList(new FilterField[] {RUN, MODULE, NAME}));
+
     private Image IMG_BASICFILTER = ScavePlugin.getImage("icons/full/obj16/basicfilter.png");
     private Image IMG_ADVANCEDFILTER = ScavePlugin.getImage("icons/full/obj16/advancedfilter.png");
     private Image IMG_RUNFILTER = ScavePlugin.getImage("icons/full/obj16/runfilter.png");
@@ -43,7 +52,7 @@ public class FilteringPanel extends Composite {
 
     // Edit field for the "Advanced" mode
     private Composite advancedFilterPanel;
-    private FilterField advancedFilter;
+    private org.omnetpp.scave.editors.datatable.FilterField advancedFilter; // TODO rename FilterField to avoid collision
 
     // Combo boxes for the "Simple" mode
     private Composite simpleFilterPanel;
@@ -63,6 +72,11 @@ public class FilteringPanel extends Composite {
         return advancedFilter.getText();
     }
 
+    public List<FilterField> getSimpleFilterFields()
+    {
+        return simpleFilterFields;
+    }
+
     public Combo getModuleNameCombo() {
         return moduleCombo;
     }
@@ -73,6 +87,18 @@ public class FilteringPanel extends Composite {
 
     public Combo getRunNameCombo() {
         return runCombo;
+    }
+
+    public Combo getFilterCombo(FilterField field)
+    {
+        if (field.equals(RUN))
+            return runCombo;
+        else if (field.equals(MODULE))
+            return moduleCombo;
+        else if (field.equals(NAME))
+            return dataCombo;
+        else
+            return null;
     }
 
     public Button getFilterButton() {
@@ -90,7 +116,19 @@ public class FilteringPanel extends Composite {
         advancedFilter.setFilterHints(hints);
     }
 
+    public void setFilterHintsOfCombos(FilterHints hints)
+    {
+        for (FilterField field : hints.getFields())
+        {
+            Combo combo = getFilterCombo(field);
+            if (combo != null)
+                setFilterHints(combo, hints.getHints(field));
+        }
+    }
+
     private void setFilterHints(Combo filterCombo, String[] hints) {
+        String text = filterCombo.getText();
+
         String[] items = hints;
         // prevent gtk halting when the item count ~10000
         int maxCount = 1000;
@@ -100,6 +138,9 @@ public class FilteringPanel extends Composite {
             items[maxCount - 1] = String.format("<%d skipped>", hints.length - (maxCount - 1));
         }
         filterCombo.setItems(items);
+        int index = filterCombo.indexOf(text);
+        if (index >= 0)
+            filterCombo.select(index);
     }
 
     public void showSimpleFilter() {
@@ -147,7 +188,7 @@ public class FilteringPanel extends Composite {
         ((GridLayout)advancedFilterPanel.getLayout()).marginHeight = 1;
         ((GridLayout)advancedFilterPanel.getLayout()).marginWidth = 0;
 
-        advancedFilter = new FilterField(advancedFilterPanel, SWT.SINGLE | SWT.BORDER | SWT.SEARCH);
+        advancedFilter = new org.omnetpp.scave.editors.datatable.FilterField(advancedFilterPanel, SWT.SINGLE | SWT.BORDER | SWT.SEARCH);
         advancedFilter.getLayoutControl().setLayoutData(new GridData(SWT.FILL, SWT.END, true, true));
         advancedFilter.getText().setMessage("type filter expression");
         advancedFilter.getText().setToolTipText("Filter Expression (Ctrl+Space for Content Assist)");
