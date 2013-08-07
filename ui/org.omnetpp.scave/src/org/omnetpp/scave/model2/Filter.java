@@ -7,6 +7,8 @@
 
 package org.omnetpp.scave.model2;
 
+import org.omnetpp.scave.engine.ResultFileManager;
+
 
 /**
  * Filter parameters for datasets. This basically wraps filterPattern.
@@ -27,5 +29,20 @@ public class Filter {
 
     public void setFilterPattern(String text) {
         filterPattern = text;
+    }
+
+    public boolean isValid()
+    {
+        return isValid(filterPattern);
+    }
+
+    public static boolean isValid(String text)
+    {
+        try {
+            ResultFileManager.checkPattern(text);
+        } catch (Exception e) {
+            return false; // apparently not valid
+        }
+        return true;
     }
 }
