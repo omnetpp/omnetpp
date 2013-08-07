@@ -43,7 +43,7 @@ public class FilterHints {
     public FilterHints(final ResultFileManager manager, final ResultType type) {
         ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
             public Object call() throws Exception {
-                init(manager, ScaveModelUtil.getAllIDs(manager, type));
+                fillAllFields(manager, ScaveModelUtil.getAllIDs(manager, type));
                 return null;
             }
         });
@@ -52,13 +52,23 @@ public class FilterHints {
     public FilterHints(final ResultFileManager manager, final IDList idlist) {
         ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
             public Object call() throws Exception {
-                init(manager, idlist);
+                fillAllFields(manager, idlist);
                 return null;
             }
         });
     }
 
-    private void init(ResultFileManager manager, IDList idlist) {
+    public void addHints(final FilterField field, final ResultFileManager manager, final IDList idlist)
+    {
+        ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+            public Object call() throws Exception {
+                fillOneField(manager, idlist, field);
+                return null;
+            }
+        });
+    }
+
+    private void fillAllFields(ResultFileManager manager, IDList idlist) {
         manager.checkReadLock();
         ResultFileList fileList = manager.getUniqueFiles(idlist);
         RunList runList = manager.getUniqueRuns(idlist);
@@ -73,6 +83,42 @@ public class FilterHints {
             setHints(Kind.RunAttribute, attrName, manager.getRunAttributeFilterHints(runList, attrName).toArray());
         for (String paramName : manager.getUniqueModuleParamNames(runList).keys().toArray())
             setHints(Kind.ModuleParam, paramName, manager.getModuleParamFilterHints(runList, paramName).toArray());
+    }
+
+    private void fillOneField(ResultFileManager manager, IDList idlist, FilterField field) {
+        manager.checkReadLock();
+        if (field.equals(RUN))
+        {
+            RunList runList = manager.getUniqueRuns(idlist);
+            setHints(RUN, manager.getRunNameFilterHints(runList).toArray());
+        }
+        else if (field.equals(FILE))
+        {
+            ResultFileList fileList = manager.getUniqueFiles(idlist);
+            setHints(FILE, manager.getFilePathFilterHints(fileList).toArray());
+        }
+        else if (field.equals(MODULE))
+        {
+            setHints(MODULE, manager.getModuleFilterHints(idlist).toArray());
+        }
+        else if (field.equals(NAME))
+        {
+            setHints(NAME, manager.getNameFilterHints(idlist).toArray());
+        }
+        else if (field.getKind() == FilterField.Kind.ItemField)
+        {
+            setHints(Kind.ItemField, field.getName(), manager.getResultItemAttributeFilterHints(idlist, field.getName()).toArray());
+        }
+        else if (field.getKind() == FilterField.Kind.RunAttribute)
+        {
+            RunList runList = manager.getUniqueRuns(idlist);
+            setHints(Kind.RunAttribute, field.getName(), manager.getRunAttributeFilterHints(runList, field.getName()).toArray());
+        }
+        else if (field.getKind() == FilterField.Kind.ModuleParam)
+        {
+            RunList runList = manager.getUniqueRuns(idlist);
+            setHints(Kind.ModuleParam, field.getName(), manager.getModuleParamFilterHints(runList, field.getName()).toArray());
+        }
     }
 
     public FilterField[] getFields() {

@@ -11,6 +11,9 @@ import static org.omnetpp.scave.engine.ResultItemField.MODULE;
 import static org.omnetpp.scave.engine.ResultItemField.NAME;
 import static org.omnetpp.scave.engine.ResultItemField.RUN;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -19,6 +22,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.common.ui.IHasFocusManager;
@@ -27,6 +31,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model2.Filter;
+import org.omnetpp.scave.model2.FilterField;
 import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.FilterUtil;
 import org.omnetpp.scave.model2.ScaveModelUtil;
@@ -129,6 +134,9 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
                     return;
                 }
                 runFilter();
+
+                if (e.widget instanceof Combo)
+                    updateFilterCombosExcept((Combo)e.widget);
             }
             @Override
             public void widgetDefaultSelected(SelectionEvent e) {
@@ -149,6 +157,34 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
             filterPanel.setFilterHints(getFilterHints());
     }
 
+    protected void updateFilterCombosExcept(Combo except)
+    {
+        if (data.getResultFileManager() != null && !filterPanel.isDisposed() && !filterPanel.isShowingAdvancedFilter())
+        {
+            FilterHints hints = new FilterHints();
+            if (filterPanel.getRunNameCombo() != except)
+            {
+                Filter filter = getSimpleFilter(FilterField.MODULE, FilterField.NAME);
+                IDList filteredIDList = computeFilteredIDList(filter);
+                hints.addHints(FilterField.RUN, data.getResultFileManager(), filteredIDList);
+            }
+            if (filterPanel.getModuleNameCombo() != except)
+            {
+                Filter filter = getSimpleFilter(FilterField.RUN, FilterField.NAME);
+                IDList filteredIDList = computeFilteredIDList(filter);
+                hints.addHints(FilterField.MODULE, data.getResultFileManager(), filteredIDList);
+            }
+            if (filterPanel.getNameCombo() != except)
+            {
+                Filter filter = getSimpleFilter(FilterField.RUN, FilterField.MODULE);
+                IDList filteredIDList = computeFilteredIDList(filter);
+                hints.addHints(FilterField.NAME, data.getResultFileManager(), filteredIDList);
+            }
+
+            filterPanel.setFilterHintsOfCombos(hints);
+        }
+    }
+
     public FilterHints getFilterHints() {
         if (data.getResultFileManager() != null)
             return new FilterHints(data.getResultFileManager(), idlist);
@@ -159,26 +195,31 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     protected void runFilter() {
         Assert.isTrue(idlist!=null);
 
+        Filter filter = isFilterPatternValid() ? getFilter() : null;
+        IDList filteredIDList = computeFilteredIDList(filter);
+        data.setIDList(filteredIDList);
+
+        if (getParent() instanceof FilteredDataTabFolder)
+            ((FilteredDataTabFolder)getParent()).refreshPanelTitles();
+    }
+
+    protected IDList computeFilteredIDList(Filter filter) {
         if (data.getResultFileManager() == null) {
-            // no result file manager, show empty content
-            data.setIDList(new IDList());
+            // no result file manager, return empty list
+            return new IDList();
         }
-        else if (isFilterPatternValid()) {
-            // run the filter on the unfiltered IDList, and set the result to the control
-            Filter filter = getFilter();
+        else if (filter != null) {
+            // run the filter on the unfiltered IDList, and return the result
             IDList filteredIDList = ScaveModelUtil.filterIDList(idlist, filter, data.getResultFileManager());
-            data.setIDList(filteredIDList);
+            return filteredIDList;
         }
         else {
             // fallback: if filter is not valid, just show an unfiltered list. This should be
             // done because we get invoked indirectly as well, like when files get added/removed
             // on the Inputs page. For the same reason, this function should not bring up an
             // error dialog (but the Filter button itself may do so).
-            data.setIDList(idlist);
+            return idlist;
         }
-
-        if (getParent() instanceof FilteredDataTabFolder)
-            ((FilteredDataTabFolder)getParent()).refreshPanelTitles();
     }
 
     public boolean isFilterPatternValid() {
@@ -195,14 +236,24 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         if (filterPanel.isShowingAdvancedFilter())
             filterPattern = filterPanel.getAdvancedFilterText().getText();
         else
-            filterPattern = assembleFilterPattern();
+            filterPattern = assembleFilterPattern(filterPanel.getSimpleFilterFields());
         return new Filter(filterPattern);
     }
 
-    private String assembleFilterPattern() {
-        String runId = filterPanel.getRunNameCombo().getText();
-        String moduleName = filterPanel.getModuleNameCombo().getText();
-        String name = filterPanel.getNameCombo().getText();
+    public Filter getSimpleFilter(FilterField... includedFields)
+    {
+        return getSimpleFilter(Arrays.asList(includedFields));
+    }
+
+    public Filter getSimpleFilter(List<FilterField> includedFields)
+    {
+        return new Filter(assembleFilterPattern(includedFields));
+    }
+
+    private String assembleFilterPattern(List<FilterField> includedFields) {
+        String runId = includedFields.contains(FilterField.RUN) ? filterPanel.getRunNameCombo().getText() : "";
+        String moduleName = includedFields.contains(FilterField.MODULE) ? filterPanel.getModuleNameCombo().getText() : "";
+        String name = includedFields.contains(FilterField.NAME) ? filterPanel.getNameCombo().getText() : "";
         String filterPattern = new FilterUtil(runId, moduleName, name).getFilterPattern();
         return filterPattern.equals("*") ? "" : filterPattern;  // replace "*": "" also works, and lets the filter field show the hint text
     }
@@ -257,7 +308,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
      * Switches the filter from "Basic" to "Advanced" mode. This is always successful (unlike the opposite way).
      */
     public void switchToAdvancedFilter() {
-        filterPanel.getAdvancedFilterText().setText(assembleFilterPattern());
+        filterPanel.getAdvancedFilterText().setText(assembleFilterPattern(filterPanel.getSimpleFilterFields()));
         filterPanel.showAdvancedFilter();
         runFilter();
     }
