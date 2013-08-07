@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StackLayout;
@@ -27,8 +28,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.ui.FilterCombo;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterField;
 import org.omnetpp.scave.model2.FilterHints;
+import org.omnetpp.scave.model2.FilterUtil;
 
 /**
  * A composite with UI elements to filter a data table.
@@ -159,8 +162,108 @@ public class FilteringPanel extends Composite {
         getParent().layout(true, true);
     }
 
+    /**
+     * Switches the filter from "Advanced" to "Basic" mode. If this cannot be done
+     * (filter string invalid or too complex), the user is prompted with a dialog,
+     * and switching may or may not actually take place depending on the answer.
+     * @return true if switching was actually done.
+     */
+    public boolean trySwitchToSimpleFilter() {
+        if (!isFilterPatternValid()) {
+            MessageDialog.openWarning(getShell(), "Error in Filter Expression", "Filter expression is invalid, please fix it first. (Or, just delete the whole text.)");
+            return false;
+        }
+
+        String filterPattern = getAdvancedFilterText().getText();
+        FilterUtil filterUtil = new FilterUtil(filterPattern, true);
+        if (filterUtil.isLossy()) {
+            boolean ok = MessageDialog.openConfirm(getShell(), "Filter Too Complex", "The current filter cannot be represented in Basic view without losing some of its details.");
+            if (!ok)
+                return false;  // user cancelled
+        }
+
+        String[] supportedFields = new String[] {RUN.getName(), MODULE.getName(), NAME.getName()};
+        if (!filterUtil.containsOnly(supportedFields)) {
+            boolean ok = MessageDialog.openConfirm(getShell(), "Filter Too Complex", "The current filter contains fields not present in Basic view. These extra fields will be discarded.");
+            if (!ok)
+                return false;  // user cancelled
+        }
+
+        runCombo.setText(filterUtil.getField(RUN.getName()));
+        moduleCombo.setText(filterUtil.getField(MODULE.getName()));
+        dataCombo.setText(filterUtil.getField(NAME.getName()));
+
+        showSimpleFilter();
+        return true;
+    }
+
+    public void switchToAdvancedFilter() {
+        getAdvancedFilterText().setText(assembleFilterPattern(getSimpleFilterFields()));
+        showAdvancedFilter();
+    }
+
     public boolean isShowingAdvancedFilter() {
         return showingAdvancedFilter;
+    }
+
+    public boolean isFilterPatternValid() {
+        return getFilter().isValid();
+    }
+
+    public Filter getFilter() {
+        String filterPattern;
+        if (isShowingAdvancedFilter())
+            filterPattern = getAdvancedFilterText().getText();
+        else
+            filterPattern = assembleFilterPattern(getSimpleFilterFields());
+        return new Filter(filterPattern);
+    }
+
+    public Filter getFilterIfValid() {
+        Filter filter = getFilter();
+        return filter.isValid() ? filter : null;
+    }
+
+    public Filter getSimpleFilter(FilterField... includedFields)
+    {
+        return getSimpleFilter(Arrays.asList(includedFields));
+    }
+
+    public Filter getSimpleFilter(List<FilterField> includedFields)
+    {
+        return new Filter(assembleFilterPattern(includedFields));
+    }
+
+    public Filter getSimpleFilterExcluding(FilterField... excludedFields)
+    {
+        return getSimpleFilterExcluding(Arrays.asList(excludedFields));
+    }
+
+    public Filter getSimpleFilterExcluding(List<FilterField> excludedFields)
+    {
+        return new Filter(assembleFilterPatternExcluding(excludedFields));
+    }
+
+    private String assembleFilterPattern(List<FilterField> includedFields) {
+        FilterUtil filter = new FilterUtil();
+        for (FilterField field : simpleFilterFields)
+        {
+            if (includedFields.contains(field))
+                filter.setField(field.getName(), getFilterCombo(field).getText());
+        }
+        String filterPattern = filter.getFilterPattern();
+        return filterPattern.equals("*") ? "" : filterPattern;  // replace "*": "" also works, and lets the filter field show the hint text
+    }
+
+    private String assembleFilterPatternExcluding(List<FilterField> excludedFields) {
+        FilterUtil filter = new FilterUtil();
+        for (FilterField field : simpleFilterFields)
+        {
+            if (!excludedFields.contains(field))
+                filter.setField(field.getName(), getFilterCombo(field).getText());
+        }
+        String filterPattern = filter.getFilterPattern();
+        return filterPattern.equals("*") ? "" : filterPattern;  // replace "*": "" also works, and lets the filter field show the hint text
     }
 
     private void initialize() {

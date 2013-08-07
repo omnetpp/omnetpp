@@ -7,13 +7,6 @@
 
 package org.omnetpp.scave.editors.datatable;
 
-import static org.omnetpp.scave.engine.ResultItemField.MODULE;
-import static org.omnetpp.scave.engine.ResultItemField.NAME;
-import static org.omnetpp.scave.engine.ResultItemField.RUN;
-
-import java.util.Arrays;
-import java.util.List;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -33,7 +26,6 @@ import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterField;
 import org.omnetpp.scave.model2.FilterHints;
-import org.omnetpp.scave.model2.FilterUtil;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -129,7 +121,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 // check the filter string
-                if (!isFilterPatternValid()) {
+                if (!filterPanel.isFilterPatternValid()) {
                     MessageDialog.openWarning(getShell(), "Error in Filter Expression", "Filter expression is invalid, please fix it. Contents are not changed.");
                     return;
                 }
@@ -162,23 +154,16 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         if (data.getResultFileManager() != null && !filterPanel.isDisposed() && !filterPanel.isShowingAdvancedFilter())
         {
             FilterHints hints = new FilterHints();
-            if (filterPanel.getRunNameCombo() != except)
+
+            for (FilterField field : filterPanel.getSimpleFilterFields())
             {
-                Filter filter = getSimpleFilter(FilterField.MODULE, FilterField.NAME);
-                IDList filteredIDList = computeFilteredIDList(filter);
-                hints.addHints(FilterField.RUN, data.getResultFileManager(), filteredIDList);
-            }
-            if (filterPanel.getModuleNameCombo() != except)
-            {
-                Filter filter = getSimpleFilter(FilterField.RUN, FilterField.NAME);
-                IDList filteredIDList = computeFilteredIDList(filter);
-                hints.addHints(FilterField.MODULE, data.getResultFileManager(), filteredIDList);
-            }
-            if (filterPanel.getNameCombo() != except)
-            {
-                Filter filter = getSimpleFilter(FilterField.RUN, FilterField.MODULE);
-                IDList filteredIDList = computeFilteredIDList(filter);
-                hints.addHints(FilterField.NAME, data.getResultFileManager(), filteredIDList);
+                Combo combo = filterPanel.getFilterCombo(field);
+                if (combo != except)
+                {
+                    Filter filter = filterPanel.getSimpleFilterExcluding(field);
+                    IDList filteredIDList = computeFilteredIDList(filter);
+                    hints.addHints(field, data.getResultFileManager(), filteredIDList);
+                }
             }
 
             filterPanel.setFilterHintsOfCombos(hints);
@@ -195,8 +180,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     protected void runFilter() {
         Assert.isTrue(idlist!=null);
 
-        Filter filter = isFilterPatternValid() ? getFilter() : null;
-        IDList filteredIDList = computeFilteredIDList(filter);
+        IDList filteredIDList = computeFilteredIDList(filterPanel.getFilterIfValid());
         data.setIDList(filteredIDList);
 
         if (getParent() instanceof FilteredDataTabFolder)
@@ -222,40 +206,8 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         }
     }
 
-    public boolean isFilterPatternValid() {
-        try {
-            ResultFileManager.checkPattern(getFilter().getFilterPattern());
-        } catch (Exception e) {
-            return false; // apparently not valid
-        }
-        return true;
-    }
-
     public Filter getFilter() {
-        String filterPattern;
-        if (filterPanel.isShowingAdvancedFilter())
-            filterPattern = filterPanel.getAdvancedFilterText().getText();
-        else
-            filterPattern = assembleFilterPattern(filterPanel.getSimpleFilterFields());
-        return new Filter(filterPattern);
-    }
-
-    public Filter getSimpleFilter(FilterField... includedFields)
-    {
-        return getSimpleFilter(Arrays.asList(includedFields));
-    }
-
-    public Filter getSimpleFilter(List<FilterField> includedFields)
-    {
-        return new Filter(assembleFilterPattern(includedFields));
-    }
-
-    private String assembleFilterPattern(List<FilterField> includedFields) {
-        String runId = includedFields.contains(FilterField.RUN) ? filterPanel.getRunNameCombo().getText() : "";
-        String moduleName = includedFields.contains(FilterField.MODULE) ? filterPanel.getModuleNameCombo().getText() : "";
-        String name = includedFields.contains(FilterField.NAME) ? filterPanel.getNameCombo().getText() : "";
-        String filterPattern = new FilterUtil(runId, moduleName, name).getFilterPattern();
-        return filterPattern.equals("*") ? "" : filterPattern;  // replace "*": "" also works, and lets the filter field show the hint text
+        return filterPanel.getFilter();
     }
 
     public void setFilterParams(Filter filter) {
@@ -275,41 +227,17 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
      * @return true if switching was actually done.
      */
     public boolean trySwitchToSimpleFilter() {
-        if (!isFilterPatternValid()) {
-            MessageDialog.openWarning(getShell(), "Error in Filter Expression", "Filter expression is invalid, please fix it first. (Or, just delete the whole text.)");
-            return false;
-        }
-
-        String filterPattern = filterPanel.getAdvancedFilterText().getText();
-        FilterUtil filterUtil = new FilterUtil(filterPattern, true);
-        if (filterUtil.isLossy()) {
-            boolean ok = MessageDialog.openConfirm(getShell(), "Filter Too Complex", "The current filter cannot be represented in Basic view without losing some of its details.");
-            if (!ok)
-                return false;  // user cancelled
-        }
-
-        String[] supportedFields = new String[] {RUN, MODULE, NAME};
-        if (!filterUtil.containsOnly(supportedFields)) {
-            boolean ok = MessageDialog.openConfirm(getShell(), "Filter Too Complex", "The current filter contains fields not present in Basic view. These extra fields will be discarded.");
-            if (!ok)
-                return false;  // user cancelled
-        }
-
-        filterPanel.getRunNameCombo().setText(filterUtil.getField(RUN));
-        filterPanel.getModuleNameCombo().setText(filterUtil.getField(MODULE));
-        filterPanel.getNameCombo().setText(filterUtil.getField(NAME));
-
-        filterPanel.showSimpleFilter();
-        runFilter();
-        return true;
+        boolean success = filterPanel.trySwitchToSimpleFilter();
+        if (success)
+            runFilter();
+        return success;
     }
 
     /**
      * Switches the filter from "Basic" to "Advanced" mode. This is always successful (unlike the opposite way).
      */
     public void switchToAdvancedFilter() {
-        filterPanel.getAdvancedFilterText().setText(assembleFilterPattern(filterPanel.getSimpleFilterFields()));
-        filterPanel.showAdvancedFilter();
+        filterPanel.switchToAdvancedFilter();
         runFilter();
     }
 

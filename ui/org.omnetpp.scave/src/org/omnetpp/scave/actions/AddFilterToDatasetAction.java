@@ -49,7 +49,7 @@ public class AddFilterToDatasetAction extends AbstractScaveAction {
         if (activePanel == null)
             return;
 
-        if (!activePanel.isFilterPatternValid()) {
+        if (!activePanel.getFilter().isValid()) {
             MessageDialog.openWarning(editor.getSite().getShell(), "Error in Filter Expression", "Current filter expression is invalid, please fix that first.");
             return;
         }
