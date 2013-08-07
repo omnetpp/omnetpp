@@ -13,17 +13,21 @@ import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.INullSelectionListener;
 import org.eclipse.ui.IPartListener;
@@ -44,8 +48,8 @@ import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model2.ChartDataPoint;
 import org.omnetpp.scave.model2.ChartLine;
 import org.omnetpp.scave.model2.ComputedResultFileUpdater;
-import org.omnetpp.scave.model2.ResultItemRef;
 import org.omnetpp.scave.model2.ComputedResultFileUpdater.CompletionEvent;
+import org.omnetpp.scave.model2.ResultItemRef;
 
 /**
  * View for vector data.
@@ -69,7 +73,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
     @Override
     public void createPartControl(Composite parent) {
         super.createPartControl(parent);
-        createPulldownMenu();
+        createContextMenu();
         hookListeners();
         setViewerInput(getSite().getPage().getSelection());
     }
@@ -94,15 +98,24 @@ public class VectorBrowserView extends ViewWithMessagePart {
         return viewer;
     }
 
-    private void createPulldownMenu() {
+    private void createContextMenu() {
         gotoLineAction = new GotoAction(this, GotoTarget.Line);
         gotoEventAction = new GotoAction(this, GotoTarget.Event);
         gotoTimeAction = new GotoAction(this, GotoTarget.Time);
 
-        IMenuManager manager = getViewSite().getActionBars().getMenuManager();
-        manager.add(gotoLineAction);
-        manager.add(gotoEventAction);
-        manager.add(gotoTimeAction);
+        Menu menu = new Menu(viewer.getCanvas());
+        addMenuItem(menu, gotoLineAction);
+        addMenuItem(menu, gotoEventAction);
+        addMenuItem(menu, gotoTimeAction);
+        viewer.getCanvas().setMenu(menu);
+    }
+
+    private void addMenuItem(Menu menu, final IAction action) {
+        MenuItem item = new MenuItem(menu, SWT.NONE);
+        item.setText(action.getText());
+        item.addSelectionListener(new SelectionAdapter() {
+            @Override public void widgetSelected(SelectionEvent e) { action.run(); }
+        });
     }
 
     public void gotoLine(int lineNumber) {
