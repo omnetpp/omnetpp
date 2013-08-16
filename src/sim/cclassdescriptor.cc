@@ -59,7 +59,7 @@ unsigned long cClassDescriptor::string2ulong(const char *s)
 std::string cClassDescriptor::int642string(int64 l)
 {
     char buf[32];
-    sprintf(buf, "%"LL"d", l);
+    sprintf(buf, "%" LL "d", l);
     return buf;
 }
 
@@ -71,7 +71,7 @@ int64 cClassDescriptor::string2int64(const char *s)
 std::string cClassDescriptor::uint642string(uint64 l)
 {
     char buf[32];
-    sprintf(buf, "%"LL"u", l);
+    sprintf(buf, "%" LL "u", l);
     return buf;
 }
 

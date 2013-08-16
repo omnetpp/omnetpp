@@ -239,7 +239,7 @@ file_offset_t EventLogIndex::getOffsetForEventNumber(eventnumber_t eventNumber, 
     Assert(eventNumber >= 0);
     file_offset_t offset = searchForOffset(eventNumberToCacheEntryMap, eventNumber, matchKind);
 
-    if (PRINT_DEBUG_MESSAGES) printf("Found event number: %"LL"d for match kind: %d at offset: %"LL"d\n", eventNumber, matchKind, offset);
+    if (PRINT_DEBUG_MESSAGES) printf("Found event number: %" LL "d for match kind: %d at offset: %" LL "d\n", eventNumber, matchKind, offset);
 
     return offset;
 }
@@ -249,7 +249,7 @@ file_offset_t EventLogIndex::getOffsetForSimulationTime(simtime_t simulationTime
     Assert(simulationTime >= 0);
     file_offset_t offset = searchForOffset(simulationTimeToCacheEntryMap, simulationTime, matchKind);
 
-    if (PRINT_DEBUG_MESSAGES) printf("Found simulation time: %.*g for match kind: %d at offset: %"LL"d\n", 12, simulationTime.dbl(), matchKind, offset);
+    if (PRINT_DEBUG_MESSAGES) printf("Found simulation time: %.*g for match kind: %d at offset: %" LL "d\n", 12, simulationTime.dbl(), matchKind, offset);
 
     return offset;
 }
@@ -550,7 +550,7 @@ bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset,
 
     char *line;
 
-    if (PRINT_DEBUG_MESSAGES) printf("Reading to first event line from offset: %"LL"d in direction: %s\n", readStartOffset, forward ? "forward" : "backward");
+    if (PRINT_DEBUG_MESSAGES) printf("Reading to first event line from offset: %" LL "d in direction: %s\n", readStartOffset, forward ? "forward" : "backward");
 
     // find first "E" line, return false if none found
     while (true)
@@ -623,12 +623,12 @@ void EventLogIndex::dump()
     printf("eventNumberToCacheEntryMap:\n");
 
     for (EventNumberToCacheEntryMap::iterator it = eventNumberToCacheEntryMap.begin(); it != eventNumberToCacheEntryMap.end(); ++it)
-        printf("  #%"LL"d --> offset %"LL"d (0x%"LL"x)\n", it->first, it->second.beginOffset, it->second.beginOffset);
+        printf("  #%" LL "d --> offset %" LL "d (0x%" LL "x)\n", it->first, it->second.beginOffset, it->second.beginOffset);
 
     printf("simulationTimeToCacheEntryMap:\n");
 
     for (SimulationTimeToCacheEntryMap::iterator it = simulationTimeToCacheEntryMap.begin(); it != simulationTimeToCacheEntryMap.end(); ++it)
-        printf("  %.*g --> offset %"LL"d (0x%"LL"x)\n", 12, it->first.dbl(), it->second.beginOffset, it->second.beginOffset);
+        printf("  %.*g --> offset %" LL "d (0x%" LL "x)\n", 12, it->first.dbl(), it->second.beginOffset, it->second.beginOffset);
 }
 
 

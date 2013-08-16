@@ -24,6 +24,7 @@
 #include <stdio.h>   // for sprintf
 #include <stdlib.h>  // for gcvt
 #include <typeinfo>  // for type_info
+#include <string>    // for std::string
 #include "simkerneldefs.h"
 #include "platdep/platmisc.h" // for gcvt, etc
 #include "errmsg.h"
@@ -361,8 +362,12 @@ inline long double_to_long(double d)
 // internal
 inline std::string double_to_str(double t)
 {
+#if __cplusplus >= 201103L
+   return std::to_string(t);
+#else
    char buf[32];
    return gcvt(t,16,buf);
+#endif
 }
 
 
