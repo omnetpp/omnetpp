@@ -88,9 +88,9 @@ class ENVIR_API EventlogFileManager : public cISimulationLifetimeListener
         void print(FILE *file)
         {
             if (beginEntryIndex == endEntryIndex)
-                fprintf(file, "%"INT64_PRINTF_FORMAT"d:%d", eventNumber, beginEntryIndex);
+                fprintf(file, "%" INT64_PRINTF_FORMAT "d:%d", eventNumber, beginEntryIndex);
             else
-                fprintf(file, "%"INT64_PRINTF_FORMAT"d:%d-%d", eventNumber, beginEntryIndex, endEntryIndex);
+                fprintf(file, "%" INT64_PRINTF_FORMAT "d:%d-%d", eventNumber, beginEntryIndex, endEntryIndex);
         }
     };
 

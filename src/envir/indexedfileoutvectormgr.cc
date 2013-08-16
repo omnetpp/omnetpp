@@ -94,7 +94,7 @@ void cIndexedFileOutputVectorManager::closeIndexFile()
         if (opp_stat(fname.c_str(), &s) == 0)
         {
             opp_fseek(fi, 0, SEEK_SET);
-            fprintf(fi, "file %"LL"d %"LL"d", (int64)s.st_size, (int64)s.st_mtime);
+            fprintf(fi, "file %" LL "d %" LL "d", (int64)s.st_size, (int64)s.st_mtime);
         }
 
         fclose(fi);
@@ -264,7 +264,7 @@ void cIndexedFileOutputVectorManager::writeBlock(sVector *vp)
     if (vp->recordEventNumbers)
     {
         for (std::vector<sSample>::iterator it = vp->buffer.begin(); it != vp->buffer.end(); ++it)
-            CHECK(fprintf(f,"%d\t%"LL"d\t%s\t%.*g\n", vp->id, it->eventNumber, SIMTIME_TTOA(buff, it->simtime), prec, it->value), fname);
+            CHECK(fprintf(f,"%d\t%" LL "d\t%s\t%.*g\n", vp->id, it->eventNumber, SIMTIME_TTOA(buff, it->simtime), prec, it->value), fname);
     }
     else
     {
@@ -295,7 +295,7 @@ void cIndexedFileOutputVectorManager::writeBlockToIndexFile(sVector *vp)
 
         if (vp->recordEventNumbers)
         {
-            CHECK(fprintf(fi, "%d\t%"LL"d %"LL"d %"LL"d %"LL"d %s %s %ld %.*g %.*g %.*g %.*g\n",
+            CHECK(fprintf(fi, "%d\t%" LL "d %" LL "d %" LL "d %" LL "d %s %s %ld %.*g %.*g %.*g %.*g\n",
                         vp->id, block.offset, block.size,
                         block.startEventNum, block.endEventNum,
                         SIMTIME_TTOA(buff1, block.startTime), SIMTIME_TTOA(buff2, block.endTime),
@@ -304,7 +304,7 @@ void cIndexedFileOutputVectorManager::writeBlockToIndexFile(sVector *vp)
         }
         else
         {
-            CHECK(fprintf(fi, "%d\t%"LL"d %"LL"d %s %s %ld %.*g %.*g %.*g %.*g\n",
+            CHECK(fprintf(fi, "%d\t%" LL "d %" LL "d %s %s %ld %.*g %.*g %.*g %.*g\n",
                         vp->id, block.offset, block.size,
                         SIMTIME_TTOA(buff1, block.startTime), SIMTIME_TTOA(buff2, block.endTime),
                         block.count, prec, block.min, prec, block.max, prec, block.sum, prec, block.sumSqr)

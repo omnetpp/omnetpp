@@ -22,7 +22,7 @@
 
 void checkEvent(IEvent *event)
 {
-    printf("Checking event: %"LL"d\n", event->getEventNumber());
+    printf("Checking event: %" LL "d\n", event->getEventNumber());
 
     if (event != ((EventLog*)event->getEventLog())->getEventForBeginOffset(event->getBeginOffset()))
         throw opp_runtime_error("*** Event at begin offset does not match", event->getEventNumber());
@@ -54,7 +54,7 @@ void checkEvent(IEvent *event)
             }
 
             if (!foundCauseConsequence)
-                throw opp_runtime_error("*** Consistency check failed, could not find event %"LL"d in the consequences of event %"LL"d which is included in the causes of event %"LL"d\n",
+                throw opp_runtime_error("*** Consistency check failed, could not find event %" LL "d in the consequences of event %" LL "d which is included in the causes of event %" LL "d\n",
                     event->getEventNumber(), causeEvent->getEventNumber(), event->getEventNumber());
         }
     }
@@ -77,7 +77,7 @@ void checkEvent(IEvent *event)
             }
 
             if (!foundConsequenceCause)
-                throw opp_runtime_error("*** Consistency check failed, could not find event %"LL"d in the causes of event %"LL"d which is included in the consequences of event %"LL"d\n",
+                throw opp_runtime_error("*** Consistency check failed, could not find event %" LL "d in the causes of event %" LL "d which is included in the consequences of event %" LL "d\n",
                     event->getEventNumber(), consequenceEvent->getEventNumber(), event->getEventNumber());
         }
     }
@@ -106,7 +106,7 @@ void testRandomEventLogAccess(const char *fileName, int numberOfRandomReads, int
 
             if (random.next01() < 0.5) {
                 eventnumber_t eventNumber = random.next01() * (lastEvent->getEventNumber() + 1);
-                printf("Seeking for event number: %"LL"d\n", eventNumber);
+                printf("Seeking for event number: %" LL "d\n", eventNumber);
                 event = eventLog->getEventForEventNumber(eventNumber, (MatchKind)(int)(random.next01() * 5));
             }
             else {
