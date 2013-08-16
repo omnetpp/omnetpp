@@ -904,7 +904,7 @@ void Tkenv::updateSimtimeDisplay()
 {
     // event and time display
     char buf[32];
-    sprintf(buf, "%"LL"d", simulation.getEventNumber());
+    sprintf(buf, "%" LL "d", simulation.getEventNumber());
     CHK(Tcl_VarEval(interp, EVENT_LABEL " config -text {"
                         "Event #", buf,
                         "}", NULL ));
@@ -980,14 +980,14 @@ void Tkenv::printEventBanner(cMessage *msg, cSimpleModule *module)
     // produce banner text
     char banner[2*MAX_OBJECTFULLPATH+2*MAX_CLASSNAME+60];
     if (opt_short_banners)
-        sprintf(banner,"{** Event #%"LL"d  T=%s  %s, on `%s'\n}",
+        sprintf(banner,"{** Event #%" LL "d  T=%s  %s, on `%s'\n}",
                 simulation.getEventNumber(),
                 SIMTIME_STR(simulation.getSimTime()),
                 module->getFullPath().c_str(),
                 TclQuotedString(msg->getFullName()).get()
               );
     else
-        sprintf(banner,"{** Event #%"LL"d  T=%s  %s (%s, id=%d), on %s`%s' (%s, id=%ld)\n}",
+        sprintf(banner,"{** Event #%" LL "d  T=%s  %s (%s, id=%d), on %s`%s' (%s, id=%ld)\n}",
                 simulation.getEventNumber(),
                 SIMTIME_STR(simulation.getSimTime()),
                 module->getFullPath().c_str(),

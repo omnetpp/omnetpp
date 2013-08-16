@@ -276,7 +276,7 @@ void FileReader::fillBuffer(bool forward)
             throw opp_runtime_error("Read error in file `%s'", fileName.c_str());
 
 #ifndef NDEBUG
-        if (PRINT_DEBUG_MESSAGES) printf("Reading data at file offset: %"LL"d, length: %d\n", fileOffset, bytesRead);
+        if (PRINT_DEBUG_MESSAGES) printf("Reading data at file offset: %" LL "d, length: %d\n", fileOffset, bytesRead);
 #endif
 
         if (!hasData()) {
@@ -423,7 +423,7 @@ char *FileReader::getNextLineBufferPointer()
     Assert(currentDataPointer);
 
 #ifndef NDEBUG
-    if (PRINT_DEBUG_MESSAGES) printf("Reading in next line at file offset: %"LL"d\n", pointerToFileOffset(currentDataPointer));
+    if (PRINT_DEBUG_MESSAGES) printf("Reading in next line at file offset: %" LL "d\n", pointerToFileOffset(currentDataPointer));
 #endif
 
     // read forward if needed
@@ -466,7 +466,7 @@ char *FileReader::getPreviousLineBufferPointer()
     Assert(currentDataPointer);
 
 #ifndef NDEBUG
-    if (PRINT_DEBUG_MESSAGES) printf("Reading in previous line at file offset: %"LL"d\n", pointerToFileOffset(currentDataPointer));
+    if (PRINT_DEBUG_MESSAGES) printf("Reading in previous line at file offset: %" LL "d\n", pointerToFileOffset(currentDataPointer));
 #endif
 
     // read backward if needed
@@ -567,12 +567,12 @@ int64 FileReader::getFileSizeInternal()
 void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeAround)
 {
 #ifndef NDEBUG
-    if (PRINT_DEBUG_MESSAGES) printf("Seeking to file offset: %"LL"d\n", fileOffset);
+    if (PRINT_DEBUG_MESSAGES) printf("Seeking to file offset: %" LL "d\n", fileOffset);
     checkConsistence();
 #endif
 
     if (fileOffset < 0 || fileOffset > getFileSize())
-        throw opp_runtime_error("Invalid file offset: %"LL"d", fileOffset);
+        throw opp_runtime_error("Invalid file offset: %" LL "d", fileOffset);
 
     ensureFileOpen();
 
@@ -591,7 +591,7 @@ void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeA
     Assert(currentDataPointer);
 
 #ifndef NDEBUG
-    if (PRINT_DEBUG_MESSAGES) printf("Setting buffer file offset to: %"LL"d\n", newBufferFileOffset);
+    if (PRINT_DEBUG_MESSAGES) printf("Setting buffer file offset to: %" LL "d\n", newBufferFileOffset);
 #endif
 
     // try to keep as much data as possible
@@ -600,7 +600,7 @@ void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeA
         file_offset_t oldDataEndFileOffset = getDataEndFileOffset();
 
 #ifndef NDEBUG
-        if (PRINT_DEBUG_MESSAGES) printf("Data before: from file offset: %"LL"d to file offset: %"LL"d\n", oldDataBeginFileOffset, oldDataEndFileOffset);
+        if (PRINT_DEBUG_MESSAGES) printf("Data before: from file offset: %" LL "d to file offset: %" LL "d\n", oldDataBeginFileOffset, oldDataEndFileOffset);
 #endif
 
         file_offset_t newBufferBeginFileOffset = newBufferFileOffset;
@@ -613,7 +613,7 @@ void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeA
 
         if (moveSize > 0 && moveSrc != moveDest) {
 #ifndef NDEBUG
-            if (PRINT_DEBUG_MESSAGES) printf("Keeping data from file offset: %"LL"d with length: %d\n", pointerToFileOffset(moveSrc), moveSize);
+            if (PRINT_DEBUG_MESSAGES) printf("Keeping data from file offset: %" LL "d with length: %d\n", pointerToFileOffset(moveSrc), moveSize);
 #endif
 
             fflush(stdout);
@@ -626,7 +626,7 @@ void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeA
         dataEnd = moveDest + moveSize;
 
 #ifndef NDEBUG
-        if (PRINT_DEBUG_MESSAGES) printf("Data after: from file offset: %"LL"d to file offset: %"LL"d\n", getDataBeginFileOffset(), getDataEndFileOffset());
+        if (PRINT_DEBUG_MESSAGES) printf("Data after: from file offset: %" LL "d to file offset: %" LL "d\n", getDataBeginFileOffset(), getDataEndFileOffset());
 #endif
     }
     else {

@@ -68,7 +68,7 @@ static void verifyIntTypes()
 #define LL  INT64_PRINTF_FORMAT
     char buf[32];
     int64 a=1, b=2;
-    sprintf(buf, "%"LL"d %"LL"d", a, b);
+    sprintf(buf, "%" LL "d %" LL "d", a, b);
     if (strcmp(buf, "1 2")!=0) {printf("INTERNAL ERROR: INT64_PRINTF_FORMAT incorrectly defined in include/inttypes.h, please report this bug!\n\n"); abort();}
 #undef LL
 }

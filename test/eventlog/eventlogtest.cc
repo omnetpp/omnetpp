@@ -18,9 +18,11 @@
 #include "filereader.h"
 #include "eventlog.h"
 
+#define LL INT64_PRINTF_FORMAT
+
 void checkEvent(IEvent *event)
 {
-    printf("Checking event: %ld\n", event->getEventNumber());
+    printf("Checking event: %" LL "d\n", event->getEventNumber());
 
     if (event != ((EventLog*)event->getEventLog())->getEventForBeginOffset(event->getBeginOffset()))
         throw opp_runtime_error("*** Event at begin offset does not match", event->getEventNumber());
@@ -52,7 +54,7 @@ void checkEvent(IEvent *event)
             }
 
             if (!foundCauseConsequence)
-                throw opp_runtime_error("*** Consistency check failed, could not find event %ld in the consequences of event %ld which is included in the causes of event %ld\n",
+                throw opp_runtime_error("*** Consistency check failed, could not find event %" LL "d in the consequences of event %" LL "d which is included in the causes of event %" LL "d\n",
                     event->getEventNumber(), causeEvent->getEventNumber(), event->getEventNumber());
         }
     }
@@ -75,7 +77,7 @@ void checkEvent(IEvent *event)
             }
 
             if (!foundConsequenceCause)
-                throw opp_runtime_error("*** Consistency check failed, could not find event %ld in the causes of event %ld which is included in the consequences of event %ld\n",
+                throw opp_runtime_error("*** Consistency check failed, could not find event %" LL "d in the causes of event %" LL "d which is included in the consequences of event %" LL "d\n",
                     event->getEventNumber(), consequenceEvent->getEventNumber(), event->getEventNumber());
         }
     }
@@ -106,12 +108,12 @@ void testRandomEventLogAccess(const char *fileName, int numberOfRandomReads, int
 
             if (random.next01() < 0.5) {
                 long eventNumber = random.next01() * lastEvent->getEventNumber();
-                printf("Seeking for event number: %ld\n", eventNumber);
+                printf("Seeking for event number: %" LL "d\n", eventNumber);
                 event = eventLog->getEventForEventNumber(eventNumber, (MatchKind)(int)(random.next01() * 5));
             }
             else {
                 simtime_t simulationTime = random.next01() * lastEvent->getSimulationTime();
-                printf("Seeking for simulation time: %g\n", simulationTime);
+                printf("Seeking for simulation time: %g\n", simulationTime.dbl());
                 event = eventLog->getEventForSimulationTime(simulationTime, (MatchKind)(int)(random.next01() * 5));
             }
 

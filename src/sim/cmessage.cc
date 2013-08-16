@@ -563,7 +563,7 @@ void cPacket::_detachEncapMsg()
 void cPacket::setBitLength(int64 l)
 {
     if (l<0)
-        throw cRuntimeError(this,"setBitLength(): negative length %"INT64_PRINTF_FORMAT"d", l);
+        throw cRuntimeError(this,"setBitLength(): negative length %" INT64_PRINTF_FORMAT "d", l);
     len = l;
 }
 
@@ -571,7 +571,7 @@ void cPacket::addBitLength(int64 l)
 {
     len += l;
     if (len<0)
-        throw cRuntimeError(this,"addBitLength(): length became negative (%"INT64_PRINTF_FORMAT") after adding %"INT64_PRINTF_FORMAT"d", len, l);
+        throw cRuntimeError(this,"addBitLength(): length became negative (%" INT64_PRINTF_FORMAT ") after adding %" INT64_PRINTF_FORMAT "d", len, l);
 }
 
 void cPacket::encapsulate(cPacket *msg)

@@ -81,12 +81,12 @@ while (<FILE>)
       }
       elsif ($fieldType eq "int64")
       {
-         $fieldPrintfType = "%\"INT64_PRINTF_FORMAT\"d";
+         $fieldPrintfType = "%\" INT64_PRINTF_FORMAT \"d";
          $fieldDefault = "-1";
       }
       elsif ($fieldType eq "eventnumber_t")
       {
-         $fieldPrintfType = "%\"EVENTNUMBER_PRINTF_FORMAT\"d";
+         $fieldPrintfType = "%\" EVENTNUMBER_PRINTF_FORMAT \"d";
          $fieldDefault = "-1";
       }
       elsif ($fieldType eq "simtime_t")

@@ -235,7 +235,7 @@ EventLogEntry *EventLogTableFacade::getEntryInEvent(IEvent *event, int index)
         }
     }
 
-    throw opp_runtime_error("No event log entry with index: %d in event: %"INT64_PRINTF_FORMAT"d", index, event->getEventNumber());
+    throw opp_runtime_error("No event log entry with index: %d in event: %" INT64_PRINTF_FORMAT "d", index, event->getEventNumber());
 }
 
 int EventLogTableFacade::getEntryIndexInEvent(EventLogEntry *eventLogEntry)
@@ -256,7 +256,7 @@ int EventLogTableFacade::getEntryIndexInEvent(EventLogEntry *eventLogEntry)
         }
     }
 
-    throw opp_runtime_error("No event log entry found in event: %"INT64_PRINTF_FORMAT"d", event->getEventNumber());
+    throw opp_runtime_error("No event log entry found in event: %" INT64_PRINTF_FORMAT "d", event->getEventNumber());
 }
 
 eventnumber_t EventLogTableFacade::getDistanceToEntry(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, eventnumber_t limit)
