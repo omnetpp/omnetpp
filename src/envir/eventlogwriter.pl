@@ -75,11 +75,11 @@ while (<FILE>)
       }
       elsif ($fieldType eq "int64")
       {
-         $fieldPrintfType = '%"LL"d';
+         $fieldPrintfType = '%" LL "d';
       }
       elsif ($fieldType eq "eventnumber_t")
       {
-         $fieldPrintfType = '%"LL"d';
+         $fieldPrintfType = '%" LL "d';
       }
       elsif ($fieldType eq "simtime_t")
       {

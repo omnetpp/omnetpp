@@ -183,7 +183,7 @@ std::string cException::getFormattedMessage() const
         case CTX_NONE: when = ""; break;
         case CTX_BUILD: when = " during network setup"; break; // note leading spaces
         case CTX_INITIALIZE: when = " during network initialization"; break;
-        case CTX_EVENT: when = opp_stringf(" at event #%"LL"d, t=%s",getEventNumber(), SIMTIME_STR(getSimtime())); break; // note we say "at" and not "in", because error may have occurred outside handleMessage()
+        case CTX_EVENT: when = opp_stringf(" at event #%" LL "d, t=%s",getEventNumber(), SIMTIME_STR(getSimtime())); break; // note we say "at" and not "in", because error may have occurred outside handleMessage()
         case CTX_FINISH: when = " during finalization"; break;
         case CTX_CLEANUP: when = " during network cleanup"; break;
     }

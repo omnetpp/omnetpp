@@ -713,7 +713,7 @@ void EventlogFileManager::recordKeyframe()
         file_offset_t newPreviousKeyframeFileOffset = opp_ftell(feventlog);
         fprintf(feventlog, "KF");
         // previousKeyframeFileOffset
-        fprintf(feventlog, " p %"INT64_PRINTF_FORMAT"d", previousKeyframeFileOffset);
+        fprintf(feventlog, " p %" INT64_PRINTF_FORMAT "d", previousKeyframeFileOffset);
         previousKeyframeFileOffset = newPreviousKeyframeFileOffset;
         // consequenceLookahead
         fprintf(feventlog, " c ");
@@ -722,7 +722,7 @@ void EventlogFileManager::recordKeyframe()
         for (std::vector<eventnumber_t>::iterator it = consequenceLookaheadLimits.begin(); it != consequenceLookaheadLimits.end(); it++) {
             eventnumber_t consequenceLookaheadLimit = *it;
             if (consequenceLookaheadLimit) {
-                fprintf(feventlog, "%"INT64_PRINTF_FORMAT"d:%"INT64_PRINTF_FORMAT"d,", (eventnumber_t)keyframeBlockSize * i, consequenceLookaheadLimit);
+                fprintf(feventlog, "%" INT64_PRINTF_FORMAT "d:%" INT64_PRINTF_FORMAT "d,", (eventnumber_t)keyframeBlockSize * i, consequenceLookaheadLimit);
                 empty = false;
             }
             *it = 0;
