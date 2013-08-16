@@ -122,6 +122,15 @@
 #define FSM_Steady(state)      (state)
 
 /**
+ * Create state for FSM_Enter and FSM_Exit.
+ * Handling signed (transient) flag with shift value operation correctly.
+ *
+ * @hideinitializer
+ * @see FSM_Switch
+ */
+#define FSM_EnterExit(state)  ( ((state)<0) ? -((-state)<<1) : (state)<<1 )
+
+/**
  * Within an FSM_Switch() case branch, declares code to be executed
  * on entering the given state. No calls to FSM_Goto() are allowed
  * within a state's Enter block.
@@ -129,7 +138,7 @@
  * @hideinitializer
  * @see FSM_Switch
  */
-#define FSM_Enter(state)  ((state)<<1)
+#define FSM_Enter(state)  (FSM_EnterExit(state)|0)
 
 /**
  * Within an FSM_Switch() case branch, declares code to be executed
@@ -138,7 +147,7 @@
  * @hideinitializer
  * @see FSM_Switch
  */
-#define FSM_Exit(state)   (((state)<<1)|1)
+#define FSM_Exit(state)   (FSM_EnterExit(state)|1)
 
 /**
  * To be used in state exit code, to transition to another state.
