@@ -496,7 +496,7 @@ void IndexFileWriter::writeFingerprint(std::string vectorFileName)
 
     file_offset_t saveOffset = opp_ftell(file);
     opp_fseek(file, 0, SEEK_SET);
-    CHECK(fprintf(file, "file %"LL"d %"LL"d", fingerprint.fileSize, fingerprint.lastModified));
+    CHECK(fprintf(file, "file %" LL "d %" LL "d", fingerprint.fileSize, fingerprint.lastModified));
     opp_fseek(file, saveOffset, SEEK_SET);
 }
 
@@ -547,8 +547,8 @@ void IndexFileWriter::writeBlock(const VectorData &vector, const Block &block)
 
     if (block.getCount() > 0)
     {
-        CHECK(fprintf(file, "%d\t%"LL"d %"LL"d", vector.vectorId, (int64)block.startOffset, (int64)block.size));
-        if (vector.hasColumn('E')) { CHECK(fprintf(file, " %"LL"d %"LL"d", block.startEventNum, block.endEventNum)); }
+        CHECK(fprintf(file, "%d\t%" LL "d %" LL "d", vector.vectorId, (int64)block.startOffset, (int64)block.size));
+        if (vector.hasColumn('E')) { CHECK(fprintf(file, " %" LL "d %" LL "d", block.startEventNum, block.endEventNum)); }
         if (vector.hasColumn('T')) { CHECK(fprintf(file, " %s %s",
                                                 BigDecimal::ttoa(buff1, block.startTime, e),
                                                 BigDecimal::ttoa(buff2, block.endTime, e))); }

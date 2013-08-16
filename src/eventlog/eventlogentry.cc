@@ -155,7 +155,7 @@ int64 EventLogTokenBasedEntry::getInt64Token(char **tokens, int numTokens, const
         errno = 0;
         int64 value = strtoll(token, &end, 10);
         if (errno)
-            throw opp_runtime_error("Invalid int64 value "INT64_PRINTF_FORMAT" in line %.*s", value, currentLineLength, currentLine);
+            throw opp_runtime_error("Invalid int64 value " INT64_PRINTF_FORMAT " in line %.*s", value, currentLineLength, currentLine);
         return value;
     }
     else
@@ -171,7 +171,7 @@ eventnumber_t EventLogTokenBasedEntry::getEventNumberToken(char **tokens, int nu
         errno = 0;
         int64 value = strtoll(token, &end, 10);
         if (errno)
-            throw opp_runtime_error("Invalid event number value %"EVENTNUMBER_PRINTF_FORMAT"d in line %.*s", value, currentLineLength, currentLine);
+            throw opp_runtime_error("Invalid event number value %" EVENTNUMBER_PRINTF_FORMAT "d in line %.*s", value, currentLineLength, currentLine);
         return value;
     }
     else

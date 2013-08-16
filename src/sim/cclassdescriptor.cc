@@ -57,7 +57,7 @@ unsigned long cClassDescriptor::string2ulong(const char *s)
 void cClassDescriptor::int642string(int64 l, char *buf, int bufsize)
 {
     ASSERT(bufsize>=32);
-    sprintf(buf, "%"LL"d", l);
+    sprintf(buf, "%" LL "d", l);
 }
 
 int64 cClassDescriptor::string2int64(const char *s)
@@ -68,7 +68,7 @@ int64 cClassDescriptor::string2int64(const char *s)
 void cClassDescriptor::uint642string(uint64 l, char *buf, int bufsize)
 {
     ASSERT(bufsize>=32);
-    sprintf(buf, "%"LL"u", l);
+    sprintf(buf, "%" LL "u", l);
 }
 
 uint64 cClassDescriptor::string2uint64(const char *s)
