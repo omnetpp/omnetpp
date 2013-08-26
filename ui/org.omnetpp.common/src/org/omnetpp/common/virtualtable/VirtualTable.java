@@ -7,11 +7,15 @@
 
 package org.omnetpp.common.virtualtable;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.jface.operation.IRunnableContext;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -98,6 +102,21 @@ public class VirtualTable<T>
      * A list of selected elements;
      */
     protected List<T> selectionElements;
+
+    /**
+     * Starting point of a range selection.
+     */
+    protected T anchorElement;
+
+    /**
+     * Maximum number of elements in range selections, -1 = unlimited.
+     */
+    protected long maxRangeSelectionSize = -1;
+
+    /**
+     * Context for running long operations (e.g. range selection) with a progress monitor.
+     */
+    protected IRunnableContext runnableContext;
 
     /**
      * The input being show by this table.
@@ -295,7 +314,12 @@ public class VirtualTable<T>
                             else
                                 selectionElements.add(element);
 
+                            anchorElement = element;
+
                             fireSelectionChanged();
+                        }
+                        else if ((e.stateMask & SWT.MOD2) != 0) {
+                            setRangeSelection(element);
                         }
                         else
                             setSelectionElement(element);
@@ -495,7 +519,95 @@ public class VirtualTable<T>
         selectionElements = new ArrayList<T>();
         selectionElements.add(element);
 
+        anchorElement = element;
+
         fireSelectionChanged();
+    }
+
+    /**
+     * Sets the maximum number of elements in a range selection.
+     * Attempts to select a bigger range will fail.
+     * To limit memory usage, set this to a reasonable value depending on the size of T.
+     */
+    public void setMaxRangeSelectionSize(long value) {
+        maxRangeSelectionSize = value;
+    }
+
+    /**
+     * Sets the runnable context (e.g. progress dialog) for long running operations.
+     */
+    public void setRunnableContextForLongRunningOperations(IRunnableContext context) {
+        runnableContext = context;
+    }
+
+    /**
+     * Selects a range of elements between {@code anchorElement} and {@code endElement}.
+     */
+    protected void setRangeSelection(final T endElement) {
+        Assert.isTrue(endElement != null);
+
+        if (anchorElement != null) {
+            final List<T> elements = new ArrayList<T>();
+
+            try {
+                if (runnableContext != null) {
+                    runnableContext.run(true/*fork*/, true/*cancelable*/, new IRunnableWithProgress() {
+                        @Override public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                            collectElementsForRangeSelection(anchorElement, endElement, monitor, elements);
+                        }
+                    });
+                }
+                else {
+                    collectElementsForRangeSelection(anchorElement, endElement, null, elements);
+                }
+            }
+            catch (InterruptedException e) {
+                return;
+            }
+            catch (InvocationTargetException e) {
+                return;
+            }
+
+            selectionElements = elements;
+
+            fireSelectionChanged();
+        }
+        else
+            setSelectionElement(endElement);
+    }
+
+    private void collectElementsForRangeSelection(T startElement, T endElement, IProgressMonitor monitor, List<T> selectedElements) throws InterruptedException {
+        if (monitor != null)
+            monitor.beginTask("A long running operation is in progress. Please wait or press Cancel to abort.", IProgressMonitor.UNKNOWN);
+
+        int delta = contentProvider.compare(startElement, endElement) <= 0 ? 1 : -1;
+        long count = 0;
+        T e = startElement;
+        while (true) {
+            selectedElements.add(e);
+            count++;
+
+            if (monitor != null)
+                monitor.worked(1);
+            if (maxRangeSelectionSize > 0 && count > maxRangeSelectionSize) {
+                Display.getCurrent().beep();
+                throw new InterruptedException();
+            }
+            else if (monitor != null && monitor.isCanceled())
+                throw new InterruptedException();
+
+            if (e.equals(endElement)) {
+                if (monitor != null)
+                    monitor.done();
+                break;
+            }
+
+            e = contentProvider.getNeighbourElement(e, delta);
+            if (e == null) {
+                Display.getCurrent().beep();
+                throw new InterruptedException(); // endElement not found: do not select anything
+            }
+        }
     }
 
     /**

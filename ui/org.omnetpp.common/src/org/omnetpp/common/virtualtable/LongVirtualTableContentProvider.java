@@ -131,6 +131,13 @@ public class LongVirtualTableContentProvider implements IVirtualTableContentProv
         return maxValue + 1;
     }
 
+    public int compare(Long element1, Long element2) {
+        if (debug)
+            Debug.println("Virtual table content provider compare element1: " + element1 + " element2: " + element2);
+
+        return element1.compareTo(element2);
+    }
+
     public void dispose() {
     }
 

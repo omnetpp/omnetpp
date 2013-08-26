@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.views;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -16,6 +17,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.operation.IRunnableContext;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
@@ -34,6 +37,7 @@ import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.common.virtualtable.VirtualTable;
 import org.omnetpp.scave.editors.IDListSelection;
@@ -79,12 +83,21 @@ public class VectorBrowserView extends ViewWithMessagePart {
     }
 
     @Override
-    protected Control createViewControl(Composite parent) {
+    protected Control createViewControl(final Composite parent) {
         contentProvider = new VectorResultContentProvider();
         viewer = new VirtualTable<OutputVectorEntry>(parent, SWT.NONE);
         viewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         viewer.setContentProvider(contentProvider);
         viewer.setRowRenderer(new VectorResultRowRenderer());
+        viewer.setMaxRangeSelectionSize((long)1e6);
+        viewer.setRunnableContextForLongRunningOperations(new IRunnableContext() {
+            @Override
+            public void run(boolean fork, boolean cancelable, IRunnableWithProgress runnable) throws InvocationTargetException, InterruptedException {
+                TimeTriggeredProgressMonitorDialog dialog = new TimeTriggeredProgressMonitorDialog(parent.getShell(), 1000);
+                dialog.setCancelable(cancelable);
+                dialog.run(fork, cancelable, runnable);
+            }
+        });
 
         TableColumn tableColumn = viewer.createColumn();
         tableColumn.setWidth(60);

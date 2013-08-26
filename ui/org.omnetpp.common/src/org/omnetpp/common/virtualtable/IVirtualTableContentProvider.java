@@ -7,12 +7,14 @@
 
 package org.omnetpp.common.virtualtable;
 
+import java.util.Comparator;
+
 import org.eclipse.jface.viewers.IContentProvider;
 
 /**
  * The virtual table retrives the displayed elements by using an instance of this interface.
  */
-public interface IVirtualTableContentProvider<T> extends IContentProvider {
+public interface IVirtualTableContentProvider<T> extends IContentProvider, Comparator<T> {
     /**
      * Returns the first element of the virtual table.
      */

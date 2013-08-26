@@ -7,6 +7,8 @@
 
 package org.omnetpp.eventlogtable.editors;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -15,6 +17,8 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.operation.IRunnableContext;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -39,6 +43,7 @@ import org.omnetpp.common.IConstants;
 import org.omnetpp.common.eventlog.EventLogEditor;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.IEventLogSelection;
+import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlogtable.EventLogTablePlugin;
@@ -95,11 +100,21 @@ public class EventLogTableEditor
     }
 
     @Override
-    public void createPartControl(Composite parent) {
+    public void createPartControl(final Composite parent) {
         eventLogTable = new EventLogTable(parent, SWT.NONE);
         eventLogTable.setInput(eventLogInput);
         eventLogTable.setEventLogTableContributor(EventLogTableContributor.getDefault());
         eventLogTable.setWorkbenchPart(this);
+        eventLogTable.setMaxRangeSelectionSize((long)1e5);
+        eventLogTable.setRunnableContextForLongRunningOperations(new IRunnableContext() {
+            @Override
+            public void run(boolean fork, boolean cancelable, IRunnableWithProgress runnable) throws InvocationTargetException, InterruptedException {
+                TimeTriggeredProgressMonitorDialog dialog = new TimeTriggeredProgressMonitorDialog(parent.getShell(), 1000);
+                dialog.setCancelable(cancelable);
+                dialog.run(fork, cancelable, runnable);
+            }
+        });
+
 
         getSite().setSelectionProvider(eventLogTable);
         addLocationProviderPaintListener(eventLogTable.getCanvas());

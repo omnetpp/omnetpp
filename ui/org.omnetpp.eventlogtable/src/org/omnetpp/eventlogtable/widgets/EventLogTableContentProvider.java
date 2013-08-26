@@ -144,6 +144,17 @@ public class EventLogTableContentProvider implements IVirtualTableContentProvide
         return toEventLogEntryReference(eventLogTableFacade.getClosestEntryInEvent(element.getEventLogEntry(eventLogInput)));
     }
 
+    public int compare(EventLogEntryReference element1, EventLogEntryReference element2) {
+        if (debug)
+            Debug.println("Virtual table content provider compare element1: " + element1 + " element2: " + element2);
+
+        long eventNum1 = element1.getEventNumber();
+        long eventNum2 = element2.getEventNumber();
+        if (eventNum1 != eventNum2)
+            return (int)(eventNum1 - eventNum2);
+        return element1.getEventEntryIndex() - element2.getEventEntryIndex();
+    }
+
     public void dispose() {
     }
 

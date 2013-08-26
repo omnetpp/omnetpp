@@ -7,6 +7,10 @@
 
 package org.omnetpp.eventlogtable.editors;
 
+import java.lang.reflect.InvocationTargetException;
+
+import org.eclipse.jface.operation.IRunnableContext;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -19,6 +23,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.contexts.IContextService;
 import org.omnetpp.common.eventlog.EventLogView;
 import org.omnetpp.common.eventlog.IEventLogSelection;
+import org.omnetpp.common.ui.TimeTriggeredProgressMonitorDialog;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
@@ -105,9 +110,18 @@ public class EventLogTableView extends EventLogView implements IEventLogTablePro
     }
 
     @Override
-    protected Control createViewControl(Composite parent) {
+    protected Control createViewControl(final Composite parent) {
         eventLogTable = new EventLogTable(parent, SWT.NONE);
         eventLogTable.setWorkbenchPart(this);
+        eventLogTable.setMaxRangeSelectionSize((long)1e5);
+        eventLogTable.setRunnableContextForLongRunningOperations(new IRunnableContext() {
+            @Override
+            public void run(boolean fork, boolean cancelable, IRunnableWithProgress runnable) throws InvocationTargetException, InterruptedException {
+                TimeTriggeredProgressMonitorDialog dialog = new TimeTriggeredProgressMonitorDialog(parent.getShell(), 1000);
+                dialog.setCancelable(cancelable);
+                dialog.run(fork, cancelable, runnable);
+            }
+        });
         return eventLogTable;
     }
 
