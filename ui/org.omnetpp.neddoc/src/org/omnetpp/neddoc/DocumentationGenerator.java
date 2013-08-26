@@ -2344,7 +2344,7 @@ public class DocumentationGenerator {
                 File dir = parents.peek().getParentFile();
                 File file = new File(dir, matcher.group(1)).getCanonicalFile();
                 String content = getFileContent(file, parents);
-                matcher.appendReplacement(buffer, content);
+                matcher.appendReplacement(buffer, content.replace("\\", "\\\\").replace("$", "\\$"));
             }
 
             matcher.appendTail(buffer);
