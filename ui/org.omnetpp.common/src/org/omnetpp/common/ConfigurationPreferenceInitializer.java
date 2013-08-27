@@ -47,8 +47,20 @@ public class ConfigurationPreferenceInitializer extends AbstractPreferenceInitia
         if (containsConfigFiles(platformPath.removeLastSegments(1)))
             return platformPath.removeLastSegments(1);
 
+        String bundleLocationStr = CommonPlugin.getDefault().getBundle().getLocation(); // during development, this will be "reference:file:/C:/.../omnetpp/ui/org.omnetpp.common"
+        Path bundleLocation = cleanupBundleLocation(bundleLocationStr);
+        if (bundleLocation.removeLastSegments(1).lastSegment().equals("ui"))
+            return bundleLocation.removeLastSegments(2);
+
         // TODO look for the Makefile.inc or configuser.vc in parent directories etc.
         return new Path("");
+    }
+
+    private Path cleanupBundleLocation(String location) {
+        location = StringUtils.removeStart(location, "reference:file:");
+        if (location.matches("^/.+:.*"))  // treat "/C:/..." mishap, strip leading slash
+            location = location.substring(1);
+        return new Path(location);
     }
 
     private boolean containsConfigFiles(IPath path) {
