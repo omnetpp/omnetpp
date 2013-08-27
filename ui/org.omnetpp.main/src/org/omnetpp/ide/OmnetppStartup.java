@@ -51,11 +51,10 @@ public class OmnetppStartup implements IStartup {
             public void run() {
                 openGlancePage();
                 CommandlineUtils.autoimportAndOpenFilesOnCommandLine();
-                if (isInitialDefaultStartup()) {
+                if (true /*TODO: if workspace is empty; or isInitialDefaultStartup()*/) {
                     new OnClosingWelcomeView(new Runnable() {
                         @Override
                         public void run() {
-                            importSampleProjects(false);
                             new FirstStepsDialog(null).open();
                         }
                     }).hook();
@@ -96,22 +95,6 @@ public class OmnetppStartup implements IStartup {
     protected boolean isInitialDefaultStartup() {
         IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
         return root.getLocation().lastSegment().equals(SAMPLES_DIR) && root.getProjects().length == 0;
-    }
-
-    /**
-     * Import sample projects.
-     */
-    protected void importSampleProjects(final boolean open) {
-        WorkspaceJob job = new WorkspaceJob("Importing sample projects") {
-            @Override
-            public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
-                ProjectUtils.importAllProjectsFromWorkspaceDirectory(open, monitor);
-                return Status.OK_STATUS;
-            }
-        };
-        job.setRule(ResourcesPlugin.getWorkspace().getRoot());
-        job.setPriority(Job.LONG);
-        job.schedule();
     }
 
     /**

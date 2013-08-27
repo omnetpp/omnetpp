@@ -2,98 +2,129 @@ package org.omnetpp.ide.installer;
 
 import java.net.URL;
 
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.LocationEvent;
-import org.eclipse.swt.browser.LocationListener;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
-public class FirstStepsDialog extends Dialog {
-    protected String HTML_PAGE = "<html>" +
-"  <body style='line-height: 120%; margin: 25px;'>" +
-"    <h1><center>First Steps</center></h1>" +
-"    <p>The Simulation IDE has been installed succesfully, but before you start experimenting" +
-"       with it, we strongly <b>recommend</b> that you also install some of the freely" +
-"       available simulation models.<p>" +
-"    <p>You have the following options:</p>" +
-"    <ul>" +
-"      <li><p>install the INET framework automatically (also available at http://inet.omnetpp.org)" +
-  "           to be able to simulate communication networks, protocols, technologies and" +
-"             applications used on the Internet</p></li>" +
-"      <li><p>browse the ever growing set of simulation models listed on" +
-"             the <a href=\"http://www.omnetpp.org/models/catalog\">community web site</a>" +
-"             and install them manually</p></li>" +
-"      <li><p>skip this step and start creating a new project</p></li>" +
-"    </ul>" +
-"  </body>" +
-"</html>";
+
+/**
+ * 
+ * @author levy, andras
+ */
+public class FirstStepsDialog extends TitleAreaDialog {
+    private Button installInetButton;
+    private Button importSamplesButton;
 
     public FirstStepsDialog(Shell shell) {
         super(shell);
+        setShellStyle(getShellStyle() | SWT.RESIZE);
     }
 
     @Override
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
-        Point size = new Point(1000, 700);
-        Display display = shell.getDisplay();
-        Rectangle screen = display.getMonitors()[0].getBounds();
-        shell.setBounds((screen.width - size.x)/2, (screen.height-size.y)/2, size.x, size.y);
         shell.setText("First Steps");
     }
 
     @Override
     protected Control createDialogArea(Composite parent) {
+        setTitle("First Steps");
+        setMessage("Your workspace is empty. Do you want to...");
+
         Composite composite = (Composite)super.createDialogArea(parent);
         Group group = new Group(composite, SWT.NONE);
         group.setLayout(new GridLayout());
         group.setLayoutData(new GridData(GridData.FILL_BOTH));
-        Browser browser = new Browser(group, SWT.NONE);
-        browser.setLayoutData(new GridData(GridData.FILL_BOTH));
-        browser.setText(HTML_PAGE);
-        browser.addLocationListener(new LocationListener() {
-            @Override
-            public void changing(LocationEvent event) {
-                try {
-                    event.doit = false;
-                    IWorkbench workbench = PlatformUI.getWorkbench();
-                    workbench.getBrowserSupport().getExternalBrowser().openURL(new URL(event.location));
-                }
-                catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
 
-            @Override
-            public void changed(LocationEvent event) {
-            }
-        });
+        createLabel(group, "Select the actions to take:");
+        installInetButton = createCheckbox(group, "Install INET Framework", true);
+        createWrappingLabel(group,
+                "The INET Framework is the primary model library for the simulation of communication networks. " +
+                "It contains models for several wired and wireless networking protocols, Internet protocols and " +
+                "technologies, support for wireless ad-hoc mobile networks, and much more. INET also comes " +
+                "with several example simulations, Javadoc-style documentation and a manual. " +
+                "This option will download the latest matching INET release from http://inet.omnetpp.org, " +
+                "and install it into your workspace. Select it if you want to simulate communication networks.",
+                true);
+        importSamplesButton = createCheckbox(group, "Import OMNeT++ programming examples", true);
+        createWrappingLabel(group, 
+                "Import the examples bundled with OMNeT++ into the workspace. " +
+                "The examples demonstrate how to use various features of the simulation framework via " +
+                "queueing, resource allocation, and simplified communication network models. " +
+                "It also contains a step-by-step tutorial called TicToc. Select this item if you " +
+                "are new to OMNeT++ and want to familiarize yourself with it.", 
+                true);
+
+        //TODO community page; Help|Install models; open tictoc tutorial; open documentation; etc
+
         return composite;
     }
 
-    @Override
-    protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.OK_ID, "Install INET", true);
-        createButton(parent, IDialogConstants.CANCEL_ID, "Cancel", false);
+    protected Label createLabel(Composite parent, String text) {
+        Label label = new Label(parent, SWT.NONE);
+        GridData gridData = new GridData(SWT.FILL, SWT.CENTER, false, false);
+        label.setLayoutData(gridData);
+        label.setText(text);
+        return label;
+    }
+
+    protected Button createCheckbox(Composite parent, String label, boolean checked) {
+        Button b = new Button(parent, SWT.CHECK);
+        b.setText(label);
+        b.setSelection(checked);
+        return b;
+    }
+
+    protected Label createWrappingLabel(Composite parent, String text, boolean indented) {
+        Label label = new Label(parent, SWT.WRAP);
+        GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        gridData.widthHint = 400; // note: this affects requested height
+        if (indented)
+            gridData.horizontalIndent = 40;
+        label.setLayoutData(gridData);
+        label.setText(text);
+        return label;
     }
 
     @Override
     protected void okPressed() {
-        installINET();
+        if (importSamplesButton.getSelection())
+            importSampleProjects(false);
+        if (installInetButton.getSelection())
+            installINET();
         super.okPressed();
+    }
+
+    protected void importSampleProjects(final boolean open) {
+        WorkspaceJob job = new WorkspaceJob("Importing sample projects") {
+            @Override
+            public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
+                ProjectUtils.importAllProjectsFromWorkspaceDirectory(open, monitor);
+                return Status.OK_STATUS;
+            }
+        };
+        job.setRule(ResourcesPlugin.getWorkspace().getRoot());
+        job.setPriority(Job.LONG);
+        job.schedule();
     }
 
     protected void installINET() {
@@ -116,6 +147,7 @@ public class FirstStepsDialog extends Dialog {
                 try {
                     IWorkbench workbench = PlatformUI.getWorkbench();
                     workbench.getBrowserSupport().createBrowser("open-community-catalog").openURL(new URL("http://www.omnetpp.org/models/catalog"));
+                    //XXX workbench.getBrowserSupport().getExternalBrowser().openURL(new URL(event.location));
                 }
                 catch (Exception e) {
                     throw new RuntimeException(e);
