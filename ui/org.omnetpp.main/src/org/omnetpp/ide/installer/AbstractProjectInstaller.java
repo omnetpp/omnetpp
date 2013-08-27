@@ -60,6 +60,9 @@ public abstract class AbstractProjectInstaller {
             copyURLToFile(progressMonitor, projectDistributionURL, projectDistributionFile);
             return projectDistributionFile;
         }
+        catch (RuntimeException e) {
+            throw e;
+        }
         catch (Exception e) {
             throw new RuntimeException("Cannot download project distribution from " + projectDistribution, e);
         }
@@ -116,6 +119,9 @@ public abstract class AbstractProjectInstaller {
             subProgressMonitor.done();
             return new File(outputDirectory);
         }
+        catch (RuntimeException e) {
+            throw e;
+        }
         catch (Exception e) {
             throw new RuntimeException("Cannot extract project distribution from " + distributionFile, e);
         }
@@ -131,6 +137,9 @@ public abstract class AbstractProjectInstaller {
             SubProgressMonitor subProgressMonitor = new SubProgressMonitor(progressMonitor, 1);
             project.create(projectDescription, subProgressMonitor);
             return project;
+        }
+        catch (RuntimeException e) {
+            throw e;
         }
         catch (CoreException e) {
             throw e;
@@ -152,6 +161,9 @@ public abstract class AbstractProjectInstaller {
             while (i-- > 0 && (!project.isOpen() || project.getModificationStamp() == IResource.NULL_STAMP))
                 Thread.sleep(100);
         }
+        catch (RuntimeException e) {
+            throw e;
+        }
         catch (CoreException e) {
             throw e;
         }
@@ -165,6 +177,9 @@ public abstract class AbstractProjectInstaller {
             progressMonitor.subTask("Building " + projectDescription.getName() + " project");
             SubProgressMonitor subProgressMonitor = new SubProgressMonitor(progressMonitor, 1);
             project.build(IncrementalProjectBuilder.FULL_BUILD, subProgressMonitor);
+        }
+        catch (RuntimeException e) {
+            throw e;
         }
         catch (CoreException e) {
             throw e;
@@ -252,6 +267,8 @@ public abstract class AbstractProjectInstaller {
             while (-1 != (n = input.read(buffer))) {
                 output.write(buffer, 0, n);
                 subProgressMonitor.worked(n);
+                if (progressMonitor.isCanceled())
+                    return;
             }
             subProgressMonitor.done();
         }

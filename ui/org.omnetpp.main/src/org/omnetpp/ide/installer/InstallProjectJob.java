@@ -5,6 +5,7 @@ import java.net.URL;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.omnetpp.common.CommonPlugin;
@@ -29,6 +30,9 @@ public class InstallProjectJob extends Job {
         try {
             InstallProjectTask installProjectTask = new InstallProjectTask(projectDescriptionURL, projectInstallationOptions);
             installProjectTask.run(progressMonitor);
+            return new Status(Status.OK, CommonPlugin.PLUGIN_ID, "Ok");
+        }
+        catch (OperationCanceledException e) {
             return new Status(Status.OK, CommonPlugin.PLUGIN_ID, "Ok");
         }
         catch (CoreException e) {
