@@ -63,7 +63,17 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
     }
 
     public static String getVersion() {
-        return (String)getDefault().getBundle().getHeaders().get("Bundle-Version");
+        return getDefault().getBundle().getHeaders().get("Bundle-Version");
+    }
+
+    public static String getMajorVersion() {
+        String[] parts = getVersion().split("\\.");
+        return parts[0];
+    }
+
+    public static String getMinorVersion() {
+        String[] parts = getVersion().split("\\.");
+        return parts[1];
     }
 
     /*

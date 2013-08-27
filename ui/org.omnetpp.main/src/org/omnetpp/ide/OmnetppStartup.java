@@ -61,6 +61,7 @@ import org.omnetpp.common.IConstants;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.CommandlineUtils;
 import org.omnetpp.common.util.FileUtils;
+import org.omnetpp.ide.installer.AutomaticFirstStepsDialogOpener;
 import org.omnetpp.ide.views.NewVersionView;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -84,14 +85,14 @@ public class OmnetppStartup implements IStartup {
     public void earlyStartup() {
 
         checkForNewVersion();
-
-        final IWorkbench workbench = PlatformUI.getWorkbench();
+        IWorkbench workbench = PlatformUI.getWorkbench();
         workbench.getDisplay().asyncExec(new Runnable() {
             public void run() {
                 if (isInitialDefaultStartup())
                     importSampleProjects(false);
-                
+
                 CommandlineUtils.autoimportAndOpenFilesOnCommandLine();
+                new AutomaticFirstStepsDialogOpener().hook();
             }
         });
     }
