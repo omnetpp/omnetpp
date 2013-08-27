@@ -15,6 +15,7 @@ import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SegmentEvent;
 import org.eclipse.swt.events.SegmentListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
@@ -24,6 +25,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -50,6 +52,7 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
     protected Text projectName;
     protected Button useDefaultLocation;
     protected Text location;
+    protected Button browseLocation;
 
     protected InstallSimulationModelsDialog(Shell shell) {
         super(shell);
@@ -124,13 +127,15 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
         gridLayout.marginWidth = gridLayout.marginHeight = 10;
         container.setLayout(gridLayout);
         Group group = new Group(container, SWT.NONE);
+        gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 10;
         group.setLayout(gridLayout);
         group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
         group.setText("Model");
         projectsTable = new Table(group, SWT.BORDER);
         projectsTable.setHeaderVisible(true);
         projectsTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-        projectsTable.addSelectionListener(new SelectionListener() {
+        projectsTable.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
                 ProjectDescription projectDescription = (ProjectDescription)event.item.getData();
@@ -140,14 +145,10 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
                 projectName.setText(projectDescription.getName());
                 updateDefaultLocation();
             }
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent e) {
-            }
         });
         Link link = new Link(group, SWT.WRAP);
-        link.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
-        link.setText("Other simulation models are available for download in the community <a>catalog</a>");
+        link.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
+        link.setText("Other simulation models are available for download in the community <a>catalog</a>.");
         link.addSelectionListener(new SelectionListener() {
             public void widgetDefaultSelected(SelectionEvent e) {
                 openCommunityCatalog();
@@ -158,12 +159,16 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
             }});
         group = new Group(container, SWT.NONE);
         group.setText("Description");
-        group.setLayout(new GridLayout());
+        gridLayout = new GridLayout();
+        gridLayout.marginWidth = gridLayout.marginHeight = 10;
+        group.setLayout(gridLayout);
         group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
         longDescription = new Label(group, SWT.WRAP | SWT.V_SCROLL);
         longDescription.setLayoutData(new GridData(GridData.FILL_BOTH));
         group = new Group(container, SWT.NONE);
         group.setText("Options");
+        gridLayout = new GridLayout(3, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 10;
         group.setLayout(gridLayout);
         group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false, 2, 1));
         Label label = new Label(group, SWT.NONE);
@@ -172,7 +177,7 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
         projectName = new Text(group, SWT.BORDER);
         // TODO: revive this when importing a project with a different name than the one in the .project file becomes possible
         projectName.setEnabled(false);
-        projectName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        projectName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         projectName.addSegmentListener(new SegmentListener() {
             @Override
             public void getSegments(SegmentEvent event) {
@@ -181,18 +186,15 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
             }
         });
         useDefaultLocation = new Button(group, SWT.CHECK);
-        useDefaultLocation.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
+        useDefaultLocation.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1));
         useDefaultLocation.setText("Use default location");
-        useDefaultLocation.addSelectionListener(new SelectionListener() {
+        useDefaultLocation.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 location.setEnabled(!useDefaultLocation.getSelection());
+                browseLocation.setEnabled(!useDefaultLocation.getSelection());
                 if (useDefaultLocation.getSelection())
                     updateDefaultLocation();
-            }
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent e) {
             }
         });
         useDefaultLocation.setSelection(true);
@@ -200,8 +202,23 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
         label.setText("Location: ");
         location = new Text(group, SWT.BORDER);
-        location.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         location.setEnabled(false);
+        location.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        browseLocation = new Button(group, SWT.NONE);
+        browseLocation.setText("Browse...");
+        browseLocation.setEnabled(false);
+        browseLocation.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
+        browseLocation.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                DirectoryDialog dialog = new DirectoryDialog(getShell(), SWT.NONE);
+                dialog.setText("Select location");
+                dialog.setFilterPath(location.getText());
+                String file = dialog.open();
+                if (file != null)
+                    location.setText(file);
+            }
+        });
 
         String omnetppVersion = "omnetpp-" + OmnetppMainPlugin.getMajorVersion() + "." + OmnetppMainPlugin.getMinorVersion();
         URL descriptorsURL = null;
