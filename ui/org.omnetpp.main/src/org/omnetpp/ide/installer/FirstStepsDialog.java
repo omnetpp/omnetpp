@@ -41,7 +41,7 @@ public class FirstStepsDialog extends Dialog {
 "  </body>" +
 "</html>";
 
-    protected FirstStepsDialog(Shell shell) {
+    public FirstStepsDialog(Shell shell) {
         super(shell);
     }
 

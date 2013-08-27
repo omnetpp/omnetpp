@@ -28,7 +28,8 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.CommandlineUtils;
-import org.omnetpp.ide.installer.AutomaticFirstStepsDialogOpener;
+import org.omnetpp.ide.installer.FirstStepsDialog;
+import org.omnetpp.ide.installer.OnClosingWelcomeView;
 import org.osgi.framework.Bundle;
 
 /**
@@ -44,15 +45,21 @@ public class OmnetppStartup implements IStartup {
      */
     public void earlyStartup() {
         checkForNewVersion();
+
         IWorkbench workbench = PlatformUI.getWorkbench();
         workbench.getDisplay().asyncExec(new Runnable() {
             public void run() {
-                if (isInitialDefaultStartup())
-                    importSampleProjects(false);
-
-                CommandlineUtils.autoimportAndOpenFilesOnCommandLine();
-                new AutomaticFirstStepsDialogOpener().hook();
                 openGlancePage();
+                CommandlineUtils.autoimportAndOpenFilesOnCommandLine();
+                if (isInitialDefaultStartup()) {
+                    new OnClosingWelcomeView(new Runnable() {
+                        @Override
+                        public void run() {
+                            importSampleProjects(false);
+                            new FirstStepsDialog(null).open();
+                        }
+                    }).hook();
+                }
             }
         });
     }

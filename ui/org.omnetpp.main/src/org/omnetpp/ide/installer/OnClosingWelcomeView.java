@@ -12,19 +12,26 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.ViewIntroAdapterPart;
 import org.eclipse.ui.intro.config.CustomizableIntroPart;
-import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.util.ReflectionUtils;
+import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
- * This class makes sure that the FirstStepsDialog is automatically
- * open as soon as the user closes or minimizes the initial welcome page of the IDE.
- * After the dialog has been open once, it's never open again automatically.
+ * This class runs the given runnable as soon as the user closes or minimizes 
+ * the initial welcome page of the IDE.
  *
  * @author levy
  */
 @SuppressWarnings("restriction")
-public class AutomaticFirstStepsDialogOpener implements IPageListener, IPartListener {
-    protected static final String HAS_BEEN_ALREADY_OPEN = "FirstStepsDialogHasBeenAlreadyOpen";
+public class OnClosingWelcomeView implements IPageListener, IPartListener {
+    protected Runnable runnable;
+
+    /**
+     * Remember the runnable to be run as soon as the user closes or minimizes 
+     * the initial welcome page of the IDE.
+     */
+    public OnClosingWelcomeView(Runnable runnable) {
+        this.runnable = runnable;
+    }
 
     // IPageListener interface
 
@@ -55,7 +62,7 @@ public class AutomaticFirstStepsDialogOpener implements IPageListener, IPartList
     @Override
     public void partClosed(final IWorkbenchPart part) {
         if (part instanceof ViewIntroAdapterPart) {
-            openFirstStepsDialog(part);
+            introPartResized(part);
             removeResizeListener(part);
         }
     }
@@ -105,7 +112,7 @@ public class AutomaticFirstStepsDialogOpener implements IPageListener, IPartList
         introPart.getControl().addControlListener(new ControlAdapter() {
             @Override
             public void controlResized(ControlEvent e) {
-                openFirstStepsDialog(part);
+                introPartResized(part);
             }
         });
     }
@@ -114,24 +121,22 @@ public class AutomaticFirstStepsDialogOpener implements IPageListener, IPartList
         // TODO:
     }
 
-    protected boolean hasBeenAlreadyOpen() {
-        return CommonPlugin.getDefault().getDialogSettings().getBoolean(HAS_BEEN_ALREADY_OPEN);
-    }
-
-    protected void setHasBeenAlreadyOpen() {
-        CommonPlugin.getDefault().getDialogSettings().put(HAS_BEEN_ALREADY_OPEN, true);
-    }
-
-    protected void openFirstStepsDialog(final IWorkbenchPart part) {
+    protected void introPartResized(final IWorkbenchPart part) {
         Display.getCurrent().asyncExec(new Runnable() {
             @Override
             public void run() {
                 IWorkbenchPage page = part.getSite().getPage();
                 int partState = page.getPartState(page.getReference(part));
-                if (!hasBeenAlreadyOpen() && partState != IWorkbenchPage.STATE_MAXIMIZED && !PlatformUI.getWorkbench().isClosing()) {
-                    setHasBeenAlreadyOpen();
-                    new FirstStepsDialog(null).open();
-                    unhook();
+                if (partState != IWorkbenchPage.STATE_MAXIMIZED && !PlatformUI.getWorkbench().isClosing()) {
+                    try {
+                        runnable.run();
+                    }
+                    catch (Exception e) {
+                        OmnetppMainPlugin.logError(e);
+                    }
+                    finally {
+                        unhook();
+                    }
                 }
             }
         });
