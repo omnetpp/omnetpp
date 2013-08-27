@@ -9,6 +9,7 @@ package org.omnetpp.ide;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,11 +45,14 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.IWorkbench;
@@ -63,6 +67,7 @@ import org.omnetpp.common.util.CommandlineUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.ide.installer.AutomaticFirstStepsDialogOpener;
 import org.omnetpp.ide.views.NewVersionView;
+import org.osgi.framework.Bundle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -93,8 +98,25 @@ public class OmnetppStartup implements IStartup {
 
                 CommandlineUtils.autoimportAndOpenFilesOnCommandLine();
                 new AutomaticFirstStepsDialogOpener().hook();
+                openGlancePage();
             }
         });
+    }
+
+    protected void openGlancePage() {
+        try {
+            String settingName = "glancePageHasBeenShown";
+            IDialogSettings dialogSettings = OmnetppMainPlugin.getDefault().getDialogSettings();
+            if (!dialogSettings.getBoolean(settingName)) {
+                Bundle docBundle = Platform.getBundle("org.omnetpp.doc");
+                URL glanceURL = FileLocator.resolve(FileLocator.findEntries(docBundle, new Path("/content/ide-glance/glance.html"))[0]);
+                PlatformUI.getWorkbench().getBrowserSupport().createBrowser("glance-page").openURL(glanceURL);
+                dialogSettings.put(settingName, true);
+            }
+        }
+        catch (Exception e) {
+            OmnetppMainPlugin.logError("Cannot open glance page", e);
+        }
     }
 
     /**
