@@ -54,7 +54,7 @@ public abstract class AbstractProjectInstaller {
 
     protected File downloadProjectDistribution(IProgressMonitor progressMonitor, String projectDistribution) {
         try {
-            progressMonitor.subTask("Downloading " + projectDescription.getName() + " project distribution");
+            progressMonitor.subTask("Downloading " + projectDistribution);
             URL projectDistributionURL = new URL(projectDistribution);
             File projectDistributionFile = File.createTempFile(projectDescription.getName(), ".tgz");
             copyURLToFile(progressMonitor, projectDistributionURL, projectDistributionFile);
@@ -64,13 +64,13 @@ public abstract class AbstractProjectInstaller {
             throw e;
         }
         catch (Exception e) {
-            throw new RuntimeException("Cannot download project distribution from " + projectDistribution, e);
+            throw new RuntimeException("Cannot download archive from " + projectDistribution, e);
         }
     }
 
     protected File extractProjectDistribution(IProgressMonitor progressMonitor, File distributionFile) {
         try {
-            progressMonitor.subTask("Extracting " + projectDescription.getName() + " project distribution");
+            progressMonitor.subTask("Extracting archive");
             String projectDistributionPath = distributionFile.getPath();
             File tarFile = new File(projectDistributionPath.replace(".tgz", ".tar"));
             GZIPInputStream gzipInputStream = new GZIPInputStream(new FileInputStream(distributionFile));
@@ -105,7 +105,7 @@ public abstract class AbstractProjectInstaller {
                 else {
                     if (tarArchiveEntryFile.exists()) {
                         tarArchiveInputStream.close();
-                        throw new RuntimeException("Cannot extract " + projectDescription.getName() + " project, " + tarArchiveEntryFile.getName() + " already exists ");
+                        throw new RuntimeException("Cannot extract archive, " + tarArchiveEntryFile.getName() + " already exists");
                     }
                     byte[] content = new byte[(int)tarArchiveEntry.getSize()];
                     tarArchiveInputStream.read(content, 0, content.length);
@@ -123,13 +123,13 @@ public abstract class AbstractProjectInstaller {
             throw e;
         }
         catch (Exception e) {
-            throw new RuntimeException("Cannot extract project distribution from " + distributionFile, e);
+            throw new RuntimeException("Cannot extract archive from " + distributionFile, e);
         }
     }
 
     protected IProject importProjectIntoWorkspace(IProgressMonitor progressMonitor, File projectDirectory) throws CoreException {
         try {
-            progressMonitor.subTask("Importing " + projectDescription.getName() + " project distribution");
+            progressMonitor.subTask("Importing project");
             IWorkspace workspace = ResourcesPlugin.getWorkspace();
             Path projectFileLocation = new Path(projectDirectory.getPath() + "/.project");
             IProjectDescription projectDescription = workspace.loadProjectDescription(projectFileLocation);
@@ -151,7 +151,7 @@ public abstract class AbstractProjectInstaller {
 
     protected void openProject(IProgressMonitor progressMonitor, IProject project) throws CoreException {
         try {
-            progressMonitor.subTask("Opening " + projectDescription.getName() + " project");
+            progressMonitor.subTask("Opening project");
             SubProgressMonitor subProgressMonitor = new SubProgressMonitor(progressMonitor, 1);
             project.open(subProgressMonitor);
             // KLUDGE: this is a workaround for the fact that the project becomes immediately open after the call.
@@ -174,7 +174,7 @@ public abstract class AbstractProjectInstaller {
 
     protected void buildProject(IProgressMonitor progressMonitor, IProject project) throws CoreException {
         try {
-            progressMonitor.subTask("Building " + projectDescription.getName() + " project");
+            progressMonitor.subTask("Building project");
             SubProgressMonitor subProgressMonitor = new SubProgressMonitor(progressMonitor, 1);
             project.build(IncrementalProjectBuilder.FULL_BUILD, subProgressMonitor);
         }
@@ -185,7 +185,7 @@ public abstract class AbstractProjectInstaller {
             throw e;
         }
         catch (Exception e) {
-            throw new RuntimeException("Cannot build " + projectDescription.getName() + " project", e);
+            throw new RuntimeException("Cannot build project " + projectDescription.getName(), e);
         }
     }
 

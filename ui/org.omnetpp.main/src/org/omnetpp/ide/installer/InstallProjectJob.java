@@ -20,7 +20,7 @@ public class InstallProjectJob extends Job {
     protected ProjectInstallationOptions projectInstallationOptions;
 
     public InstallProjectJob(URL projectDescriptionURL, ProjectInstallationOptions projectInstallationOptions) {
-        super("Install Project");
+        super("Installing Project");
         this.projectDescriptionURL = projectDescriptionURL;
         this.projectInstallationOptions = projectInstallationOptions;
     }

@@ -24,7 +24,7 @@ public class DefaultProjectInstaller extends AbstractProjectInstaller {
 
     @Override
     public void run(IProgressMonitor progressMonitor) throws CoreException {
-        progressMonitor.beginTask("Installing project " + projectDescription.getName() + " into workspace", 5);
+        progressMonitor.beginTask("Installing " + projectDescription.getTitle() + " into the workspace", 5);
         File projectDistributionFile = downloadProjectDistribution(progressMonitor, projectDescription.getDistributionURL());
         if (progressMonitor.isCanceled()) return;
         File projectDirectory = extractProjectDistribution(progressMonitor, projectDistributionFile);
