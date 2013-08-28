@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -28,7 +29,7 @@ import org.omnetpp.ide.OmnetppMainPlugin;
 
 
 /**
- * 
+ *
  * @author levy, andras
  */
 public class FirstStepsDialog extends TitleAreaDialog {
@@ -49,14 +50,13 @@ public class FirstStepsDialog extends TitleAreaDialog {
     @Override
     protected Control createDialogArea(Composite parent) {
         setTitle("First Steps");
-        setMessage("Your workspace is empty. Do you want to...");
+        setMessage("Your workspace is empty. Would you like to install or import projects?");
 
         Composite composite = (Composite)super.createDialogArea(parent);
         Group group = new Group(composite, SWT.NONE);
         group.setLayout(new GridLayout());
         group.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-        createLabel(group, "Select the actions to take:");
         installInetButton = createCheckbox(group, "Install INET Framework", true);
         createWrappingLabel(group,
                 "The INET Framework is the primary model library for the simulation of communication networks. " +
@@ -67,12 +67,12 @@ public class FirstStepsDialog extends TitleAreaDialog {
                 "and install it into your workspace. Select it if you want to simulate communication networks.",
                 true);
         importSamplesButton = createCheckbox(group, "Import OMNeT++ programming examples", true);
-        createWrappingLabel(group, 
+        createWrappingLabel(group,
                 "Import the examples bundled with OMNeT++ into the workspace. " +
                 "The examples demonstrate how to use various features of the simulation framework via " +
                 "queueing, resource allocation, and simplified communication network models. " +
                 "It also contains a step-by-step tutorial called TicToc. Select this item if you " +
-                "are new to OMNeT++ and want to familiarize yourself with it.", 
+                "are new to OMNeT++ and want to familiarize yourself with it.",
                 true);
 
         //TODO community page; Help|Install models; open tictoc tutorial; open documentation; etc
@@ -92,6 +92,7 @@ public class FirstStepsDialog extends TitleAreaDialog {
         Button b = new Button(parent, SWT.CHECK);
         b.setText(label);
         b.setSelection(checked);
+        b.setFont(JFaceResources.getBannerFont());
         return b;
     }
 
@@ -100,7 +101,7 @@ public class FirstStepsDialog extends TitleAreaDialog {
         GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
         gridData.widthHint = 400; // note: this affects requested height
         if (indented)
-            gridData.horizontalIndent = 40;
+            gridData.horizontalIndent = 20;
         label.setLayoutData(gridData);
         label.setText(text);
         return label;
