@@ -8,7 +8,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
  * This class wraps the project installation task into a job.
@@ -30,16 +30,16 @@ public class InstallProjectJob extends Job {
         try {
             InstallProjectTask installProjectTask = new InstallProjectTask(projectDescriptionURL, projectInstallationOptions);
             installProjectTask.run(progressMonitor);
-            return new Status(Status.OK, CommonPlugin.PLUGIN_ID, "Ok");
+            return new Status(Status.OK, OmnetppMainPlugin.PLUGIN_ID, "Ok");
         }
         catch (OperationCanceledException e) {
-            return new Status(Status.OK, CommonPlugin.PLUGIN_ID, "Ok");
+            return new Status(Status.OK, OmnetppMainPlugin.PLUGIN_ID, "Ok");
         }
         catch (CoreException e) {
             return e.getStatus();
         }
         catch (Exception e) {
-            return new Status(Status.ERROR, CommonPlugin.PLUGIN_ID, e.getMessage(), e.getCause());
+            return new Status(Status.ERROR, OmnetppMainPlugin.PLUGIN_ID, e.getMessage(), e.getCause());
         }
     }
 }
