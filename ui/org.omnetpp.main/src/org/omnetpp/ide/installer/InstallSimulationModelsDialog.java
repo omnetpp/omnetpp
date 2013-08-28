@@ -2,6 +2,7 @@ package org.omnetpp.ide.installer;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -10,6 +11,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -38,6 +43,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
@@ -144,6 +150,7 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
                 // projectName.setText(projectDescription.getName() + "-" + projectDescription.getVersion());
                 projectName.setText(projectDescription.getName());
                 updateDefaultLocation();
+                getButton(IDialogConstants.OK_ID).setEnabled(true);
             }
         });
         Link link = new Link(group, SWT.WRAP);
@@ -219,20 +226,39 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
                     location.setText(file);
             }
         });
-
-        String omnetppVersion = "omnetpp-" + OmnetppMainPlugin.getMajorVersion() + "." + OmnetppMainPlugin.getMinorVersion();
-        URL descriptorsURL = null;
-        try {
-            descriptorsURL = new URL(DESCRIPTORS_URL + "/" + omnetppVersion + "/descriptors.txt");
-            downloadProjectDescriptions(descriptorsURL);
-        }
-        catch (Exception e) {
-            CommonPlugin.logError("An error occurred while downloading the list of models available for installation from " + descriptorsURL, e);
-            setErrorMessage("An error occurred while downloading the list of models available for installation");
-        }
-
-        fillProjects();
+        scheduleDownloadProjectDescriptions();
         return container;
+    }
+
+    protected void scheduleDownloadProjectDescriptions() {
+        try {
+            String omnetppVersion = "omnetpp-" + OmnetppMainPlugin.getMajorVersion() + "." + OmnetppMainPlugin.getMinorVersion();
+            final URL descriptorsURL = new URL(DESCRIPTORS_URL + "/" + omnetppVersion + "/descriptors.txt");
+            Job job = new Job("Download project descriptors") {
+                @Override
+                protected IStatus run(IProgressMonitor monitor) {
+                    try {
+                        downloadProjectDescriptions(descriptorsURL);
+                        DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                fillProjects();
+                            }
+                        });
+                    }
+                    catch (Exception e) {
+                        CommonPlugin.logError("An error occurred while downloading the list of models available for installation from " + descriptorsURL, e);
+                        setErrorMessage("An error occurred while downloading the list of models available for installation");
+                    }
+                    return new Status(Status.OK, OmnetppMainPlugin.PLUGIN_ID, "Ok");
+                }
+            };
+            job.setSystem(true);
+            job.schedule();
+        }
+        catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected void updateDefaultLocation() {
