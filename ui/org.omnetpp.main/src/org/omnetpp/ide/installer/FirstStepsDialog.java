@@ -1,5 +1,6 @@
 package org.omnetpp.ide.installer;
 
+import java.io.File;
 import java.net.URL;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -118,7 +119,7 @@ public class FirstStepsDialog extends TitleAreaDialog {
         WorkspaceJob job = new WorkspaceJob("Importing sample projects") {
             @Override
             public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
-                ProjectUtils.importAllProjectsFromWorkspaceDirectory(open, monitor);
+                ProjectUtils.importAllProjectsFromDirectory(new File(OmnetppMainPlugin.getOmnetppSamplesDir()), open, monitor);
                 return Status.OK_STATUS;
             }
         };

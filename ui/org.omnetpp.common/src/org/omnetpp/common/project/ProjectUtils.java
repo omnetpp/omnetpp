@@ -25,9 +25,9 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -208,12 +208,10 @@ public class ProjectUtils {
     }
 
     /**
-     * Imports all project from the workspace directory, and optionally opens them.
+     * Imports all project from a directory, and optionally opens them.
      */
-    public static void importAllProjectsFromWorkspaceDirectory(boolean open, IProgressMonitor monitor) throws CoreException {
+    public static void importAllProjectsFromDirectory(File directory, boolean open, IProgressMonitor monitor) throws CoreException {
         // note: code based on WizardProjectsImportPage.updateProjectsList()
-        IPath workspaceLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation();
-        File directory = workspaceLocation.toFile();
         if (directory.isDirectory()) {
             // we'll need the names of the currently existing projects
             IProject[] wsProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
@@ -228,9 +226,8 @@ public class ProjectUtils {
                 File subdirFile = contents[i];
                 if (subdirFile.isDirectory() && !wsProjectNames.contains(subdirFile.getName())) {
                     File dotProjectFile = new File(subdirFile.getPath()+ File.separator + dotProject);
-                    if (dotProjectFile.isFile()) {
-                        importProjectFromWorkspaceDirectory(subdirFile.getName(), open, monitor);
-                    }
+                    if (dotProjectFile.isFile())
+                        importProjectFromDirectory(subdirFile, subdirFile.getName(), open, monitor); // we assume directory name is the same as project name in .project
                 }
             }
         }
@@ -240,7 +237,7 @@ public class ProjectUtils {
      * Imports a project from the workspace directory, and optionally opens it.
      * This is basically a convenience wrapper around IProject.create().
      */
-    public static IProject importProjectFromWorkspaceDirectory(String projectName, boolean open, IProgressMonitor monitor) throws CoreException {
+    public static IProject importProjectFromDirectory(File directory, String projectName, boolean open, IProgressMonitor monitor) throws CoreException {
         //
         // Note: code based on WizardProjectsImportPage.createExistingProject().
         // Note2: description.setLocation() would only be needed when linking to a project
@@ -249,6 +246,7 @@ public class ProjectUtils {
         IWorkspace workspace = ResourcesPlugin.getWorkspace();
         final IProject project = workspace.getRoot().getProject(projectName);
         IProjectDescription description = workspace.newProjectDescription(projectName);
+        description.setLocation(new Path(directory.toString()));
 
         try {
             monitor.beginTask("Importing project", 100);
