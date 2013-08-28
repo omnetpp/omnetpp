@@ -49,12 +49,12 @@ public class OmnetppStartup implements IStartup {
         IWorkbench workbench = PlatformUI.getWorkbench();
         workbench.getDisplay().asyncExec(new Runnable() {
             public void run() {
-                openGlancePage();
                 CommandlineUtils.autoimportAndOpenFilesOnCommandLine();
                 if (true /*TODO: if workspace is empty; or isInitialDefaultStartup()*/) {
                     new OnClosingWelcomeView(new Runnable() {
                         @Override
                         public void run() {
+                            openGlancePage();
                             new FirstStepsDialog(null).open();
                         }
                     }).hook();

@@ -1,10 +1,18 @@
 package org.omnetpp.ide.installer;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.internal.SWTEventListener;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.TypedListener;
 import org.eclipse.ui.IPageListener;
 import org.eclipse.ui.IPartListener;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
@@ -16,17 +24,18 @@ import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
- * This class runs the given runnable as soon as the user closes or minimizes 
+ * This class runs the given runnable as soon as the user closes or minimizes
  * the initial welcome page of the IDE.
  *
  * @author levy
  */
 @SuppressWarnings("restriction")
 public class OnClosingWelcomeView implements IPageListener, IPartListener {
+    protected boolean hasBeenRun;
     protected Runnable runnable;
 
     /**
-     * Remember the runnable to be run as soon as the user closes or minimizes 
+     * Remember the runnable to be run as soon as the user closes or minimizes
      * the initial welcome page of the IDE.
      */
     public OnClosingWelcomeView(Runnable runnable) {
@@ -61,10 +70,8 @@ public class OnClosingWelcomeView implements IPageListener, IPartListener {
 
     @Override
     public void partClosed(final IWorkbenchPart part) {
-        if (part instanceof ViewIntroAdapterPart) {
-            introPartResized(part);
-            removeResizeListener(part);
-        }
+        if (part instanceof ViewIntroAdapterPart)
+            run(part);
     }
 
     @Override
@@ -86,9 +93,11 @@ public class OnClosingWelcomeView implements IPageListener, IPartListener {
             activeWorkbenchWindow.addPageListener(this);
             for (IWorkbenchPage page : activeWorkbenchWindow.getPages()) {
                 page.addPartListener(this);
-                IWorkbenchPart activePart = page.getActivePart();
-                if (activePart instanceof ViewIntroAdapterPart)
-                    this.addResizeListener(activePart);
+                for (IViewReference viewReference : page.getViewReferences()) {
+                    IViewPart viewPart = viewReference.getView(false);
+                    if (viewPart instanceof ViewIntroAdapterPart)
+                        addResizeListener(viewPart);
+                }
             }
         }
     }
@@ -100,41 +109,56 @@ public class OnClosingWelcomeView implements IPageListener, IPartListener {
             activeWorkbenchWindow.removePageListener(this);
             for (IWorkbenchPage page : activeWorkbenchWindow.getPages()) {
                 page.removePartListener(this);
-                IWorkbenchPart activePart = page.getActivePart();
-                if (activePart instanceof ViewIntroAdapterPart)
-                    this.removeResizeListener(activePart);
+                for (IViewReference viewReference : page.getViewReferences()) {
+                    IViewPart viewPart = viewReference.getView(false);
+                    if (viewPart instanceof ViewIntroAdapterPart)
+                        removeResizeListener(viewPart);
+                }
             }
         }
     }
 
     protected void addResizeListener(final IWorkbenchPart part) {
-        final CustomizableIntroPart introPart = (CustomizableIntroPart)ReflectionUtils.getFieldValue(part, "introPart");
+        CustomizableIntroPart introPart = (CustomizableIntroPart)ReflectionUtils.getFieldValue(part, "introPart");
         introPart.getControl().addControlListener(new ControlAdapter() {
             @Override
             public void controlResized(ControlEvent e) {
-                introPartResized(part);
+                run(part);
             }
         });
     }
 
     protected void removeResizeListener(IWorkbenchPart part) {
-        // TODO:
+        CustomizableIntroPart introPart = (CustomizableIntroPart)ReflectionUtils.getFieldValue(part, "introPart");
+        Control control = introPart.getControl();
+        for (Listener listener : control.getListeners(SWT.Resize)) {
+            if (listener instanceof TypedListener) {
+                TypedListener typedListener = (TypedListener)listener;
+                SWTEventListener eventListener = typedListener.getEventListener();
+                if (eventListener instanceof ControlListener)
+                    control.removeControlListener((ControlListener)eventListener);
+            }
+        }
     }
 
-    protected void introPartResized(final IWorkbenchPart part) {
+    protected void run(final IWorkbenchPart part) {
         Display.getCurrent().asyncExec(new Runnable() {
             @Override
             public void run() {
                 IWorkbenchPage page = part.getSite().getPage();
                 int partState = page.getPartState(page.getReference(part));
-                if (partState != IWorkbenchPage.STATE_MAXIMIZED && !PlatformUI.getWorkbench().isClosing()) {
+                // KLUDGE: we need to delay this check because the part state will change only after the control resize event is handled
+                if (!hasBeenRun && partState != IWorkbenchPage.STATE_MAXIMIZED && !PlatformUI.getWorkbench().isClosing()) {
                     try {
+                        // have to set the flag first because the runnable might open a dialog that runs a new event loop
+                        hasBeenRun = true;
                         runnable.run();
                     }
                     catch (Exception e) {
                         OmnetppMainPlugin.logError(e);
                     }
                     finally {
+                        // have to delay unhook this late to be sure that the runnable is actually called once
                         unhook();
                     }
                 }
