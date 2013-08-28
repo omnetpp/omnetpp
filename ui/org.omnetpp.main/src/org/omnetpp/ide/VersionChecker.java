@@ -48,6 +48,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.internal.ViewIntroAdapterPart;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.FileUtils;
@@ -103,7 +104,11 @@ public class VersionChecker {
                                 IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
                                 IWorkbenchPage workbenchPage = activeWorkbenchWindow == null ? null : activeWorkbenchWindow.getActivePage();
                                 if (workbenchPage != null) {
-                                    NewVersionView view = (NewVersionView)workbenchPage.showView(IConstants.NEW_VERSION_VIEW_ID);
+                                    NewVersionView view;
+                                    if (workbenchPage.getActivePart() instanceof ViewIntroAdapterPart)
+                                        view = (NewVersionView)workbenchPage.showView(IConstants.NEW_VERSION_VIEW_ID, null, IWorkbenchPage.VIEW_CREATE);
+                                    else
+                                        view = (NewVersionView)workbenchPage.showView(IConstants.NEW_VERSION_VIEW_ID);
                                     view.setText(content);
                                 }
                             }
