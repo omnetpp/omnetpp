@@ -22,3 +22,4 @@ Require-Bundle: org.eclipse.core.runtime,
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.launch,
  org.omnetpp.launch.tabs
+Import-Package: org.eclipse.ui.internal.browser

@@ -92,4 +92,10 @@
             name="Configuration Launcher">
       </editor>
    </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="org.omnetpp.launch.LaunchStartup">
+      </startup>
+   </extension>
 </plugin>
