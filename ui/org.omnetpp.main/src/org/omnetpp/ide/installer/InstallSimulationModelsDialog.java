@@ -250,7 +250,7 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
                         CommonPlugin.logError("An error occurred while downloading the list of models available for installation from " + descriptorsURL, e);
                         setErrorMessage("An error occurred while downloading the list of models available for installation");
                     }
-                    return new Status(Status.OK, OmnetppMainPlugin.PLUGIN_ID, "Ok");
+                    return Status.OK_STATUS;
                 }
             };
             job.setSystem(true);

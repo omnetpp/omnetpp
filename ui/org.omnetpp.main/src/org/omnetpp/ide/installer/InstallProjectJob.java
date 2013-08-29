@@ -30,10 +30,10 @@ public class InstallProjectJob extends Job {
         try {
             InstallProjectTask installProjectTask = new InstallProjectTask(projectDescriptionURL, projectInstallationOptions);
             installProjectTask.run(progressMonitor);
-            return new Status(Status.OK, OmnetppMainPlugin.PLUGIN_ID, "Ok");
+            return Status.OK_STATUS;
         }
         catch (OperationCanceledException e) {
-            return new Status(Status.OK, OmnetppMainPlugin.PLUGIN_ID, "Ok");
+            return Status.CANCEL_STATUS;
         }
         catch (CoreException e) {
             return e.getStatus();
