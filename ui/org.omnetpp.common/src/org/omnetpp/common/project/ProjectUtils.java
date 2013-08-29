@@ -246,7 +246,8 @@ public class ProjectUtils {
         IWorkspace workspace = ResourcesPlugin.getWorkspace();
         final IProject project = workspace.getRoot().getProject(projectName);
         IProjectDescription description = workspace.newProjectDescription(projectName);
-        description.setLocation(new Path(directory.toString()));
+        if (!workspace.getRoot().getLocation().isPrefixOf(new Path(directory.getPath())))
+            description.setLocation(new Path(directory.toString()));
 
         try {
             monitor.beginTask("Importing project", 100);
