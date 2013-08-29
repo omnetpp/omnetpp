@@ -13,20 +13,17 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.omnetpp.common.project.ProjectUtils;
+import org.eclipse.ui.internal.ViewIntroAdapterPart;
 import org.omnetpp.common.util.CommandlineUtils;
 import org.omnetpp.ide.installer.FirstStepsDialog;
 import org.omnetpp.ide.installer.OnClosingWelcomeView;
@@ -46,18 +43,24 @@ public class OmnetppStartup implements IStartup {
     public void earlyStartup() {
         checkForNewVersion();
 
-        IWorkbench workbench = PlatformUI.getWorkbench();
+        final IWorkbench workbench = PlatformUI.getWorkbench();
         workbench.getDisplay().asyncExec(new Runnable() {
             public void run() {
                 CommandlineUtils.autoimportAndOpenFilesOnCommandLine();
-                if (true /*TODO: if workspace is empty; or isInitialDefaultStartup()*/) {
-                    new OnClosingWelcomeView(new Runnable() {
-                        @Override
-                        public void run() {
-                            openGlancePage();
-                            new FirstStepsDialog(null).open();
-                        }
-                    }).hook();
+                if (isWorkspaceEmpty()) {
+                    IWorkbenchWindow activeWorkbenchWindow = workbench.getActiveWorkbenchWindow();
+                    IWorkbenchPage workbenchPage = activeWorkbenchWindow == null ? null : activeWorkbenchWindow.getActivePage();
+                    if (workbenchPage != null && workbenchPage.getActivePart() instanceof ViewIntroAdapterPart) {
+                        new OnClosingWelcomeView(new Runnable() {
+                            @Override
+                            public void run() {
+                                openGlancePage();
+                                new FirstStepsDialog(null).open();
+                            }
+                        }).hook();
+                    }
+                    else
+                        new FirstStepsDialog(null).open();
                 }
             }
         });
@@ -87,14 +90,11 @@ public class OmnetppStartup implements IStartup {
     }
 
     /**
-     * Determines whether this is the first IDE startup after the installation, with the
-     * default workspace (the "samples" directory). We check two things:
-     * - the workspace location points to the OMNeT++ "samples" directory
-     * - there are no projects in the workspace yet (none have been created or imported)
+     * Determines if there are no projects in the workspace yet (none have been created or imported).
      */
-    protected boolean isInitialDefaultStartup() {
+    protected boolean isWorkspaceEmpty() {
         IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-        return root.getLocation().lastSegment().equals(SAMPLES_DIR) && root.getProjects().length == 0;
+        return root.getProjects().length == 0;
     }
 
     /**
