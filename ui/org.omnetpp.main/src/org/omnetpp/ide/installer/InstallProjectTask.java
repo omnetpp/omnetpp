@@ -48,7 +48,7 @@ public class InstallProjectTask {
         projectDescriptionFile.delete();
         IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectDescription.getName());
         if (project != null && project.exists())
-            throw new RuntimeException("Cannot install " + projectDescription.getName() + " because a project with that name already exists (rename or delete existing project to proceed)"); 
+            throw new RuntimeException("Cannot install " + projectDescription.getName() + " because a project with that name already exists (rename or delete existing project to proceed)");
         AbstractProjectInstaller projectInstaller = createProjectInstaller(projectDescription, projectInstallationOptions);
         projectInstaller.run(progressMonitor);
     }

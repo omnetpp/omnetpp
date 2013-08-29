@@ -21,6 +21,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -60,7 +61,7 @@ public abstract class AbstractProjectInstaller {
             copyURLToFile(progressMonitor, projectDistributionURL, projectDistributionFile);
             return projectDistributionFile;
         }
-        catch (RuntimeException e) {
+        catch (OperationCanceledException e) {
             throw e;
         }
         catch (Exception e) {
@@ -77,14 +78,20 @@ public abstract class AbstractProjectInstaller {
             FileOutputStream tarOutputStream = new FileOutputStream(tarFile);
             byte[] buffer = new byte[1024];
             int length;
-            while ((length = gzipInputStream.read(buffer)) > 0)
+            while ((length = gzipInputStream.read(buffer)) > 0) {
                 tarOutputStream.write(buffer, 0, length);
+                if (progressMonitor.isCanceled())
+                    throw new OperationCanceledException();
+            }
             gzipInputStream.close();
             tarOutputStream.close();
             TarArchiveInputStream countTarArchiveInputStream = new TarArchiveInputStream(new FileInputStream(tarFile));
             int count = 0;
-            while (countTarArchiveInputStream.getNextTarEntry() != null)
+            while (countTarArchiveInputStream.getNextTarEntry() != null) {
                 count++;
+                if (progressMonitor.isCanceled())
+                    throw new OperationCanceledException();
+            }
             countTarArchiveInputStream.close();
             SubProgressMonitor subProgressMonitor = new SubProgressMonitor(progressMonitor, 1);
             subProgressMonitor.beginTask("Extracting file", count);
@@ -112,6 +119,8 @@ public abstract class AbstractProjectInstaller {
                     File outputFile = new File(tarArchiveEntryFile.getPath());
                     FileUtils.writeByteArrayToFile(outputFile, content);
                 }
+                if (progressMonitor.isCanceled())
+                    throw new OperationCanceledException();
                 subProgressMonitor.worked(1);
             }
             tarArchiveInputStream.close();
@@ -119,11 +128,11 @@ public abstract class AbstractProjectInstaller {
             subProgressMonitor.done();
             return new File(outputDirectory);
         }
-        catch (RuntimeException e) {
+        catch (OperationCanceledException e) {
             throw e;
         }
         catch (Exception e) {
-            throw new RuntimeException("Cannot extract archive from " + distributionFile, e);
+            throw new RuntimeException("Cannot extract archive " + distributionFile, e);
         }
         finally {
             distributionFile.delete();
@@ -141,7 +150,7 @@ public abstract class AbstractProjectInstaller {
             project.create(projectDescription, subProgressMonitor);
             return project;
         }
-        catch (RuntimeException e) {
+        catch (OperationCanceledException e) {
             throw e;
         }
         catch (CoreException e) {
@@ -164,7 +173,7 @@ public abstract class AbstractProjectInstaller {
             while (i-- > 0 && (!project.isOpen() || project.getModificationStamp() == IResource.NULL_STAMP))
                 Thread.sleep(100);
         }
-        catch (RuntimeException e) {
+        catch (OperationCanceledException e) {
             throw e;
         }
         catch (CoreException e) {
@@ -181,7 +190,7 @@ public abstract class AbstractProjectInstaller {
             SubProgressMonitor subProgressMonitor = new SubProgressMonitor(progressMonitor, 1);
             project.build(IncrementalProjectBuilder.FULL_BUILD, subProgressMonitor);
         }
-        catch (RuntimeException e) {
+        catch (OperationCanceledException e) {
             throw e;
         }
         catch (CoreException e) {
@@ -271,7 +280,7 @@ public abstract class AbstractProjectInstaller {
                 output.write(buffer, 0, n);
                 subProgressMonitor.worked(n);
                 if (progressMonitor.isCanceled())
-                    return;
+                    throw new OperationCanceledException();
             }
             subProgressMonitor.done();
         }
