@@ -8,8 +8,10 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.browser.LocationEvent;
@@ -23,6 +25,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.part.FileEditorInput;
+import org.omnetpp.common.CommonPlugin;
 
 /**
  * This class extends the standard Eclipse HTML editor with various actions
@@ -78,7 +81,8 @@ public class WebBrowserEditor extends org.eclipse.ui.internal.browser.WebBrowser
             public void changing(LocationEvent event) {
                 String action = null;
                 try {
-                    URL url = new URL(event.location);
+                    String location = event.location.replaceFirst("^workspace:", "file:");
+                    URL url = new URL(location);
                     if (url.getQuery() != null) {
                         Map<String, String> parameters = getParameters(url);
                         action = parameters.get("action");
@@ -87,16 +91,18 @@ public class WebBrowserEditor extends org.eclipse.ui.internal.browser.WebBrowser
                             IActionHandler actionHandler = handlers.get(action);
                             if (actionHandler == null)
                                 throw new RuntimeException("Unknown action: " + action);
-                            for (IFile file : ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(url.toURI())) {
-                                if (!file.getProject().isOpen())
-                                    file.getProject().open(null);
-                                actionHandler.executeAction(file, parameters);
-                            }
+                            IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+                            if (event.location.startsWith("workspace:"))
+                                executeAction(parameters, actionHandler, root.getFile(new Path(url.getPath())));
+                            else
+                                for (IFile file : root.findFilesForLocationURI(url.toURI()))
+                                    executeAction(parameters, actionHandler, file);
                         }
                     }
                 }
                 catch (Exception e) {
-                    MessageDialog.openError(null, "Error", "Cannot execute " + action + " action on '" + event.location + "' : " + e.getMessage());
+                    CommonPlugin.logError("Error executing '" + action + "' action on '" + event.location, e);
+                    MessageDialog.openError(null, "Error", "Error executing '" + action + "' action on '" + event.location + "' : " + e.getMessage());
                 }
             }
 
@@ -104,6 +110,12 @@ public class WebBrowserEditor extends org.eclipse.ui.internal.browser.WebBrowser
             public void changed(LocationEvent event) {
             }
         });
+    }
+
+    protected void executeAction(Map<String, String> parameters, IActionHandler actionHandler, IFile file) throws CoreException {
+        if (!file.getProject().isOpen())
+            file.getProject().open(null);
+        actionHandler.executeAction(file, parameters);
     }
 
     protected Map<String, String> getParameters(URL url) throws UnsupportedEncodingException {
