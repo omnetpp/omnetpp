@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SegmentEvent;
@@ -295,11 +296,11 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
     protected void okPressed() {
         int index = projectsTable.getSelectionIndex();
         if (index != -1)
-            installProject(projectDescriptionURLs.get(index));
+            installProject(projectDescriptionURLs.get(index), projectDescriptions.get(index));
         super.okPressed();
     }
 
-    protected void installProject(URL projectDescriptionURL) {
+    protected void installProject(URL projectDescriptionURL, ProjectDescription projectDescription) {
         try {
             ProjectInstallationOptions projectInstallationOptions = new ProjectInstallationOptions(projectName.getText(), useDefaultLocation.getSelection(), location.getText());
             InstallProjectJob installProjectJob = new InstallProjectJob(projectDescriptionURL, projectInstallationOptions);
@@ -307,7 +308,8 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
             installProjectJob.schedule();
         }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            OmnetppMainPlugin.logError("Error installing " + projectName.getText(), e);
+            MessageDialog.openError(null, "Error", "Error installing " + projectDescription.getTitle() + "!");
         }
     }
 

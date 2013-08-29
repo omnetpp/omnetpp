@@ -39,7 +39,7 @@ public class InstallProjectJob extends Job {
             return e.getStatus();
         }
         catch (Exception e) {
-            return new Status(Status.ERROR, OmnetppMainPlugin.PLUGIN_ID, e.getMessage(), e.getCause());
+            return new Status(IStatus.ERROR, OmnetppMainPlugin.PLUGIN_ID, e.getMessage(), e.getCause());
         }
     }
 }

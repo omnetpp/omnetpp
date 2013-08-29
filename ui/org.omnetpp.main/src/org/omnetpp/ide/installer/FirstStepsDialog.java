@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
@@ -49,12 +50,16 @@ public class FirstStepsDialog extends TitleAreaDialog {
 
     @Override
     protected Control createDialogArea(Composite parent) {
-        setTitle("First Steps");
+        setTitle("Empty workspace");
         setMessage("Your workspace is empty. Would you like to install or import projects?");
+        setHelpAvailable(false);
 
         Composite composite = (Composite)super.createDialogArea(parent);
         Group group = new Group(composite, SWT.NONE);
-        group.setLayout(new GridLayout());
+        GridLayout gridLayout = new GridLayout();
+        gridLayout.marginWidth = gridLayout.marginHeight = 20;
+        gridLayout.verticalSpacing = gridLayout.horizontalSpacing = 10;
+        group.setLayout(gridLayout);
         group.setLayoutData(new GridData(GridData.FILL_BOTH));
 
         installInetButton = createCheckbox(group, "Install INET Framework", true);
@@ -99,7 +104,7 @@ public class FirstStepsDialog extends TitleAreaDialog {
     protected Label createWrappingLabel(Composite parent, String text, boolean indented) {
         Label label = new Label(parent, SWT.WRAP);
         GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-        gridData.widthHint = 400; // note: this affects requested height
+        gridData.widthHint = 800; // note: this affects requested height
         if (indented)
             gridData.horizontalIndent = 20;
         label.setLayoutData(gridData);
@@ -138,7 +143,8 @@ public class FirstStepsDialog extends TitleAreaDialog {
             installProjectJob.schedule();
         }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            OmnetppMainPlugin.logError("Error installing inet", e);
+            MessageDialog.openError(null, "Error", "Error installing INET Framework!");
         }
     }
 
