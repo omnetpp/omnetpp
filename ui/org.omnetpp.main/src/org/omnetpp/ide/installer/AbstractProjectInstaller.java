@@ -125,6 +125,9 @@ public abstract class AbstractProjectInstaller {
         catch (Exception e) {
             throw new RuntimeException("Cannot extract archive from " + distributionFile, e);
         }
+        finally {
+            distributionFile.delete();
+        }
     }
 
     protected IProject importProjectIntoWorkspace(IProgressMonitor progressMonitor, File projectDirectory) throws CoreException {
