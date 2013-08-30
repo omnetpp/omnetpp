@@ -26,19 +26,14 @@ public class DefaultProjectInstaller extends AbstractProjectInstaller {
     public void run(IProgressMonitor progressMonitor) throws CoreException {
         progressMonitor.beginTask("Installing " + projectDescription.getTitle() + " into the workspace", 5);
         File projectDistributionFile = downloadProjectDistribution(progressMonitor, projectDescription.getDistributionURL());
-        if (progressMonitor.isCanceled()) return;
         File projectDirectory = extractProjectDistribution(progressMonitor, projectDistributionFile);
-        if (progressMonitor.isCanceled()) return;
         IProject project = importProjectIntoWorkspace(progressMonitor, projectDirectory);
-        if (progressMonitor.isCanceled()) return;
         openProject(progressMonitor, project);
-        if (progressMonitor.isCanceled()) return;
-        buildProject(progressMonitor, project);
-        if (progressMonitor.isCanceled()) return;
         String welcomePage = projectDescription.getWelcomePage();
         if (welcomePage != null)
             openEditor(project.getFile(welcomePage));
         expandProject(project);
+        buildProject(progressMonitor, project);
         progressMonitor.done();
     }
 }
