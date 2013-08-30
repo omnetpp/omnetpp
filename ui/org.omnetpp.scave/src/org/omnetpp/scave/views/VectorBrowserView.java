@@ -89,7 +89,6 @@ public class VectorBrowserView extends ViewWithMessagePart {
         viewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         viewer.setContentProvider(contentProvider);
         viewer.setRowRenderer(new VectorResultRowRenderer());
-        viewer.setMaxRangeSelectionSize((long)1e6);
         viewer.setRunnableContextForLongRunningOperations(new IRunnableContext() {
             @Override
             public void run(boolean fork, boolean cancelable, IRunnableWithProgress runnable) throws InvocationTargetException, InterruptedException {

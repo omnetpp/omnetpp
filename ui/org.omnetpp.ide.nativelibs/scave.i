@@ -519,6 +519,8 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(VectorFileIndexer::generateIndex)
 %include "vectorfileindexer.h"
 
 /* ------------- indexedvectorfile.h  ----------------- */
+%typemap(javainterfaces) OutputVectorEntry "Comparable<OutputVectorEntry>"
+
 %typemap(javacode) OutputVectorEntry %{
    public boolean equals(Object obj) {
       return (obj instanceof OutputVectorEntry) && getSerial() == ((OutputVectorEntry)obj).getSerial();
@@ -526,6 +528,10 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(VectorFileIndexer::generateIndex)
 
    public int hashCode() {
       return getSerial();
+   }
+
+   public int compareTo(OutputVectorEntry o) {
+      return getSerial() - o.getSerial();
    }
 %}
 

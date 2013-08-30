@@ -9,6 +9,7 @@ package org.omnetpp.eventlogtable.widgets;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IResource;
@@ -27,6 +28,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.collections.IEnumerator;
+import org.omnetpp.common.collections.IRangeSet;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogFindTextDialog;
@@ -69,6 +72,11 @@ public class EventLogTable
 
     private EventLogTableContributor eventLogTableContributor;
 
+    /**
+     * Maximum number of event numbers copied into EventLogSelection, -1 = unlimited.
+     */
+    protected long maxEventNumbersInEventLogSelection = -1;
+
     public enum TypeMode {
         CPP,
         NED
@@ -103,6 +111,44 @@ public class EventLogTable
         setContentProvider(new EventLogTableContentProvider());
         setRowRenderer(new EventLogTableRowRenderer(this));
 
+        rowEnumerator = new IEnumerator<EventLogEntryReference>() {
+            @Override
+            public int compare(EventLogEntryReference element1, EventLogEntryReference element2) {
+                return contentProvider.compare(element1, element2);
+            }
+
+            @Override
+            public EventLogEntryReference getPrevious(EventLogEntryReference element) {
+                return contentProvider.getNeighbourElement(element, -1);
+            }
+
+            @Override
+            public EventLogEntryReference getNext(EventLogEntryReference element) {
+                return contentProvider.getNeighbourElement(element, 1);
+            }
+
+            @Override
+            public int getApproximateDelta(EventLogEntryReference element1, EventLogEntryReference element2) {
+                if (compare(element1, element2) <= 0) {
+                    long distance =  contentProvider.getDistanceToElement(element1, element2, 100);
+                    if (distance < 100)
+                        return (int)distance;
+                }
+                else {
+                    long distance =  contentProvider.getDistanceToElement(element1, element2, -100);
+                    if (distance > -100)
+                        return (int)distance;
+                }
+                long numOfElements = contentProvider.getApproximateNumberOfElements();
+                double percentage1 = contentProvider.getApproximatePercentageForElement(element1);
+                double percentage2 = contentProvider.getApproximatePercentageForElement(element2);
+                return (int)(numOfElements * (percentage2 - percentage1));
+            }
+
+            public boolean isExact() { return false; }
+        };
+
+
         TableColumn tableColumn = createColumn();
         tableColumn.setWidth(60);
         tableColumn.setText("Event #");
@@ -123,6 +169,15 @@ public class EventLogTable
                 }
             }
         });
+    }
+
+    /**
+     * Sets the maximum number of elements in a range selection.
+     * Attempts to select a bigger range will fail.
+     * To limit memory usage, set this to a reasonable value depending on the size of T.
+     */
+    public void setMaxEventNumbersInEventLogSelection(long value) {
+        maxEventNumbersInEventLogSelection = value;
     }
 
     public void setEventLogTableContributor(EventLogTableContributor eventLogTableContributor) {
@@ -216,11 +271,25 @@ public class EventLogTable
         if (eventLogInput == null)
             return null;
         else {
-            List<EventLogEntryReference> selectionElements = getSelectionElements();
+            IRangeSet<EventLogEntryReference> selectionElements = getSelectionElements();
             ArrayList<Long> selectionEvents = new ArrayList<Long>();
-            if (selectionElements != null)
-                for (EventLogEntryReference selectionElement : selectionElements)
-                    selectionEvents.add(selectionElement.getEventNumber());
+            if (selectionElements != null) {
+                // copy at most maxEventNumbersInEventLogSelection event numbers into the EventLogSelection
+                int count = 0;
+                for (EventLogEntryReference selectionElement : selectionElements) {
+                    if (count == 0 || selectionElement.getEventNumber() != selectionEvents.get(count-1)) {
+                        if (maxEventNumbersInEventLogSelection < 0 || count < maxEventNumbersInEventLogSelection) {
+                            selectionEvents.add(selectionElement.getEventNumber());
+                            count++;
+                        }
+                        else {
+                            Debug.format("Too many selected event numbers, workbench selection truncated to %d items.\n", maxEventNumbersInEventLogSelection);
+                            Display.getCurrent().beep();
+                            break;
+                        }
+                    }
+                }
+            }
             return new EventLogSelection(eventLogInput, selectionEvents, null);
         }
     }
@@ -236,7 +305,7 @@ public class EventLogTable
             IEventLog eventLog = eventLogSelection.getEventLogInput().getEventLog();
             for (Long eventNumber : eventLogSelection.getEventNumbers())
                 eventLogEntries.add(new EventLogEntryReference(eventLog.getEventForEventNumber(eventNumber).getEventEntry()));
-            super.setSelection(new VirtualTableSelection<EventLogEntryReference>(eventLogSelection.getEventLogInput(), eventLogEntries));
+            super.setSelection(new VirtualTableSelection<EventLogEntryReference>(eventLogSelection.getEventLogInput(), eventLogEntries, getRowEnumerator()));
         }
     }
 
@@ -438,9 +507,11 @@ public class EventLogTable
         else
             scrollToBegin();
 
-        for (EventLogEntryReference eventLogEntryReference : new ArrayList<EventLogEntryReference>(selectionElements))
-            if (eventLog.getEventForEventNumber(eventLogEntryReference.getEventNumber()) == null)
-                selectionElements.remove(eventLogEntryReference);
+        // XXX avoid iteration over the elements of the selection
+        Iterator<EventLogEntryReference> iterator = selectionElements.iterator();
+        while (iterator.hasNext())
+            if (eventLog.getEventForEventNumber(iterator.next().getEventNumber()) == null)
+                iterator.remove();
 
         eventLogTableContributor.update();
         redraw();

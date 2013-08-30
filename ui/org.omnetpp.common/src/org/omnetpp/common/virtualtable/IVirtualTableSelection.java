@@ -7,21 +7,20 @@
 
 package org.omnetpp.common.virtualtable;
 
-import java.util.List;
-
-import org.eclipse.jface.viewers.ISelection;
+import org.omnetpp.common.collections.IRangeSet;
 
 /**
  * Represents a selection in the virtual table.
  */
-public interface IVirtualTableSelection<T> extends ISelection {
+public interface IVirtualTableSelection<T> extends IRangeSelection<T> {
+
     /**
      * The input that should be displayed.
      */
     public Object getInput();
 
     /**
-     * The list of selected elements.
+     * The set of selected elements.
      */
-    public List<T> getElements();
+    public IRangeSet<T> getElements();
 }

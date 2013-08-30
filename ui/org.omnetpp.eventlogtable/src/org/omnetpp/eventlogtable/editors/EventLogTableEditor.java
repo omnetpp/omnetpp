@@ -105,7 +105,7 @@ public class EventLogTableEditor
         eventLogTable.setInput(eventLogInput);
         eventLogTable.setEventLogTableContributor(EventLogTableContributor.getDefault());
         eventLogTable.setWorkbenchPart(this);
-        eventLogTable.setMaxRangeSelectionSize((long)1e5);
+        eventLogTable.setMaxEventNumbersInEventLogSelection(10000);
         eventLogTable.setRunnableContextForLongRunningOperations(new IRunnableContext() {
             @Override
             public void run(boolean fork, boolean cancelable, IRunnableWithProgress runnable) throws InvocationTargetException, InterruptedException {

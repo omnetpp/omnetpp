@@ -8,9 +8,8 @@
 package org.omnetpp.common.virtualtable;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ListenerList;
@@ -53,9 +52,12 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.collections.IEnumerator;
+import org.omnetpp.common.collections.IRangeSet;
+import org.omnetpp.common.collections.RangeSet;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
 
 /**
@@ -101,22 +103,12 @@ public class VirtualTable<T>
     /**
      * A list of selected elements;
      */
-    protected List<T> selectionElements;
+    protected IRangeSet<T> selectionElements;
 
     /**
      * Starting point of a range selection.
      */
     protected T anchorElement;
-
-    /**
-     * Maximum number of elements in range selections, -1 = unlimited.
-     */
-    protected long maxRangeSelectionSize = -1;
-
-    /**
-     * Context for running long operations (e.g. range selection) with a progress monitor.
-     */
-    protected IRunnableContext runnableContext;
 
     /**
      * The input being show by this table.
@@ -127,6 +119,11 @@ public class VirtualTable<T>
      * The content provider which will be queried for subsequent elements in the virtual table.
      */
     protected IVirtualTableContentProvider<T> contentProvider;
+
+    /**
+     * The row enumerator which will be used for range selections.
+     */
+    protected IEnumerator<T> rowEnumerator;
 
     /**
      * Responsible for drawing individual table items.
@@ -168,6 +165,11 @@ public class VirtualTable<T>
      */
     protected HoverSupport hoverSupport;
 
+    /**
+     * Context for running long operations (e.g. iterating selection elements) with a progress monitor.
+     */
+    protected IRunnableContext runnableContext;
+
     public VirtualTable(Composite parent, int style) {
         super(parent, style | SWT.V_SCROLL);
 
@@ -180,6 +182,32 @@ public class VirtualTable<T>
         createTable(composite);
 
         scrolledComposite.setContent(composite);
+
+        rowEnumerator = new IEnumerator<T>() {
+            @Override
+            public int compare(T element1, T element2) {
+                return contentProvider.compare(element1, element2);
+            }
+
+            @Override
+            public T getPrevious(T element) {
+                return contentProvider.getNeighbourElement(element, -1);
+            }
+
+            @Override
+            public T getNext(T element) {
+                return contentProvider.getNeighbourElement(element, 1);
+            }
+
+            @Override
+            public int getApproximateDelta(T element1, T element2) {
+                return compare(element1, element2) <= 0 ?
+                          (int)contentProvider.getDistanceToElement(element1, element2, Long.MAX_VALUE) :
+                          (int)contentProvider.getDistanceToElement(element1, element2, Long.MIN_VALUE);
+            }
+
+            public boolean isExact() { return true; }
+        };
 
         getVerticalBar().addSelectionListener(new SelectionAdapter() {
             @Override
@@ -227,6 +255,13 @@ public class VirtualTable<T>
                 recomputeTableSize();
             }
         });
+    }
+
+    /**
+     * Sets the runnable context (e.g. progress dialog) for long running operations.
+     */
+    public void setRunnableContextForLongRunningOperations(IRunnableContext context) {
+        runnableContext = context;
     }
 
     private void createComposite(Composite parent) {
@@ -404,6 +439,14 @@ public class VirtualTable<T>
         }
     }
 
+    public IEnumerator<T> getRowEnumerator() {
+        return rowEnumerator;
+    }
+
+    public void setRowEnumerator(IEnumerator<T> rowEnumerator) {
+        this.rowEnumerator = rowEnumerator;
+    }
+
     public IVirtualTableContentProvider<T> getContentProvider() {
         return contentProvider ;
     }
@@ -477,7 +520,7 @@ public class VirtualTable<T>
             Object selectionInput = virtualTableSelection.getInput();
             if (input != selectionInput)
                 setInput(selectionInput);
-            boolean isSelectionReallyChanged = !elementListEquals(selectionElements, virtualTableSelection.getElements());
+            boolean isSelectionReallyChanged = !ObjectUtils.equals(selectionElements, virtualTableSelection.getElements());
             if (isSelectionReallyChanged && !isSelectionChangeInProgress) {
                 try {
                     isSelectionChangeInProgress = true;
@@ -496,7 +539,7 @@ public class VirtualTable<T>
      * Removes all selection elements.
      */
     public void clearSelection() {
-        if (selectionElements != null && selectionElements.size() != 0) {
+        if (selectionElements != null && !selectionElements.isEmpty()) {
             selectionElements.clear();
 
             fireSelectionChanged();
@@ -507,8 +550,8 @@ public class VirtualTable<T>
      * Returns the current selection.
      */
     public T getSelectionElement() {
-        if (selectionElements != null && selectionElements.size() != 0)
-            return selectionElements.get(0);
+        if (selectionElements != null && !selectionElements.isEmpty())
+            return selectionElements.iterator().next();
         else
             return null;
     }
@@ -516,28 +559,12 @@ public class VirtualTable<T>
     public void setSelectionElement(T element) {
         Assert.isTrue(element != null);
 
-        selectionElements = new ArrayList<T>();
+        selectionElements = new RangeSet<T>(rowEnumerator);
         selectionElements.add(element);
 
         anchorElement = element;
 
         fireSelectionChanged();
-    }
-
-    /**
-     * Sets the maximum number of elements in a range selection.
-     * Attempts to select a bigger range will fail.
-     * To limit memory usage, set this to a reasonable value depending on the size of T.
-     */
-    public void setMaxRangeSelectionSize(long value) {
-        maxRangeSelectionSize = value;
-    }
-
-    /**
-     * Sets the runnable context (e.g. progress dialog) for long running operations.
-     */
-    public void setRunnableContextForLongRunningOperations(IRunnableContext context) {
-        runnableContext = context;
     }
 
     /**
@@ -547,26 +574,11 @@ public class VirtualTable<T>
         Assert.isTrue(endElement != null);
 
         if (anchorElement != null) {
-            final List<T> elements = new ArrayList<T>();
-
-            try {
-                if (runnableContext != null) {
-                    runnableContext.run(true/*fork*/, true/*cancelable*/, new IRunnableWithProgress() {
-                        @Override public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                            collectElementsForRangeSelection(anchorElement, endElement, monitor, elements);
-                        }
-                    });
-                }
-                else {
-                    collectElementsForRangeSelection(anchorElement, endElement, null, elements);
-                }
-            }
-            catch (InterruptedException e) {
-                return;
-            }
-            catch (InvocationTargetException e) {
-                return;
-            }
+            final IRangeSet<T> elements = new RangeSet<T>(rowEnumerator);
+            if (rowEnumerator.compare(anchorElement, endElement) <= 0)
+                elements.addRange(anchorElement, endElement);
+            else
+                elements.addRange(endElement, anchorElement);
 
             selectionElements = elements;
 
@@ -576,54 +588,37 @@ public class VirtualTable<T>
             setSelectionElement(endElement);
     }
 
-    private void collectElementsForRangeSelection(T startElement, T endElement, IProgressMonitor monitor, List<T> selectedElements) throws InterruptedException {
-        if (monitor != null)
-            monitor.beginTask("A long running operation is in progress. Please wait or press Cancel to abort.", IProgressMonitor.UNKNOWN);
-
-        int delta = contentProvider.compare(startElement, endElement) <= 0 ? 1 : -1;
-        long count = 0;
-        T e = startElement;
-        while (true) {
-            selectedElements.add(e);
-            count++;
-
-            if (monitor != null)
-                monitor.worked(1);
-            if (maxRangeSelectionSize > 0 && count > maxRangeSelectionSize) {
-                Display.getCurrent().beep();
-                throw new InterruptedException();
-            }
-            else if (monitor != null && monitor.isCanceled())
-                throw new InterruptedException();
-
-            if (e.equals(endElement)) {
-                if (monitor != null)
-                    monitor.done();
-                break;
-            }
-
-            e = contentProvider.getNeighbourElement(e, delta);
-            if (e == null) {
-                Display.getCurrent().beep();
-                throw new InterruptedException(); // endElement not found: do not select anything
-            }
-        }
-    }
-
     /**
      * Returns the current selection.
      */
-    public List<T> getSelectionElements() {
+    public IRangeSet<T> getSelectionElements() {
         return selectionElements;
     }
 
     /**
      * Selects the given elements, and goes to the first one.
      */
-    public void setSelectionElements(List<T> elements) {
+    public void setSelectionElements(IRangeSet<T> elements) {
         selectionElements = elements;
 
         fireSelectionChanged();
+    }
+
+    protected boolean runLongOperation(IRunnableWithProgress runnable) {
+        try {
+            if (runnableContext != null)
+                runnableContext.run(true, true, runnable);
+            else
+                runnable.run(null);
+            return true;
+        }
+        catch (InterruptedException e) {
+            return false;
+        }
+        catch (InvocationTargetException e) {
+            Debug.println("VirtualTable.runLongOperation() failed: " + e.getMessage());
+            return false;
+        }
     }
 
     /**
@@ -875,7 +870,7 @@ public class VirtualTable<T>
                 int x = 0;
                 Transform rowTransform = new Transform(null);
                 T element = getElementAtDistanceFromFixPoint(i - fixPointDistance);
-                List<T> selectionElements = getSelectionElements();
+                IRangeSet<T> selectionElements = getSelectionElements();
                 int[] columnOrder = table.getColumnOrder();
 
                 if (element != null) {
@@ -1058,24 +1053,6 @@ public class VirtualTable<T>
      */
     public int getHeaderHeight() {
         return table.getHeaderHeight();
-    }
-
-    private boolean elementListEquals(List<T> a, List<T> b) {
-        if (a == b)
-            return true;
-
-        if (a == null || b == null || a.size() != b.size())
-            return false;
-
-        for (int i = 0; i < a.size(); i++) {
-            T ae = a.get(i);
-            T be = b.get(i);
-
-            if (!(ae == null ? be == null : ae.equals(be)))
-                return false;
-        }
-
-        return true;
     }
 }
 

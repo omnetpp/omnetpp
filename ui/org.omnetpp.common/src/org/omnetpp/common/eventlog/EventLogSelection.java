@@ -8,12 +8,9 @@
 package org.omnetpp.common.eventlog;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.engine.BigDecimal;
-import org.omnetpp.common.virtualtable.IVirtualTableSelection;
 import org.omnetpp.eventlog.engine.IEventLog;
 
 /**
@@ -37,7 +34,7 @@ import org.omnetpp.eventlog.engine.IEventLog;
  *
  * It should support multiple selected elements. For some of those it should support ranges where it is applicable.
  */
-public class EventLogSelection implements IEventLogSelection, IVirtualTableSelection<Long>, IStructuredSelection, Cloneable {
+public class EventLogSelection implements IEventLogSelection, Cloneable {
     /**
      * The input where this selection is.
      */
@@ -127,28 +124,5 @@ public class EventLogSelection implements IEventLogSelection, IVirtualTableSelec
             if (other.elements.get(i) != elements.get(i))
                 return false;
         return true;
-    }
-
-    public Object getFirstElement() {
-        if (elements.size() == 0)
-            return null;
-        else
-            return elements.get(0);
-    }
-
-    public Iterator<Object> iterator() {
-        return elements.iterator();
-    }
-
-    public int size() {
-        return elements.size();
-    }
-
-    public Object[] toArray() {
-        return elements.toArray();
-    }
-
-    public ArrayList<Object> toList() {
-        return elements;
     }
 }
