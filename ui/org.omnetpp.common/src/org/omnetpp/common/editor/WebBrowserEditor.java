@@ -1,11 +1,15 @@
 package org.omnetpp.common.editor;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -23,6 +27,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.common.CommonPlugin;
@@ -43,7 +48,7 @@ public class WebBrowserEditor extends org.eclipse.ui.internal.browser.WebBrowser
     protected static Map<String, IActionHandler> handlers = new LinkedHashMap<String, IActionHandler>();
 
     public interface IActionHandler {
-        public void executeAction(IResource resource, Map<String, String> parameters) throws CoreException;
+        public void executeAction(URL url, IResource resource, Map<String, String> parameters) throws Exception;
     }
 
     public static void registerActionHandler(String action, IActionHandler handler) {
@@ -53,17 +58,27 @@ public class WebBrowserEditor extends org.eclipse.ui.internal.browser.WebBrowser
     static {
         registerActionHandler("openEditor", new IActionHandler() {
             @Override
-            public void executeAction(IResource resource, Map<String, String> parameters) throws PartInitException {
-                IFile file = (IFile)resource;
+            public void executeAction(URL url, IResource resource, Map<String, String> parameters) throws CoreException, URISyntaxException {
                 IWorkbench workbench = PlatformUI.getWorkbench();
                 IWorkbenchPage workbenchPage = workbench.getActiveWorkbenchWindow().getActivePage();
-                IEditorDescriptor editorDescriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
-                workbenchPage.openEditor(new FileEditorInput(file), editorDescriptor.getId());
+                if (resource != null) {
+                    IFile file = (IFile)resource;
+                    IEditorDescriptor editorDescriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
+                    workbenchPage.openEditor(new FileEditorInput(file), editorDescriptor.getId());
+                }
+                else {
+                    URI uri = url.toURI();
+                    // NOTE: workaround the fact that the query part is not removed from the file name by getStore
+                    IFileStore fileStore = EFS.getStore(new URI(uri.getScheme(), uri.getHost(), uri.getPath(), uri.getFragment()));
+                    FileStoreEditorInput editorInput = new FileStoreEditorInput(fileStore);
+                    IEditorDescriptor editorDescriptor = workbench.getEditorRegistry().getDefaultEditor(url.getPath());
+                    workbenchPage.openEditor(editorInput, editorDescriptor.getId());
+                }
             }
         });
         registerActionHandler("openView", new IActionHandler() {
             @Override
-            public void executeAction(IResource resource, Map<String, String> parameters) throws PartInitException {
+            public void executeAction(URL url, IResource resource, Map<String, String> parameters) throws PartInitException {
                 IViewPart viewer = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(parameters.get("id"));
                 if (viewer instanceof CommonNavigator) {
                     CommonNavigator commonNavigator = (CommonNavigator)viewer;
@@ -93,10 +108,17 @@ public class WebBrowserEditor extends org.eclipse.ui.internal.browser.WebBrowser
                                 throw new RuntimeException("Unknown action: " + action);
                             IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
                             if (event.location.startsWith("workspace:"))
-                                executeAction(parameters, actionHandler, root.getFile(new Path(url.getPath())));
-                            else
-                                for (IFile file : root.findFilesForLocationURI(url.toURI()))
-                                    executeAction(parameters, actionHandler, file);
+                                executeAction(actionHandler, url, root.getFile(new Path(url.getPath())), parameters);
+                            else {
+                                URI uri = url.toURI();
+                                IFile[] files = root.findFilesForLocationURI(uri);
+                                if (files.length == 0)
+                                    executeAction(actionHandler, url, null, parameters);
+                                else if (files.length == 1)
+                                    executeAction(actionHandler, url, files[0], parameters);
+                                else
+                                    throw new RuntimeException("More than one matching resources found for: " + uri);
+                            }
                         }
                     }
                 }
@@ -112,10 +134,10 @@ public class WebBrowserEditor extends org.eclipse.ui.internal.browser.WebBrowser
         });
     }
 
-    protected void executeAction(Map<String, String> parameters, IActionHandler actionHandler, IFile file) throws CoreException {
-        if (!file.getProject().isOpen())
+    protected void executeAction(IActionHandler actionHandler, URL url, IFile file, Map<String, String> parameters) throws Exception {
+        if (file != null && !file.getProject().isOpen())
             file.getProject().open(null);
-        actionHandler.executeAction(file, parameters);
+        actionHandler.executeAction(url, file, parameters);
     }
 
     protected Map<String, String> getParameters(URL url) throws UnsupportedEncodingException {

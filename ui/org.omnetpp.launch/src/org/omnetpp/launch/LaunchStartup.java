@@ -1,5 +1,6 @@
 package org.omnetpp.launch;
 
+import java.net.URL;
 import java.util.Map;
 
 import org.eclipse.core.resources.IResource;
@@ -15,14 +16,14 @@ public class LaunchStartup implements IStartup {
     public void earlyStartup() {
         WebBrowserEditor.registerActionHandler("launchRun", new IActionHandler() {
             @Override
-            public void executeAction(IResource resource, Map<String, String> parameters) throws PartInitException {
+            public void executeAction(URL url, IResource resource, Map<String, String> parameters) throws PartInitException {
                 SimulationLaunchShortcut launchShortcut = new SimulationLaunchShortcut();
                 launchShortcut.launch(new StructuredSelection(resource), ILaunchManager.RUN_MODE);
             }
         });
         WebBrowserEditor.registerActionHandler("launchDebug", new IActionHandler() {
             @Override
-            public void executeAction(IResource resource, Map<String, String> parameters) throws PartInitException {
+            public void executeAction(URL url, IResource resource, Map<String, String> parameters) throws PartInitException {
                 SimulationLaunchShortcut launchShortcut = new SimulationLaunchShortcut();
                 launchShortcut.launch(new StructuredSelection(resource), ILaunchManager.DEBUG_MODE);
             }

@@ -5,6 +5,7 @@ Bundle-SymbolicName: org.omnetpp.common; singleton:=true
 Bundle-Version: 4.3.0.qualifier
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
+ org.eclipse.core.filesystem,
  org.eclipse.compare.core,
  org.eclipse.ui,
  org.eclipse.ui.ide,
