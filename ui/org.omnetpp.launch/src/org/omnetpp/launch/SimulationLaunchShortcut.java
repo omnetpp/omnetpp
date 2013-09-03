@@ -201,6 +201,13 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                 else {
                     IContainer folder = (resource instanceof IContainer) ? (IContainer)resource : resource.getParent();
 
+                    if (folder instanceof IProject && !((IProject)folder).isOpen()) {
+                        IProject project = (IProject)folder;
+                        if (!MessageDialog.openConfirm(Display.getCurrent().getActiveShell(), "Confirm", "Project '" + project.getName() + "' is closed. Open it?"))
+                            return;
+                        project.open(null);
+                    }
+
                     // collect all ini files in this folder
                     List<IniSection> candidates = collectInifileConfigsForFolder(folder);
                     if (candidates.isEmpty()) {
