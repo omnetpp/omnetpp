@@ -62,7 +62,6 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.inifile.editor.model.ParseException;
 import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
-import org.omnetpp.launch.tabs.OmnetppMainTab;
 import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.INedElement;
@@ -587,7 +586,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         String name = launchManager.generateUniqueLaunchConfigurationNameFrom(suggestedName);
         ILaunchConfigurationWorkingCopy wc = launchType.newInstance(null, name);
 
-        OmnetppMainTab.prepareLaunchConfig(wc);
+        OmnetppLaunchUtils.setLaunchConfigDefaults(wc, resourceToAssociateWith);
 
         wc.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, exeFile==null ? "" : exeFile.getFullPath().toString());
         wc.setAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, iniFile.getParent().getFullPath().toString());
