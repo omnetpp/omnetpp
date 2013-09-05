@@ -278,20 +278,6 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         OmnetppLaunchUtils.setLaunchConfigDefaults(configuration, selectedResource);
     }
 
-    protected static String getDefaultExeName(String defWorkDir) {
-        if (StringUtils.isEmpty(defWorkDir))
-            return "";
-
-        String progs = StringUtils.substituteVariables("${opp_simprogs:"+defWorkDir+"}", "");
-
-        // return the first program from the list
-        String [] splitProgs  = StringUtils.split(progs, ' ');
-        if (splitProgs.length > 0)
-            return splitProgs[0];
-
-        return "";
-    }
-
     /**
      * Fills the config combo with the config section values from the inifiles
      */

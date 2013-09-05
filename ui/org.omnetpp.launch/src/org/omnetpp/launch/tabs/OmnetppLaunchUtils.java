@@ -272,8 +272,8 @@ public class OmnetppLaunchUtils {
                 workingDir = selectedResource.getFullPath().toString();
         }
 
-        if (StringUtils.isEmpty(executable))
-            executable = OmnetppMainTab.getDefaultExeName(workingDir);
+        if (StringUtils.isEmpty(executable) && !StringUtils.isEmpty(workingDir))
+            executable = getDefaultExeName(workingDir);
 
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, workingDir);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, executable);
@@ -289,6 +289,15 @@ public class OmnetppLaunchUtils {
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_STOP_AT_MAIN_SYMBOL, "main");
         if (!Platform.getOS().equals(Platform.OS_MACOSX))
             configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_GDB_INIT, IOmnetppLaunchConstants.OPP_GDB_INIT_FILE);
+    }
+
+    protected static String getDefaultExeName(String workingDir) {
+        // expand "${opp_simprogs}", then return the first program from the list
+        String progs = StringUtils.substituteVariables("${opp_simprogs:"+workingDir+"}", "");
+        String [] splitProgs  = StringUtils.split(progs, ' ');
+        if (splitProgs.length > 0)
+            return splitProgs[0];
+        return "";
     }
 
     /**
