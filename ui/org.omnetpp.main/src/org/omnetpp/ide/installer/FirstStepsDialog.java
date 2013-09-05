@@ -34,12 +34,22 @@ import org.omnetpp.ide.OmnetppMainPlugin;
  * @author levy, andras
  */
 public class FirstStepsDialog extends TitleAreaDialog {
-    private Button installInetButton;
+    private Button installINETButton;
     private Button importSamplesButton;
+    private boolean isInstallINETRequested;
+    private boolean isImportSamplesRequested;
 
     public FirstStepsDialog(Shell shell) {
         super(shell);
         setShellStyle(getShellStyle() | SWT.RESIZE);
+    }
+
+    public boolean isInstallINETRequested() {
+        return isInstallINETRequested;
+    }
+
+    public boolean isImportSamplesRequested() {
+        return isImportSamplesRequested;
     }
 
     @Override
@@ -62,7 +72,7 @@ public class FirstStepsDialog extends TitleAreaDialog {
         group.setLayout(gridLayout);
         group.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-        installInetButton = createCheckbox(group, "Install INET Framework", true);
+        installINETButton = createCheckbox(group, "Install INET Framework", true);
         createWrappingLabel(group,
                 "The INET Framework is the primary model library for the simulation of communication networks. " +
                 "It contains models for several wired and wireless networking protocols, Internet protocols and " +
@@ -116,12 +126,13 @@ public class FirstStepsDialog extends TitleAreaDialog {
     protected void okPressed() {
         if (importSamplesButton.getSelection())
             importSampleProjects(false);
-        if (installInetButton.getSelection())
+        if (installINETButton.getSelection())
             installINET();
         super.okPressed();
     }
 
     protected void importSampleProjects(final boolean open) {
+        isImportSamplesRequested = importSamplesButton.getSelection();
         WorkspaceJob job = new WorkspaceJob("Importing sample projects") {
             @Override
             public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
@@ -136,6 +147,7 @@ public class FirstStepsDialog extends TitleAreaDialog {
 
     protected void installINET() {
         try {
+            isInstallINETRequested = installINETButton.getSelection();
             String omnetppVersion = "omnetpp-" + OmnetppMainPlugin.getMajorVersion() + "." + OmnetppMainPlugin.getMinorVersion();
             URL projectDescriptionURL = new URL(InstallSimulationModelsDialog.DESCRIPTORS_URL + "/" + omnetppVersion + "/inet.xml");
             InstallProjectJob installProjectJob = new InstallProjectJob(projectDescriptionURL, new ProjectInstallationOptions("inet"));
@@ -143,7 +155,7 @@ public class FirstStepsDialog extends TitleAreaDialog {
             installProjectJob.schedule();
         }
         catch (Exception e) {
-            OmnetppMainPlugin.logError("Error installing inet", e);
+            OmnetppMainPlugin.logError("Error installing INET", e);
             MessageDialog.openError(null, "Error", "Error installing INET Framework!");
         }
     }
