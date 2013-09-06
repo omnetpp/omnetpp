@@ -717,11 +717,10 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     }
 
     /**
-     * Performs variable substitution on the string.
-     * If any variable is un-resolvable, it will remain unresolved.
+     * Performs variable substitution on the string. Unresolved macros and other errors cause CoreException.
      */
     public static String substituteVariables(String string) throws CoreException {
-        return VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(string, false);
+        return VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(string, true);
     }
 
     /**
