@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.resources.IContainer;
@@ -450,7 +451,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
 
         IContainer workingDirectory = getWorkingDirectory();
         if (workingDirectory == null) {
-            setErrorMessage("Not a directory");
+            setErrorMessage("Invalid working directory");
             return false;
         }
 
@@ -649,11 +650,11 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
     protected void updateMacros() {
         String workingDir = getWorkingDirectoryText();
         String libText = fLibraryText.getText();
-        libText = libText.replaceAll("\\$\\{"+OmnetppLaunchUtils.VAR_SHARED_LIBS+":.*?\\}", "\\${"+OmnetppLaunchUtils.VAR_SHARED_LIBS+":"+workingDir+"}");
+        libText = libText.replaceAll("\\$\\{"+OmnetppLaunchUtils.VAR_SHARED_LIBS+":.*?\\}", Matcher.quoteReplacement("${"+OmnetppLaunchUtils.VAR_SHARED_LIBS+":"+workingDir+"}"));
         fLibraryText.setText(libText);
 
         String nedText = fNedPathText.getText();
-        nedText = nedText.replaceAll("\\$\\{"+OmnetppLaunchUtils.VAR_NED_PATH+":.*?\\}", "\\${"+OmnetppLaunchUtils.VAR_NED_PATH+":"+workingDir+"}");
+        nedText = nedText.replaceAll("\\$\\{"+OmnetppLaunchUtils.VAR_NED_PATH+":.*?\\}", Matcher.quoteReplacement("${"+OmnetppLaunchUtils.VAR_NED_PATH+":"+workingDir+"}"));
         fNedPathText.setText(nedText);
     }
 
