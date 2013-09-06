@@ -11,6 +11,7 @@ import java.util.Map;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -22,6 +23,7 @@ import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorDescriptor;
+import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -30,6 +32,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.part.ISetSelectionTarget;
 import org.omnetpp.common.CommonPlugin;
 
 /**
@@ -62,9 +65,11 @@ public class WebBrowserEditor extends org.eclipse.ui.internal.browser.WebBrowser
                 IWorkbench workbench = PlatformUI.getWorkbench();
                 IWorkbenchPage workbenchPage = workbench.getActiveWorkbenchWindow().getActivePage();
                 if (resource != null) {
-                    IFile file = (IFile)resource;
-                    IEditorDescriptor editorDescriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
-                    workbenchPage.openEditor(new FileEditorInput(file), editorDescriptor.getId());
+                    if (resource instanceof IFile) {
+                        IFile file = (IFile)resource;
+                        IEditorDescriptor editorDescriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
+                        workbenchPage.openEditor(new FileEditorInput(file), editorDescriptor.getId());
+                    }
                 }
                 else {
                     URI uri = url.toURI();
@@ -83,6 +88,34 @@ public class WebBrowserEditor extends org.eclipse.ui.internal.browser.WebBrowser
                 if (viewer instanceof CommonNavigator) {
                     CommonNavigator commonNavigator = (CommonNavigator)viewer;
                     commonNavigator.selectReveal(new StructuredSelection(resource));
+                }
+            }
+        });
+        registerActionHandler("reveal", new IActionHandler() {
+            @Override
+            public void executeAction(URL url, IResource resource, Map<String, String> parameters) throws CoreException {
+                if (resource != null) {
+                    if (resource != null && resource.getProject() != null && !resource.getProject().isOpen())
+                        resource.getProject().open(null);
+                    IWorkbench workbench = PlatformUI.getWorkbench();
+                    IWorkbenchPage workbenchPage = workbench.getActiveWorkbenchWindow().getActivePage();
+                    IViewPart projectExplorerPart = workbenchPage.showView(IPageLayout.ID_PROJECT_EXPLORER);
+                    ISetSelectionTarget projectExplorer = (ISetSelectionTarget)projectExplorerPart;
+
+                    if (!(resource instanceof IProject)) {
+                        // workaround: a freshly opened project often stays collapsed in Project Explorer
+                        // when we try to reveal a file/folder in it; we need to reveal one real file or folder first
+                        IProject project = resource.getProject();
+                        IResource[] members = project.members();
+                        for (int i = 0; i < members.length; i++) {
+                            if (!members[i].getName().startsWith(".") && !members[i].isVirtual() && !members[i].isHidden() && !members[i].isPhantom() && !members[i].isDerived()) {
+                                projectExplorer.selectReveal(new StructuredSelection(members[i]));
+                                break;
+                            }
+                        }
+                    }
+
+                    projectExplorer.selectReveal(new StructuredSelection(resource));
                 }
             }
         });
@@ -107,8 +140,13 @@ public class WebBrowserEditor extends org.eclipse.ui.internal.browser.WebBrowser
                             if (actionHandler == null)
                                 throw new RuntimeException("Unknown action: " + action);
                             IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-                            if (event.location.startsWith("workspace:"))
-                                executeAction(actionHandler, url, root.getFile(new Path(url.getPath())), parameters);
+                            if (event.location.startsWith("workspace:")) {
+                                IResource resource = findResource(root, new Path(url.getPath()));
+                                if (resource != null)
+                                    executeAction(actionHandler, url, resource, parameters);
+                                else
+                                    throw new RuntimeException("No such resource: " + url.getPath());
+                            }
                             else {
                                 URI uri = url.toURI();
                                 IFile[] files = root.findFilesForLocationURI(uri);
@@ -117,7 +155,7 @@ public class WebBrowserEditor extends org.eclipse.ui.internal.browser.WebBrowser
                                 else if (files.length == 1)
                                     executeAction(actionHandler, url, files[0], parameters);
                                 else
-                                    throw new RuntimeException("More than one matching resources found for: " + uri);
+                                    throw new RuntimeException("More than one matching resource found for: " + uri);
                             }
                         }
                     }
@@ -128,16 +166,28 @@ public class WebBrowserEditor extends org.eclipse.ui.internal.browser.WebBrowser
                 }
             }
 
+            protected IResource findResource(IWorkspaceRoot root, Path path) throws CoreException {
+                IResource resource = root.findMember(path);
+                if (resource == null) {
+                    // try harder: maybe it's inside a closed project
+                    IProject project = root.getProject(path.segment(0));
+                    if (project.exists() && !project.isOpen())
+                        project.open(null);
+                    resource = root.findMember(path);
+                }
+                return resource;
+            }
+
             @Override
             public void changed(LocationEvent event) {
             }
         });
     }
 
-    protected void executeAction(IActionHandler actionHandler, URL url, IFile file, Map<String, String> parameters) throws Exception {
-        if (file != null && !file.getProject().isOpen())
-            file.getProject().open(null);
-        actionHandler.executeAction(url, file, parameters);
+    protected void executeAction(IActionHandler actionHandler, URL url, IResource resource, Map<String, String> parameters) throws Exception {
+        if (resource != null && resource.getProject() != null && !resource.getProject().isOpen())
+            resource.getProject().open(null);
+        actionHandler.executeAction(url, resource, parameters);
     }
 
     protected Map<String, String> getParameters(URL url) throws UnsupportedEncodingException {
