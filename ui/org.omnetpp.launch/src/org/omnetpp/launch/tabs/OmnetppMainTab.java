@@ -649,6 +649,13 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
 
     protected void updateMacros() {
         String workingDir = getWorkingDirectoryText();
+        try {
+            workingDir = StringUtils.substituteVariables(workingDir);
+        } catch (CoreException e) {
+            // leave unresolved
+        }
+        workingDir = workingDir.replace("}", "?");  // close braces cause weird interference with the fields below (NED path, Shared libs)
+
         String libText = fLibraryText.getText();
         libText = libText.replaceAll("\\$\\{"+OmnetppLaunchUtils.VAR_SHARED_LIBS+":.*?\\}", Matcher.quoteReplacement("${"+OmnetppLaunchUtils.VAR_SHARED_LIBS+":"+workingDir+"}"));
         fLibraryText.setText(libText);
