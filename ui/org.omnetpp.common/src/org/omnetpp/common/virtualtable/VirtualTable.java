@@ -329,6 +329,8 @@ public class VirtualTable<T>
                     gotoBegin();
                 else if (e.keyCode == SWT.END)
                     gotoEnd();
+                else if (e.keyCode == 'a' && e.stateMask == SWT.CTRL)
+                    selectAll();
             }
 
             public void keyReleased(KeyEvent e) {
@@ -526,7 +528,6 @@ public class VirtualTable<T>
                     isSelectionChangeInProgress = true;
                     setSelectionElements(virtualTableSelection.getElements());
                     scrollToSelectionElement();
-                    fireSelectionChanged();
                 }
                 finally {
                     isSelectionChangeInProgress = false;
@@ -543,6 +544,7 @@ public class VirtualTable<T>
             selectionElements.clear();
 
             fireSelectionChanged();
+            redraw();
         }
     }
 
@@ -565,6 +567,7 @@ public class VirtualTable<T>
         anchorElement = element;
 
         fireSelectionChanged();
+        redraw();
     }
 
     /**
@@ -580,9 +583,7 @@ public class VirtualTable<T>
             else
                 elements.addRange(endElement, anchorElement);
 
-            selectionElements = elements;
-
-            fireSelectionChanged();
+            setSelectionElements(elements);
         }
         else
             setSelectionElement(endElement);
@@ -602,6 +603,22 @@ public class VirtualTable<T>
         selectionElements = elements;
 
         fireSelectionChanged();
+        redraw();
+    }
+
+    /**
+     * Selects all rows of the table.
+     */
+    public void selectAll() {
+        if (contentProvider != null) {
+            T first = contentProvider.getFirstElement();
+            T last = contentProvider.getLastElement();
+            if (first != null && last != null) {
+                IRangeSet<T> elements = new RangeSet<T>(rowEnumerator);
+                elements.addRange(first, last);
+                setSelectionElements(elements);
+            }
+        }
     }
 
     protected boolean runLongOperation(IRunnableWithProgress runnable) {
