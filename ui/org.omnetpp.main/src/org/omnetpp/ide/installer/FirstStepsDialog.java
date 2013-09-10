@@ -76,14 +76,13 @@ public class FirstStepsDialog extends TitleAreaDialog {
         createWrappingLabel(group,
                 "The INET Framework is the primary model library for the simulation of communication networks. " +
                 "It contains models for several wired and wireless networking protocols, Internet protocols and " +
-                "technologies, support for wireless ad-hoc mobile networks, and much more. INET also comes " +
-                "with several example simulations, Javadoc-style documentation and a manual. " +
+                "technologies, support for wireless ad-hoc mobile networks, and much more. " +
                 "This option will download the latest matching INET release from http://inet.omnetpp.org, " +
                 "and install it into your workspace. Select it if you want to simulate communication networks.",
                 true);
         importSamplesButton = createCheckbox(group, "Import OMNeT++ programming examples", true);
         createWrappingLabel(group,
-                "Import the examples bundled with OMNeT++ into the workspace. " +
+                "Import the examples provided with OMNeT++ into the workspace. " +
                 "The examples demonstrate how to use various features of the simulation framework via " +
                 "queueing, resource allocation, and simplified communication network models. " +
                 "It also contains a step-by-step tutorial called TicToc. Select this item if you " +
