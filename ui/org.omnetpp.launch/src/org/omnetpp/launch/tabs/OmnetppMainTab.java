@@ -335,8 +335,13 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
      * Expands and returns the working directory attribute of the given launch
      * configuration or NULL.
      */
-    private IContainer getWorkingDirectory(){
-        String expandedPath = StringUtils.substituteVariables(getWorkingDirectoryText());
+    private IContainer getWorkingDirectory() {
+        String expandedPath;
+        try {
+            expandedPath = StringUtils.substituteVariables(getWorkingDirectoryText());
+        } catch (CoreException e) {
+            return null;
+        }
         if (expandedPath.length() > 0) {
             IPath newPath = new Path(expandedPath);
             if (newPath.segmentCount() == 0)

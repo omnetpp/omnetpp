@@ -605,13 +605,13 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
      * List selection dialog to choose an executable from this project and all
      * referenced projects. Returns null if user cancelled.
      */
-    protected IFile chooseExecutable(IProject project) {
+    protected IFile chooseExecutable(IProject project) throws CoreException {
         // get executables and shared libs from the CDT settings
         // (we do it via macros, in order to avoid listing the CDT plugin as dependency in the manifest)
         String simProgs = null;
         String sharedLibs = null;
-        simProgs = StringUtils.substituteVariables("${opp_simprogs:"+project.getFullPath().toString()+"}", "");
-        sharedLibs = StringUtils.substituteVariables("${opp_shared_libs:"+project.getFullPath().toString()+"}", "");
+        simProgs = StringUtils.substituteVariables("${opp_simprogs:"+project.getFullPath().toString()+"}");
+        sharedLibs = StringUtils.substituteVariables("${opp_shared_libs:"+project.getFullPath().toString()+"}");
 
         int numSimProgs = StringUtils.split(simProgs).length;
         int numSharedLibs = StringUtils.split(sharedLibs).length;
@@ -635,26 +635,17 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             // offer all executables found in the projects
             // FIXME we should actually offer shared libs as well, and add selected ones to the launch config!
             final List<IFile> exeFiles = new ArrayList<IFile>();
-            try {
-                IProject[] projects = ProjectUtils.getAllReferencedProjects(project);
-                projects = (IProject[]) ArrayUtils.add(projects, project);
+            IProject[] projects = ProjectUtils.getAllReferencedProjects(project);
+            projects = (IProject[]) ArrayUtils.add(projects, project);
 
-                for (IProject pr : projects) {
-                    pr.accept(new IResourceVisitor() {
-                        public boolean visit(IResource resource) {
-                            if (OmnetppLaunchUtils.isExecutable(resource))
-                                exeFiles.add((IFile)resource);
-                            return true;
-                        }
-                    });
-                }
-            } catch (CoreException e) {
-                LaunchPlugin.logError(e);
-                ErrorDialog.openError(
-                        Display.getCurrent().getActiveShell(),
-                        "Error",
-                        "Could not collect list of executables from project " + project.getName() + " and its referenced projects.",
-                        e.getStatus());
+            for (IProject pr : projects) {
+                pr.accept(new IResourceVisitor() {
+                    public boolean visit(IResource resource) {
+                        if (OmnetppLaunchUtils.isExecutable(resource))
+                            exeFiles.add((IFile)resource);
+                        return true;
+                    }
+                });
             }
 
             if (exeFiles.size() == 1)

@@ -292,11 +292,16 @@ public class OmnetppLaunchUtils {
     }
 
     protected static String getDefaultExeName(String workingDir) {
-        // expand "${opp_simprogs}", then return the first program from the list
-        String progs = StringUtils.substituteVariables("${opp_simprogs:"+workingDir+"}", "");
-        String [] splitProgs  = StringUtils.split(progs, ' ');
-        if (splitProgs.length > 0)
-            return splitProgs[0];
+        try {
+            // expand "${opp_simprogs}", then return the first program from the list
+            String progs = StringUtils.substituteVariables("${opp_simprogs:"+workingDir+"}");
+            String [] splitProgs  = StringUtils.split(progs, ' ');
+            if (splitProgs.length > 0)
+                return splitProgs[0];
+        }
+        catch (CoreException e) {
+            LaunchPlugin.logError(e);
+        }
         return "";
     }
 
@@ -384,7 +389,7 @@ public class OmnetppLaunchUtils {
 
         // shared libraries
         String shLibStr = config.getAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "").trim();
-        shLibStr = StringUtils.substituteVariables(shLibStr, "");
+        shLibStr = StringUtils.substituteVariables(shLibStr);
         if (StringUtils.isNotBlank(shLibStr)) {
             String[] libs = StringUtils.split(shLibStr);
             // convert to file system location
