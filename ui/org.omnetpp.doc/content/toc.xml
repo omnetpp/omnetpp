@@ -11,8 +11,10 @@
       </topic>
       <topic href="content/tictoc-tutorial/index.html" label="Tic-Toc Tutorial">
       </topic>
+      <!-- samples.html removed because "workspace:" links don't work in it!
       <topic href="content/samples/samples.html" label="The OMNeT++ Programming Examples">
       </topic>
+      -->
       <anchor id="gettingstarted"/>
    </topic>
    <topic label="OMNeT++ Manual">

@@ -58,4 +58,25 @@
       </introProductBinding>
    </extension>
 
+   <extension
+         point="org.eclipse.ui.menus">
+     <menuContribution
+            locationURI="menu:help?after=additions">
+         <command
+               commandId="org.omnetpp.common.openWebBrowser"
+               id="openSamplesHtml"
+               label="Help on the OMNeT++ Sample Simulations..."
+               style="push">
+            <parameter
+                  name="path"
+                  value="/content/samples/samples.html">
+            </parameter>
+            <parameter
+                  name="pluginId"
+                  value="org.omnetpp.doc">
+            </parameter>
+         </command>
+      </menuContribution>
+   </extension>
+
 </plugin>

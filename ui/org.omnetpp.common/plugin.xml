@@ -112,4 +112,24 @@
             name="OMNeT++ Web Browser">
       </editor>
    </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="org.eclipse.ui.category.help"
+            defaultHandler="org.omnetpp.common.editor.OpenWebBrowserHandler"
+            description="Open Web Page From Plugin"
+            id="org.omnetpp.common.openWebBrowser"
+            name="Open Web Page From Plugin">
+         <commandParameter
+               id="pluginId"
+               name="pluginId"
+               optional="false">
+         </commandParameter>
+         <commandParameter
+               id="path"
+               name="path"
+               optional="false">
+         </commandParameter>
+      </command>
+   </extension>
 </plugin>

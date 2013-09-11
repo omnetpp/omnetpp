@@ -7,4 +7,5 @@ Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.intro,
  org.eclipse.ui.intro.universal,
- org.eclipse.help
+ org.eclipse.help,
+ org.omnetpp.common
