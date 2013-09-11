@@ -70,6 +70,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
     protected IWorkbenchPart activePart;
     protected VectorResultContentProvider contentProvider;
 
+    protected Action copyToClipboardAction;
     protected GotoAction gotoLineAction;
     protected GotoAction gotoEventAction;
     protected GotoAction gotoTimeAction;
@@ -111,11 +112,14 @@ public class VectorBrowserView extends ViewWithMessagePart {
     }
 
     private void createContextMenu() {
+        copyToClipboardAction = new CopyToClipboardAction(viewer);
         gotoLineAction = new GotoAction(this, GotoTarget.Line);
         gotoEventAction = new GotoAction(this, GotoTarget.Event);
         gotoTimeAction = new GotoAction(this, GotoTarget.Time);
 
         Menu menu = new Menu(viewer.getCanvas());
+        addMenuItem(menu, copyToClipboardAction);
+        new MenuItem(menu, SWT.SEPARATOR);
         addMenuItem(menu, gotoLineAction);
         addMenuItem(menu, gotoEventAction);
         addMenuItem(menu, gotoTimeAction);
@@ -396,6 +400,22 @@ public class VectorBrowserView extends ViewWithMessagePart {
         }
     }
 
+    static class CopyToClipboardAction extends Action {
+        VirtualTable<?> table;
+
+        public CopyToClipboardAction(VirtualTable<?> table) {
+            this.table = table;
+            setText("Copy to clipboard");
+        }
+
+        public boolean isEnabled() {
+            return !table.getSelection().isEmpty();
+        }
+
+        public void run() {
+            table.copySelectionToClipboard();
+        }
+    }
 
     enum GotoTarget {
         Line,
