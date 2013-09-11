@@ -12,12 +12,17 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.TextLayout;
+import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
@@ -73,27 +78,29 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 
     private static final Color BOOKMARK_COLOR = ColorFactory.LIGHT_CYAN;
 
-    private static final Color EVENT_ENTRY_EVENT_NUMBER_COLOR = BLACK;
+    private static final Styler EVENT_ENTRY_EVENT_NUMBER_STYLE = createStyle(BLACK);
 
-    private static final Color EVENT_LOG_ENTRY_EVENT_NUMBER_COLOR = LIGHTGREY;
+    private static final Styler EVENT_LOG_ENTRY_EVENT_NUMBER_STYLE = createStyle(LIGHTGREY);
 
-    private static final Color EVENT_ENTRY_SIMULATION_TIME_COLOR = BLACK;
+    private static final Styler EVENT_ENTRY_SIMULATION_TIME_STYLE = createStyle(BLACK);
 
-    private static final Color EVENT_LOG_ENTRY_SIMULATION_TIME_COLOR = LIGHTGREY;
+    private static final Styler EVENT_LOG_ENTRY_SIMULATION_TIME_STYLE = createStyle(LIGHTGREY);
 
-    private static final Color CONSTANT_TEXT_COLOR = BLACK;
+    private static final Styler CONSTANT_TEXT_STYLE = createStyle(BLACK);
 
-    private static final Color RAW_VALUE_COLOR = DARKBLUE;
+    private static final Styler BOLD_CONSTANT_TEXT_STYLE = createStyle(BLACK, true);
 
-    private static final Color TYPE_COLOR = DARKBLUE;
+    private static final Styler RAW_VALUE_STYLE = createStyle(DARKBLUE);
 
-    private static final Color NAME_COLOR = DARKBLUE;
+    private static final Styler TYPE_STYLE = createStyle(DARKBLUE);
 
-    private static final Color EVENT_LOG_MESSAGE_COLOR = DARKRED;
+    private static final Styler NAME_STYLE = createStyle(DARKBLUE, true);
 
-    private static final Color BUBBLE_ENTRY_COLOR = RED;
+    private static final Styler EVENT_LOG_MESSAGE_STYLE = createStyle(DARKRED);
 
-    private static final Color DATA_COLOR = DARKBLUE;
+    private static final Styler BUBBLE_ENTRY_STYLE = createStyle(RED, true);
+
+    private static final Styler DATA_STYLE = createStyle(DARKBLUE);
 
     private static final int HORIZONTAL_SPACING = 4;
 
@@ -109,22 +116,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 
     protected int fontHeight;
 
-    /**
-     * The current GC we are drawing to.
-     */
-    private GC gc;
-
-    /**
-     * The next x position where drawing continues.
-     */
-    private int x;
-
     private IEvent contextEvent;
-
-    /**
-     * Specifies if the current eventlog entry being rendered is selected or not.
-     */
-    private boolean contextEventLogEntrySelected;
 
     public EventLogTableRowRenderer(EventLogTable eventLogTable) {
         this.eventLogTable = eventLogTable;
@@ -149,16 +141,11 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
     public void drawCell(GC gc, EventLogEntryReference eventLogEntryReference, int index, boolean isSelected) {
         Assert.isTrue(eventLogEntryReference != null);
 
-        this.x = HORIZONTAL_SPACING;
-        this.gc = gc;
         gc.setAntialias(SWT.OFF);
 
         EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogInput);
         contextEvent = eventLogEntry.getEvent();
-        contextEventLogEntrySelected = isSelected;
         long eventNumber = contextEvent.getEventNumber();
-        BigDecimal simulationTime = contextEvent.getSimulationTime();
-        boolean isEventLogEntry = eventLogEntry instanceof EventEntry;
 
         try {
             if (eventLogInput.getFile() != null) {
@@ -171,8 +158,8 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
                     }
 
                 if (marked &&
-                    (gc.getBackground().equals(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND)) ||
-                     gc.getBackground().equals(BOOKMARK_COLOR))) {
+                        (gc.getBackground().equals(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND)) ||
+                                gc.getBackground().equals(BOOKMARK_COLOR))) {
                     gc.setBackground(BOOKMARK_COLOR);
                     gc.fillRectangle(gc.getClipping());
                 }
@@ -182,293 +169,28 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
             throw new RuntimeException(e);
         }
 
-        switch (index) {
-            case 0:
-                drawText("#" + eventNumber, isEventLogEntry ? EVENT_ENTRY_EVENT_NUMBER_COLOR : EVENT_LOG_ENTRY_EVENT_NUMBER_COLOR, false);
-                break;
-            case 1:
-                drawText(simulationTime + "s", isEventLogEntry ? EVENT_ENTRY_SIMULATION_TIME_COLOR : EVENT_LOG_ENTRY_SIMULATION_TIME_COLOR, false);
-                break;
-            case 2:
-                x += eventLogEntry.getLevel() * INDENT_SPACING;
+        StyledString styledString = getStyledText(eventLogEntryReference, index, isSelected);
+        int x = getIndentation(eventLogEntryReference, index);
 
-                if (!(eventLogEntry instanceof EventEntry))
-                    x += INDENT_SPACING;
-
-                if (eventLogEntry instanceof SendHopEntry || eventLogEntry instanceof SendDirectEntry)
-                    x += INDENT_SPACING;
-
-                Image image = getEventLogEntryImage(eventLogEntry);
-                gc.drawImage(image, x, 0);
-                x += image.getBounds().width + HORIZONTAL_SPACING;
-
-                switch (eventLogTable.getDisplayMode()) {
-                    case DESCRIPTIVE:
-                        if (eventLogEntry instanceof EventEntry) {
-                            if (eventNumber == 0) {
-                                drawText("Setting up ", CONSTANT_TEXT_COLOR);
-                                drawModuleDescription(1);
-                            }
-                            else {
-                                IMessageDependency cause = contextEvent.getCause();
-
-                                drawText("Event in ", CONSTANT_TEXT_COLOR);
-                                drawModuleDescription(contextEvent.getModuleId(), EventLogTable.NameMode.FULL_PATH);
-
-                                MessageEntry beginSendEntry = cause != null ? cause.getMessageEntry() : null;
-                                if (beginSendEntry != null) {
-                                    drawText(" on arrival of ", CONSTANT_TEXT_COLOR);
-
-                                    if (contextEvent.isSelfMessageProcessingEvent())
-                                        drawText("self ", CONSTANT_TEXT_COLOR);
-
-                                    drawMessageDescription(beginSendEntry);
-
-                                    if (!contextEvent.isSelfMessageProcessingEvent()) {
-                                        drawText(" from ", CONSTANT_TEXT_COLOR);
-                                        drawModuleDescription(beginSendEntry.getContextModuleId());
-                                    }
-
-                                    IEvent causeEvent = cause.getCauseEvent();
-                                    if (causeEvent != null && causeEvent.getModuleId() != beginSendEntry.getContextModuleId()) {
-                                        drawText(" called from ", CONSTANT_TEXT_COLOR);
-                                        drawModuleDescription(causeEvent.getModuleId());
-                                    }
-                                }
-                            }
-                        }
-                        else {
-                            if (eventLogEntry instanceof EventLogMessageEntry) {
-                                EventLogMessageEntry eventLogMessageEntry = (EventLogMessageEntry)eventLogEntry;
-                                drawText(eventLogMessageEntry.getText(), EVENT_LOG_MESSAGE_COLOR);
-                            }
-                            else if (eventLogEntry instanceof BubbleEntry) {
-                                BubbleEntry bubbleEntry = (BubbleEntry)eventLogEntry;
-                                drawText("Bubble", CONSTANT_TEXT_COLOR);
-
-                                if (contextEvent.getModuleId() != bubbleEntry.getContextModuleId()) {
-                                    drawText(" in ", CONSTANT_TEXT_COLOR);
-                                    drawModuleDescription(bubbleEntry.getContextModuleId());
-                                }
-
-                                drawText(": ", CONSTANT_TEXT_COLOR);
-                                drawText(bubbleEntry.getText(), BUBBLE_ENTRY_COLOR, true);
-                            }
-                            else if (eventLogEntry instanceof ModuleMethodBeginEntry) {
-                                ModuleMethodBeginEntry moduleMethodBeginEntry = (ModuleMethodBeginEntry)eventLogEntry;
-                                drawText("Begin calling ", CONSTANT_TEXT_COLOR);
-                                String method = moduleMethodBeginEntry.getMethod();
-
-                                if (StringUtils.isEmpty(method))
-                                    drawText("method", CONSTANT_TEXT_COLOR);
-                                else
-                                    drawText(method, DATA_COLOR);
-                                drawText(" in ", CONSTANT_TEXT_COLOR);
-                                drawModuleDescription(moduleMethodBeginEntry.getToModuleId());
-
-                                if (contextEvent.getModuleId() != moduleMethodBeginEntry.getContextModuleId()) {
-                                    drawText(" from ", CONSTANT_TEXT_COLOR);
-                                    drawModuleDescription(moduleMethodBeginEntry.getFromModuleId());
-                                }
-                            }
-                            else if (eventLogEntry instanceof ModuleMethodEndEntry) {
-                                drawText("End calling module", CONSTANT_TEXT_COLOR);
-                            }
-                            else if (eventLogEntry instanceof ModuleCreatedEntry) {
-                                ModuleCreatedEntry moduleCreatedEntry = (ModuleCreatedEntry)eventLogEntry;
-                                drawText("Creating ", CONSTANT_TEXT_COLOR);
-                                drawModuleDescription(moduleCreatedEntry);
-                                int parentModuleId = moduleCreatedEntry.getParentModuleId();
-                                if (parentModuleId != -1) {
-                                    drawText(" under ", CONSTANT_TEXT_COLOR);
-                                    drawModuleDescription(parentModuleId);
-                                }
-                            }
-                            else if (eventLogEntry instanceof ModuleDeletedEntry) {
-                                ModuleDeletedEntry moduleDeletedEntry = (ModuleDeletedEntry)eventLogEntry;
-                                drawText("Deleting ", CONSTANT_TEXT_COLOR);
-                                drawModuleDescription(moduleDeletedEntry.getModuleId());
-                            }
-                            else if (eventLogEntry instanceof ModuleReparentedEntry) {
-                                ModuleReparentedEntry moduleReparentedEntry = (ModuleReparentedEntry)eventLogEntry;
-                                drawText("Reparenting ", CONSTANT_TEXT_COLOR);
-                                drawModuleDescription(moduleReparentedEntry.getModuleId());
-                                drawText(" under ", CONSTANT_TEXT_COLOR);
-                                drawModuleDescription(moduleReparentedEntry.getNewParentModuleId());
-                            }
-                            else if (eventLogEntry instanceof GateCreatedEntry) {
-                                GateCreatedEntry gateCreatedEntry = (GateCreatedEntry)eventLogEntry;
-                                drawText("Creating ", CONSTANT_TEXT_COLOR);
-                                drawGateDescription(gateCreatedEntry);
-                                drawText(" in ", CONSTANT_TEXT_COLOR);
-                                drawModuleDescription(gateCreatedEntry.getModuleId());
-                            }
-                            else if (eventLogEntry instanceof GateDeletedEntry) {
-                                GateDeletedEntry gateDeletedEntry = (GateDeletedEntry)eventLogEntry;
-                                drawText("Deleting ", CONSTANT_TEXT_COLOR);
-                                drawGateDescription(gateDeletedEntry.getModuleId(), gateDeletedEntry.getGateId());
-                                drawText(" in ", CONSTANT_TEXT_COLOR);
-                                drawModuleDescription(gateDeletedEntry.getModuleId());
-                            }
-                            else if (eventLogEntry instanceof ConnectionCreatedEntry) {
-                                ConnectionCreatedEntry connectionCreatedEntry = (ConnectionCreatedEntry)eventLogEntry;
-                                drawText("Creating ", CONSTANT_TEXT_COLOR);
-                                drawConnectionDescription(connectionCreatedEntry.getSourceModuleId(), connectionCreatedEntry.getSourceGateId(),
-                                    connectionCreatedEntry.getDestModuleId(), connectionCreatedEntry.getDestGateId());
-                            }
-                            else if (eventLogEntry instanceof ConnectionDeletedEntry) {
-                                ConnectionDeletedEntry connectionDeletedEntry = (ConnectionDeletedEntry)eventLogEntry;
-                                drawText("Deleting ", CONSTANT_TEXT_COLOR);
-                                drawConnectionDescription(connectionDeletedEntry.getSourceModuleId(), connectionDeletedEntry.getSourceGateId());
-                            }
-                            else if (eventLogEntry instanceof ConnectionDisplayStringChangedEntry) {
-                                ConnectionDisplayStringChangedEntry connectionDisplayStringChangedEntry = (ConnectionDisplayStringChangedEntry)eventLogEntry;
-                                drawText("Display string changed for ", CONSTANT_TEXT_COLOR);
-                                drawConnectionDescription(connectionDisplayStringChangedEntry.getSourceModuleId(), connectionDisplayStringChangedEntry.getSourceGateId());
-                                drawText(" to ", CONSTANT_TEXT_COLOR);
-                                drawText(connectionDisplayStringChangedEntry.getDisplayString(), DATA_COLOR);
-                            }
-                            else if (eventLogEntry instanceof ModuleDisplayStringChangedEntry) {
-                                ModuleDisplayStringChangedEntry moduleDisplayStringChangedEntry = (ModuleDisplayStringChangedEntry)eventLogEntry;
-                                drawText("Display string changed", CONSTANT_TEXT_COLOR);
-
-                                if (contextEvent.getModuleId() != moduleDisplayStringChangedEntry.getModuleId())    {
-                                    drawText(" for ", CONSTANT_TEXT_COLOR);
-                                    drawModuleDescription(moduleDisplayStringChangedEntry.getModuleId());
-                                }
-
-                                drawText(" to ", CONSTANT_TEXT_COLOR);
-                                drawText(moduleDisplayStringChangedEntry.getDisplayString(), DATA_COLOR);
-                            }
-                            else if (eventLogEntry instanceof CancelEventEntry) {
-                                CancelEventEntry cancelEventEntry = (CancelEventEntry)eventLogEntry;
-                                drawText("Cancelling self ", CONSTANT_TEXT_COLOR);
-                                BeginSendEntry beginSendEntry = findBeginSendEntry(cancelEventEntry.getPreviousEventNumber(), cancelEventEntry.getMessageId());
-
-                                if (beginSendEntry == null)
-                                    beginSendEntry = findBeginSendEntry(contextEvent.getEventEntry().getCauseEventNumber(), cancelEventEntry.getMessageId());
-
-                                drawMessageDescription(beginSendEntry);
-                            }
-                            else if (eventLogEntry instanceof BeginSendEntry) {
-                                BeginSendEntry beginSendEntry = (BeginSendEntry)eventLogEntry;
-                                boolean isSelfMessage = contextEvent.isSelfMessage(beginSendEntry);
-
-                                if (isSelfMessage)
-                                    drawText("Scheduling self ", CONSTANT_TEXT_COLOR);
-                                else
-                                    drawText("Sending ", CONSTANT_TEXT_COLOR);
-
-                                drawMessageDescription(beginSendEntry);
-
-                                if (isSelfMessage)
-                                    drawText(" for ", CONSTANT_TEXT_COLOR);
-                                else
-                                    drawText(" arriving at ", CONSTANT_TEXT_COLOR);
-
-                                EndSendEntry endSendEntry = contextEvent.getEndSendEntry(beginSendEntry);
-
-                                if (endSendEntry == null)
-                                    drawText("<unknown>", DATA_COLOR);
-                                else
-                                    drawMessageArrivalTime(endSendEntry);
-
-                                drawText(" kind = ", CONSTANT_TEXT_COLOR);
-                                drawText(String.valueOf(beginSendEntry.getMessageKind()), DATA_COLOR);
-                                if (!beginSendEntry.getMessageClassName().equals("cMessage")) {
-                                    drawText(" length = ", CONSTANT_TEXT_COLOR);
-                                    drawText(String.valueOf(beginSendEntry.getMessageLength()), DATA_COLOR);
-                                }
-                            }
-                            else if (eventLogEntry instanceof EndSendEntry) {
-                                EndSendEntry endSendEntry = (EndSendEntry)eventLogEntry;
-                                drawText("Arrival at ", CONSTANT_TEXT_COLOR);
-                                drawMessageArrivalTime(endSendEntry);
-                            }
-                            else if (eventLogEntry instanceof SendHopEntry) {
-                                SendHopEntry sendHopEntry = (SendHopEntry)eventLogEntry;
-                                drawText("Sending through ", CONSTANT_TEXT_COLOR);
-                                drawModuleDescription(sendHopEntry.getSenderModuleId());
-                                drawText(" ", CONSTANT_TEXT_COLOR);
-                                drawGateDescription(sendHopEntry.getSenderModuleId(), sendHopEntry.getSenderGateId());
-
-                                if (sendHopEntry.getTransmissionDelay().doubleValue() != 0) {
-                                    drawText(" transmission delay = ", CONSTANT_TEXT_COLOR);
-                                    drawText(sendHopEntry.getTransmissionDelay() + "s", DATA_COLOR);
-                                }
-
-                                if (sendHopEntry.getPropagationDelay().doubleValue() != 0) {
-                                    drawText(" propagation delay = ", CONSTANT_TEXT_COLOR);
-                                    drawText(sendHopEntry.getPropagationDelay() + "s", DATA_COLOR);
-                                }
-                            }
-                            else if (eventLogEntry instanceof SendDirectEntry) {
-                                SendDirectEntry sendDirectEntry = (SendDirectEntry)eventLogEntry;
-                                drawText("Sending direct message ", CONSTANT_TEXT_COLOR);
-
-                                if (contextEvent.getModuleId() != sendDirectEntry.getContextModuleId()) {
-                                    drawText("from ", CONSTANT_TEXT_COLOR);
-                                    drawModuleDescription(sendDirectEntry.getSenderModuleId());
-                                }
-
-                                drawText(" to ", CONSTANT_TEXT_COLOR);
-                                drawModuleDescription(sendDirectEntry.getDestModuleId());
-                                drawText(" ", CONSTANT_TEXT_COLOR);
-                                drawGateDescription(sendDirectEntry.getDestModuleId(), sendDirectEntry.getDestGateId());
-                                drawText(" with transmission delay ", CONSTANT_TEXT_COLOR);
-                                drawText(sendDirectEntry.getTransmissionDelay() + "s", DATA_COLOR);
-                                drawText(" and propagation delay ", CONSTANT_TEXT_COLOR);
-                                drawText(sendDirectEntry.getPropagationDelay() + "s", DATA_COLOR);
-                            }
-                            else if (eventLogEntry instanceof CreateMessageEntry) {
-                                CreateMessageEntry createMessageEntry = (CreateMessageEntry)eventLogEntry;
-                                drawText("Creating ", CONSTANT_TEXT_COLOR);
-                                drawMessageDescription(createMessageEntry);
-                            }
-                            else if (eventLogEntry instanceof CloneMessageEntry) {
-                                CloneMessageEntry cloneMessageEntry = (CloneMessageEntry)eventLogEntry;
-                                drawText("Cloning ", CONSTANT_TEXT_COLOR);
-                                drawMessageDescription(cloneMessageEntry);
-                            }
-                            else if (eventLogEntry instanceof DeleteMessageEntry) {
-                                DeleteMessageEntry deleteMessageEntry = (DeleteMessageEntry)eventLogEntry;
-                                drawText("Deleting ", CONSTANT_TEXT_COLOR);
-                                drawMessageDescription(deleteMessageEntry);
-                            }
-                            else if (eventLogEntry instanceof SimulationBeginEntry) {
-                                SimulationBeginEntry simulationBeginEntry = (SimulationBeginEntry)eventLogEntry;
-                                drawText("Simulation started with runId ", CONSTANT_TEXT_COLOR);
-                                drawText(simulationBeginEntry.getRunId(), DATA_COLOR);
-                            }
-                            else if (eventLogEntry instanceof SimulationEndEntry) {
-                                SimulationEndEntry simulationEndEntry = (SimulationEndEntry)eventLogEntry;
-                                drawText(simulationEndEntry.getIsError() ? "Simulation aborted with error code " : "Simulation finished with result code ", CONSTANT_TEXT_COLOR);
-                                drawText(String.valueOf(simulationEndEntry.getResultCode()), DATA_COLOR);
-                                drawText(" : ", CONSTANT_TEXT_COLOR);
-                                drawText(simulationEndEntry.getMessage(), DATA_COLOR);
-                            }
-                            else if (eventLogEntry instanceof KeyframeEntry) {
-                                KeyframeEntry keyframeEntry = (KeyframeEntry)eventLogEntry;
-                                drawText("Keyframe with ", CONSTANT_TEXT_COLOR);
-                                String simulationStateEntries = keyframeEntry.getSimulationStateEntries();
-                                if (!StringUtils.isEmpty(simulationStateEntries))
-                                    drawText(String.valueOf(simulationStateEntries.split(",").length), DATA_COLOR);
-                                else
-                                    drawText("0", DATA_COLOR);
-                                drawText("simulation state events", CONSTANT_TEXT_COLOR);
-                            }
-                            else
-                                throw new RuntimeException("Unknown eventlog entry: " + eventLogEntry.getClassName());
-                        }
-                        break;
-                    case RAW:
-                        drawRawEntry(eventLogEntry);
-                        break;
-                    default:
-                        throw new RuntimeException("Unknown display mode");
-                }
+        Image image = getImage(eventLogEntryReference, index);
+        if (image != null) {
+            gc.drawImage(image, x, 0);
+            x += image.getBounds().width + HORIZONTAL_SPACING;
         }
+
+        drawStyledString(gc, styledString, x, VERTICAL_SPACING / 2);
     }
+
+    protected void drawStyledString(GC gc, StyledString styledString, int x, int y) {
+        TextLayout textLayout = new TextLayout(gc.getDevice());
+        textLayout.setText(styledString.getString());
+        for (StyleRange styleRange : styledString.getStyleRanges()) {
+            textLayout.setStyle(styleRange, styleRange.start, styleRange.start + styleRange.length);
+        }
+        textLayout.draw(gc, x, y);
+        textLayout.dispose();
+    }
+
 
     @Override
     public String getTooltipText(EventLogEntryReference eventLogEntryReference) {
@@ -504,180 +226,514 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
         return null;
     }
 
-    private void drawModuleDescription(int moduleId) {
-        drawModuleDescription(eventLogInput.getEventLog().getModuleCreatedEntry(moduleId));
+    @Override
+    public int getIndentation(EventLogEntryReference eventLogEntryReference, int index) {
+        int indent = HORIZONTAL_SPACING;
+        if (index == 2) {
+            EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogInput);
+
+            indent += eventLogEntry.getLevel() * INDENT_SPACING;
+
+            if (!(eventLogEntry instanceof EventEntry))
+                indent += INDENT_SPACING;
+
+            if (eventLogEntry instanceof SendHopEntry || eventLogEntry instanceof SendDirectEntry)
+                indent += INDENT_SPACING;
+        }
+        return indent;
     }
 
-    private void drawModuleDescription(int moduleId, NameMode nameMode) {
-        drawModuleDescription(eventLogInput.getEventLog().getModuleCreatedEntry(moduleId), nameMode);
-    }
+    @Override
+    public Image getImage(EventLogEntryReference eventLogEntryReference, int columnIndex) {
+        if (columnIndex == 2) {
+            EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogInput);
 
-    private void drawModuleDescription(ModuleCreatedEntry moduleCreatedEntry) {
-        drawModuleDescription(moduleCreatedEntry, eventLogTable.getNameMode());
-    }
+            String className = eventLogEntry.getClassName();
+            Event event = eventLogEntry.getEvent();
 
-    private void drawModuleDescription(ModuleCreatedEntry moduleCreatedEntry, NameMode nameMode) {
-        drawText("module ", CONSTANT_TEXT_COLOR);
+            if (eventLogEntry instanceof EventEntry && event.isSelfMessageProcessingEvent())
+                return ImageFactory.global().getImage(ImageFactory.EVENLOG_IMAGE_SELF_EVENT);
+            else if (eventLogEntry instanceof BeginSendEntry) {
+                int index = eventLogEntry.getEntryIndex();
+                int count = event.getNumEventLogEntries();
 
-        if (moduleCreatedEntry != null) {
-            String typeName = null;
+                if (count > index + 1) {
+                    EventLogEntry nextEventLogEntry = event.getEventLogEntry(index + 1);
 
-            switch (eventLogTable.getTypeMode()) {
-                case NED:
-                    typeName = moduleCreatedEntry.getNedTypeName();
-                    break;
-                case CPP:
-                    typeName = moduleCreatedEntry.getModuleClassName();
-                    break;
+                    if (nextEventLogEntry instanceof EndSendEntry)
+                        return ImageFactory.global().getImage(ImageFactory.EVENLOG_IMAGE_SCHEDULE_AT);
+                }
             }
 
-            drawText("(" + typeName + ") ", TYPE_COLOR);
+            return ImageFactory.global().getImage(ImageFactory.EVENTLOG_IMAGE_DIR + className.substring(0, className.length() - 5));
 
-            switch (nameMode) {
-                case SMART_NAME:
-                    if (contextEvent.getModuleId() == moduleCreatedEntry.getModuleId())
-                        drawModuleFullName(moduleCreatedEntry);
-                    else
-                        drawModuleFullPath(moduleCreatedEntry);
-                    break;
-                case FULL_NAME:
-                    drawModuleFullName(moduleCreatedEntry);
-                    break;
-                case FULL_PATH:
-                    drawModuleFullPath(moduleCreatedEntry);
-                    break;
+        }
+        return null;
+    }
+
+    @Override
+    public StyledString getStyledText(EventLogEntryReference eventLogEntryReference, int index, boolean isSelected) {
+        EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogInput);
+        contextEvent = eventLogEntry.getEvent();
+        long eventNumber = contextEvent.getEventNumber();
+        BigDecimal simulationTime = contextEvent.getSimulationTime();
+        boolean isEventLogEntry = eventLogEntry instanceof EventEntry;
+
+        switch (index) {
+        case 0:
+            return new Builder(isSelected)
+                     .append("#" + eventNumber, isEventLogEntry ? EVENT_ENTRY_EVENT_NUMBER_STYLE : EVENT_LOG_ENTRY_EVENT_NUMBER_STYLE)
+                     .getStyledString();
+        case 1:
+            return new Builder(isSelected)
+                     .append(simulationTime + "s", isEventLogEntry ? EVENT_ENTRY_SIMULATION_TIME_STYLE : EVENT_LOG_ENTRY_SIMULATION_TIME_STYLE)
+                     .getStyledString();
+        case 2:
+            switch (eventLogTable.getDisplayMode()) {
+                case DESCRIPTIVE:
+                    return getDescriptiveStyledText(eventLogEntry, isSelected);
+                case RAW:
+                    return getRawStyledText(eventLogEntry, isSelected);
+                default:
+                    throw new RuntimeException("Unknown display mode");
             }
-        }
-        else
-            drawText("<unknown>", NAME_COLOR, true);
-    }
-
-    private void drawModuleFullPath(ModuleCreatedEntry moduleCreatedEntry) {
-        drawText(eventLogInput.getEventLogTableFacade().ModuleCreatedEntry_getModuleFullPath(moduleCreatedEntry.getCPtr()), NAME_COLOR, true);
-    }
-
-    private void drawModuleFullName(ModuleCreatedEntry moduleCreatedEntry) {
-        drawText(moduleCreatedEntry.getFullName(), NAME_COLOR, true);
-    }
-
-    private void drawGateDescription(int moduleId, int gateId) {
-        drawGateDescription(eventLogInput.getEventLog().getGateCreatedEntry(moduleId, gateId));
-    }
-
-    private void drawGateDescription(GateCreatedEntry gateCreatedEntry) {
-        drawText("gate ", CONSTANT_TEXT_COLOR);
-
-        if (gateCreatedEntry != null) {
-            int index = gateCreatedEntry.getIndex();
-            drawText(gateCreatedEntry.getName() + (index != -1 ? "[" + index + "]" : ""), NAME_COLOR, true);
-        }
-        else
-            drawText("<unknown>", NAME_COLOR, true);
-    }
-
-    private void drawConnectionDescription(int sourceModuleId, int sourceGateId) {
-        drawConnectionDescription(sourceModuleId, sourceGateId, -1, -1);
-    }
-
-    private void drawConnectionDescription(int sourceModuleId, int sourceGateId, int destModuleId, int destGateId) {
-        drawText("connection from ", CONSTANT_TEXT_COLOR);
-
-        ModuleCreatedEntry sourceModuleCreatedEntry = eventLogInput.getEventLog().getModuleCreatedEntry(sourceModuleId);
-
-        if (sourceModuleCreatedEntry != null) {
-            drawModuleDescription(sourceModuleCreatedEntry);
-            drawText(" ", CONSTANT_TEXT_COLOR);
-            drawGateDescription(sourceModuleId, sourceGateId);
-        }
-
-        ModuleCreatedEntry destModuleCreatedEntry = eventLogInput.getEventLog().getModuleCreatedEntry(destModuleId);
-
-        if (destModuleCreatedEntry != null) {
-            drawText(" to ", CONSTANT_TEXT_COLOR);
-            drawModuleDescription(destModuleCreatedEntry);
-            drawText(" ", CONSTANT_TEXT_COLOR);
-            drawGateDescription(destModuleId, destGateId);
+        default:
+            Assert.isTrue(false);
+            return null;
         }
     }
 
-    private void drawMessageDescription(MessageEntry messageEntry) {
-        drawText("message ", CONSTANT_TEXT_COLOR);
-
-        if (messageEntry != null) {
-            drawText("(" + messageEntry.getMessageClassName() + ") ", TYPE_COLOR);
-            drawText(messageEntry.getMessageName(), NAME_COLOR, true);
-        }
-        else
-            drawText("<unknown>", NAME_COLOR, true);
-    }
-
-    private void drawMessageArrivalTime(EndSendEntry endSendEntry) {
-        BigDecimal arrivalTime = endSendEntry.getArrivalTime();
-        BigDecimal simulationTime = endSendEntry.getEvent().getSimulationTime();
-        drawText(arrivalTime + "s", DATA_COLOR);
-        drawText(", now + ", CONSTANT_TEXT_COLOR);
-        drawText(TimeUtils.secondsToTimeString(arrivalTime.toBigDecimal().subtract(simulationTime.toBigDecimal())), DATA_COLOR);
-    }
-
-    private void drawRawEntry(EventLogEntry eventLogEntry) {
-
+    private StyledString getRawStyledText(EventLogEntry eventLogEntry, boolean isSelected) {
+        Builder builder = new Builder(isSelected);
         if (!(eventLogEntry instanceof EventLogMessageEntry)) {
-            drawText(eventLogEntry.getAsString() + " ", CONSTANT_TEXT_COLOR, true);
+            builder.append(eventLogEntry.getAsString() + " ", BOLD_CONSTANT_TEXT_STYLE);
         }
 
         PStringVector stringVector = eventLogEntry.getAttributeNames();
         for (int i = 0; i < stringVector.size(); i++)
         {
             String name = stringVector.get(i);
-            drawText(name + " ", CONSTANT_TEXT_COLOR);
+            builder.constant(name + " ");
             String value = eventLogEntry.getAsString(name);
             if (StringUtils.isEmpty(value))
-                drawText("\"\" ", RAW_VALUE_COLOR);
+                builder.raw("\"\" ");
             else
-                drawText(value + " ", RAW_VALUE_COLOR);
+                builder.raw(value + " ");
         }
+        return builder.getStyledString();
     }
 
-    private void drawText(String text, Color color) {
-        drawText(text, color, false);
-    }
+    private StyledString getDescriptiveStyledText(EventLogEntry eventLogEntry, boolean isSelected) {
+        Builder builder = new Builder(isSelected);
 
-    private void drawText(String text, Color color, boolean bold) {
-        text = text.replaceAll("\n", "\\\\n");
-        Font oldFont = gc.getFont();
-        FontData fontData = font.getFontData()[0];
-        Font newFont = new Font(oldFont.getDevice(), fontData.getName(), fontData.getHeight(), bold ? SWT.BOLD : SWT.NORMAL);
-        gc.setFont(newFont);
+        long eventNumber = contextEvent.getEventNumber();
 
-        if (contextEventLogEntrySelected)
-            gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
-        else if (color != null)
-            gc.setForeground(color);
+        if (eventLogEntry instanceof EventEntry) {
+            if (eventNumber == 0) {
+                builder.constant("Setting up ").module(1);
+            }
+            else {
+                IMessageDependency cause = contextEvent.getCause();
 
-        gc.drawText(text, x, VERTICAL_SPACING/2);
-        x += gc.textExtent(text).x + 1; // +1 due to avoid cropping antialias
-        newFont.dispose();
-        gc.setFont(oldFont);
-    }
+                builder.constant("Event in ")
+                       .module(contextEvent.getModuleId(), EventLogTable.NameMode.FULL_PATH);
 
-    private Image getEventLogEntryImage(EventLogEntry eventLogEntry) {
-        String className = eventLogEntry.getClassName();
-        Event event = eventLogEntry.getEvent();
+                MessageEntry beginSendEntry = cause != null ? cause.getMessageEntry() : null;
+                if (beginSendEntry != null) {
+                    builder.constant(" on arrival of ");
 
-        if (eventLogEntry instanceof EventEntry && event.isSelfMessageProcessingEvent())
-            return ImageFactory.global().getImage(ImageFactory.EVENLOG_IMAGE_SELF_EVENT);
-        else if (eventLogEntry instanceof BeginSendEntry) {
-            int index = eventLogEntry.getEntryIndex();
-            int count = event.getNumEventLogEntries();
+                    if (contextEvent.isSelfMessageProcessingEvent())
+                        builder.constant("self ");
 
-            if (count > index + 1) {
-                EventLogEntry nextEventLogEntry = event.getEventLogEntry(index + 1);
+                    builder.message(beginSendEntry);
 
-                if (nextEventLogEntry instanceof EndSendEntry)
-                    return ImageFactory.global().getImage(ImageFactory.EVENLOG_IMAGE_SCHEDULE_AT);
+                    if (!contextEvent.isSelfMessageProcessingEvent())
+                        builder.constant(" from ").module(beginSendEntry.getContextModuleId());
+
+                    IEvent causeEvent = cause.getCauseEvent();
+                    if (causeEvent != null && causeEvent.getModuleId() != beginSendEntry.getContextModuleId())
+                        builder.constant(" called from ").module(causeEvent.getModuleId());
+                }
             }
         }
+        else {
+            if (eventLogEntry instanceof EventLogMessageEntry) {
+                EventLogMessageEntry eventLogMessageEntry = (EventLogMessageEntry)eventLogEntry;
+                builder.eventLogMessage(eventLogMessageEntry.getText());
+            }
+            else if (eventLogEntry instanceof BubbleEntry) {
+                BubbleEntry bubbleEntry = (BubbleEntry)eventLogEntry;
+                builder.constant("Bubble");
 
-        return ImageFactory.global().getImage(ImageFactory.EVENTLOG_IMAGE_DIR + className.substring(0, className.length() - 5));
+                if (contextEvent.getModuleId() != bubbleEntry.getContextModuleId())
+                    builder.constant(" in ").module(bubbleEntry.getContextModuleId());
+
+                builder.constant(": ").bubble(bubbleEntry.getText());
+            }
+            else if (eventLogEntry instanceof ModuleMethodBeginEntry) {
+                ModuleMethodBeginEntry moduleMethodBeginEntry = (ModuleMethodBeginEntry)eventLogEntry;
+                builder.constant("Begin calling ");
+                String method = moduleMethodBeginEntry.getMethod();
+
+                if (StringUtils.isEmpty(method))
+                    builder.constant("method");
+                else
+                    builder.data(method);
+
+                builder.constant(" in ").module(moduleMethodBeginEntry.getToModuleId());
+
+                if (contextEvent.getModuleId() != moduleMethodBeginEntry.getContextModuleId())
+                    builder.constant(" from ").module(moduleMethodBeginEntry.getFromModuleId());
+            }
+            else if (eventLogEntry instanceof ModuleMethodEndEntry) {
+                builder.constant("End calling module");
+            }
+            else if (eventLogEntry instanceof ModuleCreatedEntry) {
+                ModuleCreatedEntry moduleCreatedEntry = (ModuleCreatedEntry)eventLogEntry;
+                builder.constant("Creating ").module(moduleCreatedEntry);
+                int parentModuleId = moduleCreatedEntry.getParentModuleId();
+                if (parentModuleId != -1)
+                    builder.constant(" under ").module(parentModuleId);
+            }
+            else if (eventLogEntry instanceof ModuleDeletedEntry) {
+                ModuleDeletedEntry moduleDeletedEntry = (ModuleDeletedEntry)eventLogEntry;
+                builder.constant("Deleting ").module(moduleDeletedEntry.getModuleId());
+            }
+            else if (eventLogEntry instanceof ModuleReparentedEntry) {
+                ModuleReparentedEntry moduleReparentedEntry = (ModuleReparentedEntry)eventLogEntry;
+                builder.constant("Reparenting ").module(moduleReparentedEntry.getModuleId())
+                       .constant(" under ").module(moduleReparentedEntry.getNewParentModuleId());
+            }
+            else if (eventLogEntry instanceof GateCreatedEntry) {
+                GateCreatedEntry gateCreatedEntry = (GateCreatedEntry)eventLogEntry;
+                builder.constant("Creating ").gate(gateCreatedEntry)
+                       .constant(" in ").module(gateCreatedEntry.getModuleId());
+            }
+            else if (eventLogEntry instanceof GateDeletedEntry) {
+                GateDeletedEntry gateDeletedEntry = (GateDeletedEntry)eventLogEntry;
+                builder.constant("Deleting ").gate(gateDeletedEntry.getModuleId(), gateDeletedEntry.getGateId())
+                       .constant(" in ").module(gateDeletedEntry.getModuleId());
+            }
+            else if (eventLogEntry instanceof ConnectionCreatedEntry) {
+                ConnectionCreatedEntry connectionCreatedEntry = (ConnectionCreatedEntry)eventLogEntry;
+                builder.constant("Creating ")
+                       .connection(connectionCreatedEntry.getSourceModuleId(), connectionCreatedEntry.getSourceGateId(),
+                               connectionCreatedEntry.getDestModuleId(), connectionCreatedEntry.getDestGateId());
+            }
+            else if (eventLogEntry instanceof ConnectionDeletedEntry) {
+                ConnectionDeletedEntry connectionDeletedEntry = (ConnectionDeletedEntry)eventLogEntry;
+                builder.constant("Deleting ")
+                       .connection(connectionDeletedEntry.getSourceModuleId(), connectionDeletedEntry.getSourceGateId());
+            }
+            else if (eventLogEntry instanceof ConnectionDisplayStringChangedEntry) {
+                ConnectionDisplayStringChangedEntry connectionDisplayStringChangedEntry = (ConnectionDisplayStringChangedEntry)eventLogEntry;
+                builder.constant("Display string changed for ")
+                       .connection(connectionDisplayStringChangedEntry.getSourceModuleId(), connectionDisplayStringChangedEntry.getSourceGateId())
+                       .constant(" to ")
+                       .data(connectionDisplayStringChangedEntry.getDisplayString());
+            }
+            else if (eventLogEntry instanceof ModuleDisplayStringChangedEntry) {
+                ModuleDisplayStringChangedEntry moduleDisplayStringChangedEntry = (ModuleDisplayStringChangedEntry)eventLogEntry;
+                builder.constant("Display string changed");
+
+                if (contextEvent.getModuleId() != moduleDisplayStringChangedEntry.getModuleId())
+                    builder.constant(" for ").module(moduleDisplayStringChangedEntry.getModuleId());
+
+                builder.constant(" to ").data(moduleDisplayStringChangedEntry.getDisplayString());
+            }
+            else if (eventLogEntry instanceof CancelEventEntry) {
+                CancelEventEntry cancelEventEntry = (CancelEventEntry)eventLogEntry;
+                builder.constant("Cancelling self ");
+                BeginSendEntry beginSendEntry = findBeginSendEntry(cancelEventEntry.getPreviousEventNumber(), cancelEventEntry.getMessageId());
+
+                if (beginSendEntry == null)
+                    beginSendEntry = findBeginSendEntry(contextEvent.getEventEntry().getCauseEventNumber(), cancelEventEntry.getMessageId());
+
+                builder.message(beginSendEntry);
+            }
+            else if (eventLogEntry instanceof BeginSendEntry) {
+                BeginSendEntry beginSendEntry = (BeginSendEntry)eventLogEntry;
+                boolean isSelfMessage = contextEvent.isSelfMessage(beginSendEntry);
+
+                if (isSelfMessage)
+                    builder.constant("Scheduling self ");
+                else
+                    builder.constant("Sending ");
+
+                builder.message(beginSendEntry);
+
+                if (isSelfMessage)
+                    builder.constant(" for ");
+                else
+                    builder.constant(" arriving at ");
+
+                EndSendEntry endSendEntry = contextEvent.getEndSendEntry(beginSendEntry);
+
+                if (endSendEntry == null)
+                    builder.data("<unknown>");
+                else
+                    builder.constant(" kind = ");
+                builder.data(String.valueOf(beginSendEntry.getMessageKind()));
+                if (!beginSendEntry.getMessageClassName().equals("cMessage"))
+                    builder.constant(" length = ").data(String.valueOf(beginSendEntry.getMessageLength()));
+            }
+            else if (eventLogEntry instanceof EndSendEntry) {
+                EndSendEntry endSendEntry = (EndSendEntry)eventLogEntry;
+                builder.constant("Arrival at ").messageArrivalTime(endSendEntry);
+            }
+            else if (eventLogEntry instanceof SendHopEntry) {
+                SendHopEntry sendHopEntry = (SendHopEntry)eventLogEntry;
+                builder.constant("Sending through ").module(sendHopEntry.getSenderModuleId())
+                       .constant(" ").gate(sendHopEntry.getSenderModuleId(), sendHopEntry.getSenderGateId());
+
+                if (sendHopEntry.getTransmissionDelay().doubleValue() != 0) {
+                    builder.constant(" transmission delay = ").data(sendHopEntry.getTransmissionDelay() + "s");
+                }
+
+                if (sendHopEntry.getPropagationDelay().doubleValue() != 0) {
+                    builder.constant(" propagation delay = ").data(sendHopEntry.getPropagationDelay() + "s");
+                }
+            }
+            else if (eventLogEntry instanceof SendDirectEntry) {
+                SendDirectEntry sendDirectEntry = (SendDirectEntry)eventLogEntry;
+                builder.constant("Sending direct message ");
+
+                if (contextEvent.getModuleId() != sendDirectEntry.getContextModuleId()) {
+                    builder.constant("from ").module(sendDirectEntry.getSenderModuleId());
+                }
+
+                builder.constant(" to ").module(sendDirectEntry.getDestModuleId())
+                       .constant(" ").gate(sendDirectEntry.getDestModuleId(), sendDirectEntry.getDestGateId())
+                       .constant(" with transmission delay ").data(sendDirectEntry.getTransmissionDelay() + "s")
+                       .constant(" and propagation delay ").data(sendDirectEntry.getPropagationDelay() + "s");
+            }
+            else if (eventLogEntry instanceof CreateMessageEntry) {
+                CreateMessageEntry createMessageEntry = (CreateMessageEntry)eventLogEntry;
+                builder.constant("Creating ").message(createMessageEntry);
+            }
+            else if (eventLogEntry instanceof CloneMessageEntry) {
+                CloneMessageEntry cloneMessageEntry = (CloneMessageEntry)eventLogEntry;
+                builder.constant("Cloning ").message(cloneMessageEntry);
+            }
+            else if (eventLogEntry instanceof DeleteMessageEntry) {
+                DeleteMessageEntry deleteMessageEntry = (DeleteMessageEntry)eventLogEntry;
+                builder.constant("Deleting ").message(deleteMessageEntry);
+            }
+            else if (eventLogEntry instanceof SimulationBeginEntry) {
+                SimulationBeginEntry simulationBeginEntry = (SimulationBeginEntry)eventLogEntry;
+                builder.constant("Simulation started with runId ").data(simulationBeginEntry.getRunId());
+            }
+            else if (eventLogEntry instanceof SimulationEndEntry) {
+                SimulationEndEntry simulationEndEntry = (SimulationEndEntry)eventLogEntry;
+                builder.constant(simulationEndEntry.getIsError() ? "Simulation aborted with error code " : "Simulation finished with result code ")
+                       .data(String.valueOf(simulationEndEntry.getResultCode()))
+                       .constant(" : ").data(simulationEndEntry.getMessage());
+            }
+            else if (eventLogEntry instanceof KeyframeEntry) {
+                KeyframeEntry keyframeEntry = (KeyframeEntry)eventLogEntry;
+                builder.constant("Keyframe with ");
+                String simulationStateEntries = keyframeEntry.getSimulationStateEntries();
+                if (!StringUtils.isEmpty(simulationStateEntries))
+                    builder.data(String.valueOf(simulationStateEntries.split(",").length));
+                else
+                    builder.data("0");
+                builder.constant(" simulation state events");
+            }
+            else
+                throw new RuntimeException("Unknown eventlog entry: " + eventLogEntry.getClassName());
+        }
+
+        return builder.getStyledString();
+    }
+
+    private class Builder {
+        StyledString styledString = new StyledString();
+        boolean isSelected;
+
+        Builder(boolean isSelected) {
+            this.isSelected = isSelected;
+        }
+
+        StyledString getStyledString() {
+            return styledString;
+        }
+
+        private Styler selectedStyle(final Styler style) {
+            return new Styler() {
+                @Override
+                public void applyStyles(TextStyle textStyle) {
+                    style.applyStyles(textStyle);
+                    textStyle.foreground = Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
+                }
+            };
+        }
+
+        Builder append(String string, Styler style) {
+            string = string.replaceAll("\n", "\\\\n");
+            styledString.append(string, isSelected ? selectedStyle(style) : style);
+            return this;
+        }
+
+        Builder constant(String string) {
+            return append(string, CONSTANT_TEXT_STYLE);
+        }
+
+        Builder data(String value) {
+            return append(value, DATA_STYLE);
+        }
+
+        Builder raw(String value) {
+            return append(value, RAW_VALUE_STYLE);
+        }
+
+        Builder bubble(String text) {
+            return append(text, BUBBLE_ENTRY_STYLE);
+        }
+
+        Builder eventLogMessage(String text) {
+            return append(text, EVENT_LOG_MESSAGE_STYLE);
+        }
+
+        Builder module(int moduleId) {
+            return module(eventLogInput.getEventLog().getModuleCreatedEntry(moduleId));
+        }
+
+        Builder module(int moduleId, NameMode nameMode) {
+            return module(eventLogInput.getEventLog().getModuleCreatedEntry(moduleId), nameMode);
+        }
+
+        Builder module(ModuleCreatedEntry moduleCreatedEntry) {
+            return module(moduleCreatedEntry, eventLogTable.getNameMode());
+        }
+
+        Builder module(ModuleCreatedEntry moduleCreatedEntry, NameMode nameMode) {
+            append("module ", CONSTANT_TEXT_STYLE);
+
+            if (moduleCreatedEntry != null) {
+                String typeName = null;
+
+                switch (eventLogTable.getTypeMode()) {
+                case NED:
+                    typeName = moduleCreatedEntry.getNedTypeName();
+                    break;
+                case CPP:
+                    typeName = moduleCreatedEntry.getModuleClassName();
+                    break;
+                }
+
+                append("(" + typeName + ") ", TYPE_STYLE);
+
+                switch (nameMode) {
+                case SMART_NAME:
+                    if (contextEvent.getModuleId() == moduleCreatedEntry.getModuleId())
+                        moduleFullName(moduleCreatedEntry);
+                    else
+                        moduleFullPath(moduleCreatedEntry);
+                    break;
+                case FULL_NAME:
+                    moduleFullName(moduleCreatedEntry);
+                    break;
+                case FULL_PATH:
+                    moduleFullPath(moduleCreatedEntry);
+                    break;
+                }
+            }
+            else
+                append("<unknown>", NAME_STYLE);
+
+            return this;
+        }
+
+        Builder moduleFullPath(ModuleCreatedEntry moduleCreatedEntry) {
+            return append(eventLogInput.getEventLogTableFacade().ModuleCreatedEntry_getModuleFullPath(moduleCreatedEntry.getCPtr()), NAME_STYLE);
+        }
+
+        Builder moduleFullName(ModuleCreatedEntry moduleCreatedEntry) {
+            return append(moduleCreatedEntry.getFullName(), NAME_STYLE);
+        }
+
+        Builder gate(int moduleId, int gateId) {
+            return gate(eventLogInput.getEventLog().getGateCreatedEntry(moduleId, gateId));
+        }
+
+        Builder gate(GateCreatedEntry gateCreatedEntry) {
+            append("gate ", CONSTANT_TEXT_STYLE);
+
+            if (gateCreatedEntry != null) {
+                int index = gateCreatedEntry.getIndex();
+                append(gateCreatedEntry.getName() + (index != -1 ? "[" + index + "]" : ""), NAME_STYLE);
+            }
+            else
+                append("<unknown>", NAME_STYLE);
+            return this;
+        }
+
+        Builder connection(int sourceModuleId, int sourceGateId) {
+            return connection(sourceModuleId, sourceGateId, -1, -1);
+        }
+
+        Builder connection(int sourceModuleId, int sourceGateId, int destModuleId, int destGateId) {
+            append("connection from ", CONSTANT_TEXT_STYLE);
+
+            ModuleCreatedEntry sourceModuleCreatedEntry = eventLogInput.getEventLog().getModuleCreatedEntry(sourceModuleId);
+
+            if (sourceModuleCreatedEntry != null) {
+                module(sourceModuleCreatedEntry);
+                append(" ", CONSTANT_TEXT_STYLE);
+                gate(sourceModuleId, sourceGateId);
+            }
+
+            ModuleCreatedEntry destModuleCreatedEntry = eventLogInput.getEventLog().getModuleCreatedEntry(destModuleId);
+
+            if (destModuleCreatedEntry != null) {
+                append(" to ", CONSTANT_TEXT_STYLE);
+                module(destModuleCreatedEntry);
+                append(" ", CONSTANT_TEXT_STYLE);
+                gate(destModuleId, destGateId);
+            }
+            return this;
+        }
+
+        Builder message(MessageEntry messageEntry) {
+            append("message ", CONSTANT_TEXT_STYLE);
+
+            if (messageEntry != null) {
+                append("(" + messageEntry.getMessageClassName() + ") ", TYPE_STYLE);
+                append(messageEntry.getMessageName(), NAME_STYLE);
+            }
+            else
+                append("<unknown>", NAME_STYLE);
+            return this;
+        }
+
+        Builder messageArrivalTime(EndSendEntry endSendEntry) {
+            BigDecimal arrivalTime = endSendEntry.getArrivalTime();
+            BigDecimal simulationTime = endSendEntry.getEvent().getSimulationTime();
+            append(arrivalTime + "s", DATA_STYLE);
+            append(", now + ", CONSTANT_TEXT_STYLE);
+            append(TimeUtils.secondsToTimeString(arrivalTime.toBigDecimal().subtract(simulationTime.toBigDecimal())), DATA_STYLE);
+            return this;
+        }
+
+    }
+
+    private static Styler createStyle(Color foreground) {
+        return createStyle(foreground, null, false);
+    }
+
+    private static Styler createStyle(Color foreground, boolean bold) {
+        return createStyle(foreground, null, bold);
+    }
+
+    private static Styler createStyle(final Color foreground, final Color background, final boolean bold) {
+        return new Styler() {
+            @Override
+            public void applyStyles(TextStyle textStyle) {
+                textStyle.foreground = foreground;
+                textStyle.background = background;
+                FontData systemFont = JFaceResources.getDefaultFont().getFontData()[0];
+                textStyle.font = new Font(null, systemFont.getName(), systemFont.getHeight(), bold ? SWT.BOLD : SWT.NORMAL);
+            }
+        };
     }
 }

@@ -7,7 +7,9 @@
 
 package org.omnetpp.common.virtualtable;
 
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 
 /**
  * Virtual table cells are rendered by using this interface.
@@ -29,6 +31,21 @@ public interface IVirtualTableRowRenderer<T> {
      * GC to enforce drawing be made only in the available area.
      */
     public void drawCell(GC gc, T element, int index, boolean isSelected);
+
+    /**
+     * Returns the indentation (in pixels) of the icon/text of the given cell.
+     */
+    public int getIndentation(T element, int index);
+
+    /**
+     * Returns the icon of the given cell.
+     */
+    public Image getImage(T element, int index);
+
+    /**
+     * Returns the text of the given cell.
+     */
+    public StyledString getStyledText(T element, int index, boolean isSelected);
 
     /**
      * A tooltip text for the given element or null.

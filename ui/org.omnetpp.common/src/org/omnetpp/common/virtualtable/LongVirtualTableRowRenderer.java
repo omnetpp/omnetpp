@@ -9,9 +9,13 @@ package org.omnetpp.common.virtualtable;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
 
@@ -34,7 +38,20 @@ public class LongVirtualTableRowRenderer extends LabelProvider implements IVirtu
         }
         else
             gc.setForeground(ColorFactory.BLACK);
-        gc.drawText("the number " + element.toString(), 5, 0); //XXX if we start at x=0, 1-2 pixel columns are off-screen
+
+        StyledString styledString = getStyledText(element, index, isSelected);
+        int indent = getIndentation(element, index);
+        drawStyledString(gc, styledString, indent, 0);
+    }
+
+    protected void drawStyledString(GC gc, StyledString styledString, int x, int y) {
+        TextLayout textLayout = new TextLayout(gc.getDevice());
+        textLayout.setText(styledString.getString());
+        for (StyleRange styleRange : styledString.getStyleRanges()) {
+            textLayout.setStyle(styleRange, styleRange.start, styleRange.start + styleRange.length);
+        }
+        textLayout.draw(gc, x, y);
+        textLayout.dispose();
     }
 
     public int getRowHeight(GC gc) {
@@ -50,5 +67,20 @@ public class LongVirtualTableRowRenderer extends LabelProvider implements IVirtu
 
     public String getTooltipText(Long element) {
         return null;
+    }
+
+    @Override
+    public int getIndentation(Long element, int index) {
+        return 5;
+    }
+
+    @Override
+    public Image getImage(Long element, int index) {
+        return null;
+    }
+
+    @Override
+    public StyledString getStyledText(Long element, int index, boolean isSelected) {
+        return new StyledString("the number " + element);
     }
 }

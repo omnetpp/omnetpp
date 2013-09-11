@@ -7,12 +7,17 @@
 
 package org.omnetpp.scave.editors.datatable;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
@@ -71,24 +76,55 @@ public class VectorResultRowRenderer extends LabelProvider implements IVirtualTa
         else
             gc.setForeground(DATA_COLOR);
 
-        switch (index) {
-            case 0:
-                gc.drawText(String.valueOf(entry.getSerial()), HORIZONTAL_SPACING, 0);
-                break;
-            case 1:
-                BigDecimal time = entry.getSimtime();
-                gc.drawText((time != null ? time.toString() : ""), HORIZONTAL_SPACING, 0);
-                break;
-            case 2:
-                gc.drawText(valueLabelProvider.format(entry.getValue()), HORIZONTAL_SPACING, 0);
-                break;
-            case 3:
-                gc.drawText(String.valueOf(entry.getEventNumber()), HORIZONTAL_SPACING, 0);
-                break;
+        StyledString styledString = getStyledText(entry, index, isSelected);
+        int indent = getIndentation(entry, index);
+        drawStyledString(gc, styledString, indent, 0);
+    }
+
+    protected void drawStyledString(GC gc, StyledString styledString, int x, int y) {
+        TextLayout textLayout = new TextLayout(gc.getDevice());
+        textLayout.setText(styledString.getString());
+        for (StyleRange styleRange : styledString.getStyleRanges()) {
+            textLayout.setStyle(styleRange, styleRange.start, styleRange.start + styleRange.length);
         }
+        textLayout.draw(gc, x, y);
+        textLayout.dispose();
     }
 
     public String getTooltipText(OutputVectorEntry element) {
         return null;
+    }
+
+    @Override
+    public int getIndentation(OutputVectorEntry element, int index) {
+        return HORIZONTAL_SPACING;
+    }
+
+    @Override
+    public Image getImage(OutputVectorEntry element, int index) {
+        return null;
+    }
+
+    @Override
+    public StyledString getStyledText(OutputVectorEntry element, int index, boolean isSelected) {
+        String text = null;
+        switch (index) {
+        case 0:
+            text = String.valueOf(element.getSerial());
+            break;
+        case 1:
+            BigDecimal time = element.getSimtime();
+            text = (time != null ? time.toString() : "");
+            break;
+        case 2:
+            text = valueLabelProvider.format(element.getValue());
+            break;
+        case 3:
+            text = String.valueOf(element.getEventNumber());
+            break;
+        default:
+            Assert.isTrue(false);
+        }
+        return new StyledString(text);
     }
 }
