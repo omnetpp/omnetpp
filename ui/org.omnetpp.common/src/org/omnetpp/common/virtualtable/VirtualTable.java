@@ -22,6 +22,9 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.FocusEvent;
@@ -59,6 +62,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
+import org.omnetpp.common.util.CsvWriter;
 
 /**
  * The virtual table is a virtually infinite table.
@@ -331,6 +335,8 @@ public class VirtualTable<T>
                     gotoEnd();
                 else if (e.keyCode == 'a' && e.stateMask == SWT.CTRL)
                     selectAll();
+                else if (e.keyCode == 'c' && e.stateMask == SWT.CTRL)
+                    copySelectionToClipboard();
             }
 
             public void keyReleased(KeyEvent e) {
@@ -621,6 +627,60 @@ public class VirtualTable<T>
         }
     }
 
+    public void copySelectionToClipboard() {
+        final CsvWriter writer = new CsvWriter('\t');
+
+        // add header
+        final int[] columnOrder = table.getColumnOrder();
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            TableColumn column = table.getColumn(columnOrder[i]);
+            writer.addField(column.getText());
+        }
+        writer.endRecord();
+
+        // add selected lines
+        boolean success = runLongOperation(new IRunnableWithProgress() {
+            @Override
+            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                int delta = 1;
+                if (monitor != null) {
+                    int size = selectionElements.approximateSize();
+                    int totalWork = size < 100 ? size : 100;
+                    delta = size < 100 ? 1 : size / 100;
+                    monitor.beginTask("A long running operation is in progress. Please wait or press Cancel to abort.", totalWork);
+                }
+
+                int count = 0;
+                for (T element : selectionElements) {
+                    if (monitor != null && monitor.isCanceled())
+                        throw new InterruptedException();
+
+                    toCSV(writer, element, columnOrder);
+                    count++;
+
+                    if (monitor != null && count % delta == 0)
+                        monitor.worked(1);
+                }
+                if (monitor != null)
+                    monitor.done();
+            }
+        });
+
+        if (success) {
+            Clipboard clipboard = new Clipboard(getDisplay());
+            clipboard.setContents(new Object[] {writer.toString()}, new Transfer[] {TextTransfer.getInstance()});
+            clipboard.dispose();
+        }
+    }
+
+    protected void toCSV(CsvWriter writer, T element, int[] columns) {
+        for (int i = 0; i < columns.length; i++) {
+            String text = rowRenderer.getStyledText(element, columns[i], false).getString();
+            writer.addField(text);
+        }
+        writer.endRecord();
+    }
+
     protected boolean runLongOperation(IRunnableWithProgress runnable) {
         try {
             if (runnableContext != null)
@@ -633,7 +693,7 @@ public class VirtualTable<T>
             return false;
         }
         catch (InvocationTargetException e) {
-            Debug.println("VirtualTable.runLongOperation() failed: " + e.getMessage());
+            Debug.println("VirtualTable.runLongOperation() failed: " + e.getTargetException().getMessage());
             return false;
         }
     }
