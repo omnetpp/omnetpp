@@ -15,8 +15,8 @@ boundary.
 
 The model of the central server checks for collisions and computes statistics.
 The internal state of the server and all statistics are visible in the GUI
-The most important statistics is channel utilization. It is also recorded into
-omnetpp.vec, and can be plotted using Plove.
+The most important statistics is channel utilization. It is also recorded in
+omnetpp.vec, and can be plotted using the Analysis Tool in the IDE.
 
 The supplied omnetpp.ini file contains six predefined 6 predefined configurations:
 - pure Aloha at high load
@@ -31,7 +31,7 @@ The supplied omnetpp.ini file contains six predefined 6 predefined configuration
   function of number of hosts and packet generation frequency.
 
 According to some descriptions of the Aloha protocol, hosts have to listen
-on the channel before they start to tranmit anything. This "listen before
+on the channel before they start to transmit anything. This "listen before
 talk" behavior is not part of the current model. (One reason is that with
 the radio nodes scattered around, the propagation delays of radio signals
 are different for every host pair, and it becomes very complex to accurately

@@ -24,10 +24,10 @@ on the icon --> Inspect as object) and click on the "Submods" tab.
 They can also be seen in the object tree in the main window -- just
 open the "server" node in the tree.
 
-Note that the modelled protocol (CONN_REQ, CONN_ACK, etc) is rather a "metaphor"
+Note that the modeled protocol (CONN_REQ, CONN_ACK, etc) is rather a "metaphor"
 of a transport-level protocol than a model of any existing protocol. (For one
 thing, it doesn't contain three-way handshake, a proper retransmission scheme
-etc.) It serves only demonstation purposes.
+etc.) It serves only demonstration purposes.
 
 The module types are:
   Client:

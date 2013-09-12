@@ -21,6 +21,6 @@ Once the routing tables are set up, nodes start sending packets at random
 intervals. Every node gets a list of destination addresses in a parameter,
 and for every packet it randomly chooses a destination from the list.
 
-There are two apps provided: App generates packets with exponential interarrival
+There are two apps provided: App generates packets with exponential inter-arrival
 times, while BurstyApp alternates between active and idle periods. BurstyApp's
 implementation demonstrates the use of the FSMs (Finite State Machine).

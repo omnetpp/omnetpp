@@ -2,7 +2,7 @@ TicToc
 ======
 
 NOTE:
-   This example simulation is accompanied by the TICTOC TUTORIAL
+   This example simulation is accompanied by the TicToc Tutorial
    which can be found in the the documentation.
 
 TicToc contains a series of simulation models numbered 1 through 12. The
@@ -19,5 +19,5 @@ want to run. It is recommended that you first read the source code of the
 given simulation (say tictoc3.ned and txc3.cc), then run it and find out
 what it does and why.
 
-Have fun!
+
 
