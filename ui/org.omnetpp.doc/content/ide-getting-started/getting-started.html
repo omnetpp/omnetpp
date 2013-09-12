@@ -1,0 +1,205 @@
+<!doctype html public "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+  <title>Getting Started</title>
+  <meta name="copyright" content="OpenSim Ltd.">
+  <meta name="author" content="Andras Varga">
+  <meta http-equiv="Content-Language" content="en-us">
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <link rel="STYLESHEET" href="../book.css"  type="text/css"/>
+  <style>
+  .box {
+      float: left;
+      width: 730px;
+      border: 1px solid #aaa;
+      background-color: #f6f6f6;
+      box-shadow: 3px 3px 3px #888888;
+      padding-left: 20px;
+      padding-right: 0px;
+      padding-bottom: 20px;
+      margin: 10px;
+  }
+  .col {
+      float: left;
+      width: 320px;
+      margin-right: 30px; /*spacing*/
+  }
+  dt, dd {
+      margin-top: 0px;
+      margin-bottom: 0px;
+  }
+  </style>
+</head>
+
+<body>
+
+<h1>Getting Started with the Simulation IDE</h1>
+
+
+<div id="list">
+  <div class="box">
+      <h2>Exploring the Models</h2><br>
+
+      <div class="col">
+        <p>1. Make sure project is open.</p>
+        <img src="images/open-project.png">
+
+        <br><br><br>
+        <p>2. Note the folder structure of the INET Framework project: <tt>src</tt> contains model components (protocols, apps, etc), and <tt>examples</tt> contains example simulations.</p>
+        <center><img src="images/inet-folders.png"></center>
+        <p>The OMNeT++ programming examples (<tt>aloha</tt>, <tt>cqn</tt>, etc.) are mostly single-folder projects.</p>
+       </div>
+
+      <div class="col">
+        <p>3. Common file types you'll encounter:</p>
+        <center><img src="images/file-types.png"></center>
+        <dl>
+          <dt><tt>.ned</tt></dt>
+          <dd>definitions of simulation components and networks</dd>
+          <dt><tt>.cc</tt>, <tt>.h</tt></dt>
+          <dd>C++ source files of simulation components</dd>
+          <dt><tt>.msg</tt></dt>
+          <dd>message descriptions (e.g. protocol headers) that are automatically translated to C++ classes</dd>
+          <dt><tt>_m.cc</tt>, <tt>_m.h</tt></dt>
+          <dd>generated files, created from <tt>msg</tt> files during the build process</dd>
+          <dt><tt>.ini</tt></dt>
+          <dd>parameter settings and configuration options for simulations</dd>
+        </dl>
+      </div>
+  </div>
+
+  <div class="box">
+      <h2>Launching Simulations</h2>
+
+      <div class="col">
+        <p>1. Select the <tt>.ini</tt> file (usually <tt>omnetpp.ini</tt>) or its parent folder.</p>
+        <center><img src="images/select-ini-file.png"></center>
+
+        <br><br>
+        <p>2. Click <i>Run</i> on the toolbar.</p>
+        <center><img src="images/click-run.png"></center>
+      </div>
+
+      <div class="col">
+        <p>3. If the following dialog comes up, choose <i>OMNeT++ Simulation</i> and click OK.</p>
+        <center><img src="images/as-omnetpp-simulation.png"></center>
+
+        <br><br>
+        <p>4. Launch configurations go to the <i>Run</i> button's menu. Select one to run, or Ctrl+Click to open it for editing.</p>
+        <center><img src="images/launch-configs.png"></center>
+
+      </div>
+  </div>
+
+  <div class="box">
+      <h2>Viewing Simulation Results</h2>
+
+      <div class="col">
+        <p>1. Simulation results are normally saved in the <tt>results</tt> folder.
+        You may need to select the project and hit Refresh (F5) to see it.</p>
+        <p>2. Double-click any (<tt>.vec</tt> or <tt>.sca</tt>) file to open the Analysis Tool.
+        </p>
+        <center><img src="images/results-folder.png"></center>
+      </div>
+
+      <div class="col">
+        <p>3. The Analysis Tool will let you browse, select, process and plot the results.
+        It will save your analysis into a <tt>.anf</tt> file in the parent folder.</p>
+        <center><img src="images/anf-file.png"></center>
+
+        <p>4. Later on you can just double-click the <tt>.anf</tt> file to open the analysis again.
+        Having <tt>.anf</tt> files enables you to call up the same charts with different results
+        after new simulation runs.</p>
+      </div>
+  </div>
+
+  <div class="box">
+      <h2>Exploring Simulation Interactions on a Sequence Chart</h2>
+
+      <p>OMNeT++ helps you explore simulation models by letting you visualize interactions
+      on a dynamic sequence chart. The sequence chart works from an event log file
+      (<tt>.elog</tt>) recorded during simulation execution.
+      Due to the associated overhead, recording has to be turned on explicitly.</p>
+
+      <div class="col">
+        <p>1. To turn on eventlog recording, open the launch configuration (see <i>Launching Simulations</i> above),
+        select the option in the dialog, then click Apply.</p>
+        <center><img src="images/record-eventlog.png" width=300></center>
+
+        <br><br>
+        <p>2. Run the simulation.</p>
+        <center><img src="images/run-button.png"></center>
+      </div>
+
+      <div class="col">
+        <p>3. The event log (<tt>.elog</tt>) file will be in the <tt>results</tt> folder, double-click to open it. (You may need to select the project and hit Refresh (F5) to see the file.)</p>
+        <center><img src="images/elog-file.png"></center>
+
+        <br><br>
+        <p>4. Sequence chart will open in the editor area.</p>
+        <center><img src="images/seqchart.png"></center>
+      </div>
+  </div>
+
+  <div class="box">
+      <h2>Getting More Simulation Models</h2>
+
+      <div class="col">
+        <p>1. The <i>Help &gt; Install simulation models</i> menu item offers automatic
+        installation of selected simulation models or model frameworks.</p>
+        <center><img src="images/install-models.png"></center>
+        <p>Currently only the INET Framework is available via this facility, but with time,
+        the list will be to expanded to include other models as well.</p>
+      </div>
+
+      <div class="col">
+        <p>2. For models not directly available, go to the download area of <tt>omnetpp.org</tt>,
+        which contains a fairly complete list of open-source OMNeT++ simulation models.</p>
+        <p>These models have to be downloaded and installed and/or imported into the IDE manually (see next item).</p>
+        <center><img src="images/omnetpp-downloads.png"></center>
+      </div>
+  </div>
+
+  <div class="box">
+      <h2>Importing Simulation Models into the IDE</h2>
+
+      <p>If you have downloaded a simulation model or some other project and you want
+      use the IDE to work with it, it needs to be imported into the workspace.</p>
+
+      <div class="col">
+        <p>1. Choose <i>File &gt; Import...</i> from the menu.</p>
+        <center><img src="images/file-import.png"></center>
+      </div>
+
+      <div class="col">
+        <p>2. In the dialog, select <i>Generic &gt; Existing project into the workspace</i>.</p>
+        <center><img src="images/import-existing-project.png"></center>
+      </div>
+  </div>
+
+  <div class="box">
+      <h2>More Help on Getting Started</h2>
+
+      <div class="col">
+        <p>1. You can find more introductory material under the <i>Getting Started</i> folder of the OMNeT++ documentation in the IDE help system.</p>
+        <center><img src="images/help-contents.png"></center>
+        <br><br>
+        <p>2. The documentation is available in PDF format and outside the IDE as well, see the <tt>doc</tt> folder of your OMNeT++ installation.</p>
+      </div>
+
+      <div class="col">
+        <p>3. Recommended items:</p>
+        <ul>
+           <li><b>TicToc Tutorial</b>: Going through this tutorial is the quickest way pick up OMNeT++ modeling concepts and become productive as fast as possible.
+           <li>The <b>OMNeT++ Manual</b> explains everything you need to know for writing OMNeT++ simulations in detail. A must-read if you are serious about working with OMNeT++.
+           <li>The <b>IDE User Guide</b> methodically describes the features of the Simulation IDE. Read it to be able to get the most out of the IDE.
+        </ul>
+        <p>Screenshot from the TicToc Tutorial:</p>
+        <center><img src="images/tictoc.png"></center>
+      </div>
+  </div>
+</div>
+
+</body>
+</html>
+
