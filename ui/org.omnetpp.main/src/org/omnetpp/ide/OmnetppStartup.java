@@ -7,24 +7,35 @@
 
 package org.omnetpp.ide;
 
+import java.io.IOException;
 import java.net.URL;
 
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.help.ui.internal.IHelpUIConstants;
+import org.eclipse.help.ui.internal.views.HelpView;
+import org.eclipse.help.ui.internal.views.ReusableHelpPart;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.internal.ViewIntroAdapterPart;
+import org.eclipse.ui.internal.browser.WebBrowserEditorInput;
+import org.eclipse.ui.internal.help.WorkbenchHelpSystem;
 import org.omnetpp.common.util.CommandlineUtils;
+import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.ide.installer.FirstStepsDialog;
 import org.omnetpp.ide.installer.OnClosingWelcomeView;
 import org.osgi.framework.Bundle;
@@ -34,8 +45,11 @@ import org.osgi.framework.Bundle;
  *
  * @author Andras
  */
+@SuppressWarnings("restriction")
 public class OmnetppStartup implements IStartup {
-    public static final String SAMPLES_DIR = "samples";
+    private static final String AT_A_GLANCE_HTML = "/content/at-a-glance/at-a-glance.html";
+    private static final String GETTINGSTARTED_HTML = "/content/ide-getting-started/getting-started.html";
+    private static final String SAMPLES_HTML = "/content/samples/samples.html";
 
     /*
      * Method declared on IStartup.
@@ -54,8 +68,9 @@ public class OmnetppStartup implements IStartup {
                         new OnClosingWelcomeView(new Runnable() {
                             @Override
                             public void run() {
-                                openGlancePage();
-                                new FirstStepsDialog(null).open();
+                                FirstStepsDialog dialog = new FirstStepsDialog(null);
+                                dialog.open();
+                                openInitialPages(dialog.isImportSamplesRequested());
                             }
                         }).hook();
                     }
@@ -66,20 +81,36 @@ public class OmnetppStartup implements IStartup {
         });
     }
 
-    protected void openGlancePage() {
+    protected void openInitialPages(boolean importSamplesRequested) {
         try {
-            String settingName = "glancePageHasBeenShown";
+            String settingName = "initialPagesHaveBeenShown";
             IDialogSettings dialogSettings = OmnetppMainPlugin.getDefault().getDialogSettings();
             if (!dialogSettings.getBoolean(settingName)) {
-                Bundle docBundle = Platform.getBundle("org.omnetpp.doc");
-                URL glanceURL = FileLocator.resolve(FileLocator.findEntries(docBundle, new Path("/content/ide-glance/glance.html"))[0]);
-                PlatformUI.getWorkbench().getBrowserSupport().createBrowser("glance-page").openURL(glanceURL);
                 dialogSettings.put(settingName, true);
+                IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+                IEditorPart howToEditorPart = openURL(workbenchPage, GETTINGSTARTED_HTML);
+                openURL(workbenchPage, AT_A_GLANCE_HTML);
+                if (importSamplesRequested)
+                    openURL(workbenchPage, SAMPLES_HTML);
+                workbenchPage.activate(howToEditorPart);
+                WorkbenchHelpSystem.getInstance().displayDynamicHelp(); //TODO: show the "OMNeT++ / Getting Started" folder within the ToC
+                HelpView helpView = (HelpView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("org.eclipse.help.ui.HelpView");
+                ReusableHelpPart reusableHelpPart = (ReusableHelpPart)ReflectionUtils.getFieldValue(helpView, "reusableHelpPart");
+                reusableHelpPart.showPage(IHelpUIConstants.HV_ALL_TOPICS_PAGE);
             }
         }
         catch (Exception e) {
-            OmnetppMainPlugin.logError("Cannot open glance page", e);
+            OmnetppMainPlugin.logError("Error during opening initial pages", e);
         }
+    }
+
+    protected IEditorPart openURL(IWorkbenchPage page, String path) throws IOException, PartInitException {
+        Bundle docBundle = Platform.getBundle("org.omnetpp.doc");
+        URL[] urls = FileLocator.findEntries(docBundle, new Path(path));
+        Assert.isTrue(urls.length > 0, path + " is missing from org.omnetpp.doc, needs to be copied from doc/");
+        URL url = FileLocator.resolve(urls[0]);
+        int style = 0; //BrowserViewer.BUTTON_BAR | BrowserViewer.LOCATION_BAR;
+        return IDE.openEditor(page, new WebBrowserEditorInput(url, style), "org.omnetpp.common.editor.WebBrowserEditor");
     }
 
     /**
