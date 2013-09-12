@@ -1,3 +1,80 @@
+2013-09-12  Levente Meszaros, Andras Varga
+
+	When the IDE is started with an empty workspace (e.g. on first-time
+	launch), a dialog comes up automatically that offers the user the
+	following options for getting something into the workspace:
+
+	- Import the OMNeT++ sample simulations into the workspace
+	- Download and install INET Framework
+
+	The latter function is also available now via the Help > Install
+	Simulation Models... menu item. The menu item brings up a dialog
+	with the list of simulation models available for automated installation,
+	and lets the user choose. Currently only the INET Framework is
+	listed there, but it is planned to add further models.
+
+2013-09-12  Levente Meszaros, Andras Varga
+
+	When the IDE was started for the first time, the user formerly saw an
+	empty workbench window (apart from the imported samples). Now some
+	helpful introductory pages are displayed in the editor area:
+
+	- "Getting Started" - practical advice for getting past the first
+	  10 minutes spent in the IDE
+
+	- "At a Glance" - explains the common file types (NED, msg, ini) and
+	  their purposes
+
+	- "The Simulation Examples" - explains each example simulation in two
+	  sentences, then provides links for opening the project, viewing the
+	  README, launching the simulation, etc.
+
+	These pages are also available in the Help system (except the last one,
+	which has a dedicated menu item under the Help menu.)
+
+2013-09-06  Andras Varga
+
+	Run dialog > OMNeT++ Simulation > Launch tab: bug fixes:
+	- pasting "a}" into the Working dir field caused weird behavior
+	- pasting ${ into workingDir caused error dialog
+
+2013-08-28  Andras Varga
+
+	IDE: import sample projects even if workspace is different from omnetpp/samples
+
+2013-06-06  Levente Meszaros
+
+	Changed default appearance of the main welcome page to be more user friendly.
+
+2013-09-03  Andras Varga
+
+	IDE: trying to launch a closed project will now offer opening it
+
+2013-08-26  Levente Meszaros
+
+	Neddoc: fixed bug 672: Added escaping for replacement string.
+
+2013-08-07  Tamas Borbély
+
+	Output Vector View: show 'Goto ...' actions in the context menu
+	(instead of the view's pulldown menu)
+
+2013-08-07  Tamas Borbély
+
+	Analysis Tool: fix #389 (Useless items in the Statistic Name filter)
+
+	The filter hints of combos is now computed from the result items filtered
+	by the other 2 combos.
+
+2013-08-06  Tamas Borbély
+
+	Analysis Tool: fix #388 (add '*.host[*].*' variant to module filter hints)
+
+2013-08-09  Rudolf Hornig
+
+	command line: fix for #670 -vmargs conflict between omnetpp.ini and
+	the launcher script.
+
 2013-04-02  ------ omnetpp-4.3 released ------
 
 2013-03-17  Rudolf Hornig

@@ -579,6 +579,101 @@ about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.</p
 </div>
 
 <div class="sect1">
+<h2 id="_omnet_4_3_1_sept_2013">OMNeT++ 4.3.1 (Sept 2013)</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>The IDE was made more friendly to first-time users:</p></div>
+
+
+<div class="ulist"><ul>
+<li>
+<p>
+When the IDE is started with an empty workspace (e.g. on first-time
+launch), it offers the user the following options: (1) Import the OMNeT++
+sample simulations into the workspace; and (2) Download and install the
+INET Framework.
+</p>
+</li>
+<li>
+<p>
+The latter function is also available via the Help > Install Simulation
+Models... menu item. The menu item brings up a dialog with the list of
+simulation models available for automated installation, and lets the user
+choose. Currently only the INET Framework is listed there, but it is
+planned to add further models.
+</p>
+</li>
+<li>
+<p>
+When the IDE is started for the first time, it now displays some helpful
+introductory pages in the editor area: "Getting Started" (practical
+advice for getting past the first 10 minutes spent in the IDE);
+"At a Glance" (explains the common file types like NED, msg and ini, and
+their purposes); "OMNeT++ Samples" (describes each example simulation in
+two sentences, then provides links for opening the project, viewing the
+README, launching the simulation, etc.) These pages are also available
+from the Help system (except the last one, which has a dedicated menu item
+under the Help menu.)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>Further IDE improvements:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+IDE launcher script: fixed #670 (vmargs conflict between omnetpp.ini and
+    the launcher script). This bug could cause IDE crashes by PermGenSpace
+    exhaustion.
+</p>
+</li>
+<li>
+<p>
+Analysis Tool, Output Vector View: show "Go to" actions in the context
+    menu (instead of the view&#8217;s pulldown menu)
+</p>
+</li>
+<li>
+<p>
+Analysis Tool: fixed #389 (Useless items in the Statistic Name filter):
+    The filter hints of combos is now computed from the result items filtered
+    by the other 2 combos.
+</p>
+</li>
+<li>
+<p>
+Analysis Tool: fixed #388 (add *.host[*].* variant to module filter hints)
+</p>
+</li>
+<li>
+<p>
+Ability to import sample projects even if workspace is different from
+    omnetpp/samples
+</p>
+</li>
+<li>
+<p>
+Trying to launch a closed project will now offer opening it
+</p>
+</li>
+<li>
+<p>
+NED documentation generator: fixed #672 (Illegal group reference error)
+</p>
+</li>
+<li>
+<p>
+Changed default appearance of the main welcome page to be more user
+    friendly
+</p>
+</li>
+<li>
+<p>
+Some other bug fixes
+</p>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_omnet_4_3_march_2013">OMNeT++ 4.3 (March 2013)</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>IDE:</p></div>
@@ -1318,7 +1413,7 @@ New option for template.properties: preRunTemplate=&lt;fti-file-name&gt;. Exampl
 <div class="ulist"><ul>
 <li>
 <p>
-Switched back double-click behaviour to Open NED Type action. The Properties
+Switched back double-click behavior to Open NED Type action. The Properties
    dialog can now opened with Ctrl+Enter (Alt+Enter was unavailable.)
 </p>
 </li>
@@ -1383,7 +1478,7 @@ extends = Foo, Bar</tt></pre>
 <p>When the runtime looks for a config option or param assignment, sections
 are examined in a "fallback order" until the first match is found. In the
 above example the order would be: Foobar, Foo, Bar, General.
-OMNeT++ uses C3 lineratization to compute the section fallback order,
+OMNeT++ uses C3 linearization to compute the section fallback order,
 see e.g. http://en.wikipedia.org/wiki/C3_linearization</p>
 </li>
 <li>
@@ -1477,7 +1572,7 @@ Added MachO64 binary parsers and error parsers. This makes it possible to
 <p>
 Linux only: Added support for profiling with Valgrind. To activate this
    feature, select "Profile as&#8230; / OMNeT++ Simulation" from the Project
-   Exporer context menu. This feature requires Valgrind to be installed
+   Explorer context menu. This feature requires Valgrind to be installed
    on your system. (Note: the main IDE toolbar does not show a Profile button
    next to the Run and Debug buttons at this time, but profiling is still
    available via the Project Explorer context menu.)
@@ -1581,7 +1676,7 @@ Performance improvements: inifile is now analyzed in the background so that
 <div class="ulist"><ul>
 <li>
 <p>
-Added 'Goto Simulation Time' and 'Goto Event Number' in the context menu.
+Added 'Go to Simulation Time' and 'Go to Event Number' in the context menu.
 </p>
 </li>
 <li>
@@ -1613,7 +1708,7 @@ The command-line for launching the simulation now uses relative paths instead
 <li>
 <p>
 Added tilde notation as an alternative to automatic hyperlinking of module
-   names in comments. The latter was often too agressive (e.g. linking to the
+   names in comments. The latter was often too aggressive (e.g. linking to the
    IP module in the phrase "IP address" is wrong). Automatic hyperlinking can
    now be turned off in the generator, and then the user is expected to mark
    words to be hyperlinked with a tilde: "the ~IP module". The INET Framework
@@ -1636,7 +1731,7 @@ Implemented @include in NED comments. Lines in the included file don&#8217;t hav
 </li>
 <li>
 <p>
-Fix: External pages (@externalpage) now appear unded the "Selected Topics"
+Fix: External pages (@externalpage) now appear under the "Selected Topics"
    node of the navigation tree in the generated documentation.
 </p>
 </li>
