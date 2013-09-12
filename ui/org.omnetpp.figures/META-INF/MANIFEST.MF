@@ -7,7 +7,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jface,
  org.eclipse.draw2d,
  org.eclipse.ui,
- org.omnetpp.common.core
+ org.omnetpp.common.core,
+ org.omnetpp.common
 Export-Package: org.omnetpp.figures,
  org.omnetpp.figures.anchors,
  org.omnetpp.figures.layout,

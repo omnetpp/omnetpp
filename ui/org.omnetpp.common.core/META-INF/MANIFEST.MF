@@ -25,7 +25,6 @@ Export-Package: org.apache.commons.lang,
  org.omnetpp.common,
  org.omnetpp.common.color,
  org.omnetpp.common.displaymodel,
- org.omnetpp.common.image,
  org.omnetpp.common.ui,
  org.omnetpp.common.util
 Bundle-ClassPath: lib/commons-lang-2.3.jar,
