@@ -8,7 +8,6 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.omnetpp.common.image.ImageFactory;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -38,8 +37,6 @@ public class CommonCorePlugin extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
-
-        ImageFactory.initialize(getConfigurationPreferenceStore().getString(ICoreConstants.PREF_OMNETPP_IMAGE_PATH).split(";"));
     }
 
     /*
