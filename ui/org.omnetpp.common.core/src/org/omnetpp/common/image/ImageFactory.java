@@ -367,19 +367,28 @@ public class ImageFactory {
         NedImageDescriptor result;
         // TODO svg support missing
         for (String currPath : imageDirs)
-            if ((result = createDescriptor(null, StringUtils.substituteVariables(currPath), baseName, "png", preferredSize)) != null)
+            if ((result = createDescriptor(null, substituteVariables(currPath), baseName, "png", preferredSize)) != null)
                 return result;
         // if not found in the filesystem, look for it in the JAR file
         if ((result = createDescriptor(ImageFactory.class, IMAGE_DIR, baseName, "png", preferredSize)) != null)
             return result;
         // search for GIFs if no PNG found
         for (String currPath : imageDirs)
-            if ((result = createDescriptor(null, StringUtils.substituteVariables(currPath), baseName, "gif", preferredSize)) != null)
+            if ((result = createDescriptor(null, substituteVariables(currPath), baseName, "gif", preferredSize)) != null)
                 return result;
         if ((result = createDescriptor(ImageFactory.class, IMAGE_DIR, baseName, "gif", preferredSize)) != null)
             return result;
 
         return null;
+    }
+
+    private static String substituteVariables(String path) {
+        try {
+            return StringUtils.substituteVariables(path);
+        }
+        catch (CoreException e) {
+            return null;
+        }
     }
 
     /**
@@ -393,6 +402,8 @@ public class ImageFactory {
      * @return The ImageDescriptor or <code>null</code> if does exist.
      */
     private static NedImageDescriptor createDescriptor(Class<?> refClass, String dir, String fileName, String ext, int preferredSize) {
+        if (dir == null)
+            return null;
         // add a size suffix to the filename if we need some of the predefined scaling factors
         String sizeSuffix = "";
         if (preferredSize == SIZE_VS)

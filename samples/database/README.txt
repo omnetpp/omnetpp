@@ -11,11 +11,11 @@ It demonstrates four ways of using a database:
   - writing output scalars to the database, instead of omnetpp.sca.
 
 The first one is implemented as a simple module (cMySQLNetBuilder),
-and it is intended as an example that can be customised at will.
+and it is intended as an example that can be customized at will.
 The latter three are plug-in extensions to Envir (cMySQLConfigReader,
 cMySQLOutputVectorManager and cMySQLOutputScalarManager) and they are
 completely generic -- they can be used with any simulation model to make them
-datatabase-enabled, without having to change a single line of source code.
+database-enabled, without having to change a single line of source code.
 
 Possible uses of a database include:
   - if you're doing heaps of simulation experiments: organized storage

@@ -23,7 +23,7 @@ collisions because only one machine can use the network at any given time.
 
 At the start, a free Token is circulating on the ring. To use the network,
 a machine first has to capture the free Token. Then it can transmit messages
-until the Token Holding Time (THT) exprires, then it shuld release the Token
+until the Token Holding Time (THT) expires, then it should release the Token
 by sending it to the next station.
 
 From a cabling point of view, Token Ring is a star topology network,
@@ -43,7 +43,7 @@ not modeled. In this simulation, THT is a parameter to the model.
 
 Each station in the ring consists of a MAC module which implements
 the protocol, and a source and a sink module which generate and consume
-modelled traffic. Token Ring frames are described in token.msg; cMessage's
+modeled traffic. Token Ring frames are described in token.msg; cMessage's
 encapsulate()/decapsulate() methods are used to add payload to Token Ring
 data frames.
 
@@ -92,11 +92,11 @@ the following nodes: "token" --> "comp[1]" --> "sink" --> "local-variables".
 Double-click on it to open an inspector, then run the model to collect
 data to display (choose "Fast" or "Express" on the main toolbar).
 The window will display a graph of the new values written to the output
-vector. The drawing style and the axes can be customised.
+vector. The drawing style and the axes can be customized.
 
 * Viewing results after the simulation completed
-The simulation creates .vec files as output. You can use the Plove program
-to plot contents of these files.
+The simulation creates .vec files as output. You can use the Analysis Tool
+in the IDE to plot contents of these files.
 
 * Playing with different network sizes and load conditions.
 Parameters of the model are described in the omnetpp.ini file.

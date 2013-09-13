@@ -22,6 +22,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
@@ -248,6 +249,65 @@ public class OmnetppLaunchUtils {
     }
 
     /**
+     * Fill a launch config working copy with default values, based on the given resource (which will
+     * usually come from the workbench selection). Also sets the launch attributes required by CDT for debugging.
+     */
+    public static void setLaunchConfigDefaults(ILaunchConfigurationWorkingCopy configuration, IResource selectedResource) {
+        String workingDir = "";
+        String executable = "";
+        String iniFile = "omnetpp.ini";
+
+        // check the current selection and figure out the initial values if possible
+        if (selectedResource != null) {
+            if (selectedResource instanceof IFile) {
+                IFile selFile = (IFile)selectedResource;
+                workingDir = selFile.getParent().getFullPath().toString();
+                // an ini file selected but (not omnetpp.ini) set the ini file name too
+                if (StringUtils.equals("ini", selFile.getFileExtension()))
+                    iniFile = selFile.getName();
+                // if executable set the project and program name
+                if (isExecutable(selFile))
+                    executable = selFile.getFullPath().toString();
+            }
+            // if a directory or project is selected, use it as working dir
+            if (selectedResource instanceof IContainer)
+                workingDir = selectedResource.getFullPath().toString();
+        }
+
+        if (StringUtils.isEmpty(executable) && !StringUtils.isEmpty(workingDir))
+            executable = getDefaultExeName(workingDir);
+
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, workingDir);
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, executable);
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, iniFile);
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, "${"+VAR_NED_PATH+":"+workingDir+"}");
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "${"+VAR_SHARED_LIBS+":"+workingDir+"}");
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "");
+
+        // minimal CDT specific attributes required to start without errors
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_ID, "gdb");
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_STOP_AT_MAIN, false);
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_STOP_AT_MAIN_SYMBOL, "main");
+        if (!Platform.getOS().equals(Platform.OS_MACOSX))
+            configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_GDB_INIT, IOmnetppLaunchConstants.OPP_GDB_INIT_FILE);
+    }
+
+    protected static String getDefaultExeName(String workingDir) {
+        try {
+            // expand "${opp_simprogs}", then return the first program from the list
+            String progs = StringUtils.substituteVariables("${opp_simprogs:"+workingDir+"}");
+            String [] splitProgs  = StringUtils.split(progs, ' ');
+            if (splitProgs.length > 0)
+                return splitProgs[0];
+        }
+        catch (CoreException e) {
+            LaunchPlugin.logError(e);
+        }
+        return "";
+    }
+
+    /**
      * Creates a new temporary configuration from a simulation config type that is compatible with CDT.
      * It adds ATTR_PROJECT_NAME, ATTR_PROGRAM_NAME and ATTR_PROGRAM_ARGUMENTS. They are
      * required to start a program correctly with a debugger launch delegate.
@@ -350,7 +410,7 @@ public class OmnetppLaunchUtils {
 
         // shared libraries
         String shLibStr = config.getAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "").trim();
-        shLibStr = StringUtils.substituteVariables(shLibStr, "");
+        shLibStr = StringUtils.substituteVariables(shLibStr);
         if (StringUtils.isNotBlank(shLibStr)) {
             String[] libs = StringUtils.split(shLibStr);
             // convert to file system location
@@ -775,7 +835,7 @@ public class OmnetppLaunchUtils {
             // launch the program
             long startTime = System.currentTimeMillis();
 			configuration = createUpdatedLaunchConfig(configuration, ILaunchManager.RUN_MODE);
-            Process proc = OmnetppLaunchUtils.startSimulationProcess(configuration, createCommandLine(configuration, ""), true);
+            Process proc = startSimulationProcess(configuration, createCommandLine(configuration, ""), true);
 
             // read its standard output
             final int BUFFERSIZE = 8192;
@@ -844,5 +904,7 @@ public class OmnetppLaunchUtils {
         return text.contains("Enter parameter");
     }
 
+    public final static String VAR_NED_PATH = "opp_ned_path";
+    public final static String VAR_SHARED_LIBS = "opp_shared_libs";
 
 }

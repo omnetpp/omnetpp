@@ -1,1 +1,11 @@
+/*
+  HACK: All the links below point to the same CSS! There are several links
+  so that at least one of them is valid under any circumstances.
+  CSS must be found at development time and in the installed product, and
+  when opened from the Help|Contents menu, from the Help View, and directly
+  in the editor area (startup time in WebBrowserEditor, or Help|Sample Simulations.
+  If you find a better solution, fix this madness, but double-check the results!!!
+*/
 @import "../../PRODUCT_PLUGIN/book.css";
+@import "../../org.omnetpp.main/book.css";
+@import "backup-css/book.css";

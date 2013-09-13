@@ -244,8 +244,8 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             runInUIThread(new Runnable() {
                 public void run() {
                     String message =
-                        "OMNeT++ library files for configuration \"" + activeConfig.getName() + "\" " +
-                        "were not found under " + OmnetppMainPlugin.getOmnetppLibDir() + ".\n\n"+
+                        "OMNeT++ libraries not yet compiled: library files for configuration \"" + activeConfig.getName() + "\" " +
+                        "are missing from " + OmnetppMainPlugin.getOmnetppLibDir() + ".\n\n"+
                         "Switch to a different build configuration in the project context menu, " +
                         "or build the OMNeT++ libraries from " +
                         "the command line. (See the Install Guide for help.)";

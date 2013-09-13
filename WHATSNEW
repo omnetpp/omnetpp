@@ -5,6 +5,60 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
+OMNeT++ 4.3.1 (Sept 2013)
+-------------------------
+
+The IDE was made more friendly to first-time users:
+
+  - When the IDE is started with an empty workspace (e.g. on first-time
+    launch), it offers the user the following options: (1) Import the OMNeT++
+    sample simulations into the workspace; and (2) Download and install the
+    INET Framework.
+
+  - The latter function is also available via the Help > Install Simulation
+    Models... menu item. The menu item brings up a dialog with the list of
+    simulation models available for automated installation, and lets the user
+    choose. Currently only the INET Framework is listed there, but it is
+    planned to add further models.
+
+  - When the IDE is started for the first time, it now displays some helpful
+    introductory pages in the editor area: "Getting Started" (practical
+    advice for getting past the first 10 minutes spent in the IDE);
+    "At a Glance" (explains the common file types like NED, msg and ini, and
+    their purposes); "OMNeT++ Samples" (describes each example simulation in
+    two sentences, then provides links for opening the project, viewing the
+    README, launching the simulation, etc.) These pages are also available
+    from the Help system (except the last one, which has a dedicated menu item
+    under the Help menu.)
+
+Further IDE improvements:
+
+  - IDE launcher script: fixed #670 (vmargs conflict between omnetpp.ini and
+    the launcher script). This bug could cause IDE crashes by PermGenSpace
+    exhaustion.
+
+  - Analysis Tool, Output Vector View: show "Go to" actions in the context
+    menu (instead of the view's pulldown menu)
+
+  - Analysis Tool: fixed #389 (Useless items in the Statistic Name filter):
+    The filter hints of combos is now computed from the result items filtered
+    by the other 2 combos.
+
+  - Analysis Tool: fixed #388 (add '*.host[*].*' variant to module filter hints)
+
+  - Ability to import sample projects even if workspace is different from
+    omnetpp/samples
+
+  - Trying to launch a closed project will now offer opening it
+
+  - NED documentation generator: fixed #672 (Illegal group reference error)
+
+  - Changed default appearance of the main welcome page to be more user
+    friendly
+
+  - Some other bug fixes
+
+
 OMNeT++ 4.3 (March 2013)
 ------------------------
 
@@ -14,7 +68,7 @@ IDE:
 
   - The CDT debugger no longer stops at the main() function by default.
 
-  - The budnled gdb is downgraded to 7.4
+  - The bundled gdb is downgraded to 7.4
 
 Tools:
 
@@ -44,7 +98,7 @@ IDE:
   - The CDT C++ code analyzer has been turned off as it was reporting
     too many false positives.
 
-  - The IDE has been switched over to use CDT's DSF debugger instead of 
+  - The IDE has been switched over to use CDT's DSF debugger instead of
     the older CDI.
 
   - The IDE no longer runs the C/C++ Indexer before build (the code now
@@ -53,7 +107,7 @@ IDE:
 
   - Added pretty printing of STL containers (std::map, etc), simtime_t
     and other objects to the debugger; see the updated User Guide for
-    details. 
+    details.
 
   - Updated the bundled MinGW (GCC, linker and GDB).
 
@@ -69,8 +123,8 @@ NED:
 Sim:
 
   - Added the cPatternMatcher and cMatchExpression utility classes to the API.
-    cPatternMatcher is a glob-style pattern matching class. cMatchExpression 
-    builds on top of cPatternMatcher and lets you combine patterns with AND, 
+    cPatternMatcher is a glob-style pattern matching class. cMatchExpression
+    builds on top of cPatternMatcher and lets you combine patterns with AND,
     OR, NOT for matching fields of arbitrary objects.
 
   - Added hasEncapsulatedPacket() to cPacket.
@@ -87,9 +141,9 @@ Tools:
   - The simulator now supports Mac OS X 10.8 (you need to install XQuartz; see
     the Install Guide)
 
-  - Simplified makefile output: Makefiles now output only the filenames to the 
-    console instead of whole commands. This makes the build output less noisy. 
-    If you need the old behavior, use the 'V=1' (verbose on) option on 
+  - Simplified makefile output: Makefiles now output only the filenames to the
+    console instead of whole commands. This makes the build output less noisy.
+    If you need the old behavior, use the 'V=1' (verbose on) option on
     the make command line.
 
 
@@ -460,7 +514,7 @@ IDE/Wizards:
 
 IDE/Graphical Editor:
 
- - Switched back double-click behaviour to Open NED Type action. The Properties
+ - Switched back double-click behavior to Open NED Type action. The Properties
    dialog can now opened with Ctrl+Enter (Alt+Enter was unavailable.)
 
 IDE/Sequence Chart and Event Log:
@@ -504,7 +558,7 @@ Simulation runtime:
    When the runtime looks for a config option or param assignment, sections
    are examined in a "fallback order" until the first match is found. In the
    above example the order would be: Foobar, Foo, Bar, General.
-   OMNeT++ uses C3 lineratization to compute the section fallback order,
+   OMNeT++ uses C3 linearization to compute the section fallback order,
    see e.g. http://en.wikipedia.org/wiki/C3_linearization
 
  - Ini files: better parsing for iteration variables, e.g. the value in
@@ -565,7 +619,7 @@ IDE/C++ Development:
 
  - Linux only: Added support for profiling with Valgrind. To activate this
    feature, select "Profile as... / OMNeT++ Simulation" from the Project
-   Exporer context menu. This feature requires Valgrind to be installed
+   Explorer context menu. This feature requires Valgrind to be installed
    on your system. (Note: the main IDE toolbar does not show a Profile button
    next to the Run and Debug buttons at this time, but profiling is still
    available via the Project Explorer context menu.)
@@ -624,7 +678,7 @@ IDE/Inifile Editor:
 
 IDE/Sequence Chart:
 
- - Added 'Goto Simulation Time' and 'Goto Event Number' in the context menu.
+ - Added 'Go to Simulation Time' and 'Go to Event Number' in the context menu.
 
  - 'Go to Simulation Time' in the 'Event Log' view now supports relative values.
 
@@ -642,7 +696,7 @@ IDE/Launcher:
 IDE/Documentation Generator:
 
  - Added tilde notation as an alternative to automatic hyperlinking of module
-   names in comments. The latter was often too agressive (e.g. linking to the
+   names in comments. The latter was often too aggressive (e.g. linking to the
    IP module in the phrase "IP address" is wrong). Automatic hyperlinking can
    now be turned off in the generator, and then the user is expected to mark
    words to be hyperlinked with a tilde: "the ~IP module". The INET Framework
@@ -656,7 +710,7 @@ IDE/Documentation Generator:
    to start with "//", but otherwise they are processed exactly as NED comment
    text.
 
- - Fix: External pages (@externalpage) now appear unded the "Selected Topics"
+ - Fix: External pages (@externalpage) now appear under the "Selected Topics"
    node of the navigation tree in the generated documentation.
 
  - Several minor fixes: recognize the <u> (underline) HTML tag; sanitize the
@@ -863,7 +917,7 @@ NED:
    @signal[pkSent](type=cPacket).
 
  - Introduced optional statistic recording modes: now you can add optional
-   items to the record= key of the the @statistic property, by appending "?"
+   items to the record= key of the @statistic property, by appending "?"
    to them. For example: @statistic[eed](record=vector?,histogram?,mean).
    By default, only non-optional items are active; optional ones can be
    turned on with **.result-recording-modes = all (see below).
@@ -922,7 +976,7 @@ IDE:
  - Analysis editor: separate horizontal and vertical zoom controls;
    more usable context menu for charts; result file reading made more
    robust (better error messages on errors); at the same time, removed
-   support for reading old-syle (3.x) vector files
+   support for reading old-style (3.x) vector files
 
  - Sequence Chart: more usable context menu; display of method calls and
    message reuse arrows turned off by default
@@ -1245,7 +1299,7 @@ GUI:
   An Eclipse-based comprehensive simulation IDE has been introduced to replace
   the previous standalone GUI programs gned, scalars and plove. The IDE supports
   all stages of a simulation project: developing, building, configuring and
-  running simulation models, and analysing results. It also supports
+  running simulation models, and analyzing results. It also supports
   visualizing simulation execution traces as sequence charts, and generating
   documentation. We are also bundling version control (cvs, svn, git) Eclipse
   plug-ins with the IDE. The IDE is supported on the three major platforms,
@@ -1364,7 +1418,7 @@ NED:
 
   Default icons (in general, default display strings) are now supported.
   Display strings are represented as metadata annotation (@display property),
-  which can be modified via inhertance.
+  which can be modified via inheritance.
 
 Ini files:
   Instead of runs, named configuration sections were introduced in the ini
@@ -3168,4 +3222,3 @@ has been replaced by the [Cmdenv]/runs-to-execute option and the
 
 Check the version.log files for the numerous other changes. Many bugfixes
 and code cleanups were made.
-

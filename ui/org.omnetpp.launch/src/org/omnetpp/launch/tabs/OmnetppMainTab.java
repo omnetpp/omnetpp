@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.resources.IContainer;
@@ -69,9 +70,6 @@ import org.omnetpp.launch.LaunchPlugin;
  * @author rhornig
  */
 public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements ModifyListener {
-
-    public final static String VAR_NED_PATH = "opp_ned_path";
-    public final static String VAR_SHARED_LIBS = "opp_shared_libs";
 
     protected static final int MAX_TOOLTIP_CHARS = 50000;
 
@@ -292,66 +290,8 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
     }
 
     public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-        prepareLaunchConfig(configuration);
-    }
-
-    /**
-     * Sets the required attributes to create a new simulation launch. Starting values are calculated
-     * from the current resource selection.
-     */
-    public static void prepareLaunchConfig(ILaunchConfigurationWorkingCopy configuration) {
-        // check the current selection and figure out the initial values if possible
-        String defWorkDir = "";
-        String defExe = "";
-        String defIni = "omnetpp.ini";
         IResource selectedResource = DebugUITools.getSelectedResource();
-        if (selectedResource != null) {
-            if (selectedResource instanceof IFile) {
-                IFile selFile = (IFile)selectedResource;
-                defWorkDir = selFile.getParent().getFullPath().toString();
-                // an ini file selected but (not omnetpp.ini) set the ini file name too
-                if (StringUtils.equals("ini", selFile.getFileExtension()))
-                    defIni = selFile.getName();
-                // if executable set the project and program name
-                if (OmnetppLaunchUtils.isExecutable(selFile))
-                    defExe = selFile.getFullPath().toString();
-            }
-            // if we just selected a directory or project use it as working dir
-            if (selectedResource instanceof IContainer)
-                defWorkDir = selectedResource.getFullPath().toString();
-        }
-
-        if (StringUtils.isEmpty(defExe))
-            defExe = getDefaultExeName(defWorkDir);
-
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, defWorkDir);
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, defExe);
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, defIni);
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, "${"+VAR_NED_PATH+":"+defWorkDir+"}");
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "${"+VAR_SHARED_LIBS+":"+defWorkDir+"}");
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "");
-
-        // minimal CDT specific attributes required to start without errors
-        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_ID, "gdb");
-        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_STOP_AT_MAIN, false);
-        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_STOP_AT_MAIN_SYMBOL, "main");
-        if (!Platform.getOS().equals(Platform.OS_MACOSX))
-            configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_GDB_INIT, IOmnetppLaunchConstants.OPP_GDB_INIT_FILE);
-    }
-
-    protected static String getDefaultExeName(String defWorkDir) {
-        if (StringUtils.isEmpty(defWorkDir))
-            return "";
-
-        String progs = StringUtils.substituteVariables("${opp_simprogs:"+defWorkDir+"}", "");
-
-        // return the first program from the list
-        String [] splitProgs  = StringUtils.split(progs, ' ');
-        if (splitProgs.length > 0)
-            return splitProgs[0];
-
-        return "";
+        OmnetppLaunchUtils.setLaunchConfigDefaults(configuration, selectedResource);
     }
 
     /**
@@ -411,8 +351,13 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
      * Expands and returns the working directory attribute of the given launch
      * configuration or NULL.
      */
-    private IContainer getWorkingDirectory(){
-        String expandedPath = StringUtils.substituteVariables(getWorkingDirectoryText());
+    private IContainer getWorkingDirectory() {
+        String expandedPath;
+        try {
+            expandedPath = StringUtils.substituteVariables(getWorkingDirectoryText());
+        } catch (CoreException e) {
+            return null;
+        }
         if (expandedPath.length() > 0) {
             IPath newPath = new Path(expandedPath);
             if (newPath.segmentCount() == 0)
@@ -521,7 +466,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
 
         IContainer workingDirectory = getWorkingDirectory();
         if (workingDirectory == null) {
-            setErrorMessage("Not a directory");
+            setErrorMessage("Invalid working directory");
             return false;
         }
 
@@ -719,12 +664,19 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
 
     protected void updateMacros() {
         String workingDir = getWorkingDirectoryText();
+        try {
+            workingDir = StringUtils.substituteVariables(workingDir);
+        } catch (CoreException e) {
+            // leave unresolved
+        }
+        workingDir = workingDir.replace("}", "?");  // close braces cause weird interference with the fields below (NED path, Shared libs)
+
         String libText = fLibraryText.getText();
-        libText = libText.replaceAll("\\$\\{"+VAR_SHARED_LIBS+":.*?\\}", "\\${"+VAR_SHARED_LIBS+":"+workingDir+"}");
+        libText = libText.replaceAll("\\$\\{"+OmnetppLaunchUtils.VAR_SHARED_LIBS+":.*?\\}", Matcher.quoteReplacement("${"+OmnetppLaunchUtils.VAR_SHARED_LIBS+":"+workingDir+"}"));
         fLibraryText.setText(libText);
 
         String nedText = fNedPathText.getText();
-        nedText = nedText.replaceAll("\\$\\{"+VAR_NED_PATH+":.*?\\}", "\\${"+VAR_NED_PATH+":"+workingDir+"}");
+        nedText = nedText.replaceAll("\\$\\{"+OmnetppLaunchUtils.VAR_NED_PATH+":.*?\\}", Matcher.quoteReplacement("${"+OmnetppLaunchUtils.VAR_NED_PATH+":"+workingDir+"}"));
         fNedPathText.setText(nedText);
     }
 

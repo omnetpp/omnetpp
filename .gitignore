@@ -15,6 +15,7 @@
 *.ilk
 *.manifest
 *.vci
+*.pyc
 .tkenvrc
 .project
 .cproject

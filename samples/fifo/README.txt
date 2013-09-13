@@ -21,7 +21,7 @@ module. The "sink" module collects statistics which can also be inspected.
 
 After running the simulation, fifo*.vec file will contain queueing time
 data collected via cOutVector objects during the simulation. The data
-can be plotted using the Plove program.
+can be plotted using the Analysis Tool in the IDE.
 
 AbstractFifo can be used as a base class for modules that involve queueing.
 One can subclass AbstractFifo and redefine the following member functions:

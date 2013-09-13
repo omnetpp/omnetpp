@@ -34,7 +34,7 @@ public class NedPathResolver implements IDynamicVariableResolver {
         boolean wantLocation = variable.getName().endsWith("_loc");
 
         IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(argument));
-        if (resource == null)
+        if (resource == null || !resource.exists() || resource.getProject() == null)
             abort("argument to ${opp_ned_path:arg} needs to be an existing file, folder, or project", null);
 
         IProject project = resource.getProject();

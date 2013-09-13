@@ -63,7 +63,17 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
     }
 
     public static String getVersion() {
-        return (String)getDefault().getBundle().getHeaders().get("Bundle-Version");
+        return getDefault().getBundle().getHeaders().get("Bundle-Version");
+    }
+
+    public static String getMajorVersion() {
+        String[] parts = getVersion().split("\\.");
+        return parts[0];
+    }
+
+    public static String getMinorVersion() {
+        String[] parts = getVersion().split("\\.");
+        return parts[1];
     }
 
     /*
@@ -114,33 +124,33 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
      * Returns the omnetpp bin directory, or empty string "" if the omnetpp root dir is not defined.
      */
     public static String getOmnetppBinDir() {
-        // FIXME in fact we have to look into the Makefile.inc or configuser.vc files in the root and get the directory from there
-        String oppRoot = getOmnetppRootDir();
-        if (StringUtils.isBlank(oppRoot))
-            return "";
-        return new Path(oppRoot).append("bin").toOSString();
+        return getOmnetppSubdir("bin");
     }
 
     /**
      * Returns the omnetpp include directory, or empty string "" if the omnetpp root dir is not defined.
      */
     public static String getOmnetppInclDir() {
-        // FIXME in fact we have to look into the Makefile.inc or configuser.vc files in the root and get the directory from there
-        String oppRoot = getOmnetppRootDir();
-        if (StringUtils.isBlank(oppRoot))
-            return "";
-        return new Path(oppRoot).append("include").toOSString();
+        return getOmnetppSubdir("include");
     }
 
     /**
-     * @return The omnetpp lib directory, or empty string "" if omnetpp root dir is not defined.
+     * Returns the omnetpp lib directory, or empty string "" if omnetpp root dir is not defined.
      */
     public static String getOmnetppLibDir() {
-        // FIXME in fact we have to look into the Makefile.inc or configuser.vc files in the root and get the directory from there
-        String oppRoot = getOmnetppRootDir();
-        if (StringUtils.isBlank(oppRoot))
-            return "";
-        return new Path(oppRoot).append("lib").toOSString();
+        return getOmnetppSubdir("lib");
+    }
+
+    /**
+     * Returns the omnetpp samples directory, or empty string "" if omnetpp root dir is not defined.
+     */
+    public static String getOmnetppSamplesDir() {
+        return getOmnetppSubdir("samples");
+    }
+
+    private static String getOmnetppSubdir(String name) {
+        String omnetppRoot = getOmnetppRootDir();
+        return StringUtils.isBlank(omnetppRoot) ? "" : new Path(omnetppRoot).append(name).toOSString();
     }
 
     /**

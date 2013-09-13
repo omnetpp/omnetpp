@@ -326,4 +326,25 @@
             </command>
       </menuContribution>
    </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="org.eclipse.ui.category.help"
+            defaultHandler="org.omnetpp.ide.installer.InstallSimulationModelsHandler"
+            description="Install Simulation Models"
+            id="org.omnetpp.common.installSimulationModels"
+            name="Install Simulation Models...">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:help?after=additions">
+         <command
+               commandId="org.omnetpp.common.installSimulationModels"
+               id="installSimulationModels"
+               style="push">
+         </command>
+      </menuContribution>
+   </extension>
 </plugin>

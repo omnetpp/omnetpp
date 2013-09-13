@@ -6,14 +6,16 @@ with OMNeT++/OMNEST. Hardware-in-the-loop means that some external device
 is taking part in the simulation. (In other scenarios, the simulation
 program may emulate a device in a real system).
 
-   |   *** ATTENTION Windows XP users ***
+   |  *** ATTENTION Windows users ***
    |
-   |   This program will open a socket for incoming TCP connections. If
-   |   Windows Firewall is turned on, it may ask you if you want to block
-   |   "sockets" from accepting connections -- say no ([Unblock] button).
-   |   If you already clicked [Keep blocking], it won't ask you any more --
-   |   then you'll have to go to the Windows Firewall Options dialog,
-   |   Exceptions tab, and select the "sockets" checkbox.
+   |  This program will open a socket for incoming TCP connections.
+   |  Windows may pop up a dialog asking whether you want to allow
+   |  the "sockets"  program to accept TCP connections; choose yes.
+   |  If you have already mistakenly told Windows to block the program
+   |  from accepting connections, it won't ask you any more -- then
+   |  you'll have to go to the "Windows Firewall with Advanced Security"
+   |  dialog (it is called like that on Windows 7), and delete the rules
+   |  that refer to the "sockets" program from the "Inbound Rules" table.
 
 This example contains two simulation models:
  * HTTPNet models a network where several clients send HTTP requests to a
