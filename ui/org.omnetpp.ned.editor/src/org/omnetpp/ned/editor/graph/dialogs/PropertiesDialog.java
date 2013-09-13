@@ -294,7 +294,7 @@ public class PropertiesDialog extends TrayDialog {
         }
 
         public Command makeChangeCommand(INedElement e, Object value) {
-            return new SetAttributeCommand((SubmoduleElement)e, SubmoduleElement.ATT_VECTOR_SIZE, ((String)value).trim());
+            return new SetAttributeCommand(e, SubmoduleElement.ATT_VECTOR_SIZE, ((String)value).trim());
         }
     }
 
@@ -328,7 +328,7 @@ public class PropertiesDialog extends TrayDialog {
         }
 
         public Command makeChangeCommand(INedElement e, Object value) {
-            return new SetAttributeCommand((ISubmoduleOrConnection)e, SubmoduleElement.ATT_LIKE_EXPR, ((String)value).trim());
+            return new SetAttributeCommand(e, SubmoduleElement.ATT_LIKE_EXPR, ((String)value).trim());
         }
     }
 
@@ -776,6 +776,7 @@ public class PropertiesDialog extends TrayDialog {
 
     protected Composite createAppearancePage(TabFolder tabfolder) {
         INedElement e = elements[0];  // all elements are of the same class (i.e. same tag code)
+        IProject project = e.getSelfOrEnclosingTypeElement().getNedTypeInfo().getProject();
         Composite page = createTabPage(tabfolder, "Appearance");
         page.setLayout(new GridLayout(1,false));
         Group group;
@@ -786,7 +787,7 @@ public class PropertiesDialog extends TrayDialog {
             // I tag
             comp = createComposite(group, 7);
             createLabel(comp, "Image:", false);
-            imageField = createImageSelector(comp);
+            imageField = createImageSelector(comp, project);
             imageSizeField = createCombo(comp, IDisplayString.Prop.IMAGE_SIZE.getEnumSpec().getNames());
             createLabel(comp, " Tint:", true);
             imageColorField = createColorSelector(comp);
@@ -798,7 +799,7 @@ public class PropertiesDialog extends TrayDialog {
             comp = createComposite(group, 7);
             // I2 tag
             createLabel(comp, "Status image:", false);
-            image2Field = createImageSelector(comp, "status/");
+            image2Field = createImageSelector(comp, "status/", project);
             createLabel(comp, "", false);
             createLabel(comp, " Tint:", true);
             image2ColorField = createColorSelector(comp);
@@ -829,7 +830,7 @@ public class PropertiesDialog extends TrayDialog {
             // I tag
             comp = createComposite(group, 7);
             createLabel(comp, "Image:", false);
-            imageField = createImageSelector(comp);
+            imageField = createImageSelector(comp, project);
             imageSizeField = createCombo(comp, IDisplayString.Prop.IMAGE_SIZE.getEnumSpec().getNames());
             createLabel(comp, " Tint:", true);
             imageColorField = createColorSelector(comp);
@@ -876,7 +877,7 @@ public class PropertiesDialog extends TrayDialog {
             comp = createComposite(group, 7);
             // I2 tag
             createLabel(comp, "Status image:", false);
-            image2Field = createImageSelector(comp, "status/");
+            image2Field = createImageSelector(comp, "status/", project);
             createLabel(comp, "", false);
             createLabel(comp, " Tint:", true);
             image2ColorField = createColorSelector(comp);
@@ -966,7 +967,8 @@ public class PropertiesDialog extends TrayDialog {
         // BGI tag
         comp = createComposite(group, 4);
         createLabel(comp, "Image:", false);
-        bgImageField = createImageSelector(comp, "background/");
+        IProject project = elements[0].getSelfOrEnclosingTypeElement().getNedTypeInfo().getProject(); // XXX ok to use the first element?
+        bgImageField = createImageSelector(comp, "background/", project);
         createLabel(comp, "Arrangement:", true);
         bgImageArrangement = createCombo(comp, IDisplayString.Prop.MODULE_IMAGE_ARRANGEMENT.getEnumSpec().getNames());
 
@@ -1245,12 +1247,12 @@ public class PropertiesDialog extends TrayDialog {
         return fieldEditor;
     }
 
-    protected ImageFieldEditor createImageSelector(Composite parent) {
-        return createImageSelector(parent, "");
+    protected ImageFieldEditor createImageSelector(Composite parent, IProject project) {
+        return createImageSelector(parent, "", project);
     }
 
-    protected ImageFieldEditor createImageSelector(Composite parent, String defaultFilter) {
-        ImageFieldEditor fieldEditor = new ImageFieldEditor(parent, SWT.BORDER);
+    protected ImageFieldEditor createImageSelector(Composite parent, String defaultFilter, IProject project) {
+        ImageFieldEditor fieldEditor = new ImageFieldEditor(parent, SWT.BORDER, project);
         fieldEditor.addModifyListener(modifyListener);
         fieldEditor.setDefaultFilter(defaultFilter);
         Composite composite = fieldEditor.getControl();
@@ -1865,8 +1867,9 @@ public class PropertiesDialog extends TrayDialog {
                         scale = parentDisplayString.getScale();
                     }
 
+                    IProject project = e.getSelfOrEnclosingTypeElement().getNedTypeInfo().getProject();
                     submoduleFigure.setName(name);
-                    submoduleFigure.setDisplayString(scale, displayString);
+                    submoduleFigure.setDisplayString(scale, displayString, project);
                     int width = submoduleFigure.getSize().width;
                     submoduleFigure.setCenterLocation(new Point(x+width/2, 50));
                     x += width + 10;
@@ -2510,8 +2513,8 @@ public class PropertiesDialog extends TrayDialog {
         if (fieldEditor!= null && fieldEditor.isEnabled() && !fieldEditor.isGrayed()) {
             String value = fieldEditor.getText();
             if (!StringUtils.isBlank(value) && !value.contains("$")) {
-                NedImageDescriptor descriptor = ImageFactory.getDescriptor(value);
-                if (descriptor==null || descriptor.equals(ImageFactory.getDescriptor(ImageFactory.UNKNOWN)))
+                NedImageDescriptor descriptor = ImageFactory.of(fieldEditor.getProject()).getDescriptor(value);
+                if (descriptor==null || descriptor.equals(ImageFactory.global().getDescriptor(ImageFactory.UNKNOWN)))
                     addWarningIfNotNull(errors, fieldEditor, fieldName, "Not a currently known image");
             }
         }

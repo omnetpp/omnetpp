@@ -31,7 +31,7 @@ public class RelayoutAction extends org.eclipse.gef.ui.actions.SelectionAction {
     public static final String ID = "Relayout";
     public static final String MENUNAME = "Re-&layout";
     public static final String TOOLTIP = "Re-layout compound module";
-    public static final ImageDescriptor IMAGE = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_LAYOUT);
+    public static final ImageDescriptor IMAGE = ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_LAYOUT);
 
     GroupRequest request;
 

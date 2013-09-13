@@ -303,7 +303,8 @@ public class ModuleHierarchyView extends AbstractModuleView {
                         return NedModelLabelProvider.getInstance().getImage(mn.element);
                     // for a "like" submodule, use icon of the concrete module type
                     DisplayString dps = mn.element.getDisplayString(mn.typeElement);
-                    Image image = ImageFactory.getIconImage(dps.getAsString(IDisplayString.Prop.IMAGE));
+                    IProject project = mn.element.getCompoundModule().getNedTypeInfo().getProject();
+                    Image image = ImageFactory.of(project).getIconImage(dps.getAsString(IDisplayString.Prop.IMAGE));
                     return image!=null ? image : NedModelLabelProvider.getInstance().getImage(mn.element);
                 }
                 else if (element instanceof ParamResolution)

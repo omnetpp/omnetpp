@@ -24,7 +24,7 @@ import org.omnetpp.scave.model.Dataset;
 public class OpenAction extends AbstractScaveAction {
     public OpenAction() {
         setText("Open");
-        setImageDescriptor(ImageFactory.getDescriptor(TOOLBAR_IMAGE_OPEN));
+        setImageDescriptor(ImageFactory.global().getDescriptor(TOOLBAR_IMAGE_OPEN));
         setToolTipText("Open item in a separate page");
     }
 

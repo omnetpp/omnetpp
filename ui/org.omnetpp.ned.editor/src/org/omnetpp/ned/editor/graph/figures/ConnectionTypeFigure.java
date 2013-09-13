@@ -7,6 +7,7 @@
 
 package org.omnetpp.ned.editor.graph.figures;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
@@ -30,7 +31,7 @@ public class ConnectionTypeFigure extends NedTypeFigure {
     /**
      * Adjusts the figure properties using a displayString object
      */
-    public void setDisplayString(IDisplayString dps) {
+    public void setDisplayString(IDisplayString dps, IProject project) {
 
         // we currently ignore the display strings of interfaces
         int lineWidth = isInterface() ? 1 : dps.getAsInt(IDisplayString.Prop.CONNECTION_WIDTH, 1);

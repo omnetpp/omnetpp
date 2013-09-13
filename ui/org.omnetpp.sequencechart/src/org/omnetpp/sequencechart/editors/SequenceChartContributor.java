@@ -567,13 +567,13 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
     private CommandContributionItem createFindTextCommandContributionItem() {
         CommandContributionItemParameter parameter = new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.sequencechart.findText", SWT.PUSH);
-        parameter.icon = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SEARCH);
+        parameter.icon = ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_SEARCH);
         return new CommandContributionItem(parameter);
     }
 
     private CommandContributionItem createFindNextCommandContributionItem() {
         CommandContributionItemParameter parameter = new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.sequencechart.findNext", SWT.PUSH);
-        parameter.icon = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SEARCH_NEXT);
+        parameter.icon = ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_SEARCH_NEXT);
         return new CommandContributionItem(parameter);
     }
 
@@ -682,7 +682,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     }
 
     private SequenceChartAction createFilterAction() {
-        return new SequenceChartMenuAction("Filter", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER)) {
+        return new SequenceChartMenuAction("Filter", Action.AS_DROP_DOWN_MENU, ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER)) {
             @Override
             protected void doRun() {
                 if (isFilteredEventLog())
@@ -1055,7 +1055,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     }
 
     private SequenceChartAction createDefaultZoomAction() {
-        return new SequenceChartAction("Default Zoom", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_ZOOM)) {
+        return new SequenceChartAction("Default Zoom", Action.AS_PUSH_BUTTON, ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_ZOOM)) {
             @Override
             protected void doRun() {
                 sequenceChart.defaultZoom();
@@ -1064,7 +1064,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     }
 
     private SequenceChartAction createZoomToFitAction() {
-        return new SequenceChartAction("Zoom to Fit", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_ZOOM)) {
+        return new SequenceChartAction("Zoom to Fit", Action.AS_PUSH_BUTTON, ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_ZOOM)) {
             @Override
             protected void doRun() {
                 sequenceChart.zoomToFit();
@@ -1073,7 +1073,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     }
 
     private SequenceChartAction createZoomInAction() {
-        return new SequenceChartAction("Zoom In", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_ZOOMPLUS)) {
+        return new SequenceChartAction("Zoom In", Action.AS_PUSH_BUTTON, ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_ZOOMPLUS)) {
             @Override
             protected void doRun() {
                 sequenceChart.zoomIn();
@@ -1082,7 +1082,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     }
 
     private SequenceChartAction createZoomOutAction() {
-        return new SequenceChartAction("Zoom Out", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_ZOOMMINUS)) {
+        return new SequenceChartAction("Zoom Out", Action.AS_PUSH_BUTTON, ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_ZOOMMINUS)) {
             @Override
             protected void doRun() {
                 sequenceChart.zoomOut();
@@ -1378,7 +1378,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
 
     private SequenceChartAction createToggleBookmarkAction() {
-        return new SequenceChartAction("Toggle bookmark", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_TOGGLE_BOOKMARK)) {
+        return new SequenceChartAction("Toggle bookmark", Action.AS_PUSH_BUTTON, ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_TOGGLE_BOOKMARK)) {
             @Override
             protected void doRun() {
                 try {
@@ -1654,7 +1654,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     }
 
     private SequenceChartAction createRefreshAction() {
-        return new SequenceChartAction("Refresh", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_REFRESH)) {
+        return new SequenceChartAction("Refresh", Action.AS_PUSH_BUTTON, ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_REFRESH)) {
             @Override
             protected void doRun() {
                 sequenceChart.refresh();
@@ -1663,7 +1663,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     }
 
     private SequenceChartAction createPinAction() {
-        return new SequenceChartAction("Pin", Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_UNPIN)) {
+        return new SequenceChartAction("Pin", Action.AS_CHECK_BOX, ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_UNPIN)) {
             @Override
             protected void doRun() {
                 IWorkbenchPart workbenchPart = sequenceChart.getWorkbenchPart();
@@ -1684,7 +1684,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
     private CommandContributionItem createRefreshCommandContributionItem() {
         CommandContributionItemParameter parameter = new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.sequencechart.refresh", SWT.PUSH);
-        parameter.icon = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_REFRESH);
+        parameter.icon = ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_REFRESH);
         return new CommandContributionItem(parameter);
     }
 

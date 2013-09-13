@@ -124,9 +124,9 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
 
     private DecorationOverlayIcon createDecoratedIcon(Image base, int severity) {
         if (severity == IMarker.SEVERITY_ERROR)
-            return new DecorationOverlayIcon(base, ImageFactory.getDescriptor(ImageFactory.DECORATOR_IMAGE_ERROR), IDecoration.BOTTOM_LEFT);
+            return new DecorationOverlayIcon(base, ImageFactory.global().getDescriptor(ImageFactory.DECORATOR_IMAGE_ERROR), IDecoration.BOTTOM_LEFT);
         else if (severity == IMarker.SEVERITY_WARNING)
-            return new DecorationOverlayIcon(base, ImageFactory.getDescriptor(ImageFactory.DECORATOR_IMAGE_ERROR), IDecoration.BOTTOM_LEFT);
+            return new DecorationOverlayIcon(base, ImageFactory.global().getDescriptor(ImageFactory.DECORATOR_IMAGE_ERROR), IDecoration.BOTTOM_LEFT);
         else
             return null;
     }

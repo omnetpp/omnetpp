@@ -1,5 +1,6 @@
 package org.omnetpp.ned.editor.graph.dialogs;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
@@ -26,6 +27,7 @@ import org.omnetpp.common.util.UIUtils;
  * @author Andras
  */
 public class ImageFieldEditor implements IFieldEditor {
+    private final IProject project; // image search scope
     private Composite composite;
     private Text text;
     private Button button;
@@ -33,7 +35,8 @@ public class ImageFieldEditor implements IFieldEditor {
     private String defaultFilter = ""; // dialog filter to use if text is empty
     private ControlDecoration problemDecoration;
 
-    public ImageFieldEditor(Composite parent, int style) {
+    public ImageFieldEditor(Composite parent, int style, final IProject project) {
+        this.project = project;
         composite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout(2, false);
         composite.setLayout(layout);
@@ -43,7 +46,7 @@ public class ImageFieldEditor implements IFieldEditor {
         text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         ((GridData)text.getLayoutData()).widthHint = 20 * PropertiesDialog.computeDialogFontAverageCharWidth(composite);
         new ContentAssistCommandAdapter(text, new TextContentAdapter(),
-                new ImageCellEditor.ImageContentProposalProvider(),
+                new ImageCellEditor.ImageContentProposalProvider(project),
                 ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, "/".toCharArray(), true);
 
         button = new Button(composite, SWT.PUSH);
@@ -65,11 +68,15 @@ public class ImageFieldEditor implements IFieldEditor {
         button.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 String initialValue = StringUtils.defaultIfEmpty(text.getText(), defaultFilter);
-                ImageSelectionDialog dialog = new ImageSelectionDialog(composite.getShell(), initialValue);
+                ImageSelectionDialog dialog = new ImageSelectionDialog(composite.getShell(), initialValue, project);
                 if (dialog.open() == Dialog.OK)
                     text.setText(dialog.getImageId());
             }
         });
+    }
+
+    public IProject getProject() {
+        return project;
     }
 
     public void setDefaultFilter(String defaultFilter) {

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -55,6 +56,9 @@ public class ImageSelectionDialog extends Dialog {
 
     private static final long TIMEOUT_MILLIS = 500;
 
+    // parameters
+    private final IProject project;
+
     // widgets
     private Combo filterCombo;
     private Label filterStatusLabel;
@@ -72,11 +76,12 @@ public class ImageSelectionDialog extends Dialog {
     private String selection = null;
 
 
-    public ImageSelectionDialog(Shell parentShell, String initialValue) {
+    public ImageSelectionDialog(Shell parentShell, String initialValue, IProject project) {
         super(parentShell);
         setShellStyle(getShellStyle() | SWT.MAX | SWT.RESIZE);
+        this.project = project;
         initialSelection = "".equals(initialValue) ? null : initialValue; // store "" as null
-        imageNames = new ArrayList<String>(ImageFactory.getImageNameList());
+        imageNames = new ArrayList<String>(ImageFactory.of(project).getImageNameList());
         // "" represents NO IMAGE
         imageNames.add(0, "");
     }
@@ -174,7 +179,7 @@ public class ImageSelectionDialog extends Dialog {
         ArrayList<String> result = new ArrayList<String>();
 
         // collect toplevel folders
-        result.addAll(ImageFactory.getCategories());
+        result.addAll(ImageFactory.of(project).getCategories());
 
         // add all concrete images as well
         result.addAll(imageNames);
@@ -273,7 +278,7 @@ public class ImageSelectionDialog extends Dialog {
         }
         else {
             // produce image and tooltip
-            Image image = ImageFactory.getImage(imageName);
+            Image image = ImageFactory.of(project).getImage(imageName);
             Rectangle bounds = image.getBounds();
             String tooltip = imageName + " (" + bounds.width + "x" + bounds.height + ")";
             if (bounds.width > 64 || bounds.height > 64) {

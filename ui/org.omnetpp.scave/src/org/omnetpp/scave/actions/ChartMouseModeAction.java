@@ -29,12 +29,12 @@ public class ChartMouseModeAction extends AbstractScaveAction {
         if (destMode==ZoomableCanvasMouseSupport.PAN_MODE) {
             setText("Hand Tool");
             setDescription("Lets you move the chart using the mouse; hold down Ctrl for zooming.");
-            setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_HAND));
+            setImageDescriptor(ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_HAND));
         }
         else if (destMode==ZoomableCanvasMouseSupport.ZOOM_MODE) {
             setText("Zoom Tool");
             setDescription("Lets you zoom the chart using the mouse; use Shift for zooming out, or hold down Ctrl for moving the chart.");
-            setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_ZOOM));
+            setImageDescriptor(ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_ZOOM));
         }
         else {
             Assert.isTrue(false);

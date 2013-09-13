@@ -53,7 +53,7 @@ public class CreateChartTemplateAction extends AbstractScaveAction {
     public CreateChartTemplateAction() {
         setText("Convert to Dataset...");
         setDescription("Create dataset from a temporary chart");
-        setImageDescriptor(ImageFactory.getDescriptor(TOOLBAR_IMAGE_TEMPLATE));
+        setImageDescriptor(ImageFactory.global().getDescriptor(TOOLBAR_IMAGE_TEMPLATE));
     }
 
     @Override

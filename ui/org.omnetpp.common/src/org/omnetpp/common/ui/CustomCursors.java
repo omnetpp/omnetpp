@@ -37,7 +37,7 @@ public class CustomCursors {
     }
 
     private static Cursor createCursor(String imageName, int hotspotX, int hotspotY) {
-        Image image = ImageFactory.getImage(imageName);
+        Image image = ImageFactory.global().getImage(imageName);
         return new Cursor(null, image.getImageData(), hotspotX, hotspotY);
     }
 }

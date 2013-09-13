@@ -49,7 +49,7 @@ public class AddSelectedToDatasetAction extends AbstractScaveAction {
     public AddSelectedToDatasetAction() {
         setText("Add Selected Data to Dataset...");
         setToolTipText("Add selected data to dataset");
-        setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_ADDSELECTEDTODATASET));
+        setImageDescriptor(ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_ADDSELECTEDTODATASET));
     }
 
     @Override

@@ -118,6 +118,11 @@ public interface IOmnetppLaunchConstants {
     public static final String OPP_NED_PATH = OMNETPP_LAUNCH_ID + ".NED_PATH";
 
     /**
+     * The Tkenv image path used to start the executable (--tkenv-image-path option)
+     */
+    public static final String OPP_IMAGE_PATH = OMNETPP_LAUNCH_ID + ".IMAGE_PATH";
+
+    /**
      * Whether to show the the debug view on launch
      */
     public static final String OPP_SHOWDEBUGVIEW = OMNETPP_LAUNCH_ID + ".SHOW_DEBUG_VIEW";

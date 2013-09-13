@@ -319,7 +319,7 @@ public class CompoundModuleFigure extends LayeredPane
         this.oldCumulativeHashCode = newCumulativeHashCode;
 
         // background color / image
-        Image imgback = ImageFactory.getImage(
+        Image imgback = ImageFactory.global().getImage(
                 dps.getAsString(IDisplayString.Prop.MODULE_IMAGE), null, null, 0);
 
         // decode the image arrangement

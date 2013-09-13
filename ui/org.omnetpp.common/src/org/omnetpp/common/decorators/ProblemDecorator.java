@@ -78,10 +78,10 @@ public class ProblemDecorator implements ILightweightLabelDecorator, IResourceCh
             int sevLevel = maxSeverityLevel(resource, checkDepth);
 
             if (sevLevel == IMarker.SEVERITY_ERROR)
-                decoration.addOverlay(ImageFactory.getDescriptor(ImageFactory.DECORATOR_IMAGE_ERROR), quadrant);
+                decoration.addOverlay(ImageFactory.global().getDescriptor(ImageFactory.DECORATOR_IMAGE_ERROR), quadrant);
 
             if (sevLevel == IMarker.SEVERITY_WARNING)
-                decoration.addOverlay(ImageFactory.getDescriptor(ImageFactory.DECORATOR_IMAGE_WARNING), quadrant);
+                decoration.addOverlay(ImageFactory.global().getDescriptor(ImageFactory.DECORATOR_IMAGE_WARNING), quadrant);
         }
     }
 

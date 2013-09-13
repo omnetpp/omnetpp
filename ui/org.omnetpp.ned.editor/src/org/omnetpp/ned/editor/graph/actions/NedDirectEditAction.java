@@ -22,7 +22,7 @@ public class NedDirectEditAction extends DirectEditAction {
     public NedDirectEditAction(IWorkbenchPart part) {
         super(part);
         setAccelerator(SWT.F6);  // affects only the display. actual mapping is done in GraphicalNedEditor.getCommonHandler()
-        setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_RENAME));
+        setImageDescriptor(ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_RENAME));
     }
 
     @Override

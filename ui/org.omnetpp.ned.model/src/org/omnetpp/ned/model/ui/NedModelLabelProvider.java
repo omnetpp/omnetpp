@@ -7,6 +7,7 @@
 
 package org.omnetpp.ned.model.ui;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -197,37 +198,38 @@ public class NedModelLabelProvider extends LabelProvider {
         Image image = null;
         if (model instanceof IHasDisplayString && !(model instanceof ChannelElementEx || model instanceof ChannelInterfaceElementEx)) {
             DisplayString dps = ((IHasDisplayString) model).getDisplayString();
-            image = ImageFactory.getIconImage(dps.getAsString(IDisplayString.Prop.IMAGE));
+            IProject project = model.getSelfOrEnclosingTypeElement().getNedTypeInfo().getProject();
+            image = ImageFactory.of(project).getIconImage(dps.getAsString(IDisplayString.Prop.IMAGE));
         }
 
         if (image != null)
             return image;
         else if (model instanceof ImportElement) {
-            image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_IMPORT);
+            image = ImageFactory.global().getImage(ImageFactory.MODEL_IMAGE_IMPORT);
         } else if (model instanceof PropertyElement) {
-            image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_PROPERTY);
+            image = ImageFactory.global().getImage(ImageFactory.MODEL_IMAGE_PROPERTY);
         } else if (model instanceof ParamElement) {
-            image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_PARAM);
+            image = ImageFactory.global().getImage(ImageFactory.MODEL_IMAGE_PARAM);
         } else if (model instanceof SimpleModuleElement) {
-            image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_SIMPLEMODULE);
+            image = ImageFactory.global().getImage(ImageFactory.MODEL_IMAGE_SIMPLEMODULE);
         } else if (model instanceof CompoundModuleElementEx) {
-            image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE);
+            image = ImageFactory.global().getImage(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE);
         } else if (model instanceof SubmoduleElementEx) {
-            image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_SUBMODULE);
+            image = ImageFactory.global().getImage(ImageFactory.MODEL_IMAGE_SUBMODULE);
         } else if (model instanceof ModuleInterfaceElement) {
-            image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_INTERFACE);
+            image = ImageFactory.global().getImage(ImageFactory.MODEL_IMAGE_INTERFACE);
         } else if (model instanceof ChannelInterfaceElement) {
-            image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE);
+            image = ImageFactory.global().getImage(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE);
         } else if (model instanceof ChannelElement) {
-            image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNEL);
+            image = ImageFactory.global().getImage(ImageFactory.MODEL_IMAGE_CHANNEL);
         } else if (model instanceof GateElement) {
-            image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_GATE);
+            image = ImageFactory.global().getImage(ImageFactory.MODEL_IMAGE_GATE);
         } else if (model instanceof ConnectionElementEx) {
-            image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CONNECTION);
+            image = ImageFactory.global().getImage(ImageFactory.MODEL_IMAGE_CONNECTION);
         } else if (model instanceof TypesElement || model instanceof ParametersElement ||
                    model instanceof GatesElement || model instanceof SubmodulesElement ||
                    model instanceof ConnectionsElement || model instanceof ConnectionGroupElement) {
-            image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_FOLDER);
+            image = ImageFactory.global().getImage(ImageFactory.MODEL_IMAGE_FOLDER);
         }
 
         return image;

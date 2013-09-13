@@ -8,6 +8,7 @@
 package org.omnetpp.figures;
 
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
@@ -46,8 +47,8 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
     protected static final int TEXTPOS_RIGHT = 2;
     protected static final int TEXTPOS_TOP = 3;
 
-    protected static final Image IMG_PIN = ImageFactory.getImage(ImageFactory.DEFAULT_PIN);
-    protected static final Image IMG_DEFAULT = ImageFactory.getImage(ImageFactory.DEFAULT);
+    protected static final Image IMG_PIN = ImageFactory.global().getImage(ImageFactory.DEFAULT_PIN);
+    protected static final Image IMG_DEFAULT = ImageFactory.global().getImage(ImageFactory.DEFAULT);
 
     // input for the layouting
     protected float scale = 1.0f;
@@ -106,7 +107,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
     /**
      * Adjust the properties using a display string object
      */
-    public void setDisplayString(float scale, IDisplayString displayString) {
+    public void setDisplayString(float scale, IDisplayString displayString, IProject project) {
         // optimization: do not change anything if the display string has not changed
         int newCumulativeHashCode = displayString.cumulativeHashCode();
         if (this.scale == scale && oldCumulativeHashCode != 0 && newCumulativeHashCode == oldCumulativeHashCode)
@@ -137,7 +138,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
 
         // shape support
         String imageSize = displayString.getAsString(IDisplayString.Prop.IMAGE_SIZE);
-        Image img = ImageFactory.getImage(
+        Image img = ImageFactory.of(project).getImage(
                 displayString.getAsString(IDisplayString.Prop.IMAGE),
                 imageSize,
                 ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.IMAGE_COLOR)),
@@ -166,7 +167,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
 
         // set the decoration image properties
         setDecorationImage(
-                ImageFactory.getImage(
+                ImageFactory.of(project).getImage(
                         displayString.getAsString(IDisplayString.Prop.IMAGE2),
                         null,
                         ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.IMAGE2_COLOR)),
@@ -305,7 +306,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
         this.image = image;
 
         if (image == null && shape == SHAPE_NONE)
-            this.image = ImageFactory.getImage(ImageFactory.DEFAULT_KEY);
+            this.image = ImageFactory.global().getImage(ImageFactory.DEFAULT_KEY);
     }
 
     public void setSubmoduleVectorIndex(Object vectorIdentifier, int vectorSize, int vectorIndex) {

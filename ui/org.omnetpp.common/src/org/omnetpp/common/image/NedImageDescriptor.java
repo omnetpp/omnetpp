@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
@@ -21,11 +22,10 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.graphics.Rectangle;
 
 
 /**
- * An ImageDescriptor used in NED editor. Supports coloring and preferred size.
+ * An ImageDescriptor used in NED editor. Supports coloring and scaling.
  *
  * @author rhornig
  */
@@ -42,12 +42,19 @@ public class NedImageDescriptor extends ImageDescriptor {
      */
     private final String name;
 
-    private int preferredScale = -100;
+    /**
+     * The version of the image.
+     *
+     * <p>This makes possible to load different version of the same file,
+     * see {@link ImageFactory.currentVersion}.
+     */
+    private final int version;
+
+    // requested image properties
+    private Scaling scaling = Scaling.NORMAL;
+    private Padding padding = Padding.NULL;
     private RGB colorization = null;
     private int colorizationWeight = 0;
-    private static Rectangle NULLPADDING = new Rectangle(0,0,0,0);
-    private Rectangle padding = NULLPADDING;
-    private Dimension paddedSize = null;
 
     /**
      * Creates a new file image descriptor.
@@ -57,80 +64,45 @@ public class NedImageDescriptor extends ImageDescriptor {
      * <p>
      * Note that the file is not accessed until its
      * <code>getImageData</code> method is called.
-     * Specific colorization effects can be added before calling
-     * <code>getImageData</code> calling <code>setColorization</code> and
-     * <code>setColorizationWeight</code>. If the image is vector based a
-     * preferred width can be set too with <code>setPreferredWidth</code>
-     *</p>
      *
-     * @param clazz class for resource directory, or
-     *   <code>null</code>
-     * @param filename the name of the file
+     * @param clazz class for resource directory, or <code>null</code>
+     * @param filename the name of the file or resource
+     * @param version the version number of the resource
      */
-    NedImageDescriptor(Class<?> clazz, String filename) {
+    NedImageDescriptor(Class<?> clazz, String filename, int version) {
+        Assert.isNotNull(filename);
         this.location = clazz;
         this.name = filename;
-    }
-
-    NedImageDescriptor(Class<?> clazz, String filename, int preferredScale) {
-        this(clazz, filename);
-        this.preferredScale = preferredScale;
+        this.version = version;
     }
 
     /**
-     * @return A copy of the current ImageDescriptor.
+     * Creates a new file image descriptor.
+     * The file has the given file name and is located
+     * in the given class's resource directory. If the given
+     * class is <code>null</code>, the file name must be absolute.
+     * <p>
+     * Note that the file is not accessed until its
+     * <code>getImageData</code> method is called.
+     *
+     * Scaling, padding, and colorization effects can be added by
+     * specifying the corresponing parameters.
+     *</p>
+     *
+     * @param clazz class for resource directory, or <code>null</code>
+     * @param filename the name of the file or resource
+     * @param version the version number of the resource
+     * @param scaling the scaling to be applied or {@code null}
+     * @param padding the padding to be applied or {@code null}
+     * @param shade the color of the shading or {@code null}
+     * @param weight the weight of the shading
      */
-    public NedImageDescriptor getCopy() {
-        NedImageDescriptor copy = new NedImageDescriptor(this.location, this.name, this.preferredScale);
-        copy.colorization = this.colorization;
-        copy.colorizationWeight = this.colorizationWeight;
-        copy.paddedSize = this.paddedSize;
-        copy.padding = this.padding;
-        return copy;
-    }
-
-    public void setColorization(RGB colorization) {
-        this.colorization = colorization;
-    }
-
-    public void setColorizationWeight(int colorizationWeight) {
-        this.colorizationWeight = colorizationWeight;
-    }
-
-    /**
-     * Sets the preferred scaling factor. If preferredScale > 0 it is treated
-     * as an absolute SHAPE_WIDTH parameter, otherwise it is assumed to be a percent value
-     * The aspect ratio of the image is kept
-     * @param preferredScale
-     */
-    public void setPreferredScale(int preferredScale) {
-        this.preferredScale = preferredScale;
-    }
-
-    /**
-     * Sets the padding value around the image if it is rescaled
-     * @param padding
-     */
-    public void setPadding(Rectangle padding) {
-        this.padding = padding;
-    }
-
-    /**
-     * Sets the padding value around the image if it is rescaled
-     * @param padding
-     */
-    public void setPadding(int padValue) {
-        this.padding = new Rectangle(padValue, padValue, padValue, padValue);
-    }
-
-    /**
-     * Sets the size of the image. The image is fitted into this size, and aspect ration is always kept.
-     * If needed addition transparent pixels are added. The Padding value is also considered also here.
-     * If both this and the preferredSize is set, padded size takes precedence
-     * @param paddedSize
-     */
-    public void setPaddedSize(Dimension paddedSize) {
-        this.paddedSize = paddedSize;
+    NedImageDescriptor(Class<?> clazz, String filename, int version, Scaling scaling, Padding padding, RGB shade, int weight) {
+        this(clazz, filename, version);
+        this.scaling = scaling == null ? Scaling.NORMAL : scaling;
+        this.padding = padding == null ? Padding.NULL : padding;
+        this.colorization = shade;
+        this.colorizationWeight = weight;
     }
 
     /* (non-Javadoc)
@@ -157,16 +129,10 @@ public class NedImageDescriptor extends ImageDescriptor {
             if (other.colorization != null)
                 return false;
         }
-        if (padding != null) {
-            if (!padding.equals(other.padding))
-                return false;
-        }
-        else {
-            if (other.padding != null)
-                return false;
-        }
         return name.equals(other.name)
-                && preferredScale == other.preferredScale
+                && version == other.version
+                && scaling.equals(other.scaling)
+                && padding.equals(other.padding)
                 && colorizationWeight == other.colorizationWeight;
     }
 
@@ -203,13 +169,14 @@ public class NedImageDescriptor extends ImageDescriptor {
      * @return <code>true</code> if resource is present <code>false</code> otherwise
      */
     public boolean canCreate() {
-        if (location != null && location.getResourceAsStream(name) == null)
-            return false;
-        // check if the file exists
-        File file = new File(name);
-        if (location == null && (!file.exists() || !file.isFile()))
-            return false;
-        return true;
+        if (location != null) {
+            return location.getResourceAsStream(name) != null;
+        }
+        else {
+            // check if the file exists
+            File file = new File(name);
+            return file.exists() && file.isFile();
+        }
     }
 
     /**
@@ -242,14 +209,14 @@ public class NedImageDescriptor extends ImageDescriptor {
 
     @Override
     public int hashCode() {
-        int code = name.hashCode();
+        int code = (37 * name.hashCode() + version);
         if (location != null) {
             code += location.hashCode();
         }
         if (colorization != null) {
             code += colorization.hashCode();
         }
-        code += colorizationWeight * 10000 + preferredScale;
+        code += colorizationWeight * 10000 + scaling.hashCode();
         return code;
     }
 
@@ -260,7 +227,8 @@ public class NedImageDescriptor extends ImageDescriptor {
     @Override
     public String toString() {
         return "NedImageDescriptor(location=" + location + ", name=" + name +
-            ", prefScale=" + preferredScale + ", colorize="+colorization+", colorWight="+colorizationWeight+")";
+            ", scaling=" + scaling + ", padding" + padding +
+            ", colorize=" + colorization + ", colorWight=" + colorizationWeight + ")";
     }
 
     /**
@@ -338,38 +306,25 @@ public class NedImageDescriptor extends ImageDescriptor {
     }
 
     /**
-     * @param result
-     * @param scale
-     * @return
+     * Utility method for rescaling the specified image.
+     * If the size is not changed, and there is no padding, then the original
+     * image is returned, otherwise a new ImageData is constructed.
      */
     private ImageData rescaleImageData(ImageData imgData) {
+        Dimension size = scaling.computeImageSize(imgData);
         // do not change anything if no re-scale is needed and no padding requested
-        if ((preferredScale == -100 || imgData.width==0 || imgData.width==preferredScale) &&
-                padding.equals(NULLPADDING) && paddedSize == null)
+        if (size == null && padding.equals(Padding.NULL))
             return imgData;
 
-        int newWidth, newHeight;
+        int newWidth = size == null ? imgData.width : size.width;
+        int newHeight = size == null ? imgData.height : size.height;
 
-        if (paddedSize != null) {
-            newWidth = paddedSize.width;
-            newHeight = paddedSize.height;
-        }
-        else {
-            double scaleRatio;
-            if (preferredScale > 0)
-                // treat as absolute size
-                scaleRatio = (double)preferredScale / imgData.width;
-            else
-                // treat as relative size in percent
-                scaleRatio = -(double)preferredScale / 100;
-
-            // image should not be smaller than the padding itself
-            newWidth = Math.max((int)(imgData.width*scaleRatio), padding.x+padding.width);
-            newHeight = Math.max((int)(imgData.height*scaleRatio), padding.y+padding.height);
-        }
+        // image should not be smaller than the padding itself
+        newWidth = Math.max(newWidth, padding.getWidth());
+        newHeight = Math.max(newHeight, padding.getHeight());
 
         return ImageUtils.getResampledImageData(imgData, newWidth, newHeight,
-                                    padding.x, padding.y, padding.width, padding.height);
+                                    padding.left, padding.top, padding.right, padding.bottom);
     }
 
 }

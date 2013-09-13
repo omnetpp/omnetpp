@@ -420,7 +420,7 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         public Image getImage() {
-            return ImageFactory.getIconImage(ImageFactory.MODEL_IMAGE_FOLDER);
+            return ImageFactory.global().getIconImage(ImageFactory.MODEL_IMAGE_FOLDER);
         }
 
         public abstract String getColumnText(int index);
@@ -452,7 +452,7 @@ public class ResultFileManagerTreeContentProvider {
 
         @Override
         public Image getImage() {
-            return ImageFactory.getIconImage(ImageFactory.TOOLBAR_IMAGE_PROPERTIES);
+            return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_PROPERTIES);
         }
 
         @Override
@@ -1039,7 +1039,7 @@ public class ResultFileManagerTreeContentProvider {
 
         @Override
         public Image getImage() {
-            return ImageFactory.getIconImage(ImageFactory.MODEL_IMAGE_SIMPLEMODULE);
+            return ImageFactory.global().getIconImage(ImageFactory.MODEL_IMAGE_SIMPLEMODULE);
         }
 
         @Override
@@ -1097,7 +1097,7 @@ public class ResultFileManagerTreeContentProvider {
 
         @Override
         public Image getImage() {
-            return ImageFactory.getIconImage(ImageFactory.MODEL_IMAGE_SIMPLEMODULE);
+            return ImageFactory.global().getIconImage(ImageFactory.MODEL_IMAGE_SIMPLEMODULE);
         }
 
         @Override
@@ -1173,27 +1173,27 @@ public class ResultFileManagerTreeContentProvider {
                     if (allType == -1)
                         allType = type;
                     else if (allType != type)
-                        return ImageFactory.getIconImage(ImageFactory.MODEL_IMAGE_FOLDER);
+                        return ImageFactory.global().getIconImage(ImageFactory.MODEL_IMAGE_FOLDER);
                 }
                 if (allType == ResultFileManager.SCALAR)
-                    return ImageFactory.getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWSCALARS);
+                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWSCALARS);
                 else if (allType == ResultFileManager.VECTOR)
-                    return ImageFactory.getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWVECTORS);
+                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWVECTORS);
                 else if (allType == ResultFileManager.HISTOGRAM)
-                    return ImageFactory.getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS);
+                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS);
                 else
-                    return ImageFactory.getIconImage(ImageFactory.DEFAULT);
+                    return ImageFactory.global().getIconImage(ImageFactory.DEFAULT);
             }
             else {
                 ResultItem resultItem = manager.getItem(id);
                 if (resultItem instanceof ScalarResult)
-                    return ImageFactory.getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWSCALARS);
+                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWSCALARS);
                 else if (resultItem instanceof VectorResult)
-                    return ImageFactory.getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWVECTORS);
+                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWVECTORS);
                 else if (resultItem instanceof HistogramResult)
-                    return ImageFactory.getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS);
+                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS);
                 else
-                    return ImageFactory.getIconImage(ImageFactory.DEFAULT);
+                    return ImageFactory.global().getIconImage(ImageFactory.DEFAULT);
             }
         }
 

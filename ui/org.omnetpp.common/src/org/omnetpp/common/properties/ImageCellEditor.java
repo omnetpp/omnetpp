@@ -9,6 +9,7 @@ package org.omnetpp.common.properties;
 
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
@@ -24,36 +25,43 @@ import org.omnetpp.common.image.ImageSelectionDialog;
 public class ImageCellEditor extends TextCellEditorEx {
 
     public static class ImageContentProposalProvider extends ContentProposalProvider {
-        public ImageContentProposalProvider() {
+        private IProject project;
+
+        public ImageContentProposalProvider(IProject project) {
             super(true);
+            this.project = project;
         }
 
         @Override
         protected List<IContentProposal> getProposalCandidates(String prefix) {
             if (prefix.contains("/"))
-                return sort(toProposals(ImageFactory.getImageNameList().toArray(new String[]{})));
+                return sort(toProposals(ImageFactory.of(project).getImageNameList().toArray(new String[]{})));
             else
-                return sort(toProposals(ImageFactory.getCategories().toArray(new String[]{})));
+                return sort(toProposals(ImageFactory.of(project).getCategories().toArray(new String[]{})));
         }
-
     }
 
-    public ImageCellEditor() {
+    final IProject project; // scope of the image search
+
+    public ImageCellEditor(IProject project) {
         super();
+        this.project = project;
     }
 
-    public ImageCellEditor(Composite parent, int style) {
+    public ImageCellEditor(Composite parent, int style, IProject project) {
         super(parent, style);
+        this.project = project;
     }
 
-    protected ImageCellEditor(Composite parent) {
+    protected ImageCellEditor(Composite parent, IProject project) {
         super(parent);
+        this.project = project;
     }
 
     @Override
     protected Control createControl(Composite parent) {
         Control result = super.createControl(parent);
-        IContentProposalProvider proposalProvider = new ImageContentProposalProvider();
+        IContentProposalProvider proposalProvider = new ImageContentProposalProvider(project);
         new ContentAssistCommandAdapter(text, new TextContentAdapter(), proposalProvider,
                 ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, "/".toCharArray(), true);
 
@@ -63,7 +71,7 @@ public class ImageCellEditor extends TextCellEditorEx {
     @Override
     protected Object openDialogBox(Control cellEditorWindow) {
         ImageSelectionDialog cellDialog =
-            new ImageSelectionDialog(cellEditorWindow.getShell(), (String)getValue());
+            new ImageSelectionDialog(cellEditorWindow.getShell(), (String)getValue(), project);
 
         if (cellDialog.open() == Dialog.OK)
             return cellDialog.getImageId();

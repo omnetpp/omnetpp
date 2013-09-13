@@ -7,6 +7,7 @@
 
 package org.omnetpp.ned.editor.graph.actions;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.jface.dialogs.Dialog;
@@ -36,10 +37,13 @@ public class ChooseIconAction extends org.eclipse.gef.ui.actions.SelectionAction
     public static final String ID = "ChooseIcon";
     public static final String MENUNAME = "C&hoose an Icon...";
     public static final String TOOLTIP = "Choose an icon for the module";
-    public static final ImageDescriptor IMAGE = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CHOOSEICON);
+    public static final ImageDescriptor IMAGE = ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_CHOOSEICON);
 
-    public ChooseIconAction(IWorkbenchPart part) {
+    private final IProject project; // scope of the icon search, can be null
+
+    public ChooseIconAction(IWorkbenchPart part, IProject project) {
         super(part);
+        this.project = project;
         setText(MENUNAME);
         setId(ID);
         setToolTipText(TOOLTIP);
@@ -72,7 +76,7 @@ public class ChooseIconAction extends org.eclipse.gef.ui.actions.SelectionAction
      */
     protected String openDialogBox(String initialValue) {
         ImageSelectionDialog dialog =    //FIXME this is always called with initialValue==null!! --Andras
-            new ImageSelectionDialog(Display.getDefault().getActiveShell(), initialValue);
+            new ImageSelectionDialog(Display.getDefault().getActiveShell(), initialValue, project);
 
         if (dialog.open() == Dialog.OK)
             return dialog.getImageId();

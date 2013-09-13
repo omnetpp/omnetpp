@@ -43,7 +43,7 @@ public class CreateTempChartAction extends AbstractScaveAction {
     public CreateTempChartAction() {
         setText("Plot");
         setToolTipText("Plot");
-        setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_PLOT));
+        setImageDescriptor(ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_PLOT));
     }
 
     @Override

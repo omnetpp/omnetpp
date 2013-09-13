@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PositionConstants;
@@ -175,11 +176,12 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         // define the properties that determine the visual appearance
         CompoundModuleTypeFigure compoundModuleFigure = getFigure();
         CompoundModuleElementEx compoundModuleModel = getModel();
+        IProject project = compoundModuleModel.getNedTypeInfo().getProject();
         compoundModuleFigure.setName(compoundModuleModel.getName());
         compoundModuleFigure.setNetwork(compoundModuleModel.isNetwork());
         compoundModuleFigure.setInterface(compoundModuleModel instanceof IInterfaceTypeElement);
         compoundModuleFigure.setInnerType(compoundModuleModel.getEnclosingTypeElement() != null);
-        compoundModuleFigure.setDisplayString(compoundModuleModel.getDisplayString());
+        compoundModuleFigure.setDisplayString(compoundModuleModel.getDisplayString(), project);
     }
 
     /**

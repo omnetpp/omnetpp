@@ -90,6 +90,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
     protected Combo fConfigCombo;
     protected Text fRunText;
     protected Text fNedPathText;
+    protected Text fImagePathText;
     protected Spinner fParallelismSpinner;
     protected Button fDefaultExternalEnvButton;
     protected Button fIDEEnvButton;
@@ -210,6 +211,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
 
             fLibraryText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "").trim());
             fNedPathText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, "").trim());
+            fImagePathText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_IMAGE_PATH, "").trim());
             fAdditionalText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "").trim());
             fShowDebugViewButton.setSelection(config.getAttribute(IOmnetppLaunchConstants.OPP_SHOWDEBUGVIEW, false));
 
@@ -230,6 +232,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, fLibraryText.getText());
 
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, fNedPathText.getText());
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_IMAGE_PATH, fImagePathText.getText());
 
         // if we are in debug mode, we should store the run parameter into the command line too
         String strippedRun = StringUtils.deleteWhitespace(fRunText.getText());
@@ -678,6 +681,10 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         String nedText = fNedPathText.getText();
         nedText = nedText.replaceAll("\\$\\{"+OmnetppLaunchUtils.VAR_NED_PATH+":.*?\\}", Matcher.quoteReplacement("${"+OmnetppLaunchUtils.VAR_NED_PATH+":"+workingDir+"}"));
         fNedPathText.setText(nedText);
+
+        String imageText = fImagePathText.getText();
+        imageText = imageText.replaceAll("\\$\\{"+OmnetppLaunchUtils.VAR_IMAGE_PATH+":.*?\\}", Matcher.quoteReplacement("${"+OmnetppLaunchUtils.VAR_IMAGE_PATH+":"+workingDir+"}"));
+        fImagePathText.setText(imageText);
     }
 
     // ********************************************************************
@@ -825,6 +832,12 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         fNedPathText.setToolTipText("Directories where NED files are read from (relative to the first selected ini file). " +
         "Use ${opp_ned_path:/workingdir} for automatic setting.");
         fNedPathText.addModifyListener(this);
+
+        SWTFactory.createLabel(composite, "Tkenv Image Path:", 1);
+        fImagePathText = SWTFactory.createSingleText(composite, 2);
+        fImagePathText.setToolTipText("Directories where image files are read from (relative to the first selected ini file). " +
+        "Use ${opp_image_path:/workingdir} for automatic setting.");
+        fImagePathText.addModifyListener(this);
 
         SWTFactory.createLabel(composite, "Additional arguments:", 1);
         fAdditionalText = SWTFactory.createSingleText(composite, 2);
