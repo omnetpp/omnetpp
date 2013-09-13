@@ -223,7 +223,6 @@ copy-ui-docu:
 	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-overview
 	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-customization-guide
 	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-developersguide
-	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-glance
 	cp -r $(OMNETPP_DOC_DIR)/ide-changelog $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
 	cp -r $(OMNETPP_DOC_DIR)/api $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
 	cp -r $(OMNETPP_DOC_DIR)/src/manual/eclipse $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/manual
@@ -233,7 +232,6 @@ copy-ui-docu:
 	cp -r $(OMNETPP_DOC_DIR)/ide-overview $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
 	cp -r $(OMNETPP_DOC_DIR)/src/ide-customization-guide/eclipse $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-customization-guide
 	cp -r $(OMNETPP_DOC_DIR)/src/ide-developersguide/eclipse $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-developersguide
-	cp -r $(OMNETPP_DOC_DIR)/src/ide-glance $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-glance
 	echo "<html><body><pre>" >$(OMNETPP_UI_DIR)/org.omnetpp.doc/content/License.html
 	cat $(OMNETPP_DOC_DIR)/License >>$(OMNETPP_UI_DIR)/org.omnetpp.doc/content/License.html
 	echo "</pre></body></html>" >>$(OMNETPP_UI_DIR)/org.omnetpp.doc/content/License.html
