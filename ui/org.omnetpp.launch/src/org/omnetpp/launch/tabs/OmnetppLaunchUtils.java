@@ -279,6 +279,7 @@ public class OmnetppLaunchUtils {
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, executable);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, iniFile);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, "${"+VAR_NED_PATH+":"+workingDir+"}");
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_IMAGE_PATH, "${"+VAR_IMAGE_PATH+":"+workingDir+"}");
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "${"+VAR_SHARED_LIBS+":"+workingDir+"}");
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "");
@@ -385,6 +386,18 @@ public class OmnetppLaunchUtils {
             // always create ned path option if more than one path element is present. Do not create if it contains a single . only (that's the default)
             if (nedPaths.length>1 || !".".equals(nedPaths[0]))
                 args += " -n " + StringUtils.join(nedPaths, pathSep)+" ";
+        }
+
+        // Tkenv image path
+        String imagePathStr = config.getAttribute(IOmnetppLaunchConstants.OPP_IMAGE_PATH, "").trim();
+        imagePathStr = StringUtils.substituteVariables(imagePathStr);
+        if (StringUtils.isNotBlank(imagePathStr)) {
+            String[] imagePaths = StringUtils.split(imagePathStr, pathSep);
+            for (int i = 0 ; i< imagePaths.length; i++)
+                imagePaths[i] = makeRelativePathTo(getLocationForWorkspacePath(imagePaths[i], workingdirStr, false), workingdirLocation).toString();
+            // always create image path option if more than one path element is present. Do not create if it contains a single . only (that's the default)
+            if (imagePaths.length>1 || !".".equals(imagePaths[0]))
+                args += " --tkenv-image-path=" + StringUtils.join(imagePaths, pathSep)+" ";
         }
 
         // shared libraries
@@ -862,5 +875,6 @@ public class OmnetppLaunchUtils {
 
     public final static String VAR_NED_PATH = "opp_ned_path";
     public final static String VAR_SHARED_LIBS = "opp_shared_libs";
+    public final static String VAR_IMAGE_PATH = "opp_image_path";
 
 }

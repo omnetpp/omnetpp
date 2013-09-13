@@ -53,7 +53,7 @@ public class CommonPlugin extends AbstractUIPlugin {
         super.start(context);
         PLUGIN_ID = getBundle().getSymbolicName();
 
-        ImageFactory.initialize(getConfigurationPreferenceStore().getString(IConstants.PREF_OMNETPP_IMAGE_PATH).split(";"));
+        ImageFactory.initialize();
 
         // configure FreeMarker to use the Eclipse log (and NOT print to stdout)
         try {

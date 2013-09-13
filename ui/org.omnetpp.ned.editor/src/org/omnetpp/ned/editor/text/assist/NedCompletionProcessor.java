@@ -365,7 +365,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
                 }
                 // add tag specific proposals
                 if (tag != null && tagPos == 0 && tag.equals(IDisplayString.Tag.bgi))
-                    addImageProposals(viewer, documentOffset, result, "maps/.*", new SyntaxHighlightHelper.NedDisplayStringImageNameDetector());
+                    addImageProposals(project, viewer, documentOffset, result, "maps/.*", new SyntaxHighlightHelper.NedDisplayStringImageNameDetector());
                 else if (prop != null) {
                     IDisplayString.EnumSpec enumSpec = prop.getEnumSpec();
                     if (enumSpec != null)
@@ -373,7 +373,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
                     else if (prop.getType() == PropType.COLOR)
                         addProposals(viewer, documentOffset, result, ColorFactory.getColorNames(), ColorFactory.getColorRGBs(), ColorFactory.getColorImages());
                     else if (prop.getType() == PropType.IMAGE)
-                        addImageProposals(viewer, documentOffset, result, ".*", new SyntaxHighlightHelper.NedDisplayStringImageNameDetector());
+                        addImageProposals(project, viewer, documentOffset, result, ".*", new SyntaxHighlightHelper.NedDisplayStringImageNameDetector());
                 }
             }
         }
@@ -400,8 +400,8 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
         return result.toArray(new ICompletionProposal[result.size()]);
     }
 
-    private void addImageProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, String regex, IWordDetector wordDetector) {
-        List<String> names = ImageFactory.getImageNameList();
+    private void addImageProposals(IProject project, ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, String regex, IWordDetector wordDetector) {
+        List<String> names = ImageFactory.of(project).getImageNameList();
         List<String> matchingName = new ArrayList<String>();
         for (String name : names)
             if (name.matches(regex))
@@ -410,7 +410,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
         Image[] images = new Image[proposals.length];
         for (int i = 0; i < proposals.length; i++) {
             String proposal = proposals[i];
-            images[i] = ImageFactory.getIconImage(proposal);
+            images[i] = ImageFactory.of(project).getIconImage(proposal);
         }
         result.addAll(createProposals(viewer, documentOffset, wordDetector, "", proposals, "", proposals, images));
     }

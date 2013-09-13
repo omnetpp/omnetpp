@@ -356,7 +356,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
     private CommandContributionItem createFindTextCommandContributionItem() {
         CommandContributionItemParameter parameter = new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.findText", SWT.PUSH);
-        parameter.icon = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SEARCH);
+        parameter.icon = ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_SEARCH);
         return new CommandContributionItem(parameter);
     }
 
@@ -373,7 +373,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
     private CommandContributionItem createFindNextCommandContributionItem() {
         CommandContributionItemParameter parameter = new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.findNext", SWT.PUSH);
-        parameter.icon = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SEARCH_NEXT);
+        parameter.icon = ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_SEARCH_NEXT);
         return new CommandContributionItem(parameter);
     }
 
@@ -707,7 +707,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
     }
 
     private EventLogTableAction createToggleBookmarkAction() {
-        return new EventLogTableAction("Toggle Bookmark", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_TOGGLE_BOOKMARK)) {
+        return new EventLogTableAction("Toggle Bookmark", Action.AS_PUSH_BUTTON, ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_TOGGLE_BOOKMARK)) {
             @Override
             protected void doRun() {
                 try {
@@ -862,7 +862,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
     }
 
     private EventLogTableMenuAction createDisplayModeAction() {
-        return new EventLogTableMenuAction("Display Mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+        return new EventLogTableMenuAction("Display Mode", Action.AS_DROP_DOWN_MENU, ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
             private AbstractMenuCreator menuCreator;
 
             @Override
@@ -1017,7 +1017,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
     }
 
     private EventLogTableAction createFilterAction() {
-        return new EventLogTableMenuAction("Filter", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER)) {
+        return new EventLogTableMenuAction("Filter", Action.AS_DROP_DOWN_MENU, ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER)) {
             @Override
             protected void doRun() {
                 if (isFilteredEventLog())
@@ -1110,7 +1110,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
     }
 
     private EventLogTableAction createRefreshAction() {
-        return new EventLogTableAction("Refresh", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_REFRESH)) {
+        return new EventLogTableAction("Refresh", Action.AS_PUSH_BUTTON, ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_REFRESH)) {
             @Override
             protected void doRun() {
                 eventLogTable.refresh();
@@ -1119,7 +1119,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
     }
 
     private EventLogTableAction createPinAction() {
-        return new EventLogTableAction("Pin", Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_UNPIN)) {
+        return new EventLogTableAction("Pin", Action.AS_CHECK_BOX, ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_UNPIN)) {
             @Override
             protected void doRun() {
                 IWorkbenchPart workbenchPart = eventLogTable.getWorkbenchPart();
@@ -1140,7 +1140,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
     private CommandContributionItem createRefreshCommandContributionItem() {
         CommandContributionItemParameter parameter = new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.refresh", SWT.PUSH);
-        parameter.icon = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_REFRESH);
+        parameter.icon = ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_REFRESH);
         return new CommandContributionItem(parameter);
     }
 

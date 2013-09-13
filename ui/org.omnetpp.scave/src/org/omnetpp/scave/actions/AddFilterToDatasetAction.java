@@ -40,7 +40,7 @@ public class AddFilterToDatasetAction extends AbstractScaveAction {
     public AddFilterToDatasetAction() {
         setText("Add Filter Expression to Dataset...");
         setToolTipText("Add filter expression to dataset");
-        setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_ADDFILTERTODATASET));
+        setImageDescriptor(ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_ADDFILTERTODATASET));
     }
 
     @Override

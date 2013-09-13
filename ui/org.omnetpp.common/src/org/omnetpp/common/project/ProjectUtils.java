@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -112,7 +113,7 @@ public class ProjectUtils {
     }
 
     public static IProject[] getAllReferencedProjects(IProject project, boolean requireOmnetppNature, boolean includeSelf) throws CoreException {
-        Set<IProject> result = new HashSet<IProject>();
+        Set<IProject> result = new LinkedHashSet<IProject>();
         if (includeSelf && (requireOmnetppNature ? isOpenOmnetppProject(project) : project.isAccessible()))
             result.add(project);
         collectReferencedProjects(project, requireOmnetppNature, result);

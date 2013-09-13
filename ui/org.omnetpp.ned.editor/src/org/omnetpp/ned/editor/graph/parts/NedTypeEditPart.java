@@ -7,13 +7,13 @@
 
 package org.omnetpp.ned.editor.graph.parts;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.draw2d.IFigure;
 import org.omnetpp.ned.editor.graph.figures.ConnectionTypeFigure;
 import org.omnetpp.ned.editor.graph.figures.ModuleTypeFigure;
 import org.omnetpp.ned.editor.graph.figures.NedTypeFigure;
 import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.DisplayString;
-import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
 import org.omnetpp.ned.model.interfaces.IInterfaceTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
@@ -54,7 +54,8 @@ public class NedTypeEditPart extends NedEditPart {
         getFigure().setInterface(getModel() instanceof IInterfaceTypeElement);
         getFigure().setInnerType(getModel().getEnclosingTypeElement() != null);
         DisplayString displayString = getModel().getDisplayString();
-        getFigure().setDisplayString(displayString);
+        IProject project = getModel().getNedTypeInfo().getProject();
+        getFigure().setDisplayString(displayString, project);
     }
 
     @Override

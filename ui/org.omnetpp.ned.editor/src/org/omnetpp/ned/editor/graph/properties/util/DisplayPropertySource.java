@@ -9,10 +9,10 @@ package org.omnetpp.ned.editor.graph.properties.util;
 
 import java.util.EnumSet;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
-
 import org.omnetpp.common.properties.ColorPropertyDescriptor;
 import org.omnetpp.common.properties.EnumComboboxPropertyDescriptor;
 import org.omnetpp.common.properties.ImagePropertyDescriptor;
@@ -27,7 +27,8 @@ import org.omnetpp.ned.model.interfaces.IHasDisplayString;
  */
 //TODO implement number cell editor
 abstract public class DisplayPropertySource extends NedBasePropertySource {
-
+    // the project of the NED element; used when searching images
+    protected final IProject project;
     // property descriptor for the sheet (could be static if pushed upper)
     protected IPropertyDescriptor[] propertyDescArray = null;
     // by default supports all possible properties defined in DisplayString
@@ -35,6 +36,7 @@ abstract public class DisplayPropertySource extends NedBasePropertySource {
 
     public DisplayPropertySource(IHasDisplayString model) {
         super(model);
+        project = model.getSelfOrEnclosingTypeElement().getNedTypeInfo().getProject();
         // by default we provide only  the single line display property editor
         supportedProperties.add(DisplayString.Prop.DISPLAY);
     }
@@ -42,7 +44,7 @@ abstract public class DisplayPropertySource extends NedBasePropertySource {
     /**
      * Creates and returns a property descriptor for the given display string property.
      */
-    public static IPropertyDescriptor getPropertyDescriptor(DisplayString.Prop prop) {
+    public IPropertyDescriptor getPropertyDescriptor(DisplayString.Prop prop) {
         PropertyDescriptor pdesc;
         if (prop.getEnumSpec() != null)
             pdesc = new EnumComboboxPropertyDescriptor(prop, prop.getName(), prop.getEnumSpec());
@@ -52,8 +54,9 @@ abstract public class DisplayPropertySource extends NedBasePropertySource {
             pdesc = new TextPropertyDescriptor(prop, prop.getName());
         else if (prop.getType() == DisplayString.PropType.INTEGER)
             pdesc = new TextPropertyDescriptor(prop, prop.getName());
-        else if (prop.getType() == DisplayString.PropType.IMAGE)
-            pdesc = new ImagePropertyDescriptor(prop, prop.getName());
+        else if (prop.getType() == DisplayString.PropType.IMAGE) {
+            pdesc = new ImagePropertyDescriptor(prop, prop.getName(), project);
+        }
         else if (prop.getType() == DisplayString.PropType.COLOR)
             pdesc = new ColorPropertyDescriptor(prop, prop.getName());
         else

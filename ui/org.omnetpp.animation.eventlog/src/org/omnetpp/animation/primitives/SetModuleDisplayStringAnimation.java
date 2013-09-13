@@ -36,7 +36,7 @@ public class SetModuleDisplayStringAnimation extends AbstractInfiniteAnimation {
 		if (submoduleFigure != null) {
 			oldDisplayString = module.getDisplayString();
             module.setDisplayString(displayString);
-			submoduleFigure.setDisplayString(1.0f, displayString);
+			submoduleFigure.setDisplayString(1.0f, displayString, null/*TODO*/);
 			Assert.isTrue(submoduleFigure.isVisible());
 		}
 	}
@@ -48,7 +48,7 @@ public class SetModuleDisplayStringAnimation extends AbstractInfiniteAnimation {
         SubmoduleFigure submoduleFigure = (SubmoduleFigure)animationController.getFigure(module, SubmoduleFigure.class);
 		if (submoduleFigure != null) {
 		    module.setDisplayString(oldDisplayString);
-			submoduleFigure.setDisplayString(1.0f, oldDisplayString == null ? new DisplayString("") : oldDisplayString);
+			submoduleFigure.setDisplayString(1.0f, oldDisplayString == null ? new DisplayString("") : oldDisplayString, null/*TODO*/);
 		}
 	}
 }

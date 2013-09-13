@@ -31,7 +31,7 @@ import org.omnetpp.ned.model.interfaces.INedTypeResolver.IPredicate;
  * @author rhornig
  */
 abstract public class NedBasePropertySource implements IPropertySource2 {
-    private INedElement nedModel;
+    private final INedElement nedModel;
 
     public NedBasePropertySource(INedElement model) {
         nedModel = model;

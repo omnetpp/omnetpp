@@ -33,7 +33,7 @@ public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction 
     public static final String ID = "Pinned";
     public static final String MENUNAME = "Pi&nned";
     public static final String TOOLTIP = "Pins the module to a location";
-    public static final ImageDescriptor IMAGE = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_UNPIN);
+    public static final ImageDescriptor IMAGE = ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_UNPIN);
 
     public TogglePinAction(IWorkbenchPart part) {
         super(part, IAction.AS_CHECK_BOX);

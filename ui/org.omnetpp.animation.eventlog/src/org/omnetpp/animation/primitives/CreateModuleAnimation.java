@@ -63,7 +63,7 @@ public class CreateModuleAnimation extends AbstractInfiniteAnimation {
         if (parentCompoundModuleFigure != null) {
 			final SubmoduleFigure submoduleFigure = new SubmoduleFigure();
             submoduleFigure.setName(module.getFullName());
-            submoduleFigure.setDisplayString(1.0f, new DisplayString(""));
+            submoduleFigure.setDisplayString(1.0f, new DisplayString(""), null/*TODO*/);
             submoduleFigure.setRangeFigureLayer(parentCompoundModuleFigure.getBackgroundDecorationLayer());
 			submoduleFigure.addMouseListener(new MouseListener() {
 				public void mouseDoubleClicked(MouseEvent me) {

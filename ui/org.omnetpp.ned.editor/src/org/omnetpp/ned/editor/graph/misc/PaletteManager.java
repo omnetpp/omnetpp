@@ -157,13 +157,13 @@ public class PaletteManager {
         // test specific code part (tests whether we are running under gui testing)
         // this is a hack because the testing framework cannot access the PalettStack correctly.
         if (System.getProperty("com.simulcraft.test.running") == null)
-            channelsStack = new PaletteStack("Connections", "Connect modules using this tool",ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION));
+            channelsStack = new PaletteStack("Connections", "Connect modules using this tool",ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION));
         else
-            channelsStack = new PaletteDrawer("Connections", ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION));
+            channelsStack = new PaletteDrawer("Connections", ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION));
         toolsContainer = createTools();
-        typesContainer = new PaletteDrawer("Types", ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
+        typesContainer = new PaletteDrawer("Types", ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
         typesContainer.setInitialState(PaletteDrawer.INITIAL_STATE_PINNED_OPEN);
-        defaultContainer = new PaletteDrawer(getSubmodulesDrawerLabel(), ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
+        defaultContainer = new PaletteDrawer(getSubmodulesDrawerLabel(), ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
 
         refresh();
     }
@@ -303,7 +303,7 @@ public class PaletteManager {
         // TODO add grouping support
 //        PaletteDrawer drawer = currentContainers.get(group);
 //        if (drawer == null) {
-//            drawer = new PaletteDrawer(group, ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
+//            drawer = new PaletteDrawer(group, ImageFactory.global().getDescriptorI(ImageFactory.MODEL_IMAGE_FOLDER));
 //            drawer.setInitialState(PaletteDrawer.INITIAL_STATE_CLOSED);
 //            currentContainers.put(group, drawer);
 //        }
@@ -334,8 +334,8 @@ public class PaletteManager {
                 "Connection",
                 "Create connections between submodules, or submodule and parent module",
                 new ModelFactory(NedElementTags.NED_CONNECTION),
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)
+                ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
+                ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)
         );
 
         // sets the required connection tool
@@ -414,7 +414,7 @@ public class PaletteManager {
             // add it if package filter matches
             String packageName = typeElement.getContainingNedFileElement().getPackage();
             if (!excludedPackages.contains(packageName) && matchesSubmodulesFilter(typeElement))
-                addModuleToolEntry((IModuleKindTypeElement)typeElement, MRU_GROUP, entries);
+                addModuleToolEntry((IModuleKindTypeElement)typeElement, MRU_GROUP, contextProject, entries);
         }
 
         entries.put("separator", new PaletteSeparator());
@@ -434,7 +434,7 @@ public class PaletteManager {
                 PropertyElement property = typeElement.getNedTypeInfo().getProperty(GROUP_PROPERTY, null);
                 String group = (property == null) ? "" : NedElementUtilEx.getPropertyValue(property);
 
-                addModuleToolEntry((IModuleKindTypeElement)typeElement, group, entries);
+                addModuleToolEntry((IModuleKindTypeElement)typeElement, group, contextProject, entries);
             }
         }
 
@@ -444,7 +444,7 @@ public class PaletteManager {
     /**
      * Adds a tool to the "entries" map for the provided MODULE type.
      */
-    private void addModuleToolEntry(IModuleKindTypeElement typeElement, String group, Map<String, PaletteEntry> entries) {
+    private void addModuleToolEntry(IModuleKindTypeElement typeElement, String group, IProject contextProject, Map<String, PaletteEntry> entries) {
         String fullyQualifiedTypeName = typeElement.getNedTypeInfo().getFullyQualifiedName();
 
         String key = fullyQualifiedTypeName;
@@ -452,16 +452,14 @@ public class PaletteManager {
             key = group+GROUP_DELIMITER+key;
 
         // set the default images for the palette entry
-        NedImageDescriptor imageDescNorm = ImageFactory.getDescriptor(ImageFactory.DEFAULT,"vs",null,0);
-        NedImageDescriptor imageDescLarge = ImageFactory.getDescriptor(ImageFactory.DEFAULT,"s",null,0);
+        NedImageDescriptor imageDescNorm = ImageFactory.global().getDescriptor(ImageFactory.DEFAULT,"vs");
+        NedImageDescriptor imageDescLarge = ImageFactory.global().getDescriptor(ImageFactory.DEFAULT,"s");
         if (typeElement instanceof IHasDisplayString) {
             IDisplayString dps = ((IHasDisplayString)typeElement).getDisplayString();
             String imageId = dps.getAsString(IDisplayString.Prop.IMAGE);
             if (StringUtils.isNotEmpty(imageId)) {
-                imageDescNorm = ImageFactory.getDescriptor(imageId,"vs",null,0);
-                imageDescNorm.setPreferredScale(16);
-                imageDescLarge = ImageFactory.getDescriptor(imageId,"s",null,0);
-                imageDescLarge.setPreferredScale(24);
+                imageDescNorm = ImageFactory.of(contextProject).getDescriptor(imageId,"16x16"); // FIXME scale "vs" to 16 pixel
+                imageDescLarge = ImageFactory.of(contextProject).getDescriptor(imageId,"24x24"); // FIXME scale "s" to 24 pixel
                 key += ":"+imageId;
             }
         }
@@ -504,8 +502,8 @@ public class PaletteManager {
                 "Connection",
                 "Create connections between submodules, or submodule and parent module",
                 new ModelFactory(NedElementTags.NED_CONNECTION),
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)
+                ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
+                ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)
         );
 
         // sets the required connection tool
@@ -548,8 +546,8 @@ public class PaletteManager {
                 getLabelFor(typeElement.getNedTypeInfo()),
                 NedCommentFormatter.makeBriefDocu(typeElement.getComment(), 300),
                 new ModelFactory(NedElementTags.NED_CONNECTION, "", fullyQualifiedTypeName, typeElement instanceof ChannelInterfaceElement),
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)
+                ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
+                ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)
         );
         // sets the required connection tool
         toolEntry.setToolClass(NedConnectionCreationTool.class);
@@ -589,8 +587,8 @@ public class PaletteManager {
                 "Simple"+NBSP+"Module",
                 "Create a simple module type",
                 modelFactory,
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SIMPLEMODULE),
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SIMPLEMODULE)
+                ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_SIMPLEMODULE),
+                ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_SIMPLEMODULE)
         );
         entries.put(TYPES_GROUP+GROUP_DELIMITER+"simple", entry);
 
@@ -600,8 +598,8 @@ public class PaletteManager {
                 "Compound"+NBSP+"Module",
                 "Create a compound module type that may contain submodules",
                 modelFactory,
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE),
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE)
+                ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE),
+                ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE)
         );
         entries.put(TYPES_GROUP+GROUP_DELIMITER+"compound", entry);
 
@@ -621,8 +619,8 @@ public class PaletteManager {
                 "Network",
                 "Create a network type",
                 modelFactory,
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_NETWORK),
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_NETWORK)
+                ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_NETWORK),
+                ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_NETWORK)
         );
         entries.put(TYPES_GROUP+GROUP_DELIMITER+"network", entry);
 
@@ -632,8 +630,8 @@ public class PaletteManager {
                 "Channel",
                 "Create a channel type",
                 modelFactory,
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNEL),
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNEL)
+                ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_CHANNEL),
+                ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_CHANNEL)
         );
         entries.put(TYPES_GROUP+GROUP_DELIMITER+"channel", entry);
 
@@ -643,8 +641,8 @@ public class PaletteManager {
                 "Module"+NBSP+"Interface",
                 "Create a module interface type",
                 modelFactory,
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_INTERFACE),
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_INTERFACE)
+                ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_INTERFACE),
+                ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_INTERFACE)
         );
         entries.put(TYPES_GROUP+GROUP_DELIMITER+"moduleinterface", entry);
 
@@ -654,8 +652,8 @@ public class PaletteManager {
                 "Channel"+NBSP+"Interface",
                 "Create a channel interface type",
                 modelFactory,
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE),
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE)
+                ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE),
+                ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE)
         );
         entries.put(TYPES_GROUP+GROUP_DELIMITER+"channelinterface", entry);
 

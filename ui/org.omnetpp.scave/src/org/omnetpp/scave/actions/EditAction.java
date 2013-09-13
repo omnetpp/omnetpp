@@ -36,7 +36,7 @@ public class EditAction extends AbstractScaveAction {
     public EditAction() {
         setText("Properties...");
         setToolTipText("Edit the properties of the selected item");
-        setImageDescriptor(ImageFactory.getDescriptor(TOOLBAR_IMAGE_PROPERTIES));
+        setImageDescriptor(ImageFactory.global().getDescriptor(TOOLBAR_IMAGE_PROPERTIES));
     }
 
     /**

@@ -27,7 +27,7 @@ public class RefreshChartAction extends AbstractScaveAction {
     public RefreshChartAction() {
         setText("Refresh");
         setDescription("Refresh the content of the current chart");
-        setImageDescriptor(ImageFactory.getDescriptor(TOOLBAR_IMAGE_REFRESH));
+        setImageDescriptor(ImageFactory.global().getDescriptor(TOOLBAR_IMAGE_REFRESH));
     }
 
     @Override

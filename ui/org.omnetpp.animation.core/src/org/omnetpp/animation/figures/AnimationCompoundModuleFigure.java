@@ -44,7 +44,7 @@ public class AnimationCompoundModuleFigure extends Figure {
         this.compoundModuleFigure = compoundModuleFigure;
         this.moduleId = moduleId;
         this.title = new Label(moduleName);
-        this.closer = new ImageFigure(ImageFactory.getImage(ImageFactory.DEFAULT_ERROR));
+        this.closer = new ImageFigure(ImageFactory.global().getImage(ImageFactory.DEFAULT_ERROR));
         setLayoutManager(new XYLayout());
         add(title);
         setConstraint(title, new Rectangle(4, 2, -1, -1));

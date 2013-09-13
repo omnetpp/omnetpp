@@ -33,7 +33,7 @@ public class PropertiesAction extends org.eclipse.gef.ui.actions.SelectionAction
     public static final String ID = "org.omnetpp.ned.editor.graph.Properties";
     public static final String MENUNAME = "&Properties...";
     public static final String TOOLTIP = "Edit properties";
-    public static final ImageDescriptor IMAGE = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_PROPERTIES);
+    public static final ImageDescriptor IMAGE = ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_PROPERTIES);
 
     public PropertiesAction(IWorkbenchPart part) {
         super(part);

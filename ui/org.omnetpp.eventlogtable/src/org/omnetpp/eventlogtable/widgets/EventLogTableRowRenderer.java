@@ -665,7 +665,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
         Event event = eventLogEntry.getEvent();
 
         if (eventLogEntry instanceof EventEntry && event.isSelfMessageProcessingEvent())
-            return ImageFactory.getImage(ImageFactory.EVENLOG_IMAGE_SELF_EVENT);
+            return ImageFactory.global().getImage(ImageFactory.EVENLOG_IMAGE_SELF_EVENT);
         else if (eventLogEntry instanceof BeginSendEntry) {
             int index = eventLogEntry.getEntryIndex();
             int count = event.getNumEventLogEntries();
@@ -674,10 +674,10 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
                 EventLogEntry nextEventLogEntry = event.getEventLogEntry(index + 1);
 
                 if (nextEventLogEntry instanceof EndSendEntry)
-                    return ImageFactory.getImage(ImageFactory.EVENLOG_IMAGE_SCHEDULE_AT);
+                    return ImageFactory.global().getImage(ImageFactory.EVENLOG_IMAGE_SCHEDULE_AT);
             }
         }
 
-        return ImageFactory.getImage(ImageFactory.EVENTLOG_IMAGE_DIR + className.substring(0, className.length() - 5));
+        return ImageFactory.global().getImage(ImageFactory.EVENTLOG_IMAGE_DIR + className.substring(0, className.length() - 5));
     }
 }

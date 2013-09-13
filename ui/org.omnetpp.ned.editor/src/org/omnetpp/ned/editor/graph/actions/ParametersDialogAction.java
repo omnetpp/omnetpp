@@ -28,7 +28,7 @@ public class ParametersDialogAction extends org.eclipse.gef.ui.actions.Selection
     public static final String ID = "Parameters";
     public static final String MENUNAME = "Pa&rameters...";
     public static final String TOOLTIP = "Edit the module parameters";
-    public static final ImageDescriptor IMAGE = ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_PARAM);
+    public static final ImageDescriptor IMAGE = ImageFactory.global().getDescriptor(ImageFactory.MODEL_IMAGE_PARAM);
 
     public ParametersDialogAction(IWorkbenchPart part) {
         super(part);

@@ -27,7 +27,7 @@ public class ExportImageAction extends org.eclipse.gef.ui.actions.SelectionActio
     public static final String ID = "ExportImage";
     public static final String MENUNAME = "Export Image...";
     public static final String TOOLTIP = "Export an image of the selected modules";
-    public static final ImageDescriptor IMAGE = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_EXPORTIMAGE);
+    public static final ImageDescriptor IMAGE = ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_EXPORTIMAGE);
 
     GroupRequest request;
 

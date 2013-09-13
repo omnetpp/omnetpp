@@ -7,6 +7,7 @@
 
 package org.omnetpp.ned.editor.graph.figures;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureUtilities;
@@ -99,8 +100,9 @@ abstract public class NedTypeFigure extends Figure implements IDirectEditSupport
     /**
      * Stores the display string, and updates the figure accordingly.
      * @param dps
+     * @param project the icons are searched in this project
      */
-    abstract public void setDisplayString(IDisplayString dps);
+    abstract public void setDisplayString(IDisplayString dps, IProject project);
 
     public boolean isInterface() {
         return isInterface;

@@ -9,6 +9,7 @@ package org.omnetpp.ned.editor.graph.figures;
 
 import static org.omnetpp.figures.CompoundModuleFigure.BORDER_SNAP_WIDTH;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
@@ -98,11 +99,11 @@ public class CompoundModuleTypeFigure extends ModuleTypeFigure implements Handle
     }
 
     @Override
-    public void setDisplayString(IDisplayString displayString) {
+    public void setDisplayString(IDisplayString displayString, IProject project) {
         // set the properties for the submodules compartment
         getSubmoduleArea().setDisplayString(displayString);
         // set the properties for the icon in the title
-        super.setDisplayString(displayString);
+        super.setDisplayString(displayString, project);
     }
 
     /**

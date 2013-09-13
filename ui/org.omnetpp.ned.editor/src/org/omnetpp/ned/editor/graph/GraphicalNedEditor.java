@@ -911,7 +911,7 @@ public class GraphicalNedEditor
                     }
                 });
 
-                filterFigure = new ImageFigure(ImageFactory.getImage("_internal/toolbar/filter"));
+                filterFigure = new ImageFigure(ImageFactory.global().getImage("_internal/toolbar/filter"));
                 filterFigure.setToolTip(new Label("Hello"));
                 filterFigure.addMouseListener(new MouseListener() {
                     public void mouseDoubleClicked(MouseEvent me) {

@@ -7,6 +7,7 @@
 
 package org.omnetpp.ned.editor.graph.figures;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Image;
@@ -39,7 +40,7 @@ public class ModuleTypeFigure extends NedTypeFigure {
     /**
      * Adjusts the figure properties using a displayString object
      */
-    public void setDisplayString(IDisplayString displayString) {
+    public void setDisplayString(IDisplayString displayString, IProject project) {
         if (isInnerType())
             iconFigure.setTargetSize(24, 24);  // "s" icons
         else
@@ -68,7 +69,7 @@ public class ModuleTypeFigure extends NedTypeFigure {
 
         // image
         String imageSize = isInnerType() ? "s" : "n";
-        Image image = ImageFactory.getImage(
+        Image image = ImageFactory.of(project).getImage(
                 displayString.getAsString(IDisplayString.Prop.IMAGE),
                 imageSize,
                 ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.IMAGE_COLOR)),
@@ -82,7 +83,7 @@ public class ModuleTypeFigure extends NedTypeFigure {
 
         // decoration image
         iconFigure.setDecorationImage(
-                ImageFactory.getImage(
+                ImageFactory.of(project).getImage(
                         displayString.getAsString(IDisplayString.Prop.IMAGE2),
                         null,
                         ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.IMAGE2_COLOR)),

@@ -531,17 +531,17 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
             switch (type.getValue()) {
             case ResultType.SCALAR:
                 setText("Show scalars");
-                setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SHOWSCALARS));
+                setImageDescriptor(ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_SHOWSCALARS));
                 panel = tabFolder.getScalarsPanel();
                 break;
             case ResultType.VECTOR:
                 setText("Show vectors");
-                setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SHOWVECTORS));
+                setImageDescriptor(ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_SHOWVECTORS));
                 panel = tabFolder.getVectorsPanel();
                 break;
             case ResultType.HISTOGRAM:
                 setText("Show histograms");
-                setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS));
+                setImageDescriptor(ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS));
                 panel = tabFolder.getHistogramsPanel();
                 break;
             default:
@@ -561,7 +561,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
         public ToggleFilterAction() {
             super(isFilterVisible() ? "Hide filter" : "Show filter", IAction.AS_CHECK_BOX);
             setDescription("Toggles the filtering panel on/off.");
-            setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER));
+            setImageDescriptor(ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER));
         }
 
         @Override

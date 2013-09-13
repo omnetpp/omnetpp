@@ -25,7 +25,7 @@ public class WindowFigure extends Figure {
     public WindowFigure(IFigure content, String title) {
         this.content = content;
         this.title = new Label(title);
-        this.closer = new ImageFigure(ImageFactory.getImage(ImageFactory.DEFAULT_ERROR));
+        this.closer = new ImageFigure(ImageFactory.global().getImage(ImageFactory.DEFAULT_ERROR));
         setLayoutManager(new XYLayout());
         add(this.title);
         setConstraint(this.title, new Rectangle(4, 2, -1, -1));

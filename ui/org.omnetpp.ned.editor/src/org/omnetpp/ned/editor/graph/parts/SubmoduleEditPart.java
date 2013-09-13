@@ -9,6 +9,7 @@ package org.omnetpp.ned.editor.graph.parts;
 
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
@@ -132,8 +133,11 @@ public class SubmoduleEditPart extends ModuleEditPart {
         // set it in the figure, so size and range indicator can use it
         float scale = getScale();
 
+        // get the project for image path resolution
+        IProject project = getModel().getSelfOrEnclosingTypeElement().getNedTypeInfo().getProject();
+
         // set the rest of the display properties
-        submoduleFigure.setDisplayString(scale, dps);
+        submoduleFigure.setDisplayString(scale, dps, project);
 
         submoduleFigure.setQueueText(StringUtils.isNotBlank(dps.getAsString(IDisplayString.Prop.QUEUE_NAME)) ? "#" : "");
 
@@ -151,7 +155,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
     public boolean isEditable() {
         // editable only if the parent controllers model is the same as the model's parent
         // i.e. the submodule is defined in this compound module (not inherited)
-        return super.isEditable() && getParent().getModel() == ((SubmoduleElementEx)getModel()).getCompoundModule();
+        return super.isEditable() && getParent().getModel() == getModel().getCompoundModule();
     }
 
     @Override

@@ -507,7 +507,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
     }
 
     protected AnimationAction createRefreshAction() {
-        return new AnimationAction("Refresh", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_REFRESH)) {
+        return new AnimationAction("Refresh", Action.AS_PUSH_BUTTON, ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_REFRESH)) {
             @Override
             protected void doRun() {
                 animationCanvas.getAnimationController().refreshAnimation();
@@ -516,7 +516,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
     }
 
     protected AnimationAction createPinAction() {
-        return new AnimationAction("Pin", Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_UNPIN)) {
+        return new AnimationAction("Pin", Action.AS_CHECK_BOX, ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_UNPIN)) {
             @Override
             protected void doRun() {
                 IWorkbenchPart workbenchPart = animationCanvas.getWorkbenchPart();

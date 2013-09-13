@@ -316,10 +316,10 @@ public class ImageUtils {
 
         int k = 0;
         GC gc = new GC(canvas);
-        for (String s : ImageFactory.getImageNameList()) {
-            Image image = ImageFactory.getImage(s);
+        for (String s : ImageFactory.global().getImageNameList()) {
+            Image image = ImageFactory.global().getImage(s);
             Image smallImage = ImageUtils.getResampledImage(image, 16, 16, 2, 2, 2, 2);
-            int x = (k%40)*20, y = 20*(int)(k/40);
+            int x = (k%40)*20, y = 20*(k/40);
             gc.drawImage(smallImage, x, y);
 
             Rectangle r = smallImage.getBounds();
