@@ -86,6 +86,10 @@ typedef long off_t;
 #define __func__        __FUNCTION__
 #endif /* _MSC_VER */
 
+#ifdef EWOULDBLOCK
+#undef EWOULDBLOCK   /* we want the Winsock version which is numerically different!!! (140 vs 10035) */
+#endif
+
 #define ERRNO           GetLastError()
 #define NO_SOCKLEN_T
 #define SSL_LIB         "ssleay32.dll"
@@ -112,6 +116,7 @@ typedef long off_t;
 #define read(x, y, z)       _read((x), (y), (unsigned) z)
 #define flockfile(x)        (void) 0
 #define funlockfile(x)      (void) 0
+#define fdopen(x, y)        _fdopen((x), (y))
 
 #ifdef HAVE_STRTOUI64
 #define strtoull(x, y, z)   _strtoui64(x, y, z)
