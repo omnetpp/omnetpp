@@ -76,6 +76,7 @@
 #include "cproperty.h"
 #include "cpsquare.h"
 #include "cqueue.h"
+#include "cpacket.h"
 #include "cpacketqueue.h"
 #include "cresultfilter.h"
 #include "cresultlistener.h"

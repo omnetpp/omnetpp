@@ -28,7 +28,7 @@
 #include "stringutil.h"
 #include "cmodule.h"
 #include "csimplemodule.h"
-#include "cmessage.h"
+#include "cpacket.h"
 #include "csimulation.h"
 #include "cscheduler.h"
 #include "cenvir.h"

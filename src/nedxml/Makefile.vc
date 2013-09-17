@@ -136,8 +136,6 @@ clean:
 	-$(Q)cd $(OMNETPP_BIN_DIR:/=\) && del /q nedtool.exe* opp_msgc opp_msgc.cmd 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-$O/b_m.obj: b_m.cc \
-  b_m.h
 $O/lex.msg2yy.obj: lex.msg2yy.cc \
   nedyydefs.h \
   nedexception.h \

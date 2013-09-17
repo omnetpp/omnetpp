@@ -175,10 +175,6 @@ static const char *buildOptions = ""
     " USE_DOUBLE_SIMTIME"
     #endif
 
-    #ifdef WITHOUT_CPACKET
-    " WITHOUT_CPACKET"
-    #endif
-
     #ifdef WITH_PARSIM
     " WITH_PARSIM"
     #endif

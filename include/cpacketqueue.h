@@ -19,7 +19,7 @@
 #define __CPACKETQUEUE_H
 
 #include "cqueue.h"
-#include "cmessage.h"
+#include "cpacket.h"
 
 NAMESPACE_BEGIN
 

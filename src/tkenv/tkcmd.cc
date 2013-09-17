@@ -27,7 +27,7 @@
 #include "ccompoundmodule.h"
 #include "ccomponenttype.h"
 #include "cpar.h"
-#include "cmessage.h"
+#include "cpacket.h"
 #include "cchannel.h"
 #include "cstatistic.h"
 #include "cwatch.h"

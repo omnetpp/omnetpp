@@ -22,7 +22,7 @@
 #include <math.h>            // pow
 #include <stdio.h>           // sprintf
 #include <string.h>          // strcpy
-#include "cmessage.h"
+#include "cpacket.h"
 #include "cmodule.h"
 #include "carray.h"
 #include "cenvir.h"

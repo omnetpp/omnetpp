@@ -15,7 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include "cdataratechannel.h"
-#include "cmessage.h"
+#include "cpacket.h"
 #include "cmodule.h"
 #include "cenvir.h"
 #include "random.h"

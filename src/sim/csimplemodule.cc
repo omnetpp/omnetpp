@@ -25,7 +25,7 @@
 #include <exception>
 #include "csimplemodule.h"
 #include "cgate.h"
-#include "cmessage.h"
+#include "cpacket.h"
 #include "ccoroutine.h"
 #include "csimulation.h"
 #include "carray.h"

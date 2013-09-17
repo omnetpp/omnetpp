@@ -16,7 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include "resultfilters.h"
-#include "cmessage.h"  // PacketBytesFilter
+#include "cpacket.h"  // PacketBytesFilter
 
 USING_NAMESPACE
 

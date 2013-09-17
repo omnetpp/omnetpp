@@ -1,3 +1,8 @@
+2013-09-17  Andras Varga
+
+	* cpacket.cc split from cmessage.cc; removed WITHOUT_CPACKET (a
+	compatibility macro to help code migration from OMNeT++ 3.x to 4.0)
+
 2013-03-19  Andras Varga
 
 	* cDatarateChannel: forceTransmissionFinishTime() now emits

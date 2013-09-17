@@ -25,7 +25,7 @@
 #include "cconfiguration.h"
 #include "envirbase.h"
 #include "cmodule.h"
-#include "cmessage.h"
+#include "cpacket.h"
 #include "cgate.h"
 #include "cchannel.h"
 #include "csimplemodule.h"

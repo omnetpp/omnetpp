@@ -23,6 +23,7 @@
 #include "cscheduler.h"
 #include "visitor.h"
 #include "cclassdescriptor.h"
+#include "cpacket.h"
 #include "cqueue.h"
 #include "cchannel.h"
 #include "coutvector.h"

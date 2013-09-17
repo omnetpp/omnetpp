@@ -156,6 +156,7 @@ $O/akaroarng.obj: akaroarng.cc \
   ../../include/cconfiguration.h \
   ../../include/cenvir.h \
   ../../include/opp_string.h \
+  ../../include/clifetimelistener.h \
   ../../include/cexception.h \
   akaroarng.h \
   ../../include/cnamedobject.h \
@@ -206,6 +207,7 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/cdefaultlist.h \
   fileoutvectormgr.h \
   ../../include/opp_string.h \
+  ../../include/clifetimelistener.h \
   ../../include/envirext.h \
   ../../include/cstatistic.h \
   ../../include/cexception.h \
@@ -219,6 +221,7 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   runattributes.h \
   objectprinter.h \
   ../../include/ccomponent.h \
+  ../../include/cevent.h \
   ../../include/regmacros.h
 $O/appreg.obj: appreg.cc \
   ../../include/cregistrationlist.h \
@@ -239,6 +242,7 @@ $O/appreg.obj: appreg.cc \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/clifetimelistener.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
@@ -267,6 +271,7 @@ $O/cxmldoccache.obj: cxmldoccache.cc \
   ../../include/cobject.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
+  ../../include/clifetimelistener.h \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
@@ -294,6 +299,7 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/cstddev.h \
   ../../include/errmsg.h \
   ../nedxml/nedparser.h \
+  ../../include/clifetimelistener.h \
   ../../include/cstatistic.h \
   ../../include/ccomponenttype.h \
   ../../include/cnedfunction.h \
@@ -310,6 +316,7 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/cproperties.h \
   ../../include/chistogram.h \
   ../../include/ccomponent.h \
+  ../../include/cevent.h \
   eventlogfilemgr.h \
   ../../include/cregistrationlist.h \
   ../../include/cscheduler.h \
@@ -367,6 +374,7 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/errmsg.h \
+  ../../include/clifetimelistener.h \
   ../../include/ccomponenttype.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
@@ -376,6 +384,7 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   ../../include/clistener.h \
   ../../include/cchannel.h \
   ../../include/ccomponent.h \
+  ../../include/cevent.h \
   eventlogfilemgr.h \
   ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \
@@ -386,6 +395,7 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
   envirdefs.h \
+  ../../include/cpacket.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/globals.h \
@@ -412,6 +422,7 @@ $O/eventlogwriter.obj: eventlogwriter.cc \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
   ../../include/errmsg.h \
+  ../../include/clifetimelistener.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
@@ -471,6 +482,7 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   ../../include/cobject.h \
   ../../include/cstddev.h \
   ../../include/errmsg.h \
+  ../../include/clifetimelistener.h \
   ../../include/ccomponenttype.h \
   ../../include/cstatistic.h \
   ../../include/cexpression.h \
@@ -479,6 +491,7 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   ../../include/clistener.h \
   runattributes.h \
   ../../include/ccomponent.h \
+  ../../include/cevent.h \
   eventlogfilemgr.h \
   ../../include/cregistrationlist.h \
   ../../include/cstringpool.h \
@@ -518,6 +531,7 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
   ../../include/errmsg.h \
+  ../../include/clifetimelistener.h \
   ../../include/ccomponenttype.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
@@ -525,6 +539,7 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   ../../include/clistener.h \
   runattributes.h \
   ../../include/ccomponent.h \
+  ../../include/cevent.h \
   eventlogfilemgr.h \
   ../../include/cregistrationlist.h \
   ../../include/cstringpool.h \
@@ -561,12 +576,14 @@ $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
   ../../include/errmsg.h \
+  ../../include/clifetimelistener.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
   ../../include/clistener.h \
   filesnapshotmgr.h \
   ../../include/ccomponent.h \
+  ../../include/cevent.h \
   eventlogfilemgr.h \
   ../../include/cregistrationlist.h \
   ../../include/cstringpool.h \
@@ -617,6 +634,7 @@ $O/httpserver.obj: httpserver.cc \
   ../../include/cobject.h \
   httpserver.h \
   ../../include/errmsg.h \
+  ../../include/clifetimelistener.h \
   ../../include/cvisitor.h \
   ../../include/simtime_t.h \
   envirdefs.h \
@@ -643,6 +661,7 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
   ../../include/errmsg.h \
+  ../../include/clifetimelistener.h \
   ../../include/cstatistic.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
@@ -650,6 +669,7 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../../include/clistener.h \
   runattributes.h \
   ../../include/ccomponent.h \
+  ../../include/cevent.h \
   eventlogfilemgr.h \
   ../../include/cregistrationlist.h \
   ../../include/cstringpool.h \
@@ -700,11 +720,13 @@ $O/intervals.obj: intervals.cc \
   ../../include/simutil.h \
   ../../include/cobject.h \
   ../../include/errmsg.h \
+  ../../include/clifetimelistener.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
   ../../include/clistener.h \
   ../../include/ccomponent.h \
+  ../../include/cevent.h \
   eventlogfilemgr.h \
   ../../include/cregistrationlist.h \
   ../../include/cvisitor.h \
@@ -728,8 +750,12 @@ $O/intervals.obj: intervals.cc \
   objectprinter.h \
   ../../include/regmacros.h
 $O/json.obj: json.cc \
+  ../../include/simtime.h \
+  ../../include/simkerneldefs.h \
   envirdefs.h \
-  json.h
+  json.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h
 $O/main.obj: main.cc \
   envirdefs.h
 $O/matchablefield.obj: matchablefield.cc \
@@ -780,6 +806,7 @@ $O/mongoosehttpserver.obj: mongoosehttpserver.cc \
   ../../include/cobject.h \
   httpserver.h \
   ../../include/errmsg.h \
+  ../../include/clifetimelistener.h \
   ../../include/cvisitor.h \
   mongoosehttpserver.h \
   mongoose.h \
@@ -805,6 +832,7 @@ $O/objectprinter.obj: objectprinter.cc \
   ../../include/simutil.h \
   ../../include/cobject.h \
   ../../include/errmsg.h \
+  ../../include/clifetimelistener.h \
   matchableobject.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
@@ -846,12 +874,14 @@ $O/runattributes.obj: runattributes.cc \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
   ../../include/errmsg.h \
+  ../../include/clifetimelistener.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
   ../../include/clistener.h \
   runattributes.h \
   ../../include/ccomponent.h \
+  ../../include/cevent.h \
   eventlogfilemgr.h \
   ../../include/cregistrationlist.h \
   ../../include/cstringpool.h \
@@ -947,6 +977,7 @@ $O/startup.obj: startup.cc \
   ../../include/cobject.h \
   ../../include/errmsg.h \
   startup.h \
+  ../../include/clifetimelistener.h \
   ../../include/distrib.h \
   matchableobject.h \
   ../../include/cexpression.h \
@@ -1016,6 +1047,7 @@ $O/visitor.obj: visitor.cc \
   ../../include/cobject.h \
   ../../include/cfsm.h \
   ../../include/errmsg.h \
+  ../../include/clifetimelistener.h \
   ../../include/ccomponenttype.h \
   ../../include/cstatistic.h \
   matchableobject.h \
@@ -1026,6 +1058,7 @@ $O/visitor.obj: visitor.cc \
   ../../include/cchannel.h \
   ../../include/cqueue.h \
   ../../include/ccomponent.h \
+  ../../include/cevent.h \
   visitor.h \
   ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \
@@ -1059,11 +1092,13 @@ $O/xgridspec.obj: xgridspec.cc \
   ../../include/simkerneldefs.h \
   ../../include/cobject.h \
   ../../include/errmsg.h \
+  ../../include/clifetimelistener.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
   ../../include/cobjectfactory.h \
   ../../include/clistener.h \
   ../../include/ccomponent.h \
+  ../../include/cevent.h \
   eventlogfilemgr.h \
   ../../include/cregistrationlist.h \
   ../../include/cvisitor.h \
