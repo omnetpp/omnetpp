@@ -1694,7 +1694,7 @@ void Cmdenv::debug(const char *fmt,...)
     time_t t = (time_t) tv.tv_sec;
     struct tm tm = *localtime(&t);
 
-    ::fprintf(logStream, "[%02d:%02d:%02d.%03d event #%"LL"d %s] ",
+    ::fprintf(logStream, "[%02d:%02d:%02d.%03d event #%" LL "d %s] ",
              tm.tm_hour, tm.tm_min, tm.tm_sec, (int)(tv.tv_usec/1000),
              simulation.getEventNumber(), stateEnum.getStringFor(state));
     va_list va;
