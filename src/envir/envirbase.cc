@@ -377,8 +377,10 @@ bool EnvirBase::setup()
         {
             signal(SIGSEGV, crashHandler);
             signal(SIGILL, crashHandler);
+#ifndef _WIN32
             signal(SIGBUS, crashHandler);
             signal(SIGUSR1, crashHandler);
+#endif
         }
 
         // initialize coroutine library
@@ -1736,14 +1738,14 @@ std::string EnvirBase::makeDebuggerCommand()
     {
         ::printf("Cannot start debugger: no debugger configured\n");
         return "";
-	}
+    }
     size_t pos = cmd.find('%');
     if (pos == std::string::npos || cmd.rfind('%') != pos || cmd[pos+1] != 'u')
     {
         ::printf("Cannot start debugger: debugger attach command must contain '%%u' "
                  "and no additional percent sign.\n");
         return "";
-	}
+    }
     pid_t pid = getpid();
     return opp_stringf(cmd.c_str(), (unsigned int)pid);
 }
