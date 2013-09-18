@@ -319,7 +319,7 @@ class SIM_API cChannelType : public cComponentType
      * Factory method to create a channel object with the given name.
      *
      * If the name is NULL, a default name will be taken from the
-     * @defaultname() property of the channel type; or if there is no
+     * \@defaultname NED property of the channel type; or if there is no
      * such property, "channel" will be used.
      *
      * In addition to creating an object of the correct type,

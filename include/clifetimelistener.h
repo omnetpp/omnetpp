@@ -26,7 +26,6 @@ NAMESPACE_BEGIN
  * Event type for cISimulationLifetimeListener's lifetimeEvent() method.
  *
  * @ingroup SimCore
- * @ingroup Internals
  */
 enum SimulationLifetimeEventType
 {
@@ -176,7 +175,7 @@ enum SimulationLifetimeEventType
  * </pre>
  *
  * Note that listeners will not be deleted automatically when the program
- * exits. To delete a listener on shutdown, add tt>delete this;</tt>
+ * exits. To delete a listener on shutdown, add <tt>delete this;</tt>
  * into the listenerRemoved() method.
  *
  * @ingroup SimCore
