@@ -195,6 +195,7 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   envirdefs.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/clog.h \
   ../../include/cconfigoption.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
@@ -222,7 +223,8 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   objectprinter.h \
   ../../include/ccomponent.h \
   ../../include/cevent.h \
-  ../../include/regmacros.h
+  ../../include/regmacros.h \
+  log.h
 $O/appreg.obj: appreg.cc \
   ../../include/cregistrationlist.h \
   ../../include/cvisitor.h \
@@ -289,11 +291,13 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/cenvir.h \
   ../../include/cconfiguration.h \
   ../../include/cmodule.h \
+  ../../include/cmessage.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cconfigoption.h \
+  ../../include/cmsgpar.h \
   ../../include/cobject.h \
   httpserver.h \
   ../../include/cstddev.h \
@@ -333,6 +337,7 @@ $O/envirbase.obj: envirbase.cc \
   cxmldoccache.h \
   ../../include/simtime_t.h \
   envirdefs.h \
+  ../../include/clog.h \
   ../../include/cdensityestbase.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
@@ -354,7 +359,8 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/ccoroutine.h \
   objectprinter.h \
   ../nedxml/nedxmldefs.h \
-  ../../include/regmacros.h
+  ../../include/regmacros.h \
+  log.h
 $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   envirbase.h \
   intervals.h \
@@ -395,6 +401,7 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
   envirdefs.h \
+  ../../include/clog.h \
   ../../include/cpacket.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
@@ -410,7 +417,8 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   objectprinter.h \
-  ../../include/regmacros.h
+  ../../include/regmacros.h \
+  log.h
 $O/eventlogwriter.obj: eventlogwriter.cc \
   ../../include/cgate.h \
   ../../include/cenvir.h \
@@ -435,6 +443,7 @@ $O/eventlogwriter.obj: eventlogwriter.cc \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   envirdefs.h \
+  ../../include/clog.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/globals.h \
@@ -500,6 +509,7 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   envirdefs.h \
+  ../../include/clog.h \
   ../../include/cdensityestbase.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
@@ -515,7 +525,8 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   objectprinter.h \
-  ../../include/regmacros.h
+  ../../include/regmacros.h \
+  log.h
 $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   envirbase.h \
   intervals.h \
@@ -548,6 +559,7 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   envirdefs.h \
+  ../../include/clog.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/globals.h \
@@ -562,7 +574,8 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   objectprinter.h \
-  ../../include/regmacros.h
+  ../../include/regmacros.h \
+  log.h
 $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   envirbase.h \
   intervals.h \
@@ -592,6 +605,7 @@ $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   envirdefs.h \
+  ../../include/clog.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/globals.h \
@@ -605,7 +619,8 @@ $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   objectprinter.h \
-  ../../include/regmacros.h
+  ../../include/regmacros.h \
+  log.h
 $O/fsutils.obj: fsutils.cc \
   ../../include/simtime.h \
   ../../include/simutil.h \
@@ -678,6 +693,7 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   envirdefs.h \
+  ../../include/clog.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/globals.h \
@@ -692,7 +708,8 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   objectprinter.h \
-  ../../include/regmacros.h
+  ../../include/regmacros.h \
+  log.h
 $O/inifilereader.obj: inifilereader.cc \
   ../../include/simtime.h \
   ../../include/simutil.h \
@@ -735,6 +752,7 @@ $O/intervals.obj: intervals.cc \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   envirdefs.h \
+  ../../include/clog.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
   ../../include/globals.h \
@@ -748,7 +766,8 @@ $O/intervals.obj: intervals.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   objectprinter.h \
-  ../../include/regmacros.h
+  ../../include/regmacros.h \
+  log.h
 $O/json.obj: json.cc \
   ../../include/simtime.h \
   ../../include/simkerneldefs.h \
@@ -756,6 +775,42 @@ $O/json.obj: json.cc \
   json.h \
   ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h
+$O/log.obj: log.cc \
+  ../../include/cgate.h \
+  ../../include/cenvir.h \
+  ../../include/cconfiguration.h \
+  ../../include/cmodule.h \
+  ../../include/csimulation.h \
+  ../../include/simtime.h \
+  ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
+  ../../include/cobject.h \
+  ../../include/errmsg.h \
+  ../../include/clifetimelistener.h \
+  ../../include/ccomponenttype.h \
+  ../../include/cexpression.h \
+  ../../include/cownedobject.h \
+  ../../include/cobjectfactory.h \
+  ../../include/clistener.h \
+  ../../include/ccomponent.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
+  ../../include/onstartup.h \
+  ../../include/simtime_t.h \
+  ../../include/clog.h \
+  ../../include/cmessageheap.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/globals.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/cdefaultlist.h \
+  ../../include/opp_string.h \
+  ../../include/cexception.h \
+  ../../include/cnamedobject.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/cpar.h \
+  ../../include/regmacros.h \
+  log.h
 $O/main.obj: main.cc \
   envirdefs.h
 $O/matchablefield.obj: matchablefield.cc \
@@ -845,6 +900,7 @@ $O/objectprinter.obj: objectprinter.cc \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   envirdefs.h \
+  ../../include/clog.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   matchablefield.h \
@@ -890,6 +946,7 @@ $O/runattributes.obj: runattributes.cc \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   envirdefs.h \
+  ../../include/clog.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/globals.h \
@@ -903,7 +960,8 @@ $O/runattributes.obj: runattributes.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   objectprinter.h \
-  ../../include/regmacros.h
+  ../../include/regmacros.h \
+  log.h
 $O/scenario.obj: scenario.cc \
   ../../include/cconfiguration.h \
   ../../include/simtime.h \
@@ -1000,6 +1058,7 @@ $O/startup.obj: startup.cc \
   fsutils.h \
   ../../include/simtime_t.h \
   envirdefs.h \
+  ../../include/clog.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
   fileoutscalarmgr.h \
@@ -1068,6 +1127,7 @@ $O/visitor.obj: visitor.cc \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   envirdefs.h \
+  ../../include/clog.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/globals.h \
@@ -1107,6 +1167,7 @@ $O/xgridspec.obj: xgridspec.cc \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   envirdefs.h \
+  ../../include/clog.h \
   xgridspec.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
@@ -1121,4 +1182,5 @@ $O/xgridspec.obj: xgridspec.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   objectprinter.h \
-  ../../include/regmacros.h
+  ../../include/regmacros.h \
+  log.h

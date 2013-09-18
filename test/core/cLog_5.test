@@ -13,4 +13,4 @@ log-format = "text %% l='%l' c='%c' e='%e' t='%t' v='%v' m='%m' a='%a' n='%n' p=
 EV_DEBUG_C("Test") << "Hello" << endl;
 
 %contains-regex: stdout
-text % l='DEBUG' c='Test' e='1' t='0' v='starter-1' m='starter-1' a='cMessage' n='Test' p='Test' o='cLog_5::Test' s='Test' q='Test' N='Test' P='Test' O='cLog_5::Test' S='Test' Q='Test' G='General' R='0' X='cLog_5::Test' Y='Test' Z='Test' \*='[0x0-9a-fA-F]+' b='Test' d='Test' x='Test' y='Test' f='cLog_5/test.cc' i='22' z='Test' u='activity' w='[0-9.]+' W='.*' H='[a-zA-Z]+' I='[0-9]+' Hello
+text % l='DEBUG' c='Test' e='1' t='0' v='starter-1' m='starter-1' a='cMessage' n='Test' p='Test' o='cLog_5::Test' s='Test' q='Test' N='Test' P='Test' O='cLog_5::Test' S='Test' Q='Test' G='General' R='0' X='cLog_5::Test' Y='Test' Z='Test' \*='[0x0-9a-fA-F]+' b='Test' d='Test' x='Test' y='Test' f='cLog_5[\\/]test\.cc' i='22' z='Test' u='.*activity' w='[0-9.]+' W='.*' H='[a-zA-Z-_]+' I='[0-9]+' Hello

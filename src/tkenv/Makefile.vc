@@ -204,6 +204,7 @@ $O/inspector.obj: inspector.cc \
   ../../include/csimplemodule.h \
   ../../include/cdelaychannel.h \
   ../../include/cpacket.h \
+  ../../include/clog.h \
   ../../include/cdensityestbase.h \
   ../../include/cmessageheap.h \
   ../../include/cvarhist.h \
@@ -316,6 +317,7 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/csimplemodule.h \
   ../../include/cdelaychannel.h \
   ../../include/cpacket.h \
+  ../../include/clog.h \
   ../../include/cdensityestbase.h \
   ../../include/cmessageheap.h \
   ../../include/cvarhist.h \
@@ -385,6 +387,7 @@ $O/layouterenv.obj: layouterenv.cc \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
+  ../../include/clog.h \
   ../../include/cdensityestbase.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
@@ -424,6 +427,7 @@ $O/logbuffer.obj: logbuffer.cc \
   tklib.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
+  ../../include/clog.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/globals.h \
@@ -479,6 +483,7 @@ $O/modinsp.obj: modinsp.cc \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
+  ../../include/clog.h \
   ../../include/cdensityestbase.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
@@ -580,6 +585,7 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/csimplemodule.h \
   ../../include/cdelaychannel.h \
   ../../include/cpacket.h \
+  ../../include/clog.h \
   ../../include/cdensityestbase.h \
   ../../include/cmessageheap.h \
   ../../include/cvarhist.h \
@@ -646,6 +652,7 @@ $O/statinsp.obj: statinsp.cc \
   ../../include/coutvector.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
+  ../../include/clog.h \
   ../../include/cdensityestbase.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
@@ -706,6 +713,7 @@ $O/tkcmd.obj: tkcmd.cc \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
+  ../../include/clog.h \
   ../../include/cpacket.h \
   ../../include/cdensityestbase.h \
   ../../include/platdep/intxtypes.h \
@@ -770,6 +778,7 @@ $O/tkenv.obj: tkenv.cc \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
+  ../../include/clog.h \
   ../../include/cdensityestbase.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
@@ -816,6 +825,7 @@ $O/tklib.obj: tklib.cc \
   tklib.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
+  ../../include/clog.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/globals.h \
@@ -861,6 +871,7 @@ $O/tkutil.obj: tkutil.cc \
   ../../include/cstringpool.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
+  ../../include/clog.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/globals.h \

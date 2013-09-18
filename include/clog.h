@@ -16,6 +16,7 @@
 #ifndef __CLOG_H
 #define __CLOG_H
 
+#include <time.h>
 #include <sstream>
 #include "simkerneldefs.h"
 
@@ -158,8 +159,8 @@ class SIM_API cLogLevel
  * efficiently prevent unnecessary computation of parameters and log content.
  */
 //@{
-#define OPP_LOG_P(loglevel, category, format, args...) EV_LOGPROXY(this, __CLASS__, loglevel, category).printf(format, ## args)
-#define OPP_LOG_PS(loglevel, category, format, args...) EV_LOGPROXY((void*)NULL, NULL, loglevel, category).printf(format, ## args)
+#define OPP_LOG_P(loglevel, category, format, ...) EV_LOGPROXY(this, __CLASS__, loglevel, category).printf(format, ## __VA_ARGS__)
+#define OPP_LOG_PS(loglevel, category, format, ...) EV_LOGPROXY((void*)NULL, NULL, loglevel, category).printf(format, ## __VA_ARGS__)
 //@}
 
 /**
@@ -214,48 +215,48 @@ class SIM_API cLogLevel
  * Printf like log macros for class member functions with default category.
  */
 //@{
-#define EV_FATAL_P(format, args...) OPP_LOG_P(LOGLEVEL_FATAL, NULL, format, ## args)
-#define EV_ERROR_P(format, args...) OPP_LOG_P(LOGLEVEL_ERROR, NULL, format, ## args)
-#define EV_WARN_P(format, args...)  OPP_LOG_P(LOGLEVEL_WARN, NULL, format, ## args)
-#define EV_INFO_P(format, args...)  OPP_LOG_P(LOGLEVEL_INFO, NULL, format, ## args)
-#define EV_DEBUG_P(format, args...) OPP_LOG_P(LOGLEVEL_DEBUG, NULL, format, ## args)
-#define EV_TRACE_P(format, args...) OPP_LOG_P(LOGLEVEL_TRACE, NULL, format, ## args)
+#define EV_FATAL_P(format, ...) OPP_LOG_P(LOGLEVEL_FATAL, NULL, format, ## __VA_ARGS__)
+#define EV_ERROR_P(format, ...) OPP_LOG_P(LOGLEVEL_ERROR, NULL, format, ## __VA_ARGS__)
+#define EV_WARN_P(format, ...)  OPP_LOG_P(LOGLEVEL_WARN, NULL, format, ## __VA_ARGS__)
+#define EV_INFO_P(format, ...)  OPP_LOG_P(LOGLEVEL_INFO, NULL, format, ## __VA_ARGS__)
+#define EV_DEBUG_P(format, ...) OPP_LOG_P(LOGLEVEL_DEBUG, NULL, format, ## __VA_ARGS__)
+#define EV_TRACE_P(format, ...) OPP_LOG_P(LOGLEVEL_TRACE, NULL, format, ## __VA_ARGS__)
 //@}
 
 /**
  * Printf like log macros for static class member or non-member functions with default category.
  */
 //@{
-#define EV_FATAL_PS(format, args...) OPP_LOG_PS(LOGLEVEL_FATAL, NULL, format, ## args)
-#define EV_ERROR_PS(format, args...) OPP_LOG_PS(LOGLEVEL_ERROR, NULL, format, ## args)
-#define EV_WARN_PS(format, args...)  OPP_LOG_PS(LOGLEVEL_WARN, NULL, format, ## args)
-#define EV_INFO_PS(format, args...)  OPP_LOG_PS(LOGLEVEL_INFO, NULL, format, ## args)
-#define EV_DEBUG_PS(format, args...) OPP_LOG_PS(LOGLEVEL_DEBUG, NULL, format, ## args)
-#define EV_TRACE_PS(format, args...) OPP_LOG_PS(LOGLEVEL_TRACE, NULL, format, ## args)
+#define EV_FATAL_PS(format, ...) OPP_LOG_PS(LOGLEVEL_FATAL, NULL, format, ## __VA_ARGS__)
+#define EV_ERROR_PS(format, ...) OPP_LOG_PS(LOGLEVEL_ERROR, NULL, format, ## __VA_ARGS__)
+#define EV_WARN_PS(format, ...)  OPP_LOG_PS(LOGLEVEL_WARN, NULL, format, ## __VA_ARGS__)
+#define EV_INFO_PS(format, ...)  OPP_LOG_PS(LOGLEVEL_INFO, NULL, format, ## __VA_ARGS__)
+#define EV_DEBUG_PS(format, ...) OPP_LOG_PS(LOGLEVEL_DEBUG, NULL, format, ## __VA_ARGS__)
+#define EV_TRACE_PS(format, ...) OPP_LOG_PS(LOGLEVEL_TRACE, NULL, format, ## __VA_ARGS__)
 //@}
 
 /**
  * Printf like log macros for class member functions with explicit category.
  */
 //@{
-#define EV_FATAL_PC(category, format, args...) OPP_LOG_P(LOGLEVEL_FATAL, category, format, ## args)
-#define EV_ERROR_PC(category, format, args...) OPP_LOG_P(LOGLEVEL_ERROR, category, format, ## args)
-#define EV_WARN_PC(category, format, args...)  OPP_LOG_P(LOGLEVEL_WARN, category, format, ## args)
-#define EV_INFO_PC(category, format, args...)  OPP_LOG_P(LOGLEVEL_INFO, category, format, ## args)
-#define EV_DEBUG_PC(category, format, args...) OPP_LOG_P(LOGLEVEL_DEBUG, category, format, ## args)
-#define EV_TRACE_PC(category, format, args...) OPP_LOG_P(LOGLEVEL_TRACE, category, format, ## args)
+#define EV_FATAL_PC(category, format, ...) OPP_LOG_P(LOGLEVEL_FATAL, category, format, ## __VA_ARGS__)
+#define EV_ERROR_PC(category, format, ...) OPP_LOG_P(LOGLEVEL_ERROR, category, format, ## __VA_ARGS__)
+#define EV_WARN_PC(category, format, ...)  OPP_LOG_P(LOGLEVEL_WARN, category, format, ## __VA_ARGS__)
+#define EV_INFO_PC(category, format, ...)  OPP_LOG_P(LOGLEVEL_INFO, category, format, ## __VA_ARGS__)
+#define EV_DEBUG_PC(category, format, ...) OPP_LOG_P(LOGLEVEL_DEBUG, category, format, ## __VA_ARGS__)
+#define EV_TRACE_PC(category, format, ...) OPP_LOG_P(LOGLEVEL_TRACE, category, format, ## __VA_ARGS__)
 //@}
 
 /**
  * Printf like log macros for static class member or non-member functions with explicit category.
  */
 //@{
-#define EV_FATAL_PSC(category, format, args...) OPP_LOG_PS(LOGLEVEL_FATAL, category, format, ## args)
-#define EV_ERROR_PSC(category, format, args...) OPP_LOG_PS(LOGLEVEL_ERROR, category, format, ## args)
-#define EV_WARN_PSC(category, format, args...)  OPP_LOG_PS(LOGLEVEL_WARN, category, format, ## args)
-#define EV_INFO_PSC(category, format, args...)  OPP_LOG_PS(LOGLEVEL_INFO, category, format, ## args)
-#define EV_DEBUG_PSC(category, format, args...) OPP_LOG_PS(LOGLEVEL_DEBUG, category, format, ## args)
-#define EV_TRACE_PSC(category, format, args...) OPP_LOG_PS(LOGLEVEL_TRACE, category, format, ## args)
+#define EV_FATAL_PSC(category, format, ...) OPP_LOG_PS(LOGLEVEL_FATAL, category, format, ## __VA_ARGS__)
+#define EV_ERROR_PSC(category, format, ...) OPP_LOG_PS(LOGLEVEL_ERROR, category, format, ## __VA_ARGS__)
+#define EV_WARN_PSC(category, format, ...)  OPP_LOG_PS(LOGLEVEL_WARN, category, format, ## __VA_ARGS__)
+#define EV_INFO_PSC(category, format, ...)  OPP_LOG_PS(LOGLEVEL_INFO, category, format, ## __VA_ARGS__)
+#define EV_DEBUG_PSC(category, format, ...) OPP_LOG_PS(LOGLEVEL_DEBUG, category, format, ## __VA_ARGS__)
+#define EV_TRACE_PSC(category, format, ...) OPP_LOG_PS(LOGLEVEL_TRACE, category, format, ## __VA_ARGS__)
 //@}
 
 /**
@@ -298,7 +299,7 @@ class SIM_API cLogEntry
  * This class is used for buffering the text content to be able to send whole
  * lines one by one to the active environment.
  */
-class cLogBuffer: public std::basic_stringbuf<char> {
+class cLogBuffer : public std::basic_stringbuf<char> {
   public:
     cLogBuffer() { }
 
@@ -340,7 +341,7 @@ class SIM_API cLogStream : public std::ostream
  *
  * NOTE: This class is internal to the logging infrastructure.
  */
-class cLogProxy
+class SIM_API cLogProxy
 {
   friend cLogBuffer;
 

@@ -97,6 +97,7 @@ $O/cmdenv.obj: cmdenv.cc \
   ../../include/csimplemodule.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/clog.h \
   ../../include/cwatch.h \
   ../../include/cconfigoption.h \
   ../../include/cdensityestbase.h \
@@ -159,6 +160,7 @@ $O/serializer.obj: serializer.cc \
   ../../include/csimplemodule.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/clog.h \
   ../../include/cwatch.h \
   ../../include/cpacket.h \
   ../../include/cdensityestbase.h \
