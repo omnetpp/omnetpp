@@ -6,12 +6,12 @@ static void printValues(const char *configName, const char *iterationVariable)
 {
     cConfigurationEx *config = ev.getConfigEx();
     int n = config->getNumRunsInConfig(configName);
-    EV_S << iterationVariable << "\n";
+    EV << iterationVariable << "\n";
     for (int i = 0; i < n; ++i)
     {
         config->activateConfig(configName, i);
         const char *value = config->getVariable(iterationVariable);
-        EV_S << "  " << value << "\n";
+        EV << "  " << value << "\n";
     }
 }
 

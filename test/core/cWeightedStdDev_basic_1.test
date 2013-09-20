@@ -9,7 +9,7 @@ uses the "N" formula (N-1 gets nasty in the weighted case).
 %global:
 void print(cStdDev& s)
 {
-    EV_S << "n=" << s.getCount() << " w=" << s.getWeights()
+    EV << "n=" << s.getCount() << " w=" << s.getWeights()
          << " sum=" << s.getSum() << " sqrsum=" << s.getSqrSum()
          << " min=" << s.getMin() << " max=" << s.getMax()
          << " mean=" << s.getMean() << " stddev=" << s.getStddev()

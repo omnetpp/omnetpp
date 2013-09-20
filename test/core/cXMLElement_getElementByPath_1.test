@@ -36,7 +36,7 @@ static void getElement(const char *pathexpr)
     cXMLElement *rootelement = ev.getXMLDocument("test.xml", NULL);
     cXMLElement *node = rootelement->getElementByPath(pathexpr);
 
-    EV_S << (!pathexpr ? "''" : pathexpr) << ": " << (!node ? "null" : node->getAttribute("id")) << "\n";
+    EV << (!pathexpr ? "''" : pathexpr) << ": " << (!node ? "null" : node->getAttribute("id")) << "\n";
 }
 
 %activity:

@@ -14,7 +14,7 @@ void test(const char *expr)
     } catch (std::exception& e) {
         result = e.what();
     }
-    EV_S << expr << " ==> " << result << "\n";
+    EV << expr << " ==> " << result << "\n";
 }
 
 #define P(expr)  test(#expr)

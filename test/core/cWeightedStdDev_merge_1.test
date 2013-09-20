@@ -7,7 +7,7 @@ to their gcc equivalent.
 %global:
 void print(cStdDev& s)
 {
-    EV_S << s.getName() << " n=" << s.getCount() << " w=" << s.getWeights()
+    EV << s.getName() << " n=" << s.getCount() << " w=" << s.getWeights()
          << " S=" << s.getSum() << " SS=" << s.getSqrSum()
          << " min=" << s.getMin() << " max=" << s.getMax()
          << " mean=" << s.getMean() << " stddev=" << s.getStddev()
@@ -40,7 +40,7 @@ void collect(int na, int nb)
     a.merge(&b); a.setName("a+b");
     print(a);
     print(s);
-    EV_S << "---\n";
+    EV << "---\n";
 }
 
 %activity:

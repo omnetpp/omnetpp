@@ -7,7 +7,7 @@ Test logging class name.
 network = TestModule
 cmdenv-express-mode = false
 debugger-attach-on-error = true
-log-format = "%b %z"
+log-format = "[%b %z] "
 
 %file: test.ned
 
@@ -24,25 +24,34 @@ simple TestModule
 namespace @TESTNAME@ {
 
 static void testNonClassFunction() {
-    EV_DEBUG_S << endl;
+    EV_DEBUG << "Hello from a plain function\n";
 }
 
-class NonObject {
+class NonCObject {
     public:
         void test() {
-            EV_DEBUG << endl;
+            EV_DEBUG << "Hello from NonCObject\n";
+        }
+};
+
+class LoggableNonCObject {
+    public:
+        const LoggableNonCObject *getThisPtr() const { return this; }
+        const char *getClassName() {return "LoggableNonCObject"; }
+
+        void test() {
+            EV_DEBUG << "Hello from LoggableNonCObject\n";
         }
 };
 
 class Object : public cObject {
     public:
         void test() {
-            EV_DEBUG << endl;
+            EV_DEBUG << "Hello from Object\n";
         }
 
     protected:
         virtual const char *getName() const { return "objectName"; }
-        virtual const char *getClassName() const { return "Object"; }
 };
 
 class TestModule : public cSimpleModule {
@@ -50,11 +59,12 @@ class TestModule : public cSimpleModule {
         TestModule() : cSimpleModule(16384) { }
 
         void testNonStaticMemberFunction() {
-            EV_DEBUG << endl;
+            EV_DEBUG << "Hello from TestModule method\n";
         }
 
         static void testStaticMemberFunction() {
-            EV_DEBUG_S << endl;
+            EV_STATICCONTEXT;
+            EV_DEBUG << "Hello from TestModule static method\n";
         }
 
     protected:
@@ -65,8 +75,10 @@ class TestModule : public cSimpleModule {
             testNonStaticMemberFunction();
             Object object;
             object.test();
-            NonObject nonObject;
-            nonObject.test();
+            NonCObject nonCObject;
+            nonCObject.test();
+            LoggableNonCObject loggableNonCObject;
+            loggableNonCObject.test();
         }
 };
 
@@ -75,6 +87,10 @@ Define_Module(TestModule);
 }
 
 %contains: stdout
-testModuleName TestModule
-objectName Object
- cLog_12::NonObject
+[ ] Hello from a plain function
+[ ] Hello from TestModule static method
+[testModuleName TestModule] Hello from TestModule method
+[objectName cLog_12::Object] Hello from Object
+[ ] Hello from NonCObject
+[ LoggableNonCObject] Hello from LoggableNonCObject
+

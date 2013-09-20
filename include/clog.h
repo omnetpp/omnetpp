@@ -27,6 +27,8 @@ class cComponent;
  * This class serves as a namespace for log levels and related functions. The actual
  * log levels are not instances of this class, but simply integers from the enumeration
  * declared inside.
+ *
+ * @ingroup Logging
  */
 class SIM_API cLogLevel
 {
@@ -39,12 +41,12 @@ class SIM_API cLogLevel
     enum LogLevel
     {
         /**
-         * The highest log level should be used for fatal (unrecoverable) errors
-         * that prevent the component from further operation. It doesn't necessarily
-         * mean that the simulation must stop immediately and exit. It may simply
-         * mean that a component is unable to continue normal operation. For example,
-         * a special purpose recording component may be unable to continue recording
-         * due to disk full.
+         * The highest log level; it should be used for fatal (unrecoverable) errors
+         * that prevent the component from further operation. It doesn't mean that
+         * the simulation must stop immediately (because in such cases the code should
+         * throw a cRuntimeError), but rather that the a component is unable to continue
+         * normal operation. For example, a special purpose recording component may be
+         * unable to continue recording due to the disk being full.
          */
         LOGLEVEL_FATAL,
 
@@ -73,20 +75,20 @@ class SIM_API cLogLevel
         LOGLEVEL_INFO,
 
         /**
-         * This log level should be used for implementation specific details that
+         * This log level should be used for implementation-specific details that
          * might be useful and understandable by users of the component. These
          * messages might help to debug various issues without actually looking deep
          * into the code. For example, a MAC layer protocol component could log state
-         * machine updates, acknowledges timeouts and selected backoff periods using
+         * machine updates, acknowledges timeouts and selected back-off periods using
          * this level.
          */
         LOGLEVEL_DEBUG,
 
         /**
-         * The lowest log level should be used for very low level implementation specific
-         * technical detail that is mostly useful for the actual developers of the
-         * component. For example, a MAC layer protocol component could log internal
-         * state variable updates, entering or leaving methods using this level.
+         * The lowest log level; it should be used for low-level implementation-specific
+         * technical details that are mostly useful for the developers of the
+         * component. For example, a MAC layer protocol component could use this log level
+         * to log update to internal state variables or entering/leaving methods.
          */
         LOGLEVEL_TRACE
     };
@@ -99,12 +101,12 @@ class SIM_API cLogLevel
     static LogLevel globalRuntimeLoglevel;
 
     /**
-     * Returns a human readable string representing the provided log level.
+     * Returns a human-readable string representing the provided log level.
      */
     static const char *getName(LogLevel loglevel);
 
     /**
-     * Returns the associated log level for the provided human readable string.
+     * Returns the associated log level for the provided human-readable string.
      */
     static LogLevel getLevel(const char *name);
 };
@@ -122,154 +124,95 @@ class SIM_API cLogLevel
 #endif
 #endif
 
-/**
- * This macro determines the name of the class where the log statement appears.
- */
-#define __CLASS__ typeid(this).name()
 
-/**
- * It returns a log proxy object that captures the provided context.
- * This macro is internal to the logging infrastructure.
- *
- * NOTE: the (void)0 trick prevents GCC producing statement has no effect warnings
- * for compile time disabled log statements.
- */
-#define EV_LOGPROXY(object, class, loglevel, category) \
+// Creates a log proxy object that captures the provided context.
+// This macro is internal to the logging infrastructure.
+//
+// NOTE: the (void)0 trick prevents GCC producing statement has no effect warnings
+// for compile time disabled log statements.
+//
+#define OPP_LOGPROXY(object, classname, loglevel, category) \
         ((void)0, !(cLogLevel::loglevel <= GLOBAL_COMPILETIME_LOGLEVEL && \
          !ev.isDisabled() && \
          cLogLevel::loglevel <= cLogLevel::globalRuntimeLoglevel && \
          cLogProxy::isEnabled(object, category, cLogLevel::loglevel))) ? \
-         cLogProxy::dummyStream : cLogProxy(object, category, cLogLevel::loglevel, __FILE__, __LINE__, class, __FUNCTION__)
+         cLogProxy::dummyStream : cLogProxy(object, category, cLogLevel::loglevel, __FILE__, __LINE__, classname, __FUNCTION__)
+
+
+// Returns NULL. Helper function for the logging macros.
+inline void *getThisPtr() {return NULL;}
+
+// Returns NULL. Helper function for the logging macros.
+inline const char *getClassName() {return NULL;}
 
 /**
- * This macro is similar to a stream and it supposed to be combined with operator<< calls.
- * It returns a log stream associated with the provided log level and log category.
+ * Use this macro when logging from static member functions.
+ * Background: OPP_LOG and derived macros (EV_INFO, EV_DEBUG, etc) will fail
+ * to compile when placed into static member functions of cObject-derived classes
+ * ("cannot call member function 'cObject::getThisPtr()' without object" in GNU C++,
+ * and "C2352: illegal call of non-static member function" in Visual C++).
+ * To fix it, add this macro at the top of the function; it contains local declarations
+ * to make the code compile.
+ *
+ * @ingroup Logging
+ * @hideinitializer
+ */
+#define EV_STATICCONTEXT  void *(*getThisPtr)() = ::getThisPtr; const char *(*getClassName)() = ::getClassName;
+
+/**
+ * This is the macro underlying EV_INFO, EV_DEBUG, EV_INFO_C, and similar log macros.
+ * It can be used as a C++ stream to log data with the provided log level and log category.
  * Log statements are wrapped with compile time and runtime guards at the call site to
  * efficiently prevent unnecessary computation of parameters and log content.
+ *
+ * @see cLogLevel::LogLevel, EV_STATICCONTEXT, EV_INFO, EV_INFO_C
+ * @ingroup Logging
+ * @hideinitializer
+ */
+#define OPP_LOG(loglevel, category) OPP_LOGPROXY(getThisPtr(), getClassName(), loglevel, category).getStream()
+
+/**
+ * Logging macros with the default category. Category is a string that refers to the
+ * topic of the log message. The macro can be used as a C++ stream. Example:
+ * <tt>EV_DEBUG << "Connection setup complete" << endl;</tt>.
+ *
+ * @see OPP_LOG, cLogLevel::LogLevel, EV_STATICCONTEXT
+ * @ingroup Logging
+ * @defgroup LoggingDefault Logging with default category
  */
 //@{
-#define OPP_LOG(loglevel, category) EV_LOGPROXY(this, __CLASS__, loglevel, category).getStream()
-#define OPP_LOG_S(loglevel, category) EV_LOGPROXY((void*)NULL, NULL, loglevel, category).getStream()
+#define EV       EV_INFO                        ///< Short for EV_INFO
+#define EV_FATAL OPP_LOG(LOGLEVEL_FATAL, NULL)  ///< Log local fatal errors
+#define EV_ERROR OPP_LOG(LOGLEVEL_ERROR, NULL)  ///< Log local but recoverable errors
+#define EV_WARN  OPP_LOG(LOGLEVEL_WARN, NULL)   ///< Log warnings
+#define EV_INFO  OPP_LOG(LOGLEVEL_INFO, NULL)   ///< Log information (default log level)
+#define EV_DEBUG OPP_LOG(LOGLEVEL_DEBUG, NULL)  ///< Log state variables and other low-level information
+#define EV_TRACE OPP_LOG(LOGLEVEL_TRACE, NULL)  ///< Log control flow information (entering/exiting functions, etc)
 //@}
 
 /**
- * This macro is similar to printf and it supposed to be called with a format string and arguments.
- * It returns a log stream associated with the provided log level and category.
- * Log statements are wrapped with compile time and runtime guards at the call site to
- * efficiently prevent unnecessary computation of parameters and log content.
+ * Logging macros with an explicit category. Category is a string that refers to the
+ * topic of the log message. The macro can be used as a C++ stream. Example:
+ * <tt>EV_DEBUG("retransmissions") << "Too many retries, discarding frame" << endl;</tt>.
+ *
+ * @see OPP_LOG, cLogLevel::LogLevel, EV_STATICCONTEXT
+ * @ingroup Logging
+ * @defgroup LoggingCat  Logging with explicit category
  */
 //@{
-#define OPP_LOG_P(loglevel, category, format, ...) EV_LOGPROXY(this, __CLASS__, loglevel, category).printf(format, ## __VA_ARGS__)
-#define OPP_LOG_PS(loglevel, category, format, ...) EV_LOGPROXY((void*)NULL, NULL, loglevel, category).printf(format, ## __VA_ARGS__)
-//@}
-
-/**
- * Stream like log macros for class member functions with default category.
- */
-//@{
-#define EV_FATAL OPP_LOG(LOGLEVEL_FATAL, NULL)
-#define EV_ERROR OPP_LOG(LOGLEVEL_ERROR, NULL)
-#define EV_WARN  OPP_LOG(LOGLEVEL_WARN, NULL)
-#define EV_INFO  OPP_LOG(LOGLEVEL_INFO, NULL)
-#define EV_DEBUG OPP_LOG(LOGLEVEL_DEBUG, NULL)
-#define EV_TRACE OPP_LOG(LOGLEVEL_TRACE, NULL)
-//@}
-
-/**
- * Stream like log macros for static class member or non-member functions with default category.
- */
-//@{
-#define EV_FATAL_S OPP_LOG_S(LOGLEVEL_FATAL, NULL)
-#define EV_ERROR_S OPP_LOG_S(LOGLEVEL_ERROR, NULL)
-#define EV_WARN_S  OPP_LOG_S(LOGLEVEL_WARN, NULL)
-#define EV_INFO_S  OPP_LOG_S(LOGLEVEL_INFO, NULL)
-#define EV_DEBUG_S OPP_LOG_S(LOGLEVEL_DEBUG, NULL)
-#define EV_TRACE_S OPP_LOG_S(LOGLEVEL_TRACE, NULL)
-//@}
-
-/**
- * Stream like log macros for class member functions with explicit category.
- */
-//@{
-#define EV_FATAL_C(category) OPP_LOG(LOGLEVEL_FATAL, category)
-#define EV_ERROR_C(category) OPP_LOG(LOGLEVEL_ERROR, category)
-#define EV_WARN_C(category)  OPP_LOG(LOGLEVEL_WARN, category)
-#define EV_INFO_C(category)  OPP_LOG(LOGLEVEL_INFO, category)
-#define EV_DEBUG_C(category) OPP_LOG(LOGLEVEL_DEBUG, category)
-#define EV_TRACE_C(category) OPP_LOG(LOGLEVEL_TRACE, category)
-//@}
-
-/**
- * Stream like log macros for static class member or non-member functions with explicit category.
- */
-//@{
-#define EV_FATAL_SC(category) OPP_LOG_S(LOGLEVEL_FATAL, category)
-#define EV_ERROR_SC(category) OPP_LOG_S(LOGLEVEL_ERROR, category)
-#define EV_WARN_SC(category)  OPP_LOG_S(LOGLEVEL_WARN, category)
-#define EV_INFO_SC(category)  OPP_LOG_S(LOGLEVEL_INFO, category)
-#define EV_DEBUG_SC(category) OPP_LOG_S(LOGLEVEL_DEBUG, category)
-#define EV_TRACE_SC(category) OPP_LOG_S(LOGLEVEL_TRACE, category)
-//@}
-
-/**
- * Printf like log macros for class member functions with default category.
- */
-//@{
-#define EV_FATAL_P(format, ...) OPP_LOG_P(LOGLEVEL_FATAL, NULL, format, ## __VA_ARGS__)
-#define EV_ERROR_P(format, ...) OPP_LOG_P(LOGLEVEL_ERROR, NULL, format, ## __VA_ARGS__)
-#define EV_WARN_P(format, ...)  OPP_LOG_P(LOGLEVEL_WARN, NULL, format, ## __VA_ARGS__)
-#define EV_INFO_P(format, ...)  OPP_LOG_P(LOGLEVEL_INFO, NULL, format, ## __VA_ARGS__)
-#define EV_DEBUG_P(format, ...) OPP_LOG_P(LOGLEVEL_DEBUG, NULL, format, ## __VA_ARGS__)
-#define EV_TRACE_P(format, ...) OPP_LOG_P(LOGLEVEL_TRACE, NULL, format, ## __VA_ARGS__)
-//@}
-
-/**
- * Printf like log macros for static class member or non-member functions with default category.
- */
-//@{
-#define EV_FATAL_PS(format, ...) OPP_LOG_PS(LOGLEVEL_FATAL, NULL, format, ## __VA_ARGS__)
-#define EV_ERROR_PS(format, ...) OPP_LOG_PS(LOGLEVEL_ERROR, NULL, format, ## __VA_ARGS__)
-#define EV_WARN_PS(format, ...)  OPP_LOG_PS(LOGLEVEL_WARN, NULL, format, ## __VA_ARGS__)
-#define EV_INFO_PS(format, ...)  OPP_LOG_PS(LOGLEVEL_INFO, NULL, format, ## __VA_ARGS__)
-#define EV_DEBUG_PS(format, ...) OPP_LOG_PS(LOGLEVEL_DEBUG, NULL, format, ## __VA_ARGS__)
-#define EV_TRACE_PS(format, ...) OPP_LOG_PS(LOGLEVEL_TRACE, NULL, format, ## __VA_ARGS__)
-//@}
-
-/**
- * Printf like log macros for class member functions with explicit category.
- */
-//@{
-#define EV_FATAL_PC(category, format, ...) OPP_LOG_P(LOGLEVEL_FATAL, category, format, ## __VA_ARGS__)
-#define EV_ERROR_PC(category, format, ...) OPP_LOG_P(LOGLEVEL_ERROR, category, format, ## __VA_ARGS__)
-#define EV_WARN_PC(category, format, ...)  OPP_LOG_P(LOGLEVEL_WARN, category, format, ## __VA_ARGS__)
-#define EV_INFO_PC(category, format, ...)  OPP_LOG_P(LOGLEVEL_INFO, category, format, ## __VA_ARGS__)
-#define EV_DEBUG_PC(category, format, ...) OPP_LOG_P(LOGLEVEL_DEBUG, category, format, ## __VA_ARGS__)
-#define EV_TRACE_PC(category, format, ...) OPP_LOG_P(LOGLEVEL_TRACE, category, format, ## __VA_ARGS__)
-//@}
-
-/**
- * Printf like log macros for static class member or non-member functions with explicit category.
- */
-//@{
-#define EV_FATAL_PSC(category, format, ...) OPP_LOG_PS(LOGLEVEL_FATAL, category, format, ## __VA_ARGS__)
-#define EV_ERROR_PSC(category, format, ...) OPP_LOG_PS(LOGLEVEL_ERROR, category, format, ## __VA_ARGS__)
-#define EV_WARN_PSC(category, format, ...)  OPP_LOG_PS(LOGLEVEL_WARN, category, format, ## __VA_ARGS__)
-#define EV_INFO_PSC(category, format, ...)  OPP_LOG_PS(LOGLEVEL_INFO, category, format, ## __VA_ARGS__)
-#define EV_DEBUG_PSC(category, format, ...) OPP_LOG_PS(LOGLEVEL_DEBUG, category, format, ## __VA_ARGS__)
-#define EV_TRACE_PSC(category, format, ...) OPP_LOG_PS(LOGLEVEL_TRACE, category, format, ## __VA_ARGS__)
-//@}
-
-/**
- * Support for backward compatibility.
- */
-//@{
-#define EV   EV_INFO
-#define EV_S EV_INFO_S
+#define EV_C(category)       EV_INFO(category)                  ///< Short for EV_INFO_C
+#define EV_FATAL_C(category) OPP_LOG(LOGLEVEL_FATAL, category)  ///< Log local fatal errors
+#define EV_ERROR_C(category) OPP_LOG(LOGLEVEL_ERROR, category)  ///< Log local but recoverable errors
+#define EV_WARN_C(category)  OPP_LOG(LOGLEVEL_WARN, category)   ///< Log warnings
+#define EV_INFO_C(category)  OPP_LOG(LOGLEVEL_INFO, category)   ///< Log information (default log level)
+#define EV_DEBUG_C(category) OPP_LOG(LOGLEVEL_DEBUG, category)  ///< Log state variables and other low-level information
+#define EV_TRACE_C(category) OPP_LOG(LOGLEVEL_TRACE, category)  ///< Log control flow information (entering/exiting functions, etc)
 //@}
 
 /**
  * This class holds various data that is captured when a particular log statement
  * executes. It also contains the text written to the log stream.
+ * @ingroup Internals
  */
 class SIM_API cLogEntry
 {
@@ -324,10 +267,7 @@ class SIM_API cLogStream : public std::ostream
     static cLogStream globalStream;
 
   private:
-    /**
-     * The underlying buffer that contains the text that has been written so far.
-     */
-    cLogBuffer buffer;
+    cLogBuffer buffer;  // underlying buffer that contains the text that has been written so far
 
   public:
     cLogStream() : std::ostream(&buffer) { }
@@ -338,34 +278,21 @@ class SIM_API cLogStream : public std::ostream
 
 /**
  * This class captures the context where the log statement appears.
- *
  * NOTE: This class is internal to the logging infrastructure.
+ *
+ * @ingroup Internals
  */
 class SIM_API cLogProxy
 {
   friend cLogBuffer;
 
   public:
-    /**
-     * This variable is not used at all, it's just used to satisfy the C++ compiler.
-     */
-    static std::stringstream dummyStream;
+    static std::stringstream dummyStream; // unused; it's just used to satisfy the C++ compiler
 
   private:
-    /**
-     * The context of the current (last) log statement that has been executed.
-     */
-    static cLogEntry currentEntry;
-
-    /**
-     * The log level of the previous log statement.
-     */
-    static cLogLevel::LogLevel previousLoglevel;
-
-    /**
-     * The category of the previous log statement.
-     */
-    static const char *previousCategory;
+    static cLogEntry currentEntry; // context of the current (last) log statement that has been executed.
+    static cLogLevel::LogLevel previousLoglevel; // log level of the previous log statement
+    static const char *previousCategory; // category of the previous log statement
 
   public:
     cLogProxy(const void *sourcePointer, const char *category, cLogLevel::LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
@@ -378,7 +305,6 @@ class SIM_API cLogProxy
     static bool isComponentEnabled(const cComponent *component, const char *category, cLogLevel::LogLevel loglevel);
 
     std::ostream& getStream();
-    std::ostream& printf(const char *format, ...);
 
   protected:
     void fillEntry(const char *category, cLogLevel::LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);

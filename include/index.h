@@ -31,6 +31,7 @@
  * - @ref Statistics
  * - @ref SimSupport
  * - @ref Envir
+ * - @ref Logging
  * - @ref EnumsTypes
  * - @ref Functions
  * - @ref Macros
@@ -187,6 +188,10 @@
 
 /**
  * @defgroup Envir  User interface: cEnvir and ev
+ */
+
+/**
+ * @defgroup Logging Logging
  */
 
 /**

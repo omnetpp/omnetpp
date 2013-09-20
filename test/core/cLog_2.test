@@ -11,9 +11,9 @@ cmdenv-express-mode = false
 %activity:
 
 #undef GLOBAL_COMPILETIME_LOGLEVEL
-#define GLOBAL_COMPILETIME_LOGLEVEL cLogLevel::LOGLEVEL_TRACE
+#define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_TRACE
 
-cLogLevel::globalRuntimeLoglevel = cLogLevel::LOGLEVEL_FATAL;
+cLogLevel::globalRuntimeLoglevel = LOGLEVEL_FATAL;
 EV_FATAL << "Hello" << endl;
 EV_ERROR << "Hello" << endl;
 EV_WARN << "Hello" << endl;
@@ -21,7 +21,7 @@ EV_INFO << "Hello" << endl;
 EV_DEBUG << "Hello" << endl;
 EV_TRACE << "Hello" << endl;
 
-cLogLevel::globalRuntimeLoglevel = cLogLevel::LOGLEVEL_ERROR;
+cLogLevel::globalRuntimeLoglevel = LOGLEVEL_ERROR;
 EV_FATAL << "Hello" << endl;
 EV_ERROR << "Hello" << endl;
 EV_WARN << "Hello" << endl;
@@ -29,7 +29,7 @@ EV_INFO << "Hello" << endl;
 EV_DEBUG << "Hello" << endl;
 EV_TRACE << "Hello" << endl;
 
-cLogLevel::globalRuntimeLoglevel = cLogLevel::LOGLEVEL_WARN;
+cLogLevel::globalRuntimeLoglevel = LOGLEVEL_WARN;
 EV_FATAL << "Hello" << endl;
 EV_ERROR << "Hello" << endl;
 EV_WARN << "Hello" << endl;
@@ -37,7 +37,7 @@ EV_INFO << "Hello" << endl;
 EV_DEBUG << "Hello" << endl;
 EV_TRACE << "Hello" << endl;
 
-cLogLevel::globalRuntimeLoglevel = cLogLevel::LOGLEVEL_INFO;
+cLogLevel::globalRuntimeLoglevel = LOGLEVEL_INFO;
 EV_FATAL << "Hello" << endl;
 EV_ERROR << "Hello" << endl;
 EV_WARN << "Hello" << endl;
@@ -45,7 +45,7 @@ EV_INFO << "Hello" << endl;
 EV_DEBUG << "Hello" << endl;
 EV_TRACE << "Hello" << endl;
 
-cLogLevel::globalRuntimeLoglevel = cLogLevel::LOGLEVEL_DEBUG;
+cLogLevel::globalRuntimeLoglevel = LOGLEVEL_DEBUG;
 EV_FATAL << "Hello" << endl;
 EV_ERROR << "Hello" << endl;
 EV_WARN << "Hello" << endl;
@@ -53,7 +53,7 @@ EV_INFO << "Hello" << endl;
 EV_DEBUG << "Hello" << endl;
 EV_TRACE << "Hello" << endl;
 
-cLogLevel::globalRuntimeLoglevel = cLogLevel::LOGLEVEL_TRACE;
+cLogLevel::globalRuntimeLoglevel = LOGLEVEL_TRACE;
 EV_FATAL << "Hello" << endl;
 EV_ERROR << "Hello" << endl;
 EV_WARN << "Hello" << endl;

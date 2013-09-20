@@ -21,10 +21,7 @@
 #include "cconfigoption.h"
 #include "cmodule.h"
 
-Register_PerObjectConfigOption(CFGID_COMPONENT_LOGLEVEL, "log-level", KIND_MODULE, CFG_STRING, "DEBUG", "Specifies the per component level of detail recorded by log statements, output below the specified level is omitted. Available values are (case insensitive): fatal, error, warn, info, debug or trace. Note that the level of detail is also controlled by the specified per component log levels and the GLOBAL_COMPILETIME_LOGLEVEL macro that is used to completely remove log statements from the executable.")
-
-#define GLOBAL_PRINT_BUFFER_SIZE 1024
-static char globalPrintfBuffer[GLOBAL_PRINT_BUFFER_SIZE];
+Register_PerObjectConfigOption(CFGID_COMPONENT_LOGLEVEL, "log-level", KIND_MODULE, CFG_STRING, "DEBUG", "Specifies the per-component level of detail recorded by log statements, output below the specified level is omitted. Available values are (case insensitive): fatal, error, warn, info, debug or trace. Note that the level of detail is also controlled by the specified per component log levels and the GLOBAL_COMPILETIME_LOGLEVEL macro that is used to completely remove log statements from the executable.")
 
 cLogStream cLogStream::globalStream;
 cLogLevel::LogLevel cLogLevel::globalRuntimeLoglevel = cLogLevel::LOGLEVEL_DEBUG;
@@ -33,7 +30,7 @@ cLogLevel::LogLevel cLogProxy::previousLoglevel = (cLogLevel::LogLevel)-1;
 const char *cLogProxy::previousCategory = NULL;
 std::stringstream cLogProxy::dummyStream;
 
-// ----------------------------------------------------------------------------
+//----
 
 const char *cLogLevel::getName(LogLevel loglevel)
 {
@@ -74,7 +71,7 @@ cLogLevel::LogLevel cLogLevel::getLevel(const char *name)
         throw cRuntimeError("Unknown log level name '%s'", name);
 }
 
-// ----------------------------------------------------------------------------
+//----
 
 int cLogBuffer::sync() {
     char *text = pbase();
@@ -106,7 +103,7 @@ void cLogStream::flushLastLine()
     flush();
 }
 
-// ----------------------------------------------------------------------------
+//----
 
 cLogProxy::cLogProxy(const void *sourcePointer, const char *category, cLogLevel::LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
 {
@@ -160,17 +157,6 @@ bool cLogProxy::isComponentEnabled(const cComponent *component, const char *cate
 
 std::ostream& cLogProxy::getStream()
 {
-    return cLogStream::globalStream;
-}
-
-std::ostream& cLogProxy::printf(const char *formatString, ...)
-{
-    va_list va;
-    va_start(va, formatString);
-    vsnprintf(globalPrintfBuffer, GLOBAL_PRINT_BUFFER_SIZE, formatString, va);
-    globalPrintfBuffer[GLOBAL_PRINT_BUFFER_SIZE - 1] = '\0';
-    va_end(va);
-    cLogStream::globalStream << globalPrintfBuffer;
     return cLogStream::globalStream;
 }
 

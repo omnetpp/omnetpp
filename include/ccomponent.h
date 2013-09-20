@@ -262,6 +262,12 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * Redefined to include component parameters in the traversal as well.
      */
     virtual void forEachChild(cVisitor *v);
+
+    /**
+     * Returns the this pointer. Utility function for the logging macros.
+     * Redefined to change the return type.
+     */
+    const cComponent *getThisPtr() const  {return this;}  //Note: nonvirtual
     //@}
 
     /**

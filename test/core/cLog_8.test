@@ -10,9 +10,9 @@ cmdenv-express-mode = false
 
 %activity:
 
-cLogLevel::globalRuntimeLoglevel = cLogLevel::LOGLEVEL_TRACE;
+cLogLevel::globalRuntimeLoglevel = LOGLEVEL_TRACE;
 #undef GLOBAL_COMPILETIME_LOGLEVEL
-#define GLOBAL_COMPILETIME_LOGLEVEL cLogLevel::LOGLEVEL_FATAL
+#define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_FATAL
 
 EV_FATAL << printf("Hello") << endl;
 EV_ERROR << printf("Omitted") << endl;

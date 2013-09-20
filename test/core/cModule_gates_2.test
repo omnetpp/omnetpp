@@ -8,16 +8,16 @@ static void printGates(cModule *mod, const char *gatename)
     int baseId = mod->gate(gatename,0)->getId();
     int size = mod->gateSize(gatename);
     for (int i=-3; i<size+3; i++) {
-        EV_S << i << ": ";
+        EV << i << ": ";
         try {
             cGate *g = mod->gate(baseId+i);
-            EV_S << g->getFullName() << "\n";
+            EV << g->getFullName() << "\n";
         }
         catch (std::exception& e) {
-            EV_S << e.what() << "\n";
+            EV << e.what() << "\n";
         }
     }
-    EV_S << "\n";
+    EV << "\n";
 }
 
 %activity:

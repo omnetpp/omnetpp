@@ -15,7 +15,7 @@ void test(const char *expr)
     } catch (std::exception& e) {
         result = e.what();
     }
-    EV_S << expr << " ==> " << result << "\n";
+    EV << expr << " ==> " << result << "\n";
 }
 
 void test(const char *s1, const std::string& s2, const char *s3)

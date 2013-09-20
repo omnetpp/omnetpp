@@ -152,6 +152,11 @@ class SIM_API cObject
     virtual std::string getFullPath() const;
 
     /**
+     * Returns the this pointer. Utility function for the logging macros.
+     */
+    const cObject *getThisPtr() const  {return this;}  //Note: nonvirtual
+
+    /**
      * Can be redefined to produce a one-line description of object.
      * The string appears in the graphical user interface (Tkenv) e.g. when
      * the object is displayed in a listbox. The returned string should

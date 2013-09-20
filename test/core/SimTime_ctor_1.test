@@ -9,13 +9,13 @@ SimTime: test the two-arg constructor
 void test(int64 value, int exponent)
 {
     double d = value * pow(10.0, exponent);
-    EV_S << value << "*10^" << exponent << " = ~" << d << " -> ";
+    EV << value << "*10^" << exponent << " = ~" << d << " -> ";
     try {
         SimTime t(value, exponent);
         bool nearlyEqual = fabs(t/d-1.0) < 0.001;
-        EV_S << t << " (int64:" << t.raw() << ") " << (nearlyEqual?"ok":"WRONG") << "\n";
+        EV << t << " (int64:" << t.raw() << ") " << (nearlyEqual?"ok":"WRONG") << "\n";
     } catch (std::exception& e) {
-        EV_S << "ERROR: " << e.what() << "\n";
+        EV << "ERROR: " << e.what() << "\n";
     }
 }
 
