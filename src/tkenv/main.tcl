@@ -536,7 +536,7 @@ proc load_bitmaps {path} {
        set sep {;}
    }
 
-   foreach dir [split $path $sep] {
+   foreach dir [lreverse [split $path $sep]] {
        if {$dir!=""} {
            puts -nonewline "Loading images from $dir: "
            do_load_bitmaps $dir ""
