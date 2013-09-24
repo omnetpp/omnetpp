@@ -117,6 +117,13 @@ const char *cComponent::getNedTypeName() const
     return getComponentType()->getFullName();
 }
 
+void cComponent::setLoglevel(LogLevel loglevel)
+{
+    ASSERT(0 <= loglevel && loglevel <= 6);
+    flags &= ~(0x7 << FL_LOGLEVEL_SHIFT);
+    flags |= (loglevel + 1) << FL_LOGLEVEL_SHIFT;
+}
+
 void cComponent::reallocParamv(int size)
 {
     ASSERT(size>=numparams);
