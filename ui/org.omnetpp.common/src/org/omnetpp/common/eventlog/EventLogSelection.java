@@ -46,49 +46,48 @@ public class EventLogSelection implements IEventLogSelection, Cloneable {
     protected ArrayList<Object> elements;
 
     public EventLogSelection(EventLogInput eventLogInput, ArrayList<Object> elements) {
+        Assert.isTrue(eventLogInput != null);
         this.eventLogInput = eventLogInput;
         this.elements = elements;
     }
 
-    public EventLogSelection(EventLogInput eventLogInput, ArrayList<Long> eventNumbers, ArrayList<BigDecimal> simulationTimes) {
-        Assert.isTrue(eventLogInput != null);
-        this.eventLogInput = eventLogInput;
-        this.elements = new ArrayList<Object>();
+    public EventLogSelection(EventLogInput eventLogInput, EventNumberRangeSet eventNumbers, ArrayList<BigDecimal> simulationTimes) {
+        this(eventLogInput, new ArrayList<Object>());
         if (eventNumbers != null)
-            elements.addAll(eventNumbers);
+            elements.add(eventNumbers);
         if (simulationTimes != null)
             elements.addAll(simulationTimes);
-    }
-
-    public ArrayList<Long> getElements() {
-        return getEventNumbers();
     }
 
     public Object getInput() {
         return eventLogInput;
     }
 
+    @Override
     public IEventLog getEventLog() {
         return eventLogInput.getEventLog();
     }
 
+    @Override
     public EventLogInput getEventLogInput() {
         return eventLogInput;
     }
 
-    public ArrayList<Long> getEventNumbers() {
-        ArrayList<Long> eventNumbers = new ArrayList<Long>();
+    @Override
+    public EventNumberRangeSet getEventNumbers() {
         for (Object element : elements)
-            if (element instanceof Long)
-                eventNumbers.add((Long)element);
-        return eventNumbers;
+            if (element instanceof EventNumberRangeSet)
+                return (EventNumberRangeSet)element;
+        return new EventNumberRangeSet();
     }
 
+    @Override
     public Long getFirstEventNumber() {
-        ArrayList<Long> eventNumbers = getEventNumbers();
-        return eventNumbers.isEmpty() ? null : eventNumbers.get(0);
+        EventNumberRangeSet eventNumbers = getEventNumbers();
+        return eventNumbers.isEmpty() ? null : eventNumbers.iterator().next();
     }
 
+    @Override
     public ArrayList<BigDecimal> getSimulationTimes() {
         ArrayList<BigDecimal> simulationTimes = new ArrayList<BigDecimal>();
         for (Object element : elements)
@@ -97,11 +96,13 @@ public class EventLogSelection implements IEventLogSelection, Cloneable {
         return simulationTimes;
     }
 
+    @Override
     public BigDecimal getFirstSimulationTime() {
         ArrayList<BigDecimal> simulationTimes = getSimulationTimes();
         return simulationTimes.isEmpty() ? null : simulationTimes.get(0);
     }
 
+    @Override
     public boolean isEmpty() {
         return elements.isEmpty();
     }
