@@ -116,7 +116,6 @@ $O/eventlog.o: eventlog.cc \
   ievent.h \
   ../common/commondefs.h \
   eventlog.h \
-  ../common/stringutil.h \
   eventlogindex.h \
   ../common/matchexpression.h \
   eventlogdefs.h \

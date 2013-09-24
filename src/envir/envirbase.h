@@ -22,7 +22,7 @@
 #ifndef __ENVIRBASE_H
 #define __ENVIRBASE_H
 
-#include "log.h"
+#include "logformatter.h"
 #include "carray.h"
 #include "ccomponent.h"
 #include "globals.h"
@@ -115,7 +115,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     cRNG **rngs;
 
     // log related
-    cLogFormatter logFormatter;
+    LogFormatter logFormatter;
     bool logFormatUsesEventName;
     std::string currentEventName;
     const char *currentEventClassName;

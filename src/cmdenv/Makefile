@@ -82,6 +82,7 @@ $O/cmdenv.o: cmdenv.cc \
   ../envir/args.h \
   cmdenv.h \
   ../../include/ctimestampedvalue.h \
+  ../../include/checkandcast.h \
   ../envir/envirdefs.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
@@ -100,6 +101,7 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/cmessage.h \
   ../../include/onstartup.h \
   ../../include/cresultlistener.h \
+  ../../include/clifetimelistener.h \
   ../envir/visitor.h \
   ../envir/envirbase.h \
   ../../include/envirext.h \
@@ -125,8 +127,8 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/coutvector.h \
   ../../include/cwatch.h \
   ../envir/eventlogfilemgr.h \
-  ../../include/simtime.h \
   ../../include/cgate.h \
+  ../../include/simtime.h \
   ../../include/carray.h \
   ../../include/cenvir.h \
   ../../include/simtime_t.h \
@@ -134,18 +136,85 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/cconfigoption.h \
   ../../include/cclassdescriptor.h \
   ../../include/cstatistic.h \
+  ../envir/logformatter.h \
   ../../include/cchannel.h \
   ../envir/intervals.h \
   ../../include/opp_string.h \
+  ../../include/cevent.h \
   ../../include/simkerneldefs.h \
   ../../include/csimulation.h \
   ../../include/cdisplaystring.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
+  serializer.h \
   ../../include/cresultfilter.h \
+  ../../include/clog.h \
   ../envir/httpserver.h \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
+  ../../include/cstddev.h \
+  ../../include/simutil.h \
+  ../../include/cmessageheap.h \
+  ../../include/cproperty.h
+$O/serializer.o: serializer.cc \
+  ../../include/regmacros.h \
+  ../../include/ctimestampedvalue.h \
+  ../envir/envirdefs.h \
+  ../../include/cexpression.h \
+  ../../include/cnamedobject.h \
+  cmddefs.h \
+  ../../include/ccompoundmodule.h \
+  ../../include/cpacket.h \
+  ../../include/ccomponent.h \
+  ../../include/cproperties.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cenum.h \
+  ../../include/platdep/timeutil.h \
+  ../../include/errmsg.h \
+  ../../include/cmessage.h \
+  ../../include/cownedobject.h \
+  ../../include/onstartup.h \
+  ../../include/clifetimelistener.h \
+  ../envir/visitor.h \
+  ../../include/clistener.h \
+  ../../include/cscheduler.h \
+  ../../include/cpar.h \
+  ../../include/globals.h \
+  ../../include/cvisitor.h \
+  ../../include/cnedmathfunction.h \
+  ../../include/csimplemodule.h \
+  ../../include/cobjectfactory.h \
+  ../envir/json.h \
+  ../../include/cmodule.h \
+  ../../include/platdep/platmisc.h \
+  ../envir/matchableobject.h \
+  ../../include/cexception.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/ccomponenttype.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/cwatch.h \
+  ../../include/coutvector.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/simtime.h \
+  ../../include/carray.h \
+  ../../include/cenvir.h \
+  ../../include/simtime_t.h \
+  ../../include/cmsgpar.h \
+  ../../include/cstatistic.h \
+  ../../include/cclassdescriptor.h \
+  ../../include/cchannel.h \
+  ../../include/opp_string.h \
+  ../../include/cevent.h \
+  ../../include/simkerneldefs.h \
+  ../../include/csimulation.h \
+  ../../include/cdisplaystring.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  serializer.h \
+  ../../include/clog.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cdensityestbase.h \
   ../../include/cstddev.h \
   ../../include/cmessageheap.h \
   ../../include/simutil.h \

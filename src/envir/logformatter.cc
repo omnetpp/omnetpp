@@ -1,5 +1,5 @@
 //==========================================================================
-//  LOG.CC - part of
+//  LOGFORMATTER.CC - part of
 //                     OMNeT++/OMNEST
 //             Discrete System Simulation in C++
 //
@@ -15,18 +15,18 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "log.h"
+#include "logformatter.h"
 #include "commonutil.h"
 #include "cmodule.h"
 #include "ccomponenttype.h"
 #include "cconfiguration.h"
 
-cLogFormatter::cLogFormatter(const char *format)
+LogFormatter::LogFormatter(const char *format)
 {
     parseFormat(format);
 }
 
-void cLogFormatter::parseFormat(const char *format)
+void LogFormatter::parseFormat(const char *format)
 {
     char *current = const_cast<char *>(format);
     char *previous = current;
@@ -56,7 +56,7 @@ void cLogFormatter::parseFormat(const char *format)
     }
 }
 
-cLogFormatter::FormatDirective cLogFormatter::getDirective(char ch)
+LogFormatter::FormatDirective LogFormatter::getDirective(char ch)
 {
     switch (ch)
     {
@@ -117,7 +117,7 @@ cLogFormatter::FormatDirective cLogFormatter::getDirective(char ch)
     }
 }
 
-void cLogFormatter::addPart(FormatDirective directive, char *textBegin, char *textEnd)
+void LogFormatter::addPart(FormatDirective directive, char *textBegin, char *textEnd)
 {
     FormatPart part;
     part.directive = directive;
@@ -126,7 +126,7 @@ void cLogFormatter::addPart(FormatDirective directive, char *textBegin, char *te
     formatParts.push_back(part);
 }
 
-void cLogFormatter::formatEntry(std::ostream& stream, cLogEntry *entry)
+void LogFormatter::formatEntry(std::ostream& stream, cLogEntry *entry)
 {
     for (std::vector<FormatPart>::iterator it = formatParts.begin(); it != formatParts.end(); it++)
     {

@@ -141,6 +141,7 @@ $O/inspector.o: inspector.cc \
   ../envir/args.h \
   ../../include/regmacros.h \
   ../../include/ctimestampedvalue.h \
+  ../../include/checkandcast.h \
   ../../include/clinkedlist.h \
   ../envir/envirdefs.h \
   ../../include/cksplit.h \
@@ -152,6 +153,7 @@ $O/inspector.o: inspector.cc \
   ../../include/cnamedobject.h \
   ../../include/ccompoundmodule.h \
   ../envir/objectprinter.h \
+  ../../include/cpacket.h \
   ../../include/ccomponent.h \
   ../../include/cmatchexpression.h \
   ../../include/cproperties.h \
@@ -168,9 +170,10 @@ $O/inspector.o: inspector.cc \
   ../../include/cownedobject.h \
   ../../include/cmessage.h \
   ../../include/clongparimpl.h \
-  ../../include/onstartup.h \
   ../../include/cstlwatch.h \
+  ../../include/onstartup.h \
   ../../include/cresultlistener.h \
+  ../../include/clifetimelistener.h \
   ../envir/envirbase.h \
   ../../include/clistener.h \
   ../../include/envirext.h \
@@ -202,9 +205,9 @@ $O/inspector.o: inspector.cc \
   ../../include/cdetect.h \
   ../../include/platdep/platdefs.h \
   ../../include/cnedvalue.h \
+  ../../include/cqueue.h \
   ../../include/cwatch.h \
   ../../include/coutvector.h \
-  ../../include/cqueue.h \
   ../../include/cdataratechannel.h \
   ../envir/eventlogfilemgr.h \
   ../../include/simtime.h \
@@ -217,14 +220,16 @@ $O/inspector.o: inspector.cc \
   ../../include/cmsgpar.h \
   ../../include/cboolparimpl.h \
   ../../include/mersennetwister.h \
-  ../../include/cstatistic.h \
+  ../envir/logformatter.h \
   ../../include/cconfigoption.h \
+  ../../include/cstatistic.h \
   ../../include/cclassdescriptor.h \
   ../../include/cstringtokenizer.h \
   inspector.h \
   ../../include/cchannel.h \
   ../envir/intervals.h \
   ../../include/opp_string.h \
+  ../../include/cevent.h \
   ../../include/simkerneldefs.h \
   ../../include/random.h \
   ../../include/csimulation.h \
@@ -237,6 +242,7 @@ $O/inspector.o: inspector.cc \
   ../../include/cnedfunction.h \
   ../../include/cstringpool.h \
   ../../include/cresultfilter.h \
+  ../../include/clog.h \
   ../../include/cdefaultlist.h \
   ../../include/cdensityestbase.h \
   ../../include/cxmlparimpl.h \
@@ -254,6 +260,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../envir/args.h \
   ../../include/regmacros.h \
   ../../include/ctimestampedvalue.h \
+  ../../include/checkandcast.h \
   ../../include/clinkedlist.h \
   ../envir/envirdefs.h \
   ../../include/cksplit.h \
@@ -265,6 +272,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/cnamedobject.h \
   ../../include/ccompoundmodule.h \
   ../envir/objectprinter.h \
+  ../../include/cpacket.h \
   ../../include/ccomponent.h \
   ../../include/cmatchexpression.h \
   ../../include/cproperties.h \
@@ -284,6 +292,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/cstlwatch.h \
   ../../include/onstartup.h \
   ../../include/cresultlistener.h \
+  ../../include/clifetimelistener.h \
   ../envir/envirbase.h \
   ../../include/clistener.h \
   ../../include/envirext.h \
@@ -330,14 +339,16 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/cmsgpar.h \
   ../../include/cboolparimpl.h \
   ../../include/mersennetwister.h \
-  ../../include/cstatistic.h \
+  ../envir/logformatter.h \
   ../../include/cconfigoption.h \
+  ../../include/cstatistic.h \
   ../../include/cclassdescriptor.h \
   ../../include/cstringtokenizer.h \
   inspector.h \
   ../../include/cchannel.h \
   ../envir/intervals.h \
   ../../include/opp_string.h \
+  ../../include/cevent.h \
   ../../include/simkerneldefs.h \
   ../../include/random.h \
   ../../include/csimulation.h \
@@ -351,6 +362,7 @@ $O/inspfactory.o: inspfactory.cc \
   inspfactory.h \
   ../../include/cstringpool.h \
   ../../include/cresultfilter.h \
+  ../../include/clog.h \
   ../../include/cdefaultlist.h \
   ../../include/cdensityestbase.h \
   ../../include/cxmlparimpl.h \
@@ -382,6 +394,7 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/cmessage.h \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
+  ../../include/clifetimelistener.h \
   ../../include/cresultlistener.h \
   ../envir/envirbase.h \
   ../../include/clistener.h \
@@ -412,16 +425,19 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/cenvir.h \
   ../../include/cmsgpar.h \
   ../../include/cstatistic.h \
+  ../envir/logformatter.h \
   inspector.h \
   ../../include/cchannel.h \
   ../../include/opp_string.h \
   ../envir/intervals.h \
+  ../../include/cevent.h \
   ../../include/simkerneldefs.h \
   ../../include/csimulation.h \
   ../../include/cdisplaystring.h \
   ../../include/cobject.h \
   tkdefs.h \
   ../../include/cstringpool.h \
+  ../../include/clog.h \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
   ../../include/cstddev.h \
@@ -437,6 +453,7 @@ $O/logbuffer.o: logbuffer.cc \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
+  ../../include/clifetimelistener.h \
   ../../include/clistener.h \
   ../../include/cpar.h \
   ../../include/globals.h \
@@ -459,6 +476,7 @@ $O/logbuffer.o: logbuffer.cc \
   ../../include/cobject.h \
   tkdefs.h \
   ../../include/cstringpool.h \
+  ../../include/clog.h \
   ../../include/cdefaultlist.h \
   ../../include/cmessageheap.h \
   ../../include/simutil.h
@@ -481,6 +499,7 @@ $O/modinsp.o: modinsp.cc \
   ../../include/cmessage.h \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
+  ../../include/clifetimelistener.h \
   ../../include/cresultlistener.h \
   ../envir/envirbase.h \
   ../../include/clistener.h \
@@ -511,10 +530,12 @@ $O/modinsp.o: modinsp.cc \
   ../../include/cenvir.h \
   ../../include/cmsgpar.h \
   ../../include/cstatistic.h \
+  ../envir/logformatter.h \
   inspector.h \
   ../../include/cchannel.h \
   ../../include/opp_string.h \
   ../envir/intervals.h \
+  ../../include/cevent.h \
   ../../include/simkerneldefs.h \
   ../../include/csimulation.h \
   ../../include/cdisplaystring.h \
@@ -522,6 +543,7 @@ $O/modinsp.o: modinsp.cc \
   tkdefs.h \
   inspfactory.h \
   ../../include/cstringpool.h \
+  ../../include/clog.h \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
   ../../include/cstddev.h \
@@ -532,6 +554,7 @@ $O/objinsp.o: objinsp.cc \
   ../envir/args.h \
   ../../include/regmacros.h \
   ../../include/ctimestampedvalue.h \
+  ../../include/checkandcast.h \
   ../../include/clinkedlist.h \
   ../envir/envirdefs.h \
   ../../include/cksplit.h \
@@ -544,6 +567,7 @@ $O/objinsp.o: objinsp.cc \
   ../../include/ccompoundmodule.h \
   objinsp.h \
   ../envir/objectprinter.h \
+  ../../include/cpacket.h \
   ../../include/ccomponent.h \
   ../../include/cmatchexpression.h \
   ../../include/cproperties.h \
@@ -563,6 +587,7 @@ $O/objinsp.o: objinsp.cc \
   ../../include/cstlwatch.h \
   ../../include/onstartup.h \
   ../../include/cresultlistener.h \
+  ../../include/clifetimelistener.h \
   ../envir/envirbase.h \
   ../../include/clistener.h \
   ../../include/envirext.h \
@@ -609,14 +634,16 @@ $O/objinsp.o: objinsp.cc \
   ../../include/cmsgpar.h \
   ../../include/cboolparimpl.h \
   ../../include/mersennetwister.h \
-  ../../include/cstatistic.h \
+  ../envir/logformatter.h \
   ../../include/cconfigoption.h \
+  ../../include/cstatistic.h \
   ../../include/cclassdescriptor.h \
   inspector.h \
   ../../include/cstringtokenizer.h \
   ../../include/cchannel.h \
   ../envir/intervals.h \
   ../../include/opp_string.h \
+  ../../include/cevent.h \
   ../../include/simkerneldefs.h \
   ../../include/random.h \
   ../../include/csimulation.h \
@@ -630,6 +657,7 @@ $O/objinsp.o: objinsp.cc \
   inspfactory.h \
   ../../include/cstringpool.h \
   ../../include/cresultfilter.h \
+  ../../include/clog.h \
   ../../include/cdefaultlist.h \
   ../../include/cdensityestbase.h \
   ../../include/cxmlparimpl.h \
@@ -661,6 +689,7 @@ $O/statinsp.o: statinsp.cc \
   ../../include/cmessage.h \
   ../../include/onstartup.h \
   ../../include/cresultlistener.h \
+  ../../include/clifetimelistener.h \
   ../envir/envirbase.h \
   ../../include/envirext.h \
   ../../include/clistener.h \
@@ -685,17 +714,20 @@ $O/statinsp.o: statinsp.cc \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
   ../../include/cmsgpar.h \
+  ../envir/logformatter.h \
   ../../include/cstatistic.h \
   inspector.h \
   ../../include/cchannel.h \
   ../envir/intervals.h \
   ../../include/opp_string.h \
+  ../../include/cevent.h \
   ../../include/simkerneldefs.h \
   ../../include/csimulation.h \
   tkdefs.h \
   ../../include/cobject.h \
   inspfactory.h \
   ../../include/cstringpool.h \
+  ../../include/clog.h \
   ../../include/cdefaultlist.h \
   ../../include/cdensityestbase.h \
   ../../include/cstddev.h \
@@ -714,15 +746,17 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/cnamedobject.h \
   ../../include/ccompoundmodule.h \
   ../envir/objectprinter.h \
+  ../../include/cpacket.h \
   ../../include/ccomponent.h \
   ../../include/cregistrationlist.h \
   ../../include/cenum.h \
   ../../include/cconfiguration.h \
   ../../include/errmsg.h \
-  ../../include/cownedobject.h \
   ../../include/cmessage.h \
+  ../../include/cownedobject.h \
   ../../include/onstartup.h \
   ../../include/cresultlistener.h \
+  ../../include/clifetimelistener.h \
   ../envir/visitor.h \
   ../envir/envirbase.h \
   ../envir/fsutils.h \
@@ -755,12 +789,14 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
   ../../include/cmsgpar.h \
+  ../envir/logformatter.h \
   ../../include/cclassdescriptor.h \
   ../../include/cstatistic.h \
   inspector.h \
   ../../include/cchannel.h \
   ../envir/intervals.h \
   ../../include/opp_string.h \
+  ../../include/cevent.h \
   ../../include/simkerneldefs.h \
   ../../include/csimulation.h \
   ../../include/cdisplaystring.h \
@@ -768,6 +804,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/cobject.h \
   inspfactory.h \
   ../../include/cstringpool.h \
+  ../../include/clog.h \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
   ../../include/cstddev.h \
@@ -795,6 +832,7 @@ $O/tkenv.o: tkenv.cc \
   ../../include/cmessage.h \
   ../../include/onstartup.h \
   ../../include/cresultlistener.h \
+  ../../include/clifetimelistener.h \
   ../envir/envirbase.h \
   ../../include/envirext.h \
   ../../include/clistener.h \
@@ -827,11 +865,13 @@ $O/tkenv.o: tkenv.cc \
   ../../include/simtime_t.h \
   ../../include/cmsgpar.h \
   ../../include/cstatistic.h \
+  ../envir/logformatter.h \
   ../../include/cconfigoption.h \
   inspector.h \
   ../../include/cchannel.h \
   ../envir/intervals.h \
   ../../include/opp_string.h \
+  ../../include/cevent.h \
   ../../include/simkerneldefs.h \
   ../../include/csimulation.h \
   ../../include/cdisplaystring.h \
@@ -839,6 +879,7 @@ $O/tkenv.o: tkenv.cc \
   tkdefs.h \
   inspfactory.h \
   ../../include/cstringpool.h \
+  ../../include/clog.h \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
   ../../include/cstddev.h \
@@ -863,6 +904,7 @@ $O/tklib.o: tklib.cc \
   ../../include/cmessage.h \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
+  ../../include/clifetimelistener.h \
   ../../include/cresultlistener.h \
   ../envir/envirbase.h \
   ../../include/clistener.h \
@@ -887,14 +929,17 @@ $O/tklib.o: tklib.cc \
   ../../include/cenvir.h \
   ../../include/simtime_t.h \
   ../../include/cmsgpar.h \
+  ../envir/logformatter.h \
   ../../include/cchannel.h \
   ../envir/intervals.h \
   ../../include/opp_string.h \
+  ../../include/cevent.h \
   ../../include/simkerneldefs.h \
   ../../include/csimulation.h \
   tkdefs.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
+  ../../include/clog.h \
   ../../include/cdefaultlist.h \
   ../../include/cmessageheap.h \
   ../../include/simutil.h \
@@ -916,6 +961,7 @@ $O/tkutil.o: tkutil.cc \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
   ../../include/cresultlistener.h \
+  ../../include/clifetimelistener.h \
   ../envir/visitor.h \
   ../envir/envirbase.h \
   ../../include/envirext.h \
@@ -940,14 +986,17 @@ $O/tkutil.o: tkutil.cc \
   ../../include/cenvir.h \
   ../../include/simtime_t.h \
   ../../include/cmsgpar.h \
+  ../envir/logformatter.h \
   ../../include/cchannel.h \
   ../envir/intervals.h \
   ../../include/opp_string.h \
+  ../../include/cevent.h \
   ../../include/simkerneldefs.h \
   ../../include/csimulation.h \
   tkdefs.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
+  ../../include/clog.h \
   ../../include/cdefaultlist.h \
   ../common/ver.h \
   ../../include/cmessageheap.h \

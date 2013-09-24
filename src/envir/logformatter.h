@@ -1,5 +1,5 @@
 //==========================================================================
-//   LOG.H  -  header for
+//   LOGFORMATTER.H  -  header for
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __LOG_H
-#define __LOG_H
+#ifndef __LOGFORMATTER_H
+#define __LOGFORMATTER_H
 
 #include <ostream>
 #include <vector>
@@ -81,7 +81,7 @@
  * Escaping % character:
  *  - %% one % character
  */
-class cLogFormatter
+class LogFormatter
 {
   private:
     enum FormatDirective {
@@ -149,8 +149,8 @@ class cLogFormatter
     std::vector<FormatPart> formatParts;
 
   public:
-    cLogFormatter() { }
-    cLogFormatter(const char *format);
+    LogFormatter() { }
+    LogFormatter(const char *format);
 
     void setFormat(const char *format) { formatParts.clear(); parseFormat(format); }
     void formatEntry(std::ostream& stream, cLogEntry *entry);
