@@ -34,6 +34,15 @@ public class Range<E> implements Iterable<E> {
     /**
      * Creates a new Range. The element type must implement IEnumerable.
      *
+     * @param element the only element in the range
+     */
+    public Range(E element) {
+        this(element, element);
+    }
+
+    /**
+     * Creates a new Range. The element type must implement IEnumerable.
+     *
      * @param first the first element of the range
      * @param last the last element of the range
      */
