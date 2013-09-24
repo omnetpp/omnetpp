@@ -72,12 +72,13 @@ import org.omnetpp.common.eventlog.EventLogFindTextDialog;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogInput.TimelineMode;
 import org.omnetpp.common.eventlog.EventLogSelection;
+import org.omnetpp.common.eventlog.EventNumberRangeSet;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.eventlog.IEventLogProvider;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
-import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
@@ -273,8 +274,8 @@ public class SequenceChart
 
     private ArrayList<SelectionListener> selectionListeners = new ArrayList<SelectionListener>(); // SWT selection listeners
     private ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener).
-    private ArrayList<Long> selectedEventNumbers = new ArrayList<Long>(); // the selection
-    Double selectedTimelineCoordinate;
+    private EventNumberRangeSet selectedEventNumbers = new EventNumberRangeSet();
+    private Double selectedTimelineCoordinate;
     private boolean isSelectionChangeInProgress;
 
     /*************************************************************************************
@@ -2917,16 +2918,13 @@ public class SequenceChart
             long startEventNumber = sequenceChartFacade.IEvent_getEventNumber(startEventPtr);
             long endEventNumber = sequenceChartFacade.IEvent_getEventNumber(endEventPtr);
 
-            graphics.setAntialias(SWT.ON);
-
-            // draw event selection marks
-            if (selectedEventNumbers != null) {
+            if (!selectedEventNumbers.isEmpty()) {
+                graphics.setAntialias(SWT.ON);
                 graphics.setLineStyle(SWT.LINE_SOLID);
                 graphics.setForegroundColor(EVENT_SELECTION_COLOR);
-
-                for (long selectedEventNumber : selectedEventNumbers)
-                    if (startEventNumber <= selectedEventNumber && selectedEventNumber <= endEventNumber)
-                        drawEventMark(graphics, eventLog.getEventForEventNumber(selectedEventNumber));
+                for (long eventNumber = startEventNumber; eventNumber <= endEventNumber; eventNumber++)
+                    if (selectedEventNumbers.contains(eventNumber))
+                        drawEventMark(graphics, eventLog.getEventForEventNumber(eventNumber));
             }
         }
     }
@@ -4074,7 +4072,7 @@ public class SequenceChart
                 }
                 else {
                     selectedTimelineCoordinate = null;
-                    ArrayList<Long> eventNumbers = new ArrayList<Long>();
+                    EventNumberRangeSet eventNumbers = new EventNumberRangeSet();
                     for (IEvent event : events)
                         eventNumbers.add(event.getEventNumber());
 
@@ -4679,10 +4677,10 @@ public class SequenceChart
                     selectedEventNumbers.addAll(eventLogSelection.getEventNumbers());
                     selectedTimelineCoordinate = newSelectedTimelineCoordinate;
                     // go to the time of the first event selected
-                    if (selectedEventNumbers.size() > 0)
-                        gotoElement(eventLog.getEventForEventNumber(selectedEventNumbers.get(0)));
-                    redraw();
+                    if (!selectedEventNumbers.isEmpty())
+                        scrollToElement(eventLog.getEventForEventNumber(selectedEventNumbers.iterator().next()));
                     fireSelectionChanged();
+                    redraw();
                 }
                 finally {
                     isSelectionChangeInProgress = false;
@@ -4695,9 +4693,8 @@ public class SequenceChart
      * Removes all selection events.
      */
     public void clearSelection() {
-        if (selectedEventNumbers != null && selectedEventNumbers.size() != 0) {
+        if (!selectedEventNumbers.isEmpty()) {
             selectedEventNumbers.clear();
-
             fireSelectionChanged();
         }
     }
@@ -4706,22 +4703,16 @@ public class SequenceChart
      * Returns the current selection.
      */
     public IEvent getSelectionEvent() {
-        if (selectedEventNumbers != null && selectedEventNumbers.size() != 0)
-            return eventLog.getEventForEventNumber(selectedEventNumbers.get(0));
+        if (!selectedEventNumbers.isEmpty())
+            return eventLog.getEventForEventNumber(selectedEventNumbers.iterator().next());
         else
             return null;
     }
 
-    public List<Long> getSelectionEventNumbers() {
-        return selectedEventNumbers;
-    }
-
     public List<IEvent> getSelectionEvents() {
         ArrayList<IEvent> events = new ArrayList<IEvent>();
-
-        for (Long eventNumber : selectedEventNumbers)
+        for (long eventNumber : selectedEventNumbers)
             events.add(eventLog.getEventForEventNumber(eventNumber));
-
         return events;
     }
 

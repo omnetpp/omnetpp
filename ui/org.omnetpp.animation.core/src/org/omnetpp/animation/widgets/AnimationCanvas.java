@@ -32,6 +32,7 @@ import org.omnetpp.common.canvas.EditableFigureCanvas;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
+import org.omnetpp.common.eventlog.EventNumberRangeSet;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.eventlog.IEventLogProvider;
 import org.omnetpp.common.eventlog.IEventLogSelection;
@@ -185,7 +186,7 @@ public class AnimationCanvas extends EditableFigureCanvas implements ISelectionP
         if (eventLogInput == null)
             return null;
         else {
-            ArrayList<Long> eventNumbers = new ArrayList<Long>();
+            EventNumberRangeSet eventNumbers = new EventNumberRangeSet();
             ArrayList<BigDecimal> simulationTimes = new ArrayList<BigDecimal>();
             if (animationController.getCurrentAnimationPosition().isCompletelySpecified()) {
                 eventNumbers.add(animationController.getCurrentEventNumber());

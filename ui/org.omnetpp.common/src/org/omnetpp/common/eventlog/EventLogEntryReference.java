@@ -17,6 +17,11 @@ public class EventLogEntryReference {
 
     private int eventEntryIndex;
 
+    public EventLogEntryReference(long eventNumber, int eventEntryIndex) {
+        this.eventNumber = eventNumber;
+        this.eventEntryIndex = eventEntryIndex;
+    }
+
     public EventLogEntryReference(EventLogEntry eventLogEntry) {
         IEvent event = eventLogEntry.getEvent();
         eventNumber = event.getEventNumber();

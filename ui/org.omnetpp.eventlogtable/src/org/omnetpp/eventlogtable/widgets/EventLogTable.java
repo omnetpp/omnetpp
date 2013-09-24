@@ -8,9 +8,7 @@
 package org.omnetpp.eventlogtable.widgets;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
@@ -30,11 +28,14 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.collections.IEnumerator;
 import org.omnetpp.common.collections.IRangeSet;
+import org.omnetpp.common.collections.Range;
+import org.omnetpp.common.collections.RangeSet;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogFindTextDialog;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
+import org.omnetpp.common.eventlog.EventNumberRangeSet;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.eventlog.IEventLogProvider;
 import org.omnetpp.common.eventlog.IEventLogSelection;
@@ -258,22 +259,12 @@ public class EventLogTable
             return null;
         else {
             IRangeSet<EventLogEntryReference> selectionElements = getSelectionElements();
-            ArrayList<Long> selectionEvents = new ArrayList<Long>();
+            EventNumberRangeSet selectionEvents = new EventNumberRangeSet();
             if (selectionElements != null) {
-                // copy at most maxEventNumbersInEventLogSelection event numbers into the EventLogSelection
-                int count = 0;
-                for (EventLogEntryReference selectionElement : selectionElements) {
-                    if (count == 0 || selectionElement.getEventNumber() != selectionEvents.get(count-1)) {
-                        if (maxEventNumbersInEventLogSelection < 0 || count < maxEventNumbersInEventLogSelection) {
-                            selectionEvents.add(selectionElement.getEventNumber());
-                            count++;
-                        }
-                        else {
-                            Debug.format("Too many selected event numbers, workbench selection truncated to %d items.\n", maxEventNumbersInEventLogSelection);
-                            Display.getCurrent().beep();
-                            break;
-                        }
-                    }
+                Iterator<Range<EventLogEntryReference>> rangeIterator = selectionElements.rangeIterator();
+                while (rangeIterator.hasNext()) {
+                    Range<EventLogEntryReference> range = rangeIterator.next();
+                    selectionEvents.addRange(range.getFirst().getEventNumber(), range.getLast().getEventNumber());
                 }
             }
             return new EventLogSelection(eventLogInput, selectionEvents, null);
@@ -287,11 +278,15 @@ public class EventLogTable
     public void setSelection(ISelection selection) {
         if (selection instanceof IEventLogSelection) {
             IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
-            List<EventLogEntryReference> eventLogEntries = new ArrayList<EventLogEntryReference>();
-            IEventLog eventLog = eventLogSelection.getEventLogInput().getEventLog();
-            for (Long eventNumber : eventLogSelection.getEventNumbers())
-                eventLogEntries.add(new EventLogEntryReference(eventLog.getEventForEventNumber(eventNumber).getEventEntry()));
-            super.setSelection(new VirtualTableSelection<EventLogEntryReference>(eventLogSelection.getEventLogInput(), eventLogEntries, getRowEnumerator()));
+            EventNumberRangeSet selectedEventNumbers = eventLogSelection.getEventNumbers();
+            Iterator<Range<Long>> iterator = selectedEventNumbers.rangeIterator();
+            RangeSet<EventLogEntryReference> selectionElements = new RangeSet<EventLogEntryReference>(rowEnumerator);
+            while (iterator.hasNext()) {
+                Range<Long> eventNumberRange = iterator.next();
+                int lastEventEntryIndex = eventLogSelection.getEventLog().getEventForEventNumber(eventNumberRange.getLast()).getNumEventLogEntries() - 1;
+                selectionElements.addRange(new EventLogEntryReference(eventNumberRange.getFirst(), 0), new EventLogEntryReference(eventNumberRange.getLast(), lastEventEntryIndex));
+            }
+            super.setSelection(new VirtualTableSelection<EventLogEntryReference>(eventLogSelection.getEventLogInput(), selectionElements));
         }
     }
 
