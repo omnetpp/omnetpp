@@ -5,7 +5,7 @@ Test per module runtime log level setting.
 %inifile: test.ini
 [General]
 network = TestNetwork
-cmdenv-express-mode = false
+log-format = "[%l]\t%c: "
 **.fatal.log-level = fatal
 **.error.log-level = error
 **.warn.log-level = warn
@@ -71,4 +71,3 @@ EV_TRACE << "Hello" << endl;
 [INFO]	: Hello
 [DEBUG]	: Hello
 [TRACE]	: Hello
-

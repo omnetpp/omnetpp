@@ -2,6 +2,10 @@
 
 Test the default log format and log level settings.
 
+%inifile: test.ini
+[General]
+log-format = "[%l]\t%c: "
+
 %activity:
 EV_FATAL << "Hello" << endl;
 EV_ERROR << "Hello" << endl;
@@ -19,4 +23,3 @@ EV_TRACE << "Hello" << endl;
 
 %not-contains: stdout
 [TRACE]	: Hello
-

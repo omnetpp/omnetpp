@@ -4,8 +4,7 @@ Test all log macro variants.
 
 %inifile: test.ini
 [General]
-network = Test
-cmdenv-express-mode = false
+log-format = "[%l]\t%c: "
 
 %activity:
 
@@ -15,4 +14,3 @@ EV_DEBUG_C("Test") << "Hello World " << 3 << endl;
 %contains: stdout
 [DEBUG]	: Hello World 1
 [DEBUG]	Test: Hello World 3
-

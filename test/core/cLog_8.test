@@ -4,8 +4,7 @@ Test conditional compilation of log statement arguments.
 
 %inifile: test.ini
 [General]
-network = Test
-cmdenv-express-mode = false
+log-format = "[%l]\t%c: "
 **.log-level = trace
 
 %activity:
@@ -22,4 +21,3 @@ Hello
 
 %not-contains: stdout
 Omitted
-

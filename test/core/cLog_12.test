@@ -5,8 +5,6 @@ Test logging class name.
 %inifile: test.ini
 [General]
 network = TestModule
-cmdenv-express-mode = false
-debugger-attach-on-error = true
 log-format = "[%b %z] "
 
 %file: test.ned
@@ -93,4 +91,3 @@ Define_Module(TestModule);
 [objectName cLog_12::Object] Hello from Object
 [ ] Hello from NonCObject
 [ LoggableNonCObject] Hello from LoggableNonCObject
-

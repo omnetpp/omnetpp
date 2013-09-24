@@ -1,6 +1,9 @@
 %description:
-
 Test sequence and nesting of log statements.
+
+%inifile: test.ini
+[General]
+log-format = "[%l]\t%c: "
 
 %activity:
 
@@ -23,4 +26,3 @@ Test sequence and nesting of log statements.
 [DEBUG]	: 3
 [DEBUG]	: 4
 [DEBUG]	: 5
-

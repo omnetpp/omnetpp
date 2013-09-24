@@ -1,6 +1,9 @@
 %description:
-
 Test new lines and composition of log statements.
+
+%inifile: test.ini
+[General]
+log-format = "[%l]\t%c: "
 
 %activity:
 
@@ -22,4 +25,3 @@ EV_DEBUG << "14\n";
 [INFO]	: 12
 [INFO]	: 13
 [DEBUG]	: 14
-

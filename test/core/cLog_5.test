@@ -4,8 +4,6 @@ Test log format characters.
 
 %inifile: test.ini
 [General]
-network = Test
-cmdenv-express-mode = false
 log-format = "text %% l='%l' c='%c' e='%e' t='%t' v='%v' m='%m' a='%a' n='%n' p='%p' o='%o' s='%s' q='%q' N='%N' P='%P' O='%O' S='%S' Q='%Q' G='%G' R='%R' X='%X' Y='%Y' Z='%Z' *='%*' b='%b' d='%d' x='%x' y='%y' f='%f' i='%i' z='%z' u='%u' w='%w' W='%W' H='%H' I='%I' "
 
 %activity:
