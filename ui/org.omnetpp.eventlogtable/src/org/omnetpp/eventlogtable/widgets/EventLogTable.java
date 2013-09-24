@@ -73,6 +73,49 @@ public class EventLogTable
 
     private EventLogTableContributor eventLogTableContributor;
 
+    private static class EventLogEntryReferenceEnumerator implements IEnumerator<EventLogEntryReference> {
+        private EventLogTableContentProvider contentProvider;
+
+        public EventLogEntryReferenceEnumerator(EventLogTableContentProvider contentProvider) {
+            this.contentProvider = contentProvider;
+        }
+
+        @Override
+        public int compare(EventLogEntryReference element1, EventLogEntryReference element2) {
+            return contentProvider.compare(element1, element2);
+        }
+
+        @Override
+        public EventLogEntryReference getPrevious(EventLogEntryReference element) {
+            return contentProvider.getNeighbourElement(element, -1);
+        }
+
+        @Override
+        public EventLogEntryReference getNext(EventLogEntryReference element) {
+            return contentProvider.getNeighbourElement(element, 1);
+        }
+
+        @Override
+        public int getApproximateDelta(EventLogEntryReference element1, EventLogEntryReference element2) {
+            if (compare(element1, element2) <= 0) {
+                long distance =  contentProvider.getDistanceToElement(element1, element2, 100);
+                if (distance < 100)
+                    return (int)distance;
+            }
+            else {
+                long distance =  contentProvider.getDistanceToElement(element1, element2, -100);
+                if (distance > -100)
+                    return (int)distance;
+            }
+            long numOfElements = contentProvider.getApproximateNumberOfElements();
+            double percentage1 = contentProvider.getApproximatePercentageForElement(element1);
+            double percentage2 = contentProvider.getApproximatePercentageForElement(element2);
+            return (int)(numOfElements * (percentage2 - percentage1));
+        }
+
+        public boolean isExact() { return false; }
+    }
+
     public enum TypeMode {
         CPP,
         NED
@@ -104,46 +147,11 @@ public class EventLogTable
     public EventLogTable(Composite parent, int style) {
         super(parent, style);
 
-        setContentProvider(new EventLogTableContentProvider());
+        EventLogTableContentProvider contentProvider = new EventLogTableContentProvider();
+        setContentProvider(contentProvider);
         setRowRenderer(new EventLogTableRowRenderer(this));
 
-        rowEnumerator = new IEnumerator<EventLogEntryReference>() {
-            @Override
-            public int compare(EventLogEntryReference element1, EventLogEntryReference element2) {
-                return contentProvider.compare(element1, element2);
-            }
-
-            @Override
-            public EventLogEntryReference getPrevious(EventLogEntryReference element) {
-                return contentProvider.getNeighbourElement(element, -1);
-            }
-
-            @Override
-            public EventLogEntryReference getNext(EventLogEntryReference element) {
-                return contentProvider.getNeighbourElement(element, 1);
-            }
-
-            @Override
-            public int getApproximateDelta(EventLogEntryReference element1, EventLogEntryReference element2) {
-                if (compare(element1, element2) <= 0) {
-                    long distance =  contentProvider.getDistanceToElement(element1, element2, 100);
-                    if (distance < 100)
-                        return (int)distance;
-                }
-                else {
-                    long distance =  contentProvider.getDistanceToElement(element1, element2, -100);
-                    if (distance > -100)
-                        return (int)distance;
-                }
-                long numOfElements = contentProvider.getApproximateNumberOfElements();
-                double percentage1 = contentProvider.getApproximatePercentageForElement(element1);
-                double percentage2 = contentProvider.getApproximatePercentageForElement(element2);
-                return (int)(numOfElements * (percentage2 - percentage1));
-            }
-
-            public boolean isExact() { return false; }
-        };
-
+        rowEnumerator = new EventLogEntryReferenceEnumerator(contentProvider);
 
         TableColumn tableColumn = createColumn();
         tableColumn.setWidth(60);
@@ -278,9 +286,11 @@ public class EventLogTable
     public void setSelection(ISelection selection) {
         if (selection instanceof IEventLogSelection) {
             IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
+            EventLogTableContentProvider selectionContentProvider = new EventLogTableContentProvider();
+            selectionContentProvider.inputChanged(null, null, eventLogSelection.getEventLogInput());
+            RangeSet<EventLogEntryReference> selectionElements = new RangeSet<EventLogEntryReference>(new EventLogEntryReferenceEnumerator(selectionContentProvider));
             EventNumberRangeSet selectedEventNumbers = eventLogSelection.getEventNumbers();
             Iterator<Range<Long>> iterator = selectedEventNumbers.rangeIterator();
-            RangeSet<EventLogEntryReference> selectionElements = new RangeSet<EventLogEntryReference>(rowEnumerator);
             while (iterator.hasNext()) {
                 Range<Long> eventNumberRange = iterator.next();
                 int lastEventEntryIndex = eventLogSelection.getEventLog().getEventForEventNumber(eventNumberRange.getLast()).getNumEventLogEntries() - 1;
