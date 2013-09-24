@@ -364,10 +364,8 @@ public class SequenceChart
             @Override
             public void controlResized(ControlEvent e) {
                 if (eventLogInput != null) {
-                    if (eventLogInput != null) {
-                        invalidateViewportSize();
-                        invalidateAxisSpacing();
-                    }
+                    invalidateViewportSize();
+                    invalidateAxisModules();
                 }
             }
         });
