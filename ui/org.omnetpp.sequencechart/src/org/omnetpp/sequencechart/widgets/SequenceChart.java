@@ -4020,11 +4020,12 @@ public class SequenceChart
                     ArrayList<IEvent> events = new ArrayList<IEvent>();
                     ArrayList<IMessageDependency> messageDependencies = new ArrayList<IMessageDependency>();
                     collectStuffUnderMouse(me.x, me.y, events, messageDependencies, null);
-
                     if (messageDependencies.size() == 1)
                         zoomToMessageDependency(messageDependencies.get(0));
-
-                    updateSelectionState(events, null, true);
+                    selectedEventNumbers.clear();
+                    for (IEvent event : events)
+                        selectedEventNumbers.add(event.getEventNumber());
+                    updateSelectionState(null, true);
                 }
             }
 
@@ -4046,11 +4047,23 @@ public class SequenceChart
                     if (me.button == 1) {
                         if (!isDragging) {
                             ArrayList<IEvent> events = new ArrayList<IEvent>();
-                            if ((me.stateMask & SWT.MOD1) != 0) // CTRL key extends selection
-                                for (Long eventNumber : selectedEventNumbers)
-                                    events.add(eventLog.getEventForEventNumber(eventNumber));
                             collectStuffUnderMouse(me.x, me.y, events, null, null);
-                            updateSelectionState(events, getTimelineCoordinateForViewportCoordinate(me.x), false);
+                            // CTRL key toggles selection
+                            if ((me.stateMask & SWT.MOD1) != 0) {
+                                for (IEvent event : events) {
+                                    long eventNumber = event.getEventNumber();
+                                    if (!selectedEventNumbers.contains(eventNumber))
+                                        selectedEventNumbers.add(eventNumber);
+                                    else
+                                        selectedEventNumbers.remove(eventNumber);
+                                }
+                            }
+                            else {
+                                selectedEventNumbers.clear();
+                                for (IEvent event : events)
+                                    selectedEventNumbers.add(event.getEventNumber());
+                            }
+                            updateSelectionState(getTimelineCoordinateForViewportCoordinate(me.x), false);
                         }
                     }
 
@@ -4060,10 +4073,9 @@ public class SequenceChart
                 }
             }
 
-            private void updateSelectionState(ArrayList<IEvent> events, Double timelineCoordinate, boolean defaultSelection) {
-                if (events.isEmpty()) {
+            private void updateSelectionState(Double timelineCoordinate, boolean defaultSelection) {
+                if (selectedEventNumbers.isEmpty()) {
                     if (!ObjectUtils.equals(selectedTimelineCoordinate, timelineCoordinate)) {
-                        selectedEventNumbers.clear();
                         selectedTimelineCoordinate = timelineCoordinate;
                         fireSelection(defaultSelection);
                         fireSelectionChanged();
@@ -4072,18 +4084,9 @@ public class SequenceChart
                 }
                 else {
                     selectedTimelineCoordinate = null;
-                    EventNumberRangeSet eventNumbers = new EventNumberRangeSet();
-                    for (IEvent event : events)
-                        eventNumbers.add(event.getEventNumber());
-
-                    if (eventNumbers.equals(selectedEventNumbers))
-                        fireSelection(defaultSelection);
-                    else {
-                        selectedEventNumbers = eventNumbers;
-                        fireSelection(defaultSelection);
-                        fireSelectionChanged();
-                        redraw();
-                    }
+                    fireSelection(defaultSelection);
+                    fireSelectionChanged();
+                    redraw();
                 }
             }
         });
