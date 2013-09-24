@@ -302,10 +302,10 @@ bool EnvirBase::simulationRequired()
     // -a option: print all config names, and number of runs in them
     if (args->optionGiven('a'))
     {
-        ev.printf("\n");
+        std::cout << "\n";
         std::vector<std::string> configNames = cfg->getConfigNames();
         for (int i=0; i<(int)configNames.size(); i++)
-            ev.printf("Config %s: %d\n", configNames[i].c_str(), cfg->getNumRunsInConfig(configNames[i].c_str()));
+            std::cout << "Config " << configNames[i] << ": " << cfg->getNumRunsInConfig(configNames[i].c_str()) << "\n";
         return false;
     }
 
@@ -329,16 +329,16 @@ bool EnvirBase::simulationRequired()
         bool unrollBrief = args->optionGiven('g');
         bool unrollDetailed = args->optionGiven('G');
 
-        ev.printf("\n");
-        ev.printf("Config: %s\n", configToPrint);
-        ev.printf("Number of runs: %d\n", cfg->getNumRunsInConfig(configToPrint));
+        std::cout <<"\n";
+        std::cout <<"Config: " << configToPrint << "\n";
+        std::cout <<"Number of runs: " << cfg->getNumRunsInConfig(configToPrint) << "\n";
 
         if (unrollBrief || unrollDetailed)
         {
             std::vector<std::string> runs = cfg->unrollConfig(configToPrint, unrollDetailed);
             const char *fmt = unrollDetailed ? "Run %d:\n%s" : "Run %d: %s\n";
             for (int i=0; i<(int)runs.size(); i++)
-                ev.printf(fmt, i, runs[i].c_str());
+                std::cout << opp_stringf(fmt, i, runs[i].c_str());
         }
         return false;
     }
@@ -347,13 +347,13 @@ bool EnvirBase::simulationRequired()
     configToPrint = args->optionValue('X');
     if (configToPrint)
     {
-        ev.printf("\n");
+        std::cout << "\n";
         std::vector<std::string> configNames = cfg->getConfigChain(configToPrint);
         for (int i=0; i<(int)configNames.size(); i++) {
-            const char *configName = configNames[i].c_str();
-            if (strcmp(configName, "General") != 0)
-                ev.printf("Config ", configName);
-            ev.printf("%s\n", configName);
+            std::string configName = configNames[i];
+            if (configName != "General")
+                std::cout << "Config ";
+            std::cout << configName << "\n";
         }
         return false;
     }
@@ -385,7 +385,7 @@ bool EnvirBase::setup()
         // initialize coroutine library
         if (TOTAL_STACK_SIZE!=0 && opt_total_stack<=MAIN_STACK_SIZE+4096)
         {
-            ev.printf("Total stack size %d increased to %d\n", opt_total_stack, MAIN_STACK_SIZE);
+            std::cout << "Total stack size " << opt_total_stack << " increased to " << MAIN_STACK_SIZE << "\n";
             opt_total_stack = MAIN_STACK_SIZE+4096;
         }
         cCoroutine::init(opt_total_stack, MAIN_STACK_SIZE);
@@ -465,9 +465,9 @@ bool EnvirBase::setup()
             const char *folder = tokenizer.nextToken();
             if (foldersloaded.find(folder)==foldersloaded.end())
             {
-                ev.printf("Loading NED files from %s:", folder); ev.flush();
+                std::cout << "Loading NED files from " << folder << endl;
                 int count = simulation.loadNedSourceFolder(folder);
-                ev.printf(" %d\n", count);
+                std::cout << " " << count << endl;
                 foldersloaded.insert(folder);
             }
         }
@@ -1110,11 +1110,11 @@ void EnvirBase::dumpResultRecorders(cComponent *component)
         for (unsigned int j = 0; j < listeners.size(); j++) {
             if (dynamic_cast<cResultListener*>(listeners[j])) {
                 if (!componentPathPrinted) {
-                    EV << component->getFullPath() << " (" << component->getNedTypeName() << "):\n";
+                    std::cout << component->getFullPath() << " (" << component->getNedTypeName() << "):\n";
                     componentPathPrinted = true;
                 }
                 if (!signalNamePrinted) {
-                    EV << "    \"" << cComponent::getSignalName(signalID) << "\" (signalID="  << signalID << "):\n";
+                    std::cout << "    \"" << cComponent::getSignalName(signalID) << "\" (signalID="  << signalID << "):\n";
                     signalNamePrinted = true;
                 }
                 dumpResultRecorderChain((cResultListener *)listeners[j], 0);
@@ -1126,11 +1126,11 @@ void EnvirBase::dumpResultRecorders(cComponent *component)
 void EnvirBase::dumpResultRecorderChain(cResultListener *listener, int depth)
 {
     for (int i = 0; i < depth+2; i++)
-        EV << "    ";
-    EV << listener->str();
+        std::cout << "    ";
+    std::cout << listener->str();
     if (dynamic_cast<cResultRecorder*>(listener))
-        EV << " ==> " << ((cResultRecorder*)listener)->getResultName();
-    EV << "\n";
+        std::cout << " ==> " << ((cResultRecorder*)listener)->getResultName();
+    std::cout << "\n";
 
     if (dynamic_cast<cResultFilter *>(listener))
     {

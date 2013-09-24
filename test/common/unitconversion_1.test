@@ -8,14 +8,14 @@ Tests the UnitConversion class
 
 static void parseAndPrint(const char *text, const char *expectedUnit=NULL)
 {
-    ev << "'" << text << "'";
-    if (expectedUnit) ev << " (as " << expectedUnit << ")";
-    ev << " ==> ";
+    EV << "'" << text << "'";
+    if (expectedUnit) EV << " (as " << expectedUnit << ")";
+    EV << " ==> ";
     try {
         double d = UnitConversion::parseQuantity(text, expectedUnit);
-        ev << d << "\n";
+        EV << d << "\n";
     } catch (std::exception& e) {
-        ev << "ERROR: " << e.what() << "\n";
+        EV << "ERROR: " << e.what() << "\n";
     }
 }
 
@@ -27,7 +27,7 @@ const char *expectedUnits[] = {NULL, "s", "ms", "W", "bogomips"};
 
 for (int i=0; i<5; i++)
 {
-    ev << "\n";
+    EV << "\n";
 
     // bad syntax
     P(""); //E
@@ -67,7 +67,7 @@ for (int i=0; i<5; i++)
     P(" 1s 550ms 700us ");
     P("17s 71ggg");
 }
-ev << ".\n";
+EV << ".\n";
 
 %subst: /e\+00+/e+0/
 %subst: /6e\+0+23/6e\+23/

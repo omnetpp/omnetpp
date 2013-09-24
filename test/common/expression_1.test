@@ -44,15 +44,15 @@ Expression::Functor *Resolver::resolveFunction(const char *funcname, int argcoun
 static void eval(const char *txt)
 {
     try {
-        ev << txt << " -> ";
+        EV << txt << " -> ";
         Expression expr;
         Resolver resolver;
         expr.parse(txt, &resolver);
-        //ev << expr.str() << " --> ";  // echo parsed form
-        ev << expr.evaluate().str() << "\n";
+        //EV << expr.str() << " --> ";  // echo parsed form
+        EV << expr.evaluate().str() << "\n";
     }
     catch (std::exception& e) {
-        ev << "exception: " << e.what() << "\n";
+        EV << "exception: " << e.what() << "\n";
     }
 }
 
@@ -116,7 +116,7 @@ eval("1^2s");
 
 //TODO many more tests needed, for all operators, precedence rules, etc
 
-ev << ".\n";
+EV << ".\n";
 
 %exitcode: 0
 

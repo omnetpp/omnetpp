@@ -10,19 +10,19 @@ Tests the BigDecimal comparison operators
 
 static void compare(const char *x, const char *y)
 {
-    ev << x << "," << y;
-    ev << ": ";
+    EV << x << "," << y;
+    EV << ": ";
     try {
         BigDecimal xx = BigDecimal::parse(x);
         BigDecimal yy = BigDecimal::parse(y);
-        if (xx < yy) ev << "< ";
-        if (xx <= yy) ev << "<= ";
-        if (xx == yy) ev << "== ";
-        if (xx >= yy) ev << ">= ";
-        if (xx > yy) ev << "> ";
-        ev << "\n";
+        if (xx < yy) EV << "< ";
+        if (xx <= yy) EV << "<= ";
+        if (xx == yy) EV << "== ";
+        if (xx >= yy) EV << ">= ";
+        if (xx > yy) EV << "> ";
+        EV << "\n";
     } catch (std::exception& e) {
-        ev << "ERROR: " << e.what() << "\n";
+        EV << "ERROR: " << e.what() << "\n";
     }
 }
 
@@ -30,7 +30,7 @@ static void compare(const char *x, const char *y)
 
 #define T(x,y) compare(#x, #y);
 
-ev << "\n";
+EV << "\n";
 
 // <
 T(0,0.000000000000000001);
@@ -75,7 +75,7 @@ T(0,NaN);
 T(NaN,NaN);
 
 
-ev << ".\n";
+EV << ".\n";
 
 %contains: stdout
 0,0.000000000000000001: < <=

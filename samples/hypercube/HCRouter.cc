@@ -165,7 +165,7 @@ void HCRouter::activity()
             sendDelayed(usr_cell[i], PROPDEL, "out", usr_port[i]);
          }
       }
-      ev.printf("rte[%d]: Discarded %ld out of %ld\n", my_address, discarded_usr, total_usr);
+      EV << "rte[" << my_address << "]: Discarded " << discarded_usr << " out of " << total_usr << "\n";
    }
 }
 

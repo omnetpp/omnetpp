@@ -13,11 +13,9 @@ Visual C++ 8.0+   long long, __int64      %lld, %I64d
 #define LL  INT64_PRINTF_FORMAT
 
 int64 a=1, b=2;
-ev.printf("sizeof(a)=%d\n", sizeof(a));
-ev.printf("a=%"LL"d b=%"LL"d pi=%g\n", a, b, 3.14);
+EV << "sizeof(a)=" << sizeof(a) << "\n";
+EV << "a=" << a << " b=" << b << " pi=" << 3.14 << "\n";
 
 %contains: stdout
 sizeof(a)=8
 a=1 b=2 pi=3.14
-
-

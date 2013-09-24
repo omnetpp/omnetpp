@@ -14,12 +14,12 @@ static void slice(const char *s)
     {
         std::string dir, fname;
         splitFileName(path.c_str(), dir, fname);
-        ev << path << " -> " << dir << " + " << fname << "\n";
+        EV << path << " -> " << dir << " + " << fname << "\n";
         if (path == dir)
             break;
         path = dir;
     }
-    ev << "\n";
+    EV << "\n";
 }
 
 %activity:
@@ -61,7 +61,7 @@ slice("c:/./tmp/../queuenet/node.ned");
 slice("c:/./tmp/../queuenet/../node.ned");
 slice("c:/./tmp/queuenet/../../node.ned");
 slice("c:/./tmp/queuenet/../../../node.ned");
-ev << ".\n";
+EV << ".\n";
 
 %exitcode: 0
 

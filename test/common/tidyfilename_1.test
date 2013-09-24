@@ -8,7 +8,7 @@ Tests tidyFilename() h function
 
 static void tidy(const char *fname, bool slashes=true)
 {
-    ev << fname << " -> " << tidyFilename(fname, slashes) << "\n";
+    EV << fname << " -> " << tidyFilename(fname, slashes) << "\n";
 }
 
 %activity:
@@ -50,7 +50,7 @@ tidy("c:/./tmp/../queuenet/node.ned");
 tidy("c:/./tmp/../queuenet/../node.ned");
 tidy("c:/./tmp/queuenet/../../node.ned");
 tidy("c:/./tmp/queuenet/../../../node.ned");
-ev << ".\n";
+EV << ".\n";
 
 %exitcode: 0
 

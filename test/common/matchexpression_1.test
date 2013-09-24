@@ -14,14 +14,14 @@ static bool casesensitive;
 
 static void match(const char *pattern, const char *line)
 {
-    ev << pattern << " | " << line << " --> ";
+    EV << pattern << " | " << line << " --> ";
     try {
         MatchExpression me(pattern, dottedpath, fullstring, casesensitive);
         MatchableString lineObject(line);
         bool result = me.matches(&lineObject);
-        ev << (result?"true":"false") << "\n";
+        EV << (result?"true":"false") << "\n";
     } catch (std::exception& e) {
-        ev << "ERROR\n";
+        EV << "ERROR\n";
     }
 }
 
@@ -56,7 +56,7 @@ match("a b c d", "x");
 match("a NOT b c", "b"); // read: "a OR (NOT b) OR c"
 match("a NOT b c", "c");
 
-ev << endl;
+EV << endl;
 
 //
 // Precedence: AND binds stronger than OR, NOT binds strongest
@@ -77,7 +77,7 @@ match("*one OR *two AND twenty*",   "thirty-one");
 match("twenty* AND *two thirty* AND *three", "thirty-three");  // read: "(twenty* AND *two) OR (thirty* AND *three)"
 match("twenty* AND *two thirty* AND *three", "thirty-two");
 
-ev << endl;
+EV << endl;
 
 
 //
@@ -86,7 +86,7 @@ ev << endl;
 match("\"a\"", "a");
 match("\"a\"", "b");
 match("\"*\"", "whatever");
-ev << endl;
+EV << endl;
 
 //
 // Parsing
@@ -107,14 +107,14 @@ match("*not", "whatever");
 match("or",  "whatever"); // parse error
 match("and", "whatever"); // parse error
 match("not", "whatever"); // parse error
-ev << endl;
+EV << endl;
 
 match("hi(there", "a");  // parse error
 match("\"hi(there\"", "hi(there");
 match("a or(b and c)", "a");
-ev << endl;
+EV << endl;
 
-ev << "done\n";
+EV << "done\n";
 
 %exitcode: 0
 

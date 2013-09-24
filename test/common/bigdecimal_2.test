@@ -15,17 +15,17 @@ static void convertAndPrint(double d)
 {
     try {
         BigDecimal bd(d);
-        ev << bd.str() << ", intVal=" << bd.getIntValue() << ", scale=" << bd.getScale() <<"\n";
+        EV << bd.str() << ", intVal=" << bd.getIntValue() << ", scale=" << bd.getScale() <<"\n";
     } catch (std::exception& e) {
-        ev << "ERROR: " << e.what() << "\n";
+        EV << "ERROR: " << e.what() << "\n";
     }
 }
 
 %activity:
 
-#define T(x) ev << #x <<  " ==> "; convertAndPrint(x)
+#define T(x) EV << #x <<  " ==> "; convertAndPrint(x)
 
-ev << "\n";
+EV << "\n";
 
 // positive cases
 T(0.0);
@@ -46,7 +46,7 @@ T(-1/zero);
 T(12345678901234567890.0); // overflow
 
 
-ev << ".\n";
+EV << ".\n";
 
 
 %contains: stdout

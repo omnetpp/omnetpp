@@ -14,11 +14,11 @@ static void tokenize(const char *text)
     	while (tokenizer.hasMoreTokens()) {
     		tokenizer.nextToken();
     	}
-        ev << "FAILED\n";
+        EV << "FAILED\n";
     } catch (StringTokenizerException& e) {
-        ev << e.what() << "\n";
+        EV << e.what() << "\n";
     } catch (std::exception& e) {
-        ev << "ERROR: " << e.what() << "\n";
+        EV << "ERROR: " << e.what() << "\n";
     }
 }
 
@@ -33,7 +33,7 @@ T(")");
 T("{(})")
 T("'bubu");
 
-ev << ".\n";
+EV << ".\n";
 
 %contains: stdout
 Unclosed parenthesis: {.

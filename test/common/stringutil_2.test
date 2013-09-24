@@ -23,18 +23,18 @@ for (int k=0; k<10000; k++)
     std::string quoted = opp_quotestr(txt);
     std::string back   = opp_parsequotedstr(quoted.c_str());
     if (back != txt) {
-        ev << "FAILED on: " << txt << "\n";
+        EV << "FAILED on: " << txt << "\n";
         ok = false;
     }
 
     if (opp_needsquotes(txt)==false && quoted.substr(1,quoted.size()-2) != txt) {
-        ev << "opp_needsquotes FAILED on: " << txt << "\n";
+        EV << "opp_needsquotes FAILED on: " << txt << "\n";
         ok = false;
     }
 }
 
 if (ok)
-    ev << "OK\n";
+    EV << "OK\n";
 
 %exitcode: 0
 

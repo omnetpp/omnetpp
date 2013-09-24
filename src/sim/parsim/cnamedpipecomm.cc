@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include "cexception.h"
 #include "cmemcommbuffer.h"
+#include "clog.h"
 #include "globals.h"
 #include "regmacros.h"
 #include "cconfigoption.h"
@@ -90,7 +91,7 @@ void cNamedPipeCommunications::init()
 {
     // get numPartitions and myProcId from "-p" command-line option
     getProcIdFromCommandLineArgs(myProcId, numPartitions, "cNamedPipeCommunications");
-    ev.printf("cNamedPipeCommunications: started as process %d out of %d.\n", myProcId, numPartitions);
+    EV << "cNamedPipeCommunications: started as process " << myProcId << " out of " << numPartitions << ".\n";
 
     // create and open pipes for read
     int i;
@@ -105,7 +106,7 @@ void cNamedPipeCommunications::init()
 
         char fname[256];
         sprintf(fname,"%spipe-%d-%d", prefix.buffer(), myProcId, i);
-        ev.printf("cNamedPipeCommunications: creating and opening pipe '%s' for read...\n", fname);
+        EV << "cNamedPipeCommunications: creating and opening pipe '" << fname << "' for read...\n";
         unlink(fname);
         if (mknod(fname, S_IFIFO|0600, 0)==-1)
             throw cRuntimeError("cNamedPipeCommunications: cannot create pipe '%s': %s", fname, strerror(errno));
@@ -130,7 +131,7 @@ void cNamedPipeCommunications::init()
 
         char fname[256];
         sprintf(fname,"%spipe-%d-%d", prefix.buffer(), i, myProcId);
-        ev.printf("cNamedPipeCommunications: opening pipe '%s' for write...\n", fname);
+        EV << "cNamedPipeCommunications: opening pipe '" << fname << "' for write...\n";
         wpipes[i] = open(fname,O_WRONLY);
         for (int k=0; k<30 && wpipes[i]==-1; k++)
         {

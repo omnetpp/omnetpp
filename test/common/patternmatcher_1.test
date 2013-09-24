@@ -22,7 +22,7 @@ static void match(const char *pattern, const char *line, bool expectedresult)
     pat.setPattern(pattern, dottedpath, fullstring, casesensitive);
     bool result = pat.matches(line);
     //pat.dump();
-    ev.printf("%s %s %s: %s\n", pattern, (expectedresult?"~":"!~"), line, (result==expectedresult?"ok":"FAIL"));
+    EV << pattern << " " << (expectedresult?"~":"!~") << " " << line << ": " << (result==expectedresult?"ok":"FAIL") << "\n";
 }
 
 
@@ -334,4 +334,3 @@ match("**", ".", true);
 
 %not-contains: stdout
 FAIL
-

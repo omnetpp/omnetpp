@@ -26,21 +26,21 @@ void checkNumDrawn(unsigned long *oldnumDrawn, int usedrng, const char *label)
     for (int rng=0; rng<ev.getNumRNGs(); rng++)
     {
         if (rng!=usedrng && oldnumDrawn[rng]!=ev.getRNG(rng)->getNumbersDrawn())
-            ev.printf("ERROR: %s with rng=%d also changed rng=%d\n", label,usedrng,rng);
+            EV << "ERROR: " << label << " with rng=" << usedrng << " also changed rng=" << rng << "\n";
     }
     if (oldnumDrawn[usedrng]==ev.getRNG(usedrng)->getNumbersDrawn())
-        ev.printf("ERROR: %s with rng=%d did NOT change rng=%d\n", label,usedrng,usedrng);
+        EV << "ERROR: " << label << " with rng=" << usedrng << " did NOT change rng=" << usedrng << "\n";
 }
 
 %activity:
 
-#define CHECKNUMDRAWN(f) ev.printf("checking %s\n",#f); storeNumDrawn(numDrawn); f; checkNumDrawn(numDrawn,rng,#f);
+#define CHECKNUMDRAWN(f) EV << "checking " << #f << "\n"; storeNumDrawn(numDrawn); f; checkNumDrawn(numDrawn,rng,#f);
 
 unsigned long *numDrawn = new unsigned long[ev.getNumRNGs()];
 
 for (int rng=0; rng<=2; rng++)
 {
-    ev.printf("RNG=%d:\n",rng);
+    EV << "RNG=" << rng << ":\n";
 
     CHECKNUMDRAWN(uniform(1.0, 2.0, rng));
     CHECKNUMDRAWN(exponential(1.0, rng));
@@ -151,4 +151,3 @@ checking poisson\(35.0, rng\)
 finished
 %not-contains: stdout
 ERROR:
-

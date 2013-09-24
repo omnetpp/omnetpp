@@ -8,23 +8,23 @@ Tests stringutil.h functions
 
 static void parseQuoted(const char *txt)
 {
-    ev << "P '" << txt << "' -> ";
+    EV << "P '" << txt << "' -> ";
     try {
         std::string res = opp_parsequotedstr(txt);
-        ev << "'" << res << "'\n";
+        EV << "'" << res << "'\n";
     } catch (std::exception& e) {
-        ev << "exception\n";  // e.what() << "\n";
+        EV << "exception\n";  // e.what() << "\n";
     }
 }
 
 static void quote(const char *txt)
 {
-    ev << "Q '" << txt << "' -> ";
+    EV << "Q '" << txt << "' -> ";
     try {
         std::string res = opp_quotestr(txt);
-        ev << "'" << res << "'\n";
+        EV << "'" << res << "'\n";
     } catch (std::exception& e) {
-        ev << "exception\n";  // e.what() << "\n";
+        EV << "exception\n";  // e.what() << "\n";
     }
 }
 
@@ -46,7 +46,7 @@ quote("foo bar");
 quote("foo\\bar");
 quote("foo\tbar");
 quote("foo\"bar");
-ev << ".\n";
+EV << ".\n";
 
 %exitcode: 0
 

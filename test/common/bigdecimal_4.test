@@ -10,14 +10,14 @@ Tests the BigDecimal operator+.
 
 static void add(const char *x, const char *y)
 {
-    ev << x << "," << y;
-    ev << ": ";
+    EV << x << "," << y;
+    EV << ": ";
     try {
         BigDecimal xx = BigDecimal::parse(x);
         BigDecimal yy = BigDecimal::parse(y);
-        ev << xx + yy << "\n";
+        EV << xx + yy << "\n";
     } catch (std::exception& e) {
-        ev << "ERROR: " << e.what() << "\n";
+        EV << "ERROR: " << e.what() << "\n";
     }
 }
 
@@ -25,7 +25,7 @@ static void add(const char *x, const char *y)
 
 #define T(x,y) add(#x, #y);
 
-ev << "\n";
+EV << "\n";
 
 T(0,0);
 
@@ -58,7 +58,7 @@ T(NaN,0);
 T(0,NaN);
 T(NaN,NaN);
 
-ev << ".\n";
+EV << ".\n";
 
 %contains: stdout
 0,0: 0

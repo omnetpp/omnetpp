@@ -12,13 +12,13 @@ static void tokenize(const char *text)
     try {
     	StringTokenizer2 tokenizer(text, " ", "{}[]()", "'");
     	while (tokenizer.hasMoreTokens()) {
-    		ev << tokenizer.nextToken();
+    		EV << tokenizer.nextToken();
     		if (tokenizer.hasMoreTokens())
-    		    ev << "|";
+    		    EV << "|";
     	}
-        ev << "\n";
+        EV << "\n";
     } catch (std::exception& e) {
-        ev << "ERROR: " << e.what() << "\n";
+        EV << "ERROR: " << e.what() << "\n";
     }
 }
 
@@ -29,7 +29,7 @@ static void tokenize(const char *text)
 T("This 'string contains' {a lot} (of {[{irritating}]}) 'parentheses: {,[ and ('");
 T("\\\\ \\  \\{ \\} \\( \\) \\[ \\] \\' \\n");
 
-ev << ".\n";
+EV << ".\n";
 
 %contains: stdout
 This|'string contains'|{a lot}|(of {[{irritating}]})|'parentheses: {,[ and ('

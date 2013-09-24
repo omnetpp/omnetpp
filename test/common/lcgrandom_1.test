@@ -11,8 +11,8 @@ LCGRandom rng;
 for (int k=0; k<1000000; k++)
     rng.next01();
 
-ev << rng.getSeed() << "\n";
-ev << ".\n";
+EV << rng.getSeed() << "\n";
+EV << ".\n";
 
 %exitcode: 0
 

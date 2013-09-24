@@ -117,7 +117,7 @@ void cStdDev::collect(double value)
     if (++num_vals <= 0)
     {
         // num_vals overflow: issue warning and stop collecting
-        ev.printf("\a\nWARNING: (%s)%s: collect(): observation count overflow!\n\n",getClassName(),getFullPath().c_str());
+        ev.printfmsg("WARNING: (%s)%s: collect(): observation count overflow", getClassName(), getFullPath().c_str());
         num_vals--;  // restore
         return;
     }
@@ -294,7 +294,7 @@ void cWeightedStdDev::collect2(double value, double weight)
         if (++num_vals <= 0)
         {
             // num_vals overflow: issue warning and stop collecting
-            ev.printf("\a\nWARNING: (%s)%s: collect2(): observation count overflow!\n\n",getClassName(),getFullPath().c_str());
+            ev.printfmsg("WARNING: (%s)%s: collect2(): observation count overflow", getClassName(), getFullPath().c_str());
             num_vals--;  // restore
             return;
         }

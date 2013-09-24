@@ -59,7 +59,7 @@ void cMPICommunications::init()
     char **argv = ev.getArgVector();
     for (int i=1; i<argc; i++)
         if (argv[i][0]=='-' && argv[i][1]=='p')
-            ev.printf("WARNING: cMPICommunications doesn't need -p command-line option, ignored\n");
+            EV_WARN << "cMPICommunications doesn't need -p command-line option, ignored\n";
 
     // init MPI
     MPI_Init(&argc, &argv);
@@ -68,10 +68,9 @@ void cMPICommunications::init()
     MPI_Comm_size(MPI_COMM_WORLD, &numPartitions);
     MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
 
-    ev.printf("cMPICommunications: started as process %d out of %d.\n", myRank, numPartitions);
+    EV << "cMPICommunications: started as process " << myRank << " out of " << numPartitions << ".\n";
     if (numPartitions==1)
-        ev.printf("WARNING: MPI thinks this process is the only one in the session "
-                  "(did you use mpirun to start this program?)\n");
+        EV_WARN << "MPI thinks this process is the only one in the session (did you use mpirun to start this program?)\n";
 
     // set up MPI send buffer (+16K prevents MPI_Buffer_attach() error if numPartitions==1)
     int defaultBufSize = MPI_SEND_BUFFER_PER_PARTITION * (numPartitions-1) + 16384;

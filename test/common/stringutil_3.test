@@ -13,12 +13,12 @@ static int sgn(int i)
 
 static void compare(const char *s1, const char *s2)
 {
-    ev << '"' << s1 << "\",\"" << s2 << "\":";
+    EV << '"' << s1 << "\",\"" << s2 << "\":";
     try {
         int res = strdictcmp(s1, s2);
-        ev << sgn(res) << endl;
+        EV << sgn(res) << endl;
     } catch (std::exception& e) {
-        ev << "exception\n";  // e.what() << "\n";
+        EV << "exception\n";  // e.what() << "\n";
     }
 }
 
@@ -34,7 +34,7 @@ compare("0.1", "00.1");
 compare("0.1", "0.10");
 compare("0.1b", "0.10a");
 
-ev << ".\n";
+EV << ".\n";
 
 %exitcode: 0
 

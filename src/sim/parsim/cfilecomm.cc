@@ -34,6 +34,7 @@
 #include "cconfiguration.h"
 #include "parsimutil.h"
 #include "fileglobber.h"
+#include "clog.h"
 #include "platmisc.h"
 
 USING_NAMESPACE
@@ -62,7 +63,7 @@ void cFileCommunications::init()
 {
     // get numPartitions and myProcId from "-p" command-line option
     getProcIdFromCommandLineArgs(myProcId, numPartitions, "cFileCommunications");
-    ev.printf("cFileCommunications: started as process %d out of %d.\n", myProcId, numPartitions);
+    EV << "cFileCommunications: started as process " << myProcId << " out of " << numPartitions << ".\n";
 
     // We cannot check here that the communications directory is empty, because
     // other partitions may have already sent messages to us...
@@ -172,7 +173,7 @@ bool cFileCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, i
             for (int i=0; i<20; i++)
             {
                 usleep(500000); // wait 0.5s
-                ev.printf("cFileCommunications: retrying to open file %s (previous attempt failed)\n", fname);
+                EV << "cFileCommunications: retrying opening file " << fname << " (previous attempt failed)\n";
                 f = fopen(fname,"rb");
                 if (f) break;
             }

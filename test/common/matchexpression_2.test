@@ -14,14 +14,14 @@ static bool casesensitive;
 
 static void match(const char *pattern, cObject *obj)
 {
-    ev << pattern << " | (" << obj->getClassName() << ")" << obj->getName() << " --> ";
+    EV << pattern << " | (" << obj->getClassName() << ")" << obj->getName() << " --> ";
     try {
         MatchExpression me(pattern, dottedpath, fullstring, casesensitive);
         MatchableObjectAdapter matchobj(MatchableObjectAdapter::FULLNAME, obj);
         bool result = me.matches(&matchobj);
-        ev << (result?"true":"false") << "\n";
+        EV << (result?"true":"false") << "\n";
     } catch (std::exception& e) {
-        ev << "ERROR: " << e.what() << "\n";
+        EV << "ERROR: " << e.what() << "\n";
     }
 }
 
@@ -44,7 +44,7 @@ match("kind(41)", msg);
 match("bitLength({990..1000})", msg);
 match("bitLength({980..990})", msg);
 
-ev << "done\n";
+EV << "done\n";
 
 %exitcode: 0
 

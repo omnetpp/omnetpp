@@ -10,22 +10,22 @@ Tests the ReadWriteLock class
 try
 {
   ReentrantReadWriteLock lock;
-  ev << "Lock created\n";
+  EV << "Lock created\n";
   lock.readLock().lock();
-  ev << "Read lock acquired\n";
+  EV << "Read lock acquired\n";
   lock.readLock().lock();
-  ev << "Read lock again\n";
+  EV << "Read lock again\n";
   lock.readLock().unlock();
-  ev << "First unlock\n";
+  EV << "First unlock\n";
   lock.readLock().unlock();
-  ev << "Second unlock\n";
+  EV << "Second unlock\n";
 }
 catch (std::exception &e)
 {
-  ev << "ERROR: " << e.what() << "\n";
+  EV << "ERROR: " << e.what() << "\n";
 }
 
-ev << ".\n";
+EV << ".\n";
 
 %contains: stdout
 Lock created

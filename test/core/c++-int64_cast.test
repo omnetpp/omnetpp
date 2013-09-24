@@ -13,8 +13,9 @@ Valgrind only supports 64-bit one, while most compilers do 80 bits.
 
 char *x = "\x19\x6d\xb2\x9a\xba\x7e\x15\x40";
 double d = *(double *)x;
-ev.printf("\ndouble: %.20f", d);
-ev.printf("\nlong long:%lld \n", (long long)(d*(1e12)));
+char buf[80];
+sprintf(buf, "\ndouble: %.20f", d); EV << buf;
+sprintf(buf, "\nlong long:%lld \n", (long long)(d*(1e12))); EV << buf;
 
 // We have seen two kind of results:
 //  double: 5.37375871385599968022
@@ -26,4 +27,3 @@ ev.printf("\nlong long:%lld \n", (long long)(d*(1e12)));
 %contains-regex: stdout
 double: 5\.373758713855999[0-9]+
 long long:537375871385[56]
-
