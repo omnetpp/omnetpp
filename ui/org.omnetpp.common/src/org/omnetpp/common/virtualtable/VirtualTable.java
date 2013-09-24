@@ -441,9 +441,9 @@ public class VirtualTable<T>
             getContentProvider().inputChanged(null, null, input);
             getRowRenderer().setInput(input);
             // clear state
+            relocateFixPoint(null, 0);
             clearSelection();
             configureVerticalScrollBar();
-            relocateFixPoint(null, 0);
         }
     }
 
