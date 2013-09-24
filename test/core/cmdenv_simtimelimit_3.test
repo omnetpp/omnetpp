@@ -35,7 +35,6 @@ void Module::finish()
 %inifile: test.ini
 [General]
 network = Module
-cmdenv-express-mode = false
 sim-time-limit = 5s
 
 %contains-regex: stdout

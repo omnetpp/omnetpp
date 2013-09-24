@@ -324,6 +324,13 @@ sub parse_testfile
         print STDERR "$arg0: error in test file `$testfilename': %module_b without %module_a\n"; exit(1);
     }
 
+    # fake a _defaults.ini after the other inifiles
+    $key = "inifile";
+    $count{$key}++;
+    $key_index = $key.'('.$count{$key}.')';
+    $values{$key_index} = "_defaults.ini";
+    $bodies{$key_index} = $INITemplate;
+
     # substitute TESTNAME and other macros, kill comments
     foreach $key (keys(%values))
     {
@@ -434,28 +441,18 @@ sub testcase_generatesources
         writefile($cppfname, $cpp);
     }
 
-    # ini file
+    # ini files
     my @inifilekeys = ();
     foreach my $key (keys(%values)) {
         if ($key =~ /^inifile\([0-9]+\)/) {
             push(@inifilekeys,$key);
         }
     }
-    if (!@inifilekeys) {
-        # pretend there is an "%inifile: test.ini" line in the file
-        my $key = "inifile0";
-        push(@inifilekeys,$key);
-        $values{$key} = "test.ini";
-        $bodies{$key} = ""; # default content
-    }
 
     foreach my $key (@inifilekeys)
     {
         my $inifname = $workdir."/".$testname."/".$values{$key};
         my $inifile = $bodies{$key};
-        if ($inifile =~ /^\s*$/s) {
-            $inifile = $INITemplate;
-        }
         $inifile =~ s/\@TESTNAME\@/$testname/g;
         $inifile =~ s/\@NETWORKNAME\@/$networkname/g;
         writefile($inifname, $inifile);
@@ -536,12 +533,11 @@ sub testcase_run()
         foreach $key (sort(keys(%values)))
         {
             if ($key =~ /^inifile\([0-9]+\)/) {
-                $inifilenames = $inifilenames." ".$values{$key};
+                $inifilenames .= " ".$values{$key};
             }
         }
-        if ($inifilenames eq '') {
-            $inifilenames = "test.ini";
-        }
+        die if $inifilenames eq ''; # at least the implicit _defaults.ini should be there
+
 
         if ($values{'testprog(1)'} ne '') {
             $exitcode = exec_program($values{'testprog(1)'}." $myargs $extraargs", "$workdir/$testname", $outfname, $errfname);
@@ -995,6 +991,7 @@ network = @NETWORKNAME@
 cmdenv-express-mode = false
 output-vector-file = test.vec
 output-scalar-file = test.sca
+eventlog-file = test.elog
+log-format = ""
 ';
 }
-

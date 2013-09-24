@@ -1,5 +1,5 @@
 %description:
-check that scalar file does not get deleted between runs.
+check multiple scalar file generation
 
 %activity:
 
@@ -10,15 +10,15 @@ recordScalar("two", -1.5);
 [General]
 network = Test
 cmdenv-express-mode = false
-#output-scalar-file = test.sca
+output-scalar-file = test-${runnumber}.sca
 repeat = 2
 
-%contains-regex: results/General-0.sca
+%contains-regex: test-0.sca
 run General-0-.*?
 scalar Test 	one 	24.2
 scalar Test 	two 	-1.5
 
-%contains-regex: results/General-1.sca
+%contains-regex: test-1.sca
 run General-1-.*?
 scalar Test 	one 	24.2
 scalar Test 	two 	-1.5
