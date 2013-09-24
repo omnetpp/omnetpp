@@ -107,9 +107,6 @@ class SIM_API cEnvir
     bool attach_debugger_on_errors;
 
   protected:
-    // internal: ev.printf() and ev<< eventually ends up here; write the first n characters of string s
-    virtual void sputn(const char *s, int n) = 0;
-
     // internal: pop up a dialog with the given message; called from printfmsg()
     virtual void putsmsg(const char *msg) = 0;
 
@@ -483,18 +480,8 @@ class SIM_API cEnvir
 
     /**
      * Returns true if the simulation is running in an Express or Express-like mode
-     * where output from <tt>ev&lt;&lt;</tt> and <tt>ev.printf()</tt> statement is
-     * not printed or logged anywhere but discarded. Model code may make <tt>ev&lt;&lt;</tt>
-     * statements conditional on this flag to save CPU cycles. For example:
-     * <pre>
-     *     if (!ev.isDisabled())  EV << "Packet " << msg->getName() << " received";
-     * </pre>
-     *
-     * which can be abbreviated with the <tt>EV</tt> macro:
-     *
-     * <pre>
-     *     EV << "Packet " << msg->getName() << " received";
-     * </pre>
+     * where output from <tt>EV&lt;&lt;</tt> statements is not printed or logged
+     * anywhere but discarded. The <tt>EV</tt> macro already makes use of this function.
      */
     bool isDisabled() const {return disable_tracing && !record_eventlog;}
 
@@ -509,19 +496,6 @@ class SIM_API cEnvir
      * used by simple modules. Delegates to putsmsg().
      */
     virtual void printfmsg(const char *fmt,...);
-
-    /**
-     * This method can be used by modules and channels to display debugging output.
-     * It is up to the user interface implementation to display the text in
-     * the way it wants. The text is usually associated with the module or channel
-     * in context (see cSimulation::getContext()), and may get displayed in the
-     * module's debug window, or enabled/disabled per module.
-     *
-     * The function's arguments are identical to the standard \<stdio.h\> printf().
-     * It is recommended to use C++-style I/O (operator<<) instead of this function.
-     */
-    // note: non-virtual, delegates to sputn()
-    virtual int printf(const char *fmt,...);
 
     /**
      * Writes the provided log statement to the standard output.

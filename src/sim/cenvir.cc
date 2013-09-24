@@ -57,22 +57,6 @@ void cEnvir::printfmsg(const char *fmt,...)
     putsmsg(staticbuf);
 }
 
-int cEnvir::printf(const char *fmt,...)
-{
-    if (disable_tracing)
-        return 0;
-
-    va_list va;
-    va_start(va, fmt);
-    int len = vsnprintf(staticbuf, BUFLEN, fmt, va);
-    staticbuf[BUFLEN-1] = '\0';
-    va_end(va);
-
-    // route it through streambuf to preserve ordering
-    sputn(staticbuf, len);
-    return len;
-}
-
 bool cEnvir::askYesNo(const char *fmt,...)
 {
     VSNPRINTF(staticbuf, BUFLEN, fmt);
