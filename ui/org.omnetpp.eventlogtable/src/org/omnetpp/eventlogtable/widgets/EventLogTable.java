@@ -72,11 +72,6 @@ public class EventLogTable
 
     private EventLogTableContributor eventLogTableContributor;
 
-    /**
-     * Maximum number of event numbers copied into EventLogSelection, -1 = unlimited.
-     */
-    protected long maxEventNumbersInEventLogSelection = -1;
-
     public enum TypeMode {
         CPP,
         NED
@@ -169,15 +164,6 @@ public class EventLogTable
                 }
             }
         });
-    }
-
-    /**
-     * Sets the maximum number of elements in a range selection.
-     * Attempts to select a bigger range will fail.
-     * To limit memory usage, set this to a reasonable value depending on the size of T.
-     */
-    public void setMaxEventNumbersInEventLogSelection(long value) {
-        maxEventNumbersInEventLogSelection = value;
     }
 
     public void setEventLogTableContributor(EventLogTableContributor eventLogTableContributor) {

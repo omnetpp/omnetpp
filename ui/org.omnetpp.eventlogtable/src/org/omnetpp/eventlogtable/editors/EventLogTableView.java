@@ -113,7 +113,6 @@ public class EventLogTableView extends EventLogView implements IEventLogTablePro
     protected Control createViewControl(final Composite parent) {
         eventLogTable = new EventLogTable(parent, SWT.NONE);
         eventLogTable.setWorkbenchPart(this);
-        eventLogTable.setMaxEventNumbersInEventLogSelection(10000);
         eventLogTable.setRunnableContextForLongRunningOperations(new IRunnableContext() {
             @Override
             public void run(boolean fork, boolean cancelable, IRunnableWithProgress runnable) throws InvocationTargetException, InterruptedException {
