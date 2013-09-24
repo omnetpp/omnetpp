@@ -239,43 +239,6 @@ class SIM_API cLogEntry
     int textLength;
 };
 
-/**
- * This class is used for buffering the text content to be able to send whole
- * lines one by one to the active environment.
- */
-class cLogBuffer : public std::basic_stringbuf<char> {
-  public:
-    cLogBuffer() { }
-
-    bool isEmpty() { return pptr() == pbase(); }
-
-  protected:
-    virtual int sync();
-};
-
-/**
- * This class is used for collecting the text content written by multiple
- * invocations of operator<< in a log statement.
- */
-class SIM_API cLogStream : public std::ostream
-{
-  public:
-    /**
-     * This singleton is used to avoid allocating a new stream each time a
-     * log statement executes. It may be also used to write text directly
-     * to the log stream.
-     */
-    static cLogStream globalStream;
-
-  private:
-    cLogBuffer buffer;  // underlying buffer that contains the text that has been written so far
-
-  public:
-    cLogStream() : std::ostream(&buffer) { }
-
-    bool isEmpty() { return buffer.isEmpty(); }
-    void flushLastLine();
-};
 
 /**
  * This class captures the context where the log statement appears.
@@ -285,12 +248,40 @@ class SIM_API cLogStream : public std::ostream
  */
 class SIM_API cLogProxy
 {
-  friend cLogBuffer;
+  private:
+    /**
+     * This class is used for buffering the text content to be able to send whole
+     * lines one by one to the active environment.
+     */
+    class LogBuffer : public std::basic_stringbuf<char> {
+      public:
+        LogBuffer() { }
+        bool isEmpty() { return pptr() == pbase(); }
+
+      protected:
+        virtual int sync();
+    };
+
+    /**
+     * This class is used for collecting the text content written by multiple
+     * invocations of operator<< in a log statement.
+     */
+    class SIM_API LogStream : public std::ostream
+    {
+      private:
+        LogBuffer buffer;  // underlying buffer that contains the text that has been written so far
+
+      public:
+        LogStream() : std::ostream(&buffer) { }
+        bool isEmpty() { return buffer.isEmpty(); }
+        void flushLastLine();
+    };
 
   public:
     static std::stringstream dummyStream; // unused; it's just used to satisfy the C++ compiler
 
   private:
+    static LogStream globalStream;  // this singleton is used to avoid allocating a new stream each time a log statement executes
     static cLogEntry currentEntry; // context of the current (last) log statement that has been executed.
     static LogLevel previousLoglevel; // log level of the previous log statement
     static const char *previousCategory; // category of the previous log statement
@@ -305,7 +296,8 @@ class SIM_API cLogProxy
     static bool isEnabled(const cComponent *sourceComponent, const char *category, LogLevel loglevel);
     static bool isComponentEnabled(const cComponent *component, const char *category, LogLevel loglevel);
 
-    std::ostream& getStream();
+    std::ostream& getStream() { return globalStream; }
+    static void flushLastLine()  { globalStream.flushLastLine(); }
 
   protected:
     void fillEntry(const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);

@@ -547,7 +547,7 @@ bool Tkenv::doRunSimulation()
         performAnimations();
 
         // flush so that output from different modules don't get mixed
-        cLogStream::globalStream.flushLastLine();
+        cLogProxy::flushLastLine();
 
         // display update
         if (frequent_updates || ((simulation.getEventNumber()&0x0f)==0 && elapsed(opt_updatefreq_fast, last_update)))
@@ -674,7 +674,7 @@ void Tkenv::finishSimulation()
     try
     {
         simulation.callFinish();
-        cLogStream::globalStream.flushLastLine();
+        cLogProxy::flushLastLine();
 
         checkFingerprint();
     }

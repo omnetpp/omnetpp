@@ -23,7 +23,7 @@
 
 Register_PerObjectConfigOption(CFGID_COMPONENT_LOGLEVEL, "log-level", KIND_MODULE, CFG_STRING, "DEBUG", "Specifies the per-component level of detail recorded by log statements, output below the specified level is omitted. Available values are (case insensitive): fatal, error, warn, info, debug or trace. Note that the level of detail is also controlled by the specified per component log levels and the GLOBAL_COMPILETIME_LOGLEVEL macro that is used to completely remove log statements from the executable.")
 
-cLogStream cLogStream::globalStream;
+cLogProxy::LogStream cLogProxy::globalStream;
 LogLevel cLogLevel::globalRuntimeLoglevel = LOGLEVEL_DEBUG;
 cLogEntry cLogProxy::currentEntry;
 LogLevel cLogProxy::previousLoglevel = (LogLevel)-1;
@@ -73,7 +73,7 @@ LogLevel cLogLevel::getLevel(const char *name)
 
 //----
 
-int cLogBuffer::sync() {
+int cLogProxy::LogBuffer::sync() {
     char *text = pbase();
     int size = pptr() - pbase();
     if (size != 0)
@@ -96,7 +96,7 @@ int cLogBuffer::sync() {
     return 0;
 }
 
-void cLogStream::flushLastLine()
+void cLogProxy::LogStream::flushLastLine()
 {
     if (!isEmpty())
         put('\n');
@@ -127,7 +127,7 @@ cLogProxy::cLogProxy(const cComponent *sourceComponent, const char *category, Lo
 
 cLogProxy::~cLogProxy()
 {
-    cLogStream::globalStream.flush();
+    globalStream.flush();
     previousLoglevel = currentEntry.loglevel;
     previousCategory = currentEntry.category;
 }
@@ -155,15 +155,10 @@ bool cLogProxy::isComponentEnabled(const cComponent *component, const char *cate
     return loglevel <= componentLoglevel;
 }
 
-std::ostream& cLogProxy::getStream()
-{
-    return cLogStream::globalStream;
-}
-
 void cLogProxy::fillEntry(const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
 {
     if (previousLoglevel != loglevel || (previousCategory != category && strcmp(previousCategory ? previousCategory : "", category ? category : "")))
-        cLogStream::globalStream.flushLastLine();
+        globalStream.flushLastLine();
     currentEntry.category = category;
     currentEntry.loglevel = loglevel;
     currentEntry.sourceFile = sourceFile;
