@@ -257,31 +257,16 @@ class SIM_API cLogProxy
       public:
         LogBuffer() { }
         bool isEmpty() { return pptr() == pbase(); }
-
       protected:
-        virtual int sync();
-    };
-
-    /**
-     * This class is used for collecting the text content written by multiple
-     * invocations of operator<< in a log statement.
-     */
-    class SIM_API LogStream : public std::ostream
-    {
-      private:
-        LogBuffer buffer;  // underlying buffer that contains the text that has been written so far
-
-      public:
-        LogStream() : std::ostream(&buffer) { }
-        bool isEmpty() { return buffer.isEmpty(); }
-        void flushLastLine();
+        virtual int sync();  // invokes ev.log() for each log line
     };
 
   public:
     static std::stringstream dummyStream; // unused; it's just used to satisfy the C++ compiler
 
   private:
-    static LogStream globalStream;  // this singleton is used to avoid allocating a new stream each time a log statement executes
+    static LogBuffer buffer;  // underlying buffer that contains the text that has been written so far
+    static std::ostream globalStream;  // this singleton is used to avoid allocating a new stream each time a log statement executes
     static cLogEntry currentEntry; // context of the current (last) log statement that has been executed.
     static LogLevel previousLoglevel; // log level of the previous log statement
     static const char *previousCategory; // category of the previous log statement
@@ -297,7 +282,7 @@ class SIM_API cLogProxy
     static bool isComponentEnabled(const cComponent *component, const char *category, LogLevel loglevel);
 
     std::ostream& getStream() { return globalStream; }
-    static void flushLastLine()  { globalStream.flushLastLine(); }
+    static void flushLastLine();
 
   protected:
     void fillEntry(const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);

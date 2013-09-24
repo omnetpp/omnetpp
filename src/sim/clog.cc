@@ -23,7 +23,8 @@
 
 Register_PerObjectConfigOption(CFGID_COMPONENT_LOGLEVEL, "log-level", KIND_MODULE, CFG_STRING, "DEBUG", "Specifies the per-component level of detail recorded by log statements, output below the specified level is omitted. Available values are (case insensitive): fatal, error, warn, info, debug or trace. Note that the level of detail is also controlled by the specified per component log levels and the GLOBAL_COMPILETIME_LOGLEVEL macro that is used to completely remove log statements from the executable.")
 
-cLogProxy::LogStream cLogProxy::globalStream;
+cLogProxy::LogBuffer cLogProxy::buffer;
+std::ostream cLogProxy::globalStream(&cLogProxy::buffer);
 LogLevel cLogLevel::globalRuntimeLoglevel = LOGLEVEL_DEBUG;
 cLogEntry cLogProxy::currentEntry;
 LogLevel cLogProxy::previousLoglevel = (LogLevel)-1;
@@ -73,7 +74,8 @@ LogLevel cLogLevel::getLevel(const char *name)
 
 //----
 
-int cLogProxy::LogBuffer::sync() {
+int cLogProxy::LogBuffer::sync()
+{
     char *text = pbase();
     int size = pptr() - pbase();
     if (size != 0)
@@ -96,11 +98,14 @@ int cLogProxy::LogBuffer::sync() {
     return 0;
 }
 
-void cLogProxy::LogStream::flushLastLine()
+
+void cLogProxy::flushLastLine()
 {
-    if (!isEmpty())
-        put('\n');
-    flush();
+    if (!buffer.isEmpty())
+    {
+        globalStream.put('\n');
+        globalStream.flush();
+    }
 }
 
 //----
@@ -158,7 +163,7 @@ bool cLogProxy::isComponentEnabled(const cComponent *component, const char *cate
 void cLogProxy::fillEntry(const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
 {
     if (previousLoglevel != loglevel || (previousCategory != category && strcmp(previousCategory ? previousCategory : "", category ? category : "")))
-        globalStream.flushLastLine();
+        flushLastLine();
     currentEntry.category = category;
     currentEntry.loglevel = loglevel;
     currentEntry.sourceFile = sourceFile;
