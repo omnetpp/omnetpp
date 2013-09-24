@@ -174,7 +174,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 
         Image image = getImage(eventLogEntryReference, index);
         if (image != null) {
-            gc.drawImage(image, x, 0);
+            gc.drawImage(image, x, (getRowHeight(gc) - image.getBounds().height) / 2);
             x += image.getBounds().width + HORIZONTAL_SPACING;
         }
 
