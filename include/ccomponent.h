@@ -126,8 +126,8 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     bool isEvEnabled() const  {return flags&FL_EVLOGENABLED;}
 
     // internal: used by log mechanism
-    cLogLevel::LogLevel getLoglevel() const { return (cLogLevel::LogLevel)(((flags >> FL_LOGLEVEL_SHIFT) & 0x7) - 1); }
-    void setLoglevel(cLogLevel::LogLevel loglevel) {
+    LogLevel getLoglevel() const { return (LogLevel)(((flags >> FL_LOGLEVEL_SHIFT) & 0x7) - 1); }
+    void setLoglevel(LogLevel loglevel) {
         ASSERT(0 <= loglevel && loglevel <= 6);
         flags &= ~(0x7 << FL_LOGLEVEL_SHIFT);
         flags |= (loglevel + 1) << FL_LOGLEVEL_SHIFT;

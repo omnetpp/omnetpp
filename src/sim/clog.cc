@@ -24,9 +24,9 @@
 Register_PerObjectConfigOption(CFGID_COMPONENT_LOGLEVEL, "log-level", KIND_MODULE, CFG_STRING, "DEBUG", "Specifies the per-component level of detail recorded by log statements, output below the specified level is omitted. Available values are (case insensitive): fatal, error, warn, info, debug or trace. Note that the level of detail is also controlled by the specified per component log levels and the GLOBAL_COMPILETIME_LOGLEVEL macro that is used to completely remove log statements from the executable.")
 
 cLogStream cLogStream::globalStream;
-cLogLevel::LogLevel cLogLevel::globalRuntimeLoglevel = cLogLevel::LOGLEVEL_DEBUG;
+LogLevel cLogLevel::globalRuntimeLoglevel = LOGLEVEL_DEBUG;
 cLogEntry cLogProxy::currentEntry;
-cLogLevel::LogLevel cLogProxy::previousLoglevel = (cLogLevel::LogLevel)-1;
+LogLevel cLogProxy::previousLoglevel = (LogLevel)-1;
 const char *cLogProxy::previousCategory = NULL;
 std::stringstream cLogProxy::dummyStream;
 
@@ -53,20 +53,20 @@ const char *cLogLevel::getName(LogLevel loglevel)
      }
 }
 
-cLogLevel::LogLevel cLogLevel::getLevel(const char *name)
+LogLevel cLogLevel::getLevel(const char *name)
 {
     if (!strcasecmp(name, "FATAL"))
-        return cLogLevel::LOGLEVEL_FATAL;
+        return LOGLEVEL_FATAL;
     else if (!strcasecmp(name, "ERROR"))
-        return cLogLevel::LOGLEVEL_ERROR;
+        return LOGLEVEL_ERROR;
     else if (!strcasecmp(name, "WARN"))
-        return cLogLevel::LOGLEVEL_WARN;
+        return LOGLEVEL_WARN;
     else if (!strcasecmp(name, "INFO"))
-        return cLogLevel::LOGLEVEL_INFO;
+        return LOGLEVEL_INFO;
     else if (!strcasecmp(name, "DEBUG"))
-        return cLogLevel::LOGLEVEL_DEBUG;
+        return LOGLEVEL_DEBUG;
     else if (!strcasecmp(name, "TRACE"))
-        return cLogLevel::LOGLEVEL_TRACE;
+        return LOGLEVEL_TRACE;
     else
         throw cRuntimeError("Unknown log level name '%s'", name);
 }
@@ -105,21 +105,21 @@ void cLogStream::flushLastLine()
 
 //----
 
-cLogProxy::cLogProxy(const void *sourcePointer, const char *category, cLogLevel::LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
+cLogProxy::cLogProxy(const void *sourcePointer, const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
 {
     fillEntry(category, loglevel, sourceFile, sourceLine, sourceClass, sourceFunction);
     currentEntry.sourcePointer = sourcePointer;
     currentEntry.sourceObject = currentEntry.sourceComponent = NULL;
 }
 
-cLogProxy::cLogProxy(const cObject *sourceObject, const char *category, cLogLevel::LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
+cLogProxy::cLogProxy(const cObject *sourceObject, const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
 {
     fillEntry(category, loglevel, sourceFile, sourceLine, sourceClass, sourceFunction);
     currentEntry.sourcePointer = currentEntry.sourceObject = const_cast<cObject *>(sourceObject);
     currentEntry.sourceComponent = NULL;
 }
 
-cLogProxy::cLogProxy(const cComponent *sourceComponent, const char *category, cLogLevel::LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
+cLogProxy::cLogProxy(const cComponent *sourceComponent, const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
 {
     fillEntry(category, loglevel, sourceFile, sourceLine, sourceClass, sourceFunction);
     currentEntry.sourcePointer = currentEntry.sourceObject = currentEntry.sourceComponent = const_cast<cComponent *>(sourceComponent);
@@ -132,20 +132,20 @@ cLogProxy::~cLogProxy()
     previousCategory = currentEntry.category;
 }
 
-bool cLogProxy::isEnabled(const void *sourceObject, const char *category, cLogLevel::LogLevel loglevel)
+bool cLogProxy::isEnabled(const void *sourceObject, const char *category, LogLevel loglevel)
 {
     const cModule *contextModule = simulation.getContextModule();
     return !contextModule || isComponentEnabled(contextModule, category, loglevel);
 }
 
-bool cLogProxy::isEnabled(const cComponent *sourceComponent, const char *category, cLogLevel::LogLevel loglevel)
+bool cLogProxy::isEnabled(const cComponent *sourceComponent, const char *category, LogLevel loglevel)
 {
     return isComponentEnabled(sourceComponent, category, loglevel);
 }
 
-bool cLogProxy::isComponentEnabled(const cComponent *component, const char *category, cLogLevel::LogLevel loglevel)
+bool cLogProxy::isComponentEnabled(const cComponent *component, const char *category, LogLevel loglevel)
 {
-    cLogLevel::LogLevel componentLoglevel = component->getLoglevel();
+    LogLevel componentLoglevel = component->getLoglevel();
     if (componentLoglevel == -1)
     {
         componentLoglevel = cLogLevel::getLevel(ev.getConfig()->getAsString(component->getFullPath().c_str(), CFGID_COMPONENT_LOGLEVEL).c_str());
@@ -160,7 +160,7 @@ std::ostream& cLogProxy::getStream()
     return cLogStream::globalStream;
 }
 
-void cLogProxy::fillEntry(const char *category, cLogLevel::LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
+void cLogProxy::fillEntry(const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
 {
     if (previousLoglevel != loglevel || (previousCategory != category && strcmp(previousCategory ? previousCategory : "", category ? category : "")))
         cLogStream::globalStream.flushLastLine();

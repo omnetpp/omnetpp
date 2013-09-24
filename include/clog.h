@@ -23,76 +23,77 @@
 class cObject;
 class cComponent;
 
+
 /**
- * This class serves as a namespace for log levels and related functions. The actual
- * log levels are not instances of this class, but simply integers from the enumeration
- * declared inside.
+ * Classifies log messages based on detail and importance.
+ *
+ * @ingroup Logging
+ */
+enum LogLevel
+{
+    /**
+     * The highest log level; it should be used for fatal (unrecoverable) errors
+     * that prevent the component from further operation. It doesn't mean that
+     * the simulation must stop immediately (because in such cases the code should
+     * throw a cRuntimeError), but rather that the a component is unable to continue
+     * normal operation. For example, a special purpose recording component may be
+     * unable to continue recording due to the disk being full.
+     */
+    LOGLEVEL_FATAL,
+
+    /**
+     * This log level should be used for recoverable (non-fatal) errors that allow
+     * the component to continue normal operation. For example, a MAC layer protocol
+     * component could log unsuccessful packet receptions and unsuccessful packet
+     * transmissions using this level.
+     */
+    LOGLEVEL_ERROR,
+
+    /**
+     * This log level should be used for exceptional (non-error) situations that
+     * may be important for users and rarely occur in the component. For example,
+     * a MAC layer protocol component could log detected collisions and retries
+     * using this level.
+     */
+    LOGLEVEL_WARN,
+
+    /**
+     * This log level should be used for high level information that is most
+     * likely important for users of the component. For example, a MAC layer
+     * protocol component could log successful packet receptions and successful
+     * packet transmissions using this level.
+     */
+    LOGLEVEL_INFO,
+
+    /**
+     * This log level should be used for implementation-specific details that
+     * might be useful and understandable by users of the component. These
+     * messages might help to debug various issues without actually looking deep
+     * into the code. For example, a MAC layer protocol component could log state
+     * machine updates, acknowledges timeouts and selected back-off periods using
+     * this level.
+     */
+    LOGLEVEL_DEBUG,
+
+    /**
+     * The lowest log level; it should be used for low-level implementation-specific
+     * technical details that are mostly useful for the developers of the
+     * component. For example, a MAC layer protocol component could use this log level
+     * to log update to internal state variables or entering/leaving methods.
+     */
+    LOGLEVEL_TRACE
+};
+
+
+/**
+ * Serves as a namespace for log levels related functions.
+ * @see LogLevel
  *
  * @ingroup Logging
  */
 class SIM_API cLogLevel
 {
   public:
-    /**
-     * This enumeration is used to classify log messages based on the provided
-     * detail and importance. NOTE: log messages are also categorized by the
-     * component that generated them.
-     */
-    enum LogLevel
-    {
-        /**
-         * The highest log level; it should be used for fatal (unrecoverable) errors
-         * that prevent the component from further operation. It doesn't mean that
-         * the simulation must stop immediately (because in such cases the code should
-         * throw a cRuntimeError), but rather that the a component is unable to continue
-         * normal operation. For example, a special purpose recording component may be
-         * unable to continue recording due to the disk being full.
-         */
-        LOGLEVEL_FATAL,
-
-        /**
-         * This log level should be used for recoverable (non-fatal) errors that allow
-         * the component to continue normal operation. For example, a MAC layer protocol
-         * component could log unsuccessful packet receptions and unsuccessful packet
-         * transmissions using this level.
-         */
-        LOGLEVEL_ERROR,
-
-        /**
-         * This log level should be used for exceptional (non-error) situations that
-         * may be important for users and rarely occur in the component. For example,
-         * a MAC layer protocol component could log detected collisions and retries
-         * using this level.
-         */
-        LOGLEVEL_WARN,
-
-        /**
-         * This log level should be used for high level information that is most
-         * likely important for users of the component. For example, a MAC layer
-         * protocol component could log successful packet receptions and successful
-         * packet transmissions using this level.
-         */
-        LOGLEVEL_INFO,
-
-        /**
-         * This log level should be used for implementation-specific details that
-         * might be useful and understandable by users of the component. These
-         * messages might help to debug various issues without actually looking deep
-         * into the code. For example, a MAC layer protocol component could log state
-         * machine updates, acknowledges timeouts and selected back-off periods using
-         * this level.
-         */
-        LOGLEVEL_DEBUG,
-
-        /**
-         * The lowest log level; it should be used for low-level implementation-specific
-         * technical details that are mostly useful for the developers of the
-         * component. For example, a MAC layer protocol component could use this log level
-         * to log update to internal state variables or entering/leaving methods.
-         */
-        LOGLEVEL_TRACE
-    };
-
     /**
      * This log level specifies a globally applied runtime modifiable filter. This is
      * the fastest runtime filter, it works with a simple integer comparison at the call
@@ -118,9 +119,9 @@ class SIM_API cLogLevel
  */
 #ifndef GLOBAL_COMPILETIME_LOGLEVEL
 #ifdef NDEBUG
-#define GLOBAL_COMPILETIME_LOGLEVEL cLogLevel::LOGLEVEL_INFO
+#define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_INFO
 #else
-#define GLOBAL_COMPILETIME_LOGLEVEL cLogLevel::LOGLEVEL_TRACE
+#define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_TRACE
 #endif
 #endif
 
@@ -132,11 +133,11 @@ class SIM_API cLogLevel
 // for compile time disabled log statements.
 //
 #define OPP_LOGPROXY(object, classname, loglevel, category) \
-        ((void)0, !(cLogLevel::loglevel <= GLOBAL_COMPILETIME_LOGLEVEL && \
+        ((void)0, !(loglevel <= GLOBAL_COMPILETIME_LOGLEVEL && \
          !ev.isDisabled() && \
-         cLogLevel::loglevel <= cLogLevel::globalRuntimeLoglevel && \
-         cLogProxy::isEnabled(object, category, cLogLevel::loglevel))) ? \
-         cLogProxy::dummyStream : cLogProxy(object, category, cLogLevel::loglevel, __FILE__, __LINE__, classname, __FUNCTION__)
+         loglevel <= cLogLevel::globalRuntimeLoglevel && \
+         cLogProxy::isEnabled(object, category, loglevel))) ? \
+         cLogProxy::dummyStream : cLogProxy(object, category, loglevel, __FILE__, __LINE__, classname, __FUNCTION__)
 
 
 // Returns NULL. Helper function for the logging macros.
@@ -165,7 +166,7 @@ inline const char *getClassName() {return NULL;}
  * Log statements are wrapped with compile time and runtime guards at the call site to
  * efficiently prevent unnecessary computation of parameters and log content.
  *
- * @see cLogLevel::LogLevel, EV_STATICCONTEXT, EV_INFO, EV_INFO_C
+ * @see LogLevel, EV_STATICCONTEXT, EV_INFO, EV_INFO_C
  * @ingroup Logging
  * @hideinitializer
  */
@@ -176,7 +177,7 @@ inline const char *getClassName() {return NULL;}
  * topic of the log message. The macro can be used as a C++ stream. Example:
  * <tt>EV_DEBUG << "Connection setup complete" << endl;</tt>.
  *
- * @see OPP_LOG, cLogLevel::LogLevel, EV_STATICCONTEXT
+ * @see OPP_LOG, LogLevel, EV_STATICCONTEXT
  * @ingroup Logging
  * @defgroup LoggingDefault Logging with default category
  */
@@ -195,7 +196,7 @@ inline const char *getClassName() {return NULL;}
  * topic of the log message. The macro can be used as a C++ stream. Example:
  * <tt>EV_DEBUG("retransmissions") << "Too many retries, discarding frame" << endl;</tt>.
  *
- * @see OPP_LOG, cLogLevel::LogLevel, EV_STATICCONTEXT
+ * @see OPP_LOG, LogLevel, EV_STATICCONTEXT
  * @ingroup Logging
  * @defgroup LoggingCat  Logging with explicit category
  */
@@ -218,7 +219,7 @@ class SIM_API cLogEntry
 {
   public:
     // log statement related
-    cLogLevel::LogLevel loglevel;
+    LogLevel loglevel;
     const char *category;
 
     // C++ source related (where the log statement appears)
@@ -291,23 +292,23 @@ class SIM_API cLogProxy
 
   private:
     static cLogEntry currentEntry; // context of the current (last) log statement that has been executed.
-    static cLogLevel::LogLevel previousLoglevel; // log level of the previous log statement
+    static LogLevel previousLoglevel; // log level of the previous log statement
     static const char *previousCategory; // category of the previous log statement
 
   public:
-    cLogProxy(const void *sourcePointer, const char *category, cLogLevel::LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
-    cLogProxy(const cObject *sourceObject, const char *category, cLogLevel::LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
-    cLogProxy(const cComponent *sourceComponent, const char *category, cLogLevel::LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
+    cLogProxy(const void *sourcePointer, const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
+    cLogProxy(const cObject *sourceObject, const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
+    cLogProxy(const cComponent *sourceComponent, const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
     ~cLogProxy();
 
-    static bool isEnabled(const void *sourceObject, const char *category, cLogLevel::LogLevel loglevel);
-    static bool isEnabled(const cComponent *sourceComponent, const char *category, cLogLevel::LogLevel loglevel);
-    static bool isComponentEnabled(const cComponent *component, const char *category, cLogLevel::LogLevel loglevel);
+    static bool isEnabled(const void *sourceObject, const char *category, LogLevel loglevel);
+    static bool isEnabled(const cComponent *sourceComponent, const char *category, LogLevel loglevel);
+    static bool isComponentEnabled(const cComponent *component, const char *category, LogLevel loglevel);
 
     std::ostream& getStream();
 
   protected:
-    void fillEntry(const char *category, cLogLevel::LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
+    void fillEntry(const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
 };
 
 #endif
