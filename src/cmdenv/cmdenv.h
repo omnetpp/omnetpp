@@ -166,7 +166,7 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      FILE *logStream;
 
    protected:
-     virtual void sputn(const char *s, int n);
+     virtual void log(cLogEntry *entry);
      virtual void putsmsg(const char *s);
      virtual bool askyesno(const char *question);
      virtual void printEventBanner(cEvent *event);
@@ -206,7 +206,6 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      virtual void displayStringChanged(cComponent *component);
 
      virtual bool isGUI() const;
-     virtual cEnvir& flush();
      virtual std::string gets(const char *prompt, const char *defaultReply);
      virtual bool idle();
      virtual unsigned getExtraStackForEnvir() const;

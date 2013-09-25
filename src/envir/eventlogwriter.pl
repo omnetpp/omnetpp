@@ -151,7 +151,7 @@ USING_NAMESPACE
 class EventLogWriter
 {
   public:
-    static void recordLogLine(FILE *f, const char *s, int n);
+    static void recordLogLine(FILE *f, const char *prefix, const char *line, int lineLength);
 ";
 
 foreach $class (@classes)
@@ -191,10 +191,10 @@ print CC "
 
 #define LL    INT64_PRINTF_FORMAT
 
-void EventLogWriter::recordLogLine(FILE *f, const char *s, int n)
+void EventLogWriter::recordLogLine(FILE *f, const char *prefix, const char *line, int lineLength)
 {
-    CHECK(fprintf(f, \"- \"));
-    CHECK(fwrite(s, 1, n, f));
+    CHECK(fprintf(f, \"- %s\", prefix));
+    CHECK(fwrite(line, 1, lineLength, f));
 }
 
 ";

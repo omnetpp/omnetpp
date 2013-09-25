@@ -153,7 +153,7 @@ class LogFormatter
     LogFormatter(const char *format);
 
     void setFormat(const char *format) { formatParts.clear(); parseFormat(format); }
-    void formatEntry(std::ostream& stream, cLogEntry *entry);
+    std::string formatPrefix(cLogEntry *entry);
 
   private:
     void parseFormat(const char *format);

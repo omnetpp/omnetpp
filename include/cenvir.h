@@ -503,14 +503,6 @@ class SIM_API cEnvir
     virtual void log(cLogEntry *entry) = 0;
 
     /**
-     * Flushes the output buffer of ev.printf() and ev<< operations.
-     * Only some user interfaces need it: it can be useful with Cmdenv which
-     * writes to the standard output, but no need for it with Tkenv which
-     * displays all output immediately anyway.
-     */
-    virtual cEnvir& flush() = 0;
-
-    /**
      * Interactively prompts the user to enter a string.
      */
     virtual std::string gets(const char *prompt, const char *defaultreply=NULL) = 0;

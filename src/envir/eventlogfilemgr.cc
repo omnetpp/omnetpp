@@ -674,10 +674,10 @@ void EventlogFileManager::displayStringChanged(cComponent *component)
     }
 }
 
-void EventlogFileManager::sputn(const char *s, int n)
+void EventlogFileManager::logLine(const char *prefix, const char *line, int lineLength)
 {
     if (isEventLogRecordingEnabled) {
-        EventLogWriter::recordLogLine(feventlog, s, n);
+        EventLogWriter::recordLogLine(feventlog, prefix, line, lineLength);
         entryIndex++;
     }
 }

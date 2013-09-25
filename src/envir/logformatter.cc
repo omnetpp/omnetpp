@@ -126,12 +126,13 @@ void LogFormatter::addPart(FormatDirective directive, char *textBegin, char *tex
     formatParts.push_back(part);
 }
 
-void LogFormatter::formatEntry(std::ostream& stream, cLogEntry *entry)
+std::string LogFormatter::formatPrefix(cLogEntry *entry)
 {
+    std::stringstream stream;
     for (std::vector<FormatPart>::iterator it = formatParts.begin(); it != formatParts.end(); it++)
     {
         FormatPart& part = *it;
-       switch (part.directive)
+        switch (part.directive)
         {
             case LOGDIRECTIVE_CONSTANTTEXT:
                 stream << part.text; break;
@@ -235,6 +236,5 @@ void LogFormatter::formatEntry(std::ostream& stream, cLogEntry *entry)
                 throw cRuntimeError("Unknown format directive '%d'", part.directive);
         }
     }
-//    stream << entry->text;
-    stream.rdbuf()->sputn(entry->text, entry->textLength);
+    return stream.str();
 }

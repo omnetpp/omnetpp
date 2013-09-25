@@ -154,7 +154,7 @@ class ENVIR_API EventlogFileManager : public cISimulationLifetimeListener
     virtual void connectionCreated(cGate *srcgate);
     virtual void connectionDeleted(cGate *srcgate);
     virtual void displayStringChanged(cComponent *component);
-    virtual void sputn(const char *s, int n);
+    virtual void logLine(const char *prefix, const char *line, int lineLength);
     //@}
 
   private:

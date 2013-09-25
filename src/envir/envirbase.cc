@@ -1451,18 +1451,13 @@ void EnvirBase::displayStringChanged(cComponent *component)
         eventlogmgr->displayStringChanged(component);
 }
 
-void EnvirBase::sputn(const char *s, int n)
-{
-    if (record_eventlog)
-        eventlogmgr->sputn(s, n);
-}
-
 void EnvirBase::log(cLogEntry *entry)
 {
-    std::stringstream stream;
-    logFormatter.formatEntry(stream, entry);
-    const std::string& text = stream.str();
-    sputn(text.c_str(), text.size());
+    if (record_eventlog)
+    {
+        std::string prefix = logFormatter.formatPrefix(entry);
+        eventlogmgr->logLine(prefix.c_str(), entry->text, entry->textLength);
+    }
 }
 
 void EnvirBase::undisposedObject(cObject *obj)

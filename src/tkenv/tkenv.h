@@ -171,9 +171,8 @@ class TKENV_API Tkenv : public EnvirBase
       virtual bool isGUI() const {return true;}
       virtual void bubble(cComponent *component, const char *text);
 
+      virtual void log(cLogEntry *entry);
       virtual void putsmsg(const char *s);
-      virtual void sputn(const char *s, int n);
-      virtual cEnvir& flush();
       virtual std::string gets(const char *promt, const char *defaultReply);
       virtual bool askyesno(const char *question);
 

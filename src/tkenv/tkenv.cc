@@ -1948,43 +1948,45 @@ void Tkenv::putsmsg(const char *msg)
     confirm(msg);
 }
 
-void Tkenv::sputn(const char *s, int n)
+void Tkenv::log(cLogEntry *entry)
 {
-    EnvirBase::sputn(s, n);
+    EnvirBase::log(entry);
 
     if (disable_tracing)
         return;
 
+    std::string prefix = logFormatter.formatPrefix(entry);
+    const char *s = entry->text;
+    int n = entry->textLength;
+
     if (!interp)
     {
-        (void) ::fwrite(s,1,n,stdout); // fallback in case Tkenv didn't fire up correctly
+        // fallback in case Tkenv didn't fire up correctly
+        ::fputs(prefix.c_str(), stdout);
+        (void) ::fwrite(s,1,n,stdout);
         return;
     }
 
     // rough guard against forgotten "\n"'s in the code
-    if (n>5000)
+    const int maxLen = 5000;
+    if (n > maxLen)
     {
-        const char *s2 = "... [line too long, truncated]\n";
-        this->sputn(s, 5000);
-        this->sputn(s2, strlen(s2));
-        return;
+        const char *ellipsis = "... [line too long, truncated]\n";
+        strcpy(const_cast<char *>(s) + maxLen - strlen(ellipsis), ellipsis);  //khmm...
+        n = maxLen;
     }
 
     // insert into log buffer
     cModule *module = simulation.getContextModule();
+    std::string line = prefix + std::string(s,n);
+    const char *quotedLine = TclQuotedString(line.c_str(), line.size()).get();
     if (module)
-        logBuffer.addLogLine(TclQuotedString(s,n).get()); //FIXME too much copying! reuse original string if no quoting needed
+        logBuffer.addLogLine(quotedLine);
     else
-        logBuffer.addInfo(TclQuotedString(s,n).get()); //FIXME too much copying! reuse original string if no quoting needed
+        logBuffer.addInfo(quotedLine);
 
     // print string into log windows
     printLastLogLine();
-}
-
-cEnvir& Tkenv::flush()
-{
-    // Tk doesn't need flush(), it displays everything ASAP anyway
-    return *this;
 }
 
 bool Tkenv::inputDialog(const char *title, const char *prompt,

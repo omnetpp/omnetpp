@@ -1565,9 +1565,9 @@ void Cmdenv::putsmsg(const char *s)
     }
 }
 
-void Cmdenv::sputn(const char *s, int n)
+void Cmdenv::log(cLogEntry *entry)
 {
-    EnvirBase::sputn(s, n);
+    EnvirBase::log(entry);
 
     if (disable_tracing)
         return;
@@ -1575,24 +1575,21 @@ void Cmdenv::sputn(const char *s, int n)
     cComponent *ctx = simulation.getContext();
     if (!ctx || (opt_modulemsgs && ctx->isEvEnabled()) || simulation.getContextType()==CTX_FINISH)
     {
-        ::fwrite(s,1,n,fout);
+        std::string prefix = logFormatter.formatPrefix(entry);
+        ::fputs(prefix.c_str(), fout);
+        ::fwrite(entry->text, 1, entry->textLength, fout);
         if (opt_autoflush)
             ::fflush(fout);
     }
 
     if (collectJsonLog)
     {
-        JsonObject *entry = new JsonObject();
-        entry->put("@", jsonWrap("L"));
-        entry->put("txt", jsonWrap(std::string(s, n)));
-        jsonLog->push_back(entry);
+        std::string prefix = logFormatter.formatPrefix(entry);  //TODO reuse previously formatted prefix...
+        JsonObject *jentry = new JsonObject();
+        jentry->put("@", jsonWrap("L"));
+        jentry->put("txt", jsonWrap(prefix + std::string(entry->text, entry->textLength)));
+        jsonLog->push_back(jentry);
     }
-}
-
-cEnvir& Cmdenv::flush()
-{
-    ::fflush(fout);
-    return *this;
 }
 
 std::string Cmdenv::gets(const char *prompt, const char *defaultReply)
