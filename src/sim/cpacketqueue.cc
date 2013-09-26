@@ -127,3 +127,9 @@ cPacket *cPacketQueue::pop()
     return pkt;
 }
 
+void cPacketQueue::clear()
+{
+    cQueue::clear();
+    bitlength = 0;
+}
+

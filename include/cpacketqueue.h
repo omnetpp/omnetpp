@@ -136,6 +136,12 @@ class SIM_API cPacketQueue : public cQueue
      * is empty, cRuntimeError is thrown.
      */
     virtual cPacket *pop();
+
+    /**
+     * Empties the container. Contained objects that were owned by the
+     * queue (see getTakeOwnership()) will be deleted.
+     */
+    virtual void clear();
     //@}
 
     /** @name Query functions. */
