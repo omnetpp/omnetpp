@@ -16,14 +16,12 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.ConfigOption;
@@ -86,7 +84,7 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
         fieldEditor = createFieldEditor(isExpanded);
         fieldEditor.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 
-        toggleButton = createFlatImageButton(this);
+        toggleButton = FieldEditor.createFlatImageButton(this);
         toggleButton.setImage(isExpanded ? IMAGE_COLLAPSE : IMAGE_EXPAND);
         toggleButton.setToolTipText(isExpanded ? "Specify value globally, in the [General] section": "Specify values individually for different sections");
         toggleButton.addSelectionListener(new SelectionAdapter() {
@@ -99,21 +97,6 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
     }
 
     abstract protected FieldEditor createFieldEditor(boolean isExpanded);
-
-    protected static ToolItem createFlatImageButton(Composite parent) {
-        // code from TrayDialog.createHelpImageButton()
-        ToolBar toolBar = new ToolBar(parent, SWT.FLAT | SWT.NO_FOCUS);
-        toolBar.setLayoutData(new GridData(SWT.CENTER, SWT.BEGINNING, false, false));
-        final Cursor cursor = new Cursor(parent.getDisplay(), SWT.CURSOR_HAND);
-        toolBar.setCursor(cursor);
-        toolBar.addDisposeListener(new DisposeListener() {
-            public void widgetDisposed(DisposeEvent e) {
-                cursor.dispose();
-            }
-        });
-        ToolItem item = new ToolItem(toolBar, SWT.NONE);
-        return item;
-    }
 
     protected boolean canBeCollapsed() {
         if (!entry.isPerObject()) {

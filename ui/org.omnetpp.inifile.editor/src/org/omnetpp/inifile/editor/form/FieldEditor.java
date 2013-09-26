@@ -16,6 +16,8 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -23,11 +25,14 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.util.UIUtils;
@@ -50,6 +55,7 @@ public abstract class FieldEditor extends Composite {
     public static final Image ICON_ERROR = UIUtils.ICON_ERROR;
     public static final Image ICON_WARNING = UIUtils.ICON_WARNING;
     public static final Image ICON_INFO = UIUtils.ICON_INFO;
+    private static final Image ICON_RESET = InifileEditorPlugin.getCachedImage("icons/full/elcl16/reset.png");
 
     protected ConfigOption entry;
     protected IInifileDocument inifile;
@@ -159,10 +165,10 @@ public abstract class FieldEditor extends Composite {
             return InifileHoverUtils.getConfigHoverText(GENERAL, key, inifile);
     }
 
-    protected Button createResetButton() {
-        Button resetButton = new Button(this, SWT.PUSH);
-        resetButton.setText("Reset");
-        resetButton.setToolTipText("Reset value to default, by removing corresponding entry from the document");
+    protected ToolItem createResetButton() {
+        ToolItem resetButton = FieldEditor.createFlatImageButton(this);
+        resetButton.setImage(ICON_RESET);
+        resetButton.setToolTipText("Reset to default (remove setting from document)");
         resetButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -200,6 +206,21 @@ public abstract class FieldEditor extends Composite {
         reread();
     }
 
+    protected static ToolItem createFlatImageButton(Composite parent) {
+        // code from TrayDialog.createHelpImageButton()
+        ToolBar toolBar = new ToolBar(parent, SWT.FLAT | SWT.NO_FOCUS);
+        toolBar.setLayoutData(new GridData(SWT.CENTER, SWT.BEGINNING, false, false));
+        final Cursor cursor = new Cursor(parent.getDisplay(), SWT.CURSOR_HAND);
+        toolBar.setCursor(cursor);
+        toolBar.addDisposeListener(new DisposeListener() {
+            public void widgetDisposed(DisposeEvent e) {
+                cursor.dispose();
+            }
+        });
+        ToolItem item = new ToolItem(toolBar, SWT.NONE);
+        return item;
+    }
+
     /**
      * Utility function: sets up a mouse listener so when a composite or label is clicked,
      * another control (editfield etc) gets the focus.
@@ -222,6 +243,7 @@ public abstract class FieldEditor extends Composite {
             default: return null;
         }
     }
+
     protected static String getProblemsText(IMarker[] markers) {
         if (markers.length==0)
             return null;

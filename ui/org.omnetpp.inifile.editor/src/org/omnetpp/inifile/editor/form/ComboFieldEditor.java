@@ -21,10 +21,10 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.ToolItem;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -47,7 +47,7 @@ import org.omnetpp.inifile.editor.model.ConfigOption.DataType;
 public class ComboFieldEditor extends FieldEditor {
     private Combo combo;
     private Label label;
-    private Button resetButton;
+    private ToolItem resetButton;
     private boolean isEdited;
     private ControlDecoration problemDecoration;
 
@@ -73,7 +73,6 @@ public class ComboFieldEditor extends FieldEditor {
         int width = (entry.getDataType()==DataType.CFG_INT || entry.getDataType()==DataType.CFG_DOUBLE) ? 80 : 250;
         combo.setLayoutData(new GridData(width, SWT.DEFAULT));
         ((GridData)combo.getLayoutData()).horizontalIndent = 3; // room for the decoration
-        resetButton.setLayoutData(new GridData());
 
         reread();
 

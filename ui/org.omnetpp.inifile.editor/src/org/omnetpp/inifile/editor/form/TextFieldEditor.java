@@ -24,10 +24,10 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.color.ColorFactory;
@@ -52,7 +52,7 @@ public class TextFieldEditor extends FieldEditor {
     private static final char[] AUTOACTIVATION_CHARS = null; // "( ".toCharArray();
     private Text textField;
     private Label label;
-    private Button resetButton;
+    private ToolItem resetButton;
     private boolean isEdited;
     private ControlDecoration problemDecoration;
 
@@ -78,7 +78,6 @@ public class TextFieldEditor extends FieldEditor {
         int width = (entry.getDataType()==DataType.CFG_INT || entry.getDataType()==DataType.CFG_DOUBLE) ? 80 : 250;
         textField.setLayoutData(new GridData(width, SWT.DEFAULT));
         ((GridData)textField.getLayoutData()).horizontalIndent = 3; // room for the decoration
-        resetButton.setLayoutData(new GridData());
 
         reread();
 
