@@ -24,6 +24,10 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_STATU
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONFIGURATION_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONSTRAINT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CPU_TIME_LIMIT;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUGGER_ATTACH_COMMAND;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUGGER_ATTACH_ON_ERROR;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUGGER_ATTACH_ON_STARTUP;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUGGER_ATTACH_WAIT_TIME;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUG_ON_ERRORS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUG_STATISTICS_RECORDING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_FILE;
@@ -190,7 +194,6 @@ public class GenericConfigPage extends ScrolledFormPage {
             Group group3 = createGroup(form, "Other");
             addComboboxFieldEditor(group3, CFGID_SIMTIME_SCALE, "Simulation time precision");
             //TODO display extra info: "nanosecond resolution; range: +-100 days"
-            addCheckboxFieldEditor(group3, CFGID_DEBUG_ON_ERRORS, "Debug on errors");
             addSpacer(form);
         }
         else if (category.equals(CAT_ADVANCED)) {
@@ -200,6 +203,13 @@ public class GenericConfigPage extends ScrolledFormPage {
             Group group2 = createGroup(form, "Debugging");
             addCheckboxFieldEditor(group2, CFGID_PRINT_UNDISPOSED, "Dump names of undisposed objects");
             addCheckboxFieldEditor(group2, CFGID_WARNINGS, "Warnings"); //XXX
+            addCheckboxFieldEditor(group2, CFGID_DEBUG_ON_ERRORS, "Debug on errors");
+            addSpacer(form);
+            Group group3 = createGroup(form, "External Debugger");
+            addTextFieldEditor(group3, CFGID_DEBUGGER_ATTACH_COMMAND, "Debugger command");
+            addCheckboxFieldEditor(group3, CFGID_DEBUGGER_ATTACH_ON_ERROR, "Attach debugger on errors");
+            addCheckboxFieldEditor(group3, CFGID_DEBUGGER_ATTACH_ON_STARTUP, "Attach debugger on startup");
+            addTextFieldEditor(group3, CFGID_DEBUGGER_ATTACH_WAIT_TIME, "Attach timeout");
             addSpacer(form);
             Group group4 = createGroup(form, "Output Vector Recording");
             addTextFieldEditor(group4, CFGID_OUTPUT_VECTOR_PRECISION, "Precision", c(null, "Precision"));
