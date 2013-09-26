@@ -1,3 +1,8 @@
+2013-09-26  Andras Varga
+
+	* Implementation of the new logging API, see include/ChangeLog.
+	Existing ev<< and ev.printf() logging statements were converted to EV<<.
+
 2013-09-17  Andras Varga
 
 	* cpacket.cc split from cmessage.cc; removed WITHOUT_CPACKET (a
@@ -33,7 +38,7 @@
 
 2013-09-26  Andras Varga
 
-	* Fix: cPacketQueue's clear() didn't zero the bit length [reported by 
+	* Fix: cPacketQueue's clear() didn't zero the bit length [reported by
 	Guglielmo Morandin]
 
 2013-09-12  ------ omnetpp-4.3.1 released ------

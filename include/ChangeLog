@@ -1,3 +1,47 @@
+2013-09-26  Andras Varga, Levente Meszaros
+
+	* New logging API. It features 6 log levels (FATAL, ERROR, WARN, INFO,
+	DEBUG, TRACE), category support, compile-time and runtime global and
+	per-module log level thresholds. Internally, the implementation makes
+	much more information available to the Envir library than previously,
+	e.g. the file/line of the logging statement, and the class/name/pointer
+	of the surrounding object if the logging statement occurs in a
+	non-static method of a class.
+
+	The following macros can be used for logging (stream-style, i.e. with
+	operator <<): EV, EV_FATAL, EV_ERROR, EV_WARN, EV_INFO, EV_DEBUG,
+	EV_TRACE for logging without category (i.e. generic); and their _C
+	counterparts (EV_C(category), EV_FATAL_C(category), etc.) for logging
+	with category information. They all rely on OPP_LOG(loglevel, category).
+
+	Compile-time log level can be set by defining the GLOBAL_COMPILETIME_LOGLEVEL
+	macro during compilation.
+
+	The global runtime log level can be changed by assigning the
+	cLogLevel::globalRuntimeLoglevel variable, but it better to set it
+	via the log-level= inifile configuration option (defined in the Envir
+	library).
+
+	Per-module log level can be set with cComponent's setLoglevel() internal
+	method. When set, it overrides the global runtime log level. There is
+	currently no way to set per-module log level from ini files.
+
+	Category filtering could be offered by the Envir library (it has the
+	category information), but it is currently not implemented.
+
+	Incompatibilities:
+	- ev<< is no longer legal, use EV<< instead
+	- ev.printf() was removed, use the stream API (EV<<) instead
+
+	Implementation:
+	- added clog.h
+	- cEnvir no longer has << operators for logging, and printf(), sputn()
+	  and the internal std::ostream was removed; now it has a log(cLogEntry*)
+	  method instead where all the logging macros eventually delegate.
+	- the logging macros internally refer to a cLogProxy class; a cLogProxy
+	  instance is used to store log context information (file/line etc)
+	  until a log line is complete.
+
 2013-09-17  Andras Varga
 
 	* cpacket.h split from cmessage.h; removed WITHOUT_CPACKET (a

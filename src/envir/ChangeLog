@@ -1,3 +1,19 @@
+2013-09-26  Andras Varga, Levente Meszaros
+
+	* Adapted to logging API changes (see include/ChangeLog):
+
+	- Log lines can now be prefixed with information such as the module
+	  path; simulation time; event's class and object name; file/line
+	  of the log statement; class, name and pointer of the object
+	  containing the log statement; etc. The format of this prefix can be
+	  changed from ini files.
+
+	- New inifile config options: log-format, log-level.
+
+	- Implementation-wise, EnvirBase's printf() and sputn() methods were
+	  removed, and replaced by log(cLogEntry*). The LogFormatter class
+	  was added.
+
 2013-01-28  Andras Varga
 
 	* Follow through with the introduction of cEvent; see related ChangeLog
@@ -16,6 +32,7 @@
 
 	* Followed cOutputVectorManager/cOutputScalarManager/cSnapshotManager
 	renaming in sim/ (they became cIOutputVectorManager, etc.)
+
 2013-09-12  ------ omnetpp-4.3.1 released ------
 
 2013-04-02  ------ omnetpp-4.3 released ------

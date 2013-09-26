@@ -1,3 +1,8 @@
+2013-09-26  Andras Varga
+
+	* Follow logging API changes (sputn() replaced by log() function); see
+	see related ChangeLog entry in envir/
+
 2013-01-28  Andras Varga
 
 	* Follow through with the introduction of cEvent; see related ChangeLog
