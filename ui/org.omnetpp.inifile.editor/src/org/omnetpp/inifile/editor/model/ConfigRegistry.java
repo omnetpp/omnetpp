@@ -245,6 +245,25 @@ public class ConfigRegistry {
         "debug-statistics-recording", CFG_BOOL, "false",
         "Turns on the printing of debugging information related to statistics " +
         "recording (@statistic properties)");
+    public static final ConfigOption CFGID_DEBUGGER_ATTACH_COMMAND = addGlobalOption(
+        "debugger-attach-command", CFG_STRING, "nemiver --attach=%u &",
+        "Command line to launch the debugger. It must contain exactly one percent " +
+        "sign, as '%u', which will be replaced by the PID of this process. The " +
+        "command must not block (i.e. it should end in '&' on Unix-like systems).");
+    public static final ConfigOption CFGID_DEBUGGER_ATTACH_ON_ERROR = addGlobalOption(
+        "debugger-attach-on-error", CFG_BOOL, "false",
+        "When set to true, runtime errors and crashes will trigger an external " +
+        "debugger to be launched, allowing you to do just-in-time debugging on the " +
+        "simulation process.");
+    public static final ConfigOption CFGID_DEBUGGER_ATTACH_ON_STARTUP = addGlobalOption(
+        "debugger-attach-on-startup", CFG_BOOL, "false",
+        "When set to true, the simulation program will launch an external debugger " +
+        "attached to it, allowing you to set breakpoints before proceeding. The " +
+        "debugger command is configurable.");
+    public static final ConfigOption CFGID_DEBUGGER_ATTACH_WAIT_TIME = addGlobalOptionU(
+        "debugger-attach-wait-time", "s", "20s",
+        "An interval to wait after launching the external debugger, to give the " +
+        "debugger time to start up and attach to the simulation process.");
     public static final ConfigOption CFGID_DESCRIPTION = addPerRunOption(
         "description", CFG_STRING, null,
         "Descriptive name for the given simulation configuration. Descriptions get " +
