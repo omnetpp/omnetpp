@@ -1,3 +1,8 @@
+2013-09-26  Andras Varga
+
+	* Fix: cPacketQueue's clear() didn't zero the bit length [reported by 
+	Guglielmo Morandin]
+
 2013-09-12  ------ omnetpp-4.3.1 released ------
 
 2013-07-29  Rudolf Hornig

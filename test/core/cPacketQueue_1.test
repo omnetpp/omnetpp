@@ -4,6 +4,14 @@ test cPacketQueue basic operation
 %activity:
 
 cPacketQueue q;
+ev << q.info() << "\n";
+
+q.insert(new cPacket("a", 0, 10));
+q.insert(new cPacket("b", 0, 200));
+ev << q.info() << "\n";
+
+q.clear();
+ev << q.info() << "\n";
 
 q.insert(new cPacket("one", 0, 10));
 ev << q.info() << "\n";
@@ -14,9 +22,12 @@ ev << q.info() << "\n";
 q.insert(new cPacket("three", 0, 3000));
 ev << q.info() << "\n";
 
-cPacketQueue copy;
-copy = q;
-ev << "copy: " << q.info() << "\n";
+cPacketQueue copy1(q);
+ev << "copy1: " << copy1.info() << "\n";
+
+cPacketQueue copy2;
+copy2 = q;
+ev << "copy2: " << copy2.info() << "\n";
 
 cPacketQueue *dup;
 dup = q.dup();
@@ -32,10 +43,14 @@ ev << q.info() << "\n";
 ev << ".\n";
 
 %contains: stdout
+empty
+len=2, 210 bits (27 bytes)
+empty
 len=1, 10 bits (2 bytes)
 len=2, 210 bits (27 bytes)
 len=3, 3210 bits (402 bytes)
-copy: len=3, 3210 bits (402 bytes)
+copy1: len=3, 3210 bits (402 bytes)
+copy2: len=3, 3210 bits (402 bytes)
 dup: len=3, 3210 bits (402 bytes)
 len=2, 3200 bits (400 bytes)
 len=1, 3000 bits (375 bytes)
