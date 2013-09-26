@@ -824,17 +824,17 @@ property_namevalue
         ;
 
 property_name
-        : '@' NAME
+        : '@' permissive_name
                 {
                   assertNonEmpty(ps.propertyscope);
-                  ps.property = addProperty(ps.propertyscope.top(), toString(@2));
+                  ps.property = addProperty(ps.propertyscope.top(), removeSpaces(@2).c_str());
                   ps.propvals.clear(); // just to be safe
                 }
-        | '@' NAME '[' NAME ']'
+        | '@' permissive_name '[' permissive_name ']'
                 {
                   assertNonEmpty(ps.propertyscope);
-                  ps.property = addProperty(ps.propertyscope.top(), toString(@2));
-                  ps.property->setIndex(toString(@4));
+                  ps.property = addProperty(ps.propertyscope.top(), removeSpaces(@2).c_str());
+                  ps.property->setIndex(removeSpaces(@4).c_str());
                   ps.propvals.clear(); // just to be safe
                 }
         ;
@@ -849,10 +849,10 @@ property_keys
         ;
 
 property_key
-        : NAME '=' property_values
+        : permissive_name '=' property_values
                 {
                   ps.propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, ps.property);
-                  ps.propkey->setName(toString(@1));
+                  ps.propkey->setName(removeSpaces(@1).c_str());
                   for (int i=0; i<(int)ps.propvals.size(); i++)
                       ps.propkey->appendChild(ps.propvals[i]);
                   ps.propvals.clear();
@@ -899,6 +899,24 @@ property_value_token
         | '$' | '@' | ':' | '[' | ']' | '{' | '}' | '.' | '?'
         | '^' | '+' | '-' | '*' | '/' | '%' | '<' | '>' | EQ | NE | LE | GE   /*note: '=' not listed as it would cause ambiguity: "a=b" is key=value or a single value for the default key? */
         | DOUBLEASTERISK | TO | PLUSPLUS | OR | AND | XOR | NOT
+        ;
+
+permissive_name
+        : permissive_name permissive_name_element
+        | permissive_name_element
+        ;
+
+permissive_name_element
+        : NAME | INTCONSTANT | REALCONSTANT | any_reserved_word | ':' | '.' | '-'  /* like XML attribute names */
+        ;
+
+any_reserved_word
+        : IMPORT | PACKAGE | PROPERTY | MODULE | SIMPLE | NETWORK | CHANNEL
+        | MODULEINTERFACE | CHANNELINTERFACE | EXTENDS | LIKE
+        | TYPES | PARAMETERS | GATES | SUBMODULES | CONNECTIONS | ALLOWUNCONNECTED
+        | DOUBLETYPE | INTTYPE | STRINGTYPE | BOOLTYPE | XMLTYPE | VOLATILE
+        | INPUT_ | OUTPUT_ | INOUT_ | IF | FOR | TRUE_ | FALSE_ | THIS_
+        | DEFAULT | ASK | CONST_ | SIZEOF | INDEX_ | TYPENAME | XMLDOC
         ;
 
 /*
