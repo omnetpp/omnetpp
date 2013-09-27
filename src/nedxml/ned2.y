@@ -35,6 +35,7 @@
 
 %token EXPRESSION_SELECTOR   /* forces parsing text as a single expression */
 
+%token CHAR
 %token INVALID_CHAR   /* just to generate parse error */
 
 /* Operator precedences (low to high) and associativity */
@@ -80,6 +81,7 @@
 #include "nederror.h"
 #include "nedexception.h"
 #include "commonutil.h"
+#include "stringutil.h"
 
 #define YYDEBUG 1           /* allow debugging */
 #define YYDEBUGGING_ON 0    /* turn on/off debugging */
@@ -309,12 +311,12 @@ propertydecl
         ; /* no error recovery rule -- see discussion at top */
 
 propertydecl_header
-        : PROPERTY '@' NAME
+        : PROPERTY '@' property_literal
                 {
                   ps.propertydecl = (PropertyDeclElement *)createElementWithTag(NED_PROPERTY_DECL, ps.nedfile);
                   ps.propertydecl->setName(toString(@3));
                 }
-        | PROPERTY '@' NAME '[' ']'
+        | PROPERTY '@' property_literal '[' ']'
                 {
                   ps.propertydecl = (PropertyDeclElement *)createElementWithTag(NED_PROPERTY_DECL, ps.nedfile);
                   ps.propertydecl->setName(toString(@3));
@@ -333,10 +335,10 @@ propertydecl_keys
         ;
 
 propertydecl_key
-        : NAME
+        : property_literal
                 {
                   ps.propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, ps.propertydecl);
-                  ps.propkey->setName(toString(@1));
+                  ps.propkey->setName(opp_trim(toString(@1)).c_str());
                   storePos(ps.propkey, @$);
                 }
         ;
@@ -824,17 +826,17 @@ property_namevalue
         ;
 
 property_name
-        : '@' permissive_name
+        : '@' property_literal
                 {
                   assertNonEmpty(ps.propertyscope);
-                  ps.property = addProperty(ps.propertyscope.top(), removeSpaces(@2).c_str());
+                  ps.property = addProperty(ps.propertyscope.top(), toString(@2));
                   ps.propvals.clear(); // just to be safe
                 }
-        | '@' permissive_name '[' permissive_name ']'
+        | '@' property_literal '[' property_literal ']'
                 {
                   assertNonEmpty(ps.propertyscope);
-                  ps.property = addProperty(ps.propertyscope.top(), removeSpaces(@2).c_str());
-                  ps.property->setIndex(removeSpaces(@4).c_str());
+                  ps.property = addProperty(ps.propertyscope.top(), toString(@2));
+                  ps.property->setIndex(toString(@4));
                   ps.propvals.clear(); // just to be safe
                 }
         ;
@@ -849,10 +851,10 @@ property_keys
         ;
 
 property_key
-        : permissive_name '=' property_values
+        : property_literal '=' property_values
                 {
                   ps.propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, ps.property);
-                  ps.propkey->setName(removeSpaces(@1).c_str());
+                  ps.propkey->setName(opp_trim(toString(@1)).c_str());
                   for (int i=0; i<(int)ps.propvals.size(); i++)
                       ps.propkey->appendChild(ps.propvals[i]);
                   ps.propvals.clear();
@@ -877,10 +879,10 @@ property_values
         ;
 
 property_value
-        : property_value_tokens
-                { $$ = createLiteral(NED_CONST_SPEC, @$, @$); }
-        | STRINGCONSTANT
-                { $$ = createStringLiteral(@1); }
+        : property_literal
+                {
+                  $$ = createPropertyValue(@$);
+                }
         |  /*empty*/
                 {
                   LiteralElement *node = (LiteralElement *)createElementWithTag(NED_LITERAL);
@@ -889,34 +891,11 @@ property_value
                 }
         ;
 
-property_value_tokens
-        : property_value_tokens property_value_token
-        | property_value_token
-        ;
-
-property_value_token
-        : NAME | INTCONSTANT | REALCONSTANT | TRUE_ | FALSE_
-        | '$' | '@' | ':' | '[' | ']' | '{' | '}' | '.' | '?'
-        | '^' | '+' | '-' | '*' | '/' | '%' | '<' | '>' | EQ | NE | LE | GE   /*note: '=' not listed as it would cause ambiguity: "a=b" is key=value or a single value for the default key? */
-        | DOUBLEASTERISK | TO | PLUSPLUS | OR | AND | XOR | NOT
-        ;
-
-permissive_name
-        : permissive_name permissive_name_element
-        | permissive_name_element
-        ;
-
-permissive_name_element
-        : NAME | INTCONSTANT | REALCONSTANT | any_reserved_word | ':' | '.' | '-'  /* like XML attribute names */
-        ;
-
-any_reserved_word
-        : IMPORT | PACKAGE | PROPERTY | MODULE | SIMPLE | NETWORK | CHANNEL
-        | MODULEINTERFACE | CHANNELINTERFACE | EXTENDS | LIKE
-        | TYPES | PARAMETERS | GATES | SUBMODULES | CONNECTIONS | ALLOWUNCONNECTED
-        | DOUBLETYPE | INTTYPE | STRINGTYPE | BOOLTYPE | XMLTYPE | VOLATILE
-        | INPUT_ | OUTPUT_ | INOUT_ | IF | FOR | TRUE_ | FALSE_ | THIS_
-        | DEFAULT | ASK | CONST_ | SIZEOF | INDEX_ | TYPENAME | XMLDOC
+property_literal
+        : property_literal CHAR
+        | property_literal STRINGCONSTANT
+        | CHAR
+        | STRINGCONSTANT
         ;
 
 /*
@@ -1777,4 +1756,3 @@ void yyerror(const char *s)
 
     np->error(buf, pos.li);
 }
-

@@ -75,6 +75,7 @@ OperatorElement *createOperator(const char *op, NEDElement *operand1, NEDElement
 FunctionElement *createFunction(const char *funcname, NEDElement *arg1=NULL, NEDElement *arg2=NULL, NEDElement *arg3=NULL, NEDElement *arg4=NULL, NEDElement *arg5=NULL, NEDElement *arg6=NULL, NEDElement *arg7=NULL, NEDElement *arg8=NULL, NEDElement *arg9=NULL, NEDElement *arg10=NULL);
 IdentElement *createIdent(YYLTYPE parampos);
 IdentElement *createIdent(YYLTYPE parampos, YYLTYPE modulepos, NEDElement *moduleindexoperand=NULL);
+LiteralElement *createPropertyValue(YYLTYPE textpos);
 LiteralElement *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos);
 LiteralElement *createLiteral(int type, const char *value, const char *text);
 LiteralElement *createStringLiteral(YYLTYPE textpos);

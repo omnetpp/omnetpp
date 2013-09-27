@@ -37,7 +37,7 @@
 
 <!ELEMENT property-decl (comment*, property-key*, property*)>
 <!ATTLIST property-decl
-     name               NMTOKEN   #REQUIRED
+     name               CDATA     #REQUIRED
      is-array           (true|false) "false">
 
 <!ELEMENT extends (comment*)>
@@ -85,8 +85,8 @@
 <!ELEMENT property (comment*, property-key*)>
 <!ATTLIST property
      is-implicit        (true|false) "false"
-     name               NMTOKEN   #REQUIRED
-     index              NMTOKEN   #IMPLIED>
+     name               CDATA     #REQUIRED
+     index              CDATA     #IMPLIED>
 
 <!ELEMENT property-key (comment*, literal*)>
 <!ATTLIST property-key

@@ -28,6 +28,7 @@
 %token BIN_AND BIN_OR BIN_XOR BIN_COMPL
 %token SHIFT_LEFT SHIFT_RIGHT
 
+%token CHAR
 %token INVALID_CHAR   /* just to generate parse error --VA */
 
 /* Operator precedences (low to high) and associativity */
@@ -54,6 +55,7 @@
 #include "nederror.h"
 #include "nedexception.h"
 #include "commonutil.h"
+#include "stringutil.h"
 
 #define YYDEBUG 1           /* allow debugging */
 #define YYDEBUGGING_ON 0    /* turn on/off debugging */
@@ -542,13 +544,13 @@ property_namevalue
         ;
 
 property_name
-        : '@' property_name_token
+        : '@' property_literal
                 {
                   NEDElement *propertyscope = ps.field ? ps.field : ps.msgclassorstruct;
                   ps.property = addProperty(propertyscope, toString(@2));
                   ps.propvals.clear(); // just to be safe
                 }
-        | '@' property_name_token '[' NAME ']'
+        | '@' property_literal '[' property_literal ']'
                 {
                   NEDElement *propertyscope = ps.field ? ps.field : ps.msgclassorstruct;
                   ps.property = addProperty(propertyscope, toString(@2));
@@ -563,11 +565,6 @@ property_name
                 }
         ;
 
-property_name_token
-        : NAME
-        | ENUM  /* unfortunately we have to allow this as property name */
-        ;
-
 opt_property_keys
         : property_keys  /* can't allow epsilon rule here, because @foo() would result in "ambiguous syntax" :( */
         ;
@@ -578,10 +575,10 @@ property_keys
         ;
 
 property_key
-        : NAME '=' property_values
+        : property_literal '=' property_values
                 {
                   ps.propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, ps.property);
-                  ps.propkey->setName(toString(@1));
+                  ps.propkey->setName(opp_trim(toString(@1)).c_str());
                   for (int i=0; i<(int)ps.propvals.size(); i++)
                       ps.propkey->appendChild(ps.propvals[i]);
                   ps.propvals.clear();
@@ -606,10 +603,10 @@ property_values
         ;
 
 property_value
-        : property_value_tokens
-                { $$ = createLiteral(NED_CONST_SPEC, @$, @$); }
-        | STRINGCONSTANT
-                { $$ = createStringLiteral(@1); }
+        : property_literal
+                {
+                  $$ = createPropertyValue(@$);
+                }
         |  /*empty*/
                 {
                   LiteralElement *node = (LiteralElement *)createElementWithTag(NED_LITERAL);
@@ -618,20 +615,13 @@ property_value
                 }
         ;
 
-property_value_tokens
-        : property_value_tokens property_value_token
-        | property_value_token
+property_literal
+        : property_literal CHAR
+        | property_literal STRINGCONSTANT
+        | CHAR
+        | STRINGCONSTANT
         ;
 
-property_value_token
-        : NAME | INTCONSTANT | REALCONSTANT | CHARCONSTANT | TRUE_ | FALSE_
-        | '$' | '@' | ':' | '=' | '[' | ']' | '{' | '}' | '.' | '?'
-        | '^' | '+' | '-' | '*' | '/' | '%' | '<' | '>' | EQ | NE | LE | GE
-        | DOUBLECOLON | OR | AND | XOR | NOT
-        | BIN_AND | BIN_OR | BIN_XOR BIN_COMPL | SHIFT_LEFT | SHIFT_RIGHT
-        | MESSAGE | PACKET | CLASS | STRUCT | ENUM | NONCOBJECT
-        | BOOLTYPE | CHARTYPE | SHORTTYPE | INTTYPE | LONGTYPE | DOUBLETYPE | UNSIGNED_ | STRINGTYPE
-        ;
 
 /*
  * Old-style fields block
@@ -755,4 +745,3 @@ void yyerror(const char *s)
 
     np->error(buf, pos.li);
 }
-
