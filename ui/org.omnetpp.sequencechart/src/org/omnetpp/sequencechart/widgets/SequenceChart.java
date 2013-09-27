@@ -140,41 +140,24 @@ public class SequenceChart
      */
 
     private static final Color CHART_BACKGROUND_COLOR = ColorFactory.WHITE;
-    private static final Color LABEL_COLOR = ColorFactory.BLACK;
 
     private static final Color TICK_LINE_COLOR = ColorFactory.DARK_GREY;
     private static final Color MOUSE_TICK_LINE_COLOR = ColorFactory.BLACK;
-    private static final Color TICK_LABEL_COLOR = ColorFactory.BLACK;
+    private static final Color INFO_LABEL_COLOR = ColorFactory.BLACK;
     private static final Color INFO_BACKGROUND_COLOR = ColorFactory.LIGHT_CYAN;
 
     private static final Color GUTTER_BACKGROUND_COLOR = new Color(null, 255, 255, 160);
     private static final Color GUTTER_BORDER_COLOR = ColorFactory.BLACK;
-
-    private static final Color INITIALIZATION_EVENT_BORDER_COLOR = ColorFactory.BLACK;
-    private static final Color INITIALIZATION_EVENT_BACKGROUND_COLOR = ColorFactory.WHITE;
-    private static final Color EVENT_BORDER_COLOR = ColorFactory.RED4;
-    private static final Color EVENT_BACKGROUND_COLOR = ColorFactory.RED;
-    private static final Color SELF_EVENT_BORDER_COLOR = ColorFactory.GREEN4;
-    private static final Color SELF_EVENT_BACKGROUND_COLOR = ColorFactory.GREEN2;
 
     private static final Color EVENT_SELECTION_COLOR = ColorFactory.RED;
     private static final Color EVENT_BOOKMARK_COLOR = ColorFactory.CYAN;
 
     private static final Color ARROW_HEAD_COLOR = null; // defaults to line color
     private static final Color LONG_ARROW_HEAD_COLOR = ColorFactory.WHITE; // defaults to line color
-    private static final Color MESSAGE_LABEL_COLOR = null; // defaults to line color
-
-    private static final Color MESSAGE_SEND_COLOR = ColorFactory.BLUE;
-    private static final Color MESSAGE_REUSE_COLOR = ColorFactory.GREEN4;
-    private static final Color MIXED_MESSAGE_DEPENDENCY_COLOR = ColorFactory.CYAN4;
-    private static final Color MODULE_METHOD_CALL_COLOR = ColorFactory.ORANGE3;
 
     private static final Color ZERO_SIMULATION_TIME_REGION_COLOR = ColorFactory.GREY90;
 
     private static final Cursor DRAG_CURSOR = new Cursor(null, SWT.CURSOR_SIZEALL);
-
-    private static final int[] DOTTED_LINE_PATTERN = new int[] {2, 2}; // 2px black, 2px gap
-    private static final int[] DASHED_LINE_PATTERN = new int[] {4, 4}; // 4px black, 4px gap
 
     private static final int ANTIALIAS_TURN_ON_AT_MSEC = 100;
     private static final int ANTIALIAS_TURN_OFF_AT_MSEC = 300;
@@ -199,6 +182,7 @@ public class SequenceChart
     private EventLogInput eventLogInput; // the Java input object
     private SequenceChartFacade sequenceChartFacade; // helpful C++ facade on eventlog
     private SequenceChartContributor sequenceChartContributor; // for popup menu
+    private SequenceChartStyleProvider sequenceChartStyleProvider = new SequenceChartStyleProvider();
 
     private long fixPointViewportCoordinate; // the viewport coordinate of the coordinate system's origin event stored in the facade
 
@@ -1264,6 +1248,7 @@ public class SequenceChart
             eventLogInput = input;
             eventLog = eventLogInput == null ? null : eventLogInput.getEventLog();
             sequenceChartFacade = eventLogInput == null ? null : eventLogInput.getSequenceChartFacade();
+            sequenceChartStyleProvider.setEventLogInput(input);
             if (eventLogInput != null) {
                 eventLogInput.runWithProgressMonitor(new Runnable() {
                     public void run() {
@@ -2446,7 +2431,7 @@ public class SequenceChart
         int gutterHeight = getGutterHeight(graphics);
         int spacing = (gutterHeight - getFontHeight(graphics)) / 2;
 
-        graphics.setForegroundColor(TICK_LABEL_COLOR);
+        graphics.setForegroundColor(INFO_LABEL_COLOR);
         graphics.setBackgroundColor(INFO_BACKGROUND_COLOR);
         graphics.fillRectangle(x - 3, gutterHeight, width + 6, 2 * gutterHeight + 1);
         graphics.setForegroundColor(GUTTER_BORDER_COLOR);
@@ -2642,8 +2627,8 @@ public class SequenceChart
                 int x = (int)getEventXViewportCoordinate(eventPtr);
 
                 if (graphics != null) {
-                    graphics.setForegroundColor(MODULE_METHOD_CALL_COLOR);
-                    graphics.setLineDash(DOTTED_LINE_PATTERN);
+                    graphics.setForegroundColor(sequenceChartStyleProvider.getModuleMethodCallColor(moduleMethodCallPtr));
+                    graphics.setLineDash(sequenceChartStyleProvider.getModuleMethodCallLineDash(moduleMethodCallPtr));
                     graphics.drawLine(x, fromY, x, toY);
 
                     if (showArrowHeads && toY != fromY)
@@ -2751,26 +2736,15 @@ public class SequenceChart
      * Draws a single event at the given coordinates and axis module.
      */
     private void drawEvent(Graphics graphics, long eventPtr, int axisModuleIndex, int x, int y) {
-        if (isInitializationEvent(eventPtr)) {
-            graphics.setForegroundColor(INITIALIZATION_EVENT_BORDER_COLOR);
-            graphics.setBackgroundColor(INITIALIZATION_EVENT_BACKGROUND_COLOR);
-        }
-        else if (sequenceChartFacade.IEvent_isSelfMessageProcessingEvent(eventPtr)) {
-            graphics.setForegroundColor(SELF_EVENT_BORDER_COLOR);
-            graphics.setBackgroundColor(SELF_EVENT_BACKGROUND_COLOR);
-        }
-        else {
-            graphics.setForegroundColor(EVENT_BORDER_COLOR);
-            graphics.setBackgroundColor(EVENT_BACKGROUND_COLOR);
-        }
-
+        graphics.setForegroundColor(sequenceChartStyleProvider.getEventStrokeColor(eventPtr));
+        graphics.setBackgroundColor(sequenceChartStyleProvider.getEventFillColor(eventPtr));
         graphics.fillOval(x - 2, y - 3, 6, 8);
         graphics.setLineStyle(SWT.LINE_SOLID);
         graphics.drawOval(x - 2, y - 3, 5, 7);
-
         if (showEventNumbers) {
-            graphics.setFont(getFont());
-            drawText(graphics, "#" + sequenceChartFacade.IEvent_getEventNumber(eventPtr), x + 5, y + 1 + getAxisRenderers()[axisModuleIndex].getHeight() / 2);
+            graphics.setForegroundColor(sequenceChartStyleProvider.getEventLabelColor(eventPtr));
+            graphics.setFont(sequenceChartStyleProvider.getEventLabelFont(eventPtr));
+            drawText(graphics, sequenceChartStyleProvider.getEventLabel(eventPtr), x + 5, y + 1 + getAxisRenderers()[axisModuleIndex].getHeight() / 2);
         }
     }
 
@@ -2880,11 +2854,11 @@ public class SequenceChart
      * The tick value will be drawn on both gutters with a hair line connecting them.
      */
     private void drawTick(Graphics graphics, int viewportHeight, Color tickColor, Color backgroundColor, BigDecimal tick, int x, boolean mouseTick) {
-        String string = TimeUtils.secondsToTimeString(tick.subtract(tickPrefix));
+        String string = sequenceChartStyleProvider.getTickLabel(tick.subtract(tickPrefix));
         if (tickPrefix.doubleValue() != 0.0)
             string = "+" + string;
 
-        graphics.setFont(getFont());
+        graphics.setFont(sequenceChartStyleProvider.getTickLabelFont(tick));
         int stringWidth = GraphicsUtils.getTextExtent(graphics, string).x;
         int boxWidth = stringWidth + 6;
         int boxX = mouseTick ? Math.min(getViewportWidth() - boxWidth, x) : x;
@@ -2904,7 +2878,7 @@ public class SequenceChart
         }
 
         // draw tick value
-        graphics.setForegroundColor(TICK_LABEL_COLOR);
+        graphics.setForegroundColor(sequenceChartStyleProvider.getTickLabelColor(tick));
         graphics.setBackgroundColor(backgroundColor);
         int spacing = (gutterHeight - getFontHeight(graphics)) / 2;
         drawText(graphics, string, boxX + 3, spacing);
@@ -3045,10 +3019,9 @@ public class SequenceChart
      */
     private void drawAxisLabel(Graphics graphics, int index, ModuleTreeItem axisModule) {
         int y = getAxisModuleYs()[index] - (int)getViewportTop();
-        String label = axisModule.getModuleFullPath();
-        graphics.setForegroundColor(LABEL_COLOR);
-        graphics.setFont(getFont());
-        drawText(graphics, label, 5, y - getFontHeight(graphics) - 1);
+        graphics.setForegroundColor(sequenceChartStyleProvider.getAxisLabelColor(axisModule));
+        graphics.setFont(sequenceChartStyleProvider.getAxisLabelFont(axisModule));
+        drawText(graphics, sequenceChartStyleProvider.getAxisLabel(axisModule), 5, y - getFontHeight(graphics) - 1);
     }
 
     /**
@@ -3165,26 +3138,14 @@ public class SequenceChart
                 case FilteredMessageDependency.Kind.SENDS:
                     if ((isSelfArrow && !showSelfMessageSends) || (!isSelfArrow && !showMessageSends))
                         return false;
-                    if (graphics != null) {
-                        graphics.setForegroundColor(MESSAGE_SEND_COLOR);
-                        graphics.setLineStyle(SWT.LINE_SOLID);
-                    }
                     break;
                 case FilteredMessageDependency.Kind.REUSES:
                     if ((isSelfArrow && !showSelfMessageReuses) || (!isSelfArrow && !showMessageReuses))
                         return false;
-                    if (graphics != null) {
-                        graphics.setForegroundColor(MESSAGE_REUSE_COLOR);
-                        graphics.setLineDash(DOTTED_LINE_PATTERN); // SWT.LINE_DOT style is not what we want
-                    }
                     break;
                 case FilteredMessageDependency.Kind.MIXED:
                     if ((isSelfArrow && !showMixedSelfMessageDependencies) || (!isSelfArrow && !showMixedMessageDependencies))
                         return false;
-                    if (graphics != null) {
-                        graphics.setForegroundColor(MIXED_MESSAGE_DEPENDENCY_COLOR);
-                        graphics.setLineDash(DASHED_LINE_PATTERN);
-                    }
                     break;
                 default:
                     throw new RuntimeException("Unknown kind");
@@ -3194,19 +3155,18 @@ public class SequenceChart
             if (isReuse) {
                 if ((isSelfArrow && !showSelfMessageReuses) || (!isSelfArrow && !showMessageReuses))
                     return false;
-                if (graphics != null) {
-                    graphics.setForegroundColor(MESSAGE_REUSE_COLOR);
-                    graphics.setLineDash(DOTTED_LINE_PATTERN); // SWT.LINE_DOT style is not what we want
-                }
             }
             else {
                 if ((isSelfArrow && !showSelfMessageSends) || (!isSelfArrow && !showMessageSends))
                     return false;
-                if (graphics != null) {
-                    graphics.setForegroundColor(MESSAGE_SEND_COLOR);
-                    graphics.setLineStyle(SWT.LINE_SOLID);
-                }
             }
+        }
+        if (graphics != null) {
+            graphics.setForegroundColor(sequenceChartStyleProvider.getMessageDependencyStrokeColor(messageDependencyPtr));
+            graphics.setLineStyle(sequenceChartStyleProvider.getMessageDependencyLineStyle(messageDependencyPtr));
+            int[] lineDash = sequenceChartStyleProvider.getMessageDependencyLineDash(messageDependencyPtr);
+            if (lineDash != null)
+                graphics.setLineDash(lineDash);
         }
         // and finally the actual drawing
         if (isSelfArrow) {
@@ -3526,24 +3486,12 @@ public class SequenceChart
      * Draws a message arrow label with the corresponding message line color.
      */
     private void drawMessageDependencyLabel(Graphics graphics, long messageDependencyPtr, int x, int y, int dx, int dy) {
-        String arrowLabel = "<no label>";
-
-        if (sequenceChartFacade.IMessageDependency_isFilteredMessageDependency(messageDependencyPtr)) {
-            arrowLabel = sequenceChartFacade.FilteredMessageDependency_getBeginMessageName(messageDependencyPtr) +
-             " -> " +
-             sequenceChartFacade.FilteredMessageDependency_getEndMessageName(messageDependencyPtr);
-
+        if (sequenceChartFacade.IMessageDependency_isFilteredMessageDependency(messageDependencyPtr))
             // not to overlap with filtered sign
             x += 7;
-        }
-        else
-            arrowLabel = sequenceChartFacade.IMessageDependency_getMessageName(messageDependencyPtr);
-
-        if (MESSAGE_LABEL_COLOR != null)
-            graphics.setForegroundColor(MESSAGE_LABEL_COLOR);
-
-        graphics.setFont(getFont());
-        drawText(graphics, arrowLabel, x + dx, y + dy);
+        graphics.setForegroundColor(sequenceChartStyleProvider.getMessageDependencyLabelColor(messageDependencyPtr));
+        graphics.setFont(sequenceChartStyleProvider.getMessageDependencyLabelFont(messageDependencyPtr));
+        drawText(graphics, sequenceChartStyleProvider.getMessageDependencyLabel(messageDependencyPtr), x + dx, y + dy);
     }
 
     // KLUDGE: This is a workaround for SWT bug https://bugs.eclipse.org/215243
