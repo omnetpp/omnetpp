@@ -989,9 +989,6 @@ namespace @TESTNAME@ {
 [General]
 network = @NETWORKNAME@
 cmdenv-express-mode = false
-output-vector-file = test.vec
-output-scalar-file = test.sca
-eventlog-file = test.elog
 log-format = ""
 ';
 }
