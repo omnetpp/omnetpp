@@ -35,7 +35,10 @@ E  [Ee][+-]?{D}+
 S  [ \t\v\n\r\f]
 
 %x stringliteral
-%x property
+%x propertyname
+%x afterpropertyname
+%x propertyindex
+%x propertyvalue
 
 /* the following option keeps isatty() out */
 %option never-interactive
@@ -144,20 +147,37 @@ USING_NAMESPACE
     \\\"                 { extendCount(); /* qouted quote */ }
     \\[^\n\"]            { extendCount(); /* qouted char */ }
     [^\\\n\"]+           { extendCount(); /* character inside string literal */ }
-    \"                   { extendCount(); if (parenDepth==0) BEGIN(INITIAL);else BEGIN(property); return STRINGCONSTANT; /* closing quote */ }
+    \"                   { extendCount(); if (parenDepth==0) BEGIN(INITIAL);else BEGIN(propertyvalue); return STRINGCONSTANT; /* closing quote */ }
 }
 
-"@"                      { countChars(); BEGIN(property); parenDepth=0; return '@'; }
-<property>{ /*FIXME param property-kre nincs felkeszulve!!!  int x @foo @unit(s) = default(3s); plusz: beragad property modba!!! */
-    "("                  { countChars(); return P(++parenDepth==1 ? '(' : CHAR); }
-    ")"                  { countChars(); if (--parenDepth==0) {BEGIN(INITIAL); return P(')');} else return P(CHAR); }
-    "["                  { countChars(); return P(parenDepth==0 ? '[' : CHAR); }
-    "]"                  { countChars(); return P(parenDepth==0 ? ']' : CHAR); }
+"@"                      { countChars(); BEGIN(propertyname); return '@'; }
+<propertyname>{
+    ({L}|{D}|[:.-])+     { countChars(); BEGIN(afterpropertyname); return PROPNAME; }
+    {S}                  { countChars(); }
+    .                    { BEGIN(INITIAL); yyless(0); }
+}
+
+<afterpropertyname>{
+    "["                  { countChars(); BEGIN(propertyindex); return P('['); }
+    "("                  { countChars(); BEGIN(propertyvalue); parenDepth=1; return P('('); }
+    {S}                  { countChars(); }
+    .                    { BEGIN(INITIAL); yyless(0); }
+}
+
+<propertyindex>{
+    "]"                  { countChars(); BEGIN(afterpropertyname); return P(']'); }
+    ({L}|{D}|[:.-])+     { countChars(); return PROPNAME; }
+    {S}                  { countChars(); }
+    .                    { BEGIN(INITIAL); yyless(0); }
+}
+
+<propertyvalue>{
+    [({[]                { countChars(); ++parenDepth; return P(CHAR); }
+    [)}\]]               { countChars(); if (--parenDepth==0) {BEGIN(INITIAL); return P(yytext[0]);} else return P(CHAR); }
     "="                  { countChars(); return P(parenDepth==1 ? '=' : CHAR); }
     ","                  { countChars(); return P(parenDepth==1 ? ',' : CHAR); }
-    ";"                  { countChars(); if (parenDepth==0) {BEGIN(INITIAL);} return P(parenDepth<=1 ? ';' : CHAR); }
-    \"                   { countChars(); if (parenDepth>0) BEGIN(stringliteral); else return P(CHAR); }
-    {S}                  { countChars(); if (parenDepth==0) BEGIN(INITIAL); else return P(CHAR); }
+    ";"                  { countChars(); return P(parenDepth==1 ? ';' : CHAR); }
+    \"                   { countChars(); BEGIN(stringliteral); }
     .                    { countChars(); return P(CHAR); }
 }
 
@@ -243,7 +263,7 @@ void comment()
  */
 static void _count(bool updateprevpos)
 {
-    static int textbuflen;
+    static int textbuflen; /*TODO: textbuf is not used any more, could be ripped out */
     int i;
 
     /* printf("DBG: countChars(): prev=%d,%d  pos=%d,%d yytext=>>%s<<\n",

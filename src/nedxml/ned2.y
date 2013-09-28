@@ -26,7 +26,7 @@
 %token TRUE_ FALSE_ THIS_ DEFAULT ASK CONST_ SIZEOF INDEX_ TYPENAME XMLDOC
 
 /* Other tokens: identifiers, numeric literals, operators etc */
-%token NAME INTCONSTANT REALCONSTANT STRINGCONSTANT CHARCONSTANT
+%token NAME PROPNAME INTCONSTANT REALCONSTANT STRINGCONSTANT CHARCONSTANT
 %token PLUSPLUS DOUBLEASTERISK
 %token EQ NE GE LE
 %token AND OR XOR NOT
@@ -311,12 +311,12 @@ propertydecl
         ; /* no error recovery rule -- see discussion at top */
 
 propertydecl_header
-        : PROPERTY '@' property_literal
+        : PROPERTY '@' PROPNAME
                 {
                   ps.propertydecl = (PropertyDeclElement *)createElementWithTag(NED_PROPERTY_DECL, ps.nedfile);
                   ps.propertydecl->setName(toString(@3));
                 }
-        | PROPERTY '@' property_literal '[' ']'
+        | PROPERTY '@' PROPNAME '[' ']'
                 {
                   ps.propertydecl = (PropertyDeclElement *)createElementWithTag(NED_PROPERTY_DECL, ps.nedfile);
                   ps.propertydecl->setName(toString(@3));
@@ -826,13 +826,13 @@ property_namevalue
         ;
 
 property_name
-        : '@' property_literal
+        : '@' PROPNAME
                 {
                   assertNonEmpty(ps.propertyscope);
                   ps.property = addProperty(ps.propertyscope.top(), toString(@2));
                   ps.propvals.clear(); // just to be safe
                 }
-        | '@' property_literal '[' property_literal ']'
+        | '@' PROPNAME '[' PROPNAME ']'
                 {
                   assertNonEmpty(ps.propertyscope);
                   ps.property = addProperty(ps.propertyscope.top(), toString(@2));
@@ -1670,12 +1670,15 @@ opt_semicolon
 //----------------------------------------------------------------------
 // general bison/flex stuff:
 //
+int ned2yylex_destroy();  // from lex.XXX.cc file
 
 NEDElement *doParseNED2(NEDParser *p, const char *nedtext)
 {
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;
 #endif
+
+    ned2yylex_destroy();
 
     NONREENTRANT_NED_PARSER(p);
 

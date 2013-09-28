@@ -32,7 +32,10 @@ S  [ \t\v\n\r\f]
 
 %x cplusplusbody
 %x stringliteral
-%x property
+%x propertyname
+%x afterpropertyname
+%x propertyindex
+%x propertyvalue
 
 /* the following option keeps isatty() out */
 %option never-interactive
@@ -109,32 +112,51 @@ USING_NAMESPACE
 
 \"                       { countChars(); BEGIN(stringliteral); }
 <stringliteral>{
-    \n                   { BEGIN(INITIAL);parenDepth=0; throw NEDException("unterminated string literal (append backslash to line for multi-line strings)"); /* NOTE: BEGIN(INITIAL) is important, otherwise parsing of the next file (!) will start from the <stringliteral> state! */ }
+    \n                   { BEGIN(INITIAL); parenDepth=0; throw NEDException("unterminated string literal (append backslash to line for multi-line strings)"); }
     \\\n                 { extendCount(); /* line continuation */ }
     \\\"                 { extendCount(); /* qouted quote */ }
     \\[^\n\"]            { extendCount(); /* qouted char */ }
     [^\\\n\"]+           { extendCount(); /* character inside string literal */ }
-    \"                   { extendCount();if (parenDepth==0) BEGIN(INITIAL);else BEGIN(property); return STRINGCONSTANT; /* closing quote */ }
+    \"                   { extendCount(); if (parenDepth==0) BEGIN(INITIAL);else BEGIN(propertyvalue); return STRINGCONSTANT; /* closing quote */ }
 }
 
-"@"                      { countChars(); BEGIN(property); parenDepth=0; return '@'; }
-<property>{
-    "("                  { countChars(); return P(++parenDepth==1 ? '(' : CHAR); }
-    ")"                  { countChars(); return P(--parenDepth==0 ? ')' : CHAR); }
-    "["                  { countChars(); return P(parenDepth==0 ? '[' : CHAR); }
-    "]"                  { countChars(); return P(parenDepth==0 ? ']' : CHAR); }
+"@"                      { countChars(); BEGIN(propertyname); return '@'; }
+<propertyname>{
+    ({L}|{D}|[:.-])+     { countChars(); BEGIN(afterpropertyname); return PROPNAME; }
+    {S}                  { countChars(); }
+    .                    { BEGIN(INITIAL); yyless(0); }
+}
+
+<afterpropertyname>{
+    "["                  { countChars(); BEGIN(propertyindex); return P('['); }
+    "("                  { countChars(); BEGIN(propertyvalue); parenDepth=1; return P('('); }
+    {S}                  { countChars(); }
+    .                    { BEGIN(INITIAL); yyless(0); }
+}
+
+<propertyindex>{
+    "]"                  { countChars(); BEGIN(afterpropertyname); return P(']'); }
+    ({L}|{D}|[:.-])+     { countChars(); return PROPNAME; }
+    {S}                  { countChars(); }
+    .                    { BEGIN(INITIAL); yyless(0); }
+}
+
+<propertyvalue>{
+    [({[]                { countChars(); ++parenDepth; return P(CHAR); }
+    [)}\]]               { countChars(); if (--parenDepth==0) {BEGIN(INITIAL); return P(yytext[0]);} else return P(CHAR); }
     "="                  { countChars(); return P(parenDepth==1 ? '=' : CHAR); }
     ","                  { countChars(); return P(parenDepth==1 ? ',' : CHAR); }
-    ";"                  { countChars(); if (parenDepth==0) BEGIN(INITIAL); return P(parenDepth<=1 ? ';' : CHAR); }
-    \"                   { countChars(); if (parenDepth>0) BEGIN(stringliteral); else return P(CHAR); }
-    {S}                  { countChars(); if (parenDepth>0) return P(CHAR); }
+    ";"                  { countChars(); return P(parenDepth==1 ? ';' : CHAR); }
+    \"                   { countChars(); BEGIN(stringliteral); }
     .                    { countChars(); return P(CHAR); }
 }
 
 "{{"                     { countChars(); BEGIN(cplusplusbody); }
-<cplusplusbody>"}}"      { extendCount(); BEGIN(INITIAL); return CPLUSPLUSBODY; }
-<cplusplusbody>{S}       { extendCount(); }
-<cplusplusbody>.         { extendCount(); }
+<cplusplusbody>{
+    "}}"                 { extendCount(); BEGIN(INITIAL); return CPLUSPLUSBODY; }
+    {S}                  { extendCount(); }
+    .                    { extendCount(); }
+}
 
 ";"                      { countChars(); return ';'; }
 ","                      { countChars(); return ','; }
@@ -227,6 +249,7 @@ static void _count(bool updateprevpos)
     /* init textbuf */
     if (pos.li==1 && pos.co==0) {
         textbuf[0]='\0'; textbuflen=0;
+        parenDepth = 0;
     }
 
     if (updateprevpos) {

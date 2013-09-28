@@ -18,7 +18,7 @@
 %token MESSAGE PACKET CLASS STRUCT ENUM NONCOBJECT
 %token EXTENDS FIELDS PROPERTIES ABSTRACT READONLY
 
-%token NAME DOUBLECOLON
+%token NAME PROPNAME DOUBLECOLON
 %token INTCONSTANT REALCONSTANT STRINGCONSTANT CHARCONSTANT
 %token TRUE_ FALSE_
 %token BOOLTYPE CHARTYPE SHORTTYPE INTTYPE LONGTYPE DOUBLETYPE UNSIGNED_ STRINGTYPE
@@ -544,13 +544,13 @@ property_namevalue
         ;
 
 property_name
-        : '@' property_literal
+        : '@' PROPNAME
                 {
                   NEDElement *propertyscope = ps.field ? ps.field : ps.msgclassorstruct;
                   ps.property = addProperty(propertyscope, toString(@2));
                   ps.propvals.clear(); // just to be safe
                 }
-        | '@' property_literal '[' property_literal ']'
+        | '@' PROPNAME '[' PROPNAME ']'
                 {
                   NEDElement *propertyscope = ps.field ? ps.field : ps.msgclassorstruct;
                   ps.property = addProperty(propertyscope, toString(@2));
@@ -682,12 +682,15 @@ opt_semicolon : ';' | ;
 //----------------------------------------------------------------------
 // general bison/flex stuff:
 //
+int msg2yylex_destroy();  // from lex.XXX.cc file
 
 NEDElement *doParseMSG2(NEDParser *p, const char *nedtext)
 {
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;
 #endif
+
+    msg2yylex_destroy();
 
     NONREENTRANT_NED_PARSER(p);
 
