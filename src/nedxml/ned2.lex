@@ -150,14 +150,14 @@ USING_NAMESPACE
 "@"                      { countChars(); BEGIN(property); parenDepth=0; return '@'; }
 <property>{ /*FIXME param property-kre nincs felkeszulve!!!  int x @foo @unit(s) = default(3s); plusz: beragad property modba!!! */
     "("                  { countChars(); return P(++parenDepth==1 ? '(' : CHAR); }
-    ")"                  { countChars(); return P(--parenDepth==0 ? ')' : CHAR); }
+    ")"                  { countChars(); if (--parenDepth==0) {BEGIN(INITIAL); return P(')');} else return P(CHAR); }
     "["                  { countChars(); return P(parenDepth==0 ? '[' : CHAR); }
     "]"                  { countChars(); return P(parenDepth==0 ? ']' : CHAR); }
     "="                  { countChars(); return P(parenDepth==1 ? '=' : CHAR); }
     ","                  { countChars(); return P(parenDepth==1 ? ',' : CHAR); }
-    ";"                  { countChars(); if (parenDepth==0) BEGIN(INITIAL); return P(parenDepth<=1 ? ';' : CHAR); }
+    ";"                  { countChars(); if (parenDepth==0) {BEGIN(INITIAL);} return P(parenDepth<=1 ? ';' : CHAR); }
     \"                   { countChars(); if (parenDepth>0) BEGIN(stringliteral); else return P(CHAR); }
-    {S}                  { countChars(); if (parenDepth>0) return P(CHAR); }
+    {S}                  { countChars(); if (parenDepth==0) BEGIN(INITIAL); else return P(CHAR); }
     .                    { countChars(); return P(CHAR); }
 }
 
@@ -252,7 +252,8 @@ static void _count(bool updateprevpos)
 
     /* init textbuf */
     if (pos.li==1 && pos.co==0) {
-        textbuf[0]='\0'; textbuflen=0;
+        textbuf[0] = '\0'; textbuflen = 0;
+        parenDepth = 0;
     }
 
     if (updateprevpos) {
