@@ -36,18 +36,18 @@ void LogFormatter::parseFormat(const char *format)
         if (ch == '\0')
         {
             if (previous != current)
-                addPart(LOGDIRECTIVE_CONSTANTTEXT, previous, current);
+                addPart(CONSTANT_TEXT, previous, current);
             break;
         }
         else if (ch == '%')
         {
             if (previous != current)
-                addPart(LOGDIRECTIVE_CONSTANTTEXT, previous, current);
+                addPart(CONSTANT_TEXT, previous, current);
             previous = current;
             current++;
             ch = *current;
             if (ch == '%')
-                addPart(LOGDIRECTIVE_CONSTANTTEXT, previous, current);
+                addPart(CONSTANT_TEXT, previous, current);
             else
                 addPart(getDirective(ch), NULL, NULL);
             previous = current + 1;
@@ -58,7 +58,7 @@ void LogFormatter::parseFormat(const char *format)
 
 LogFormatter::FormatDirective LogFormatter::getDirective(char ch)
 {
-    if (strchr("lcetvanmosqNMOSQGRXYZpbdxyzufiwWH", ch) == NULL)
+    if (strchr("lcetvanmosqNMOSQGRXYZpbdxyzufiwWHI", ch) == NULL)
         throw cRuntimeError("Unknown log format character '%c'", ch);
     return (LogFormatter::FormatDirective) ch;
 }
@@ -80,90 +80,90 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
         FormatPart& part = *it;
         switch (part.directive)
         {
-            case LOGDIRECTIVE_CONSTANTTEXT:
+            case CONSTANT_TEXT:
                 stream << part.text; break;
 
             // log statement related
-            case LOGDIRECTIVE_LOGLEVEL:
+            case LOGLEVEL:
                 stream << cLogLevel::getName(entry->loglevel); break;
-            case LOGDIRECTIVE_LOGCATEGORY:
+            case LOGCATEGORY:
                 stream << (entry->category ? entry->category : ""); break;
 
             // current simulation state related
-            case LOGDIRECTIVE_CURRENTEVENTNUMBER:
+            case CURRENT_EVENT_NUMBER:
                 stream << simulation.getEventNumber(); break;
-            case LOGDIRECTIVE_CURRENTSIMULATIONTIME:
+            case CURRENT_SIMULATION_TIME:
                 stream << simulation.getSimTime(); break;
 
-            case LOGDIRECTIVE_CURRENTEVENTNAME:
+            case CURRENT_EVENT_NAME:
                 if (ev.getCurrentEventName()) stream << ev.getCurrentEventName(); break;
-            case LOGDIRECTIVE_CURRENTEVENTCLASSNAME:
+            case CURRENT_EVENT_CLASSNAME:
                 if (ev.getCurrentEventClassName()) stream << ev.getCurrentEventClassName(); break;
 
-            case LOGDIRECTIVE_CURRENTMODULENAME:
+            case CURRENT_MODULE_NAME:
                 if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getFullName(); break;
-            case LOGDIRECTIVE_CURRENTMODULEPATH:
+            case CURRENT_MODULE_FULLPATH:
                 if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getFullPath(); break;
-            case LOGDIRECTIVE_CURRENTMODULECLASSNAME:
+            case CURRENT_MODULE_CLASSNAME:
                 if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getClassName(); break;
-            case LOGDIRECTIVE_CURRENTMODULENEDTYPESIMPLENAME:
+            case CURRENT_MODULE_NEDTYPE_SIMPLENAME:
                 if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getComponentType()->getName(); break;
-            case LOGDIRECTIVE_CURRENTMODULENEDTYPEQUALIFIEDNAME:
+            case CURRENT_MODULE_NEDTYPE_QUALIFIEDNAME:
                 if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getComponentType()->getFullName(); break;
 
-            case LOGDIRECTIVE_CONTEXTMODULENAME:
+            case CONTEXT_MODULE_NAME:
                 if (simulation.getContextModule()) stream << simulation.getContextModule()->getFullName(); break;
-            case LOGDIRECTIVE_CONTEXTMODULEPATH:
+            case CONTEXT_MODULE_FULLPATH:
                 if (simulation.getContextModule()) stream << simulation.getContextModule()->getFullPath(); break;
-            case LOGDIRECTIVE_CONTEXTMODULECLASSNAME:
+            case CONTEXT_MODULE_CLASSNAME:
                 if (simulation.getContextModule()) stream << simulation.getContextModule()->getClassName(); break;
-            case LOGDIRECTIVE_CONTEXTMODULENEDTYPESIMPLENAME:
+            case CONTEXT_MODULE_NEDTYPE_SIMPLENAME:
                 if (simulation.getContextModule()) stream << simulation.getContextModule()->getComponentType()->getName(); break;
-            case LOGDIRECTIVE_CONTEXTMODULENEDTYPEQUALIFIEDNAME:
+            case CONTEXT_MODULE_NEDTYPE_QUALIFIEDNAME:
                 if (simulation.getContextModule()) stream << simulation.getContextModule()->getComponentType()->getFullName(); break;
 
             // simulation run related
-            case LOGDIRECTIVE_CONFIGNAME:
+            case CONFIGNAME:
                 stream << simulation.getActiveEnvir()->getConfigEx()->getActiveConfigName(); break;
-            case LOGDIRECTIVE_RUNNUMBER:
+            case RUNNUMBER:
                 stream << simulation.getActiveEnvir()->getConfigEx()->getActiveRunNumber(); break;
 
-            case LOGDIRECTIVE_NETWORKMODULECLASSNAME:
+            case NETWORK_MODULE_CLASSNAME:
                 stream << simulation.getSystemModule()->getClassName(); break;
-            case LOGDIRECTIVE_NETWORKMODUENEDTYPESIMPLENAME:
+            case NETWORK_MODULE_NEDTYPE_SIMPLENAME:
                 stream << simulation.getNetworkType()->getName(); break;
-            case LOGDIRECTIVE_NETWORKMODUENEDTYPEQUALIFIEDNAME:
+            case NETWORK_MODULE_NEDTYPE_QUALIFIEDNAME:
                 stream << simulation.getNetworkType()->getFullName(); break;
 
             // C++ source related
-            case LOGDIRECTIVE_SOURCEOBJECTPOINTER:
+            case SOURCE_OBJECT_POINTER:
                 if (entry->sourcePointer) stream << entry->sourcePointer; break;
-            case LOGDIRECTIVE_SOURCEOBJECTNAME:
+            case SOURCE_OBJECT_NAME:
                 if (entry->sourceObject) stream << entry->sourceObject->getFullName(); break;
-            case LOGDIRECTIVE_SOURCEOBJECTPATH:
+            case SOURCE_OBJECT_FULLPATH:
                 if (entry->sourceObject) stream << entry->sourceObject->getFullPath(); break;
 
-            case LOGDIRECTIVE_SOURCECOMPONENTNEDSIMPLENAME:
+            case SOURCE_COMPONENT_NEDTYPE_SIMPLENAME:
                 if (entry->sourceComponent) stream << entry->sourceComponent->getComponentType()->getName(); break;
-            case LOGDIRECTIVE_SOURCECOMPONENTNEDQUALIFIEDNAME:
+            case SOURCE_COMPONENT_NEDTYPE_QUALIFIEDNAME:
                 if (entry->sourceComponent) stream << entry->sourceComponent->getComponentType()->getFullName(); break;
 
-            case LOGDIRECTIVE_SOURCEFILE:
+            case SOURCE_FILE:
                 stream << entry->sourceFile; break;
-            case LOGDIRECTIVE_SOURCELINE:
+            case SOURCE_LINE:
                 stream << entry->sourceLine; break;
 
-            case LOGDIRECTIVE_SOURCEOBJECTCLASSNAME:
+            case SOURCE_OBJECT_CLASSNAME:
                 stream << (entry->sourceComponent ? entry->sourceComponent->getComponentType()->getName() :
                           (entry->sourceObject ? entry->sourceObject->getClassName() :
                           (entry->sourceClass ? opp_demangle_typename(entry->sourceClass) : ""))); break;
-            case LOGDIRECTIVE_SOURCEFUNCTION:
+            case SOURCE_FUNCTION:
                 stream << entry->sourceFunction; break;
 
             // operating system related
-            case LOGDIRECTIVE_USERTIME:
+            case USERTIME:
                 stream << (double)entry->userTime / (double)CLOCKS_PER_SEC; break;
-            case LOGDIRECTIVE_WALLTIME:
+            case WALLTIME:
             {
                 // chop off newline at the end (no worries, this is slow anyway)
                 time_t now = time(NULL);
@@ -171,9 +171,9 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                 stream << nowstr.substr(0, nowstr.length() - 1); break;
             }
 
-            case LOGDIRECTIVE_HOSTNAME:
+            case HOSTNAME:
                 stream << opp_gethostname(); break;
-            case LOGDIRECTIVE_PROCESSID:
+            case PROCESSID:
                 stream << getpid(); break;
 
             default:
