@@ -32,19 +32,17 @@
  * Current simulation state related format characters:
  *  - %e current event number
  *  - %t current simulation time
- *  - %v current event name
- *
- *  - %m current message name
- *  - %a current message class name
+ *  - %v current message or event name
+ *  - %a current message or event class name
  *
  *  - %n current module name
- *  - %p current module path
+ *  - %m current module path
  *  - %o current module class name
  *  - %s current module NED type simple name
  *  - %q current module NED type fully qualified name
  *
  *  - %N context module name
- *  - %P context module path
+ *  - %M context module path
  *  - %O context module class name
  *  - %S context module NED type simple name
  *  - %Q context module NED type fully qualified name
@@ -58,18 +56,18 @@
  *  - %Z network module NED type fully qualified name
  *
  * C++ source related (where the log statement appears) format characters:
- *  - %* source object pointer
+ *  - %p source object pointer
  *  - %b source object name
  *  - %d source object path
  *
  *  - %x source component NED type simple name
  *  - %y source component NED type fully qualified
  *
- *  - %f source file name
- *  - %i source line number
- *
  *  - %z source class name
  *  - %u source function name
+ *
+ *  - %f source file name
+ *  - %i source line number
  *
  * Operating system related format characters:
  *  - %w user time in seconds
@@ -88,57 +86,56 @@ class LogFormatter
         LOGDIRECTIVE_CONSTANTTEXT,
 
         // log statement related
-        LOGDIRECTIVE_LOGLEVEL,
-        LOGDIRECTIVE_LOGCATEGORY,
+        LOGDIRECTIVE_LOGLEVEL = 'l',
+        LOGDIRECTIVE_LOGCATEGORY = 'c',
 
         // current simulation state related
-        LOGDIRECTIVE_CURRENTEVENTNUMBER,
-        LOGDIRECTIVE_CURRENTSIMULATIONTIME,
-        LOGDIRECTIVE_CURRENTEVENTNAME,
+        LOGDIRECTIVE_CURRENTEVENTNUMBER = 'e',
+        LOGDIRECTIVE_CURRENTSIMULATIONTIME = 't',
 
-        LOGDIRECTIVE_CURRENTMESSAGENAME,
-        LOGDIRECTIVE_CURRENTMESSAGECLASSNAME,
+        LOGDIRECTIVE_CURRENTEVENTNAME = 'v',
+        LOGDIRECTIVE_CURRENTEVENTCLASSNAME = 'a',
 
-        LOGDIRECTIVE_CURRENTMODULENAME,
-        LOGDIRECTIVE_CURRENTMODULEPATH,
-        LOGDIRECTIVE_CURRENTMODULECLASSNAME,
-        LOGDIRECTIVE_CURRENTMODULENEDTYPESIMPLENAME,
-        LOGDIRECTIVE_CURRENTMODULENEDTYPEQUALIFIEDNAME,
+        LOGDIRECTIVE_CURRENTMODULENAME = 'n',
+        LOGDIRECTIVE_CURRENTMODULEPATH = 'm',
+        LOGDIRECTIVE_CURRENTMODULECLASSNAME = 'o',
+        LOGDIRECTIVE_CURRENTMODULENEDTYPESIMPLENAME = 's',
+        LOGDIRECTIVE_CURRENTMODULENEDTYPEQUALIFIEDNAME = 'q',
 
-        LOGDIRECTIVE_CONTEXTMODULENAME,
-        LOGDIRECTIVE_CONTEXTMODULEPATH,
-        LOGDIRECTIVE_CONTEXTMODULECLASSNAME,
-        LOGDIRECTIVE_CONTEXTMODULENEDTYPESIMPLENAME,
-        LOGDIRECTIVE_CONTEXTMODULENEDTYPEQUALIFIEDNAME,
+        LOGDIRECTIVE_CONTEXTMODULENAME = 'N',
+        LOGDIRECTIVE_CONTEXTMODULEPATH = 'M',
+        LOGDIRECTIVE_CONTEXTMODULECLASSNAME = 'O',
+        LOGDIRECTIVE_CONTEXTMODULENEDTYPESIMPLENAME = 'S',
+        LOGDIRECTIVE_CONTEXTMODULENEDTYPEQUALIFIEDNAME = 'Q',
 
         // simulation run related
-        LOGDIRECTIVE_CONFIGNAME,
-        LOGDIRECTIVE_RUNNUMBER,
+        LOGDIRECTIVE_CONFIGNAME = 'G',
+        LOGDIRECTIVE_RUNNUMBER = 'R',
 
-        LOGDIRECTIVE_NETWORKMODUECLASSNAME,
-        LOGDIRECTIVE_NETWORKMODUENEDTYPESIMPLENAME,
-        LOGDIRECTIVE_NETWORKMODUENEDTYPEQUALIFIEDNAME,
+        LOGDIRECTIVE_NETWORKMODULECLASSNAME = 'X',
+        LOGDIRECTIVE_NETWORKMODUENEDTYPESIMPLENAME = 'Y',
+        LOGDIRECTIVE_NETWORKMODUENEDTYPEQUALIFIEDNAME = 'Z',
 
         // C++ source related
-        LOGDIRECTIVE_SOURCEOBJECTPOINTER,
-        LOGDIRECTIVE_SOURCEOBJECTNAME,
-        LOGDIRECTIVE_SOURCEOBJECTPATH,
+        LOGDIRECTIVE_SOURCEOBJECTPOINTER = 'p',
+        LOGDIRECTIVE_SOURCEOBJECTNAME = 'b',
+        LOGDIRECTIVE_SOURCEOBJECTPATH = 'd',
 
-        LOGDIRECTIVE_SOURCECOMPONENTNEDSIMPLENAME,
-        LOGDIRECTIVE_SOURCECOMPONENTNEDQUALIFIEDNAME,
+        LOGDIRECTIVE_SOURCECOMPONENTNEDSIMPLENAME = 'x',
+        LOGDIRECTIVE_SOURCECOMPONENTNEDQUALIFIEDNAME = 'y',
 
-        LOGDIRECTIVE_SOURCEFILE,
-        LOGDIRECTIVE_SOURCELINE,
+        LOGDIRECTIVE_SOURCEFILE = 'z',
+        LOGDIRECTIVE_SOURCELINE = 'u',
 
-        LOGDIRECTIVE_SOURCECLASS,
-        LOGDIRECTIVE_SOURCEFUNCTION,
+        LOGDIRECTIVE_SOURCEOBJECTCLASSNAME = 'f',
+        LOGDIRECTIVE_SOURCEFUNCTION = 'i',
 
         // operating system related
-        LOGDIRECTIVE_USERTIME,
-        LOGDIRECTIVE_WALLTIME,
+        LOGDIRECTIVE_USERTIME = 'w',
+        LOGDIRECTIVE_WALLTIME = 'W',
 
-        LOGDIRECTIVE_HOSTNAME,
-        LOGDIRECTIVE_PROCESSID
+        LOGDIRECTIVE_HOSTNAME = 'H',
+        LOGDIRECTIVE_PROCESSID = 'I'
     };
 
     struct FormatPart {

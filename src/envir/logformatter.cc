@@ -58,63 +58,9 @@ void LogFormatter::parseFormat(const char *format)
 
 LogFormatter::FormatDirective LogFormatter::getDirective(char ch)
 {
-    switch (ch)
-    {
-    // log statement related
-        case 'l': return LOGDIRECTIVE_LOGLEVEL;
-        case 'c': return LOGDIRECTIVE_LOGCATEGORY;
-
-        // current simulation state related
-        case 'e': return LOGDIRECTIVE_CURRENTEVENTNUMBER;
-        case 't': return LOGDIRECTIVE_CURRENTSIMULATIONTIME;
-        case 'v': return LOGDIRECTIVE_CURRENTEVENTNAME;
-
-        case 'm': return LOGDIRECTIVE_CURRENTMESSAGENAME;
-        case 'a': return LOGDIRECTIVE_CURRENTMESSAGECLASSNAME;
-
-        case 'n': return LOGDIRECTIVE_CURRENTMODULENAME;
-        case 'p': return LOGDIRECTIVE_CURRENTMODULEPATH;
-        case 'o': return LOGDIRECTIVE_CURRENTMODULECLASSNAME;
-        case 's': return LOGDIRECTIVE_CURRENTMODULENEDTYPESIMPLENAME;
-        case 'q': return LOGDIRECTIVE_CURRENTMODULENEDTYPEQUALIFIEDNAME;
-
-        case 'N': return LOGDIRECTIVE_CONTEXTMODULENAME;
-        case 'P': return LOGDIRECTIVE_CONTEXTMODULEPATH;
-        case 'O': return LOGDIRECTIVE_CONTEXTMODULECLASSNAME;
-        case 'S': return LOGDIRECTIVE_CONTEXTMODULENEDTYPESIMPLENAME;
-        case 'Q': return LOGDIRECTIVE_CONTEXTMODULENEDTYPEQUALIFIEDNAME;
-
-        // simulation run related
-        case 'G': return LOGDIRECTIVE_CONFIGNAME;
-        case 'R': return LOGDIRECTIVE_RUNNUMBER;
-
-        case 'X': return LOGDIRECTIVE_NETWORKMODUECLASSNAME;
-        case 'Y': return LOGDIRECTIVE_NETWORKMODUENEDTYPESIMPLENAME;
-        case 'Z': return LOGDIRECTIVE_NETWORKMODUENEDTYPEQUALIFIEDNAME;
-
-        // C++ source related
-        case '*': return LOGDIRECTIVE_SOURCEOBJECTPOINTER;
-        case 'b': return LOGDIRECTIVE_SOURCEOBJECTNAME;
-        case 'd': return LOGDIRECTIVE_SOURCEOBJECTPATH;
-
-        case 'x': return LOGDIRECTIVE_SOURCECOMPONENTNEDSIMPLENAME;
-        case 'y': return LOGDIRECTIVE_SOURCECOMPONENTNEDQUALIFIEDNAME;
-
-        case 'f': return LOGDIRECTIVE_SOURCEFILE;
-        case 'i': return LOGDIRECTIVE_SOURCELINE;
-
-        case 'z': return LOGDIRECTIVE_SOURCECLASS;
-        case 'u': return LOGDIRECTIVE_SOURCEFUNCTION;
-
-        // operating system related
-        case 'w': return LOGDIRECTIVE_USERTIME;
-        case 'W': return LOGDIRECTIVE_WALLTIME;
-
-        case 'H': return LOGDIRECTIVE_HOSTNAME;
-        case 'I': return LOGDIRECTIVE_PROCESSID;
-
-        default: throw cRuntimeError("Unknown format character '%c'", ch);
-    }
+    if (strchr("lcetvanmosqNMOSQGRXYZpbdxyzufiwWH", ch) == NULL)
+        throw cRuntimeError("Unknown log format character '%c'", ch);
+    return (LogFormatter::FormatDirective) ch;
 }
 
 void LogFormatter::addPart(FormatDirective directive, char *textBegin, char *textEnd)
@@ -148,12 +94,10 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                 stream << simulation.getEventNumber(); break;
             case LOGDIRECTIVE_CURRENTSIMULATIONTIME:
                 stream << simulation.getSimTime(); break;
+
             case LOGDIRECTIVE_CURRENTEVENTNAME:
                 if (ev.getCurrentEventName()) stream << ev.getCurrentEventName(); break;
-
-            case LOGDIRECTIVE_CURRENTMESSAGENAME:
-                if (ev.getCurrentEventName()) stream << ev.getCurrentEventName(); break;
-            case LOGDIRECTIVE_CURRENTMESSAGECLASSNAME:
+            case LOGDIRECTIVE_CURRENTEVENTCLASSNAME:
                 if (ev.getCurrentEventClassName()) stream << ev.getCurrentEventClassName(); break;
 
             case LOGDIRECTIVE_CURRENTMODULENAME:
@@ -184,7 +128,7 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
             case LOGDIRECTIVE_RUNNUMBER:
                 stream << simulation.getActiveEnvir()->getConfigEx()->getActiveRunNumber(); break;
 
-            case LOGDIRECTIVE_NETWORKMODUECLASSNAME:
+            case LOGDIRECTIVE_NETWORKMODULECLASSNAME:
                 stream << simulation.getSystemModule()->getClassName(); break;
             case LOGDIRECTIVE_NETWORKMODUENEDTYPESIMPLENAME:
                 stream << simulation.getNetworkType()->getName(); break;
@@ -209,7 +153,7 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
             case LOGDIRECTIVE_SOURCELINE:
                 stream << entry->sourceLine; break;
 
-            case LOGDIRECTIVE_SOURCECLASS:
+            case LOGDIRECTIVE_SOURCEOBJECTCLASSNAME:
                 stream << (entry->sourceComponent ? entry->sourceComponent->getComponentType()->getName() :
                           (entry->sourceObject ? entry->sourceObject->getClassName() :
                           (entry->sourceClass ? opp_demangle_typename(entry->sourceClass) : ""))); break;
