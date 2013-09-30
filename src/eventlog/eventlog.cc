@@ -523,7 +523,7 @@ std::vector<MessageEntry *> EventLog::getMessageEntriesWithPreviousEventNumber(e
             }
             else {
                 eventNumber++;
-                event = getEventForEventNumber(beginEventNumber);
+                event = getEventForEventNumber(eventNumber);
             }
         }
         return previousEventNumberToMessageEntriesMap.find(previousEventNumber)->second;
