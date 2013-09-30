@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include "cmpicomm.h"
 #include "cmpicommbuffer.h"
+#include "clog.h"
 #include "globals.h"
 #include "regmacros.h"
 #include "cenvir.h"
