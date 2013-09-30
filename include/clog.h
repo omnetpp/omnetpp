@@ -261,8 +261,14 @@ class SIM_API cLogProxy
         virtual int sync();  // invokes ev.log() for each log line
     };
 
+    // act likes /dev/null
+    class nullstream : public std::ostream {
+      public:
+        nullstream() {}  // results in rdbuf==0 and badbit==true
+    };
+
   public:
-    static std::stringstream dummyStream; // unused; it's just used to satisfy the C++ compiler
+    static nullstream dummyStream; // EV evaluates to this when in express mode (ev.disabled())
 
   private:
     static LogBuffer buffer;  // underlying buffer that contains the text that has been written so far

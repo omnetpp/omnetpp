@@ -29,7 +29,7 @@ LogLevel cLogLevel::globalRuntimeLoglevel = LOGLEVEL_DEBUG;
 cLogEntry cLogProxy::currentEntry;
 LogLevel cLogProxy::previousLoglevel = (LogLevel)-1;
 const char *cLogProxy::previousCategory = NULL;
-std::stringstream cLogProxy::dummyStream;
+cLogProxy::nullstream cLogProxy::dummyStream;
 
 //----
 
