@@ -56,6 +56,7 @@ public class EventLogTable
 
     private boolean paintHasBeenFinished = false;
 
+    private RuntimeException internalError;
     private boolean internalErrorHappenedDuringPaint = false;
 
     private boolean followEnd = false; // when the eventlog changes should we follow it or not?
@@ -159,27 +160,34 @@ public class EventLogTable
                 "Either try changing some filter parameters or select refresh from the menu. Sorry for your inconvenience.");
         else if (eventLogInput.isLongRunningOperationInProgress())
             drawNotificationMessage(gc, "Processing a long running eventlog operation. Please wait.");
-        else
-            eventLogInput.runWithProgressMonitor(new Runnable() {
-                public void run() {
-                    try {
-                        EventLogTable.super.paint(gc);
-                        paintHasBeenFinished = true;
-                    }
-                    catch (RuntimeException e) {
-                        if (eventLogInput.isFileChangedException(e))
-                            eventLogInput.synchronize(e);
-                        else {
-                            internalErrorHappenedDuringPaint = true;
-                            throw e;
+        else {
+            try {
+                eventLogInput.runWithProgressMonitor(new Runnable() {
+                    public void run() {
+                        try {
+                            EventLogTable.super.paint(gc);
+                            paintHasBeenFinished = true;
+                        }
+                        catch (RuntimeException e) {
+                            if (eventLogInput.isFileChangedException(e))
+                                eventLogInput.synchronize(e);
+                            else
+                                throw e;
                         }
                     }
-                }
-            });
+                });
+            }
+            catch (RuntimeException e) {
+                EventLogTablePlugin.logError("Internal error happened during painting", e);
+                internalError = e;
+                internalErrorHappenedDuringPaint = true;
+            }
+        }
     }
 
     @Override
     public void refresh() {
+        internalError = null;
         internalErrorHappenedDuringPaint = false;
         if (eventLogInput != null)
             eventLogInput.resetCanceled();

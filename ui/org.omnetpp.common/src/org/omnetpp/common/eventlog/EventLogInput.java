@@ -517,6 +517,8 @@ public class EventLogInput extends FileEditorInput
             catch (Throwable t) {
                 if (isLongRunningOperationCanceledException(t))
                     canceled = true;
+                else if (t instanceof RuntimeException)
+                    throw (RuntimeException)t;
                 else
                     throw new RuntimeException(t);
             }
