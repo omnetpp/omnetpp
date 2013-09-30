@@ -2295,29 +2295,32 @@ public class SequenceChart
                 "Either try changing some filter parameters or select refresh from the menu. Sorry for your inconvenience.");
         else if (eventLogInput.isLongRunningOperationInProgress())
             drawNotificationMessage(gc, "Processing a long running eventlog operation. Please wait.");
-        else
-            eventLogInput.runWithProgressMonitor(new Runnable() {
-                public void run() {
-                    try {
-                        revalidateAxisModules();
-
-                        SequenceChart.super.paint(gc);
-                        paintHasBeenFinished = true;
-
-                        if (debug && eventLogInput != null)
-                            Debug.println("Read " + eventLog.getFileReader().getNumReadBytes() + " bytes, " + eventLog.getFileReader().getNumReadLines() + " lines, " + eventLog.getNumParsedEvents() + " events from " + eventLogInput.getFile().getName());
-                    }
-                    catch (RuntimeException e) {
-                        if (eventLogInput.isFileChangedException(e))
-                            eventLogInput.synchronize(e);
-                        else {
-                            internalError = e;
-                            internalErrorHappenedDuringPaint = true;
-                            throw e;
+        else {
+            try {
+                eventLogInput.runWithProgressMonitor(new Runnable() {
+                    public void run() {
+                        try {
+                            revalidateAxisModules();
+                            SequenceChart.super.paint(gc);
+                            paintHasBeenFinished = true;
+                            if (debug && eventLogInput != null)
+                                Debug.println("Read " + eventLog.getFileReader().getNumReadBytes() + " bytes, " + eventLog.getFileReader().getNumReadLines() + " lines, " + eventLog.getNumParsedEvents() + " events from " + eventLogInput.getFile().getName());
+                        }
+                        catch (RuntimeException e) {
+                            if (eventLogInput.isFileChangedException(e))
+                                eventLogInput.synchronize(e);
+                            else
+                                throw e;
                         }
                     }
-                }
-            });
+                });
+            }
+            catch (RuntimeException e) {
+                SequenceChartPlugin.logError("Internal error happened during painting", e);
+                internalError = e;
+                internalErrorHappenedDuringPaint = true;
+            }
+        }
     }
 
     @Override
