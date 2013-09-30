@@ -41,11 +41,11 @@
  *  - %s current module NED type simple name
  *  - %q current module NED type fully qualified name
  *
- *  - %N context module name
- *  - %M context module path
- *  - %O context module class name
- *  - %S context module NED type simple name
- *  - %Q context module NED type fully qualified name
+ *  - %N context component name
+ *  - %M context component path
+ *  - %O context component class name
+ *  - %S context component NED type simple name
+ *  - %Q context component NED type fully qualified name
  *
  * Simulation run related format characters:
  *  - %G config name
@@ -101,11 +101,11 @@ class LogFormatter
         CURRENT_MODULE_NEDTYPE_SIMPLENAME = 's',
         CURRENT_MODULE_NEDTYPE_QUALIFIEDNAME = 'q',
 
-        CONTEXT_MODULE_NAME = 'N',
-        CONTEXT_MODULE_FULLPATH = 'M',
-        CONTEXT_MODULE_CLASSNAME = 'O',
-        CONTEXT_MODULE_NEDTYPE_SIMPLENAME = 'S',
-        CONTEXT_MODULE_NEDTYPE_QUALIFIEDNAME = 'Q',
+        CONTEXT_COMPONENT_NAME = 'N',
+        CONTEXT_COMPONENT_FULLPATH = 'M',
+        CONTEXT_COMPONENT_CLASSNAME = 'O',
+        CONTEXT_COMPONENT_NEDTYPE_SIMPLENAME = 'S',
+        CONTEXT_COMPONENT_NEDTYPE_QUALIFIEDNAME = 'Q',
 
         // simulation run related
         CONFIGNAME = 'G',

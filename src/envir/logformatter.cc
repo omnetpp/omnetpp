@@ -111,16 +111,16 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
             case CURRENT_MODULE_NEDTYPE_QUALIFIEDNAME:
                 if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getComponentType()->getFullName(); break;
 
-            case CONTEXT_MODULE_NAME:
-                if (simulation.getContextModule()) stream << simulation.getContextModule()->getFullName(); break;
-            case CONTEXT_MODULE_FULLPATH:
-                if (simulation.getContextModule()) stream << simulation.getContextModule()->getFullPath(); break;
-            case CONTEXT_MODULE_CLASSNAME:
-                if (simulation.getContextModule()) stream << simulation.getContextModule()->getClassName(); break;
-            case CONTEXT_MODULE_NEDTYPE_SIMPLENAME:
-                if (simulation.getContextModule()) stream << simulation.getContextModule()->getComponentType()->getName(); break;
-            case CONTEXT_MODULE_NEDTYPE_QUALIFIEDNAME:
-                if (simulation.getContextModule()) stream << simulation.getContextModule()->getComponentType()->getFullName(); break;
+            case CONTEXT_COMPONENT_NAME:
+                if (simulation.getContext()) stream << simulation.getContext()->getFullName(); break;
+            case CONTEXT_COMPONENT_FULLPATH:
+                if (simulation.getContext()) stream << simulation.getContext()->getFullPath(); break;
+            case CONTEXT_COMPONENT_CLASSNAME:
+                if (simulation.getContext()) stream << simulation.getContext()->getClassName(); break;
+            case CONTEXT_COMPONENT_NEDTYPE_SIMPLENAME:
+                if (simulation.getContext()) stream << simulation.getContext()->getComponentType()->getName(); break;
+            case CONTEXT_COMPONENT_NEDTYPE_QUALIFIEDNAME:
+                if (simulation.getContext()) stream << simulation.getContext()->getComponentType()->getFullName(); break;
 
             // simulation run related
             case CONFIGNAME:
