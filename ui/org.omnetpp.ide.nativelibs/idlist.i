@@ -74,7 +74,7 @@ import java.util.EventListener;
 ADD_NOTIFY(add);
 ADD_NOTIFY(intersect);
 ADD_NOTIFY(merge);
-ADD_NOTIFY(substract);
+ADD_NOTIFY(subtract);
 ADD_NOTIFY(sortByDirectory);
 ADD_NOTIFY(sortByFileName);
 ADD_NOTIFY(sortByModule);

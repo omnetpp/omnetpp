@@ -87,7 +87,7 @@ int IDList::indexOf(ID x) const
         return -1;
 }
 
-void IDList::substract(ID x)
+void IDList::subtract(ID x)
 {
     checkV();
     V::iterator it = std::find(v->begin(), v->end(), x);
@@ -115,7 +115,7 @@ void IDList::merge(IDList& ids)
     v = v2;
 }
 
-void IDList::substract(IDList& ids)
+void IDList::subtract(IDList& ids)
 {
     checkV();
     ids.checkV();

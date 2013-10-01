@@ -154,7 +154,7 @@ class SCAVE_API ModuloNodeType : public FilterNodeType
 //----
 
 /**
- * Processing node which substracts the previous value from every value
+ * Processing node which subtracts the previous value from every value
  */
 class SCAVE_API DifferenceNode : public FilterNode
 {
@@ -181,7 +181,7 @@ class SCAVE_API DifferenceNodeType : public FilterNodeType
 //----
 
 /**
- * Processing node which substracts the previous value from every value
+ * Processing node which subtracts the previous value from every value
  */
 class SCAVE_API TimeDiffNode : public FilterNode
 {
@@ -547,21 +547,21 @@ class SCAVE_API TimeToSerialNodeType : public FilterNodeType
 //----
 
 /**
- * Processing node which substracts the first finite value from every value.
+ * Processing node which subtracts the first finite value from every value.
  */
-class SCAVE_API SubstractFirstValueNode : public FilterNode
+class SCAVE_API SubtractFirstValueNode : public FilterNode
 {
     protected:
         bool firstValueSeen;
         double firstValue;
     public:
-        SubstractFirstValueNode() : firstValueSeen(false) {}
-        virtual ~SubstractFirstValueNode() {}
+        SubtractFirstValueNode() : firstValueSeen(false) {}
+        virtual ~SubtractFirstValueNode() {}
         virtual bool isReady() const;
         virtual void process();
 };
 
-class SCAVE_API SubstractFirstValueNodeType : public FilterNodeType
+class SCAVE_API SubtractFirstValueNodeType : public FilterNodeType
 {
     public:
         virtual const char *getName() const {return "substractFirstValue";}

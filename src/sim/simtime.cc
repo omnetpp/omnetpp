@@ -85,10 +85,10 @@ void SimTime::overflowAdding(const SimTime& x)
                         x.str().c_str(), str().c_str(), range().c_str(), scaleexp);
 }
 
-void SimTime::overflowSubstracting(const SimTime& x)
+void SimTime::overflowSubtracting(const SimTime& x)
 {
     t += x.t; // restore original value
-    throw cRuntimeError("simtime_t overflow substracting %s from %s: result is out of range %s, allowed by scale exponent %d",
+    throw cRuntimeError("simtime_t overflow subtracting %s from %s: result is out of range %s, allowed by scale exponent %d",
                         x.str().c_str(), str().c_str(), range().c_str(), scaleexp);
 }
 

@@ -89,7 +89,9 @@ inline timeval timeval_add(const timeval& a, double b)
     return res;
 }
 
-inline timeval timeval_substract(const timeval& a, const timeval& b)
+#define timeval_substract  timeval_subtract  /*spelling fixed*/
+
+inline timeval timeval_subtract(const timeval& a, const timeval& b)
 {
     timeval res;
     res.tv_sec = a.tv_sec - b.tv_sec;
@@ -101,7 +103,8 @@ inline timeval timeval_substract(const timeval& a, const timeval& b)
     return res;
 }
 
-inline timeval timeval_substract(const timeval& a, double b)
+
+inline timeval timeval_subtract(const timeval& a, double b)
 {
     double bInt;
     double bFrac = modf(b, &bInt);
@@ -138,7 +141,7 @@ inline long timeval_diff_usec(const timeval& t2, const timeval& t1)
 }
 
 inline timeval operator+(const timeval& a, const timeval& b) {return timeval_add(a,b);}
-inline timeval operator-(const timeval& a, const timeval& b) {return timeval_substract(a,b);}
+inline timeval operator-(const timeval& a, const timeval& b) {return timeval_subtract(a,b);}
 
 // prints time in "yyyy-mm-dd hh:mm:ss" format
 inline char *opp_asctime(time_t t, char *buf)

@@ -34,7 +34,7 @@ typedef int64 ID;
 
 /**
  * Stores a set of unique IDs. Order is not important, and may occasionally
- * change (after merge(), substract() or intersect()).
+ * change (after merge(), subtract() or intersect()).
  *
  * Beware: Copy ctor implements transfer-of-ownership semantics!
  */
@@ -72,10 +72,10 @@ class SCAVE_API IDList
         ID get(int i) const {checkV(); return v->at(i);} // at() includes bounds check
         // void set(int i, ID x);
         void erase(int i);
-        void substract(ID x); // this -= {x}
+        void subtract(ID x); // this -= {x}
         int indexOf(ID x) const;
         void merge(IDList& ids);  // this += ids
-        void substract(IDList& ids);  // this -= ids
+        void subtract(IDList& ids);  // this -= ids
         void intersect(IDList& ids);  // this = intersection(this,ids)
         IDList getSubsetByIndices(int *array, int n) const;
         IDList dup() const;

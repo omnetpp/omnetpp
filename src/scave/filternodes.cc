@@ -305,7 +305,7 @@ void DifferenceNode::process()
 
 const char *DifferenceNodeType::getDescription() const
 {
-    return "Substracts the previous value from every value: yout[k] = y[k] - y[k-1]";
+    return "Subtracts the previous value from every value: yout[k] = y[k] - y[k-1]";
 }
 
 void DifferenceNodeType::getAttributes(StringMap& attrs) const
@@ -1107,12 +1107,12 @@ void TimeToSerialNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*
 
 //-----
 
-bool SubstractFirstValueNode::isReady() const
+bool SubtractFirstValueNode::isReady() const
 {
     return in()->length()>0;
 }
 
-void SubstractFirstValueNode::process()
+void SubtractFirstValueNode::process()
 {
     int n = in()->length();
     Datum d;
@@ -1140,26 +1140,26 @@ void SubstractFirstValueNode::process()
 
 //--
 
-const char *SubstractFirstValueNodeType::getDescription() const
+const char *SubtractFirstValueNodeType::getDescription() const
 {
-    return "Substract the first value from every subsequent values: yout[k] = y[k] - y[0]";
+    return "Subtract the first value from every subsequent values: yout[k] = y[k] - y[0]";
 }
 
-void SubstractFirstValueNodeType::getAttributes(StringMap& attrs) const
+void SubtractFirstValueNodeType::getAttributes(StringMap& attrs) const
 {
 }
 
-Node *SubstractFirstValueNodeType::create(DataflowManager *mgr, StringMap& attrs) const
+Node *SubtractFirstValueNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 {
     checkAttrNames(attrs);
 
-    Node *node = new SubstractFirstValueNode();
+    Node *node = new SubtractFirstValueNode();
     node->setNodeType(this);
     mgr->addNode(node);
     return node;
 }
 
-void SubstractFirstValueNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void SubtractFirstValueNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
     if (attrs["type"] == "enum")
         warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
