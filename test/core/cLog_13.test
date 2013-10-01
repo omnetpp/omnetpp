@@ -11,5 +11,5 @@ log-format = "%U, %C, %K, %J, %L: "
 
 EV << "Hello" << endl;
 
-%contains-regex: stdout
+%contains: stdout
 (Test)Test, (Test)Test, , (Test)Test, : Hello
