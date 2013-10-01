@@ -84,6 +84,9 @@
  *
  * Escaping % character:
  *  - %% one % character
+ *
+ * Conditional constant text:
+ *  - %? ignore the following constant part if the preceding directive didn't print anything (useful for separators)
  */
 class LogFormatter
 {
@@ -153,6 +156,7 @@ class LogFormatter
     struct FormatPart {
         FormatDirective directive;
         std::string text;
+        bool conditional;
     };
 
     std::vector<FormatPart> formatParts;
@@ -167,7 +171,7 @@ class LogFormatter
   private:
     void parseFormat(const char *format);
     FormatDirective getDirective(char ch);
-    void addPart(FormatDirective directive, char *textBegin, char *textEnd);
+    void addPart(FormatDirective directive, char *textBegin, char *textEnd, bool conditional);
 };
 
 #endif

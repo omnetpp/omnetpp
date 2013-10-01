@@ -30,26 +30,37 @@ void LogFormatter::parseFormat(const char *format)
 {
     char *current = const_cast<char *>(format);
     char *previous = current;
+    bool conditional = false;
     while (true)
     {
         char ch = *current;
         if (ch == '\0')
         {
-            if (previous != current)
-                addPart(CONSTANT_TEXT, previous, current);
+            if (previous != current) {
+                addPart(CONSTANT_TEXT, previous, current, conditional);
+                conditional = false;
+            }
             break;
         }
         else if (ch == '%')
         {
-            if (previous != current)
-                addPart(CONSTANT_TEXT, previous, current);
+            if (previous != current) {
+                addPart(CONSTANT_TEXT, previous, current, conditional);
+                conditional = false;
+            }
             previous = current;
             current++;
             ch = *current;
-            if (ch == '%')
-                addPart(CONSTANT_TEXT, previous, current);
-            else
-                addPart(getDirective(ch), NULL, NULL);
+            if (ch == '%') {
+                addPart(CONSTANT_TEXT, previous, current, conditional);
+                conditional = false;
+            }
+            else if (ch == '?')
+                conditional = true;
+            else {
+                addPart(getDirective(ch), NULL, NULL, conditional);
+                conditional = false;
+            }
             previous = current + 1;
         }
         current++;
@@ -63,10 +74,11 @@ LogFormatter::FormatDirective LogFormatter::getDirective(char ch)
     return (LogFormatter::FormatDirective) ch;
 }
 
-void LogFormatter::addPart(FormatDirective directive, char *textBegin, char *textEnd)
+void LogFormatter::addPart(FormatDirective directive, char *textBegin, char *textEnd, bool conditional)
 {
     FormatPart part;
     part.directive = directive;
+    part.conditional = conditional;
     if (textBegin && textEnd)
         part.text = std::string(textBegin, textEnd - textBegin);
     formatParts.push_back(part);
@@ -74,20 +86,24 @@ void LogFormatter::addPart(FormatDirective directive, char *textBegin, char *tex
 
 std::string LogFormatter::formatPrefix(cLogEntry *entry)
 {
+    bool lastPartEmpty = true;
     std::stringstream stream;
     for (std::vector<FormatPart>::iterator it = formatParts.begin(); it != formatParts.end(); it++)
     {
         FormatPart& part = *it;
+        if (part.directive == CONSTANT_TEXT && (!part.conditional || !lastPartEmpty))
+            stream << part.text;
+        lastPartEmpty = false;
         switch (part.directive)
         {
-            case CONSTANT_TEXT:
-                stream << part.text; break;
+            // constant text is already done
+            case CONSTANT_TEXT: break;
 
             // log statement related
             case LOGLEVEL:
                 stream << cLogLevel::getName(entry->loglevel); break;
             case LOGCATEGORY:
-                stream << (entry->category ? entry->category : ""); break;
+                if (entry->category) stream << entry->category; else lastPartEmpty = true; break;
 
             // current simulation state related
             case CURRENT_EVENT_NUMBER:
@@ -96,31 +112,31 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                 stream << simulation.getSimTime(); break;
 
             case CURRENT_EVENT_NAME:
-                if (ev.getCurrentEventName()) stream << ev.getCurrentEventName(); break;
+                if (ev.getCurrentEventName()) stream << ev.getCurrentEventName(); else lastPartEmpty = true; break;
             case CURRENT_EVENT_CLASSNAME:
-                if (ev.getCurrentEventClassName()) stream << ev.getCurrentEventClassName(); break;
+                if (ev.getCurrentEventClassName()) stream << ev.getCurrentEventClassName(); else lastPartEmpty = true; break;
 
             case CURRENT_MODULE_NAME:
-                if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getFullName(); break;
+                if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getFullName(); else lastPartEmpty = true; break;
             case CURRENT_MODULE_FULLPATH:
-                if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getFullPath(); break;
+                if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getFullPath(); else lastPartEmpty = true; break;
             case CURRENT_MODULE_CLASSNAME:
-                if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getClassName(); break;
+                if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getClassName(); else lastPartEmpty = true; break;
             case CURRENT_MODULE_NEDTYPE_SIMPLENAME:
-                if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getComponentType()->getName(); break;
+                if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getComponentType()->getName(); else lastPartEmpty = true; break;
             case CURRENT_MODULE_NEDTYPE_QUALIFIEDNAME:
-                if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getComponentType()->getFullName(); break;
+                if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getComponentType()->getFullName(); else lastPartEmpty = true; break;
 
             case CONTEXT_COMPONENT_NAME:
-                if (simulation.getContext()) stream << simulation.getContext()->getFullName(); break;
+                if (simulation.getContext()) stream << simulation.getContext()->getFullName(); else lastPartEmpty = true; break;
             case CONTEXT_COMPONENT_FULLPATH:
-                if (simulation.getContext()) stream << simulation.getContext()->getFullPath(); break;
+                if (simulation.getContext()) stream << simulation.getContext()->getFullPath(); else lastPartEmpty = true; break;
             case CONTEXT_COMPONENT_CLASSNAME:
-                if (simulation.getContext()) stream << simulation.getContext()->getClassName(); break;
+                if (simulation.getContext()) stream << simulation.getContext()->getClassName(); else lastPartEmpty = true; break;
             case CONTEXT_COMPONENT_NEDTYPE_SIMPLENAME:
-                if (simulation.getContext()) stream << simulation.getContext()->getComponentType()->getName(); break;
+                if (simulation.getContext()) stream << simulation.getContext()->getComponentType()->getName(); else lastPartEmpty = true; break;
             case CONTEXT_COMPONENT_NEDTYPE_QUALIFIEDNAME:
-                if (simulation.getContext()) stream << simulation.getContext()->getComponentType()->getFullName(); break;
+                if (simulation.getContext()) stream << simulation.getContext()->getComponentType()->getFullName(); else lastPartEmpty = true; break;
 
             // simulation run related
             case CONFIGNAME:
@@ -137,16 +153,16 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
 
             // C++ source related
             case SOURCE_OBJECT_POINTER:
-                if (entry->sourcePointer) stream << entry->sourcePointer; break;
+                if (entry->sourcePointer) stream << entry->sourcePointer; else lastPartEmpty = true; break;
             case SOURCE_OBJECT_NAME:
-                if (entry->sourceObject) stream << entry->sourceObject->getFullName(); break;
+                if (entry->sourceObject) stream << entry->sourceObject->getFullName(); else lastPartEmpty = true; break;
             case SOURCE_OBJECT_FULLPATH:
-                if (entry->sourceObject) stream << entry->sourceObject->getFullPath(); break;
+                if (entry->sourceObject) stream << entry->sourceObject->getFullPath(); else lastPartEmpty = true; break;
 
             case SOURCE_COMPONENT_NEDTYPE_SIMPLENAME:
-                if (entry->sourceComponent) stream << entry->sourceComponent->getComponentType()->getName(); break;
+                if (entry->sourceComponent) stream << entry->sourceComponent->getComponentType()->getName(); else lastPartEmpty = true; break;
             case SOURCE_COMPONENT_NEDTYPE_QUALIFIEDNAME:
-                if (entry->sourceComponent) stream << entry->sourceComponent->getComponentType()->getFullName(); break;
+                if (entry->sourceComponent) stream << entry->sourceComponent->getComponentType()->getFullName(); else lastPartEmpty = true; break;
 
             case SOURCE_FILE:
                 stream << entry->sourceFile; break;
@@ -181,21 +197,29 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                 cModule *mod = ev.getCurrentEventModule();
                 if (mod)
                     stream << "(" << mod->getComponentType()->getName() << ")" << mod->getFullPath();
+                else
+                    lastPartEmpty = true;
                 break;
             }
             case CONTEXT_COMPONENT_IF_DIFFERENT:
-                if (simulation.getContext() == ev.getCurrentEventModule())
+                if (simulation.getContext() == ev.getCurrentEventModule()) {
+                    lastPartEmpty = true;
                     break;
+                }
                 // no break
             case CONTEXT_COMPONENT: {
                 cComponent *component = simulation.getContext();
                 if (component)
                     stream << "(" << component->getComponentType()->getName() << ")" << component->getFullPath();
+                else
+                    lastPartEmpty = true;
                 break;
             }
             case SOURCE_COMPONENT_OR_OBJECT_IF_DIFFERENT:
-                if (entry->sourceComponent == simulation.getContext())
+                if (entry->sourceComponent == simulation.getContext()) {
+                    lastPartEmpty = true;
                     break;
+                }
                 // no break
             case SOURCE_COMPONENT_OR_OBJECT: {
                 if (entry->sourceComponent)
@@ -205,12 +229,14 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                         (entry->sourceObject->getOwner() == simulation.getContext() ?
                         entry->sourceObject->getFullName() : entry->sourceObject->getFullPath());
                 }
-                else {
+                else if (entry->sourceClass || entry->sourcePointer) {
                     if (entry->sourceClass)
                         stream << "(" << entry->sourceClass << ")";
                     if (entry->sourcePointer)
                         stream << "0x" << std::hex << entry->sourcePointer;
                 }
+                else
+                    lastPartEmpty = true;
                 break;
             }
 

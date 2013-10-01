@@ -1,0 +1,16 @@
+%description:
+
+Test conditional text (based on the previous part being empty).
+
+%inifile: test.ini
+[General]
+log-format = "[%c%? %l] : "
+
+%activity:
+
+EV << "Hello" << endl;
+EV_INFO_C("Test") << "Hello" << endl;
+
+%contains: stdout
+[INFO] : Hello
+[Test INFO] : Hello
