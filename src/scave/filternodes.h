@@ -564,7 +564,7 @@ class SCAVE_API SubtractFirstValueNode : public FilterNode
 class SCAVE_API SubtractFirstValueNodeType : public FilterNodeType
 {
     public:
-        virtual const char *getName() const {return "substractFirstValue";}
+        virtual const char *getName() const {return "subtractfirstval";}
         virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;

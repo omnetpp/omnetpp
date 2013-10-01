@@ -26,7 +26,7 @@
       <row><entry>nop</entry><entry>Does nothing</entry></row>
       <row><entry>removerepeats</entry><entry>Removes repeated y values</entry></row>
       <row><entry>slidingwinavg</entry><entry>Replaces every value with the mean of values in the window: <emphasis>y<superscript>out</superscript><subscript>k</subscript> = SUM(y<subscript>i</subscript>,i=k-winsize+1..k)/winsize</emphasis></entry></row>
-      <row><entry>substractFirstValue</entry><entry>Substract the first value from every subsequent values: <emphasis>y<superscript>out</superscript><subscript>k</subscript> = y<subscript>k</subscript> - y[0]</emphasis></entry></row>
+      <row><entry>subtractfirstval</entry><entry>Subtract the first value from every subsequent values: <emphasis>y<superscript>out</superscript><subscript>k</subscript> = y<subscript>k</subscript> - y[0]</emphasis></entry></row>
       <row><entry>sum</entry><entry>Sums up values: <emphasis>y<superscript>out</superscript><subscript>k</subscript> = SUM(y<subscript>i</subscript>, i=0..k)</emphasis></entry></row>
       <row><entry>timeavg</entry><entry>Calculates the time average of the input (integral divided by time)</entry></row>
       <row><entry>timediff</entry><entry>Returns the difference in time between this and the previous value: <emphasis>y<superscript>out</superscript><subscript>k</subscript> = t<subscript>k</subscript> - t<subscript>k-1</subscript></emphasis></entry></row>
