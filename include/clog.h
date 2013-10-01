@@ -201,7 +201,7 @@ inline const char *getClassName() {return NULL;}
  * @defgroup LoggingCat  Logging with explicit category
  */
 //@{
-#define EV_C(category)       EV_INFO(category)                  ///< Short for EV_INFO_C
+#define EV_C(category)       EV_INFO_C(category)                ///< Short for EV_INFO_C
 #define EV_FATAL_C(category) OPP_LOG(LOGLEVEL_FATAL, category)  ///< Log local fatal errors
 #define EV_ERROR_C(category) OPP_LOG(LOGLEVEL_ERROR, category)  ///< Log local but recoverable errors
 #define EV_WARN_C(category)  OPP_LOG(LOGLEVEL_WARN, category)   ///< Log warnings
