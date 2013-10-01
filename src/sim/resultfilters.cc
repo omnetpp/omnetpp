@@ -31,6 +31,7 @@ Register_ResultFilter("min", MinFilter);
 Register_ResultFilter("max", MaxFilter);
 Register_ResultFilter("last", IdentityFilter);  // useful for expressions like: record=last+5
 Register_ResultFilter("timeavg", TimeAverageFilter);
+Register_ResultFilter("removerepeats", RemoveRepeatsFilter);
 Register_ResultFilter("packetBytes", PacketBytesFilter);
 Register_ResultFilter("packetBits", PacketBitsFilter);
 Register_ResultFilter("sumPerDuration", SumPerDurationFilter);
