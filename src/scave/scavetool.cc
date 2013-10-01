@@ -212,7 +212,7 @@ int vectorCommand(int argc, char **argv)
         else if (!strcmp(opt, "-r") && i!=argc-1) // for testing only
             opt_readerNodeType = argv[++i];
         else
-            {fprintf(stderr, "unknown option `%s'", opt);return 1;}
+            {fprintf(stderr, "unknown option `%s'\n", opt);return 1;}
     }
 
     bool opt_writeSeparateFiles = false;
@@ -616,13 +616,13 @@ int listCommand(int argc, char **argv)
         else if (opt[0] != '-')
             opt_fileNames.push_back(argv[i]);
         else
-            {fprintf(stderr, "unknown option `%s'", opt);return 1;}
+            {fprintf(stderr, "unknown option `%s'\n", opt);return 1;}
     }
     if (count == 0)
         opt_name = true;
     else if (count > 1)
     {
-        fprintf(stderr, "expects only one option");
+        fprintf(stderr, "expects only one option\n");
         return 1;
     }
 
@@ -682,7 +682,7 @@ int infoCommand(int argc, char **argv)
         else if (!strcmp(opt, "-v"))
             ; // no-op
         else
-            {fprintf(stderr, "unknown option `%s'", opt);return 1;}
+            {fprintf(stderr, "unknown option `%s'\n", opt);return 1;}
     }
 
     printf("\nScalar operations:\n\n");
@@ -755,7 +755,7 @@ int indexCommand(int argc, char **argv)
         else if (opt[0] != '-')
             opt_fileNames.push_back(argv[i]);
         else
-            {fprintf(stderr, "unknown option `%s'", opt);return 1;}
+            {fprintf(stderr, "unknown option `%s'\n", opt);return 1;}
     }
 
     VectorFileIndexer indexer;
@@ -802,7 +802,7 @@ int main(int argc, char **argv)
     else if (!strcmp(command, "x") || !strcmp(command, "index"))
         return indexCommand(argc, argv);
     else
-        {fprintf(stderr, "unknown command `%s'", command);return 1;}
+        {fprintf(stderr, "unknown command `%s'\n", command);return 1;}
 }
 
 
