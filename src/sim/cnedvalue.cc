@@ -82,6 +82,16 @@ double cNEDValue::convertUnit(double d, const char *unit, const char *targetUnit
     return UnitConversion::convertUnit(d, unit, targetUnit);
 }
 
+double cNEDValue::parseQuantity(const char *str, const char *expectedUnit)
+{
+    return UnitConversion::parseQuantity(str, expectedUnit);
+}
+
+double cNEDValue::parseQuantity(const char *str, std::string& outActualUnit)
+{
+    return UnitConversion::parseQuantity(str, outActualUnit);
+}
+
 const char *cNEDValue::getPooled(const char *s)
 {
     static CommonStringPool stringPool; // non-refcounted
