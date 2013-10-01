@@ -75,6 +75,13 @@
  *  - %H host name
  *  - %I process id
  *
+ * Compound fields
+ *  - %U current module (NED type, full path)
+ *  - %C context component (NED type, full path)
+ *  - %K context component, if different from current module (NED type, full path)
+ *  - %J source component or object (NED type or class, full path or pointer)
+ *  - %L source component or object, if different from context component (NED type or class, full path or pointer)
+ *
  * Escaping % character:
  *  - %% one % character
  */
@@ -133,7 +140,14 @@ class LogFormatter
         WALLTIME = 'W',
 
         HOSTNAME = 'H',
-        PROCESSID = 'I'
+        PROCESSID = 'I',
+
+        // compound fields
+        CURRENT_MODULE = 'U',
+        CONTEXT_COMPONENT = 'C',
+        CONTEXT_COMPONENT_IF_DIFFERENT = 'K',
+        SOURCE_COMPONENT_OR_OBJECT = 'J',
+        SOURCE_COMPONENT_OR_OBJECT_IF_DIFFERENT = 'L',
     };
 
     struct FormatPart {

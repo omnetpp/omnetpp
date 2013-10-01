@@ -58,7 +58,7 @@ void LogFormatter::parseFormat(const char *format)
 
 LogFormatter::FormatDirective LogFormatter::getDirective(char ch)
 {
-    if (strchr("lcetvanmosqNMOSQGRXYZpbdxyzufiwWHI", ch) == NULL)
+    if (strchr("lcetvanmosqNMOSQGRXYZpbdzuxyfiwWHIUCKJL", ch) == NULL)
         throw cRuntimeError("Unknown log format character '%c'", ch);
     return (LogFormatter::FormatDirective) ch;
 }
@@ -175,6 +175,44 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                 stream << opp_gethostname(); break;
             case PROCESSID:
                 stream << getpid(); break;
+
+            // compound fields
+            case CURRENT_MODULE: {
+                cModule *mod = ev.getCurrentEventModule();
+                if (mod)
+                    stream << "(" << mod->getComponentType()->getName() << ")" << mod->getFullPath();
+                break;
+            }
+            case CONTEXT_COMPONENT_IF_DIFFERENT:
+                if (simulation.getContext() == ev.getCurrentEventModule())
+                    break;
+                // no break
+            case CONTEXT_COMPONENT: {
+                cComponent *component = simulation.getContext();
+                if (component)
+                    stream << "(" << component->getComponentType()->getName() << ")" << component->getFullPath();
+                break;
+            }
+            case SOURCE_COMPONENT_OR_OBJECT_IF_DIFFERENT:
+                if (entry->sourceComponent == simulation.getContext())
+                    break;
+                // no break
+            case SOURCE_COMPONENT_OR_OBJECT: {
+                if (entry->sourceComponent)
+                    stream << "(" << entry->sourceComponent->getComponentType()->getName() << ")" << entry->sourceComponent->getFullPath();
+                else if (entry->sourceObject) {
+                    stream << "(" << entry->sourceClass << ")" <<
+                        (entry->sourceObject->getOwner() == simulation.getContext() ?
+                        entry->sourceObject->getFullName() : entry->sourceObject->getFullPath());
+                }
+                else {
+                    if (entry->sourceClass)
+                        stream << "(" << entry->sourceClass << ")";
+                    if (entry->sourcePointer)
+                        stream << "0x" << std::hex << entry->sourcePointer;
+                }
+                break;
+            }
 
             default:
                 throw cRuntimeError("Unknown format directive '%d'", part.directive);
