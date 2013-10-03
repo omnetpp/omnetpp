@@ -1,0 +1,105 @@
+%description:
+Basic test for ev.addResultRecorders()
+
+%file: test.ned
+
+simple Node
+{
+    @statisticTemplate[qlen](record=vector,vector(mean),count+10,mean,timeavg; title="Queue Length"; unit=packets);
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class Node : public cSimpleModule {
+    simsignal_t signal1, signal2;
+
+    virtual void initialize() {
+        signal1 = registerSignal("foo");
+        signal2 = registerSignal("bar");
+        cProperty *statisticTemplate = getProperties()->get("statisticTemplate", "qlen");
+        ev.addResultRecorders(this, signal1, "queueLength1", statisticTemplate);
+        ev.addResultRecorders(this, signal2, "queueLength2", statisticTemplate);
+
+        emit(signal1, 10);
+        emit(signal1, 11);
+        emit(signal1, 12);
+        emit(signal2, 2);
+        scheduleAt(0.1, new cMessage());
+    }
+    virtual void handleMessage(cMessage *msg) {
+        delete msg;
+        emit(signal1, 13);
+        emit(signal1, 14);
+        emit(signal1, 15);
+        emit(signal2, 4);
+    }
+};
+
+Define_Module(Node);
+
+}; //namespace
+
+
+%subst: /-?1\.#IND/nan/
+%subst: /-?1\.#QNAN/nan/
+%subst: /-?:NaN/:nan/
+
+%contains: test.sca
+scalar Test.node 	queueLength2:count+10 	12
+attr title  "Queue Length, count+10"
+attr unit  packets
+scalar Test.node 	queueLength2:mean 	3
+attr title  "Queue Length, mean"
+attr unit  packets
+scalar Test.node 	queueLength2:timeavg 	2
+attr title  "Queue Length, timeavg"
+attr unit  packets
+scalar Test.node 	queueLength1:count+10 	16
+attr title  "Queue Length, count+10"
+attr unit  packets
+scalar Test.node 	queueLength1:mean 	12.5
+attr title  "Queue Length, mean"
+attr unit  packets
+scalar Test.node 	queueLength1:timeavg 	12
+attr title  "Queue Length, timeavg"
+attr unit  packets
+
+%contains: test.vec
+vector 0  Test.node  queueLength1:vector  ETV
+attr title  "Queue Length, vector"
+attr unit  packets
+vector 1  Test.node  queueLength1:vector(mean)  ETV
+attr title  "Queue Length, vector(mean)"
+attr unit  packets
+vector 2  Test.node  queueLength2:vector  ETV
+attr title  "Queue Length, vector"
+attr unit  packets
+vector 3  Test.node  queueLength2:vector(mean)  ETV
+attr title  "Queue Length, vector(mean)"
+attr unit  packets
+0	0	0	10
+0	0	0	11
+0	0	0	12
+0	1	0.1	13
+0	1	0.1	14
+0	1	0.1	15
+1	0	0	10
+1	0	0	10.5
+1	0	0	11
+1	1	0.1	11.5
+1	1	0.1	12
+1	1	0.1	12.5
+2	0	0	2
+2	1	0.1	4
+3	0	0	2
+3	1	0.1	3

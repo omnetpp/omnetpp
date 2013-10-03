@@ -25,19 +25,27 @@ NAMESPACE_BEGIN
 cGlobalRegistrationList resultRecorders("resultRecorders");
 
 
-void cResultRecorder::init(cComponent *comp, const char *statsName, const char *recMode)
+void cResultRecorder::init(cComponent *comp, const char *statsName, const char *recMode, cProperty *property, opp_string_map *attrs)
 {
     component = comp;
     statisticName = getPooled(statsName);
     recordingMode = getPooled(recMode);
+    attrsProperty = property;
+    manualAttrs = attrs;
+    if ((!attrsProperty) == (!manualAttrs))
+        throw cRuntimeError("cResultRecorder::init(): exactly one of attrsProperty and manualAttrs must be specified");
 }
 
 opp_string_map cResultRecorder::getStatisticAttributes()
 {
+    if (manualAttrs)
+        return *manualAttrs;
+    return getStatisticAttributesFrom(attrsProperty);
+}
+
+opp_string_map cResultRecorder::getStatisticAttributesFrom(cProperty *property)
+{
     opp_string_map result;
-    cProperty *property = getComponent()->getProperties()->get("statistic", getStatisticName());
-    if (!property)
-        return result;
 
     // fill result[] from the properties
     const std::vector<const char *>& keys = property->getKeys();

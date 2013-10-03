@@ -318,7 +318,7 @@ class RecorderExpressionResolver : public Expression::Resolver
     }
 };
 
-void StatisticRecorderParser::parse(const SignalSource& source, const char *recordingMode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName)
+void StatisticRecorderParser::parse(const SignalSource& source, const char *recordingMode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName, cProperty *attrsProperty)
 {
     // parse expression
     Expression expr;
@@ -353,7 +353,7 @@ void StatisticRecorderParser::parse(const SignalSource& source, const char *reco
            // on the stack.
            // if top 'len' elements contain more than one signalsource/filterorrecorder elements --> throw error (not supported for now)
            FilterOrRecorderReference *filterOrRecorderRef = (FilterOrRecorderReference *) e.getFunctor();
-           SignalSource signalSource = createFilterOrRecorder(filterOrRecorderRef, i==exprLen-1, stack, len, source, component, statisticName, recordingMode);
+           SignalSource signalSource = createFilterOrRecorder(filterOrRecorderRef, i==exprLen-1, stack, len, source, component, statisticName, recordingMode, attrsProperty);
            stack.erase(stack.end()-len, stack.end());
            stack.push_back(Expression::Elem());
            stack.back() = new SignalSourceReference(signalSource);
@@ -369,7 +369,7 @@ void StatisticRecorderParser::parse(const SignalSource& source, const char *reco
         // install it, and replace top 'len' elements with a SignalSourceReference
         // on the stack.
         // if top 'len' elements contain more than one signalsource/filterorrecorder elements --> throw error (not supported for now)
-        SignalSource signalSource = createFilterOrRecorder(NULL, true, stack, len, source, component, statisticName, recordingMode);
+        SignalSource signalSource = createFilterOrRecorder(NULL, true, stack, len, source, component, statisticName, recordingMode, attrsProperty);
         stack.erase(stack.end()-len, stack.end());
         stack.push_back(Expression::Elem());
         stack.back() = new SignalSourceReference(signalSource);
@@ -387,7 +387,7 @@ void StatisticRecorderParser::parse(const SignalSource& source, const char *reco
 }
 
 //XXX now it appears that StatisticSourceParser::createFilter() is a special case of this -- eliminate it?
-SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderReference *filterOrRecorderRef, bool makeRecorder, const std::vector<Expression::Elem>& stack, int len, const SignalSource& source, cComponent *component, const char *statisticName, const char *recordingMode)
+SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderReference *filterOrRecorderRef, bool makeRecorder, const std::vector<Expression::Elem>& stack, int len, const SignalSource& source, cComponent *component, const char *statisticName, const char *recordingMode, cProperty *attrsProperty)
 {
     Assert(len >= 1);
     int stackSize = stack.size();
@@ -427,7 +427,7 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
         const char *name = filterOrRecorderRef->getName();
         if (makeRecorder) {
             cResultRecorder *recorder = cResultRecorderDescriptor::get(name)->create();
-            recorder->init(component, statisticName, recordingMode);
+            recorder->init(component, statisticName, recordingMode, attrsProperty);
             filterOrRecorder = recorder;
         }
         else
@@ -459,7 +459,7 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
         {
             // expression recorder
             ExpressionRecorder *exprRecorder = new ExpressionRecorder();
-            exprRecorder->init(component, statisticName, recordingMode);
+            exprRecorder->init(component, statisticName, recordingMode, attrsProperty);
 
             Expression::Elem *v = new Expression::Elem[argLen];
             for (int i=0; i<argLen; i++)

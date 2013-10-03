@@ -880,39 +880,57 @@ void EnvirBase::addResultRecorders(cComponent *component)
     std::string componentFullPath;
     for (int i = 0; i < (int)statisticNames.size(); i++)
     {
-        const char *statisticName = statisticNames[i];
         if (componentFullPath.empty())
             componentFullPath = component->getFullPath();
-        std::string statisticFullPath = componentFullPath + "." + statisticName;
-
-        bool scalarsEnabled = ev.getConfig()->getAsBool(statisticFullPath.c_str(), CFGID_SCALAR_RECORDING);
-        bool vectorsEnabled = ev.getConfig()->getAsBool(statisticFullPath.c_str(), CFGID_VECTOR_RECORDING);
-        if (!scalarsEnabled && !vectorsEnabled)
-            continue;
-
+        const char *statisticName = statisticNames[i];
         cProperty *statisticProperty = component->getProperties()->get("statistic", statisticName);
         ASSERT(statisticProperty!=NULL);
-
-        // collect the list of result recorders
-        std::string modesOption = ev.getConfig()->getAsString(statisticFullPath.c_str(), CFGID_RESULT_RECORDING_MODES, "");
-        std::vector<std::string> modes = extractRecorderList(modesOption.c_str(), statisticProperty);
-
-        // if there are result recorders, add source filters and recorders
-        if (!modes.empty())
-        {
-            // add source
-            bool hasSourceKey = statisticProperty->getNumValues("source") > 0;
-            const char *sourceSpec = hasSourceKey ? statisticProperty->getValue("source",0) : statisticName;
-            SignalSource source = doStatisticSource(component, statisticName, sourceSpec, opt_warmupperiod!=0);
-
-            // add result recorders
-            for (int j = 0; j < (int)modes.size(); j++)
-                doResultRecorder(source, modes[j].c_str(), scalarsEnabled, vectorsEnabled, component, statisticName);
-        }
+        doAddResultRecorders(component, componentFullPath, statisticName, statisticProperty, SIMSIGNAL_NULL);
     }
 
     if (opt_debug_statistics_recording)
         dumpResultRecorders(component);
+}
+
+void EnvirBase::addResultRecorders(cComponent *component, simsignal_t signal, const char *statisticName, cProperty *statisticTemplateProperty)
+{
+    std::string dummy;
+    doAddResultRecorders(component, dummy, statisticName, statisticTemplateProperty, signal);
+}
+
+void EnvirBase::doAddResultRecorders(cComponent *component, std::string& componentFullPath, const char *statisticName, cProperty *statisticProperty, simsignal_t signal)
+{
+    if (componentFullPath.empty())
+        componentFullPath = component->getFullPath();
+    std::string statisticFullPath = componentFullPath + "." + statisticName;
+
+    bool scalarsEnabled = ev.getConfig()->getAsBool(statisticFullPath.c_str(), CFGID_SCALAR_RECORDING);
+    bool vectorsEnabled = ev.getConfig()->getAsBool(statisticFullPath.c_str(), CFGID_VECTOR_RECORDING);
+    if (!scalarsEnabled && !vectorsEnabled)
+        return;
+
+    // collect the list of result recorders
+    std::string modesOption = ev.getConfig()->getAsString(statisticFullPath.c_str(), CFGID_RESULT_RECORDING_MODES, "");
+    std::vector<std::string> modes = extractRecorderList(modesOption.c_str(), statisticProperty);
+
+    // if there are result recorders, add source filters and recorders
+    if (!modes.empty())
+    {
+        // determine source: use either the signal from the argument list, or the source= key in the @statistic property
+        SignalSource source;
+        if (signal == SIMSIGNAL_NULL) {
+            bool hasSourceKey = statisticProperty->getNumValues("source") > 0;
+            const char *sourceSpec = hasSourceKey ? statisticProperty->getValue("source",0) : statisticName;
+            source = doStatisticSource(component, statisticName, sourceSpec, opt_warmupperiod!=0);
+        }
+        else {
+            source = SignalSource(component, signal);
+        }
+
+        // add result recorders
+        for (int j = 0; j < (int)modes.size(); j++)
+            doResultRecorder(source, modes[j].c_str(), scalarsEnabled, vectorsEnabled, component, statisticName, statisticProperty);
+    }
 }
 
 std::vector<std::string> EnvirBase::extractRecorderList(const char *modesOption, cProperty *statisticProperty)
@@ -1017,7 +1035,7 @@ SignalSource EnvirBase::doStatisticSource(cComponent *component, const char *sta
     }
 }
 
-void EnvirBase::doResultRecorder(const SignalSource& source, const char *recordingMode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName)
+void EnvirBase::doResultRecorder(const SignalSource& source, const char *recordingMode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName, cProperty *attrsProperty)
 {
     try
     {
@@ -1029,14 +1047,14 @@ void EnvirBase::doResultRecorder(const SignalSource& source, const char *recordi
                 return; // no point in creating if recording is disabled
 
             cResultRecorder *recorder = cResultRecorderDescriptor::get(recordingMode)->create();
-            recorder->init(component, statisticName, recordingMode);
+            recorder->init(component, statisticName, recordingMode, attrsProperty);
             source.subscribe(recorder);
         }
         else
         {
             // something more complicated: use parser
             StatisticRecorderParser parser;
-            parser.parse(source, recordingMode, scalarsEnabled, vectorsEnabled, component, statisticName);
+            parser.parse(source, recordingMode, scalarsEnabled, vectorsEnabled, component, statisticName, attrsProperty);
         }
     }
     catch (std::exception& e)

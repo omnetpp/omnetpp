@@ -47,6 +47,9 @@
 	* cNEDValue: added two static parseQuantity() functions that let you
 	access similar functions of UnitConversion in the common lib.
 
+	* cResultRecorder: make it possible to bypass reading the @statistic
+	property
+
 2013-09-12  ------ omnetpp-4.3.1 released ------
 
 2013-04-02  ------ omnetpp-4.3 released ------

@@ -213,6 +213,8 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL);
     virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL);
 
+    virtual void addResultRecorders(cComponent *component, simsignal_t signal, const char *statisticName, cProperty *statisticTemplateProperty);
+
     // snapshot file
     virtual std::ostream *getStreamForSnapshot();
     virtual void releaseStreamForSnapshot(std::ostream *os);
@@ -273,6 +275,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
      */
     virtual void addResultRecorders(cComponent *component);
 
+
   public:
     // Utility function: optionally appends host name to fname
     virtual void processFileName(opp_string& fname);
@@ -281,12 +284,16 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     // Utility function: checks simulation fingerprint and displays a message accordingly
     void checkFingerprint();
 
+    // Utility function: adds result recording listeners for the given signal (if it's non-null) or for the given @statistic property.
+    // If signal is specified, it will override the source= key in statisticProperty.
+    // The index of statisticProperty is ignored; statisticName will be used as name of the statistic instead.
+    virtual void doAddResultRecorders(cComponent *component, std::string& componentFullPath, const char *statisticName, cProperty *statisticProperty, simsignal_t signal=SIMSIGNAL_NULL);
     // Utility function for addResultRecorders()
     std::vector<std::string> extractRecorderList(const char *modesOption, cProperty *statisticProperty);
     // Utility function for addResultRecorders()
     SignalSource doStatisticSource(cComponent *component, const char *statisticName, const char *sourceSpec, bool needWarmupFilter);
     // Utility function for addResultRecorders()
-    void doResultRecorder(const SignalSource& source, const char *mode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName);
+    void doResultRecorder(const SignalSource& source, const char *mode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName, cProperty *attrsProperty);
     // Utility function for addResultRecorders()
     void dumpResultRecorders(cComponent *component);
     void dumpResultRecorderChain(cResultListener *listener, int depth);
