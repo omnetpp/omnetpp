@@ -536,7 +536,7 @@ proc load_bitmaps {path} {
        set sep {;}
    }
 
-   foreach dir [lreverse [split $path $sep]] {
+   foreach dir [split $path $sep] {
        if {$dir!=""} {
            puts -nonewline "Loading images from $dir: "
            do_load_bitmaps $dir ""
@@ -559,7 +559,8 @@ proc do_load_bitmaps {dir prefix} {
                      [glob -nocomplain -- [file join $dir {*.png}]]]
 
    # load bitmaps from this directory
-   set n 0
+   set numTotal 0
+   set numLoaded 0
    foreach f $files {
       set name [file tail [file rootname $f]]
       set img "i[incr bitmap_ctr]$name"
@@ -567,17 +568,22 @@ proc do_load_bitmaps {dir prefix} {
          image create photo $img -file $f
          set size "n" ;#default
          regexp -- {^(.*)_(vl|xl|l|n|s|vs|xs)$} $name dummy name size
-         do_add_bitmap $img $prefix $name $size
-         incr n
+         set loaded [do_add_bitmap $img $prefix $name $size]
+         if {$loaded} {incr numLoaded}
+         incr numTotal
       } err] {
          puts -nonewline "(*** cannot load $f: $err ***) "
       }
    }
-   puts -nonewline "$prefix*: $n  "
+   if {$numLoaded==$numTotal} {
+      puts -nonewline "$prefix*: $numTotal  "
+   } else {
+      puts -nonewline "$prefix*: $numLoaded (skipped [expr $numTotal-$numLoaded])  "
+   }
 
    # recurse into subdirs
    foreach f [glob -nocomplain -- [file join $dir {*}]] {
-      if {[file isdirectory $f] && [file tail $f]!="CVS"} {
+      if {[file isdirectory $f] && [file tail $f]!="CVS" && [file tail $f]!=".svn"} {
          do_load_bitmaps "$f" "$prefix[file tail $f]/"
       }
    }
@@ -588,6 +594,12 @@ proc do_load_bitmaps {dir prefix} {
 proc do_add_bitmap {img prefix name size} {
    global bitmaps
 
+   # skip if already exists
+   if [info exists bitmaps($prefix$name,$size)] {
+       image delete $img
+       return 0
+   }
+
    # access via the s= display string option
    set bitmaps($prefix$name,$size) $img
 
@@ -597,6 +609,7 @@ proc do_add_bitmap {img prefix name size} {
    } else {
        set bitmaps($prefix${name}_$size) $img
    }
+   return 1
 }
 
 
