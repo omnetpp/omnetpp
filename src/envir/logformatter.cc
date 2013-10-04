@@ -57,6 +57,13 @@ void LogFormatter::parseFormat(const char *format)
             }
             else if (ch == '?')
                 conditional = true;
+            else if ('0' <= ch && ch <= '9') {
+                char *tail;
+                int padding = strtol(current, &tail, 10);
+                addPart(PADDING, NULL, NULL, conditional);
+                formatParts[formatParts.size() - 1].padding = padding;
+                current = tail - 1;
+            }
             else {
                 addPart(getDirective(ch), NULL, NULL, conditional);
                 conditional = false;
@@ -97,7 +104,15 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
         switch (part.directive)
         {
             // constant text is already done
-            case CONSTANT_TEXT: break;
+            case CONSTANT_TEXT:
+                break;
+            case PADDING:
+            {
+                int count = part.padding - stream.str().size();
+                if (count > 0)
+                    stream << std::string(count, ' ');
+                break;
+            }
 
             // log statement related
             case LOGLEVEL:

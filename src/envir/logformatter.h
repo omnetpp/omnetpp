@@ -85,6 +85,9 @@
  * Escaping % character:
  *  - %% one % character
  *
+ * Padding with spaces:
+ *  - %[0-9]+ add spaces until specified column
+ *
  * Conditional constant text:
  *  - %? ignore the following constant part if the preceding directive didn't print anything (useful for separators)
  */
@@ -93,6 +96,7 @@ class LogFormatter
   private:
     enum FormatDirective {
         CONSTANT_TEXT,
+        PADDING,
 
         // log statement related
         LOGLEVEL = 'l',
@@ -155,6 +159,7 @@ class LogFormatter
 
     struct FormatPart {
         FormatDirective directive;
+        int padding;
         std::string text;
         bool conditional;
     };
