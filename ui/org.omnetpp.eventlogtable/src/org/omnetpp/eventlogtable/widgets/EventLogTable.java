@@ -337,8 +337,8 @@ public class EventLogTable
     }
 
     @Override
-    public void scrollToElement(EventLogEntryReference element) {
-        super.scrollToElement(element);
+    public void reveal(EventLogEntryReference element) {
+        super.reveal(element);
         followEnd = false;
     }
 
@@ -547,7 +547,7 @@ public class EventLogTable
                     setNameMode(eventLogTableState.nameMode);
                     setDisplayMode(eventLogTableState.displayMode);
 
-                    scrollToElement(new EventLogEntryReference(event.getEventEntry()));
+                    reveal(new EventLogEntryReference(event.getEventEntry()));
 
                     return true;
                 }

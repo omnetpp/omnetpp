@@ -326,9 +326,9 @@ public class VirtualTable<T>
                 else if (e.keyCode == SWT.ARROW_DOWN)
                     keyDownPressed(e);
                 else if (e.keyCode == SWT.PAGE_UP)
-                    moveSelection(-getPageJumpCount());
+                    moveFocus(-getPageJumpCount());
                 else if (e.keyCode == SWT.PAGE_DOWN)
-                    moveSelection(getPageJumpCount());
+                    moveFocus(getPageJumpCount());
                 else if (e.keyCode == SWT.HOME)
                     gotoBegin();
                 else if (e.keyCode == SWT.END)
@@ -381,11 +381,11 @@ public class VirtualTable<T>
     }
 
     protected void keyUpPressed(KeyEvent e) {
-        moveSelection(-1);
+        moveFocus(-1);
     }
 
     protected void keyDownPressed(KeyEvent e) {
-        moveSelection(1);
+        moveFocus(1);
     }
 
     private void createTable(Composite parent) {
@@ -533,7 +533,7 @@ public class VirtualTable<T>
                 try {
                     isSelectionChangeInProgress = true;
                     setSelectionElements(virtualTableSelection.getElements());
-                    scrollToSelectionElement();
+                    revealFocus();
                 }
                 finally {
                     isSelectionChangeInProgress = false;
@@ -705,7 +705,7 @@ public class VirtualTable<T>
         Assert.isTrue(element != null);
 
         setSelectionElement(element);
-        scrollToElement(element);
+        reveal(element);
     }
 
     /**
@@ -798,7 +798,7 @@ public class VirtualTable<T>
     /**
      * Moves the selection with the given number of elements up or down and scrolls if necessary.
      */
-    public void moveSelection(int numberOfElements) {
+    public void moveFocus(int numberOfElements) {
         T element = getSelectionElement();
 
         if (element == null) {
@@ -820,7 +820,7 @@ public class VirtualTable<T>
         if (element != null)
             setSelectionElement(element);
 
-        scrollToElement(element);
+        reveal(element);
     }
 
     /**
@@ -842,7 +842,7 @@ public class VirtualTable<T>
     /**
      * Scroll to the given element making it visible with as little scrolling as it is possible.
      */
-    public void scrollToElement(T element) {
+    public void reveal(T element) {
         Assert.isTrue(element != null);
 
         T topElement = getTopVisibleElement();
@@ -866,11 +866,11 @@ public class VirtualTable<T>
     /**
      * Scroll to the selection element making it visible.
      */
-    public void scrollToSelectionElement() {
+    public void revealFocus() {
         T element = getSelectionElement();
 
         if (element != null)
-            scrollToElement(element);
+            reveal(element);
     }
 
     /**

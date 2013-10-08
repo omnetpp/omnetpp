@@ -137,25 +137,25 @@ public class VectorBrowserView extends ViewWithMessagePart {
     public void gotoLine(int lineNumber) {
         OutputVectorEntry entry = contentProvider.getElementBySerial(lineNumber);
         if (entry != null)
-            viewer.scrollToElement(entry);
+            viewer.reveal(entry);
     }
 
     public void gotoEvent(long eventNumber) {
         OutputVectorEntry entry = contentProvider.getElementByEventNumber(eventNumber, true);
         if (entry != null)
-            viewer.scrollToElement(entry);
+            viewer.reveal(entry);
     }
 
     public void gotoTime(BigDecimal time) {
         OutputVectorEntry entry = contentProvider.getElementBySimulationTime(time, true);
         if (entry != null)
-            viewer.scrollToElement(entry);
+            viewer.reveal(entry);
     }
 
     public void selectLine(int lineNumber) {
         OutputVectorEntry entry = contentProvider.getElementBySerial(lineNumber);
         if (entry != null) {
-            viewer.scrollToElement(entry);
+            viewer.reveal(entry);
             viewer.setSelectionElement(entry);
         }
     }

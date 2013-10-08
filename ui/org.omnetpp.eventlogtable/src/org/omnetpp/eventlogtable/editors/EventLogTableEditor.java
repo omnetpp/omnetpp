@@ -171,7 +171,7 @@ public class EventLogTableEditor
             EventLogEntry eventLogEntry = event != null ? event.getEventEntry() : null;
 
             if (eventLogEntry != null)
-                eventLogTable.scrollToElement(new EventLogEntryReference(eventLogEntry));
+                eventLogTable.reveal(new EventLogEntryReference(eventLogEntry));
         }
 
         public void restoreState(IMemento memento) {

@@ -382,7 +382,7 @@ public class SequenceChart
                     refresh();
                 else if (e.keyCode == SWT.ARROW_LEFT) {
                     if (e.stateMask == 0)
-                        moveSelection(-1);
+                        moveFocus(-1);
                     else if (e.stateMask == SWT.MOD1) {
                         IEvent event = getSelectionEvent();
 
@@ -412,7 +412,7 @@ public class SequenceChart
                 }
                 else if (e.keyCode == SWT.ARROW_RIGHT) {
                     if (e.stateMask == 0)
-                        moveSelection(1);
+                        moveFocus(1);
                     else if (e.stateMask == SWT.MOD1) {
                         IEvent event = getSelectionEvent();
 
@@ -895,7 +895,7 @@ public class SequenceChart
         else if (percentage == 1)
             scrollToEnd();
         else
-            scrollToElement(eventLog.getApproximateEventAt(percentage));
+            reveal(eventLog.getApproximateEventAt(percentage));
     }
 
     @Override
@@ -935,10 +935,10 @@ public class SequenceChart
         IEvent neighbourEvent = eventLog.getNeighbourEvent(sequenceChartFacade.IEvent_getEvent(eventPtr), numberOfEvents);
 
         if (neighbourEvent != null)
-            scrollToElement(neighbourEvent);
+            reveal(neighbourEvent);
     }
 
-    public void scrollToElement(IEvent event) {
+    public void reveal(IEvent event) {
         scrollToElement(event, getViewportWidth() / 2);
     }
 
@@ -996,11 +996,11 @@ public class SequenceChart
         redraw();
     }
 
-    public void scrollToSelectionElement() {
+    public void revealFocus() {
         IEvent event = getSelectionEvent();
 
         if (event != null)
-            scrollToElement(event);
+            reveal(event);
     }
 
     /**
@@ -1028,7 +1028,7 @@ public class SequenceChart
                 scrollVerticalTo(getAxisModuleYs()[i] - getAxisRenderers()[i].getHeight() / 2 - getViewportHeight() / 2);
     }
 
-    public void moveSelection(int numberOfEvents) {
+    public void moveFocus(int numberOfEvents) {
         IEvent selectionEvent = getSelectionEvent();
 
         if (selectionEvent != null) {
@@ -1059,7 +1059,7 @@ public class SequenceChart
 
     public void gotoElement(IEvent event) {
         setSelectionEvent(event);
-        scrollToElement(event);
+        reveal(event);
     }
 
     public void gotoClosestElement(IEvent event) {
@@ -4679,7 +4679,7 @@ public class SequenceChart
                     selectedTimelineCoordinate = newSelectedTimelineCoordinate;
                     // go to the time of the first event selected
                     if (!selectedEventNumbers.isEmpty())
-                        scrollToElement(eventLog.getEventForEventNumber(selectedEventNumbers.iterator().next()));
+                        reveal(eventLog.getEventForEventNumber(selectedEventNumbers.iterator().next()));
                     fireSelectionChanged();
                     redraw();
                 }

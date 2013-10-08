@@ -8,55 +8,62 @@
 package org.omnetpp.common.virtualtable;
 
 
+/**
+ * Defines navigation on a widget that displays a list of elements.
+ */
 public interface IVirtualContentWidget<T> {
     /**
-     * Scroll to the very beginning of the content making it visible.
+     * Scroll to the very beginning of the content making it visible, keeping the focus element unchanged.
      */
     public void scrollToBegin();
 
     /**
-     * Scroll to the very end of the content making it visible.
+     * Scroll to the very end of the content making it visible, keeping the focus element unchanged.
      */
     public void scrollToEnd();
 
     /**
-     * Scrolls with the given number of elements in both directions making that element visible with as little scrolling as possible.
+     * Scrolls by the given number of elements up or down, keeping the focus element unchanged.
      */
     public void scroll(int numberOfElements);
 
     /**
-     * Scroll to the given element making it visible with as little scrolling as possible.
+     * Make the given element visible by scrolling as little as possible.
      */
-    public void scrollToElement(T element);
+    public void reveal(T element);
 
     /**
-     * Scroll to the first selection element making it visible.
+     * Make the focus element visible by scrolling as little as possible.
      */
-    public void scrollToSelectionElement();
+    public void revealFocus();
 
     /**
-     * Moves the selection with the given number of elements in both directions and scrolls if necessary.
+     * Move the focus by the given number of elements up or down, and scroll if necessary to reveal it.
+     * This will also set the selection to the focus element.
      */
-    public void moveSelection(int numberOfElements);
+    public void moveFocus(int numberOfElements);
 
     /**
-     * Position the selection to the very beginning of the content making it visible.
+     * Position the focus to the very beginning of the content, making it visible.
+     * This will also set the selection to the focus element.
      */
     public void gotoBegin();
 
     /**
-     * Position the selection to the very end of the content making it visible.
+     * Position the focus to the very end of the content, making it visible.
+     * This will also set the selection to the focus element.
      */
     public void gotoEnd();
 
     /**
-     * Position the selection to the given element making it visible.
+     * Position the focus to the given element making it visible, and scroll if necessary to reveal it.
+     * This will also set the selection to the focus element.
      */
     public void gotoElement(T element);
 
     /**
-     * Position the selection to the closest non filtered element making it visible.
-     * If the element is not filtered at the moment then it is equivalent by calling gotoElement.
+     * Position the focus to the closest non-filtered element, and scroll if necessary to reveal it.
+     * If the element is not filtered out at the moment, then it is equivalent to calling gotoElement.
      */
     public void gotoClosestElement(T element);
 }
