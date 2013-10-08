@@ -698,9 +698,6 @@ public class VirtualTable<T>
         }
     }
 
-    /**
-     * Position the selection to the given element and make it visible.
-     */
     public void gotoElement(T element) {
         Assert.isTrue(element != null);
 
@@ -708,16 +705,10 @@ public class VirtualTable<T>
         reveal(element);
     }
 
-    /**
-     * Position the selection to the closest shown element and make it visible.
-     */
     public void gotoClosestElement(T element) {
         gotoElement(contentProvider.getClosestElement(element));
     }
 
-    /**
-     * Position the selection to the very beginning of the table.
-     */
     public void gotoBegin() {
         T firstElement = contentProvider.getFirstElement();
 
@@ -727,9 +718,6 @@ public class VirtualTable<T>
         scrollToBegin();
     }
 
-    /**
-     * Position the selection to the very end of the table.
-     */
     public void gotoEnd() {
         T lastElement = contentProvider.getLastElement();
 
@@ -742,7 +730,7 @@ public class VirtualTable<T>
     /**
      * Updates the invalid fix point to a valid one staying as close to the current position as it is possible.
      */
-    public void stayNear() {
+    protected void stayNear() {
         if (fixPointElement != null) {
             relocateFixPoint(contentProvider.getClosestElement(fixPointElement), fixPointDistance);
             redraw();
@@ -795,9 +783,6 @@ public class VirtualTable<T>
         verticalBar.setSelection((int)((verticalBar.getMaximum() - verticalBar.getThumb()) * percentage));
     }
 
-    /**
-     * Moves the selection with the given number of elements up or down and scrolls if necessary.
-     */
     public void moveFocus(int numberOfElements) {
         T element = getSelectionElement();
 
@@ -831,17 +816,11 @@ public class VirtualTable<T>
         scrolledComposite.setOrigin(p.x + pixel, p.y);
     }
 
-    /**
-     * Scrolls with the given number of elements up or down.
-     */
     public void scroll(int numberOfElements) {
         relocateFixPoint(fixPointElement, fixPointDistance + numberOfElements);
         redraw();
     }
 
-    /**
-     * Scroll to the given element making it visible with as little scrolling as it is possible.
-     */
     public void reveal(T element) {
         Assert.isTrue(element != null);
 
@@ -863,9 +842,6 @@ public class VirtualTable<T>
         redraw();
     }
 
-    /**
-     * Scroll to the selection element making it visible.
-     */
     public void revealFocus() {
         T element = getSelectionElement();
 
@@ -873,17 +849,11 @@ public class VirtualTable<T>
             reveal(element);
     }
 
-    /**
-     * Scroll to the very beginning making it visible.
-     */
     public void scrollToBegin() {
         relocateFixPoint(contentProvider.getFirstElement(), 0);
         redraw();
     }
 
-    /**
-     * Scroll to the very end making it visible.
-     */
     public void scrollToEnd() {
         relocateFixPoint(contentProvider.getLastElement(), Math.max(0, getFullyVisibleElementCount() - 1));
         redraw();
