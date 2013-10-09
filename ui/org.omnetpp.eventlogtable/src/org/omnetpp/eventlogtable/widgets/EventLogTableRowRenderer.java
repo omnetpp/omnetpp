@@ -66,57 +66,40 @@ import org.omnetpp.eventlog.engine.SimulationEndEntry;
 import org.omnetpp.eventlogtable.widgets.EventLogTable.NameMode;
 
 public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventLogEntryReference> {
+    private static final Font FONT;
+    private static final Font BOLD_FONT;
     private static final Color DARKBLUE = new Color(null, 0, 0, 192);
-
     private static final Color DARKRED = new Color(null, 127, 0, 85);
-
     private static final Color RED = new Color(null, 240, 0, 0);
-
     private static final Color BLACK = new Color(null, 0, 0, 0);
-
     private static final Color LIGHTGREY = new Color(null, 211, 211, 211);
-
     private static final Color BOOKMARK_COLOR = ColorFactory.LIGHT_CYAN;
-
     private static final Styler EVENT_ENTRY_EVENT_NUMBER_STYLE = createStyle(BLACK);
-
     private static final Styler EVENT_LOG_ENTRY_EVENT_NUMBER_STYLE = createStyle(LIGHTGREY);
-
     private static final Styler EVENT_ENTRY_SIMULATION_TIME_STYLE = createStyle(BLACK);
-
     private static final Styler EVENT_LOG_ENTRY_SIMULATION_TIME_STYLE = createStyle(LIGHTGREY);
-
     private static final Styler CONSTANT_TEXT_STYLE = createStyle(BLACK);
-
     private static final Styler BOLD_CONSTANT_TEXT_STYLE = createStyle(BLACK, true);
-
     private static final Styler RAW_VALUE_STYLE = createStyle(DARKBLUE);
-
     private static final Styler TYPE_STYLE = createStyle(DARKBLUE);
-
     private static final Styler NAME_STYLE = createStyle(DARKBLUE, true);
-
     private static final Styler EVENT_LOG_MESSAGE_STYLE = createStyle(DARKRED);
-
     private static final Styler BUBBLE_ENTRY_STYLE = createStyle(RED, true);
-
     private static final Styler DATA_STYLE = createStyle(DARKBLUE);
-
     private static final int HORIZONTAL_SPACING = 4;
-
     private static final int INDENT_SPACING = HORIZONTAL_SPACING * 4;
-
     private static final int VERTICAL_SPACING = 3;
 
     protected EventLogInput eventLogInput;
-
     protected EventLogTable eventLogTable;
-
-    protected Font font = JFaceResources.getDefaultFont();
-
     protected int fontHeight;
-
     private IEvent contextEvent;
+
+    static {
+        FontData systemFont = JFaceResources.getDefaultFont().getFontData()[0];
+        FONT = new Font(null, systemFont.getName(), systemFont.getHeight(), SWT.NORMAL);
+        BOLD_FONT = new Font(null, systemFont.getName(), systemFont.getHeight(), SWT.BOLD);
+    }
 
     public EventLogTableRowRenderer(EventLogTable eventLogTable) {
         this.eventLogTable = eventLogTable;
@@ -129,7 +112,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
     public int getRowHeight(GC gc) {
         if (fontHeight == 0) {
             Font oldFont = gc.getFont();
-            gc.setFont(font);
+            gc.setFont(FONT);
             fontHeight = gc.getFontMetrics().getHeight();
             gc.setFont(oldFont);
         }
@@ -731,8 +714,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
             public void applyStyles(TextStyle textStyle) {
                 textStyle.foreground = foreground;
                 textStyle.background = background;
-                FontData systemFont = JFaceResources.getDefaultFont().getFontData()[0];
-                textStyle.font = new Font(null, systemFont.getName(), systemFont.getHeight(), bold ? SWT.BOLD : SWT.NORMAL);
+                textStyle.font = bold ? BOLD_FONT : FONT;
             }
         };
     }
