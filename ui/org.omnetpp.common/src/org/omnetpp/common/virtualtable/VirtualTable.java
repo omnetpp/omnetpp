@@ -8,7 +8,6 @@
 package org.omnetpp.common.virtualtable;
 
 import java.lang.reflect.InvocationTargetException;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -108,6 +107,11 @@ public class VirtualTable<T>
      * A list of selected elements;
      */
     protected IRangeSet<T> selectionElements;
+
+    /**
+     * The highlighted element. This is the highlight that can be moved with the up/down keys.
+     */
+    protected T focusElement;
 
     /**
      * Starting point of a range selection.
@@ -315,6 +319,8 @@ public class VirtualTable<T>
 
         canvas.addKeyListener(new KeyListener() {
             public void keyPressed(KeyEvent e) {
+                boolean withCtrl = (e.stateMask & SWT.MOD1) != 0;
+                boolean withShift = (e.stateMask & SWT.MOD2) != 0;
                 if (e.keyCode == SWT.F5)
                     refresh();
                 else if (e.keyCode == SWT.ARROW_LEFT)
@@ -322,20 +328,22 @@ public class VirtualTable<T>
                 else if (e.keyCode == SWT.ARROW_RIGHT)
                     scrollHorizontal(10);
                 else if (e.keyCode == SWT.ARROW_UP)
-                    keyUpPressed(e);
+                    moveFocusBy(-1, withShift, withCtrl, false);
                 else if (e.keyCode == SWT.ARROW_DOWN)
-                    keyDownPressed(e);
+                    moveFocusBy(1, withShift, withCtrl, false);
                 else if (e.keyCode == SWT.PAGE_UP)
-                    moveFocus(-getPageJumpCount());
+                    moveFocusBy(-getPageJumpCount(), withShift, withCtrl, false);
                 else if (e.keyCode == SWT.PAGE_DOWN)
-                    moveFocus(getPageJumpCount());
+                    moveFocusBy(getPageJumpCount(), withShift, withCtrl, false);
                 else if (e.keyCode == SWT.HOME)
-                    gotoBegin();
+                    moveFocusTo(contentProvider.getFirstElement(), withShift, withCtrl, false);
                 else if (e.keyCode == SWT.END)
-                    gotoEnd();
-                else if (e.keyCode == 'a' && e.stateMask == SWT.CTRL)
+                    moveFocusTo(contentProvider.getLastElement(), withShift, withCtrl, false);
+                else if (e.keyCode == SWT.SPACE && withCtrl)
+                    moveFocusBy(0, false, true, true);
+                else if (e.keyCode == 'a' && withCtrl)
                     selectAll();
-                else if (e.keyCode == 'c' && e.stateMask == SWT.CTRL)
+                else if (e.keyCode == 'c' && withCtrl)
                     copySelectionToClipboard();
             }
 
@@ -349,26 +357,11 @@ public class VirtualTable<T>
                 if (input != null && contentProvider != null) {
                     T element = getVisibleElementAt(e.y / getRowHeight());
 
-                    if (element != null &&
-                        (e.button == 1 || selectionElements == null || !selectionElements.contains(element))) {
-                        if ((e.stateMask & SWT.MOD1) != 0) {
-                            if (selectionElements.contains(element))
-                                selectionElements.remove(element);
-                            else
-                                selectionElements.add(element);
-
-                            anchorElement = element;
-
-                            fireSelectionChanged();
-                        }
-                        else if ((e.stateMask & SWT.MOD2) != 0) {
-                            setRangeSelection(element);
-                        }
-                        else
-                            setSelectionElement(element);
+                    if (e.button == 1 && element != null) {
+                        boolean withCtrl = (e.stateMask & SWT.MOD1) != 0;
+                        boolean withShift = (e.stateMask & SWT.MOD2) != 0;
+                        moveFocusTo(element, withShift, withCtrl, true);
                     }
-
-                    redraw();
                 }
             }
         });
@@ -378,14 +371,6 @@ public class VirtualTable<T>
                 scroll(event.count);
             }
         });
-    }
-
-    protected void keyUpPressed(KeyEvent e) {
-        moveFocus(-1);
-    }
-
-    protected void keyDownPressed(KeyEvent e) {
-        moveFocus(1);
     }
 
     private void createTable(Composite parent) {
@@ -555,44 +540,10 @@ public class VirtualTable<T>
     }
 
     /**
-     * Returns the focus element.
+     * Returns the focused element. Note: there's no setFocusElement(), use gotoElement() instead!
      */
     public T getFocusElement() {
-        if (selectionElements != null && !selectionElements.isEmpty())
-            return selectionElements.iterator().next();
-        else
-            return null;
-    }
-
-    public void setSelectionElement(T element) {
-        Assert.isTrue(element != null);
-
-        selectionElements = new RangeSet<T>(rowEnumerator);
-        selectionElements.add(element);
-
-        anchorElement = element;
-
-        fireSelectionChanged();
-        redraw();
-    }
-
-    /**
-     * Selects a range of elements between {@code anchorElement} and {@code endElement}.
-     */
-    protected void setRangeSelection(final T endElement) {
-        Assert.isTrue(endElement != null);
-
-        if (anchorElement != null) {
-            final IRangeSet<T> elements = new RangeSet<T>(rowEnumerator);
-            if (rowEnumerator.compare(anchorElement, endElement) <= 0)
-                elements.addRange(anchorElement, endElement);
-            else
-                elements.addRange(endElement, anchorElement);
-
-            setSelectionElements(elements);
-        }
-        else
-            setSelectionElement(endElement);
+        return focusElement;
     }
 
     /**
@@ -701,7 +652,7 @@ public class VirtualTable<T>
     public void gotoElement(T element) {
         Assert.isTrue(element != null);
 
-        setSelectionElement(element);
+        doGotoElement(element);
         reveal(element);
     }
 
@@ -713,7 +664,7 @@ public class VirtualTable<T>
         T firstElement = contentProvider.getFirstElement();
 
         if (firstElement != null)
-            setSelectionElement(firstElement);
+            doGotoElement(firstElement);
 
         scrollToBegin();
     }
@@ -722,9 +673,22 @@ public class VirtualTable<T>
         T lastElement = contentProvider.getLastElement();
 
         if (lastElement != null)
-            setSelectionElement(lastElement);
+            doGotoElement(lastElement);
 
         scrollToEnd();
+    }
+
+    protected void doGotoElement(T element) {
+        Assert.isTrue(element != null);
+
+        focusElement = element;
+        anchorElement = element;
+
+        selectionElements = new RangeSet<T>(rowEnumerator);
+        selectionElements.add(element);
+
+        fireSelectionChanged();
+        redraw();
     }
 
     /**
@@ -784,6 +748,10 @@ public class VirtualTable<T>
     }
 
     public void moveFocus(int numberOfElements) {
+        moveFocusBy(numberOfElements, false, false, false);
+    }
+
+    protected void moveFocusBy(int numberOfElements, boolean withShift, boolean withCtrl, boolean click) {
         T element = getFocusElement();
 
         if (element == null) {
@@ -802,9 +770,53 @@ public class VirtualTable<T>
                 element = contentProvider.getLastElement();
         }
 
-        if (element != null)
-            setSelectionElement(element);
+        moveFocusTo(element, withShift, withCtrl, click);
+    }
 
+    protected void moveFocusTo(T element, boolean withShift, boolean withCtrl, boolean click) {
+        if (element == null)
+            return;
+
+        focusElement = element;
+
+        if (!withCtrl) {
+            if (!withShift) {
+                // no shift or ctrl: overwrite selection and anchor
+                anchorElement = element;
+                selectionElements = new RangeSet<T>(rowEnumerator);
+                selectionElements.add(element);
+            }
+            else {
+                // shift only: overwrite selection with this range selection
+                selectionElements = new RangeSet<T>(rowEnumerator);
+                if (rowEnumerator.compare(anchorElement, element) <= 0)
+                    selectionElements.addRange(anchorElement, element);
+                else
+                    selectionElements.addRange(element, anchorElement);
+            }
+        }
+        else {
+            if (!withShift) {
+                // ctrl only, by keyboard: move focus without affecting selection or anchor (so nothing to do here)
+                // ctrl only, by mouse (or Space button): toggle selection of the given element, and move anchor
+                if (click) {
+                    anchorElement = focusElement;
+                    if (selectionElements.contains(element))
+                        selectionElements.remove(element);
+                    else
+                        selectionElements.add(element);
+                }
+            }
+            else {
+                // ctrl+shift: add range to current selection
+                if (rowEnumerator.compare(anchorElement, element) <= 0)
+                    selectionElements.addRange(anchorElement, element);
+                else
+                    selectionElements.addRange(element, anchorElement);
+            }
+        }
+
+        fireSelectionChanged();
         reveal(element);
     }
 
@@ -959,6 +971,15 @@ public class VirtualTable<T>
 
                         gc.setTransform(transform);
                         gc.setClipping((Rectangle)null);
+                    }
+
+                    if (element.equals(focusElement)) {
+                        if (!isSelectedElement || selectionElements.approximateSize() > 1) { // suppress focus border if it's the only selected element
+                            gc.setForeground(Display.getCurrent().getSystemColor(isSelectedElement ? SWT.COLOR_LIST_SELECTION_TEXT : SWT.COLOR_LIST_FOREGROUND));
+                            gc.setLineStyle(SWT.LINE_DOT);
+                            gc.drawRectangle(1, i * getRowHeight(), getClientArea().width - 2, getRowHeight() - 2);
+                            gc.setLineStyle(SWT.LINE_SOLID);
+                        }
                     }
                 }
             }
