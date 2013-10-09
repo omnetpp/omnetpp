@@ -399,7 +399,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
             if (part instanceof IEventLogTableProvider) {
                 EventLogTable eventLogTable = ((IEventLogTableProvider)part).getEventLogTable();
-                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+                EventLogEntryReference eventLogEntryReference = eventLogTable.getFocusElement();
 
                 if (eventLogEntryReference != null) {
                     IEvent event = eventLogTable.getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
@@ -428,7 +428,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
             if (part instanceof IEventLogTableProvider) {
                 EventLogTable eventLogTable = ((IEventLogTableProvider)part).getEventLogTable();
-                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+                EventLogEntryReference eventLogEntryReference = eventLogTable.getFocusElement();
 
                 if (eventLogEntryReference != null) {
                     EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput());
@@ -479,7 +479,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
             }
 
             private EventLogEntry getMessageOriginEventLogEntry() {
-                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+                EventLogEntryReference eventLogEntryReference = eventLogTable.getFocusElement();
 
                 if (eventLogEntryReference != null) {
                     EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput());
@@ -517,7 +517,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
             }
 
             private EventLogEntry getMessageReuseEventLogEntry() {
-                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+                EventLogEntryReference eventLogEntryReference = eventLogTable.getFocusElement();
 
                 if (eventLogEntryReference != null) {
                     IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
@@ -550,7 +550,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
             if (part instanceof IEventLogTableProvider) {
                 EventLogTable eventLogTable = ((IEventLogTableProvider)part).getEventLogTable();
-                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+                EventLogEntryReference eventLogEntryReference = eventLogTable.getFocusElement();
 
                 if (eventLogEntryReference != null) {
                     IEvent event = eventLogTable.getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
@@ -578,7 +578,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
             if (part instanceof IEventLogTableProvider) {
                 EventLogTable eventLogTable = ((IEventLogTableProvider)part).getEventLogTable();
-                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+                EventLogEntryReference eventLogEntryReference = eventLogTable.getFocusElement();
 
                 if (eventLogEntryReference != null) {
                     IEvent event = eventLogTable.getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
@@ -606,7 +606,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
             if (part instanceof IEventLogTableProvider) {
                 EventLogTable eventLogTable = ((IEventLogTableProvider)part).getEventLogTable();
-                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+                EventLogEntryReference eventLogEntryReference = eventLogTable.getFocusElement();
 
                 if (eventLogEntryReference != null) {
                     IEvent event = eventLogTable.getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
@@ -640,7 +640,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
             if (part instanceof IEventLogTableProvider) {
                 EventLogTable eventLogTable = ((IEventLogTableProvider)part).getEventLogTable();
-                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+                EventLogEntryReference eventLogEntryReference = eventLogTable.getFocusElement();
 
                 if (eventLogEntryReference != null) {
                     IEvent event = eventLogTable.getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
@@ -692,7 +692,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
             IWorkbenchPart part = HandlerUtil.getActivePartChecked(executionEvent);
             if (part instanceof IEventLogTableProvider) {
                 EventLogTable eventLogTable = ((IEventLogTableProvider)part).getEventLogTable();
-                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+                EventLogEntryReference eventLogEntryReference = eventLogTable.getFocusElement();
                 if (eventLogEntryReference == null)
                     eventLogEntryReference = eventLogTable.getTopVisibleElement();
                 GotoSimulationTimeDialog dialog = new GotoSimulationTimeDialog(eventLogTable.getEventLog(), eventLogEntryReference.getEvent(eventLogTable.getEventLogInput()).getSimulationTime());
@@ -711,7 +711,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
             @Override
             protected void doRun() {
                 try {
-                    EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+                    EventLogEntryReference eventLogEntryReference = eventLogTable.getFocusElement();
 
                     if (eventLogEntryReference != null) {
                         IEvent event = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput()).getEvent();
@@ -748,7 +748,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
             @Override
             public void update() {
-                setEnabled(eventLogTable.getSelectionElement() != null);
+                setEnabled(eventLogTable.getFocusElement() != null);
             }
         };
     }

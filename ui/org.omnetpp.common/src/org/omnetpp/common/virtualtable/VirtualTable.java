@@ -555,9 +555,9 @@ public class VirtualTable<T>
     }
 
     /**
-     * Returns the current selection.
+     * Returns the focus element.
      */
-    public T getSelectionElement() {
+    public T getFocusElement() {
         if (selectionElements != null && !selectionElements.isEmpty())
             return selectionElements.iterator().next();
         else
@@ -784,7 +784,7 @@ public class VirtualTable<T>
     }
 
     public void moveFocus(int numberOfElements) {
-        T element = getSelectionElement();
+        T element = getFocusElement();
 
         if (element == null) {
             element = getTopVisibleElement();
@@ -843,7 +843,7 @@ public class VirtualTable<T>
     }
 
     public void revealFocus() {
-        T element = getSelectionElement();
+        T element = getFocusElement();
 
         if (element != null)
             reveal(element);

@@ -595,7 +595,7 @@ public class EventLogTable
             String findText = findTextDialog.getValue();
 
             if (findText != null) {
-                EventLogEntryReference eventLogEntryReference = getSelectionElement();
+                EventLogEntryReference eventLogEntryReference = getFocusElement();
                 EventLogEntry startEventLogEntry = (eventLogEntryReference == null ? getTopVisibleElement() : eventLogEntryReference).getEventLogEntry(eventLogInput);
                 EventLogEntry foundEventLogEntry = eventLog.findEventLogEntry(startEventLogEntry, findText, !findTextDialog.isBackward(), !findTextDialog.isCaseInsensitive());
 
