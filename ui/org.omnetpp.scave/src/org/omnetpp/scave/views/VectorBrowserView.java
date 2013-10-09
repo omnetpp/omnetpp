@@ -137,27 +137,19 @@ public class VectorBrowserView extends ViewWithMessagePart {
     public void gotoLine(int lineNumber) {
         OutputVectorEntry entry = contentProvider.getElementBySerial(lineNumber);
         if (entry != null)
-            viewer.reveal(entry);
+            viewer.gotoElement(entry);
     }
 
     public void gotoEvent(long eventNumber) {
         OutputVectorEntry entry = contentProvider.getElementByEventNumber(eventNumber, true);
         if (entry != null)
-            viewer.reveal(entry);
+            viewer.gotoElement(entry);
     }
 
     public void gotoTime(BigDecimal time) {
         OutputVectorEntry entry = contentProvider.getElementBySimulationTime(time, true);
         if (entry != null)
-            viewer.reveal(entry);
-    }
-
-    public void selectLine(int lineNumber) {
-        OutputVectorEntry entry = contentProvider.getElementBySerial(lineNumber);
-        if (entry != null) {
-            viewer.reveal(entry);
-            viewer.setSelectionElement(entry);
-        }
+            viewer.gotoElement(entry);
     }
 
     @Override
@@ -259,7 +251,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 
         if (ObjectUtils.equals(selectedVector, viewer.getInput())) {
             if (dataPointIndex >= 0)
-                selectLine(dataPointIndex);
+                gotoLine(dataPointIndex);
             return;
         }
 
@@ -325,7 +317,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
         if (severity == IStatus.OK) {
             setViewerInput(input);
             if (serial >= 0)
-                selectLine(serial);
+                gotoLine(serial);
         }
         else if (severity == IStatus.CANCEL)
             showMessage("Canceled");
