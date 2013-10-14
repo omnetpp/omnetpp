@@ -555,12 +555,6 @@ property_name
                   ps.property->setIndex(toString(@4));
                   ps.propvals.clear(); // just to be safe
                 }
-        | ENUM /* legacy syntax */
-                {
-                  NEDElement *propertyscope = ps.field ? ps.field : ps.msgclassorstruct;
-                  ps.property = addProperty(propertyscope, toString(@1));
-                  ps.propvals.clear(); // just to be safe
-                }
         ;
 
 property_name_token
@@ -755,4 +749,3 @@ void yyerror(const char *s)
 
     np->error(buf, pos.li);
 }
-
