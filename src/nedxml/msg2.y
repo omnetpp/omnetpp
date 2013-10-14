@@ -541,6 +541,14 @@ property
 property_namevalue
         : property_name
         | property_name '(' opt_property_keys ')'
+        | ENUM '(' NAME ')' /* legacy syntax */
+                {
+                  NEDElement *propertyscope = ps.field ? ps.field : ps.msgclassorstruct;
+                  ps.property = addProperty(propertyscope, toString(@1));
+                  ps.propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, ps.property);
+                  ps.propkey->appendChild(createPropertyValue(@3));
+                  storePos(ps.propkey, @3);
+                }
         ;
 
 property_name
@@ -555,12 +563,6 @@ property_name
                   NEDElement *propertyscope = ps.field ? ps.field : ps.msgclassorstruct;
                   ps.property = addProperty(propertyscope, toString(@2));
                   ps.property->setIndex(toString(@4));
-                  ps.propvals.clear(); // just to be safe
-                }
-        | ENUM /* legacy syntax */
-                {
-                  NEDElement *propertyscope = ps.field ? ps.field : ps.msgclassorstruct;
-                  ps.property = addProperty(propertyscope, toString(@1));
                   ps.propvals.clear(); // just to be safe
                 }
         ;
