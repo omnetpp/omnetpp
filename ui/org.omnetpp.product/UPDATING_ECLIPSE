@@ -1,17 +1,15 @@
-This is a quick how to/checklist what to do when updating to a new eclipse version.
+This is a quick checklist what to do when updating to a new Eclipse version.
 
-- Download Eclipse Classic from eclipse.org/download for your platform.
+- Download Eclipse IDE for Automotive Software Developers 
+  from eclipse.org/download for your platform.
 
 - start it and access the Help / Install new software dialog. Install the following 
   featues:
 
-  o EPP Common Package Feature
+  o ChangeLog management tools + ChangeLog management tools C++
   o C/C++ Developmnet Tools SDK
+  o Eclipse Git team Provider, JGit, command line interface for jgit
   o C++ Library API Documentation Hover Help
-  o ChangeLog management tool
-  o CDT Visual C++ support
-  o Eclipse EGit, JGit
-  o GEF SDK, GEF Zest SDK, GMF Runtime,Third party components for GMF runtime
   o Valgrind Tools
 
 - Create a directory named 'target' inside the eclipse dir.
@@ -19,11 +17,13 @@ This is a quick how to/checklist what to do when updating to a new eclipse versi
 - copy the imageexport plugins/features there
 
 - Go to Delta Pack download at http://download.eclipse.org/eclipse/downloads then
-  select the latest build (i.e. /drops/R-3.6-201006080911/index.php#DeltaPack)
+  select the latest build (i.e. /drops4/R-4.3.1-201309111000/)
 
 - Extract it in the 'target' directory and rename it to "deltapack"
 
 - adjust the ECLIPSE_HOME directory in 'build-ide-java'
+
+- adjust the REPO urls for CDT and LinuxTools in the build.xml file (to match the actual eclipse version)
 
 - download/mirror the CDT/LinuxTools repo. (This is required to build a multi-platform
   CDT installation): Can be done by invoking:
