@@ -5,11 +5,11 @@ the event's module, the context module and the source object are all the same.
 
 %inifile: test.ini
 [General]
-log-format = "%U, %C, %K, %J, %L: "
+log-format = "%U, %C, %K, %J, %L"
 
 %activity:
 
 EV << "Hello" << endl;
 
 %contains: stdout
-(Test)Test, (Test)Test, , (Test)Test, : Hello
+(Test)Test, (Test)Test, , (Test)Test, Hello

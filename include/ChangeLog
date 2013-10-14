@@ -1,7 +1,7 @@
 2013-09-26  Andras Varga, Levente Meszaros
 
 	* New logging API. It features 6 log levels (FATAL, ERROR, WARN, INFO,
-	DEBUG, TRACE), category support, compile-time and runtime global and
+	DETAIL, DEBUG, TRACE), category support, compile-time and runtime global and
 	per-module log level thresholds. Internally, the implementation makes
 	much more information available to the Envir library than previously,
 	e.g. the file/line of the logging statement, and the class/name/pointer
@@ -9,7 +9,7 @@
 	non-static method of a class.
 
 	The following macros can be used for logging (stream-style, i.e. with
-	operator <<): EV, EV_FATAL, EV_ERROR, EV_WARN, EV_INFO, EV_DEBUG,
+	operator <<): EV, EV_FATAL, EV_ERROR, EV_WARN, EV_INFO, EV_DETAIL, EV_DEBUG,
 	EV_TRACE for logging without category (i.e. generic); and their _C
 	counterparts (EV_C(category), EV_FATAL_C(category), etc.) for logging
 	with category information. They all rely on OPP_LOG(loglevel, category).

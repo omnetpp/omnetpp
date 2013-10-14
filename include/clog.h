@@ -52,34 +52,43 @@ enum LogLevel
     /**
      * This log level should be used for exceptional (non-error) situations that
      * may be important for users and rarely occur in the component. For example,
-     * a MAC layer protocol component could log detected collisions and retries
-     * using this level.
+     * a MAC layer protocol component could log detected bit errors using this level.
      */
     LOGLEVEL_WARN,
 
     /**
-     * This log level should be used for high level information that is most
-     * likely important for users of the component. For example, a MAC layer
-     * protocol component could log successful packet receptions and successful
+     * This log level should be used for high-level protocol specific details that
+     * are most likely important for the users of the component. For example, a MAC
+     * layer protocol component could log successful packet receptions and successful
      * packet transmissions using this level.
      */
     LOGLEVEL_INFO,
 
     /**
-     * This log level should be used for implementation-specific details that
-     * might be useful and understandable by users of the component. These
-     * messages might help to debug various issues without actually looking deep
-     * into the code. For example, a MAC layer protocol component could log state
-     * machine updates, acknowledges timeouts and selected back-off periods using
+     * This log level should be used for low-level protocol-specific details that
+     * may be useful and understandable by the users of the component. These messages
+     * may help to track down various protocol-specific issues without actually looking
+     * too deep into the code. For example, a MAC layer protocol component could log
+     * state machine updates, acknowledge timeouts and selected back-off periods using
      * this level.
+     */
+    LOGLEVEL_DETAIL,
+
+    /**
+     * This log level should be used for high-level implementation-specific technical
+     * details that are most likely important for the developers/maintainers of the
+     * component. These messages may help to debug various issues when one is looking
+     * at the code. For example, a MAC layer protocol component could log updates to
+     * internal state variables, updates to complex data structures using this log level.
      */
     LOGLEVEL_DEBUG,
 
     /**
      * The lowest log level; it should be used for low-level implementation-specific
-     * technical details that are mostly useful for the developers of the
-     * component. For example, a MAC layer protocol component could use this log level
-     * to log update to internal state variables or entering/leaving methods.
+     * technical details that are mostly useful for the developers/maintainers of the
+     * component. For example, a MAC layer protocol component could log control flow
+     * in loops and if statements, entering/leaving methods and code blocks using this
+     * log level.
      */
     LOGLEVEL_TRACE
 };
@@ -148,7 +157,7 @@ inline const char *getClassName() {return NULL;}
 
 /**
  * Use this macro when logging from static member functions.
- * Background: OPP_LOG and derived macros (EV_INFO, EV_DEBUG, etc) will fail
+ * Background: OPP_LOG and derived macros (EV_INFO, EV_DETAIL, etc) will fail
  * to compile when placed into static member functions of cObject-derived classes
  * ("cannot call member function 'cObject::getThisPtr()' without object" in GNU C++,
  * and "C2352: illegal call of non-static member function" in Visual C++).
@@ -161,7 +170,7 @@ inline const char *getClassName() {return NULL;}
 #define EV_STATICCONTEXT  void *(*getThisPtr)() = ::getThisPtr; const char *(*getClassName)() = ::getClassName;
 
 /**
- * This is the macro underlying EV_INFO, EV_DEBUG, EV_INFO_C, and similar log macros.
+ * This is the macro underlying EV_INFO, EV_DETAIL, EV_INFO_C, and similar log macros.
  * It can be used as a C++ stream to log data with the provided log level and log category.
  * Log statements are wrapped with compile time and runtime guards at the call site to
  * efficiently prevent unnecessary computation of parameters and log content.
@@ -175,39 +184,41 @@ inline const char *getClassName() {return NULL;}
 /**
  * Logging macros with the default category. Category is a string that refers to the
  * topic of the log message. The macro can be used as a C++ stream. Example:
- * <tt>EV_DEBUG << "Connection setup complete" << endl;</tt>.
+ * <tt>EV_DETAIL << "Connection setup complete" << endl;</tt>.
  *
  * @see OPP_LOG, LogLevel, EV_STATICCONTEXT
  * @ingroup Logging
  * @defgroup LoggingDefault Logging with default category
  */
 //@{
-#define EV       EV_INFO                        ///< Short for EV_INFO
-#define EV_FATAL OPP_LOG(LOGLEVEL_FATAL, NULL)  ///< Log local fatal errors
-#define EV_ERROR OPP_LOG(LOGLEVEL_ERROR, NULL)  ///< Log local but recoverable errors
-#define EV_WARN  OPP_LOG(LOGLEVEL_WARN, NULL)   ///< Log warnings
-#define EV_INFO  OPP_LOG(LOGLEVEL_INFO, NULL)   ///< Log information (default log level)
-#define EV_DEBUG OPP_LOG(LOGLEVEL_DEBUG, NULL)  ///< Log state variables and other low-level information
-#define EV_TRACE OPP_LOG(LOGLEVEL_TRACE, NULL)  ///< Log control flow information (entering/exiting functions, etc)
+#define EV        EV_INFO                        ///< Short for EV_INFO
+#define EV_FATAL  OPP_LOG(LOGLEVEL_FATAL, NULL)  ///< Log local fatal errors
+#define EV_ERROR  OPP_LOG(LOGLEVEL_ERROR, NULL)  ///< Log local but recoverable errors
+#define EV_WARN   OPP_LOG(LOGLEVEL_WARN, NULL)   ///< Log warnings
+#define EV_INFO   OPP_LOG(LOGLEVEL_INFO, NULL)   ///< Log information (default log level)
+#define EV_DETAIL OPP_LOG(LOGLEVEL_DETAIL, NULL) ///< Log state variables and other low-level information
+#define EV_DEBUG  OPP_LOG(LOGLEVEL_DEBUG, NULL)  ///< Log state variables and other low-level information
+#define EV_TRACE  OPP_LOG(LOGLEVEL_TRACE, NULL)  ///< Log control flow information (entering/exiting functions, etc)
 //@}
 
 /**
  * Logging macros with an explicit category. Category is a string that refers to the
  * topic of the log message. The macro can be used as a C++ stream. Example:
- * <tt>EV_DEBUG("retransmissions") << "Too many retries, discarding frame" << endl;</tt>.
+ * <tt>EV_DETAIL("retransmissions") << "Too many retries, discarding frame" << endl;</tt>.
  *
  * @see OPP_LOG, LogLevel, EV_STATICCONTEXT
  * @ingroup Logging
  * @defgroup LoggingCat  Logging with explicit category
  */
 //@{
-#define EV_C(category)       EV_INFO_C(category)                ///< Short for EV_INFO_C
-#define EV_FATAL_C(category) OPP_LOG(LOGLEVEL_FATAL, category)  ///< Log local fatal errors
-#define EV_ERROR_C(category) OPP_LOG(LOGLEVEL_ERROR, category)  ///< Log local but recoverable errors
-#define EV_WARN_C(category)  OPP_LOG(LOGLEVEL_WARN, category)   ///< Log warnings
-#define EV_INFO_C(category)  OPP_LOG(LOGLEVEL_INFO, category)   ///< Log information (default log level)
-#define EV_DEBUG_C(category) OPP_LOG(LOGLEVEL_DEBUG, category)  ///< Log state variables and other low-level information
-#define EV_TRACE_C(category) OPP_LOG(LOGLEVEL_TRACE, category)  ///< Log control flow information (entering/exiting functions, etc)
+#define EV_C(category)        EV_INFO_C(category)                ///< Short for EV_INFO_C
+#define EV_FATAL_C(category)  OPP_LOG(LOGLEVEL_FATAL, category)  ///< Log local fatal errors
+#define EV_ERROR_C(category)  OPP_LOG(LOGLEVEL_ERROR, category)  ///< Log local but recoverable errors
+#define EV_WARN_C(category)   OPP_LOG(LOGLEVEL_WARN, category)   ///< Log warnings
+#define EV_INFO_C(category)   OPP_LOG(LOGLEVEL_INFO, category)   ///< Log information (default log level)
+#define EV_DETAIL_C(category) OPP_LOG(LOGLEVEL_DETAIL, category) ///< Log state variables and other low-level information
+#define EV_DEBUG_C(category)  OPP_LOG(LOGLEVEL_DEBUG, category)  ///< Log state variables and other low-level information
+#define EV_TRACE_C(category)  OPP_LOG(LOGLEVEL_TRACE, category)  ///< Log control flow information (entering/exiting functions, etc)
 //@}
 
 /**

@@ -5,13 +5,14 @@ Test per module runtime log level setting.
 %inifile: test.ini
 [General]
 network = TestNetwork
-log-format = "[%l]\t%c: "
-**.fatal.log-level = fatal
-**.error.log-level = error
-**.warn.log-level = warn
-**.info.log-level = info
-**.debug.log-level = debug
-**.trace.log-level = trace
+log-format = "[%l]%9"
+**.fatal.log-level  = fatal
+**.error.log-level  = error
+**.warn.log-level   = warn
+**.info.log-level   = info
+**.detail.log-level = detail
+**.debug.log-level  = debug
+**.trace.log-level  = trace
 
 %file: test.ned
 
@@ -22,12 +23,13 @@ simple Test
 network TestNetwork
 {
     submodules:
-        fatal: Test;
-        error: Test;
-        warn: Test;
-        info: Test;
-        debug: Test;
-        trace: Test;
+        fatal:  Test;
+        error:  Test;
+        warn:   Test;
+        info:   Test;
+        detail: Test;
+        debug:  Test;
+        trace:  Test;
 }
 
 %activity:
@@ -36,38 +38,47 @@ network TestNetwork
 #define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_TRACE
 cLogLevel::globalRuntimeLoglevel = LOGLEVEL_TRACE;
 
-EV_FATAL << "Hello" << endl;
-EV_ERROR << "Hello" << endl;
-EV_WARN << "Hello" << endl;
-EV_INFO << "Hello" << endl;
-EV_DEBUG << "Hello" << endl;
-EV_TRACE << "Hello" << endl;
+EV_FATAL  << "Hello" << endl;
+EV_ERROR  << "Hello" << endl;
+EV_WARN   << "Hello" << endl;
+EV_INFO   << "Hello" << endl;
+EV_DETAIL << "Hello" << endl;
+EV_DEBUG  << "Hello" << endl;
+EV_TRACE  << "Hello" << endl;
 
 %contains: stdout
 ** Event #1  T=0   TestNetwork.fatal (Test, id=2)
-[FATAL]	: Hello
+[FATAL]  Hello
 ** Event #2  T=0   TestNetwork.error (Test, id=3)
-[FATAL]	: Hello
-[ERROR]	: Hello
+[FATAL]  Hello
+[ERROR]  Hello
 ** Event #3  T=0   TestNetwork.warn (Test, id=4)
-[FATAL]	: Hello
-[ERROR]	: Hello
-[WARN]	: Hello
+[FATAL]  Hello
+[ERROR]  Hello
+[WARN]   Hello
 ** Event #4  T=0   TestNetwork.info (Test, id=5)
-[FATAL]	: Hello
-[ERROR]	: Hello
-[WARN]	: Hello
-[INFO]	: Hello
-** Event #5  T=0   TestNetwork.debug (Test, id=6)
-[FATAL]	: Hello
-[ERROR]	: Hello
-[WARN]	: Hello
-[INFO]	: Hello
-[DEBUG]	: Hello
-** Event #6  T=0   TestNetwork.trace (Test, id=7)
-[FATAL]	: Hello
-[ERROR]	: Hello
-[WARN]	: Hello
-[INFO]	: Hello
-[DEBUG]	: Hello
-[TRACE]	: Hello
+[FATAL]  Hello
+[ERROR]  Hello
+[WARN]   Hello
+[INFO]   Hello
+** Event #5  T=0   TestNetwork.detail (Test, id=6)
+[FATAL]  Hello
+[ERROR]  Hello
+[WARN]   Hello
+[INFO]   Hello
+[DETAIL] Hello
+** Event #6  T=0   TestNetwork.debug (Test, id=7)
+[FATAL]  Hello
+[ERROR]  Hello
+[WARN]   Hello
+[INFO]   Hello
+[DETAIL] Hello
+[DEBUG]  Hello
+** Event #7  T=0   TestNetwork.trace (Test, id=8)
+[FATAL]  Hello
+[ERROR]  Hello
+[WARN]   Hello
+[INFO]   Hello
+[DETAIL] Hello
+[DEBUG]  Hello
+[TRACE]  Hello

@@ -4,7 +4,7 @@ Test automatic log output flushing between events and after simulation end.
 
 %inifile: test.ini
 [General]
-log-format = "[%l]\t%c: "
+log-format = "[%l]%9"
 
 %activity:
 
@@ -14,6 +14,6 @@ EV_DEBUG << "World";
 
 %contains: stdout
 ** Event #1  T=0   Test (Test, id=1)
-[DEBUG]	: Hello
+[DEBUG]  Hello
 ** Event #2  T=1   Test (Test, id=1)
-[DEBUG]	: World
+[DEBUG]  World

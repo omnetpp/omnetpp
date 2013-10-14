@@ -4,7 +4,7 @@ Test global compile time log level setting.
 
 %inifile: test.ini
 [General]
-log-format = "[%l]\t%c: "
+log-format = "[%l]%9"
 **.log-level = trace
 
 %activity:
@@ -13,77 +13,100 @@ cLogLevel::globalRuntimeLoglevel = LOGLEVEL_TRACE;
 
 #undef GLOBAL_COMPILETIME_LOGLEVEL
 #define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_FATAL
-EV_FATAL << "Hello" << endl;
-EV_ERROR << "Hello" << endl;
-EV_WARN << "Hello" << endl;
-EV_INFO << "Hello" << endl;
-EV_DEBUG << "Hello" << endl;
-EV_TRACE << "Hello" << endl;
+EV_FATAL  << "Hello" << endl;
+EV_ERROR  << "Hello" << endl;
+EV_WARN   << "Hello" << endl;
+EV_INFO   << "Hello" << endl;
+EV_DETAIL << "Hello" << endl;
+EV_DEBUG  << "Hello" << endl;
+EV_TRACE  << "Hello" << endl;
 
 #undef GLOBAL_COMPILETIME_LOGLEVEL
 #define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_ERROR
-EV_FATAL << "Hello" << endl;
-EV_ERROR << "Hello" << endl;
-EV_WARN << "Hello" << endl;
-EV_INFO << "Hello" << endl;
-EV_DEBUG << "Hello" << endl;
-EV_TRACE << "Hello" << endl;
+EV_FATAL  << "Hello" << endl;
+EV_ERROR  << "Hello" << endl;
+EV_WARN   << "Hello" << endl;
+EV_INFO   << "Hello" << endl;
+EV_DETAIL << "Hello" << endl;
+EV_DEBUG  << "Hello" << endl;
+EV_TRACE  << "Hello" << endl;
 
 #undef GLOBAL_COMPILETIME_LOGLEVEL
 #define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_WARN
-EV_FATAL << "Hello" << endl;
-EV_ERROR << "Hello" << endl;
-EV_WARN << "Hello" << endl;
-EV_INFO << "Hello" << endl;
-EV_DEBUG << "Hello" << endl;
-EV_TRACE << "Hello" << endl;
+EV_FATAL  << "Hello" << endl;
+EV_ERROR  << "Hello" << endl;
+EV_WARN   << "Hello" << endl;
+EV_INFO   << "Hello" << endl;
+EV_DETAIL << "Hello" << endl;
+EV_DEBUG  << "Hello" << endl;
+EV_TRACE  << "Hello" << endl;
 
 #undef GLOBAL_COMPILETIME_LOGLEVEL
 #define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_INFO
-EV_FATAL << "Hello" << endl;
-EV_ERROR << "Hello" << endl;
-EV_WARN << "Hello" << endl;
-EV_INFO << "Hello" << endl;
-EV_DEBUG << "Hello" << endl;
-EV_TRACE << "Hello" << endl;
+EV_FATAL  << "Hello" << endl;
+EV_ERROR  << "Hello" << endl;
+EV_WARN   << "Hello" << endl;
+EV_INFO   << "Hello" << endl;
+EV_DETAIL << "Hello" << endl;
+EV_DEBUG  << "Hello" << endl;
+EV_TRACE  << "Hello" << endl;
+
+#undef GLOBAL_COMPILETIME_LOGLEVEL
+#define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_DETAIL
+EV_FATAL  << "Hello" << endl;
+EV_ERROR  << "Hello" << endl;
+EV_WARN   << "Hello" << endl;
+EV_INFO   << "Hello" << endl;
+EV_DETAIL << "Hello" << endl;
+EV_DEBUG  << "Hello" << endl;
+EV_TRACE  << "Hello" << endl;
 
 #undef GLOBAL_COMPILETIME_LOGLEVEL
 #define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_DEBUG
-EV_FATAL << "Hello" << endl;
-EV_ERROR << "Hello" << endl;
-EV_WARN << "Hello" << endl;
-EV_INFO << "Hello" << endl;
-EV_DEBUG << "Hello" << endl;
-EV_TRACE << "Hello" << endl;
+EV_FATAL  << "Hello" << endl;
+EV_ERROR  << "Hello" << endl;
+EV_WARN   << "Hello" << endl;
+EV_INFO   << "Hello" << endl;
+EV_DETAIL << "Hello" << endl;
+EV_DEBUG  << "Hello" << endl;
+EV_TRACE  << "Hello" << endl;
 
 #undef GLOBAL_COMPILETIME_LOGLEVEL
 #define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_TRACE
-EV_FATAL << "Hello" << endl;
-EV_ERROR << "Hello" << endl;
-EV_WARN << "Hello" << endl;
-EV_INFO << "Hello" << endl;
-EV_DEBUG << "Hello" << endl;
-EV_TRACE << "Hello" << endl;
+EV_FATAL  << "Hello" << endl;
+EV_ERROR  << "Hello" << endl;
+EV_WARN   << "Hello" << endl;
+EV_INFO   << "Hello" << endl;
+EV_DETAIL << "Hello" << endl;
+EV_DEBUG  << "Hello" << endl;
+EV_TRACE  << "Hello" << endl;
 
 %contains: stdout
-[FATAL]	: Hello
-[FATAL]	: Hello
-[ERROR]	: Hello
-[FATAL]	: Hello
-[ERROR]	: Hello
-[WARN]	: Hello
-[FATAL]	: Hello
-[ERROR]	: Hello
-[WARN]	: Hello
-[INFO]	: Hello
-[FATAL]	: Hello
-[ERROR]	: Hello
-[WARN]	: Hello
-[INFO]	: Hello
-[DEBUG]	: Hello
-[FATAL]	: Hello
-[ERROR]	: Hello
-[WARN]	: Hello
-[INFO]	: Hello
-[DEBUG]	: Hello
-[TRACE]	: Hello
+[FATAL]  Hello
+[FATAL]  Hello
+[ERROR]  Hello
+[FATAL]  Hello
+[ERROR]  Hello
+[WARN]   Hello
+[FATAL]  Hello
+[ERROR]  Hello
+[WARN]   Hello
+[INFO]   Hello
+[FATAL]  Hello
+[ERROR]  Hello
+[WARN]   Hello
+[INFO]   Hello
+[DETAIL] Hello
+[FATAL]  Hello
+[ERROR]  Hello
+[WARN]   Hello
+[INFO]   Hello
+[DETAIL] Hello
+[DEBUG]  Hello
+[FATAL]  Hello
+[ERROR]  Hello
+[WARN]   Hello
+[INFO]   Hello
+[DETAIL] Hello
+[DEBUG]  Hello
+[TRACE]  Hello

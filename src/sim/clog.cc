@@ -21,7 +21,7 @@
 #include "cconfigoption.h"
 #include "cmodule.h"
 
-Register_PerObjectConfigOption(CFGID_COMPONENT_LOGLEVEL, "log-level", KIND_MODULE, CFG_STRING, "DEBUG", "Specifies the per-component level of detail recorded by log statements, output below the specified level is omitted. Available values are (case insensitive): fatal, error, warn, info, debug or trace. Note that the level of detail is also controlled by the specified per component log levels and the GLOBAL_COMPILETIME_LOGLEVEL macro that is used to completely remove log statements from the executable.")
+Register_PerObjectConfigOption(CFGID_COMPONENT_LOGLEVEL, "log-level", KIND_MODULE, CFG_STRING, "DEBUG", "Specifies the per-component level of detail recorded by log statements, output below the specified level is omitted. Available values are (case insensitive): fatal, error, warn, info, detail, debug or trace. Note that the level of detail is also controlled by the globally specified runtime log level and the GLOBAL_COMPILETIME_LOGLEVEL macro that is used to completely remove log statements from the executable.")
 
 cLogProxy::LogBuffer cLogProxy::buffer;
 std::ostream cLogProxy::globalStream(&cLogProxy::buffer);
@@ -45,6 +45,8 @@ const char *cLogLevel::getName(LogLevel loglevel)
             return "WARN";
         case LOGLEVEL_INFO:
             return "INFO";
+        case LOGLEVEL_DETAIL:
+            return "DETAIL";
         case LOGLEVEL_DEBUG:
             return "DEBUG";
         case LOGLEVEL_TRACE:
@@ -64,6 +66,8 @@ LogLevel cLogLevel::getLevel(const char *name)
         return LOGLEVEL_WARN;
     else if (!strcasecmp(name, "INFO"))
         return LOGLEVEL_INFO;
+    else if (!strcasecmp(name, "DETAIL"))
+        return LOGLEVEL_DETAIL;
     else if (!strcasecmp(name, "DEBUG"))
         return LOGLEVEL_DEBUG;
     else if (!strcasecmp(name, "TRACE"))

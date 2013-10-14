@@ -3,7 +3,7 @@ Test sequence and nesting of log statements.
 
 %inifile: test.ini
 [General]
-log-format = "[%l]\t%c: "
+log-format = "[%l]%9"
 
 %activity:
 
@@ -21,8 +21,8 @@ log-format = "[%l]\t%c: "
 }
 
 %contains: stdout
-[DEBUG]	: 1
-[DEBUG]	: 2
-[DEBUG]	: 3
-[DEBUG]	: 4
-[DEBUG]	: 5
+[DEBUG]  1
+[DEBUG]  2
+[DEBUG]  3
+[DEBUG]  4
+[DEBUG]  5

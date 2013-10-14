@@ -4,7 +4,7 @@ Test conditional compilation of log statement arguments.
 
 %inifile: test.ini
 [General]
-log-format = "[%l]\t%c: "
+log-format = "[%l]%9"
 **.log-level = trace
 
 %activity:

@@ -3,7 +3,7 @@ Test new lines and composition of log statements.
 
 %inifile: test.ini
 [General]
-log-format = "[%l]\t%c: "
+log-format = "[%l]%9"
 
 %activity:
 
@@ -13,15 +13,15 @@ EV_INFO << "5" << " " << "6" << endl << "7" << " " << "8" << endl;
 EV_INFO << "9" << "\n" << "10" << "\n";
 EV_INFO << "11\n12\n";
 EV_INFO << "13";
-EV_DEBUG << "14\n";
+EV_DETAIL << "14\n";
 
 %contains: stdout
-[INFO]	: 1 2 3 4
-[INFO]	: 5 6
-[INFO]	: 7 8
-[INFO]	: 9
-[INFO]	: 10
-[INFO]	: 11
-[INFO]	: 12
-[INFO]	: 13
-[DEBUG]	: 14
+[INFO]   1 2 3 4
+[INFO]   5 6
+[INFO]   7 8
+[INFO]   9
+[INFO]   10
+[INFO]   11
+[INFO]   12
+[INFO]   13
+[DETAIL] 14
