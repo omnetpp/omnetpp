@@ -20,7 +20,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.browser,
  org.eclipse.help,
  org.eclipse.help.ui,
- org.apache.commons.httpclient,
+ org.apache.httpcomponents.httpclient,
  org.apache.commons.logging,
  org.omnetpp.common,
  de.unikassel.imageexport;resolution:=optional

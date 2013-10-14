@@ -45,7 +45,7 @@
     </property>
     <property
           name="aboutImage"
-          value="icons/about-image.png">
+          value="platform:/plugin/org.omnetpp.main.omnetpp/icons/about-image.png">
     </property>
     <property
           name="windowImages"
@@ -55,7 +55,12 @@
           name="aboutText"
           value="%aboutText">
     </property>
-      </product>
+    <property
+            name="cssTheme"
+            value="org.eclipse.e4.ui.css.theme.e4_classic">
+    </property>
+
+    </product>
    </extension>
    <extension
          id="omnetppnature"

@@ -802,6 +802,11 @@ public class Index {
             return include.isResolvedByHeuristics();
         }
 
+        @Override
+        public boolean isIncludedFileExported() throws CoreException {
+            return include.isIncludedFileExported();
+        }
+
         public Path getPath() {
             return resolvedPath;
         }
