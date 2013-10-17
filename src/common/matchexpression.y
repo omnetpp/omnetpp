@@ -22,7 +22,12 @@
 %left AND_
 %left NOT_
 
+// for bison 2.3
 %pure_parser
+
+// for bison 3.x
+%lex-param {void *statePtr}
+%parse-param {void *statePtr}
 
 %start expression
 
@@ -39,7 +44,8 @@
 #include <string.h>         /* YYVERBOSE needs it */
 #endif
 
-void yyerror (const char *s);
+void yyerror (void *statePtr, const char *s);  // used by bison 3+
+void yyerror (const char *s);  // used by bison 2.x
 
 #include "matchexpression.h"
 #include "matchexpressionlexer.h"
@@ -131,6 +137,13 @@ void MatchExpression::parsePattern(std::vector<MatchExpression::Elem>& elems, co
     yyparse(&state);
 }
 
+// for bison 3.x
+void yyerror(void *statePtr, const char *s)
+{
+    yyerror(s);
+}
+
+// for bison 2.x
 void yyerror(const char *s)
 {
     // chop newline
