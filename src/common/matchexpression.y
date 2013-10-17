@@ -18,7 +18,10 @@
 %token STRINGLITERAL
 %token OR_ AND_ NOT_   /* note: cannot use %left/%right because of implicit "or" operator */
 
-%pure_parser
+%language "c"
+%define api.pure
+%lex-param {void *statePtr}
+%parse-param {void *statePtr}
 
 %start expression
 
@@ -35,7 +38,8 @@
 #include <string.h>         /* YYVERBOSE needs it */
 #endif
 
-void yyerror (const char *s);
+void yyerror (void *statePtr, const char *s);  // used by bison 3+
+void yyerror (const char *s);  // used by bison 2.x
 
 #include "matchexpression.h"
 #include "matchexpressionlexer.h"
@@ -140,6 +144,11 @@ void MatchExpression::parsePattern(std::vector<MatchExpression::Elem>& elems, co
 
     // parse
     yyparse(&state);
+}
+
+void yyerror(void *statePtr, const char *s)
+{
+    yyerror(s);
 }
 
 void yyerror(const char *s)
