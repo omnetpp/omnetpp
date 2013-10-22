@@ -1,3 +1,7 @@
+2013-10-24  Andras Varga
+
+	* Fix: implementation of cPatternMatcher::containsWildcards() was missing
+
 2013-10-01  Andras Varga
 
 	* Added result filter 'removerepeats'
