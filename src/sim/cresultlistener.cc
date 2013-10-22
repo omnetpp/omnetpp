@@ -120,12 +120,12 @@ void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, cO
             // dispatch cITimestampedValue by data type
             switch (v->getValueType(signalID))
             {
-                case cITimestampedValue::LONG: receiveSignal(NULL, v->getTimestamp(signalID), v->longValue(signalID)); break;
-                case cITimestampedValue::ULONG: receiveSignal(NULL, v->getTimestamp(signalID), v->unsignedLongValue(signalID)); break;
-                case cITimestampedValue::DOUBLE: receiveSignal(NULL, v->getTimestamp(signalID), v->doubleValue(signalID)); break;
-                case cITimestampedValue::SIMTIME: receiveSignal(NULL, v->getTimestamp(signalID), v->simtimeValue(signalID)); break;
-                case cITimestampedValue::STRING: receiveSignal(NULL, v->getTimestamp(signalID), v->stringValue(signalID)); break;
-                case cITimestampedValue::OBJECT: receiveSignal(NULL, v->getTimestamp(signalID), v->objectValue(signalID)); break;
+                case SIMSIGNAL_LONG: receiveSignal(NULL, v->getTimestamp(signalID), v->longValue(signalID)); break;
+                case SIMSIGNAL_ULONG: receiveSignal(NULL, v->getTimestamp(signalID), v->unsignedLongValue(signalID)); break;
+                case SIMSIGNAL_DOUBLE: receiveSignal(NULL, v->getTimestamp(signalID), v->doubleValue(signalID)); break;
+                case SIMSIGNAL_SIMTIME: receiveSignal(NULL, v->getTimestamp(signalID), v->simtimeValue(signalID)); break;
+                case SIMSIGNAL_STRING: receiveSignal(NULL, v->getTimestamp(signalID), v->stringValue(signalID)); break;
+                case SIMSIGNAL_OBJECT: receiveSignal(NULL, v->getTimestamp(signalID), v->objectValue(signalID)); break;
                 default: throw opp_runtime_error("got cITimestampedValue with blank or invalid data type");
             }
         }

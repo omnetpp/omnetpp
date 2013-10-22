@@ -87,8 +87,8 @@ class SIM_API cChannel : public cComponent //implies noncopyable
         /** Returns the timestamp; it represents the start of the transmission. */
         virtual simtime_t_cref getTimestamp(simsignal_t signalID) const {return timestamp;}
 
-        /** Returns cITimestampedValue::OBJECT. */
-        virtual Type getValueType(simsignal_t signalID) const {return OBJECT;}
+        /** Returns SIMSIGNAL_OBJECT. */
+        virtual SimsignalType getValueType(simsignal_t signalID) const {return SIMSIGNAL_OBJECT;}
 
         /** Returns the message (packet) as the stored object. */
         virtual cObject *objectValue(simsignal_t signalID) const {return msg;}

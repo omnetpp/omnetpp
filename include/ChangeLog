@@ -1,5 +1,10 @@
 2013-10-24  Andras Varga
 
+	* introduced SimsignalType, an enum for signal data types; it replaces 
+	cITimestampedValue::Type.
+
+2013-10-24  Andras Varga
+
 	* cObjectFactory was extended with an isInstance() method that 
 	effectively wraps a dynamic_cast
 

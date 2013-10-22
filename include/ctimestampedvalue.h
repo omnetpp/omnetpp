@@ -35,9 +35,6 @@ NAMESPACE_BEGIN
 class SIM_API cITimestampedValue
 {
     public:
-        enum Type {UNDEF, LONG, ULONG, DOUBLE, SIMTIME, STRING, OBJECT};
-
-    public:
         /** Virtual destructor */
         virtual ~cITimestampedValue() {}
 
@@ -45,7 +42,7 @@ class SIM_API cITimestampedValue
         virtual simtime_t_cref getTimestamp(simsignal_t signalID) const = 0;
 
         /** Returns the value's data type for the given signal. */
-        virtual Type getValueType(simsignal_t signalID) const = 0;
+        virtual SimsignalType getValueType(simsignal_t signalID) const = 0;
 
         /** @name Returns the value for the given signal. */
         //@{
@@ -67,7 +64,7 @@ class SIM_API cTimestampedValue : public cITimestampedValue, public cObject
 {
     public:
         simtime_t timestamp;
-        Type type; // selector for the union
+        SimsignalType type; // selector for the union
         union {
             long l;
             unsigned long ul;
@@ -80,7 +77,7 @@ class SIM_API cTimestampedValue : public cITimestampedValue, public cObject
     public:
         /** @name Constructors */
         //@{
-        cTimestampedValue() {type=UNDEF;}
+        cTimestampedValue() {type=SIMSIGNAL_UNDEF;}
         cTimestampedValue(simtime_t timestamp, long l) {set(timestamp,l);}
         cTimestampedValue(simtime_t timestamp, unsigned long ul) {set(timestamp,ul);}
         cTimestampedValue(simtime_t timestamp, double d) {set(timestamp,d);}
@@ -91,19 +88,19 @@ class SIM_API cTimestampedValue : public cITimestampedValue, public cObject
 
         /** @name Setters */
         //@{
-        void set(simtime_t timestamp, long l) {this->timestamp=timestamp; type=LONG; this->l=l;}
-        void set(simtime_t timestamp, unsigned long ul) {this->timestamp=timestamp; type=ULONG; this->ul=ul;}
-        void set(simtime_t timestamp, double d) {this->timestamp=timestamp; type=DOUBLE; this->d=d;}
-        void set(simtime_t timestamp, const SimTime& t) {this->timestamp=timestamp; type=SIMTIME; this->t=t;}
-        void set(simtime_t timestamp, const char *s) {this->timestamp=timestamp; type=STRING; this->s=s;}
-        void set(simtime_t timestamp, cObject *obj) {this->timestamp=timestamp; type=OBJECT; this->obj=obj;}
+        void set(simtime_t timestamp, long l) {this->timestamp=timestamp; type=SIMSIGNAL_LONG; this->l=l;}
+        void set(simtime_t timestamp, unsigned long ul) {this->timestamp=timestamp; type=SIMSIGNAL_ULONG; this->ul=ul;}
+        void set(simtime_t timestamp, double d) {this->timestamp=timestamp; type=SIMSIGNAL_DOUBLE; this->d=d;}
+        void set(simtime_t timestamp, const SimTime& t) {this->timestamp=timestamp; type=SIMSIGNAL_SIMTIME; this->t=t;}
+        void set(simtime_t timestamp, const char *s) {this->timestamp=timestamp; type=SIMSIGNAL_STRING; this->s=s;}
+        void set(simtime_t timestamp, cObject *obj) {this->timestamp=timestamp; type=SIMSIGNAL_OBJECT; this->obj=obj;}
         //@}
 
         /** Returns the stored timestamp. */
         virtual simtime_t_cref getTimestamp(simsignal_t signalID) const {return timestamp;}
 
         /** Returns the data type of the stored value. */
-        virtual Type getValueType(simsignal_t signalID) const {return type;}
+        virtual SimsignalType getValueType(simsignal_t signalID) const {return type;}
 
         /** @name Getters. Call the one that corresponds to the stored type. */
         //@{
