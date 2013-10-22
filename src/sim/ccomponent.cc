@@ -36,6 +36,8 @@ USING_NAMESPACE
 
 Register_PerObjectConfigOption(CFGID_PARAM_RECORD_AS_SCALAR, "param-record-as-scalar", KIND_PARAMETER, CFG_BOOL, "false", "Applicable to module parameters: specifies whether the module parameter should be recorded into the output scalar file. Set it for parameters whose value you'll need for result analysis.");
 
+#define SIGNALMASK_UNFILLED (~(uint64)0)
+
 cComponent::SignalNameMapping *cComponent::signalNameMapping = NULL;
 int cComponent::lastSignalID = -1;
 

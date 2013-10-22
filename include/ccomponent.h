@@ -33,7 +33,6 @@ class cDisplayString;
 class cRNG;
 class cStatistic;
 
-#define SIGNALMASK_UNFILLED (~(uint64)0)
 
 /**
  * Common base for module and channel classes: cModule and cChannel.
