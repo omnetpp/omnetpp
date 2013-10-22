@@ -26,10 +26,11 @@
 USING_NAMESPACE
 
 
-cObjectFactory::cObjectFactory(const char *name, cObject *(*f)(), const char *description)
+cObjectFactory::cObjectFactory(const char *name, cObject *(*creatorf)(), void *(*castf)(cObject *), const char *description)
   : cNoncopyableOwnedObject(name, false)
 {
-    creatorfunc = f;
+    creatorfunc = creatorf;
+    castfunc = castf;
     descr = description ? description : "";
 }
 
@@ -53,6 +54,13 @@ cObjectFactory *cObjectFactory::get(const char *classname)
                             "or the class wasn't registered with Register_Class(), or in the case of "
                             "modules and channels, with Define_Module()/Define_Channel()", classname);
     return p;
+}
+
+cObject *cObjectFactory::createOne() const
+{
+    if (!creatorfunc)
+        throw cRuntimeError("Class \"%s\" is registered as abstract, and cannot be instantiated", getFullName());
+    return creatorfunc();
 }
 
 cObject *cObjectFactory::createOne(const char *classname)

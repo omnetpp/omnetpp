@@ -141,11 +141,21 @@ _OPPDEPRECATED inline void Define_Function_macro() {}
  * The class must be a subclass of cObject, otherwise a compile-time error
  * will occur: <i>"cannot convert..."</i>
  *
+ * @see cObjectFactory, cObjectFactory::createOne(), cObjectFactory::isInstance()
  * @hideinitializer
  */
-#define Register_Class(CLASSNAME) \
-  static cObject *__FILEUNIQUENAME__() {return new CLASSNAME;} \
-  EXECUTE_ON_STARTUP(classes.getInstance()->add(new cObjectFactory(opp_typename(typeid(CLASSNAME)),__FILEUNIQUENAME__));)
+#define Register_Class(CLASSNAME)  __REGISTER_CLASS(CLASSNAME, cObject, "class")
+
+/**
+ * Register an abstract class. Registration makes it possible to dynamically test
+ * whether an object is a subclass of the registered class (see cObjectFactory::isInstance()).
+ * The class must be a subclass of cObject, otherwise a compile-time error
+ * will occur: <i>"cannot convert..."</i>
+ *
+ * @see cObjectFactory, cObjectFactory::isInstance()
+ * @hideinitializer
+ */
+#define Register_Abstract_Class(CLASSNAME)  __REGISTER_ABSTRACT_CLASS(CLASSNAME, cObject, "class")
 
 /**
  * Announces the C++ simple module class to \opp, and couples it with the
@@ -153,10 +163,7 @@ _OPPDEPRECATED inline void Define_Function_macro() {}
  *
  * @hideinitializer
  */
-// Implementation note: this is basically a Register_Class(), making sure the class subclasses from cModule.
-#define Define_Module(CLASSNAME) \
-  static cObject *__FILEUNIQUENAME__() {cModule *ret = new CLASSNAME; return ret; } \
-  EXECUTE_ON_STARTUP(classes.getInstance()->add(new cObjectFactory(opp_typename(typeid(CLASSNAME)),__FILEUNIQUENAME__,"module"));)
+#define Define_Module(CLASSNAME)  __REGISTER_CLASS(CLASSNAME, cModule, "module")
 
 /**
  * Announces the C++ channel class to \opp, and couples it with the
@@ -164,10 +171,18 @@ _OPPDEPRECATED inline void Define_Function_macro() {}
  *
  * @hideinitializer
  */
-// Implementation note: this is basically a Register_Class().
-#define Define_Channel(CLASSNAME) \
-  static cObject *__FILEUNIQUENAME__() {cChannel *ret = new CLASSNAME; return ret; } \
-  EXECUTE_ON_STARTUP(classes.getInstance()->add(new cObjectFactory(opp_typename(typeid(CLASSNAME)),__FILEUNIQUENAME__, "channel"));)
+#define Define_Channel(CLASSNAME)  __REGISTER_CLASS(CLASSNAME, cChannel, "channel")
+
+// internal
+#define __REGISTER_CLASS(CLASSNAME, BASECLASS, DESC) \
+  static cObject *MAKE_UNIQUE_WITHIN_FILE(__factoryfunc_)() {BASECLASS *ret = new CLASSNAME; return ret; } \
+  static void *MAKE_UNIQUE_WITHIN_FILE(__castfunc_)(cObject *obj) {return (void*)dynamic_cast<CLASSNAME*>(obj);} \
+  EXECUTE_ON_STARTUP(classes.getInstance()->add(new cObjectFactory(opp_typename(typeid(CLASSNAME)), MAKE_UNIQUE_WITHIN_FILE(__factoryfunc_), MAKE_UNIQUE_WITHIN_FILE(__castfunc_), DESC));)
+
+// internal
+#define __REGISTER_ABSTRACT_CLASS(CLASSNAME, BASECLASS /*unused*/, DESC) \
+  static void *MAKE_UNIQUE_WITHIN_FILE(__castfunc_)(cObject *obj) {return (void*)dynamic_cast<CLASSNAME*>(obj);} \
+  EXECUTE_ON_STARTUP(classes.getInstance()->add(new cObjectFactory(opp_typename(typeid(CLASSNAME)), NULL, MAKE_UNIQUE_WITHIN_FILE(__castfunc_), DESC));)
 
 /**
  * Internal. Registers a class descriptor which provides reflection information.

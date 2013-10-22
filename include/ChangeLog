@@ -1,3 +1,11 @@
+2013-10-24  Andras Varga
+
+	* cObjectFactory was extended with an isInstance() method that 
+	effectively wraps a dynamic_cast
+
+	* added Register_Abstract_Class() macro so cObjectFactory::isInstance()
+	can be used on abstract classes as well
+
 2013-10-01  Andras Varga
 
 	* cNEDValue: added two static parseQuantity() functions that let you
