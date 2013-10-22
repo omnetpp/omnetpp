@@ -33,6 +33,7 @@ class cProperties;
 class cIdealChannel;
 class cDelayChannel;
 class cDatarateChannel;
+class cObjectFactory;
 
 
 /**
@@ -57,6 +58,9 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     struct Less {bool operator()(cParImpl *a, cParImpl *b) const;};
     typedef std::set<cParImpl *, Less> ParImplSet;
     ParImplSet sharedParSet;
+
+    struct SignalDesc { SimsignalType type; cObjectFactory *objectType; };
+    std::map<simsignal_t,SignalDesc> signalsSeen;
 
   protected:
     friend class cComponent;

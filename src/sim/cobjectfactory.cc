@@ -38,7 +38,7 @@ std::string cObjectFactory::info() const
 {
     if (descr.empty())
         return "";
-    return std::string("(") + descr + ")";
+    return std::string("(") + descr + ")";  //TODO isAbstract
 }
 
 cObjectFactory *cObjectFactory::find(const char *classname)

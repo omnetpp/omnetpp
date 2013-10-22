@@ -14,6 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <algorithm>
 #include <string.h>
 #include "ccomponenttype.h"
 #include "cmodule.h"
@@ -29,6 +30,9 @@
 #include "cmodelchange.h"
 #include "cproperties.h"
 #include "cproperty.h"
+#include "cenum.h"
+#include "cobjectfactory.h"
+#include "../common/patternmatcher.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -36,6 +40,32 @@
 #endif
 
 USING_NAMESPACE
+
+static const char *getSignalTypeName(SimsignalType type)
+{
+    switch (type) {
+        case SIMSIGNAL_LONG: return "long";
+        case SIMSIGNAL_ULONG: return "unsigned long";
+        case SIMSIGNAL_DOUBLE: return "double";
+        case SIMSIGNAL_SIMTIME: return "simtime_t";
+        case SIMSIGNAL_STRING: return "string";
+        case SIMSIGNAL_OBJECT: return "object";
+        default: return NULL;
+    }
+};
+
+static SimsignalType getSignalType(const char *name, SimsignalType fallback=SIMSIGNAL_UNDEF)
+{
+    if (!strcmp(name, "long")) return SIMSIGNAL_LONG;
+    if (!strcmp(name, "unsigned long")) return SIMSIGNAL_ULONG;
+    if (!strcmp(name, "double")) return SIMSIGNAL_DOUBLE;
+    if (!strcmp(name, "simtime_t")) return SIMSIGNAL_SIMTIME;
+    if (!strcmp(name, "string")) return SIMSIGNAL_STRING;
+    if (!strcmp(name, "object")) return SIMSIGNAL_OBJECT;
+    return fallback;
+};
+
+//----
 
 cComponentType::cComponentType(const char *qname) : cNoncopyableOwnedObject(qname,false)
 {
@@ -110,6 +140,91 @@ bool cComponentType::isAvailable()
         availabilityTested = true;
     }
     return available;
+}
+
+void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObject *obj)
+{
+    // check that this signal is allowed
+    std::map<simsignal_t,SignalDesc>::const_iterator it = signalsSeen.find(signalID);
+    if (it == signalsSeen.end())
+    {
+        // ignore built-in signals
+        if (signalID == PRE_MODEL_CHANGE || signalID == POST_MODEL_CHANGE)
+            return;
+
+        // find @signal property for this signal
+        const char *signalName = cComponent::getSignalName(signalID);
+        std::vector<const char *> declaredSignalNames = getProperties()->getIndicesFor("signal");
+        int i;
+        for (i = 0; i < (int)declaredSignalNames.size(); i++) {
+            if (strcmp(signalName, declaredSignalNames[i]) == 0)
+                break;
+            if (PatternMatcher::containsWildcards(declaredSignalNames[i]) &&
+                    PatternMatcher(declaredSignalNames[i], false, true, true).matches(declaredSignalNames[i]))
+                break;
+        }
+        if (i == declaredSignalNames.size())
+            throw cRuntimeError("Undeclared signal \"%s\" emitted (@signal missing from NED file?)", signalName);
+        const char *declaredSignalName = declaredSignalNames[i];
+
+        // found; add it to signalsSeen
+        cProperty *prop = getProperties()->get("signal", declaredSignalName);
+        const char *declaredType = prop->getValue("type");
+        SignalDesc& desc = signalsSeen[signalID];
+        desc.type = !declaredType ? SIMSIGNAL_UNDEF : getSignalType(declaredType, SIMSIGNAL_OBJECT);
+        desc.objectType = NULL;
+        if (desc.type == SIMSIGNAL_OBJECT) {
+            desc.objectType = cObjectFactory::find(declaredType);
+            if (!desc.objectType)
+                throw cRuntimeError("Wrong type \"%s\" in the @signal[%s] property in the \"%s\" NED type, "
+                        "should be one of: long, unsigned long, double, simtime_t, string, or a registered class name",
+                        declaredType, declaredSignalName, getFullName());
+        }
+        it = signalsSeen.find(signalID);
+    }
+
+    // check data type
+    const SignalDesc& desc = it->second;
+    if (type == SIMSIGNAL_OBJECT)
+    {
+        if (desc.type == SIMSIGNAL_OBJECT)
+        {
+            if (!desc.objectType->isInstance(obj))
+            {
+                cITimestampedValue *timestampedValue = dynamic_cast<cITimestampedValue*>(obj);
+                cObject *innerObj;
+                if (!timestampedValue)
+                    throw cRuntimeError("Signal \"%s\" emitted with wrong class (%s does not subclass from %s as declared)",
+                            cComponent::getSignalName(signalID), obj->getClassName(), desc.objectType->getFullName());
+                else if (timestampedValue->getValueType(signalID) != SIMSIGNAL_OBJECT)
+                    throw cRuntimeError("Signal \"%s\" emitted as timestamped value with wrong type (%s, but object expected)",
+                            cComponent::getSignalName(signalID), getSignalTypeName(timestampedValue->getValueType(signalID)));
+                else if ((innerObj = timestampedValue->objectValue(signalID)) == NULL)
+                    throw cRuntimeError("Signal \"%s\" emitted as timestamped value with NULL pointer in it (should be a %s as declared)",
+                            cComponent::getSignalName(signalID), desc.objectType->getFullName());
+                else if (!desc.objectType->isInstance(innerObj))
+                    throw cRuntimeError("Signal \"%s\" emitted as timestamped value with wrong class in it (%s does not subclass from %s as declared)",
+                            cComponent::getSignalName(signalID), innerObj->getClassName(), desc.objectType->getFullName());
+            }
+        }
+        else if (desc.type != SIMSIGNAL_UNDEF)
+        {
+            // additionally allow time-stamped value of the appropriate type
+            cITimestampedValue *timestampedValue = dynamic_cast<cITimestampedValue*>(obj);
+            if (!timestampedValue)
+                throw cRuntimeError("Signal \"%s\" emitted with wrong data type (expected=%s, actual=%s)",
+                        cComponent::getSignalName(signalID), getSignalTypeName(desc.type), obj->getClassName());
+            SimsignalType actualType = timestampedValue->getValueType(signalID);
+            if (timestampedValue->getValueType(signalID) != desc.type)
+                throw cRuntimeError("Signal \"%s\" emitted as timestamped value with wrong data type (expected=%s, actual=%s)",
+                        cComponent::getSignalName(signalID), getSignalTypeName(desc.type), getSignalTypeName(actualType));
+        }
+    }
+    else if (type != desc.type && desc.type != SIMSIGNAL_UNDEF)
+    {
+        throw cRuntimeError("Signal \"%s\" emitted with wrong data type (expected=%s, actual=%s)",
+                cComponent::getSignalName(signalID), getSignalTypeName(desc.type), getSignalTypeName(type));
+    }
 }
 
 //----

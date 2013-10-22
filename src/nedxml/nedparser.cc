@@ -64,7 +64,7 @@ const char *NEDParser::getBuiltInDeclarations()
         "channel DatarateChannel\n"
         "{\n"
         "    @class(cDatarateChannel);\n"
-        "    @signal[channelBusy](type=\"int\");\n"
+        "    @signal[channelBusy](type=long);\n"
         "    @signal[messageSent](type=cMessage);\n"
         "    @signal[messageDiscarded](type=cMessage);\n"
         "    @statistic[busy](source=channelBusy;record=vector?;interpolationmode=sample-hold);\n"

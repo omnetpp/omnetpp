@@ -48,6 +48,8 @@ static const int NOTIFICATION_STACK_SIZE = 64;
 cIListener **cComponent::notificationStack[NOTIFICATION_STACK_SIZE];
 int cComponent::notificationSP = 0;
 
+bool cComponent::checkSignals;
+
 simsignal_t PRE_MODEL_CHANGE = cComponent::registerSignal("PRE_MODEL_CHANGE");
 simsignal_t POST_MODEL_CHANGE = cComponent::registerSignal("POST_MODEL_CHANGE");
 
@@ -441,31 +443,43 @@ void cComponent::removeSignalData(simsignal_t signalID)
 
 void cComponent::emit(simsignal_t signalID, long l)
 {
+    if (checkSignals)
+        getComponentType()->checkSignal(signalID, SIMSIGNAL_LONG);
     fire(this, signalID, getSignalMask(signalID), l);
 }
 
 void cComponent::emit(simsignal_t signalID, unsigned long l)
 {
+    if (checkSignals)
+        getComponentType()->checkSignal(signalID, SIMSIGNAL_ULONG);
     fire(this, signalID, getSignalMask(signalID), l);
 }
 
 void cComponent::emit(simsignal_t signalID, double d)
 {
+    if (checkSignals)
+        getComponentType()->checkSignal(signalID, SIMSIGNAL_DOUBLE);
     fire(this, signalID, getSignalMask(signalID), d);
 }
 
 void cComponent::emit(simsignal_t signalID, const SimTime& t)
 {
+    if (checkSignals)
+        getComponentType()->checkSignal(signalID, SIMSIGNAL_SIMTIME);
     fire(this, signalID, getSignalMask(signalID), t);
 }
 
 void cComponent::emit(simsignal_t signalID, const char *s)
 {
+    if (checkSignals)
+        getComponentType()->checkSignal(signalID, SIMSIGNAL_STRING);
     fire(this, signalID, getSignalMask(signalID), s);
 }
 
 void cComponent::emit(simsignal_t signalID, cObject *obj)
 {
+    if (checkSignals)
+        getComponentType()->checkSignal(signalID, SIMSIGNAL_OBJECT, obj);
     fire(this, signalID, getSignalMask(signalID), obj);
 }
 
