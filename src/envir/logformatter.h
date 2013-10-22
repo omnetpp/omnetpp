@@ -18,6 +18,7 @@
 
 #include <ostream>
 #include <vector>
+#include "envirdefs.h"
 #include "clog.h"
 
 /**
@@ -91,7 +92,7 @@
  * Conditional constant text:
  *  - %? ignore the following constant part if the preceding directive didn't print anything (useful for separators)
  */
-class LogFormatter
+class ENVIR_API LogFormatter
 {
   private:
     enum FormatDirective {

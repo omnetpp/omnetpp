@@ -34,6 +34,7 @@
 #include "globals.h"
 #include "regmacros.h"
 #include "cenvir.h"
+#include "clog.h"
 #include "cconfiguration.h"
 #include "cconfigoption.h"
 #include "parsimutil.h"
@@ -95,7 +96,7 @@ void cNamedPipeCommunications::init()
 {
     // get numPartitions and myProcId from "-p" command-line option
     getProcIdFromCommandLineArgs(myProcId, numPartitions, "cNamedPipeCommunications");
-    ev.printf("cNamedPipeCommunications: started as process %d out of %d.\n", myProcId, numPartitions);
+    EV << "cNamedPipeCommunications: started as process " << myProcId << " out of " << numPartitions << ".\n";
 
     // create and open pipes for read
     int i;
@@ -110,7 +111,7 @@ void cNamedPipeCommunications::init()
 
         char fname[256];
         sprintf(fname,"\\\\.\\pipe\\%s-%d-%d", prefix.buffer(), myProcId, i);
-        ev.printf("cNamedPipeCommunications: creating pipe '%s' for read...\n", fname);
+        EV << "cNamedPipeCommunications: creating pipe '" << fname << "' for read...\n";
 
         int openMode = PIPE_ACCESS_INBOUND;
         int pipeMode = PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT;
@@ -131,10 +132,10 @@ void cNamedPipeCommunications::init()
 
         char fname[256];
         sprintf(fname,"\\\\.\\pipe\\%s-%d-%d", prefix.buffer(), i, myProcId);
-        ev.printf("cNamedPipeCommunications: opening pipe '%s' for write...\n", fname);
+        EV << "cNamedPipeCommunications: opening pipe '" << fname << "' for write...\n";
         for (int k=0; k<60; k++)
         {
-            if (k>0 && k%5==0) ev.printf("retry %d of 60...\n", k);
+            if (k>0 && k%5==0) EV << "retry " << k << " of 60...\n";
             wpipes[i] = CreateFile(fname, GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
             if (wpipes[i]!=INVALID_HANDLE_VALUE)
                 break;
@@ -149,7 +150,7 @@ void cNamedPipeCommunications::init()
     {
         if (i==myProcId)
             continue;
-        ev.printf("cNamedPipeCommunications: opening pipe from procId=%d for read...\n", i);
+        EV << "cNamedPipeCommunications: opening pipe from procId=" << i << " for read...\n";
         if (!ConnectNamedPipe(rpipes[i], NULL) && GetLastError()!=ERROR_PIPE_CONNECTED)
             throw cRuntimeError("cNamedPipeCommunications: ConnectNamedPipe operation failed: %s", getWindowsError().c_str());
     }

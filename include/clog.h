@@ -264,7 +264,7 @@ class SIM_API cLogProxy
     // act likes /dev/null
     class nullstream : public std::ostream {
       public:
-        nullstream() {}  // results in rdbuf==0 and badbit==true
+        nullstream() : std::ostream(0) {}  // results in rdbuf==0 and badbit==true
     };
 
   public:
