@@ -1,0 +1,42 @@
+%description:
+Positive test: Check that declared signals are allowed to be emitted.
+
+%file: test.ned
+
+simple Test extends testlib.SignalSource
+{
+    @isNetwork(true);
+
+    @signal[untyped]();
+    @signal[l](type="long");
+    @signal[ul](type="unsigned long");
+    @signal[d](type="double");
+    @signal[t](type="simtime_t");
+    @signal[s](type="string");
+    @signal[o](type="cMessage");
+
+    script = xml("<root>\
+       <e at='init' name='untyped' type='long' value='-1'/> \
+       \
+       <e at='init' name='l' type='long' value='-1'/> \
+       <e at='init' name='ul' type='unsigned long' value='5'/> \
+       <e at='init' name='d' type='double' value='5.999'/> \
+       <e at='init' name='t' type='simtime_t' value='13.5'/> \
+       <e at='init' name='s' type='string' value='hello'/> \
+       <e at='init' name='o' type='cMessage' value=''/> \
+       \
+       <e at='init' timestamp='1' name='l' type='long' value='-1'/> \
+       <e at='init' timestamp='1' name='ul' type='unsigned long' value='5'/> \
+       <e at='init' timestamp='1' name='d' type='double' value='5.999'/> \
+       <e at='init' timestamp='1' name='t' type='simtime_t' value='13.5'/> \
+       <e at='init' timestamp='1' name='s' type='string' value='hello'/> \
+       <e at='init' timestamp='1' name='o' type='cMessage' value=''/> \
+    </root>");
+}
+
+
+%exitcode: 0
+
+%contains-regex: stdout
+emitted 13 signals
+
