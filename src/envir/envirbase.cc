@@ -467,7 +467,7 @@ bool EnvirBase::setup()
             const char *folder = tokenizer.nextToken();
             if (foldersloaded.find(folder)==foldersloaded.end())
             {
-                std::cout << "Loading NED files from " << folder << endl;
+                std::cout << "Loading NED files from " << folder << ": ";
                 int count = simulation.loadNedSourceFolder(folder);
                 std::cout << " " << count << endl;
                 foldersloaded.insert(folder);
