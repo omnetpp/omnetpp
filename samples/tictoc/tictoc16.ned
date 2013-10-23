@@ -11,9 +11,9 @@
 simple Txc16
 {
     parameters:
-        @signal[arrival](type="int");
+        @signal[arrival](type="long");
         @statistic[hopCount](title="hop count"; source="arrival"; record=vector,stats; interpolationmode=none);
-        
+
         @display("i=block/routing");
     gates:
         inout gate[];

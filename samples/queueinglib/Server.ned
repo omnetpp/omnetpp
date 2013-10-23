@@ -18,7 +18,7 @@ simple Server
     parameters:
         @group(Queueing);
         @display("i=block/server");
-        @signal[busy](type="bool");
+        @signal[busy](type="long");
         @statistic[busy](title="server busy state";record=vector?,timeavg;interpolationmode=sample-hold);
 
         string fetchingAlgorithm @enum("priority","random","roundRobin","longestQueue") = default("priority");

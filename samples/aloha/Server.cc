@@ -43,8 +43,8 @@ void Server::initialize()
     collisionSignal = registerSignal("collision");
     collisionLengthSignal = registerSignal("collisionLength");
 
-    emit(receiveSignal, 0.0);
-    emit(receiveBeginSignal, 0.0);
+    emit(receiveSignal, 0L);
+    emit(receiveBeginSignal, 0L);
 
     if (ev.isGUI())
         getDisplayString().setTagArg("i2",0,"x_off");

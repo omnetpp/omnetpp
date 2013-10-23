@@ -137,7 +137,7 @@ void L2Queue::handleMessage(cMessage *msg)
         {
             // We are idle, so we can start transmitting right away.
             EV << "Received " << msg << endl;
-            emit(queueingTimeSignal, 0.0);
+            emit(queueingTimeSignal, SIMTIME_ZERO);
             startTransmitting(msg);
             emit(busySignal, 1);
         }

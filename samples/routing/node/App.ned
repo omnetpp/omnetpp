@@ -21,8 +21,8 @@ simple App like IApp
         volatile int packetLength @unit(byte);  // length of one message (fixed! no "volatile" modifier)
         @display("i=block/browser");
         @signal[endToEndDelay](type="simtime_t");
-        @signal[hopCount](type="int");
-        @signal[sourceAddress](type="int");
+        @signal[hopCount](type="long");
+        @signal[sourceAddress](type="long");
         @statistic[endToEndDelay](title="end-to-end delay of arrived packets";unit=s;record=vector,mean,max;interpolationmode=none);
         @statistic[hopCount](title="hop count of arrived packets";interpolationmode=none;record=vector?,mean,max);
         @statistic[sourceAddress](title="source address of arrived packets";interpolationmode=none;record=vector?);

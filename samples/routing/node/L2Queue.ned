@@ -29,10 +29,10 @@ simple L2Queue
     parameters:
         int frameCapacity = default(0); // max number of packets; 0 means no limit
         @display("i=block/queue;q=queue");
-        @signal[qlen](type="int");
-        @signal[busy](type="bool");
+        @signal[qlen](type="long");
+        @signal[busy](type="long");
         @signal[queueingTime](type="simtime_t");
-        @signal[drop](type="int");
+        @signal[drop](type="long");
         @signal[txBytes](type="long");
         @signal[rxBytes](type="long");
         @statistic[qlen](title="queue length";record=vector?,timeavg,max;interpolationmode=sample-hold);

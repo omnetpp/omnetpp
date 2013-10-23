@@ -17,10 +17,10 @@ simple ResourceBasedQueue
 {
     parameters:
         @group(Queueing);
-        @signal[dropped](type="int");
-        @signal[queueLength](type="int");
+        @signal[dropped](type="long");
+        @signal[queueLength](type="long");
         @signal[queueingTime](type="simtime_t");
-        @signal[busy](type="bool");
+        @signal[busy](type="long");
         @statistic[dropped](title="drop event";record=vector?,count;interpolationmode=none);
         @statistic[queueLength](title="queue length";record=vector,timeavg,max;interpolationmode=sample-hold);
         @statistic[queueingTime](title="queueing time at dequeue";record=vector?,mean,max;unit=s;interpolationmode=none);
