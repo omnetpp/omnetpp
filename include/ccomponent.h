@@ -34,7 +34,6 @@ class cDisplayString;
 class cRNG;
 class cStatistic;
 
-#define SIGNALMASK_UNFILLED (~(uint64)0)
 
 /**
  * Common base for module and channel classes: cModule and cChannel.
@@ -107,6 +106,9 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     static cIListener **notificationStack[];
     static int notificationSP;
 
+    // whether only signals declared in NED via @signal are allowed to be emitted
+    static bool checkSignals;
+
   private:
     SignalData *findSignalData(simsignal_t signalID) const;
     SignalData *findOrCreateSignalData(simsignal_t signalID);
@@ -166,6 +168,10 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     // given signal and returns the corresponding mask (1<<index); returns 0 if there are no more
     // free bit indices. Result is remembered and returned in subsequent calls (until clearSignalState())
     static uint64 getSignalMask(simsignal_t signalID);
+
+    // internal: controls whether signals should be validated against @signal declarations in NED files
+    static void setCheckSignals(bool b) {checkSignals = b;}
+    static bool getCheckSignals() {return checkSignals;}
 
   protected:
     /** @name Initialization, finish and parameter change hooks.

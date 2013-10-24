@@ -5,6 +5,8 @@ Basic test for individual result filters and recorders.
 
 simple Node
 {
+    @signal[tenToFifteen](type="long");
+
     // test the recorders
     @statistic[rec](source=tenToFifteen;record=count,sum,mean,min,max,last,timeavg,histogram,vector,2*mean);
 

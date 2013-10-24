@@ -139,6 +139,25 @@ class SIM_API cNEDValue
     static double convertUnit(double d, const char *unit, const char *targetUnit);
 
     /**
+     * Invokes parseQuantity(), and converts the result into the given unit.
+     * If conversion is not possible (unrelated or unknown units), and error
+     * is thrown.
+     */
+    static double parseQuantity(const char *str, const char *expectedUnit=NULL);
+
+    /**
+     * Converts a quantity given as string to a double, and returns it, together
+     * with the unit it was given in. If there are several numbers and units
+     * (see syntax), everything is converted into the last unit.
+     *
+     * Syntax: <number> | (<number> <unit>)+
+     *
+     * If there is a syntax error, or if unit mismatch is found (i.e. distance
+     * is given instead of time), the method throws an exception.
+     */
+    static double parseQuantity(const char *str, std::string& outActualUnit);
+
+    /**
      * Returns a copy of the string that is guaranteed to stay valid
      * until the program exits. Multiple calls with identical strings as
      * parameter will return the same copy. Useful for getting measurement

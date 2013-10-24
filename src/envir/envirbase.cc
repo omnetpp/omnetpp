@@ -136,6 +136,8 @@ Register_PerRunConfigOption(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, 
 Register_PerRunConfigOption(CFGID_DEBUG_STATISTICS_RECORDING, "debug-statistics-recording", CFG_BOOL, "false", "Turns on the printing of debugging information related to statistics recording (@statistic properties)");
 Register_PerRunConfigOption(CFGID_LOG_FORMAT, "log-format", CFG_STRING, "[%l]\t", "Specifies the format string that determines the prefix of each recorded log line. Log lines can be produced by using any of the predefined C++ macros such as FATAL, ERROR, WARN, INFO, DEBUG or TRACE. The format string may contain constant texts interleaved with format directives. A format directive is a '%' character followed by a single format character. See the manual for the list of available format characters.")
 Register_PerRunConfigOption(CFGID_GLOBAL_LOGLEVEL, "log-level", CFG_STRING, "DEBUG", "Globally specifies the level of detail recorded by log statements, output below the specified level is omitted. Available values are (case insensitive): fatal, error, warn, info, debug or trace. Note that the level of detail is also controlled by the specified per component log levels and the GLOBAL_COMPILETIME_LOGLEVEL macro that is used to completely remove log statements from the executable.")
+Register_PerRunConfigOption(CFGID_CHECK_SIGNALS, "check-signals", CFG_BOOL, "false", "Controls whether the simulation kernel will validate signals emitted by modules and channels against signal declarations (@signal properties) in NED files.");  //TODO for 5.0, add: "The default setting depends on the build type: 'true' in DEBUG, and 'false' in RELEASE mode."
+
 Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", KIND_MODULE, CFG_STRING, NULL, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (\"5..9\") and \"*\" (=all) are accepted too.");
 Register_PerObjectConfigOption(CFGID_RNG_K, "rng-%", KIND_MODULE, CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The default is one-to-one mapping.");
 Register_PerObjectConfigOption(CFGID_RESULT_RECORDING_MODES, "result-recording-modes", KIND_STATISTIC, CFG_STRING, "default", "Defines how to calculate results from the @statistic property matched by the wildcard. Special values: default, all: they select the modes listed in the record= key of @statistic; all selects all of them, default selects the non-optional ones (i.e. excludes the ones that end in a question mark). Example values: vector, count, last, sum, mean, min, max, timeavg, stats, histogram. More than one values are accepted, separated by commas. Expressions are allowed. Items prefixed with '-' get removed from the list. Example: **.queueLength.result-recording-modes=default,-vector,+timeavg");
@@ -1551,6 +1553,7 @@ void EnvirBase::readPerRunOptions()
     opt_rng_class = cfg->getAsString(CFGID_RNG_CLASS);
     opt_seedset = cfg->getAsInt(CFGID_SEED_SET);
     opt_debug_statistics_recording = cfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
+    opt_check_signals = cfg->getAsBool(CFGID_CHECK_SIGNALS);
 
     simulation.setWarmupPeriod(opt_warmupperiod);
 
@@ -1559,6 +1562,8 @@ void EnvirBase::readPerRunOptions()
         simulation.setHasher(new cHasher());
     else
         simulation.setHasher(NULL);
+
+    cComponent::setCheckSignals(opt_check_signals);
 
     // run RNG self-test on RNG class selected for this run
     cRNG *testrng;

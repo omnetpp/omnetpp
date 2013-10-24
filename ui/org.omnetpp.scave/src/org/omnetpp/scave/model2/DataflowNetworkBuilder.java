@@ -715,7 +715,7 @@ public class DataflowNetworkBuilder {
             if (chart == target) {
                 // discard everything not on the chart
                 IDList idlist = getIDs();
-                idlist.substract(select(idlist, chart.getFilters(), ResultType.VECTOR_LITERAL));
+                idlist.subtract(select(idlist, chart.getFilters(), ResultType.VECTOR_LITERAL));
                 removeOutputPorts(idlist);
             }
             return this;
@@ -732,7 +732,7 @@ public class DataflowNetworkBuilder {
                 // discard everything not on the chart
                 IDList idlist = getIDs();
                 IDList displayedIds = select(idlist, chart.getFilters(), ResultType.VECTOR_LITERAL);
-                idlist.substract(displayedIds);
+                idlist.subtract(displayedIds);
                 removeOutputPorts(idlist);
 
                 // select x data
@@ -746,7 +746,7 @@ public class DataflowNetworkBuilder {
                         FileRunList fileruns = new FileRunList();
                         fileruns.add(item.getFileRun());
                         IDList yData = manager.filterIDList(displayedIds, fileruns, "", "");
-                        yData.substract(id);
+                        yData.subtract(id);
 
                         addXYPlotNode(id, yData);
                     }

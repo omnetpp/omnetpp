@@ -101,12 +101,12 @@ class SIM_API SimTime
         bool differentSign = !haveSameSign(t, x.t);
         t -= x.t;
         if (differentSign && haveSameSign(t, x.t))
-            overflowSubstracting(x);
+            overflowSubtracting(x);
     }
 
     void rangeError(double i64);
     void overflowAdding(const SimTime& x);
-    void overflowSubstracting(const SimTime& x);
+    void overflowSubtracting(const SimTime& x);
 
   public:
     // renamed constants (use SIMTIME_x instead)

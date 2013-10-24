@@ -1,0 +1,94 @@
+%description:
+Test property parsing in MSG files
+
+%file: test.msg_
+
+packet Foo {
+   // basic syntax
+   @foo1;
+   @foo2();
+   @foo3(true);
+   @foo4("Hello world");
+   @foo5("Hello world", 42);
+   @foo6(q="2x2"; a="5");
+
+   // index
+   @bar1[id1];
+   @bar2[id1](true);
+
+   // fancy names
+   @org.acme-corp._private_.class::name[a.b-c_d:e];
+
+   // parens, quotes in values
+   @baz(a=f(g(x))+2; b=[1,2,3]; c={printf("x=%d; y=%d",x,y);});
+}
+
+%testprog: nedtool -x -X msg test.msg_
+
+%contains: test_m.xml
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<msg-file filename="test.msg_">
+    <comment locid="banner" content="&#10;"/>
+    <packet name="Foo">
+        <comment locid="trailing" content="&#10;&#10;"/>
+        <property name="foo1">
+            <comment locid="banner" content="   // basic syntax&#10;"/>
+        </property>
+        <property name="foo2">
+            <property-key>
+                <literal type="spec"/>
+            </property-key>
+        </property>
+        <property name="foo3">
+            <property-key>
+                <literal type="spec" text="true" value="true"/>
+            </property-key>
+        </property>
+        <property name="foo4">
+            <property-key>
+                <literal type="string" text="&quot;Hello world&quot;" value="Hello world"/>
+            </property-key>
+        </property>
+        <property name="foo5">
+            <property-key>
+                <literal type="string" text="&quot;Hello world&quot;" value="Hello world"/>
+                <literal type="spec" text=" 42" value="42"/>
+            </property-key>
+        </property>
+        <property name="foo6">
+            <comment locid="right" content="&#10;&#10;"/>
+            <property-key name="q">
+                <literal type="string" text="&quot;2x2&quot;" value="2x2"/>
+            </property-key>
+            <property-key name="a">
+                <literal type="string" text="&quot;5&quot;" value="5"/>
+            </property-key>
+        </property>
+        <property name="bar1" index="id1">
+            <comment locid="banner" content="   // index&#10;"/>
+        </property>
+        <property name="bar2" index="id1">
+            <comment locid="right" content="&#10;&#10;"/>
+            <property-key>
+                <literal type="spec" text="true" value="true"/>
+            </property-key>
+        </property>
+        <property name="org.acme-corp._private_.class::name" index="a.b-c_d:e">
+            <comment locid="right" content="&#10;&#10;"/>
+            <comment locid="banner" content="   // fancy names&#10;"/>
+        </property>
+        <property name="baz">
+            <comment locid="banner" content="   // parens, quotes in values&#10;"/>
+            <property-key name="a">
+                <literal type="spec" text="f(g(x))+2" value="f(g(x))+2"/>
+            </property-key>
+            <property-key name="b">
+                <literal type="spec" text="[1,2,3]" value="[1,2,3]"/>
+            </property-key>
+            <property-key name="c">
+                <literal type="spec" text="{printf(&quot;x=%d; y=%d&quot;,x,y);}" value="{printf(&quot;x=%d; y=%d&quot;,x,y);}"/>
+            </property-key>
+        </property>
+    </packet>
+</msg-file>

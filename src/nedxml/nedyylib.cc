@@ -394,11 +394,29 @@ IdentElement *createIdent(YYLTYPE parampos, YYLTYPE modulepos, NEDElement *modul
     return ident;
 }
 
+LiteralElement *createPropertyValue(YYLTYPE textpos)  // which is a spec or a string literal
+{
+    bool isString = false;
+    try {
+        const char *text = toString(textpos);
+        const char *endp;
+        opp_parsequotedstr(text, endp);
+        if (*endp == '\0')
+            isString = true;
+    }
+    catch (std::exception& e) { /*not string*/ }
+
+    if (isString)
+        return createStringLiteral(textpos);
+    else
+        return createLiteral(NED_CONST_SPEC, textpos, textpos);
+}
+
 LiteralElement *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos)
 {
     LiteralElement *c = (LiteralElement *)createElementWithTag(NED_LITERAL);
     c->setType(type);
-    c->setValue(toString(valuepos));
+    c->setValue(opp_trim(toString(valuepos)).c_str());
     c->setText(toString(textpos));
     return c;
 }

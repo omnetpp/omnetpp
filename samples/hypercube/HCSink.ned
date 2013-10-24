@@ -17,7 +17,7 @@ simple HCSink
         int address;
         @display("i=block/sink");
         @signal[endToEndDelay](type="simtime_t");
-        @signal[hopCount](type="int");
+        @signal[hopCount](type="long");
         @signal[hopRatio](type="double");
         @statistic[endToEndDelay](title="end-to-end delay";unit=s;record=vector,mean,max;interpolationmode=none);
         @statistic[hopCount](title="hop count";record=vector?,mean,max;interpolationmode=none);

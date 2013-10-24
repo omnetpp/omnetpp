@@ -34,11 +34,16 @@ X  [0-9a-fA-F]
 E  [Ee][+-]?{D}+
 S  [ \t\v\n\r\f]
 
-%x cplusplusbody
 %x stringliteral
+%x propertyname
+%x afterpropertyname
+%x propertyindex
+%x propertyvalue
 
 /* the following option keeps isatty() out */
 %option never-interactive
+
+/*%option debug*/
 
 %{
 #include <string.h>
@@ -54,13 +59,20 @@ extern YYLTYPE yylloc;
 #define comment     ned2comment
 #define countChars  ned2count
 #define extendCount ned2extendCount
+#define debugPrint  ned2debugPrint
 
 void comment();
 void countChars();
 void extendCount();
+int debugPrint(int c);
 
 #define TEXTBUF_LEN 1024
 static char textbuf[TEXTBUF_LEN];
+
+static int parenDepth = 0;
+
+#define P(x)  (x)
+//#define P(x)  debugPrint(x)  /*for debugging*/
 
 USING_NAMESPACE
 
@@ -130,19 +142,49 @@ USING_NAMESPACE
 
 \"                       { countChars(); BEGIN(stringliteral); }
 <stringliteral>{
-      \n                 { BEGIN(INITIAL); throw NEDException("unterminated string literal (append backslash to line for multi-line strings)"); /* NOTE: BEGIN(INITIAL) is important, otherwise parsing of the next file (!) will start from the <stringliteral> state! */ }
-      \\\n               { extendCount(); /* line continuation */ }
-      \\\"               { extendCount(); /* qouted quote */ }
-      \\[^\n\"]          { extendCount(); /* qouted char */ }
-      [^\\\n\"]+         { extendCount(); /* character inside string literal */ }
-      \"                 { extendCount(); BEGIN(INITIAL); return STRINGCONSTANT; /* closing quote */ }
+    \n                   { BEGIN(INITIAL); parenDepth=0; throw NEDException("unterminated string literal (append backslash to line for multi-line strings)"); /* NOTE: BEGIN(INITIAL) is important, otherwise parsing of the next file (!) will start from the <stringliteral> state! */ }
+    \\\n                 { extendCount(); /* line continuation */ }
+    \\\"                 { extendCount(); /* qouted quote */ }
+    \\[^\n\"]            { extendCount(); /* qouted char */ }
+    [^\\\n\"]+           { extendCount(); /* character inside string literal */ }
+    \"                   { extendCount(); if (parenDepth==0) BEGIN(INITIAL);else BEGIN(propertyvalue); return STRINGCONSTANT; /* closing quote */ }
+}
+
+"@"                      { countChars(); BEGIN(propertyname); return '@'; }
+<propertyname>{
+    ({L}|{D}|[:.-])+     { countChars(); BEGIN(afterpropertyname); return PROPNAME; }
+    {S}                  { countChars(); }
+    .                    { BEGIN(INITIAL); yyless(0); }
+}
+
+<afterpropertyname>{
+    "["                  { countChars(); BEGIN(propertyindex); return P('['); }
+    "("                  { countChars(); BEGIN(propertyvalue); parenDepth=1; return P('('); }
+    {S}                  { countChars(); }
+    .                    { BEGIN(INITIAL); yyless(0); }
+}
+
+<propertyindex>{
+    "]"                  { countChars(); BEGIN(afterpropertyname); return P(']'); }
+    ({L}|{D}|[:.-])+     { countChars(); return PROPNAME; }
+    {S}                  { countChars(); }
+    .                    { BEGIN(INITIAL); yyless(0); }
+}
+
+<propertyvalue>{
+    [({[]                { countChars(); ++parenDepth; return P(CHAR); }
+    [)}\]]               { countChars(); if (--parenDepth==0) {BEGIN(INITIAL); return P(yytext[0]);} else return P(CHAR); }
+    "="                  { countChars(); return P(parenDepth==1 ? '=' : CHAR); }
+    ","                  { countChars(); return P(parenDepth==1 ? ',' : CHAR); }
+    ";"                  { countChars(); return P(parenDepth==1 ? ';' : CHAR); }
+    \"                   { countChars(); BEGIN(stringliteral); }
+    .                    { countChars(); return P(CHAR); }
 }
 
 "**"                     { countChars(); return DOUBLEASTERISK; }
 "++"                     { countChars(); return PLUSPLUS; }
 
 "$"                      { countChars(); return '$'; }
-"@"                      { countChars(); return '@'; }
 ";"                      { countChars(); return ';'; }
 ","                      { countChars(); return ','; }
 ":"                      { countChars(); return ':'; }
@@ -221,7 +263,7 @@ void comment()
  */
 static void _count(bool updateprevpos)
 {
-    static int textbuflen;
+    static int textbuflen; /*TODO: textbuf is not used any more, could be ripped out */
     int i;
 
     /* printf("DBG: countChars(): prev=%d,%d  pos=%d,%d yytext=>>%s<<\n",
@@ -230,7 +272,8 @@ static void _count(bool updateprevpos)
 
     /* init textbuf */
     if (pos.li==1 && pos.co==0) {
-        textbuf[0]='\0'; textbuflen=0;
+        textbuf[0] = '\0'; textbuflen = 0;
+        parenDepth = 0;
     }
 
     if (updateprevpos) {
@@ -274,4 +317,11 @@ void extendCount()
     _count(false);
 }
 
-
+int debugPrint(int c)
+{
+    if (c==CHAR) fprintf(stderr, " ret=CHAR\n");
+    else if (c==STRINGCONSTANT) fprintf(stderr, " ret=STRINGCONSTANT\n");
+    else if (c>0 && c<=255) fprintf(stderr, " ret='%c'\n", c);
+    else fprintf(stderr, " ret=%d\n", c);
+    return c;
+}

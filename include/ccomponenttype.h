@@ -22,6 +22,7 @@
 #include "cpar.h"
 #include "cgate.h"
 #include "cownedobject.h"
+#include "clistener.h"
 
 
 NAMESPACE_BEGIN
@@ -32,6 +33,7 @@ class cProperties;
 class cIdealChannel;
 class cDelayChannel;
 class cDatarateChannel;
+class cObjectFactory;
 
 
 /**
@@ -56,6 +58,9 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     struct Less {bool operator()(cParImpl *a, cParImpl *b) const;};
     typedef std::set<cParImpl *, Less> ParImplSet;
     ParImplSet sharedParSet;
+
+    struct SignalDesc { SimsignalType type; cObjectFactory *objectType; };
+    std::map<simsignal_t,SignalDesc> signalsSeen;
 
   protected:
     friend class cComponent;
@@ -103,6 +108,9 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
 
     // internal: delegates to the similar NedTypeInfo method
     virtual bool isInnerType() const {return false;}
+
+    // internal: used by cComponent::emit() methods to validate signals
+    virtual void checkSignal(simsignal_t signalID, SimsignalType type, cObject *obj = NULL);
 
   public:
     /** @name Constructors, destructor, assignment */

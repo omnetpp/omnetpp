@@ -19,7 +19,7 @@ simple Source
 {
     parameters:
         @group(Queueing);
-        @signal[created](type="int");
+        @signal[created](type="long");
         @statistic[created](title="the number of jobs created";record=count;interpolationmode=none);
         @display("i=block/source");
         int numJobs = default(-1);               // number of jobs to be generated (-1 means no limit)

@@ -36,6 +36,28 @@
 
 ////////////// fixes cherry-picked from 4.x come here /////////////////
 
+2013-10-24  Andras Varga
+
+	* Added optional checking of emitted signals against signal declarations
+	in the NED file. Example signal declaration: @signal[numPackets](type="long")
+	What it does:
+	  - only signals declared with @signal may be emitted
+	  - if @signal contains a "type=", data type is also checked.
+
+	Check is turned off by default; it can be turned on with the
+	   check-signals = true
+	configuration option. It is planned that in the 5.0 version
+	signal checking will be turned on by default. See related changes
+	in include/ChangeLog.
+
+2013-10-24  Andras Varga
+
+	* Fix: implementation of cPatternMatcher::containsWildcards() was missing
+
+2013-10-01  Andras Varga
+
+	* Added result filter 'removerepeats'
+
 2013-09-26  Andras Varga
 
 	* Fix: cPacketQueue's clear() didn't zero the bit length [reported by

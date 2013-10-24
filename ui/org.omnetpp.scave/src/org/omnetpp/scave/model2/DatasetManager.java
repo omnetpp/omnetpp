@@ -141,7 +141,7 @@ public class DatasetManager {
         @Override
         public Object caseDiscard(Discard discard) {
             if (type == null || discard.getType() == type || type == ResultType.SCALAR_LITERAL)
-                idlist.substract(select(idlist, discard));
+                idlist.subtract(select(idlist, discard));
             return this;
         }
 
@@ -176,7 +176,7 @@ public class DatasetManager {
                     IDList ids = manager.filterIDList(idlist, runModuleName.first, runModuleName.second, runModuleName.third);
                     // remove one-by-one, because idlist.substract(ids) would change the order of ids in idlist
                     for (int i = 0; i < ids.size(); ++i)
-                        idlist.substract(ids.get(i));
+                        idlist.subtract(ids.get(i));
                 }
                 // add new scalars
                 for (int i = 0; i < computedScalars.size(); ++i)
@@ -190,7 +190,7 @@ public class DatasetManager {
                 IDList selectedVectors = select(idlist, op.getFilters(), ResultType.VECTOR_LITERAL);
                 if (!selectedVectors.isEmpty()) {
                     if (removeInputs)
-                        idlist.substract(selectedVectors);
+                        idlist.subtract(selectedVectors);
                     List<IDList> groups = groupIDs(op, selectedVectors, manager);
                     for (int i = 0; i < groups.size(); ++i) {
                         IDList group = groups.get(i);
@@ -649,7 +649,7 @@ public class DatasetManager {
                     result.merge(select(source, filter, manager));
                 }
                 else if (filter instanceof Deselect) {
-                    result.substract(select(source, filter, manager));
+                    result.subtract(select(source, filter, manager));
                 }
             }
         }
@@ -684,7 +684,7 @@ public class DatasetManager {
 
         if (excepts != null)
             for (Except except : excepts)
-                idlist.substract(selectInternal(idlist, sourceDataset, type, except.getFilterPattern(), manager));
+                idlist.subtract(selectInternal(idlist, sourceDataset, type, except.getFilterPattern(), manager));
 
         // update cached IDs
         if (op.getCachedIDs() != null)

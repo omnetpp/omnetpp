@@ -171,6 +171,19 @@ class SIM_API TimeAverageFilter : public cNumericResultFilter
         TimeAverageFilter() {startTime = lastTime = -1; lastValue = weightedSum = 0;}
 };
 
+/**
+ * Result filter that removes repeated values
+ */
+class SIM_API RemoveRepeatsFilter : public cNumericResultFilter
+{
+    protected:
+        double prev;
+    protected:
+        virtual bool process(simtime_t& t, double& value) {bool repeated = (value==prev); prev = value; return !repeated;}
+    public:
+        RemoveRepeatsFilter() {prev = NaN;}
+};
+
 class SIM_API ExpressionFilter : public cNumericResultFilter
 {
     protected:

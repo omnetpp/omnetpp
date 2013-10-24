@@ -1,0 +1,102 @@
+%description:
+Test property parsing
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Test
+{
+    parameters:
+        @foo1;
+        @ foo2 ;
+        @
+          foo3
+            ;
+
+        @:org.ac-me._foo_:12;
+        @ :org.ac-me._foo_:21 ;
+
+        @foo.indexed1[99];
+        @foo.indexed2 [ 99 ]  ;
+        @foo.indexed3[bar-1.99];
+        @foo.indexed4[::baz::Clazz];
+        @foo.indexed5[idx](first,second);
+        @foo.indexed6 [ idx ] ( first );
+
+        @foo.1val(first);
+        @foo.2val(first,second);
+        @foo.spec(!@#$%^&*(){}[]_+:'""/.<>?\|, bubu);
+        @foo.paren1((first));
+        @foo.paren2((fir,st),(se=co;nd));
+        @foo.paren3(a=f(g(x)); b=fu(a:int;b:int)->[]);
+        @foo.brackets([fir,st],[se=co;nd]);
+        @foo.cbraces({fir,st},{se=co;nd});
+        @foo.quotes1("one", "two");
+        @foo.quotes2(x"one"x, !"two"!);
+        @foo.quotes3("a,b;c]]{{{z=!z)");
+        @foo.quotes4("\"a,b;c]]{{{z=!z)\"");
+
+        int p1 @foo @bar @baz;
+        int p2 @ foo @ bar @ baz ;
+        int p3 @foo@bar@baz;
+        int p4 @foo@bar@baz=5;
+
+        int q1 @foo[1] @foo[2] @foo[3];
+        int q2 @foo[1]@foo[2]@foo[3];
+        int q3 @foo[1]@foo[2]@foo[3];
+        int q4 @f.o.o[a.1-20:22];
+
+        int r1 @foo(one,two) @bar(three,four);
+        int r2 @foo(a=one;b=two) @bar(c=three;d=four) = 3;
+
+    submodules:
+        dump: Dump;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+*.* =99
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        @foo1
+        @foo2
+        @foo3
+        @:org.ac-me._foo_:12
+        @:org.ac-me._foo_:21
+        @foo.indexed1[99]
+        @foo.indexed2[99]
+        @foo.indexed3[bar-1.99]
+        @foo.indexed4[::baz::Clazz]
+        @foo.indexed5[idx](first,second)
+        @foo.indexed6[idx](first)
+        @foo.1val(first)
+        @foo.2val(first,second)
+        @foo.spec(!@#$%^&*(){}[]_+:'""/.<>?\|,bubu)
+        @foo.paren1((first))
+        @foo.paren2((fir,st),(se=co;nd))
+        @foo.paren3(a=f(g(x));b=fu(a:int;b:int)->[])
+        @foo.brackets([fir,st],[se=co;nd])
+        @foo.cbraces({fir,st},{se=co;nd})
+        @foo.quotes1(one,two)
+        @foo.quotes2(x"one"x,!"two"!)
+        @foo.quotes3(a,b;c]]{{{z=!z))
+        @foo.quotes4("a,b;c]]{{{z=!z)")
+        p1 @foo @bar @baz = 99
+        p2 @foo @bar @baz = 99
+        p3 @foo @bar @baz = 99
+        p4 @foo @bar @baz = 5
+        q1 @foo[1] @foo[2] @foo[3] = 99
+        q2 @foo[1] @foo[2] @foo[3] = 99
+        q3 @foo[1] @foo[2] @foo[3] = 99
+        q4 @f.o.o[a.1-20:22] = 99
+        r1 @foo(one,two) @bar(three,four) = 99
+        r2 @foo(a=one;b=two) @bar(c=three;d=four) = 3
+    submodules:
+}
+

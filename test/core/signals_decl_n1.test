@@ -1,0 +1,63 @@
+%description:
+Negative test: trying to produce all 9 error messages currently in the code:
+
+- Undeclared signal "%s" emitted (@signal missing from NED file?)
+- Wrong type "%s" in the @signal[%s] property in the "%s" NED type, should be one of: long, unsigned long, double, simtime_t, string, or a registered class name
+- Signal "%s" emitted with wrong class (%s does not subclass from %s as declared)
+- Signal "%s" emitted as timestamped value with wrong type (%s, but object expected)
+- Signal "%s" emitted as timestamped value with NULL pointer in it (should be a %s as declared)
+- Signal "%s" emitted as timestamped value with wrong class in it (%s does not subclass from %s as declared)
+- Signal "%s" emitted with wrong data type (expected=%s, actual=%s)
+- Signal "%s" emitted as a timestamped value with wrong data type (expected=%s, actual=%s)
+- Signal "%s" emitted with wrong data type (expected=%s, actual=%s) [same a 2nd above, but issued on different condition]
+
+%file: test.ned
+
+simple Test extends testlib.SignalSource
+{
+    @isNetwork(true);
+
+    @signal[untypedSignal]();
+    @signal[bogusSignal](type="foo");
+    @signal[longSignal](type="long");
+    @signal[stringSignal](type="string");
+    @signal[objectSignal](type="cMessage");
+
+    script = xml("<root>\
+       <e at='init' name='foo' type='long' value='99'/> \
+       <e at='init' name='bogusSignal' type='long' value='99'/> \
+       <e at='init' name='objectSignal' type='cArray' value=''/> \
+       <e at='init' name='objectSignal' type='long' value='99' timestamp='1'/> \
+       <e at='init' name='objectSignal' type='NULL' value='' timestamp='1'/> \
+       <e at='init' name='objectSignal' type='cArray' value='' timestamp='1'/> \
+       <e at='init' name='longSignal' type='unsigned long' value='153'/> \
+       <e at='init' name='longSignal' type='cMessage' value=''/> \
+       <e at='init' name='longSignal' type='unsigned long' value='153' timestamp='1'/> \
+       <e at='init' name='longSignal' type='cMessage' value='' timestamp='1'/> \
+    </root>");
+}
+
+%exitcode: 1
+
+%contains: stdout
+t=0s: emit "foo" type=long value=99
+ERROR: Undeclared signal "foo" emitted (@signal missing from NED file?)
+t=0s: emit "bogusSignal" type=long value=99
+ERROR: Wrong type "foo" in the @signal[bogusSignal] property in the "Test" NED type, should be one of: long, unsigned long, double, simtime_t, string, or a registered class name
+t=0s: emit "objectSignal" type=cArray value=
+ERROR: Signal "objectSignal" emitted with wrong class (cArray does not subclass from cMessage as declared)
+t=0s: emit "objectSignal" type=long value=99 timestamp=1s
+ERROR: Signal "objectSignal" emitted as timestamped value with wrong type (long, but object expected)
+t=0s: emit "objectSignal" type=NULL value= timestamp=1s
+ERROR: Signal "objectSignal" emitted as timestamped value with NULL pointer in it (should be a cMessage as declared)
+t=0s: emit "objectSignal" type=cArray value= timestamp=1s
+ERROR: Signal "objectSignal" emitted as timestamped value with wrong class in it (cArray does not subclass from cMessage as declared)
+t=0s: emit "longSignal" type=unsigned long value=153
+ERROR: Signal "longSignal" emitted with wrong data type (expected=long, actual=unsigned long)
+t=0s: emit "longSignal" type=cMessage value=
+ERROR: Signal "longSignal" emitted with wrong data type (expected=long, actual=cMessage)
+t=0s: emit "longSignal" type=unsigned long value=153 timestamp=1s
+ERROR: Signal "longSignal" emitted as timestamped value with wrong data type (expected=long, actual=unsigned long)
+t=0s: emit "longSignal" type=cMessage value= timestamp=1s
+ERROR: Signal "longSignal" emitted as timestamped value with wrong data type (expected=long, actual=object)
+

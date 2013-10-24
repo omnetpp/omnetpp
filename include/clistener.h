@@ -35,6 +35,22 @@ typedef int simsignal_t;
 
 #define SIMSIGNAL_NULL   ((simsignal_t)-1)
 
+/**
+ * Signal data types.
+ *
+ * @see simsignal_t, cIListener
+ * @ingroup Signals
+ */
+enum SimsignalType
+{
+    SIMSIGNAL_UNDEF,
+    SIMSIGNAL_LONG,
+    SIMSIGNAL_ULONG,
+    SIMSIGNAL_DOUBLE,
+    SIMSIGNAL_SIMTIME,
+    SIMSIGNAL_STRING,
+    SIMSIGNAL_OBJECT
+};
 
 /**
  * Interface for listeners in a simulation model.

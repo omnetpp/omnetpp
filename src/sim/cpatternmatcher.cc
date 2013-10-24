@@ -59,3 +59,7 @@ void cPatternMatcher::dump()
     impl->dump();
 }
 
+bool cPatternMatcher::containsWildcards(const char *pattern)
+{
+    return PatternMatcher::containsWildcards(pattern);
+}

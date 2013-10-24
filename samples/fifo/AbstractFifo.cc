@@ -58,7 +58,7 @@ void AbstractFifo::handleMessage(cMessage *msg)
     {
         arrival( msg );
         msgServiced = msg;
-        emit(queueingTimeSignal, 0.0);
+        emit(queueingTimeSignal, SIMTIME_ZERO);
         simtime_t serviceTime = startService( msgServiced );
         scheduleAt( simTime()+serviceTime, endServiceMsg );
         emit(busySignal, 1);

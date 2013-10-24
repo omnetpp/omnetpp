@@ -15,7 +15,7 @@ namespace queueing {
 
 void SourceBase::initialize()
 {
-	createdSignal = registerSignal("created");
+    createdSignal = registerSignal("created");
     jobCounter = 0;
     WATCH(jobCounter);
     jobName = par("jobName").stringValue();

@@ -1329,12 +1329,15 @@ comma_or_semicolon : ',' | ';' ;
 //----------------------------------------------------------------------
 // general bison/flex stuff:
 //
+int ned1yylex_destroy();  // from lex.XXX.cc file
 
 NEDElement *doParseNED1(NEDParser *p, const char *nedtext)
 {
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;
 #endif
+
+    ned1yylex_destroy();
 
     NONREENTRANT_NED_PARSER(p);
 

@@ -20,9 +20,9 @@ simple PassiveQueue
 {
     parameters:
         @group(Queueing);
-        @signal[dropped](type="int");
-        @signal[queueLength](type="int");
-        @signal[queuingTime](type="simtime_t");
+        @signal[dropped](type="long");
+        @signal[queueLength](type="long");
+        @signal[queueingTime](type="simtime_t");
         @statistic[dropped](title="drop event";record=vector?,count;interpolationmode=none);
         @statistic[queueLength](title="queue length";record=vector,timeavg,max;interpolationmode=sample-hold);
         @statistic[queueingTime](title="queueing time at dequeue";record=vector?,mean,max;unit=s;interpolationmode=none);

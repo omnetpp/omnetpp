@@ -177,7 +177,7 @@ Note that although simulation time cannot be negative, it is still useful to
 be able to represent negative numbers, because they often arise
 during the evaluation of arithmetic expressions.
 
-The \ttt{SimTime} class performs additions and substractions as 64-bit integer
+The \ttt{SimTime} class performs additions and subtractions as 64-bit integer
 operations. Integer overflows are checked, and will cause the simulation to
 stop with an error message. Other operations (multiplication, division, etc)
 are performed in \ttt{double}, then converted back to integer.

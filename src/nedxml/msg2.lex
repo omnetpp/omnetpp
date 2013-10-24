@@ -32,9 +32,15 @@ S  [ \t\v\n\r\f]
 
 %x cplusplusbody
 %x stringliteral
+%x propertyname
+%x afterpropertyname
+%x propertyindex
+%x propertyvalue
 
 /* the following option keeps isatty() out */
 %option never-interactive
+
+/*%option debug*/
 
 %{
 #include <string.h>
@@ -50,114 +56,153 @@ extern YYLTYPE yylloc;
 #define comment     msgcomment
 #define countChars  msgcount
 #define extendCount msgextendCount
+#define debugPrint  msgdebugPrint
 
 void comment();
 void countChars();
 void extendCount();
+int debugPrint(int c);
 
 #define TEXTBUF_LEN 1024
 static char textbuf[TEXTBUF_LEN];
+
+static int parenDepth = 0;
+
+#define P(x)  (x)
+//#define P(x)  debugPrint(x)  /*for debugging*/
 
 USING_NAMESPACE
 
 %}
 
 %%
-"//"                    { comment(); }
+"//"                     { comment(); }
 
-"namespace"             { countChars(); return NAMESPACE; }
-"cplusplus"             { countChars(); return CPLUSPLUS; }
-"struct"                { countChars(); return STRUCT; }
-"message"               { countChars(); return MESSAGE; }
-"packet"                { countChars(); return PACKET; }
-"class"                 { countChars(); return CLASS; }
-"noncobject"            { countChars(); return NONCOBJECT; }
-"enum"                  { countChars(); return ENUM; }
-"extends"               { countChars(); return EXTENDS; }
-"abstract"              { countChars(); return ABSTRACT; }
-"readonly"              { countChars(); return READONLY; }
-"properties"            { countChars(); return PROPERTIES; }
-"fields"                { countChars(); return FIELDS; }
+"namespace"              { countChars(); return NAMESPACE; }
+"cplusplus"              { countChars(); return CPLUSPLUS; }
+"struct"                 { countChars(); return STRUCT; }
+"message"                { countChars(); return MESSAGE; }
+"packet"                 { countChars(); return PACKET; }
+"class"                  { countChars(); return CLASS; }
+"noncobject"             { countChars(); return NONCOBJECT; }
+"enum"                   { countChars(); return ENUM; }
+"extends"                { countChars(); return EXTENDS; }
+"abstract"               { countChars(); return ABSTRACT; }
+"readonly"               { countChars(); return READONLY; }
+"properties"             { countChars(); return PROPERTIES; }
+"fields"                 { countChars(); return FIELDS; }
 
-"bool"                  { countChars(); return BOOLTYPE; }
-"char"                  { countChars(); return CHARTYPE; }
-"short"                 { countChars(); return SHORTTYPE; }
-"int"                   { countChars(); return INTTYPE; }
-"long"                  { countChars(); return LONGTYPE; }
-"double"                { countChars(); return DOUBLETYPE; }
-"unsigned"              { countChars(); return UNSIGNED_; }
-"string"                { countChars(); return STRINGTYPE; }
-"true"                  { countChars(); return TRUE_; }
-"false"                 { countChars(); return FALSE_; }
+"bool"                   { countChars(); return BOOLTYPE; }
+"char"                   { countChars(); return CHARTYPE; }
+"short"                  { countChars(); return SHORTTYPE; }
+"int"                    { countChars(); return INTTYPE; }
+"long"                   { countChars(); return LONGTYPE; }
+"double"                 { countChars(); return DOUBLETYPE; }
+"unsigned"               { countChars(); return UNSIGNED_; }
+"string"                 { countChars(); return STRINGTYPE; }
+"true"                   { countChars(); return TRUE_; }
+"false"                  { countChars(); return FALSE_; }
 
-{L}({L}|{D})*           { countChars(); return NAME; }
-{D}+                    { countChars(); return INTCONSTANT; }
-0[xX]{X}+               { countChars(); return INTCONSTANT; }
-{D}+{E}                 { countChars(); return REALCONSTANT; }
-{D}*"."{D}+({E})?       { countChars(); return REALCONSTANT; }
-\'[^\']\'               { countChars(); return CHARCONSTANT; }
+{L}({L}|{D})*            { countChars(); return NAME; }
+{D}+                     { countChars(); return INTCONSTANT; }
+0[xX]{X}+                { countChars(); return INTCONSTANT; }
+{D}+{E}                  { countChars(); return REALCONSTANT; }
+{D}*"."{D}+({E})?        { countChars(); return REALCONSTANT; }
+\'[^\']\'                { countChars(); return CHARCONSTANT; }
 
-\"                      { countChars(); BEGIN(stringliteral); }
+\"                       { countChars(); BEGIN(stringliteral); }
 <stringliteral>{
-      \n                { BEGIN(INITIAL); throw NEDException("unterminated string literal (append backslash to line for multi-line strings)"); /* NOTE: BEGIN(INITIAL) is important, otherwise parsing of the next file (!) will start from the <stringliteral> state! */ }
-      \\\n              { extendCount(); /* line continuation */ }
-      \\\"              { extendCount(); /* qouted quote */ }
-      \\[^\n\"]         { extendCount(); /* qouted char */ }
-      [^\\\n\"]+        { extendCount(); /* character inside string literal */ }
-      \"                { extendCount(); BEGIN(INITIAL); return STRINGCONSTANT; /* closing quote */ }
+    \n                   { BEGIN(INITIAL); parenDepth=0; throw NEDException("unterminated string literal (append backslash to line for multi-line strings)"); }
+    \\\n                 { extendCount(); /* line continuation */ }
+    \\\"                 { extendCount(); /* qouted quote */ }
+    \\[^\n\"]            { extendCount(); /* qouted char */ }
+    [^\\\n\"]+           { extendCount(); /* character inside string literal */ }
+    \"                   { extendCount(); if (parenDepth==0) BEGIN(INITIAL);else BEGIN(propertyvalue); return STRINGCONSTANT; /* closing quote */ }
 }
 
-"{{"                    { countChars(); BEGIN(cplusplusbody); }
-<cplusplusbody>"}}"     { extendCount(); BEGIN(INITIAL); return CPLUSPLUSBODY; }
-<cplusplusbody>{S}      { extendCount(); }
-<cplusplusbody>.        { extendCount(); }
+"@"                      { countChars(); BEGIN(propertyname); return '@'; }
+<propertyname>{
+    ({L}|{D}|[:.-])+     { countChars(); BEGIN(afterpropertyname); return PROPNAME; }
+    {S}                  { countChars(); }
+    .                    { BEGIN(INITIAL); yyless(0); }
+}
 
-";"                     { countChars(); return ';'; }
-","                     { countChars(); return ','; }
-":"                     { countChars(); return ':'; }
-"="                     { countChars(); return '='; }
-"("                     { countChars(); return '('; }
-")"                     { countChars(); return ')'; }
-"["                     { countChars(); return '['; }
-"]"                     { countChars(); return ']'; }
-"{"                     { countChars(); return '{'; }
-"}"                     { countChars(); return '}'; }
-"."                     { countChars(); return '.'; }
-"?"                     { countChars(); return '?'; }
-"@"                     { countChars(); return '@'; }
+<afterpropertyname>{
+    "["                  { countChars(); BEGIN(propertyindex); return P('['); }
+    "("                  { countChars(); BEGIN(propertyvalue); parenDepth=1; return P('('); }
+    {S}                  { countChars(); }
+    .                    { BEGIN(INITIAL); yyless(0); }
+}
+
+<propertyindex>{
+    "]"                  { countChars(); BEGIN(afterpropertyname); return P(']'); }
+    ({L}|{D}|[:.-])+     { countChars(); return PROPNAME; }
+    {S}                  { countChars(); }
+    .                    { BEGIN(INITIAL); yyless(0); }
+}
+
+<propertyvalue>{
+    [({[]                { countChars(); ++parenDepth; return P(CHAR); }
+    [)}\]]               { countChars(); if (--parenDepth==0) {BEGIN(INITIAL); return P(yytext[0]);} else return P(CHAR); }
+    "="                  { countChars(); return P(parenDepth==1 ? '=' : CHAR); }
+    ","                  { countChars(); return P(parenDepth==1 ? ',' : CHAR); }
+    ";"                  { countChars(); return P(parenDepth==1 ? ';' : CHAR); }
+    \"                   { countChars(); BEGIN(stringliteral); }
+    .                    { countChars(); return P(CHAR); }
+}
+
+"{{"                     { countChars(); BEGIN(cplusplusbody); }
+<cplusplusbody>{
+    "}}"                 { extendCount(); BEGIN(INITIAL); return CPLUSPLUSBODY; }
+    {S}                  { extendCount(); }
+    .                    { extendCount(); }
+}
+
+";"                      { countChars(); return ';'; }
+","                      { countChars(); return ','; }
+":"                      { countChars(); return ':'; }
+"="                      { countChars(); return '='; }
+"("                      { countChars(); return '('; }
+")"                      { countChars(); return ')'; }
+"["                      { countChars(); return '['; }
+"]"                      { countChars(); return ']'; }
+"{"                      { countChars(); return '{'; }
+"}"                      { countChars(); return '}'; }
+"."                      { countChars(); return '.'; }
+"?"                      { countChars(); return '?'; }
 
    /* XXX are the next ones really needed? */
 
-"::"                    { countChars(); return DOUBLECOLON; }
-"||"                    { countChars(); return OR; }
-"&&"                    { countChars(); return AND; }
-"##"                    { countChars(); return XOR; }
-"!"                     { countChars(); return NOT; }
+"::"                     { countChars(); return DOUBLECOLON; }
+"||"                     { countChars(); return OR; }
+"&&"                     { countChars(); return AND; }
+"##"                     { countChars(); return XOR; }
+"!"                      { countChars(); return NOT; }
 
-"|"                     { countChars(); return BIN_OR; }
-"&"                     { countChars(); return BIN_AND; }
-"#"                     { countChars(); return BIN_XOR; }
-"~"                     { countChars(); return BIN_COMPL; }
-"<<"                    { countChars(); return SHIFT_LEFT; }
-">>"                    { countChars(); return SHIFT_RIGHT; }
+"|"                      { countChars(); return BIN_OR; }
+"&"                      { countChars(); return BIN_AND; }
+"#"                      { countChars(); return BIN_XOR; }
+"~"                      { countChars(); return BIN_COMPL; }
+"<<"                     { countChars(); return SHIFT_LEFT; }
+">>"                     { countChars(); return SHIFT_RIGHT; }
 
-"^"                     { countChars(); return '^'; }
-"+"                     { countChars(); return '+'; }
-"-"                     { countChars(); return '-'; }
-"*"                     { countChars(); return '*'; }
-"/"                     { countChars(); return '/'; }
-"%"                     { countChars(); return '%'; }
-"<"                     { countChars(); return '<'; }
-">"                     { countChars(); return '>'; }
+"^"                      { countChars(); return '^'; }
+"+"                      { countChars(); return '+'; }
+"-"                      { countChars(); return '-'; }
+"*"                      { countChars(); return '*'; }
+"/"                      { countChars(); return '/'; }
+"%"                      { countChars(); return '%'; }
+"<"                      { countChars(); return '<'; }
+">"                      { countChars(); return '>'; }
 
-"=="                    { countChars(); return EQ; }
-"!="                    { countChars(); return NE; }
-"<="                    { countChars(); return LE; }
-">="                    { countChars(); return GE; }
+"=="                     { countChars(); return EQ; }
+"!="                     { countChars(); return NE; }
+"<="                     { countChars(); return LE; }
+">="                     { countChars(); return GE; }
 
-"\xEF\xBB\xBF"          { /* UTF-8 BOM mark, ignore */ }
-{S}                     { countChars(); }
-.                       { countChars(); return INVALID_CHAR; }
+"\xEF\xBB\xBF"           { /* UTF-8 BOM mark, ignore */ }
+{S}                      { countChars(); }
+.                        { countChars(); return INVALID_CHAR; }
 
 %%
 
@@ -204,6 +249,7 @@ static void _count(bool updateprevpos)
     /* init textbuf */
     if (pos.li==1 && pos.co==0) {
         textbuf[0]='\0'; textbuflen=0;
+        parenDepth = 0;
     }
 
     if (updateprevpos) {
@@ -247,4 +293,11 @@ void extendCount()
     _count(false);
 }
 
-
+int debugPrint(int c)
+{
+    if (c==CHAR) fprintf(stderr, " ret=CHAR\n");
+    else if (c==STRINGCONSTANT) fprintf(stderr, " ret=STRINGCONSTANT\n");
+    else if (c>0 && c<=255) fprintf(stderr, " ret='%c'\n", c);
+    else fprintf(stderr, " ret=%d\n", c);
+    return c;
+}

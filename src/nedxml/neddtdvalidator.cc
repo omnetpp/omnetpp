@@ -74,7 +74,6 @@ void NEDDTDValidator::validateElement(PropertyDeclElement *node)
     checkSequence(node, tags, mult);
 
     checkRequiredAttribute(node, "name");
-    checkNameAttribute(node, "name");
     const char *vals1[] = {"true","false"};
     checkEnumeratedAttribute(node, "is-array", vals1, sizeof(vals1)/sizeof(const char *));
 }
@@ -185,8 +184,6 @@ void NEDDTDValidator::validateElement(PropertyElement *node)
     const char *vals0[] = {"true","false"};
     checkEnumeratedAttribute(node, "is-implicit", vals0, sizeof(vals0)/sizeof(const char *));
     checkRequiredAttribute(node, "name");
-    checkNameAttribute(node, "name");
-    checkNameAttribute(node, "index");
 }
 
 void NEDDTDValidator::validateElement(PropertyKeyElement *node)
