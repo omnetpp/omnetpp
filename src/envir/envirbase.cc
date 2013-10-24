@@ -89,7 +89,7 @@
 #if defined _WIN32
 #define DEFAULT_DEBUGGER_COMMAND "start gdb --pid=%u"
 #elif defined __APPLE__
-#define DEFAULT_DEBUGGER_COMMAND "xterm -e 'gdb --pid=%u' &"  // is it possible to have XCode launched and attached to us?
+#define DEFAULT_DEBUGGER_COMMAND "XTerm -e 'gdb --pid=%u' &"  // looks like we cannot launch XCode like that
 #else /* Linux, *BSD and other: assume Nemiver is available and installed */
 #define DEFAULT_DEBUGGER_COMMAND "nemiver --attach=%u &"
 #endif
