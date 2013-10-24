@@ -1979,11 +1979,11 @@ void Tkenv::log(cLogEntry *entry)
     // insert into log buffer
     cModule *module = simulation.getContextModule();
     std::string line = prefix + std::string(s,n);
-    const char *quotedLine = TclQuotedString(line.c_str(), line.size()).get();
+    TclQuotedString quotedLine(line.c_str(), line.size());
     if (module)
-        logBuffer.addLogLine(quotedLine);
+        logBuffer.addLogLine(quotedLine.get());
     else
-        logBuffer.addInfo(quotedLine);
+        logBuffer.addInfo(quotedLine.get());
 
     // print string into log windows
     printLastLogLine();
