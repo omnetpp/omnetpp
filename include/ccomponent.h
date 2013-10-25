@@ -453,6 +453,9 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      */
     void emit(simsignal_t signalID, cObject *obj);
 
+    /** Delegates to emit(simsignal_t, cObject*) after a const_cast. */
+    void emit(simsignal_t signalID, const cObject *obj) { emit(signalID, const_cast<cObject *>(obj)); }
+
     /** Delegates to emit(simsignal_t, long) */
     void emit(simsignal_t signalID, bool b) {emit(signalID,(long)b);}
 
