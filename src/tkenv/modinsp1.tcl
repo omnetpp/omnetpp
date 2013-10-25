@@ -250,6 +250,7 @@ proc logtextwidget_configuretags {txt} {
     $txt tag configure SELECT -back #808080 -fore #ffffff
     $txt tag configure event -foreground blue
     $txt tag configure log -foreground #006000
+    $txt tag configure prefix -foreground #909090
 }
 
 proc logtextwidget_clear {txt} {

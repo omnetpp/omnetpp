@@ -25,8 +25,10 @@ LogBuffer::Entry::~Entry()
 {
     delete[] moduleIds;
     delete[] banner;
-    for (int i=0; i<(int)lines.size(); i++)
-        delete[] lines[i];
+    for (int i=0; i<(int)lines.size(); i++) {
+        delete[] lines[i].prefix;
+        delete[] lines[i].line;
+    }
 }
 
 //----
@@ -74,7 +76,7 @@ void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char 
     discardIfMemoryLimitExceeded();
 }
 
-void LogBuffer::addLogLine(const char *text)
+void LogBuffer::addLogLine(const char *prefix, const char *text)
 {
     if (entries.empty())
     {
@@ -88,9 +90,9 @@ void LogBuffer::addLogLine(const char *text)
     //FIXME if last line is "info" then we cannot append to it! create new entry with empty banner?
 
     Entry& entry = entries.back();
-    entry.lines.push_back(opp_strdup(text));
-    totalStrings++;
-    totalChars += strlen(text);
+    entry.lines.push_back(Line(opp_strdup(prefix), opp_strdup(text)));
+    totalStrings += 2;
+    totalChars += opp_strlen(prefix) + opp_strlen(text);
 
     discardIfMemoryLimitExceeded();
 }
@@ -118,7 +120,7 @@ void LogBuffer::discardIfMemoryLimitExceeded()
         // discard first entry
         Entry& entry = entries.front();
         totalChars -= entry.numChars;
-        totalStrings -= entry.lines.size()+1;
+        totalStrings -= 2*entry.lines.size()+1;
         entries.pop_front();
         numEntries--;
     }
@@ -136,7 +138,7 @@ void LogBuffer::dump() const
         const LogBuffer::Entry& entry = *it;
         printf("[%d] #%" LL "d t=%s moduleId=%d: %s", k, entry.eventNumber, SIMTIME_STR(entry.simtime), entry.moduleIds?entry.moduleIds[0]:-1, entry.banner);
         for (int i=0; i<(int)entry.lines.size(); i++)
-            printf("\t[l%d]:%s", k, entry.lines[i]);
+            printf("\t[l%d]:%s%s", k, entry.lines[i].prefix, entry.lines[i].line);
         k++;
     }
 }

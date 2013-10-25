@@ -105,15 +105,19 @@ void TModuleWindow::printLastLineOf(Tcl_Interp *interp, const char *textWidget, 
     {
         if (entry.lines.empty())
             textWidget_insert(interp, textWidget, entry.banner, "log");
-        else
-            textWidget_insert(interp, textWidget, entry.lines.back());
+        else {
+            textWidget_insert(interp, textWidget, entry.lines.back().prefix, "prefix");
+            textWidget_insert(interp, textWidget, entry.lines.back().line);
+        }
     }
     else if (excludedModuleIds.find(entry.moduleIds[0])==excludedModuleIds.end())
     {
         if (entry.lines.empty())
             textWidget_insert(interp, textWidget, entry.banner, "event");
-        else
-            textWidget_insert(interp, textWidget, entry.lines.back());
+        else {
+            textWidget_insert(interp, textWidget, entry.lines.back().prefix, "prefix");
+            textWidget_insert(interp, textWidget, entry.lines.back().line);
+        }
     }
     textWidget_gotoEnd(interp, textWidget);
 }
@@ -133,8 +137,10 @@ void TModuleWindow::redisplay(Tcl_Interp *interp, const char *textWidget, const 
         if (!entry.moduleIds)
         {
             textWidget_insert(interp, textWidget, entry.banner, "log");
-            for (int i=0; i<(int)entry.lines.size(); i++)
-                textWidget_insert(interp, textWidget, entry.lines[i]); //?
+            for (int i=0; i<(int)entry.lines.size(); i++) {
+                textWidget_insert(interp, textWidget, entry.lines[i].prefix, "prefix");
+                textWidget_insert(interp, textWidget, entry.lines[i].line);
+            }
         }
         else
         {
@@ -148,8 +154,10 @@ void TModuleWindow::redisplay(Tcl_Interp *interp, const char *textWidget, const 
             if (found && excludedModuleIds.find(entry.moduleIds[0])==excludedModuleIds.end())
             {
                 textWidget_insert(interp, textWidget, entry.banner, "event");
-                for (int i=0; i<(int)entry.lines.size(); i++)
-                    textWidget_insert(interp, textWidget, entry.lines[i]);
+                for (int i=0; i<(int)entry.lines.size(); i++) {
+                    textWidget_insert(interp, textWidget, entry.lines[i].prefix, "prefix");
+                    textWidget_insert(interp, textWidget, entry.lines[i].line);
+                }
             }
         }
     }

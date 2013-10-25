@@ -34,12 +34,17 @@ class cModule;
 class LogBuffer
 {
   public:
+    struct Line {
+        const char *prefix;
+        const char *line;  // including newline
+        Line(const char *prefix, const char *line) : prefix(prefix), line(line) {}
+    };
     struct Entry {
         eventnumber_t eventNumber;
         simtime_t simtime;
         int *moduleIds;  // from this module up to the root; zero-terminated; NULL for info messages
         const char *banner;
-        std::vector<const char *> lines;
+        std::vector<Line> lines;
         int numChars; // banner plus lines
 
         Entry() {eventNumber=0; simtime=0; moduleIds=NULL; banner=NULL; numChars=0;}
@@ -63,7 +68,7 @@ class LogBuffer
     ~LogBuffer();
 
     void addEvent(eventnumber_t e, simtime_t t, cModule *moduleIds, const char *banner);
-    void addLogLine(const char *text);
+    void addLogLine(const char *prefix, const char *text);
     void addInfo(const char *text);
 
     void setMemoryLimit(size_t limit);

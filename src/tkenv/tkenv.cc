@@ -1138,7 +1138,7 @@ void Tkenv::componentInitBegin(cComponent *component, int stage)
         component->isModule() ? "module" : "channel", component->getFullPath().c_str(), stage);
 
     // insert into log buffer
-    logBuffer.addLogLine(banner);
+    logBuffer.addLogLine(NULL, banner);
 
     // print into module log windows
     printLastLogLine();
@@ -1978,12 +1978,10 @@ void Tkenv::log(cLogEntry *entry)
 
     // insert into log buffer
     cModule *module = simulation.getContextModule();
-    std::string line = prefix + std::string(s,n);
-    TclQuotedString quotedLine(line.c_str(), line.size());
     if (module)
-        logBuffer.addLogLine(quotedLine.get());
+        logBuffer.addLogLine(TclQuotedString(prefix.c_str()).get(), TclQuotedString(s,n).get());
     else
-        logBuffer.addInfo(quotedLine.get());
+        logBuffer.addInfo(TclQuotedString(s,n).get()); // ignores prefix
 
     // print string into log windows
     printLastLogLine();
