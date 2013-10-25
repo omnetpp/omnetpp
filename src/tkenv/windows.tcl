@@ -219,6 +219,7 @@ proc create_fileviewer {filename} {
 proc textwidget_contextmenu {txt wintype X Y} {
     global tmp config
 
+    set tmp(hideprefix) [$txt tag cget prefix -elide]
     set tmp(wrap) [$txt cget -wrap]
 
     catch {destroy .popup}
@@ -239,6 +240,7 @@ proc textwidget_contextmenu {txt wintype X Y} {
         .popup add command -command "mainlogwindow_filterdialog" -label {Filter window contents...} -accel {Ctrl+H} -underline 0
         .popup add separator
     }
+    .popup add checkbutton -command "textwidget_toggleprefix $txt" -variable tmp(hideprefix) -onvalue 0 -offvalue 1 -label {Show log prefix} -underline 0
     .popup add checkbutton -command "textwidget_togglewrap $txt" -variable tmp(wrap) -onvalue "char" -offvalue "none" -label {Wrap lines} -underline 0
     .popup add separator
     .popup add command -command "$txt tag add sel 1.0 end" -label {Select all} -accel {Ctrl+A} -underline 0
@@ -253,4 +255,13 @@ proc textwidget_togglewrap {txt} {
 
     # set default for further windows
     set config(editor-wrap) $tmp(wrap)
+}
+
+proc textwidget_toggleprefix {txt} {
+    global tmp config
+
+    $txt tag configure "prefix" -elide $tmp(hideprefix)
+
+    # set default for further windows
+    set config(editor-hideprefix) $tmp(hideprefix)
 }

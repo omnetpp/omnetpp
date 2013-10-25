@@ -28,6 +28,7 @@ set config(editor-whole-words) 0
 set config(editor-regexp) 0
 set config(editor-backwards) 1
 set config(editor-wrap) none
+set config(editor-hideprefix) 0
 set config(display-treeview) 1
 set config(filtobjlist-class)  ""
 set config(filtobjlist-name)   ""
@@ -514,6 +515,7 @@ proc bind_commands_to_textwidget {txt {wintype ""}} {
 
     # bind a context menu as well
     catch {$txt config -wrap $config(editor-wrap)}
+    catch {$txt tag configure "prefix" -elide $config(editor-hideprefix)}
     bind $txt <Button-$B3> [list textwidget_contextmenu %W $wintype %X %Y]
 }
 

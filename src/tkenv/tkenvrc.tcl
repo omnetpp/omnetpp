@@ -166,6 +166,7 @@ proc reflectSettingsInGui {} {
    catch {wm geometry . $config(mainwin-geom)}
 
    catch {.main.text config -wrap $config(editor-wrap)}
+   catch {.main.text tag configure "prefix" -elide $config(editor-hideprefix)}
 
    applyFont Menubutton  $fonts(normal)
    applyFont Menu        $fonts(normal)
