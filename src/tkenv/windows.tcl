@@ -233,15 +233,14 @@ proc textwidget_contextmenu {txt wintype X Y} {
     if {$wintype=="modulewindow"} {
         set w [winfo toplevel $txt]
         .popup add command -command "modulewindow_filterdialog $w" -label {Filter window contents...} -accel {Ctrl+H} -underline 0
-        .popup add separator
-
     }
     if {$wintype=="mainwindow"} {
         .popup add command -command "mainlogwindow_filterdialog" -label {Filter window contents...} -accel {Ctrl+H} -underline 0
-        .popup add separator
     }
+    .popup add separator
     .popup add checkbutton -command "textwidget_toggleprefix $txt" -variable tmp(hideprefix) -onvalue 0 -offvalue 1 -label {Show log prefix} -underline 0
     .popup add checkbutton -command "textwidget_togglewrap $txt" -variable tmp(wrap) -onvalue "char" -offvalue "none" -label {Wrap lines} -underline 0
+    .popup add command -label "Logging options..." -command "options_dialog $txt g"
     .popup add separator
     .popup add command -command "$txt tag add sel 1.0 end" -label {Select all} -accel {Ctrl+A} -underline 0
 
