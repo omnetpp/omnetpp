@@ -110,6 +110,7 @@ class TKENV_API Tkenv : public EnvirBase
       opp_string opt_image_path;   // directory of module icon files
       opp_string opt_plugin_path;  // path for loading Tcl and binary plugins
       bool opt_stoponmsgcancel;    // with rununtil_msg: whether to stop when the message gets cancelled
+      opp_string opt_logformat;    // format of the log prefix, see the LogFormatter class
 
       // state variables
       bool animating;              // while execution, do message animation or not

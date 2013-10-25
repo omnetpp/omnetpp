@@ -333,6 +333,8 @@ proc options_dialog {parent {defaultpage "g"}} {
     checkbutton $nb.g.f2.initbanners -text {Print initialization banners} -variable opp(initbanners)
     checkbutton $nb.g.f2.eventbanners -text {Print event banners} -variable opp(eventbanners)
     checkbutton $nb.g.f2.shortbanners -text {Short event banners} -variable opp(shortbanners)
+    label-entry-help $nb.g.f2.logformat {Log prefix format:} $helptexts(logformat)
+    commentlabel $nb.g.f2.c0 {Applies to subsequent events. Hover mouse for help.}
     label-entry $nb.g.f2.numlines {Scrollback buffer (lines):}
     commentlabel $nb.g.f2.c1 {Applies to main window and module log windows. Leave blank for unlimited. Minimum value is 500 lines.}
 
@@ -341,6 +343,8 @@ proc options_dialog {parent {defaultpage "g"}} {
     pack $nb.g.f2.initbanners -anchor w
     pack $nb.g.f2.eventbanners -anchor w
     pack $nb.g.f2.shortbanners -anchor w -padx 10
+    pack $nb.g.f2.logformat -anchor w -fill x
+    pack $nb.g.f2.c0 -anchor w
     pack $nb.g.f2.numlines -anchor w -fill x
     pack $nb.g.f2.c1 -anchor w
 
@@ -452,6 +456,7 @@ proc options_dialog {parent {defaultpage "g"}} {
     set opp(eventbanners) [opp_getsimoption event_banners]
     set opp(initbanners) [opp_getsimoption init_banners]
     set opp(shortbanners) [opp_getsimoption short_banners]
+    $nb.g.f2.logformat.e insert 0 [opp_getsimoption logformat]
     set opp(anim)       [opp_getsimoption animation_enabled]
     set opp(concanim)   $config(concurrent-anim)
     set opp(nextev)     [opp_getsimoption nexteventmarkers]
@@ -495,6 +500,7 @@ proc options_dialog {parent {defaultpage "g"}} {
         opp_setsimoption event_banners       $opp(eventbanners)
         opp_setsimoption init_banners        $opp(initbanners)
         opp_setsimoption short_banners       $opp(shortbanners)
+        opp_setsimoption logformat           [$nb.g.f2.logformat.e get]
         opp_setsimoption animation_enabled   $opp(anim)
         set config(concurrent-anim)          $opp(concanim)
         opp_setsimoption nexteventmarkers    $opp(nextev)
@@ -1253,6 +1259,61 @@ proc filteredobjectlist_inspect {lb} {
 
 #----
 
+set helptexts(logformat) {
+Log statement related format characters:
+   - %l log level name
+   - %c log category
+Current simulation state related format characters:
+   - %e current event number
+   - %t current simulation time
+   - %v current message or event name
+   - %a current message or event class name
+   - %n current module name
+   - %m current module path
+   - %o current module class name
+   - %s current module NED type simple name
+   - %q current module NED type fully qualified name
+   - %N context component name
+   - %M context component path
+   - %O context component class name
+   - %S context component NED type simple name
+   - %Q context component NED type fully qualified name
+Simulation run related format characters:
+   - %G config name
+   - %R run number
+   - %X network module class name
+   - %Y network module NED type simple name
+   - %Z network module NED type fully qualified name
+C++ source related (where the log statement appears) format characters:
+   - %p source object pointer
+   - %b source object name
+   - %d source object path
+   - %z source class name
+   - %u source function name
+   - %x source component NED type simple name
+   - %y source component NED type fully qualified
+   - %f source file name
+   - %i source line number
+Operating system related format characters:
+   - %w user time in seconds
+   - %W human readable wall time
+   - %H host name
+   - %I process id
+Compound fields
+   - %U current module (NED type, full path)
+   - %C context component (NED type, full path)
+   - %K context component, if different from current module (NED type, full path)
+   - %J source component or object (NED type or class, full path or pointer)
+   - %L source component or object, if different from context component (NED type or class, full path or pointer)
+Escaping % character:
+   - %% one % character
+Padding with spaces:
+   - %[0-9]+ add spaces until specified column
+Conditional constant text:
+   - %? ignore the following constant part if the preceding directive didn't print anything (useful for separators)
+}
+
+
 set helptexts(timeline-namepattern) {
 Generic filter expression which matches the object name by default.
 
@@ -1429,4 +1490,3 @@ proc modelinfo_dialog {{w ""}} {
     execOkCancelDialog $dlg
     destroy $dlg
 }
-

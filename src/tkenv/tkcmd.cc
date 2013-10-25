@@ -1174,6 +1174,8 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       sprintf(buf,"%d", app->opt_stoponmsgcancel);
    else if (0==strcmp(argv[1], "record_eventlog"))
       sprintf(buf,"%d", app->record_eventlog);
+   else if (0==strcmp(argv[1], "logformat"))
+      strcpy(buf, app->opt_logformat.c_str());
    else
       return TCL_ERROR;
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
@@ -1244,6 +1246,10 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       app->opt_stoponmsgcancel = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "record_eventlog"))
       app->setEventlogRecording(argv[2][0]!='0');
+   else if (0==strcmp(argv[1], "logformat")) {
+      app->opt_logformat = argv[2];
+      app->setLogFormat(argv[2]);
+   }
    else
       return TCL_ERROR;
    return TCL_OK;

@@ -158,6 +158,7 @@ Tkenv::Tkenv()
     opt_use_mainwindow = true;
     opt_expressmode_autoupdate = true;
     opt_stoponmsgcancel = true;
+    opt_logformat = "%l %C: ";
 }
 
 Tkenv::~Tkenv()

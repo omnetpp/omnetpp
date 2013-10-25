@@ -50,6 +50,7 @@ proc save_tkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
                 animation_speed
                 expressmode_autoupdate
                 stoponmsgcancel
+                logformat
             } {
                 set value [opp_getsimoption $key]
                 puts $fout "option $key\t{$value}"
