@@ -836,6 +836,7 @@ proc moduleOutputFilterDialog {rootmodule excludedModuleIds} {
 
     Tree:init $tree getModuleTreeInfo
     Tree:open $tree $rootmodule
+    Tree:readsubtreecheckboxstate $tree $rootmodule
 
     setinitialdialogfocus $tree
 
@@ -1429,4 +1430,3 @@ proc modelinfo_dialog {{w ""}} {
     execOkCancelDialog $dlg
     destroy $dlg
 }
-

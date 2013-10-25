@@ -1,3 +1,11 @@
+2013-09-25  Andras Varga
+
+	* Fix "Filter window contents" dialog. List of filtered modules could
+	be changed by simply opening and accepting dialog without making any
+	change. This occurs to subtrees that  never expanded while the dialog
+	is open. (i.e. reproducing the bug needed compound modules to be present
+	in the simulation, e.g. the "routing" example)
+
 2013-09-12  ------ omnetpp-4.3.1 released ------
 
 2013-04-02  ------ omnetpp-4.3 released ------
@@ -2077,4 +2085,3 @@
            - implement concrete inspectors
 
            - fast run
-
