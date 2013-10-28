@@ -49,7 +49,7 @@ void testFileReader(const char *file, long numberOfLines, int numberOfSeeks, int
         else
             offset = random.next01() * fileSize;
 
-        printf("Seeking to offset: %"LL"d\n", offset);
+        printf("Seeking to offset: %" LL "d\n", offset);
         fileReader.seekTo(offset);
 
         int j = numberOfReadLines;

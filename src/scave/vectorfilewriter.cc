@@ -113,11 +113,11 @@ void VectorFileWriterNode::process()
                 chan->read(&a,1);
                 if (a.xp.isNil())
                 {
-                    CHECK(fprintf(f,"%d\t%"LL"d\t%.*g\t%.*g\n", it->id, a.eventNumber, prec, a.x, prec, a.y));
+                    CHECK(fprintf(f,"%d\t%" LL "d\t%.*g\t%.*g\n", it->id, a.eventNumber, prec, a.x, prec, a.y));
                 }
                 else
                 {
-                    CHECK(fprintf(f,"%d\t%"LL"d\t%s\t%.*g\n", it->id, a.eventNumber, BigDecimal::ttoa(buf, a.xp, endp), prec, a.y));
+                    CHECK(fprintf(f,"%d\t%" LL "d\t%s\t%.*g\n", it->id, a.eventNumber, BigDecimal::ttoa(buf, a.xp, endp), prec, a.y));
                 }
             }
         }
@@ -143,7 +143,7 @@ void VectorFileWriterNode::process()
                         }
                         break;
                     case 'V': CHECK(fprintf(f,"%.*g", prec, a.y)); break;
-                    case 'E': CHECK(fprintf(f,"%"LL"d", a.eventNumber)); break;
+                    case 'E': CHECK(fprintf(f,"%" LL "d", a.eventNumber)); break;
                     default: throw opp_runtime_error("unknown column type: '%c' while writing %s", columns[j], fileName.c_str());
                     }
                 }

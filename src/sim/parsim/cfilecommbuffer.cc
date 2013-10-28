@@ -148,13 +148,13 @@ void cFileCommBuffer::pack(unsigned long d)
 void cFileCommBuffer::pack(opp_long_long d)
 {
     extendBufferFor(30);
-    STORE("ll %"LL"d",d);
+    STORE("ll %" LL "d",d);
 }
 
 void cFileCommBuffer::pack(opp_unsigned_long_long d)
 {
     extendBufferFor(30);
-    STORE("ull %"LL"u",d);
+    STORE("ull %" LL "u",d);
 }
 
 void cFileCommBuffer::pack(float d)
@@ -358,12 +358,12 @@ void cFileCommBuffer::unpack(unsigned long& d)
 
 void cFileCommBuffer::unpack(opp_long_long& d)
 {
-    EXTRACT("ll %"LL"d",d);
+    EXTRACT("ll %" LL "d",d);
 }
 
 void cFileCommBuffer::unpack(opp_unsigned_long_long& d)
 {
-    EXTRACT("ull %"LL"u",d);
+    EXTRACT("ull %" LL "u",d);
 }
 
 void cFileCommBuffer::unpack(float& d)

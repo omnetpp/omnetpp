@@ -20,6 +20,7 @@
 #include <vector>
 #include <exception>
 #include <stdexcept>
+#include <string>
 #include "nedxmldefs.h"
 
 NAMESPACE_BEGIN

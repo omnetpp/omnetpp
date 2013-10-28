@@ -935,7 +935,7 @@ void Tkenv::updateSimtimeDisplay()
 {
     // event and time display
     char buf[32];
-    sprintf(buf, "%"LL"d", simulation.getEventNumber());
+    sprintf(buf, "%" LL "d", simulation.getEventNumber());
     CHK(Tcl_VarEval(interp, EVENT_LABEL " config -text {"
                         "Event #", buf,
                         "}", NULL ));
