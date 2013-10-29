@@ -59,7 +59,7 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     typedef std::set<cParImpl *, Less> ParImplSet;
     ParImplSet sharedParSet;
 
-    struct SignalDesc { SimsignalType type; cObjectFactory *objectType; };
+    struct SignalDesc { SimsignalType type; cObjectFactory *objectType; bool isNullable; };
     std::map<simsignal_t,SignalDesc> signalsSeen;
 
   protected:
