@@ -74,6 +74,11 @@ void cResultRecorder::tweakTitle(opp_string& title)
 
 //---
 
+void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b)
+{
+    collect(t, b);
+}
+
 void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l)
 {
     collect(t, l);

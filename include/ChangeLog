@@ -1,3 +1,8 @@
+2013-10-29  Andras Varga
+
+	* cIListener: added receiveSignal() overload for the bool type.
+	(Before it was channelled into long.)
+
 2013-10-24  Andras Varga
 
 	* introduced SimsignalType, an enum for signal data types; it replaces 

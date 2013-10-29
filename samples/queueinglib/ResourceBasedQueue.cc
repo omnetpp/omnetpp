@@ -34,7 +34,7 @@ void ResourceBasedQueue::initialize()
     queueLengthSignal = registerSignal("queueLength");
     emit(queueLengthSignal, 0);
     busySignal = registerSignal("busy");
-    emit(busySignal, 0);
+    emit(busySignal, false);
 
     endServiceMsg = new cMessage("end-service");
     fifo = par("fifo");
@@ -66,7 +66,7 @@ void ResourceBasedQueue::handleMessage(cMessage *msg)
         else
         {
             jobServiced = NULL;
-            emit(busySignal, 0);
+            emit(busySignal, false);
         }
     }
     else
@@ -79,7 +79,7 @@ void ResourceBasedQueue::handleMessage(cMessage *msg)
         {
             // processor was idle and the allocation is successful
             jobServiced = job;
-            emit(busySignal, 1);
+            emit(busySignal, true);
             simtime_t serviceTime = startService( jobServiced );
             scheduleAt( simTime()+serviceTime, endServiceMsg );
         }
@@ -190,7 +190,7 @@ void ResourceBasedQueue::resourceGranted(IResourcePool *provider)
     {
         jobServiced = getFromQueue();
         emit(queueLengthSignal, length());
-        emit(busySignal, 1);
+        emit(busySignal, true);
         simtime_t serviceTime = startService( jobServiced );
         scheduleAt( simTime()+serviceTime, endServiceMsg );
     }

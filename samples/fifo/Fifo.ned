@@ -17,7 +17,7 @@ simple Fifo
         volatile double serviceTime @unit(s);
         @display("i=block/queue;q=queue");
         @signal[qlen](type="long");
-        @signal[busy](type="long");
+        @signal[busy](type="bool");
         @signal[queueingTime](type="simtime_t");
         @statistic[qlen](title="queue length";record=vector,timeavg,max;interpolationmode=sample-hold);
         @statistic[busy](title="server busy state";record=vector?,timeavg;interpolationmode=sample-hold);

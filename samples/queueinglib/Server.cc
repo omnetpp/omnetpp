@@ -33,7 +33,7 @@ Server::~Server()
 void Server::initialize()
 {
     busySignal = registerSignal("busy");
-    emit(busySignal, 0);
+    emit(busySignal, false);
 
     endServiceMsg = new cMessage("end-service");
     jobServiced = NULL;
@@ -51,7 +51,7 @@ void Server::handleMessage(cMessage *msg)
         jobServiced->setTotalServiceTime(jobServiced->getTotalServiceTime() + d);
         send(jobServiced, "out");
         jobServiced = NULL;
-        emit(busySignal, 0);
+        emit(busySignal, false);
 
         if (ev.isGUI()) getDisplayString().setTagArg("i",1,"");
 
@@ -72,7 +72,7 @@ void Server::handleMessage(cMessage *msg)
         jobServiced = check_and_cast<Job *>(msg);
         simtime_t serviceTime = par("serviceTime");
         scheduleAt(simTime()+serviceTime, endServiceMsg);
-        emit(busySignal, 1);
+        emit(busySignal, true);
 
         if (ev.isGUI()) getDisplayString().setTagArg("i",1,"cyan");
     }

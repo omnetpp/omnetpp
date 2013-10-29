@@ -44,6 +44,7 @@ USING_NAMESPACE
 static const char *getSignalTypeName(SimsignalType type)
 {
     switch (type) {
+        case SIMSIGNAL_BOOL: return "bool";
         case SIMSIGNAL_LONG: return "long";
         case SIMSIGNAL_ULONG: return "unsigned long";
         case SIMSIGNAL_DOUBLE: return "double";
@@ -56,6 +57,7 @@ static const char *getSignalTypeName(SimsignalType type)
 
 static SimsignalType getSignalType(const char *name, SimsignalType fallback=SIMSIGNAL_UNDEF)
 {
+    if (!strcmp(name, "bool")) return SIMSIGNAL_BOOL;
     if (!strcmp(name, "long")) return SIMSIGNAL_LONG;
     if (!strcmp(name, "unsigned long")) return SIMSIGNAL_ULONG;
     if (!strcmp(name, "double")) return SIMSIGNAL_DOUBLE;
@@ -155,8 +157,8 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
         // find @signal property for this signal
         const char *signalName = cComponent::getSignalName(signalID);
         std::vector<const char *> declaredSignalNames = getProperties()->getIndicesFor("signal");
-        int i;
-        for (i = 0; i < (int)declaredSignalNames.size(); i++) {
+        unsigned int i;
+        for (i = 0; i < declaredSignalNames.size(); i++) {
             if (strcmp(signalName, declaredSignalNames[i]) == 0)
                 break;
             if (PatternMatcher::containsWildcards(declaredSignalNames[i]) &&

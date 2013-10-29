@@ -408,6 +408,13 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     static const char *getSignalName(simsignal_t signalID);
 
     /**
+     * Emits the boolean value as a signal. If the given signal has listeners in this
+     * component or in ancestor components, their appropriate receiveSignal() methods
+     * are called. If there are no listeners, the runtime cost is usually minimal.
+     */
+    void emit(simsignal_t signalID, bool b);
+
+    /**
      * Emits the long value as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
      * are called. If there are no listeners, the runtime cost is usually minimal.
@@ -455,9 +462,6 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
 
     /** Delegates to emit(simsignal_t, cObject*) after a const_cast. */
     void emit(simsignal_t signalID, const cObject *obj) { emit(signalID, const_cast<cObject *>(obj)); }
-
-    /** Delegates to emit(simsignal_t, long) */
-    void emit(simsignal_t signalID, bool b) {emit(signalID,(long)b);}
 
     /** Delegates to emit(simsignal_t, long) */
     void emit(simsignal_t signalID, char c) {emit(signalID,(long)c);}

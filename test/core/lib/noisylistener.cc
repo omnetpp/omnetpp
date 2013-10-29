@@ -22,6 +22,13 @@ void NoisyListener::printFrom(cComponent *source, simsignal_t signalID)
     EV << "signal \"" << cComponent::getSignalName(signalID) << "\" (id=" << signalID << ")";
 }
 
+void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, bool b)
+{
+    EV << "SIGNAL from "; printFrom(source, signalID);
+    EV << ", bool " << b << "\n";
+    simulation.getSystemModule()->checkSignalConsistency();
+}
+
 void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, long l)
 {
     EV << "SIGNAL from "; printFrom(source, signalID);

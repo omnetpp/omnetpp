@@ -441,6 +441,13 @@ void cComponent::removeSignalData(simsignal_t signalID)
     }
 }
 
+void cComponent::emit(simsignal_t signalID, bool b)
+{
+    if (checkSignals)
+        getComponentType()->checkSignal(signalID, SIMSIGNAL_BOOL);
+    fire(this, signalID, getSignalMask(signalID), b);
+}
+
 void cComponent::emit(simsignal_t signalID, long l)
 {
     if (checkSignals)

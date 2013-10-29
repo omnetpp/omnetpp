@@ -40,6 +40,7 @@ class SIM_API cResultListener : public cIListener
         static const char *getPooled(const char *s);
 
         // simplified API that better supports chaining:
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b) = 0;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l) = 0;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l) = 0;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d) = 0;
@@ -51,6 +52,7 @@ class SIM_API cResultListener : public cIListener
         virtual void finish(cResultFilter *prev) {}
 
         // original listener API delegates to simplified API:
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b);
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l);
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l);
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d);

@@ -30,7 +30,7 @@ simple L2Queue
         int frameCapacity = default(0); // max number of packets; 0 means no limit
         @display("i=block/queue;q=queue");
         @signal[qlen](type="long");
-        @signal[busy](type="long");
+        @signal[busy](type="bool");
         @signal[queueingTime](type="simtime_t");
         @signal[drop](type="long");
         @signal[txBytes](type="long");

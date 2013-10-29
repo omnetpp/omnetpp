@@ -71,7 +71,7 @@ void L2Queue::initialize()
     rxBytesSignal = registerSignal("rxBytes");
 
     emit(qlenSignal, queue.length());
-    emit(busySignal, 0);
+    emit(busySignal, false);
 }
 
 void L2Queue::startTransmitting(cMessage *msg)
@@ -98,7 +98,7 @@ void L2Queue::handleMessage(cMessage *msg)
         if (ev.isGUI()) displayStatus(false);
         if (queue.empty())
         {
-            emit(busySignal, 0);
+            emit(busySignal, false);
         }
         else
         {
@@ -139,7 +139,7 @@ void L2Queue::handleMessage(cMessage *msg)
             EV << "Received " << msg << endl;
             emit(queueingTimeSignal, SIMTIME_ZERO);
             startTransmitting(msg);
-            emit(busySignal, 1);
+            emit(busySignal, true);
         }
     }
 }
