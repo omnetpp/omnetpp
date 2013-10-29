@@ -5,7 +5,7 @@ the event's module, the context module and the source object are all the same.
 
 %inifile: test.ini
 [General]
-log-format = "%U, %C, %K, %J, %L"
+cmdenv-log-format = "%U, %C, %K, %J, %L"
 
 %activity:
 

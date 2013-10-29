@@ -5,7 +5,7 @@ Test per module runtime log level setting.
 %inifile: test.ini
 [General]
 network = TestNetwork
-log-format = "[%l]%9"
+cmdenv-log-format = "[%l]%9"
 **.fatal.log-level  = fatal
 **.error.log-level  = error
 **.warn.log-level   = warn

@@ -4,7 +4,7 @@ Test the default log format and log level settings.
 
 %inifile: test.ini
 [General]
-log-format = "[%l]%9"
+cmdenv-log-format = "[%l]%9"
 
 %activity:
 EV_FATAL  << "Hello" << endl;

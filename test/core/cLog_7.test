@@ -3,7 +3,7 @@ Test new lines and composition of log statements.
 
 %inifile: test.ini
 [General]
-log-format = "[%l]%9"
+cmdenv-log-format = "[%l]%9"
 
 %activity:
 
