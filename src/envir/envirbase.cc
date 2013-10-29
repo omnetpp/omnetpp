@@ -127,7 +127,6 @@ Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_ON_STARTUP, "debugger-attach-o
 Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_ON_ERROR, "debugger-attach-on-error", CFG_BOOL, "false", "When set to true, runtime errors and crashes will trigger an external debugger to be launched, allowing you to do just-in-time debugging on the simulation process.");
 Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_COMMAND, "debugger-attach-command", CFG_STRING, DEFAULT_DEBUGGER_COMMAND, "Command line to launch the debugger. It must contain exactly one percent sign, as '%u', which will be replaced by the PID of this process. The command must not block (i.e. it should end in '&' on Unix-like systems).");
 Register_GlobalConfigOptionU(CFGID_DEBUGGER_ATTACH_WAIT_TIME, "debugger-attach-wait-time", "s", "20s", "An interval to wait after launching the external debugger, to give the debugger time to start up and attach to the simulation process.");
-Register_GlobalConfigOption(CFGID_GLOBAL_LOGLEVEL, "global-log-level", CFG_STRING, "DEBUG", "Globally specifies the level of detail recorded by log statements, output below the specified level is omitted. Available values are (case insensitive): fatal, error, warn, info, detail, debug or trace. Note that the level of detail is also controlled by the specified per component log levels and the GLOBAL_COMPILETIME_LOGLEVEL macro that is used to completely remove log statements from the executable.");
 
 Register_PerRunConfigOption(CFGID_NETWORK, "network", CFG_STRING, NULL, "The name of the network to be simulated.  The package name can be omitted if the ini file is in the same directory as the NED file that contains the network.");
 Register_PerRunConfigOption(CFGID_WARNINGS, "warnings", CFG_BOOL, "true", "Enables warnings.");
@@ -1625,10 +1624,14 @@ void EnvirBase::clearEventlogRecordingIntervals()
         eventlogmgr->clearRecordingIntervals();
 }
 
+void EnvirBase::setLogLevel(LogLevel logLevel)
+{
+    cLogLevel::globalRuntimeLoglevel = logLevel;
+}
+
 void EnvirBase::setLogFormat(const char *logFormat)
 {
     logFormatUsesEventName = strstr(logFormat, "%m") || strstr(logFormat, "%v");
-    cLogLevel::globalRuntimeLoglevel = cLogLevel::getLevel(getConfig()->getAsString(CFGID_GLOBAL_LOGLEVEL).c_str());
     logFormatter.setFormat(logFormat);
 }
 

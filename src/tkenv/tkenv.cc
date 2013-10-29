@@ -159,6 +159,7 @@ Tkenv::Tkenv()
     opt_expressmode_autoupdate = true;
     opt_stoponmsgcancel = true;
     opt_logformat = "%l %C: ";
+    opt_loglevel = LOGLEVEL_TRACE;
 }
 
 Tkenv::~Tkenv()

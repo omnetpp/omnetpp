@@ -168,6 +168,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual void setEventlogRecording(bool enabled);
     virtual bool hasEventlogRecordingIntervals() const;
     virtual void clearEventlogRecordingIntervals();
+    virtual void setLogLevel(LogLevel logLevel);
     virtual void setLogFormat(const char *logFormat);
 
     // eventlog callback interface

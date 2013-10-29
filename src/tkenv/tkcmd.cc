@@ -1176,6 +1176,8 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       sprintf(buf,"%d", app->record_eventlog);
    else if (0==strcmp(argv[1], "logformat"))
       strcpy(buf, app->opt_logformat.c_str());
+   else if (0==strcmp(argv[1], "loglevel"))
+      strcpy(buf, cLogLevel::getName(app->opt_loglevel));
    else
       return TCL_ERROR;
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
@@ -1247,8 +1249,12 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    else if (0==strcmp(argv[1], "record_eventlog"))
       app->setEventlogRecording(argv[2][0]!='0');
    else if (0==strcmp(argv[1], "logformat")) {
+      TRY(app->setLogFormat(argv[2]));
       app->opt_logformat = argv[2];
-      app->setLogFormat(argv[2]);
+   }
+   else if (0==strcmp(argv[1], "loglevel")) {
+      TRY(app->opt_loglevel = cLogLevel::getLevel(argv[2]));
+      app->setLogLevel(app->opt_loglevel);
    }
    else
       return TCL_ERROR;

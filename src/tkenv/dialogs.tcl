@@ -334,7 +334,8 @@ proc options_dialog {parent {defaultpage "g"}} {
     checkbutton $nb.g.f2.eventbanners -text {Print event banners} -variable opp(eventbanners)
     checkbutton $nb.g.f2.shortbanners -text {Short event banners} -variable opp(shortbanners)
     label-entry-help $nb.g.f2.logformat {Log prefix format:} $helptexts(logformat)
-    commentlabel $nb.g.f2.c0 {Applies to subsequent events. Hover mouse for help.}
+    label-combo $nb.g.f2.loglevel {Log level:} {FATAL ERROR WARN INFO DETAIL DEBUG TRACE} ""
+    commentlabel $nb.g.f2.c0 {The above settings apply to subsequent simulation events. Hover mouse to get help on log format syntax.}
     label-entry $nb.g.f2.numlines {Scrollback buffer (lines):}
     commentlabel $nb.g.f2.c1 {Applies to main window and module log windows. Leave blank for unlimited. Minimum value is 500 lines.}
 
@@ -344,6 +345,7 @@ proc options_dialog {parent {defaultpage "g"}} {
     pack $nb.g.f2.eventbanners -anchor w
     pack $nb.g.f2.shortbanners -anchor w -padx 10
     pack $nb.g.f2.logformat -anchor w -fill x
+    pack $nb.g.f2.loglevel -anchor w
     pack $nb.g.f2.c0 -anchor w
     pack $nb.g.f2.numlines -anchor w -fill x
     pack $nb.g.f2.c1 -anchor w
@@ -457,6 +459,8 @@ proc options_dialog {parent {defaultpage "g"}} {
     set opp(initbanners) [opp_getsimoption init_banners]
     set opp(shortbanners) [opp_getsimoption short_banners]
     $nb.g.f2.logformat.e insert 0 [opp_getsimoption logformat]
+    $nb.g.f2.loglevel.e delete 0 end
+    $nb.g.f2.loglevel.e insert 0 [opp_getsimoption loglevel]
     set opp(anim)       [opp_getsimoption animation_enabled]
     set opp(concanim)   $config(concurrent-anim)
     set opp(nextev)     [opp_getsimoption nexteventmarkers]
@@ -501,6 +505,7 @@ proc options_dialog {parent {defaultpage "g"}} {
         opp_setsimoption init_banners        $opp(initbanners)
         opp_setsimoption short_banners       $opp(shortbanners)
         opp_setsimoption logformat           [$nb.g.f2.logformat.e get]
+        catch {opp_setsimoption loglevel     [$nb.g.f2.loglevel.e get] }
         opp_setsimoption animation_enabled   $opp(anim)
         set config(concurrent-anim)          $opp(concanim)
         opp_setsimoption nexteventmarkers    $opp(nextev)

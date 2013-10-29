@@ -51,6 +51,7 @@ proc save_tkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
                 expressmode_autoupdate
                 stoponmsgcancel
                 logformat
+                loglevel
             } {
                 set value [opp_getsimoption $key]
                 puts $fout "option $key\t{$value}"
@@ -215,4 +216,3 @@ proc reflectSettingsInGui {} {
 
    opp_redrawinspectors
 }
-
