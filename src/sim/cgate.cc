@@ -155,7 +155,7 @@ const char *cGate::getFullName() const
 std::string cGate::info() const
 {
     const char *arrow;
-    cGate const *g;
+    cGate const *g = NULL;
     cChannel const *chan;
 
     if (getType()==OUTPUT)

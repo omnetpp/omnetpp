@@ -307,7 +307,7 @@ void cPSquare::doMergeCellValues(const cDensityEstBase *other)
 double cPSquare::random() const
 {
     double s;
-    int k, l;
+    int k=0, l;
 
     //if (num_obs==0)   // newer, from PUPPIS
     if (numobs<numcells+1)
