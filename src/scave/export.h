@@ -319,7 +319,7 @@ class SCAVE_API CsvExport : public ScaveExport
     public:
         CsvExport() : separator(','), quoteChar('"'), eol("\r\n"), quoteMethod(DOUBLE),
                         columnNames(true), fileNameSuffix(0) {}
-        virtual void saveVector(const std::string name, const std::string description,
+        virtual void saveVector(const std::string &name, const std::string &description,
                         ID vectorID, bool computed, const XYArray *vec, ResultFileManager &manager,
                         int startIndex=0, int endIndex=-1);
     protected:
