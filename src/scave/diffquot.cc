@@ -80,7 +80,7 @@ Node *DifferenceQuotientNodeType::create(DataflowManager *mgr, StringMap& attrs)
     return node;
 }
 
-void DifferenceQuotientNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+void DifferenceQuotientNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
     attrs["type"] = "double";
 }

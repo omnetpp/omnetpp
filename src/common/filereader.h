@@ -66,7 +66,6 @@ class COMMON_API FileReader
     // the very end of the file as currently known
     int lastSavedSize;
     char* lastSavedBufferBegin;
-    char* lastSavedBufferEnd;
 
     // the position where readNextLine() or readPreviousLine() starts from
     char *currentDataPointer; // must point between dataBegin and dataEnd when used

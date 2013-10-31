@@ -133,3 +133,22 @@ void cPacketQueue::clear()
     bitlength = 0;
 }
 
+void cPacketQueue::insert(cObject *obj)
+{
+    throw cRuntimeError("cPacketQueue: cannot insert cObject");
+}
+
+void cPacketQueue::insertBefore(cObject *where, cObject *obj)
+{
+    throw cRuntimeError("cPacketQueue: cannot insert cObject");
+}
+
+void cPacketQueue::insertAfter(cObject *where, cObject *obj)
+{
+    throw cRuntimeError("cPacketQueue: cannot insert cObject");
+}
+
+cObject *cPacketQueue::remove(cObject *obj)
+{
+    throw cRuntimeError("cPacketQueue: cannot remove cObject");
+}

@@ -39,9 +39,9 @@
 
 NAMESPACE_BEGIN
 
-class Run;
-class ResultFile;
-class FileRun;
+struct Run;
+struct ResultFile;
+struct FileRun;
 class ResultFileManager;
 
 typedef std::map<std::string, std::string> StringMap;

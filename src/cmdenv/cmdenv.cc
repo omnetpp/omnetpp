@@ -204,15 +204,18 @@ void Cmdenv::run()
     if (opt_runstoexec.empty())
     {
         int n = cfg->getNumRunsInConfig(opt_configname.c_str());  //note: may throw exception
-        if (n==0) {
+        if (n==0) 
+        {
             ev.printfmsg("Error: Configuration `%s' generates 0 runs", opt_configname.c_str());
             exitcode = 1;
             return;
         }
-
-        char buf[32];
-        sprintf(buf, (n==0 ? "" : n==1 ? "%d" : "0..%d"), n-1);
-        opt_runstoexec = buf;
+        else
+        {
+            char buf[32];
+            sprintf(buf, (n==1 ? "%d" : "0..%d"), n-1);
+            opt_runstoexec = buf;
+        }
     }
 
     EnumStringIterator runiterator(opt_runstoexec.c_str());
@@ -445,7 +448,7 @@ void Cmdenv::simulate()
 
 void Cmdenv::printEventBanner(cSimpleModule *mod)
 {
-    ::fprintf(fout, "** Event #%" LL "d  T=%s%s   ",
+    ::fprintf(fout, "** Event #%" LL "d  T=%s%s   %s (%s, id=%d)\n",
             simulation.getEventNumber(),
             SIMTIME_STR(simulation.getSimTime()),
             progressPercentage(), // note: IDE launcher uses this to track progress

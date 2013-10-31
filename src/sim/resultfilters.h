@@ -251,6 +251,7 @@ class SIM_API NaryExpressionFilter : public ExpressionFilter
         cResultFilter **prevFilters;
         double *currentValues;
     protected:
+        using ExpressionFilter::process;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b);
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l);
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l);
@@ -271,6 +272,7 @@ class SIM_API NaryExpressionFilter : public ExpressionFilter
 class SIM_API PacketBytesFilter : public cObjectResultFilter
 {
     public:
+        using cObjectResultFilter::receiveSignal;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object);
 };
 
@@ -280,6 +282,7 @@ class SIM_API PacketBytesFilter : public cObjectResultFilter
 class SIM_API PacketBitsFilter : public cObjectResultFilter
 {
     public:
+        using cObjectResultFilter::receiveSignal;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object);
 };
 

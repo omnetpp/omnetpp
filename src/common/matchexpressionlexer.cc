@@ -22,7 +22,7 @@
 USING_NAMESPACE
 
 MatchExpressionLexer::MatchExpressionLexer(const char *input)
-    : input(input), ptr(input)
+    : ptr(input)
 {
 }
 

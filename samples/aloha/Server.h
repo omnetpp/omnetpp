@@ -28,7 +28,7 @@ class Server : public cSimpleModule
     long currentCollisionNumFrames;
     long receiveCounter;
     simtime_t recvStartTime;
-    enum {IDLE=0, TRANSMISSION=1, COLLISION=2} channelState;
+    enum {IDLE=0, TRANSMISSION=1, COLLISION=2};
     simsignal_t channelStateSignal;
 
     // statistics
