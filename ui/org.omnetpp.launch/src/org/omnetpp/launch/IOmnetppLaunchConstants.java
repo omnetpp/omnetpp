@@ -133,7 +133,9 @@ public interface IOmnetppLaunchConstants {
     public static final String OPP_RECORD_EVENTLOG = OMNETPP_LAUNCH_ID + ".RECORD_EVENTLOG";
 
     /**
-     * Whether to drop to debugger on an simulation error
+     * Whether to drop to debugger on an simulation error; values are "true", "false", "auto", "".
+     * "" means that the "Default" radio button should be selected in the launch dialog.
+     * A missing (unset) value MUST be understood as "auto".
      */
     public static final String OPP_DEBUG_ON_ERRORS = OMNETPP_LAUNCH_ID + ".DEBUG_ON_ERRORS";
 

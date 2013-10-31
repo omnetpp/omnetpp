@@ -436,7 +436,7 @@ public class OmnetppLaunchUtils {
         if (StringUtils.isNotEmpty(recEventlog))
             args += " --"+ConfigRegistry.CFGID_RECORD_EVENTLOG.getName()+"="+recEventlog+" ";
 
-        String dbgOnErr = config.getAttribute(IOmnetppLaunchConstants.OPP_DEBUG_ON_ERRORS, "").trim();
+        String dbgOnErr = config.getAttribute(IOmnetppLaunchConstants.OPP_DEBUG_ON_ERRORS, "auto").trim();
         if (dbgOnErr.equals("auto"))
             dbgOnErr = mode.equals(ILaunchManager.DEBUG_MODE) ? "true" : "false";
         if (StringUtils.isNotEmpty(dbgOnErr))
