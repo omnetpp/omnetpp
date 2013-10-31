@@ -813,7 +813,7 @@ string CsvExport::makeFileName(const string name)
     return file + suffix.str() + extension;
 }
 
-void CsvExport::saveVector(const string name, const string description,
+void CsvExport::saveVector(const string &name, const string &description,
                              ID vectorID, bool computed, const XYArray *xyarray, ResultFileManager &manager,
                              int startIndex, int endIndex)
 {
