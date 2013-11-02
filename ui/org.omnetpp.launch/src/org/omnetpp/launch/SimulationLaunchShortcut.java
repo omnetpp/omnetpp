@@ -133,7 +133,6 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             ILaunchConfiguration lc = findOrChooseLaunchConfigAssociatedWith(resource, mode);
             if (lc == null) {
                 // determine executable, ini file and ini config to use for launching
-                String launchName = null;
                 IFile exeFile = null;
                 IFile iniFile = null;
                 String configName = null;
@@ -148,7 +147,6 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
 
                     // use selected ini file
                     iniFile = (IFile)resource;
-                    launchName = resource.getParent().getName();
                 }
                 else if (resource instanceof IFile && "ned".equals(resource.getFileExtension())) {
                     // must be a valid NED file and must contain at least one network
@@ -193,9 +191,6 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
 
                     iniFile = iniFileAndConfig.iniFile;
                     configName = iniFileAndConfig.configName;
-                    launchName = (configName!=null && !configName.equals(GENERAL)) ? configName :
-                        iniFileAndConfig.network!=null ? iniFileAndConfig.network :
-                            nedFile.getParent().getName();
                 }
                 else {
                     IContainer folder = (resource instanceof IContainer) ? (IContainer)resource : resource.getParent();
@@ -246,8 +241,15 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
 
                     iniFile = iniFileAndConfig.iniFile;
                     configName = iniFileAndConfig.configName;
-                    launchName = folder.getName();
                 }
+
+                // generate a name for the launch config
+                String launchName = iniFile.getParent().getName();
+                String iniFileBaseName = iniFile.getFullPath().removeFileExtension().lastSegment();
+                if (!iniFileBaseName.equals("omnetpp"))
+                    launchName += " - " + iniFileBaseName;
+                if (configName!=null && !configName.equals(GENERAL))
+                    launchName += " - " + configName;
 
                 // create launch config based on the above data
                 lc = createLaunchConfig(launchName, exeFile, iniFile, configName, resource);
