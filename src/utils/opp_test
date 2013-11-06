@@ -72,7 +72,10 @@ b=has body, f=value is filename)
     'testprog'           => '1v',
     'extraargs'          => '1v',
     'exitcode'           => '1v',
-    'ignore-exitcode'    => '1v'
+    'ignore-exitcode'    => '1v',
+
+    'prerun-command'     => 'v',
+    'postrun-command'    => 'v'
 );
 
 #
@@ -470,6 +473,19 @@ sub testcase_generatesources
         }
     }
 
+    # execute pre-run commands
+    foreach $key (keys(%values))
+    {
+        if ($key =~ /^prerun-command\(/)
+        {
+            # execute file
+            my $exitcode = exec_program("$values{$key}", "$workdir/$testname", $key.".out", $key.".err");
+            if ($exitcode != 0) {
+                unresolved($testfilename, "pre-run command \"$values{$key}\" returned nonzero exit code: $exitcode");
+                return;
+            }
+        }
+    }
 }
 
 sub testcase_run()
@@ -586,6 +602,23 @@ sub testcase_run()
        }
     }
     close(IN);
+
+    # execute post-run commands
+    if ($mode eq 'run')
+    {
+        foreach $key (keys(%values))
+        {
+            if ($key =~ /^postrun-command\(/)
+            {
+                # execute file
+                my $exitcode = exec_program("$values{$key}", "$workdir/$testname", $key.".out", $key.".err");
+                if ($exitcode != 0) {
+                    unresolved($testfilename, "post-run command \"$values{$key}\" returned nonzero exit code: $exitcode");
+                    return;
+                }
+            }
+        }
+    }
 
     # check output files
     foreach $key (keys(%values))
@@ -838,7 +871,7 @@ sub exec_program()
             print "  cannot chdir to \"$dir\"\n" if ($debug);
             return -1;
         }
-        print "  running \"$cmd >$outfile 2>$errfile\"\n" if ($debug);
+        print "  running: $cmd >$outfile 2>$errfile\n" if ($debug);
         # The following line mysteriously fails to redirect on some Windows configuration.
         # This can be observed together with cvs reporting "editor session fails" -- root cause is common?
         #$status = system ("$cmd >$outfile 2>$errfile");
@@ -875,8 +908,8 @@ sub exec_program()
     }
     else
     {
-        print "  running \"$shell -c 'cd $dir && $cmd' >$dir/$outfile 2>$dir/$errfile\"\n" if ($debug);
-        $status = system ("$shell -c 'cd $dir && $cmd' >$dir/$outfile 2>$dir/$errfile");
+        print "  running: $shell -c 'cd $dir && $cmd' >\"$dir/$outfile\" 2>\"$dir/$errfile\"\n" if ($debug);
+        $status = system ("$shell -c 'cd $dir && $cmd' >\"$dir/$outfile\" 2>\"$dir/$errfile\"");
         print "  returned status = $status\n" if ($debug);
         if ($status == 0)
         {
