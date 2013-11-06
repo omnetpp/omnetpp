@@ -19,7 +19,7 @@
 #ifndef __SIMUTIL_H
 #define __SIMUTIL_H
 
-#include <string>    // for strlen, etc.
+#include <string.h>  // for strlen, etc.
 #include <stdarg.h>  // for va_list
 #include <stdio.h>   // for sprintf
 #include <stdlib.h>  // for gcvt
