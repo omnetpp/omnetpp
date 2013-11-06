@@ -37,6 +37,12 @@ Register_ResultFilter("packetBits", PacketBitsFilter);
 Register_ResultFilter("sumPerDuration", SumPerDurationFilter);
 
 
+void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b)
+{
+    if (t >= getEndWarmupPeriod())
+        fire(this, t, b);
+}
+
 void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l)
 {
     if (t >= getEndWarmupPeriod())
@@ -102,6 +108,14 @@ bool UnaryExpressionFilter::process(simtime_t& t, double& value)
     currentValue = value;
     value = expr.doubleValue();
     return true;
+}
+
+void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b)
+{
+    simtime_t tt = t;
+    double d = b;
+    if (process(prev, tt, d))
+        fire(this, tt, d);
 }
 
 void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l)

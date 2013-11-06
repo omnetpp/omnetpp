@@ -8,7 +8,6 @@
 package org.omnetpp.ned.editor.graph.parts;
 
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.EditPolicy;
@@ -20,6 +19,7 @@ import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.tools.DirectEditManager;
 import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.IProblemDecorationSupport;
 import org.omnetpp.figures.ITooltipTextProvider;
 import org.omnetpp.ned.core.NedResourcesPlugin;

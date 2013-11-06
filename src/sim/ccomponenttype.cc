@@ -44,6 +44,7 @@ USING_NAMESPACE
 static const char *getSignalTypeName(SimsignalType type)
 {
     switch (type) {
+        case SIMSIGNAL_BOOL: return "bool";
         case SIMSIGNAL_LONG: return "long";
         case SIMSIGNAL_ULONG: return "unsigned long";
         case SIMSIGNAL_DOUBLE: return "double";
@@ -56,6 +57,7 @@ static const char *getSignalTypeName(SimsignalType type)
 
 static SimsignalType getSignalType(const char *name, SimsignalType fallback=SIMSIGNAL_UNDEF)
 {
+    if (!strcmp(name, "bool")) return SIMSIGNAL_BOOL;
     if (!strcmp(name, "long")) return SIMSIGNAL_LONG;
     if (!strcmp(name, "unsigned long")) return SIMSIGNAL_ULONG;
     if (!strcmp(name, "double")) return SIMSIGNAL_DOUBLE;
@@ -155,8 +157,8 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
         // find @signal property for this signal
         const char *signalName = cComponent::getSignalName(signalID);
         std::vector<const char *> declaredSignalNames = getProperties()->getIndicesFor("signal");
-        int i;
-        for (i = 0; i < (int)declaredSignalNames.size(); i++) {
+        unsigned int i;
+        for (i = 0; i < declaredSignalNames.size(); i++) {
             if (strcmp(signalName, declaredSignalNames[i]) == 0)
                 break;
             if (PatternMatcher::containsWildcards(declaredSignalNames[i]) &&
@@ -173,11 +175,21 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
         SignalDesc& desc = signalsSeen[signalID];
         desc.type = !declaredType ? SIMSIGNAL_UNDEF : getSignalType(declaredType, SIMSIGNAL_OBJECT);
         desc.objectType = NULL;
+        desc.isNullable = false;
         if (desc.type == SIMSIGNAL_OBJECT) {
-            desc.objectType = cObjectFactory::find(declaredType);
+            // if declaredType ends in a question mark, the signal allows NULL to be emitted as well
+            if (declaredType[strlen(declaredType)-1] == '?') {
+                std::string netDeclaredType = std::string(declaredType, strlen(declaredType)-1);
+                desc.objectType = cObjectFactory::find(netDeclaredType.c_str());
+                desc.isNullable = true;
+            }
+            else {
+                desc.objectType = cObjectFactory::find(declaredType);
+            }
             if (!desc.objectType)
                 throw cRuntimeError("Wrong type \"%s\" in the @signal[%s] property in the \"%s\" NED type, "
-                        "should be one of: long, unsigned long, double, simtime_t, string, or a registered class name",
+                        "should be one of: long, unsigned long, double, simtime_t, string, or a "
+                        "registered class name optionally followed by a question mark",
                         declaredType, declaredSignalName, getFullName());
         }
         it = signalsSeen.find(signalID);
@@ -193,15 +205,22 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
             {
                 cITimestampedValue *timestampedValue = dynamic_cast<cITimestampedValue*>(obj);
                 cObject *innerObj;
-                if (!timestampedValue)
-                    throw cRuntimeError("Signal \"%s\" emitted with wrong class (%s does not subclass from %s as declared)",
-                            cComponent::getSignalName(signalID), obj->getClassName(), desc.objectType->getFullName());
+                if (!timestampedValue) {
+                    if (obj)
+                        throw cRuntimeError("Signal \"%s\" emitted with wrong class (%s does not subclass from %s as declared)",
+                                cComponent::getSignalName(signalID), obj->getClassName(), desc.objectType->getFullName());
+                    else if (!desc.isNullable)
+                        throw cRuntimeError("Signal \"%s\" emitted a NULL pointer (specify 'type=%s?' in @signal to allow NULLs)",
+                                cComponent::getSignalName(signalID), desc.objectType->getFullName());
+                }
                 else if (timestampedValue->getValueType(signalID) != SIMSIGNAL_OBJECT)
                     throw cRuntimeError("Signal \"%s\" emitted as timestamped value with wrong type (%s, but object expected)",
                             cComponent::getSignalName(signalID), getSignalTypeName(timestampedValue->getValueType(signalID)));
-                else if ((innerObj = timestampedValue->objectValue(signalID)) == NULL)
-                    throw cRuntimeError("Signal \"%s\" emitted as timestamped value with NULL pointer in it (should be a %s as declared)",
-                            cComponent::getSignalName(signalID), desc.objectType->getFullName());
+                else if ((innerObj = timestampedValue->objectValue(signalID)) == NULL) {
+                    if (!desc.isNullable)
+                        throw cRuntimeError("Signal \"%s\" emitted as timestamped value with NULL pointer in it (specify 'type=%s?' in @signal to allow NULLs)",
+                                cComponent::getSignalName(signalID), desc.objectType->getFullName());
+                }
                 else if (!desc.objectType->isInstance(innerObj))
                     throw cRuntimeError("Signal \"%s\" emitted as timestamped value with wrong class in it (%s does not subclass from %s as declared)",
                             cComponent::getSignalName(signalID), innerObj->getClassName(), desc.objectType->getFullName());
@@ -213,7 +232,7 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
             cITimestampedValue *timestampedValue = dynamic_cast<cITimestampedValue*>(obj);
             if (!timestampedValue)
                 throw cRuntimeError("Signal \"%s\" emitted with wrong data type (expected=%s, actual=%s)",
-                        cComponent::getSignalName(signalID), getSignalTypeName(desc.type), obj->getClassName());
+                        cComponent::getSignalName(signalID), getSignalTypeName(desc.type), obj ? obj->getClassName() : "NULL");
             SimsignalType actualType = timestampedValue->getValueType(signalID);
             if (timestampedValue->getValueType(signalID) != desc.type)
                 throw cRuntimeError("Signal \"%s\" emitted as timestamped value with wrong data type (expected=%s, actual=%s)",

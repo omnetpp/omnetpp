@@ -31,6 +31,7 @@ class SIM_API WarmupPeriodFilter : public cResultFilter
     private:
         simtime_t_cref getEndWarmupPeriod() {return simulation.getWarmupPeriod();}
     public:
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b);
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l);
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l);
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d);
@@ -49,6 +50,7 @@ class SIM_API CountFilter : public cResultFilter
         long count;
     public:
         CountFilter() {count = 0;}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b) {count++; fire(this,t,count);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l) {count++; fire(this,t,count);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l) {count++; fire(this,t,count);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d) {count++; fire(this,t,count);}
@@ -67,6 +69,7 @@ class SIM_API ConstantFilter : public cResultFilter
         double c;
     public:
         ConstantFilter(double c) {this->c = c;}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b) {fire(this,t,c);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l) {fire(this,t,c);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l) {fire(this,t,c);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d) {fire(this,t,c);}
@@ -248,6 +251,8 @@ class SIM_API NaryExpressionFilter : public ExpressionFilter
         cResultFilter **prevFilters;
         double *currentValues;
     protected:
+        using ExpressionFilter::process;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b);
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l);
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l);
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d);
@@ -267,6 +272,7 @@ class SIM_API NaryExpressionFilter : public ExpressionFilter
 class SIM_API PacketBytesFilter : public cObjectResultFilter
 {
     public:
+        using cObjectResultFilter::receiveSignal;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object);
 };
 
@@ -276,6 +282,7 @@ class SIM_API PacketBytesFilter : public cObjectResultFilter
 class SIM_API PacketBitsFilter : public cObjectResultFilter
 {
     public:
+        using cObjectResultFilter::receiveSignal;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object);
 };
 

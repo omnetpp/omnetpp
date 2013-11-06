@@ -27,7 +27,6 @@ NAMESPACE_BEGIN
 class MatchExpressionLexer
 {
     private:
-        const char *input;
         const char *ptr;
     public:
         MatchExpressionLexer(const char *input);

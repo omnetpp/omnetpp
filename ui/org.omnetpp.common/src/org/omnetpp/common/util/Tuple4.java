@@ -7,7 +7,7 @@
 
 package org.omnetpp.common.util;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 /**
  * Utility class to group four values.

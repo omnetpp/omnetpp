@@ -2222,8 +2222,8 @@ OPP_PROBLEM_PACKAGES=
 # Location of various components. They are defined here so that they can be overridden in configure.user.
 #
 
-# determine OMNETPP_ROOT; note that 'case' branches on *host* platform not the target platform
-case $host in
+# determine OMNETPP_ROOT; note that 'case' branches on *build* platform not the host platform
+case $build in
 *-*-cygwin*)
     OMNETPP_ROOT=`cygpath -w $OMNETPP_ROOT | sed 's|\\\\|/|g'`
     ;;
@@ -2280,7 +2280,7 @@ SHARED_LIB_SUFFIX='$(SO_LIB_SUFFIX)'
 LIB_PREFIX="lib"
 
 #
-#  Figure out target platform
+#  Figure out the host platform
 #
 if test "$TOOLCHAIN" = "mingw"; then
     # cross compiling for mingw
@@ -2308,11 +2308,20 @@ else
         PLATFORM=win32.x86
         EXE_SUFFIX=".exe"
         SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-        # add default include and lib paths to make it similar to gcc on Linux
-        CFLAGS_ARCH="$CFLAGS_ARCH -I/usr/include"
         # on MinGW dll auto importing MUST be used with shared gcc and stdc++
         # otherwise exceptions can't be thrown across dll boundaries
-        LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -shared-libgcc -L/usr/bin -L/usr/lib"
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -shared-libgcc -L/usr/bin"
+
+        # If we are building on windows (native compile) we have to add the /usr/lib and
+        # /usr/include directories as they are not added by default, but they are needed
+        # to properly find the Tcl/Tk, LibXML2 libraries.
+        if test "$cross_compiling" = no ; then
+            CFLAGS_ARCH="$CFLAGS_ARCH -I/usr/include"
+            LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib"
+        fi
+            # NOTE: if we are cross-compiling we may need to add the lib and include path
+            # to the cross-compiled TckTk/Xml libs here. They should NOT reside in the default
+            # /usr/lib directory as that would interfere with the native build.
         ;;
     x86_64-*-linux*)
         jni_platform=linux
@@ -3311,15 +3320,15 @@ else
         # -w1 disables all remarks
         CFLAGS_ARCH="$CFLAGS_ARCH -w1 -wd654 -wd177"
     fi
-    AS=${AS:-as}
-    AR=${AR:-ar cr}
+    AS=${AS:-${ac_tool_prefix}as}
+    AR=${AR:-${ac_tool_prefix}ar cr}
     if test "$PLATFORM" = "macosx"; then
         SHLIB_LD=${SHLIB_LD:-$CXX -dynamiclib}
     else
         SHLIB_LD=${SHLIB_LD:-$CXX -shared}
     fi
-    DLLTOOL=${DLLTOOL:-dlltool}
-    STRIP=${STRIP:-strip}
+    DLLTOOL=${DLLTOOL:-${ac_tool_prefix}dlltool}
+    STRIP=${STRIP:-${ac_tool_prefix}strip}
     if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ranlib; ac_word=$2
@@ -4561,86 +4570,6 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-
-# zlib
-if test "$ZLIB_LIBS" = ""; then
-    ZLIB_LIBS=-lz
-fi
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$CFLAGS_RELEASE $ZLIB_CFLAGS"
-   LIBS="$ZLIB_LIBS"
-
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for zlib with CFLAGS=\"$CFLAGS_RELEASE $ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"" >&5
-$as_echo_n "checking for zlib with CFLAGS=\"$CFLAGS_RELEASE $ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <zlib.h>
-int
-main ()
-{
-gzopen("","");
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; zlib_ok=yes;
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }; zlib_ok=no;
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-# on mingw/msys try a different library name
-if test $zlib_ok = no -a "$mingw" = yes; then
-    ZLIB_LIBS="-lzlib1"
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$CFLAGS_RELEASE $ZLIB_CFLAGS"
-   LIBS="$ZLIB_LIBS"
-
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for zlib with CFLAGS=\"$CFLAGS_RELEASE $ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"" >&5
-$as_echo_n "checking for zlib with CFLAGS=\"$CFLAGS_RELEASE $ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <zlib.h>
-int
-main ()
-{
-gzopen("","");
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; zlib_ok=yes;
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }; zlib_ok=no;
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-fi
-if test $zlib_ok = no; then
-   as_fn_error $? "zlib or zlib header file not found, please install it" "$LINENO" 5
-fi
 
 
 #----------------------
@@ -5994,6 +5923,9 @@ fi
 # error dialog complaining that wpcap.dll was missing
 case $host in
 *-*-cygwin* | *-*-mingw32*)
+    # we do not have to test for the DLL if we are cross-compiling because the DLL is obviously not installed
+    # on the build system (as it is a non-windows architecture).
+    if test "$cross_compiling" = no ; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -6036,8 +5968,11 @@ fi
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
+    else
+        wpcap_dll=notneeded
+    fi
     ;;
-*)
+  *)
     wpcap_dll=notneeded
     ;;
 esac
@@ -6058,13 +5993,7 @@ else
    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for PCAP with CFLAGS=\"$CFLAGS_RELEASE $PCAP_CFLAGS\" LIBS=\"$PCAP_LIBS\"" >&5
 $as_echo_n "checking for PCAP with CFLAGS=\"$CFLAGS_RELEASE $PCAP_CFLAGS\" LIBS=\"$PCAP_LIBS\"... " >&6; }
 
-   if test "$cross_compiling" = yes; then :
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "cannot run test program while cross compiling
-See \`config.log' for more details" "$LINENO" 5; }
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #include <pcap.h>
 int
@@ -6075,17 +6004,15 @@ pcap_lib_version();
   return 0;
 }
 _ACEOF
-if ac_fn_cxx_try_run "$LINENO"; then :
+if ac_fn_cxx_try_link "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }; pcap_ok=yes;
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }; pcap_ok=no;
 fi
-rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
-  conftest.$ac_objext conftest.beam conftest.$ac_ext
-fi
-
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
 
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
@@ -6102,13 +6029,7 @@ fi
    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for PCAP with CFLAGS=\"$CFLAGS_RELEASE $PCAP_CFLAGS\" LIBS=\"$PCAP_LIBS\"" >&5
 $as_echo_n "checking for PCAP with CFLAGS=\"$CFLAGS_RELEASE $PCAP_CFLAGS\" LIBS=\"$PCAP_LIBS\"... " >&6; }
 
-   if test "$cross_compiling" = yes; then :
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "cannot run test program while cross compiling
-See \`config.log' for more details" "$LINENO" 5; }
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #include <pcap.h>
 int
@@ -6119,27 +6040,26 @@ pcap_lib_version();
   return 0;
 }
 _ACEOF
-if ac_fn_cxx_try_run "$LINENO"; then :
+if ac_fn_cxx_try_link "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }; pcap_ok=yes;
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }; pcap_ok=no;
 fi
-rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
-  conftest.$ac_objext conftest.beam conftest.$ac_ext
-fi
-
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
 
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
     fi
 fi
+
 if test $pcap_ok = yes; then
-    HAVE_PCAP=yes
-    CFLAGS_RELEASE="$CFLAGS_RELEASE $PCAP_CFLAGS -DHAVE_PCAP"
-    CFLAGS_DEBUG="$CFLAGS_DEBUG $PCAP_CFLAGS -DHAVE_PCAP"
+	HAVE_PCAP=yes
+	CFLAGS_RELEASE="$CFLAGS_RELEASE $PCAP_CFLAGS -DHAVE_PCAP"
+	CFLAGS_DEBUG="$CFLAGS_DEBUG $PCAP_CFLAGS -DHAVE_PCAP"
 else
     HAVE_PCAP=no
     PCAP_CFLAGS=""
@@ -6422,28 +6342,110 @@ rm -f core conftest.err conftest.$ac_objext \
 fi
 
 if test $libxml_ok = yes; then
-   { $as_echo "$as_me:${as_lineno-$LINENO}: Using LibXML for XML parsing" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: Using LibXML for XML parsing" >&5
 $as_echo "$as_me: Using LibXML for XML parsing" >&6;}
-   XMLPARSER=libxml
-   XML_CFLAGS=$LIBXML_CFLAGS
-   XML_LIBS=$LIBXML_LIBS
+    XMLPARSER=libxml
+    XML_CFLAGS=$LIBXML_CFLAGS
+    XML_LIBS=$LIBXML_LIBS
 elif test $expat_ok = yes; then
-   { $as_echo "$as_me:${as_lineno-$LINENO}: Using Expat for XML parsing" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: Using Expat for XML parsing" >&5
 $as_echo "$as_me: Using Expat for XML parsing" >&6;}
-   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: DTD validation is not supported with Expat, only with LibXML!" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: DTD validation is not supported with Expat, only with LibXML!" >&5
 $as_echo "$as_me: WARNING: DTD validation is not supported with Expat, only with LibXML!" >&2;}
-   XMLPARSER=expat
-   XML_CFLAGS=$EXPAT_CFLAGS
-   XML_LIBS=$EXPAT_LIBS
+    XMLPARSER=expat
+    XML_CFLAGS=$EXPAT_CFLAGS
+    XML_LIBS=$EXPAT_LIBS
 else
-   XMLPARSER=none
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  LibXML/Expat"
-   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: No suitable XML parser found: no support for XML input" >&5
+    XMLPARSER=none
+    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  LibXML/Expat"
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: No suitable XML parser found: no support for XML input" >&5
 $as_echo "$as_me: WARNING: No suitable XML parser found: no support for XML input" >&2;}
 fi
 
 CFLAGS_DEBUG="$CFLAGS_DEBUG -DXMLPARSER=$XMLPARSER"
 CFLAGS_RELEASE="$CFLAGS_RELEASE -DXMLPARSER=$XMLPARSER"
+
+# zlib is required by the xml ppackages
+if test $libxml_ok = yes -o $expat_ok = yes; then
+    if test "$ZLIB_LIBS" = ""; then
+        ZLIB_LIBS=-lz
+    fi
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$CFLAGS_RELEASE $ZLIB_CFLAGS"
+   LIBS="$ZLIB_LIBS"
+
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for zlib with CFLAGS=\"$CFLAGS_RELEASE $ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"" >&5
+$as_echo_n "checking for zlib with CFLAGS=\"$CFLAGS_RELEASE $ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <zlib.h>
+int
+main ()
+{
+gzopen("","");
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }; zlib_ok=yes;
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }; zlib_ok=no;
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+    # on mingw/msys try a different library name
+    if test $zlib_ok = no -a "$mingw" = yes; then
+        ZLIB_LIBS="-lzlib1"
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$CFLAGS_RELEASE $ZLIB_CFLAGS"
+   LIBS="$ZLIB_LIBS"
+
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for zlib with CFLAGS=\"$CFLAGS_RELEASE $ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"" >&5
+$as_echo_n "checking for zlib with CFLAGS=\"$CFLAGS_RELEASE $ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <zlib.h>
+int
+main ()
+{
+gzopen("","");
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }; zlib_ok=yes;
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }; zlib_ok=no;
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+    fi
+    if test $zlib_ok = no; then
+        as_fn_error $? "zlib or zlib header file not found, please install it" "$LINENO" 5
+    fi
+fi
 
 #----------------------
 # Check for Akaroa header and lib
@@ -6511,7 +6513,6 @@ if test "$WITH_NETBUILDER" = yes; then
    CFLAGS_DEBUG="$CFLAGS_DEBUG -DWITH_NETBUILDER"
    CFLAGS_RELEASE="$CFLAGS_RELEASE -DWITH_NETBUILDER"
 fi
-
 
 
 #----------------------

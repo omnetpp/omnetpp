@@ -3,7 +3,7 @@
  */
 package org.omnetpp.scave.actions;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jface.action.Action;
 import org.omnetpp.scave.editors.datatable.DataTree;
 import org.omnetpp.scave.editors.datatable.ResultFileManagerTreeContentProvider;

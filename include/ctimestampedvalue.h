@@ -46,6 +46,7 @@ class SIM_API cITimestampedValue
 
         /** @name Returns the value for the given signal. */
         //@{
+        virtual bool boolValue(simsignal_t signalID) const = 0;
         virtual long longValue(simsignal_t signalID) const = 0;
         virtual unsigned long unsignedLongValue(simsignal_t signalID) const = 0;
         virtual double doubleValue(simsignal_t signalID) const = 0;
@@ -66,6 +67,7 @@ class SIM_API cTimestampedValue : public cITimestampedValue, public cObject
         simtime_t timestamp;
         SimsignalType type; // selector for the union
         union {
+            bool b;
             long l;
             unsigned long ul;
             double d;
@@ -78,6 +80,7 @@ class SIM_API cTimestampedValue : public cITimestampedValue, public cObject
         /** @name Constructors */
         //@{
         cTimestampedValue() {type=SIMSIGNAL_UNDEF;}
+        cTimestampedValue(simtime_t timestamp, bool b) {set(timestamp,b);}
         cTimestampedValue(simtime_t timestamp, long l) {set(timestamp,l);}
         cTimestampedValue(simtime_t timestamp, unsigned long ul) {set(timestamp,ul);}
         cTimestampedValue(simtime_t timestamp, double d) {set(timestamp,d);}
@@ -88,6 +91,7 @@ class SIM_API cTimestampedValue : public cITimestampedValue, public cObject
 
         /** @name Setters */
         //@{
+        void set(simtime_t timestamp, bool b) {this->timestamp=timestamp; type=SIMSIGNAL_BOOL; this->b=b;}
         void set(simtime_t timestamp, long l) {this->timestamp=timestamp; type=SIMSIGNAL_LONG; this->l=l;}
         void set(simtime_t timestamp, unsigned long ul) {this->timestamp=timestamp; type=SIMSIGNAL_ULONG; this->ul=ul;}
         void set(simtime_t timestamp, double d) {this->timestamp=timestamp; type=SIMSIGNAL_DOUBLE; this->d=d;}
@@ -104,6 +108,7 @@ class SIM_API cTimestampedValue : public cITimestampedValue, public cObject
 
         /** @name Getters. Call the one that corresponds to the stored type. */
         //@{
+        virtual bool boolValue(simsignal_t signalID) const {return b;}
         virtual long longValue(simsignal_t signalID) const {return l;}
         virtual unsigned long unsignedLongValue(simsignal_t signalID) const {return ul;}
         virtual double doubleValue(simsignal_t signalID) const {return d;}

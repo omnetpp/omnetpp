@@ -10,6 +10,7 @@ class NoisyListener : public cListener
   public:
     NoisyListener();
     virtual ~NoisyListener();
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t);

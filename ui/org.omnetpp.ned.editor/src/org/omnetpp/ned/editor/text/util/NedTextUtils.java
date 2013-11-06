@@ -7,7 +7,7 @@
 
 package org.omnetpp.ned.editor.text.util;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -42,8 +42,6 @@ import org.omnetpp.ned.model.pojo.GateElement;
 import org.omnetpp.ned.model.pojo.ImportElement;
 import org.omnetpp.ned.model.pojo.InterfaceNameElement;
 import org.omnetpp.ned.model.pojo.ParamElement;
-
-
 
 /**
  * Misc functions for NED text editors.

@@ -79,6 +79,7 @@ class SIM_API cNumericResultRecorder : public cResultRecorder
         // all receiveSignal() methods either throw error or delegate here.
         virtual void collect(simtime_t_cref t, double value) = 0;
     public:
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b);
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l);
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l);
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d);

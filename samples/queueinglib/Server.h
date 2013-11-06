@@ -26,9 +26,8 @@ class SelectionStrategy;
 class QUEUEING_API Server : public cSimpleModule, public IServer
 {
     private:
-		simsignal_t busySignal;
+        simsignal_t busySignal;
 
-        int numQueues;
         SelectionStrategy *selectionStrategy;
 
         Job *jobServiced;

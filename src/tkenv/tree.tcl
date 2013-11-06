@@ -473,3 +473,12 @@ proc Tree:checksubtree {w v state} {
       Tree:checksubtree $w $c $state
   }
 }
+
+# Internal use only: initialize checkbox state for the whole subtree
+proc Tree:readsubtreecheckboxstate {w v} {
+  global Tree
+  $Tree($w:function) $w needcheckbox $v   ;# this forces reading the checkbox state
+  foreach c [$Tree($w:function) $w children $v] {
+      Tree:readsubtreecheckboxstate $w $c
+  }
+}

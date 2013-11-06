@@ -10,7 +10,7 @@ package org.omnetpp.scave.views;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;

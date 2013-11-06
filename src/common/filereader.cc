@@ -32,7 +32,7 @@ USING_NAMESPACE
 
 //#define TRACE_FILEREADER
 
-FileChangedError::FileChangedError(FileReader::FileChangedState changed, const char *messagefmt, ...) : opp_runtime_error(""), change(change)
+FileChangedError::FileChangedError(FileReader::FileChangedState change, const char *messagefmt, ...) : opp_runtime_error(""), change(change)
 {
     char buf[1024];
     VSNPRINTF(buf, 1024, messagefmt);
@@ -44,8 +44,7 @@ FileReader::FileReader(const char *fileName, size_t bufferSize)
      bufferBegin(new char[bufferSize]),
      bufferEnd(bufferBegin + bufferSize),
      maxLineSize(bufferSize / 2),
-     lastSavedBufferBegin(new char[bufferSize]),
-     lastSavedBufferEnd(lastSavedBufferBegin + bufferSize)
+     lastSavedBufferBegin(new char[bufferSize])
 {
 #ifdef TRACE_FILEREADER
 	TRACE_CALL("FileReader::FileReader(%s, %d)", fileName, bufferSize);

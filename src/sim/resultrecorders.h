@@ -49,6 +49,7 @@ class SIM_API CountRecorder : public cResultRecorder
         long count;
     public:
         CountRecorder() {count = 0;}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b) {count++;}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l) {count++;}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l) {count++;}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d) {count++;}

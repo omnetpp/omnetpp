@@ -69,6 +69,12 @@ cResultFilter::~cResultFilter()
     delete [] delegates;
 }
 
+void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, bool b)
+{
+    for (int i=0; delegates[i]; i++)
+        delegates[i]->receiveSignal(this, t, b);
+}
+
 void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, long l)
 {
     for (int i=0; delegates[i]; i++)
@@ -112,6 +118,14 @@ void cResultFilter::finish(cResultFilter *prev)
 }
 
 //---
+
+void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b)
+{
+    simtime_t tt = t;
+    double d = b;
+    if (process(tt, d))
+        fire(this, tt, d);
+}
 
 void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l)
 {
@@ -158,6 +172,11 @@ void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, 
 //---
 
 #define THROW(t)  throw opp_runtime_error("%s: received data with wrong type (%s): object expected", getClassName(), t);
+
+void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b)
+{
+    THROW("long");
+}
 
 void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l)
 {

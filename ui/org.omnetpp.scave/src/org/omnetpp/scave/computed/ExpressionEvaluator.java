@@ -1,16 +1,16 @@
 package org.omnetpp.scave.computed;
 
-import static org.apache.commons.lang.StringUtils.replaceOnce;
-import static org.apache.commons.lang.StringUtils.substringAfter;
-import static org.apache.commons.lang.StringUtils.substringAfterLast;
-import static org.apache.commons.lang.StringUtils.substringBefore;
-import static org.apache.commons.lang.StringUtils.substringBeforeLast;
 import static org.omnetpp.common.util.Pair.pair;
 import static org.omnetpp.common.util.StringUtils.choose;
 import static org.omnetpp.common.util.StringUtils.replace;
 import static org.omnetpp.common.util.StringUtils.replaceFirst;
 import static org.omnetpp.common.util.StringUtils.substring;
 import static org.omnetpp.common.util.StringUtils.tail;
+import static org.omnetpp.common.util.StringUtils.substringAfter;
+import static org.omnetpp.common.util.StringUtils.substringAfterLast;
+import static org.omnetpp.common.util.StringUtils.substringBefore;
+import static org.omnetpp.common.util.StringUtils.substringBeforeLast;
+import static org.omnetpp.common.util.StringUtils.replaceOnce;
 import static org.omnetpp.scave.computed.ExpressionSyntax.manychars;
 import static org.omnetpp.scave.computed.ExpressionSyntax.pattern;
 import static org.omnetpp.scave.computed.ExpressionSyntax.pexpr;

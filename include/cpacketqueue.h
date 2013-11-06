@@ -38,6 +38,10 @@ class SIM_API cPacketQueue : public cQueue
 
   private:
     void copy(const cPacketQueue& other);
+    virtual void insert(cObject *obj);
+    virtual void insertBefore(cObject *where, cObject *obj);
+    virtual void insertAfter(cObject *where, cObject *obj);
+    virtual cObject *remove(cObject *obj);
 
   protected:
     // internal

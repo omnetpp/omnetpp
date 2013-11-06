@@ -104,7 +104,10 @@
 	cSnapshotManager to include an "I" (for interface) ->
 	cIOutputVectorManager, cIOutputScalarManager, cSnapshotManager.
 
-////////////// fixes cherry-picked from 4.x come here /////////////////
+2013-10-29  Andras Varga
+	
+	* cIListener: added receiveSignal() overload for the bool type.
+	(Before it was channelled into long.)
 
 2013-10-24  Andras Varga
 

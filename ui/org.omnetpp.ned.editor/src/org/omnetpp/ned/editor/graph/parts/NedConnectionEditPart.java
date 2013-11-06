@@ -9,7 +9,6 @@ package org.omnetpp.ned.editor.graph.parts;
 
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.ConnectionEditPart;
@@ -23,6 +22,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.figures.ConnectionKindFigure;
 import org.omnetpp.figures.ITooltipTextProvider;

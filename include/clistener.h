@@ -44,6 +44,7 @@ typedef int simsignal_t;
 enum SimsignalType
 {
     SIMSIGNAL_UNDEF,
+    SIMSIGNAL_BOOL,
     SIMSIGNAL_LONG,
     SIMSIGNAL_ULONG,
     SIMSIGNAL_DOUBLE,
@@ -73,9 +74,12 @@ class SIM_API cIListener
     virtual ~cIListener();
 
     /**
-     * Receive an emitted long value. The "source" argument is the channel
-     * or module on which the emit() method was invoked, and NOT the one at
-     * which this listener is subscribed.
+     * Receive an emitted signal. Note that cIListener declares several
+     * overloaded receiveSignal() methods, one for each data type (except
+     * that all integer types are merged to the long and unsigned long
+     * types). The "source" argument is the channel or module on which
+     * the emit() method was invoked, and NOT the one at which this listener
+     * is subscribed.
      *
      * It is not allowed inside a receiveSignal() call to unsubscribe from
      * the signal being received -- it will cause an error to be thrown.
@@ -84,21 +88,24 @@ class SIM_API cIListener
      * to make a temporary copy of the listener list each time, but this is
      * not desirable for performance reasons.)
      */
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b) = 0;
+
+    /** Receive an emitted long value. See receiveSignal(cComponent*,simsignal_t,bool) for more info. */
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l) = 0;
 
-    /** Receive an emitted unsigned long value. See receiveSignal(cComponent*,simsignal_t,long) for more info */
+    /** Receive an emitted unsigned long value. See receiveSignal(cComponent*,simsignal_t,bool) for more info. */
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l) = 0;
 
-    /** Receive an emitted double value. See receiveSignal(cComponent*,simsignal_t,long) for more info */
+    /** Receive an emitted double value. See receiveSignal(cComponent*,simsignal_t,bool) for more info. */
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d) = 0;
 
-    /** Receive an emitted simtime_t value. See receiveSignal(cComponent*,simsignal_t,long) for more info */
+    /** Receive an emitted simtime_t value. See receiveSignal(cComponent*,simsignal_t,bool) for more info. */
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t) = 0;
 
-    /** Receive an emitted string value. See receiveSignal(cComponent*,simsignal_t,long) for more info */
+    /** Receive an emitted string value. See receiveSignal(cComponent*,simsignal_t,bool) for more info. */
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s) = 0;
 
-    /** Receive an emitted cObject value. See receiveSignal(cComponent*,simsignal_t,long) for more info */
+    /** Receive an emitted cObject value. See receiveSignal(cComponent*,simsignal_t,bool) for more info. */
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj) = 0;
 
     /**
@@ -154,6 +161,7 @@ class SIM_API cListener : public cIListener
     /** Utility function, throws a "data type not supported" error. */
     virtual void unsupportedType(simsignal_t signalID, const char *dataType);
   public:
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d);

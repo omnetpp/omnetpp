@@ -337,9 +337,11 @@ $O/ccomponenttype.o: ccomponenttype.cc \
   ../../include/regmacros.h \
   ../../include/ctimestampedvalue.h \
   ../../include/platdep/platdefs.h \
+  ../common/commondefs.h \
   ../../include/cdataratechannel.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
+  ../common/patternmatcher.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/ccompoundmodule.h \
@@ -352,6 +354,7 @@ $O/ccomponenttype.o: ccomponenttype.cc \
   parsim/cplaceholdermod.h \
   ../../include/cproperties.h \
   ../../include/cregistrationlist.h \
+  ../../include/cenum.h \
   ../../include/cdelaychannel.h \
   ../../include/cchannel.h \
   ../../include/opp_string.h \
@@ -2648,6 +2651,7 @@ $O/globals.o: globals.cc \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
   ../../include/cobject.h \
+  ../../include/clistener.h \
   ../../include/cstringpool.h \
   ../../include/cpar.h \
   ../../include/globals.h \

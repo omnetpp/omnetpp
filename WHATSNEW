@@ -5,6 +5,11 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
+Sim:
+
+    - The source now compiles without any warning using the "-std=c++11 -Wall" 
+      flags.
+
 OMNeT++ 4.3.1 (Sept 2013)
 -------------------------
 

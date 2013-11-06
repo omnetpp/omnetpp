@@ -98,32 +98,37 @@ void cListener::unsupportedType(simsignal_t signalID, const char *dataType)
                         opp_typename(typeid(*this)), dataType, signalName, (int)signalID);
 }
 
-void cListener::receiveSignal(cComponent *source, simsignal_t signalID, long l)
+void cListener::receiveSignal(cComponent *, simsignal_t signalID, bool)
+{
+    unsupportedType(signalID, "bool");
+}
+
+void cListener::receiveSignal(cComponent *, simsignal_t signalID, long)
 {
     unsupportedType(signalID, "long");
 }
 
-void cListener::receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l)
+void cListener::receiveSignal(cComponent *, simsignal_t signalID, unsigned long)
 {
     unsupportedType(signalID, "unsigned long");
 }
 
-void cListener::receiveSignal(cComponent *source, simsignal_t signalID, double d)
+void cListener::receiveSignal(cComponent *, simsignal_t signalID, double)
 {
     unsupportedType(signalID, "double");
 }
 
-void cListener::receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t)
+void cListener::receiveSignal(cComponent *, simsignal_t signalID, const SimTime&)
 {
     unsupportedType(signalID, "simtime_t");
 }
 
-void cListener::receiveSignal(cComponent *source, simsignal_t signalID, const char *s)
+void cListener::receiveSignal(cComponent *, simsignal_t signalID, const char *)
 {
     unsupportedType(signalID, "const char *");
 }
 
-void cListener::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
+void cListener::receiveSignal(cComponent *, simsignal_t signalID, cObject *)
 {
     unsupportedType(signalID, "cObject *");
 }

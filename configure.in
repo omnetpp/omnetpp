@@ -1,4 +1,7 @@
-# NOTE: set TOOLCHAIN=mingw to use the MINGW compiler to cross compile to Windows on Linux
+# NOTE1: to do a proper Win32 cross compile from Linux use ./configure --host=i686-w64-mingw32
+# 
+# NOTE2: $build refers to the platform where this script is running
+#        $host refers to the platform where the final code will run
 
 dnl Process this file with autoconf to produce a configure script.
 
@@ -134,8 +137,8 @@ OPP_PROBLEM_PACKAGES=
 # Location of various components. They are defined here so that they can be overridden in configure.user.
 #
 
-# determine OMNETPP_ROOT; note that 'case' branches on *host* platform not the target platform
-case $host in
+# determine OMNETPP_ROOT; note that 'case' branches on *build* platform not the host platform
+case $build in
 *-*-cygwin*)
     OMNETPP_ROOT=`cygpath -w $OMNETPP_ROOT | sed 's|\\\\|/|g'`
     ;;
@@ -189,7 +192,7 @@ SHARED_LIB_SUFFIX='$(SO_LIB_SUFFIX)'
 LIB_PREFIX="lib"
 
 #
-#  Figure out target platform
+#  Figure out the host platform
 #
 if test "$TOOLCHAIN" = "mingw"; then
     # cross compiling for mingw
@@ -217,11 +220,20 @@ else
         PLATFORM=win32.x86
         EXE_SUFFIX=".exe"
         SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-        # add default include and lib paths to make it similar to gcc on Linux
-        CFLAGS_ARCH="$CFLAGS_ARCH -I/usr/include"
         # on MinGW dll auto importing MUST be used with shared gcc and stdc++
         # otherwise exceptions can't be thrown across dll boundaries
-        LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -shared-libgcc -L/usr/bin -L/usr/lib"
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -shared-libgcc -L/usr/bin"
+
+        # If we are building on windows (native compile) we have to add the /usr/lib and
+        # /usr/include directories as they are not added by default, but they are needed
+        # to properly find the Tcl/Tk, LibXML2 libraries.
+        if test "$cross_compiling" = no ; then
+            CFLAGS_ARCH="$CFLAGS_ARCH -I/usr/include"
+            LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib"
+        fi
+            # NOTE: if we are cross-compiling we may need to add the lib and include path 
+            # to the cross-compiled TckTk/Xml libs here. They should NOT reside in the default
+            # /usr/lib directory as that would interfere with the native build.
         ;;
     x86_64-*-linux*)
         jni_platform=linux
@@ -331,15 +343,15 @@ else
         # -w1 disables all remarks
         CFLAGS_ARCH="$CFLAGS_ARCH -w1 -wd654 -wd177"
     fi
-    AS=${AS:-as}
-    AR=${AR:-ar cr}
+    AS=${AS:-${ac_tool_prefix}as}
+    AR=${AR:-${ac_tool_prefix}ar cr}
     if test "$PLATFORM" = "macosx"; then
         SHLIB_LD=${SHLIB_LD:-$CXX -dynamiclib}
     else
         SHLIB_LD=${SHLIB_LD:-$CXX -shared}
     fi
-    DLLTOOL=${DLLTOOL:-dlltool}
-    STRIP=${STRIP:-strip}
+    DLLTOOL=${DLLTOOL:-${ac_tool_prefix}dlltool}
+    STRIP=${STRIP:-${ac_tool_prefix}strip}
     AC_PROG_RANLIB
 fi
 
@@ -718,20 +730,6 @@ fi
 # winsock (for MinGW)
 OPP_CHECK_LIB(winsock, winsock.h, socket(0,0,0), , -lwsock32, wsock_ok, SYS_LIBS="-lwsock32 $SYS_LIBS")
 
-# zlib
-if test "$ZLIB_LIBS" = ""; then
-    ZLIB_LIBS=-lz
-fi
-OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $CFLAGS_RELEASE $ZLIB_CFLAGS, $ZLIB_LIBS, zlib_ok)
-# on mingw/msys try a different library name
-if test $zlib_ok = no -a "$mingw" = yes; then
-    ZLIB_LIBS="-lzlib1"
-    OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $CFLAGS_RELEASE $ZLIB_CFLAGS, $ZLIB_LIBS, zlib_ok)
-fi
-if test $zlib_ok = no; then
-   AC_MSG_ERROR([zlib or zlib header file not found, please install it])
-fi
-
 
 #----------------------
 # Check for Tcl/Tk.
@@ -977,9 +975,15 @@ fi
 # error dialog complaining that wpcap.dll was missing
 case $host in
 *-*-cygwin* | *-*-mingw32*)
-    OPP_CHECK_AND_RUN_LIB(WinPCAP, windows.h, return LoadLibrary("wpcap.dll")==NULL ? 1 : 0, $CFLAGS_RELEASE, , wpcap_dll)
+    # we do not have to test for the DLL if we are cross-compiling because the DLL is obviously not installed
+    # on the build system (as it is a non-windows architecture).
+    if test "$cross_compiling" = no ; then
+        OPP_CHECK_AND_RUN_LIB(WinPCAP, windows.h, return LoadLibrary("wpcap.dll")==NULL ? 1 : 0, $CFLAGS_RELEASE, , wpcap_dll)
+    else
+        wpcap_dll=notneeded
+    fi
     ;;
-*)
+  *)
     wpcap_dll=notneeded
     ;;
 esac
@@ -989,16 +993,17 @@ if test $wpcap_dll = "no"; then
     AC_MSG_NOTICE([WinPCAP not found -- if you need packet capture functionality in your models, install it from winpcap.org])
 else
     if test -n "$PCAP_LIBS"; then
-        OPP_CHECK_AND_RUN_LIB(PCAP, pcap.h, pcap_lib_version(), $CFLAGS_RELEASE $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
+        OPP_CHECK_LIB(PCAP, pcap.h, pcap_lib_version(), $CFLAGS_RELEASE $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
     else
         PCAP_LIBS="-lpcap"
-        OPP_CHECK_AND_RUN_LIB(PCAP, pcap.h, pcap_lib_version(), $CFLAGS_RELEASE $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
+        OPP_CHECK_LIB(PCAP, pcap.h, pcap_lib_version(), $CFLAGS_RELEASE $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
     fi
 fi
+
 if test $pcap_ok = yes; then
-    HAVE_PCAP=yes
-    CFLAGS_RELEASE="$CFLAGS_RELEASE $PCAP_CFLAGS -DHAVE_PCAP"
-    CFLAGS_DEBUG="$CFLAGS_DEBUG $PCAP_CFLAGS -DHAVE_PCAP"
+	HAVE_PCAP=yes
+	CFLAGS_RELEASE="$CFLAGS_RELEASE $PCAP_CFLAGS -DHAVE_PCAP"
+	CFLAGS_DEBUG="$CFLAGS_DEBUG $PCAP_CFLAGS -DHAVE_PCAP"
 else
     HAVE_PCAP=no
     PCAP_CFLAGS=""
@@ -1052,24 +1057,40 @@ else
 fi
 
 if test $libxml_ok = yes; then
-   AC_MSG_NOTICE([Using LibXML for XML parsing])
-   XMLPARSER=libxml
-   XML_CFLAGS=$LIBXML_CFLAGS
-   XML_LIBS=$LIBXML_LIBS
+    AC_MSG_NOTICE([Using LibXML for XML parsing])
+    XMLPARSER=libxml
+    XML_CFLAGS=$LIBXML_CFLAGS
+    XML_LIBS=$LIBXML_LIBS
 elif test $expat_ok = yes; then
-   AC_MSG_NOTICE([Using Expat for XML parsing])
-   AC_MSG_WARN([DTD validation is not supported with Expat, only with LibXML!])
-   XMLPARSER=expat
-   XML_CFLAGS=$EXPAT_CFLAGS
-   XML_LIBS=$EXPAT_LIBS
+    AC_MSG_NOTICE([Using Expat for XML parsing])
+    AC_MSG_WARN([DTD validation is not supported with Expat, only with LibXML!])
+    XMLPARSER=expat
+    XML_CFLAGS=$EXPAT_CFLAGS
+    XML_LIBS=$EXPAT_LIBS
 else
-   XMLPARSER=none
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  LibXML/Expat"
-   AC_MSG_WARN([No suitable XML parser found: no support for XML input])
+    XMLPARSER=none
+    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  LibXML/Expat"
+    AC_MSG_WARN([No suitable XML parser found: no support for XML input])
 fi
 
 CFLAGS_DEBUG="$CFLAGS_DEBUG -DXMLPARSER=$XMLPARSER"
 CFLAGS_RELEASE="$CFLAGS_RELEASE -DXMLPARSER=$XMLPARSER"
+
+# zlib is required by the xml ppackages
+if test $libxml_ok = yes -o $expat_ok = yes; then
+    if test "$ZLIB_LIBS" = ""; then
+        ZLIB_LIBS=-lz
+    fi
+    OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $CFLAGS_RELEASE $ZLIB_CFLAGS, $ZLIB_LIBS, zlib_ok)
+    # on mingw/msys try a different library name
+    if test $zlib_ok = no -a "$mingw" = yes; then
+        ZLIB_LIBS="-lzlib1"
+        OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $CFLAGS_RELEASE $ZLIB_CFLAGS, $ZLIB_LIBS, zlib_ok)
+    fi
+    if test $zlib_ok = no; then
+        AC_MSG_ERROR([zlib or zlib header file not found, please install it])
+    fi
+fi
 
 #----------------------
 # Check for Akaroa header and lib
@@ -1103,7 +1124,6 @@ if test "$WITH_NETBUILDER" = yes; then
    CFLAGS_DEBUG="$CFLAGS_DEBUG -DWITH_NETBUILDER"
    CFLAGS_RELEASE="$CFLAGS_RELEASE -DWITH_NETBUILDER"
 fi
-
 
 
 #----------------------

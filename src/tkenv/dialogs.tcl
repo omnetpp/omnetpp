@@ -847,6 +847,7 @@ proc moduleOutputFilterDialog {rootmodule excludedModuleIds} {
 
     Tree:init $tree getModuleTreeInfo
     Tree:open $tree $rootmodule
+    Tree:readsubtreecheckboxstate $tree $rootmodule
 
     setinitialdialogfocus $tree
 

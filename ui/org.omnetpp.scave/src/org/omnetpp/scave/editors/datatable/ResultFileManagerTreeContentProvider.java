@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.collections.map.MultiValueMap;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.Debug;

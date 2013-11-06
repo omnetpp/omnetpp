@@ -9,7 +9,7 @@ package org.omnetpp.sequencechart.widgets.axisorder;
 
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.eventlog.engine.IntIntMap;

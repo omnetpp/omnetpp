@@ -32,7 +32,7 @@ import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_LEGEND_
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_MAX;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_MIN;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;

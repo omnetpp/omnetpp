@@ -28,7 +28,7 @@ import static org.omnetpp.scave.charting.properties.ScalarChartProperties.PROP_B
 import static org.omnetpp.scave.charting.properties.ScalarChartProperties.PROP_BAR_PLACEMENT;
 import static org.omnetpp.scave.charting.properties.ScalarChartProperties.PROP_WRAP_LABELS;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -399,7 +399,7 @@ public class ScalarChart extends ChartCanvas {
                 }
                 valueStr = formatValue(value, halfInterval);
             }
-            String line1 = StringEscapeUtils.escapeHtml(key);
+            String line1 = StringEscapeUtils.escapeHtml4(key);
             String line2 = "value: " + valueStr;
             //int maxLength = Math.max(line1.length(), line2.length());
             TextLayout textLayout = new TextLayout(getDisplay());

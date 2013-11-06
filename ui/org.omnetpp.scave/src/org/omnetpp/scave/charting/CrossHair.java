@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
@@ -35,8 +35,8 @@ import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
-import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -265,7 +265,7 @@ class CrossHair {
                     htmlText.append(String.format("<img src='%s'>", imageFile));
                 htmlText.append("</td>");
                 htmlText.append("<td>");
-                htmlText.append(StringEscapeUtils.escapeHtml(text));
+                htmlText.append(StringEscapeUtils.escapeHtml4(text));
                 if (lineNo > 0)
                     plainText.append("\n");
                 plainText.append(text);

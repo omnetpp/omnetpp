@@ -7,8 +7,8 @@
 
 package org.omnetpp.ned.editor.graph.commands;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.gef.commands.CompoundCommand;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;

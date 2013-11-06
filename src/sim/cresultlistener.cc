@@ -48,6 +48,18 @@ const char *cResultListener::getPooled(const char *s)
                         cComponent::getSignalName(signalID), (int)signalID, \
                         source->getClassName(), source->getFullPath().c_str(), datatype, e.what())
 
+void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, bool b)
+{
+    try
+    {
+        receiveSignal(NULL, simulation.getSimTime(), b);
+    }
+    catch (std::exception& e)
+    {
+        THROW(source, signalID, "bool", e);
+    }
+}
+
 void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, long l)
 {
     try
@@ -120,6 +132,7 @@ void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, cO
             // dispatch cITimestampedValue by data type
             switch (v->getValueType(signalID))
             {
+                case SIMSIGNAL_BOOL: receiveSignal(NULL, v->getTimestamp(signalID), v->boolValue(signalID)); break;
                 case SIMSIGNAL_LONG: receiveSignal(NULL, v->getTimestamp(signalID), v->longValue(signalID)); break;
                 case SIMSIGNAL_ULONG: receiveSignal(NULL, v->getTimestamp(signalID), v->unsignedLongValue(signalID)); break;
                 case SIMSIGNAL_DOUBLE: receiveSignal(NULL, v->getTimestamp(signalID), v->doubleValue(signalID)); break;

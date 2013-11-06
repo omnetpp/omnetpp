@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.dom.ILinkage;
 import org.eclipse.cdt.core.dom.ast.DOMException;
 import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
@@ -50,6 +49,7 @@ import org.omnetpp.cdt.cache.CppScanner.IScannerEventListener;
 import org.omnetpp.cdt.cache.FileCache.ISourceFileChangeListener;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.Pair;
+import org.omnetpp.common.util.StringUtils;
 
 /**
  * This class implements some of the structures of the CDT index,

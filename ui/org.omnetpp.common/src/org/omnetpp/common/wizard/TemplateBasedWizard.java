@@ -9,8 +9,7 @@ package org.omnetpp.common.wizard;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
@@ -29,6 +28,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.ui.DetailMessageDialog;
+import org.omnetpp.common.util.StringUtils;
 
 import freemarker.template.TemplateException;
 

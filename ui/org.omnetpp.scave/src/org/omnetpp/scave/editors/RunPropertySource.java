@@ -1,6 +1,6 @@
 package org.omnetpp.scave.editors;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.omnetpp.common.util.StringUtils;

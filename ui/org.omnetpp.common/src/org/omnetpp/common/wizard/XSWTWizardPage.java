@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
@@ -22,6 +21,7 @@ import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.FileUtils;
+import org.omnetpp.common.util.StringUtils;
 
 import com.swtworkbench.community.xswt.XSWT;
 

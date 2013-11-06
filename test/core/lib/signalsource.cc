@@ -77,7 +77,9 @@ void SignalSource::emitSignal(cXMLElement *elem)
     try {
         if (!timestamp)
         {
-            if (strcmp(type, "long")==0)
+            if (strcmp(type, "bool")==0)
+                emit(signalID, value[0]=='t');
+            else if (strcmp(type, "long")==0)
                 emit(signalID, strtol(value, NULL, 10));
             else if (strcmp(type, "unsigned long")==0)
                 emit(signalID, strtoul(value, NULL, 10));
@@ -96,7 +98,9 @@ void SignalSource::emitSignal(cXMLElement *elem)
         {
             simtime_t t = STR_SIMTIME(timestamp);
             cTimestampedValue tsval;
-            if (strcmp(type, "long")==0)
+            if (strcmp(type, "bool")==0)
+                tsval.set(t, value[0]=='t');
+            else if (strcmp(type, "long")==0)
                 tsval.set(t, strtol(value, NULL, 10));
             else if (strcmp(type, "unsigned long")==0)
                 tsval.set(t, strtoul(value, NULL, 10));

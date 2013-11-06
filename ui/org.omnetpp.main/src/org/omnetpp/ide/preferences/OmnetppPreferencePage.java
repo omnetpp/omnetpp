@@ -10,8 +10,7 @@ package org.omnetpp.ide.preferences;
 import java.io.File;
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
@@ -34,6 +33,7 @@ import org.omnetpp.common.ui.MultiLineTextFieldEditor;
 import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.ProcessUtils;
 import org.omnetpp.common.util.ReflectionUtils;
+import org.omnetpp.common.util.StringUtils;
 
 /**
  * The OMNeT++ preference page that is contributed to the Preferences dialog.

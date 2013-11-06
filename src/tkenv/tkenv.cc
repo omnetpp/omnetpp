@@ -1029,7 +1029,7 @@ void Tkenv::printEventBanner(cEvent *event)
     // produce banner text
     char banner[2*MAX_OBJECTFULLPATH+2*MAX_CLASSNAME+60];
     char *p = banner;
-    p += sprintf(p, "{** Event #%" LL "d  T=%s  ",
+    p += sprintf(p,"{** Event #%" LL "d  T=%s  %s, on `%s'\n}",
             simulation.getEventNumber(),
             SIMTIME_STR(simulation.getSimTime()));
 

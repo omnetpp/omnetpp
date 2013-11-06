@@ -58,6 +58,7 @@ class SIM_API cResultFilter : public cResultListener
         cResultListener **delegates; // NULL-terminated array
     protected:
         // methods for invoking the delegates
+        void fire(cResultFilter *prev, simtime_t_cref t, bool b);
         void fire(cResultFilter *prev, simtime_t_cref t, long l);
         void fire(cResultFilter *prev, simtime_t_cref t, unsigned long l);
         void fire(cResultFilter *prev, simtime_t_cref t, double d);
@@ -87,6 +88,7 @@ class SIM_API cNumericResultFilter : public cResultFilter
         // return value: whether to invoke chained listeners (true) or to swallow the value (false)
         virtual bool process(simtime_t& t, double& value) = 0;
     public:
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b);
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l);
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l);
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d);
@@ -105,6 +107,7 @@ class SIM_API cNumericResultFilter : public cResultFilter
 class SIM_API cObjectResultFilter : public cResultFilter
 {
     public:
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b);
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l);
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l);
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d);

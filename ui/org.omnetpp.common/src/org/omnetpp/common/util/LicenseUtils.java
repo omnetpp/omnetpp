@@ -7,7 +7,7 @@
 
 package org.omnetpp.common.util;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
 
