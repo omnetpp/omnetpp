@@ -109,7 +109,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
             hideControl((Control)ReflectionUtils.getFieldValue(getLocationArea(), "useDefaultsButton"));
 
             // select "Show supported configurations only" checkbox (this comes from a preference in CDT, but we don't care)
-            ((Button)ReflectionUtils.getFieldValue(this, "show_sup")).setSelection(true);
+            ((Button)ReflectionUtils.getFieldValue(this, "showSup")).setSelection(true);
         }
 
         private void hideControl(Control control) {
