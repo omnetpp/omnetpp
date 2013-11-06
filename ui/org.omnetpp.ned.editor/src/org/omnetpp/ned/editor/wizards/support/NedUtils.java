@@ -1,15 +1,14 @@
 package org.omnetpp.ned.editor.wizards.support;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
-import org.omnetpp.ned.core.MsgResources;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.INedResources;
+import org.omnetpp.ned.core.MsgResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
-
 
 /**
  *

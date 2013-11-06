@@ -7,7 +7,7 @@
 
 package org.omnetpp.figures.misc;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;

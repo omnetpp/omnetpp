@@ -1,6 +1,5 @@
 package org.omnetpp.scave.editors.forms;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.omnetpp.scave.computed.ComputedScalarEngine.FIELD_GROUPBY;
 import static org.omnetpp.scave.computed.ComputedScalarEngine.FIELD_MODULE;
 import static org.omnetpp.scave.computed.ComputedScalarEngine.FIELD_NAME;
@@ -55,6 +54,7 @@ import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.ui.HelpLink;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StatusUtil;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.computed.ComputedScalarEngine;
 import org.omnetpp.scave.computed.ExpressionEvaluator.Function;
 import org.omnetpp.scave.engine.IDList;
@@ -485,7 +485,7 @@ public class ComputeScalarEditForm extends BaseScaveObjectEditForm {
             case FIELD_NAME:
             case FIELD_VALUE:
                 Set<String> variables = new TreeSet<String>();
-                if (!isEmpty(groupByField.text.getText()) && !groupByField.decoration.isVisible()) {
+                if (!StringUtils.isEmpty(groupByField.text.getText()) && !groupByField.decoration.isVisible()) {
                     variables.add("group");
                 }
                 return variables;
@@ -521,7 +521,7 @@ public class ComputeScalarEditForm extends BaseScaveObjectEditForm {
         String moduleText = moduleField != null ? moduleField.text.getText() : null;
 
         IStatus[] validationResult = null;
-        if (isEmpty(valueText) && isEmpty(groupByText) && isEmpty(nameText) && isEmpty(moduleText)) {
+        if (StringUtils.isEmpty(valueText) && StringUtils.isEmpty(groupByText) && StringUtils.isEmpty(nameText) && StringUtils.isEmpty(moduleText)) {
             // special case: empty form is valid
         }
         else {

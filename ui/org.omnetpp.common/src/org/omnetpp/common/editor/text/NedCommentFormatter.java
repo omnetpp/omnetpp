@@ -3,7 +3,7 @@ package org.omnetpp.common.editor.text;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.StringUtils.IRegexpReplacementProvider;
 
@@ -112,7 +112,7 @@ public class NedCommentFormatter {
         });
 
         // escape html content, elements will be restored later, after processor has been called
-        comment = StringEscapeUtils.escapeHtml(comment);
+        comment = StringEscapeUtils.escapeHtml4(comment);
 
         // restore unicode chars, otherwise Chinese identifiers won't be hyperlinked
         // (they can remain as they are anyway, because we generate html in utf-8 encoding)

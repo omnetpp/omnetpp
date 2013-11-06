@@ -4,12 +4,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.ExportChartsDialog;
 import org.omnetpp.scave.export.IChartExport;
@@ -17,8 +17,8 @@ import org.omnetpp.scave.export.IGraphicalExportFileFormat;
 import org.omnetpp.scave.jobs.ExportChartsJob;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model2.FilenameGenerator;
-import org.omnetpp.scave.model2.ScaveModelUtil;
 import org.omnetpp.scave.model2.FilenameGenerator.Overwrite;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 public class ExportChartsAction extends AbstractScaveAction {
 

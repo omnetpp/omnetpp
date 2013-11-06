@@ -10,8 +10,8 @@ package org.omnetpp.common.ui;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.core.runtime.Assert;
 
 /**

@@ -3,7 +3,7 @@ package org.omnetpp.scave.actions;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;

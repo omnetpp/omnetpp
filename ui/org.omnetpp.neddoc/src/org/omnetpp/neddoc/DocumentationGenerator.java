@@ -31,8 +31,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.eclipse.core.internal.preferences.Base64;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -2171,7 +2171,7 @@ public class DocumentationGenerator {
         if (textAttribute != null)
             generateHTMLStyle(textAttribute);
         out("\">");
-        out(StringEscapeUtils.escapeHtml(source));
+        out(StringEscapeUtils.escapeHtml4(source));
         out("</span>");
     }
 

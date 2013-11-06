@@ -7,7 +7,6 @@
 
 package org.omnetpp.cdt;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.formatter.DefaultCodeFormatterConstants;
 import org.eclipse.core.runtime.CoreException;
@@ -22,12 +21,13 @@ import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.omnetpp.cdt.cache.FileCache;
 import org.omnetpp.cdt.cache.DependencyCache;
+import org.omnetpp.cdt.cache.FileCache;
 import org.omnetpp.cdt.cache.IncludeFoldersCache;
 import org.omnetpp.cdt.cache.Index;
 import org.omnetpp.cdt.cache.NewConfigConfigurer;
 import org.omnetpp.cdt.ui.ProjectFeaturesListener;
+import org.omnetpp.common.util.StringUtils;
 import org.osgi.framework.BundleContext;
 
 /**

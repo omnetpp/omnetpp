@@ -14,13 +14,13 @@ import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
 
 import java.util.concurrent.Callable;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.common.command.BasicCommandStack;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.IDList;

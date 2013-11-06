@@ -1,6 +1,6 @@
 package org.omnetpp.common.wizardwizard;
 
-import org.apache.commons.lang.StringUtils;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.common.wizard.ICustomWizardPage;
