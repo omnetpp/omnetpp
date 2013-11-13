@@ -50,8 +50,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
 
 /**
