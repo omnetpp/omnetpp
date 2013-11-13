@@ -8,7 +8,8 @@
 package org.omnetpp.common.virtualtable;
 
 import java.lang.reflect.InvocationTargetException;
-import org.apache.commons.lang.ObjectUtils;
+
+import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ListenerList;
