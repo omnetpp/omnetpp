@@ -7,7 +7,6 @@
 
 package org.omnetpp.simulation.actions;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -27,6 +26,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.Simulation.RunMode;
@@ -136,7 +136,7 @@ public class RunUntilDialog extends TrayDialog {
         simtimeText.selectAll();
         eventNumberText.selectAll();
         moduleText.selectAll();
-        RunMode runMode = RunMode.valueOf(StringUtils.defaultIfEmpty(settings.get("runMode"), "NORMAL"));
+        RunMode runMode = Enum.valueOf(RunMode.class, StringUtils.defaultIfEmpty(settings.get("runMode"), "NORMAL"));
         if (runMode == RunMode.NORMAL)
             normalRunButton.setSelection(true);
         else if (runMode == RunMode.FAST)

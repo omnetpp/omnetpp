@@ -1,7 +1,7 @@
 package org.omnetpp.simulation.ui;
 
-import org.apache.commons.lang.StringUtils;
 import org.omnetpp.common.util.IPredicate;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.model.cMessage;
 import org.omnetpp.simulation.model.cModule;

@@ -7,7 +7,6 @@
 
 package org.omnetpp.simulation.actions;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -23,6 +22,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.omnetpp.common.simulation.SimulationEditorInput;
 import org.omnetpp.common.ui.InputDialog;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.editors.SimulationEditor;
 

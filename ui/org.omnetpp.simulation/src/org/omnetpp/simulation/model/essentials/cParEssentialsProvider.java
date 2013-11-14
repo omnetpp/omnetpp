@@ -5,7 +5,7 @@ import static org.omnetpp.simulation.model.FieldNames.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cPar;
 import org.omnetpp.simulation.ui.IEssentialsProvider;

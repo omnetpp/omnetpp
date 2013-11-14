@@ -1,7 +1,6 @@
 package org.omnetpp.simulation.inspectors;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
@@ -10,6 +9,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.List;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.simulation.canvas.IInspectorContainer;
 import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.model.Field;

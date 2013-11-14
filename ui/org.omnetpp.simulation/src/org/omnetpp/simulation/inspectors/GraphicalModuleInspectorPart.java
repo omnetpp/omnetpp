@@ -565,7 +565,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         for (cModule submodule : submodules.keySet()) {
             submodule.loadIfUnfilled();
             SubmoduleFigureEx submoduleFigure = submodules.get(submodule);
-            submoduleFigure.setDisplayString(scale, getDisplayStringFrom(submodule));
+            submoduleFigure.setDisplayString(scale, getDisplayStringFrom(submodule), null);
             submoduleFigure.setName(showNameLabels ? submodule.getFullName() : null);
             submoduleFigure.setSubmoduleVectorIndex(submodule.getName(), submodule.getVectorSize(), submodule.getIndex());
             submoduleFigure.setImageSizePercentage(imageSizePercentage);

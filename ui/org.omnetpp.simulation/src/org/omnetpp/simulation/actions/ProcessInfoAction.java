@@ -1,6 +1,5 @@
 package org.omnetpp.simulation.actions;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -17,6 +16,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.editors.SimulationEditorContributor;

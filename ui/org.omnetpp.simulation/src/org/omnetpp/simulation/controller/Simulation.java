@@ -15,23 +15,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpMethodRetryHandler;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.auth.BasicScheme;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.Jdk14Logger;
+import org.apache.http.HttpException;
+import org.apache.http.client.fluent.Request;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.json.JSONReader;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.simulation.model.cGate;
 import org.omnetpp.simulation.model.cMessage;
 import org.omnetpp.simulation.model.cModule;
@@ -133,7 +127,7 @@ public class Simulation {
 
     private String urlBase;
     private int timeoutMillis = 30 * 1000;
-    private GetMethod currentHttpMethod;  // ongoing HTTP request, so that we can abort it from another thread when needed
+    private Request currentHttpRequest;  // ongoing HTTP request, so that we can abort it from another thread when needed
     private boolean isOnline;
     private ISimulationCallback simulationCallback;
 
@@ -824,45 +818,28 @@ public class Simulation {
 
     /**
      * A low-level HTTP GET method. Returns the response body.
+     * @throws IOException
      */
     protected String doHttpGet(String url) throws IOException {
-        HttpClient client = new HttpClient(); //XXX we could keep one instance for the whole session
-        client.getParams().setSoTimeout(timeoutMillis);
-        client.getParams().setConnectionManagerTimeout(timeoutMillis);
-        client.getHttpConnectionManager().getParams().setSoTimeout(timeoutMillis);
-        client.getHttpConnectionManager().getParams().setConnectionTimeout(timeoutMillis);
-
-        // do not retry
-        HttpMethodRetryHandler noRetryhandler = new HttpMethodRetryHandler() {
-            public boolean retryMethod(final HttpMethod method, final IOException exception, int executionCount) {
-                return false;
-            }
-        };
-
-        GetMethod method = new GetMethod(url);
-        method.getProxyAuthState().setAuthScheme(new BasicScheme());
-        method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, noRetryhandler);
-        method.setDoAuthentication(true);
-
-        currentHttpMethod = method;
-
         try {
-            int status = client.executeMethod(method);
-            if (status != HttpStatus.SC_OK)
-                throw new HttpException("Received non-\"200 OK\" HTTP status: " + status);
-            return method.getResponseBodyAsString();
+            currentHttpRequest = Request.Get(url);
+            return currentHttpRequest.
+                   connectTimeout(timeoutMillis).
+                   socketTimeout(timeoutMillis).
+                   execute().
+                   returnContent().asString();
         }
         finally {
-            method.releaseConnection();
-            currentHttpMethod = null;
+            currentHttpRequest = null;
         }
     }
 
     public void abortOngoingHttpRequest() {
         // for more info see e.g. http://devtcg.blogspot.hu/2008/07/interruptible-io-example-using.html
-        if (currentHttpMethod != null) {
-            Display.getDefault().getThread().interrupt(); // set interrupted flag for getPageContent() 
-            currentHttpMethod.abort();  // does nothing if already aborted
+        if (currentHttpRequest != null) {
+            Display.getDefault().getThread().interrupt(); // set interrupted flag
+            currentHttpRequest.abort();  // does nothing if already aborted
+            currentHttpRequest = null;
         }
     }
 
