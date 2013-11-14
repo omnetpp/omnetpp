@@ -55,12 +55,12 @@ all: $O/opp_lcg32_seedtool$(EXE_SUFFIX) $O/abspath$(EXE_SUFFIX)
 $O/opp_lcg32_seedtool$(EXE_SUFFIX) : opp_lcg32_seedtool.cc
 	@mkdir -p $O
 	@echo Creating executable: $@
-	$(Q)$(CXX) opp_lcg32_seedtool.cc -o $O/opp_lcg32_seedtool$(EXE_SUFFIX)
+	$(Q)$(CXX) $(CXXFLAGS) opp_lcg32_seedtool.cc -o $O/opp_lcg32_seedtool$(EXE_SUFFIX)
 
 $O/abspath$(EXE_SUFFIX) : abspath.cc
 	@mkdir -p $O
 	@echo Creating executable: $@
-	$(Q)$(CXX) abspath.cc -o $O/abspath$(EXE_SUFFIX)
+	$(Q)$(CXX) $(CXXFLAGS) abspath.cc -o $O/abspath$(EXE_SUFFIX)
 
 depend:
 	$(qecho) Creating dependencies...

@@ -369,6 +369,11 @@ if test "$TOOLCHAIN_NAME" = ""; then
 fi
 
 #----------------------
+# check whether the compiler supports the C++11 standard
+#----------------------
+AC_PROG_CXX_OPTION(-std=c++11, CXXFLAGS="$CXXFLAGS -std=c++11")
+
+#----------------------
 # check and disable stack checking to avoid opplibs.so dependence on glibc 2.4
 #----------------------
 AC_PROG_CXX_OPTION(-fno-stack-protector, CFLAGS_ARCH="$CFLAGS_ARCH -fno-stack-protector")
@@ -1162,7 +1167,7 @@ AC_SUBST(YACC)
 AC_SUBST(LEX)
 AC_SUBST(CC)
 AC_SUBST(CXX)
-AC_SUBST(CPPFLAGS)
+AC_SUBST(CXXFLAGS)
 AC_SUBST(CFLAGS_DEBUG)
 AC_SUBST(CFLAGS_RELEASE)
 AC_SUBST(LDFLAGS)

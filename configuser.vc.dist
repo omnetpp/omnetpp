@@ -334,6 +334,9 @@ AR=lib.exe /nologo
 SHLIB_LD=$(LINK) /dll
 RC=rc.exe
 
+# general options for the C++ compiler
+CXXFLAGS=
+
 # dependency generator (needs Perl!)
 MAKEDEPEND=$(PERL) $(OMNETPP_ROOT)/src/utils/opp_makedep -Y --objsuffix .obj --objdirtree
 
@@ -459,5 +462,3 @@ CONFIGNAME=msvc-$(MODE)
 # Misc settings
 #CFLAGS = $(CFLAGS) -DUSE_NAMESPACE
 #CFLAGS = $(CFLAGS) -DUSE_DOUBLE_SIMTIME
-
-

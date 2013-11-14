@@ -90,7 +90,7 @@ GENERATED_SOURCES= expr.tab.hh expr.tab.cc lex.expryy.cc sim_std_m.cc sim_std_m.
 $O/%.o: %.cc
 	@mkdir -p $O $O/netbuilder $O/parsim
 	$(qecho) "$<"
-	$(Q)$(CXX) -c $(COPTS) -o $@ $<
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -o $@ $<
 
 #
 # Targets

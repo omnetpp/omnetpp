@@ -51,7 +51,7 @@ COPTS= $(COPTS) -DNEDXML_EXPORT
 .SUFFIXES : .cc
 
 {.}.cc{$O}.obj:
-	$(Q)$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+	$(Q)$(CXX) /Fo"$@" $(CXXFLAGS) $(COPTS) /c /Tp $<
 
 #
 # Targets

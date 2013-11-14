@@ -49,7 +49,7 @@ OBJS= $O/appreg.o $O/args.o $O/startup.o $O/evmain.o $O/envirbase.o $O/fsutils.o
 $O/%.o: %.cc
 	@mkdir -p $O
 	$(qecho) "$<"
-	$(Q)$(CXX) -c $(COPTS) -o $@ $<
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -o $@ $<
 
 #
 # Targets

@@ -44,7 +44,7 @@ TKENV_EMBED_SUFFIX=
 .SUFFIXES : .cc .c
 
 {.}.cc{$O}.obj:
-	$(Q)$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+	$(Q)$(CXX) /Fo"$@" $(CXXFLAGS) $(COPTS) /c /Tp $<
 
 {.}.c{$O}.obj:
 	$(Q)$(CXX) /Fo"$@" $(COPTS) /c $<
@@ -71,10 +71,10 @@ $O/$(LIBNAME).dll : $(OBJS) $L
 	-$(Q)copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 1>nul
 
 $O/tkenv.obj : tkenv.cc
-	$(Q)$(CXX) -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR:\=/)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH:\=/)\"" $(COPTS) /c /Fo"$@" /Tp tkenv.cc
+	$(Q)$(CXX) $(CXXFLAGS) -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR:\=/)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH:\=/)\"" $(COPTS) /c /Fo"$@" /Tp tkenv.cc
 
 $O/tkenv-e.obj : tkenv.cc tclcode.cc
-	$(Q)$(CXX) -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH:\=/)\"" $(COPTS) /c /Fo"$@" /Tp tkenv.cc
+	$(Q)$(CXX) $(CXXFLAGS) -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH:\=/)\"" $(COPTS) /c /Fo"$@" /Tp tkenv.cc
 
 tclcode.cc : *.tcl tcl2c.pl
 	$(qecho) Running tcl2c.pl

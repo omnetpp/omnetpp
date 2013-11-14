@@ -50,7 +50,7 @@ GENERATED_SOURCES=nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h \
 $O/%.o: %.cc
 	@mkdir -p $O
 	$(qecho) "$<"
-	$(Q)$(CXX) -c $(COPTS) -o $@ $<
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -o $@ $<
 
 #
 # Targets

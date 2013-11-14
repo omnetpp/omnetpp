@@ -170,14 +170,14 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 {sourcedirs:}{~nmake:}$O/%.{obj}: %.{cc} $(COPTS_FILE)
 {sourcedirs:}{~nmake:}	@$(MKPATH) $(dir $@)
 {sourcedirs:}{~nmake:}	$(qecho) "$<"
-{sourcedirs:}{~nmake:}	$(Q)$(CXX) -c $(COPTS) -o $@ $<
+{sourcedirs:}{~nmake:}	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -o $@ $<
 {sourcedirs:}{nmake:}{lbrace}.{rbrace}.{cc}{lbrace}$O{rbrace}.{obj}:
 {sourcedirs:}{nmake:}	-@md $(O:/=\) 2>nul
-{sourcedirs:}{nmake:}	$(Q)$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
+{sourcedirs:}{nmake:}	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) /Fo"$@" -Tp $<
 {@dir:sourcedirs,bsdir:backslashedsourcedirs}
 {nmake:}{lbrace}{dir}{rbrace}.{cc}{lbrace}$O/{dir}{rbrace}.{obj}:
 {nmake:}	-@md $(O:/=\)\{bsdir} 2>nul
-{nmake:}	$(Q)$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
+{nmake:}	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) /Fo"$@" -Tp $<
 {/@}
 ### Pattern rules for msg files. For gnu make one rule is enough,
 ### nmake needs per-file rules
