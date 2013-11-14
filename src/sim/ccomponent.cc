@@ -566,7 +566,7 @@ void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
     SignalData *data = findOrCreateSignalData(signalID);
     checkNotFiring(signalID, data->listeners);
     if (!data->addListener(listener))
-        throw cRuntimeError(this, "subscribe(): listener already subscribed, signalID=%d", signalID);
+        throw cRuntimeError(this, "subscribe(): listener already subscribed, signalID=%d (%s)", signalID, getSignalName(signalID));
 
     uint64 mask = getSignalMask(signalID);
     signalHasLocalListeners |= mask;
