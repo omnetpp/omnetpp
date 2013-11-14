@@ -4386,6 +4386,41 @@ fi
    save_LIBS=$LIBS
 
    CXXFLAGS=""
+   LIBS="-lc++"
+
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for standard C++ lib with CFLAGS=\"\" LIBS=\"-lc++\"" >&5
+$as_echo_n "checking for standard C++ lib with CFLAGS=\"\" LIBS=\"-lc++\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <iostream>
+int
+main ()
+{
+/**/;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }; stdcpp_ok=yes; SYS_LIBS="-lc++ $SYS_LIBS"
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }; stdcpp_ok=no;
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+   if test $stdcpp_ok = no; then
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS=""
    LIBS="-lstdc++"
 
    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for standard C++ lib with CFLAGS=\"\" LIBS=\"-lstdc++\"" >&5
@@ -4415,6 +4450,7 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
+   fi
    if test $stdcpp_ok = no; then
 
    save_CXXFLAGS=$CXXFLAGS
@@ -4489,7 +4525,7 @@ rm -f core conftest.err conftest.$ac_objext \
    fi
 #fi
 if test $stdcpp_ok = no; then
-   as_fn_error $? "Standard C++ library -lstdc++_s or -lstdc++ or -lcxx or -lcxa not found" "$LINENO" 5
+   as_fn_error $? "Standard C++ library -lstdc++_s or -lstdc++ or -lcxx or -lcxa or -lc++ not found" "$LINENO" 5
 fi
 
 # dlopen()
