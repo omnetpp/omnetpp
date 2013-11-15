@@ -362,7 +362,7 @@ inline long double_to_long(double d)
 // internal
 inline std::string double_to_str(double t)
 {
-#if __STDC_HOSTED__ == 1
+#if __cplusplus >= 201103L
    return std::to_string(t);
 #else
    char buf[32];
