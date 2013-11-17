@@ -18,6 +18,9 @@
 #include "cresultrecorder.h"
 #include "cproperty.h"
 #include "chistogram.h"
+#include "cstringtokenizer.h"
+#include "../common/opp_ctype.h"
+#include "../common/stringutil.h"
 
 NAMESPACE_BEGIN
 
@@ -74,10 +77,50 @@ opp_string_map cResultRecorder::getStatisticAttributesFrom(cProperty *property)
     return result;
 }
 
+static std::string getPart(const char *s, int k)
+{
+    if (k >= 0) {
+        cStringTokenizer tokenizer(s, ":");
+        for (const char *token; (token = tokenizer.nextToken()) != NULL; k--)
+            if (k == 0)
+                return token;
+    }
+    return "";
+}
+
+namespace {
+struct Resolver : public opp_substitutevariables_resolver
+{
+    cResultRecorder *self;
+    Resolver(cResultRecorder *self) : self(self) {}
+    virtual bool isVariableNameChar(char c) {
+        return opp_isalnum(c) || c=='_';
+    }
+    virtual std::string operator()(const std::string& name) {
+        if (name == "name")
+            return self->getStatisticName();
+        else if (name == "mode")
+            return self->getRecordingMode();
+        else if (name == "component")
+            return self->getComponent()->getFullPath();
+        else if (opp_stringbeginswith(name.c_str(), "namePart") && opp_isdigit(name.c_str()[8]))
+            return getPart(self->getStatisticName(), strtol(name.c_str()+8, NULL, 10) - 1);
+        else
+            throw cRuntimeError("unknown variable $%s", name.c_str());
+    }
+};
+}
+
 void cResultRecorder::tweakTitle(opp_string& title)
 {
-    //title = opp_string(getRecordingMode()) + " of " + title;
-    title = title + ", " + getRecordingMode();
+    if (strchr(title.c_str(), '$')) {
+        Resolver resolver(this);
+        title = opp_substitutevariables(title.c_str(), resolver).c_str();
+    }
+    else {
+        // if title didn't make use of any $ macro, just add recording mode after a comma as default
+        title = title + ", " + getRecordingMode();
+    }
 }
 
 //---
