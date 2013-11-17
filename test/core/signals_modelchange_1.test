@@ -49,6 +49,7 @@ network Test
 
 #include <omnetpp.h>
 #include "../lib/noisylistener.h"
+using namespace testlib;
 
 namespace @TESTNAME@ {
 

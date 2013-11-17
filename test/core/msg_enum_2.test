@@ -13,6 +13,7 @@ enum @TESTNAME@_MyEnum
 %includes:
 #include "test_m.h"
 #include "../lib/testutil.h"
+using namespace testlib;
 
 %activity:
 #define PRINT(X) ev << #X << ":" << X << endl

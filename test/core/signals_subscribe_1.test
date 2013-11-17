@@ -3,6 +3,7 @@ Test signal subscribe/unsubscribe
 
 %includes:
 #include "../lib/noisylistener.h"
+using namespace testlib;
 
 %activity:
 

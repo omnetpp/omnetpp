@@ -1,5 +1,7 @@
 #include <omnetpp.h>
 
+namespace testlib {
+	
 class Dump : public cSimpleModule
 {
   protected:
@@ -83,3 +85,4 @@ void Dump::dump(cModule *mod, std::string currentIndent)
     printf("%s}\n", indent);
 }
 
+}
