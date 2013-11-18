@@ -176,6 +176,7 @@ int colorizeImage_cmd(ClientData, Tcl_Interp *, int, const char **);
 int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
 int imageSwapRedAndBlue_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
 int imageMultiplyAlpha_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
+int imageReduceAlpha_cmd(ClientData, Tcl_Interp *, int, const char **);
 int setWindowProperty_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
 
 // command table
@@ -286,7 +287,8 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_colorizeimage",       colorizeImage_cmd      },   // args: <image> ... ret: -
    { "opp_resizeimage",         resizeImage_cmd        },   // args: <destimage> <srcimage>
    { "opp_swapredandblue",      imageSwapRedAndBlue_cmd},   // args: <image>
-   { "opp_multiplyalpha",       imageMultiplyAlpha_cmd},   // args: <image> <alphamultiplier>
+   { "opp_multiplyalpha",       imageMultiplyAlpha_cmd },   // args: <image> <alphamultiplier>
+   { "opp_reducealpha",         imageReduceAlpha_cmd   },   // args: <image> <alphathreshold>
    { "opp_setwindowproperty",   setWindowProperty_cmd  },   // args: <window> <propertyname> <value>
    // end of list
    { NULL, },
@@ -2224,6 +2226,39 @@ int imageMultiplyAlpha_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
            int alpha = pixel[alphaOffset];
            alpha = (int)floor(c * alpha + 0.5);
            alpha = (alpha < 0) ? 0 : (alpha > 255) ? 255 : alpha;
+           pixel[alphaOffset] = alpha;
+       }
+   }
+
+   // Put back the image "onto itself", otherwise the internal
+   // masterPtr->validRegion data item is not updated, and the
+   // image will have no "valid region" and nothing will appear
+   // on the canvas when the icon is drawn.
+   Tk_PhotoHandle imghandle = Tk_FindPhoto(interp, TCLCONST(imgname));
+   Tk_PhotoPutBlock(INTERP_IF_TK85 imghandle, &img, 0, 0, img.width, img.height, TK_PHOTO_COMPOSITE_SET);
+
+   return TCL_OK;
+}
+
+int imageReduceAlpha_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   // cut alpha to 1 bit
+   if (argc!=3) {Tcl_SetResult(interp, TCLCONST("2 args expected"), TCL_STATIC); return TCL_ERROR;}
+   const char *imgname = argv[1];
+   int threshold = atoi(argv[2]);
+
+   Tk_PhotoImageBlock img;
+   if (getTkPhotoImageBlock(interp, imgname, &img)!=TCL_OK) return TCL_ERROR;
+
+   int alphaOffset = img.offset[3];
+
+   for (int y=0; y<img.height; y++)
+   {
+       for (int x=0; x<img.width; x++)
+       {
+           unsigned char *pixel = img.pixelPtr + y*img.pitch + x*img.pixelSize;
+           int alpha = pixel[alphaOffset];
+           alpha = alpha < threshold ? 0 : 255;
            pixel[alphaOffset] = alpha;
        }
    }

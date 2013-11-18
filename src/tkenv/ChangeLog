@@ -1,3 +1,11 @@
+2013-11-15  Andras Varga
+
+	* Fix for bug #684, Module icons are missing in Tkenv on Mac OS X.
+	Apparently the TkAqua library that comes with OS X cannot handle
+	partial transparency (images with alpha pixels different from 0 and 255
+	don't appear on canvases at all). The workaround is to replace
+	alpha values in images with all 0 and 255.
+
 2013-09-25  Andras Varga
 
 	* Fix "Filter window contents" dialog. List of filtered modules could

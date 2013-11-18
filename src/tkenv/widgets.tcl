@@ -53,7 +53,7 @@ catch {set tk::mac::CGAntialiasLimit 1}
 # on Unix/Windows and across different Tk versions.
 #
 proc setupTkOptions {} {
-   global fonts defaultfonts tcl_platform tk_version
+   global fonts defaultfonts icons tcl_platform tk_version
    global tcl_wordchars tcl_nonwordchars
    global HAVE_BLT B2 B3
 
@@ -185,6 +185,11 @@ proc setupTkOptions {} {
        option add *menubar.activeBorderWidth 1
        option add *menubar.activeBackground $activebg
        option add *menubar.activeForeground $activefg
+   }
+
+   # patch icons on OS X
+   foreach key [array names icons] {
+       fixupImageIfNeeded $icons($key)
    }
 
 }

@@ -566,6 +566,7 @@ proc do_load_bitmaps {dir prefix} {
       set img "i[incr bitmap_ctr]$name"
       if [catch {
          image create photo $img -file $f
+         fixupImageIfNeeded $img
          set size "n" ;#default
          regexp -- {^(.*)_(vl|xl|l|n|s|vs|xs)$} $name dummy name size
          set loaded [do_add_bitmap $img $prefix $name $size]
@@ -589,6 +590,13 @@ proc do_load_bitmaps {dir prefix} {
    }
 }
 
+# On recent versions of OS X, images with partial transparency (alpha not 0 or 255)
+# are not displayed at all. Workaround: replace all alpha values with 0 or 255.
+proc fixupImageIfNeeded {img} {
+   if {[string equal [tk windowingsystem] aqua]} {
+       opp_reducealpha $img 128
+   }
+}
 
 # register loaded image
 proc do_add_bitmap {img prefix name size} {
@@ -611,7 +619,6 @@ proc do_add_bitmap {img prefix name size} {
    }
    return 1
 }
-
 
 #===================================================================
 #    LOAD PLUGINS
@@ -781,4 +788,3 @@ proc notifyPlugins {command args} {
         eval $pluginname:$command $args
     }
 }
-
