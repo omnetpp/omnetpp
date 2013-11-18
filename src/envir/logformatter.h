@@ -33,6 +33,7 @@
  * Current simulation state related format characters:
  *  - %e current event number
  *  - %t current simulation time
+ *  - %g current fingerprint if fingerprint verification is enabled in the configuration, otherwise empty
  *  - %v current message or event name
  *  - %a current message or event class name
  *
@@ -107,6 +108,7 @@ class ENVIR_API LogFormatter
         // current simulation state related
         EVENT_NUMBER = 'e',
         SIMULATION_TIME = 't',
+        FINGERPRINT = 'g',
 
         EVENT_OBJECT_NAME = 'v',
         EVENT_OBJECT_CLASSNAME = 'a',

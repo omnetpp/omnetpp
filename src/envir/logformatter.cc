@@ -20,6 +20,7 @@
 #include "cmodule.h"
 #include "ccomponenttype.h"
 #include "cconfiguration.h"
+#include "chasher.h"
 
 LogFormatter::LogFormatter(const char *format)
 {
@@ -76,7 +77,7 @@ void LogFormatter::parseFormat(const char *format)
 
 LogFormatter::FormatDirective LogFormatter::getDirective(char ch)
 {
-    if (strchr("lcetvanmosqNMOSQGRXYZpbdzuxyfiwWHIEUCKJL", ch) == NULL)
+    if (strchr("lcetgvanmosqNMOSQGRXYZpbdzuxyfiwWHIEUCKJL", ch) == NULL)
         throw cRuntimeError("Unknown log format character '%c'", ch);
     return (LogFormatter::FormatDirective) ch;
 }
@@ -133,6 +134,8 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                 stream << simulation.getEventNumber(); break;
             case SIMULATION_TIME:
                 stream << simulation.getSimTime(); break;
+            case FINGERPRINT:
+                if (simulation.getHasher()) stream << simulation.getHasher()->str().c_str(); else lastPartEmpty = true; break;
 
             case EVENT_OBJECT_NAME:
                 if (ev.getCurrentEventName()) stream << ev.getCurrentEventName(); else lastPartEmpty = true; break;
