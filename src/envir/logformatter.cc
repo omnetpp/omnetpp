@@ -121,25 +121,25 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                 if (entry->category) stream << entry->category; else lastPartEmpty = true; break;
 
             // current simulation state related
-            case CURRENT_EVENT_NUMBER:
+            case EVENT_NUMBER:
                 stream << simulation.getEventNumber(); break;
-            case CURRENT_SIMULATION_TIME:
+            case SIMULATION_TIME:
                 stream << simulation.getSimTime(); break;
 
-            case CURRENT_EVENT_NAME:
+            case EVENT_OBJECT_NAME:
                 if (ev.getCurrentEventName()) stream << ev.getCurrentEventName(); else lastPartEmpty = true; break;
-            case CURRENT_EVENT_CLASSNAME:
+            case EVENT_OBJECT_CLASSNAME:
                 if (ev.getCurrentEventClassName()) stream << ev.getCurrentEventClassName(); else lastPartEmpty = true; break;
 
-            case CURRENT_MODULE_NAME:
+            case EVENT_MODULE_NAME:
                 if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getFullName(); else lastPartEmpty = true; break;
-            case CURRENT_MODULE_FULLPATH:
+            case EVENT_MODULE_FULLPATH:
                 if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getFullPath(); else lastPartEmpty = true; break;
-            case CURRENT_MODULE_CLASSNAME:
+            case EVENT_MODULE_CLASSNAME:
                 if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getClassName(); else lastPartEmpty = true; break;
-            case CURRENT_MODULE_NEDTYPE_SIMPLENAME:
+            case EVENT_MODULE_NEDTYPE_SIMPLENAME:
                 if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getComponentType()->getName(); else lastPartEmpty = true; break;
-            case CURRENT_MODULE_NEDTYPE_QUALIFIEDNAME:
+            case EVENT_MODULE_NEDTYPE_QUALIFIEDNAME:
                 if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getComponentType()->getFullName(); else lastPartEmpty = true; break;
 
             case CONTEXT_COMPONENT_NAME:
@@ -208,7 +208,7 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                 stream << getpid(); break;
 
             // compound fields
-            case CURRENT_MODULE: {
+            case EVENT_MODULE: {
                 cModule *mod = ev.getCurrentEventModule();
                 if (mod)
                     stream << "(" << mod->getComponentType()->getName() << ")" << mod->getFullPath();

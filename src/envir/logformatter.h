@@ -36,11 +36,11 @@
  *  - %v current message or event name
  *  - %a current message or event class name
  *
- *  - %n current module name
- *  - %m current module path
- *  - %o current module class name
- *  - %s current module NED type simple name
- *  - %q current module NED type fully qualified name
+ *  - %n module name of current event
+ *  - %m module path of current event
+ *  - %o module class name of current event
+ *  - %s simple NED type name of module of current event
+ *  - %q fully qualified NED type name of module of current event
  *
  *  - %N context component name
  *  - %M context component path
@@ -77,7 +77,7 @@
  *  - %I process id
  *
  * Compound fields
- *  - %U current module (NED type, full path)
+ *  - %U module of current event (NED type, full path)
  *  - %C context component (NED type, full path)
  *  - %K context component, if different from current module (NED type, full path)
  *  - %J source component or object (NED type or class, full path or pointer)
@@ -104,17 +104,17 @@ class ENVIR_API LogFormatter
         LOGCATEGORY = 'c',
 
         // current simulation state related
-        CURRENT_EVENT_NUMBER = 'e',
-        CURRENT_SIMULATION_TIME = 't',
+        EVENT_NUMBER = 'e',
+        SIMULATION_TIME = 't',
 
-        CURRENT_EVENT_NAME = 'v',
-        CURRENT_EVENT_CLASSNAME = 'a',
+        EVENT_OBJECT_NAME = 'v',
+        EVENT_OBJECT_CLASSNAME = 'a',
 
-        CURRENT_MODULE_NAME = 'n',
-        CURRENT_MODULE_FULLPATH = 'm',
-        CURRENT_MODULE_CLASSNAME = 'o',
-        CURRENT_MODULE_NEDTYPE_SIMPLENAME = 's',
-        CURRENT_MODULE_NEDTYPE_QUALIFIEDNAME = 'q',
+        EVENT_MODULE_NAME = 'n',
+        EVENT_MODULE_FULLPATH = 'm',
+        EVENT_MODULE_CLASSNAME = 'o',
+        EVENT_MODULE_NEDTYPE_SIMPLENAME = 's',
+        EVENT_MODULE_NEDTYPE_QUALIFIEDNAME = 'q',
 
         CONTEXT_COMPONENT_NAME = 'N',
         CONTEXT_COMPONENT_FULLPATH = 'M',
@@ -151,7 +151,7 @@ class ENVIR_API LogFormatter
         PROCESSID = 'I',
 
         // compound fields
-        CURRENT_MODULE = 'U',
+        EVENT_MODULE = 'U',
         CONTEXT_COMPONENT = 'C',
         CONTEXT_COMPONENT_IF_DIFFERENT = 'K',
         SOURCE_COMPONENT_OR_OBJECT = 'J',
