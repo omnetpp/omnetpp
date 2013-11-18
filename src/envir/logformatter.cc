@@ -76,7 +76,7 @@ void LogFormatter::parseFormat(const char *format)
 
 LogFormatter::FormatDirective LogFormatter::getDirective(char ch)
 {
-    if (strchr("lcetvanmosqNMOSQGRXYZpbdzuxyfiwWHIUCKJL", ch) == NULL)
+    if (strchr("lcetvanmosqNMOSQGRXYZpbdzuxyfiwWHIEUCKJL", ch) == NULL)
         throw cRuntimeError("Unknown log format character '%c'", ch);
     return (LogFormatter::FormatDirective) ch;
 }
@@ -89,6 +89,14 @@ void LogFormatter::addPart(FormatDirective directive, char *textBegin, char *tex
     if (textBegin && textEnd)
         part.text = std::string(textBegin, textEnd - textBegin);
     formatParts.push_back(part);
+}
+
+bool LogFormatter::usesEventName()
+{
+    for (std::vector<FormatPart>::iterator it = formatParts.begin(); it != formatParts.end(); it++)
+        if (it->directive == EVENT_OBJECT_NAME || it->directive == EVENT_OBJECT)
+            return true;
+    return false;
 }
 
 std::string LogFormatter::formatPrefix(cLogEntry *entry)
@@ -208,6 +216,13 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                 stream << getpid(); break;
 
             // compound fields
+            case EVENT_OBJECT: {
+                if (ev.getCurrentEventName())
+                    stream << "(" << ev.getCurrentEventClassName() << ")" << ev.getCurrentEventName();
+                else
+                    lastPartEmpty = true;
+                break;
+            }
             case EVENT_MODULE: {
                 cModule *mod = ev.getCurrentEventModule();
                 if (mod)

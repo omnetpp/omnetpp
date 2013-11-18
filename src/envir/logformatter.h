@@ -77,6 +77,7 @@
  *  - %I process id
  *
  * Compound fields
+ *  - %E event object (class name, name)
  *  - %U module of current event (NED type, full path)
  *  - %C context component (NED type, full path)
  *  - %K context component, if different from current module (NED type, full path)
@@ -151,6 +152,7 @@ class ENVIR_API LogFormatter
         PROCESSID = 'I',
 
         // compound fields
+        EVENT_OBJECT = 'E',
         EVENT_MODULE = 'U',
         CONTEXT_COMPONENT = 'C',
         CONTEXT_COMPONENT_IF_DIFFERENT = 'K',
@@ -172,6 +174,7 @@ class ENVIR_API LogFormatter
     LogFormatter(const char *format);
 
     void setFormat(const char *format) { formatParts.clear(); parseFormat(format); }
+    bool usesEventName();
     std::string formatPrefix(cLogEntry *entry);
 
   private:

@@ -1631,8 +1631,8 @@ void EnvirBase::setLogLevel(LogLevel logLevel)
 
 void EnvirBase::setLogFormat(const char *logFormat)
 {
-    logFormatUsesEventName = strstr(logFormat, "%m") || strstr(logFormat, "%v");
     logFormatter.setFormat(logFormat);
+    logFormatUsesEventName = logFormatter.usesEventName();
 }
 
 //-------------------------------------------------------------
