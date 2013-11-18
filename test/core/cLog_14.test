@@ -1,0 +1,57 @@
+%description:
+
+Test logging adaptove tab stops (%|)
+
+%inifile: test.ini
+[General]
+network = TestModule
+cmdenv-log-format = "%ts%| %v%| : "
+cmdenv-event-banners = false
+
+%file: test.ned
+
+simple TestModule
+{
+    parameters:
+        @isNetwork;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class TestModule : public cSimpleModule {
+    protected:
+        virtual void initialize() {
+            scheduleAt(0, new cMessage("Foo"));
+            scheduleAt(.9, new cMessage("Bar"));
+            scheduleAt(0.999, new cMessage("Foobar"));
+            scheduleAt(1.0, new cMessage("Fubar"));
+            scheduleAt(1.9999, new cMessage("Bazz"));
+            scheduleAt(2.1, new cMessage("Foo"));
+            scheduleAt(3, new cMessage("Foobar"));
+            scheduleAt(3.23, new cMessage("Foo"));
+            scheduleAt(3.999, new cMessage("Bazz"));
+        }
+        virtual void handleMessage(cMessage *msg) {
+            EV << "Received " << msg->getName() << endl;
+            delete msg;
+        }
+};
+
+Define_Module(TestModule);
+
+}
+
+%contains: stdout
+0s Foo : Received Foo
+0.9s Bar : Received Bar
+0.999s Foobar : Received Foobar
+1s     Fubar  : Received Fubar
+1.9999s Bazz  : Received Bazz
+2.1s    Foo   : Received Foo
+3s      Foobar : Received Foobar
+3.23s   Foo    : Received Foo
+3.999s  Bazz   : Received Bazz

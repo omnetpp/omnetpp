@@ -29,6 +29,8 @@ LogFormatter::LogFormatter(const char *format)
 
 void LogFormatter::parseFormat(const char *format)
 {
+    formatParts.clear();
+    adaptiveTabColumns.clear();
     char *current = const_cast<char *>(format);
     char *previous = current;
     bool conditional = false;
@@ -55,6 +57,10 @@ void LogFormatter::parseFormat(const char *format)
             if (ch == '%') {
                 addPart(CONSTANT_TEXT, previous, current, conditional);
                 conditional = false;
+            }
+            else if (ch == '|') {
+                addPart(ADAPTIVE_TAB, NULL, NULL, conditional);
+                adaptiveTabColumns.push_back(0);
             }
             else if (ch == '?')
                 conditional = true;
@@ -104,6 +110,7 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
 {
     bool lastPartEmpty = true;
     std::stringstream stream;
+    int adaptiveTabIndex = 0;
     for (std::vector<FormatPart>::iterator it = formatParts.begin(); it != formatParts.end(); it++)
     {
         FormatPart& part = *it;
@@ -120,6 +127,17 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                 int count = part.padding - stream.str().size();
                 if (count > 0)
                     stream << std::string(count, ' ');
+                break;
+            }
+            case ADAPTIVE_TAB:
+            {
+                int col = stream.str().size();
+                int& tabCol = adaptiveTabColumns[adaptiveTabIndex];
+                if (tabCol <= col)
+                    tabCol = col;
+                else
+                    stream << std::string(tabCol - col, ' ');
+                adaptiveTabIndex++;
                 break;
             }
 
@@ -278,4 +296,10 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
         }
     }
     return stream.str();
+}
+
+void LogFormatter::resetAdaptiveTabs()
+{
+    for (size_t i = 0; i < adaptiveTabColumns.size(); i++)
+        adaptiveTabColumns[i] = 0;
 }

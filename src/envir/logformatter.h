@@ -90,6 +90,7 @@
  *
  * Padding with spaces:
  *  - %[0-9]+ add spaces until specified column
+ *  - %| adaptive tabstop: add padding until longest prefix seen so far
  *
  * Conditional constant text:
  *  - %? ignore the following constant part if the preceding directive didn't print anything (useful for separators)
@@ -100,6 +101,7 @@ class ENVIR_API LogFormatter
     enum FormatDirective {
         CONSTANT_TEXT,
         PADDING,
+        ADAPTIVE_TAB = '|',
 
         // log statement related
         LOGLEVEL = 'l',
@@ -170,14 +172,16 @@ class ENVIR_API LogFormatter
     };
 
     std::vector<FormatPart> formatParts;
+    std::vector<int> adaptiveTabColumns;
 
   public:
     LogFormatter() { }
     LogFormatter(const char *format);
 
-    void setFormat(const char *format) { formatParts.clear(); parseFormat(format); }
+    void setFormat(const char *format) { parseFormat(format); }
     bool usesEventName();
     std::string formatPrefix(cLogEntry *entry);
+    void resetAdaptiveTabs();
 
   private:
     void parseFormat(const char *format);
