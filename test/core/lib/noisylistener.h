@@ -3,6 +3,8 @@
 
 #include <omnetpp.h>
 
+namespace testlib {
+
 class NoisyListener : public cListener
 {
   protected:
@@ -20,5 +22,7 @@ class NoisyListener : public cListener
     virtual void subscribedTo(cComponent *component, simsignal_t signalID);
     virtual void unsubscribedFrom(cComponent *component, simsignal_t signalID);
 };
+
+}
 
 #endif

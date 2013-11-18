@@ -38,7 +38,7 @@ OBJS= $O/geometry.o $O/graphcomponent.o $O/heapembedding.o $O/startreeembedding.
 $O/%.o: %.cc
 	@mkdir -p $O
 	$(qecho) "$<"
-	$(Q)$(CXX) -c $(COPTS) -o $@ $<
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -o $@ $<
 
 #
 # Targets

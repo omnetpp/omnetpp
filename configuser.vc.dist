@@ -334,6 +334,9 @@ AR=lib.exe /nologo
 SHLIB_LD=$(LINK) /dll
 RC=rc.exe
 
+# general options for the C++ compiler
+CXXFLAGS=
+
 # dependency generator (needs Perl!)
 MAKEDEPEND=$(PERL) $(OMNETPP_ROOT)/src/utils/opp_makedep -Y --objsuffix .obj --objdirtree
 
@@ -430,18 +433,18 @@ CLVER_PROG=perl $(OMNETPP_SRC_DIR)/utils/opp_msvcver.pl $(CXX)
 
 !if "$(TOOLCHAIN_NAME)"!=""
 # respect user's setting
+!elseif [$(CLVER_PROG)] == 18
+TOOLCHAIN_NAME = vc120
 !elseif [$(CLVER_PROG)] == 17
 TOOLCHAIN_NAME = vc110
 !elseif [$(CLVER_PROG)] == 16
 TOOLCHAIN_NAME = vc100
 !elseif [$(CLVER_PROG)] == 15
 TOOLCHAIN_NAME = vc90
-!elseif [$(CLVER_PROG)] == 14
-TOOLCHAIN_NAME = vc80
 !elseif [$(CLVER_PROG)] == -1
 !error Visual C++ compiler $(CXX) not found (not in the PATH?)
 !else
-!error Unsupported Visual C++ compiler version (8.x, 9.x, 10.x and 11.x supported)
+!error Unsupported Visual C++ compiler version (9.x, 10.x, 11.x and 12.x supported)
 !endif
 
 #
@@ -459,5 +462,3 @@ CONFIGNAME=msvc-$(MODE)
 # Misc settings
 #CFLAGS = $(CFLAGS) -DUSE_NAMESPACE
 #CFLAGS = $(CFLAGS) -DUSE_DOUBLE_SIMTIME
-
-

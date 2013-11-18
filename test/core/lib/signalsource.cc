@@ -1,5 +1,7 @@
 #include <omnetpp.h>
 
+namespace testlib {
+
 class SignalSource : public cSimpleModule
 {
   protected:
@@ -128,4 +130,4 @@ void SignalSource::emitSignal(cXMLElement *elem)
     count++;
 }
 
-
+}

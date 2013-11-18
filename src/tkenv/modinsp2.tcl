@@ -115,6 +115,9 @@ proc dispstr_getimage {tags_i tags_is zoomfactor imagesizefactor {alphamult 1}} 
             set img $img2
         }
 
+        # patch image on OS X
+        fixupImageIfNeeded $img
+
         set imagecache($key) $img
     }
     return $imagecache($key)
@@ -163,7 +166,11 @@ proc draw_submod {c submodptr x y name dispstr scaling isplaceholder} {
    set imagesizefactor $inspectordata($c:imagesizefactor)
 
    set alphamult 1
-   if {$isplaceholder} {set alphamult 0.3}
+   if {$isplaceholder} {
+       if {![string equal [tk windowingsystem] aqua]} {  # no transparency on OS X; see proc fixupImageIfNeeded why!
+           set alphamult 0.3
+       }
+   }
 
    if [catch {
        opp_displaystring $dispstr parse tags $submodptr 1
@@ -575,6 +582,9 @@ proc get_cached_image {img zoomfactor x1 y1 x2 y2 targetWidth targetHeight doStr
             # IMPORTANT: (x1,y1,x2,y2) gets ignored -- this proc may only be invoked with the full image!
             set newimg [resizeimage $img $targetWidth $targetHeight]
         }
+
+        # patch image on OS X
+        fixupImageIfNeeded $newimg
 
         set img_cache($key) $newimg
     }

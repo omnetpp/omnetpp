@@ -51,7 +51,7 @@ OBJS += $O/httpserver.o $O/mongoosehttpserver.o $O/mongoose.o  $O/json.o
 $O/%.o: %.cc
 	@mkdir -p $O
 	$(qecho) "$<"
-	$(Q)$(CXX) -c $(COPTS) -o $@ $<
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -o $@ $<
 
 #
 # Targets

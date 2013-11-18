@@ -1,5 +1,7 @@
 #include <omnetpp.h>
 
+namespace testlib {
+
 class Sink : public cSimpleModule
 {
   protected:
@@ -30,4 +32,5 @@ void Sink::finish()
     EV << "Sink finishing, received msgs: " << numPackets << "\n";
 }
 
+}
 

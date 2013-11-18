@@ -412,10 +412,11 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
 
         if (numSignalRefs != 1)
         {
+            // note: filterOrRecorderRef can be NULL, so cannot use its name in the error msg
             if (numSignalRefs == 0)
-                throw cRuntimeError("expression inside %s() does not refer to any signal", filterOrRecorderRef->getName());
+                throw cRuntimeError("expression does not refer to any signal");
             else
-                throw cRuntimeError("expression inside %s() may only refer to one signal", filterOrRecorderRef->getName());
+                throw cRuntimeError("expression may only refer to one signal");
         }
     }
 

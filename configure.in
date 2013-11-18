@@ -370,6 +370,11 @@ if test "$TOOLCHAIN_NAME" = ""; then
 fi
 
 #----------------------
+# check whether the compiler supports the C++11 standard
+#----------------------
+AC_PROG_CXX_OPTION(-std=c++11, CXXFLAGS="$CXXFLAGS -std=c++11")
+
+#----------------------
 # check and disable stack checking to avoid opplibs.so dependence on glibc 2.4
 #----------------------
 AC_PROG_CXX_OPTION(-fno-stack-protector, CFLAGS_ARCH="$CFLAGS_ARCH -fno-stack-protector")
@@ -703,7 +708,10 @@ fi
 #   # check for shared version (on mingw)
 #   OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lstdc++_s, stdcpp_ok, SYS_LIBS="-lstdc++_s $SYS_LIBS")
 #else
-   OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lstdc++, stdcpp_ok, SYS_LIBS="-lstdc++ $SYS_LIBS")
+   OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lc++, stdcpp_ok, SYS_LIBS="-lc++ $SYS_LIBS")
+   if test $stdcpp_ok = no; then
+      OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lstdc++, stdcpp_ok, SYS_LIBS="-lstdc++ $SYS_LIBS")
+   fi
    if test $stdcpp_ok = no; then
       OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lcxx, stdcpp_ok, SYS_LIBS="-lcxx $SYS_LIBS")
    fi
@@ -712,7 +720,7 @@ fi
    fi
 #fi
 if test $stdcpp_ok = no; then
-   AC_MSG_ERROR([Standard C++ library -lstdc++_s or -lstdc++ or -lcxx or -lcxa not found])
+   AC_MSG_ERROR([Standard C++ library -lstdc++_s or -lstdc++ or -lcxx or -lcxa or -lc++ not found])
 fi
 
 # dlopen()
@@ -1163,7 +1171,7 @@ AC_SUBST(YACC)
 AC_SUBST(LEX)
 AC_SUBST(CC)
 AC_SUBST(CXX)
-AC_SUBST(CPPFLAGS)
+AC_SUBST(CXXFLAGS)
 AC_SUBST(CFLAGS_DEBUG)
 AC_SUBST(CFLAGS_RELEASE)
 AC_SUBST(LDFLAGS)

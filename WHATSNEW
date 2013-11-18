@@ -7,8 +7,16 @@ about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 Sim:
 
-    - The source now compiles without any warning using the "-std=c++11 -Wall" 
-      flags.
+  - The source now compiles without any warning using the "-std=c++11 -Wall" 
+    flags.
+
+
+Tools:
+
+  - The configure script now detects whether the compiler supports C++11
+    and adds -std=c++11 to CXXFLAGS.
+
+  - The configure script detects the libc++ standart library, too.
 
 OMNeT++ 4.3.1 (Sept 2013)
 -------------------------

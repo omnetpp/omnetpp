@@ -19,7 +19,7 @@
 #ifndef __SIMUTIL_H
 #define __SIMUTIL_H
 
-#include <string.h>    // for strlen, etc.
+#include <string.h>  // for strlen, etc.
 #include <stdarg.h>  // for va_list
 #include <stdio.h>   // for sprintf
 #include <stdlib.h>  // for gcvt
@@ -365,7 +365,7 @@ inline long double_to_long(double d)
 // internal
 inline std::string double_to_str(double t)
 {
-#if __cplusplus >= 201103L 
+#if __cplusplus >= 201103L
    return std::to_string(t);
 #else
    char buf[32];

@@ -1,5 +1,7 @@
 #include <omnetpp.h>
 
+namespace testlib {
+
 class TestChannel : public cIdealChannel
 {
   private:
@@ -31,3 +33,4 @@ void TestChannel::finish()
     EV << "TestChannel finishing, msgs: " << numPackets << "\n";
 }
 
+}

@@ -51,7 +51,7 @@ all: $O/opp_lcg32_seedtool.exe $O/ln.exe $O/opp_pefileversion.exe
 
 $O/opp_lcg32_seedtool.exe : $O opp_lcg32_seedtool.cc
 	@echo Creating EXE: $@
-	$(Q)$(CXX) $(CFLAGS) /Tp opp_lcg32_seedtool.cc /link /out:$(O:/=\)\opp_lcg32_seedtool.exe
+	$(Q)$(CXX) $(CXXFLAGS) $(CFLAGS) /Tp opp_lcg32_seedtool.cc /link /out:$(O:/=\)\opp_lcg32_seedtool.exe
 
 $O/ln.exe : $O ln.c
 	@echo Creating EXE: $@
@@ -59,7 +59,7 @@ $O/ln.exe : $O ln.c
 
 $O/opp_pefileversion.exe : $O opp_pefileversion.cc
 	@echo Creating EXE: $@
-	$(Q)$(CXX) $(CFLAGS) /Tp opp_pefileversion.cc /link version.lib /out:$(O:/=\)\opp_pefileversion.exe
+	$(Q)$(CXX) $(CXXFLAGS) $(CFLAGS) /Tp opp_pefileversion.cc /link version.lib /out:$(O:/=\)\opp_pefileversion.exe
 
 $O:
 	@md $(O:/=\)

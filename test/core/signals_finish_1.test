@@ -4,6 +4,7 @@ module destructors unsubscribe listeners
 
 %includes:
 #include "../lib/noisylistener.h"
+using namespace testlib;
 
 %activity:
 EV << "Subscribing:\n";

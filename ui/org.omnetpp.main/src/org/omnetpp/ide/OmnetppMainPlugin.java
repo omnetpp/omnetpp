@@ -179,11 +179,21 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
     }
 
     /**
-     * Detects whether oppsim library (built by GCC) is present in the
+     * Detects whether oppsim library (built by GCC or CLANG) is present in the
      * lib directory.
      */
-    public static boolean isOppsimGccLibraryPresent(boolean debug) {
-        String libFileName = getOmnetppLibDir() + "/gcc/liboppsim" + (debug ? "d" : "");
+    public static boolean isOppsimGccOrClangLibraryPresent(boolean debug) {
+        // FIXME hardcoded names! we should rather get the library path from the Makefile.inc
+        // and then use that directory to check for the presence of library files.
+        return isOppsimUnixStyleLibraryPresent("gcc", debug) ||
+                isOppsimUnixStyleLibraryPresent("clang", debug);
+    }
+
+    /**
+     * checks if there exist a unix styled compiled lib under the lib/<libSubDir>
+     */
+    private static boolean isOppsimUnixStyleLibraryPresent(String libSubDir, boolean debug) {
+        String libFileName = getOmnetppLibDir() + "/" + libSubDir + "/liboppsim" + (debug ? "d" : "");
         String extension1, extension2;
         if (Platform.getOS().equals(Platform.OS_WIN32)) {
             // on windows we do not test for dynamic libs (as they are in the bin directory)
@@ -208,10 +218,11 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
      */
     // FIXME should be reviewed once we put all library files under /lib (instead
     // of the current /lib/<toolchain> name.
-    public static  boolean isOppsimVcLibraryPresent(boolean debug) {
+    public static boolean isOppsimVcLibraryPresent(boolean debug) {
         return isOppsimVcXXXLibraryPresent("vc90", debug) ||
                isOppsimVcXXXLibraryPresent("vc100", debug) ||
-               isOppsimVcXXXLibraryPresent("vc110", debug);
+               isOppsimVcXXXLibraryPresent("vc110", debug) ||
+               isOppsimVcXXXLibraryPresent("vc120", debug);
     }
 
     /**

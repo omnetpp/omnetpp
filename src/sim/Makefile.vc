@@ -95,13 +95,13 @@ GENERATED_SOURCES= expr.tab.hh expr.tab.cc lex.expryy.cc sim_std_m.cc sim_std_m.
 .SUFFIXES : .cc
 
 {.}.cc{$O}.obj:
-	$(Q)$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+	$(Q)$(CXX) /Fo"$@" $(CXXFLAGS) $(COPTS) /c /Tp $<
 
 {netbuilder}.cc{$O/netbuilder}.obj:
-	$(Q)$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+	$(Q)$(CXX) /Fo"$@" $(CXXFLAGS) $(COPTS) /c /Tp $<
 
 {parsim}.cc{$O/parsim}.obj:
-	$(Q)$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+	$(Q)$(CXX) /Fo"$@" $(CXXFLAGS) $(COPTS) /c /Tp $<
 
 #
 # Targets

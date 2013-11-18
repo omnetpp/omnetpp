@@ -1,5 +1,7 @@
 #include "noisylistener.h"
 
+namespace testlib {
+
 NoisyListener::NoisyListener()
 {
     EV << "NOISYLISTENER CONSTRUCTOR\n";
@@ -90,4 +92,5 @@ void NoisyListener::unsubscribedFrom(cComponent *component, simsignal_t signalID
     ASSERT(!component->isSubscribed(signalID,this));
 }
 
+}
 

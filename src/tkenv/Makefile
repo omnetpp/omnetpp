@@ -56,7 +56,7 @@ $O/%.o: %.c
 $O/%.o: %.cc
 	@mkdir -p $O
 	$(qecho) "$<"
-	$(Q)$(CXX) -c $(COPTS) -o $@ $<
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -o $@ $<
 
 #
 # Targets
@@ -92,12 +92,12 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 $O/tkenv.o : tkenv.cc
 	@mkdir -p $O
 	$(qecho) "$<"
-	$(Q)$(CXX) -c $(COPTS) -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" tkenv.cc -o $O/tkenv.o
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" tkenv.cc -o $O/tkenv.o
 
 $O/tkenv-e.o : tkenv.cc tclcode.cc
 	@mkdir -p $O
 	$(qecho) "$<"
-	$(Q)$(CXX) -c $(COPTS) -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" tkenv.cc -o $O/tkenv-e.o
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" tkenv.cc -o $O/tkenv-e.o
 
 tclcode.cc: *.tcl tcl2c.pl
 	$(PERL) tcl2c.pl tclcode.cc *.tcl
