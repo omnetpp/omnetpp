@@ -21,6 +21,7 @@
 #include "ccomponenttype.h"
 #include "cconfiguration.h"
 #include "chasher.h"
+#include "simutil.h"
 
 LogFormatter::LogFormatter(const char *format)
 {
@@ -61,6 +62,11 @@ void LogFormatter::parseFormat(const char *format)
             else if (ch == '|') {
                 addPart(ADAPTIVE_TAB, NULL, NULL, conditional);
                 adaptiveTabColumns.push_back(0);
+                conditional = false;
+            }
+            else if (ch == '>') {
+                addPart(INDENT, NULL, NULL, conditional);
+                conditional = false;
             }
             else if (ch == '?')
                 conditional = true;
@@ -70,6 +76,7 @@ void LogFormatter::parseFormat(const char *format)
                 addPart(PADDING, NULL, NULL, conditional);
                 formatParts[formatParts.size() - 1].padding = padding;
                 current = tail - 1;
+                conditional = false;
             }
             else {
                 addPart(getDirective(ch), NULL, NULL, conditional);
@@ -138,6 +145,13 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                 else
                     stream << std::string(tabCol - col, ' ');
                 adaptiveTabIndex++;
+                break;
+            }
+            case INDENT:
+            {
+                int depth = cMethodCallContextSwitcher::getDepth();
+                if (depth > 0)
+                    stream << std::string(2*depth, ' ');
                 break;
             }
 

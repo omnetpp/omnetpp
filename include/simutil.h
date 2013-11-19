@@ -262,10 +262,14 @@ class SIM_API cContextSwitcher
  */
 class SIM_API cMethodCallContextSwitcher : public cContextSwitcher
 {
+  private:
+    static int depth;
+
   public:
     /**
      * Switches context to the given module
      */
+    //TODO store previous frame, __FILE__, __LINE__, __FUNCTION__ too, at least in debug builds?
     cMethodCallContextSwitcher(const cComponent *newContext);
 
     /**
@@ -280,6 +284,11 @@ class SIM_API cMethodCallContextSwitcher : public cContextSwitcher
     void methodCall(const char *methodFmt,...);
     void methodCallSilent(const char *methodFm,...);
     void methodCallSilent();
+
+    /**
+     * Returns the depth of Enter_Method[_Silent] calls
+     */
+    static int getDepth() {return depth;}
 };
 
 /**

@@ -1,12 +1,13 @@
 %description:
 
-Test logging adaptove tab stops (%|)
+Test logging: adaptive tab stops (%|) and fingerprint (%g)
 
 %inifile: test.ini
 [General]
 network = TestModule
-cmdenv-log-format = "%ts%| %v%| : "
+cmdenv-log-format = "%ts%| %v%| %g : "
 cmdenv-event-banners = false
+fingerprint = 0000-0000
 
 %file: test.ned
 
@@ -46,12 +47,13 @@ Define_Module(TestModule);
 }
 
 %contains: stdout
-0s Foo : Received Foo
-0.9s Bar : Received Bar
-0.999s Foobar : Received Foobar
-1s     Fubar  : Received Fubar
-1.9999s Bazz  : Received Bazz
-2.1s    Foo   : Received Foo
-3s      Foobar : Received Foobar
-3.23s   Foo    : Received Foo
-3.999s  Bazz   : Received Bazz
+0s Foo 0000-0001 : Received Foo
+0.9s Bar 30b8-a1a9 : Received Bar
+0.999s Foobar e1ec-149a : Received Foobar
+1s     Fubar  5df4-e505 : Received Fubar
+1.9999s Bazz  62f7-d78b : Received Bazz
+2.1s    Foo   d0ba-9f89 : Received Foo
+3s      Foobar 7268-393a : Received Foobar
+3.23s   Foo    bf43-7c32 : Received Foo
+3.999s  Bazz   a1fe-3ed2 : Received Bazz
+

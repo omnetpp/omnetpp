@@ -398,9 +398,12 @@ cContextSwitcher::~cContextSwitcher()
 
 static va_list dummy_va;
 
+int cMethodCallContextSwitcher::depth = 0;
+
 cMethodCallContextSwitcher::cMethodCallContextSwitcher(const cComponent *newContext) :
   cContextSwitcher(newContext)
 {
+    depth++;
 }
 
 void cMethodCallContextSwitcher::methodCall(const char *methodFmt,...)
@@ -436,6 +439,7 @@ void cMethodCallContextSwitcher::methodCallSilent()
 
 cMethodCallContextSwitcher::~cMethodCallContextSwitcher()
 {
+    depth--;
     cComponent *methodContext = simulation.getContext();
     if (methodContext!=callerContext)
         EVCB.componentMethodEnd();

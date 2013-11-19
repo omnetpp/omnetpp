@@ -1,0 +1,81 @@
+%description:
+
+Test logging: indent (%>) using Ackerman's function
+
+%inifile: test.ini
+[General]
+network = TestModule
+cmdenv-log-format = "%ts%| :%> "
+cmdenv-event-banners = false
+
+%file: test.ned
+
+simple TestModule
+{
+    parameters:
+        @isNetwork;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class TestModule : public cSimpleModule {
+    protected:
+        virtual void initialize() {
+            scheduleAt(0.1, new cMessage("Foo"));
+        }
+        virtual void handleMessage(cMessage *msg) {
+            EV << "Received " << msg->getName() << endl;
+            EV << "Computing...\n";
+            EV << "Result: "<< A(2,2) << "\n";
+            EV << "Done\n";
+            delete msg;
+        }
+        int A (int m, int n) {
+            Enter_Method_Silent();
+            EV_INFO << "A(" << m << "," << n << ")\n";
+            if (m == 0) return n + 1;
+            if (n == 0) return A(m - 1, 1);
+            return A(m - 1, A(m, n - 1));
+        }
+};
+
+Define_Module(TestModule);
+
+}
+
+%contains: stdout
+0.1s : Received Foo
+0.1s : Computing...
+0.1s :   A(2,2)
+0.1s :     A(2,1)
+0.1s :       A(2,0)
+0.1s :         A(1,1)
+0.1s :           A(1,0)
+0.1s :             A(0,1)
+0.1s :           A(0,2)
+0.1s :       A(1,3)
+0.1s :         A(1,2)
+0.1s :           A(1,1)
+0.1s :             A(1,0)
+0.1s :               A(0,1)
+0.1s :             A(0,2)
+0.1s :           A(0,3)
+0.1s :         A(0,4)
+0.1s :     A(1,5)
+0.1s :       A(1,4)
+0.1s :         A(1,3)
+0.1s :           A(1,2)
+0.1s :             A(1,1)
+0.1s :               A(1,0)
+0.1s :                 A(0,1)
+0.1s :               A(0,2)
+0.1s :             A(0,3)
+0.1s :           A(0,4)
+0.1s :         A(0,5)
+0.1s :       A(0,6)
+0.1s : Result: 7
+0.1s : Done
