@@ -1266,57 +1266,26 @@ proc filteredobjectlist_inspect {lb} {
 #----
 
 set helptexts(logformat) {
-Log statement related format characters:
-   - %l log level name
-   - %c log category
-Current simulation state related format characters:
-   - %e current event number
-   - %t current simulation time
-   - %v current message or event name
-   - %a current message or event class name
-   - %n current module name
-   - %m current module path
-   - %o current module class name
-   - %s current module NED type simple name
-   - %q current module NED type fully qualified name
-   - %N context component name
-   - %M context component path
-   - %O context component class name
-   - %S context component NED type simple name
-   - %Q context component NED type fully qualified name
-Simulation run related format characters:
-   - %G config name
-   - %R run number
-   - %X network module class name
-   - %Y network module NED type simple name
-   - %Z network module NED type fully qualified name
-C++ source related (where the log statement appears) format characters:
-   - %p source object pointer
-   - %b source object name
-   - %d source object path
-   - %z source class name
-   - %u source function name
-   - %x source component NED type simple name
-   - %y source component NED type fully qualified
-   - %f source file name
-   - %i source line number
-Operating system related format characters:
-   - %w user time in seconds
-   - %W human readable wall time
-   - %H host name
-   - %I process id
-Compound fields
-   - %U current module (NED type, full path)
-   - %C context component (NED type, full path)
-   - %K context component, if different from current module (NED type, full path)
-   - %J source component or object (NED type or class, full path or pointer)
-   - %L source component or object, if different from context component (NED type or class, full path or pointer)
-Escaping % character:
-   - %% one % character
+Here are some of the format characters that you can use in the log prefix.
+See the manual or the LogFormatter class for the complete list.
+
+General:
+  - %l, %c: log level (INFO, DEBUG, etc) and category string
+  - %e, %t, %g: event number, simulation time, and fingerprint if enabled
+  - %f, %i, %u: source file, line number, and function
+
+Objects:
+  - %E event object (class name, name)
+  - %U module of current event (NED type, full path)
+  - %C context component (NED type, full path)
+  - %K context component, if different from event module (NED type, full path)
+  - %J source component or object (NED type or class, full path or pointer)
+  - %L source component or object, if different from context (NED type or class, full path or pointer)
+
 Padding with spaces:
-   - %[0-9]+ add spaces until specified column
-Conditional constant text:
-   - %? ignore the following constant part if the preceding directive didn't print anything (useful for separators)
+  - %[0-9]+ add spaces until specified column
+  - %| adaptive tabstop: add padding until longest prefix seen so far
+  - %> function call depth times 2-space indentation (see Enter_Method, Enter_Method_Silent)
 }
 
 
