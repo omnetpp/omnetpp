@@ -9,6 +9,7 @@ The following releases are covered:
 
 * Mac OS X 10.7 ('Lion')
 * Mac OS X 10.8 ('Mountain Lion')
+* Mac OS X 10.9 ('Mavericks')
 
 === Installing the Prerequisite Packages
 
@@ -23,6 +24,44 @@ The following releases are covered:
 Installing additional packages will enable more functionality in @OMNETPP@; see
 the 'Additional packages' section at the end of this chapter.
 
+=== Additional steps required on Mac OS X 10.9 or later
+
+The Command line tools package on Mac OS X 10.9 no longer contains `gdb` or `gcc`. 
+To debug from the IDE you have to install MacPorts from 
+http://macports.org and install gdb manually.
+
+After installing MacPorts, install gdb:
+
+    $ sudo port install gdb
+
+To be able to debug with gdb on OS X 10.9 you must sign the `ggdb` executable
+with a self signed certificate:
+
+Start the 'Keychain Access' application.
+
+Open menu `/ Keychain Access / Certificate Assistant / Create a Certificate...`
+
+Choose a name (e.g. gdb-cert), set 'Identity Type' to 'Self Signed Root', set 
+'Certificate Type' to 'Code Signing' and select the 'Let me override defaults'. 
+Click several times on Continue until you get to the Specify a 
+Location For The Certificate screen, then set Keychain to System.
+
+If you can't store the certificate in the 'System' keychain, create it in the 
+'Login' keychain, then export it. You can then import it into the 'System' keychain.
+
+Finally, using the contextual menu for the certificate, select 'Get Info', open 
+the 'Trust' item, and set 'Code Signing' to 'Always Trust'.
+
+You must quit 'Keychain Access' application in order to use the certificate and 
+restart the system.
+
+Now sign the executable:
+
+    $ sudo codesign -s gdb-cert /opt/local/bin/ggdb
+
+After installing the @OMNETPP@ IDE you have to change the name of the 
+executable used for debugging. Open menu / 'Preferences / C++ / Debug / gdb'
+in the IDE and change the executable name from `gdb` to `ggdb`. 
 
 === Downloading and Unpacking @OMNETPP@
 
@@ -178,8 +217,8 @@ nice gui windows and dialogs.
 
 === Starting the IDE
 
-@OMNETPP@ comes with an Eclipse-based Simulation IDE. On Mac OS X 10.7 (Lion) and
-10.8 (Mountain Lion), the Java Runtime must be installed (see prerequisites)
+@OMNETPP@ comes with an Eclipse-based Simulation IDE. On Mac OS X 10.7 (Lion) or later, 
+the Java Runtime must be installed (see prerequisites)
 before you can use the IDE. Start the IDE by typing:
 
     $ @omnetpp@
