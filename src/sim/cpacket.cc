@@ -128,7 +128,7 @@ std::string cPacket::detailedInfo() const
 void cPacket::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     cMessage::parsimPack(buffer);
     buffer->pack(len);
@@ -141,7 +141,7 @@ void cPacket::parsimPack(cCommBuffer *buffer)
 void cPacket::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     ASSERT(sharecount==0);
     cMessage::parsimUnpack(buffer);

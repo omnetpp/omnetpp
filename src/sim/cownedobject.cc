@@ -152,7 +152,7 @@ cOwnedObject& cOwnedObject::operator=(const cOwnedObject& obj)
 void cOwnedObject::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     cNamedObject::parsimPack(buffer);
 #endif
@@ -161,7 +161,7 @@ void cOwnedObject::parsimPack(cCommBuffer *buffer)
 void cOwnedObject::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     cNamedObject::parsimUnpack(buffer);
 #endif

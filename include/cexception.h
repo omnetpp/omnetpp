@@ -87,7 +87,7 @@ class SIM_API cException : public std::exception
     cException(OppErrorCode errcode,...);
 
     /**
-     * To be called like printf(). The error code is set to eCUSTOM.
+     * To be called like printf(). The error code is set to E_CUSTOM.
      */
     cException(const char *msg,...);
 
@@ -101,7 +101,7 @@ class SIM_API cException : public std::exception
     cException(const cObject *where, OppErrorCode errcode,...);
 
     /**
-     * To be called like printf(). The error code is set to eCUSTOM.
+     * To be called like printf(). The error code is set to E_CUSTOM.
      * The 1st arg is the object where the error occurred: its class and
      * object name will be prepended to the message like this: "(cArray)arr".
      */
@@ -229,7 +229,7 @@ class SIM_API cTerminationException : public cException
     cTerminationException(OppErrorCode errcode,...);
 
     /**
-     * To be called like printf(). The error code is set to eCUSTOM.
+     * To be called like printf(). The error code is set to E_CUSTOM.
      */
     cTerminationException(const char *msg,...);
 
@@ -275,7 +275,7 @@ class SIM_API cRuntimeError : public cException
     cRuntimeError(OppErrorCode errcode,...);
 
     /**
-     * To be called like printf(). The error code is set to eCUSTOM.
+     * To be called like printf(). The error code is set to E_CUSTOM.
      */
     cRuntimeError(const char *msg,...);
 
@@ -289,7 +289,7 @@ class SIM_API cRuntimeError : public cException
     cRuntimeError(const cObject *where, OppErrorCode errcode,...);
 
     /**
-     * To be called like printf(). The error code is set to eCUSTOM.
+     * To be called like printf(). The error code is set to E_CUSTOM.
      * The 1st arg is the object where the error occurred: its class and
      * object name will be prepended to the message like this: "(cArray)arr".
      */

@@ -130,7 +130,7 @@ void cObject::parsimUnpack(cCommBuffer *buffer)
 
 void cObject::copyNotSupported() const
 {
-    throw cRuntimeError(this,eCANTCOPY);
+    throw cRuntimeError(this,E_CANTCOPY);
 }
 
 void cObject::forEachChild(cVisitor *v)

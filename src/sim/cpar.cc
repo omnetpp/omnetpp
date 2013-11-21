@@ -185,7 +185,7 @@ bool cPar::isExpression() const
 }
 
 #define TRY(x) \
-    try {x;} catch (std::exception& e) {throw cRuntimeError(ePARAM, getFullName(), e.what());}
+    try {x;} catch (std::exception& e) {throw cRuntimeError(E_PARAM, getFullName(), e.what());}
 
 bool cPar::boolValue() const
 {
@@ -384,7 +384,7 @@ void cPar::convertToConst()
         p->convertToConst(evalcontext);
     }
     catch (std::exception& e) {
-        throw cRuntimeError(ePARAM, getFullName(), e.what());
+        throw cRuntimeError(E_PARAM, getFullName(), e.what());
     }
 
     // maybe replace it with a shared copy

@@ -166,7 +166,7 @@ void cDefaultList::forEachChild(cVisitor *v)
 void cDefaultList::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     cOwnedObject::parsimPack(buffer);
 
@@ -178,7 +178,7 @@ void cDefaultList::parsimPack(cCommBuffer *buffer)
 void cDefaultList::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     cOwnedObject::parsimUnpack(buffer);
     if (size>0)

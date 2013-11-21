@@ -194,7 +194,7 @@ void cMsgPar::forEachChild(cVisitor *v)
 void cMsgPar::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     cOwnedObject::parsimPack(buffer);
 
@@ -267,7 +267,7 @@ void cMsgPar::parsimPack(cCommBuffer *buffer)
 void cMsgPar::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     char *funcname;
     int argc;
@@ -466,7 +466,7 @@ cMsgPar& cMsgPar::setDoubleValue(MathFunc4Args f, double p1, double p2, double p
 cMsgPar& cMsgPar::setDoubleValue(cStatistic *res)
 {
     if (!res)
-        throw cRuntimeError(this,eBADINIT,getTypeName('T'));
+        throw cRuntimeError(this,E_BADINIT,getTypeName('T'));
 
     beforeChange();
     deleteOld();
@@ -532,7 +532,7 @@ void cMsgPar::configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc,
 const char *cMsgPar::stringValue()
 {
     if (typechar!='S')
-        throw cRuntimeError(this,eBADCAST,getTypeName(typechar),getTypeName('S'));
+        throw cRuntimeError(this,E_BADCAST,getTypeName(typechar),getTypeName('S'));
     return ss.sht ? ss.str : ls.str;
 }
 
@@ -549,7 +549,7 @@ bool cMsgPar::boolValue()
     else if (isNumeric())
         return doubleValue()!=0;
     else
-        throw cRuntimeError(this,eBADCAST,getTypeName(typechar),getTypeName('B'));
+        throw cRuntimeError(this,E_BADCAST,getTypeName(typechar),getTypeName('B'));
 }
 
 inline long _double_to_long(double d)
@@ -569,7 +569,7 @@ long cMsgPar::longValue()
     else if (isNumeric())
         return _double_to_long(doubleValue());
     else
-        throw cRuntimeError(this,eBADCAST,getTypeName(typechar),getTypeName('L'));
+        throw cRuntimeError(this,E_BADCAST,getTypeName(typechar),getTypeName('L'));
 }
 
 double cMsgPar::doubleValue()
@@ -587,7 +587,7 @@ double cMsgPar::doubleValue()
                func.argc==3 ? ((MathFunc3Args)func.f)(func.p1,func.p2,func.p3) :
                               ((MathFunc4Args)func.f)(func.p1,func.p2,func.p3,func.p4);
     else
-        throw cRuntimeError(this,eBADCAST,getTypeName(typechar),getTypeName('D'));
+        throw cRuntimeError(this,E_BADCAST,getTypeName(typechar),getTypeName('D'));
 }
 
 void *cMsgPar::pointerValue()
@@ -595,7 +595,7 @@ void *cMsgPar::pointerValue()
     if (typechar=='P')
         return ptr.ptr;
     else
-        throw cRuntimeError(this,eBADCAST,getTypeName(typechar),getTypeName('P'));
+        throw cRuntimeError(this,E_BADCAST,getTypeName(typechar),getTypeName('P'));
 }
 
 cOwnedObject *cMsgPar::getObjectValue()
@@ -603,7 +603,7 @@ cOwnedObject *cMsgPar::getObjectValue()
     if (typechar=='O')
         return obj.obj;
     else
-        throw cRuntimeError(this,eBADCAST,getTypeName(typechar),getTypeName('O'));
+        throw cRuntimeError(this,E_BADCAST,getTypeName(typechar),getTypeName('O'));
 }
 
 cXMLElement *cMsgPar::xmlValue()
@@ -611,7 +611,7 @@ cXMLElement *cMsgPar::xmlValue()
     if (typechar=='M')
         return xmlp.node;
     else
-        throw cRuntimeError(this,eBADCAST,getTypeName(typechar),getTypeName('M'));
+        throw cRuntimeError(this,E_BADCAST,getTypeName(typechar),getTypeName('M'));
 }
 
 bool cMsgPar::isNumeric() const
@@ -777,7 +777,7 @@ bool cMsgPar::parse(const char *text, char tp)
         else
            setDoubleValue(num);
     }
-    else if (strspn(tmp,"+-.eE0123456789")==strlen(tmp)) // double?
+    else if (strspn(tmp,"+-.E_E0123456789")==strlen(tmp)) // double?
     {
         double num;
         int len;
@@ -928,7 +928,7 @@ bool cMsgPar::setfunction(char *text)
 double cMsgPar::getFromstat()
 {
     if (typechar!='T')
-        throw cRuntimeError(this,eBADCAST,getTypeName(typechar),getTypeName('T'));
+        throw cRuntimeError(this,E_BADCAST,getTypeName(typechar),getTypeName('T'));
     return  dtr.res->random();
 }
 

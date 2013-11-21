@@ -67,7 +67,7 @@ cVarHistogram::~cVarHistogram()
 void cVarHistogram::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this, eNOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cHistogramBase::parsimPack(buffer);
 
@@ -80,7 +80,7 @@ void cVarHistogram::parsimPack(cCommBuffer *buffer)
 void cVarHistogram::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this, eNOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cHistogramBase::parsimUnpack(buffer);
 

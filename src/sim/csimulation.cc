@@ -72,7 +72,7 @@ class SIM_API cEndSimulationEvent : public cEvent, public noncopyable
         }
         virtual cEvent *dup() const {copyNotSupported(); return NULL;}
         virtual cObject *getTargetObject() const {return NULL;}
-        virtual void execute() {throw cTerminationException(eSIMTIME);}
+        virtual void execute() {throw cTerminationException(E_SIMTIME);}
 };
 
 cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, false)
@@ -360,7 +360,7 @@ void cSimulation::setupNetwork(cModuleType *network)
 
     checkActive();
     if (!network)
-        throw cRuntimeError(eNONET);
+        throw cRuntimeError(E_NONET);
     if (!network->isNetwork())
         throw cRuntimeError("setupNetwork: `%s' is not a network", network->getFullName());
 

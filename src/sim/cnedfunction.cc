@@ -157,16 +157,16 @@ void cNEDFunction::checkArgs(cNEDValue argv[], int argc)
         char declType = argtypes[i];
         if (declType=='D' || declType=='L') {
             if (argv[i].type != cNEDValue::DBL)
-                throw cRuntimeError(eEBADARGS, getName());
+                throw cRuntimeError(E_EBADARGS, getName());
             if (!opp_isempty(argv[i].getUnit()))
-                throw cRuntimeError(eDIMLESS, getName()); //XXX better msg! only arg i is dimless
+                throw cRuntimeError(E_DIMLESS, getName()); //XXX better msg! only arg i is dimless
         }
         else if (declType=='Q') {
             if (argv[i].type != cNEDValue::DBL)
-                throw cRuntimeError(eEBADARGS, getName());
+                throw cRuntimeError(E_EBADARGS, getName());
         }
         else if (declType!='*' && argv[i].type!=declType) {
-            throw cRuntimeError(eEBADARGS, getName());
+            throw cRuntimeError(E_EBADARGS, getName());
         }
     }
 }

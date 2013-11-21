@@ -1903,7 +1903,7 @@ void EnvirBase::checkTimeLimits()
 {
 #ifdef USE_OMNETPP4x_FINGERPRINTS
     if (opt_simtimelimit!=SIMTIME_ZERO && simulation.getSimTime()>=opt_simtimelimit)
-         throw cTerminationException(eSIMTIME);
+         throw cTerminationException(E_SIMTIME);
 #endif
     if (opt_cputimelimit==0) // no limit
          return;
@@ -1913,7 +1913,7 @@ void EnvirBase::checkTimeLimits()
     gettimeofday(&now, NULL);
     long elapsedsecs = now.tv_sec - laststarted.tv_sec + elapsedtime.tv_sec;
     if (elapsedsecs>=opt_cputimelimit)
-         throw cTerminationException(eREALTIME);
+         throw cTerminationException(E_REALTIME);
 }
 
 void EnvirBase::stoppedWithTerminationException(cTerminationException& e)
@@ -1938,7 +1938,7 @@ void EnvirBase::stoppedWithException(std::exception& e)
 #endif
     if (record_eventlog)
         // TODO: get error code from the exception?
-        eventlogmgr->endRun(true, eCUSTOM, e.what());
+        eventlogmgr->endRun(true, E_CUSTOM, e.what());
 }
 
 void EnvirBase::checkFingerprint()

@@ -66,7 +66,7 @@ void opp_error(const char *msgformat...)
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, msgformat);
-    throw cRuntimeError(eUSER, message);
+    throw cRuntimeError(E_USER, message);
 }
 
 void opp_warning(OppErrorCode errorcode...)

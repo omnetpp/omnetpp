@@ -158,7 +158,7 @@ std::string cMessage::detailedInfo() const
 void cMessage::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     cEvent::parsimPack(buffer);
 
@@ -185,7 +185,7 @@ void cMessage::parsimPack(cCommBuffer *buffer)
 void cMessage::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     cEvent::parsimUnpack(buffer);
 

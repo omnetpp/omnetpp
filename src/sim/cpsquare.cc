@@ -75,7 +75,7 @@ cPSquare::~cPSquare()
 void cPSquare::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     cDensityEstBase::parsimPack(buffer);
 
@@ -92,7 +92,7 @@ void cPSquare::parsimPack(cCommBuffer *buffer)
 void cPSquare::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     cDensityEstBase::parsimUnpack(buffer);
 

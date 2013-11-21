@@ -89,7 +89,7 @@ cProperty& cProperty::operator=(const cProperty& other)
 {
     if (this==&other) return *this;
     if (isLocked())
-        throw cRuntimeError(this, eLOCKED);
+        throw cRuntimeError(this, E_LOCKED);
     cNamedObject::operator=(other);
     copy(other);
     setName(other.getName()); // cNamedObject doesn't do that
@@ -100,7 +100,7 @@ cProperty& cProperty::operator=(const cProperty& other)
 void cProperty::setName(const char *name)
 {
     if (isLocked())
-        throw cRuntimeError(this, eLOCKED);
+        throw cRuntimeError(this, E_LOCKED);
     if (name && name[0]=='@')
         throw cRuntimeError(this,"setName(): property name must be specified without the '@' character");
 
@@ -150,20 +150,20 @@ std::string cProperty::info() const
 
 void cProperty::parsimPack(cCommBuffer *buffer)
 {
-    throw cRuntimeError(this, eCANTPACK);
+    throw cRuntimeError(this, E_CANTPACK);
 }
 
 void cProperty::parsimUnpack(cCommBuffer *buffer)
 {
     if (isLocked())
-        throw cRuntimeError(this, eLOCKED);
-    throw cRuntimeError(this, eCANTPACK);
+        throw cRuntimeError(this, E_LOCKED);
+    throw cRuntimeError(this, E_CANTPACK);
 }
 
 void cProperty::setIndex(const char *index)
 {
     if (isLocked())
-        throw cRuntimeError(this, eLOCKED);
+        throw cRuntimeError(this, E_LOCKED);
 
     stringPool.release(propindex);
     propindex = stringPool.get(index);
@@ -180,7 +180,7 @@ const char *cProperty::getIndex() const
 void cProperty::setIsImplicit(bool b)
 {
     if (isLocked())
-        throw cRuntimeError(this, eLOCKED);
+        throw cRuntimeError(this, E_LOCKED);
     setFlag(FL_ISIMPLICIT, b);
 }
 
@@ -244,7 +244,7 @@ int cProperty::getNumValues(const char *key) const
 void cProperty::setNumValues(const char *key, int size)
 {
     if (isLocked())
-        throw cRuntimeError(this, eLOCKED);
+        throw cRuntimeError(this, E_LOCKED);
     CharPtrVector& v = getValuesVector(key);
     int oldsize = v.size();
 
@@ -276,7 +276,7 @@ const char *cProperty::getValue(const char *key, int index) const
 void cProperty::setValue(const char *key, int index, const char *value)
 {
     if (isLocked())
-        throw cRuntimeError(this, eLOCKED);
+        throw cRuntimeError(this, E_LOCKED);
     if (!value)
         value = "";
     CharPtrVector& v = getValuesVector(key);
@@ -291,7 +291,7 @@ void cProperty::setValue(const char *key, int index, const char *value)
 void cProperty::erase(const char *key)
 {
     if (isLocked())
-        throw cRuntimeError(this, eLOCKED);
+        throw cRuntimeError(this, E_LOCKED);
 
     // erase
     int k = findKey(key);

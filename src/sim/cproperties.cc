@@ -37,7 +37,7 @@ cProperties::~cProperties()
 void cProperties::copy(const cProperties& other)
 {
     if (islocked)
-        throw cRuntimeError(this, eLOCKED);
+        throw cRuntimeError(this, E_LOCKED);
 
     // note: do NOT copy islocked flag
 
@@ -83,7 +83,7 @@ void cProperties::parsimPack(cCommBuffer *buffer)
 void cProperties::parsimUnpack(cCommBuffer *buffer)
 {
     if (islocked)
-        throw cRuntimeError(this, eLOCKED);
+        throw cRuntimeError(this, E_LOCKED);
     // TBD
 }
 
@@ -117,7 +117,7 @@ bool cProperties::getAsBool(const char *name, const char *index) const
 void cProperties::add(cProperty *p)
 {
     if (islocked)
-        throw cRuntimeError(this, eLOCKED);
+        throw cRuntimeError(this, E_LOCKED);
     propv.push_back(p);
     p->setOwner(this);
 }
@@ -125,7 +125,7 @@ void cProperties::add(cProperty *p)
 void cProperties::remove(int k)
 {
     if (islocked)
-        throw cRuntimeError(this, eLOCKED);
+        throw cRuntimeError(this, E_LOCKED);
 
     if (k < 0 || k >= (int)propv.size())
         throw cRuntimeError(this, "property index %d out of range", k);

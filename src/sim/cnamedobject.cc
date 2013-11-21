@@ -139,7 +139,7 @@ void cNamedObject::setNamePooling(bool pooling)
 void cNamedObject::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     buffer->pack(getName());
     buffer->pack(flags);
@@ -149,7 +149,7 @@ void cNamedObject::parsimPack(cCommBuffer *buffer)
 void cNamedObject::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     opp_string tmp;
     buffer->unpack(tmp);

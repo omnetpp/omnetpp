@@ -61,7 +61,7 @@ void cLongParImpl::parsimUnpack(cCommBuffer *buffer)
 
 void cLongParImpl::setBoolValue(bool b)
 {
-    throw cRuntimeError(this, eBADCAST, "bool", "int/long");
+    throw cRuntimeError(this, E_BADCAST, "bool", "int/long");
 }
 
 void cLongParImpl::setLongValue(long l)
@@ -80,12 +80,12 @@ void cLongParImpl::setDoubleValue(double d)
 
 void cLongParImpl::setStringValue(const char *s)
 {
-    throw cRuntimeError(this, eBADCAST, "string", "int/long");
+    throw cRuntimeError(this, E_BADCAST, "string", "int/long");
 }
 
 void cLongParImpl::setXMLValue(cXMLElement *node)
 {
-    throw cRuntimeError(this, eBADCAST, "XML", "int/long");
+    throw cRuntimeError(this, E_BADCAST, "XML", "int/long");
 }
 
 void cLongParImpl::setExpression(cExpression *e)
@@ -97,7 +97,7 @@ void cLongParImpl::setExpression(cExpression *e)
 
 bool cLongParImpl::boolValue(cComponent *) const
 {
-    throw cRuntimeError(this, eBADCAST, "int/long", "bool");
+    throw cRuntimeError(this, E_BADCAST, "int/long", "bool");
 }
 
 long cLongParImpl::longValue(cComponent *context) const
@@ -112,17 +112,17 @@ double cLongParImpl::doubleValue(cComponent *context) const
 
 const char *cLongParImpl::stringValue(cComponent *) const
 {
-    throw cRuntimeError(this, eBADCAST, "int/long", "string");
+    throw cRuntimeError(this, E_BADCAST, "int/long", "string");
 }
 
 std::string cLongParImpl::stdstringValue(cComponent *) const
 {
-    throw cRuntimeError(this, eBADCAST, "int/long", "string");
+    throw cRuntimeError(this, E_BADCAST, "int/long", "string");
 }
 
 cXMLElement *cLongParImpl::xmlValue(cComponent *) const
 {
-    throw cRuntimeError(this, eBADCAST, "int/long", "XML");
+    throw cRuntimeError(this, E_BADCAST, "int/long", "XML");
 }
 
 cExpression *cLongParImpl::getExpression() const

@@ -70,7 +70,7 @@ std::string cStdDev::info() const
 void cStdDev::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     cStatistic::parsimPack(buffer);
     buffer->pack(num_vals);
@@ -84,7 +84,7 @@ void cStdDev::parsimPack(cCommBuffer *buffer)
 void cStdDev::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     cStatistic::parsimUnpack(buffer);
     buffer->unpack(num_vals);
@@ -248,7 +248,7 @@ std::string cWeightedStdDev::info() const
 void cWeightedStdDev::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     cStdDev::parsimPack(buffer);
     buffer->pack(sum_weights);
@@ -261,7 +261,7 @@ void cWeightedStdDev::parsimPack(cCommBuffer *buffer)
 void cWeightedStdDev::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     cStdDev::parsimUnpack(buffer);
     buffer->unpack(sum_weights);

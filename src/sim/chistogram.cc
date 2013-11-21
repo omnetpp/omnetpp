@@ -63,7 +63,7 @@ cHistogramBase::~cHistogramBase()
 void cHistogramBase::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this, eNOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cDensityEstBase::parsimPack(buffer);
     buffer->pack(num_cells);
@@ -76,7 +76,7 @@ void cHistogramBase::parsimPack(cCommBuffer *buffer)
 void cHistogramBase::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this, eNOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cDensityEstBase::parsimUnpack(buffer);
     buffer->pack(num_cells);
@@ -194,7 +194,7 @@ cHistogramBase(name, numcells)
 void cHistogram::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this, eNOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cHistogramBase::parsimPack(buffer);
     buffer->pack(cellsize);
@@ -204,7 +204,7 @@ void cHistogram::parsimPack(cCommBuffer *buffer)
 void cHistogram::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this, eNOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cHistogramBase::parsimUnpack(buffer);
     buffer->unpack(cellsize);

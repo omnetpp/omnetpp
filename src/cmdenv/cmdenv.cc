@@ -297,7 +297,7 @@ void Cmdenv::doRun()
         if (opt_runstoexec.empty())
         {
             int n = cfg->getNumRunsInConfig(opt_configname.c_str());  //note: may throw exception
-        if (n==0) 
+        if (n==0)
         {
                 ev.printfmsg("Error: Configuration `%s' generates 0 runs", opt_configname.c_str());
                 exitcode = 1;
@@ -1625,7 +1625,7 @@ std::string Cmdenv::gets(const char *prompt, const char *defaultReply)
         buffer[strlen(buffer)-1] = '\0'; // chop LF
 
         if (buffer[0]=='\x1b') // ESC?
-           throw cRuntimeError(eCANCEL);
+           throw cRuntimeError(E_CANCEL);
 
         return std::string(buffer);
     }
@@ -1656,7 +1656,7 @@ bool Cmdenv::askyesno(const char *question)
             ::fgets(buffer, 512, stdin);
             buffer[strlen(buffer)-1] = '\0'; // chop LF
             if (buffer[0]=='\x1b') // ESC?
-               throw cRuntimeError(eCANCEL);
+               throw cRuntimeError(E_CANCEL);
             if (opp_toupper(buffer[0])=='Y' && !buffer[1])
                 return true;
             else if (opp_toupper(buffer[0])=='N' && !buffer[1])
@@ -1683,7 +1683,7 @@ std::string Cmdenv::getUserInput(UserInputType type, JsonObject *details)
     // done
     userInput.state = INPSTATE_NONE;
     if (userInput.cancel)
-        throw cRuntimeError(eCANCEL);
+        throw cRuntimeError(E_CANCEL);
     debug("[cmdenv] leaving getUserInput(), reply=\"%s\"\n", userInput.reply.c_str());
     return userInput.reply;
 }

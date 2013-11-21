@@ -24,12 +24,12 @@
 USING_NAMESPACE
 
 
-#define eESTKOFLOW   "Stack overflow"
-#define eESTKUFLOW   "Stack underflow"
-#define eEBADARGS    "Wrong arguments for '%s'"
-#define eBADEXP      "Malformed expression"
-#define eECANTCAST   "Cannot cast to %s"
-#define eDIMLESS     "Error in expression: `%s': argument(s) must be dimensionless"
+#define E_ESTKOFLOW   "Stack overflow"
+#define E_ESTKUFLOW   "Stack underflow"
+#define E_EBADARGS    "Wrong arguments for '%s'"
+#define E_BADEXP      "Malformed expression"
+#define E_ECANTCAST   "Cannot cast to %s"
+#define E_DIMLESS     "Error in expression: `%s': argument(s) must be dimensionless"
 
 CommonStringPool Expression::Elem::stringPool/*("Expression::Elem::stringPool")*/;
 
@@ -155,19 +155,19 @@ Expression::Value Expression::evaluate() const
        {
            case Elem::BOOL:
              if (tos>=stksize-1)
-                 throw opp_runtime_error(eESTKOFLOW);
+                 throw opp_runtime_error(E_ESTKOFLOW);
              stk[++tos] = e.b;
              break;
 
            case Elem::DBL:
              if (tos>=stksize-1)
-                 throw opp_runtime_error(eESTKOFLOW);
+                 throw opp_runtime_error(E_ESTKOFLOW);
              stk[++tos].set(e.d.d, e.d.unit);
              break;
 
            case Elem::STR:
              if (tos>=stksize-1)
-                 throw opp_runtime_error(eESTKOFLOW);
+                 throw opp_runtime_error(E_ESTKOFLOW);
              stk[++tos] = e.s;
              break;
 
@@ -176,11 +176,11 @@ Expression::Value Expression::evaluate() const
              int numargs = e.fu->getNumArgs();
              int argpos = tos-numargs+1; // stk[] index of 1st arg to pass
              if (argpos<0)
-                 throw opp_runtime_error(eESTKUFLOW);
+                 throw opp_runtime_error(E_ESTKUFLOW);
              const char *argtypes = e.fu->getArgTypes();
              for (int i=0; i<numargs; i++)
                  if (stk[argpos+i].type != (argtypes[i]=='L' ? 'D' : argtypes[i]))
-                     throw opp_runtime_error(eEBADARGS,e.fu->getName());
+                     throw opp_runtime_error(E_EBADARGS,e.fu->getName());
              stk[argpos] = e.fu->evaluate(stk+argpos, numargs);
              tos = argpos;
              break;
@@ -191,24 +191,24 @@ Expression::Value Expression::evaluate() const
              {
                  // unary
                  if (tos<0)
-                     throw opp_runtime_error(eESTKUFLOW);
+                     throw opp_runtime_error(E_ESTKUFLOW);
                  switch (e.op)
                  {
                      case NEG:
                          if (stk[tos].type!=Value::DBL)
-                             throw opp_runtime_error(eEBADARGS,"-");
+                             throw opp_runtime_error(E_EBADARGS,"-");
                          stk[tos].dbl = -stk[tos].dbl;
                          break;
                      case NOT:
                          if (stk[tos].type!=Value::BOOL)
-                             throw opp_runtime_error(eEBADARGS,"!");
+                             throw opp_runtime_error(E_EBADARGS,"!");
                          stk[tos].bl = !stk[tos].bl;
                          break;
                      case BIN_NOT:
                          if (stk[tos].type!=Value::DBL)
-                             throw opp_runtime_error(eEBADARGS,"~");
+                             throw opp_runtime_error(E_EBADARGS,"~");
                          if (!opp_isempty(stk[tos].dblunit))
-                             throw opp_runtime_error(eDIMLESS,"~");
+                             throw opp_runtime_error(E_DIMLESS,"~");
                          stk[tos].dbl = ~ulong(stk[tos].dbl);
                          break;
                      default: Assert(false);
@@ -218,10 +218,10 @@ Expression::Value Expression::evaluate() const
              {
                  // tertiary
                  if (tos<2)
-                     throw opp_runtime_error(eESTKUFLOW);
+                     throw opp_runtime_error(E_ESTKUFLOW);
                  // 1st arg must be bool, others 2nd and 3rd can be anything
                  if (stk[tos-2].type!=Value::BOOL)
-                     throw opp_runtime_error(eEBADARGS,""); //XXX fix error msg
+                     throw opp_runtime_error(E_EBADARGS,""); //XXX fix error msg
                  stk[tos-2] = (stk[tos-2].bl ? stk[tos-1] : stk[tos]);
                  tos-=2;
              }
@@ -229,7 +229,7 @@ Expression::Value Expression::evaluate() const
              {
                  // binary
                  if (tos<1)
-                     throw opp_runtime_error(eESTKUFLOW);
+                     throw opp_runtime_error(E_ESTKUFLOW);
                  switch(e.op)
                  {
                    case ADD:
@@ -241,19 +241,19 @@ Expression::Value Expression::evaluate() const
                        else if (stk[tos-1].type==Value::STR && stk[tos].type==Value::STR)
                            stk[tos-1].s = stk[tos-1].s + stk[tos].s;
                        else
-                           throw opp_runtime_error(eEBADARGS,"+");
+                           throw opp_runtime_error(E_EBADARGS,"+");
                        tos--;
                        break;
                    case SUB:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                           throw opp_runtime_error(eEBADARGS,"-");
+                           throw opp_runtime_error(E_EBADARGS,"-");
                        stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].dblunit, stk[tos-1].dblunit);
                        stk[tos-1].dbl = stk[tos-1].dbl - stk[tos].dbl;
                        tos--;
                        break;
                    case MUL:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                           throw opp_runtime_error(eEBADARGS,"*");
+                           throw opp_runtime_error(E_EBADARGS,"*");
                        if (!opp_isempty(stk[tos].dblunit) && !opp_isempty(stk[tos-1].dblunit))
                            throw opp_runtime_error("Multiplying two quantities with units is not supported");
                        stk[tos-1].dbl = stk[tos-1].dbl * stk[tos].dbl;
@@ -263,7 +263,7 @@ Expression::Value Expression::evaluate() const
                        break;
                    case DIV:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                           throw opp_runtime_error(eEBADARGS,"/");
+                           throw opp_runtime_error(E_EBADARGS,"/");
                        // for now we only support num/num, unit/num, and unit/unit if the two units are convertible
                        if (!opp_isempty(stk[tos].dblunit))
                            stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].dblunit, stk[tos-1].dblunit);
@@ -274,75 +274,75 @@ Expression::Value Expression::evaluate() const
                        break;
                    case MOD:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                           throw opp_runtime_error(eEBADARGS,"%");
+                           throw opp_runtime_error(E_EBADARGS,"%");
                        if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
-                           throw opp_runtime_error(eDIMLESS,"%");
+                           throw opp_runtime_error(E_DIMLESS,"%");
                        stk[tos-1].dbl = (double)(ulong(stk[tos-1].dbl) % ulong(stk[tos].dbl));
                        tos--;
                        break;
                    case POW:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                           throw opp_runtime_error(eEBADARGS,"^");
+                           throw opp_runtime_error(E_EBADARGS,"^");
                        if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
-                           throw opp_runtime_error(eDIMLESS,"^");
+                           throw opp_runtime_error(E_DIMLESS,"^");
                        stk[tos-1].dbl = pow(stk[tos-1].dbl, stk[tos].dbl);
                        tos--;
                        break;
                    case AND:
                        if (stk[tos].type!=Value::BOOL || stk[tos-1].type!=Value::BOOL)
-                           throw opp_runtime_error(eEBADARGS,"&&");
+                           throw opp_runtime_error(E_EBADARGS,"&&");
                        stk[tos-1] = stk[tos-1].bl && stk[tos].bl;
                        tos--;
                        break;
                    case OR:
                        if (stk[tos].type!=Value::BOOL || stk[tos-1].type!=Value::BOOL)
-                           throw opp_runtime_error(eEBADARGS,"||");
+                           throw opp_runtime_error(E_EBADARGS,"||");
                        stk[tos-1] = stk[tos-1].bl || stk[tos].bl;
                        tos--;
                        break;
                    case XOR:
                        if (stk[tos].type!=Value::BOOL || stk[tos-1].type!=Value::BOOL)
-                           throw opp_runtime_error(eEBADARGS,"##");
+                           throw opp_runtime_error(E_EBADARGS,"##");
                        stk[tos-1] = stk[tos-1].bl != stk[tos].bl;
                        tos--;
                        break;
                    case BIN_AND:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                           throw opp_runtime_error(eEBADARGS,"&");
+                           throw opp_runtime_error(E_EBADARGS,"&");
                        if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
-                           throw opp_runtime_error(eDIMLESS,"&");
+                           throw opp_runtime_error(E_DIMLESS,"&");
                        stk[tos-1] = (double)(ulong(stk[tos-1].dbl) & ulong(stk[tos].dbl));
                        tos--;
                        break;
                    case BIN_OR:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                           throw opp_runtime_error(eEBADARGS,"|");
+                           throw opp_runtime_error(E_EBADARGS,"|");
                        if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
-                           throw opp_runtime_error(eDIMLESS,"|");
+                           throw opp_runtime_error(E_DIMLESS,"|");
                        stk[tos-1] = (double)(ulong(stk[tos-1].dbl) | ulong(stk[tos].dbl));
                        tos--;
                        break;
                    case BIN_XOR:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                           throw opp_runtime_error(eEBADARGS,"#");
+                           throw opp_runtime_error(E_EBADARGS,"#");
                        if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
-                           throw opp_runtime_error(eDIMLESS,"#");
+                           throw opp_runtime_error(E_DIMLESS,"#");
                        stk[tos-1] = (double)(ulong(stk[tos-1].dbl) ^ ulong(stk[tos].dbl));
                        tos--;
                        break;
                    case LSHIFT:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                           throw opp_runtime_error(eEBADARGS,"<<");
+                           throw opp_runtime_error(E_EBADARGS,"<<");
                        if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
-                           throw opp_runtime_error(eDIMLESS,"<<");
+                           throw opp_runtime_error(E_DIMLESS,"<<");
                        stk[tos-1] = (double)(ulong(stk[tos-1].dbl) << ulong(stk[tos].dbl));
                        tos--;
                        break;
                    case RSHIFT:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                           throw opp_runtime_error(eEBADARGS,">>");
+                           throw opp_runtime_error(E_EBADARGS,">>");
                        if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
-                           throw opp_runtime_error(eDIMLESS,">>");
+                           throw opp_runtime_error(E_DIMLESS,">>");
                        stk[tos-1] = (double)(ulong(stk[tos-1].dbl) >> ulong(stk[tos].dbl));
                        tos--;
                        break;
@@ -355,7 +355,7 @@ Expression::Value Expression::evaluate() const
                                  else if (stk[tos-1].type==Value::BOOL && stk[tos].type==Value::BOOL) \
                                      stk[tos-1] = (stk[tos-1].bl RELATION stk[tos].bl); \
                                  else \
-                                     throw opp_runtime_error(eEBADARGS,#RELATION); \
+                                     throw opp_runtime_error(E_EBADARGS,#RELATION); \
                                  tos--;
                    case EQ:
                        COMPARISON(==);
@@ -377,16 +377,16 @@ Expression::Value Expression::evaluate() const
                        break;
 #undef COMPARISON
                    default:
-                       throw opp_runtime_error(eBADEXP);
+                       throw opp_runtime_error(E_BADEXP);
                  }
              }
              break;
            default:
-             throw opp_runtime_error(eBADEXP);
+             throw opp_runtime_error(E_BADEXP);
        }
     }
     if (tos!=0)
-        throw opp_runtime_error(eBADEXP);
+        throw opp_runtime_error(E_BADEXP);
 
     return stk[tos];
 }
@@ -395,7 +395,7 @@ bool Expression::boolValue()
 {
     Value v = evaluate();
     if (v.type!=Value::BOOL)
-        throw opp_runtime_error(eECANTCAST,"bool");
+        throw opp_runtime_error(E_ECANTCAST,"bool");
     return v.bl;
 }
 
@@ -403,7 +403,7 @@ long Expression::longValue(const char *expectedUnit)
 {
     Value v = evaluate();
     if (v.type!=Value::DBL)
-        throw opp_runtime_error(eECANTCAST,"long");
+        throw opp_runtime_error(E_ECANTCAST,"long");
     return (long)(UnitConversion::convertUnit(v.dbl, v.dblunit, expectedUnit));
 }
 
@@ -411,7 +411,7 @@ double Expression::doubleValue(const char *expectedUnit)
 {
     Value v = evaluate();
     if (v.type!=Value::DBL)
-        throw opp_runtime_error(eECANTCAST,"double");
+        throw opp_runtime_error(E_ECANTCAST,"double");
     return UnitConversion::convertUnit(v.dbl, v.dblunit, expectedUnit);
 }
 
@@ -419,7 +419,7 @@ std::string Expression::stringValue()
 {
     Value v = evaluate();
     if (v.type!=Value::STR)
-        throw opp_runtime_error(eECANTCAST,"string");
+        throw opp_runtime_error(E_ECANTCAST,"string");
     return v.s;
 }
 
@@ -443,14 +443,14 @@ std::string Expression::str() const
            {
                case Elem::BOOL:
                  if (tos>=stksize-1)
-                     throw opp_runtime_error(eESTKOFLOW);
+                     throw opp_runtime_error(E_ESTKOFLOW);
                  strstk[++tos] = (e.b ? "true" : "false");
                  pristk[tos] = 0;
                  break;
                case Elem::DBL:
                  {
                  if (tos>=stksize-1)
-                     throw opp_runtime_error(eESTKOFLOW);
+                     throw opp_runtime_error(E_ESTKOFLOW);
                  char buf[32];
                  sprintf(buf, "%g%s", e.d.d, opp_nulltoempty(e.d.unit));
                  strstk[++tos] = buf;
@@ -459,7 +459,7 @@ std::string Expression::str() const
                  break;
                case Elem::STR:
                  if (tos>=stksize-1)
-                     throw opp_runtime_error(eESTKOFLOW);
+                     throw opp_runtime_error(E_ESTKOFLOW);
                  strstk[++tos] = opp_quotestr(e.s ? e.s : "");
                  pristk[tos] = 0;
                  break;
@@ -468,7 +468,7 @@ std::string Expression::str() const
                  int numargs = e.fu->getNumArgs();
                  int argpos = tos-numargs+1; // strstk[] index of 1st arg to pass
                  if (argpos<0)
-                     throw opp_runtime_error(eESTKUFLOW);
+                     throw opp_runtime_error(E_ESTKUFLOW);
                  strstk[argpos] = e.fu->str(strstk+argpos, numargs);
                  tos = argpos;
                  pristk[tos] = 0;
@@ -478,7 +478,7 @@ std::string Expression::str() const
                  if (e.op==NEG || e.op==NOT || e.op==BIN_NOT)
                  {
                      if (tos<0)
-                         throw opp_runtime_error(eESTKUFLOW);
+                         throw opp_runtime_error(E_ESTKUFLOW);
                      const char *op;
                      switch (e.op)
                      {
@@ -493,7 +493,7 @@ std::string Expression::str() const
                  else if (e.op==IIF)  // conditional (tertiary)
                  {
                      if (tos<2)
-                         throw opp_runtime_error(eESTKUFLOW);
+                         throw opp_runtime_error(E_ESTKUFLOW);
                      strstk[tos-2] = strstk[tos-2] + " ? " + strstk[tos-1] + " : " + strstk[tos];
                      tos-=2;
                      pristk[tos] = 8;
@@ -502,7 +502,7 @@ std::string Expression::str() const
                  {
                      // binary
                      if (tos<1)
-                         throw opp_runtime_error(eESTKUFLOW);
+                         throw opp_runtime_error(E_ESTKUFLOW);
                      int pri;
                      const char *op;
                      switch(e.op)
@@ -559,11 +559,11 @@ std::string Expression::str() const
                  }
                  break;
                default:
-                 throw opp_runtime_error(eBADEXP);
+                 throw opp_runtime_error(E_BADEXP);
            }
         }
         if (tos!=0)
-            throw opp_runtime_error(eBADEXP);
+            throw opp_runtime_error(E_BADEXP);
         return strstk[tos];
     }
     catch (std::exception& e)

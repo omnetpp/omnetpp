@@ -55,7 +55,7 @@ cDensityEstBase::~cDensityEstBase()
 void cDensityEstBase::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this, eNOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cStdDev::parsimPack(buffer);
 
@@ -76,7 +76,7 @@ void cDensityEstBase::parsimPack(cCommBuffer *buffer)
 void cDensityEstBase::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this, eNOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cStdDev::parsimUnpack(buffer);
 

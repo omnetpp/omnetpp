@@ -1213,7 +1213,7 @@ void Tkenv::askParameter(cPar *par, bool unassigned)
                               "Use this value for all similar parameters",
                               par->str().c_str(), reply, useForAll);
         if (!ok)
-            throw cRuntimeError(eCANCEL);
+            throw cRuntimeError(E_CANCEL);
 
         try
         {
@@ -2024,7 +2024,7 @@ std::string Tkenv::gets(const char *promt, const char *defaultReply)
     bool dummy;
     bool ok = inputDialog(title.c_str(), promt, NULL, defaultReply, result, dummy);
     if (!ok)
-        throw cRuntimeError(eCANCEL);
+        throw cRuntimeError(E_CANCEL);
     return result;
 }
 

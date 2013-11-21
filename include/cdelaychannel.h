@@ -46,7 +46,7 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
 
   private:
     // internal: checks whether parameters have been set up
-    void checkState() const  {if (!parametersFinalized()) throw cRuntimeError(this, ePARAMSNOTREADY);}
+    void checkState() const  {if (!parametersFinalized()) throw cRuntimeError(this, E_PARAMSNOTREADY);}
 
   protected:
     // internal: update cached copies of parameters

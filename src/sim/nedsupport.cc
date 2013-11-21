@@ -63,7 +63,7 @@ cNEDValue ParameterRef::evaluate(cComponent *context, cNEDValue args[], int numa
     ASSERT(numargs==0 && context!=NULL);
     cComponent *component = ofParent ? context->getParentModule() : context;
     if (!component)
-        throw cRuntimeError(context,eENOPARENT);
+        throw cRuntimeError(context,E_ENOPARENT);
 
     // In inner types, a "paramName" should be first tried as the enclosing type's
     // parameter, only then as local parameter.
@@ -103,7 +103,7 @@ cNEDValue SiblingModuleParameterRef::evaluate(cComponent *context, cNEDValue arg
     ASSERT(!withModuleIndex || (withModuleIndex && numargs==1 && args[0].type==cNEDValue::DBL));
     cModule *compoundModule = dynamic_cast<cModule *>(ofParent ? context->getParentModule() : context); // this works for channels too
     if (!compoundModule)
-        throw cRuntimeError(context,eENOPARENT);
+        throw cRuntimeError(context,E_ENOPARENT);
     int moduleIndex = withModuleIndex ? (int)args[0] : -1;
     cModule *siblingModule = compoundModule->getSubmodule(moduleName.c_str(), moduleIndex);
     if (!siblingModule) {
@@ -175,7 +175,7 @@ cNEDValue Sizeof::evaluate(cComponent *context, cNEDValue args[], int numargs)
     ASSERT(numargs==0 && context!=NULL);
     cModule *module = dynamic_cast<cModule *>(ofParent ? context->getParentModule() : context);
     if (!module)
-        throw cRuntimeError(context,eENOPARENT);
+        throw cRuntimeError(context,E_ENOPARENT);
 
 //FIXME stuff already implemented at the bottom of this file????
 

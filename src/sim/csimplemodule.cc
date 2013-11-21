@@ -289,7 +289,7 @@ void cSimpleModule::error(const char *fmt...) const
 {
     char buf[BUFLEN];
     VSNPRINTF(buf, BUFLEN, fmt);
-    throw cRuntimeError(eUSER, buf);
+    throw cRuntimeError(E_USER, buf);
 }
 
 #undef BUFLEN
@@ -532,7 +532,7 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
     if (msg==NULL)
         throw cRuntimeError("scheduleAt(): message pointer is NULL");
     if (t<simTime())
-        throw cRuntimeError(eBACKSCHED, msg->getClassName(), msg->getName(), SIMTIME_DBL(t));
+        throw cRuntimeError(E_BACKSCHED, msg->getClassName(), msg->getName(), SIMTIME_DBL(t));
     if (msg->getOwner()!=this)
     {
         if (this!=simulation.getContextModule() && simulation.getContextModule()!=NULL)
@@ -602,7 +602,7 @@ void cSimpleModule::cancelAndDelete(cMessage *msg)
 void cSimpleModule::arrived(cMessage *msg, cGate *ongate, simtime_t t)
 {
     if (isTerminated())
-        throw cRuntimeError(eMODFIN, getFullPath().c_str());
+        throw cRuntimeError(E_MODFIN, getFullPath().c_str());
     if (t < simTime())
         throw cRuntimeError("Causality violation: message `%s' arrival time %s at module `%s' "
                             "is earlier than current simulation time",
@@ -623,9 +623,9 @@ void cSimpleModule::arrived(cMessage *msg, cGate *ongate, simtime_t t)
 void cSimpleModule::wait(simtime_t t)
 {
     if (!usesActivity())
-        throw cRuntimeError(eNORECV);
+        throw cRuntimeError(E_NORECV);
     if (t<SIMTIME_ZERO)
-        throw cRuntimeError(eNEGTIME);
+        throw cRuntimeError(E_NEGTIME);
 
     timeoutmsg->setArrivalTime(simTime()+t);
     EVCB.messageScheduled(timeoutmsg);
@@ -646,9 +646,9 @@ void cSimpleModule::wait(simtime_t t)
 void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
 {
     if (!usesActivity())
-        throw cRuntimeError(eNORECV);
+        throw cRuntimeError(E_NORECV);
     if (t<SIMTIME_ZERO)
-        throw cRuntimeError(eNEGTIME);
+        throw cRuntimeError(E_NEGTIME);
     if (!queue)
         throw cRuntimeError("waitAndEnqueue(): queue pointer is NULL");
 
@@ -676,7 +676,7 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
 cMessage *cSimpleModule::receive()
 {
     if (!usesActivity())
-        throw cRuntimeError(eNORECV);
+        throw cRuntimeError(E_NORECV);
 
     simulation.transferToMain();
     if (stack_cleanup_requested)
@@ -689,9 +689,9 @@ cMessage *cSimpleModule::receive()
 cMessage *cSimpleModule::receive(simtime_t t)
 {
     if (!usesActivity())
-        throw cRuntimeError(eNORECV);
+        throw cRuntimeError(E_NORECV);
     if (t<SIMTIME_ZERO)
-        throw cRuntimeError(eNEGTOUT);
+        throw cRuntimeError(E_NEGTOUT);
 
     timeoutmsg->setArrivalTime(simTime()+t);
     EVCB.messageScheduled(timeoutmsg);
@@ -735,7 +735,7 @@ void cSimpleModule::handleMessage(cMessage *)
 
 void cSimpleModule::endSimulation()
 {
-    throw cTerminationException(eENDSIM);
+    throw cTerminationException(E_ENDSIM);
 }
 
 bool cSimpleModule::snapshot(cObject *object, const char *label)

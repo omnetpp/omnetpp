@@ -70,7 +70,7 @@ std::string cPacketQueue::info() const
 void cPacketQueue::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     cQueue::parsimPack(buffer);
     buffer->pack(bitlength);
@@ -80,7 +80,7 @@ void cPacketQueue::parsimPack(cCommBuffer *buffer)
 void cPacketQueue::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     cQueue::parsimUnpack(buffer);
     buffer->unpack(bitlength);

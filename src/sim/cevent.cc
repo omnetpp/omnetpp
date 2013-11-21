@@ -78,7 +78,7 @@ std::string cEvent::detailedInfo() const
 void cEvent::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     cOwnedObject::parsimPack(buffer);
 
@@ -92,7 +92,7 @@ void cEvent::parsimPack(cCommBuffer *buffer)
 void cEvent::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,E_NOPARSIM);
 #else
     cOwnedObject::parsimUnpack(buffer);
 

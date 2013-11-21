@@ -467,7 +467,7 @@ cGate::Desc *cModule::gateDesc(const char *gatename, char& suffix) const
     return descv + descIndex;
 }
 
-#define ENSURE(x)  if (!(x)) throw cRuntimeError(this, eGATEID, id)
+#define ENSURE(x)  if (!(x)) throw cRuntimeError(this, E_GATEID, id)
 
 cGate *cModule::gate(int id)
 {
@@ -502,7 +502,7 @@ cGate *cModule::gate(int id)
                 throw cRuntimeError(this, "Invalid gate Id %d: size of `%s[]' is only %d, so index %d (deduced from the Id) is out of bounds",
                                           id, desc->nameFor(isOutput ? cGate::OUTPUT : cGate::INPUT), desc->gateSize(), index);
             else
-                throw cRuntimeError(this, eGATEID, id); // id probably just plain garbage
+                throw cRuntimeError(this, E_GATEID, id); // id probably just plain garbage
         }
         return isOutput ? desc->output.gatev[index] : desc->input.gatev[index];
     }

@@ -105,7 +105,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
   private:
     // internal
-    void checkActive()  {if (getActiveSimulation()!=this) throw cRuntimeError(this, eWRONGSIM);}
+    void checkActive()  {if (getActiveSimulation()!=this) throw cRuntimeError(this, E_WRONGSIM);}
 
     // helper for executeEvent()
     void doMessageEvent(cMessage *msg, cSimpleModule *mod);

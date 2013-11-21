@@ -50,7 +50,7 @@ static char buffer2[BUFLEN];
 
 cException::cException() : std::exception()
 {
-    errorcode = eCUSTOM;
+    errorcode = E_CUSTOM;
     storeCtx();
     msg = "n/a";
 }
@@ -67,7 +67,7 @@ cException::cException(const char *msgformat...) : std::exception()
 {
     va_list va;
     va_start(va, msgformat);
-    init(NULL, eCUSTOM, msgformat, va);
+    init(NULL, E_CUSTOM, msgformat, va);
     va_end(va);
 }
 
@@ -83,7 +83,7 @@ cException::cException(const cObject *where, const char *msgformat...) : std::ex
 {
     va_list va;
     va_start(va, msgformat);
-    init(where, eCUSTOM, msgformat, va);
+    init(where, E_CUSTOM, msgformat, va);
     va_end(va);
 }
 
@@ -225,7 +225,7 @@ cTerminationException::cTerminationException(const char *msgformat...)
 {
     va_list va;
     va_start(va, msgformat);
-    init(NULL, eCUSTOM, msgformat, va);
+    init(NULL, E_CUSTOM, msgformat, va);
     va_end(va);
 }
 
@@ -244,7 +244,7 @@ cRuntimeError::cRuntimeError(const char *msgformat...)
 {
     va_list va;
     va_start(va, msgformat);
-    init(NULL, eCUSTOM, msgformat, va);
+    init(NULL, E_CUSTOM, msgformat, va);
     va_end(va);
     breakIntoDebuggerIfRequested();
 }
@@ -262,7 +262,7 @@ cRuntimeError::cRuntimeError(const cObject *where, const char *msgformat...)
 {
     va_list va;
     va_start(va, msgformat);
-    init(where, eCUSTOM, msgformat, va);
+    init(where, E_CUSTOM, msgformat, va);
     va_end(va);
 
     breakIntoDebuggerIfRequested();

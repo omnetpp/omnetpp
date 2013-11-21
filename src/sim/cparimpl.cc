@@ -96,7 +96,7 @@ std::string cParImpl::detailedInfo() const
 
 cParImpl *cParImpl::dup() const
 {
-    throw cRuntimeError(this, eCANTDUP);  // cannot instantiate an abstract class
+    throw cRuntimeError(this, E_CANTDUP);  // cannot instantiate an abstract class
 }
 
 const char *cParImpl::getUnit() const

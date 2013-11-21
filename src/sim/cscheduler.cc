@@ -71,7 +71,7 @@ cEvent *cSequentialScheduler::takeNextEvent()
     {
         cEvent *event = sim->msgQueue.removeFirst();
         if (!event)
-            throw cTerminationException(eENDEDOK);
+            throw cTerminationException(E_ENDEDOK);
         if (event->isStale())
             delete event;
         else
@@ -143,7 +143,7 @@ cEvent *cRealTimeScheduler::takeNextEvent()
 {
     cEvent *event = sim->msgQueue.peekFirst();
     if (!event)
-        throw cTerminationException(eENDEDOK);
+        throw cTerminationException(E_ENDEDOK);
 
     // calculate target time
     simtime_t eventSimtime = event->getArrivalTime();

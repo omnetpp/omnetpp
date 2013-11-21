@@ -74,12 +74,12 @@ class SIM_API cExpression : public cObject
     /**
      * Redefined to "de-inherit" it.
      */
-    virtual void parsimPack(cCommBuffer *buffer)  {throw cRuntimeError(this, eCANTPACK);}
+    virtual void parsimPack(cCommBuffer *buffer)  {throw cRuntimeError(this, E_CANTPACK);}
 
     /**
      * Redefined to "de-inherit" it.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer)  {throw cRuntimeError(this, eCANTPACK);}
+    virtual void parsimUnpack(cCommBuffer *buffer)  {throw cRuntimeError(this, E_CANTPACK);}
     //@}
 
     /** @name Getter functions. Note that overloaded conversion operators also exist. */
