@@ -406,12 +406,6 @@ class cMsgPar extends cOwnedObject
     bool isConstant @getter(isConstant) @group(flags) @hint("Whether the parameter has a constant value");
 }
 
-class cLinkedList extends cOwnedObject
-{
-    @icon(queue);
-    int length @hint("Number of items contained");
-}
-
 class cMessageHeap extends cOwnedObject
 {
     @icon(container);

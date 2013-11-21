@@ -31,7 +31,7 @@ OBJS_STD=\
     $O/ccompoundmodule.obj $O/ccoroutine.obj $O/cdefaultlist.obj $O/cdensityestbase.obj \
     $O/cdetect.obj $O/cdisplaystring.obj $O/cdoubleparimpl.obj $O/cdynamicexpression.obj $O/cenvir.obj \
     $O/cenum.obj $O/cevent.obj $O/cexception.obj $O/cfsm.obj $O/cnedmathfunction.obj $O/cgate.obj $O/chistogram.obj \
-    $O/cksplit.obj $O/clcg32.obj $O/clinkedlist.obj $O/clistener.obj $O/clog.obj $O/clongparimpl.obj $O/cmersennetwister.obj \
+    $O/cksplit.obj $O/clcg32.obj $O/clistener.obj $O/clog.obj $O/clongparimpl.obj $O/cmersennetwister.obj \
     $O/cmessage.obj $O/cpacket.obj $O/cmsgpar.obj $O/cmodule.obj $O/cmessageheap.obj $O/chasher.obj $O/ctimestampedvalue.obj \
     $O/cmatchexpression.obj $O/cpatternmatcher.obj $O/cnullenvir.obj $O/envirext.obj \
     $O/cnedfunction.obj $O/cnedvalue.obj $O/cobject.obj $O/coutvector.obj $O/cnamedobject.obj \
@@ -343,6 +343,7 @@ $O/ccomponent.obj: ccomponent.cc \
   ../../include/cevent.h \
   ../../include/regmacros.h
 $O/ccomponenttype.obj: ccomponenttype.cc \
+  ../common/commondefs.h \
   ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \
   parsim/cplaceholdermod.h \
@@ -365,12 +366,14 @@ $O/ccomponenttype.obj: ccomponenttype.cc \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
   ../../include/clog.h \
+  ../../include/cenum.h \
   ../../include/cmsgpar.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
+  ../common/patternmatcher.h \
   ../../include/errmsg.h \
   ../../include/cdefaultlist.h \
   ../../include/clifetimelistener.h \
@@ -1074,29 +1077,6 @@ $O/clifetimelistener.obj: clifetimelistener.cc \
   ../../include/errmsg.h \
   ../../include/clifetimelistener.h \
   ../../include/platdep/platdefs.h \
-  ../../include/regmacros.h
-$O/clinkedlist.obj: clinkedlist.cc \
-  ../../include/cregistrationlist.h \
-  ../../include/ccommbuffer.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  ../../include/onstartup.h \
-  ../../include/simtime.h \
-  ../../include/simtime_t.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simutil.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/cobject.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h \
-  ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/cownedobject.h \
-  ../../include/cobjectfactory.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/clinkedlist.h \
   ../../include/regmacros.h
 $O/clistener.obj: clistener.cc \
   ../../include/ctimestampedvalue.h \
@@ -2664,6 +2644,7 @@ $O/globals.obj: globals.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/regmacros.h
@@ -2936,7 +2917,6 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/cdetect.h \
   ../../include/cproperty.h \
   ../../include/cparimpl.h \
-  ../../include/clinkedlist.h \
   ../../include/cpatternmatcher.h \
   ../../include/cqueue.h \
   ../../include/cproperties.h \
@@ -3049,7 +3029,6 @@ $O/util.obj: util.cc \
   ../../include/crng.h \
   ../../include/clistener.h \
   ../../include/random.h \
-  ../../include/clinkedlist.h \
   ../../include/cqueue.h \
   ../../include/cchannel.h \
   ../../include/chistogram.h \
@@ -3447,6 +3426,7 @@ $O/parsim/cfilecomm.obj: parsim/cfilecomm.cc \
   ../../include/cvisitor.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
+  ../../include/clog.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   parsim/ccommbufferbase.h \
@@ -3679,6 +3659,7 @@ $O/parsim/cmpicomm.obj: parsim/cmpicomm.cc \
   ../../include/cvisitor.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
+  ../../include/clog.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   parsim/ccommbufferbase.h \
@@ -3735,6 +3716,7 @@ $O/parsim/cnamedpipecomm-win.obj: parsim/cnamedpipecomm-win.cc \
   parsim/cnamedpipecomm.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
+  ../../include/clog.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   parsim/ccommbufferbase.h \
@@ -3768,6 +3750,7 @@ $O/parsim/cnamedpipecomm.obj: parsim/cnamedpipecomm.cc \
   parsim/cnamedpipecomm.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
+  ../../include/clog.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   parsim/ccommbufferbase.h \

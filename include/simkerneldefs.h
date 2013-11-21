@@ -83,14 +83,14 @@
 typedef int64 eventnumber_t;
 
 /**
- * Prototype for functions that are called by some objects (cMsgPar, cLinkedList)
+ * Prototype for functions that are called by some objects (e.g. cMsgPar)
  * to free up user-defined data structures.
  * @ingroup EnumsTypes
  */
 typedef void (*VoidDelFunc)(void *);
 
 /**
- * Prototype for functions that are called by some objects (cMsgPar, cLinkedList)
+ * Prototype for functions that are called by some objects (e.g. cMsgPar)
  * to duplicate user-defined data structures.
  * @ingroup EnumsTypes
  */

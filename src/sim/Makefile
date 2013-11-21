@@ -32,7 +32,7 @@ OBJS_STD=\
     $O/ccompoundmodule.o $O/ccoroutine.o $O/cdefaultlist.o $O/cdensityestbase.o \
     $O/cdetect.o $O/cdisplaystring.o $O/cdoubleparimpl.o $O/cdynamicexpression.o $O/cenvir.o \
     $O/cenum.o $O/cevent.o $O/cexception.o $O/cfsm.o $O/cnedmathfunction.o $O/cgate.o $O/chistogram.o \
-    $O/cksplit.o $O/clcg32.o $O/clinkedlist.o $O/clistener.o $O/clog.o $O/clongparimpl.o $O/cmersennetwister.o \
+    $O/cksplit.o $O/clcg32.o $O/clistener.o $O/clog.o $O/clongparimpl.o $O/cmersennetwister.o \
     $O/cmessage.o $O/cpacket.o $O/cmsgpar.o $O/cmodule.o $O/cmessageheap.o $O/chasher.o $O/ctimestampedvalue.o \
     $O/cmatchexpression.o $O/cpatternmatcher.o $O/cnullenvir.o $O/envirext.o \
     $O/cnedfunction.o $O/cnedvalue.o $O/cobject.o $O/coutvector.o $O/cnamedobject.o \
@@ -1068,29 +1068,6 @@ $O/clifetimelistener.o: clifetimelistener.cc \
   ../../include/cvisitor.h \
   ../../include/platdep/platmisc.h \
   ../../include/simutil.h \
-  ../../include/platdep/intxtypes.h
-$O/clinkedlist.o: clinkedlist.cc \
-  ../../include/regmacros.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/clinkedlist.h \
-  ../../include/cnamedobject.h \
-  ../../include/simtime.h \
-  ../../include/simtime_t.h \
-  ../../include/cregistrationlist.h \
-  ../../include/opp_string.h \
-  ../../include/simkerneldefs.h \
-  ../../include/ccommbuffer.h \
-  ../../include/errmsg.h \
-  ../../include/cownedobject.h \
-  ../../include/onstartup.h \
-  ../../include/cobject.h \
-  ../../include/cstringpool.h \
-  ../../include/globals.h \
-  ../../include/cvisitor.h \
-  ../../include/cobjectfactory.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/simutil.h \
-  ../../include/cexception.h \
   ../../include/platdep/intxtypes.h
 $O/clistener.o: clistener.cc \
   ../../include/regmacros.h \
@@ -2884,7 +2861,6 @@ $O/sim_std_m.o: sim_std_m.cc \
   ../../include/regmacros.h \
   ../../include/ctimestampedvalue.h \
   ../../include/checkandcast.h \
-  ../../include/clinkedlist.h \
   ../../include/cksplit.h \
   ../../include/packing.h \
   ../../include/cdoubleparimpl.h \
@@ -3013,7 +2989,6 @@ $O/task.o: task.cc \
 $O/util.o: util.cc \
   ../../include/regmacros.h \
   ../../include/ctimestampedvalue.h \
-  ../../include/clinkedlist.h \
   ../../include/cksplit.h \
   ../../include/distrib.h \
   ../../include/cexpression.h \

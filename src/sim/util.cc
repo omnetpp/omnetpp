@@ -478,7 +478,6 @@ NAMESPACE_END
 #include "cpacketqueue.h"
 #include "ccompoundmodule.h"
 #include "cfsm.h"
-#include "clinkedlist.h"
 #include "coutvector.h"
 #include "cvarhist.h"
 
@@ -524,8 +523,6 @@ void _sim_dummy_func()
       commod.info();
       cFSM fsm;
       fsm.info();
-      cLinkedList ll;
-      ll.info();
       cOutVector ov;
       ov.info();
       cVarHistogram vh;

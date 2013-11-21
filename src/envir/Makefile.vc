@@ -224,7 +224,7 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/ccomponent.h \
   ../../include/cevent.h \
   ../../include/regmacros.h \
-  log.h
+  logformatter.h
 $O/appreg.obj: appreg.cc \
   ../../include/cregistrationlist.h \
   ../../include/cvisitor.h \
@@ -360,7 +360,7 @@ $O/envirbase.obj: envirbase.cc \
   objectprinter.h \
   ../nedxml/nedxmldefs.h \
   ../../include/regmacros.h \
-  log.h
+  logformatter.h
 $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   envirbase.h \
   intervals.h \
@@ -418,7 +418,7 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   ../../include/cpar.h \
   objectprinter.h \
   ../../include/regmacros.h \
-  log.h
+  logformatter.h
 $O/eventlogwriter.obj: eventlogwriter.cc \
   ../../include/cgate.h \
   ../../include/cenvir.h \
@@ -526,7 +526,7 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   ../../include/cpar.h \
   objectprinter.h \
   ../../include/regmacros.h \
-  log.h
+  logformatter.h
 $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   envirbase.h \
   intervals.h \
@@ -575,7 +575,7 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   ../../include/cpar.h \
   objectprinter.h \
   ../../include/regmacros.h \
-  log.h
+  logformatter.h
 $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   envirbase.h \
   intervals.h \
@@ -620,7 +620,7 @@ $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   ../../include/cpar.h \
   objectprinter.h \
   ../../include/regmacros.h \
-  log.h
+  logformatter.h
 $O/fsutils.obj: fsutils.cc \
   ../../include/simtime.h \
   ../../include/simutil.h \
@@ -709,7 +709,7 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../../include/cpar.h \
   objectprinter.h \
   ../../include/regmacros.h \
-  log.h
+  logformatter.h
 $O/inifilereader.obj: inifilereader.cc \
   ../../include/simtime.h \
   ../../include/simutil.h \
@@ -767,7 +767,7 @@ $O/intervals.obj: intervals.cc \
   ../../include/cpar.h \
   objectprinter.h \
   ../../include/regmacros.h \
-  log.h
+  logformatter.h
 $O/json.obj: json.cc \
   ../../include/simtime.h \
   ../../include/simkerneldefs.h \
@@ -775,15 +775,15 @@ $O/json.obj: json.cc \
   json.h \
   ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h
-$O/log.obj: log.cc \
+$O/logformatter.obj: logformatter.cc \
   ../../include/cgate.h \
   ../../include/cenvir.h \
   ../../include/cconfiguration.h \
   ../../include/cmodule.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
-  ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/simutil.h \
   ../../include/cobject.h \
   ../../include/errmsg.h \
   ../../include/clifetimelistener.h \
@@ -798,11 +798,13 @@ $O/log.obj: log.cc \
   ../../include/cstringpool.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
+  envirdefs.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
+  ../../include/chasher.h \
   ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
   ../../include/cexception.h \
@@ -810,7 +812,7 @@ $O/log.obj: log.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/regmacros.h \
-  log.h
+  logformatter.h
 $O/main.obj: main.cc \
   envirdefs.h
 $O/matchablefield.obj: matchablefield.cc \
@@ -961,7 +963,7 @@ $O/runattributes.obj: runattributes.cc \
   ../../include/cpar.h \
   objectprinter.h \
   ../../include/regmacros.h \
-  log.h
+  logformatter.h
 $O/scenario.obj: scenario.cc \
   ../../include/cconfiguration.h \
   ../../include/simtime.h \
@@ -1183,4 +1185,4 @@ $O/xgridspec.obj: xgridspec.cc \
   ../../include/cpar.h \
   objectprinter.h \
   ../../include/regmacros.h \
-  log.h
+  logformatter.h

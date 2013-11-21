@@ -173,7 +173,6 @@ $O/inspector.obj: inspector.cc \
   ../../include/cdetect.h \
   ../../include/random.h \
   ../../include/cproperty.h \
-  ../../include/clinkedlist.h \
   ../../include/cparimpl.h \
   ../../include/cpatternmatcher.h \
   ../../include/cchannel.h \
@@ -285,7 +284,6 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/cdetect.h \
   ../../include/random.h \
   ../../include/cproperty.h \
-  ../../include/clinkedlist.h \
   ../../include/cparimpl.h \
   ../../include/cpatternmatcher.h \
   ../../include/cchannel.h \
@@ -553,7 +551,6 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/cdetect.h \
   ../../include/random.h \
   ../../include/cproperty.h \
-  ../../include/clinkedlist.h \
   ../../include/cparimpl.h \
   ../../include/cpatternmatcher.h \
   ../../include/cchannel.h \

@@ -160,7 +160,6 @@ set treeicons(cGate)           {gate_vs}
 set treeicons(cPar)            {param_vs}
 set treeicons(cMessage)        {message_vs}
 set treeicons(cQueue)          {queue_vs}
-set treeicons(cLinkedList)     {queue_vs}
 set treeicons(cArray)          {container_vs}
 set treeicons(cMessageHeap)    {container_vs}
 set treeicons(cChannel)        {chan_vs}
