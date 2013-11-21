@@ -180,10 +180,6 @@ static const char *buildInfoFormat =
     ;
 
 static const char *buildOptions = ""
-    #ifdef USE_DOUBLE_SIMTIME
-    " USE_DOUBLE_SIMTIME"
-    #endif
-
     #ifdef WITH_PARSIM
     " WITH_PARSIM"
     #endif

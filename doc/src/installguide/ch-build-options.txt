@@ -76,23 +76,11 @@ WARNING: It is important to completely delete the @OMNETPP@ libraries (`make cle
 and then rebuild them, otherwise it cannot be guaranteed that the created simulations
 are linked against the correct libraries.
 
-The following symbols can be defined for the compiler if you need backward compatibility
-with some older @OMNETPP@ 3.x features. They should be specified on the
-compiler command line using the `-DSYMBOLNAME` syntax. You can add these options to the
-`CFLAGS_RELEASE` or `CFLAGS_DEBUG` variables (e.g. `CFLAGS_RELEASE='-O2 -DNDEBUG=1 -DSYMBOLNAME'`).
+NOTE: The `USE_DOUBLE_SIMTIME` and `WITHOUT_CPACKET` options are no longer supported.
+They were introduced in @OMNETPP@ 4.0 to help porting model code from @OMNETPP@ 3.x,
+and having fulfilled their role, they were removed in @OMNETPP@ 5.0. If you still have
+old model code to port, use @OMNETPP@ 4.x.
 
-`USE_DOUBLE_SIMTIME`::
-  @OMNETPP@ 3.x used `double` as the type for simulation time. In @OMNETPP@ 4.0
-  and later, the simulation time is a fixed-point number based on a 64-bit integer..
-  If you want to work with `double` simulation time for some reason (e.g. during
-  porting an @OMNETPP@ 3.x model), define the `USE_DOUBLE_SIMTIME` symbol for the compiler.
-
-`WITHOUT_CPACKET`::
-  In @OMNETPP@ 3.x, methods and data related to the modeling of network packets
-  were included in the `cMessage` class. For these parameters, @OMNETPP@ 4.x has
-  a new class called `cPacket` (derived from cMessage). If you want get back
-  the old behavior (i.e. having a single `cMessage` class only), define the
-  `WITHOUT_CPACKET` symbol.
 
 === Moving the Installation
 

@@ -15,6 +15,14 @@
       <para>You should be already familiar with the &Omnetpp; 3.x and 4.x before doing the
       migration. We recommend to take a closer look at the 4.x sample simulations before
       proceeding.</para>
+
+      <tip>
+        <para>It is recommended that you use an &Omnetpp; 4.x version for porting, and
+        not 5.0 or later. Several devices that have been introduced in &Omnetpp; 4.0
+        specifically for the purpose of helping the transition from 3.x, such as
+        the ``USE_DOUBLE_SIMTIME'' and ``WITHOUT_CPACKET'' options, have been removed
+        in &Omnetpp; 5.0.</para>
+      </tip>
     </sect1>
 
     <sect1>

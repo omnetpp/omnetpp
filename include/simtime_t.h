@@ -23,46 +23,18 @@
 #include "simkerneldefs.h"
 #include "simtime.h"
 
-//
-// simtime_t: simulation time.
-//
-// There are two sets of definitions. By default, OMNeT++ 4.x uses
-// an int64-based simtime_t (class SimTime), but it also supports
-// "double" which was in use in earlier versions (2.x and 3.x).
-// This "legacy mode" can be enabled at compile-time by #defining
-// USE_DOUBLE_SIMTIME. One use of legacy mode is simulation fingerprint
-// verification across 3.x and 4.x.
-//
-// The macros SIMTIME_STR(), SIMTIME_DBL(), SIMTIME_RAW(), STR_SIMTIME()
-// perform conversions to double and to/from string; they should only be
-// used in models that should be able to compile with USE_DOUBLE_SIMTIME
-// as well. Otherwise, methods of the SimTime class can be directly
-// invoked.
-//
-// It is expected that support for legacy mode (double) will be dropped
-// in some future version, together with the SIMTIME_STR(), etc macros.
-//
 #ifdef USE_DOUBLE_SIMTIME
+#error USE_DOUBLE_SIMTIME is no longer supported -- use OMNeT++ 4.x if you need it
+#endif
 
-// "Legacy" module: double simtime_t
-typedef double         simtime_t;
-typedef double         simtime_t_cref;
-typedef const double   const_simtime_t;
-#define MAXTIME        DBL_MAX
-#define SIMTIME_ZERO   0.0
-#define SIMTIME_STR(t) double_to_str(t).c_str()
-#define SIMTIME_DBL(t) (t)
-#define SIMTIME_RAW(t) (t)
-#define STR_SIMTIME(s) strToSimtime(s)
-#define SIMTIME_TTOA(buf,t) gcvt(t,16,buf)
-
-#else
-
-// OMNeT++ 4.x native mode: int64-based fixed-point simtime_t (class SimTime)
-
+/**
+ * simtime_t: simulation time
+ */
 typedef OPP::SimTime   simtime_t;
+
 typedef const simtime_t& simtime_t_cref;  // in many configurations (e.g. debug builds), it is more efficient to return a SimTime from a function as a const ref than by value
 typedef const double   const_simtime_t;
+
 #define MAXTIME        OPP::SimTime::getMaxTime()
 #define SIMTIME_ZERO   OPP::SimTime::ZERO
 #define SIMTIME_STR(t) ((t).str().c_str())
@@ -70,8 +42,6 @@ typedef const double   const_simtime_t;
 #define SIMTIME_RAW(t) ((t).raw())
 #define STR_SIMTIME(s) OPP::SimTime::parse(s)
 #define SIMTIME_TTOA(buf,t) ((t).str(buf))
-
-#endif  //USE_DOUBLE_SIMTIME
 
 #endif
 

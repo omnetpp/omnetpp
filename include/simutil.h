@@ -37,53 +37,6 @@ class cComponent;
 // logically belongs to csimulation.h but must be here because of declaration order
 enum {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH, CTX_CLEANUP};
 
-
-#ifdef USE_DOUBLE_SIMTIME
-/**
- * @ingroup Functions
- * @defgroup FunctionsSimtime Converting simulation time to and from string form
- */
-//@{
-
-/**
- * Convert a string to simtime_t. The string should have a format
- * similar to the one output by simtimeToStr() (like "1s 34ms").
- *
- * Throws an exception if the whole string cannot be interpreted as time.
- * Empty string (or only spaces+tabs) is also an error.
- */
-SIM_API double strToSimtime(const char *str);
-
-/**
- * Convert the beginning of a string to simtime_t. Similar to
- * strToSimtime(), only it processes the string as far as it
- * can be interpreted as simulation time. It sets the pointer
- * passed to the first character which cannot be interpreted
- * as part of the time string, or to the terminating zero.
- * Empty string is accepted as 0.0.
- *
- * Example: strToSimtime0("3s 600ms x") will return 3.6 and the
- * str pointer will point to the character 'x'.
- */
-SIM_API double strToSimtime0(const char *&str);
-
-/**
- * Converts simulation time (passed as simtime_t) into a
- * string like "0.0120000 (12ms)". If no destination pointer
- * is given, it will use a static buffer.
- */
-SIM_API char *simtimeToStr(double t, char *dest=NULL);
-
-/**
- * Converts simulation time (passed as simtime_t) into a short string
- * form like "12.37ms". If no destination pointer is given, it will use
- * a static buffer.
- */
-SIM_API char *simtimeToStrShort(double t, char *buf=NULL);
-//@}
-#endif //USE_DOUBLE_SIMTIME
-
-
 /**
  * Some of these functions are similar to \<string.h\> functions, with the
  * exception that they also accept NULL pointers as empty strings (""),
