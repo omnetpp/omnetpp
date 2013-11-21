@@ -18,8 +18,10 @@
 %token STRINGLITERAL
 %token OR_ AND_ NOT_   /* note: cannot use %left/%right because of implicit "or" operator */
 
-%language "c"
-%define api.pure
+// for bison 2.3
+%pure_parser
+
+// for bison 3.x
 %lex-param {void *statePtr}
 %parse-param {void *statePtr}
 
@@ -146,11 +148,13 @@ void MatchExpression::parsePattern(std::vector<MatchExpression::Elem>& elems, co
     yyparse(&state);
 }
 
+// for bison 3.x
 void yyerror(void *statePtr, const char *s)
 {
     yyerror(s);
 }
 
+// for bison 2.x
 void yyerror(const char *s)
 {
     // chop newline

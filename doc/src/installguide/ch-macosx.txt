@@ -9,12 +9,13 @@ The following releases are covered:
 
 * Mac OS X 10.7 ('Lion')
 * Mac OS X 10.8 ('Mountain Lion')
+* Mac OS X 10.9 ('Mavericks')
 
 === Installing the Prerequisite Packages
 
  * Install the Java Runtime from http://support.apple.com/kb/DL1572 , because
    OS X does not provide it by default.
- * Install the command line developer tools (gcc, gdb etc.) for OS X from
+ * Install the command line developer tools for OS X from
    http://developer.apple.com/downloads/index.action?=Command%20Line%20Tools
    (you will need a free Apple Developer Account for the download.)
  * Install the quartz project from http://xquartz.macosforge.org/ .
@@ -23,6 +24,48 @@ The following releases are covered:
 Installing additional packages will enable more functionality in @OMNETPP@; see
 the 'Additional packages' section at the end of this chapter.
 
+=== Additional Steps Required on Mac OS X 10.9 or Later
+
+The Command Line Tools package on Mac OS X 10.9 no longer contains gcc and gdb;
+instead it contains the Clang compiler and lldb. (The `gcc` and `g++` commands
+actually run `clang`.) @OMNETPP@ will use Clang automatically. However, the
+@OMNETPP@ IDE can only use gdb as the underlying debugger, but not lldb.
+
+To be able to debug from the IDE, you have to install gdb from MacPorts.
+Alternatively, you can use XCode for debugging.
+
+To do the former, first install MacPorts from http://macports.org. Then
+you can install gdb:
+
+    $ sudo port install gdb
+
+OS X 10.9 requires that you sign the `ggdb` executable with a self-signed
+certificate (or with your own certificate, if you have one.)
+
+Start the 'Keychain Access' application. Choose 'Keychain Access > Certificate
+Assistant > Create a Certificate...' from the menu.
+
+Choose a name (e.g. `gdb-cert`), set 'Identity Type' to 'Self Signed Root', set
+'Certificate Type' to 'Code Signing' and select the 'Let me override defaults'.
+Click several times on 'Continue' until you get to the 'Specify a
+Location For The Certificate' screen, then set 'Keychain' to 'System'.
+
+If you can't store the certificate in the 'System' keychain, create it in the
+'Login' keychain, then export it. You can then import it into the 'System' keychain.
+
+Finally, using the context menu for the certificate, select 'Get Info', open
+the 'Trust' item, and set 'Code Signing' to 'Always Trust'.
+
+You must quit the 'Keychain Access' application in order to use the certificate and
+restart the system.
+
+Now sign the executable:
+
+    $ sudo codesign -s gdb-cert /opt/local/bin/ggdb
+
+After installing the @OMNETPP@ IDE, you have to change the name of the
+executable used for debugging. Go to 'Preferences > C++ > Debug > gdb'
+in the IDE, and change the executable name from `gdb` to `ggdb`.
 
 === Downloading and Unpacking @OMNETPP@
 
@@ -178,8 +221,8 @@ nice gui windows and dialogs.
 
 === Starting the IDE
 
-@OMNETPP@ comes with an Eclipse-based Simulation IDE. On Mac OS X 10.7 (Lion) and
-10.8 (Mountain Lion), the Java Runtime must be installed (see prerequisites)
+@OMNETPP@ comes with an Eclipse-based Simulation IDE. On Mac OS X 10.7 (Lion) or later,
+the Java Runtime must be installed (see prerequisites)
 before you can use the IDE. Start the IDE by typing:
 
     $ @omnetpp@
