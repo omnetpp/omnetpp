@@ -216,13 +216,6 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cModule *getModule(int id) const  {return id>=0 && id<size ? vect[id] : NULL;}
 
     /**
-     * DEPRECATED because it might return null reference; use getModule(int) instead.
-     *
-     * Same as getModule(int), only this returns reference instead of pointer.
-     */
-    _OPPDEPRECATED cModule& operator[](int id) const  {return id>=0 && id<size ? *vect[id] : *(cModule *)NULL;}
-
-    /**
      * Designates the system module, the top-level module in the model.
      */
     void setSystemModule(cModule *p);

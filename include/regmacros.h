@@ -69,37 +69,6 @@ NAMESPACE_BEGIN
   EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cNEDMathFunction(#NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION));)
 
 /**
- * DEPRECATED MACRO. Use Define_NED_Math_Function() instead.
- * @hideinitializer
- */
-#define Define_Function(NAME,ARGCOUNT) \
-  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cNEDMathFunction(#NAME,NAME,ARGCOUNT)); Define_Function_macro(); /*issues deprecation warning*/)
-
-/**
- * DEPRECATED MACRO. Use Define_NED_Math_Function2() instead.
- * @hideinitializer
- */
-#define Define_Function2(NAME,FUNCTION,ARGCOUNT) \
-  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cNEDMathFunction(#NAME,FUNCTION,ARGCOUNT)); Define_Function_macro(); /*issues deprecation warning*/)
-
-/**
- * DEPRECATED MACRO. Use Define_NED_Math_Function3() instead.
- * @hideinitializer
- */
-#define Define_Function3(NAME,ARGCOUNT,CATEGORY,DESCRIPTION) \
-  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cNEDMathFunction(#NAME,NAME,ARGCOUNT,CATEGORY,DESCRIPTION)); Define_Function_macro(); /*issues deprecation warning*/)
-
-/**
- * DEPRECATED MACRO. Use Define_NED_Math_Function4() instead.
- * @hideinitializer
- */
-#define Define_Function4(NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION) \
-  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cNEDMathFunction(#NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION)); Define_Function_macro(); /*issues deprecation warning*/)
-
-// only exists so that Define_FunctionX() macros issue a deprecation warning when used:
-_OPPDEPRECATED inline void Define_Function_macro() {}
-
-/**
  * Registers a C/C++ function for use in NED and ini files; see cNEDFunction.
  * FUNCTION is a pointer to the function, and SIGNATURE is the function's
  * signature in NED.
@@ -191,25 +160,6 @@ _OPPDEPRECATED inline void Define_Function_macro() {}
  */
 #define Register_ClassDescriptor(DESCRIPTORCLASS) \
   EXECUTE_ON_STARTUP(classDescriptors.getInstance()->add(new DESCRIPTORCLASS());)
-
-/**
- * This macro has been previously marked as deprecated, and was removed in \opp 4.0.
- * Existing occurrences should be replaced with a public default constructor. That is,
- *
- * <pre>
- * Module_Class_Members(Foo, cSimpleModule, 0)
- * </pre>
- *
- * should become
- *
- * <pre>
- * public:
- *   Foo() : cSimpleModule() {}
- * </pre>
- *
- * @hideinitializer
- */
-#define Module_Class_Members(CLASSNAME,BASECLASS,STACK)  NOTE_the_deprecated_Module_Class_Members_macro_has_been_removed_in_version_4_0
 
 // internal
 #define __REGISTER_CONFIGOPTION(ID, ARGLIST) \
