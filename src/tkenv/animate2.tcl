@@ -213,6 +213,11 @@ proc doAnimateConcurrent {animlist} {
     # max 100 steps (otherwise animation takes forever!)
     set steps [expr int($maxlen/2)]
     if {$steps>100} {set steps 100}
+    if {[string equal [tk windowingsystem] aqua]}  {
+        # we have max 60 frames/sec due to "update" being vsync'd, so we do fewer $steps to be able to keep up
+        set initialspeed [opp_getsimoption animation_speed]
+        set steps [expr $steps/2.0/$initialspeed]
+    }
     if {$steps==0} {set steps 1}
 
     # calculate dx,dy pairs and assemble commands from it

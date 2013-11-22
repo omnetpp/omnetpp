@@ -212,6 +212,11 @@ proc graphicalModuleWindow:doAnimate {win x1 y1 x2 y2 msgptr {mode thru}} {
 
     # max 100 steps (otherwise animation takes forever!)
     if {$steps>100} {set steps 100}
+    if {[string equal [tk windowingsystem] aqua]}  {
+        # we have max 60 frames/sec due to "update" being vsync'd, so we do fewer $steps to be able to keep up
+        set initialspeed [opp_getsimoption animation_speed]
+        set steps [expr $steps/2.0/$initialspeed]
+    }
     if {$steps==0} {set steps 1}
 
     if {$mode=="beg"} {
