@@ -110,7 +110,7 @@ proc setupTkOptions {} {
 
    # also, work around bug in Tk/Aqua image handling
    if {[string equal [tk windowingsystem] aqua]}  {
-       icons_workaround_for_osx
+       iconsWorkaroundForOSX
    }
 
    # set up wheel support for a few extra widget types
@@ -218,7 +218,7 @@ proc getFirstAvailableFontFamily {preferencelist defaultvalue} {
 # partial transparency to opaque (even though it should keep alpha, and
 # indeed does it on all platforms *except* OS/X -- another funny point.)
 #
-proc icons_workaround_for_osx {} {
+proc iconsWorkaroundForOSX {} {
     global icons
     foreach i [array names icons] {
         set img $icons($i)
@@ -257,27 +257,27 @@ proc wsize {w width height} {
 # apparently gets ignored if the containing dialog is not already focused.
 # In that case, we'll keep trying in the background until we succeed.
 #
-proc setinitialdialogfocus w {
+proc setInitialDialogFocus w {
     focus $w
 
     if {[string equal [tk windowingsystem] aqua]}  {
         set f [focus]
         if {$f != $w} {
-            after 10 [list setinitialdialogfocusifstillexists $w]   ;# retry after 10ms
+            after 10 [list setInitialDialogFocusIfStillExists $w]   ;# retry after 10ms
         }
     }
 }
 
-proc setinitialdialogfocusifstillexists w {
+proc setInitialDialogFocusIfStillExists w {
     if [winfo exist $w] {
-        setinitialdialogfocus $w
+        setInitialDialogFocus $w
     }
 }
 
 #
 # Focuses the given widget. Only exists because of Aqua.
 #
-proc waitforfocus w {
+proc waitForFocus w {
     focus $w
 
     if {[string equal [tk windowingsystem] aqua]}  {
@@ -308,30 +308,30 @@ proc iconbutton {w args} {
         # button
         #eval button $w -bd 1 $args
         eval button $w -bd 1 -relief flat $args
-        bind $w <Enter> [list _changerelief $w flat raised]
-        bind $w <Leave> [list _changerelief $w raised flat]
+        bind $w <Enter> [list _changeRelief $w flat raised]
+        bind $w <Leave> [list _changeRelief $w raised flat]
     }
     return $w
 }
 
-proc _changerelief {w from to} {
+proc _changeRelief {w from to} {
     set current [$w cget -relief]
     if {$current == $from} {
         $w config -relief $to
     }
 }
 
-proc pack_iconbutton {w args} {
+proc packIconButton {w args} {
     eval iconbutton $w $args
     pack $w -anchor n -side left -padx 1 -pady 2
 }
 
-proc rpack_iconbutton {w args} {
+proc rpackIconButton {w args} {
     eval iconbutton $w $args
     pack $w -anchor n -side right -padx 1 -pady 2
 }
 
-proc config_iconbutton {w icon command tooltip} {
+proc iconButton:configure {w icon command tooltip} {
     global help_tips
 
     $w config -image $icon
@@ -355,7 +355,7 @@ proc combo {w list {cmd {}}} {
     return $w
 }
 
-proc comboconfig {w list {cmd {}}} {
+proc combo:configure {w list {cmd {}}} {
     # reconfigures a combo box widget
 
     $w list delete 0 end
@@ -369,7 +369,7 @@ proc comboconfig {w list {cmd {}}} {
     return $w
 }
 
-proc combo-onchange {w cmd} {
+proc combo:onChange {w cmd} {
     $w configure -command "$cmd ;#" -commandstate normal
 }
 
@@ -395,7 +395,7 @@ proc label-entry-help {w label helptext {text {}}} {
     #grid $w.l $w.e $w.h -sticky news
     grid $w.l $w.e -sticky news
     grid columnconfigure $w 1 -weight 1
-    #bind $w.h <Button-1> [list helplabel_showhelp $helptext %X %Y]
+    #bind $w.h <Button-1> [list helplabel:showhelp $helptext %X %Y]
     $w.e insert 0 $text
 }
 
@@ -485,7 +485,7 @@ proc fontcombo:update {w} {
     $w.p configure -text "Actual: $font"
 }
 
-proc fontcombo-set {w oldfont} {
+proc fontcombo:set {w oldfont} {
     # reuse size from existing font
     set size ""
     catch {
@@ -501,7 +501,7 @@ proc fontcombo-set {w oldfont} {
             lappend fontlist [string trim "$family $size"]
         }
     }
-    comboconfig $w $fontlist
+    combo:configure $w $fontlist
     regsub -all "\[{}\]" $oldfont "\"" oldfont
     $w configure -value $oldfont
 }
@@ -618,7 +618,7 @@ proc label-colorchooser {w label {color ""}} {
     entry $w.f.e
     pack $w.f.e -anchor center -expand 1 -fill x -side left -padx 2 -pady 2
 
-    button $w.f.b -relief groove -command [list colorchooser:setColor $w.f.b $w.f.e [winfo toplevel $w]] -width 6
+    button $w.f.b -relief groove -command [list colorChooser:setColor $w.f.b $w.f.e [winfo toplevel $w]] -width 6
     pack $w.f.b -anchor c -expand 0 -fill none -side left -padx 2 -pady 2
 
     $w.f.e insert 0 $color
@@ -628,7 +628,7 @@ proc label-colorchooser {w label {color ""}} {
     }
 }
 
-proc colorchooser:setColor {b e pwin} {
+proc colorChooser:setColor {b e pwin} {
     global gned
 
     set color [tk_chooseColor -parent $pwin]
@@ -655,11 +655,11 @@ proc labelwithhelp {w text helptext} {
     set help_tips($w.l) $helptext
     #pack $w.l $w.h -expand 0 -side left -anchor center -fill none -padx 2 -pady 2
     pack $w.l -expand 0 -side left -anchor center -fill none -padx 2 -pady 2
-    #bind $w.h <Button-1> [list helplabel_showhelp $helptext %X %Y]
+    #bind $w.h <Button-1> [list helplabel:showhelp $helptext %X %Y]
 }
 
 # do not use - DOES NOT work on Linux (focus problems...)
-proc helplabel_showhelp {text x y} {
+proc helplabel:showhelp {text x y} {
     global help_tips
     catch {destroy .helpwin}
     toplevel .helpwin -relief flat
@@ -674,7 +674,7 @@ proc helplabel_showhelp {text x y} {
     bind .helpwin.tip <Escape> "catch { destroy .helpwin }"
     bind .helpwin.tip <FocusOut> "catch { destroy .helpwin }"
     bind .helpwin.tip <Button-1> "catch { destroy .helpwin }"
-    waitforfocus .helpwin.tip
+    waitForFocus .helpwin.tip
 }
 
 
@@ -684,9 +684,9 @@ proc helplabel_showhelp {text x y} {
 #
 # Usage example:
 #  notebook .x
-#  notebook_addpage .x p1 Egy
-#  notebook_addpage .x p2 Ketto
-#  notebook_addpage .x p3 Harom
+#  notebook:addPage .x p1 Egy
+#  notebook:addPage .x p2 Ketto
+#  notebook:addPage .x p3 Harom
 #  pack .x -expand 1 -fill both
 #  label .x.p1.e -text "One"
 #  pack .x.p1.e
@@ -710,7 +710,7 @@ proc notebook {w {side top}} {
 #
 #  utility function: add page to notebook widget
 #
-proc notebook_addpage {w name label} {
+proc notebook:addPage {w name label} {
     global HAVE_BLT
 
     if {$HAVE_BLT} {
@@ -724,18 +724,18 @@ proc notebook_addpage {w name label} {
         set page $w.$name
 
         frame $page -border 2 -relief raised
-        button $tab -text $label -command "notebook_showpage $w $name" -relief flat
+        button $tab -text $label -command "notebook:showPage $w $name" -relief flat
         pack $tab -anchor n -expand 0 -fill none -side left
 
         global nb
-        if {$nb($w)==""} {notebook_showpage $w $name}
+        if {$nb($w)==""} {notebook:showPage $w $name}
     }
 }
 
 #
 # show given notebook page
 #
-proc notebook_showpage {w name} {
+proc notebook:showPage {w name} {
     global HAVE_BLT
 
     if {$HAVE_BLT} {
@@ -953,7 +953,7 @@ proc multicolumnlistbox {w columnlist args} {
             set label [lindex $i 1]
             set width [lindex $i 2]
             $w column insert end $name -text $label -justify left -edit no -pad 8 \
-                -command [list multicolumnlistbox_blt_sortcolumn $w $name]
+                -command [list multicolumnlistbox:bltSortColumn $w $name]
             if {$width!=""} {
                 $w column config $name -width $width
             }
@@ -994,7 +994,7 @@ proc multicolumnlistbox {w columnlist args} {
 #
 # private procedure for multicolumnlistbox
 #
-proc multicolumnlistbox_blt_sortcolumn {w column} {
+proc multicolumnlistbox:bltSortColumn {w column} {
     set old [$w sort cget -column]
     set decreasing 0
     if {$old==$column} {
@@ -1015,7 +1015,7 @@ proc multicolumnlistbox_blt_sortcolumn {w column} {
 # format {name1 value1 name2 value2 ...}, conventiently produced from
 # arrays by the command "array get".
 #
-proc multicolumnlistbox_insert {w rowname data {icon ""}} {
+proc multicolumnlistbox:insert {w rowname data {icon ""}} {
     global icons
     global HAVE_BLT
     if {$HAVE_BLT} {
@@ -1047,41 +1047,41 @@ proc multicolumnlistbox_insert {w rowname data {icon ""}} {
 #
 # Updates a given row.
 #
-proc multicolumnlistbox_modify {w rowname data} {
+proc multicolumnlistbox:modify {w rowname data} {
     global HAVE_BLT
     if {$HAVE_BLT} {
         set id [$w find -full $rowname]
         if {$id==""} {error "row $rowname not found"}
         $w entry config $id -data $data
     } else {
-        error "multicolumnlistbox_modify not supported without BLT!"
+        error "multicolumnlistbox:modify not supported without BLT!"
     }
 }
 
 #
 # Returns data from the given row.
 #
-proc multicolumnlistbox_getrow {w rowname} {
+proc multicolumnlistbox:getRow {w rowname} {
     global HAVE_BLT
     if {$HAVE_BLT} {
         set id [$w find -full $rowname]
         if {$id==""} {error "row $rowname not found"}
         return [$w entry cget $id -data]
     } else {
-        error "multicolumnlistbox_getrow not supported without BLT!"
+        error "multicolumnlistbox:getRow not supported without BLT!"
     }
 }
 
 #
 # Returns true if the given row exists.
 #
-proc multicolumnlistbox_hasrow {w rowname} {
+proc multicolumnlistbox:hasRow {w rowname} {
     global HAVE_BLT
     if {$HAVE_BLT} {
         set id [$w find -full $rowname]
         if {$id!=""} {return 1} else {return 0}
     } else {
-        error "multicolumnlistbox_hasrow not supported without BLT!"
+        error "multicolumnlistbox:hasRow not supported without BLT!"
     }
 }
 
@@ -1090,7 +1090,7 @@ proc multicolumnlistbox_hasrow {w rowname} {
 # that are currently selected. If there are no entries selected,
 # then the empty string is returned.
 #
-proc multicolumnlistbox_curselection {w} {
+proc multicolumnlistbox:curSelection {w} {
     global HAVE_BLT
     if {$HAVE_BLT} {
         set rownamelist {}
@@ -1116,7 +1116,7 @@ proc multicolumnlistbox_curselection {w} {
 # that are currently selected. If there are no entries selected,
 # then the empty string is returned.
 #
-proc multicolumnlistbox_getrownames {w} {
+proc multicolumnlistbox:getRowNames {w} {
     global HAVE_BLT
     if {$HAVE_BLT} {
         set rownamelist {}
@@ -1128,14 +1128,14 @@ proc multicolumnlistbox_getrownames {w} {
         }
         return $rownamelist
     } else {
-        error "multicolumnlistbox_getrownames not supported without BLT!"
+        error "multicolumnlistbox:getRowNames not supported without BLT!"
     }
 }
 
 #
 # Delete the given rows.
 #
-proc multicolumnlistbox_delete {w rownames} {
+proc multicolumnlistbox:delete {w rownames} {
     global HAVE_BLT
     if {$HAVE_BLT} {
         foreach rowname $rownames {
@@ -1144,14 +1144,14 @@ proc multicolumnlistbox_delete {w rownames} {
             $w delete $id
         }
     } else {
-        error "multicolumnlistbox_delete not supported without BLT!"
+        error "multicolumnlistbox:delete not supported without BLT!"
     }
 }
 
 #
 # Delete all rows.
 #
-proc multicolumnlistbox_deleteall {w} {
+proc multicolumnlistbox:deleteAll {w} {
     global HAVE_BLT
     if {$HAVE_BLT} {
         $w delete all
@@ -1163,7 +1163,7 @@ proc multicolumnlistbox_deleteall {w} {
 #
 # Inserts a dummy line.
 #
-proc multicolumnlistbox_adddummyline {w} {
+proc multicolumnlistbox:addDummyLine {w} {
     global HAVE_BLT icons
     if {$HAVE_BLT} {
         set icon $icons(16pixtransp)
@@ -1208,7 +1208,7 @@ proc center {w} {
 # taskbar area, etc if they exist. This method tries to err on the safe side,
 # i.e. rather report a smaller area as usable.
 #
-proc wm_getdesktopbounds {w arrayname} {
+proc wmGetDesktopBounds {w arrayname} {
     global tcl_platform
     upvar $arrayname a
 
@@ -1235,7 +1235,7 @@ proc wm_getdesktopbounds {w arrayname} {
 #
 # Returns the typical sizes of window decoration (title bar, resize borders, etc.)
 #
-proc wm_getdecorationsize {arrayname} {
+proc wmGetDecorationSize {arrayname} {
     upvar $arrayname a
     set a(left) 10
     set a(top) 25
@@ -1245,11 +1245,11 @@ proc wm_getdecorationsize {arrayname} {
     set a(height) [expr $a(top)+$a(bottom)]
 }
 
-# move_to_screen --
+# moveToScreen --
 #
 # utility function: move a toplevel window so that it is fully on the screen
 #
-proc move_to_screen {w} {
+proc moveToScreen {w} {
     global tcl_platform
 
     # Note:
@@ -1270,8 +1270,8 @@ proc move_to_screen {w} {
     set oldy $y
     set width [winfo width $w]
     set height [winfo height $w]
-    wm_getdesktopbounds $w "desktop"
-    wm_getdecorationsize "border"
+    wmGetDesktopBounds $w "desktop"
+    wmGetDecorationSize "border"
 
     # note: x,y are top-left of the wm title bar, unlike width/height which are size of the window contents
 
@@ -1442,11 +1442,11 @@ proc createCloseDialog {w title} {
 }
 
 
-# execCloseDialog --
+# executeCloseDialog --
 #
 # Executes the dialog.
 #
-proc execCloseDialog w {
+proc executeCloseDialog w {
 
     global opp
 

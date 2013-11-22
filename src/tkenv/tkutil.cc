@@ -151,13 +151,13 @@ void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor)
 void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath)
 {
     const char *ptr = ptrToStr(obj);
-    CHK(Tcl_VarEval(interp, "multicolumnlistbox_insert ",listbox," ",ptr," {"
+    CHK(Tcl_VarEval(interp, "multicolumnlistbox:insert ",listbox," ",ptr," {"
                             "ptr {",ptr,"} "
                             "name {",(fullpath ? obj->getFullPath().c_str() : obj->getFullName()),"} "
                             "class {",getObjectShortTypeName(obj),"} "
                             "info ",TclQuotedString(obj->info().c_str()).get(),
                             "} ",
-                            "[get_icon_for_object {",ptr,"}]",
+                            "[inspector:getIconForObject {",ptr,"}]",
                             NULL));
 }
 
@@ -281,7 +281,7 @@ void textWidget_gotoEnd(Tcl_Interp *interp, const char *textWidget)
 void textWidget_clear(Tcl_Interp *interp, const char *textWidget)
 {
     //CHK(Tcl_VarEval(interp, textWidget, " delete 1.0 end", NULL)); -- very slow if content is large
-    CHK(Tcl_VarEval(interp, "logtextwidget_clear ", textWidget, NULL));
+    CHK(Tcl_VarEval(interp, "logTextWidget:clear ", textWidget, NULL));
 }
 
 //----------------------------------------------------------------------

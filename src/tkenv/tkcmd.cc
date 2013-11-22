@@ -300,7 +300,7 @@ OmnetTclCommand tcl_commands[] = {
 int exitOmnetpp_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   exit_omnetpp = 1;
+   exitOmnetpp = 1;
    return TCL_OK;
 }
 

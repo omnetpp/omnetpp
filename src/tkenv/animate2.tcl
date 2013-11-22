@@ -26,7 +26,7 @@ proc setvars {vars vals} {
 # Perform concurrent animations. Each job in the $animjobs list should
 # look like this: <op> <window> <msg> <additional-args>...
 #
-proc do_concurrent_animations {animjobs} {
+proc doConcurrentAnimations {animjobs} {
     global config
 
     # we should form groups -- anim requests within the group are performed
@@ -57,7 +57,7 @@ proc do_concurrent_animations {animjobs} {
 
     # then animate each group, one after another
     foreach stage [lsort -integer [array names jobgroup]] {
-        do_animate_group $jobgroup($stage)
+        doAnimateGroup $jobgroup($stage)
     }
 
     # restore old WM_DELETE_WINDOW handlers
@@ -66,7 +66,7 @@ proc do_concurrent_animations {animjobs} {
     }
 }
 
-proc do_animate_group {animjobs} {
+proc doAnimateGroup {animjobs} {
     set beforelist {}
     set animlist {}
     set afterlist {}
@@ -89,7 +89,7 @@ proc do_animate_group {animjobs} {
                 } else {
                     setvars {x1 y1 x2 y2} $coords
                     if {$mode=="beg"} {
-                        set endpos [graphmodwin_getmessageendpos $x1 $y1 $x2 $y2]
+                        set endpos [graphicalModuleWindow:getMessageEndPos $x1 $y1 $x2 $y2]
                         setvars {x2 y2} $endpos
                     }
 
@@ -106,8 +106,8 @@ proc do_animate_group {animjobs} {
                 if {$mode=="end"} {error "internal error: mode cannot be 'end'"}
 
                 set c $win.c
-                set src  [get_submod_coords $c $mod1ptr]
-                set dest [get_submod_coords $c $mod2ptr]
+                set src  [graphicalModuleWindow:getSubmodCoords $c $mod1ptr]
+                set dest [graphicalModuleWindow:getSubmodCoords $c $mod2ptr]
 
                 set x1 [expr ([lindex $src 0]+[lindex $src 2])/2]
                 set y1 [expr ([lindex $src 1]+[lindex $src 3])/2]
@@ -128,7 +128,7 @@ proc do_animate_group {animjobs} {
                 if {$mode=="end"} {error "internal error: mode cannot be 'end'"}
 
                 set c $win.c
-                set src  [get_submod_coords $c $modptr]
+                set src  [graphicalModuleWindow:getSubmodCoords $c $modptr]
 
                 set x1 [expr ([lindex $src 0]+[lindex $src 2])/2]
                 set y1 [expr ([lindex $src 1]+[lindex $src 3])/2]
@@ -149,7 +149,7 @@ proc do_animate_group {animjobs} {
                 if {$mode=="end"} {error "internal error: mode cannot be 'end'"}
 
                 set c $win.c
-                set dest [get_submod_coords $c $modptr]
+                set dest [graphicalModuleWindow:getSubmodCoords $c $modptr]
 
                 set x2 [expr ([lindex $dest 0]+[lindex $dest 2])/2]
                 set y2 [expr ([lindex $dest 1]+[lindex $dest 3])/2]
@@ -179,7 +179,7 @@ proc do_animate_group {animjobs} {
 
     # finally, do the job
     foreach cmd $beforelist {eval $cmd}
-    do_animate_concurrent $animlist
+    doAnimateConcurrent $animlist
     foreach cmd $afterlist {eval $cmd}
 }
 
@@ -198,7 +198,7 @@ proc do_animate_group {animjobs} {
 #     [list $w2 $msg4 10 40  20  50]
 #  ]
 #
-proc do_animate_concurrent {animlist} {
+proc doAnimateConcurrent {animlist} {
     global clicksPerSec
 
     # calculate maxlen -- that will determine numsteps
@@ -220,7 +220,7 @@ proc do_animate_concurrent {animlist} {
     foreach req $animlist {
         setvars {w msgptr x1 y1 x2 y2} $req
         $w.c delete $msgptr
-        draw_message $w.c $msgptr $x1 $y1
+        graphicalModuleWindow:drawMessage $w.c $msgptr $x1 $y1
 
         set len [expr sqrt(($x2-$x1)*($x2-$x1)+($y2-$y1)*($y2-$y1))]
         set dx [expr ($x2-$x1)/double($steps)]

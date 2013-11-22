@@ -50,7 +50,7 @@ void TGenericObjectInspector::createWindow()
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, "create_genericobjectinspector ", windowname, " \"", geometry, "\"", " ",
+   CHK(Tcl_VarEval(interp, "createGenericObjectInspector ", windowname, " \"", geometry, "\"", " ",
                    (hascontentspage ? "1" : "0"), " ",  (focuscontentspage ? "1" : "0"), " ", NULL));
 }
 
@@ -60,7 +60,7 @@ void TGenericObjectInspector::update()
 
    // refresh "fields" page
    Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, "refresh_fields2page ", windowname, NULL));
+   CHK(Tcl_VarEval(interp, "fields2Page:refresh ", windowname, NULL));
 
    // refresh "contents" page
    if (hascontentspage)
@@ -141,7 +141,7 @@ void TWatchInspector::createWindow()
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, "create_watchinspector ", windowname, " \"", geometry, "\"", NULL ));
+   CHK(Tcl_VarEval(interp, "createWatchInspector ", windowname, " \"", geometry, "\"", NULL ));
 }
 
 void TWatchInspector::update()

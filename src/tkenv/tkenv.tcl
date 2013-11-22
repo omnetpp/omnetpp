@@ -49,7 +49,7 @@ if [info exist OMNETPP_TKENV_DIR] {
 #
 # Execute startup code
 #
-proc start_tkenv {} {
+proc startTkenv {} {
   global OMNETPP_IMAGE_PATH
   global OMNETPP_PLUGIN_PATH
   global HAVE_BLT
@@ -57,16 +57,16 @@ proc start_tkenv {} {
   wm withdraw .
   checkTclTkVersion
   setupTkOptions
-  generic_bindings
-  init_balloons
-  create_omnetpp_window
+  genericBindings
+  initBalloons
+  createOmnetppWindow
   puts ""
-  load_bitmaps $OMNETPP_IMAGE_PATH
-  load_plugins $OMNETPP_PLUGIN_PATH
-  load_tkenvrc "~/.tkenvrc"
-  load_tkenvrc ".tkenvrc"
+  loadBitmaps $OMNETPP_IMAGE_PATH
+  loadPlugins $OMNETPP_PLUGIN_PATH
+  loadTkenvrc "~/.tkenvrc"
+  loadTkenvrc ".tkenvrc"
   reflectSettingsInGui
-  determine_clocks_per_sec
+  determineClocksPerSec
 
   global tcl_platform
   if {$tcl_platform(platform) == "windows"} {

@@ -29,7 +29,7 @@ struct OmnetTclCommand {
 };
 extern OmnetTclCommand tcl_commands[];
 
-extern int exit_omnetpp;
+extern int exitOmnetpp;
 
 Tcl_Interp *initTk(int argc, char **argv);
 int createTkCommands(Tcl_Interp *interp, OmnetTclCommand *tcl_commands);

@@ -41,7 +41,7 @@ proc inputbox {title prompt variable {checkboxlabel {}} {checkboxvar {}}} {
         pack $w.f.c -anchor w -expand 0 -fill x -padx 4 -pady 2 -side top
     }
 
-    setinitialdialogfocus $w.f.e
+    setInitialDialogFocus $w.f.e
 
     if [execOkCancelDialog $w] {
         set var [$w.f.e get]
@@ -69,7 +69,7 @@ proc comboSelectionDialog {title text label variable list} {
     label-combo $w.f.c $label $list $var
     pack $w.f.m -fill x -padx 2 -pady 2 -side top
     pack $w.f.c -fill x -padx 2 -pady 2 -side top
-    setinitialdialogfocus $w.f.c.e
+    setInitialDialogFocus $w.f.c.e
 
     $w.f.c.e config -width 30
 
@@ -123,12 +123,12 @@ proc runSelectionDialog {configname_var runnumber_var} {
         pack $w.f.m -fill x -padx 2 -pady 2 -side top
         pack $w.f.c -fill x -padx 2 -pady 2 -side top
         pack $w.f.c2 -fill x -padx 2 -pady 2 -side top
-        setinitialdialogfocus $w.f.c.e
+        setInitialDialogFocus $w.f.c.e
 
         $w.f.c.e config -width 30
         $w.f.c2.e config -width 10
 
-        combo-onchange $w.f.c.e [list runSelectionDialog:update $w]
+        combo:onChange $w.f.c.e [list runSelectionDialog:update $w]
 
         runSelectionDialog:update $w
 
@@ -206,7 +206,7 @@ proc runSelectionDialog:update {w} {
     }
 }
 
-proc display_stopdialog {} {
+proc displayStopDialog {} {
     # Create a dialog that can be used to stop a running simulation
     global opp fonts tmp
 
@@ -231,7 +231,7 @@ proc display_stopdialog {} {
     set red #f83030
     button $w.stopbutton  -text "STOP!" -background $red -activebackground $red \
           -borderwidth 6 -font $fonts(big) -command {opp_stopsimulation}
-    checkbutton $w.autoupdate -text "auto-update inspectors" -variable opp(autoupdate) -command "stopdialog_autoupdate $w"
+    checkbutton $w.autoupdate -text "auto-update inspectors" -variable opp(autoupdate) -command "stopDialogAutoupdate $w"
     button $w.updatebutton  -text "  Update now  " -borderwidth 1 -command {opp_updateinspectors}
 
     grid $w.stopbutton   -sticky news -padx 4 -pady 3
@@ -243,7 +243,7 @@ proc display_stopdialog {} {
     bind $w <F8>     "opp_stopsimulation"
 
     set opp(autoupdate) [opp_getsimoption expressmode_autoupdate]
-    stopdialog_autoupdate $w
+    stopDialogAutoupdate $w
 
     # 2. Center window
     center $w
@@ -256,7 +256,7 @@ proc display_stopdialog {} {
     focus $w.stopbutton
 }
 
-proc stopdialog_autoupdate {w} {
+proc stopDialogAutoupdate {w} {
     global opp
     if {$opp(autoupdate)} {
         opp_setsimoption expressmode_autoupdate 1
@@ -267,8 +267,8 @@ proc stopdialog_autoupdate {w} {
     }
 }
 
-proc remove_stopdialog {} {
-    # Remove the dialog created by display_stopdialog
+proc removeStopDialog {} {
+    # Remove the dialog created by displayStopDialog
 
     global opp tmp
     if ![info exist tmp(stopdialog)] {
@@ -289,7 +289,7 @@ proc remove_stopdialog {} {
     }
 }
 
-proc options_dialog {parent {defaultpage "g"}} {
+proc optionsDialog {parent {defaultpage "g"}} {
     global opp config fonts help_tips helptexts
 
     set parent [winfo toplevel $parent]
@@ -305,14 +305,14 @@ proc options_dialog {parent {defaultpage "g"}} {
     notebook $w.f.nb
     set nb $w.f.nb
 
-    notebook_addpage $nb g General
-    notebook_addpage $nb l Layouting
-    notebook_addpage $nb a Animation
-    notebook_addpage $nb t Timeline
-    notebook_addpage $nb f Fonts
+    notebook:addPage $nb g General
+    notebook:addPage $nb l Layouting
+    notebook:addPage $nb a Animation
+    notebook:addPage $nb t Timeline
+    notebook:addPage $nb f Fonts
     pack $nb -expand 1 -fill both
 
-    notebook_showpage $nb $defaultpage
+    notebook:showPage $nb $defaultpage
 
     # "General" page
     labelframe $nb.g.f1 -text "Simulation Execution" -relief groove -borderwidth 2 -font $fonts(normal)
@@ -476,11 +476,11 @@ proc options_dialog {parent {defaultpage "g"}} {
     set opp(timeline-wantselfmsgs)      $config(timeline-wantselfmsgs)
     set opp(timeline-wantnonselfmsgs)   $config(timeline-wantnonselfmsgs)
 
-    fontcombo-set $nb.f.f1.normalfont.e $fonts(normal)
-    fontcombo-set $nb.f.f1.textfont.e $fonts(text)
-    fontcombo-set $nb.f.f1.canvasfont.e $fonts(canvas)
+    fontcombo:set $nb.f.f1.normalfont.e $fonts(normal)
+    fontcombo:set $nb.f.f1.textfont.e $fonts(text)
+    fontcombo:set $nb.f.f1.canvasfont.e $fonts(canvas)
 
-    setinitialdialogfocus $nb.g.f2.usemainwin
+    setInitialDialogFocus $nb.g.f2.usemainwin
 
     if [execOkCancelDialog $w] {
         opp_setsimoption stepdelay             [$nb.g.f1.stepdelay.e get]
@@ -552,7 +552,7 @@ proc setIfPatternIsValid {var pattern} {
     }
 }
 
-proc rununtil_dialog {time_var event_var msg_var mode_var} {
+proc runUntilDialog {time_var event_var msg_var mode_var} {
 
     global opp config tmp
 
@@ -603,7 +603,7 @@ proc rununtil_dialog {time_var event_var msg_var mode_var} {
     $w.f.time.e select range 0 end
     $w.f.event.e select range 0 end
 
-    setinitialdialogfocus $w.f.time.e
+    setInitialDialogFocus $w.f.time.e
 
     if [execOkCancelDialog $w] {
         set time_var0  [$w.f.time.e get]
@@ -671,7 +671,7 @@ proc findDialog {w} {
     $dlg.f.find.e insert 0 $config(editor-findstring)
     $dlg.f.find.e select range 0 end
 
-    setinitialdialogfocus $dlg.f.find.e
+    setInitialDialogFocus $dlg.f.find.e
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
     if {[execOkCancelDialog $dlg] == 1} {
@@ -807,7 +807,7 @@ proc _doFind {w findstring case words regexp backwards} {
 proc moduleOutputFilterDialog {rootmodule excludedModuleIds} {
     global tmp tmpExcludedModuleIds
 
-    if {[network_present] == 0} {return 0}
+    if {[networkPresent] == 0} {return 0}
 
     set title "Filter window contents"
     set msg "Select modules to show log messages from:"
@@ -834,11 +834,11 @@ proc moduleOutputFilterDialog {rootmodule excludedModuleIds} {
     array unset tmpExcludedModuleIds
     foreach i $excludedModuleIds {set tmpExcludedModuleIds($i) 1}
 
-    Tree:init $tree getModuleTreeInfo
+    Tree:init $tree moduleOutputFilterDialog:getModuleTreeInfo
     Tree:open $tree $rootmodule
     Tree:readsubtreecheckboxstate $tree $rootmodule
 
-    setinitialdialogfocus $tree
+    setInitialDialogFocus $tree
 
     if [execOkCancelDialog $w] {
         set excludedModuleIds {}
@@ -860,7 +860,7 @@ proc moduleOutputFilterDialog {rootmodule excludedModuleIds} {
     return 0
 }
 
-proc getModuleTreeInfo {w op {key {}}} {
+proc moduleOutputFilterDialog:getModuleTreeInfo {w op {key {}}} {
     global icons tmp tmpExcludedModuleIds
 
     set ptr $key
@@ -889,7 +889,7 @@ proc getModuleTreeInfo {w op {key {}}} {
       }
 
       icon {
-        #return [get_icon_for_object $ptr]
+        #return [inspector:getIconForObject $ptr]
         return ""
       }
 
@@ -912,11 +912,11 @@ proc getModuleTreeInfo {w op {key {}}} {
 
 
 
-# filteredobjectlist_window --
+# filteredObjectList:window --
 #
 # Implements the "Find/inspect objects" dialog.
 #
-proc filteredobjectlist_window {{ptr ""}} {
+proc filteredObjectList:window {{ptr ""}} {
     global config tmp icons help_tips helptexts fonts
     global HAVE_BLT B2 B3
 
@@ -928,7 +928,7 @@ proc filteredobjectlist_window {{ptr ""}} {
     if {[winfo exists $w]} {
         $w.f.filter.searchin.e delete 0 end
         $w.f.filter.searchin.e insert 0 [opp_getobjectfullpath $ptr]
-        show_window $w  ;# black magic to raise the window
+        showWindow $w  ;# black magic to raise the window
         return
     }
 
@@ -940,13 +940,13 @@ proc filteredobjectlist_window {{ptr ""}} {
     pack $w.toolbar -anchor center -expand 0 -fill x -side top -before $w.f
     foreach i {
       {sep1     -separator}
-      {step     -image $icons(step)    -command {one_step}}
-      {run      -image $icons(run)     -command {run_normal}}
-      {fastrun  -image $icons(fast)    -command {run_fast}}
-      {exprrun  -image $icons(express) -command {run_express}}
-      {until    -image $icons(until)   -command {run_until}}
+      {step     -image $icons(step)    -command {oneStep}}
+      {run      -image $icons(run)     -command {runNormal}}
+      {fastrun  -image $icons(fast)    -command {runFast}}
+      {exprrun  -image $icons(express) -command {runExpress}}
+      {until    -image $icons(until)   -command {runUntil}}
       {sep2     -separator}
-      {stop     -image $icons(stop)    -command {stop_simulation}}
+      {stop     -image $icons(stop)    -command {stopSimulation}}
     } {
       set b [eval iconbutton $w.toolbar.$i]
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
@@ -986,14 +986,14 @@ proc filteredobjectlist_window {{ptr ""}} {
     labelwithhelp $fp.classlabel "Class filter expression:" $helptexts(filterdialog-classnamepattern)
     labelwithhelp $fp.namelabel  "Object full path filter, e.g. \"*.queue\ AND not length(0)\":" $helptexts(filterdialog-namepattern)
 
-    combo $fp.classentry [concat {{}} [getClassNames]]
+    combo $fp.classentry [concat {{}} [filteredObjectList:getClassNames]]
     $fp.classentry.entry config -textvariable tmp(class)
     entry $fp.nameentry -textvariable tmp(name)
 
     set help_tips($fp.classentry.entry) $helptexts(filterdialog-classnamepattern)
     set help_tips($fp.nameentry) $helptexts(filterdialog-namepattern)
 
-    button $fp.refresh -text "Refresh" -width 10 -command "filteredobjectlist_refresh $w"
+    button $fp.refresh -text "Refresh" -width 10 -command "filteredObjectList:refresh $w"
 
     grid $fp.classlabel $fp.namelabel x           -sticky nw   -padx 5
     grid $fp.classentry $fp.nameentry $fp.refresh -sticky news -padx 5 -pady 3
@@ -1059,25 +1059,25 @@ proc filteredobjectlist_window {{ptr ""}} {
     # leave listbox empty -- filling it with all objects might take too long
 
     # Configure dialog
-    $w.buttons.closebutton config -command filteredobjectlist_window_close
+    $w.buttons.closebutton config -command filteredObjectList:windowClose
     wm protocol $w WM_DELETE_WINDOW "$w.buttons.closebutton invoke"
 
     bind $fp.classentry.entry <Return> "$fp.refresh invoke"
     bind $fp.nameentry <Return> "$fp.refresh invoke"
-    bind $lb <Double-Button-1> "filteredobjectlist_inspect $lb; after 500 \{raise $w; focus $lb\}"
-    bind $lb <Key-Return> "filteredobjectlist_inspect $lb; after 500 \{raise $w; focus $lb\}"
-    bind $lb <Button-$B3> "+filteredobjectlist_popup %X %Y $w"  ;# Note "+"! it appends this code to binding in widgets.tcl
+    bind $lb <Double-Button-1> "filteredObjectList:inspect $lb; after 500 \{raise $w; focus $lb\}"
+    bind $lb <Key-Return> "filteredObjectList:inspect $lb; after 500 \{raise $w; focus $lb\}"
+    bind $lb <Button-$B3> "+filteredObjectList:popup %X %Y $w"  ;# Note "+"! it appends this code to binding in widgets.tcl
     bind $w <Escape> "$w.buttons.closebutton invoke"
-    bind_runcommands $w
+    bindRunCommands $w
 
-    setinitialdialogfocus $fp.nameentry
+    setInitialDialogFocus $fp.nameentry
 
 }
 
 #
 # Closes Filtered object dialog
 #
-proc filteredobjectlist_window_close {} {
+proc filteredObjectList:windowClose {} {
     global config tmp
     set w .objdlg
 
@@ -1089,11 +1089,11 @@ proc filteredobjectlist_window_close {} {
     destroy $w
 }
 
-# getClassNames --
+# filteredObjectList:getClassNames --
 #
-# helper proc for filteredobjectlist_window
+# helper proc for filteredObjectList:window
 #
-proc getClassNames {} {
+proc filteredObjectList:getClassNames {} {
     set classes [opp_getchildobjects [opp_object_classes]]
 
     # get the names
@@ -1107,11 +1107,11 @@ proc getClassNames {} {
     return [lsort -dictionary $classnames]
 }
 
-# filteredobjectlist_refresh --
+# filteredObjectList:refresh --
 #
-# helper proc for filteredobjectlist_window
+# helper proc for filteredObjectList:window
 #
-proc filteredobjectlist_refresh {w} {
+proc filteredObjectList:refresh {w} {
     global config tmp HAVE_BLT
     global filtobjlist_state
 
@@ -1181,7 +1181,7 @@ proc filteredobjectlist_refresh {w} {
 
     # clear listbox
     set lb $w.f.main.list
-    multicolumnlistbox_deleteall $lb
+    multicolumnlistbox:deleteAll $lb
 
     # insert into listbox
     if {$viewall=="ok"} {
@@ -1191,7 +1191,7 @@ proc filteredobjectlist_refresh {w} {
             $w.f.numobj config -text "Found $num objects:"
         }
         foreach ptr $objlist {
-            multicolumnlistbox_insert $lb $ptr [list ptr $ptr class [opp_getobjectshorttypename $ptr] name [opp_getobjectfullpath $ptr] info [opp_getobjectinfostring $ptr]] [get_icon_for_object $ptr]
+            multicolumnlistbox:insert $lb $ptr [list ptr $ptr class [opp_getobjectshorttypename $ptr] name [opp_getobjectfullpath $ptr] info [opp_getobjectinfostring $ptr]] [inspector:getIconForObject $ptr]
         }
         set filtobjlist_state(outofdate) 0
         #$lb selection set 0
@@ -1201,28 +1201,28 @@ proc filteredobjectlist_refresh {w} {
 set filtobjlist_state(outofdate) 0
 
 #
-# Called from inspectorupdate_callback whenever inspectors should be refereshed
+# Called from inspectorUpdateCallback whenever inspectors should be refereshed
 #
-proc filteredobjectlist_inspectorupdate {} {
+proc filteredObjectList:inspectorUpdate {} {
     global filtobjlist_state
     set filtobjlist_state(outofdate) 1
 }
 
 proc filteredobjectlist_isnotsafetoinspect {} {
     global filtobjlist_state
-    if {$filtobjlist_state(outofdate) || [is_running]} {
+    if {$filtobjlist_state(outofdate) || [isRunning]} {
         return 1
     }
     return 0
 }
 
-# filteredobjectlist_popup --
+# filteredObjectList:popup --
 #
-# helper procedure for filteredobjectlist_window -- creates popup menu
+# helper procedure for filteredObjectList:window -- creates popup menu
 #
-proc filteredobjectlist_popup {X Y w} {
+proc filteredObjectList:popup {X Y w} {
     set lb $w.f.main.list
-    set ptr [lindex [multicolumnlistbox_curselection $lb] 0]
+    set ptr [lindex [multicolumnlistbox:curSelection $lb] 0]
     if {$ptr==""} return
     set insptypes [opp_supported_insp_types $ptr]
 
@@ -1236,10 +1236,10 @@ proc filteredobjectlist_popup {X Y w} {
     $p post $X $Y
 }
 
-proc filteredobjectlist_inspect {lb} {
+proc filteredObjectList:inspect {lb} {
     set w .objdlg
     if {[filteredobjectlist_isnotsafetoinspect]} {
-        if {[is_running]} {
+        if {[isRunning]} {
             set advice "please stop the simulation and click Refresh first"
         } else {
             set advice "please click Refresh first"
@@ -1249,7 +1249,7 @@ proc filteredobjectlist_inspect {lb} {
         return
     }
 
-    inspect_item_in $lb
+    inspectItemIn $lb
 }
 
 #----
@@ -1368,8 +1368,8 @@ Examples:
             matches objects of class cMessage and message kind 3.
 }
 
-proc modelinfo_dialog {{w ""}} {
-    if {[network_present] == 0} {return 0}
+proc modelInfoDialog {{w ""}} {
+    if {[networkPresent] == 0} {return 0}
 
     if {$w==""} {
         set modptr [opp_object_systemmodule]

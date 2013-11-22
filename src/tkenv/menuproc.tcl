@@ -21,7 +21,7 @@
 #    HELPER/GUI PROCEDURES
 #===================================================================
 
-proc network_present {} {
+proc networkPresent {} {
     if [opp_isnull [opp_object_systemmodule]] {
        messagebox {Error} {No network has been set up yet.} info ok
        return 0
@@ -29,23 +29,23 @@ proc network_present {} {
     return 1
 }
 
-proc network_ready {} {
-    if {[network_present] == 0} {return 0}
+proc networkReady {} {
+    if {[networkPresent] == 0} {return 0}
 
-    if {[is_simulation_ok] == 1} {
+    if {[isSimulationOk] == 1} {
         return 1
     } else {
         set ans [messagebox {Warning} {Cannot continue this simulation. Rebuild network?} question yesno]
         if {$ans == "yes"} {
             rebuild
-            return [is_simulation_ok]
+            return [isSimulationOk]
         } else {
             return 0
         }
     }
 }
 
-proc is_simulation_ok {} {
+proc isSimulationOk {} {
     set state [opp_getsimulationstate]
     if {$state == "SIM_NEW" || $state == "SIM_RUNNING" || $state == "SIM_READY"} {
         return 1
@@ -54,7 +54,7 @@ proc is_simulation_ok {} {
     }
 }
 
-proc is_running {} {
+proc isRunning {} {
     set state [opp_getsimulationstate]
     if {$state == "SIM_RUNNING" || $state == "SIM_BUSY"} {
         return 1
@@ -63,7 +63,7 @@ proc is_running {} {
     }
 }
 
-proc check_running {} {
+proc checkRunning {} {
     if {[opp_getsimulationstate] == "SIM_RUNNING"} {
        messagebox {Warning} {Sorry, you cannot do this while the simulation\
                              is running. Please stop it first.} info ok
@@ -95,10 +95,10 @@ Release: $OMNETPP_RELEASE, build: $OMNETPP_BUILDID, edition: $OMNETPP_EDITION
 NO WARRANTY -- see license for details."
 }
 
-proc exit_omnetpp {} {
+proc exitOmnetpp {} {
     global config
 
-    set isrunning [is_running]
+    set isrunning [isRunning]
     set state [opp_getsimulationstate]
 
     if {$config(confirm-exit)} {
@@ -129,16 +129,16 @@ proc exit_omnetpp {} {
     }
 
     # save settings (fonts etc) globally, and inspector list locally
-    save_tkenvrc "~/.tkenvrc" 1 0 1
-    save_tkenvrc ".tkenvrc"   0 1 1 "# Partial Tkenv config file -- see \$HOME/.tkenvrc as well"
+    saveTkenvrc "~/.tkenvrc" 1 0 1
+    saveTkenvrc ".tkenvrc"   0 1 1 "# Partial Tkenv config file -- see \$HOME/.tkenvrc as well"
 
     opp_exitomnetpp
 }
 
-proc create_snapshot {} {
+proc createSnapshot {} {
     # implements File|Create snapshot
 
-    if {[network_present] == 0} return
+    if {[networkPresent] == 0} return
 
     set label ""
     set ok [inputbox {Snapshot} {Enter label for current simulation snapshot:} label]
@@ -154,13 +154,13 @@ proc create_snapshot {} {
             set ans [messagebox {Snapshot created} "Current state of simulation has been \
 saved into \"$snapshotfile\". Do you want to open it now in a file viewer window?" question yesno]
             if {$ans == "yes"} {
-                view_snapshotfile
+                viewSnapshotFile
             }
         }
     }
 }
 
-proc load_nedfile {} {
+proc loadNedFile {} {
    global config
 
    set fname $config(last-nedfile)
@@ -187,10 +187,10 @@ proc load_nedfile {} {
    }
 }
 
-proc new_network {} {
+proc newNetwork {} {
     # implements File|New network...
 
-    if [check_running] return
+    if [checkRunning] return
 
     # get list of network names
     set networks [opp_getnetworktypes]
@@ -217,7 +217,7 @@ proc new_network {} {
     if {$ok == 1} {
        busy "Setting up network..."
        opp_newnetwork $netname
-       reflect_record_eventlog
+       reflectRecordEventlog
        busy
 
        if [opp_isnotnull [opp_object_systemmodule]] {
@@ -233,10 +233,10 @@ proc new_network {} {
     }
 }
 
-proc new_run {} {
+proc newRun {} {
     # implements File|New run...
 
-    if [check_running] return
+    if [checkRunning] return
 
     set configname [opp_getactiveconfigname]
     set runnumber  [opp_getactiverunnumber]
@@ -247,7 +247,7 @@ proc new_run {} {
        # puts "DBG: selected $configname $runnumber"
        busy "Setting up network..."
        opp_newrun $configname $runnumber
-       reflect_record_eventlog
+       reflectRecordEventlog
        busy
 
        if [opp_isnotnull [opp_object_systemmodule]] {
@@ -263,32 +263,32 @@ proc new_run {} {
     }
 }
 
-proc edit_copy {{w .main.text}} {
+proc editCopy {{w .main.text}} {
    # implements Edit|Copy
    tk_textCopy $w
 }
 
-proc edit_find {{w .main.text}} {
+proc editFind {{w .main.text}} {
    # implements Edit|Find...
    findDialog $w
 }
 
-proc edit_findnext {{w .main.text}} {
+proc editFindNext {{w .main.text}} {
    # implements Edit|Find next
    findNext $w
 }
 
-proc edit_filterwindowcontents {{w ".main.text"}} {
+proc editFilterWindowContents {{w ".main.text"}} {
    # implements Edit|Filter window contents...
    if {$w==".main.text"} {
-       mainlogwindow_filterdialog
+       mainlogWindow:openFilterDialog
    } else {
        set w [winfo toplevel $w]
-       modulewindow_filterdialog [winfo toplevel $w]
+       moduleWindow:openFilterDialog [winfo toplevel $w]
    }
 }
 
-proc toggle_treeview {} {
+proc toggleTreeView {} {
    global config widgets
 
    if {$config(display-treeview)==1} {
@@ -299,11 +299,11 @@ proc toggle_treeview {} {
        set config(display-treeview) 1
        pack $widgets(manager) -before .main.text -expand 0 -fill y  -side left
        .toolbar.tree config -relief sunken
-       updateTreeManager
+       treeManager:update
    }
 }
 
-proc toggle_timeline {} {
+proc toggleTimeline {} {
    global config widgets
 
    if {$config(display-timeline)==1} {
@@ -314,11 +314,11 @@ proc toggle_timeline {} {
        set config(display-timeline) 1
        pack $widgets(timeline) -before .main -anchor center -expand 0 -fill x -side top
        .toolbar.tline config -relief sunken
-       redraw_timeline
+       redrawTimeline
    }
 }
 
-proc toggle_record_eventlog {} {
+proc toggleRecordEventlog {} {
    if {[opp_getsimoption record_eventlog]==1} {
        opp_setsimoption record_eventlog 0
    } else {
@@ -328,10 +328,10 @@ proc toggle_record_eventlog {} {
        messagebox {Eventlog Recording} "Switching to manual control of eventlog recording -- the recording intervals specified in the configuration will be ignored." info ok
        opp_eventlogrecording clearintervals
    }
-   reflect_record_eventlog
+   reflectRecordEventlog
 }
 
-proc reflect_record_eventlog {} {
+proc reflectRecordEventlog {} {
    global config widgets
 
    if {[opp_getsimoption record_eventlog]==1} {
@@ -341,7 +341,7 @@ proc reflect_record_eventlog {} {
    }
 }
 
-proc set_gui_for_runmode {mode {modinspwin ""} {untilmode ""}} {
+proc setGuiForRunmode {mode {modinspwin ""} {untilmode ""}} {
     global opp
     set w $modinspwin
     if {$w!="" && ![winfo exists $w]} {set w ""}
@@ -352,7 +352,7 @@ proc set_gui_for_runmode {mode {modinspwin ""} {untilmode ""}} {
     .toolbar.fastrun config -relief $default_iconbutton_relief
     .toolbar.exprrun config -relief $default_iconbutton_relief
     catch {$opp(sunken-run-button) config -relief $default_iconbutton_relief}
-    remove_stopdialog
+    removeStopDialog
 
     if {$w==""} {
         if {$mode=="step"} {
@@ -365,7 +365,7 @@ proc set_gui_for_runmode {mode {modinspwin ""} {untilmode ""}} {
             .toolbar.fastrun config -relief sunken
         } elseif {$mode=="express"} {
             .toolbar.exprrun config -relief sunken
-            display_stopdialog
+            displayStopDialog
         } elseif {$mode=="notrunning"} {
             .toolbar.until config -relief $default_iconbutton_relief
         } else {
@@ -379,7 +379,7 @@ proc set_gui_for_runmode {mode {modinspwin ""} {untilmode ""}} {
             $w.toolbar.mfast config -relief sunken
             set opp(sunken-run-button) $w.toolbar.mfast
         } elseif {$mode=="express"} {
-            display_stopdialog
+            displayStopDialog
         } elseif {$mode=="notrunning"} {
             .toolbar.until config -relief $default_iconbutton_relief
         } else {
@@ -396,57 +396,57 @@ proc set_gui_for_runmode {mode {modinspwin ""} {untilmode ""}} {
     }
 }
 
-proc one_step {} {
+proc oneStep {} {
     # implements Simulate|One step
 
-    if [is_running] {
-        set_gui_for_runmode step
+    if [isRunning] {
+        setGuiForRunmode step
         opp_stopsimulation
     } else {
-        if {![network_ready]} {return}
-        set_gui_for_runmode step
+        if {![networkReady]} {return}
+        setGuiForRunmode step
         opp_onestep
-        set_gui_for_runmode notrunning
+        setGuiForRunmode notrunning
     }
 }
 
-proc runsimulation {mode} {
-    if [is_running] {
-        set_gui_for_runmode $mode
+proc runSimulation {mode} {
+    if [isRunning] {
+        setGuiForRunmode $mode
         opp_set_run_mode $mode
         opp_set_run_until_module
     } else {
-        if {![network_ready]} {return}
-        set_gui_for_runmode $mode
+        if {![networkReady]} {return}
+        setGuiForRunmode $mode
         opp_run $mode
-        set_gui_for_runmode notrunning
+        setGuiForRunmode notrunning
     }
 }
 
-proc run_slow {} {
+proc runSlow {} {
     # implements Simulate|Slow execution
-    runsimulation slow
+    runSimulation slow
 }
 
-proc run_normal {} {
+proc runNormal {} {
     # implements Simulate|Run
-    runsimulation normal
+    runSimulation normal
 }
 
-proc run_fast {} {
+proc runFast {} {
     # implements Simulate|Fast Run
-    runsimulation fast
+    runSimulation fast
 }
 
-proc run_express {} {
+proc runExpress {} {
     # implements Simulate|Express Run
-    runsimulation express
+    runSimulation express
 }
 
-proc run_until {} {
+proc runUntil {} {
     # implements Simulate|Run until...
 
-    if {[network_ready] == 0} {
+    if {[networkReady] == 0} {
        return
     }
 
@@ -455,7 +455,7 @@ proc run_until {} {
     set msg ""
     set mode ""    ;# will be set to Normal, Fast or Express
 
-    set ok [rununtil_dialog time event msg mode]
+    set ok [runUntilDialog time event msg mode]
     if {$ok==0} return
 
     if {$mode=="Normal"} {
@@ -471,34 +471,34 @@ proc run_until {} {
     set untilmode "until_on"
     if {$time=="" && $event=="" && $msg==""} {set until_on "until_off"}
 
-    if [is_running] {
+    if [isRunning] {
         if [catch {
-            set_gui_for_runmode $mode "" $untilmode
+            setGuiForRunmode $mode "" $untilmode
             opp_set_run_mode $mode
             opp_set_run_until $time $event $msg
         } err] {
             messagebox {Error} "Error: $err" error ok
         }
     } else {
-        if {![network_ready]} {return}
+        if {![networkReady]} {return}
         if [catch {
-            set_gui_for_runmode $mode "" $untilmode
+            setGuiForRunmode $mode "" $untilmode
             opp_run $mode $time $event $msg
         } err] {
             messagebox {Error} "Error: $err" error ok
         }
-        set_gui_for_runmode notrunning
+        setGuiForRunmode notrunning
     }
 }
 
-proc run_until_msg {msg mode} {
-    if {[network_ready] == 0} {
+proc runUntilMsg {msg mode} {
+    if {[networkReady] == 0} {
        return
     }
     # mode must be "normal", "fast" or "express"
-    if [is_running] {
+    if [isRunning] {
         if [catch {
-            set_gui_for_runmode $mode "" "until_on"
+            setGuiForRunmode $mode "" "until_on"
             opp_set_run_mode $mode
             opp_set_run_until "" "" $msg
         } err] {
@@ -506,31 +506,31 @@ proc run_until_msg {msg mode} {
         }
     } else {
         if [catch {
-            set_gui_for_runmode $mode "" "until_on"
+            setGuiForRunmode $mode "" "until_on"
             opp_run $mode "" "" $msg
         } err] {
             messagebox {Error} "Error: $err" error ok
         }
-        set_gui_for_runmode notrunning
+        setGuiForRunmode notrunning
     }
 }
 
 
-proc start_all {} {
+proc startAll {} {
 
-    if [check_running] return
+    if [checkRunning] return
 
-    if {[network_present] == 0} return
+    if {[networkPresent] == 0} return
     opp_start_all
 }
 
-proc call_finish {} {
+proc callFinish {} {
 
     # check state is not SIM_RUNNING
-    if [check_running] return
+    if [checkRunning] return
 
     # check state is not SIM_NONET
-    if {[network_present] == 0} return
+    if {[networkPresent] == 0} return
 
     # check state is not SIM_FINISHCALLED
     if {[opp_getsimulationstate] == "SIM_FINISHCALLED"} {
@@ -563,22 +563,22 @@ proc call_finish {} {
 proc rebuild {} {
     # implements Simulate|Rebuild
 
-    if [check_running] return
+    if [checkRunning] return
 
-    if {[network_present] == 0} return
+    if {[networkPresent] == 0} return
     busy "Rebuilding network..."
     opp_rebuild
-    reflect_record_eventlog
+    reflectRecordEventlog
     busy
 }
 
 
-proc stop_simulation {} {
+proc stopSimulation {} {
     # implements Simulate|Stop
     if {[opp_getsimulationstate] == "SIM_RUNNING" || [opp_getsimulationstate] == "SIM_BUSY"} {
        # "opp_stopsimulation" just *asks* the simulation to stop, causing it to return
        # from the "opp_run" command.
-       # "set_gui_for_runmode notrunning" will be called after "opp_run" has returned.
+       # "setGuiForRunmode notrunning" will be called after "opp_run" has returned.
        opp_stopsimulation
     }
 
@@ -587,13 +587,13 @@ proc stop_simulation {} {
     set stoplayouting 1
 }
 
-proc message_windows {} {
+proc messageWindows {} {
     # implements Trace|Message sending...
-    if {[network_present] == 0} return
-    create_messagewindow .messagewindow
+    if {[networkPresent] == 0} return
+    createMessageWindow .messagewindow
 }
 
-proc clear_windows {} {
+proc clearWindows {} {
     # implements Trace|Clear windows...
     # also called back from C++ code
     # TBD: should delete the contents of module windows as well
@@ -601,16 +601,16 @@ proc clear_windows {} {
     catch {.messagewindow.main.text delete 1.0 end}
 }
 
-proc inspect_filteredobjectlist {{w "."}} {
+proc inspectFilteredObjectList {{w "."}} {
     # implements Find/inspect objects...
     set ptr ""
     if {$w!="" && $w!="." && ![regexp {\.(ptr.*)-([0-9]+)} $w match ptr type]} {
         error "window name $w doesn't look like an inspector window"
     }
-    filteredobjectlist_window $ptr
+    filteredObjectList:window $ptr
 }
 
-proc inspect_bypointer {} {
+proc inspectBypointer {} {
     # implements Inspect|By pointer...
     set pointer "ptr"
     set ok [inputbox {Inspect by pointer...} {Enter pointer (invalid pointer may cause segmentation fault!):} pointer]
@@ -619,70 +619,70 @@ proc inspect_bypointer {} {
     }
 }
 
-proc inspect_systemmodule {} {
+proc inspectSystemModule {} {
     # implements Inspect|Toplevel modules...
-    if {[network_present] == 0} return
+    if {[networkPresent] == 0} return
     opp_inspect [opp_object_systemmodule] (default)
 }
 
-proc inspect_messagequeue {} {
+proc inspectMessageQueue {} {
     # implements Inspect|Message queue...
     opp_inspect [opp_object_messagequeue] (default)
 }
 
-proc inspect_simulation {} {
+proc inspectSimulation {} {
     # implements Inspect|Simulation...
     opp_inspect [opp_object_simulation] (default)
 }
 
-proc inspect_componenttypes {} {
+proc inspectComponentTypes {} {
     opp_inspect [opp_object_componenttypes] {(default)}
 }
 
-proc inspect_classes {} {
+proc inspectClasses {} {
     opp_inspect [opp_object_classes] {(default)}
 }
 
-proc inspect_enums {} {
+proc inspectEnums {} {
     opp_inspect [opp_object_enums] {(default)}
 }
 
-proc inspect_configentries {} {
+proc inspectConfigEntries {} {
     opp_inspect [opp_object_configentries] {(default)}
 }
 
-proc inspect_functions {} {
+proc inspectFunctions {} {
     opp_inspect [opp_object_functions] {(default)}
 }
 
-proc simulation_options {} {
-    options_dialog .
+proc simulationOptions {} {
+    optionsDialog .
     opp_updateinspectors
 }
 
-proc save_tkenv_config {} {
+proc saveTkenvConfig {} {
     set filename "tkenv.cfg"
     set filename [tk_getSaveFile -title {Save Tkenv configuration} \
                   -defaultextension "cfg" -initialfile $filename \
                   -filetypes {{{Configuration files} {*.cfg}} {{All files} {*}}}]
 
     if {$filename!=""} {
-       save_tkenvrc $filename 1 1 0 "# Tkenv config file"
+       saveTkenvrc $filename 1 1 0 "# Tkenv config file"
     }
 }
 
-proc load_tkenv_config {} {
+proc loadTkenvConfig {} {
     set filename "tkenv.cfg"
     set filename [tk_getOpenFile -title {Load Tkenv configuration} \
                   -defaultextension "cfg" -initialfile $filename \
                   -filetypes {{{Configuration files} {*.cfg}} {{All files} {*}}}]
 
     if {$filename!=""} {
-       load_tkenvrc $filename
+       loadTkenvrc $filename
     }
 }
 
-proc edit_textfile {} {
+proc editTextFile {} {
     # implements Options|File name...
     set types {
          {{Text files}             {*.txt}}
@@ -702,21 +702,21 @@ proc edit_textfile {} {
                   -filetypes $types]
 
     if {$filename!=""} {
-       create_fileviewer $filename
+       createFileViewer $filename
     }
 }
 
-proc view_inifile {} {
+proc viewIniFile {} {
     set fname [opp_getfilename ini]
     if {$fname == ""} {
        messagebox {Info} "The current configuration manager doesn't use file input." info ok
        return
     }
 
-    view_file $fname
+    viewFile $fname
 }
 
-proc view_outputvectorfile {} {
+proc viewOutputVectorFile {} {
     set fname [opp_getfilename outvector]
     if {$fname == ""} {
        messagebox {Info} "The current output vector manager doesn't use file output." info ok
@@ -726,10 +726,10 @@ proc view_outputvectorfile {} {
        messagebox {Info} "Output vector file not yet created (no values recorded yet)." info ok
        return
     }
-    view_file $fname
+    viewFile $fname
 }
 
-proc view_outputscalarfile {} {
+proc viewOutputScalarFile {} {
     set fname [opp_getfilename outscalar]
     if {$fname == ""} {
        messagebox {Info} "The current output scalar manager doesn't use file output." info ok
@@ -739,10 +739,10 @@ proc view_outputscalarfile {} {
        messagebox {Info} "Output scalar file not yet created (no output scalars written)." info ok
        return
     }
-    view_file $fname
+    viewFile $fname
 }
 
-proc view_snapshotfile {} {
+proc viewSnapshotFile {} {
     set fname [opp_getfilename snapshot]
     if {$fname == ""} {
        messagebox {Info} "The current snapshot manager doesn't use file output." info ok
@@ -752,15 +752,15 @@ proc view_snapshotfile {} {
        messagebox {Info} "Snapshot file not yet created (no snapshots done yet)." info ok
        return
     }
-    view_file $fname
+    viewFile $fname
 }
 
-proc view_file {filename} {
+proc viewFile {filename} {
     if [catch {open $filename r} f] {
        messagebox {Error} "Error: $f" info ok
        return
     } else {
-       create_fileviewer $filename
+       createFileViewer $filename
     }
 }
 

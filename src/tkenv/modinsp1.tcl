@@ -17,32 +17,32 @@
 #  non-graphical module inspectors etc.
 #
 
-proc moduleinspector_add_run_buttons {w} {
+proc moduleInspector:addRunButtons {w} {
     global icons help_tips
 
-    pack_iconbutton $w.toolbar.minfo   -image $icons(info) -command "modelinfo_dialog $w"
-    pack_iconbutton $w.toolbar.type    -image $icons(modtype) -command "inspect_componenttype $w"
-    #pack_iconbutton $w.toolbar.sep15   -separator
-    pack_iconbutton $w.toolbar.objs    -image $icons(findobj) -command "inspect_filteredobjectlist $w"
-    pack_iconbutton $w.toolbar.sep11   -separator
+    packIconButton $w.toolbar.minfo   -image $icons(info) -command "modelInfoDialog $w"
+    packIconButton $w.toolbar.type    -image $icons(modtype) -command "inspectComponentType $w"
+    #packIconButton $w.toolbar.sep15   -separator
+    packIconButton $w.toolbar.objs    -image $icons(findobj) -command "inspectFilteredObjectList $w"
+    packIconButton $w.toolbar.sep11   -separator
 
-    pack_iconbutton $w.toolbar.mrun    -image $icons(mrun)    -command "runsimulation_local $w normal"
-    pack_iconbutton $w.toolbar.mfast   -image $icons(mfast)   -command "runsimulation_local $w fast"
-    #pack_iconbutton $w.toolbar.sep13   -separator
+    packIconButton $w.toolbar.mrun    -image $icons(mrun)    -command "runSimulationLocal $w normal"
+    packIconButton $w.toolbar.mfast   -image $icons(mfast)   -command "runSimulationLocal $w fast"
+    #packIconButton $w.toolbar.sep13   -separator
 
-    pack_iconbutton $w.toolbar.vrun     -image $icons(run)     -command {run_normal}
-    pack_iconbutton $w.toolbar.vruncfg  -image $icons(down_vs) -command "moduleinspector_setrunmode $w.toolbar.vrun"
+    packIconButton $w.toolbar.vrun     -image $icons(run)     -command {runNormal}
+    packIconButton $w.toolbar.vruncfg  -image $icons(down_vs) -command "moduleInspector:setRunmode $w.toolbar.vrun"
 
-    #pack_iconbutton $w.toolbar.fastrun -image $icons(fast)    -command {run_fast}
-    #pack_iconbutton $w.toolbar.exprrun -image $icons(express) -command {run_express}
-    #pack_iconbutton $w.toolbar.sep12   -separator
-    #pack_iconbutton $w.toolbar.until   -image $icons(until)   -command {run_until}
-    #pack_iconbutton $w.toolbar.sep14   -separator
+    #packIconButton $w.toolbar.fastrun -image $icons(fast)    -command {runFast}
+    #packIconButton $w.toolbar.exprrun -image $icons(express) -command {runExpress}
+    #packIconButton $w.toolbar.sep12   -separator
+    #packIconButton $w.toolbar.until   -image $icons(until)   -command {runUntil}
+    #packIconButton $w.toolbar.sep14   -separator
 
-    pack_iconbutton $w.toolbar.stop    -image $icons(stop)    -command {stop_simulation}
-    pack_iconbutton $w.toolbar.sep16   -separator
+    packIconButton $w.toolbar.stop    -image $icons(stop)    -command {stopSimulation}
+    packIconButton $w.toolbar.sep16   -separator
 
-    bind $w <Control-F4> "runsimulation_local $w fast"
+    bind $w <Control-F4> "runSimulationLocal $w fast"
 
     set help_tips($w.toolbar.type)    {Inspect component type}
     set help_tips(.toolbar.minfo)     {Model information}
@@ -57,39 +57,39 @@ proc moduleinspector_add_run_buttons {w} {
 # Invoked by the small down arrow next to the "Run" icon on the toolbar, and displays
 # a menu to select between Run, Fast, Express and Until. $w is the icon button to configure.
 #
-proc moduleinspector_setrunmode {w} {
+proc moduleInspector:setRunmode {w} {
     global icons help_tips
 
     catch {destroy .popup}
     menu .popup -tearoff 0
 
     .popup add command -label "Run" \
-        -command [list config_iconbutton $w $icons(run)  run_normal "Run with full animation (F5)"]
+        -command [list iconButton:configure $w $icons(run)  runNormal "Run with full animation (F5)"]
     .popup add command -label "Fast Run" \
-        -command [list config_iconbutton $w $icons(fast) run_fast "Run faster: no animation and rare inspector updates (F6)"]
+        -command [list iconButton:configure $w $icons(fast) runFast "Run faster: no animation and rare inspector updates (F6)"]
     .popup add command -label "Express Run" \
-        -command [list config_iconbutton $w $icons(express) run_express "Run at full speed: no text output, animation or inspector updates (F7)"]
+        -command [list iconButton:configure $w $icons(express) runExpress "Run at full speed: no text output, animation or inspector updates (F7)"]
     .popup add command -label "Until..."  \
-        -command [list config_iconbutton $w $icons(until) run_until "Run until time or event number"]
+        -command [list iconButton:configure $w $icons(until) runUntil "Run until time or event number"]
 
     tk_popup .popup [winfo rootx $w] [expr [winfo rooty $w]+[winfo height $w]]
 
 }
 
-#proc create_compoundmodinspector {name geom} {
+#proc createCompoundModuleInspector {name geom} {
 #    global icons help_tips
 #
 #    set w $name
-#    create_inspector_toplevel $w $geom
+#    createInspectorToplevel $w $geom
 #
-#    pack_iconbutton $w.toolbar.graph   -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
-#    pack_iconbutton $w.toolbar.win     -image $icons(asoutput) -command "inspect_this $w {Module output}"
-#    pack_iconbutton $w.toolbar.sep1    -separator
+#    packIconButton $w.toolbar.graph   -image $icons(asgraphics) -command "inspectThis $w {As Graphics}"
+#    packIconButton $w.toolbar.win     -image $icons(asoutput) -command "inspectThis $w {Module output}"
+#    packIconButton $w.toolbar.sep1    -separator
 #
-#    moduleinspector_add_run_buttons $w
+#    moduleInspector:addRunButtons $w
 #
-#    rpack_iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
-#    rpack_iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
+#    rpackIconButton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
+#    rpackIconButton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
 #
 #    set help_tips($w.toolbar.owner)   {Inspect parent module}
 #    set help_tips($w.toolbar.graph)   {Inspect as network graphics}
@@ -97,12 +97,12 @@ proc moduleinspector_setrunmode {w} {
 #    set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
 #    set help_tips($w.toolbar.revert)  {Revert}
 #
-#    set nb [inspector_createnotebook $w]
+#    set nb [inspector:createNotebook $w]
 #
-#    notebook_addpage $nb info    {Info}
-#    notebook_addpage $nb contents {Contents}
+#    notebook:addPage $nb info    {Info}
+#    notebook:addPage $nb contents {Contents}
 #
-#    notebook_showpage $nb contents
+#    notebook:showPage $nb contents
 #
 #    # page 1: info
 #    label-entry $nb.info.name {Module name:}
@@ -115,39 +115,39 @@ proc moduleinspector_setrunmode {w} {
 #    pack $nb.info.dispstrpt -anchor center -fill x -side top
 #
 #    # other pages:
-#    create_inspector_listbox $nb.contents
+#    createInspectorListbox $nb.contents
 #
 #    # note: experimental page
-#    inspector_createfields2page $w
+#    inspector:createFields2Page $w
 #}
 #
-#proc create_simplemodinspector {name geom} {
+#proc createSimpleModuleInspector {name geom} {
 #    global icons help_tips
 #
 #    set w $name
-#    create_inspector_toplevel $w $geom
+#    createInspectorToplevel $w $geom
 #
-#    pack_iconbutton $w.toolbar.win    -image $icons(asoutput) -command "inspect_this $w {Module output}"
-#    pack_iconbutton $w.toolbar.sep1   -separator
+#    packIconButton $w.toolbar.win    -image $icons(asoutput) -command "inspectThis $w {Module output}"
+#    packIconButton $w.toolbar.sep1   -separator
 #
-#    moduleinspector_add_run_buttons $w
+#    moduleInspector:addRunButtons $w
 #
-#    rpack_iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
-#    rpack_iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
+#    rpackIconButton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
+#    rpackIconButton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
 #
 #    set help_tips($w.toolbar.owner)   {Inspect parent module}
 #    set help_tips($w.toolbar.win)     {See module output}
 #    set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
 #    set help_tips($w.toolbar.revert)  {Revert}
 #
-#    bind $w <Control-F4> "runsimulation_local $w fast"
+#    bind $w <Control-F4> "runSimulationLocal $w fast"
 #
-#    set nb [inspector_createnotebook $w]
+#    set nb [inspector:createNotebook $w]
 #
-#    notebook_addpage $nb info    {Info}
-#    notebook_addpage $nb contents {Contents}
+#    notebook:addPage $nb info    {Info}
+#    notebook:addPage $nb contents {Contents}
 #
-#    notebook_showpage $nb contents
+#    notebook:showPage $nb contents
 #
 #    # page 1: info
 #    label-entry $nb.info.name {Module name:}
@@ -168,72 +168,72 @@ proc moduleinspector_setrunmode {w} {
 #    pack $nb.info.stackused -anchor center  -fill x -side top
 #
 #    # other pages:
-#    create_inspector_listbox $nb.contents
+#    createInspectorListbox $nb.contents
 #
 #    # note: experimental page
-#    inspector_createfields2page $w
+#    inspector:createFields2Page $w
 #}
 
-proc runsimulation_local {w mode} {
+proc runSimulationLocal {w mode} {
     # invoked from toolbar in module inspectors
-    if [is_running] {
-        set_gui_for_runmode $mode $w
+    if [isRunning] {
+        setGuiForRunmode $mode $w
         opp_set_run_mode $mode
         opp_set_run_until_module $w
     } else {
-        if {![network_ready]} {return}
-        set_gui_for_runmode $mode $w
+        if {![networkReady]} {return}
+        setGuiForRunmode $mode $w
         opp_onestepinmodule $w $mode
-        set_gui_for_runmode notrunning
+        setGuiForRunmode notrunning
     }
 }
 
-proc create_simplemodulewindow {name geom} {
-    _create_modulewindow $name $geom 0
+proc createSimpleModuleWindow {name geom} {
+    _createModuleWindow $name $geom 0
 }
 
-proc create_compoundmodulewindow {name geom} {
-    _create_modulewindow $name $geom 1
+proc createCompoundModuleWindow {name geom} {
+    _createModuleWindow $name $geom 1
 }
 
-proc _create_modulewindow {name geom iscompound} {
+proc _createModuleWindow {name geom iscompound} {
     global icons fonts help_tips B2 B3
 
     set w $name
-    create_inspector_toplevel $w $geom
+    createInspectorToplevel $w $geom
 
     regexp {\.(ptr.*)-[0-9]+} $w match modptr
 
     # Add icons
     if {$iscompound} {
         # for compound module
-        pack_iconbutton $w.toolbar.graph  -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
-        pack_iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
-        pack_iconbutton $w.toolbar.sep1   -separator
+        packIconButton $w.toolbar.graph  -image $icons(asgraphics) -command "inspectThis $w {As Graphics}"
+        packIconButton $w.toolbar.obj    -image $icons(asobject) -command "inspectThis $w {As Object}"
+        packIconButton $w.toolbar.sep1   -separator
         set help_tips($w.toolbar.owner)  {Inspect parent module}
         set help_tips($w.toolbar.graph)  {Inspect as network graphics}
         set help_tips($w.toolbar.obj)    {Inspect as object}
 
-        textwindow_add_icons $w modulewindow
+        textWindowAddIcons $w modulewindow
 
-        moduleinspector_add_run_buttons $w
+        moduleInspector:addRunButtons $w
 
     } else {
         # for simple module
-        pack_iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
-        pack_iconbutton $w.toolbar.sep1   -separator
+        packIconButton $w.toolbar.obj    -image $icons(asobject) -command "inspectThis $w {As Object}"
+        packIconButton $w.toolbar.sep1   -separator
         set help_tips($w.toolbar.owner)  {Inspect parent module}
         set help_tips($w.toolbar.obj)    {Inspect as object}
 
-        textwindow_add_icons $w modulewindow
+        textWindowAddIcons $w modulewindow
 
-        moduleinspector_add_run_buttons $w
+        moduleInspector:addRunButtons $w
     }
 
     frame $w.main
     text $w.main.text -yscrollcommand "$w.main.sb set" -width 80 -height 15 -font $fonts(text)
     scrollbar $w.main.sb -command "$w.main.text yview"
-    logtextwidget_configuretags $w.main.text
+    logTextWidget:configureTags $w.main.text
 
     #pack $w.statusbar -anchor center -expand 0 -fill x -side top
     #pack $w.statusbar.name -anchor n -expand 1 -fill x -side left
@@ -243,16 +243,16 @@ proc _create_modulewindow {name geom iscompound} {
     pack $w.main.text -anchor center -expand 1 -fill both -side left
 
     # bindings for find
-    bind_commands_to_textwidget $w.main.text modulewindow
+    bindCommandsToTextWidget $w.main.text modulewindow
 }
 
-proc logtextwidget_configuretags {txt} {
+proc logTextWidget:configureTags {txt} {
     $txt tag configure SELECT -back #808080 -fore #ffffff
     $txt tag configure event -foreground blue
     $txt tag configure log -foreground #006000
 }
 
-proc logtextwidget_clear {txt} {
+proc logTextWidget:clear {txt} {
     # Note: the direct way ($txt delete 0.1 end) is very slow if there's
     # a lot of lines (100,000). Luckily, removing all tags beforehand
     # speeds up the whole process about a hundred times. We need to
@@ -260,10 +260,10 @@ proc logtextwidget_clear {txt} {
 
     $txt tag delete log event
     $txt delete 0.1 end
-    logtextwidget_configuretags $txt
+    logTextWidget:configureTags $txt
 }
 
-proc mainlogwindow_filterdialog {} {
+proc mainlogWindow:openFilterDialog {} {
     set modptr [opp_object_systemmodule]
     set excludedModuleIds [opp_getmainwindowexcludedmoduleids]
     set excludedModuleIds [moduleOutputFilterDialog $modptr $excludedModuleIds]
@@ -272,7 +272,7 @@ proc mainlogwindow_filterdialog {} {
     }
 }
 
-proc modulewindow_filterdialog {w} {
+proc moduleWindow:openFilterDialog {w} {
     regexp {\.(ptr.*)-[0-9]+} $w match modptr
     set excludedModuleIds [opp_inspectorcommand $w getexcludedmoduleids]
     set excludedModuleIds [moduleOutputFilterDialog $modptr $excludedModuleIds]
@@ -281,17 +281,17 @@ proc modulewindow_filterdialog {w} {
     }
 }
 
-proc mainlogwindow_trimlines {} {
+proc mainlogWindow:trimlines {} {
     global config
-    text_trimlines .main.text $config(logwindow-scrollbacklines)
+    textwidget:trimLines .main.text $config(logwindow-scrollbacklines)
 }
 
-proc modulewindow_trimlines {w} {
+proc moduleWindow:trimlines {w} {
     global config
-    text_trimlines $w.main.text $config(logwindow-scrollbacklines)
+    textwidget:trimLines $w.main.text $config(logwindow-scrollbacklines)
 }
 
-proc text_trimlines {t numlines} {
+proc textwidget:trimLines {t numlines} {
     if {$numlines==""} {return}
     set endline [$t index {end linestart}]
     if {$endline > $numlines + 100} {  ;# for performance, we want to delete in at least 100-line chunks

@@ -17,7 +17,7 @@
 # Histogram, output vector and statistic inspectors
 #
 
-proc histogramwindow_mouse {w x y on} {
+proc histogramWindow:mouse {w x y on} {
     #set obj [$w find closest $x $y]
     set tags [$w gettags current]
     if [regexp {.*cell([0-9]+).*} $tags match cell] {
@@ -32,17 +32,17 @@ proc histogramwindow_mouse {w x y on} {
     }
 }
 
-proc create_histogramwindow {name geom} {
+proc createHistogramWindow {name geom} {
     global icons help_tips
 
     # create histogram inspector
     set w $name
-    create_inspector_toplevel $w $geom
+    createInspectorToplevel $w $geom
 
     # make the window respond to resize events
     bind $w <Configure> "opp_updateinspector $w"
 
-    pack_iconbutton $w.toolbar.obj -image $icons(asobject) -command "inspect_this $w {As Object}"
+    packIconButton $w.toolbar.obj -image $icons(asobject) -command "inspectThis $w {As Object}"
     set help_tips($w.toolbar.obj) {Inspect as object}
 
     frame $w.main
@@ -56,8 +56,8 @@ proc create_histogramwindow {name geom} {
     label $w.bot.info -relief groove -width 50
     pack $w.bot.info -anchor center -expand 1 -fill x -side left
 
-    $w.main.canvas bind all <Any-Enter> {histogramwindow_mouse %W %x %y 1}
-    $w.main.canvas bind all <Any-Leave> {histogramwindow_mouse %W %x %y 0}
+    $w.main.canvas bind all <Any-Enter> {histogramWindow:mouse %W %x %y 1}
+    $w.main.canvas bind all <Any-Leave> {histogramWindow:mouse %W %x %y 0}
 
     # we need to let the window display, otherwise the canvas size
     # (needed by the first draw) returned by [winfo width/height ...]
@@ -65,7 +65,7 @@ proc create_histogramwindow {name geom} {
     update idletasks
 }
 
-proc outvectorwindow_opt_update {w win} {
+proc outvectorWindow:optUpdate {w win} {
     global tmp
     opp_inspectorcommand $win config \
                      $tmp(autoscale) \
@@ -76,7 +76,7 @@ proc outvectorwindow_opt_update {w win} {
     opp_updateinspector $win
 }
 
-proc outvectorwindow_options {win} {
+proc outvectorWindow:options {win} {
     set w .ov-options
     catch {destroy $w}
     global tmp
@@ -121,11 +121,11 @@ proc outvectorwindow_options {win} {
     # 2. Create bindings.
     global opp
 
-    $w.buttons.okbutton configure -command "outvectorwindow_opt_update $w $win; set opp(button) 1"
-    $w.buttons.applybutton configure -command "outvectorwindow_opt_update $w $win"
+    $w.buttons.okbutton configure -command "outvectorWindow:optUpdate $w $win; set opp(button) 1"
+    $w.buttons.applybutton configure -command "outvectorWindow:optUpdate $w $win"
     $w.buttons.cancelbutton configure -command "set opp(button) 1"
 
-    bind $w <Return> "outvectorwindow_opt_update $w $win; set opp(button) 1"
+    bind $w <Return> "outvectorWindow:optUpdate $w $win; set opp(button) 1"
     bind $w <Escape> "set opp(button) 0"
 
     # 3. set initial values
@@ -164,7 +164,7 @@ proc outvectorwindow_options {win} {
     }
 }
 
-proc outvectorwindow_mouse {w x y on} {
+proc outvectorWindow:mouse {w x y on} {
     global opp
     # mouse enters/leaves a data point's drawing in a outvector window
     # the index of the point is in the drawing's tag: "value12"
@@ -195,17 +195,17 @@ proc outvectorwindow_mouse {w x y on} {
     }
 }
 
-proc create_outvectorwindow {name geom} {
+proc createOutvectorWindow {name geom} {
     global icons
 
     # create histogram inspector
     set w $name
-    create_inspector_toplevel $w $geom
+    createInspectorToplevel $w $geom
 
     # make the window respond to resize events
     bind $w <Configure> "opp_updateinspector $w"
 
-    pack_iconbutton $w.toolbar.obj -image $icons(asobject) -command "inspect_this $w {As Object}"
+    packIconButton $w.toolbar.obj -image $icons(asobject) -command "inspectThis $w {As Object}"
     set help_tips($w.toolbar.obj) {Inspect as object}
 
     frame $w.main
@@ -217,12 +217,12 @@ proc create_outvectorwindow {name geom} {
     pack $w.main.canvas -anchor center -expand 1 -fill both -side top
 
     label $w.bot.info -width 50 -relief groove
-    button $w.bot.view -text {Options...} -command "outvectorwindow_options $w"
+    button $w.bot.view -text {Options...} -command "outvectorWindow:options $w"
     pack $w.bot.view -anchor center -expand 0 -fill none -side right
     pack $w.bot.info -anchor center -expand 1 -fill x -side left
 
-    $w.main.canvas bind all <Any-Enter> {outvectorwindow_mouse %W %x %y 1}
-    $w.main.canvas bind all <Any-Leave> {outvectorwindow_mouse %W %x %y 0}
+    $w.main.canvas bind all <Any-Enter> {outvectorWindow:mouse %W %x %y 1}
+    $w.main.canvas bind all <Any-Leave> {outvectorWindow:mouse %W %x %y 0}
 
     # we need to let the window display, otherwise the canvas size
     # (needed by the first draw) returned by [winfo width/height ...]
@@ -230,19 +230,19 @@ proc create_outvectorwindow {name geom} {
     update idletasks
 }
 
-#proc create_statisticinspector {name geom} {
+#proc createStatisticInspector {name geom} {
 #    global icons help_tips
 #
 #    set w $name
-#    create_inspector_toplevel $w $geom
+#    createInspectorToplevel $w $geom
 #
-#    set nb [inspector_createnotebook $w]
+#    set nb [inspector:createNotebook $w]
 #
-#    inspector_createfields2page $w
+#    inspector:createFields2Page $w
 #
-#    notebook_addpage $nb info  {Info}
+#    notebook:addPage $nb info  {Info}
 #
-#    pack_iconbutton $w.toolbar.graph -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
+#    packIconButton $w.toolbar.graph -image $icons(asgraphics) -command "inspectThis $w {As Graphics}"
 #    set help_tips($w.toolbar.graph) {Inspect as histogram graphics}
 #
 #    label-sunkenlabel $nb.info.count Count:
