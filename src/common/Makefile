@@ -136,10 +136,10 @@ $O/expression.o: expression.cc \
   commondefs.h \
   stringutil.h \
   unitconversion.h \
-  stringpool.h \
   expressionyydefs.h \
-  exception.h \
-  expression.h
+  expression.h \
+  stringpool.h \
+  exception.h
 $O/expression.tab.o: expression.tab.cc \
   commonutil.h \
   commondefs.h \

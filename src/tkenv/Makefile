@@ -217,8 +217,8 @@ $O/inspector.o: inspector.cc \
   ../../include/cmsgpar.h \
   ../../include/cboolparimpl.h \
   ../../include/mersennetwister.h \
-  ../../include/cstatistic.h \
   ../../include/cconfigoption.h \
+  ../../include/cstatistic.h \
   ../../include/cclassdescriptor.h \
   ../../include/cstringtokenizer.h \
   inspector.h \
@@ -330,8 +330,8 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/cmsgpar.h \
   ../../include/cboolparimpl.h \
   ../../include/mersennetwister.h \
-  ../../include/cstatistic.h \
   ../../include/cconfigoption.h \
+  ../../include/cstatistic.h \
   ../../include/cclassdescriptor.h \
   ../../include/cstringtokenizer.h \
   inspector.h \
@@ -609,8 +609,8 @@ $O/objinsp.o: objinsp.cc \
   ../../include/cmsgpar.h \
   ../../include/cboolparimpl.h \
   ../../include/mersennetwister.h \
-  ../../include/cstatistic.h \
   ../../include/cconfigoption.h \
+  ../../include/cstatistic.h \
   ../../include/cclassdescriptor.h \
   inspector.h \
   ../../include/cstringtokenizer.h \

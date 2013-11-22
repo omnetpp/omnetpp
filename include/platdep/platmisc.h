@@ -25,8 +25,11 @@
 #define DEBUG_TRAP  __asm {int 3}  // Visual C++: debug interrupt
 #elif defined _WIN32 and defined __GNUC__
 #define DEBUG_TRAP  asm("int $3\n")  // MinGW or Cygwin: debug interrupt with GNU syntax
+#elif defined(__linux__) && (defined(__i386__) || defined(__x86_64__))
+#define DEBUG_TRAP  __asm__("int3")
 #else
-#define DEBUG_TRAP  raise(2)  // SIGINT
+#include <signal.h>
+#define DEBUG_TRAP  raise(SIGTRAP)
 #endif
 
 //

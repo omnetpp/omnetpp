@@ -155,12 +155,12 @@ $O/carray.o: carray.cc \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/carray.h \
-  ../../include/simtime_t.h \
   ../../include/cvisitor.h \
-  ../../include/cobjectfactory.h \
+  ../../include/simtime_t.h \
   ../../include/cregistrationlist.h \
-  ../../include/platdep/platmisc.h \
+  ../../include/cobjectfactory.h \
   ../../include/opp_string.h \
+  ../../include/platdep/platmisc.h \
   ../../include/cexception.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
@@ -2530,8 +2530,8 @@ $O/onstartup.o: onstartup.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/platdep/platmisc.h \
-  ../../include/simutil.h \
   ../../include/cexception.h \
+  ../../include/simutil.h \
   ../../include/platdep/intxtypes.h
 $O/resultfilters.o: resultfilters.cc \
   ../../include/regmacros.h \
@@ -2669,16 +2669,16 @@ $O/sim_std_m.o: sim_std_m.cc \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/cmodelchange.h \
-  ../../include/carray.h \
   ../../include/cstringparimpl.h \
+  ../../include/carray.h \
   ../../include/cenvir.h \
   ../../include/simtime_t.h \
   ../../include/mersennetwister.h \
   ../../include/cboolparimpl.h \
   ../../include/cmsgpar.h \
   ../../include/cclassdescriptor.h \
-  ../../include/cconfigoption.h \
   ../../include/cstatistic.h \
+  ../../include/cconfigoption.h \
   ../../include/cstringtokenizer.h \
   ../../include/cchannel.h \
   ../../include/opp_string.h \

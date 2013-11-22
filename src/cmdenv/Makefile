@@ -107,12 +107,12 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/errmsg.h \
   ../../include/cmessage.h \
   ../../include/cownedobject.h \
-  ../../include/cobject.h \
   ../../include/onstartup.h \
+  ../../include/cobject.h \
   ../../include/cresultlistener.h \
   ../envir/envirbase.h \
-  ../../include/clistener.h \
   ../../include/envirext.h \
+  ../../include/clistener.h \
   ../../include/cstringpool.h \
   ../../include/cpar.h \
   ../../include/globals.h \
