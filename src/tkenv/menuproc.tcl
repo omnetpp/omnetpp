@@ -410,6 +410,24 @@ proc oneStep {} {
     }
 }
 
+proc debugNextEvent {} {
+    # implements Simulate|Debug next event
+
+    if [isRunning] {
+        messagebox {Error} {Simulation is currently running -- please stop it first.} info ok
+     } else {
+        if {![networkReady]} {return}
+        set ans [messagebox {Confirm} {Trigger debugger breakpoint for the next simulation event?\
+           Note: If you are not running under a debugger, this will likely result in a crash.} warning okcancel]
+        if {$ans == "ok"} {
+           setGuiForRunmode step
+           opp_request_trap_on_next_event
+           opp_onestep
+           setGuiForRunmode notrunning
+        }
+    }
+}
+
 proc runSimulation {mode} {
     if [isRunning] {
         setGuiForRunmode $mode

@@ -99,6 +99,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
     cMessage *msg_for_activity; // helper variable to pass the received message into activity()
     cException *exception;    // helper variable to get exceptions back from activity()
+    bool trap_on_next_event;  // when set, next handleMessage or activity() will execute debugger interrupt
 
     cHasher *hasherp;         // used for fingerprint calculation
 
@@ -518,6 +519,24 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * This is a convenience function which simply calls getContextModule().
      */
     cSimpleModule *getContextSimpleModule() const;
+
+    /**
+     * Request the next handleMessage() or activity() to execute a debugger
+     * interrupt. (If the program is not run under a debugger, that will
+     * usually result in a crash.)
+     */
+    void requestTrapOnNextEvent() {trap_on_next_event = true;}
+
+    /**
+     * Clear the previous requestTrapOnNextEvent() call.
+     */
+    void clearTrapOnNextEvent() {trap_on_next_event = false;}
+
+    /**
+     * Returns true if there is a pending request to execute a debugger
+     * interrupt on the next event.
+     */
+    bool isTrapOnNextEventRequested() const {return trap_on_next_event;}
     //@}
 
     /** @name Miscellaneous. */

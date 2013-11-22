@@ -39,6 +39,7 @@
 #include "chasher.h"
 #include "cconfiguration.h"
 #include "ccoroutine.h"
+#include "platdep/platmisc.h"  // for DEBUG_TRAP
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -58,6 +59,11 @@ extern std::set<cOwnedObject*> objectlist;
 void printAllObjects();
 #endif
 
+#ifdef NDEBUG
+#define DEBUG_TRAP_IF_REQUESTED   /*no-op*/
+#else
+#define DEBUG_TRAP_IF_REQUESTED   {if (trap_on_next_event) {trap_on_next_event=false; DEBUG_TRAP;}}
+#endif
 
 cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, false)
 {
@@ -84,6 +90,7 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
 
     sim_time = SIMTIME_ZERO;
     event_num = 0;
+    trap_on_next_event = false;
 
     msgQueue.setName("scheduled-events");
     take(&msgQueue);
@@ -374,6 +381,7 @@ void cSimulation::startRun()
     // reset counters. Note msgQueue.clear() was already called from setupNetwork()
     sim_time = 0;
     event_num = 0; // initialize() has event number 0
+    trap_on_next_event = false;
     cMessage::resetMessageCounters();
 
     simulationstage = CTX_INITIALIZE;
@@ -612,8 +620,7 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
         }
         else
         {
-            // if there was an error during simulation, handleMessage() will come back
-            // with an exception
+            DEBUG_TRAP_IF_REQUESTED; // YOU ARE ABOUT TO ENTER THE handleMessage() CALL YOU REQUESTED -- SELECT "STEP INTO" IN YOUR DEBUGGER
             mod->handleMessage(msg);
         }
     }

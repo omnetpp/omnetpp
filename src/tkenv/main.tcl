@@ -193,6 +193,8 @@ proc createOmnetppWindow {} {
       {command -command runExpress -label {Express Run (tracing off)} -accel {F7} -underline 1}
       {command -command runUntil -label {Run Until...} -underline 4}
       {separator}
+      {command -command debugNextEvent -label {Debug Next Event} -accel {Ctrl+F9} -underline 1}
+      {separator}
       {command -command stopSimulation -label {Stop Execution} -accel {F8} -underline 0}
       {separator}
       {command -command callFinish -label {Call finish() for All Modules} -underline 0}
@@ -475,6 +477,7 @@ proc bindRunCommands {w} {
     bind $w <F6> {runFast}
     bind $w <F7> {runExpress}
     bind $w <F8> {stopSimulation}
+    bind $w <Control-F9> {debugNextEvent}
 }
 
 proc bindOtherCommands {w} {

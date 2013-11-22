@@ -17,6 +17,18 @@
 #ifndef __PLATMISC_H
 #define __PLATMISC_H
 
+
+//
+// Breaking into the debugger
+//
+#if defined _MSC_VER
+#define DEBUG_TRAP  __asm {int 3}  // Visual C++: debug interrupt
+#elif defined _WIN32 and defined __GNUC__
+#define DEBUG_TRAP  asm("int $3\n")  // MinGW or Cygwin: debug interrupt with GNU syntax
+#else
+#define DEBUG_TRAP  raise(2)  // SIGINT
+#endif
+
 //
 // Common Unix functionality
 //

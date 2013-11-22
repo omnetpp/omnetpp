@@ -90,6 +90,8 @@ int startAll_cmd(ClientData, Tcl_Interp *, int, const char **);
 int finishSimulation_cmd(ClientData, Tcl_Interp *, int, const char **);
 int loadLib_cmd(ClientData, Tcl_Interp *, int, const char **);
 int isAPL_cmd(ClientData, Tcl_Interp *, int, const char **);
+int requestTrapOnNextEvent_cmd(ClientData, Tcl_Interp *, int, const char **);
+
 
 int getActiveConfigName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getActiveRunNumber_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -197,6 +199,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_finish_simulation",finishSimulation_cmd}, // args: -
    { "opp_loadlib",          loadLib_cmd        }, // args: <fname>
    { "opp_isapl",            isAPL_cmd          }, // args: -
+   { "opp_request_trap_on_next_event", requestTrapOnNextEvent_cmd}, // args: -
    // Utility commands
    { "opp_getactiveconfigname",getActiveConfigName_cmd}, // args: -  ret: current config name
    { "opp_getactiverunnumber", getActiveRunNumber_cmd }, // args: -  ret: current run number
@@ -572,6 +575,13 @@ int isAPL_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, TCLCONST(isAPL() ? "1" : "0"), TCL_STATIC);
+   return TCL_OK;
+}
+
+int requestTrapOnNextEvent_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   simulation.requestTrapOnNextEvent();
    return TCL_OK;
 }
 
