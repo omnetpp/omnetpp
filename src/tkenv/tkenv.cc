@@ -253,7 +253,7 @@ void Tkenv::doRun()
 #endif
 
         // evaluate main script and build user interface
-        if (Tcl_Eval(interp,"start_tkenv")==TCL_ERROR)
+        if (Tcl_Eval(interp,"startTkenv")==TCL_ERROR)
             throw opp_runtime_error("Tkenv: %s\n", Tcl_GetStringResult(interp));
 
         // create windowtitle prefix
@@ -272,7 +272,7 @@ void Tkenv::doRun()
     //
     // RUN
     //
-    CHK(Tcl_Eval(interp,"startup_commands"));
+    CHK(Tcl_Eval(interp,"startupCommands"));
     runTk(interp);
 
     //
@@ -732,7 +732,7 @@ void Tkenv::newNetwork(const char *networkname)
         cModuleType *network = resolveNetwork(networkname);
         ASSERT(network);
 
-        CHK(Tcl_VarEval(interp, "clear_windows", NULL));
+        CHK(Tcl_VarEval(interp, "clearWindows", NULL));
 
         // set up new network with config General.
         isconfigrun = false;
@@ -787,7 +787,7 @@ void Tkenv::newRun(const char *configname, int runnumber)
         cModuleType *network = resolveNetwork(opt_network_name.c_str());
         ASSERT(network);
 
-        CHK(Tcl_VarEval(interp, "clear_windows", NULL));
+        CHK(Tcl_VarEval(interp, "clearWindows", NULL));
 
         answers.clear();
         setupNetwork(network);
@@ -884,13 +884,13 @@ void Tkenv::updateInspectors()
     }
 
     // update object tree
-    CHK(Tcl_VarEval(interp, "updateTreeManager",NULL));
+    CHK(Tcl_VarEval(interp, "treeManager:update",NULL));
 
     // trim log in main window
-    CHK(Tcl_VarEval(interp, "mainlogwindow_trimlines",NULL));
+    CHK(Tcl_VarEval(interp, "mainlogWindow:trimlines",NULL));
 
     // try opening "pending" inspectors
-    CHK(Tcl_VarEval(interp, "inspectorupdate_callback",NULL));
+    CHK(Tcl_VarEval(interp, "inspectorUpdateCallback",NULL));
 }
 
 void Tkenv::redrawInspectors()
@@ -972,7 +972,7 @@ void Tkenv::updateSimtimeDisplay()
                         "}", NULL ));
 
     // time axis
-    CHK(Tcl_Eval(interp, "redraw_timeline"));
+    CHK(Tcl_Eval(interp, "redrawTimeline"));
 }
 
 void Tkenv::updateNextModuleDisplay()
@@ -1455,7 +1455,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
                 char parentptr[30], modptr[30];
                 strcpy(parentptr,ptrToStr(enclosingmod));
                 strcpy(modptr,ptrToStr(mod));
-                CHK(Tcl_VarEval(interp, "graphmodwin_animate_methodcall_ascent ",
+                CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateMethodcallAscent ",
                                         insp->windowName(), " ",
                                         parentptr," ",
                                         modptr," ",
@@ -1478,7 +1478,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
                 char parentptr[30], modptr[30];
                 strcpy(parentptr,ptrToStr(enclosingmod));
                 strcpy(modptr,ptrToStr(mod));
-                CHK(Tcl_VarEval(interp, "graphmodwin_animate_methodcall_descent ",
+                CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateMethodcallDescent ",
                                         insp->windowName(), " ",
                                         parentptr," ",
                                         modptr," ",
@@ -1496,7 +1496,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
                 char fromptr[30], toptr[30];
                 strcpy(fromptr,ptrToStr(i->from));
                 strcpy(toptr,ptrToStr(i->to));
-                CHK(Tcl_VarEval(interp, "graphmodwin_animate_methodcall_horiz ",
+                CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateMethodcallHoriz ",
                                         insp->windowName(), " ",
                                         fromptr," ",
                                         toptr," ",
@@ -1509,7 +1509,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
     if (numinsp>0)
     {
         // leave it there for a while
-        CHK(Tcl_Eval(interp, "graphmodwin_animate_methodcall_wait"));
+        CHK(Tcl_Eval(interp, "graphicalModuleWindow:animateMethodcallWait"));
 
         // then remove all arrows
         for (i=pathvec.begin(); i!=pathvec.end(); i++)
@@ -1519,7 +1519,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
             TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
             if (insp)
             {
-                CHK(Tcl_VarEval(interp, "graphmodwin_animate_methodcall_cleanup ",
+                CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateMethodcallCleanup ",
                                         insp->windowName(),
                                         NULL));
             }
@@ -1686,7 +1686,7 @@ void Tkenv::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
         if (insp)
         {
             int lastgate = (g->getNextGate()==arrivalgate);
-            CHK(Tcl_VarEval(interp, "graphmodwin_animate_on_conn ",
+            CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateOnConn ",
                                     insp->windowName(), " ",
                                     msgptr, " ",
                                     ptrToStr(g)," ",
@@ -1792,7 +1792,7 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
                 char parentptr[30], modptr[30];
                 strcpy(parentptr,ptrToStr(enclosingmod));
                 strcpy(modptr,ptrToStr(mod));
-                CHK(Tcl_VarEval(interp, "graphmodwin_animate_senddirect_ascent ",
+                CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateSenddirectAscent ",
                                         insp->windowName(), " ",
                                         msgptr, " ",
                                         parentptr," ",
@@ -1812,7 +1812,7 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
                 char parentptr[30], modptr[30];
                 strcpy(parentptr,ptrToStr(enclosingmod));
                 strcpy(modptr,ptrToStr(mod));
-                CHK(Tcl_VarEval(interp, "graphmodwin_animate_senddirect_descent ",
+                CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateSenddirectDescent ",
                                         insp->windowName(), " ",
                                         msgptr, " ",
                                         parentptr," ",
@@ -1830,7 +1830,7 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
                 char fromptr[30], toptr[30];
                 strcpy(fromptr,ptrToStr(i->from));
                 strcpy(toptr,ptrToStr(i->to));
-                CHK(Tcl_VarEval(interp, "graphmodwin_animate_senddirect_horiz ",
+                CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateSenddirectHoriz ",
                                         insp->windowName(), " ",
                                         msgptr, " ",
                                         fromptr," ",
@@ -1849,7 +1849,7 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
         TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
         if (insp)
         {
-            CHK(Tcl_VarEval(interp, "graphmodwin_animate_senddirect_cleanup ",
+            CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateSenddirectCleanup ",
                                     insp->windowName(),
                                     NULL));
         }
@@ -1874,7 +1874,7 @@ void Tkenv::animateDelivery(cMessage *msg)
     TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
     if (insp)
     {
-        CHK(Tcl_VarEval(interp, "graphmodwin_animate_on_conn ",
+        CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateOnConn ",
                                 insp->windowName(), " ",
                                 msgptr, " ",
                                 ptrToStr(g)," ",
@@ -1897,7 +1897,7 @@ void Tkenv::animateDeliveryDirect(cMessage *msg)
     TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
     if (insp)
     {
-        CHK(Tcl_VarEval(interp, "graphmodwin_animate_senddirect_delivery ",
+        CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateSenddirectDelivery ",
                                 insp->windowName(), " ",
                                 msgptr, " ",
                                 ptrToStr(destmod),
@@ -1907,7 +1907,7 @@ void Tkenv::animateDeliveryDirect(cMessage *msg)
 
 void Tkenv::performAnimations()
 {
-    CHK(Tcl_VarEval(interp, "perform_animations", NULL));
+    CHK(Tcl_VarEval(interp, "performAnimations", NULL));
 }
 
 void Tkenv::bubble(cComponent *component, const char *text)

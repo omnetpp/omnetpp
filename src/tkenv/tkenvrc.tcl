@@ -15,10 +15,10 @@
 
 
 
-# save_tkenvrc --
+# saveTkenvrc --
 #
 #
-proc save_tkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
+proc saveTkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
     global config fonts defaultfonts
 
     if [catch {
@@ -57,7 +57,7 @@ proc save_tkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
                 puts $fout "option $key\t{$value}"
             }
 
-            store_mainwin_geom
+            storeMainwinGeometry
             foreach key [lsort [array names config]] {
                 set value $config($key)
                 puts $fout "config $key\t{$value}"
@@ -72,7 +72,7 @@ proc save_tkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
         }
 
         if {$saveinspectors} {
-            puts $fout [inspectorlist_tkenvrc_get_contents $atexit]
+            puts $fout [inspectorList:tkenvrcGetContents $atexit]
         }
 
         close $fout
@@ -83,7 +83,7 @@ proc save_tkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
     }
 }
 
-proc store_mainwin_geom {} {
+proc storeMainwinGeometry {} {
     global config
 
     set state [wm state .]
@@ -102,17 +102,17 @@ proc store_mainwin_geom {} {
     set config(mainwin-geom) $geom
 }
 
-# load_tkenvrc --
+# loadTkenvrc --
 #
 #
-proc load_tkenvrc {fname} {
+proc loadTkenvrc {fname} {
     global config fonts
 
     if [catch {open $fname r} fin] {
         return
     }
 
-    inspectorlist_tkenvrc_reset
+    inspectorList:tkenvrcReset
 
     set lineno 1
     while {[gets $fin line] >= 0} {
@@ -122,7 +122,7 @@ proc load_tkenvrc {fname} {
         if [catch {
             set cat [lindex $line 0]
             if {$cat == "inspector"} {
-                inspectorlist_tkenvrc_process_line $line
+                inspectorList:tkenvrcProcessLine $line
             } elseif {$cat == "option"} {
                 set key [lindex $line 1]
                 set value [lindex $line 2]
@@ -140,7 +140,7 @@ proc load_tkenvrc {fname} {
                 }
             } elseif {[llength $line]==4} {
                 # old tkenvrc, patch it up
-                inspectorlist_tkenvrc_process_line [concat "inspector" $line]
+                inspectorList:tkenvrcProcessLine [concat "inspector" $line]
             }
         }] {
             tk_messageBox -icon warning -type ok -title {Error reading .tkenvrc} -message "$fname line $lineno is invalid, ignoring"
@@ -153,7 +153,7 @@ proc load_tkenvrc {fname} {
     set fonts(balloon)  $fonts(normal)
     set fonts(timeline) $fonts(canvas)
 
-    inspectorlist_openinspectors
+    inspectorList:openInspectors
     reflectSettingsInGui
 }
 
@@ -207,12 +207,12 @@ proc reflectSettingsInGui {} {
 
    set help_tips(font)  $fonts(balloon)
 
-   toggle_treeview
-   toggle_treeview
-   toggle_timeline
-   toggle_timeline
+   toggleTreeView
+   toggleTreeView
+   toggleTimeline
+   toggleTimeline
 
-   redraw_timeline
+   redrawTimeline
 
    opp_redrawinspectors
 }

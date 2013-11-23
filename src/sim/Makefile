@@ -155,12 +155,12 @@ $O/carray.o: carray.cc \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/carray.h \
-  ../../include/simtime_t.h \
   ../../include/cvisitor.h \
-  ../../include/cobjectfactory.h \
+  ../../include/simtime_t.h \
   ../../include/cregistrationlist.h \
-  ../../include/platdep/platmisc.h \
+  ../../include/cobjectfactory.h \
   ../../include/opp_string.h \
+  ../../include/platdep/platmisc.h \
   ../../include/cexception.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
@@ -2780,8 +2780,8 @@ $O/onstartup.o: onstartup.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/platdep/platmisc.h \
-  ../../include/simutil.h \
   ../../include/cexception.h \
+  ../../include/simutil.h \
   ../../include/platdep/intxtypes.h
 $O/resultfilters.o: resultfilters.cc \
   ../../include/regmacros.h \

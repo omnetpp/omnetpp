@@ -73,7 +73,7 @@ void TGraphLayouterEnvironment::showGraphics(const char *text)
     if (inspected())
     {
         Tcl_VarEval(interp, canvas, " raise node", NULL);
-        Tcl_VarEval(interp, "layouter_debugDraw_finish ", canvas, " {", text, "}", NULL);
+        Tcl_VarEval(interp, "layouter:debugDrawFinish ", canvas, " {", text, "}", NULL);
     }
 }
 
@@ -126,7 +126,7 @@ bool TGraphLayouterEnvironment::okToProceed()
         // start grab
         grabActive = true;
         Tcl_SetVar(interp, "stoplayouting", "0", TCL_GLOBAL_ONLY);
-        Tcl_VarEval(interp, "layouter_startgrab ", widgetToGrab, NULL);
+        Tcl_VarEval(interp, "layouter:startGrab ", widgetToGrab, NULL);
     }
 
     // only check the UI once a while
@@ -154,7 +154,7 @@ void TGraphLayouterEnvironment::cleanup()
     }
     if (grabActive)
     {
-        Tcl_VarEval(interp, "layouter_releasegrab ", widgetToGrab, NULL);
+        Tcl_VarEval(interp, "layouter:releaseGrab ", widgetToGrab, NULL);
     }
 }
 

@@ -34,9 +34,15 @@
 #include "cenvir.h"
 #include "cexception.h"
 #include "commonutil.h"
+#include "platdep/platmisc.h"  // for DEBUG_TRAP
 
 USING_NAMESPACE
 
+#ifdef NDEBUG
+#define DEBUG_TRAP_IF_REQUESTED   /*no-op*/
+#else
+#define DEBUG_TRAP_IF_REQUESTED   {if (simulation.trap_on_next_event) {simulation.trap_on_next_event=false; DEBUG_TRAP;}}
+#endif
 
 bool cSimpleModule::stack_cleanup_requested;
 cSimpleModule *cSimpleModule::after_cleanup_transfer_to;
@@ -641,6 +647,8 @@ void cSimpleModule::wait(simtime_t t)
         throw cRuntimeError("message arrived during wait() call ((%s)%s); if this "
                             "should be allowed, use waitAndEnqueue() instead of wait()",
                             newmsg->getClassName(), newmsg->getFullName());
+
+    DEBUG_TRAP_IF_REQUESTED; // MODULE IS ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP" IN YOUR DEBUGGER
 }
 
 void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
@@ -669,6 +677,8 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
         else
             queue->insert(newmsg);
     }
+
+    DEBUG_TRAP_IF_REQUESTED; // MODULE IS ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP" IN YOUR DEBUGGER
 }
 
 //-------------
@@ -683,6 +693,7 @@ cMessage *cSimpleModule::receive()
         throw cStackCleanupException();
 
     cMessage *newmsg = simulation.msg_for_activity;
+    DEBUG_TRAP_IF_REQUESTED; // MODULE IS ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP" IN YOUR DEBUGGER
     return newmsg;
 }
 
@@ -706,11 +717,13 @@ cMessage *cSimpleModule::receive(simtime_t t)
     if (newmsg==timeoutmsg)  // timeout expired
     {
         take(timeoutmsg);
+        DEBUG_TRAP_IF_REQUESTED; // MODULE IS ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP" IN YOUR DEBUGGER
         return NULL;
     }
     else  // message received OK
     {
         take(cancelEvent(timeoutmsg));
+        DEBUG_TRAP_IF_REQUESTED; // MODULE IS ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP" IN YOUR DEBUGGER
         return newmsg;
     }
 }

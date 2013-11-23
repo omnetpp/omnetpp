@@ -64,7 +64,7 @@ image create bitmap Tree:closedbm -data $data -maskdata $maskdata \
 
 #
 # Initialize a new tree widget. $w must be a previously created Tk canvas, and
-# f a content provider procedure (like getNodeInfo).
+# f a content provider procedure (like treeManager:getNodeInfo).
 #
 proc Tree:init {w f} {
   global Tree

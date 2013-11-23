@@ -32,7 +32,7 @@
 
 NAMESPACE_BEGIN
 
-int exit_omnetpp;
+int exitOmnetpp;
 extern "C" int Tkpng_Init(Tcl_Interp *interp);
 
 // Procedure to handle X errors
@@ -105,8 +105,8 @@ int createTkCommands(Tcl_Interp *interp, OmnetTclCommand *commands)
 int runTk(Tcl_Interp *)
 {
     // Custom event loop
-    //  the C++ variable exit_omnetpp is used for exiting
-    while (!exit_omnetpp)
+    //  the C++ variable exitOmnetpp is used for exiting
+    while (!exitOmnetpp)
     {
        Tk_DoOneEvent(TK_ALL_EVENTS);
     }

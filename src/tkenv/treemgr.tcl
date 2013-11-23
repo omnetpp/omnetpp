@@ -22,38 +22,38 @@ proc initTreeManager {} {
     global widgets
     global B2 B3
 
-    Tree:init $widgets(manager).tree getNodeInfo
+    Tree:init $widgets(manager).tree treeManager:getNodeInfo
 
     #
     # bindings for the tree
     #
     bind $widgets(manager).tree <Double-1> {
         focus %W
-        #updateTreeManager
+        #treeManager:update
         set key [Tree:nodeat %W %x %y]
         if {$key!=""} {
             # Tree:toggle %W $key
-            treemanagerDoubleClick $key
+            treeManager:doubleClick $key
         }
     }
 
     bind $widgets(manager).tree <Button-$B3> {
         focus %W
-        #updateTreeManager
+        #treeManager:update
         set key [Tree:nodeat %W %x %y]
         if {$key!=""} {
             Tree:setselection %W $key
-            treemanagerPopup $key %X %Y
+            treeManager:popup $key %X %Y
         }
     }
 }
 
 
-# updateTreeManager --
+# treeManager:update --
 #
 # Redraws the manager window (left side of main window).
 #
-proc updateTreeManager {} {
+proc treeManager:update {} {
     global widgets config
 
     # spare work if we're not displayed
@@ -63,7 +63,7 @@ proc updateTreeManager {} {
     $widgets(manager).tree xview moveto 0
 }
 
-# getNodeInfo --
+# treeManager:getNodeInfo --
 #
 # This user-supplied function gets called by the tree widget to get info about
 # tree nodes. The widget itself only stores the state (open/closed) of the
@@ -71,7 +71,7 @@ proc updateTreeManager {} {
 #
 # We use the object pointer as tree element key.
 #
-proc getNodeInfo {w op {key {}}} {
+proc treeManager:getNodeInfo {w op {key {}}} {
     global icons
 
     set ptr $key
@@ -92,7 +92,7 @@ proc getNodeInfo {w op {key {}}} {
       }
 
       icon {
-        return [get_icon_for_object $ptr]
+        return [inspector:getIconForObject $ptr]
       }
 
       haschildren {
@@ -114,17 +114,17 @@ proc getNodeInfo {w op {key {}}} {
 # Bindings for the tree manager
 #------------------------------
 
-proc treemanagerDoubleClick {key} {
+proc treeManager:doubleClick {key} {
     # $key is the object pointer
     opp_inspect $key "(default)"
 }
 
-proc treemanagerPopup {key x y} {
+proc treeManager:popup {key x y} {
     global ned
 
     # $key is the object pointer
     set ptr $key
-    set popup [create_inspector_contextmenu $ptr]
+    set popup [createInspectorContextMenu $ptr]
     tk_popup $popup $x $y
 }
 

@@ -76,7 +76,7 @@ proc debug {str} {
 #    MAIN OMNET++ WINDOW
 #===================================================================
 
-proc create_omnetpp_window {} {
+proc createOmnetppWindow {} {
 
     global tcl_version tk_version tk_patchLevel tcl_platform
     global icons fonts help_tips widgets config priv
@@ -90,13 +90,13 @@ proc create_omnetpp_window {} {
     wm resizable . 1 1
     wm deiconify .
     wm title . "OMNeT++/Tkenv"
-    wm protocol . WM_DELETE_WINDOW {exit_omnetpp}
+    wm protocol . WM_DELETE_WINDOW {exitOmnetpp}
 
     # set the application icon
     set iconphoto_main $icons(logo128m)
     set iconphoto_other $icons(logo128w)
     if {$tcl_platform(platform) == "windows"} {
-        if {![is_tk_at_least "8.5.6"]} {
+        if {![isTkAtLeast "8.5.6"]} {
             # Tk bug #2504402: "On Windows the wm iconphoto command only works with
             # 32-bit color displays. Other display settings produce a black icon."
             # This bug appears to have been fixed in Tk 8.5.6. For earlier versions,
@@ -105,7 +105,7 @@ proc create_omnetpp_window {} {
                 # Bug #1467997: "the displayed icons have red and blue colors transposed."
                 # This bug was was fixed in 8.4.16. For earlier versions, we manually swap
                 # the R and B channels.
-                if {![is_tk_at_least "8.4.16"]} {
+                if {![isTkAtLeast "8.4.16"]} {
                     opp_swapredandblue $iconphoto_other
                     opp_swapredandblue $iconphoto_main
                 }
@@ -121,7 +121,7 @@ proc create_omnetpp_window {} {
         # on 10.6, it does not cause an error but simply has no apparent effect
     } else {
         # On linux, 8.4.19 was tested and known to be working.
-        if {[is_tk_at_least "8.4.19"]} {
+        if {[isTkAtLeast "8.4.19"]} {
             wm iconphoto . -default $iconphoto_other
             wm iconphoto . $iconphoto_main
         }
@@ -159,26 +159,26 @@ proc create_omnetpp_window {} {
 
     # File menu
     foreach i {
-      {command -command new_run -label {Set Up a Configuration...} -underline 7}
+      {command -command newRun -label {Set Up a Configuration...} -underline 7}
       {separator}
-      {command -command load_nedfile -label {Load NED File...} -underline 0}
-      {command -command new_network -label {Set Up an Unconfigured Network...} -underline 7}
+      {command -command loadNedFile -label {Load NED File...} -underline 0}
+      {command -command newNetwork -label {Set Up an Unconfigured Network...} -underline 7}
       {separator}
-      {command -command create_snapshot -label {Create Snapshot...} -underline 7}
+      {command -command createSnapshot -label {Create Snapshot...} -underline 7}
       {separator}
-      {command -command exit_omnetpp -label Exit -underline 1}
+      {command -command exitOmnetpp -label Exit -underline 1}
     } {
       eval .menubar.filemenu$m add $i
     }
 
     # Edit menu
     foreach i {
-      {command -command edit_copy -label {Copy} -accel {Ctrl+C} -underline 0}
+      {command -command editCopy -label {Copy} -accel {Ctrl+C} -underline 0}
       {separator}
-      {command -command edit_find -label {Find...} -accel {Ctrl+F} -underline 0}
-      {command -command edit_findnext -label {Find Next} -accel {Ctrl+N,F3} -underline 5}
+      {command -command editFind -label {Find...} -accel {Ctrl+F} -underline 0}
+      {command -command editFindNext -label {Find Next} -accel {Ctrl+N,F3} -underline 5}
       {separator}
-      {command -command edit_filterwindowcontents -label {Filter Window Contents...} -accel {Ctrl+H} -underline 0}
+      {command -command editFilterWindowContents -label {Filter Window Contents...} -accel {Ctrl+H} -underline 0}
     } {
       eval .menubar.editmenu$m add $i
     }
@@ -187,17 +187,19 @@ proc create_omnetpp_window {} {
     #  {command -command init_step -label {First real event} -underline 1}
     #  {separator}
     foreach i {
-      {command -command one_step -label {One Step} -accel {F4} -underline 4}
-      {command -command run_slow -label {Slow Execution} -underline 1}
+      {command -command oneStep -label {One Step} -accel {F4} -underline 4}
+      {command -command runSlow -label {Slow Execution} -underline 1}
       {separator}
-      {command -command run_normal -label {Run}  -accel {F5} -underline 0}
-      {command -command run_fast -label {Fast Run (rare display updates)} -accel {F6} -underline 0}
-      {command -command run_express -label {Express Run (tracing off)} -accel {F7} -underline 1}
-      {command -command run_until -label {Run Until...} -underline 4}
+      {command -command runNormal -label {Run}  -accel {F5} -underline 0}
+      {command -command runFast -label {Fast Run (rare display updates)} -accel {F6} -underline 0}
+      {command -command runExpress -label {Express Run (tracing off)} -accel {F7} -underline 1}
+      {command -command runUntil -label {Run Until...} -underline 4}
       {separator}
-      {command -command stop_simulation -label {Stop Execution} -accel {F8} -underline 0}
+      {command -command debugNextEvent -label {Debug Next Event} -accel {Ctrl+F9} -underline 1}
       {separator}
-      {command -command call_finish -label {Call finish() for All Modules} -underline 0}
+      {command -command stopSimulation -label {Stop Execution} -accel {F8} -underline 0}
+      {separator}
+      {command -command callFinish -label {Call finish() for All Modules} -underline 0}
       {command -command rebuild -label {Rebuild Network} -underline 1}
     } {
       eval .menubar.simulatemenu$m add $i
@@ -205,9 +207,9 @@ proc create_omnetpp_window {} {
 
     # Trace menu
     foreach i {
-      {command -command message_windows -label {Message Sending...} -underline 8}
+      {command -command messageWindows -label {Message Sending...} -underline 8}
       {separator}
-      {command -command clear_windows -label {Clear Main Window} -underline 0}
+      {command -command clearWindows -label {Clear Main Window} -underline 0}
     } {
       eval .menubar.tracemenu$m add $i
     }
@@ -217,14 +219,14 @@ proc create_omnetpp_window {} {
     #  {command -command inspect_anyobject -label {From list of all objects...} -underline 0}
     #  {command -command inspect_matching -label {By pattern matching...} -underline 3}
     foreach i {
-      {command -command inspect_systemmodule -label {Network} -underline 0}
-      {command -command inspect_messagequeue -label {Scheduled Events (FES)} -underline 0}
-      {command -command inspect_simulation   -label {Simulation} -underline 1}
+      {command -command inspectSystemModule -label {Network} -underline 0}
+      {command -command inspectMessageQueue -label {Scheduled Events (FES)} -underline 0}
+      {command -command inspectSimulation   -label {Simulation} -underline 1}
       {separator}
       {cascade -label {Available Components} -underline 10 -menu .menubar.inspectmenu$m.components}
       {separator}
-      {command -command inspect_filteredobjectlist -label {Show 'Find/Inspect Objects' Window} -accel {Ctrl+S} -underline 0}
-      {command -command inspect_bypointer -label {Inspect by Pointer...} -underline 4}
+      {command -command inspectFilteredObjectList -label {Show 'Find/Inspect Objects' Window} -accel {Ctrl+S} -underline 0}
+      {command -command inspectBypointer -label {Inspect by Pointer...} -underline 4}
       {separator}
       {command -command opp_updateinspectors -label {Refresh Inspectors} -underline 0}
     } {
@@ -234,38 +236,38 @@ proc create_omnetpp_window {} {
     # Inspect|Components menu
     menu .menubar.inspectmenu$m.components -tearoff 0
     foreach i {
-      {command -command inspect_componenttypes -label {NED Component Types} -underline 0}
-      {command -command inspect_classes        -label {Registered Classes} -underline 0}
-      {command -command inspect_functions      -label {NED Functions} -underline 4}
-      {command -command inspect_enums          -label {Registered Enums} -underline 11}
-      {command -command inspect_configentries  -label {Supported Configuration Options} -underline 0}
+      {command -command inspectComponentTypes -label {NED Component Types} -underline 0}
+      {command -command inspectClasses        -label {Registered Classes} -underline 0}
+      {command -command inspectFunctions      -label {NED Functions} -underline 4}
+      {command -command inspectEnums          -label {Registered Enums} -underline 11}
+      {command -command inspectConfigEntries  -label {Supported Configuration Options} -underline 0}
     } {
       eval .menubar.inspectmenu$m.components add $i
     }
 
     # View menu
     foreach i {
-      {command -label {Ini File} -underline 0 -command view_inifile}
-      {command -label {README} -underline 0 -command {view_file README}}
+      {command -label {Ini File} -underline 0 -command viewIniFile}
+      {command -label {README} -underline 0 -command {viewFile README}}
       {separator}
-      {command -label {Output Vector File} -underline 7 -command view_outputvectorfile}
-      {command -label {Output Scalar File} -underline 7 -command view_outputscalarfile}
-      {command -label {Snapshot File} -underline 0 -command view_snapshotfile}
+      {command -label {Output Vector File} -underline 7 -command viewOutputVectorFile}
+      {command -label {Output Scalar File} -underline 7 -command viewOutputScalarFile}
+      {command -label {Snapshot File} -underline 0 -command viewSnapshotFile}
       {separator}
-      {command -label {View Text File...} -underline 0 -command {edit_textfile}}
+      {command -label {View Text File...} -underline 0 -command {editTextFile}}
     } {
       eval .menubar.viewmenu$m add $i
     }
 
     # Options menu
     foreach i {
-      {command -command simulation_options -label {Simulation Options...} -underline 0}
-      {command -command toggle_timeline -label {Show/Hide Timeline} -underline 10}
-      {command -command toggle_treeview -label {Show/Hide Object Tree} -underline 1}
-      {command -command toggle_record_eventlog -label {Eventlog Recording} -underline 10}
+      {command -command simulationOptions -label {Simulation Options...} -underline 0}
+      {command -command toggleTimeline -label {Show/Hide Timeline} -underline 10}
+      {command -command toggleTreeView -label {Show/Hide Object Tree} -underline 1}
+      {command -command toggleRecordEventlog -label {Eventlog Recording} -underline 10}
       {separator}
-      {command -label {Load Config...} -underline 0 -command load_tkenv_config}
-      {command -label {Save Config...} -underline 1 -command save_tkenv_config}
+      {command -label {Load Config...} -underline 0 -command loadTkenvConfig}
+      {command -label {Save Config...} -underline 1 -command saveTkenvConfig}
     } {
       eval .menubar.optionsmenu$m add $i
     }
@@ -287,31 +289,31 @@ proc create_omnetpp_window {} {
 
     foreach i {
       {sep00    -separator}
-      {newrun   -image $icons(newrun)  -command {new_run}}
-      {loadned  -image $icons(loadned) -command {load_nedfile}}
+      {newrun   -image $icons(newrun)  -command {newRun}}
+      {loadned  -image $icons(loadned) -command {loadNedFile}}
       {sep5     -separator}
-      {copy     -image $icons(copy)    -command {edit_copy}}
-      {find     -image $icons(find)    -command {edit_find}}
-      {save     -image $icons(save)    -command {savefile "."}}
+      {copy     -image $icons(copy)    -command {editCopy}}
+      {find     -image $icons(find)    -command {editFind}}
+      {save     -image $icons(save)    -command {saveFile "."}}
       {sep0     -separator}
-      {step     -image $icons(step)    -command {one_step}}
-      {run      -image $icons(run)     -command {run_normal}}
-      {fastrun  -image $icons(fast)    -command {run_fast}}
-      {exprrun  -image $icons(express) -command {run_express}}
-      {until    -image $icons(until)   -command {run_until}}
-      {stop     -image $icons(stop)    -command {stop_simulation}}
+      {step     -image $icons(step)    -command {oneStep}}
+      {run      -image $icons(run)     -command {runNormal}}
+      {fastrun  -image $icons(fast)    -command {runFast}}
+      {exprrun  -image $icons(express) -command {runExpress}}
+      {until    -image $icons(until)   -command {runUntil}}
+      {stop     -image $icons(stop)    -command {stopSimulation}}
       {sep4     -separator}
-      {eventlog -image $icons(recordeventlog) -command {toggle_record_eventlog}}
-      {finish   -image $icons(finish)  -command {call_finish}}
+      {eventlog -image $icons(recordeventlog) -command {toggleRecordEventlog}}
+      {finish   -image $icons(finish)  -command {callFinish}}
       {sep02     -separator}
-      {network  -image $icons(network) -command {inspect_systemmodule}}
-      {objs     -image $icons(findobj) -command {inspect_filteredobjectlist}}
-      {filter   -image $icons(filter)  -command {edit_filterwindowcontents}}
+      {network  -image $icons(network) -command {inspectSystemModule}}
+      {objs     -image $icons(findobj) -command {inspectFilteredObjectList}}
+      {filter   -image $icons(filter)  -command {editFilterWindowContents}}
       {sep6     -separator}
-      {tline    -image $icons(fes)     -command {toggle_timeline}}
-      {tree     -image $icons(tree)    -command {toggle_treeview}}
+      {tline    -image $icons(fes)     -command {toggleTimeline}}
+      {tree     -image $icons(tree)    -command {toggleTreeView}}
       {sep9     -separator}
-      {options  -image $icons(config)  -command {simulation_options}}
+      {options  -image $icons(config)  -command {simulationOptions}}
     } {
       set b [eval iconbutton .toolbar.$i]
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
@@ -348,12 +350,12 @@ proc create_omnetpp_window {} {
     frame .statusbar3
 
     canvas .timeline -borderwidth 2 -relief groove -height 40
-    bind .timeline <Configure> "redraw_timeline"
-    .timeline bind msg <Double-1> "timeline_dblclick .timeline"
-    .timeline bind msgname <Double-1> "timeline_dblclick .timeline"
-    .timeline bind msg <$B3> "timeline_rightclick .timeline %X %Y %x %y"
-    .timeline bind msgname <$B3> "timeline_rightclick .timeline %X %Y %x %y"
-    bind .timeline <Button-$B3> {timeline_popup %x %y %X %Y}
+    bind .timeline <Configure> "redrawTimeline"
+    .timeline bind msg <Double-1> "timeline:dblClick .timeline"
+    .timeline bind msgname <Double-1> "timeline:dblClick .timeline"
+    .timeline bind msg <$B3> "timeline:rightClick .timeline %X %Y %x %y"
+    .timeline bind msgname <$B3> "timeline:rightClick .timeline %X %Y %x %y"
+    bind .timeline <Button-$B3> {timeline:popup %x %y %X %Y}
 
     set widgets(timeline) .timeline
 
@@ -446,7 +448,7 @@ proc create_omnetpp_window {} {
     #
     text .main.text -yscrollcommand ".main.sb set" -font $fonts(text)
     scrollbar .main.sb -command ".main.text yview"
-    logtextwidget_configuretags .main.text
+    logTextWidget:configureTags .main.text
 
     pack .main.sb -anchor center -expand 0 -fill y  -side right
     pack .main.text -anchor center -expand 1 -fill both -side right
@@ -466,26 +468,27 @@ proc create_omnetpp_window {} {
     ###############################
     # Hotkeys
     ###############################
-    bind_commands_to_textwidget .main.text mainwindow
-    bind_runcommands .
-    bind_othercommands .
+    bindCommandsToTextWidget .main.text mainwindow
+    bindRunCommands .
+    bindOtherCommands .
 }
 
-proc bind_runcommands {w} {
-    bind $w <F4> {one_step}
-    bind $w <F5> {run_normal}
-    bind $w <F6> {run_fast}
-    bind $w <F7> {run_express}
-    bind $w <F8> {stop_simulation}
+proc bindRunCommands {w} {
+    bind $w <F4> {oneStep}
+    bind $w <F5> {runNormal}
+    bind $w <F6> {runFast}
+    bind $w <F7> {runExpress}
+    bind $w <F8> {stopSimulation}
+    bind $w <Control-F9> {debugNextEvent}
 }
 
-proc bind_othercommands {w} {
-    bind $w <Control-s> [list inspect_filteredobjectlist $w]
-    bind $w <Control-S> [list inspect_filteredobjectlist $w]
+proc bindOtherCommands {w} {
+    bind $w <Control-s> [list inspectFilteredObjectList $w]
+    bind $w <Control-S> [list inspectFilteredObjectList $w]
 }
 
 # note: modptr may be "systemmodule" or a pointer; "" means no module
-proc bind_commands_to_textwidget {txt {wintype ""}} {
+proc bindCommandsToTextWidget {txt {wintype ""}} {
     global config B2 B3
 
     # bindings for find
@@ -501,13 +504,13 @@ proc bind_commands_to_textwidget {txt {wintype ""}} {
     if {$wintype=="modulewindow"} {
         # bind Ctrl+H ('break' is needed because originally ^H is bound to DEL)
         set w [winfo toplevel $txt]
-        bind $txt <Control-h> "modulewindow_filterdialog %W; break"
-        bind $txt <Control-H> "modulewindow_filterdialog %W; break"
+        bind $txt <Control-h> "moduleWindow:openFilterDialog %W; break"
+        bind $txt <Control-H> "moduleWindow:openFilterDialog %W; break"
     }
     if {$wintype=="mainwindow"} {
         # bind Ctrl+H ('break' is needed because originally ^H is bound to DEL)
-        bind $txt <Control-h> "mainlogwindow_filterdialog; break"
-        bind $txt <Control-H> "mainlogwindow_filterdialog; break"
+        bind $txt <Control-h> "mainlogWindow:openFilterDialog; break"
+        bind $txt <Control-H> "mainlogWindow:openFilterDialog; break"
     }
 
     # bind Ctrl+A "Select all" ('break' is needed below because ^A=Home)
@@ -516,7 +519,7 @@ proc bind_commands_to_textwidget {txt {wintype ""}} {
     # bind a context menu as well
     catch {$txt config -wrap $config(editor-wrap)}
     catch {$txt tag configure "prefix" -elide $config(editor-hideprefix)}
-    bind $txt <Button-$B3> [list textwidget_contextmenu %W $wintype %X %Y]
+    bind $txt <Button-$B3> [list textwidget:contextMenu %W $wintype %X %Y]
 }
 
 #===================================================================
@@ -525,7 +528,7 @@ proc bind_commands_to_textwidget {txt {wintype ""}} {
 
 set bitmap_ctr 0
 
-proc load_bitmaps {path} {
+proc loadBitmaps {path} {
    global tcl_platform bitmaps bitmap_ctr
 
    # On Windows, we use ";" to separate directories in $path. Using ":" (the
@@ -542,7 +545,7 @@ proc load_bitmaps {path} {
    foreach dir [split $path $sep] {
        if {$dir!=""} {
            puts -nonewline "Loading images from $dir: "
-           do_load_bitmaps $dir ""
+           doLoadBitmaps $dir ""
            puts ""
        }
    }
@@ -554,7 +557,7 @@ proc load_bitmaps {path} {
    puts ""
 }
 
-proc do_load_bitmaps {dir prefix} {
+proc doLoadBitmaps {dir prefix} {
    global bitmaps bitmap_ctr
 
    #debug "entering $dir"
@@ -572,7 +575,7 @@ proc do_load_bitmaps {dir prefix} {
          fixupImageIfNeeded $img
          set size "n" ;#default
          regexp -- {^(.*)_(vl|xl|l|n|s|vs|xs)$} $name dummy name size
-         set loaded [do_add_bitmap $img $prefix $name $size]
+         set loaded [doAddBitmap $img $prefix $name $size]
          if {$loaded} {incr numLoaded}
          incr numTotal
       } err] {
@@ -588,7 +591,7 @@ proc do_load_bitmaps {dir prefix} {
    # recurse into subdirs
    foreach f [glob -nocomplain -- [file join $dir {*}]] {
       if {[file isdirectory $f] && [file tail $f]!="CVS" && [file tail $f]!=".svn"} {
-         do_load_bitmaps "$f" "$prefix[file tail $f]/"
+         doLoadBitmaps "$f" "$prefix[file tail $f]/"
       }
    }
 }
@@ -602,7 +605,7 @@ proc fixupImageIfNeeded {img} {
 }
 
 # register loaded image
-proc do_add_bitmap {img prefix name size} {
+proc doAddBitmap {img prefix name size} {
    global bitmaps
 
    # skip if already exists
@@ -627,7 +630,7 @@ proc do_add_bitmap {img prefix name size} {
 #    LOAD PLUGINS
 #===================================================================
 
-proc load_plugins {path} {
+proc loadPlugins {path} {
    global tcl_platform
 
    # On Windows, we use ";" to separate directories in $path. Using ":" (the
@@ -692,15 +695,15 @@ proc load_plugins {path} {
 #    GENERIC BINDINGS
 #===================================================================
 
-proc generic_bindings {} {
+proc genericBindings {} {
     global help_tips
-    set help_tips(helptip_proc) get_help_tip
+    set help_tips(helptip_proc) getHelpTip
     set help_tips(width) 500
 
     bind Button <Return> {%W invoke}
 }
 
-proc startup_commands {} {
+proc startupCommands {} {
     set configname [opp_getsimoption default_config]
     set runnumber [opp_getsimoption default_run]
 
@@ -717,7 +720,7 @@ proc startup_commands {} {
     if {$configname != ""} {
         # set up the selected config and run number
         opp_newrun $configname $runnumber
-        reflect_record_eventlog
+        reflectRecordEventlog
         if [opp_isnotnull [opp_object_systemmodule]] {
             opp_inspect [opp_object_systemmodule] "(default)"
             notifyPlugins newNetwork
@@ -725,9 +728,9 @@ proc startup_commands {} {
     } else {
         # ask the user to select a network or a config
         if {$confignames=={} || $confignames=={General}} {
-            new_network
+            newNetwork
         } else {
-            new_run
+            newRun
         }
     }
 }
@@ -748,7 +751,7 @@ proc busy {{msg {}}} {
     }
 }
 
-proc is_tk_at_least {version} {
+proc isTkAtLeast {version} {
     global tk_patchLevel
 
     # must use dictionary comparison due to the embedded numbers

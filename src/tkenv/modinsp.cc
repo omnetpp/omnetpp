@@ -75,7 +75,7 @@ void TModuleWindow::createWindow()
     Tcl_Interp *interp = getTkenv()->getInterp();
     cModule *mod = static_cast<cModule *>(object);
     const char *createcommand = mod->isSimple() ?
-             "create_simplemodulewindow " : "create_compoundmodulewindow ";
+             "createSimpleModuleWindow " : "createCompoundModuleWindow ";
     CHK(Tcl_VarEval(interp, createcommand, windowname, " \"", geometry, "\"", NULL ));
     redisplay(getTkenv()->getLogBuffer());
 }
@@ -85,7 +85,7 @@ void TModuleWindow::update()
     TInspector::update();
 
     Tcl_Interp *interp = getTkenv()->getInterp();
-    CHK(Tcl_VarEval(interp, "modulewindow_trimlines ", windowname, NULL));
+    CHK(Tcl_VarEval(interp, "moduleWindow:trimlines ", windowname, NULL));
 }
 
 void TModuleWindow::printLastLineOf(const LogBuffer& logBuffer)
@@ -242,7 +242,7 @@ void TGraphicalModWindow::createWindow()
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, "create_graphicalmodwindow ", windowname, " \"", geometry, "\"", NULL ));
+   CHK(Tcl_VarEval(interp, "createGraphicalModWindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
 void TGraphicalModWindow::update()
@@ -343,7 +343,7 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
         else
         {
             Tcl_Interp *interp = getTkenv()->getInterp();
-            Tcl_VarEval(interp, "lookup_image ", imgname, " ", imgsize, NULL);
+            Tcl_VarEval(interp, "lookupImage ", imgname, " ", imgsize, NULL);
             Tk_Image img = Tk_GetImage(interp, Tk_MainWindow(interp), Tcl_GetStringResult(interp), NULL, NULL);
             if (!img)
             {
@@ -609,7 +609,7 @@ void TGraphicalModWindow::redrawModules()
         }
     }
     CHK(Tcl_VarEval(interp, canvas, " raise bubble",NULL));
-    CHK(Tcl_VarEval(interp, "graphmodwin_setscrollregion ", windowname, " 0",NULL));
+    CHK(Tcl_VarEval(interp, "graphicalModuleWindow:setScrollRegion ", windowname, " 0",NULL));
 }
 
 void TGraphicalModWindow::drawSubmodule(Tcl_Interp *interp, cModule *submod, double x, double y, const char *scaling)
@@ -618,7 +618,7 @@ void TGraphicalModWindow::drawSubmodule(Tcl_Interp *interp, cModule *submod, dou
     sprintf(coords,"%g %g ", x, y);
     const char *dispstr = submod->hasDisplayString() && submod->parametersFinalized() ? submod->getDisplayString().str() : "";
 
-    CHK(Tcl_VarEval(interp, "draw_submod ",
+    CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawSubmodule ",
                     canvas, " ",
                     ptrToStr(submod), " ",
                     coords,
@@ -632,7 +632,7 @@ void TGraphicalModWindow::drawSubmodule(Tcl_Interp *interp, cModule *submod, dou
 void TGraphicalModWindow::drawEnclosingModule(Tcl_Interp *interp, cModule *parentmodule, const char *scaling)
 {
     const char *dispstr = parentmodule->hasDisplayString() && parentmodule->parametersFinalized() ? parentmodule->getDisplayString().str() : "";
-    CHK(Tcl_VarEval(interp, "draw_enclosingmod ",
+    CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawEnclosingModule ",
                        canvas, " ",
                        ptrToStr(parentmodule), " ",
                        "{", parentmodule->getFullPath().c_str(), "} ",
@@ -678,7 +678,7 @@ void TGraphicalModWindow::drawConnection(Tcl_Interp *interp, cGate *gate)
     ptrToStr(chan, chanptr);
     const char *dispstr = (chan && chan->hasDisplayString() && chan->parametersFinalized()) ? chan->getDisplayString().str() : "";
 
-    CHK(Tcl_VarEval(interp, "draw_connection ",
+    CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawConnection ",
             canvas, " ",
             gateptr, " ",
             TclQuotedString(dispstr).get(), " ",
@@ -723,7 +723,7 @@ void TGraphicalModWindow::redrawMessages()
          if (arrivalGate->getPreviousGate())
          {
              cGate *gate = arrivalGate->getPreviousGate();
-             CHK(Tcl_VarEval(interp, "graphmodwin_draw_message_on_gate ",
+             CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawMessageOnGate ",
                              canvas, " ",
                              ptrToStr(gate), " ",
                              msgptr,
@@ -731,7 +731,7 @@ void TGraphicalModWindow::redrawMessages()
          }
          else
          {
-             CHK(Tcl_VarEval(interp, "graphmodwin_draw_message_on_module ",
+             CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawMessageOnModule ",
                              canvas, " ",
                              ptrToStr(arrivalmod), " ",
                              msgptr,
@@ -761,7 +761,7 @@ void TGraphicalModWindow::redrawNextEventMarker()
        nextmodparent = nextmodparent->getParentModule();
    if (nextmodparent)
    {
-       CHK(Tcl_VarEval(interp, "graphmodwin_draw_nexteventmarker ",
+       CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawNextEventMarker ",
                        canvas, " ",
                        ptrToStr(nextmodparent), " ",
                        (nextmod==nextmodparent ? "2" : "1"),
@@ -774,7 +774,7 @@ void TGraphicalModWindow::updateSubmodules()
    Tcl_Interp *interp = getTkenv()->getInterp();
    for (cModule::SubmoduleIterator submod(static_cast<cModule *>(object)); !submod.end(); submod++)
    {
-       CHK(Tcl_VarEval(interp, "graphmodwin_update_submod ",
+       CHK(Tcl_VarEval(interp, "graphicalModuleWindow:updateSubmodule ",
                        canvas, " ",
                        ptrToStr(submod()),
                        NULL));
@@ -836,7 +836,7 @@ void TGraphicalModWindow::bubble(cModule *submod, const char *text)
     char coords[64];
     Point& pos = submodPosMap[submod];
     sprintf(coords, " %g %g ", pos.x, pos.y);
-    CHK(Tcl_VarEval(interp, "graphmodwin_bubble ", canvas, coords, " ", TclQuotedString(scaling).get(), " ", TclQuotedString(text).get(), NULL));
+    CHK(Tcl_VarEval(interp, "graphicalModuleWindow:bubble ", canvas, coords, " ", TclQuotedString(scaling).get(), " ", TclQuotedString(text).get(), NULL));
 }
 
 int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
@@ -949,7 +949,7 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 //    // create inspector window by calling the specified proc with
 //    // the object's pointer. Window name will be like ".ptr80003a9d-1"
 //    Tcl_Interp *interp = getTkenv()->getInterp();
-//    CHK(Tcl_VarEval(interp, "create_compoundmodinspector ", windowname, " \"", geometry, "\"", NULL ));
+//    CHK(Tcl_VarEval(interp, "createCompoundModuleInspector ", windowname, " \"", geometry, "\"", NULL ));
 // }
 //
 // void TCompoundModInspector::update()
@@ -1013,7 +1013,7 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 //    // create inspector window by calling the specified proc with
 //    // the object's pointer. Window name will be like ".ptr80003a9d-1"
 //    Tcl_Interp *interp = getTkenv()->getInterp();
-//    CHK(Tcl_VarEval(interp, "create_simplemodinspector ", windowname, " \"", geometry, "\"", NULL ));
+//    CHK(Tcl_VarEval(interp, "createSimpleModuleInspector ", windowname, " \"", geometry, "\"", NULL ));
 // }
 //
 // void TSimpleModInspector::update()
@@ -1091,7 +1091,7 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 //    // create inspector window by calling the specified proc with
 //    // the object's pointer. Window name will be like ".ptr80003a9d-1"
 //    Tcl_Interp *interp = getTkenv()->getInterp();
-//    CHK(Tcl_VarEval(interp, "create_gateinspector ", windowname, " \"", geometry, "\"", NULL ));
+//    CHK(Tcl_VarEval(interp, "createGateInspector ", windowname, " \"", geometry, "\"", NULL ));
 // }
 //
 // void TGateInspector::update()
@@ -1180,7 +1180,7 @@ void TGraphicalGateWindow::createWindow()
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, "create_graphicalgatewindow ", windowname, " \"", geometry, "\"", NULL ));
+   CHK(Tcl_VarEval(interp, "createGraphicalGateWindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
 int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
@@ -1207,7 +1207,7 @@ int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
         sprintf(kstr,"%d",k);
         sprintf(xstr,"%d",xsiz);
         dir[0] = g->getType(); dir[1]=0;
-        CHK(Tcl_VarEval(interp, "draw_module_gate ",
+        CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawModuleGate ",
                       canvas, " ",
                       modptr, " ",
                       gateptr, " ",
@@ -1229,7 +1229,7 @@ int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
         cChannel *chan = g->getChannel();
         ptrToStr(chan,chanptr);
         const char *dispstr = (chan && chan->hasDisplayString() && chan->parametersFinalized() ) ? chan->getDisplayString().str() : "";
-        CHK(Tcl_VarEval(interp, "draw_conn ",
+        CHK(Tcl_VarEval(interp, "graphGateWin:drawConnection ",
                       canvas, " ",
                       srcgateptr, " ",
                       destgateptr, " ",
@@ -1274,7 +1274,7 @@ void TGraphicalGateWindow::update()
              char gateptr[32], msgptr[32];
              ptrToStr(msg, msgptr);
              ptrToStr(gate, gateptr);
-             CHK(Tcl_VarEval(interp, "graphmodwin_draw_message_on_gate ",
+             CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawMessageOnGate ",
                              canvas, " ",
                              gateptr, " ",
                              msgptr,

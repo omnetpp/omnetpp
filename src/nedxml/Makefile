@@ -301,8 +301,8 @@ $O/nedtool.o: nedtool.cc \
   nedsyntaxvalidator.h \
   nederror.h \
   nedelements.h \
-  xmlgenerator.h \
   neddtdvalidatorbase.h \
+  xmlgenerator.h \
   neddtdvalidator.h \
   nedcrossvalidator.h \
   ../common/ver.h \

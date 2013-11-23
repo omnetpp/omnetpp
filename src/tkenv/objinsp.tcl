@@ -18,11 +18,11 @@
 #
 
 
-proc create_genericobjectinspector {name geom wantcontentspage focuscontentspage} {
+proc createGenericObjectInspector {name geom wantcontentspage focuscontentspage} {
     global icons help_tips
 
     set w $name
-    create_inspector_toplevel $w $geom
+    createInspectorToplevel $w $geom
 
     if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
         error "window name $w doesn't look like an inspector window"
@@ -32,50 +32,50 @@ proc create_genericobjectinspector {name geom wantcontentspage focuscontentspage
 
     if {$type=="cSimpleModule" || $type=="cCompoundModule"} {
         if {$type=="cCompoundModule"} {
-            pack_iconbutton $w.toolbar.graph  -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
+            packIconButton $w.toolbar.graph  -image $icons(asgraphics) -command "inspectThis $w {As Graphics}"
             set help_tips($w.toolbar.graph)  {Network graphics}
         }
-        pack_iconbutton $w.toolbar.win    -image $icons(asoutput) -command "inspect_this $w {Module output}"
-        pack_iconbutton $w.toolbar.sep1   -separator
+        packIconButton $w.toolbar.win    -image $icons(asoutput) -command "inspectThis $w {Module output}"
+        packIconButton $w.toolbar.sep1   -separator
         set help_tips($w.toolbar.owner)  {Inspect parent module}
         set help_tips($w.toolbar.win)    {See module output}
-        moduleinspector_add_run_buttons $w
+        moduleInspector:addRunButtons $w
     } else {
         set insptypes [opp_supported_insp_types $object]
         if {[lsearch -exact $insptypes "As Graphics"]!=-1} {
-            pack_iconbutton $w.toolbar.graph  -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
+            packIconButton $w.toolbar.graph  -image $icons(asgraphics) -command "inspectThis $w {As Graphics}"
             set help_tips($w.toolbar.graph)  {Inspect graphically}
         }
     }
 
-    set nb [inspector_createnotebook $w]
+    set nb [inspector:createNotebook $w]
 
-    inspector_createfields2page $w
+    inspector:createFields2Page $w
 
     if {$wantcontentspage} {
-        notebook_addpage $nb contents {Contents}
-        create_inspector_listbox $nb.contents
+        notebook:addPage $nb contents {Contents}
+        createInspectorListbox $nb.contents
 
         if {$focuscontentspage} {
-            notebook_showpage $nb contents
+            notebook:showPage $nb contents
         } else {
-            notebook_showpage $nb fields2
+            notebook:showPage $nb fields2
         }
     }
 }
 
 
-#proc create_objinspector {name geom} {
+#proc createObjInspector {name geom} {
 #
 #    set w $name
-#    create_inspector_toplevel $w $geom
+#    createInspectorToplevel $w $geom
 #
-#    set nb [inspector_createnotebook $w]
+#    set nb [inspector:createNotebook $w]
 #
-#    notebook_addpage $nb info {General}
+#    notebook:addPage $nb info {General}
 #
 #    # note: experimental page
-#    inspector_createfields2page $w
+#    inspector:createFields2Page $w
 #
 #    # page 1: info
 #    label-sunkenlabel $nb.info.name {Name:}   ;# TBD make it editfield
@@ -91,45 +91,45 @@ proc create_genericobjectinspector {name geom wantcontentspage focuscontentspage
 #    pack $nb.info.details -expand 1 -fill both -side top
 #}
 #
-#proc create_containerinspector {name geom args} {
+#proc createContainerInspector {name geom args} {
 #    # create a list window
 #
 #    set w $name
 #    set typelist $args
-#    create_inspector_toplevel $w $geom
+#    createInspectorToplevel $w $geom
 #
-#    set nb [inspector_createnotebook $w]
+#    set nb [inspector:createNotebook $w]
 #
 #    # XXX experimental page
-#    inspector_createfields2page $w
+#    inspector:createFields2Page $w
 #
-#    notebook_addpage $nb contents  {Contents}
-#    create_inspector_listbox $nb.contents
+#    notebook:addPage $nb contents  {Contents}
+#    createInspectorListbox $nb.contents
 #}
 #
-#proc create_messageinspector {name geom} {
+#proc createMessageInspector {name geom} {
 #    global fonts icons help_tips
 #
 #    set w $name
-#    create_inspector_toplevel $w $geom
+#    createInspectorToplevel $w $geom
 #
-#    pack_iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
-#    pack_iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
+#    packIconButton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
+#    packIconButton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
 #
 #    set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
 #    set help_tips($w.toolbar.revert)  {Revert}
 #
-#    set nb [inspector_createnotebook $w]
+#    set nb [inspector:createNotebook $w]
 #
 #    # XXX experimental page
-#    inspector_createfields2page $w
+#    inspector:createFields2Page $w
 #
-#    notebook_addpage $nb info        {General}
-#    notebook_addpage $nb send        {Sending/Arrival}
-#    notebook_addpage $nb controlinfo {Control Info}
-#    notebook_addpage $nb params      {Params}
+#    notebook:addPage $nb info        {General}
+#    notebook:addPage $nb send        {Sending/Arrival}
+#    notebook:addPage $nb controlinfo {Control Info}
+#    notebook:addPage $nb params      {Params}
 #
-#    notebook_showpage $nb info
+#    notebook:showPage $nb info
 #
 #    # page 2: info
 #    label-entry $nb.info.name Name:
@@ -166,17 +166,17 @@ proc create_genericobjectinspector {name geom wantcontentspage focuscontentspage
 #    pack $nb.send.dest -fill x -side top
 #
 #    # page 4: params
-#    create_inspector_listbox $nb.params
+#    createInspectorListbox $nb.params
 #
 #    # page 5: control info
 #    create_structpanel $nb.controlinfo
 #}
 
-proc create_watchinspector {name geom} {
+proc createWatchInspector {name geom} {
     global fonts
 
     set w $name
-    create_inspector_toplevel $w $geom
+    createInspectorToplevel $w $geom
 
     frame $w.main
     pack $w.main -anchor center -expand 0 -fill both -side top
@@ -187,14 +187,14 @@ proc create_watchinspector {name geom} {
     pack $w.main.name -fill x -side top
 }
 
-#proc create_parinspector {name geom} {
+#proc createParInspector {name geom} {
 #    global fonts icons help_tips
 #
 #    set w $name
-#    create_inspector_toplevel $w $geom
+#    createInspectorToplevel $w $geom
 #
-#    pack_iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
-#    pack_iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
+#    packIconButton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
+#    packIconButton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
 #
 #    set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
 #    set help_tips($w.toolbar.revert)  {Revert}
@@ -206,8 +206,8 @@ proc create_watchinspector {name geom} {
 #    pack $w.main.value -fill x -side top
 #}
 #
-#proc create_packetinspector {name geom} {
-#    create_messageinspector $name $geom
+#proc createPacketInspector {name geom} {
+#    createMessageInspector $name $geom
 #
 #    set w $name
 #    set nb $w.nb

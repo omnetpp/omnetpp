@@ -32,21 +32,21 @@
 #
 # THIS PROC IS CALLED FROM C++ CODE, at each inspector display update.
 #
-proc inspectorupdate_callback {} {
+proc inspectorUpdateCallback {} {
     global priv
 
     set priv(animspeed) [opp_getsimoption animation_speed]
 
-    inspectorlist_openinspectors
+    inspectorList:openInspectors
     notifyPlugins inspectorUpdate
-    filteredobjectlist_inspectorupdate
+    filteredObjectList:inspectorUpdate
 }
 
 
 #
 # try to open inspectors in 'pending inspectors' list
 #
-proc inspectorlist_openinspectors {} {
+proc inspectorList:openInspectors {} {
     global pil_name pil_class pil_type pil_geom
 
     foreach key [array names pil_name] {
@@ -66,7 +66,7 @@ proc inspectorlist_openinspectors {} {
 }
 
 
-proc inspectorlist_storename {w} {
+proc inspectorList:storeName {w} {
     global insp_w2name insp_w2class
 
     if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
@@ -86,7 +86,7 @@ proc inspectorlist_storename {w} {
 # was destroyed -- in this case remember it on the 'pending inspectors' list
 # so that we can reopen the inspector when (if) the object reappears.
 #
-proc inspectorlist_add {w} {
+proc inspectorList:add {w} {
     global pil_name pil_class pil_type pil_geom pil_nextindex
     global insp_w2name insp_w2class
 
@@ -103,7 +103,7 @@ proc inspectorlist_add {w} {
     set pil_name($key)   $objname
     set pil_class($key)  $classname
     set pil_type($key)   $type
-    set pil_geom($key)   [inspectorlist_get_geom $w 1]
+    set pil_geom($key)   [inspectorList:getGeom $w 1]
 
     #debug "$key added to insp list"
 }
@@ -113,7 +113,7 @@ proc inspectorlist_add {w} {
 #
 # called when an inspector window is opened.
 #
-proc inspectorlist_remove {w} {
+proc inspectorList:remove {w} {
     global pil_name pil_class pil_type pil_geom
 
     if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
@@ -131,7 +131,7 @@ proc inspectorlist_remove {w} {
     }
 }
 
-proc inspectorlist_tkenvrc_get_contents {allowdestructive} {
+proc inspectorList:tkenvrcGetContents {allowdestructive} {
     global pil_name pil_class pil_type pil_geom
 
     set res ""
@@ -139,7 +139,7 @@ proc inspectorlist_tkenvrc_get_contents {allowdestructive} {
        if [regexp {\.(ptr.*)-([0-9]+)} $w match object type] {
            set objname [opp_getobjectfullpath $object]
            set class [opp_getobjectshorttypename $object]
-           set geom [inspectorlist_get_geom $w $allowdestructive]
+           set geom [inspectorList:getGeom $w $allowdestructive]
 
            append res "inspector \"$objname\" \"$class\" \"$type\" \"$geom\"\n"
        }
@@ -153,7 +153,7 @@ proc inspectorlist_tkenvrc_get_contents {allowdestructive} {
 }
 
 
-proc inspectorlist_tkenvrc_reset {} {
+proc inspectorList:tkenvrcReset {} {
     global pil_name pil_class pil_type pil_geom
 
     # delete old array
@@ -166,7 +166,7 @@ proc inspectorlist_tkenvrc_reset {} {
 }
 
 
-proc inspectorlist_tkenvrc_process_line {line} {
+proc inspectorList:tkenvrcProcessLine {line} {
     global pil_name pil_class pil_type pil_geom
 
     if {[llength $line]!=5} {error "wrong number of columns"}
@@ -191,7 +191,7 @@ proc inspectorlist_tkenvrc_process_line {line} {
 # The geometry corresponds to the "normal" (non-zoomed) state of the
 # window, so that can be restored from .tkenvrc as well.
 #
-proc inspectorlist_get_geom {w allowdestructive} {
+proc inspectorList:getGeom {w allowdestructive} {
     set state [wm state $w]
     if {$state == "normal"} {
         return "[wm geometry $w]:$state"

@@ -21,7 +21,7 @@
 #    MESSAGE WINDOW - IT IS NOT INSPECTOR!
 #===================================================================
 
-proc create_messagewindow {name} {
+proc createMessageWindow {name} {
     set w $name
     if {[winfo exists $w]} {
         wm deiconify $w; return
@@ -41,12 +41,12 @@ proc create_messagewindow {name} {
     wm protocol $w WM_DELETE_WINDOW "opp_setmsgwindowexists 0; destroy $w"
 
     frame $w.toolbar
-    textwindow_add_icons $w
+    textWindowAddIcons $w
 
     frame $w.main
     text $w.main.text -yscrollcommand "$w.main.sb set" -width 88 -height 15 -font $fonts(text)
     scrollbar $w.main.sb -command "$w.main.text yview"
-    logtextwidget_configuretags $w.main.text
+    logTextWidget:configureTags $w.main.text
 
     # setting geometry
     pack $w.toolbar  -anchor center -expand 0 -fill x -side top
@@ -54,11 +54,11 @@ proc create_messagewindow {name} {
     pack $w.main.sb -anchor center -expand 0 -fill y -ipadx 0 -ipady 0 -padx 0 -pady 0 -side right
     pack $w.main.text -anchor center -expand 1 -fill both -side left
 
-    logtextwidget_configuretags $w.main.text
+    logTextWidget:configureTags $w.main.text
 
     # keyboard bindings
-    bind_runcommands $w
-    bind_commands_to_textwidget $w.main.text
+    bindRunCommands $w
+    bindCommandsToTextWidget $w.main.text
 
     # let C++ code know about it
     opp_setmsgwindowexists 1
@@ -68,7 +68,7 @@ proc create_messagewindow {name} {
 #    CONSOLE WINDOW
 #===================================================================
 
-proc show_console {} {
+proc showConsole {} {
     set w .con
     if {[winfo exists .con]} {
         wm deiconify .con; return
@@ -124,7 +124,7 @@ proc show_console {} {
 #    FILE VIEWER/EDITOR PROCEDURES
 #===================================================================
 
-proc loadfile {win filename} {
+proc loadFile {win filename} {
     if [catch {open $filename r} f] {
        messagebox {Error} "Error: $f" info ok
        return
@@ -140,7 +140,7 @@ proc loadfile {win filename} {
     $t see insert
 }
 
-proc savefile {win {filename ""}} {
+proc saveFile {win {filename ""}} {
     global config
 
     if {$filename == ""} {
@@ -166,7 +166,7 @@ proc savefile {win {filename ""}} {
 #
 # Open file viewer window
 #
-proc create_fileviewer {filename} {
+proc createFileViewer {filename} {
     global icons fonts help_tips
 
     if {$filename == ""} return
@@ -186,11 +186,11 @@ proc create_fileviewer {filename} {
 
     frame $w.toolbar
 
-    pack_iconbutton $w.toolbar.copy   -image $icons(copy) -command "edit_copy $w.main.text"
-    pack_iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
-    pack_iconbutton $w.toolbar.sep20  -separator
-    pack_iconbutton $w.toolbar.save   -image $icons(save) -command "savefile $w $filename"
-    pack_iconbutton $w.toolbar.sep21  -separator
+    packIconButton $w.toolbar.copy   -image $icons(copy) -command "editCopy $w.main.text"
+    packIconButton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
+    packIconButton $w.toolbar.sep20  -separator
+    packIconButton $w.toolbar.save   -image $icons(save) -command "saveFile $w $filename"
+    packIconButton $w.toolbar.sep21  -separator
 
     set help_tips($w.toolbar.copy)   {Copy selected text to clipboard (Ctrl+C)}
     set help_tips($w.toolbar.find)   {Find string in window (Ctrl+F}
@@ -205,18 +205,18 @@ proc create_fileviewer {filename} {
     text $w.main.text -yscrollcommand "$w.main.sb set" -width 88 -height 30 -font $fonts(text)
     pack $w.main.text -anchor center -expand 1 -fill both -side left
 
-    logtextwidget_configuretags $w.main.text
-    bind_commands_to_textwidget $w.main.text
+    logTextWidget:configureTags $w.main.text
+    bindCommandsToTextWidget $w.main.text
 
     # Read file
-    loadfile $w $filename
+    loadFile $w $filename
 }
 
 
 #
 # Create a context menu for a text widget
 #
-proc textwidget_contextmenu {txt wintype X Y} {
+proc textwidget:contextMenu {txt wintype X Y} {
     global tmp config
 
     set tmp(hideprefix) [$txt tag cget prefix -elide]
@@ -225,29 +225,29 @@ proc textwidget_contextmenu {txt wintype X Y} {
     catch {destroy .popup}
     menu .popup -tearoff 0
 
-    .popup add command -command edit_copy -label {Copy} -accel {Ctrl+C} -underline 0
+    .popup add command -command editCopy -label {Copy} -accel {Ctrl+C} -underline 0
     .popup add separator
-    .popup add command -command "edit_find $txt" -label {Find...} -accel {Ctrl+F} -underline 0
-    .popup add command -command "edit_findnext $txt" -label {Find next} -accel {Ctrl+N,F3} -underline 5
+    .popup add command -command "editFind $txt" -label {Find...} -accel {Ctrl+F} -underline 0
+    .popup add command -command "editFindNext $txt" -label {Find next} -accel {Ctrl+N,F3} -underline 5
     .popup add separator
     if {$wintype=="modulewindow"} {
         set w [winfo toplevel $txt]
-        .popup add command -command "modulewindow_filterdialog $w" -label {Filter window contents...} -accel {Ctrl+H} -underline 0
-    }
+        .popup add command -command "moduleWindow:openFilterDialog $w" -label {Filter window contents...} -accel {Ctrl+H} -underline 0
+   }
     if {$wintype=="mainwindow"} {
-        .popup add command -command "mainlogwindow_filterdialog" -label {Filter window contents...} -accel {Ctrl+H} -underline 0
+        .popup add command -command "mainlogWindow:openFilterDialog" -label {Filter window contents...} -accel {Ctrl+H} -underline 0
     }
     .popup add separator
-    .popup add checkbutton -command "textwidget_toggleprefix $txt" -variable tmp(hideprefix) -onvalue 0 -offvalue 1 -label {Show log prefix} -underline 0
-    .popup add checkbutton -command "textwidget_togglewrap $txt" -variable tmp(wrap) -onvalue "char" -offvalue "none" -label {Wrap lines} -underline 0
-    .popup add command -label "Logging options..." -command "options_dialog $txt g"
+    .popup add checkbutton -command "textwidget:togglePrefix $txt" -variable tmp(hideprefix) -onvalue 0 -offvalue 1 -label {Show log prefix} -underline 0
+    .popup add checkbutton -command "textwidget:toggleWrap $txt" -variable tmp(wrap) -onvalue "char" -offvalue "none" -label {Wrap lines} -underline 0
+    .popup add command -label "Logging options..." -command "optionsDialog $txt g"
     .popup add separator
     .popup add command -command "$txt tag add sel 1.0 end" -label {Select all} -accel {Ctrl+A} -underline 0
 
     tk_popup .popup $X $Y
 }
 
-proc textwidget_togglewrap {txt} {
+proc textwidget:toggleWrap {txt} {
     global tmp config
 
     $txt config -wrap $tmp(wrap)
@@ -256,7 +256,7 @@ proc textwidget_togglewrap {txt} {
     set config(editor-wrap) $tmp(wrap)
 }
 
-proc textwidget_toggleprefix {txt} {
+proc textwidget:togglePrefix {txt} {
     global tmp config
 
     $txt tag configure "prefix" -elide $tmp(hideprefix)

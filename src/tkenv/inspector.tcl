@@ -25,7 +25,7 @@
 #
 # gets called from concrete inspector subtypes
 #
-proc create_inspector_toplevel {w geom} {
+proc createInspectorToplevel {w geom} {
 
     # create toplevel inspector window
 
@@ -44,27 +44,27 @@ proc create_inspector_toplevel {w geom} {
     wm minsize $w 1 1
     wm overrideredirect $w 0
     wm resizable $w 1 1
-    wm protocol $w WM_DELETE_WINDOW "close_inspector_toplevel $w"
+    wm protocol $w WM_DELETE_WINDOW "inspector:close $w"
 
-    inspectorlist_remove $w
-    inspectorlist_storename $w
+    inspectorList:remove $w
+    inspectorList:storeName $w
 
     # add the "Inspect As.." icon at the top
     frame $w.toolbar -relief raised -bd 1
     pack $w.toolbar -anchor w -side top -fill x -expand 0
 
-    pack_iconbutton $w.toolbar.sep0 -separator
-    pack_iconbutton $w.toolbar.owner -image $icons(parent) ;#command assigned from C++
-    pack_iconbutton $w.toolbar.sep01 -separator
+    packIconButton $w.toolbar.sep0 -separator
+    packIconButton $w.toolbar.owner -image $icons(parent) ;#command assigned from C++
+    packIconButton $w.toolbar.sep01 -separator
 
     set help_tips($w.toolbar.owner) {Inspect owner object}
 
     # add object type-and-name bar with color codes
     regexp {\.(ptr.*)-[0-9]+} $w match ptr
-    set colorcode [choosecolorcode $ptr]
+    set colorcode [inspector:chooseColorCode $ptr]
 
     frame $w.infobar -relief raised -bd 1
-    button $w.infobar.color -anchor w -relief raised -bd 1 -bg $colorcode -activebackground $colorcode -image $icons(1pixtransp) -width 8 -command "inspect_this_as $w"
+    button $w.infobar.color -anchor w -relief raised -bd 1 -bg $colorcode -activebackground $colorcode -image $icons(1pixtransp) -width 8 -command "inspectThisAs $w"
     label $w.infobar.name -anchor w -relief flat -justify left
     pack $w.infobar.color -anchor n -side left -expand 0 -fill y -pady 1
     pack $w.infobar.name -anchor n -side left -expand 1 -fill both -pady 1
@@ -78,14 +78,14 @@ proc create_inspector_toplevel {w geom} {
     bind $w <Button-1>   "catch {.popup unpost}"
     bind $w <Key-Return> "opp_writebackinspector $w; opp_updateinspectors"
 
-    bind $w.infobar.name <Button-$B3> [list inspectorNamePopup $ptr %X %Y]
-    bind $w.infobar.color <Button-$B3> [list inspectorNamePopup $ptr %X %Y]
+    bind $w.infobar.name <Button-$B3> [list inspector:namePopup $ptr %X %Y]
+    bind $w.infobar.color <Button-$B3> [list inspector:namePopup $ptr %X %Y]
 
-    bind_runcommands $w
-    bind_othercommands $w
+    bindRunCommands $w
+    bindOtherCommands $w
 }
 
-proc choosecolorcode {ptr} {
+proc inspector:chooseColorCode {ptr} {
     set colors {
     gray60 gray70 gray80 gray85 gray90 gray95 \
     snow1 snow2 snow3 snow4 seashell1 seashell2 \
@@ -169,7 +169,7 @@ set treeicons(cOutVector)      {outvect_vs}
 #
 # Returns the icon of an object (for tree view / listbox)
 #
-proc get_icon_for_object {ptr} {
+proc inspector:getIconForObject {ptr} {
     global icons treeicons
     set class [opp_getobjectbaseclass $ptr]
     if [info exists treeicons($class)] {
@@ -182,7 +182,7 @@ proc get_icon_for_object {ptr} {
 #
 # gets called by the WM (Window Manager)
 #
-proc close_inspector_toplevel {w} {
+proc inspector:close {w} {
     # invokes app->deleteInspector(insp)
     opp_deleteinspector $w
 }
@@ -191,30 +191,30 @@ proc close_inspector_toplevel {w} {
 #
 # gets called from C++
 #
-proc inspector_hostobjectdeleted {w} {
+proc inspector:hostObjectDeleted {w} {
     # if the insp window is destroyed because the object no longer exists,
     # prepare to reopen it with same geometry if the object reappears
-    inspectorlist_add $w
+    inspectorList:add $w
 }
 
 #
 # gets called from C++
 #
-proc destroy_inspector_toplevel {w} {
+proc inspector:destroy {w} {
     destroy $w
 }
 
 #
 # gets called from C++
 #
-proc inspector_show {w} {
-    show_window $w
+proc inspector:show {w} {
+    showWindow $w
 }
 
 #
 # Brings the window to front, and gives it focus
 #
-proc show_window {w} {
+proc showWindow {w} {
     global tcl_platform
     if {$tcl_platform(platform) != "windows"} {
         # looks like some X servers ignore the "raise" command unless we
@@ -229,7 +229,7 @@ proc show_window {w} {
 #
 # invoked on right-clicking object name inspectors
 #
-proc inspectorNamePopup {ptr x y} {
+proc inspector:namePopup {ptr x y} {
     catch {destroy .popup}
     menu .popup -tearoff 0
 
@@ -254,16 +254,16 @@ proc setClipboard {str} {
 #    UTILITY FUNCTIONS FOR INSPECTOR WINDOWS
 #===================================================================
 
-proc textwindow_add_icons {w {wintype ""}} {
+proc textWindowAddIcons {w {wintype ""}} {
     global icons help_tips
 
-    pack_iconbutton $w.toolbar.copy   -image $icons(copy) -command "edit_copy $w.main.text"
-    pack_iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
-    pack_iconbutton $w.toolbar.save   -image $icons(save) -command "savefile $w"
+    packIconButton $w.toolbar.copy   -image $icons(copy) -command "editCopy $w.main.text"
+    packIconButton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
+    packIconButton $w.toolbar.save   -image $icons(save) -command "saveFile $w"
     if {$wintype=="modulewindow"} {
-        pack_iconbutton $w.toolbar.filter -image $icons(filter) -command "edit_filterwindowcontents $w.main.text"
+        packIconButton $w.toolbar.filter -image $icons(filter) -command "editFilterWindowContents $w.main.text"
     }
-    pack_iconbutton $w.toolbar.sep21  -separator
+    packIconButton $w.toolbar.sep21  -separator
 
     set help_tips($w.toolbar.copy)   {Copy selected text to clipboard (Ctrl+C)}
     set help_tips($w.toolbar.find)   {Find string in window (Ctrl+F)}
@@ -271,7 +271,7 @@ proc textwindow_add_icons {w {wintype ""}} {
     set help_tips($w.toolbar.filter) {Filter window contents (Ctrl+H)}
 }
 
-proc create_inspector_listbox {w} {
+proc createInspectorListbox {w} {
     global B2 B3
 
     # create a listbox
@@ -295,17 +295,17 @@ proc create_inspector_listbox {w} {
     grid rowconfig    $w.main 0 -weight 1 -minsize 0
     grid columnconfig $w.main 0 -weight 1 -minsize 0
 
-    bind $w.main.list <Double-Button-1> {inspect_item_in %W}
-    bind $w.main.list <Button-$B3> {+inspector_rightclick %W %X %Y}  ;# Note "+"! it appends this code to binding in widgets.tcl
-    bind $w.main.list <Key-Return> {inspect_item_in %W}
+    bind $w.main.list <Double-Button-1> {inspectItemIn %W}
+    bind $w.main.list <Button-$B3> {+inspector:rightClick %W %X %Y}  ;# Note "+"! it appends this code to binding in widgets.tcl
+    bind $w.main.list <Key-Return> {inspectItemIn %W}
 
     focus $w.main.list
 }
 
-proc inspector_rightclick {lb X Y} {
-    set ptr [lindex [multicolumnlistbox_curselection $lb] 0]
+proc inspector:rightClick {lb X Y} {
+    set ptr [lindex [multicolumnlistbox:curSelection $lb] 0]
     if [opp_isnotnull $ptr] {
-        set popup [create_inspector_contextmenu $ptr]
+        set popup [createInspectorContextMenu $ptr]
         tk_popup $popup $X $Y
     }
 }
@@ -350,7 +350,7 @@ proc extendContextMenu {rules} {
     }
 }
 
-proc fill_inspector_contextmenu {menu ptr} {
+proc fillInspectorContextMenu {menu ptr} {
     global contextmenurules
 
     # ptr should never be null, but check it anyway
@@ -368,15 +368,15 @@ proc fill_inspector_contextmenu {menu ptr} {
     if {$baseclass=="cSimpleModule" || $baseclass=="cCompoundModule"} {
         set w ".$ptr-0"  ;#hack
         $menu add separator
-        $menu add command -label "Run until next event in module '$name'" -command "runsimulation_local $w normal"
-        $menu add command -label "Fast run until next event in module '$name'" -command "runsimulation_local $w fast"
+        $menu add command -label "Run until next event in module '$name'" -command "runSimulationLocal $w normal"
+        $menu add command -label "Fast run until next event in module '$name'" -command "runSimulationLocal $w fast"
     }
 
     if {$baseclass=="cMessage"} {
         $menu add separator
-        $menu add command -label "Run until message '$name'" -command "run_until_msg $ptr normal"
-        $menu add command -label "Fast run until message '$name'" -command "run_until_msg $ptr fast"
-        $menu add command -label "Express run until message '$name'" -command "run_until_msg $ptr express"
+        $menu add command -label "Run until message '$name'" -command "runUntilMsg $ptr normal"
+        $menu add command -label "Fast run until message '$name'" -command "runUntilMsg $ptr fast"
+        $menu add command -label "Express run until message '$name'" -command "runUntilMsg $ptr express"
     }
 
     # add further menu items
@@ -397,19 +397,19 @@ proc fill_inspector_contextmenu {menu ptr} {
                set first 0
                $menu add separator
            }
-           $menu add command -label "$contextmenurules($key,label)..." -command "inspect_contextmenurules $ptr $key"
+           $menu add command -label "$contextmenurules($key,label)..." -command "inspectContextMenuRules $ptr $key"
        }
     }
 }
 
-proc create_inspector_contextmenu {ptrs} {
+proc createInspectorContextMenu {ptrs} {
 
     # create popup menu
     catch {destroy .popup}
     menu .popup -tearoff 0
 
     if {[llength $ptrs] == 1} {
-        fill_inspector_contextmenu .popup $ptrs
+        fillInspectorContextMenu .popup $ptrs
     } else {
         foreach ptr $ptrs {
             set submenu .popup.$ptr
@@ -437,7 +437,7 @@ proc create_inspector_contextmenu {ptrs} {
             } else {
                 set label "$name ($infostr)"
             }
-            fill_inspector_contextmenu $submenu $ptr
+            fillInspectorContextMenu $submenu $ptr
             .popup add cascade -label $label -menu $submenu
         }
     }
@@ -445,7 +445,7 @@ proc create_inspector_contextmenu {ptrs} {
     return .popup
 }
 
-proc inspect_contextmenurules {ptr key} {
+proc inspectContextMenuRules {ptr key} {
     global contextmenurules
     set allcategories "mqsgvo"
     set name [opp_getobjectfullpath $ptr]
@@ -459,7 +459,7 @@ proc inspect_contextmenurules {ptr key} {
     }
 }
 
-proc ask_inspectortype {ptr parentwin {typelist {}}} {
+proc askInspectorType {ptr parentwin {typelist {}}} {
     set w .asktype
 
     if {$typelist=={}} {
@@ -497,30 +497,30 @@ proc ask_inspectortype {ptr parentwin {typelist {}}} {
     return $type
 }
 
-proc inspect_item_in {lb} {
+proc inspectItemIn {lb} {
     # called on double-clicking in a container inspector;
     # inspect the current item in the listbox of an inspector listwindow
 
-    set ptr [lindex [multicolumnlistbox_curselection $lb] 0]
+    set ptr [lindex [multicolumnlistbox:curSelection $lb] 0]
     if [opp_isnotnull $ptr] {
         opp_inspect $ptr {(default)}
     }
 }
 
-proc inspectas_item_in {lb} {
+proc inspectAsItemIn {lb} {
     # called on double-clicking in a container inspector;
     # inspect the current item in the listbox of an inspector listwindow
 
-    set ptr [lindex [multicolumnlistbox_curselection $lb] 0]
+    set ptr [lindex [multicolumnlistbox:curSelection $lb] 0]
     if {$sel != ""} {
-        set type [ask_inspectortype $ptr [winfo toplevel $lb]]
+        set type [askInspectorType $ptr [winfo toplevel $lb]]
         if {$type != ""} {
             opp_inspect $ptr $type
         }
     }
 }
 
-proc inspect_this_as {win} {
+proc inspectThisAs {win} {
     # called by the "Inspect As.." button at the TOP of an inspector
     # extract object pointer from window path name and create inpector
     regexp {\.(ptr.*)-([0-9]+)} $win match ptr curtype
@@ -534,19 +534,19 @@ proc inspect_this_as {win} {
     if {[llength $typelist]==0} {return}
 
     # type selection dialog
-    set type [ask_inspectortype $ptr $win $typelist]
+    set type [askInspectorType $ptr $win $typelist]
     if {$type != ""} {
         opp_inspect $ptr $type
     }
 }
 
-proc inspect_this {win type} {
+proc inspectThis {win type} {
     # extract object pointer from window path name and create inspector
     regexp {\.(ptr.*)-[0-9]+} $win match object
     opp_inspect $object $type
 }
 
-proc inspect_componenttype {win {type "(default)"}} {
+proc inspectComponentType {win {type "(default)"}} {
     # extract object pointer from window path name and create inspector
     regexp {\.(ptr.*)-[0-9]+} $win match ptr
 
@@ -556,12 +556,12 @@ proc inspect_componenttype {win {type "(default)"}} {
 
 #
 # Called from balloon.tcl, supposed to return tooltip for a widget (or items
-# in a widget). Installed via: set help_tips(helptip_proc) get_help_tip
+# in a widget). Installed via: set help_tips(helptip_proc) getHelpTip
 #
 # Here we produce help text for canvas items that represent simulation
 # objects.
 #
-proc get_help_tip {w x y} {
+proc getHelpTip {w x y} {
    if {![winfo exists $w]} {
        return ""
    }
@@ -585,7 +585,7 @@ proc get_help_tip {w x y} {
           regexp "ptr.*" $tags ptr
        } elseif {[lsearch $tags "qlen-ptr*"] != -1} {
           regexp "ptr.*" $tags modptr
-          set ptr [graphmodwin_qlen_getqptr $w $modptr]
+          set ptr [graphicalModuleWindow:qlenGetQptr $w $modptr]
        } elseif {[lsearch $tags "node-ptr*"] != -1} {
           regexp "ptr.*" $tags ptr
        } elseif {[lsearch $tags "node-*"] != -1} {
@@ -622,7 +622,7 @@ proc get_help_tip {w x y} {
 }
 
 
-proc inspector_createnotebook {w} {
+proc inspector:createNotebook {w} {
     set nb $w.nb
     notebook $nb
     $nb config -width 460 -height 260

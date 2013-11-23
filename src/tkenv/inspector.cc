@@ -99,7 +99,7 @@ TInspector::~TInspector()
    if (windowname[0])
    {
       Tcl_Interp *interp = getTkenv()->getInterp();
-      CHK(Tcl_VarEval(interp, "destroy_inspector_toplevel ", windowname, NULL ));
+      CHK(Tcl_VarEval(interp, "inspector:destroy ", windowname, NULL ));
    }
 }
 
@@ -123,13 +123,13 @@ bool TInspector::windowExists()
 void TInspector::showWindow()
 {
    Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, "inspector_show ", windowname, NULL ));
+   CHK(Tcl_VarEval(interp, "inspector:show ", windowname, NULL ));
 }
 
 void TInspector::hostObjectDeleted()
 {
    Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, "inspector_hostobjectdeleted ", windowname, NULL ));
+   CHK(Tcl_VarEval(interp, "inspector:hostObjectDeleted ", windowname, NULL ));
 }
 
 void TInspector::update()
@@ -287,7 +287,7 @@ void TInspector::setToolbarInspectButton(const char *button, cObject *object, in
 void TInspector::deleteInspectorListbox(const char *listbox)
 {
    Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, "multicolumnlistbox_deleteall ", windowname,listbox,".main.list",NULL));
+   CHK(Tcl_VarEval(interp, "multicolumnlistbox:deleteAll ", windowname,listbox,".main.list",NULL));
 }
 
 void TInspector::fillInspectorListbox(const char *listbox, cObject *object, bool deep)
@@ -301,7 +301,7 @@ void TInspector::fillInspectorListbox(const char *listbox, cObject *object, bool
    // from 3 to 0 (e.g. in samples/fifo, Fast mode). Adding a dummy line when
    // listbox is empty solves the problem...
    if (n==0)
-       CHK(Tcl_VarEval(interp, "multicolumnlistbox_adddummyline ", w, NULL));
+       CHK(Tcl_VarEval(interp, "multicolumnlistbox:addDummyLine ", w, NULL));
 
    // set "number of items" display
    sprintf(w, "%s.label", listbox);

@@ -16,7 +16,7 @@
 set tkenv(timeline-minexp) -1
 set tkenv(timeline-maxexp) +1
 
-proc redraw_timeline {} {
+proc redrawTimeline {} {
     global fonts tkenv config widgets
 
     # spare work if we're not displayed
@@ -135,7 +135,7 @@ proc redraw_timeline {} {
 }
 
 
-proc timeline_popup {cx cy x y} {
+proc timeline:popup {cx cy x y} {
     global widgets
     set c $widgets(timeline)
     set ids [$c find overlapping $cx $cy $cx $cy]
@@ -144,12 +144,12 @@ proc timeline_popup {cx cy x y} {
     if {$ids=={}} {
         catch {destroy .popup}
         menu .popup -tearoff 0
-        .popup add command -label "Timeline options..." -command "options_dialog . t"
+        .popup add command -label "Timeline options..." -command "optionsDialog . t"
         tk_popup .popup $x $y
     }
 }
 
-proc timeline_dblclick c {
+proc timeline:dblClick c {
    set item [$c find withtag current]
    set tags [$c gettags $item]
 
@@ -163,10 +163,10 @@ proc timeline_dblclick c {
    }
 }
 
-proc timeline_rightclick {c X Y x y} {
-   set ptrs [get_ptrs_under_mouse $c $x $y]
+proc timeline:rightClick {c X Y x y} {
+   set ptrs [graphicalModuleWindow:getPtrsUnderMouse $c $x $y]
    if {$ptrs != {}} {
-      set popup [create_inspector_contextmenu $ptrs]
+      set popup [createInspectorContextMenu $ptrs]
       tk_popup $popup $X $Y
    }
 }
