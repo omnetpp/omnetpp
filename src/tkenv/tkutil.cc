@@ -267,6 +267,8 @@ void inspectObjectByName(const char *fullpath, const char *classname, int inspty
 
 void textWidget_insert(Tcl_Interp *interp, const char *textWidget, const char *quotedText, const char *tags)
 {
+    if (!quotedText || !quotedText[0])
+        return;
     if (!tags)
         CHK(Tcl_VarEval(interp, textWidget, " insert end ", quotedText, NULL));
     else
