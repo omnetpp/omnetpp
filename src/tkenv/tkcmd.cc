@@ -244,7 +244,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getmodulepar",     getModulePar_cmd         }, // args: <modptr> <parname> ret: value
    { "opp_setmodulepar",     setModulePar_cmd         }, // args: <modptr> <parname> <value>
    { "opp_checkpattern",     checkPattern_cmd         }, // args: <pattern>
-   { "opp_fesmsgs",          fesMsgs_cmd              }, // args: <maxnum> <wantSelfMsgs> <wantNonSelfMsgs> <namePattern> <classNamePattern>
+   { "opp_fesmsgs",          fesMsgs_cmd              }, // args: <maxnum> <wantSelfMsgs> <wantNonSelfMsgs> <wantSilentMsgs>
    { "opp_sortfesandgetrange",sortFesAndGetRange_cmd  }, // args: -  ret: {minDeltaT maxDeltaT}
    { "opp_msgarrtimefromnow",msgArrTimeFromNow_cmd    }, // args: <modptr>
    { "opp_patmatch",         patmatch_cmd             }, // args: <string> <pattern>
@@ -1166,6 +1166,8 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       sprintf(buf,"%d", app->opt_stoponmsgcancel);
    else if (0==strcmp(argv[1], "record_eventlog"))
       sprintf(buf,"%d", app->record_eventlog);
+   else if (0==strcmp(argv[1], "silent_event_filters"))
+      buf = const_cast<char *>(app->getSilentEventFilters());
    else
       return TCL_ERROR;
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
@@ -1236,7 +1238,9 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       app->opt_stoponmsgcancel = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "record_eventlog"))
       app->setEventlogRecording(argv[2][0]!='0');
-   else
+   else if (0==strcmp(argv[1], "silent_event_filters")) {
+      TRY(app->setSilentEventFilters(argv[2]));
+   } else
       return TCL_ERROR;
    return TCL_OK;
 }
@@ -1514,34 +1518,21 @@ int checkPattern_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 int fesMsgs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    E_TRY
-   if (argc!=6) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    int maxNum = atoi(argv[1]);
    bool wantSelfMsgs = atoi(argv[2])!=0;
    bool wantNonSelfMsgs = atoi(argv[3])!=0;
-   const char *namePattern = argv[4];
-   const char *classNamePattern = argv[5];
+   bool wantSilentMsgs = atoi(argv[4])!=0;
 
-   if (!*namePattern) namePattern = "*";
-   MatchExpression nameMatcher(namePattern, false, true, true);
-
-   if (!*classNamePattern) classNamePattern = "*";
-   MatchExpression classNameMatcher(classNamePattern, false, true, true);
-
+   Tkenv *app = getTkenv();
    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
    for (cMessageHeap::Iterator it(simulation.msgQueue); maxNum>0 && !it.end(); it++, maxNum--)
    {
        cMessage *msg = it();
        if (msg->isSelfMessage() ? !wantSelfMsgs : !wantNonSelfMsgs)
            continue;
-
-       MatchableObjectAdapter msgAdapter(MatchableObjectAdapter::FULLNAME, msg);
-       if (namePattern[0] && !nameMatcher.matches(&msgAdapter))
+       if (!wantSilentMsgs && app->isSilentEvent(msg))
            continue;
-
-       msgAdapter.setDefaultAttribute(MatchableObjectAdapter::CLASSNAME);
-       if (classNamePattern[0] && !classNameMatcher.matches(&msgAdapter))
-           continue;
-
        Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(ptrToStr(msg), -1));
    }
    Tcl_SetObjResult(interp, listobj);

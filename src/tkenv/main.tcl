@@ -42,12 +42,9 @@ set config(rununtil-event) ""
 set config(rununtil-msg) ""
 set config(display-timeline) 1
 set config(timeline-maxnumevents) 1000
-#set config(timeline-includemsgkinds) {*}
-#set config(timeline-excludemsgkinds) {}
 set config(timeline-wantselfmsgs) 1
 set config(timeline-wantnonselfmsgs) 1
-set config(timeline-msgnamepattern) "*"
-set config(timeline-msgclassnamepattern) "*"
+set config(timeline-wantsilentmsgs) 0
 set config(log-save-filename) "omnetpp.out"
 set config(mainwin-state) "normal"
 set config(mainwin-geom) ""

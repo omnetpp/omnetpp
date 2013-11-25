@@ -141,6 +141,10 @@ class TKENV_API Tkenv : public EnvirBase
       typedef std::map<std::string,std::string> StringMap;
       StringMap answers;           // key: <ModuleType>:<paramName>, value: <interactively-given-paramvalue>
 
+      typedef std::vector<MatchExpression*> MatchExpressions;
+      std::string silentEventFilterLines; // match expressions, separated by newlines (\n)
+      MatchExpressions silentEventFilters; // silent events: objects to hide from animation and the timeline
+
       FILE *ferrorlog;             // .tkenvlog file; NULL if not yet open
 
    public:
@@ -229,6 +233,9 @@ class TKENV_API Tkenv : public EnvirBase
       const LogBuffer& getLogBuffer() const {return logBuffer;}
       const std::set<int>& getMainWindowExcludedModuleIds() const {return mainWindowExcludedModuleIds;}
       void setMainWindowExcludedModuleIds(const std::set<int>& ids);
+      const char *getSilentEventFilters() const {return silentEventFilterLines.c_str();}
+      void setSilentEventFilters(const char *filterLines);
+      bool isSilentEvent(cMessage *msg);
 
       void updateGraphicalInspectorsBeforeAnimation();
 

@@ -82,8 +82,7 @@ proc redrawTimeline {} {
     set msgs [opp_fesmsgs $config(timeline-maxnumevents) \
                           $config(timeline-wantselfmsgs) \
                           $config(timeline-wantnonselfmsgs) \
-                          $config(timeline-msgnamepattern) \
-                          $config(timeline-msgclassnamepattern)]
+                          $config(timeline-wantsilentmsgs)]
 
     foreach msgptr $msgs {
         # calculate position

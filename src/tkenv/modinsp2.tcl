@@ -1279,6 +1279,7 @@ proc graphicalModuleWindow:rightClick {w X Y x y} {
       $popup add separator
       $popup add command -label "Layouting options..." -command "optionsDialog $w l"
       $popup add command -label "Animation options..." -command "optionsDialog $w a"
+      $popup add command -label "Filtering options..." -command "optionsDialog $w t"
 
       tk_popup $popup $X $Y
    }
