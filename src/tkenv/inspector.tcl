@@ -378,6 +378,8 @@ proc fillInspectorContextMenu {menu ptr} {
         $menu add command -label "Run until message '$name'" -command "runUntilMsg $ptr normal"
         $menu add command -label "Fast run until message '$name'" -command "runUntilMsg $ptr fast"
         $menu add command -label "Express run until message '$name'" -command "runUntilMsg $ptr express"
+        $menu add separator
+        $menu add command -label "Exclude messages like '$name' from animation" -command "excludeMessageFromAnimation $ptr"
     }
 
     # add further menu items

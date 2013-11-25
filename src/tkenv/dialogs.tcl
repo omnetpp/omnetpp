@@ -383,15 +383,15 @@ proc optionsDialog {parent {defaultpage "g"}} {
 
     labelframe $nb.t.f2 -text "Animation" -relief groove -borderwidth 2 -font $fonts(normal)
     label $nb.t.f2.filterslabel -text "Messages to exclude from animation:"
-    text $nb.t.f2.filterstext -highlightthickness 0 -height 10
-    commentlabel $nb.t.f2.c1 {One expression per line. Wildcards, AND, OR, NOT, numeric ranges, field matchers like className(...), kind(..), byteLength(), etc. accepted. Hover with the mouse over this text for more info.}
+    text $nb.t.f2.filterstext -highlightthickness 0 -height 10 -width 20
+    commentlabel $nb.t.f2.c1 {One expression per line. Wildcards, AND, OR, NOT, numeric ranges ({5..10}), field matchers (className(..), kind(..), byteLength(..), etc.) are accepted.}
 
     pack $nb.t.f1.tlwantself -anchor w
     pack $nb.t.f1.tlwantnonself -anchor w
     pack $nb.t.f1.tlwantsilent -anchor w
     pack $nb.t.f2.filterslabel -anchor w
     pack $nb.t.f2.filterstext -fill x -padx 8 -pady 2
-    pack $nb.t.f2.c1 -anchor w
+    pack $nb.t.f2.c1 -anchor w -fill x
 
     pack $nb.t.f1 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
     pack $nb.t.f2 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
