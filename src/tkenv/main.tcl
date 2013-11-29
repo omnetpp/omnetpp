@@ -469,10 +469,14 @@ proc createOmnetppWindow {} {
 }
 
 proc bindRunCommands {w} {
-    bind $w <F4> {oneStep}
-    bind $w <F5> {runNormal}
-    bind $w <F6> {runFast}
-    bind $w <F7> {runExpress}
+    # Note: the "after 100" in the commands below is a workaround on Mac OS X:
+    # without them, a few seconds after hitting e.g. F5 (Run) the app will
+    # stop responding to UI events (beach ball appears and never goes away).
+    # It doesn't hurt on other platforms.
+    bind $w <F4> {after 100 oneStep}
+    bind $w <F5> {after 100 runNormal}
+    bind $w <F6> {after 100 runFast}
+    bind $w <F7> {after 100 runExpress}
     bind $w <F8> {stopSimulation}
     bind $w <Control-F9> {debugNextEvent}
 }
