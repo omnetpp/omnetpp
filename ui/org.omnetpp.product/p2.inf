@@ -1,11 +1,11 @@
 instructions.configure=\
-org.eclipse.equinox.p2.touchpoint.eclipse.addRepository(type:0,location:http${#58}//download.eclipse.org/eclipse/updates/4.3,name:The Eclipse Project Updates);\
-org.eclipse.equinox.p2.touchpoint.eclipse.addRepository(type:1,location:http${#58}//download.eclipse.org/eclipse/updates/4.3,name:The Eclipse Project Updates);\
+org.eclipse.equinox.p2.touchpoint.eclipse.addRepository(type:0,location:http${#58}//download.eclipse.org/eclipse/updates/4.4,name:The Eclipse Project Updates);\
+org.eclipse.equinox.p2.touchpoint.eclipse.addRepository(type:1,location:http${#58}//download.eclipse.org/eclipse/updates/4.4,name:The Eclipse Project Updates);\
 org.eclipse.equinox.p2.touchpoint.eclipse.addRepository(type:0,location:http${#58}//download.eclipse.org/releases/kepler,name:Kepler);\
 org.eclipse.equinox.p2.touchpoint.eclipse.addRepository(type:1,location:http${#58}//download.eclipse.org/releases/kepler,name:Kepler);
 
 instructions.unconfigure=\
-org.eclipse.equinox.p2.touchpoint.eclipse.removeRepository(type:0,location:http${#58}//download.eclipse.org/eclipse/updates/4.3);\
-org.eclipse.equinox.p2.touchpoint.eclipse.removeRepository(type:1,location:http${#58}//download.eclipse.org/eclipse/updates/4.3);\
+org.eclipse.equinox.p2.touchpoint.eclipse.removeRepository(type:0,location:http${#58}//download.eclipse.org/eclipse/updates/4.4);\
+org.eclipse.equinox.p2.touchpoint.eclipse.removeRepository(type:1,location:http${#58}//download.eclipse.org/eclipse/updates/4.4);\
 org.eclipse.equinox.p2.touchpoint.eclipse.removeRepository(type:0,location:http${#58}//download.eclipse.org/releases/kepler);\
 org.eclipse.equinox.p2.touchpoint.eclipse.removeRepository(type:1,location:http${#58}//download.eclipse.org/releases/kepler);
