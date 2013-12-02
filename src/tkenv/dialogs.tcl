@@ -308,7 +308,7 @@ proc optionsDialog {parent {defaultpage "g"}} {
     notebook:addPage $nb g General
     notebook:addPage $nb l Layouting
     notebook:addPage $nb a Animation
-    notebook:addPage $nb t Timeline
+    notebook:addPage $nb t Filtering
     notebook:addPage $nb f Fonts
     pack $nb -expand 1 -fill both
 
@@ -381,21 +381,26 @@ proc optionsDialog {parent {defaultpage "g"}} {
     pack $nb.l.f1 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
     pack $nb.l.f2 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
 
-    # "Timeline" page
-    checkbutton $nb.t.tlwantself -text {Display self-messages in the timeline} -variable opp(timeline-wantselfmsgs)
-    checkbutton $nb.t.tlwantnonself -text {Display non-self messages in the timeline} -variable opp(timeline-wantnonselfmsgs)
-    label-entry-help $nb.t.tlnamepattern {Message name filter:} $helptexts(timeline-namepattern)
-    label-entry-help $nb.t.tlclassnamepattern {Class name filter:} $helptexts(timeline-classnamepattern)
-    commentlabel $nb.t.c1 {Wildcards, AND, OR, NOT, numeric ranges, field matchers like kind, length, etc. accepted. Hover with the mouse over the controls for more info.}
-    $nb.t.tlnamepattern.l config -width 20
-    $nb.t.tlclassnamepattern.l config -width 20
-    $nb.t.tlnamepattern.e config -width 40
-    $nb.t.tlclassnamepattern.e config -width 40
-    pack $nb.t.tlwantself -anchor w
-    pack $nb.t.tlwantnonself -anchor w
-    pack $nb.t.tlnamepattern -anchor w -fill x
-    pack $nb.t.tlclassnamepattern -anchor w -fill x
-    pack $nb.t.c1 -anchor w
+    # "Filtering" page
+    labelframe $nb.t.f1 -text "Timeline" -relief groove -borderwidth 2 -font $fonts(normal)
+    checkbutton $nb.t.f1.tlwantself -text {Show self-messages} -variable opp(timeline-wantselfmsgs)
+    checkbutton $nb.t.f1.tlwantnonself -text {Show non-self messages} -variable opp(timeline-wantnonselfmsgs)
+    checkbutton $nb.t.f1.tlwantsilent -text {Show silent (non-animated) messages, see below} -variable opp(timeline-wantsilentmsgs)
+
+    labelframe $nb.t.f2 -text "Animation" -relief groove -borderwidth 2 -font $fonts(normal)
+    label $nb.t.f2.filterslabel -text "Messages to exclude from animation:"
+    text $nb.t.f2.filterstext -highlightthickness 0 -height 10 -width 20
+    commentlabel $nb.t.f2.c1 {One expression per line. Wildcards, AND, OR, NOT, numeric ranges ({5..10}), field matchers (className(..), kind(..), byteLength(..), etc.) are accepted.}
+
+    pack $nb.t.f1.tlwantself -anchor w
+    pack $nb.t.f1.tlwantnonself -anchor w
+    pack $nb.t.f1.tlwantsilent -anchor w
+    pack $nb.t.f2.filterslabel -anchor w
+    pack $nb.t.f2.filterstext -fill x -padx 8 -pady 2
+    pack $nb.t.f2.c1 -anchor w -fill x
+
+    pack $nb.t.f1 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
+    pack $nb.t.f2 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
 
     # "Animation" page
     labelframe $nb.a.f1 -text "General" -relief groove -borderwidth 2 -font $fonts(normal)
@@ -454,6 +459,7 @@ proc optionsDialog {parent {defaultpage "g"}} {
     $nb.g.f1.stepdelay.e insert 0 [opp_getsimoption stepdelay]
     $nb.g.f2.numlines.e insert 0 $config(logwindow-scrollbacklines)
     $nb.l.f2.iconminsize.e insert 0 [opp_getsimoption iconminsize]
+    $nb.t.f2.filterstext insert 1.0 [opp_getsimoption silent_event_filters]
     set opp(usemainwin) [opp_getsimoption use_mainwindow]
     set opp(eventbanners) [opp_getsimoption event_banners]
     set opp(initbanners) [opp_getsimoption init_banners]
@@ -480,10 +486,9 @@ proc optionsDialog {parent {defaultpage "g"}} {
     set opp(allowresize) $config(layout-may-resize-window)
     set opp(allowzoom)   $config(layout-may-change-zoom)
 
-    $nb.t.tlnamepattern.e insert 0      $config(timeline-msgnamepattern)
-    $nb.t.tlclassnamepattern.e insert 0 $config(timeline-msgclassnamepattern)
     set opp(timeline-wantselfmsgs)      $config(timeline-wantselfmsgs)
     set opp(timeline-wantnonselfmsgs)   $config(timeline-wantnonselfmsgs)
+    set opp(timeline-wantsilentmsgs)    $config(timeline-wantsilentmsgs)
 
     fontcombo:set $nb.f.f1.normalfont.e $fonts(normal)
     fontcombo:set $nb.f.f1.textfont.e $fonts(text)
@@ -495,6 +500,7 @@ proc optionsDialog {parent {defaultpage "g"}} {
         opp_setsimoption stepdelay             [$nb.g.f1.stepdelay.e get]
         opp_setsimoption updatefreq_fast_ms    [$nb.g.f1.updfreq_fast.e get]
         opp_setsimoption updatefreq_express_ms [$nb.g.f1.updfreq_express.e get]
+        opp_setsimoption silent_event_filters  [$nb.t.f2.filterstext get 1.0 end]
         set n [$nb.g.f2.numlines.e get]
         if {$n=="" || [string is integer $n]} {
             if {$n!="" && $n<500} {set n 500}
@@ -527,10 +533,9 @@ proc optionsDialog {parent {defaultpage "g"}} {
         set config(layout-may-resize-window) $opp(allowresize)
         set config(layout-may-change-zoom)   $opp(allowzoom)
 
-        setIfPatternIsValid config(timeline-msgnamepattern)  [$nb.t.tlnamepattern.e get]
-        setIfPatternIsValid config(timeline-msgclassnamepattern) [$nb.t.tlclassnamepattern.e get]
         set config(timeline-wantselfmsgs)    $opp(timeline-wantselfmsgs)
         set config(timeline-wantnonselfmsgs) $opp(timeline-wantnonselfmsgs)
+        set config(timeline-wantsilentmsgs)  $opp(timeline-wantsilentmsgs)
 
         set font [actualFont [fixupFontName [$nb.f.f1.normalfont.e get]]]
         if {$font != ""} {
@@ -577,7 +582,7 @@ proc runUntilDialog {time_var event_var msg_var mode_var} {
 
     # collect FES messages for combo
     set msglabels {""}
-    set msgptrs [opp_fesevents 1000 0 1 1 "" ""]  ;# messages only (opp_fesevents is called with wantEvents=0)
+    set msgptrs [opp_fesevents 1000 0 1 1 1]  ;# exclude non-message events
     foreach ptr $msgptrs {
         set msglabel "[opp_getobjectfullname $ptr] ([opp_getobjectshorttypename $ptr]), [opp_getobjectinfostring $ptr] -- $ptr"
         lappend msglabels $msglabel

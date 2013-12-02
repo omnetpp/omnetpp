@@ -41,6 +41,7 @@ proc saveTkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
                 animation_msgnames
                 animation_msgclassnames
                 animation_msgcolors
+                silent_event_filters
                 penguin_mode
                 showlayouting
                 layouterchoice
@@ -54,12 +55,14 @@ proc saveTkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
                 loglevel
             } {
                 set value [opp_getsimoption $key]
+                set value [string map {"\n" "\x2"} $value]
                 puts $fout "option $key\t{$value}"
             }
 
             storeMainwinGeometry
             foreach key [lsort [array names config]] {
                 set value $config($key)
+                set value [string map {"\n" "\x2"} $value]
                 puts $fout "config $key\t{$value}"
             }
 
@@ -118,6 +121,7 @@ proc loadTkenvrc {fname} {
     while {[gets $fin line] >= 0} {
         if {$line == ""} {incr lineno; continue}
         if [string match {#*} $line] {incr lineno; continue}
+        set line [string map {"\x2" "\n"} $line]
 
         if [catch {
             set cat [lindex $line 0]

@@ -43,13 +43,10 @@ set config(rununtil-event) ""
 set config(rununtil-msg) ""
 set config(display-timeline) 1
 set config(timeline-maxnumevents) 1000
-#set config(timeline-includemsgkinds) {*}
-#set config(timeline-excludemsgkinds) {}
 set config(timeline-wantevents) 1
 set config(timeline-wantselfmsgs) 1
 set config(timeline-wantnonselfmsgs) 1
-set config(timeline-msgnamepattern) "*"
-set config(timeline-msgclassnamepattern) "*"
+set config(timeline-wantsilentmsgs) 0
 set config(log-save-filename) "omnetpp.out"
 set config(mainwin-state) "normal"
 set config(mainwin-geom) ""
@@ -474,10 +471,14 @@ proc createOmnetppWindow {} {
 }
 
 proc bindRunCommands {w} {
-    bind $w <F4> {oneStep}
-    bind $w <F5> {runNormal}
-    bind $w <F6> {runFast}
-    bind $w <F7> {runExpress}
+    # Note: the "after 100" in the commands below is a workaround on Mac OS X:
+    # without them, a few seconds after hitting e.g. F5 (Run) the app will
+    # stop responding to UI events (beach ball appears and never goes away).
+    # It doesn't hurt on other platforms.
+    bind $w <F4> {after 100 oneStep}
+    bind $w <F5> {after 100 runNormal}
+    bind $w <F6> {after 100 runFast}
+    bind $w <F7> {after 100 runExpress}
     bind $w <F8> {stopSimulation}
     bind $w <Control-F9> {debugNextEvent}
 }

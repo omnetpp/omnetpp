@@ -83,8 +83,8 @@ proc redrawTimeline {} {
                               $config(timeline-wantevents) \
                               $config(timeline-wantselfmsgs) \
                               $config(timeline-wantnonselfmsgs) \
-                              $config(timeline-msgnamepattern) \
-                              $config(timeline-msgclassnamepattern)]
+                              $config(timeline-wantsilentmsgs)]
+
     foreach eventptr $events {
         # calculate position
         set dt [opp_eventarrtimefromnow $eventptr]

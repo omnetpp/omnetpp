@@ -44,6 +44,9 @@
 #include "modinsp.h"
 #include "timeutil.h"
 #include "stringutil.h"
+#include "stringtokenizer.h"
+#include "matchexpression.h"
+#include "matchableobject.h"
 #include "../common/ver.h"
 #include "platdep/platmisc.h"  // va_copy
 
@@ -164,6 +167,8 @@ Tkenv::Tkenv()
 
 Tkenv::~Tkenv()
 {
+    for (int i = 0; i < (int)silentEventFilters.size(); i++)
+        delete silentEventFilters[i];
 }
 
 static void signalHandler(int signum)
@@ -1160,6 +1165,46 @@ void Tkenv::setMainWindowExcludedModuleIds(const std::set<int>& ids)
     TModuleWindow::redisplay(interp, ".main.text", logBuffer, simulation.getSystemModule(), mainWindowExcludedModuleIds);
 }
 
+void Tkenv::setSilentEventFilters(const char *filterLines)
+{
+    // parse into tmp
+    MatchExpressions tmp;
+    try
+    {
+        StringTokenizer tokenizer(filterLines, "\n");
+        while (tokenizer.hasMoreTokens())
+        {
+            const char *line = tokenizer.nextToken();
+            if (!opp_isblank(line))
+            {
+                tmp.push_back(new MatchExpression());
+                tmp.back()->setPattern(line, false, true, true);
+            }
+        }
+    }
+    catch (std::exception& e) // parse error
+    {
+        for (int i = 0; i < (int)tmp.size(); i++)
+            delete tmp[i];
+        throw;
+    }
+
+    // parsing successful, store the result
+    for (int i = 0; i < (int)silentEventFilters.size(); i++)
+        delete silentEventFilters[i];
+    silentEventFilterLines = filterLines;
+    silentEventFilters = tmp;
+}
+
+bool Tkenv::isSilentEvent(cMessage *msg)
+{
+    MatchableObjectAdapter wrappedMsg(MatchableObjectAdapter::FULLNAME, msg);
+    for (int i = 0; i < (int)silentEventFilters.size(); i++)
+        if (silentEventFilters[i]->matches(&wrappedMsg))
+            return true;
+    return false;
+}
+
 //=========================================================================
 
 void Tkenv::readOptions()
@@ -1342,7 +1387,7 @@ void Tkenv::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate) //FIXME nee
             "}\n",
             NULL));
 
-    if (animating && opt_animation_enabled)
+    if (animating && opt_animation_enabled && !isSilentEvent(msg))
     {
         // find suitable inspectors and do animate the message...
         updateGraphicalInspectorsBeforeAnimation(); // actually this will draw `msg' too (which would cause "phantom message"),

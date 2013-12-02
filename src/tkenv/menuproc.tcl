@@ -533,6 +533,24 @@ proc runUntilMsg {msg mode} {
     }
 }
 
+proc excludeMessageFromAnimation {msg} {
+    set name [opp_getobjectfullname $msg]
+    set class [opp_getobjectshorttypename $msg]
+    set namepattern [regsub -all -- {[0-9]+} $name {*}]
+    set namepattern [regsub -all -- {[^[:print:]]} $namepattern {?}]  ;# sanitize: replace nonprintable chars with '?'
+    set namepattern [regsub -all -- {["\\]} $namepattern {?}] ;# sanitize: replace quotes and backslashes with '?'
+    if {[regexp " " $namepattern]} {   # must be quoted if contains spaces
+        set namepattern "\"$namepattern\""
+    }
+
+    set filters [string trim [opp_getsimoption silent_event_filters]]
+    if {$filters != ""} {append filters "\n"}
+    append filters "$namepattern and className($class)\n"
+    opp_setsimoption silent_event_filters $filters
+
+    redrawTimeline
+    opp_updateinspectors
+}
 
 proc startAll {} {
 
