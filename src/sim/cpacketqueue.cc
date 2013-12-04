@@ -87,36 +87,40 @@ void cPacketQueue::parsimUnpack(cCommBuffer *buffer)
 #endif
 }
 
-void cPacketQueue::addLen(cPacket *pkt)
+void cPacketQueue::addLength(cPacket *pkt)
 {
-    if (pkt)
-        bitlength += pkt->getBitLength();
+    bitlength += pkt->getBitLength();
+}
+
+cPacket *cPacketQueue::checkPacket(cObject *obj)
+{
+    cPacket *pkt = dynamic_cast<cPacket *>(obj);
+    if (!pkt)
+        throw cRuntimeError(this, "insert...(): Cannot cast (%s)%s to cPacket", obj->getClassName(), obj->getFullName());
+    return pkt;
 }
 
 void cPacketQueue::insert(cPacket *pkt)
 {
-    addLen(pkt);
     cQueue::insert(pkt);
+    addLength(pkt);
 }
 
 void cPacketQueue::insertBefore(cPacket *where, cPacket *pkt)
 {
-    addLen(pkt);
     cQueue::insertBefore(where, pkt);
+    addLength(pkt);
 }
 
 void cPacketQueue::insertAfter(cPacket *where, cPacket *pkt)
 {
-    addLen(pkt);
     cQueue::insertAfter(where, pkt);
+    addLength(pkt);
 }
 
 cPacket *cPacketQueue::remove(cPacket *pkt)
 {
-    cPacket *pkt1 = (cPacket *)cQueue::remove(pkt);
-    if (pkt1)
-        bitlength -= pkt1->getBitLength();
-    return pkt1;
+    return (cPacket *)remove((cObject *)pkt);
 }
 
 cPacket *cPacketQueue::pop()
@@ -135,20 +139,23 @@ void cPacketQueue::clear()
 
 void cPacketQueue::insert(cObject *obj)
 {
-    throw cRuntimeError("cPacketQueue: cannot insert cObject");
+    insert(checkPacket(obj));
 }
 
 void cPacketQueue::insertBefore(cObject *where, cObject *obj)
 {
-    throw cRuntimeError("cPacketQueue: cannot insert cObject");
+    insertBefore(checkPacket(where), checkPacket(obj));
 }
 
 void cPacketQueue::insertAfter(cObject *where, cObject *obj)
 {
-    throw cRuntimeError("cPacketQueue: cannot insert cObject");
+    insertAfter(checkPacket(where), checkPacket(obj));
 }
 
 cObject *cPacketQueue::remove(cObject *obj)
 {
-    throw cRuntimeError("cPacketQueue: cannot remove cObject");
+    cPacket *pkt = (cPacket *)cQueue::remove(obj);
+    if (pkt)
+        bitlength -= pkt->getBitLength();
+    return pkt;
 }
