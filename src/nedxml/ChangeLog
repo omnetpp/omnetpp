@@ -1,3 +1,19 @@
+2013-09-28  Andras Varga
+
+    * More liberal syntax for NED (and MSG) properties. Rules:
+       - property names and indices may now contain letters, digits,
+         underscore, hyphen, dot and colon (this is roughly the same rule as
+         for XML attribute names)
+       - values no longer need to be enclosed in quotes if they contain parens,
+         provided that parens are balanced
+       - comma, semicolon and equal sign are ignored within nested parens,
+         brackets, curly braces; also within string constants
+       - if parens, brackets or braces are unbalanced, the value needs to be
+         quoted
+       - spaces are generally ignored, except within values
+
+    Implementation uses several flex modes and yyless()
+
 2013-09-12  ------ omnetpp-4.3.1 released ------
 
 2013-04-02  ------ omnetpp-4.3 released ------
@@ -6,7 +22,7 @@
 
 2012-01-14  Andras Varga
 
-	* grammar change (ned2.dtd,ned2.y, ned2generator.cc): added channel 
+	* grammar change (ned2.dtd,ned2.y, ned2generator.cc): added channel
 	name support to connections
 
 	Syntax:

@@ -21,6 +21,30 @@ Legend:
 (i)     information
 
 
+OMNeT++ 4.4
+~~~~~~~~~~~
+
+(!)     cIListener: added receiveSignal() overload for the bool type. Most code
+        containing listeners don't have to be changed as they subclass from
+        cListener, a do-nothing listener implementation.
+
+(!)     cComponent: added emit(simsignal_t, const cObject*). This was necessary
+        because otherwise the compiler silently casts 'const cObject *' pointers
+        to long (!) and calls that emit(). The new method delegates to the
+        const-less version. It would have been cleaner to do it the other way
+        round (let the non-const version delegate to the const version);
+        for that, however, existing listeners would have had to be changed to
+        accept const pointer, a painful change.
+
+(!)     cITimestampedValue::Type replaced by SimsignalType
+
+(+)     cObjectFactory: added isInstance() method
+
+(+)	    Added Register_Abstract_Class() macro
+
+(+)     cNEDValue: added two static parseQuantity() functions
+
+
 OMNeT++ 4.3
 ~~~~~~~~~~~
 

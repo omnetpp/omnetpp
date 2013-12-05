@@ -1,3 +1,12 @@
+2013-11-22  Andras Varga
+
+	* cSimpleModule, cSimulation: changes to support Tkenv's "Debug next event"
+	feature. Both handleMessage() and activity() are supported.
+
+2013-10-31  Rudolf Hornig
+
+    * Fixed warnings when compiling with clang and -std=c++11 -Wall
+
 2013-10-24  Andras Varga
 
 	* Added optional checking of emitted signals against signal declarations
