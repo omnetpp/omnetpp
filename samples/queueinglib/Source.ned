@@ -20,7 +20,7 @@ simple Source
     parameters:
         @group(Queueing);
         @signal[created](type="long");
-        @statistic[created](title="the number of jobs created";record=count;interpolationmode=none);
+        @statistic[created](title="the number of jobs created";record=last;interpolationmode=none);
         @display("i=block/source");
         int numJobs = default(-1);               // number of jobs to be generated (-1 means no limit)
         volatile double interArrivalTime @unit(s); // time between generated jobs
