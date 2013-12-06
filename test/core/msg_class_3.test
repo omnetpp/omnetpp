@@ -20,7 +20,7 @@ MyClass x;
 ev << "s1:" << x.getS1() << endl;
 ev << "s2:" << x.getS2() << endl;
 
-char *p = "alice";
+const char *p = "alice";
 x.setS1(p);
 x.setS2(p);
 ev << "s1:" << x.getS1() << ":" << (x.getS1()==p ? "shallow" : "deep") << endl;

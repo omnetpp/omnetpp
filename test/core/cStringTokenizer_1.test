@@ -4,8 +4,8 @@ strtok's static buffer
 
 %activity:
 
-char *str1 = "10 20 30 40 50 60 70";
-char *str2 = "aa bb cc dd ee ff gg";
+const char *str1 = "10 20 30 40 50 60 70";
+const char *str2 = "aa bb cc dd ee ff gg";
 
 cStringTokenizer tok1(str1);
 ev << tok1.nextToken() << " ";

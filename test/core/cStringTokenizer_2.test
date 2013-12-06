@@ -3,7 +3,7 @@ verify delimiters with cStringTokenizer
 
 %activity:
 
-char *str = "a b---c - /-- d/ e";
+const char *str = "a b---c - /-- d/ e";
 
 const char *token;
 

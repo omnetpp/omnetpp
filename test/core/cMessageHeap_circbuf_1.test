@@ -39,12 +39,12 @@ void Test::verifyFES()
     // produce reference event list (expected = shadow + future)
     int i;
     std::vector<cMessage*> expected = shadow;
-    for (i=0; i<future.size(); i++)
+    for (i=0; i<(int)future.size(); i++)
         expected.push_back(future[i]);
     ASSERT(expected.size()==shadow.size()+future.size());
 
     // verify
-    ASSERT(fes.length()==expected.size());
+    ASSERT(fes.length()==(int)expected.size());
     ASSERT(fes.isEmpty()==expected.empty());
     ASSERT(fes.peekFirst()==(expected.empty() ? NULL : expected[0]));
 

@@ -27,7 +27,7 @@ ev << "after decap: sharecount=" << payload->getShareCount() << ", "
    << "decappkt.sharecount=" << decappkt->getShareCount() << "\n";
 
 // test encapsulatedMsg:  this should cause an own (non-shared) copy to be made
-cPacket *encappkt = pkt2->getEncapsulatedMsg();
+cPacket *encappkt = pkt2->getEncapsulatedPacket();
 ev << "after encappkt: sharecount=" << payload->getShareCount() << ", "
    << (payload==encappkt ? "same" : "different") << ", "
    << "encappkt.sharecount=" << encappkt->getShareCount() << "\n";
