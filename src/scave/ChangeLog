@@ -1,6 +1,6 @@
 2013-11-14  Rudolf Hornig
 
-    * Fixes for compiling with clang
+	* Fixes for compiling with clang
 
 2013-09-12  ------ omnetpp-4.3.1 released ------
 
