@@ -66,6 +66,9 @@ IDE:
 
   - Use Eclipse 4.3 as base platform
 
+  - Eclipse Marketplace Client is now incuded in the distribution. You can install
+    additional tools and plugins from the Marketplace.
+
   - Support for project-specific images: icons from the "images/" folder of the
     project and its dependencies are automatically used by the NED editor, and
     added to the Tkenv image path when the simulation is launched. (The folder

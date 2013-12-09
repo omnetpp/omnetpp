@@ -294,6 +294,7 @@ POSSIBILITY OF SUCH DAMAGES.
       <feature id="org.eclipse.linuxtools.cdt.libhover.feature"/>
       <feature id="org.eclipse.linuxtools.profiling"/>
       <feature id="org.eclipse.linuxtools.valgrind"/>
+      <feature id="org.eclipse.epp.mpc"/>
       <feature id="org.omnetpp.ide.academic"/>
    </features>
 
