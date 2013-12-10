@@ -156,11 +156,13 @@ IDE:
 
   - The CDT debugger no longer stops at the main() function by default.
 
-  - The bundled gdb is downgraded to 7.4
+  - The bundled GDB has been downgraded to 7.4, due to problems with the one
+    in the 4.3rc1 version
 
 Tools:
 
   - The configure script now correctly detects the X headers on Mac OS X 10.8.
+
 
 OMNeT++ 4.3rc1 (Jan 2013)
 -------------------------
