@@ -38,7 +38,7 @@ Sim:
 
   - Added cNEDValue::parseQuantity()
 
-  - New result filter: removerepeats
+  - New result filter: removeRepeats
 
 NED:
 

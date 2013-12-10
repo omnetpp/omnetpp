@@ -255,17 +255,12 @@ property
 property\_namevalue
         : property\_name
         | property\_name '(' opt\_property\_keys ')'
+        | ENUM '(' NAME ')'
         ;
 
 property\_name
-        : '@' property\_name\_token
-        | '@' property\_name\_token '[' NAME ']'
-        | ENUM
-        ;
-
-property\_name\_token
-        : NAME
-        | ENUM
+        : '@' PROPNAME
+        | '@' PROPNAME '[' PROPNAME ']'
         ;
 
 opt\_property\_keys
@@ -278,7 +273,7 @@ property\_keys
         ;
 
 property\_key
-        : NAME '=' property\_values
+        : property\_literal '=' property\_values
         | property\_values
         ;
 
@@ -288,24 +283,15 @@ property\_values
         ;
 
 property\_value
-        : property\_value\_tokens
-        | STRINGCONSTANT
+        : property\_literal
         |
         ;
 
-property\_value\_tokens
-        : property\_value\_tokens property\_value\_token
-        | property\_value\_token
-        ;
-
-property\_value\_token
-        : NAME | INTCONSTANT | REALCONSTANT | CHARCONSTANT | TRUE | FALSE
-        | '$' | '@' | ':' | '=' | '[' | ']' | '\{' | '\}' | '.' | '?'
-        | '^' | '+' | '-' | '*' | '/' | '%' | '<' | '>' | '==' | '!=' | '<=' | '>='
-        | DOUBLECOLON | '||' | '&&' | '##' | '!'
-        | '&' | '|' | '#' '~' | '<<' | '>>'
-        | MESSAGE | PACKET | CLASS | STRUCT | ENUM | NONCOBJECT
-        | BOOL | CHAR | SHORT | INT | LONG | DOUBLE | UNSIGNED | STRING
+property\_literal
+        : property\_literal CHAR
+        | property\_literal STRINGCONSTANT
+        | CHAR
+        | STRINGCONSTANT
         ;
 
 opt\_fieldsblock\_old

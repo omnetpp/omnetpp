@@ -95,8 +95,8 @@ propertydecl
         ;
 
 propertydecl\_header
-        : PROPERTY '@' NAME
-        | PROPERTY '@' NAME '[' ']'
+        : PROPERTY '@' PROPNAME
+        | PROPERTY '@' PROPNAME '[' ']'
         ;
 
 opt\_propertydecl\_keys
@@ -110,7 +110,7 @@ propertydecl\_keys
         ;
 
 propertydecl\_key
-        : NAME
+        : property\_literal
         ;
 
 fileproperty
@@ -338,8 +338,8 @@ property\_namevalue
         ;
 
 property\_name
-        : '@' NAME
-        | '@' NAME '[' NAME ']'
+        : '@' PROPNAME
+        | '@' PROPNAME '[' PROPNAME ']'
         ;
 
 opt\_property\_keys
@@ -352,7 +352,7 @@ property\_keys
         ;
 
 property\_key
-        : NAME '=' property\_values
+        : property\_literal '=' property\_values
         | property\_values
         ;
 
@@ -362,21 +362,15 @@ property\_values
         ;
 
 property\_value
-        : property\_value\_tokens
-        | STRINGCONSTANT
+        : property\_literal
         |
         ;
 
-property\_value\_tokens
-        : property\_value\_tokens property\_value\_token
-        | property\_value\_token
-        ;
-
-property\_value\_token
-        : NAME | INTCONSTANT | REALCONSTANT | TRUE | FALSE
-        | '$' | '@' | ':' | '[' | ']' | '\{' | '\}' | '.' | '?'
-        | '^' | '+' | '-' | '*' | '/' | '%' | '<' | '>' | '==' | '!=' | '<=' | '>='
-        | '**' | '..' | '++' | '||' | '&&' | '##' | '!'
+property\_literal
+        : property\_literal CHAR
+        | property\_literal STRINGCONSTANT
+        | CHAR
+        | STRINGCONSTANT
         ;
 
 opt\_gateblock
