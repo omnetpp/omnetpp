@@ -3909,8 +3909,8 @@ the value:
 emit(lengthSignalId, queue.length());
 \end{cpp}
 
-The value can be of type \ttt{long}, \ttt{double}, \ttt{simtime\_t},
-\ttt{const char *}, or \ttt{cObject *}. Other types can be cast into
+The value can be of type \ttt{bool}, \ttt{long}, \ttt{double}, \ttt{simtime\_t},
+\ttt{const char *}, or \ttt{(const) cObject *}. Other types can be cast into
 one of these types, or wrapped into an object subclassed from \ttt{cObject}.
 
 When there are no listeners, the runtime cost of \ttt{emit()} is usually minimal.
@@ -3938,6 +3938,63 @@ not cached for the signal, it just returns \ttt{true}. In contrast,
 the answer is not cached, so it is generally slower. We recommend that
 you take into account the cost of producing notification information when
 deciding between \ffunc{mayHaveListeners()} and \ffunc{hasListeners()}.
+
+\subsubsection{Signal Declarations}
+
+Since {\opp} 4.4, modules (and channels) can declare the signals they emit
+in their NED definitions, and {\opp} can be configured to enforce that
+emitted signals conform to the declarations.
+
+Signals are declared with the \fprop{@signal} property (NED properties are
+described in section \ref{sec:ch-ned-lang:properties}). The signal name is
+written in the property index, and the property's body may declare various
+attributes of the signal (currently only the data type is supported).
+
+The following example declares a queue module that emits a queue length signal:
+
+\begin{ned}
+simple Queue
+{
+    parameters:
+        @signal[queueLength](type=long);
+        ...
+}
+\end{ned}
+
+\ttt{type} is optional; when present, its value should be \ttt{bool},
+\ttt{long}, \ttt{unsigned long}, \ttt{double}, \ttt{simtime\_t},
+\ttt{string}, or a registered class name optionally followed by a question
+mark. Classes can be registered using the \fmac{Register\_Class()} or
+\fmac{Register\_Abstract\_Class()} macros; these macros create a
+\cclass{cObjectFactory} instance, and the simulation kernel will call
+\cclass{cObjectFactory}'s \ffunc{isInstance()} method to check that the
+emitted object is really a subclass of the declared class.
+\ffunc{isInstance()} just wraps a C++ \ttt{dynamic\_cast}.) A question mark
+after the class name means that the signal is allowed to emit \ttt{NULL}
+pointers, too.
+
+For example, a module named \ttt{PPP} may emit the frame (packet) object
+every time it starts transmiting, and emit \ttt{NULL} when the transmission
+is completed:
+
+\begin{ned}
+simple PPP
+{
+    parameters:
+        @signal[txFrame](type=PPPFrame?);  // a PPPFrame or NULL
+        ...
+}
+\end{ned}
+
+Currently, signal checking is turned off by default, you can turn it
+on with the \fconfig{check-signals} configuration option in \ttt{omnetpp.ini}:
+
+\begin{inifile}
+check-signals = true
+\end{inifile}
+
+It is expected that starting with {\opp} 5.0, signal checking will be turned
+on by default when the simulation kernel is compiled in debug mode.
 
 
 \subsubsection{Signal Data Objects}
@@ -4080,6 +4137,7 @@ class cIListener
 {
   public:
     virtual ~cIListener() {}
+    virtual void receiveSignal(cComponent *src, simsignal_t id, bool b) = 0;
     virtual void receiveSignal(cComponent *src, simsignal_t id, long l) = 0;
     virtual void receiveSignal(cComponent *src, simsignal_t id, double d) = 0;
     virtual void receiveSignal(cComponent *src, simsignal_t id, simtime_t t) = 0;
@@ -4464,6 +4522,7 @@ All filters in the table output a value for each input value.
                       for each received one. Non-\ttt{cPacket} values are ignored. \\\hline
   \ttt{sumPerDuration} & For each value, computes the sum of values received so far,
                          divides it by the duration, and outputs the result. \\\hline
+  \ttt{removeRepeats} & Removes repeated values, i.e. discards values that are the same as the previous value. \\\hline
 \end{longtable}
 
 The list of predefined result recorders:
