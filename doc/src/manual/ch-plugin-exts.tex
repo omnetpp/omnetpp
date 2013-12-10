@@ -62,7 +62,7 @@ To actually implement and select a plug-in for use:
 
 % TODO
 The new RNG C++ class must implement the \cclass{cRNG} interface,
-and can be activated with the \fpar{rng-class} configuration option.
+and can be activated with the \fconfig{rng-class} configuration option.
 
 
 \subsection{Defining a New Scheduler}
@@ -73,7 +73,7 @@ hardware-in-the-loop, distributed and distributed parallel simulation.
 %FIXME cScheduler usage
 
 The scheduler C++ class must implement the \cclass{cScheduler} interface,
-and can be activated with the \fpar{scheduler-class} configuration option.
+and can be activated with the \fconfig{scheduler-class} configuration option.
 
 To see examples of scheduler classes, check the \cclass{cRealTimeScheduler}
 class in the simulation kernel, and \ttt{cSocketRTScheduler} which is part
@@ -89,7 +89,7 @@ The configuration provider plug-in lets you replace ini files
 with some other storage implementation, for example a database.
 The configuration provider C++ class must implement the
 \cclass{cConfigurationEx} interface, and can be activated with
-the \fpar{configuration-class} configuration option.
+the \fconfig{configuration-class} configuration option.
 
 The \cclass{cConfigurationEx} interface abstracts the inifile-based
 data model to some degree. It assumes that the configuration data
@@ -195,7 +195,7 @@ Register_Class(DatabaseConfigurationReader);
 The default output scalar manager is \cclass{cFileOutputScalarManager},
 defined in the Envir library.
 
-The new class can be activated with the \fpar{outputscalarmanager-class}
+The new class can be activated with the \fconfig{outputscalarmanager-class}
 configuration option.
 
 
@@ -206,7 +206,7 @@ configuration option.
 The default output vector manager is \cclass{cIndexedFileOutputVectorManager},
 defined in the Envir library.
 
-The new class can be activated with the \fpar{outputvectormanager-class}
+The new class can be activated with the \fconfig{outputvectormanager-class}
 configuration option.
 
 
@@ -217,7 +217,7 @@ configuration option.
 (see section \ref{sec:ch-sim-lib:snapshots}). The default snapshot manager
 is \cclass{cFileSnapshotManager}, defined in the Envir library.
 
-The new class can be activated with the \fpar{snapshotmanager-class}
+The new class can be activated with the \fconfig{snapshotmanager-class}
 configuration option.
 
 

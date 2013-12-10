@@ -306,7 +306,7 @@ for more information about running simulation batches.
 \subsection{Cmdenv Ini File Options}
 \label{sec:ch-run-sim:cmdenv-section}
 
-\fpar{cmdenv-runs-to-execute} specifies which simulation runs should be executed.
+\fconfig{cmdenv-runs-to-execute} specifies which simulation runs should be executed.
 It accepts a comma-separated list of run numbers or run number ranges, e.g.
 \ttt{1,3..4,7..9}. If the value is missing, Cmdenv executes all runs that have
 ini file sections; if no runs are specified in the ini file, Cmdenv does one run.
@@ -742,7 +742,7 @@ global data analyser.
 Akaroa's RNG is a Combined Multiple Recursive pseudorandom
 number generator (CMRG) with a period of approximately $2^{191}$
 random numbers, and provides a unique stream of random numbers
-for every simulation engine. 
+for every simulation engine.
 
 \begin{note}
 It is vital that you obtain random numbers from Akaroa; otherwise,
@@ -815,7 +815,7 @@ so in \ffilename{omnetpp.ini}:
 total-stack = 2MiB
 \end{inifile}
 
-There is no performance penalty if you set \fpar{total-stack} too high. I
+There is no performance penalty if you set \fconfig{total-stack} too high. I
 recommend to set it to a few K less than the maximum process stack
 size allowed by the operating system (\fprog[ulimit]{ulimit -s}; see
 next section).

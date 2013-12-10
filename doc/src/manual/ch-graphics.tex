@@ -8,7 +8,7 @@ Display strings\index{display strings} specify the arrangement and
 appearance of representations of modules in graphical user interfaces (currently only
 Tkenv); they control how the objects (compound modules, their
 submodules and connections) are displayed. Display strings are specified in
-NED's \fpar[ned!keywords!display]{@display} property.
+NED's \fprop{@display} property.
 
 Display strings can be used in the following contexts:
 \begin{itemize}
@@ -73,7 +73,7 @@ Every module and channel object has one single display string object,
 which controls its appearance in various contexts. The initial value of
 this display string object comes from merging the \fprop{@display}
 properties occurring at various places in NED files.
-This section describes the rules for merging \fprop{@display} properties 
+This section describes the rules for merging \fprop{@display} properties
 to create the module or channel's display string.
 
 \begin{itemize}
@@ -115,7 +115,7 @@ simple Derived extends Base {
 network SimpleQueue {
     submodules:
         submod: Derived {
-            @display("i=,yellow,-;p=273,101;r=70");  
+            @display("i=,yellow,-;p=273,101;r=70");
                      // ==> "i=block/queue,yellow;p=273,101;r=70"
         }
         ...
