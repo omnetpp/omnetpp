@@ -79,9 +79,6 @@ IDE:
 
 Improved support for C++11, Mac OS X:
 
-  - The configure script now detects whether the compiler supports C++11,
-    and adds "-std=c++11" to CXXFLAGS if so.
-
   - The source now compiles without any warning with both gcc and clang, using
     the "-std=c++11 -Wall" flags (clang is the default compiler on OS X since
     version 10.9 Mavericks).
