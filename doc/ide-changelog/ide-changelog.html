@@ -9,6 +9,136 @@
   </style>
 <body>
 
+<h1>What's New in the OMNeT++/OMNEST 4.4 IDE</h1>
+
+<h2>Tkenv</h2>
+
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
+
+<tr><td><p align="right"><b>Animation Filtering</b></p></td>
+<td><p>This feature makes it possible to suppress animation of messages that you are not interested in (e.g. WLAN ACK
+frames, ARP exchanges, etc). Just right-click the message (either on the canvas or on the timeline), and choose
+"Exclude messages like '...' from animation" from the context menu. The filters can also be edited in the Simulation Options dialog.</p>
+<img src="pictures/44-tkenv-anim-filter.png" border="0"><br>
+</td></tr>
+
+<tr><td><p align="right"><b>Debug Next Event (Ctrl+F9)</b></p></td>
+<td><p>This function causes the simulation program to stop in the debugger just before entering the handleMessage() call.
+You just need to hit "Step Into" in your debugger to debug that event.</p>
+<img src="pictures/44-tkenv-debug-next-event.png" border="0">
+</td></tr>
+
+</tbody></table>
+
+<h2>IDE</h2>
+
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
+
+<tr><td><p align="right"><b>Based on Eclipse 4</b></p></td>
+<td><p>The IDE is now based on Eclipse 4.3.1 (Kepler) and CDT 8.2.1.</p>
+<img src="pictures/44-eclipse-platform.png" border="0">
+</td></tr>
+
+<tr><td><p align="right"><b>Project-Specific Icons</b></p></td>
+<td><p>Images from the "images/" folder of the project and its dependencies are automatically
+    used by the NED editor, and added to the Tkenv image path when the simulation is launched.
+    (The per-project image path will be configurable in future versions.)</p>
+<img src="pictures/44-project-images.png" border="0">
+</td></tr>
+
+</tbody></table>
+
+
+<h1>What's New in the OMNeT++/OMNEST 4.3.1 IDE</h1>
+
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
+
+<h2>More friendly to first-time users</h2>
+
+<tr><td><p align="right"><b>"First Steps" Dialog</b></p></td>
+<td><p>When the IDE is started with an empty workspace (e.g. on first-time
+    launch), it offers the user the following options: (1) Import the OMNeT++
+    sample simulations into the workspace; and (2) Download and install the
+    INET Framework.</p>
+<img src="pictures/431-first-steps-dialog.png" border="0">
+</td></tr>
+
+<tr><td><p align="right"><b>"Install Simulation Models" Dialog</b></p></td>
+<td><p>INET installation is also available from the menu. It brings up a dialog with the list of
+    simulation models available for automated installation, and lets the user
+    choose. Currently only the INET Framework is listed there, but it is
+    planned to add further models</p>
+<img src="pictures/431-install-models-dialog.png" border="0">
+</td></tr>
+
+<tr><td><p align="right"><b>Intro Pages</b></p></td>
+<td><p>When the IDE is started for the first time, it now displays some helpful
+    introductory pages in the editor area: "Getting Started", "At a Glance" ,
+    "OMNeT++ Samples", etc. These pages are also available from the Help system
+    (except the last one, which has a dedicated menu item in the Help menu.)</p>
+<img src="pictures/431-intro-pages.png" border="0">
+</td></tr>
+
+</tbody></table>
+
+<h2>Further IDE improvements</h2>
+
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
+
+<tr><td><p align="right"><b>More Usable Filter Hints</b></p></td>
+<td><p>In the Analysis Tool, if you filter for the module, hints for the statistic name
+    filter will only show statistics recorded by that module. (In general,
+    filter hints for a combo are now computed from the result items filtered
+    by the other combos.)</p>
+<img src="pictures/431-ana-filter-hints.png" border="0">
+</td></tr>
+
+<tr><td><p align="right"><b>More Accessible "Go to" Actions</b></p></td>
+<td><p>In the Output Vector View (Analysis Tool), "Go to" actions are now shown
+    in the context menu instead of the view's pulldown menu.</p>
+<img src="pictures/431-ana-goto-actions.png" border="0">
+</td></tr>
+
+<tr><td><p align="right"><b>Launching Improvement</b></p></td>
+<td><p>Trying to launch a closed project will now offer opening it.</p>
+<img src="pictures/431-launching.png" border="0">
+</td></tr>
+
+</tbody></table>
+
+
+
+<h1>What's New in the OMNeT++/OMNEST 4.3 IDE</h1>
+
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
+
+<tr><td><p align="right"><b>Computed Scalars</b></p></td>
+<td><p>Analysis tool: Added support for computed scalars. Read the updated the User Guide for further details.</p>
+<img src="pictures/43-ana-computed-scalars.png" border="0">
+</td></tr>
+
+<tr><td><p align="right"><b>Logarithmic X Axis</b></p></td>
+<td><p>Analysis tool: Added the 'Logarithmic X axis' option to scatter charts.</p>
+<img src="pictures/43-ana-log-x-axis.png" border="0">
+</td></tr>
+
+<tr><td><p align="right"><b>Full-Screen Mode</b></p></td>
+<td><p>Added full-screen mode (Ctrl-Shift-F11).</p>
+<img src="pictures/43-full-screen-mode.png" border="0">
+</td></tr>
+
+<tr><td><p align="right"><b>Updated Eclipse Platform</b></p></td>
+<td><p>The IDE is now based on Eclipse 3.8.2.</p>
+<img src="pictures/43-eclipse-platform.png" border="0">
+</td></tr>
+
+</pre>
+</tbody></table>
 
 
 <h1>What's New in the OMNeT++/OMNEST 4.2 IDE</h1>
