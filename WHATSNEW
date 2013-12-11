@@ -66,9 +66,6 @@ IDE:
 
   - Use Eclipse 4.3 as base platform
 
-  - Eclipse Marketplace Client is now incuded in the distribution. You can install
-    additional tools and plugins from the Marketplace.
-
   - Support for project-specific images: icons from the "images/" folder of the
     project and its dependencies are automatically used by the NED editor, and
     added to the Tkenv image path when the simulation is launched. (The folder
@@ -93,17 +90,7 @@ Improved support for C++11, Mac OS X:
 
   - Updated the source to compile with both Bison 2.3 and 3.0
 
-Bugfixes:
-
-  - cPacketQueue's clear() didn't zero the bit length
-
-  - Implementation of cPatternMatcher::containsWildcards() was missing
-
-  - The the output-vector-file=... config option was working poorly when used
-    as command line argument (did not support relative filenames and ${}
-    variables like ${configname})
-
-  - Tkenv: see above
+Bugs fixed: http://tinyurl.com/omnetpp44-fixes
 
 
 OMNeT++ 4.3.1 (Sept 2013)
