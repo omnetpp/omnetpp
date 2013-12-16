@@ -19,7 +19,7 @@
 #include "logbuffer.h"
 #include "cmodule.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 LogBuffer::Entry::~Entry()
 {
@@ -141,4 +141,5 @@ void LogBuffer::dump() const
     }
 }
 
+NAMESPACE_END
 

@@ -18,7 +18,7 @@
 #include "patternmatcher.h"
 #include "commonutil.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 MatchExpression::Elem::Elem(PatternMatcher *pattern, const char *fieldname)
@@ -119,4 +119,6 @@ bool MatchExpression::matches(const Matchable *object)
 
     return stk[tos];
 }
+
+NAMESPACE_END
 

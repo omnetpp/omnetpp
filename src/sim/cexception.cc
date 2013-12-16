@@ -32,7 +32,7 @@
 #include "commonutil.h"
 #include "platdep/platmisc.h"  // for DEBUG_TRAP
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 #define BUFLEN 1024
@@ -293,4 +293,5 @@ void cRuntimeError::breakIntoDebuggerIfRequested()
     }
 }
 
+NAMESPACE_END
 

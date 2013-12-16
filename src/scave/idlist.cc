@@ -34,7 +34,7 @@
 #define READER_MUTEX
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 IDList::IDList(const IDList& ids)
 {
@@ -543,4 +543,5 @@ void IDList::fromByteArray(char *array, int n)
     std::copy(a, a+n/8, v->begin());
 }
 
+NAMESPACE_END
 

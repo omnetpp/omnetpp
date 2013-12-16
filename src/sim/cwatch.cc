@@ -23,7 +23,7 @@
 #include "cwatch.h"
 #include "stringutil.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 std::string cWatch_stdstring::info() const
 {
@@ -41,4 +41,6 @@ void cWatch_stdstring::assign(const char *s)
         r = s;
     }
 }
+
+NAMESPACE_END
 

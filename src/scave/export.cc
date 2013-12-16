@@ -25,7 +25,7 @@
 #include "scaveutils.h"
 #include "export.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using namespace std;
 
@@ -1029,4 +1029,6 @@ ScaveExport *ExporterFactory::createExporter(const string format)
     else
         return NULL;
 }
+
+NAMESPACE_END
 

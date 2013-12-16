@@ -34,7 +34,7 @@
 #include "stringutil.h"
 #include "unitconversion.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 #define SCALAR_FILE_VERSION 2
 #define DEFAULT_PRECISION  "14"
@@ -258,4 +258,6 @@ void cFileOutputScalarManager::flush()
     if (f)
         fflush(f);
 }
+
+NAMESPACE_END
 

@@ -427,5 +427,3 @@ void logTclError(const char *file, int line, Tcl_Interp *interp)
 }
 
 NAMESPACE_END
-
-

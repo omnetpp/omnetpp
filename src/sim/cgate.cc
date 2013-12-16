@@ -38,7 +38,7 @@
 #include "simutil.h"
 #include "cmodelchange.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using std::ostream;
 
@@ -598,4 +598,6 @@ void cGate::setDisplayString(const char *dispstr)
 {
     getDisplayString().set(dispstr);
 }
+
+NAMESPACE_END
 

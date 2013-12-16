@@ -26,7 +26,7 @@
 #include "tklib.h"
 #include "inspector.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 //
 // Inspector type code <--> string conversions
@@ -339,4 +339,5 @@ void TInspectorPanel::setObject(cObject *obj)
    object=obj;
 }
 
+NAMESPACE_END
 

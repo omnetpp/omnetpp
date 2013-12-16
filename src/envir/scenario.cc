@@ -24,7 +24,7 @@
 #include "stringutil.h"
 #include "unitconversion.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 //----
@@ -304,4 +304,6 @@ std::string Scenario::str() const
     }
     return out.str();
 }
+
+NAMESPACE_END
 

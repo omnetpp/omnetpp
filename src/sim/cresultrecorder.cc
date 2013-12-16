@@ -19,7 +19,7 @@
 #include "cproperty.h"
 #include "chistogram.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 cGlobalRegistrationList resultRecorders("resultRecorders");
@@ -132,4 +132,5 @@ cResultRecorderDescriptor *cResultRecorderDescriptor::get(const char *name)
     return p;
 }
 
+NAMESPACE_END
 

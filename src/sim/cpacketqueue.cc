@@ -27,7 +27,7 @@
 #include "ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using std::ostream;
 
@@ -159,3 +159,6 @@ cObject *cPacketQueue::remove(cObject *obj)
         bitlength -= pkt->getBitLength();
     return pkt;
 }
+
+NAMESPACE_END
+

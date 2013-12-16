@@ -48,4 +48,3 @@ cInspectorFactory *findInspectorFactoryFor(cObject *obj, int type)
 }
 
 NAMESPACE_END
-

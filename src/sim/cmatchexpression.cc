@@ -18,6 +18,7 @@
 #include "cmatchexpression.h"
 #include "../common/matchexpression.h"
 
+NAMESPACE_BEGIN
 
 cMatchExpression::cMatchExpression()
 {
@@ -55,3 +56,4 @@ bool cMatchExpression::matches(const Matchable *object)
     return impl->matches(&wrapper);
 }
 
+NAMESPACE_END

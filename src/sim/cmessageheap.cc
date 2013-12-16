@@ -28,7 +28,7 @@
 #include "cmessage.h"
 #include "cmessageheap.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 Register_Class(cMessageHeap);
 
@@ -325,4 +325,6 @@ cMessage *cMessageHeap::remove(cMessage *event)
     event->heapindex=-1;
     return event;
 }
+
+NAMESPACE_END
 

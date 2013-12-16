@@ -28,7 +28,7 @@
 #include "globals.h"
 #include "regmacros.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 Register_Class(cISPEventLogger);
 
@@ -95,4 +95,5 @@ cMessage *cISPEventLogger::getNextEvent()
     return msg;
 }
 
+NAMESPACE_END
 

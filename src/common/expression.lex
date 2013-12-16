@@ -52,6 +52,8 @@ static char textbuf[TEXTBUF_LEN];
 static std::string extendbuf;
 
 #include "stringutil.h"  // opp_strdup()
+
+USING_NAMESPACE
 %}
 
 %%
@@ -204,5 +206,3 @@ void extendCount()
 {
     _count(false);
 }
-
-

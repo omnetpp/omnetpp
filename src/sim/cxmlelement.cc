@@ -28,7 +28,7 @@
 #include "cenvir.h"
 #include "cmodule.h" // for ModNameParamResolver
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 using std::ostream;
@@ -387,4 +387,6 @@ bool StringMapParamResolver::resolve(const char *paramname, std::string& value)
     value = it->second;
     return true;
 }
+
+NAMESPACE_END
 

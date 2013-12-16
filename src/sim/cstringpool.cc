@@ -17,7 +17,7 @@
 #include "cownedobject.h"
 #include "stringutil.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 cStringPool::cStringPool(const char *poolName)
 {
@@ -108,4 +108,5 @@ void cStringPool::release(const char *s)
     }
 }
 
+NAMESPACE_END
 

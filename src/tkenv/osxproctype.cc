@@ -30,3 +30,5 @@ void OSXTransformProcess()
     TransformProcessType( &psn, kProcessTransformToForegroundApplication);
 }
 
+NAMESPACE_END
+

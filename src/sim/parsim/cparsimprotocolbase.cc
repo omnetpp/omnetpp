@@ -29,7 +29,7 @@
 #include "messagetags.h"
 #include "cparsimprotocolbase.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 
@@ -107,4 +107,6 @@ bool cParsimProtocolBase::receiveBlocking()
     comm->recycleCommBuffer(buffer);
     return true;
 }
+
+NAMESPACE_END
 

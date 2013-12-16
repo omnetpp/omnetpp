@@ -20,7 +20,7 @@
 #include <utility>
 #include "xyarray.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using namespace std;
 
@@ -60,3 +60,6 @@ void XYArray::sortByX()
             permute(evec, len, permutation);
     }
 }
+
+NAMESPACE_END
+

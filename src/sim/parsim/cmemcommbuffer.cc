@@ -25,7 +25,7 @@
 #include "globals.h"
 #include "regmacros.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 Register_Class(cMemCommBuffer);
 
@@ -437,4 +437,6 @@ void cMemCommBuffer::unpack(SimTime *d, int size)
     for (int i = 0; i < size; i++)
         unpack(d[i]);
 }
+
+NAMESPACE_END
 

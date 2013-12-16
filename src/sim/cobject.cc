@@ -23,7 +23,7 @@
 #include "cclassdescriptor.h"
 #include "cenvir.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 cObject::~cObject()
@@ -194,4 +194,5 @@ cObject *cObject::findObject(const char *objname, bool deep)
     }
 }
 
+NAMESPACE_END
 

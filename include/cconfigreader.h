@@ -18,6 +18,8 @@
 
 #include "simkerneldefs.h"
 
+NAMESPACE_BEGIN 
+
 class cConfiguration;
 
 /**
@@ -102,6 +104,8 @@ class cConfigurationReader
      */
     virtual void dump() const = 0;
 };
+
+NAMESPACE_END
 
 #endif
 

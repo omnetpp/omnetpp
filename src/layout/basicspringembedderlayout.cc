@@ -27,7 +27,7 @@
 #include "commonutil.h"
 #include "basicspringembedderlayout.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 static bool debug = false;
@@ -718,4 +718,5 @@ void BasicSpringEmbedderLayout::debugDraw(int step)
     environment->showGraphics(buf);
 }
 
+NAMESPACE_END
 

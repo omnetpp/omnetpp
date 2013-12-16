@@ -48,4 +48,3 @@ NEDException::NEDException(NEDElement *context, const char *messagefmt...) : std
 }
 
 NAMESPACE_END
-

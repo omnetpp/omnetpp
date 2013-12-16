@@ -22,7 +22,7 @@
 #include "commonnodes.h"
 #include "dataflowmanager.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 DataflowManager::DataflowManager()
@@ -287,4 +287,6 @@ void DataflowManager::dump()
     }
     fflush(stdout);
 }
+
+NAMESPACE_END
 

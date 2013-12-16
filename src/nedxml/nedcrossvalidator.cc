@@ -23,7 +23,7 @@
 #include "nedresourcecache.h"
 #include "nedcrossvalidator.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 NEDCrossValidator::NEDCrossValidator(bool parsedExpr, NEDResourceCache *res, NEDErrorStore *e)
@@ -442,4 +442,6 @@ void NEDCrossValidator::validateElement(FieldElement *node)
 void NEDCrossValidator::validateElement(UnknownElement *node)
 {
 }
+
+NAMESPACE_END
 

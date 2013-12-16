@@ -28,7 +28,7 @@
 #include "cmodule.h"
 #include "cdisplaystring.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 TGraphLayouterEnvironment::TGraphLayouterEnvironment(Tcl_Interp *interp, cModule *parentModule, const cDisplayString& displayString)
@@ -158,4 +158,5 @@ void TGraphLayouterEnvironment::cleanup()
     }
 }
 
+NAMESPACE_END
 

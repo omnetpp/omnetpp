@@ -19,7 +19,7 @@
 
 #include "errmsg.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 const char *cErrorMessages::get(OppErrorCode e)
@@ -67,3 +67,6 @@ const char *cErrorMessages::get(OppErrorCode e)
       default:         return "<missing error text>";
     }
 }
+
+NAMESPACE_END
+

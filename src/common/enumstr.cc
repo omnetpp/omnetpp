@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include "enumstr.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 EnumStringIterator::EnumStringIterator(const char *s)
 {
@@ -90,3 +90,6 @@ int EnumStringIterator::operator++(int)
          {err=true;return -1;}
      return current;
 }
+
+NAMESPACE_END
+

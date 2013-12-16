@@ -34,7 +34,7 @@
 #include "ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 #define MIN(a,b) ((a)<(b) ? (a) : (b))
 #define MAX(a,b) ((a)>(b) ? (a) : (b))
@@ -467,5 +467,5 @@ void cVarHistogram::loadFromFile(FILE *f)
     }
 }
 
-
+NAMESPACE_END
 

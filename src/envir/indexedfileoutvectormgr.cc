@@ -40,7 +40,7 @@
 #include "unitconversion.h"
 #include "indexedfileoutvectormgr.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 #define INDEX_FILE_VERSION 2
 #define LL  INT64_PRINTF_FORMAT
@@ -316,4 +316,5 @@ void cIndexedFileOutputVectorManager::writeBlockToIndexFile(sVector *vp)
     }
 }
 
+NAMESPACE_END
 

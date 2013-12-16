@@ -32,7 +32,7 @@
 #include "ccomponenttype.h"
 #include "stringutil.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 Register_Class(cFileOutputVectorManager);
 
@@ -214,5 +214,5 @@ void cFileOutputVectorManager::flush()
         fflush(f);
 }
 
-
+NAMESPACE_END
 

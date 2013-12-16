@@ -23,7 +23,7 @@
 #include "stringutil.h"
 #include "fields.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using namespace std;
 
@@ -213,4 +213,6 @@ bool ResultItemFields::less(const ResultItem &d1, const ResultItem &d2) const
     }
     return false; // ==
 }
+
+NAMESPACE_END
 

@@ -35,7 +35,7 @@
 #include "stddev.h"
 #include "teenode.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 NodeTypeRegistry *NodeTypeRegistry::inst;
 
@@ -185,4 +185,5 @@ void NodeTypeRegistry::parseFilterSpec(const char *filterSpec, std::string& name
         args.push_back(token);
 }
 
+NAMESPACE_END
 

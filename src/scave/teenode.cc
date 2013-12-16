@@ -19,7 +19,7 @@
 #include "channel.h"
 #include "teenode.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 Port *TeeNode::addPort()
 {
@@ -82,5 +82,5 @@ Port *TeeNodeType::getPort(Node *node, const char *portname) const
     throw opp_runtime_error("no such port `%s'", portname);
 }
 
-
+NAMESPACE_END
 

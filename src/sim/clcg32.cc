@@ -22,7 +22,7 @@
 #include "cexception.h"
 #include "cconfigoption.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Register_Class(cLCG32);
@@ -174,4 +174,5 @@ long cLCG32::autoSeeds[] = {
     1358844649L, 1115145546L, 1398997376L, 1021484058L, 2035865982L,
 };
 
+NAMESPACE_END
 

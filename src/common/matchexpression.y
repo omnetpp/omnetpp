@@ -40,13 +40,15 @@
 #include <string.h>         /* YYVERBOSE needs it */
 #endif
 
-void yyerror (void *statePtr, const char *s);  // used by bison 3+
-void yyerror (const char *s);  // used by bison 2.x
-
 #include "matchexpression.h"
 #include "matchexpressionlexer.h"
 #include "patternmatcher.h"
 #include "exception.h"
+
+NAMESPACE_BEGIN
+
+void yyerror (void *statePtr, const char *s);  // used by bison 3+
+void yyerror (const char *s);  // used by bison 2.x
 
 #define YYSTYPE  char *
 
@@ -64,11 +66,6 @@ inline int matchexpressionyylex (YYSTYPE *yylval, void *statePtr)
 {
     return ((MatchExpressionParserState*)statePtr)->lexer->getNextToken(yylval);
 }
-
-
-using OPP::MatchExpression;
-using OPP::PatternMatcher;
-using OPP::opp_runtime_error;
 
 %}
 
@@ -166,3 +163,4 @@ void yyerror(const char *s)
     throw opp_runtime_error("Error parsing match expression: %s", buf);
 }
 
+NAMESPACE_END

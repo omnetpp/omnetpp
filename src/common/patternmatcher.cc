@@ -25,7 +25,7 @@
 #include "stringutil.h"
 #include "exception.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 PatternMatcher::PatternMatcher()
@@ -367,3 +367,6 @@ bool PatternMatcher::containsWildcards(const char *pattern)
            strchr(pattern,'\\') || strchr(pattern,'{') ||
            strstr(pattern,"..");
 }
+
+NAMESPACE_END
+

@@ -29,7 +29,7 @@
 #include "ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using std::ostream;
 
@@ -94,4 +94,6 @@ void cDelayChannel::processMessage(cMessage *msg, simtime_t t, result_t& result)
         emit(messageSentSignal, &tmp);
     }
 }
+
+NAMESPACE_END
 

@@ -30,7 +30,7 @@
 #undef CHECK
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 #define CHECK(fprintf)    if (fprintf<0) throw opp_runtime_error("Cannot write output vector file `%s'", fileName.c_str())
 
@@ -198,4 +198,6 @@ Port *VectorFileWriterNodeType::getPort(Node *node, const char *portname) const
     vector.columns = "TV";             // old vector file format
     return node1->addVector(vector);
 }
+
+NAMESPACE_END
 

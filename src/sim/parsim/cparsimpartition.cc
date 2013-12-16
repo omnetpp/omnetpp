@@ -36,7 +36,7 @@
 #include "cconfigoption.h"
 #include "regmacros.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 Register_Class(cParsimPartition);
 
@@ -282,4 +282,5 @@ void cParsimPartition::broadcastException(std::exception& e)
     comm->recycleCommBuffer(buffer);
 }
 
+NAMESPACE_END
 

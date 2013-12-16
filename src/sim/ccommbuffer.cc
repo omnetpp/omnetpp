@@ -24,7 +24,7 @@
 #include "cobject.h"
 #include "cobjectfactory.h"    // createOne()
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 void cCommBuffer::packObject(cObject *obj)
@@ -43,4 +43,6 @@ cObject *cCommBuffer::unpackObject()
     obj->parsimUnpack(this);
     return obj;
 }
+
+NAMESPACE_END
 

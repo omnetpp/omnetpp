@@ -26,7 +26,7 @@
 #include "cenvir.h"
 #include "cexception.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 void cParsimCommunications::broadcast(cCommBuffer *buffer, int tag)
@@ -56,4 +56,5 @@ void cParsimCommunications::broadcast(cCommBuffer *buffer, int tag)
         throw cRuntimeError("Error during broadcast: %s", exceptionText.c_str());
 }
 
+NAMESPACE_END
 

@@ -31,7 +31,7 @@
 #include "cconfiguration.h"
 #include "cconfigoption.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Register_Class(cAkOutputVectorManager);
@@ -97,6 +97,6 @@ bool cAkOutputVectorManager::record(void *vectorhandle, simtime_t t, double valu
     return cFileOutputVectorManager::record(vectorhandle, t, value);
 }
 
+NAMESPACE_END
+
 #endif
-
-

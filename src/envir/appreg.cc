@@ -17,7 +17,7 @@
 
 #include "appreg.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 cGlobalRegistrationList omnetapps("omnetapps");
 
@@ -35,4 +35,5 @@ cOmnetAppRegistration *cOmnetAppRegistration::chooseBest()
     return best;
 }
 
+NAMESPACE_END
 

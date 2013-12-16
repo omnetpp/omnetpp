@@ -22,7 +22,7 @@
 #undef CHECK
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 #define CHECK(fprintf)    if (fprintf<0) throw opp_runtime_error("Cannot write file `%s'", fileName.c_str())
 
 
@@ -165,4 +165,6 @@ void OctaveExport::saveVectorY(const char *name, const char *description,
     for (int i=startIndex; i<endIndex; i++)
         CHECK(fprintf(f," %.*g\n", prec, vec->getY(i)));
 }
+
+NAMESPACE_END
 

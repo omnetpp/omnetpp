@@ -51,7 +51,7 @@
 #include "unitconversion.h"
 #include "modinsp.h"  // displayStringPar
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using std::string;
 
@@ -2537,3 +2537,6 @@ int setWindowProperty_cmd(ClientData clientData, Tcl_Interp *interp, int argc, c
 #endif
    return TCL_OK;
 }
+
+NAMESPACE_END
+

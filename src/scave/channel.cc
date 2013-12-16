@@ -17,7 +17,7 @@
 
 #include "channel.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Channel::Channel()
@@ -57,4 +57,5 @@ void Channel::write(Datum *a, int n)
         buffer.push_back(a[i]);
 }
 
+NAMESPACE_END
 

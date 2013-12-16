@@ -22,7 +22,7 @@
 #include "ccommbufferbase.h"
 #include "cexception.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 cCommBufferBase::cCommBufferBase()
@@ -125,4 +125,5 @@ void cCommBufferBase::assertBufferEmpty()
     }
 }
 
+NAMESPACE_END
 

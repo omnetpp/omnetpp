@@ -31,7 +31,7 @@
 #include "stringutil.h"
 #include "cenvir.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Register_PerObjectConfigOption(CFGID_PARAM_RECORD_AS_SCALAR, "param-record-as-scalar", KIND_PARAMETER, CFG_BOOL, "false", "Applicable to module parameters: specifies whether the module parameter should be recorded into the output scalar file. Set it for parameters whose value you'll need for result analysis.");
@@ -815,4 +815,6 @@ void cComponent::releaseLocalListeners()
     signalHasAncestorListeners = parent ? (parent->signalHasLocalListeners | parent->signalHasAncestorListeners) : 0; // this only works if releaseLocalListeners() is called top-down
 */
 }
+
+NAMESPACE_END
 

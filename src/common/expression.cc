@@ -21,7 +21,7 @@
 #include "expressionyydefs.h"
 #include "unitconversion.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 #define eESTKOFLOW   "Stack overflow"
@@ -689,4 +689,6 @@ Expression::Value MathFunction::evaluate(Expression::Value args[], int numargs)
         default: throw opp_runtime_error("too many args");
     }
 }
+
+NAMESPACE_END
 

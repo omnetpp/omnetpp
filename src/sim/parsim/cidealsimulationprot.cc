@@ -34,7 +34,7 @@
 #include "cconfigoption.h"
 #include "regmacros.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Register_Class(cIdealSimulationProtocol);
@@ -159,4 +159,6 @@ void cIdealSimulationProtocol::readNextRecordedEvent()
     if (debug) ev << "next expected external event: srcProcId=" << nextExternalEvent.srcProcId
                   << " t=" << nextExternalEvent.t << "\n";
 }
+
+NAMESPACE_END
 

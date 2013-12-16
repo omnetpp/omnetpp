@@ -25,7 +25,7 @@
 #include "cexception.h"
 #include "unitconversion.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using namespace std;
 
@@ -380,3 +380,6 @@ void ValueIterator::dump() const
     }
     printf(".\n");
 }
+
+NAMESPACE_END
+

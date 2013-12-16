@@ -20,7 +20,7 @@
 #include "channel.h"
 #include "arraybuilder.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 ArrayBuilderNode::ArrayBuilderNode()
@@ -162,4 +162,5 @@ Node *ArrayBuilderNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
+NAMESPACE_END
 

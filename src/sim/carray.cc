@@ -30,7 +30,7 @@
 #include "ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 Register_Class(cArray);
 
@@ -422,3 +422,6 @@ cObject *cArray::remove(int m)
         drop(static_cast<cOwnedObject *>(obj));
     return obj;
 }
+
+NAMESPACE_END
+

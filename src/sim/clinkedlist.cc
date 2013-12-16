@@ -38,7 +38,7 @@
 #  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Register_Class(cLinkedList);
@@ -247,4 +247,5 @@ void *cLinkedList::pop()
     return remove_llelem( tailp );
 }
 
+NAMESPACE_END
 

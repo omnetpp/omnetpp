@@ -27,7 +27,7 @@
 #include "heapembedding.h"
 #include "platmisc.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 ForceDirectedGraphLayouter::ForceDirectedGraphLayouter()
@@ -614,3 +614,6 @@ void ForceDirectedGraphLayouter::debugDraw()
 
     usleep((int)(debugWaitTime*1000));
 }
+
+NAMESPACE_END
+

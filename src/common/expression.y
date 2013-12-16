@@ -55,6 +55,13 @@
 #include <string.h>         /* YYVERBOSE needs it */
 #endif
 
+#include "expression.h"
+#include "exception.h"
+#include "stringutil.h"
+#include "unitconversion.h"
+
+USING_NAMESPACE
+
 #define yyin expressionyyin
 #define yyout expressionyyout
 #define yyrestart expressionyyrestart
@@ -70,14 +77,6 @@ int yylex();
 void yyerror (const char *s);
 
 LineColumn xpos, xprevpos;
-
-
-#include "expression.h"
-#include "exception.h"
-#include "stringutil.h"
-#include "unitconversion.h"
-
-using OPP::Expression;
 
 static Expression::Elem *e;
 static Expression::Resolver *resolver;
@@ -334,4 +333,3 @@ void yyerror(const char *s)
 
     throw std::runtime_error(buf);
 }
-

@@ -32,7 +32,7 @@
 #include "ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 // comment out to disable reference-counting for encapsulated messages
 #define REFCOUNTING
@@ -674,7 +674,5 @@ long cPacket::getEncapsulationTreeId() const
     return msg->getTreeId();
 }
 
-
-
-
+NAMESPACE_END
 

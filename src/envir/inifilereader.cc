@@ -27,7 +27,7 @@
 #include "fsutils.h"
 #include "cexception.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 #define ERRPREFIX  "Error at `%s' line %d: "
@@ -305,4 +305,5 @@ void InifileReader::dump() const
     }
 }
 
+NAMESPACE_END
 

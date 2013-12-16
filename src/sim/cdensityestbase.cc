@@ -31,7 +31,7 @@
 #include "ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using std::ostream;
 
@@ -423,4 +423,6 @@ const cDensityEstBase::Cell& cDensityEstBase::internalGetCellInfo(int k) const
     buf = getCellInfo(k);
     return buf;
 }
+
+NAMESPACE_END
 

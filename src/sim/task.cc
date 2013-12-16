@@ -213,4 +213,3 @@ unsigned task_stackusage( _Task *t )
 }
 
 NAMESPACE_END
-

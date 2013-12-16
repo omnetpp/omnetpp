@@ -27,8 +27,7 @@
 #include "stringutil.h"
 #include "stringtokenizer.h"
 
-USING_NAMESPACE
-
+NAMESPACE_BEGIN
 
 bool opp_isblank(const char *txt)
 {
@@ -549,3 +548,4 @@ const char *opp_findmatchingparen(const char *s)
     return parens>0 ? NULL : s;
 }
 
+NAMESPACE_END

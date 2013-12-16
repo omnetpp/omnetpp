@@ -41,7 +41,7 @@
 #include "ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using std::ostream;
 
@@ -377,4 +377,5 @@ void cWeightedStdDev::loadFromFile(FILE *f)
     freadvarsf(f,"%g\t #= sum_weights_squared_vals", &sum_weights_squared_vals);
 }
 
+NAMESPACE_END
 

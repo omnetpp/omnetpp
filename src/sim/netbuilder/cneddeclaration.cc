@@ -26,7 +26,7 @@
 #include "stringutil.h"
 #include "patternmatcher.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 cNEDDeclaration::cNEDDeclaration(NEDResourceCache *resolver, const char *qname, bool isInnerType, NEDElement *tree) : NEDTypeInfo(resolver, qname, isInnerType, tree)
@@ -392,3 +392,6 @@ void cNEDDeclaration::collectPatternsFrom(ParametersElement *paramsNode, std::ve
         }
     }
 }
+
+NAMESPACE_END
+

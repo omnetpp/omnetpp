@@ -21,7 +21,7 @@
 #include "cclassdescriptor.h"
 #include "globals.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 //
 // Internal
@@ -159,4 +159,6 @@ cClassDescriptor *cStdVectorWatcherBase::getDescriptor()
 {
     return cClassDescriptor::getDescriptorFor("cStdVectorWatcher");
 }
+
+NAMESPACE_END
 

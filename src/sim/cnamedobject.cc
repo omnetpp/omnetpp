@@ -26,7 +26,7 @@
 #include "ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using std::ostream;
 
@@ -158,4 +158,5 @@ void cNamedObject::parsimUnpack(cCommBuffer *buffer)
 #endif
 }
 
+NAMESPACE_END
 

@@ -19,7 +19,7 @@
 #include "resultfilters.h"    // WarmupFilter, ExpressionFilter
 #include "resultrecorders.h"  // ExpressionRecorder
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 void SignalSource::subscribe(cResultListener *listener) const
@@ -508,4 +508,6 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
     }
     return result; // if makeRecorder=true, we return a NULL SignalSource (no chaining possible)
 }
+
+NAMESPACE_END
 

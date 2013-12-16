@@ -22,9 +22,9 @@
 #include <vector>
 #include "simkerneldefs.h"
 
-class PatternMatcher;
-
 NAMESPACE_BEGIN
+
+class PatternMatcher;
 
 /**
  * Glob-style pattern matching class, adopted to special OMNeT++ requirements.
@@ -150,7 +150,6 @@ class SIM_API cPatternMatcher
 };
 
 NAMESPACE_END
-
 
 #endif
 

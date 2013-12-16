@@ -20,7 +20,7 @@
 #include "cchannel.h"
 #include "csimulation.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 struct Subscription {cComponent *component; simsignal_t signalID;};
@@ -133,4 +133,5 @@ void cListener::receiveSignal(cComponent *, simsignal_t signalID, cObject *)
     unsupportedType(signalID, "cObject *");
 }
 
+NAMESPACE_END
 

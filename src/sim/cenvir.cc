@@ -21,6 +21,7 @@
 #include "cconfiguration.h"
 #include "csimulation.h"
 
+NAMESPACE_BEGIN
 
 /**
  * The std::streambuf class used by cEnvir's ostream. It redirects writes to
@@ -115,4 +116,4 @@ bool cEnvir::askYesNo(const char *fmt,...)
     return askyesno(staticbuf);
 }
 
-
+NAMESPACE_END

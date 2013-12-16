@@ -30,7 +30,7 @@
 #include "ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using std::ostream;
 
@@ -331,4 +331,5 @@ cObject *cQueue::get(int i) const
     return p ? p->obj : NULL;
 }
 
+NAMESPACE_END
 

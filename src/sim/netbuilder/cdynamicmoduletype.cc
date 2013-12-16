@@ -26,7 +26,7 @@
 #include "cnednetworkbuilder.h"
 #include "ccompoundmodule.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 cDynamicModuleType::cDynamicModuleType(const char *name) : cModuleType(name)
@@ -134,4 +134,6 @@ bool cDynamicModuleType::isInnerType() const
     cNEDDeclaration *decl = getDecl();
     return decl->isInnerType();
 }
+
+NAMESPACE_END
 

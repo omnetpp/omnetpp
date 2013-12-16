@@ -31,7 +31,7 @@
 #include "ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using std::ostream;
 
@@ -200,4 +200,6 @@ cIdealChannel *cIdealChannel::create(const char *name)
 {
     return dynamic_cast<cIdealChannel *>(cChannelType::getIdealChannelType()->create(name));
 }
+
+NAMESPACE_END
 

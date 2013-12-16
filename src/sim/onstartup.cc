@@ -19,7 +19,7 @@
 
 #include "onstartup.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 #if NDEBUG
 extern "C" SIM_API bool __is_release_oppsim__;
@@ -88,4 +88,5 @@ void ExecuteOnStartup::executeAll()
     ExecuteOnStartup::head = NULL;
 }
 
+NAMESPACE_END
 

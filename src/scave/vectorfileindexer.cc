@@ -32,7 +32,7 @@
 #include "nodetyperegistry.h"
 #include "vectorfileindexer.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using namespace std;
 
@@ -376,4 +376,5 @@ void VectorFileIndexer::rebuildVectorFile(const char *vectorFileName, IProgressM
     }
 }
 
+NAMESPACE_END
 

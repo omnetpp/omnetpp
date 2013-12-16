@@ -19,7 +19,7 @@
 #include "filteredevent.h"
 #include "filteredeventlog.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 static FilteredMessageDependency::Kind getMessageDependencyKind(IMessageDependency *messageDependency)
 {
@@ -335,3 +335,6 @@ void FilteredEvent::pushNewFilteredMessageDependency(IMessageDependencyList *mes
 
     messageDependencies->push_back(newMessageDependency);
 }
+
+NAMESPACE_END
+

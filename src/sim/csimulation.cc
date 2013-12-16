@@ -835,7 +835,4 @@ cEnvir *cSimulation::staticEvPtr = &staticEnv;
 
 cSimulation *cSimulation::simPtr = NULL;
 
-
 NAMESPACE_END
-
-

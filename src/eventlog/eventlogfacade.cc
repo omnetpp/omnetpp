@@ -23,7 +23,7 @@
 #include "filteredeventlog.h"
 #include "eventlogfacade.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 EventLogFacade::EventLogFacade(IEventLog *eventLog)
 {
@@ -307,3 +307,6 @@ FilteredMessageDependency::Kind EventLogFacade::FilteredMessageDependency_getKin
     FILTERED_MESSAGE_DEPENDENCY_PTR(ptr);
     return ((FilteredMessageDependency*)ptr)->getKind();
 }
+
+NAMESPACE_END
+

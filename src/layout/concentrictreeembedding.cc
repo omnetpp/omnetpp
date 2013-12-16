@@ -16,7 +16,7 @@
 
 #include "concentrictreeembedding.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 ConcentricTreeEmbedding::ConcentricTreeEmbedding(GraphComponent *graphComponent, double vertexSpacing)
 {
@@ -41,3 +41,6 @@ void ConcentricTreeEmbedding::calculateCenterRecursive(Vertex *vertex, int level
     for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); it++)
         calculateCenterRecursive(*it, level + 1);
 }
+
+NAMESPACE_END
+

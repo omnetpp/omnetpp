@@ -17,7 +17,7 @@
 #include <float.h>
 #include "graphcomponent.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 Vertex::Vertex(Pt pt, Rs rs, void *identity) {
     this->rc = Rc(pt, rs);
@@ -218,3 +218,6 @@ void GraphComponent::colorizeConnectedSubComponent(GraphComponent *childComponen
             colorizeConnectedSubComponent(childComponent, neighbour, color);
     }
 }
+
+NAMESPACE_END
+

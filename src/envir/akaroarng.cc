@@ -29,7 +29,7 @@
 #include "cexception.h"
 #include "akaroarng.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Register_Class(cAkaroaRNG);
@@ -87,5 +87,6 @@ double cAkaroaRNG::doubleRandIncl1()
     return AkRandomReal();
 }
 
-#endif
+NAMESPACE_END
 
+#endif

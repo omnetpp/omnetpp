@@ -18,7 +18,7 @@
 #include "matchableobject.h"
 #include "cclassdescriptor.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 MatchableObjectAdapter::MatchableObjectAdapter(DefaultAttribute attr, cObject *obj)
 {
@@ -106,4 +106,6 @@ const char *MatchableObjectAdapter::getAsString(const char *attribute) const
     tmp = desc->getFieldAsString(obj, fieldId, index);
     return tmp.c_str();
 }
+
+NAMESPACE_END
 

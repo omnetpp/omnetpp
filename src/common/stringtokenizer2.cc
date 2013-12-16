@@ -25,7 +25,7 @@
 #include "commonutil.h"
 #include "stringtokenizer2.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 StringTokenizerException::StringTokenizerException(const char *messagefmt, ...) : opp_runtime_error("")
 {
@@ -175,4 +175,6 @@ const char *StringTokenizer2::nextToken()
         return NULL;
     }
 }
+
+NAMESPACE_END
 

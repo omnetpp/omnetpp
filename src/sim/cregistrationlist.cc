@@ -23,7 +23,7 @@
 #include "cexception.h"
 #include "cownedobject.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 cRegistrationList::~cRegistrationList()
@@ -117,4 +117,6 @@ void cGlobalRegistrationList::clear()
     delete inst;
     inst = NULL;
 }
+
+NAMESPACE_END
 

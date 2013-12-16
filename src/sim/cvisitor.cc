@@ -22,7 +22,7 @@
 #include "cvisitor.h"
 #include "cobject.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 bool cVisitor::process(cObject *obj)
@@ -50,4 +50,6 @@ bool cVisitor::processChildrenOf(cObject *obj)
     }
     return true;
 }
+
+NAMESPACE_END
 

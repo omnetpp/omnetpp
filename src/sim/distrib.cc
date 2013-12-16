@@ -440,5 +440,4 @@ int poisson(double lambda, int rng)
     return X;
 }
 
-
 NAMESPACE_END

@@ -21,7 +21,7 @@
 #include "eventlog.h"
 #include "eventlogentry.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 Event::Event(EventLog *eventLog)
 {
@@ -368,3 +368,6 @@ IMessageDependencyList *Event::getConsequences()
     }
     return consequences;
 }
+
+NAMESPACE_END
+

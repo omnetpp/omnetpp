@@ -16,7 +16,7 @@
 
 #include "heapembedding.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 HeapEmbedding::HeapEmbedding(GraphComponent *graphComponent, double vertexSpacing)
 {
@@ -156,3 +156,6 @@ void HeapEmbedding::pushPtUnlessRcsContains(std::vector<Pt>& pts, const std::vec
 
     pts.push_back(pt);
 }
+
+NAMESPACE_END
+

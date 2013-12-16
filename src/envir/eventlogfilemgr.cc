@@ -33,7 +33,7 @@
 #include "cdisplaystring.h"
 #include "cclassdescriptor.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Register_PerRunConfigOption(CFGID_EVENTLOG_FILE, "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.elog", "Name of the eventlog file to generate.");
@@ -757,3 +757,5 @@ void EventlogFileManager::addPreviousEventNumber(eventnumber_t previousEventNumb
         consequenceLookaheadLimits[blockIndex] = std::max(consequenceLookaheadLimits[blockIndex], eventNumber - previousEventNumber);
     }
 }
+
+NAMESPACE_END

@@ -20,7 +20,7 @@
 #include "eventlogindex.h"
 #include "exception.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 #define LL INT64_PRINTF_FORMAT
 
@@ -631,4 +631,5 @@ void EventLogIndex::dump()
         printf("  %.*g --> offset %" LL "d (0x%" LL "x)\n", 12, it->first.dbl(), it->second.beginOffset, it->second.beginOffset);
 }
 
+NAMESPACE_END
 

@@ -16,7 +16,7 @@
 
 #include "stringpool.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 CommonStringPool::CommonStringPool()
 {
@@ -45,4 +45,6 @@ const char *CommonStringPool::get(const char *s)
     pool.insert(str);
     return str;
 }
+
+NAMESPACE_END
 

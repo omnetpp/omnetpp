@@ -21,6 +21,7 @@
 #ifndef __PARSIMUTIL_H
 #define __PARSIMUTIL_H
 
+NAMESPACE_BEGIN
 
 /**
  * Expects a -p<procId>,<numPartitions> command line argument, and parses it
@@ -28,6 +29,8 @@
  */
 void getProcIdFromCommandLineArgs(int& myProcId, int& numPartitions,
                                   const char *caller);
+
+NAMESPACE_END
 
 #endif
 

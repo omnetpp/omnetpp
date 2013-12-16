@@ -27,7 +27,7 @@
 #include "inspfactory.h"
 #include "objinsp.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 void _dummy_for_objinsp() {}
@@ -165,4 +165,5 @@ void TWatchInspector::writeBack()
    TInspector::writeBack();    // must be there after all changes
 }
 
+NAMESPACE_END
 

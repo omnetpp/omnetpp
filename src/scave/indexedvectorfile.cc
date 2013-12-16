@@ -24,7 +24,7 @@
 #include "indexedvectorfile.h"
 #include "scaveutils.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 #define LL  INT64_PRINTF_FORMAT
 #define VECTOR_FILE_VERSION 2
@@ -521,4 +521,5 @@ Port *IndexedVectorFileWriterNodeType::getPort(Node *node, const char *portname)
     return node1->addVector(vectorId, moduleName, name, columns);
 }
 
+NAMESPACE_END
 

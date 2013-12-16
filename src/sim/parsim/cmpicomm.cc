@@ -31,7 +31,7 @@
 #include "cconfigoption.h"
 #include "platmisc.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 Register_Class(cMPICommunications);
 
@@ -194,3 +194,6 @@ bool cMPICommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, in
 }
 
 #endif  // WITH_MPI
+
+NAMESPACE_END
+

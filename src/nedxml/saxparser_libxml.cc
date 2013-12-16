@@ -26,7 +26,7 @@
 #include <libxml/SAX.h>
 #include "saxparser.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 //
@@ -424,4 +424,6 @@ int SAXParser::getCurrentLineNumber()
 }
 
 #endif
+
+NAMESPACE_END
 

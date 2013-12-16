@@ -24,5 +24,6 @@ extern "C" ENVIR_API int evMain(int argc, char *argv[]);
 int main(int argc, char *argv[])
 {
     // call the main function and start the simulation
-    return evMain(argc, argv);
+    return OPP::evMain(argc, argv);
 }
+

@@ -30,7 +30,7 @@
 #include "nedsupport.h"
 #include "stringutil.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 /* for debugging
 static void dump(NEDElement *node)
@@ -293,4 +293,6 @@ void cExpressionBuilder::setExpression(cParImpl *par, cDynamicExpression *expr)
     if (expr->isAConstant())
         par->convertToConst(NULL);
 }
+
+NAMESPACE_END
 

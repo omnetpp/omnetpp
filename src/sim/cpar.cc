@@ -32,7 +32,7 @@
 #include "ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 cPar::~cPar()
@@ -431,4 +431,6 @@ void cPar::parse(const char *text)
     }
     afterChange();
 }
+
+NAMESPACE_END
 

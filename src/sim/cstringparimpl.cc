@@ -20,7 +20,7 @@
 #include "ccomponent.h"
 #include "stringutil.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 cStringParImpl::cStringParImpl()
@@ -200,4 +200,6 @@ int cStringParImpl::compare(const cParImpl *other) const
     else
         return (val == other2->val) ? 0 : (val < other2->val) ? -1 : 1;
 }
+
+NAMESPACE_END
 

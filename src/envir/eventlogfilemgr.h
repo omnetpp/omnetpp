@@ -24,13 +24,13 @@
 #include "objectprinter.h"
 #include "intervals.h"
 
+NAMESPACE_BEGIN
+
 class cComponent;
 class cModule;
 class cChannel;
 class cMessage;
 class cGate;
-
-NAMESPACE_BEGIN
 
 /**
  * Responsible for writing the eventlog file.

@@ -20,7 +20,7 @@
 #include "customfilter.h"
 #include "scaveutils.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 
@@ -133,3 +133,6 @@ void ExpressionFilterNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*
 {
     attrs["type"] = "double";
 }
+
+NAMESPACE_END
+

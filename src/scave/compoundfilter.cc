@@ -21,7 +21,7 @@
 #include "filternodes.h"
 #include "nodetyperegistry.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 bool CompoundFilterType::Subfilter::operator==(const CompoundFilterType::Subfilter& other) const
@@ -209,3 +209,6 @@ void CompoundFilterType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/S
         nodeType->mapVectorAttributes(attrs, warnings);
     }
 }
+
+NAMESPACE_END
+

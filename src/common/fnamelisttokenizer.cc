@@ -19,7 +19,7 @@
 #include <string.h>
 #include "fnamelisttokenizer.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 FilenamesListTokenizer::FilenamesListTokenizer(const char *s)
@@ -86,4 +86,5 @@ std::vector<std::string> FilenamesListTokenizer::asVector()
     return v;
 }
 
+NAMESPACE_END
 

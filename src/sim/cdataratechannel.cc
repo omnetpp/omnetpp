@@ -30,7 +30,7 @@
 #include "ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using std::ostream;
 
@@ -192,4 +192,6 @@ void cDatarateChannel::forceTransmissionFinishTime(simtime_t t)
     //TODO record this into the eventlog so that it can be visualized in the sequence chart
     txfinishtime = t;
 }
+
+NAMESPACE_END
 

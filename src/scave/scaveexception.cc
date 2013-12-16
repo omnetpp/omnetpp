@@ -17,7 +17,7 @@
 #include <sstream>
 #include "scaveexception.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 ResultFileFormatException::ResultFileFormatException(const char *message, const char *file, int64 line, file_offset_t offset)
@@ -32,3 +32,6 @@ ResultFileFormatException::ResultFileFormatException(const char *message, const 
 
     errormsg = msg.str();
 }
+
+NAMESPACE_END
+

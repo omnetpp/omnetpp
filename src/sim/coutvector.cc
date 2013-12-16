@@ -32,7 +32,7 @@
 #include "ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 Register_Class(cOutVector);
 
@@ -213,4 +213,5 @@ bool cOutVector::recordWithTimestamp(simtime_t t, double value)
     return stored;
 }
 
+NAMESPACE_END
 

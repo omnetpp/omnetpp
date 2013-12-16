@@ -25,7 +25,7 @@
 #include "messagedependency.h"
 #include "sequencechartfacade.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(eventLog)
 {
@@ -624,3 +624,6 @@ std::vector<int> SequenceChartFacade::getApproximateMessageDependencyCountAdjace
 
     return adjacencyMatrix;
 }
+
+NAMESPACE_END
+

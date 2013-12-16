@@ -35,7 +35,7 @@
 #include "stringtokenizer.h"
 #include "scaveutils.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using namespace std;
 
@@ -782,6 +782,10 @@ int indexCommand(int argc, char **argv)
     return rc;
 }
 
+NAMESPACE_END
+
+USING_NAMESPACE
+
 int main(int argc, char **argv)
 {
     if (argc<2)
@@ -804,5 +808,4 @@ int main(int argc, char **argv)
     else
         {fprintf(stderr, "unknown command `%s'\n", command);return 1;}
 }
-
 

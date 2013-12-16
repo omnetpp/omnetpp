@@ -38,4 +38,3 @@ NEDElement *parseXML(const char *filename, NEDErrorStore *errors)
 }
 
 NAMESPACE_END
-

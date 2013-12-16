@@ -28,7 +28,7 @@
 
 #define LL INT64_PRINTF_FORMAT
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 static bool serialLess(const Block &first, const Block &second)
 {
@@ -583,4 +583,6 @@ void IndexFileWriter::closeFile()
         file = NULL;
     }
 }
+
+NAMESPACE_END
 

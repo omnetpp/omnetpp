@@ -73,6 +73,7 @@
 #include <string>
 #include <string.h>
 #include <errno.h>
+#include "platdep/platdefs.h"
 
 #ifdef NDEBUG
 #error "opp_run.cc must be compiled in 'debug' mode!"
@@ -290,12 +291,12 @@ bool needsDebugSimkernel(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
     if (needsDebugSimkernel(argc, argv))
-        return evMain(argc, argv);
+        return OPP::evMain(argc, argv);
     else
     {
         // The libs specified on the command line were compiled with release-mode simulation libraries
         // but opp_run is by definition a debug executable; we must delegate to opp_run_release with the
         // current command line arguments.
-        return oppExec("opp_run_release", argv);
+        return OPP::oppExec("opp_run_release", argv);
     }
 }

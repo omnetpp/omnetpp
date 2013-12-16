@@ -23,7 +23,7 @@
 #include "cmessage.h"
 #include "cconfigoption.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Register_Class(cMersenneTwister);
@@ -117,4 +117,5 @@ double cMersenneTwister::doubleRandIncl1()
     return rng.rand();
 }
 
+NAMESPACE_END
 

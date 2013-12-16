@@ -263,4 +263,3 @@ const char *EventLogMessageEntry::getAsString(const char *attribute) const
 }
 
 NAMESPACE_END
-

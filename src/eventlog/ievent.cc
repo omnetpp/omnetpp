@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include "ievent.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 IEvent::IEvent()
 {
@@ -71,3 +71,6 @@ void IEvent::unlinkNeighbourEvents(IEvent *event)
     if (event->nextEvent)
         unlinkEvents(event, event->nextEvent);
 }
+
+NAMESPACE_END
+

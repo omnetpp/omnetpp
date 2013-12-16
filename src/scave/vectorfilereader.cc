@@ -212,5 +212,3 @@ Port *VectorFileReaderNodeType::getPort(Node *node, const char *portname) const
 }
 
 NAMESPACE_END
-
-

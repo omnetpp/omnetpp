@@ -32,4 +32,3 @@ cGlobalRegistrationList classDescriptors("class descriptors");
 cGlobalRegistrationList configOptions("supported configuration options");
 
 NAMESPACE_END
-

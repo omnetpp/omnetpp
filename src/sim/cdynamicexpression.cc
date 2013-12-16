@@ -27,7 +27,7 @@
 #include "stringutil.h"
 #include "unitconversion.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 cStringPool cDynamicExpression::Elem::stringPool("cDynamicExpression::Elem::stringPool");
 
@@ -763,4 +763,5 @@ std::string cDynamicExpression::str() const
     }
 }
 
+NAMESPACE_END
 

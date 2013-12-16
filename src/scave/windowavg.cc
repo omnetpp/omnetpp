@@ -20,7 +20,7 @@
 #include "scaveutils.h"
 #include "windowavg.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 WindowAverageNode::WindowAverageNode(int windowSize)
@@ -187,3 +187,6 @@ void TimeWindowAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /
         warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
     attrs["type"] = "double";
 }
+
+NAMESPACE_END
+

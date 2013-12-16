@@ -506,5 +506,3 @@ NEDElement *unaryMinus(NEDElement *node)
 }
 
 NAMESPACE_END
-
-

@@ -29,7 +29,7 @@
 #include "parsim/cplaceholdermod.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 cNEDMathFunction::cNEDMathFunction(const char *name, MathFuncNoArg f, int ac, const char *category, const char *description) :
     cNoncopyableOwnedObject(name, false)
@@ -175,4 +175,5 @@ cNEDMathFunction *cNEDMathFunction::findByPointer(MathFunc f)
     return NULL;
 }
 
+NAMESPACE_END
 

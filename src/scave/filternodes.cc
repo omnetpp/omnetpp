@@ -21,7 +21,7 @@
 #include "filternodes.h"
 #include "stringutil.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 bool NopNode::isReady() const
@@ -1166,3 +1166,6 @@ void SubtractFirstValueNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, 
     else if (attrs["type"] == "")
         attrs["type"] = "double";
 }
+
+NAMESPACE_END
+

@@ -19,7 +19,7 @@
 #include "exception.h"
 #include "commonutil.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 opp_runtime_error::opp_runtime_error(const char *messagefmt, ...) : std::runtime_error("")
@@ -29,4 +29,5 @@ opp_runtime_error::opp_runtime_error(const char *messagefmt, ...) : std::runtime
     errormsg = buf;
 }
 
+NAMESPACE_END
 

@@ -24,7 +24,7 @@
 #include "nedfilebuffer.h"
 #include "nedyylib.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 //-----------------------------------------------------------
 
@@ -457,4 +457,6 @@ void NEDFileBuffer::trimSpaceAndComments(YYLTYPE& pos)
     // this is currently not needed though, as bison grammar doesn't produce
     // YYLTYPEs with trailing spaces/comments.
 }
+
+NAMESPACE_END
 

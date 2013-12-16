@@ -17,7 +17,7 @@
 #include "cproperty.h"
 #include "cproperties.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 const char *cProperty::DEFAULTKEY = "";
@@ -303,4 +303,6 @@ void cProperty::erase(const char *key)
         valuesv.erase(valuesv.begin()+k);
     }
 }
+
+NAMESPACE_END
 

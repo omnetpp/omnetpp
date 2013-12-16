@@ -24,7 +24,7 @@
 #include "cnedloader.h"
 #include "cnednetworkbuilder.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 cDynamicChannelType::cDynamicChannelType(const char *name) : cChannelType(name)
@@ -106,4 +106,6 @@ bool cDynamicChannelType::isInnerType() const
     cNEDDeclaration *decl = getDecl();
     return decl->isInnerType();
 }
+
+NAMESPACE_END
 

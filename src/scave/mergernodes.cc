@@ -21,7 +21,7 @@
 #include "scaveutils.h"
 #include "mergernodes.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Port *MergerNode::addPort()
@@ -270,4 +270,5 @@ Port *AggregatorNodeType::getPort(Node *node, const char *portname) const
     throw opp_runtime_error("no such port `%s'", portname);
 }
 
+NAMESPACE_END
 

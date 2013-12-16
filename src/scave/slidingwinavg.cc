@@ -19,7 +19,7 @@
 #include "channel.h"
 #include "slidingwinavg.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 SlidingWindowAverageNode::SlidingWindowAverageNode(int windowSize)
@@ -97,4 +97,6 @@ void SlidingWindowAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs
 {
     attrs["type"] = "double";
 }
+
+NAMESPACE_END
 

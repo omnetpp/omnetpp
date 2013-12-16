@@ -40,7 +40,7 @@
 #include "cconfiguration.h"
 #include "parsimutil.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Register_Class(cNamedPipeCommunications);
@@ -260,4 +260,5 @@ bool cNamedPipeCommunications::receiveNonblocking(int filtTag, cCommBuffer *buff
 
 #endif /* (!USE_WINDOWS_PIPES) */
 
+NAMESPACE_END
 

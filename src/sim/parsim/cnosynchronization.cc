@@ -31,7 +31,7 @@
 #include "globals.h"
 #include "regmacros.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 Register_Class(cNoSynchronization);
 
@@ -70,4 +70,5 @@ cMessage *cNoSynchronization::getNextEvent()
     return msg;
 }
 
+NAMESPACE_END
 

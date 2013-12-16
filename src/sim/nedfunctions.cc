@@ -26,7 +26,7 @@
 #include "cconfiguration.h"
 #include "ccomponenttype.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 //FIXME cDynamicExpression to add function name to exceptions thrown from functions
 
@@ -763,4 +763,6 @@ DEF(nedf_firstAvailable,
         typelist += std::string(i==0?"":", ") + argv[i].stdstringValue();
     throw cRuntimeError("None of the following NED types are available: %s", typelist.c_str());
 })
+
+NAMESPACE_END
 

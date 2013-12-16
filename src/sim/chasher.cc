@@ -17,7 +17,7 @@
 
 #include "chasher.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 void cHasher::add(const char *p, size_t length)
@@ -95,4 +95,6 @@ int main(int argc, char **argv)
     return 0;
 }
 */
+
+NAMESPACE_END
 

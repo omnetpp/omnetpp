@@ -23,7 +23,7 @@
 #include "commondefs.h"
 #include "commonutil.h"
 
-//NAMESPACE_BEGIN
+NAMESPACE_BEGIN
 
 /**
  * Returns true if the string is NULL or has zero length.
@@ -272,7 +272,7 @@ COMMON_API const char *opp_findmatchingquote(const char *s);
  */
 COMMON_API const char *opp_findmatchingparen(const char *s);
 
-//NAMESPACE_END
+NAMESPACE_END
 
 
 #endif

@@ -37,7 +37,7 @@
 #include "ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 Register_Class(cTopology);
 
@@ -399,4 +399,6 @@ void cTopology::calculateWeightedSingleShortestPathsTo(Node *_target)
         }
     }
 }
+
+NAMESPACE_END
 

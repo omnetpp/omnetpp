@@ -19,7 +19,7 @@
 #include "commonnodes.h"
 #include "channel.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Port *SingleSourceNodeType::getPort(Node *node, const char *name) const
@@ -53,6 +53,5 @@ Port *FilterNodeType::getPort(Node *node, const char *name) const
     throw opp_runtime_error("no such port `%s'", name);
 }
 
-
-
+NAMESPACE_END
 

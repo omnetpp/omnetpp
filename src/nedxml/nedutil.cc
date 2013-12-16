@@ -26,7 +26,7 @@
 #include "displaystring.h"
 #include "nedelements.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 static void renameTag(DisplayString& ds, const char *from, const char *to)
 {
@@ -231,4 +231,6 @@ bool NEDElementUtil::isNEDType(NEDElement *node)
     return tag==NED_SIMPLE_MODULE || tag==NED_MODULE_INTERFACE || tag==NED_COMPOUND_MODULE ||
            tag==NED_CHANNEL_INTERFACE || tag==NED_CHANNEL;
 }
+
+NAMESPACE_END
 

@@ -20,7 +20,7 @@
 #include "stringtokenizer.h"
 #include "intervals.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 Intervals::Intervals()
 {
@@ -81,4 +81,6 @@ bool Intervals::empty() const
 {
     return !intervals || (intervals[0].startTime==0 && intervals[0].stopTime==0);
 }
+
+NAMESPACE_END
 
