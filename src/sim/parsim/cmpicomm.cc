@@ -193,7 +193,6 @@ bool cMPICommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, in
     return false;
 }
 
-#endif  // WITH_MPI
-
 NAMESPACE_END
 
+#endif  // WITH_MPI

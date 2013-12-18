@@ -492,7 +492,7 @@ void cMPICommBuffer::unpack(SimTime *d, int size)
         unpack(d[i]);
 }
 
-#endif // WITH_MPI
-
 NAMESPACE_END
+
+#endif // WITH_MPI
 
