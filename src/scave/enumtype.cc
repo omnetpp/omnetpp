@@ -21,7 +21,7 @@
 #include "scaveutils.h"
 #include "enumtype.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 EnumType::EnumType(const EnumType& list)
@@ -124,3 +124,6 @@ void EnumType::parseFromString(const char *str)
         }
     }
 }
+
+NAMESPACE_END
+

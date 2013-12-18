@@ -26,7 +26,6 @@
 #include "nedsupport.h"
 #include "stringutil.h"
 
-
 NAMESPACE_BEGIN
 
 namespace NEDSupport {

@@ -40,7 +40,7 @@
 #include "ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using std::ostream;
 
@@ -177,4 +177,5 @@ void cStatistic::freadvarsf(FILE *f, const char *fmt, ...)
     va_end(va);
 }
 
+NAMESPACE_END
 

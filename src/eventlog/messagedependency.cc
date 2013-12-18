@@ -22,7 +22,7 @@
 #include "eventlogentry.h"
 #include "messagedependency.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 /**************************************************/
 
@@ -322,3 +322,6 @@ void FilteredMessageDependency::print(FILE *file)
     beginMessageDependency->print(file);
     endMessageDependency->print(file);
 }
+
+NAMESPACE_END
+

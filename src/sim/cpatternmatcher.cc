@@ -17,7 +17,7 @@
 #include "cpatternmatcher.h"
 #include "../common/patternmatcher.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 cPatternMatcher::cPatternMatcher()
 {
@@ -63,3 +63,6 @@ bool cPatternMatcher::containsWildcards(const char *pattern)
 {
     return PatternMatcher::containsWildcards(pattern);
 }
+
+NAMESPACE_END
+

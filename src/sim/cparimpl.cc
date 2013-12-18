@@ -22,11 +22,17 @@
 #include "ccomponent.h"
 #include "csimulation.h"
 
+#include "cboolparimpl.h"
+#include "clongparimpl.h"
+#include "cdoubleparimpl.h"
+#include "cstringparimpl.h"
+#include "cxmlparimpl.h"
+
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 long cParImpl::total_parimpl_objs;
 long cParImpl::live_parimpl_objs;
@@ -140,13 +146,6 @@ int cParImpl::compare(const cParImpl *other) const
     return opp_strcmp(unitp, other->unitp);
 }
 
-//----
-#include "cboolparimpl.h"
-#include "clongparimpl.h"
-#include "cdoubleparimpl.h"
-#include "cstringparimpl.h"
-#include "cxmlparimpl.h"
-
 cParImpl *cParImpl::createWithType(Type type)
 {
     switch (type)
@@ -159,4 +158,6 @@ cParImpl *cParImpl::createWithType(Type type)
         default: throw cRuntimeError("cParImpl::createWithType(): no such type: %d", type);
     }
 }
+
+NAMESPACE_END
 

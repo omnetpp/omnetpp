@@ -1,0 +1,62 @@
+%description:
+Test $-fields for the result title attribute
+
+%file: test.ned
+
+simple Node
+{
+    @statisticTemplate[qlen](record=count,mean; title="Queue Length of $namePart2: -- component: $component, statistic: $name, recording mode: $mode");
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class Node : public cSimpleModule {
+    simsignal_t signal1, signal2;
+
+    virtual void initialize() {
+        signal1 = registerSignal("foo");
+        signal2 = registerSignal("bar");
+        cProperty *statisticTemplate = getProperties()->get("statisticTemplate", "qlen");
+        ev.addResultRecorders(this, signal1, "queueLength:q1", statisticTemplate);
+        ev.addResultRecorders(this, signal2, "queueLength:q2", statisticTemplate);
+
+        emit(signal1, 10);
+        emit(signal1, 11);
+        emit(signal1, 12);
+        emit(signal1, 13);
+        emit(signal1, 14);
+        emit(signal1, 15);
+
+        emit(signal2, 2);
+        emit(signal2, 4);
+    }
+};
+
+Define_Module(Node);
+
+}; //namespace
+
+
+%subst: /-?1\.#IND/nan/
+%subst: /-?1\.#QNAN/nan/
+%subst: /-?:NaN/:nan/
+
+%contains: test.sca
+scalar Test.node 	queueLength:q2:count 	2
+attr title  "Queue Length of q2: -- component: Test.node, statistic: queueLength:q2, recording mode: count"
+scalar Test.node 	queueLength:q2:mean 	3
+attr title  "Queue Length of q2: -- component: Test.node, statistic: queueLength:q2, recording mode: mean"
+scalar Test.node 	queueLength:q1:count 	6
+attr title  "Queue Length of q1: -- component: Test.node, statistic: queueLength:q1, recording mode: count"
+scalar Test.node 	queueLength:q1:mean 	12.5
+attr title  "Queue Length of q1: -- component: Test.node, statistic: queueLength:q1, recording mode: mean"

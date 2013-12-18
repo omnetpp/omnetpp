@@ -20,7 +20,7 @@
 #include "displaystring.h"
 #include "stringutil.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 DisplayString::DisplayString()
@@ -440,4 +440,5 @@ void DisplayString::strcatescaped(char *d, const char *s)
     *d = '\0';
 }
 
+NAMESPACE_END
 

@@ -27,8 +27,7 @@
 #include "stringutil.h"
 #include "stringtokenizer.h"
 
-USING_NAMESPACE
-
+NAMESPACE_BEGIN
 
 bool opp_isblank(const char *txt)
 {
@@ -266,6 +265,73 @@ std::string opp_replacesubstring(const char *s, const char *substring, const cha
     return text;
 }
 
+namespace {
+struct MapBasedResolver : public opp_substitutevariables_resolver
+{
+    const std::map<std::string,std::string>& map;
+    MapBasedResolver(const std::map<std::string,std::string>& map) : map(map) {}
+    virtual bool isVariableNameChar(char c) {
+        return opp_isalnum(c) || c=='_';
+    }
+    virtual std::string operator()(const std::string& name) {
+        const std::map<std::string,std::string>::const_iterator it = map.find(name);
+        if (it == map.end())
+            throw opp_runtime_error("unknown variable: $%s", name.c_str());
+        return it->second;
+    }
+};
+}
+
+std::string opp_substitutevariables(const std::string& raw, const std::map<std::string,std::string>& vars)
+{
+    MapBasedResolver resolver(vars);
+    return opp_substitutevariables(raw, resolver);
+}
+
+std::string opp_substitutevariables(const std::string& raw, opp_substitutevariables_resolver& resolver)
+{
+    std::string result;
+
+    std::string::size_type dollarPos, varStart, varEnd, prevEnd=0;
+    while (prevEnd < raw.size() && (dollarPos = raw.find('$', prevEnd)) != std::string::npos)
+    {
+        // copy segment before '$'
+        result.append(raw.substr(prevEnd, dollarPos-prevEnd));
+
+        varStart = (dollarPos+1<raw.size() && raw[dollarPos+1]=='{')? dollarPos+2 : dollarPos+1;
+
+        // find variable end
+        for (varEnd = varStart; varEnd < raw.size() && resolver.isVariableNameChar(raw[varEnd]); ++varEnd)
+            ;
+
+        if (varEnd == varStart) // no varname after "$" or "${"
+        {
+            result.append(raw.substr(dollarPos, varStart-dollarPos)); // copy "$" or "${"
+        }
+        else if (varStart == dollarPos+2 && (varEnd==raw.size() || raw[varEnd]!='}')) // started with "${", no closing "}"
+        {
+            result.append(raw.substr(dollarPos, varEnd-dollarPos));
+        }
+        else
+        {
+            std::string name = raw.substr(varStart, varEnd-varStart);
+            if (varStart == dollarPos+2)
+                varEnd++; // skip closing "}"
+            std::string value = resolver(name);
+            result.append(value);
+        }
+
+        // continue from end of the variable
+        prevEnd = varEnd;
+    }
+
+    // append last segment
+    if (prevEnd < raw.size())
+        result.append(raw.substr(prevEnd));
+
+    return result;
+}
+
 std::string opp_breaklines(const char *text, int lineLength)
 {
     char *buf = new char[strlen(text)+1];
@@ -441,7 +507,7 @@ Expected results:
 long opp_strtol(const char *s, char **endptr)
 {
     // accept decimal and hex numbers (0x), but ignore leading zero as octal prefix;
-    // C's octal notation is not explixit enough, and causes confusion e.g. with
+    // C's octal notation is not explicit enough, and causes confusion e.g. with
     // the runnumber-width configuration option (bug #232)
     while (opp_isspace(*s))
         s++;
@@ -468,7 +534,7 @@ long opp_atol(const char *s)
 unsigned long opp_strtoul(const char *s, char **endptr)
 {
     // accept decimal and hex numbers (0x), but ignore leading zero as octal prefix;
-    // C's octal notation is not explixit enough, and causes confusion e.g. with
+    // C's octal notation is not explicit enough, and causes confusion e.g. with
     // the runnumber-width configuration option (bug #232)
     while (opp_isspace(*s))
         s++;
@@ -603,3 +669,5 @@ const char *opp_strnistr(const char *haystack, const char *needle, int n, bool c
             return s;
     return NULL;
 }
+
+NAMESPACE_END

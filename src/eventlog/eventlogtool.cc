@@ -23,7 +23,7 @@
 #include "eventlog.h"
 #include "filteredeventlog.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 class Options
 {
@@ -446,6 +446,10 @@ void parseStringTokens(std::vector<std::string> &parameter, char *str)
     for (int j = 0; j < tokenizer.numTokens(); j++)
         parameter.push_back((char *)eventLogStringPool.get(tokens[j]));
 }
+
+NAMESPACE_END
+
+USING_NAMESPACE
 
 int main(int argc, char **argv)
 {

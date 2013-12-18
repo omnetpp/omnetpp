@@ -23,7 +23,7 @@
 #include "parsimutil.h"
 #include "cexception.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 void getProcIdFromCommandLineArgs(int& myProcId, int& numPartitions, const char *caller)
@@ -46,3 +46,6 @@ void getProcIdFromCommandLineArgs(int& myProcId, int& numPartitions, const char 
         throw cRuntimeError("%s: invalid switch '%s' -- should have the format -p<procId>,<numPartitions>",
                                 caller, parg);
 }
+
+NAMESPACE_END
+

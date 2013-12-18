@@ -25,7 +25,7 @@
 #include "globals.h"
 #include "cfsm.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using std::ostream;
 
@@ -73,4 +73,6 @@ void cFSM::parsimUnpack(cCommBuffer *buffer)
 {
     throw cRuntimeError(this,"parsimUnpack() not implemented");
 }
+
+NAMESPACE_END
 

@@ -19,7 +19,7 @@
 #include "cproperty.h"
 #include "stringutil.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 cProperties::cProperties()
@@ -168,4 +168,5 @@ void cProperties::lock()
         propv[i]->lock();
 }
 
+NAMESPACE_END
 

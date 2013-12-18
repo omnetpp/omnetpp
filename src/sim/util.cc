@@ -361,7 +361,7 @@ NAMESPACE_END
 #include "coutvector.h"
 #include "cvarhist.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 #ifdef __GNUC__
 #  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -411,4 +411,6 @@ void _sim_dummy_func()
       nedfunctions_dummy();
       //_dummy_for_env();
 }
+
+NAMESPACE_END
 

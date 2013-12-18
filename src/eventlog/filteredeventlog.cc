@@ -18,7 +18,7 @@
 #include <algorithm>
 #include "filteredeventlog.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
 {
@@ -667,3 +667,6 @@ bool FilteredEventLog::isAncestorModuleCreatedEntry(ModuleCreatedEntry *ancestor
 
     return false;
 }
+
+NAMESPACE_END
+

@@ -47,7 +47,7 @@
 #define WRITER_MUTEX
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 ResultItem& ResultItem::operator=(const ResultItem &rhs)
 {
@@ -1659,3 +1659,6 @@ const char *ResultFileManager::getRunAttribute(ID id, const char *attribute) con
 {
     return getItem(id).fileRunRef->runRef->getAttribute(attribute);
 }
+
+NAMESPACE_END
+

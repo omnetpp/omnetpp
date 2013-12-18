@@ -31,7 +31,7 @@
 #include "globals.h"
 #include "regmacros.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 Register_Class(cNoSynchronization);
 
@@ -76,4 +76,5 @@ void cNoSynchronization::putBackEvent(cEvent *event)
     sim->msgQueue.putBackFirst(event);
 }
 
+NAMESPACE_END
 

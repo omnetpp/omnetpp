@@ -27,7 +27,7 @@
 #include "opp_ctype.h"
 #include "cobjectfactory.h"  // createOne()
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 #define LL  INT64_PRINTF_FORMAT  /* abbreviation */
@@ -283,4 +283,6 @@ int cClassDescriptor::findField(const char *fieldName) const
             return i;
     return -1;
 }
+
+NAMESPACE_END
 

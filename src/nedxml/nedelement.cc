@@ -24,7 +24,7 @@
 #include "nederror.h"
 #include "nedexception.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using std::ostream;
 
@@ -346,4 +346,6 @@ NEDElementUserData *NEDElement::getUserData() const
 {
     return userdata;
 }
+
+NAMESPACE_END
 

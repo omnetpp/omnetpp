@@ -32,7 +32,7 @@
 #include "globals.h"
 #include "regmacros.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Register_Class(cLinkDelayLookahead);
@@ -135,5 +135,5 @@ simtime_t cLinkDelayLookahead::getCurrentLookahead(int procId)
     return segInfo[procId].minDelay;
 }
 
-
+NAMESPACE_END
 

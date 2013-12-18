@@ -19,7 +19,7 @@
 #include "cproperty.h"
 #include "chistogram.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Register_ResultRecorder("vector", VectorRecorder);
@@ -186,4 +186,6 @@ void ExpressionRecorder::finish(cResultFilter *prev)
     opp_string_map attributes = getStatisticAttributes();
     ev.recordScalar(getComponent(), getResultName().c_str(), expr.doubleValue(), &attributes);
 }
+
+NAMESPACE_END
 

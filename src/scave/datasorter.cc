@@ -26,7 +26,7 @@
 #include "datasorter.h"
 #include "stringutil.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using namespace std;
 
@@ -596,4 +596,6 @@ IDVectorVector DataSorter::prepareCopyToClipboard(const IDList& idlist)
 
     return vv;
 }
+
+NAMESPACE_END
 

@@ -38,7 +38,7 @@
 #include "ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 #define MIN(a,b) ((a)<(b) ? (a) : (b))
 #define MAX(a,b) ((a)>(b) ? (a) : (b))
@@ -482,3 +482,6 @@ cDoubleHistogram& cDoubleHistogram::operator=(const cDoubleHistogram& res)
     copy(res);
     return *this;
 }
+
+NAMESPACE_END
+

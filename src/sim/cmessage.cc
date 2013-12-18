@@ -27,7 +27,7 @@
 #include "ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using std::ostream;
 
@@ -358,4 +358,5 @@ void cMessage::execute()
     throw new cRuntimeError("illegal call to cMessage::execute()");
 }
 
+NAMESPACE_END
 

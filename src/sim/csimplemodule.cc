@@ -36,7 +36,7 @@
 #include "commonutil.h"
 #include "platdep/platmisc.h"  // for DEBUG_TRAP
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 #ifdef NDEBUG
 #define DEBUG_TRAP_IF_REQUESTED   /*no-op*/
@@ -771,4 +771,5 @@ unsigned cSimpleModule::getStackUsage() const
     return coroutine ? coroutine->getStackUsage() : 0;
 }
 
+NAMESPACE_END
 

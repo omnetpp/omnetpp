@@ -34,7 +34,7 @@
 #include "cconfigoption.h"
 #include "regmacros.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Register_Class(cIdealSimulationProtocol);
@@ -173,4 +173,7 @@ void cIdealSimulationProtocol::putBackEvent(cEvent *event)
     throw cRuntimeError("cIdealSimulationProtocol: \"Run Until Event/Module\" functionality "
                         "cannot be used with this scheduler (putBackEvent() not implemented)");
 }
+
+NAMESPACE_END
+
 

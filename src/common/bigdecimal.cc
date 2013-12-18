@@ -22,6 +22,7 @@
 #include "bigdecimal.h"
 #include "commonutil.h"  //NaN & friends
 
+NAMESPACE_BEGIN
 USING_NAMESPACE
 
 // helpers
@@ -127,11 +128,11 @@ void BigDecimal::normalize()
 const BigDecimal& BigDecimal::operator=(double d)
 {
     // check NaN and infinity
-    if (::isNaN(d))
+    if (OPP::isNaN(d))
         return *this = NaN;
-    else if (::isPositiveInfinity(d))
+    else if (OPP::isPositiveInfinity(d))
         return *this = PositiveInfinity;
-    else if (::isNegativeInfinity(d))
+    else if (OPP::isNegativeInfinity(d))
         return *this = NegativeInfinity;
 
     int sign = 1;
@@ -278,7 +279,7 @@ double BigDecimal::dbl() const
     if (isSpecial())
     {
         if (isNaN())
-            return ::NaN;
+            return OPP::NaN;
         else if (*this == PositiveInfinity)
             return POSITIVE_INFINITY;
         else if (*this == NegativeInfinity)
@@ -534,4 +535,4 @@ const BigDecimal operator-(const BigDecimal& x, const BigDecimal& y)
     return BigDecimal(x.dbl()-y.dbl());
 }
 
-
+NAMESPACE_END

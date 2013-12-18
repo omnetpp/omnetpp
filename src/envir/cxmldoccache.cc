@@ -22,7 +22,7 @@
 #include "fileutil.h"
 #include "../nedxml/saxparser.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 // We depend on WITH_NETBUILDER because it brings the nedxml library which
@@ -246,4 +246,6 @@ void cXMLDocCache::flushParsedContentCache()
         delete i->second;
     contentCache.clear();
 }
+
+NAMESPACE_END
 

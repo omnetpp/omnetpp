@@ -25,6 +25,7 @@
 #include "exception.h"
 #include "intxtypes.h"
 
+NAMESPACE_BEGIN
 
 #ifdef NDEBUG
 #  define Assert(x)
@@ -136,7 +137,7 @@ uint64 readCPUTimeStampCounter();
       ~Guard() {active=false;} \
     } __guard;
 
+NAMESPACE_END
 
 #endif
-
-
+    

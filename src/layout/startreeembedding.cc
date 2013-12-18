@@ -16,7 +16,7 @@
 
 #include "startreeembedding.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 StarTreeEmbedding::StarTreeEmbedding(GraphComponent *graphComponent, double vertexSpacing)
 {
@@ -212,3 +212,6 @@ void StarTreeEmbedding::calculatePositionRecursive(Vertex *vertex, Pt pt)
         calculatePositionRecursive(child, pt.copy().add(child->starTreeCenter));
     }
 }
+
+NAMESPACE_END
+

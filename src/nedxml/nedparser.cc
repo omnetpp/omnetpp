@@ -273,5 +273,3 @@ void NEDParser::error(const char *msg, int line)
 }
 
 NAMESPACE_END
-
-

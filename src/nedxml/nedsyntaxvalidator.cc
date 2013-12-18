@@ -27,7 +27,7 @@
 #include "nedsyntaxvalidator.h"
 #include "stringutil.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 // FIXME TODO: assert types begin with capital letters, and submods/gates/params with lowercase! warning if not!
@@ -767,4 +767,6 @@ void NEDSyntaxValidator::validateElement(FieldElement *node)
 void NEDSyntaxValidator::validateElement(UnknownElement *node)
 {
 }
+
+NAMESPACE_END
 

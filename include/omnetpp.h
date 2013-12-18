@@ -116,6 +116,10 @@
 #include "compat.h"
 #include "platdep/intxtypes.h"
 
+#ifdef AUTOIMPORT_NAMESPACE
+USING_NAMESPACE
+#endif
+
 #endif
 
 

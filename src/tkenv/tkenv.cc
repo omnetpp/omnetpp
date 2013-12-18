@@ -62,7 +62,7 @@ void OSXTransformProcess();
 #endif
 
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 //
 // Register the Tkenv user interface
@@ -2114,4 +2114,5 @@ void _dummy_func() {
   _dummy_for_statinsp();
 }
 
+NAMESPACE_END
 

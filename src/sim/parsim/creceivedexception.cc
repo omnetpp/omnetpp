@@ -20,7 +20,7 @@
 
 #include "creceivedexception.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 cReceivedException::cReceivedException(int sourceProcId, const char *msg)
  : cException("Error occurred in procId=%d: %s", sourceProcId, msg)
@@ -32,5 +32,5 @@ cReceivedTerminationException::cReceivedTerminationException(int sourceProcId, c
 {
 }
 
-
+NAMESPACE_END
 

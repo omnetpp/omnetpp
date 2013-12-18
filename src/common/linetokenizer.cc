@@ -21,7 +21,7 @@
 #include "exception.h"
 #include "linetokenizer.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 LineTokenizer::LineTokenizer(int bufferSize, int maxTokenNum, char sep1, char sep2)
@@ -198,4 +198,5 @@ int main(int argc, char **argv)
 }
 */
 
+NAMESPACE_END
 

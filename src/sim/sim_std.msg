@@ -31,7 +31,7 @@ cplusplus
 #  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 //
 // Register enums from the sim. kernel
@@ -517,5 +517,9 @@ class cXMLElement
     string detailedInfo @getter(detailedInfo) @label(contents);
 }
 
+cplusplus 
+{{
 
+NAMESPACE_END
 
+}}

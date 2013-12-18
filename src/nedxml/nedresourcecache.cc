@@ -29,7 +29,7 @@
 #include "fileglobber.h"
 #include "patternmatcher.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 //TODO collect errors in a NEDErrorStore?
 
@@ -525,4 +525,5 @@ const std::vector<std::string>& NEDResourceCache::getTypeNames() const
     return nedTypeNames;
 }
 
+NAMESPACE_END
 

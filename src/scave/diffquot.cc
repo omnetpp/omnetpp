@@ -17,7 +17,7 @@
 #include "channel.h"
 #include "diffquot.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 DifferenceQuotientNode::DifferenceQuotientNode()
@@ -84,4 +84,6 @@ void DifferenceQuotientNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, 
 {
     attrs["type"] = "double";
 }
+
+NAMESPACE_END
 

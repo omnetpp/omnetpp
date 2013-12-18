@@ -30,7 +30,7 @@
 #include "ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using std::ostream;
 
@@ -194,4 +194,6 @@ void cDatarateChannel::forceTransmissionFinishTime(simtime_t t)
     cTimestampedValue tmp(t, 0L);
     emit(channelBusySignal, &tmp);
 }
+
+NAMESPACE_END
 

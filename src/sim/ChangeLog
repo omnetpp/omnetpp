@@ -35,6 +35,38 @@
 	include/.
 
 ////////////// fixes cherry-picked from 4.x come here /////////////////
+	* Removed a compatibility macro required for OMNeT++ 4.3 and INET 2.0
+	INET 2.1 and later does not need this hack. (If you want to compile 
+	INET 2.0 with OMNeT++ 4.4 prepare to rename some method calls
+	from getFieldArraySize to getArraySize.
+
+2013-11-17  Andras Varga
+
+	cResultRecorder: support $-variables in the @statistic title
+	 - $name: name of the statistic
+	 - $component: component fullpath
+	 - $mode: recording mode
+	 - $namePart[0-9]+: given part of statistic name, when split along
+	   colons (:); numbering starts with 1
+	The last one is useful with @statisticTemplate; e.g. if the
+	statistic name is "tcpConn:host1>host4(3):bytesSent", and the
+	title is "bytes sent in connection $namePart2", it will become
+	"bytes sent in connection host1>host4(3)"
+
+2013-10-03  Andras Varga
+
+	* cResultRecorder: added support for programmatically setting up result
+	filters and recorders on signals. This is made possible by adding new args
+	to init(): cProperty* attrsProperty, opp_string_map *manualAttrs;
+	this allows result recorders to be used without a corresponding @statistic
+	attribute, e.g. they can be added to signals programmatically
+
+	* cEnvir: added support for @statistic-style result recording on dynamically
+	registered signals (i.e. "conn-<n>" where n is an integer). Instead of
+	@statistic, use @statisticTemplate property in the NED file, and for each
+	new signal call a new cEnvir method:
+	   addResultRecorders(cComponent *component, simsignal_t signal,
+	   const char *statisticName, cProperty *statisticTemplateProperty);
 
 2013-11-22  Andras Varga
 

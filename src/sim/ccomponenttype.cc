@@ -39,7 +39,7 @@
 #include "parsim/cplaceholdermod.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 static const char *getSignalTypeName(SimsignalType type)
 {
@@ -521,4 +521,5 @@ cDatarateChannel *cChannelType::createDatarateChannel(const char *name)
     return cDatarateChannel::create(name);
 }
 
+NAMESPACE_END
 

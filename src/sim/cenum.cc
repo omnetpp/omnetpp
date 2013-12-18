@@ -28,7 +28,7 @@
 #include "cexception.h"
 #include "cstringtokenizer.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Register_Class(cEnum);
@@ -159,4 +159,5 @@ std::string cEnum::str() const
     return out.str();
 }
 
+NAMESPACE_END
 

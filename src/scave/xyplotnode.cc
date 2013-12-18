@@ -20,7 +20,7 @@
 #include "channel.h"
 #include "xyplotnode.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Port *XYPlotNode::getPortY(int k)
@@ -134,5 +134,5 @@ Port *XYPlotNodeType::getPort(Node *node, const char *portname) const
     throw opp_runtime_error("no such port `%s'", portname);
 }
 
-
+NAMESPACE_END
 

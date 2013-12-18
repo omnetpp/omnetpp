@@ -250,6 +250,8 @@ sub processFile($)
     print CC "#include <sstream>\n";
     print CC "#include \"$hfilenamewithoutdir\"\n\n";
 
+    print CC "USING_NAMESPACE\n\n";
+
     print CC "// Template rule which fires if a struct or class doesn't have operator<<\n";
     print CC "template<typename T>\n";
     print CC "std::ostream& operator<<(std::ostream& out,const T&) {return out;}\n";

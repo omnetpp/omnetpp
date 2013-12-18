@@ -28,7 +28,7 @@
 #include "globals.h"
 #include "regmacros.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 Register_Class(cISPEventLogger);
 
@@ -100,4 +100,7 @@ void cISPEventLogger::putBackEvent(cEvent *event)
     throw cRuntimeError("cISPEventLogger: \"Run Until Event/Module\" functionality cannot be "
                         "used with this scheduler (putBackEvent() not implemented)");
 }
+
+NAMESPACE_END
+
 

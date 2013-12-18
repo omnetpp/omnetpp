@@ -25,7 +25,7 @@
 #include "arrow.h"
 #include "tkutil.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 static void clip_line_to_rect(
             double& x1, double& y1, double x2, double y2,
@@ -367,4 +367,6 @@ int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
       Tcl_SetResult(interp, buf, TCL_VOLATILE);
       return TCL_OK;
 }
+
+NAMESPACE_END
 

@@ -35,7 +35,7 @@
 #include "stringutil.h"
 #include "fileutil.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 cNEDLoader *cNEDLoader::inst;
 
@@ -76,4 +76,6 @@ cNEDDeclaration *cNEDLoader::getDecl(const char *qname) const
     ASSERT(decl);
     return decl;
 }
+
+NAMESPACE_END
 

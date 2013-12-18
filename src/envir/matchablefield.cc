@@ -19,7 +19,7 @@
 #include "matchablefield.h"
 #include "cclassdescriptor.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 MatchableFieldAdapter::MatchableFieldAdapter(cObject *object, int fieldIndex)
 {
@@ -63,3 +63,6 @@ const char *MatchableFieldAdapter::getAsString(const char *attribute) const
     else
         return NULL;
 }
+
+NAMESPACE_END
+

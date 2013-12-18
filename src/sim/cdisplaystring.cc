@@ -25,7 +25,7 @@
 #include "stringutil.h"
 #include "cmodelchange.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 cDisplayString::cDisplayString()
@@ -532,4 +532,6 @@ void cDisplayString::dump() const
     }
     printf(" ==> \"%s\"\n", str());
 }
+
+NAMESPACE_END
 

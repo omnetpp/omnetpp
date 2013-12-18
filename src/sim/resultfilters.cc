@@ -18,7 +18,7 @@
 #include "resultfilters.h"
 #include "cpacket.h"  // PacketBytesFilter
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 // note: we don't register WarmupPeriodFilter and ExpressionFilter
@@ -200,4 +200,6 @@ bool SumPerDurationFilter::process(simtime_t& t, double& value)
     value = sum / (t - simulation.getWarmupPeriod());
     return true;
 }
+
+NAMESPACE_END
 

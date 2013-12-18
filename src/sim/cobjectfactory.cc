@@ -23,7 +23,7 @@
 #include "parsim/cplaceholdermod.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 cObjectFactory::cObjectFactory(const char *name, cObject *(*creatorf)(), void *(*castf)(cObject *), const char *description)
@@ -75,4 +75,5 @@ cObject *cObjectFactory::createOneIfClassIsKnown(const char *classname)
     return p ? p->createOne() : NULL;
 }
 
+NAMESPACE_END
 

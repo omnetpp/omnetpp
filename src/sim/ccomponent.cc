@@ -31,7 +31,7 @@
 #include "stringutil.h"
 #include "cenvir.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Register_PerObjectConfigOption(CFGID_PARAM_RECORD_AS_SCALAR, "param-record-as-scalar", KIND_PARAMETER, CFG_BOOL, "false", "Applicable to module parameters: specifies whether the module parameter should be recorded into the output scalar file. Set it for parameters whose value you'll need for result analysis.");
@@ -573,7 +573,7 @@ void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
     SignalData *data = findOrCreateSignalData(signalID);
     checkNotFiring(signalID, data->listeners);
     if (!data->addListener(listener))
-        throw cRuntimeError(this, "subscribe(): listener already subscribed, signalID=%d", signalID);
+        throw cRuntimeError(this, "subscribe(): listener already subscribed, signalID=%d (%s)", signalID, getSignalName(signalID));
 
     uint64 mask = getSignalMask(signalID);
     signalHasLocalListeners |= mask;
@@ -822,4 +822,6 @@ void cComponent::releaseLocalListeners()
     signalHasAncestorListeners = parent ? (parent->signalHasLocalListeners | parent->signalHasAncestorListeners) : 0; // this only works if releaseLocalListeners() is called top-down
 */
 }
+
+NAMESPACE_END
 

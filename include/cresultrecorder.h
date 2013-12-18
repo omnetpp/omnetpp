@@ -26,6 +26,7 @@
 NAMESPACE_BEGIN
 
 class cResultRecorder;
+class cProperty;
 
 /**
  * Registers a result recorder. The class must be a subclass of cResultRecorder.
@@ -55,11 +56,24 @@ class SIM_API cResultRecorder : public cResultListener
         cComponent *component;
         const char *statisticName;
         const char *recordingMode;
+        cProperty *attrsProperty;  // property to take result attributes from (normally @statistic[statisticName])
+        opp_string_map *manualAttrs; // if non-null, overrides attrsProperty
+
     protected:
-        virtual opp_string_map getStatisticAttributes();
+        virtual opp_string_map getStatisticAttributes(); // order: manualAttrs, then attrsProperty
+        virtual opp_string_map getStatisticAttributesFrom(cProperty *property);
         virtual void tweakTitle(opp_string& title);
+
     public:
-        virtual void init(cComponent *component, const char *statisticName, const char *recordingMode);
+        /**
+         * Sets contextual information on the result recorder: it will record a (scalar, vector, etc)
+         * result for the given component, with a name composed of statisticName and recordingMode,
+         * result attributes taken either from the keys and values of the attrsProperty NED property,
+         * or from the manualAttrs string map (exactly one of the two must be non-NULL). manualAttrs,
+         * when specified, will be owned (i.e. deleted) by the result recorder object.
+         */
+        virtual void init(cComponent *component, const char *statisticName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs=NULL);
+        virtual ~cResultRecorder() {delete manualAttrs;}
         virtual cComponent *getComponent() const {return component;}
         virtual const char *getStatisticName() const {return statisticName;}
         virtual const char *getRecordingMode() const {return recordingMode;}

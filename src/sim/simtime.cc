@@ -21,7 +21,7 @@
 #include "cpar.h"
 #include "onstartup.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 #define LL  INT64_PRINTF_FORMAT
 
@@ -270,4 +270,6 @@ const SimTime SimTime::parse(const char *s, const char *&endp)
     // delegate to the other parse() method
     return parse(std::string(s, endp-s).c_str());
 }
+
+NAMESPACE_END
 

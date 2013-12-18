@@ -27,7 +27,7 @@
 #include "fnamelisttokenizer.h"
 #include "exception.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 bool cConfiguration::parseBool(const char *s, const char *defaultValue, bool fallbackValue)
@@ -248,4 +248,6 @@ std::string cConfiguration::getAsPath(const char *objectFullPath, cConfigOption 
     const KeyValue& keyvalue = getConfigEntry(option->getName());
     TRY(return adjustPath(keyvalue.getValue(), keyvalue.getBaseDirectory(), substituteVariables(option->getDefaultValue())));
 }
+
+NAMESPACE_END
 

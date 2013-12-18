@@ -18,7 +18,7 @@
 #include "commonutil.h"
 #include "cresultfilter.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 cGlobalRegistrationList resultFilters("resultFilters");
 
@@ -227,4 +227,5 @@ cResultFilterDescriptor *cResultFilterDescriptor::get(const char *name)
     return p;
 }
 
+NAMESPACE_END
 

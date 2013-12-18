@@ -20,7 +20,7 @@
 #include "nederror.h"
 #include "nedexception.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 NEDSAXHandler::NEDSAXHandler(const char *fname, NEDErrorStore *e)
@@ -112,4 +112,6 @@ void NEDSAXHandler::endCdataSection()
 {
     // ignore
 }
+
+NAMESPACE_END
 

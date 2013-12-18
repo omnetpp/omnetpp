@@ -32,7 +32,7 @@
 #include "globals.h"
 #include "regmacros.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Register_Class(cAdvancedLinkDelayLookahead);
@@ -160,5 +160,5 @@ simtime_t cAdvancedLinkDelayLookahead::getCurrentLookahead(int procId)
     return segInfo[procId].lookahead;
 }
 
-
+NAMESPACE_END
 

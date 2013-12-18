@@ -28,7 +28,7 @@
 #include "cmessage.h"
 #include "cmessageheap.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 Register_Class(cMessageHeap);
 
@@ -343,3 +343,6 @@ void cMessageHeap::putBackFirst(cEvent *event)
     if (cbtail==cbhead)
         cbgrow();
 }
+
+NAMESPACE_END
+

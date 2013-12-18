@@ -25,7 +25,7 @@
 #include "ccoroutine.h"
 #include "cexception.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 #ifdef USE_WIN32_FIBERS
@@ -229,4 +229,6 @@ unsigned cCoroutine::getStackUsage() const
 }
 
 #endif
+
+NAMESPACE_END
 

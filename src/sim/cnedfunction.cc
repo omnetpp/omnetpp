@@ -24,7 +24,7 @@
 #include "stringtokenizer.h"
 #include "opp_ctype.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 cNEDFunction::cNEDFunction(NEDFunction f, const char *signature,
@@ -208,4 +208,5 @@ cNEDFunction *cNEDFunction::findByPointer(NEDFunction f)
     return NULL;
 }
 
+NAMESPACE_END
 

@@ -20,7 +20,11 @@
 
 #include "envirdefs.h"
 
+NAMESPACE_BEGIN
+
 int ENVIR_API setupUserInterface(int argc, char *argv[]);
+
+NAMESPACE_END
 
 #endif
 

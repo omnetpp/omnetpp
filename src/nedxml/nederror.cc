@@ -171,4 +171,3 @@ void NEDInternalError(const char *file, int line, NEDElement *context, const cha
 }
 
 NAMESPACE_END
-

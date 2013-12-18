@@ -21,7 +21,7 @@
 #include "exception.h"
 #include "stringpool.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 void cResultListener::subscribedTo(cResultFilter *prev)
@@ -166,4 +166,5 @@ void cResultListener::finish(cComponent *component, simsignal_t signalID)
     finish(NULL);
 }
 
+NAMESPACE_END
 

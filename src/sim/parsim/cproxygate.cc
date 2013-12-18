@@ -27,7 +27,7 @@
 #include "cmodule.h"
 #include "cmessage.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 cProxyGate::cProxyGate() : cGate()
@@ -66,4 +66,5 @@ void cProxyGate::setRemoteGate(short procId, int moduleId, int gateId)
     remoteGateId = gateId;
 }
 
+NAMESPACE_END
 

@@ -25,14 +25,14 @@
 #include "intervals.h"
 #include "clifetimelistener.h"
 
+NAMESPACE_BEGIN
+
 class cComponent;
 class cModule;
 class cChannel;
 class cEvent;
 class cMessage;
 class cGate;
-
-NAMESPACE_BEGIN
 
 /**
  * Responsible for writing the eventlog file.

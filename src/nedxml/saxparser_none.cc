@@ -19,7 +19,7 @@
 #include "nederror.h"
 #include "saxparser.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 SAXParser::SAXParser()
@@ -55,4 +55,5 @@ int SAXParser::getCurrentLineNumber()
     return 0;
 }
 
+NAMESPACE_END
 

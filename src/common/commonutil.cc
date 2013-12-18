@@ -24,7 +24,7 @@
 #include <unistd.h>
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 static double zero = 0.0;
@@ -104,4 +104,5 @@ uint64 readCPUTimeStampCounter()
 }
 #endif
 
+NAMESPACE_END
 

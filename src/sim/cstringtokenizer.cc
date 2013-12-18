@@ -24,7 +24,7 @@
 #include "cstringtokenizer.h"
 #include "cexception.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 cStringTokenizer::cStringTokenizer(const char *s, const char *delim)
@@ -146,4 +146,5 @@ std::vector<double> cStringTokenizer::asDoubleVector()
     return v;
 }
 
+NAMESPACE_END
 

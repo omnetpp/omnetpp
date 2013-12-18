@@ -20,7 +20,7 @@
 #include "cconfigoption.h"
 #include "exception.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 cConfigOption::cConfigOption(const char *name, bool isGlobal, Type type, const char *unit,
@@ -101,3 +101,6 @@ const char *cConfigOption::getObjectKindName(ObjectKind kind)
         default:                    return "???";
     }
 }
+
+NAMESPACE_END
+

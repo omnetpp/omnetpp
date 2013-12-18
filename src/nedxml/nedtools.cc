@@ -19,7 +19,7 @@
 #include "neddtdvalidator.h"
 #include "fileutil.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 void NEDTools::repairNEDElementTree(NEDElement *tree)
@@ -101,4 +101,5 @@ void NEDTools::splitToFiles(FilesElement *tree)
         tree->appendChild(tmpTree->removeChild(tmpTree->getFirstChild()));
 }
 
+NAMESPACE_END
 

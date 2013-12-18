@@ -38,7 +38,7 @@
 #include "ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using std::ostream;
 using std::string;
@@ -987,4 +987,5 @@ void cMsgPar::convertToConst ()
     }
 }
 
+NAMESPACE_END
 

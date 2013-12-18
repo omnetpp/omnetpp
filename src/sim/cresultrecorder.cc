@@ -18,26 +18,37 @@
 #include "cresultrecorder.h"
 #include "cproperty.h"
 #include "chistogram.h"
+#include "cstringtokenizer.h"
+#include "../common/opp_ctype.h"
+#include "../common/stringutil.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 cGlobalRegistrationList resultRecorders("resultRecorders");
 
 
-void cResultRecorder::init(cComponent *comp, const char *statsName, const char *recMode)
+void cResultRecorder::init(cComponent *comp, const char *statsName, const char *recMode, cProperty *property, opp_string_map *attrs)
 {
     component = comp;
     statisticName = getPooled(statsName);
     recordingMode = getPooled(recMode);
+    attrsProperty = property;
+    manualAttrs = attrs;
+    if ((!attrsProperty) == (!manualAttrs))
+        throw cRuntimeError("cResultRecorder::init(): exactly one of attrsProperty and manualAttrs must be specified");
 }
 
 opp_string_map cResultRecorder::getStatisticAttributes()
 {
+    if (manualAttrs)
+        return *manualAttrs;
+    return getStatisticAttributesFrom(attrsProperty);
+}
+
+opp_string_map cResultRecorder::getStatisticAttributesFrom(cProperty *property)
+{
     opp_string_map result;
-    cProperty *property = getComponent()->getProperties()->get("statistic", getStatisticName());
-    if (!property)
-        return result;
 
     // fill result[] from the properties
     const std::vector<const char *>& keys = property->getKeys();
@@ -66,10 +77,50 @@ opp_string_map cResultRecorder::getStatisticAttributes()
     return result;
 }
 
+static std::string getPart(const char *s, int k)
+{
+    if (k >= 0) {
+        cStringTokenizer tokenizer(s, ":");
+        for (const char *token; (token = tokenizer.nextToken()) != NULL; k--)
+            if (k == 0)
+                return token;
+    }
+    return "";
+}
+
+namespace {
+struct Resolver : public opp_substitutevariables_resolver
+{
+    cResultRecorder *self;
+    Resolver(cResultRecorder *self) : self(self) {}
+    virtual bool isVariableNameChar(char c) {
+        return opp_isalnum(c) || c=='_';
+    }
+    virtual std::string operator()(const std::string& name) {
+        if (name == "name")
+            return self->getStatisticName();
+        else if (name == "mode")
+            return self->getRecordingMode();
+        else if (name == "component")
+            return self->getComponent()->getFullPath();
+        else if (opp_stringbeginswith(name.c_str(), "namePart") && opp_isdigit(name.c_str()[8]))
+            return getPart(self->getStatisticName(), strtol(name.c_str()+8, NULL, 10) - 1);
+        else
+            throw cRuntimeError("unknown variable $%s", name.c_str());
+    }
+};
+}
+
 void cResultRecorder::tweakTitle(opp_string& title)
 {
-    //title = opp_string(getRecordingMode()) + " of " + title;
-    title = title + ", " + getRecordingMode();
+    if (strchr(title.c_str(), '$')) {
+        Resolver resolver(this);
+        title = opp_substitutevariables(title.c_str(), resolver).c_str();
+    }
+    else {
+        // if title didn't make use of any $ macro, just add recording mode after a comma as default
+        title = title + ", " + getRecordingMode();
+    }
 }
 
 //---
@@ -132,4 +183,5 @@ cResultRecorderDescriptor *cResultRecorderDescriptor::get(const char *name)
     return p;
 }
 
+NAMESPACE_END
 

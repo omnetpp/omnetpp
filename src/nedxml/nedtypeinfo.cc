@@ -25,7 +25,7 @@
 #include "nedresourcecache.h"
 #include "ned2generator.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isInnerType, NEDElement *tree)
@@ -118,7 +118,7 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
         else if (numExtendsNames()!=0)
             implClassName = opp_nulltoempty(getSuperDecl()->implementationClassName());
         else if (getType()==COMPOUND_MODULE)
-            implClassName = "cCompoundModule";
+            implClassName = OPP_PREFIX "cCompoundModule";
         else
             implClassName = opp_join("::", getCxxNamespace().c_str(), getName());
     }
@@ -465,4 +465,5 @@ void NEDTypeInfo::checkComplianceToInterface(NEDTypeInfo *idecl)
     }
 }
 
+NAMESPACE_END
 

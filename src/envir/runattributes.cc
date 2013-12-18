@@ -25,7 +25,7 @@
 #include "stringutil.h"
 #include "runattributes.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 #ifdef CHECK
@@ -90,4 +90,6 @@ void sRunData::writeRunData(FILE *f, opp_string fname)
     }
     CHECK(fprintf(f, "\n"));
 }
+
+NAMESPACE_END
 

@@ -25,7 +25,7 @@
 #include "envirbase.h"
 #include "filesnapshotmgr.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using std::ostream;
 using std::ofstream;
@@ -74,4 +74,6 @@ const char *cFileSnapshotManager::getFileName() const
 {
     return fname.c_str();
 }
+
+NAMESPACE_END
 

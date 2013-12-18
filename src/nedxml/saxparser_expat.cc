@@ -22,7 +22,7 @@
 #include "expat.h"
 #include "saxparser.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 static bool hasDTD;
@@ -196,4 +196,5 @@ int SAXParser::getCurrentLineNumber()
     return XML_GetCurrentLineNumber(*(XML_Parser *)currentparser);
 }
 
+NAMESPACE_END
 

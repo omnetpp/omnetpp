@@ -37,7 +37,7 @@
 #include "clog.h"
 #include "platmisc.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Register_Class(cFileCommunications);
@@ -213,5 +213,5 @@ bool cFileCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, i
     return ret;
 }
 
-
+NAMESPACE_END
 

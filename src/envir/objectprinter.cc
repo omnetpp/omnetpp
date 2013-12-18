@@ -28,7 +28,7 @@
 #include "matchableobject.h"
 #include "objectprinter.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 #define MAXIMUM_OBJECT_PRINTER_LEVEL 20
 
@@ -235,3 +235,6 @@ bool ObjectPrinter::matchesObjectField(cObject *object, int fieldIndex)
 
     return false;
 }
+
+NAMESPACE_END
+

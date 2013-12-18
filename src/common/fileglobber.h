@@ -40,9 +40,9 @@
 
 #include "commondefs.h"
 
-struct GlobPrivateData;
-
 NAMESPACE_BEGIN
+
+struct GlobPrivateData;
 
 /**
  * Utility for resolving wildcards in file names. If the pattern doesn't contain
@@ -79,7 +79,6 @@ class COMMON_API FileGlobber
 };
 
 NAMESPACE_END
-
 
 #endif
 

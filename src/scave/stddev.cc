@@ -20,7 +20,7 @@
 #include "channel.h"
 #include "stddev.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 StddevNode::StddevNode()
@@ -115,4 +115,5 @@ Node *StddevNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
+NAMESPACE_END
 

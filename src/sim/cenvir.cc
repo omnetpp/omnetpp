@@ -21,6 +21,7 @@
 #include "cconfiguration.h"
 #include "csimulation.h"
 
+NAMESPACE_BEGIN
 
 cEnvir::cEnvir()
 {
@@ -63,4 +64,4 @@ bool cEnvir::askYesNo(const char *fmt,...)
     return askyesno(staticbuf);
 }
 
-
+NAMESPACE_END

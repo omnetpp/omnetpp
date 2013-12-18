@@ -23,7 +23,7 @@
 #include <string.h>
 #include "stringtokenizer.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 StringTokenizer::StringTokenizer(const char *s, const char *delim)
@@ -86,4 +86,5 @@ std::vector<std::string> StringTokenizer::asVector()
     return v;
 }
 
+NAMESPACE_END
 

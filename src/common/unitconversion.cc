@@ -24,7 +24,7 @@
 #include "platmisc.h"  //strcasecmp
 #include "unitconversion.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 const double K = 1024.0;
 
@@ -264,4 +264,6 @@ std::vector<const char *> UnitConversion::getAllUnits()
         result.push_back(unitTable[i].unit);
     return result;
 }
+
+NAMESPACE_END
 

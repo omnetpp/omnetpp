@@ -18,7 +18,7 @@
 #include "rwlock.h"
 #include "exception.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 #ifdef _WIN32
 #ifdef PTW32_STATIC_LIB
@@ -249,3 +249,6 @@ void ReentrantReadWriteLock::unlockWrite()
         }
     }
 }
+
+NAMESPACE_END
+

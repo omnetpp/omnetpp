@@ -18,7 +18,7 @@
 #include <assert.h>
 #include "speedometer.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Speedometer::Speedometer()
@@ -106,4 +106,6 @@ double Speedometer::getSimSecPerSec()
     if (!started) return 0;
     return last_simsecpersec;
 }
+
+NAMESPACE_END
 

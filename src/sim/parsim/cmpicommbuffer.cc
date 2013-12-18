@@ -26,7 +26,7 @@
 #include "globals.h"
 #include "regmacros.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 Register_Class(cMPICommBuffer);
 
@@ -493,3 +493,6 @@ void cMPICommBuffer::unpack(SimTime *d, int size)
 }
 
 #endif // WITH_MPI
+
+NAMESPACE_END
+

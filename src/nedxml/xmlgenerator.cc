@@ -163,5 +163,3 @@ void NEDXMLGenerator::doGenerate(ostream& out, NEDElement *node, int level)
 }
 
 NAMESPACE_END
-
-

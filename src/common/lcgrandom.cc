@@ -17,7 +17,7 @@
 #include <math.h>
 #include "lcgrandom.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 LCGRandom::LCGRandom(int32 seed)
@@ -66,3 +66,6 @@ void LCGRandom::selfTest()
     if (seed!=1043618065L)
         throw opp_runtime_error("LCGRandom: self test failed, please report this problem!");
 }
+
+NAMESPACE_END
+

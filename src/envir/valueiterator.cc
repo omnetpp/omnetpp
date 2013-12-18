@@ -25,7 +25,7 @@
 #include "cexception.h"
 #include "unitconversion.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using namespace std;
 
@@ -89,52 +89,27 @@ class FunctionResolver : public Expression::Resolver
     }
 };
 
+namespace {
+struct Resolver : public opp_substitutevariables_resolver
+{
+    const ValueIterator::VariableMap& map;
+    Resolver(const ValueIterator::VariableMap& map) : map(map) {}
+    virtual bool isVariableNameChar(char c) {
+        return ::isVariableNameChar(c);
+    }
+    virtual std::string operator()(const std::string& name) {
+        ValueIterator::VariableMap::const_iterator it = map.find(name);
+        if (it == map.end())
+            throw opp_runtime_error("unknown iteration variable: $%s", name.c_str());
+        return it->second->get();
+    }
+};
+}
+
 void ValueIterator::Expr::substituteVariables(const VariableMap& map)
 {
-    string result;
-
-    string::size_type dollarPos, varStart, varEnd, prevEnd=0;
-    while (prevEnd < raw.size() && (dollarPos = raw.find('$', prevEnd)) != string::npos)
-    {
-        // copy segment before '$'
-        result.append(raw.substr(prevEnd, dollarPos-prevEnd));
-
-        varStart = (dollarPos+1<raw.size() && raw[dollarPos+1]=='{')? dollarPos+2 : dollarPos+1;
-
-        // find variable end
-        for (varEnd = varStart; varEnd < raw.size() && isVariableNameChar(raw[varEnd]); ++varEnd)
-            ;
-
-        if (varEnd == varStart) // no varname after "$" or "${"
-        {
-            result.append(raw.substr(dollarPos, varStart-dollarPos)); // copy "$" or "${"
-        }
-        else if (varStart == dollarPos+2 && (varEnd==raw.size() || raw[varEnd]!='}')) // started with "${", no closing "}"
-        {
-            result.append(raw.substr(dollarPos, varEnd-dollarPos));
-        }
-        else
-        {
-            string name = raw.substr(varStart, varEnd-varStart);
-            if (varStart == dollarPos+2)
-                varEnd++; // skip closing "}"
-            VariableMap::const_iterator it = map.find(name);
-            if (it == map.end())
-            {
-                throw opp_runtime_error("unknown iteration variable: $%s", name.c_str());
-            }
-            result.append(it->second->get());
-        }
-
-        // continue from end of the variable
-        prevEnd = varEnd;
-    }
-
-    // append last segment
-    if (prevEnd < raw.size())
-        result.append(raw.substr(prevEnd));
-
-    value = result;
+    Resolver resolver(map);
+    value = opp_substitutevariables(raw, resolver);
 }
 
 void ValueIterator::Expr::evaluate()
@@ -380,3 +355,6 @@ void ValueIterator::dump() const
     }
     printf(".\n");
 }
+
+NAMESPACE_END
+

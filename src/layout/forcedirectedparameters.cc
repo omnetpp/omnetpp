@@ -16,5 +16,7 @@
 
 #include "forcedirectedparameters.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
+
+NAMESPACE_END
 

@@ -19,7 +19,7 @@
 #include "forcedirectedparameters.h"
 #include "lcgrandom.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 ForceDirectedEmbedding::ForceDirectedEmbedding() {
     debugLevel = 0;
@@ -371,3 +371,6 @@ void ForceDirectedEmbedding::writeDebugInformation(std::ostream& ostream)
     if (initialized)
         ostream << "at real time: " << elapsedCalculationTime << " time: " << elapsedTime << " relaxFactor: " << relaxFactor << " h: " << updatedTimeStep << " friction: " << parameters.frictionCoefficient << " min acceleration error: " << parameters.minAccelerationError << " max acceleration error: " << parameters.maxAccelerationError << " last acceleration error: " << lastAccelerationError << " cycle: " << cycle << " prob cycle: " << probCycle << " last max velocity: " << lastMaxVelocity << " last max acceleration: " << lastMaxAcceleration << "\n";
 }
+
+NAMESPACE_END
+

@@ -21,8 +21,17 @@
 #include "cplaceholdermod.h"
 #include "cproxygate.h"
 
-USING_NAMESPACE
+#include "cfilecomm.h"
+#include "cnamedpipecomm.h"
+#include "cmpicomm.h"
+#include "cnosynchronization.h"
+#include "cnullmessageprot.h"
+#include "cispeventlogger.h"
+#include "cidealsimulationprot.h"
+#include "clinkdelaylookahead.h"
+#include <stdio.h>
 
+NAMESPACE_BEGIN
 
 cPlaceholderModule::cPlaceholderModule()
 {
@@ -59,15 +68,6 @@ cGate *cPlaceholderModule::createGateObject(cGate::Type type)
 
 //----------------------------------------
 // as usual: tribute to smart linkers
-#include "cfilecomm.h"
-#include "cnamedpipecomm.h"
-#include "cmpicomm.h"
-#include "cnosynchronization.h"
-#include "cnullmessageprot.h"
-#include "cispeventlogger.h"
-#include "cidealsimulationprot.h"
-#include "clinkdelaylookahead.h"
-#include <stdio.h>
 void parsim_dummy()
 {
     cFileCommunications fc;
@@ -83,4 +83,6 @@ void parsim_dummy()
     // prevent "unused variable" warnings:
     (void)fc; (void)npc; (void)ns; (void)np; (void)iel; (void)ip; (void)ldla;
 }
+
+NAMESPACE_END
 

@@ -20,10 +20,11 @@
 #include <stdarg.h>
 #include <string.h>
 #include <string>
+#include <map>
 #include "commondefs.h"
 #include "commonutil.h"
 
-//NAMESPACE_BEGIN
+NAMESPACE_BEGIN
 
 /**
  * Returns true if the string is NULL or has zero length.
@@ -160,6 +161,27 @@ COMMON_API int opp_vsscanf(const char *s, const char *fmt, va_list va);
 COMMON_API std::string opp_replacesubstring(const char *s, const char *substring, const char *replacement, bool replaceAll);
 
 /**
+ * For opp_substitutevariables().
+ */
+struct opp_substitutevariables_resolver {
+    virtual bool isVariableNameChar(char c) = 0;
+    virtual std::string operator()(const std::string&) = 0;
+};
+
+/**
+ * Substitutes dollar variables ($name or ${name}) into the given string.
+ * The second arg is a function that should return the value of a variable
+ * from its name. (It may also throw an exception if there is no such variable.)
+ */
+COMMON_API std::string opp_substitutevariables(const std::string& raw, opp_substitutevariables_resolver& resolver);
+
+/**
+ * Substitutes dollar variables ($name or ${name}) into the given string, using the
+ * dictionary passed as second arg. Throws an exception if a variable is not found.
+ */
+COMMON_API std::string opp_substitutevariables(const std::string& raw, const std::map<std::string,std::string>& vars);
+
+/**
  * Inserts newlines into the string, performing rudimentary line breaking.
  */
 COMMON_API std::string opp_breaklines(const char *text, int maxLineLength);
@@ -284,8 +306,7 @@ COMMON_API std::string opp_urldecode(const std::string& src);
  */
 COMMON_API const char *opp_strnistr(const char *haystack, const char *needle, int n, bool caseSensitive);
 
-//NAMESPACE_END
-
+NAMESPACE_END
 
 #endif
 

@@ -1,0 +1,35 @@
+%description:
+Basic test for instantiating and adding result filters/recorders manually
+
+%activity:
+simsignal_t signal = registerSignal("foo");
+
+cResultFilter *removeRepeatsFilter = cResultFilterDescriptor::get("removerepeats")->create();
+
+cResultRecorder *vectorRecorder = cResultRecorderDescriptor::get("vector")->create();
+opp_string_map *attrs = new opp_string_map;
+(*attrs)["title"] = "Queue Length";
+(*attrs)["unit"] = "packets";
+vectorRecorder->init(this, "queueLength", "vector", NULL, attrs);
+
+subscribe(signal, removeRepeatsFilter);
+removeRepeatsFilter->addDelegate(vectorRecorder);
+
+emit(signal, 4);
+emit(signal, 4);
+emit(signal, 4);
+emit(signal, 5);
+emit(signal, 6);
+emit(signal, 6);
+
+%subst: /-?1\.#IND/nan/
+%subst: /-?1\.#QNAN/nan/
+%subst: /-?:NaN/:nan/
+
+%contains: test.vec
+vector 0  Test  queueLength:vector  ETV
+attr title  "Queue Length"
+attr unit  packets
+0	1	0	4
+0	1	0	5
+0	1	0	6

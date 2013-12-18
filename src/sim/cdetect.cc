@@ -29,7 +29,7 @@
 #include "csimulation.h"  // simTime()
 #include "cdetect.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 cTDExpandingWindows::cTDExpandingWindows(const cTDExpandingWindows& r) : cTransientDetection(r)
@@ -299,4 +299,6 @@ void cADByStddev::detectAccuracy()
       (*pdf)(this, pdfdata);
    }
 }
+
+NAMESPACE_END
 

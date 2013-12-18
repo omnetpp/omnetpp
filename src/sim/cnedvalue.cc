@@ -23,7 +23,7 @@
 #include "stringpool.h"
 #include "unitconversion.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 void cNEDValue::operator=(const cNEDValue& other)
 {
@@ -111,4 +111,6 @@ std::string cNEDValue::str() const
         default:   throw cRuntimeError("internal error: bad cNEDValue type");
     }
 }
+
+NAMESPACE_END
 

@@ -53,7 +53,7 @@
 #include "stringutil.h"
 #include "patternmatcher.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 Register_PerRunConfigOption(CFGID_MAX_MODULE_NESTING, "max-module-nesting", CFG_INT, "50", "The maximum allowed depth of submodule nesting. This is used to catch accidental infinite recursions in NED.");
 Register_PerObjectConfigOption(CFGID_TYPENAME, "typename", KIND_UNSPECIFIED_TYPE, CFG_STRING, NULL, "Specifies type for submodules and channels declared with 'like <>'.");
@@ -1313,4 +1313,6 @@ std::string cNEDNetworkBuilder::evaluateAsString(ExpressionElement *exprNode, cC
         updateOrRethrowException(e, exprNode); throw;
     }
 }
+
+NAMESPACE_END
 

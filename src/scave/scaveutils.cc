@@ -138,3 +138,4 @@ const std::string *StringPool::find(const std::string& str) const
 }
 
 NAMESPACE_END
+

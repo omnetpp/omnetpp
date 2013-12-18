@@ -35,13 +35,20 @@
 #include "intxtypes.h"
 #include "startup.h"
 
+#include "speedometer.h"
+#include "fileoutvectormgr.h"
+#include "fileoutscalarmgr.h"
+#include "filesnapshotmgr.h"
+#include "indexedfileoutvectormgr.h"
+#include "akaroarng.h"
+#include "akoutvectormgr.h"
+#include "matchableobject.h"
 
-USING_NAMESPACE;
+NAMESPACE_BEGIN
 
 Register_GlobalConfigOption(CFGID_LOAD_LIBS, "load-libs", CFG_FILENAMES, "", "A space-separated list of dynamic libraries to be loaded on startup. The libraries should be given without the `.dll' or `.so' suffix -- that will be automatically appended.");
 Register_GlobalConfigOption(CFGID_CONFIGURATION_CLASS, "configuration-class", CFG_STRING, "", "Part of the Envir plugin mechanism: selects the class from which all configuration information will be obtained. This option lets you replace omnetpp.ini with some other implementation, e.g. database input. The simulation program still has to bootstrap from an omnetpp.ini (which contains the configuration-class setting). The class should implement the cConfigurationEx interface.");
 Register_GlobalConfigOption(CFGID_USER_INTERFACE, "user-interface", CFG_STRING, "", "Selects the user interface to be started. Possible values are Cmdenv and Tkenv. This option is normally left empty, as it is more convenient to specify the user interface via a command-line option or the IDE's Run and Debug dialogs. New user interfaces can be defined by subclassing cRunnableEnvir.");
-
 
 // helper macro
 #define CREATE_BY_CLASSNAME(var,classname,baseclass,description) \
@@ -263,18 +270,7 @@ int setupUserInterface(int argc, char *argv[])
     return exitcode;
 }
 
-
 //---------------------------------------------------------
-
-#include "speedometer.h"
-#include "fileoutvectormgr.h"
-#include "fileoutscalarmgr.h"
-#include "filesnapshotmgr.h"
-#include "indexedfileoutvectormgr.h"
-#include "akaroarng.h"
-#include "akoutvectormgr.h"
-#include "matchableobject.h"
-
 // A dummy function to force UNIX linkers collect all symbols we need
 void env_dummy_function() {
     exponential(1.0);
@@ -291,4 +287,6 @@ void env_dummy_function() {
     (void)ao; (void)ar; // eliminate 'unused var' warning
 #endif
 }
+
+NAMESPACE_END
 

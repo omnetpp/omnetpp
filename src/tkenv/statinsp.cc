@@ -30,7 +30,7 @@
 #include "inspfactory.h"
 #include "statinsp.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 
@@ -604,5 +604,5 @@ int TOutVectorWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char 
    return TCL_ERROR;
 }
 
-
+NAMESPACE_END
 

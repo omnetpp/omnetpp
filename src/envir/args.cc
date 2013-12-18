@@ -23,7 +23,7 @@
 #include "opp_ctype.h"
 #include "exception.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 ArgList::ArgList()
@@ -136,4 +136,5 @@ const char *ArgList::argument(int k) const
     return (k>=0 && k<(int)params.size()) ? params[k].c_str() : NULL;
 }
 
+NAMESPACE_END
 

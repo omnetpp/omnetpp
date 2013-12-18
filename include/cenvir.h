@@ -23,6 +23,7 @@
 #include "simtime_t.h"
 #include "opp_string.h"
 #include "csimulation.h"
+#include "clistener.h"  // for simsignal_t
 #include "clifetimelistener.h"
 
 NAMESPACE_BEGIN
@@ -37,6 +38,7 @@ class cComponent;
 class cModule;
 class cSimpleModule;
 class cStatistic;
+class cProperty;
 class cRNG;
 class cXMLElement;
 class cEnvir;
@@ -594,6 +596,32 @@ class SIM_API cEnvir
      * This operation may invoke the transform() method on the histogram object.
      */
     virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL) = 0;
+    //@}
+
+    /** @name Statistic recording. */
+    //@{
+
+    /**
+     * Adds result recording listeners for the given signal on the given component.
+     * The result will be recorded to the the given component, with a name equal to
+     * or derived from the given statisticName. The statisticTemplateProperty parameter
+     * is expected to point to a @statisticTemplate NED property with content similar
+     * to @statistic properties. The computation and result type (scalar, vector, etc)
+     * will be taken from the 'record' key of statisticTemplateProperty in the same
+     * way as with @statistic. Also similar to @statistic, key-value pairs of
+     * statisticTemplateProperty will be recorded as result attributes.
+     *
+     * In statisticTemplateProperty, the 'source' key will be ignored (because the
+     * signal given as parameter will be used as source). The actual name and index of
+     * statisticTemplateProperty will also be ignored. (With @statistic, the index
+     * holds the result name, but here the name is explicitly specified in the
+     * statisticName parameter.)
+     *
+     * The purpose of this function is to allow setting up signal-based result recording
+     * dynamically when static configuration via @statistic properties is not possible,
+     * e.g. because the set of signals to record is only known at runtime.
+     */
+    virtual void addResultRecorders(cComponent *component, simsignal_t signal, const char *statisticName, cProperty *statisticTemplateProperty) = 0;
     //@}
 
     /** @name Management of streams where snapshots can be written.

@@ -23,7 +23,7 @@
 #include "ccomponenttype.h"
 #include "cmessage.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Register_Class(cCompoundModule);
@@ -66,4 +66,5 @@ void cCompoundModule::scheduleStart(simtime_t t)
         submod()->scheduleStart(t);
 }
 
+NAMESPACE_END
 

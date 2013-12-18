@@ -22,7 +22,7 @@
 #include "minixpath.h"
 #include "cexception.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 
@@ -329,4 +329,6 @@ cXMLElement *MiniXPath::matchPathExpression(cXMLElement *contextNode, const char
         return matchStep(contextNode, pathexpr);
     }
 }
+
+NAMESPACE_END
 

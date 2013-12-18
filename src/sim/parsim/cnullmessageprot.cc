@@ -37,7 +37,7 @@
 #include "cproxygate.h"
 #include "cchannel.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 Register_Class(cNullMessageProtocol);
 
@@ -315,4 +315,5 @@ void cNullMessageProtocol::rescheduleEvent(cMessage *msg, simtime_t t)
     sim->msgQueue.insert(msg);
 }
 
+NAMESPACE_END
 

@@ -26,7 +26,7 @@
 #include "exception.h"
 #include "stringutil.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 #define LL  INT64_PRINTF_FORMAT
 
@@ -291,8 +291,7 @@ bool FileReader::isLineStart(char *s) {
             opp_fseek(file, fileOffset, SEEK_SET);
             if (ferror(file))
                 throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
-            char previousChar;
-            fread(&previousChar, 1, 1, file);  //XXX warning: ignored return value
+            char previousChar = fgetc(file); // khmm: EOF
             if (ferror(file))
                 throw opp_runtime_error("Read error in file `%s'", fileName.c_str());
             return previousChar == '\n';
@@ -671,3 +670,6 @@ int main(int argc, char **argv)
     return 0;
 }
 */
+
+NAMESPACE_END
+

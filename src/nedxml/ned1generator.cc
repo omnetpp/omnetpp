@@ -1166,5 +1166,3 @@ void NED1Generator::generateNedItem(NEDElement *node, const char *indent, bool i
 }
 
 NAMESPACE_END
-
-

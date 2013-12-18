@@ -860,6 +860,8 @@ class StaticEnv : public cEnvir
     virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL)  {}
     virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL)  {}
 
+    virtual void addResultRecorders(cComponent *component, simsignal_t signal, const char *statisticName, cProperty *statisticTemplateProperty) {}
+
     // snapshot file
     virtual std::ostream *getStreamForSnapshot()  {unsupported(); return NULL;}
     virtual void releaseStreamForSnapshot(std::ostream *os)  {unsupported();}
@@ -898,7 +900,4 @@ cEnvir *cSimulation::staticEvPtr = &staticEnv;
 
 cSimulation *cSimulation::simPtr = NULL;
 
-
 NAMESPACE_END
-
-

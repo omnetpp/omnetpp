@@ -34,7 +34,7 @@
 #include "patternmatcher.h"
 #include "visitor.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 
@@ -212,4 +212,5 @@ void sortObjectsByShortTypeName(cObject **objs, int n)
     qsort(objs, n, sizeof(cObject*), qsort_cmp_by_shorttypename);
 }
 
+NAMESPACE_END
 

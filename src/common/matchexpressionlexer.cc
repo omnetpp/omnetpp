@@ -19,7 +19,7 @@
 #include "matchexpressionlexer.h"
 #include "platmisc.h"   // strncasecmp
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 MatchExpressionLexer::MatchExpressionLexer(const char *input)
     : ptr(input)
@@ -67,4 +67,6 @@ int MatchExpressionLexer::getNextToken(char **valuep) {
         }
     }
 }
+
+NAMESPACE_END
 

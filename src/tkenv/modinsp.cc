@@ -35,7 +35,7 @@
 #include "basicspringembedderlayout.h"
 #include "stringtokenizer.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 #define UNKNOWNICON_WIDTH  32
 #define UNKNOWNICON_HEIGHT 32
@@ -848,7 +848,7 @@ int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const ch
 
    if (strcmp(argv[0],"arrowcoords")==0)
    {
-      return ::arrowcoords(interp,argc,argv);
+      return arrowcoords(interp,argc,argv);
    }
    else if (strcmp(argv[0],"relayout")==0)
    {
@@ -1305,5 +1305,5 @@ void TGraphicalGateWindow::displayStringChanged(cGate *gate)
    //XXX should defer redraw (via redraw_needed) to avoid "flickering"
 }
 
-
+NAMESPACE_END
 

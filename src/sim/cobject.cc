@@ -23,7 +23,7 @@
 #include "cclassdescriptor.h"
 #include "cenvir.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 int64 cObject::changeCounter = 0;
 
@@ -200,4 +200,5 @@ cObject *cObject::findObject(const char *objname, bool deep)
     }
 }
 
+NAMESPACE_END
 

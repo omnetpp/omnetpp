@@ -35,7 +35,7 @@
 #include "simutil.h"
 #include "cmodelchange.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 // static members:
@@ -1489,4 +1489,5 @@ void cModule::ChannelIterator::init(const cModule *parentmodule)
     k = 0;
 }
 
+NAMESPACE_END
 

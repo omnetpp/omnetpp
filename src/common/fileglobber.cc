@@ -25,8 +25,7 @@
 #include <direct.h>
 #include <stdlib.h> // _MAX_PATH
 
-USING_NAMESPACE
-
+NAMESPACE_BEGIN
 
 struct GlobPrivateData
 {
@@ -104,9 +103,13 @@ const char *FileGlobber::getNext()
     }
 }
 
+NAMESPACE_END
+
 #else
 
 #include <glob.h>
+
+NAMESPACE_BEGIN
 
 struct GlobPrivateData
 {
@@ -151,8 +154,13 @@ const char *FileGlobber::getNext()
         return data->globdata.gl_pathv[data->globpos++];
     }
 }
+
+NAMESPACE_END
+
 #endif
 
+
+NAMESPACE_BEGIN
 
 std::vector<std::string> FileGlobber::getFilenames()
 {
@@ -163,4 +171,5 @@ std::vector<std::string> FileGlobber::getFilenames()
     return v;
 }
 
+NAMESPACE_END
 

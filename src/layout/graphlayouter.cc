@@ -17,7 +17,7 @@
 #include <time.h>
 #include "graphlayouter.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 BasicGraphLayouterEnvironment::BasicGraphLayouterEnvironment()
 {
@@ -73,4 +73,5 @@ void GraphLayouter::setSize(double w, double h, double bd)
         throw opp_runtime_error("GraphLayouter::setSize(): required width or height smaller than 2*border");
 }
 
+NAMESPACE_END
 

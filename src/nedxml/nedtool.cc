@@ -41,7 +41,7 @@
 #include "platmisc.h"   // getcwd, chdir
 #include "../common/ver.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using std::ofstream;
 using std::ifstream;
@@ -405,6 +405,9 @@ bool processListFile(const char *listfilename, bool istemplistfile, NEDErrorStor
     return true;
 }
 
+NAMESPACE_END
+
+USING_NAMESPACE
 
 int main(int argc, char **argv)
 {
@@ -650,5 +653,3 @@ int main(int argc, char **argv)
 
     return 0;
 }
-
-

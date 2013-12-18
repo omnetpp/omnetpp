@@ -21,7 +21,7 @@
 #include "vectorfilereader.h"
 #include "indexedvectorfilereader2.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using namespace std;
 
@@ -184,4 +184,6 @@ Port *IndexedVectorFileReaderNode2Type::getPort(Node *node, const char *portname
         throw opp_runtime_error("indexed file reader node: port should be a vector id, received: %s", portname);
     return node1->addVector(vector);
 }
+
+NAMESPACE_END
 
