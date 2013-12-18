@@ -252,16 +252,6 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     //@}
 };
 
-// TODO remove this compatibili1y hack after OMNeT++ 4.3
-// This is required for compatibility with INET 2.0 as it assumed that
-// once OMNeT++ 4.3 released, it will change the getArraySize method
-// to getFieldArraySize. This did not happen so we have to emulate
-// this change only for the INET project.
-//
-#if ((defined _MANET_COMPATIBILITY_H || defined __INET_MESSAGECHECKER_H) && OMNETPP_VERSION == 0x0403)
-#define getFieldArraySize    getArraySize
-#endif
-
 NAMESPACE_END
 
 

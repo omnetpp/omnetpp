@@ -1,3 +1,10 @@
+2013-12-17  Rudolf Hornig
+
+	* Removed a compatibility macro required for OMNeT++ 4.3 and INET 2.0
+	INET 2.1 and later does not need this hack. (If you want to compile 
+	INET 2.0 with OMNeT++ 4.4 prepare to rename some method calls
+	from getFieldArraySize to getArraySize.
+
 2013-11-22  Andras Varga
 
 	* cSimpleModule, cSimulation: changes to support Tkenv's "Debug next event"
