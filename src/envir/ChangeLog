@@ -32,7 +32,21 @@
 
 	* Followed cOutputVectorManager/cOutputScalarManager/cSnapshotManager
 	renaming in sim/ (they became cIOutputVectorManager, etc.)
+2013-10-28  Rudolf Hornig
 
+	* Fixes for compiling with clang
+
+2013-10-22  Andras Varga
+
+	* Added check-signals=<bool> config option.
+
+2013-04-24  Andras Varga
+
+	* Fix: the --output-vector-file=... option was working poorly when specified
+	on the command line:
+	  - did not support relative filenames (basedir of its KeyValue was unfilled)
+	  - did not support ${} variables like ${configname}
+	  
 2013-09-12  ------ omnetpp-4.3.1 released ------
 
 2013-04-02  ------ omnetpp-4.3 released ------
@@ -87,7 +101,7 @@
 	* Result filter/recorder stuff moved into the simkernel, so that
 	users can contribute their own result filters and recorders.
 
-2011-05-26  Levente Mészáros
+2011-05-26  Levente Mï¿½szï¿½ros
 
 	* Implemented number filter expressions using multiple inputs for
 	statistics source expressions. Enhanced error reporting for constant

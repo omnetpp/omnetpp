@@ -15,6 +15,56 @@
 
 ////////////// fixes cherry-picked from 4.x come here /////////////////
 
+2013-11-29  Andras Varga
+
+	* Fix a Mac OS X problem: after hitting F5 (Run), the program stopped
+	responding to user input after a while (the beach ball cursor appeared and
+	stayed). The workaround was to start the simulation from a separate UI
+	callback (~asyncExec) after a little delay.
+
+2013-11-25  Andras Varga
+
+	* Implemented animation filtering. This feature makes it possible to
+	suppress animation of messages that you are not interested in (e.g. WLAN ACK
+	frames, ARP exchanges, etc). Just right-click the message (either on the
+	canvas or on the timeline), and choose "Exclude messages like '...' from
+	animation" from the context menu. The filters can also be edited in the
+	Simulation Options dialog.
+
+2013-11-22  Andras Varga
+
+	* Implemented "Debug Next Event" (Ctrl+F9). It causes the simulation program
+	to stop in the debugger just before entering the handleMessage() call. You
+	just need to hit "Step Into" in your debugger to debug that event.
+
+2013-11-22  Andras Varga
+
+	* Fix poor animation speed on Mac OS X. The cause was that OS X synchronizes
+	screen updates to the vertical sync, so the animation can be at most sixty
+	frames per second.
+
+2013-11-22  Andras Varga
+
+	* Source cleanup: force a consistent naming style for Tcl procedures
+
+2013-11-18  Andras Varga
+
+	* Fix for bug #684 "Module icons are missing in Tkenv on Mac OS X".
+	Apparently the TkAqua library that comes with OS X cannot handle
+	partial transparency (images with alpha pixels different from 0 and 255
+	don't appear on canvases at all). The workaround is to replace
+	alpha values in images with all 0 and 255. BTW, the MacPorts version of
+	Tcl/Tk is no better, it just has the same hack built in.
+
+2013-10-31  Rudolf Hornig
+
+	* Fixed warnings when compiling with clang and -std=c++11 -Wall
+
+2013-10-04  Tamas Borbely
+
+	* Fixed image loading order: if there are duplicate images in the image
+	path, the first one will win.
+
 2013-11-15  Andras Varga
 
 	* Fix for bug #684, Module icons are missing in Tkenv on Mac OS X.

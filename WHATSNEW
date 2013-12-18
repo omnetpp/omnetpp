@@ -5,18 +5,106 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
+OMNeT++ 4.4 (Dec 2013)
+----------------------
+
 Sim:
 
-  - The source now compiles without any warning using the "-std=c++11 -Wall" 
-    flags.
+  - Feature: Optional signal checking. When signal checking is turned on,
+    signals emitted by modules/channels must be declared with a @signal property
+    in the module's or channel's NED description; undeclared signals will result
+    in a runtime error. Signal declarations are of the form
 
+        @signal[<signalName>](type=<dataType>).
 
-Tools:
+    <signalName> may contain wildcards (?,*). Type is optional; if present,
+    data type can be long, unsigned long, double, simtime_t, string, or a
+    registered class name. To allow NULL pointers, append a question mark to
+    the class name. Example:
 
-  - The configure script now detects whether the compiler supports C++11
-    and adds -std=c++11 to CXXFLAGS.
+        @signal[receivedPk](type=cPacket?);
 
-  - The configure script detects the libc++ standart library, too.
+    This feature is controlled by the check-signals=<bool> configuration
+    option, and it is turned off by default for now.
+
+  - Further signals-related changes:
+    - added emit(simsignal_t, const cObject*) to cComponent
+    - added receiveSignal() overload for bool to cIListener
+    - introduced SimsignalType which replaces the older cITimestampedValue::Type
+    - added cObjectFactory::isInstance() method that effectively wraps a
+      dynamic_cast
+    - added Register_Abstract_Class() macro that allows abstract classes to be
+      used in signal declarations as type.
+
+  - Added cNEDValue::parseQuantity()
+
+  - New result filter: removerepeats
+
+NED:
+
+  - More freedom in NED property syntax: (1) Hyphens, dots and colons are now
+    allowed in property names and indices; and (2) values no longer need
+    to be enclosed in quotes if they contain parens, provided that parens are
+    balanced.
+
+Tkenv:
+
+  - Feature: Animation filters (right-click on any message, and select
+    "Exclude messages like '...' from animation" from the context menu.)
+
+  - Feature: "Debug Next Event" (Ctrl+F9). It causes the simulation program
+    to stop in the debugger just before entering the handleMessage() call.
+
+  - Fixes and workarounds for various issues on Mac OS X (poor animation speed,
+    missing icons on OS X Mavericks, hang on the F5 key, etc.)
+
+  - Fix: the "Filter Window Contents" dialog could lose state
+
+  - Source cleanup (consistent naming style for Tcl procedures)
+
+IDE:
+
+  - Use Eclipse 4.3 as base platform
+
+  - Support for project-specific images: icons from the "images/" folder of the
+    project and its dependencies are automatically used by the NED editor, and
+    added to the Tkenv image path when the simulation is launched. (The folder
+    name is currently hardcoded; it will become configurable in future versions.)
+
+  - Sequence Chart: Fixed bug that caused including the same reuses multiple times.
+    Fixed error handling when the error occurs in paint during startup.
+
+Improved support for C++11, Mac OS X:
+
+  - The configure script now detects whether the compiler supports C++11,
+    and adds "-std=c++11" to CXXFLAGS if so.
+
+  - The source now compiles without any warning with both gcc and clang, using
+    the "-std=c++11 -Wall" flags (clang is the default compiler on OS X since
+    version 10.9 Mavericks).
+
+  - Added proper support for cross-compilation using ./configure --host=i686-w64-mingw32
+
+  - Updated install instructions for OS X 10.9 Mavericks. Specifically, gdb is
+    no longer distributed with OS X; users are expected to install it themselves
+    from MacPorts, and digitally sign it.
+
+  - IDE: fixed the launcher not to throw error if the toolchain is clang.
+
+  - Updated the source to compile with both Bison 2.3 and 3.0
+
+Bugfixes:
+
+  - cPacketQueue's clear() didn't zero the bit length
+
+  - Implementation of cPatternMatcher::containsWildcards() was missing
+
+  - The the output-vector-file=... config option was working poorly when used
+    as command line argument (did not support relative filenames and ${}
+    variables like ${configname})
+
+  - Tkenv: see above
+
 
 OMNeT++ 4.3.1 (Sept 2013)
 -------------------------

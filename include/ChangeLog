@@ -103,21 +103,41 @@
 	* envirext.h: renamed cOutputVectorManager, cOutputScalarManager and
 	cSnapshotManager to include an "I" (for interface) ->
 	cIOutputVectorManager, cIOutputScalarManager, cSnapshotManager.
+2013-11-23  Andras Varga
 
+	* better definition for DEBUG_TRAP on *nix: use SIGTRAP instead of
+	SIGINT, and on Intel+Linux use asm int 3.
+
+2013-10-28  Rudolf Hornig
+
+	* fixes for clang and C++11 [thanks to https://github.com/shigeya/omnetpp]
+
+2013-10-25  Zoltan Bojthe
+
+	* signals: added emit(simsignal_t, const cObject*) to cComponent
+
+	This was necessary because otherwise the compiler casts the const pointer
+	to long (!!!) and calls that emit().
+
+	The new method delegates to the const-less version, which is not very
+	clean. It would be better to do the other way round (let non-const
+	delegate to the const version), however, for that the listeners would
+	have to accept const pointer which would be a painful change
+	
 2013-10-29  Andras Varga
 	
-	* cIListener: added receiveSignal() overload for the bool type.
+	* signals: cIListener: added receiveSignal() overload for the bool type.
 	(Before it was channelled into long.)
 
 2013-10-24  Andras Varga
 
-	* introduced SimsignalType, an enum for signal data types; it replaces
-	cITimestampedValue::Type.
+	* signals: introduced SimsignalType, an enum for signal data types;
+	it replaces cITimestampedValue::Type.
 
 2013-10-24  Andras Varga
 
-	* cObjectFactory was extended with an isInstance() method that
-	effectively wraps a dynamic_cast
+	* cObjectFactory: extended with an isInstance() method that effectively
+	wraps a dynamic_cast
 
 	* added Register_Abstract_Class() macro so cObjectFactory::isInstance()
 	can be used on abstract classes as well

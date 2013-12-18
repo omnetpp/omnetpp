@@ -1,3 +1,39 @@
+2013-10-15  Rudolf Hornig
+
+    Fixed the launcher not to throw error if the toolchain is clang.
+
+2013-10-14  Rudolf Hornig
+
+    Now using Eclipse 4.3.1 as base for the IDE
+
+2013-09-13  Tamas Borbely
+
+	Implemented project specific image searches. The "image" folder of the
+	project and its dependency projects are added to the image path. New image
+	path is automatically used by the NED editor and other places where module
+	are displayed. (Folder name is hardcoded now; this will be configurable
+	in future releases).
+
+    Additional changes:
+    - Launch dialog contains a field to specify the --tkenv-image-path option;
+      by default its value is populated with the image path of the project
+      containing the working directory.
+    - Added ${opp_image_path:dir} variable substitution.
+    - Caches are invalidated if OMNETPP_IMAGE_PATH, the project dependencies, or
+      the image directories or files have changed.
+
+    Also: NED palette scales images to 16x16 and 24x24. Previously the aspect
+    ratio was kept.
+
+2013-10-01  Andras Varga
+
+    Scave: name of 'substract' filter changed to 'subtract' (typo)
+
+2013-09-30  Levente Meszaros
+
+    Sequence Chart: Fixed error handling when the error occurs in paint during
+    startup.
+
 2013-09-12  ------ omnetpp-4.3.1 released ------
 
 2013-09-12  Levente Meszaros, Andras Varga
