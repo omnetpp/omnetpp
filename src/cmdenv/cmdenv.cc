@@ -448,7 +448,9 @@ bool TCmdenvApp::gets(const char *promptstr, char *buf, int len)
     ::fprintf(fout, "%s", promptstr);
     if (buf[0]) ::fprintf(fout, "(default: %s) ",buf);
 
-    ::fgets(buffer,512,stdin);
+    if (!::fgets(buffer, 512, stdin))
+        throw new cRuntimeError("Error reading from standard input: end-of-file or input error");
+
     buffer[strlen(buffer)-1] = '\0'; // chop LF
 
     if( buffer[0]=='\x1b' ) // ESC?
@@ -467,7 +469,8 @@ int TCmdenvApp::askYesNo(const char *question )
     for(;;)
     {
         ::fprintf(fout, "%s (y/n) ", question);
-        ::fgets(buffer,512,stdin);
+        if (!::fgets(buffer, 512, stdin))
+           throw new cRuntimeError("Error reading from standard input: end-of-file or input error");
         buffer[strlen(buffer)-1] = '\0'; // chop LF
         if (toupper(buffer[0])=='Y' && !buffer[1])
            return 1;

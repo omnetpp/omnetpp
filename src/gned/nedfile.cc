@@ -66,9 +66,10 @@ bool NEDFile::readFile(const char *filename)
     wholeFile = new char [size+2];  // +1 because last line may need an extra '\n'
     if (!wholeFile) return false;
 
-    fread(wholeFile,size,1,intmp);
+    int bytes = fread(wholeFile,1,size,intmp);
     fclose(intmp);
     wholeFile[size]='\0';
+    if (bytes != size) return false;
 
     return indexLines();
 }
