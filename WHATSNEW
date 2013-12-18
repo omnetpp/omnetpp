@@ -38,7 +38,7 @@ Sim:
 
   - Added cNEDValue::parseQuantity()
 
-  - New result filter: removerepeats
+  - New result filter: removeRepeats
 
 NED:
 
@@ -76,9 +76,6 @@ IDE:
 
 Improved support for C++11, Mac OS X:
 
-  - The configure script now detects whether the compiler supports C++11,
-    and adds "-std=c++11" to CXXFLAGS if so.
-
   - The source now compiles without any warning with both gcc and clang, using
     the "-std=c++11 -Wall" flags (clang is the default compiler on OS X since
     version 10.9 Mavericks).
@@ -93,17 +90,7 @@ Improved support for C++11, Mac OS X:
 
   - Updated the source to compile with both Bison 2.3 and 3.0
 
-Bugfixes:
-
-  - cPacketQueue's clear() didn't zero the bit length
-
-  - Implementation of cPatternMatcher::containsWildcards() was missing
-
-  - The the output-vector-file=... config option was working poorly when used
-    as command line argument (did not support relative filenames and ${}
-    variables like ${configname})
-
-  - Tkenv: see above
+Bugs fixed: http://tinyurl.com/omnetpp44-fixes
 
 
 OMNeT++ 4.3.1 (Sept 2013)
@@ -169,11 +156,13 @@ IDE:
 
   - The CDT debugger no longer stops at the main() function by default.
 
-  - The bundled gdb is downgraded to 7.4
+  - The bundled GDB has been downgraded to 7.4, due to problems with the one
+    in the 4.3rc1 version
 
 Tools:
 
   - The configure script now correctly detects the X headers on Mac OS X 10.8.
+
 
 OMNeT++ 4.3rc1 (Jan 2013)
 -------------------------

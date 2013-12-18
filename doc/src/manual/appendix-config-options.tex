@@ -13,6 +13,11 @@ A similar list can be obtained from any simulation executable by running it
 with the \ttt{-h configdetails} option.
 
 \begin{verbatim}
+check-signals=<bool>, default:false; per-run setting
+    Controls whether the simulation kernel will validate signals emitted by
+    modules and channels against signal declarations (@signal properties) in
+    NED files.
+
 cmdenv-autoflush=<bool>, default:false; per-run setting
     Call fflush(stdout) after each event banner or status update; affects both
     express and normal mode. Turning on autoflush may have a performance

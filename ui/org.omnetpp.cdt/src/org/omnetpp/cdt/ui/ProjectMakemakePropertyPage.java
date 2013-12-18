@@ -515,15 +515,12 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 "MAKEMAKE=opp_makemake $(MMOPT)\n" +
                 "\n";
 
-            // variables for referenced projects
-            String vars = "";
             IProject project = getProject();
             IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(project, false, false);
             for (IProject refProj : referencedProjects) {
                 String variable = Makemake.makeSymbolicProjectName(refProj);
                 IPath path = MakefileTools.makeRelativePath(refProj.getLocation(), project.getLocation());
                 text += variable + "=" + path + "\n";
-                vars += "-K" + variable + "=$(" + variable + ") ";
             }
             if (referencedProjects.length>0)
                 text += "\n";
@@ -538,7 +535,8 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                     text += "\t";
                     if (!folder.equals(project))
                         text += "cd " + folder.getProjectRelativePath().toString() + " && ";
-                    text += "$(MAKEMAKE) " + vars + translatedOptions.toString() + "\n";
+                    String escapedOptsStr = StringUtils.escapeBash(translatedOptions.toString());
+                    text += "$(MAKEMAKE) " + escapedOptsStr + "\n";
                 }
             }
 

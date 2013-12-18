@@ -2611,16 +2611,20 @@ two-argument \ffunc{set()} function. The measurement unit can be read with
 want to overwrite the number part but preserve the original unit, you need
 to use the \ffunc{setPreservingUnit(double)} method.
 
-For unit conversion there are three functions. The
+There are several functions that perform unit conversion. The
 \ffunc{doubleValueInUnit()} method accepts a measurement unit, and attempts
 to return the number in that unit. The \ffunc{convertTo()} method also
-accepts a measurement unit, and tries to permanantly convert the value to
+accepts a measurement unit, and tries to permanently convert the value to
 that unit; that is, if successful, it changes both the number and the
 measurement unit part of the object. The \ffunc{convertUnit()} static
-\cclass{cNEDValue} member accepts three arguments: a quantity as a
+\cclass{cNEDValue} member function accepts three arguments: a quantity as a
 \ttt{double} and a unit, and a target unit; and returns the number in the
-target unit. All three functions raise an error if the conversion is not
-possible.
+target unit. A \ffunc{parseQuantity()} static member function parses
+a string that contains a quantity (e.g. \ttt{"5min 48s"}), and return
+both the numeric value and the measurement unit. Another version of
+\ffunc{parseQuantity()} tries to return the value in a unit you specify.
+All functions raise an error if the unit conversion is not possible, e.g.
+due to incompatible units.
 
 For performance reasons, \ttt{setUnit()}, \ttt{convertTo()} and all other
 functions that accept and store a measurement unit will only store the
@@ -2646,10 +2650,11 @@ value.setPreservingUnit(180); // ==> 180s (overwrites the number)
 value.setUnit(NULL);          // ==> 180 (clears the unit)
 
 // unit conversion
-value.set(500,"ms");          // ==> 500ms
+value.set(500, "ms");         // ==> 500ms
 value.convertTo("s");         // ==> 0.5s
 double us = value.doubleValueInUnit("us"); // ==> 500000 (value is unchanged)
 double bps = cNEDValue::convertUnit(128, "kbps", "bps"); // ==> 128000
+double ms = cNEDValue::convertUnit("2min 15.1s", "ms"); // ==> 135100
 
 // getting persistent measurement unit strings
 const char *unit = argv[0].stringValue(); // cannot be trusted to persist

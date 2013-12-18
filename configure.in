@@ -371,9 +371,9 @@ if test "$TOOLCHAIN_NAME" = ""; then
 fi
 
 #----------------------
-# check whether the compiler supports the C++11 standard
+# check whether the compiler supports the C++11 standard - turned off for now, but should be enabled for OMNeT++ 5.0
 #----------------------
-AC_PROG_CXX_OPTION(-std=c++11, CXXFLAGS="$CXXFLAGS -std=c++11")
+#AC_PROG_CXX_OPTION(-std=c++11, CXXFLAGS="$CXXFLAGS -std=c++11")
 
 #----------------------
 # check and disable stack checking to avoid opplibs.so dependence on glibc 2.4

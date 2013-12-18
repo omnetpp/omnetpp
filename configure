@@ -3439,47 +3439,14 @@ if test "$TOOLCHAIN_NAME" = ""; then
 fi
 
 #----------------------
-# check whether the compiler supports the C++11 standard
+# check whether the compiler supports the C++11 standard - turned off for now, but should be enabled for OMNeT++ 5.0
 #----------------------
-
-
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports -std=c++11" >&5
-$as_echo_n "checking whether $CXX supports -std=c++11... " >&6; }
-    ac_save_CXX="$CXX"
-    CXX="$CXX -std=c++11"
-    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-int
-main ()
-{
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-        CXX="$ac_save_CXX"
-        CXXFLAGS="$CXXFLAGS -std=c++11"
-
-else
-
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-        CXX="$ac_save_CXX"
-
-
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
+#AC_PROG_CXX_OPTION(-std=c++11, CXXFLAGS="$CXXFLAGS -std=c++11")
 
 #----------------------
 # check and disable stack checking to avoid opplibs.so dependence on glibc 2.4
 #----------------------
+
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports -fno-stack-protector" >&5
 $as_echo_n "checking whether $CXX supports -fno-stack-protector... " >&6; }

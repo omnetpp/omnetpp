@@ -1,4 +1,4 @@
-INKSCAPE="C:\Program Files\inkscape\inkscape.exe"
+INKSCAPE="C:\Progra~1\inkscape\inkscape.exe"
 
 !if "$(what)" != "omnest"
 PRODUCT = OMNeT++

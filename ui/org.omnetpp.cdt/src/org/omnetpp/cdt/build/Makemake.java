@@ -370,7 +370,7 @@ public class Makemake {
         m.put("subpath", subpath);
         m.put("isdeep", isDeep);
         m.put("progname", "opp_makemake");  // isNMake ? "opp_nmakemake" : "opp_makemake"
-        m.put("args", options.toString());
+        m.put("args", StringUtils.escapeBash(options.toString()));
         m.put("configfile", configFile);
         m.put("-L", isNMake ? "/libpath:" : "-L");
         m.put("-l", isNMake ? "" : "-l");

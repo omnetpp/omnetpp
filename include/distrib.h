@@ -93,7 +93,7 @@ SIM_API double truncnormal(double mean, double stddev, int rng=0);
 /**
  * SimTime version of truncnormal(double,double,int), for convenience.
  */
-inline SimTime truncnormal(SimTime mean, SimTime stddev, int rng=0) {return normal(mean.dbl(), stddev.dbl(), rng);}
+inline SimTime truncnormal(SimTime mean, SimTime stddev, int rng=0) {return truncnormal(mean.dbl(), stddev.dbl(), rng);}
 
 /**
  * Returns a random variate from the gamma distribution with parameters

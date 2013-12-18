@@ -209,7 +209,7 @@ public class ProjectFeatureTester {
                 text += "\t";
                 if (!folder.equals(project))
                     text += "cd " + folder.getProjectRelativePath().toString() + " && ";
-                text += "$(MAKEMAKE) " + extraNMakeOptions + translatedOptions.toString() + "\n";
+                text += "$(MAKEMAKE) " + extraNMakeOptions + StringUtils.escapeBash(translatedOptions.toString()) + "\n";
                 text += "\t$(RUNTEST)\n";
                 text += "\n";
             }

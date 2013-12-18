@@ -827,4 +827,11 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         else
             return str;
     }
+
+    /**
+     * Escape to bash (shell) script. Converts $ to $$ and ( and ) to \( and \) .
+     */
+    public static String escapeBash(String str) {
+        return str.replace("$", "$$").replace("(", "\\(").replace(")", "\\)");
+    }
 }
