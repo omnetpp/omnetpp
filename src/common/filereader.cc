@@ -313,14 +313,14 @@ bool FileReader::isLineStart(char *s) {
             return true;
         else { // slow path
            file_offset_t fileOffset = pointerToFileOffset(s) - 1;
+           if (!f)
+               throw opp_runtime_error("File is not open '%s'", fileName.c_str());
 
            opp_fseek(f, fileOffset, SEEK_SET);
            if (ferror(f))
                throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
 
-           char previousChar;
-           fread(&previousChar, 1, 1, f);  //XXX warning: ignored return value
-
+           char previousChar = fgetc(f); // khmm: EOF
            if (ferror(f))
                throw opp_runtime_error("Read error in file `%s'", fileName.c_str());
 
