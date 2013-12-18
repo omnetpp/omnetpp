@@ -65,9 +65,10 @@ bool NEDFileBuffer::readFile(const char *filename)
     int size = statbuf.st_size;
     wholeFile = new char [size+2];  // +1 because last line may need an extra '\n'
 
-    fread(wholeFile,size,1,intmp);
+    int bytes = fread(wholeFile,1,size,intmp);
     fclose(intmp);
     wholeFile[size]='\0';
+    if (bytes != size) return false;
 
     return indexLines();
 }
