@@ -440,7 +440,7 @@ Expected results:
 long opp_strtol(const char *s, char **endptr)
 {
     // accept decimal and hex numbers (0x), but ignore leading zero as octal prefix;
-    // C's octal notation is not explixit enough, and causes confusion e.g. with
+    // C's octal notation is not explicit enough, and causes confusion e.g. with
     // the runnumber-width configuration option (bug #232)
     while (opp_isspace(*s))
         s++;
@@ -467,7 +467,7 @@ long opp_atol(const char *s)
 unsigned long opp_strtoul(const char *s, char **endptr)
 {
     // accept decimal and hex numbers (0x), but ignore leading zero as octal prefix;
-    // C's octal notation is not explixit enough, and causes confusion e.g. with
+    // C's octal notation is not explicit enough, and causes confusion e.g. with
     // the runnumber-width configuration option (bug #232)
     while (opp_isspace(*s))
         s++;
