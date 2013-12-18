@@ -40,13 +40,6 @@ Sim:
 
   - New result filter: removeRepeats
 
-  - It is now possible to put the OMNeT++ APIs into the 'omnetpp::' namespace
-    by adding the -DUSE_NAMESPACE macro to the CXXFLAGS variable in the
-    Makefile.inc file. Additionaly, specifying the -DAUTOIMPORT_NAMESPACE
-    will automatically import the OMNeT++ APIs so you don't have to specify
-    the 'omnetpp::' namespace prefix in your model code. (i.e. your models will
-    compile without any changes to the source.)
-
 NED:
 
   - More freedom in NED property syntax: (1) Hyphens, dots and colons are now
