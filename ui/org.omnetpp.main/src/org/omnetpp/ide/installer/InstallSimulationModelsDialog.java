@@ -142,18 +142,6 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
         projectsTable = new Table(group, SWT.BORDER);
         projectsTable.setHeaderVisible(true);
         projectsTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-        projectsTable.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-                ProjectDescription projectDescription = (ProjectDescription)event.item.getData();
-                longDescription.setText(projectDescription.getLongDescription());
-                // TODO: revive this when importing a project with a different name than the one in the .project file becomes possible
-                // projectName.setText(projectDescription.getName() + "-" + projectDescription.getVersion());
-                projectName.setText(projectDescription.getName());
-                updateDefaultLocation();
-                getButton(IDialogConstants.OK_ID).setEnabled(true);
-            }
-        });
         Link link = new Link(group, SWT.WRAP);
         link.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
         link.setText("Other simulation models are available for download in the community <a>catalog</a>.");
@@ -186,25 +174,9 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
         // TODO: revive this when importing a project with a different name than the one in the .project file becomes possible
         projectName.setEnabled(false);
         projectName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        projectName.addSegmentListener(new SegmentListener() {
-            @Override
-            public void getSegments(SegmentEvent event) {
-                if (useDefaultLocation.getSelection())
-                    updateDefaultLocation();
-            }
-        });
         useDefaultLocation = new Button(group, SWT.CHECK);
         useDefaultLocation.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1));
         useDefaultLocation.setText("Use default location");
-        useDefaultLocation.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                location.setEnabled(!useDefaultLocation.getSelection());
-                browseLocation.setEnabled(!useDefaultLocation.getSelection());
-                if (useDefaultLocation.getSelection())
-                    updateDefaultLocation();
-            }
-        });
         useDefaultLocation.setSelection(true);
         label = new Label(group, SWT.NONE);
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
@@ -225,6 +197,34 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
                 String file = dialog.open();
                 if (file != null)
                     location.setText(file);
+            }
+        });
+        projectsTable.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                ProjectDescription projectDescription = (ProjectDescription)event.item.getData();
+                longDescription.setText(projectDescription.getLongDescription());
+                // TODO: revive this when importing a project with a different name than the one in the .project file becomes possible
+                // projectName.setText(projectDescription.getName() + "-" + projectDescription.getVersion());
+                projectName.setText(projectDescription.getName());
+                updateDefaultLocation();
+                getButton(IDialogConstants.OK_ID).setEnabled(true);
+            }
+        });
+        projectName.addSegmentListener(new SegmentListener() {
+            @Override
+            public void getSegments(SegmentEvent event) {
+                if (useDefaultLocation.getSelection())
+                    updateDefaultLocation();
+            }
+        });
+        useDefaultLocation.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                location.setEnabled(!useDefaultLocation.getSelection());
+                browseLocation.setEnabled(!useDefaultLocation.getSelection());
+                if (useDefaultLocation.getSelection())
+                    updateDefaultLocation();
             }
         });
         scheduleDownloadProjectDescriptions();

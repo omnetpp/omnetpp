@@ -9,7 +9,7 @@ class SimTimeExt : SimTime {
 
 %activity:
 SimTimeExt::reset();
-SimTime::setScaleExp(SimTime::SCALEEXP_NS);
+SimTime::setScaleExp(SIMTIME_NS);
 EV << "using nanosecond precision: scale=" << SimTime::getScale() << "\n";
 
 SimTime t, t2, tmp;

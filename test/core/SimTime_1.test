@@ -15,12 +15,12 @@ for (int i=-18; i<=0; i++)
     SimTime::setScaleExp(i);
 
     const char *u="";
-    if (SimTime::getScaleExp()==SimTime::SCALEEXP_S)  u =  "s";
-    if (SimTime::getScaleExp()==SimTime::SCALEEXP_MS) u = "ms";
-    if (SimTime::getScaleExp()==SimTime::SCALEEXP_US) u = "us";
-    if (SimTime::getScaleExp()==SimTime::SCALEEXP_NS) u = "ns";
-    if (SimTime::getScaleExp()==SimTime::SCALEEXP_PS) u = "ps";
-    if (SimTime::getScaleExp()==SimTime::SCALEEXP_FS) u = "fs";
+    if (SimTime::getScaleExp()==SIMTIME_S)  u =  "s";
+    if (SimTime::getScaleExp()==SIMTIME_MS) u = "ms";
+    if (SimTime::getScaleExp()==SIMTIME_US) u = "us";
+    if (SimTime::getScaleExp()==SIMTIME_NS) u = "ns";
+    if (SimTime::getScaleExp()==SIMTIME_PS) u = "ps";
+    if (SimTime::getScaleExp()==SIMTIME_FS) u = "fs";
     EV << i << ": scale=" << SimTime::getScale() << " " << u << "\n";
 }
 EV << ".\n";

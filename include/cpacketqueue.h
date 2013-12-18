@@ -45,7 +45,8 @@ class SIM_API cPacketQueue : public cQueue
 
   protected:
     // internal
-    void addLen(cPacket *pkt);
+    void addLength(cPacket *pkt);
+    cPacket *checkPacket(cObject *obj);
 
   public:
     /** @name Constructors, destructor, assignment. */

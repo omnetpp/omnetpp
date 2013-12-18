@@ -1099,7 +1099,7 @@ class FooPacket : public FooPacket_Base
     std::stack<int> bar;
 
     // helper method
-    void unsupported() {throw cRuntimeException("unsupported method called");}
+    void unsupported() {throw cRuntimeError("unsupported method called");}
 
   public:
     ...

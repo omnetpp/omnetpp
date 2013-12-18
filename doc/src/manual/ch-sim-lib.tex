@@ -3274,12 +3274,12 @@ left unchanged.
 % void cMessage::encapsulate(cMessage *msg)
 % {
 %     if (encapmsg)
-%        throw cRuntimeException(this,"encapsulate(): another message already encapsulated");
+%        throw cRuntimeError(this,"encapsulate(): another message already encapsulated");
 %
 %    if (msg)
 %    {
 %        if (msg->getOwner()!=&(simulation.getContextSimpleModule()->locals))
-%            throw cRuntimeException(this,"encapsulate(): not owner of message");
+%            throw cRuntimeError(this,"encapsulate(): not owner of message");
 %        take( encapmsg = msg );
 %        len += encapmsg->len;
 %    }

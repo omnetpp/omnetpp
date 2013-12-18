@@ -5,7 +5,7 @@ test config inheritance (C3 linearization)
 
 cConfigurationEx *config = ev.getConfigEx();
 std::vector<std::string> chain = config->getConfigChain("editable-scrollable-pane");
-for (int i = 0; i < chain.size(); ++i)
+for (int i = 0; i < (int)chain.size(); ++i)
    printf("%s%s", (i == 0 ? "" : ","), chain[i].c_str());
 printf("\n");
 
