@@ -538,7 +538,7 @@ proc excludeMessageFromAnimation {msg} {
     set class [opp_getobjectshorttypename $msg]
     set namepattern [regsub -all -- {[0-9]+} $name {*}]
     set namepattern [regsub -all -- {[^[:print:]]} $namepattern {?}]  ;# sanitize: replace nonprintable chars with '?'
-    set namepattern [regsub -all -- {["\\]} $namepattern {?}] ;# sanitize: replace quotes and backslashes with '?'
+    set namepattern [regsub -all -- {["\\]} $namepattern {?}] ;# sanitize: replace quotes (") and backslashes with '?'
     if {[regexp " " $namepattern]} {   # must be quoted if contains spaces
         set namepattern "\"$namepattern\""
     }
@@ -603,6 +603,7 @@ proc rebuild {} {
 
     if {[networkPresent] == 0} return
     busy "Rebuilding network..."
+    inspectorList:addAll 1
     opp_rebuild
     reflectRecordEventlog
     busy
