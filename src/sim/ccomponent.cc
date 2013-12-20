@@ -432,6 +432,7 @@ void cComponent::removeSignalData(simsignal_t signalID)
         // if found, remove
         if (i<n) {
             ASSERT(!(*signalTable)[i].hasListener()); // must not have listeners
+            (*signalTable)[i].dispose();
             signalTable->erase(signalTable->begin()+i);
         }
         if (signalTable->empty()) {

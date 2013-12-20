@@ -74,6 +74,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
         cIListener **listeners; // NULL-terminated array
 
         SignalData() {signalID=SIMSIGNAL_NULL; listeners=NULL;}
+        void dispose() {delete [] listeners;}
         bool addListener(cIListener *l);
         bool removeListener(cIListener *l);
         int findListener(cIListener *l);
