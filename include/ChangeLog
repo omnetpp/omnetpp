@@ -1,3 +1,5 @@
+2013-12-20  ------ omnetpp-4.4 released ------
+
 2013-12-20  Andras Varga
 
 	* cEnvir: added attachDebugger() method
