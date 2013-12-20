@@ -7,6 +7,7 @@
 
 package org.omnetpp.inifile.editor.form;
 
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CHECK_SIGNALS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_AUTOFLUSH;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_CONFIG_NAME;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EVENT_BANNERS;
@@ -201,9 +202,10 @@ public class GenericConfigPage extends ScrolledFormPage {
             addTextFieldEditor(group0, CFGID_FINGERPRINT, "Fingerprint to verify", c(null, "Fingerprint (Hex)"));
             addSpacer(form);
             Group group2 = createGroup(form, "Debugging");
+            addCheckboxFieldEditor(group2, CFGID_DEBUG_ON_ERRORS, "Debug on errors");
+            addCheckboxFieldEditor(group2, CFGID_CHECK_SIGNALS, "Check emitted signals against @signal declarations");
             addCheckboxFieldEditor(group2, CFGID_PRINT_UNDISPOSED, "Dump names of undisposed objects");
             addCheckboxFieldEditor(group2, CFGID_WARNINGS, "Warnings"); //XXX
-            addCheckboxFieldEditor(group2, CFGID_DEBUG_ON_ERRORS, "Debug on errors");
             addSpacer(form);
             Group group3 = createGroup(form, "External Debugger");
             addTextFieldEditor(group3, CFGID_DEBUGGER_ATTACH_COMMAND, "Debugger command");
