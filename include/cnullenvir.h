@@ -147,6 +147,7 @@ class SIM_API cNullEnvir : public cEnvir
     virtual int getParsimNumPartitions() const {return 1;}
     virtual unsigned long getUniqueNumber()  {return ++lastnum;}
     virtual bool idle()  {return false;}
+    virtual void attachDebugger() {}
 };
 
 

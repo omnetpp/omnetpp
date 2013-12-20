@@ -56,6 +56,7 @@ cEnvir::cEnvir() : out(new evbuf())
 {
     disable_tracing = false;
     debug_on_errors = false;
+    attach_debugger_on_errors = false;
     suppress_notifications = false; //FIXME set to true when not needed!
 }
 

@@ -40,9 +40,11 @@ OMNeT++ 4.4
 
 (+)     cObjectFactory: added isInstance() method
 
-(+)	    Added Register_Abstract_Class() macro
+(+)     Added Register_Abstract_Class() macro
 
 (+)     cNEDValue: added two static parseQuantity() functions
+
+(+)     cEnvir: added attachDebugger() method
 
 
 OMNeT++ 4.3

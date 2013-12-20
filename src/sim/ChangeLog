@@ -1,3 +1,8 @@
+2013-12-20  Andras Varga
+
+	* Just-in-time debugging support: cRuntimeError to invoke cEnvir's
+	attachToDebugger() if debugger-attach-on-error is enabled
+
 2013-12-17  Rudolf Hornig
 
 	* Removed a compatibility macro required for OMNeT++ 4.3 and INET 2.0

@@ -1,3 +1,7 @@
+2013-12-20  Andras Varga
+
+	* cEnvir: added attachDebugger() method
+
 2013-12-09  Andras Varga
 
 	* distrib.h: fix #693: SimTime version of truncnormal() accidentally

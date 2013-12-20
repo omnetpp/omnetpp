@@ -132,6 +132,8 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     // leave to subclasses: virtual void putsmsg(const char *msg);
     // leave to subclasses: virtual bool askyesno(const char *msg);
     virtual void sputn(const char *s, int n);
+    virtual std::string makeDebuggerCommand();
+    static void crashHandler(int signum);
 
   public:
     /**
@@ -225,6 +227,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual int getParsimProcId() const;
     virtual int getParsimNumPartitions() const;
     virtual unsigned long getUniqueNumber();
+    virtual void attachDebugger();
     virtual bool idle();
     //@}
 

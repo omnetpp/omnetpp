@@ -262,7 +262,11 @@ cRuntimeError::cRuntimeError(const cObject *where, const char *msgformat...)
 
 void cRuntimeError::breakIntoDebuggerIfRequested()
 {
-    if (ev.debug_on_errors)
+    if (ev.attach_debugger_on_errors)
+    {
+        ev.attachDebugger();
+    }
+    else if (ev.debug_on_errors)
     {
         printf("\n"
                "RUNTIME ERROR. A cRuntimeError exception is about to be thrown, and you\n"

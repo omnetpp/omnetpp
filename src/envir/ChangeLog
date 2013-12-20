@@ -1,3 +1,11 @@
+2013-12-20  Andras Varga
+
+	* Feature: added Just-in-Time debugging. Adds the following config options:
+	  - debugger-attach-on-startup=<bool>
+	  - debugger-attach-on-error=<bool>
+	  - debugger-attach-command=<string>
+	  - debugger-attach-wait-time=<time>
+
 2013-10-28  Rudolf Hornig
 
 	* Fixes for compiling with clang

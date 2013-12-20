@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <signal.h>
 #include <fstream>
 #include <set>
 
@@ -84,6 +85,14 @@
 
 NAMESPACE_BEGIN
 
+#if defined _WIN32
+#define DEFAULT_DEBUGGER_COMMAND "start gdb --pid=%u"
+#elif defined __APPLE__
+#define DEFAULT_DEBUGGER_COMMAND "XTerm -e 'gdb --pid=%u' &"  // looks like we cannot launch XCode like that
+#else /* Linux, *BSD and other: assume Nemiver is available and installed */
+#define DEFAULT_DEBUGGER_COMMAND "nemiver --attach=%u &"
+#endif
+
 using std::ostream;
 
 #define CREATE_BY_CLASSNAME(var,classname,baseclass,description) \
@@ -105,6 +114,10 @@ Register_GlobalConfigOption(CFGID_DEBUG_ON_ERRORS, "debug-on-errors", CFG_BOOL, 
 Register_GlobalConfigOption(CFGID_PRINT_UNDISPOSED, "print-undisposed", CFG_BOOL, "true", "Whether to report objects left (that is, not deallocated by simple module destructors) after network cleanup.");
 Register_GlobalConfigOption(CFGID_SIMTIME_SCALE, "simtime-scale", CFG_INT, "-12", "Sets the scale exponent, and thus the resolution of time for the 64-bit fixed-point simulation time representation. Accepted values are -18..0; for example, -6 selects microsecond resolution. -12 means picosecond resolution, with a maximum simtime of ~110 days.");
 Register_GlobalConfigOption(CFGID_NED_PATH, "ned-path", CFG_PATH, "", "A semicolon-separated list of directories. The directories will be regarded as roots of the NED package hierarchy, and all NED files will be loaded from their subdirectory trees. This option is normally left empty, as the OMNeT++ IDE sets the NED path automatically, and for simulations started outside the IDE it is more convenient to specify it via a command-line option or the NEDPATH environment variable.");
+Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_ON_STARTUP, "debugger-attach-on-startup", CFG_BOOL, "false", "When set to true, the simulation program will launch an external debugger attached to it, allowing you to set breakpoints before proceeding. The debugger command is configurable.");
+Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_ON_ERROR, "debugger-attach-on-error", CFG_BOOL, "false", "When set to true, runtime errors and crashes will trigger an external debugger to be launched, allowing you to do just-in-time debugging on the simulation process.");
+Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_COMMAND, "debugger-attach-command", CFG_STRING, DEFAULT_DEBUGGER_COMMAND, "Command line to launch the debugger. It must contain exactly one percent sign, as '%u', which will be replaced by the PID of this process. The command must not block (i.e. it should end in '&' on Unix-like systems).");
+Register_GlobalConfigOptionU(CFGID_DEBUGGER_ATTACH_WAIT_TIME, "debugger-attach-wait-time", "s", "20s", "An interval to wait after launching the external debugger, to give the debugger time to start up and attach to the simulation process.");
 
 Register_PerRunConfigOption(CFGID_NETWORK, "network", CFG_STRING, NULL, "The name of the network to be simulated.  The package name can be omitted if the ini file is in the same directory as the NED file that contains the network.");
 Register_PerRunConfigOption(CFGID_WARNINGS, "warnings", CFG_BOOL, "true", "Enables warnings.");
@@ -239,6 +252,8 @@ int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
     cfg = dynamic_cast<cConfigurationEx *>(configobject);
     if (!cfg)
         throw cRuntimeError("Cannot cast configuration object %s to cConfigurationEx", configobject->getClassName());
+    if (cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_STARTUP))
+        attachDebugger();
 
     if (simulationRequired())
     {
@@ -350,6 +365,13 @@ bool EnvirBase::setup()
 
         // set opt_* variables from ini file(s)
         readOptions();
+
+        if (getConfig()->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR))
+        {
+            signal(SIGSEGV, crashHandler);
+            signal(SIGILL, crashHandler);
+            signal(SIGBUS, crashHandler);
+        }
 
         // initialize coroutine library
         if (TOTAL_STACK_SIZE!=0 && opt_total_stack<=MAIN_STACK_SIZE+4096)
@@ -1486,6 +1508,7 @@ void EnvirBase::readOptions()
     opt_fname_append_host = cfg->getAsBool(CFGID_FNAME_APPEND_HOST, opt_parsim);
 
     ev.debug_on_errors = cfg->getAsBool(CFGID_DEBUG_ON_ERRORS);
+    ev.attach_debugger_on_errors = cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR);
     opt_print_undisposed = cfg->getAsBool(CFGID_PRINT_UNDISPOSED);
 
     int scaleexp = (int) cfg->getAsInt(CFGID_SIMTIME_SCALE);
@@ -1710,6 +1733,48 @@ unsigned long EnvirBase::getUniqueNumber()
     return nextuniquenumber++;
 }
 
+std::string EnvirBase::makeDebuggerCommand()
+{
+    std::string cmd = getConfig()->getAsString(CFGID_DEBUGGER_ATTACH_COMMAND);
+    if (cmd == "")
+    {
+        ::printf("Cannot start debugger: no debugger configured\n");
+        return "";
+	}
+    size_t pos = cmd.find('%');
+    if (pos == std::string::npos || cmd.rfind('%') != pos || cmd[pos+1] != 'u')
+    {
+        ::printf("Cannot start debugger: debugger attach command must contain '%%u' "
+                 "and no additional percent sign.\n");
+        return "";
+	}
+    pid_t pid = getpid();
+    return opp_stringf(cmd.c_str(), (unsigned int)pid);
+}
+
+void EnvirBase::attachDebugger()
+{
+    // launch debugger
+    std::string cmd = makeDebuggerCommand();
+    if (cmd == "")
+        return; // no suitable debugger command
+
+    ::printf("Starting debugger: %s\n", cmd.c_str());
+    fflush(stdout);
+    system(cmd.c_str());
+
+    // hold for a while to allow debugger to start up and attach to us
+    int secondsToWait = (int)ceil(getConfig()->getAsDouble(CFGID_DEBUGGER_ATTACH_WAIT_TIME));
+    time_t startTime = time(NULL);
+    while (time(NULL)-startTime < secondsToWait)
+        for (int i=0; i<1000; i++); // DEBUGGER ATTACHED -- YOUR CODE IS A FEW FRAMES UP ON THE CALL STACK
+}
+
+void EnvirBase::crashHandler(int)
+{
+    ev.attachDebugger();
+}
+
 void EnvirBase::displayException(std::exception& ex)
 {
     cException *e = dynamic_cast<cException *>(&ex);
@@ -1849,4 +1914,3 @@ cModuleType *EnvirBase::resolveNetwork(const char *networkname)
 }
 
 NAMESPACE_END
-
