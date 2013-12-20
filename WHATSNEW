@@ -40,6 +40,14 @@ Sim:
 
   - New result filter: removeRepeats
 
+  - Feature: Just-in-Time debugging support. It adds the following new
+    configuration options: debugger-attach-on-startup=<bool>,
+    debugger-attach-on-error=<bool>, debugger-attach-command=<string>,
+    debugger-attach-wait-time=<time>. When any of the first two options are
+    set to true, the simulation kernel will launch an external debugger
+    attached to the simulation process at the appropriate time. The default
+    debugger on Linux is Nemiver.
+
 NED:
 
   - More freedom in NED property syntax: (1) Hyphens, dots and colons are now
