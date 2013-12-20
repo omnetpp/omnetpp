@@ -46,8 +46,6 @@ proc createInspectorToplevel {w geom} {
     wm resizable $w 1 1
     wm protocol $w WM_DELETE_WINDOW "inspector:close $w"
 
-    inspectorList:remove $w
-
     # add the "Inspect As.." icon at the top
     frame $w.toolbar -relief raised -bd 1
     pack $w.toolbar -anchor w -side top -fill x -expand 0

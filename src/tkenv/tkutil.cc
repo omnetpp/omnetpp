@@ -213,6 +213,8 @@ class cInspectByNameVisitor : public cVisitor
     const char *classname;
     int insptype;
     const char *geometry;
+    int numopened;
+
   public:
     cInspectByNameVisitor(const char *_fullpath, const char *_classname,
                           int _insptype, const char *_geometry) {
@@ -220,7 +222,11 @@ class cInspectByNameVisitor : public cVisitor
         classname = _classname;
         insptype = _insptype;
         geometry = _geometry;
+        numopened = 0;
     }
+
+    int getNumOpened() const {return numopened;}
+
     virtual void visit(cObject *obj) {
         // we have to do exhaustive search here... optimization, such as checking
         // if objpath matches beginning of fullpath to see if we are on the
@@ -244,8 +250,10 @@ class cInspectByNameVisitor : public cVisitor
         {
             // found: inspect if inspector is not open
             Tkenv *app = getTkenv();
-            if (!app->findInspector(obj, insptype))
+            if (!app->findInspector(obj, insptype)) {
                 app->inspect(obj, insptype, geometry, NULL);
+                numopened++;
+            }
 
             // makes no sense to go further down
             return;
@@ -256,11 +264,12 @@ class cInspectByNameVisitor : public cVisitor
     }
 };
 
-void inspectObjectByName(const char *fullpath, const char *classname, int insptype, const char *geometry)
+int inspectObjectByName(const char *fullpath, const char *classname, int insptype, const char *geometry)
 {
     // open inspectors for object whose is the same as fullpath
     cInspectByNameVisitor v(fullpath, classname, insptype, geometry);
     v.process(&simulation);
+    return v.getNumOpened();
 }
 
 //----------------------------------------------------------------------

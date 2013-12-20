@@ -48,14 +48,22 @@ proc inspectorList:openInspectors {} {
         # check if element is still in the array: if an inspector was several times
         # on the list (ie. both w/ type=0 and type!=0), opening it removes both elements...
         if [info exists pil_name($key)] {
-            debug [list opp_inspectbyname $pil_name($key) $pil_class($key) $pil_type($key) $pil_geom($key)]
-            if [catch {opp_inspectbyname $pil_name($key) $pil_class($key) $pil_type($key) $pil_geom($key)}] {
+            debug "trying to open inspector $key"
+            if [catch {set opened [opp_inspectbyname $pil_name($key) $pil_class($key) $pil_type($key) $pil_geom($key)]}] {
                 tk_messageBox -title Error -message "Error opening inspector for ($pil_class($key))$pil_name($key), ignoring."
                 unset pil_name($key)
                 unset pil_class($key)
                 unset pil_type($key)
                 unset pil_geom($key)
-                debug "entry $key removed from inspector list due to error"
+                debug "error opening inspector, discarding entry $key"
+            } elseif {$opened} {
+                unset pil_name($key)
+                unset pil_class($key)
+                unset pil_type($key)
+                unset pil_geom($key)
+                debug "success, removing $key from inspector list"
+            } else {
+                debug "no such object (yet)"
             }
         }
     }
