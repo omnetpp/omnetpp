@@ -64,7 +64,9 @@ set contextmenurules(keys) {}
 #
 proc debug {str} {
    # uncomment the next line if you want debug messages
-   #puts "dbg: $str"
+   set procname_with_args [info level [expr [info level]-1]]
+   set procname [lindex $procname_with_args 0]
+   puts "dbg: \[$procname\]: $str"
 }
 
 #===================================================================
