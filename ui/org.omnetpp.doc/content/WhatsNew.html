@@ -577,7 +577,196 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.</p></div>
 </div>
 </div>
-
+<div class="sect1">
+<h2 id="_omnet_4_4_dec_2013">OMNeT++ 4.4 (Dec 2013)</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Sim:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Feature: Optional signal checking. When signal checking is turned on,
+    signals emitted by modules/channels must be declared with a @signal property
+    in the module&#8217;s or channel&#8217;s NED description; undeclared signals will result
+    in a runtime error. Signal declarations are of the form
+</p>
+<div class="listingblock">
+<div class="content">
+<pre><tt>@signal[&lt;signalName&gt;](type=&lt;dataType&gt;);</tt></pre>
+</div></div>
+<div class="paragraph"><p>&lt;signalName&gt; may contain wildcards (?,*). Type is optional; if present,
+data type can be long, unsigned long, double, simtime_t, string, or a
+registered class name. To allow NULL pointers, append a question mark to
+the class name. Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>@signal[receivedPk](type=cPacket?);</tt></pre>
+</div></div>
+<div class="paragraph"><p>This feature is controlled by the check-signals=&lt;bool&gt; configuration
+option, and it is turned off by default for now.</p></div>
+</li>
+<li>
+<p>
+Further signals-related changes:
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+added emit(simsignal_t, const cObject*) to cComponent
+</p>
+</li>
+<li>
+<p>
+added receiveSignal() overload for bool to cIListener
+</p>
+</li>
+<li>
+<p>
+introduced SimsignalType which replaces the older cITimestampedValue::Type
+</p>
+</li>
+<li>
+<p>
+added cObjectFactory::isInstance() method that effectively wraps a
+      dynamic_cast
+</p>
+</li>
+<li>
+<p>
+added Register_Abstract_Class() macro that allows abstract classes to be
+      used in signal declarations as type.
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Added cNEDValue::parseQuantity()
+</p>
+</li>
+<li>
+<p>
+New result filter: removeRepeats
+</p>
+</li>
+<li>
+<p>
+Feature: Just-in-time debugging support.
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+new configuration options: <em>debugger-attach-on-startup</em>, <em>debugger-attach-on-error</em>,
+        <em>debugger-attach-command</em>, <em>debugger-attach-wait-time</em>.
+</p>
+</li>
+<li>
+<p>
+the simulation kernel can invoke the debugger on an error (or on startup)
+        using the command-line specified by the <em>debugger-attach-command</em> option.
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+<div class="paragraph"><p>NED:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+More freedom in NED property syntax: (1) Hyphens, dots and colons are now
+    allowed in property names and indices; and (2) values no longer need
+    to be enclosed in quotes if they contain parens, provided that parens are
+    balanced.
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>Tkenv:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Feature: Animation filters (right-click on any message, and select
+    "Exclude messages like <em>&#8230;</em> from animation" from the context menu.)
+</p>
+</li>
+<li>
+<p>
+Feature: "Debug Next Event" (Ctrl+F9). It causes the simulation program
+    to stop in the debugger just before entering the handleMessage() call.
+</p>
+</li>
+<li>
+<p>
+Fixes and workarounds for various issues on Mac OS X (poor animation speed,
+    missing icons on OS X Mavericks, hang on the F5 key, etc.)
+</p>
+</li>
+<li>
+<p>
+Fix: the "Filter Window Contents" dialog could lose state
+</p>
+</li>
+<li>
+<p>
+Source cleanup (consistent naming style for Tcl procedures)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>IDE:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Use Eclipse 4.3 as base platform
+</p>
+</li>
+<li>
+<p>
+Support for project-specific images: icons from the "images/" folder of the
+    project and its dependencies are automatically used by the NED editor, and
+    added to the Tkenv image path when the simulation is launched. (The folder
+    name is currently hardcoded; it will become configurable in future versions.)
+</p>
+</li>
+<li>
+<p>
+Sequence Chart: Fixed bug that caused including the same reuses multiple times.
+    Fixed error handling when the error occurs in paint during startup.
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>Improved support for C++11, Mac OS X:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+The source now compiles without any warning with both gcc and clang, using
+    the "-std=c++11 -Wall" flags (clang is the default compiler on OS X since
+    version 10.9 Mavericks).
+</p>
+</li>
+<li>
+<p>
+Added proper support for cross-compilation using ./configure --host=i686-w64-mingw32
+</p>
+</li>
+<li>
+<p>
+Updated install instructions for OS X 10.9 Mavericks. Specifically, gdb is
+    no longer distributed with OS X; users are expected to install it themselves
+    from MacPorts, and digitally sign it.
+</p>
+</li>
+<li>
+<p>
+IDE: fixed the launcher not to throw error if the toolchain is clang.
+</p>
+</li>
+<li>
+<p>
+Updated the source to compile with both Bison 2.3 and 3.0
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>Bugs fixed: <a href="http://tinyurl.com/omnetpp44-fixes">http://tinyurl.com/omnetpp44-fixes</a></p></div>
+</div>
+</div>
 <div class="sect1">
 <h2 id="_omnet_4_3_1_sept_2013">OMNeT++ 4.3.1 (Sept 2013)</h2>
 <div class="sectionbody">
