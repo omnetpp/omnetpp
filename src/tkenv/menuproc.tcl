@@ -216,6 +216,7 @@ proc newNetwork {} {
     set ok [comboSelectionDialog "Set up network" "Set up a network. NOTE: The network will use parameter values defined in the \n\[General\] section of the ini file." "Select network:" netname $networknames]
     if {$ok == 1} {
        busy "Setting up network..."
+       inspectorList:addAll 1
        opp_newnetwork $netname
        reflectRecordEventlog
        busy
@@ -246,6 +247,7 @@ proc newRun {} {
     if {$ok == 1} {
        # puts "DBG: selected $configname $runnumber"
        busy "Setting up network..."
+       inspectorList:addAll 1
        opp_newrun $configname $runnumber
        reflectRecordEventlog
        busy
