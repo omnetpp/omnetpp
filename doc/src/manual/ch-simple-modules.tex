@@ -4413,7 +4413,7 @@ It is also possible to apply processing to a signal before recording it.
 Consider the following example:
 
 \begin{ned}
-@statistic[dropCount](source="count(drop)"; record=last,vector?);
+@statistic[dropCount](source=count(drop); record=last,vector?);
 \end{ned}
 
 This records the total number of packet drops as a scalar, and
@@ -4424,15 +4424,14 @@ indifferent, because only the number of emits will be counted.
 Here, \ttt{count()} is a \textit{result filter}.
 
 \begin{note}
-The quotation marks around \ttt{"count(drop)"} are there because the NED
-language parser does not allow parentheses in property values; otherwise
-they have no significance.
+Starting from {\opp} 4.4, items containing parens (e.g. \ttt{count(drop)})
+no longer need to be enclosed in quotation marks.
 \end{note}
 
 Another example:
 
 \begin{ned}
-@statistic[droppedBytes](source="sum(packetBytes(pkdrop))"; record=last,
+@statistic[droppedBytes](source=sum(packetBytes(pkdrop)); record=last,
 vector?);
 \end{ned}
 
@@ -4447,14 +4446,14 @@ Arithmetic expressions can also be used. For example, the following line
 computes the number of dropped bytes using the \ttt{packetBits()} filter.
 
 \begin{ned}
-@statistic[droppedBytes](source="sum(8*packetBits(pkdrop))"; record=last,
+@statistic[droppedBytes](source=sum(8*packetBits(pkdrop)); record=last,
 vector?);
 \end{ned}
 
 The source can also combine multiple signals in an arithmetic expression:
 
 \begin{ned}
-@statistic[dropRate](source="count(drop)/count(pk)"; record=last,vector?);
+@statistic[dropRate](source=count(drop)/count(pk); record=last,vector?);
 \end{ned}
 
 When multiple signals are used, a value arriving on either signal will
@@ -4470,8 +4469,8 @@ dropped, using a \ttt{cPacket*}-valued signal as input; however, some of
 the computations have been shifted into the recorder part.
 
 \begin{ned}
-@statistic[droppedBytes](source="packetBits(pkdrop)"; record="last(8*sum)",
-"vector(8*sum)?");
+@statistic[droppedBytes](source=packetBits(pkdrop); record=last(8*sum),
+vector(8*sum)?);
 \end{ned}
 
 
@@ -4574,8 +4573,8 @@ statistic name and the recording mode with a colon between them:
 Thus, the following statistics
 
 \begin{ned}
-@statistic[dropRate](source="count(drop)/count(pk)"; record=last,vector?);
-@statistic[droppedBytes](source="packetBytes(pkdrop)"; record=sum,"vector(sum)?");
+@statistic[dropRate](source=count(drop)/count(pk); record=last,vector?);
+@statistic[droppedBytes](source=packetBytes(pkdrop); record=sum,vector(sum)?);
 \end{ned}
 
 will produce the following scalars: \ttt{dropRate:last}, \ttt{droppedBytes:sum},
@@ -4628,7 +4627,7 @@ The next figure illustrates which filters and recorders are created and how
 they are connected for the following statistics:
 
 \begin{ned}
-@statistic[droppedBytes](source="8*packetBits(pkdrop)"; record="sum,vector(sum)");
+@statistic[droppedBytes](source=8*packetBits(pkdrop); record=sum,vector(sum));
 \end{ned}
 
 \begin{figure}[htbp]
