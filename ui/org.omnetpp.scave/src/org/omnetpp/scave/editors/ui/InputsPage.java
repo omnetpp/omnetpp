@@ -57,7 +57,7 @@ public class InputsPage extends ScaveEditorPage {
     private Runnable scheduledUpdate;
 
     public InputsPage(Composite parent, ScaveEditor scaveEditor) {
-        super(parent, SWT.V_SCROLL, scaveEditor);
+        super(parent, SWT.NONE, scaveEditor);
         initialize();
     }
 
@@ -85,10 +85,8 @@ public class InputsPage extends ScaveEditorPage {
         // set up UI
         setPageTitle("Inputs");
         setFormTitle("Inputs");
-        setExpandHorizontal(true);
-        setExpandVertical(true);
         setBackground(ColorFactory.WHITE);
-        getBody().setLayout(new GridLayout());
+        getContent().setLayout(new GridLayout());
         createSashForm();
         createInputFilesSection();
         createDataSection();
@@ -175,7 +173,7 @@ public class InputsPage extends ScaveEditorPage {
     }
 
     private void createSashForm() {
-        sashform = new CustomSashForm(getBody(), SWT.VERTICAL | SWT.SMOOTH);
+        sashform = new CustomSashForm(getContent(), SWT.VERTICAL | SWT.SMOOTH);
         getFormToolkit().adapt(sashform);
         //sashform.setBackground(this.getBackground());
         sashform.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL |

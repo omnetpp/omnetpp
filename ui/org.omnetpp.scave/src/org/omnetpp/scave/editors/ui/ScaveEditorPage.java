@@ -35,10 +35,12 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -52,26 +54,43 @@ import org.omnetpp.scave.editors.ScaveEditor;
  * Common functionality of Scave multi-page editor pages.
  * @author andras
  */
-public class ScaveEditorPage extends ScrolledForm {
+public class ScaveEditorPage extends Composite {
     //private static final Color PALETTE_BG_COLOR = new Color(null, 234, 240, 252);
     //private static final Color BUTTONS_BG_COLOR = new Color(null, 239, 244, 253);
     private static final Color PALETTE_BG_COLOR = new Color(null, 241, 245, 253);
     private static final Color BUTTONS_BG_COLOR = new Color(null, 249, 251, 254);
 
     protected ScaveEditor scaveEditor = null;  // backreference to the containing editor
+
+    private Label formTitle;
+    private Composite content;
     private String pageTitle = "untitled";
 
     protected FocusManager focusManager = null;
 
     public ScaveEditorPage(Composite parent, int style, ScaveEditor scaveEditor) {
         super(parent, style);
+        setLayout(new GridLayout());
+        formTitle = new Label(this, SWT.NONE);
+        content = new Composite(this, SWT.NONE);
+        content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         this.scaveEditor = scaveEditor;
     }
 
+    public Label getHeader()
+    {
+        return formTitle;
+    }
+
+    public Composite getContent()
+    {
+        return content;
+    }
+
     public void setFormTitle(String title) {
-        setFont(new Font(null, "Arial", 12, SWT.BOLD));
-        setForeground(new Color(null, 0, 128, 255));
-        setText(title);
+        formTitle.setFont(new Font(null, "Arial", 12, SWT.BOLD));
+        formTitle.setForeground(new Color(null, 0, 128, 255));
+        formTitle.setText(title);
     }
 
     /**

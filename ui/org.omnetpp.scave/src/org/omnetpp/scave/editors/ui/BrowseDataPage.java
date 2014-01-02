@@ -53,7 +53,7 @@ public class BrowseDataPage extends ScaveEditorPage {
     private SetFilterAction2 setFilterAction = new SetFilterAction2();
 
     public BrowseDataPage(Composite parent, ScaveEditor editor) {
-        super(parent, SWT.V_SCROLL, editor);
+        super(parent, SWT.NONE, editor);
         initialize();
         hookListeners();
     }
@@ -93,14 +93,12 @@ public class BrowseDataPage extends ScaveEditorPage {
         setPageTitle("Browse Data");
         setFormTitle("Browse Data");
         //setBackground(ColorFactory.WHITE);
-        setExpandHorizontal(true);
-        setExpandVertical(true);
-        getBody().setLayout(new GridLayout());
-        label = new Label(getBody(), SWT.WRAP);
+        getContent().setLayout(new GridLayout());
+        label = new Label(getContent(), SWT.WRAP);
         label.setText("Here you can see all data that come from the files specified in the Inputs page.");
         label.setBackground(this.getBackground());
 
-        tabFolder = new FilteredDataTabFolder(getBody(), SWT.NONE);
+        tabFolder = new FilteredDataTabFolder(getContent(), SWT.NONE);
         tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         configureFilteredDataPanel(tabFolder.getAllPanel());

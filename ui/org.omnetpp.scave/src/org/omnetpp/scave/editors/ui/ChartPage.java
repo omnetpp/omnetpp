@@ -48,7 +48,7 @@ public class ChartPage extends ScaveEditorPage {
     private IPropertyChangeListener chartPropertyChangeListener;
 
     public ChartPage(Composite parent, ScaveEditor editor, Chart chart) {
-        super(parent, SWT.V_SCROLL, editor);
+        super(parent, SWT.NONE, editor);
         this.chart = chart;
         initialize();
         this.updater = new ChartUpdater(chart, chartView, scaveEditor.getResultFileManager());
@@ -106,12 +106,10 @@ public class ChartPage extends ScaveEditorPage {
         // set up UI
         setPageTitle("Chart: " + getChartName(chart));
         setFormTitle("Chart: " + getChartName(chart));
-        setExpandHorizontal(true);
-        setExpandVertical(true);
         //setBackground(ColorFactory.asColor("lightGray"));
-        getBody().setLayout(new GridLayout(2,false));
+        getContent().setLayout(new GridLayout(2,false));
 
-        chartView = (ChartCanvas) ChartFactory.createChart(getBody(), this.chart, scaveEditor.getResultFileManager());
+        chartView = (ChartCanvas) ChartFactory.createChart(getContent(), this.chart, scaveEditor.getResultFileManager());
         chartView.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
         MenuManager menuManager = new ChartMenuManager(chart, scaveEditor);

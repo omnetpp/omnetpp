@@ -29,7 +29,7 @@ public class DatasetPage extends ScaveEditorPage {
     private Dataset dataset; // backreference to the model object we operate on
 
     public DatasetPage(Composite parent, ScaveEditor scaveEditor, Dataset dataset) {
-        super(parent, SWT.V_SCROLL | SWT.H_SCROLL, scaveEditor);
+        super(parent, SWT.NONE, scaveEditor);
         this.dataset = dataset;
         initialize();
     }
@@ -50,13 +50,11 @@ public class DatasetPage extends ScaveEditorPage {
         String datasetName = StringUtils.isEmpty(dataset.getName()) ? "<unnamed>" : dataset.getName();
         setPageTitle("Dataset: " + datasetName);
         setFormTitle("Dataset: " + datasetName);
-        setExpandHorizontal(true);
-        setExpandVertical(true);
         //setDelayedReflow(false);
         setBackground(ColorFactory.WHITE);
-        getBody().setLayout(new GridLayout(2, false));
+        getContent().setLayout(new GridLayout(2, false));
 
-        Label label = new Label(getBody(), SWT.WRAP);
+        Label label = new Label(getContent(), SWT.WRAP);
         label.setBackground(getBackground());
         label.setText("Here you can edit the dataset. " +
           "The dataset allows you to create a subset of the input data and work with it. "+
@@ -65,10 +63,10 @@ public class DatasetPage extends ScaveEditorPage {
         ((GridData)label.getLayoutData()).horizontalSpan = 2;
 
         // create dataset treeviewer with buttons
-        datasetTreeViewer = new TreeViewer(getBody(), SWT.BORDER | SWT.MULTI);
+        datasetTreeViewer = new TreeViewer(getContent(), SWT.BORDER | SWT.MULTI);
         datasetTreeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        createPalette(getBody(), false);
+        createPalette(getContent(), false);
 
         // configure dataset treeviewer
         TreeViewer treeViewer = getDatasetTreeViewer();
