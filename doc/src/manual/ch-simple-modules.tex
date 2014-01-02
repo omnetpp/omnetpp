@@ -3941,16 +3941,13 @@ deciding between \ffunc{mayHaveListeners()} and \ffunc{hasListeners()}.
 
 \subsubsection{Signal Declarations}
 
-Since {\opp} 4.4, modules (and channels) can declare the signals they emit
-in their NED definitions, and {\opp} can be configured to enforce that
-emitted signals conform to the declarations.
+Since {\opp} 4.4, signals can be declared in NED files for documentation
+purposes, and {\opp} can check that only declared signals are emitted,
+and that they actually conform to the declarations (with regard to the
+data type, etc.)
 
-Signals are declared with the \fprop{@signal} property (NED properties are
-described in section \ref{sec:ch-ned-lang:properties}). The signal name is
-written in the property index, and the property's body may declare various
-attributes of the signal (currently only the data type is supported).
-
-The following example declares a queue module that emits a queue length signal:
+The following example declares a queue module that emits a signal named
+\ttt{queueLength}:
 
 \begin{ned}
 simple Queue
@@ -3961,21 +3958,26 @@ simple Queue
 }
 \end{ned}
 
-\ttt{type} is optional; when present, its value should be \ttt{bool},
-\ttt{long}, \ttt{unsigned long}, \ttt{double}, \ttt{simtime\_t},
+As you can see, signals are declared with the \fprop{@signal} property on
+the module or channel that emits it. (NED properties are described in
+\ref{sec:ch-ned-lang:properties}). The property index corresponds
+to the signal name, and the property's body may declare various attributes
+of the signal; currently only the data type is supported.
+
+The \ttt{type} property key is optional; when present, its value should be
+\ttt{bool}, \ttt{long}, \ttt{unsigned long}, \ttt{double}, \ttt{simtime\_t},
 \ttt{string}, or a registered class name optionally followed by a question
 mark. Classes can be registered using the \fmac{Register\_Class()} or
 \fmac{Register\_Abstract\_Class()} macros; these macros create a
 \cclass{cObjectFactory} instance, and the simulation kernel will call
 \cclass{cObjectFactory}'s \ffunc{isInstance()} method to check that the
 emitted object is really a subclass of the declared class.
-\ffunc{isInstance()} just wraps a C++ \ttt{dynamic\_cast}.) A question mark
-after the class name means that the signal is allowed to emit \ttt{NULL}
-pointers, too.
+\ffunc{isInstance()} just wraps a C++ \ttt{dynamic\_cast}.)
 
-For example, a module named \ttt{PPP} may emit the frame (packet) object
-every time it starts transmiting, and emit \ttt{NULL} when the transmission
-is completed:
+A question mark after the class name means that the signal is allowed to
+emit \ttt{NULL} pointers. For example, a module named \ttt{PPP} may emit
+the frame (packet) object every time it starts transmiting, and emit
+\ttt{NULL} when the transmission is completed:
 
 \begin{ned}
 simple PPP
@@ -3986,15 +3988,30 @@ simple PPP
 }
 \end{ned}
 
-Currently, signal checking is turned off by default, you can turn it
+The property index may contain wildcards, which is important if you want
+to declare signals whose names are only known at runtime. For example, if
+a module emits signals called \ttt{session-1-seqno}, \ttt{session-2-seqno},
+\ttt{session-3-seqno}, etc. for the individual sessions it handles, you
+can declare those signals as:
+
+\begin{ned}
+    @signal[session-*-seqno]();
+\end{ned}
+
+
+\subsubsection{Enabling Signal Checking}
+
+In {\opp} 4.x, signal checking is turned off by default. You can turn it
 on with the \fconfig{check-signals} configuration option in \ttt{omnetpp.ini}:
 
 \begin{inifile}
 check-signals = true
 \end{inifile}
 
-It is expected that starting with {\opp} 5.0, signal checking will be turned
-on by default when the simulation kernel is compiled in debug mode.
+It is expected that starting with {\opp} 5.0, signal checking will be
+turned on by default when the simulation kernel is compiled in debug mode.
+It will continue to be turned off in release mode simulation kernels due to
+performance reasons.
 
 
 \subsubsection{Signal Data Objects}
@@ -4643,6 +4660,97 @@ simulation, run the simulation with the \fconfig{debug-statistics-recording}
 configuration option, e.g. specify \ttt{--debug-statistics-recording=true}
 on the command line.
 \end{hint}
+
+
+\subsection{Statistics Recording for Dynamically Registered Signals}
+
+It is often convenient to have a module record statistics per session, per
+connection, per client, etc. One way of handling this use case is registering
+signals dynamically (e.g. \ttt{session1-jitter}, \ttt{session2-jitter}, ...),
+and setting up \fprop{@statistic}-style result recording on each.
+
+The NED file would look like this:
+
+\begin{ned}
+@signal[session*-jitter](type=simtime_t); // note the wildcard
+@statisticTemplate[sessionJitter](record=mean,stddev,vector?);
+\end{ned}
+
+In the C++ code of the module, you need to register each new signal with
+\ffunc{registerSignal()}, and in addition, tell {\opp} to set up statistics
+recording for it as described by the \fprop{@statisticTemplate} property.
+The latter can be achieved by calling \ffunc{ev.addResultRecorders()}.
+
+\begin{cpp}
+char signalName[32];
+sprintf(signalName, "session%d-jitter", sessionNum};
+simsignal_t signal = registerSignal(signalName);
+
+char statisticName[32];
+sprintf(statisticName, "session%d-jitter", sessionNum};
+cProperty *statisticTemplate =
+    getProperties()->get("statisticTemplate", "sessionJitter");
+ev.addResultRecorders(this, signal, statisticName, statisticTemplate);
+\end{cpp}
+
+In the \fprop{@statisticTemplate} property, the \ttt{source} key will be
+ignored (because the signal given as parameter will be used as source). The
+actual name and index of property will also be ignored. (With
+\fprop{@statistic}, the index holds the result name, but here the name is
+explicitly specified in the statisticName parameter.)
+
+When multiple signals are recorded using a common \fprop{@statisticTemplate}
+property, you'll want the titles of the recorded statistics to differ
+for each signal. This can be achieved by using dollar variables in the
+\ttt{title} key of \fprop{@statisticTemplate}. The following variables
+are available:
+
+\begin{itemize}
+  \item \ttt{\$name}: name of the statistic
+  \item \ttt{\$component}: component fullpath
+  \item \ttt{\$mode}: recording mode
+  \item \ttt{\$namePart[0-9]+}: given part of statistic name, when split
+    along colons (:); numbering starts with 1
+\end{itemize}
+
+For example, if the statistic name is \ttt{"conn:host1-to-host4(3):bytesSent"},
+and the title is \ttt{"bytes sent in connection \$namePart2"}, it will become
+\ttt{"bytes sent in connection host1-to-host4(3)"}.
+
+
+\subsection{Adding Result Filters and Recorders Programmatically}
+
+As an alternative to \fprop{@statisticTemplate} and \ffunc{ev.addResultRecorders()},
+it is also possible to set up result recording programmatically, by creating and
+attaching result filters and recorders to the desired signals.
+
+The following code example sets up recording to an output vector after
+removing duplicate values, and is essentially equivalent to the following
+\ttt{@statistic} line:
+
+\begin{ned}
+@statistic[queueLength](source=qlen; record=vector(removerepeats);
+                        title="Queue Length"; unit=packets);
+\end{ned}
+
+The C++ code:
+
+\begin{cpp}
+simsignal_t signal = registerSignal("qlen");
+
+cResultFilter *removeRepeatsFilter =
+    cResultFilterDescriptor::get("removerepeats")->create();
+
+cResultRecorder *vectorRecorder =
+    cResultRecorderDescriptor::get("vector")->create();
+opp_string_map *attrs = new opp_string_map;
+(*attrs)["title"] = "Queue Length";
+(*attrs)["unit"] = "packets";
+vectorRecorder->init(this, "queueLength", "vector", NULL, attrs);
+
+subscribe(signal, removeRepeatsFilter);
+removeRepeatsFilter->addDelegate(vectorRecorder);
+\end{cpp}
 
 
 \subsection{Emitting Signals}

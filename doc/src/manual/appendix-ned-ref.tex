@@ -134,7 +134,7 @@ channel DelayChannel
 channel DatarateChannel
 {
     @class(cDatarateChannel);
-    @signal[channelBusy](type="int");
+    @signal[channelBusy](type=long);
     @signal[messageSent](type=cMessage);
     @signal[messageDiscarded](type=cMessage);
     @statistic[busy](...);
