@@ -87,7 +87,6 @@ int setupUserInterface(int argc, char *argv[])
     //
     cSimulation *simulationobject = NULL;
     cRunnableEnvir *app = NULL;
-    ArgList *args = NULL;
     SectionBasedConfiguration *bootconfig = NULL;
     cConfigurationEx *configobject = NULL;
     int exitcode = 0;
@@ -100,32 +99,32 @@ int setupUserInterface(int argc, char *argv[])
         verifyIntTypes();
 
         // args
-        args = new ArgList();
-        args->parse(argc, argv, "h?f:u:l:c:r:p:n:x:X:agGv");
+        ArgList args;
+        args.parse(argc, argv, "h?f:u:l:c:r:p:n:x:X:agGv");
 
         //
         // First, load the ini file. It might contain the name of the user interface
         // to instantiate.
         //
-        const char *fname = args->optionValue('f',0);  // 1st '-f filename' option
-        if (!fname) fname = args->argument(0);   // first argument
+        const char *fname = args.optionValue('f',0);  // 1st '-f filename' option
+        if (!fname) fname = args.argument(0);   // first argument
         if (!fname) fname = "omnetpp.ini";   // or default filename
 
         // when -h or -v is specified, be forgiving about nonexistent omnetpp.ini
         InifileReader *inifile = new InifileReader();
-        if ((!args->optionGiven('v') && !args->optionGiven('h')) || fileExists(fname))
+        if ((!args.optionGiven('v') && !args.optionGiven('h')) || fileExists(fname))
             inifile->readFile(fname);
 
         // process additional '-f filename' options or arguments if there are any
-        for (int k=1; (fname=args->optionValue('f',k))!=NULL; k++)
+        for (int k=1; (fname=args.optionValue('f',k))!=NULL; k++)
             inifile->readFile(fname);
-        for (int k=(args->optionValue('f',0) ? 0 : 1); (fname=args->argument(k))!=NULL; k++)
+        for (int k=(args.optionValue('f',0) ? 0 : 1); (fname=args.argument(k))!=NULL; k++)
             inifile->readFile(fname);
 
         // activate [General] section so that we can read global settings from it
         bootconfig = new SectionBasedConfiguration();
         bootconfig->setConfigurationReader(inifile);
-        bootconfig->setCommandLineConfigOptions(args->getLongOptions(), getWorkingDir().c_str());
+        bootconfig->setCommandLineConfigOptions(args.getLongOptions(), getWorkingDir().c_str());
         bootconfig->activateConfig("General", 0);
 
         //
@@ -134,7 +133,7 @@ int setupUserInterface(int argc, char *argv[])
         // (The user interface library also might be among them.)
         //
         const char *libname;
-        for (int k=0; (libname=args->optionValue('l',k))!=NULL; k++)
+        for (int k=0; (libname=args.optionValue('l',k))!=NULL; k++)
             loadExtensionLibrary(libname);
         std::vector<std::string> libs = bootconfig->getAsFilenames(CFGID_LOAD_LIBS);
         for (int k=0; k<(int)libs.size(); k++)
@@ -178,7 +177,7 @@ int setupUserInterface(int argc, char *argv[])
         //
 
         // was it specified explicitly which one to use?
-        std::string appname = opp_nulltoempty(args->optionValue('u',0));  // 1st '-u name' option
+        std::string appname = opp_nulltoempty(args.optionValue('u',0));  // 1st '-u name' option
         if (appname.empty())
             appname = configobject->getAsString(CFGID_USER_INTERFACE);
 
@@ -223,8 +222,7 @@ int setupUserInterface(int argc, char *argv[])
         }
         else
         {
-            // normally, these two get deleted by app
-            delete args;
+            // normally, this is deleted by app
             delete bootconfig;
         }
     }
