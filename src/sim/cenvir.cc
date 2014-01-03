@@ -62,6 +62,7 @@ cEnvir::cEnvir() : out(new evbuf())
 
 cEnvir::~cEnvir()
 {
+    delete out.rdbuf();
 }
 
 cConfigurationEx *cEnvir::getConfigEx()
