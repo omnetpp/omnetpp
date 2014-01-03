@@ -156,8 +156,11 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     void checkLocalSignalConsistency() const;
     void checkSignalConsistency() const;
 
-    // internal: clears global signals-related data structures; to be invoked before each simulation run
+    // internal: clears per-run signals-related data structures; to be invoked before each simulation run
     static void clearSignalState();
+
+    // internal: clears signal registrations; to be invoked on exit
+    static void clearSignalRegistrations();
 
     // internal: allocates a signalHasLocalListeners/signalHasAncestorListeners bit index to the
     // given signal and returns the corresponding mask (1<<index); returns 0 if there are no more

@@ -371,6 +371,12 @@ void cComponent::clearSignalState()
     notificationSP = 0;
 }
 
+void cComponent::clearSignalRegistrations()
+{
+    delete signalNameMapping;
+    signalNameMapping = NULL;
+}
+
 cComponent::SignalData *cComponent::findSignalData(simsignal_t signalID) const
 {
     // note: we could use std::binary_search() instead of linear search here,

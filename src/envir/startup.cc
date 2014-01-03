@@ -163,7 +163,6 @@ int setupUserInterface(int argc, char *argv[])
                 loadExtensionLibrary(libs[k].c_str());
         }
 
-
         // validate the configuration, but make sure we don't report cmdenv-* keys
         // as errors if Cmdenv is absent; same for Tkenv.
         std::string ignorablekeys;
@@ -266,6 +265,7 @@ int setupUserInterface(int argc, char *argv[])
     configOptions.clear();
     omnetapps.clear();
     cSimulation::clearLoadedNedFiles();
+    cComponent::clearSignalRegistrations();
 
     return exitcode;
 }
