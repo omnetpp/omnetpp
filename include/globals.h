@@ -36,6 +36,8 @@ SIM_API extern cGlobalRegistrationList classes;         ///< List of all classes
 SIM_API extern cGlobalRegistrationList enums;           ///< List of all enum objects (cEnum)
 SIM_API extern cGlobalRegistrationList classDescriptors;///< List of all class descriptors (cClassDescriptor)
 SIM_API extern cGlobalRegistrationList configOptions;   ///< List of supported configuration options (cConfigOption)
+SIM_API extern cGlobalRegistrationList resultFilters;   ///< List of result filters (cResultFilter)
+SIM_API extern cGlobalRegistrationList resultRecorders; ///< List of result recorders (cResultRecorder)
 
 NAMESPACE_END
 

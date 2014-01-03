@@ -20,8 +20,6 @@
 
 NAMESPACE_BEGIN
 
-cGlobalRegistrationList resultFilters("resultFilters");
-
 
 cResultFilter::cResultFilter()
 {

@@ -21,7 +21,7 @@
 #include "simkerneldefs.h"
 #include "cresultlistener.h"
 #include "onstartup.h"
-#include "cregistrationlist.h"
+#include "globals.h"
 #include "cownedobject.h"
 
 NAMESPACE_BEGIN
@@ -41,7 +41,6 @@ class cResultFilter;
   static cResultFilter *__FILEUNIQUENAME__() {return new CLASSNAME;} \
   EXECUTE_ON_STARTUP(resultFilters.getInstance()->add(new cResultFilterDescriptor(NAME,__FILEUNIQUENAME__));)
 
-extern SIM_API cGlobalRegistrationList resultFilters;
 
 /**
  * Base class for result filters. Result filters map ONE SIGNAL to ONE SIGNAL

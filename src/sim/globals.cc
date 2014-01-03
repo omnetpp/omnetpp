@@ -30,5 +30,7 @@ cGlobalRegistrationList classes("classes");
 cGlobalRegistrationList enums("enums");
 cGlobalRegistrationList classDescriptors("class descriptors");
 cGlobalRegistrationList configOptions("supported configuration options");
+cGlobalRegistrationList resultFilters("resultFilters");
+cGlobalRegistrationList resultRecorders("resultRecorders");
 
 NAMESPACE_END

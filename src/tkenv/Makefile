@@ -810,6 +810,7 @@ $O/tkenv.o: tkenv.cc \
   ../../include/cobjectfactory.h \
   ../../include/cmodule.h \
   ../../include/platdep/platmisc.h \
+  ../envir/matchableobject.h \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \

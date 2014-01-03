@@ -262,6 +262,8 @@ int setupUserInterface(int argc, char *argv[])
     classDescriptors.clear();
     configOptions.clear();
     omnetapps.clear();
+    resultFilters.clear();
+    resultRecorders.clear();
     cSimulation::clearLoadedNedFiles();
     cComponent::clearSignalRegistrations();
 

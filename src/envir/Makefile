@@ -154,6 +154,7 @@ $O/akaroarng.o: akaroarng.cc \
   ../../include/onstartup.h \
   ../../include/cobject.h \
   ../../include/platdep/platdefs.h \
+  ../../include/clistener.h \
   ../../include/cstringpool.h \
   envirdefs.h \
   ../../include/globals.h \
@@ -161,8 +162,8 @@ $O/akaroarng.o: akaroarng.cc \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/cenvir.h \
-  ../../include/simtime_t.h \
   ../../include/cvisitor.h \
+  ../../include/simtime_t.h \
   ../../include/cregistrationlist.h \
   ../../include/cobjectfactory.h \
   ../../include/crng.h \
@@ -202,12 +203,12 @@ $O/akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/errmsg.h \
   ../../include/csimulation.h \
   ../../include/cownedobject.h \
-  ../../include/cobject.h \
   ../../include/onstartup.h \
+  ../../include/cobject.h \
   ../../include/cresultlistener.h \
   eventlogfilemgr.h \
-  ../../include/clistener.h \
   ../../include/envirext.h \
+  ../../include/clistener.h \
   ../../include/cstringpool.h \
   ../../include/cpar.h \
   ../../include/globals.h \
@@ -238,6 +239,7 @@ $O/appreg.o: appreg.cc \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
   ../../include/cobject.h \
+  ../../include/clistener.h \
   ../../include/cstringpool.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
@@ -266,6 +268,7 @@ $O/cxmldoccache.o: cxmldoccache.cc \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/cobject.h \
+  ../../include/clistener.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   cxmldoccache.h \
@@ -621,8 +624,8 @@ $O/indexedfileoutvectormgr.o: indexedfileoutvectormgr.cc \
   ../../include/onstartup.h \
   ../../include/cresultlistener.h \
   eventlogfilemgr.h \
-  ../../include/clistener.h \
   ../../include/envirext.h \
+  ../../include/clistener.h \
   ../../include/cpar.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
@@ -790,7 +793,8 @@ $O/objectprinter.o: objectprinter.cc \
   ../../include/simutil.h
 $O/opp_run.o: opp_run.cc \
   ../../include/platdep/platmisc.h \
-  ../../include/platdep/intxtypes.h
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h
 $O/runattributes.o: runattributes.cc \
   ../../include/regmacros.h \
   envirbase.h \

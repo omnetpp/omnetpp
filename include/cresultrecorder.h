@@ -21,7 +21,7 @@
 #include "cresultlistener.h"
 #include "ccomponent.h"
 #include "onstartup.h"
-#include "cregistrationlist.h"
+#include "globals.h"
 
 NAMESPACE_BEGIN
 
@@ -40,8 +40,6 @@ class cProperty;
 #define Register_ResultRecorder(NAME, CLASSNAME) \
   static cResultRecorder *__FILEUNIQUENAME__() {return new CLASSNAME;} \
   EXECUTE_ON_STARTUP(resultRecorders.getInstance()->add(new cResultRecorderDescriptor(NAME,__FILEUNIQUENAME__));)
-
-extern SIM_API cGlobalRegistrationList resultRecorders;
 
 
 /**

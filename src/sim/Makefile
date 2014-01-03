@@ -524,6 +524,7 @@ $O/cdefaultlist.o: cdefaultlist.cc \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
   ../../include/cobject.h \
+  ../../include/clistener.h \
   ../../include/cstringpool.h \
   ../../include/globals.h \
   ../../include/cdefaultlist.h \
@@ -765,6 +766,7 @@ $O/cenvir.o: cenvir.cc \
   ../../include/csimulation.h \
   ../../include/cownedobject.h \
   ../../include/cobject.h \
+  ../../include/clistener.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/platdep/platmisc.h \
@@ -978,6 +980,7 @@ $O/clcg32.o: clcg32.cc \
   ../../include/cownedobject.h \
   ../../include/cobject.h \
   ../../include/onstartup.h \
+  ../../include/clistener.h \
   ../../include/cstringpool.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
@@ -1109,6 +1112,7 @@ $O/cmersennetwister.o: cmersennetwister.cc \
   ../../include/cmessage.h \
   ../../include/onstartup.h \
   ../../include/cobject.h \
+  ../../include/clistener.h \
   ../../include/cstringpool.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
@@ -1250,6 +1254,7 @@ $O/cmsgpar.o: cmsgpar.cc \
   ../../include/cobject.h \
   ../../include/onstartup.h \
   ../../include/cnedfunction.h \
+  ../../include/clistener.h \
   ../../include/cstringpool.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
@@ -1359,6 +1364,7 @@ $O/cnedvalue.o: cnedvalue.cc \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/cobject.h \
+  ../../include/clistener.h \
   ../../include/cstringpool.h \
   ../../include/cpar.h \
   ../../include/cvisitor.h \
@@ -1382,6 +1388,7 @@ $O/cobject.o: cobject.cc \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/cobject.h \
+  ../../include/clistener.h \
   ../../include/cstringpool.h \
   ../../include/cdefaultlist.h \
   ../../include/cvisitor.h \
@@ -1474,6 +1481,7 @@ $O/cownedobject.o: cownedobject.cc \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
   ../../include/cobject.h \
+  ../../include/clistener.h \
   ../../include/cstringpool.h \
   ../../include/globals.h \
   ../../include/cdefaultlist.h \
@@ -1602,6 +1610,7 @@ $O/cparsimcomm.o: cparsimcomm.cc \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/cobject.h \
+  ../../include/clistener.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/platdep/platmisc.h \
@@ -1759,8 +1768,10 @@ $O/cresultfilter.o: cresultfilter.cc \
   ../../include/cresultlistener.h \
   ../../include/clistener.h \
   ../../include/cstringpool.h \
+  ../../include/globals.h \
   ../../include/cresultfilter.h \
   ../../include/cvisitor.h \
+  ../../include/cobjectfactory.h \
   ../../include/platdep/platmisc.h \
   ../../include/simutil.h \
   ../../include/cexception.h \
@@ -1794,9 +1805,12 @@ $O/cresultlistener.o: cresultlistener.cc \
   ../../include/platdep/intxtypes.h
 $O/cresultrecorder.o: cresultrecorder.cc \
   ../../include/regmacros.h \
+  ../common/opp_ctype.h \
   ../../include/platdep/platdefs.h \
+  ../common/commondefs.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
+  ../common/stringutil.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
@@ -1804,6 +1818,7 @@ $O/cresultrecorder.o: cresultrecorder.cc \
   ../../include/cstatistic.h \
   ../../include/cproperties.h \
   ../../include/cregistrationlist.h \
+  ../../include/cstringtokenizer.h \
   ../../include/opp_string.h \
   ../../include/simkerneldefs.h \
   ../../include/errmsg.h \
@@ -1821,6 +1836,8 @@ $O/cresultrecorder.o: cresultrecorder.cc \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
   ../../include/cvisitor.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
   ../../include/cobjectfactory.h \
   ../../include/cstddev.h \
   ../../include/platdep/platmisc.h \
@@ -1850,6 +1867,7 @@ $O/cscheduler.o: cscheduler.cc \
   ../../include/cmessage.h \
   ../../include/onstartup.h \
   ../../include/cobject.h \
+  ../../include/clistener.h \
   ../../include/cstringpool.h \
   ../../include/cscheduler.h \
   ../../include/globals.h \
@@ -2356,6 +2374,7 @@ $O/expr.tab.o: expr.tab.cc \
   ../../include/onstartup.h \
   ../../include/cobject.h \
   ../../include/cnedfunction.h \
+  ../../include/clistener.h \
   ../../include/cstringpool.h \
   ../../include/cpar.h \
   ../../include/globals.h \
@@ -2428,6 +2447,7 @@ $O/minixpath.o: minixpath.cc \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/cobject.h \
+  ../../include/clistener.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/cxmlelement.h \
@@ -3129,6 +3149,7 @@ $O/parsim/cfilecomm.o: parsim/cfilecomm.cc \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
+  ../../include/clistener.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
   ../../include/cobjectfactory.h \
@@ -3349,6 +3370,7 @@ $O/parsim/cmpicomm.o: parsim/cmpicomm.cc \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
+  ../../include/clistener.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
   ../../include/cobjectfactory.h \
@@ -3405,6 +3427,7 @@ $O/parsim/cnamedpipecomm-win.o: parsim/cnamedpipecomm-win.cc \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
+  ../../include/clistener.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
   ../../include/cobjectfactory.h \
@@ -3437,6 +3460,7 @@ $O/parsim/cnamedpipecomm.o: parsim/cnamedpipecomm.cc \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
+  ../../include/clistener.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
   ../../include/cobjectfactory.h \
@@ -3752,6 +3776,7 @@ $O/parsim/parsimutil.o: parsim/parsimutil.cc \
   ../../include/cnamedobject.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/cvisitor.h \
   ../../include/platdep/platmisc.h \
   ../../include/cexception.h \
