@@ -370,7 +370,9 @@ bool EnvirBase::setup()
         {
             signal(SIGSEGV, crashHandler);
             signal(SIGILL, crashHandler);
-            signal(SIGBUS, crashHandler);
+#ifdef SIGBUS
+            signal(SIGBUS, crashHandler);  // on MinGW SIGBUS is not defined
+#endif
         }
 
         // initialize coroutine library
