@@ -79,6 +79,22 @@ static struct ConfigVarDescription { const char *name, *description; } configVar
 
 std::string SectionBasedConfiguration::KeyValue1::nullbasedir;
 
+SectionBasedConfiguration::KeyValue2::KeyValue2(const KeyValue2& e) : KeyValue1(e)
+{
+    // apparently only used for std::vector storage
+    ownerPattern = e.ownerPattern ? new PatternMatcher(*e.ownerPattern) : NULL;
+    suffixPattern = e.suffixPattern ? new PatternMatcher(*e.suffixPattern) : NULL;
+    fullPathPattern = e.fullPathPattern ? new PatternMatcher(*e.fullPathPattern) : NULL;
+}
+
+SectionBasedConfiguration::KeyValue2::~KeyValue2()
+{
+    delete ownerPattern;
+    delete suffixPattern;
+    delete fullPathPattern;
+}
+
+//----
 
 SectionBasedConfiguration::SectionBasedConfiguration()
 {

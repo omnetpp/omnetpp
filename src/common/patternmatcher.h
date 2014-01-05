@@ -119,6 +119,11 @@ class COMMON_API PatternMatcher
     PatternMatcher(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive);
 
     /**
+     * Copy constructor
+     */
+    PatternMatcher(const PatternMatcher& other);
+
+    /**
      * Destructor
      */
     ~PatternMatcher();
