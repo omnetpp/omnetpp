@@ -79,6 +79,7 @@
 #define getcwd _getcwd
 #define chdir  _chdir
 #define gcvt _gcvt
+#define pid_t int
 #endif
 
 //
