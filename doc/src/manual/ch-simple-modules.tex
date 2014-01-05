@@ -4729,7 +4729,7 @@ removing duplicate values, and is essentially equivalent to the following
 \ttt{@statistic} line:
 
 \begin{ned}
-@statistic[queueLength](source=qlen; record=vector(removerepeats);
+@statistic[queueLength](source=qlen; record=vector(removeRepeats);
                         title="Queue Length"; unit=packets);
 \end{ned}
 
@@ -4739,7 +4739,7 @@ The C++ code:
 simsignal_t signal = registerSignal("qlen");
 
 cResultFilter *removeRepeatsFilter =
-    cResultFilterDescriptor::get("removerepeats")->create();
+    cResultFilterDescriptor::get("removeRepeats")->create();
 
 cResultRecorder *vectorRecorder =
     cResultRecorderDescriptor::get("vector")->create();
