@@ -271,13 +271,6 @@ std::string cSimulation::getNedPackageForFolder(const char *folder)
 #endif
 }
 
-void cSimulation::clearLoadedNedFiles()
-{
-#ifdef WITH_NETBUILDER
-    cNEDLoader::clear();
-#endif
-}
-
 int cSimulation::registerModule(cModule *mod)
 {
     // Insert module into the vector.

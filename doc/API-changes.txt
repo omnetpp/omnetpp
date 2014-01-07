@@ -52,6 +52,11 @@ OMNeT++ 4.4
 
 (!)     cResultRecorder: init() method signature change
 
+(!)     In embedding uses, ExecuteOnStartup::executeAll() should be replaced
+        by CodeFragments::executeAll(CodeFragments::STARTUP), and the cleanup
+        code at the end of main() should be replaced by CodeFragments::
+        executeAll(CodeFragments::SHUTDOWN).
+
 
 OMNeT++ 4.3
 ~~~~~~~~~~~

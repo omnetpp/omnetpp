@@ -53,6 +53,8 @@ bool cComponent::checkSignals;
 simsignal_t PRE_MODEL_CHANGE = cComponent::registerSignal("PRE_MODEL_CHANGE");
 simsignal_t POST_MODEL_CHANGE = cComponent::registerSignal("POST_MODEL_CHANGE");
 
+EXECUTE_ON_SHUTDOWN( cComponent::clearSignalRegistrations() );
+
 
 cComponent::cComponent(const char *name) : cDefaultList(name)
 {

@@ -1,5 +1,11 @@
 2013-12-20  ------ omnetpp-4.4 released ------
 
+2014-01-07  Andras Varga
+
+	* use EXECUTE_ON_SHUTDOWN() to invoke cGlobalRegistration objects'
+	clear() methods, cNEDLoader::clear(), and cNEDLoader::clear() just
+	before the program exits.
+
 2013-12-20  Andras Varga
 
 	* Just-in-Time debugging support: cRuntimeError to invoke cEnvir's

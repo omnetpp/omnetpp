@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
     cStaticFlag dummy;
 
     // initializations
-    ExecuteOnStartup::executeAll();
+    CodeFragments::executeAll(CodeFragments::STARTUP);
     SimTime::setScaleExp(-12);
 
     // set up an environment for the simulation
@@ -125,13 +125,7 @@ int main(int argc, char *argv[])
     cSimulation::setActiveSimulation(NULL);
     delete sim;
 
-    // properly clean up everything (optional)
-    componentTypes.clear();
-    nedFunctions.clear();
-    classes.clear();
-    enums.clear();
-    classDescriptors.clear();
-    configOptions.clear();
-    cSimulation::clearLoadedNedFiles();
+    // deallocate registration lists, loaded NED files, etc.
+    CodeFragments::executeAll(CodeFragments::SHUTDOWN);
     return 0;
 }

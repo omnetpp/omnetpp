@@ -93,7 +93,7 @@ int setupUserInterface(int argc, char *argv[])
     try
     {
         // construct global lists
-        ExecuteOnStartup::executeAll();
+        CodeFragments::executeAll(CodeFragments::STARTUP);
 
         // verify definitions of int64, int32, etc.
         verifyIntTypes();
@@ -255,17 +255,7 @@ int setupUserInterface(int argc, char *argv[])
     cSimulation::setActiveSimulation(NULL);
     delete simulationobject;  // will delete app as well
 
-    componentTypes.clear();
-    nedFunctions.clear();
-    classes.clear();
-    enums.clear();
-    classDescriptors.clear();
-    configOptions.clear();
-    omnetapps.clear();
-    resultFilters.clear();
-    resultRecorders.clear();
-    cSimulation::clearLoadedNedFiles();
-    cComponent::clearSignalRegistrations();
+    CodeFragments::executeAll(CodeFragments::SHUTDOWN);
 
     return exitcode;
 }

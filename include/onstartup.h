@@ -27,8 +27,7 @@
 NAMESPACE_BEGIN
 
 
-// Generating identifiers unique for this file. See MSVC Help for __COUNTER__
-// for more info.
+// Generating identifiers unique for this file. See MSVC Help for __COUNTER__ for more info.
 #define __OPPCONCAT1(x,y) x##y
 #define __OPPCONCAT2(prefix,line) __OPPCONCAT1(prefix,line)
 #define MAKE_UNIQUE_WITHIN_FILE(prefix) __OPPCONCAT2(prefix,__LINE__)
@@ -53,26 +52,42 @@ NAMESPACE_BEGIN
 #define EXECUTE_ON_STARTUP(CODE)  \
   namespace { \
     void __ONSTARTUP_FUNC() {CODE;} \
-    static ExecuteOnStartup __ONSTARTUP_OBJ(__ONSTARTUP_FUNC); \
+    static CodeFragments __ONSTARTUP_OBJ(__ONSTARTUP_FUNC, CodeFragments::STARTUP); \
   };
 
+/**
+ * Allows code fragments to be collected in global scope which will then be
+ * executed on normal shutdown, just before control returns from main().
+ * This is used by \opp for deallocating static global data structures such as
+ * registration lists.
+ *
+ * @hideinitializer
+ */
+//NOTE: implementation reuses some of the *startup* macros
+#define EXECUTE_ON_SHUTDOWN(CODE)  \
+  namespace { \
+    void __ONSTARTUP_FUNC() {CODE;} \
+    static CodeFragments __ONSTARTUP_OBJ(__ONSTARTUP_FUNC, CodeFragments::SHUTDOWN); \
+  };
 
 /**
- * Supporting class for EXECUTE_ON_STARTUP macro.
+ * Supporting class for the EXECUTE_ON_STARTUP and EXECUTE_ON_SHUTDOWN macros.
  *
  * @ingroup Internals
  */
-class SIM_API ExecuteOnStartup
+class SIM_API CodeFragments
 {
-  private:
-    void (*code_to_exec)();
-    ExecuteOnStartup *next;
-    static ExecuteOnStartup *head;
   public:
-    ExecuteOnStartup(void (*code_to_exec)());
-    ~ExecuteOnStartup();
-    void execute();
-    static void executeAll();
+    enum Type {STARTUP, SHUTDOWN};
+  private:
+    Type type;
+    void (*code)();
+    CodeFragments *next;
+    static CodeFragments *head;
+  public:
+    CodeFragments(void (*code)(), Type type);
+    ~CodeFragments();
+    static void executeAll(Type type);
 };
 
 NAMESPACE_END

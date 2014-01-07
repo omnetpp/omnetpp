@@ -1,5 +1,11 @@
 2013-12-20  ------ omnetpp-4.4 released ------
 
+2014-01-07  Andras Varga
+
+	* startup.cc: use CodeFragments::executeAll(CodeFragments::STARTUP) and
+	CodeFragments::executeAll(CodeFragments::SHUTDOWN) to run startup/cleanup
+	code fragments.
+
 2013-12-20  Andras Varga
 
 	* Feature: added Just-in-Time debugging. Adds the following config options:

@@ -39,6 +39,8 @@ NAMESPACE_BEGIN
 
 cNEDLoader *cNEDLoader::inst;
 
+EXECUTE_ON_SHUTDOWN( cNEDLoader::clear() );
+
 cNEDLoader *cNEDLoader::getInstance()
 {
     if (!inst) {

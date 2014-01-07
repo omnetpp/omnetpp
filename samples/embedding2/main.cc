@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
     cStaticFlag dummy;
 
     // initializations
-    ExecuteOnStartup::executeAll();
+    CodeFragments::executeAll(CodeFragments::STARTUP);
     SimTime::setScaleExp(-12);
 
     // load NED definitions from string constants (this program doesn't need external NED files!)
@@ -194,13 +194,7 @@ int main(int argc, char *argv[])
     }
     while (againQuestion == "y");
 
-    // properly clean up everything before exiting (optional)
-    componentTypes.clear();
-    nedFunctions.clear();
-    classes.clear();
-    enums.clear();
-    classDescriptors.clear();
-    configOptions.clear();
-    cSimulation::clearLoadedNedFiles();
+    // deallocate registration lists, loaded NED files, etc.
+    CodeFragments::executeAll(CodeFragments::SHUTDOWN);
     return 0;
 }

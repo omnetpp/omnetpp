@@ -27,6 +27,9 @@ NAMESPACE_BEGIN
 
 cGlobalRegistrationList inspectorfactories;
 
+EXECUTE_ON_SHUTDOWN( inspectorfactories.clear() );
+
+
 cInspectorFactory *findInspectorFactoryFor(cObject *obj, int type)
 {
     cInspectorFactory *best=NULL;
