@@ -782,8 +782,6 @@ class StaticEnv : public cEnvir
 {
   protected:
     void unsupported() const {throw opp_runtime_error("StaticEnv: unsupported method called");}
-
-    virtual void sputn(const char *s, int n) {(void) ::fwrite(s,1,n,stdout);}
     virtual void putsmsg(const char *msg) {::printf("\n<!> %s\n\n", msg);}
     virtual bool askyesno(const char *msg)  {unsupported(); return false;}
 

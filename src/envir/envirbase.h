@@ -146,7 +146,6 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
   protected:
     // leave to subclasses: virtual void putsmsg(const char *msg);
     // leave to subclasses: virtual bool askyesno(const char *msg);
-    virtual void sputn(const char *s, int n);
     virtual std::string makeDebuggerCommand();
     static void crashHandler(int signum);
 

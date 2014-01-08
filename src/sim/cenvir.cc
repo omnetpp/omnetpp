@@ -33,7 +33,6 @@ cEnvir::cEnvir()
 
 cEnvir::~cEnvir()
 {
-    delete out.rdbuf();
 }
 
 cConfigurationEx *cEnvir::getConfigEx()
