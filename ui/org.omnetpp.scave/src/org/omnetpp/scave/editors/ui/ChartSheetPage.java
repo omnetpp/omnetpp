@@ -25,6 +25,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
@@ -56,11 +57,12 @@ public class ChartSheetPage extends ScaveEditorPage {
 
     private ChartSheet chartSheet; // the underlying model
 
+    private ScrolledComposite scrolledComposite;
     private LiveTable chartsArea;
     private List<ChartUpdater> updaters = new ArrayList<ChartUpdater>();
 
     public ChartSheetPage(Composite parent, ScaveEditor editor, ChartSheet chartsheet) {
-        super(parent, SWT.V_SCROLL | SWT.H_SCROLL, editor);
+        super(parent, SWT.NONE, editor);
         this.chartSheet = chartsheet;
         initialize();
     }
@@ -78,8 +80,7 @@ public class ChartSheetPage extends ScaveEditorPage {
                     break;
                 case ScaveModelPackage.CHART_SHEET__CHARTS:
                     synchronize();
-                    chartsArea.layout(true);
-                    reflow(true);
+                    updateLayout();
                     break;
                 case ScaveModelPackage.CHART_SHEET__PROPERTIES:
                     Property property;
@@ -245,9 +246,7 @@ public class ChartSheetPage extends ScaveEditorPage {
         // set up UI
         setPageTitle("Charts: " + getChartSheetName(chartSheet));
         setFormTitle("Charts: " + getChartSheetName(chartSheet));
-        setExpandHorizontal(true);
-        setExpandVertical(true);
-        getForm().getHead().addMouseListener(new MouseAdapter() {
+        getHeader().addMouseListener(new MouseAdapter() {
             // mouse click on the title selects the chart sheet in the model
             public void mouseUp(MouseEvent e) {
                 chartsArea.setSelection(new Control[0]);
@@ -255,9 +254,13 @@ public class ChartSheetPage extends ScaveEditorPage {
             }
         });
 
-        Composite body = getBody();
-        body.setLayout(new FillLayout());
-        chartsArea = new LiveTable(body, SWT.DOUBLE_BUFFERED);
+        getContent().setLayout(new FillLayout());
+
+        scrolledComposite = new ScrolledComposite(getContent(), SWT.V_SCROLL | SWT.H_SCROLL);
+        scrolledComposite.setExpandHorizontal(true);
+        scrolledComposite.setExpandVertical(true);
+
+        chartsArea = new LiveTable(scrolledComposite, SWT.DOUBLE_BUFFERED);
         chartsArea.setBackground(getBackground());
         chartsArea.setLayout(new GridLayout(ChartSheetProperties.DEFAULT_COLUMN_COUNT, true));
 
@@ -274,6 +277,8 @@ public class ChartSheetPage extends ScaveEditorPage {
             }
         });
 
+        scrolledComposite.setContent(chartsArea);
+
         // set up contents
         for (Chart chart : chartSheet.getCharts())
             addChartView(chart);
@@ -283,6 +288,8 @@ public class ChartSheetPage extends ScaveEditorPage {
 
         // ensure that focus gets restored correctly after user goes somewhere else and then comes back
         setFocusManager(new FocusManager(this));
+
+        scrolledComposite.setMinSize(chartsArea.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 
     }
 
@@ -347,30 +354,26 @@ public class ChartSheetPage extends ScaveEditorPage {
         if (ChartSheetProperties.PROP_COLUMN_COUNT.equals(name)) {
             GridLayout gridLayout = (GridLayout)chartsArea.getLayout();
             gridLayout.numColumns = value == null ? ChartSheetProperties.DEFAULT_COLUMN_COUNT : Integer.parseInt(value);
-            chartsArea.layout(true);
-            reflow(true);
+            updateLayout();
         }
         else if (ChartSheetProperties.PROP_MIN_CHART_WIDTH.equals(name)) {
             int minWidth = value == null ? ChartSheetProperties.DEFAULT_MIN_CHART_WIDTH : Integer.parseInt(value);
             for (Control child : chartsArea.getChildren())
                 ((GridData)child.getLayoutData()).minimumWidth = minWidth;
-            chartsArea.layout(true);
-            reflow(true);
+            updateLayout();
         }
         else if (ChartSheetProperties.PROP_MIN_CHART_HEIGHT.equals(name)) {
             int minHeight = value == null ? ChartSheetProperties.DEFAULT_MIN_CHART_HEIGHT : Integer.parseInt(value);
             for (Control child : chartsArea.getChildren())
                 ((GridData)child.getLayoutData()).minimumHeight = minHeight;
-            chartsArea.layout(true);
-            reflow(true);
+            updateLayout();
         }
         else if (ChartSheetProperties.PROP_DISPLAY_CHART_DETAILS.equals(name)) {
             boolean displayChartDetails = value == null ? ChartSheetProperties.DEFAULT_DISPLAY_CHART_DETAILS : Boolean.parseBoolean(value);
             for (Control child : chartsArea.getChildren())
                 if (child instanceof ChartCanvas)
                     setDisplayChartDetails((ChartCanvas)child, displayChartDetails);
-            chartsArea.layout(true);
-            reflow(true);
+            updateLayout();
         }
     }
 
@@ -410,5 +413,11 @@ public class ChartSheetPage extends ScaveEditorPage {
         public int computeMaximumWidth(Composite composite, boolean changed) {
             return computeSize(composite, SWT.DEFAULT, SWT.DEFAULT, false).x;
         }
+    }
+
+    private void updateLayout()
+    {
+        chartsArea.layout(true);
+        scrolledComposite.setMinSize(chartsArea.computeSize(SWT.DEFAULT, SWT.DEFAULT));
     }
 }

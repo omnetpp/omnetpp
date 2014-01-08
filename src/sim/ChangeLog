@@ -34,11 +34,25 @@
 	* Implemented simulation lifecycle listeners; see the ChangeLog in
 	include/.
 
-////////////// fixes cherry-picked from 4.x come here /////////////////
-	* Removed a compatibility macro required for OMNeT++ 4.3 and INET 2.0
-	INET 2.1 and later does not need this hack. (If you want to compile 
-	INET 2.0 with OMNeT++ 4.4 prepare to rename some method calls
-	from getFieldArraySize to getArraySize.
+2013-12-20  ------ omnetpp-4.4 released ------
+
+2014-01-07  Andras Varga
+
+	* use EXECUTE_ON_SHUTDOWN() to invoke cGlobalRegistration objects'
+	clear() methods, cNEDLoader::clear(), and cNEDLoader::clear() just
+	before the program exits.
+
+2013-12-20  Andras Varga
+
+	* Just-in-Time debugging support: cRuntimeError to invoke cEnvir's
+	attachToDebugger() if debugger-attach-on-error is enabled
+
+2013-12-17  Rudolf Hornig
+
+	* Removed a compatibility macro required for INET 2.0 to compile with
+	OMNeT++ 4.3; INET 2.1 and later does not need it . (If you want to
+	compile INET 2.0 with OMNeT++ 4.4, you need change getFieldArraySize()
+	method calls in the source to getArraySize()).
 
 2013-11-17  Andras Varga
 
@@ -62,7 +76,7 @@
 	attribute, e.g. they can be added to signals programmatically
 
 	* cEnvir: added support for @statistic-style result recording on dynamically
-	registered signals (i.e. "conn-<n>" where n is an integer). Instead of
+	registered signals (e.g. "conn-<n>" where n is an integer). Instead of
 	@statistic, use @statisticTemplate property in the NED file, and for each
 	new signal call a new cEnvir method:
 	   addResultRecorders(cComponent *component, simsignal_t signal,

@@ -23,11 +23,6 @@
 #set pil_type() {}
 #set pil_geom() {}
 
-# must store a copy if object names and class names because this info
-# is no longer available when we get called from cObject dtor:
-#set insp_w2name() {}
-#set insp_w2class() {}
-
 
 #
 # THIS PROC IS CALLED FROM C++ CODE, at each inspector display update.
@@ -53,59 +48,58 @@ proc inspectorList:openInspectors {} {
         # check if element is still in the array: if an inspector was several times
         # on the list (ie. both w/ type=0 and type!=0), opening it removes both elements...
         if [info exists pil_name($key)] {
-            #DBG: puts [list opp_inspectbyname $pil_name($key) $pil_class($key) $pil_type($key) $pil_geom($key)]
-            if [catch {opp_inspectbyname $pil_name($key) $pil_class($key) $pil_type($key) $pil_geom($key)}] {
+            debug "trying to open inspector $key"
+            if [catch {set opened [opp_inspectbyname $pil_name($key) $pil_class($key) $pil_type($key) $pil_geom($key)]}] {
                 tk_messageBox -title Error -message "Error opening inspector for ($pil_class($key))$pil_name($key), ignoring."
                 unset pil_name($key)
                 unset pil_class($key)
                 unset pil_type($key)
                 unset pil_geom($key)
+                debug "error opening inspector, discarding entry $key"
+            } elseif {$opened} {
+                unset pil_name($key)
+                unset pil_class($key)
+                unset pil_type($key)
+                unset pil_geom($key)
+                debug "success, removing $key from inspector list"
+            } else {
+                debug "no such object (yet)"
             }
         }
     }
 }
 
-
-proc inspectorList:storeName {w} {
-    global insp_w2name insp_w2class
-
-    if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
-        error "window name $w doesn't look like an inspector window"
-    }
-
-    set insp_w2name($w) [opp_getobjectfullpath $object]
-    set insp_w2class($w) [opp_getobjectshorttypename $object]
-    #debug "object and class name for $w stored"
-}
-
-
 #
-# add an inspector to the list
+# add an inspector to the list. The underlying object must still exist.
 #
-# called when an inspector window gets closed because the underlying object
-# was destroyed -- in this case remember it on the 'pending inspectors' list
-# so that we can reopen the inspector when (if) the object reappears.
-#
-proc inspectorList:add {w} {
+proc inspectorList:add {w allowdestructive} {
     global pil_name pil_class pil_type pil_geom pil_nextindex
-    global insp_w2name insp_w2class
 
     if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
         error "window name $w doesn't look like an inspector window"
     }
 
-    # we cannot use here the opp_getobjectfullpath, opp_getclass methods because
-    # we're called from the cObject destructor, name and class are long gone!
-    set objname $insp_w2name($w)
-    set classname $insp_w2class($w)
+    set objname [opp_getobjectfullpath $object]
+    set classname [opp_getobjectshorttypename $object]
     set key "$objname:$classname:$type"
 
     set pil_name($key)   $objname
     set pil_class($key)  $classname
     set pil_type($key)   $type
-    set pil_geom($key)   [inspectorList:getGeom $w 1]
+    set pil_geom($key)   [inspectorList:getGeometry $w $allowdestructive]
 
-    #debug "$key added to insp list"
+    debug "entry $key added to inspector list"
+}
+
+#
+# Add all open inspectors to the inspector list.
+#
+proc inspectorList:addAll {allowdestructive} {
+    foreach w [winfo children .] {
+       if [regexp {\.(ptr.*)-([0-9]+)} $w match object type] {
+           inspectorList:add $w $allowdestructive
+       }
+    }
 }
 
 #
@@ -127,7 +121,7 @@ proc inspectorList:remove {w} {
         unset pil_class($key)
         unset pil_type($key)
         unset pil_geom($key)
-        #debug "$key removed from insp list"
+        debug "$key removed from inspector list"
     }
 }
 
@@ -139,7 +133,7 @@ proc inspectorList:tkenvrcGetContents {allowdestructive} {
        if [regexp {\.(ptr.*)-([0-9]+)} $w match object type] {
            set objname [opp_getobjectfullpath $object]
            set class [opp_getobjectshorttypename $object]
-           set geom [inspectorList:getGeom $w $allowdestructive]
+           set geom [inspectorList:getGeometry $w $allowdestructive]
 
            append res "inspector \"$objname\" \"$class\" \"$type\" \"$geom\"\n"
        }
@@ -149,6 +143,7 @@ proc inspectorList:tkenvrcGetContents {allowdestructive} {
        append res "inspector \"$pil_name($key)\" \"$pil_class($key)\" \"$pil_type($key)\" \"$pil_geom($key)\"\n"
     }
 
+    debug "generated contents: >>>$res<<<"
     return $res
 }
 
@@ -163,6 +158,7 @@ proc inspectorList:tkenvrcReset {} {
        unset pil_type
        unset pil_geom
     }
+    debug "inspector list cleared"
 }
 
 
@@ -184,6 +180,8 @@ proc inspectorList:tkenvrcProcessLine {line} {
     set pil_class($key)  $class
     set pil_type($key)   $type
     set pil_geom($key)   $geom
+
+    debug "inspector list entry $key read from tkenvrc"
 }
 
 #
@@ -191,7 +189,7 @@ proc inspectorList:tkenvrcProcessLine {line} {
 # The geometry corresponds to the "normal" (non-zoomed) state of the
 # window, so that can be restored from .tkenvrc as well.
 #
-proc inspectorList:getGeom {w allowdestructive} {
+proc inspectorList:getGeometry {w allowdestructive} {
     set state [wm state $w]
     if {$state == "normal"} {
         return "[wm geometry $w]:$state"

@@ -21,6 +21,8 @@ NAMESPACE_BEGIN
 
 cGlobalRegistrationList omnetapps("omnetapps");
 
+EXECUTE_ON_SHUTDOWN( omnetapps.clear() );
+
 cOmnetAppRegistration *cOmnetAppRegistration::chooseBest()
 {
     // choose the one with highest score

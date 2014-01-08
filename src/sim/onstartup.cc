@@ -54,38 +54,32 @@ class StartupChecker
 StartupChecker startupChecker;
 
 
-ExecuteOnStartup *ExecuteOnStartup::head;
+CodeFragments *CodeFragments::head;
 
 
-ExecuteOnStartup::ExecuteOnStartup(void (*_code_to_exec)())
+CodeFragments::CodeFragments(void (*code)(), Type type) : code(code), type(type)
 {
-    code_to_exec = _code_to_exec;
-
     // add to list
     next = head;
     head = this;
 }
 
-ExecuteOnStartup::~ExecuteOnStartup()
+CodeFragments::~CodeFragments()
 {
 }
 
-void ExecuteOnStartup::execute()
+void CodeFragments::executeAll(Type type)
 {
-    code_to_exec();
-}
-
-void ExecuteOnStartup::executeAll()
-{
-    ExecuteOnStartup *p = ExecuteOnStartup::head;
+    CodeFragments *p = CodeFragments::head;
     while (p)
     {
-        p->execute();
+        if (p->type == type && p->code != NULL)
+        {
+            p->code();
+            p->code = NULL;  // do it only once (executeAll() may be called multiple times, e.g. after dlopen() / LoadLibrary() calls)
+        }
         p = p->next;
     }
-
-    // null out list to prevent double execution on subsequent calls (e.g. after dll loading)
-    ExecuteOnStartup::head = NULL;
 }
 
 NAMESPACE_END

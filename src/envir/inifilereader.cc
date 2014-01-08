@@ -225,6 +225,8 @@ void InifileReader::internalReadFile(const char *filename, Section *currentSecti
             currentSection->entries.push_back(KeyValue1(basedirRef, filenameRef, lineNumber, key.c_str(), value.c_str()));
         }
     }
+
+    fclose(file);
 }
 
 bool InifileReader::readLineInto(std::string& line, FILE *file)

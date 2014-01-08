@@ -49,7 +49,7 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
      * Constructor
      */
     public DatasetsAndChartsPage(Composite parent, ScaveEditor scaveEditor) {
-        super(parent, SWT.V_SCROLL, scaveEditor);
+        super(parent, SWT.NONE, scaveEditor);
         initialize();
     }
 
@@ -57,17 +57,15 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
         // set up UI
         setPageTitle("Datasets");
         setFormTitle("Datasets and Charts");
-        setExpandHorizontal(true);
-        setExpandVertical(true);
         setBackground(ColorFactory.WHITE);
-        getBody().setLayout(new GridLayout(2, false));
+        getContent().setLayout(new GridLayout(2, false));
 
         createSashForm();
         createDatasetsSection();
         createChartSheetsSection();
         sashform.setWeights(new int[] {2,1});
 
-        Composite palette = createPalette(getBody(), true);
+        Composite palette = createPalette(getContent(), true);
 
         // configure viewers
         scaveEditor.configureTreeViewer(getDatasetsTreeViewer());
@@ -106,7 +104,7 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
     }
 
     private void createSashForm() {
-        sashform = new CustomSashForm(getBody(), SWT.VERTICAL | SWT.SMOOTH);
+        sashform = new CustomSashForm(getContent(), SWT.VERTICAL | SWT.SMOOTH);
         sashform.setBackground(this.getBackground());
         sashform.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
     }

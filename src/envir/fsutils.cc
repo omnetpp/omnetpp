@@ -67,7 +67,7 @@ void loadExtensionLibrary(const char *lib)
 {
     try {
         opp_loadlibrary(lib);
-        ExecuteOnStartup::executeAll();
+        CodeFragments::executeAll(CodeFragments::STARTUP);
     }
     catch (std::runtime_error& e) {
         throw cRuntimeError(e.what());

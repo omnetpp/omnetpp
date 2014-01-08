@@ -25,9 +25,6 @@
 NAMESPACE_BEGIN
 
 
-cGlobalRegistrationList resultRecorders("resultRecorders");
-
-
 void cResultRecorder::init(cComponent *comp, const char *statsName, const char *recMode, cProperty *property, opp_string_map *attrs)
 {
     component = comp;

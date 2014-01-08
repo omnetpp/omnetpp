@@ -30,11 +30,19 @@ NAMESPACE_BEGIN
 
 PatternMatcher::PatternMatcher()
 {
+    iscasesensitive = true;
 }
 
 PatternMatcher::PatternMatcher(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive)
 {
     setPattern(pattern, dottedpath, fullstring, casesensitive);
+}
+
+PatternMatcher::PatternMatcher(const PatternMatcher& other)
+{
+    pattern = other.pattern;
+    iscasesensitive = other.iscasesensitive;
+    rest = other.rest;
 }
 
 PatternMatcher::~PatternMatcher()

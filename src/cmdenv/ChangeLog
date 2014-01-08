@@ -13,6 +13,8 @@
 	* Fire simulation lifecycle events; see related ChangeLog entry
 	in include/.
 
+2013-12-20  ------ omnetpp-4.4 released ------
+
 2013-11-14  Rudolf Hornig
 
 	* Fixes for compiling with clang

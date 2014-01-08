@@ -30,5 +30,19 @@ cGlobalRegistrationList classes("classes");
 cGlobalRegistrationList enums("enums");
 cGlobalRegistrationList classDescriptors("class descriptors");
 cGlobalRegistrationList configOptions("supported configuration options");
+cGlobalRegistrationList resultFilters("resultFilters");
+cGlobalRegistrationList resultRecorders("resultRecorders");
+
+EXECUTE_ON_SHUTDOWN(
+        componentTypes.clear();
+        nedFunctions.clear();
+        classes.clear();
+        enums.clear();
+        classDescriptors.clear();
+        configOptions.clear();
+        resultFilters.clear();
+        resultRecorders.clear();
+);
+
 
 NAMESPACE_END

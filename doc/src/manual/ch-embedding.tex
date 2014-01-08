@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
     cStaticFlag dummy;
 
     // initializations
-    ExecuteOnStartup::executeAll();
+    CodeFragments::executeAll(CodeFragments::STARTUP);
     SimTime::setScaleExp(-12);
 
     // load NED files
@@ -126,6 +126,8 @@ int main(int argc, char *argv[])
     simulate("FooNetwork", 1000);
     simulate("BarNetwork", 2000);
 
+    // deallocate registration lists, loaded NED files, etc.
+    CodeFragment::executeAll(CodeFragment::SHUTDOWN);
     return 0;
 }
 \end{cpp}
@@ -134,8 +136,8 @@ The first few lines of the code initialize the simulation library. The
 purpose of \cclass{cStaticFlag} is to set a global variable to \ttt{true}
 for the duration of the \ttt{main()} function, to help the simulation
 library handle exceptions correctly in extreme cases.
-\ttt{ExecuteOnStartup::executeAll()} performs various startup tasks such as,
-building registration tables out of the \fmac{Define\_Module()},
+\ttt{CodeFragment::executeAll(CodeFragment::STARTUP)} performs various startup 
+tasks, such as building registration tables out of the \fmac{Define\_Module()},
 \fmac{Register\_Class()} and similar entries throughout the code.
 \ttt{SimTime::setScaleExp(-12)} sets the simulation time resolution to
 picoseconds; other values can be used as well, but it is mandatory to

@@ -78,15 +78,9 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
         PatternMatcher *suffixPattern; // only filled in when this is a wildcard group
         PatternMatcher *fullPathPattern; // when present, match against this instead of ownerPattern & suffixPattern
 
-        KeyValue2(const KeyValue1& e) : KeyValue1(e) {
-            ownerPattern = suffixPattern = fullPathPattern = NULL;
-        }
-        KeyValue2(const KeyValue2& e) : KeyValue1(e) {
-            ownerPattern = e.ownerPattern;
-            suffixPattern = e.suffixPattern;
-            fullPathPattern = e.fullPathPattern;
-        }
-        //FIXME patterns never get deleted?
+        KeyValue2(const KeyValue1& e) : KeyValue1(e) {ownerPattern = suffixPattern = fullPathPattern = NULL;}
+        KeyValue2(const KeyValue2& e);
+        ~KeyValue2();
     };
 
     // Some explanation. Basically we could just store all entries in order,

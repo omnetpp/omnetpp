@@ -104,6 +104,23 @@
 	cSnapshotManager to include an "I" (for interface) ->
 	cIOutputVectorManager, cIOutputScalarManager, cSnapshotManager.
 	
+2013-12-20  ------ omnetpp-4.4 released ------
+
+2014-01-07  Andras Varga
+
+	* Added the EXECUTE_ON_SHUTDOWN() macro
+
+	* Embedding: Code registered with EXECUTE_ON_STARTUP() can now be run 
+	with CodeFragments::executeAll(CodeFragments::STARTUP) (instead of the
+	old ExecuteOnStartup::executeAll()) and code registered with the new
+	EXECUTE_ON_SHUTDOWN() macro can be run with CodeFragments::executeAll(
+	CodeFragments::SHUTDOWN). These calls usually occur at the top and 
+	bottom of the main() function of the simulation program.
+
+2013-12-20  Andras Varga
+
+	* cEnvir: added attachDebugger() method
+
 2013-12-09  Andras Varga
 
 	* distrib.h: fix #693: SimTime version of truncnormal() accidentally
@@ -113,6 +130,21 @@
 
 	* better definition for DEBUG_TRAP on *nix: use SIGTRAP instead of
 	SIGINT, and on Intel+Linux use asm int 3.
+
+2013-10-03  Andras Varga
+
+	* cResultRecorder: added support for programmatically setting up result
+	filters and recorders on signals. This is made possible by adding new args
+	to init(): cProperty* attrsProperty, opp_string_map *manualAttrs;
+	this allows result recorders to be used without a corresponding @statistic
+	attribute, e.g. they can be added to signals programmatically
+
+	* cEnvir: added support for @statistic-style result recording on dynamically
+	registered signals (e.g. "conn-<n>" where n is an integer). Instead of
+	@statistic, use @statisticTemplate property in the NED file, and for each
+	new signal call a new cEnvir method:
+	   addResultRecorders(cComponent *component, simsignal_t signal,
+	   const char *statisticName, cProperty *statisticTemplateProperty);
 
 2013-10-28  Rudolf Hornig
 

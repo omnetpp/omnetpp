@@ -10,7 +10,7 @@ OMNeT++ 4.4 (Dec 2013)
 
 Sim:
 
-  - Feature: Optional signal checking. When signal checking is turned on,
+  - Support for optional signal checking. When signal checking is turned on,
     signals emitted by modules/channels must be declared with a @signal property
     in the module's or channel's NED description; undeclared signals will result
     in a runtime error. Signal declarations are of the form
@@ -27,6 +27,16 @@ Sim:
     This feature is controlled by the check-signals=<bool> configuration
     option, and it is turned off by default for now.
 
+  - Support for @statistic-style declarative result recording on dynamically
+    registered signals (e.g. "conn-<n>" where n is an integer). Instead of
+    @statistic, add a @statisticTemplate property in the NED file, and for
+    each new signal call ev.addResultRecorders(...).
+
+  - Support for programmatically adding result filters and recorders on
+    signals: cResultRecorder has been revised to allow result recorders
+    to be used without a corresponding @statistic attribute, e.g. they
+    can now be added to signals programmatically.
+
   - Further signals-related changes:
     - added emit(simsignal_t, const cObject*) to cComponent
     - added receiveSignal() overload for bool to cIListener
@@ -39,6 +49,14 @@ Sim:
   - Added cNEDValue::parseQuantity()
 
   - New result filter: removeRepeats
+
+  - Feature: Just-in-Time debugging support. It adds the following new
+    configuration options: debugger-attach-on-startup=<bool>,
+    debugger-attach-on-error=<bool>, debugger-attach-command=<string>,
+    debugger-attach-wait-time=<time>. When any of the first two options are
+    set to true, the simulation kernel will launch an external debugger
+    attached to the simulation process at the appropriate time. The default
+    debugger on Linux is Nemiver.
 
 NED:
 

@@ -282,13 +282,6 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * for the default package, and "-" if the folder is outside all NED folders.
      */
     static std::string getNedPackageForFolder(const char *folder);
-
-    /**
-     * Discards all information loaded from NED files. This method may only be
-     * called immediately before exiting, because cModuleType/cChannelType
-     * objects may depend on the corresponding NED declarations being loaded.
-     */
-    static void clearLoadedNedFiles();
     //@}
 
     /** @name Setting up and finishing a simulation run. */

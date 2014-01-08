@@ -114,7 +114,7 @@ void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Int
 
 int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep);
 
-void inspectObjectByName(const char *fullpath, const char *classname, int insptype, const char *geometry);
+int inspectObjectByName(const char *fullpath, const char *classname, int insptype, const char *geometry);
 
 void textWidget_insert(Tcl_Interp *interp, const char *textWidget, const char *text, const char *tags=NULL);
 

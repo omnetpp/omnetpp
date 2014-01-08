@@ -46,9 +46,6 @@ proc createInspectorToplevel {w geom} {
     wm resizable $w 1 1
     wm protocol $w WM_DELETE_WINDOW "inspector:close $w"
 
-    inspectorList:remove $w
-    inspectorList:storeName $w
-
     # add the "Inspect As.." icon at the top
     frame $w.toolbar -relief raised -bd 1
     pack $w.toolbar -anchor w -side top -fill x -expand 0
@@ -192,9 +189,6 @@ proc inspector:close {w} {
 # gets called from C++
 #
 proc inspector:hostObjectDeleted {w} {
-    # if the insp window is destroyed because the object no longer exists,
-    # prepare to reopen it with same geometry if the object reappears
-    inspectorList:add $w
 }
 
 #

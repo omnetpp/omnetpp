@@ -32,6 +32,23 @@
 
 	* Followed cOutputVectorManager/cOutputScalarManager/cSnapshotManager
 	renaming in sim/ (they became cIOutputVectorManager, etc.)
+
+2013-12-20  ------ omnetpp-4.4 released ------
+
+2014-01-07  Andras Varga
+
+	* startup.cc: use CodeFragments::executeAll(CodeFragments::STARTUP) and
+	CodeFragments::executeAll(CodeFragments::SHUTDOWN) to run startup/cleanup
+	code fragments.
+
+2013-12-20  Andras Varga
+
+	* Feature: added Just-in-Time debugging. Adds the following config options:
+	  - debugger-attach-on-startup=<bool>
+	  - debugger-attach-on-error=<bool>
+	  - debugger-attach-command=<string>
+	  - debugger-attach-wait-time=<time>
+
 2013-10-28  Rudolf Hornig
 
 	* Fixes for compiling with clang

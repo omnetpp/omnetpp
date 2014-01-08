@@ -15,6 +15,13 @@
 
 ////////////// fixes cherry-picked from 4.x come here /////////////////
 
+2013-12-20  ------ omnetpp-4.4 released ------
+
+2013-12-20  Andras Varga
+
+	* Fix #702 "Message inspector windows keep coming back". Deleted objects are
+	no longer remembered as pending inspectors. 
+
 2013-11-29  Andras Varga
 
 	* Fix a Mac OS X problem: after hitting F5 (Run), the program stopped

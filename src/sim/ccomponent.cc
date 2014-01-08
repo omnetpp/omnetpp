@@ -53,6 +53,8 @@ bool cComponent::checkSignals;
 simsignal_t PRE_MODEL_CHANGE = cComponent::registerSignal("PRE_MODEL_CHANGE");
 simsignal_t POST_MODEL_CHANGE = cComponent::registerSignal("POST_MODEL_CHANGE");
 
+EXECUTE_ON_SHUTDOWN( cComponent::clearSignalRegistrations() );
+
 
 cComponent::cComponent(const char *name) : cDefaultList(name)
 {
@@ -378,6 +380,12 @@ void cComponent::clearSignalState()
     notificationSP = 0;
 }
 
+void cComponent::clearSignalRegistrations()
+{
+    delete signalNameMapping;
+    signalNameMapping = NULL;
+}
+
 cComponent::SignalData *cComponent::findSignalData(simsignal_t signalID) const
 {
     // note: we could use std::binary_search() instead of linear search here,
@@ -439,6 +447,7 @@ void cComponent::removeSignalData(simsignal_t signalID)
         // if found, remove
         if (i<n) {
             ASSERT(!(*signalTable)[i].hasListener()); // must not have listeners
+            (*signalTable)[i].dispose();
             signalTable->erase(signalTable->begin()+i);
         }
         if (signalTable->empty()) {

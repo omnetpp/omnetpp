@@ -106,6 +106,25 @@ debug-statistics-recording=<bool>, default:false; per-run setting
     Turns on the printing of debugging information related to statistics
     recording (@statistic properties)
 
+debugger-attach-command=<string>, default:nemiver --attach=%u &; global setting
+    Command line to launch the debugger. It must contain exactly one percent
+    sign, as '%u', which will be replaced by the PID of this process. The
+    command must not block (i.e. it should end in '&' on Unix-like systems).
+
+debugger-attach-on-error=<bool>, default:false; global setting
+    When set to true, runtime errors and crashes will trigger an external
+    debugger to be launched, allowing you to do just-in-time debugging on the
+    simulation process.
+
+debugger-attach-on-startup=<bool>, default:false; global setting
+    When set to true, the simulation program will launch an external debugger
+    attached to it, allowing you to set breakpoints before proceeding. The
+    debugger command is configurable.
+
+debugger-attach-wait-time=<double>, unit="s", default:20s; global setting
+    An interval to wait after launching the external debugger, to give the
+    debugger time to start up and attach to the simulation process.
+
 description=<string>; per-run setting
     Descriptive name for the given simulation configuration. Descriptions get
     displayed in the run selection dialog.
@@ -280,9 +299,10 @@ parsim-mpicommunications-mpibuffer=<int>; global setting
     specifies the size of the MPI communications buffer. The default is to
     calculate a buffer size based on the number of partitions.
 
-parsim-namedpipecommunications-prefix=<string>, default:omnetpp; global setting
+parsim-namedpipecommunications-prefix=<string>, default:comm/; global setting
     When cNamedPipeCommunications is selected as parsim communications class:
-    selects the name prefix for Windows named pipes created.
+    selects the prefix (directory+potential filename prefix) where name pipes
+    are created in the file system.
 
 parsim-nullmessageprotocol-laziness=<double>, default:0.5; global setting
     When cNullMessageProtocol is selected as parsim synchronization class:

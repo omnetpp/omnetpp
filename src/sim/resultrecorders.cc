@@ -34,6 +34,12 @@ Register_ResultRecorder("stats", StatsRecorder);
 Register_ResultRecorder("histogram", HistogramRecorder);
 
 
+VectorRecorder::~VectorRecorder()
+{
+    if (handle != NULL)
+        ev.deregisterOutputVector(handle);
+}
+
 void VectorRecorder::subscribedTo(cResultFilter *prev)
 {
     cNumericResultRecorder::subscribedTo(prev);

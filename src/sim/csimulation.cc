@@ -303,13 +303,6 @@ std::string cSimulation::getNedPackageForFolder(const char *folder)
 #endif
 }
 
-void cSimulation::clearLoadedNedFiles()
-{
-#ifdef WITH_NETBUILDER
-    cNEDLoader::clear();
-#endif
-}
-
 int cSimulation::registerModule(cModule *mod)
 {
     // Insert module into the vector.
@@ -874,6 +867,7 @@ class StaticEnv : public cEnvir
     virtual unsigned long getUniqueNumber()  {unsupported(); return 0;}
     virtual bool idle()  {return false;}
     virtual void attachDebugger() {}
+
     virtual void addHttpRequestHandler(cHttpRequestHandler *p) {}
     virtual void removeHttpRequestHandler(cHttpRequestHandler *p) {}
 

@@ -40,9 +40,22 @@ OMNeT++ 4.4
 
 (+)     cObjectFactory: added isInstance() method
 
-(+)	    Added Register_Abstract_Class() macro
+(+)     Added Register_Abstract_Class() macro
 
 (+)     cNEDValue: added two static parseQuantity() functions
+
+(+)     cEnvir: added attachDebugger() method
+
+(+)     cEnvir: added addResultRecorders() method that allows for setting up
+        declarative statistics collection on dynamically created signals
+        (see manual for details)
+
+(!)     cResultRecorder: init() method signature change
+
+(!)     In embedding uses, ExecuteOnStartup::executeAll() should be replaced
+        by CodeFragments::executeAll(CodeFragments::STARTUP), and the cleanup
+        code at the end of main() should be replaced by CodeFragments::
+        executeAll(CodeFragments::SHUTDOWN).
 
 
 OMNeT++ 4.3

@@ -1750,7 +1750,8 @@ int inspectByName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 
    const char *geometry = (argc==5) ? argv[4] : NULL;
 
-   inspectObjectByName(fullpath, classname, insptype, geometry);
+   int numOpened = inspectObjectByName(fullpath, classname, insptype, geometry);
+   Tcl_SetResult(interp, TCLCONST(numOpened==0 ? "0" : "1"), TCL_STATIC);
    return TCL_OK;
 }
 
