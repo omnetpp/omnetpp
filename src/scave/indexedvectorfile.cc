@@ -234,7 +234,7 @@ long IndexedVectorFileReader::collectEntriesInEventnumInterval(eventnumber_t sta
 #ifdef CHECK
 #undef CHECK
 #endif
-#define CHECK(printf) if (printf<0) throw opp_runtime_error("Cannot write vector file '%s'", fileName.c_str());
+#define CHECK(printf) if ((printf)<0) throw opp_runtime_error("Cannot write vector file '%s'", fileName.c_str());
 
 
 static FILE *openFile(const std::string fileName)
