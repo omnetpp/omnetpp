@@ -35,7 +35,9 @@ OBJS= $O/appreg.obj $O/args.obj $O/startup.obj $O/evmain.obj $O/logformatter.obj
       $O/statisticparser.obj $O/visitor.obj
 
 #TODO make configurable; put into separate lib? (src/httpserver)
-OBJS= $(OBJS) $O/httpserver.obj $O/mongoosehttpserver.obj $O/mongoose.obj $O/json.obj 
+OBJS= $(OBJS) $O/httpserver.obj $O/mongoosehttpserver.obj $O/mongoose.obj $O/json.obj
+
+GENERATED_SOURCES= eventlogwriter.cc eventlogwriter.h
 
 !if "$(LIB_SUFFIX)"==".dll"
 COPTS= $(COPTS) -DENVIR_EXPORT
@@ -134,13 +136,13 @@ $(OBJS): $O
 $O $L:
 	@md $(@:/=\)
 
-depend:
+depend: $(GENERATED_SOURCES)
 	$(qecho) Creating dependencies...
 	$(Q)$(MAKEDEPEND) -I../../include -fMakefile.vc -P^$O/ -- *.cc
 
 clean:
 	$(qecho) Cleaning...
-	-$(Q)del eventlogwriter.cc eventlogwriter.h 2>nul
+	-$(Q)del -f $(GENERATED_SOURCES) 2>nul
 	-$(Q)rmdir /s /q $(O:/=\) 2>nul
 	-$(Q)del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
 	-$(Q)cd $(OMNETPP_BIN_DIR:/=\) && del /q opp_run.exe* 2>nul

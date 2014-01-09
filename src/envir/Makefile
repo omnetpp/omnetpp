@@ -43,6 +43,8 @@ OBJS= $O/appreg.o $O/args.o $O/startup.o $O/evmain.o $O/logformatter.o $O/envirb
 #TODO make configurable; put into separate lib? (src/httpserver)
 OBJS += $O/httpserver.o $O/mongoosehttpserver.o $O/mongoose.o  $O/json.o
 
+GENERATED_SOURCES= eventlogwriter.cc eventlogwriter.h
+
 #
 # Automatic rules
 #
@@ -140,14 +142,14 @@ opp_run_executable:
 	@echo "Note: We don't create opp_run.exe when building static libs"
 endif
 
-depend:
+depend: $(GENERATED_SOURCES)
 	$(qecho) Creating dependencies...
 	$(Q)$(MAKEDEPEND) -I. -I../../include -P\$$O/ -- *.cc
 
 
 clean:
 	$(qecho) Cleaning...
-	$(Q)rm -f eventlogwriter.cc eventlogwriter.h
+	$(Q)rm -f $(GENERATED_SOURCES)
 	$(Q)rm -rf $O
 	$(Q)rm -f $L/$(LIBNAME).* $(OMNETPP_LIB_DIR)/$(LIBNAME).*
 	$(Q)cd $(OMNETPP_BIN_DIR) && rm -f opp_run$(EXE_SUFFIX)
