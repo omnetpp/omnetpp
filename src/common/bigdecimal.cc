@@ -17,6 +17,7 @@
 #include <sstream>
 #include <assert.h>
 #include <string.h>
+#include <algorithm>
 #include "opp_ctype.h"
 #include "platmisc.h"
 #include "bigdecimal.h"

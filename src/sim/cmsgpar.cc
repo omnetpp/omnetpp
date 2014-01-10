@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <algorithm>
 #include "opp_ctype.h"
 #include "cmsgpar.h"
 #include "cstatistic.h"

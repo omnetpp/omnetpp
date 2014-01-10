@@ -19,6 +19,7 @@
 
 #include <math.h>
 #include <vector>
+#include <algorithm>
 #include "layoutdefs.h"
 #include "commonutil.h"
 #include "exception.h"

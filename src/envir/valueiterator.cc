@@ -17,6 +17,7 @@
 
 #include <math.h>
 #include <locale.h>
+#include <algorithm>
 #include "opp_ctype.h"
 #include "valueiterator.h"
 #include "stringutil.h"

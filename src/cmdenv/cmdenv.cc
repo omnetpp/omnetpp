@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+#include <algorithm>
 
 #include "opp_ctype.h"
 #include "cmddefs.h"
