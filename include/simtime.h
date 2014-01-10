@@ -274,7 +274,7 @@ class SIM_API SimTime
      * beginning. Please read the documentation of ttoa() for the minimum
      * required buffer size.
      */
-    char *str(char *buf) {char *endp; return SimTime::ttoa(buf, t, getScaleExp(), endp);}
+    char *str(char *buf) const {char *endp; return SimTime::ttoa(buf, t, getScaleExp(), endp);}
 
     /**
      * Returns the underlying 64-bit integer.
