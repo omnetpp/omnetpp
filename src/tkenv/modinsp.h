@@ -18,6 +18,7 @@
 #define __MODINSP_H
 
 #include <map>
+#include "platmisc.h"   // must precede <tk.h> otherwise Visual Studio 2013 fails to compile
 #include <tk.h>
 #include "csimplemodule.h"
 #include "cchannel.h"

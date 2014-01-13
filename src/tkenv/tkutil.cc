@@ -21,7 +21,6 @@
 #include <string.h>
 #include <time.h>
 #include <assert.h>
-#include <tk.h>
 
 #include "cownedobject.h"
 #include "cmodule.h"
