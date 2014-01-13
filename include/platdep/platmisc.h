@@ -125,7 +125,7 @@ inline std::string opp_getWindowsError(DWORD errorCode)
 //
 // gcvt -- FreeBSD does not have it
 //
-#if defined __FreeBSD__
+#if defined __FreeBSD__ || defined __ANDROID__
 inline char *gcvt(double value, int ndigit, char *buf)
 {
     sprintf(buf, "%.*g", ndigit, value);
@@ -153,7 +153,7 @@ typedef int64 file_offset_t;  // off_t on Linux
   #define opp_stat_t _stati64 // name of the struct
   #define opp_stat _stati64    // name of the function
   #define opp_fstat _fstati64
-#elif defined __APPLE__ || defined __FreeBSD__
+#elif defined __APPLE__ || defined __FreeBSD__ || defined __ANDROID__
   #define opp_ftell ftello
   #define opp_fseek fseeko
   #define opp_stat_t stat

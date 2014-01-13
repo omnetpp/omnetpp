@@ -20,6 +20,11 @@
 #ifdef _WIN32
 #include <io.h>
 #include <stdlib.h> // _MAX_PATH
+#elif defined __ANDROID__
+#include <dirent.h>
+#include <errno.h>
+#include <fnmatch.h>
+#include <limits.h>
 #else
 #include <sys/types.h>
 #include <glob.h>
