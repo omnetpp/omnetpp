@@ -117,7 +117,7 @@ inline std::string opp_getWindowsError(DWORD errorCode)
 }
 #endif
 
-#ifdef _MSC_VER
+#if defined _MSC_VER && _MSC_VER<1800
 #define va_copy(dst, src) ((void)((dst) = (src)))
 #endif
 
