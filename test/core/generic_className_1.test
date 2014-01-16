@@ -19,7 +19,6 @@ PRINT_CLASSNAME( cFSM )
 PRINT_CLASSNAME( cLongHistogram )
 PRINT_CLASSNAME( cDoubleHistogram )
 PRINT_CLASSNAME( cKSplit )
-PRINT_CLASSNAME( cLinkedList )
 PRINT_CLASSNAME( cMessage )
 PRINT_CLASSNAME( cMessageHeap )
 PRINT_CLASSNAME( cObject )
@@ -39,7 +38,6 @@ cFSM: cFSM
 cLongHistogram: cLongHistogram
 cDoubleHistogram: cDoubleHistogram
 cKSplit: cKSplit
-cLinkedList: cLinkedList
 cMessage: cMessage
 cMessageHeap: cMessageHeap
 cObject: cObject

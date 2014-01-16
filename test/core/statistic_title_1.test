@@ -5,6 +5,8 @@ Test $-fields for the result title attribute
 
 simple Node
 {
+    @signal[foo];
+    @signal[bar];
     @statisticTemplate[qlen](record=count,mean; title="Queue Length of $namePart2: -- component: $component, statistic: $name, recording mode: $mode");
 }
 
@@ -51,7 +53,7 @@ Define_Module(Node);
 %subst: /-?1\.#QNAN/nan/
 %subst: /-?:NaN/:nan/
 
-%contains: test.sca
+%contains: results/General-0.sca
 scalar Test.node 	queueLength:q2:count 	2
 attr title  "Queue Length of q2: -- component: Test.node, statistic: queueLength:q2, recording mode: count"
 scalar Test.node 	queueLength:q2:mean 	3
