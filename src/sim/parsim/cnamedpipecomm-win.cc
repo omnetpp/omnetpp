@@ -35,6 +35,7 @@
 #include "regmacros.h"
 #include "cenvir.h"
 #include "clog.h"
+#include "csimulation.h"
 #include "cconfiguration.h"
 #include "cconfigoption.h"
 #include "parsimutil.h"

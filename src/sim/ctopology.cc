@@ -188,7 +188,7 @@ void cTopology::extractFromNetwork(bool (*predicate)(cModule *,void *), void *da
     clear();
 
     // Loop through all modules and find those that satisfy the criteria
-    for (int modId=0; modId<=simulation.getLastModuleId(); modId++)
+    for (int modId=0; modId<=simulation.getLastComponentId(); modId++)
     {
         cModule *module = simulation.getModule(modId);
         if (module && predicate(module, data)) {

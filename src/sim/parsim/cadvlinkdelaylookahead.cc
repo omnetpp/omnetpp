@@ -69,7 +69,7 @@ void cAdvancedLinkDelayLookahead::startRun()
     EV << "  collecting links...\n";
 
     // step 1: count gates
-    for (int modId=0; modId<=sim->getLastModuleId(); modId++)
+    for (int modId=0; modId<=sim->getLastComponentId(); modId++)
     {
         cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->getModule(modId));
         if (mod)
@@ -94,7 +94,7 @@ void cAdvancedLinkDelayLookahead::startRun()
     }
 
     // step 3: fill in
-    for (int modId=0; modId<=sim->getLastModuleId(); modId++)
+    for (int modId=0; modId<=sim->getLastComponentId(); modId++)
     {
         cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->getModule(modId));
         if (mod)

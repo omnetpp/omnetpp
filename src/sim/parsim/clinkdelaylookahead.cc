@@ -65,7 +65,7 @@ void cLinkDelayLookahead::startRun()
 
     // fill in minDelays
     EV << "  calculating minimum link delays...\n";
-    for (int modId=0; modId<=sim->getLastModuleId(); modId++)
+    for (int modId=0; modId<=sim->getLastComponentId(); modId++)
     {
         cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->getModule(modId));
         if (mod)

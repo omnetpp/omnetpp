@@ -84,8 +84,8 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/ctimestampedvalue.h \
   ../../include/checkandcast.h \
   ../envir/envirdefs.h \
-  ../../include/cnamedobject.h \
   ../../include/cexpression.h \
+  ../../include/cnamedobject.h \
   cmddefs.h \
   ../../include/ccompoundmodule.h \
   ../envir/objectprinter.h \
@@ -100,12 +100,12 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/cownedobject.h \
   ../../include/cmessage.h \
   ../../include/onstartup.h \
-  ../../include/cresultlistener.h \
   ../../include/clifetimelistener.h \
+  ../../include/cresultlistener.h \
   ../envir/visitor.h \
   ../envir/envirbase.h \
-  ../../include/envirext.h \
   ../../include/clistener.h \
+  ../../include/envirext.h \
   ../../include/cscheduler.h \
   ../../include/cpar.h \
   ../../include/cresultrecorder.h \
@@ -130,8 +130,8 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/carray.h \
-  ../../include/cenvir.h \
   ../../include/simtime_t.h \
+  ../../include/cenvir.h \
   ../../include/cmsgpar.h \
   ../../include/cconfigoption.h \
   ../../include/cclassdescriptor.h \
@@ -148,13 +148,13 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/cstringpool.h \
   serializer.h \
   ../../include/cresultfilter.h \
-  ../../include/clog.h \
   ../envir/httpserver.h \
+  ../../include/clog.h \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
   ../../include/cstddev.h \
-  ../../include/simutil.h \
   ../../include/cmessageheap.h \
+  ../../include/simutil.h \
   ../../include/cproperty.h
 $O/serializer.o: serializer.cc \
   ../../include/regmacros.h \

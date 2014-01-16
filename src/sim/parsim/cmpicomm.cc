@@ -28,6 +28,7 @@
 #include "globals.h"
 #include "regmacros.h"
 #include "cenvir.h"
+#include "csimulation.h"
 #include "cconfiguration.h"
 #include "cconfigoption.h"
 #include "platmisc.h"

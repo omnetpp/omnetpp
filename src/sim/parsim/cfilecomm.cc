@@ -31,6 +31,7 @@
 #include "cconfigoption.h"
 #include "regmacros.h"
 #include "cenvir.h"
+#include "csimulation.h"
 #include "cconfiguration.h"
 #include "parsimutil.h"
 #include "fileglobber.h"

@@ -20,6 +20,7 @@
 
 #include <string.h>
 #include "cenvir.h"
+#include "csimulation.h"
 #include "parsimutil.h"
 #include "cexception.h"
 

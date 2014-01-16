@@ -20,6 +20,7 @@
 #include "clog.h"
 #include "simutil.h"
 #include "cenvir.h"
+#include "csimulation.h"
 #include "cexception.h"
 #include "cconfigoption.h"
 

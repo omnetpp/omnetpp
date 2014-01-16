@@ -439,8 +439,8 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
   ../../include/cstddev.h \
-  ../../include/cmessageheap.h \
-  ../../include/simutil.h
+  ../../include/simutil.h \
+  ../../include/cmessageheap.h
 $O/logbuffer.o: logbuffer.cc \
   ../../include/regmacros.h \
   logbuffer.h \
@@ -545,8 +545,8 @@ $O/modinsp.o: modinsp.cc \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
   ../../include/cstddev.h \
-  ../../include/cmessageheap.h \
   ../../include/simutil.h \
+  ../../include/cmessageheap.h \
   tkenv.h
 $O/objinsp.o: objinsp.cc \
   ../envir/args.h \
@@ -728,11 +728,10 @@ $O/statinsp.o: statinsp.cc \
   ../../include/cdefaultlist.h \
   ../../include/cdensityestbase.h \
   ../../include/cstddev.h \
-  ../../include/cmessageheap.h \
   ../../include/simutil.h \
+  ../../include/cmessageheap.h \
   tkenv.h \
   statinsp.h
-$O/tclcode.o: tclcode.cc
 $O/tkcmd.o: tkcmd.cc \
   ../envir/args.h \
   ../../include/regmacros.h \
@@ -805,8 +804,8 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
   ../../include/cstddev.h \
-  ../../include/simutil.h \
   ../../include/cmessageheap.h \
+  ../../include/simutil.h \
   tkenv.h
 $O/tkenv.o: tkenv.cc \
   ../envir/args.h \
@@ -835,7 +834,6 @@ $O/tkenv.o: tkenv.cc \
   ../../include/clistener.h \
   ../../include/cscheduler.h \
   ../../include/cpar.h \
-  tclcode.cc \
   ../../include/globals.h \
   ../envir/appreg.h \
   ../../include/cvisitor.h \

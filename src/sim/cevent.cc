@@ -20,6 +20,7 @@
 #include <sstream>
 #include "globals.h"
 #include "cevent.h"
+#include "csimulation.h"
 #include "cexception.h"
 #include "cenvir.h"
 

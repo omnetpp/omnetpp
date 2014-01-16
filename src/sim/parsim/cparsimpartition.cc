@@ -100,7 +100,7 @@ void cParsimPartition::connectRemoteGates()
     // proxy gates in other partitions (as they need to redirect here)
     //
     EV << "connecting remote gates: step 1 - broadcasting input gates...\n";
-    for (int modId=0; modId<=sim->getLastModuleId(); modId++)
+    for (int modId=0; modId<=sim->getLastComponentId(); modId++)
     {
         cModule *mod = sim->getModule(modId);
         if (mod && !mod->isPlaceholder())
@@ -193,7 +193,7 @@ void cParsimPartition::connectRemoteGates()
     comm->recycleCommBuffer(buffer);
 
     // verify that all gates have been connected
-    for (int modId=0; modId<=sim->getLastModuleId(); modId++)
+    for (int modId=0; modId<=sim->getLastComponentId(); modId++)
     {
         cModule *mod = sim->getModule(modId);
         if (mod && mod->isPlaceholder())

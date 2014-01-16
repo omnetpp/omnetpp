@@ -22,7 +22,6 @@
 #include "simkerneldefs.h"
 #include "simtime_t.h"
 #include "opp_string.h"
-#include "csimulation.h"
 #include "clistener.h"  // for simsignal_t
 #include "clifetimelistener.h"
 
@@ -31,6 +30,7 @@ NAMESPACE_BEGIN
 class cObject;
 class cOwnedObject;
 class cLogEntry;
+class cEvent;
 class cMessage;
 class cPar;
 class cGate;

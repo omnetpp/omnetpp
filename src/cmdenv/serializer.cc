@@ -214,8 +214,8 @@ JsonObject *Serializer::serializeObject(cObject *obj, JsonObject *jObject, int64
         jObject->put("scheduler", jsonWrap(getIdStringForObject(sim->getScheduler())));
         jObject->put("messageQueue", jsonWrap(getIdStringForObject(&sim->getMessageQueue())));
         JsonArray *jmodules = new JsonArray();
-        for (int id = 0; id <= sim->getLastModuleId(); id++)
-            jmodules->push_back(jsonWrap(getIdStringForObject(sim->getModule(id))));
+        for (int id = 0; id <= sim->getLastComponentId(); id++)
+            jmodules->push_back(jsonWrap(getIdStringForObject(sim->getModule(id)))); //FIXME rather: getComponent() !!!!!
         jObject->put("modules", jmodules);
     }
 

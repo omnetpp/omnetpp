@@ -16,6 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include "cresultlistener.h"
+#include "csimulation.h"
 #include "ccomponent.h"
 #include "ctimestampedvalue.h"
 #include "exception.h"

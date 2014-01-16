@@ -38,6 +38,7 @@
 #include "regmacros.h"
 #include "cconfigoption.h"
 #include "cenvir.h"
+#include "csimulation.h"
 #include "cconfiguration.h"
 #include "parsimutil.h"
 

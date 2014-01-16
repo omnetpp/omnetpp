@@ -24,6 +24,7 @@
 
 #include "logformatter.h"
 #include "carray.h"
+#include "csimulation.h"
 #include "ccomponent.h"
 #include "globals.h"
 #include "cenvir.h"

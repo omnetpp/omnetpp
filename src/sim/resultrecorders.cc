@@ -18,6 +18,7 @@
 #include "resultrecorders.h"
 #include "cproperty.h"
 #include "chistogram.h"
+#include "csimulation.h"
 
 NAMESPACE_BEGIN
 
