@@ -314,8 +314,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     cOwnedObject::setDefaultOwner(oldlist);
 
     // register with cSimulation
-    int id = simulation.registerModule(mod);
-    mod->setId(id);
+    simulation.registerComponent(mod);
 
     // set up RNG mapping
     ev.getRNGMappingFor(mod);
@@ -454,6 +453,9 @@ cChannel *cChannelType::create(const char *name)
 
     // restore defaultowner
     cOwnedObject::setDefaultOwner(oldlist);
+
+    // register with cSimulation
+    simulation.registerComponent(channel);
 
     // set up RNG mapping
     ev.getRNGMappingFor(channel);

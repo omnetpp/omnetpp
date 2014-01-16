@@ -47,6 +47,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     friend class cChannel; // allow it to access FL_INITIALIZED and releaseLocalListeners()
     friend class cModule; // allow it to access FL_INITIALIZED, releaseLocalListeners() and repairSignalFlags()
     friend class cGate;   // because of repairSignalFlags()
+    friend class cSimulation; // sets componentId
 
   private:
     enum {
@@ -60,6 +61,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
 
   private:
     cComponentType *componenttype;  // component type object
+    int componentId;   // id in cSimulation
 
     short rngmapsize;  // size of rngmap array (RNGs>=rngmapsize are mapped one-to-one to physical RNGs)
     int *rngmap;       // maps local RNG numbers (may be NULL if rngmapsize==0)
@@ -299,6 +301,15 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     cComponentType *getComponentType() const;
 
     /**
+     * Returns the component's ID in the simulation object (cSimulation).
+     * Component IDs are guaranteed to be unique during a simulation run
+     * (that is, IDs of deleted components are not reused for new components.)
+     *
+     * @see cSimulation::getComponent(), cSimulation::getModule(), cSimulation::getChannel()
+     */
+    int getId() const  {return componentId;}
+
+    /**
      * Returns the fully qualified NED type name of the component (i.e. the
      * simple name prefixed with the package name and any existing enclosing
      * NED type names).
@@ -328,7 +339,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * Returns the global RNG mapped to local RNG number k. For large indices
      * (k >= map size) the global RNG k is returned, provided it exists.
      */
-    cRNG *getRNG(int k) const  {return ev.getRNG(k<rngmapsize ? rngmap[k] : k);}
+    cRNG *getRNG(int k) const;
     //@}
 
     /** @name Interface for calling initialize()/finish().

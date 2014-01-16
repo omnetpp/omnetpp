@@ -23,6 +23,7 @@
 #include "simkerneldefs.h"
 #include "simtime_t.h"
 #include "cmessageheap.h"
+#include "ccomponent.h"
 #include "cexception.h"
 
 NAMESPACE_BEGIN
@@ -31,7 +32,9 @@ NAMESPACE_BEGIN
 class  cEvent;
 class  cMessage;
 class  cGate;
+class  cComponent;
 class  cModule;
+class  cChannel;
 class  cSimpleModule;
 class  cCompoundModule;
 class  cSimulation;
@@ -81,8 +84,8 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     // variables of the module vector
     int size;                 // size of vector
     int delta;                // if needed, grows by delta
-    cModule **vect;           // vector of modules, vect[0] is not used
-    int last_id;              // index of last used pos. in vect[]
+    cComponent **vect;        // vector of modules/channels, vect[0] is not used
+    int last_id;               // index of last used pos. in vect[]
 
     // simulation vars
     cEnvir *ownEvPtr;         // the environment that belongs to this simulation object
@@ -186,23 +189,23 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     //@{
 
     /**
-     * Registers the module in cSimulation and assigns a module Id. It is called
-     * internally during module creation. The Id of a deleted module is not
-     * issued again to another module, because we want module Ids to be
-     * unique during the whole simulation.
+     * Registers the component in cSimulation and assigns it an ID. It is called
+     * internally during component creation. The ID of a deleted component is not
+     * issued again to another component, because we want IDs to be unique during
+     * the whole simulation.
      */
-    int registerModule(cModule *mod);
+    int registerComponent(cComponent *component);
 
     /**
-     * Deregisters the module from cSimulation. It is called internally from cModule
-     * destructor.
+     * Deregisters the component from cSimulation. It is called internally from
+     * cComponent's destructor.
      */
-    void deregisterModule(cModule *mod);
+    void deregisterComponent(cComponent *component);
 
     /**
-     * Returns highest used module ID.
+     * Returns the highest used component ID.
      */
-    int getLastModuleId() const    {return last_id;}
+    int getLastComponentId() const    {return last_id;}
 
     /**
      * Finds a module by its path. The path is a string of module names
@@ -212,9 +215,22 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cModule *getModuleByPath(const char *modulepath) const;
 
     /**
-     * Looks up a module by ID. If the module does not exist, returns NULL.
+     * Looks up a component (module or channel) by ID. If the ID does not identify
+     * a component (e.g. invalid ID or component already deleted), it returns NULL.
      */
-    cModule *getModule(int id) const  {return id>=0 && id<size ? vect[id] : NULL;}
+    cComponent *getComponent(int id) const  {return id<0 || id>=size ? NULL : vect[id];}
+
+    /**
+     * Looks up a module by ID. If the ID does not identify a module (e.g. invalid ID,
+     * module already deleted, or object is not a module), it returns NULL.
+     */
+    cModule *getModule(int id) const  {return id<0 || id>=size || !vect[id] ? NULL : vect[id]->isModule() ? (cModule *)vect[id] : NULL;}
+
+    /**
+     * Looks up a channel by ID. If the ID does not identify a channel (e.g. invalid ID,
+     * channel already deleted, or object is not a channel), it returns NULL.
+     */
+    cChannel *getChannel(int id) const  {return id<0 || id>=size || !vect[id] ? NULL : vect[id]->isChannel() ? (cChannel *)vect[id] : NULL;}
 
     /**
      * Designates the system module, the top-level module in the model.

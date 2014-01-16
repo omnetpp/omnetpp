@@ -59,6 +59,7 @@ EXECUTE_ON_SHUTDOWN( cComponent::clearSignalRegistrations() );
 cComponent::cComponent(const char *name) : cDefaultList(name)
 {
     componenttype = NULL;
+    componentId = -1;
     rngmapsize = 0;
     rngmap = 0;
 
@@ -74,6 +75,9 @@ cComponent::cComponent(const char *name) : cDefaultList(name)
 
 cComponent::~cComponent()
 {
+    if (componentId!=-1)
+        simulation.deregisterComponent(this);
+
     ASSERT(signalTable==NULL); // note: releaseLocalListeners() gets called in subclasses, ~cModule and ~cChannel
     delete [] rngmap;
     delete [] paramv;
@@ -121,6 +125,11 @@ cComponentType *cComponent::getComponentType() const
 const char *cComponent::getNedTypeName() const
 {
     return getComponentType()->getFullName();
+}
+
+cRNG *cComponent::getRNG(int k) const
+{
+    return ev.getRNG(k<rngmapsize ? rngmap[k] : k);
 }
 
 void cComponent::setLoglevel(LogLevel loglevel)

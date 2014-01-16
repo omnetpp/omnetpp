@@ -1,3 +1,14 @@
+2014-01-16  Andras Varga
+
+	* cSimulation: store cComponent* not cModule*, to give cChannels IDs
+
+	API changes:
+	- getId() was moved from cModule to cComponent, so now cChannel inherits it
+	- cSimulation: getLastModuleId() renamed to getLastComponentId()
+	- cSimulation: added getChannel(id) and getComponent(id) to already existing
+	  getModule(id)
+	- cSimulation: internal functions registerModule()/deregisterModule() renamed
+
 2013-09-26  Andras Varga, Levente Meszaros
 
 	* New logging API. It features 6 log levels (FATAL, ERROR, WARN, INFO,

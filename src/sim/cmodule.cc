@@ -51,7 +51,6 @@ bool cModule::cachefullpath = true;  // fullpath is useful during debugging
 
 cModule::cModule()
 {
-    mod_id = -1;
     idx = 0;
     vectsize = -1;
     fullpath = NULL;
@@ -109,8 +108,6 @@ cModule::~cModule()
     clearGates();
 
     // deregister ourselves
-    if (mod_id!=-1)
-        simulation.deregisterModule(this);
     if (getParentModule())
         getParentModule()->removeSubmodule(this);
 
@@ -136,11 +133,6 @@ void cModule::forEachChild(cVisitor *v)
         v->visit(i());
 
     cDefaultList::forEachChild(v);
-}
-
-void cModule::setId(int n)
-{
-    mod_id = n;
 }
 
 void cModule::setNameAndIndex(const char *s, int i, int n)

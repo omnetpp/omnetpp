@@ -1,3 +1,8 @@
+2014-04-16  Andras Varga
+
+	* cSimulation, cComponent, cModule: implemented change: cSimulation to store
+	cComponent* not cModule*, so that cChannels have IDs too
+
 2013-09-26  Andras Varga
 
 	* Implementation of the new logging API, see include/ChangeLog.

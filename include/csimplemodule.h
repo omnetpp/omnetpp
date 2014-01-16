@@ -86,9 +86,6 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     // internal use
     virtual void arrived(cMessage *msg, cGate *ongate, simtime_t t);
 
-    // internal: sets the module id.
-    virtual void setId(int n);
-
   protected:
     /** @name Hooks for defining module behavior.
      *

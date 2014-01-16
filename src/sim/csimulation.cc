@@ -303,35 +303,34 @@ std::string cSimulation::getNedPackageForFolder(const char *folder)
 #endif
 }
 
-int cSimulation::registerModule(cModule *mod)
+int cSimulation::registerComponent(cComponent *component)
 {
-    // Insert module into the vector.
-    // The module will get (last_id+1) as ID. We do not reuse "holes"
-    // (empty slots) in the vector because we want the module ids to be
-    // unique during the whole simulation.
-
     last_id++;
 
     if (last_id>=size)
     {
         // vector full, grow by delta
-        cModule **v = new cModule *[size+delta];
-        memcpy(v, vect, sizeof(cModule*)*size );
+        cComponent **v = new cComponent *[size+delta];
+        memcpy(v, vect, sizeof(cComponent*)*size );
         for (int i=size; i<size+delta; i++) v[i]=NULL;
         delete [] vect;
         vect = v;
         size += delta;
     }
-    vect[last_id] = mod;
-    return last_id;
+
+    int id = last_id;
+    vect[id] = component;
+    component->componentId = id;
+    return id;
 }
 
-void cSimulation::deregisterModule(cModule *mod)
+void cSimulation::deregisterComponent(cComponent *component)
 {
-    int id = mod->getId();
+    int id = component->componentId;
+    component->componentId = -1;
     vect[id] = NULL;
 
-    if (mod==systemmodp)
+    if (component==systemmodp)
     {
         drop(systemmodp);
         systemmodp = NULL;

@@ -270,14 +270,6 @@ void cSimpleModule::forEachChild(cVisitor *v)
     cModule::forEachChild(v);
 }
 
-void cSimpleModule::setId(int n)
-{
-    cModule::setId(n);
-
-    if (timeoutmsg)
-        timeoutmsg->setArrival(this, n);
-}
-
 void cSimpleModule::halt()
 {
     if (!usesActivity())

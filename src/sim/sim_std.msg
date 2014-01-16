@@ -438,9 +438,9 @@ class cSimulation extends cNoncopyableOwnedObject
     simtime_t simTime @hint("The current simulation time in seconds");
     int64 eventNumber @hint("The current event number -- counts from 0 up");
     cMessageHeap messageQueue @label(futureEvents) @hint("Self-messages scheduled, and messages in transit");
-    int lastModuleId @group(modules) @hint("The largest module ID issued so far");
-    cModule *systemModule @group(modules) @hint("The top-level module");
-    cModule *module[] @sizeGetter(getLastModuleId) @group(modules) @label(modules) @hint("List of modules, indexed with module ID");
+    int lastComponentId @group(components) @hint("The largest component ID issued so far");
+    cModule *systemModule @group(components) @hint("The top-level module");
+    cComponent *component[] @sizeGetter(getLastComponentId) @group(components) @label(components) @hint("List of components indexed by component ID");
     cHasher *hasher @hint("Used for fingerprint calculation");
 }
 
