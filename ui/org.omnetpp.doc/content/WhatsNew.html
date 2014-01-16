@@ -584,7 +584,7 @@ about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.</p
 <div class="ulist"><ul>
 <li>
 <p>
-Feature: Optional signal checking. When signal checking is turned on,
+    Support for optional signal checking. When signal checking is turned on,
     signals emitted by modules/channels must be declared with a @signal property
     in the module&#8217;s or channel&#8217;s NED description; undeclared signals will result
     in a runtime error. Signal declarations are of the form
@@ -603,6 +603,22 @@ the class name. Example:</p></div>
 </div></div>
 <div class="paragraph"><p>This feature is controlled by the check-signals=&lt;bool&gt; configuration
 option, and it is turned off by default for now.</p></div>
+</li>
+<li>
+  <p>
+    Support for @statistic-style declarative result recording on dynamically
+    registered signals (e.g. "conn-<n>" where n is an integer). Instead of
+    @statistic, add a @statisticTemplate property in the NED file, and for
+    each new signal call ev.addResultRecorders(...).
+  </p>
+</li>
+<li>
+  <p>
+    Support for programmatically adding result filters and recorders on
+    signals: cResultRecorder has been revised to allow result recorders
+    to be used without a corresponding @statistic attribute, e.g. they
+    can now be added to signals programmatically.    
+  </p>
 </li>
 <li>
 <p>
