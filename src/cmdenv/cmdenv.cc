@@ -1911,9 +1911,9 @@ void Cmdenv::moduleDeleted(cModule *module)
     EnvirBase::moduleDeleted(module);
 }
 
-void Cmdenv::moduleReparented(cModule *module, cModule *oldparent)
+void Cmdenv::moduleReparented(cModule *module, cModule *oldparent, int oldId)
 {
-    EnvirBase::moduleReparented(module, oldparent);
+    EnvirBase::moduleReparented(module, oldparent, oldId);
 }
 
 void Cmdenv::gateCreated(cGate *newgate)

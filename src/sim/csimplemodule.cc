@@ -625,7 +625,7 @@ void cSimpleModule::wait(simtime_t t)
     if (t<SIMTIME_ZERO)
         throw cRuntimeError(E_NEGTIME);
 
-    timeoutmsg->setArrivalTime(simTime()+t);
+    timeoutmsg->setArrival(this, -1, simTime()+t);
     EVCB.messageScheduled(timeoutmsg);
     simulation.insertEvent(timeoutmsg);
 
@@ -652,7 +652,7 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
     if (!queue)
         throw cRuntimeError("waitAndEnqueue(): queue pointer is NULL");
 
-    timeoutmsg->setArrivalTime(simTime()+t);
+    timeoutmsg->setArrival(this, -1, simTime()+t);
     EVCB.messageScheduled(timeoutmsg);
     simulation.insertEvent(timeoutmsg);
 
@@ -696,7 +696,7 @@ cMessage *cSimpleModule::receive(simtime_t t)
     if (t<SIMTIME_ZERO)
         throw cRuntimeError(E_NEGTOUT);
 
-    timeoutmsg->setArrivalTime(simTime()+t);
+    timeoutmsg->setArrival(this, -1, simTime()+t);
     EVCB.messageScheduled(timeoutmsg);
     simulation.insertEvent(timeoutmsg);
 

@@ -1601,9 +1601,9 @@ void Tkenv::moduleDeleted(cModule *module)
     modinsp->submoduleDeleted(module);
 }
 
-void Tkenv::moduleReparented(cModule *module, cModule *oldparent)
+void Tkenv::moduleReparented(cModule *module, cModule *oldparent, int oldId)
 {
-    EnvirBase::moduleReparented(module, oldparent);
+    EnvirBase::moduleReparented(module, oldparent, oldId);
 
     // pretend it got deleted from under the 1st module, and got created under the 2nd
     TInspector *insp = findInspector(oldparent,INSP_GRAPHICAL);

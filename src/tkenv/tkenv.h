@@ -169,7 +169,7 @@ class TKENV_API Tkenv : public EnvirBase
       virtual void componentMethodEnd();
       virtual void moduleCreated(cModule *newmodule);
       virtual void moduleDeleted(cModule *module);
-      virtual void moduleReparented(cModule *module, cModule *oldparent);
+      virtual void moduleReparented(cModule *module, cModule *oldparent, int oldId);
       virtual void connectionCreated(cGate *srcgate);
       virtual void connectionDeleted(cGate *srcgate);
       virtual void displayStringChanged(cComponent *component);

@@ -603,10 +603,10 @@ void EventlogFileManager::moduleDeleted(cModule *module)
     }
 }
 
-void EventlogFileManager::moduleReparented(cModule *module, cModule *oldparent)
+void EventlogFileManager::moduleReparented(cModule *module, cModule *oldparent, int oldId)
 {
     if (isEventLogRecordingEnabled) {
-        EventLogWriter::recordModuleReparentedEntry_id_p(feventlog, module->getId(), module->getParentModule()->getId());
+        EventLogWriter::recordModuleReparentedEntry_id_p_nid(feventlog, oldId, module->getParentModule()->getId(), module->getId());
         entryIndex++;
     }
 }

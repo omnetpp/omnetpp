@@ -803,7 +803,7 @@ class StaticEnv : public cEnvir
     virtual void messageCreated(cMessage *msg)  {}
     virtual void messageCloned(cMessage *msg, cMessage *clone)  {}
     virtual void messageDeleted(cMessage *msg)  {}
-    virtual void moduleReparented(cModule *module, cModule *oldparent)  {}
+    virtual void moduleReparented(cModule *module, cModule *oldparent, int oldId)  {}
     virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent)  {}
     virtual void componentMethodEnd()  {}
     virtual void moduleCreated(cModule *newmodule)  {}

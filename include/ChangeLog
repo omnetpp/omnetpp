@@ -1,3 +1,15 @@
+2014-01-18  Andras Varga
+
+	* cModule: changeParentTo() will now assign a new ID to the module.
+	This usually causes no problem in the simulation's operation, but
+	if your model stores module IDs somewhere, you'll need to invalidate or
+	update them manually.
+
+	Motivation: we want to have a time-independent moduleId-to-fullPath
+	mapping, as it would allow a lot simpler and more efficient data
+	structures in GUI parts (Tkenv, Sequence Chart, Simulation Front-End,
+	etc.)
+
 2014-01-16  Andras Varga
 
 	* cSimulation: store cComponent* not cModule*, to give cChannels IDs
@@ -114,18 +126,18 @@
 	* envirext.h: renamed cOutputVectorManager, cOutputScalarManager and
 	cSnapshotManager to include an "I" (for interface) ->
 	cIOutputVectorManager, cIOutputScalarManager, cSnapshotManager.
-	
+
 2013-12-20  ------ omnetpp-4.4 released ------
 
 2014-01-07  Andras Varga
 
 	* Added the EXECUTE_ON_SHUTDOWN() macro
 
-	* Embedding: Code registered with EXECUTE_ON_STARTUP() can now be run 
+	* Embedding: Code registered with EXECUTE_ON_STARTUP() can now be run
 	with CodeFragments::executeAll(CodeFragments::STARTUP) (instead of the
 	old ExecuteOnStartup::executeAll()) and code registered with the new
 	EXECUTE_ON_SHUTDOWN() macro can be run with CodeFragments::executeAll(
-	CodeFragments::SHUTDOWN). These calls usually occur at the top and 
+	CodeFragments::SHUTDOWN). These calls usually occur at the top and
 	bottom of the main() function of the simulation program.
 
 2013-12-20  Andras Varga
@@ -172,9 +184,9 @@
 	clean. It would be better to do the other way round (let non-const
 	delegate to the const version), however, for that the listeners would
 	have to accept const pointer which would be a painful change
-	
+
 2013-10-29  Andras Varga
-	
+
 	* signals: cIListener: added receiveSignal() overload for the bool type.
 	(Before it was channelled into long.)
 

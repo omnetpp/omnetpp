@@ -1437,10 +1437,10 @@ void EnvirBase::moduleDeleted(cModule *module)
         eventlogmgr->moduleDeleted(module);
 }
 
-void EnvirBase::moduleReparented(cModule *module, cModule *oldparent)
+void EnvirBase::moduleReparented(cModule *module, cModule *oldparent, int oldId)
 {
     if (record_eventlog)
-        eventlogmgr->moduleReparented(module, oldparent);
+        eventlogmgr->moduleReparented(module, oldparent, oldId);
 }
 
 void EnvirBase::gateCreated(cGate *newgate)

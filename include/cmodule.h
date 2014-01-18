@@ -262,8 +262,11 @@ class SIM_API cModule : public cComponent //implies noncopyable
     // internal: called from setName() and setIndex()
     void updateFullName();
 
-    // internal: called from setName() and setIndex()
-    void updateFullPath();
+    // internal: called from setName(), setIndex(), and changeParentTo()
+    void updateFullPathRec();
+
+    // internal: used by changeParentTo()
+    void reassignModuleIdRec();
 
     // internal: inserts a submodule. Called as part of the module creation process.
     void insertSubmodule(cModule *mod);
@@ -743,6 +746,13 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Moves the module under a new parent module. This functionality
      * may be useful for some (rare) mobility scenarios.
      *
+     * NOTE: THIS METHOD CHANGES THE MODULE ID. To maintain a time-independent
+     * moduleId-to-fullPath mapping, this method will cause this module, and all
+     * modules under it in the module hierarchy, to be assigned a new ID.
+     * This usually causes no problem in the simulation's operation, but
+     * if your model stores module IDs somewhere, you'll need to invalidate or
+     * update them manually.
+     *
      * This function could bypass several rules which are enforced when you
      * build the model using NED, so you must observe the following:
      *
@@ -759,6 +769,8 @@ class SIM_API cModule : public cComponent //implies noncopyable
      *     isVector(), getIndex() and size() functions will continue to deliver
      *     the same info -- although other elements of the vector will not
      *     necessarily be present under the same parent module.
+     *
+     *  @see getId()
      */
     virtual void changeParentTo(cModule *mod);
     //@}

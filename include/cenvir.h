@@ -226,7 +226,7 @@ class SIM_API cEnvir
     /**
      * Notifies the environment that a module changed parent.
      */
-    virtual void moduleReparented(cModule *module, cModule *oldparent) = 0;
+    virtual void moduleReparented(cModule *module, cModule *oldparent, int oldId) = 0;
 
     /**
      * Notifies the environment that one component (module) called a member

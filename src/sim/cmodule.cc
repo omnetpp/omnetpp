@@ -220,19 +220,38 @@ void cModule::updateFullName()
         lastmodulefullpathmod = NULL;  // invalidate
 
     if (cachefullpath)
-        updateFullPath();
+        updateFullPathRec();
 
     updateLastChangeSerial();
 }
 
-void cModule::updateFullPath()
+void cModule::reassignModuleIdRec()
+{
+    int oldId = getId();
+    simulation.deregisterComponent(this);
+    simulation.registerComponent(this);
+    int newId = getId();
+
+    for (cMessageHeap::Iterator it = cMessageHeap::Iterator(simulation.getMessageQueue()); !it.end(); it++)
+    {
+        cEvent *event = it();
+        cMessage *msg = dynamic_cast<cMessage*>(event);
+        if (msg && msg->getArrivalModuleId() == oldId)
+            msg->setArrival(this, msg->getArrivalGateId());
+    }
+
+    for (cModule *child = firstsubmodp; child; child = child->nextp)
+        child->reassignModuleIdRec();
+}
+
+void cModule::updateFullPathRec()
 {
     delete [] fullpath;
     fullpath = NULL; // for the next getFullPath() call
     fullpath = opp_strdup(getFullPath().c_str());
 
     for (cModule *child = firstsubmodp; child; child = child->nextp)
-        child->updateFullPath();
+        child->updateFullPathRec();
 }
 
 const char *cModule::getFullName() const
@@ -1233,10 +1252,13 @@ void cModule::changeParentTo(cModule *mod)
     cModule *oldparent = getParentModule();
     oldparent->removeSubmodule(this);
     mod->insertSubmodule(this);
-    updateFullPath();
+    int oldId = getId();
+    reassignModuleIdRec();
+    if (cachefullpath)
+        updateFullPathRec();
 
     // notify environment
-    EVCB.moduleReparented(this,oldparent);
+    EVCB.moduleReparented(this,oldparent, oldId);
     updateLastChangeSerial();
 
     // notify post-change listeners
