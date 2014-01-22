@@ -1484,7 +1484,9 @@ public class SequenceChart
     }
 
     public void eventLogOverwritten() {
-        Display.getCurrent().asyncExec(new Runnable() {
+        // NOTE: it must be synchronous because the coordinate system origin is already cleared
+        // NOTE: and making this asynchronous allows paint events to kick in too early
+        Display.getCurrent().syncExec(new Runnable() {
             public void run() {
                 try {
                     clearAxisModules();
