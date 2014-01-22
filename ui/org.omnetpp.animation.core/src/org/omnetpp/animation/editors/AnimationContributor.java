@@ -88,7 +88,6 @@ public class AnimationContributor extends EditorActionBarContributor implements 
     protected static AnimationContributor singleton;
     protected AnimationCanvas animationCanvas;
 
-    protected Separator separatorAction;
     protected AnimationAction increaseAnimationSpeedAction;
     protected AnimationAction decreaseAnimationSpeedAction;
     protected AnimationAction gotoBeginAction;
@@ -109,7 +108,6 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 	 */
 
 	public AnimationContributor() {
-		this.separatorAction = new Separator();
 		this.increaseAnimationSpeedAction = createIncreaseAnimationSpeedActionAction();
         this.decreaseAnimationSpeedAction = createDecreaseAnimationSpeedActionAction();
 		this.gotoBeginAction = createGotoBeginAction();
@@ -168,7 +166,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         showInSubmenu.add(ContributionItemFactory.VIEWS_SHOW_IN.create(workbenchWindow));
 
-        menuManager.add(separatorAction);
+        menuManager.add(new Separator());
 
         IMenuManager subMenuManager = new MenuManager("Speed");
         menuManager.add(subMenuManager);
@@ -186,18 +184,18 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         subMenuManager.add(stepForwardAction);
         subMenuManager.add(playForwardAction);
         subMenuManager.add(gotoEndAction);
-        subMenuManager.add(separatorAction);
+        subMenuManager.add(new Separator());
 
         subMenuManager = new MenuManager("Go To");
         menuManager.add(subMenuManager);
         subMenuManager.add(createGotoEventCommandContributionItem());
         subMenuManager.add(createGotoSimulationTimeCommandContributionItem());
 
-        menuManager.add(separatorAction);
+        menuManager.add(new Separator());
         menuManager.add(pinAction);
         menuManager.add(copyToClipboardAction);
         menuManager.add(refreshAction);
-        menuManager.add(separatorAction);
+        menuManager.add(new Separator());
 
         menuManager.add(showInSubmenu);
     }
@@ -208,10 +206,10 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 	}
 
 	public void contributeToToolBar(IToolBarManager toolBarManager, boolean view) {
-        toolBarManager.add(separatorAction);
+        toolBarManager.add(new Separator());
         toolBarManager.add(increaseAnimationSpeedAction);
         toolBarManager.add(decreaseAnimationSpeedAction);
-        toolBarManager.add(separatorAction);
+        toolBarManager.add(new Separator());
         toolBarManager.add(gotoBeginAction);
         toolBarManager.add(gotoFirstEventAction);
         toolBarManager.add(playBackwardAction);
@@ -220,7 +218,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         toolBarManager.add(stepForwardAction);
         toolBarManager.add(playForwardAction);
         toolBarManager.add(gotoEndAction);
-        toolBarManager.add(separatorAction);
+        toolBarManager.add(new Separator());
         toolBarManager.add(refreshAction);
         if (view)
             toolBarManager.add(pinAction);
