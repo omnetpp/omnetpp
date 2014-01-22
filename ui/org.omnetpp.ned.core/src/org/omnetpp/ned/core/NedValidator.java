@@ -448,6 +448,8 @@ public class NedValidator extends AbstractNedValidatorEx {
         int assignmentType = -1;
         String assignmentUnit = null;
         String assignmentValue = paramAssignment.getValue();
+        if (assignmentValue == null)
+            assignmentValue = "";
 
         if (assignmentValue.equals("true") || assignmentValue.equals("false"))
             assignmentType = NED_PARTYPE_BOOL;
