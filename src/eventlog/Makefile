@@ -31,7 +31,7 @@ OBJS= $O/ievent.o $O/ieventlog.o $O/eventlogfacade.o $O/eventlogtablefacade.o $O
       $O/eventlogentries.o $O/filteredevent.o $O/filteredeventlog.o $O/eventlogentryfactory.o
 LIBS= -loppeventlog$D -loppcommon$D
 
-GENERATED_SOURCES= eventlogentries.cc eventlogentries.h eventlogfactory.cc
+GENERATED_SOURCES= eventlogentries.cc eventlogentries.h eventlogentryfactory.cc
 
 #
 # Automatic rules
@@ -48,7 +48,7 @@ $O/%.o: %.cc
 all: eventlogentries.cc $L/$(LIBNAME)$(LIB_SUFFIX) $O/eventlogtool$(EXE_SUFFIX)
 	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME).* .
 
-eventlogentries.cc eventlogentries.h eventlogfactory.cc : eventlogentries.txt eventlogentries.pl
+$(GENERATED_SOURCES) : eventlogentries.txt eventlogentries.pl
 	$(PERL) eventlogentries.pl
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
