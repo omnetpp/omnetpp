@@ -83,15 +83,22 @@ public abstract class AnimationEditor extends EventLogEditor implements IAnimati
         ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener);
         IContextService contextService = (IContextService)site.getService(IContextService.class);
         contextService.activateContext("org.omnetpp.context.AnimationCanvas");
-        // try to open the log view
-        try {
-            // Eclipse feature: during startup, showView() throws "Abnormal Workbench Condition" because perspective is null
-            if (site.getPage().getPerspective() != null)
-                site.getPage().showView("org.omnetpp.eventlogtable.editors.EventLogTableView");
-        }
-        catch (PartInitException e) {
-            AnimationCorePlugin.getDefault().logException(e);
-        }
+
+        // try to open the log view after all events are processed
+        Display.getDefault().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // Eclipse feature: during startup, showView() throws "Abnormal Workbench Condition" because perspective is null
+                    if (getSite().getPage().getPerspective() != null)
+                        getSite().getPage().showView("org.omnetpp.eventlogtable.editors.EventLogTableView");
+                }
+                catch (PartInitException e) {
+                    AnimationCorePlugin.getDefault().logException(e);
+                }
+            }
+        });
+
 	    if (!(input instanceof IFileEditorInput))
 	    	throw new PartInitException("Invalid input: this editor only works with workspace files");
 	}
