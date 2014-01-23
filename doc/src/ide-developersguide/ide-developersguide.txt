@@ -135,9 +135,7 @@ The plug-in will be generated as <dirname>/plugins/aaaa_1.0.0.201001061910.jar
 === Deploying the plug-in in a project
 
 Once you have a final, exported plug-in in a deployable format you have to copy it
-into your Eclipse installation (<omnetpp>/ide/plugins
-or <omnetpp>/ide/dropins ??? ${TODO} check this
-).
+into your Eclipse installation (<omnetpp>/ide/dropins).
 You should restart the IDE so it can recognize it.
 
 The OMNeT++ IDE can load plug-ins from the workspace (projects) as well. This
