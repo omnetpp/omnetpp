@@ -9,7 +9,7 @@ in the 'Linux' chapter.
 The following Ubuntu releases are covered:
 
 * Ubuntu 12.04 LTS
-* Ubuntu 13.04
+* Ubuntu 13.10
 
 They were tested on the following architectures:
 
@@ -40,7 +40,8 @@ To install the required packages, type in the terminal:
 
  $ sudo apt-get install build-essential gcc g++ bison flex perl \
        tcl-dev tk-dev blt libxml2-dev zlib1g-dev default-jre \
-       doxygen graphviz libwebkitgtk-1.0-0 openmpi-bin libopenmpi-dev libpcap-dev
+       doxygen graphviz libwebkitgtk-1.0-0 openmpi-bin \
+       libopenmpi-dev libpcap-dev
 
 At the confirmation questions ('Do you want to continue? [Y/N]'), answer 'Y'.
 
