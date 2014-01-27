@@ -38,7 +38,7 @@ pdf: cover
 	$(FOP) -fo tmp.fo -c ../fop.xconf -pdf migration.pdf
 	rm -f tmp.fo tmp.xml tmp0.xml
 	rm -f custom-fo-docbook-tmp.xsl
-	pdftk C=cover.pdf B=../cover/copyright.pdf D=migration.pdf cat C B D4-end output ../../Migration.pdf
+	pdftk C=cover.pdf B=../cover/copyright.pdf D=migration.pdf cat C B D3-end output ../../Migration.pdf
 
 clean:
 	rm -rf migration.pdf migration.html cover.svg cover.pdf
