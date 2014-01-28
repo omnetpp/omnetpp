@@ -333,19 +333,6 @@ void cMessage::setSentFrom(cModule *module, int gateId, simtime_t_cref t)
     sent = t;
 }
 
-void cMessage::setArrival(cModule *module, int gateId, simtime_t_cref t)
-{
-    tomod = module ? module->getId() : -1;
-    togate = gateId;
-    setArrivalTime(t);
-}
-
-void cMessage::setArrival(cModule *module, int gateId)
-{
-    tomod = module ? module->getId() : -1;
-    togate = gateId;
-}
-
 bool cMessage::isStale()
 {
     // check that destination module still exists and is alive

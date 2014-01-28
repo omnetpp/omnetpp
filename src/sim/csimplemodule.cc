@@ -316,7 +316,7 @@ void cSimpleModule::scheduleStart(simtime_t t)
 
         // initialize message fields
         timeoutmsg->setSentFrom(NULL, -1, SIMTIME_ZERO);
-        timeoutmsg->setArrival(this, -1, t);
+        timeoutmsg->setArrival(getId(), -1, t);
 
         // use timeoutmsg as the activation message; insert it into the FES
         EVCB.messageScheduled(timeoutmsg);
@@ -562,7 +562,7 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
 
     // set message parameters and schedule it
     msg->setSentFrom(this, -1, simTime());
-    msg->setArrival(this, -1, t);
+    msg->setArrival(getId(), -1, t);
     EVCB.messageSent_OBSOLETE( msg ); //XXX obsolete but needed for Tkenv
     EVCB.messageScheduled(msg);
     simulation.insertEvent(msg);
@@ -605,7 +605,7 @@ void cSimpleModule::arrived(cMessage *msg, cGate *ongate, simtime_t t)
         throw cRuntimeError("Causality violation: message `%s' arrival time %s at module `%s' "
                             "is earlier than current simulation time",
                             msg->getName(), SIMTIME_STR(t), getFullPath().c_str());
-    msg->setArrival(this, ongate->getId());
+    msg->setArrival(getId(), ongate->getId());
     bool isStart = ongate->getDeliverOnReceptionStart();
     if (msg->isPacket()) {
         cPacket *pkt = (cPacket *)msg;
@@ -625,7 +625,7 @@ void cSimpleModule::wait(simtime_t t)
     if (t<SIMTIME_ZERO)
         throw cRuntimeError(E_NEGTIME);
 
-    timeoutmsg->setArrival(this, -1, simTime()+t);
+    timeoutmsg->setArrival(getId(), -1, simTime()+t);
     EVCB.messageScheduled(timeoutmsg);
     simulation.insertEvent(timeoutmsg);
 
@@ -652,7 +652,7 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
     if (!queue)
         throw cRuntimeError("waitAndEnqueue(): queue pointer is NULL");
 
-    timeoutmsg->setArrival(this, -1, simTime()+t);
+    timeoutmsg->setArrival(getId(), -1, simTime()+t);
     EVCB.messageScheduled(timeoutmsg);
     simulation.insertEvent(timeoutmsg);
 
@@ -696,7 +696,7 @@ cMessage *cSimpleModule::receive(simtime_t t)
     if (t<SIMTIME_ZERO)
         throw cRuntimeError(E_NEGTOUT);
 
-    timeoutmsg->setArrival(this, -1, simTime()+t);
+    timeoutmsg->setArrival(getId(), -1, simTime()+t);
     EVCB.messageScheduled(timeoutmsg);
     simulation.insertEvent(timeoutmsg);
 

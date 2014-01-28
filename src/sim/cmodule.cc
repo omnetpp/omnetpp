@@ -237,7 +237,7 @@ void cModule::reassignModuleIdRec()
         cEvent *event = it();
         cMessage *msg = dynamic_cast<cMessage*>(event);
         if (msg && msg->getArrivalModuleId() == oldId)
-            msg->setArrival(this, msg->getArrivalGateId());
+            msg->setArrival(newId, msg->getArrivalGateId());
     }
 
     for (cModule *child = firstsubmodp; child; child = child->nextp)

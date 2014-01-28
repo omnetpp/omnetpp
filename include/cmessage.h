@@ -135,15 +135,8 @@ class SIM_API cMessage : public cEvent
     // getSenderModuleId(), getSenderGate(), getSendingTime() methods.
     void setSentFrom(cModule *module, int gateId, simtime_t_cref t);
 
-    // internal: called by the simulation kernel as part of processing
-    // the send(), scheduleAt() calls to set the values returned
-    // by the getArrivalModuleId(), getArrivalGate() methods.
-    void setArrival(cModule *module, int gateId);
-
-    // internal: called by the simulation kernel as part of processing
-    // the send(), scheduleAt() calls to set the values returned
-    // by the getArrivalModuleId(), getArrivalGate(), getArrivalTime() methods.
-    void setArrival(cModule *module, int gate, simtime_t_cref t);
+    // internal: use the public, documented setArrival(int,int,simtime_t_cref) instead
+    _OPPDEPRECATED void setArrival(cModule *module, int gateId, simtime_t_cref t) {setArrival(module?module->getId():-1, gateId, t);}
 
     // internal: used by the parallel simulation kernel.
     void setSrcProcId(int procId) {srcprocid = (short)procId;}
@@ -608,13 +601,26 @@ class SIM_API cMessage : public cEvent
 
     /** @name Miscellaneous. */
     //@{
-
     /**
      * Override to define a display string for the message. Display string
      * affects message appearance in Tkenv. This default implementation
      * returns "".
      */
     virtual const char *getDisplayString() const;
+
+    /**
+     * For use by custom scheduler classes (see cScheduler): set the arrival
+     * module and gate for messages inserted into the FES directly by the
+     * scheduler. If you pass gateId=-1, the message will arrive as a
+     * self-message.
+     */
+    void setArrival(int moduleId, int gateId) {tomod = moduleId; togate = gateId;}
+
+    /**
+     * Like setArrival(int moduleId, int gateId), but also sets the arrival
+     * time for the message.
+     */
+    void setArrival(int moduleId, int gateId, simtime_t_cref t) {tomod = moduleId; togate = gateId; setArrivalTime(t);}
     //@}
 
     /** @name Statistics. */
