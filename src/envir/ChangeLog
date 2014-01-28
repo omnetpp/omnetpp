@@ -1,3 +1,8 @@
+2014-01-28  Andras Varga
+
+	* Removed eventlog support for module reparenting (i.e. logging of
+	cModule::changeParentTo()), because tools cannot easily support it
+
 2013-09-26  Andras Varga, Levente Meszaros
 
 	* Adapted to logging API changes (see include/ChangeLog):

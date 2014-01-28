@@ -46,13 +46,6 @@ MD ModuleDeletedEntry // deleting a module
    id int moduleId // id of the module being deleted
 }
 
-MR ModuleReparentedEntry // reparenting a module
-{
-   id int moduleId         // id of the module being reparented
-   p int newParentModuleId // id of the new parent module
-   nid int newModuleId     // new id of the module being reparented
-}
-
 GC GateCreatedEntry // gate created
 {
    m int moduleId  // module in which the gate was created

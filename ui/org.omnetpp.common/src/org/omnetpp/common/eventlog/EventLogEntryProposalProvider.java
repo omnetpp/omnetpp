@@ -36,7 +36,6 @@ import org.omnetpp.eventlog.engine.ModuleDeletedEntry;
 import org.omnetpp.eventlog.engine.ModuleDisplayStringChangedEntry;
 import org.omnetpp.eventlog.engine.ModuleMethodBeginEntry;
 import org.omnetpp.eventlog.engine.ModuleMethodEndEntry;
-import org.omnetpp.eventlog.engine.ModuleReparentedEntry;
 import org.omnetpp.eventlog.engine.PStringVector;
 import org.omnetpp.eventlog.engine.SendDirectEntry;
 import org.omnetpp.eventlog.engine.SendHopEntry;
@@ -61,7 +60,6 @@ public class EventLogEntryProposalProvider extends MatchExpressionContentProposa
         storeProposals(ModuleMethodEndEntry.class);
         storeProposals(ModuleCreatedEntry.class);
         storeProposals(ModuleDeletedEntry.class);
-        storeProposals(ModuleReparentedEntry.class);
         storeProposals(GateCreatedEntry.class);
         storeProposals(GateDeletedEntry.class);
         storeProposals(ConnectionCreatedEntry.class);

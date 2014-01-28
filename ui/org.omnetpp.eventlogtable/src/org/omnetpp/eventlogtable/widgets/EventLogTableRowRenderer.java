@@ -57,7 +57,6 @@ import org.omnetpp.eventlog.engine.ModuleDeletedEntry;
 import org.omnetpp.eventlog.engine.ModuleDisplayStringChangedEntry;
 import org.omnetpp.eventlog.engine.ModuleMethodBeginEntry;
 import org.omnetpp.eventlog.engine.ModuleMethodEndEntry;
-import org.omnetpp.eventlog.engine.ModuleReparentedEntry;
 import org.omnetpp.eventlog.engine.PStringVector;
 import org.omnetpp.eventlog.engine.SendDirectEntry;
 import org.omnetpp.eventlog.engine.SendHopEntry;
@@ -381,11 +380,6 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
             else if (eventLogEntry instanceof ModuleDeletedEntry) {
                 ModuleDeletedEntry moduleDeletedEntry = (ModuleDeletedEntry)eventLogEntry;
                 builder.constant("Deleting ").module(moduleDeletedEntry.getModuleId());
-            }
-            else if (eventLogEntry instanceof ModuleReparentedEntry) {
-                ModuleReparentedEntry moduleReparentedEntry = (ModuleReparentedEntry)eventLogEntry;
-                builder.constant("Reparenting ").module(moduleReparentedEntry.getModuleId())
-                       .constant(" under ").module(moduleReparentedEntry.getNewParentModuleId());
             }
             else if (eventLogEntry instanceof GateCreatedEntry) {
                 GateCreatedEntry gateCreatedEntry = (GateCreatedEntry)eventLogEntry;

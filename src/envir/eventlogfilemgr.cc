@@ -606,8 +606,7 @@ void EventlogFileManager::moduleDeleted(cModule *module)
 void EventlogFileManager::moduleReparented(cModule *module, cModule *oldparent, int oldId)
 {
     if (isEventLogRecordingEnabled) {
-        EventLogWriter::recordModuleReparentedEntry_id_p_nid(feventlog, oldId, module->getParentModule()->getId(), module->getId());
-        entryIndex++;
+        throw cRuntimeError("Tools based on the eventlog do not support module reparenting -- please turn off eventlog recording if your model contains calls to cModule::changeParent()");
     }
 }
 
