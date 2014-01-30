@@ -67,6 +67,7 @@ using std::ostream;
 // non-refcounting pool for gate fullnames
 static CommonStringPool gateFullnamePool;
 
+int cGate::lastConnectionId = -1;
 
 cGate::Name::Name(const char *name, Type type)
 {
@@ -95,6 +96,7 @@ cGate::cGate()
     pos = 0;
     prevgatep = nextgatep = NULL;
     channelp = NULL;
+    connectionId = -1;
 }
 
 cGate::~cGate()
@@ -274,6 +276,7 @@ cChannel *cGate::connectTo(cGate *g, cChannel *chan, bool leaveUninitialized)
     // build new connection
     nextgatep = g;
     nextgatep->prevgatep = this;
+    connectionId = ++lastConnectionId;
     if (chan)
         installChannel(chan);
 
@@ -353,6 +356,7 @@ void cGate::disconnect()
     cGate *oldnextgatep = nextgatep;
     nextgatep->prevgatep = NULL;
     nextgatep = NULL;
+    connectionId = -1;
 
     cChannel *oldchannelp = channelp;
     channelp = NULL;

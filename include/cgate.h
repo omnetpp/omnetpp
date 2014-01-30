@@ -129,9 +129,12 @@ class SIM_API cGate : public cObject, noncopyable
     int pos;    // b0: input(0) or output(1); b1: deliverOnReceptionStart bit;
                 // rest (pos>>2): array index, or -1 if scalar gate
 
+    int connectionId;   // uniquely identifies the connection between *this and *nextgatep; -1 if unconnected
     cChannel *channelp; // channel object (if exists)
     cGate *prevgatep;   // previous and next gate in the path
     cGate *nextgatep;
+
+    static int lastConnectionId;
 
   protected:
     // internal: constructor is protected because only cModule is allowed to create instances
@@ -412,6 +415,15 @@ class SIM_API cGate : public cObject, noncopyable
      * (E.g. for a simple module input gate, this function will return NULL.)
      */
     cGate *getNextGate() const   {return nextgatep;}
+
+    /**
+     * Returns an ID that uniquely identifies the connection between this gate
+     * and the next gate in the path (see getNextGate()) during the lifetime of
+     * the simulation. (Disconnecting and then reconnecting the gate results
+     * in a new connection ID being assigned.) The method returns -1 if the gate
+     * is unconnected.
+     */
+    int getConnectionId() const  {return connectionId;}
 
     /**
      * Return the ultimate source of the series of connections

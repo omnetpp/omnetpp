@@ -1,3 +1,12 @@
+2014-01-30  Andras Varga
+
+	* cGate: added getConnectionId(). Connection ID is an integer that can
+	be used by tools like the Sequence Chart to globally and uniquely
+	identify the connection during the lifetime of the simulation.
+	(Reconnecting the gate assigns a fresh ID, and disconnecting it sets
+	-1 as ID.) There is no mechasnism for looking up a connection by ID
+	(apart from scanning through all gates in the simulation.)
+
 2014-01-18  Andras Varga
 
 	* cModule: changeParentTo() will now assign a new ID to the module.
