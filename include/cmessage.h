@@ -136,7 +136,7 @@ class SIM_API cMessage : public cEvent
     void setSentFrom(cModule *module, int gateId, simtime_t_cref t);
 
     // internal: use the public, documented setArrival(int,int,simtime_t_cref) instead
-    _OPPDEPRECATED void setArrival(cModule *module, int gateId, simtime_t_cref t) {setArrival(module?module->getId():-1, gateId, t);}
+    _OPPDEPRECATED void setArrival(cModule *module, int gateId, simtime_t_cref t);
 
     // internal: used by the parallel simulation kernel.
     void setSrcProcId(int procId) {srcprocid = (short)procId;}
