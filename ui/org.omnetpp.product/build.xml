@@ -91,9 +91,12 @@
 		<replace dir="${srcDirectory}" token="IS_COMMERCIAL = false;" value="IS_COMMERCIAL = true;">
 			<include name="**/*.java" />
 		</replace>
-		<copy file="${srcDirectory}/plugins/org.omnetpp.product/omnest-ide.product" tofile="${srcDirectory}/plugins/org.omnetpp.product/ide.product" />
-		<move file="${srcDirectory}/plugins/org.omnetpp.main/icons/intro-omnest.png" tofile="${srcDirectory}/plugins/org.omnetpp.main/icons/intro-image.png" />
+		<!-- overlay OMNEST specific files -->
+		<copy todir="${srcDirectory}/plugins/org.omnetpp.main/" overwrite="true">
+			<fileset dir="${srcDirectory}/plugins/org.omnetpp.main/omnest/"/>
+		</copy>
 		<property name="main_feature_group" value="org.omnetpp.ide.commercial.feature.group"/>
+		<copy file="${srcDirectory}/plugins/org.omnetpp.product/omnest-ide.product" tofile="${srcDirectory}/plugins/org.omnetpp.product/ide.product" />
 	</target>
 
 	<!-- prepare for academic build / throw out commercial features etc. -->
@@ -101,9 +104,12 @@
 		<replace dir="${srcDirectory}" token="IS_COMMERCIAL = true;" value="IS_COMMERCIAL = false;">
 			<include name="**/*.java" />
 		</replace>
-		<copy file="${srcDirectory}/plugins/org.omnetpp.product/omnetpp-ide.product" tofile="${srcDirectory}/plugins/org.omnetpp.product/ide.product" />
-		<move file="${srcDirectory}/plugins/org.omnetpp.main/icons/intro-omnetpp.png" tofile="${srcDirectory}/plugins/org.omnetpp.main/icons/intro-image.png" />
+		<!-- overlay OMNeT++ specific files -->
+		<copy todir="${srcDirectory}/plugins/org.omnetpp.main/" overwrite="true">
+			<fileset dir="${srcDirectory}/plugins/org.omnetpp.main/omnetpp/"/>
+		</copy>
 		<property name="main_feature_group" value="org.omnetpp.ide.academic.feature.group"/>
+		<copy file="${srcDirectory}/plugins/org.omnetpp.product/omnetpp-ide.product" tofile="${srcDirectory}/plugins/org.omnetpp.product/ide.product" />
 	</target>
 
 	<target name="pde-build">
