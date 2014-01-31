@@ -172,12 +172,6 @@ sub processFile($)
     }
     $hfilenamewithoutdir = $hfile;
     $hfilenamewithoutdir =~ s|^.*/||;
-    $hdef = $hfilenamewithoutdir;
-    $hdef =~ s|^.*/||;
-    $hdef =~ s|\.[^.]*$|_H_|;
-    $hdef = '_'.$hdef;
-    $hdef =~ tr/[a-z]/[A-Z]/;
-    $hdef =~ s/[^a-zA-Z0-9]/_/g;
     $ccfile = $filename;
     $ccfile =~ s|\.[^.]*$|$ccsuffix|;
     if ($here)
@@ -354,6 +348,16 @@ sub processFile($)
         }
     }
 
+    # produce header guard
+    $hdef = $hfilenamewithoutdir;
+    $hdef =~ s|^.*/||;
+    $hdef =~ s|\.[^.]*$|_H_|;
+    $hdef = '_'.$hdef;
+    $hdef = '_'.$namespacename.$hdef if $namespacename ne "";
+    $hdef =~ tr/[a-z]/[A-Z]/;
+    $hdef =~ s/[^a-zA-Z0-9]/_/g;
+
+    # generate
     open(H,">$hfile") || die "$filename: Error: cannot open output file $hfile";
     open(CC,">$ccfile") || die "$filename: Error: cannot open output file $ccfile";
 

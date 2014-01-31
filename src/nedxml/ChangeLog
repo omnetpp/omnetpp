@@ -1,3 +1,9 @@
+2014-01-31  Andras Varga
+
+	* opp_msgc: fix bug #655 "opp_msgc does not respect namespace when
+	generating #ifndef/#define". Generated header guard now includes the
+	namespace name.
+
 2013-12-20  ------ omnetpp-4.4 released ------
 
 2013-09-28  Andras Varga
