@@ -230,6 +230,9 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     int idx;      // index if module vector, 0 otherwise
     int vectsize; // vector size, -1 if not a vector
+#ifdef USE_OMNETPP4x_FINGERPRINTS
+    int version4ModuleId;   // OMNeT++ V4.x compatible module ID
+#endif
 
   public:
     // internal: currently used by init
@@ -299,6 +302,11 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     // internal: called as part of the destructor
     void clearGates();
+
+#ifdef USE_OMNETPP4x_FINGERPRINTS
+    // internal: returns OMNeT++ V4.x compatible module ID
+    int getVersion4ModuleId() const { return version4ModuleId; }
+#endif
 
   public:
     // internal: may only be called between simulations, when no modules exist

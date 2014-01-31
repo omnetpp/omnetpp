@@ -100,6 +100,9 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
     delta = 32;
     size = 0;
     last_id = 0;  // vect[0] is not used for historical reasons
+#ifdef USE_OMNETPP4x_FINGERPRINTS
+    lastVersion4ModuleId = 0;
+#endif
     vect = NULL;
 
     networktype = NULL;
@@ -321,6 +324,10 @@ int cSimulation::registerComponent(cComponent *component)
     int id = last_id;
     vect[id] = component;
     component->componentId = id;
+#ifdef USE_OMNETPP4x_FINGERPRINTS
+    if (component->isModule())
+        ((cModule *)component)->version4ModuleId = ++lastVersion4ModuleId;
+#endif
     return id;
 }
 
@@ -474,6 +481,9 @@ void cSimulation::deleteNetwork()
     vect = NULL;
     size = 0;
     last_id = 0;
+#ifdef USE_OMNETPP4x_FINGERPRINTS
+    lastVersion4ModuleId = 0;
+#endif
 
     networktype = NULL;
 
@@ -671,7 +681,7 @@ void cSimulation::doMessageEvent(cMessage *msg, cSimpleModule *mod)
         cHasher *hasher = getHasher();
         hasher->add(SIMTIME_RAW(simTime()));
 #ifdef USE_OMNETPP4x_FINGERPRINTS
-        hasher->add(mod->getId());
+        hasher->add(mod->getVersion4ModuleId());
 #else
         hasher->add(mod->getFullPath().c_str());
         hasher->add(msg->getClassName());

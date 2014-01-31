@@ -60,7 +60,9 @@ cModule::cModule()
 
     descvSize = 0;
     descv = NULL;
-
+#ifdef USE_OMNETPP4x_FINGERPRINTS
+    version4ModuleId = -1;
+#endif
     // gates and parameters will be added by cModuleType
 }
 
