@@ -29,7 +29,6 @@
 #include "cgate.h"
 #include "cchannel.h"
 #include "csimplemodule.h"
-#include "ccompoundmodule.h"
 #include "cdisplaystring.h"
 #include "cclassdescriptor.h"
 
@@ -548,7 +547,7 @@ void EventlogFileManager::moduleCreated(cModule *module)
     if (isEventLogRecordingEnabled) {
         bool recordModuleEvents = ev.getConfig()->getAsBool(module->getFullPath().c_str(), CFGID_MODULE_EVENTLOG_RECORDING);
         module->setRecordEvents(recordModuleEvents);
-        bool isCompoundModule = dynamic_cast<cCompoundModule *>(module);
+        bool isCompoundModule = !module->isSimple();
         // FIXME: size() is missing
         EventLogWriter::recordModuleCreatedEntry_id_c_t_pid_n_cm(feventlog, module->getId(), module->getClassName(), module->getNedTypeName(), module->getParentModule() ? module->getParentModule()->getId() : -1, module->getFullName(), isCompoundModule);
         entryIndex++;

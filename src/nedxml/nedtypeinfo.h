@@ -162,7 +162,7 @@ class NEDXML_API NEDTypeInfo
     /**
      * For modules and channels, it returns the name of the C++ class that
      * has to be instantiated (for compound modules this defaults to
-     * "cCompoundModule"); for interface types it returns NULL.
+     * "cModule"); for interface types it returns NULL.
      */
     virtual const char *getImplementationClassName() const;
 

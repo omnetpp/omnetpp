@@ -32,7 +32,6 @@ class cGate;
 class cChannel;
 class cModule;
 class cSimpleModule;
-class cCompoundModule;
 class cSimulation;
 class cMessageHeap;
 class LogBuffer;

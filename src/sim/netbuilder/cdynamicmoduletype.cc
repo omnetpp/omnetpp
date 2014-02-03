@@ -24,7 +24,6 @@
 #include "cneddeclaration.h"
 #include "cnedloader.h"
 #include "cnednetworkbuilder.h"
-#include "ccompoundmodule.h"
 
 NAMESPACE_BEGIN
 

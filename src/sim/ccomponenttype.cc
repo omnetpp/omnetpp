@@ -19,7 +19,6 @@
 #include "ccomponenttype.h"
 #include "cmodule.h"
 #include "csimplemodule.h"
-#include "ccompoundmodule.h"
 #include "cchannel.h"
 #include "cenvir.h"
 #include "cparimpl.h"
@@ -370,12 +369,6 @@ cModule *cModuleType::instantiateModuleClass(const char *classname)
             throw cRuntimeError("incorrect simple module class %s: not subclassed from cSimpleModule", classname);
         if (mod->isSimple()==false)
             throw cRuntimeError("incorrect simple module class %s: isSimple() returns false", classname);
-    }
-    else {
-        if (dynamic_cast<cCompoundModule *>(mod)==NULL)
-            throw cRuntimeError("incorrect compound module class %s: not subclassed from cCompoundModule", classname);
-        if (mod->isSimple()==true)
-            throw cRuntimeError("incorrect compound module class %s: isSimple() returns true", classname);
     }
 
     return mod;

@@ -93,7 +93,7 @@ proc fillInspectorContextMenu {menu insp ptr} {
 
     # add "run until" menu items
     set baseclass [opp_getobjectbaseclass $ptr]
-    if {$baseclass=="cSimpleModule" || $baseclass=="cCompoundModule"} {
+    if {$baseclass=="cSimpleModule" || $baseclass=="cModule"} {
         $menu add separator
         $menu add command -label "Run Until Next Event in Module '$name'" -command "runSimulationLocal $insp normal $ptr"
         $menu add command -label "Fast Run Until Next Event in Module '$name'" -command "runSimulationLocal $insp fast $ptr"

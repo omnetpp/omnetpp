@@ -118,7 +118,7 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
         else if (numExtendsNames()!=0)
             implClassName = opp_nulltoempty(getSuperDecl()->getImplementationClassName());
         else if (getType()==COMPOUND_MODULE)
-            implClassName = OPP_PREFIX "cCompoundModule";
+            implClassName = OPP_PREFIX "cModule";
         else
             implClassName = opp_join("::", getCxxNamespace().c_str(), getName());
     }

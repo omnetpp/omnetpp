@@ -356,7 +356,6 @@ $O/eventlogfilemgr.o: eventlogfilemgr.cc \
   ../../include/ctimestampedvalue.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
-  ../../include/ccompoundmodule.h \
   ../../include/ccomponent.h \
   ../../include/cregistrationlist.h \
   ../../include/cconfiguration.h \

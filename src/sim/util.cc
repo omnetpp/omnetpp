@@ -469,7 +469,6 @@ NAMESPACE_END
 #include "cdelaychannel.h"
 #include "cdataratechannel.h"
 #include "cpacketqueue.h"
-#include "ccompoundmodule.h"
 #include "cfsm.h"
 #include "clinkedlist.h"
 #include "coutvector.h"
@@ -513,8 +512,6 @@ void _sim_dummy_func()
       (void)c;
       cPacketQueue pq;
       (void)pq;
-      cCompoundModule commod;
-      commod.info();
       cFSM fsm;
       fsm.info();
       cLinkedList ll;

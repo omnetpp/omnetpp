@@ -296,8 +296,7 @@ class SIM_API cObject
  * NOTE: <tt>dup()</tt> must be redefined as <tt>{copyNotSupported(); return NULL;}</tt>
  * in classes directly subclassing from noncopyable, but this is not needed
  * in classes derived from them. For example, cDefaultList is noncopyable,
- * so cModule, cCompoundModule and cSimpleModule no longer need to redefine
- * <tt>dup()</tt>.
+ * so cModule and cSimpleModule no longer need to redefine <tt>dup()</tt>.
  *
  * This class is from boost, which bears the following copyright:
  *

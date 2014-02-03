@@ -32,7 +32,6 @@ class  cMessage;
 class  cGate;
 class  cModule;
 class  cSimpleModule;
-class  cCompoundModule;
 class  cSimulation;
 class  cException;
 class  cScheduler;

@@ -17,7 +17,6 @@
 #include "cmodule.h"
 #include "cchannel.h"
 #include "csimplemodule.h"
-#include "ccompoundmodule.h"
 #include "componenthistory.h"
 
 NAMESPACE_BEGIN

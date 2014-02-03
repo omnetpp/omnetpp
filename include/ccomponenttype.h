@@ -177,7 +177,6 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
 class SIM_API cModuleType : public cComponentType
 {
     friend class cModule;
-    friend class cCompoundModule;
   protected:
     /**
      * Creates the module object. To be defined in subclasses.

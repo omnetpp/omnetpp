@@ -24,7 +24,6 @@
 #include "ccommbuffer.h"
 #include "ccomponent.h"
 #include "ccomponenttype.h"
-#include "ccompoundmodule.h"
 #include "cchannel.h"
 #include "cdelaychannel.h"
 #include "cdataratechannel.h"

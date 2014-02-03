@@ -27,7 +27,6 @@
 #include "cregistrationlist.h"
 #include "cmodule.h"
 #include "csimplemodule.h"
-#include "ccompoundmodule.h"
 #include "cchannel.h"
 #include "cgate.h"
 #include "cpar.h"
@@ -213,7 +212,7 @@ std::string getObjectIcon(Tcl_Interp *interp, cObject *object)
         iconName = "placeholder_vs";
     else if (dynamic_cast<cSimpleModule *>(object))
         iconName = "simple_vs";
-    else if (dynamic_cast<cCompoundModule *>(object))
+    else if (dynamic_cast<cModule *>(object))
         iconName = "compound_vs";
     else if (dynamic_cast<cWatchBase *>(object))
         iconName = "cogwheel_vs";

@@ -29,7 +29,7 @@ IMPLIBS=-L$L -loppcommon$D
 OBJS_STD=\
     $O/carray.o $O/cdelaychannel.o $O/cdataratechannel.o $O/cboolparimpl.o $O/cchannel.o \
     $O/cobjectfactory.o $O/ccomponent.o $O/ccomponenttype.o $O/cconfiguration.o $O/cconfigoption.o \
-    $O/ccompoundmodule.o $O/ccoroutine.o $O/cdefaultlist.o $O/cdensityestbase.o \
+    $O/ccoroutine.o $O/cdefaultlist.o $O/cdensityestbase.o \
     $O/cdetect.o $O/cdisplaystring.o $O/cdoubleparimpl.o $O/cdynamicexpression.o $O/cenvir.o \
     $O/cenum.o $O/cexception.o $O/cfsm.o $O/cnedmathfunction.o $O/cgate.o $O/chistogram.o \
     $O/cksplit.o $O/clcg32.o $O/clinkedlist.o $O/clistener.o $O/clongparimpl.o $O/cmersennetwister.o \
@@ -336,7 +336,6 @@ $O/ccomponenttype.o: ccomponenttype.cc \
   ../common/patternmatcher.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
-  ../../include/ccompoundmodule.h \
   ../../include/cmodelchange.h \
   ../../include/carray.h \
   ../../include/simtime_t.h \
@@ -374,43 +373,6 @@ $O/ccomponenttype.o: ccomponenttype.cc \
   ../../include/simutil.h \
   ../../include/cexception.h \
   ../../include/cproperty.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/ccomponenttype.h
-$O/ccompoundmodule.o: ccompoundmodule.cc \
-  ../../include/regmacros.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/cnamedobject.h \
-  ../../include/cexpression.h \
-  ../../include/simtime.h \
-  ../../include/cgate.h \
-  ../../include/ccompoundmodule.h \
-  ../../include/carray.h \
-  ../../include/cenvir.h \
-  ../../include/simtime_t.h \
-  ../../include/cmsgpar.h \
-  ../../include/ccomponent.h \
-  ../../include/cregistrationlist.h \
-  ../../include/opp_string.h \
-  ../../include/simkerneldefs.h \
-  ../../include/errmsg.h \
-  ../../include/csimulation.h \
-  ../../include/cownedobject.h \
-  ../../include/cmessage.h \
-  ../../include/onstartup.h \
-  ../../include/cobject.h \
-  ../../include/clistener.h \
-  ../../include/cstringpool.h \
-  ../../include/cpar.h \
-  ../../include/globals.h \
-  ../../include/cdefaultlist.h \
-  ../../include/cvisitor.h \
-  ../../include/cnedmathfunction.h \
-  ../../include/cobjectfactory.h \
-  ../../include/cmodule.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/simutil.h \
-  ../../include/cexception.h \
-  ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h
 $O/cconfigoption.o: cconfigoption.cc \
@@ -2841,7 +2803,6 @@ $O/sim_std_m.o: sim_std_m.cc \
   ../../include/distrib.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
-  ../../include/ccompoundmodule.h \
   ../../include/ccomponent.h \
   ../../include/cmatchexpression.h \
   ../../include/cproperties.h \
@@ -2964,7 +2925,6 @@ $O/util.o: util.cc \
   ../../include/distrib.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
-  ../../include/ccompoundmodule.h \
   ../../include/ccomponent.h \
   ../../include/cregistrationlist.h \
   ../../include/platdep/timeutil.h \
@@ -3071,7 +3031,6 @@ $O/netbuilder/cdynamicmoduletype.o: netbuilder/cdynamicmoduletype.cc \
   netbuilder/cnednetworkbuilder.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
-  ../../include/ccompoundmodule.h \
   ../../include/ccomponent.h \
   ../../include/cproperties.h \
   ../../include/cregistrationlist.h \
