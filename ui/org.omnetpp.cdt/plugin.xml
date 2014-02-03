@@ -419,7 +419,7 @@
             locationURI="popup:org.omnetpp.ned.editor.graph?after=org.eclipse.gef.group.find">
          <command
                commandId="org.omnetpp.cdt.gotoCppDefinitionForNedType"
-               mnemonic="G"
+               mnemonic="n"
                style="push"
                tooltip="Go To C++ Definition">
          </command>
@@ -428,9 +428,9 @@
             locationURI="popup:org.omnetpp.ned.editor.text?after=group.find">
          <command
                commandId="org.omnetpp.cdt.gotoCppDefinitionForNedType"
-               mnemonic="G"
+               mnemonic="n"
                style="push"
-               tooltip="&amp;Go To C++ Definition">
+               tooltip="Go To C++ Definition">
          </command>
       </menuContribution>
       <menuContribution

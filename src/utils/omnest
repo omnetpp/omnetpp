@@ -25,6 +25,8 @@ fi
 export LANG=en_US.UTF-8
 # workaround for KDE bug: https://bugs.kde.org/show_bug.cgi?id=316012
 export OXYGEN_DISABLE_INNER_SHADOWS_HACK=1
+# workaround for bug: https://bugs.eclipse.org/bugs/show_bug.cgi?id=419830
+export UBUNTU_MENUPROXY=0
 # arguments needed to initially correctly show the default 'samples' workspace
 DEFAULT_WORKSPACE_ARGS="-vmargs -Xms256m -Xmx1024m -XX:MaxPermSize=320m -Dosgi.instance.area.default=$IDEDIR/../samples"
 

@@ -16,6 +16,7 @@
 
 #include <math.h>
 #include <string.h>
+#include <algorithm>
 #include "distrib.h"
 #include "cnedmathfunction.h"
 #include "cnedfunction.h"

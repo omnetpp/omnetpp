@@ -69,7 +69,7 @@ pdf: docbook cover
 	xsltproc --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -c ../fop.xconf -pdf ide-developersguide.pdf
 	rm tmp.fo tmp.xml custom-fo-docbook-tmp.xsl
-	pdftk C=cover.pdf B=../cover/copyright.pdf D=ide-developersguide.pdf cat C B D4-end output ../../IDE-DevelopersGuide.pdf
+	pdftk C=cover.pdf B=../cover/copyright.pdf D=ide-developersguide.pdf cat C B D3-end output ../../IDE-DevelopersGuide.pdf
 
 clean:
 	rm -f ide-developersguide.pdf ide-developersguide.html ide-developersguide.xml tmp1.xml tmp.xml cover.svg cover.pdf

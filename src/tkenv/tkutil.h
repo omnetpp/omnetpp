@@ -19,6 +19,7 @@
 #define __TKUTIL_H
 
 #define WIN32_LEAN_AND_MEAN
+#include "platmisc.h"   // must precede tk.h otherwise Visual Studio 2013 fails to compile
 #include <tk.h>
 
 #include "tkdefs.h"

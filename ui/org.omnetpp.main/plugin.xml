@@ -15,7 +15,7 @@
           		value="Introduction to OMNeT++ 4"/>
           <property
           		name="introBrandingImage"
-          		value="product:icons/intro-image.png"/>
+			value="product:/icons/intro-image.png"/>
           <property
           		name="introBrandingImageText"
           		value="OMNeT++ Simulation Environment"/>
@@ -45,7 +45,7 @@
     </property>
     <property
           name="aboutImage"
-          value="platform:/plugin/org.omnetpp.main.omnetpp/icons/about-image.png">
+          value="icons/about-image.png">
     </property>
     <property
           name="windowImages"

@@ -89,7 +89,6 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
     private static EventLogTableContributor singleton;
     private EventLogTable eventLogTable;
 
-    private Separator separatorAction;
     private EventLogTableAction gotoMessageOriginAction;
     private EventLogTableAction gotoMessageReuseAction;
     private EventLogTableAction toggleBookmarkAction;
@@ -107,7 +106,6 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
      */
 
     public EventLogTableContributor() {
-        this.separatorAction = new Separator();
         this.gotoMessageOriginAction = createGotoMessageOriginAction();
         this.gotoMessageReuseAction = createGotoMessageReuseAction();
         this.toggleBookmarkAction = createToggleBookmarkAction();
@@ -159,42 +157,41 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
     public void contributeToPopupMenu(IMenuManager menuManager) {
         menuManager.add(createFindTextCommandContributionItem());
         menuManager.add(createFindNextCommandContributionItem());
-        menuManager.add(separatorAction);
+        menuManager.add(new Separator());
 
         // goto submenu
         IMenuManager subMenuManager = new MenuManager("Go To");
         menuManager.add(subMenuManager);
         subMenuManager.add(createGotoEventCommandContributionItem());
         subMenuManager.add(createGotoSimulationTimeCommandContributionItem());
-        subMenuManager.add(separatorAction);
+        subMenuManager.add(new Separator());
         subMenuManager.add(createGotoEventCauseCommandContributionItem());
         subMenuManager.add(createGotoMessageArrivalCommandContributionItem());
         subMenuManager.add(gotoMessageOriginAction);
         subMenuManager.add(gotoMessageReuseAction);
-        subMenuManager.add(separatorAction);
+        subMenuManager.add(new Separator());
         subMenuManager.add(createGotoPreviousEventCommandContributionItem());
         subMenuManager.add(createGotoNextEventCommandContributionItem());
         subMenuManager.add(createGotoPreviousModuleEventCommandContributionItem());
         subMenuManager.add(createGotoNextModuleEventCommandContributionItem());
 
-        menuManager.add(separatorAction);
+        menuManager.add(new Separator());
         menuManager.add(filterAction);
         menuManager.add(lineFilterModeAction);
-        menuManager.add(separatorAction);
+        menuManager.add(new Separator());
         menuManager.add(typeModeAction);
         menuManager.add(nameModeAction);
         menuManager.add(displayModeAction);
-        menuManager.add(separatorAction);
+        menuManager.add(new Separator());
         menuManager.add(toggleBookmarkAction);
         menuManager.add(pinAction);
         menuManager.add(createRefreshCommandContributionItem());
-        menuManager.add(separatorAction);
+        menuManager.add(new Separator());
 
         MenuManager showInSubmenu = new MenuManager(getShowInMenuLabel());
         IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         showInSubmenu.add(ContributionItemFactory.VIEWS_SHOW_IN.create(workbenchWindow));
         menuManager.add(showInSubmenu);
-
     }
 
     private String getShowInMenuLabel() {
@@ -218,10 +215,10 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
     public void contributeToToolBar(IToolBarManager toolBarManager, boolean view) {
         toolBarManager.add(filterAction);
         toolBarManager.add(lineFilterModeAction);
-        toolBarManager.add(separatorAction);
+        toolBarManager.add(new Separator());
         toolBarManager.add(nameModeAction);
         toolBarManager.add(displayModeAction);
-        toolBarManager.add(separatorAction);
+        toolBarManager.add(new Separator());
         toolBarManager.add(refreshAction);
         if (view)
             toolBarManager.add(pinAction);

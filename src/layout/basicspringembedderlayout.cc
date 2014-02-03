@@ -23,6 +23,7 @@
 #include <sstream>
 #include <set>
 #include <deque>
+#include <algorithm>
 
 #include "commonutil.h"
 #include "basicspringembedderlayout.h"

@@ -164,7 +164,6 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     private static SequenceChartContributor singleton;
     private SequenceChart sequenceChart;
 
-    private Separator separatorAction;
     private SequenceChartMenuAction timelineModeAction;
     private SequenceChartMenuAction axisOrderingModeAction;
     private SequenceChartAction filterAction;
@@ -205,7 +204,6 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
      */
 
     public SequenceChartContributor() {
-        this.separatorAction = new Separator();
         this.timelineModeAction = createTimelineModeAction();
         this.axisOrderingModeAction = createAxisOrderingModeAction();
         this.filterAction = createFilterAction();
@@ -300,7 +298,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 }
 
                 if (events.size() != 0)
-                    menuManager.add(separatorAction);
+                    menuManager.add(new Separator());
 
                 // messages submenu
                 for (final IMessageDependency msg : msgs) {
@@ -314,7 +312,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 }
 
                 if (msgs.size() != 0)
-                    menuManager.add(separatorAction);
+                    menuManager.add(new Separator());
 
                 // axis submenu
                 final ModuleTreeItem axisModule = sequenceChart.findAxisAt(p.y);
@@ -330,7 +328,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                     subMenuManager.add(createZoomToAxisValueAction(axisModule, p.x));
                     subMenuManager.add(createCenterAxisAction(axisModule));
 
-                    menuManager.add(separatorAction);
+                    menuManager.add(new Separator());
                 }
 
                 // Show/Hide submenu
@@ -342,11 +340,11 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 showHideSubmenu.add(showMixedMessageDependenciesAction);
                 showHideSubmenu.add(showMixedSelfMessageDependenciesAction);
                 showHideSubmenu.add(showModuleMethodCallsAction);
-                showHideSubmenu.add(separatorAction);
+                showHideSubmenu.add(new Separator());
                 showHideSubmenu.add(showAxesWithoutEventsAction);
                 showHideSubmenu.add(showTransmissionDurationsAction);
                 showHideSubmenu.add(showZeroSimulationTimeRegionsAction);
-                showHideSubmenu.add(separatorAction);
+                showHideSubmenu.add(new Separator());
                 showHideSubmenu.add(showEventNumbersAction);
                 showHideSubmenu.add(showMessageNamesAction);
                 showHideSubmenu.add(showArrowHeadsAction);
@@ -376,34 +374,34 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 menuManager.add(filterAction);
                 menuManager.add(timelineModeAction);
                 menuManager.add(axisOrderingModeAction);
-                menuManager.add(separatorAction);
+                menuManager.add(new Separator());
 
                 menuManager.add(createFindTextCommandContributionItem());
                 menuManager.add(createFindNextCommandContributionItem());
-                menuManager.add(separatorAction);
+                menuManager.add(new Separator());
 
                 // goto submenu
                 IMenuManager subMenuManager = new MenuManager("Go To");
                 menuManager.add(subMenuManager);
                 subMenuManager.add(createGotoEventCommandContributionItem());
                 subMenuManager.add(createGotoSimulationTimeCommandContributionItem());
-                menuManager.add(separatorAction);
+                menuManager.add(new Separator());
 
                 menuManager.add(spacingSubmenu);
                 menuManager.add(zoomSubmenu);
                 menuManager.add(changeFontAction);
-                menuManager.add(separatorAction);
+                menuManager.add(new Separator());
 
                 menuManager.add(toggleBookmarkAction);
                 menuManager.add(copyToClipboardAction);
                 if (IConstants.IS_COMMERCIAL)
                     menuManager.add(exportToSVGAction);
-                menuManager.add(separatorAction);
+                menuManager.add(new Separator());
 
                 menuManager.add(pinAction);
                 menuManager.add(createRefreshCommandContributionItem());
                 menuManager.add(releaseMemoryAction);
-                menuManager.add(separatorAction);
+                menuManager.add(new Separator());
 
                 menuManager.add(showInSubmenu);
             }
@@ -419,7 +417,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         toolBarManager.add(timelineModeAction);
         toolBarManager.add(axisOrderingModeAction);
         toolBarManager.add(filterAction);
-        toolBarManager.add(separatorAction);
+        toolBarManager.add(new Separator());
         toolBarManager.add(showEventNumbersAction);
         toolBarManager.add(showMessageNamesAction);
         toolBarManager.add(showMessageSendsAction);
@@ -429,13 +427,13 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         toolBarManager.add(showMixedMessageDependenciesAction);
         toolBarManager.add(showMixedSelfMessageDependenciesAction);
         toolBarManager.add(showModuleMethodCallsAction);
-        toolBarManager.add(separatorAction);
+        toolBarManager.add(new Separator());
         toolBarManager.add(increaseSpacingAction);
         toolBarManager.add(decreaseSpacingAction);
-        toolBarManager.add(separatorAction);
+        toolBarManager.add(new Separator());
         toolBarManager.add(zoomInAction);
         toolBarManager.add(zoomOutAction);
-        toolBarManager.add(separatorAction);
+        toolBarManager.add(new Separator());
         toolBarManager.add(refreshAction);
         if (view)
             toolBarManager.add(pinAction);

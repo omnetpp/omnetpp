@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -39,6 +38,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 import org.omnetpp.neddoc.properties.DocumentationGeneratorPropertyPage;
@@ -127,7 +127,7 @@ public class GeneratorConfigurationDialog
             }
         });
 
-        for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
+        for (IProject project : ProjectUtils.getOmnetppProjectsSafely(getShell())) {
             if (project.isAccessible()) {
                 allProjects.add(project);
                 selectedProjects.add(project);

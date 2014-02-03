@@ -23,7 +23,6 @@
 #include <string.h>
 #include <time.h>
 #include <assert.h>
-#include <tk.h>
 
 #include "tklib.h"
 #include "tkutil.h"

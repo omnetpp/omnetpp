@@ -492,7 +492,7 @@ public class ParametersDialog extends TitleAreaDialog {
 
             if (StringUtils.isEmpty(strippedValue)) {
                 paramElement.setIsDefault(false);
-                paramElement.setValue(null);
+                paramElement.setValue("");
             }
             else {
                 String canoncialValue = removeDefaultAroundValue(strippedValue);

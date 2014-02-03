@@ -194,9 +194,11 @@ proc setupTkOptions {} {
 
    # On OS X, the application comes up in the background. The workaround is
    # to set the "always on top" option (which can be removed later)
-   after idle {
-       wm attributes . -topmost 1
-       after 1000 {wm attributes . -topmost 0}  ;# note: doesn't work with "after idle"
+   if {[string equal [tk windowingsystem] aqua]} {
+       after idle {
+           wm attributes . -topmost 1
+           after 1000 {wm attributes . -topmost 0}  ;# note: doesn't work with "after idle"
+       }
    }
 
 }

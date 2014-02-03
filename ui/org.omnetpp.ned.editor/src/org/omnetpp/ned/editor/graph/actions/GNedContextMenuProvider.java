@@ -32,7 +32,6 @@ import static org.eclipse.ui.IWorkbenchActionConstants.MB_ADDITIONS;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.ui.actions.ActionRegistry;
-import org.eclipse.jface.action.ContributionManager;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -43,7 +42,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.ContributionItemFactory;
 import org.eclipse.ui.keys.IBindingService;
-import org.eclipse.ui.menus.IMenuService;
 import org.eclipse.ui.services.IServiceLocator;
 
 /**
@@ -154,9 +152,6 @@ public class GNedContextMenuProvider extends ContextMenuProvider {
         action = ar.getAction(ExportImageAction.ID);
         if (action != null && action.isEnabled())
             manager.appendToGroup(GROUP_SAVE, action);
-
-        IMenuService menuService = (IMenuService)serviceLocator.getService(IMenuService.class);
-        menuService.populateContributionManager((ContributionManager)manager, "popup:org.omnetpp.ned.editor.graphical");
     }
 
     private String getShowInMenuLabel() {

@@ -36,10 +36,10 @@
 #  define OPP_DLLEXPORT
 #endif
 
-// check VC++ version (6.0 is no longer accepted)
+// check VC++ version (9.0 is no longer accepted)
 #ifdef _MSC_VER
-#if _MSC_VER<1300
-#error "OMNEST/OMNeT++ cannot be compiled with Visual C++ 6.0 or earlier, at least version 7.0 required"
+#if _MSC_VER<1600
+#error "OMNEST/OMNeT++ cannot be compiled with Visual C++ 2008 or earlier, at least version 2010 required"
 #endif
 #endif
 

@@ -71,7 +71,7 @@ public class OnClosingWelcomeView implements IPageListener, IPartListener {
     @Override
     public void partClosed(final IWorkbenchPart part) {
         if (part instanceof ViewIntroAdapterPart)
-            run(part);
+            onCloseOrResize(part, true);
     }
 
     @Override
@@ -123,7 +123,7 @@ public class OnClosingWelcomeView implements IPageListener, IPartListener {
         introPart.getControl().addControlListener(new ControlAdapter() {
             @Override
             public void controlResized(ControlEvent e) {
-                run(part);
+                onCloseOrResize(part, false);
             }
         });
     }
@@ -141,14 +141,14 @@ public class OnClosingWelcomeView implements IPageListener, IPartListener {
         }
     }
 
-    protected void run(final IWorkbenchPart part) {
+    protected void onCloseOrResize(final IWorkbenchPart part, final boolean closed) {
         Display.getCurrent().asyncExec(new Runnable() {
             @Override
             public void run() {
                 IWorkbenchPage page = part.getSite().getPage();
                 int partState = page.getPartState(page.getReference(part));
                 // KLUDGE: we need to delay this check because the part state will change only after the control resize event is handled
-                if (!hasBeenRun && partState != IWorkbenchPage.STATE_MAXIMIZED && !PlatformUI.getWorkbench().isClosing()) {
+                if (!hasBeenRun && (closed || partState != IWorkbenchPage.STATE_MAXIMIZED) && !PlatformUI.getWorkbench().isClosing()) {
                     try {
                         // have to set the flag first because the runnable might open a dialog that runs a new event loop
                         hasBeenRun = true;

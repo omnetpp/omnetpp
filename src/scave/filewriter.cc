@@ -25,7 +25,7 @@
 #endif
 
 NAMESPACE_BEGIN
-#define CHECK(fprintf)    if (fprintf<0) throw opp_runtime_error("Cannot write output vector file `%s'", fileName.c_str())
+#define CHECK(fprintf)    if ((fprintf)<0) throw opp_runtime_error("Cannot write output vector file `%s'", fileName.c_str())
 
 
 FileWriterNode::FileWriterNode(const char *filename, const char *banner)

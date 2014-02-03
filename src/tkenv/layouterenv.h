@@ -18,6 +18,7 @@
 #define __LAYOUTERENV_H
 
 #include "timeutil.h"   // must precede <tk.h>, due to collision with <windows.h>
+#include "platmisc.h"   // must precede <tk.h> otherwise Visual Studio 2013 fails to compile
 #include <tk.h>
 #include "graphlayouter.h"
 
