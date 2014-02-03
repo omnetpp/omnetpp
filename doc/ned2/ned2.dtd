@@ -48,7 +48,9 @@
 <!ATTLIST interface-name
      name               CDATA     #REQUIRED>
 
-<!ELEMENT simple-module (comment*, extends?, interface-name*, parameters?, gates?)>
+<!ELEMENT simple-module (comment*, extends?, interface-name*,
+                         parameters?, gates?, types?,
+                         submodules?, connections?)>
 <!ATTLIST simple-module
      name               NMTOKEN   #REQUIRED>
 
@@ -57,7 +59,8 @@
      name               NMTOKEN   #REQUIRED>
 
 <!ELEMENT compound-module (comment*, extends?, interface-name*,
-                           parameters?, gates?, types?, submodules?, connections?)>
+                           parameters?, gates?, types?,
+                           submodules?, connections?)>
 <!ATTLIST compound-module
      name               NMTOKEN   #REQUIRED>
 

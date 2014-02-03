@@ -98,8 +98,8 @@ void NEDDTDValidator::validateElement(InterfaceNameElement *node)
 
 void NEDDTDValidator::validateElement(SimpleModuleElement *node)
 {
-    int tags[] = {NED_COMMENT,NED_EXTENDS,NED_INTERFACE_NAME,NED_PARAMETERS,NED_GATES, NED_NULL};
-    char mult[] = {'*','?','*','?','?', 0};
+    int tags[] = {NED_COMMENT,NED_EXTENDS,NED_INTERFACE_NAME,NED_PARAMETERS,NED_GATES,NED_TYPES,NED_SUBMODULES,NED_CONNECTIONS, NED_NULL};
+    char mult[] = {'*','?','*','?','?','?','?','?', 0};
     checkSequence(node, tags, mult);
 
     checkRequiredAttribute(node, "name");

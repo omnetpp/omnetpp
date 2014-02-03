@@ -207,7 +207,8 @@ class TGraphicalModWindowFactory : public cInspectorFactory
     bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
     int inspectorType() {return INSP_GRAPHICAL;}
     double qualityAsDefault(cObject *object) {
-        return dynamic_cast<cSimpleModule *>(object) ? 0.9 : 3.0;
+        cModule *mod = dynamic_cast<cModule *>(object);
+        return mod && mod->hasSubmodules() ? 3.0 : 0.9;
     }
 
     TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {

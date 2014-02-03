@@ -44,12 +44,6 @@ std::string cCompoundModule::info() const
     return out.str();
 }
 
-void cCompoundModule::doBuildInside()
-{
-    // ask module type to create submodules and internal connections
-    getModuleType()->buildInside(this);
-}
-
 void cCompoundModule::arrived(cMessage *msg, cGate *ongate, simtime_t)
 {
     throw cRuntimeError("Gate `%s' of compound module (%s)%s is not connected on the %s, "
@@ -58,12 +52,6 @@ void cCompoundModule::arrived(cMessage *msg, cGate *ongate, simtime_t)
                         getClassName(), getFullPath().c_str(),
                         (ongate->isConnectedOutside() ? "inside" : "outside"),
                         msg->getClassName(), msg->getName());
-}
-
-void cCompoundModule::scheduleStart(simtime_t t)
-{
-    for (SubmoduleIterator submod(this); !submod.end(); submod++)
-        submod()->scheduleStart(t);
 }
 
 NAMESPACE_END

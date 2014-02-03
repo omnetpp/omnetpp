@@ -303,6 +303,9 @@ class SIM_API cModule : public cComponent //implies noncopyable
     // internal: called as part of the destructor
     void clearGates();
 
+    // internal: builds submodules and internal connections for this module
+    virtual void doBuildInside();
+
 #ifdef USE_OMNETPP4x_FINGERPRINTS
     // internal: returns OMNeT++ V4.x compatible module ID
     int getVersion4ModuleId() const { return version4ModuleId; }
@@ -317,15 +320,6 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     // internal utility function. Takes O(n) time as it iterates on the gates
     cGate *gateByOrdinal(int k) const;
-
-  protected:
-    /**
-     * Internal function for buildInside(), it should not be invoked directly.
-     * Should be refined in subclasses representing compound modules
-     * to build submodule and internal connections of this module. This
-     * default implementation does nothing.
-     */
-    virtual void doBuildInside() {}
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -513,6 +507,11 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     /** @name Submodule access. */
     //@{
+    /**
+     * Returns true if the module has submodules, and false otherwise.
+     * To enumerate the submodules use SubmoduleIterator.
+     */
+    bool hasSubmodules() const {return firstsubmodp!=NULL;}
 
     /**
      * Finds a direct submodule with the given name and index, and returns
@@ -736,12 +735,10 @@ class SIM_API cModule : public cComponent //implies noncopyable
     //@{
 
     /**
-     * Pure virtual function; it is redefined in both cCompoundModule
-     * and cSimpleModule. It creates a starting message for a dynamically
-     * created module (and recursively for its submodules). See the user
-     * manual for explanation how to use dynamically created modules.
+     * Creates a starting message for modules that need it (and recursively
+     * for its submodules).
      */
-    virtual void scheduleStart(simtime_t t) = 0;
+    virtual void scheduleStart(simtime_t t);
 
     /**
      * Deletes the module and recursively all its submodules. This method

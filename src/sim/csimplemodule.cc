@@ -323,8 +323,8 @@ void cSimpleModule::scheduleStart(simtime_t t)
         simulation.insertEvent(timeoutmsg);
     }
 
-    for (SubmoduleIterator submod(this); !submod.end(); submod++)
-        submod()->scheduleStart(t);
+    // delegate to base class for doing the same for submodules
+    cModule::scheduleStart(t);
 }
 
 void cSimpleModule::deleteModule()
@@ -369,6 +369,9 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
        throw cRuntimeError("send()/sendDelayed(): cannot send via an input gate (`%s')", outgate->getFullName());
     if (!outgate->getNextGate())  // NOTE: without this error check, msg would become self-message
        throw cRuntimeError("send()/sendDelayed(): gate `%s' not connected", outgate->getFullName());
+    if (outgate->getPreviousGate())
+       throw cRuntimeError("send()/sendDelayed(): gate `%s' is not the start of a connection path (path starts at gate %s)",
+                           outgate->getFullName(), outgate->getPathStartGate()->getFullPath().c_str());
     if (msg==NULL)
         throw cRuntimeError("send()/sendDelayed(): message pointer is NULL");
     if (msg->getOwner()!=this)

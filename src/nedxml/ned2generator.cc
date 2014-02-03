@@ -332,6 +332,9 @@ void NED2Generator::doSimpleModule(SimpleModuleElement *node, const char *indent
 
     generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
     generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
+    generateChildrenWithType(node, NED_TYPES, increaseIndent(indent));
+    generateChildrenWithType(node, NED_SUBMODULES, increaseIndent(indent));
+    generateChildrenWithType(node, NED_CONNECTIONS, increaseIndent(indent));
 
     OUT << indent << "}" << getTrailingComment(node);
 }

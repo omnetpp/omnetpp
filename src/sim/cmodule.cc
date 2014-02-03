@@ -1018,11 +1018,14 @@ bool cModule::checkInternalConnections() const
     // check this compound module if its inside is connected ok
     // Note: checking of the inner side of compound module gates
     // cannot be turned off with @loose
-    for (GateIterator i(this); !i.end(); i++)
+    if (!isSimple())
     {
-       cGate *g = i();
-       if (g->size()!=0 && !g->isConnectedInside())
-            throw cRuntimeError(this,"Gate `%s' is not connected to a submodule (or internally to another gate of the same module)", g->getFullPath().c_str());
+        for (GateIterator i(this); !i.end(); i++)
+        {
+            cGate *g = i();
+            if (g->size()!=0 && !g->isConnectedInside())
+                throw cRuntimeError(this,"Gate `%s' is not connected to a submodule (or internally to another gate of the same module)", g->getFullPath().c_str());
+        }
     }
 
     // check submodules
@@ -1164,6 +1167,12 @@ void cModule::finalizeParameters()
     getModuleType()->setupGateVectors(this);
 }
 
+void cModule::scheduleStart(simtime_t t)
+{
+    for (SubmoduleIterator submod(this); !submod.end(); submod++)
+        submod()->scheduleStart(t);
+}
+
 int cModule::buildInside()
 {
     if (buildInsideCalled())
@@ -1184,6 +1193,12 @@ int cModule::buildInside()
     setFlag(FL_BUILDINSIDE_CALLED, true);
 
     return 0;
+}
+
+void cModule::doBuildInside()
+{
+    // ask module type to create submodules and internal connections
+    getModuleType()->buildInside(this);
 }
 
 void cModule::deleteModule()

@@ -31,9 +31,6 @@ class SIM_API cCompoundModule : public cModule //implies noncopyable
     friend class TCompoundModInspector;
 
   protected:
-    // overridden to delegate job to cModuleType
-    virtual void doBuildInside();
-
     // internal use
     virtual void arrived(cMessage *msg, cGate *ongate, simtime_t t);
 
@@ -59,16 +56,6 @@ class SIM_API cCompoundModule : public cModule //implies noncopyable
      * See cObject for more details.
      */
     virtual std::string info() const;
-    //@}
-
-    /** @name Redefined cModule functions. */
-    //@{
-
-    /**
-     * Calls scheduleStart() recursively for all its (immediate)
-     * submodules. This is used with dynamically created modules.
-     */
-    virtual void scheduleStart(simtime_t t);
     //@}
 };
 
