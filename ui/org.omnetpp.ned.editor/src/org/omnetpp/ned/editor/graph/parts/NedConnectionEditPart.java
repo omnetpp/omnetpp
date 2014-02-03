@@ -182,6 +182,8 @@ public class NedConnectionEditPart extends AbstractConnectionEditPart
         }
         if (isConditional || isGroup)
             cfig.setMidpointDecoration(new ConnectionKindFigure(isConditional, isGroup));
+        else
+            cfig.setMidpointDecoration(null);
 
         // set the error marker on the figure
         ITooltipTextProvider textProvider = new ITooltipTextProvider() {
