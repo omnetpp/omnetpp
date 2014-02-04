@@ -98,7 +98,7 @@ void cNEDNetworkBuilder::addParametersAndGatesTo(cComponent *component, cNEDDecl
         {
             NEDElement *subcomponentNode = component->isModule() ?
                 (NEDElement *)parentDecl->getSubmoduleElement(component->getName()) :
-                (NEDElement *)parentDecl->getConnectionElement(((cChannel*)component)->getConnectionId());
+                (NEDElement *)parentDecl->getConnectionElement(((cChannel*)component)->getNedConnectionElementId());
             if (subcomponentNode)
                 assignSubcomponentParams(component, subcomponentNode);
         }
@@ -987,7 +987,7 @@ void cNEDNetworkBuilder::doConnectGates(cModule *modp, cGate *srcg, cGate *destg
     else
     {
         cChannel *channel = createChannel(conn, modp, srcg);
-        channel->setConnectionId(conn->getId()); // so that properties will be found
+        channel->setNedConnectionElementId(conn->getId()); // so that properties will be found
         srcg->connectTo(destg, channel);
         assignSubcomponentParams(channel, conn);
         channel->finalizeParameters();

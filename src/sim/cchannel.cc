@@ -46,7 +46,7 @@ void cChannel::MessageSentSignalValue::error() const
 cChannel::cChannel(const char *name) : cComponent(name)
 {
     srcgatep = NULL;
-    connId = -1;
+    nedConnectionElementId = -1;
 }
 
 cChannel::~cChannel()
@@ -182,7 +182,7 @@ cProperties *cChannel::getProperties() const
     cComponentType *type = getComponentType();
     cProperties *props;
     if (parent)
-        props = parent->getComponentType()->getConnectionProperties(connId, type->getFullName());
+        props = parent->getComponentType()->getConnectionProperties(nedConnectionElementId, type->getFullName());
     else
         props = type->getProperties();
     return props;
