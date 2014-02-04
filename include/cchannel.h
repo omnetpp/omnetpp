@@ -39,15 +39,15 @@ class SIM_API cChannel : public cComponent //implies noncopyable
 {
   protected:
     cGate *srcgatep; // gate the channel is attached to
-    int connId;      // for cChannel::getProperties(); usually the NED connection element's id
+    int nedConnectionElementId;  // for cChannel::getProperties(); usually the NED connection element's id
 
   public:
     // internal: called from cGate
     void setSourceGate(cGate *g) {srcgatep=g;}
 
-    // internal: sets/gets connId
-    void setConnectionId(int id) {connId = id;}
-    int getConnectionId() {return connId;}
+    // internal: sets/gets nedConnectionElementId
+    void setNedConnectionElementId(int id) {nedConnectionElementId = id;}
+    int getNedConnectionElementId() {return nedConnectionElementId;}
 
     // internal: called from callInitialize(). Does one stage for this
     // channel, and returns true if there are more stages to do
