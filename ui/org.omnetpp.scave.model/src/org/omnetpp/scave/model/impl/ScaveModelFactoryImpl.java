@@ -39,7 +39,7 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
      */
     public static ScaveModelFactory init() {
         try {
-            ScaveModelFactory theScaveModelFactory = (ScaveModelFactory)EPackage.Registry.INSTANCE.getEFactory("http://www.omnetpp.org/omnetpp/scave");
+            ScaveModelFactory theScaveModelFactory = (ScaveModelFactory)EPackage.Registry.INSTANCE.getEFactory(ScaveModelPackage.eNS_URI);
             if (theScaveModelFactory != null) {
                 return theScaveModelFactory;
             }

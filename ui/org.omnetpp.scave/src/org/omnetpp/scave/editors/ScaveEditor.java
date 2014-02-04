@@ -67,6 +67,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.omnetpp.common.util.DetailedPartInitException;
 import org.omnetpp.scave.Markers;
 import org.omnetpp.scave.ScavePlugin;
@@ -379,15 +380,13 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
     /** Override base method to set the property source provider. */
     @Override
     public IPropertySheetPage getPropertySheetPage() {
-        if (propertySheetPage == null) {
-            // this will initialize propertySheetPage
-            super.getPropertySheetPage();
-            propertySheetPage.setPropertySourceProvider(
+        IPropertySheetPage propertySheetPage = super.getPropertySheetPage();
+        if (propertySheetPage instanceof PropertySheetPage)
+        {
+            ((PropertySheetPage)propertySheetPage).setPropertySourceProvider(
                 new ScavePropertySourceProvider(adapterFactory, manager));
-            return propertySheetPage;
         }
-        else
-            return super.getPropertySheetPage();
+        return propertySheetPage;
     }
 
     /**
@@ -434,7 +433,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
      * Returns the edited resource.
      */
     public Resource getResource() {
-        return (Resource)editingDomain.getResourceSet().getResources().get(0);
+        return editingDomain.getResourceSet().getResources().get(0);
     }
 
     /**

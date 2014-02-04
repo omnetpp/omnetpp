@@ -289,7 +289,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 
     /**
      * Creates, registers, and initializes the <b>Package</b> for this model, and for any others upon which it depends.
-     *
+     * 
      * <p>This method is used to initialize {@link ScaveModelPackage#eINSTANCE} when that field is accessed.
      * Clients should not invoke it directly. Instead, they should simply access that field to obtain the package.
      * <!-- begin-user-doc -->
@@ -316,7 +316,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
         // Mark meta-data to indicate it can't be changed
         theScaveModelPackage.freeze();
 
-
+  
         // Update the registry and return the package
         EPackage.Registry.INSTANCE.put(ScaveModelPackage.eNS_URI, theScaveModelPackage);
         return theScaveModelPackage;
