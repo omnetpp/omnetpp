@@ -43,7 +43,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.IScaveAction;
@@ -161,11 +160,29 @@ public class ScaveEditorPage extends Composite {
         if (o instanceof DropTarget) {
             dropTarget = (DropTarget) o; // this is a dirty hack, but there seems to be no public API for getting an existing drop target
             // add FileTransfer to the transfer array if not already in there
-            Transfer[] transfer = dropTarget.getTransfer();
-            Transfer[] transfer2 = new Transfer[transfer.length+1];
-            System.arraycopy(transfer, 0, transfer2, 0, transfer.length);
-            transfer2[transfer2.length-1] = FileTransfer.getInstance();
-            dropTarget.setTransfer(transfer2);
+//            Transfer[] transfer = dropTarget.getTransfer();
+//            boolean hasFileTransfer = false;
+//            for (Transfer t : transfer) {
+//                if (t instanceof FileTransfer) {
+//                    hasFileTransfer = true;
+//                    break;
+//                }
+//
+//            }
+//            if (!hasFileTransfer) {
+//                Transfer[] transfer2 = new Transfer[transfer.length+1];
+//                System.arraycopy(transfer, 0, transfer2, 0, transfer.length);
+//                transfer2[transfer2.length-1] = FileTransfer.getInstance();
+//                dropTarget.setTransfer(transfer2);
+//            }
+
+            // XXX drop existing DropTarget (added in AbstractEMFModelEditor.setupDragAndDropSupportFor()),
+            //     because if FileTransfer added to existing target then it will try to load the dropped file as an XMI resource.
+            // XXX The dnd of input files in the 'Input files' section does not work, because there is no
+            //     EditingDomainViewerDropAdapter listener.
+            dropTarget.dispose();
+            dropTarget = new DropTarget(dropTargetControl, DND.DROP_DEFAULT | DND.DROP_COPY);
+            dropTarget.setTransfer(new Transfer[] {FileTransfer.getInstance()});
         }
         else {
             dropTarget = new DropTarget(dropTargetControl, DND.DROP_DEFAULT | DND.DROP_COPY);
