@@ -8,6 +8,7 @@
 package org.omnetpp.scave.editors.ui;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.jface.action.IAction;
@@ -154,40 +155,9 @@ public class ScaveEditorPage extends Composite {
      */
     public void setupResultFileDropTarget(Control dropTargetControl) {
         // set up DropTarget, and add FileTransfer to it;
-        // issue: the EMF editor already adds a drop target to the TreeViewer
-        DropTarget dropTarget = null;
-        Object o = dropTargetControl.getData("DropTarget");
-        if (o instanceof DropTarget) {
-            dropTarget = (DropTarget) o; // this is a dirty hack, but there seems to be no public API for getting an existing drop target
-            // add FileTransfer to the transfer array if not already in there
-//            Transfer[] transfer = dropTarget.getTransfer();
-//            boolean hasFileTransfer = false;
-//            for (Transfer t : transfer) {
-//                if (t instanceof FileTransfer) {
-//                    hasFileTransfer = true;
-//                    break;
-//                }
-//
-//            }
-//            if (!hasFileTransfer) {
-//                Transfer[] transfer2 = new Transfer[transfer.length+1];
-//                System.arraycopy(transfer, 0, transfer2, 0, transfer.length);
-//                transfer2[transfer2.length-1] = FileTransfer.getInstance();
-//                dropTarget.setTransfer(transfer2);
-//            }
-
-            // XXX drop existing DropTarget (added in AbstractEMFModelEditor.setupDragAndDropSupportFor()),
-            //     because if FileTransfer added to existing target then it will try to load the dropped file as an XMI resource.
-            // XXX The dnd of input files in the 'Input files' section does not work, because there is no
-            //     EditingDomainViewerDropAdapter listener.
-            dropTarget.dispose();
-            dropTarget = new DropTarget(dropTargetControl, DND.DROP_DEFAULT | DND.DROP_COPY);
-            dropTarget.setTransfer(new Transfer[] {FileTransfer.getInstance()});
-        }
-        else {
-            dropTarget = new DropTarget(dropTargetControl, DND.DROP_DEFAULT | DND.DROP_COPY);
-            dropTarget.setTransfer(new Transfer[] {FileTransfer.getInstance()});
-        }
+        Assert.isTrue(dropTargetControl.getData("DropTarget") == null);
+        DropTarget dropTarget = new DropTarget(dropTargetControl, DND.DROP_DEFAULT | DND.DROP_COPY);
+        dropTarget.setTransfer(new Transfer[] {FileTransfer.getInstance()});
 
         // add our listener to handle file transfer to the DropTarget
         dropTarget.addDropListener(new DropTargetAdapter() {

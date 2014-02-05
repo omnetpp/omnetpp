@@ -653,7 +653,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
      */
     protected void setupDragAndDropSupportFor(StructuredViewer viewer) {
         int dndOperations = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
-        Transfer[] transfers = new Transfer[] { LocalTransfer.getInstance()/*, LocalSelectionTransfer.getTransfer(), FileTransfer.getInstance()*/ };
+        Transfer[] transfers = new Transfer[] { LocalTransfer.getInstance(), LocalSelectionTransfer.getTransfer(), FileTransfer.getInstance() };
         viewer.addDragSupport(dndOperations, transfers, new ViewerDragAdapter(viewer));
         viewer.addDropSupport(dndOperations, transfers, new EditingDomainViewerDropAdapter(editingDomain, viewer));
     }

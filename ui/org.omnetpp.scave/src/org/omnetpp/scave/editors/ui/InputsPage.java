@@ -136,7 +136,6 @@ public class InputsPage extends ScaveEditorPage {
         getLogicalDataTreeViewer().addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
 
         // set up drag & drop of .sca and .vec files into the viewers
-        setupResultFileDropTarget(getInputFilesTreeViewer().getControl());
         setupResultFileDropTarget(getFileRunTreeViewer().getControl());
         setupResultFileDropTarget(getRunFileTreeViewer().getControl());
         setupResultFileDropTarget(getLogicalDataTreeViewer().getControl());
