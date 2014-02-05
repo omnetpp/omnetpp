@@ -9,6 +9,7 @@ package org.omnetpp.scave.editors;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -18,6 +19,7 @@ import java.util.concurrent.Callable;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
@@ -34,18 +36,27 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.edit.command.AddCommand;
+import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
+import org.eclipse.emf.edit.ui.dnd.EditingDomainViewerDropAdapter;
+import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
+import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
+import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -53,6 +64,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
@@ -266,6 +278,80 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
             manager = null;
         }
         super.dispose();
+    }
+
+    // Modified DropAdapter to convert drop events.
+    // The original EditingDomainViewerDropAdapter tries to add
+    // files to the ResourceSet as XMI documents (what probably
+    // causes a parse error). Here we convert the URIs of the
+    // drop source to InputFiles and modify the drop target.
+    class DropAdapter extends EditingDomainViewerDropAdapter
+    {
+        List<InputFile> inputFilesInSource = null;
+
+        public DropAdapter(EditingDomain domain, Viewer viewer) {
+            super(domain, viewer);
+        }
+
+        @Override
+        protected Collection<?> extractDragSource(Object object) {
+            Collection<?> collection = super.extractDragSource(object);
+
+            // find URIs in source and convert them InputFiles
+            ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
+            inputFilesInSource = null;
+            for (Object element : collection) {
+                if (element instanceof URI) {
+                    String workspacePath = getWorkspacePathFromURI((URI)element);
+                    if (workspacePath != null) {
+                        if (inputFilesInSource == null)
+                            inputFilesInSource = new ArrayList<InputFile>();
+                        if (workspacePath.endsWith(".sca") || workspacePath.endsWith(".vec")) {
+                            InputFile file = factory.createInputFile();
+                            file.setName(workspacePath);
+                            inputFilesInSource.add(file);
+                        }
+                    }
+                }
+            }
+
+            return inputFilesInSource != null ? inputFilesInSource : collection;
+        }
+
+        @Override
+        protected Object extractDropTarget(Widget item) {
+            Object target = super.extractDropTarget(item);
+            if (inputFilesInSource != null) {
+                if (target instanceof InputFile)
+                    target = ((InputFile)target).eContainer();
+                else if (target == null)
+                    target = getAnalysis().getInputs();
+            }
+            return target;
+        }
+    }
+
+    private String getWorkspacePathFromURI(URI uri) {
+        if (uri.isFile())
+        {
+            IPath path = new Path(uri.path());
+            IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+            IFile file = root.getFileForLocation(path);
+            return file != null ? file.getFullPath().toString() : null;
+        }
+        else if (uri.isPlatformResource())
+            return uri.toPlatformString(false);
+        else
+            return null;
+    }
+
+    @Override
+    protected void setupDragAndDropSupportFor(StructuredViewer viewer) {
+        int dndOperations = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
+        // XXX FileTransfer causes an exception
+        Transfer[] transfers = new Transfer[] { LocalTransfer.getInstance(), LocalSelectionTransfer.getTransfer()/*, FileTransfer.getInstance()*/ };
+        viewer.addDragSupport(dndOperations, transfers, new ViewerDragAdapter(viewer));
+        viewer.addDropSupport(dndOperations, transfers, new DropAdapter(editingDomain, viewer));
     }
 
     @Override
