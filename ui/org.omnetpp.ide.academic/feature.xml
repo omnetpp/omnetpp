@@ -340,7 +340,7 @@ END OF TERMS AND CONDITIONS
 
    <includes
          id="org.omnetpp.ide"
-         version="4.4.0.qualifier"
+         version="0.0.0"
          name="OMNeT++ IDE Features"/>
 
    <includes

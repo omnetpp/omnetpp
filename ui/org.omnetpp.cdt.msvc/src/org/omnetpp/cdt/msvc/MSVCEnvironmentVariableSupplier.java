@@ -18,6 +18,7 @@ import org.eclipse.cdt.managedbuilder.envvar.IBuildEnvironmentVariable;
 import org.eclipse.cdt.managedbuilder.envvar.IConfigurationEnvironmentVariableSupplier;
 import org.eclipse.cdt.managedbuilder.envvar.IEnvironmentVariableProvider;
 import org.eclipse.core.runtime.Path;
+import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.BuildEnvironmentVariable;
 import org.omnetpp.cdt.msvc.ui.MSVCPreferencePage;
 import org.omnetpp.common.util.StringUtils;

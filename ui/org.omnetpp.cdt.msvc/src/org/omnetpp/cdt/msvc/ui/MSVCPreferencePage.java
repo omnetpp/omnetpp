@@ -12,7 +12,7 @@ import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-import org.omnetpp.cdt.msvc.Activator;
+import org.omnetpp.cdt.Activator;
 
 /**
  * Preference page to specify Visual Studio and Platform SDK locations.

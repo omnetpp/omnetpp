@@ -11,7 +11,7 @@ import org.eclipse.cdt.utils.WindowsRegistry;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.omnetpp.cdt.msvc.Activator;
+import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.util.StringUtils;
 
 public class MSVCPreferenceInitializer extends AbstractPreferenceInitializer {
