@@ -4683,11 +4683,11 @@ The latter can be achieved by calling \ffunc{ev.addResultRecorders()}.
 
 \begin{cpp}
 char signalName[32];
-sprintf(signalName, "session%d-jitter", sessionNum};
+sprintf(signalName, "session%d-jitter", sessionNum);
 simsignal_t signal = registerSignal(signalName);
 
 char statisticName[32];
-sprintf(statisticName, "session%d-jitter", sessionNum};
+sprintf(statisticName, "session%d-jitter", sessionNum);
 cProperty *statisticTemplate =
     getProperties()->get("statisticTemplate", "sessionJitter");
 ev.addResultRecorders(this, signal, statisticName, statisticTemplate);
