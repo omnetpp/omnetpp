@@ -4,6 +4,7 @@ PERL=perl
 INKSCAPE=inkscape
 DOT=dot
 TEMPLATE=omnetpp
+VERSION=4.x
 
 TITLE=User Manual
 
@@ -94,7 +95,7 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png cover
 
 eclipse : $(HTMCHAPTERS) $(PNGPICS) eclipse.thtml prephtml2 ltoh.specs ltoh.pl
 	cat $(HTMCHAPTERS) > usman.tmp
-	$(PERL) prephtml2 --split --template eclipse.thtml usman.tmp
+	$(PERL) prephtml2 --split --template eclipse.thtml --opp_version $(VERSION) usman.tmp
 	rm usman.tmp
 	rm -rf eclipse
 	mkdir eclipse
@@ -104,7 +105,7 @@ eclipse : $(HTMCHAPTERS) $(PNGPICS) eclipse.thtml prephtml2 ltoh.specs ltoh.pl
 
 html : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
 	cat $(HTMCHAPTERS) > usman.tmp
-	$(PERL) prephtml2 --template $(TEMPLATE).thtml usman.tmp
+	$(PERL) prephtml2 --template $(TEMPLATE).thtml --opp_version $(VERSION) usman.tmp
 	rm usman.tmp
 	rm -rf ../../manual
 	mkdir ../../manual
