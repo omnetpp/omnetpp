@@ -166,7 +166,7 @@ USING_NAMESPACE
 
 <propertyindex>{
     "]"                  { countChars(); BEGIN(afterpropertyname); return P(']'); }
-    ({L}|{D}|[:.-])+     { countChars(); return PROPNAME; }
+    ({L}|{D}|[*?{}:.-])+ { countChars(); return PROPNAME; }
     {S}                  { countChars(); }
     .                    { BEGIN(INITIAL); yyless(0); }
 }

@@ -169,6 +169,17 @@ void NEDSyntaxValidator::checkPropertyNameAttribute(NEDElement *node, const char
             {errors->addError(node,"illegal character in %s '%s'", attr, node->getAttribute(attr)); return;}
 }
 
+void NEDSyntaxValidator::checkPropertyIndexAttribute(NEDElement *node, const char *attr)
+{
+    const char *s = node->getAttribute(attr);
+    assert(s);
+    if (!*s)
+        return;
+    for (; *s; s++)
+        if (!opp_isalnumext(*s) && strchr("*?{}_-:.", *s)==NULL) // note: same rule as for XML attribute names, plus wildcards
+            {errors->addError(node,"illegal character in %s '%s'", attr, node->getAttribute(attr)); return;}
+}
+
 bool NEDSyntaxValidator::isWithinSubcomponent(NEDElement *node)
 {
     // only returns true if node is within the BODY of a submodule or a connection
@@ -292,7 +303,7 @@ void NEDSyntaxValidator::validateElement(ParamElement *node)
 void NEDSyntaxValidator::validateElement(PropertyElement *node)
 {
     checkPropertyNameAttribute(node, "name");
-    checkPropertyNameAttribute(node, "index");
+    checkPropertyIndexAttribute(node, "index");
 
     // properties cannot occur on submodule or connection parameters/gates.
     // structure: submodule>parameters>parameter>property

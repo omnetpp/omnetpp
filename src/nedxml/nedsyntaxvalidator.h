@@ -43,6 +43,7 @@ class NEDXML_API NEDSyntaxValidator : public NEDValidatorBase
     void checkExpressionAttributes(NEDElement *node, const char *attrs[], bool optional[], int n);
     void checkDottedNameAttribute(NEDElement *node, const char *attr, bool wildcardsAllowed);
     void checkPropertyNameAttribute(NEDElement *node, const char *attr);
+    void checkPropertyIndexAttribute(NEDElement *node, const char *attr);
 
     // helper: whether the given node is inside the BODY of a submodule or a connection
     bool isWithinSubcomponent(NEDElement *node);

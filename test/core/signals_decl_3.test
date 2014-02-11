@@ -1,0 +1,51 @@
+%description:
+Check wildcards in @signal property index
+
+%file: test.ned
+
+simple Test extends testlib.SignalSource
+{
+    @isNetwork(true);
+    @signal[foo-*]();
+    @signal[a?c]();
+    @signal[bar{5..10}]();
+    @signal[foo.*.bar]();
+
+    script = xml("<root>\
+       <e at='init' name='foo-123' type='long' value='1'/> \
+       <e at='init' name='abc' type='long' value='1'/> \
+       <e at='init' name='bar8' type='long' value='1'/> \
+       <e at='init' name='foo.x.bar' type='long' value='1'/> \
+       \
+       <!-- wrong ones: --> \
+       <e at='init' name='Xfoo-123' type='long' value='1'/> \
+       <e at='init' name='aXXc' type='long' value='1'/> \
+       <e at='init' name='bar11' type='long' value='1'/> \
+       <e at='init' name='foo.x.barX' type='long' value='1'/> \
+    </root>");
+}
+
+%inifile: omnetpp.ini
+network = Test
+cmdenv-express-mode = false
+check-signals = true
+
+%exitcode: 0
+
+%contains: stdout
+t=0s: emit "foo-123" type=long value=1
+t=0s: emit "abc" type=long value=1
+t=0s: emit "bar8" type=long value=1
+t=0s: emit "foo.x.bar" type=long value=1
+t=0s: emit "Xfoo-123" type=long value=1
+ERROR: Undeclared signal "Xfoo-123" emitted (@signal missing from NED file?)
+t=0s: emit "aXXc" type=long value=1
+ERROR: Undeclared signal "aXXc" emitted (@signal missing from NED file?)
+t=0s: emit "bar11" type=long value=1
+ERROR: Undeclared signal "bar11" emitted (@signal missing from NED file?)
+t=0s: emit "foo.x.barX" type=long value=1
+ERROR: Undeclared signal "foo.x.barX" emitted (@signal missing from NED file?)
+
+%contains: stdout
+emitted 8 signals
+

@@ -162,7 +162,7 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
             if (strcmp(signalName, declaredSignalNames[i]) == 0)
                 break;
             if (PatternMatcher::containsWildcards(declaredSignalNames[i]) &&
-                    PatternMatcher(declaredSignalNames[i], false, true, true).matches(declaredSignalNames[i]))
+                    PatternMatcher(declaredSignalNames[i], false, true, true).matches(signalName))
                 break;
         }
         if (i == declaredSignalNames.size())
