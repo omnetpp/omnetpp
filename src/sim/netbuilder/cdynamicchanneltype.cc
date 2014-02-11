@@ -52,7 +52,7 @@ std::string cDynamicChannelType::detailedInfo() const
 
 cChannel *cDynamicChannelType::createChannelObject()
 {
-    const char *classname = getDecl()->implementationClassName();
+    const char *classname = getDecl()->getImplementationClassName();
     return instantiateChannelClass(classname);
 }
 
@@ -98,7 +98,13 @@ std::string cDynamicChannelType::getPackageProperty(const char *name) const
 const char *cDynamicChannelType::getImplementationClassName() const
 {
     cNEDDeclaration *decl = getDecl();
-    return decl->implementationClassName();
+    return decl->getImplementationClassName();
+}
+
+std::string cDynamicChannelType::getCxxNamespace() const
+{
+    cNEDDeclaration *decl = getDecl();
+    return decl->getCxxNamespace();
 }
 
 bool cDynamicChannelType::isInnerType() const

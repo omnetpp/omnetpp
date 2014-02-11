@@ -116,7 +116,7 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
         if (!opp_isempty(explicitClassName))
             implClassName = opp_join("::", getCxxNamespace().c_str(), explicitClassName);
         else if (numExtendsNames()!=0)
-            implClassName = opp_nulltoempty(getSuperDecl()->implementationClassName());
+            implClassName = opp_nulltoempty(getSuperDecl()->getImplementationClassName());
         else if (getType()==COMPOUND_MODULE)
             implClassName = OPP_PREFIX "cCompoundModule";
         else
@@ -236,7 +236,7 @@ const char *NEDTypeInfo::getEnclosingTypeName() const
     return isInner ? enclosingTypeName.c_str() : NULL;
 }
 
-const char *NEDTypeInfo::implementationClassName() const
+const char *NEDTypeInfo::getImplementationClassName() const
 {
     return implClassName.empty() ? NULL : implClassName.c_str();
 }

@@ -164,7 +164,7 @@ class NEDXML_API NEDTypeInfo
      * has to be instantiated (for compound modules this defaults to
      * "cCompoundModule"); for interface types it returns NULL.
      */
-    virtual const char *implementationClassName() const;
+    virtual const char *getImplementationClassName() const;
 
     /**
      * Find a property with the given name in the type's NED file, then in the
