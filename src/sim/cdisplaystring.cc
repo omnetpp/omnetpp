@@ -96,13 +96,16 @@ void cDisplayString::beforeChange()
 void cDisplayString::afterChange()
 {
     needsassemble = true;
-    EVCB.displayStringChanged(ownercomponent);
 
-    // notify post-change listeners
-    if (ownercomponent && ownercomponent->hasListeners(POST_MODEL_CHANGE)) {
-        cPostDisplayStringChangeNotification tmp;
-        tmp.displayString = this;
-        ownercomponent->emit(POST_MODEL_CHANGE, &tmp);
+    if (ownercomponent) {
+        EVCB.displayStringChanged(ownercomponent);
+
+        // notify post-change listeners
+        if (ownercomponent->hasListeners(POST_MODEL_CHANGE)) {
+            cPostDisplayStringChangeNotification tmp;
+            tmp.displayString = this;
+            ownercomponent->emit(POST_MODEL_CHANGE, &tmp);
+        }
     }
 }
 
