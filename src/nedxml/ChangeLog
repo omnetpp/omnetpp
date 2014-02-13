@@ -1,3 +1,5 @@
+2014-02-13  ------ omnetpp-4.4.1 released ------
+
 2014-02-11  Andras Varga
 
 	* ned2.lex: fix #715: allow wildcards in property indices, for @signal;

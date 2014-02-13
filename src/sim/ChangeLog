@@ -1,3 +1,5 @@
+2014-02-13  ------ omnetpp-4.4.1 released ------
+
 2014-02-11  Andras Varga
 
 	* signal checking: fix #714: class name resolution for @signal type attr
