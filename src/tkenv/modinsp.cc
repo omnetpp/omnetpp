@@ -435,16 +435,16 @@ void TGraphicalModWindow::refreshLayout()
     const cDisplayString& ds = parentmodule->hasDisplayString() && parentmodule->parametersFinalized() ? parentmodule->getDisplayString() : blank;
 
     // create and configure layouter object
-    Tkenv::LayouterChoice choice = getTkenv()->opt_layouterchoice;
-    if (choice==Tkenv::LAYOUTER_AUTO)
+    LayouterChoice choice = getTkenv()->opt->layouterChoice;
+    if (choice==LAYOUTER_AUTO)
     {
         const int LIMIT = 20; // note: on test/anim/dynamic2, Advanced is already very slow with 30-40 modules
         int submodCountLimited = 0;
         for (cModule::SubmoduleIterator submod(parentmodule); !submod.end() && submodCountLimited<LIMIT; submod++)
             submodCountLimited++;
-        choice = submodCountLimited>=LIMIT ? Tkenv::LAYOUTER_FAST : Tkenv::LAYOUTER_ADVANCED;
+        choice = submodCountLimited>=LIMIT ? LAYOUTER_FAST : LAYOUTER_ADVANCED;
     }
-    GraphLayouter *layouter = choice==Tkenv::LAYOUTER_FAST ?
+    GraphLayouter *layouter = choice==LAYOUTER_FAST ?
                                     (GraphLayouter *) new BasicSpringEmbedderLayout() :
                                     (GraphLayouter *) new ForceDirectedGraphLayouter();
 
@@ -537,8 +537,8 @@ void TGraphicalModWindow::refreshLayout()
         environment.setWidgetToGrab(stopButton.c_str());
 
     // enable visualizing only if full re-layouting (no cached coordinates in submodPosMap)
-    // if (getTkenv()->opt_showlayouting)  // for debugging
-    if (submodPosMap.empty() && getTkenv()->opt_showlayouting)
+    // if (getTkenv()->opt->showlayouting)  // for debugging
+    if (submodPosMap.empty() && getTkenv()->opt->showLayouting)
         environment.setCanvas(canvas);
 
     layouter->setEnvironment(&environment);
@@ -739,7 +739,7 @@ void TGraphicalModWindow::redrawNextEventMarker()
    CHK(Tcl_VarEval(interp, canvas, " delete nexteventmarker", NULL));
 
    // this thingy is only needed if animation is going on
-   if (!getTkenv()->animating || !getTkenv()->opt_nexteventmarkers)
+   if (!getTkenv()->animating || !getTkenv()->opt->showNextEventMarkers)
        return;
 
    // if any parent of the module containing the next event is on this canvas, draw marker

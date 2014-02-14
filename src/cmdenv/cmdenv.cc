@@ -95,7 +95,23 @@ char *timeToStr(timeval t, char *buf=NULL)
 }
 
 
-Cmdenv::Cmdenv()
+CmdenvOptions::CmdenvOptions()
+{
+    // note: these values will be overwritten in setup()/readOptions() before taking effect
+    extraStack = 0;
+    autoflush = true;
+    expressMode = false;
+    interactive = false;
+    printModuleMsgs = true;
+    printEventBanners = true;
+    detailedEventBanners = false;
+    messageTrace = false;
+    statusFrequencyMs = 2000;
+    printPerformanceData = false;
+}
+
+
+Cmdenv::Cmdenv() : opt((CmdenvOptions *&)EnvirBase::opt)
 {
     // Note: ctor should only contain trivial initializations, because
     // the class may be instantiated only for the purpose of calling
@@ -104,9 +120,6 @@ Cmdenv::Cmdenv()
     // initialize fout to stdout, then we'll replace it if redirection is
     // requested in the ini file
     fout = stdout;
-
-    // init config variables that are used even before readOptions()
-    opt_autoflush = true;
 }
 
 Cmdenv::~Cmdenv()
@@ -121,19 +134,19 @@ void Cmdenv::readOptions()
 
     // note: configname and runstoexec will possibly be overwritten
     // with the -c, -r command-line options in our setup() method
-    opt_configname = cfg->getAsString(CFGID_CONFIG_NAME);
-    opt_runstoexec = cfg->getAsString(CFGID_RUNS_TO_EXECUTE);
+    opt->configName = cfg->getAsString(CFGID_CONFIG_NAME);
+    opt->runsToExec = cfg->getAsString(CFGID_RUNS_TO_EXECUTE);
 
-    opt_extrastack = (size_t) cfg->getAsDouble(CFGID_CMDENV_EXTRA_STACK);
-    opt_outputfile = cfg->getAsFilename(CFGID_OUTPUT_FILE).c_str();
+    opt->extraStack = (size_t) cfg->getAsDouble(CFGID_CMDENV_EXTRA_STACK);
+    opt->outputFile = cfg->getAsFilename(CFGID_OUTPUT_FILE).c_str();
 
-    if (!opt_outputfile.empty())
+    if (!opt->outputFile.empty())
     {
-        processFileName(opt_outputfile);
-        ::printf("Cmdenv: redirecting output to file `%s'...\n",opt_outputfile.c_str());
-        FILE *out = fopen(opt_outputfile.c_str(), "w");
+        processFileName(opt->outputFile);
+        ::printf("Cmdenv: redirecting output to file `%s'...\n",opt->outputFile.c_str());
+        FILE *out = fopen(opt->outputFile.c_str(), "w");
         if (!out)
-            throw cRuntimeError("Cannot open output redirection file `%s'",opt_outputfile.c_str());
+            throw cRuntimeError("Cannot open output redirection file `%s'",opt->outputFile.c_str());
         fout = out;
     }
 }
@@ -143,15 +156,15 @@ void Cmdenv::readPerRunOptions()
     EnvirBase::readPerRunOptions();
 
     cConfiguration *cfg = getConfig();
-    opt_expressmode = cfg->getAsBool(CFGID_EXPRESS_MODE);
-    opt_interactive = cfg->getAsBool(CFGID_CMDENV_INTERACTIVE);
-    opt_autoflush = cfg->getAsBool(CFGID_AUTOFLUSH);
-    opt_modulemsgs = cfg->getAsBool(CFGID_MODULE_MESSAGES);
-    opt_eventbanners = cfg->getAsBool(CFGID_EVENT_BANNERS);
-    opt_eventbanner_details = cfg->getAsBool(CFGID_EVENT_BANNER_DETAILS);
-    opt_messagetrace = cfg->getAsBool(CFGID_MESSAGE_TRACE);
-    opt_status_frequency_ms = 1000*cfg->getAsDouble(CFGID_STATUS_FREQUENCY);
-    opt_perfdisplay = cfg->getAsBool(CFGID_PERFORMANCE_DISPLAY);
+    opt->expressMode = cfg->getAsBool(CFGID_EXPRESS_MODE);
+    opt->interactive = cfg->getAsBool(CFGID_CMDENV_INTERACTIVE);
+    opt->autoflush = cfg->getAsBool(CFGID_AUTOFLUSH);
+    opt->printModuleMsgs = cfg->getAsBool(CFGID_MODULE_MESSAGES);
+    opt->printEventBanners = cfg->getAsBool(CFGID_EVENT_BANNERS);
+    opt->detailedEventBanners = cfg->getAsBool(CFGID_EVENT_BANNER_DETAILS);
+    opt->messageTrace = cfg->getAsBool(CFGID_MESSAGE_TRACE);
+    opt->statusFrequencyMs = 1000*cfg->getAsDouble(CFGID_STATUS_FREQUENCY);
+    opt->printPerformanceData = cfg->getAsBool(CFGID_PERFORMANCE_DISPLAY);
 }
 
 void Cmdenv::askParameter(cPar *par, bool unassigned)
@@ -193,21 +206,21 @@ void Cmdenv::run()
 
     const char *configname = args->optionValue('c');
     if (configname)
-        opt_configname = configname;
-    if (opt_configname.empty())
-        opt_configname = "General";
+        opt->configName = configname;
+    if (opt->configName.empty())
+        opt->configName = "General";
 
     const char *runstoexec = args->optionValue('r');
     if (runstoexec)
-        opt_runstoexec = runstoexec;
+        opt->runsToExec = runstoexec;
 
     // if the list of runs is not given explicitly, must execute all runs
-    if (opt_runstoexec.empty())
+    if (opt->runsToExec.empty())
     {
-        int n = cfg->getNumRunsInConfig(opt_configname.c_str());  //note: may throw exception
-        if (n==0) 
+        int n = cfg->getNumRunsInConfig(opt->configName.c_str());  //note: may throw exception
+        if (n==0)
         {
-            ev.printfmsg("Error: Configuration `%s' generates 0 runs", opt_configname.c_str());
+            ev.printfmsg("Error: Configuration `%s' generates 0 runs", opt->configName.c_str());
             exitcode = 1;
             return;
         }
@@ -215,14 +228,14 @@ void Cmdenv::run()
         {
             char buf[32];
             sprintf(buf, (n==1 ? "%d" : "0..%d"), n-1);
-            opt_runstoexec = buf;
+            opt->runsToExec = buf;
         }
     }
 
-    EnumStringIterator runiterator(opt_runstoexec.c_str());
+    EnumStringIterator runiterator(opt->runsToExec.c_str());
     if (runiterator.hasError())
     {
-        ev.printfmsg("Error parsing list of runs to execute: `%s'", opt_runstoexec.c_str());
+        ev.printfmsg("Error parsing list of runs to execute: `%s'", opt->runsToExec.c_str());
         exitcode = 1;
         return;
     }
@@ -237,10 +250,10 @@ void Cmdenv::run()
         bool startrun_done = false;
         try
         {
-            ::fprintf(fout, "\nPreparing for running configuration %s, run #%d...\n", opt_configname.c_str(), runnumber);
+            ::fprintf(fout, "\nPreparing for running configuration %s, run #%d...\n", opt->configName.c_str(), runnumber);
             ::fflush(fout);
 
-            cfg->activateConfig(opt_configname.c_str(), runnumber);
+            cfg->activateConfig(opt->configName.c_str(), runnumber);
 
             const char *itervars = cfg->getVariable(CFGVAR_ITERATIONVARS2);
             if (itervars && strlen(itervars)>0)
@@ -252,11 +265,11 @@ void Cmdenv::run()
             readPerRunOptions();
 
             // find network
-            cModuleType *network = resolveNetwork(opt_network_name.c_str());
+            cModuleType *network = resolveNetwork(opt->networkName.c_str());
             ASSERT(network);
 
             // set up network
-            ::fprintf(fout, "Setting up network `%s'...\n", opt_network_name.c_str());
+            ::fprintf(fout, "Setting up network `%s'...\n", opt->networkName.c_str());
             ::fflush(fout);
 
             setupNetwork(network);
@@ -266,7 +279,7 @@ void Cmdenv::run()
             ::fprintf(fout, "Initializing...\n");
             ::fflush(fout);
 
-            disable_tracing = opt_expressmode;
+            disable_tracing = opt->expressMode;
             startRun();
             startrun_done = true;
 
@@ -357,7 +370,7 @@ void Cmdenv::simulate()
 
     try
     {
-        if (!opt_expressmode)
+        if (!opt->expressMode)
         {
             disable_tracing = false;
             while (true)
@@ -366,13 +379,13 @@ void Cmdenv::simulate()
                 if (!mod)
                     throw cTerminationException("scheduler interrupted while waiting");
 
-                // print event banner if neccessary
-                if (opt_eventbanners && mod->isEvEnabled())
+                // print event banner if necessary
+                if (opt->printEventBanners && mod->isEvEnabled())
                     printEventBanner(mod);
 
                 // flush *between* printing event banner and event processing, so that
                 // if event processing crashes, it can be seen which event it was
-                if (opt_autoflush)
+                if (opt->autoflush)
                     ::fflush(fout);
 
                 // execute event
@@ -405,7 +418,7 @@ void Cmdenv::simulate()
                 speedometer.addEvent(simulation.getSimTime()); //XXX potential performance hog
 
                 // print event banner from time to time
-                if ((simulation.getEventNumber()&0xff)==0 && elapsed(opt_status_frequency_ms, last_update))
+                if ((simulation.getEventNumber()&0xff)==0 && elapsed(opt->statusFrequencyMs, last_update))
                     doStatusUpdate(speedometer);
 
                 // execute event
@@ -419,7 +432,7 @@ void Cmdenv::simulate()
     }
     catch (cTerminationException& e)
     {
-        if (opt_expressmode)
+        if (opt->expressMode)
             doStatusUpdate(speedometer);
         disable_tracing = false;
         stopClock();
@@ -431,7 +444,7 @@ void Cmdenv::simulate()
     }
     catch (std::exception& e)
     {
-        if (opt_expressmode)
+        if (opt->expressMode)
             doStatusUpdate(speedometer);
         disable_tracing = false;
         stopClock();
@@ -440,7 +453,7 @@ void Cmdenv::simulate()
     }
 
     // note: C++ lacks "finally": lines below need to be manually kept in sync with catch{...} blocks above!
-    if (opt_expressmode)
+    if (opt->expressMode)
         doStatusUpdate(speedometer);
     disable_tracing = false;
     stopClock();
@@ -457,7 +470,7 @@ void Cmdenv::printEventBanner(cSimpleModule *mod)
             mod->getComponentType()->getName(),
             mod->getId()
           );
-    if (opt_eventbanner_details)
+    if (opt->detailedEventBanners)
     {
         ::fprintf(fout, "   Elapsed: %s   Messages: created: %ld  present: %ld  in FES: %d\n",
                 timeToStr(totalElapsed()),
@@ -471,7 +484,7 @@ void Cmdenv::doStatusUpdate(Speedometer& speedometer)
 {
     speedometer.beginNewInterval();
 
-    if (opt_perfdisplay)
+    if (opt->printPerformanceData)
     {
         ::fprintf(fout, "** Event #%" LL "d   T=%s   Elapsed: %s%s\n",
                 simulation.getEventNumber(),
@@ -498,22 +511,22 @@ void Cmdenv::doStatusUpdate(Speedometer& speedometer)
                 speedometer.getEventsPerSec());
     }
 
-    // status update is always autoflushed (not only if opt_autoflush is on)
+    // status update is always autoflushed (not only if opt->autoflush is on)
     ::fflush(fout);
 }
 
 const char *Cmdenv::progressPercentage()
 {
     double simtimeRatio = -1;
-    if (opt_simtimelimit!=0)
-         simtimeRatio = simulation.getSimTime() / opt_simtimelimit;
+    if (opt->simtimeLimit!=0)
+         simtimeRatio = simulation.getSimTime() / opt->simtimeLimit;
 
     double cputimeRatio = -1;
-    if (opt_cputimelimit!=0) {
+    if (opt->cpuTimeLimit!=0) {
         timeval now;
         gettimeofday(&now, NULL);
         long elapsedsecs = now.tv_sec - laststarted.tv_sec + elapsedtime.tv_sec;
-        cputimeRatio = elapsedsecs / (double)opt_cputimelimit;
+        cputimeRatio = elapsedsecs / (double)opt->cpuTimeLimit;
     }
 
     double ratio = std::max(simtimeRatio, cputimeRatio);
@@ -530,7 +543,7 @@ const char *Cmdenv::progressPercentage()
 
 void Cmdenv::componentInitBegin(cComponent *component, int stage)
 {
-    if (!opt_expressmode && opt_eventbanners && component->isEvEnabled())
+    if (!opt->expressMode && opt->printEventBanners && component->isEvEnabled())
         ::fprintf(fout, "Initializing %s %s, stage %d\n",
                 component->isModule() ? "module" : "channel", component->getFullPath().c_str(), stage);
 }
@@ -569,10 +582,10 @@ void Cmdenv::sputn(const char *s, int n)
         return;
 
     cComponent *ctx = simulation.getContext();
-    if (!ctx || (opt_modulemsgs && ctx->isEvEnabled()) || simulation.getContextType()==CTX_FINISH)
+    if (!ctx || (opt->printModuleMsgs && ctx->isEvEnabled()) || simulation.getContextType()==CTX_FINISH)
     {
         ::fwrite(s,1,n,fout);
-        if (opt_autoflush)
+        if (opt->autoflush)
             ::fflush(fout);
     }
 }
@@ -585,7 +598,7 @@ cEnvir& Cmdenv::flush()
 
 std::string Cmdenv::gets(const char *prompt, const char *defaultReply)
 {
-    if (!opt_interactive)
+    if (!opt->interactive)
     {
         throw cRuntimeError("The simulation wanted to ask a question, set cmdenv-interactive=true to allow it: \"%s\"", prompt);
     }
@@ -608,7 +621,7 @@ std::string Cmdenv::gets(const char *prompt, const char *defaultReply)
 
 bool Cmdenv::askyesno(const char *question)
 {
-    if (!opt_interactive)
+    if (!opt->interactive)
     {
         throw cRuntimeError("Simulation needs user input in non-interactive mode (prompt text: \"%s (y/n)\")", question);
     }
@@ -646,10 +659,10 @@ void Cmdenv::moduleCreated(cModule *mod)
 
 void Cmdenv::messageSent_OBSOLETE(cMessage *msg, cGate *)
 {
-    if (!opt_expressmode && opt_messagetrace)
+    if (!opt->expressMode && opt->messageTrace)
     {
         ::fprintf(fout, "SENT:   %s\n", msg->info().c_str());
-        if (opt_autoflush)
+        if (opt->autoflush)
             ::fflush(fout);
     }
 }
@@ -658,10 +671,10 @@ void Cmdenv::simulationEvent(cMessage *msg)
 {
     EnvirBase::simulationEvent(msg);
 
-    if (!opt_expressmode && opt_messagetrace)
+    if (!opt->expressMode && opt->messageTrace)
     {
         ::fprintf(fout, "DELIVD: %s\n", msg->info().c_str());  //TODO can go out!
-        if (opt_autoflush)
+        if (opt->autoflush)
             ::fflush(fout);
     }
 }
@@ -689,7 +702,7 @@ void Cmdenv::printUISpecificHelp()
 
 unsigned Cmdenv::getExtraStackForEnvir() const
 {
-    return opt_extrastack;
+    return opt->extraStack;
 }
 
 NAMESPACE_END

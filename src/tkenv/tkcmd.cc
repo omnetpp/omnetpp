@@ -1102,68 +1102,69 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 {
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
+   TkenvOptions *opt = getTkenv()->opt;
 
    char buffer[32];
    char *buf = buffer;
    if (0==strcmp(argv[1], "default_config"))
-      buf = const_cast<char *>(app->opt_default_config.c_str());
+      buf = const_cast<char *>(opt->defaultConfig.c_str());
    else if (0==strcmp(argv[1], "default_run"))
-      sprintf(buf,"%d", app->opt_default_run);
+      sprintf(buf,"%d", opt->defaultRun);
    else if (0==strcmp(argv[1], "localpackage"))
       sprintf(buf,"%s", app->getLocalPackage().c_str());
    else if (0==strcmp(argv[1], "animation_enabled"))
-      sprintf(buf,"%d", app->opt_animation_enabled);
+      sprintf(buf,"%d", opt->animationEnabled);
    else if (0==strcmp(argv[1], "nexteventmarkers"))
-      sprintf(buf,"%d", app->opt_nexteventmarkers);
+      sprintf(buf,"%d", opt->showNextEventMarkers);
    else if (0==strcmp(argv[1], "senddirect_arrows"))
-      sprintf(buf,"%d", app->opt_senddirect_arrows);
+      sprintf(buf,"%d", opt->showSendDirectArrows);
    else if (0==strcmp(argv[1], "anim_methodcalls"))
-      sprintf(buf,"%d", app->opt_anim_methodcalls);
+      sprintf(buf,"%d", opt->animateMethodCalls);
    else if (0==strcmp(argv[1], "methodcalls_delay"))
-      sprintf(buf,"%d", app->opt_methodcalls_delay);
+      sprintf(buf,"%d", opt->methodCallAnimDelay);
    else if (0==strcmp(argv[1], "animation_msgnames"))
-      sprintf(buf,"%d", app->opt_animation_msgnames);
+      sprintf(buf,"%d", opt->animationMsgNames);
    else if (0==strcmp(argv[1], "animation_msgclassnames"))
-      sprintf(buf,"%d", app->opt_animation_msgclassnames);
+      sprintf(buf,"%d", opt->animationMsgClassNames);
    else if (0==strcmp(argv[1], "animation_msgcolors"))
-      sprintf(buf,"%d", app->opt_animation_msgcolors);
+      sprintf(buf,"%d", opt->animationMsgColors);
    else if (0==strcmp(argv[1], "penguin_mode"))
-      sprintf(buf,"%d", app->opt_penguin_mode);
+      sprintf(buf,"%d", opt->penguinMode);
    else if (0==strcmp(argv[1], "showlayouting"))
-      sprintf(buf,"%d", app->opt_showlayouting);
+      sprintf(buf,"%d", opt->showLayouting);
    else if (0==strcmp(argv[1], "layouterchoice")) {
-      switch (app->opt_layouterchoice) {
-          case Tkenv::LAYOUTER_FAST: strcpy(buf, "fast"); break;
-          case Tkenv::LAYOUTER_ADVANCED: strcpy(buf, "advanced"); break;
+      switch (opt->layouterChoice) {
+          case LAYOUTER_FAST: strcpy(buf, "fast"); break;
+          case LAYOUTER_ADVANCED: strcpy(buf, "advanced"); break;
           default: strcpy(buf, "auto");
       }
    }
    else if (0==strcmp(argv[1], "arrangevectorconnections"))
-      sprintf(buf,"%d", app->opt_arrangevectorconnections);
+      sprintf(buf,"%d", opt->arrangeVectorConnections);
    else if (0==strcmp(argv[1], "iconminsize"))
-      sprintf(buf,"%d", app->opt_iconminsize);
+      sprintf(buf,"%d", opt->iconMinimumSize);
    else if (0==strcmp(argv[1], "bubbles"))
-      sprintf(buf,"%d", app->opt_bubbles);
+      sprintf(buf,"%d", opt->showBubbles);
    else if (0==strcmp(argv[1], "animation_speed"))
-      sprintf(buf,"%g", app->opt_animation_speed);
+      sprintf(buf,"%g", opt->animationSpeed);
    else if (0==strcmp(argv[1], "stepdelay"))
-      sprintf(buf,"%ld", app->opt_stepdelay);
+      sprintf(buf,"%ld", opt->stepDelay);
    else if (0==strcmp(argv[1], "event_banners"))
-      sprintf(buf,"%d", app->opt_event_banners);
+      sprintf(buf,"%d", opt->printEventBanners);
    else if (0==strcmp(argv[1], "init_banners"))
-      sprintf(buf,"%d", app->opt_init_banners);
+      sprintf(buf,"%d", opt->printInitBanners);
    else if (0==strcmp(argv[1], "short_banners"))
-      sprintf(buf,"%d", app->opt_short_banners);
+      sprintf(buf,"%d", opt->shortBanners);
    else if (0==strcmp(argv[1], "use_mainwindow"))
-      sprintf(buf,"%d", app->opt_use_mainwindow);
+      sprintf(buf,"%d", opt->useMainWindow);
    else if (0==strcmp(argv[1], "updatefreq_fast_ms"))
-      sprintf(buf,"%ld", app->opt_updatefreq_fast);
+      sprintf(buf,"%ld", opt->updateFreqFast);
    else if (0==strcmp(argv[1], "updatefreq_express_ms"))
-      sprintf(buf,"%ld", app->opt_updatefreq_express);
+      sprintf(buf,"%ld", opt->updateFreqExpress);
    else if (0==strcmp(argv[1], "expressmode_autoupdate"))
-      sprintf(buf,"%d", app->opt_expressmode_autoupdate);
+      sprintf(buf,"%d", opt->autoupdateInExpress);
    else if (0==strcmp(argv[1], "stoponmsgcancel"))
-      sprintf(buf,"%d", app->opt_stoponmsgcancel);
+      sprintf(buf,"%d", opt->stopOnMsgCancel);
    else if (0==strcmp(argv[1], "record_eventlog"))
       sprintf(buf,"%d", app->record_eventlog);
    else if (0==strcmp(argv[1], "silent_event_filters"))
@@ -1178,64 +1179,65 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 {
    if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
+   TkenvOptions *opt = getTkenv()->opt;
 
    if (0==strcmp(argv[1], "stepdelay"))
-      app->opt_stepdelay = atol(argv[2]);
+      opt->stepDelay = atol(argv[2]);
    else if (0==strcmp(argv[1], "animation_enabled"))
-      app->opt_animation_enabled = (argv[2][0]!='0');
+      opt->animationEnabled = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "nexteventmarkers"))
-      app->opt_nexteventmarkers = (argv[2][0]!='0');
+      opt->showNextEventMarkers = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "senddirect_arrows"))
-      app->opt_senddirect_arrows = (argv[2][0]!='0');
+      opt->showSendDirectArrows = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "anim_methodcalls"))
-      app->opt_anim_methodcalls = (argv[2][0]!='0');
+      opt->animateMethodCalls = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "methodcalls_delay"))
-      app->opt_methodcalls_delay = atoi(argv[2]);
+      opt->methodCallAnimDelay = atoi(argv[2]);
    else if (0==strcmp(argv[1], "animation_msgnames"))
-      app->opt_animation_msgnames = (argv[2][0]!='0');
+      opt->animationMsgNames = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "animation_msgclassnames"))
-      app->opt_animation_msgclassnames = (argv[2][0]!='0');
+      opt->animationMsgClassNames = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "animation_msgcolors"))
-      app->opt_animation_msgcolors = (argv[2][0]!='0');
+      opt->animationMsgColors = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "penguin_mode"))
-      app->opt_penguin_mode = (argv[2][0]!='0');
+      opt->penguinMode = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "showlayouting"))
-      app->opt_showlayouting = (argv[2][0]!='0');
+      opt->showLayouting = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "layouterchoice"))  {
-      app->opt_layouterchoice =
-          strcmp(argv[2],"fast")==0 ? Tkenv::LAYOUTER_FAST :
-          strcmp(argv[2],"advanced")==0 ? Tkenv::LAYOUTER_ADVANCED :
-          Tkenv::LAYOUTER_AUTO;
+      opt->layouterChoice =
+          strcmp(argv[2],"fast")==0 ? LAYOUTER_FAST :
+          strcmp(argv[2],"advanced")==0 ? LAYOUTER_ADVANCED :
+          LAYOUTER_AUTO;
    }
    else if (0==strcmp(argv[1], "arrangevectorconnections"))
-      app->opt_arrangevectorconnections = (argv[2][0]!='0');
+      opt->arrangeVectorConnections = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "iconminsize"))
-      app->opt_iconminsize = std::min(40, std::max(1, atoi(argv[2])));
+      opt->iconMinimumSize = std::min(40, std::max(1, atoi(argv[2])));
    else if (0==strcmp(argv[1], "bubbles"))
-      app->opt_bubbles = (argv[2][0]!='0');
+      opt->showBubbles = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "animation_speed"))
    {
       setlocale(LC_NUMERIC, "C");
-      sscanf(argv[2],"%lg",&app->opt_animation_speed);
-      if (app->opt_animation_speed<0) app->opt_animation_speed=0;
-      if (app->opt_animation_speed>3) app->opt_animation_speed=3;
+      sscanf(argv[2],"%lg",&opt->animationSpeed);
+      if (opt->animationSpeed<0) opt->animationSpeed=0;
+      if (opt->animationSpeed>3) opt->animationSpeed=3;
    }
    else if (0==strcmp(argv[1], "event_banners"))
-      app->opt_event_banners = (argv[2][0]!='0');
+      opt->printEventBanners = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "init_banners"))
-      app->opt_init_banners = (argv[2][0]!='0');
+      opt->printInitBanners = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "short_banners"))
-      app->opt_short_banners = (argv[2][0]!='0');
+      opt->shortBanners = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "use_mainwindow"))
-      app->opt_use_mainwindow = (argv[2][0]!='0');
+      opt->useMainWindow = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "updatefreq_fast_ms"))
-      app->opt_updatefreq_fast = atol(argv[2]);
+      opt->updateFreqFast = atol(argv[2]);
    else if (0==strcmp(argv[1], "updatefreq_express_ms"))
-      app->opt_updatefreq_express = atol(argv[2]);
+      opt->updateFreqExpress = atol(argv[2]);
    else if (0==strcmp(argv[1], "expressmode_autoupdate"))
-      app->opt_expressmode_autoupdate = (argv[2][0]!='0');
+      opt->autoupdateInExpress = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "stoponmsgcancel"))
-      app->opt_stoponmsgcancel = (argv[2][0]!='0');
+      opt->stopOnMsgCancel = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "record_eventlog"))
       app->setEventlogRecording(argv[2][0]!='0');
    else if (0==strcmp(argv[1], "silent_event_filters")) {

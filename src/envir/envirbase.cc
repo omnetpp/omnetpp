@@ -201,6 +201,21 @@ static const char *buildOptions = ""
     ;
 
 
+EnvirOptions::EnvirOptions()
+{
+    // note: these values will be overwritten in setup()/readOptions() before taking effect
+    totalStack = 0;
+    parsim = false;
+    numRNGs = 1;
+    seedset = 0;
+    debugStatisticsRecording = false;
+    checkSignals = false;
+    fnameAppendHost = false;
+    warnings = true;
+    printUndisposed = true;
+    cpuTimeLimit = 0;
+}
+
 EnvirBase::EnvirBase()
 {
     args = NULL;
@@ -360,10 +375,12 @@ bool EnvirBase::setup()
 {
     try
     {
+        opt = createOptions();
+
         // ensure correct numeric format in output files
         setPosixLocale();
 
-        // set opt_* variables from ini file(s)
+        // set opt->* variables from ini file(s)
         readOptions();
 
         if (getConfig()->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR))
@@ -376,12 +393,12 @@ bool EnvirBase::setup()
         }
 
         // initialize coroutine library
-        if (TOTAL_STACK_SIZE!=0 && opt_total_stack<=MAIN_STACK_SIZE+4096)
+        if (TOTAL_STACK_SIZE!=0 && opt->totalStack<=MAIN_STACK_SIZE+4096)
         {
-            ev.printf("Total stack size %d increased to %d\n", opt_total_stack, MAIN_STACK_SIZE);
-            opt_total_stack = MAIN_STACK_SIZE+4096;
+            ev.printf("Total stack size %d increased to %d\n", opt->totalStack, MAIN_STACK_SIZE);
+            opt->totalStack = MAIN_STACK_SIZE+4096;
         }
-        cCoroutine::init(opt_total_stack, MAIN_STACK_SIZE);
+        cCoroutine::init(opt->totalStack, MAIN_STACK_SIZE);
 
         // install XML document cache
         xmlcache = new cXMLDocCache();
@@ -390,30 +407,30 @@ bool EnvirBase::setup()
         eventlogmgr = new EventlogFileManager();
 
         // install output vector manager
-        CREATE_BY_CLASSNAME(outvectormgr, opt_outputvectormanager_class.c_str(), cOutputVectorManager, "output vector manager");
+        CREATE_BY_CLASSNAME(outvectormgr, opt->outputVectorManagerClass.c_str(), cOutputVectorManager, "output vector manager");
 
         // install output scalar manager
-        CREATE_BY_CLASSNAME(outscalarmgr, opt_outputscalarmanager_class.c_str(), cOutputScalarManager, "output scalar manager");
+        CREATE_BY_CLASSNAME(outscalarmgr, opt->outputScalarManagerClass.c_str(), cOutputScalarManager, "output scalar manager");
 
         // install snapshot manager
-        CREATE_BY_CLASSNAME(snapshotmgr, opt_snapshotmanager_class.c_str(), cSnapshotManager, "snapshot manager");
+        CREATE_BY_CLASSNAME(snapshotmgr, opt->snapshotmanagerClass.c_str(), cSnapshotManager, "snapshot manager");
 
         // set up for sequential or distributed execution
-        if (!opt_parsim)
+        if (!opt->parsim)
         {
             // sequential
             cScheduler *scheduler;
-            CREATE_BY_CLASSNAME(scheduler, opt_scheduler_class.c_str(), cScheduler, "event scheduler");
+            CREATE_BY_CLASSNAME(scheduler, opt->schedulerClass.c_str(), cScheduler, "event scheduler");
             simulation.setScheduler(scheduler);
         }
         else
         {
 #ifdef WITH_PARSIM
             // parsim: create components
-            CREATE_BY_CLASSNAME(parsimcomm, opt_parsimcomm_class.c_str(), cParsimCommunications, "parallel simulation communications layer");
+            CREATE_BY_CLASSNAME(parsimcomm, opt->parsimcomm_class.c_str(), cParsimCommunications, "parallel simulation communications layer");
             parsimpartition = new cParsimPartition();
             cParsimSynchronizer *parsimsynchronizer;
-            CREATE_BY_CLASSNAME(parsimsynchronizer, opt_parsimsynch_class.c_str(), cParsimSynchronizer, "parallel simulation synchronization layer");
+            CREATE_BY_CLASSNAME(parsimsynchronizer, opt->parsimsynch_class.c_str(), cParsimSynchronizer, "parallel simulation synchronization layer");
 
             // wire them together (note: 'parsimsynchronizer' is also the scheduler for 'simulation')
             parsimpartition->setContext(&simulation, parsimcomm, parsimsynchronizer);
@@ -820,7 +837,7 @@ void EnvirBase::shutdown()
     {
         simulation.deleteNetwork();
 #ifdef WITH_PARSIM
-        if (opt_parsim && parsimpartition)
+        if (opt->parsim && parsimpartition)
             parsimpartition->shutdown();
 #endif
     }
@@ -845,7 +862,7 @@ void EnvirBase::startRun()
     outvectormgr->startRun();
     outscalarmgr->startRun();
     snapshotmgr->startRun();
-    if (opt_parsim)
+    if (opt->parsim)
     {
 #ifdef WITH_PARSIM
         parsimpartition->startRun();
@@ -859,7 +876,7 @@ void EnvirBase::endRun()
 {
     // reverse order as startRun()
     simulation.endRun();
-    if (opt_parsim)
+    if (opt->parsim)
     {
 #ifdef WITH_PARSIM
         parsimpartition->endRun();
@@ -912,7 +929,7 @@ void EnvirBase::addResultRecorders(cComponent *component)
         doAddResultRecorders(component, componentFullPath, statisticName, statisticProperty, SIMSIGNAL_NULL);
     }
 
-    if (opt_debug_statistics_recording)
+    if (opt->debugStatisticsRecording)
         dumpResultRecorders(component);
 }
 
@@ -945,7 +962,7 @@ void EnvirBase::doAddResultRecorders(cComponent *component, std::string& compone
         if (signal == SIMSIGNAL_NULL) {
             bool hasSourceKey = statisticProperty->getNumValues("source") > 0;
             const char *sourceSpec = hasSourceKey ? statisticProperty->getValue("source",0) : statisticName;
-            source = doStatisticSource(component, statisticName, sourceSpec, opt_warmupperiod!=0);
+            source = doStatisticSource(component, statisticName, sourceSpec, opt->warmupPeriod!=0);
         }
         else {
             source = SignalSource(component, signal);
@@ -1187,7 +1204,7 @@ void EnvirBase::readParameter(cPar *par)
 bool EnvirBase::isModuleLocal(cModule *parentmod, const char *modname, int index)
 {
 #ifdef WITH_PARSIM
-    if (!opt_parsim)
+    if (!opt->parsim)
        return true;
 
     // toplevel module is local everywhere
@@ -1445,7 +1462,7 @@ void EnvirBase::sputn(const char *s, int n)
 
 void EnvirBase::undisposedObject(cObject *obj)
 {
-    if (opt_print_undisposed)
+    if (opt->printUndisposed)
         ::printf("undisposed object: (%s) %s -- check module destructor\n", obj->getClassName(), obj->getFullPath().c_str());
 }
 
@@ -1457,7 +1474,7 @@ void EnvirBase::processFileName(opp_string& fname)
 
     // insert ".<hostname>.<pid>" if requested before file extension
     // (note: parsimProcId cannot be appended because of initialization order)
-    if (opt_fname_append_host)
+    if (opt->fnameAppendHost)
     {
         std::string extension = "";
         std::string::size_type index = text.rfind('.');
@@ -1487,37 +1504,37 @@ void EnvirBase::readOptions()
 {
     cConfiguration *cfg = getConfig();
 
-    opt_total_stack = (size_t) cfg->getAsDouble(CFGID_TOTAL_STACK, TOTAL_STACK_SIZE);
-    opt_parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
-    if (!opt_parsim)
+    opt->totalStack = (size_t) cfg->getAsDouble(CFGID_TOTAL_STACK, TOTAL_STACK_SIZE);
+    opt->parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
+    if (!opt->parsim)
     {
-        opt_scheduler_class = cfg->getAsString(CFGID_SCHEDULER_CLASS);
+        opt->schedulerClass = cfg->getAsString(CFGID_SCHEDULER_CLASS);
     }
     else
     {
 #ifdef WITH_PARSIM
-        opt_parsimcomm_class = cfg->getAsString(CFGID_PARSIM_COMMUNICATIONS_CLASS);
-        opt_parsimsynch_class = cfg->getAsString(CFGID_PARSIM_SYNCHRONIZATION_CLASS);
+        opt->parsimcomm_class = cfg->getAsString(CFGID_PARSIM_COMMUNICATIONS_CLASS);
+        opt->parsimsynch_class = cfg->getAsString(CFGID_PARSIM_SYNCHRONIZATION_CLASS);
 #else
         throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
     }
 
-    opt_outputvectormanager_class = cfg->getAsString(CFGID_OUTPUTVECTORMANAGER_CLASS);
-    opt_outputscalarmanager_class = cfg->getAsString(CFGID_OUTPUTSCALARMANAGER_CLASS);
-    opt_snapshotmanager_class = cfg->getAsString(CFGID_SNAPSHOTMANAGER_CLASS);
+    opt->outputVectorManagerClass = cfg->getAsString(CFGID_OUTPUTVECTORMANAGER_CLASS);
+    opt->outputScalarManagerClass = cfg->getAsString(CFGID_OUTPUTSCALARMANAGER_CLASS);
+    opt->snapshotmanagerClass = cfg->getAsString(CFGID_SNAPSHOTMANAGER_CLASS);
 
-    opt_fname_append_host = cfg->getAsBool(CFGID_FNAME_APPEND_HOST, opt_parsim);
+    opt->fnameAppendHost = cfg->getAsBool(CFGID_FNAME_APPEND_HOST, opt->parsim);
 
     ev.debug_on_errors = cfg->getAsBool(CFGID_DEBUG_ON_ERRORS);
     ev.attach_debugger_on_errors = cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR);
-    opt_print_undisposed = cfg->getAsBool(CFGID_PRINT_UNDISPOSED);
+    opt->printUndisposed = cfg->getAsBool(CFGID_PRINT_UNDISPOSED);
 
     int scaleexp = (int) cfg->getAsInt(CFGID_SIMTIME_SCALE);
     SimTime::setScaleExp(scaleexp);
 
     // note: this is read per run as well, but Tkenv needs its value on startup too
-    opt_inifile_network_dir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
+    opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
 
     // other options are read on per-run basis
 }
@@ -1527,32 +1544,32 @@ void EnvirBase::readPerRunOptions()
     cConfiguration *cfg = getConfig();
 
     // get options from ini file
-    opt_network_name = cfg->getAsString(CFGID_NETWORK);
-    opt_inifile_network_dir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
-    opt_warnings = cfg->getAsBool(CFGID_WARNINGS);
-    opt_simtimelimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT);
-    opt_cputimelimit = (long) cfg->getAsDouble(CFGID_CPU_TIME_LIMIT);
-    opt_warmupperiod = cfg->getAsDouble(CFGID_WARMUP_PERIOD);
-    opt_fingerprint = cfg->getAsString(CFGID_FINGERPRINT);
-    opt_num_rngs = cfg->getAsInt(CFGID_NUM_RNGS);
-    opt_rng_class = cfg->getAsString(CFGID_RNG_CLASS);
-    opt_seedset = cfg->getAsInt(CFGID_SEED_SET);
-    opt_debug_statistics_recording = cfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
-    opt_check_signals = cfg->getAsBool(CFGID_CHECK_SIGNALS);
+    opt->networkName = cfg->getAsString(CFGID_NETWORK);
+    opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
+    opt->warnings = cfg->getAsBool(CFGID_WARNINGS);
+    opt->simtimeLimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT);
+    opt->cpuTimeLimit = (long) cfg->getAsDouble(CFGID_CPU_TIME_LIMIT);
+    opt->warmupPeriod = cfg->getAsDouble(CFGID_WARMUP_PERIOD);
+    opt->expectedFingerprint = cfg->getAsString(CFGID_FINGERPRINT);
+    opt->numRNGs = cfg->getAsInt(CFGID_NUM_RNGS);
+    opt->rngClass = cfg->getAsString(CFGID_RNG_CLASS);
+    opt->seedset = cfg->getAsInt(CFGID_SEED_SET);
+    opt->debugStatisticsRecording = cfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
+    opt->checkSignals = cfg->getAsBool(CFGID_CHECK_SIGNALS);
 
-    simulation.setWarmupPeriod(opt_warmupperiod);
+    simulation.setWarmupPeriod(opt->warmupPeriod);
 
     // install hasher object
-    if (!opt_fingerprint.empty())
+    if (!opt->expectedFingerprint.empty())
         simulation.setHasher(new cHasher());
     else
         simulation.setHasher(NULL);
 
-    cComponent::setCheckSignals(opt_check_signals);
+    cComponent::setCheckSignals(opt->checkSignals);
 
     // run RNG self-test on RNG class selected for this run
     cRNG *testrng;
-    CREATE_BY_CLASSNAME(testrng, opt_rng_class.c_str(), cRNG, "random number generator");
+    CREATE_BY_CLASSNAME(testrng, opt->rngClass.c_str(), cRNG, "random number generator");
     testrng->selfTest();
     delete testrng;
 
@@ -1562,20 +1579,20 @@ void EnvirBase::readPerRunOptions()
          delete rngs[i];
     delete [] rngs;
 
-    num_rngs = opt_num_rngs;
+    num_rngs = opt->numRNGs;
     rngs = new cRNG *[num_rngs];
     for (i=0; i<num_rngs; i++)
     {
         cRNG *rng;
-        CREATE_BY_CLASSNAME(rng, opt_rng_class.c_str(), cRNG, "random number generator");
+        CREATE_BY_CLASSNAME(rng, opt->rngClass.c_str(), cRNG, "random number generator");
         rngs[i] = rng;
-        rngs[i]->initialize(opt_seedset, i, num_rngs, getParsimProcId(), getParsimNumPartitions(), getConfig());
+        rngs[i]->initialize(opt->seedset, i, num_rngs, getParsimProcId(), getParsimNumPartitions(), getConfig());
     }
 
     // init nextuniquenumber -- startRun() is too late because simple module ctors have run by then
     nextuniquenumber = 0;
 #ifdef WITH_PARSIM
-    if (opt_parsim)
+    if (opt->parsim)
         nextuniquenumber = (unsigned)parsimcomm->getProcId() * ((~0UL) / (unsigned)parsimcomm->getNumPartitions());
 #endif
 
@@ -1832,16 +1849,16 @@ timeval EnvirBase::totalElapsed()
 
 void EnvirBase::checkTimeLimits()
 {
-    if (opt_simtimelimit!=0 && simulation.getSimTime()>=opt_simtimelimit)
+    if (opt->simtimeLimit!=0 && simulation.getSimTime()>=opt->simtimeLimit)
          throw cTerminationException(eSIMTIME);
-    if (opt_cputimelimit==0) // no limit
+    if (opt->cpuTimeLimit==0) // no limit
          return;
     if (disable_tracing && (simulation.getEventNumber()&0xFF)!=0) // optimize: in Express mode, don't call gettimeofday() on every event
          return;
     timeval now;
     gettimeofday(&now, NULL);
     long elapsedsecs = now.tv_sec - laststarted.tv_sec + elapsedtime.tv_sec;
-    if (elapsedsecs>=opt_cputimelimit)
+    if (elapsedsecs>=opt->cpuTimeLimit)
          throw cTerminationException(eREALTIME);
 }
 
@@ -1850,7 +1867,7 @@ void EnvirBase::stoppedWithTerminationException(cTerminationException& e)
     // if we're running in parallel and this exception is NOT one we received
     // from other partitions, then notify other partitions
 #ifdef WITH_PARSIM
-    if (opt_parsim && !dynamic_cast<cReceivedTerminationException *>(&e))
+    if (opt->parsim && !dynamic_cast<cReceivedTerminationException *>(&e))
         parsimpartition->broadcastTerminationException(e);
 #endif
     if (record_eventlog)
@@ -1862,7 +1879,7 @@ void EnvirBase::stoppedWithException(std::exception& e)
     // if we're running in parallel and this exception is NOT one we received
     // from other partitions, then notify other partitions
 #ifdef WITH_PARSIM
-    if (opt_parsim && !dynamic_cast<cReceivedException *>(&e))
+    if (opt->parsim && !dynamic_cast<cReceivedException *>(&e))
         parsimpartition->broadcastException(e);
 #endif
     if (record_eventlog)
@@ -1872,11 +1889,11 @@ void EnvirBase::stoppedWithException(std::exception& e)
 
 void EnvirBase::checkFingerprint()
 {
-    if (opt_fingerprint.empty() || !simulation.getHasher())
+    if (opt->expectedFingerprint.empty() || !simulation.getHasher())
         return;
 
     int k = 0;
-    StringTokenizer tokenizer(opt_fingerprint.c_str());
+    StringTokenizer tokenizer(opt->expectedFingerprint.c_str());
     while (tokenizer.hasMoreTokens())
     {
         const char *fingerprint = tokenizer.nextToken();
@@ -1890,13 +1907,13 @@ void EnvirBase::checkFingerprint()
 
     printfmsg("Fingerprint mismatch! calculated: %s, expected: %s%s",
               simulation.getHasher()->str().c_str(),
-              (k>=2 ? "one of: " : ""), opt_fingerprint.c_str());
+              (k>=2 ? "one of: " : ""), opt->expectedFingerprint.c_str());
 }
 
 cModuleType *EnvirBase::resolveNetwork(const char *networkname)
 {
     cModuleType *network = NULL;
-    std::string inifilePackage = simulation.getNedPackageForFolder(opt_inifile_network_dir.c_str());
+    std::string inifilePackage = simulation.getNedPackageForFolder(opt->inifileNetworkDir.c_str());
 
     bool hasInifilePackage = !inifilePackage.empty() && strcmp(inifilePackage.c_str(),"-")!=0;
     if (hasInifilePackage)

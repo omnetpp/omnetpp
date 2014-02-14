@@ -59,6 +59,41 @@ class SignalSource;
 #define MAX_METHODCALL 1024
 
 
+struct ENVIR_API EnvirOptions
+{
+    EnvirOptions();
+    size_t totalStack;
+    bool parsim;
+    opp_string networkName;
+    opp_string inifileNetworkDir; // dir of the inifile containing "network="
+
+    int numRNGs;
+    opp_string rngClass;
+    int seedset; // which set of seeds to use
+
+    opp_string schedulerClass;
+    opp_string outputVectorManagerClass;
+    opp_string outputScalarManagerClass;
+    opp_string snapshotmanagerClass;
+#ifdef WITH_PARSIM
+    opp_string parsimcomm_class; // if parsim: cParsimCommunications class to use
+    opp_string parsimsynch_class; // if parsim: cParsimSynchronizer class to use
+#endif
+
+    bool debugStatisticsRecording;
+    bool checkSignals;
+    bool fnameAppendHost;
+
+    bool warnings;
+    bool printUndisposed;
+
+    simtime_t simtimeLimit;
+    long cpuTimeLimit;
+    simtime_t warmupPeriod;
+
+    opp_string expectedFingerprint;
+};
+
 /**
  * Abstract base class for the user interface. Concrete user interface
  * implementations (Cmdenv, Tkenv) should be derived from this class.
@@ -71,38 +106,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     cXMLDocCache *xmlcache;
     int exitcode;
 
-    //
-    // Configuration options
-    //
-    size_t opt_total_stack;
-    opp_string opt_scheduler_class;
-    bool opt_parsim;
-// WITH_PARSIM (note: no #ifdef to preserve class layout!)
-    opp_string opt_parsimcomm_class; // if opt_parsim: cParsimCommunications class to use
-    opp_string opt_parsimsynch_class; // if opt_parsim: cParsimSynchronizer class to use
-// end
-    opp_string opt_network_name;
-    opp_string opt_inifile_network_dir; // dir of the inifile containing "network="
-
-    int opt_num_rngs;
-    opp_string opt_rng_class;
-    int opt_seedset; // which set of seeds to use
-
-    opp_string opt_outputvectormanager_class;
-    opp_string opt_outputscalarmanager_class;
-    opp_string opt_snapshotmanager_class;
-    bool opt_debug_statistics_recording;
-    bool opt_check_signals;
-    bool opt_fname_append_host;
-
-    bool opt_warnings;
-    bool opt_print_undisposed;
-
-    simtime_t opt_simtimelimit;
-    long opt_cputimelimit;
-    simtime_t opt_warmupperiod;
-
-    opp_string opt_fingerprint;
+    EnvirOptions *opt;
 
 // WITH_PARSIM (note: no #ifdef to preserve class layout!)
     cParsimCommunications *parsimcomm;
@@ -259,8 +263,10 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
      */
     virtual void printUISpecificHelp() = 0;
 
+    virtual EnvirOptions *createOptions() {return new EnvirOptions();}
+
     /**
-     * Used internally to read opt_xxxxx setting from ini file.
+     * Used internally to read opt->xxxxx setting from ini file.
      * Can be overloaded in subclasses, to support new options.
      */
     virtual void readOptions();

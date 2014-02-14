@@ -35,6 +35,46 @@ class TInspector;
 
 #define MAX_CLASSNAME  100
 
+enum LayouterChoice
+{
+    LAYOUTER_FAST,
+    LAYOUTER_ADVANCED,
+    LAYOUTER_AUTO
+};
+
+struct TkenvOptions : public EnvirOptions
+{
+    TkenvOptions();
+    size_t extraStack;        // per-module extra stack for activity() modules
+    opp_string imagePath;     // directory of module icon files
+    opp_string pluginPath;    // path for loading Tcl and binary plugins
+    opp_string defaultConfig; // automatically set up this config at startup
+    int  defaultRun;          // automatically set up this run (of the default config) at startup
+    bool printInitBanners;    // print "initializing..." banners
+    bool printEventBanners;   // print event banners
+    bool shortBanners;        // controls detail of event banners
+    bool useMainWindow;       // dump modules' EV << ... stuff into main window
+    bool animationEnabled;    // msg animation
+    bool showNextEventMarkers;// display next event marker (red frame around modules)
+    bool showSendDirectArrows;// flash arrows when doing sendDirect() animation
+    bool animateMethodCalls;  // animate method calls
+    int  methodCallAnimDelay; // hold animation of method calls (millisec)
+    bool animationMsgNames;   // msg animation: display message name or not
+    bool animationMsgClassNames; // msg animation: display message class name or not
+    bool animationMsgColors;  // msg animation: display msg kind as color code or not
+    bool penguinMode;         // msg animation: message appearance
+    bool showLayouting;       // show layouting process in graphical module inspectors
+    LayouterChoice layouterChoice; // which new layouting algorithm to use
+    bool arrangeVectorConnections; // arrange connections on vector gates parallel to each other
+    int iconMinimumSize;      // minimum size of icons when zooming out
+    bool showBubbles;         // show result of bubble() calls
+    double animationSpeed;    // msg animation speed: 0=slow 1=norm 2=fast
+    long stepDelay;           // delay between steps in ms
+    long updateFreqFast;      // Fast Run updates display every N milliseconds
+    long updateFreqExpress;   // Express Run updates display every N milliseconds
+    bool autoupdateInExpress; // update inspectors at every display refresh in EXPRESS mode or not
+    bool stopOnMsgCancel;     // with rununtil_msg: whether to stop when the message gets cancelled
+};
 
 /**
  * A Tcl/Tk-based user interface.
@@ -73,43 +113,8 @@ class TKENV_API Tkenv : public EnvirBase
       };
       typedef std::vector<sPathEntry> PathVec;
 
-      enum LayouterChoice {
-          LAYOUTER_FAST,
-          LAYOUTER_ADVANCED,
-          LAYOUTER_AUTO
-      };
-
    public:
-      // options
-      opp_string opt_default_config; // automatically set up this config at startup
-      int  opt_default_run;        // automatically set up this run (of the default config) at startup
-      bool opt_init_banners;       // print "initializing..." banners
-      bool opt_event_banners;      // print event banners
-      bool opt_short_banners;      // controls detail of event banners
-      bool opt_use_mainwindow;     // dump modules' ev << ... stuff into main window
-      bool opt_animation_enabled;  // msg animation
-      bool opt_nexteventmarkers;   // display next event marker (red frame around modules)
-      bool opt_senddirect_arrows;  // flash arrows when doing sendDirect() animation
-      bool opt_anim_methodcalls;   // animate method calls
-      int  opt_methodcalls_delay;  // hold animation of method calls (millisec)
-      bool opt_animation_msgnames; // msg animation: display message name or not
-      bool opt_animation_msgclassnames; // msg animation: display message class name or not
-      bool opt_animation_msgcolors;// msg animation: display msg kind as color code or not
-      bool opt_penguin_mode;       // msg animation: message appearance
-      bool opt_showlayouting;      // show layouting process in graphical module inspectors
-      LayouterChoice opt_layouterchoice;  // which new layouting algorithm to use
-      bool opt_arrangevectorconnections;     // arrange connections on vector gates parallel to each outher
-      int opt_iconminsize;         // minimum size of icons when zooming out
-      bool opt_bubbles;            // show result of bubble() calls
-      double opt_animation_speed;  // msg animation speed: 0=slow 1=norm 2=fast
-      long opt_stepdelay;          // Delay between steps in ms
-      long opt_updatefreq_fast;    // Fast Run updates display every N milliseconds
-      long opt_updatefreq_express; // Express Run updates display every N milliseconds
-      size_t opt_extrastack;       // per-module extra stack for activity() modules
-      bool opt_expressmode_autoupdate;// update inspectors at every display refresh in EXPRESS mode or not
-      opp_string opt_image_path;   // directory of module icon files
-      opp_string opt_plugin_path;  // path for loading Tcl and binary plugins
-      bool opt_stoponmsgcancel;    // with rununtil_msg: whether to stop when the message gets cancelled
+      TkenvOptions *&opt;          // alias to EnvirBase::opt
 
       // state variables
       bool animating;              // while execution, do message animation or not
@@ -193,6 +198,7 @@ class TKENV_API Tkenv : public EnvirBase
       virtual void run();
       virtual void printUISpecificHelp();
 
+      virtual EnvirOptions *createOptions() {return new TkenvOptions();}
       virtual void readOptions();
       virtual void readPerRunOptions();
       virtual void askParameter(cPar *par, bool unassigned);
@@ -264,7 +270,7 @@ class TKENV_API Tkenv : public EnvirBase
 
       void findDirectPath(cModule *frommodule, cModule *tomodule, PathVec& pathvec);
 
-      std::string getLocalPackage()      {return simulation.getNedPackageForFolder(opt_inifile_network_dir.c_str());}
+      std::string getLocalPackage()      {return simulation.getNedPackageForFolder(opt->inifileNetworkDir.c_str());}
       const char *getIniFileName()       {return getConfigEx()->getFileName();}
       const char *getOutVectorFileName() {return outvectormgr->getFileName();}
       const char *getOutScalarFileName() {return outscalarmgr->getFileName();}
