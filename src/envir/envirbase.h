@@ -43,11 +43,9 @@ class cScheduler;
 class cModuleType;
 class cIListener;
 class cProperty;
-// WITH_PARSIM:
 class cParsimCommunications;
 class cParsimPartition;
 class cParsimSynchronizer;
-// endif
 class cResultRecorder;
 class SignalSource;
 
@@ -108,10 +106,10 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
 
     EnvirOptions *opt;
 
-// WITH_PARSIM (note: no #ifdef to preserve class layout!)
+#ifdef WITH_PARSIM
     cParsimCommunications *parsimcomm;
     cParsimPartition *parsimpartition;
-// end
+#endif
 
     // Random number generators. Module RNG's map to these RNG objects.
     int num_rngs;
@@ -140,24 +138,19 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     static void crashHandler(int signum);
 
   public:
-    /**
-     * Constructor.
-     */
     EnvirBase();
-
-    /**
-     * Destructor.
-     */
     virtual ~EnvirBase();
 
-    /** @name Functions called from cEnvir's similar functions */
-    //@{
     // life cycle
     virtual int run(int argc, char *argv[], cConfiguration *config);
 
+    // eventlog recording
     virtual void setEventlogRecording(bool enabled);
     virtual bool hasEventlogRecordingIntervals() const;
     virtual void clearEventlogRecordingIntervals();
+
+    // Utility function: optionally appends host name to fname
+    virtual void processFileName(opp_string& fname);
 
     // eventlog callback interface
     virtual void objectDeleted(cObject *object);
@@ -246,50 +239,29 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual void startRun();
     virtual void endRun();
 
-    // utility function; never returns NULL
-    cModuleType *resolveNetwork(const char *networkname);
-
+    ArgList *argList()  {return args;}
     void printHelp();
     void setupEventLog();
-
-    /**
-     * Prints the contents of a registration list to the standard output.
-     */
     void dumpComponentList(const char *category);
-
-    /**
-     * To be redefined to print Cmdenv or Tkenv-specific help on available
-     * command-line options. Invoked from printHelp().
-     */
     virtual void printUISpecificHelp() = 0;
 
     virtual EnvirOptions *createOptions() {return new EnvirOptions();}
-
-    /**
-     * Used internally to read opt->xxxxx setting from ini file.
-     * Can be overloaded in subclasses, to support new options.
-     */
     virtual void readOptions();
     virtual void readPerRunOptions();
 
-    /**
-     * Called internally from readParameter(), to interactively prompt the
-     * user for a parameter value.
-     */
+    // Utility function; never returns NULL
+    cModuleType *resolveNetwork(const char *networkname);
+
+    // Called internally from readParameter(), to interactively prompt the
+    // user for a parameter value.
     virtual void askParameter(cPar *par, bool unassigned) = 0;
 
-    /**
-     * Called from configure(component); adds result recording listeners
-     * for each declared signal (@statistic property) in the component.
-     */
+    virtual void displayException(std::exception& e);
+
+    // Called from configure(component); adds result recording listeners
+    // for each declared signal (@statistic property) in the component.
     virtual void addResultRecorders(cComponent *component);
 
-
-  public:
-    // Utility function: optionally appends host name to fname
-    virtual void processFileName(opp_string& fname);
-
-  protected:
     // Utility function: checks simulation fingerprint and displays a message accordingly
     void checkFingerprint();
 
@@ -297,75 +269,34 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     // If signal is specified, it will override the source= key in statisticProperty.
     // The index of statisticProperty is ignored; statisticName will be used as name of the statistic instead.
     virtual void doAddResultRecorders(cComponent *component, std::string& componentFullPath, const char *statisticName, cProperty *statisticProperty, simsignal_t signal=SIMSIGNAL_NULL);
-    // Utility function for addResultRecorders()
+
+    // Utility functions for addResultRecorders()
     std::vector<std::string> extractRecorderList(const char *modesOption, cProperty *statisticProperty);
-    // Utility function for addResultRecorders()
     SignalSource doStatisticSource(cComponent *component, const char *statisticName, const char *sourceSpec, bool needWarmupFilter);
-    // Utility function for addResultRecorders()
     void doResultRecorder(const SignalSource& source, const char *mode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName, cProperty *attrsProperty);
-    // Utility function for addResultRecorders()
     void dumpResultRecorders(cComponent *component);
     void dumpResultRecorderChain(cResultListener *listener, int depth);
+
     // Utility function for getXMLDocument() and getParsedXMLString()
     cXMLElement *resolveXMLPath(cXMLElement *documentnode, const char *path);
 
-    /**
-     * Original command-line args.
-     */
-    ArgList *argList()  {return args;}
-
-    /**
-     * Display the exception.
-     */
-    virtual void displayException(std::exception& e);
-
-    /** @name Measuring elapsed time. */
-    //@{
-    /**
-     * Checks if the current simulation has reached the simulation
-     * or real time limits, and if so, throws an appropriate exception.
-     */
+    // Measuring elapsed time
     void checkTimeLimits();
-
-    /**
-     * Resets the clock measuring the elapsed (real) time spent in this
-     * simulation run.
-     */
     void resetClock();
-
-    /**
-     * Start measuring elapsed (real) time spent in this simulation run.
-     */
     void startClock();
-
-    /**
-     * Stop measuring elapsed (real) time spent in this simulation run.
-     */
     void stopClock();
-
-    /**
-     * Elapsed time
-     */
     timeval totalElapsed();
-    //@}
 
-    //@{
-    /**
-     * Hook called when the simulation terminates normally.
-     * Its current use is to notify parallel simulation part.
-     */
+    // Hook called when the simulation terminates normally.
+    // Its current use is to notify parallel simulation part.
     void stoppedWithTerminationException(cTerminationException& e);
 
-    /**
-     * Hook called when the simulation is stopped with an error.
-     * Its current use is to notify parallel simulation part.
-     */
+    // Hook called when the simulation is stopped with an error.
+    // Its current use is to notify parallel simulation part.
     void stoppedWithException(std::exception& e);
-    //@}
 };
 
 NAMESPACE_END
-
 
 #endif
 
