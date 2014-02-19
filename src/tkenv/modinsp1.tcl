@@ -160,7 +160,7 @@ proc logTextWidget:clear {txt} {
     # speeds up the whole process about a hundred times. We need to
     # re-define the tags afterwards though.
 
-    $txt tag delete log event
+    $txt tag delete log event prefix
     $txt delete 0.1 end
     logTextWidget:configureTags $txt
 }

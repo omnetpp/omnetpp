@@ -888,7 +888,7 @@ proc createGraphicalModWindow {name geom} {
     packIconButton $w.toolbar.zoomin  -image $icons(zoomin)  -command "graphicalModuleWindow:zoomIn $w"
     packIconButton $w.toolbar.zoomout -image $icons(zoomout) -command "graphicalModuleWindow:zoomOut $w"
     packIconButton $w.toolbar.showlabels -image $icons(modnames) -command "graphicalModuleWindow:toggleLabels $w"
-    packIconButton $w.toolbar.showarrowheads -image $icons(arrowhead) -command "graphicalModuleWindow:togglAarrowheads $w"
+    packIconButton $w.toolbar.showarrowheads -image $icons(arrowhead) -command "graphicalModuleWindow:toggleArrowheads $w"
 
     set help_tips($w.toolbar.owner)   {Inspect parent module}
     set help_tips($w.toolbar.ascont)  {Inspect as object}
@@ -949,7 +949,7 @@ proc createGraphicalModWindow {name geom} {
     bind $w <Control-o> "graphicalModuleWindow:zoomIconsBy $w 0.8"
     bind $w <Control-r> "graphicalModuleWindow:relayout $w"
     bind $w <Control-d> "graphicalModuleWindow:toggleLabels $w"
-    bind $w <Control-a> "graphicalModuleWindow:togglAarrowheads $w"
+    bind $w <Control-a> "graphicalModuleWindow:toggleArrowheads $w"
 
     if {$inspectordata($c:showlabels)} {
         $w.toolbar.showlabels config -relief sunken
@@ -1183,7 +1183,7 @@ proc graphicalModuleWindow:toggleLabels {w} {
     $w.toolbar.showlabels config -relief $relief
 }
 
-proc graphicalModuleWindow:togglAarrowheads {w} {
+proc graphicalModuleWindow:toggleArrowheads {w} {
     global inspectordata
     set c $w.c
     set inspectordata($c:showarrowheads) [expr !$inspectordata($c:showarrowheads)]
@@ -1265,7 +1265,7 @@ proc graphicalModuleWindow:rightClick {w X Y x y} {
 
       $popup add separator
       $popup add checkbutton -label "Show module names" -command "graphicalModuleWindow:toggleLabels $w" -accel "Ctrl+D" -variable tmp($c:showlabels)
-      $popup add checkbutton -label "Show arrowheads" -command "graphicalModuleWindow:togglAarrowheads $w" -accel "Ctrl+A" -variable tmp($c:showarrowheads)
+      $popup add checkbutton -label "Show arrowheads" -command "graphicalModuleWindow:toggleArrowheads $w" -accel "Ctrl+A" -variable tmp($c:showarrowheads)
 
       $popup add separator
       $popup add command -label "Increase icon size" -accel "Ctrl+I" -command "graphicalModuleWindow:zoomIconsBy $w 1.25"
