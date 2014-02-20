@@ -125,39 +125,6 @@ class TGraphicalModWindow : public TInspector
       virtual void bubble(cModule *mod, const char *text);
 };
 
-//
-// *** Note: the following inspectors have been replaced with TGenericObjectInspector ***
-//
-// class TCompoundModInspector: public TInspector
-// {
-//    protected:
-//       bool deep;
-//       bool simpleonly;
-//    public:
-//       TCompoundModInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
-//       virtual void createWindow();
-//       virtual void update();
-//       virtual void writeBack();
-// };
-//
-// class TSimpleModInspector: public TInspector
-// {
-//    public:
-//       TSimpleModInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
-//       virtual void createWindow();
-//       virtual void update();
-//       virtual void writeBack();
-// };
-//
-// class TGateInspector: public TInspector
-// {
-//    public:
-//       TGateInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
-//       virtual void createWindow();
-//       virtual void update();
-//       virtual void writeBack();
-// };
-//
 
 class TGraphicalGateWindow : public TInspector
 {

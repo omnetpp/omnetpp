@@ -32,60 +32,9 @@
 
 NAMESPACE_BEGIN
 
-
-
 void _dummy_for_statinsp() {}
 
-//===============================================================
 
-//
-// class TStatisticInspectorFactory : public cInspectorFactory
-// {
-//   public:
-//     TStatisticInspectorFactory(const char *name) : cInspectorFactory(name) {}
-//
-//     bool supportsObject(cObject *obj) {return dynamic_cast<cStatistic *>(obj)!=NULL;}
-//     int inspectorType() {return INSP_OBJECT;}
-//     double qualityAsDefault(cObject *object) {return 2.0;}
-//
-//     TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
-//         return new TStatisticInspector(object, type, geom, data);
-//     }
-// };
-//
-// Register_InspectorFactory(TStatisticInspectorFactory);
-//
-//
-// TStatisticInspector::TStatisticInspector(cObject *obj,int typ,const char *geom,void *dat) :
-//     TInspector(obj,typ,geom,dat)
-// {
-// }
-//
-// void TStatisticInspector::createWindow()
-// {
-//    TInspector::createWindow(); // create window name etc.
-//
-//    // create inspector window by calling the specified proc with
-//    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-//    Tcl_Interp *interp = getTkenv()->getInterp();
-//    CHK(Tcl_VarEval(interp, "createStatisticInspector ", windowname, " \"", geometry, "\"", NULL ));
-// }
-//
-// void TStatisticInspector::update()
-// {
-//    TInspector::update();
-//
-//    cStatistic *stat = static_cast<cStatistic *>(object);
-//
-//    setLabel(".nb.info.count.e", (double) stat->getCount() );
-//    setLabel(".nb.info.mean.e", stat->getMean() );
-//    setLabel(".nb.info.stddev.e", stat->getStddev() );
-//    setLabel(".nb.info.min.e", stat->getMin() );
-//    setLabel(".nb.info.max.e", stat->getMax() );
-// }
-//
-
-//=======================================================================
 class THistogramWindowFactory : public cInspectorFactory
 {
   public:

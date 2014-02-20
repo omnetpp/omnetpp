@@ -230,32 +230,4 @@ proc createOutvectorWindow {name geom} {
     update idletasks
 }
 
-#proc createStatisticInspector {name geom} {
-#    global icons help_tips
-#
-#    set w $name
-#    createInspectorToplevel $w $geom
-#
-#    set nb [inspector:createNotebook $w]
-#
-#    inspector:createFields2Page $w
-#
-#    notebook:addPage $nb info  {Info}
-#
-#    packIconButton $w.toolbar.graph -image $icons(asgraphics) -command "inspectThis $w {As Graphics}"
-#    set help_tips($w.toolbar.graph) {Inspect as histogram graphics}
-#
-#    label-sunkenlabel $nb.info.count Count:
-#    label-sunkenlabel $nb.info.mean Mean:
-#    label-sunkenlabel $nb.info.stddev Std.dev:
-#    label-sunkenlabel $nb.info.min Min:
-#    label-sunkenlabel $nb.info.max Max:
-#
-#    pack $nb.info.count -fill x -side top
-#    pack $nb.info.mean -fill x -side top
-#    pack $nb.info.stddev -fill x -side top
-#    pack $nb.info.min -fill x -side top
-#    pack $nb.info.max -fill x -side top
-#}
-
 

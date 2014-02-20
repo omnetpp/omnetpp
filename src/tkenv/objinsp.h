@@ -38,44 +38,6 @@ class TGenericObjectInspector : public TInspector
       virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
 };
 
-//
-// *** Note: the following inspectors have been replaced with TGenericObjectInspector ***
-//
-// class TObjInspector : public TInspector
-// {
-//    public:
-//       TObjInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
-//       ~TObjInspector();
-//       virtual void createWindow();
-//       virtual void update();
-//       virtual void writeBack();
-//       virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
-// };
-//
-// class TContainerInspector : public TInspector
-// {
-//    protected:
-//       bool deep;
-//       char listbox[64];
-//    public:
-//       TContainerInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
-//       virtual void createWindow();
-//       virtual void update();
-// };
-//
-// class TMessageInspector: public TInspector
-// {
-//    protected:
-//       TStructPanel *controlinfopage;
-//    public:
-//       TMessageInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
-//       ~TMessageInspector();
-//       virtual void createWindow();
-//       virtual void update();
-//       virtual void writeBack();
-//       virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
-// };
-//
 
 class TWatchInspector: public TInspector
 {
@@ -86,17 +48,7 @@ class TWatchInspector: public TInspector
       virtual void writeBack();
 };
 
-// class TParInspector: public TInspector
-// {
-//    public:
-//       TParInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
-//       virtual void createWindow();
-//       virtual void update();
-//       virtual void writeBack();
-// };
-
 NAMESPACE_END
-
 
 #endif
 
