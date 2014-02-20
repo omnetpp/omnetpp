@@ -77,6 +77,9 @@ proc inspectorList:add {w allowdestructive} {
 
     set object [opp_inspector_getobject $w]
     set type [opp_inspector_gettype $w]
+    if [opp_isnull $object] {
+        return
+    }
 
     set objname [opp_getobjectfullpath $object]
     set classname [opp_getobjectshorttypename $object]

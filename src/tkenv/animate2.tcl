@@ -51,8 +51,8 @@ proc doConcurrentAnimations {animjobs} {
     # WM_DELETE_WINDOW stuff: if user wants to close window (during "update"), postpone it until updateInspectors()
     foreach w [array names winlist] {
         # remember current Close handler and temporarily replace it
-        set winlist($w) [wm protocol $w WM_DELETE_WINDOW]
-        wm protocol $w WM_DELETE_WINDOW [list opp_markinspectorfordeletion $w]
+        catch { set winlist($w) [wm protocol $w WM_DELETE_WINDOW] } ; # FIXME catch is a hack! fails for embedded inspectors
+        catch { wm protocol $w WM_DELETE_WINDOW [list opp_markinspectorfordeletion $w] } ; # FIXME catch is a hack! fails for embedded inspectors
     }
 
     # then animate each group, one after another
@@ -62,7 +62,7 @@ proc doConcurrentAnimations {animjobs} {
 
     # restore old WM_DELETE_WINDOW handlers
     foreach w [array names winlist] {
-        wm protocol $w WM_DELETE_WINDOW $winlist($w)
+        catch { wm protocol $w WM_DELETE_WINDOW $winlist($w) } ; # FIXME catch is a hack! fails for embedded inspectors
     }
 }
 

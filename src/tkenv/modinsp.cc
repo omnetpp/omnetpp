@@ -83,6 +83,9 @@ void TModuleWindow::createWindow(const char *window, const char *geometry)
 
 void TModuleWindow::update()
 {
+    if (!object)
+        return;
+
     TInspector::update();
 
     Tcl_Interp *interp = getTkenv()->getInterp();
@@ -245,8 +248,18 @@ void TGraphicalModWindow::createWindow(const char *window, const char *geometry)
    CHK(Tcl_VarEval(interp, "createGraphicalModWindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
+void TGraphicalModWindow::useWindow(const char *widget)
+{
+    TInspector::useWindow(widget);
+    strcpy(canvas,windowname);
+    strcat(canvas,".c");
+}
+
 void TGraphicalModWindow::update()
 {
+   if (!object)
+       return;
+
    TInspector::update();
 
    if (not_drawn) return;

@@ -115,11 +115,12 @@ void TInspector::showWindow()
 void TInspector::hostObjectDeleted()
 {
    Tcl_Interp *interp = getTkenv()->getInterp(); //FIXME only if ownsWindow?
-   CHK(Tcl_VarEval(interp, "inspector:hostObjectDeleted ", windowname, NULL ));
+   CHK(Tcl_VarEval(interp, "inspector:hostObjectDeleted ", windowname, NULL )); //FIXME needed? this Tcl proc is currently empty!!!
 }
 
 void TInspector::update()
 {
+   //FIXME only if there is infobar and toolbar! (that is, !embedded; or hasToolbar && hasInfobar)
    Tcl_Interp *interp = getTkenv()->getInterp();
 
    // update window title (only if changed)

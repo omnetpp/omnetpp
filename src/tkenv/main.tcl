@@ -48,6 +48,9 @@ set config(timeline-wantsilentmsgs) 0
 set config(log-save-filename) "omnetpp.out"
 set config(mainwin-state) "normal"
 set config(mainwin-geom) ""
+set config(mainwin-main-sashpos) {}
+set config(mainwin-left-sashpos) {}
+set config(mainwin-right-sashpos) {}
 set config(concurrent-anim) 1
 set config(logwindow-scrollbacklines) 100000
 set config(zoomby-factor) 1.1
@@ -95,34 +98,33 @@ proc createOmnetppWindow {} {
     mainWindow:createStatusbars
     mainWindow:createTimeline
 
-    # Create main display area
-    frame .main -borderwidth 1 -height 30 -relief sunken -width 30
-
-    mainWindow:createTreeView
-    mainWindow:refreshToolbar
-
-    #
-    # Create main text window
-    #
-    text .main.text -yscrollcommand ".main.sb set" -font $fonts(text)
-    scrollbar .main.sb -command ".main.text yview"
-    logTextWidget:configureTags .main.text
-
-    pack .main.sb -anchor center -expand 0 -fill y  -side right
-    pack .main.text -anchor center -expand 1 -fill both -side right
-
-    # Pack everything
     pack .toolbar    -anchor center -expand 0 -fill x -side top
     pack .statusbar  -anchor center -expand 0 -fill x -side top
     pack .statusbar2 -anchor center -expand 0 -fill x -side top
     pack .statusbar3 -anchor center -expand 0 -fill x -side top
     pack .timeline   -anchor center -expand 0 -fill x -side top
-    pack .main       -anchor center -expand 1 -fill both -side top
 
-    focus .main.text
+    # Create main display area
+    panedwindow .main -orient horizontal
+    pack .main -expand 1 -fill both -side top
+
+    panedwindow .main.left -orient vertical
+    panedwindow .main.right -orient vertical
+    .main add .main.left .main.right
+
+    set treeview [mainWindow:createTreeView]
+    set inspectorview [frame .main.left.inspector -relief sunken -borderwidth 3]
+    .main.left add $treeview $inspectorview
+
+    set networkview [mainWindow:createNetworkView]
+    set logview [mainWindow:createLogView]
+    .main.right add $networkview $logview
+
+    mainWindow:refreshToolbar
+    focus .log.text
 
     # Hotkeys
-    bindCommandsToTextWidget .main.text mainwindow
+    bindCommandsToTextWidget .log.text mainwindow
     bindRunCommands .
     bindOtherCommands .
 }
@@ -444,21 +446,89 @@ proc mainWindow:createTimeline {} {
 proc mainWindow:createTreeView {} {
     global widgets
 
-    set widgets(manager) .main.mgr
+    set f .main.mgr
+    set widgets(manager) $f
+    frame $f -relief flat -borderwidth 1
 
-    frame .main.mgr -relief flat -borderwidth 1
-
-    vertResizeBar .main.mgr.resize .main.mgr.tree
-
-    canvas .main.mgr.tree -width 140 -bg #ffffe0 -bd 0 -yscrollcommand ".main.mgr.sb set"
-    scrollbar .main.mgr.sb -command ".main.mgr.tree yview"
-    pack .main.mgr.resize -side right -fill y
-    pack .main.mgr.sb -side right -fill y
-    pack .main.mgr.tree -side left -fill y -padx 0 -pady 0 -ipadx 0 -ipady 0
+    canvas $f.tree -bg #ffffe0 -bd 0 -yscrollcommand "$f.sb set"
+    scrollbar $f.sb -command "$f.tree yview"
+    pack $f.sb -side right -expand 0 -fill y
+    pack $f.tree -side left -expand 1 -fill both -padx 0 -pady 0 -ipadx 0 -ipady 0
 
     initTreeManager
+    return $f
+}
 
-    pack .main.mgr -anchor center -expand 0 -fill y  -side left
+proc mainWindow:createNetworkView {} {
+    set f .network
+    frame $f -borderwidth 0
+
+    frame $f.grid
+    scrollbar $f.hsb -orient horiz -command "$f.c xview"
+    scrollbar $f.vsb -command "$f.c yview"
+    canvas $f.c -background "#a0e0a0" -relief raised -closeenough 2 \
+        -xscrollcommand "$f.hsb set" \
+        -yscrollcommand "$f.vsb set"
+    pack $f.grid -expand yes -fill both -padx 1 -pady 1
+    grid rowconfig    $f.grid 0 -weight 1 -minsize 0
+    grid columnconfig $f.grid 0 -weight 1 -minsize 0
+
+    grid $f.c -in $f.grid -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
+    grid $f.vsb -in $f.grid -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
+    grid $f.hsb -in $f.grid -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
+
+    # FIXME USE SAME CODE AS IN MODINSP2.TCL!!!!
+    set c $f.c
+    set w $f
+    global B1 B2 B3
+
+    # init some state vars
+    global inspectordata
+    set inspectordata($c:zoomfactor) 1
+    set inspectordata($c:imagesizefactor) 1
+    set inspectordata($c:showlabels) 1
+    set inspectordata($c:showarrowheads) 1
+
+    # mouse bindings
+    $c bind submod <Double-1> "graphicalModuleWindow:dblClick $w"
+    $c bind conn <Double-1> "graphicalModuleWindow:dblClick $w"
+    $c bind msg <Double-1> "graphicalModuleWindow:dblClick $w"
+    $c bind msgname <Double-1> "graphicalModuleWindow:dblClick $w"
+    $c bind qlen <Double-1> "graphicalModuleWindow:qlenDblclick $w"
+
+    $c bind submod <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
+    $c bind conn <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
+    $c bind msg <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
+    $c bind msgname <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
+    $c bind mod <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
+    $c bind modname <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
+    $c bind qlen <$B3> "graphicalModuleWindow:qlenRightClick $w %X %Y %x %y"
+
+    # keyboard shortcuts
+    bind $w <Control-m> "graphicalModuleWindow:zoomIn $w"
+    bind $w <Control-n> "graphicalModuleWindow:zoomOut $w"
+    bind $w <Control-i> "graphicalModuleWindow:zoomIconsBy $w 1.25"
+    bind $w <Control-o> "graphicalModuleWindow:zoomIconsBy $w 0.8"
+    bind $w <Control-r> "graphicalModuleWindow:relayout $w"
+    bind $w <Control-d> "graphicalModuleWindow:toggleLabels $w"
+    bind $w <Control-a> "graphicalModuleWindow:togglAarrowheads $w"
+
+    return $f
+}
+
+proc mainWindow:createLogView {} {
+    global fonts
+
+    set f .log
+    frame $f -borderwidth 0
+
+    text $f.text -yscrollcommand "$f.sb set" -font $fonts(text)
+    scrollbar $f.sb -command "$f.text yview"
+    pack $f.sb -anchor center -expand 0 -fill y  -side right
+    pack $f.text -in $f -anchor center -expand 1 -fill both -side right
+
+    logTextWidget:configureTags $f.text
+    return $f
 }
 
 proc mainWindow:refreshToolbar {} {

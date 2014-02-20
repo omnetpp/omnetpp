@@ -32,6 +32,8 @@ NAMESPACE_BEGIN
 
 class Speedometer;
 class TInspector;
+class TModuleWindow;
+class TGraphicalModWindow;
 
 #define MAX_CLASSNAME  100
 
@@ -142,6 +144,9 @@ class TKENV_API Tkenv : public EnvirBase
 
       LogBuffer logBuffer;         // text window contents
       std::set<int> mainWindowExcludedModuleIds;
+
+      TModuleWindow *mainLogView;
+      TGraphicalModWindow *mainNetworkView;
 
       typedef std::map<std::string,std::string> StringMap;
       StringMap answers;           // key: <ModuleType>:<paramName>, value: <interactively-given-paramvalue>

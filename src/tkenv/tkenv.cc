@@ -267,6 +267,11 @@ void Tkenv::run()
             windowtitleprefix.reserve(24);
             sprintf(windowtitleprefix.buffer(), "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
         }
+
+        //TODO mainLogView
+        mainNetworkView = new TGraphicalModWindow();
+        mainNetworkView->setType(INSP_GRAPHICAL); //XXX
+        addEmbeddedInspector(".network", mainNetworkView);
     }
     catch (std::exception& e)
     {
@@ -785,6 +790,7 @@ void Tkenv::newRun(const char *configname, int runnumber)
 
         answers.clear();
         setupNetwork(network);
+        mainNetworkView->setObject(simulation.getSystemModule()); //FIXME factor out to setupNetwork()!
         startRun();
 
         simstate = SIM_NEW;
@@ -1078,7 +1084,7 @@ void Tkenv::printLastLogLine()
 
     // print into main window
     if (opt->useMainWindow)
-        TModuleWindow::printLastLineOf(interp, ".main.text", logBuffer, mainWindowExcludedModuleIds);
+        TModuleWindow::printLastLineOf(interp, ".log.text", logBuffer, mainWindowExcludedModuleIds);
 
     // print into module window and all parent module windows if they exist
     if (!entry.moduleIds)
@@ -1148,7 +1154,7 @@ void Tkenv::componentInitBegin(cComponent *component, int stage)
 void Tkenv::setMainWindowExcludedModuleIds(const std::set<int>& ids)
 {
     mainWindowExcludedModuleIds = ids;
-    TModuleWindow::redisplay(interp, ".main.text", logBuffer, simulation.getSystemModule(), mainWindowExcludedModuleIds);
+    TModuleWindow::redisplay(interp, ".log.text", logBuffer, simulation.getSystemModule(), mainWindowExcludedModuleIds);
 }
 
 void Tkenv::setSilentEventFilters(const char *filterLines)

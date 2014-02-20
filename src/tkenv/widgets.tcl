@@ -767,56 +767,6 @@ proc notebook:showPage {w name} {
 }
 
 
-# vertResizeBar --
-#
-# Vertical 'resize bar' (divider)
-#
-proc vertResizeBar {w wToBeResized} {
-    global B2 B3
-
-    # create widget
-    frame $w -width 5 -relief raised -borderwidth 1
-    if [catch {$w config -cursor size_we}] {
-      if [catch {$w config -cursor sb_h_double_arrow}] {
-        catch {$w config -cursor sizing}
-      }
-    }
-
-    # create bindings
-    bind $w <Button-1> "vertResizeBar:buttonDown %W %X"
-    bind $w <B1-Motion> "vertResizeBar:buttonMove %X"
-    bind $w <ButtonRelease-1> "vertResizeBar:buttonRelease %X $wToBeResized"
-    bind $w <Button-$B2> "catch {destroy .resizeBar}"
-    bind $w <Button-$B3> "catch {destroy .resizeBar}"
-}
-
-proc vertResizeBar:buttonDown {w x} {
-    global mouse
-    set mouse(origx) $x
-
-    catch {destroy .resizeBar}
-    toplevel .resizeBar -relief flat -bg #606060
-    wm overrideredirect .resizeBar true
-    wm positionfrom .resizeBar program
-    set geom "[winfo width $w]x[winfo height $w]+[winfo rootx $w]+[winfo rooty $w]"
-    wm geometry .resizeBar $geom
-}
-
-proc vertResizeBar:buttonMove {x} {
-    catch {wm geometry .resizeBar "+$x+[winfo rooty .resizeBar]"}
-}
-
-proc vertResizeBar:buttonRelease {x wToBeResized} {
-    global mouse
-    set dx [expr $x-$mouse(origx)]
-
-    set width [$wToBeResized cget -width]
-    set width [expr $width+$dx]
-    $wToBeResized config -width $width
-
-    catch {destroy .resizeBar}
-}
-
 # tableEdit --
 #
 # Create a "tableEdit" widget

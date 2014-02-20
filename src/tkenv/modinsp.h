@@ -86,6 +86,7 @@ class TGraphicalModWindow : public TInspector
       ~TGraphicalModWindow();
       virtual void setObject(cObject *obj);
       virtual void createWindow(const char *window, const char *geometry);
+      virtual void useWindow(const char *widget);
       virtual void update();
       virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
 

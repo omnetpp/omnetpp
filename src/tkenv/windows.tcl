@@ -155,7 +155,7 @@ proc saveFile {win {filename ""}} {
     if [catch {
        set f [open $filename w]
        set txt $win.main.text
-       if {$txt == "..main.text"} {set txt .main.text}
+       if {$txt == "..main.text"} {set txt .log.text}
        puts -nonewline $f [$txt get 1.0 end]
        close $f
     } err] {

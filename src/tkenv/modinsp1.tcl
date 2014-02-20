@@ -185,7 +185,7 @@ proc moduleWindow:openFilterDialog {w} {
 
 proc mainlogWindow:trimlines {} {
     global config
-    textwidget:trimLines .main.text $config(logwindow-scrollbacklines)
+    textwidget:trimLines .log.text $config(logwindow-scrollbacklines)
 }
 
 proc moduleWindow:trimlines {w} {
