@@ -89,7 +89,46 @@ proc createOmnetppWindow {} {
     wm title . "OMNeT++/Tkenv"
     wm protocol . WM_DELETE_WINDOW {exitOmnetpp}
 
-    # set the application icon
+    mainWindow:setApplicationIcon
+    mainWindow:createMenu
+    mainWindow:createToolbar
+    mainWindow:createStatusbars
+
+    # Create main display area
+    frame .main -borderwidth 1 -height 30 -relief sunken -width 30
+
+    mainWindow:createTreeView
+    mainWindow:refreshToolbar
+
+    #
+    # Create main text window
+    #
+    text .main.text -yscrollcommand ".main.sb set" -font $fonts(text)
+    scrollbar .main.sb -command ".main.text yview"
+    logTextWidget:configureTags .main.text
+
+    pack .main.sb -anchor center -expand 0 -fill y  -side right
+    pack .main.text -anchor center -expand 1 -fill both -side right
+
+    # Pack everything
+    pack .toolbar    -anchor center -expand 0 -fill x -side top
+    pack .statusbar  -anchor center -expand 0 -fill x -side top
+    pack .statusbar2 -anchor center -expand 0 -fill x -side top
+    pack .statusbar3 -anchor center -expand 0 -fill x -side top
+    pack .timeline   -anchor center -expand 0 -fill x -side top
+    pack .main       -anchor center -expand 1 -fill both -side top
+
+    focus .main.text
+
+    # Hotkeys
+    bindCommandsToTextWidget .main.text mainwindow
+    bindRunCommands .
+    bindOtherCommands .
+}
+
+proc mainWindow:setApplicationIcon {} {
+    global tcl_platform icons
+
     set iconphoto_main $icons(logo128m)
     set iconphoto_other $icons(logo128w)
     if {$tcl_platform(platform) == "windows"} {
@@ -123,10 +162,10 @@ proc createOmnetppWindow {} {
             wm iconphoto . $iconphoto_main
         }
     }
+}
 
-    #################################
-    # Menu bar
-    #################################
+proc mainWindow:createMenu {} {
+    global tcl_version
 
     menu .menubar
     . config -menu .menubar
@@ -275,10 +314,10 @@ proc createOmnetppWindow {} {
     } {
       eval .menubar.helpmenu$m add $i
     }
+}
 
-    #################################
-    # Create toolbar
-    #################################
+proc mainWindow:createToolbar {} {
+    global icons
 
     frame .toolbar -relief raised -borderwidth 1
 
@@ -337,10 +376,10 @@ proc createOmnetppWindow {} {
     set help_tips(.toolbar.tline)   {Show/hide timeline}
     set help_tips(.toolbar.tree)    {Show/hide object tree}
     set help_tips(.toolbar.options) {Simulation options}
+}
 
-    #################################
-    # Create status bars
-    #################################
+proc mainWindow:createStatusbars {} {
+    global widgets B1 B2 B3
 
     frame .statusbar
     frame .statusbar2
@@ -356,28 +395,18 @@ proc createOmnetppWindow {} {
 
     set widgets(timeline) .timeline
 
-    label .statusbar.networklabel \
-        -relief groove -text {(no network set up)} -width 18 -anchor w
-    label .statusbar.eventlabel \
-        -relief groove -text {Event #0} -width 15  -anchor w
-    label .statusbar.timelabel \
-        -relief groove -text {T=0.0000000 (0.00s)} -width 20 -anchor w
-    label .statusbar.nextlabel \
-        -relief groove -text {Next:} -width 23 -anchor w
+    label .statusbar.networklabel -relief groove -text {(no network set up)} -width 18 -anchor w
+    label .statusbar.eventlabel -relief groove -text {Event #0} -width 15  -anchor w
+    label .statusbar.timelabel -relief groove -text {T=0.0000000 (0.00s)} -width 20 -anchor w
+    label .statusbar.nextlabel -relief groove -text {Next:} -width 23 -anchor w
 
-    label .statusbar2.feslength \
-        -relief groove -text {Msgs scheduled: 0} -width 20 -anchor w
-    label .statusbar2.totalmsgs \
-        -relief groove -text {Msgs created: 0} -width 20 -anchor w
-    label .statusbar2.livemsgs \
-        -relief groove -text {Msgs present: 0} -width 20 -anchor w
+    label .statusbar2.feslength -relief groove -text {Msgs scheduled: 0} -width 20 -anchor w
+    label .statusbar2.totalmsgs -relief groove -text {Msgs created: 0} -width 20 -anchor w
+    label .statusbar2.livemsgs -relief groove -text {Msgs present: 0} -width 20 -anchor w
 
-    label .statusbar3.eventspersec \
-        -relief groove -text {Ev/sec: n/a} -width 15 -anchor w
-    label .statusbar3.simsecpersec \
-        -relief groove -text {Simsec/sec: n/a} -width 22 -anchor w
-    label .statusbar3.eventspersimsec \
-        -relief groove -text {Ev/simsec: n/a} -width 18 -anchor w
+    label .statusbar3.eventspersec -relief groove -text {Ev/sec: n/a} -width 15 -anchor w
+    label .statusbar3.simsecpersec -relief groove -text {Simsec/sec: n/a} -width 22 -anchor w
+    label .statusbar3.eventspersimsec -relief groove -text {Ev/simsec: n/a} -width 18 -anchor w
 
     pack .statusbar.networklabel -anchor n -expand 1 -fill x -side left
     pack .statusbar.eventlabel -anchor n -expand 1 -fill x -side left
@@ -404,16 +433,13 @@ proc createOmnetppWindow {} {
     set help_tips(.statusbar3.eventspersec)    {Performance: events processed per second}
     set help_tips(.statusbar3.simsecpersec)    {Relative speed: simulated seconds processed per second}
     set help_tips(.statusbar3.eventspersimsec) {Event density: events per simulated second}
+}
 
+proc mainWindow:createTreeView {} {
+    global widgets
 
-    #################################
-    # Create main display area
-    #################################
-    frame .main -borderwidth 1 -height 30 -relief sunken -width 30
+    set widgets(manager) .main.mgr
 
-    #
-    # Create manager (vert. tree view)
-    #
     frame .main.mgr -relief flat -borderwidth 1
 
     vertResizeBar .main.mgr.resize .main.mgr.tree
@@ -424,9 +450,13 @@ proc createOmnetppWindow {} {
     pack .main.mgr.sb -side right -fill y
     pack .main.mgr.tree -side left -fill y -padx 0 -pady 0 -ipadx 0 -ipady 0
 
-    set widgets(manager) .main.mgr
     initTreeManager
+
     pack .main.mgr -anchor center -expand 0 -fill y  -side left
+}
+
+proc mainWindow:refreshToolbar {} {
+    global config
 
     if {$config(display-treeview)==0} {
         .toolbar.tree config -relief flat
@@ -439,35 +469,6 @@ proc createOmnetppWindow {} {
     } else {
         .toolbar.tline config -relief sunken
     }
-
-    #
-    # Create main text window
-    #
-    text .main.text -yscrollcommand ".main.sb set" -font $fonts(text)
-    scrollbar .main.sb -command ".main.text yview"
-    logTextWidget:configureTags .main.text
-
-    pack .main.sb -anchor center -expand 0 -fill y  -side right
-    pack .main.text -anchor center -expand 1 -fill both -side right
-
-    #################################
-    # Pack everything
-    #################################
-    pack .toolbar    -anchor center -expand 0 -fill x -side top
-    pack .statusbar  -anchor center -expand 0 -fill x -side top
-    pack .statusbar2 -anchor center -expand 0 -fill x -side top
-    pack .statusbar3 -anchor center -expand 0 -fill x -side top
-    pack .timeline   -anchor center -expand 0 -fill x -side top
-    pack .main       -anchor center -expand 1 -fill both -side top
-
-    focus .main.text
-
-    ###############################
-    # Hotkeys
-    ###############################
-    bindCommandsToTextWidget .main.text mainwindow
-    bindRunCommands .
-    bindOtherCommands .
 }
 
 proc bindRunCommands {w} {
