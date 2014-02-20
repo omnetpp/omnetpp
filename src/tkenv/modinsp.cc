@@ -531,7 +531,7 @@ void TGraphicalModWindow::refreshLayout()
     Tcl_Interp *interp = getTkenv()->getInterp();
     TGraphLayouterEnvironment environment(interp, parentmodule, ds);
 
-    std::string stopButton = std::string(windowName()) + ".toolbar.stop";
+    std::string stopButton = std::string(getWindowName()) + ".toolbar.stop";
     bool isExpressMode = getTkenv()->getSimulationRunMode() == Tkenv::RUNMODE_EXPRESS;
     if (!isExpressMode)
         environment.setWidgetToGrab(stopButton.c_str());

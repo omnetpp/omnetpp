@@ -1379,7 +1379,7 @@ proc modelInfoDialog {{w ""}} {
     if {$w==""} {
         set modptr [opp_object_systemmodule]
     } else {
-        regexp {\.(ptr.*)-[0-9]+} $w match modptr
+        set modptr [opp_inspector_getobject $w]
     }
     if {$modptr==[opp_object_systemmodule]} {
         set what "Network"

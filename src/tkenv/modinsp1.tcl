@@ -104,7 +104,7 @@ proc _createModuleWindow {name geom iscompound} {
     set w $name
     createInspectorToplevel $w $geom
 
-    regexp {\.(ptr.*)-[0-9]+} $w match modptr
+    set modptr [opp_inspector_getobject $w]
 
     # Add icons
     if {$iscompound} {
@@ -175,7 +175,7 @@ proc mainlogWindow:openFilterDialog {} {
 }
 
 proc moduleWindow:openFilterDialog {w} {
-    regexp {\.(ptr.*)-[0-9]+} $w match modptr
+    set modptr [opp_inspector_getobject $w]
     set excludedModuleIds [opp_inspectorcommand $w getexcludedmoduleids]
     set excludedModuleIds [moduleOutputFilterDialog $modptr $excludedModuleIds]
     if {$excludedModuleIds!="0"} {

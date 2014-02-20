@@ -35,9 +35,7 @@ proc inspector:createFields2Page {w} {
     grid columnconfig $nb.fields2 0 -weight 1
 
     set tree $nb.fields2.tree
-    if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
-        error "window name $w doesn't look like an inspector window"
-    }
+    set object [opp_inspector_getobject $w]
     set treeroots($tree) $object
 
     Tree:init $tree fields2Page:getNodeInfo
@@ -577,9 +575,7 @@ proc fields2Page:getNodeInfo:copy {w key} {
 #    #set one  [$tree insert end {ROOT ONE} -data {value 42 type short}]
 #    #set two  [$tree insert end {ROOT TWO} -data {value 42 type double}]
 #
-#    if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
-#        error "window name $w doesn't look like an inspector window"
-#    }
+#    set object [opp_inspector_getobject $w]
 #
 #    fillTreeView $tree $object   ;# should be called from C++ on updates
 #}

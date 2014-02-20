@@ -38,8 +38,6 @@ enum {
 // utility functions
 const char *insptypeNameFromCode( int code );
 int insptypeCodeFromName(const char *namestr);
-void splitInspectorName(const char *namestr, cObject *&object, int& type);
-
 
 
 /**
@@ -61,7 +59,7 @@ class TKENV_API TInspector
 
       virtual cObject *getObject() {return object;}
       virtual int getType() {return type;}
-      virtual const char *windowName() {return windowname;}
+      virtual const char *getWindowName() {return windowname;}
 
       virtual void hostObjectDeleted();
       virtual void markForDeletion() {toBeDeleted=true;}

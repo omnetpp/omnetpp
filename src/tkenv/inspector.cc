@@ -56,30 +56,8 @@ int insptypeCodeFromName(const char *namestr)
    return -1;
 }
 
-//=================================================================
-// a utility function:
 
-void splitInspectorName(const char *namestr, cObject *&object, int& type)
-{
-   // namestr is the window path name, sth like ".ptr80005a31-2"
-   // split it into pointer string ("ptr80005a31") and inspector type ("2")
-   assert(namestr!=0); // must exist
-   assert(namestr[0]=='.');  // must begin with a '.'
-
-   // find '-' and temporarily replace it with EOS
-   char *s;
-   for (s=const_cast<char *>(namestr); *s!='-' && *s!='\0'; s++);
-   assert(*s=='-');  // there must be a '-' in the string
-   *s = '\0';
-
-   object = strToPtr(namestr+1);
-   type = atoi(s+1);
-   *s = '-';  // restore '-'
-}
-
-//=======================================================================
-// TInspector: base class for all inspector types
-//             member functions
+//----
 
 TInspector::TInspector(cObject *obj, int typ, const char *geom, void *dat)
 {
@@ -105,9 +83,8 @@ TInspector::~TInspector()
 
 void TInspector::createWindow()
 {
-   windowname[0] = '.';
-   ptrToStr(object, windowname+1 );
-   sprintf(windowname+strlen(windowname), "-%d",type);
+   static int counter = 0;
+   sprintf(windowname, ".inspector%d", counter++);
 
    // derived classes will also call Tcl_Eval() to actually create the
    // Tk window by invoking a procedure in inspect.tcl

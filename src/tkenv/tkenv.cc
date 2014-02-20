@@ -856,6 +856,17 @@ TInspector *Tkenv::findInspector(cObject *obj, int type)
     return NULL;
 }
 
+TInspector *Tkenv::findInspector(const char *widget)
+{
+    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    {
+        TInspector *insp = *it;
+        if (strcmp(insp->getWindowName(), widget) == 0)
+            return insp;
+    }
+    return NULL;
+}
+
 void Tkenv::deleteInspector(TInspector *insp)
 {
     inspectors.remove(insp);
@@ -1467,7 +1478,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
                 strcpy(parentptr,ptrToStr(enclosingmod));
                 strcpy(modptr,ptrToStr(mod));
                 CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateMethodcallAscent ",
-                                        insp->windowName(), " ",
+                                        insp->getWindowName(), " ",
                                         parentptr," ",
                                         modptr," ",
                                         " {",methodText,"} ",
@@ -1490,7 +1501,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
                 strcpy(parentptr,ptrToStr(enclosingmod));
                 strcpy(modptr,ptrToStr(mod));
                 CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateMethodcallDescent ",
-                                        insp->windowName(), " ",
+                                        insp->getWindowName(), " ",
                                         parentptr," ",
                                         modptr," ",
                                         " {",methodText,"} ",
@@ -1508,7 +1519,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
                 strcpy(fromptr,ptrToStr(i->from));
                 strcpy(toptr,ptrToStr(i->to));
                 CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateMethodcallHoriz ",
-                                        insp->windowName(), " ",
+                                        insp->getWindowName(), " ",
                                         fromptr," ",
                                         toptr," ",
                                         " {",methodText,"} ",
@@ -1531,7 +1542,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
             if (insp)
             {
                 CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateMethodcallCleanup ",
-                                        insp->windowName(),
+                                        insp->getWindowName(),
                                         NULL));
             }
         }
@@ -1698,7 +1709,7 @@ void Tkenv::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
         {
             int lastgate = (g->getNextGate()==arrivalgate);
             CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateOnConn ",
-                                    insp->windowName(), " ",
+                                    insp->getWindowName(), " ",
                                     msgptr, " ",
                                     ptrToStr(g)," ",
                                     (lastgate?"beg":"thru"),
@@ -1804,7 +1815,7 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
                 strcpy(parentptr,ptrToStr(enclosingmod));
                 strcpy(modptr,ptrToStr(mod));
                 CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateSenddirectAscent ",
-                                        insp->windowName(), " ",
+                                        insp->getWindowName(), " ",
                                         msgptr, " ",
                                         parentptr," ",
                                         modptr," ",
@@ -1824,7 +1835,7 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
                 strcpy(parentptr,ptrToStr(enclosingmod));
                 strcpy(modptr,ptrToStr(mod));
                 CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateSenddirectDescent ",
-                                        insp->windowName(), " ",
+                                        insp->getWindowName(), " ",
                                         msgptr, " ",
                                         parentptr," ",
                                         modptr," ",
@@ -1842,7 +1853,7 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
                 strcpy(fromptr,ptrToStr(i->from));
                 strcpy(toptr,ptrToStr(i->to));
                 CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateSenddirectHoriz ",
-                                        insp->windowName(), " ",
+                                        insp->getWindowName(), " ",
                                         msgptr, " ",
                                         fromptr," ",
                                         toptr," ",
@@ -1861,7 +1872,7 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
         if (insp)
         {
             CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateSenddirectCleanup ",
-                                    insp->windowName(),
+                                    insp->getWindowName(),
                                     NULL));
         }
     }
@@ -1886,7 +1897,7 @@ void Tkenv::animateDelivery(cMessage *msg)
     if (insp)
     {
         CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateOnConn ",
-                                insp->windowName(), " ",
+                                insp->getWindowName(), " ",
                                 msgptr, " ",
                                 ptrToStr(g)," ",
                                 "end",
@@ -1909,7 +1920,7 @@ void Tkenv::animateDeliveryDirect(cMessage *msg)
     if (insp)
     {
         CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateSenddirectDelivery ",
-                                insp->windowName(), " ",
+                                insp->getWindowName(), " ",
                                 msgptr, " ",
                                 ptrToStr(destmod),
                                 NULL));

@@ -75,9 +75,8 @@ proc inspectorList:openInspectors {} {
 proc inspectorList:add {w allowdestructive} {
     global pil_name pil_class pil_type pil_geom pil_nextindex
 
-    if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
-        error "window name $w doesn't look like an inspector window"
-    }
+    set object [opp_inspector_getobject $w]
+    set type [opp_inspector_gettype $w]
 
     set objname [opp_getobjectfullpath $object]
     set classname [opp_getobjectshorttypename $object]
@@ -96,7 +95,7 @@ proc inspectorList:add {w allowdestructive} {
 #
 proc inspectorList:addAll {allowdestructive} {
     foreach w [winfo children .] {
-       if [regexp {\.(ptr.*)-([0-9]+)} $w match object type] {
+       if [opp_isinspector $w] {
            inspectorList:add $w $allowdestructive
        }
     }
@@ -110,9 +109,8 @@ proc inspectorList:addAll {allowdestructive} {
 proc inspectorList:remove {w} {
     global pil_name pil_class pil_type pil_geom
 
-    if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
-        error "window name $w doesn't look like an inspector window"
-    }
+    set object [opp_inspector_getobject $w]
+    set type [opp_inspector_gettype $w]
 
     set key "[opp_getobjectfullpath $object]:[opp_getobjectshorttypename $object]:$type"
 
@@ -130,7 +128,10 @@ proc inspectorList:tkenvrcGetContents {allowdestructive} {
 
     set res ""
     foreach w [winfo children .] {
-       if [regexp {\.(ptr.*)-([0-9]+)} $w match object type] {
+       if [opp_isinspector $w] {
+           set object [opp_inspector_getobject $w]
+           set type [opp_inspector_gettype $w]
+
            set objname [opp_getobjectfullpath $object]
            set class [opp_getobjectshorttypename $object]
            set geom [inspectorList:getGeometry $w $allowdestructive]

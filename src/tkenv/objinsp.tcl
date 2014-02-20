@@ -20,10 +20,7 @@ proc createGenericObjectInspector {name geom wantcontentspage focuscontentspage}
     set w $name
     createInspectorToplevel $w $geom
 
-    if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
-        error "window name $w doesn't look like an inspector window"
-    }
-
+    set object [opp_inspector_getobject $w]
     set type [opp_getobjectbaseclass $object]
 
     if {$type=="cSimpleModule" || $type=="cCompoundModule"} {

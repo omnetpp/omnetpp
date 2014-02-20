@@ -643,8 +643,8 @@ proc clearWindows {} {
 proc inspectFilteredObjectList {{w "."}} {
     # implements Find/inspect objects...
     set ptr ""
-    if {$w!="" && $w!="." && ![regexp {\.(ptr.*)-([0-9]+)} $w match ptr type]} {
-        error "window name $w doesn't look like an inspector window"
+    if {$w!="" && $w!="."} {
+        set ptr [opp_inspector_getobject $w]
     }
     filteredObjectList:window $ptr
 }

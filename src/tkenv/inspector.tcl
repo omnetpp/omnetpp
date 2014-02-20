@@ -57,7 +57,7 @@ proc createInspectorToplevel {w geom} {
     set help_tips($w.toolbar.owner) {Inspect owner object}
 
     # add object type-and-name bar with color codes
-    regexp {\.(ptr.*)-[0-9]+} $w match ptr
+    set ptr [opp_inspector_getobject $w]
     set colorcode [inspector:chooseColorCode $ptr]
 
     frame $w.infobar -relief raised -bd 1
@@ -520,7 +520,8 @@ proc inspectAsItemIn {lb} {
 proc inspectThisAs {win} {
     # called by the "Inspect As.." button at the TOP of an inspector
     # extract object pointer from window path name and create inpector
-    regexp {\.(ptr.*)-([0-9]+)} $win match ptr curtype
+    set ptr [opp_inspector_getobject $win]
+    set curtype [opp_inspector_gettype $win]
 
     # do not offer the type of the inspector from which we're invoked
     set typelist [opp_supported_insp_types $ptr]
@@ -537,16 +538,15 @@ proc inspectThisAs {win} {
     }
 }
 
-proc inspectThis {win type} {
+proc inspectThis {w type} {
     # extract object pointer from window path name and create inspector
-    regexp {\.(ptr.*)-[0-9]+} $win match object
+    set object [opp_inspector_getobject $w]
     opp_inspect $object $type
 }
 
-proc inspectComponentType {win {type "(default)"}} {
+proc inspectComponentType {w {type "(default)"}} {
     # extract object pointer from window path name and create inspector
-    regexp {\.(ptr.*)-[0-9]+} $win match ptr
-
+    set ptr [opp_inspector_getobject $w]
     set typeptr [opp_getcomponenttypeobject $ptr]
     opp_inspect $typeptr $type
 }
