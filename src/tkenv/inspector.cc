@@ -64,6 +64,7 @@ TInspector::TInspector()
 {
    object = NULL;
    type = -1;
+   ownsWindow = false;
    toBeDeleted = false;
 
    windowname[0] = '\0'; // no window exists
@@ -72,7 +73,7 @@ TInspector::TInspector()
 
 TInspector::~TInspector()
 {
-   if (windowname[0])
+   if (ownsWindow && windowname[0])
    {
       Tcl_Interp *interp = getTkenv()->getInterp();
       CHK(Tcl_VarEval(interp, "inspector:destroy ", windowname, NULL ));
@@ -85,22 +86,35 @@ std::string TInspector::makeWindowName()
    return opp_stringf(".inspector%d", counter++);
 }
 
+void TInspector::createWindow(const char *window, const char *geometry)
+{
+    strcpy(windowname, window);
+    ownsWindow = true;
+}
+
+void TInspector::useWindow(const char *widget)
+{
+    strcpy(windowname, widget);
+    windowtitle[0] = '\0';
+    ownsWindow = false;
+}
+
 bool TInspector::windowExists()
 {
    Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, "winfo exists ", windowname, NULL ));
+   CHK(Tcl_VarEval(interp, "winfo exists ", windowname, NULL )); //FIXME what if not toplevel?
    return Tcl_GetStringResult(interp)[0]=='1';
 }
 
 void TInspector::showWindow()
 {
    Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, "inspector:show ", windowname, NULL ));
+   CHK(Tcl_VarEval(interp, "inspector:show ", windowname, NULL ));  //FIXME what if not toplevel?
 }
 
 void TInspector::hostObjectDeleted()
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
+   Tcl_Interp *interp = getTkenv()->getInterp(); //FIXME only if ownsWindow?
    CHK(Tcl_VarEval(interp, "inspector:hostObjectDeleted ", windowname, NULL ));
 }
 

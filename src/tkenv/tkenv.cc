@@ -839,11 +839,18 @@ TInspector *Tkenv::inspect(cObject *obj, int type, const char *geometry)
 
     // everything ok, finish inspector
     insp->setObject(obj);
-    inspectors.insert(inspectors.end(), insp);
+    inspectors.push_back(insp);
     insp->createWindow(TInspector::makeWindowName().c_str(), geometry);
     insp->update();
 
     return insp;
+}
+
+void Tkenv::addEmbeddedInspector(const char *widget, TInspector *insp)
+{
+    inspectors.push_back(insp);
+    insp->useWindow(widget);
+    insp->update();
 }
 
 TInspector *Tkenv::findInspector(cObject *obj, int type)
@@ -1303,7 +1310,7 @@ void Tkenv::objectDeleted(cObject *object)
         TInspectorList::iterator next = it;
         ++next;
         TInspector *insp = *it;
-        if (insp->getObject()==object)
+        if (insp->getObject()==object)   //FIXME only delete if ownsWindow
         {
             inspectors.erase(it); // with std::list, "next" remains valid
             insp->hostObjectDeleted();

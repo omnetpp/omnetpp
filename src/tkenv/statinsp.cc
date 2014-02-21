@@ -58,8 +58,10 @@ THistogramWindow::THistogramWindow() : TInspector()
 
 void THistogramWindow::createWindow(const char *window, const char *geometry)
 {
-   strcpy(windowname, window);
-   strcpy(canvas,windowname); strcat(canvas,".main.canvas");
+   TInspector::createWindow(window, geometry);
+
+   strcpy(canvas,windowname);
+   strcat(canvas,".main.canvas");
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
@@ -264,8 +266,10 @@ void TOutVectorWindow::setObject(cObject *obj)
 
 void TOutVectorWindow::createWindow(const char *window, const char *geometry)
 {
-   strcpy(windowname, window);
-   strcpy(canvas,windowname); strcat(canvas,".main.canvas");
+   TInspector::createWindow(window, geometry);
+
+   strcpy(canvas,windowname);
+   strcat(canvas,".main.canvas");
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"

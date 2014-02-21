@@ -66,8 +66,10 @@ TModuleWindow::TModuleWindow() : TInspector()
 
 void TModuleWindow::createWindow(const char *window, const char *geometry)
 {
-    strcpy(windowname, window);
-    strcpy(textWidget,windowname); strcat(textWidget, ".main.text");
+    TInspector::createWindow(window, geometry);
+
+    strcpy(textWidget,windowname);
+    strcat(textWidget, ".main.text");
 
     // create inspector window by calling the specified proc with
     // the object's pointer. Window name will be like ".ptr80003a9d-1"
@@ -232,8 +234,10 @@ void TGraphicalModWindow::setObject(cObject *obj)
 
 void TGraphicalModWindow::createWindow(const char *window, const char *geometry)
 {
-   strcpy(windowname, window);
-   strcpy(canvas,windowname); strcat(canvas,".c");
+   TInspector::createWindow(window, geometry);
+
+   strcpy(canvas,windowname);
+   strcat(canvas,".c");
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
@@ -933,8 +937,10 @@ TGraphicalGateWindow::TGraphicalGateWindow() : TInspector()
 
 void TGraphicalGateWindow::createWindow(const char *window, const char *geometry)
 {
-   strcpy(windowname, window);
-   strcpy(canvas,windowname); strcat(canvas,".c");
+   TInspector::createWindow(window, geometry);
+
+   strcpy(canvas,windowname);
+   strcat(canvas,".c");
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"

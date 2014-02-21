@@ -59,7 +59,7 @@ void TGenericObjectInspector::setObject(cObject *obj)
 
 void TGenericObjectInspector::createWindow(const char *window, const char *geometry)
 {
-   strcpy(windowname, window);
+   TInspector::createWindow(window, geometry);
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
@@ -139,7 +139,7 @@ TWatchInspector::TWatchInspector() : TInspector()
 
 void TWatchInspector::createWindow(const char *window, const char *geometry)
 {
-   strcpy(windowname, window);
+   TInspector::createWindow(window, geometry);
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"

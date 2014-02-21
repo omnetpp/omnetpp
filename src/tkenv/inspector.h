@@ -50,6 +50,7 @@ class TKENV_API TInspector
       int type;               // INSP_OBJECT, etc.
       char windowname[24];    // Tk inspector window variable
       char windowtitle[128];  // window title string
+      bool ownsWindow;        // whether destructor should destroy the window
       bool toBeDeleted;       // "mark for deletion" flag (set if user wants to close inspector during animation)
    public:
       TInspector();
@@ -67,10 +68,10 @@ class TKENV_API TInspector
 
       /** @name Virtual functions to be redefined in subclasses */
       //@{
-      virtual void createWindow(const char *window, const char *geometry) = 0; //TODO should set ownsWindow=true
-      virtual void setWindow(const char *widget) {} //TODO for embedded use; should set ownsWindow=false
-      bool windowExists();
-      void showWindow();
+      virtual void createWindow(const char *window, const char *geometry);
+      virtual void useWindow(const char *widget);
+      virtual bool windowExists();
+      virtual void showWindow();
 
       virtual void update();
       virtual void writeBack() {}
