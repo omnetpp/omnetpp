@@ -114,6 +114,7 @@ void TInspector::showWindow()
 
 void TInspector::hostObjectDeleted()
 {
+   //FIXME for embedded inspectors, call setObject(NULL) !!!!
    Tcl_Interp *interp = getTkenv()->getInterp(); //FIXME only if ownsWindow?
    CHK(Tcl_VarEval(interp, "inspector:hostObjectDeleted ", windowname, NULL )); //FIXME needed? this Tcl proc is currently empty!!!
 }

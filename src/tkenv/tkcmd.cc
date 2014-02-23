@@ -146,6 +146,7 @@ int supportedInspTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectByName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int isInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorGetObject_cmd(ClientData, Tcl_Interp *, int, const char **);
+int inspectorSetObject_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorGetType_cmd(ClientData, Tcl_Interp *, int, const char **);
 int updateInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
 int writeBackInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -262,6 +263,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_inspectbyname",     inspectByName_cmd     }, // args: <objfullpath> <classname> <insptype> <geom>
    { "opp_isinspector",       isInspector_cmd       }, // args: <window>
    { "opp_inspector_getobject",inspectorGetObject_cmd}, // args: <window>
+   { "opp_inspector_setobject",inspectorSetObject_cmd}, // args: <window> <ptr>
    { "opp_inspector_gettype", inspectorGetType_cmd  }, // args: <window>
    { "opp_updateinspector",   updateInspector_cmd   }, // args: <window>
    { "opp_writebackinspector",writeBackInspector_cmd}, // args: <window>
@@ -1738,6 +1740,18 @@ int inspectorGetObject_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
     TInspector *insp = app->findInspector(argv[1]);
     if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
     Tcl_SetResult(interp, ptrToStr(insp->getObject()), TCL_VOLATILE);
+    return TCL_OK;
+}
+
+int inspectorSetObject_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+    if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+    Tkenv *app = getTkenv();
+    TInspector *insp = app->findInspector(argv[1]);
+    if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
+    cObject *obj = strToPtr(argv[2]);
+    insp->setObject(obj);
+    insp->update();
     return TCL_OK;
 }
 

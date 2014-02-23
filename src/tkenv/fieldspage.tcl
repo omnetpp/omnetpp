@@ -71,7 +71,10 @@ proc fields2Page:refresh {w} {
     if ![winfo exist $tree] {return}
 
     set object [opp_inspector_getobject $w]
-    set treeroots($tree) $object
+    if {$treeroots($tree)!=$object} {
+        set treeroots($tree) $object
+        Tree:open $tree "0-obj-$object"
+    }
 
     Tree:build $tree
 }

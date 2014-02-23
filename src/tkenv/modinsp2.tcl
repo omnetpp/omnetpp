@@ -954,6 +954,12 @@ proc createGraphicalModuleViewer {w} {
     set inspectordata($c:showarrowheads) 1
 
     # mouse bindings
+    $c bind submod <1> "graphicalModuleWindow:click $w"
+    $c bind conn <1> "graphicalModuleWindow:click $w"
+    $c bind msg <1> "graphicalModuleWindow:click $w"
+    $c bind msgname <1> "graphicalModuleWindow:click $w"
+    $c bind qlen <1> "graphicalModuleWindow:qlenClick $w"
+
     $c bind submod <Double-1> "graphicalModuleWindow:dblClick $w"
     $c bind conn <Double-1> "graphicalModuleWindow:dblClick $w"
     $c bind msg <Double-1> "graphicalModuleWindow:dblClick $w"
@@ -1201,6 +1207,21 @@ proc graphicalModuleWindow:toggleArrowheads {w} {
     $w.toolbar.showarrowheads config -relief $relief
 }
 
+proc graphicalModuleWindow:click w {
+   set c $w.c
+   set item [$c find withtag current]
+   set tags [$c gettags $item]
+
+   set ptr ""
+   if {[lsearch $tags "ptr*"] != -1} {
+      regexp "ptr.*" $tags ptr
+   }
+
+   if {$ptr!=""} {
+      mainWindow:selectionChanged $ptr
+   }
+}
+
 proc graphicalModuleWindow:dblClick w {
    set c $w.c
    set item [$c find withtag current]
@@ -1438,6 +1459,14 @@ proc graphicalModuleWindow:qlenGetQptr {c modptr} {
        return $qptr
    }
    return ""
+}
+
+proc graphicalModuleWindow:qlenClick w {
+   set c $w.c
+   set qptr [graphicalModuleWindow:qlenGetQptrCurrent $c]
+   if [opp_isnotnull $qptr] {
+       mainWindow:selectionChanged $qptr
+   }
 }
 
 proc graphicalModuleWindow:qlenDblclick w {
