@@ -35,8 +35,7 @@ proc inspector:createFields2Page {w} {
     grid columnconfig $nb.fields2 0 -weight 1
 
     set tree $nb.fields2.tree
-    set object [opp_inspector_getobject $w]
-    set treeroots($tree) $object
+    set treeroots($tree) [opp_null]
 
     Tree:init $tree fields2Page:getNodeInfo
 
@@ -60,12 +59,19 @@ proc inspector:createFields2Page {w} {
         }
     }
 
+    set object [opp_null]
+    set treeroots($tree) $object
     Tree:open $tree "0-obj-$object"
 }
 
 proc fields2Page:refresh {w} {
+    global treeroots
+
     set tree $w.nb.fields2.tree
     if ![winfo exist $tree] {return}
+
+    set object [opp_inspector_getobject $w]
+    set treeroots($tree) $object
 
     Tree:build $tree
 }
@@ -102,7 +108,7 @@ proc fields2Page:getNodeInfo {w op {key ""}} {
     switch $op {
 
         text {
-            if [opp_isnull $obj] {return "<object is NULL>"}
+            if [opp_isnull $obj] {return "No object selected"}
             if {$sd!="" && [opp_isnull $sd]} {return "<no descriptor for object>"}
 
             switch $keytype {
@@ -146,6 +152,7 @@ proc fields2Page:getNodeInfo {w op {key ""}} {
         icon {
             switch $keytype {
                 obj {
+                    if [opp_isnull $obj] {return ""}
                     return [inspector:getIconForObject $obj]
                 }
                 struct -

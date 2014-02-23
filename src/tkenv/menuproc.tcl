@@ -299,7 +299,7 @@ proc toggleTreeView {} {
        .toolbar.tree config -relief flat
    } else {
        set config(display-treeview) 1
-       .main.left add $widgets(manager) -before .main.left.inspector
+       .main.left add $widgets(manager) -before .inspector
        .toolbar.tree config -relief sunken
        treeManager:update
    }

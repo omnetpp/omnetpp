@@ -54,6 +54,7 @@ void TGenericObjectInspector::setObject(cObject *obj)
             dynamic_cast<cArray *>(object) || dynamic_cast<cQueue *>(object) ||
             dynamic_cast<cMessageHeap *>(object) || dynamic_cast<cDefaultList *>(object) ||
             dynamic_cast<cRegistrationList *>(object);
+    //FIXME this probably doesn't work now
     setContentsPage(showcontentspage, focuscontentspage);
 }
 

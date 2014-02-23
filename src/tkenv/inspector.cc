@@ -127,14 +127,21 @@ void TInspector::update()
    //  (always updating the title produces many unnecessary redraws under some window mgrs)
    char newtitle[128];
    const char *prefix = getTkenv()->getWindowTitlePrefix();
-   char fullpath[300];
-   strncpy(fullpath, object->getFullPath().c_str(), 300);
-   fullpath[299] = 0;
-   int len = strlen(fullpath);
-   if (len<=45)
-       sprintf(newtitle, "%s(%.40s) %s", prefix, getObjectShortTypeName(object), fullpath);
+   if (!object)
+   {
+       sprintf(newtitle, "%s n/a", prefix);
+   }
    else
-       sprintf(newtitle, "%s(%.40s) ...%s", prefix, getObjectShortTypeName(object), fullpath+len-40);
+   {
+       char fullpath[300];
+       strncpy(fullpath, object->getFullPath().c_str(), 300);
+       fullpath[299] = 0;
+       int len = strlen(fullpath);
+       if (len<=45)
+           sprintf(newtitle, "%s(%.40s) %s", prefix, getObjectShortTypeName(object), fullpath);
+       else
+           sprintf(newtitle, "%s(%.40s) ...%s", prefix, getObjectShortTypeName(object), fullpath+len-40);
+   }
 
    if (strcmp(newtitle, windowtitle)!=0)
    {
@@ -148,14 +155,16 @@ void TInspector::update()
    cModule *mod = dynamic_cast<cModule *>(object);
    if (mod)
        sprintf(newname, "(%s) %s  (id=%d)  (%s)", getObjectFullTypeName(object),
-                        object->getFullPath().c_str(), mod->getId(), ptrToStr(object,buf));
-   else
+               object->getFullPath().c_str(), mod->getId(), ptrToStr(object,buf));
+   else if (object)
        sprintf(newname, "(%s) %s  (%s)", getObjectFullTypeName(object),
-                        object->getFullPath().c_str(), ptrToStr(object,buf));
+               object->getFullPath().c_str(), ptrToStr(object,buf));
+   else
+       sprintf(newname, "n/a");
    CHK(Tcl_VarEval(interp, windowname,".infobar.name config -text {",newname,"}",NULL));
 
    // owner button on toolbar
-   setToolbarInspectButton(".toolbar.owner", mod ? mod->getParentModule() : object->getOwner(), INSP_DEFAULT);
+   setToolbarInspectButton(".toolbar.owner", mod ? mod->getParentModule() : object ? object->getOwner() : NULL, INSP_DEFAULT);
 }
 
 void TInspector::setEntry(const char *entry, const char *val)

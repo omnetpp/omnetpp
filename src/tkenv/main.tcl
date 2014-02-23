@@ -113,7 +113,7 @@ proc createOmnetppWindow {} {
     .main add .main.left .main.right
 
     set treeview [mainWindow:createTreeView]
-    set inspectorview [frame .main.left.inspector -relief sunken -borderwidth 3]
+    set inspectorview [mainWindow:createInspectorView]
     .main.left add $treeview $inspectorview
 
     set networkview [mainWindow:createNetworkView]
@@ -456,6 +456,13 @@ proc mainWindow:createTreeView {} {
     pack $f.tree -side left -expand 1 -fill both -padx 0 -pady 0 -ipadx 0 -ipady 0
 
     initTreeManager
+    return $f
+}
+
+proc mainWindow:createInspectorView {} {
+    set f .inspector
+    frame $f -borderwidth 0
+    createGenericObjectViewer $f 1 0
     return $f
 }
 

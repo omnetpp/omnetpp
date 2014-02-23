@@ -42,6 +42,7 @@
 #include "inspector.h"
 #include "inspfactory.h"
 #include "modinsp.h"
+#include "objinsp.h"
 #include "timeutil.h"
 #include "stringutil.h"
 #include "stringtokenizer.h"
@@ -241,10 +242,12 @@ void Tkenv::run()
         // Case A: TCL code in separate .tcl files
         //
         Tcl_SetVar(interp, "OMNETPP_TKENV_DIR",  TCLCONST(tkenv_dir.c_str()), TCL_GLOBAL_ONLY);
-        if (Tcl_EvalFile(interp,opp_concat(tkenv_dir.c_str(),"/tkenv.tcl"))==TCL_ERROR)
+        if (Tcl_EvalFile(interp,opp_concat(tkenv_dir.c_str(),"/tkenv.tcl"))==TCL_ERROR) {
+            logTclError(__FILE__,__LINE__, interp);
             throw opp_runtime_error("Tkenv: %s. (Is the OMNETPP_TKENV_DIR environment variable "
                                     "set correctly? When not set, it defaults to " OMNETPP_TKENV_DIR ")",
                                     Tcl_GetStringResult(interp));
+        }
 #else
         //
         // Case B: compiled-in TCL code
@@ -253,13 +256,17 @@ void Tkenv::run()
         // with the tcl2c program (to be compiled from tcl2c.c).
         //
 #include "tclcode.cc"
-        if (Tcl_Eval(interp,(char *)tcl_code)==TCL_ERROR)
+        if (Tcl_Eval(interp,(char *)tcl_code)==TCL_ERROR) {
+            logTclError(__FILE__,__LINE__, interp);
             throw opp_runtime_error("Tkenv: %s", Tcl_GetStringResult(interp));
+        }
 #endif
 
         // evaluate main script and build user interface
-        if (Tcl_Eval(interp,"startTkenv")==TCL_ERROR)
+        if (Tcl_Eval(interp,"startTkenv")==TCL_ERROR) {
+            logTclError(__FILE__,__LINE__, interp);
             throw opp_runtime_error("Tkenv: %s\n", Tcl_GetStringResult(interp));
+        }
 
         // create windowtitle prefix
         if (getParsimNumPartitions()>0)
@@ -268,10 +275,18 @@ void Tkenv::run()
             sprintf(windowtitleprefix.buffer(), "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
         }
 
-        //TODO mainLogView
+        mainInspector = new TGenericObjectInspector();
+        mainInspector->setType(INSP_OBJECT); //XXX
+        addEmbeddedInspector(".inspector", mainInspector);
+
         mainNetworkView = new TGraphicalModWindow();
         mainNetworkView->setType(INSP_GRAPHICAL); //XXX
         addEmbeddedInspector(".network", mainNetworkView);
+
+        //TODO:
+        //mainLogView = new TModuleWindow();
+        //mainLogView->setType(INSP_MODULEOUTPUT); //XXX
+        //addEmbeddedInspector(".log", mainLogView);
     }
     catch (std::exception& e)
     {
@@ -791,6 +806,7 @@ void Tkenv::newRun(const char *configname, int runnumber)
         answers.clear();
         setupNetwork(network);
         mainNetworkView->setObject(simulation.getSystemModule()); //FIXME factor out to setupNetwork()!
+        mainInspector->setObject(simulation.getSystemModule()); //FIXME just temporary, should come from tree/canvas selection
         startRun();
 
         simstate = SIM_NEW;

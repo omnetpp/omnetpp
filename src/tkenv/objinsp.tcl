@@ -52,7 +52,6 @@ proc createGenericObjectViewer {w wantcontentspage focuscontentspage} {
     if {$wantcontentspage} {
         notebook:addPage $nb contents {Contents}
         createInspectorListbox $nb.contents
-
         if {$focuscontentspage} {
             notebook:showPage $nb contents
         } else {

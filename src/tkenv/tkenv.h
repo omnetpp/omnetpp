@@ -32,6 +32,7 @@ NAMESPACE_BEGIN
 
 class Speedometer;
 class TInspector;
+class TGenericObjectInspector;
 class TModuleWindow;
 class TGraphicalModWindow;
 
@@ -145,8 +146,9 @@ class TKENV_API Tkenv : public EnvirBase
       LogBuffer logBuffer;         // text window contents
       std::set<int> mainWindowExcludedModuleIds;
 
-      TModuleWindow *mainLogView;
+      TGenericObjectInspector *mainInspector;
       TGraphicalModWindow *mainNetworkView;
+      TModuleWindow *mainLogView;
 
       typedef std::map<std::string,std::string> StringMap;
       StringMap answers;           // key: <ModuleType>:<paramName>, value: <interactively-given-paramvalue>
