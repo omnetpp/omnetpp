@@ -106,6 +106,9 @@ proc treeManager:getNodeInfo {w op {key {}}} {
       root {
         return [opp_object_simulation]
       }
+
+      selectionchanged {
+      }
     }
 }
 

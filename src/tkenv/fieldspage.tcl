@@ -277,6 +277,9 @@ proc fields2Page:getNodeInfo {w op {key ""}} {
             #return "0-obj-$treeroots($w)"
             return "0-root-$treeroots($w)"
         }
+
+        selectionchanged {
+        }
     }
 }
 

@@ -911,6 +911,9 @@ proc moduleOutputFilterDialog:getModuleTreeInfo {w op {key {}}} {
       root {
         return "treeroot"
       }
+
+      selectionchanged {
+      }
     }
 }
 
