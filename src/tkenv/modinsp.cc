@@ -49,25 +49,24 @@ class TModuleWindowFactory : public cInspectorFactory
     TModuleWindowFactory(const char *name) : cInspectorFactory(name) {}
 
     bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
-    int inspectorType() {return INSP_MODULEOUTPUT;}
-    double qualityAsDefault(cObject *object) {return 0.5;}
+    int getInspectorType() {return INSP_MODULEOUTPUT;}
+    double getQualityAsDefault(cObject *object) {return 0.5;}
 
-    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
-        return new TModuleWindow(object, type, geom, data);
+    TInspector *createInspector() {
+        return prepare(new TModuleWindow());
     }
 };
 
 Register_InspectorFactory(TModuleWindowFactory);
 
 
-TModuleWindow::TModuleWindow(cObject *obj,int typ,const char *geom,void *dat) :
-    TInspector(obj,typ,geom,dat)
+TModuleWindow::TModuleWindow() : TInspector()
 {
 }
 
-void TModuleWindow::createWindow()
+void TModuleWindow::createWindow(const char *window, const char *geometry)
 {
-    TInspector::createWindow(); // create window name etc.
+    strcpy(windowname, window);
     strcpy(textWidget,windowname); strcat(textWidget, ".main.text");
 
     // create inspector window by calling the specified proc with
@@ -197,38 +196,43 @@ class TGraphicalModWindowFactory : public cInspectorFactory
     TGraphicalModWindowFactory(const char *name) : cInspectorFactory(name) {}
 
     bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
-    int inspectorType() {return INSP_GRAPHICAL;}
-    double qualityAsDefault(cObject *object) {
+    int getInspectorType() {return INSP_GRAPHICAL;}
+    double getQualityAsDefault(cObject *object) {
         return dynamic_cast<cSimpleModule *>(object) ? 0.9 : 3.0;
     }
 
-    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
-        return new TGraphicalModWindow(object, type, geom, data);
+    TInspector *createInspector() {
+        return prepare(new TGraphicalModWindow());
     }
 };
 
 Register_InspectorFactory(TGraphicalModWindowFactory);
 
 
-TGraphicalModWindow::TGraphicalModWindow(cObject *obj,int typ,const char *geom,void *dat) :
-    TInspector(obj,typ,geom,dat)
+TGraphicalModWindow::TGraphicalModWindow() : TInspector()
 {
    needs_redraw = false;
    not_drawn = false;
-
-   const cDisplayString blank;
-   cModule *parentmodule = static_cast<cModule *>(object);
-   const cDisplayString& ds = parentmodule->hasDisplayString() && parentmodule->parametersFinalized() ? parentmodule->getDisplayString() : blank;
-   random_seed = resolveLongDispStrArg(ds.getTagArg("bgl",4), parentmodule, 1);
+   random_seed = 0;
 }
 
 TGraphicalModWindow::~TGraphicalModWindow()
 {
 }
 
-void TGraphicalModWindow::createWindow()
+void TGraphicalModWindow::setObject(cObject *obj)
 {
-   TInspector::createWindow(); // create window name etc.
+    TInspector::setObject(obj);
+
+    const cDisplayString blank;
+    cModule *parentmodule = static_cast<cModule *>(object);
+    const cDisplayString& ds = parentmodule->hasDisplayString() && parentmodule->parametersFinalized() ? parentmodule->getDisplayString() : blank;
+    random_seed = resolveLongDispStrArg(ds.getTagArg("bgl",4), parentmodule, 1);
+}
+
+void TGraphicalModWindow::createWindow(const char *window, const char *geometry)
+{
+   strcpy(windowname, window);
    strcpy(canvas,windowname); strcat(canvas,".c");
 
    // create inspector window by calling the specified proc with
@@ -912,25 +916,24 @@ class TGraphicalGateWindowFactory : public cInspectorFactory
     TGraphicalGateWindowFactory(const char *name) : cInspectorFactory(name) {}
 
     bool supportsObject(cObject *obj) {return dynamic_cast<cGate *>(obj)!=NULL;}
-    int inspectorType() {return INSP_GRAPHICAL;}
-    double qualityAsDefault(cObject *object) {return 3.0;}
+    int getInspectorType() {return INSP_GRAPHICAL;}
+    double getQualityAsDefault(cObject *object) {return 3.0;}
 
-    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
-        return new TGraphicalGateWindow(object, type, geom, data);
+    TInspector *createInspector() {
+        return prepare(new TGraphicalGateWindow());
     }
 };
 
 Register_InspectorFactory(TGraphicalGateWindowFactory);
 
 
-TGraphicalGateWindow::TGraphicalGateWindow(cObject *obj,int typ,const char *geom,void *dat) :
-    TInspector(obj,typ,geom,dat)
+TGraphicalGateWindow::TGraphicalGateWindow() : TInspector()
 {
 }
 
-void TGraphicalGateWindow::createWindow()
+void TGraphicalGateWindow::createWindow(const char *window, const char *geometry)
 {
-   TInspector::createWindow(); // create window name etc.
+   strcpy(windowname, window);
    strcpy(canvas,windowname); strcat(canvas,".c");
 
    // create inspector window by calling the specified proc with

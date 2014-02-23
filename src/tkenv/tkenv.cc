@@ -325,7 +325,7 @@ void Tkenv::rebuildSim()
     else
          confirm("Choose File|New Network or File|New Run.");
     if (simulation.getSystemModule())
-         inspect(simulation.getSystemModule(),INSP_DEFAULT,"",NULL);
+         inspect(simulation.getSystemModule(),INSP_DEFAULT,"");
 }
 
 void Tkenv::doOneStep()
@@ -803,7 +803,7 @@ void Tkenv::newRun(const char *configname, int runnumber)
     updateInspectors();
 }
 
-TInspector *Tkenv::inspect(cObject *obj, int type, const char *geometry, void *dat)
+TInspector *Tkenv::inspect(cObject *obj, int type, const char *geometry)
 {
     // create inspector object & window or display existing one
     TInspector *existing_insp = findInspector(obj, type);
@@ -821,7 +821,7 @@ TInspector *Tkenv::inspect(cObject *obj, int type, const char *geometry, void *d
         return NULL;
     }
 
-    int actualtype = p->inspectorType();
+    int actualtype = p->getInspectorType();
     existing_insp = findInspector(obj, actualtype);
     if (existing_insp)
     {
@@ -829,7 +829,7 @@ TInspector *Tkenv::inspect(cObject *obj, int type, const char *geometry, void *d
         return existing_insp;
     }
 
-    TInspector *insp = p->createInspectorFor(obj, actualtype, geometry, dat);
+    TInspector *insp = p->createInspector();
     if (!insp)
     {
         // message: object has no such inspector
@@ -838,8 +838,9 @@ TInspector *Tkenv::inspect(cObject *obj, int type, const char *geometry, void *d
     }
 
     // everything ok, finish inspector
+    insp->setObject(obj);
     inspectors.insert(inspectors.end(), insp);
-    insp->createWindow();
+    insp->createWindow(TInspector::makeWindowName().c_str(), geometry);
     insp->update();
 
     return insp;

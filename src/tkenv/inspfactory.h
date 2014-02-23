@@ -34,6 +34,9 @@ NAMESPACE_BEGIN
  */
 class TKENV_API cInspectorFactory : public cNoncopyableOwnedObject
 {
+  protected:
+    virtual TInspector *prepare(TInspector *insp) {insp->setType(getInspectorType()); return insp;}
+
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
@@ -61,7 +64,7 @@ class TKENV_API cInspectorFactory : public cNoncopyableOwnedObject
      * Returns type of inspector created by this factory (INSP_* constants).
      * Works with RTTI.
      */
-    virtual int inspectorType() = 0;
+    virtual int getInspectorType() = 0;
 
     /**
      * Returns "how good" this inspector is as default inspector for this object.
@@ -70,13 +73,12 @@ class TKENV_API cInspectorFactory : public cNoncopyableOwnedObject
      *  2.0 for TMessageInspector, TWatchInspector, etc, and TContainerInspector for cArray&cQueue;
      *  3.0 for TPacketInspector; ...
      */
-    virtual double qualityAsDefault(cObject *object) = 0;
+    virtual double getQualityAsDefault(cObject *object) = 0;
 
     /**
-     * Creates an inspector for the object passed. The type and data
-     * arguments influence the type of inspector created.
+     * Creates an inspector.
      */
-    virtual TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) = 0;
+    virtual TInspector *createInspector() = 0;
     //@}
 };
 

@@ -25,6 +25,7 @@
 #include "tkenv.h"
 #include "tklib.h"
 #include "inspector.h"
+#include "stringutil.h"
 
 NAMESPACE_BEGIN
 
@@ -59,17 +60,14 @@ int insptypeCodeFromName(const char *namestr)
 
 //----
 
-TInspector::TInspector(cObject *obj, int typ, const char *geom, void *dat)
+TInspector::TInspector()
 {
-   object = obj;
-   type = typ;
-   data = dat;
+   object = NULL;
+   type = -1;
    toBeDeleted = false;
 
    windowname[0] = '\0'; // no window exists
    windowtitle[0] = '\0';
-   geometry[0] = '\0';
-   if (geom) strcpy(geometry, geom);
 }
 
 TInspector::~TInspector()
@@ -81,13 +79,10 @@ TInspector::~TInspector()
    }
 }
 
-void TInspector::createWindow()
+std::string TInspector::makeWindowName()
 {
    static int counter = 0;
-   sprintf(windowname, ".inspector%d", counter++);
-
-   // derived classes will also call Tcl_Eval() to actually create the
-   // Tk window by invoking a procedure in inspect.tcl
+   return opp_stringf(".inspector%d", counter++);
 }
 
 bool TInspector::windowExists()

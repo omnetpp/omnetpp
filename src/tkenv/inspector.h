@@ -48,17 +48,17 @@ class TKENV_API TInspector
    protected:
       cObject *object;        // the inspected object
       int type;               // INSP_OBJECT, etc.
-      void *data;
       char windowname[24];    // Tk inspector window variable
       char windowtitle[128];  // window title string
-      char geometry[64];      // X-window geometry string (window pos + size)
       bool toBeDeleted;       // "mark for deletion" flag (set if user wants to close inspector during animation)
    public:
-      TInspector(cObject *obj, int typ, const char *geom, void *dat=NULL);
+      TInspector();
       virtual ~TInspector();
 
       virtual cObject *getObject() {return object;}
+      virtual void setObject(cObject *obj) {object = obj;} // obj=NULL should be accepted; override to refresh GUI accordingly
       virtual int getType() {return type;}
+      virtual void setType(int t) {type = t;}
       virtual const char *getWindowName() {return windowname;}
 
       virtual void hostObjectDeleted();
@@ -67,7 +67,8 @@ class TKENV_API TInspector
 
       /** @name Virtual functions to be redefined in subclasses */
       //@{
-      virtual void createWindow();
+      virtual void createWindow(const char *window, const char *geometry) = 0; //TODO should set ownsWindow=true
+      virtual void setWindow(const char *widget) {} //TODO for embedded use; should set ownsWindow=false
       bool windowExists();
       void showWindow();
 
@@ -81,6 +82,8 @@ class TKENV_API TInspector
 
       /** @name Utility functions */
       //@{
+      static std::string makeWindowName();
+
       void setEntry(const char *entry, const char *val);
       void setEntry(const char *entry, long l);
       void setEntry(const char *entry, double d);

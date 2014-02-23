@@ -228,7 +228,7 @@ class TKENV_API Tkenv : public EnvirBase
 
       void updateInspectors();
       void redrawInspectors();
-      TInspector *inspect(cObject *obj, int type, const char *geometry, void *dat);
+      TInspector *inspect(cObject *obj, int type, const char *geometry);
       TInspector *findInspector(cObject *obj, int type);
       TInspector *findInspector(const char *widget);
       void deleteInspector(TInspector *insp);

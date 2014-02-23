@@ -29,10 +29,11 @@ class TGenericObjectInspector : public TInspector
       bool hascontentspage;
       bool focuscontentspage;
    public:
-      TGenericObjectInspector(cObject *obj, int typ, const char *geom, void *dat=NULL);
+      TGenericObjectInspector();
       ~TGenericObjectInspector();
+      virtual void setObject(cObject *obj);
       void setContentsPage(bool show, bool focus) {hascontentspage = show; focuscontentspage = focus;}
-      virtual void createWindow();
+      virtual void createWindow(const char *window, const char *geometry);
       virtual void update();
       virtual void writeBack();
       virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
@@ -42,8 +43,8 @@ class TGenericObjectInspector : public TInspector
 class TWatchInspector: public TInspector
 {
    public:
-      TWatchInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
-      virtual void createWindow();
+      TWatchInspector();
+      virtual void createWindow(const char *window, const char *geometry);
       virtual void update();
       virtual void writeBack();
 };

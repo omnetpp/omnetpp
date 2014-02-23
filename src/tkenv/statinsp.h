@@ -29,8 +29,8 @@ class THistogramWindow : public TInspector
    protected:
       char canvas[64];
    public:
-      THistogramWindow(cObject *obj,int typ,const char *geom,void *dat=NULL);
-      virtual void createWindow();
+      THistogramWindow();
+      virtual void createWindow(const char *window, const char *geometry);
       virtual void update();
       virtual void writeBack() {}
       virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
@@ -77,9 +77,10 @@ class TOutVectorWindow : public TInspector
       simtime_t moving_tline;   // t position of moving axis
 
    public:
-      TOutVectorWindow(cObject *obj,int typ,const char *geom,void *dat=NULL, int size=100);
+      TOutVectorWindow();
       ~TOutVectorWindow();
-      virtual void createWindow();
+      virtual void setObject(cObject *obj);
+      virtual void createWindow(const char *window, const char *geometry);
       virtual void update();
       virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
 

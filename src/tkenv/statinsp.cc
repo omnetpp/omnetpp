@@ -41,25 +41,24 @@ class THistogramWindowFactory : public cInspectorFactory
     THistogramWindowFactory(const char *name) : cInspectorFactory(name) {}
 
     bool supportsObject(cObject *obj) {return dynamic_cast<cDensityEstBase *>(obj)!=NULL;}
-    int inspectorType() {return INSP_GRAPHICAL;}
-    double qualityAsDefault(cObject *object) {return 3.0;}
+    int getInspectorType() {return INSP_GRAPHICAL;}
+    double getQualityAsDefault(cObject *object) {return 3.0;}
 
-    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
-        return new THistogramWindow(object, type, geom, data);
+    TInspector *createInspector() {
+        return prepare(new THistogramWindow());
     }
 };
 
 Register_InspectorFactory(THistogramWindowFactory);
 
 
-THistogramWindow::THistogramWindow(cObject *obj,int typ,const char *geom,void *dat) :
-    TInspector(obj,typ,geom,dat)
+THistogramWindow::THistogramWindow() : TInspector()
 {
 }
 
-void THistogramWindow::createWindow()
+void THistogramWindow::createWindow(const char *window, const char *geometry)
 {
-   TInspector::createWindow(); // create window name etc.
+   strcpy(windowname, window);
    strcpy(canvas,windowname); strcat(canvas,".main.canvas");
 
    // create inspector window by calling the specified proc with
@@ -193,11 +192,11 @@ class TOutVectorWindowFactory : public cInspectorFactory
     TOutVectorWindowFactory(const char *name) : cInspectorFactory(name) {}
 
     bool supportsObject(cObject *obj) {return dynamic_cast<cOutVector *>(obj)!=NULL;}
-    int inspectorType() {return INSP_GRAPHICAL;}
-    double qualityAsDefault(cObject *object) {return 3.0;}
+    int getInspectorType() {return INSP_GRAPHICAL;}
+    double getQualityAsDefault(cObject *object) {return 3.0;}
 
-    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
-        return new TOutVectorWindow(object, type, geom, data);
+    TInspector *createInspector() {
+        return prepare(new TOutVectorWindow());
     }
 };
 
@@ -233,13 +232,8 @@ static void record_in_insp(void *data, simtime_t t, double val1, double val2)
    insp->circbuf.add(t,val1,val2);
 }
 
-TOutVectorWindow::TOutVectorWindow(cObject *obj,int typ,const char *geom,void *dat,int size) :
-    TInspector(obj,typ,geom,dat), circbuf(size)
+TOutVectorWindow::TOutVectorWindow() : TInspector(), circbuf(100)
 {
-   // make inspected outvector to call us back when it gets data to write out
-   cOutVector *ov = static_cast<cOutVector *>(object);
-   ov->setCallback(record_in_insp, (void *)this);
-
    autoscale = true;
    drawing_mode = DRAW_LINES;
    miny = 0; maxy = 10;
@@ -254,9 +248,23 @@ TOutVectorWindow::~TOutVectorWindow()
    ov->setCallback(NULL, NULL);
 }
 
-void TOutVectorWindow::createWindow()
+void TOutVectorWindow::setObject(cObject *obj)
 {
-   TInspector::createWindow(); // create window name etc.
+    if (object) {
+        cOutVector *ov = static_cast<cOutVector *>(object);
+        ov->setCallback(NULL, NULL);
+    }
+
+    TInspector::setObject(obj);
+
+    // make inspected output vector to call us back when it gets data to write out
+    cOutVector *ov = static_cast<cOutVector *>(object);
+    ov->setCallback(record_in_insp, (void *)this);
+}
+
+void TOutVectorWindow::createWindow(const char *window, const char *geometry)
+{
+   strcpy(windowname, window);
    strcpy(canvas,windowname); strcat(canvas,".main.canvas");
 
    // create inspector window by calling the specified proc with

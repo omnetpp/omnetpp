@@ -50,8 +50,8 @@ class TModuleWindow : public TInspector
       char textWidget[128];
       std::set<int> excludedModuleIds;
    public:
-      TModuleWindow(cObject *obj,int typ,const char *geom,void *dat=NULL);
-      virtual void createWindow();
+      TModuleWindow();
+      virtual void createWindow(const char *window, const char *geometry);
       virtual void update();
 
       virtual void printLastLineOf(const LogBuffer& logBuffer);
@@ -82,9 +82,10 @@ class TGraphicalModWindow : public TInspector
       void drawConnection(Tcl_Interp *interp, cGate *gate);
 
    public:
-      TGraphicalModWindow(cObject *obj,int typ,const char *geom,void *dat=NULL);
+      TGraphicalModWindow();
       ~TGraphicalModWindow();
-      virtual void createWindow();
+      virtual void setObject(cObject *obj);
+      virtual void createWindow(const char *window, const char *geometry);
       virtual void update();
       virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
 
@@ -131,8 +132,8 @@ class TGraphicalGateWindow : public TInspector
    protected:
       char canvas[128];
    public:
-      TGraphicalGateWindow(cObject *obj,int typ,const char *geom,void *dat=NULL);
-      virtual void createWindow();
+      TGraphicalGateWindow();
+      virtual void createWindow(const char *window, const char *geometry);
       virtual void update();
       virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
 

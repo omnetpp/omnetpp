@@ -257,7 +257,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_eventlogrecording", eventlogRecording_cmd },   // args: subcommand <args>
 
    // Inspector stuff
-   { "opp_inspect",           inspect_cmd           }, // args: <ptr> <type> <opt> ret: window
+   { "opp_inspect",           inspect_cmd           }, // args: <ptr> <type> ret: window
    { "opp_supported_insp_types",supportedInspTypes_cmd}, // args: <ptr>  ret: insp type list
    { "opp_inspectbyname",     inspectByName_cmd     }, // args: <objfullpath> <classname> <insptype> <geom>
    { "opp_isinspector",       isInspector_cmd       }, // args: <window>
@@ -1645,7 +1645,7 @@ int eventlogRecording_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 
 int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=3 && argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    cObject *object = strToPtr(argv[1]);
@@ -1657,8 +1657,7 @@ int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    else if ((type=insptypeCodeFromName(argv[2])) < 0)
         {Tcl_SetResult(interp, TCLCONST("unrecognized inspector type"), TCL_STATIC);return TCL_ERROR;}
 
-   void *dat = (argc==4) ? (void *)argv[3] : NULL;
-   TInspector *insp = app->inspect(object, type, "", dat);
+   TInspector *insp = app->inspect(object, type, "");
    Tcl_SetResult(interp, TCLCONST(insp ? insp->getWindowName() : ""), TCL_VOLATILE);
    return TCL_OK;
 }
@@ -1681,10 +1680,10 @@ int supportedInspTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
       {
           int k;
           for (k=0; k<n; k++)
-              if (insp_types[k] == ifc->inspectorType())
+              if (insp_types[k] == ifc->getInspectorType())
                  break;
           if (k==n) // not yet in array, insert
-              insp_types[n++] = ifc->inspectorType();
+              insp_types[n++] = ifc->getInspectorType();
           assert(n<20);  // fixed-size array :(
       }
    }

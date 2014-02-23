@@ -39,11 +39,11 @@ cInspectorFactory *findInspectorFactoryFor(cObject *obj, int type)
     {
         cInspectorFactory *ifc = static_cast<cInspectorFactory *>(a->get(i));
         if (ifc->supportsObject(obj) &&
-            (type==INSP_DEFAULT || ifc->inspectorType()==type) &&
-            ifc->qualityAsDefault(obj)>bestweight
+            (type==INSP_DEFAULT || ifc->getInspectorType()==type) &&
+            ifc->getQualityAsDefault(obj)>bestweight
            )
         {
-            bestweight = ifc->qualityAsDefault(obj);
+            bestweight = ifc->getQualityAsDefault(obj);
             best = ifc;
         }
     }
