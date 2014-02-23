@@ -71,8 +71,6 @@ void TModuleWindow::createWindow(const char *window, const char *geometry)
     strcpy(textWidget,windowname);
     strcat(textWidget, ".main.text");
 
-    // create inspector window by calling the specified proc with
-    // the object's pointer. Window name will be like ".ptr80003a9d-1"
     Tcl_Interp *interp = getTkenv()->getInterp();
     cModule *mod = static_cast<cModule *>(object);
     const char *createcommand = mod->isSimple() ?

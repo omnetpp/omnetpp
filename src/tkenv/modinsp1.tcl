@@ -133,19 +133,21 @@ proc _createModuleWindow {name geom iscompound} {
     }
 
     frame $w.main
-    text $w.main.text -yscrollcommand "$w.main.sb set" -width 80 -height 15 -font $fonts(text)
-    scrollbar $w.main.sb -command "$w.main.text yview"
-    logTextWidget:configureTags $w.main.text
+    pack $w.main -expand 1 -fill both -side top
+    createModuleLogViewer $w.main
+}
 
-    #pack $w.statusbar -anchor center -expand 0 -fill x -side top
-    #pack $w.statusbar.name -anchor n -expand 1 -fill x -side left
-    #pack $w.statusbar.phase   -anchor n -expand 1 -fill x -side right
-    pack $w.main -anchor center -expand 1 -fill both -side top
-    pack $w.main.sb -anchor center -expand 0 -fill y -side right
-    pack $w.main.text -anchor center -expand 1 -fill both -side left
+proc createModuleLogViewer {w} {
+    global fonts
+    text $w.text -yscrollcommand "$w.sb set" -width 80 -height 15 -font $fonts(text)
+    scrollbar $w.sb -command "$w.text yview"
+    logTextWidget:configureTags $w.text
+
+    pack $w.sb -anchor center -expand 0 -fill y -side right
+    pack $w.text -anchor center -expand 1 -fill both -side left
 
     # bindings for find
-    bindCommandsToTextWidget $w.main.text modulewindow
+    bindCommandsToTextWidget $w.text modulewindow
 }
 
 proc logTextWidget:configureTags {txt} {

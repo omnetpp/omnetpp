@@ -15,8 +15,7 @@
 
 
 proc createGraphicalGateWindow {name geom} {
-    global icons help_tips inspectordata
-    global B2 B3
+    global icons help_tips
 
     set w $name
     createInspectorToplevel $w $geom
@@ -28,6 +27,15 @@ proc createGraphicalGateWindow {name geom} {
 
     set help_tips($w.toolbar.ascont) {Inspect as object}
     set help_tips($w.toolbar.redraw) {Redraw}
+
+    createGraphicalGateViewer $w
+
+    opp_inspectorcommand $w redraw
+}
+
+proc createGraphicalGateViewer {w} {
+    global inspectordata
+    global B2 B3
 
     # create canvas
     set c $w.c
@@ -65,10 +73,7 @@ proc createGraphicalGateWindow {name geom} {
     $c bind conn <$B3> "graphGateWin:rightClick $c %X %Y"
     $c bind msg <$B3> "graphGateWin:rightClick $c %X %Y"
     $c bind msgname <$B3> "graphGateWin:rightClick $c %X %Y"
-
-    opp_inspectorcommand $w redraw
 }
-
 
 proc graphicalModuleWindow:drawModuleGate {c modptr gateptr modname gatename k xsiz dir highlight} {
     global fonts

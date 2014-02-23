@@ -41,6 +41,10 @@ proc createGenericObjectInspector {name geom wantcontentspage focuscontentspage}
         }
     }
 
+    createGenericObjectViewer $w $wantcontentspage $focuscontentspage
+}
+
+proc createGenericObjectViewer {w wantcontentspage focuscontentspage} {
     set nb [inspector:createNotebook $w]
 
     inspector:createFields2Page $w
@@ -64,12 +68,16 @@ proc createWatchInspector {name geom} {
     createInspectorToplevel $w $geom
 
     frame $w.main
-    pack $w.main -anchor center -expand 0 -fill both -side top
+    pack $w.main -expand 0 -fill both -side top
 
-    label-entry $w.main.name ""
-    $w.main.name.l config -width 20
-    focus $w.main.name.e
-    pack $w.main.name -fill x -side top
+    createWatchViewer $w.main
+}
+
+proc createWatchViewer {w} {
+    label-entry $w.name ""
+    $w.name.l config -width 20
+    focus $w.name.e
+    pack $w.name -fill x -side top
 }
 
 

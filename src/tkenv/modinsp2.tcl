@@ -862,8 +862,7 @@ proc graphicalModuleWindow:animControl {w} {
 }
 
 proc createGraphicalModWindow {name geom} {
-    global icons help_tips inspectordata config
-    global B2 B3
+    global icons help_tips config inspectordata
 
     if {$config(layout-may-resize-window)} {
         # remove size from geom
@@ -905,27 +904,54 @@ proc createGraphicalModWindow {name geom} {
     pack $w.infobar.zoominfo -anchor n -side right -expand 0 -fill none -pady 1
 
     # create canvas
+    createGraphicalModuleViewer $w
+
     set c $w.c
+    if {$inspectordata($c:showlabels)} {
+        $w.toolbar.showlabels config -relief sunken
+    }
+    if {$inspectordata($c:showarrowheads)} {
+        $w.toolbar.showarrowheads config -relief sunken
+    }
 
-    # init some state vars
-    set inspectordata($c:zoomfactor) 1
-    set inspectordata($c:imagesizefactor) 1
-    set inspectordata($c:showlabels) 1
-    set inspectordata($c:showarrowheads) 1
+    #update idletasks
+    update
+    if [catch {
+       opp_inspectorcommand $w relayout
+    } errmsg] {
+       tk_messageBox -type ok -title Error -icon error -parent [winfo toplevel [focus]] \
+                     -message "Error displaying network graphics: $errmsg"
+    }
 
+    graphicalModuleWindow:adjustWindowSizeAndZoom $w
+}
+
+proc createGraphicalModuleViewer {w} {
+    global inspectordata
+    global B2 B3
+
+    # create widgets inside $w
     frame $w.grid
+    pack $w.grid -expand yes -fill both -padx 1 -pady 1
+
+    set c $w.c
     scrollbar $w.hsb -orient horiz -command "$c xview"
     scrollbar $w.vsb -command "$c yview"
     canvas $c -background "#a0e0a0" -relief raised -closeenough 2 \
         -xscrollcommand "$w.hsb set" \
         -yscrollcommand "$w.vsb set"
-    pack $w.grid -expand yes -fill both -padx 1 -pady 1
     grid rowconfig    $w.grid 0 -weight 1 -minsize 0
     grid columnconfig $w.grid 0 -weight 1 -minsize 0
 
     grid $c -in $w.grid -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
     grid $w.vsb -in $w.grid -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
     grid $w.hsb -in $w.grid -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
+
+    # initialize state vars
+    set inspectordata($c:zoomfactor) 1
+    set inspectordata($c:imagesizefactor) 1
+    set inspectordata($c:showlabels) 1
+    set inspectordata($c:showarrowheads) 1
 
     # mouse bindings
     $c bind submod <Double-1> "graphicalModuleWindow:dblClick $w"
@@ -950,24 +976,6 @@ proc createGraphicalModWindow {name geom} {
     bind $w <Control-r> "graphicalModuleWindow:relayout $w"
     bind $w <Control-d> "graphicalModuleWindow:toggleLabels $w"
     bind $w <Control-a> "graphicalModuleWindow:toggleArrowheads $w"
-
-    if {$inspectordata($c:showlabels)} {
-        $w.toolbar.showlabels config -relief sunken
-    }
-    if {$inspectordata($c:showarrowheads)} {
-        $w.toolbar.showarrowheads config -relief sunken
-    }
-
-    #update idletasks
-    update
-    if [catch {
-       opp_inspectorcommand $w relayout
-    } errmsg] {
-       tk_messageBox -type ok -title Error -icon error -parent [winfo toplevel [focus]] \
-                     -message "Error displaying network graphics: $errmsg"
-    }
-
-    graphicalModuleWindow:adjustWindowSizeAndZoom $w
 }
 
 proc graphicalModuleWindow:adjustWindowSizeAndZoom {w} {

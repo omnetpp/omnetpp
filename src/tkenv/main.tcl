@@ -462,72 +462,14 @@ proc mainWindow:createTreeView {} {
 proc mainWindow:createNetworkView {} {
     set f .network
     frame $f -borderwidth 0
-
-    frame $f.grid
-    scrollbar $f.hsb -orient horiz -command "$f.c xview"
-    scrollbar $f.vsb -command "$f.c yview"
-    canvas $f.c -background "#a0e0a0" -relief raised -closeenough 2 \
-        -xscrollcommand "$f.hsb set" \
-        -yscrollcommand "$f.vsb set"
-    pack $f.grid -expand yes -fill both -padx 1 -pady 1
-    grid rowconfig    $f.grid 0 -weight 1 -minsize 0
-    grid columnconfig $f.grid 0 -weight 1 -minsize 0
-
-    grid $f.c -in $f.grid -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
-    grid $f.vsb -in $f.grid -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
-    grid $f.hsb -in $f.grid -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
-
-    # FIXME USE SAME CODE AS IN MODINSP2.TCL!!!!
-    set c $f.c
-    set w $f
-    global B1 B2 B3
-
-    # init some state vars
-    global inspectordata
-    set inspectordata($c:zoomfactor) 1
-    set inspectordata($c:imagesizefactor) 1
-    set inspectordata($c:showlabels) 1
-    set inspectordata($c:showarrowheads) 1
-
-    # mouse bindings
-    $c bind submod <Double-1> "graphicalModuleWindow:dblClick $w"
-    $c bind conn <Double-1> "graphicalModuleWindow:dblClick $w"
-    $c bind msg <Double-1> "graphicalModuleWindow:dblClick $w"
-    $c bind msgname <Double-1> "graphicalModuleWindow:dblClick $w"
-    $c bind qlen <Double-1> "graphicalModuleWindow:qlenDblclick $w"
-
-    $c bind submod <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
-    $c bind conn <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
-    $c bind msg <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
-    $c bind msgname <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
-    $c bind mod <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
-    $c bind modname <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
-    $c bind qlen <$B3> "graphicalModuleWindow:qlenRightClick $w %X %Y %x %y"
-
-    # keyboard shortcuts
-    bind $w <Control-m> "graphicalModuleWindow:zoomIn $w"
-    bind $w <Control-n> "graphicalModuleWindow:zoomOut $w"
-    bind $w <Control-i> "graphicalModuleWindow:zoomIconsBy $w 1.25"
-    bind $w <Control-o> "graphicalModuleWindow:zoomIconsBy $w 0.8"
-    bind $w <Control-r> "graphicalModuleWindow:relayout $w"
-    bind $w <Control-d> "graphicalModuleWindow:toggleLabels $w"
-    bind $w <Control-a> "graphicalModuleWindow:togglAarrowheads $w"
-
+    createGraphicalModuleViewer $f
     return $f
 }
 
 proc mainWindow:createLogView {} {
-    global fonts
-
     set f .log
     frame $f -borderwidth 0
-
-    text $f.text -yscrollcommand "$f.sb set" -font $fonts(text)
-    scrollbar $f.sb -command "$f.text yview"
-    pack $f.sb -anchor center -expand 0 -fill y  -side right
-    pack $f.text -in $f -anchor center -expand 1 -fill both -side right
-
-    logTextWidget:configureTags $f.text
+    createModuleLogViewer $f
     return $f
 }
 
