@@ -484,6 +484,8 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
                     longestLineLength = Math.max(longestLineLength, line.length());
                 return "<pre>" + detail + "</pre>";
             }
+            else
+                return "No message detail recorded. You can record message detail by setting the eventlog-message-detail-pattern configuration option in the ini file.";
         }
 
         return null;
