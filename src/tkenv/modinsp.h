@@ -44,13 +44,13 @@
 NAMESPACE_BEGIN
 
 
-class TModuleWindow : public TInspector
+class TKENV_API LogInspector : public Inspector
 {
    protected:
       char textWidget[128];
       std::set<int> excludedModuleIds;
    public:
-      TModuleWindow();
+      LogInspector();
       virtual void createWindow(const char *window, const char *geometry);
       virtual void update();
 
@@ -64,7 +64,7 @@ class TModuleWindow : public TInspector
 };
 
 
-class TGraphicalModWindow : public TInspector
+class TKENV_API ModuleInspector : public Inspector
 {
    protected:
       char canvas[128];
@@ -82,8 +82,8 @@ class TGraphicalModWindow : public TInspector
       void drawConnection(Tcl_Interp *interp, cGate *gate);
 
    public:
-      TGraphicalModWindow();
-      ~TGraphicalModWindow();
+      ModuleInspector();
+      ~ModuleInspector();
       virtual void setObject(cObject *obj);
       virtual void createWindow(const char *window, const char *geometry);
       virtual void useWindow(const char *widget);
@@ -128,12 +128,12 @@ class TGraphicalModWindow : public TInspector
 };
 
 
-class TGraphicalGateWindow : public TInspector
+class TKENV_API GateInspector : public Inspector
 {
    protected:
       char canvas[128];
    public:
-      TGraphicalGateWindow();
+      GateInspector();
       virtual void createWindow(const char *window, const char *geometry);
       virtual void update();
       virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);

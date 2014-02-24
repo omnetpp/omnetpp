@@ -31,10 +31,10 @@
 NAMESPACE_BEGIN
 
 class Speedometer;
-class TInspector;
-class TGenericObjectInspector;
-class TModuleWindow;
-class TGraphicalModWindow;
+class Inspector;
+class GenericObjectInspector;
+class LogInspector;
+class ModuleInspector;
 
 #define MAX_CLASSNAME  100
 
@@ -140,15 +140,15 @@ class TKENV_API Tkenv : public EnvirBase
       bool stopsimulation_flag;    // indicates that the simulation should be stopped (STOP button pressed in the UI)
       timeval idleLastUICheck;     // gettimeofday() time when idle() last run the Tk "update" command
 
-      typedef std::list<TInspector*> TInspectorList;
+      typedef std::list<Inspector*> TInspectorList;
       TInspectorList inspectors;   // list of inspector objects
 
       LogBuffer logBuffer;         // text window contents
       std::set<int> mainWindowExcludedModuleIds;
 
-      TGenericObjectInspector *mainInspector;
-      TGraphicalModWindow *mainNetworkView;
-      TModuleWindow *mainLogView;
+      GenericObjectInspector *mainInspector;
+      ModuleInspector *mainNetworkView;
+      LogInspector *mainLogView;
 
       typedef std::map<std::string,std::string> StringMap;
       StringMap answers;           // key: <ModuleType>:<paramName>, value: <interactively-given-paramvalue>
@@ -235,11 +235,11 @@ class TKENV_API Tkenv : public EnvirBase
 
       void updateInspectors();
       void redrawInspectors();
-      TInspector *inspect(cObject *obj, int type, const char *geometry);
-      void addEmbeddedInspector(const char *widget, TInspector *insp);
-      TInspector *findInspector(cObject *obj, int type);
-      TInspector *findInspector(const char *widget);
-      void deleteInspector(TInspector *insp);
+      Inspector *inspect(cObject *obj, int type, const char *geometry);
+      void addEmbeddedInspector(const char *widget, Inspector *insp);
+      Inspector *findInspector(cObject *obj, int type);
+      Inspector *findInspector(const char *widget);
+      void deleteInspector(Inspector *insp);
 
       int getSimulationState() {return simstate;}
       void setStopSimulationFlag() {stopsimulation_flag = true;}

@@ -43,7 +43,7 @@ int insptypeCodeFromName(const char *namestr);
 /**
  * Virtual base class for all inspectors.
  */
-class TKENV_API TInspector
+class TKENV_API Inspector
 {
    protected:
       cObject *object;        // the inspected object
@@ -53,8 +53,8 @@ class TKENV_API TInspector
       bool ownsWindow;        // whether destructor should destroy the window
       bool toBeDeleted;       // "mark for deletion" flag (set if user wants to close inspector during animation)
    public:
-      TInspector();
-      virtual ~TInspector();
+      Inspector();
+      virtual ~Inspector();
 
       virtual cObject *getObject() {return object;}
       virtual void setObject(cObject *obj) {object = obj;} // obj=NULL should be accepted; override to refresh GUI accordingly
@@ -106,14 +106,14 @@ class TKENV_API TInspector
 /**
  * Defines a panel that can be inserted into any inspector
  */
-class TInspectorPanel
+class TKENV_API GenericObjectViewer
 {
    protected:
       char widgetname[80];
       cObject *object;
    public:
-      TInspectorPanel(const char *widgetname, cObject *obj);
-      virtual ~TInspectorPanel() {}
+      GenericObjectViewer(const char *widgetname, cObject *obj);
+      virtual ~GenericObjectViewer() {}
       virtual void setObject(cObject *obj);
       virtual void update() = 0;
       virtual void writeBack() = 0;

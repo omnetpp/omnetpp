@@ -31,7 +31,7 @@
 NAMESPACE_BEGIN
 
 
-TGraphLayouterEnvironment::TGraphLayouterEnvironment(Tcl_Interp *interp, cModule *parentModule, const cDisplayString& displayString)
+TkenvGraphLayouterEnvironment::TkenvGraphLayouterEnvironment(Tcl_Interp *interp, cModule *parentModule, const cDisplayString& displayString)
     : displayString(displayString)
 {
     this->interp = interp;
@@ -45,22 +45,22 @@ TGraphLayouterEnvironment::TGraphLayouterEnvironment(Tcl_Interp *interp, cModule
     grabActive = false;
 }
 
-bool TGraphLayouterEnvironment::getBoolParameter(const char *tagName, int index, bool defaultValue)
+bool TkenvGraphLayouterEnvironment::getBoolParameter(const char *tagName, int index, bool defaultValue)
 {
     return resolveBoolDispStrArg(displayString.getTagArg(tagName, index), parentModule, defaultValue);
 }
 
-long TGraphLayouterEnvironment::getLongParameter(const char *tagName, int index, long defaultValue)
+long TkenvGraphLayouterEnvironment::getLongParameter(const char *tagName, int index, long defaultValue)
 {
     return resolveLongDispStrArg(displayString.getTagArg(tagName, index), parentModule, defaultValue);
 }
 
-double TGraphLayouterEnvironment::getDoubleParameter(const char *tagName, int index, double defaultValue)
+double TkenvGraphLayouterEnvironment::getDoubleParameter(const char *tagName, int index, double defaultValue)
 {
     return resolveDoubleDispStrArg(displayString.getTagArg(tagName, index), parentModule, defaultValue);
 }
 
-void TGraphLayouterEnvironment::clearGraphics()
+void TkenvGraphLayouterEnvironment::clearGraphics()
 {
     if (inspected())
     {
@@ -68,7 +68,7 @@ void TGraphLayouterEnvironment::clearGraphics()
     }
 }
 
-void TGraphLayouterEnvironment::showGraphics(const char *text)
+void TkenvGraphLayouterEnvironment::showGraphics(const char *text)
 {
     if (inspected())
     {
@@ -77,7 +77,7 @@ void TGraphLayouterEnvironment::showGraphics(const char *text)
     }
 }
 
-void TGraphLayouterEnvironment::drawText(double x, double y, const char *text, const char *tags, const char *color)
+void TkenvGraphLayouterEnvironment::drawText(double x, double y, const char *text, const char *tags, const char *color)
 {
     if (inspected())
     {
@@ -87,7 +87,7 @@ void TGraphLayouterEnvironment::drawText(double x, double y, const char *text, c
     }
 }
 
-void TGraphLayouterEnvironment::drawLine(double x1, double y1, double x2, double y2, const char *tags, const char *color)
+void TkenvGraphLayouterEnvironment::drawLine(double x1, double y1, double x2, double y2, const char *tags, const char *color)
 {
     if (inspected())
     {
@@ -97,7 +97,7 @@ void TGraphLayouterEnvironment::drawLine(double x1, double y1, double x2, double
     }
 }
 
-void TGraphLayouterEnvironment::drawRectangle(double x1, double y1, double x2, double y2, const char *tags, const char *color)
+void TkenvGraphLayouterEnvironment::drawRectangle(double x1, double y1, double x2, double y2, const char *tags, const char *color)
 {
     if (inspected())
     {
@@ -107,7 +107,7 @@ void TGraphLayouterEnvironment::drawRectangle(double x1, double y1, double x2, d
     }
 }
 
-bool TGraphLayouterEnvironment::okToProceed()
+bool TkenvGraphLayouterEnvironment::okToProceed()
 {
     //
     // Strategy: do not interact with UI for up to 3 seconds. At the end of the
@@ -142,7 +142,7 @@ bool TGraphLayouterEnvironment::okToProceed()
     return !stopNow;
 }
 
-void TGraphLayouterEnvironment::cleanup()
+void TkenvGraphLayouterEnvironment::cleanup()
 {
     if (inspected())
     {

@@ -23,14 +23,14 @@
 
 NAMESPACE_BEGIN
 
-class TGenericObjectInspector : public TInspector
+class TKENV_API GenericObjectInspector : public Inspector
 {
    protected:
       bool hascontentspage;
       bool focuscontentspage;
    public:
-      TGenericObjectInspector();
-      ~TGenericObjectInspector();
+      GenericObjectInspector();
+      ~GenericObjectInspector();
       virtual void setObject(cObject *obj);
       void setContentsPage(bool show, bool focus) {hascontentspage = show; focuscontentspage = focus;}
       virtual void createWindow(const char *window, const char *geometry);
@@ -40,10 +40,10 @@ class TGenericObjectInspector : public TInspector
 };
 
 
-class TWatchInspector: public TInspector
+class TKENV_API WatchInspector: public Inspector
 {
    public:
-      TWatchInspector();
+      WatchInspector();
       virtual void createWindow(const char *window, const char *geometry);
       virtual void update();
       virtual void writeBack();

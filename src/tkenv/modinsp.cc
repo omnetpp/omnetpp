@@ -43,30 +43,30 @@ NAMESPACE_BEGIN
 void _dummy_for_modinsp() {}
 
 
-class TModuleWindowFactory : public cInspectorFactory
+class TModuleWindowFactory : public InspectorFactory
 {
   public:
-    TModuleWindowFactory(const char *name) : cInspectorFactory(name) {}
+    TModuleWindowFactory(const char *name) : InspectorFactory(name) {}
 
     bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
     int getInspectorType() {return INSP_MODULEOUTPUT;}
     double getQualityAsDefault(cObject *object) {return 0.5;}
 
-    TInspector *createInspector() {
-        return prepare(new TModuleWindow());
+    Inspector *createInspector() {
+        return prepare(new LogInspector());
     }
 };
 
 Register_InspectorFactory(TModuleWindowFactory);
 
 
-TModuleWindow::TModuleWindow() : TInspector()
+LogInspector::LogInspector() : Inspector()
 {
 }
 
-void TModuleWindow::createWindow(const char *window, const char *geometry)
+void LogInspector::createWindow(const char *window, const char *geometry)
 {
-    TInspector::createWindow(window, geometry);
+    Inspector::createWindow(window, geometry);
 
     strcpy(textWidget,windowname);
     strcat(textWidget, ".main.text");
@@ -79,28 +79,28 @@ void TModuleWindow::createWindow(const char *window, const char *geometry)
     redisplay(getTkenv()->getLogBuffer());
 }
 
-void TModuleWindow::update()
+void LogInspector::update()
 {
     if (!object)
         return;
 
-    TInspector::update();
+    Inspector::update();
 
     Tcl_Interp *interp = getTkenv()->getInterp();
     CHK(Tcl_VarEval(interp, "moduleWindow:trimlines ", windowname, NULL));
 }
 
-void TModuleWindow::printLastLineOf(const LogBuffer& logBuffer)
+void LogInspector::printLastLineOf(const LogBuffer& logBuffer)
 {
     printLastLineOf(getTkenv()->getInterp(), textWidget, logBuffer, excludedModuleIds);
 }
 
-void TModuleWindow::redisplay(const LogBuffer& logBuffer)
+void LogInspector::redisplay(const LogBuffer& logBuffer)
 {
     redisplay(getTkenv()->getInterp(), textWidget, logBuffer, static_cast<cModule *>(object), excludedModuleIds);
 }
 
-void TModuleWindow::printLastLineOf(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, const std::set<int>& excludedModuleIds)
+void LogInspector::printLastLineOf(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, const std::set<int>& excludedModuleIds)
 {
     const LogBuffer::Entry& entry = logBuffer.getEntries().back();
     if (!entry.moduleIds)
@@ -120,7 +120,7 @@ void TModuleWindow::printLastLineOf(Tcl_Interp *interp, const char *textWidget, 
     textWidget_gotoEnd(interp, textWidget);
 }
 
-void TModuleWindow::redisplay(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, cModule *mod, const std::set<int>& excludedModuleIds)
+void LogInspector::redisplay(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, cModule *mod, const std::set<int>& excludedModuleIds)
 {
     textWidget_clear(interp, textWidget);
 
@@ -158,7 +158,7 @@ void TModuleWindow::redisplay(Tcl_Interp *interp, const char *textWidget, const 
     textWidget_gotoEnd(interp, textWidget);
 }
 
-int TModuleWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
+int LogInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
     if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
 
@@ -193,10 +193,10 @@ int TModuleWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **a
 
 //=======================================================================
 
-class TGraphicalModWindowFactory : public cInspectorFactory
+class TGraphicalModWindowFactory : public InspectorFactory
 {
   public:
-    TGraphicalModWindowFactory(const char *name) : cInspectorFactory(name) {}
+    TGraphicalModWindowFactory(const char *name) : InspectorFactory(name) {}
 
     bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
     int getInspectorType() {return INSP_GRAPHICAL;}
@@ -204,28 +204,28 @@ class TGraphicalModWindowFactory : public cInspectorFactory
         return dynamic_cast<cSimpleModule *>(object) ? 0.9 : 3.0;
     }
 
-    TInspector *createInspector() {
-        return prepare(new TGraphicalModWindow());
+    Inspector *createInspector() {
+        return prepare(new ModuleInspector());
     }
 };
 
 Register_InspectorFactory(TGraphicalModWindowFactory);
 
 
-TGraphicalModWindow::TGraphicalModWindow() : TInspector()
+ModuleInspector::ModuleInspector() : Inspector()
 {
    needs_redraw = false;
    not_drawn = false;
    random_seed = 0;
 }
 
-TGraphicalModWindow::~TGraphicalModWindow()
+ModuleInspector::~ModuleInspector()
 {
 }
 
-void TGraphicalModWindow::setObject(cObject *obj)
+void ModuleInspector::setObject(cObject *obj)
 {
-    TInspector::setObject(obj);
+    Inspector::setObject(obj);
 
     const cDisplayString blank;
     cModule *parentmodule = static_cast<cModule *>(object);
@@ -233,9 +233,9 @@ void TGraphicalModWindow::setObject(cObject *obj)
     random_seed = resolveLongDispStrArg(ds.getTagArg("bgl",4), parentmodule, 1);
 }
 
-void TGraphicalModWindow::createWindow(const char *window, const char *geometry)
+void ModuleInspector::createWindow(const char *window, const char *geometry)
 {
-   TInspector::createWindow(window, geometry);
+   Inspector::createWindow(window, geometry);
 
    strcpy(canvas,windowname);
    strcat(canvas,".c");
@@ -246,19 +246,19 @@ void TGraphicalModWindow::createWindow(const char *window, const char *geometry)
    CHK(Tcl_VarEval(interp, "createGraphicalModWindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
-void TGraphicalModWindow::useWindow(const char *widget)
+void ModuleInspector::useWindow(const char *widget)
 {
-    TInspector::useWindow(widget);
+    Inspector::useWindow(widget);
     strcpy(canvas,windowname);
     strcat(canvas,".c");
 }
 
-void TGraphicalModWindow::update()
+void ModuleInspector::update()
 {
    if (!object)
        return;
 
-   TInspector::update();
+   Inspector::update();
 
    if (not_drawn) return;
 
@@ -276,7 +276,7 @@ void TGraphicalModWindow::update()
    }
 }
 
-void TGraphicalModWindow::relayoutAndRedrawAll()
+void ModuleInspector::relayoutAndRedrawAll()
 {
    cModule *mod = (cModule *)object;
    int submodcount = 0;
@@ -319,7 +319,7 @@ void TGraphicalModWindow::relayoutAndRedrawAll()
    updateSubmodules();
 }
 
-void TGraphicalModWindow::redrawAll()
+void ModuleInspector::redrawAll()
 {
    refreshLayout();
    redrawModules();
@@ -328,7 +328,7 @@ void TGraphicalModWindow::redrawAll()
    updateSubmodules();
 }
 
-void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeyslayout,
+void ModuleInspector::getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeyslayout,
                                                               double& x, double& y, double& sx, double& sy)
 {
     const cDisplayString blank;
@@ -434,14 +434,14 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
     }
 }
 
-void TGraphicalModWindow::recalculateLayout()
+void ModuleInspector::recalculateLayout()
 {
     // refresh layout with empty submodPosMap -- everything layouted
     submodPosMap.clear();
     refreshLayout();
 }
 
-void TGraphicalModWindow::refreshLayout()
+void ModuleInspector::refreshLayout()
 {
     // recalculate layout, using coordinates in submodPosMap as "fixed" nodes --
     // only new nodes are re-layouted
@@ -548,7 +548,7 @@ void TGraphicalModWindow::refreshLayout()
 
     // set up layouter environment (responsible for "Stop" button handling and visualizing the layouting process)
     Tcl_Interp *interp = getTkenv()->getInterp();
-    TGraphLayouterEnvironment environment(interp, parentmodule, ds);
+    TkenvGraphLayouterEnvironment environment(interp, parentmodule, ds);
 
     std::string stopButton = std::string(getWindowName()) + ".toolbar.stop";
     bool isExpressMode = getTkenv()->getSimulationRunMode() == Tkenv::RUNMODE_EXPRESS;
@@ -581,7 +581,7 @@ void TGraphicalModWindow::refreshLayout()
 }
 
 // requires either recalculateLayout() or refreshLayout() called before!
-void TGraphicalModWindow::redrawModules()
+void ModuleInspector::redrawModules()
 {
     cModule *parentmodule = static_cast<cModule *>(object);
     Tcl_Interp *interp = getTkenv()->getInterp();
@@ -623,7 +623,7 @@ void TGraphicalModWindow::redrawModules()
     CHK(Tcl_VarEval(interp, "graphicalModuleWindow:setScrollRegion ", windowname, " 0",NULL));
 }
 
-void TGraphicalModWindow::drawSubmodule(Tcl_Interp *interp, cModule *submod, double x, double y, const char *scaling)
+void ModuleInspector::drawSubmodule(Tcl_Interp *interp, cModule *submod, double x, double y, const char *scaling)
 {
     char coords[64];
     sprintf(coords,"%g %g ", x, y);
@@ -640,7 +640,7 @@ void TGraphicalModWindow::drawSubmodule(Tcl_Interp *interp, cModule *submod, dou
                     NULL));
 }
 
-void TGraphicalModWindow::drawEnclosingModule(Tcl_Interp *interp, cModule *parentmodule, const char *scaling)
+void ModuleInspector::drawEnclosingModule(Tcl_Interp *interp, cModule *parentmodule, const char *scaling)
 {
     const char *dispstr = parentmodule->hasDisplayString() && parentmodule->parametersFinalized() ? parentmodule->getDisplayString().str() : "";
     CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawEnclosingModule ",
@@ -652,7 +652,7 @@ void TGraphicalModWindow::drawEnclosingModule(Tcl_Interp *interp, cModule *paren
                        NULL ));
 }
 
-void TGraphicalModWindow::drawConnection(Tcl_Interp *interp, cGate *gate)
+void ModuleInspector::drawConnection(Tcl_Interp *interp, cGate *gate)
 {
     cModule *mod = gate->getOwnerModule();
     cGate *dest_gate = gate->getNextGate();
@@ -702,7 +702,7 @@ void TGraphicalModWindow::drawConnection(Tcl_Interp *interp, cGate *gate)
              ));
 }
 
-void TGraphicalModWindow::redrawMessages()
+void ModuleInspector::redrawMessages()
 {
    Tcl_Interp *interp = getTkenv()->getInterp();
 
@@ -749,7 +749,7 @@ void TGraphicalModWindow::redrawMessages()
    CHK(Tcl_VarEval(interp, canvas, " raise bubble",NULL));
 }
 
-void TGraphicalModWindow::redrawNextEventMarker()
+void ModuleInspector::redrawNextEventMarker()
 {
    Tcl_Interp *interp = getTkenv()->getInterp();
    cModule *mod = static_cast<cModule *>(object);
@@ -776,7 +776,7 @@ void TGraphicalModWindow::redrawNextEventMarker()
    }
 }
 
-void TGraphicalModWindow::updateSubmodules()
+void ModuleInspector::updateSubmodules()
 {
    Tcl_Interp *interp = getTkenv()->getInterp();
    for (cModule::SubmoduleIterator submod(static_cast<cModule *>(object)); !submod.end(); submod++)
@@ -789,42 +789,42 @@ void TGraphicalModWindow::updateSubmodules()
 }
 
 
-void TGraphicalModWindow::submoduleCreated(cModule *newmodule)
+void ModuleInspector::submoduleCreated(cModule *newmodule)
 {
    needs_redraw = true;
 }
 
-void TGraphicalModWindow::submoduleDeleted(cModule *module)
+void ModuleInspector::submoduleDeleted(cModule *module)
 {
    needs_redraw = true;
 }
 
-void TGraphicalModWindow::connectionCreated(cGate *srcgate)
+void ModuleInspector::connectionCreated(cGate *srcgate)
 {
    needs_redraw = true;
 }
 
-void TGraphicalModWindow::connectionDeleted(cGate *srcgate)
+void ModuleInspector::connectionDeleted(cGate *srcgate)
 {
    needs_redraw = true;
 }
 
-void TGraphicalModWindow::displayStringChanged(cModule *)
+void ModuleInspector::displayStringChanged(cModule *)
 {
    needs_redraw = true;
 }
 
-void TGraphicalModWindow::displayStringChanged()
+void ModuleInspector::displayStringChanged()
 {
    needs_redraw = true; //TODO check, probably only non-background tags have changed...
 }
 
-void TGraphicalModWindow::displayStringChanged(cGate *)
+void ModuleInspector::displayStringChanged(cGate *)
 {
    needs_redraw = true;
 }
 
-void TGraphicalModWindow::bubble(cModule *submod, const char *text)
+void ModuleInspector::bubble(cModule *submod, const char *text)
 {
     Tcl_Interp *interp = getTkenv()->getInterp();
 
@@ -846,7 +846,7 @@ void TGraphicalModWindow::bubble(cModule *submod, const char *text)
     CHK(Tcl_VarEval(interp, "graphicalModuleWindow:bubble ", canvas, coords, " ", TclQuotedString(scaling).get(), " ", TclQuotedString(text).get(), NULL));
 }
 
-int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
+int ModuleInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
 
@@ -882,7 +882,7 @@ int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const ch
    return TCL_ERROR;
 }
 
-int TGraphicalModWindow::getSubmoduleCount(Tcl_Interp *interp, int argc, const char **argv)
+int ModuleInspector::getSubmoduleCount(Tcl_Interp *interp, int argc, const char **argv)
 {
    int count = 0;
    for (cModule::SubmoduleIterator submod(static_cast<cModule *>(object)); !submod.end(); submod++)
@@ -893,7 +893,7 @@ int TGraphicalModWindow::getSubmoduleCount(Tcl_Interp *interp, int argc, const c
    return TCL_OK;
 }
 
-int TGraphicalModWindow::getSubmodQ(Tcl_Interp *interp, int argc, const char **argv)
+int ModuleInspector::getSubmodQ(Tcl_Interp *interp, int argc, const char **argv)
 {
    // args: <module ptr> <qname>
    if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
@@ -907,7 +907,7 @@ int TGraphicalModWindow::getSubmodQ(Tcl_Interp *interp, int argc, const char **a
    return TCL_OK;
 }
 
-int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char **argv)
+int ModuleInspector::getSubmodQLen(Tcl_Interp *interp, int argc, const char **argv)
 {
    // args: <module ptr> <qname>
    if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
@@ -925,30 +925,30 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 
 
 //=======================================================================
-class TGraphicalGateWindowFactory : public cInspectorFactory
+class TGraphicalGateWindowFactory : public InspectorFactory
 {
   public:
-    TGraphicalGateWindowFactory(const char *name) : cInspectorFactory(name) {}
+    TGraphicalGateWindowFactory(const char *name) : InspectorFactory(name) {}
 
     bool supportsObject(cObject *obj) {return dynamic_cast<cGate *>(obj)!=NULL;}
     int getInspectorType() {return INSP_GRAPHICAL;}
     double getQualityAsDefault(cObject *object) {return 3.0;}
 
-    TInspector *createInspector() {
-        return prepare(new TGraphicalGateWindow());
+    Inspector *createInspector() {
+        return prepare(new GateInspector());
     }
 };
 
 Register_InspectorFactory(TGraphicalGateWindowFactory);
 
 
-TGraphicalGateWindow::TGraphicalGateWindow() : TInspector()
+GateInspector::GateInspector() : Inspector()
 {
 }
 
-void TGraphicalGateWindow::createWindow(const char *window, const char *geometry)
+void GateInspector::createWindow(const char *window, const char *geometry)
 {
-   TInspector::createWindow(window, geometry);
+   Inspector::createWindow(window, geometry);
 
    strcpy(canvas,windowname);
    strcat(canvas,".c");
@@ -959,7 +959,7 @@ void TGraphicalGateWindow::createWindow(const char *window, const char *geometry
    CHK(Tcl_VarEval(interp, "createGraphicalGateWindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
-int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
+int GateInspector::redraw(Tcl_Interp *interp, int, const char **)
 {
    cGate *gate = (cGate *)object;
 
@@ -1021,9 +1021,9 @@ int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
    return TCL_OK;
 }
 
-void TGraphicalGateWindow::update()
+void GateInspector::update()
 {
-   TInspector::update();
+   Inspector::update();
 
    Tcl_Interp *interp = getTkenv()->getInterp();
    cGate *gate = static_cast<cGate *>(object);
@@ -1054,7 +1054,7 @@ void TGraphicalGateWindow::update()
    }
 }
 
-int TGraphicalGateWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
+int GateInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
 
@@ -1070,7 +1070,7 @@ int TGraphicalGateWindow::inspectorCommand(Tcl_Interp *interp, int argc, const c
    return TCL_ERROR;
 }
 
-void TGraphicalGateWindow::displayStringChanged(cGate *gate)
+void GateInspector::displayStringChanged(cGate *gate)
 {
    //XXX should defer redraw (via redraw_needed) to avoid "flickering"
 }

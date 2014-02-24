@@ -35,30 +35,30 @@ NAMESPACE_BEGIN
 void _dummy_for_statinsp() {}
 
 
-class THistogramWindowFactory : public cInspectorFactory
+class THistogramWindowFactory : public InspectorFactory
 {
   public:
-    THistogramWindowFactory(const char *name) : cInspectorFactory(name) {}
+    THistogramWindowFactory(const char *name) : InspectorFactory(name) {}
 
     bool supportsObject(cObject *obj) {return dynamic_cast<cDensityEstBase *>(obj)!=NULL;}
     int getInspectorType() {return INSP_GRAPHICAL;}
     double getQualityAsDefault(cObject *object) {return 3.0;}
 
-    TInspector *createInspector() {
-        return prepare(new THistogramWindow());
+    Inspector *createInspector() {
+        return prepare(new HistogramInspector());
     }
 };
 
 Register_InspectorFactory(THistogramWindowFactory);
 
 
-THistogramWindow::THistogramWindow() : TInspector()
+HistogramInspector::HistogramInspector() : Inspector()
 {
 }
 
-void THistogramWindow::createWindow(const char *window, const char *geometry)
+void HistogramInspector::createWindow(const char *window, const char *geometry)
 {
-   TInspector::createWindow(window, geometry);
+   Inspector::createWindow(window, geometry);
 
    strcpy(canvas,windowname);
    strcat(canvas,".main.canvas");
@@ -69,9 +69,9 @@ void THistogramWindow::createWindow(const char *window, const char *geometry)
    CHK(Tcl_VarEval(interp, "createHistogramWindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
-void THistogramWindow::update()
+void HistogramInspector::update()
 {
-   TInspector::update();
+   Inspector::update();
 
    Tcl_Interp *interp = getTkenv()->getInterp();
    cDensityEstBase *distr = static_cast<cDensityEstBase *>(object);
@@ -141,7 +141,7 @@ void THistogramWindow::update()
 #undef Y
 }
 
-void THistogramWindow::generalInfo( char *buf )
+void HistogramInspector::generalInfo( char *buf )
 {
    cDensityEstBase *d = static_cast<cDensityEstBase *>(object);
    if (!d->isTransformed())
@@ -154,7 +154,7 @@ void THistogramWindow::generalInfo( char *buf )
               );
 }
 
-void THistogramWindow::getCellInfo( char *buf, int cell )
+void HistogramInspector::getCellInfo( char *buf, int cell )
 {
    cDensityEstBase *d = static_cast<cDensityEstBase *>(object);
    double count = d->getCellValue(cell);
@@ -168,7 +168,7 @@ void THistogramWindow::getCellInfo( char *buf, int cell )
           );
 }
 
-int THistogramWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
+int HistogramInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
 
@@ -188,17 +188,17 @@ int THistogramWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char 
 }
 
 //=======================================================================
-class TOutVectorWindowFactory : public cInspectorFactory
+class TOutVectorWindowFactory : public InspectorFactory
 {
   public:
-    TOutVectorWindowFactory(const char *name) : cInspectorFactory(name) {}
+    TOutVectorWindowFactory(const char *name) : InspectorFactory(name) {}
 
     bool supportsObject(cObject *obj) {return dynamic_cast<cOutVector *>(obj)!=NULL;}
     int getInspectorType() {return INSP_GRAPHICAL;}
     double getQualityAsDefault(cObject *object) {return 3.0;}
 
-    TInspector *createInspector() {
-        return prepare(new TOutVectorWindow());
+    Inspector *createInspector() {
+        return prepare(new OutputVectorInspector());
     }
 };
 
@@ -230,11 +230,11 @@ void CircBuffer::add(simtime_t t, double value1, double value2)
 
 static void record_in_insp(void *data, simtime_t t, double val1, double val2)
 {
-   TOutVectorWindow *insp = (TOutVectorWindow *) data;
+   OutputVectorInspector *insp = (OutputVectorInspector *) data;
    insp->circbuf.add(t,val1,val2);
 }
 
-TOutVectorWindow::TOutVectorWindow() : TInspector(), circbuf(100)
+OutputVectorInspector::OutputVectorInspector() : Inspector(), circbuf(100)
 {
    autoscale = true;
    drawing_mode = DRAW_LINES;
@@ -243,30 +243,30 @@ TOutVectorWindow::TOutVectorWindow() : TInspector(), circbuf(100)
    moving_tline = 0;
 }
 
-TOutVectorWindow::~TOutVectorWindow()
+OutputVectorInspector::~OutputVectorInspector()
 {
    // cancel installed callback in inspected outvector
    cOutVector *ov = static_cast<cOutVector *>(object);
    ov->setCallback(NULL, NULL);
 }
 
-void TOutVectorWindow::setObject(cObject *obj)
+void OutputVectorInspector::setObject(cObject *obj)
 {
     if (object) {
         cOutVector *ov = static_cast<cOutVector *>(object);
         ov->setCallback(NULL, NULL);
     }
 
-    TInspector::setObject(obj);
+    Inspector::setObject(obj);
 
     // make inspected output vector to call us back when it gets data to write out
     cOutVector *ov = static_cast<cOutVector *>(object);
     ov->setCallback(record_in_insp, (void *)this);
 }
 
-void TOutVectorWindow::createWindow(const char *window, const char *geometry)
+void OutputVectorInspector::createWindow(const char *window, const char *geometry)
 {
-   TInspector::createWindow(window, geometry);
+   Inspector::createWindow(window, geometry);
 
    strcpy(canvas,windowname);
    strcat(canvas,".main.canvas");
@@ -277,9 +277,9 @@ void TOutVectorWindow::createWindow(const char *window, const char *geometry)
    CHK(Tcl_VarEval(interp, "createOutvectorWindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
-void TOutVectorWindow::update()
+void OutputVectorInspector::update()
 {
-   TInspector::update();
+   Inspector::update();
 
    Tcl_Interp *interp = getTkenv()->getInterp();
 
@@ -479,7 +479,7 @@ static const char *drawingmodes[] = {
       "dots", "bars", "pins", "sample-hold", "lines", NULL
 };
 
-void TOutVectorWindow::generalInfo( char *buf )
+void OutputVectorInspector::generalInfo( char *buf )
 {
    if (circbuf.items()==0)
    {
@@ -491,7 +491,7 @@ void TOutVectorWindow::generalInfo( char *buf )
    sprintf(buf, "Last value: t=%s  value=%g", SIMTIME_STR(p.t), p.value1);
 }
 
-void TOutVectorWindow::valueInfo( char *buf, int valueindex )
+void OutputVectorInspector::valueInfo( char *buf, int valueindex )
 {
    CircBuffer::CBEntry& p = circbuf.entry(valueindex);
    sprintf(buf, "t=%s  value=%g", SIMTIME_STR(p.t), p.value1);
@@ -499,12 +499,12 @@ void TOutVectorWindow::valueInfo( char *buf, int valueindex )
    moving_tline = SIMTIME_DBL(p.t);
 }
 
-void TOutVectorWindow::getConfig( char *buf )
+void OutputVectorInspector::getConfig( char *buf )
 {
    sprintf(buf,"%d %g %g %g %s", autoscale, time_factor, miny, maxy, drawingmodes[drawing_mode] );
 }
 
-void TOutVectorWindow::setConfig( bool autosc, double timefac, double min_y, double max_y, const char *mode)
+void OutputVectorInspector::setConfig( bool autosc, double timefac, double min_y, double max_y, const char *mode)
 {
    // store new parameters
    autoscale = autosc;
@@ -529,7 +529,7 @@ void TOutVectorWindow::setConfig( bool autosc, double timefac, double min_y, dou
        drawing_mode = i;
 }
 
-int TOutVectorWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
+int OutputVectorInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
 

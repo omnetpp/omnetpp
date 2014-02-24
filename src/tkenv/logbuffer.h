@@ -31,7 +31,7 @@ class cModule;
 /**
  * Stores textual debug output from modules.
  */
-class LogBuffer
+class TKENV_API LogBuffer
 {
   public:
     struct Entry {

@@ -513,7 +513,7 @@ int setRunUntilModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    }
    else
    {
-       TInspector *insp = app->findInspector(argv[1]);
+       Inspector *insp = app->findInspector(argv[1]);
        if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
        cObject *object = insp->getObject();
        if (!object) {Tcl_SetResult(interp, TCLCONST("inspector has no object"), TCL_STATIC); return TCL_ERROR;}
@@ -529,7 +529,7 @@ int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
 {
    if (argc!=2 && argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
-   TInspector *insp = app->findInspector(argv[1]);
+   Inspector *insp = app->findInspector(argv[1]);
    if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = insp->getObject();
    if (!object) {Tcl_SetResult(interp, TCLCONST("inspector has no object"), TCL_STATIC); return TCL_ERROR;}
@@ -1659,7 +1659,7 @@ int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    else if ((type=insptypeCodeFromName(argv[2])) < 0)
         {Tcl_SetResult(interp, TCLCONST("unrecognized inspector type"), TCL_STATIC);return TCL_ERROR;}
 
-   TInspector *insp = app->inspect(object, type, "");
+   Inspector *insp = app->inspect(object, type, "");
    Tcl_SetResult(interp, TCLCONST(insp ? insp->getWindowName() : ""), TCL_VOLATILE);
    return TCL_OK;
 }
@@ -1677,7 +1677,7 @@ int supportedInspTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    cRegistrationList *a = inspectorfactories.getInstance();
    for (int i=0; i<a->size(); i++)
    {
-      cInspectorFactory *ifc = static_cast<cInspectorFactory *>(a->get(i));
+      InspectorFactory *ifc = static_cast<InspectorFactory *>(a->get(i));
       if (ifc->supportsObject(object))
       {
           int k;
@@ -1728,7 +1728,7 @@ int isInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
     Tkenv *app = getTkenv();
-    TInspector *insp = app->findInspector(argv[1]);
+    Inspector *insp = app->findInspector(argv[1]);
     Tcl_SetResult(interp, TCLCONST(insp ? "1" : "0"), TCL_STATIC);
     return TCL_OK;
 }
@@ -1737,7 +1737,7 @@ int inspectorGetObject_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 {
     if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
     Tkenv *app = getTkenv();
-    TInspector *insp = app->findInspector(argv[1]);
+    Inspector *insp = app->findInspector(argv[1]);
     if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
     Tcl_SetResult(interp, ptrToStr(insp->getObject()), TCL_VOLATILE);
     return TCL_OK;
@@ -1747,7 +1747,7 @@ int inspectorSetObject_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 {
     if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
     Tkenv *app = getTkenv();
-    TInspector *insp = app->findInspector(argv[1]);
+    Inspector *insp = app->findInspector(argv[1]);
     if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
     cObject *obj = strToPtr(argv[2]);
     insp->setObject(obj);
@@ -1759,7 +1759,7 @@ int inspectorGetType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
 {
     if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
     Tkenv *app = getTkenv();
-    TInspector *insp = app->findInspector(argv[1]);
+    Inspector *insp = app->findInspector(argv[1]);
     if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
     char buf[20];
     sprintf(buf, "%d", insp->getType());
@@ -1772,7 +1772,7 @@ int updateInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    // expected arg: inspector widget name
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
-   TInspector *insp = app->findInspector(argv[1]);
+   Inspector *insp = app->findInspector(argv[1]);
    if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
    insp->update();
    return TCL_OK;
@@ -1783,7 +1783,7 @@ int writeBackInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    // expected arg: inspector widget name
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
-   TInspector *insp = app->findInspector(argv[1]);
+   Inspector *insp = app->findInspector(argv[1]);
    if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
    insp->writeBack();
    insp->update();  // show what writeBack() did
@@ -1795,7 +1795,7 @@ int deleteInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    // expected arg: inspector widget name
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
-   TInspector *insp = app->findInspector(argv[1]);
+   Inspector *insp = app->findInspector(argv[1]);
    if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
    app->deleteInspector(insp);
    return TCL_OK;
@@ -1806,7 +1806,7 @@ int markInspectorForDeletion_cmd(ClientData, Tcl_Interp *interp, int argc, const
    // expected arg: inspector widget name
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
-   TInspector *insp = app->findInspector(argv[1]);
+   Inspector *insp = app->findInspector(argv[1]);
    if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
    insp->markForDeletion();
    return TCL_OK;
@@ -1817,7 +1817,7 @@ int inspMarkedForDeletion_cmd(ClientData, Tcl_Interp *interp, int argc, const ch
    // expected arg: inspector widget name
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
-   TInspector *insp = app->findInspector(argv[1]);
+   Inspector *insp = app->findInspector(argv[1]);
    if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, TCLCONST(insp->isMarkedForDeletion() ? "1" : "0"), TCL_STATIC);
    return TCL_OK;
@@ -1879,7 +1879,7 @@ int inspectorCommand_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
 {
    if (argc<2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
-   TInspector *insp = app->findInspector(argv[1]);
+   Inspector *insp = app->findInspector(argv[1]);
    if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
    TRY(return insp->inspectorCommand(interp, argc-2, argv+2));
 }

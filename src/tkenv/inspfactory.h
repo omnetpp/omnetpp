@@ -32,10 +32,10 @@ NAMESPACE_BEGIN
 /**
  * Serves as a base class for inspector factories of specific classes.
  */
-class TKENV_API cInspectorFactory : public cNoncopyableOwnedObject
+class TKENV_API InspectorFactory : public cNoncopyableOwnedObject
 {
   protected:
-    virtual TInspector *prepare(TInspector *insp) {insp->setType(getInspectorType()); return insp;}
+    virtual Inspector *prepare(Inspector *insp) {insp->setType(getInspectorType()); return insp;}
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -43,12 +43,12 @@ class TKENV_API cInspectorFactory : public cNoncopyableOwnedObject
     /**
      * Constructor.
      */
-    cInspectorFactory(const char *name) : cNoncopyableOwnedObject(name,false) {}
+    InspectorFactory(const char *name) : cNoncopyableOwnedObject(name,false) {}
 
     /**
      * Destructor.
      */
-    virtual ~cInspectorFactory() {}
+    virtual ~InspectorFactory() {}
     //@}
 
 
@@ -78,7 +78,7 @@ class TKENV_API cInspectorFactory : public cNoncopyableOwnedObject
     /**
      * Creates an inspector.
      */
-    virtual TInspector *createInspector() = 0;
+    virtual Inspector *createInspector() = 0;
     //@}
 };
 
@@ -88,7 +88,7 @@ extern cGlobalRegistrationList inspectorfactories;
 /**
  * Find a cInspectorFactory.
  */
-cInspectorFactory *findInspectorFactoryFor(cObject *obj, int type);
+InspectorFactory *findInspectorFactoryFor(cObject *obj, int type);
 
 NAMESPACE_END
 

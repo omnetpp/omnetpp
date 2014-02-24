@@ -28,7 +28,7 @@ class cModule;
 class cDisplayString;
 
 
-class TGraphLayouterEnvironment : public GraphLayouterEnvironment
+class TkenvGraphLayouterEnvironment : public GraphLayouterEnvironment
 {
    protected:
       // configuration
@@ -44,7 +44,7 @@ class TGraphLayouterEnvironment : public GraphLayouterEnvironment
       bool grabActive;
 
    public:
-      TGraphLayouterEnvironment(Tcl_Interp *interp, cModule *parentModule, const cDisplayString& displayString);
+      TkenvGraphLayouterEnvironment(Tcl_Interp *interp, cModule *parentModule, const cDisplayString& displayString);
 
       void setWidgetToGrab(const char *w) { this->widgetToGrab = w; }
       void setCanvas(const char *canvas) { this->canvas = canvas; }

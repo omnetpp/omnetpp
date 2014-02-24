@@ -30,14 +30,14 @@ cGlobalRegistrationList inspectorfactories;
 EXECUTE_ON_SHUTDOWN( inspectorfactories.clear() );
 
 
-cInspectorFactory *findInspectorFactoryFor(cObject *obj, int type)
+InspectorFactory *findInspectorFactoryFor(cObject *obj, int type)
 {
-    cInspectorFactory *best=NULL;
+    InspectorFactory *best=NULL;
     double bestweight=0;
     cRegistrationList *a = inspectorfactories.getInstance();
     for (int i=0; i<a->size(); i++)
     {
-        cInspectorFactory *ifc = static_cast<cInspectorFactory *>(a->get(i));
+        InspectorFactory *ifc = static_cast<InspectorFactory *>(a->get(i));
         if (ifc->supportsObject(obj) &&
             (type==INSP_DEFAULT || ifc->getInspectorType()==type) &&
             ifc->getQualityAsDefault(obj)>bestweight

@@ -24,12 +24,12 @@
 NAMESPACE_BEGIN
 
 
-class THistogramWindow : public TInspector
+class TKENV_API HistogramInspector : public Inspector
 {
    protected:
       char canvas[64];
    public:
-      THistogramWindow();
+      HistogramInspector();
       virtual void createWindow(const char *window, const char *geometry);
       virtual void update();
       virtual void writeBack() {}
@@ -61,7 +61,7 @@ class CircBuffer
       CBEntry& entry(int k) {return buf[k];}
 };
 
-class TOutVectorWindow : public TInspector
+class TKENV_API OutputVectorInspector : public Inspector
 {
    public:
       CircBuffer circbuf;     // buffer to store values
@@ -77,8 +77,8 @@ class TOutVectorWindow : public TInspector
       simtime_t moving_tline;   // t position of moving axis
 
    public:
-      TOutVectorWindow();
-      ~TOutVectorWindow();
+      OutputVectorInspector();
+      ~OutputVectorInspector();
       virtual void setObject(cObject *obj);
       virtual void createWindow(const char *window, const char *geometry);
       virtual void update();

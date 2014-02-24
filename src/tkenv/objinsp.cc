@@ -32,19 +32,19 @@ NAMESPACE_BEGIN
 
 void _dummy_for_objinsp() {}
 
-TGenericObjectInspector::TGenericObjectInspector() : TInspector()
+GenericObjectInspector::GenericObjectInspector() : Inspector()
 {
     hascontentspage = false;
     focuscontentspage = false;
 }
 
-TGenericObjectInspector::~TGenericObjectInspector()
+GenericObjectInspector::~GenericObjectInspector()
 {
 }
 
-void TGenericObjectInspector::setObject(cObject *obj)
+void GenericObjectInspector::setObject(cObject *obj)
 {
-    TInspector::setObject(obj);
+    Inspector::setObject(obj);
 
     bool showcontentspage =
             dynamic_cast<cArray *>(object) || dynamic_cast<cQueue *>(object) ||
@@ -58,9 +58,9 @@ void TGenericObjectInspector::setObject(cObject *obj)
     setContentsPage(showcontentspage, focuscontentspage);
 }
 
-void TGenericObjectInspector::createWindow(const char *window, const char *geometry)
+void GenericObjectInspector::createWindow(const char *window, const char *geometry)
 {
-   TInspector::createWindow(window, geometry);
+   Inspector::createWindow(window, geometry);
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
@@ -69,9 +69,9 @@ void TGenericObjectInspector::createWindow(const char *window, const char *geome
                    (hascontentspage ? "1" : "0"), " ",  (focuscontentspage ? "1" : "0"), " ", NULL));
 }
 
-void TGenericObjectInspector::update()
+void GenericObjectInspector::update()
 {
-   TInspector::update();
+   Inspector::update();
 
    // refresh "fields" page
    Tcl_Interp *interp = getTkenv()->getInterp();
@@ -85,27 +85,27 @@ void TGenericObjectInspector::update()
    }
 }
 
-void TGenericObjectInspector::writeBack()
+void GenericObjectInspector::writeBack()
 {
-   TInspector::writeBack();
+   Inspector::writeBack();
 }
 
-int TGenericObjectInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
+int GenericObjectInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
    return TCL_ERROR;
 }
 
-class TGenericObjectInspectorFactory : public cInspectorFactory
+class TGenericObjectInspectorFactory : public InspectorFactory
 {
   public:
-    TGenericObjectInspectorFactory(const char *name) : cInspectorFactory(name) {}
+    TGenericObjectInspectorFactory(const char *name) : InspectorFactory(name) {}
 
     bool supportsObject(cObject *obj) {return true;}
     int getInspectorType() {return INSP_OBJECT;}
     double getQualityAsDefault(cObject *object) {return 1.0;}
 
-    TInspector *createInspector() {
-        return prepare(new TGenericObjectInspector());
+    Inspector *createInspector() {
+        return prepare(new GenericObjectInspector());
     }
 };
 
@@ -113,10 +113,10 @@ Register_InspectorFactory(TGenericObjectInspectorFactory);
 
 //----
 
-class TWatchInspectorFactory : public cInspectorFactory
+class TWatchInspectorFactory : public InspectorFactory
 {
   public:
-    TWatchInspectorFactory(const char *name) : cInspectorFactory(name) {}
+    TWatchInspectorFactory(const char *name) : InspectorFactory(name) {}
 
     bool supportsObject(cObject *obj) {
         // Return true if it's a watch for a simple type (int, double, string etc).
@@ -126,21 +126,21 @@ class TWatchInspectorFactory : public cInspectorFactory
     }
     int getInspectorType() {return INSP_OBJECT;}
     double getQualityAsDefault(cObject *object) {return 2.0;}
-    TInspector *createInspector() {
-        return prepare(new TWatchInspector());
+    Inspector *createInspector() {
+        return prepare(new WatchInspector());
     }
 };
 
 Register_InspectorFactory(TWatchInspectorFactory);
 
 
-TWatchInspector::TWatchInspector() : TInspector()
+WatchInspector::WatchInspector() : Inspector()
 {
 }
 
-void TWatchInspector::createWindow(const char *window, const char *geometry)
+void WatchInspector::createWindow(const char *window, const char *geometry)
 {
-   TInspector::createWindow(window, geometry);
+   Inspector::createWindow(window, geometry);
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
@@ -148,16 +148,16 @@ void TWatchInspector::createWindow(const char *window, const char *geometry)
    CHK(Tcl_VarEval(interp, "createWatchInspector ", windowname, " \"", geometry, "\"", NULL ));
 }
 
-void TWatchInspector::update()
+void WatchInspector::update()
 {
-   TInspector::update();
+   Inspector::update();
 
    cWatchBase *watch = static_cast<cWatchBase *>(object);
    setLabel(".main.name.l", (std::string(watch->getClassName())+" "+watch->getName()).c_str());
    setEntry(".main.name.e", watch->info().c_str());
 }
 
-void TWatchInspector::writeBack()
+void WatchInspector::writeBack()
 {
    Tcl_Interp *interp = getTkenv()->getInterp();
    cWatchBase *watch = static_cast<cWatchBase *>(object);
@@ -166,7 +166,7 @@ void TWatchInspector::writeBack()
        watch->assign(s);
    else
       CHK(Tcl_VarEval(interp,"messagebox {Warning} {This inspector doesn't support changing the value.} warning ok", NULL));
-   TInspector::writeBack();    // must be there after all changes
+   Inspector::writeBack();    // must be there after all changes
 }
 
 NAMESPACE_END
