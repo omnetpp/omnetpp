@@ -93,6 +93,7 @@ proc createOmnetppWindow {} {
     mainWindow:createMenu
     mainWindow:createToolbar
     mainWindow:createStatusbars
+    mainWindow:createTimeline
 
     # Create main display area
     frame .main -borderwidth 1 -height 30 -relief sunken -width 30
@@ -379,21 +380,9 @@ proc mainWindow:createToolbar {} {
 }
 
 proc mainWindow:createStatusbars {} {
-    global widgets B1 B2 B3
-
     frame .statusbar
     frame .statusbar2
     frame .statusbar3
-
-    canvas .timeline -borderwidth 2 -relief groove -height 40
-    bind .timeline <Configure> "redrawTimeline"
-    .timeline bind msg <Double-1> "timeline:dblClick .timeline"
-    .timeline bind msgname <Double-1> "timeline:dblClick .timeline"
-    .timeline bind msg <$B3> "timeline:rightClick .timeline %X %Y %x %y"
-    .timeline bind msgname <$B3> "timeline:rightClick .timeline %X %Y %x %y"
-    bind .timeline <Button-$B3> {timeline:popup %x %y %X %Y}
-
-    set widgets(timeline) .timeline
 
     label .statusbar.networklabel -relief groove -text {(no network set up)} -width 18 -anchor w
     label .statusbar.eventlabel -relief groove -text {Event #0} -width 15  -anchor w
@@ -433,6 +422,23 @@ proc mainWindow:createStatusbars {} {
     set help_tips(.statusbar3.eventspersec)    {Performance: events processed per second}
     set help_tips(.statusbar3.simsecpersec)    {Relative speed: simulated seconds processed per second}
     set help_tips(.statusbar3.eventspersimsec) {Event density: events per simulated second}
+}
+
+proc mainWindow:createTimeline {} {
+    global widgets B1 B2 B3
+
+    frame .timelineframe -borderwidth 2 -relief groove
+    canvas .timeline -borderwidth 0 -height 46
+    pack .timeline -in .timelineframe -expand 1 -fill both
+
+    bind .timeline <Configure> "redrawTimeline"
+    .timeline bind msg <Double-1> "timeline:dblClick .timeline"
+    .timeline bind msgname <Double-1> "timeline:dblClick .timeline"
+    .timeline bind msg <$B3> "timeline:rightClick .timeline %X %Y %x %y"
+    .timeline bind msgname <$B3> "timeline:rightClick .timeline %X %Y %x %y"
+    bind .timeline <Button-$B3> {timeline:popup %x %y %X %Y}
+
+    set widgets(timeline) .timeline
 }
 
 proc mainWindow:createTreeView {} {

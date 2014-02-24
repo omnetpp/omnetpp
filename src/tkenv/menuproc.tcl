@@ -310,11 +310,11 @@ proc toggleTimeline {} {
 
    if {$config(display-timeline)==1} {
        set config(display-timeline) 0
-       pack forget $widgets(timeline)
+       pack forget .timelineframe
        .toolbar.tline config -relief flat
    } else {
        set config(display-timeline) 1
-       pack $widgets(timeline) -before .main -anchor center -expand 0 -fill x -side top
+       pack .timelineframe -before .main -anchor center -expand 0 -fill x -side top -padx 0 -pady 0 -ipadx 0 -ipady 0
        .toolbar.tline config -relief sunken
        redrawTimeline
    }
