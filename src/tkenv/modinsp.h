@@ -69,8 +69,8 @@ class TKENV_API ModuleInspector : public Inspector
    protected:
       char canvas[128];
       bool needs_redraw;
-      int32 random_seed;
-      bool not_drawn;
+      int32 randomSeed;
+      bool notDrawn;
 
       struct Point {double x,y;};
       typedef std::map<cModule*,Point> PositionMap;

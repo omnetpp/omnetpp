@@ -48,10 +48,10 @@ class TKENV_API Inspector
    protected:
       cObject *object;        // the inspected object
       int type;               // INSP_OBJECT, etc.
-      char windowname[24];    // Tk inspector window variable
-      char windowtitle[128];  // window title string
+      char windowName[24];    // Tk inspector window variable
+      char windowTitle[128];  // window title string
       bool ownsWindow;        // whether destructor should destroy the window
-      bool toBeDeleted;       // "mark for deletion" flag (set if user wants to close inspector during animation)
+      bool closeRequested;    // "mark for deletion" flag (set if user wants to close inspector during animation)
    public:
       Inspector();
       virtual ~Inspector();
@@ -60,11 +60,11 @@ class TKENV_API Inspector
       virtual void setObject(cObject *obj) {object = obj;} // obj=NULL should be accepted; override to refresh GUI accordingly
       virtual int getType() {return type;}
       virtual void setType(int t) {type = t;}
-      virtual const char *getWindowName() {return windowname;}
+      virtual const char *getWindowName() {return windowName;}
 
       virtual void hostObjectDeleted();
-      virtual void markForDeletion() {toBeDeleted=true;}
-      virtual bool isMarkedForDeletion() {return toBeDeleted;}
+      virtual void markForDeletion() {closeRequested=true;}
+      virtual bool isMarkedForDeletion() {return closeRequested;}
 
       /** @name Virtual functions to be redefined in subclasses */
       //@{

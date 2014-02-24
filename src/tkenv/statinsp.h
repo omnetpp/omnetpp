@@ -64,17 +64,18 @@ class CircBuffer
 class TKENV_API OutputVectorInspector : public Inspector
 {
    public:
-      CircBuffer circbuf;     // buffer to store values
+      CircBuffer circbuf;
+
    protected:
-      char canvas[64];        // widget namestr
+      char canvas[64];
 
       // configuration
       enum {DRAW_DOTS, DRAW_BARS, DRAW_PINS, DRAW_SAMPLEHOLD, DRAW_LINES, NUM_DRAWINGMODES};
       bool autoscale;
-      int drawing_mode;
+      int drawingMode;
       double miny, maxy;
-      double time_factor; // x scaling: secs/10 pixel
-      simtime_t moving_tline;   // t position of moving axis
+      double timeScale; // x scaling: secs/10 pixel
+      simtime_t hairlineTime;   // t position of moving axis
 
    public:
       OutputVectorInspector();

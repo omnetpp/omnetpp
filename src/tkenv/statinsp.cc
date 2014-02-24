@@ -60,13 +60,13 @@ void HistogramInspector::createWindow(const char *window, const char *geometry)
 {
    Inspector::createWindow(window, geometry);
 
-   strcpy(canvas,windowname);
+   strcpy(canvas,windowName);
    strcat(canvas,".main.canvas");
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, "createHistogramWindow ", windowname, " \"", geometry, "\"", NULL ));
+   CHK(Tcl_VarEval(interp, "createHistogramWindow ", windowName, " \"", geometry, "\"", NULL ));
 }
 
 void HistogramInspector::update()
@@ -78,7 +78,7 @@ void HistogramInspector::update()
 
    char buf[80];
    generalInfo( buf );
-   CHK(Tcl_VarEval(interp, windowname,".bot.info config -text {",buf,"}",NULL));
+   CHK(Tcl_VarEval(interp, windowName,".bot.info config -text {",buf,"}",NULL));
 
    // can we draw anything at all?
    if (!distr->isTransformed() || distr->getNumCells()==0) return;
@@ -237,10 +237,10 @@ static void record_in_insp(void *data, simtime_t t, double val1, double val2)
 OutputVectorInspector::OutputVectorInspector() : Inspector(), circbuf(100)
 {
    autoscale = true;
-   drawing_mode = DRAW_LINES;
+   drawingMode = DRAW_LINES;
    miny = 0; maxy = 10;
-   time_factor = 1;   // x scaling
-   moving_tline = 0;
+   timeScale = 1;   // x scaling
+   hairlineTime = 0;
 }
 
 OutputVectorInspector::~OutputVectorInspector()
@@ -268,13 +268,13 @@ void OutputVectorInspector::createWindow(const char *window, const char *geometr
 {
    Inspector::createWindow(window, geometry);
 
-   strcpy(canvas,windowname);
+   strcpy(canvas,windowName);
    strcat(canvas,".main.canvas");
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, "createOutvectorWindow ", windowname, " \"", geometry, "\"", NULL ));
+   CHK(Tcl_VarEval(interp, "createOutvectorWindow ", windowName, " \"", geometry, "\"", NULL ));
 }
 
 void OutputVectorInspector::update()
@@ -291,11 +291,11 @@ void OutputVectorInspector::update()
 
    // get canvas size
    CHK(Tcl_VarEval(interp, "winfo width ",canvas, NULL));
-   int canvaswidth = atoi( Tcl_GetStringResult(interp) );
-   if (!canvaswidth)  canvaswidth=1;
+   int canvasWidth = atoi( Tcl_GetStringResult(interp) );
+   if (!canvasWidth)  canvasWidth=1;
    CHK(Tcl_VarEval(interp, "winfo height ", canvas, NULL));
-   int canvasheight = atoi( Tcl_GetStringResult(interp) );
-   if (!canvasheight) canvasheight=1;
+   int canvasHeight = atoi( Tcl_GetStringResult(interp) );
+   if (!canvasHeight) canvasHeight=1;
 
    simtime_t tbase = simulation.getSimTime();
    // simtime_t tbase = circbuf.entry[circbuf.headPos()].t;
@@ -307,15 +307,15 @@ void OutputVectorInspector::update()
        double dt = SIMTIME_DBL(tbase - firstt);
        if (dt>0)
        {
-          double opt_tf = dt/canvaswidth;
+          double opt_tf = dt/canvasWidth;
 
           // some rounding: keep 2 significant digits
           double order = pow(10.0, (int)floor(log10(opt_tf)));
           opt_tf = floor(opt_tf/order+.5)*order;
 
           // adjust only if it differs >=20% from its optimal value
-          if (fabs(time_factor-opt_tf) > opt_tf*0.20)
-              time_factor = opt_tf;
+          if (fabs(timeScale-opt_tf) > opt_tf*0.20)
+              timeScale = opt_tf;
        }
 
        // determine miny and maxy
@@ -336,11 +336,11 @@ void OutputVectorInspector::update()
    }
    double rangey=maxy-miny;
 
-   simtime_t tf = time_factor;
+   simtime_t tf = timeScale;
 
    // temporarily define X() and Y() coordinate translation macros
-#define X(t)   (int)(canvaswidth-10-(tbase-(t))/tf)
-#define Y(y)   (int)(canvasheight-20-((y)-miny)*((long)canvasheight-30)/rangey)
+#define X(t)   (int)(canvasWidth-10-(tbase-(t))/tf)
+#define Y(y)   (int)(canvasHeight-20-((y)-miny)*((long)canvasHeight-30)/rangey)
 
    //printf("cw=%d  ch=%d  tbase=%f trange=%f  miny=%f  maxy=%f rangey=%f\n",
    //        canvaswidth, canvasheight,tbase,trange, miny, maxy, rangey);
@@ -357,12 +357,12 @@ void OutputVectorInspector::update()
    int next_y1=next_y2; // next_y2 is just used to prevent unused variable warning.
    int x, y1;
    int pos;
-   int next_pos = (circbuf.headPos()-circbuf.items()+circbuf.size())%circbuf.size();
+   int nextPos = (circbuf.headPos()-circbuf.items()+circbuf.size())%circbuf.size();
    for (int i=0;i<=circbuf.items();i++)
    {
        x  = next_x;
        y1 = next_y1;
-       pos = next_pos;
+       pos = nextPos;
 
        if (i==circbuf.items())
        {
@@ -370,8 +370,8 @@ void OutputVectorInspector::update()
        }
        else
        {
-           next_pos=(next_pos+1)%circbuf.size();
-           CircBuffer::CBEntry& p = circbuf.entry(next_pos);
+           nextPos=(nextPos+1)%circbuf.size();
+           CircBuffer::CBEntry& p = circbuf.entry(nextPos);
            next_x =  X(p.t);
            next_y1 = Y(p.value1);
            next_y2 = Y(p.value2);
@@ -384,7 +384,7 @@ void OutputVectorInspector::update()
 
            const int d = 2;
            char coords[64];
-           switch (drawing_mode)
+           switch (drawingMode)
            {
              case DRAW_DOTS:
                 // draw rectangle 1
@@ -420,10 +420,10 @@ void OutputVectorInspector::update()
        }
    }
 
-   simtime_t tmin = tbase - tf * (canvaswidth-20);
+   simtime_t tmin = tbase - tf * (canvasWidth-20);
 
-   if (moving_tline < tmin)
-       moving_tline = tbase;
+   if (hairlineTime < tmin)
+       hairlineTime = tbase;
 
    double midy = (miny+maxy)/2;
 
@@ -444,7 +444,7 @@ void OutputVectorInspector::update()
    sprintf(coords,"%d %d %d %d", X(tmin), Y(maxy)-2, X(tmin), Y(miny)+2);
    CHK(Tcl_VarEval(interp, canvas," create line ",coords," -fill black", NULL));
 
-   sprintf(coords,"%d %d %d %d", X(moving_tline), Y(maxy)-2, X(moving_tline), Y(miny)+2);
+   sprintf(coords,"%d %d %d %d", X(hairlineTime), Y(maxy)-2, X(hairlineTime), Y(miny)+2);
    CHK(Tcl_VarEval(interp, canvas," create line ",coords," -fill black", NULL));
 
    sprintf(coords,"%d %d", X(tbase)-3, Y(miny));
@@ -467,8 +467,8 @@ void OutputVectorInspector::update()
    sprintf(value,"%s", SIMTIME_STR(tmin));
    CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor nw", NULL));
 
-   sprintf(coords,"%d %d", X(moving_tline)-3, Y(miny));
-   sprintf(value,"%s", SIMTIME_STR(moving_tline));
+   sprintf(coords,"%d %d", X(hairlineTime)-3, Y(miny));
+   sprintf(value,"%s", SIMTIME_STR(hairlineTime));
    CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor n", NULL));
 
 #undef X
@@ -496,19 +496,19 @@ void OutputVectorInspector::valueInfo( char *buf, int valueindex )
    CircBuffer::CBEntry& p = circbuf.entry(valueindex);
    sprintf(buf, "t=%s  value=%g", SIMTIME_STR(p.t), p.value1);
 
-   moving_tline = SIMTIME_DBL(p.t);
+   hairlineTime = SIMTIME_DBL(p.t);
 }
 
 void OutputVectorInspector::getConfig( char *buf )
 {
-   sprintf(buf,"%d %g %g %g %s", autoscale, time_factor, miny, maxy, drawingmodes[drawing_mode] );
+   sprintf(buf,"%d %g %g %g %s", autoscale, timeScale, miny, maxy, drawingmodes[drawingMode] );
 }
 
 void OutputVectorInspector::setConfig( bool autosc, double timefac, double min_y, double max_y, const char *mode)
 {
    // store new parameters
    autoscale = autosc;
-   time_factor = timefac;
+   timeScale = timefac;
    miny = min_y;
    maxy = max_y;
 
@@ -526,7 +526,7 @@ void OutputVectorInspector::setConfig( bool autosc, double timefac, double min_y
        if (0==strcmp(mode,drawingmodes[i]))
            break;
    if (i!=NUM_DRAWINGMODES)
-       drawing_mode = i;
+       drawingMode = i;
 }
 
 int OutputVectorInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)

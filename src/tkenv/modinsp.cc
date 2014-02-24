@@ -68,14 +68,14 @@ void LogInspector::createWindow(const char *window, const char *geometry)
 {
     Inspector::createWindow(window, geometry);
 
-    strcpy(textWidget,windowname);
+    strcpy(textWidget,windowName);
     strcat(textWidget, ".main.text");
 
     Tcl_Interp *interp = getTkenv()->getInterp();
     cModule *mod = static_cast<cModule *>(object);
     const char *createcommand = mod->isSimple() ?
              "createSimpleModuleWindow " : "createCompoundModuleWindow ";
-    CHK(Tcl_VarEval(interp, createcommand, windowname, " \"", geometry, "\"", NULL ));
+    CHK(Tcl_VarEval(interp, createcommand, windowName, " \"", geometry, "\"", NULL ));
     redisplay(getTkenv()->getLogBuffer());
 }
 
@@ -87,7 +87,7 @@ void LogInspector::update()
     Inspector::update();
 
     Tcl_Interp *interp = getTkenv()->getInterp();
-    CHK(Tcl_VarEval(interp, "moduleWindow:trimlines ", windowname, NULL));
+    CHK(Tcl_VarEval(interp, "moduleWindow:trimlines ", windowName, NULL));
 }
 
 void LogInspector::printLastLineOf(const LogBuffer& logBuffer)
@@ -215,8 +215,8 @@ Register_InspectorFactory(TGraphicalModWindowFactory);
 ModuleInspector::ModuleInspector() : Inspector()
 {
    needs_redraw = false;
-   not_drawn = false;
-   random_seed = 0;
+   notDrawn = false;
+   randomSeed = 0;
 }
 
 ModuleInspector::~ModuleInspector()
@@ -228,28 +228,28 @@ void ModuleInspector::setObject(cObject *obj)
     Inspector::setObject(obj);
 
     const cDisplayString blank;
-    cModule *parentmodule = static_cast<cModule *>(object);
-    const cDisplayString& ds = parentmodule->hasDisplayString() && parentmodule->parametersFinalized() ? parentmodule->getDisplayString() : blank;
-    random_seed = resolveLongDispStrArg(ds.getTagArg("bgl",4), parentmodule, 1);
+    cModule *parentModule = static_cast<cModule *>(object);
+    const cDisplayString& ds = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString() : blank;
+    randomSeed = resolveLongDispStrArg(ds.getTagArg("bgl",4), parentModule, 1);
 }
 
 void ModuleInspector::createWindow(const char *window, const char *geometry)
 {
    Inspector::createWindow(window, geometry);
 
-   strcpy(canvas,windowname);
+   strcpy(canvas,windowName);
    strcat(canvas,".c");
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, "createGraphicalModWindow ", windowname, " \"", geometry, "\"", NULL ));
+   CHK(Tcl_VarEval(interp, "createGraphicalModWindow ", windowName, " \"", geometry, "\"", NULL ));
 }
 
 void ModuleInspector::useWindow(const char *widget)
 {
     Inspector::useWindow(widget);
-    strcpy(canvas,windowname);
+    strcpy(canvas,windowName);
     strcat(canvas,".c");
 }
 
@@ -260,7 +260,7 @@ void ModuleInspector::update()
 
    Inspector::update();
 
-   if (not_drawn) return;
+   if (notDrawn) return;
 
    // redraw modules only if really needed
    if (needs_redraw)
@@ -279,39 +279,39 @@ void ModuleInspector::update()
 void ModuleInspector::relayoutAndRedrawAll()
 {
    cModule *mod = (cModule *)object;
-   int submodcount = 0;
-   int gatecountestimate = mod->gateCount();
+   int submoduleCount = 0;
+   int estimatedGateCount = mod->gateCount();
    for (cModule::SubmoduleIterator submod(mod); !submod.end(); submod++)
    {
-       submodcount++;
-       // note: gatecountestimate will count unconnected gates in the gate array as well
-       gatecountestimate += submod()->gateCount();
+       submoduleCount++;
+       // note: estimatedGateCount will count unconnected gates in the gate array as well
+       estimatedGateCount += submod()->gateCount();
    }
 
-   not_drawn = false;
-   if (submodcount>1000 || gatecountestimate>4000)
+   notDrawn = false;
+   if (submoduleCount>1000 || estimatedGateCount>4000)
    {
        Tcl_Interp *interp = getTkenv()->getInterp();
        char problem[200];
-       if (submodcount>1000)
-           sprintf(problem, "contains more than 1000 submodules (exactly %d)", submodcount);
+       if (submoduleCount>1000)
+           sprintf(problem, "contains more than 1000 submodules (exactly %d)", submoduleCount);
        else
            sprintf(problem, "may contain a lot of connections (modules have a large number of gates)");
-       CHK(Tcl_VarEval(interp,"tk_messageBox -parent ",windowname," -type yesno -title Warning -icon question "
+       CHK(Tcl_VarEval(interp,"tk_messageBox -parent ",windowName," -type yesno -title Warning -icon question "
                               "-message {Module '", object->getFullName(), "' ", problem,
                               ", it may take a long time to display the graphics. "
                               "Do you want to proceed with drawing?}", NULL));
        bool answer = (Tcl_GetStringResult(interp)[0]=='y');
        if (answer==false)
        {
-           not_drawn = true;
+           notDrawn = true;
            CHK(Tcl_VarEval(interp, canvas, " delete all",NULL)); // this must be done, still
            return;
        }
    }
 
    // go to next seed
-   random_seed++;
+   randomSeed++;
    recalculateLayout();
    redrawModules();
    redrawNextEventMarker();
@@ -328,7 +328,7 @@ void ModuleInspector::redrawAll()
    updateSubmodules();
 }
 
-void ModuleInspector::getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeyslayout,
+void ModuleInspector::getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeysLayout,
                                                               double& x, double& y, double& sx, double& sy)
 {
     const cDisplayString blank;
@@ -344,9 +344,9 @@ void ModuleInspector::getSubmoduleCoords(cModule *submod, bool& explicitcoords, 
     }
     if (ds.containsTag("i"))
     {
-        const char *imgname = ds.getTagArg("i",0);
-        const char *imgsize = ds.getTagArg("is",0);
-        if (!imgname || !*imgname)
+        const char *imgName = ds.getTagArg("i",0);
+        const char *imgSize = ds.getTagArg("is",0);
+        if (!imgName || !*imgName)
         {
             iconsx = UNKNOWNICON_WIDTH;
             iconsy = UNKNOWNICON_HEIGHT;
@@ -354,7 +354,7 @@ void ModuleInspector::getSubmoduleCoords(cModule *submod, bool& explicitcoords, 
         else
         {
             Tcl_Interp *interp = getTkenv()->getInterp();
-            Tcl_VarEval(interp, "lookupImage ", imgname, " ", imgsize, NULL);
+            Tcl_VarEval(interp, "lookupImage ", imgName, " ", imgSize, NULL);
             Tk_Image img = Tk_GetImage(interp, Tk_MainWindow(interp), Tcl_GetStringResult(interp), NULL, NULL);
             if (!img)
             {
@@ -381,7 +381,7 @@ void ModuleInspector::getSubmoduleCoords(cModule *submod, bool& explicitcoords, 
     if (y==-1) y = 0;
 
     const char *layout = ds.getTagArg("p",2); // matrix, row, column, ring, exact etc.
-    obeyslayout = (layout && *layout);
+    obeysLayout = (layout && *layout);
 
     // modify x,y using predefined layouts
     if (!layout || !*layout)
@@ -446,12 +446,12 @@ void ModuleInspector::refreshLayout()
     // recalculate layout, using coordinates in submodPosMap as "fixed" nodes --
     // only new nodes are re-layouted
 
-    cModule *parentmodule = static_cast<cModule *>(object);
+    cModule *parentModule = static_cast<cModule *>(object);
 
     // Note trick avoid calling getDisplayString() directly because it'd cause
     // the display string object inside cModule to spring into existence
     const cDisplayString blank;
-    const cDisplayString& ds = parentmodule->hasDisplayString() && parentmodule->parametersFinalized() ? parentmodule->getDisplayString() : blank;
+    const cDisplayString& ds = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString() : blank;
 
     // create and configure layouter object
     LayouterChoice choice = getTkenv()->opt->layouterChoice;
@@ -459,7 +459,7 @@ void ModuleInspector::refreshLayout()
     {
         const int LIMIT = 20; // note: on test/anim/dynamic2, Advanced is already very slow with 30-40 modules
         int submodCountLimited = 0;
-        for (cModule::SubmoduleIterator submod(parentmodule); !submod.end() && submodCountLimited<LIMIT; submod++)
+        for (cModule::SubmoduleIterator submod(parentModule); !submod.end() && submodCountLimited<LIMIT; submod++)
             submodCountLimited++;
         choice = submodCountLimited>=LIMIT ? LAYOUTER_FAST : LAYOUTER_ADVANCED;
     }
@@ -467,11 +467,11 @@ void ModuleInspector::refreshLayout()
                                     (GraphLayouter *) new BasicSpringEmbedderLayout() :
                                     (GraphLayouter *) new ForceDirectedGraphLayouter();
 
-    layouter->setSeed(random_seed);
+    layouter->setSeed(randomSeed);
 
     // background size
-    int sx = resolveLongDispStrArg(ds.getTagArg("bgb",0), parentmodule, 0);
-    int sy = resolveLongDispStrArg(ds.getTagArg("bgb",1), parentmodule, 0);
+    int sx = resolveLongDispStrArg(ds.getTagArg("bgb",0), parentModule, 0);
+    int sy = resolveLongDispStrArg(ds.getTagArg("bgb",1), parentModule, 0);
     int border = 30;
     if (sx!=0 && sx < 2*border)
         border = sx/2;
@@ -484,16 +484,16 @@ void ModuleInspector::refreshLayout()
     // by "scale" before passing them to the layouter, then multiply back the results.
 
     // loop through all submodules, get their sizes and positions and feed them into layouting engine
-    for (cModule::SubmoduleIterator it(parentmodule); !it.end(); it++)
+    for (cModule::SubmoduleIterator it(parentModule); !it.end(); it++)
     {
         cModule *submod = it();
 
-        bool explicitcoords, obeyslayout;
+        bool explicitCoords, obeysLayout;
         double x, y, sx, sy;
-        getSubmoduleCoords(submod, explicitcoords, obeyslayout, x, y, sx, sy);
+        getSubmoduleCoords(submod, explicitCoords, obeysLayout, x, y, sx, sy);
 
         // add node into layouter:
-        if (explicitcoords)
+        if (explicitCoords)
         {
             // e.g. "p=120,70" or "p=140,30,ring"
             layouter->addFixedNode(submod->getId(), x, y, sx, sy);
@@ -504,7 +504,7 @@ void ModuleInspector::refreshLayout()
             Point pos = submodPosMap[submod];
             layouter->addFixedNode(submod->getId(), pos.x, pos.y, sx, sy);
         }
-        else if (obeyslayout)
+        else if (obeysLayout)
         {
             // all modules are anchored to the anchor point with the vector's name
             // e.g. "p=,,ring"
@@ -517,30 +517,30 @@ void ModuleInspector::refreshLayout()
     }
 
     // add connections into the layouter, too
-    bool parent = false;
-    for (cModule::SubmoduleIterator it(parentmodule); !parent; it++)
+    bool atParent = false;
+    for (cModule::SubmoduleIterator it(parentModule); !atParent; it++)
     {
-        cModule *mod = !it.end() ? it() : (parent=true,parentmodule);
+        cModule *mod = !it.end() ? it() : (atParent=true,parentModule);
 
         for (cModule::GateIterator i(mod); !i.end(); i++)
         {
             cGate *gate = i();
-            cGate *destgate = gate->getNextGate();
-            if (gate->getType()==(parent ? cGate::INPUT : cGate::OUTPUT) && destgate)
+            cGate *destGate = gate->getNextGate();
+            if (gate->getType()==(atParent ? cGate::INPUT : cGate::OUTPUT) && destGate)
             {
-                cModule *destmod = destgate->getOwnerModule();
-                if (mod==parentmodule && destmod==parentmodule) {
+                cModule *destMod = destGate->getOwnerModule();
+                if (mod==parentModule && destMod==parentModule) {
                     // nop
-                } else if (destmod==parentmodule) {
+                } else if (destMod==parentModule) {
                     layouter->addEdgeToBorder(mod->getId());
-                } else if (destmod->getParentModule()!=parentmodule) {
+                } else if (destMod->getParentModule()!=parentModule) {
                     // connection goes to a module under a different parent!
                     // this in fact violates module encapsulation, but let's
                     // accept it nevertheless. Just skip this connection.
-                } else if (mod==parentmodule) {
-                    layouter->addEdgeToBorder(destmod->getId());
+                } else if (mod==parentModule) {
+                    layouter->addEdgeToBorder(destMod->getId());
                 } else {
-                    layouter->addEdge(mod->getId(), destmod->getId());
+                    layouter->addEdge(mod->getId(), destMod->getId());
                 }
             }
         }
@@ -548,7 +548,7 @@ void ModuleInspector::refreshLayout()
 
     // set up layouter environment (responsible for "Stop" button handling and visualizing the layouting process)
     Tcl_Interp *interp = getTkenv()->getInterp();
-    TkenvGraphLayouterEnvironment environment(interp, parentmodule, ds);
+    TkenvGraphLayouterEnvironment environment(interp, parentModule, ds);
 
     std::string stopButton = std::string(getWindowName()) + ".toolbar.stop";
     bool isExpressMode = getTkenv()->getSimulationRunMode() == Tkenv::RUNMODE_EXPRESS;
@@ -566,7 +566,7 @@ void ModuleInspector::refreshLayout()
 
     // fill the map with the results
     submodPosMap.clear();
-    for (cModule::SubmoduleIterator it(parentmodule); !it.end(); it++)
+    for (cModule::SubmoduleIterator it(parentModule); !it.end(); it++)
     {
         cModule *submod = it();
 
@@ -575,7 +575,7 @@ void ModuleInspector::refreshLayout()
         submodPosMap[submod] = pos;
     }
 
-    random_seed = layouter->getSeed();
+    randomSeed = layouter->getSeed();
 
     delete layouter;
 }
@@ -583,17 +583,17 @@ void ModuleInspector::refreshLayout()
 // requires either recalculateLayout() or refreshLayout() called before!
 void ModuleInspector::redrawModules()
 {
-    cModule *parentmodule = static_cast<cModule *>(object);
+    cModule *parentModule = static_cast<cModule *>(object);
     Tcl_Interp *interp = getTkenv()->getInterp();
 
     // then display all submodules
     CHK(Tcl_VarEval(interp, canvas, " delete dx",NULL)); // NOT "delete all" because that'd remove "bubbles" too!
     const cDisplayString blank;
     std::string buffer;
-    const char *rawScaling = parentmodule->hasDisplayString() && parentmodule->parametersFinalized() ? parentmodule->getDisplayString().getTagArg("bgs",0) : "";
-    const char *scaling = substituteDisplayStringParamRefs(rawScaling, buffer, parentmodule, true);
+    const char *rawScaling = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString().getTagArg("bgs",0) : "";
+    const char *scaling = substituteDisplayStringParamRefs(rawScaling, buffer, parentModule, true);
 
-    for (cModule::SubmoduleIterator it(parentmodule); !it.end(); it++)
+    for (cModule::SubmoduleIterator it(parentModule); !it.end(); it++)
     {
         cModule *submod = it();
         assert(submodPosMap.find(submod)!=submodPosMap.end());
@@ -602,25 +602,25 @@ void ModuleInspector::redrawModules()
     }
 
     // draw enclosing module
-    drawEnclosingModule(interp, parentmodule, scaling);
+    drawEnclosingModule(interp, parentModule, scaling);
 
     // loop through all submodules and enclosing module & draw their connections
-    bool atparent = false;
-    for (cModule::SubmoduleIterator it(parentmodule); !atparent; it++)
+    bool atParent = false;
+    for (cModule::SubmoduleIterator it(parentModule); !atParent; it++)
     {
-        cModule *mod = !it.end() ? it() : (atparent=true,parentmodule);
+        cModule *mod = !it.end() ? it() : (atParent=true,parentModule);
 
         for (cModule::GateIterator i(mod); !i.end(); i++)
         {
             cGate *gate = i();
-            if (gate->getType()==(atparent ? cGate::INPUT: cGate::OUTPUT) && gate->getNextGate()!=NULL)
+            if (gate->getType()==(atParent ? cGate::INPUT: cGate::OUTPUT) && gate->getNextGate()!=NULL)
             {
                 drawConnection(interp, gate);
             }
         }
     }
     CHK(Tcl_VarEval(interp, canvas, " raise bubble",NULL));
-    CHK(Tcl_VarEval(interp, "graphicalModuleWindow:setScrollRegion ", windowname, " 0",NULL));
+    CHK(Tcl_VarEval(interp, "graphicalModuleWindow:setScrollRegion ", windowName, " 0",NULL));
 }
 
 void ModuleInspector::drawSubmodule(Tcl_Interp *interp, cModule *submod, double x, double y, const char *scaling)
@@ -640,14 +640,14 @@ void ModuleInspector::drawSubmodule(Tcl_Interp *interp, cModule *submod, double 
                     NULL));
 }
 
-void ModuleInspector::drawEnclosingModule(Tcl_Interp *interp, cModule *parentmodule, const char *scaling)
+void ModuleInspector::drawEnclosingModule(Tcl_Interp *interp, cModule *parentModule, const char *scaling)
 {
-    const char *dispstr = parentmodule->hasDisplayString() && parentmodule->parametersFinalized() ? parentmodule->getDisplayString().str() : "";
+    const char *displayString = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString().str() : "";
     CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawEnclosingModule ",
                        canvas, " ",
-                       ptrToStr(parentmodule), " ",
-                       "{", parentmodule->getFullPath().c_str(), "} ",
-                       TclQuotedString(dispstr).get(), " ",
+                       ptrToStr(parentModule), " ",
+                       "{", parentModule->getFullPath().c_str(), "} ",
+                       TclQuotedString(displayString).get(), " ",
                        "{", scaling, "} ",
                        NULL ));
 }
@@ -655,7 +655,7 @@ void ModuleInspector::drawEnclosingModule(Tcl_Interp *interp, cModule *parentmod
 void ModuleInspector::drawConnection(Tcl_Interp *interp, cGate *gate)
 {
     cModule *mod = gate->getOwnerModule();
-    cGate *dest_gate = gate->getNextGate();
+    cGate *destGate = gate->getNextGate();
 
     char gateptr[32], srcptr[32], destptr[32], chanptr[32], indices[32];
 
@@ -666,25 +666,25 @@ void ModuleInspector::drawConnection(Tcl_Interp *interp, cGate *gate)
     // gate      o-------------------->o dest_gate
     // gate_pair o<--------------------o dest_gate_pair
     if (gate->getNameSuffix()[0]) {
-      const cGate *gate_pair = mod->gateHalf(gate->getBaseName(),
+        const cGate *gatePair = mod->gateHalf(gate->getBaseName(),
                                         gate->getType() == cGate::INPUT ? cGate::OUTPUT : cGate::INPUT,
                                         gate->isVector() ? gate->getIndex() : -1);
 
-      if (dest_gate->getNameSuffix()[0]) {
-        const cGate *dest_gate_pair = dest_gate->getOwnerModule()->gateHalf(dest_gate->getBaseName(),
-                                            dest_gate->getType() == cGate::INPUT ? cGate::OUTPUT : cGate::INPUT,
-                                            dest_gate->isVector() ? dest_gate->getIndex() : -1);
-          twoWayConnection = dest_gate_pair == gate_pair->getPreviousGate();
+      if (destGate->getNameSuffix()[0]) {
+          const cGate *destGatePair = destGate->getOwnerModule()->gateHalf(destGate->getBaseName(),
+                                            destGate->getType() == cGate::INPUT ? cGate::OUTPUT : cGate::INPUT,
+                                            destGate->isVector() ? destGate->getIndex() : -1);
+          twoWayConnection = destGatePair == gatePair->getPreviousGate();
       }
     }
 
 
     ptrToStr(gate, gateptr);
     ptrToStr(mod, srcptr);
-    ptrToStr(dest_gate->getOwnerModule(), destptr);
+    ptrToStr(destGate->getOwnerModule(), destptr);
     sprintf(indices, "%d %d %d %d",
             gate->getIndex(), gate->size(),
-            dest_gate->getIndex(), dest_gate->size());
+            destGate->getIndex(), destGate->size());
     cChannel *chan = gate->getChannel();
     ptrToStr(chan, chanptr);
     const char *dispstr = (chan && chan->hasDisplayString() && chan->parametersFinalized()) ? chan->getDisplayString().str() : "";
@@ -719,14 +719,14 @@ void ModuleInspector::redrawMessages()
       char msgptr[32];
       ptrToStr(msg(),msgptr);
 
-      cModule *arrivalmod = simulation.getModule( msg()->getArrivalModuleId() );
-      if (arrivalmod &&
-          arrivalmod->getParentModule()==static_cast<cModule *>(object) &&
+      cModule *arrivalMod = simulation.getModule( msg()->getArrivalModuleId() );
+      if (arrivalMod &&
+          arrivalMod->getParentModule()==static_cast<cModule *>(object) &&
           msg()->getArrivalGateId()>=0)
       {
          cGate *arrivalGate = msg()->getArrivalGate();
 
-         // if arrivalgate is connected, msg arrived on a connection, otherwise via sendDirect()
+         // if arrivalGate is connected, msg arrived on a connection, otherwise via sendDirect()
          if (arrivalGate->getPreviousGate())
          {
              cGate *gate = arrivalGate->getPreviousGate();
@@ -740,7 +740,7 @@ void ModuleInspector::redrawMessages()
          {
              CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawMessageOnModule ",
                              canvas, " ",
-                             ptrToStr(arrivalmod), " ",
+                             ptrToStr(arrivalMod), " ",
                              msgptr,
                              NULL));
          }
@@ -762,16 +762,16 @@ void ModuleInspector::redrawNextEventMarker()
        return;
 
    // if any parent of the module containing the next event is on this canvas, draw marker
-   cModule *nextmod = simulation.guessNextModule();
-   cModule *nextmodparent = nextmod;
-   while (nextmodparent && nextmodparent->getParentModule()!=mod)
-       nextmodparent = nextmodparent->getParentModule();
-   if (nextmodparent)
+   cModule *nextMod = simulation.guessNextModule();
+   cModule *nextModParent = nextMod;
+   while (nextModParent && nextModParent->getParentModule()!=mod)
+       nextModParent = nextModParent->getParentModule();
+   if (nextModParent)
    {
        CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawNextEventMarker ",
                        canvas, " ",
-                       ptrToStr(nextmodparent), " ",
-                       (nextmod==nextmodparent ? "2" : "1"),
+                       ptrToStr(nextModParent), " ",
+                       (nextMod==nextModParent ? "2" : "1"),
                        NULL));
    }
 }
@@ -834,10 +834,10 @@ void ModuleInspector::bubble(cModule *submod, const char *text)
     if (submodPosMap.find(submod)==submodPosMap.end())
         refreshLayout();
 
-    cModule *parentmodule = static_cast<cModule *>(object);
+    cModule *parentModule = static_cast<cModule *>(object);
     std::string buffer;
-    const char *rawScaling = parentmodule->hasDisplayString() && parentmodule->parametersFinalized() ? parentmodule->getDisplayString().getTagArg("bgs",0) : "";
-    const char *scaling = substituteDisplayStringParamRefs(rawScaling, buffer, parentmodule, true);
+    const char *rawScaling = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString().getTagArg("bgs",0) : "";
+    const char *scaling = substituteDisplayStringParamRefs(rawScaling, buffer, parentModule, true);
 
     // invoke Tcl code to display bubble
     char coords[64];
@@ -950,13 +950,13 @@ void GateInspector::createWindow(const char *window, const char *geometry)
 {
    Inspector::createWindow(window, geometry);
 
-   strcpy(canvas,windowname);
+   strcpy(canvas,windowName);
    strcat(canvas,".c");
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, "createGraphicalGateWindow ", windowname, " \"", geometry, "\"", NULL ));
+   CHK(Tcl_VarEval(interp, "createGraphicalGateWindow ", windowName, " \"", geometry, "\"", NULL ));
 }
 
 int GateInspector::redraw(Tcl_Interp *interp, int, const char **)
@@ -1032,13 +1032,13 @@ void GateInspector::update()
 
    // loop through all messages in the event queue
    CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", NULL));
-   cGate *destgate = gate->getPathEndGate();
+   cGate *destGate = gate->getPathEndGate();
    for (cMessageHeap::Iterator msg(simulation.msgQueue); !msg.end(); msg++)
    {
       char gateptr[32], msgptr[32];
       ptrToStr(msg(),msgptr);
 
-      if (msg()->getArrivalGate()== destgate)
+      if (msg()->getArrivalGate()== destGate)
       {
          cGate *gate = msg()->getArrivalGate();
          if (gate) gate = gate->getPreviousGate();
