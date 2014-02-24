@@ -467,10 +467,26 @@ proc mainWindow:createInspectorView {} {
 }
 
 proc mainWindow:createNetworkView {} {
-    set f .network
-    frame $f -borderwidth 0
-    createGraphicalModuleViewer $f
-    return $f
+    set w .network
+    frame $w -borderwidth 0
+    createGraphicalModuleViewer $w
+
+    global icons
+    set tb [createInternalToolbar $w $w.c]
+    packIconButton $tb.mrun    -image $icons(mrun)    -command "runSimulationLocal $w normal"
+    packIconButton $tb.mfast   -image $icons(mfast)   -command "runSimulationLocal $w fast"
+    packIconButton $tb.vrun     -image $icons(run)     -command {runNormal}
+    packIconButton $tb.vruncfg  -image $icons(down_vs) -command "moduleInspector:setRunmode $w.toolbar.vrun"
+
+    packIconButton $tb.stop    -image $icons(stop)    -command {stopSimulation}
+    packIconButton $tb.sep2    -separator
+    packIconButton $tb.redraw  -image $icons(redraw) -command "graphicalModuleWindow:relayout $w"
+    packIconButton $tb.zoomin  -image $icons(zoomin)  -command "graphicalModuleWindow:zoomIn $w"
+    packIconButton $tb.zoomout -image $icons(zoomout) -command "graphicalModuleWindow:zoomOut $w"
+    packIconButton $tb.showlabels -image $icons(modnames) -command "graphicalModuleWindow:toggleLabels $w"
+    packIconButton $tb.showarrowheads -image $icons(arrowhead) -command "graphicalModuleWindow:toggleArrowheads $w"
+
+    return $w
 }
 
 proc mainWindow:createLogView {} {
