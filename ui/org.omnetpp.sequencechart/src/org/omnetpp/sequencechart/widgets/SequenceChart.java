@@ -465,6 +465,10 @@ public class SequenceChart
         });
     }
 
+    public SequenceChartContributor getSequenceChartContributor() {
+        return sequenceChartContributor;
+    }
+
     /**
      * Sets the contributor used to build the pop-up menu on the chart.
      */

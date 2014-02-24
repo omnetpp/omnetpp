@@ -125,6 +125,10 @@ public class EventLogTable
         });
     }
 
+    public EventLogTableContributor getEventLogTableContributor() {
+        return eventLogTableContributor;
+    }
+
     public void setEventLogTableContributor(EventLogTableContributor eventLogTableContributor) {
         this.eventLogTableContributor = eventLogTableContributor;
         MenuManager menuManager = new MenuManager();

@@ -102,7 +102,6 @@ public class SequenceChartEditor
         sequenceChart = new SequenceChart(parent, SWT.DOUBLE_BUFFERED);
         sequenceChart.setInput(eventLogInput);
         sequenceChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        sequenceChart.setSequenceChartContributor(SequenceChartContributor.getDefault());
         sequenceChart.setWorkbenchPart(this);
 
         getSite().setSelectionProvider(sequenceChart);
