@@ -1,5 +1,5 @@
 //==========================================================================
-//  MODINSP.H - part of
+//  MODULEINSPECTOR.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,55 +14,18 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __MODINSP_H
-#define __MODINSP_H
+#ifndef __MODULEINSPECTOR_H
+#define __MODULEINSPECTOR_H
 
 #include <map>
 #include "platmisc.h"   // must precede <tk.h> otherwise Visual Studio 2013 fails to compile
 #include <tk.h>
-#include "csimplemodule.h"
-#include "cchannel.h"
-#include "cgate.h"
-#include "cmessage.h"
-#include "cpar.h"
-#include "carray.h"
-#include "coutvector.h"
-#include "cstatistic.h"
-#include "cdensityestbase.h"
-#include "cdisplaystring.h"
-#include "cqueue.h"
-#include "ccompoundmodule.h"
-#include "cchannel.h"
-#include "cdataratechannel.h"
-
-#include "intxtypes.h"
-#include "logbuffer.h"
 #include "inspector.h"
-#include "envirbase.h"
-#include "graphlayouter.h"
 
 NAMESPACE_BEGIN
 
-
-class TKENV_API LogInspector : public Inspector
-{
-   protected:
-      char textWidget[128];
-      std::set<int> excludedModuleIds;
-   public:
-      LogInspector();
-      virtual void createWindow(const char *window, const char *geometry);
-      virtual void update();
-
-      virtual void printLastLineOf(const LogBuffer& logBuffer);
-      virtual void redisplay(const LogBuffer& logBuffer);
-
-      virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
-
-      static void printLastLineOf(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, const std::set<int>& excludedModuleIds);
-      static void redisplay(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, cModule *mod, const std::set<int>& excludedModuleIds);
-};
-
+class cModule;
+class cGate;
 
 class TKENV_API ModuleInspector : public Inspector
 {
@@ -127,24 +90,6 @@ class TKENV_API ModuleInspector : public Inspector
       virtual void bubble(cModule *mod, const char *text);
 };
 
-
-class TKENV_API GateInspector : public Inspector
-{
-   protected:
-      char canvas[128];
-   public:
-      GateInspector();
-      virtual void createWindow(const char *window, const char *geometry);
-      virtual void update();
-      virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
-
-      virtual int redraw(Tcl_Interp *interp, int argc, const char **argv);
-
-      // notifications from envir:
-      virtual void displayStringChanged(cGate *gate);
-};
-
 NAMESPACE_END
-
 
 #endif

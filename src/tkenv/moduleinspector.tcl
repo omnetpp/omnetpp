@@ -1,5 +1,5 @@
 #=================================================================
-#  MODINSP2.TCL - part of
+#  MODULEINSPECTOR.TCL - part of
 #
 #                     OMNeT++/OMNEST
 #            Discrete System Simulation in C++
@@ -13,15 +13,260 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-#-----------------------------------------------------------------
-#  Graphical compound module window stuff
-#-----------------------------------------------------------------
-
 #
 # Note: tooltips on canvas come from the proc whose name is stored in
 # $help_tips(helptip_proc). This is currently getHelpTip.
 #
 
+proc createGraphicalModWindow {name geom} {
+    global icons help_tips config inspectordata
+
+    if {$config(layout-may-resize-window)} {
+        # remove size from geom
+        regsub -- {^[0-9]+x[0-9]+} $geom {} geom
+    }
+
+    set w $name
+    createInspectorToplevel $w $geom
+
+    # create toolbar
+    packIconButton $w.toolbar.ascont  -image $icons(asobject) -command "inspectThis $w {As Object}"
+    packIconButton $w.toolbar.win     -image $icons(asoutput) -command "inspectThis $w {Module output}"
+    packIconButton $w.toolbar.sep1    -separator
+
+    moduleInspector:addRunButtons $w
+
+    graphicalModuleWindow:animControl $w.toolbar.animspeed
+    pack $w.toolbar.animspeed -anchor c -expand 0 -fill none -side left -padx 5 -pady 0
+
+    packIconButton $w.toolbar.sep2    -separator
+    packIconButton $w.toolbar.redraw  -image $icons(redraw) -command "graphicalModuleWindow:relayout $w"
+    packIconButton $w.toolbar.zoomin  -image $icons(zoomin)  -command "graphicalModuleWindow:zoomIn $w"
+    packIconButton $w.toolbar.zoomout -image $icons(zoomout) -command "graphicalModuleWindow:zoomOut $w"
+    packIconButton $w.toolbar.showlabels -image $icons(modnames) -command "graphicalModuleWindow:toggleLabels $w"
+    packIconButton $w.toolbar.showarrowheads -image $icons(arrowhead) -command "graphicalModuleWindow:toggleArrowheads $w"
+
+    set help_tips($w.toolbar.owner)   {Inspect parent module}
+    set help_tips($w.toolbar.ascont)  {Inspect as object}
+    set help_tips($w.toolbar.win)     {See module output}
+    set help_tips($w.toolbar.redraw)  {Re-layout (Ctrl+R)}
+    set help_tips($w.toolbar.animspeed) {Animation speed -- see Options dialog}
+    set help_tips($w.toolbar.zoomin)  {Zoom in (Ctrl+M)}
+    set help_tips($w.toolbar.zoomout) {Zoom out (Ctrl+N}
+    set help_tips($w.toolbar.showlabels) {Show module names (Ctrl+D)}
+    set help_tips($w.toolbar.showarrowheads) {Show arrowheads (Ctrl+A)}
+
+    # add zoom status
+    label $w.infobar.zoominfo -text "" -anchor e -relief flat -justify right
+    pack $w.infobar.zoominfo -anchor n -side right -expand 0 -fill none -pady 1
+
+    # create canvas
+    createGraphicalModuleViewer $w
+
+    set c $w.c
+    if {$inspectordata($c:showlabels)} {
+        $w.toolbar.showlabels config -relief sunken
+    }
+    if {$inspectordata($c:showarrowheads)} {
+        $w.toolbar.showarrowheads config -relief sunken
+    }
+
+    #update idletasks
+    update
+    if [catch {
+       opp_inspectorcommand $w relayout
+    } errmsg] {
+       tk_messageBox -type ok -title Error -icon error -parent [winfo toplevel [focus]] \
+                     -message "Error displaying network graphics: $errmsg"
+    }
+
+    graphicalModuleWindow:adjustWindowSizeAndZoom $w
+}
+
+proc createGraphicalModuleViewer {w} {
+    global inspectordata
+    global B2 B3
+
+    # create widgets inside $w
+    frame $w.grid
+    pack $w.grid -expand yes -fill both -padx 1 -pady 1
+
+    set c $w.c
+    scrollbar $w.hsb -orient horiz -command "$c xview"
+    scrollbar $w.vsb -command "$c yview"
+    canvas $c -background "#a0e0a0" -relief raised -closeenough 2 \
+        -xscrollcommand "$w.hsb set" \
+        -yscrollcommand "$w.vsb set"
+    grid rowconfig    $w.grid 0 -weight 1 -minsize 0
+    grid columnconfig $w.grid 0 -weight 1 -minsize 0
+
+    grid $c -in $w.grid -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
+    grid $w.vsb -in $w.grid -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
+    grid $w.hsb -in $w.grid -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
+
+    # initialize state vars
+    set inspectordata($c:zoomfactor) 1
+    set inspectordata($c:imagesizefactor) 1
+    set inspectordata($c:showlabels) 1
+    set inspectordata($c:showarrowheads) 1
+
+    # mouse bindings
+    $c bind submod <1> "graphicalModuleWindow:click $w"
+    $c bind conn <1> "graphicalModuleWindow:click $w"
+    $c bind msg <1> "graphicalModuleWindow:click $w"
+    $c bind msgname <1> "graphicalModuleWindow:click $w"
+    $c bind qlen <1> "graphicalModuleWindow:qlenClick $w"
+
+    $c bind submod <Double-1> "graphicalModuleWindow:dblClick $w"
+    $c bind conn <Double-1> "graphicalModuleWindow:dblClick $w"
+    $c bind msg <Double-1> "graphicalModuleWindow:dblClick $w"
+    $c bind msgname <Double-1> "graphicalModuleWindow:dblClick $w"
+    $c bind qlen <Double-1> "graphicalModuleWindow:qlenDblclick $w"
+
+    $c bind submod <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
+    $c bind conn <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
+    $c bind msg <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
+    $c bind msgname <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
+    $c bind mod <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
+    $c bind modname <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
+    $c bind qlen <$B3> "graphicalModuleWindow:qlenRightClick $w %X %Y %x %y"
+
+    # keyboard shortcuts
+    bind $w <Control-m> "graphicalModuleWindow:zoomIn $w"
+    bind $w <Control-n> "graphicalModuleWindow:zoomOut $w"
+    bind $w <Control-i> "graphicalModuleWindow:zoomIconsBy $w 1.25"
+    bind $w <Control-o> "graphicalModuleWindow:zoomIconsBy $w 0.8"
+    bind $w <Control-r> "graphicalModuleWindow:relayout $w"
+    bind $w <Control-d> "graphicalModuleWindow:toggleLabels $w"
+    bind $w <Control-a> "graphicalModuleWindow:toggleArrowheads $w"
+}
+
+proc graphicalModuleWindow:adjustWindowSizeAndZoom {w} {
+    global config
+
+    if {!$config(layout-may-resize-window) && !$config(layout-may-change-zoom)} {
+        graphicalModuleWindow:setScrollRegion $w 1
+        return
+    }
+
+    set c $w.c
+
+    # if needed, resize window to fit graphics; if not enough, additionally zoom out as well
+    set bb [$c bbox "mod"] ;# bounding box of the compound module
+    set graphicswidth [expr [lindex $bb 2]-[lindex $bb 0]]
+    set graphicsheight [expr [lindex $bb 3]-[lindex $bb 1]]
+
+    if {!$config(layout-may-resize-window)} {
+        # do not resize, but change zoom so that graphics fills the window
+        # note: $config(layout-may-change-zoom) is TRUE here because of the above "if"
+        set canvaswidth [winfo width $c]
+        set canvasheight [winfo height $c]
+        if {$canvaswidth == 0} {set canvaswidth 400}  ;# approximate size for (rare) case when window size is not yet available
+        if {$canvasheight == 0} {set canvasheight 300}
+        set canvaswidth2 [expr $canvaswidth - 20]  ;# deduce 10px border around compound module
+        set canvasheight2 [expr $canvasheight - 20]
+        if {$canvaswidth2 < 50} {set canvaswidth2 50}
+        if {$canvasheight2 < 50} {set canvasheight2 50}
+
+        set zoomx [expr $canvaswidth2 / double($graphicswidth)]
+        set zoomy [expr $canvasheight2 / double($graphicsheight)]
+        set zoom [mathMin $zoomx $zoomy]
+        if {$zoom < 0.001} {set zoom 0.001}
+        if {$zoom > 1000} {set zoom 1000}
+
+        if {$zoom < 1.0} {
+            graphicalModuleWindow:zoomBy $w $zoom
+        }
+        graphicalModuleWindow:setScrollRegion $w 1
+
+    } else {
+        # we'll need to resize the window, and then either zoom out or not
+
+        # compute maximum available canvas size first that would fit on the screen
+        wmGetDesktopBounds $w desktop ;# fills $desktop(top), $desktop(width), etc.
+        wmGetDecorationSize border    ;# fills $border(top), $border(left), etc.
+        set maxwinwidth [expr $desktop(width) - $border(left) - $border(right) - 30]
+        set maxwinheight [expr $desktop(height) - $border(top) - $border(bottom) - 20]
+
+        set chromewidth [expr [winfo width $w] - [winfo width $c]]
+        set chromeheight [expr [winfo height $w] - [winfo height $c]]
+        if {$chromewidth <= 0} {set chromewidth 0}  ;# in case something was wrong with "winfo width"
+        if {$chromeheight <= 0} {set chromeheight 0}
+
+        set scrollbarwidth 24
+        set scrollbarheight 24
+
+        set margin 10  ;# 10px space around compound module
+
+        set maxcanvaswidth [expr $maxwinwidth - $chromewidth - $scrollbarwidth - $margin]
+        set maxcanvasheight [expr $maxwinheight - $chromeheight - $scrollbarheight - $margin]
+
+        # compute zoomby factor; this is either 1.0 (no change), or less than 1.0 (zoom out)
+        if {!$config(layout-may-change-zoom)} {
+            set zoom 1
+        } else {
+            set zoomx 1.0
+            set zoomy 1.0
+            if {$graphicswidth > $maxcanvaswidth} {
+                set zoomx [expr $maxcanvaswidth / double($graphicswidth)]
+            }
+            if {$graphicsheight > $maxcanvasheight} {
+                set zoomy [expr $maxcanvasheight / double($graphicsheight)]
+            }
+            if {$zoomx < $zoomy} {set zoom $zoomx} else {set zoom $zoomy}
+            if {$zoom < 0.001} {set zoom 0.001}
+            if {$zoom > 1000} {set zoom 1000}
+        }
+
+        set zoomedgraphicswidth [expr $zoom * $graphicswidth]
+        set zoomedgraphicsheight [expr $zoom * $graphicsheight]
+
+        set canvaswidth [expr [mathMin $zoomedgraphicswidth $maxcanvaswidth] + 30]
+        set canvasheight [expr [mathMin $zoomedgraphicsheight $maxcanvasheight] + 30]
+
+        # set size and zoom
+        $c config -width $canvaswidth
+        $c config -height $canvasheight
+        graphicalModuleWindow:zoomBy $w $zoom
+
+        # allow the window to appear, so that scrollbars know their real size;
+        # this is needed for "$c xview moveto" inside graphicalModuleWindow:setScrollRegion
+        # to work properly
+        update idletasks
+
+        graphicalModuleWindow:setScrollRegion $w 1
+
+        # move the window so that it is fully on the screen -- this is not
+        # such a good idea in practice (can be annoying/confusing)
+        #moveToScreen $w
+    }
+}
+
+#
+# Sets the scrolling region for a graphical module inspector.
+# NOTE: This method is invoked from C++.
+#
+proc graphicalModuleWindow:setScrollRegion {w moveToOrigin} {
+    set c $w.c
+
+    # scrolling region
+    set bb [$c bbox all]
+    set x1 [expr [lindex $bb 0]-10]
+    set y1 [expr [lindex $bb 1]-10]
+    set x2 [expr [lindex $bb 2]+10]
+    set y2 [expr [lindex $bb 3]+10]
+    $c config -scrollregion [list $x1 $y1 $x2 $y2]
+
+    # scroll to top-left corner of compound module to top-left corner of window
+    if {$moveToOrigin} {
+        set enclosingmodbb [$c bbox mod]
+        set mx1 [expr [lindex $enclosingmodbb 0]-10]
+        set my1 [expr [lindex $enclosingmodbb 1]-10]
+
+        $c xview moveto [expr ($mx1 - $x1) / double($x2 - $x1)]
+        $c yview moveto [expr ($my1 - $y1) / double($y2 - $y1)]
+    }
+}
 
 proc lookupImage {imgname {imgsize ""}} {
     global bitmaps icons
@@ -861,255 +1106,6 @@ proc graphicalModuleWindow:animControl {w} {
     trace variable priv(animspeed) w animSpeedChanged
 }
 
-proc createGraphicalModWindow {name geom} {
-    global icons help_tips config inspectordata
-
-    if {$config(layout-may-resize-window)} {
-        # remove size from geom
-        regsub -- {^[0-9]+x[0-9]+} $geom {} geom
-    }
-
-    set w $name
-    createInspectorToplevel $w $geom
-
-    # create toolbar
-    packIconButton $w.toolbar.ascont  -image $icons(asobject) -command "inspectThis $w {As Object}"
-    packIconButton $w.toolbar.win     -image $icons(asoutput) -command "inspectThis $w {Module output}"
-    packIconButton $w.toolbar.sep1    -separator
-
-    moduleInspector:addRunButtons $w
-
-    graphicalModuleWindow:animControl $w.toolbar.animspeed
-    pack $w.toolbar.animspeed -anchor c -expand 0 -fill none -side left -padx 5 -pady 0
-
-    packIconButton $w.toolbar.sep2    -separator
-    packIconButton $w.toolbar.redraw  -image $icons(redraw) -command "graphicalModuleWindow:relayout $w"
-    packIconButton $w.toolbar.zoomin  -image $icons(zoomin)  -command "graphicalModuleWindow:zoomIn $w"
-    packIconButton $w.toolbar.zoomout -image $icons(zoomout) -command "graphicalModuleWindow:zoomOut $w"
-    packIconButton $w.toolbar.showlabels -image $icons(modnames) -command "graphicalModuleWindow:toggleLabels $w"
-    packIconButton $w.toolbar.showarrowheads -image $icons(arrowhead) -command "graphicalModuleWindow:toggleArrowheads $w"
-
-    set help_tips($w.toolbar.owner)   {Inspect parent module}
-    set help_tips($w.toolbar.ascont)  {Inspect as object}
-    set help_tips($w.toolbar.win)     {See module output}
-    set help_tips($w.toolbar.redraw)  {Re-layout (Ctrl+R)}
-    set help_tips($w.toolbar.animspeed) {Animation speed -- see Options dialog}
-    set help_tips($w.toolbar.zoomin)  {Zoom in (Ctrl+M)}
-    set help_tips($w.toolbar.zoomout) {Zoom out (Ctrl+N}
-    set help_tips($w.toolbar.showlabels) {Show module names (Ctrl+D)}
-    set help_tips($w.toolbar.showarrowheads) {Show arrowheads (Ctrl+A)}
-
-    # add zoom status
-    label $w.infobar.zoominfo -text "" -anchor e -relief flat -justify right
-    pack $w.infobar.zoominfo -anchor n -side right -expand 0 -fill none -pady 1
-
-    # create canvas
-    createGraphicalModuleViewer $w
-
-    set c $w.c
-    if {$inspectordata($c:showlabels)} {
-        $w.toolbar.showlabels config -relief sunken
-    }
-    if {$inspectordata($c:showarrowheads)} {
-        $w.toolbar.showarrowheads config -relief sunken
-    }
-
-    #update idletasks
-    update
-    if [catch {
-       opp_inspectorcommand $w relayout
-    } errmsg] {
-       tk_messageBox -type ok -title Error -icon error -parent [winfo toplevel [focus]] \
-                     -message "Error displaying network graphics: $errmsg"
-    }
-
-    graphicalModuleWindow:adjustWindowSizeAndZoom $w
-}
-
-proc createGraphicalModuleViewer {w} {
-    global inspectordata
-    global B2 B3
-
-    # create widgets inside $w
-    frame $w.grid
-    pack $w.grid -expand yes -fill both -padx 1 -pady 1
-
-    set c $w.c
-    scrollbar $w.hsb -orient horiz -command "$c xview"
-    scrollbar $w.vsb -command "$c yview"
-    canvas $c -background "#a0e0a0" -relief raised -closeenough 2 \
-        -xscrollcommand "$w.hsb set" \
-        -yscrollcommand "$w.vsb set"
-    grid rowconfig    $w.grid 0 -weight 1 -minsize 0
-    grid columnconfig $w.grid 0 -weight 1 -minsize 0
-
-    grid $c -in $w.grid -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
-    grid $w.vsb -in $w.grid -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
-    grid $w.hsb -in $w.grid -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
-
-    # initialize state vars
-    set inspectordata($c:zoomfactor) 1
-    set inspectordata($c:imagesizefactor) 1
-    set inspectordata($c:showlabels) 1
-    set inspectordata($c:showarrowheads) 1
-
-    # mouse bindings
-    $c bind submod <1> "graphicalModuleWindow:click $w"
-    $c bind conn <1> "graphicalModuleWindow:click $w"
-    $c bind msg <1> "graphicalModuleWindow:click $w"
-    $c bind msgname <1> "graphicalModuleWindow:click $w"
-    $c bind qlen <1> "graphicalModuleWindow:qlenClick $w"
-
-    $c bind submod <Double-1> "graphicalModuleWindow:dblClick $w"
-    $c bind conn <Double-1> "graphicalModuleWindow:dblClick $w"
-    $c bind msg <Double-1> "graphicalModuleWindow:dblClick $w"
-    $c bind msgname <Double-1> "graphicalModuleWindow:dblClick $w"
-    $c bind qlen <Double-1> "graphicalModuleWindow:qlenDblclick $w"
-
-    $c bind submod <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
-    $c bind conn <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
-    $c bind msg <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
-    $c bind msgname <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
-    $c bind mod <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
-    $c bind modname <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
-    $c bind qlen <$B3> "graphicalModuleWindow:qlenRightClick $w %X %Y %x %y"
-
-    # keyboard shortcuts
-    bind $w <Control-m> "graphicalModuleWindow:zoomIn $w"
-    bind $w <Control-n> "graphicalModuleWindow:zoomOut $w"
-    bind $w <Control-i> "graphicalModuleWindow:zoomIconsBy $w 1.25"
-    bind $w <Control-o> "graphicalModuleWindow:zoomIconsBy $w 0.8"
-    bind $w <Control-r> "graphicalModuleWindow:relayout $w"
-    bind $w <Control-d> "graphicalModuleWindow:toggleLabels $w"
-    bind $w <Control-a> "graphicalModuleWindow:toggleArrowheads $w"
-}
-
-proc graphicalModuleWindow:adjustWindowSizeAndZoom {w} {
-    global config
-
-    if {!$config(layout-may-resize-window) && !$config(layout-may-change-zoom)} {
-        graphicalModuleWindow:setScrollRegion $w 1
-        return
-    }
-
-    set c $w.c
-
-    # if needed, resize window to fit graphics; if not enough, additionally zoom out as well
-    set bb [$c bbox "mod"] ;# bounding box of the compound module
-    set graphicswidth [expr [lindex $bb 2]-[lindex $bb 0]]
-    set graphicsheight [expr [lindex $bb 3]-[lindex $bb 1]]
-
-    if {!$config(layout-may-resize-window)} {
-        # do not resize, but change zoom so that graphics fills the window
-        # note: $config(layout-may-change-zoom) is TRUE here because of the above "if"
-        set canvaswidth [winfo width $c]
-        set canvasheight [winfo height $c]
-        if {$canvaswidth == 0} {set canvaswidth 400}  ;# approximate size for (rare) case when window size is not yet available
-        if {$canvasheight == 0} {set canvasheight 300}
-        set canvaswidth2 [expr $canvaswidth - 20]  ;# deduce 10px border around compound module
-        set canvasheight2 [expr $canvasheight - 20]
-        if {$canvaswidth2 < 50} {set canvaswidth2 50}
-        if {$canvasheight2 < 50} {set canvasheight2 50}
-
-        set zoomx [expr $canvaswidth2 / double($graphicswidth)]
-        set zoomy [expr $canvasheight2 / double($graphicsheight)]
-        set zoom [mathMin $zoomx $zoomy]
-        if {$zoom < 0.001} {set zoom 0.001}
-        if {$zoom > 1000} {set zoom 1000}
-
-        if {$zoom < 1.0} {
-            graphicalModuleWindow:zoomBy $w $zoom
-        }
-        graphicalModuleWindow:setScrollRegion $w 1
-
-    } else {
-        # we'll need to resize the window, and then either zoom out or not
-
-        # compute maximum available canvas size first that would fit on the screen
-        wmGetDesktopBounds $w desktop ;# fills $desktop(top), $desktop(width), etc.
-        wmGetDecorationSize border    ;# fills $border(top), $border(left), etc.
-        set maxwinwidth [expr $desktop(width) - $border(left) - $border(right) - 30]
-        set maxwinheight [expr $desktop(height) - $border(top) - $border(bottom) - 20]
-
-        set chromewidth [expr [winfo width $w] - [winfo width $c]]
-        set chromeheight [expr [winfo height $w] - [winfo height $c]]
-        if {$chromewidth <= 0} {set chromewidth 0}  ;# in case something was wrong with "winfo width"
-        if {$chromeheight <= 0} {set chromeheight 0}
-
-        set scrollbarwidth 24
-        set scrollbarheight 24
-
-        set margin 10  ;# 10px space around compound module
-
-        set maxcanvaswidth [expr $maxwinwidth - $chromewidth - $scrollbarwidth - $margin]
-        set maxcanvasheight [expr $maxwinheight - $chromeheight - $scrollbarheight - $margin]
-
-        # compute zoomby factor; this is either 1.0 (no change), or less than 1.0 (zoom out)
-        if {!$config(layout-may-change-zoom)} {
-            set zoom 1
-        } else {
-            set zoomx 1.0
-            set zoomy 1.0
-            if {$graphicswidth > $maxcanvaswidth} {
-                set zoomx [expr $maxcanvaswidth / double($graphicswidth)]
-            }
-            if {$graphicsheight > $maxcanvasheight} {
-                set zoomy [expr $maxcanvasheight / double($graphicsheight)]
-            }
-            if {$zoomx < $zoomy} {set zoom $zoomx} else {set zoom $zoomy}
-            if {$zoom < 0.001} {set zoom 0.001}
-            if {$zoom > 1000} {set zoom 1000}
-        }
-
-        set zoomedgraphicswidth [expr $zoom * $graphicswidth]
-        set zoomedgraphicsheight [expr $zoom * $graphicsheight]
-
-        set canvaswidth [expr [mathMin $zoomedgraphicswidth $maxcanvaswidth] + 30]
-        set canvasheight [expr [mathMin $zoomedgraphicsheight $maxcanvasheight] + 30]
-
-        # set size and zoom
-        $c config -width $canvaswidth
-        $c config -height $canvasheight
-        graphicalModuleWindow:zoomBy $w $zoom
-
-        # allow the window to appear, so that scrollbars know their real size;
-        # this is needed for "$c xview moveto" inside graphicalModuleWindow:setScrollRegion
-        # to work properly
-        update idletasks
-
-        graphicalModuleWindow:setScrollRegion $w 1
-
-        # move the window so that it is fully on the screen -- this is not
-        # such a good idea in practice (can be annoying/confusing)
-        #moveToScreen $w
-    }
-}
-
-#
-# Sets the scrolling region for a graphical module inspector.
-# NOTE: This method is invoked from C++.
-#
-proc graphicalModuleWindow:setScrollRegion {w moveToOrigin} {
-    set c $w.c
-
-    # scrolling region
-    set bb [$c bbox all]
-    set x1 [expr [lindex $bb 0]-10]
-    set y1 [expr [lindex $bb 1]-10]
-    set x2 [expr [lindex $bb 2]+10]
-    set y2 [expr [lindex $bb 3]+10]
-    $c config -scrollregion [list $x1 $y1 $x2 $y2]
-
-    # scroll to top-left corner of compound module to top-left corner of window
-    if {$moveToOrigin} {
-        set enclosingmodbb [$c bbox mod]
-        set mx1 [expr [lindex $enclosingmodbb 0]-10]
-        set my1 [expr [lindex $enclosingmodbb 1]-10]
-
-        $c xview moveto [expr ($mx1 - $x1) / double($x2 - $x1)]
-        $c yview moveto [expr ($my1 - $y1) / double($y2 - $y1)]
-    }
-}
 
 proc mathMin {a b} {
     return [expr ($a < $b) ? $a : $b]
@@ -1554,66 +1550,6 @@ proc graphicalModuleWindow:bubble {c x y scaling txt} {
     set sp [opp_getsimoption animation_speed]
     set ad [expr int(1000 / (0.1+$sp))]
     after $ad [list catch [list $c delete $txtid $bubbleid]]
-}
-
-
-#
-# Called from Layouter::debugDraw()
-#
-proc layouter:debugDrawFinish {c msg} {
-    global fonts
-
-    # create label
-    set bb [$c bbox bbox]
-    $c create text [lindex $bb 0] [lindex $bb 1] -tag bbox -anchor sw -text $msg -font $fonts(canvas)
-    set bb [$c bbox bbox]
-
-    # rescale to fit canvas
-    set w [expr [lindex $bb 2]-[lindex $bb 0]]
-    set h [expr [lindex $bb 3]-[lindex $bb 1]]
-    set cw [winfo width $c]
-    set ch [winfo height $c]
-    set fx [expr $cw/double($w)]
-    set fy [expr $ch/double($h)]
-    if {$fx>1} {set fx 1}
-    if {$fy>1} {set fy 1}
-    $c scale all 0 0 $fx $fy
-
-    $c config -scrollregion [$c bbox bbox]
-    $c xview moveto 0
-    $c yview moveto 0
-    update idletasks
-}
-
-proc layouter:startGrab {stopbutton} {
-    global opp help_tips
-
-    # tooltip
-    set opp(grabSavedTooltip) $help_tips($stopbutton)
-    set help_tips($stopbutton) {Layouting -- click STOP to abort it}
-
-    # prevent user from closing window (postpone close operation)
-    set win [winfo toplevel $stopbutton]
-    set opp(grabOrigCloseHandler) [wm protocol $win WM_DELETE_WINDOW]
-    wm protocol $win WM_DELETE_WINDOW [list opp_markinspectorfordeletion $win]
-
-    set opp(oldGrab) [grab current $stopbutton]
-
-    grab $stopbutton
-    focus $stopbutton
-}
-
-proc layouter:releaseGrab {stopbutton} {
-    global opp help_tips
-
-    # restore everything messed up in layouter:startGrab
-    set help_tips($stopbutton) $opp(grabSavedTooltip)
-
-    catch {grab release $stopbutton}
-    catch {grab release [grab current]}
-
-    set win [winfo toplevel $stopbutton]
-    wm protocol $win WM_DELETE_WINDOW $opp(grabOrigCloseHandler)
 }
 
 

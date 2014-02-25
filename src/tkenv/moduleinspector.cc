@@ -1,11 +1,8 @@
 //==========================================================================
-//  MODINSP.CC - part of
+//  MODULEINSPECTOR.CC - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
-//
-//  Implementation of
-//    inspectors
 //
 //==========================================================================
 
@@ -22,181 +19,36 @@
 #include <math.h>
 #include <assert.h>
 
-#include "modinsp.h"
-#include "cchannel.h"
+#include "moduleinspector.h"
 #include "tkenv.h"
 #include "tklib.h"
 #include "tkutil.h"
-#include "inspfactory.h"
+#include "inspectorfactory.h"
 #include "arrow.h"
 #include "graphlayouter.h"
 #include "layouterenv.h"
 #include "forcedirectedgraphlayouter.h"
 #include "basicspringembedderlayout.h"
 #include "stringtokenizer.h"
+#include "cdisplaystring.h"
+#include "cqueue.h"
+#include "cmessage.h"
+#include "cgate.h"
+#include "cchannel.h"
+#include "csimplemodule.h"
 
 NAMESPACE_BEGIN
 
 #define UNKNOWNICON_WIDTH  32
 #define UNKNOWNICON_HEIGHT 32
 
-void _dummy_for_modinsp() {}
+void _dummy_for_moduleinspector() {}
 
 
-class TModuleWindowFactory : public InspectorFactory
+class ModuleInspectorFactory : public InspectorFactory
 {
   public:
-    TModuleWindowFactory(const char *name) : InspectorFactory(name) {}
-
-    bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
-    int getInspectorType() {return INSP_MODULEOUTPUT;}
-    double getQualityAsDefault(cObject *object) {return 0.5;}
-
-    Inspector *createInspector() {
-        return prepare(new LogInspector());
-    }
-};
-
-Register_InspectorFactory(TModuleWindowFactory);
-
-
-LogInspector::LogInspector() : Inspector()
-{
-}
-
-void LogInspector::createWindow(const char *window, const char *geometry)
-{
-    Inspector::createWindow(window, geometry);
-
-    strcpy(textWidget,windowName);
-    strcat(textWidget, ".main.text");
-
-    Tcl_Interp *interp = getTkenv()->getInterp();
-    cModule *mod = static_cast<cModule *>(object);
-    const char *createcommand = mod->isSimple() ?
-             "createSimpleModuleWindow " : "createCompoundModuleWindow ";
-    CHK(Tcl_VarEval(interp, createcommand, windowName, " \"", geometry, "\"", NULL ));
-    redisplay(getTkenv()->getLogBuffer());
-}
-
-void LogInspector::update()
-{
-    if (!object)
-        return;
-
-    Inspector::update();
-
-    Tcl_Interp *interp = getTkenv()->getInterp();
-    CHK(Tcl_VarEval(interp, "moduleWindow:trimlines ", windowName, NULL));
-}
-
-void LogInspector::printLastLineOf(const LogBuffer& logBuffer)
-{
-    printLastLineOf(getTkenv()->getInterp(), textWidget, logBuffer, excludedModuleIds);
-}
-
-void LogInspector::redisplay(const LogBuffer& logBuffer)
-{
-    redisplay(getTkenv()->getInterp(), textWidget, logBuffer, static_cast<cModule *>(object), excludedModuleIds);
-}
-
-void LogInspector::printLastLineOf(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, const std::set<int>& excludedModuleIds)
-{
-    const LogBuffer::Entry& entry = logBuffer.getEntries().back();
-    if (!entry.moduleIds)
-    {
-        if (entry.lines.empty())
-            textWidget_insert(interp, textWidget, entry.banner, "log");
-        else
-            textWidget_insert(interp, textWidget, entry.lines.back());
-    }
-    else if (excludedModuleIds.find(entry.moduleIds[0])==excludedModuleIds.end())
-    {
-        if (entry.lines.empty())
-            textWidget_insert(interp, textWidget, entry.banner, "event");
-        else
-            textWidget_insert(interp, textWidget, entry.lines.back());
-    }
-    textWidget_gotoEnd(interp, textWidget);
-}
-
-void LogInspector::redisplay(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, cModule *mod, const std::set<int>& excludedModuleIds)
-{
-    textWidget_clear(interp, textWidget);
-
-    if (!mod)
-        return;
-
-    int inspModuleId = mod->getId();
-    const std::list<LogBuffer::Entry>& entries = logBuffer.getEntries();
-    for (std::list<LogBuffer::Entry>::const_iterator it=entries.begin(); it!=entries.end(); it++)
-    {
-        const LogBuffer::Entry& entry = *it;
-        if (!entry.moduleIds)
-        {
-            textWidget_insert(interp, textWidget, entry.banner, "log");
-            for (int i=0; i<(int)entry.lines.size(); i++)
-                textWidget_insert(interp, textWidget, entry.lines[i]); //?
-        }
-        else
-        {
-            // check that this module is covered in entry.moduleIds[] (module path up to the root)
-            bool found = false;
-            for (int *p = entry.moduleIds; !found && *p; p++)
-                if (*p == inspModuleId)
-                    found = true;
-
-            // if so, and is not excluded, display log
-            if (found && excludedModuleIds.find(entry.moduleIds[0])==excludedModuleIds.end())
-            {
-                textWidget_insert(interp, textWidget, entry.banner, "event");
-                for (int i=0; i<(int)entry.lines.size(); i++)
-                    textWidget_insert(interp, textWidget, entry.lines[i]);
-            }
-        }
-    }
-    textWidget_gotoEnd(interp, textWidget);
-}
-
-int LogInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
-{
-    if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
-
-    // supported commands: redisplay, getexcludedmoduleids, setexcludedmoduleids
-
-    if (strcmp(argv[0],"redisplay")==0)
-    {
-       if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-       TRY(redisplay(getTkenv()->getLogBuffer()));
-       return TCL_OK;
-    }
-    else if (strcmp(argv[0],"getexcludedmoduleids")==0)
-    {
-       if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-       Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
-       for (std::set<int>::iterator it=excludedModuleIds.begin(); it!=excludedModuleIds.end(); it++)
-           Tcl_ListObjAppendElement(interp, listobj, Tcl_NewIntObj(*it));
-       Tcl_SetObjResult(interp, listobj);
-       return TCL_OK;
-    }
-    else if (strcmp(argv[0],"setexcludedmoduleids")==0)
-    {
-       if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-       excludedModuleIds.clear();
-       StringTokenizer tokenizer(argv[1]);
-       while (tokenizer.hasMoreTokens())
-           excludedModuleIds.insert(atoi(tokenizer.nextToken()));
-       return TCL_OK;
-    }
-    return TCL_ERROR;
-}
-
-//=======================================================================
-
-class TGraphicalModWindowFactory : public InspectorFactory
-{
-  public:
-    TGraphicalModWindowFactory(const char *name) : InspectorFactory(name) {}
+    ModuleInspectorFactory(const char *name) : InspectorFactory(name) {}
 
     bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
     int getInspectorType() {return INSP_GRAPHICAL;}
@@ -209,7 +61,7 @@ class TGraphicalModWindowFactory : public InspectorFactory
     }
 };
 
-Register_InspectorFactory(TGraphicalModWindowFactory);
+Register_InspectorFactory(ModuleInspectorFactory);
 
 
 ModuleInspector::ModuleInspector() : Inspector()
@@ -240,8 +92,6 @@ void ModuleInspector::createWindow(const char *window, const char *geometry)
    strcpy(canvas,windowName);
    strcat(canvas,".c");
 
-   // create inspector window by calling the specified proc with
-   // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = getTkenv()->getInterp();
    CHK(Tcl_VarEval(interp, "createGraphicalModWindow ", windowName, " \"", geometry, "\"", NULL ));
 }
@@ -850,9 +700,6 @@ int ModuleInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char *
 {
    if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
 
-   // supported commands:
-   //   arrowcoords, relayout, etc...
-
    if (strcmp(argv[0],"arrowcoords")==0)
    {
       return arrowcoords(interp,argc,argv);
@@ -921,158 +768,6 @@ int ModuleInspector::getSubmodQLen(Tcl_Interp *interp, int argc, const char **ar
    sprintf(buf, "%d", q->length());
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
    return TCL_OK;
-}
-
-
-//=======================================================================
-class TGraphicalGateWindowFactory : public InspectorFactory
-{
-  public:
-    TGraphicalGateWindowFactory(const char *name) : InspectorFactory(name) {}
-
-    bool supportsObject(cObject *obj) {return dynamic_cast<cGate *>(obj)!=NULL;}
-    int getInspectorType() {return INSP_GRAPHICAL;}
-    double getQualityAsDefault(cObject *object) {return 3.0;}
-
-    Inspector *createInspector() {
-        return prepare(new GateInspector());
-    }
-};
-
-Register_InspectorFactory(TGraphicalGateWindowFactory);
-
-
-GateInspector::GateInspector() : Inspector()
-{
-}
-
-void GateInspector::createWindow(const char *window, const char *geometry)
-{
-   Inspector::createWindow(window, geometry);
-
-   strcpy(canvas,windowName);
-   strcat(canvas,".c");
-
-   // create inspector window by calling the specified proc with
-   // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, "createGraphicalGateWindow ", windowName, " \"", geometry, "\"", NULL ));
-}
-
-int GateInspector::redraw(Tcl_Interp *interp, int, const char **)
-{
-   cGate *gate = (cGate *)object;
-
-   CHK(Tcl_VarEval(interp, canvas, " delete all",NULL));
-
-   // draw modules
-   int k = 0;
-   int xsiz = 0;
-   char prevdir = ' ';
-   cGate *g;
-   for (g = gate->getPathStartGate(); g!=NULL; g=g->getNextGate(),k++)
-   {
-        if (g->getType()==prevdir)
-             xsiz += (g->getType()==cGate::OUTPUT) ? 1 : -1;
-        else
-             prevdir = g->getType();
-
-        char modptr[32], gateptr[32], kstr[16], xstr[16], dir[2];
-        ptrToStr(g->getOwnerModule(),modptr);
-        ptrToStr(g,gateptr);
-        sprintf(kstr,"%d",k);
-        sprintf(xstr,"%d",xsiz);
-        dir[0] = g->getType(); dir[1]=0;
-        CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawModuleGate ",
-                      canvas, " ",
-                      modptr, " ",
-                      gateptr, " ",
-                      "{",g->getOwnerModule()->getFullPath().c_str(), "} ",
-                      "{",g->getFullName(), "} ",
-                      kstr," ",
-                      xstr," ",
-                      dir, " ",
-                      g==gate?"1":"0",
-                      NULL ));
-   }
-
-   // draw connections
-   for (g = gate->getPathStartGate(); g->getNextGate()!=NULL; g=g->getNextGate())
-   {
-        char srcgateptr[32], destgateptr[32], chanptr[32];
-        ptrToStr(g,srcgateptr);
-        ptrToStr(g->getNextGate(),destgateptr);
-        cChannel *chan = g->getChannel();
-        ptrToStr(chan,chanptr);
-        const char *dispstr = (chan && chan->hasDisplayString() && chan->parametersFinalized() ) ? chan->getDisplayString().str() : "";
-        CHK(Tcl_VarEval(interp, "graphGateWin:drawConnection ",
-                      canvas, " ",
-                      srcgateptr, " ",
-                      destgateptr, " ",
-                      chanptr, " ",
-                      TclQuotedString(chan?chan->info().c_str():"").get(), " ",
-                      TclQuotedString(dispstr).get(), " ",
-                      NULL ));
-   }
-
-   // loop through all messages in the event queue
-   update();
-
-   return TCL_OK;
-}
-
-void GateInspector::update()
-{
-   Inspector::update();
-
-   Tcl_Interp *interp = getTkenv()->getInterp();
-   cGate *gate = static_cast<cGate *>(object);
-
-   // redraw modules only on explicit request
-
-   // loop through all messages in the event queue
-   CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", NULL));
-   cGate *destGate = gate->getPathEndGate();
-   for (cMessageHeap::Iterator msg(simulation.msgQueue); !msg.end(); msg++)
-   {
-      char gateptr[32], msgptr[32];
-      ptrToStr(msg(),msgptr);
-
-      if (msg()->getArrivalGate()== destGate)
-      {
-         cGate *gate = msg()->getArrivalGate();
-         if (gate) gate = gate->getPreviousGate();
-         if (gate)
-         {
-             CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawMessageOnGate ",
-                             canvas, " ",
-                             ptrToStr(gate,gateptr), " ",
-                             msgptr,
-                             NULL));
-         }
-      }
-   }
-}
-
-int GateInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
-{
-   if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
-
-   // supported commands:
-   //   redraw
-
-   if (strcmp(argv[0],"redraw")==0)
-   {
-      return redraw(interp,argc,argv);
-   }
-
-   Tcl_SetResult(interp, TCLCONST("invalid arg: must be 'redraw'"), TCL_STATIC);
-   return TCL_ERROR;
-}
-
-void GateInspector::displayStringChanged(cGate *gate)
-{
-   //XXX should defer redraw (via redraw_needed) to avoid "flickering"
 }
 
 NAMESPACE_END

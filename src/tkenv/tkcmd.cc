@@ -41,7 +41,7 @@
 #include "tklib.h"
 #include "tkutil.h"
 #include "inspector.h"
-#include "inspfactory.h"
+#include "inspectorfactory.h"
 #include "patternmatcher.h"
 #include "visitor.h"
 #include "fsutils.h"
@@ -49,7 +49,6 @@
 #include "stringutil.h"
 #include "stringtokenizer.h"
 #include "unitconversion.h"
-#include "modinsp.h"  // displayStringPar
 
 NAMESPACE_BEGIN
 

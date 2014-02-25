@@ -40,9 +40,12 @@
 #include "tkenv.h"
 #include "tklib.h"
 #include "inspector.h"
-#include "inspfactory.h"
-#include "modinsp.h"
-#include "objinsp.h"
+#include "inspectorfactory.h"
+#include "moduleinspector.h"
+#include "loginspector.h"
+#include "gateinspector.h"
+#include "genericobjectinspector.h"
+#include "watchinspector.h"
 #include "timeutil.h"
 #include "stringutil.h"
 #include "stringtokenizer.h"
@@ -2111,14 +2114,22 @@ void Tkenv::logTclError(const char *file, int line, Tcl_Interp *interp)
 //======================================================================
 // dummy function to force Unix linkers collect all symbols needed
 
-void _dummy_for_objinsp();
-void _dummy_for_modinsp();
-void _dummy_for_statinsp();
+void _dummy_for_genericobjectinspector();
+void _dummy_for_watchinspector();
+void _dummy_for_moduleinspector();
+void _dummy_for_loginspector();
+void _dummy_for_gateinspector();
+void _dummy_for_histograminspector();
+void _dummy_for_outputvectorinspector();
 
 void _dummy_func() {
-  _dummy_for_objinsp();
-  _dummy_for_modinsp();
-  _dummy_for_statinsp();
+  _dummy_for_genericobjectinspector();
+  _dummy_for_watchinspector();
+  _dummy_for_moduleinspector();
+  _dummy_for_loginspector();
+  _dummy_for_gateinspector();
+  _dummy_for_histograminspector();
+  _dummy_for_outputvectorinspector();
 }
 
 NAMESPACE_END

@@ -27,8 +27,10 @@ COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../envir -
 IMPLIBS= -L$L -loppsim$D -loppenvir$D -lopplayout$D -loppcommon$D $(TK_LIBS) $(ZLIB_LIBS)
 
 OBJS = $O/tkenv$(TKENV_EMBED_SUFFIX).o $O/tkcmd.o $O/tklib.o $O/inspector.o $O/logbuffer.o \
-       $O/inspfactory.o $O/objinsp.o $O/modinsp.o $O/statinsp.o $O/layouterenv.o \
-       $O/arrow.o $O/tkutil.o $O/tkImgPNG.o $O/tkImgPNGInit.o
+       $O/inspectorfactory.o $O/genericobjectinspector.o $O/watchinspector.o \
+       $O/moduleinspector.o $O/loginspector.o $O/gateinspector.o \
+       $O/outputvectorinspector.o $O/histograminspector.o \
+       $O/layouterenv.o $O/arrow.o $O/tkutil.o $O/tkImgPNG.o $O/tkImgPNGInit.o
 
 ifeq ("$(EMBED_TCL_CODE)","yes")
 TKENV_EMBED_SUFFIX=-e
@@ -71,7 +73,7 @@ $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
 	@echo Creating static library: $@
 	$(Q)$(AR) $O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
 	$(Q)$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
-	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L 
+	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
 
 $L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $L
@@ -86,7 +88,7 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $L
 	@echo Creating DLL: $@
 	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX)
-	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L 
+	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
 	$(Q)cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
 $O/tkenv.o : tkenv.cc
@@ -250,7 +252,7 @@ $O/inspector.o: inspector.cc \
   ../../include/simutil.h \
   tkenv.h \
   ../../include/cproperty.h
-$O/inspfactory.o: inspfactory.cc \
+$O/inspectorfactory.o: inspectorfactory.cc \
   ../envir/args.h \
   ../../include/regmacros.h \
   ../../include/ctimestampedvalue.h \
@@ -348,7 +350,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/cnullenvir.h \
   ../../include/cobject.h \
   ../../include/cnedfunction.h \
-  inspfactory.h \
+  inspectorfactory.h \
   ../../include/cstringpool.h \
   ../../include/cresultfilter.h \
   ../../include/cdefaultlist.h \
@@ -520,7 +522,7 @@ $O/modinsp.o: modinsp.cc \
   ../../include/cdisplaystring.h \
   ../../include/cobject.h \
   tkdefs.h \
-  inspfactory.h \
+  inspectorfactory.h \
   ../../include/cstringpool.h \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
@@ -627,7 +629,7 @@ $O/objinsp.o: objinsp.cc \
   ../../include/cnullenvir.h \
   ../../include/cobject.h \
   ../../include/cnedfunction.h \
-  inspfactory.h \
+  inspectorfactory.h \
   ../../include/cstringpool.h \
   ../../include/cresultfilter.h \
   ../../include/cdefaultlist.h \
@@ -694,7 +696,7 @@ $O/statinsp.o: statinsp.cc \
   ../../include/csimulation.h \
   tkdefs.h \
   ../../include/cobject.h \
-  inspfactory.h \
+  inspectorfactory.h \
   ../../include/cstringpool.h \
   ../../include/cdefaultlist.h \
   ../../include/cdensityestbase.h \
@@ -766,7 +768,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/cdisplaystring.h \
   tkdefs.h \
   ../../include/cobject.h \
-  inspfactory.h \
+  inspectorfactory.h \
   ../../include/cstringpool.h \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
@@ -838,7 +840,7 @@ $O/tkenv.o: tkenv.cc \
   ../../include/cdisplaystring.h \
   ../../include/cobject.h \
   tkdefs.h \
-  inspfactory.h \
+  inspectorfactory.h \
   ../../include/cstringpool.h \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \

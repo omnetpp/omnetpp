@@ -1,5 +1,5 @@
 //==========================================================================
-//  STATINSP.H - part of
+//  OUTPUTVECTORINSPECTOR.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __STATINSP_H
-#define __STATINSP_H
+#ifndef __OUTPUTVECTORINSPECTOR_H
+#define __OUTPUTVECTORINSPECTOR_H
 
 #include <tk.h>
 #include "inspector.h"
@@ -23,22 +23,6 @@
 
 NAMESPACE_BEGIN
 
-
-class TKENV_API HistogramInspector : public Inspector
-{
-   protected:
-      char canvas[64];
-   public:
-      HistogramInspector();
-      virtual void createWindow(const char *window, const char *geometry);
-      virtual void update();
-      virtual void writeBack() {}
-      virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
-
-      // return textual information in general or about a value/value pair
-      void generalInfo( char *buf );
-      void getCellInfo( char *buf, int cellindex );
-};
 
 class CircBuffer
 {

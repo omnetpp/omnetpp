@@ -24,7 +24,7 @@
 
 #include "layouterenv.h"
 #include "tklib.h"
-#include "modinsp.h"
+#include "tkutil.h"
 #include "cmodule.h"
 #include "cdisplaystring.h"
 

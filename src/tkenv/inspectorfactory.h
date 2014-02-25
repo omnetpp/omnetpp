@@ -1,5 +1,5 @@
 //==========================================================================
-//  INSPFACTORY.H - part of
+//  INSPECTORFACTORY.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __INSPFACTORY_H
-#define __INSPFACTORY_H
+#ifndef __INSPECTORFACTORY_H
+#define __INSPECTORFACTORY_H
 
 #include <tk.h>
 #include "onstartup.h"

@@ -1,5 +1,5 @@
 #=================================================================
-#  INSPLIST.TCL - part of
+#  INSPECTORLIST.TCL - part of
 #
 #                     OMNeT++/OMNEST
 #            Discrete System Simulation in C++
@@ -14,15 +14,13 @@
 #----------------------------------------------------------------#
 
 #
-# Inspector list handling
+# PIL stands for Pending Inspector List.
+# Variables:
+# - pil_name()
+# - pil_class()
+# - pil_type()
+# - pil_geom()
 #
-
-# PIL stands for Pending Inspector List
-#set pil_name() {}
-#set pil_class() {}
-#set pil_type() {}
-#set pil_geom() {}
-
 
 #
 # THIS PROC IS CALLED FROM C++ CODE, at each inspector display update.
@@ -39,7 +37,7 @@ proc inspectorUpdateCallback {} {
 
 
 #
-# try to open inspectors in 'pending inspectors' list
+# Try to open inspectors in 'pending inspectors' list
 #
 proc inspectorList:openInspectors {} {
     global pil_name pil_class pil_type pil_geom
@@ -70,7 +68,7 @@ proc inspectorList:openInspectors {} {
 }
 
 #
-# add an inspector to the list. The underlying object must still exist.
+# Add an inspector to the list. The underlying object must still exist.
 #
 proc inspectorList:add {w allowdestructive} {
     global pil_name pil_class pil_type pil_geom pil_nextindex

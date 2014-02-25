@@ -1,10 +1,8 @@
 //==========================================================================
-//  INSPECT.CC - part of
+//  INSPECTORFACTORY.CC - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
-//
-//  Implementation of inspector() functions
 //
 //==========================================================================
 
@@ -21,7 +19,7 @@
 #include "tkenv.h"
 #include "tklib.h"
 #include "inspector.h"
-#include "inspfactory.h"
+#include "inspectorfactory.h"
 
 NAMESPACE_BEGIN
 

@@ -1,5 +1,5 @@
 #=================================================================
-#  GATEINSP.TCL - part of
+#  GATEINSPECTOR.TCL - part of
 #
 #                     OMNeT++/OMNEST
 #            Discrete System Simulation in C++

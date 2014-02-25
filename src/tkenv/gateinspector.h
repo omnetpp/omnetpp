@@ -1,5 +1,5 @@
 //==========================================================================
-//  OBJINSP.H - part of
+//  GATEINSPECTOR.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,44 +14,33 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OBJINSP_H
-#define __OBJINSP_H
+#ifndef __GATEINSPECTOR_H
+#define __GATEINSPECTOR_H
 
+#include <map>
+#include "platmisc.h"   // must precede <tk.h> otherwise Visual Studio 2013 fails to compile
 #include <tk.h>
 #include "inspector.h"
-#include "envirbase.h"
 
 NAMESPACE_BEGIN
 
-class TKENV_API GenericObjectInspector : public Inspector
+
+class TKENV_API GateInspector : public Inspector
 {
    protected:
-      bool hascontentspage;
-      bool focuscontentspage;
+      char canvas[128];
    public:
-      GenericObjectInspector();
-      ~GenericObjectInspector();
-      virtual void setObject(cObject *obj);
-      void setContentsPage(bool show, bool focus) {hascontentspage = show; focuscontentspage = focus;}
+      GateInspector();
       virtual void createWindow(const char *window, const char *geometry);
       virtual void update();
-      virtual void writeBack();
       virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
-};
 
+      virtual int redraw(Tcl_Interp *interp, int argc, const char **argv);
 
-class TKENV_API WatchInspector: public Inspector
-{
-   public:
-      WatchInspector();
-      virtual void createWindow(const char *window, const char *geometry);
-      virtual void update();
-      virtual void writeBack();
+      // notifications from envir:
+      virtual void displayStringChanged(cGate *gate);
 };
 
 NAMESPACE_END
 
 #endif
-
-
-
