@@ -48,8 +48,8 @@ class TKENV_API Inspector
    protected:
       cObject *object;        // the inspected object
       int type;               // INSP_OBJECT, etc.
-      char windowName[24];    // Tk inspector window variable
-      char windowTitle[128];  // window title string
+      char windowName[24];    // Tk widget path
+      std::string windowTitle;// window title string
       bool ownsWindow;        // whether destructor should destroy the window
       bool closeRequested;    // "mark for deletion" flag (set if user wants to close inspector during animation)
    public:

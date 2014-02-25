@@ -68,7 +68,6 @@ Inspector::Inspector()
    closeRequested = false;
 
    windowName[0] = '\0'; // no window exists
-   windowTitle[0] = '\0';
 }
 
 Inspector::~Inspector()
@@ -95,7 +94,7 @@ void Inspector::createWindow(const char *window, const char *geometry)
 void Inspector::useWindow(const char *widget)
 {
     strcpy(windowName, widget);
-    windowTitle[0] = '\0';
+    windowTitle = "";
     ownsWindow = false;
 }
 
@@ -124,45 +123,42 @@ void Inspector::update()
    //FIXME only if there is infobar and toolbar! (that is, !embedded; or hasToolbar && hasInfobar)
    Tcl_Interp *interp = getTkenv()->getInterp();
 
-   // update window title (only if changed)
-   //  (always updating the title produces many unnecessary redraws under some window mgrs)
-   char newtitle[128];
+   // update window title (only if changed -- always updating the title produces
+   // unnecessary redraws under some window managers
+   char newTitle[256];
    const char *prefix = getTkenv()->getWindowTitlePrefix();
    if (!object)
    {
-       sprintf(newtitle, "%s n/a", prefix);
+       sprintf(newTitle, "%s n/a", prefix);
    }
    else
    {
-       char fullpath[300];
-       strncpy(fullpath, object->getFullPath().c_str(), 300);
-       fullpath[299] = 0;
-       int len = strlen(fullpath);
-       if (len<=45)
-           sprintf(newtitle, "%s(%.40s) %s", prefix, getObjectShortTypeName(object), fullpath);
+       std::string fullPath = object->getFullPath();
+       if (fullPath.length()<=60)
+           sprintf(newTitle, "%s(%.40s) %s", prefix, getObjectShortTypeName(object), fullPath.c_str());
        else
-           sprintf(newtitle, "%s(%.40s) ...%s", prefix, getObjectShortTypeName(object), fullpath+len-40);
+           sprintf(newTitle, "%s(%.40s) ...%s", prefix, getObjectShortTypeName(object), fullPath.c_str()+fullPath.length()-55);
    }
 
-   if (strcmp(newtitle, windowTitle)!=0)
+   if (windowTitle != newTitle)
    {
-       strcpy(windowTitle, newtitle);
-       CHK(Tcl_VarEval(interp, "wm title ",windowName," {",windowTitle,"}",NULL));
+       windowTitle = newTitle;
+       CHK(Tcl_VarEval(interp, "wm title ",windowName," {",windowTitle.c_str(),"}",NULL));
    }
 
    // update object type and name info
-   char newname[MAX_OBJECTFULLPATH+MAX_CLASSNAME+40];
+   char newName[MAX_OBJECTFULLPATH+MAX_CLASSNAME+40];
    char buf[30];
    cModule *mod = dynamic_cast<cModule *>(object);
    if (mod)
-       sprintf(newname, "(%s) %s  (id=%d)  (%s)", getObjectFullTypeName(object),
+       sprintf(newName, "(%s) %s  (id=%d)  (%s)", getObjectFullTypeName(object),
                object->getFullPath().c_str(), mod->getId(), ptrToStr(object,buf));
    else if (object)
-       sprintf(newname, "(%s) %s  (%s)", getObjectFullTypeName(object),
+       sprintf(newName, "(%s) %s  (%s)", getObjectFullTypeName(object),
                object->getFullPath().c_str(), ptrToStr(object,buf));
    else
-       sprintf(newname, "n/a");
-   CHK(Tcl_VarEval(interp, windowName,".infobar.name config -text {",newname,"}",NULL));
+       sprintf(newName, "n/a");
+   CHK(Tcl_VarEval(interp, windowName,".infobar.name config -text {",newName,"}",NULL));
 
    // owner button on toolbar
    setToolbarInspectButton(".toolbar.owner", mod ? mod->getParentModule() : object ? object->getOwner() : NULL, INSP_DEFAULT);
