@@ -53,9 +53,9 @@ struct TkenvOptions : public EnvirOptions
     opp_string pluginPath;    // path for loading Tcl and binary plugins
     opp_string defaultConfig; // automatically set up this config at startup
     int  defaultRun;          // automatically set up this run (of the default config) at startup
-    bool printInitBanners;    // print "initializing..." banners
-    bool printEventBanners;   // print event banners
-    bool shortBanners;        // controls detail of event banners
+    bool printInitBanners;    // print "initializing..." banners ----------- FIXME DOES NOT WORK PROPERLY!!!
+    bool printEventBanners;   // print event banners ----------- FIXME DOES NOT WORK PROPERLY!!!
+    bool shortBanners;        // controls detail of event banners ----------- FIXME DOES NOT WORK PROPERLY!!!
     bool animationEnabled;    // msg animation
     bool showNextEventMarkers;// display next event marker (red frame around modules)
     bool showSendDirectArrows;// flash arrows when doing sendDirect() animation

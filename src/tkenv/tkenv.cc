@@ -1087,7 +1087,7 @@ void Tkenv::printLastLogLine()
     const LogBuffer::Entry& entry = logBuffer.getEntries().back();
 
     // print into module window and all parent module windows if they exist
-    if (!entry.moduleIds)
+    if (!entry.moduleIds /*info*/ || !entry.moduleIds[0] /*initialize--FIXME how???*/)
     {
         // info message: insert into all log windows
         for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
