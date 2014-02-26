@@ -46,7 +46,8 @@ int insptypeCodeFromName(const char *namestr);
 class TKENV_API Inspector
 {
    protected:
-      cObject *object;        // the inspected object
+      Tcl_Interp *interp;     // Tcl interpreter
+      cObject *object;        // the inspected object or NULL if inspector is empty
       int type;               // INSP_OBJECT, etc.
       char windowName[24];    // Tk widget path
       std::string windowTitle;// window title string

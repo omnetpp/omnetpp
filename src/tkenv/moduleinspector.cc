@@ -92,7 +92,6 @@ void ModuleInspector::createWindow(const char *window, const char *geometry)
    strcpy(canvas,windowName);
    strcat(canvas,".c");
 
-   Tcl_Interp *interp = getTkenv()->getInterp();
    CHK(Tcl_VarEval(interp, "createGraphicalModWindow ", windowName, " \"", geometry, "\"", NULL ));
 }
 
@@ -141,7 +140,6 @@ void ModuleInspector::relayoutAndRedrawAll()
    notDrawn = false;
    if (submoduleCount>1000 || estimatedGateCount>4000)
    {
-       Tcl_Interp *interp = getTkenv()->getInterp();
        char problem[200];
        if (submoduleCount>1000)
            sprintf(problem, "contains more than 1000 submodules (exactly %d)", submoduleCount);
@@ -203,7 +201,6 @@ void ModuleInspector::getSubmoduleCoords(cModule *submod, bool& explicitcoords, 
         }
         else
         {
-            Tcl_Interp *interp = getTkenv()->getInterp();
             Tcl_VarEval(interp, "lookupImage ", imgName, " ", imgSize, NULL);
             Tk_Image img = Tk_GetImage(interp, Tk_MainWindow(interp), Tcl_GetStringResult(interp), NULL, NULL);
             if (!img)
@@ -277,7 +274,6 @@ void ModuleInspector::getSubmoduleCoords(cModule *submod, bool& explicitcoords, 
     }
     else
     {
-        Tcl_Interp *interp = getTkenv()->getInterp();
         CHK(Tcl_VarEval(interp,"messagebox {Error} "
                         "{Error: invalid layout `", layout, "' in `p' tag "
                         "of display string \"", ds.str(), "\"} error ok", NULL));
@@ -397,7 +393,6 @@ void ModuleInspector::refreshLayout()
     }
 
     // set up layouter environment (responsible for "Stop" button handling and visualizing the layouting process)
-    Tcl_Interp *interp = getTkenv()->getInterp();
     TkenvGraphLayouterEnvironment environment(interp, parentModule, ds);
 
     std::string stopButton = std::string(getWindowName()) + ".toolbar.stop";
@@ -434,7 +429,6 @@ void ModuleInspector::refreshLayout()
 void ModuleInspector::redrawModules()
 {
     cModule *parentModule = static_cast<cModule *>(object);
-    Tcl_Interp *interp = getTkenv()->getInterp();
 
     // then display all submodules
     CHK(Tcl_VarEval(interp, canvas, " delete dx",NULL)); // NOT "delete all" because that'd remove "bubbles" too!
@@ -554,8 +548,6 @@ void ModuleInspector::drawConnection(Tcl_Interp *interp, cGate *gate)
 
 void ModuleInspector::redrawMessages()
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
-
    // refresh & cleanup from prev. events
    CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", NULL));
 
@@ -601,7 +593,6 @@ void ModuleInspector::redrawMessages()
 
 void ModuleInspector::redrawNextEventMarker()
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
    cModule *mod = static_cast<cModule *>(object);
 
    // removing marker from previous event
@@ -628,7 +619,6 @@ void ModuleInspector::redrawNextEventMarker()
 
 void ModuleInspector::updateSubmodules()
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
    for (cModule::SubmoduleIterator submod(static_cast<cModule *>(object)); !submod.end(); submod++)
    {
        CHK(Tcl_VarEval(interp, "graphicalModuleWindow:updateSubmodule ",
@@ -676,8 +666,6 @@ void ModuleInspector::displayStringChanged(cGate *)
 
 void ModuleInspector::bubble(cModule *submod, const char *text)
 {
-    Tcl_Interp *interp = getTkenv()->getInterp();
-
     // if submod position is not yet known (because e.g. we're in fast mode
     // and it was dynamically created since the last update), refresh layout
     // so that we can get coordinates for it

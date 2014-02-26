@@ -81,7 +81,6 @@ void GenericObjectInspector::createWindow(const char *window, const char *geomet
 {
    Inspector::createWindow(window, geometry);
 
-   Tcl_Interp *interp = getTkenv()->getInterp();
    CHK(Tcl_VarEval(interp, "createGenericObjectInspector ", windowName, " \"", geometry, "\"", " ",
                    (hascontentspage ? "1" : "0"), " ",  (focuscontentspage ? "1" : "0"), " ", NULL));
 }
@@ -91,7 +90,6 @@ void GenericObjectInspector::refresh()
    Inspector::refresh();
 
    // refresh "fields" page
-   Tcl_Interp *interp = getTkenv()->getInterp();
    CHK(Tcl_VarEval(interp, "fields2Page:refresh ", windowName, NULL));
 
    // refresh "contents" page

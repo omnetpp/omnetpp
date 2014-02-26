@@ -110,15 +110,12 @@ void OutputVectorInspector::createWindow(const char *window, const char *geometr
    strcpy(canvas,windowName);
    strcat(canvas,".main.canvas");
 
-   Tcl_Interp *interp = getTkenv()->getInterp();
    CHK(Tcl_VarEval(interp, "createOutvectorWindow ", windowName, " \"", geometry, "\"", NULL ));
 }
 
 void OutputVectorInspector::refresh()
 {
    Inspector::refresh();
-
-   Tcl_Interp *interp = getTkenv()->getInterp();
 
    char buf[80];
    generalInfo( buf );

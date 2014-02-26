@@ -61,7 +61,6 @@ void WatchInspector::createWindow(const char *window, const char *geometry)
 {
    Inspector::createWindow(window, geometry);
 
-   Tcl_Interp *interp = getTkenv()->getInterp();
    CHK(Tcl_VarEval(interp, "createWatchInspector ", windowName, " \"", geometry, "\"", NULL ));
 }
 
@@ -76,7 +75,6 @@ void WatchInspector::refresh()
 
 void WatchInspector::commit()
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
    cWatchBase *watch = static_cast<cWatchBase *>(object);
    const char *s = getEntry(".main.name.e");
    if (watch->supportsAssignment())

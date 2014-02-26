@@ -59,7 +59,6 @@ void LogInspector::createWindow(const char *window, const char *geometry)
     strcpy(textWidget,windowName);
     strcat(textWidget, ".main.text");
 
-    Tcl_Interp *interp = getTkenv()->getInterp();
     cModule *mod = static_cast<cModule *>(object);
     const char *createcommand = mod->isSimple() ?
              "createSimpleModuleWindow " : "createCompoundModuleWindow ";
@@ -74,7 +73,6 @@ void LogInspector::refresh()
 
     Inspector::refresh();
 
-    Tcl_Interp *interp = getTkenv()->getInterp();
     CHK(Tcl_VarEval(interp, "moduleWindow:trimlines ", windowName, NULL));
 }
 

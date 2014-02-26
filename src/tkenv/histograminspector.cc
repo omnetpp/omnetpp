@@ -55,7 +55,6 @@ void HistogramInspector::createWindow(const char *window, const char *geometry)
    strcpy(canvas,windowName);
    strcat(canvas,".main.canvas");
 
-   Tcl_Interp *interp = getTkenv()->getInterp();
    CHK(Tcl_VarEval(interp, "createHistogramWindow ", windowName, " \"", geometry, "\"", NULL ));
 }
 
@@ -63,7 +62,6 @@ void HistogramInspector::refresh()
 {
    Inspector::refresh();
 
-   Tcl_Interp *interp = getTkenv()->getInterp();
    cDensityEstBase *distr = static_cast<cDensityEstBase *>(object);
 
    char buf[80];

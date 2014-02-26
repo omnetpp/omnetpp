@@ -62,6 +62,7 @@ int insptypeCodeFromName(const char *namestr)
 
 Inspector::Inspector()
 {
+   interp = getTkenv()->getInterp();
    object = NULL;
    type = -1;
    ownsWindow = false;
@@ -74,7 +75,6 @@ Inspector::~Inspector()
 {
    if (ownsWindow && windowName[0])
    {
-      Tcl_Interp *interp = getTkenv()->getInterp();
       CHK(Tcl_VarEval(interp, "inspector:destroy ", windowName, NULL ));
    }
 }
@@ -100,29 +100,24 @@ void Inspector::useWindow(const char *widget)
 
 bool Inspector::windowExists()
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
    CHK(Tcl_VarEval(interp, "winfo exists ", windowName, NULL )); //FIXME what if not toplevel?
    return Tcl_GetStringResult(interp)[0]=='1';
 }
 
 void Inspector::showWindow()
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
    CHK(Tcl_VarEval(interp, "inspector:show ", windowName, NULL ));  //FIXME what if not toplevel?
 }
 
 void Inspector::hostObjectDeleted()
 {
    //FIXME for embedded inspectors, call setObject(NULL) !!!!
-   Tcl_Interp *interp = getTkenv()->getInterp(); //FIXME only if ownsWindow?
    CHK(Tcl_VarEval(interp, "inspector:hostObjectDeleted ", windowName, NULL )); //FIXME needed? this Tcl proc is currently empty!!!
 }
 
 void Inspector::refresh()
 {
    //FIXME only if there is infobar and toolbar! (that is, !embedded; or hasToolbar && hasInfobar)
-   Tcl_Interp *interp = getTkenv()->getInterp();
-
    // update window title (only if changed -- always updating the title produces
    // unnecessary redraws under some window managers
    char newTitle[256];
@@ -166,7 +161,6 @@ void Inspector::refresh()
 
 void Inspector::setEntry(const char *entry, const char *val)
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
    if (!val) val="";
    CHK(Tcl_VarEval(interp, windowName,entry," delete 0 end;",
                            windowName,entry," insert 0 {",val,"}",NULL));
@@ -174,7 +168,6 @@ void Inspector::setEntry(const char *entry, const char *val)
 
 void Inspector::setEntry( const char *entry, long l )
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
    char buf[16];
    sprintf(buf, "%ld", l );
    CHK(Tcl_VarEval(interp, windowName,entry," delete 0 end;",
@@ -183,7 +176,6 @@ void Inspector::setEntry( const char *entry, long l )
 
 void Inspector::setEntry( const char *entry, double d )
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
    char buf[24];
    sprintf(buf, "%g", d );
    CHK(Tcl_VarEval(interp, windowName,entry," delete 0 end;",
@@ -192,14 +184,12 @@ void Inspector::setEntry( const char *entry, double d )
 
 void Inspector::setLabel( const char *label, const char *val )
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
    if (!val) val="";
    CHK(Tcl_VarEval(interp, windowName,label," config -text {",val,"}",NULL));
 }
 
 void Inspector::setLabel( const char *label, long l )
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
    char buf[16];
    sprintf(buf, "%ld", l );
    CHK(Tcl_VarEval(interp, windowName,label," config -text {",buf,"}",NULL));
@@ -207,7 +197,6 @@ void Inspector::setLabel( const char *label, long l )
 
 void Inspector::setLabel( const char *label, double d )
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
    char buf[16];
    sprintf(buf, "%g", d );
    CHK(Tcl_VarEval(interp, windowName,label," config -text {",buf,"}",NULL));
@@ -215,7 +204,6 @@ void Inspector::setLabel( const char *label, double d )
 
 void Inspector::setText(const char *entry, const char *val)
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
    if (!val) val="";
    CHK(Tcl_VarEval(interp, windowName,entry," delete 1.0 end", NULL));
    CHK(Tcl_VarEval(interp, windowName,entry," insert 1.0 {",val,"}",NULL));
@@ -223,7 +211,6 @@ void Inspector::setText(const char *entry, const char *val)
 
 void Inspector::setReadonlyText(const char *entry, const char *val)
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
    CHK(Tcl_VarEval(interp, windowName,entry," config -state normal", NULL));
    setText(entry, val);
    CHK(Tcl_VarEval(interp, windowName,entry," config -state disabled", NULL));
@@ -231,14 +218,12 @@ void Inspector::setReadonlyText(const char *entry, const char *val)
 
 const char *Inspector::getEntry( const char *entry )
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
    CHK(Tcl_VarEval(interp, windowName,entry," get",NULL));
    return Tcl_GetStringResult(interp);
 }
 
 void Inspector::setInspectButton(const char *button, cObject *object, bool displayfullpath, int inspectortype)
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
    if (object)
    {
       char buf[16];
@@ -263,7 +248,6 @@ void Inspector::setInspectButton(const char *button, cObject *object, bool displ
 
 void Inspector::setToolbarInspectButton(const char *button, cObject *object, int type)
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
    if (object)
    {
       char buf[16];
@@ -279,13 +263,11 @@ void Inspector::setToolbarInspectButton(const char *button, cObject *object, int
 
 void Inspector::deleteInspectorListbox(const char *listbox)
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
    CHK(Tcl_VarEval(interp, "multicolumnlistbox:deleteAll ", windowName,listbox,".main.list",NULL));
 }
 
 void Inspector::fillInspectorListbox(const char *listbox, cObject *object, bool deep)
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
    char w[256], buf[256];
    sprintf(w, "%s%s.main.list", windowName,listbox);
    int n = fillListboxWithChildObjects(object, interp, w, deep);
@@ -304,7 +286,6 @@ void Inspector::fillInspectorListbox(const char *listbox, cObject *object, bool 
 
 void Inspector::fillListboxWithSubmodules(const char *listbox, cModule *parent)
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
    char w[256], buf[256];
    sprintf(w, "%s%s.main.list", windowName,listbox);
 

@@ -63,7 +63,6 @@ void GateInspector::createWindow(const char *window, const char *geometry)
    strcpy(canvas,windowName);
    strcat(canvas,".c");
 
-   Tcl_Interp *interp = getTkenv()->getInterp();
    CHK(Tcl_VarEval(interp, "createGraphicalGateWindow ", windowName, " \"", geometry, "\"", NULL ));
 }
 
@@ -133,7 +132,6 @@ void GateInspector::refresh()
 {
    Inspector::refresh();
 
-   Tcl_Interp *interp = getTkenv()->getInterp();
    cGate *gate = static_cast<cGate *>(object);
 
    // redraw modules only on explicit request
