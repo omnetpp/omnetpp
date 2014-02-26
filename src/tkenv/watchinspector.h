@@ -27,6 +27,7 @@ class TKENV_API WatchInspector: public Inspector
    public:
       WatchInspector();
       virtual void createWindow(const char *window, const char *geometry);
+      virtual void useWindow(const char *window);
       virtual void refresh();
       virtual void commit();
 };

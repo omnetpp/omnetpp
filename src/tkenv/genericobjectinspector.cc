@@ -85,6 +85,11 @@ void GenericObjectInspector::createWindow(const char *window, const char *geomet
                    (hascontentspage ? "1" : "0"), " ",  (focuscontentspage ? "1" : "0"), " ", NULL));
 }
 
+void GenericObjectInspector::useWindow(const char *window)
+{
+   Inspector::useWindow(window);
+}
+
 void GenericObjectInspector::refresh()
 {
    Inspector::refresh();

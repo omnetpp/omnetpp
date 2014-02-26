@@ -66,6 +66,14 @@ void GateInspector::createWindow(const char *window, const char *geometry)
    CHK(Tcl_VarEval(interp, "createGraphicalGateWindow ", windowName, " \"", geometry, "\"", NULL ));
 }
 
+void GateInspector::useWindow(const char *window)
+{
+   Inspector::useWindow(window);
+
+   strcpy(canvas,windowName);
+   strcat(canvas,".c");
+}
+
 int GateInspector::redraw(Tcl_Interp *interp, int, const char **)
 {
    cGate *gate = (cGate *)object;

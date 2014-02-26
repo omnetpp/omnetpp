@@ -32,6 +32,7 @@ class TKENV_API GateInspector : public Inspector
    public:
       GateInspector();
       virtual void createWindow(const char *window, const char *geometry);
+      virtual void useWindow(const char *window);
       virtual void refresh();
       virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
 

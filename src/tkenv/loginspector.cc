@@ -62,6 +62,14 @@ void LogInspector::createWindow(const char *window, const char *geometry)
     CHK(Tcl_VarEval(interp, "createModuleWindow ", windowName, " \"", geometry, "\"", NULL ));
 }
 
+void LogInspector::useWindow(const char *window)
+{
+   Inspector::useWindow(window);
+
+    strcpy(textWidget,windowName);
+    strcat(textWidget, ".main.text");
+}
+
 void LogInspector::setObject(cObject *obj)
 {
     Inspector::setObject(obj);

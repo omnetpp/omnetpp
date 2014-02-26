@@ -70,7 +70,7 @@ class TKENV_API Inspector
       /** @name Virtual functions to be redefined in subclasses */
       //@{
       virtual void createWindow(const char *window, const char *geometry);
-      virtual void useWindow(const char *widget);
+      virtual void useWindow(const char *window);
       virtual bool windowExists();
       virtual void showWindow();
 

@@ -105,9 +105,9 @@ void ModuleInspector::createWindow(const char *window, const char *geometry)
    CHK(Tcl_VarEval(interp, "createGraphicalModWindow ", windowName, " \"", geometry, "\"", NULL ));
 }
 
-void ModuleInspector::useWindow(const char *widget)
+void ModuleInspector::useWindow(const char *window)
 {
-    Inspector::useWindow(widget);
+    Inspector::useWindow(window);
     strcpy(canvas,windowName);
     strcat(canvas,".c");
 }

@@ -91,9 +91,9 @@ void Inspector::createWindow(const char *window, const char *geometry)
     ownsWindow = true;
 }
 
-void Inspector::useWindow(const char *widget)
+void Inspector::useWindow(const char *window)
 {
-    strcpy(windowName, widget);
+    strcpy(windowName, window);
     windowTitle = "";
     ownsWindow = false;
 }

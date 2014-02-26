@@ -34,6 +34,7 @@ class TKENV_API GenericObjectInspector : public Inspector
       virtual void setObject(cObject *obj);
       void setContentsPage(bool show, bool focus) {hascontentspage = show; focuscontentspage = focus;}
       virtual void createWindow(const char *window, const char *geometry);
+      virtual void useWindow(const char *window);
       virtual void refresh();
       virtual void commit();
       virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);

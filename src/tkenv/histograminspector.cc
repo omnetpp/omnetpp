@@ -58,6 +58,14 @@ void HistogramInspector::createWindow(const char *window, const char *geometry)
    CHK(Tcl_VarEval(interp, "createHistogramWindow ", windowName, " \"", geometry, "\"", NULL ));
 }
 
+void HistogramInspector::useWindow(const char *window)
+{
+   Inspector::useWindow(window);
+
+   strcpy(canvas,windowName);
+   strcat(canvas,".main.canvas");
+}
+
 void HistogramInspector::refresh()
 {
    Inspector::refresh();
