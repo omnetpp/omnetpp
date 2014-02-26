@@ -1157,8 +1157,6 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       sprintf(buf,"%d", opt->printInitBanners);
    else if (0==strcmp(argv[1], "short_banners"))
       sprintf(buf,"%d", opt->shortBanners);
-   else if (0==strcmp(argv[1], "use_mainwindow"))
-      sprintf(buf,"%d", opt->useMainWindow);
    else if (0==strcmp(argv[1], "updatefreq_fast_ms"))
       sprintf(buf,"%ld", opt->updateFreqFast);
    else if (0==strcmp(argv[1], "updatefreq_express_ms"))
@@ -1230,8 +1228,6 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       opt->printInitBanners = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "short_banners"))
       opt->shortBanners = (argv[2][0]!='0');
-   else if (0==strcmp(argv[1], "use_mainwindow"))
-      opt->useMainWindow = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "updatefreq_fast_ms"))
       opt->updateFreqFast = atol(argv[2]);
    else if (0==strcmp(argv[1], "updatefreq_express_ms"))

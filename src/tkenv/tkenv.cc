@@ -144,7 +144,6 @@ TkenvOptions::TkenvOptions()
     printEventBanners = true;
     printInitBanners = true;
     shortBanners = false;
-    useMainWindow = true;
     autoupdateInExpress = true;
     stopOnMsgCancel = true;
 }
@@ -1086,10 +1085,6 @@ void Tkenv::printEventBanner(cMessage *msg, cSimpleModule *module)
 void Tkenv::printLastLogLine()
 {
     const LogBuffer::Entry& entry = logBuffer.getEntries().back();
-
-//    // print into main window
-//    if (opt->useMainWindow)
-//        LogInspector::printLastLineOf(interp, ".log.text", logBuffer, mainWindowExcludedModuleIds);
 
     // print into module window and all parent module windows if they exist
     if (!entry.moduleIds)

@@ -329,7 +329,6 @@ proc optionsDialog {parent {defaultpage "g"}} {
     pack $nb.g.f1.confirmexit -anchor w
 
     labelframe $nb.g.f2 -text "Logs" -relief groove -borderwidth 2 -font $fonts(normal)
-    checkbutton $nb.g.f2.usemainwin -text {Use main window for module output} -variable opp(usemainwin)
     checkbutton $nb.g.f2.initbanners -text {Print initialization banners} -variable opp(initbanners)
     checkbutton $nb.g.f2.eventbanners -text {Print event banners} -variable opp(eventbanners)
     checkbutton $nb.g.f2.shortbanners -text {Short event banners} -variable opp(shortbanners)
@@ -337,7 +336,6 @@ proc optionsDialog {parent {defaultpage "g"}} {
     commentlabel $nb.g.f2.c1 {Applies to main window and module log windows. Leave blank for unlimited. Minimum value is 500 lines.}
 
     $nb.g.f2.numlines.l config -width 0
-    pack $nb.g.f2.usemainwin -anchor w
     pack $nb.g.f2.initbanners -anchor w
     pack $nb.g.f2.eventbanners -anchor w
     pack $nb.g.f2.shortbanners -anchor w -padx 10
@@ -454,7 +452,6 @@ proc optionsDialog {parent {defaultpage "g"}} {
     $nb.g.f2.numlines.e insert 0 $config(logwindow-scrollbacklines)
     $nb.l.f2.iconminsize.e insert 0 [opp_getsimoption iconminsize]
     $nb.t.f2.filterstext insert 1.0 [opp_getsimoption silent_event_filters]
-    set opp(usemainwin) [opp_getsimoption use_mainwindow]
     set opp(eventbanners) [opp_getsimoption event_banners]
     set opp(initbanners) [opp_getsimoption init_banners]
     set opp(shortbanners) [opp_getsimoption short_banners]
@@ -485,7 +482,7 @@ proc optionsDialog {parent {defaultpage "g"}} {
     fontcombo:set $nb.f.f1.textfont.e $fonts(text)
     fontcombo:set $nb.f.f1.canvasfont.e $fonts(canvas)
 
-    setInitialDialogFocus $nb.g.f2.usemainwin
+    setInitialDialogFocus $nb.a.f1.anim
 
     if [execOkCancelDialog $w] {
         opp_setsimoption stepdelay             [$nb.g.f1.stepdelay.e get]
@@ -497,7 +494,6 @@ proc optionsDialog {parent {defaultpage "g"}} {
             if {$n!="" && $n<500} {set n 500}
             set config(logwindow-scrollbacklines) $n
         }
-        opp_setsimoption use_mainwindow      $opp(usemainwin)
         opp_setsimoption event_banners       $opp(eventbanners)
         opp_setsimoption init_banners        $opp(initbanners)
         opp_setsimoption short_banners       $opp(shortbanners)

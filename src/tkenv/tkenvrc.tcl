@@ -29,7 +29,6 @@ proc saveTkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
                 updatefreq_fast_ms
                 updatefreq_express_ms
                 stepdelay
-                use_mainwindow
                 event_banners
                 init_banners
                 short_banners

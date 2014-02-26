@@ -56,7 +56,6 @@ struct TkenvOptions : public EnvirOptions
     bool printInitBanners;    // print "initializing..." banners
     bool printEventBanners;   // print event banners
     bool shortBanners;        // controls detail of event banners
-    bool useMainWindow;       // dump modules' EV << ... stuff into main window
     bool animationEnabled;    // msg animation
     bool showNextEventMarkers;// display next event marker (red frame around modules)
     bool showSendDirectArrows;// flash arrows when doing sendDirect() animation
