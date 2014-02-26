@@ -620,20 +620,6 @@ proc stopSimulation {} {
     set stoplayouting 1
 }
 
-proc messageWindows {} {
-    # implements Trace|Message sending...
-    if {[networkPresent] == 0} return
-    createMessageWindow .messagewindow
-}
-
-proc clearWindows {} {
-    # implements Trace|Clear windows...
-    # also called back from C++ code
-    # TBD: should delete the contents of module windows as well
-    .log.main.text delete 1.0 end
-    catch {.messagewindow.main.text delete 1.0 end}
-}
-
 proc inspectFilteredObjectList {{w "."}} {
     # implements Find/inspect objects...
     set ptr ""

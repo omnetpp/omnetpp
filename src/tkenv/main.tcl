@@ -177,7 +177,6 @@ proc mainWindow:createMenu {} {
        {filemenu     -$label_opt File -underline 0}
        {editmenu     -$label_opt Edit -underline 0}
        {simulatemenu -$label_opt Simulate -underline 0}
-       {tracemenu    -$label_opt Trace -underline 0}
        {inspectmenu  -$label_opt Inspect -underline 0}
        {viewmenu     -$label_opt View -underline 0}
        {optionsmenu  -$label_opt Options -underline 0}
@@ -241,15 +240,6 @@ proc mainWindow:createMenu {} {
       {command -command rebuild -label {Rebuild Network} -underline 1}
     } {
       eval .menubar.simulatemenu$m add $i
-    }
-
-    # Trace menu
-    foreach i {
-      {command -command messageWindows -label {Message Sending...} -underline 8}
-      {separator}
-      {command -command clearWindows -label {Clear Main Window} -underline 0}
-    } {
-      eval .menubar.tracemenu$m add $i
     }
 
     # Inspect menu

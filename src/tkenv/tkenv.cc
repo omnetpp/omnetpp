@@ -160,7 +160,6 @@ Tkenv::Tkenv() : opt((TkenvOptions *&)EnvirBase::opt)
     simstate = SIM_NONET;
     stopsimulation_flag = false;
     animating = false;
-    hasmessagewindow = false;
     isconfigrun = false;
     rununtil_msg = NULL; // deactivate corresponding checks in eventCancelled()/objectDeleted()
     gettimeofday(&idleLastUICheck, NULL);
@@ -1082,15 +1081,6 @@ void Tkenv::printEventBanner(cMessage *msg, cSimpleModule *module)
 
     // print into module log windows
     printLastLogLine();
-
-    // and into the message window
-    if (hasmessagewindow)
-        CHK(Tcl_VarEval(interp,
-              "catch {\n"
-              " .messagewindow.main.text insert end ",banner,"\n"
-              " .messagewindow.main.text see end\n"
-              "}\n", NULL));
-
 }
 
 void Tkenv::printLastLogLine()
@@ -1156,14 +1146,6 @@ void Tkenv::componentInitBegin(cComponent *component, int stage)
 
     // print into module log windows
     printLastLogLine();
-
-    // and into the message window
-    if (hasmessagewindow)
-        CHK(Tcl_VarEval(interp,
-              "catch {\n"
-              " .messagewindow.main.text insert end ",banner,"\n"
-              " .messagewindow.main.text see end\n"
-              "}\n", NULL));
 }
 
 void Tkenv::setMainWindowExcludedModuleIds(const std::set<int>& ids)
@@ -1350,17 +1332,6 @@ void Tkenv::simulationEvent(cMessage *msg)
 {
     EnvirBase::simulationEvent(msg);
 
-    // display in message window
-    if (hasmessagewindow)
-        CHK(Tcl_VarEval(interp,
-            "catch {\n"
-            " .messagewindow.main.text insert end {DELIVD:\t (",msg->getClassName(),")",msg->getFullName(),"}\n"
-            " .messagewindow.main.text insert end ",TclQuotedString(msg->info().c_str()).get(),"\n"
-            " .messagewindow.main.text insert end {\n}\n"
-            " .messagewindow.main.text see end\n"
-            "}\n",
-            NULL));
-
     if (animating && opt->animationEnabled)
     {
         cGate *arrivalGate = msg->getArrivalGate();
@@ -1382,17 +1353,6 @@ void Tkenv::simulationEvent(cMessage *msg)
 
 void Tkenv::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate) //FIXME needed?
 {
-    // display in message window
-    if (hasmessagewindow)
-        CHK(Tcl_VarEval(interp,
-            "catch {\n"
-            " .messagewindow.main.text insert end {SENT:\t (", msg->getClassName(),")", msg->getFullName(), "}\n"
-            " .messagewindow.main.text insert end ", TclQuotedString(msg->info().c_str()).get(), "\n"
-            " .messagewindow.main.text insert end {\n}\n"
-            " .messagewindow.main.text see end\n"
-            "}\n",
-            NULL));
-
     if (animating && opt->animationEnabled && !isSilentEvent(msg))
     {
         // find suitable inspectors and do animate the message...
