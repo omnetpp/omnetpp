@@ -128,52 +128,61 @@ void Inspector::hostObjectDeleted()
 void Inspector::refresh()
 {
    //FIXME only if there is infobar and toolbar! (that is, !embedded; or hasToolbar && hasInfobar)
-   // update window title (only if changed -- always updating the title produces
-   // unnecessary redraws under some window managers
-   char newTitle[256];
-   const char *prefix = getTkenv()->getWindowTitlePrefix();
-   if (!object)
-   {
-       sprintf(newTitle, "%s n/a", prefix);
-   }
-   else
-   {
-       std::string fullPath = object->getFullPath();
-       if (fullPath.length()<=60)
-           sprintf(newTitle, "%s(%.40s) %s", prefix, getObjectShortTypeName(object), fullPath.c_str());
-       else
-           sprintf(newTitle, "%s(%.40s) ...%s", prefix, getObjectShortTypeName(object), fullPath.c_str()+fullPath.length()-55);
-   }
-
-   if (windowTitle != newTitle)
-   {
-       windowTitle = newTitle;
-       CHK(Tcl_VarEval(interp, "wm title ",windowName," {",windowTitle.c_str(),"}",NULL));
-   }
-
-   // update object type and name info
-   char newName[MAX_OBJECTFULLPATH+MAX_CLASSNAME+40]; //TODO std::string!
-   char buf[30];
-   cModule *mod = dynamic_cast<cModule *>(object);
-   if (mod)
-       sprintf(newName, "(%s) %s  (id=%d)  (%s)", getObjectFullTypeName(object),
-               object->getFullPath().c_str(), mod->getId(), ptrToStr(object,buf));
-   else if (object)
-       sprintf(newName, "(%s) %s  (%s)", getObjectFullTypeName(object),
-               object->getFullPath().c_str(), ptrToStr(object,buf));
-   else
-       sprintf(newName, "n/a");
-   CHK(Tcl_VarEval(interp, windowName,".infobar.name config -text {",newName,"}",NULL));  //TODO only if changed! and infobar exists
+   refreshTitle();
+   refreshInfobar();
 
    // owner button on toolbar
+   cModule *mod = dynamic_cast<cModule *>(object);
    setToolbarInspectButton(".toolbar.owner", mod ? mod->getParentModule() : object ? object->getOwner() : NULL, INSP_DEFAULT);
+}
+
+void Inspector::refreshTitle()
+{
+    // update window title (only if changed -- always updating the title produces
+    // unnecessary redraws under some window managers
+    char newTitle[256];
+    const char *prefix = getTkenv()->getWindowTitlePrefix();
+    if (!object)
+    {
+        sprintf(newTitle, "%s n/a", prefix);
+    }
+    else
+    {
+        std::string fullPath = object->getFullPath();
+        if (fullPath.length()<=60)
+            sprintf(newTitle, "%s(%.40s) %s", prefix, getObjectShortTypeName(object), fullPath.c_str());
+        else
+            sprintf(newTitle, "%s(%.40s) ...%s", prefix, getObjectShortTypeName(object), fullPath.c_str()+fullPath.length()-55);
+    }
+
+    if (windowTitle != newTitle)
+    {
+        windowTitle = newTitle;
+        CHK(Tcl_VarEval(interp, "wm title ",windowName," {",windowTitle.c_str(),"}",NULL));
+    }
+}
+
+void Inspector::refreshInfobar()
+{
+    char newName[MAX_OBJECTFULLPATH+MAX_CLASSNAME+40]; //TODO std::string!
+    char buf[30];
+    cModule *mod = dynamic_cast<cModule *>(object);
+    if (mod)
+        sprintf(newName, "(%s) %s  (id=%d)  (%s)", getObjectFullTypeName(object),
+                object->getFullPath().c_str(), mod->getId(), ptrToStr(object,buf));
+    else if (object)
+        sprintf(newName, "(%s) %s  (%s)", getObjectFullTypeName(object),
+                object->getFullPath().c_str(), ptrToStr(object,buf));
+    else
+        sprintf(newName, "n/a");
+    CHK(Tcl_VarEval(interp, windowName,".infobar.name config -text {",newName,"}",NULL));
 }
 
 void Inspector::setEntry(const char *entry, const char *val)
 {
-   if (!val) val="";
-   CHK(Tcl_VarEval(interp, windowName,entry," delete 0 end;",
-                           windowName,entry," insert 0 {",val,"}",NULL));
+    if (!val) val="";
+    CHK(Tcl_VarEval(interp, windowName,entry," delete 0 end;",
+            windowName,entry," insert 0 {",val,"}",NULL));
 }
 
 void Inspector::setEntry( const char *entry, long l )

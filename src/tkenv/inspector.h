@@ -41,7 +41,7 @@ int insptypeCodeFromName(const char *namestr);
 
 
 /**
- * Virtual base class for all inspectors.
+ * Base class for inspectors.
  */
 class TKENV_API Inspector
 {
@@ -53,38 +53,10 @@ class TKENV_API Inspector
       std::string windowTitle;// window title string
       bool ownsWindow;        // whether destructor should destroy the window
       bool closeRequested;    // "mark for deletion" flag (set if user wants to close inspector during animation)
-   public:
-      Inspector();
-      virtual ~Inspector();
 
-      virtual cObject *getObject() {return object;}
-      virtual void setObject(cObject *obj);
-      virtual int getType() {return type;}
-      virtual void setType(int t) {type = t;}
-      virtual const char *getWindowName() {return windowName;}
-
-      virtual void hostObjectDeleted();
-      virtual void markForDeletion() {closeRequested=true;}
-      virtual bool isMarkedForDeletion() {return closeRequested;}
-
-      /** @name Virtual functions to be redefined in subclasses */
-      //@{
-      virtual void createWindow(const char *window, const char *geometry);
-      virtual void useWindow(const char *window);
-      virtual bool windowExists();
-      virtual void showWindow();
-
-      virtual void refresh();
-      virtual void commit() {}
-
-      virtual int inspectorCommand(Tcl_Interp *interp, int, const char **) {return TCL_ERROR;}
-
-      virtual void objectDeleted(cObject *) {}
-      //@}
-
-      /** @name Utility functions */
-      //@{
-      static std::string makeWindowName();
+   protected:
+      void refreshTitle();
+      void refreshInfobar();
 
       void setEntry(const char *entry, const char *val);
       void setEntry(const char *entry, long l);
@@ -101,7 +73,34 @@ class TKENV_API Inspector
       void clearInspectorListbox(const char *listbox);
       void fillInspectorListbox(const char *listbox, cObject *object, bool deep);
       void fillListboxWithSubmodules(const char *listbox, cModule *parent);
-      //@}
+
+   public:
+      Inspector();
+      virtual ~Inspector();
+
+      static std::string makeWindowName();
+
+      virtual cObject *getObject() {return object;}
+      virtual void setObject(cObject *obj);
+      virtual int getType() {return type;}
+      virtual void setType(int t) {type = t;}
+      virtual const char *getWindowName() {return windowName;}
+
+      virtual void hostObjectDeleted();
+      virtual void markForDeletion() {closeRequested=true;}
+      virtual bool isMarkedForDeletion() {return closeRequested;}
+
+      virtual void createWindow(const char *window, const char *geometry);
+      virtual void useWindow(const char *window);
+      virtual bool windowExists();
+      virtual void showWindow();
+
+      virtual void refresh();
+      virtual void commit() {}
+
+      virtual int inspectorCommand(Tcl_Interp *interp, int, const char **) {return TCL_ERROR;}
+
+      virtual void objectDeleted(cObject *) {}
 };
 
 /**
