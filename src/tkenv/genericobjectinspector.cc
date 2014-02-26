@@ -95,8 +95,9 @@ void GenericObjectInspector::refresh()
    // refresh "contents" page
    if (hascontentspage)
    {
-       deleteInspectorListbox(".nb.contents");
-       fillInspectorListbox(".nb.contents", object, false);
+       clearInspectorListbox(".nb.contents");
+       if (object)
+           fillInspectorListbox(".nb.contents", object, false);
    }
 }
 

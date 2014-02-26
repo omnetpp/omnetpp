@@ -59,19 +59,26 @@ void LogInspector::createWindow(const char *window, const char *geometry)
     strcpy(textWidget,windowName);
     strcat(textWidget, ".main.text");
 
-    cModule *mod = static_cast<cModule *>(object);
-    const char *createcommand = mod->isSimple() ?
-             "createSimpleModuleWindow " : "createCompoundModuleWindow ";
-    CHK(Tcl_VarEval(interp, createcommand, windowName, " \"", geometry, "\"", NULL ));
-    redisplay(getTkenv()->getLogBuffer());
+    CHK(Tcl_VarEval(interp, "createModuleWindow ", windowName, " \"", geometry, "\"", NULL ));
+}
+
+void LogInspector::setObject(cObject *obj)
+{
+    Inspector::setObject(obj);
+
+    if (object)
+        redisplay(getTkenv()->getLogBuffer());
 }
 
 void LogInspector::refresh()
 {
-    if (!object)
-        return;
-
     Inspector::refresh();
+
+    if (!object)
+    {
+        textWidget_clear(interp, textWidget);
+        return;
+    }
 
     CHK(Tcl_VarEval(interp, "moduleWindow:trimlines ", windowName, NULL));
 }

@@ -62,6 +62,12 @@ void HistogramInspector::refresh()
 {
    Inspector::refresh();
 
+   if (!object)
+   {
+       CHK(Tcl_VarEval(interp, canvas," delete all", NULL));
+       return;
+   }
+
    cDensityEstBase *distr = static_cast<cDensityEstBase *>(object);
 
    char buf[80];

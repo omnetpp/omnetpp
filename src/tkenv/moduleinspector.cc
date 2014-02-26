@@ -77,12 +77,22 @@ ModuleInspector::~ModuleInspector()
 
 void ModuleInspector::setObject(cObject *obj)
 {
+    if (obj == object)
+        return;
+
     Inspector::setObject(obj);
 
-    const cDisplayString blank;
-    cModule *parentModule = static_cast<cModule *>(object);
-    const cDisplayString& ds = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString() : blank;
-    randomSeed = resolveLongDispStrArg(ds.getTagArg("bgl",4), parentModule, 1);
+    CHK(Tcl_VarEval(interp, canvas, " delete all",NULL));
+
+    if (object)
+    {
+        const cDisplayString blank;
+        cModule *parentModule = static_cast<cModule *>(object);
+        const cDisplayString& ds = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString() : blank;
+        randomSeed = resolveLongDispStrArg(ds.getTagArg("bgl",4), parentModule, 1);
+
+        CHK(Tcl_VarEval(interp, "graphicalModuleWindow:onSetObject ", windowName, NULL ));
+    }
 }
 
 void ModuleInspector::createWindow(const char *window, const char *geometry)
@@ -104,12 +114,17 @@ void ModuleInspector::useWindow(const char *widget)
 
 void ModuleInspector::refresh()
 {
-   if (!object)
-       return;
-
    Inspector::refresh();
 
-   if (notDrawn) return;
+   if (!object)
+   {
+       CHK(Tcl_VarEval(interp, canvas," delete all", NULL));
+       return;
+   }
+
+   if (notDrawn)
+       return;
+
 
    // redraw modules only if really needed
    if (needs_redraw)
@@ -127,6 +142,8 @@ void ModuleInspector::refresh()
 
 void ModuleInspector::relayoutAndRedrawAll()
 {
+   ASSERT(object != NULL);
+
    cModule *mod = (cModule *)object;
    int submoduleCount = 0;
    int estimatedGateCount = mod->gateCount();
@@ -169,6 +186,7 @@ void ModuleInspector::relayoutAndRedrawAll()
 
 void ModuleInspector::redrawAll()
 {
+   ASSERT(object != NULL);
    refreshLayout();
    redrawModules();
    redrawNextEventMarker();

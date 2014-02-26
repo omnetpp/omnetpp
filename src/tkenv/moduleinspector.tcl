@@ -70,17 +70,6 @@ proc createGraphicalModWindow {name geom} {
     if {$inspectordata($c:showarrowheads)} {
         $w.toolbar.showarrowheads config -relief sunken
     }
-
-    #update idletasks
-    update
-    if [catch {
-       opp_inspectorcommand $w relayout
-    } errmsg] {
-       tk_messageBox -type ok -title Error -icon error -parent [winfo toplevel [focus]] \
-                     -message "Error displaying network graphics: $errmsg"
-    }
-
-    graphicalModuleWindow:adjustWindowSizeAndZoom $w
 }
 
 proc createGraphicalModuleViewer {w} {
@@ -139,6 +128,19 @@ proc createGraphicalModuleViewer {w} {
     bind $w <Control-r> "graphicalModuleWindow:relayout $w"
     bind $w <Control-d> "graphicalModuleWindow:toggleLabels $w"
     bind $w <Control-a> "graphicalModuleWindow:toggleArrowheads $w"
+}
+
+proc graphicalModuleWindow:onSetObject {w} {
+    #update idletasks
+    update
+    if [catch {
+       opp_inspectorcommand $w relayout
+    } errmsg] {
+       tk_messageBox -type ok -title Error -icon error -parent [winfo toplevel [focus]] \
+                     -message "Error displaying network graphics: $errmsg"
+    }
+
+    graphicalModuleWindow:adjustWindowSizeAndZoom $w
 }
 
 proc graphicalModuleWindow:adjustWindowSizeAndZoom {w} {

@@ -863,10 +863,9 @@ Inspector *Tkenv::inspect(cObject *obj, int type, const char *geometry)
     }
 
     // everything ok, finish inspector
-    insp->setObject(obj);
     inspectors.push_back(insp);
     insp->createWindow(Inspector::makeWindowName().c_str(), geometry);
-    insp->refresh();
+    insp->setObject(obj);
 
     return insp;
 }

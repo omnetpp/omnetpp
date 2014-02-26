@@ -117,6 +117,13 @@ void OutputVectorInspector::refresh()
 {
    Inspector::refresh();
 
+   if (!object)
+   {
+       CHK(Tcl_VarEval(interp, canvas," delete all", NULL));
+       setLabel(".bot.info", "");
+       return;
+   }
+
    char buf[80];
    generalInfo( buf );
    setLabel(".bot.info",buf);

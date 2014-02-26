@@ -14,47 +14,22 @@
 #----------------------------------------------------------------#
 
 
-proc createSimpleModuleWindow {name geom} {
-    _createModuleWindow $name $geom 0
-}
-
-proc createCompoundModuleWindow {name geom} {
-    _createModuleWindow $name $geom 1
-}
-
-proc _createModuleWindow {name geom iscompound} {
+proc createModuleWindow {name geom} {
     global icons fonts help_tips B2 B3
 
     set w $name
     createInspectorToplevel $w $geom
 
-    set modptr [opp_inspector_getobject $w]
+    set help_tips($w.toolbar.owner)  {Inspect parent module}
 
-    # Add icons
-    if {$iscompound} {
-        # for compound module
-        packIconButton $w.toolbar.graph  -image $icons(asgraphics) -command "inspectThis $w {As Graphics}"
-        packIconButton $w.toolbar.obj    -image $icons(asobject) -command "inspectThis $w {As Object}"
-        packIconButton $w.toolbar.sep1   -separator
-        set help_tips($w.toolbar.owner)  {Inspect parent module}
-        set help_tips($w.toolbar.graph)  {Inspect as network graphics}
-        set help_tips($w.toolbar.obj)    {Inspect as object}
+    packIconButton $w.toolbar.graph  -image $icons(asgraphics) -command "inspectThis $w {As Graphics}"
+    packIconButton $w.toolbar.obj    -image $icons(asobject) -command "inspectThis $w {As Object}"
+    packIconButton $w.toolbar.sep1   -separator
+    set help_tips($w.toolbar.graph)  {Inspect as network graphics}
+    set help_tips($w.toolbar.obj)    {Inspect as object}
 
-        textWindowAddIcons $w modulewindow
-
-        moduleInspector:addRunButtons $w
-
-    } else {
-        # for simple module
-        packIconButton $w.toolbar.obj    -image $icons(asobject) -command "inspectThis $w {As Object}"
-        packIconButton $w.toolbar.sep1   -separator
-        set help_tips($w.toolbar.owner)  {Inspect parent module}
-        set help_tips($w.toolbar.obj)    {Inspect as object}
-
-        textWindowAddIcons $w modulewindow
-
-        moduleInspector:addRunButtons $w
-    }
+    textWindowAddIcons $w modulewindow
+    moduleInspector:addRunButtons $w
 
     frame $w.main
     pack $w.main -expand 1 -fill both -side top

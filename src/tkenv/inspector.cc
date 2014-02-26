@@ -98,6 +98,16 @@ void Inspector::useWindow(const char *widget)
     ownsWindow = false;
 }
 
+void Inspector::setObject(cObject *obj)
+{
+    ASSERT2(windowName[0], "createWindow()/useWindow() needs to be called before setObject()");
+
+    if (obj != object) {
+        object = obj;
+        refresh();
+    }
+}
+
 bool Inspector::windowExists()
 {
    CHK(Tcl_VarEval(interp, "winfo exists ", windowName, NULL )); //FIXME what if not toplevel?
@@ -261,7 +271,7 @@ void Inspector::setToolbarInspectButton(const char *button, cObject *object, int
    }
 }
 
-void Inspector::deleteInspectorListbox(const char *listbox)
+void Inspector::clearInspectorListbox(const char *listbox)
 {
    CHK(Tcl_VarEval(interp, "multicolumnlistbox:deleteAll ", windowName,listbox,".main.list",NULL));
 }

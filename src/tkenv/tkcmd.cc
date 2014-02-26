@@ -1750,7 +1750,6 @@ int inspectorSetObject_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
     if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
     cObject *obj = strToPtr(argv[2]);
     insp->setObject(obj);
-    insp->refresh();
     return TCL_OK;
 }
 

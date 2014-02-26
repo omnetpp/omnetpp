@@ -132,6 +132,12 @@ void GateInspector::refresh()
 {
    Inspector::refresh();
 
+   if (!object)
+   {
+       CHK(Tcl_VarEval(interp, canvas," delete all", NULL));
+       return;
+   }
+
    cGate *gate = static_cast<cGate *>(object);
 
    // redraw modules only on explicit request

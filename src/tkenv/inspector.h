@@ -58,7 +58,7 @@ class TKENV_API Inspector
       virtual ~Inspector();
 
       virtual cObject *getObject() {return object;}
-      virtual void setObject(cObject *obj) {object = obj;} // obj=NULL should be accepted; override to refresh GUI accordingly
+      virtual void setObject(cObject *obj);
       virtual int getType() {return type;}
       virtual void setType(int t) {type = t;}
       virtual const char *getWindowName() {return windowName;}
@@ -98,7 +98,7 @@ class TKENV_API Inspector
       void setInspectButton(const char *button, cObject *object, bool displayfullpath, int inspectortype);
       void setToolbarInspectButton(const char *button, cObject *object, int inspectortype);
 
-      void deleteInspectorListbox(const char *listbox);
+      void clearInspectorListbox(const char *listbox);
       void fillInspectorListbox(const char *listbox, cObject *object, bool deep);
       void fillListboxWithSubmodules(const char *listbox, cModule *parent);
       //@}
