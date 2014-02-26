@@ -67,12 +67,12 @@ void LogInspector::createWindow(const char *window, const char *geometry)
     redisplay(getTkenv()->getLogBuffer());
 }
 
-void LogInspector::update()
+void LogInspector::refresh()
 {
     if (!object)
         return;
 
-    Inspector::update();
+    Inspector::refresh();
 
     Tcl_Interp *interp = getTkenv()->getInterp();
     CHK(Tcl_VarEval(interp, "moduleWindow:trimlines ", windowName, NULL));

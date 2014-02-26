@@ -179,11 +179,11 @@ proc loadNedFile {} {
    if {$fname!=""} {
       set config(last-nedfile) $fname
       if [catch {opp_loadnedfile $fname} err] {
-        opp_updateinspectors
+        opp_refreshinspectors
         messagebox {Error} "Error: $err" error ok
         return
       }
-      opp_updateinspectors
+      opp_refreshinspectors
    }
 }
 
@@ -551,7 +551,7 @@ proc excludeMessageFromAnimation {msg} {
     opp_setsimoption silent_event_filters $filters
 
     redrawTimeline
-    opp_updateinspectors
+    opp_refreshinspectors
 }
 
 proc startAll {} {
@@ -696,7 +696,7 @@ proc inspectFunctions {} {
 
 proc simulationOptions {} {
     optionsDialog .
-    opp_updateinspectors
+    opp_refreshinspectors
 }
 
 proc saveTkenvConfig {} {

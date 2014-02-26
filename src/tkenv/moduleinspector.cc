@@ -103,12 +103,12 @@ void ModuleInspector::useWindow(const char *widget)
     strcat(canvas,".c");
 }
 
-void ModuleInspector::update()
+void ModuleInspector::refresh()
 {
    if (!object)
        return;
 
-   Inspector::update();
+   Inspector::refresh();
 
    if (notDrawn) return;
 

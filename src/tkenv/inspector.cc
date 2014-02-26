@@ -118,7 +118,7 @@ void Inspector::hostObjectDeleted()
    CHK(Tcl_VarEval(interp, "inspector:hostObjectDeleted ", windowName, NULL )); //FIXME needed? this Tcl proc is currently empty!!!
 }
 
-void Inspector::update()
+void Inspector::refresh()
 {
    //FIXME only if there is infobar and toolbar! (that is, !embedded; or hasToolbar && hasInfobar)
    Tcl_Interp *interp = getTkenv()->getInterp();

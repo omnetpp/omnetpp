@@ -30,8 +30,8 @@ class TKENV_API HistogramInspector : public Inspector
    public:
       HistogramInspector();
       virtual void createWindow(const char *window, const char *geometry);
-      virtual void update();
-      virtual void writeBack() {}
+      virtual void refresh();
+      virtual void commit() {}
       virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
 
       // return textual information in general or about a value/value pair

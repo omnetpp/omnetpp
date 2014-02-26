@@ -124,14 +124,14 @@ int GateInspector::redraw(Tcl_Interp *interp, int, const char **)
    }
 
    // loop through all messages in the event queue
-   update();
+   refresh();
 
    return TCL_OK;
 }
 
-void GateInspector::update()
+void GateInspector::refresh()
 {
-   Inspector::update();
+   Inspector::refresh();
 
    Tcl_Interp *interp = getTkenv()->getInterp();
    cGate *gate = static_cast<cGate *>(object);

@@ -147,12 +147,12 @@ int isInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorGetObject_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorSetObject_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorGetType_cmd(ClientData, Tcl_Interp *, int, const char **);
-int updateInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
-int writeBackInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
+int refreshInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
+int commitInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
 int deleteInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
 int markInspectorForDeletion_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspMarkedForDeletion_cmd(ClientData, Tcl_Interp *, int, const char **);
-int updateInspectors_cmd(ClientData, Tcl_Interp *, int, const char **);
+int refreshInspectors_cmd(ClientData, Tcl_Interp *, int, const char **);
 int redrawInspectors_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorType_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorCommand_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -264,12 +264,12 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_inspector_getobject",inspectorGetObject_cmd}, // args: <window>
    { "opp_inspector_setobject",inspectorSetObject_cmd}, // args: <window> <ptr>
    { "opp_inspector_gettype", inspectorGetType_cmd  }, // args: <window>
-   { "opp_updateinspector",   updateInspector_cmd   }, // args: <window>
-   { "opp_writebackinspector",writeBackInspector_cmd}, // args: <window>
+   { "opp_refreshinspector",  refreshInspector_cmd  }, // args: <window>
+   { "opp_commitinspector",   commitInspector_cmd   }, // args: <window>
    { "opp_deleteinspector",   deleteInspector_cmd   }, // args: <window>
    { "opp_markinspectorfordeletion", markInspectorForDeletion_cmd}, // args: <window>
    { "opp_inspmarkedfordeletion", inspMarkedForDeletion_cmd}, // args: <window>
-   { "opp_updateinspectors",  updateInspectors_cmd  }, // args: -
+   { "opp_refreshinspectors", refreshInspectors_cmd }, // args: -
    { "opp_redrawinspectors",  redrawInspectors_cmd  }, // args: -
    { "opp_inspectortype",     inspectorType_cmd     }, // translates inspector type code to namestr and v.v.
    { "opp_inspectorcommand",  inspectorCommand_cmd  }, // args: <window> <args-to-be-passed-to-inspectorCommand>
@@ -1750,7 +1750,7 @@ int inspectorSetObject_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
     if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
     cObject *obj = strToPtr(argv[2]);
     insp->setObject(obj);
-    insp->update();
+    insp->refresh();
     return TCL_OK;
 }
 
@@ -1766,26 +1766,26 @@ int inspectorGetType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
     return TCL_OK;
 }
 
-int updateInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+int refreshInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    // expected arg: inspector widget name
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
    Inspector *insp = app->findInspector(argv[1]);
    if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
-   insp->update();
+   insp->refresh();
    return TCL_OK;
 }
 
-int writeBackInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+int commitInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    // expected arg: inspector widget name
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
    Inspector *insp = app->findInspector(argv[1]);
    if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
-   insp->writeBack();
-   insp->update();  // show what writeBack() did
+   insp->commit();
+   insp->refresh();  // show what writeBack() did
    return TCL_OK;
 }
 
@@ -1822,7 +1822,7 @@ int inspMarkedForDeletion_cmd(ClientData, Tcl_Interp *interp, int argc, const ch
    return TCL_OK;
 }
 
-int updateInspectors_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
+int refreshInspectors_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();

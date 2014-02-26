@@ -65,16 +65,16 @@ void WatchInspector::createWindow(const char *window, const char *geometry)
    CHK(Tcl_VarEval(interp, "createWatchInspector ", windowName, " \"", geometry, "\"", NULL ));
 }
 
-void WatchInspector::update()
+void WatchInspector::refresh()
 {
-   Inspector::update();
+   Inspector::refresh();
 
    cWatchBase *watch = static_cast<cWatchBase *>(object);
    setLabel(".main.name.l", (std::string(watch->getClassName())+" "+watch->getName()).c_str());
    setEntry(".main.name.e", watch->info().c_str());
 }
 
-void WatchInspector::writeBack()
+void WatchInspector::commit()
 {
    Tcl_Interp *interp = getTkenv()->getInterp();
    cWatchBase *watch = static_cast<cWatchBase *>(object);
@@ -83,7 +83,7 @@ void WatchInspector::writeBack()
        watch->assign(s);
    else
       CHK(Tcl_VarEval(interp,"messagebox {Warning} {This inspector doesn't support changing the value.} warning ok", NULL));
-   Inspector::writeBack();    // must be there after all changes
+   Inspector::commit();    // must be there after all changes
 }
 
 NAMESPACE_END

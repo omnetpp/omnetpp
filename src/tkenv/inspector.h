@@ -73,8 +73,8 @@ class TKENV_API Inspector
       virtual bool windowExists();
       virtual void showWindow();
 
-      virtual void update();
-      virtual void writeBack() {}
+      virtual void refresh();
+      virtual void commit() {}
 
       virtual int inspectorCommand(Tcl_Interp *interp, int, const char **) {return TCL_ERROR;}
 

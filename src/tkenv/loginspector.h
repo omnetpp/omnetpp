@@ -34,7 +34,7 @@ class TKENV_API LogInspector : public Inspector
    public:
       LogInspector();
       virtual void createWindow(const char *window, const char *geometry);
-      virtual void update();
+      virtual void refresh();
 
       virtual void printLastLineOf(const LogBuffer& logBuffer);
       virtual void redisplay(const LogBuffer& logBuffer);

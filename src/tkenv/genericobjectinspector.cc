@@ -86,9 +86,9 @@ void GenericObjectInspector::createWindow(const char *window, const char *geomet
                    (hascontentspage ? "1" : "0"), " ",  (focuscontentspage ? "1" : "0"), " ", NULL));
 }
 
-void GenericObjectInspector::update()
+void GenericObjectInspector::refresh()
 {
-   Inspector::update();
+   Inspector::refresh();
 
    // refresh "fields" page
    Tcl_Interp *interp = getTkenv()->getInterp();
@@ -102,9 +102,9 @@ void GenericObjectInspector::update()
    }
 }
 
-void GenericObjectInspector::writeBack()
+void GenericObjectInspector::commit()
 {
-   Inspector::writeBack();
+   Inspector::commit();
 }
 
 int GenericObjectInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)

@@ -114,9 +114,9 @@ void OutputVectorInspector::createWindow(const char *window, const char *geometr
    CHK(Tcl_VarEval(interp, "createOutvectorWindow ", windowName, " \"", geometry, "\"", NULL ));
 }
 
-void OutputVectorInspector::update()
+void OutputVectorInspector::refresh()
 {
-   Inspector::update();
+   Inspector::refresh();
 
    Tcl_Interp *interp = getTkenv()->getInterp();
 

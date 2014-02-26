@@ -267,7 +267,7 @@ proc mainWindow:createMenu {} {
       {command -command inspectFilteredObjectList -label {Show 'Find/Inspect Objects' Window} -accel {Ctrl+S} -underline 0}
       {command -command inspectBypointer -label {Inspect by Pointer...} -underline 4}
       {separator}
-      {command -command opp_updateinspectors -label {Refresh Inspectors} -underline 0}
+      {command -command opp_refreshinspectors -label {Refresh Inspectors} -underline 0}
     } {
       eval .menubar.inspectmenu$m add $i
     }

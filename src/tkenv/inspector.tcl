@@ -65,7 +65,7 @@ proc createInspectorToplevel {w geom} {
     # Keyboard bindings
     bind $w <Escape>     "catch {.popup unpost}"
     bind $w <Button-1>   "catch {.popup unpost}"
-    bind $w <Key-Return> "opp_writebackinspector $w; opp_updateinspectors"
+    bind $w <Key-Return> "opp_commitinspector $w; opp_refreshinspectors"
 
     bind $w.infobar.name <Button-$B3> [list inspector:namePopup $ptr %X %Y]
     bind $w.infobar.color <Button-$B3> [list inspector:namePopup $ptr %X %Y]

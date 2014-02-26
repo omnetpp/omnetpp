@@ -22,7 +22,7 @@ proc createHistogramWindow {name geom} {
     createInspectorToplevel $w $geom
 
     # make the window respond to resize events
-    bind $w <Configure> "opp_updateinspector $w"
+    bind $w <Configure> "opp_refreshinspector $w"
 
     packIconButton $w.toolbar.obj -image $icons(asobject) -command "inspectThis $w {As Object}"
     set help_tips($w.toolbar.obj) {Inspect as object}

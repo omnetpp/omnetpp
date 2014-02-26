@@ -866,7 +866,7 @@ Inspector *Tkenv::inspect(cObject *obj, int type, const char *geometry)
     insp->setObject(obj);
     inspectors.push_back(insp);
     insp->createWindow(Inspector::makeWindowName().c_str(), geometry);
-    insp->update();
+    insp->refresh();
 
     return insp;
 }
@@ -875,7 +875,7 @@ void Tkenv::addEmbeddedInspector(const char *widget, Inspector *insp)
 {
     inspectors.push_back(insp);
     insp->useWindow(widget);
-    insp->update();
+    insp->refresh();
 }
 
 Inspector *Tkenv::findInspector(cObject *obj, int type)
@@ -916,7 +916,7 @@ void Tkenv::updateInspectors()
         if (insp->isMarkedForDeletion())
             deleteInspector(insp);
         else
-            insp->update();
+            insp->refresh();
         it = next;
     }
 
@@ -956,7 +956,7 @@ void Tkenv::updateGraphicalInspectorsBeforeAnimation()
         Inspector *insp = *it;
         if (dynamic_cast<ModuleInspector *>(insp) && static_cast<ModuleInspector *>(insp)->needsRedraw())
         {
-            insp->update();
+            insp->refresh();
         }
     }
 }
