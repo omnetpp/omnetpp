@@ -21,7 +21,7 @@ proc textWindowAddIcons {w {wintype ""}} {
     packIconButton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
     packIconButton $w.toolbar.save   -image $icons(save) -command "saveFile $w"
     if {$wintype=="modulewindow"} {
-        packIconButton $w.toolbar.filter -image $icons(filter) -command "editFilterWindowContents $w.main.text"
+        packIconButton $w.toolbar.filter -image $icons(filter) -command "editFilterWindowContents $w"
     }
     packIconButton $w.toolbar.sep21  -separator
 

@@ -280,7 +280,7 @@ proc editFindNext {{w .log.main.text}} {
    findNext $w
 }
 
-proc editFilterWindowContents {{w .log.main.text}} {
+proc editFilterWindowContents {{w .log}} {
    LogInspector:openFilterDialog $w
 }
 

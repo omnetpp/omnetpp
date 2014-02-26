@@ -72,6 +72,7 @@ proc LogInspector:openFilterDialog {w} {
     set excludedModuleIds [moduleOutputFilterDialog $modptr $excludedModuleIds]
     if {$excludedModuleIds!="0"} {
         opp_inspectorcommand $w setexcludedmoduleids $excludedModuleIds
+        opp_inspectorcommand $w redisplay
     }
 }
 
