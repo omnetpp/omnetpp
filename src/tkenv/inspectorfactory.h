@@ -35,7 +35,7 @@ NAMESPACE_BEGIN
 class TKENV_API InspectorFactory : public cNoncopyableOwnedObject
 {
   protected:
-    virtual Inspector *prepare(Inspector *insp) {insp->setType(getInspectorType()); return insp;}
+    virtual Inspector *prepare(Inspector *insp) {ASSERT(insp->getType()==getInspectorType()); return insp;}
 
   public:
     /** @name Constructors, destructor, assignment. */

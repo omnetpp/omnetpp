@@ -73,7 +73,7 @@ static void record_in_insp(void *data, simtime_t t, double val1, double val2)
    insp->circbuf.add(t,val1,val2);
 }
 
-OutputVectorInspector::OutputVectorInspector() : Inspector(), circbuf(100)
+OutputVectorInspector::OutputVectorInspector() : Inspector(INSP_GRAPHICAL), circbuf(100)
 {
    autoscale = true;
    drawingMode = DRAW_LINES;

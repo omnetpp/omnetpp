@@ -51,7 +51,7 @@ class GenericObjectInspectorFactory : public InspectorFactory
 Register_InspectorFactory(GenericObjectInspectorFactory);
 
 
-GenericObjectInspector::GenericObjectInspector() : Inspector()
+GenericObjectInspector::GenericObjectInspector() : Inspector(INSP_OBJECT)
 {
     hascontentspage = false;
     focuscontentspage = false;

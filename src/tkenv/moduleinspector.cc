@@ -64,7 +64,7 @@ class ModuleInspectorFactory : public InspectorFactory
 Register_InspectorFactory(ModuleInspectorFactory);
 
 
-ModuleInspector::ModuleInspector() : Inspector()
+ModuleInspector::ModuleInspector() : Inspector(INSP_GRAPHICAL)
 {
    needs_redraw = false;
    notDrawn = false;

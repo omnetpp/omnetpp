@@ -52,7 +52,7 @@ class GateInspectorFactory : public InspectorFactory
 Register_InspectorFactory(GateInspectorFactory);
 
 
-GateInspector::GateInspector() : Inspector()
+GateInspector::GateInspector() : Inspector(INSP_GRAPHICAL)
 {
 }
 

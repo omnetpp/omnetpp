@@ -60,11 +60,11 @@ int insptypeCodeFromName(const char *namestr)
 
 //----
 
-Inspector::Inspector()
+Inspector::Inspector(int t)
 {
    interp = getTkenv()->getInterp();
    object = NULL;
-   type = -1;
+   type = t;
    isToplevelWindow = false;
    closeRequested = false;
 

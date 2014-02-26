@@ -48,7 +48,7 @@ class LogInspectorFactory : public InspectorFactory
 Register_InspectorFactory(LogInspectorFactory);
 
 
-LogInspector::LogInspector() : Inspector()
+LogInspector::LogInspector() : Inspector(INSP_MODULEOUTPUT)
 {
 }
 

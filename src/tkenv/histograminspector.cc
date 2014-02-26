@@ -44,7 +44,7 @@ class HistogramInspectorFactory : public InspectorFactory
 Register_InspectorFactory(HistogramInspectorFactory);
 
 
-HistogramInspector::HistogramInspector() : Inspector()
+HistogramInspector::HistogramInspector() : Inspector(INSP_GRAPHICAL)
 {
 }
 

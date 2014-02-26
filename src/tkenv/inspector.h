@@ -36,7 +36,7 @@ enum {
 
 
 // utility functions
-const char *insptypeNameFromCode( int code );
+const char *insptypeNameFromCode(int code);
 int insptypeCodeFromName(const char *namestr);
 
 
@@ -75,16 +75,16 @@ class TKENV_API Inspector
       void fillListboxWithSubmodules(const char *listbox, cModule *parent);
 
    public:
-      Inspector();
+      Inspector(int type);
       virtual ~Inspector();
 
       static std::string makeWindowName();
 
+      virtual int getType() {return type;}
+      virtual const char *getWindowName() {return windowName;}
+
       virtual cObject *getObject() {return object;}
       virtual void setObject(cObject *obj);
-      virtual int getType() {return type;}
-      virtual void setType(int t) {type = t;}
-      virtual const char *getWindowName() {return windowName;}
 
       virtual void hostObjectDeleted();
       virtual void markForDeletion() {closeRequested=true;}

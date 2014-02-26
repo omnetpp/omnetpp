@@ -53,7 +53,7 @@ class WatchInspectorFactory : public InspectorFactory
 Register_InspectorFactory(WatchInspectorFactory);
 
 
-WatchInspector::WatchInspector() : Inspector()
+WatchInspector::WatchInspector() : Inspector(INSP_OBJECT)
 {
 }
 

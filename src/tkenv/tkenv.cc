@@ -277,15 +277,12 @@ void Tkenv::run()
         }
 
         mainInspector = new GenericObjectInspector();
-        mainInspector->setType(INSP_OBJECT); //XXX
         addEmbeddedInspector(".inspector", mainInspector);
 
         mainNetworkView = new ModuleInspector();
-        mainNetworkView->setType(INSP_GRAPHICAL); //XXX
         addEmbeddedInspector(".network", mainNetworkView);
 
         mainLogView = new LogInspector();
-        mainLogView->setType(INSP_MODULEOUTPUT); //XXX
         addEmbeddedInspector(".log", mainLogView);
     }
     catch (std::exception& e)
