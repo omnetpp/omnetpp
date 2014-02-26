@@ -38,8 +38,8 @@ proc createHistogramWindow {name geom} {
     label $w.bot.info -relief groove -width 50
     pack $w.bot.info -anchor center -expand 1 -fill x -side left
 
-    $w.main.canvas bind all <Any-Enter> {histogramWindow:mouse %W %x %y 1}
-    $w.main.canvas bind all <Any-Leave> {histogramWindow:mouse %W %x %y 0}
+    $w.main.canvas bind all <Any-Enter> {HistogramInspector:mouse %W %x %y 1}
+    $w.main.canvas bind all <Any-Leave> {HistogramInspector:mouse %W %x %y 0}
 
     # we need to let the window display, otherwise the canvas size
     # (needed by the first draw) returned by [winfo width/height ...]
@@ -47,7 +47,7 @@ proc createHistogramWindow {name geom} {
     update idletasks
 }
 
-proc histogramWindow:mouse {w x y on} {
+proc HistogramInspector:mouse {w x y on} {
     #set obj [$w find closest $x $y]
     set tags [$w gettags current]
     if [regexp {.*cell([0-9]+).*} $tags match cell] {

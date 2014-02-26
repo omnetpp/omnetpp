@@ -91,7 +91,7 @@ void ModuleInspector::setObject(cObject *obj)
         const cDisplayString& ds = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString() : blank;
         randomSeed = resolveLongDispStrArg(ds.getTagArg("bgl",4), parentModule, 1);
 
-        CHK(Tcl_VarEval(interp, "graphicalModuleWindow:onSetObject ", windowName, NULL ));
+        CHK(Tcl_VarEval(interp, "ModuleInspector:onSetObject ", windowName, NULL ));
     }
 }
 
@@ -102,7 +102,7 @@ void ModuleInspector::createWindow(const char *window, const char *geometry)
    strcpy(canvas,windowName);
    strcat(canvas,".c");
 
-   CHK(Tcl_VarEval(interp, "createGraphicalModWindow ", windowName, " \"", geometry, "\"", NULL ));
+   CHK(Tcl_VarEval(interp, "createModuleInspector ", windowName, " \"", geometry, "\"", NULL ));
 }
 
 void ModuleInspector::useWindow(const char *window)
@@ -482,7 +482,7 @@ void ModuleInspector::redrawModules()
         }
     }
     CHK(Tcl_VarEval(interp, canvas, " raise bubble",NULL));
-    CHK(Tcl_VarEval(interp, "graphicalModuleWindow:setScrollRegion ", windowName, " 0",NULL));
+    CHK(Tcl_VarEval(interp, "ModuleInspector:setScrollRegion ", windowName, " 0",NULL));
 }
 
 void ModuleInspector::drawSubmodule(Tcl_Interp *interp, cModule *submod, double x, double y, const char *scaling)
@@ -491,7 +491,7 @@ void ModuleInspector::drawSubmodule(Tcl_Interp *interp, cModule *submod, double 
     sprintf(coords,"%g %g ", x, y);
     const char *dispstr = submod->hasDisplayString() && submod->parametersFinalized() ? submod->getDisplayString().str() : "";
 
-    CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawSubmodule ",
+    CHK(Tcl_VarEval(interp, "ModuleInspector:drawSubmodule ",
                     canvas, " ",
                     ptrToStr(submod), " ",
                     coords,
@@ -505,7 +505,7 @@ void ModuleInspector::drawSubmodule(Tcl_Interp *interp, cModule *submod, double 
 void ModuleInspector::drawEnclosingModule(Tcl_Interp *interp, cModule *parentModule, const char *scaling)
 {
     const char *displayString = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString().str() : "";
-    CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawEnclosingModule ",
+    CHK(Tcl_VarEval(interp, "ModuleInspector:drawEnclosingModule ",
                        canvas, " ",
                        ptrToStr(parentModule), " ",
                        "{", parentModule->getFullPath().c_str(), "} ",
@@ -551,7 +551,7 @@ void ModuleInspector::drawConnection(Tcl_Interp *interp, cGate *gate)
     ptrToStr(chan, chanptr);
     const char *dispstr = (chan && chan->hasDisplayString() && chan->parametersFinalized()) ? chan->getDisplayString().str() : "";
 
-    CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawConnection ",
+    CHK(Tcl_VarEval(interp, "ModuleInspector:drawConnection ",
             canvas, " ",
             gateptr, " ",
             TclQuotedString(dispstr).get(), " ",
@@ -590,7 +590,7 @@ void ModuleInspector::redrawMessages()
          if (arrivalGate->getPreviousGate())
          {
              cGate *gate = arrivalGate->getPreviousGate();
-             CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawMessageOnGate ",
+             CHK(Tcl_VarEval(interp, "ModuleInspector:drawMessageOnGate ",
                              canvas, " ",
                              ptrToStr(gate), " ",
                              msgptr,
@@ -598,7 +598,7 @@ void ModuleInspector::redrawMessages()
          }
          else
          {
-             CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawMessageOnModule ",
+             CHK(Tcl_VarEval(interp, "ModuleInspector:drawMessageOnModule ",
                              canvas, " ",
                              ptrToStr(arrivalMod), " ",
                              msgptr,
@@ -627,7 +627,7 @@ void ModuleInspector::redrawNextEventMarker()
        nextModParent = nextModParent->getParentModule();
    if (nextModParent)
    {
-       CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawNextEventMarker ",
+       CHK(Tcl_VarEval(interp, "ModuleInspector:drawNextEventMarker ",
                        canvas, " ",
                        ptrToStr(nextModParent), " ",
                        (nextMod==nextModParent ? "2" : "1"),
@@ -639,7 +639,7 @@ void ModuleInspector::updateSubmodules()
 {
    for (cModule::SubmoduleIterator submod(static_cast<cModule *>(object)); !submod.end(); submod++)
    {
-       CHK(Tcl_VarEval(interp, "graphicalModuleWindow:updateSubmodule ",
+       CHK(Tcl_VarEval(interp, "ModuleInspector:updateSubmodule ",
                        canvas, " ",
                        ptrToStr(submod()),
                        NULL));
@@ -699,7 +699,7 @@ void ModuleInspector::bubble(cModule *submod, const char *text)
     char coords[64];
     Point& pos = submodPosMap[submod];
     sprintf(coords, " %g %g ", pos.x, pos.y);
-    CHK(Tcl_VarEval(interp, "graphicalModuleWindow:bubble ", canvas, coords, " ", TclQuotedString(scaling).get(), " ", TclQuotedString(text).get(), NULL));
+    CHK(Tcl_VarEval(interp, "ModuleInspector:bubble ", canvas, coords, " ", TclQuotedString(scaling).get(), " ", TclQuotedString(text).get(), NULL));
 }
 
 int ModuleInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)

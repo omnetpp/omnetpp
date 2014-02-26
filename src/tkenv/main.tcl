@@ -475,15 +475,15 @@ proc mainWindow:createNetworkView {} {
     packIconButton $tb.mrun    -image $icons(mrun)    -command "runSimulationLocal $w normal"
     packIconButton $tb.mfast   -image $icons(mfast)   -command "runSimulationLocal $w fast"
     packIconButton $tb.vrun     -image $icons(run)     -command {runNormal}
-    packIconButton $tb.vruncfg  -image $icons(down_vs) -command "moduleInspector:setRunmode $w.toolbar.vrun"
+    packIconButton $tb.vruncfg  -image $icons(down_vs) -command "ModuleInspector:setRunmode $w.toolbar.vrun"
 
     packIconButton $tb.stop    -image $icons(stop)    -command {stopSimulation}
     packIconButton $tb.sep2    -separator
-    packIconButton $tb.redraw  -image $icons(redraw) -command "graphicalModuleWindow:relayout $w"
-    packIconButton $tb.zoomin  -image $icons(zoomin)  -command "graphicalModuleWindow:zoomIn $w"
-    packIconButton $tb.zoomout -image $icons(zoomout) -command "graphicalModuleWindow:zoomOut $w"
-    packIconButton $tb.showlabels -image $icons(modnames) -command "graphicalModuleWindow:toggleLabels $w"
-    packIconButton $tb.showarrowheads -image $icons(arrowhead) -command "graphicalModuleWindow:toggleArrowheads $w"
+    packIconButton $tb.redraw  -image $icons(redraw) -command "ModuleInspector:relayout $w"
+    packIconButton $tb.zoomin  -image $icons(zoomin)  -command "ModuleInspector:zoomIn $w"
+    packIconButton $tb.zoomout -image $icons(zoomout) -command "ModuleInspector:zoomOut $w"
+    packIconButton $tb.showlabels -image $icons(modnames) -command "ModuleInspector:toggleLabels $w"
+    packIconButton $tb.showarrowheads -image $icons(arrowhead) -command "ModuleInspector:toggleArrowheads $w"
 
     return $w
 }
@@ -495,7 +495,7 @@ proc mainWindow:createLogView {} {
     frame $w.main
     pack $w.main -expand 1 -fill both -side top
 
-    createModuleLogViewer $w.main
+    createLogViewer $w.main
     return $w
 }
 
@@ -555,8 +555,8 @@ proc bindCommandsToTextWidget {txt {wintype ""}} {
     if {$wintype=="modulewindow"} {
         # bind Ctrl+H ('break' is needed because originally ^H is bound to DEL)
         set w [winfo parent [winfo parent $txt]]
-        bind $txt <Control-h> "moduleWindow:openFilterDialog $w; break"
-        bind $txt <Control-H> "moduleWindow:openFilterDialog $w; break"
+        bind $txt <Control-h> "LogInspector:openFilterDialog $w; break"
+        bind $txt <Control-H> "LogInspector:openFilterDialog $w; break"
     }
 
     # bind Ctrl+A "Select all" ('break' is needed below because ^A=Home)

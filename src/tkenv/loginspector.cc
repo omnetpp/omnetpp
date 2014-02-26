@@ -59,7 +59,7 @@ void LogInspector::createWindow(const char *window, const char *geometry)
     strcpy(textWidget,windowName);
     strcat(textWidget, ".main.text");
 
-    CHK(Tcl_VarEval(interp, "createModuleWindow ", windowName, " \"", geometry, "\"", NULL ));
+    CHK(Tcl_VarEval(interp, "createLogInspector ", windowName, " \"", geometry, "\"", NULL ));
 }
 
 void LogInspector::useWindow(const char *window)
@@ -88,7 +88,7 @@ void LogInspector::refresh()
         return;
     }
 
-    CHK(Tcl_VarEval(interp, "moduleWindow:trimlines ", windowName, NULL));
+    CHK(Tcl_VarEval(interp, "LogInspector:trimlines ", windowName, NULL));
 }
 
 void LogInspector::printLastLineOf(const LogBuffer& logBuffer)

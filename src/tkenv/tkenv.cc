@@ -922,9 +922,6 @@ void Tkenv::updateInspectors()
     // update object tree
     CHK(Tcl_VarEval(interp, "treeManager:update",NULL));
 
-    // trim log in main window
-    CHK(Tcl_VarEval(interp, "mainlogWindow:trimlines",NULL));
-
     // try opening "pending" inspectors
     CHK(Tcl_VarEval(interp, "inspectorUpdateCallback",NULL));
 }
@@ -1509,7 +1506,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
                 char parentptr[30], modptr[30];
                 strcpy(parentptr,ptrToStr(enclosingmod));
                 strcpy(modptr,ptrToStr(mod));
-                CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateMethodcallAscent ",
+                CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallAscent ",
                                         insp->getWindowName(), " ",
                                         parentptr," ",
                                         modptr," ",
@@ -1532,7 +1529,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
                 char parentptr[30], modptr[30];
                 strcpy(parentptr,ptrToStr(enclosingmod));
                 strcpy(modptr,ptrToStr(mod));
-                CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateMethodcallDescent ",
+                CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallDescent ",
                                         insp->getWindowName(), " ",
                                         parentptr," ",
                                         modptr," ",
@@ -1550,7 +1547,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
                 char fromptr[30], toptr[30];
                 strcpy(fromptr,ptrToStr(i->from));
                 strcpy(toptr,ptrToStr(i->to));
-                CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateMethodcallHoriz ",
+                CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallHoriz ",
                                         insp->getWindowName(), " ",
                                         fromptr," ",
                                         toptr," ",
@@ -1563,7 +1560,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
     if (numinsp>0)
     {
         // leave it there for a while
-        CHK(Tcl_Eval(interp, "graphicalModuleWindow:animateMethodcallWait"));
+        CHK(Tcl_Eval(interp, "ModuleInspector:animateMethodcallWait"));
 
         // then remove all arrows
         for (i=pathvec.begin(); i!=pathvec.end(); i++)
@@ -1573,7 +1570,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
             Inspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
             if (insp)
             {
-                CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateMethodcallCleanup ",
+                CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallCleanup ",
                                         insp->getWindowName(),
                                         NULL));
             }
@@ -1740,7 +1737,7 @@ void Tkenv::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
         if (insp)
         {
             int lastgate = (g->getNextGate()==arrivalgate);
-            CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateOnConn ",
+            CHK(Tcl_VarEval(interp, "ModuleInspector:animateOnConn ",
                                     insp->getWindowName(), " ",
                                     msgptr, " ",
                                     ptrToStr(g)," ",
@@ -1846,7 +1843,7 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
                 char parentptr[30], modptr[30];
                 strcpy(parentptr,ptrToStr(enclosingmod));
                 strcpy(modptr,ptrToStr(mod));
-                CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateSenddirectAscent ",
+                CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectAscent ",
                                         insp->getWindowName(), " ",
                                         msgptr, " ",
                                         parentptr," ",
@@ -1866,7 +1863,7 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
                 char parentptr[30], modptr[30];
                 strcpy(parentptr,ptrToStr(enclosingmod));
                 strcpy(modptr,ptrToStr(mod));
-                CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateSenddirectDescent ",
+                CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectDescent ",
                                         insp->getWindowName(), " ",
                                         msgptr, " ",
                                         parentptr," ",
@@ -1884,7 +1881,7 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
                 char fromptr[30], toptr[30];
                 strcpy(fromptr,ptrToStr(i->from));
                 strcpy(toptr,ptrToStr(i->to));
-                CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateSenddirectHoriz ",
+                CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectHoriz ",
                                         insp->getWindowName(), " ",
                                         msgptr, " ",
                                         fromptr," ",
@@ -1903,7 +1900,7 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
         Inspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
         if (insp)
         {
-            CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateSenddirectCleanup ",
+            CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectCleanup ",
                                     insp->getWindowName(),
                                     NULL));
         }
@@ -1928,7 +1925,7 @@ void Tkenv::animateDelivery(cMessage *msg)
     Inspector *insp = findInspector(mod,INSP_GRAPHICAL);
     if (insp)
     {
-        CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateOnConn ",
+        CHK(Tcl_VarEval(interp, "ModuleInspector:animateOnConn ",
                                 insp->getWindowName(), " ",
                                 msgptr, " ",
                                 ptrToStr(g)," ",
@@ -1951,7 +1948,7 @@ void Tkenv::animateDeliveryDirect(cMessage *msg)
     Inspector *insp = findInspector(mod,INSP_GRAPHICAL);
     if (insp)
     {
-        CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateSenddirectDelivery ",
+        CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectDelivery ",
                                 insp->getWindowName(), " ",
                                 msgptr, " ",
                                 ptrToStr(destmod),

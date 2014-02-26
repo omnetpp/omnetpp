@@ -14,7 +14,7 @@
 #----------------------------------------------------------------#
 
 
-proc createModuleWindow {name geom} {
+proc createLogInspector {name geom} {
     global icons fonts help_tips B2 B3
 
     set w $name
@@ -29,14 +29,14 @@ proc createModuleWindow {name geom} {
     set help_tips($w.toolbar.obj)    {Inspect as object}
 
     textWindowAddIcons $w modulewindow
-    moduleInspector:addRunButtons $w
+    ModuleInspector:addRunButtons $w
 
     frame $w.main
     pack $w.main -expand 1 -fill both -side top
-    createModuleLogViewer $w.main
+    createLogViewer $w.main
 }
 
-proc createModuleLogViewer {w} {
+proc createLogViewer {w} {
     global fonts
     text $w.text -yscrollcommand "$w.sb set" -width 80 -height 15 -font $fonts(text)
     scrollbar $w.sb -command "$w.text yview"
@@ -66,7 +66,7 @@ proc logTextWidget:clear {txt} {
     logTextWidget:configureTags $txt
 }
 
-proc moduleWindow:openFilterDialog {w} {
+proc LogInspector:openFilterDialog {w} {
     set modptr [opp_inspector_getobject $w]
     set excludedModuleIds [opp_inspectorcommand $w getexcludedmoduleids]
     set excludedModuleIds [moduleOutputFilterDialog $modptr $excludedModuleIds]
@@ -75,18 +75,9 @@ proc moduleWindow:openFilterDialog {w} {
     }
 }
 
-proc moduleWindow:trimlines {w} {
+proc LogInspector:trimlines {w} {
     global config
     textwidget:trimLines $w.main.text $config(logwindow-scrollbacklines)
-}
-
-proc textwidget:trimLines {t numlines} {
-    if {$numlines==""} {return}
-    set endline [$t index {end linestart}]
-    if {$endline > $numlines + 100} {  ;# for performance, we want to delete in at least 100-line chunks
-        set linestodelete [expr int($endline-$numlines)]
-        $t delete 1.0 $linestodelete.0
-    }
 }
 
 

@@ -14,7 +14,7 @@
 #----------------------------------------------------------------#
 
 
-proc createGraphicalGateWindow {name geom} {
+proc createGateInspector {name geom} {
     global icons help_tips
 
     set w $name
@@ -28,12 +28,12 @@ proc createGraphicalGateWindow {name geom} {
     set help_tips($w.toolbar.ascont) {Inspect as object}
     set help_tips($w.toolbar.redraw) {Redraw}
 
-    createGraphicalGateViewer $w
+    createGateViewer $w
 
     opp_inspectorcommand $w redraw
 }
 
-proc createGraphicalGateViewer {w} {
+proc createGateViewer {w} {
     global inspectordata
     global B2 B3
 
@@ -62,24 +62,21 @@ proc createGraphicalGateViewer {w} {
     grid $w.hsb -in $w.grid -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
 
     # mouse bindings
-    $c bind mod <Double-1> "graphGateWin:dblClick $c"
-    $c bind gate <Double-1> "graphGateWin:dblClick $c {As Object}"
-    $c bind conn <Double-1> "graphGateWin:dblClick $c {As Object}"
-    $c bind msg <Double-1> "graphGateWin:dblClick $c"
-    $c bind msgname <Double-1> "graphGateWin:dblClick $c"
+    $c bind mod <Double-1> "GateInspector:dblClick $c"
+    $c bind gate <Double-1> "GateInspector:dblClick $c {As Object}"
+    $c bind conn <Double-1> "GateInspector:dblClick $c {As Object}"
+    $c bind msg <Double-1> "GateInspector:dblClick $c"
+    $c bind msgname <Double-1> "GateInspector:dblClick $c"
 
-    $c bind mod <$B3> "graphGateWin:rightClick $c %X %Y"
-    $c bind gate <$B3> "graphGateWin:rightClick $c %X %Y"
-    $c bind conn <$B3> "graphGateWin:rightClick $c %X %Y"
-    $c bind msg <$B3> "graphGateWin:rightClick $c %X %Y"
-    $c bind msgname <$B3> "graphGateWin:rightClick $c %X %Y"
+    $c bind mod <$B3> "GateInspector:rightClick $c %X %Y"
+    $c bind gate <$B3> "GateInspector:rightClick $c %X %Y"
+    $c bind conn <$B3> "GateInspector:rightClick $c %X %Y"
+    $c bind msg <$B3> "GateInspector:rightClick $c %X %Y"
+    $c bind msgname <$B3> "GateInspector:rightClick $c %X %Y"
 }
 
-proc graphicalModuleWindow:drawModuleGate {c modptr gateptr modname gatename k xsiz dir highlight} {
+proc GateInspector:drawModuleGate {c modptr gateptr modname gatename k xsiz dir highlight} {
     global fonts
-
-    # puts "DEBUG: graphicalModuleWindow:drawModuleGate /$c/ /$modptr/ /$gateptr/ "
-    #      "/$modname/ /$gatename/ /$k/ /$xsiz/ /$dir/ /$highlight/"
 
     set y [expr 40+40*$k]
 
@@ -125,7 +122,7 @@ proc graphicalModuleWindow:drawModuleGate {c modptr gateptr modname gatename k x
 
 }
 
-proc graphGateWin:drawConnection {c srcgateptr destgateptr chanptr chanstr dispstr} {
+proc GateInspector:drawConnection {c srcgateptr destgateptr chanptr chanstr dispstr} {
     global fonts
 
     opp_displaystring $dispstr parse tags $chanptr 0
@@ -157,7 +154,7 @@ proc graphGateWin:drawConnection {c srcgateptr destgateptr chanptr chanstr disps
    }
 }
 
-proc graphGateWin:dblClick {c {type (default)}} {
+proc GateInspector:dblClick {c {type (default)}} {
 
    set item [$c find withtag current]
    set tags [$c gettags $item]
@@ -172,7 +169,7 @@ proc graphGateWin:dblClick {c {type (default)}} {
    }
 }
 
-proc graphGateWin:rightClick {c X Y} {
+proc GateInspector:rightClick {c X Y} {
 
    set item [$c find withtag current]
    set tags [$c gettags $item]

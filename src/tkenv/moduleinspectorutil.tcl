@@ -14,7 +14,7 @@
 #----------------------------------------------------------------#
 
 
-proc moduleInspector:addRunButtons {w} {
+proc ModuleInspector:addRunButtons {w} {
     global icons help_tips
 
     packIconButton $w.toolbar.minfo   -image $icons(info) -command "modelInfoDialog $w"
@@ -28,7 +28,7 @@ proc moduleInspector:addRunButtons {w} {
     #packIconButton $w.toolbar.sep13   -separator
 
     packIconButton $w.toolbar.vrun     -image $icons(run)     -command {runNormal}
-    packIconButton $w.toolbar.vruncfg  -image $icons(down_vs) -command "moduleInspector:setRunmode $w.toolbar.vrun"
+    packIconButton $w.toolbar.vruncfg  -image $icons(down_vs) -command "ModuleInspector:setRunmode $w.toolbar.vrun"
 
     #packIconButton $w.toolbar.fastrun -image $icons(fast)    -command {runFast}
     #packIconButton $w.toolbar.exprrun -image $icons(express) -command {runExpress}
@@ -54,7 +54,7 @@ proc moduleInspector:addRunButtons {w} {
 # Invoked by the small down arrow next to the "Run" icon on the toolbar, and displays
 # a menu to select between Run, Fast, Express and Until. $w is the icon button to configure.
 #
-proc moduleInspector:setRunmode {w} {
+proc ModuleInspector:setRunmode {w} {
     global icons help_tips
 
     catch {destroy .popup}

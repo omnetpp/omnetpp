@@ -231,7 +231,7 @@ proc textwidget:contextMenu {txt wintype X Y} {
     .popup add separator
     if {$wintype=="modulewindow"} {
         set w [winfo parent [winfo parent $txt]]
-        .popup add command -command "moduleWindow:openFilterDialog $w" -label {Filter window contents...} -accel {Ctrl+H} -underline 0
+        .popup add command -command "LogInspector:openFilterDialog $w" -label {Filter window contents...} -accel {Ctrl+H} -underline 0
         .popup add separator
 
     }
@@ -250,3 +250,14 @@ proc textwidget:toggleWrap {txt} {
     # set default for further windows
     set config(editor-wrap) $tmp(wrap)
 }
+
+proc textwidget:trimLines {t numlines} {
+    if {$numlines==""} {return}
+    set endline [$t index {end linestart}]
+    if {$endline > $numlines + 100} {  ;# for performance, we want to delete in at least 100-line chunks
+        set linestodelete [expr int($endline-$numlines)]
+        $t delete 1.0 $linestodelete.0
+    }
+}
+
+

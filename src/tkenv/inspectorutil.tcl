@@ -354,7 +354,7 @@ proc getHelpTip {w x y} {
           regexp "ptr.*" $tags ptr
        } elseif {[lsearch $tags "qlen-ptr*"] != -1} {
           regexp "ptr.*" $tags modptr
-          set ptr [graphicalModuleWindow:qlenGetQptr $w $modptr]
+          set ptr [ModuleInspector:qlenGetQptr $w $modptr]
        } elseif {[lsearch $tags "node-ptr*"] != -1} {
           regexp "ptr.*" $tags ptr
        } elseif {[lsearch $tags "node-*"] != -1} {

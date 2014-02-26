@@ -63,7 +63,7 @@ void GateInspector::createWindow(const char *window, const char *geometry)
    strcpy(canvas,windowName);
    strcat(canvas,".c");
 
-   CHK(Tcl_VarEval(interp, "createGraphicalGateWindow ", windowName, " \"", geometry, "\"", NULL ));
+   CHK(Tcl_VarEval(interp, "createGateInspector ", windowName, " \"", geometry, "\"", NULL ));
 }
 
 void GateInspector::useWindow(const char *window)
@@ -98,7 +98,7 @@ int GateInspector::redraw(Tcl_Interp *interp, int, const char **)
         sprintf(kstr,"%d",k);
         sprintf(xstr,"%d",xsiz);
         dir[0] = g->getType(); dir[1]=0;
-        CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawModuleGate ",
+        CHK(Tcl_VarEval(interp, "GateInspector:drawModuleGate ",
                       canvas, " ",
                       modptr, " ",
                       gateptr, " ",
@@ -120,7 +120,7 @@ int GateInspector::redraw(Tcl_Interp *interp, int, const char **)
         cChannel *chan = g->getChannel();
         ptrToStr(chan,chanptr);
         const char *dispstr = (chan && chan->hasDisplayString() && chan->parametersFinalized() ) ? chan->getDisplayString().str() : "";
-        CHK(Tcl_VarEval(interp, "graphGateWin:drawConnection ",
+        CHK(Tcl_VarEval(interp, "GateInspector:drawConnection ",
                       canvas, " ",
                       srcgateptr, " ",
                       destgateptr, " ",
@@ -164,7 +164,7 @@ void GateInspector::refresh()
          if (gate) gate = gate->getPreviousGate();
          if (gate)
          {
-             CHK(Tcl_VarEval(interp, "graphicalModuleWindow:drawMessageOnGate ",
+             CHK(Tcl_VarEval(interp, "ModuleInspector:drawMessageOnGate ",
                              canvas, " ",
                              ptrToStr(gate,gateptr), " ",
                              msgptr,

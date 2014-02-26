@@ -160,7 +160,7 @@ proc timeline:dblClick c {
 }
 
 proc timeline:rightClick {c X Y x y} {
-   set ptrs [graphicalModuleWindow:getPtrsUnderMouse $c $x $y]
+   set ptrs [ModuleInspector:getPtrsUnderMouse $c $x $y]
    if {$ptrs != {}} {
       set popup [createInspectorContextMenu $ptrs]
       tk_popup $popup $X $Y

@@ -32,7 +32,7 @@ proc createGenericObjectInspector {name geom wantcontentspage focuscontentspage}
         packIconButton $w.toolbar.sep1   -separator
         set help_tips($w.toolbar.owner)  {Inspect parent module}
         set help_tips($w.toolbar.win)    {See module output}
-        moduleInspector:addRunButtons $w
+        ModuleInspector:addRunButtons $w
     } else {
         set insptypes [opp_supported_insp_types $object]
         if {[lsearch -exact $insptypes "As Graphics"]!=-1} {

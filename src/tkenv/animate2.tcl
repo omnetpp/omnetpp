@@ -89,7 +89,7 @@ proc doAnimateGroup {animjobs} {
                 } else {
                     setvars {x1 y1 x2 y2} $coords
                     if {$mode=="beg"} {
-                        set endpos [graphicalModuleWindow:getMessageEndPos $x1 $y1 $x2 $y2]
+                        set endpos [ModuleInspector:getMessageEndPos $x1 $y1 $x2 $y2]
                         setvars {x2 y2} $endpos
                     }
 
@@ -106,8 +106,8 @@ proc doAnimateGroup {animjobs} {
                 if {$mode=="end"} {error "internal error: mode cannot be 'end'"}
 
                 set c $win.c
-                set src  [graphicalModuleWindow:getSubmodCoords $c $mod1ptr]
-                set dest [graphicalModuleWindow:getSubmodCoords $c $mod2ptr]
+                set src  [ModuleInspector:getSubmodCoords $c $mod1ptr]
+                set dest [ModuleInspector:getSubmodCoords $c $mod2ptr]
 
                 set x1 [expr ([lindex $src 0]+[lindex $src 2])/2]
                 set y1 [expr ([lindex $src 1]+[lindex $src 3])/2]
@@ -128,7 +128,7 @@ proc doAnimateGroup {animjobs} {
                 if {$mode=="end"} {error "internal error: mode cannot be 'end'"}
 
                 set c $win.c
-                set src  [graphicalModuleWindow:getSubmodCoords $c $modptr]
+                set src  [ModuleInspector:getSubmodCoords $c $modptr]
 
                 set x1 [expr ([lindex $src 0]+[lindex $src 2])/2]
                 set y1 [expr ([lindex $src 1]+[lindex $src 3])/2]
@@ -149,7 +149,7 @@ proc doAnimateGroup {animjobs} {
                 if {$mode=="end"} {error "internal error: mode cannot be 'end'"}
 
                 set c $win.c
-                set dest [graphicalModuleWindow:getSubmodCoords $c $modptr]
+                set dest [ModuleInspector:getSubmodCoords $c $modptr]
 
                 set x2 [expr ([lindex $dest 0]+[lindex $dest 2])/2]
                 set y2 [expr ([lindex $dest 1]+[lindex $dest 3])/2]
@@ -225,7 +225,7 @@ proc doAnimateConcurrent {animlist} {
     foreach req $animlist {
         setvars {w msgptr x1 y1 x2 y2} $req
         $w.c delete $msgptr
-        graphicalModuleWindow:drawMessage $w.c $msgptr $x1 $y1
+        ModuleInspector:drawMessage $w.c $msgptr $x1 $y1
 
         set len [expr sqrt(($x2-$x1)*($x2-$x1)+($y2-$y1)*($y2-$y1))]
         set dx [expr ($x2-$x1)/double($steps)]

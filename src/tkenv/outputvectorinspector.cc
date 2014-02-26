@@ -110,7 +110,7 @@ void OutputVectorInspector::createWindow(const char *window, const char *geometr
    strcpy(canvas,windowName);
    strcat(canvas,".main.canvas");
 
-   CHK(Tcl_VarEval(interp, "createOutvectorWindow ", windowName, " \"", geometry, "\"", NULL ));
+   CHK(Tcl_VarEval(interp, "createOutputVectorInspector ", windowName, " \"", geometry, "\"", NULL ));
 }
 
 void OutputVectorInspector::useWindow(const char *window)

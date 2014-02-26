@@ -18,7 +18,7 @@
 # $help_tips(helptip_proc). This is currently getHelpTip.
 #
 
-proc createGraphicalModWindow {name geom} {
+proc createModuleInspector {name geom} {
     global icons help_tips config inspectordata
 
     if {$config(layout-may-resize-window)} {
@@ -34,17 +34,17 @@ proc createGraphicalModWindow {name geom} {
     packIconButton $w.toolbar.win     -image $icons(asoutput) -command "inspectThis $w {Module output}"
     packIconButton $w.toolbar.sep1    -separator
 
-    moduleInspector:addRunButtons $w
+    ModuleInspector:addRunButtons $w
 
-    graphicalModuleWindow:animControl $w.toolbar.animspeed
+    ModuleInspector:animControl $w.toolbar.animspeed
     pack $w.toolbar.animspeed -anchor c -expand 0 -fill none -side left -padx 5 -pady 0
 
     packIconButton $w.toolbar.sep2    -separator
-    packIconButton $w.toolbar.redraw  -image $icons(redraw) -command "graphicalModuleWindow:relayout $w"
-    packIconButton $w.toolbar.zoomin  -image $icons(zoomin)  -command "graphicalModuleWindow:zoomIn $w"
-    packIconButton $w.toolbar.zoomout -image $icons(zoomout) -command "graphicalModuleWindow:zoomOut $w"
-    packIconButton $w.toolbar.showlabels -image $icons(modnames) -command "graphicalModuleWindow:toggleLabels $w"
-    packIconButton $w.toolbar.showarrowheads -image $icons(arrowhead) -command "graphicalModuleWindow:toggleArrowheads $w"
+    packIconButton $w.toolbar.redraw  -image $icons(redraw) -command "ModuleInspector:relayout $w"
+    packIconButton $w.toolbar.zoomin  -image $icons(zoomin)  -command "ModuleInspector:zoomIn $w"
+    packIconButton $w.toolbar.zoomout -image $icons(zoomout) -command "ModuleInspector:zoomOut $w"
+    packIconButton $w.toolbar.showlabels -image $icons(modnames) -command "ModuleInspector:toggleLabels $w"
+    packIconButton $w.toolbar.showarrowheads -image $icons(arrowhead) -command "ModuleInspector:toggleArrowheads $w"
 
     set help_tips($w.toolbar.owner)   {Inspect parent module}
     set help_tips($w.toolbar.ascont)  {Inspect as object}
@@ -100,37 +100,37 @@ proc createGraphicalModuleViewer {w} {
     set inspectordata($c:showarrowheads) 1
 
     # mouse bindings
-    $c bind submod <1> "graphicalModuleWindow:click $w"
-    $c bind conn <1> "graphicalModuleWindow:click $w"
-    $c bind msg <1> "graphicalModuleWindow:click $w"
-    $c bind msgname <1> "graphicalModuleWindow:click $w"
-    $c bind qlen <1> "graphicalModuleWindow:qlenClick $w"
+    $c bind submod <1> "ModuleInspector:click $w"
+    $c bind conn <1> "ModuleInspector:click $w"
+    $c bind msg <1> "ModuleInspector:click $w"
+    $c bind msgname <1> "ModuleInspector:click $w"
+    $c bind qlen <1> "ModuleInspector:qlenClick $w"
 
-    $c bind submod <Double-1> "graphicalModuleWindow:dblClick $w"
-    $c bind conn <Double-1> "graphicalModuleWindow:dblClick $w"
-    $c bind msg <Double-1> "graphicalModuleWindow:dblClick $w"
-    $c bind msgname <Double-1> "graphicalModuleWindow:dblClick $w"
-    $c bind qlen <Double-1> "graphicalModuleWindow:qlenDblclick $w"
+    $c bind submod <Double-1> "ModuleInspector:dblClick $w"
+    $c bind conn <Double-1> "ModuleInspector:dblClick $w"
+    $c bind msg <Double-1> "ModuleInspector:dblClick $w"
+    $c bind msgname <Double-1> "ModuleInspector:dblClick $w"
+    $c bind qlen <Double-1> "ModuleInspector:qlenDblclick $w"
 
-    $c bind submod <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
-    $c bind conn <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
-    $c bind msg <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
-    $c bind msgname <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
-    $c bind mod <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
-    $c bind modname <$B3> "graphicalModuleWindow:rightClick $w %X %Y %x %y"
-    $c bind qlen <$B3> "graphicalModuleWindow:qlenRightClick $w %X %Y %x %y"
+    $c bind submod <$B3> "ModuleInspector:rightClick $w %X %Y %x %y"
+    $c bind conn <$B3> "ModuleInspector:rightClick $w %X %Y %x %y"
+    $c bind msg <$B3> "ModuleInspector:rightClick $w %X %Y %x %y"
+    $c bind msgname <$B3> "ModuleInspector:rightClick $w %X %Y %x %y"
+    $c bind mod <$B3> "ModuleInspector:rightClick $w %X %Y %x %y"
+    $c bind modname <$B3> "ModuleInspector:rightClick $w %X %Y %x %y"
+    $c bind qlen <$B3> "ModuleInspector:qlenRightClick $w %X %Y %x %y"
 
     # keyboard shortcuts
-    bind $w <Control-m> "graphicalModuleWindow:zoomIn $w"
-    bind $w <Control-n> "graphicalModuleWindow:zoomOut $w"
-    bind $w <Control-i> "graphicalModuleWindow:zoomIconsBy $w 1.25"
-    bind $w <Control-o> "graphicalModuleWindow:zoomIconsBy $w 0.8"
-    bind $w <Control-r> "graphicalModuleWindow:relayout $w"
-    bind $w <Control-d> "graphicalModuleWindow:toggleLabels $w"
-    bind $w <Control-a> "graphicalModuleWindow:toggleArrowheads $w"
+    bind $w <Control-m> "ModuleInspector:zoomIn $w"
+    bind $w <Control-n> "ModuleInspector:zoomOut $w"
+    bind $w <Control-i> "ModuleInspector:zoomIconsBy $w 1.25"
+    bind $w <Control-o> "ModuleInspector:zoomIconsBy $w 0.8"
+    bind $w <Control-r> "ModuleInspector:relayout $w"
+    bind $w <Control-d> "ModuleInspector:toggleLabels $w"
+    bind $w <Control-a> "ModuleInspector:toggleArrowheads $w"
 }
 
-proc graphicalModuleWindow:onSetObject {w} {
+proc ModuleInspector:onSetObject {w} {
     #update idletasks
     update
     if [catch {
@@ -140,14 +140,14 @@ proc graphicalModuleWindow:onSetObject {w} {
                      -message "Error displaying network graphics: $errmsg"
     }
 
-    graphicalModuleWindow:adjustWindowSizeAndZoom $w
+    ModuleInspector:adjustWindowSizeAndZoom $w
 }
 
-proc graphicalModuleWindow:adjustWindowSizeAndZoom {w} {
+proc ModuleInspector:adjustWindowSizeAndZoom {w} {
     global config
 
     if {!$config(layout-may-resize-window) && !$config(layout-may-change-zoom)} {
-        graphicalModuleWindow:setScrollRegion $w 1
+        ModuleInspector:setScrollRegion $w 1
         return
     }
 
@@ -177,9 +177,9 @@ proc graphicalModuleWindow:adjustWindowSizeAndZoom {w} {
         if {$zoom > 1000} {set zoom 1000}
 
         if {$zoom < 1.0} {
-            graphicalModuleWindow:zoomBy $w $zoom
+            ModuleInspector:zoomBy $w $zoom
         }
-        graphicalModuleWindow:setScrollRegion $w 1
+        ModuleInspector:setScrollRegion $w 1
 
     } else {
         # we'll need to resize the window, and then either zoom out or not
@@ -229,14 +229,14 @@ proc graphicalModuleWindow:adjustWindowSizeAndZoom {w} {
         # set size and zoom
         $c config -width $canvaswidth
         $c config -height $canvasheight
-        graphicalModuleWindow:zoomBy $w $zoom
+        ModuleInspector:zoomBy $w $zoom
 
         # allow the window to appear, so that scrollbars know their real size;
-        # this is needed for "$c xview moveto" inside graphicalModuleWindow:setScrollRegion
+        # this is needed for "$c xview moveto" inside ModuleInspector:setScrollRegion
         # to work properly
         update idletasks
 
-        graphicalModuleWindow:setScrollRegion $w 1
+        ModuleInspector:setScrollRegion $w 1
 
         # move the window so that it is fully on the screen -- this is not
         # such a good idea in practice (can be annoying/confusing)
@@ -248,7 +248,7 @@ proc graphicalModuleWindow:adjustWindowSizeAndZoom {w} {
 # Sets the scrolling region for a graphical module inspector.
 # NOTE: This method is invoked from C++.
 #
-proc graphicalModuleWindow:setScrollRegion {w moveToOrigin} {
+proc ModuleInspector:setScrollRegion {w moveToOrigin} {
     set c $w.c
 
     # scrolling region
@@ -373,7 +373,7 @@ proc dispstrGetImage {tags_i tags_is zoomfactor imagesizefactor {alphamult 1}} {
 #
 # helper function
 #
-proc graphicalModuleWindow:getSubmodCoords {c tag} {
+proc ModuleInspector:getSubmodCoords {c tag} {
 
    set id [$c find withtag $tag]
    if {$id==""} {error "$tag not found"}
@@ -396,12 +396,12 @@ proc graphicalModuleWindow:getSubmodCoords {c tag} {
 }
 
 
-# graphicalModuleWindow:drawSubmodule --
+# ModuleInspector:drawSubmodule --
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc graphicalModuleWindow:drawSubmodule {c submodptr x y name dispstr scaling isplaceholder} {
-   #puts "DEBUG: graphicalModuleWindow:drawSubmodule $c $submodptr $x $y $name $dispstr $scaling $isplaceholder"
+proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplaceholder} {
+   #puts "DEBUG: ModuleInspector:drawSubmodule $c $submodptr $x $y $name $dispstr $scaling $isplaceholder"
    global icons inspectordata fonts
 
    set zoomfactor $inspectordata($c:zoomfactor)
@@ -509,7 +509,7 @@ proc graphicalModuleWindow:drawSubmodule {c submodptr x y name dispstr scaling i
 
        # queue length
        if {[info exists tags(q)]} {
-           set r [graphicalModuleWindow:getSubmodCoords $c $submodptr]
+           set r [ModuleInspector:getSubmodCoords $c $submodptr]
            set qx [expr [lindex $r 2]+1]
            set qy [lindex $r 1]
            $c create text $qx $qy -text "q:?" -anchor nw -tags "dx tooltip qlen qlen-$submodptr" -font $fonts(canvas)
@@ -520,7 +520,7 @@ proc graphicalModuleWindow:drawSubmodule {c submodptr x y name dispstr scaling i
            if ![info exists tags(is2)] {
                set tags(is2) {}
            }
-           set r [graphicalModuleWindow:getSubmodCoords $c $submodptr]
+           set r [ModuleInspector:getSubmodCoords $c $submodptr]
            set mx [expr [lindex $r 2]+2]
            set my [expr [lindex $r 1]-2]
            set img2 [dispstrGetImage $tags(i2) $tags(is2) $zoomfactor $imagesizefactor $alphamult]
@@ -536,7 +536,7 @@ proc graphicalModuleWindow:drawSubmodule {c submodptr x y name dispstr scaling i
            if {$color == ""} {set color "#0000ff"}
            if {[string index $color 0]== "@"} {set color [opp_hsb_to_rgb $color]}
 
-           set r [graphicalModuleWindow:getSubmodCoords $c $submodptr]
+           set r [ModuleInspector:getSubmodCoords $c $submodptr]
            if {$pos=="l"} {
                set tx [lindex $r 0]
                set ty [lindex $r 1]
@@ -584,7 +584,7 @@ proc graphicalModuleWindow:drawSubmodule {c submodptr x y name dispstr scaling i
 
            set circle [$c create oval $x1 $y1 $x2 $y2 \
                -fill $rfill -width $rwidth -outline $routline -tags "dx range"]
-           # has been moved to the beginning of graphicalModuleWindow:drawEnclosingModule to maintain relative z order of range indicators
+           # has been moved to the beginning of ModuleInspector:drawEnclosingModule to maintain relative z order of range indicators
            # $c lower $circle
        }
 
@@ -595,13 +595,13 @@ proc graphicalModuleWindow:drawSubmodule {c submodptr x y name dispstr scaling i
 }
 
 
-# graphicalModuleWindow:drawEnclosingModule --
+# ModuleInspector:drawEnclosingModule --
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc graphicalModuleWindow:drawEnclosingModule {c ptr name dispstr scaling} {
+proc ModuleInspector:drawEnclosingModule {c ptr name dispstr scaling} {
    global icons bitmaps inspectordata fonts
-   # puts "DEBUG: graphicalModuleWindow:drawEnclosingModule $c $ptr $name $dispstr $scaling"
+   # puts "DEBUG: ModuleInspector:drawEnclosingModule $c $ptr $name $dispstr $scaling"
 
    set zoomfactor $inspectordata($c:zoomfactor)
    if {$scaling!="" || $zoomfactor!=1} {
@@ -849,18 +849,18 @@ proc resizeImage {img sx sy} {
 }
 
 
-# graphicalModuleWindow:drawConnection --
+# ModuleInspector:drawConnection --
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc graphicalModuleWindow:drawConnection {c gateptr dispstr srcptr destptr chanptr src_i src_n dest_i dest_n two_way} {
+proc ModuleInspector:drawConnection {c gateptr dispstr srcptr destptr chanptr src_i src_n dest_i dest_n two_way} {
     global inspectordata fonts
 
-    # puts "DEBUG: graphicalModuleWindow:drawConnection $c $gateptr $dispstr $srcptr $destptr $src_i $src_n $dest_i $dest_n $two_way"
+    # puts "DEBUG: ModuleInspector:drawConnection $c $gateptr $dispstr $srcptr $destptr $src_i $src_n $dest_i $dest_n $two_way"
 
     if [catch {
-       set src_rect [graphicalModuleWindow:getSubmodCoords $c $srcptr]
-       set dest_rect [graphicalModuleWindow:getSubmodCoords $c $destptr]
+       set src_rect [ModuleInspector:getSubmodCoords $c $srcptr]
+       set dest_rect [ModuleInspector:getSubmodCoords $c $destptr]
     } errmsg] {
        # skip this connection if source or destination of the arrow cannot be found
        return
@@ -967,11 +967,11 @@ proc graphicalModuleWindow:drawConnection {c gateptr dispstr srcptr destptr chan
 }
 
 
-# graphicalModuleWindow:drawMessage --
+# ModuleInspector:drawMessage --
 #
 # This function is invoked from the message animation code.
 #
-proc graphicalModuleWindow:drawMessage {c msgptr x y} {
+proc ModuleInspector:drawMessage {c msgptr x y} {
     global fonts inspectordata anim_msg
 
     set zoomfactor $inspectordata($c:zoomfactor)
@@ -1097,7 +1097,7 @@ proc graphicalModuleWindow:drawMessage {c msgptr x y} {
 
 }
 
-proc graphicalModuleWindow:animControl {w} {
+proc ModuleInspector:animControl {w} {
     global priv
 
     scale $w -orient horizontal -length 50 -sliderlength 8 -showvalue 0 -bd 1
@@ -1117,17 +1117,17 @@ proc mathMax {a b} {
     return [expr ($a > $b) ? $a : $b]
 }
 
-proc graphicalModuleWindow:zoomIn {w} {
+proc ModuleInspector:zoomIn {w} {
     global config
-    graphicalModuleWindow:zoomBy $w $config(zoomby-factor) 1
+    ModuleInspector:zoomBy $w $config(zoomby-factor) 1
 }
 
-proc graphicalModuleWindow:zoomOut {w} {
+proc ModuleInspector:zoomOut {w} {
     global config
-    graphicalModuleWindow:zoomBy $w [expr 1.0 / $config(zoomby-factor)] 1
+    ModuleInspector:zoomBy $w [expr 1.0 / $config(zoomby-factor)] 1
 }
 
-proc graphicalModuleWindow:zoomBy {w mult {snaptoone 0}} {
+proc ModuleInspector:zoomBy {w mult {snaptoone 0}} {
     global inspectordata
     set c $w.c
     if {($mult<1 && $inspectordata($c:zoomfactor)>0.001) || ($mult>1 && $inspectordata($c:zoomfactor)<1000)} {
@@ -1145,17 +1145,17 @@ proc graphicalModuleWindow:zoomBy {w mult {snaptoone 0}} {
         }
 
         opp_inspectorcommand $w redraw
-        graphicalModuleWindow:setScrollRegion $w 0
+        ModuleInspector:setScrollRegion $w 0
 
         # update status display
         set value [format "%.2f" $inspectordata($c:zoomfactor)]
         $w.infobar.zoominfo config -text "Zoom: ${value}x"
     }
 
-    graphicalModuleWindow:popOutToolbarButtons $w
+    ModuleInspector:popOutToolbarButtons $w
 }
 
-proc graphicalModuleWindow:popOutToolbarButtons {w} {
+proc ModuleInspector:popOutToolbarButtons {w} {
     # in Run or Fast mode with dynamic module creation, toolbar buttons may get stuck
     # after clicking in "sunken" or "raised" state instead of returning to "flat",
     # likely because events get lost during the grab during incremental layouting.
@@ -1174,7 +1174,7 @@ proc graphicalModuleWindow:popOutToolbarButtons {w} {
     $w.toolbar.zoomout config -relief flat
 }
 
-proc graphicalModuleWindow:zoomIconsBy {w mult} {
+proc ModuleInspector:zoomIconsBy {w mult} {
     global inspectordata
     set c $w.c
     if {($mult<1 && $inspectordata($c:imagesizefactor)>0.1) || ($mult>1 && $inspectordata($c:imagesizefactor)<5)} {
@@ -1185,7 +1185,7 @@ proc graphicalModuleWindow:zoomIconsBy {w mult} {
     #puts "icon size factor: $inspectordata($c:imagesizefactor)"
 }
 
-proc graphicalModuleWindow:toggleLabels {w} {
+proc ModuleInspector:toggleLabels {w} {
     global inspectordata
     set c $w.c
     set inspectordata($c:showlabels) [expr !$inspectordata($c:showlabels)]
@@ -1195,7 +1195,7 @@ proc graphicalModuleWindow:toggleLabels {w} {
     $w.toolbar.showlabels config -relief $relief
 }
 
-proc graphicalModuleWindow:toggleArrowheads {w} {
+proc ModuleInspector:toggleArrowheads {w} {
     global inspectordata
     set c $w.c
     set inspectordata($c:showarrowheads) [expr !$inspectordata($c:showarrowheads)]
@@ -1205,7 +1205,7 @@ proc graphicalModuleWindow:toggleArrowheads {w} {
     $w.toolbar.showarrowheads config -relief $relief
 }
 
-proc graphicalModuleWindow:click w {
+proc ModuleInspector:click w {
    set c $w.c
    set item [$c find withtag current]
    set tags [$c gettags $item]
@@ -1220,7 +1220,7 @@ proc graphicalModuleWindow:click w {
    }
 }
 
-proc graphicalModuleWindow:dblClick w {
+proc ModuleInspector:dblClick w {
    set c $w.c
    set item [$c find withtag current]
    set tags [$c gettags $item]
@@ -1240,7 +1240,7 @@ proc graphicalModuleWindow:dblClick w {
 # (of the canvas object). The background module pointer is removed automatically
 # if more that 1 pointer is present. I.e. background is returned ONLY if the mouse
 # is directly over the background module.
-proc graphicalModuleWindow:getPtrsUnderMouse {c x y} {
+proc ModuleInspector:getPtrsUnderMouse {c x y} {
    set ptrs {}
    # convert widget coordinates to canvas coordinates
    set x [$c canvasx $x]
@@ -1278,10 +1278,10 @@ proc graphicalModuleWindow:getPtrsUnderMouse {c x y} {
    return $ptrs2
 }
 
-proc graphicalModuleWindow:rightClick {w X Y x y} {
+proc ModuleInspector:rightClick {w X Y x y} {
    global inspectordata tmp
    set c $w.c
-   set ptrs [graphicalModuleWindow:getPtrsUnderMouse $c $x $y]
+   set ptrs [ModuleInspector:getPtrsUnderMouse $c $x $y]
 
    if {$ptrs != {}} {
 
@@ -1291,16 +1291,16 @@ proc graphicalModuleWindow:rightClick {w X Y x y} {
       set tmp($c:showarrowheads) $inspectordata($c:showarrowheads)
 
       $popup add separator
-      $popup add checkbutton -label "Show module names" -command "graphicalModuleWindow:toggleLabels $w" -accel "Ctrl+D" -variable tmp($c:showlabels)
-      $popup add checkbutton -label "Show arrowheads" -command "graphicalModuleWindow:toggleArrowheads $w" -accel "Ctrl+A" -variable tmp($c:showarrowheads)
+      $popup add checkbutton -label "Show module names" -command "ModuleInspector:toggleLabels $w" -accel "Ctrl+D" -variable tmp($c:showlabels)
+      $popup add checkbutton -label "Show arrowheads" -command "ModuleInspector:toggleArrowheads $w" -accel "Ctrl+A" -variable tmp($c:showarrowheads)
 
       $popup add separator
-      $popup add command -label "Increase icon size" -accel "Ctrl+I" -command "graphicalModuleWindow:zoomIconsBy $w 1.25"
-      $popup add command -label "Decrease icon size" -accel "Ctrl+O" -command "graphicalModuleWindow:zoomIconsBy $w 0.8"
+      $popup add command -label "Increase icon size" -accel "Ctrl+I" -command "ModuleInspector:zoomIconsBy $w 1.25"
+      $popup add command -label "Decrease icon size" -accel "Ctrl+O" -command "ModuleInspector:zoomIconsBy $w 0.8"
 
       $popup add separator
-      $popup add command -label "Zoom in"  -accel "Ctrl+M" -command "graphicalModuleWindow:zoomIn $w"
-      $popup add command -label "Zoom out" -accel "Ctrl+N" -command "graphicalModuleWindow:zoomOut $w"
+      $popup add command -label "Zoom in"  -accel "Ctrl+M" -command "ModuleInspector:zoomIn $w"
+      $popup add command -label "Zoom out" -accel "Ctrl+N" -command "ModuleInspector:zoomOut $w"
       $popup add command -label "Re-layout" -accel "Ctrl+R" -command "opp_inspectorcommand $w relayout"
 
       $popup add separator
@@ -1312,11 +1312,11 @@ proc graphicalModuleWindow:rightClick {w X Y x y} {
    }
 }
 
-# graphicalModuleWindow:relayout --
+# ModuleInspector:relayout --
 #
 # Relayout the compound module, and resize the window accordingly.
 #
-proc graphicalModuleWindow:relayout {w} {
+proc ModuleInspector:relayout {w} {
     global config
 
     opp_inspectorcommand $w relayout
@@ -1325,17 +1325,17 @@ proc graphicalModuleWindow:relayout {w} {
         wm geometry $w ""
     }
 
-    graphicalModuleWindow:adjustWindowSizeAndZoom $w
+    ModuleInspector:adjustWindowSizeAndZoom $w
 }
 
-# graphicalModuleWindow:drawMessageOnGate --
+# ModuleInspector:drawMessageOnGate --
 #
 # Draw message near the head of the connection arrow.
 # Called from inspector C++ code.
 #
-proc graphicalModuleWindow:drawMessageOnGate {c gateptr msgptr} {
+proc ModuleInspector:drawMessageOnGate {c gateptr msgptr} {
 
-    #debug "graphicalModuleWindow:drawMessageOnGate $msgptr"
+    #debug "ModuleInspector:drawMessageOnGate $msgptr"
 
     global fonts
 
@@ -1355,17 +1355,17 @@ proc graphicalModuleWindow:drawMessageOnGate {c gateptr msgptr} {
 
     set coords [$c coords $conn_id]
     setvars {x1 y1 x2 y2} $coords
-    set endpos [graphicalModuleWindow:getMessageEndPos $x1 $y1 $x2 $y2]
+    set endpos [ModuleInspector:getMessageEndPos $x1 $y1 $x2 $y2]
     setvars {xx yy} $endpos
 
-    graphicalModuleWindow:drawMessage $c $msgptr $xx $yy
+    ModuleInspector:drawMessage $c $msgptr $xx $yy
 }
 
 #
 # Calculates the position where a sent message ball should rest until its event
 # comes and it gets processed by the module
 #
-proc graphicalModuleWindow:getMessageEndPos {x1 y1 x2 y2} {
+proc ModuleInspector:getMessageEndPos {x1 y1 x2 y2} {
     set len [expr sqrt(($x2-$x1)*($x2-$x1)+($y2-$y1)*($y2-$y1))]
     if {$len==0} {set len 1}
     set dx [expr ($x2-$x1)/$len]
@@ -1378,27 +1378,27 @@ proc graphicalModuleWindow:getMessageEndPos {x1 y1 x2 y2} {
     return [list $xx $yy]
 }
 
-# graphicalModuleWindow:drawMessageOnModule --
+# ModuleInspector:drawMessageOnModule --
 #
 # Draw message on submodule rectangle.
 # Called from inspector C++ code.
 #
-proc graphicalModuleWindow:drawMessageOnModule {c modptr msgptr} {
+proc ModuleInspector:drawMessageOnModule {c modptr msgptr} {
 
-    #debug "graphicalModuleWindow:drawMessageOnModule $msgptr"
-    set r  [graphicalModuleWindow:getSubmodCoords $c $modptr]
+    #debug "ModuleInspector:drawMessageOnModule $msgptr"
+    set r  [ModuleInspector:getSubmodCoords $c $modptr]
     set x [expr ([lindex $r 0]+[lindex $r 2])/2]
     set y [expr ([lindex $r 1]+[lindex $r 3])/2]
 
-    graphicalModuleWindow:drawMessage $c $msgptr $x $y
+    ModuleInspector:drawMessage $c $msgptr $x $y
 }
 
-# graphicalModuleWindow:drawNextEventMarker --
+# ModuleInspector:drawNextEventMarker --
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc graphicalModuleWindow:drawNextEventMarker {c modptr type} {
-    set src  [graphicalModuleWindow:getSubmodCoords $c $modptr]
+proc ModuleInspector:drawNextEventMarker {c modptr type} {
+    set src  [ModuleInspector:getSubmodCoords $c $modptr]
     set x1 [expr [lindex $src 0]-2]
     set y1 [expr [lindex $src 1]-2]
     set x2 [expr [lindex $src 2]+2]
@@ -1413,11 +1413,11 @@ proc graphicalModuleWindow:drawNextEventMarker {c modptr type} {
     }
 }
 
-# graphicalModuleWindow:updateSubmodule --
+# ModuleInspector:updateSubmodule --
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc graphicalModuleWindow:updateSubmodule {c modptr} {
+proc ModuleInspector:updateSubmodule {c modptr} {
     # currently the only thing to be updated is the number of elements in queue
     set win [winfo toplevel $c]
     set dispstr [opp_getobjectfield $modptr displayString]
@@ -1434,7 +1434,7 @@ proc graphicalModuleWindow:updateSubmodule {c modptr} {
 #
 # Helper proc.
 #
-proc graphicalModuleWindow:qlenGetQptrCurrent {c} {
+proc ModuleInspector:qlenGetQptrCurrent {c} {
    set item [$c find withtag current]
    set tags [$c gettags $item]
 
@@ -1444,11 +1444,11 @@ proc graphicalModuleWindow:qlenGetQptrCurrent {c} {
    }
    if {$modptr==""} {return}
 
-   return [graphicalModuleWindow:qlenGetQptr $c $modptr]
+   return [ModuleInspector:qlenGetQptr $c $modptr]
 
 }
 
-proc graphicalModuleWindow:qlenGetQptr {c modptr} {
+proc ModuleInspector:qlenGetQptr {c modptr} {
    set win [winfo toplevel $c]
    set dispstr [opp_getobjectfield $modptr displayString]
    set qname [opp_displaystring $dispstr getTagArg "q" 0 $modptr 1]
@@ -1459,36 +1459,36 @@ proc graphicalModuleWindow:qlenGetQptr {c modptr} {
    return ""
 }
 
-proc graphicalModuleWindow:qlenClick w {
+proc ModuleInspector:qlenClick w {
    set c $w.c
-   set qptr [graphicalModuleWindow:qlenGetQptrCurrent $c]
+   set qptr [ModuleInspector:qlenGetQptrCurrent $c]
    if [opp_isnotnull $qptr] {
        mainWindow:selectionChanged $qptr
    }
 }
 
-proc graphicalModuleWindow:qlenDblclick w {
+proc ModuleInspector:qlenDblclick w {
    set c $w.c
-   set qptr [graphicalModuleWindow:qlenGetQptrCurrent $c]
+   set qptr [ModuleInspector:qlenGetQptrCurrent $c]
    if [opp_isnotnull $qptr] {
        opp_inspect $qptr "(default)"
    }
 }
 
-proc graphicalModuleWindow:qlenRightClick {w X Y} {
+proc ModuleInspector:qlenRightClick {w X Y} {
    set c $w.c
-   set qptr [graphicalModuleWindow:qlenGetQptrCurrent $c]
+   set qptr [ModuleInspector:qlenGetQptrCurrent $c]
    if [opp_isnotnull $qptr] {
        set popup [createInspectorContextMenu $qptr]
        tk_popup $popup $X $Y
    }
 }
 
-# graphicalModuleWindow:bubble --
+# ModuleInspector:bubble --
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc graphicalModuleWindow:bubble {c x y scaling txt} {
+proc ModuleInspector:bubble {c x y scaling txt} {
     global inspectordata fonts
 
     set zoom $inspectordata($c:zoomfactor)

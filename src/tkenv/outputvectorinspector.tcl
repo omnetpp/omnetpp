@@ -14,7 +14,7 @@
 #----------------------------------------------------------------#
 
 
-proc createOutvectorWindow {name geom} {
+proc createOutputVectorInspector {name geom} {
     global icons
 
     # create histogram inspector
@@ -36,12 +36,12 @@ proc createOutvectorWindow {name geom} {
     pack $w.main.canvas -anchor center -expand 1 -fill both -side top
 
     label $w.bot.info -width 50 -relief groove
-    button $w.bot.view -text {Options...} -command "outvectorWindow:options $w"
+    button $w.bot.view -text {Options...} -command "OutputVectorInspector:options $w"
     pack $w.bot.view -anchor center -expand 0 -fill none -side right
     pack $w.bot.info -anchor center -expand 1 -fill x -side left
 
-    $w.main.canvas bind all <Any-Enter> {outvectorWindow:mouse %W %x %y 1}
-    $w.main.canvas bind all <Any-Leave> {outvectorWindow:mouse %W %x %y 0}
+    $w.main.canvas bind all <Any-Enter> {OutputVectorInspector:mouse %W %x %y 1}
+    $w.main.canvas bind all <Any-Leave> {OutputVectorInspector:mouse %W %x %y 0}
 
     # we need to let the window display, otherwise the canvas size
     # (needed by the first draw) returned by [winfo width/height ...]
@@ -49,7 +49,7 @@ proc createOutvectorWindow {name geom} {
     update idletasks
 }
 
-proc outvectorWindow:optUpdate {w win} {
+proc OutputVectorInspector:optUpdate {w win} {
     global tmp
     opp_inspectorcommand $win config \
                      $tmp(autoscale) \
@@ -60,7 +60,7 @@ proc outvectorWindow:optUpdate {w win} {
     opp_refreshinspector $win
 }
 
-proc outvectorWindow:options {win} {
+proc OutputVectorInspector:options {win} {
     set w .ov-options
     catch {destroy $w}
     global tmp
@@ -105,11 +105,11 @@ proc outvectorWindow:options {win} {
     # 2. Create bindings.
     global opp
 
-    $w.buttons.okbutton configure -command "outvectorWindow:optUpdate $w $win; set opp(button) 1"
-    $w.buttons.applybutton configure -command "outvectorWindow:optUpdate $w $win"
+    $w.buttons.okbutton configure -command "OutputVectorInspector:optUpdate $w $win; set opp(button) 1"
+    $w.buttons.applybutton configure -command "OutputVectorInspector:optUpdate $w $win"
     $w.buttons.cancelbutton configure -command "set opp(button) 1"
 
-    bind $w <Return> "outvectorWindow:optUpdate $w $win; set opp(button) 1"
+    bind $w <Return> "OutputVectorInspector:optUpdate $w $win; set opp(button) 1"
     bind $w <Escape> "set opp(button) 0"
 
     # 3. set initial values
@@ -148,7 +148,7 @@ proc outvectorWindow:options {win} {
     }
 }
 
-proc outvectorWindow:mouse {w x y on} {
+proc OutputVectorInspector:mouse {w x y on} {
     global opp
     # mouse enters/leaves a data point's drawing in a outvector window
     # the index of the point is in the drawing's tag: "value12"
