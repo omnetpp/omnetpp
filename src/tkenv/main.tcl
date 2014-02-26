@@ -121,10 +121,9 @@ proc createOmnetppWindow {} {
     .main.right add $networkview $logview
 
     mainWindow:refreshToolbar
-    focus .log.text
+    focus .log.main.text
 
     # Hotkeys
-    bindCommandsToTextWidget .log.text mainwindow
     bindRunCommands .
     bindOtherCommands .
 }
@@ -490,10 +489,14 @@ proc mainWindow:createNetworkView {} {
 }
 
 proc mainWindow:createLogView {} {
-    set f .log
-    frame $f -borderwidth 0
-    createModuleLogViewer $f
-    return $f
+    set w .log
+    frame $w -borderwidth 0
+
+    frame $w.main
+    pack $w.main -expand 1 -fill both -side top
+
+    createModuleLogViewer $w.main
+    return $w
 }
 
 proc mainWindow:refreshToolbar {} {
@@ -548,16 +551,12 @@ proc bindCommandsToTextWidget {txt {wintype ""}} {
     bind $txt <Control-n> {findNext %W; break}
     bind $txt <Control-N> {findNext %W; break}
     bind $txt <F3> {findNext %W}
+
     if {$wintype=="modulewindow"} {
         # bind Ctrl+H ('break' is needed because originally ^H is bound to DEL)
-        set w [winfo toplevel $txt]
-        bind $txt <Control-h> "moduleWindow:openFilterDialog %W; break"
-        bind $txt <Control-H> "moduleWindow:openFilterDialog %W; break"
-    }
-    if {$wintype=="mainwindow"} {
-        # bind Ctrl+H ('break' is needed because originally ^H is bound to DEL)
-        bind $txt <Control-h> "mainlogWindow:openFilterDialog; break"
-        bind $txt <Control-H> "mainlogWindow:openFilterDialog; break"
+        set w [winfo parent [winfo parent $txt]]
+        bind $txt <Control-h> "moduleWindow:openFilterDialog $w; break"
+        bind $txt <Control-H> "moduleWindow:openFilterDialog $w; break"
     }
 
     # bind Ctrl+A "Select all" ('break' is needed below because ^A=Home)

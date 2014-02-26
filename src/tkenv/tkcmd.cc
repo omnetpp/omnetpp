@@ -136,8 +136,6 @@ int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *, int, const char **);
 int msgArrTimeFromNow_cmd(ClientData, Tcl_Interp *, int, const char **);
 int patmatch_cmd(ClientData, Tcl_Interp *, int, const char **);
 int setMsgWindowExists_cmd(ClientData, Tcl_Interp *, int, const char **);
-int getMainWindowExcludedModuleIds_cmd(ClientData, Tcl_Interp *, int, const char **);
-int setMainWindowExcludedModuleIds_cmd(ClientData, Tcl_Interp *, int, const char **);
 int eventlogRecording_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int inspect_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -252,8 +250,6 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_msgarrtimefromnow",msgArrTimeFromNow_cmd    }, // args: <modptr>
    { "opp_patmatch",         patmatch_cmd             }, // args: <string> <pattern>
    { "opp_setmsgwindowexists", setMsgWindowExists_cmd }, // args: 0 or 1
-   { "opp_getmainwindowexcludedmoduleids", getMainWindowExcludedModuleIds_cmd }, // args: - ret: module id list
-   { "opp_setmainwindowexcludedmoduleids", setMainWindowExcludedModuleIds_cmd }, // args: <moduleIds>
    { "opp_eventlogrecording", eventlogRecording_cmd },   // args: subcommand <args>
 
    // Inspector stuff
@@ -1599,28 +1595,6 @@ int setMsgWindowExists_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
    app->hasmessagewindow = argv[1][0]!='0';
-   return TCL_OK;
-}
-
-int getMainWindowExcludedModuleIds_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
-{
-   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   const std::set<int>& excludedModuleIds = getTkenv()->getMainWindowExcludedModuleIds();
-   Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
-   for (std::set<int>::const_iterator it=excludedModuleIds.begin(); it!=excludedModuleIds.end(); it++)
-       Tcl_ListObjAppendElement(interp, listobj, Tcl_NewIntObj(*it));
-   Tcl_SetObjResult(interp, listobj);
-   return TCL_OK;
-}
-
-int setMainWindowExcludedModuleIds_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
-{
-   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   std::set<int> excludedModuleIds;
-   StringTokenizer tokenizer(argv[1]);
-   while (tokenizer.hasMoreTokens())
-       excludedModuleIds.insert(atoi(tokenizer.nextToken()));
-   getTkenv()->setMainWindowExcludedModuleIds(excludedModuleIds);
    return TCL_OK;
 }
 

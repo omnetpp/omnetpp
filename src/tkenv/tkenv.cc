@@ -286,10 +286,9 @@ void Tkenv::run()
         mainNetworkView->setType(INSP_GRAPHICAL); //XXX
         addEmbeddedInspector(".network", mainNetworkView);
 
-        //TODO:
-        //mainLogView = new TModuleWindow();
-        //mainLogView->setType(INSP_MODULEOUTPUT); //XXX
-        //addEmbeddedInspector(".log", mainLogView);
+        mainLogView = new LogInspector();
+        mainLogView->setType(INSP_MODULEOUTPUT); //XXX
+        addEmbeddedInspector(".log", mainLogView);
     }
     catch (std::exception& e)
     {
@@ -809,6 +808,7 @@ void Tkenv::newRun(const char *configname, int runnumber)
         answers.clear();
         setupNetwork(network);
         mainNetworkView->setObject(simulation.getSystemModule()); //FIXME factor out to setupNetwork()!
+        mainLogView->setObject(simulation.getSystemModule()); //FIXME factor out to setupNetwork()!
         mainInspector->setObject(simulation.getSystemModule()); //FIXME just temporary, should come from tree/canvas selection
         startRun();
 
@@ -1100,9 +1100,9 @@ void Tkenv::printLastLogLine()
 {
     const LogBuffer::Entry& entry = logBuffer.getEntries().back();
 
-    // print into main window
-    if (opt->useMainWindow)
-        LogInspector::printLastLineOf(interp, ".log.text", logBuffer, mainWindowExcludedModuleIds);
+//    // print into main window
+//    if (opt->useMainWindow)
+//        LogInspector::printLastLineOf(interp, ".log.text", logBuffer, mainWindowExcludedModuleIds);
 
     // print into module window and all parent module windows if they exist
     if (!entry.moduleIds)

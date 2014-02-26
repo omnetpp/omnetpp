@@ -155,7 +155,7 @@ proc saveFile {win {filename ""}} {
     if [catch {
        set f [open $filename w]
        set txt $win.main.text
-       if {$txt == "..main.text"} {set txt .log.text}
+       if {$txt == "..main.text"} {set txt .log.main.text}
        puts -nonewline $f [$txt get 1.0 end]
        close $f
     } err] {
@@ -230,14 +230,10 @@ proc textwidget:contextMenu {txt wintype X Y} {
     .popup add command -command "editFindNext $txt" -label {Find next} -accel {Ctrl+N,F3} -underline 5
     .popup add separator
     if {$wintype=="modulewindow"} {
-        set w [winfo toplevel $txt]
+        set w [winfo parent [winfo parent $txt]]
         .popup add command -command "moduleWindow:openFilterDialog $w" -label {Filter window contents...} -accel {Ctrl+H} -underline 0
         .popup add separator
 
-    }
-    if {$wintype=="mainwindow"} {
-        .popup add command -command "mainlogWindow:openFilterDialog" -label {Filter window contents...} -accel {Ctrl+H} -underline 0
-        .popup add separator
     }
     .popup add checkbutton -command "textwidget:toggleWrap $txt" -variable tmp(wrap) -onvalue "char" -offvalue "none" -label {Wrap lines} -underline 0
     .popup add separator

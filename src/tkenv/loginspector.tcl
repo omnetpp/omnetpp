@@ -66,15 +66,6 @@ proc logTextWidget:clear {txt} {
     logTextWidget:configureTags $txt
 }
 
-proc mainlogWindow:openFilterDialog {} {
-    set modptr [opp_object_systemmodule]
-    set excludedModuleIds [opp_getmainwindowexcludedmoduleids]
-    set excludedModuleIds [moduleOutputFilterDialog $modptr $excludedModuleIds]
-    if {$excludedModuleIds!="0"} {
-        opp_setmainwindowexcludedmoduleids $excludedModuleIds
-    }
-}
-
 proc moduleWindow:openFilterDialog {w} {
     set modptr [opp_inspector_getobject $w]
     set excludedModuleIds [opp_inspectorcommand $w getexcludedmoduleids]
@@ -82,11 +73,6 @@ proc moduleWindow:openFilterDialog {w} {
     if {$excludedModuleIds!="0"} {
         opp_inspectorcommand $w setexcludedmoduleids $excludedModuleIds
     }
-}
-
-proc mainlogWindow:trimlines {} {
-    global config
-    textwidget:trimLines .log.text $config(logwindow-scrollbacklines)
 }
 
 proc moduleWindow:trimlines {w} {

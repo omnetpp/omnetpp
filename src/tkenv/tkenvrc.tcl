@@ -185,7 +185,7 @@ proc reflectSettingsInGui {} {
       }
    }}
 
-   catch {.log.text config -wrap $config(editor-wrap)}
+   catch {.log.main.text config -wrap $config(editor-wrap)}
 
    applyFont Menubutton  $fonts(normal)
    applyFont Menu        $fonts(normal)

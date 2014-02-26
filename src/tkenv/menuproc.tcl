@@ -265,29 +265,23 @@ proc newRun {} {
     }
 }
 
-proc editCopy {{w .log.text}} {
+proc editCopy {{w .log.main.text}} {
    # implements Edit|Copy
    tk_textCopy $w
 }
 
-proc editFind {{w .log.text}} {
+proc editFind {{w .log.main.text}} {
    # implements Edit|Find...
    findDialog $w
 }
 
-proc editFindNext {{w .log.text}} {
+proc editFindNext {{w .log.main.text}} {
    # implements Edit|Find next
    findNext $w
 }
 
-proc editFilterWindowContents {{w .log.text}} {
-   # implements Edit|Filter window contents...
-   if {$w==".log.text"} {
-       mainlogWindow:openFilterDialog
-   } else {
-       set w [winfo toplevel $w]
-       moduleWindow:openFilterDialog [winfo toplevel $w]
-   }
+proc editFilterWindowContents {{w .log.main.text}} {
+   moduleWindow:openFilterDialog $w
 }
 
 proc toggleTreeView {} {
@@ -636,7 +630,7 @@ proc clearWindows {} {
     # implements Trace|Clear windows...
     # also called back from C++ code
     # TBD: should delete the contents of module windows as well
-    .log.text delete 1.0 end
+    .log.main.text delete 1.0 end
     catch {.messagewindow.main.text delete 1.0 end}
 }
 
