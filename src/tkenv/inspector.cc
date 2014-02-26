@@ -65,7 +65,7 @@ Inspector::Inspector()
    interp = getTkenv()->getInterp();
    object = NULL;
    type = -1;
-   ownsWindow = false;
+   isToplevelWindow = false;
    closeRequested = false;
 
    windowName[0] = '\0'; // no window exists
@@ -73,7 +73,7 @@ Inspector::Inspector()
 
 Inspector::~Inspector()
 {
-   if (ownsWindow && windowName[0])
+   if (isToplevelWindow && windowName[0])
    {
       CHK(Tcl_VarEval(interp, "inspector:destroy ", windowName, NULL ));
    }
@@ -88,52 +88,52 @@ std::string Inspector::makeWindowName()
 void Inspector::createWindow(const char *window, const char *geometry)
 {
     strcpy(windowName, window);
-    ownsWindow = true;
+    isToplevelWindow = true;
 }
 
 void Inspector::useWindow(const char *window)
 {
     strcpy(windowName, window);
     windowTitle = "";
-    ownsWindow = false;
+    isToplevelWindow = false;
 }
 
 void Inspector::setObject(cObject *obj)
 {
     ASSERT2(windowName[0], "createWindow()/useWindow() needs to be called before setObject()");
 
-    if (obj != object) {
+    if (obj != object)
+    {
         object = obj;
         refresh();
     }
 }
 
-bool Inspector::windowExists()
-{
-   CHK(Tcl_VarEval(interp, "winfo exists ", windowName, NULL )); //FIXME what if not toplevel?
-   return Tcl_GetStringResult(interp)[0]=='1';
-}
-
 void Inspector::showWindow()
 {
-   CHK(Tcl_VarEval(interp, "inspector:show ", windowName, NULL ));  //FIXME what if not toplevel?
+    if (isToplevelWindow)
+        CHK(Tcl_VarEval(interp, "inspector:show ", windowName, NULL ));
 }
 
 void Inspector::hostObjectDeleted()
 {
-   //FIXME for embedded inspectors, call setObject(NULL) !!!!
-   CHK(Tcl_VarEval(interp, "inspector:hostObjectDeleted ", windowName, NULL )); //FIXME needed? this Tcl proc is currently empty!!!
+    if (isToplevelWindow)
+        CHK(Tcl_VarEval(interp, "inspector:hostObjectDeleted ", windowName, NULL )); //FIXME needed? this Tcl proc is currently empty!!!
+    else
+        setObject(NULL);
 }
 
 void Inspector::refresh()
 {
-   //FIXME only if there is infobar and toolbar! (that is, !embedded; or hasToolbar && hasInfobar)
-   refreshTitle();
-   refreshInfobar();
+    if (isToplevelWindow)
+    {
+        refreshTitle();
+        refreshInfobar();
+    }
 
-   // owner button on toolbar
-   cModule *mod = dynamic_cast<cModule *>(object);
-   setToolbarInspectButton(".toolbar.owner", mod ? mod->getParentModule() : object ? object->getOwner() : NULL, INSP_DEFAULT);
+    // owner button on toolbar
+    cModule *mod = dynamic_cast<cModule *>(object);
+    setToolbarInspectButton(".toolbar.owner", mod ? mod->getParentModule() : object ? object->getOwner() : NULL, INSP_DEFAULT);
 }
 
 void Inspector::refreshTitle()

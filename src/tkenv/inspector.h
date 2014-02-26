@@ -51,7 +51,7 @@ class TKENV_API Inspector
       int type;               // INSP_OBJECT, etc.
       char windowName[24];    // Tk widget path   --FIXME use std::string here! (and for canvas etc)
       std::string windowTitle;// window title string
-      bool ownsWindow;        // whether destructor should destroy the window
+      bool isToplevelWindow;  // if so: has window title, has infobar, and destructor should destroy window
       bool closeRequested;    // "mark for deletion" flag (set if user wants to close inspector during animation)
 
    protected:
@@ -92,7 +92,6 @@ class TKENV_API Inspector
 
       virtual void createWindow(const char *window, const char *geometry);
       virtual void useWindow(const char *window);
-      virtual bool windowExists();
       virtual void showWindow();
 
       virtual void refresh();
