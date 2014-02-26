@@ -85,6 +85,15 @@
 			<include name="**/*.properties" />
 			<include name="**/*.product" />
 		</replace>
+		<replace dir="${srcDirectory}" token="OMNEST/OMNEST" value="OMNeT++/OMNEST"> <!-- replace back as the previous replace could create OMNEST/OMNEST from the string OMNeT++/OMNEST -->
+			<include name="**/*.java" />
+			<include name="**/*.htm" />
+			<include name="**/*.html" />
+			<include name="**/*.xml" />
+			<include name="**/MANIFEST.MF" />
+			<include name="**/*.properties" />
+			<include name="**/*.product" />
+		</replace>
 		<replace dir="${srcDirectory}" token="Academic Edition, not for commercial use" value="Commercial Edition">
 			<include name="**/*.xml" />
 		</replace>
