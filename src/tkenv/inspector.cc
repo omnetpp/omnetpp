@@ -152,7 +152,7 @@ void Inspector::refresh()
    }
 
    // update object type and name info
-   char newName[MAX_OBJECTFULLPATH+MAX_CLASSNAME+40];
+   char newName[MAX_OBJECTFULLPATH+MAX_CLASSNAME+40]; //TODO std::string!
    char buf[30];
    cModule *mod = dynamic_cast<cModule *>(object);
    if (mod)
@@ -163,7 +163,7 @@ void Inspector::refresh()
                object->getFullPath().c_str(), ptrToStr(object,buf));
    else
        sprintf(newName, "n/a");
-   CHK(Tcl_VarEval(interp, windowName,".infobar.name config -text {",newName,"}",NULL));
+   CHK(Tcl_VarEval(interp, windowName,".infobar.name config -text {",newName,"}",NULL));  //TODO only if changed! and infobar exists
 
    // owner button on toolbar
    setToolbarInspectButton(".toolbar.owner", mod ? mod->getParentModule() : object ? object->getOwner() : NULL, INSP_DEFAULT);

@@ -49,7 +49,7 @@ class TKENV_API Inspector
       Tcl_Interp *interp;     // Tcl interpreter
       cObject *object;        // the inspected object or NULL if inspector is empty
       int type;               // INSP_OBJECT, etc.
-      char windowName[24];    // Tk widget path
+      char windowName[24];    // Tk widget path   --FIXME use std::string here! (and for canvas etc)
       std::string windowTitle;// window title string
       bool ownsWindow;        // whether destructor should destroy the window
       bool closeRequested;    // "mark for deletion" flag (set if user wants to close inspector during animation)
