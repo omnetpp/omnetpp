@@ -25,14 +25,10 @@ NAMESPACE_BEGIN
 
 class TKENV_API GenericObjectInspector : public Inspector
 {
-   protected:
-      bool hascontentspage;
-      bool focuscontentspage;
    public:
       GenericObjectInspector();
       ~GenericObjectInspector();
       virtual void setObject(cObject *obj);
-      void setContentsPage(bool show, bool focus) {hascontentspage = show; focuscontentspage = focus;}
       virtual void createWindow(const char *window, const char *geometry);
       virtual void useWindow(const char *window);
       virtual void refresh();

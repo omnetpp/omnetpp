@@ -451,7 +451,7 @@ proc mainWindow:createTreeView {} {
 proc mainWindow:createInspectorView {} {
     set f .inspector
     frame $f -borderwidth 0
-    createGenericObjectViewer $f 1 0
+    createGenericObjectViewer $f
     return $f
 }
 

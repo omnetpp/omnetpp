@@ -53,8 +53,6 @@ Register_InspectorFactory(GenericObjectInspectorFactory);
 
 GenericObjectInspector::GenericObjectInspector() : Inspector(INSP_OBJECT)
 {
-    hascontentspage = false;
-    focuscontentspage = false;
 }
 
 GenericObjectInspector::~GenericObjectInspector()
@@ -73,16 +71,17 @@ void GenericObjectInspector::setObject(cObject *obj)
             dynamic_cast<cArray *>(object) || dynamic_cast<cQueue *>(object) ||
             dynamic_cast<cMessageHeap *>(object) || dynamic_cast<cDefaultList *>(object) ||
             dynamic_cast<cRegistrationList *>(object);
-    //FIXME this probably doesn't work now
-    setContentsPage(showcontentspage, focuscontentspage);
+
+    //FIXME the above vars!!!
+
+    CHK(Tcl_VarEval(interp, "GenericObjectInspector:onSetObject ", windowName, NULL));
 }
 
 void GenericObjectInspector::createWindow(const char *window, const char *geometry)
 {
    Inspector::createWindow(window, geometry);
 
-   CHK(Tcl_VarEval(interp, "createGenericObjectInspector ", windowName, " \"", geometry, "\"", " ",
-                   (hascontentspage ? "1" : "0"), " ",  (focuscontentspage ? "1" : "0"), " ", NULL));
+   CHK(Tcl_VarEval(interp, "createGenericObjectInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL));
 }
 
 void GenericObjectInspector::useWindow(const char *window)
@@ -98,7 +97,7 @@ void GenericObjectInspector::refresh()
    CHK(Tcl_VarEval(interp, "fields2Page:refresh ", windowName, NULL));
 
    // refresh "contents" page
-   if (hascontentspage)
+   if (true) //FIXME!!!!!!!!!!!!!!!
    {
        clearInspectorListbox(".nb.contents");
        if (object)

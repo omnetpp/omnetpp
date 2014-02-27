@@ -14,11 +14,25 @@
 #----------------------------------------------------------------#
 
 
-proc createGenericObjectInspector {name geom wantcontentspage focuscontentspage} {
-    global icons help_tips
-
+proc createGenericObjectInspector {name geom} {
     set w $name
     createInspectorToplevel $w $geom
+    createGenericObjectViewer $w
+}
+
+proc createGenericObjectViewer {w} {
+    set nb [inspector:createNotebook $w]
+
+    inspector:createFields2Page $w
+
+    notebook:addPage $nb contents {Contents}
+    createInspectorListbox $nb.contents
+}
+
+proc GenericObjectInspector:onSetObject {w} {
+    global icons help_tips
+
+    #FIXME TODO: (1) rebuild toolbar  (2) enable/disable "contents" page as needed
 
     set object [opp_inspector_getobject $w]
     set type [opp_getobjectbaseclass $object]
@@ -41,23 +55,7 @@ proc createGenericObjectInspector {name geom wantcontentspage focuscontentspage}
         }
     }
 
-    createGenericObjectViewer $w $wantcontentspage $focuscontentspage
-}
-
-proc createGenericObjectViewer {w wantcontentspage focuscontentspage} {
-    set nb [inspector:createNotebook $w]
-
-    inspector:createFields2Page $w
-
-    if {$wantcontentspage} {
-        notebook:addPage $nb contents {Contents}
-        createInspectorListbox $nb.contents
-        if {$focuscontentspage} {
-            notebook:showPage $nb contents
-        } else {
-            notebook:showPage $nb fields2
-        }
-    }
+    notebook:setPageEnabled $w.nb contents 0  ;# disable --- FIXME do it depending on the object type
 }
 
 
