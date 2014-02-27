@@ -766,6 +766,23 @@ proc notebook:showPage {w name} {
     }
 }
 
+#
+# enable/disable the given notebook page
+#
+proc notebook:setPageEnabled {w name enabled} {
+    global HAVE_BLT
+
+    if {$enabled} {set state normal} else {set state disabled}
+
+    if {$HAVE_BLT} {
+        $w tab configure $name -state $state
+    } else {
+        # poor man's tabnotebook
+        global nb
+        $w.tabs.$name config -state $state
+    }
+}
+
 
 # tableEdit --
 #
