@@ -244,6 +244,39 @@ proc iconsWorkaroundForOSX {} {
 #    UTILITY PROCEDURES
 #===================================================================
 
+proc makeTransient {w {geom ""}} {
+    # note: "wm attribute $w -topmost 1" is no good here -- it keeps the window above ALL OTHER apps' windows as well
+    if {[string equal [tk windowingsystem] win32]} {
+        # drawback of "transient": (1) inspector windows cannot be minimized or maximized
+        # (2) it places all windows to (0,0) and "positionfrom" doesn't help;
+        # workaround: place window explicitly (near the current mouse position)
+        wm transient $w .
+        wm attribute $w -toolwindow 1
+        if {$geom==""} {
+            set x [expr [winfo pointerx .]-50]
+            set y [expr [winfo pointery .]+40]
+            wm geometry $w +$x+$y
+        }
+    } elseif {[string equal [tk windowingsystem] x11]} {
+        # "positionfrom" is for KDE 4.x, where minimize+restore would lose window position otherwise
+        wm transient $w .
+        wm attribute $w -type normal
+        wm positionfrom $w user
+        if {$geom==""} {
+            # at least Ubuntu (Unity) places the window at (0,0) by default, so use explicit placement
+            set x [expr [winfo pointerx .]-50]
+            set y [expr [winfo pointery .]+40]
+            wm geometry $w +$x+$y
+        }
+    } elseif {[string equal [tk windowingsystem] aqua]}  {
+        # drawback of "transient": inspector windows cannot be minimized or maximized
+        # (and move together with the main window, but this is not necessarily bad)
+        wm transient $w .
+    } else {
+        wm transient $w .
+    }
+}
+
 # wsize --
 #
 # Utility to set a widget's size to exactly width x height pixels.

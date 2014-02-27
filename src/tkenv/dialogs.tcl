@@ -315,18 +315,22 @@ proc optionsDialog {parent {defaultpage "g"}} {
     notebook:showPage $nb $defaultpage
 
     # "General" page
+    labelframe $nb.g.f0 -text "User Interface" -relief groove -borderwidth 2 -font $fonts(normal)
+    checkbutton $nb.g.f0.keepontop -text {Keep inspector windows on top} -variable opp(keepontop)
+    checkbutton $nb.g.f0.confirmexit -text {Confirm exit when simulation is in progress} -variable opp(confirmexit)
+    pack $nb.g.f0.keepontop -anchor w
+    pack $nb.g.f0.confirmexit -anchor w
+
     labelframe $nb.g.f1 -text "Simulation Execution" -relief groove -borderwidth 2 -font $fonts(normal)
     label-entry $nb.g.f1.updfreq_fast    {Display update frequency for Fast Run (ms):}
     label-entry $nb.g.f1.updfreq_express {Display update frequency for Express Run (ms):}
     label-entry $nb.g.f1.stepdelay       {Per-event delay for slow execution (ms):}
-    checkbutton $nb.g.f1.confirmexit -text {Confirm exit when simulation is in progress} -variable opp(confirmexit)
     $nb.g.f1.updfreq_fast.l config -width 0
     $nb.g.f1.updfreq_express.l config -width 0
     $nb.g.f1.stepdelay.l config -width 0
     pack $nb.g.f1.updfreq_fast -anchor w -fill x
     pack $nb.g.f1.updfreq_express -anchor w -fill x
     pack $nb.g.f1.stepdelay -anchor w -fill x
-    pack $nb.g.f1.confirmexit -anchor w
 
     labelframe $nb.g.f2 -text "Logs" -relief groove -borderwidth 2 -font $fonts(normal)
     checkbutton $nb.g.f2.initbanners -text {Print initialization banners} -variable opp(initbanners)
@@ -342,6 +346,7 @@ proc optionsDialog {parent {defaultpage "g"}} {
     pack $nb.g.f2.numlines -anchor w -fill x
     pack $nb.g.f2.c1 -anchor w
 
+    pack $nb.g.f0 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
     pack $nb.g.f2 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
     pack $nb.g.f1 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
 
@@ -470,6 +475,7 @@ proc optionsDialog {parent {defaultpage "g"}} {
     set opp(arrangevectorconnections) [opp_getsimoption arrangevectorconnections]
     set opp(bubbles)    [opp_getsimoption bubbles]
     set opp(speed)      [opp_getsimoption animation_speed]
+    set opp(keepontop)   $config(keep-inspectors-on-top)
     set opp(confirmexit) $config(confirm-exit)
     set opp(allowresize) $config(layout-may-resize-window)
     set opp(allowzoom)   $config(layout-may-change-zoom)
@@ -514,6 +520,7 @@ proc optionsDialog {parent {defaultpage "g"}} {
         opp_setsimoption arrangevectorconnections  $opp(arrangevectorconnections)
         opp_setsimoption bubbles             $opp(bubbles)
         opp_setsimoption animation_speed     $opp(speed)
+        set config(keep-inspectors-on-top)   $opp(keepontop)
         set config(confirm-exit)             $opp(confirmexit)
         set config(layout-may-resize-window) $opp(allowresize)
         set config(layout-may-change-zoom)   $opp(allowzoom)
@@ -938,6 +945,11 @@ proc filteredObjectList:window {{ptr ""}} {
 
     # otherwise create
     createCloseDialog $w "Find/inspect objects"
+
+    # stay on top
+    if {$config(keep-inspectors-on-top)} {
+        makeTransient $w
+    }
 
     # Create toolbar
     frame $w.toolbar -relief raised -borderwidth 1

@@ -18,10 +18,7 @@
 # Invoked from concrete inspector subtypes
 #
 proc createInspectorToplevel {w geom} {
-
-    # create toplevel inspector window
-
-    global fonts icons help_tips
+    global config fonts icons help_tips
     global B2 B3
 
     toplevel $w -class Toplevel
@@ -32,11 +29,14 @@ proc createInspectorToplevel {w geom} {
     catch {wm geometry $w $geom}
     catch {wm state $w $state}
 
-    #wm maxsize $w 1009 738
     wm minsize $w 1 1
     wm overrideredirect $w 0
     wm resizable $w 1 1
     wm protocol $w WM_DELETE_WINDOW "inspector:close $w"
+
+    if {$config(keep-inspectors-on-top)} {
+        makeTransient $w $geom
+    }
 
     # add the "Inspect As.." icon at the top
     frame $w.toolbar -relief raised -bd 1
