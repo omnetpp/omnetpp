@@ -59,7 +59,7 @@ void LogInspector::createWindow(const char *window, const char *geometry)
     strcpy(textWidget,windowName);
     strcat(textWidget, ".main.text");
 
-    CHK(Tcl_VarEval(interp, "createLogInspector ", windowName, " \"", geometry, "\"", NULL ));
+    CHK(Tcl_VarEval(interp, "createLogInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL ));
 }
 
 void LogInspector::useWindow(const char *window)

@@ -63,7 +63,7 @@ void GateInspector::createWindow(const char *window, const char *geometry)
    strcpy(canvas,windowName);
    strcat(canvas,".c");
 
-   CHK(Tcl_VarEval(interp, "createGateInspector ", windowName, " \"", geometry, "\"", NULL ));
+   CHK(Tcl_VarEval(interp, "createGateInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL ));
 }
 
 void GateInspector::useWindow(const char *window)

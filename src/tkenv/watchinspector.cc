@@ -61,7 +61,7 @@ void WatchInspector::createWindow(const char *window, const char *geometry)
 {
    Inspector::createWindow(window, geometry);
 
-   CHK(Tcl_VarEval(interp, "createWatchInspector ", windowName, " \"", geometry, "\"", NULL ));
+   CHK(Tcl_VarEval(interp, "createWatchInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL ));
 }
 
 void WatchInspector::useWindow(const char *window)
