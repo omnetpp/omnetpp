@@ -150,14 +150,14 @@ void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor)
 void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath)
 {
     const char *ptr = ptrToStr(obj);
-    CHK(Tcl_VarEval(interp, "multicolumnlistbox:insert ",listbox," ",ptr," {"
-                            "ptr {",ptr,"} "
-                            "name {",(fullpath ? obj->getFullPath().c_str() : obj->getFullName()),"} "
-                            "class {",getObjectShortTypeName(obj),"} "
-                            "info ",TclQuotedString(obj->info().c_str()).get(),
-                            "} ",
-                            "[inspector:getIconForObject {",ptr,"}]",
-                            NULL));
+    CHK(Tcl_VarEval(interp, listbox, " insert {} end "
+                    "-image [inspector:getIconForObject ", ptr, "] ",
+                    "-text {", "  " /*padding*/, getObjectShortTypeName(obj), "} ",
+                    "-values {",
+                    TclQuotedString(fullpath ? obj->getFullPath().c_str() : obj->getFullName()).get(), " ",
+                    TclQuotedString(obj->info().c_str()).get(), " ", ptr,
+                    "}",
+                    NULL));
 }
 
 void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath)

@@ -25,7 +25,7 @@ proc createGenericObjectViewer {w} {
 
     inspector:createFields2Page $w
 
-    notebook:addPage $nb contents {Contents}
+    $nb add [frame $nb.contents] -text "Contents"
     createInspectorListbox $nb.contents
 }
 
@@ -38,11 +38,16 @@ proc GenericObjectInspector:onSetObject {w} {
     set showContentsPage  [lcontains {cArray cQueue cMessageHeap cSimpleModule cCompoundModule cChannel cRegistrationList cSimulation } $type]
     set focusContentsPage [lcontains {cArray cQueue cMessageHeap cSimpleModule cCompoundModule cChannel cRegistrationList} $type]
 
-    notebook:setPageEnabled $w.nb contents $showContentsPage
-    if {$focusContentsPage} {
-        notebook:showPage $w.nb contents
+    if {$showContentsPage} {
+        $w.nb tab $w.nb.contents -state normal
     } else {
-        notebook:showPage $w.nb fields
+        $w.nb tab $w.nb.contents -state disabled
+    }
+
+    if {$focusContentsPage} {
+        $w.nb select $w.nb.contents
+    } else {
+        $w.nb select $w.nb.fields
     }
 }
 

@@ -74,7 +74,7 @@ proc comboSelectionDialog {title text label variable list} {
     $w.f.c.e config -width 30
 
     if [execOkCancelDialog $w] {
-        set var [$w.f.c.e cget -value]
+        set var [$w.f.c.e get]
         destroy $w
         return 1
     }
@@ -128,13 +128,13 @@ proc runSelectionDialog {configname_var runnumber_var} {
         $w.f.c.e config -width 30
         $w.f.c2.e config -width 10
 
-        combo:onChange $w.f.c.e [list runSelectionDialog:update $w]
+        bind $w.f.c.e <<ComboboxSelected>> [list runSelectionDialog:update $w]
 
         runSelectionDialog:update $w
 
         if [execOkCancelDialog $w] {
-            set configname [runSelectionDialog:extractConfigName [$w.f.c.e cget -value]]
-            set runnumber  [$w.f.c2.e cget -value]
+            set configname [runSelectionDialog:extractConfigName [$w.f.c.e get]]
+            set runnumber  [$w.f.c2.e get]
             if ![string is integer $runnumber] {
                 messagebox "Error" "Run number must be numeric." info ok
                 set runnumber 0
@@ -179,7 +179,7 @@ proc runSelectionDialog:extractConfigName {s} {
 
 proc runSelectionDialog:update {w} {
     # fill run number combo with runs of the selected config
-    set configname [runSelectionDialog:extractConfigName [$w.f.c.e cget -value]]
+    set configname [runSelectionDialog:extractConfigName [$w.f.c.e get]]
     set n 0
     catch {set n [opp_getnumrunsinconfig $configname]}
 
@@ -187,13 +187,13 @@ proc runSelectionDialog:update {w} {
         $w.f.c2.e config -state normal
     }
 
-    $w.f.c2.e list delete 0 end
-    for {set i 0} {$i<$n} {incr i} {
-        $w.f.c2.e list insert end $i
-    }
+    set runs {}
+    for {set i 0} {$i<$n} {incr i} {lappend runs $i}
+    $w.f.c2.e configure -values $runs
+    catch {$w.f.c2.e current 0}
 
     # ensure run number is in the valid range
-    set runnumber  [$w.f.c2.e cget -value]
+    set runnumber [$w.f.c2.e get]
     if {$n<=1} {
         $w.f.c2.e config -value ""
     }
@@ -302,17 +302,18 @@ proc optionsDialog {parent {defaultpage "g"}} {
 
     createOkCancelDialog $w {Simulation Options}
 
-    notebook $w.f.nb
+    ttk::notebook $w.f.nb
     set nb $w.f.nb
 
-    notebook:addPage $nb g General
-    notebook:addPage $nb l Layouting
-    notebook:addPage $nb a Animation
-    notebook:addPage $nb t Filtering
-    notebook:addPage $nb f Fonts
+    $nb add [frame $nb.g] -text "General"
+    $nb add [frame $nb.l] -text "Layouting"
+    $nb add [frame $nb.a] -text "Animation"
+    $nb add [frame $nb.t] -text "Filtering"
+    $nb add [frame $nb.f] -text "Fonts"
+
     pack $nb -expand 1 -fill both
 
-    notebook:showPage $nb $defaultpage
+    $nb select $nb.$defaultpage
 
     # "General" page
     labelframe $nb.g.f0 -text "User Interface" -relief groove -borderwidth 2 -font $fonts(normal)
@@ -604,8 +605,8 @@ proc runUntilDialog {time_var event_var msg_var mode_var} {
 
     $w.f.time.e insert 0 $config(rununtil-time)
     $w.f.event.e insert 0 $config(rununtil-event)
-    $w.f.msg.e configure -value $msglabel
-    $w.f.mode.e configure -value $config(rununtil-mode)
+    $w.f.msg.e set $msglabel
+    $w.f.mode.e set $config(rununtil-mode)
     set tmp(stop) [opp_getsimoption stoponmsgcancel]
 
     $w.f.time.e select range 0 end
@@ -617,12 +618,12 @@ proc runUntilDialog {time_var event_var msg_var mode_var} {
         set time_var0  [$w.f.time.e get]
         set event_var0 [$w.f.event.e get]
         set msg_var0   [lindex [$w.f.msg.e get] end]
-        set mode_var0  [lindex [$w.f.mode.e cget -value] 0]
+        set mode_var0  [lindex [$w.f.mode.e get] 0]
 
         set config(rununtil-time)  $time_var0
         set config(rununtil-event) $event_var0
         set config(rununtil-msg)   $msg_var0
-        set config(rununtil-mode)  [$w.f.mode.e cget -value]
+        set config(rununtil-mode)  [$w.f.mode.e get]
         opp_setsimoption stoponmsgcancel $tmp(stop)
 
         destroy $w
@@ -929,7 +930,7 @@ proc moduleOutputFilterDialog:getModuleTreeInfo {w op {key {}}} {
 #
 proc filteredObjectList:window {{ptr ""}} {
     global config tmp icons help_tips helptexts fonts
-    global HAVE_BLT B2 B3
+    global B2 B3
 
     set w .objdlg
 
@@ -1002,14 +1003,15 @@ proc filteredObjectList:window {{ptr ""}} {
     labelwithhelp $fp.classlabel "Class filter expression:" $helptexts(filterdialog-classnamepattern)
     labelwithhelp $fp.namelabel  "Object full path filter, e.g. \"*.queue\ AND not length(0)\":" $helptexts(filterdialog-namepattern)
 
-    combo $fp.classentry [concat {{}} [filteredObjectList:getClassNames]]
-    $fp.classentry.entry config -textvariable tmp(class)
+    ttk::combobox $fp.classentry -values [concat {{}} [filteredObjectList:getClassNames]]
+    catch {$fp.classentry current 0}
+    $fp.classentry config -textvariable tmp(class)
     entry $fp.nameentry -textvariable tmp(name)
 
-    set help_tips($fp.classentry.entry) $helptexts(filterdialog-classnamepattern)
+    set help_tips($fp.classentry) $helptexts(filterdialog-classnamepattern)
     set help_tips($fp.nameentry) $helptexts(filterdialog-namepattern)
 
-    button $fp.refresh -text "Refresh" -width 10 -command "filteredObjectList:refresh $w"
+    ttk_button $fp.refresh -text "Refresh" -width 10 -command "filteredObjectList:refresh $w"
 
     grid $fp.classlabel $fp.namelabel x           -sticky nw   -padx 5
     grid $fp.classentry $fp.nameentry $fp.refresh -sticky news -padx 5 -pady 3
@@ -1036,49 +1038,18 @@ proc filteredObjectList:window {{ptr ""}} {
         set tmp(cat-$c) [string match "*$c*" $tmp(category)]
     }
 
-    # Sorting
-    if {!$HAVE_BLT} {
-        labelframe $w.f.filter.order -text "Sorting:" -font $fonts(normal)
-        label-combo $w.f.filter.order.entry "Sort by:" {{Class} {Full name} {Name}}
-        $w.f.filter.order.entry.e configure -textvariable tmp(order)
-        pack $w.f.filter.order.entry -expand 0 -fill none -side top -anchor w
-        pack $w.f.filter.order -expand 0 -fill x -side top
-    }
-
-
     # number of objects
     label $w.f.numobj -text "Found 0 objects" -justify left -anchor w
     pack $w.f.numobj -anchor w -expand 0 -fill x -side top
 
-    # panel for listbox
-    frame $w.f.main
-    scrollbar $w.f.main.vsb -command "$w.f.main.list yview"
-    scrollbar $w.f.main.hsb -command "$w.f.main.list xview" -orient horiz
-    multicolumnlistbox $w.f.main.list {
-        {class   Class  80}
-        {name    Name  180}
-        {info    Info}
-        {ptr     Pointer}
-    } -height 200 -yscrollcommand "$w.f.main.vsb set" -xscrollcommand "$w.f.main.hsb set"
-
-    grid $w.f.main.list $w.f.main.vsb -sticky news
-    grid $w.f.main.hsb  x             -sticky news
-    grid rowconfig $w.f.main 0 -weight 1
-    grid columnconfig $w.f.main 0 -weight 1
-
-    pack $w.f.main  -anchor center -expand 1 -fill both -side top
-
-    set lb $w.f.main.list
-
-    set type "(default)"
-
-    # leave listbox empty -- filling it with all objects might take too long
+    # Listbox
+    set lb [createInspectorListbox $w.f]
 
     # Configure dialog
     $w.buttons.closebutton config -command filteredObjectList:windowClose
     wm protocol $w WM_DELETE_WINDOW "$w.buttons.closebutton invoke"
 
-    bind $fp.classentry.entry <Return> "$fp.refresh invoke"
+    bind $fp.classentry <Return> "$fp.refresh invoke"
     bind $fp.nameentry <Return> "$fp.refresh invoke"
     bind $lb <Double-Button-1> "filteredObjectList:inspect $lb; after 500 \{raise $w; focus $lb\}"
     bind $lb <Key-Return> "filteredObjectList:inspect $lb; after 500 \{raise $w; focus $lb\}"
@@ -1128,7 +1099,7 @@ proc filteredObjectList:getClassNames {} {
 # helper proc for filteredObjectList:window
 #
 proc filteredObjectList:refresh {w} {
-    global config tmp HAVE_BLT
+    global config tmp
     global filtobjlist_state
 
     # resolve root object
@@ -1172,11 +1143,7 @@ proc filteredObjectList:refresh {w} {
         set name "*"
     }
 
-    if {!$HAVE_BLT} {
-        set order $tmp(order)
-    } else {
-        set order ""
-    }
+    set order ""
 
     # get list
     set maxcount $config(filtobjlist-maxcount)
@@ -1197,7 +1164,7 @@ proc filteredObjectList:refresh {w} {
 
     # clear listbox
     set lb $w.f.main.list
-    multicolumnlistbox:deleteAll $lb
+    ttkTreeview:deleteAll $lb
 
     # insert into listbox
     if {$viewall=="ok"} {
@@ -1207,10 +1174,13 @@ proc filteredObjectList:refresh {w} {
             $w.f.numobj config -text "Found $num objects:"
         }
         foreach ptr $objlist {
-            multicolumnlistbox:insert $lb $ptr [list ptr $ptr class [opp_getobjectshorttypename $ptr] name [opp_getobjectfullpath $ptr] info [opp_getobjectinfostring $ptr]] [inspector:getIconForObject $ptr]
+            set type [opp_getobjectshorttypename $ptr]
+            set fullpath [opp_getobjectfullpath $ptr]
+            set info [opp_getobjectinfostring $ptr]
+            set icon [inspector:getIconForObject $ptr]
+            $lb insert {} end -image $icon -text "  $type" -values [list $fullpath $info $ptr]
         }
         set filtobjlist_state(outofdate) 0
-        #$lb selection set 0
     }
 }
 
@@ -1238,8 +1208,8 @@ proc filteredobjectlist_isnotsafetoinspect {} {
 #
 proc filteredObjectList:popup {X Y w} {
     set lb $w.f.main.list
-    set ptr [lindex [multicolumnlistbox:curSelection $lb] 0]
-    if {$ptr==""} return
+    set ptr [inspectorListbox:getCurrent $lb]
+    if [opp_isnull $ptr] return
     set insptypes [opp_supported_insp_types $ptr]
 
     set p $w.popup

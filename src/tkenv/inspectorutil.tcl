@@ -41,36 +41,92 @@ proc createInternalToolbar {w {parent ""}} {
 proc createInspectorListbox {w} {
     global B2 B3
 
-    # create a listbox
-
     label $w.label -text "# objects:"
     pack $w.label -side top -anchor w
 
     frame $w.main
     pack $w.main -expand 1 -fill both -side top
 
-    multicolumnlistbox $w.main.list {
-       {class  Class   80}
-       {name   Name   120}
-       {info   Info}
-       {ptr    Pointer}
-    } -width 400 -yscrollcommand "$w.main.vsb set" -xscrollcommand "$w.main.hsb set"
+    set lb $w.main.list
+    ttk::treeview $lb -columns {name info ptr} -show {tree headings} -yscroll "$w.main.vsb set" -xscroll "$w.main.hsb set"
+    $lb heading "#0" -anchor c -text "Class"   ;#TODO: -command [list inspectorListbox:sortBy $lb "#0" 0]
+    $lb heading name -anchor w -text "Name"    -command [list inspectorListbox:sortBy $lb name 0]
+    $lb heading info -anchor w -text "Info"    -command [list inspectorListbox:sortBy $lb info 0]
+    $lb heading ptr  -anchor w -text "Pointer" -command [list inspectorListbox:sortBy $lb ptr 0]
+    $lb column "#0"  -stretch 0 -width 140
+    $lb column name  -stretch 0 -width 120
+    $lb column info  -stretch 0 -width 300
+
     scrollbar $w.main.hsb  -command "$w.main.list xview" -orient horiz
     scrollbar $w.main.vsb  -command "$w.main.list yview"
     grid $w.main.list $w.main.vsb -sticky news
     grid $w.main.hsb  x           -sticky news
     grid rowconfig    $w.main 0 -weight 1 -minsize 0
     grid columnconfig $w.main 0 -weight 1 -minsize 0
+    #FIXME TODO: -width 400
 
     bind $w.main.list <Double-Button-1> {inspectItemIn %W}
     bind $w.main.list <Button-$B3> {+inspector:rightClick %W %X %Y}  ;# Note "+"! it appends this code to binding in widgets.tcl
     bind $w.main.list <Key-Return> {inspectItemIn %W}
 
     focus $w.main.list
+
+    return $w.main.list
+}
+
+# source: Tk "widget" demo
+proc inspectorListbox:sortBy {tree col direction} {
+    #TODO: cannot sort by the #0 column
+    # Determine currently sorted column and its sort direction
+    foreach c {"#0" name info ptr} {
+        set s [$tree heading $c state]
+        if {("selected" in $s || "alternate" in $s) && $col ne $c} {
+            # Sorted column has changed
+            $tree heading $c state {!selected !alternate !user1}
+            set direction [expr {"alternate" in $s}]
+        }
+    }
+
+    # Build something we can sort
+    set data {}
+    foreach row [$tree children {}] {
+        lappend data [list [$tree set $row $col] $row]
+    }
+
+    set dir [expr {$direction ? "-decreasing" : "-increasing"}]
+    set r -1
+
+    # Now reshuffle the rows into the sorted order
+    foreach info [lsort -dictionary -index 0 $dir $data] {
+        $tree move [lindex $info 1] {} [incr r]
+    }
+
+    # Switch the heading so that it will sort in the opposite direction
+    $tree heading $col -command [list inspectorListbox:sortBy $tree $col [expr {!$direction}]] \
+        state [expr {$direction?"!selected alternate":"selected !alternate"}]
+    if {[tk windowingsystem] eq "aqua"} {
+        # Aqua theme displays native sort arrows when user1 state is set
+        $tree heading $col state "user1"
+    }
+}
+
+proc inspectorListbox:getSelection {lb} {
+    set ptrs {}
+    foreach item [$lb selection] {
+        set values [$lb item $item -values]
+        set ptr [lindex $values 2]
+        lappend ptrs $ptr
+    }
+    return $ptrs
+}
+
+proc inspectorListbox:getCurrent {lb} {
+    set ptrs [inspectorListbox:getSelection $lb]
+    return [lindex $ptrs 0]
 }
 
 proc inspector:rightClick {lb X Y} {
-    set ptr [lindex [multicolumnlistbox:curSelection $lb] 0]
+    set ptr [inspectorListbox:getCurrent $lb]
     if [opp_isnotnull $ptr] {
         set popup [createInspectorContextMenu $ptr]
         tk_popup $popup $X $Y
@@ -254,7 +310,7 @@ proc askInspectorType {ptr parentwin {typelist {}}} {
 
     set type ""
     if [execOkCancelDialog $w] {
-        set type [$w.f.type.e cget -value]
+        set type [$w.f.type.e get]
 
         if {[lsearch $typelist $type] == -1} {
             messagebox {Error} "Invalid inspector type. Please choose from the list." error ok
@@ -270,18 +326,15 @@ proc inspectItemIn {lb} {
     # called on double-clicking in a container inspector;
     # inspect the current item in the listbox of an inspector listwindow
 
-    set ptr [lindex [multicolumnlistbox:curSelection $lb] 0]
+    set ptr [inspectorListbox:getCurrent $lb]
     if [opp_isnotnull $ptr] {
         opp_inspect $ptr {(default)}
     }
 }
 
 proc inspectAsItemIn {lb} {
-    # called on double-clicking in a container inspector;
-    # inspect the current item in the listbox of an inspector listwindow
-
-    set ptr [lindex [multicolumnlistbox:curSelection $lb] 0]
-    if {$sel != ""} {
+    set ptr [inspectorListbox:getCurrent $lb]
+    if [opp_isnotnull $ptr] {
         set type [askInspectorType $ptr [winfo toplevel $lb]]
         if {$type != ""} {
             opp_inspect $ptr $type
@@ -372,7 +425,7 @@ proc getHelpTip {w x y} {
 
 proc inspector:createNotebook {w} {
     set nb $w.nb
-    notebook $nb
+    ttk::notebook $nb
     $nb config -width 460 -height 260
     pack $nb -expand 1 -fill both
     return $nb

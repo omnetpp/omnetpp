@@ -24,7 +24,6 @@ if [info exist OMNETPP_TKENV_DIR] {
    source [file join $dir animate2.tcl]
    source [file join $dir balloon.tcl]
    source [file join $dir canvaslabel.tcl]
-   source [file join $dir combobox.tcl]
    source [file join $dir dialogs.tcl]
    source [file join $dir fieldspage.tcl]
    source [file join $dir gateinspector.tcl]
@@ -56,7 +55,6 @@ if [info exist OMNETPP_TKENV_DIR] {
 proc startTkenv {} {
   global OMNETPP_IMAGE_PATH
   global OMNETPP_PLUGIN_PATH
-  global HAVE_BLT
 
   wm withdraw .
   checkTclTkVersion

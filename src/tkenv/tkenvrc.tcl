@@ -197,10 +197,7 @@ proc reflectSettingsInGui {} {
    applyFont Scale       $fonts(normal)
    applyFont Labelframe  $fonts(normal)
    applyFont Canvas      $fonts(normal)
-   applyFont Combobox    $fonts(normal)
    applyFont Listbox     $fonts(normal)
-   applyFont Tabset      $fonts(normal)
-   applyFont TreeView    $fonts(normal)
    applyFont Text        $fonts(text)
 
    option add *Menubutton.font  $fonts(normal)
@@ -214,12 +211,14 @@ proc reflectSettingsInGui {} {
    option add *Scale.font       $fonts(normal)
    option add *Labelframe       $fonts(normal)
    option add *Canvas.font      $fonts(normal)
-   option add *Combobox.font    $fonts(normal)
-   option add *ComboboxListbox.font $fonts(normal)
    option add *Listbox.font     $fonts(normal)
-   option add *Tabset.font      $fonts(normal)
-   option add *TreeView.font    $fonts(normal)
    option add *Text.font        $fonts(text)
+
+   ttk::style configure TButton          -font $fonts(normal)
+   ttk::style configure TCombobox        -font $fonts(normal)
+   ttk::style configure TNotebook.Tab    -font $fonts(normal)
+   ttk::style configure Treeview         -font $fonts(normal)
+   ttk::style configure Treeview.Heading -font $fonts(normal)
 
    set help_tips(font)  $fonts(balloon)
 

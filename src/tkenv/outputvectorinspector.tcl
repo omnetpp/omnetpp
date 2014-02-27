@@ -33,7 +33,7 @@ proc createOutputVectorInspector {name geom} {
     pack $w.main.canvas -anchor center -expand 1 -fill both -side top
 
     label $w.bot.info -width 50 -relief groove
-    button $w.bot.view -text {Options...} -command "OutputVectorInspector:options $w"
+    ttk_button $w.bot.view -text {Options...} -command "OutputVectorInspector:options $w"
     pack $w.bot.view -anchor center -expand 0 -fill none -side right
     pack $w.bot.info -anchor center -expand 1 -fill x -side left
 
@@ -53,7 +53,7 @@ proc OutputVectorInspector:optUpdate {w win} {
                      [$w.time.e get] \
                      [$w.ymin.e get] \
                      [$w.ymax.e get] \
-                     [$w.combo.e cget -value]
+                     [$w.combo.e get]
     opp_refreshinspector $win
 }
 
@@ -82,9 +82,9 @@ proc OutputVectorInspector:options {win} {
     label-entry $w.ymax {Ymax:}
     label-combo $w.combo {Draw mode:} {dots pins bars sample-hold lines}
     frame $w.buttons
-    button $w.buttons.okbutton -width 10 -text {OK}
-    button $w.buttons.applybutton -width 10 -text {Apply}
-    button $w.buttons.cancelbutton -width 10 -text {Cancel}
+    ttk_button $w.buttons.okbutton -width 10 -text {OK}
+    ttk_button $w.buttons.applybutton -width 10 -text {Apply}
+    ttk_button $w.buttons.cancelbutton -width 10 -text {Cancel}
 
     pack $w.msg  -anchor w -expand 0 -fill none -padx 3m -pady 3m -side top
     pack $w.auto -anchor w -expand 0 -fill none -padx 3m -pady 3m -side top
@@ -115,7 +115,7 @@ proc OutputVectorInspector:options {win} {
     $w.time.e insert 0 [lindex $settings 1]
     $w.ymin.e insert 0 [lindex $settings 2]
     $w.ymax.e insert 0 [lindex $settings 3]
-    $w.combo.e configure -value [lindex $settings 4]
+    $w.combo.e set [lindex $settings 4]
 
     # 4. Set a grab and claim the focus too.
     set oldFocus [focus]

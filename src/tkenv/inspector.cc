@@ -282,7 +282,7 @@ void Inspector::setToolbarInspectButton(const char *button, cObject *object, int
 
 void Inspector::clearInspectorListbox(const char *listbox)
 {
-   CHK(Tcl_VarEval(interp, "multicolumnlistbox:deleteAll ", windowName,listbox,".main.list",NULL));
+   CHK(Tcl_VarEval(interp, "ttkTreeview:deleteAll ", windowName,listbox,".main.list",NULL));
 }
 
 void Inspector::fillInspectorListbox(const char *listbox, cObject *object, bool deep)
@@ -290,12 +290,6 @@ void Inspector::fillInspectorListbox(const char *listbox, cObject *object, bool 
    char w[256], buf[256];
    sprintf(w, "%s%s.main.list", windowName,listbox);
    int n = fillListboxWithChildObjects(object, interp, w, deep);
-
-   // The following is needed because BLT tends to crash when item count goes
-   // from 3 to 0 (e.g. in samples/fifo, Fast mode). Adding a dummy line when
-   // listbox is empty solves the problem...
-   if (n==0)
-       CHK(Tcl_VarEval(interp, "multicolumnlistbox:addDummyLine ", w, NULL));
 
    // set "number of items" display
    sprintf(w, "%s.label", listbox);
