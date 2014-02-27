@@ -222,10 +222,6 @@ proc newNetwork {} {
        busy
 
        if [opp_isnotnull [opp_object_systemmodule]] {
-           busy "Opening graphical network inspector..."
-           opp_inspect [opp_object_systemmodule] (default)
-           busy
-
            # tell plugins about it
            busy "Notifying Tcl plugins..."
            notifyPlugins newNetwork
@@ -253,10 +249,6 @@ proc newRun {} {
        busy
 
        if [opp_isnotnull [opp_object_systemmodule]] {
-           busy "Opening graphical network inspector..."
-           opp_inspect [opp_object_systemmodule] (default)
-           busy
-
            # tell plugins about it
            busy "Notifying Tcl plugins..."
            notifyPlugins newNetwork

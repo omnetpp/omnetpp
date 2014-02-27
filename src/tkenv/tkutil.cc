@@ -249,8 +249,8 @@ class cInspectByNameVisitor : public cVisitor
         {
             // found: inspect if inspector is not open
             Tkenv *app = getTkenv();
-            if (!app->findInspector(obj, insptype)) {
-                app->inspect(obj, insptype, geometry);
+            if (!app->findInspector(obj, insptype, true)) {
+                app->inspect(obj, insptype, true, geometry);
                 numopened++;
             }
 

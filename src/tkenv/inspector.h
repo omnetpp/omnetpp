@@ -80,10 +80,11 @@ class TKENV_API Inspector
 
       static std::string makeWindowName();
 
-      virtual int getType() {return type;}
-      virtual const char *getWindowName() {return windowName;}
+      virtual int getType() const {return type;}
+      virtual const char *getWindowName() const {return windowName;}
+      virtual bool isToplevel() const {return isToplevelWindow;}
 
-      virtual cObject *getObject() {return object;}
+      virtual cObject *getObject() const {return object;}
       virtual void setObject(cObject *obj);
 
       virtual void hostObjectDeleted();

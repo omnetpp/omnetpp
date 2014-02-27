@@ -304,7 +304,7 @@ void Tkenv::run()
     // close all inspectors before exiting
     for(;;)
     {
-        TInspectorList::iterator it = inspectors.begin();
+        InspectorList::iterator it = inspectors.begin();
         if (it==inspectors.end())
             break;
         Inspector *insp = *it;
@@ -341,8 +341,6 @@ void Tkenv::rebuildSim()
          newNetwork(simulation.getNetworkType()->getName());
     else
          confirm("Choose File|New Network or File|New Run.");
-    if (simulation.getSystemModule())
-         inspect(simulation.getSystemModule(),INSP_DEFAULT,"");
 }
 
 void Tkenv::doOneStep()
@@ -823,10 +821,10 @@ void Tkenv::newRun(const char *configname, int runnumber)
     updateInspectors();
 }
 
-Inspector *Tkenv::inspect(cObject *obj, int type, const char *geometry)
+Inspector *Tkenv::inspect(cObject *obj, int type, bool ignoreEmbedded, const char *geometry)
 {
     // create inspector object & window or display existing one
-    Inspector *existing_insp = findInspector(obj, type);
+    Inspector *existing_insp = findInspector(obj, type, ignoreEmbedded);
     if (existing_insp)
     {
         existing_insp->showWindow();
@@ -842,7 +840,7 @@ Inspector *Tkenv::inspect(cObject *obj, int type, const char *geometry)
     }
 
     int actualtype = p->getInspectorType();
-    existing_insp = findInspector(obj, actualtype);
+    existing_insp = findInspector(obj, actualtype, ignoreEmbedded);
     if (existing_insp)
     {
         existing_insp->showWindow();
@@ -872,12 +870,12 @@ void Tkenv::addEmbeddedInspector(const char *widget, Inspector *insp)
     insp->refresh();
 }
 
-Inspector *Tkenv::findInspector(cObject *obj, int type)
+Inspector *Tkenv::findInspector(cObject *obj, int type, bool ignoreEmbedded)
 {
-    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
     {
         Inspector *insp = *it;
-        if (insp->getObject()==obj && insp->getType()==type)
+        if (insp->getObject()==obj && insp->getType()==type && (!ignoreEmbedded || insp->isToplevel()))
             return insp;
     }
     return NULL;
@@ -885,7 +883,7 @@ Inspector *Tkenv::findInspector(cObject *obj, int type)
 
 Inspector *Tkenv::findInspector(const char *widget)
 {
-    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
     {
         Inspector *insp = *it;
         if (strcmp(insp->getWindowName(), widget) == 0)
@@ -903,10 +901,10 @@ void Tkenv::deleteInspector(Inspector *insp)
 void Tkenv::updateInspectors()
 {
     // update inspectors
-    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end();)
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end();)
     {
         Inspector *insp = *it;
-        TInspectorList::iterator next = ++it;
+        InspectorList::iterator next = ++it;
         if (insp->isMarkedForDeletion())
             deleteInspector(insp);
         else
@@ -927,7 +925,7 @@ void Tkenv::redrawInspectors()
     updateInspectors();
 
     // redraw them
-    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); it++)
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); it++)
     {
         Inspector *insp = *it;
         if (dynamic_cast<ModuleInspector*>(insp))
@@ -942,7 +940,7 @@ void Tkenv::createSnapshot( const char *label )
 
 void Tkenv::updateGraphicalInspectorsBeforeAnimation()
 {
-    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
     {
         Inspector *insp = *it;
         if (dynamic_cast<ModuleInspector *>(insp) && static_cast<ModuleInspector *>(insp)->needsRedraw())
@@ -1087,7 +1085,7 @@ void Tkenv::printLastLogLine()
     if (!entry.moduleIds /*info*/ || !entry.moduleIds[0] /*initialize--FIXME how???*/)
     {
         // info message: insert into all log windows
-        for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+        for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
         {
             LogInspector *insp = dynamic_cast<LogInspector *>(*it);
             if (insp)
@@ -1300,9 +1298,9 @@ void Tkenv::objectDeleted(cObject *object)
             confirm("Message to run until has just been deleted.");
     }
 
-    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); )
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); )
     {
-        TInspectorList::iterator next = it;
+        InspectorList::iterator next = it;
         ++next;
         Inspector *insp = *it;
         if (insp->getObject()==object)   //FIXME only delete if ownsWindow
@@ -1640,7 +1638,7 @@ void Tkenv::channelDisplayStringChanged(cChannel *channel)
 
     // graphical gate inspector windows: normally a user doesn't have many such windows open
     // (typically, none at all), so we can afford simply refreshing all of them
-    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
     {
         Inspector *insp = *it;
         GateInspector *gateinsp = dynamic_cast<GateInspector *>(insp);

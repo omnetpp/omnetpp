@@ -1618,7 +1618,7 @@ int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    else if ((type=insptypeCodeFromName(argv[2])) < 0)
         {Tcl_SetResult(interp, TCLCONST("unrecognized inspector type"), TCL_STATIC);return TCL_ERROR;}
 
-   Inspector *insp = app->inspect(object, type, "");
+   Inspector *insp = app->inspect(object, type, true, "");
    Tcl_SetResult(interp, TCLCONST(insp ? insp->getWindowName() : ""), TCL_VOLATILE);
    return TCL_OK;
 }

@@ -138,8 +138,8 @@ class TKENV_API Tkenv : public EnvirBase
       bool stopsimulation_flag;    // indicates that the simulation should be stopped (STOP button pressed in the UI)
       timeval idleLastUICheck;     // gettimeofday() time when idle() last run the Tk "update" command
 
-      typedef std::list<Inspector*> TInspectorList;
-      TInspectorList inspectors;   // list of inspector objects
+      typedef std::list<Inspector*> InspectorList;
+      InspectorList inspectors;    // list of inspector objects
 
       LogBuffer logBuffer;         // text window contents
       std::set<int> mainWindowExcludedModuleIds;
@@ -233,9 +233,9 @@ class TKENV_API Tkenv : public EnvirBase
 
       void updateInspectors();
       void redrawInspectors();
-      Inspector *inspect(cObject *obj, int type, const char *geometry);
+      Inspector *inspect(cObject *obj, int type, bool ignoreEmbedded, const char *geometry);
       void addEmbeddedInspector(const char *widget, Inspector *insp);
-      Inspector *findInspector(cObject *obj, int type);
+      Inspector *findInspector(cObject *obj, int type, bool ignoreEmbedded=false);
       Inspector *findInspector(const char *widget);
       void deleteInspector(Inspector *insp);
 
