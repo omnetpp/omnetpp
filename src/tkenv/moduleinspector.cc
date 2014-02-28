@@ -219,7 +219,7 @@ void ModuleInspector::getSubmoduleCoords(cModule *submod, bool& explicitcoords, 
         }
         else
         {
-            Tcl_VarEval(interp, "lookupImage ", imgName, " ", imgSize, NULL);
+            CHK(Tcl_VarEval(interp, "lookupImage ", imgName, " ", imgSize, NULL));
             Tk_Image img = Tk_GetImage(interp, Tk_MainWindow(interp), Tcl_GetStringResult(interp), NULL, NULL);
             if (!img)
             {
