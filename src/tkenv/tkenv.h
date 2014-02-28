@@ -238,6 +238,7 @@ class TKENV_API Tkenv : public EnvirBase
       Inspector *findInspector(cObject *obj, int type, bool ignoreEmbedded=false);
       Inspector *findInspector(const char *widget);
       void deleteInspector(Inspector *insp);
+      const std::list<Inspector*>& getInspectors() {return inspectors;}
 
       int getSimulationState() {return simstate;}
       void setStopSimulationFlag() {stopsimulation_flag = true;}

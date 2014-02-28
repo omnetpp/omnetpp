@@ -149,6 +149,7 @@ int commitInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
 int deleteInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
 int markInspectorForDeletion_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspMarkedForDeletion_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getInspectors_cmd(ClientData, Tcl_Interp *, int, const char **);
 int refreshInspectors_cmd(ClientData, Tcl_Interp *, int, const char **);
 int redrawInspectors_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorType_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -263,6 +264,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_deleteinspector",   deleteInspector_cmd   }, // args: <window>
    { "opp_markinspectorfordeletion", markInspectorForDeletion_cmd}, // args: <window>
    { "opp_inspmarkedfordeletion", inspMarkedForDeletion_cmd}, // args: <window>
+   { "opp_getinspectors",     getInspectors_cmd     }, // args: <toplevelOnly>
    { "opp_refreshinspectors", refreshInspectors_cmd }, // args: -
    { "opp_redrawinspectors",  redrawInspectors_cmd  }, // args: -
    { "opp_inspectortype",     inspectorType_cmd     }, // translates inspector type code to namestr and v.v.
@@ -1778,6 +1780,23 @@ int inspMarkedForDeletion_cmd(ClientData, Tcl_Interp *interp, int argc, const ch
    Inspector *insp = app->findInspector(argv[1]);
    if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, TCLCONST(insp->isMarkedForDeletion() ? "1" : "0"), TCL_STATIC);
+   return TCL_OK;
+}
+
+int getInspectors_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   bool toplevelsOnly = atoi(argv[1])!=0;
+   Tkenv *app = getTkenv();
+   Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+   const std::list<Inspector*>& inspectors = app->getInspectors();
+   for (std::list<Inspector*>::const_iterator it = inspectors.begin(); it != inspectors.end(); ++it)
+   {
+       Inspector *insp = *it;
+       if (!toplevelsOnly || insp->isToplevel())
+           Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(TCLCONST(insp->getWindowName()), -1));
+   }
+   Tcl_SetObjResult(interp, listobj);
    return TCL_OK;
 }
 

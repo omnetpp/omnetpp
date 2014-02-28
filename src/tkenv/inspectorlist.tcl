@@ -95,10 +95,8 @@ proc inspectorList:add {w allowdestructive} {
 # Add all open inspectors to the inspector list.
 #
 proc inspectorList:addAll {allowdestructive} {
-    foreach w [winfo children .] {
-       if [opp_isinspector $w] {
-           inspectorList:add $w $allowdestructive
-       }
+    foreach w [opp_getinspectors 1] {
+        inspectorList:add $w $allowdestructive
     }
 }
 
@@ -128,17 +126,15 @@ proc inspectorList:tkenvrcGetContents {allowdestructive} {
     global pil_name pil_class pil_type pil_geom
 
     set res ""
-    foreach w [winfo children .] {
-       if [opp_isinspector $w] {
-           set object [opp_inspector_getobject $w]
-           set type [opp_inspector_gettype $w]
+    foreach w [opp_getinspectors 1] {
+       set object [opp_inspector_getobject $w]
+       set type [opp_inspector_gettype $w]
 
-           set objname [opp_getobjectfullpath $object]
-           set class [opp_getobjectshorttypename $object]
-           set geom [inspectorList:getGeometry $w $allowdestructive]
+       set objname [opp_getobjectfullpath $object]
+       set class [opp_getobjectshorttypename $object]
+       set geom [inspectorList:getGeometry $w $allowdestructive]
 
-           append res "inspector \"$objname\" \"$class\" \"$type\" \"$geom\"\n"
-       }
+       append res "inspector \"$objname\" \"$class\" \"$type\" \"$geom\"\n"
     }
 
     foreach key [array names pil_name] {
