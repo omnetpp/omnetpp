@@ -1149,7 +1149,11 @@ proc ModuleInspector:zoomBy {w mult {snaptoone 0}} {
 
         # update status display
         set value [format "%.2f" $inspectordata($c:zoomfactor)]
-        $w.infobar.zoominfo config -text "Zoom: ${value}x"
+        if [opp_inspector_istoplevel $w] {
+            $w.infobar.zoominfo config -text "Zoom: ${value}x"
+        } else {
+            # TODO display in transient floating window?
+        }
     }
 
     ModuleInspector:popOutToolbarButtons $w
@@ -1162,16 +1166,25 @@ proc ModuleInspector:popOutToolbarButtons {w} {
     # No idea how this can be fixed properly.
     # This is a weak attempt to fix it for the most commonly clicked buttons.
     # This could be called from many more places for better results.
-    $w.toolbar.minfo config -relief flat
-    $w.toolbar.type config -relief flat
-    $w.toolbar.objs config -relief flat
-    $w.toolbar.owner config -relief flat
-    $w.toolbar.ascont config -relief flat
-    $w.toolbar.win config -relief flat
-    $w.toolbar.stop config -relief flat
-    $w.toolbar.redraw config -relief flat
-    $w.toolbar.zoomin config -relief flat
-    $w.toolbar.zoomout config -relief flat
+    if [opp_inspector_istoplevel $w] {
+        $w.toolbar.minfo config -relief flat
+        $w.toolbar.type config -relief flat
+        $w.toolbar.objs config -relief flat
+        $w.toolbar.owner config -relief flat
+        $w.toolbar.ascont config -relief flat
+        $w.toolbar.win config -relief flat
+        $w.toolbar.stop config -relief flat
+        $w.toolbar.redraw config -relief flat
+        $w.toolbar.zoomin config -relief flat
+        $w.toolbar.zoomout config -relief flat
+    } else {
+        #TODO list actual buttons here
+        $w.toolbar.stop config -relief flat
+        $w.toolbar.redraw config -relief flat
+        $w.toolbar.zoomin config -relief flat
+        $w.toolbar.zoomout config -relief flat
+
+    }
 }
 
 proc ModuleInspector:zoomIconsBy {w mult} {
