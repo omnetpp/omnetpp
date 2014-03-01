@@ -137,6 +137,21 @@ proc animRememberMsg {msgptr} {
     }
 }
 
+proc animDisableClose {w} {
+    if [opp_inspector_istoplevel $w] {
+        global savedCloseHandlers
+        set savedCloseHandlers($w) [wm protocol $w WM_DELETE_WINDOW]
+        wm protocol $w WM_DELETE_WINDOW [list opp_markinspectorfordeletion $w]
+    }
+}
+
+proc animRestoreClose {w} {
+    if [opp_inspector_istoplevel $w] {
+        global savedCloseHandlers
+        wm protocol $w WM_DELETE_WINDOW $savedCloseHandlers($w)
+    }
+}
+
 #
 # Called from C++ code.
 #
@@ -149,8 +164,7 @@ proc ModuleInspector:animateSenddirectDelivery {win msgptr modptr} {
 
     # flash the message a few times before removing it
     # WM_DELETE_WINDOW stuff: if user wants to close window (during "update"), postpone it until updateInspectors()
-    set old_close_handler [wm protocol $win WM_DELETE_WINDOW]
-    wm protocol $win WM_DELETE_WINDOW [list opp_markinspectorfordeletion $win]
+    animDisableClose $win
     for {set i 0} {$i<3} {incr i} {
        $c itemconfig $msgptr -state hidden
        update
@@ -159,7 +173,7 @@ proc ModuleInspector:animateSenddirectDelivery {win msgptr modptr} {
        update
        animFlashingDelay $win 0.05
     }
-    wm protocol $win WM_DELETE_WINDOW $old_close_handler
+    animRestoreClose $win
 
     $c delete $msgptr
 }
@@ -235,8 +249,7 @@ proc ModuleInspector:doAnimate {win x1 y1 x2 y2 msgptr {mode thru}} {
     set dy [expr ($y2-$y1)/double($steps)]
 
     # WM_DELETE_WINDOW stuff: if user wants to close window (during "update"), postpone it until updateInspectors()
-    set old_close_handler [wm protocol $win WM_DELETE_WINDOW]
-    wm protocol $win WM_DELETE_WINDOW [list opp_markinspectorfordeletion $win]
+    animDisableClose $win
     for {set i 0} {$i<$steps} {incr i} {
        set tbeg [clock clicks]
        update
@@ -251,7 +264,7 @@ proc ModuleInspector:doAnimate {win x1 y1 x2 y2 msgptr {mode thru}} {
            while {[expr abs([clock clicks]-$tbeg)] < $clicks} {}
        }
     }
-    wm protocol $win WM_DELETE_WINDOW $old_close_handler
+    animRestoreClose $win
 }
 
 #
@@ -339,8 +352,7 @@ proc ModuleInspector:doDrawMethodcall {win x1 y1 x2 y2 methodlabel} {
 
     # flash arrow a bit
     # WM_DELETE_WINDOW stuff: if user wants to close window (during "update"), postpone it until updateInspectors()
-    set old_close_handler [wm protocol $win WM_DELETE_WINDOW]
-    wm protocol $win WM_DELETE_WINDOW [list opp_markinspectorfordeletion $win]
+    animDisableClose $win
     for {set i 0} {$i<2} {incr i} {
        $c itemconfig $arrow -state hidden
        update
@@ -349,7 +361,7 @@ proc ModuleInspector:doDrawMethodcall {win x1 y1 x2 y2 methodlabel} {
        update
        animFlashingDelay $win 0.3
     }
-    wm protocol $win WM_DELETE_WINDOW $old_close_handler
+    animRestoreClose $win
 }
 
 # ModuleInspector:animateMethodcallWait --

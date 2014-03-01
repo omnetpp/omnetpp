@@ -144,6 +144,7 @@ int isInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorGetObject_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorSetObject_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorGetType_cmd(ClientData, Tcl_Interp *, int, const char **);
+int inspectorIsToplevel_cmd(ClientData, Tcl_Interp *, int, const char **);
 int refreshInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
 int commitInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
 int deleteInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -259,6 +260,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_inspector_getobject",inspectorGetObject_cmd}, // args: <window>
    { "opp_inspector_setobject",inspectorSetObject_cmd}, // args: <window> <ptr>
    { "opp_inspector_gettype", inspectorGetType_cmd  }, // args: <window>
+   { "opp_inspector_istoplevel",inspectorIsToplevel_cmd}, // args: <window>
    { "opp_refreshinspector",  refreshInspector_cmd  }, // args: <window>
    { "opp_commitinspector",   commitInspector_cmd   }, // args: <window>
    { "opp_deleteinspector",   deleteInspector_cmd   }, // args: <window>
@@ -1724,6 +1726,16 @@ int inspectorGetType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
     char buf[20];
     sprintf(buf, "%d", insp->getType());
     Tcl_SetResult(interp, buf, TCL_VOLATILE);
+    return TCL_OK;
+}
+
+int inspectorIsToplevel_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+    Tkenv *app = getTkenv();
+    Inspector *insp = app->findInspector(argv[1]);
+    if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
+    Tcl_SetResult(interp, TCLCONST(insp->isToplevel() ? "1" : "0"), TCL_VOLATILE);
     return TCL_OK;
 }
 
