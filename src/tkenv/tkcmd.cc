@@ -851,6 +851,10 @@ int getObjectBaseClass_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
        Tcl_SetResult(interp, TCLCONST("cMessageHeap"), TCL_STATIC);
    else if (dynamic_cast<cWatchBase *>(object))
        Tcl_SetResult(interp, TCLCONST("cWatchBase"), TCL_STATIC);
+   else if (dynamic_cast<cSimulation *>(object))
+       Tcl_SetResult(interp, TCLCONST("cSimulation"), TCL_STATIC);
+   else if (dynamic_cast<cRegistrationList *>(object))
+       Tcl_SetResult(interp, TCLCONST("cRegistrationList"), TCL_STATIC);
    else
        Tcl_SetResult(interp, TCLCONST(object->getClassName()), TCL_VOLATILE); // return itself as base class
    return TCL_OK;

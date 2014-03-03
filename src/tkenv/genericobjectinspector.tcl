@@ -32,10 +32,21 @@ proc createGenericObjectViewer {w} {
 proc GenericObjectInspector:onSetObject {w} {
     global icons help_tips
 
-    #FIXME enable/disable "contents" page as needed
     set object [opp_inspector_getobject $w]
     set type [opp_getobjectbaseclass $object]
-    notebook:setPageEnabled $w.nb contents 0  ;# disable --- FIXME do it depending on the object type
+
+    set showContentsPage  [lcontains {cArray cQueue cMessageHeap cSimpleModule cCompoundModule cChannel cRegistrationList cSimulation } $type]
+    set focusContentsPage [lcontains {cArray cQueue cMessageHeap cSimpleModule cCompoundModule cChannel cRegistrationList} $type]
+
+    notebook:setPageEnabled $w.nb contents $showContentsPage
+    if {$focusContentsPage} {
+        notebook:showPage $w.nb contents
+    } else {
+        notebook:showPage $w.nb fields
+    }
 }
 
-
+proc lcontains {list item} {
+    set i [lsearch -exact $list $item]
+    return [expr $i != -1]
+}
