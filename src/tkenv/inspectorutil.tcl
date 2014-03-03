@@ -289,27 +289,6 @@ proc inspectAsItemIn {lb} {
     }
 }
 
-proc inspectThisAs {win} {
-    # called by the "Inspect As.." button at the TOP of an inspector
-    # extract object pointer from window path name and create inpector
-    set ptr [opp_inspector_getobject $win]
-    set curtype [opp_inspector_gettype $win]
-
-    # do not offer the type of the inspector from which we're invoked
-    set typelist [opp_supported_insp_types $ptr]
-    set pos [lsearch $typelist [opp_inspectortype $curtype]]
-    set typelist [lreplace $typelist $pos $pos]
-
-    # if no choice, don't do anything
-    if {[llength $typelist]==0} {return}
-
-    # type selection dialog
-    set type [askInspectorType $ptr $win $typelist]
-    if {$type != ""} {
-        opp_inspect $ptr $type
-    }
-}
-
 proc inspectThis {w type} {
     # extract object pointer from window path name and create inspector
     set object [opp_inspector_getobject $w]

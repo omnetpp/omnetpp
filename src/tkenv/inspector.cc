@@ -105,6 +105,7 @@ void Inspector::setObject(cObject *obj)
     if (obj != object)
     {
         object = obj;
+        CHK(Tcl_VarEval(interp, "inspector:onSetObject ", windowName, NULL));
         refresh();
     }
 }
@@ -165,14 +166,13 @@ void Inspector::refreshTitle()
 void Inspector::refreshInfobar()
 {
     char newName[MAX_OBJECTFULLPATH+MAX_CLASSNAME+40]; //TODO std::string!
-    char buf[30];
     cModule *mod = dynamic_cast<cModule *>(object);
     if (mod)
-        sprintf(newName, "(%s) %s  (id=%d)  (%s)", getObjectFullTypeName(object),
-                object->getFullPath().c_str(), mod->getId(), ptrToStr(object,buf));
+        sprintf(newName, "(%s) %s  (id=%d)", getObjectFullTypeName(object),
+                object->getFullPath().c_str(), mod->getId());
     else if (object)
-        sprintf(newName, "(%s) %s  (%s)", getObjectFullTypeName(object),
-                object->getFullPath().c_str(), ptrToStr(object,buf));
+        sprintf(newName, "(%s) %s", getObjectFullTypeName(object),
+                object->getFullPath().c_str());
     else
         sprintf(newName, "n/a");
     CHK(Tcl_VarEval(interp, windowName,".infobar.name config -text {",newName,"}",NULL));

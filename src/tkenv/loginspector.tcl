@@ -19,15 +19,9 @@ proc createLogInspector {name geom} {
 
     set w $name
     createInspectorToplevel $w $geom
+    set help_tips($w.toolbar.owner)  {Inspect parent}
 
-    set help_tips($w.toolbar.owner)  {Inspect parent module}
-
-    packIconButton $w.toolbar.graph  -image $icons(asgraphics) -command "inspectThis $w {As Graphics}"
-    packIconButton $w.toolbar.obj    -image $icons(asobject) -command "inspectThis $w {As Object}"
-    packIconButton $w.toolbar.sep1   -separator
-    set help_tips($w.toolbar.graph)  {Inspect as network graphics}
-    set help_tips($w.toolbar.obj)    {Inspect as object}
-
+    packIconButton $w.toolbar.sep1 -separator
     textWindowAddIcons $w modulewindow
     ModuleInspector:addRunButtons $w
 

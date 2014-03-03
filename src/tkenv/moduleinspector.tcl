@@ -30,10 +30,7 @@ proc createModuleInspector {name geom} {
     createInspectorToplevel $w $geom
 
     # create toolbar
-    packIconButton $w.toolbar.ascont  -image $icons(asobject) -command "inspectThis $w {As Object}"
-    packIconButton $w.toolbar.win     -image $icons(asoutput) -command "inspectThis $w {Module output}"
-    packIconButton $w.toolbar.sep1    -separator
-
+    packIconButton $w.toolbar.sep1 -separator
     ModuleInspector:addRunButtons $w
 
     ModuleInspector:animControl $w.toolbar.animspeed
@@ -47,8 +44,6 @@ proc createModuleInspector {name geom} {
     packIconButton $w.toolbar.showarrowheads -image $icons(arrowhead) -command "ModuleInspector:toggleArrowheads $w"
 
     set help_tips($w.toolbar.owner)   {Inspect parent module}
-    set help_tips($w.toolbar.ascont)  {Inspect as object}
-    set help_tips($w.toolbar.win)     {See module output}
     set help_tips($w.toolbar.redraw)  {Re-layout (Ctrl+R)}
     set help_tips($w.toolbar.animspeed) {Animation speed -- see Options dialog}
     set help_tips($w.toolbar.zoomin)  {Zoom in (Ctrl+M)}
@@ -1171,8 +1166,6 @@ proc ModuleInspector:popOutToolbarButtons {w} {
         $w.toolbar.type config -relief flat
         $w.toolbar.objs config -relief flat
         $w.toolbar.owner config -relief flat
-        $w.toolbar.ascont config -relief flat
-        $w.toolbar.win config -relief flat
         $w.toolbar.stop config -relief flat
         $w.toolbar.redraw config -relief flat
         $w.toolbar.zoomin config -relief flat

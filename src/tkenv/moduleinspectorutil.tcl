@@ -20,7 +20,7 @@ proc ModuleInspector:addRunButtons {w} {
     packIconButton $w.toolbar.minfo   -image $icons(info) -command "modelInfoDialog $w"
     packIconButton $w.toolbar.type    -image $icons(modtype) -command "inspectComponentType $w"
     #packIconButton $w.toolbar.sep15   -separator
-    packIconButton $w.toolbar.objs    -image $icons(findobj) -command "inspectFilteredObjectList $w"
+#    packIconButton $w.toolbar.objs    -image $icons(findobj) -command "inspectFilteredObjectList $w"
     packIconButton $w.toolbar.sep11   -separator
 
     packIconButton $w.toolbar.mrun    -image $icons(mrun)    -command "runSimulationLocal $w normal"
@@ -41,9 +41,9 @@ proc ModuleInspector:addRunButtons {w} {
 
     bind $w <Control-F4> "runSimulationLocal $w fast"
 
+    set help_tips($w.toolbar.minfo)   {Model information}
     set help_tips($w.toolbar.type)    {Inspect component type}
-    set help_tips(.toolbar.minfo)     {Model information}
-    set help_tips($w.toolbar.objs)    {Find and inspect messages, queues, watched variables, statistics, etc (Ctrl+S)}
+#    set help_tips($w.toolbar.objs)    {Find and inspect messages, queues, watched variables, statistics, etc (Ctrl+S)}
     set help_tips($w.toolbar.mrun)    {Run until next event in this module}
     set help_tips($w.toolbar.mfast)   {Fast run until next event in this module (Ctrl+F4)}
     set help_tips($w.toolbar.vrun)    {Run with full animation (F5)}

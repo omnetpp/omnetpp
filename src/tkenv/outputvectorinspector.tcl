@@ -24,9 +24,6 @@ proc createOutputVectorInspector {name geom} {
     # make the window respond to resize events
     bind $w <Configure> "opp_refreshinspector $w"
 
-    packIconButton $w.toolbar.obj -image $icons(asobject) -command "inspectThis $w {As Object}"
-    set help_tips($w.toolbar.obj) {Inspect as object}
-
     frame $w.main
     frame $w.bot
     pack $w.bot -anchor center -expand 0 -fill x -side bottom

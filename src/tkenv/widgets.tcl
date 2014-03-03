@@ -330,6 +330,28 @@ proc waitForFocus w {
     }
 }
 
+#
+# Brings the window to front, and gives it focus
+#
+proc showWindow {w} {
+    global tcl_platform
+    if {$tcl_platform(platform) != "windows"} {
+        # looks like some X servers ignore the "raise" command unless we
+        # kick them by "wm withdraw" plus "wm deiconify"...
+        wm withdraw $w
+        wm deiconify $w
+    }
+    raise $w
+    focus $w
+}
+
+#
+# Copies the given string to the clipboard
+#
+proc setClipboard {str} {
+    clipboard clear
+    clipboard append -- $str
+}
 
 #===================================================================
 #    PROCEDURES FOR CREATING NEW 'WIDGET TYPES'
