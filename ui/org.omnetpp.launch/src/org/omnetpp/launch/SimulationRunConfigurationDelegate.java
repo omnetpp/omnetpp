@@ -13,7 +13,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -41,11 +40,6 @@ public class SimulationRunConfigurationDelegate extends LaunchConfigurationDeleg
         OmnetppLaunchUtils.updateLaunchConfigurationWithProgramAttributes(mode, launch);
         // we must use the updated configuration in 'launch' instead the original passed to us
         ILaunchConfiguration newConfig = launch.getLaunchConfiguration();
-
-        if (monitor == null) {
-            monitor = new NullProgressMonitor();
-        }
-        monitor.beginTask("Launching Simulation", 1);
 
         int runs[] = OmnetppLaunchUtils.parseRuns(newConfig.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, ""),
                                                 OmnetppLaunchUtils.getMaxNumberOfRuns(newConfig));
@@ -75,7 +69,6 @@ public class SimulationRunConfigurationDelegate extends LaunchConfigurationDeleg
             job = new BatchedSimulationLauncherJob(newConfig, launch, runs, numProcesses);
 
         job.schedule();
-        monitor.done();
     }
 
     @Override
