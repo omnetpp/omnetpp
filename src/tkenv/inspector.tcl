@@ -73,6 +73,13 @@ proc createInspectorToplevel {w geom} {
     bindOtherCommands $w
 }
 
+proc inspector:createInternalToolbar {w {parent ""}} {
+    if {$parent==""} {set parent $w}
+    frame $w.toolbar -border 2 -relief groove
+    place $w.toolbar -in $parent -relx 1.0 -rely 0 -anchor ne -x -2 -y 2
+    return $w.toolbar
+}
+
 #
 # Invoked from C++
 #

@@ -14,12 +14,16 @@
 #----------------------------------------------------------------#
 
 
-proc createWatchInspector {name geom} {
-    global fonts
-
-    set w $name
+proc createWatchInspector {w geom} {
     createInspectorToplevel $w $geom
 
+    frame $w.main
+    pack $w.main -expand 0 -fill both -side top
+
+    createWatchViewer $w.main
+}
+
+proc createEmbeddedWatchInspector {w} {
     frame $w.main
     pack $w.main -expand 0 -fill both -side top
 

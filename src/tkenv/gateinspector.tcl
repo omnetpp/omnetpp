@@ -14,10 +14,9 @@
 #----------------------------------------------------------------#
 
 
-proc createGateInspector {name geom} {
+proc createGateInspector {w geom} {
     global icons help_tips
 
-    set w $name
     createInspectorToplevel $w $geom
 
     # create toolbar
@@ -26,8 +25,10 @@ proc createGateInspector {name geom} {
     set help_tips($w.toolbar.redraw) {Redraw}
 
     createGateViewer $w
+}
 
-    opp_inspectorcommand $w redraw
+proc createEmbeddedGateInspector {w} {
+    createGateViewer $w
 }
 
 proc createGateViewer {w} {

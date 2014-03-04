@@ -451,41 +451,21 @@ proc mainWindow:createTreeView {} {
 proc mainWindow:createInspectorView {} {
     set f .inspector
     frame $f -borderwidth 0
-    createGenericObjectViewer $f
+    createEmbeddedGenericObjectInspector $f
     return $f
 }
 
 proc mainWindow:createNetworkView {} {
     set w .network
     frame $w -borderwidth 0
-    createGraphicalModuleViewer $w
-
-    global icons
-    set tb [createInternalToolbar $w $w.c]
-    packIconButton $tb.mrun    -image $icons(mrun)    -command "runSimulationLocal $w normal"
-    packIconButton $tb.mfast   -image $icons(mfast)   -command "runSimulationLocal $w fast"
-    packIconButton $tb.vrun     -image $icons(run)     -command {runNormal}
-    packIconButton $tb.vruncfg  -image $icons(down_vs) -command "ModuleInspector:setRunmode $w.toolbar.vrun"
-
-    packIconButton $tb.stop    -image $icons(stop)    -command {stopSimulation}
-    packIconButton $tb.sep2    -separator
-    packIconButton $tb.redraw  -image $icons(redraw) -command "ModuleInspector:relayout $w"
-    packIconButton $tb.zoomin  -image $icons(zoomin)  -command "ModuleInspector:zoomIn $w"
-    packIconButton $tb.zoomout -image $icons(zoomout) -command "ModuleInspector:zoomOut $w"
-    packIconButton $tb.showlabels -image $icons(modnames) -command "ModuleInspector:toggleLabels $w"
-    packIconButton $tb.showarrowheads -image $icons(arrowhead) -command "ModuleInspector:toggleArrowheads $w"
-
+    createEmbeddedModuleInspector $w
     return $w
 }
 
 proc mainWindow:createLogView {} {
     set w .log
     frame $w -borderwidth 0
-
-    frame $w.main
-    pack $w.main -expand 1 -fill both -side top
-
-    createLogViewer $w.main
+    createEmbeddedLogInspector $w
     return $w
 }
 

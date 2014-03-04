@@ -14,14 +14,19 @@
 #----------------------------------------------------------------#
 
 
-proc createGenericObjectInspector {name geom} {
-    set w $name
+proc createGenericObjectInspector {w geom} {
     createInspectorToplevel $w $geom
     createGenericObjectViewer $w
 }
 
+proc createEmbeddedGenericObjectInspector {w} {
+    createGenericObjectViewer $w
+}
+
 proc createGenericObjectViewer {w} {
-    set nb [inspector:createNotebook $w]
+    set nb $w.nb
+    ttk::notebook $nb -width 460 -height 260
+    pack $nb -expand 1 -fill both
 
     inspector:createFields2Page $w
 

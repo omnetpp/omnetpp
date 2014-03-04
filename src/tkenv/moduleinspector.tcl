@@ -18,7 +18,7 @@
 # $help_tips(helptip_proc). This is currently getHelpTip.
 #
 
-proc createModuleInspector {name geom} {
+proc createModuleInspector {w geom} {
     global icons help_tips config inspectordata
 
     if {$config(layout-may-resize-window)} {
@@ -26,7 +26,6 @@ proc createModuleInspector {name geom} {
         regsub -- {^[0-9]+x[0-9]+} $geom {} geom
     }
 
-    set w $name
     createInspectorToplevel $w $geom
 
     # create toolbar
@@ -65,6 +64,27 @@ proc createModuleInspector {name geom} {
     if {$inspectordata($c:showarrowheads)} {
         $w.toolbar.showarrowheads config -relief sunken
     }
+}
+
+proc createEmbeddedModuleInspector {w} {
+    global icons
+
+    createGraphicalModuleViewer $w
+
+    set tb [inspector:createInternalToolbar $w $w.c]
+    packIconButton $tb.mrun    -image $icons(mrun)    -command "runSimulationLocal $w normal"
+    packIconButton $tb.mfast   -image $icons(mfast)   -command "runSimulationLocal $w fast"
+    packIconButton $tb.vrun     -image $icons(run)     -command {runNormal}
+    packIconButton $tb.vruncfg  -image $icons(down_vs) -command "ModuleInspector:setRunmode $w.toolbar.vrun"
+
+    packIconButton $tb.stop    -image $icons(stop)    -command {stopSimulation}
+    packIconButton $tb.sep2    -separator
+    packIconButton $tb.redraw  -image $icons(redraw) -command "ModuleInspector:relayout $w"
+    packIconButton $tb.zoomin  -image $icons(zoomin)  -command "ModuleInspector:zoomIn $w"
+    packIconButton $tb.zoomout -image $icons(zoomout) -command "ModuleInspector:zoomOut $w"
+    packIconButton $tb.showlabels -image $icons(modnames) -command "ModuleInspector:toggleLabels $w"
+    packIconButton $tb.showarrowheads -image $icons(arrowhead) -command "ModuleInspector:toggleArrowheads $w"
+
 }
 
 proc createGraphicalModuleViewer {w} {

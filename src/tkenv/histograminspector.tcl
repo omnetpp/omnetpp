@@ -14,16 +14,16 @@
 #----------------------------------------------------------------#
 
 
-proc createHistogramWindow {name geom} {
-    global icons help_tips
-
-    # create histogram inspector
-    set w $name
+proc createHistogramInspector {w geom} {
     createInspectorToplevel $w $geom
+    createHistogramViewer $w
+}
 
-    # make the window respond to resize events
-    bind $w <Configure> "opp_refreshinspector $w"
+proc createEmbeddedHistogramInspector {w} {
+    createHistogramViewer $w
+}
 
+proc createHistogramViewer {w} {
     frame $w.main
     frame $w.bot
     pack $w.bot  -expand 0 -fill x -side bottom
@@ -37,6 +37,9 @@ proc createHistogramWindow {name geom} {
 
     $w.main.canvas bind all <Any-Enter> {HistogramInspector:mouse %W %x %y 1}
     $w.main.canvas bind all <Any-Leave> {HistogramInspector:mouse %W %x %y 0}
+
+    # make the window respond to resize events
+    bind $w <Configure> "opp_refreshinspector $w"
 
     # we need to let the window display, otherwise the canvas size
     # (needed by the first draw) returned by [winfo width/height ...]

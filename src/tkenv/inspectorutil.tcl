@@ -31,13 +31,6 @@ proc textWindowAddIcons {w {wintype ""}} {
     set help_tips($w.toolbar.filter) {Filter window contents (Ctrl+H)}
 }
 
-proc createInternalToolbar {w {parent ""}} {
-    if {$parent==""} {set parent $w}
-    frame $w.toolbar -border 2 -relief groove
-    place $w.toolbar -in $parent -relx 1.0 -rely 0 -anchor ne -x -2 -y 2
-    return $w.toolbar
-}
-
 proc createInspectorListbox {w} {
     global B2 B3
 
@@ -422,12 +415,4 @@ proc getHelpTip {w x y} {
    return [string trim $tip \n]
 }
 
-
-proc inspector:createNotebook {w} {
-    set nb $w.nb
-    ttk::notebook $nb
-    $nb config -width 460 -height 260
-    pack $nb -expand 1 -fill both
-    return $nb
-}
 

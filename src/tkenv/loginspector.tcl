@@ -14,10 +14,9 @@
 #----------------------------------------------------------------#
 
 
-proc createLogInspector {name geom} {
+proc createLogInspector {w geom} {
     global icons fonts help_tips B2 B3
 
-    set w $name
     createInspectorToplevel $w $geom
     set help_tips($w.toolbar.owner)  {Inspect parent}
 
@@ -25,6 +24,12 @@ proc createLogInspector {name geom} {
     textWindowAddIcons $w modulewindow
     ModuleInspector:addRunButtons $w
 
+    frame $w.main
+    pack $w.main -expand 1 -fill both -side top
+    createLogViewer $w.main
+}
+
+proc createEmbeddedLogInspector {w} {
     frame $w.main
     pack $w.main -expand 1 -fill both -side top
     createLogViewer $w.main

@@ -14,16 +14,16 @@
 #----------------------------------------------------------------#
 
 
-proc createOutputVectorInspector {name geom} {
-    global icons
-
-    # create histogram inspector
-    set w $name
+proc createOutputVectorInspector {w geom} {
     createInspectorToplevel $w $geom
+    createOutputVectorViewer $w
+}
 
-    # make the window respond to resize events
-    bind $w <Configure> "opp_refreshinspector $w"
+proc createEmbeddedOutputVectorInspector {w geom} {
+    createOutputVectorViewer $w
+}
 
+proc createOutputVectorViewer {w} {
     frame $w.main
     frame $w.bot
     pack $w.bot -anchor center -expand 0 -fill x -side bottom
@@ -39,6 +39,9 @@ proc createOutputVectorInspector {name geom} {
 
     $w.main.canvas bind all <Any-Enter> {OutputVectorInspector:mouse %W %x %y 1}
     $w.main.canvas bind all <Any-Leave> {OutputVectorInspector:mouse %W %x %y 0}
+
+    # make the window respond to resize events
+    bind $w <Configure> "opp_refreshinspector $w"
 
     # we need to let the window display, otherwise the canvas size
     # (needed by the first draw) returned by [winfo width/height ...]
