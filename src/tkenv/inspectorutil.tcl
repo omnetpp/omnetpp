@@ -66,7 +66,7 @@ proc createInspectorListbox {w} {
     #FIXME TODO: -width 400
 
     bind $w.main.list <Double-Button-1> {inspectItemIn %W}
-    bind $w.main.list <Button-$B3> {+inspector:rightClick %W %X %Y}  ;# Note "+"! it appends this code to binding in widgets.tcl
+    bind $w.main.list <Button-$B3> {+inspectorListbox:rightClick %W %X %Y}  ;# Note "+"! it appends this code to binding in widgets.tcl
     bind $w.main.list <Key-Return> {inspectItemIn %W}
 
     focus $w.main.list
@@ -125,7 +125,7 @@ proc inspectorListbox:getCurrent {lb} {
     return [lindex $ptrs 0]
 }
 
-proc inspector:rightClick {lb X Y} {
+proc inspectorListbox:rightClick {lb X Y} {
     set ptr [inspectorListbox:getCurrent $lb]
     if [opp_isnotnull $ptr] {
         set popup [createInspectorContextMenu $ptr]
