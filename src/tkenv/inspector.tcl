@@ -86,7 +86,12 @@ proc inspector:createInternalToolbar {w {parent ""}} {
 proc inspector:onSetObject {w} {
     set ptr [opp_inspector_getobject $w]
     set icon [inspector:getIconForObject $ptr]
-    $w.infobar.icon config -image $icon
+    if [opp_inspector_istoplevel $w] {
+        $w.infobar.icon config -image $icon
+    }
+    if {$w==".network"} {
+        mainWindow:networkViewInputChanged $ptr
+    }
 }
 
 # icons used in the tree view and listboxes

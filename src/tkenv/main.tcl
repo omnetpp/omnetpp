@@ -489,6 +489,10 @@ proc mainWindow:selectionChanged {obj} {
     opp_inspector_setobject .inspector $obj
 }
 
+proc mainWindow:networkViewInputChanged {obj} {
+    opp_inspector_setobject .log $obj
+}
+
 proc bindRunCommands {w} {
     # Note: the "after 100" in the commands below is a workaround on Mac OS X:
     # without them, a few seconds after hitting e.g. F5 (Run) the app will
