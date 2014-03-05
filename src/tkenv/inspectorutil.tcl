@@ -231,6 +231,17 @@ proc createInspectorContextMenu {w ptrs} {
     catch {destroy .popup}
     menu .popup -tearoff 0
 
+    if [opp_isinspector $w] {
+       set ptr [opp_inspector_getobject $w]
+       if [opp_isnotnull $ptr] {
+          set parentptr [opp_getobjectowner $ptr]
+          if {[opp_isnotnull $parentptr] && [opp_inspector_supportsobject $w $parentptr]} {
+              .popup add command -label "Go up" -command "opp_inspector_setobject $w $parentptr"
+              .popup add separator
+          }
+       }
+    }
+
     if {[llength $ptrs] == 1} {
         fillInspectorContextMenu .popup $w $ptrs
     } else {
