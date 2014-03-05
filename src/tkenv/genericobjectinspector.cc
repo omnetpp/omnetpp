@@ -80,7 +80,7 @@ void GenericObjectInspector::refresh()
    Inspector::refresh();
 
    // refresh "fields" page
-   CHK(Tcl_VarEval(interp, "fields2Page:refresh ", windowName, NULL));
+   CHK(Tcl_VarEval(interp, "fieldsPage:refresh ", windowName, NULL));
 
    // refresh "contents" page
    if (true) //FIXME!!!!!!!!!!!!!!!

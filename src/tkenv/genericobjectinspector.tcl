@@ -28,8 +28,8 @@ proc createGenericObjectViewer {w} {
     ttk::notebook $nb -width 460 -height 260
     pack $nb -expand 1 -fill both
 
-    $nb add [frame $nb.fields2] -text "Fields"
-    inspector:createFields2Page $nb.fields2 $w
+    $nb add [frame $nb.fields] -text "Fields"
+    createFieldsPage $nb.fields $w
 
     $nb add [frame $nb.contents] -text "Contents"
     createInspectorListbox $nb.contents $w
@@ -53,7 +53,7 @@ proc GenericObjectInspector:onSetObject {w} {
     if {$focusContentsPage} {
         $w.nb select $w.nb.contents
     } else {
-        $w.nb select $w.nb.fields2
+        $w.nb select $w.nb.fields
     }
 }
 
