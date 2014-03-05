@@ -59,9 +59,9 @@ proc createInspectorListbox {f w} {
     #FIXME TODO: -width 400
 
     bind $f.main.list <<TreeviewSelect>> [list inspectorListbox:selectionChanged $w %W]
-    bind $f.main.list <Double-Button-1> {inspectItemIn %W}
+    bind $f.main.list <Double-Button-1> {inspectorListbox:dblClick %W}
     bind $f.main.list <Button-$B3> [list +inspectorListbox:rightClick $w %W %X %Y]  ;# Note "+"! it appends this code to binding in widgets.tcl
-    bind $f.main.list <Key-Return> [list inspectItemIn %W]
+    bind $f.main.list <Key-Return> [list inspectorListbox:dblClick %W]
 
     focus $f.main.list
 
@@ -131,6 +131,13 @@ proc inspectorListbox:rightClick {w lb X Y} {
     if [opp_isnotnull $ptr] {
         set popup [createInspectorContextMenu $w $ptr]
         tk_popup $popup $X $Y
+    }
+}
+
+proc inspectorListbox:dblClick {lb} {
+    set ptr [inspectorListbox:getCurrent $lb]
+    if [opp_isnotnull $ptr] {
+        opp_inspect $ptr {(default)}
     }
 }
 
@@ -298,64 +305,6 @@ proc inspectContextMenuRules {ptr key} {
     }
     foreach objptr $objlist {
         opp_inspect $objptr "(default)"
-    }
-}
-
-proc askInspectorType {ptr parentwin {typelist {}}} {
-    set w .asktype
-
-    if {$typelist=={}} {
-        set typelist [opp_supported_insp_types $ptr]
-    }
-
-    # if there's only one, use yes/no dialog instead
-    if {[llength $typelist]==1} {
-        set type [lindex $typelist 0]
-        set ans [tk_messageBox -message "Open inspector of type '$type'?" \
-                  -title "Open inspector" -icon question -type yesno -parent $parentwin]
-        if {$ans == "yes"} {
-            return [lindex $typelist 0]
-        } else {
-            return ""
-        }
-    }
-
-    # chooser dialog
-    createOkCancelDialog $w {Open Inspector}
-    label-combo $w.f.type {Choose type:} $typelist
-    pack $w.f.type -expand 0 -fill x -side top
-
-    set type ""
-    if [execOkCancelDialog $w] {
-        set type [$w.f.type.e get]
-
-        if {[lsearch $typelist $type] == -1} {
-            messagebox {Error} "Invalid inspector type. Please choose from the list." error ok
-            set type ""
-        }
-    }
-    destroy $w
-
-    return $type
-}
-
-proc inspectItemIn {lb} {
-    # called on double-clicking in a container inspector;
-    # inspect the current item in the listbox of an inspector listwindow
-
-    set ptr [inspectorListbox:getCurrent $lb]
-    if [opp_isnotnull $ptr] {
-        opp_inspect $ptr {(default)}
-    }
-}
-
-proc inspectAsItemIn {lb} {
-    set ptr [inspectorListbox:getCurrent $lb]
-    if [opp_isnotnull $ptr] {
-        set type [askInspectorType $ptr [winfo toplevel $lb]]
-        if {$type != ""} {
-            opp_inspect $ptr $type
-        }
     }
 }
 

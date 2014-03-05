@@ -1235,7 +1235,10 @@ proc filteredObjectList:inspect {lb} {
         return
     }
 
-    inspectItemIn $lb
+    set ptr [inspectorListbox:getCurrent $lb]
+    if [opp_isnotnull $ptr] {
+        opp_inspect $ptr {(default)}
+    }
 }
 
 #----
