@@ -145,11 +145,11 @@ void Inspector::refresh()
     {
         refreshTitle();
         refreshInfobar();
-    }
 
-    // owner button on toolbar
-    cModule *mod = dynamic_cast<cModule *>(object);
-    setToolbarInspectButton(".toolbar.owner", mod ? mod->getParentModule() : object ? object->getOwner() : NULL, INSP_DEFAULT);
+        // owner button on toolbar
+        cModule *mod = dynamic_cast<cModule *>(object);
+        setToolbarInspectButton(".toolbar.owner", mod ? mod->getParentModule() : object ? object->getOwner() : NULL, INSP_DEFAULT);
+    }
 }
 
 void Inspector::refreshTitle()
