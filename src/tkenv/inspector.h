@@ -108,23 +108,6 @@ class TKENV_API Inspector
       virtual void objectDeleted(cObject *) {}
 };
 
-/**
- * Defines a panel that can be inserted into any inspector
- */
-class TKENV_API GenericObjectViewer
-{
-   protected:
-      char widgetname[80];
-      cObject *object;
-   public:
-      GenericObjectViewer(const char *widgetname, cObject *obj);
-      virtual ~GenericObjectViewer() {}
-      virtual void setObject(cObject *obj);
-      virtual void update() = 0;
-      virtual void writeBack() = 0;
-      virtual int inspectorCommand(Tcl_Interp *, int, const char **) = 0;
-};
-
 NAMESPACE_END
 
 

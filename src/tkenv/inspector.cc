@@ -328,18 +328,5 @@ void Inspector::fillListboxWithSubmodules(const char *listbox, cModule *parent)
    setLabel(w, buf);
 }
 
-//=======================================================================
-
-GenericObjectViewer::GenericObjectViewer(const char *widgetname, cObject *obj)
-{
-   strcpy(this->widgetname, widgetname);
-   object = obj;
-}
-
-void GenericObjectViewer::setObject(cObject *obj)
-{
-   object=obj;
-}
-
 NAMESPACE_END
 
