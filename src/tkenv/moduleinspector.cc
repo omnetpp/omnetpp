@@ -52,19 +52,14 @@ class ModuleInspectorFactory : public InspectorFactory
 
     bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
     int getInspectorType() {return INSP_GRAPHICAL;}
-    double getQualityAsDefault(cObject *object) {
-        return dynamic_cast<cSimpleModule *>(object) ? 0.9 : 3.0;
-    }
-
-    Inspector *createInspector() {
-        return prepare(new ModuleInspector());
-    }
+    double getQualityAsDefault(cObject *object) {return dynamic_cast<cSimpleModule *>(object) ? 0.9 : 3.0;}
+    Inspector *createInspector() {return new ModuleInspector(this);}
 };
 
 Register_InspectorFactory(ModuleInspectorFactory);
 
 
-ModuleInspector::ModuleInspector() : Inspector(INSP_GRAPHICAL)
+ModuleInspector::ModuleInspector(InspectorFactory *f) : Inspector(f)
 {
    needs_redraw = false;
    notDrawn = false;

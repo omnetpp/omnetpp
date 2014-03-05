@@ -48,4 +48,18 @@ InspectorFactory *findInspectorFactoryFor(cObject *obj, int type)
     return best; // may be NULL too
 }
 
+InspectorFactory *InspectorFactory::find(const char *className)
+{
+    return dynamic_cast<InspectorFactory *>(inspectorfactories.getInstance()->find(className));
+}
+
+InspectorFactory *InspectorFactory::get(const char *className)
+{
+    InspectorFactory *p = find(className);
+    if (!p)
+        throw cRuntimeError("Inspectorfactory \"%s\" not found", className);
+    return p;
+}
+
+
 NAMESPACE_END

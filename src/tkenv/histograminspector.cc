@@ -35,16 +35,13 @@ class HistogramInspectorFactory : public InspectorFactory
     bool supportsObject(cObject *obj) {return dynamic_cast<cDensityEstBase *>(obj)!=NULL;}
     int getInspectorType() {return INSP_GRAPHICAL;}
     double getQualityAsDefault(cObject *object) {return 3.0;}
-
-    Inspector *createInspector() {
-        return prepare(new HistogramInspector());
-    }
+    Inspector *createInspector() {return new HistogramInspector(this);}
 };
 
 Register_InspectorFactory(HistogramInspectorFactory);
 
 
-HistogramInspector::HistogramInspector() : Inspector(INSP_GRAPHICAL)
+HistogramInspector::HistogramInspector(InspectorFactory *f) : Inspector(f)
 {
 }
 

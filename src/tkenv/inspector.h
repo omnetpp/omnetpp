@@ -23,6 +23,8 @@
 
 NAMESPACE_BEGIN
 
+class InspectorFactory;
+
 /**
  * Inspector types
  */
@@ -46,6 +48,7 @@ int insptypeCodeFromName(const char *namestr);
 class TKENV_API Inspector
 {
    protected:
+      InspectorFactory *factory; // meta-object that describes this inspector class
       Tcl_Interp *interp;     // Tcl interpreter
       cObject *object;        // the inspected object or NULL if inspector is empty
       int type;               // INSP_OBJECT, etc.
@@ -75,8 +78,10 @@ class TKENV_API Inspector
       void fillListboxWithSubmodules(const char *listbox, cModule *parent);
 
    public:
-      Inspector(int type);
+      Inspector(InspectorFactory *factory);
       virtual ~Inspector();
+      virtual const char *getClassName() const;
+      virtual bool supportsObject(cObject *object) const;
 
       static std::string makeWindowName();
 

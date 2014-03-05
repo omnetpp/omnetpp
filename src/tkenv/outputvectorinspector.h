@@ -62,7 +62,7 @@ class TKENV_API OutputVectorInspector : public Inspector
       simtime_t hairlineTime;   // t position of moving axis
 
    public:
-      OutputVectorInspector();
+      OutputVectorInspector(InspectorFactory *f);
       ~OutputVectorInspector();
       virtual void setObject(cObject *obj);
       virtual void createWindow(const char *window, const char *geometry);

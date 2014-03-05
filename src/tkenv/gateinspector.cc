@@ -43,16 +43,13 @@ class GateInspectorFactory : public InspectorFactory
     bool supportsObject(cObject *obj) {return dynamic_cast<cGate *>(obj)!=NULL;}
     int getInspectorType() {return INSP_GRAPHICAL;}
     double getQualityAsDefault(cObject *object) {return 3.0;}
-
-    Inspector *createInspector() {
-        return prepare(new GateInspector());
-    }
+    Inspector *createInspector() {return new GateInspector(this);}
 };
 
 Register_InspectorFactory(GateInspectorFactory);
 
 
-GateInspector::GateInspector() : Inspector(INSP_GRAPHICAL)
+GateInspector::GateInspector(InspectorFactory *f) : Inspector(f)
 {
 }
 

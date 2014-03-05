@@ -45,7 +45,7 @@ class TKENV_API ModuleInspector : public Inspector
       void drawConnection(Tcl_Interp *interp, cGate *gate);
 
    public:
-      ModuleInspector();
+      ModuleInspector(InspectorFactory *f);
       ~ModuleInspector();
       virtual void setObject(cObject *obj);
       virtual void createWindow(const char *window, const char *geometry);

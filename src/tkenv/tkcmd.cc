@@ -141,6 +141,7 @@ int inspect_cmd(ClientData, Tcl_Interp *, int, const char **);
 int supportedInspTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectByName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int isInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
+int inspectorSupportsObject_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorGetObject_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorSetObject_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorGetType_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -257,6 +258,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_supported_insp_types",supportedInspTypes_cmd}, // args: <ptr>  ret: insp type list
    { "opp_inspectbyname",     inspectByName_cmd     }, // args: <objfullpath> <classname> <insptype> <geom>
    { "opp_isinspector",       isInspector_cmd       }, // args: <window>
+   { "opp_inspector_supportsobject",inspectorSupportsObject_cmd}, // args: <window> <ptr>
    { "opp_inspector_getobject",inspectorGetObject_cmd}, // args: <window>
    { "opp_inspector_setobject",inspectorSetObject_cmd}, // args: <window> <ptr>
    { "opp_inspector_gettype", inspectorGetType_cmd  }, // args: <window>
@@ -1699,6 +1701,18 @@ int isInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
     Tcl_SetResult(interp, TCLCONST(insp ? "1" : "0"), TCL_STATIC);
     return TCL_OK;
 }
+
+int inspectorSupportsObject_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+    if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+    Tkenv *app = getTkenv();
+    Inspector *insp = app->findInspector(argv[1]);
+    if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
+    cObject *obj = strToPtr(argv[2]);
+    Tcl_SetResult(interp, TCLCONST(insp->supportsObject(obj) ? "1" : "0"), TCL_STATIC);
+    return TCL_OK;
+}
+
 
 int inspectorGetObject_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {

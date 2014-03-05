@@ -25,6 +25,7 @@
 #include "tkenv.h"
 #include "tklib.h"
 #include "inspector.h"
+#include "inspectorfactory.h"
 #include "stringutil.h"
 
 NAMESPACE_BEGIN
@@ -60,11 +61,12 @@ int insptypeCodeFromName(const char *namestr)
 
 //----
 
-Inspector::Inspector(int t)
+Inspector::Inspector(InspectorFactory *f)
 {
+   factory = f;
    interp = getTkenv()->getInterp();
    object = NULL;
-   type = t;
+   type = f->getInspectorType();
    isToplevelWindow = false;
    closeRequested = false;
 
@@ -77,6 +79,17 @@ Inspector::~Inspector()
    {
       CHK(Tcl_VarEval(interp, "inspector:destroy ", windowName, NULL ));
    }
+}
+
+const char *Inspector::getClassName() const
+{
+    return opp_typename(typeid(*this));
+}
+
+
+bool Inspector::supportsObject(cObject *object) const
+{
+    return factory->supportsObject(object);
 }
 
 std::string Inspector::makeWindowName()
@@ -104,6 +117,8 @@ void Inspector::setObject(cObject *obj)
 
     if (obj != object)
     {
+        if (obj && !supportsObject(obj))
+            throw cRuntimeError("Inspector %s doesn't support objects of class %s", getClassName(), obj->getClassName());
         object = obj;
         CHK(Tcl_VarEval(interp, "inspector:onSetObject ", windowName, NULL));
         refresh();

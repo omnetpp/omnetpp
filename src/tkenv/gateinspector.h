@@ -30,7 +30,7 @@ class TKENV_API GateInspector : public Inspector
    protected:
       char canvas[128];
    public:
-      GateInspector();
+      GateInspector(InspectorFactory *f);
       virtual void createWindow(const char *window, const char *geometry);
       virtual void useWindow(const char *window);
       virtual void refresh();

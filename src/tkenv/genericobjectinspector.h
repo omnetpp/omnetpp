@@ -26,7 +26,7 @@ NAMESPACE_BEGIN
 class TKENV_API GenericObjectInspector : public Inspector
 {
    public:
-      GenericObjectInspector();
+      GenericObjectInspector(InspectorFactory *f);
       ~GenericObjectInspector();
       virtual void setObject(cObject *obj);
       virtual void createWindow(const char *window, const char *geometry);

@@ -34,9 +34,6 @@ NAMESPACE_BEGIN
  */
 class TKENV_API InspectorFactory : public cNoncopyableOwnedObject
 {
-  protected:
-    virtual Inspector *prepare(Inspector *insp) {ASSERT(insp->getType()==getInspectorType()); return insp;}
-
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
@@ -56,22 +53,17 @@ class TKENV_API InspectorFactory : public cNoncopyableOwnedObject
     //@{
     /**
      * Returns true if this factory can create an inspector for this object.
-     * Works with RTTI.
      */
     virtual bool supportsObject(cObject *object) = 0;
 
     /**
      * Returns type of inspector created by this factory (INSP_* constants).
-     * Works with RTTI.
      */
     virtual int getInspectorType() = 0;
 
     /**
-     * Returns "how good" this inspector is as default inspector for this object.
-     * Expressed as distance in the hiearchy tree from cObject, i.e.
-     *  1.0 for TObjectInspector and TContainerInspector for common objects;
-     *  2.0 for TMessageInspector, TWatchInspector, etc, and TContainerInspector for cArray&cQueue;
-     *  3.0 for TPacketInspector; ...
+     * Returns "how good" this inspector is as default inspector for this object;
+     * a higher value is better.
      */
     virtual double getQualityAsDefault(cObject *object) = 0;
 
@@ -80,6 +72,17 @@ class TKENV_API InspectorFactory : public cNoncopyableOwnedObject
      */
     virtual Inspector *createInspector() = 0;
     //@}
+
+    /**
+     * Finds an inspector factory by name. Returns NULL if not found.
+     */
+    static InspectorFactory *find(const char *className);
+
+    /**
+     * Finds an inspector factory by name. Throws an error if not found.
+     */
+    static InspectorFactory *get(const char *className);
+
 };
 
 ///< List of cInspectorFactory objects.

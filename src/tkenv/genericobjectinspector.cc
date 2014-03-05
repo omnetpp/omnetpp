@@ -42,16 +42,13 @@ class GenericObjectInspectorFactory : public InspectorFactory
     bool supportsObject(cObject *obj) {return true;}
     int getInspectorType() {return INSP_OBJECT;}
     double getQualityAsDefault(cObject *object) {return 1.0;}
-
-    Inspector *createInspector() {
-        return prepare(new GenericObjectInspector());
-    }
+    Inspector *createInspector() {return new GenericObjectInspector(this);}
 };
 
 Register_InspectorFactory(GenericObjectInspectorFactory);
 
 
-GenericObjectInspector::GenericObjectInspector() : Inspector(INSP_OBJECT)
+GenericObjectInspector::GenericObjectInspector(InspectorFactory *f) : Inspector(f)
 {
 }
 

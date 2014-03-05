@@ -32,7 +32,7 @@ class TKENV_API LogInspector : public Inspector
       char textWidget[128];
       std::set<int> excludedModuleIds;
    public:
-      LogInspector();
+      LogInspector(InspectorFactory *f);
       virtual void createWindow(const char *window, const char *geometry);
       virtual void useWindow(const char *window);
       virtual void setObject(cObject *obj);

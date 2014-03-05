@@ -39,16 +39,13 @@ class LogInspectorFactory : public InspectorFactory
     bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
     int getInspectorType() {return INSP_MODULEOUTPUT;}
     double getQualityAsDefault(cObject *object) {return 0.5;}
-
-    Inspector *createInspector() {
-        return prepare(new LogInspector());
-    }
+    Inspector *createInspector() {return new LogInspector(this);}
 };
 
 Register_InspectorFactory(LogInspectorFactory);
 
 
-LogInspector::LogInspector() : Inspector(INSP_MODULEOUTPUT)
+LogInspector::LogInspector(InspectorFactory *f) : Inspector(f)
 {
 }
 

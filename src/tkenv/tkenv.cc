@@ -276,13 +276,13 @@ void Tkenv::run()
             sprintf(windowtitleprefix.buffer(), "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
         }
 
-        mainInspector = new GenericObjectInspector();
+        mainInspector = (GenericObjectInspector *)InspectorFactory::get("GenericObjectInspectorFactory")->createInspector();
         addEmbeddedInspector(".inspector", mainInspector);
 
-        mainNetworkView = new ModuleInspector();
+        mainNetworkView = (ModuleInspector *)InspectorFactory::get("ModuleInspectorFactory")->createInspector();
         addEmbeddedInspector(".network", mainNetworkView);
 
-        mainLogView = new LogInspector();
+        mainLogView = (LogInspector *)InspectorFactory::get("LogInspectorFactory")->createInspector();
         addEmbeddedInspector(".log", mainLogView);
     }
     catch (std::exception& e)

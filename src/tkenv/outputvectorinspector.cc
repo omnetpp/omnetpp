@@ -35,10 +35,7 @@ class OutputVectorInspectorFactory : public InspectorFactory
     bool supportsObject(cObject *obj) {return dynamic_cast<cOutVector *>(obj)!=NULL;}
     int getInspectorType() {return INSP_GRAPHICAL;}
     double getQualityAsDefault(cObject *object) {return 3.0;}
-
-    Inspector *createInspector() {
-        return prepare(new OutputVectorInspector());
-    }
+    Inspector *createInspector() {return new OutputVectorInspector(this);}
 };
 
 Register_InspectorFactory(OutputVectorInspectorFactory);
@@ -73,7 +70,7 @@ static void record_in_insp(void *data, simtime_t t, double val1, double val2)
    insp->circbuf.add(t,val1,val2);
 }
 
-OutputVectorInspector::OutputVectorInspector() : Inspector(INSP_GRAPHICAL), circbuf(100)
+OutputVectorInspector::OutputVectorInspector(InspectorFactory *f) : Inspector(f), circbuf(100)
 {
    autoscale = true;
    drawingMode = DRAW_LINES;
