@@ -60,17 +60,17 @@ proc createGateViewer {w} {
     grid $w.hsb -in $w.grid -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
 
     # mouse bindings
-    $c bind mod <Double-1> "GateInspector:dblClick $c"
-    $c bind gate <Double-1> "GateInspector:dblClick $c {As Object}"
-    $c bind conn <Double-1> "GateInspector:dblClick $c {As Object}"
-    $c bind msg <Double-1> "GateInspector:dblClick $c"
-    $c bind msgname <Double-1> "GateInspector:dblClick $c"
+    $c bind mod <Double-1> "GateInspector:dblClick $w"
+    $c bind gate <Double-1> "GateInspector:dblClick $w {As Object}"
+    $c bind conn <Double-1> "GateInspector:dblClick $w {As Object}"
+    $c bind msg <Double-1> "GateInspector:dblClick $w"
+    $c bind msgname <Double-1> "GateInspector:dblClick $w"
 
-    $c bind mod <$B3> "GateInspector:rightClick $c %X %Y"
-    $c bind gate <$B3> "GateInspector:rightClick $c %X %Y"
-    $c bind conn <$B3> "GateInspector:rightClick $c %X %Y"
-    $c bind msg <$B3> "GateInspector:rightClick $c %X %Y"
-    $c bind msgname <$B3> "GateInspector:rightClick $c %X %Y"
+    $c bind mod <$B3> "GateInspector:rightClick $w %X %Y"
+    $c bind gate <$B3> "GateInspector:rightClick $w %X %Y"
+    $c bind conn <$B3> "GateInspector:rightClick $w %X %Y"
+    $c bind msg <$B3> "GateInspector:rightClick $w %X %Y"
+    $c bind msgname <$B3> "GateInspector:rightClick $w %X %Y"
 }
 
 proc GateInspector:drawModuleGate {c modptr gateptr modname gatename k xsiz dir highlight} {
@@ -152,8 +152,8 @@ proc GateInspector:drawConnection {c srcgateptr destgateptr chanptr chanstr disp
    }
 }
 
-proc GateInspector:dblClick {c {type (default)}} {
-
+proc GateInspector:dblClick {w {type (default)}} {
+   set c $w.c
    set item [$c find withtag current]
    set tags [$c gettags $item]
 
@@ -167,8 +167,8 @@ proc GateInspector:dblClick {c {type (default)}} {
    }
 }
 
-proc GateInspector:rightClick {c X Y} {
-
+proc GateInspector:rightClick {w X Y} {
+   set c $w.c
    set item [$c find withtag current]
    set tags [$c gettags $item]
 
@@ -179,7 +179,7 @@ proc GateInspector:rightClick {c X Y} {
    set ptr [lindex $ptr 0]
 
    if [opp_isnotnull $ptr] {
-      set popup [createInspectorContextMenu $ptr]
+      set popup [createInspectorContextMenu $w $ptr]
       tk_popup $popup $X $Y
    }
 }

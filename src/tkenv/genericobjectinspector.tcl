@@ -31,7 +31,7 @@ proc createGenericObjectViewer {w} {
     inspector:createFields2Page $w
 
     $nb add [frame $nb.contents] -text "Contents"
-    createInspectorListbox $nb.contents
+    createInspectorListbox $nb.contents $w
 }
 
 proc GenericObjectInspector:onSetObject {w} {

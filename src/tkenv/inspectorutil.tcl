@@ -31,17 +31,17 @@ proc textWindowAddIcons {w {wintype ""}} {
     set help_tips($w.toolbar.filter) {Filter window contents (Ctrl+H)}
 }
 
-proc createInspectorListbox {w} {
+proc createInspectorListbox {f w} {
     global B2 B3
 
-    label $w.label -text "# objects:"
-    pack $w.label -side top -anchor w
+    label $f.label -text "# objects:"
+    pack $f.label -side top -anchor w
 
-    frame $w.main
-    pack $w.main -expand 1 -fill both -side top
+    frame $f.main
+    pack $f.main -expand 1 -fill both -side top
 
-    set lb $w.main.list
-    ttk::treeview $lb -columns {name info ptr} -show {tree headings} -yscroll "$w.main.vsb set" -xscroll "$w.main.hsb set"
+    set lb $f.main.list
+    ttk::treeview $lb -columns {name info ptr} -show {tree headings} -yscroll "$f.main.vsb set" -xscroll "$f.main.hsb set"
     $lb heading "#0" -anchor c -text "Class"   ;#TODO: -command [list inspectorListbox:sortBy $lb "#0" 0]
     $lb heading name -anchor w -text "Name"    -command [list inspectorListbox:sortBy $lb name 0]
     $lb heading info -anchor w -text "Info"    -command [list inspectorListbox:sortBy $lb info 0]
@@ -50,21 +50,21 @@ proc createInspectorListbox {w} {
     $lb column name  -stretch 0 -width 120
     $lb column info  -stretch 0 -width 300
 
-    scrollbar $w.main.hsb  -command "$w.main.list xview" -orient horiz
-    scrollbar $w.main.vsb  -command "$w.main.list yview"
-    grid $w.main.list $w.main.vsb -sticky news
-    grid $w.main.hsb  x           -sticky news
-    grid rowconfig    $w.main 0 -weight 1 -minsize 0
-    grid columnconfig $w.main 0 -weight 1 -minsize 0
+    scrollbar $f.main.hsb  -command "$f.main.list xview" -orient horiz
+    scrollbar $f.main.vsb  -command "$f.main.list yview"
+    grid $f.main.list $f.main.vsb -sticky news
+    grid $f.main.hsb  x           -sticky news
+    grid rowconfig    $f.main 0 -weight 1 -minsize 0
+    grid columnconfig $f.main 0 -weight 1 -minsize 0
     #FIXME TODO: -width 400
 
-    bind $w.main.list <Double-Button-1> {inspectItemIn %W}
-    bind $w.main.list <Button-$B3> {+inspectorListbox:rightClick %W %X %Y}  ;# Note "+"! it appends this code to binding in widgets.tcl
-    bind $w.main.list <Key-Return> {inspectItemIn %W}
+    bind $f.main.list <Double-Button-1> {inspectItemIn %W}
+    bind $f.main.list <Button-$B3> [list +inspectorListbox:rightClick $w %W %X %Y]  ;# Note "+"! it appends this code to binding in widgets.tcl
+    bind $f.main.list <Key-Return> [list inspectItemIn %W]
 
-    focus $w.main.list
+    focus $f.main.list
 
-    return $w.main.list
+    return $f.main.list
 }
 
 # source: Tk "widget" demo
@@ -118,10 +118,10 @@ proc inspectorListbox:getCurrent {lb} {
     return [lindex $ptrs 0]
 }
 
-proc inspectorListbox:rightClick {lb X Y} {
+proc inspectorListbox:rightClick {w lb X Y} {
     set ptr [inspectorListbox:getCurrent $lb]
     if [opp_isnotnull $ptr] {
-        set popup [createInspectorContextMenu $ptr]
+        set popup [createInspectorContextMenu $w $ptr]
         tk_popup $popup $X $Y
     }
 }
@@ -166,21 +166,26 @@ proc extendContextMenu {rules} {
     }
 }
 
-proc fillInspectorContextMenu {menu ptr} {
+proc fillInspectorContextMenu {menu w ptr} {
     global contextmenurules
 
     # ptr should never be null, but check it anyway
     if [opp_isnull $ptr] {return $menu}
 
     # add inspector types supported by the object
+    set name [opp_getobjectfullname $ptr]
     set insptypes [opp_supported_insp_types $ptr]
+    if {$w!="" && $ptr!=[opp_inspector_getobject $w]} {
+        if [opp_inspector_supportsobject $w $ptr] {set state normal} else {set state disabled}
+        $menu add command -label "Go into '$name'" -command "opp_inspector_setobject $w $ptr" -state $state
+        $menu add separator
+    }
     foreach type $insptypes {
        $menu add command -label "Inspect $type..." -command "opp_inspect $ptr \{$type\}"
     }
 
     # add "run until" menu items
     set baseclass [opp_getobjectbaseclass $ptr]
-    set name [opp_getobjectfullname $ptr]
     if {$baseclass=="cSimpleModule" || $baseclass=="cCompoundModule"} {
         set w ".$ptr-0"  ;#hack
         $menu add separator
@@ -220,14 +225,14 @@ proc fillInspectorContextMenu {menu ptr} {
     }
 }
 
-proc createInspectorContextMenu {ptrs} {
+proc createInspectorContextMenu {w ptrs} {
 
     # create popup menu
     catch {destroy .popup}
     menu .popup -tearoff 0
 
     if {[llength $ptrs] == 1} {
-        fillInspectorContextMenu .popup $ptrs
+        fillInspectorContextMenu .popup $w $ptrs
     } else {
         foreach ptr $ptrs {
             set submenu .popup.$ptr
@@ -255,7 +260,7 @@ proc createInspectorContextMenu {ptrs} {
             } else {
                 set label "$name ($infostr)"
             }
-            fillInspectorContextMenu $submenu $ptr
+            fillInspectorContextMenu $submenu $w $ptr
             .popup add cascade -label $label -menu $submenu
         }
     }

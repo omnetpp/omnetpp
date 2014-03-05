@@ -1257,7 +1257,12 @@ proc ModuleInspector:dblClick w {
    }
 
    if {$ptr!=""} {
-      opp_inspect $ptr "(default)"
+      # inspect in current inspector if possible, otherwise open a new one
+      if [opp_inspector_supportsobject $w $ptr] {
+          opp_inspector_setobject $w $ptr
+      } else {
+          opp_inspect $ptr "(default)"
+      }
    }
 }
 
@@ -1311,7 +1316,7 @@ proc ModuleInspector:rightClick {w X Y x y} {
 
    if {$ptrs != {}} {
 
-      set popup [createInspectorContextMenu $ptrs]
+      set popup [createInspectorContextMenu $w $ptrs]
 
       set tmp($c:showlabels) $inspectordata($c:showlabels)
       set tmp($c:showarrowheads) $inspectordata($c:showarrowheads)
@@ -1505,7 +1510,7 @@ proc ModuleInspector:qlenRightClick {w X Y} {
    set c $w.c
    set qptr [ModuleInspector:qlenGetQptrCurrent $c]
    if [opp_isnotnull $qptr] {
-       set popup [createInspectorContextMenu $qptr]
+       set popup [createInspectorContextMenu $w $qptr]
        tk_popup $popup $X $Y
    }
 }

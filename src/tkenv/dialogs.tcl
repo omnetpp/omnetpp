@@ -1043,7 +1043,7 @@ proc filteredObjectList:window {{ptr ""}} {
     pack $w.f.numobj -anchor w -expand 0 -fill x -side top
 
     # Listbox
-    set lb [createInspectorListbox $w.f]
+    set lb [createInspectorListbox $w.f ""]
 
     # Configure dialog
     $w.buttons.closebutton config -command filteredObjectList:windowClose
