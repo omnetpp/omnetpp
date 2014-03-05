@@ -635,7 +635,7 @@ void ModuleInspector::updateSubmodules()
    for (cModule::SubmoduleIterator submod(static_cast<cModule *>(object)); !submod.end(); submod++)
    {
        CHK(Tcl_VarEval(interp, "ModuleInspector:updateSubmodule ",
-                       canvas, " ",
+                       windowName, " ",
                        ptrToStr(submod()),
                        NULL));
    }

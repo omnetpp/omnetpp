@@ -1448,16 +1448,16 @@ proc ModuleInspector:drawNextEventMarker {c modptr type} {
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc ModuleInspector:updateSubmodule {c modptr} {
+proc ModuleInspector:updateSubmodule {w modptr} {
     # currently the only thing to be updated is the number of elements in queue
-    set win [winfo toplevel $c]
+    set c $w.c
     set dispstr [opp_getobjectfield $modptr displayString]
     set qname [opp_displaystring $dispstr getTagArg "q" 0 $modptr 1]
     if {$qname!=""} {
         #set qptr [opp_inspectorcommand $win getsubmodq $modptr $qname]
         #set qlen [opp_getobjectfield $qptr length]
         # TBD optimize -- maybe store and remember q pointer?
-        set qlen [opp_inspectorcommand $win getsubmodqlen $modptr $qname]
+        set qlen [opp_inspectorcommand $w getsubmodqlen $modptr $qname]
         $c itemconfig "qlen-$modptr" -text "q:$qlen"
     }
 }
@@ -1465,7 +1465,8 @@ proc ModuleInspector:updateSubmodule {c modptr} {
 #
 # Helper proc.
 #
-proc ModuleInspector:qlenGetQptrCurrent {c} {
+proc ModuleInspector:qlenGetQptrCurrent {w} {
+   set c $w.c
    set item [$c find withtag current]
    set tags [$c gettags $item]
 
@@ -1475,40 +1476,36 @@ proc ModuleInspector:qlenGetQptrCurrent {c} {
    }
    if {$modptr==""} {return}
 
-   return [ModuleInspector:qlenGetQptr $c $modptr]
+   return [ModuleInspector:qlenGetQptr $w $modptr]
 
 }
 
-proc ModuleInspector:qlenGetQptr {c modptr} {
-   set win [winfo toplevel $c]
+proc ModuleInspector:qlenGetQptr {w modptr} {
    set dispstr [opp_getobjectfield $modptr displayString]
    set qname [opp_displaystring $dispstr getTagArg "q" 0 $modptr 1]
    if {$qname!=""} {
-       set qptr [opp_inspectorcommand $win getsubmodq $modptr $qname]
+       set qptr [opp_inspectorcommand $w getsubmodq $modptr $qname]
        return $qptr
    }
    return ""
 }
 
 proc ModuleInspector:qlenClick w {
-   set c $w.c
-   set qptr [ModuleInspector:qlenGetQptrCurrent $c]
+   set qptr [ModuleInspector:qlenGetQptrCurrent $w]
    if [opp_isnotnull $qptr] {
        mainWindow:selectionChanged $qptr
    }
 }
 
 proc ModuleInspector:qlenDblclick w {
-   set c $w.c
-   set qptr [ModuleInspector:qlenGetQptrCurrent $c]
+   set qptr [ModuleInspector:qlenGetQptrCurrent $w]
    if [opp_isnotnull $qptr] {
        opp_inspect $qptr "(default)"
    }
 }
 
 proc ModuleInspector:qlenRightClick {w X Y} {
-   set c $w.c
-   set qptr [ModuleInspector:qlenGetQptrCurrent $c]
+   set qptr [ModuleInspector:qlenGetQptrCurrent $w]
    if [opp_isnotnull $qptr] {
        set popup [createInspectorContextMenu $w $qptr]
        tk_popup $popup $X $Y
