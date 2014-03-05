@@ -58,6 +58,7 @@ proc createInspectorListbox {f w} {
     grid columnconfig $f.main 0 -weight 1 -minsize 0
     #FIXME TODO: -width 400
 
+    bind $f.main.list <<TreeviewSelect>> [list inspectorListbox:selectionChanged $w %W]
     bind $f.main.list <Double-Button-1> {inspectItemIn %W}
     bind $f.main.list <Button-$B3> [list +inspectorListbox:rightClick $w %W %X %Y]  ;# Note "+"! it appends this code to binding in widgets.tcl
     bind $f.main.list <Key-Return> [list inspectItemIn %W]
@@ -116,6 +117,13 @@ proc inspectorListbox:getSelection {lb} {
 proc inspectorListbox:getCurrent {lb} {
     set ptrs [inspectorListbox:getSelection $lb]
     return [lindex $ptrs 0]
+}
+
+proc inspectorListbox:selectionChanged {w lb} {
+    set ptr [inspectorListbox:getCurrent $lb]
+    if [opp_isnotnull $ptr] {
+        mainWindow:selectionChanged $w $ptr
+    }
 }
 
 proc inspectorListbox:rightClick {w lb X Y} {

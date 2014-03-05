@@ -486,8 +486,10 @@ proc mainWindow:refreshToolbar {} {
     }
 }
 
-proc mainWindow:selectionChanged {obj} {
-    opp_inspector_setobject .inspector $obj
+proc mainWindow:selectionChanged {w obj} {
+    if {$w!=".inspector"} { # source is different from .inspector itself
+        opp_inspector_setobject .inspector $obj
+    }
 }
 
 proc mainWindow:networkViewInputChanged {obj} {

@@ -155,7 +155,7 @@ proc timeline:click c {
    }
 
    if {$ptr!=""} {
-      mainWindow:selectionChanged $ptr
+      mainWindow:selectionChanged "" $ptr
    }
 }
 

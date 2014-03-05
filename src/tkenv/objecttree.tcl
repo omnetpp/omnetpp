@@ -108,7 +108,7 @@ proc treeManager:getNodeInfo {w op {key {}}} {
       }
 
       selectionchanged {
-        mainWindow:selectionChanged $ptr
+        mainWindow:selectionChanged "" $ptr
       }
     }
 }

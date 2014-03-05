@@ -1242,7 +1242,7 @@ proc ModuleInspector:click w {
    }
 
    if {$ptr!=""} {
-      mainWindow:selectionChanged $ptr
+      mainWindow:selectionChanged $w $ptr
    }
 }
 
@@ -1493,7 +1493,7 @@ proc ModuleInspector:qlenGetQptr {w modptr} {
 proc ModuleInspector:qlenClick w {
    set qptr [ModuleInspector:qlenGetQptrCurrent $w]
    if [opp_isnotnull $qptr] {
-       mainWindow:selectionChanged $qptr
+       mainWindow:selectionChanged $w $qptr
    }
 }
 
