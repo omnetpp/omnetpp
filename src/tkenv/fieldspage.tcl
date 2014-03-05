@@ -17,24 +17,22 @@
 #
 # Creates a Fields page for a tabbed inspector window.
 #
-proc inspector:createFields2Page {w} {
+proc inspector:createFields2Page {f w} {
     global treeroots
     global B2 B3
-    set nb $w.nb
-    $nb add [frame $nb.fields2] -text "Fields"
 
     # create treeview with scrollbars
-    scrollbar $nb.fields2.vsb -command "$nb.fields2.tree yview"
-    scrollbar $nb.fields2.hsb -command "$nb.fields2.tree xview" -orient horiz
-    canvas $nb.fields2.tree -bg white -relief sunken -bd 2
-    $nb.fields2.tree config -yscrollcommand "$nb.fields2.vsb set" -xscrollcommand "$nb.fields2.hsb set"
+    scrollbar $f.vsb -command "$f.tree yview"
+    scrollbar $f.hsb -command "$f.tree xview" -orient horiz
+    canvas $f.tree -bg white -relief sunken -bd 2
+    $f.tree config -yscrollcommand "$f.vsb set" -xscrollcommand "$f.hsb set"
 
-    grid $nb.fields2.tree $nb.fields2.vsb -sticky news
-    grid $nb.fields2.hsb  x               -sticky news
-    grid rowconfig $nb.fields2 0 -weight 1
-    grid columnconfig $nb.fields2 0 -weight 1
+    grid $f.tree $f.vsb -sticky news
+    grid $f.hsb  x      -sticky news
+    grid rowconfig $f 0 -weight 1
+    grid columnconfig $f 0 -weight 1
 
-    set tree $nb.fields2.tree
+    set tree $f.tree
     set treeroots($tree) [opp_null]
 
     Tree:init $tree fields2Page:getNodeInfo
