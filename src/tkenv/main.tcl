@@ -423,6 +423,7 @@ proc mainWindow:createTimeline {} {
     pack .timeline -in .timelineframe -expand 1 -fill both
 
     bind .timeline <Configure> "redrawTimeline"
+    .timeline bind msg <1> "timeline:click .timeline"
     .timeline bind msg <Double-1> "timeline:dblClick .timeline"
     .timeline bind msgname <Double-1> "timeline:dblClick .timeline"
     .timeline bind msg <$B3> "timeline:rightClick .timeline %X %Y %x %y"

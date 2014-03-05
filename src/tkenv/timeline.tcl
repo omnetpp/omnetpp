@@ -145,6 +145,20 @@ proc timeline:popup {cx cy x y} {
     }
 }
 
+proc timeline:click c {
+   set item [$c find withtag current]
+   set tags [$c gettags $item]
+
+   set ptr ""
+   if {[lsearch $tags "ptr*"] != -1} {
+      regexp "ptr.*" $tags ptr
+   }
+
+   if {$ptr!=""} {
+      mainWindow:selectionChanged $ptr
+   }
+}
+
 proc timeline:dblClick c {
    set item [$c find withtag current]
    set tags [$c gettags $item]
