@@ -32,6 +32,7 @@ if [info exist OMNETPP_TKENV_DIR] {
    source [file join $dir icons.tcl]
    source [file join $dir inspector.tcl]
    source [file join $dir inspectorlist.tcl]
+   source [file join $dir inspectorlistbox.tcl]
    source [file join $dir inspectorutil.tcl]
    source [file join $dir layouterenv.tcl]
    source [file join $dir loginspector.tcl]
