@@ -948,23 +948,17 @@ void Tkenv::updateGraphicalInspectorsBeforeAnimation()
 
 void Tkenv::updateNetworkRunDisplay()
 {
-    char runnr[10];
-    const char *networkname;
-
-    if (getConfigEx()->getActiveRunNumber())
-        sprintf(runnr, "?");
-    else
-        sprintf(runnr, "%d", getConfigEx()->getActiveRunNumber());
-
-    if (simulation.getNetworkType()==NULL)
-        networkname = "(no network)";
-    else
-        networkname = simulation.getNetworkType()->getName();
+    const char *configName = getConfigEx()->getActiveConfigName();
+    if (opp_isempty(configName))
+        configName = "n/a";
+    std::string runNumber = opp_stringf("%d", getConfigEx()->getActiveRunNumber());
+    const char *networkName = (simulation.getNetworkType()==NULL) ? "(no network)" : simulation.getNetworkType()->getName();
 
     CHK(Tcl_VarEval(interp, NETWORK_LABEL " config -text {",
-                        "Run #",runnr,": ",networkname,
-                        "}", NULL ));
-    CHK(Tcl_VarEval(interp, "wm title . {" OMNETPP_PRODUCT "/Tkenv - ", getWindowTitlePrefix(), networkname, "}",NULL));
+            TclQuotedString(configName).get(), " #",  runNumber.c_str(), ": ",
+            TclQuotedString(networkName).get(), "}", NULL ));
+    CHK(Tcl_VarEval(interp, "wm title . {" OMNETPP_PRODUCT "/Tkenv - ", getWindowTitlePrefix(),
+            TclQuotedString(networkName).get(), "}",NULL));
 }
 
 void Tkenv::updateSimtimeDisplay()
