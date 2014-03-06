@@ -1257,12 +1257,7 @@ proc ModuleInspector:dblClick w {
    }
 
    if {$ptr!=""} {
-      # inspect in current inspector if possible, otherwise open a new one
-      if [opp_inspector_supportsobject $w $ptr] {
-          opp_inspector_setobject $w $ptr
-      } else {
-          opp_inspect $ptr "(default)"
-      }
+      inspector:dblClick $w $ptr
    }
 }
 

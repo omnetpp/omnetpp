@@ -147,6 +147,17 @@ proc inspector:show {w} {
     showWindow $w
 }
 
+proc inspector:dblClick {w ptr} {
+    global config
+
+    # inspect in current inspector if possible (and allowed), otherwise open a new one
+    if {[opp_inspector_supportsobject $w $ptr] && $config(reuse-inspectors)} {
+        opp_inspector_setobject $w $ptr
+    } else {
+        opp_inspect $ptr "(default)"
+    }
+}
+
 proc inspector:namePopup {w toolbutton} {
     set ptr [opp_inspector_getobject $w]
     regsub {^ptr} $ptr {0x} p

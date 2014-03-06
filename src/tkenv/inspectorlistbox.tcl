@@ -120,7 +120,7 @@ proc inspectorListbox:rightClick {w lb X Y} {
 proc inspectorListbox:dblClick {w lb} {
     set ptr [inspectorListbox:getCurrent $lb]
     if [opp_isnotnull $ptr] {
-       opp_inspect $ptr {(default)}
+        inspector:dblClick $w $ptr
     }
 }
 

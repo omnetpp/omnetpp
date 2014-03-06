@@ -163,7 +163,7 @@ proc GateInspector:dblClick {w {type (default)}} {
    }
 
    if {$ptr!=""} {
-      opp_inspect $ptr $type
+      inspector:dblClick $w $ptr
    }
 }
 

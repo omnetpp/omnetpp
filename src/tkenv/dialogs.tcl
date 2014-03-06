@@ -318,8 +318,10 @@ proc optionsDialog {parent {defaultpage "g"}} {
     # "General" page
     labelframe $nb.g.f0 -text "User Interface" -relief groove -borderwidth 2 -font $fonts(normal)
     checkbutton $nb.g.f0.keepontop -text {Keep inspector windows on top} -variable opp(keepontop)
+    checkbutton $nb.g.f0.reuseinsp -text {Reuse inspectors if possible} -variable opp(reuseinsp)
     checkbutton $nb.g.f0.confirmexit -text {Confirm exit when simulation is in progress} -variable opp(confirmexit)
     pack $nb.g.f0.keepontop -anchor w
+    pack $nb.g.f0.reuseinsp -anchor w
     pack $nb.g.f0.confirmexit -anchor w
 
     labelframe $nb.g.f1 -text "Simulation Execution" -relief groove -borderwidth 2 -font $fonts(normal)
@@ -477,6 +479,7 @@ proc optionsDialog {parent {defaultpage "g"}} {
     set opp(bubbles)    [opp_getsimoption bubbles]
     set opp(speed)      [opp_getsimoption animation_speed]
     set opp(keepontop)   $config(keep-inspectors-on-top)
+    set opp(reuseinsp)   $config(reuse-inspectors)
     set opp(confirmexit) $config(confirm-exit)
     set opp(allowresize) $config(layout-may-resize-window)
     set opp(allowzoom)   $config(layout-may-change-zoom)
@@ -522,6 +525,7 @@ proc optionsDialog {parent {defaultpage "g"}} {
         opp_setsimoption bubbles             $opp(bubbles)
         opp_setsimoption animation_speed     $opp(speed)
         set config(keep-inspectors-on-top)   $opp(keepontop)
+        set config(reuse-inspectors)         $opp(reuseinsp)
         set config(confirm-exit)             $opp(confirmexit)
         set config(layout-may-resize-window) $opp(allowresize)
         set config(layout-may-change-zoom)   $opp(allowzoom)

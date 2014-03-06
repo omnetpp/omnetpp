@@ -468,7 +468,8 @@ proc fieldsPage:getNodeInfo:inspect {w key} {
     set keyargs [split $key "-"]
     set ptr [fieldsPage:getNodeInfo:resolveObject $keyargs]
     if [opp_isnotnull $ptr] {
-        opp_inspect $ptr "(default)"
+        set insp [winfo parent [winfo parent [winfo parent $w]]]
+        inspector:dblClick $insp $ptr
     } elseif [fieldsPage:getNodeInfo:isEditable $w $key] {
         fieldsPage:getNodeInfo:edit $w $key
     } else {
