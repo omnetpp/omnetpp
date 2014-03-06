@@ -67,16 +67,16 @@ proc createModuleInspector {w geom} {
 }
 
 proc createEmbeddedModuleInspector {w} {
-    global icons
+    global icons help_tips
 
     createGraphicalModuleViewer $w
 
     set tb [inspector:createInternalToolbar $w $w.c]
+
+    packIconButton $tb.owner   -image $icons(parent) -command "inspector:inspectOwner $w"
+    packIconButton $tb.sep1    -separator
     packIconButton $tb.mrun    -image $icons(mrun)    -command "runSimulationLocal $w normal"
     packIconButton $tb.mfast   -image $icons(mfast)   -command "runSimulationLocal $w fast"
-    packIconButton $tb.vrun     -image $icons(run)     -command {runNormal}
-    packIconButton $tb.vruncfg  -image $icons(down_vs) -command "ModuleInspector:setRunmode $w.toolbar.vrun"
-
     packIconButton $tb.stop    -image $icons(stop)    -command {stopSimulation}
     packIconButton $tb.sep2    -separator
     packIconButton $tb.redraw  -image $icons(redraw) -command "ModuleInspector:relayout $w"
@@ -84,6 +84,17 @@ proc createEmbeddedModuleInspector {w} {
     packIconButton $tb.zoomout -image $icons(zoomout) -command "ModuleInspector:zoomOut $w"
     packIconButton $tb.showlabels -image $icons(modnames) -command "ModuleInspector:toggleLabels $w"
     packIconButton $tb.showarrowheads -image $icons(arrowhead) -command "ModuleInspector:toggleArrowheads $w"
+
+    set help_tips($tb.owner)   {Inspect parent}
+    set help_tips($tb.mrun)    {Run until next event in this module}
+    set help_tips($tb.mfast)   {Fast run until next event in this module (Ctrl+F4)}
+    set help_tips($tb.stop)    {Stop the simulation (F8)}
+    set help_tips($tb.redraw)  {Re-layout (Ctrl+R)}
+    set help_tips($tb.animspeed) {Animation speed -- see Options dialog}
+    set help_tips($tb.zoomin)  {Zoom in (Ctrl+M)}
+    set help_tips($tb.zoomout) {Zoom out (Ctrl+N}
+    set help_tips($tb.showlabels) {Show module names (Ctrl+D)}
+    set help_tips($tb.showarrowheads) {Show arrowheads (Ctrl+A)}
 
 }
 
