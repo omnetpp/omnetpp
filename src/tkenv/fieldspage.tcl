@@ -523,25 +523,36 @@ proc fieldsPage:getNodeInfo:setValue {w key value} {
 }
 
 proc fieldsPage:getNodeInfo:popup {w key x y} {
-    catch {destroy .popup}
-    menu .popup -tearoff 0
-
-    .popup add command -label "Copy" -command [list fieldsPage:getNodeInfo:copy $w $key]
-
-    .popup add separator
+    set insp [winfo parent [winfo parent [winfo parent $w]]]
 
     set keyargs [split $key "-"]
     set ptr [fieldsPage:getNodeInfo:resolveObject $keyargs]
     if [opp_isnotnull $ptr] {
-        foreach i [opp_supported_insp_types $ptr] {
-           .popup add command -label "Inspect $i" -command "opp_inspect $ptr \"$i\""
-        }
+        createInspectorContextMenu $insp $ptr
+        .popup add separator
+        .popup add command -label "Copy" -command [list fieldsPage:getNodeInfo:copy $w $key]
     } else {
+        catch {destroy .popup}
+        menu .popup -tearoff 0
         if [fieldsPage:getNodeInfo:isEditable $w $key] {
             .popup add command -label "Edit..." -command [list fieldsPage:getNodeInfo:edit $w $key]
         } else {
             .popup add command -label "Edit..." -state disabled
         }
+        .popup add separator
+        .popup add command -label "Copy" -command [list fieldsPage:getNodeInfo:copy $w $key]
+
+        if [opp_isinspector $insp] {
+           set ptr [opp_inspector_getobject $insp]
+           if [opp_isnotnull $ptr] {
+              set parentptr [opp_getobjectowner $ptr]
+              if {[opp_isnotnull $parentptr] && [opp_inspector_supportsobject $insp $parentptr]} {
+                  .popup add separator
+                  .popup add command -label "Go up" -command "opp_inspector_setobject $insp $parentptr"
+              }
+           }
+        }
+
     }
 
     tk_popup .popup $x $y
