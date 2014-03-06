@@ -742,8 +742,6 @@ void Tkenv::newNetwork(const char *networkname)
         cModuleType *network = resolveNetwork(networkname);
         ASSERT(network);
 
-        CHK(Tcl_VarEval(interp, "clearWindows", NULL));
-
         // set up new network with config General.
         isconfigrun = false;
         getConfigEx()->activateConfig("General", 0);
@@ -795,8 +793,6 @@ void Tkenv::newRun(const char *configname, int runnumber)
 
         cModuleType *network = resolveNetwork(opt->networkName.c_str());
         ASSERT(network);
-
-        CHK(Tcl_VarEval(interp, "clearWindows", NULL));
 
         answers.clear();
         setupNetwork(network);
@@ -1303,11 +1299,17 @@ void Tkenv::objectDeleted(cObject *object)
         InspectorList::iterator next = it;
         ++next;
         Inspector *insp = *it;
-        if (insp->getObject()==object)   //FIXME only delete if ownsWindow
+        if (insp->getObject()==object)
         {
-            inspectors.erase(it); // with std::list, "next" remains valid
-            insp->hostObjectDeleted();
-            delete insp;
+            if (insp->isToplevel())
+            {
+                inspectors.erase(it);
+                delete insp;
+            }
+            else
+            {
+                insp->setObject(NULL);
+            }
         }
         else
         {

@@ -131,14 +131,6 @@ void Inspector::showWindow()
         CHK(Tcl_VarEval(interp, "inspector:show ", windowName, NULL ));
 }
 
-void Inspector::hostObjectDeleted()
-{
-    if (isToplevelWindow)
-        CHK(Tcl_VarEval(interp, "inspector:hostObjectDeleted ", windowName, NULL )); //FIXME needed? this Tcl proc is currently empty!!!
-    else
-        setObject(NULL);
-}
-
 void Inspector::refresh()
 {
     if (isToplevelWindow)

@@ -92,7 +92,6 @@ class TKENV_API Inspector
       virtual cObject *getObject() const {return object;}
       virtual void setObject(cObject *obj);
 
-      virtual void hostObjectDeleted();
       virtual void markForDeletion() {closeRequested=true;}
       virtual bool isMarkedForDeletion() {return closeRequested;}
 

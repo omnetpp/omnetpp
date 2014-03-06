@@ -133,13 +133,6 @@ proc inspector:close {w} {
     opp_deleteinspector $w
 }
 
-
-#
-# Called from C++
-#
-proc inspector:hostObjectDeleted {w} {
-}
-
 #
 # Called from C++
 #

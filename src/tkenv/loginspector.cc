@@ -73,18 +73,13 @@ void LogInspector::setObject(cObject *obj)
 
     if (object)
         redisplay(getTkenv()->getLogBuffer());
+    else
+        textWidget_clear(interp, textWidget);
 }
 
 void LogInspector::refresh()
 {
     Inspector::refresh();
-
-    if (!object)
-    {
-        textWidget_clear(interp, textWidget);
-        return;
-    }
-
     CHK(Tcl_VarEval(interp, "LogInspector:trimlines ", windowName, NULL));
 }
 
