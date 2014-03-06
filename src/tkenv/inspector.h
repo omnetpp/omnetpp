@@ -59,7 +59,6 @@ class TKENV_API Inspector
 
    protected:
       void refreshTitle();
-      void refreshInfobar();
 
       void setEntry(const char *entry, const char *val);
       void setEntry(const char *entry, long l);

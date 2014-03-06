@@ -45,7 +45,7 @@ proc createInspectorToplevel {w geom} {
     pack $w.toolbar -anchor w -side top -fill x -expand 0
 
     packIconButton $w.toolbar.sep0 -separator
-    packIconButton $w.toolbar.owner -image $icons(parent) ;#command assigned from C++
+    packIconButton $w.toolbar.owner -image $icons(parent) -command "inspector:inspectOwner $w"
     packIconButton $w.toolbar.copyobj -image $icons(copy) -command "inspector:namePopup $w $w.toolbar.copyobj"
     packIconButton $w.toolbar.objs -image $icons(findobj) -command "inspectFilteredObjectList $w"
     packIconButton $w.toolbar.sep01 -separator
@@ -91,6 +91,37 @@ proc inspector:onSetObject {w} {
     }
     if {$w==".network"} {
         mainWindow:networkViewInputChanged $ptr
+    }
+}
+
+#
+# Invoked from C++
+#
+proc inspector:refresh {w} {
+    global config help_tips
+
+    set ptr [opp_inspector_getobject $w]
+    if [opp_isnull $ptr] {
+        $w.infobar.name config -text {n/a}
+        $w.toolbar.owner config -state disabled
+    } else {
+        # Info bar
+        set typename [opp_getobjectshorttypename $ptr]
+        set fullpath [opp_getobjectfullpath $ptr]
+        #set info [opp_getobjectinfostring $ptr]
+        set str "($typename) $fullpath"   ;#TODO short info?
+        $w.infobar.name config -text $str
+
+        # 'Inspect owner' button
+        set ownerptr [opp_getobjectowner $ptr]
+        if [opp_isnull $ownerptr] {set state disabled} else {set state normal}
+        $w.toolbar.owner config -state $state
+
+        if {[opp_inspector_supportsobject $w $ownerptr] && $config(reuse-inspectors)} {
+            set help_tips($w.toolbar.owner) {Go up}
+        } else {
+            set help_tips($w.toolbar.owner) {Inspect owner}
+        }
     }
 }
 
@@ -145,6 +176,23 @@ proc inspector:destroy {w} {
 #
 proc inspector:show {w} {
     showWindow $w
+}
+
+proc inspector:inspectOwner {w} {
+    global config
+
+    set ptr [opp_inspector_getobject $w]
+    set ownerptr [opp_getobjectowner $ptr]
+    if [opp_isnull $ownerptr] {
+        return
+    }
+
+    # inspect in current inspector if possible (and allowed), otherwise open a new one
+    if {[opp_inspector_supportsobject $w $ownerptr] && $config(reuse-inspectors)} {
+        opp_inspector_setobject $w $ownerptr
+    } else {
+        opp_inspect $ownerptr "(default)"
+    }
 }
 
 proc inspector:dblClick {w ptr} {

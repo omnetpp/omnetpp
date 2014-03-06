@@ -136,11 +136,7 @@ void Inspector::refresh()
     if (isToplevelWindow)
     {
         refreshTitle();
-        refreshInfobar();
-
-        // owner button on toolbar
-        cModule *mod = dynamic_cast<cModule *>(object);
-        setToolbarInspectButton(".toolbar.owner", mod ? mod->getParentModule() : object ? object->getOwner() : NULL, INSP_DEFAULT);
+        CHK(Tcl_VarEval(interp, "inspector:refresh ", windowName, NULL));
     }
 }
 
@@ -168,21 +164,6 @@ void Inspector::refreshTitle()
         windowTitle = newTitle;
         CHK(Tcl_VarEval(interp, "wm title ",windowName," {",windowTitle.c_str(),"}",NULL));
     }
-}
-
-void Inspector::refreshInfobar()
-{
-    char newName[MAX_OBJECTFULLPATH+MAX_CLASSNAME+40]; //TODO std::string!
-    cModule *mod = dynamic_cast<cModule *>(object);
-    if (mod)
-        sprintf(newName, "(%s) %s  (id=%d)", getObjectFullTypeName(object),
-                object->getFullPath().c_str(), mod->getId());
-    else if (object)
-        sprintf(newName, "(%s) %s", getObjectFullTypeName(object),
-                object->getFullPath().c_str());
-    else
-        sprintf(newName, "n/a");
-    CHK(Tcl_VarEval(interp, windowName,".infobar.name config -text {",newName,"}",NULL));
 }
 
 void Inspector::setEntry(const char *entry, const char *val)
