@@ -776,13 +776,3 @@ proc viewFile {filename} {
 }
 
 
-#
-# Called when simulation speed slider on toolbar changes
-#
-proc animSpeedChanged {arr name op} {
-    if {($op!="w" && $op!="write") || $arr!="priv" || $name!="animspeed"} {error "wrong callback"}
-
-    global priv
-    opp_setsimoption "animation_speed" $priv(animspeed)
-}
-

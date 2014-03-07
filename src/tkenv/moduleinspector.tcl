@@ -32,9 +32,6 @@ proc createModuleInspector {w geom} {
     packIconButton $w.toolbar.sep1 -separator
     ModuleInspector:addRunButtons $w
 
-    ModuleInspector:animControl $w.toolbar.animspeed
-    pack $w.toolbar.animspeed -anchor c -expand 0 -fill none -side left -padx 5 -pady 0
-
     packIconButton $w.toolbar.sep2    -separator
     packIconButton $w.toolbar.redraw  -image $icons(redraw) -command "ModuleInspector:relayout $w"
     packIconButton $w.toolbar.zoomin  -image $icons(zoomin)  -command "ModuleInspector:zoomIn $w"
@@ -1122,18 +1119,6 @@ proc ModuleInspector:drawMessage {c msgptr x y} {
     }
 
 }
-
-proc ModuleInspector:animControl {w} {
-    global priv
-
-    scale $w -orient horizontal -length 50 -sliderlength 8 -showvalue 0 -bd 1
-    $w config -from .5 -to 3 -resolution 0.01 -variable priv(animspeed)
-
-    # following line is too new (Tcl8.4) -- not understood by Tcl8.3
-    #trace add variable priv(animspeed) write animSpeedChanged
-    trace variable priv(animspeed) w animSpeedChanged
-}
-
 
 proc mathMin {a b} {
     return [expr ($a < $b) ? $a : $b]

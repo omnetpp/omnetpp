@@ -310,7 +310,7 @@ proc mainWindow:createMenu {} {
 }
 
 proc mainWindow:createToolbar {} {
-    global icons
+    global icons help_tips
 
     frame .toolbar -relief raised -borderwidth 1
 
@@ -343,10 +343,13 @@ proc mainWindow:createToolbar {} {
       {tree     -image $icons(tree)    -command {toggleTreeView}}
       {sep9     -separator}
       {options  -image $icons(config)  -command {simulationOptions}}
+      {sep10    -separator}
     } {
       set b [eval iconbutton .toolbar.$i]
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
     }
+    animControl .toolbar.animspeed
+    pack .toolbar.animspeed -anchor c -expand 0 -fill none -side left -padx 5 -pady 0
 
     set help_tips(.toolbar.loadned) {Load NED file for compound module definitions}
     set help_tips(.toolbar.newrun)  {Set up an inifile configuration}
@@ -369,6 +372,7 @@ proc mainWindow:createToolbar {} {
     set help_tips(.toolbar.tline)   {Show/hide timeline}
     set help_tips(.toolbar.tree)    {Show/hide object tree}
     set help_tips(.toolbar.options) {Simulation options}
+    set help_tips(.toolbar.animspeed) {Animation speed}
 }
 
 proc mainWindow:createStatusbars {} {
@@ -495,6 +499,25 @@ proc mainWindow:selectionChanged {w obj} {
 
 proc mainWindow:networkViewInputChanged {obj} {
     opp_inspector_setobject .log $obj
+}
+
+proc animControl {w} {
+    global priv
+
+    scale $w -orient horizontal -length 50 -sliderlength 8 -showvalue 0 -bd 1
+    $w config -from .5 -to 3 -resolution 0.01 -variable priv(animspeed)
+
+    trace variable priv(animspeed) w animSpeedChanged
+}
+
+#
+# Called when simulation speed slider on toolbar changes
+#
+proc animSpeedChanged {arr name op} {
+    if {($op!="w" && $op!="write") || $arr!="priv" || $name!="animspeed"} {error "wrong callback"}
+
+    global priv
+    opp_setsimoption "animation_speed" $priv(animspeed)
 }
 
 proc bindRunCommands {w} {
