@@ -53,7 +53,7 @@ proc createInspectorToplevel {insp geom} {
     packIconButton $insp.toolbar.copyobj -image $icons(copy) -command "inspector:namePopup $insp $insp.toolbar.copyobj"
     packIconButton $insp.toolbar.objs -image $icons(findobj) -command "inspectFilteredObjectList $insp"
 
-    set help_tips($insp.toolbar.parent) "Inspect parent"
+    set help_tips($insp.toolbar.parent) "Go to parent"
     set help_tips($insp.toolbar.inspectas) "Inspect"
     set help_tips($insp.toolbar.copyobj) "Copy name, type or pointer"
     set help_tips($insp.toolbar.objs) "Find objects (Ctrl+S)"
@@ -99,12 +99,11 @@ proc inspector:refresh {insp} {
     # Info bar
     if [winfo exist $insp.infobar] {  ;#FIXME add proper condition
         if [opp_isnull $ptr] {
-            $insp.infobar.name config -text "n/a"
+            $insp.infobar.name config -text "N/A"
         } else {
             set typename [opp_getobjectshorttypename $ptr]
             set fullpath [opp_getobjectfullpath $ptr]
-            #set info [opp_getobjectinfostring $ptr]
-            set str "($typename) $fullpath"   ;#TODO short info?
+            set str "($typename) $fullpath"
             $insp.infobar.name config -text $str
         }
     }
@@ -116,12 +115,6 @@ proc inspector:refresh {insp} {
             set parentptr [opp_getobjectparent $ptr]
             if [opp_isnull $parentptr] {set state disabled} else {set state normal}
             $insp.toolbar.parent config -state $state
-
-            if {[opp_inspector_supportsobject $insp $parentptr] && $config(reuse-inspectors)} {
-                set help_tips($insp.toolbar.parent) "Go up"
-            } else {
-                set help_tips($insp.toolbar.parent) "Inspect parent"
-            }
         }
     }
 

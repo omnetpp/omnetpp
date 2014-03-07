@@ -83,7 +83,7 @@ proc createFileViewer {filename} {
     packIconButton $w.toolbar.sep21  -separator
 
     set help_tips($w.toolbar.copy)   "Copy selected text to clipboard (Ctrl+C)"
-    set help_tips($w.toolbar.find)   "Find string in window (Ctrl+F"
+    set help_tips($w.toolbar.find)   "Find string in window (Ctrl+F)"
     set help_tips($w.toolbar.save)   "Save window contents to file"
 
     pack $w.toolbar  -anchor center -expand 0 -fill x -side top

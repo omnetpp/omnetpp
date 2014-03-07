@@ -39,10 +39,10 @@ proc createModuleInspector {insp geom} {
     packIconButton $insp.toolbar.showlabels -image $icons(modnames) -command "ModuleInspector:toggleLabels $insp"
     packIconButton $insp.toolbar.showarrowheads -image $icons(arrowhead) -command "ModuleInspector:toggleArrowheads $insp"
 
-    set help_tips($insp.toolbar.parent)  "Inspect parent module"
+    set help_tips($insp.toolbar.parent)  "Go to parent module"
     set help_tips($insp.toolbar.redraw)  "Re-layout (Ctrl+R)"
     set help_tips($insp.toolbar.zoomin)  "Zoom in (Ctrl+M)"
-    set help_tips($insp.toolbar.zoomout) "Zoom out (Ctrl+N"
+    set help_tips($insp.toolbar.zoomout) "Zoom out (Ctrl+N)"
     set help_tips($insp.toolbar.showlabels) "Show module names (Ctrl+D)"
     set help_tips($insp.toolbar.showarrowheads) "Show arrowheads (Ctrl+A)"
 
@@ -79,14 +79,16 @@ proc createEmbeddedModuleInspector {insp} {
     packIconButton $tb.showlabels -image $icons(modnames) -command "ModuleInspector:toggleLabels $insp"
     packIconButton $tb.showarrowheads -image $icons(arrowhead) -command "ModuleInspector:toggleArrowheads $insp"
 
-    set help_tips($tb.parent)  "Inspect parent"
+    set help_tips($tb.back)    "Back"
+    set help_tips($tb.forward) "Forward"
+    set help_tips($tb.parent)  "Go to parent module"
     set help_tips($tb.mrun)    "Run until next event in this module"
     set help_tips($tb.mfast)   "Fast run until next event in this module (Ctrl+F4)"
     set help_tips($tb.stop)    "Stop the simulation (F8)"
     set help_tips($tb.redraw)  "Re-layout (Ctrl+R)"
     set help_tips($tb.animspeed) "Animation speed -- see Options dialog"
     set help_tips($tb.zoomin)  "Zoom in (Ctrl+M)"
-    set help_tips($tb.zoomout) "Zoom out (Ctrl+N"
+    set help_tips($tb.zoomout) "Zoom out (Ctrl+N)"
     set help_tips($tb.showlabels) "Show module names (Ctrl+D)"
     set help_tips($tb.showarrowheads) "Show arrowheads (Ctrl+A)"
 
@@ -1225,9 +1227,6 @@ proc ModuleInspector:popOutToolbarButtons {insp} {
     # This is a weak attempt to fix it for the most commonly clicked buttons.
     # This could be called from many more places for better results.
     if [opp_inspector_istoplevel $insp] {
-        $insp.toolbar.minfo config -relief flat
-        $insp.toolbar.type config -relief flat
-        $insp.toolbar.objs config -relief flat
         $insp.toolbar.parent config -relief flat
         $insp.toolbar.stop config -relief flat
         $insp.toolbar.redraw config -relief flat

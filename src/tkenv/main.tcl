@@ -204,7 +204,7 @@ proc mainWindow:createMenu {} {
       {command -command editCopy -label "Copy" -accel "Ctrl+C" -underline 0}
       {separator}
       {command -command editFind -label "Find..." -accel "Ctrl+F" -underline 0}
-      {command -command editFindNext -label "Find Next" -accel "Ctrl+N,F3" -underline 5}
+      {command -command editFindNext -label "Find Next" -accel "F3" -underline 5}
       {separator}
       {command -command editFilterWindowContents -label "Filter Window Contents..." -accel "Ctrl+H" -underline 0}
     } {
@@ -310,10 +310,6 @@ proc mainWindow:createToolbar {} {
       {newrun   -image $icons(newrun)  -command {newRun}}
       {loadned  -image $icons(loadned) -command {loadNedFile}}
       {sep5     -separator}
-      {copy     -image $icons(copy)    -command {editCopy}}
-      {find     -image $icons(find)    -command {editFind}}
-      {save     -image $icons(save)    -command {saveFile "."}}
-      {sep0     -separator}
       {step     -image $icons(step)    -command {oneStep}}
       {run      -image $icons(run)     -command {runNormal}}
       {fastrun  -image $icons(fast)    -command {runFast}}
@@ -321,10 +317,10 @@ proc mainWindow:createToolbar {} {
       {until    -image $icons(until)   -command {runUntil}}
       {stop     -image $icons(stop)    -command {stopSimulation}}
       {sep4     -separator}
-      {eventlog -image $icons(recordeventlog) -command {toggleRecordEventlog}}
       {finish   -image $icons(finish)  -command {callFinish}}
-      {sep02     -separator}
-      {network  -image $icons(network) -command {inspectSystemModule}}
+      {sep7     -separator}
+      {eventlog -image $icons(recordeventlog) -command {toggleRecordEventlog}}
+      {sep3     -separator}
       {objs     -image $icons(findobj) -command {inspectFilteredObjectList}}
       {filter   -image $icons(filter)  -command {editFilterWindowContents}}
       {sep6     -separator}
@@ -355,7 +351,6 @@ proc mainWindow:createToolbar {} {
     set help_tips(.toolbar.restart) "Rebuild network"
     set help_tips(.toolbar.eventlog) "Eventlog recording on/off"
     set help_tips(.toolbar.finish)  "Call finish()"
-    set help_tips(.toolbar.network) "Inspect network"
     set help_tips(.toolbar.objs)    "Find and inspect modules, messages, queues and other objects (Ctrl+S)"
     set help_tips(.toolbar.tline)   "Show/hide timeline"
     set help_tips(.toolbar.tree)    "Show/hide object tree"
@@ -722,7 +717,7 @@ proc startupCommands {} {
     if {$configname==""} {
         set confignames [opp_getconfignames]
         set cfgnetworkname [opp_getvaluefromconfig "network"]  ;# CFGID_NETWORK
-        if {($confignames=={General} && $cfgnetworkname!="")} {
+        if {($confignames=="General" && $cfgnetworkname!="")} {
             set configname "General"
         }
     }
@@ -737,7 +732,7 @@ proc startupCommands {} {
         }
     } else {
         # ask the user to select a network or a config
-        if {$confignames=={} || $confignames=={General}} {
+        if {$confignames=={} || $confignames=="General"} {
             newNetwork
         } else {
             newRun

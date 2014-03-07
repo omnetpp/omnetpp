@@ -18,7 +18,7 @@ proc createLogInspector {insp geom} {
     global icons fonts help_tips B2 B3
 
     createInspectorToplevel $insp $geom
-    set help_tips($insp.toolbar.parent)  "Inspect parent"
+    set help_tips($insp.toolbar.parent)  "Go to parent module"
 
     packIconButton $insp.toolbar.sep1 -separator
     textWindowAddIcons $insp modulewindow
@@ -42,9 +42,9 @@ proc createEmbeddedLogInspector {insp} {
     packIconButton $tb.find   -image $icons(find) -command "findDialog $insp.main.text"
     packIconButton $tb.filter -image $icons(filter) -command "editFilterWindowContents $insp"
 
-    set help_tips($tb.copy)   {Copy selected text to clipboard (Ctrl+C)}
-    set help_tips($tb.find)   {Find string in window (Ctrl+F)}
-    set help_tips($tb.filter) {Filter window contents (Ctrl+H)}
+    set help_tips($tb.copy)   "Copy selected text to clipboard (Ctrl+C)"
+    set help_tips($tb.find)   "Find string in window (Ctrl+F)"
+    set help_tips($tb.filter) "Filter window contents (Ctrl+H)"
 }
 
 proc createLogViewer {insp f} {

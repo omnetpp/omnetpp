@@ -223,7 +223,7 @@ proc displayStopDialog {} {
     if {[winfo exists $w]} return
 
     toplevel $w
-    wm title $w {Running...}
+    wm title $w "Running..."
     wm transient $w [winfo toplevel [winfo parent $w]]
     wm protocol $w WM_DELETE_WINDOW {opp_stopsimulation}
     # bind $w <Visibility> "raise $w"  ;# Keep modal window on top -- not good! (obscures error dialogs)
@@ -300,7 +300,7 @@ proc optionsDialog {parent {defaultpage "g"}} {
         set w $parent.optionsdialog
     }
 
-    createOkCancelDialog $w {Simulation Options}
+    createOkCancelDialog $w "Simulation Options"
 
     ttk::notebook $w.f.nb
     set nb $w.f.nb
@@ -582,7 +582,7 @@ proc runUntilDialog {time_var event_var msg_var mode_var} {
     upvar $mode_var mode_var0
 
     set w .rununtil
-    createOkCancelDialog $w {Run until}
+    createOkCancelDialog $w "Run until"
 
     # collect FES messages for combo
     set msglabels {""}
@@ -967,31 +967,6 @@ proc filteredObjectList:window {{ptr ""}} {
     if {$config(keep-inspectors-on-top)} {
         makeTransient $w
     }
-
-    # Create toolbar
-    frame $w.toolbar -relief raised -borderwidth 1
-    pack $w.toolbar -anchor center -expand 0 -fill x -side top -before $w.f
-    foreach i {
-      {sep1     -separator}
-      {step     -image $icons(step)    -command {oneStep}}
-      {run      -image $icons(run)     -command {runNormal}}
-      {fastrun  -image $icons(fast)    -command {runFast}}
-      {exprrun  -image $icons(express) -command {runExpress}}
-      {until    -image $icons(until)   -command {runUntil}}
-      {sep2     -separator}
-      {stop     -image $icons(stop)    -command {stopSimulation}}
-    } {
-      set b [eval iconbutton $w.toolbar.$i]
-      pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
-    }
-
-    set help_tips($w.toolbar.step)    "Execute one event (F4)"
-    set help_tips($w.toolbar.run)     "Run with full animation (F5)"
-    set help_tips($w.toolbar.fastrun) "Run faster: no animation and rare inspector updates (F6)"
-    set help_tips($w.toolbar.exprrun) "Run at full speed: no text output, animation or inspector updates (F7)"
-    set help_tips($w.toolbar.until)   "Run until time or event number"
-    set help_tips($w.toolbar.stop)    "Stop running simulation (F8)"
-
 
     # vars
     set tmp(class)    $config(filtobjlist-class)
