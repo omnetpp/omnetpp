@@ -1048,6 +1048,8 @@ proc filteredObjectList:window {{ptr ""}} {
 
     # Listbox
     set lb [createInspectorListbox $w.f ""]
+    $lb column name  -stretch 0 -width 350
+    $lb column info  -stretch 0 -width 200
 
     # Configure dialog
     $w.buttons.closebutton config -command filteredObjectList:windowClose
