@@ -154,7 +154,7 @@ proc fieldsPage:getNodeInfo {w op {key ""}} {
             switch $keytype {
                 obj {
                     if [opp_isnull $obj] {return ""}
-                    return [inspector:getIconForObject $obj]
+                    return [opp_getobjecticon $obj]
                 }
                 struct -
                 group {
@@ -164,7 +164,7 @@ proc fieldsPage:getNodeInfo {w op {key ""}} {
                 findex {
                     set fieldptr [fieldsPage:getNodeInfo:resolveObject $keyargs]
                     if [opp_isnull $fieldptr] {return ""}
-                    return [inspector:getIconForObject $fieldptr]
+                    return [opp_getobjecticon $fieldptr]
                 }
             }
         }

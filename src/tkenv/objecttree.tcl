@@ -92,7 +92,7 @@ proc treeManager:getNodeInfo {w op {key {}}} {
       }
 
       icon {
-        return [inspector:getIconForObject $ptr]
+        return [opp_getobjecticon $ptr]
       }
 
       haschildren {

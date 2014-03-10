@@ -902,7 +902,7 @@ proc moduleOutputFilterDialog:getModuleTreeInfo {w op {key {}}} {
       }
 
       icon {
-        #return [inspector:getIconForObject $ptr]
+        #return [opp_getobjecticon $ptr]
         return ""
       }
 
@@ -1183,7 +1183,7 @@ proc filteredObjectList:refresh {w} {
             set type [opp_getobjectshorttypename $ptr]
             set fullpath [opp_getobjectfullpath $ptr]
             set info [opp_getobjectinfostring $ptr]
-            set icon [inspector:getIconForObject $ptr]
+            set icon [opp_getobjecticon $ptr]
             $lb insert {} end -image $icon -text "  $type" -values [list $fullpath $info $ptr]
         }
         set filtobjlist_state(outofdate) 0

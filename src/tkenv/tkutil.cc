@@ -22,12 +22,23 @@
 #include <time.h>
 #include <assert.h>
 
-#include "cownedobject.h"
-#include "cmodule.h"
 #include "csimulation.h"
+#include "cmessageheap.h"
+#include "cregistrationlist.h"
+#include "cmodule.h"
+#include "csimplemodule.h"
+#include "ccompoundmodule.h"
+#include "cchannel.h"
+#include "cgate.h"
+#include "cpar.h"
+#include "cstatistic.h"
+#include "coutvector.h"
+#include "cqueue.h"
+#include "carray.h"
+#include "cwatch.h"
+
 #include "stringutil.h"
 #include "opp_ctype.h"
-
 #include "tkenv.h"
 #include "patternmatcher.h"
 #include "visitor.h"
@@ -147,11 +158,56 @@ void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor)
 
 //-----------------------------------------------------------------------
 
+std::string getObjectIcon(Tcl_Interp *interp, cObject *object)
+{
+    const char *iconName;
+    if (object == NULL)
+        iconName = "none_vs";
+    else if (dynamic_cast<cModule *>(object) && ((cModule *)object)->isPlaceholder())
+        iconName = "placeholder_vs";
+    else if (dynamic_cast<cSimpleModule *>(object))
+        iconName = "simple_vs";
+    else if (dynamic_cast<cCompoundModule *>(object))
+        iconName = "compound_vs";
+    else if (dynamic_cast<cWatchBase *>(object))
+        iconName = "cogwheel_vs";
+    else if (dynamic_cast<cMessage *>(object))
+        iconName = "message_vs";
+    else if (dynamic_cast<cArray *>(object))
+        iconName = "container_vs";
+    else if (dynamic_cast<cQueue *>(object))
+        iconName = "queue_vs";
+    else if (dynamic_cast<cGate *>(object))
+        iconName = "gate_vs";
+    else if (dynamic_cast<cPar *>(object))
+        iconName = "param_vs";
+    else if (dynamic_cast<cChannel *>(object))
+        iconName = "chan_vs";
+    else if (dynamic_cast<cOutVector *>(object))
+        iconName = "outvect_vs";
+    else if (dynamic_cast<cStatistic *>(object))
+        iconName = "stat_vs";
+    else if (dynamic_cast<cSimulation *>(object))
+        iconName = "container_vs";
+    else if (dynamic_cast<cMessageHeap *>(object))
+        iconName = "container_vs";
+    else if (dynamic_cast<cRegistrationList *>(object))
+        iconName = "container_vs";
+    else
+        iconName = "cogwheel_vs";
+
+    // look up the image in the icons() array
+    const char *image = Tcl_GetVar2(interp, TCLCONST("icons"), TCLCONST(iconName), TCL_GLOBAL_ONLY);
+    if (!image)
+        throw cRuntimeError("getObjectIcon(): undefined variable $icons(%s)", iconName);
+    return image;
+}
+
 void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath)
 {
     const char *ptr = ptrToStr(obj);
     CHK(Tcl_VarEval(interp, listbox, " insert {} end "
-                    "-image [inspector:getIconForObject ", ptr, "] ",
+                    "-image ", getObjectIcon(interp, obj).c_str(), " "
                     "-text {", "  " /*padding*/, getObjectShortTypeName(obj), "} ",
                     "-values {",
                     TclQuotedString(fullpath ? obj->getFullPath().c_str() : obj->getFullName()).get(), " ",

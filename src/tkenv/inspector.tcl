@@ -79,7 +79,7 @@ proc inspector:createInternalToolbar {w {parent ""}} {
 #
 proc inspector:onSetObject {w} {
     set ptr [opp_inspector_getobject $w]
-    set icon [inspector:getIconForObject $ptr]
+    set icon [opp_getobjecticon $ptr]
     if [winfo exist $w.infobar] {  ;#FIXME add proper condition
         $w.infobar.icon config -image $icon
     }
@@ -131,37 +131,6 @@ proc inspector:refresh {w} {
     if [opp_inspectorcommand $w cangoforward] {set state normal} else {set state disabled}
     catch {$w.toolbar.forward config -state $state}  ;#FIXME add proper condition whether button exists
 
-}
-
-# icons used in the tree view and listboxes
-set treeicons(cCompoundModule) {compound_vs}
-set treeicons(cSimpleModule)   {simple_vs}
-set treeicons(cPlaceholderModule) {placeholder_vs}
-set treeicons(cGate)           {gate_vs}
-set treeicons(cPar)            {param_vs}
-set treeicons(cMessage)        {message_vs}
-set treeicons(cQueue)          {queue_vs}
-set treeicons(cLinkedList)     {queue_vs}
-set treeicons(cArray)          {container_vs}
-set treeicons(cMessageHeap)    {container_vs}
-set treeicons(cChannel)        {chan_vs}
-set treeicons(cStatistic)      {stat_vs}
-set treeicons(cOutVector)      {outvect_vs}
-
-#
-# Returns the icon of an object (for tree view / listbox)
-#
-proc inspector:getIconForObject {ptr} {
-    global icons treeicons
-    if [opp_isnull $ptr] {
-       return $icons(none_vs)
-    }
-    set class [opp_getobjectbaseclass $ptr]
-    if [info exists treeicons($class)] {
-       return $icons($treeicons($class))
-    } else {
-       return $icons(cogwheel_vs)
-    }
 }
 
 #

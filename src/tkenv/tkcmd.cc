@@ -162,6 +162,7 @@ int getClassDescriptorFor_cmd(ClientData, Tcl_Interp *interp, int argc, const ch
 int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
 int getNameForEnum_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
 int fillInspectorListbox_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getObjectIcon_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int nullPointer_cmd(ClientData, Tcl_Interp *, int, const char **);
 int isNullPointer_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -281,6 +282,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_classdescriptor",   classDescriptor_cmd   }, // args: <descrptr> <objptr> ...
    { "opp_getnameforenum",    getNameForEnum_cmd    }, // args: <enumname> <number>
    { "opp_fillinspectorlistbox",fillInspectorListbox_cmd}, // args: <listbox> <objptr> <deepflag>
+   { "opp_getobjecticon",     getObjectIcon_cmd      }, // args: <objptr>
 
    // Functions that return object pointers
    { "opp_null",                nullPointer_cmd        },
@@ -2349,6 +2351,16 @@ int fillInspectorListbox_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
     char buf[20];
     sprintf(buf, "%d", count);
     Tcl_SetResult(interp, buf, TCL_VOLATILE);
+    return TCL_OK;
+}
+
+int getObjectIcon_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("1 arg expected"), TCL_STATIC); return TCL_ERROR;}
+    cObject *object = strToPtr(argv[1]);
+    std::string image;
+    TRY(image = getObjectIcon(interp, object));
+    Tcl_SetResult(interp, TCLCONST(image.c_str()), TCL_VOLATILE);
     return TCL_OK;
 }
 
