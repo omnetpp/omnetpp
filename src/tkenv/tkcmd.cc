@@ -105,6 +105,7 @@ int getObjectFullTypeName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectInfoString_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getMessageShortInfoString_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectOwner_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getObjectParent_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectField_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectBaseClass_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectId_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -221,6 +222,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getobjectbaseclass",getObjectBaseClass_cmd  }, // args: <pointer>  ret: a base class
    { "opp_getobjectid",      getObjectId_cmd          }, // args: <pointer>  ret: object ID (if object has one) or ""
    { "opp_getobjectowner",   getObjectOwner_cmd       }, // args: <pointer>  ret: <ownerptr>
+   { "opp_getobjectparent",  getObjectParent_cmd      }, // args: <pointer>  ret: <parentptr>
    { "opp_getobjectinfostring",getObjectInfoString_cmd}, // args: <pointer>  ret: info()
    { "opp_getmessageshortinfostring",getMessageShortInfoString_cmd}, // args: <msg_pointer>  ret: a short info string containing only the src and destination of the message
    { "opp_getobjectfield",   getObjectField_cmd       }, // args: <pointer> <field>  ret: value of object field (if supported)
@@ -703,6 +705,17 @@ int getObjectOwner_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
 
    Tcl_SetResult(interp, ptrToStr(object->getOwner()), TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int getObjectParent_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   cObject *object = strToPtr(argv[1]);
+   if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
+
+   cObject *owner = dynamic_cast<cComponent *>(object) ? ((cComponent *)object)->getParentModule() : object->getOwner();
+   Tcl_SetResult(interp, ptrToStr(owner), TCL_VOLATILE);
    return TCL_OK;
 }
 

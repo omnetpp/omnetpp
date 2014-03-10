@@ -39,7 +39,7 @@ proc createModuleInspector {w geom} {
     packIconButton $w.toolbar.showlabels -image $icons(modnames) -command "ModuleInspector:toggleLabels $w"
     packIconButton $w.toolbar.showarrowheads -image $icons(arrowhead) -command "ModuleInspector:toggleArrowheads $w"
 
-    set help_tips($w.toolbar.owner)   {Inspect parent module}
+    set help_tips($w.toolbar.parent)  {Inspect parent module}
     set help_tips($w.toolbar.redraw)  {Re-layout (Ctrl+R)}
     set help_tips($w.toolbar.animspeed) {Animation speed -- see Options dialog}
     set help_tips($w.toolbar.zoomin)  {Zoom in (Ctrl+M)}
@@ -72,7 +72,7 @@ proc createEmbeddedModuleInspector {w} {
 
     packIconButton $tb.back    -image $icons(back)    -command "inspector:back $w"
     packIconButton $tb.forward -image $icons(forward) -command "inspector:forward $w"
-    packIconButton $tb.owner   -image $icons(parent)  -command "inspector:inspectOwner $w" ;#TODO ehelyett inspectParent kellene, ami megáll a rootnál!!!
+    packIconButton $tb.parent  -image $icons(parent)  -command "inspector:inspectParent $w"
     packIconButton $tb.sep1    -separator
     packIconButton $tb.mrun    -image $icons(mrun)    -command "runSimulationLocal $w normal"
     packIconButton $tb.mfast   -image $icons(mfast)   -command "runSimulationLocal $w fast"
@@ -84,7 +84,7 @@ proc createEmbeddedModuleInspector {w} {
     packIconButton $tb.showlabels -image $icons(modnames) -command "ModuleInspector:toggleLabels $w"
     packIconButton $tb.showarrowheads -image $icons(arrowhead) -command "ModuleInspector:toggleArrowheads $w"
 
-    set help_tips($tb.owner)   {Inspect parent}
+    set help_tips($tb.parent)  {Inspect parent}
     set help_tips($tb.mrun)    {Run until next event in this module}
     set help_tips($tb.mfast)   {Fast run until next event in this module (Ctrl+F4)}
     set help_tips($tb.stop)    {Stop the simulation (F8)}
@@ -1183,7 +1183,7 @@ proc ModuleInspector:popOutToolbarButtons {w} {
         $w.toolbar.minfo config -relief flat
         $w.toolbar.type config -relief flat
         $w.toolbar.objs config -relief flat
-        $w.toolbar.owner config -relief flat
+        $w.toolbar.parent config -relief flat
         $w.toolbar.stop config -relief flat
         $w.toolbar.redraw config -relief flat
         $w.toolbar.zoomin config -relief flat

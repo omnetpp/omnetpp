@@ -135,10 +135,8 @@ void Inspector::showWindow()
 void Inspector::refresh()
 {
     if (isToplevelWindow)
-    {
         refreshTitle();
-        CHK(Tcl_VarEval(interp, "inspector:refresh ", windowName, NULL));
-    }
+    CHK(Tcl_VarEval(interp, "inspector:refresh ", windowName, NULL));
 }
 
 void Inspector::refreshTitle()

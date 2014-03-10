@@ -47,13 +47,13 @@ proc createInspectorToplevel {w geom} {
     packIconButton $w.toolbar.sep0 -separator
     packIconButton $w.toolbar.back -image $icons(back) -command "inspector:back $w"
     packIconButton $w.toolbar.forward -image $icons(forward) -command "inspector:forward $w"
-    packIconButton $w.toolbar.owner -image $icons(parent) -command "inspector:inspectOwner $w"
+    packIconButton $w.toolbar.parent -image $icons(parent) -command "inspector:inspectParent $w"
     packIconButton $w.toolbar.sep01 -separator
     packIconButton $w.toolbar.inspectas -image $icons(inspectas) -command "inspector:inspectAsPopup $w $w.toolbar.inspectas"
     packIconButton $w.toolbar.copyobj -image $icons(copy) -command "inspector:namePopup $w $w.toolbar.copyobj"
     packIconButton $w.toolbar.objs -image $icons(findobj) -command "inspectFilteredObjectList $w"
 
-    set help_tips($w.toolbar.owner) {Inspect owner}
+    set help_tips($w.toolbar.parent) {Inspect parent}
     set help_tips($w.toolbar.inspectas) {Inspect}
     set help_tips($w.toolbar.copyobj) {Copy name, type or pointer}
     set help_tips($w.toolbar.objs) {Find objects (Ctrl+S)}
@@ -103,26 +103,33 @@ proc inspector:refresh {w} {
     global config help_tips
 
     set ptr [opp_inspector_getobject $w]
-    if [opp_isnull $ptr] {
-        $w.infobar.name config -text {n/a}
-        $w.toolbar.owner config -state disabled
-    } else {
-        # Info bar
-        set typename [opp_getobjectshorttypename $ptr]
-        set fullpath [opp_getobjectfullpath $ptr]
-        #set info [opp_getobjectinfostring $ptr]
-        set str "($typename) $fullpath"   ;#TODO short info?
-        $w.infobar.name config -text $str
 
-        # 'Inspect owner' button
-        set ownerptr [opp_getobjectowner $ptr]
-        if [opp_isnull $ownerptr] {set state disabled} else {set state normal}
-        $w.toolbar.owner config -state $state
-
-        if {[opp_inspector_supportsobject $w $ownerptr] && $config(reuse-inspectors)} {
-            set help_tips($w.toolbar.owner) {Go up}
+    # Info bar
+    if [opp_inspector_istoplevel $w] {  ;# FIXME add proper condition
+        if [opp_isnull $ptr] {
+            $w.infobar.name config -text {n/a}
         } else {
-            set help_tips($w.toolbar.owner) {Inspect owner}
+            set typename [opp_getobjectshorttypename $ptr]
+            set fullpath [opp_getobjectfullpath $ptr]
+            #set info [opp_getobjectinfostring $ptr]
+            set str "($typename) $fullpath"   ;#TODO short info?
+            $w.infobar.name config -text $str
+        }
+    }
+
+    if [winfo exist $w.toolbar.parent] {  ;#FIXME add proper condition
+        if [opp_isnull $ptr] {
+            $w.toolbar.parent config -state disabled
+        } else {
+            set parentptr [opp_getobjectparent $ptr]
+            if [opp_isnull $parentptr] {set state disabled} else {set state normal}
+            $w.toolbar.parent config -state $state
+
+            if {[opp_inspector_supportsobject $w $parentptr] && $config(reuse-inspectors)} {
+                set help_tips($w.toolbar.parent) {Go up}
+            } else {
+                set help_tips($w.toolbar.parent) {Inspect parent}
+            }
         }
     }
 
@@ -195,20 +202,20 @@ proc inspector:forward {w} {
     opp_inspectorcommand $w goforward
 }
 
-proc inspector:inspectOwner {w} {
+proc inspector:inspectParent {w} {
     global config
 
     set ptr [opp_inspector_getobject $w]
-    set ownerptr [opp_getobjectowner $ptr]
-    if [opp_isnull $ownerptr] {
+    set parentptr [opp_getobjectparent $ptr]
+    if [opp_isnull $parentptr] {
         return
     }
 
     # inspect in current inspector if possible (and allowed), otherwise open a new one
-    if {[opp_inspector_supportsobject $w $ownerptr] && $config(reuse-inspectors)} {
-        opp_inspector_setobject $w $ownerptr
+    if {[opp_inspector_supportsobject $w $parentptr] && $config(reuse-inspectors)} {
+        opp_inspector_setobject $w $parentptr
     } else {
-        opp_inspect $ownerptr "(default)"
+        opp_inspect $parentptr "(default)"
     }
 }
 

@@ -18,7 +18,7 @@ proc createLogInspector {w geom} {
     global icons fonts help_tips B2 B3
 
     createInspectorToplevel $w $geom
-    set help_tips($w.toolbar.owner)  {Inspect parent}
+    set help_tips($w.toolbar.parent)  {Inspect parent}
 
     packIconButton $w.toolbar.sep1 -separator
     textWindowAddIcons $w modulewindow
