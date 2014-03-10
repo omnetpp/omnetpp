@@ -85,7 +85,6 @@ public class AnimationContributor extends EditorActionBarContributor implements 
     public final static String IMAGE_SEND_SELF_MESSAGE = TOOL_IMAGE_DIR + "SendSelfMessage.png";
     public final static String IMAGE_HANDLE_MESSAGE = TOOL_IMAGE_DIR + "HandleMessage.png";
 
-    protected static AnimationContributor singleton;
     protected AnimationCanvas animationCanvas;
 
     protected AnimationAction increaseAnimationSpeedAction;
@@ -121,11 +120,8 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         this.copyToClipboardAction = createCopyToClipboardAction();
         this.refreshAction = createRefreshAction();
         this.pinAction = createPinAction();
-		this.animationPositionContribution = createAnimationPositionContribution();
-
-		if (singleton == null)
-			singleton = this;
-	}
+        this.animationPositionContribution = createAnimationPositionContribution();
+    }
 
     public AnimationContributor(AnimationCanvas animationCanvas) {
 		this();
@@ -133,21 +129,11 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 		animationCanvas.addSelectionChangedListener(this);
 	}
 
-    public static AnimationContributor getDefault() {
-        if (singleton == null)
-            singleton = new AnimationContributor();
-
-        return singleton;
-    }
-
 	@Override
 	public void dispose() {
 	    if (animationCanvas != null)
 	        animationCanvas.removeSelectionChangedListener(this);
-
 	    animationCanvas = null;
-		singleton = null;
-
 		super.dispose();
 	}
 
@@ -234,6 +220,8 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 				animationCanvas.getAnimationController().removeAnimationListener(this);
 			}
 			animationCanvas = ((AnimationEditor)targetEditor).getAnimationCanvas();
+            if (animationCanvas.getAnimationContributor() == null)
+                animationCanvas.setAnimationContributor(this);
 			getPage().addPartListener(this);
 			animationCanvas.addSelectionChangedListener(this);
 			animationCanvas.getAnimationController().addAnimationListener(this);

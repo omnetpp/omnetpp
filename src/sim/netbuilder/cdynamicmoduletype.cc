@@ -64,7 +64,7 @@ bool cDynamicModuleType::isSimple() const
 
 cModule *cDynamicModuleType::createModuleObject()
 {
-    const char *classname = getDecl()->implementationClassName();
+    const char *classname = getDecl()->getImplementationClassName();
     ASSERT(classname!=NULL);
     return instantiateModuleClass(classname);
 }
@@ -126,7 +126,13 @@ std::string cDynamicModuleType::getPackageProperty(const char *name) const
 const char *cDynamicModuleType::getImplementationClassName() const
 {
     cNEDDeclaration *decl = getDecl();
-    return decl->implementationClassName();
+    return decl->getImplementationClassName();
+}
+
+std::string cDynamicModuleType::getCxxNamespace() const
+{
+    cNEDDeclaration *decl = getDecl();
+    return decl->getCxxNamespace();
 }
 
 bool cDynamicModuleType::isInnerType() const

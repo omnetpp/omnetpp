@@ -1,3 +1,15 @@
+2014-02-13  ------ omnetpp-4.4.1 released ------
+
+2014-02-11  Andras Varga
+
+	* ned2.lex: fix #715: allow wildcards in property indices, for @signal;
+	allowed characters are *,?,{, and } (not [ and ] though)
+
+2014-02-11  Andras Varga
+
+	* opp_msgc: fix related to namespace qualifier of base classes in
+	generated code
+
 2014-01-31  Andras Varga
 
 	* opp_msgc: fix bug #655 "opp_msgc does not respect namespace when

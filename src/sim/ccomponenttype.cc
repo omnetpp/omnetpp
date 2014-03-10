@@ -162,7 +162,7 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
             if (strcmp(signalName, declaredSignalNames[i]) == 0)
                 break;
             if (PatternMatcher::containsWildcards(declaredSignalNames[i]) &&
-                    PatternMatcher(declaredSignalNames[i], false, true, true).matches(declaredSignalNames[i]))
+                    PatternMatcher(declaredSignalNames[i], false, true, true).matches(signalName))
                 break;
         }
         if (i == declaredSignalNames.size())
@@ -180,11 +180,11 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
             // if declaredType ends in a question mark, the signal allows NULL to be emitted as well
             if (declaredType[strlen(declaredType)-1] == '?') {
                 std::string netDeclaredType = std::string(declaredType, strlen(declaredType)-1);
-                desc.objectType = cObjectFactory::find(netDeclaredType.c_str());
+                desc.objectType = lookupClass(netDeclaredType.c_str());
                 desc.isNullable = true;
             }
             else {
-                desc.objectType = cObjectFactory::find(declaredType);
+                desc.objectType = lookupClass(declaredType);
             }
             if (!desc.objectType)
                 throw cRuntimeError("Wrong type \"%s\" in the @signal[%s] property in the \"%s\" NED type, "
@@ -201,7 +201,7 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
     {
         if (desc.type == SIMSIGNAL_OBJECT)
         {
-            if (!desc.objectType->isInstance(obj))
+            if (desc.objectType && !desc.objectType->isInstance(obj))
             {
                 cITimestampedValue *timestampedValue = dynamic_cast<cITimestampedValue*>(obj);
                 cObject *innerObj;
@@ -244,6 +244,19 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
         throw cRuntimeError("Signal \"%s\" emitted with wrong data type (expected=%s, actual=%s)",
                 cComponent::getSignalName(signalID), getSignalTypeName(desc.type), getSignalTypeName(type));
     }
+}
+
+cObjectFactory *cComponentType::lookupClass(const char *className) const
+{
+    if (className[0]==':' && className[1]==':')
+        return cObjectFactory::find(className+2);
+    cObjectFactory *result = NULL;
+    std::string cxxNamespace = getCxxNamespace();
+    if (!cxxNamespace.empty())
+        result = cObjectFactory::find((cxxNamespace + "::" + className).c_str());
+    if (!result)
+        result = cObjectFactory::find(className);
+    return result;
 }
 
 //----

@@ -128,7 +128,6 @@ public abstract class AnimationEditor extends EventLogEditor implements IAnimati
         animationCanvas = createAnimationCanvas(parent);
         animationCanvas.setInput(eventLogInput);
         animationCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        animationCanvas.setAnimationContributor(AnimationContributor.getDefault());
         animationCanvas.setWorkbenchPart(this);
         animationCanvas.setAnimationController(animationController);
         animationController.setAnimationCanvas(animationCanvas);

@@ -39,6 +39,13 @@
 	* Implemented simulation lifecycle listeners; see the ChangeLog in
 	include/.
 
+2014-02-11  Andras Varga
+
+	* signal checking: fix #714: class name resolution for @signal type attr
+	should take @namespace into account
+
+2014-02-13  ------ omnetpp-4.4.1 released ------
+
 2013-12-20  ------ omnetpp-4.4 released ------
 
 2014-01-07  Andras Varga
@@ -55,7 +62,7 @@
 2013-12-17  Rudolf Hornig
 
 	* Removed a compatibility macro required for INET 2.0 to compile with
-	OMNeT++ 4.3; INET 2.1 and later does not need it . (If you want to
+	OMNeT++ 4.3; INET 2.1 and later do not need it. (If you want to
 	compile INET 2.0 with OMNeT++ 4.4, you need change getFieldArraySize()
 	method calls in the source to getArraySize()).
 

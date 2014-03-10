@@ -86,7 +86,6 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
     public final static String IMAGE_NAME_MODE = TOOL_IMAGE_DIR + "NameMode.gif";
     public final static String IMAGE_LINE_FILTER_MODE = TOOL_IMAGE_DIR + "LineFilterMode.png";
 
-    private static EventLogTableContributor singleton;
     private EventLogTable eventLogTable;
 
     private EventLogTableAction gotoMessageOriginAction;
@@ -116,11 +115,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         this.filterAction = createFilterAction();
         this.refreshAction = createRefreshAction();
         this.pinAction = createPinAction();
-
         this.filterStatus = createFilterStatus();
-
-        if (singleton == null)
-            singleton = this;
     }
 
     public EventLogTableContributor(EventLogTable eventLogTable) {
@@ -133,21 +128,12 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
     public void dispose() {
         if (eventLogTable != null)
             eventLogTable.removeSelectionChangedListener(this);
-
         eventLogTable = null;
-        singleton = null;
-
         super.dispose();
     }
 
     private IEventLog getEventLog() {
         return eventLogTable.getEventLog();
-    }
-
-    public static EventLogTableContributor getDefault() {
-        Assert.isTrue(singleton != null);
-
-        return singleton;
     }
 
     /*************************************************************************************
@@ -241,6 +227,8 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                 eventLogTable.removeSelectionChangedListener(this);
             }
             eventLogTable = ((EventLogTableEditor)targetEditor).getEventLogTable();
+            if (eventLogTable.getEventLogTableContributor() == null)
+                eventLogTable.setEventLogTableContributor(this);
             eventLogInput = eventLogTable.getEventLogInput();
             if (eventLogInput != null)
                 eventLogInput.addEventLogChangedListener(this);

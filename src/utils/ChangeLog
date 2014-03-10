@@ -17,6 +17,8 @@
 	from the SMC project web site, http://smc.sourceforge.net.
 	statemap.h, part of SMC, has also been added under omnetpp/include.
 
+2014-02-13  ------ omnetpp-4.4.1 released ------
+
 2013-12-20  ------ omnetpp-4.4 released ------
 
 2013-09-12  ------ omnetpp-4.3.1 released ------
@@ -91,7 +93,7 @@
 	a >32K command line, and fails... There seems to be no other solution
 	than splitting up the project's sources to multiple libs..
 
-2010-03-31  Levente Mészáros
+2010-03-31  Levente Mï¿½szï¿½ros
 
 	* opp_test: added new entries called %file-exists and %file-not-exists
 	with a single file name parameter.

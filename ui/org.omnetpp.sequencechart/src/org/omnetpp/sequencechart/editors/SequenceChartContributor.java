@@ -161,7 +161,6 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     public final static String IMAGE_ATTACH_VECTOR_TO_AXIS = TOOL_IMAGE_DIR + "attachvector.png";
     public final static String IMAGE_EXPORT_SVG = TOOL_IMAGE_DIR + "export_wiz.gif";
 
-    private static SequenceChartContributor singleton;
     private SequenceChart sequenceChart;
 
     private SequenceChartMenuAction timelineModeAction;
@@ -241,9 +240,6 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
         this.timelineModeStatus = createTimelineModeStatus();
         this.filterStatus = createFilterStatus();
-
-        if (singleton == null)
-            singleton = this;
     }
 
     public SequenceChartContributor(SequenceChart sequenceChart) {
@@ -256,21 +252,12 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     public void dispose() {
         if (sequenceChart != null)
             sequenceChart.removeSelectionChangedListener(this);
-
         sequenceChart = null;
-        singleton = null;
-
         super.dispose();
     }
 
     private IEventLog getEventLog() {
         return sequenceChart.getEventLog();
-    }
-
-    public static SequenceChartContributor getDefault() {
-        Assert.isTrue(singleton != null);
-
-        return singleton;
     }
 
     /*************************************************************************************
@@ -457,6 +444,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 sequenceChart.removeSelectionChangedListener(this);
             }
             sequenceChart = ((SequenceChartEditor)targetEditor).getSequenceChart();
+            if (sequenceChart.getSequenceChartContributor() == null)
+                sequenceChart.setSequenceChartContributor(this);
             eventLogInput = sequenceChart.getInput();
             if (eventLogInput != null)
                 eventLogInput.addEventLogChangedListener(this);

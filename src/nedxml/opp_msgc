@@ -1364,19 +1364,19 @@ sub generateClass
         if ($keyword eq "message" or $keyword eq "packet") {
             # CAREFUL when assigning values to existing members gets implemented!
             # The msg kind passed to the ctor should take priority!!!
-            print CC "$msgclass\:\:$msgclass(const char *name, int kind) : $msgbaseclass(name,kind)\n";
+            print CC "$msgclass\:\:$msgclass(const char *name, int kind) : \:\:$msgbaseclass(name,kind)\n";
         } else {
             if ($msgbaseclass eq "") {
                 print CC "$msgclass\:\:$msgclass(const char *name)\n";
             } else {
-                print CC "$msgclass\:\:$msgclass(const char *name) : $msgbaseclass(name)\n";
+                print CC "$msgclass\:\:$msgclass(const char *name) : \:\:$msgbaseclass(name)\n";
             }
         }
     } else {
         if ($msgbaseclass eq "") {
             print CC "$msgclass\:\:$msgclass()\n";
         } else {
-            print CC "$msgclass\:\:$msgclass() : $msgbaseclass()\n";
+            print CC "$msgclass\:\:$msgclass() : \:\:$msgbaseclass()\n";
         }
     }
     print CC "{\n";
@@ -1420,7 +1420,7 @@ sub generateClass
     if ($msgbaseclass eq "") {
         print CC "$msgclass\:\:$msgclass(const $msgclass& other)\n";
     } else {
-        print CC "$msgclass\:\:$msgclass(const $msgclass& other) : $msgbaseclass(other)\n";
+        print CC "$msgclass\:\:$msgclass(const $msgclass& other) : \:\:$msgbaseclass(other)\n";
     }
     print CC "{\n";
     foreach my $fieldname (@fieldlist)
@@ -1467,7 +1467,7 @@ sub generateClass
     print CC "{\n";
     print CC "    if (this==&other) return *this;\n";
     if ($msgbaseclass ne "") {
-        print CC "    $msgbaseclass\:\:operator=(other);\n";
+        print CC "    \:\:$msgbaseclass\:\:operator=(other);\n";
     }
     print CC "    copy(other);\n";
     print CC "    return *this;\n";
@@ -1517,9 +1517,9 @@ sub generateClass
     print CC "{\n";
     if ($msgbaseclass ne "") {
         if ($classtype eq "cownedobject" || $classtype eq "cnamedobject" || $classtype eq "cobject") {
-            print CC "    $msgbaseclass\:\:parsimPack(b);\n" unless ($msgbaseclass eq "cObject");
+            print CC "    \:\:$msgbaseclass\:\:parsimPack(b);\n" unless ($msgbaseclass eq "cObject");
         } else {
-            print CC "    doPacking(b,($msgbaseclass&)*this);\n"; # this would do for cOwnedObject too, but the other is nicer
+            print CC "    doPacking(b,(\:\:$msgbaseclass&)*this);\n"; # this would do for cOwnedObject too, but the other is nicer
         }
     }
     foreach my $fieldname (@fieldlist)
@@ -1545,9 +1545,9 @@ sub generateClass
     print CC "{\n";
     if ($msgbaseclass ne "") {
         if ($classtype eq "cownedobject" || $classtype eq "cnamedobject" || $classtype eq "cobject") {
-            print CC "    $msgbaseclass\:\:parsimUnpack(b);\n" unless ($msgbaseclass eq "cObject");
+            print CC "    \:\:$msgbaseclass\:\:parsimUnpack(b);\n" unless ($msgbaseclass eq "cObject");
         } else {
-            print CC "    doUnpacking(b,($msgbaseclass&)*this);\n"; # this would do for cOwnedObject too, but the other is nicer
+            print CC "    doUnpacking(b,(\:\:$msgbaseclass&)*this);\n"; # this would do for cOwnedObject too, but the other is nicer
         }
     }
     foreach my $fieldname (@fieldlist)
@@ -1654,7 +1654,7 @@ sub generateStruct
     if ($msgbaseclass eq "") {
         print H "struct $exportdef$msgclass\n";
     } else {
-        print H "struct $exportdef$msgclass : public $msgbaseclass\n";
+        print H "struct $exportdef$msgclass : public \:\:$msgbaseclass\n";
     }
     print H "{\n";
     print H "    $msgclass();\n";
@@ -1698,7 +1698,7 @@ sub generateStruct
     print CC "void doPacking(cCommBuffer *b, $msgclass& a)\n";
     print CC "{\n";
     if ($msgbaseclass ne "") {
-        print CC "    doPacking(b,($msgbaseclass&)a);\n";
+        print CC "    doPacking(b,(\:\:$msgbaseclass&)a);\n";
     }
     foreach my $fieldname (@fieldlist)
     {
@@ -1713,7 +1713,7 @@ sub generateStruct
     print CC "void doUnpacking(cCommBuffer *b, $msgclass& a)\n";
     print CC "{\n";
     if ($msgbaseclass ne "") {
-        print CC "    doUnpacking(b,($msgbaseclass&)a);\n";
+        print CC "    doUnpacking(b,(\:\:$msgbaseclass&)a);\n";
     }
     foreach my $fieldname (@fieldlist)
     {

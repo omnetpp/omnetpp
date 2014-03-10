@@ -8,7 +8,7 @@
 # *** check settings below -- also ltoh.specs for \opp definition! ***
 #$product = "OMNEST";
 $product = "OMNeT++";
-$opp_version = "4.2";
+$opp_version = "4.x";
 $templatefile = "omnetpp.thtml";
 #$templatefile = "omnest.thtml";
 
@@ -34,6 +34,9 @@ while (@ARGV)
     }
     elsif ($arg eq "--template") {
         $templatefile = shift @ARGV;
+    }
+    elsif ($arg eq "--opp_version") {
+        $opp_version = shift @ARGV;
     }
     elsif ($arg =~ /^-/) {
           die("unrecognized option: $arg");

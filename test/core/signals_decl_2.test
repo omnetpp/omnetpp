@@ -1,0 +1,52 @@
+%description:
+Namespace lookup of class names in @signal type attr
+
+%file: test.msg
+namespace @TESTNAME@;
+
+message Foo { }
+class cMessage { }  // so we have similarly named but unrelated classes in 2 different namespaces (@TESTNAME@::cMessage, ::cMessage)
+
+%file: test.ned
+
+simple Test extends testlib.SignalSource
+{
+    @isNetwork(true);
+    @signal[f0](type="Foo"); // should be understood as @TESTNAME@::Foo
+    @signal[m0](type="cMessage"); // should be understood as @TESTNAME@::cMessage
+    @signal[m1](type="@TESTNAME@::cMessage"); // ditto
+    @signal[m2](type="::cMessage"); // the OMNeT++ class
+
+    script = xml("<root>\
+       <e at='init' name='f0' type='@TESTNAME@::Foo' value=''/> \
+       <e at='init' name='m0' type='@TESTNAME@::cMessage' value=''/> \
+       <e at='init' name='m1' type='@TESTNAME@::cMessage' value=''/> \
+       <e at='init' name='m2' type='cMessage' value=''/> \
+       <!-- bad: --> \
+       <e at='init' name='m0' type='cMessage' value=''/> \
+       <e at='init' name='m1' type='cMessage' value=''/> \
+       <e at='init' name='m2' type='@TESTNAME@::cMessage' value=''/> \
+    </root>");
+}
+
+%inifile: omnetpp.ini
+network = Test
+cmdenv-express-mode = false
+check-signals = true
+
+%exitcode: 0
+
+%contains: stdout
+t=0s: emit "f0" type=@TESTNAME@::Foo value=
+t=0s: emit "m0" type=@TESTNAME@::cMessage value=
+t=0s: emit "m1" type=@TESTNAME@::cMessage value=
+t=0s: emit "m2" type=cMessage value=
+t=0s: emit "m0" type=cMessage value=
+ERROR: Signal "m0" emitted with wrong class (cMessage does not subclass from @TESTNAME@::cMessage as declared)
+t=0s: emit "m1" type=cMessage value=
+ERROR: Signal "m1" emitted with wrong class (cMessage does not subclass from @TESTNAME@::cMessage as declared)
+t=0s: emit "m2" type=@TESTNAME@::cMessage value=
+ERROR: Signal "m2" emitted with wrong class (@TESTNAME@::cMessage does not subclass from cMessage as declared)
+
+%contains-regex: stdout
+emitted 7 signals

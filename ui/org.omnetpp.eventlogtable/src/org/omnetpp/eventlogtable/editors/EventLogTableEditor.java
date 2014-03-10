@@ -109,7 +109,6 @@ public class EventLogTableEditor
     public void createPartControl(final Composite parent) {
         eventLogTable = new EventLogTable(parent, SWT.NONE);
         eventLogTable.setInput(eventLogInput);
-        eventLogTable.setEventLogTableContributor(EventLogTableContributor.getDefault());
         eventLogTable.setWorkbenchPart(this);
         eventLogTable.setRunnableContextForLongRunningOperations(new IRunnableContext() {
             @Override

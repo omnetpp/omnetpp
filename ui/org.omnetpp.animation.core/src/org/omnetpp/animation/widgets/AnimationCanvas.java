@@ -50,6 +50,8 @@ public class AnimationCanvas extends EditableFigureCanvas implements ISelectionP
 
     private EventLogInput eventLogInput; // the Java input object
 
+    private AnimationContributor animationContributor;
+
     private AnimationController animationController;
 
     private IWorkbenchPart workbenchPart;
@@ -85,7 +87,12 @@ public class AnimationCanvas extends EditableFigureCanvas implements ISelectionP
         return animationController;
     }
 
+    public AnimationContributor getAnimationContributor() {
+        return animationContributor;
+    }
+
     public void setAnimationContributor(AnimationContributor animationContributor) {
+        this.animationContributor = animationContributor;
         MenuManager menuManager = new MenuManager();
         animationContributor.contributeToPopupMenu(menuManager);
         Menu menu = menuManager.createContextMenu(this);

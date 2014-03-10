@@ -48,6 +48,7 @@ class SIM_API cDynamicChannelType : public cChannelType
     virtual cProperties *getConnectionProperties(int connectionId, const char *channelType) const;
     virtual std::string getPackageProperty(const char *name) const;
     virtual const char *getImplementationClassName() const;
+    virtual std::string getCxxNamespace() const;
     virtual bool isInnerType() const;
 
   public:

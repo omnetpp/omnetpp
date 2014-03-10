@@ -3,6 +3,8 @@
 	* Removed eventlog support for module reparenting (i.e. logging of
 	cModule::changeParentTo()), because tools cannot easily support it
 
+2014-02-13  ------ omnetpp-4.4.1 released ------
+
 2013-12-20  ------ omnetpp-4.4 released ------
 
 2013-11-14  Rudolf Hornig

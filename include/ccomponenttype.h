@@ -99,6 +99,9 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     cParImpl *getSharedParImpl(cParImpl *p) const;
     void putSharedParImpl(cParImpl *p);
 
+    // internal: helper for checkSignal()
+    cObjectFactory *lookupClass(const char *className) const;
+
   public:
     // internal: delegates to the similar NedTypeInfo method
     virtual std::string getPackageProperty(const char *name) const {return "";}
@@ -108,6 +111,9 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
 
     // internal: delegates to the similar NedTypeInfo method
     virtual bool isInnerType() const {return false;}
+
+    // internal: return the default C++ namespace at this NED type (for NED it's the @namespace package property)
+    virtual std::string getCxxNamespace() const {return "";}
 
     // internal: used by cComponent::emit() methods to validate signals
     virtual void checkSignal(simsignal_t signalID, SimsignalType type, cObject *obj = NULL);
