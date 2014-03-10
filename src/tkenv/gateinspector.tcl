@@ -46,8 +46,8 @@ proc createGateViewer {w} {
     set inspectordata($c:showarrowheads) 1
 
     frame $w.grid
-    scrollbar $w.hsb -orient horiz -command "$c xview"
-    scrollbar $w.vsb -command "$c yview"
+    ttk::scrollbar $w.hsb -orient horiz -command "$c xview"
+    ttk::scrollbar $w.vsb -command "$c yview"
     canvas $c -background #a0e0a0 -relief raised \
         -xscrollcommand "$w.hsb set" \
         -yscrollcommand "$w.vsb set"

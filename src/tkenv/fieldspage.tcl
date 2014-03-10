@@ -22,8 +22,8 @@ proc createFieldsPage {f w} {
     global B2 B3
 
     # create treeview with scrollbars
-    scrollbar $f.vsb -command "$f.tree yview"
-    scrollbar $f.hsb -command "$f.tree xview" -orient horiz
+    ttk::scrollbar $f.vsb -command "$f.tree yview"
+    ttk::scrollbar $f.hsb -command "$f.tree xview" -orient horiz
     canvas $f.tree -bg white -relief sunken -bd 2
     $f.tree config -yscrollcommand "$f.vsb set" -xscrollcommand "$f.hsb set"
 

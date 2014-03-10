@@ -30,8 +30,8 @@ proc createInspectorListbox {f w} {
     $lb column name  -stretch 0 -width 120
     $lb column info  -stretch 0 -width 300
 
-    scrollbar $f.main.hsb  -command "$f.main.list xview" -orient horiz
-    scrollbar $f.main.vsb  -command "$f.main.list yview"
+    ttk::scrollbar $f.main.hsb  -command "$f.main.list xview" -orient horiz
+    ttk::scrollbar $f.main.vsb  -command "$f.main.list yview"
     grid $f.main.list $f.main.vsb -sticky news
     grid $f.main.hsb  x           -sticky news
     grid rowconfig    $f.main 0 -weight 1 -minsize 0

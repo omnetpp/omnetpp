@@ -38,7 +38,7 @@ proc createEmbeddedLogInspector {w} {
 proc createLogViewer {w} {
     global fonts
     text $w.text -yscrollcommand "$w.sb set" -width 80 -height 15 -font $fonts(text)
-    scrollbar $w.sb -command "$w.text yview"
+    ttk::scrollbar $w.sb -command "$w.text yview"
     logTextWidget:configureTags $w.text
 
     pack $w.sb -anchor center -expand 0 -fill y -side right

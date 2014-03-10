@@ -102,8 +102,8 @@ proc createGraphicalModuleViewer {w} {
     pack $w.grid -expand yes -fill both -padx 1 -pady 1
 
     set c $w.c
-    scrollbar $w.hsb -orient horiz -command "$c xview"
-    scrollbar $w.vsb -command "$c yview"
+    ttk::scrollbar $w.hsb -orient horiz -command "$c xview"
+    ttk::scrollbar $w.vsb -command "$c yview"
     canvas $c -background "#a0e0a0" -relief raised -closeenough 2 \
         -xscrollcommand "$w.hsb set" \
         -yscrollcommand "$w.vsb set"

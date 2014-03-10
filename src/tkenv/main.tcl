@@ -446,7 +446,7 @@ proc mainWindow:createTreeView {} {
     frame $f -relief flat -borderwidth 1
 
     canvas $f.tree -bg #ffffe0 -bd 0 -yscrollcommand "$f.sb set"
-    scrollbar $f.sb -command "$f.tree yview"
+    ttk::scrollbar $f.sb -command "$f.tree yview"
     pack $f.sb -side right -expand 0 -fill y
     pack $f.tree -side left -expand 1 -fill both -padx 0 -pady 0 -ipadx 0 -ipady 0
 

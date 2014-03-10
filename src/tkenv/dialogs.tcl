@@ -835,8 +835,8 @@ proc moduleOutputFilterDialog {rootmodule excludedModuleIds} {
 
     canvas $w.f.f.c -width 300 -height 350 -bd 0 -relief flat -yscrollcommand "$w.f.f.vsb set"
     #   -xscrollcommand "$w.f.f.hsb set"
-    #scrollbar $w.f.f.hsb -command "$w.f.f.c xview" -orient horiz
-    scrollbar $w.f.f.vsb -command "$w.f.f.c yview"
+    #ttk::scrollbar $w.f.f.hsb -command "$w.f.f.c xview" -orient horiz
+    ttk::scrollbar $w.f.f.vsb -command "$w.f.f.c yview"
     grid $w.f.f.c   $w.f.f.vsb  -sticky news
     #grid $w.f.f.hsb x           -sticky news
     grid rowconfig $w.f.f 0 -weight 1
