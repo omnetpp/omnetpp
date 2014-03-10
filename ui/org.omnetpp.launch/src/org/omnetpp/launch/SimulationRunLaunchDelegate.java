@@ -95,9 +95,6 @@ public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
         configuration = OmnetppLaunchUtils.createUpdatedLaunchConfig(configuration, mode);
         OmnetppLaunchUtils.replaceConfigurationInLaunch(launch, configuration);
 
-        if (monitor == null)
-            monitor = new NullProgressMonitor();
-
         monitor.beginTask("Launching Simulation", 1);
 
         int runs[] = OmnetppLaunchUtils.parseRuns(configuration.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, ""),
@@ -133,7 +130,6 @@ public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
             job = new BatchedSimulationLauncherJob(configuration, launch, runs, numProcesses);
 
         job.schedule();
-        monitor.done();
 
         // open simulation front-end
         if (openSimulationEditor) {

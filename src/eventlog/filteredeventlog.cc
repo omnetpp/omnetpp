@@ -199,6 +199,7 @@ FilteredEvent *FilteredEventLog::getApproximateEventAt(double percentage)
             return filteredEvent;
 
         Assert(false);
+        return NULL;
     }
 }
 

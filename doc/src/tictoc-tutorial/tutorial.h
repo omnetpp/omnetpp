@@ -74,7 +74,7 @@ The file is best read from the bottom up. Here's what it says:
      and one output gate named out (<tt>simple ... { ... }</tt>).
 
 3. We now need to implement the functionality of the simple module Txc1. This is
-achieved by writing a C++ file txc1.cc:
+achieved by writing a C++ file @ref txc1.cc:
 
 @include txc1.cc
 
