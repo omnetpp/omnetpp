@@ -68,6 +68,20 @@ proc GenericObjectInspector:onSetObject {w} {
     }
 }
 
+proc GenericObjectInspector:refresh {w} {
+    fieldsPage:refresh $w
+
+    set lb $w.nb.contents.main.list
+    ttkTreeview:deleteAll $lb
+    set ptr [opp_inspector_getobject $w]
+    if [opp_isnull $ptr] {
+        $w.nb tab $w.nb.contents -text "Contents (0)"
+    } else {
+        set count [opp_fillinspectorlistbox $lb $ptr 0]
+        $w.nb tab $w.nb.contents -text "Contents ($count)"
+    }
+}
+
 proc lcontains {list item} {
     set i [lsearch -exact $list $item]
     return [expr $i != -1]

@@ -79,16 +79,7 @@ void GenericObjectInspector::refresh()
 {
    Inspector::refresh();
 
-   // refresh "fields" page
-   CHK(Tcl_VarEval(interp, "fieldsPage:refresh ", windowName, NULL));
-
-   // refresh "contents" page
-   if (true) //FIXME!!!!!!!!!!!!!!!
-   {
-       clearInspectorListbox(".nb.contents");
-       if (object)
-           fillInspectorListbox(".nb.contents", object, false);
-   }
+   CHK(Tcl_VarEval(interp, "GenericObjectInspector:refresh ", windowName, NULL));
 }
 
 void GenericObjectInspector::commit()

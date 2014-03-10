@@ -161,6 +161,7 @@ int getClassDescriptor_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getClassDescriptorFor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
 int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
 int getNameForEnum_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
+int fillInspectorListbox_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int nullPointer_cmd(ClientData, Tcl_Interp *, int, const char **);
 int isNullPointer_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -279,6 +280,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getclassdescriptorfor", getClassDescriptorFor_cmd}, // args: <objptr>
    { "opp_classdescriptor",   classDescriptor_cmd   }, // args: <descrptr> <objptr> ...
    { "opp_getnameforenum",    getNameForEnum_cmd    }, // args: <enumname> <number>
+   { "opp_fillinspectorlistbox",fillInspectorListbox_cmd}, // args: <listbox> <objptr> <deepflag>
 
    // Functions that return object pointers
    { "opp_null",                nullPointer_cmd        },
@@ -2331,6 +2333,23 @@ int getNameForEnum_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    cEnum *e = cEnum::find(enumName);
    Tcl_SetResult(interp, TCLCONST(e ? e->getStringFor(value) : ""), TCL_VOLATILE);
    return TCL_OK;
+}
+
+int fillInspectorListbox_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+    if (argc!=4) {Tcl_SetResult(interp, TCLCONST("3 args expected"), TCL_STATIC); return TCL_ERROR;}
+    const char *listbox = argv[1];
+    cObject *object = strToPtr(argv[2]);
+    if (!object) {Tcl_SetResult(interp, TCLCONST("object is null"), TCL_STATIC); return TCL_ERROR;}
+    bool deep = atoi(argv[3])!=0;
+
+    int count;
+    TRY(count = fillListboxWithChildObjects(object, interp, listbox, deep));
+
+    char buf[20];
+    sprintf(buf, "%d", count);
+    Tcl_SetResult(interp, buf, TCL_VOLATILE);
+    return TCL_OK;
 }
 
 int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
