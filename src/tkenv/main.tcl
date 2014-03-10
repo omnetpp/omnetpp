@@ -106,11 +106,11 @@ proc createOmnetppWindow {} {
     pack .timeline   -anchor center -expand 0 -fill x -side top
 
     # Create main display area
-    panedwindow .main -orient horizontal
+    panedwindow .main -orient horizontal -sashrelief raised
     pack .main -expand 1 -fill both -side top
 
-    panedwindow .main.left -orient vertical
-    panedwindow .main.right -orient vertical
+    panedwindow .main.left -orient vertical -sashrelief raised
+    panedwindow .main.right -orient vertical -sashrelief raised
     .main add .main.left .main.right
 
     set treeview [mainWindow:createTreeView]

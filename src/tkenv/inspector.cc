@@ -355,30 +355,20 @@ void Inspector::clearInspectorListbox(const char *listbox)
 
 void Inspector::fillInspectorListbox(const char *listbox, cObject *object, bool deep)
 {
-   char w[256], buf[256];
+   char w[256];
    sprintf(w, "%s%s.main.list", windowName,listbox);
    int n = fillListboxWithChildObjects(object, interp, w, deep);
-
-   // set "number of items" display
-   sprintf(w, "%s.label", listbox);
-   sprintf(buf,"%d objects", n);
-   setLabel(w, buf);
 }
 
 void Inspector::fillListboxWithSubmodules(const char *listbox, cModule *parent)
 {
-   char w[256], buf[256];
+   char w[256];
    sprintf(w, "%s%s.main.list", windowName,listbox);
 
    // feed into listbox
    int n = 0;
    for (cModule::SubmoduleIterator submod(parent); !submod.end(); submod++, n++)
         insertIntoInspectorListbox(interp, w, submod(), false);
-
-   // set "number of items" display
-   sprintf(w, "%s.label", listbox);
-   sprintf(buf,"%d modules", n);
-   setLabel(w, buf);
 }
 
 NAMESPACE_END

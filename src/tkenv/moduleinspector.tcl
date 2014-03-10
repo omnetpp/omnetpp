@@ -47,10 +47,6 @@ proc createModuleInspector {w geom} {
     set help_tips($w.toolbar.showlabels) {Show module names (Ctrl+D)}
     set help_tips($w.toolbar.showarrowheads) {Show arrowheads (Ctrl+A)}
 
-    # add zoom status
-    label $w.infobar.zoominfo -text "" -anchor e -relief flat -justify right
-    pack $w.infobar.zoominfo -anchor n -side right -expand 0 -fill none -pady 1
-
     # create canvas
     createGraphicalModuleViewer $w
 
@@ -1160,13 +1156,10 @@ proc ModuleInspector:zoomBy {w mult {snaptoone 0}} {
         opp_inspectorcommand $w redraw
         ModuleInspector:setScrollRegion $w 0
 
-        # update status display
+        # update zoom display
         set value [format "%.2f" $inspectordata($c:zoomfactor)]
-        if [opp_inspector_istoplevel $w] {
-            $w.infobar.zoominfo config -text "Zoom: ${value}x"
-        } else {
-            # TODO display in transient floating window?
-        }
+        #FIXME TODO display in transient floating window!
+        # $w.zoominfo config -text "Zoom: ${value}x"
     }
 
     ModuleInspector:popOutToolbarButtons $w

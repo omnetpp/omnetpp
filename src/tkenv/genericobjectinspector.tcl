@@ -20,6 +20,16 @@ proc createGenericObjectInspector {w geom} {
 }
 
 proc createEmbeddedGenericObjectInspector {w} {
+    global icons
+
+    # Create info bar
+    frame $w.infobar  -borderwidth 0
+    label $w.infobar.icon -anchor w -relief flat -image $icons(none_vs)
+    label $w.infobar.name -anchor w -relief flat -justify left
+    pack $w.infobar.icon -anchor n -side left -expand 0 -fill y -pady 1
+    pack $w.infobar.name -anchor n -side left -expand 1 -fill both -pady 1
+    pack $w.infobar -anchor w -side top -fill x -expand 0
+
     createGenericObjectViewer $w
 }
 
@@ -39,6 +49,7 @@ proc GenericObjectInspector:onSetObject {w} {
     global icons help_tips
 
     set object [opp_inspector_getobject $w]
+    if [opp_isnull $object] return  ;# leave inspector as it is
     set type [opp_getobjectbaseclass $object]
 
     set showContentsPage  [lcontains {cArray cQueue cMessageHeap cSimpleModule cCompoundModule cChannel cRegistrationList cSimulation } $type]

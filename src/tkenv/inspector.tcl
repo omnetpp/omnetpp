@@ -58,14 +58,6 @@ proc createInspectorToplevel {w geom} {
     set help_tips($w.toolbar.copyobj) {Copy name, type or pointer}
     set help_tips($w.toolbar.objs) {Find objects (Ctrl+S)}
 
-    # Create info bar
-    frame $w.infobar -relief raised -bd 1
-    label $w.infobar.icon -anchor w -relief flat -image $icons(cogwheel_vs)
-    label $w.infobar.name -anchor w -relief flat -justify left
-    pack $w.infobar.icon -anchor n -side left -expand 0 -fill y -pady 1
-    pack $w.infobar.name -anchor n -side left -expand 1 -fill both -pady 1
-    pack $w.infobar -anchor w -side top -fill x -expand 0
-
     # Keyboard bindings
     bind $w <Escape>     "catch {.popup unpost}"
     bind $w <Button-1>   "catch {.popup unpost}"
@@ -88,7 +80,7 @@ proc inspector:createInternalToolbar {w {parent ""}} {
 proc inspector:onSetObject {w} {
     set ptr [opp_inspector_getobject $w]
     set icon [inspector:getIconForObject $ptr]
-    if [opp_inspector_istoplevel $w] {
+    if [winfo exist $w.infobar] {  ;#FIXME add proper condition
         $w.infobar.icon config -image $icon
     }
     if {$w==".network"} {
@@ -105,7 +97,7 @@ proc inspector:refresh {w} {
     set ptr [opp_inspector_getobject $w]
 
     # Info bar
-    if [opp_inspector_istoplevel $w] {  ;# FIXME add proper condition
+    if [winfo exist $w.infobar] {  ;#FIXME add proper condition
         if [opp_isnull $ptr] {
             $w.infobar.name config -text {n/a}
         } else {

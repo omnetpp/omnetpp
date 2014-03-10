@@ -17,9 +17,6 @@
 proc createInspectorListbox {f w} {
     global B2 B3
 
-    label $f.label -text "# objects:"
-    pack $f.label -side top -anchor w
-
     frame $f.main
     pack $f.main -expand 1 -fill both -side top
 
