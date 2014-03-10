@@ -66,20 +66,8 @@ class TKENV_API Inspector
       virtual void removeFromToHistory(cObject *obj);
 
       void setEntry(const char *entry, const char *val);
-      void setEntry(const char *entry, long l);
-      void setEntry(const char *entry, double d);
       void setLabel(const char *label, const char *val);
-      void setLabel(const char *label, long l);
-      virtual void setLabel(const char *label, double d);
-      void setText(const char *entry, const char *val);
-      void setReadonlyText(const char *entry, const char *val);
       const char *getEntry(const char *entry);
-      void setInspectButton(const char *button, cObject *object, bool displayfullpath, int inspectortype);
-      void setToolbarInspectButton(const char *button, cObject *object, int inspectortype);
-
-      void clearInspectorListbox(const char *listbox);
-      void fillInspectorListbox(const char *listbox, cObject *object, bool deep);
-      void fillListboxWithSubmodules(const char *listbox, cModule *parent);
 
    public:
       Inspector(InspectorFactory *factory);

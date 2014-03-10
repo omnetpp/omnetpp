@@ -253,122 +253,16 @@ void Inspector::setEntry(const char *entry, const char *val)
             windowName,entry," insert 0 {",val,"}",NULL));
 }
 
-void Inspector::setEntry( const char *entry, long l )
-{
-   char buf[16];
-   sprintf(buf, "%ld", l );
-   CHK(Tcl_VarEval(interp, windowName,entry," delete 0 end;",
-                           windowName,entry," insert 0 {",buf,"}",NULL));
-}
-
-void Inspector::setEntry( const char *entry, double d )
-{
-   char buf[24];
-   sprintf(buf, "%g", d );
-   CHK(Tcl_VarEval(interp, windowName,entry," delete 0 end;",
-                           windowName,entry," insert 0 {",buf,"}",NULL));
-}
-
 void Inspector::setLabel( const char *label, const char *val )
 {
    if (!val) val="";
    CHK(Tcl_VarEval(interp, windowName,label," config -text {",val,"}",NULL));
 }
 
-void Inspector::setLabel( const char *label, long l )
-{
-   char buf[16];
-   sprintf(buf, "%ld", l );
-   CHK(Tcl_VarEval(interp, windowName,label," config -text {",buf,"}",NULL));
-}
-
-void Inspector::setLabel( const char *label, double d )
-{
-   char buf[16];
-   sprintf(buf, "%g", d );
-   CHK(Tcl_VarEval(interp, windowName,label," config -text {",buf,"}",NULL));
-}
-
-void Inspector::setText(const char *entry, const char *val)
-{
-   if (!val) val="";
-   CHK(Tcl_VarEval(interp, windowName,entry," delete 1.0 end", NULL));
-   CHK(Tcl_VarEval(interp, windowName,entry," insert 1.0 {",val,"}",NULL));
-}
-
-void Inspector::setReadonlyText(const char *entry, const char *val)
-{
-   CHK(Tcl_VarEval(interp, windowName,entry," config -state normal", NULL));
-   setText(entry, val);
-   CHK(Tcl_VarEval(interp, windowName,entry," config -state disabled", NULL));
-}
-
 const char *Inspector::getEntry( const char *entry )
 {
    CHK(Tcl_VarEval(interp, windowName,entry," get",NULL));
    return Tcl_GetStringResult(interp);
-}
-
-void Inspector::setInspectButton(const char *button, cObject *object, bool displayfullpath, int inspectortype)
-{
-   if (object)
-   {
-      char buf[16];
-      sprintf(buf, "%d", inspectortype);
-      char idtext[30] = "";
-      if (dynamic_cast<cModule *>(object))
-      {
-          sprintf(idtext, " (id=%d)", static_cast<cModule *>(object)->getId());
-      }
-      CHK(Tcl_VarEval(interp, windowName, button,".e config -state normal ",
-                              "-text {(", getObjectShortTypeName(object), ") ",
-                              (displayfullpath ? object->getFullPath().c_str() : object->getFullName()),
-                              idtext, "} ",
-                              "-command {opp_inspect ",ptrToStr(object)," ",buf,"}",
-                              NULL));
-   }
-   else
-   {
-      CHK(Tcl_VarEval(interp, windowName,button,".e config -state disabled -text {n/a}",NULL));
-   }
-}
-
-void Inspector::setToolbarInspectButton(const char *button, cObject *object, int type)
-{
-   if (object)
-   {
-      char buf[16];
-      sprintf(buf, "%d", type );
-      CHK(Tcl_VarEval(interp, windowName,button," config -state normal -command"
-                              " {opp_inspect ",ptrToStr(object)," ",buf,"}",NULL));
-   }
-   else
-   {
-      CHK(Tcl_VarEval(interp, windowName,button," config -state disabled",NULL));
-   }
-}
-
-void Inspector::clearInspectorListbox(const char *listbox)
-{
-   CHK(Tcl_VarEval(interp, "ttkTreeview:deleteAll ", windowName,listbox,".main.list",NULL));
-}
-
-void Inspector::fillInspectorListbox(const char *listbox, cObject *object, bool deep)
-{
-   char w[256];
-   sprintf(w, "%s%s.main.list", windowName,listbox);
-   int n = fillListboxWithChildObjects(object, interp, w, deep);
-}
-
-void Inspector::fillListboxWithSubmodules(const char *listbox, cModule *parent)
-{
-   char w[256];
-   sprintf(w, "%s%s.main.list", windowName,listbox);
-
-   // feed into listbox
-   int n = 0;
-   for (cModule::SubmoduleIterator submod(parent); !submod.end(); submod++, n++)
-        insertIntoInspectorListbox(interp, w, submod(), false);
 }
 
 NAMESPACE_END
