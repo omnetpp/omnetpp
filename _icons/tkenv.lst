@@ -17,10 +17,12 @@ until.png
 mrun.png
 mfast.png
 stop.png
-as.png
+inspectas.png
 asgraphics.png
 asobject.png
 asoutput.png
+back.png
+forward.png
 parent.png
 redraw.png
 fes.png
@@ -33,6 +35,7 @@ newrun.png
 restart.png
 finish.png
 findobj.png
+none_vs.png
 chan_vs.png
 cogwheel_vs.png
 compound_vs.png

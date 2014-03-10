@@ -48,15 +48,15 @@ proc createInspectorToplevel {w geom} {
     packIconButton $w.toolbar.back -image $icons(back) -command "inspector:back $w"
     packIconButton $w.toolbar.forward -image $icons(forward) -command "inspector:forward $w"
     packIconButton $w.toolbar.owner -image $icons(parent) -command "inspector:inspectOwner $w"
+    packIconButton $w.toolbar.sep01 -separator
+    packIconButton $w.toolbar.inspectas -image $icons(inspectas) -command "inspector:inspectAsPopup $w $w.toolbar.inspectas"
     packIconButton $w.toolbar.copyobj -image $icons(copy) -command "inspector:namePopup $w $w.toolbar.copyobj"
     packIconButton $w.toolbar.objs -image $icons(findobj) -command "inspectFilteredObjectList $w"
-    packIconButton $w.toolbar.sep01 -separator
-    packIconButton $w.toolbar.inspectas -image $icons(as) -command "inspector:inspectAsPopup $w $w.toolbar.inspectas"
 
     set help_tips($w.toolbar.owner) {Inspect owner}
+    set help_tips($w.toolbar.inspectas) {Inspect}
     set help_tips($w.toolbar.copyobj) {Copy name, type or pointer}
     set help_tips($w.toolbar.objs) {Find objects (Ctrl+S)}
-    set help_tips($w.toolbar.inspectas) {Inspect}
 
     # Create info bar
     frame $w.infobar -relief raised -bd 1
@@ -155,7 +155,7 @@ set treeicons(cOutVector)      {outvect_vs}
 proc inspector:getIconForObject {ptr} {
     global icons treeicons
     if [opp_isnull $ptr] {
-       return $icons(cogwheel_vs)  ;#FIXME make "null" icon
+       return $icons(none_vs)
     }
     set class [opp_getobjectbaseclass $ptr]
     if [info exists treeicons($class)] {
