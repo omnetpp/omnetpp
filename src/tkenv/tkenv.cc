@@ -116,8 +116,38 @@ static bool moduleContains(cModule *potentialparent, cModule *mod)
    return false;
 }
 
+TkenvOptions::TkenvOptions()
+{
+    // note: these values will be overwritten in setup()/readOptions() before taking effect
+    stepDelay = 300;
+    updateFreqFast = 500;
+    updateFreqExpress = 1000;
+    animationEnabled = true;
+    showNextEventMarkers = true;
+    showSendDirectArrows = true;
+    animateMethodCalls = true;
+    methodCallAnimDelay = 200;
+    animationMsgNames = true;
+    animationMsgClassNames = true;
+    animationMsgColors = true;
+    penguinMode = false;
+    showLayouting = false;
+    layouterChoice = LAYOUTER_AUTO;
+    arrangeVectorConnections = false;
+    iconMinimumSize = 5;
+    showBubbles = true;
+    animationSpeed = 1.5;
+    printEventBanners = true;
+    printInitBanners = true;
+    shortBanners = false;
+    useMainWindow = true;
+    autoupdateInExpress = true;
+    stopOnMsgCancel = true;
+    logFormat = "%l %C: ";
+    logLevel = LOGLEVEL_TRACE;
+}
 
-Tkenv::Tkenv()
+Tkenv::Tkenv() : opt((TkenvOptions *&)EnvirBase::opt)
 {
     // Note: ctor should only contain trivial initializations, because
     // the class may be instantiated only for the purpose of calling
@@ -135,34 +165,6 @@ Tkenv::Tkenv()
 
     // set the name here, to prevent warning from cStringPool on shutdown when Cmdenv runs
     inspectorfactories.getInstance()->setName("inspectorfactories");
-
-    // initialize .tkenvrc config variables
-    opt_stepdelay = 300;
-    opt_updatefreq_fast = 500;
-    opt_updatefreq_express = 1000;
-    opt_animation_enabled = true;
-    opt_nexteventmarkers = true;
-    opt_senddirect_arrows = true;
-    opt_anim_methodcalls = true;
-    opt_methodcalls_delay = 200;
-    opt_animation_msgnames = true;
-    opt_animation_msgclassnames = true;
-    opt_animation_msgcolors = true;
-    opt_penguin_mode = false;
-    opt_showlayouting = false;
-    opt_layouterchoice = LAYOUTER_AUTO;
-    opt_arrangevectorconnections = false;
-    opt_iconminsize = 5;
-    opt_bubbles = true;
-    opt_animation_speed = 1.5;
-    opt_event_banners = true;
-    opt_init_banners = true;
-    opt_short_banners = false;
-    opt_use_mainwindow = true;
-    opt_expressmode_autoupdate = true;
-    opt_stoponmsgcancel = true;
-    opt_logformat = "%l %C: ";
-    opt_loglevel = LOGLEVEL_TRACE;
 }
 
 Tkenv::~Tkenv()
@@ -204,14 +206,14 @@ void Tkenv::doRun()
             fprintf(stderr, "\n<!> WARNING: Obsolete environment variable OMNETPP_BITMAP_PATH found -- "
                             "please change it to OMNETPP_IMAGE_PATH for " OMNETPP_PRODUCT " 4.0\n");
         std::string image_path = opp_isempty(image_path_env) ? OMNETPP_IMAGE_PATH : image_path_env;
-        if (!opt_image_path.empty())
-            image_path = std::string(opt_image_path.c_str()) + ";" + image_path;
+        if (!opt->imagePath.empty())
+            image_path = std::string(opt->imagePath.c_str()) + ";" + image_path;
 
         // path for plugins
         const char *plugin_path_env = getenv("OMNETPP_PLUGIN_PATH");
         std::string plugin_path = plugin_path_env ? plugin_path_env : OMNETPP_PLUGIN_PATH;
-        if (!opt_plugin_path.empty())
-            plugin_path = std::string(opt_plugin_path.c_str()) + ";" + plugin_path;
+        if (!opt->pluginPath.empty())
+            plugin_path = std::string(opt->pluginPath.c_str()) + ";" + plugin_path;
 
         // set up Tcl/Tk
         interp = initTk(args->getArgCount(), args->getArgVector());
@@ -348,7 +350,7 @@ void Tkenv::doOneStep()
         cEvent *event = simulation.takeNextEvent();
         if (event)  // takeNextEvent() not interrupted
         {
-            if (opt_event_banners)
+            if (opt->printEventBanners)
                 printEventBanner(event);
             simulation.executeEvent(event);
             performAnimations();
@@ -548,7 +550,7 @@ bool Tkenv::doRunSimulation()
         speedometer.addEvent(simulation.getSimTime());
 
         // do a simulation step
-        if (opt_event_banners)
+        if (opt->printEventBanners)
             printEventBanner(event);
         simulation.executeEvent(event);
         performAnimations();
@@ -557,7 +559,7 @@ bool Tkenv::doRunSimulation()
         cLogProxy::flushLastLine();
 
         // display update
-        if (frequent_updates || ((simulation.getEventNumber()&0x0f)==0 && elapsed(opt_updatefreq_fast, last_update)))
+        if (frequent_updates || ((simulation.getEventNumber()&0x0f)==0 && elapsed(opt->updateFreqFast, last_update)))
         {
             updateSimtimeDisplay();
             if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
@@ -581,7 +583,7 @@ bool Tkenv::doRunSimulation()
         {
             timeval start;
             gettimeofday(&start, NULL);
-            while (!elapsed(opt_stepdelay, start) && !stopsimulation_flag)
+            while (!elapsed(opt->stepDelay, start) && !stopsimulation_flag)
                 Tcl_Eval(interp, "update");
         }
 
@@ -598,7 +600,7 @@ bool Tkenv::doRunSimulationExpress()
     // during Tcl_Eval("update"):
     //  - runmode, rununtil_time, rununtil_eventnum, rununtil_msg, rununtil_module;
     //  - stopsimulation_flag
-    //  - opt_expressmode_autoupdate
+    //  - opt->expressmode_autoupdate
     //
     // EXPRESS does not support rununtil_module!
     //
@@ -634,7 +636,7 @@ bool Tkenv::doRunSimulationExpress()
 
         simulation.executeEvent(event);
 
-        if ((simulation.getEventNumber()&0xff)==0 && elapsed(opt_updatefreq_express, last_update))
+        if ((simulation.getEventNumber()&0xff)==0 && elapsed(opt->updateFreqExpress, last_update))
         {
             updateSimtimeDisplay();
             if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
@@ -642,7 +644,7 @@ bool Tkenv::doRunSimulationExpress()
                 speedometer.beginNewInterval();
                 updatePerformanceDisplay(speedometer);
             }
-            if (opt_expressmode_autoupdate)
+            if (opt->autoupdateInExpress)
                 updateInspectors();
             Tcl_Eval(interp, "update");
             resetElapsedTime(last_update); // exclude UI update time [bug #52]
@@ -743,7 +745,7 @@ void Tkenv::newNetwork(const char *networkname)
         isconfigrun = false;
         getConfigEx()->activateConfig("General", 0);
         readPerRunOptions();
-        opt_network_name = network->getName();  // override config setting
+        opt->networkName = network->getName();  // override config setting
         answers.clear();
         setupNetwork(network);
         startRun();
@@ -783,13 +785,13 @@ void Tkenv::newRun(const char *configname, int runnumber)
         getConfigEx()->activateConfig(configname, runnumber);
         readPerRunOptions();
 
-        if (opt_network_name.empty())
+        if (opt->networkName.empty())
         {
             confirm("No network specified in the configuration.");
             return;
         }
 
-        cModuleType *network = resolveNetwork(opt_network_name.c_str());
+        cModuleType *network = resolveNetwork(opt->networkName.c_str());
         ASSERT(network);
 
         CHK(Tcl_VarEval(interp, "clearWindows", NULL));
@@ -1038,7 +1040,7 @@ void Tkenv::printEventBanner(cEvent *event)
             simulation.getEventNumber(),
             SIMTIME_STR(simulation.getSimTime()));
 
-    if (opt_short_banners)
+    if (opt->shortBanners)
     {
         // just object names
         if (target)
@@ -1091,7 +1093,7 @@ void Tkenv::printLastLogLine()
     const LogBuffer::Entry& entry = logBuffer.getEntries().back();
 
     // print into main window
-    if (opt_use_mainwindow)
+    if (opt->useMainWindow)
         TModuleWindow::printLastLineOf(interp, ".main.text", logBuffer, mainWindowExcludedModuleIds);
 
     // print into module window and all parent module windows if they exist
@@ -1136,7 +1138,7 @@ void Tkenv::displayException(std::exception& ex)
 
 void Tkenv::componentInitBegin(cComponent *component, int stage)
 {
-    if (!opt_init_banners || runmode == RUNMODE_EXPRESS)
+    if (!opt->printInitBanners || runmode == RUNMODE_EXPRESS)
         return;
 
     // produce banner text
@@ -1213,16 +1215,16 @@ void Tkenv::readOptions()
 
     cConfiguration *cfg = getConfig();
 
-    opt_extrastack = (size_t) cfg->getAsDouble(CFGID_TKENV_EXTRA_STACK);
+    opt->extraStack = (size_t) cfg->getAsDouble(CFGID_TKENV_EXTRA_STACK);
 
     const char *s = args->optionValue('c');
-    opt_default_config = s ? s : cfg->getAsString(CFGID_TKENV_DEFAULT_CONFIG);
+    opt->defaultConfig = s ? s : cfg->getAsString(CFGID_TKENV_DEFAULT_CONFIG);
 
     const char *r = args->optionValue('r');
-    opt_default_run = r ? atoi(r) : cfg->getAsInt(CFGID_TKENV_DEFAULT_RUN);
+    opt->defaultRun = r ? atoi(r) : cfg->getAsInt(CFGID_TKENV_DEFAULT_RUN);
 
-    opt_image_path = cfg->getAsPath(CFGID_TKENV_IMAGE_PATH).c_str();
-    opt_plugin_path = cfg->getAsPath(CFGID_TKENV_PLUGIN_PATH).c_str();
+    opt->imagePath = cfg->getAsPath(CFGID_TKENV_IMAGE_PATH).c_str();
+    opt->pluginPath = cfg->getAsPath(CFGID_TKENV_PLUGIN_PATH).c_str();
 }
 
 void Tkenv::readPerRunOptions()
@@ -1354,7 +1356,7 @@ void Tkenv::simulationEvent(cEvent *event)
             "}\n",
             NULL));
 
-    if (animating && opt_animation_enabled && event->isMessage())
+    if (animating && opt->animationEnabled && event->isMessage())
     {
         cMessage *msg = static_cast<cMessage*>(event);
         cGate *arrivalGate = msg->getArrivalGate();
@@ -1387,7 +1389,7 @@ void Tkenv::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate) //FIXME nee
             "}\n",
             NULL));
 
-    if (animating && opt_animation_enabled && !isSilentEvent(msg))
+    if (animating && opt->animationEnabled && !isSilentEvent(msg))
     {
         // find suitable inspectors and do animate the message...
         updateGraphicalInspectorsBeforeAnimation(); // actually this will draw `msg' too (which would cause "phantom message"),
@@ -1413,7 +1415,7 @@ void Tkenv::messageScheduled(cMessage *msg)
 
 void Tkenv::messageCancelled(cMessage *msg)
 {
-    if (msg==rununtil_msg && opt_stoponmsgcancel)
+    if (msg==rununtil_msg && opt->stopOnMsgCancel)
     {
         if (simstate==SIM_RUNNING || simstate==SIM_BUSY)
             confirm(opp_stringf("Run-until message `%s' got cancelled.", msg->getName()).c_str());
@@ -1460,7 +1462,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
     EnvirBase::componentMethodBegin(fromComp, toComp, methodFmt, va2, silent);
     va_end(va2);
 
-    if (silent || !animating || !opt_anim_methodcalls)
+    if (silent || !animating || !opt->animateMethodCalls)
         return;
 
     if (!methodFmt)
@@ -1962,7 +1964,7 @@ void Tkenv::bubble(cComponent *component, const char *text)
     if (disable_tracing)
         return;
 
-    if (!opt_bubbles)
+    if (!opt->showBubbles)
         return;
 
     if (dynamic_cast<cModule *>(component))
@@ -2082,7 +2084,7 @@ bool Tkenv::askyesno(const char *question)
 
 unsigned Tkenv::getExtraStackForEnvir() const
 {
-    return opt_extrastack;
+    return opt->extraStack;
 }
 
 void Tkenv::logTclError(const char *file, int line, Tcl_Interp *interp)

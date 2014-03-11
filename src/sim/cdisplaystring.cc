@@ -96,10 +96,10 @@ void cDisplayString::beforeChange()
 void cDisplayString::afterChange()
 {
     needsassemble = true;
-    EVCB.displayStringChanged(ownercomponent);
 
     if (ownercomponent) {
         ownercomponent->updateLastChangeSerial();
+        EVCB.displayStringChanged(ownercomponent);
 
         // notify post-change listeners
         if (ownercomponent->hasListeners(POST_MODEL_CHANGE)) {

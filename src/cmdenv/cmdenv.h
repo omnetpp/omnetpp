@@ -29,6 +29,27 @@ NAMESPACE_BEGIN
 
 class Speedometer;
 
+struct CMDENV_API CmdenvOptions : public EnvirOptions
+{
+    CmdenvOptions();
+    opp_string configName;
+    opp_string runsToExec;
+    size_t extraStack;
+    opp_string outputFile;
+    bool expressMode;
+    bool interactive;
+    bool autoflush; // all modes
+    bool printModuleMsgs;  // if normal mode
+    bool printEventBanners; // if normal mode
+    bool detailedEventBanners; // if normal mode
+    bool messageTrace; // if normal mode
+    long statusFrequencyMs; // if express mode
+    bool printPerformanceData; // if express mode
+    bool httpControlled;  // when true, user input is expected via HTTP
+    long updatefreqExpress; //XXX from Tkenv
+    long updatefreqFast; //XXX from Tkenv
+};
+
 /**
  * Command line user interface.
  */
@@ -100,25 +121,7 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
        };
 
     protected:
-     // new simulation options:
-     opp_string opt_configname;
-     opp_string opt_runstoexec;
-     size_t opt_extrastack;
-     opp_string opt_outputfile;
-
-     bool opt_httpcontrolled;  // when true, user input is expected via HTTP
-     bool opt_expressmode;
-     bool opt_interactive;
-     bool opt_autoflush; // all modes
-     bool opt_modulemsgs;  // if normal mode
-     bool opt_eventbanners; // if normal mode
-     bool opt_eventbanner_details; // if normal mode
-     bool opt_messagetrace; // if normal mode
-     long opt_status_frequency_ms; // if express mode
-     bool opt_perfdisplay; // if express mode
-
-     long opt_updatefreq_express; //XXX from Tkenv
-     long opt_updatefreq_fast; //XXX from Tkenv
+     CmdenvOptions *&opt;         // alias to EnvirBase::opt
 
      typedef std::map<std::string,std::string> StringMap;
 
@@ -216,6 +219,7 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      virtual void doRun();
      virtual void printUISpecificHelp();
 
+     virtual EnvirOptions *createOptions() {return new CmdenvOptions();}
      virtual void readOptions();
      virtual void readPerRunOptions();
      virtual void askParameter(cPar *par, bool unassigned);
