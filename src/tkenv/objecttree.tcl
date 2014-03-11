@@ -56,9 +56,6 @@ proc initTreeManager {} {
 proc treeManager:update {} {
     global widgets config
 
-    # spare work if we're not displayed
-    if {$config(display-treeview)==0} {return}
-
     Tree:build $widgets(manager).tree
     $widgets(manager).tree xview moveto 0
 }

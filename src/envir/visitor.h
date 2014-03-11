@@ -121,6 +121,20 @@ class ENVIR_API cCountChildrenVisitor : public cVisitor
     int getCount() {return count;}
 };
 
+/**
+ * Visitor to determine whether an object has any children at all.
+ */
+class ENVIR_API cHasChildrenVisitor : public cVisitor
+{
+  private:
+    cObject *parent;
+    bool hasChildren;
+  protected:
+    virtual void visit(cObject *obj);
+  public:
+    cHasChildrenVisitor(cObject *_parent) {parent = _parent; hasChildren=false;}
+    bool getResult() {return hasChildren;}
+};
 
 //----------------------------------------------------------------
 // utilities for sorting objects:

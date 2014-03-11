@@ -222,8 +222,6 @@ proc reflectSettingsInGui {} {
 
    set help_tips(font)  $fonts(balloon)
 
-   toggleTreeView
-   toggleTreeView
    toggleTimeline
    toggleTimeline
 

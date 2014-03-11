@@ -30,7 +30,6 @@ set config(editor-whole-words) 0
 set config(editor-regexp) 0
 set config(editor-backwards) 1
 set config(editor-wrap) none
-set config(display-treeview) 1
 set config(filtobjlist-class)  ""
 set config(filtobjlist-name)   ""
 set config(filtobjlist-order)  "Class"
@@ -292,7 +291,6 @@ proc mainWindow:createMenu {} {
     foreach i {
       {command -command simulationOptions -label {Simulation Options...} -underline 0}
       {command -command toggleTimeline -label {Show/Hide Timeline} -underline 10}
-      {command -command toggleTreeView -label {Show/Hide Object Tree} -underline 1}
       {command -command toggleRecordEventlog -label {Eventlog Recording} -underline 10}
       {separator}
       {command -label {Load Config...} -underline 0 -command loadTkenvConfig}
@@ -340,7 +338,6 @@ proc mainWindow:createToolbar {} {
       {filter   -image $icons(filter)  -command {editFilterWindowContents}}
       {sep6     -separator}
       {tline    -image $icons(fes)     -command {toggleTimeline}}
-      {tree     -image $icons(tree)    -command {toggleTreeView}}
       {sep9     -separator}
       {options  -image $icons(config)  -command {simulationOptions}}
       {sep10    -separator}
@@ -477,12 +474,6 @@ proc mainWindow:createLogView {} {
 
 proc mainWindow:refreshToolbar {} {
     global config
-
-    if {$config(display-treeview)==0} {
-        .toolbar.tree config -relief flat
-    } else {
-        .toolbar.tree config -relief sunken
-    }
 
     if {$config(display-timeline)==0} {
         .toolbar.tline config -relief flat

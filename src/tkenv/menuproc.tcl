@@ -276,21 +276,6 @@ proc editFilterWindowContents {{w .log}} {
    LogInspector:openFilterDialog $w
 }
 
-proc toggleTreeView {} {
-   global config widgets
-
-   if {$config(display-treeview)==1} {
-       set config(display-treeview) 0
-       .main.left forget $widgets(manager)
-       .toolbar.tree config -relief flat
-   } else {
-       set config(display-treeview) 1
-       .main.left add $widgets(manager) -before .inspector
-       .toolbar.tree config -relief sunken
-       treeManager:update
-   }
-}
-
 proc toggleTimeline {} {
    global config widgets
 
