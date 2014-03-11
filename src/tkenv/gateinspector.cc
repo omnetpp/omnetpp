@@ -71,7 +71,17 @@ void GateInspector::useWindow(const char *window)
    strcat(canvas,".c");
 }
 
-int GateInspector::redraw(Tcl_Interp *interp, int, const char **)
+void GateInspector::doSetObject(cObject *obj)
+{
+    if (obj == object)
+        return;
+
+    Inspector::doSetObject(obj);
+
+    redraw();
+}
+
+int GateInspector::redraw()
 {
    cGate *gate = (cGate *)object;
 
@@ -177,7 +187,8 @@ int GateInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **a
 
    if (strcmp(argv[0], "redraw")==0)
    {
-      return redraw(interp,argc,argv);
+      redraw();
+      return TCL_OK;
    }
 
    return Inspector::inspectorCommand(interp, argc, argv);
