@@ -23,6 +23,8 @@
 
 NAMESPACE_BEGIN
 
+class InspectorFactory;
+
 /**
  * Inspector types
  */
@@ -36,86 +38,69 @@ enum {
 
 
 // utility functions
-const char *insptypeNameFromCode( int code );
+const char *insptypeNameFromCode(int code);
 int insptypeCodeFromName(const char *namestr);
-void splitInspectorName(const char *namestr, cObject *&object, int& type);
-
 
 
 /**
- * Virtual base class for all inspectors.
+ * Base class for inspectors.
  */
-class TKENV_API TInspector
+class TKENV_API Inspector
 {
    protected:
-      cObject *object;        // the inspected object
+      InspectorFactory *factory; // meta-object that describes this inspector class
+      Tcl_Interp *interp;     // Tcl interpreter
+      cObject *object;        // the inspected object or NULL if inspector is empty
       int type;               // INSP_OBJECT, etc.
-      void *data;
-      char windowname[24];    // Tk inspector window variable
-      char windowtitle[128];  // window title string
-      char geometry[64];      // X-window geometry string (window pos + size)
-      bool toBeDeleted;       // "mark for deletion" flag (set if user wants to close inspector during animation)
-   public:
-      TInspector(cObject *obj, int typ, const char *geom, void *dat=NULL);
-      virtual ~TInspector();
+      char windowName[24];    // Tk widget path   --FIXME use std::string here! (and for canvas etc)
+      std::string windowTitle;// window title string
+      bool isToplevelWindow;  // if so: has window title, has infobar, and destructor should destroy window
+      bool closeRequested;    // "mark for deletion" flag (set if user wants to close inspector during animation)
+      std::vector<cObject*> historyBack;
+      std::vector<cObject*> historyForward;
 
-      virtual cObject *getObject() {return object;}
-      virtual int getType() {return type;}
-      virtual const char *windowName() {return windowname;}
-
-      virtual void hostObjectDeleted();
-      virtual void markForDeletion() {toBeDeleted=true;}
-      virtual bool isMarkedForDeletion() {return toBeDeleted;}
-
-      /** @name Virtual functions to be redefined in subclasses */
-      //@{
-      virtual void createWindow();
-      bool windowExists();
-      void showWindow();
-
-      virtual void update();
-      virtual void writeBack() {}
-
-      virtual int inspectorCommand(Tcl_Interp *interp, int, const char **) {return TCL_ERROR;}
-
-      virtual void objectDeleted(cObject *) {}
-      //@}
-
-      /** @name Utility functions */
-      //@{
-      void setEntry(const char *entry, const char *val);
-      void setEntry(const char *entry, long l);
-      void setEntry(const char *entry, double d);
-      void setLabel(const char *label, const char *val);
-      void setLabel(const char *label, long l);
-      void setLabel(const char *label, double d);
-      void setText(const char *entry, const char *val);
-      void setReadonlyText(const char *entry, const char *val);
-      const char *getEntry(const char *entry);
-      void setInspectButton(const char *button, cObject *object, bool displayfullpath, int inspectortype);
-      void setToolbarInspectButton(const char *button, cObject *object, int inspectortype);
-
-      void deleteInspectorListbox(const char *listbox);
-      void fillInspectorListbox(const char *listbox, cObject *object, bool deep);
-      void fillListboxWithSubmodules(const char *listbox, cModule *parent);
-      //@}
-};
-
-/**
- * Defines a panel that can be inserted into any inspector
- */
-class TInspectorPanel
-{
    protected:
-      char widgetname[80];
-      cObject *object;
+      virtual void refreshTitle();
+
+      virtual void doSetObject(cObject *obj);
+      virtual void removeFromToHistory(cObject *obj);
+
+      void setEntry(const char *entry, const char *val);
+      void setLabel(const char *label, const char *val);
+      const char *getEntry(const char *entry);
+
    public:
-      TInspectorPanel(const char *widgetname, cObject *obj);
-      virtual ~TInspectorPanel() {}
-      virtual void setObject(cObject *obj);
-      virtual void update() = 0;
-      virtual void writeBack() = 0;
-      virtual int inspectorCommand(Tcl_Interp *, int, const char **) = 0;
+      Inspector(InspectorFactory *factory);
+      virtual ~Inspector();
+      virtual const char *getClassName() const;
+      virtual bool supportsObject(cObject *object) const;
+
+      static std::string makeWindowName();
+
+      virtual int getType() const {return type;}
+      virtual const char *getWindowName() const {return windowName;}
+      virtual bool isToplevel() const {return isToplevelWindow;}
+
+      virtual cObject *getObject() const {return object;}
+      virtual void setObject(cObject *object);
+      virtual bool canGoForward();
+      virtual bool canGoBack();
+      virtual void goForward();
+      virtual void goBack();
+
+      virtual void markForDeletion() {closeRequested=true;}
+      virtual bool isMarkedForDeletion() {return closeRequested;}
+
+      virtual void createWindow(const char *window, const char *geometry);
+      virtual void useWindow(const char *window);
+      virtual void showWindow();
+
+      virtual void refresh();
+      virtual void commit() {}
+
+      virtual int inspectorCommand(Tcl_Interp *interp, int, const char **);
+
+      virtual void objectDeleted(cObject *);
 };
 
 NAMESPACE_END

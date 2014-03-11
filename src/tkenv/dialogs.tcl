@@ -74,7 +74,7 @@ proc comboSelectionDialog {title text label variable list} {
     $w.f.c.e config -width 30
 
     if [execOkCancelDialog $w] {
-        set var [$w.f.c.e cget -value]
+        set var [$w.f.c.e get]
         destroy $w
         return 1
     }
@@ -128,13 +128,13 @@ proc runSelectionDialog {configname_var runnumber_var} {
         $w.f.c.e config -width 30
         $w.f.c2.e config -width 10
 
-        combo:onChange $w.f.c.e [list runSelectionDialog:update $w]
+        bind $w.f.c.e <<ComboboxSelected>> [list runSelectionDialog:update $w]
 
         runSelectionDialog:update $w
 
         if [execOkCancelDialog $w] {
-            set configname [runSelectionDialog:extractConfigName [$w.f.c.e cget -value]]
-            set runnumber  [$w.f.c2.e cget -value]
+            set configname [runSelectionDialog:extractConfigName [$w.f.c.e get]]
+            set runnumber  [$w.f.c2.e get]
             if ![string is integer $runnumber] {
                 messagebox "Error" "Run number must be numeric." info ok
                 set runnumber 0
@@ -179,7 +179,7 @@ proc runSelectionDialog:extractConfigName {s} {
 
 proc runSelectionDialog:update {w} {
     # fill run number combo with runs of the selected config
-    set configname [runSelectionDialog:extractConfigName [$w.f.c.e cget -value]]
+    set configname [runSelectionDialog:extractConfigName [$w.f.c.e get]]
     set n 0
     catch {set n [opp_getnumrunsinconfig $configname]}
 
@@ -187,13 +187,13 @@ proc runSelectionDialog:update {w} {
         $w.f.c2.e config -state normal
     }
 
-    $w.f.c2.e list delete 0 end
-    for {set i 0} {$i<$n} {incr i} {
-        $w.f.c2.e list insert end $i
-    }
+    set runs {}
+    for {set i 0} {$i<$n} {incr i} {lappend runs $i}
+    $w.f.c2.e configure -values $runs
+    catch {$w.f.c2.e current 0}
 
     # ensure run number is in the valid range
-    set runnumber  [$w.f.c2.e cget -value]
+    set runnumber [$w.f.c2.e get]
     if {$n<=1} {
         $w.f.c2.e config -value ""
     }
@@ -232,7 +232,7 @@ proc displayStopDialog {} {
     button $w.stopbutton  -text "STOP!" -background $red -activebackground $red \
           -borderwidth 6 -font $fonts(big) -command {opp_stopsimulation}
     checkbutton $w.autoupdate -text "auto-update inspectors" -variable opp(autoupdate) -command "stopDialogAutoupdate $w"
-    button $w.updatebutton  -text "  Update now  " -borderwidth 1 -command {opp_updateinspectors}
+    button $w.updatebutton  -text "  Update now  " -borderwidth 1 -command {opp_refreshinspectors}
 
     grid $w.stopbutton   -sticky news -padx 4 -pady 3
     grid $w.autoupdate   -sticky nes -padx 4 -pady 0
@@ -302,34 +302,40 @@ proc optionsDialog {parent {defaultpage "g"}} {
 
     createOkCancelDialog $w {Simulation Options}
 
-    notebook $w.f.nb
+    ttk::notebook $w.f.nb
     set nb $w.f.nb
 
-    notebook:addPage $nb g General
-    notebook:addPage $nb l Layouting
-    notebook:addPage $nb a Animation
-    notebook:addPage $nb t Filtering
-    notebook:addPage $nb f Fonts
+    $nb add [frame $nb.g] -text "General"
+    $nb add [frame $nb.l] -text "Layouting"
+    $nb add [frame $nb.a] -text "Animation"
+    $nb add [frame $nb.t] -text "Filtering"
+    $nb add [frame $nb.f] -text "Fonts"
+
     pack $nb -expand 1 -fill both
 
-    notebook:showPage $nb $defaultpage
+    $nb select $nb.$defaultpage
 
     # "General" page
+    labelframe $nb.g.f0 -text "User Interface" -relief groove -borderwidth 2 -font $fonts(normal)
+    checkbutton $nb.g.f0.keepontop -text {Keep inspector windows on top} -variable opp(keepontop)
+    checkbutton $nb.g.f0.reuseinsp -text {Reuse inspectors if possible} -variable opp(reuseinsp)
+    checkbutton $nb.g.f0.confirmexit -text {Confirm exit when simulation is in progress} -variable opp(confirmexit)
+    pack $nb.g.f0.keepontop -anchor w
+    pack $nb.g.f0.reuseinsp -anchor w
+    pack $nb.g.f0.confirmexit -anchor w
+
     labelframe $nb.g.f1 -text "Simulation Execution" -relief groove -borderwidth 2 -font $fonts(normal)
     label-entry $nb.g.f1.updfreq_fast    {Display update frequency for Fast Run (ms):}
     label-entry $nb.g.f1.updfreq_express {Display update frequency for Express Run (ms):}
     label-entry $nb.g.f1.stepdelay       {Per-event delay for slow execution (ms):}
-    checkbutton $nb.g.f1.confirmexit -text {Confirm exit when simulation is in progress} -variable opp(confirmexit)
     $nb.g.f1.updfreq_fast.l config -width 0
     $nb.g.f1.updfreq_express.l config -width 0
     $nb.g.f1.stepdelay.l config -width 0
     pack $nb.g.f1.updfreq_fast -anchor w -fill x
     pack $nb.g.f1.updfreq_express -anchor w -fill x
     pack $nb.g.f1.stepdelay -anchor w -fill x
-    pack $nb.g.f1.confirmexit -anchor w
 
     labelframe $nb.g.f2 -text "Logs" -relief groove -borderwidth 2 -font $fonts(normal)
-    checkbutton $nb.g.f2.usemainwin -text {Use main window for module output} -variable opp(usemainwin)
     checkbutton $nb.g.f2.initbanners -text {Print initialization banners} -variable opp(initbanners)
     checkbutton $nb.g.f2.eventbanners -text {Print event banners} -variable opp(eventbanners)
     checkbutton $nb.g.f2.shortbanners -text {Short event banners} -variable opp(shortbanners)
@@ -340,7 +346,6 @@ proc optionsDialog {parent {defaultpage "g"}} {
     commentlabel $nb.g.f2.c1 {Applies to main window and module log windows. Leave blank for unlimited. Minimum value is 500 lines.}
 
     $nb.g.f2.numlines.l config -width 0
-    pack $nb.g.f2.usemainwin -anchor w
     pack $nb.g.f2.initbanners -anchor w
     pack $nb.g.f2.eventbanners -anchor w
     pack $nb.g.f2.shortbanners -anchor w -padx 10
@@ -350,6 +355,7 @@ proc optionsDialog {parent {defaultpage "g"}} {
     pack $nb.g.f2.numlines -anchor w -fill x
     pack $nb.g.f2.c1 -anchor w
 
+    pack $nb.g.f0 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
     pack $nb.g.f2 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
     pack $nb.g.f1 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
 
@@ -460,7 +466,6 @@ proc optionsDialog {parent {defaultpage "g"}} {
     $nb.g.f2.numlines.e insert 0 $config(logwindow-scrollbacklines)
     $nb.l.f2.iconminsize.e insert 0 [opp_getsimoption iconminsize]
     $nb.t.f2.filterstext insert 1.0 [opp_getsimoption silent_event_filters]
-    set opp(usemainwin) [opp_getsimoption use_mainwindow]
     set opp(eventbanners) [opp_getsimoption event_banners]
     set opp(initbanners) [opp_getsimoption init_banners]
     set opp(shortbanners) [opp_getsimoption short_banners]
@@ -482,6 +487,8 @@ proc optionsDialog {parent {defaultpage "g"}} {
     set opp(arrangevectorconnections) [opp_getsimoption arrangevectorconnections]
     set opp(bubbles)    [opp_getsimoption bubbles]
     set opp(speed)      [opp_getsimoption animation_speed]
+    set opp(keepontop)   $config(keep-inspectors-on-top)
+    set opp(reuseinsp)   $config(reuse-inspectors)
     set opp(confirmexit) $config(confirm-exit)
     set opp(allowresize) $config(layout-may-resize-window)
     set opp(allowzoom)   $config(layout-may-change-zoom)
@@ -494,7 +501,7 @@ proc optionsDialog {parent {defaultpage "g"}} {
     fontcombo:set $nb.f.f1.textfont.e $fonts(text)
     fontcombo:set $nb.f.f1.canvasfont.e $fonts(canvas)
 
-    setInitialDialogFocus $nb.g.f2.usemainwin
+    setInitialDialogFocus $nb.a.f1.anim
 
     if [execOkCancelDialog $w] {
         opp_setsimoption stepdelay             [$nb.g.f1.stepdelay.e get]
@@ -506,7 +513,6 @@ proc optionsDialog {parent {defaultpage "g"}} {
             if {$n!="" && $n<500} {set n 500}
             set config(logwindow-scrollbacklines) $n
         }
-        opp_setsimoption use_mainwindow      $opp(usemainwin)
         opp_setsimoption event_banners       $opp(eventbanners)
         opp_setsimoption init_banners        $opp(initbanners)
         opp_setsimoption short_banners       $opp(shortbanners)
@@ -529,6 +535,8 @@ proc optionsDialog {parent {defaultpage "g"}} {
         opp_setsimoption arrangevectorconnections  $opp(arrangevectorconnections)
         opp_setsimoption bubbles             $opp(bubbles)
         opp_setsimoption animation_speed     $opp(speed)
+        set config(keep-inspectors-on-top)   $opp(keepontop)
+        set config(reuse-inspectors)         $opp(reuseinsp)
         set config(confirm-exit)             $opp(confirmexit)
         set config(layout-may-resize-window) $opp(allowresize)
         set config(layout-may-change-zoom)   $opp(allowzoom)
@@ -612,8 +620,8 @@ proc runUntilDialog {time_var event_var msg_var mode_var} {
 
     $w.f.time.e insert 0 $config(rununtil-time)
     $w.f.event.e insert 0 $config(rununtil-event)
-    $w.f.msg.e configure -value $msglabel
-    $w.f.mode.e configure -value $config(rununtil-mode)
+    $w.f.msg.e set $msglabel
+    $w.f.mode.e set $config(rununtil-mode)
     set tmp(stop) [opp_getsimoption stoponmsgcancel]
 
     $w.f.time.e select range 0 end
@@ -625,12 +633,12 @@ proc runUntilDialog {time_var event_var msg_var mode_var} {
         set time_var0  [$w.f.time.e get]
         set event_var0 [$w.f.event.e get]
         set msg_var0   [lindex [$w.f.msg.e get] end]
-        set mode_var0  [lindex [$w.f.mode.e cget -value] 0]
+        set mode_var0  [lindex [$w.f.mode.e get] 0]
 
         set config(rununtil-time)  $time_var0
         set config(rununtil-event) $event_var0
         set config(rununtil-msg)   $msg_var0
-        set config(rununtil-mode)  [$w.f.mode.e cget -value]
+        set config(rununtil-mode)  [$w.f.mode.e get]
         opp_setsimoption stoponmsgcancel $tmp(stop)
 
         destroy $w
@@ -838,8 +846,8 @@ proc moduleOutputFilterDialog {rootmodule excludedModuleIds} {
 
     canvas $w.f.f.c -width 300 -height 350 -bd 0 -relief flat -yscrollcommand "$w.f.f.vsb set"
     #   -xscrollcommand "$w.f.f.hsb set"
-    #scrollbar $w.f.f.hsb -command "$w.f.f.c xview" -orient horiz
-    scrollbar $w.f.f.vsb -command "$w.f.f.c yview"
+    #ttk::scrollbar $w.f.f.hsb -command "$w.f.f.c xview" -orient horiz
+    ttk::scrollbar $w.f.f.vsb -command "$w.f.f.c yview"
     grid $w.f.f.c   $w.f.f.vsb  -sticky news
     #grid $w.f.f.hsb x           -sticky news
     grid rowconfig $w.f.f 0 -weight 1
@@ -905,7 +913,7 @@ proc moduleOutputFilterDialog:getModuleTreeInfo {w op {key {}}} {
       }
 
       icon {
-        #return [inspector:getIconForObject $ptr]
+        #return [opp_getobjecticon $ptr]
         return ""
       }
 
@@ -922,6 +930,9 @@ proc moduleOutputFilterDialog:getModuleTreeInfo {w op {key {}}} {
       root {
         return "treeroot"
       }
+
+      selectionchanged {
+      }
     }
 }
 
@@ -934,7 +945,7 @@ proc moduleOutputFilterDialog:getModuleTreeInfo {w op {key {}}} {
 #
 proc filteredObjectList:window {{ptr ""}} {
     global config tmp icons help_tips helptexts fonts
-    global HAVE_BLT B2 B3
+    global B2 B3
 
     set w .objdlg
 
@@ -950,6 +961,11 @@ proc filteredObjectList:window {{ptr ""}} {
 
     # otherwise create
     createCloseDialog $w "Find/inspect objects"
+
+    # stay on top
+    if {$config(keep-inspectors-on-top)} {
+        makeTransient $w
+    }
 
     # Create toolbar
     frame $w.toolbar -relief raised -borderwidth 1
@@ -1002,14 +1018,15 @@ proc filteredObjectList:window {{ptr ""}} {
     labelwithhelp $fp.classlabel "Class filter expression:" $helptexts(filterdialog-classnamepattern)
     labelwithhelp $fp.namelabel  "Object full path filter, e.g. \"*.queue\ AND not length(0)\":" $helptexts(filterdialog-namepattern)
 
-    combo $fp.classentry [concat {{}} [filteredObjectList:getClassNames]]
-    $fp.classentry.entry config -textvariable tmp(class)
+    ttk::combobox $fp.classentry -values [concat {{}} [filteredObjectList:getClassNames]]
+    catch {$fp.classentry current 0}
+    $fp.classentry config -textvariable tmp(class)
     entry $fp.nameentry -textvariable tmp(name)
 
-    set help_tips($fp.classentry.entry) $helptexts(filterdialog-classnamepattern)
+    set help_tips($fp.classentry) $helptexts(filterdialog-classnamepattern)
     set help_tips($fp.nameentry) $helptexts(filterdialog-namepattern)
 
-    button $fp.refresh -text "Refresh" -width 10 -command "filteredObjectList:refresh $w"
+    ttk_button $fp.refresh -text "Refresh" -width 10 -command "filteredObjectList:refresh $w"
 
     grid $fp.classlabel $fp.namelabel x           -sticky nw   -padx 5
     grid $fp.classentry $fp.nameentry $fp.refresh -sticky news -padx 5 -pady 3
@@ -1036,49 +1053,20 @@ proc filteredObjectList:window {{ptr ""}} {
         set tmp(cat-$c) [string match "*$c*" $tmp(category)]
     }
 
-    # Sorting
-    if {!$HAVE_BLT} {
-        labelframe $w.f.filter.order -text "Sorting:" -font $fonts(normal)
-        label-combo $w.f.filter.order.entry "Sort by:" {{Class} {Full name} {Name}}
-        $w.f.filter.order.entry.e configure -textvariable tmp(order)
-        pack $w.f.filter.order.entry -expand 0 -fill none -side top -anchor w
-        pack $w.f.filter.order -expand 0 -fill x -side top
-    }
-
-
     # number of objects
     label $w.f.numobj -text "Found 0 objects" -justify left -anchor w
     pack $w.f.numobj -anchor w -expand 0 -fill x -side top
 
-    # panel for listbox
-    frame $w.f.main
-    scrollbar $w.f.main.vsb -command "$w.f.main.list yview"
-    scrollbar $w.f.main.hsb -command "$w.f.main.list xview" -orient horiz
-    multicolumnlistbox $w.f.main.list {
-        {class   Class  80}
-        {name    Name  180}
-        {info    Info}
-        {ptr     Pointer}
-    } -height 200 -yscrollcommand "$w.f.main.vsb set" -xscrollcommand "$w.f.main.hsb set"
-
-    grid $w.f.main.list $w.f.main.vsb -sticky news
-    grid $w.f.main.hsb  x             -sticky news
-    grid rowconfig $w.f.main 0 -weight 1
-    grid columnconfig $w.f.main 0 -weight 1
-
-    pack $w.f.main  -anchor center -expand 1 -fill both -side top
-
-    set lb $w.f.main.list
-
-    set type "(default)"
-
-    # leave listbox empty -- filling it with all objects might take too long
+    # Listbox
+    set lb [createInspectorListbox $w.f ""]
+    $lb column name  -stretch 0 -width 350
+    $lb column info  -stretch 0 -width 200
 
     # Configure dialog
     $w.buttons.closebutton config -command filteredObjectList:windowClose
     wm protocol $w WM_DELETE_WINDOW "$w.buttons.closebutton invoke"
 
-    bind $fp.classentry.entry <Return> "$fp.refresh invoke"
+    bind $fp.classentry <Return> "$fp.refresh invoke"
     bind $fp.nameentry <Return> "$fp.refresh invoke"
     bind $lb <Double-Button-1> "filteredObjectList:inspect $lb; after 500 \{raise $w; focus $lb\}"
     bind $lb <Key-Return> "filteredObjectList:inspect $lb; after 500 \{raise $w; focus $lb\}"
@@ -1128,7 +1116,7 @@ proc filteredObjectList:getClassNames {} {
 # helper proc for filteredObjectList:window
 #
 proc filteredObjectList:refresh {w} {
-    global config tmp HAVE_BLT
+    global config tmp
     global filtobjlist_state
 
     # resolve root object
@@ -1172,11 +1160,7 @@ proc filteredObjectList:refresh {w} {
         set name "*"
     }
 
-    if {!$HAVE_BLT} {
-        set order $tmp(order)
-    } else {
-        set order ""
-    }
+    set order ""
 
     # get list
     set maxcount $config(filtobjlist-maxcount)
@@ -1197,7 +1181,7 @@ proc filteredObjectList:refresh {w} {
 
     # clear listbox
     set lb $w.f.main.list
-    multicolumnlistbox:deleteAll $lb
+    ttkTreeview:deleteAll $lb
 
     # insert into listbox
     if {$viewall=="ok"} {
@@ -1207,10 +1191,13 @@ proc filteredObjectList:refresh {w} {
             $w.f.numobj config -text "Found $num objects:"
         }
         foreach ptr $objlist {
-            multicolumnlistbox:insert $lb $ptr [list ptr $ptr class [opp_getobjectshorttypename $ptr] name [opp_getobjectfullpath $ptr] info [opp_getobjectinfostring $ptr]] [inspector:getIconForObject $ptr]
+            set type [opp_getobjectshorttypename $ptr]
+            set fullpath [opp_getobjectfullpath $ptr]
+            set info [opp_getobjectinfostring $ptr]
+            set icon [opp_getobjecticon $ptr]
+            $lb insert {} end -image $icon -text "  $type" -values [list $fullpath $info $ptr]
         }
         set filtobjlist_state(outofdate) 0
-        #$lb selection set 0
     }
 }
 
@@ -1238,8 +1225,8 @@ proc filteredobjectlist_isnotsafetoinspect {} {
 #
 proc filteredObjectList:popup {X Y w} {
     set lb $w.f.main.list
-    set ptr [lindex [multicolumnlistbox:curSelection $lb] 0]
-    if {$ptr==""} return
+    set ptr [inspectorListbox:getCurrent $lb]
+    if [opp_isnull $ptr] return
     set insptypes [opp_supported_insp_types $ptr]
 
     set p $w.popup
@@ -1265,7 +1252,10 @@ proc filteredObjectList:inspect {lb} {
         return
     }
 
-    inspectItemIn $lb
+    set ptr [inspectorListbox:getCurrent $lb]
+    if [opp_isnotnull $ptr] {
+        opp_inspect $ptr {(default)}
+    }
 }
 
 #----
@@ -1414,7 +1404,7 @@ proc modelInfoDialog {{w ""}} {
     if {$w==""} {
         set modptr [opp_object_systemmodule]
     } else {
-        regexp {\.(ptr.*)-[0-9]+} $w match modptr
+        set modptr [opp_inspector_getobject $w]
     }
     if {$modptr==[opp_object_systemmodule]} {
         set what "Network"

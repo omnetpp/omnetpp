@@ -23,8 +23,7 @@
 #include <tk.h>
 
 #include "tkdefs.h"
-#include "cownedobject.h"
-#include "exception.h"
+#include "cobject.h"
 
 NAMESPACE_BEGIN
 
@@ -106,6 +105,8 @@ inline char *ptrToStr(cObject *ptr, char *buffer=NULL) {return voidPtrToStr((voi
 inline cObject *strToPtr(const char *s) {return (cObject *)strToVoidPtr(s);}
 
 bool isAPL();
+
+std::string getObjectIcon(Tcl_Interp *interp, cObject *object);
 
 void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor);
 

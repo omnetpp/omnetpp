@@ -18,7 +18,7 @@ set tkenv(animjobs) {}
 #
 # Called from C++ code. $mode="beg"/"thru"/"end".
 #
-proc graphicalModuleWindow:animateOnConn {win msgptr gateptr mode} {
+proc ModuleInspector:animateOnConn {win msgptr gateptr mode} {
     global config tkenv
     # Note on $mode!="end" condition: "end" equals to delivery of msg to
     # the module. It is called *before* processing the event, so it must be
@@ -42,7 +42,7 @@ proc graphicalModuleWindow:animateOnConn {win msgptr gateptr mode} {
     }
 
     setvars {x1 y1 x2 y2} $coords
-    graphicalModuleWindow:doAnimate $win $x1 $y1 $x2 $y2 $msgptr $mode
+    ModuleInspector:doAnimate $win $x1 $y1 $x2 $y2 $msgptr $mode
 
     if {$mode!="beg"} {
        $c delete $msgptr
@@ -53,7 +53,7 @@ proc graphicalModuleWindow:animateOnConn {win msgptr gateptr mode} {
 #
 # Called from C++ code. $mode="beg"/"thru"/"end".
 #
-proc graphicalModuleWindow:animateSenddirectHoriz {win msgptr mod1ptr mod2ptr mode} {
+proc ModuleInspector:animateSenddirectHoriz {win msgptr mod1ptr mod2ptr mode} {
     global config tkenv
     if {$config(concurrent-anim)} {
         # if concurrent-anim is ON, we just store the params here, and will execute inside performAnimations.
@@ -63,22 +63,22 @@ proc graphicalModuleWindow:animateSenddirectHoriz {win msgptr mod1ptr mod2ptr mo
     }
 
     set c $win.c
-    set src  [graphicalModuleWindow:getSubmodCoords $c $mod1ptr]
-    set dest [graphicalModuleWindow:getSubmodCoords $c $mod2ptr]
+    set src  [ModuleInspector:getSubmodCoords $c $mod1ptr]
+    set dest [ModuleInspector:getSubmodCoords $c $mod2ptr]
 
     set x1 [expr ([lindex $src 0]+[lindex $src 2])/2]
     set y1 [expr ([lindex $src 1]+[lindex $src 3])/2]
     set x2 [expr ([lindex $dest 0]+[lindex $dest 2])/2]
     set y2 [expr ([lindex $dest 1]+[lindex $dest 3])/2]
 
-    graphicalModuleWindow:doAnimateSenddirect $win $x1 $y1 $x2 $y2 $msgptr $mode
+    ModuleInspector:doAnimateSenddirect $win $x1 $y1 $x2 $y2 $msgptr $mode
 }
 
 
 #
 # Called from C++ code. $mode="beg"/"thru"/"end".
 #
-proc graphicalModuleWindow:animateSenddirectAscent {win msgptr parentmodptr modptr mode} {
+proc ModuleInspector:animateSenddirectAscent {win msgptr parentmodptr modptr mode} {
     global config tkenv
     if {$config(concurrent-anim)} {
         # if concurrent-anim is ON, we just store the params here, and will execute inside performAnimations.
@@ -88,21 +88,21 @@ proc graphicalModuleWindow:animateSenddirectAscent {win msgptr parentmodptr modp
     }
 
     set c $win.c
-    set src  [graphicalModuleWindow:getSubmodCoords $c $modptr]
+    set src  [ModuleInspector:getSubmodCoords $c $modptr]
 
     set x1 [expr ([lindex $src 0]+[lindex $src 2])/2]
     set y1 [expr ([lindex $src 1]+[lindex $src 3])/2]
     set x2 [expr $x1 + $y1/4]
     set y2 0
 
-    graphicalModuleWindow:doAnimateSenddirect $win $x1 $y1 $x2 $y2 $msgptr $mode
+    ModuleInspector:doAnimateSenddirect $win $x1 $y1 $x2 $y2 $msgptr $mode
 }
 
 
 #
 # Called from C++ code. $mode="beg"/"thru"/"end".
 #
-proc graphicalModuleWindow:animateSenddirectDescent {win msgptr parentmodptr modptr mode} {
+proc ModuleInspector:animateSenddirectDescent {win msgptr parentmodptr modptr mode} {
     global config tkenv
     if {$config(concurrent-anim)} {
         # if concurrent-anim is ON, we just store the params here, and will execute inside performAnimations.
@@ -112,14 +112,14 @@ proc graphicalModuleWindow:animateSenddirectDescent {win msgptr parentmodptr mod
     }
 
     set c $win.c
-    set dest [graphicalModuleWindow:getSubmodCoords $c $modptr]
+    set dest [ModuleInspector:getSubmodCoords $c $modptr]
 
     set x2 [expr ([lindex $dest 0]+[lindex $dest 2])/2]
     set y2 [expr ([lindex $dest 1]+[lindex $dest 3])/2]
     set x1 [expr $x2 - $y2/4]
     set y1 0
 
-    graphicalModuleWindow:doAnimateSenddirect $win $x1 $y1 $x2 $y2 $msgptr $mode
+    ModuleInspector:doAnimateSenddirect $win $x1 $y1 $x2 $y2 $msgptr $mode
 }
 
 #
@@ -137,20 +137,34 @@ proc animRememberMsg {msgptr} {
     }
 }
 
+proc animDisableClose {w} {
+    if [opp_inspector_istoplevel $w] {
+        global savedCloseHandlers
+        set savedCloseHandlers($w) [wm protocol $w WM_DELETE_WINDOW]
+        wm protocol $w WM_DELETE_WINDOW [list opp_markinspectorfordeletion $w]
+    }
+}
+
+proc animRestoreClose {w} {
+    if [opp_inspector_istoplevel $w] {
+        global savedCloseHandlers
+        wm protocol $w WM_DELETE_WINDOW $savedCloseHandlers($w)
+    }
+}
+
 #
 # Called from C++ code.
 #
-proc graphicalModuleWindow:animateSenddirectDelivery {win msgptr modptr} {
+proc ModuleInspector:animateSenddirectDelivery {win msgptr modptr} {
     # Note: delivery is called *before* processing the event, so it must be
     # animated immediately, regardless of $config(concurrent-anim).
 
     set c $win.c
-    set src  [graphicalModuleWindow:getSubmodCoords $c $modptr]
+    set src  [ModuleInspector:getSubmodCoords $c $modptr]
 
     # flash the message a few times before removing it
     # WM_DELETE_WINDOW stuff: if user wants to close window (during "update"), postpone it until updateInspectors()
-    set old_close_handler [wm protocol $win WM_DELETE_WINDOW]
-    wm protocol $win WM_DELETE_WINDOW [list opp_markinspectorfordeletion $win]
+    animDisableClose $win
     for {set i 0} {$i<3} {incr i} {
        $c itemconfig $msgptr -state hidden
        update
@@ -159,7 +173,7 @@ proc graphicalModuleWindow:animateSenddirectDelivery {win msgptr modptr} {
        update
        animFlashingDelay $win 0.05
     }
-    wm protocol $win WM_DELETE_WINDOW $old_close_handler
+    animRestoreClose $win
 
     $c delete $msgptr
 }
@@ -179,16 +193,16 @@ proc animFlashingDelay {win d} {
 #
 # Helper for senddirect animations
 #
-proc graphicalModuleWindow:doAnimateSenddirect {win x1 y1 x2 y2 msgptr mode} {
+proc ModuleInspector:doAnimateSenddirect {win x1 y1 x2 y2 msgptr mode} {
     set c $win.c
 
     if [opp_getsimoption senddirect_arrows] {
         #$c create line $x1 $y1 $x2 $y2 -tags {senddirect} -arrow last -fill gray
         $c create line $x1 $y1 $x2 $y2 -tags {senddirect} -arrow last -fill blue -dash {.}
-        graphicalModuleWindow:doAnimate $win $x1 $y1 $x2 $y2 $msgptr "thru"
+        ModuleInspector:doAnimate $win $x1 $y1 $x2 $y2 $msgptr "thru"
         #$c delete $arrow -- this will come in _cleanup
     } else {
-        graphicalModuleWindow:doAnimate $win $x1 $y1 $x2 $y2 $msgptr "thru"
+        ModuleInspector:doAnimate $win $x1 $y1 $x2 $y2 $msgptr "thru"
     }
     if {$mode!="beg"} {
        $c delete $msgptr
@@ -199,7 +213,7 @@ proc graphicalModuleWindow:doAnimateSenddirect {win x1 y1 x2 y2 msgptr mode} {
 #
 # Ultimate helper function which in fact performs the animation.
 #
-proc graphicalModuleWindow:doAnimate {win x1 y1 x2 y2 msgptr {mode thru}} {
+proc ModuleInspector:doAnimate {win x1 y1 x2 y2 msgptr {mode thru}} {
     global fonts clicksPerSec
     set c $win.c
 
@@ -220,23 +234,22 @@ proc graphicalModuleWindow:doAnimate {win x1 y1 x2 y2 msgptr {mode thru}} {
     if {$steps==0} {set steps 1}
 
     if {$mode=="beg"} {
-        set endpos [graphicalModuleWindow:getMessageEndPos $x1 $y1 $x2 $y2]
+        set endpos [ModuleInspector:getMessageEndPos $x1 $y1 $x2 $y2]
         setvars {x2 y2} $endpos
     }
     if {$mode=="end"} {
-        set endpos [graphicalModuleWindow:getMessageEndPos $x1 $y1 $x2 $y2]
+        set endpos [ModuleInspector:getMessageEndPos $x1 $y1 $x2 $y2]
         setvars {x1 y1} $endpos
         set steps 6
     }
 
-    graphicalModuleWindow:drawMessage $c $msgptr $x1 $y1
+    ModuleInspector:drawMessage $c $msgptr $x1 $y1
 
     set dx [expr ($x2-$x1)/double($steps)]
     set dy [expr ($y2-$y1)/double($steps)]
 
     # WM_DELETE_WINDOW stuff: if user wants to close window (during "update"), postpone it until updateInspectors()
-    set old_close_handler [wm protocol $win WM_DELETE_WINDOW]
-    wm protocol $win WM_DELETE_WINDOW [list opp_markinspectorfordeletion $win]
+    animDisableClose $win
     for {set i 0} {$i<$steps} {incr i} {
        set tbeg [clock clicks]
        update
@@ -251,14 +264,14 @@ proc graphicalModuleWindow:doAnimate {win x1 y1 x2 y2 msgptr {mode thru}} {
            while {[expr abs([clock clicks]-$tbeg)] < $clicks} {}
        }
     }
-    wm protocol $win WM_DELETE_WINDOW $old_close_handler
+    animRestoreClose $win
 }
 
 #
 # This function is invoked from the module inspector C++ code.
 # Removes all dashed arrows at the end of a senddirect animation.
 #
-proc graphicalModuleWindow:animateSenddirectCleanup {win} {
+proc ModuleInspector:animateSenddirectCleanup {win} {
     global config tkenv
     if {$config(concurrent-anim)} {
         # if concurrent-anim is ON, we just store the params here, and will execute inside performAnimations.
@@ -271,57 +284,57 @@ proc graphicalModuleWindow:animateSenddirectCleanup {win} {
 }
 
 
-# graphicalModuleWindow:animateMethodcallAscent --
+# ModuleInspector:animateMethodcallAscent --
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc graphicalModuleWindow:animateMethodcallAscent {win parentmodptr modptr methodlabel} {
+proc ModuleInspector:animateMethodcallAscent {win parentmodptr modptr methodlabel} {
     set c $win.c
-    set src  [graphicalModuleWindow:getSubmodCoords $c $modptr]
+    set src  [ModuleInspector:getSubmodCoords $c $modptr]
 
     set x1 [expr ([lindex $src 0]+[lindex $src 2])/2]
     set y1 [expr ([lindex $src 1]+[lindex $src 3])/2]
     set x2 [expr $x1 + $y1/4]
     set y2 0
-    graphicalModuleWindow:doDrawMethodcall $win $x1 $y1 $x2 $y2 $methodlabel
+    ModuleInspector:doDrawMethodcall $win $x1 $y1 $x2 $y2 $methodlabel
 }
 
-# graphicalModuleWindow:animateMethodcallDescent --
+# ModuleInspector:animateMethodcallDescent --
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc graphicalModuleWindow:animateMethodcallDescent {win parentmodptr modptr methodlabel} {
+proc ModuleInspector:animateMethodcallDescent {win parentmodptr modptr methodlabel} {
     set c $win.c
-    set dest [graphicalModuleWindow:getSubmodCoords $c $modptr]
+    set dest [ModuleInspector:getSubmodCoords $c $modptr]
 
     set x2 [expr ([lindex $dest 0]+[lindex $dest 2])/2]
     set y2 [expr ([lindex $dest 1]+[lindex $dest 3])/2]
     set x1 [expr $x2 - $y2/4]
     set y1 0
-    graphicalModuleWindow:doDrawMethodcall $win $x1 $y1 $x2 $y2 $methodlabel
+    ModuleInspector:doDrawMethodcall $win $x1 $y1 $x2 $y2 $methodlabel
 }
 
-# graphicalModuleWindow:animateMethodcallHoriz --
+# ModuleInspector:animateMethodcallHoriz --
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc graphicalModuleWindow:animateMethodcallHoriz {win fromptr toptr methodlabel} {
+proc ModuleInspector:animateMethodcallHoriz {win fromptr toptr methodlabel} {
     set c $win.c
-    set src  [graphicalModuleWindow:getSubmodCoords $c $fromptr]
-    set dest [graphicalModuleWindow:getSubmodCoords $c $toptr]
+    set src  [ModuleInspector:getSubmodCoords $c $fromptr]
+    set dest [ModuleInspector:getSubmodCoords $c $toptr]
 
     set x1 [expr ([lindex $src 0]+[lindex $src 2])/2]
     set y1 [expr ([lindex $src 1]+[lindex $src 3])/2]
     set x2 [expr ([lindex $dest 0]+[lindex $dest 2])/2]
     set y2 [expr ([lindex $dest 1]+[lindex $dest 3])/2]
-    graphicalModuleWindow:doDrawMethodcall $win $x1 $y1 $x2 $y2 $methodlabel
+    ModuleInspector:doDrawMethodcall $win $x1 $y1 $x2 $y2 $methodlabel
 }
 
-# graphicalModuleWindow:doDrawMethodcall --
+# ModuleInspector:doDrawMethodcall --
 #
 # Helper.
 #
-proc graphicalModuleWindow:doDrawMethodcall {win x1 y1 x2 y2 methodlabel} {
+proc ModuleInspector:doDrawMethodcall {win x1 y1 x2 y2 methodlabel} {
     global fonts
 
     set c $win.c
@@ -339,8 +352,7 @@ proc graphicalModuleWindow:doDrawMethodcall {win x1 y1 x2 y2 methodlabel} {
 
     # flash arrow a bit
     # WM_DELETE_WINDOW stuff: if user wants to close window (during "update"), postpone it until updateInspectors()
-    set old_close_handler [wm protocol $win WM_DELETE_WINDOW]
-    wm protocol $win WM_DELETE_WINDOW [list opp_markinspectorfordeletion $win]
+    animDisableClose $win
     for {set i 0} {$i<2} {incr i} {
        $c itemconfig $arrow -state hidden
        update
@@ -349,24 +361,24 @@ proc graphicalModuleWindow:doDrawMethodcall {win x1 y1 x2 y2 methodlabel} {
        update
        animFlashingDelay $win 0.3
     }
-    wm protocol $win WM_DELETE_WINDOW $old_close_handler
+    animRestoreClose $win
 }
 
-# graphicalModuleWindow:animateMethodcallWait --
+# ModuleInspector:animateMethodcallWait --
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc graphicalModuleWindow:animateMethodcallWait {} {
+proc ModuleInspector:animateMethodcallWait {} {
     update idletasks
     set d [opp_getsimoption methodcalls_delay]
     after $d
 }
 
-# graphicalModuleWindow:animateMethodcallCleanup --
+# ModuleInspector:animateMethodcallCleanup --
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc graphicalModuleWindow:animateMethodcallCleanup {win} {
+proc ModuleInspector:animateMethodcallCleanup {win} {
     set c $win.c
     $c delete methodcall
 }

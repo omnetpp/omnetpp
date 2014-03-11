@@ -1,10 +1,8 @@
 //==========================================================================
-//  INSPECT.CC - part of
+//  INSPECTORFACTORY.CC - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
-//
-//  Implementation of inspector() functions
 //
 //==========================================================================
 
@@ -21,7 +19,7 @@
 #include "tkenv.h"
 #include "tklib.h"
 #include "inspector.h"
-#include "inspfactory.h"
+#include "inspectorfactory.h"
 
 NAMESPACE_BEGIN
 
@@ -30,24 +28,38 @@ cGlobalRegistrationList inspectorfactories;
 EXECUTE_ON_SHUTDOWN( inspectorfactories.clear() );
 
 
-cInspectorFactory *findInspectorFactoryFor(cObject *obj, int type)
+InspectorFactory *findInspectorFactoryFor(cObject *obj, int type)
 {
-    cInspectorFactory *best=NULL;
+    InspectorFactory *best=NULL;
     double bestweight=0;
     cRegistrationList *a = inspectorfactories.getInstance();
     for (int i=0; i<a->size(); i++)
     {
-        cInspectorFactory *ifc = static_cast<cInspectorFactory *>(a->get(i));
+        InspectorFactory *ifc = static_cast<InspectorFactory *>(a->get(i));
         if (ifc->supportsObject(obj) &&
-            (type==INSP_DEFAULT || ifc->inspectorType()==type) &&
-            ifc->qualityAsDefault(obj)>bestweight
+            (type==INSP_DEFAULT || ifc->getInspectorType()==type) &&
+            ifc->getQualityAsDefault(obj)>bestweight
            )
         {
-            bestweight = ifc->qualityAsDefault(obj);
+            bestweight = ifc->getQualityAsDefault(obj);
             best = ifc;
         }
     }
     return best; // may be NULL too
 }
+
+InspectorFactory *InspectorFactory::find(const char *className)
+{
+    return dynamic_cast<InspectorFactory *>(inspectorfactories.getInstance()->find(className));
+}
+
+InspectorFactory *InspectorFactory::get(const char *className)
+{
+    InspectorFactory *p = find(className);
+    if (!p)
+        throw cRuntimeError("Inspectorfactory \"%s\" not found", className);
+    return p;
+}
+
 
 NAMESPACE_END

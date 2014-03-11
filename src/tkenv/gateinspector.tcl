@@ -1,5 +1,5 @@
 #=================================================================
-#  GATEINSP.TCL - part of
+#  GATEINSPECTOR.TCL - part of
 #
 #                     OMNeT++/OMNEST
 #            Discrete System Simulation in C++
@@ -14,62 +14,26 @@
 #----------------------------------------------------------------#
 
 
-#-----------------------------------------------------------------
-#  gate inspector
-#-----------------------------------------------------------------
-#
-#proc createGateInspector {name geom} {
-#    global fonts icons help_tips
-#
-#    set w $name
-#    createInspectorToplevel $w $geom
-#
-#    set nb [inspector:createNotebook $w]
-#
-#    notebook:addPage $nb info {General}
-#
-#    inspector:createFields2Page $w
-#
-#    label-entry $nb.info.name {Name:}
-#    label-sunkenlabel $nb.info.id {Id:}
-#    label-button $nb.info.from {From:}
-#    label-button $nb.info.to {To:}
-#    label-entry $nb.info.dispstr {Display string:}
-#    label-entry $nb.info.delay {Delay:}
-#    label-entry $nb.info.error {Error:}
-#    label-entry $nb.info.datarate {Data rate:}
-#    label-sunkenlabel $nb.info.trfinish {Tx finishes:}
-#
-#    pack $nb.info.name -fill x -side top
-#    pack $nb.info.id -fill x -side top
-#    pack $nb.info.from -fill x -side top
-#    pack $nb.info.to -fill x -side top
-#    pack $nb.info.dispstr -fill x -side top
-#    pack $nb.info.delay -fill x -side top
-#    pack $nb.info.error -fill x -side top
-#    pack $nb.info.datarate -fill x -side top
-#    pack $nb.info.trfinish -fill x -side top
-#}
+proc createGateInspector {w geom} {
+    global icons help_tips
 
-
-#-----------------------------------------------------------------
-#  Graphical gate/path window stuff
-#-----------------------------------------------------------------
-
-proc createGraphicalGateWindow {name geom} {
-    global icons help_tips inspectordata
-    global B2 B3
-
-    set w $name
     createInspectorToplevel $w $geom
 
     # create toolbar
-    packIconButton $w.toolbar.ascont -image $icons(asobject) -command "inspectThis $w {As Object}"
     packIconButton $w.toolbar.sep1   -separator
     packIconButton $w.toolbar.redraw -image $icons(redraw) -command "opp_inspectorcommand $w redraw"
-
-    set help_tips($w.toolbar.ascont) {Inspect as object}
     set help_tips($w.toolbar.redraw) {Redraw}
+
+    createGateViewer $w
+}
+
+proc createEmbeddedGateInspector {w} {
+    createGateViewer $w
+}
+
+proc createGateViewer {w} {
+    global inspectordata
+    global B2 B3
 
     # create canvas
     set c $w.c
@@ -82,8 +46,8 @@ proc createGraphicalGateWindow {name geom} {
     set inspectordata($c:showarrowheads) 1
 
     frame $w.grid
-    scrollbar $w.hsb -orient horiz -command "$c xview"
-    scrollbar $w.vsb -command "$c yview"
+    ttk::scrollbar $w.hsb -orient horiz -command "$c xview"
+    ttk::scrollbar $w.vsb -command "$c yview"
     canvas $c -background #a0e0a0 -relief raised \
         -xscrollcommand "$w.hsb set" \
         -yscrollcommand "$w.vsb set"
@@ -96,27 +60,21 @@ proc createGraphicalGateWindow {name geom} {
     grid $w.hsb -in $w.grid -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
 
     # mouse bindings
-    $c bind mod <Double-1> "graphGateWin:dblClick $c"
-    $c bind gate <Double-1> "graphGateWin:dblClick $c {As Object}"
-    $c bind conn <Double-1> "graphGateWin:dblClick $c {As Object}"
-    $c bind msg <Double-1> "graphGateWin:dblClick $c"
-    $c bind msgname <Double-1> "graphGateWin:dblClick $c"
+    $c bind mod <Double-1> "GateInspector:dblClick $w"
+    $c bind gate <Double-1> "GateInspector:dblClick $w {As Object}"
+    $c bind conn <Double-1> "GateInspector:dblClick $w {As Object}"
+    $c bind msg <Double-1> "GateInspector:dblClick $w"
+    $c bind msgname <Double-1> "GateInspector:dblClick $w"
 
-    $c bind mod <$B3> "graphGateWin:rightClick $c %X %Y"
-    $c bind gate <$B3> "graphGateWin:rightClick $c %X %Y"
-    $c bind conn <$B3> "graphGateWin:rightClick $c %X %Y"
-    $c bind msg <$B3> "graphGateWin:rightClick $c %X %Y"
-    $c bind msgname <$B3> "graphGateWin:rightClick $c %X %Y"
-
-    opp_inspectorcommand $w redraw
+    $c bind mod <$B3> "GateInspector:rightClick $w %X %Y"
+    $c bind gate <$B3> "GateInspector:rightClick $w %X %Y"
+    $c bind conn <$B3> "GateInspector:rightClick $w %X %Y"
+    $c bind msg <$B3> "GateInspector:rightClick $w %X %Y"
+    $c bind msgname <$B3> "GateInspector:rightClick $w %X %Y"
 }
 
-
-proc graphicalModuleWindow:drawModuleGate {c modptr gateptr modname gatename k xsiz dir highlight} {
+proc GateInspector:drawModuleGate {c modptr gateptr modname gatename k xsiz dir highlight} {
     global fonts
-
-    # puts "DEBUG: graphicalModuleWindow:drawModuleGate /$c/ /$modptr/ /$gateptr/ "
-    #      "/$modname/ /$gatename/ /$k/ /$xsiz/ /$dir/ /$highlight/"
 
     set y [expr 40+40*$k]
 
@@ -162,7 +120,7 @@ proc graphicalModuleWindow:drawModuleGate {c modptr gateptr modname gatename k x
 
 }
 
-proc graphGateWin:drawConnection {c srcgateptr destgateptr chanptr chanstr dispstr} {
+proc GateInspector:drawConnection {c srcgateptr destgateptr chanptr chanstr dispstr} {
     global fonts
 
     opp_displaystring $dispstr parse tags $chanptr 0
@@ -194,8 +152,8 @@ proc graphGateWin:drawConnection {c srcgateptr destgateptr chanptr chanstr disps
    }
 }
 
-proc graphGateWin:dblClick {c {type (default)}} {
-
+proc GateInspector:dblClick {w {type (default)}} {
+   set c $w.c
    set item [$c find withtag current]
    set tags [$c gettags $item]
 
@@ -205,12 +163,12 @@ proc graphGateWin:dblClick {c {type (default)}} {
    }
 
    if {$ptr!=""} {
-      opp_inspect $ptr $type
+      inspector:dblClick $w $ptr
    }
 }
 
-proc graphGateWin:rightClick {c X Y} {
-
+proc GateInspector:rightClick {w X Y} {
+   set c $w.c
    set item [$c find withtag current]
    set tags [$c gettags $item]
 
@@ -221,7 +179,7 @@ proc graphGateWin:rightClick {c X Y} {
    set ptr [lindex $ptr 0]
 
    if [opp_isnotnull $ptr] {
-      set popup [createInspectorContextMenu $ptr]
+      set popup [createInspectorContextMenu $w $ptr]
       tk_popup $popup $X $Y
    }
 }

@@ -1,5 +1,5 @@
 //==========================================================================
-//  INSPFACTORY.H - part of
+//  INSPECTORFACTORY.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __INSPFACTORY_H
-#define __INSPFACTORY_H
+#ifndef __INSPECTORFACTORY_H
+#define __INSPECTORFACTORY_H
 
 #include <tk.h>
 #include "onstartup.h"
@@ -32,7 +32,7 @@ NAMESPACE_BEGIN
 /**
  * Serves as a base class for inspector factories of specific classes.
  */
-class TKENV_API cInspectorFactory : public cNoncopyableOwnedObject
+class TKENV_API InspectorFactory : public cNoncopyableOwnedObject
 {
   public:
     /** @name Constructors, destructor, assignment. */
@@ -40,12 +40,12 @@ class TKENV_API cInspectorFactory : public cNoncopyableOwnedObject
     /**
      * Constructor.
      */
-    cInspectorFactory(const char *name) : cNoncopyableOwnedObject(name,false) {}
+    InspectorFactory(const char *name) : cNoncopyableOwnedObject(name,false) {}
 
     /**
      * Destructor.
      */
-    virtual ~cInspectorFactory() {}
+    virtual ~InspectorFactory() {}
     //@}
 
 
@@ -53,31 +53,36 @@ class TKENV_API cInspectorFactory : public cNoncopyableOwnedObject
     //@{
     /**
      * Returns true if this factory can create an inspector for this object.
-     * Works with RTTI.
      */
     virtual bool supportsObject(cObject *object) = 0;
 
     /**
      * Returns type of inspector created by this factory (INSP_* constants).
-     * Works with RTTI.
      */
-    virtual int inspectorType() = 0;
+    virtual int getInspectorType() = 0;
 
     /**
-     * Returns "how good" this inspector is as default inspector for this object.
-     * Expressed as distance in the hiearchy tree from cObject, i.e.
-     *  1.0 for TObjectInspector and TContainerInspector for common objects;
-     *  2.0 for TMessageInspector, TWatchInspector, etc, and TContainerInspector for cArray&cQueue;
-     *  3.0 for TPacketInspector; ...
+     * Returns "how good" this inspector is as default inspector for this object;
+     * a higher value is better.
      */
-    virtual double qualityAsDefault(cObject *object) = 0;
+    virtual double getQualityAsDefault(cObject *object) = 0;
 
     /**
-     * Creates an inspector for the object passed. The type and data
-     * arguments influence the type of inspector created.
+     * Creates an inspector.
      */
-    virtual TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) = 0;
+    virtual Inspector *createInspector() = 0;
     //@}
+
+    /**
+     * Finds an inspector factory by name. Returns NULL if not found.
+     */
+    static InspectorFactory *find(const char *className);
+
+    /**
+     * Finds an inspector factory by name. Throws an error if not found.
+     */
+    static InspectorFactory *get(const char *className);
+
 };
 
 ///< List of cInspectorFactory objects.
@@ -86,7 +91,7 @@ extern cGlobalRegistrationList inspectorfactories;
 /**
  * Find a cInspectorFactory.
  */
-cInspectorFactory *findInspectorFactoryFor(cObject *obj, int type);
+InspectorFactory *findInspectorFactoryFor(cObject *obj, int type);
 
 NAMESPACE_END
 

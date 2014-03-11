@@ -29,7 +29,6 @@ proc saveTkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
                 updatefreq_fast_ms
                 updatefreq_express_ms
                 stepdelay
-                use_mainwindow
                 event_banners
                 init_banners
                 short_banners
@@ -103,6 +102,10 @@ proc storeMainwinGeometry {} {
     }
     set config(mainwin-state) $state
     set config(mainwin-geom) $geom
+
+    set config(mainwin-main-sashpos)  [.main sash coord 0]
+    set config(mainwin-left-sashpos)  [.main.left sash coord 0]
+    set config(mainwin-right-sashpos) [.main.right sash coord 0]
 }
 
 # loadTkenvrc --
@@ -171,8 +174,20 @@ proc reflectSettingsInGui {} {
    catch {wm state . $config(mainwin-state)}
    catch {wm geometry . $config(mainwin-geom)}
 
-   catch {.main.text config -wrap $config(editor-wrap)}
-   catch {.main.text tag configure "prefix" -elide $config(editor-hideprefix)}
+   after idle {after idle {
+      catch {
+         global config
+         set mpos $config(mainwin-main-sashpos)
+         set lpos $config(mainwin-left-sashpos)
+         set rpos $config(mainwin-right-sashpos)
+         .main sash place 0 [lindex $mpos 0] [lindex $mpos 1]
+         .main.left sash place 0 [lindex $lpos 0] [lindex $lpos 1]
+         .main.right sash place 0 [lindex $rpos 0] [lindex $rpos 1]
+      }
+   }}
+
+   catch {.log.main.text config -wrap $config(editor-wrap)}
+   catch {.log.main.text tag configure "prefix" -elide $config(editor-hideprefix)}
 
    applyFont Menubutton  $fonts(normal)
    applyFont Menu        $fonts(normal)
@@ -185,10 +200,7 @@ proc reflectSettingsInGui {} {
    applyFont Scale       $fonts(normal)
    applyFont Labelframe  $fonts(normal)
    applyFont Canvas      $fonts(normal)
-   applyFont Combobox    $fonts(normal)
    applyFont Listbox     $fonts(normal)
-   applyFont Tabset      $fonts(normal)
-   applyFont TreeView    $fonts(normal)
    applyFont Text        $fonts(text)
 
    option add *Menubutton.font  $fonts(normal)
@@ -202,12 +214,14 @@ proc reflectSettingsInGui {} {
    option add *Scale.font       $fonts(normal)
    option add *Labelframe       $fonts(normal)
    option add *Canvas.font      $fonts(normal)
-   option add *Combobox.font    $fonts(normal)
-   option add *ComboboxListbox.font $fonts(normal)
    option add *Listbox.font     $fonts(normal)
-   option add *Tabset.font      $fonts(normal)
-   option add *TreeView.font    $fonts(normal)
    option add *Text.font        $fonts(text)
+
+   ttk::style configure TButton          -font $fonts(normal)
+   ttk::style configure TCombobox        -font $fonts(normal)
+   ttk::style configure TNotebook.Tab    -font $fonts(normal)
+   ttk::style configure Treeview         -font $fonts(normal)
+   ttk::style configure Treeview.Heading -font $fonts(normal)
 
    set help_tips(font)  $fonts(balloon)
 

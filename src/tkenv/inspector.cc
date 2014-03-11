@@ -20,11 +20,14 @@
 #include <string.h>
 #include <math.h>
 #include <assert.h>
+#include <algorithm>
 
 #include "omnetpp.h"
 #include "tkenv.h"
 #include "tklib.h"
 #include "inspector.h"
+#include "inspectorfactory.h"
+#include "stringutil.h"
 
 NAMESPACE_BEGIN
 
@@ -56,287 +59,210 @@ int insptypeCodeFromName(const char *namestr)
    return -1;
 }
 
-//=================================================================
-// a utility function:
 
-void splitInspectorName(const char *namestr, cObject *&object, int& type)
+//----
+
+Inspector::Inspector(InspectorFactory *f)
 {
-   // namestr is the window path name, sth like ".ptr80005a31-2"
-   // split it into pointer string ("ptr80005a31") and inspector type ("2")
-   assert(namestr!=0); // must exist
-   assert(namestr[0]=='.');  // must begin with a '.'
+   factory = f;
+   interp = getTkenv()->getInterp();
+   object = NULL;
+   type = f->getInspectorType();
+   isToplevelWindow = false;
+   closeRequested = false;
 
-   // find '-' and temporarily replace it with EOS
-   char *s;
-   for (s=const_cast<char *>(namestr); *s!='-' && *s!='\0'; s++);
-   assert(*s=='-');  // there must be a '-' in the string
-   *s = '\0';
-
-   object = strToPtr(namestr+1);
-   type = atoi(s+1);
-   *s = '-';  // restore '-'
+   windowName[0] = '\0'; // no window exists
 }
 
-//=======================================================================
-// TInspector: base class for all inspector types
-//             member functions
-
-TInspector::TInspector(cObject *obj, int typ, const char *geom, void *dat)
+Inspector::~Inspector()
 {
-   object = obj;
-   type = typ;
-   data = dat;
-   toBeDeleted = false;
-
-   windowname[0] = '\0'; // no window exists
-   windowtitle[0] = '\0';
-   geometry[0] = '\0';
-   if (geom) strcpy(geometry, geom);
-}
-
-TInspector::~TInspector()
-{
-   if (windowname[0])
+   if (isToplevelWindow && windowName[0])
    {
-      Tcl_Interp *interp = getTkenv()->getInterp();
-      CHK(Tcl_VarEval(interp, "inspector:destroy ", windowname, NULL ));
+      CHK(Tcl_VarEval(interp, "inspector:destroy ", windowName, NULL ));
    }
 }
 
-void TInspector::createWindow()
+const char *Inspector::getClassName() const
 {
-   windowname[0] = '.';
-   ptrToStr(object, windowname+1 );
-   sprintf(windowname+strlen(windowname), "-%d",type);
-
-   // derived classes will also call Tcl_Eval() to actually create the
-   // Tk window by invoking a procedure in inspect.tcl
+    return opp_typename(typeid(*this));
 }
 
-bool TInspector::windowExists()
+
+bool Inspector::supportsObject(cObject *object) const
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, "winfo exists ", windowname, NULL ));
-   return Tcl_GetStringResult(interp)[0]=='1';
+    return factory->supportsObject(object);
 }
 
-void TInspector::showWindow()
+std::string Inspector::makeWindowName()
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, "inspector:show ", windowname, NULL ));
+   static int counter = 0;
+   return opp_stringf(".inspector%d", counter++);
 }
 
-void TInspector::hostObjectDeleted()
+void Inspector::createWindow(const char *window, const char *geometry)
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, "inspector:hostObjectDeleted ", windowname, NULL ));
+    strcpy(windowName, window);
+    isToplevelWindow = true;
 }
 
-void TInspector::update()
+void Inspector::useWindow(const char *window)
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
-
-   // update window title (only if changed)
-   //  (always updating the title produces many unnecessary redraws under some window mgrs)
-   char newtitle[128];
-   const char *prefix = getTkenv()->getWindowTitlePrefix();
-   char fullpath[300];
-   strncpy(fullpath, object->getFullPath().c_str(), 300);
-   fullpath[299] = 0;
-   int len = strlen(fullpath);
-   if (len<=45)
-       sprintf(newtitle, "%s(%.40s) %s", prefix, getObjectShortTypeName(object), fullpath);
-   else
-       sprintf(newtitle, "%s(%.40s) ...%s", prefix, getObjectShortTypeName(object), fullpath+len-40);
-
-   if (strcmp(newtitle, windowtitle)!=0)
-   {
-       strcpy(windowtitle, newtitle);
-       CHK(Tcl_VarEval(interp, "wm title ",windowname," {",windowtitle,"}",NULL));
-   }
-
-   // update object type and name info
-   char newname[MAX_OBJECTFULLPATH+MAX_CLASSNAME+40];
-   char buf[30];
-   cModule *mod = dynamic_cast<cModule *>(object);
-   if (mod)
-       sprintf(newname, "(%s) %s  (id=%d)  (%s)", getObjectFullTypeName(object),
-                        object->getFullPath().c_str(), mod->getId(), ptrToStr(object,buf));
-   else
-       sprintf(newname, "(%s) %s  (%s)", getObjectFullTypeName(object),
-                        object->getFullPath().c_str(), ptrToStr(object,buf));
-   CHK(Tcl_VarEval(interp, windowname,".infobar.name config -text {",newname,"}",NULL));
-
-   // owner button on toolbar
-   setToolbarInspectButton(".toolbar.owner", mod ? mod->getParentModule() : object->getOwner(), INSP_DEFAULT);
+    strcpy(windowName, window);
+    windowTitle = "";
+    isToplevelWindow = false;
 }
 
-void TInspector::setEntry(const char *entry, const char *val)
+void Inspector::doSetObject(cObject *obj)
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
+    ASSERT2(windowName[0], "createWindow()/useWindow() needs to be called before setObject()");
+
+    if (obj != object)
+    {
+        if (obj && !supportsObject(obj))
+            throw cRuntimeError("Inspector %s doesn't support objects of class %s", getClassName(), obj->getClassName());
+        object = obj;
+        CHK(Tcl_VarEval(interp, "inspector:onSetObject ", windowName, NULL));
+        refresh();
+    }
+}
+
+void Inspector::showWindow()
+{
+    if (isToplevelWindow)
+        CHK(Tcl_VarEval(interp, "inspector:show ", windowName, NULL ));
+}
+
+void Inspector::refresh()
+{
+    if (isToplevelWindow)
+        refreshTitle();
+    CHK(Tcl_VarEval(interp, "inspector:refresh ", windowName, NULL));
+}
+
+void Inspector::refreshTitle()
+{
+    // update window title (only if changed -- always updating the title produces
+    // unnecessary redraws under some window managers
+    char newTitle[256];
+    const char *prefix = getTkenv()->getWindowTitlePrefix();
+    if (!object)
+    {
+        sprintf(newTitle, "%s n/a", prefix);
+    }
+    else
+    {
+        std::string fullPath = object->getFullPath();
+        if (fullPath.length()<=60)
+            sprintf(newTitle, "%s(%.40s) %s", prefix, getObjectShortTypeName(object), fullPath.c_str());
+        else
+            sprintf(newTitle, "%s(%.40s) ...%s", prefix, getObjectShortTypeName(object), fullPath.c_str()+fullPath.length()-55);
+    }
+
+    if (windowTitle != newTitle)
+    {
+        windowTitle = newTitle;
+        CHK(Tcl_VarEval(interp, "wm title ",windowName," {",windowTitle.c_str(),"}",NULL));
+    }
+}
+
+void Inspector::objectDeleted(cObject *obj)
+{
+    if (obj == object)
+        doSetObject(NULL);
+    removeFromToHistory(obj);
+}
+
+void Inspector::setObject(cObject *obj)
+{
+    if (obj != object) {
+        if (object != NULL) {
+            historyBack.push_back(object);
+            historyForward.clear();
+        }
+        doSetObject(obj);
+    }
+}
+
+template <typename T>
+void removeFromVector(std::vector<T>& vec, T value)
+{
+    vec.erase(std::remove(vec.begin(), vec.end(), value), vec.end());
+}
+
+void Inspector::removeFromToHistory(cObject *obj)
+{
+    removeFromVector(historyBack, obj);
+    removeFromVector(historyForward, obj);
+}
+
+bool Inspector::canGoForward()
+{
+    return !historyForward.empty();
+}
+
+bool Inspector::canGoBack()
+{
+    return !historyBack.empty();
+}
+
+void Inspector::goForward()
+{
+    if (!historyForward.empty()) {
+        cObject *newObj = historyForward.back();
+        historyForward.pop_back();
+        if (object != NULL)
+            historyBack.push_back(object);
+        doSetObject(newObj);
+    }
+}
+
+void Inspector::goBack()
+{
+    if (!historyBack.empty()) {
+        cObject *newObj = historyBack.back();
+        historyBack.pop_back();
+        if (object != NULL)
+            historyForward.push_back(object);
+        doSetObject(newObj);
+    }
+}
+
+int Inspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
+{
+    if (argc != 1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
+
+    if (strcmp(argv[0], "cangoback")==0)
+       Tcl_SetResult(interp, TCLCONST(canGoBack() ? "1" : "0"), TCL_STATIC);
+    else if (strcmp(argv[0], "cangoforward")==0)
+       Tcl_SetResult(interp, TCLCONST(canGoForward() ? "1" : "0"), TCL_STATIC);
+    else if (strcmp(argv[0], "goback")==0)
+        goBack();
+    else if (strcmp(argv[0], "goforward")==0)
+        goForward();
+    else {
+        Tcl_SetResult(interp, TCLCONST("unknown inspector command"), TCL_STATIC);
+        return TCL_ERROR;
+    }
+    return TCL_OK;
+}
+
+void Inspector::setEntry(const char *entry, const char *val)
+{
+    if (!val) val="";
+    CHK(Tcl_VarEval(interp, windowName,entry," delete 0 end;",
+            windowName,entry," insert 0 {",val,"}",NULL));
+}
+
+void Inspector::setLabel( const char *label, const char *val )
+{
    if (!val) val="";
-   CHK(Tcl_VarEval(interp, windowname,entry," delete 0 end;",
-                           windowname,entry," insert 0 {",val,"}",NULL));
+   CHK(Tcl_VarEval(interp, windowName,label," config -text {",val,"}",NULL));
 }
 
-void TInspector::setEntry( const char *entry, long l )
+const char *Inspector::getEntry( const char *entry )
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
-   char buf[16];
-   sprintf(buf, "%ld", l );
-   CHK(Tcl_VarEval(interp, windowname,entry," delete 0 end;",
-                           windowname,entry," insert 0 {",buf,"}",NULL));
-}
-
-void TInspector::setEntry( const char *entry, double d )
-{
-   Tcl_Interp *interp = getTkenv()->getInterp();
-   char buf[24];
-   sprintf(buf, "%g", d );
-   CHK(Tcl_VarEval(interp, windowname,entry," delete 0 end;",
-                           windowname,entry," insert 0 {",buf,"}",NULL));
-}
-
-void TInspector::setLabel( const char *label, const char *val )
-{
-   Tcl_Interp *interp = getTkenv()->getInterp();
-   if (!val) val="";
-   CHK(Tcl_VarEval(interp, windowname,label," config -text {",val,"}",NULL));
-}
-
-void TInspector::setLabel( const char *label, long l )
-{
-   Tcl_Interp *interp = getTkenv()->getInterp();
-   char buf[16];
-   sprintf(buf, "%ld", l );
-   CHK(Tcl_VarEval(interp, windowname,label," config -text {",buf,"}",NULL));
-}
-
-void TInspector::setLabel( const char *label, double d )
-{
-   Tcl_Interp *interp = getTkenv()->getInterp();
-   char buf[16];
-   sprintf(buf, "%g", d );
-   CHK(Tcl_VarEval(interp, windowname,label," config -text {",buf,"}",NULL));
-}
-
-void TInspector::setText(const char *entry, const char *val)
-{
-   Tcl_Interp *interp = getTkenv()->getInterp();
-   if (!val) val="";
-   CHK(Tcl_VarEval(interp, windowname,entry," delete 1.0 end", NULL));
-   CHK(Tcl_VarEval(interp, windowname,entry," insert 1.0 {",val,"}",NULL));
-}
-
-void TInspector::setReadonlyText(const char *entry, const char *val)
-{
-   Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, windowname,entry," config -state normal", NULL));
-   setText(entry, val);
-   CHK(Tcl_VarEval(interp, windowname,entry," config -state disabled", NULL));
-}
-
-const char *TInspector::getEntry( const char *entry )
-{
-   Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, windowname,entry," get",NULL));
+   CHK(Tcl_VarEval(interp, windowName,entry," get",NULL));
    return Tcl_GetStringResult(interp);
-}
-
-void TInspector::setInspectButton(const char *button, cObject *object, bool displayfullpath, int inspectortype)
-{
-   Tcl_Interp *interp = getTkenv()->getInterp();
-   if (object)
-   {
-      char buf[16];
-      sprintf(buf, "%d", inspectortype);
-      char idtext[30] = "";
-      if (dynamic_cast<cModule *>(object))
-      {
-          sprintf(idtext, " (id=%d)", static_cast<cModule *>(object)->getId());
-      }
-      CHK(Tcl_VarEval(interp, windowname, button,".e config -state normal ",
-                              "-text {(", getObjectShortTypeName(object), ") ",
-                              (displayfullpath ? object->getFullPath().c_str() : object->getFullName()),
-                              idtext, "} ",
-                              "-command {opp_inspect ",ptrToStr(object)," ",buf,"}",
-                              NULL));
-   }
-   else
-   {
-      CHK(Tcl_VarEval(interp, windowname,button,".e config -state disabled -text {n/a}",NULL));
-   }
-}
-
-void TInspector::setToolbarInspectButton(const char *button, cObject *object, int type)
-{
-   Tcl_Interp *interp = getTkenv()->getInterp();
-   if (object)
-   {
-      char buf[16];
-      sprintf(buf, "%d", type );
-      CHK(Tcl_VarEval(interp, windowname,button," config -state normal -command"
-                              " {opp_inspect ",ptrToStr(object)," ",buf,"}",NULL));
-   }
-   else
-   {
-      CHK(Tcl_VarEval(interp, windowname,button," config -state disabled",NULL));
-   }
-}
-
-void TInspector::deleteInspectorListbox(const char *listbox)
-{
-   Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, "multicolumnlistbox:deleteAll ", windowname,listbox,".main.list",NULL));
-}
-
-void TInspector::fillInspectorListbox(const char *listbox, cObject *object, bool deep)
-{
-   Tcl_Interp *interp = getTkenv()->getInterp();
-   char w[256], buf[256];
-   sprintf(w, "%s%s.main.list", windowname,listbox);
-   int n = fillListboxWithChildObjects(object, interp, w, deep);
-
-   // The following is needed because BLT tends to crash when item count goes
-   // from 3 to 0 (e.g. in samples/fifo, Fast mode). Adding a dummy line when
-   // listbox is empty solves the problem...
-   if (n==0)
-       CHK(Tcl_VarEval(interp, "multicolumnlistbox:addDummyLine ", w, NULL));
-
-   // set "number of items" display
-   sprintf(w, "%s.label", listbox);
-   sprintf(buf,"%d objects", n);
-   setLabel(w, buf);
-}
-
-void TInspector::fillListboxWithSubmodules(const char *listbox, cModule *parent)
-{
-   Tcl_Interp *interp = getTkenv()->getInterp();
-   char w[256], buf[256];
-   sprintf(w, "%s%s.main.list", windowname,listbox);
-
-   // feed into listbox
-   int n = 0;
-   for (cModule::SubmoduleIterator submod(parent); !submod.end(); submod++, n++)
-        insertIntoInspectorListbox(interp, w, submod(), false);
-
-   // set "number of items" display
-   sprintf(w, "%s.label", listbox);
-   sprintf(buf,"%d modules", n);
-   setLabel(w, buf);
-}
-
-//=======================================================================
-
-TInspectorPanel::TInspectorPanel(const char *widgetname, cObject *obj)
-{
-   strcpy(this->widgetname, widgetname);
-   object = obj;
-}
-
-void TInspectorPanel::setObject(cObject *obj)
-{
-   object=obj;
 }
 
 NAMESPACE_END

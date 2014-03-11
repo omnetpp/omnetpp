@@ -149,6 +149,20 @@ proc timeline:popup {cx cy x y} {
     }
 }
 
+proc timeline:click c {
+   set item [$c find withtag current]
+   set tags [$c gettags $item]
+
+   set ptr ""
+   if {[lsearch $tags "ptr*"] != -1} {
+      regexp "ptr.*" $tags ptr
+   }
+
+   if {$ptr!=""} {
+      mainWindow:selectionChanged "" $ptr
+   }
+}
+
 proc timeline:dblClick c {
    set item [$c find withtag current]
    set tags [$c gettags $item]
@@ -164,9 +178,9 @@ proc timeline:dblClick c {
 }
 
 proc timeline:rightClick {c X Y x y} {
-   set ptrs [graphicalModuleWindow:getPtrsUnderMouse $c $x $y]
+   set ptrs [ModuleInspector:getPtrsUnderMouse $c $x $y]
    if {$ptrs != {}} {
-      set popup [createInspectorContextMenu $ptrs]
+      set popup [createInspectorContextMenu "" $ptrs]
       tk_popup $popup $X $Y
    }
 }

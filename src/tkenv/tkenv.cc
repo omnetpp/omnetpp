@@ -40,8 +40,12 @@
 #include "tkenv.h"
 #include "tklib.h"
 #include "inspector.h"
-#include "inspfactory.h"
-#include "modinsp.h"
+#include "inspectorfactory.h"
+#include "moduleinspector.h"
+#include "loginspector.h"
+#include "gateinspector.h"
+#include "genericobjectinspector.h"
+#include "watchinspector.h"
 #include "timeutil.h"
 #include "stringutil.h"
 #include "stringtokenizer.h"
@@ -140,7 +144,6 @@ TkenvOptions::TkenvOptions()
     printEventBanners = true;
     printInitBanners = true;
     shortBanners = false;
-    useMainWindow = true;
     autoupdateInExpress = true;
     stopOnMsgCancel = true;
     logFormat = "%l %C: ";
@@ -158,7 +161,6 @@ Tkenv::Tkenv() : opt((TkenvOptions *&)EnvirBase::opt)
     simstate = SIM_NONET;
     stopsimulation_flag = false;
     animating = false;
-    hasmessagewindow = false;
     isconfigrun = false;
     rununtil_msg = NULL; // deactivate corresponding checks in eventCancelled()/objectDeleted()
     gettimeofday(&idleLastUICheck, NULL);
@@ -243,10 +245,12 @@ void Tkenv::doRun()
         // Case A: TCL code in separate .tcl files
         //
         Tcl_SetVar(interp, "OMNETPP_TKENV_DIR",  TCLCONST(tkenv_dir.c_str()), TCL_GLOBAL_ONLY);
-        if (Tcl_EvalFile(interp,opp_concat(tkenv_dir.c_str(),"/tkenv.tcl"))==TCL_ERROR)
+        if (Tcl_EvalFile(interp,opp_concat(tkenv_dir.c_str(),"/tkenv.tcl"))==TCL_ERROR) {
+            logTclError(__FILE__,__LINE__, interp);
             throw opp_runtime_error("Tkenv: %s. (Is the OMNETPP_TKENV_DIR environment variable "
                                     "set correctly? When not set, it defaults to " OMNETPP_TKENV_DIR ")",
                                     Tcl_GetStringResult(interp));
+        }
 #else
         //
         // Case B: compiled-in TCL code
@@ -255,13 +259,17 @@ void Tkenv::doRun()
         // with the tcl2c program (to be compiled from tcl2c.c).
         //
 #include "tclcode.cc"
-        if (Tcl_Eval(interp,(char *)tcl_code)==TCL_ERROR)
+        if (Tcl_Eval(interp,(char *)tcl_code)==TCL_ERROR) {
+            logTclError(__FILE__,__LINE__, interp);
             throw opp_runtime_error("Tkenv: %s", Tcl_GetStringResult(interp));
+        }
 #endif
 
         // evaluate main script and build user interface
-        if (Tcl_Eval(interp,"startTkenv")==TCL_ERROR)
+        if (Tcl_Eval(interp,"startTkenv")==TCL_ERROR) {
+            logTclError(__FILE__,__LINE__, interp);
             throw opp_runtime_error("Tkenv: %s\n", Tcl_GetStringResult(interp));
+        }
 
         // create windowtitle prefix
         if (getParsimNumPartitions()>0)
@@ -269,6 +277,15 @@ void Tkenv::doRun()
             windowtitleprefix.reserve(24);
             sprintf(windowtitleprefix.buffer(), "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
         }
+
+        mainInspector = (GenericObjectInspector *)InspectorFactory::get("GenericObjectInspectorFactory")->createInspector();
+        addEmbeddedInspector(".inspector", mainInspector);
+
+        mainNetworkView = (ModuleInspector *)InspectorFactory::get("ModuleInspectorFactory")->createInspector();
+        addEmbeddedInspector(".network", mainNetworkView);
+
+        mainLogView = (LogInspector *)InspectorFactory::get("LogInspectorFactory")->createInspector();
+        addEmbeddedInspector(".log", mainLogView);
     }
     catch (std::exception& e)
     {
@@ -289,10 +306,10 @@ void Tkenv::doRun()
     // close all inspectors before exiting
     for(;;)
     {
-        TInspectorList::iterator it = inspectors.begin();
+        InspectorList::iterator it = inspectors.begin();
         if (it==inspectors.end())
             break;
-        TInspector *insp = *it;
+        Inspector *insp = *it;
         inspectors.erase(it);
         delete insp;
     }
@@ -326,8 +343,6 @@ void Tkenv::rebuildSim()
          newNetwork(simulation.getNetworkType()->getName());
     else
          confirm("Choose File|New Network or File|New Run.");
-    if (simulation.getSystemModule())
-         inspect(simulation.getSystemModule(),INSP_DEFAULT,"",NULL);
 }
 
 void Tkenv::doOneStep()
@@ -739,8 +754,6 @@ void Tkenv::newNetwork(const char *networkname)
         cModuleType *network = resolveNetwork(networkname);
         ASSERT(network);
 
-        CHK(Tcl_VarEval(interp, "clearWindows", NULL));
-
         // set up new network with config General.
         isconfigrun = false;
         getConfigEx()->activateConfig("General", 0);
@@ -794,10 +807,11 @@ void Tkenv::newRun(const char *configname, int runnumber)
         cModuleType *network = resolveNetwork(opt->networkName.c_str());
         ASSERT(network);
 
-        CHK(Tcl_VarEval(interp, "clearWindows", NULL));
-
         answers.clear();
         setupNetwork(network);
+        mainNetworkView->doSetObject(simulation.getSystemModule()); //FIXME factor out to setupNetwork()!
+        mainLogView->doSetObject(simulation.getSystemModule()); //FIXME factor out to setupNetwork()!
+        mainInspector->doSetObject(simulation.getSystemModule()); //FIXME just temporary, should come from tree/canvas selection
         startRun();
 
         simstate = SIM_NEW;
@@ -817,10 +831,10 @@ void Tkenv::newRun(const char *configname, int runnumber)
     updateInspectors();
 }
 
-TInspector *Tkenv::inspect(cObject *obj, int type, const char *geometry, void *dat)
+Inspector *Tkenv::inspect(cObject *obj, int type, bool ignoreEmbedded, const char *geometry)
 {
     // create inspector object & window or display existing one
-    TInspector *existing_insp = findInspector(obj, type);
+    Inspector *existing_insp = findInspector(obj, type, ignoreEmbedded);
     if (existing_insp)
     {
         existing_insp->showWindow();
@@ -828,22 +842,22 @@ TInspector *Tkenv::inspect(cObject *obj, int type, const char *geometry, void *d
     }
 
     // create inspector
-    cInspectorFactory *p = findInspectorFactoryFor(obj,type);
+    InspectorFactory *p = findInspectorFactoryFor(obj,type);
     if (!p)
     {
         confirm(opp_stringf("Class `%s' has no associated inspectors.", obj->getClassName()).c_str());
         return NULL;
     }
 
-    int actualtype = p->inspectorType();
-    existing_insp = findInspector(obj, actualtype);
+    int actualtype = p->getInspectorType();
+    existing_insp = findInspector(obj, actualtype, ignoreEmbedded);
     if (existing_insp)
     {
         existing_insp->showWindow();
         return existing_insp;
     }
 
-    TInspector *insp = p->createInspectorFor(obj, actualtype, geometry, dat);
+    Inspector *insp = p->createInspector();
     if (!insp)
     {
         // message: object has no such inspector
@@ -852,25 +866,43 @@ TInspector *Tkenv::inspect(cObject *obj, int type, const char *geometry, void *d
     }
 
     // everything ok, finish inspector
-    inspectors.insert(inspectors.end(), insp);
-    insp->createWindow();
-    insp->update();
+    inspectors.push_back(insp);
+    insp->createWindow(Inspector::makeWindowName().c_str(), geometry);
+    insp->setObject(obj);
 
     return insp;
 }
 
-TInspector *Tkenv::findInspector(cObject *obj, int type)
+void Tkenv::addEmbeddedInspector(const char *widget, Inspector *insp)
 {
-    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    inspectors.push_back(insp);
+    insp->useWindow(widget);
+    insp->refresh();
+}
+
+Inspector *Tkenv::findInspector(cObject *obj, int type, bool ignoreEmbedded)
+{
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
     {
-        TInspector *insp = *it;
-        if (insp->getObject()==obj && insp->getType()==type)
+        Inspector *insp = *it;
+        if (insp->getObject()==obj && insp->getType()==type && (!ignoreEmbedded || insp->isToplevel()))
             return insp;
     }
     return NULL;
 }
 
-void Tkenv::deleteInspector(TInspector *insp)
+Inspector *Tkenv::findInspector(const char *widget)
+{
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    {
+        Inspector *insp = *it;
+        if (strcmp(insp->getWindowName(), widget) == 0)
+            return insp;
+    }
+    return NULL;
+}
+
+void Tkenv::deleteInspector(Inspector *insp)
 {
     inspectors.remove(insp);
     delete insp;
@@ -879,22 +911,19 @@ void Tkenv::deleteInspector(TInspector *insp)
 void Tkenv::updateInspectors()
 {
     // update inspectors
-    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end();)
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end();)
     {
-        TInspector *insp = *it;
-        TInspectorList::iterator next = ++it;
+        Inspector *insp = *it;
+        InspectorList::iterator next = ++it;
         if (insp->isMarkedForDeletion())
             deleteInspector(insp);
         else
-            insp->update();
+            insp->refresh();
         it = next;
     }
 
     // update object tree
     CHK(Tcl_VarEval(interp, "treeManager:update",NULL));
-
-    // trim log in main window
-    CHK(Tcl_VarEval(interp, "mainlogWindow:trimlines",NULL));
 
     // try opening "pending" inspectors
     CHK(Tcl_VarEval(interp, "inspectorUpdateCallback",NULL));
@@ -906,11 +935,11 @@ void Tkenv::redrawInspectors()
     updateInspectors();
 
     // redraw them
-    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); it++)
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); it++)
     {
-        TInspector *insp = *it;
-        if (dynamic_cast<TGraphicalModWindow*>(insp))
-            ((TGraphicalModWindow*)insp)->redrawAll();
+        Inspector *insp = *it;
+        if (dynamic_cast<ModuleInspector*>(insp))
+            ((ModuleInspector*)insp)->redrawAll();
     }
 }
 
@@ -921,35 +950,29 @@ void Tkenv::createSnapshot( const char *label )
 
 void Tkenv::updateGraphicalInspectorsBeforeAnimation()
 {
-    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
     {
-        TInspector *insp = *it;
-        if (dynamic_cast<TGraphicalModWindow *>(insp) && static_cast<TGraphicalModWindow *>(insp)->needsRedraw())
+        Inspector *insp = *it;
+        if (dynamic_cast<ModuleInspector *>(insp) && static_cast<ModuleInspector *>(insp)->needsRedraw())
         {
-            insp->update();
+            insp->refresh();
         }
     }
 }
 
 void Tkenv::updateNetworkRunDisplay()
 {
-    char runnr[10];
-    const char *networkname;
-
-    if (getConfigEx()->getActiveRunNumber())
-        sprintf(runnr, "?");
-    else
-        sprintf(runnr, "%d", getConfigEx()->getActiveRunNumber());
-
-    if (simulation.getNetworkType()==NULL)
-        networkname = "(no network)";
-    else
-        networkname = simulation.getNetworkType()->getName();
+    const char *configName = getConfigEx()->getActiveConfigName();
+    if (opp_isempty(configName))
+        configName = "n/a";
+    std::string runNumber = opp_stringf("%d", getConfigEx()->getActiveRunNumber());
+    const char *networkName = (simulation.getNetworkType()==NULL) ? "(no network)" : simulation.getNetworkType()->getName();
 
     CHK(Tcl_VarEval(interp, NETWORK_LABEL " config -text {",
-                        "Run #",runnr,": ",networkname,
-                        "}", NULL ));
-    CHK(Tcl_VarEval(interp, "wm title . {" OMNETPP_PRODUCT "/Tkenv - ", getWindowTitlePrefix(), networkname, "}",NULL));
+            TclQuotedString(configName).get(), " #",  runNumber.c_str(), ": ",
+            TclQuotedString(networkName).get(), "}", NULL ));
+    CHK(Tcl_VarEval(interp, "wm title . {" OMNETPP_PRODUCT "/Tkenv - ", getWindowTitlePrefix(),
+            TclQuotedString(networkName).get(), "}",NULL));
 }
 
 void Tkenv::updateSimtimeDisplay()
@@ -1077,32 +1100,19 @@ void Tkenv::printEventBanner(cEvent *event)
 
     // print into module log windows
     printLastLogLine();
-
-    // and into the message window
-    if (hasmessagewindow)
-        CHK(Tcl_VarEval(interp,
-              "catch {\n"
-              " .messagewindow.main.text insert end ",banner,"\n"
-              " .messagewindow.main.text see end\n"
-              "}\n", NULL));
-
 }
 
 void Tkenv::printLastLogLine()
 {
     const LogBuffer::Entry& entry = logBuffer.getEntries().back();
 
-    // print into main window
-    if (opt->useMainWindow)
-        TModuleWindow::printLastLineOf(interp, ".main.text", logBuffer, mainWindowExcludedModuleIds);
-
     // print into module window and all parent module windows if they exist
-    if (!entry.moduleIds)
+    if (!entry.moduleIds /*info*/ || !entry.moduleIds[0] /*initialize--FIXME how???*/)
     {
         // info message: insert into all log windows
-        for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+        for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
         {
-            TModuleWindow *insp = dynamic_cast<TModuleWindow *>(*it);
+            LogInspector *insp = dynamic_cast<LogInspector *>(*it);
             if (insp)
                 insp->printLastLineOf(logBuffer);
         }
@@ -1113,7 +1123,7 @@ void Tkenv::printLastLogLine()
         cModule *mod = simulation.getModule(entry.moduleIds[0]);
         while (mod)
         {
-            TModuleWindow *insp = static_cast<TModuleWindow *>(findInspector(mod,INSP_MODULEOUTPUT));
+            LogInspector *insp = static_cast<LogInspector *>(findInspector(mod,INSP_MODULEOUTPUT));
             if (insp)
                 insp->printLastLineOf(logBuffer);
             mod = mod->getParentModule();
@@ -1151,20 +1161,12 @@ void Tkenv::componentInitBegin(cComponent *component, int stage)
 
     // print into module log windows
     printLastLogLine();
-
-    // and into the message window
-    if (hasmessagewindow)
-        CHK(Tcl_VarEval(interp,
-              "catch {\n"
-              " .messagewindow.main.text insert end ",banner,"\n"
-              " .messagewindow.main.text see end\n"
-              "}\n", NULL));
 }
 
 void Tkenv::setMainWindowExcludedModuleIds(const std::set<int>& ids)
 {
     mainWindowExcludedModuleIds = ids;
-    TModuleWindow::redisplay(interp, ".main.text", logBuffer, simulation.getSystemModule(), mainWindowExcludedModuleIds);
+    LogInspector::redisplay(interp, ".log.text", logBuffer, simulation.getSystemModule(), mainWindowExcludedModuleIds);
 }
 
 void Tkenv::setSilentEventFilters(const char *filterLines)
@@ -1321,21 +1323,18 @@ void Tkenv::objectDeleted(cObject *object)
             confirm("Message to run until has just been deleted.");
     }
 
-    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); )
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); )
     {
-        TInspectorList::iterator next = it;
+        InspectorList::iterator next = it;
         ++next;
-        TInspector *insp = *it;
-        if (insp->getObject()==object)
+        Inspector *insp = *it;
+
+        insp->objectDeleted(object);
+
+        if (insp->getObject() == object && insp->isToplevel())
         {
-            inspectors.erase(it); // with std::list, "next" remains valid
-            insp->hostObjectDeleted();
+            inspectors.erase(it);
             delete insp;
-        }
-        else
-        {
-            // notify the inspector, maybe it's interested in learning that
-            insp->objectDeleted(object);
         }
         it = next;
     }
@@ -1344,17 +1343,6 @@ void Tkenv::objectDeleted(cObject *object)
 void Tkenv::simulationEvent(cEvent *event)
 {
     EnvirBase::simulationEvent(event);
-
-    // display in message window
-    if (hasmessagewindow)
-        CHK(Tcl_VarEval(interp,
-            "catch {\n"
-            " .messagewindow.main.text insert end {DELIVD:\t (",event->getClassName(),")",event->getFullName(),"}\n"
-            " .messagewindow.main.text insert end ",TclQuotedString(event->info().c_str()).get(),"\n"
-            " .messagewindow.main.text insert end {\n}\n"
-            " .messagewindow.main.text see end\n"
-            "}\n",
-            NULL));
 
     if (animating && opt->animationEnabled && event->isMessage())
     {
@@ -1378,17 +1366,6 @@ void Tkenv::simulationEvent(cEvent *event)
 
 void Tkenv::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate) //FIXME needed?
 {
-    // display in message window
-    if (hasmessagewindow)
-        CHK(Tcl_VarEval(interp,
-            "catch {\n"
-            " .messagewindow.main.text insert end {SENT:\t (", msg->getClassName(),")", msg->getFullName(), "}\n"
-            " .messagewindow.main.text insert end ", TclQuotedString(msg->info().c_str()).get(), "\n"
-            " .messagewindow.main.text insert end {\n}\n"
-            " .messagewindow.main.text see end\n"
-            "}\n",
-            NULL));
-
     if (animating && opt->animationEnabled && !isSilentEvent(msg))
     {
         // find suitable inspectors and do animate the message...
@@ -1495,15 +1472,15 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
             cModule *enclosingmod = mod->getParentModule();
             //EV << "DBG: animate ascent inside " << enclosingmod->getFullPath()
             //   << " from " << mod->getFullPath() << endl;
-            TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
+            Inspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
             if (insp)
             {
                 numinsp++;
                 char parentptr[30], modptr[30];
                 strcpy(parentptr,ptrToStr(enclosingmod));
                 strcpy(modptr,ptrToStr(mod));
-                CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateMethodcallAscent ",
-                                        insp->windowName(), " ",
+                CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallAscent ",
+                                        insp->getWindowName(), " ",
                                         parentptr," ",
                                         modptr," ",
                                         " {",methodText,"} ",
@@ -1518,15 +1495,15 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
             //EV << "DBG: animate descent in " << enclosingmod->getFullPath() <<
             //   " to " << mod->getFullPath() << endl;
 
-            TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
+            Inspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
             if (insp)
             {
                 numinsp++;
                 char parentptr[30], modptr[30];
                 strcpy(parentptr,ptrToStr(enclosingmod));
                 strcpy(modptr,ptrToStr(mod));
-                CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateMethodcallDescent ",
-                                        insp->windowName(), " ",
+                CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallDescent ",
+                                        insp->getWindowName(), " ",
                                         parentptr," ",
                                         modptr," ",
                                         " {",methodText,"} ",
@@ -1536,15 +1513,15 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
         else
         {
             cModule *enclosingmod = i->from->getParentModule();
-            TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
+            Inspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
             if (insp)
             {
                 numinsp++;
                 char fromptr[30], toptr[30];
                 strcpy(fromptr,ptrToStr(i->from));
                 strcpy(toptr,ptrToStr(i->to));
-                CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateMethodcallHoriz ",
-                                        insp->windowName(), " ",
+                CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallHoriz ",
+                                        insp->getWindowName(), " ",
                                         fromptr," ",
                                         toptr," ",
                                         " {",methodText,"} ",
@@ -1556,18 +1533,18 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
     if (numinsp>0)
     {
         // leave it there for a while
-        CHK(Tcl_Eval(interp, "graphicalModuleWindow:animateMethodcallWait"));
+        CHK(Tcl_Eval(interp, "ModuleInspector:animateMethodcallWait"));
 
         // then remove all arrows
         for (i=pathvec.begin(); i!=pathvec.end(); i++)
         {
             cModule *mod= i->from ? i->from : i->to;
             cModule *enclosingmod = mod->getParentModule();
-            TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
+            Inspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
             if (insp)
             {
-                CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateMethodcallCleanup ",
-                                        insp->windowName(),
+                CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallCleanup ",
+                                        insp->getWindowName(),
                                         NULL));
             }
         }
@@ -1584,9 +1561,9 @@ void Tkenv::moduleCreated(cModule *newmodule)
     EnvirBase::moduleCreated(newmodule);
 
     cModule *mod = newmodule->getParentModule();
-    TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
+    Inspector *insp = findInspector(mod,INSP_GRAPHICAL);
     if (!insp) return;
-    TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
+    ModuleInspector *modinsp = dynamic_cast<ModuleInspector *>(insp);
     assert(modinsp);
     modinsp->submoduleCreated(newmodule);
 }
@@ -1596,9 +1573,9 @@ void Tkenv::moduleDeleted(cModule *module)
     EnvirBase::moduleDeleted(module);
 
     cModule *mod = module->getParentModule();
-    TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
+    Inspector *insp = findInspector(mod,INSP_GRAPHICAL);
     if (!insp) return;
-    TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
+    ModuleInspector *modinsp = dynamic_cast<ModuleInspector *>(insp);
     assert(modinsp);
     modinsp->submoduleDeleted(module);
 }
@@ -1608,13 +1585,13 @@ void Tkenv::moduleReparented(cModule *module, cModule *oldparent, int oldId)
     EnvirBase::moduleReparented(module, oldparent, oldId);
 
     // pretend it got deleted from under the 1st module, and got created under the 2nd
-    TInspector *insp = findInspector(oldparent,INSP_GRAPHICAL);
-    TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
+    Inspector *insp = findInspector(oldparent,INSP_GRAPHICAL);
+    ModuleInspector *modinsp = dynamic_cast<ModuleInspector *>(insp);
     if (modinsp) modinsp->submoduleDeleted(module);
 
     cModule *mod = module->getParentModule();
-    TInspector *insp2 = findInspector(mod,INSP_GRAPHICAL);
-    TGraphicalModWindow *modinsp2 = dynamic_cast<TGraphicalModWindow *>(insp2);
+    Inspector *insp2 = findInspector(mod,INSP_GRAPHICAL);
+    ModuleInspector *modinsp2 = dynamic_cast<ModuleInspector *>(insp2);
     if (modinsp2) modinsp2->submoduleCreated(module);
 }
 
@@ -1628,9 +1605,9 @@ void Tkenv::connectionCreated(cGate *srcgate)
         notifymodule = srcgate->getOwnerModule()->getParentModule();
     else
         notifymodule = srcgate->getOwnerModule();
-    TInspector *insp = findInspector(notifymodule,INSP_GRAPHICAL);
+    Inspector *insp = findInspector(notifymodule,INSP_GRAPHICAL);
     if (!insp) return;
-    TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
+    ModuleInspector *modinsp = dynamic_cast<ModuleInspector *>(insp);
     assert(modinsp);
     modinsp->connectionCreated(srcgate);
 }
@@ -1646,9 +1623,9 @@ void Tkenv::connectionDeleted(cGate *srcgate)
         notifymodule = srcgate->getOwnerModule()->getParentModule();
     else
         notifymodule = srcgate->getOwnerModule();
-    TInspector *insp = findInspector(notifymodule,INSP_GRAPHICAL);
+    Inspector *insp = findInspector(notifymodule,INSP_GRAPHICAL);
     if (!insp) return;
-    TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
+    ModuleInspector *modinsp = dynamic_cast<ModuleInspector *>(insp);
     assert(modinsp);
     modinsp->connectionDeleted(srcgate);
 }
@@ -1674,20 +1651,20 @@ void Tkenv::channelDisplayStringChanged(cChannel *channel)
     else
         notifymodule = gate->getOwnerModule();
 
-    TInspector *insp = findInspector(notifymodule,INSP_GRAPHICAL);
+    Inspector *insp = findInspector(notifymodule,INSP_GRAPHICAL);
     if (insp)
     {
-        TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
+        ModuleInspector *modinsp = dynamic_cast<ModuleInspector *>(insp);
         assert(modinsp);
         modinsp->displayStringChanged(gate);
     }
 
     // graphical gate inspector windows: normally a user doesn't have many such windows open
     // (typically, none at all), so we can afford simply refreshing all of them
-    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
     {
-        TInspector *insp = *it;
-        TGraphicalGateWindow *gateinsp = dynamic_cast<TGraphicalGateWindow *>(insp);
+        Inspector *insp = *it;
+        GateInspector *gateinsp = dynamic_cast<GateInspector *>(insp);
         if (gateinsp)
             gateinsp->displayStringChanged(gate);
     }
@@ -1697,10 +1674,10 @@ void Tkenv::moduleDisplayStringChanged(cModule *module)
 {
     // refresh inspector where this module is a submodule
     cModule *parentmodule = module->getParentModule();
-    TInspector *insp = findInspector(parentmodule,INSP_GRAPHICAL);
+    Inspector *insp = findInspector(parentmodule,INSP_GRAPHICAL);
     if (insp)
     {
-        TGraphicalModWindow *parentmodinsp = dynamic_cast<TGraphicalModWindow *>(insp);
+        ModuleInspector *parentmodinsp = dynamic_cast<ModuleInspector *>(insp);
         assert(parentmodinsp);
         parentmodinsp->displayStringChanged(module);
     }
@@ -1710,7 +1687,7 @@ void Tkenv::moduleDisplayStringChanged(cModule *module)
     insp = findInspector(module,INSP_GRAPHICAL);
     if (insp)
     {
-        TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
+        ModuleInspector *modinsp = dynamic_cast<ModuleInspector *>(insp);
         assert(modinsp);
         modinsp->displayStringChanged();
     }
@@ -1729,12 +1706,12 @@ void Tkenv::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
         cModule *mod = g->getOwnerModule();
         if (g->getType()==cGate::OUTPUT) mod = mod->getParentModule();
 
-        TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
+        Inspector *insp = findInspector(mod,INSP_GRAPHICAL);
         if (insp)
         {
             int lastgate = (g->getNextGate()==arrivalgate);
-            CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateOnConn ",
-                                    insp->windowName(), " ",
+            CHK(Tcl_VarEval(interp, "ModuleInspector:animateOnConn ",
+                                    insp->getWindowName(), " ",
                                     msgptr, " ",
                                     ptrToStr(g)," ",
                                     (lastgate?"beg":"thru"),
@@ -1833,14 +1810,14 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
             // ascent
             cModule *mod = i->from;
             cModule *enclosingmod = mod->getParentModule();
-            TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
+            Inspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
             if (insp)
             {
                 char parentptr[30], modptr[30];
                 strcpy(parentptr,ptrToStr(enclosingmod));
                 strcpy(modptr,ptrToStr(mod));
-                CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateSenddirectAscent ",
-                                        insp->windowName(), " ",
+                CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectAscent ",
+                                        insp->getWindowName(), " ",
                                         msgptr, " ",
                                         parentptr," ",
                                         modptr," ",
@@ -1853,14 +1830,14 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
             // animate descent towards destmod
             cModule *mod = i->to;
             cModule *enclosingmod = mod->getParentModule();
-            TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
+            Inspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
             if (insp)
             {
                 char parentptr[30], modptr[30];
                 strcpy(parentptr,ptrToStr(enclosingmod));
                 strcpy(modptr,ptrToStr(mod));
-                CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateSenddirectDescent ",
-                                        insp->windowName(), " ",
+                CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectDescent ",
+                                        insp->getWindowName(), " ",
                                         msgptr, " ",
                                         parentptr," ",
                                         modptr," ",
@@ -1871,14 +1848,14 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
         else
         {
             cModule *enclosingmod = i->from->getParentModule();
-            TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
+            Inspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
             if (insp)
             {
                 char fromptr[30], toptr[30];
                 strcpy(fromptr,ptrToStr(i->from));
                 strcpy(toptr,ptrToStr(i->to));
-                CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateSenddirectHoriz ",
-                                        insp->windowName(), " ",
+                CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectHoriz ",
+                                        insp->getWindowName(), " ",
                                         msgptr, " ",
                                         fromptr," ",
                                         toptr," ",
@@ -1893,11 +1870,11 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
     {
         cModule *mod= i->from ? i->from : i->to;
         cModule *enclosingmod = mod->getParentModule();
-        TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
+        Inspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
         if (insp)
         {
-            CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateSenddirectCleanup ",
-                                    insp->windowName(),
+            CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectCleanup ",
+                                    insp->getWindowName(),
                                     NULL));
         }
     }
@@ -1918,11 +1895,11 @@ void Tkenv::animateDelivery(cMessage *msg)
     cModule *mod = g->getOwnerModule();
     if (g->getType()==cGate::OUTPUT) mod = mod->getParentModule();
 
-    TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
+    Inspector *insp = findInspector(mod,INSP_GRAPHICAL);
     if (insp)
     {
-        CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateOnConn ",
-                                insp->windowName(), " ",
+        CHK(Tcl_VarEval(interp, "ModuleInspector:animateOnConn ",
+                                insp->getWindowName(), " ",
                                 msgptr, " ",
                                 ptrToStr(g)," ",
                                 "end",
@@ -1941,11 +1918,11 @@ void Tkenv::animateDeliveryDirect(cMessage *msg)
     cModule *destmod = g->getOwnerModule();
     cModule *mod = destmod->getParentModule();
 
-    TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
+    Inspector *insp = findInspector(mod,INSP_GRAPHICAL);
     if (insp)
     {
-        CHK(Tcl_VarEval(interp, "graphicalModuleWindow:animateSenddirectDelivery ",
-                                insp->windowName(), " ",
+        CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectDelivery ",
+                                insp->getWindowName(), " ",
                                 msgptr, " ",
                                 ptrToStr(destmod),
                                 NULL));
@@ -1972,9 +1949,9 @@ void Tkenv::bubble(cComponent *component, const char *text)
         // module bubble
         cModule *mod = (cModule *)component;
         cModule *parentmod = mod->getParentModule();
-        TInspector *insp = findInspector(parentmod,INSP_GRAPHICAL);
+        Inspector *insp = findInspector(parentmod,INSP_GRAPHICAL);
         if (!insp) return;
-        TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
+        ModuleInspector *modinsp = dynamic_cast<ModuleInspector *>(insp);
         assert(modinsp);
         modinsp->bubble(mod, text);
     }
@@ -2106,14 +2083,22 @@ void Tkenv::logTclError(const char *file, int line, Tcl_Interp *interp)
 //======================================================================
 // dummy function to force Unix linkers collect all symbols needed
 
-void _dummy_for_objinsp();
-void _dummy_for_modinsp();
-void _dummy_for_statinsp();
+void _dummy_for_genericobjectinspector();
+void _dummy_for_watchinspector();
+void _dummy_for_moduleinspector();
+void _dummy_for_loginspector();
+void _dummy_for_gateinspector();
+void _dummy_for_histograminspector();
+void _dummy_for_outputvectorinspector();
 
 void _dummy_func() {
-  _dummy_for_objinsp();
-  _dummy_for_modinsp();
-  _dummy_for_statinsp();
+  _dummy_for_genericobjectinspector();
+  _dummy_for_watchinspector();
+  _dummy_for_moduleinspector();
+  _dummy_for_loginspector();
+  _dummy_for_gateinspector();
+  _dummy_for_histograminspector();
+  _dummy_for_outputvectorinspector();
 }
 
 NAMESPACE_END

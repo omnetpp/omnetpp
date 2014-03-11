@@ -22,6 +22,8 @@
 #===================================================================
 
 # default config settings
+set config(keep-inspectors-on-top) 1
+set config(reuse-inspectors) 1
 set config(editor-findstring) ""
 set config(editor-case-sensitive) 0
 set config(editor-whole-words) 0
@@ -50,10 +52,13 @@ set config(timeline-wantsilentmsgs) 0
 set config(log-save-filename) "omnetpp.out"
 set config(mainwin-state) "normal"
 set config(mainwin-geom) ""
+set config(mainwin-main-sashpos) {}
+set config(mainwin-left-sashpos) {}
+set config(mainwin-right-sashpos) {}
 set config(concurrent-anim) 1
 set config(logwindow-scrollbacklines) 100000
 set config(zoomby-factor) 1.1
-set config(layout-may-resize-window) 0
+set config(layout-may-resize-window) 1
 set config(layout-may-change-zoom) 1
 
 set pluginlist {}
@@ -82,8 +87,7 @@ proc createOmnetppWindow {} {
     global B2 B3
 
     wm focusmodel . passive
-    wm geometry . 640x350
-    #wm maxsize . 1009 738
+    wm geometry . 1000x650
     wm minsize . 1 1
     wm overrideredirect . 0
     wm resizable . 1 1
@@ -91,7 +95,45 @@ proc createOmnetppWindow {} {
     wm title . "OMNeT++/Tkenv"
     wm protocol . WM_DELETE_WINDOW {exitOmnetpp}
 
-    # set the application icon
+    mainWindow:setApplicationIcon
+    mainWindow:createMenu
+    mainWindow:createToolbar
+    mainWindow:createStatusbars
+    mainWindow:createTimeline
+
+    pack .toolbar    -anchor center -expand 0 -fill x -side top
+    pack .statusbar  -anchor center -expand 0 -fill x -side top
+    pack .statusbar2 -anchor center -expand 0 -fill x -side top
+    pack .statusbar3 -anchor center -expand 0 -fill x -side top
+    pack .timeline   -anchor center -expand 0 -fill x -side top
+
+    # Create main display area
+    panedwindow .main -orient horizontal -sashrelief raised
+    pack .main -expand 1 -fill both -side top
+
+    panedwindow .main.left -orient vertical -sashrelief raised
+    panedwindow .main.right -orient vertical -sashrelief raised
+    .main add .main.left .main.right
+
+    set treeview [mainWindow:createTreeView]
+    set inspectorview [mainWindow:createInspectorView]
+    .main.left add $treeview $inspectorview
+
+    set networkview [mainWindow:createNetworkView]
+    set logview [mainWindow:createLogView]
+    .main.right add $networkview $logview
+
+    mainWindow:refreshToolbar
+    focus .log.main.text
+
+    # Hotkeys
+    bindRunCommands .
+    bindOtherCommands .
+}
+
+proc mainWindow:setApplicationIcon {} {
+    global tcl_platform icons
+
     set iconphoto_main $icons(logo128m)
     set iconphoto_other $icons(logo128w)
     if {$tcl_platform(platform) == "windows"} {
@@ -125,10 +167,10 @@ proc createOmnetppWindow {} {
             wm iconphoto . $iconphoto_main
         }
     }
+}
 
-    #################################
-    # Menu bar
-    #################################
+proc mainWindow:createMenu {} {
+    global tcl_version
 
     menu .menubar
     . config -menu .menubar
@@ -138,7 +180,6 @@ proc createOmnetppWindow {} {
        {filemenu     -$label_opt File -underline 0}
        {editmenu     -$label_opt Edit -underline 0}
        {simulatemenu -$label_opt Simulate -underline 0}
-       {tracemenu    -$label_opt Trace -underline 0}
        {inspectmenu  -$label_opt Inspect -underline 0}
        {viewmenu     -$label_opt View -underline 0}
        {optionsmenu  -$label_opt Options -underline 0}
@@ -204,15 +245,6 @@ proc createOmnetppWindow {} {
       eval .menubar.simulatemenu$m add $i
     }
 
-    # Trace menu
-    foreach i {
-      {command -command messageWindows -label {Message Sending...} -underline 8}
-      {separator}
-      {command -command clearWindows -label {Clear Main Window} -underline 0}
-    } {
-      eval .menubar.tracemenu$m add $i
-    }
-
     # Inspect menu
     # The following two items have been replaced by the new Find/inspect objects... dialog:
     #  {command -command inspect_anyobject -label {From list of all objects...} -underline 0}
@@ -227,7 +259,7 @@ proc createOmnetppWindow {} {
       {command -command inspectFilteredObjectList -label {Show 'Find/Inspect Objects' Window} -accel {Ctrl+S} -underline 0}
       {command -command inspectBypointer -label {Inspect by Pointer...} -underline 4}
       {separator}
-      {command -command opp_updateinspectors -label {Refresh Inspectors} -underline 0}
+      {command -command opp_refreshinspectors -label {Refresh Inspectors} -underline 0}
     } {
       eval .menubar.inspectmenu$m add $i
     }
@@ -277,10 +309,10 @@ proc createOmnetppWindow {} {
     } {
       eval .menubar.helpmenu$m add $i
     }
+}
 
-    #################################
-    # Create toolbar
-    #################################
+proc mainWindow:createToolbar {} {
+    global icons help_tips
 
     frame .toolbar -relief raised -borderwidth 1
 
@@ -313,10 +345,13 @@ proc createOmnetppWindow {} {
       {tree     -image $icons(tree)    -command {toggleTreeView}}
       {sep9     -separator}
       {options  -image $icons(config)  -command {simulationOptions}}
+      {sep10    -separator}
     } {
       set b [eval iconbutton .toolbar.$i]
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
     }
+    animControl .toolbar.animspeed
+    pack .toolbar.animspeed -anchor c -expand 0 -fill none -side left -padx 5 -pady 0
 
     set help_tips(.toolbar.loadned) {Load NED file for compound module definitions}
     set help_tips(.toolbar.newrun)  {Set up an inifile configuration}
@@ -339,47 +374,26 @@ proc createOmnetppWindow {} {
     set help_tips(.toolbar.tline)   {Show/hide timeline}
     set help_tips(.toolbar.tree)    {Show/hide object tree}
     set help_tips(.toolbar.options) {Simulation options}
+    set help_tips(.toolbar.animspeed) {Animation speed}
+}
 
-    #################################
-    # Create status bars
-    #################################
-
+proc mainWindow:createStatusbars {} {
     frame .statusbar
     frame .statusbar2
     frame .statusbar3
 
-    canvas .timeline -borderwidth 2 -relief groove -height 40
-    bind .timeline <Configure> "redrawTimeline"
-    .timeline bind msg <Double-1> "timeline:dblClick .timeline"
-    .timeline bind msgname <Double-1> "timeline:dblClick .timeline"
-    .timeline bind msg <$B3> "timeline:rightClick .timeline %X %Y %x %y"
-    .timeline bind msgname <$B3> "timeline:rightClick .timeline %X %Y %x %y"
-    bind .timeline <Button-$B3> {timeline:popup %x %y %X %Y}
+    label .statusbar.networklabel -relief groove -text {(no network set up)} -width 18 -anchor w
+    label .statusbar.eventlabel -relief groove -text {Event #0} -width 15  -anchor w
+    label .statusbar.timelabel -relief groove -text {T=0.0000000 (0.00s)} -width 20 -anchor w
+    label .statusbar.nextlabel -relief groove -text {Next:} -width 23 -anchor w
 
-    set widgets(timeline) .timeline
+    label .statusbar2.feslength -relief groove -text {Msgs scheduled: 0} -width 20 -anchor w
+    label .statusbar2.totalmsgs -relief groove -text {Msgs created: 0} -width 20 -anchor w
+    label .statusbar2.livemsgs -relief groove -text {Msgs present: 0} -width 20 -anchor w
 
-    label .statusbar.networklabel \
-        -relief groove -text {(no network set up)} -width 18 -anchor w
-    label .statusbar.eventlabel \
-        -relief groove -text {Event #0} -width 15  -anchor w
-    label .statusbar.timelabel \
-        -relief groove -text {T=0.0000000 (0.00s)} -width 20 -anchor w
-    label .statusbar.nextlabel \
-        -relief groove -text {Next:} -width 23 -anchor w
-
-    label .statusbar2.feslength \
-        -relief groove -text {Msgs scheduled: 0} -width 20 -anchor w
-    label .statusbar2.totalmsgs \
-        -relief groove -text {Msgs created: 0} -width 20 -anchor w
-    label .statusbar2.livemsgs \
-        -relief groove -text {Msgs present: 0} -width 20 -anchor w
-
-    label .statusbar3.eventspersec \
-        -relief groove -text {Ev/sec: n/a} -width 15 -anchor w
-    label .statusbar3.simsecpersec \
-        -relief groove -text {Simsec/sec: n/a} -width 22 -anchor w
-    label .statusbar3.eventspersimsec \
-        -relief groove -text {Ev/simsec: n/a} -width 18 -anchor w
+    label .statusbar3.eventspersec -relief groove -text {Ev/sec: n/a} -width 15 -anchor w
+    label .statusbar3.simsecpersec -relief groove -text {Simsec/sec: n/a} -width 22 -anchor w
+    label .statusbar3.eventspersimsec -relief groove -text {Ev/simsec: n/a} -width 18 -anchor w
 
     pack .statusbar.networklabel -anchor n -expand 1 -fill x -side left
     pack .statusbar.eventlabel -anchor n -expand 1 -fill x -side left
@@ -406,29 +420,65 @@ proc createOmnetppWindow {} {
     set help_tips(.statusbar3.eventspersec)    {Performance: events processed per second}
     set help_tips(.statusbar3.simsecpersec)    {Relative speed: simulated seconds processed per second}
     set help_tips(.statusbar3.eventspersimsec) {Event density: events per simulated second}
+}
 
+proc mainWindow:createTimeline {} {
+    global widgets B1 B2 B3
 
-    #################################
-    # Create main display area
-    #################################
-    frame .main -borderwidth 1 -height 30 -relief sunken -width 30
+    frame .timelineframe -borderwidth 2 -relief groove
+    canvas .timeline -borderwidth 0 -height 46
+    pack .timeline -in .timelineframe -expand 1 -fill both
 
-    #
-    # Create manager (vert. tree view)
-    #
-    frame .main.mgr -relief flat -borderwidth 1
+    bind .timeline <Configure> "redrawTimeline"
+    .timeline bind msg <1> "timeline:click .timeline"
+    .timeline bind msg <Double-1> "timeline:dblClick .timeline"
+    .timeline bind msgname <Double-1> "timeline:dblClick .timeline"
+    .timeline bind msg <$B3> "timeline:rightClick .timeline %X %Y %x %y"
+    .timeline bind msgname <$B3> "timeline:rightClick .timeline %X %Y %x %y"
+    bind .timeline <Button-$B3> {timeline:popup %x %y %X %Y}
 
-    vertResizeBar .main.mgr.resize .main.mgr.tree
+    set widgets(timeline) .timeline
+}
 
-    canvas .main.mgr.tree -width 140 -bg #ffffe0 -bd 0 -yscrollcommand ".main.mgr.sb set"
-    scrollbar .main.mgr.sb -command ".main.mgr.tree yview"
-    pack .main.mgr.resize -side right -fill y
-    pack .main.mgr.sb -side right -fill y
-    pack .main.mgr.tree -side left -fill y -padx 0 -pady 0 -ipadx 0 -ipady 0
+proc mainWindow:createTreeView {} {
+    global widgets
 
-    set widgets(manager) .main.mgr
+    set f .main.mgr
+    set widgets(manager) $f
+    frame $f -relief flat -borderwidth 1
+
+    canvas $f.tree -bg #ffffe0 -bd 0 -yscrollcommand "$f.sb set"
+    ttk::scrollbar $f.sb -command "$f.tree yview"
+    pack $f.sb -side right -expand 0 -fill y
+    pack $f.tree -side left -expand 1 -fill both -padx 0 -pady 0 -ipadx 0 -ipady 0
+
     initTreeManager
-    pack .main.mgr -anchor center -expand 0 -fill y  -side left
+    return $f
+}
+
+proc mainWindow:createInspectorView {} {
+    set f .inspector
+    frame $f -borderwidth 0
+    createEmbeddedGenericObjectInspector $f
+    return $f
+}
+
+proc mainWindow:createNetworkView {} {
+    set w .network
+    frame $w -borderwidth 0
+    createEmbeddedModuleInspector $w
+    return $w
+}
+
+proc mainWindow:createLogView {} {
+    set w .log
+    frame $w -borderwidth 0
+    createEmbeddedLogInspector $w
+    return $w
+}
+
+proc mainWindow:refreshToolbar {} {
+    global config
 
     if {$config(display-treeview)==0} {
         .toolbar.tree config -relief flat
@@ -441,35 +491,35 @@ proc createOmnetppWindow {} {
     } else {
         .toolbar.tline config -relief sunken
     }
+}
 
-    #
-    # Create main text window
-    #
-    text .main.text -yscrollcommand ".main.sb set" -font $fonts(text)
-    scrollbar .main.sb -command ".main.text yview"
-    logTextWidget:configureTags .main.text
+proc mainWindow:selectionChanged {w obj} {
+    if {$w!=".inspector"} { # source is different from .inspector itself
+        opp_inspector_setobject .inspector $obj
+    }
+}
 
-    pack .main.sb -anchor center -expand 0 -fill y  -side right
-    pack .main.text -anchor center -expand 1 -fill both -side right
+proc mainWindow:networkViewInputChanged {obj} {
+    opp_inspector_setobject .log $obj
+}
 
-    #################################
-    # Pack everything
-    #################################
-    pack .toolbar    -anchor center -expand 0 -fill x -side top
-    pack .statusbar  -anchor center -expand 0 -fill x -side top
-    pack .statusbar2 -anchor center -expand 0 -fill x -side top
-    pack .statusbar3 -anchor center -expand 0 -fill x -side top
-    pack .timeline   -anchor center -expand 0 -fill x -side top
-    pack .main       -anchor center -expand 1 -fill both -side top
+proc animControl {w} {
+    global priv
 
-    focus .main.text
+    scale $w -orient horizontal -length 50 -sliderlength 8 -showvalue 0 -bd 1
+    $w config -from .5 -to 3 -resolution 0.01 -variable priv(animspeed)
 
-    ###############################
-    # Hotkeys
-    ###############################
-    bindCommandsToTextWidget .main.text mainwindow
-    bindRunCommands .
-    bindOtherCommands .
+    trace variable priv(animspeed) w animSpeedChanged
+}
+
+#
+# Called when simulation speed slider on toolbar changes
+#
+proc animSpeedChanged {arr name op} {
+    if {($op!="w" && $op!="write") || $arr!="priv" || $name!="animspeed"} {error "wrong callback"}
+
+    global priv
+    opp_setsimoption "animation_speed" $priv(animspeed)
 }
 
 proc bindRunCommands {w} {
@@ -504,16 +554,12 @@ proc bindCommandsToTextWidget {txt {wintype ""}} {
     bind $txt <Control-n> {findNext %W; break}
     bind $txt <Control-N> {findNext %W; break}
     bind $txt <F3> {findNext %W}
+
     if {$wintype=="modulewindow"} {
         # bind Ctrl+H ('break' is needed because originally ^H is bound to DEL)
-        set w [winfo toplevel $txt]
-        bind $txt <Control-h> "moduleWindow:openFilterDialog %W; break"
-        bind $txt <Control-H> "moduleWindow:openFilterDialog %W; break"
-    }
-    if {$wintype=="mainwindow"} {
-        # bind Ctrl+H ('break' is needed because originally ^H is bound to DEL)
-        bind $txt <Control-h> "mainlogWindow:openFilterDialog; break"
-        bind $txt <Control-H> "mainlogWindow:openFilterDialog; break"
+        set w [winfo parent [winfo parent $txt]]
+        bind $txt <Control-h> "LogInspector:openFilterDialog $w; break"
+        bind $txt <Control-H> "LogInspector:openFilterDialog $w; break"
     }
 
     # bind Ctrl+A "Select all" ('break' is needed below because ^A=Home)

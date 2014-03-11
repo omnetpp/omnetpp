@@ -92,7 +92,7 @@ proc treeManager:getNodeInfo {w op {key {}}} {
       }
 
       icon {
-        return [inspector:getIconForObject $ptr]
+        return [opp_getobjecticon $ptr]
       }
 
       haschildren {
@@ -105,6 +105,10 @@ proc treeManager:getNodeInfo {w op {key {}}} {
 
       root {
         return [opp_object_simulation]
+      }
+
+      selectionchanged {
+        mainWindow:selectionChanged "" $ptr
       }
     }
 }
@@ -124,7 +128,7 @@ proc treeManager:popup {key x y} {
 
     # $key is the object pointer
     set ptr $key
-    set popup [createInspectorContextMenu $ptr]
+    set popup [createInspectorContextMenu "" $ptr]
     tk_popup $popup $x $y
 }
 

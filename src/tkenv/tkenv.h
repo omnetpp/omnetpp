@@ -31,7 +31,10 @@
 NAMESPACE_BEGIN
 
 class Speedometer;
-class TInspector;
+class Inspector;
+class GenericObjectInspector;
+class LogInspector;
+class ModuleInspector;
 
 #define MAX_CLASSNAME  100
 
@@ -50,10 +53,9 @@ struct TkenvOptions : public EnvirOptions
     opp_string pluginPath;    // path for loading Tcl and binary plugins
     opp_string defaultConfig; // automatically set up this config at startup
     int  defaultRun;          // automatically set up this run (of the default config) at startup
-    bool printInitBanners;    // print "initializing..." banners
-    bool printEventBanners;   // print event banners
-    bool shortBanners;        // controls detail of event banners
-    bool useMainWindow;       // dump modules' EV << ... stuff into main window
+    bool printInitBanners;    // print "initializing..." banners ----------- FIXME DOES NOT WORK PROPERLY!!!
+    bool printEventBanners;   // print event banners ----------- FIXME DOES NOT WORK PROPERLY!!!
+    bool shortBanners;        // controls detail of event banners ----------- FIXME DOES NOT WORK PROPERLY!!!
     bool animationEnabled;    // msg animation
     bool showNextEventMarkers;// display next event marker (red frame around modules)
     bool showSendDirectArrows;// flash arrows when doing sendDirect() animation
@@ -120,7 +122,6 @@ class TKENV_API Tkenv : public EnvirBase
 
       // state variables
       bool animating;              // while execution, do message animation or not
-      bool hasmessagewindow;       // whether the message window is currently open
 
    protected:
       Tcl_Interp *interp;          // Tcl interpreter
@@ -139,11 +140,15 @@ class TKENV_API Tkenv : public EnvirBase
       bool stopsimulation_flag;    // indicates that the simulation should be stopped (STOP button pressed in the UI)
       timeval idleLastUICheck;     // gettimeofday() time when idle() last run the Tk "update" command
 
-      typedef std::list<TInspector*> TInspectorList;
-      TInspectorList inspectors;   // list of inspector objects
+      typedef std::list<Inspector*> InspectorList;
+      InspectorList inspectors;    // list of inspector objects
 
       LogBuffer logBuffer;         // text window contents
       std::set<int> mainWindowExcludedModuleIds;
+
+      GenericObjectInspector *mainInspector;
+      ModuleInspector *mainNetworkView;
+      LogInspector *mainLogView;
 
       typedef std::map<std::string,std::string> StringMap;
       StringMap answers;           // key: <ModuleType>:<paramName>, value: <interactively-given-paramvalue>
@@ -229,9 +234,12 @@ class TKENV_API Tkenv : public EnvirBase
 
       void updateInspectors();
       void redrawInspectors();
-      TInspector *inspect(cObject *obj, int type, const char *geometry, void *dat);
-      TInspector *findInspector(cObject *obj, int type);
-      void deleteInspector(TInspector *insp);
+      Inspector *inspect(cObject *obj, int type, bool ignoreEmbedded, const char *geometry);
+      void addEmbeddedInspector(const char *widget, Inspector *insp);
+      Inspector *findInspector(cObject *obj, int type, bool ignoreEmbedded=false);
+      Inspector *findInspector(const char *widget);
+      void deleteInspector(Inspector *insp);
+      const std::list<Inspector*>& getInspectors() {return inspectors;}
 
       int getSimulationState() {return simstate;}
       void setStopSimulationFlag() {stopsimulation_flag = true;}

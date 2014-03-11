@@ -179,11 +179,11 @@ proc loadNedFile {} {
    if {$fname!=""} {
       set config(last-nedfile) $fname
       if [catch {opp_loadnedfile $fname} err] {
-        opp_updateinspectors
+        opp_refreshinspectors
         messagebox {Error} "Error: $err" error ok
         return
       }
-      opp_updateinspectors
+      opp_refreshinspectors
    }
 }
 
@@ -222,10 +222,6 @@ proc newNetwork {} {
        busy
 
        if [opp_isnotnull [opp_object_systemmodule]] {
-           busy "Opening graphical network inspector..."
-           opp_inspect [opp_object_systemmodule] (default)
-           busy
-
            # tell plugins about it
            busy "Notifying Tcl plugins..."
            notifyPlugins newNetwork
@@ -253,10 +249,6 @@ proc newRun {} {
        busy
 
        if [opp_isnotnull [opp_object_systemmodule]] {
-           busy "Opening graphical network inspector..."
-           opp_inspect [opp_object_systemmodule] (default)
-           busy
-
            # tell plugins about it
            busy "Notifying Tcl plugins..."
            notifyPlugins newNetwork
@@ -265,29 +257,23 @@ proc newRun {} {
     }
 }
 
-proc editCopy {{w .main.text}} {
+proc editCopy {{w .log.main.text}} {
    # implements Edit|Copy
    tk_textCopy $w
 }
 
-proc editFind {{w .main.text}} {
+proc editFind {{w .log.main.text}} {
    # implements Edit|Find...
    findDialog $w
 }
 
-proc editFindNext {{w .main.text}} {
+proc editFindNext {{w .log.main.text}} {
    # implements Edit|Find next
    findNext $w
 }
 
-proc editFilterWindowContents {{w ".main.text"}} {
-   # implements Edit|Filter window contents...
-   if {$w==".main.text"} {
-       mainlogWindow:openFilterDialog
-   } else {
-       set w [winfo toplevel $w]
-       moduleWindow:openFilterDialog [winfo toplevel $w]
-   }
+proc editFilterWindowContents {{w .log}} {
+   LogInspector:openFilterDialog $w
 }
 
 proc toggleTreeView {} {
@@ -295,11 +281,11 @@ proc toggleTreeView {} {
 
    if {$config(display-treeview)==1} {
        set config(display-treeview) 0
-       pack forget $widgets(manager)
+       .main.left forget $widgets(manager)
        .toolbar.tree config -relief flat
    } else {
        set config(display-treeview) 1
-       pack $widgets(manager) -before .main.text -expand 0 -fill y  -side left
+       .main.left add $widgets(manager) -before .inspector
        .toolbar.tree config -relief sunken
        treeManager:update
    }
@@ -310,11 +296,11 @@ proc toggleTimeline {} {
 
    if {$config(display-timeline)==1} {
        set config(display-timeline) 0
-       pack forget $widgets(timeline)
+       pack forget .timelineframe
        .toolbar.tline config -relief flat
    } else {
        set config(display-timeline) 1
-       pack $widgets(timeline) -before .main -anchor center -expand 0 -fill x -side top
+       pack .timelineframe -before .main -anchor center -expand 0 -fill x -side top -padx 0 -pady 0 -ipadx 0 -ipady 0
        .toolbar.tline config -relief sunken
        redrawTimeline
    }
@@ -551,7 +537,7 @@ proc excludeMessageFromAnimation {msg} {
     opp_setsimoption silent_event_filters $filters
 
     redrawTimeline
-    opp_updateinspectors
+    opp_refreshinspectors
 }
 
 proc startAll {} {
@@ -626,25 +612,11 @@ proc stopSimulation {} {
     set stoplayouting 1
 }
 
-proc messageWindows {} {
-    # implements Trace|Message sending...
-    if {[networkPresent] == 0} return
-    createMessageWindow .messagewindow
-}
-
-proc clearWindows {} {
-    # implements Trace|Clear windows...
-    # also called back from C++ code
-    # TBD: should delete the contents of module windows as well
-    .main.text delete 1.0 end
-    catch {.messagewindow.main.text delete 1.0 end}
-}
-
 proc inspectFilteredObjectList {{w "."}} {
     # implements Find/inspect objects...
     set ptr ""
-    if {$w!="" && $w!="." && ![regexp {\.(ptr.*)-([0-9]+)} $w match ptr type]} {
-        error "window name $w doesn't look like an inspector window"
+    if {$w!="" && $w!="."} {
+        set ptr [opp_inspector_getobject $w]
     }
     filteredObjectList:window $ptr
 }
@@ -696,7 +668,7 @@ proc inspectFunctions {} {
 
 proc simulationOptions {} {
     optionsDialog .
-    opp_updateinspectors
+    opp_refreshinspectors
 }
 
 proc saveTkenvConfig {} {
@@ -803,14 +775,4 @@ proc viewFile {filename} {
     }
 }
 
-
-#
-# Called when simulation speed slider on toolbar changes
-#
-proc animSpeedChanged {arr name op} {
-    if {($op!="w" && $op!="write") || $arr!="priv" || $name!="animspeed"} {error "wrong callback"}
-
-    global priv
-    opp_setsimoption "animation_speed" $priv(animspeed)
-}
 

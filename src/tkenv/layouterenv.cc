@@ -24,14 +24,14 @@
 
 #include "layouterenv.h"
 #include "tklib.h"
-#include "modinsp.h"
+#include "tkutil.h"
 #include "cmodule.h"
 #include "cdisplaystring.h"
 
 NAMESPACE_BEGIN
 
 
-TGraphLayouterEnvironment::TGraphLayouterEnvironment(Tcl_Interp *interp, cModule *parentModule, const cDisplayString& displayString)
+TkenvGraphLayouterEnvironment::TkenvGraphLayouterEnvironment(Tcl_Interp *interp, cModule *parentModule, const cDisplayString& displayString)
     : displayString(displayString)
 {
     this->interp = interp;
@@ -45,69 +45,69 @@ TGraphLayouterEnvironment::TGraphLayouterEnvironment(Tcl_Interp *interp, cModule
     grabActive = false;
 }
 
-bool TGraphLayouterEnvironment::getBoolParameter(const char *tagName, int index, bool defaultValue)
+bool TkenvGraphLayouterEnvironment::getBoolParameter(const char *tagName, int index, bool defaultValue)
 {
     return resolveBoolDispStrArg(displayString.getTagArg(tagName, index), parentModule, defaultValue);
 }
 
-long TGraphLayouterEnvironment::getLongParameter(const char *tagName, int index, long defaultValue)
+long TkenvGraphLayouterEnvironment::getLongParameter(const char *tagName, int index, long defaultValue)
 {
     return resolveLongDispStrArg(displayString.getTagArg(tagName, index), parentModule, defaultValue);
 }
 
-double TGraphLayouterEnvironment::getDoubleParameter(const char *tagName, int index, double defaultValue)
+double TkenvGraphLayouterEnvironment::getDoubleParameter(const char *tagName, int index, double defaultValue)
 {
     return resolveDoubleDispStrArg(displayString.getTagArg(tagName, index), parentModule, defaultValue);
 }
 
-void TGraphLayouterEnvironment::clearGraphics()
+void TkenvGraphLayouterEnvironment::clearGraphics()
 {
     if (inspected())
     {
-        Tcl_VarEval(interp, canvas, " delete all", NULL);
+        CHK(Tcl_VarEval(interp, canvas, " delete all", NULL));
     }
 }
 
-void TGraphLayouterEnvironment::showGraphics(const char *text)
+void TkenvGraphLayouterEnvironment::showGraphics(const char *text)
 {
     if (inspected())
     {
-        Tcl_VarEval(interp, canvas, " raise node", NULL);
-        Tcl_VarEval(interp, "layouter:debugDrawFinish ", canvas, " {", text, "}", NULL);
+        CHK(Tcl_VarEval(interp, canvas, " raise node", NULL));
+        CHK(Tcl_VarEval(interp, "layouter:debugDrawFinish ", canvas, " {", text, "}", NULL));
     }
 }
 
-void TGraphLayouterEnvironment::drawText(double x, double y, const char *text, const char *tags, const char *color)
+void TkenvGraphLayouterEnvironment::drawText(double x, double y, const char *text, const char *tags, const char *color)
 {
     if (inspected())
     {
         char coords[100];
         sprintf(coords,"%d %d", (int)x, (int)y);
-        Tcl_VarEval(interp, canvas, " create text ", coords, " -text ", text, " -fill ", color, " -tag ", tags, NULL);
+        CHK(Tcl_VarEval(interp, canvas, " create text ", coords, " -text ", text, " -fill ", color, " -tag ", tags, NULL));
     }
 }
 
-void TGraphLayouterEnvironment::drawLine(double x1, double y1, double x2, double y2, const char *tags, const char *color)
+void TkenvGraphLayouterEnvironment::drawLine(double x1, double y1, double x2, double y2, const char *tags, const char *color)
 {
     if (inspected())
     {
         char coords[100];
         sprintf(coords,"%d %d %d %d", (int)x1, (int)y1, (int)x2, (int)y2);
-        Tcl_VarEval(interp, canvas, " create line ", coords, " -fill ", color, " -tag ", tags, NULL);
+        CHK(Tcl_VarEval(interp, canvas, " create line ", coords, " -fill ", color, " -tag ", tags, NULL));
     }
 }
 
-void TGraphLayouterEnvironment::drawRectangle(double x1, double y1, double x2, double y2, const char *tags, const char *color)
+void TkenvGraphLayouterEnvironment::drawRectangle(double x1, double y1, double x2, double y2, const char *tags, const char *color)
 {
     if (inspected())
     {
         char coords[100];
         sprintf(coords,"%d %d %d %d", (int)x1, (int)y1, (int)x2, (int)y2);
-        Tcl_VarEval(interp, canvas, " create rect ", coords, " -outline ", color, " -tag ", tags, NULL);
+        CHK(Tcl_VarEval(interp, canvas, " create rect ", coords, " -outline ", color, " -tag ", tags, NULL));
     }
 }
 
-bool TGraphLayouterEnvironment::okToProceed()
+bool TkenvGraphLayouterEnvironment::okToProceed()
 {
     //
     // Strategy: do not interact with UI for up to 3 seconds. At the end of the
@@ -126,7 +126,7 @@ bool TGraphLayouterEnvironment::okToProceed()
         // start grab
         grabActive = true;
         Tcl_SetVar(interp, "stoplayouting", "0", TCL_GLOBAL_ONLY);
-        Tcl_VarEval(interp, "layouter:startGrab ", widgetToGrab, NULL);
+        CHK(Tcl_VarEval(interp, "layouter:startGrab ", widgetToGrab, NULL));
     }
 
     // only check the UI once a while
@@ -136,25 +136,26 @@ bool TGraphLayouterEnvironment::okToProceed()
 
     // process UI events; we assume that a "grab" is in effect to the Stop button
     // (i.e. the user can only interact with the Stop button, but nothing else)
-    Tcl_VarEval(interp, "update\n", NULL);
+    CHK(Tcl_VarEval(interp, "update\n", NULL));
     const char *var = Tcl_GetVar(interp, "stoplayouting", TCL_GLOBAL_ONLY);
     bool stopNow = var && var[0] && var[0]!='0';
     return !stopNow;
 }
 
-void TGraphLayouterEnvironment::cleanup()
+void TkenvGraphLayouterEnvironment::cleanup()
 {
     if (inspected())
     {
-        Tcl_VarEval(interp, canvas, " delete all\n",
-                            canvas, " config -scrollregion {0 0 1 1}\n",
-                            canvas, " xview moveto 0\n",
-                            canvas, " yview moveto 0\n",
-                            NULL);
+        CHK(Tcl_VarEval(interp,
+            canvas, " delete all\n",
+            canvas, " config -scrollregion {0 0 1 1}\n",
+            canvas, " xview moveto 0\n",
+            canvas, " yview moveto 0\n",
+            NULL));
     }
     if (grabActive)
     {
-        Tcl_VarEval(interp, "layouter:releaseGrab ", widgetToGrab, NULL);
+        CHK(Tcl_VarEval(interp, "layouter:releaseGrab ", widgetToGrab, NULL));
     }
 }
 

@@ -91,6 +91,7 @@ proc Tree:init {w f} {
 proc Tree:setselection {w v} {
   global Tree
   set Tree($w:selection) $v
+  $Tree($w:function) $w selectionchanged $v
   Tree:drawselection $w
   Tree:view $w $v
 }

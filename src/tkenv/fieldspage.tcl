@@ -17,40 +17,35 @@
 #
 # Creates a Fields page for a tabbed inspector window.
 #
-proc inspector:createFields2Page {w} {
+proc createFieldsPage {f w} {
     global treeroots
     global B2 B3
-    set nb $w.nb
-    notebook:addPage $nb fields2 {Fields}
 
     # create treeview with scrollbars
-    scrollbar $nb.fields2.vsb -command "$nb.fields2.tree yview"
-    scrollbar $nb.fields2.hsb -command "$nb.fields2.tree xview" -orient horiz
-    canvas $nb.fields2.tree -bg white -relief sunken -bd 2
-    $nb.fields2.tree config -yscrollcommand "$nb.fields2.vsb set" -xscrollcommand "$nb.fields2.hsb set"
+    ttk::scrollbar $f.vsb -command "$f.tree yview"
+    ttk::scrollbar $f.hsb -command "$f.tree xview" -orient horiz
+    canvas $f.tree -bg white -relief sunken -bd 2
+    $f.tree config -yscrollcommand "$f.vsb set" -xscrollcommand "$f.hsb set"
 
-    grid $nb.fields2.tree $nb.fields2.vsb -sticky news
-    grid $nb.fields2.hsb  x               -sticky news
-    grid rowconfig $nb.fields2 0 -weight 1
-    grid columnconfig $nb.fields2 0 -weight 1
+    grid $f.tree $f.vsb -sticky news
+    grid $f.hsb  x      -sticky news
+    grid rowconfig $f 0 -weight 1
+    grid columnconfig $f 0 -weight 1
 
-    set tree $nb.fields2.tree
-    if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
-        error "window name $w doesn't look like an inspector window"
-    }
-    set treeroots($tree) $object
+    set tree $f.tree
+    set treeroots($tree) [opp_null]
 
-    Tree:init $tree fields2Page:getNodeInfo
+    Tree:init $tree fieldsPage:getNodeInfo
 
     bind $tree <Double-1> {
         focus %W
         set key [Tree:nodeat %W %x %y]
-        fields2Page:getNodeInfo:inspect %W $key
+        fieldsPage:getNodeInfo:inspect %W $key
     }
 
     bind $tree <Return> {
         set key [Tree:getselection %W]
-        fields2Page:getNodeInfo:inspect %W $key
+        fieldsPage:getNodeInfo:inspect %W $key
     }
 
     bind $tree <Button-$B3> {
@@ -58,16 +53,26 @@ proc inspector:createFields2Page {w} {
         set key [Tree:nodeat %W %x %y]
         if {$key!=""} {
             Tree:setselection %W $key
-            fields2Page:getNodeInfo:popup %W $key %X %Y
+            fieldsPage:getNodeInfo:popup %W $key %X %Y
         }
     }
 
+    set object [opp_null]
+    set treeroots($tree) $object
     Tree:open $tree "0-obj-$object"
 }
 
-proc fields2Page:refresh {w} {
-    set tree $w.nb.fields2.tree
+proc fieldsPage:refresh {w} {
+    global treeroots
+
+    set tree $w.nb.fields.tree
     if ![winfo exist $tree] {return}
+
+    set object [opp_inspector_getobject $w]
+    if {$treeroots($tree)!=$object} {
+        set treeroots($tree) $object
+        Tree:open $tree "0-obj-$object"
+    }
 
     Tree:build $tree
 }
@@ -92,7 +97,7 @@ proc fields2Page:refresh {w} {
 # (crash scenario without depth: open the object's "owner" field, then the object
 # itself within its owner --> bang!).
 #
-proc fields2Page:getNodeInfo {w op {key ""}} {
+proc fieldsPage:getNodeInfo {w op {key ""}} {
     global icons treeroots
 
     set keyargs [split $key "-"]
@@ -104,7 +109,7 @@ proc fields2Page:getNodeInfo {w op {key ""}} {
     switch $op {
 
         text {
-            if [opp_isnull $obj] {return "<object is NULL>"}
+            if [opp_isnull $obj] {return "No object selected"}
             if {$sd!="" && [opp_isnull $sd]} {return "<no descriptor for object>"}
 
             switch $keytype {
@@ -128,7 +133,7 @@ proc fields2Page:getNodeInfo {w op {key ""}} {
                 findex {
                     set fieldid [lindex $keyargs 4]
                     set index [lindex $keyargs 5]
-                    return [fields2Page:getNodeInfo:getFieldText $obj $sd $fieldid $index]
+                    return [fieldsPage:getNodeInfo:getFieldText $obj $sd $fieldid $index]
                 }
 
                 default {
@@ -148,7 +153,8 @@ proc fields2Page:getNodeInfo {w op {key ""}} {
         icon {
             switch $keytype {
                 obj {
-                    return [inspector:getIconForObject $obj]
+                    if [opp_isnull $obj] {return ""}
+                    return [opp_getobjecticon $obj]
                 }
                 struct -
                 group {
@@ -156,9 +162,9 @@ proc fields2Page:getNodeInfo {w op {key ""}} {
                 }
                 field -
                 findex {
-                    set fieldptr [fields2Page:getNodeInfo:resolveObject $keyargs]
-                    if [opp_isnull $fieldptr] {return ""}
-                    return [inspector:getIconForObject $fieldptr]
+                    set obj [fieldsPage:getNodeInfo:resolveObject $keyargs]
+                    if [opp_isnull $obj] {return ""}
+                    return [opp_getobjecticon $obj]
                 }
             }
         }
@@ -192,7 +198,7 @@ proc fields2Page:getNodeInfo {w op {key ""}} {
                 field -
                 findex {
                     # XXX this can be improved performance-wise (this actually collects all children!)
-                    set children [fields2Page:getNodeInfo $w children $key]
+                    set children [fieldsPage:getNodeInfo $w children $key]
                     return [expr [llength $children]!=0]
                 }
             }
@@ -207,15 +213,15 @@ proc fields2Page:getNodeInfo {w op {key ""}} {
                     if {$keytype=="obj"} {set sd [opp_getclassdescriptorfor $obj]}
                     if {$sd==[opp_null]} {return ""}
 
-                    set children1 [fields2Page:getNodeInfo:getFieldsInGroup $depth $obj $sd ""]
-                    set children2 [fields2Page:getNodeInfo:getGroupKeys $depth $obj $sd]
+                    set children1 [fieldsPage:getNodeInfo:getFieldsInGroup $depth $obj $sd ""]
+                    set children2 [fieldsPage:getNodeInfo:getGroupKeys $depth $obj $sd]
                     return [concat $children1 $children2]
                 }
 
                 group {
                     # return fields in the given group
                     set groupname [lindex $keyargs 4]
-                    return [fields2Page:getNodeInfo:getFieldsInGroup $depth $obj $sd $groupname]
+                    return [fieldsPage:getNodeInfo:getFieldsInGroup $depth $obj $sd $groupname]
                 }
 
                 field {
@@ -223,7 +229,7 @@ proc fields2Page:getNodeInfo {w op {key ""}} {
                     set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
                     if {$isarray} {
                         # expand array: enumerate all indices
-                        return [fields2Page:getNodeInfo:getElementsInArray $depth $obj $sd $fieldid]
+                        return [fieldsPage:getNodeInfo:getElementsInArray $depth $obj $sd $fieldid]
                     }
                     set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldid]
                     if {$iscompound} {
@@ -232,12 +238,12 @@ proc fields2Page:getNodeInfo {w op {key ""}} {
                         set fieldptr [opp_classdescriptor $obj $sd fieldstructpointer $fieldid]
                         if [opp_isnull $fieldptr] {return ""}
                         if {$ispoly} {
-                            return [fields2Page:getNodeInfo $w children "$depth-obj-$fieldptr"]
+                            return [fieldsPage:getNodeInfo $w children "$depth-obj-$fieldptr"]
                         } else {
                             set fielddesc [opp_classdescriptor $obj $sd fieldstructdesc $fieldid]
                             if {$fielddesc==""} {return ""}  ;# nothing known about it
                             set tmpkey "$depth-struct-$fieldptr-$fielddesc"
-                            return [fields2Page:getNodeInfo $w children $tmpkey]
+                            return [fieldsPage:getNodeInfo $w children $tmpkey]
                         }
                     }
                     return ""
@@ -253,12 +259,12 @@ proc fields2Page:getNodeInfo {w op {key ""}} {
                         set fieldptr [opp_classdescriptor $obj $sd fieldstructpointer $fieldid $index]
                         if [opp_isnull $fieldptr] {return ""}
                         if {$ispoly} {
-                            return [fields2Page:getNodeInfo $w children "$depth-obj-$fieldptr"]
+                            return [fieldsPage:getNodeInfo $w children "$depth-obj-$fieldptr"]
                         } else {
                             set fielddesc [opp_classdescriptor $obj $sd fieldstructdesc $fieldid]
                             if {$fielddesc==""} {return ""}  ;# nothing known about it
                             set tmpkey "$depth-struct-$fieldptr-$fielddesc"
-                            return [fields2Page:getNodeInfo $w children $tmpkey]
+                            return [fieldsPage:getNodeInfo $w children $tmpkey]
                         }
                     }
                     return ""
@@ -279,14 +285,31 @@ proc fields2Page:getNodeInfo {w op {key ""}} {
             #return "0-obj-$treeroots($w)"
             return "0-root-$treeroots($w)"
         }
+
+        selectionchanged {
+            switch $keytype {
+                obj {
+                    if [opp_isnotnull $obj] {
+                        fieldsPage:getNodeInfo:objectSelected $w $obj
+                    }
+                }
+                field -
+                findex {
+                    set obj [fieldsPage:getNodeInfo:resolveObject $keyargs]
+                    if [opp_isnotnull $obj] {
+                        fieldsPage:getNodeInfo:objectSelected $w $obj
+                    }
+                }
+            }
+        }
     }
 }
 
 #
-# Helper proc for fields2Page:getNodeInfo.
+# Helper proc for fieldsPage:getNodeInfo.
 # Collects field groups, and converts them to keys.
 #
-proc fields2Page:getNodeInfo:getGroupKeys {depth obj sd} {
+proc fieldsPage:getNodeInfo:getGroupKeys {depth obj sd} {
     # collect list of groups
     set numfields [opp_classdescriptor $obj $sd fieldcount]
     for {set i 0} {$i<$numfields} {incr i} {
@@ -306,10 +329,10 @@ proc fields2Page:getNodeInfo:getGroupKeys {depth obj sd} {
 
 
 #
-# Helper proc for fields2Page:getNodeInfo.
+# Helper proc for fieldsPage:getNodeInfo.
 # Return fields in the given group; groupname may be "" (meaning no group).
 #
-proc fields2Page:getNodeInfo:getFieldsInGroup {depth obj sd groupid} {
+proc fieldsPage:getNodeInfo:getFieldsInGroup {depth obj sd groupid} {
     set children {}
     if {$groupid!=""} {
         set groupname [opp_classdescriptor $obj $sd fieldproperty $groupid "group"]
@@ -326,10 +349,10 @@ proc fields2Page:getNodeInfo:getFieldsInGroup {depth obj sd groupid} {
 }
 
 #
-# Helper proc for fields2Page:getNodeInfo.
+# Helper proc for fieldsPage:getNodeInfo.
 # Expands array by enumerating all indices, and returns the list of corresponding keys.
 #
-proc fields2Page:getNodeInfo:getElementsInArray {depth obj sd fieldid} {
+proc fieldsPage:getNodeInfo:getElementsInArray {depth obj sd fieldid} {
     set children {}
     set n [opp_classdescriptor $obj $sd fieldarraysize $fieldid]
     for {set i 0} {$i<$n} {incr i} {
@@ -339,9 +362,9 @@ proc fields2Page:getNodeInfo:getElementsInArray {depth obj sd fieldid} {
 }
 
 #
-# Helper proc for fields2Page:getNodeInfo. Produces text for a field.
+# Helper proc for fieldsPage:getNodeInfo. Produces text for a field.
 #
-proc fields2Page:getNodeInfo:getFieldText {obj sd fieldid index} {
+proc fieldsPage:getNodeInfo:getFieldText {obj sd fieldid index} {
 
     set typename [opp_classdescriptor $obj $sd fieldtypename $fieldid]
     set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
@@ -430,7 +453,7 @@ proc fields2Page:getNodeInfo:getFieldText {obj sd fieldid index} {
 # isCObject), returns its pointer. Otherwise returns [opp_null].
 #
 #
-proc fields2Page:getNodeInfo:resolveObject {keyargs} {
+proc fieldsPage:getNodeInfo:resolveObject {keyargs} {
     set depth [lindex $keyargs 0]
     set keytype [lindex $keyargs 1]
 
@@ -455,13 +478,14 @@ proc fields2Page:getNodeInfo:resolveObject {keyargs} {
 # an inspector for the given object. Or starts editing. Or at least
 # opens/closes that tree branch.
 #
-proc fields2Page:getNodeInfo:inspect {w key} {
+proc fieldsPage:getNodeInfo:inspect {w key} {
     set keyargs [split $key "-"]
-    set ptr [fields2Page:getNodeInfo:resolveObject $keyargs]
+    set ptr [fieldsPage:getNodeInfo:resolveObject $keyargs]
     if [opp_isnotnull $ptr] {
-        opp_inspect $ptr "(default)"
-    } elseif [fields2Page:getNodeInfo:isEditable $w $key] {
-        fields2Page:getNodeInfo:edit $w $key
+        set insp [winfo parent [winfo parent [winfo parent $w]]]
+        inspector:dblClick $insp $ptr
+    } elseif [fieldsPage:getNodeInfo:isEditable $w $key] {
+        fieldsPage:getNodeInfo:edit $w $key
     } else {
         Tree:toggle $w $key
     }
@@ -470,7 +494,7 @@ proc fields2Page:getNodeInfo:inspect {w key} {
 #
 # Returns true if a tree node is editable (it's a field and its descriptor says editable)
 #
-proc fields2Page:getNodeInfo:isEditable {w key} {
+proc fieldsPage:getNodeInfo:isEditable {w key} {
     set keyargs [split $key "-"]
     set keytype [lindex $keyargs 1]
     if {$keytype=="field" || $keytype=="findex"} {
@@ -485,17 +509,17 @@ proc fields2Page:getNodeInfo:isEditable {w key} {
 #
 # Initiates in-place editing of a tree field
 #
-proc fields2Page:getNodeInfo:edit {w key} {
+proc fieldsPage:getNodeInfo:edit {w key} {
     set id [lindex [$w find withtag "text-$key"] 1]
     if {$id!=""} {
-        editCanvasLabel $w $id [list fields2Page:getNodeInfo:setValue $w $key]
+        editCanvasLabel $w $id [list fieldsPage:getNodeInfo:setValue $w $key]
     }
 }
 
 #
 # Sets the value of a tree field after in-place editing
 #
-proc fields2Page:getNodeInfo:setValue {w key value} {
+proc fieldsPage:getNodeInfo:setValue {w key value} {
     set keyargs [split $key "-"]
     set keytype [lindex $keyargs 1]
     if {$keytype=="field" || $keytype=="findex"} {
@@ -513,132 +537,53 @@ proc fields2Page:getNodeInfo:setValue {w key value} {
     Tree:build $w
 }
 
-proc fields2Page:getNodeInfo:popup {w key x y} {
-    catch {destroy .popup}
-    menu .popup -tearoff 0
+proc fieldsPage:getNodeInfo:objectSelected {w obj} {
+    set insp [winfo parent [winfo parent [winfo parent $w]]]
+    mainWindow:selectionChanged $insp $obj
+}
 
-    .popup add command -label "Copy" -command [list fields2Page:getNodeInfo:copy $w $key]
-
-    .popup add separator
+proc fieldsPage:getNodeInfo:popup {w key x y} {
+    set insp [winfo parent [winfo parent [winfo parent $w]]]
 
     set keyargs [split $key "-"]
-    set ptr [fields2Page:getNodeInfo:resolveObject $keyargs]
+    set ptr [fieldsPage:getNodeInfo:resolveObject $keyargs]
     if [opp_isnotnull $ptr] {
-        foreach i [opp_supported_insp_types $ptr] {
-           .popup add command -label "Inspect $i" -command "opp_inspect $ptr \"$i\""
-        }
+        createInspectorContextMenu $insp $ptr
+        .popup add separator
+        .popup add command -label "Copy" -command [list fieldsPage:getNodeInfo:copy $w $key]
     } else {
-        if [fields2Page:getNodeInfo:isEditable $w $key] {
-            .popup add command -label "Edit..." -command [list fields2Page:getNodeInfo:edit $w $key]
+        catch {destroy .popup}
+        menu .popup -tearoff 0
+        if [fieldsPage:getNodeInfo:isEditable $w $key] {
+            .popup add command -label "Edit..." -command [list fieldsPage:getNodeInfo:edit $w $key]
         } else {
             .popup add command -label "Edit..." -state disabled
         }
+        .popup add separator
+        .popup add command -label "Copy" -command [list fieldsPage:getNodeInfo:copy $w $key]
+
+        if [opp_isinspector $insp] {
+           set ptr [opp_inspector_getobject $insp]
+           if [opp_isnotnull $ptr] {
+              set parentptr [opp_getobjectowner $ptr]
+              if {[opp_isnotnull $parentptr] && [opp_inspector_supportsobject $insp $parentptr]} {
+                  .popup add separator
+                  .popup add command -label "Go up" -command "opp_inspector_setobject $insp $parentptr"
+              }
+           }
+        }
+
     }
 
     tk_popup .popup $x $y
 }
 
-proc fields2Page:getNodeInfo:copy {w key} {
-    set txt [fields2Page:getNodeInfo $w text $key]
+proc fieldsPage:getNodeInfo:copy {w key} {
+    set txt [fieldsPage:getNodeInfo $w text $key]
     regsub -all "\b" $txt "" txt
 
     # note: next two lines are from tk_textCopy Tk proc.
     clipboard clear -displayof $w
     clipboard append -displayof $w $txt
 }
-
-
-##
-## This alternative version of the Fields table uses a BLT treeview widget.
-##
-#proc inspector:createFields2PageX {w} {
-#    global treeroots
-#    set nb $w.nb
-#    notebook:addPage $nb fields2 {Fields}
-#
-#    multicolumnlistbox $nb.fields2.list {
-#       {value  Value   200}
-#       {type   Type    80}
-#       {on     Declared-on}
-#    } -width 400 -yscrollcommand "$nb.fields2.vsb set" -xscrollcommand "$nb.fields2.hsb set"
-#    scrollbar $nb.fields2.hsb  -command "$nb.fields2.list xview" -orient horiz
-#    scrollbar $nb.fields2.vsb  -command "$nb.fields2.list yview"
-#    grid $nb.fields2.list $nb.fields2.vsb -sticky news
-#    grid $nb.fields2.hsb  x           -sticky news
-#    grid rowconfig    $nb.fields2 0 -weight 1 -minsize 0
-#    grid columnconfig $nb.fields2 0 -weight 1 -minsize 0
-#
-#    set tree $nb.fields2.list
-#
-#    $tree config -flat no -hideroot yes
-#    $tree column configure treeView -text "Name" -hide no -width 160 -state disabled
-#
-#    #set root [$tree insert end ROOT -data {value 42 type struct}]
-#    #set one  [$tree insert end {ROOT ONE} -data {value 42 type short}]
-#    #set two  [$tree insert end {ROOT TWO} -data {value 42 type double}]
-#
-#    if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
-#        error "window name $w doesn't look like an inspector window"
-#    }
-#
-#    fillTreeView $tree $object   ;# should be called from C++ on updates
-#}
-#
-#proc fillTreeView {tree obj} {
-#    set desc [opp_getclassdescriptor $obj]
-#    set key "fld-$obj-$desc---"
-#
-#    _doFillTreeView $tree {} $key
-#}
-#
-#proc _doFillTreeView {tree path key} {
-#    global icons
-#
-#    set data [_getFieldDataFor $key]
-#    set name [lindex $data 1]
-#    set newpath [concat $path [list $name]]
-#    #set icon $icons(1pixtransp)
-#    #set icon $icons(cogwheel_vs)
-#    set icon $icons(node_xs)
-#    $tree insert end $newpath -data $data -icons [list $icon $icon] -activeicons [list $icon $icon]
-#
-#    foreach child [fields2Page:getNodeInfo $tree children $key] {
-#        _doFillTreeView $tree $newpath $child
-#    }
-#}
-#
-#proc _getFieldDataFor {key} {
-#    # key: objectptr-descriptorptr-fieldid-index
-#    set obj ""
-#    set sd ""
-#    set fieldid ""
-#    set index ""
-#    regexp {^fld-(ptr.*)-(ptr.*)-([^-]*)-([^-]*)$} $key dummy obj sd fieldid index
-#    #puts "DBG --> $obj -- $sd -- field=$fieldid -- index=$index"
-#
-#    if {$obj==[opp_null]} {return "<object is NULL>"}
-#    if {$sd==[opp_null]} {return "<no descriptor for object>"}
-#
-#    set declname [opp_classdescriptor $obj $sd name]
-#
-#    if {$fieldid==""} {
-#        return [list treeView $declname value "" type "" on ""]
-#    }
-#
-#    set typename [opp_classdescriptor $obj $sd fieldtypename $fieldid]
-#    set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
-#    set name [opp_classdescriptor $obj $sd fieldname $fieldid]
-#    if {$index!=""} {
-#        append name "\[$index\]"
-#    } elseif {$isarray} {
-#        set size [opp_classdescriptor $obj $sd fieldarraysize $fieldid]
-#        append name "\[$size\]"
-#    }
-#    set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]
-#    regsub -all "\n" $value "; " value
-#    regsub -all "   +" $value "  " value
-#    if {$typename=="string"} {set value "\"$value\""}
-#
-#    return [list treeView $name value $value type $typename on $declname]
-#}
 

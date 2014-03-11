@@ -1,5 +1,5 @@
 #=================================================================
-#  INSPLIST.TCL - part of
+#  INSPECTORLIST.TCL - part of
 #
 #                     OMNeT++/OMNEST
 #            Discrete System Simulation in C++
@@ -14,15 +14,13 @@
 #----------------------------------------------------------------#
 
 #
-# Inspector list handling
+# PIL stands for Pending Inspector List.
+# Variables:
+# - pil_name()
+# - pil_class()
+# - pil_type()
+# - pil_geom()
 #
-
-# PIL stands for Pending Inspector List
-#set pil_name() {}
-#set pil_class() {}
-#set pil_type() {}
-#set pil_geom() {}
-
 
 #
 # THIS PROC IS CALLED FROM C++ CODE, at each inspector display update.
@@ -39,7 +37,7 @@ proc inspectorUpdateCallback {} {
 
 
 #
-# try to open inspectors in 'pending inspectors' list
+# Try to open inspectors in 'pending inspectors' list
 #
 proc inspectorList:openInspectors {} {
     global pil_name pil_class pil_type pil_geom
@@ -70,13 +68,15 @@ proc inspectorList:openInspectors {} {
 }
 
 #
-# add an inspector to the list. The underlying object must still exist.
+# Add an inspector to the list. The underlying object must still exist.
 #
 proc inspectorList:add {w allowdestructive} {
     global pil_name pil_class pil_type pil_geom pil_nextindex
 
-    if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
-        error "window name $w doesn't look like an inspector window"
+    set object [opp_inspector_getobject $w]
+    set type [opp_inspector_gettype $w]
+    if [opp_isnull $object] {
+        return
     }
 
     set objname [opp_getobjectfullpath $object]
@@ -95,10 +95,8 @@ proc inspectorList:add {w allowdestructive} {
 # Add all open inspectors to the inspector list.
 #
 proc inspectorList:addAll {allowdestructive} {
-    foreach w [winfo children .] {
-       if [regexp {\.(ptr.*)-([0-9]+)} $w match object type] {
-           inspectorList:add $w $allowdestructive
-       }
+    foreach w [opp_getinspectors 1] {
+        inspectorList:add $w $allowdestructive
     }
 }
 
@@ -110,9 +108,8 @@ proc inspectorList:addAll {allowdestructive} {
 proc inspectorList:remove {w} {
     global pil_name pil_class pil_type pil_geom
 
-    if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
-        error "window name $w doesn't look like an inspector window"
-    }
+    set object [opp_inspector_getobject $w]
+    set type [opp_inspector_gettype $w]
 
     set key "[opp_getobjectfullpath $object]:[opp_getobjectshorttypename $object]:$type"
 
@@ -129,14 +126,15 @@ proc inspectorList:tkenvrcGetContents {allowdestructive} {
     global pil_name pil_class pil_type pil_geom
 
     set res ""
-    foreach w [winfo children .] {
-       if [regexp {\.(ptr.*)-([0-9]+)} $w match object type] {
-           set objname [opp_getobjectfullpath $object]
-           set class [opp_getobjectshorttypename $object]
-           set geom [inspectorList:getGeometry $w $allowdestructive]
+    foreach w [opp_getinspectors 1] {
+       set object [opp_inspector_getobject $w]
+       set type [opp_inspector_gettype $w]
 
-           append res "inspector \"$objname\" \"$class\" \"$type\" \"$geom\"\n"
-       }
+       set objname [opp_getobjectfullpath $object]
+       set class [opp_getobjectshorttypename $object]
+       set geom [inspectorList:getGeometry $w $allowdestructive]
+
+       append res "inspector \"$objname\" \"$class\" \"$type\" \"$geom\"\n"
     }
 
     foreach key [array names pil_name] {

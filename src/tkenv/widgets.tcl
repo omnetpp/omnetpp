@@ -28,13 +28,13 @@ proc checkTclTkVersion {} {
    global tk_version tk_patchLevel
 
    catch {package require Tk}
-   if {[string compare $tk_patchLevel "8.4.0"]<0} {
+   if {[string compare $tk_patchLevel "8.5.0"]<0} {
       wm deiconify .
       wm title . "Bad news..."
       frame .f
       pack .f -expand 1 -fill both -padx 2 -pady 2
       label .f.l1 -text "Your version of Tcl/Tk is too old, please upgrade!"
-      label .f.l2 -text "Tcl/Tk 8.4.0 or later required."
+      label .f.l2 -text "Tcl/Tk 8.5.0 or later required."
       button .f.b -text "  OK  " -command {exit}
       pack .f.l1 .f.l2 -side top -padx 5
       pack .f.b -side top -pady 5
@@ -55,29 +55,7 @@ catch {set tk::mac::CGAntialiasLimit 1}
 proc setupTkOptions {} {
    global fonts defaultfonts icons tcl_platform tk_version
    global tcl_wordchars tcl_nonwordchars
-   global HAVE_BLT B2 B3
-
-   # test for BLT
-   set HAVE_BLT 0
-   catch {package require BLT; set HAVE_BLT 1}
-   if {!$HAVE_BLT && ![string equal [tk windowingsystem] aqua]} {
-      # no BLT on OS X Tk Aqua, so skip the warning
-      puts "\n*** BLT Tcl/Tk extension not found -- please make sure it is installed, and TCL_LIBRARY is set properly."
-   }
-   if {$HAVE_BLT} {
-       if [catch {
-           blt::tabset .test_blt_tabset
-           blt::treeview .test_blt_treeview
-       } errmsg] {
-           set HAVE_BLT 0
-           puts "\n*** BLT installation seems to be broken, reverting to non-BLT widgets! Details: \"package require BLT\" command was successful, but could not create BLT widgets: $errmsg\n"
-       }
-       catch {destroy .test_blt_tabset}
-       catch {destroy .test_blt_treeview}
-   }
-
-   # load combobox
-   package require combobox 2.3
+   global B2 B3
 
    # work around Tcl bug: these vars got reset when words.tcl was autoloaded
    catch {tcl_wordBreakAfter};
@@ -244,6 +222,39 @@ proc iconsWorkaroundForOSX {} {
 #    UTILITY PROCEDURES
 #===================================================================
 
+proc makeTransient {w {geom ""}} {
+    # note: "wm attribute $w -topmost 1" is no good here -- it keeps the window above ALL OTHER apps' windows as well
+    if {[string equal [tk windowingsystem] win32]} {
+        # drawback of "transient": (1) inspector windows cannot be minimized or maximized
+        # (2) it places all windows to (0,0) and "positionfrom" doesn't help;
+        # workaround: place window explicitly (near the current mouse position)
+        wm transient $w .
+        wm attribute $w -toolwindow 1
+        if {$geom==""} {
+            set x [expr [winfo pointerx .]-50]
+            set y [expr [winfo pointery .]+40]
+            wm geometry $w +$x+$y
+        }
+    } elseif {[string equal [tk windowingsystem] x11]} {
+        # "positionfrom" is for KDE 4.x, where minimize+restore would lose window position otherwise
+        wm transient $w .
+        wm attribute $w -type normal
+        wm positionfrom $w user
+        if {$geom==""} {
+            # at least Ubuntu (Unity) places the window at (0,0) by default, so use explicit placement
+            set x [expr [winfo pointerx .]-50]
+            set y [expr [winfo pointery .]+40]
+            wm geometry $w +$x+$y
+        }
+    } elseif {[string equal [tk windowingsystem] aqua]}  {
+        # drawback of "transient": inspector windows cannot be minimized or maximized
+        # (and move together with the main window, but this is not necessarily bad)
+        wm transient $w .
+    } else {
+        wm transient $w .
+    }
+}
+
 # wsize --
 #
 # Utility to set a widget's size to exactly width x height pixels.
@@ -297,10 +308,41 @@ proc waitForFocus w {
     }
 }
 
+#
+# Brings the window to front, and gives it focus
+#
+proc showWindow {w} {
+    global tcl_platform
+    if {$tcl_platform(platform) != "windows"} {
+        # looks like some X servers ignore the "raise" command unless we
+        # kick them by "wm withdraw" plus "wm deiconify"...
+        wm withdraw $w
+        wm deiconify $w
+    }
+    raise $w
+    focus $w
+}
+
+#
+# Copies the given string to the clipboard
+#
+proc setClipboard {str} {
+    clipboard clear
+    clipboard append -- $str
+}
 
 #===================================================================
 #    PROCEDURES FOR CREATING NEW 'WIDGET TYPES'
 #===================================================================
+
+proc ttk_button {args} {
+    # on OS X, plain button is native widget and looks better than ttk::button
+    if {[string equal [tk windowingsystem] aqua]}  {
+        eval button $args
+    } else {
+        eval ttk::button $args
+    }
+}
 
 proc iconbutton {w args} {
     global fonts icons
@@ -346,40 +388,6 @@ proc iconButton:configure {w icon command tooltip} {
     $w config -image $icon
     $w config -command $command
     set help_tips($w) $tooltip
-}
-
-
-proc combo {w list {cmd {}}} {
-    # implements a combo box widget (which is missing from Tk)
-    # using a menubutton and a menu
-
-    global fonts
-
-    combobox::combobox $w
-    foreach i $list {
-        $w list insert end $i
-    }
-    catch {$w configure -value [lindex $list 0]}
-    $w configure -command "$cmd ;#"
-    return $w
-}
-
-proc combo:configure {w list {cmd {}}} {
-    # reconfigures a combo box widget
-
-    $w list delete 0 end
-    foreach i $list {
-        $w list insert end $i
-    }
-    if {[lsearch $list [$w cget -value]] == -1} {
-        catch {$w configure -value [lindex $list 0]}
-    }
-    $w configure -command "$cmd ;#"
-    return $w
-}
-
-proc combo:onChange {w cmd} {
-    $w configure -command "$cmd ;#" -commandstate normal
 }
 
 proc label-entry {w label {text {}}} {
@@ -456,13 +464,17 @@ proc label-combo {w label list {text {}} {cmd {}}} {
     # utility function: create a frame with a label+combo
     frame $w
     label $w.l -anchor w -width 16 -text $label
-    combo $w.e $list $cmd
+    ttk::combobox $w.e -values $list
     pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 2 -side left
     pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side right
+
     if {$text != ""} {
-         $w.e configure -value $text
+        $w.e set $text
     } else {
-         $w.e configure -value [lindex $list 0]
+        $w.e set [lindex $list 0]
+    }
+    if {$cmd != ""} {
+        bind $w.e <<ComboboxSelected>> $cmd
     }
 }
 
@@ -476,15 +488,18 @@ proc label-fontcombo {w label {font {}}} {
     # utility function: create a frame with a label+combo for font selection
     frame $w
     label $w.l -anchor w -width 16 -text $label
-    combo $w.e {}
+    ttk::combobox $w.e
     label $w.p -anchor w
 
     grid $w.l $w.e -sticky news -padx 2 -pady 2
     grid x    $w.p -sticky news -padx 2 -pady 2
     grid columnconfigure $w 1 -weight 1
 
-    $w.e configure -value $font
-    $w.e.entry configure -validate all -validatecommand "after idle {fontcombo:update $w}; return 1"
+    $w.e set $font
+
+    bind $w.e <<ComboboxSelected>> "after idle {fontcombo:update $w}"
+    bind $w.e <KeyRelease> "after idle {fontcombo:update $w}"
+    after idle [list fontcombo:update $w]
 }
 
 # private proc for label-fontcombo
@@ -510,9 +525,12 @@ proc fontcombo:set {w oldfont} {
             lappend fontlist [string trim "$family $size"]
         }
     }
-    combo:configure $w $fontlist
+
+    $w configure -values $fontlist
+    catch {$w current 0}
+
     regsub -all "\[{}\]" $oldfont "\"" oldfont
-    $w configure -value $oldfont
+    $w set $oldfont
 }
 
 proc label-text {w label height {text {}}} {
@@ -687,322 +705,7 @@ proc helplabel:showhelp {text x y} {
 }
 
 
-# noteboook --
-#
-# Create 'tabbed notebook' widget
-#
-# Usage example:
-#  notebook .x
-#  notebook:addPage .x p1 Egy
-#  notebook:addPage .x p2 Ketto
-#  notebook:addPage .x p3 Harom
-#  pack .x -expand 1 -fill both
-#  label .x.p1.e -text "One"
-#  pack .x.p1.e
-#
-proc notebook {w {side top}} {
-    global HAVE_BLT fonts
-
-    if {$HAVE_BLT} {
-        blt::tabset $w -tearoff no -relief flat -side top -samewidth no -highlightthickness 0 -font $fonts(normal)
-    } else {
-        # poor man's tabnotebook
-        global nb
-        set nb($w) ""
-
-        frame $w
-        frame $w.tabs
-        pack $w.tabs -side $side -fill x
-    }
-}
-
-#
-#  utility function: add page to notebook widget
-#
-proc notebook:addPage {w name label} {
-    global HAVE_BLT
-
-    if {$HAVE_BLT} {
-        set page $w.$name
-        frame $page
-        $w insert end $name -text $label -window $page -fill both
-        $w select [$w index -name $name]
-    } else {
-        # poor man's tabnotebook
-        set tab $w.tabs.$name
-        set page $w.$name
-
-        frame $page -border 2 -relief raised
-        button $tab -text $label -command "notebook:showPage $w $name" -relief flat
-        pack $tab -anchor n -expand 0 -fill none -side left
-
-        global nb
-        if {$nb($w)==""} {notebook:showPage $w $name}
-    }
-}
-
-#
-# show given notebook page
-#
-proc notebook:showPage {w name} {
-    global HAVE_BLT
-
-    if {$HAVE_BLT} {
-        $w select [$w index -name $name]
-    } else {
-        # poor man's tabnotebook
-        global nb
-
-        if {$nb($w)==$name} return
-
-        pack $w.$name -expand 1 -fill both
-        $w.tabs.$name config -relief raised
-
-        if {$nb($w)!=""} {
-           pack forget $w.$nb($w)
-           $w.tabs.$nb($w) config -relief flat
-        }
-        set nb($w) $name
-    }
-}
-
-
-# vertResizeBar --
-#
-# Vertical 'resize bar' (divider)
-#
-proc vertResizeBar {w wToBeResized} {
-    global B2 B3
-
-    # create widget
-    frame $w -width 5 -relief raised -borderwidth 1
-    if [catch {$w config -cursor size_we}] {
-      if [catch {$w config -cursor sb_h_double_arrow}] {
-        catch {$w config -cursor sizing}
-      }
-    }
-
-    # create bindings
-    bind $w <Button-1> "vertResizeBar:buttonDown %W %X"
-    bind $w <B1-Motion> "vertResizeBar:buttonMove %X"
-    bind $w <ButtonRelease-1> "vertResizeBar:buttonRelease %X $wToBeResized"
-    bind $w <Button-$B2> "catch {destroy .resizeBar}"
-    bind $w <Button-$B3> "catch {destroy .resizeBar}"
-}
-
-proc vertResizeBar:buttonDown {w x} {
-    global mouse
-    set mouse(origx) $x
-
-    catch {destroy .resizeBar}
-    toplevel .resizeBar -relief flat -bg #606060
-    wm overrideredirect .resizeBar true
-    wm positionfrom .resizeBar program
-    set geom "[winfo width $w]x[winfo height $w]+[winfo rootx $w]+[winfo rooty $w]"
-    wm geometry .resizeBar $geom
-}
-
-proc vertResizeBar:buttonMove {x} {
-    catch {wm geometry .resizeBar "+$x+[winfo rooty .resizeBar]"}
-}
-
-proc vertResizeBar:buttonRelease {x wToBeResized} {
-    global mouse
-    set dx [expr $x-$mouse(origx)]
-
-    set width [$wToBeResized cget -width]
-    set width [expr $width+$dx]
-    $wToBeResized config -width $width
-
-    catch {destroy .resizeBar}
-}
-
-# tableEdit --
-#
-# Create a "tableEdit" widget
-#
-# one $columnlist entry:
-#   {title column-name command-to-create-widget-in-cell}
-#
-#  the command should use two variables:
-#    $e - widget must be created with name stored in $e
-#    $v - widget must be bound to variable whose name is in $v
-#
-# Example:
-# tableEdit .t 20 {
-#   {Name    name    {entry $e -textvariable $v -width 8 -bd 1 -relief sunken}}
-#   {Value   value   {entry $e -textvariable $v -width 12 -bd 1 -relief sunken}}
-#   {Comment comment {entry $e -textvariable $v -width 20 -bd 1 -relief sunken}}
-# }
-# pack .t -expand 1 -fill both
-#
-proc tableEdit {w numlines columnlist} {
-
-    # clean up variables from earlier table instances with same name $w
-    global tablePriv
-    foreach i [array names tablePriv "$w,*"] {
-        unset tablePriv($i)
-    }
-
-    # create widgets
-    frame $w; # -bg green
-    frame $w.tb -height 16
-    canvas $w.c -yscrollcommand "$w.vsb set" -height 150 -bd 0
-    scrollbar $w.vsb -command "$w.c yview"
-
-    grid rowconfig $w 1 -weight 1 -minsize 0
-
-    grid $w.tb -in $w -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
-    grid $w.c   -in $w -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
-    grid $w.vsb -in $w -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky news
-
-    frame $w.c.f -bd 0
-    $w.c create window 0 0 -anchor nw -window $w.c.f
-
-    set tb $w.tb
-    set f $w.c.f
-
-    for {set li 0} {$li<$numlines} {incr li} {
-       set col 0
-       foreach entry $columnlist {
-           # get fields from entry
-           set title   [lindex $entry 0]
-           set attr    [lindex $entry 1]
-           set wcmd    [lindex $entry 2]
-
-           # add table entry
-           set e $f.li$li-$attr
-           set v tablePriv($w,$li,$attr)
-           eval $wcmd
-           grid $e -in $f -row $li -column $col -rowspan 1 -columnspan 1 -sticky news
-
-           # make sure edited entry is always visible
-           bind $e <Key> [list _focusTableEntry $f.li$li-$attr $w.c]
-
-           # key bindings: up, down
-           if {$li!=0} {
-               bind $e <Up> [list _focusTableEntry $f.li[expr $li-1]-$attr $w.c]
-           }
-           if {$li!=$numlines-1} {
-               bind $e <Down> [list _focusTableEntry $f.li[expr $li+1]-$attr $w.c]
-           }
-
-           # next column
-           incr col
-       }
-    }
-
-    update idletasks
-
-    # create title labels
-    set dx 2
-    foreach entry $columnlist {
-        # get fields from entry
-        set title   [lindex $entry 0]
-        set attr    [lindex $entry 1]
-
-        set e $f.li0-$attr
-        label $tb.$attr -bd 1 -relief raised -text $title
-
-        # add title bar
-        set width [expr [winfo width $e]]
-        place $tb.$attr -in $tb -x $dx -y 0 -width $width -height [winfo height $tb]
-        set dx [expr $dx + $width]
-    }
-
-    # adjust canvas width to frame width
-    $w.c config -width [winfo width $f]
-    $w.c config -scrollregion "0 0 0 [winfo height $f]"
-
-    #focus $w.l0c0
-
-}
-
-#
-# internal to tableEdit: ensures current widget is always visible
-#
-proc _focusTableEntry {e c} {
-    focus $e
-    # are we below the visible canvas area?
-    set d [expr [winfo rooty $e]-[winfo rooty $c]-[winfo height $c]]
-    if {$d>-10} {
-        $c yview scroll [expr $d+10] units
-    }
-    # are we above the visible canvas area?
-    set d [expr [winfo rooty $c]-[winfo rooty $e]-[winfo height $e]]
-    if {$d>0} {
-        $c yview scroll [expr -$d+10] units
-    }
-}
-
-#
-# Create multicolumn listbox. The $columnlist arg should contain a list of
-# column descriptions, each one either as {name label width} or
-# {name label} pair (in the latter case, column width will be auto).
-#
-# Example:
-#  multicolumnlistbox .lb {
-#     {name    Name          20}
-#     {date    Date          15}
-#     {descr   Description}
-#  }
-#
-#
-proc multicolumnlistbox {w columnlist args} {
-    global HAVE_BLT B2 B3 fonts
-    if {$HAVE_BLT} {
-        blt::treeview $w -allowduplicates yes -flat yes
-        $w column configure treeView -hide no -width 15 -state disabled
-        if {$args!=""} {
-             eval $w config $args
-        }
-
-        foreach i $columnlist {
-            set name [lindex $i 0]
-            set label [lindex $i 1]
-            set width [lindex $i 2]
-            $w column insert end $name -text $label -justify left -edit no -pad 8 \
-                -command [list multicolumnlistbox:bltSortColumn $w $name]
-            if {$width!=""} {
-                $w column config $name -width $width
-            }
-        }
-        # eliminate "last column quirk" by adding a very wide dummy column:
-        $w column insert end "dummy" -text "" -edit no -width 1000
-        # right-click support: should select the item (unless already selected)
-        bind $w <$B3> {%W selection clearall; %W select set [%W nearest %x %y]}
-        #bind $w <Motion> {puts "[%W nearest %x %y] of [%W index view.top]..[%W index view.bottom] -- [%W find view.top view.bottom]"}
-    } else {
-        # emulate it with listbox widget
-        global mclistbox
-        listbox $w -font $fonts(mono)
-        if {$args!=""} {
-             eval $w config $args
-        }
-        # unlike blt::tree, listbox counts in chars
-        if {[$w cget -width]>100} {
-             $w config -width [expr [$w cget -width]/8]
-        }
-        if {[$w cget -height]>100} {
-             $w config -height [expr [$w cget -height]/12]
-        }
-        # store column names -- we'll need them later
-        set cols {}
-        foreach i $columnlist {
-            set name [lindex $i 0]
-            set label [lindex $i 1]
-            set width [lindex $i 2]
-            if {$width==""} {set width 15} else {set width [expr $width/6]}
-            lappend cols $name
-            set mclistbox($w,columnwidth,$name) $width
-        }
-        set mclistbox($w,columns) $cols
-    }
-}
-
-#
-# private procedure for multicolumnlistbox
-#
+#TODO!
 proc multicolumnlistbox:bltSortColumn {w column} {
     set old [$w sort cget -column]
     set decreasing 0
@@ -1018,166 +721,8 @@ proc multicolumnlistbox:bltSortColumn {w column} {
     blt::busy release $w
 }
 
-#
-# Inserts a line into a multicolumn-listbox. The $rowname can be used later
-# to identify the row. $data contains values for different columns in the
-# format {name1 value1 name2 value2 ...}, conventiently produced from
-# arrays by the command "array get".
-#
-proc multicolumnlistbox:insert {w rowname data {icon ""}} {
-    global icons
-    global HAVE_BLT
-    if {$HAVE_BLT} {
-        if {$icon==""} {set icon $icons(16pixtransp)}
-        $w insert end $rowname -data $data -button no -icons [list $icon $icon] -activeicons [list $icon $icon]
-    } else {
-        global mclistbox
-        array set ary $data
-        set row ""
-        set overshoot 0
-        foreach col $mclistbox($w,columns) {
-            # catch because it might be missing from the array
-            set value "n/a"
-            catch {set value $ary($col)}
-            set width $mclistbox($w,columnwidth,$col)
-            set valuelength [string length $value]
-            set padlength [expr $width - $valuelength - $overshoot]
-            if {$padlength < 0} {set padlength 0}
-            incr overshoot [expr $valuelength + $padlength - $width]
-            set padding [string repeat " " $padlength]
-            append row "$value$padding  "
-        }
-        append row [string repeat " " 160]
-        append row $rowname
-        $w insert end $row
-    }
-}
-
-#
-# Updates a given row.
-#
-proc multicolumnlistbox:modify {w rowname data} {
-    global HAVE_BLT
-    if {$HAVE_BLT} {
-        set id [$w find -full $rowname]
-        if {$id==""} {error "row $rowname not found"}
-        $w entry config $id -data $data
-    } else {
-        error "multicolumnlistbox:modify not supported without BLT!"
-    }
-}
-
-#
-# Returns data from the given row.
-#
-proc multicolumnlistbox:getRow {w rowname} {
-    global HAVE_BLT
-    if {$HAVE_BLT} {
-        set id [$w find -full $rowname]
-        if {$id==""} {error "row $rowname not found"}
-        return [$w entry cget $id -data]
-    } else {
-        error "multicolumnlistbox:getRow not supported without BLT!"
-    }
-}
-
-#
-# Returns true if the given row exists.
-#
-proc multicolumnlistbox:hasRow {w rowname} {
-    global HAVE_BLT
-    if {$HAVE_BLT} {
-        set id [$w find -full $rowname]
-        if {$id!=""} {return 1} else {return 0}
-    } else {
-        error "multicolumnlistbox:hasRow not supported without BLT!"
-    }
-}
-
-#
-# Returns a list containing the rownames of all of the entries
-# that are currently selected. If there are no entries selected,
-# then the empty string is returned.
-#
-proc multicolumnlistbox:curSelection {w} {
-    global HAVE_BLT
-    if {$HAVE_BLT} {
-        set rownamelist {}
-        foreach id [$w curselection] {
-            lappend rownamelist [$w get -full $id]
-        }
-        return $rownamelist
-    } else {
-        set sel [$w curselection]
-        if {$sel == ""} {return ""}
-        set rownames {}
-        foreach i $sel {
-            set row [$w get $i]
-            # catch because there might be a parse error when interpreting it as a list
-            catch {lappend rownames [lindex $row end]}
-        }
-        return $rownames
-    }
-}
-
-#
-# Returns a list containing the rownames of all of the entries
-# that are currently selected. If there are no entries selected,
-# then the empty string is returned.
-#
-proc multicolumnlistbox:getRowNames {w} {
-    global HAVE_BLT
-    if {$HAVE_BLT} {
-        set rownamelist {}
-        catch {
-            # if the listbox is empty, $w find... will throw an error !?!@$!!
-            foreach id [$w find view.top view.bottom] {
-                lappend rownamelist [$w get -full $id]
-            }
-        }
-        return $rownamelist
-    } else {
-        error "multicolumnlistbox:getRowNames not supported without BLT!"
-    }
-}
-
-#
-# Delete the given rows.
-#
-proc multicolumnlistbox:delete {w rownames} {
-    global HAVE_BLT
-    if {$HAVE_BLT} {
-        foreach rowname $rownames {
-            set id [$w find -full $rowname]
-            if {$id==""} {error "row $rowname not found"}
-            $w delete $id
-        }
-    } else {
-        error "multicolumnlistbox:delete not supported without BLT!"
-    }
-}
-
-#
-# Delete all rows.
-#
-proc multicolumnlistbox:deleteAll {w} {
-    global HAVE_BLT
-    if {$HAVE_BLT} {
-        $w delete all
-    } else {
-        $w delete 0 end
-    }
-}
-
-#
-# Inserts a dummy line.
-#
-proc multicolumnlistbox:addDummyLine {w} {
-    global HAVE_BLT icons
-    if {$HAVE_BLT} {
-        set icon $icons(16pixtransp)
-        $w insert end [opp_null] -icons [list $icon $icon] -activeicons [list $icon $icon]
-    }
+proc ttkTreeview:deleteAll {tree} {
+    $tree delete [$tree children {}]
 }
 
 # center --
@@ -1333,8 +878,8 @@ proc createOkCancelDialog {w title} {
 
     frame $w.f
     frame $w.buttons
-    button $w.buttons.okbutton  -text {OK} -width 10 -default active
-    button $w.buttons.cancelbutton  -text {Cancel} -width 10
+    ttk_button $w.buttons.okbutton  -text {OK} -width 10 -default active
+    ttk_button $w.buttons.cancelbutton  -text {Cancel} -width 10
 
     set padx 5
     set pady 5
@@ -1436,7 +981,7 @@ proc createCloseDialog {w title} {
 
     frame $w.f
     frame $w.buttons
-    button $w.buttons.closebutton  -text {Close} -width 10 -default active
+    ttk_button $w.buttons.closebutton  -text {Close} -width 10 -default active
 
     set padx 5
     set pady 5
