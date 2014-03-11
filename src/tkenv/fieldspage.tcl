@@ -162,9 +162,9 @@ proc fieldsPage:getNodeInfo {w op {key ""}} {
                 }
                 field -
                 findex {
-                    set fieldptr [fieldsPage:getNodeInfo:resolveObject $keyargs]
-                    if [opp_isnull $fieldptr] {return ""}
-                    return [opp_getobjecticon $fieldptr]
+                    set obj [fieldsPage:getNodeInfo:resolveObject $keyargs]
+                    if [opp_isnull $obj] {return ""}
+                    return [opp_getobjecticon $obj]
                 }
             }
         }
@@ -287,6 +287,20 @@ proc fieldsPage:getNodeInfo {w op {key ""}} {
         }
 
         selectionchanged {
+            switch $keytype {
+                obj {
+                    if [opp_isnotnull $obj] {
+                        fieldsPage:getNodeInfo:objectSelected $w $obj
+                    }
+                }
+                field -
+                findex {
+                    set obj [fieldsPage:getNodeInfo:resolveObject $keyargs]
+                    if [opp_isnotnull $obj] {
+                        fieldsPage:getNodeInfo:objectSelected $w $obj
+                    }
+                }
+            }
         }
     }
 }
@@ -521,6 +535,11 @@ proc fieldsPage:getNodeInfo:setValue {w key value} {
         }
     }
     Tree:build $w
+}
+
+proc fieldsPage:getNodeInfo:objectSelected {w obj} {
+    set insp [winfo parent [winfo parent [winfo parent $w]]]
+    mainWindow:selectionChanged $insp $obj
 }
 
 proc fieldsPage:getNodeInfo:popup {w key x y} {
