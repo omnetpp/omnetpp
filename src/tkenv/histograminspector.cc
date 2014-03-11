@@ -183,7 +183,8 @@ int HistogramInspector::inspectorCommand(Tcl_Interp *interp, int argc, const cha
       Tcl_SetResult(interp,buf,TCL_VOLATILE);
       return TCL_OK;
    }
-   return TCL_ERROR;
+
+   return Inspector::inspectorCommand(interp, argc, argv);
 }
 
 NAMESPACE_END

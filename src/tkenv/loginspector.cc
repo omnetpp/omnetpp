@@ -179,7 +179,8 @@ int LogInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
            excludedModuleIds.insert(atoi(tokenizer.nextToken()));
        return TCL_OK;
     }
-    return TCL_ERROR;
+
+    return Inspector::inspectorCommand(interp, argc, argv);
 }
 
 NAMESPACE_END

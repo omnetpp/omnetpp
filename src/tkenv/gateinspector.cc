@@ -175,13 +175,12 @@ int GateInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **a
 {
    if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
 
-   if (strcmp(argv[0],"redraw")==0)
+   if (strcmp(argv[0], "redraw")==0)
    {
       return redraw(interp,argc,argv);
    }
 
-   Tcl_SetResult(interp, TCLCONST("invalid arg: must be 'redraw'"), TCL_STATIC);
-   return TCL_ERROR;
+   return Inspector::inspectorCommand(interp, argc, argv);
 }
 
 void GateInspector::displayStringChanged(cGate *gate)

@@ -408,7 +408,8 @@ int OutputVectorInspector::inspectorCommand(Tcl_Interp *interp, int argc, const 
       }
       return TCL_OK;
    }
-   return TCL_ERROR;
+
+   return Inspector::inspectorCommand(interp, argc, argv);
 }
 
 NAMESPACE_END

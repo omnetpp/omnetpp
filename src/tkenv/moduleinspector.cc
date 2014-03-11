@@ -727,7 +727,8 @@ int ModuleInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char *
    {
       return getSubmodQLen(interp,argc,argv);
    }
-   return TCL_ERROR;
+
+   return Inspector::inspectorCommand(interp, argc, argv);
 }
 
 int ModuleInspector::getSubmoduleCount(Tcl_Interp *interp, int argc, const char **argv)
