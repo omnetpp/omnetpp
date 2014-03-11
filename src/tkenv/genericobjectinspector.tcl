@@ -20,7 +20,7 @@ proc createGenericObjectInspector {insp geom} {
 }
 
 proc createEmbeddedGenericObjectInspector {insp} {
-    global icons
+    global icons help_tips
 
     # Create info bar
     frame $insp.infobar  -borderwidth 0
@@ -31,6 +31,16 @@ proc createEmbeddedGenericObjectInspector {insp} {
     pack $insp.infobar -anchor w -side top -fill x -expand 0
 
     createGenericObjectViewer $insp
+
+    set tb [inspector:createInternalToolbar $insp $insp]
+
+    packIconButton $tb.back    -image $icons(back)    -command "inspector:back $insp"
+    packIconButton $tb.forward -image $icons(forward) -command "inspector:forward $insp"
+    packIconButton $tb.parent  -image $icons(parent)  -command "inspector:inspectParent $insp"
+
+    set help_tips($tb.back)    "Back"
+    set help_tips($tb.forward) "Forward"
+    set help_tips($tb.parent)  "Go to parent"
 }
 
 proc createGenericObjectViewer {insp} {

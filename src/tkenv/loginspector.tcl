@@ -30,9 +30,21 @@ proc createLogInspector {insp geom} {
 }
 
 proc createEmbeddedLogInspector {insp} {
+    global icons help_tips
+
     frame $insp.main
     pack $insp.main -expand 1 -fill both -side top
+
     createLogViewer $insp $insp.main
+
+    set tb [inspector:createInternalToolbar $insp $insp.main.text]
+    packIconButton $tb.copy   -image $icons(copy) -command "editCopy $insp.main.text"
+    packIconButton $tb.find   -image $icons(find) -command "findDialog $insp.main.text"
+    packIconButton $tb.filter -image $icons(filter) -command "editFilterWindowContents $insp"
+
+    set help_tips($tb.copy)   {Copy selected text to clipboard (Ctrl+C)}
+    set help_tips($tb.find)   {Find string in window (Ctrl+F)}
+    set help_tips($tb.filter) {Filter window contents (Ctrl+H)}
 }
 
 proc createLogViewer {insp f} {
