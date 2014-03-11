@@ -86,14 +86,14 @@ OutputVectorInspector::~OutputVectorInspector()
    ov->setCallback(NULL, NULL);
 }
 
-void OutputVectorInspector::setObject(cObject *obj)
+void OutputVectorInspector::doSetObject(cObject *obj)
 {
     if (object) {
         cOutVector *ov = static_cast<cOutVector *>(object);
         ov->setCallback(NULL, NULL);
     }
 
-    Inspector::setObject(obj);
+    Inspector::doSetObject(obj);
 
     // make inspected output vector to call us back when it gets data to write out
     cOutVector *ov = static_cast<cOutVector *>(object);

@@ -70,12 +70,12 @@ ModuleInspector::~ModuleInspector()
 {
 }
 
-void ModuleInspector::setObject(cObject *obj)
+void ModuleInspector::doSetObject(cObject *obj)
 {
     if (obj == object)
         return;
 
-    Inspector::setObject(obj);
+    Inspector::doSetObject(obj);
 
     CHK(Tcl_VarEval(interp, canvas, " delete all",NULL));
 

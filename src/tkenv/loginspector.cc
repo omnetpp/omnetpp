@@ -67,9 +67,9 @@ void LogInspector::useWindow(const char *window)
     strcat(textWidget, ".main.text");
 }
 
-void LogInspector::setObject(cObject *obj)
+void LogInspector::doSetObject(cObject *obj)
 {
-    Inspector::setObject(obj);
+    Inspector::doSetObject(obj);
 
     if (object)
         redisplay(getTkenv()->getLogBuffer());

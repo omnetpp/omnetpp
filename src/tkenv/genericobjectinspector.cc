@@ -56,9 +56,9 @@ GenericObjectInspector::~GenericObjectInspector()
 {
 }
 
-void GenericObjectInspector::setObject(cObject *obj)
+void GenericObjectInspector::doSetObject(cObject *obj)
 {
-    Inspector::setObject(obj);
+    Inspector::doSetObject(obj);
 
     CHK(Tcl_VarEval(interp, "GenericObjectInspector:onSetObject ", windowName, NULL));
 }

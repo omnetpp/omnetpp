@@ -28,7 +28,7 @@ class TKENV_API GenericObjectInspector : public Inspector
    public:
       GenericObjectInspector(InspectorFactory *f);
       ~GenericObjectInspector();
-      virtual void setObject(cObject *obj);
+      virtual void doSetObject(cObject *obj);
       virtual void createWindow(const char *window, const char *geometry);
       virtual void useWindow(const char *window);
       virtual void refresh();

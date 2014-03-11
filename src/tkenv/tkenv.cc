@@ -796,9 +796,9 @@ void Tkenv::newRun(const char *configname, int runnumber)
 
         answers.clear();
         setupNetwork(network);
-        mainNetworkView->setObject(simulation.getSystemModule()); //FIXME factor out to setupNetwork()!
-        mainLogView->setObject(simulation.getSystemModule()); //FIXME factor out to setupNetwork()!
-        mainInspector->setObject(simulation.getSystemModule()); //FIXME just temporary, should come from tree/canvas selection
+        mainNetworkView->doSetObject(simulation.getSystemModule()); //FIXME factor out to setupNetwork()!
+        mainLogView->doSetObject(simulation.getSystemModule()); //FIXME factor out to setupNetwork()!
+        mainInspector->doSetObject(simulation.getSystemModule()); //FIXME just temporary, should come from tree/canvas selection
         startRun();
 
         simstate = SIM_NEW;
@@ -1293,22 +1293,13 @@ void Tkenv::objectDeleted(cObject *object)
         InspectorList::iterator next = it;
         ++next;
         Inspector *insp = *it;
-        if (insp->getObject()==object)
+
+        insp->objectDeleted(object);
+
+        if (insp->getObject() == object && insp->isToplevel())
         {
-            if (insp->isToplevel())
-            {
-                inspectors.erase(it);
-                delete insp;
-            }
-            else
-            {
-                insp->setObject(NULL);
-            }
-        }
-        else
-        {
-            // notify the inspector, maybe it's interested in learning that
-            insp->objectDeleted(object);
+            inspectors.erase(it);
+            delete insp;
         }
         it = next;
     }

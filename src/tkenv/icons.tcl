@@ -501,6 +501,20 @@ set icons(save) [image create photo -data {
     AABJRU5ErkJggg==
 }]
 
+set icons(back) [image create photo -data {
+    iVBORw0KGgoAAAANSUhEUgAAABQAAAATBAMAAABiojCGAAAAMFBMVEUAAAAAAITG
+    xsYAAP////////////////////////////////////////////////9MSdVzAAAA
+    EHRSTlP//wD/////////////////8qlaxQAAAC5JREFUeJxjUIIDBkqYgoIQppCS
+    IIgAMQUVgUKKEKYQgimIxBSCqQUDIQrdAAYA5lYYQC6lU50AAAAASUVORK5CYII=
+}]
+
+set icons(forward) [image create photo -data {
+    iVBORw0KGgoAAAANSUhEUgAAABQAAAATBAMAAABiojCGAAAAMFBMVEUAAAAAAITG
+    xsYAAP////////////////////////////////////////////////9MSdVzAAAA
+    EHRSTlP//wD/////////////////8qlaxQAAACxJREFUeJxjUIIDBvKZgoIwpiKQ
+    AyKATCGgiJAgnKmIYAoKwtQqIpiUugEKAPDvGF5qge68AAAAAElFTkSuQmCC
+}]
+
 set icons(undo) [image create photo -data {
     iVBORw0KGgoAAAANSUhEUgAAABQAAAATBAMAAABiojCGAAAAMFBMVEUAAAAAAITG
     xsYAAP////////////////////////////////////////////////9MSdVzAAAA

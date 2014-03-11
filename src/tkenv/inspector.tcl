@@ -45,6 +45,8 @@ proc createInspectorToplevel {w geom} {
     pack $w.toolbar -anchor w -side top -fill x -expand 0
 
     packIconButton $w.toolbar.sep0 -separator
+    packIconButton $w.toolbar.back -image $icons(back) -command "inspector:back $w"
+    packIconButton $w.toolbar.forward -image $icons(forward) -command "inspector:forward $w"
     packIconButton $w.toolbar.owner -image $icons(parent) -command "inspector:inspectOwner $w"
     packIconButton $w.toolbar.copyobj -image $icons(copy) -command "inspector:namePopup $w $w.toolbar.copyobj"
     packIconButton $w.toolbar.objs -image $icons(findobj) -command "inspectFilteredObjectList $w"
@@ -123,6 +125,13 @@ proc inspector:refresh {w} {
             set help_tips($w.toolbar.owner) {Inspect owner}
         }
     }
+
+    if [opp_inspectorcommand $w cangoback] {set state normal} else {set state disabled}
+    catch {$w.toolbar.back config -state $state} ;#FIXME add proper condition whether button exists
+
+    if [opp_inspectorcommand $w cangoforward] {set state normal} else {set state disabled}
+    catch {$w.toolbar.forward config -state $state}  ;#FIXME add proper condition whether button exists
+
 }
 
 # icons used in the tree view and listboxes
@@ -176,6 +185,14 @@ proc inspector:destroy {w} {
 #
 proc inspector:show {w} {
     showWindow $w
+}
+
+proc inspector:back {w} {
+    opp_inspectorcommand $w goback
+}
+
+proc inspector:forward {w} {
+    opp_inspectorcommand $w goforward
 }
 
 proc inspector:inspectOwner {w} {

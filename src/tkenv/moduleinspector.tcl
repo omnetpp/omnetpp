@@ -70,13 +70,15 @@ proc createEmbeddedModuleInspector {w} {
 
     set tb [inspector:createInternalToolbar $w $w.c]
 
-    packIconButton $tb.owner   -image $icons(parent) -command "inspector:inspectOwner $w"
+    packIconButton $tb.back    -image $icons(back)    -command "inspector:back $w"
+    packIconButton $tb.forward -image $icons(forward) -command "inspector:forward $w"
+    packIconButton $tb.owner   -image $icons(parent)  -command "inspector:inspectOwner $w" ;#TODO ehelyett inspectParent kellene, ami megáll a rootnál!!!
     packIconButton $tb.sep1    -separator
     packIconButton $tb.mrun    -image $icons(mrun)    -command "runSimulationLocal $w normal"
     packIconButton $tb.mfast   -image $icons(mfast)   -command "runSimulationLocal $w fast"
     packIconButton $tb.stop    -image $icons(stop)    -command {stopSimulation}
     packIconButton $tb.sep2    -separator
-    packIconButton $tb.redraw  -image $icons(redraw) -command "ModuleInspector:relayout $w"
+    packIconButton $tb.redraw  -image $icons(redraw)  -command "ModuleInspector:relayout $w"
     packIconButton $tb.zoomin  -image $icons(zoomin)  -command "ModuleInspector:zoomIn $w"
     packIconButton $tb.zoomout -image $icons(zoomout) -command "ModuleInspector:zoomOut $w"
     packIconButton $tb.showlabels -image $icons(modnames) -command "ModuleInspector:toggleLabels $w"

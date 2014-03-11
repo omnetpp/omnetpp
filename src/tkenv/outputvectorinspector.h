@@ -64,7 +64,7 @@ class TKENV_API OutputVectorInspector : public Inspector
    public:
       OutputVectorInspector(InspectorFactory *f);
       ~OutputVectorInspector();
-      virtual void setObject(cObject *obj);
+      virtual void doSetObject(cObject *obj);
       virtual void createWindow(const char *window, const char *geometry);
       virtual void useWindow(const char *window);
       virtual void refresh();

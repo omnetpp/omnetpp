@@ -56,16 +56,21 @@ class TKENV_API Inspector
       std::string windowTitle;// window title string
       bool isToplevelWindow;  // if so: has window title, has infobar, and destructor should destroy window
       bool closeRequested;    // "mark for deletion" flag (set if user wants to close inspector during animation)
+      std::vector<cObject*> historyBack;
+      std::vector<cObject*> historyForward;
 
    protected:
-      void refreshTitle();
+      virtual void refreshTitle();
+
+      virtual void doSetObject(cObject *obj);
+      virtual void removeFromToHistory(cObject *obj);
 
       void setEntry(const char *entry, const char *val);
       void setEntry(const char *entry, long l);
       void setEntry(const char *entry, double d);
       void setLabel(const char *label, const char *val);
       void setLabel(const char *label, long l);
-      void setLabel(const char *label, double d);
+      virtual void setLabel(const char *label, double d);
       void setText(const char *entry, const char *val);
       void setReadonlyText(const char *entry, const char *val);
       const char *getEntry(const char *entry);
@@ -89,7 +94,11 @@ class TKENV_API Inspector
       virtual bool isToplevel() const {return isToplevelWindow;}
 
       virtual cObject *getObject() const {return object;}
-      virtual void setObject(cObject *obj);
+      virtual void setObject(cObject *object);
+      virtual bool canGoForward();
+      virtual bool canGoBack();
+      virtual void goForward();
+      virtual void goBack();
 
       virtual void markForDeletion() {closeRequested=true;}
       virtual bool isMarkedForDeletion() {return closeRequested;}
@@ -101,9 +110,9 @@ class TKENV_API Inspector
       virtual void refresh();
       virtual void commit() {}
 
-      virtual int inspectorCommand(Tcl_Interp *interp, int, const char **) {return TCL_ERROR;}
+      virtual int inspectorCommand(Tcl_Interp *interp, int, const char **);
 
-      virtual void objectDeleted(cObject *) {}
+      virtual void objectDeleted(cObject *);
 };
 
 NAMESPACE_END

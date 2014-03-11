@@ -20,6 +20,7 @@
 #include <string.h>
 #include <math.h>
 #include <assert.h>
+#include <algorithm>
 
 #include "omnetpp.h"
 #include "tkenv.h"
@@ -111,7 +112,7 @@ void Inspector::useWindow(const char *window)
     isToplevelWindow = false;
 }
 
-void Inspector::setObject(cObject *obj)
+void Inspector::doSetObject(cObject *obj)
 {
     ASSERT2(windowName[0], "createWindow()/useWindow() needs to be called before setObject()");
 
@@ -164,6 +165,87 @@ void Inspector::refreshTitle()
         windowTitle = newTitle;
         CHK(Tcl_VarEval(interp, "wm title ",windowName," {",windowTitle.c_str(),"}",NULL));
     }
+}
+
+void Inspector::objectDeleted(cObject *obj)
+{
+    if (obj == object)
+        doSetObject(NULL);
+    removeFromToHistory(obj);
+}
+
+void Inspector::setObject(cObject *obj)
+{
+    if (obj != object) {
+        if (object != NULL) {
+            historyBack.push_back(object);
+            historyForward.clear();
+        }
+        doSetObject(obj);
+    }
+}
+
+template <typename T>
+void removeFromVector(std::vector<T>& vec, T value)
+{
+    vec.erase(std::remove(vec.begin(), vec.end(), value), vec.end());
+}
+
+void Inspector::removeFromToHistory(cObject *obj)
+{
+    removeFromVector(historyBack, obj);
+    removeFromVector(historyForward, obj);
+}
+
+bool Inspector::canGoForward()
+{
+    return !historyForward.empty();
+}
+
+bool Inspector::canGoBack()
+{
+    return !historyBack.empty();
+}
+
+void Inspector::goForward()
+{
+    if (!historyForward.empty()) {
+        cObject *newObj = historyForward.back();
+        historyForward.pop_back();
+        if (object != NULL)
+            historyBack.push_back(object);
+        doSetObject(newObj);
+    }
+}
+
+void Inspector::goBack()
+{
+    if (!historyBack.empty()) {
+        cObject *newObj = historyBack.back();
+        historyBack.pop_back();
+        if (object != NULL)
+            historyForward.push_back(object);
+        doSetObject(newObj);
+    }
+}
+
+int Inspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
+{
+    if (argc != 1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
+
+    if (strcmp(argv[0], "cangoback")==0)
+       Tcl_SetResult(interp, TCLCONST(canGoBack() ? "1" : "0"), TCL_STATIC);
+    else if (strcmp(argv[0], "cangoforward")==0)
+       Tcl_SetResult(interp, TCLCONST(canGoForward() ? "1" : "0"), TCL_STATIC);
+    else if (strcmp(argv[0], "goback")==0)
+        goBack();
+    else if (strcmp(argv[0], "goforward")==0)
+        goForward();
+    else {
+        Tcl_SetResult(interp, TCLCONST("unknown inspector command"), TCL_STATIC);
+        return TCL_ERROR;
+    }
+    return TCL_OK;
 }
 
 void Inspector::setEntry(const char *entry, const char *val)

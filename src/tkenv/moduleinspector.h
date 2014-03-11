@@ -47,7 +47,7 @@ class TKENV_API ModuleInspector : public Inspector
    public:
       ModuleInspector(InspectorFactory *f);
       ~ModuleInspector();
-      virtual void setObject(cObject *obj);
+      virtual void doSetObject(cObject *obj);
       virtual void createWindow(const char *window, const char *geometry);
       virtual void useWindow(const char *window);
       virtual void refresh();
