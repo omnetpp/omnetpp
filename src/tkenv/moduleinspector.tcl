@@ -142,13 +142,14 @@ proc createGraphicalModuleViewer {w} {
     $c bind qlen <$B3> "ModuleInspector:qlenRightClick $w %X %Y %x %y"
 
     # keyboard shortcuts
-    bind $w <Control-m> "ModuleInspector:zoomIn $w"
-    bind $w <Control-n> "ModuleInspector:zoomOut $w"
-    bind $w <Control-i> "ModuleInspector:zoomIconsBy $w 1.25"
-    bind $w <Control-o> "ModuleInspector:zoomIconsBy $w 0.8"
-    bind $w <Control-r> "ModuleInspector:relayout $w"
-    bind $w <Control-d> "ModuleInspector:toggleLabels $w"
-    bind $w <Control-a> "ModuleInspector:toggleArrowheads $w"
+    set ww [winfo toplevel $w]
+    bind $ww <Control-m> "ModuleInspector:zoomIn $w"
+    bind $ww <Control-n> "ModuleInspector:zoomOut $w"
+    bind $ww <Control-i> "ModuleInspector:zoomIconsBy $w 1.25"
+    bind $ww <Control-o> "ModuleInspector:zoomIconsBy $w 0.8"
+    bind $ww <Control-r> "ModuleInspector:relayout $w"
+    bind $ww <Control-d> "ModuleInspector:toggleLabels $w"
+    bind $ww <Control-a> "ModuleInspector:toggleArrowheads $w"
 }
 
 proc ModuleInspector:onSetObject {w} {
