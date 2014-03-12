@@ -886,13 +886,8 @@ proc setGeometry {w} {
 # user's widgets can go into frame $w.f
 #
 proc createOkCancelDialog {w title} {
-    global tk_version tcl_platform
-
     catch {destroy $w}
     toplevel $w -class Toplevel
-    if {$tk_version<8.2 || $tcl_platform(platform)!="windows"} {
-        wm transient $w [winfo toplevel [winfo parent $w]]
-    }
     wm title $w $title
     wm iconname $w Dialog
     wm focusmodel $w passive
@@ -989,13 +984,8 @@ proc execOkCancelDialog {w {validating_proc {}}} {
 # User's widgets can go into frame $w.f, and extra buttons can go into frame $w.buttons.
 #
 proc createCloseDialog {w title} {
-    global tk_version tcl_platform
-
     catch {destroy $w}
     toplevel $w -class Toplevel
-    if {$tk_version<8.2 || $tcl_platform(platform)!="windows"} {
-        wm transient $w [winfo toplevel [winfo parent $w]]
-    }
     wm title $w $title
     wm iconname $w Dialog
     wm focusmodel $w passive

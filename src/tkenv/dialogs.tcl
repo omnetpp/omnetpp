@@ -664,10 +664,10 @@ proc findDialog {w} {
     pack $dlg.f.opt -expand 0 -fill none -anchor e
 
     # add entry fields
-    checkbutton $dlg.f.opt.regexp -text {regular expression} -underline 0 -variable tmp(regexp)
-    checkbutton $dlg.f.opt.case -text {case sensitive} -underline 0 -variable tmp(case-sensitive)
-    checkbutton $dlg.f.opt.words -text {whole words only} -underline 0 -variable tmp(whole-words)
-    checkbutton $dlg.f.opt.backwards -text {search backwards} -underline 7 -variable tmp(backwards)
+    checkbutton $dlg.f.opt.regexp -text {Regular expression} -underline 0 -variable tmp(regexp)
+    checkbutton $dlg.f.opt.case -text {Case sensitive} -underline 0 -variable tmp(case-sensitive)
+    checkbutton $dlg.f.opt.words -text {Whole words only} -underline 0 -variable tmp(whole-words)
+    checkbutton $dlg.f.opt.backwards -text {Search backwards} -underline 7 -variable tmp(backwards)
 
     grid $dlg.f.opt.regexp $dlg.f.opt.case      -sticky nw
     grid $dlg.f.opt.words  $dlg.f.opt.backwards -sticky nw
