@@ -246,10 +246,9 @@ proc displayStopDialog {} {
     stopDialogAutoupdate $w
 
     # 2. Center window
-    center $w
+    setGeometry $w
 
     # 3. Set a grab and claim the focus too.
-
     set opp(oldFocus) [focus]
     set opp(oldGrab) [grab current $w]
     grab $w
@@ -282,6 +281,7 @@ proc removeStopDialog {} {
     # window manager may take the focus away so we can't redirect it.
     # Finally, restore any grab that was in effect.
 
+    rememberGeometry $w
     catch {focus $opp(oldFocus)}
     destroy $w
     if {$opp(oldGrab) != ""} {
@@ -651,8 +651,8 @@ proc findDialog {w} {
     set tmp(backwards)       $config(editor-backwards)
 
     # dialog should be child of the window which contains the text widget
-    set dlg [winfo toplevel $w].dlg
-    if {$dlg=="..dlg"} {set dlg .dlg}
+    set dlg [winfo toplevel $w].finddialog
+    if {$dlg=="..finddialog"} {set dlg .finddialog}
 
     # create dialog with OK and Cancel buttons
     set title "Find"
@@ -686,25 +686,28 @@ proc findDialog {w} {
 
     setInitialDialogFocus $dlg.f.find.e
 
-    # exec the dialog, extract its contents if OK was pressed, then delete dialog
-    if {[execOkCancelDialog $dlg] == 1} {
-        set findstring [$dlg.f.find.e get]
+    # exec the dialog
+    set result [execOkCancelDialog $dlg]
 
-        set case $tmp(case-sensitive)
-        set words $tmp(whole-words)
-        set regexp $tmp(regexp)
-        set backwards $tmp(backwards)
+    set findstring [$dlg.f.find.e get]
 
-        set config(editor-findstring) $findstring
-        set config(editor-case-sensitive) $case
-        set config(editor-whole-words) $words
-        set config(editor-regexp) $regexp
-        set config(editor-backwards) $backwards
+    set case $tmp(case-sensitive)
+    set words $tmp(whole-words)
+    set regexp $tmp(regexp)
+    set backwards $tmp(backwards)
 
-        destroy $dlg
+    set config(editor-findstring) $findstring
+    set config(editor-case-sensitive) $case
+    set config(editor-whole-words) $words
+    set config(editor-regexp) $regexp
+    set config(editor-backwards) $backwards
+
+    rememberGeometry $dlg
+    destroy $dlg
+
+    if {$result == 1} {
         doFind $w $findstring $case $words $regexp $backwards
-   }
-   catch {destroy $dlg}
+    }
 }
 
 
@@ -1063,8 +1066,9 @@ proc filteredObjectList:window {{ptr ""}} {
     bind $w <Escape> "$w.buttons.closebutton invoke"
     bindRunCommands $w
 
-    setInitialDialogFocus $fp.nameentry
+    setGeometry $w
 
+    setInitialDialogFocus $fp.nameentry
 }
 
 #
@@ -1078,6 +1082,8 @@ proc filteredObjectList:windowClose {} {
     set config(filtobjlist-name)     $tmp(name)
     set config(filtobjlist-order)    $tmp(order)
     set config(filtobjlist-category) $tmp(category)
+
+    rememberGeometry $w
 
     destroy $w
 }

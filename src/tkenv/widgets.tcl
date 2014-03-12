@@ -850,6 +850,36 @@ proc moveToScreen {w} {
     }
 }
 
+# rememberGeometry --
+#
+# Remember geometry of a dialog for the duration of the session.
+# Note: it is usually not a good idea to persist the dialog
+# position and size, as wrong settings may later cause confusion.
+#
+proc rememberGeometry {w} {
+    global session
+    set key "$w:geom"
+    regsub {^.*\.} $key "" key
+    set geom [wm geometry $w]
+    set session($key) $geom
+}
+
+# setGeometry --
+#
+# Restore geometry of a dialog, or center the dialog
+# if no remembered geometry information is available.
+#
+proc setGeometry {w} {
+    global session
+    set key "$w:geom"
+    regsub {^.*\.} $key "" key
+    if [info exists session($key)] {
+        wm geometry $w $session($key)
+    } else {
+        center $w
+    }
+}
+
 # createOkCancelDialog --
 #
 # creates dialog with OK and Cancel buttons
@@ -920,7 +950,7 @@ proc execOkCancelDialog {w {validating_proc {}}} {
     # next line mysteriously solves "lost focus" problem of popup dialogs...
     after 1 "wm deiconify $w"
 
-    center $w
+    setGeometry $w
 
     set oldGrab [grab current $w]
     if {$oldGrab != ""} {
@@ -1001,7 +1031,6 @@ proc createCloseDialog {w title} {
 # Executes the dialog.
 #
 proc executeCloseDialog w {
-
     global opp
 
     $w.buttons.closebutton configure -command "set opp($w) 1"
@@ -1014,7 +1043,7 @@ proc executeCloseDialog w {
     # next line mysteriously solves "lost focus" problem of popup dialogs...
     after 1 "wm deiconify $w"
 
-    center $w
+    setGeometry $w
 
     set oldGrab [grab current $w]
     if {$oldGrab != ""} {
