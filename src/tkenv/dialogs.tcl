@@ -1020,8 +1020,8 @@ proc filteredObjectList:window {{ptr ""}} {
 
     ttk_button $fp.refresh -text "Refresh" -width 10 -command "filteredObjectList:refresh $w"
 
-    grid $fp.classlabel $fp.namelabel x           -sticky nw   -padx 5
-    grid $fp.classentry $fp.nameentry $fp.refresh -sticky news -padx 5 -pady 3
+    grid $fp.classlabel $fp.namelabel x -sticky ws -padx 5
+    grid $fp.classentry $fp.nameentry $fp.refresh -sticky ew -padx 5 -pady 3
     grid columnconfig $fp 0 -weight 1
     grid columnconfig $fp 1 -weight 3
 

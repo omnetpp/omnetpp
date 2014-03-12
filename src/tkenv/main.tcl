@@ -526,21 +526,14 @@ proc bindRunCommands {w} {
 
 proc bindOtherCommands {w} {
     bind $w <Control-s> [list inspectFilteredObjectList $w]
-    bind $w <Control-S> [list inspectFilteredObjectList $w]
 }
 
 proc bindCommandsToTextWidget {txt} {
     global config B2 B3
 
-    # bindings for find
-    #   'break' is needed below because
-    #      ^F is originally bound to 1 char right
-    #      ^N is originally bound to 1 line down
+    # bindings for find; 'break' is needed below because Ctrl+F is already bound
     bind $txt <Key> {%W tag remove SELECT 0.0 end}
     bind $txt <Control-f> {findDialog %W; break}
-    bind $txt <Control-F> {findDialog %W; break}
-    bind $txt <Control-n> {findNext %W; break}
-    bind $txt <Control-N> {findNext %W; break}
     bind $txt <F3> {findNext %W}
 
     # bind Ctrl+A "Select all" ('break' is needed below because ^A=Home)

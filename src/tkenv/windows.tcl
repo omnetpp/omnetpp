@@ -121,7 +121,7 @@ proc textwidget:contextMenu {txt w X Y} {
     .popup add command -command editCopy -label {Copy} -accel {Ctrl+C} -underline 0
     .popup add separator
     .popup add command -command "editFind $txt" -label {Find...} -accel {Ctrl+F} -underline 0
-    .popup add command -command "editFindNext $txt" -label {Find next} -accel {Ctrl+N,F3} -underline 5
+    .popup add command -command "editFindNext $txt" -label {Find next} -accel {F3} -underline 5
     .popup add separator
     if {$w!=""} {
         .popup add command -command "LogInspector:openFilterDialog $w" -label {Filter window contents...} -accel {Ctrl+H} -underline 0
