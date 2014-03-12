@@ -658,7 +658,7 @@ proc simulationOptions {} {
 
 proc saveTkenvConfig {} {
     set filename "tkenv.cfg"
-    set filename [tk_getSaveFile -title {Save Tkenv configuration} \
+    set filename [tk_getSaveFile -title "Save Tkenv configuration" \
                   -defaultextension "cfg" -initialfile $filename \
                   -filetypes {{{Configuration files} {*.cfg}} {{All files} {*}}}]
 
@@ -669,7 +669,7 @@ proc saveTkenvConfig {} {
 
 proc loadTkenvConfig {} {
     set filename "tkenv.cfg"
-    set filename [tk_getOpenFile -title {Load Tkenv configuration} \
+    set filename [tk_getOpenFile -title "Load Tkenv configuration" \
                   -defaultextension "cfg" -initialfile $filename \
                   -filetypes {{{Configuration files} {*.cfg}} {{All files} {*}}}]
 
@@ -693,7 +693,7 @@ proc editTextFile {} {
          {{Inspector lists}        {*.lst}}
          {{All files}              {*}}
     }
-    set filename [tk_getOpenFile -title {View/Edit text file} \
+    set filename [tk_getOpenFile -title "View/Edit text file" \
                   -defaultextension "out" -initialfile "" \
                   -filetypes $types]
 

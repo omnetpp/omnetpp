@@ -903,8 +903,8 @@ proc createOkCancelDialog {w title} {
 
     frame $w.f
     frame $w.buttons
-    ttk_button $w.buttons.okbutton  -text {OK} -width 10 -default active
-    ttk_button $w.buttons.cancelbutton  -text {Cancel} -width 10
+    ttk_button $w.buttons.okbutton  -text "OK" -width 10 -default active
+    ttk_button $w.buttons.cancelbutton  -text "Cancel" -width 10
 
     set padx 5
     set pady 5
@@ -1001,7 +1001,7 @@ proc createCloseDialog {w title} {
 
     frame $w.f
     frame $w.buttons
-    ttk_button $w.buttons.closebutton  -text {Close} -width 10 -default active
+    ttk_button $w.buttons.closebutton  -text "Close" -width 10 -default active
 
     set padx 5
     set pady 5
@@ -1109,7 +1109,7 @@ proc showTextOnceDialog {key} {
     text $w.f.text -relief solid -bd 1 -wrap word
     $w.f.text insert 1.0 $text
     $w.f.text config -state disabled
-    checkbutton $w.f.x -text {do not show this hint again} -variable tmp_once
+    checkbutton $w.f.x -text "do not show this hint again" -variable tmp_once
     pack $w.f.x -expand 0 -fill x -side bottom
     pack $w.f.text -expand 1 -fill both -side top -padx 5 -pady 5
 

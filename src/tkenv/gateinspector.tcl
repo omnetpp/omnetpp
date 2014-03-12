@@ -22,7 +22,7 @@ proc createGateInspector {w geom} {
     # create toolbar
     packIconButton $w.toolbar.sep1   -separator
     packIconButton $w.toolbar.redraw -image $icons(redraw) -command "opp_inspectorcommand $w redraw"
-    set help_tips($w.toolbar.redraw) {Redraw}
+    set help_tips($w.toolbar.redraw) "Redraw"
 
     createGateViewer $w
 }
@@ -147,7 +147,7 @@ proc GateInspector:drawConnection {c srcgateptr destgateptr chanptr chanstr disp
        $c create text [expr $x+3] [expr ($y0+$y1)/2] -text $chanstr -anchor w -font $fonts(canvas)
 
    } errmsg] {
-       tk_messageBox -type ok -title Error -icon error -parent [winfo toplevel [focus]] \
+       tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focus]] \
                      -message "Error in display string of a connection: $errmsg"
    }
 }

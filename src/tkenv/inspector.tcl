@@ -53,10 +53,10 @@ proc createInspectorToplevel {w geom} {
     packIconButton $w.toolbar.copyobj -image $icons(copy) -command "inspector:namePopup $w $w.toolbar.copyobj"
     packIconButton $w.toolbar.objs -image $icons(findobj) -command "inspectFilteredObjectList $w"
 
-    set help_tips($w.toolbar.parent) {Inspect parent}
-    set help_tips($w.toolbar.inspectas) {Inspect}
-    set help_tips($w.toolbar.copyobj) {Copy name, type or pointer}
-    set help_tips($w.toolbar.objs) {Find objects (Ctrl+S)}
+    set help_tips($w.toolbar.parent) "Inspect parent"
+    set help_tips($w.toolbar.inspectas) "Inspect"
+    set help_tips($w.toolbar.copyobj) "Copy name, type or pointer"
+    set help_tips($w.toolbar.objs) "Find objects (Ctrl+S)"
 
     # Keyboard bindings
     bind $w <Escape>     "catch {.popup unpost}"
@@ -99,7 +99,7 @@ proc inspector:refresh {w} {
     # Info bar
     if [winfo exist $w.infobar] {  ;#FIXME add proper condition
         if [opp_isnull $ptr] {
-            $w.infobar.name config -text {n/a}
+            $w.infobar.name config -text "n/a"
         } else {
             set typename [opp_getobjectshorttypename $ptr]
             set fullpath [opp_getobjectfullpath $ptr]
@@ -118,9 +118,9 @@ proc inspector:refresh {w} {
             $w.toolbar.parent config -state $state
 
             if {[opp_inspector_supportsobject $w $parentptr] && $config(reuse-inspectors)} {
-                set help_tips($w.toolbar.parent) {Go up}
+                set help_tips($w.toolbar.parent) "Go up"
             } else {
-                set help_tips($w.toolbar.parent) {Inspect parent}
+                set help_tips($w.toolbar.parent) "Inspect parent"
             }
         }
     }

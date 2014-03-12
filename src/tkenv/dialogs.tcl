@@ -317,17 +317,17 @@ proc optionsDialog {parent {defaultpage "g"}} {
 
     # "General" page
     labelframe $nb.g.f0 -text "User Interface" -relief groove -borderwidth 2 -font $fonts(normal)
-    checkbutton $nb.g.f0.keepontop -text {Keep inspector windows on top} -variable opp(keepontop)
-    checkbutton $nb.g.f0.reuseinsp -text {Reuse inspectors if possible} -variable opp(reuseinsp)
-    checkbutton $nb.g.f0.confirmexit -text {Confirm exit when simulation is in progress} -variable opp(confirmexit)
+    checkbutton $nb.g.f0.keepontop -text "Keep inspector windows on top" -variable opp(keepontop)
+    checkbutton $nb.g.f0.reuseinsp -text "Reuse inspectors if possible" -variable opp(reuseinsp)
+    checkbutton $nb.g.f0.confirmexit -text "Confirm exit when simulation is in progress" -variable opp(confirmexit)
     pack $nb.g.f0.keepontop -anchor w
     pack $nb.g.f0.reuseinsp -anchor w
     pack $nb.g.f0.confirmexit -anchor w
 
     labelframe $nb.g.f1 -text "Simulation Execution" -relief groove -borderwidth 2 -font $fonts(normal)
-    label-entry $nb.g.f1.updfreq_fast    {Display update frequency for Fast Run (ms):}
-    label-entry $nb.g.f1.updfreq_express {Display update frequency for Express Run (ms):}
-    label-entry $nb.g.f1.stepdelay       {Per-event delay for slow execution (ms):}
+    label-entry $nb.g.f1.updfreq_fast    "Display update frequency for Fast Run (ms):"
+    label-entry $nb.g.f1.updfreq_express "Display update frequency for Express Run (ms):"
+    label-entry $nb.g.f1.stepdelay       "Per-event delay for slow execution (ms):"
     $nb.g.f1.updfreq_fast.l config -width 0
     $nb.g.f1.updfreq_express.l config -width 0
     $nb.g.f1.stepdelay.l config -width 0
@@ -336,11 +336,11 @@ proc optionsDialog {parent {defaultpage "g"}} {
     pack $nb.g.f1.stepdelay -anchor w -fill x
 
     labelframe $nb.g.f2 -text "Logs" -relief groove -borderwidth 2 -font $fonts(normal)
-    checkbutton $nb.g.f2.initbanners -text {Print initialization banners} -variable opp(initbanners)
-    checkbutton $nb.g.f2.eventbanners -text {Print event banners} -variable opp(eventbanners)
-    checkbutton $nb.g.f2.shortbanners -text {Short event banners} -variable opp(shortbanners)
-    label-entry $nb.g.f2.numlines {Scrollback buffer (lines):}
-    commentlabel $nb.g.f2.c1 {Applies to main window and module log windows. Leave blank for unlimited. Minimum value is 500 lines.}
+    checkbutton $nb.g.f2.initbanners -text "Print initialization banners" -variable opp(initbanners)
+    checkbutton $nb.g.f2.eventbanners -text "Print event banners" -variable opp(eventbanners)
+    checkbutton $nb.g.f2.shortbanners -text "Short event banners" -variable opp(shortbanners)
+    label-entry $nb.g.f2.numlines "Scrollback buffer (lines):"
+    commentlabel $nb.g.f2.c1 "Applies to main window and module log windows. Leave blank for unlimited. Minimum value is 500 lines."
 
     $nb.g.f2.numlines.l config -width 0
     pack $nb.g.f2.initbanners -anchor w
@@ -360,12 +360,12 @@ proc optionsDialog {parent {defaultpage "g"}} {
     radiobutton  $nb.l.f1.layouter.fast -text "Fast" -variable opp(layouterchoice) -value "fast"
     radiobutton  $nb.l.f1.layouter.advanced -text "Advanced" -variable opp(layouterchoice) -value "advanced"
     radiobutton  $nb.l.f1.layouter.auto -text "Adaptive (Fast for large networks, Advanced for smaller ones)" -variable opp(layouterchoice) -value "auto"
-    checkbutton $nb.l.f1.layouting -text {Show layouting process} -variable opp(layouting)
+    checkbutton $nb.l.f1.layouting -text "Show layouting process" -variable opp(layouting)
     labelframe $nb.l.f2 -text "Display" -relief groove -borderwidth 2 -font $fonts(normal)
-    checkbutton $nb.l.f2.arrangevectorconnections -text {Arrange connections on vector gates parallel to each other} -variable opp(arrangevectorconnections)
-    checkbutton $nb.l.f2.allowresize -text {Resize window to fit network with current zoom level first} -variable opp(allowresize)
-    checkbutton $nb.l.f2.allowzoom -text {Zoom out if necessary to fit network into window} -variable opp(allowzoom)
-    label-entry $nb.l.f2.iconminsize  {Minimum icon size when zoomed out (pixels):}
+    checkbutton $nb.l.f2.arrangevectorconnections -text "Arrange connections on vector gates parallel to each other" -variable opp(arrangevectorconnections)
+    checkbutton $nb.l.f2.allowresize -text "Resize window to fit network with current zoom level first" -variable opp(allowresize)
+    checkbutton $nb.l.f2.allowzoom -text "Zoom out if necessary to fit network into window" -variable opp(allowzoom)
+    label-entry $nb.l.f2.iconminsize  "Minimum icon size when zoomed out (pixels):"
     $nb.l.f2.iconminsize.l config -width 0
 
     pack $nb.l.f1.layouterlabel -anchor w
@@ -383,9 +383,9 @@ proc optionsDialog {parent {defaultpage "g"}} {
 
     # "Filtering" page
     labelframe $nb.t.f1 -text "Timeline" -relief groove -borderwidth 2 -font $fonts(normal)
-    checkbutton $nb.t.f1.tlwantself -text {Show self-messages} -variable opp(timeline-wantselfmsgs)
-    checkbutton $nb.t.f1.tlwantnonself -text {Show non-self messages} -variable opp(timeline-wantnonselfmsgs)
-    checkbutton $nb.t.f1.tlwantsilent -text {Show silent (non-animated) messages, see below} -variable opp(timeline-wantsilentmsgs)
+    checkbutton $nb.t.f1.tlwantself -text "Show self-messages" -variable opp(timeline-wantselfmsgs)
+    checkbutton $nb.t.f1.tlwantnonself -text "Show non-self messages" -variable opp(timeline-wantnonselfmsgs)
+    checkbutton $nb.t.f1.tlwantsilent -text "Show silent (non-animated) messages, see below" -variable opp(timeline-wantsilentmsgs)
 
     labelframe $nb.t.f2 -text "Animation" -relief groove -borderwidth 2 -font $fonts(normal)
     label $nb.t.f2.filterslabel -text "Messages to exclude from animation:"
@@ -404,23 +404,23 @@ proc optionsDialog {parent {defaultpage "g"}} {
 
     # "Animation" page
     labelframe $nb.a.f1 -text "General" -relief groove -borderwidth 2 -font $fonts(normal)
-    checkbutton $nb.a.f1.anim -text {Animate messages} -variable opp(anim)
+    checkbutton $nb.a.f1.anim -text "Animate messages" -variable opp(anim)
     label-scale $nb.a.f1.speed {Animation speed:}
     $nb.a.f1.speed.e config -length 200 -from 0 -to 3 -resolution 0.01 -variable opp(speed)
-    checkbutton $nb.a.f1.concanim -text {Broadcast animation} -variable opp(concanim)
+    checkbutton $nb.a.f1.concanim -text "Broadcast animation" -variable opp(concanim)
     commentlabel $nb.a.f1.ca "Animates send/sendDirect calls concurrently, after processing\neach event (i.e. out of sequence)"
-    checkbutton $nb.a.f1.nextev -text {Show next event markers} -variable opp(nextev)
-    checkbutton $nb.a.f1.sdarrows -text {Show arrows for sendDirect animation} -variable opp(sdarrows)
-    checkbutton $nb.a.f1.bubbles -text {Show bubbles (bubble() calls)} -variable opp(bubbles)
-    checkbutton $nb.a.f1.animmeth -text {Animate method calls} -variable opp(animmeth)
+    checkbutton $nb.a.f1.nextev -text "Show next event markers" -variable opp(nextev)
+    checkbutton $nb.a.f1.sdarrows -text "Show arrows for sendDirect animation" -variable opp(sdarrows)
+    checkbutton $nb.a.f1.bubbles -text "Show bubbles (bubble() calls)" -variable opp(bubbles)
+    checkbutton $nb.a.f1.animmeth -text "Animate method calls" -variable opp(animmeth)
     label-scale $nb.a.f1.methdelay {Method call delay (ms):}
     $nb.a.f1.methdelay.e config -length 200 -from 0 -to 3000 -resolution 1 -variable opp(methdelay)
     labelframe $nb.a.f2 -text "Messages" -relief groove -borderwidth 2 -font $fonts(normal)
-    checkbutton $nb.a.f2.msgnam -text {Display message names during animation} -variable opp(msgnam)
-    checkbutton $nb.a.f2.msgclass -text {Display message class during animation} -variable opp(msgclass)
-    checkbutton $nb.a.f2.msgcol -text {Color messages by message kind} -variable opp(msgcol)
+    checkbutton $nb.a.f2.msgnam -text "Display message names during animation" -variable opp(msgnam)
+    checkbutton $nb.a.f2.msgclass -text "Display message class during animation" -variable opp(msgclass)
+    checkbutton $nb.a.f2.msgcol -text "Color messages by message kind" -variable opp(msgcol)
     commentlabel $nb.a.f2.c {Color code (message kind modulo 8): 0=red 1=green 2=blue 3=white 4=yellow 5=cyan 6=magenta 7=black}
-    checkbutton $nb.a.f2.penguin -text {Penguin mode} -variable opp(penguin)
+    checkbutton $nb.a.f2.penguin -text "Penguin mode" -variable opp(penguin)
 
     pack $nb.a.f1.anim -anchor w
     pack $nb.a.f1.speed -anchor w -expand 0 -fill x
@@ -559,7 +559,7 @@ proc optionsDialog {parent {defaultpage "g"}} {
 
 proc setIfPatternIsValid {var pattern} {
     if [catch {opp_checkpattern $pattern} errmsg] {
-        tk_messageBox -type ok -icon warning -title Tkenv -message "Filter pattern \"$pattern\" has invalid syntax -- setting unchanged."
+        tk_messageBox -type ok -icon warning -title "Tkenv" -message "Filter pattern \"$pattern\" has invalid syntax -- setting unchanged."
     } else {
         uplevel [list set $var $pattern]
     }
@@ -586,11 +586,11 @@ proc runUntilDialog {time_var event_var msg_var mode_var} {
     }
 
     # create and pack controls
-    label-entry $w.f.time  {Simulation time to stop at:}
-    label-entry $w.f.event {Event number to stop at:}
-    label-combo $w.f.msg   {Message to stop at:} $msglabels
-    label-check $w.f.stop  {} {stop if message gets cancelled} tmp(stop)
-    label-combo $w.f.mode  {Running mode:}  {{Normal} {Fast (rare updates)} {Express (tracing off)}}
+    label-entry $w.f.time  "Simulation time to stop at:"
+    label-entry $w.f.event "Event number to stop at:"
+    label-combo $w.f.msg   "Message to stop at:" $msglabels
+    label-check $w.f.stop  "" "stop if message gets cancelled" tmp(stop)
+    label-combo $w.f.mode  "Running mode:"  {"Normal" "Fast (rare updates)" "Express (tracing off)"}
 
     foreach i {time event msg stop mode} {
        $w.f.$i.l configure -width 24
@@ -664,10 +664,10 @@ proc findDialog {w} {
     pack $dlg.f.opt -expand 0 -fill none -anchor e
 
     # add entry fields
-    checkbutton $dlg.f.opt.regexp -text {Regular expression} -underline 0 -variable tmp(regexp)
-    checkbutton $dlg.f.opt.case -text {Case sensitive} -underline 0 -variable tmp(case-sensitive)
-    checkbutton $dlg.f.opt.words -text {Whole words only} -underline 0 -variable tmp(whole-words)
-    checkbutton $dlg.f.opt.backwards -text {Search backwards} -underline 7 -variable tmp(backwards)
+    checkbutton $dlg.f.opt.regexp -text "Regular expression" -underline 0 -variable tmp(regexp)
+    checkbutton $dlg.f.opt.case -text "Case sensitive" -underline 0 -variable tmp(case-sensitive)
+    checkbutton $dlg.f.opt.words -text "Whole words only" -underline 0 -variable tmp(whole-words)
+    checkbutton $dlg.f.opt.backwards -text "Search backwards" -underline 7 -variable tmp(backwards)
 
     grid $dlg.f.opt.regexp $dlg.f.opt.case      -sticky nw
     grid $dlg.f.opt.words  $dlg.f.opt.backwards -sticky nw
@@ -976,12 +976,12 @@ proc filteredObjectList:window {{ptr ""}} {
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
     }
 
-    set help_tips($w.toolbar.step)    {Execute one event (F4)}
-    set help_tips($w.toolbar.run)     {Run with full animation (F5)}
-    set help_tips($w.toolbar.fastrun) {Run faster: no animation and rare inspector updates (F6)}
-    set help_tips($w.toolbar.exprrun) {Run at full speed: no text output, animation or inspector updates (F7)}
-    set help_tips($w.toolbar.until)   {Run until time or event number}
-    set help_tips($w.toolbar.stop)    {Stop running simulation (F8)}
+    set help_tips($w.toolbar.step)    "Execute one event (F4)"
+    set help_tips($w.toolbar.run)     "Run with full animation (F5)"
+    set help_tips($w.toolbar.fastrun) "Run faster: no animation and rare inspector updates (F6)"
+    set help_tips($w.toolbar.exprrun) "Run at full speed: no text output, animation or inspector updates (F7)"
+    set help_tips($w.toolbar.until)   "Run until time or event number"
+    set help_tips($w.toolbar.stop)    "Stop running simulation (F8)"
 
 
     # vars
@@ -1144,14 +1144,14 @@ proc filteredObjectList:refresh {w} {
     set class $tmp(class)
     if {$class==""} {set class "*"}
     if [catch {opp_checkpattern $class} errmsg] {
-        tk_messageBox -parent $w -type ok -icon warning -title Tkenv -message "Class filter pattern \"$class\" has invalid syntax -- using \"*\" instead."
+        tk_messageBox -parent $w -type ok -icon warning -title "Tkenv" -message "Class filter pattern \"$class\" has invalid syntax -- using \"*\" instead."
         set class "*"
     }
 
     set name $tmp(name)
     if {$name==""} {set name "*"}
     if [catch {opp_checkpattern $name} errmsg] {
-        tk_messageBox -parent $w -type ok -icon warning -title Tkenv -message "Name filter pattern \"$name\" has invalid syntax -- using \"*\" instead."
+        tk_messageBox -parent $w -type ok -icon warning -title "Tkenv" -message "Name filter pattern \"$name\" has invalid syntax -- using \"*\" instead."
         set name "*"
     }
 
@@ -1242,7 +1242,7 @@ proc filteredObjectList:inspect {lb} {
         } else {
             set advice "please click Refresh first"
         }
-        tk_messageBox -parent $w -icon info -type ok -title {Filtered object list} \
+        tk_messageBox -parent $w -icon info -type ok -title "Filtered object list" \
                       -message "Dialog contents might be out of date -- $advice."
         return
     }

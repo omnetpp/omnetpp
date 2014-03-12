@@ -41,13 +41,13 @@ proc ModuleInspector:addRunButtons {w} {
 
     bind $w <Control-F4> "runSimulationLocal $w fast"
 
-    set help_tips($w.toolbar.minfo)   {Model information}
-    set help_tips($w.toolbar.type)    {Inspect component type}
-#    set help_tips($w.toolbar.objs)    {Find and inspect messages, queues, watched variables, statistics, etc (Ctrl+S)}
-    set help_tips($w.toolbar.mrun)    {Run until next event in this module}
-    set help_tips($w.toolbar.mfast)   {Fast run until next event in this module (Ctrl+F4)}
-    set help_tips($w.toolbar.vrun)    {Run with full animation (F5)}
-    set help_tips($w.toolbar.stop)    {Stop the simulation (F8)}
+    set help_tips($w.toolbar.minfo)   "Model information"
+    set help_tips($w.toolbar.type)    "Inspect component type"
+#    set help_tips($w.toolbar.objs)    "Find and inspect messages, queues, watched variables, statistics, etc (Ctrl+S)"
+    set help_tips($w.toolbar.mrun)    "Run until next event in this module"
+    set help_tips($w.toolbar.mfast)   "Fast run until next event in this module (Ctrl+F4)"
+    set help_tips($w.toolbar.vrun)    "Run with full animation (F5)"
+    set help_tips($w.toolbar.stop)    "Stop the simulation (F8)"
 }
 
 #

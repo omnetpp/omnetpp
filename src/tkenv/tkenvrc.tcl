@@ -78,7 +78,7 @@ proc saveTkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
         close $fout
 
     } err] {
-       tk_messageBox -icon error -type ok -message "Error: $err" -title {Error}
+       tk_messageBox -icon error -type ok -message "Error: $err" -title "Error"
        return
     }
 }
@@ -148,7 +148,7 @@ proc loadTkenvrc {fname} {
                 inspectorList:tkenvrcProcessLine [concat "inspector" $line]
             }
         }] {
-            tk_messageBox -icon warning -type ok -title {Error reading .tkenvrc} -message "$fname line $lineno is invalid, ignoring"
+            tk_messageBox -icon warning -type ok -title "Error reading .tkenvrc" -message "$fname line $lineno is invalid, ignoring"
         }
         incr lineno
     }

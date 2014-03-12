@@ -35,7 +35,7 @@ proc saveFile {win {filename ""}} {
 
     if {$filename == ""} {
         set filename $config(log-save-filename)
-        set filename [tk_getSaveFile -title {Save Log Window Contents} -parent $win \
+        set filename [tk_getSaveFile -title "Save Log Window Contents" -parent $win \
                       -defaultextension "out" -initialfile $filename \
                       -filetypes {{{Log files} {*.out}} {{All files} {*}}}]
         if {$filename == ""} return
@@ -82,9 +82,9 @@ proc createFileViewer {filename} {
     packIconButton $w.toolbar.save   -image $icons(save) -command "saveFile $w $filename"
     packIconButton $w.toolbar.sep21  -separator
 
-    set help_tips($w.toolbar.copy)   {Copy selected text to clipboard (Ctrl+C)}
-    set help_tips($w.toolbar.find)   {Find string in window (Ctrl+F}
-    set help_tips($w.toolbar.save)   {Save window contents to file}
+    set help_tips($w.toolbar.copy)   "Copy selected text to clipboard (Ctrl+C)"
+    set help_tips($w.toolbar.find)   "Find string in window (Ctrl+F"
+    set help_tips($w.toolbar.save)   "Save window contents to file"
 
     pack $w.toolbar  -anchor center -expand 0 -fill x -side top
 
@@ -118,18 +118,18 @@ proc textwidget:contextMenu {txt w X Y} {
     catch {destroy .popup}
     menu .popup -tearoff 0
 
-    .popup add command -command editCopy -label {Copy} -accel {Ctrl+C} -underline 0
+    .popup add command -command editCopy -label "Copy" -accel "Ctrl+C" -underline 0
     .popup add separator
-    .popup add command -command "editFind $txt" -label {Find...} -accel {Ctrl+F} -underline 0
-    .popup add command -command "editFindNext $txt" -label {Find next} -accel {F3} -underline 5
+    .popup add command -command "editFind $txt" -label "Find..." -accel "Ctrl+F" -underline 0
+    .popup add command -command "editFindNext $txt" -label "Find next" -accel "F3" -underline 5
     .popup add separator
     if {$w!=""} {
-        .popup add command -command "LogInspector:openFilterDialog $w" -label {Filter window contents...} -accel {Ctrl+H} -underline 0
+        .popup add command -command "LogInspector:openFilterDialog $w" -label "Filter window contents..." -accel "Ctrl+H" -underline 0
         .popup add separator
     }
-    .popup add checkbutton -command "textwidget:toggleWrap $txt" -variable tmp(wrap) -onvalue "char" -offvalue "none" -label {Wrap lines} -underline 0
+    .popup add checkbutton -command "textwidget:toggleWrap $txt" -variable tmp(wrap) -onvalue "char" -offvalue "none" -label "Wrap lines" -underline 0
     .popup add separator
-    .popup add command -command "$txt tag add sel 1.0 end" -label {Select all} -accel {Ctrl+A} -underline 0
+    .popup add command -command "$txt tag add sel 1.0 end" -label "Select all" -accel "Ctrl+A" -underline 0
 
     tk_popup .popup $X $Y
 }

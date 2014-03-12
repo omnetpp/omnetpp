@@ -48,7 +48,7 @@ proc inspectorList:openInspectors {} {
         if [info exists pil_name($key)] {
             debug "trying to open inspector $key"
             if [catch {set opened [opp_inspectbyname $pil_name($key) $pil_class($key) $pil_type($key) $pil_geom($key)]}] {
-                tk_messageBox -title Error -message "Error opening inspector for ($pil_class($key))$pil_name($key), ignoring."
+                tk_messageBox -title "Error" -message "Error opening inspector for ($pil_class($key))$pil_name($key), ignoring."
                 unset pil_name($key)
                 unset pil_class($key)
                 unset pil_type($key)

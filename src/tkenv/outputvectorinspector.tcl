@@ -33,7 +33,7 @@ proc createOutputVectorViewer {w} {
     pack $w.main.canvas -anchor center -expand 1 -fill both -side top
 
     label $w.bot.info -width 50 -relief groove
-    ttk_button $w.bot.view -text {Options...} -command "OutputVectorInspector:options $w"
+    ttk_button $w.bot.view -text "Options..." -command "OutputVectorInspector:options $w"
     pack $w.bot.view -anchor center -expand 0 -fill none -side right
     pack $w.bot.info -anchor center -expand 1 -fill x -side left
 
@@ -63,19 +63,19 @@ proc OutputVectorInspector:options {win} {
     wm title $w {Plotting Options}
     wm protocol $w WM_DELETE_WINDOW { }
 
-    labelframe $w.main -text {Options}
-    checkbutton $w.main.auto -text {Autoscale time and value axes} -variable tmp(autoscale)
-    label $w.main.lbl -text {Manual axis settings:}
-    label-entry $w.main.time {Time scale (sec/px):}
-    label-entry $w.main.ymin {Ymin:}
-    label-entry $w.main.ymax {Ymax:}
-    label-combo $w.main.combo {Style:} {dots pins bars sample-hold lines}
-    label $w.main.pad -text { }
+    labelframe $w.main -text "Options"
+    checkbutton $w.main.auto -text "Autoscale time and value axes" -variable tmp(autoscale)
+    label $w.main.lbl -text "Manual axis settings:"
+    label-entry $w.main.time "Time scale (sec/px):"
+    label-entry $w.main.ymin "Ymin:"
+    label-entry $w.main.ymax "Ymax:"
+    label-combo $w.main.combo "Style:" {dots pins bars sample-hold lines}
+    label $w.main.pad -text " "
 
     frame $w.buttons
-    ttk_button $w.buttons.okbutton -width 10 -text {OK}
-    ttk_button $w.buttons.applybutton -width 10 -text {Apply}
-    ttk_button $w.buttons.cancelbutton -width 10 -text {Cancel}
+    ttk_button $w.buttons.okbutton -width 10 -text "OK"
+    ttk_button $w.buttons.applybutton -width 10 -text "Apply"
+    ttk_button $w.buttons.cancelbutton -width 10 -text "Cancel"
 
     pack $w.main -anchor center -expand 1 -fill both -side top -padx 5 -pady 5
     pack $w.main.auto -anchor w -expand 0 -fill none -padx 3m -side top

@@ -25,10 +25,10 @@ proc textWindowAddIcons {w {wintype ""}} {
     }
     packIconButton $w.toolbar.sep21  -separator
 
-    set help_tips($w.toolbar.copy)   {Copy selected text to clipboard (Ctrl+C)}
-    set help_tips($w.toolbar.find)   {Find string in window (Ctrl+F)}
-    set help_tips($w.toolbar.save)   {Save window contents to file}
-    set help_tips($w.toolbar.filter) {Filter window contents (Ctrl+H)}
+    set help_tips($w.toolbar.copy)   "Copy selected text to clipboard (Ctrl+C)"
+    set help_tips($w.toolbar.find)   "Find string in window (Ctrl+F)"
+    set help_tips($w.toolbar.save)   "Save window contents to file"
+    set help_tips($w.toolbar.filter) "Filter window contents (Ctrl+H)"
 }
 
 #
@@ -60,7 +60,7 @@ proc extendContextMenu {rules} {
        lappend contextmenurules(keys) $i
        if {[llength $line]!=4} {
            set rulename "\"[lindex $line 0]\""
-           tk_messageBox -type ok -icon info -title Info -message "Context menu inspector rule $rulename should contain 4 items, ignoring."
+           tk_messageBox -type ok -icon info -title "Info" -message "Context menu inspector rule $rulename should contain 4 items, ignoring."
        } else {
            set contextmenurules($i,label)   [lindex $line 0]
            set contextmenurules($i,context) [lindex $line 1]
@@ -190,7 +190,7 @@ proc inspectContextMenuRules {ptr key} {
     set name [opp_getobjectfullpath $ptr]
     set objlist [opp_getsubobjectsfilt $ptr $allcategories $contextmenurules($key,class) "$name.$contextmenurules($key,name)" 100 ""]
     if {[llength $objlist] > 5} {
-        tk_messageBox -type ok -icon info -title Info -message "This matches [llength $objlist]+ objects, opening inspectors only for the first five."
+        tk_messageBox -type ok -icon info -title "Info" -message "This matches [llength $objlist]+ objects, opening inspectors only for the first five."
         set objlist [lrange $objlist 0 4]
     }
     foreach objptr $objlist {

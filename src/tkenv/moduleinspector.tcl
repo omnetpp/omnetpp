@@ -39,13 +39,13 @@ proc createModuleInspector {w geom} {
     packIconButton $w.toolbar.showlabels -image $icons(modnames) -command "ModuleInspector:toggleLabels $w"
     packIconButton $w.toolbar.showarrowheads -image $icons(arrowhead) -command "ModuleInspector:toggleArrowheads $w"
 
-    set help_tips($w.toolbar.parent)  {Inspect parent module}
-    set help_tips($w.toolbar.redraw)  {Re-layout (Ctrl+R)}
-    set help_tips($w.toolbar.animspeed) {Animation speed -- see Options dialog}
-    set help_tips($w.toolbar.zoomin)  {Zoom in (Ctrl+M)}
-    set help_tips($w.toolbar.zoomout) {Zoom out (Ctrl+N}
-    set help_tips($w.toolbar.showlabels) {Show module names (Ctrl+D)}
-    set help_tips($w.toolbar.showarrowheads) {Show arrowheads (Ctrl+A)}
+    set help_tips($w.toolbar.parent)  "Inspect parent module"
+    set help_tips($w.toolbar.redraw)  "Re-layout (Ctrl+R)"
+    set help_tips($w.toolbar.animspeed) "Animation speed -- see Options dialog"
+    set help_tips($w.toolbar.zoomin)  "Zoom in (Ctrl+M)"
+    set help_tips($w.toolbar.zoomout) "Zoom out (Ctrl+N"
+    set help_tips($w.toolbar.showlabels) "Show module names (Ctrl+D)"
+    set help_tips($w.toolbar.showarrowheads) "Show arrowheads (Ctrl+A)"
 
     # create canvas
     createGraphicalModuleViewer $w
@@ -80,16 +80,16 @@ proc createEmbeddedModuleInspector {w} {
     packIconButton $tb.showlabels -image $icons(modnames) -command "ModuleInspector:toggleLabels $w"
     packIconButton $tb.showarrowheads -image $icons(arrowhead) -command "ModuleInspector:toggleArrowheads $w"
 
-    set help_tips($tb.parent)  {Inspect parent}
-    set help_tips($tb.mrun)    {Run until next event in this module}
-    set help_tips($tb.mfast)   {Fast run until next event in this module (Ctrl+F4)}
-    set help_tips($tb.stop)    {Stop the simulation (F8)}
-    set help_tips($tb.redraw)  {Re-layout (Ctrl+R)}
-    set help_tips($tb.animspeed) {Animation speed -- see Options dialog}
-    set help_tips($tb.zoomin)  {Zoom in (Ctrl+M)}
-    set help_tips($tb.zoomout) {Zoom out (Ctrl+N}
-    set help_tips($tb.showlabels) {Show module names (Ctrl+D)}
-    set help_tips($tb.showarrowheads) {Show arrowheads (Ctrl+A)}
+    set help_tips($tb.parent)  "Inspect parent"
+    set help_tips($tb.mrun)    "Run until next event in this module"
+    set help_tips($tb.mfast)   "Fast run until next event in this module (Ctrl+F4)"
+    set help_tips($tb.stop)    "Stop the simulation (F8)"
+    set help_tips($tb.redraw)  "Re-layout (Ctrl+R)"
+    set help_tips($tb.animspeed) "Animation speed -- see Options dialog"
+    set help_tips($tb.zoomin)  "Zoom in (Ctrl+M)"
+    set help_tips($tb.zoomout) "Zoom out (Ctrl+N"
+    set help_tips($tb.showlabels) "Show module names (Ctrl+D)"
+    set help_tips($tb.showarrowheads) "Show arrowheads (Ctrl+A)"
 
 }
 
@@ -158,7 +158,7 @@ proc ModuleInspector:onSetObject {w} {
     if [catch {
        opp_inspectorcommand $w relayout
     } errmsg] {
-       tk_messageBox -type ok -title Error -icon error -parent [winfo toplevel [focus]] \
+       tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focus]] \
                      -message "Error displaying network graphics: $errmsg"
     }
 
@@ -611,7 +611,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplace
        }
 
    } errmsg] {
-       tk_messageBox -type ok -title Error -icon error -parent [winfo toplevel [focus]] \
+       tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focus]] \
                      -message "Error in display string of $name: $errmsg"
    }
 }
@@ -800,7 +800,7 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr scaling} {
        $c lower mod
 
    } errmsg] {
-       tk_messageBox -type ok -title Error -icon error -parent [winfo toplevel [focus]] \
+       tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focus]] \
                      -message "Error in display string of $name: $errmsg"
    }
 }
@@ -983,7 +983,7 @@ proc ModuleInspector:drawConnection {c gateptr dispstr srcptr destptr chanptr sr
        }
 
     } errmsg] {
-       tk_messageBox -type ok -title Error -icon error -parent [winfo toplevel [focus]] \
+       tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focus]] \
                      -message "Error in display string of a connection: $errmsg"
     }
 }

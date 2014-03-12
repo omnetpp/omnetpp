@@ -47,7 +47,7 @@ proc layouter:startGrab {stopbutton} {
 
     # tooltip
     set opp(grabSavedTooltip) $help_tips($stopbutton)
-    set help_tips($stopbutton) {Layouting -- click STOP to abort it}
+    set help_tips($stopbutton) "Layouting -- click STOP to abort it"
 
     # prevent user from closing window (postpone close operation)
     set win [winfo toplevel $stopbutton]
