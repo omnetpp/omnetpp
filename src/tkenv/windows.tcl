@@ -57,7 +57,7 @@ proc saveFile {win {filename ""}} {
 # Open file viewer window
 #
 proc createFileViewer {filename} {
-    global icons fonts help_tips
+    global config icons fonts help_tips B3
 
     if {$filename == ""} return
 
@@ -98,6 +98,10 @@ proc createFileViewer {filename} {
     logTextWidget:configureTags $w.main.text
     bindCommandsToTextWidget $w.main.text
 
+    # bind a context menu as well
+    catch {$w.main.text config -wrap $config(editor-wrap)}
+    bind $w.main.text <Button-$B3> [list textwidget:contextMenu %W "" %X %Y]
+
     # Read file
     loadFile $w $filename
 }
@@ -106,7 +110,7 @@ proc createFileViewer {filename} {
 #
 # Create a context menu for a text widget
 #
-proc textwidget:contextMenu {txt wintype X Y} {
+proc textwidget:contextMenu {txt w X Y} {
     global tmp config
 
     set tmp(wrap) [$txt cget -wrap]
@@ -119,11 +123,9 @@ proc textwidget:contextMenu {txt wintype X Y} {
     .popup add command -command "editFind $txt" -label {Find...} -accel {Ctrl+F} -underline 0
     .popup add command -command "editFindNext $txt" -label {Find next} -accel {Ctrl+N,F3} -underline 5
     .popup add separator
-    if {$wintype=="modulewindow"} {
-        set w [winfo parent [winfo parent $txt]]
+    if {$w!=""} {
         .popup add command -command "LogInspector:openFilterDialog $w" -label {Filter window contents...} -accel {Ctrl+H} -underline 0
         .popup add separator
-
     }
     .popup add checkbutton -command "textwidget:toggleWrap $txt" -variable tmp(wrap) -onvalue "char" -offvalue "none" -label {Wrap lines} -underline 0
     .popup add separator

@@ -26,26 +26,37 @@ proc createLogInspector {w geom} {
 
     frame $w.main
     pack $w.main -expand 1 -fill both -side top
-    createLogViewer $w.main
+    createLogViewer $w $w.main
 }
 
 proc createEmbeddedLogInspector {w} {
     frame $w.main
     pack $w.main -expand 1 -fill both -side top
-    createLogViewer $w.main
+    createLogViewer $w $w.main
 }
 
-proc createLogViewer {w} {
-    global fonts
-    text $w.text -yscrollcommand "$w.sb set" -width 80 -height 15 -font $fonts(text)
-    ttk::scrollbar $w.sb -command "$w.text yview"
-    logTextWidget:configureTags $w.text
+proc createLogViewer {w f} {
+    global config fonts B3
 
-    pack $w.sb -anchor center -expand 0 -fill y -side right
-    pack $w.text -anchor center -expand 1 -fill both -side left
+    text $f.text -yscrollcommand "$f.sb set" -width 80 -height 15 -font $fonts(text)
+    ttk::scrollbar $f.sb -command "$f.text yview"
+    logTextWidget:configureTags $f.text
+
+    pack $f.sb -anchor center -expand 0 -fill y -side right
+    pack $f.text -anchor center -expand 1 -fill both -side left
 
     # bindings for find
-    bindCommandsToTextWidget $w.text modulewindow
+    bindCommandsToTextWidget $f.text
+
+    # bind Ctrl+H ('break' is needed because originally ^H is bound to DEL)
+    set ww [winfo toplevel $f]
+    bind $ww <Control-h> "puts $w; LogInspector:openFilterDialog $w; break"
+    bind $ww <Control-H> "puts $w; LogInspector:openFilterDialog $w; break"
+
+    # bind a context menu as well
+    catch {$f.text config -wrap $config(editor-wrap)}
+    bind $f.text <Button-$B3> [list textwidget:contextMenu %W $w %X %Y]
+
 }
 
 proc logTextWidget:configureTags {txt} {

@@ -529,8 +529,7 @@ proc bindOtherCommands {w} {
     bind $w <Control-S> [list inspectFilteredObjectList $w]
 }
 
-# note: modptr may be "systemmodule" or a pointer; "" means no module
-proc bindCommandsToTextWidget {txt {wintype ""}} {
+proc bindCommandsToTextWidget {txt} {
     global config B2 B3
 
     # bindings for find
@@ -544,19 +543,8 @@ proc bindCommandsToTextWidget {txt {wintype ""}} {
     bind $txt <Control-N> {findNext %W; break}
     bind $txt <F3> {findNext %W}
 
-    if {$wintype=="modulewindow"} {
-        # bind Ctrl+H ('break' is needed because originally ^H is bound to DEL)
-        set w [winfo parent [winfo parent $txt]]
-        bind $txt <Control-h> "LogInspector:openFilterDialog $w; break"
-        bind $txt <Control-H> "LogInspector:openFilterDialog $w; break"
-    }
-
     # bind Ctrl+A "Select all" ('break' is needed below because ^A=Home)
     bind $txt <Control-a> {%W tag add sel 1.0 end; break}
-
-    # bind a context menu as well
-    catch {$txt config -wrap $config(editor-wrap)}
-    bind $txt <Button-$B3> [list textwidget:contextMenu %W $wintype %X %Y]
 }
 
 #===================================================================

@@ -1339,7 +1339,7 @@ proc ModuleInspector:relayout {w} {
 
     opp_inspectorcommand $w relayout
 
-    if {$config(layout-may-resize-window)} {
+    if {[opp_inspector_istoplevel $w] && $config(layout-may-resize-window)} {
         wm geometry $w ""
     }
 
