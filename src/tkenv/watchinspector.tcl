@@ -14,27 +14,27 @@
 #----------------------------------------------------------------#
 
 
-proc createWatchInspector {w geom} {
-    createInspectorToplevel $w $geom
+proc createWatchInspector {insp geom} {
+    createInspectorToplevel $insp $geom
 
-    frame $w.main
-    pack $w.main -expand 0 -fill both -side top
+    frame $insp.main
+    pack $insp.main -expand 0 -fill both -side top
 
-    createWatchViewer $w.main
+    createWatchViewer $insp.main
 }
 
-proc createEmbeddedWatchInspector {w} {
-    frame $w.main
-    pack $w.main -expand 0 -fill both -side top
+proc createEmbeddedWatchInspector {insp} {
+    frame $insp.main
+    pack $insp.main -expand 0 -fill both -side top
 
-    createWatchViewer $w.main
+    createWatchViewer $insp.main
 }
 
-proc createWatchViewer {w} {
-    label-entry $w.name ""
-    $w.name.l config -width 20
-    focus $w.name.e
-    pack $w.name -fill x -side top
+proc createWatchViewer {f} {
+    label-entry $f.name ""
+    $f.name.l config -width 20
+    focus $f.name.e
+    pack $f.name -fill x -side top
 }
 
 

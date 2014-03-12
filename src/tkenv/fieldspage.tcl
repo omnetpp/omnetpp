@@ -62,13 +62,13 @@ proc createFieldsPage {f w} {
     Tree:open $tree "0-obj-$object"
 }
 
-proc fieldsPage:refresh {w} {
+proc fieldsPage:refresh {insp} {
     global treeroots
 
-    set tree $w.nb.fields.tree
+    set tree $insp.nb.fields.tree
     if ![winfo exist $tree] {return}
 
-    set object [opp_inspector_getobject $w]
+    set object [opp_inspector_getobject $insp]
     if {$treeroots($tree)!=$object} {
         set treeroots($tree) $object
         Tree:open $tree "0-obj-$object"

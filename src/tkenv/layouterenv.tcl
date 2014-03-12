@@ -50,9 +50,9 @@ proc layouter:startGrab {stopbutton} {
     set help_tips($stopbutton) "Layouting -- click STOP to abort it"
 
     # prevent user from closing window (postpone close operation)
-    set win [winfo toplevel $stopbutton]
-    set opp(grabOrigCloseHandler) [wm protocol $win WM_DELETE_WINDOW]
-    wm protocol $win WM_DELETE_WINDOW [list opp_markinspectorfordeletion $win]
+    set insp [winfo toplevel $stopbutton]  ;#FIXME NOT QUITE!!!
+    set opp(grabOrigCloseHandler) [wm protocol $insp WM_DELETE_WINDOW]
+    wm protocol $insp WM_DELETE_WINDOW [list opp_markinspectorfordeletion $insp]
 
     set opp(oldGrab) [grab current $stopbutton]
 
@@ -69,8 +69,8 @@ proc layouter:releaseGrab {stopbutton} {
     catch {grab release $stopbutton}
     catch {grab release [grab current]}
 
-    set win [winfo toplevel $stopbutton]
-    wm protocol $win WM_DELETE_WINDOW $opp(grabOrigCloseHandler)
+    set insp [winfo toplevel $stopbutton]   ;#FIXME see above
+    wm protocol $insp WM_DELETE_WINDOW $opp(grabOrigCloseHandler)
 }
 
 

@@ -70,11 +70,11 @@ proc inspectorList:openInspectors {} {
 #
 # Add an inspector to the list. The underlying object must still exist.
 #
-proc inspectorList:add {w allowdestructive} {
+proc inspectorList:add {insp allowdestructive} {
     global pil_name pil_class pil_type pil_geom pil_nextindex
 
-    set object [opp_inspector_getobject $w]
-    set type [opp_inspector_gettype $w]
+    set object [opp_inspector_getobject $insp]
+    set type [opp_inspector_gettype $insp]
     if [opp_isnull $object] {
         return
     }
@@ -86,7 +86,7 @@ proc inspectorList:add {w allowdestructive} {
     set pil_name($key)   $objname
     set pil_class($key)  $classname
     set pil_type($key)   $type
-    set pil_geom($key)   [inspectorList:getGeometry $w $allowdestructive]
+    set pil_geom($key)   [inspectorList:getGeometry $insp $allowdestructive]
 
     debug "entry $key added to inspector list"
 }
@@ -95,8 +95,8 @@ proc inspectorList:add {w allowdestructive} {
 # Add all open inspectors to the inspector list.
 #
 proc inspectorList:addAll {allowdestructive} {
-    foreach w [opp_getinspectors 1] {
-        inspectorList:add $w $allowdestructive
+    foreach insp [opp_getinspectors 1] {
+        inspectorList:add $insp $allowdestructive
     }
 }
 
@@ -105,11 +105,11 @@ proc inspectorList:addAll {allowdestructive} {
 #
 # called when an inspector window is opened.
 #
-proc inspectorList:remove {w} {
+proc inspectorList:remove {insp} {
     global pil_name pil_class pil_type pil_geom
 
-    set object [opp_inspector_getobject $w]
-    set type [opp_inspector_gettype $w]
+    set object [opp_inspector_getobject $insp]
+    set type [opp_inspector_gettype $insp]
 
     set key "[opp_getobjectfullpath $object]:[opp_getobjectshorttypename $object]:$type"
 
@@ -126,13 +126,13 @@ proc inspectorList:tkenvrcGetContents {allowdestructive} {
     global pil_name pil_class pil_type pil_geom
 
     set res ""
-    foreach w [opp_getinspectors 1] {
-       set object [opp_inspector_getobject $w]
-       set type [opp_inspector_gettype $w]
+    foreach insp [opp_getinspectors 1] {
+       set object [opp_inspector_getobject $insp]
+       set type [opp_inspector_gettype $insp]
 
        set objname [opp_getobjectfullpath $object]
        set class [opp_getobjectshorttypename $object]
-       set geom [inspectorList:getGeometry $w $allowdestructive]
+       set geom [inspectorList:getGeometry $insp $allowdestructive]
 
        append res "inspector \"$objname\" \"$class\" \"$type\" \"$geom\"\n"
     }

@@ -1369,13 +1369,13 @@ Examples:
             matches objects of class cMessage and message kind 3.
 }
 
-proc modelInfoDialog {{w ""}} {
+proc modelInfoDialog {{insp ""}} {
     if {[networkPresent] == 0} {return 0}
 
-    if {$w==""} {
+    if {$insp==""} {
         set modptr [opp_object_systemmodule]
     } else {
-        set modptr [opp_inspector_getobject $w]
+        set modptr [opp_inspector_getobject $insp]
     }
     if {$modptr==[opp_object_systemmodule]} {
         set what "Network"
@@ -1421,7 +1421,7 @@ proc modelInfoDialog {{w ""}} {
     }
 
     global fonts
-    set dlg $w.dlg
+    set dlg $insp.dlg
     catch {destroy $dlg}
     createOkCancelDialog $dlg "Model Information"
     $dlg.f config -border 0

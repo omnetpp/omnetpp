@@ -125,7 +125,7 @@ proc createOmnetppWindow {} {
 
     # Hotkeys
     bindRunCommands .
-    bindOtherCommands .
+    bindOtherCommands . .network
 }
 
 proc mainWindow:setApplicationIcon {} {
@@ -450,17 +450,17 @@ proc mainWindow:createInspectorView {} {
 }
 
 proc mainWindow:createNetworkView {} {
-    set w .network
-    frame $w -borderwidth 0
-    createEmbeddedModuleInspector $w
-    return $w
+    set insp .network
+    frame $insp -borderwidth 0
+    createEmbeddedModuleInspector $insp
+    return $insp
 }
 
 proc mainWindow:createLogView {} {
-    set w .log
-    frame $w -borderwidth 0
-    createEmbeddedLogInspector $w
-    return $w
+    set insp .log
+    frame $insp -borderwidth 0
+    createEmbeddedLogInspector $insp
+    return $insp
 }
 
 proc mainWindow:refreshToolbar {} {
@@ -473,8 +473,8 @@ proc mainWindow:refreshToolbar {} {
     }
 }
 
-proc mainWindow:selectionChanged {w obj} {
-    if {$w!=".inspector"} { # source is different from .inspector itself
+proc mainWindow:selectionChanged {insp obj} {
+    if {$insp!=".inspector"} { # source is different from .inspector itself
         opp_inspector_setobject .inspector $obj
     }
 }
@@ -515,8 +515,8 @@ proc bindRunCommands {w} {
     bind $w <Control-F9> {debugNextEvent}
 }
 
-proc bindOtherCommands {w} {
-    bind $w <Control-s> [list inspectFilteredObjectList $w]
+proc bindOtherCommands {w insp} {
+    bind $w <Control-s> [list inspectFilteredObjectList $insp]
 }
 
 proc bindCommandsToTextWidget {txt} {

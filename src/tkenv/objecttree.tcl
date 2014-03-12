@@ -129,5 +129,3 @@ proc treeManager:popup {key x y} {
     tk_popup $popup $x $y
 }
 
-
-

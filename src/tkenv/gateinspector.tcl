@@ -14,29 +14,29 @@
 #----------------------------------------------------------------#
 
 
-proc createGateInspector {w geom} {
+proc createGateInspector {insp geom} {
     global icons help_tips
 
-    createInspectorToplevel $w $geom
+    createInspectorToplevel $insp $geom
 
     # create toolbar
-    packIconButton $w.toolbar.sep1   -separator
-    packIconButton $w.toolbar.redraw -image $icons(redraw) -command "opp_inspectorcommand $w redraw"
-    set help_tips($w.toolbar.redraw) "Redraw"
+    packIconButton $insp.toolbar.sep1   -separator
+    packIconButton $insp.toolbar.redraw -image $icons(redraw) -command "opp_inspectorcommand $insp redraw"
+    set help_tips($insp.toolbar.redraw) "Redraw"
 
-    createGateViewer $w
+    createGateViewer $insp
 }
 
-proc createEmbeddedGateInspector {w} {
-    createGateViewer $w
+proc createEmbeddedGateInspector {insp} {
+    createGateViewer $insp
 }
 
-proc createGateViewer {w} {
+proc createGateViewer {insp} {
     global inspectordata
     global B2 B3
 
     # create canvas
-    set c $w.c
+    set c $insp.c
 
     # init some state vars (not all of them fully used, e.g. zoomfactor is only
     # needed by some modinsp2.tcl procs we call from here)
@@ -45,32 +45,32 @@ proc createGateViewer {w} {
     set inspectordata($c:showlabels) 1
     set inspectordata($c:showarrowheads) 1
 
-    frame $w.grid
-    ttk::scrollbar $w.hsb -orient horiz -command "$c xview"
-    ttk::scrollbar $w.vsb -command "$c yview"
+    frame $insp.grid
+    ttk::scrollbar $insp.hsb -orient horiz -command "$c xview"
+    ttk::scrollbar $insp.vsb -command "$c yview"
     canvas $c -background #a0e0a0 -relief raised \
-        -xscrollcommand "$w.hsb set" \
-        -yscrollcommand "$w.vsb set"
-    pack $w.grid -expand yes -fill both -padx 1 -pady 1
-    grid rowconfig    $w.grid 0 -weight 1 -minsize 0
-    grid columnconfig $w.grid 0 -weight 1 -minsize 0
+        -xscrollcommand "$insp.hsb set" \
+        -yscrollcommand "$insp.vsb set"
+    pack $insp.grid -expand yes -fill both -padx 1 -pady 1
+    grid rowconfig    $insp.grid 0 -weight 1 -minsize 0
+    grid columnconfig $insp.grid 0 -weight 1 -minsize 0
 
-    grid $c -in $w.grid -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
-    grid $w.vsb -in $w.grid -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
-    grid $w.hsb -in $w.grid -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
+    grid $c -in $insp.grid -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
+    grid $insp.vsb -in $insp.grid -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
+    grid $insp.hsb -in $insp.grid -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
 
     # mouse bindings
-    $c bind mod <Double-1> "GateInspector:dblClick $w"
-    $c bind gate <Double-1> "GateInspector:dblClick $w {As Object}"
-    $c bind conn <Double-1> "GateInspector:dblClick $w {As Object}"
-    $c bind msg <Double-1> "GateInspector:dblClick $w"
-    $c bind msgname <Double-1> "GateInspector:dblClick $w"
+    $c bind mod <Double-1> "GateInspector:dblClick $insp"
+    $c bind gate <Double-1> "GateInspector:dblClick $insp {As Object}"
+    $c bind conn <Double-1> "GateInspector:dblClick $insp {As Object}"
+    $c bind msg <Double-1> "GateInspector:dblClick $insp"
+    $c bind msgname <Double-1> "GateInspector:dblClick $insp"
 
-    $c bind mod <$B3> "GateInspector:rightClick $w %X %Y"
-    $c bind gate <$B3> "GateInspector:rightClick $w %X %Y"
-    $c bind conn <$B3> "GateInspector:rightClick $w %X %Y"
-    $c bind msg <$B3> "GateInspector:rightClick $w %X %Y"
-    $c bind msgname <$B3> "GateInspector:rightClick $w %X %Y"
+    $c bind mod <$B3> "GateInspector:rightClick $insp %X %Y"
+    $c bind gate <$B3> "GateInspector:rightClick $insp %X %Y"
+    $c bind conn <$B3> "GateInspector:rightClick $insp %X %Y"
+    $c bind msg <$B3> "GateInspector:rightClick $insp %X %Y"
+    $c bind msgname <$B3> "GateInspector:rightClick $insp %X %Y"
 }
 
 proc GateInspector:drawModuleGate {c modptr gateptr modname gatename k xsiz dir highlight} {
@@ -152,8 +152,8 @@ proc GateInspector:drawConnection {c srcgateptr destgateptr chanptr chanstr disp
    }
 }
 
-proc GateInspector:dblClick {w {type (default)}} {
-   set c $w.c
+proc GateInspector:dblClick {insp {type (default)}} {
+   set c $insp.c
    set item [$c find withtag current]
    set tags [$c gettags $item]
 
@@ -163,12 +163,12 @@ proc GateInspector:dblClick {w {type (default)}} {
    }
 
    if {$ptr!=""} {
-      inspector:dblClick $w $ptr
+      inspector:dblClick $insp $ptr
    }
 }
 
-proc GateInspector:rightClick {w X Y} {
-   set c $w.c
+proc GateInspector:rightClick {insp X Y} {
+   set c $insp.c
    set item [$c find withtag current]
    set tags [$c gettags $item]
 
@@ -179,7 +179,7 @@ proc GateInspector:rightClick {w X Y} {
    set ptr [lindex $ptr 0]
 
    if [opp_isnotnull $ptr] {
-      set popup [createInspectorContextMenu $w $ptr]
+      set popup [createInspectorContextMenu $insp $ptr]
       tk_popup $popup $X $Y
    }
 }

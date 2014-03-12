@@ -18,7 +18,7 @@
 # $help_tips(helptip_proc). This is currently getHelpTip.
 #
 
-proc createModuleInspector {w geom} {
+proc createModuleInspector {insp geom} {
     global icons help_tips config inspectordata
 
     if {$config(layout-may-resize-window)} {
@@ -26,59 +26,59 @@ proc createModuleInspector {w geom} {
         regsub -- {^[0-9]+x[0-9]+} $geom {} geom
     }
 
-    createInspectorToplevel $w $geom
+    createInspectorToplevel $insp $geom
 
     # create toolbar
-    packIconButton $w.toolbar.sep1 -separator
-    ModuleInspector:addRunButtons $w
+    packIconButton $insp.toolbar.sep1 -separator
+    ModuleInspector:addRunButtons $insp
 
-    packIconButton $w.toolbar.sep2    -separator
-    packIconButton $w.toolbar.redraw  -image $icons(redraw) -command "ModuleInspector:relayout $w"
-    packIconButton $w.toolbar.zoomin  -image $icons(zoomin)  -command "ModuleInspector:zoomIn $w"
-    packIconButton $w.toolbar.zoomout -image $icons(zoomout) -command "ModuleInspector:zoomOut $w"
-    packIconButton $w.toolbar.showlabels -image $icons(modnames) -command "ModuleInspector:toggleLabels $w"
-    packIconButton $w.toolbar.showarrowheads -image $icons(arrowhead) -command "ModuleInspector:toggleArrowheads $w"
+    packIconButton $insp.toolbar.sep2    -separator
+    packIconButton $insp.toolbar.redraw  -image $icons(redraw) -command "ModuleInspector:relayout $insp"
+    packIconButton $insp.toolbar.zoomin  -image $icons(zoomin)  -command "ModuleInspector:zoomIn $insp"
+    packIconButton $insp.toolbar.zoomout -image $icons(zoomout) -command "ModuleInspector:zoomOut $insp"
+    packIconButton $insp.toolbar.showlabels -image $icons(modnames) -command "ModuleInspector:toggleLabels $insp"
+    packIconButton $insp.toolbar.showarrowheads -image $icons(arrowhead) -command "ModuleInspector:toggleArrowheads $insp"
 
-    set help_tips($w.toolbar.parent)  "Inspect parent module"
-    set help_tips($w.toolbar.redraw)  "Re-layout (Ctrl+R)"
-    set help_tips($w.toolbar.animspeed) "Animation speed -- see Options dialog"
-    set help_tips($w.toolbar.zoomin)  "Zoom in (Ctrl+M)"
-    set help_tips($w.toolbar.zoomout) "Zoom out (Ctrl+N"
-    set help_tips($w.toolbar.showlabels) "Show module names (Ctrl+D)"
-    set help_tips($w.toolbar.showarrowheads) "Show arrowheads (Ctrl+A)"
+    set help_tips($insp.toolbar.parent)  "Inspect parent module"
+    set help_tips($insp.toolbar.redraw)  "Re-layout (Ctrl+R)"
+    set help_tips($insp.toolbar.animspeed) "Animation speed -- see Options dialog"
+    set help_tips($insp.toolbar.zoomin)  "Zoom in (Ctrl+M)"
+    set help_tips($insp.toolbar.zoomout) "Zoom out (Ctrl+N"
+    set help_tips($insp.toolbar.showlabels) "Show module names (Ctrl+D)"
+    set help_tips($insp.toolbar.showarrowheads) "Show arrowheads (Ctrl+A)"
 
     # create canvas
-    createGraphicalModuleViewer $w
+    createGraphicalModuleViewer $insp
 
-    set c $w.c
+    set c $insp.c
     if {$inspectordata($c:showlabels)} {
-        $w.toolbar.showlabels config -relief sunken
+        $insp.toolbar.showlabels config -relief sunken
     }
     if {$inspectordata($c:showarrowheads)} {
-        $w.toolbar.showarrowheads config -relief sunken
+        $insp.toolbar.showarrowheads config -relief sunken
     }
 }
 
-proc createEmbeddedModuleInspector {w} {
+proc createEmbeddedModuleInspector {insp} {
     global icons help_tips
 
-    createGraphicalModuleViewer $w
+    createGraphicalModuleViewer $insp
 
-    set tb [inspector:createInternalToolbar $w $w.c]
+    set tb [inspector:createInternalToolbar $insp $insp.c]
 
-    packIconButton $tb.back    -image $icons(back)    -command "inspector:back $w"
-    packIconButton $tb.forward -image $icons(forward) -command "inspector:forward $w"
-    packIconButton $tb.parent  -image $icons(parent)  -command "inspector:inspectParent $w"
+    packIconButton $tb.back    -image $icons(back)    -command "inspector:back $insp"
+    packIconButton $tb.forward -image $icons(forward) -command "inspector:forward $insp"
+    packIconButton $tb.parent  -image $icons(parent)  -command "inspector:inspectParent $insp"
     packIconButton $tb.sep1    -separator
-    packIconButton $tb.mrun    -image $icons(mrun)    -command "runSimulationLocal $w normal"
-    packIconButton $tb.mfast   -image $icons(mfast)   -command "runSimulationLocal $w fast"
+    packIconButton $tb.mrun    -image $icons(mrun)    -command "runSimulationLocal $insp normal"
+    packIconButton $tb.mfast   -image $icons(mfast)   -command "runSimulationLocal $insp fast"
     packIconButton $tb.stop    -image $icons(stop)    -command {stopSimulation}
     packIconButton $tb.sep2    -separator
-    packIconButton $tb.redraw  -image $icons(redraw)  -command "ModuleInspector:relayout $w"
-    packIconButton $tb.zoomin  -image $icons(zoomin)  -command "ModuleInspector:zoomIn $w"
-    packIconButton $tb.zoomout -image $icons(zoomout) -command "ModuleInspector:zoomOut $w"
-    packIconButton $tb.showlabels -image $icons(modnames) -command "ModuleInspector:toggleLabels $w"
-    packIconButton $tb.showarrowheads -image $icons(arrowhead) -command "ModuleInspector:toggleArrowheads $w"
+    packIconButton $tb.redraw  -image $icons(redraw)  -command "ModuleInspector:relayout $insp"
+    packIconButton $tb.zoomin  -image $icons(zoomin)  -command "ModuleInspector:zoomIn $insp"
+    packIconButton $tb.zoomout -image $icons(zoomout) -command "ModuleInspector:zoomOut $insp"
+    packIconButton $tb.showlabels -image $icons(modnames) -command "ModuleInspector:toggleLabels $insp"
+    packIconButton $tb.showarrowheads -image $icons(arrowhead) -command "ModuleInspector:toggleArrowheads $insp"
 
     set help_tips($tb.parent)  "Inspect parent"
     set help_tips($tb.mrun)    "Run until next event in this module"
@@ -93,26 +93,26 @@ proc createEmbeddedModuleInspector {w} {
 
 }
 
-proc createGraphicalModuleViewer {w} {
+proc createGraphicalModuleViewer {insp} {
     global inspectordata
     global B2 B3
 
-    # create widgets inside $w
-    frame $w.grid
-    pack $w.grid -expand yes -fill both -padx 1 -pady 1
+    # create widgets inside $insp
+    frame $insp.grid
+    pack $insp.grid -expand yes -fill both -padx 1 -pady 1
 
-    set c $w.c
-    ttk::scrollbar $w.hsb -orient horiz -command "$c xview"
-    ttk::scrollbar $w.vsb -command "$c yview"
+    set c $insp.c
+    ttk::scrollbar $insp.hsb -orient horiz -command "$c xview"
+    ttk::scrollbar $insp.vsb -command "$c yview"
     canvas $c -background "#a0e0a0" -relief raised -closeenough 2 \
-        -xscrollcommand "$w.hsb set" \
-        -yscrollcommand "$w.vsb set"
-    grid rowconfig    $w.grid 0 -weight 1 -minsize 0
-    grid columnconfig $w.grid 0 -weight 1 -minsize 0
+        -xscrollcommand "$insp.hsb set" \
+        -yscrollcommand "$insp.vsb set"
+    grid rowconfig    $insp.grid 0 -weight 1 -minsize 0
+    grid columnconfig $insp.grid 0 -weight 1 -minsize 0
 
-    grid $c -in $w.grid -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
-    grid $w.vsb -in $w.grid -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
-    grid $w.hsb -in $w.grid -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
+    grid $c -in $insp.grid -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
+    grid $insp.vsb -in $insp.grid -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
+    grid $insp.hsb -in $insp.grid -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
 
     # initialize state vars
     set inspectordata($c:zoomfactor) 1
@@ -121,59 +121,59 @@ proc createGraphicalModuleViewer {w} {
     set inspectordata($c:showarrowheads) 1
 
     # mouse bindings
-    $c bind submod <1> "ModuleInspector:click $w"
-    $c bind conn <1> "ModuleInspector:click $w"
-    $c bind msg <1> "ModuleInspector:click $w"
-    $c bind msgname <1> "ModuleInspector:click $w"
-    $c bind qlen <1> "ModuleInspector:qlenClick $w"
+    $c bind submod <1> "ModuleInspector:click $insp"
+    $c bind conn <1> "ModuleInspector:click $insp"
+    $c bind msg <1> "ModuleInspector:click $insp"
+    $c bind msgname <1> "ModuleInspector:click $insp"
+    $c bind qlen <1> "ModuleInspector:qlenClick $insp"
 
-    $c bind submod <Double-1> "ModuleInspector:dblClick $w"
-    $c bind conn <Double-1> "ModuleInspector:dblClick $w"
-    $c bind msg <Double-1> "ModuleInspector:dblClick $w"
-    $c bind msgname <Double-1> "ModuleInspector:dblClick $w"
-    $c bind qlen <Double-1> "ModuleInspector:qlenDblclick $w"
+    $c bind submod <Double-1> "ModuleInspector:dblClick $insp"
+    $c bind conn <Double-1> "ModuleInspector:dblClick $insp"
+    $c bind msg <Double-1> "ModuleInspector:dblClick $insp"
+    $c bind msgname <Double-1> "ModuleInspector:dblClick $insp"
+    $c bind qlen <Double-1> "ModuleInspector:qlenDblclick $insp"
 
-    $c bind submod <$B3> "ModuleInspector:rightClick $w %X %Y %x %y"
-    $c bind conn <$B3> "ModuleInspector:rightClick $w %X %Y %x %y"
-    $c bind msg <$B3> "ModuleInspector:rightClick $w %X %Y %x %y"
-    $c bind msgname <$B3> "ModuleInspector:rightClick $w %X %Y %x %y"
-    $c bind mod <$B3> "ModuleInspector:rightClick $w %X %Y %x %y"
-    $c bind modname <$B3> "ModuleInspector:rightClick $w %X %Y %x %y"
-    $c bind qlen <$B3> "ModuleInspector:qlenRightClick $w %X %Y %x %y"
+    $c bind submod <$B3> "ModuleInspector:rightClick $insp %X %Y %x %y"
+    $c bind conn <$B3> "ModuleInspector:rightClick $insp %X %Y %x %y"
+    $c bind msg <$B3> "ModuleInspector:rightClick $insp %X %Y %x %y"
+    $c bind msgname <$B3> "ModuleInspector:rightClick $insp %X %Y %x %y"
+    $c bind mod <$B3> "ModuleInspector:rightClick $insp %X %Y %x %y"
+    $c bind modname <$B3> "ModuleInspector:rightClick $insp %X %Y %x %y"
+    $c bind qlen <$B3> "ModuleInspector:qlenRightClick $insp %X %Y %x %y"
 
     # keyboard shortcuts
-    set ww [winfo toplevel $w]
-    bind $ww <Control-m> "ModuleInspector:zoomIn $w"
-    bind $ww <Control-n> "ModuleInspector:zoomOut $w"
-    bind $ww <Control-i> "ModuleInspector:zoomIconsBy $w 1.25"
-    bind $ww <Control-o> "ModuleInspector:zoomIconsBy $w 0.8"
-    bind $ww <Control-r> "ModuleInspector:relayout $w"
-    bind $ww <Control-d> "ModuleInspector:toggleLabels $w"
-    bind $ww <Control-a> "ModuleInspector:toggleArrowheads $w"
+    set ww [winfo toplevel $insp]
+    bind $ww <Control-m> "ModuleInspector:zoomIn $insp"
+    bind $ww <Control-n> "ModuleInspector:zoomOut $insp"
+    bind $ww <Control-i> "ModuleInspector:zoomIconsBy $insp 1.25"
+    bind $ww <Control-o> "ModuleInspector:zoomIconsBy $insp 0.8"
+    bind $ww <Control-r> "ModuleInspector:relayout $insp"
+    bind $ww <Control-d> "ModuleInspector:toggleLabels $insp"
+    bind $ww <Control-a> "ModuleInspector:toggleArrowheads $insp"
 }
 
-proc ModuleInspector:onSetObject {w} {
+proc ModuleInspector:onSetObject {insp} {
     #update idletasks
     update
     if [catch {
-       opp_inspectorcommand $w relayout
+       opp_inspectorcommand $insp relayout
     } errmsg] {
        tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focus]] \
                      -message "Error displaying network graphics: $errmsg"
     }
 
-    ModuleInspector:adjustWindowSizeAndZoom $w
+    ModuleInspector:adjustWindowSizeAndZoom $insp
 }
 
-proc ModuleInspector:adjustWindowSizeAndZoom {w} {
+proc ModuleInspector:adjustWindowSizeAndZoom {insp} {
     global config
 
     if {!$config(layout-may-resize-window) && !$config(layout-may-change-zoom)} {
-        ModuleInspector:setScrollRegion $w 1
+        ModuleInspector:setScrollRegion $insp 1
         return
     }
 
-    set c $w.c
+    set c $insp.c
 
     # if needed, resize window to fit graphics; if not enough, additionally zoom out as well
     set bb [$c bbox "mod"] ;# bounding box of the compound module
@@ -199,21 +199,21 @@ proc ModuleInspector:adjustWindowSizeAndZoom {w} {
         if {$zoom > 1000} {set zoom 1000}
 
         if {$zoom < 1.0} {
-            ModuleInspector:zoomBy $w $zoom
+            ModuleInspector:zoomBy $insp $zoom
         }
-        ModuleInspector:setScrollRegion $w 1
+        ModuleInspector:setScrollRegion $insp 1
 
     } else {
         # we'll need to resize the window, and then either zoom out or not
 
         # compute maximum available canvas size first that would fit on the screen
-        wmGetDesktopBounds $w desktop ;# fills $desktop(top), $desktop(width), etc.
+        wmGetDesktopBounds $insp desktop ;# fills $desktop(top), $desktop(width), etc.
         wmGetDecorationSize border    ;# fills $border(top), $border(left), etc.
         set maxwinwidth [expr $desktop(width) - $border(left) - $border(right) - 30]
         set maxwinheight [expr $desktop(height) - $border(top) - $border(bottom) - 20]
 
-        set chromewidth [expr [winfo width $w] - [winfo width $c]]
-        set chromeheight [expr [winfo height $w] - [winfo height $c]]
+        set chromewidth [expr [winfo width $insp] - [winfo width $c]]
+        set chromeheight [expr [winfo height $insp] - [winfo height $c]]
         if {$chromewidth <= 0} {set chromewidth 0}  ;# in case something was wrong with "winfo width"
         if {$chromeheight <= 0} {set chromeheight 0}
 
@@ -251,18 +251,18 @@ proc ModuleInspector:adjustWindowSizeAndZoom {w} {
         # set size and zoom
         $c config -width $canvaswidth
         $c config -height $canvasheight
-        ModuleInspector:zoomBy $w $zoom
+        ModuleInspector:zoomBy $insp $zoom
 
         # allow the window to appear, so that scrollbars know their real size;
         # this is needed for "$c xview moveto" inside ModuleInspector:setScrollRegion
         # to work properly
         update idletasks
 
-        ModuleInspector:setScrollRegion $w 1
+        ModuleInspector:setScrollRegion $insp 1
 
         # move the window so that it is fully on the screen -- this is not
         # such a good idea in practice (can be annoying/confusing)
-        #moveToScreen $w
+        #moveToScreen $insp
     }
 }
 
@@ -270,8 +270,8 @@ proc ModuleInspector:adjustWindowSizeAndZoom {w} {
 # Sets the scrolling region for a graphical module inspector.
 # NOTE: This method is invoked from C++.
 #
-proc ModuleInspector:setScrollRegion {w moveToOrigin} {
-    set c $w.c
+proc ModuleInspector:setScrollRegion {insp moveToOrigin} {
+    set c $insp.c
 
     # scrolling region
     set bb [$c bbox all]
@@ -1127,19 +1127,19 @@ proc mathMax {a b} {
     return [expr ($a > $b) ? $a : $b]
 }
 
-proc ModuleInspector:zoomIn {w} {
+proc ModuleInspector:zoomIn {insp} {
     global config
-    ModuleInspector:zoomBy $w $config(zoomby-factor) 1
+    ModuleInspector:zoomBy $insp $config(zoomby-factor) 1
 }
 
-proc ModuleInspector:zoomOut {w} {
+proc ModuleInspector:zoomOut {insp} {
     global config
-    ModuleInspector:zoomBy $w [expr 1.0 / $config(zoomby-factor)] 1
+    ModuleInspector:zoomBy $insp [expr 1.0 / $config(zoomby-factor)] 1
 }
 
-proc ModuleInspector:zoomBy {w mult {snaptoone 0}} {
+proc ModuleInspector:zoomBy {insp mult {snaptoone 0}} {
     global inspectordata
-    set c $w.c
+    set c $insp.c
     if {($mult<1 && $inspectordata($c:zoomfactor)>0.001) || ($mult>1 && $inspectordata($c:zoomfactor)<1000)} {
         # update zoom factor and redraw
         set inspectordata($c:zoomfactor) [expr $inspectordata($c:zoomfactor) * $mult]
@@ -1154,77 +1154,77 @@ proc ModuleInspector:zoomBy {w mult {snaptoone 0}} {
             }
         }
 
-        opp_inspectorcommand $w redraw
-        ModuleInspector:setScrollRegion $w 0
+        opp_inspectorcommand $insp redraw
+        ModuleInspector:setScrollRegion $insp 0
 
         # update zoom display
         set value [format "%.2f" $inspectordata($c:zoomfactor)]
         #FIXME TODO display in transient floating window!
-        # $w.zoominfo config -text "Zoom: ${value}x"
+        # $insp.zoominfo config -text "Zoom: ${value}x"
     }
 
-    ModuleInspector:popOutToolbarButtons $w
+    ModuleInspector:popOutToolbarButtons $insp
 }
 
-proc ModuleInspector:popOutToolbarButtons {w} {
+proc ModuleInspector:popOutToolbarButtons {insp} {
     # in Run or Fast mode with dynamic module creation, toolbar buttons may get stuck
     # after clicking in "sunken" or "raised" state instead of returning to "flat",
     # likely because events get lost during the grab during incremental layouting.
     # No idea how this can be fixed properly.
     # This is a weak attempt to fix it for the most commonly clicked buttons.
     # This could be called from many more places for better results.
-    if [opp_inspector_istoplevel $w] {
-        $w.toolbar.minfo config -relief flat
-        $w.toolbar.type config -relief flat
-        $w.toolbar.objs config -relief flat
-        $w.toolbar.parent config -relief flat
-        $w.toolbar.stop config -relief flat
-        $w.toolbar.redraw config -relief flat
-        $w.toolbar.zoomin config -relief flat
-        $w.toolbar.zoomout config -relief flat
+    if [opp_inspector_istoplevel $insp] {
+        $insp.toolbar.minfo config -relief flat
+        $insp.toolbar.type config -relief flat
+        $insp.toolbar.objs config -relief flat
+        $insp.toolbar.parent config -relief flat
+        $insp.toolbar.stop config -relief flat
+        $insp.toolbar.redraw config -relief flat
+        $insp.toolbar.zoomin config -relief flat
+        $insp.toolbar.zoomout config -relief flat
     } else {
         #TODO list actual buttons here
-        $w.toolbar.stop config -relief flat
-        $w.toolbar.redraw config -relief flat
-        $w.toolbar.zoomin config -relief flat
-        $w.toolbar.zoomout config -relief flat
+        $insp.toolbar.stop config -relief flat
+        $insp.toolbar.redraw config -relief flat
+        $insp.toolbar.zoomin config -relief flat
+        $insp.toolbar.zoomout config -relief flat
 
     }
 }
 
-proc ModuleInspector:zoomIconsBy {w mult} {
+proc ModuleInspector:zoomIconsBy {insp mult} {
     global inspectordata
-    set c $w.c
+    set c $insp.c
     if {($mult<1 && $inspectordata($c:imagesizefactor)>0.1) || ($mult>1 && $inspectordata($c:imagesizefactor)<5)} {
         set inspectordata($c:imagesizefactor) [expr $inspectordata($c:imagesizefactor) * $mult]
         if {abs($inspectordata($c:imagesizefactor)-1.0) < 0.1} {set inspectordata($c:imagesizefactor) 1}
-        opp_inspectorcommand $w redraw
+        opp_inspectorcommand $insp redraw
     }
     #puts "icon size factor: $inspectordata($c:imagesizefactor)"
 }
 
-proc ModuleInspector:toggleLabels {w} {
+proc ModuleInspector:toggleLabels {insp} {
     global inspectordata
-    set c $w.c
+    set c $insp.c
     set inspectordata($c:showlabels) [expr !$inspectordata($c:showlabels)]
-    opp_inspectorcommand $w redraw
+    opp_inspectorcommand $insp redraw
 
     if {$inspectordata($c:showlabels)} {set relief "sunken"} else {set relief "flat"}
-    $w.toolbar.showlabels config -relief $relief
+    $insp.toolbar.showlabels config -relief $relief
 }
 
-proc ModuleInspector:toggleArrowheads {w} {
+proc ModuleInspector:toggleArrowheads {insp} {
     global inspectordata
-    set c $w.c
+    set c $insp.c
     set inspectordata($c:showarrowheads) [expr !$inspectordata($c:showarrowheads)]
-    opp_inspectorcommand $w redraw
+    opp_inspectorcommand $insp redraw
 
     if {$inspectordata($c:showarrowheads)} {set relief "sunken"} else {set relief "flat"}
-    $w.toolbar.showarrowheads config -relief $relief
+    $insp.toolbar.showarrowheads config -relief $relief
 }
 
-proc ModuleInspector:click w {
-   set c $w.c
+proc ModuleInspector:click insp {
+   set c $insp.c
    set item [$c find withtag current]
    set tags [$c gettags $item]
 
@@ -1234,12 +1234,12 @@ proc ModuleInspector:click w {
    }
 
    if {$ptr!=""} {
-      mainWindow:selectionChanged $w $ptr
+      mainWindow:selectionChanged $insp $ptr
    }
 }
 
-proc ModuleInspector:dblClick w {
-   set c $w.c
+proc ModuleInspector:dblClick insp {
+   set c $insp.c
    set item [$c find withtag current]
    set tags [$c gettags $item]
 
@@ -1249,7 +1249,7 @@ proc ModuleInspector:dblClick w {
    }
 
    if {$ptr!=""} {
-      inspector:dblClick $w $ptr
+      inspector:dblClick $insp $ptr
    }
 }
 
@@ -1296,35 +1296,35 @@ proc ModuleInspector:getPtrsUnderMouse {c x y} {
    return $ptrs2
 }
 
-proc ModuleInspector:rightClick {w X Y x y} {
+proc ModuleInspector:rightClick {insp X Y x y} {
    global inspectordata tmp
-   set c $w.c
+   set c $insp.c
    set ptrs [ModuleInspector:getPtrsUnderMouse $c $x $y]
 
    if {$ptrs != {}} {
 
-      set popup [createInspectorContextMenu $w $ptrs]
+      set popup [createInspectorContextMenu $insp $ptrs]
 
       set tmp($c:showlabels) $inspectordata($c:showlabels)
       set tmp($c:showarrowheads) $inspectordata($c:showarrowheads)
 
       $popup add separator
-      $popup add checkbutton -label "Show module names" -command "ModuleInspector:toggleLabels $w" -accel "Ctrl+D" -variable tmp($c:showlabels)
-      $popup add checkbutton -label "Show arrowheads" -command "ModuleInspector:toggleArrowheads $w" -accel "Ctrl+A" -variable tmp($c:showarrowheads)
+      $popup add checkbutton -label "Show module names" -command "ModuleInspector:toggleLabels $insp" -accel "Ctrl+D" -variable tmp($c:showlabels)
+      $popup add checkbutton -label "Show arrowheads" -command "ModuleInspector:toggleArrowheads $insp" -accel "Ctrl+A" -variable tmp($c:showarrowheads)
 
       $popup add separator
-      $popup add command -label "Increase icon size" -accel "Ctrl+I" -command "ModuleInspector:zoomIconsBy $w 1.25"
-      $popup add command -label "Decrease icon size" -accel "Ctrl+O" -command "ModuleInspector:zoomIconsBy $w 0.8"
+      $popup add command -label "Increase icon size" -accel "Ctrl+I" -command "ModuleInspector:zoomIconsBy $insp 1.25"
+      $popup add command -label "Decrease icon size" -accel "Ctrl+O" -command "ModuleInspector:zoomIconsBy $insp 0.8"
 
       $popup add separator
-      $popup add command -label "Zoom in"  -accel "Ctrl+M" -command "ModuleInspector:zoomIn $w"
-      $popup add command -label "Zoom out" -accel "Ctrl+N" -command "ModuleInspector:zoomOut $w"
-      $popup add command -label "Re-layout" -accel "Ctrl+R" -command "opp_inspectorcommand $w relayout"
+      $popup add command -label "Zoom in"  -accel "Ctrl+M" -command "ModuleInspector:zoomIn $insp"
+      $popup add command -label "Zoom out" -accel "Ctrl+N" -command "ModuleInspector:zoomOut $insp"
+      $popup add command -label "Re-layout" -accel "Ctrl+R" -command "opp_inspectorcommand $insp relayout"
 
       $popup add separator
-      $popup add command -label "Layouting options..." -command "optionsDialog $w l"
-      $popup add command -label "Animation options..." -command "optionsDialog $w a"
-      $popup add command -label "Filtering options..." -command "optionsDialog $w t"
+      $popup add command -label "Layouting options..." -command "optionsDialog $insp l"
+      $popup add command -label "Animation options..." -command "optionsDialog $insp a"
+      $popup add command -label "Filtering options..." -command "optionsDialog $insp t"
 
       tk_popup $popup $X $Y
    }
@@ -1334,16 +1334,16 @@ proc ModuleInspector:rightClick {w X Y x y} {
 #
 # Relayout the compound module, and resize the window accordingly.
 #
-proc ModuleInspector:relayout {w} {
+proc ModuleInspector:relayout {insp} {
     global config
 
-    opp_inspectorcommand $w relayout
+    opp_inspectorcommand $insp relayout
 
-    if {[opp_inspector_istoplevel $w] && $config(layout-may-resize-window)} {
-        wm geometry $w ""
+    if {[opp_inspector_istoplevel $insp] && $config(layout-may-resize-window)} {
+        wm geometry $insp ""
     }
 
-    ModuleInspector:adjustWindowSizeAndZoom $w
+    ModuleInspector:adjustWindowSizeAndZoom $insp
 }
 
 # ModuleInspector:drawMessageOnGate --
@@ -1435,16 +1435,16 @@ proc ModuleInspector:drawNextEventMarker {c modptr type} {
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc ModuleInspector:updateSubmodule {w modptr} {
+proc ModuleInspector:updateSubmodule {insp modptr} {
     # currently the only thing to be updated is the number of elements in queue
-    set c $w.c
+    set c $insp.c
     set dispstr [opp_getobjectfield $modptr displayString]
     set qname [opp_displaystring $dispstr getTagArg "q" 0 $modptr 1]
     if {$qname!=""} {
         #set qptr [opp_inspectorcommand $win getsubmodq $modptr $qname]
         #set qlen [opp_getobjectfield $qptr length]
         # TBD optimize -- maybe store and remember q pointer?
-        set qlen [opp_inspectorcommand $w getsubmodqlen $modptr $qname]
+        set qlen [opp_inspectorcommand $insp getsubmodqlen $modptr $qname]
         $c itemconfig "qlen-$modptr" -text "q:$qlen"
     }
 }
@@ -1452,8 +1452,8 @@ proc ModuleInspector:updateSubmodule {w modptr} {
 #
 # Helper proc.
 #
-proc ModuleInspector:qlenGetQptrCurrent {w} {
-   set c $w.c
+proc ModuleInspector:qlenGetQptrCurrent {insp} {
+   set c $insp.c
    set item [$c find withtag current]
    set tags [$c gettags $item]
 
@@ -1463,38 +1463,38 @@ proc ModuleInspector:qlenGetQptrCurrent {w} {
    }
    if {$modptr==""} {return}
 
-   return [ModuleInspector:qlenGetQptr $w $modptr]
+   return [ModuleInspector:qlenGetQptr $insp $modptr]
 
 }
 
-proc ModuleInspector:qlenGetQptr {w modptr} {
+proc ModuleInspector:qlenGetQptr {insp modptr} {
    set dispstr [opp_getobjectfield $modptr displayString]
    set qname [opp_displaystring $dispstr getTagArg "q" 0 $modptr 1]
    if {$qname!=""} {
-       set qptr [opp_inspectorcommand $w getsubmodq $modptr $qname]
+       set qptr [opp_inspectorcommand $insp getsubmodq $modptr $qname]
        return $qptr
    }
    return ""
 }
 
-proc ModuleInspector:qlenClick w {
-   set qptr [ModuleInspector:qlenGetQptrCurrent $w]
+proc ModuleInspector:qlenClick insp {
+   set qptr [ModuleInspector:qlenGetQptrCurrent $insp]
    if [opp_isnotnull $qptr] {
-       mainWindow:selectionChanged $w $qptr
+       mainWindow:selectionChanged $insp $qptr
    }
 }
 
-proc ModuleInspector:qlenDblclick w {
-   set qptr [ModuleInspector:qlenGetQptrCurrent $w]
+proc ModuleInspector:qlenDblclick insp {
+   set qptr [ModuleInspector:qlenGetQptrCurrent $insp]
    if [opp_isnotnull $qptr] {
        opp_inspect $qptr "(default)"
    }
 }
 
-proc ModuleInspector:qlenRightClick {w X Y} {
-   set qptr [ModuleInspector:qlenGetQptrCurrent $w]
+proc ModuleInspector:qlenRightClick {insp X Y} {
+   set qptr [ModuleInspector:qlenGetQptrCurrent $insp]
    if [opp_isnotnull $qptr] {
-       set popup [createInspectorContextMenu $w $qptr]
+       set popup [createInspectorContextMenu $insp $qptr]
        tk_popup $popup $X $Y
    }
 }

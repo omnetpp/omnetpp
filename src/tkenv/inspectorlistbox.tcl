@@ -14,7 +14,7 @@
 #----------------------------------------------------------------#
 
 
-proc createInspectorListbox {f w} {
+proc createInspectorListbox {f insp} {
     global B2 B3
 
     frame $f.main
@@ -36,12 +36,11 @@ proc createInspectorListbox {f w} {
     grid $f.main.hsb  x           -sticky news
     grid rowconfig    $f.main 0 -weight 1 -minsize 0
     grid columnconfig $f.main 0 -weight 1 -minsize 0
-    #FIXME TODO: -width 400
 
-    bind $f.main.list <<TreeviewSelect>> [list inspectorListbox:selectionChanged $w %W]
-    bind $f.main.list <Double-Button-1> [list inspectorListbox:dblClick $w %W]
-    bind $f.main.list <Button-$B3> [list +inspectorListbox:rightClick $w %W %X %Y]  ;# Note "+"! it appends this code to binding in widgets.tcl
-    bind $f.main.list <Key-Return> [list inspectorListbox:dblClick $w %W]
+    bind $f.main.list <<TreeviewSelect>> [list inspectorListbox:selectionChanged $insp %W]
+    bind $f.main.list <Double-Button-1> [list inspectorListbox:dblClick $insp %W]
+    bind $f.main.list <Button-$B3> [list +inspectorListbox:rightClick $insp %W %X %Y]  ;# Note "+"! it appends this code to binding in widgets.tcl
+    bind $f.main.list <Key-Return> [list inspectorListbox:dblClick $insp %W]
 
     focus $f.main.list
 
@@ -99,25 +98,25 @@ proc inspectorListbox:getCurrent {lb} {
     return [lindex $ptrs 0]
 }
 
-proc inspectorListbox:selectionChanged {w lb} {
+proc inspectorListbox:selectionChanged {insp lb} {
     set ptr [inspectorListbox:getCurrent $lb]
     if [opp_isnotnull $ptr] {
-        mainWindow:selectionChanged $w $ptr
+        mainWindow:selectionChanged $insp $ptr
     }
 }
 
-proc inspectorListbox:rightClick {w lb X Y} {
+proc inspectorListbox:rightClick {insp lb X Y} {
     set ptr [inspectorListbox:getCurrent $lb]
     if [opp_isnotnull $ptr] {
-        set popup [createInspectorContextMenu $w $ptr]
+        set popup [createInspectorContextMenu $insp $ptr]
         tk_popup $popup $X $Y
     }
 }
 
-proc inspectorListbox:dblClick {w lb} {
+proc inspectorListbox:dblClick {insp lb} {
     set ptr [inspectorListbox:getCurrent $lb]
     if [opp_isnotnull $ptr] {
-        inspector:dblClick $w $ptr
+        inspector:dblClick $insp $ptr
     }
 }
 

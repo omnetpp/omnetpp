@@ -272,8 +272,8 @@ proc editFindNext {{w .log.main.text}} {
    findNext $w
 }
 
-proc editFilterWindowContents {{w .log}} {
-   LogInspector:openFilterDialog $w
+proc editFilterWindowContents {{insp .log}} {
+   LogInspector:openFilterDialog $insp
 }
 
 proc toggleTimeline {} {
@@ -314,10 +314,10 @@ proc reflectRecordEventlog {} {
    }
 }
 
-proc setGuiForRunmode {mode {modinspwin ""} {untilmode ""}} {
+proc setGuiForRunmode {mode {modinspwin ""} {untilmode ""}} {  #FIXME needs to be revised
     global opp
-    set w $modinspwin
-    if {$w!="" && ![winfo exists $w]} {set w ""}
+    set insp $modinspwin
+    if {$insp!="" && ![winfo exists $insp]} {set insp ""}
 
     set default_iconbutton_relief "flat"
     .toolbar.step config -relief $default_iconbutton_relief
@@ -327,7 +327,7 @@ proc setGuiForRunmode {mode {modinspwin ""} {untilmode ""}} {
     catch {$opp(sunken-run-button) config -relief $default_iconbutton_relief}
     removeStopDialog
 
-    if {$w==""} {
+    if {$insp==""} {
         if {$mode=="step"} {
             .toolbar.step config -relief sunken
         } elseif {$mode=="slow"} {
@@ -346,11 +346,11 @@ proc setGuiForRunmode {mode {modinspwin ""} {untilmode ""}} {
         }
     } else {
         if {$mode=="normal"} {
-            $w.toolbar.mrun config -relief sunken
-            set opp(sunken-run-button) $w.toolbar.mrun
+            $insp.toolbar.mrun config -relief sunken
+            set opp(sunken-run-button) $insp.toolbar.mrun
         } elseif {$mode=="fast"} {
-            $w.toolbar.mfast config -relief sunken
-            set opp(sunken-run-button) $w.toolbar.mfast
+            $insp.toolbar.mfast config -relief sunken
+            set opp(sunken-run-button) $insp.toolbar.mfast
         } elseif {$mode=="express"} {
             displayStopDialog
         } elseif {$mode=="notrunning"} {
@@ -597,12 +597,9 @@ proc stopSimulation {} {
     set stoplayouting 1
 }
 
-proc inspectFilteredObjectList {{w "."}} {
+proc inspectFilteredObjectList {{insp ".network"}} {
     # implements Find/inspect objects...
-    set ptr ""
-    if {$w!="" && $w!="."} {
-        set ptr [opp_inspector_getobject $w]
-    }
+    set ptr [opp_inspector_getobject $insp]
     filteredObjectList:window $ptr
 }
 

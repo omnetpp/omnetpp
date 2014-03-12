@@ -110,7 +110,7 @@ proc createFileViewer {filename} {
 #
 # Create a context menu for a text widget
 #
-proc textwidget:contextMenu {txt w X Y} {
+proc textwidget:contextMenu {txt insp X Y} {
     global tmp config
 
     set tmp(wrap) [$txt cget -wrap]
@@ -123,8 +123,8 @@ proc textwidget:contextMenu {txt w X Y} {
     .popup add command -command "editFind $txt" -label "Find..." -accel "Ctrl+F" -underline 0
     .popup add command -command "editFindNext $txt" -label "Find next" -accel "F3" -underline 5
     .popup add separator
-    if {$w!=""} {
-        .popup add command -command "LogInspector:openFilterDialog $w" -label "Filter window contents..." -accel "Ctrl+H" -underline 0
+    if {$insp!=""} {
+        .popup add command -command "LogInspector:openFilterDialog $insp" -label "Filter window contents..." -accel "Ctrl+H" -underline 0
         .popup add separator
     }
     .popup add checkbutton -command "textwidget:toggleWrap $txt" -variable tmp(wrap) -onvalue "char" -offvalue "none" -label "Wrap lines" -underline 0

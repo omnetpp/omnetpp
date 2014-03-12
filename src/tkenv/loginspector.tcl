@@ -14,28 +14,28 @@
 #----------------------------------------------------------------#
 
 
-proc createLogInspector {w geom} {
+proc createLogInspector {insp geom} {
     global icons fonts help_tips B2 B3
 
-    createInspectorToplevel $w $geom
-    set help_tips($w.toolbar.parent)  "Inspect parent"
+    createInspectorToplevel $insp $geom
+    set help_tips($insp.toolbar.parent)  "Inspect parent"
 
-    packIconButton $w.toolbar.sep1 -separator
-    textWindowAddIcons $w modulewindow
-    ModuleInspector:addRunButtons $w
+    packIconButton $insp.toolbar.sep1 -separator
+    textWindowAddIcons $insp modulewindow
+    ModuleInspector:addRunButtons $insp
 
-    frame $w.main
-    pack $w.main -expand 1 -fill both -side top
-    createLogViewer $w $w.main
+    frame $insp.main
+    pack $insp.main -expand 1 -fill both -side top
+    createLogViewer $insp $insp.main
 }
 
-proc createEmbeddedLogInspector {w} {
-    frame $w.main
-    pack $w.main -expand 1 -fill both -side top
-    createLogViewer $w $w.main
+proc createEmbeddedLogInspector {insp} {
+    frame $insp.main
+    pack $insp.main -expand 1 -fill both -side top
+    createLogViewer $insp $insp.main
 }
 
-proc createLogViewer {w f} {
+proc createLogViewer {insp f} {
     global config fonts B3
 
     text $f.text -yscrollcommand "$f.sb set" -width 80 -height 15 -font $fonts(text)
@@ -48,14 +48,15 @@ proc createLogViewer {w f} {
     # bindings for find
     bindCommandsToTextWidget $f.text
 
-    # bind Ctrl+H ('break' is needed because originally ^H is bound to DEL)
-    set ww [winfo toplevel $f]
-    bind $ww <Control-h> "puts $w; LogInspector:openFilterDialog $w; break"
-    bind $ww <Control-H> "puts $w; LogInspector:openFilterDialog $w; break"
+    # bind Ctrl+H to the whole (main or inspector) window
+    # ('break' is needed because originally ^H is bound to DEL)
+    set w [winfo toplevel $f]
+    bind $w <Control-h> "LogInspector:openFilterDialog $insp; break"
+    bind $w <Control-H> "LogInspector:openFilterDialog $insp; break"
 
     # bind a context menu as well
     catch {$f.text config -wrap $config(editor-wrap)}
-    bind $f.text <Button-$B3> [list textwidget:contextMenu %W $w %X %Y]
+    bind $f.text <Button-$B3> [list textwidget:contextMenu %W $insp %X %Y]
 
 }
 
@@ -76,19 +77,19 @@ proc logTextWidget:clear {txt} {
     logTextWidget:configureTags $txt
 }
 
-proc LogInspector:openFilterDialog {w} {
-    set modptr [opp_inspector_getobject $w]
-    set excludedModuleIds [opp_inspectorcommand $w getexcludedmoduleids]
+proc LogInspector:openFilterDialog {insp} {
+    set modptr [opp_inspector_getobject $insp]
+    set excludedModuleIds [opp_inspectorcommand $insp getexcludedmoduleids]
     set excludedModuleIds [moduleOutputFilterDialog $modptr $excludedModuleIds]
     if {$excludedModuleIds!="0"} {
-        opp_inspectorcommand $w setexcludedmoduleids $excludedModuleIds
-        opp_inspectorcommand $w redisplay
+        opp_inspectorcommand $insp setexcludedmoduleids $excludedModuleIds
+        opp_inspectorcommand $insp redisplay
     }
 }
 
-proc LogInspector:trimlines {w} {
+proc LogInspector:trimlines {insp} {
     global config
-    textwidget:trimLines $w.main.text $config(logwindow-scrollbacklines)
+    textwidget:trimLines $insp.main.text $config(logwindow-scrollbacklines)
 }
 
 
