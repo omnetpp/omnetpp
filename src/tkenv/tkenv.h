@@ -235,7 +235,7 @@ class TKENV_API Tkenv : public EnvirBase
       void redrawInspectors();
       Inspector *inspect(cObject *obj, int type, bool ignoreEmbedded, const char *geometry);
       void addEmbeddedInspector(const char *widget, Inspector *insp);
-      Inspector *findInspector(cObject *obj, int type, bool ignoreEmbedded=false);
+      Inspector *findFirstInspector(cObject *obj, int type, bool ignoreEmbedded=false);
       Inspector *findInspector(const char *widget);
       void deleteInspector(Inspector *insp);
       const std::list<Inspector*>& getInspectors() {return inspectors;}

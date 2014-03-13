@@ -87,7 +87,7 @@ class TKENV_API ModuleInspector : public Inspector
       virtual void displayStringChanged();
       virtual void displayStringChanged(cModule *submodule);
       virtual void displayStringChanged(cGate *gate);
-      virtual void bubble(cModule *mod, const char *text);
+      virtual void bubble(cComponent *subcomponent, const char *text);
 };
 
 NAMESPACE_END

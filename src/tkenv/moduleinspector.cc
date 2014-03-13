@@ -677,11 +677,15 @@ void ModuleInspector::displayStringChanged(cGate *)
    needs_redraw = true;
 }
 
-void ModuleInspector::bubble(cModule *submod, const char *text)
+void ModuleInspector::bubble(cComponent *subcomponent, const char *text)
 {
+    if (!subcomponent->isModule())
+        return; // channel bubbles not yet supported
+
     // if submod position is not yet known (because e.g. we're in fast mode
     // and it was dynamically created since the last update), refresh layout
     // so that we can get coordinates for it
+    cModule *submod = (cModule *)subcomponent;
     if (submodPosMap.find(submod)==submodPosMap.end())
         refreshLayout();
 
