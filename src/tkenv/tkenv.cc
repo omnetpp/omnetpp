@@ -1448,74 +1448,44 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
     {
         if (i->to==NULL)
         {
-            // ascent
+            // animate ascent from source module
             cModule *mod = i->from;
             cModule *enclosingmod = mod->getParentModule();
-            //ev << "DBG: animate ascent inside " << enclosingmod->getFullPath()
-            //   << " from " << mod->getFullPath() << endl;
             for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
             {
                 ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
                 if (insp)
                 {
                     numinsp++;
-                    char parentptr[30], modptr[30];
-                    strcpy(parentptr,ptrToStr(enclosingmod));
-                    strcpy(modptr,ptrToStr(mod));
-                    CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallAscent ",
-                            insp->getWindowName(), " ",
-                            parentptr," ",
-                            modptr," ",
-                            " {",methodText,"} ",
-                            NULL));
+                    insp->animateMethodcallAscent(mod, methodText);
                 }
             }
         }
         else if (i->from==NULL)
         {
-            // animate descent towards destmod
+            // animate descent towards destination module
             cModule *mod = i->to;
             cModule *enclosingmod = mod->getParentModule();
-            //ev << "DBG: animate descent in " << enclosingmod->getFullPath() <<
-            //   " to " << mod->getFullPath() << endl;
-
             for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
             {
                 ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
                 if (insp)
                 {
                     numinsp++;
-                    char parentptr[30], modptr[30];
-                    strcpy(parentptr,ptrToStr(enclosingmod));
-                    strcpy(modptr,ptrToStr(mod));
-                    CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallDescent ",
-                            insp->getWindowName(), " ",
-                            parentptr," ",
-                            modptr," ",
-                            " {",methodText,"} ",
-                            NULL));
+                    insp->animateMethodcallDescent(mod, methodText);
                 }
             }
         }
         else
         {
             cModule *enclosingmod = i->from->getParentModule();
-
             for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
             {
                 ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
                 if (insp)
                 {
                     numinsp++;
-                    char fromptr[30], toptr[30];
-                    strcpy(fromptr,ptrToStr(i->from));
-                    strcpy(toptr,ptrToStr(i->to));
-                    CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallHoriz ",
-                            insp->getWindowName(), " ",
-                            fromptr," ",
-                            toptr," ",
-                            " {",methodText,"} ",
-                            NULL));
+                    insp->animateMethodcallHoriz(i->from, i->to, methodText);
                 }
             }
         }
@@ -1524,7 +1494,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
     if (numinsp>0)
     {
         // leave it there for a while
-        CHK(Tcl_Eval(interp, "ModuleInspector:animateMethodcallWait"));
+        ModuleInspector::animateMethodcallDelay(interp);
 
         // then remove all arrows
         for (i=pathvec.begin(); i!=pathvec.end(); i++)
@@ -1536,11 +1506,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
             {
                 ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
                 if (insp)
-                {
-                    CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallCleanup ",
-                            insp->getWindowName(),
-                            NULL));
-                }
+                    insp->animateMethodcallCleanup();
             }
         }
     }
@@ -1713,20 +1679,12 @@ void Tkenv::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
         cModule *mod = g->getOwnerModule();
         if (g->getType()==cGate::OUTPUT)
             mod = mod->getParentModule();
-
+        bool isLastGate = (g->getNextGate()==arrivalgate);
         for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
         {
             ModuleInspector *insp = isModuleInspectorFor(mod, *it);
             if (insp)
-            {
-                int lastgate = (g->getNextGate()==arrivalgate);
-                CHK(Tcl_VarEval(interp, "ModuleInspector:animateOnConn ",
-                        insp->getWindowName(), " ",
-                        msgptr, " ",
-                        ptrToStr(g)," ",
-                        (lastgate?"beg":"thru"),
-                        NULL));
-            }
+                insp->animateSendOnConn(g, msg, (isLastGate ? ANIM_BEGIN : ANIM_THROUGH));
         }
         g = g->getNextGate();
     }
@@ -1805,9 +1763,6 @@ void Tkenv::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pathvec)
 
 void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
 {
-    char msgptr[32];
-    ptrToStr(msg,msgptr);
-
     PathVec pathvec;
     findDirectPath(frommodule, togate->getOwnerModule(), pathvec);
 
@@ -1821,68 +1776,35 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
             // ascent
             cModule *mod = i->from;
             cModule *enclosingmod = mod->getParentModule();
-
             for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
             {
                 ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
                 if (insp)
-                {
-                    char parentptr[30], modptr[30];
-                    strcpy(parentptr,ptrToStr(enclosingmod));
-                    strcpy(modptr,ptrToStr(mod));
-                    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectAscent ",
-                            insp->getWindowName(), " ",
-                            msgptr, " ",
-                            parentptr," ",
-                            modptr," ",
-                            "thru", // cannot be "beg" (msg ball cannot stay on encl.module rect)
-                            NULL));
-                }
+                    insp->animateSenddirectAscent(mod, msg);
             }
         }
         else if (i->from==NULL)
         {
-            // animate descent towards destmod
+            // descent
             cModule *mod = i->to;
             cModule *enclosingmod = mod->getParentModule();
-
+            bool isArrival = (mod==arrivalmod);
             for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
             {
                 ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
                 if (insp)
-                {
-                    char parentptr[30], modptr[30];
-                    strcpy(parentptr,ptrToStr(enclosingmod));
-                    strcpy(modptr,ptrToStr(mod));
-                    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectDescent ",
-                            insp->getWindowName(), " ",
-                            msgptr, " ",
-                            parentptr," ",
-                            modptr," ",
-                            (mod==arrivalmod?"beg":"thru"),
-                            NULL));
-                }
+                    insp->animateSenddirectDescent(mod, msg, isArrival ? ANIM_BEGIN : ANIM_THROUGH);
             }
         }
         else
         {
             cModule *enclosingmod = i->from->getParentModule();
+            bool isArrival = (i->to == arrivalmod);
             for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
             {
                 ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
                 if (insp)
-                {
-                    char fromptr[30], toptr[30];
-                    strcpy(fromptr,ptrToStr(i->from));
-                    strcpy(toptr,ptrToStr(i->to));
-                    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectHoriz ",
-                            insp->getWindowName(), " ",
-                            msgptr, " ",
-                            fromptr," ",
-                            toptr," ",
-                            (i->to==arrivalmod?"beg":"thru"),
-                            NULL));
-                }
+                    insp->animateSenddirectHoriz(i->from, i->to, msg, isArrival ? ANIM_BEGIN : ANIM_THROUGH);
             }
         }
     }
@@ -1890,18 +1812,14 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
     // then remove all arrows
     for (i=pathvec.begin(); i!=pathvec.end(); i++)
     {
-        cModule *mod= i->from ? i->from : i->to;
+        cModule *mod = i->from ? i->from : i->to;
         cModule *enclosingmod = mod->getParentModule();
 
         for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
         {
             ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
             if (insp)
-            {
-                CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectCleanup ",
-                        insp->getWindowName(),
-                        NULL));
-            }
+                insp->animateSenddirectCleanup();
         }
     }
 }
@@ -1925,14 +1843,7 @@ void Tkenv::animateDelivery(cMessage *msg)
     {
         ModuleInspector *insp = isModuleInspectorFor(mod, *it);
         if (insp)
-        {
-            CHK(Tcl_VarEval(interp, "ModuleInspector:animateOnConn ",
-                    insp->getWindowName(), " ",
-                    msgptr, " ",
-                    ptrToStr(g)," ",
-                    "end",
-                    NULL));
-        }
+            insp->animateSendOnConn(g, msg, ANIM_END);
     }
 }
 
@@ -1951,19 +1862,13 @@ void Tkenv::animateDeliveryDirect(cMessage *msg)
     {
         ModuleInspector *insp = isModuleInspectorFor(mod, *it);
         if (insp)
-        {
-            CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectDelivery ",
-                    insp->getWindowName(), " ",
-                    msgptr, " ",
-                    ptrToStr(destmod),
-                    NULL));
-        }
+            insp->animateSenddirectDelivery(destmod, msg);
     }
 }
 
 void Tkenv::performAnimations()
 {
-    CHK(Tcl_VarEval(interp, "performAnimations", NULL));
+    ModuleInspector::performAnimations(interp);
 }
 
 void Tkenv::bubble(cComponent *component, const char *text)
