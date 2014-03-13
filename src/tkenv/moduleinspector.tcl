@@ -41,7 +41,6 @@ proc createModuleInspector {insp geom} {
 
     set help_tips($insp.toolbar.parent)  "Inspect parent module"
     set help_tips($insp.toolbar.redraw)  "Re-layout (Ctrl+R)"
-    set help_tips($insp.toolbar.animspeed) "Animation speed -- see Options dialog"
     set help_tips($insp.toolbar.zoomin)  "Zoom in (Ctrl+M)"
     set help_tips($insp.toolbar.zoomout) "Zoom out (Ctrl+N"
     set help_tips($insp.toolbar.showlabels) "Show module names (Ctrl+D)"
@@ -114,6 +113,9 @@ proc createGraphicalModuleViewer {insp} {
     grid $insp.vsb -in $insp.grid -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
     grid $insp.hsb -in $insp.grid -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
 
+    label $insp.zoominfo -borderwidth 0 -text "Zoom: 0.00x"
+    place $insp.zoominfo -in $c -relx 1.0 -rely 1.0 -anchor se -x -2 -y -2
+
     # initialize state vars
     set inspectordata($c:zoomfactor) 1
     set inspectordata($c:imagesizefactor) 1
@@ -162,6 +164,7 @@ proc ModuleInspector:onSetObject {insp} {
                      -message "Error displaying network graphics: $errmsg"
     }
 
+    ModuleInspector:updateZoomLabel $insp
     ModuleInspector:adjustWindowSizeAndZoom $insp
 }
 
@@ -1157,13 +1160,17 @@ proc ModuleInspector:zoomBy {insp mult {snaptoone 0}} {
         opp_inspectorcommand $insp redraw
         ModuleInspector:setScrollRegion $insp 0
 
-        # update zoom display
-        set value [format "%.2f" $inspectordata($c:zoomfactor)]
-        #FIXME TODO display in transient floating window!
-        # $insp.zoominfo config -text "Zoom: ${value}x"
+        ModuleInspector:updateZoomLabel $insp
     }
 
     ModuleInspector:popOutToolbarButtons $insp
+}
+
+proc ModuleInspector:updateZoomLabel {insp} {
+    global inspectordata
+    set c $insp.c
+    set value [format "%.2f" $inspectordata($c:zoomfactor)]
+    $insp.zoominfo config -text "Zoom: ${value}x"
 }
 
 proc ModuleInspector:popOutToolbarButtons {insp} {
