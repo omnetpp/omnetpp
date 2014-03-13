@@ -194,7 +194,7 @@ proc mainWindow:createMenu {} {
       {separator}
       {command -command createSnapshot -label "Create Snapshot..." -underline 7}
       {separator}
-      {command -command exitOmnetpp -label "Exit" -underline 1}
+      {command -command exitOmnetpp -label "Exit" -accel "Ctrl+Q" -underline 1}
     } {
       eval .menubar.filemenu$m add $i
     }
@@ -513,6 +513,7 @@ proc bindRunCommands {w} {
     bind $w <F7> {after 100 runExpress}
     bind $w <F8> {stopSimulation}
     bind $w <Control-F9> {debugNextEvent}
+    bind $w <Control-q>  {exitOmnetpp}
 }
 
 proc bindOtherCommands {w {insp ""}} {
