@@ -948,7 +948,9 @@ proc filteredObjectList:window {{ptr ""}} {
 
     set w .objdlg
 
-    if {$ptr==""} {set ptr [opp_object_simulation]}
+    if {$ptr=="" || [opp_isnull $ptr]} {
+        set ptr [opp_object_simulation]
+    }
 
     # if already exists, update the "search in" field and show it
     if {[winfo exists $w]} {

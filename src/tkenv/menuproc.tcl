@@ -597,8 +597,9 @@ proc stopSimulation {} {
     set stoplayouting 1
 }
 
-proc inspectFilteredObjectList {{insp ".network"}} {
+proc inspectFilteredObjectList {{insp ""}} {
     # implements Find/inspect objects...
+    if {$insp==""} {set insp .inspector}
     set ptr [opp_inspector_getobject $insp]
     filteredObjectList:window $ptr
 }

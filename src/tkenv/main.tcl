@@ -125,7 +125,7 @@ proc createOmnetppWindow {} {
 
     # Hotkeys
     bindRunCommands .
-    bindOtherCommands . .network
+    bindOtherCommands .
 }
 
 proc mainWindow:setApplicationIcon {} {
@@ -515,7 +515,7 @@ proc bindRunCommands {w} {
     bind $w <Control-F9> {debugNextEvent}
 }
 
-proc bindOtherCommands {w insp} {
+proc bindOtherCommands {w {insp ""}} {
     bind $w <Control-s> [list inspectFilteredObjectList $insp]
 }
 
