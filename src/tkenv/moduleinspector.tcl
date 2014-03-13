@@ -157,6 +157,9 @@ proc createGraphicalModuleViewer {insp} {
 proc ModuleInspector:onSetObject {insp} {
     #update idletasks
     update
+
+    ModuleInspector:recallPreferences $insp
+
     if [catch {
        opp_inspectorcommand $insp relayout
     } errmsg] {
@@ -166,6 +169,45 @@ proc ModuleInspector:onSetObject {insp} {
 
     ModuleInspector:updateZoomLabel $insp
     ModuleInspector:adjustWindowSizeAndZoom $insp
+}
+
+proc ModuleInspector:recallPreferences {insp} {
+    global config inspectordata
+
+    # defaults
+    set c $insp.c
+    set inspectordata($c:zoomfactor) 1
+    set inspectordata($c:imagesizefactor) 1
+    set inspectordata($c:showlabels) 1
+    set inspectordata($c:showarrowheads) 1
+
+    # overwrite them with saved values if they exist
+    set ptr [opp_inspector_getobject $insp]
+    if [opp_isnull $ptr] return
+    set typename [opp_getobjectshorttypename $ptr]
+    set insptype [opp_inspector_istoplevel $insp]
+    set key $typename:$insptype
+
+    if [info exist config($key:zoomfactor)] {set inspectordata($c:zoomfactor) $config($key:zoomfactor)}
+    if [info exist config($key:imagesizefactor)] {set inspectordata($c:imagesizefactor) $config($key:imagesizefactor)}
+    if [info exist config($key:showlabels)] {set inspectordata($c:showlabels) $config($key:showlabels)}
+    if [info exist config($key:showarrowheads)] {set inspectordata($c:showarrowheads) $config($key:showarrowheads)}
+}
+
+proc ModuleInspector:updatePreferences {insp} {
+    global config inspectordata
+
+    set ptr [opp_inspector_getobject $insp]
+    if [opp_isnull $ptr] return
+    set typename [opp_getobjectshorttypename $ptr]
+    set insptype [opp_inspector_istoplevel $insp]
+    set key $typename:$insptype
+    set c $insp.c
+
+    set config($key:zoomfactor) $inspectordata($c:zoomfactor)
+    set config($key:imagesizefactor) $inspectordata($c:imagesizefactor)
+    set config($key:showlabels) $inspectordata($c:showlabels)
+    set config($key:showarrowheads) $inspectordata($c:showarrowheads)
 }
 
 proc ModuleInspector:adjustWindowSizeAndZoom {insp} {
@@ -1163,6 +1205,8 @@ proc ModuleInspector:zoomBy {insp mult {snaptoone 0}} {
         ModuleInspector:updateZoomLabel $insp
     }
 
+    ModuleInspector:updatePreferences $insp
+
     ModuleInspector:popOutToolbarButtons $insp
 }
 
@@ -1207,7 +1251,8 @@ proc ModuleInspector:zoomIconsBy {insp mult} {
         if {abs($inspectordata($c:imagesizefactor)-1.0) < 0.1} {set inspectordata($c:imagesizefactor) 1}
         opp_inspectorcommand $insp redraw
     }
-    #puts "icon size factor: $inspectordata($c:imagesizefactor)"
+
+    ModuleInspector:updatePreferences $insp
 }
 
 proc ModuleInspector:toggleLabels {insp} {
@@ -1218,6 +1263,8 @@ proc ModuleInspector:toggleLabels {insp} {
 
     if {$inspectordata($c:showlabels)} {set relief "sunken"} else {set relief "flat"}
     $insp.toolbar.showlabels config -relief $relief
+
+    ModuleInspector:updatePreferences $insp
 }
 
 proc ModuleInspector:toggleArrowheads {insp} {
@@ -1228,6 +1275,8 @@ proc ModuleInspector:toggleArrowheads {insp} {
 
     if {$inspectordata($c:showarrowheads)} {set relief "sunken"} else {set relief "flat"}
     $insp.toolbar.showarrowheads config -relief $relief
+
+    ModuleInspector:updatePreferences $insp
 }
 
 proc ModuleInspector:click insp {
