@@ -213,6 +213,7 @@ proc reflectSettingsInGui {} {
    option add *Canvas.font      $fonts(normal)
    option add *Listbox.font     $fonts(normal)
    option add *Text.font        $fonts(text)
+   option add *TCombobox.font   $fonts(normal)
 
    ttk::style configure TButton          -font $fonts(normal)
    ttk::style configure TCombobox        -font $fonts(normal)
@@ -221,6 +222,10 @@ proc reflectSettingsInGui {} {
    ttk::style configure Treeview.Heading -font $fonts(normal)
 
    set help_tips(font)  $fonts(balloon)
+
+   set h [font metrics $fonts(normal) -displayof . -linespace]
+   set h [expr $h+3]
+   ttk::style configure Treeview -rowheight $h
 
    toggleTimeline
    toggleTimeline
