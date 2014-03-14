@@ -209,6 +209,7 @@ class TKENV_API Tkenv : public EnvirBase
       virtual void askParameter(cPar *par, bool unassigned);
       virtual void printLastLogLine();
       virtual void displayException(std::exception& e);
+      virtual std::string getWindowTitle();
 
   public:
       // New functions:

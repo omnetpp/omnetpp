@@ -51,7 +51,8 @@
 #include "stringtokenizer.h"
 #include "matchexpression.h"
 #include "matchableobject.h"
-#include "../common/ver.h"
+#include "fileutil.h"
+#include "ver.h"
 #include "platdep/platmisc.h"  // va_copy
 
 
@@ -960,6 +961,24 @@ void Tkenv::updateGraphicalInspectorsBeforeAnimation()
     }
 }
 
+std::string Tkenv::getWindowTitle()
+{
+    const char *configName = getConfigEx()->getActiveConfigName();
+    int runNumber = getConfigEx()->getActiveRunNumber();
+    const char *inifile = getConfigEx()->getFileName();
+
+    std::stringstream os;
+    os << OMNETPP_PRODUCT "/Tkenv - " << getWindowTitlePrefix();
+    if (opp_isempty(configName))
+        os << "No network";
+    else
+        os << configName << " #" << runNumber;
+    if (!opp_isempty(inifile))
+        os << " - " << inifile;
+    os << " - " << getWorkingDir();
+    return os.str();
+}
+
 void Tkenv::updateNetworkRunDisplay()
 {
     const char *configName = getConfigEx()->getActiveConfigName();
@@ -971,8 +990,7 @@ void Tkenv::updateNetworkRunDisplay()
     CHK(Tcl_VarEval(interp, NETWORK_LABEL " config -text {",
             TclQuotedString(configName).get(), " #",  runNumber.c_str(), ": ",
             TclQuotedString(networkName).get(), "}", NULL ));
-    CHK(Tcl_VarEval(interp, "wm title . {" OMNETPP_PRODUCT "/Tkenv - ", getWindowTitlePrefix(),
-            TclQuotedString(networkName).get(), "}",NULL));
+    CHK(Tcl_VarEval(interp, "wm title . ", TclQuotedString(getWindowTitle().c_str()).get(), NULL));
 }
 
 void Tkenv::updateSimtimeDisplay()
