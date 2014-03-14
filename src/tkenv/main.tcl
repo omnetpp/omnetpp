@@ -98,11 +98,11 @@ proc createOmnetppWindow {} {
     mainWindow:createStatusbars
     mainWindow:createTimeline
 
-    pack .toolbar    -anchor center -expand 0 -fill x -side top
-    pack .statusbar  -anchor center -expand 0 -fill x -side top
-    pack .statusbar2 -anchor center -expand 0 -fill x -side top
-    pack .statusbar3 -anchor center -expand 0 -fill x -side top
-    pack .timeline   -anchor center -expand 0 -fill x -side top
+    pack .toolbar -expand 0 -fill x -side top
+    pack .statusbar -expand 0 -fill x -side top
+    pack .statusbar2 -expand 0 -fill x -side top
+    #pack .statusbar3 -expand 0 -fill x -side top
+    pack .timeline -expand 0 -fill x -side top
 
     # Create main display area
     panedwindow .main -orient horizontal -sashrelief raised
@@ -359,48 +359,41 @@ proc mainWindow:createToolbar {} {
 }
 
 proc mainWindow:createStatusbars {} {
+    global fonts help_tips
     frame .statusbar
     frame .statusbar2
     frame .statusbar3
 
-    label .statusbar.networklabel -relief groove -text "(no network set up)" -width 18 -anchor w
-    label .statusbar.eventlabel -relief groove -text "Event #0" -width 15  -anchor w
-    label .statusbar.timelabel -relief groove -text "T=0.0000000 (0.00s)" -width 20 -anchor w
-    label .statusbar.nextlabel -relief groove -text "Next:" -width 23 -anchor w
+    label .networklabel -relief groove -text "(No network set up)" -width 40 -anchor w
+    label .eventnumlabel -relief groove -text "Event #0" -width 15  -anchor w
+    label .timelabel -relief groove -text "t=0" -width 20 -anchor w -font "$fonts(normal) bold"
+    label .msgstatslabel -relief groove -text "Msg stats: 0 scheduled / 0 existing / 0 created" -width 40 -anchor w
 
-    label .statusbar2.feslength -relief groove -text "Msgs scheduled: 0" -width 20 -anchor w
-    label .statusbar2.totalmsgs -relief groove -text "Msgs created: 0" -width 20 -anchor w
-    label .statusbar2.livemsgs -relief groove -text "Msgs present: 0" -width 20 -anchor w
+    label .nexteventlabel -relief groove -text "Next: n/a" -anchor w -width 20
+    label .nextmodulelabel -relief groove -text "In: n/a" -anchor w -width 20
+    label .timedelta -relief groove -text "At: last event + 0s" -anchor w -width 20
 
-    label .statusbar3.eventspersec -relief groove -text "Ev/sec: n/a" -width 15 -anchor w
-    label .statusbar3.simsecpersec -relief groove -text "Simsec/sec: n/a" -width 22 -anchor w
-    label .statusbar3.eventspersimsec -relief groove -text "Ev/simsec: n/a" -width 18 -anchor w
+    label .eventspersec -relief groove -text "Ev/sec: n/a" -anchor w -width 20
+    label .simsecpersec -relief groove -text "Simsec/sec: n/a" -anchor w -width 20
+    label .eventspersimsec -relief groove -text "Ev/simsec: n/a" -anchor w -width 20
 
-    pack .statusbar.networklabel -anchor n -expand 1 -fill x -side left
-    pack .statusbar.eventlabel -anchor n -expand 1 -fill x -side left
-    pack .statusbar.timelabel -anchor n -expand 1 -fill x -side left
-    pack .statusbar.nextlabel -anchor n -expand 1 -fill x -side right
+    pack .networklabel .eventnumlabel .timelabel .msgstatslabel -in .statusbar -anchor n -expand 1 -fill x -side left
+    #pack .feslength .totalmsgs .livemsgs -in .statusbar2 -anchor n -expand 1 -fill x -side left
+    pack .nexteventlabel .nextmodulelabel .timedelta -in .statusbar2 -anchor n -expand 1 -fill x -side left
+    pack .eventspersec .simsecpersec .eventspersimsec -in .statusbar3 -anchor n -expand 1 -fill x -side left
 
-    pack .statusbar2.feslength -anchor n -expand 1 -fill x -side left
-    pack .statusbar2.totalmsgs -anchor n -expand 1 -fill x -side left
-    pack .statusbar2.livemsgs -anchor n -expand 1 -fill x -side left
+    set help_tips(.networklabel)    "Current inifile configuration, run number, and network name"
+    set help_tips(.eventnumlabel)   "Sequence number of next event"
+    set help_tips(.timelabel)       "Simulation time of next event"
+    set help_tips(.msgstatslabel)   "Number of events (messages) currently scheduled /\nNumber of existing message objects, including scheduled ones /\nTotal number of messages created since start of the simulation"
 
-    pack .statusbar3.eventspersec -anchor n -expand 1 -fill x -side left
-    pack .statusbar3.simsecpersec -anchor n -expand 1 -fill x -side left
-    pack .statusbar3.eventspersimsec -anchor n -expand 1 -fill x -side left
+    set help_tips(.nexteventlabel)  "The next simulation event"
+    set help_tips(.nextmodulelabel) "Module where next event will occur"
+    set help_tips(.timedelta)       "Time delta between the last executed and the next event"
 
-    set help_tips(.statusbar.networklabel)  "Network currently set up for execution"
-    set help_tips(.statusbar.eventlabel)    "Sequence number of next event"
-    set help_tips(.statusbar.timelabel)     "Simulation time of next event)"
-    set help_tips(.statusbar.nextlabel)     "Module where next event will occur"
-
-    set help_tips(.statusbar2.feslength)    "Number of events (messages) currently scheduled"
-    set help_tips(.statusbar2.totalmsgs)    "Total number of messages created since start of the simulation"
-    set help_tips(.statusbar2.livemsgs)     "Number of existing message objects, including scheduled ones"
-
-    set help_tips(.statusbar3.eventspersec)    "Performance: events processed per second"
-    set help_tips(.statusbar3.simsecpersec)    "Relative speed: simulated seconds processed per second"
-    set help_tips(.statusbar3.eventspersimsec) "Event density: events per simulated second"
+    set help_tips(.eventspersec)    "Performance: events processed per second"
+    set help_tips(.simsecpersec)    "Relative speed: simulated seconds processed per second"
+    set help_tips(.eventspersimsec) "Event density: events per simulated second"
 }
 
 proc mainWindow:createTimeline {} {
@@ -486,6 +479,74 @@ proc animControl {w} {
 
     trace variable priv(animspeed) w animSpeedChanged
 }
+
+proc mainWindow:updateNetworkRunDisplay {} {
+    set configname [opp_getstatusvar activeconfig]
+    set runnumber [opp_getstatusvar activerunnumber]
+    set network [opp_getstatusvar networktypename]
+    if {$configname==""} {set configName "n/a"}
+    if {$network==""} {set network "(no network)"}
+    .networklabel config -text "$configname #$runnumber: $network"
+}
+
+proc mainWindow:updateStatusDisplay {} {
+    mainWindow:updateSimtimeDisplay
+
+    set state [opp_getsimulationstate]
+    set runmode [opp_getrunmode]
+
+    if {$state=="SIM_RUNNING" && ($runmode=="fast" || $runmode=="express")} {
+        if {[winfo manager .statusbar2]!=""} {
+            pack forget .statusbar2
+            pack .statusbar3 -after .statusbar -expand 0 -fill x -side top
+        }
+        mainWindow:updatePerformanceDisplay
+    } else {
+        if {[winfo manager .statusbar3]!=""} {
+            pack forget .statusbar3
+            pack .statusbar2 -after .statusbar -expand 0 -fill x -side top
+        }
+        mainWindow:updateNextModuleDisplay
+    }
+}
+
+proc mainWindow:updateSimtimeDisplay {} {
+    .eventnumlabel config -text "Event #[opp_getstatusvar eventnumber]"
+    .timelabel config -text "t=[opp_getstatusvar guessnextsimtime]s"
+    .msgstatslabel config -text "Msg stats: [opp_getstatusvar feslength] scheduled / [opp_getstatusvar livemsgcount] existing / [opp_getstatusvar totalmsgcount] created"
+}
+
+proc mainWindow:updateNextModuleDisplay {} {
+    set modptr [opp_null]
+    set msgptr [opp_null]
+
+    set state [opp_getsimulationstate]
+    if {$state=="SIM_NEW" || $state=="SIM_READY" || $state=="SIM_RUNNING"} {
+        set modptr [opp_getstatusvar guessnextmodule]
+        set msgptr [opp_getstatusvar guessnextevent]
+    }
+
+    if [opp_isnotnull $msgptr] {
+        .nexteventlabel config -text "Next: [opp_getobjectname $msgptr] ([opp_getobjectfield $msgptr className], id=[opp_getobjectid $msgptr])"
+        .timedelta config -text "At: last event + [opp_getstatusvar timedelta]s"
+    } else {
+        .nexteventlabel config -text "Next: n/a"
+        .timedelta config -text "At: n/a"
+    }
+
+    if [opp_isnotnull $modptr] {
+        .nextmodulelabel config -text "In: [opp_getobjectfullpath $modptr] ([opp_getobjectshorttypename $modptr], id=[opp_getobjectid $modptr])"
+    } else {
+        .nextmodulelabel config -text "In: n/a"
+    }
+}
+
+proc mainWindow:updatePerformanceDisplay {} {
+    .simsecpersec config -text "Simsec/sec: [opp_getstatusvar simsecpersec]"
+    .eventspersec config -text "Ev/sec: [opp_getstatusvar eventspersec]"
+    .eventspersimsec config -text "Ev/simsec: [opp_getstatusvar eventspersimsec]"
+}
+
 
 #
 # Called when simulation speed slider on toolbar changes

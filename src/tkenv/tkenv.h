@@ -27,10 +27,10 @@
 #include "envirbase.h"
 #include "cchannel.h"
 #include "cmodule.h"
+#include "speedometer.h"
 
 NAMESPACE_BEGIN
 
-class Speedometer;
 class Inspector;
 class GenericObjectInspector;
 class LogInspector;
@@ -134,6 +134,7 @@ class TKENV_API Tkenv : public EnvirBase
       eventnumber_t rununtil_eventnum;// event number in current "Run Until" execution, or zero
       cMessage *rununtil_msg;      // stop before this event; also when this message gets cancelled
       cModule *rununtil_module;    // stop before and after events in this module; ignored with EXPRESS mode
+      Speedometer speedometer;
 
       bool stopsimulation_flag;    // indicates that the simulation should be stopped (STOP button pressed in the UI)
       timeval idleLastUICheck;     // gettimeofday() time when idle() last run the Tk "update" command
@@ -244,6 +245,7 @@ class TKENV_API Tkenv : public EnvirBase
       int getSimulationState() {return simstate;}
       void setStopSimulationFlag() {stopsimulation_flag = true;}
       bool getStopSimulationFlag() {return stopsimulation_flag;}
+      Speedometer& getSpeedometer() {return speedometer;}
       Tcl_Interp *getInterp() {return interp;}
       const LogBuffer& getLogBuffer() const {return logBuffer;}
       const std::set<int>& getMainWindowExcludedModuleIds() const {return mainWindowExcludedModuleIds;}
@@ -259,11 +261,7 @@ class TKENV_API Tkenv : public EnvirBase
 
       // small functions:
       void updateNetworkRunDisplay();
-      void updateSimtimeDisplay();
-      void updateNextModuleDisplay();
-      void clearNextModuleDisplay();
-      void updatePerformanceDisplay(Speedometer& speedometer);
-      void clearPerformanceDisplay();
+      void updateStatusDisplay();
 
       void confirm(const char *msg); // messagebox with OK button
       bool inputDialog(const char *title, const char *prompt,
