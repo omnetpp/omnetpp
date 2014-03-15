@@ -504,6 +504,30 @@ Expected results:
  dictcmp a1b a2b a11b a13b a20b --> a1b a2b a11b a13b a20b
 */
 
+char *opp_itoa(char *buf, int d)
+{
+    sprintf(buf, "%d", d);
+    return buf;
+}
+
+char *opp_ltoa(char *buf, long d)
+{
+    sprintf(buf, "%ld", d);
+    return buf;
+}
+
+char *opp_i64toa(char *buf, int64_t d)
+{
+    sprintf(buf, "%" INT64_PRINTF_FORMAT "d", d);
+    return buf;
+}
+
+char *opp_dtoa(char *buf, const char *format, double d)
+{
+    sprintf(buf, format, d);
+    return buf;
+}
+
 long opp_strtol(const char *s, char **endptr)
 {
     // accept decimal and hex numbers (0x), but ignore leading zero as octal prefix;
