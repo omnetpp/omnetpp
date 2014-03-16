@@ -1037,6 +1037,7 @@ proc filteredObjectList:window {{ptr ""}} {
     set lb [createInspectorListbox $w.f ""]
     $lb column name  -stretch 0 -width 350
     $lb column info  -stretch 0 -width 200
+    inspectorListbox:restoreColumnWidths $lb "objdialog:columnwidths"
 
     # Configure dialog
     $w.buttons.closebutton config -command filteredObjectList:windowClose
@@ -1068,6 +1069,9 @@ proc filteredObjectList:windowClose {} {
     set config(filtobjlist-category) $tmp(category)
 
     rememberGeometry $w
+
+    set lb $w.f.main.list
+    inspectorListbox:storeColumnWidths $lb "objdialog:columnwidths"
 
     destroy $w
 }

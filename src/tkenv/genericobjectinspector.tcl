@@ -52,7 +52,10 @@ proc createGenericObjectViewer {insp} {
     createFieldsPage $nb.fields $insp
 
     $nb add [frame $nb.contents] -text "Contents"
-    createInspectorListbox $nb.contents $insp
+    set lb [createInspectorListbox $nb.contents $insp]
+
+    # restore columns widths -- note: for the main embedded inspector this is too soon, as the config hasn't been loaded yet
+    inspectorListbox:restoreColumnWidths $lb "inspector:columnwidths"
 }
 
 proc GenericObjectInspector:onSetObject {insp} {

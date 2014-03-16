@@ -104,6 +104,9 @@ proc storeMainwinGeometry {} {
     set config(mainwin-main-sashpos)  [.main sash coord 0]
     set config(mainwin-left-sashpos)  [.main.left sash coord 0]
     set config(mainwin-right-sashpos) [.main.right sash coord 0]
+
+    set lb .inspector.nb.contents.main.list
+    inspectorListbox:storeColumnWidths $lb "inspector:columnwidths"
 }
 
 # loadTkenvrc --
@@ -158,30 +161,44 @@ proc loadTkenvrc {fname} {
     set fonts(balloon)  $fonts(normal)
 
     inspectorList:openInspectors
+    applyTkenvrc
+}
+
+# applyTkenvrc --
+#
+# Invoked on loading the tkenvrc file.
+#
+proc applyTkenvrc {} {
+    global config
+
+    catch {wm state . $config(mainwin-state)}
+    catch {wm geometry . $config(mainwin-geom)}
+
+    after idle {after idle {
+        catch {
+            global config
+            set mpos $config(mainwin-main-sashpos)
+            set lpos $config(mainwin-left-sashpos)
+            set rpos $config(mainwin-right-sashpos)
+            .main sash place 0 [lindex $mpos 0] [lindex $mpos 1]
+            .main.left sash place 0 [lindex $lpos 0] [lindex $lpos 1]
+            .main.right sash place 0 [lindex $rpos 0] [lindex $rpos 1]
+        }
+    }}
+
+    set lb .inspector.nb.contents.main.list
+    inspectorListbox:restoreColumnWidths $lb "inspector:columnwidths"
+
     reflectSettingsInGui
 }
 
-
 # reflectSettingsInGui --
 #
+# Invoked whenever some preference setting is changed, e.g. on closing the
+# Simulation Options dialog.
 #
 proc reflectSettingsInGui {} {
    global config fonts help_tips
-
-   catch {wm state . $config(mainwin-state)}
-   catch {wm geometry . $config(mainwin-geom)}
-
-   after idle {after idle {
-      catch {
-         global config
-         set mpos $config(mainwin-main-sashpos)
-         set lpos $config(mainwin-left-sashpos)
-         set rpos $config(mainwin-right-sashpos)
-         .main sash place 0 [lindex $mpos 0] [lindex $mpos 1]
-         .main.left sash place 0 [lindex $lpos 0] [lindex $lpos 1]
-         .main.right sash place 0 [lindex $rpos 0] [lindex $rpos 1]
-      }
-   }}
 
    catch {.log.main.text config -wrap $config(editor-wrap)}
 
