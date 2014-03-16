@@ -521,7 +521,6 @@ proc fontcombo:set {w oldfont} {
     set fontlist {}
     foreach family [lsort [font families]] {
         if {[regexp {^[A-Za-z]} $family]} {
-            if {[llength $family]>1} {set family "\"$family\""}
             lappend fontlist [string trim "$family $size"]
         }
     }
@@ -529,7 +528,7 @@ proc fontcombo:set {w oldfont} {
     $w configure -values $fontlist
     catch {$w current 0}
 
-    regsub -all "\[{}\]" $oldfont "\"" oldfont
+    set oldfont [string map {"{" "" "}" "" "\"" ""} $oldfont]
     $w set $oldfont
 }
 
@@ -576,7 +575,6 @@ proc label-check {w label first var} {
 }
 
 proc fixupFontName {font} {
-puts "in: $font"
     # remove special chars that may cause problems
     set font [string map {"{" "" "}" "" "\"" ""} $font]
     set font [string trim $font]
