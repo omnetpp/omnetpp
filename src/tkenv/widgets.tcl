@@ -100,20 +100,21 @@ proc setupTkOptions {} {
    # which is called after .tkenvrc has been read
    if {[string equal [tk windowingsystem] x11]} {
       set normalfamily [getFirstAvailableFontFamily {Ubuntu Arial Verdana Helvetica Tahoma "DejaVu Sans" "Nimbus Sans L" FreeSans Sans} unknown]
-      set monofamily [getFirstAvailableFontFamily {"DejaVu Sans Mono" "Courier New" "FreeMono" "Courier"} unknown]
+      set condensedfamily [getFirstAvailableFontFamily {"Ubuntu Condensed" "Arial Narrow" "DejaVu Sans Condensed"} $normalfamily]
+      set monofamily [getFirstAvailableFontFamily {"Ubuntu Mono" "DejaVu Sans Mono" "Courier New" "FreeMono" "Courier"} unknown]
       # note: standard font names (not families!) are: TkCaptionFont TkSmallCaptionFont TkTooltipFont TkFixedFont TkHeadingFont TkMenuFont TkIconFont TkTextFont TkDefaultFont
       if {[tk scaling] > 1.5} {set size 11} else {set size 9}
       set fonts(normal)   [list $normalfamily $size]
       set fonts(bold)     [list $normalfamily $size bold]
       set fonts(big)      [list $normalfamily 18]
-      set fonts(text)     [list $normalfamily $size]
+      set fonts(text)     [list $normalfamily $size] ;# or: $monofamily
       set fonts(balloon)  [list $normalfamily $size]
       set fonts(canvas)   [list $normalfamily $size]
-      set fonts(timeline) [list $normalfamily $size]
-      set fonts(mono)     [list $monofamily $size]
+      set fonts(timeline) [list $condensedfamily $size]
    } elseif {[string equal [tk windowingsystem] aqua]} {
       # Mac
       set normalfamily [getFirstAvailableFontFamily {"Lucida Grande" Helvetica} unknown]
+      set condensedfamily [getFirstAvailableFontFamily {"Arial Narrow"} $normalfamily]
       set monofamily [getFirstAvailableFontFamily {"Monaco" "Courier"} unknown]
       set size 13
       set fonts(normal)   [list $normalfamily 12]
@@ -121,12 +122,12 @@ proc setupTkOptions {} {
       set fonts(big)      [list $normalfamily 18]
       set fonts(text)     [list $monofamily 12]
       set fonts(balloon)  [list $normalfamily 12]
-      set fonts(timeline) [list $normalfamily 11]
+      set fonts(timeline) [list $condensedfamily 11]
       set fonts(canvas)   [list $normalfamily 12]
-      set fonts(mono)     [list $monofamily $size]
    } else {
       # Windows
       set normalfamily [getFirstAvailableFontFamily {"Segoe UI" "MS Sans Serif" "Arial"} unknown]
+      set condensedfamily [getFirstAvailableFontFamily {"Segoe Condensed" "Gill Sans MT Condensed" "Liberation Sans Narrow"} $normalfamily]
       set monofamily [getFirstAvailableFontFamily {"DejaVu Sans Mono" "Courier New" "Consolas" "Terminal"} unknown]
       if {$normalfamily == "Segoe UI"} {
           set size 9  ;# text in this font appears to be smaller than in MS Sans Serif or Arial
@@ -136,11 +137,10 @@ proc setupTkOptions {} {
       set fonts(normal)   [list $normalfamily $size]
       set fonts(bold)     [list $normalfamily $size]
       set fonts(big)      [list $normalfamily 18]
-      set fonts(text)     [list $normalfamily $size]
+      set fonts(text)     [list $normalfamily $size] ;# or: $monofamily
       set fonts(balloon)  [list $normalfamily $size]
-      set fonts(timeline) [list $normalfamily $size]
+      set fonts(timeline) [list $condensedfamily $size]
       set fonts(canvas)   [list $normalfamily $size]
-      set fonts(mono)     [list $monofamily $size]
    }
 
    # remember default font settings (we'll only save the non-default ones to .tkenvrc)
@@ -576,6 +576,7 @@ proc label-check {w label first var} {
 }
 
 proc fixupFontName {font} {
+puts "in: $font"
     # remove special chars that may cause problems
     set font [string map {"{" "" "}" "" "\"" ""} $font]
     set font [string trim $font]

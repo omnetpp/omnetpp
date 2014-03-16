@@ -156,7 +156,6 @@ proc loadTkenvrc {fname} {
 
     set fonts(bold)     $fonts(normal)
     set fonts(balloon)  $fonts(normal)
-    set fonts(timeline) $fonts(canvas)
 
     inspectorList:openInspectors
     reflectSettingsInGui

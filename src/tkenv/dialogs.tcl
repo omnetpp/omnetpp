@@ -443,12 +443,14 @@ proc optionsDialog {parent {defaultpage "g"}} {
     # "Fonts" page
     labelframe $nb.f.f1 -text "Fonts" -relief groove -borderwidth 2 -font $fonts(normal)
     label-fontcombo $nb.f.f1.normalfont {User interface:} {}
+    label-fontcombo $nb.f.f1.timelinefont {Timeline:} {}
+    label-fontcombo $nb.f.f1.canvasfont {Canvas:} {}
     label-fontcombo $nb.f.f1.textfont  {Log windows:} {}
-    label-fontcombo $nb.f.f1.canvasfont {Graphics:} {}
     commentlabel $nb.f.f1.note {Examples: Arial, Arial 10, Arial 10 bold. The system may silently use another font if the given font is not available.}
     pack $nb.f.f1.normalfont -anchor w -fill x
-    pack $nb.f.f1.textfont -anchor w -fill x
+    pack $nb.f.f1.timelinefont -anchor w -fill x
     pack $nb.f.f1.canvasfont -anchor w -fill x
+    pack $nb.f.f1.textfont -anchor w -fill x
     pack $nb.f.f1.note -anchor w -fill x
 
     pack $nb.f.f1 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
@@ -490,6 +492,7 @@ proc optionsDialog {parent {defaultpage "g"}} {
 
     fontcombo:set $nb.f.f1.normalfont.e $fonts(normal)
     fontcombo:set $nb.f.f1.textfont.e $fonts(text)
+    fontcombo:set $nb.f.f1.timelinefont.e $fonts(timeline)
     fontcombo:set $nb.f.f1.canvasfont.e $fonts(canvas)
 
     setInitialDialogFocus $nb.a.f1.anim
@@ -546,10 +549,14 @@ proc optionsDialog {parent {defaultpage "g"}} {
             set fonts(text) $font
         }
 
+        set font [actualFont [fixupFontName [$nb.f.f1.timelinefont.e get]]]
+        if {$font != ""} {
+            set fonts(timeline) $font
+        }
+
         set font [actualFont [fixupFontName [$nb.f.f1.canvasfont.e get]]]
         if {$font != ""} {
             set fonts(canvas) $font
-            set fonts(timeline) $font
         }
 
         reflectSettingsInGui
