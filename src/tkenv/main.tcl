@@ -412,7 +412,7 @@ proc mainWindow:createTimeline {} {
     global widgets B1 B2 B3
 
     frame .timelineframe -borderwidth 2 -relief groove
-    canvas .timeline -borderwidth 0 -height 46
+    canvas .timeline -borderwidth 0
     pack .timeline -in .timelineframe -expand 1 -fill both
 
     bind .timeline <Configure> "redrawTimeline"

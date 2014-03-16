@@ -227,6 +227,7 @@ proc reflectSettingsInGui {} {
    set h [expr $h+3]
    ttk::style configure Treeview -rowheight $h
 
+   timeline:fontChanged
    toggleTimeline
    toggleTimeline
 
