@@ -684,11 +684,15 @@ void ModuleInspector::displayStringChanged(cGate *)
    needs_redraw = true;
 }
 
-void ModuleInspector::bubble(cModule *submod, const char *text)
+void ModuleInspector::bubble(cComponent *subcomponent, const char *text)
 {
+    if (!subcomponent->isModule())
+        return; // channel bubbles not yet supported
+
     // if submod position is not yet known (because e.g. we're in fast mode
     // and it was dynamically created since the last update), refresh layout
     // so that we can get coordinates for it
+    cModule *submod = (cModule *)subcomponent;
     if (submodPosMap.find(submod)==submodPosMap.end())
         refreshLayout();
 
@@ -702,6 +706,109 @@ void ModuleInspector::bubble(cModule *submod, const char *text)
     Point& pos = submodPosMap[submod];
     sprintf(coords, " %g %g ", pos.x, pos.y);
     CHK(Tcl_VarEval(interp, "ModuleInspector:bubble ", canvas, coords, " ", TclQuotedString(scaling).get(), " ", TclQuotedString(text).get(), NULL));
+}
+
+const char *ModuleInspector::animModeToStr(SendAnimMode mode)
+{
+    return mode==ANIM_BEGIN ? "beg" : mode==ANIM_THROUGH ? "thru" : mode==ANIM_END ? "end" : "???";
+}
+
+void ModuleInspector::animateMethodcallAscent(cModule *srcSubmod, const char *methodText)
+{
+    char parentPtr[30], modPtr[30];
+    ptrToStr(object, parentPtr);
+    ptrToStr(srcSubmod, modPtr);
+
+    CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallAscent ", getWindowName(), " ", parentPtr, " ", modPtr," ", TclQuotedString(methodText).get(), NULL));
+}
+
+void ModuleInspector::animateMethodcallDescent(cModule *destSubmod, const char *methodText)
+{
+    char parentPtr[30], modPtr[30];
+    ptrToStr(object, parentPtr);
+    ptrToStr(destSubmod, modPtr);
+
+    CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallDescent ", getWindowName(), " ", parentPtr, " ", modPtr," ", TclQuotedString(methodText).get(), NULL));
+}
+
+void ModuleInspector::animateMethodcallHoriz(cModule *srcSubmod, cModule *destSubmod, const char *methodText)
+{
+    char srcPtr[30], destPtr[30];
+    ptrToStr(srcSubmod, srcPtr);
+    ptrToStr(destSubmod, destPtr);
+
+    CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallHoriz ", getWindowName(), " ", srcPtr, " ", destPtr," ", TclQuotedString(methodText).get(), NULL));
+}
+
+void ModuleInspector::animateMethodcallDelay(Tcl_Interp *interp)
+{
+    CHK(Tcl_Eval(interp, "ModuleInspector:animateMethodcallWait"));
+}
+
+void ModuleInspector::animateMethodcallCleanup()
+{
+    CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallCleanup ", getWindowName(), NULL));
+}
+
+void ModuleInspector::animateSendOnConn(cGate *srcGate, cMessage *msg, SendAnimMode mode)
+{
+    char gatePtr[30], msgPtr[30];
+    ptrToStr(srcGate, gatePtr);
+    ptrToStr(msg, msgPtr);
+    const char *modeStr = animModeToStr(mode);
+
+    CHK(Tcl_VarEval(interp, "ModuleInspector:animateOnConn ", getWindowName(), " ", msgPtr, " ", gatePtr, " ", modeStr, NULL));
+}
+
+void ModuleInspector::animateSenddirectAscent(cModule *srcSubmod, cMessage *msg)
+{
+    char parentPtr[30], modPtr[30], msgPtr[30];
+    ptrToStr(object, parentPtr);
+    ptrToStr(srcSubmod, modPtr);
+    ptrToStr(msg, msgPtr);
+
+    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectAscent ", getWindowName(), " ", msgPtr, " ", parentPtr," ", modPtr," ", "thru", NULL));
+}
+
+void ModuleInspector::animateSenddirectDescent(cModule *destSubmod, cMessage *msg, SendAnimMode mode)
+{
+    char parentPtr[30], modPtr[30], msgPtr[30];
+    ptrToStr(object, parentPtr);
+    ptrToStr(destSubmod, modPtr);
+    ptrToStr(msg, msgPtr);
+    const char *modeStr = animModeToStr(mode);
+
+    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectDescent ", getWindowName(), " ", msgPtr, " ", parentPtr," ", modPtr," ", modeStr, NULL));
+}
+
+void ModuleInspector::animateSenddirectHoriz(cModule *srcSubmod, cModule *destSubmod, cMessage *msg, SendAnimMode mode)
+{
+    char srcPtr[30], destPtr[30], msgPtr[30];
+    ptrToStr(srcSubmod, srcPtr);
+    ptrToStr(destSubmod, destPtr);
+    ptrToStr(msg, msgPtr);
+    const char *modeStr = animModeToStr(mode);
+
+    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectHoriz ", getWindowName(), " ", msgPtr, " ", srcPtr," ", destPtr, " ", modeStr, NULL));
+}
+
+void ModuleInspector::animateSenddirectCleanup()
+{
+    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectCleanup ", getWindowName(), NULL));
+}
+
+void ModuleInspector::animateSenddirectDelivery(cModule *destSubmod, cMessage *msg)
+{
+    char destPtr[30], msgPtr[30];
+    ptrToStr(destSubmod, destPtr);
+    ptrToStr(msg, msgPtr);
+
+    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectDelivery ", getWindowName(), " ", msgPtr, " ", destPtr, NULL));
+}
+
+void ModuleInspector::performAnimations(Tcl_Interp *interp)
+{
+    CHK(Tcl_VarEval(interp, "performAnimations", NULL));
 }
 
 int ModuleInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
@@ -778,6 +885,7 @@ int ModuleInspector::getSubmodQLen(Tcl_Interp *interp, int argc, const char **ar
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
    return TCL_OK;
 }
+
 
 NAMESPACE_END
 

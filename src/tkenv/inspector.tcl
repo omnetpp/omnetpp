@@ -17,73 +17,73 @@
 #
 # Invoked from concrete inspector subtypes
 #
-proc createInspectorToplevel {w geom} {
+proc createInspectorToplevel {insp geom} {
     global config fonts icons help_tips
     global B2 B3
 
     # Create window
-    toplevel $w -class Toplevel
-    wm focusmodel $w passive
+    toplevel $insp -class Toplevel
+    wm focusmodel $insp passive
 
     set state "normal"
     regexp {(.*):(.*)} $geom dummy geom state
-    catch {wm geometry $w $geom}
-    catch {wm state $w $state}
+    catch {wm geometry $insp $geom}
+    catch {wm state $insp $state}
 
-    wm minsize $w 1 1
-    wm overrideredirect $w 0
-    wm resizable $w 1 1
-    wm protocol $w WM_DELETE_WINDOW "inspector:close $w"
+    wm minsize $insp 1 1
+    wm overrideredirect $insp 0
+    wm resizable $insp 1 1
+    wm protocol $insp WM_DELETE_WINDOW "inspector:close $insp"
 
     # Stay on top
     if {$config(keep-inspectors-on-top)} {
-        makeTransient $w $geom
+        makeTransient $insp $geom
     }
 
     # Create toolbar
-    frame $w.toolbar -relief raised -bd 1
-    pack $w.toolbar -anchor w -side top -fill x -expand 0
+    frame $insp.toolbar -relief raised -bd 1
+    pack $insp.toolbar -anchor w -side top -fill x -expand 0
 
-    packIconButton $w.toolbar.sep0 -separator
-    packIconButton $w.toolbar.back -image $icons(back) -command "inspector:back $w"
-    packIconButton $w.toolbar.forward -image $icons(forward) -command "inspector:forward $w"
-    packIconButton $w.toolbar.parent -image $icons(parent) -command "inspector:inspectParent $w"
-    packIconButton $w.toolbar.sep01 -separator
-    packIconButton $w.toolbar.inspectas -image $icons(inspectas) -command "inspector:inspectAsPopup $w $w.toolbar.inspectas"
-    packIconButton $w.toolbar.copyobj -image $icons(copy) -command "inspector:namePopup $w $w.toolbar.copyobj"
-    packIconButton $w.toolbar.objs -image $icons(findobj) -command "inspectFilteredObjectList $w"
+    packIconButton $insp.toolbar.sep0 -separator
+    packIconButton $insp.toolbar.back -image $icons(back) -command "inspector:back $insp"
+    packIconButton $insp.toolbar.forward -image $icons(forward) -command "inspector:forward $insp"
+    packIconButton $insp.toolbar.parent -image $icons(parent) -command "inspector:inspectParent $insp"
+    packIconButton $insp.toolbar.sep01 -separator
+    packIconButton $insp.toolbar.inspectas -image $icons(inspectas) -command "inspector:inspectAsPopup $insp $insp.toolbar.inspectas"
+    packIconButton $insp.toolbar.copyobj -image $icons(copy) -command "inspector:namePopup $insp $insp.toolbar.copyobj"
+    packIconButton $insp.toolbar.objs -image $icons(findobj) -command "inspectFilteredObjectList $insp"
 
-    set help_tips($w.toolbar.parent) {Inspect parent}
-    set help_tips($w.toolbar.inspectas) {Inspect}
-    set help_tips($w.toolbar.copyobj) {Copy name, type or pointer}
-    set help_tips($w.toolbar.objs) {Find objects (Ctrl+S)}
+    set help_tips($insp.toolbar.parent) "Inspect parent"
+    set help_tips($insp.toolbar.inspectas) "Inspect"
+    set help_tips($insp.toolbar.copyobj) "Copy name, type or pointer"
+    set help_tips($insp.toolbar.objs) "Find objects (Ctrl+S)"
 
     # Keyboard bindings
-    bind $w <Escape>     "catch {.popup unpost}"
-    bind $w <Button-1>   "catch {.popup unpost}"
-    bind $w <Key-Return> "opp_commitinspector $w; opp_refreshinspectors"
+    bind $insp <Escape>     "catch {.popup unpost}"
+    bind $insp <Button-1>   "catch {.popup unpost}"
+    bind $insp <Key-Return> "opp_commitinspector $insp; opp_refreshinspectors"
 
-    bindRunCommands $w
-    bindOtherCommands $w
+    bindRunCommands $insp
+    bindOtherCommands $insp $insp
 }
 
-proc inspector:createInternalToolbar {w {parent ""}} {
-    if {$parent==""} {set parent $w}
-    frame $w.toolbar -border 2 -relief groove
-    place $w.toolbar -in $parent -relx 1.0 -rely 0 -anchor ne -x -2 -y 2
-    return $w.toolbar
+proc inspector:createInternalToolbar {insp {parent ""}} {
+    if {$parent==""} {set parent $insp}
+    frame $insp.toolbar -border 2 -relief groove
+    place $insp.toolbar -in $parent -relx 1.0 -rely 0 -anchor ne -x -2 -y 2
+    return $insp.toolbar
 }
 
 #
 # Invoked from C++
 #
-proc inspector:onSetObject {w} {
-    set ptr [opp_inspector_getobject $w]
+proc inspector:onSetObject {insp} {
+    set ptr [opp_inspector_getobject $insp]
     set icon [opp_getobjecticon $ptr]
-    if [winfo exist $w.infobar] {  ;#FIXME add proper condition
-        $w.infobar.icon config -image $icon
+    if [winfo exist $insp.infobar] {  ;#FIXME add proper condition
+        $insp.infobar.icon config -image $icon
     }
-    if {$w==".network"} {
+    if {$insp==".network"} {
         mainWindow:networkViewInputChanged $ptr
     }
 }
@@ -91,108 +91,108 @@ proc inspector:onSetObject {w} {
 #
 # Invoked from C++
 #
-proc inspector:refresh {w} {
+proc inspector:refresh {insp} {
     global config help_tips
 
-    set ptr [opp_inspector_getobject $w]
+    set ptr [opp_inspector_getobject $insp]
 
     # Info bar
-    if [winfo exist $w.infobar] {  ;#FIXME add proper condition
+    if [winfo exist $insp.infobar] {  ;#FIXME add proper condition
         if [opp_isnull $ptr] {
-            $w.infobar.name config -text {n/a}
+            $insp.infobar.name config -text "n/a"
         } else {
             set typename [opp_getobjectshorttypename $ptr]
             set fullpath [opp_getobjectfullpath $ptr]
             #set info [opp_getobjectinfostring $ptr]
             set str "($typename) $fullpath"   ;#TODO short info?
-            $w.infobar.name config -text $str
+            $insp.infobar.name config -text $str
         }
     }
 
-    if [winfo exist $w.toolbar.parent] {  ;#FIXME add proper condition
+    if [winfo exist $insp.toolbar.parent] {  ;#FIXME add proper condition
         if [opp_isnull $ptr] {
-            $w.toolbar.parent config -state disabled
+            $insp.toolbar.parent config -state disabled
         } else {
             set parentptr [opp_getobjectparent $ptr]
             if [opp_isnull $parentptr] {set state disabled} else {set state normal}
-            $w.toolbar.parent config -state $state
+            $insp.toolbar.parent config -state $state
 
-            if {[opp_inspector_supportsobject $w $parentptr] && $config(reuse-inspectors)} {
-                set help_tips($w.toolbar.parent) {Go up}
+            if {[opp_inspector_supportsobject $insp $parentptr] && $config(reuse-inspectors)} {
+                set help_tips($insp.toolbar.parent) "Go up"
             } else {
-                set help_tips($w.toolbar.parent) {Inspect parent}
+                set help_tips($insp.toolbar.parent) "Inspect parent"
             }
         }
     }
 
-    if [opp_inspectorcommand $w cangoback] {set state normal} else {set state disabled}
-    catch {$w.toolbar.back config -state $state} ;#FIXME add proper condition whether button exists
+    if [opp_inspectorcommand $insp cangoback] {set state normal} else {set state disabled}
+    catch {$insp.toolbar.back config -state $state} ;#FIXME add proper condition whether button exists
 
-    if [opp_inspectorcommand $w cangoforward] {set state normal} else {set state disabled}
-    catch {$w.toolbar.forward config -state $state}  ;#FIXME add proper condition whether button exists
+    if [opp_inspectorcommand $insp cangoforward] {set state normal} else {set state disabled}
+    catch {$insp.toolbar.forward config -state $state}  ;#FIXME add proper condition whether button exists
 
 }
 
 #
 # Invoked by the WM (Window Manager)
 #
-proc inspector:close {w} {
+proc inspector:close {insp} {
     # invokes app->deleteInspector(insp)
-    opp_deleteinspector $w
+    opp_deleteinspector $insp
 }
 
 #
 # Called from C++
 #
-proc inspector:destroy {w} {
-    destroy $w
+proc inspector:destroy {insp} {
+    destroy $insp
 }
 
 #
 # Called from C++
 #
-proc inspector:show {w} {
-    showWindow $w
+proc inspector:show {insp} {
+    showWindow $insp
 }
 
-proc inspector:back {w} {
-    opp_inspectorcommand $w goback
+proc inspector:back {insp} {
+    opp_inspectorcommand $insp goback
 }
 
-proc inspector:forward {w} {
-    opp_inspectorcommand $w goforward
+proc inspector:forward {insp} {
+    opp_inspectorcommand $insp goforward
 }
 
-proc inspector:inspectParent {w} {
+proc inspector:inspectParent {insp} {
     global config
 
-    set ptr [opp_inspector_getobject $w]
+    set ptr [opp_inspector_getobject $insp]
     set parentptr [opp_getobjectparent $ptr]
     if [opp_isnull $parentptr] {
         return
     }
 
     # inspect in current inspector if possible (and allowed), otherwise open a new one
-    if {[opp_inspector_supportsobject $w $parentptr] && $config(reuse-inspectors)} {
-        opp_inspector_setobject $w $parentptr
+    if {[opp_inspector_supportsobject $insp $parentptr] && $config(reuse-inspectors)} {
+        opp_inspector_setobject $insp $parentptr
     } else {
         opp_inspect $parentptr "(default)"
     }
 }
 
-proc inspector:dblClick {w ptr} {
+proc inspector:dblClick {insp ptr} {
     global config
 
     # inspect in current inspector if possible (and allowed), otherwise open a new one
-    if {[opp_inspector_supportsobject $w $ptr] && $config(reuse-inspectors)} {
-        opp_inspector_setobject $w $ptr
+    if {[opp_inspector_supportsobject $insp $ptr] && $config(reuse-inspectors)} {
+        opp_inspector_setobject $insp $ptr
     } else {
         opp_inspect $ptr "(default)"
     }
 }
 
-proc inspector:namePopup {w toolbutton} {
-    set ptr [opp_inspector_getobject $w]
+proc inspector:namePopup {insp toolbutton} {
+    set ptr [opp_inspector_getobject $insp]
     regsub {^ptr} $ptr {0x} p
 
     catch {destroy .popup}
@@ -209,9 +209,9 @@ proc inspector:namePopup {w toolbutton} {
     tk_popup .popup $x $y
 }
 
-proc inspector:inspectAsPopup {w toolbutton} {
-    set ptr [opp_inspector_getobject $w]
-    set curtype [opp_inspectortype [opp_inspector_gettype $w]]
+proc inspector:inspectAsPopup {insp toolbutton} {
+    set ptr [opp_inspector_getobject $insp]
+    set curtype [opp_inspectortype [opp_inspector_gettype $insp]]
     set typelist [opp_supported_insp_types $ptr]
 
     catch {destroy .popup}

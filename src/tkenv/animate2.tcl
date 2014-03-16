@@ -36,9 +36,9 @@ proc doConcurrentAnimations {animjobs} {
 
     # sort jobs into jobgroups; meanwhile collect window list in $winlist()
     foreach job $animjobs {
-        set w [lindex $job 1]
-        if [winfo exist $w] {
-            set winlist($w) {}
+        set insp [lindex $job 1]
+        if [opp_isinspector $insp] {
+            set winlist($insp) {}
             set msg [lindex $job 2]
             if ![info exist msgcount($msg)] {set msgcount($msg) 0}
             incr msgcount($msg)
@@ -49,8 +49,8 @@ proc doConcurrentAnimations {animjobs} {
     }
 
     # WM_DELETE_WINDOW stuff: if user wants to close window (during "update"), postpone it until updateInspectors()
-    foreach w [array names winlist] {
-        animDisableClose $w
+    foreach insp [array names winlist] {
+        animDisableClose $insp
     }
 
     # then animate each group, one after another
@@ -59,8 +59,8 @@ proc doConcurrentAnimations {animjobs} {
     }
 
     # restore old WM_DELETE_WINDOW handlers
-    foreach w [array names winlist] {
-        animRestoreClose $w
+    foreach insp [array names winlist] {
+        animRestoreClose $insp
     }
 }
 
@@ -73,10 +73,10 @@ proc doAnimateGroup {animjobs} {
         set op [lindex $job 0]
         switch $op {
             on_conn {
-                setvars {cmd win msgptr gateptr mode} $job
+                setvars {cmd insp msgptr gateptr mode} $job
                 if {$mode=="end"} {error "internal error: mode cannot be 'end'"}
 
-                set c $win.c
+                set c $insp.c
 
                 # gate pointer string is the tag of the connection arrow
                 set coords [$c coords $gateptr]
@@ -91,7 +91,7 @@ proc doAnimateGroup {animjobs} {
                         setvars {x2 y2} $endpos
                     }
 
-                    lappend animlist [list $win $msgptr $x1 $y1 $x2 $y2]
+                    lappend animlist [list $insp $msgptr $x1 $y1 $x2 $y2]
 
                     if {$mode!="beg"} {
                        lappend afterlist [list $c delete $msgptr]
@@ -100,10 +100,10 @@ proc doAnimateGroup {animjobs} {
             }
 
             senddirect_horiz {
-                setvars {cmd win msgptr mod1ptr mod2ptr mode} $job
+                setvars {cmd insp msgptr mod1ptr mod2ptr mode} $job
                 if {$mode=="end"} {error "internal error: mode cannot be 'end'"}
 
-                set c $win.c
+                set c $insp.c
                 set src  [ModuleInspector:getSubmodCoords $c $mod1ptr]
                 set dest [ModuleInspector:getSubmodCoords $c $mod2ptr]
 
@@ -115,17 +115,17 @@ proc doAnimateGroup {animjobs} {
                 if [opp_getsimoption senddirect_arrows] {
                     $c create line $x1 $y1 $x2 $y2 -tags {senddirect} -arrow last -fill blue -dash {.}
                 }
-                lappend animlist [list $win $msgptr $x1 $y1 $x2 $y2]
+                lappend animlist [list $insp $msgptr $x1 $y1 $x2 $y2]
                 if {$mode!="beg"} {
                    lappend afterlist [list $c delete $msgptr]
                 }
             }
 
             senddirect_ascent {
-                setvars {cmd win msgptr parentmodptr modptr mode} $job
+                setvars {cmd insp msgptr parentmodptr modptr mode} $job
                 if {$mode=="end"} {error "internal error: mode cannot be 'end'"}
 
-                set c $win.c
+                set c $insp.c
                 set src  [ModuleInspector:getSubmodCoords $c $modptr]
 
                 set x1 [expr ([lindex $src 0]+[lindex $src 2])/2]
@@ -136,17 +136,17 @@ proc doAnimateGroup {animjobs} {
                 if [opp_getsimoption senddirect_arrows] {
                     $c create line $x1 $y1 $x2 $y2 -tags {senddirect} -arrow last -fill blue -dash {.}
                 }
-                lappend animlist [list $win $msgptr $x1 $y1 $x2 $y2]
+                lappend animlist [list $insp $msgptr $x1 $y1 $x2 $y2]
                 if {$mode!="beg"} {
                    lappend afterlist [list $c delete $msgptr]
                 }
             }
 
             senddirect_descent {
-                setvars {cmd win msgptr parentmodptr modptr mode} $job
+                setvars {cmd insp msgptr parentmodptr modptr mode} $job
                 if {$mode=="end"} {error "internal error: mode cannot be 'end'"}
 
-                set c $win.c
+                set c $insp.c
                 set dest [ModuleInspector:getSubmodCoords $c $modptr]
 
                 set x2 [expr ([lindex $dest 0]+[lindex $dest 2])/2]
@@ -157,15 +157,15 @@ proc doAnimateGroup {animjobs} {
                 if [opp_getsimoption senddirect_arrows] {
                     $c create line $x1 $y1 $x2 $y2 -tags {senddirect} -arrow last -fill blue -dash {.}
                 }
-                lappend animlist [list $win $msgptr $x1 $y1 $x2 $y2]
+                lappend animlist [list $insp $msgptr $x1 $y1 $x2 $y2]
                 if {$mode!="beg"} {
                    lappend afterlist [list $c delete $msgptr]
                 }
             }
 
             senddirect_cleanup {
-                set win [lindex $job 1]
-                set c $win.c
+                set insp [lindex $job 1]
+                set c $insp.c
                 lappend afterlist [list $c delete senddirect]
             }
 
@@ -185,7 +185,7 @@ proc doAnimateGroup {animjobs} {
 # Ultimate helper function which in fact animates several messages together.
 # $animlist should contain a list of anim requests, each request consisting
 # of 6 elements: inspectorwindow, msgptr, x1, y1, x2, y2.
-# The function animates on the canvases ($w.c) the movements of messages
+# The function animates on the canvases ($insp.c) the movements of messages
 # (identified by $msgptr as canvas tag) from (x1,y1) to (x2,y2).
 #
 # Example animlist:
@@ -203,7 +203,7 @@ proc doAnimateConcurrent {animlist} {
     set maxlen 0
     foreach req $animlist {
         if {[llength $req]!=6} {error "wrong number of items in animreq"}
-        setvars {w msgptr x1 y1 x2 y2} $req
+        setvars {insp msgptr x1 y1 x2 y2} $req
         set len [expr sqrt(($x2-$x1)*($x2-$x1)+($y2-$y1)*($y2-$y1))]
         if {$len>$maxlen} {set maxlen $len}
     }
@@ -221,14 +221,14 @@ proc doAnimateConcurrent {animlist} {
     # calculate dx,dy pairs and assemble commands from it
     set movecommands {}
     foreach req $animlist {
-        setvars {w msgptr x1 y1 x2 y2} $req
-        $w.c delete $msgptr
-        ModuleInspector:drawMessage $w.c $msgptr $x1 $y1
+        setvars {insp msgptr x1 y1 x2 y2} $req
+        $insp.c delete $msgptr
+        ModuleInspector:drawMessage $insp.c $msgptr $x1 $y1
 
         set len [expr sqrt(($x2-$x1)*($x2-$x1)+($y2-$y1)*($y2-$y1))]
         set dx [expr ($x2-$x1)/double($steps)]
         set dy [expr ($y2-$y1)/double($steps)]
-        lappend movecommands [list $w.c move $msgptr $dx $dy]
+        lappend movecommands [list $insp.c move $msgptr $dx $dy]
     }
 
     # now do the animation

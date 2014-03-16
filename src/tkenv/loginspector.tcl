@@ -14,38 +14,62 @@
 #----------------------------------------------------------------#
 
 
-proc createLogInspector {w geom} {
+proc createLogInspector {insp geom} {
     global icons fonts help_tips B2 B3
 
-    createInspectorToplevel $w $geom
-    set help_tips($w.toolbar.parent)  {Inspect parent}
+    createInspectorToplevel $insp $geom
+    set help_tips($insp.toolbar.parent)  "Inspect parent"
 
-    packIconButton $w.toolbar.sep1 -separator
-    textWindowAddIcons $w modulewindow
-    ModuleInspector:addRunButtons $w
+    packIconButton $insp.toolbar.sep1 -separator
+    textWindowAddIcons $insp modulewindow
+    ModuleInspector:addRunButtons $insp
 
-    frame $w.main
-    pack $w.main -expand 1 -fill both -side top
-    createLogViewer $w.main
+    frame $insp.main
+    pack $insp.main -expand 1 -fill both -side top
+    createLogViewer $insp $insp.main
 }
 
-proc createEmbeddedLogInspector {w} {
-    frame $w.main
-    pack $w.main -expand 1 -fill both -side top
-    createLogViewer $w.main
+proc createEmbeddedLogInspector {insp} {
+    global icons help_tips
+
+    frame $insp.main
+    pack $insp.main -expand 1 -fill both -side top
+
+    createLogViewer $insp $insp.main
+
+    set tb [inspector:createInternalToolbar $insp $insp.main.text]
+    packIconButton $tb.copy   -image $icons(copy) -command "editCopy $insp.main.text"
+    packIconButton $tb.find   -image $icons(find) -command "findDialog $insp.main.text"
+    packIconButton $tb.filter -image $icons(filter) -command "editFilterWindowContents $insp"
+
+    set help_tips($tb.copy)   {Copy selected text to clipboard (Ctrl+C)}
+    set help_tips($tb.find)   {Find string in window (Ctrl+F)}
+    set help_tips($tb.filter) {Filter window contents (Ctrl+H)}
 }
 
-proc createLogViewer {w} {
-    global fonts
-    text $w.text -yscrollcommand "$w.sb set" -width 80 -height 15 -font $fonts(text)
-    ttk::scrollbar $w.sb -command "$w.text yview"
-    logTextWidget:configureTags $w.text
+proc createLogViewer {insp f} {
+    global config fonts B3
 
-    pack $w.sb -anchor center -expand 0 -fill y -side right
-    pack $w.text -anchor center -expand 1 -fill both -side left
+    text $f.text -yscrollcommand "$f.sb set" -width 80 -height 15 -font $fonts(text)
+    ttk::scrollbar $f.sb -command "$f.text yview"
+    logTextWidget:configureTags $f.text
+
+    pack $f.sb -anchor center -expand 0 -fill y -side right
+    pack $f.text -anchor center -expand 1 -fill both -side left
 
     # bindings for find
-    bindCommandsToTextWidget $w.text modulewindow
+    bindCommandsToTextWidget $f.text
+
+    # bind Ctrl+H to the whole (main or inspector) window
+    # ('break' is needed because originally ^H is bound to DEL)
+    set w [winfo toplevel $f]
+    bind $w <Control-h> "LogInspector:openFilterDialog $insp; break"
+    bind $w <Control-H> "LogInspector:openFilterDialog $insp; break"
+
+    # bind a context menu as well
+    catch {$f.text config -wrap $config(editor-wrap)}
+    bind $f.text <Button-$B3> [list textwidget:contextMenu %W $insp %X %Y]
+
 }
 
 proc logTextWidget:configureTags {txt} {
@@ -66,19 +90,19 @@ proc logTextWidget:clear {txt} {
     logTextWidget:configureTags $txt
 }
 
-proc LogInspector:openFilterDialog {w} {
-    set modptr [opp_inspector_getobject $w]
-    set excludedModuleIds [opp_inspectorcommand $w getexcludedmoduleids]
+proc LogInspector:openFilterDialog {insp} {
+    set modptr [opp_inspector_getobject $insp]
+    set excludedModuleIds [opp_inspectorcommand $insp getexcludedmoduleids]
     set excludedModuleIds [moduleOutputFilterDialog $modptr $excludedModuleIds]
     if {$excludedModuleIds!="0"} {
-        opp_inspectorcommand $w setexcludedmoduleids $excludedModuleIds
-        opp_inspectorcommand $w redisplay
+        opp_inspectorcommand $insp setexcludedmoduleids $excludedModuleIds
+        opp_inspectorcommand $insp redisplay
     }
 }
 
-proc LogInspector:trimlines {w} {
+proc LogInspector:trimlines {insp} {
     global config
-    textwidget:trimLines $w.main.text $config(logwindow-scrollbacklines)
+    textwidget:trimLines $insp.main.text $config(logwindow-scrollbacklines)
 }
 
 

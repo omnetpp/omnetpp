@@ -173,6 +173,18 @@ void cCountChildrenVisitor::visit(cObject *obj)
 }
 
 //----------------------------------------------------------------
+
+void cHasChildrenVisitor::visit(cObject *obj)
+{
+    if (obj==parent)
+        obj->forEachChild(this);
+    else {
+        hasChildren = true;
+        throw EndTraversalException();
+    }
+}
+
+//----------------------------------------------------------------
 // utilities for sorting objects:
 
 static const char *getObjectShortTypeName(cObject *object)

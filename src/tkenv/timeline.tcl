@@ -24,6 +24,19 @@ proc redrawTimeline {} {
 
     set c $widgets(timeline)
 
+    # figure out vertical layout (see also timeline:fontChanged)
+    set fontheight [font metrics $fonts(timeline) -linespace]
+    set row1y       [expr 2]
+    set row2y       [expr $row1y+$fontheight]
+    set axisy       [expr $row2y+$fontheight+3]
+    set labely      [expr $axisy+3]
+    set minorticky1 [expr $axisy-2]
+    set minorticky2 [expr $axisy+3]
+    set majorticky1 [expr $axisy-3]
+    set majorticky2 [expr $axisy+4]
+    set arrowy1     [expr $row2y-2]
+    set arrowy2     [expr $axisy-4]
+
     # sort the FES and adjust display range
     set minexp $tkenv(timeline-minexp)
     set maxexp $tkenv(timeline-maxexp)
@@ -46,15 +59,15 @@ proc redrawTimeline {} {
     # draw axis
     set w [winfo width $c]
     incr w -10
-    $c create line 20 29 $w 29 -arrow last -fill black -width 1
-    $c create text [expr $w+4] 30 -anchor ne -text "sec" -font $fonts(canvas)
+    $c create line 20 $axisy $w $axisy -arrow last -fill black -width 1
+    $c create text [expr $w+4] $labely -anchor ne -text "sec" -font $fonts(timeline)
 
     # draw ticks
     set dx [expr $w/($maxexp-$minexp+1)]
     set x0 [expr int($dx/2)+15]
     set x $x0
     for {set i $minexp} {$i<=$maxexp} {incr i} {
-        $c create line $x 26 $x 33 -fill black -width 1
+        $c create line $x $majorticky1 $x $majorticky2 -fill black -width 1
         if {$i>=4} {
             set txt "1e$i"
         } elseif {$i>=0} {
@@ -64,12 +77,12 @@ proc redrawTimeline {} {
         } else {
             set txt "1e$i"
         }
-        $c create text $x 30 -anchor n -text "+$txt" -fill "#808080" -font $fonts(timeline)
+        $c create text $x $labely -anchor n -text "+$txt" -fill "#808080" -font $fonts(timeline)
 
         # minor ticks at 2, 4, 6, 8
         foreach tick {0.301 0.602 0.778 0.903} {
             set minorx [expr $x+int($tick*$dx)]
-            $c create line $minorx 29 $minorx 32 -fill black -width 1
+            $c create line $minorx $minorticky1 $minorx $minorticky2 -fill black -width 1
         }
         incr x $dx
     }
@@ -89,10 +102,10 @@ proc redrawTimeline {} {
         # calculate position
         set dt [opp_eventarrtimefromnow $eventptr]
         if {$dt < $dtmin} {
-            set anchor "sw"
+            set anchor "nw"
             set x 10
         } else {
-            set anchor "s"
+            set anchor "n"
             set x [expr int($x0+(log10($dt)-$minexp)*$dx)]
         }
 
@@ -108,19 +121,21 @@ proc redrawTimeline {} {
         } else {
             set ball [$c create oval -2 -3 2 4 -fill "" -outline red -tags "dx tooltip msg $eventptr"]
         }
-        $c move $ball $x 29
+        $c move $ball $x $axisy
 
-        # print event name, if it's not too close to previous label (they do not overlap)
+        # print msg name, if it's not too close to previous label
+        # label for only those msgs past this label's right edge will be displayed
         set eventlabel [opp_getobjectfullname $eventptr]
         if {$eventlabel!=""} {
-            set estlabelx [expr $x-3*[string length $eventlabel]]
+            set estlabelwidth [font measure $fonts(timeline) $eventlabel]
+            set estlabelx [expr $x-$estlabelwidth/2]
             if {$estlabelx>=$minlabelx} {
-                set labelid [$c create text $x 27 -text $eventlabel -anchor $anchor -font $fonts(timeline) -tags "dx tooltip msgname $eventptr"]
+                set labelid [$c create text $x $row2y -text $eventlabel -anchor $anchor -font $fonts(timeline) -tags "dx tooltip msgname $eventptr"]
                 set minlabelx [lindex [$c bbox $labelid] 2]
                 set labelssuppressed 0
             } elseif {$estlabelx>=$minlabelx2} {
-                set labelid [$c create text $x 17 -text $eventlabel -anchor $anchor -font $fonts(timeline) -tags "dx tooltip msgname $eventptr"]
-                $c create line $x 24 $x 14 -fill "#808080" -width 1 -tags "h"
+                set labelid [$c create text $x $row1y -text $eventlabel -anchor $anchor -font $fonts(timeline) -tags "dx tooltip msgname $eventptr"]
+                $c create line $x $arrowy1 $x $arrowy2 -fill "#ccc" -width 1 -tags "h"
                 set minlabelx2 [lindex [$c bbox $labelid] 2]
                 set labelssuppressed 0
             } else {
@@ -134,6 +149,13 @@ proc redrawTimeline {} {
     $c lower "h"
 }
 
+proc timeline:fontChanged {} {
+   global fonts widgets
+
+   set h [font metrics $fonts(timeline) -linespace]
+   set h [expr 3*$h+6]
+   $widgets(timeline) config -height $h
+}
 
 proc timeline:popup {cx cy x y} {
     global widgets

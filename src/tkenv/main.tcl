@@ -170,96 +170,87 @@ proc mainWindow:setApplicationIcon {} {
 }
 
 proc mainWindow:createMenu {} {
-    global tcl_version
-
     menu .menubar
     . config -menu .menubar
 
     # Create menus
     foreach i {
-       {filemenu     -$label_opt File -underline 0}
-       {editmenu     -$label_opt Edit -underline 0}
-       {simulatemenu -$label_opt Simulate -underline 0}
-       {inspectmenu  -$label_opt Inspect -underline 0}
-       {viewmenu     -$label_opt View -underline 0}
-       {optionsmenu  -$label_opt Options -underline 0}
-       {helpmenu     -$label_opt Help -underline 0}
+       {filemenu     -$label_opt "File" -underline 0}
+       {editmenu     -$label_opt "Edit" -underline 0}
+       {simulatemenu -$label_opt "Simulate" -underline 0}
+       {inspectmenu  -$label_opt "Inspect" -underline 0}
+       {viewmenu     -$label_opt "View" -underline 0}
+       {optionsmenu  -$label_opt "Options" -underline 0}
+       {helpmenu     -$label_opt "Help" -underline 0}
     } {
-       if {$tcl_version < 8.0} {
-           set label_opt "text"; set m ".m"
-           set mb [eval menubutton .menubar.$i -padx 4 -pady 3]
-           menu $mb.m -tearoff 0
-           $mb config -menu $mb.m
-       } else {
-           set label_opt "label"; set m ""
-           eval .menubar add cascade -menu .menubar.$i
-           menu ".menubar.[lindex $i 0]" -tearoff 0
-       }
+       set label_opt "label"; set m ""
+       eval .menubar add cascade -menu .menubar.$i
+       menu ".menubar.[lindex $i 0]" -tearoff 0
     }
 
     # File menu
     foreach i {
-      {command -command newRun -label {Set Up a Configuration...} -underline 7}
+      {command -command newRun -label "Set Up a Configuration..." -underline 7}
       {separator}
-      {command -command loadNedFile -label {Load NED File...} -underline 0}
-      {command -command newNetwork -label {Set Up an Unconfigured Network...} -underline 7}
+      {command -command loadNedFile -label "Load NED File..." -underline 0}
+      {command -command newNetwork -label "Set Up an Unconfigured Network..." -underline 7}
       {separator}
-      {command -command createSnapshot -label {Create Snapshot...} -underline 7}
+      {command -command createSnapshot -label "Create Snapshot..." -underline 7}
       {separator}
-      {command -command exitOmnetpp -label Exit -underline 1}
+      {command -command exitOmnetpp -label "Exit" -accel "Ctrl+Q" -underline 1}
     } {
       eval .menubar.filemenu$m add $i
     }
 
     # Edit menu
     foreach i {
-      {command -command editCopy -label {Copy} -accel {Ctrl+C} -underline 0}
+      {command -command editCopy -label "Copy" -accel "Ctrl+C" -underline 0}
       {separator}
-      {command -command editFind -label {Find...} -accel {Ctrl+F} -underline 0}
-      {command -command editFindNext -label {Find Next} -accel {Ctrl+N,F3} -underline 5}
+      {command -command editFind -label "Find..." -accel "Ctrl+F" -underline 0}
+      {command -command editFindNext -label "Find Next" -accel "Ctrl+N,F3" -underline 5}
       {separator}
-      {command -command editFilterWindowContents -label {Filter Window Contents...} -accel {Ctrl+H} -underline 0}
+      {command -command editFilterWindowContents -label "Filter Window Contents..." -accel "Ctrl+H" -underline 0}
     } {
       eval .menubar.editmenu$m add $i
     }
 
     # Simulate menu
-    #  {command -command init_step -label {First real event} -underline 1}
+    #  {command -command init_step -label "First real event" -underline 1}
     #  {separator}
     foreach i {
-      {command -command oneStep -label {One Step} -accel {F4} -underline 4}
-      {command -command runSlow -label {Slow Execution} -underline 1}
+      {command -command oneStep -label "One Step" -accel "F4" -underline 4}
+      {command -command runSlow -label "Slow Execution" -underline 1}
       {separator}
-      {command -command runNormal -label {Run}  -accel {F5} -underline 0}
-      {command -command runFast -label {Fast Run (rare display updates)} -accel {F6} -underline 0}
-      {command -command runExpress -label {Express Run (tracing off)} -accel {F7} -underline 1}
-      {command -command runUntil -label {Run Until...} -underline 4}
+      {command -command runNormal -label "Run"  -accel "F5" -underline 0}
+      {command -command runFast -label "Fast Run (rare display updates)" -accel "F6" -underline 0}
+      {command -command runExpress -label "Express Run (tracing off)" -accel "F7" -underline 1}
+      {command -command runUntil -label "Run Until..." -underline 4}
       {separator}
-      {command -command debugNextEvent -label {Debug Next Event} -accel {Ctrl+F9} -underline 1}
+      {command -command debugNextEvent -label "Debug Next Event" -accel "Ctrl+F9" -underline 1}
       {separator}
-      {command -command stopSimulation -label {Stop Execution} -accel {F8} -underline 0}
+      {command -command stopSimulation -label "Stop Execution" -accel "F8" -underline 0}
       {separator}
-      {command -command callFinish -label {Call finish() for All Modules} -underline 0}
-      {command -command rebuild -label {Rebuild Network} -underline 1}
+      {command -command callFinish -label "Call finish() for All Modules" -underline 0}
+      {command -command rebuild -label "Rebuild Network" -underline 1}
     } {
       eval .menubar.simulatemenu$m add $i
     }
 
     # Inspect menu
     # The following two items have been replaced by the new Find/inspect objects... dialog:
-    #  {command -command inspect_anyobject -label {From list of all objects...} -underline 0}
-    #  {command -command inspect_matching -label {By pattern matching...} -underline 3}
+    #  {command -command inspect_anyobject -label "From list of all objects..." -underline 0}
+    #  {command -command inspect_matching -label "By pattern matching..." -underline 3}
     foreach i {
-      {command -command inspectSystemModule -label {Network} -underline 0}
-      {command -command inspectMessageQueue -label {Scheduled Events (FES)} -underline 0}
-      {command -command inspectSimulation   -label {Simulation} -underline 1}
+      {command -command inspectSystemModule -label "Network" -underline 0}
+      {command -command inspectMessageQueue -label "Scheduled Events (FES)" -underline 0}
+      {command -command inspectSimulation   -label "Simulation" -underline 1}
       {separator}
-      {cascade -label {Available Components} -underline 10 -menu .menubar.inspectmenu$m.components}
+      {cascade -label "Available Components" -underline 10 -menu .menubar.inspectmenu$m.components}
       {separator}
-      {command -command inspectFilteredObjectList -label {Show 'Find/Inspect Objects' Window} -accel {Ctrl+S} -underline 0}
-      {command -command inspectBypointer -label {Inspect by Pointer...} -underline 4}
+      {command -command inspectFilteredObjectList -label "Show 'Find/Inspect Objects' Window" -accel "Ctrl+S" -underline 0}
+      {command -command inspectBypointer -label "Inspect by Pointer..." -underline 4}
       {separator}
-      {command -command opp_refreshinspectors -label {Refresh Inspectors} -underline 0}
+      {command -command opp_refreshinspectors -label "Refresh Inspectors" -underline 0}
     } {
       eval .menubar.inspectmenu$m add $i
     }
@@ -267,45 +258,44 @@ proc mainWindow:createMenu {} {
     # Inspect|Components menu
     menu .menubar.inspectmenu$m.components -tearoff 0
     foreach i {
-      {command -command inspectComponentTypes -label {NED Component Types} -underline 0}
-      {command -command inspectClasses        -label {Registered Classes} -underline 0}
-      {command -command inspectFunctions      -label {NED Functions} -underline 4}
-      {command -command inspectEnums          -label {Registered Enums} -underline 11}
-      {command -command inspectConfigEntries  -label {Supported Configuration Options} -underline 0}
+      {command -command inspectComponentTypes -label "NED Component Types" -underline 0}
+      {command -command inspectClasses        -label "Registered Classes" -underline 0}
+      {command -command inspectFunctions      -label "NED Functions" -underline 4}
+      {command -command inspectEnums          -label "Registered Enums" -underline 11}
+      {command -command inspectConfigEntries  -label "Supported Configuration Options" -underline 0}
     } {
       eval .menubar.inspectmenu$m.components add $i
     }
 
     # View menu
     foreach i {
-      {command -label {Ini File} -underline 0 -command viewIniFile}
-      {command -label {README} -underline 0 -command {viewFile README}}
+      {command -label "Ini File" -underline 0 -command viewIniFile}
+      {command -label "README" -underline 0 -command {viewFile README}}
       {separator}
-      {command -label {Output Vector File} -underline 7 -command viewOutputVectorFile}
-      {command -label {Output Scalar File} -underline 7 -command viewOutputScalarFile}
-      {command -label {Snapshot File} -underline 0 -command viewSnapshotFile}
+      {command -label "Output Vector File" -underline 7 -command viewOutputVectorFile}
+      {command -label "Output Scalar File" -underline 7 -command viewOutputScalarFile}
+      {command -label "Snapshot File" -underline 0 -command viewSnapshotFile}
       {separator}
-      {command -label {View Text File...} -underline 0 -command {editTextFile}}
+      {command -label "View Text File..." -underline 0 -command {editTextFile}}
     } {
       eval .menubar.viewmenu$m add $i
     }
 
     # Options menu
     foreach i {
-      {command -command simulationOptions -label {Simulation Options...} -underline 0}
-      {command -command toggleTimeline -label {Show/Hide Timeline} -underline 10}
-      {command -command toggleTreeView -label {Show/Hide Object Tree} -underline 1}
-      {command -command toggleRecordEventlog -label {Eventlog Recording} -underline 10}
+      {command -command simulationOptions -label "Simulation Options..." -underline 0}
+      {command -command toggleTimeline -label "Show/Hide Timeline" -underline 10}
+      {command -command toggleRecordEventlog -label "Eventlog Recording" -underline 10}
       {separator}
-      {command -label {Load Config...} -underline 0 -command loadTkenvConfig}
-      {command -label {Save Config...} -underline 1 -command saveTkenvConfig}
+      {command -label "Load Config..." -underline 0 -command loadTkenvConfig}
+      {command -label "Save Config..." -underline 1 -command saveTkenvConfig}
     } {
       eval .menubar.optionsmenu$m add $i
     }
 
     # Help menu
     foreach i {
-      {command -command about -label {About OMNeT++/Tkenv} -underline 0}
+      {command -command about -label "About OMNeT++/Tkenv" -underline 0}
     } {
       eval .menubar.helpmenu$m add $i
     }
@@ -342,7 +332,6 @@ proc mainWindow:createToolbar {} {
       {filter   -image $icons(filter)  -command {editFilterWindowContents}}
       {sep6     -separator}
       {tline    -image $icons(fes)     -command {toggleTimeline}}
-      {tree     -image $icons(tree)    -command {toggleTreeView}}
       {sep9     -separator}
       {options  -image $icons(config)  -command {simulationOptions}}
       {sep10    -separator}
@@ -353,28 +342,28 @@ proc mainWindow:createToolbar {} {
     animControl .toolbar.animspeed
     pack .toolbar.animspeed -anchor c -expand 0 -fill none -side left -padx 5 -pady 0
 
-    set help_tips(.toolbar.loadned) {Load NED file for compound module definitions}
-    set help_tips(.toolbar.newrun)  {Set up an inifile configuration}
-    set help_tips(.toolbar.copy)    {Copy selected text to clipboard (Ctrl+C)}
-    set help_tips(.toolbar.find)    {Find string in main window (Ctrl+F)}
-    set help_tips(.toolbar.save)    {Save main window contents to file}
-    set help_tips(.toolbar.filter)  {Filter main window contents (Ctrl+H)}
-    set help_tips(.toolbar.newnet)  {Set up a network}
-    set help_tips(.toolbar.step)    {Execute one event (F4)}
-    set help_tips(.toolbar.run)     {Run with full animation (F5)}
-    set help_tips(.toolbar.fastrun) {Run faster: no animation and rare inspector updates (F6)}
-    set help_tips(.toolbar.exprrun) {Run at full speed: no text output, animation or inspector updates (F7)}
-    set help_tips(.toolbar.until)   {Run until time or event number}
-    set help_tips(.toolbar.stop)    {Stop running simulation (F8)}
-    set help_tips(.toolbar.restart) {Rebuild network}
-    set help_tips(.toolbar.eventlog) {Eventlog recording on/off}
-    set help_tips(.toolbar.finish)  {Call finish()}
-    set help_tips(.toolbar.network) {Inspect network}
-    set help_tips(.toolbar.objs)    {Find and inspect modules, messages, queues and other objects (Ctrl+S)}
-    set help_tips(.toolbar.tline)   {Show/hide timeline}
-    set help_tips(.toolbar.tree)    {Show/hide object tree}
-    set help_tips(.toolbar.options) {Simulation options}
-    set help_tips(.toolbar.animspeed) {Animation speed}
+    set help_tips(.toolbar.loadned) "Load NED file for compound module definitions"
+    set help_tips(.toolbar.newrun)  "Set up an inifile configuration"
+    set help_tips(.toolbar.copy)    "Copy selected text to clipboard (Ctrl+C)"
+    set help_tips(.toolbar.find)    "Find string in main window (Ctrl+F)"
+    set help_tips(.toolbar.save)    "Save main window contents to file"
+    set help_tips(.toolbar.filter)  "Filter main window contents (Ctrl+H)"
+    set help_tips(.toolbar.newnet)  "Set up a network"
+    set help_tips(.toolbar.step)    "Execute one event (F4)"
+    set help_tips(.toolbar.run)     "Run with full animation (F5)"
+    set help_tips(.toolbar.fastrun) "Run faster: no animation and rare inspector updates (F6)"
+    set help_tips(.toolbar.exprrun) "Run at full speed: no text output, animation or inspector updates (F7)"
+    set help_tips(.toolbar.until)   "Run until time or event number"
+    set help_tips(.toolbar.stop)    "Stop running simulation (F8)"
+    set help_tips(.toolbar.restart) "Rebuild network"
+    set help_tips(.toolbar.eventlog) "Eventlog recording on/off"
+    set help_tips(.toolbar.finish)  "Call finish()"
+    set help_tips(.toolbar.network) "Inspect network"
+    set help_tips(.toolbar.objs)    "Find and inspect modules, messages, queues and other objects (Ctrl+S)"
+    set help_tips(.toolbar.tline)   "Show/hide timeline"
+    set help_tips(.toolbar.tree)    "Show/hide object tree"
+    set help_tips(.toolbar.options) "Simulation options"
+    set help_tips(.toolbar.animspeed) "Animation speed"
 }
 
 proc mainWindow:createStatusbars {} {
@@ -382,18 +371,18 @@ proc mainWindow:createStatusbars {} {
     frame .statusbar2
     frame .statusbar3
 
-    label .statusbar.networklabel -relief groove -text {(no network set up)} -width 18 -anchor w
-    label .statusbar.eventlabel -relief groove -text {Event #0} -width 15  -anchor w
-    label .statusbar.timelabel -relief groove -text {T=0.0000000 (0.00s)} -width 20 -anchor w
-    label .statusbar.nextlabel -relief groove -text {Next:} -width 23 -anchor w
+    label .statusbar.networklabel -relief groove -text "(no network set up)" -width 18 -anchor w
+    label .statusbar.eventlabel -relief groove -text "Event #0" -width 15  -anchor w
+    label .statusbar.timelabel -relief groove -text "T=0.0000000 (0.00s)" -width 20 -anchor w
+    label .statusbar.nextlabel -relief groove -text "Next:" -width 23 -anchor w
 
-    label .statusbar2.feslength -relief groove -text {Msgs scheduled: 0} -width 20 -anchor w
-    label .statusbar2.totalmsgs -relief groove -text {Msgs created: 0} -width 20 -anchor w
-    label .statusbar2.livemsgs -relief groove -text {Msgs present: 0} -width 20 -anchor w
+    label .statusbar2.feslength -relief groove -text "Msgs scheduled: 0" -width 20 -anchor w
+    label .statusbar2.totalmsgs -relief groove -text "Msgs created: 0" -width 20 -anchor w
+    label .statusbar2.livemsgs -relief groove -text "Msgs present: 0" -width 20 -anchor w
 
-    label .statusbar3.eventspersec -relief groove -text {Ev/sec: n/a} -width 15 -anchor w
-    label .statusbar3.simsecpersec -relief groove -text {Simsec/sec: n/a} -width 22 -anchor w
-    label .statusbar3.eventspersimsec -relief groove -text {Ev/simsec: n/a} -width 18 -anchor w
+    label .statusbar3.eventspersec -relief groove -text "Ev/sec: n/a" -width 15 -anchor w
+    label .statusbar3.simsecpersec -relief groove -text "Simsec/sec: n/a" -width 22 -anchor w
+    label .statusbar3.eventspersimsec -relief groove -text "Ev/simsec: n/a" -width 18 -anchor w
 
     pack .statusbar.networklabel -anchor n -expand 1 -fill x -side left
     pack .statusbar.eventlabel -anchor n -expand 1 -fill x -side left
@@ -408,25 +397,25 @@ proc mainWindow:createStatusbars {} {
     pack .statusbar3.simsecpersec -anchor n -expand 1 -fill x -side left
     pack .statusbar3.eventspersimsec -anchor n -expand 1 -fill x -side left
 
-    set help_tips(.statusbar.networklabel)  {Network currently set up for execution}
-    set help_tips(.statusbar.eventlabel)    {Sequence number of next event}
-    set help_tips(.statusbar.timelabel)     {Simulation time of next event)}
-    set help_tips(.statusbar.nextlabel)     {Module where next event will occur}
+    set help_tips(.statusbar.networklabel)  "Network currently set up for execution"
+    set help_tips(.statusbar.eventlabel)    "Sequence number of next event"
+    set help_tips(.statusbar.timelabel)     "Simulation time of next event)"
+    set help_tips(.statusbar.nextlabel)     "Module where next event will occur"
 
-    set help_tips(.statusbar2.feslength)    {Number of events (messages) currently scheduled}
-    set help_tips(.statusbar2.totalmsgs)    {Total number of messages created since start of the simulation}
-    set help_tips(.statusbar2.livemsgs)     {Number of existing message objects, including scheduled ones}
+    set help_tips(.statusbar2.feslength)    "Number of events (messages) currently scheduled"
+    set help_tips(.statusbar2.totalmsgs)    "Total number of messages created since start of the simulation"
+    set help_tips(.statusbar2.livemsgs)     "Number of existing message objects, including scheduled ones"
 
-    set help_tips(.statusbar3.eventspersec)    {Performance: events processed per second}
-    set help_tips(.statusbar3.simsecpersec)    {Relative speed: simulated seconds processed per second}
-    set help_tips(.statusbar3.eventspersimsec) {Event density: events per simulated second}
+    set help_tips(.statusbar3.eventspersec)    "Performance: events processed per second"
+    set help_tips(.statusbar3.simsecpersec)    "Relative speed: simulated seconds processed per second"
+    set help_tips(.statusbar3.eventspersimsec) "Event density: events per simulated second"
 }
 
 proc mainWindow:createTimeline {} {
     global widgets B1 B2 B3
 
     frame .timelineframe -borderwidth 2 -relief groove
-    canvas .timeline -borderwidth 0 -height 46
+    canvas .timeline -borderwidth 0
     pack .timeline -in .timelineframe -expand 1 -fill both
 
     bind .timeline <Configure> "redrawTimeline"
@@ -464,27 +453,21 @@ proc mainWindow:createInspectorView {} {
 }
 
 proc mainWindow:createNetworkView {} {
-    set w .network
-    frame $w -borderwidth 0
-    createEmbeddedModuleInspector $w
-    return $w
+    set insp .network
+    frame $insp -borderwidth 0
+    createEmbeddedModuleInspector $insp
+    return $insp
 }
 
 proc mainWindow:createLogView {} {
-    set w .log
-    frame $w -borderwidth 0
-    createEmbeddedLogInspector $w
-    return $w
+    set insp .log
+    frame $insp -borderwidth 0
+    createEmbeddedLogInspector $insp
+    return $insp
 }
 
 proc mainWindow:refreshToolbar {} {
     global config
-
-    if {$config(display-treeview)==0} {
-        .toolbar.tree config -relief flat
-    } else {
-        .toolbar.tree config -relief sunken
-    }
 
     if {$config(display-timeline)==0} {
         .toolbar.tline config -relief flat
@@ -493,8 +476,8 @@ proc mainWindow:refreshToolbar {} {
     }
 }
 
-proc mainWindow:selectionChanged {w obj} {
-    if {$w!=".inspector"} { # source is different from .inspector itself
+proc mainWindow:selectionChanged {insp obj} {
+    if {$insp!=".inspector"} { # source is different from .inspector itself
         opp_inspector_setobject .inspector $obj
     }
 }
@@ -533,42 +516,23 @@ proc bindRunCommands {w} {
     bind $w <F7> {after 100 runExpress}
     bind $w <F8> {stopSimulation}
     bind $w <Control-F9> {debugNextEvent}
+    bind $w <Control-q>  {exitOmnetpp}
 }
 
-proc bindOtherCommands {w} {
-    bind $w <Control-s> [list inspectFilteredObjectList $w]
-    bind $w <Control-S> [list inspectFilteredObjectList $w]
+proc bindOtherCommands {w {insp ""}} {
+    bind $w <Control-s> [list inspectFilteredObjectList $insp]
 }
 
-# note: modptr may be "systemmodule" or a pointer; "" means no module
-proc bindCommandsToTextWidget {txt {wintype ""}} {
+proc bindCommandsToTextWidget {txt} {
     global config B2 B3
 
-    # bindings for find
-    #   'break' is needed below because
-    #      ^F is originally bound to 1 char right
-    #      ^N is originally bound to 1 line down
+    # bindings for find; 'break' is needed below because Ctrl+F is already bound
     bind $txt <Key> {%W tag remove SELECT 0.0 end}
     bind $txt <Control-f> {findDialog %W; break}
-    bind $txt <Control-F> {findDialog %W; break}
-    bind $txt <Control-n> {findNext %W; break}
-    bind $txt <Control-N> {findNext %W; break}
     bind $txt <F3> {findNext %W}
-
-    if {$wintype=="modulewindow"} {
-        # bind Ctrl+H ('break' is needed because originally ^H is bound to DEL)
-        set w [winfo parent [winfo parent $txt]]
-        bind $txt <Control-h> "LogInspector:openFilterDialog $w; break"
-        bind $txt <Control-H> "LogInspector:openFilterDialog $w; break"
-    }
 
     # bind Ctrl+A "Select all" ('break' is needed below because ^A=Home)
     bind $txt <Control-a> {%W tag add sel 1.0 end; break}
-
-    # bind a context menu as well
-    catch {$txt config -wrap $config(editor-wrap)}
-    catch {$txt tag configure "prefix" -elide $config(editor-hideprefix)}
-    bind $txt <Button-$B3> [list textwidget:contextMenu %W $wintype %X %Y]
 }
 
 #===================================================================

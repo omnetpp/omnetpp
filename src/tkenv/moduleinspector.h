@@ -27,8 +27,13 @@ NAMESPACE_BEGIN
 class cModule;
 class cGate;
 
+enum SendAnimMode {ANIM_BEGIN, ANIM_END, ANIM_THROUGH};
+
+
 class TKENV_API ModuleInspector : public Inspector
 {
+   public:
+
    protected:
       char canvas[128];
       bool needs_redraw;
@@ -43,6 +48,7 @@ class TKENV_API ModuleInspector : public Inspector
       void drawSubmodule(Tcl_Interp *interp, cModule *submod, double x, double y, const char *scaling);
       void drawEnclosingModule(Tcl_Interp *interp, cModule *parentmodule, const char *scaling);
       void drawConnection(Tcl_Interp *interp, cGate *gate);
+      static const char *animModeToStr(SendAnimMode mode);
 
    public:
       ModuleInspector(InspectorFactory *f);
@@ -87,7 +93,20 @@ class TKENV_API ModuleInspector : public Inspector
       virtual void displayStringChanged();
       virtual void displayStringChanged(cModule *submodule);
       virtual void displayStringChanged(cGate *gate);
-      virtual void bubble(cModule *mod, const char *text);
+      virtual void bubble(cComponent *subcomponent, const char *text);
+
+      virtual void animateMethodcallAscent(cModule *srcSubmodule, const char *methodText);
+      virtual void animateMethodcallDescent(cModule *destSubmodule, const char *methodText);
+      virtual void animateMethodcallHoriz(cModule *srcSubmodule, cModule *destSubmodule, const char *methodText);
+      static void animateMethodcallDelay(Tcl_Interp *interp);
+      virtual void animateMethodcallCleanup();
+      virtual void animateSendOnConn(cGate *srcGate, cMessage *msg, SendAnimMode mode);
+      virtual void animateSenddirectAscent(cModule *srcSubmodule, cMessage *msg);
+      virtual void animateSenddirectDescent(cModule *destSubmodule, cMessage *msg, SendAnimMode mode);
+      virtual void animateSenddirectHoriz(cModule *srcSubmodule, cModule *destSubmodule, cMessage *msg, SendAnimMode mode);
+      virtual void animateSenddirectCleanup();
+      virtual void animateSenddirectDelivery(cModule *destSubmodule, cMessage *msg);
+      static void performAnimations(Tcl_Interp *interp);
 };
 
 NAMESPACE_END

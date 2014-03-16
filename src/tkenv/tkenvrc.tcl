@@ -80,7 +80,7 @@ proc saveTkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
         close $fout
 
     } err] {
-       tk_messageBox -icon error -type ok -message "Error: $err" -title {Error}
+       tk_messageBox -icon error -type ok -message "Error: $err" -title "Error"
        return
     }
 }
@@ -150,7 +150,7 @@ proc loadTkenvrc {fname} {
                 inspectorList:tkenvrcProcessLine [concat "inspector" $line]
             }
         }] {
-            tk_messageBox -icon warning -type ok -title {Error reading .tkenvrc} -message "$fname line $lineno is invalid, ignoring"
+            tk_messageBox -icon warning -type ok -title "Error reading .tkenvrc" -message "$fname line $lineno is invalid, ignoring"
         }
         incr lineno
     }
@@ -158,7 +158,6 @@ proc loadTkenvrc {fname} {
 
     set fonts(bold)     $fonts(normal)
     set fonts(balloon)  $fonts(normal)
-    set fonts(timeline) $fonts(canvas)
 
     inspectorList:openInspectors
     reflectSettingsInGui
@@ -216,6 +215,7 @@ proc reflectSettingsInGui {} {
    option add *Canvas.font      $fonts(normal)
    option add *Listbox.font     $fonts(normal)
    option add *Text.font        $fonts(text)
+   option add *TCombobox.font   $fonts(normal)
 
    ttk::style configure TButton          -font $fonts(normal)
    ttk::style configure TCombobox        -font $fonts(normal)
@@ -225,8 +225,11 @@ proc reflectSettingsInGui {} {
 
    set help_tips(font)  $fonts(balloon)
 
-   toggleTreeView
-   toggleTreeView
+   set h [font metrics $fonts(normal) -displayof . -linespace]
+   set h [expr $h+3]
+   ttk::style configure Treeview -rowheight $h
+
+   timeline:fontChanged
    toggleTimeline
    toggleTimeline
 

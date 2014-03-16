@@ -14,21 +14,21 @@
 #----------------------------------------------------------------#
 
 
-proc textWindowAddIcons {w {wintype ""}} {
+proc textWindowAddIcons {insp {wintype ""}} {
     global icons help_tips
 
-    packIconButton $w.toolbar.copy   -image $icons(copy) -command "editCopy $w.main.text"
-    packIconButton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
-    packIconButton $w.toolbar.save   -image $icons(save) -command "saveFile $w"
+    packIconButton $insp.toolbar.copy   -image $icons(copy) -command "editCopy $insp.main.text"
+    packIconButton $insp.toolbar.find   -image $icons(find) -command "findDialog $insp.main.text"
+    packIconButton $insp.toolbar.save   -image $icons(save) -command "saveFile $insp"
     if {$wintype=="modulewindow"} {
-        packIconButton $w.toolbar.filter -image $icons(filter) -command "editFilterWindowContents $w"
+        packIconButton $insp.toolbar.filter -image $icons(filter) -command "editFilterWindowContents $insp"
     }
-    packIconButton $w.toolbar.sep21  -separator
+    packIconButton $insp.toolbar.sep21  -separator
 
-    set help_tips($w.toolbar.copy)   {Copy selected text to clipboard (Ctrl+C)}
-    set help_tips($w.toolbar.find)   {Find string in window (Ctrl+F)}
-    set help_tips($w.toolbar.save)   {Save window contents to file}
-    set help_tips($w.toolbar.filter) {Filter window contents (Ctrl+H)}
+    set help_tips($insp.toolbar.copy)   "Copy selected text to clipboard (Ctrl+C)"
+    set help_tips($insp.toolbar.find)   "Find string in window (Ctrl+F)"
+    set help_tips($insp.toolbar.save)   "Save window contents to file"
+    set help_tips($insp.toolbar.filter) "Filter window contents (Ctrl+H)"
 }
 
 #
@@ -60,7 +60,7 @@ proc extendContextMenu {rules} {
        lappend contextmenurules(keys) $i
        if {[llength $line]!=4} {
            set rulename "\"[lindex $line 0]\""
-           tk_messageBox -type ok -icon info -title Info -message "Context menu inspector rule $rulename should contain 4 items, ignoring."
+           tk_messageBox -type ok -icon info -title "Info" -message "Context menu inspector rule $rulename should contain 4 items, ignoring."
        } else {
            set contextmenurules($i,label)   [lindex $line 0]
            set contextmenurules($i,context) [lindex $line 1]
@@ -71,7 +71,7 @@ proc extendContextMenu {rules} {
     }
 }
 
-proc fillInspectorContextMenu {menu w ptr} {
+proc fillInspectorContextMenu {menu insp ptr} {
     global contextmenurules
 
     # ptr should never be null, but check it anyway
@@ -80,9 +80,9 @@ proc fillInspectorContextMenu {menu w ptr} {
     # add inspector types supported by the object
     set name [opp_getobjectfullname $ptr]
     set insptypes [opp_supported_insp_types $ptr]
-    if {$w!="" && $ptr!=[opp_inspector_getobject $w]} {
-        if [opp_inspector_supportsobject $w $ptr] {set state normal} else {set state disabled}
-        $menu add command -label "Go into '$name'" -command "opp_inspector_setobject $w $ptr" -state $state
+    if {$insp!="" && $ptr!=[opp_inspector_getobject $insp]} {
+        if [opp_inspector_supportsobject $insp $ptr] {set state normal} else {set state disabled}
+        $menu add command -label "Go into '$name'" -command "opp_inspector_setobject $insp $ptr" -state $state
         $menu add separator
     }
     foreach type $insptypes {
@@ -92,10 +92,10 @@ proc fillInspectorContextMenu {menu w ptr} {
     # add "run until" menu items
     set baseclass [opp_getobjectbaseclass $ptr]
     if {$baseclass=="cSimpleModule" || $baseclass=="cCompoundModule"} {
-        set w ".$ptr-0"  ;#hack
+        set insp ".$ptr-0"  ;#hack
         $menu add separator
-        $menu add command -label "Run until next event in module '$name'" -command "runSimulationLocal $w normal"
-        $menu add command -label "Fast run until next event in module '$name'" -command "runSimulationLocal $w fast"
+        $menu add command -label "Run until next event in module '$name'" -command "runSimulationLocal $insp normal"
+        $menu add command -label "Fast run until next event in module '$name'" -command "runSimulationLocal $insp fast"
     }
 
     if {$baseclass=="cMessage"} {
@@ -130,25 +130,25 @@ proc fillInspectorContextMenu {menu w ptr} {
     }
 }
 
-proc createInspectorContextMenu {w ptrs} {
+proc createInspectorContextMenu {insp ptrs} {
 
     # create popup menu
     catch {destroy .popup}
     menu .popup -tearoff 0
 
-    if [opp_isinspector $w] {
-       set ptr [opp_inspector_getobject $w]
+    if [opp_isinspector $insp] {
+       set ptr [opp_inspector_getobject $insp]
        if [opp_isnotnull $ptr] {
           set parentptr [opp_getobjectparent $ptr]
-          if {[opp_isnotnull $parentptr] && [opp_inspector_supportsobject $w $parentptr]} {
-              .popup add command -label "Go up" -command "opp_inspector_setobject $w $parentptr"
+          if {[opp_isnotnull $parentptr] && [opp_inspector_supportsobject $insp $parentptr]} {
+              .popup add command -label "Go up" -command "opp_inspector_setobject $insp $parentptr"
               .popup add separator
           }
        }
     }
 
     if {[llength $ptrs] == 1} {
-        fillInspectorContextMenu .popup $w $ptrs
+        fillInspectorContextMenu .popup $insp $ptrs
     } else {
         foreach ptr $ptrs {
             set submenu .popup.$ptr
@@ -176,7 +176,7 @@ proc createInspectorContextMenu {w ptrs} {
             } else {
                 set label "$name ($infostr)"
             }
-            fillInspectorContextMenu $submenu $w $ptr
+            fillInspectorContextMenu $submenu $insp $ptr
             .popup add cascade -label $label -menu $submenu
         }
     }
@@ -190,7 +190,7 @@ proc inspectContextMenuRules {ptr key} {
     set name [opp_getobjectfullpath $ptr]
     set objlist [opp_getsubobjectsfilt $ptr $allcategories $contextmenurules($key,class) "$name.$contextmenurules($key,name)" 100 ""]
     if {[llength $objlist] > 5} {
-        tk_messageBox -type ok -icon info -title Info -message "This matches [llength $objlist]+ objects, opening inspectors only for the first five."
+        tk_messageBox -type ok -icon info -title "Info" -message "This matches [llength $objlist]+ objects, opening inspectors only for the first five."
         set objlist [lrange $objlist 0 4]
     }
     foreach objptr $objlist {
@@ -198,15 +198,15 @@ proc inspectContextMenuRules {ptr key} {
     }
 }
 
-proc inspectThis {w type} {
+proc inspectThis {insp type} {
     # extract object pointer from window path name and create inspector
-    set object [opp_inspector_getobject $w]
+    set object [opp_inspector_getobject $insp]
     opp_inspect $object $type
 }
 
-proc inspectComponentType {w {type "(default)"}} {
+proc inspectComponentType {insp {type "(default)"}} {
     # extract object pointer from window path name and create inspector
-    set ptr [opp_inspector_getobject $w]
+    set ptr [opp_inspector_getobject $insp]
     set typeptr [opp_getcomponenttypeobject $ptr]
     opp_inspect $typeptr $type
 }

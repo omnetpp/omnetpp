@@ -999,12 +999,11 @@ int hasChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    cObject *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
 
-   // TBD may be optimized, by exiting foreach on 1st child
-   cCountChildrenVisitor visitor(object);
+   cHasChildrenVisitor visitor(object);
    visitor.process(object);
-   int count = visitor.getCount();
+   bool hasChildren = visitor.getResult();
 
-   Tcl_SetResult(interp, TCLCONST(count==0 ? "0" : "1"), TCL_STATIC);
+   Tcl_SetResult(interp, TCLCONST(hasChildren ? "1" : "0"), TCL_STATIC);
    return TCL_OK;
 }
 

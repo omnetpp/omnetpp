@@ -35,7 +35,7 @@ proc saveFile {win {filename ""}} {
 
     if {$filename == ""} {
         set filename $config(log-save-filename)
-        set filename [tk_getSaveFile -title {Save Log Window Contents} -parent $win \
+        set filename [tk_getSaveFile -title "Save Log Window Contents" -parent $win \
                       -defaultextension "out" -initialfile $filename \
                       -filetypes {{{Log files} {*.out}} {{All files} {*}}}]
         if {$filename == ""} return
@@ -57,7 +57,7 @@ proc saveFile {win {filename ""}} {
 # Open file viewer window
 #
 proc createFileViewer {filename} {
-    global icons fonts help_tips
+    global config icons fonts help_tips B3
 
     if {$filename == ""} return
 
@@ -82,9 +82,9 @@ proc createFileViewer {filename} {
     packIconButton $w.toolbar.save   -image $icons(save) -command "saveFile $w $filename"
     packIconButton $w.toolbar.sep21  -separator
 
-    set help_tips($w.toolbar.copy)   {Copy selected text to clipboard (Ctrl+C)}
-    set help_tips($w.toolbar.find)   {Find string in window (Ctrl+F}
-    set help_tips($w.toolbar.save)   {Save window contents to file}
+    set help_tips($w.toolbar.copy)   "Copy selected text to clipboard (Ctrl+C)"
+    set help_tips($w.toolbar.find)   "Find string in window (Ctrl+F"
+    set help_tips($w.toolbar.save)   "Save window contents to file"
 
     pack $w.toolbar  -anchor center -expand 0 -fill x -side top
 
@@ -98,6 +98,10 @@ proc createFileViewer {filename} {
     logTextWidget:configureTags $w.main.text
     bindCommandsToTextWidget $w.main.text
 
+    # bind a context menu as well
+    catch {$w.main.text config -wrap $config(editor-wrap)}
+    bind $w.main.text <Button-$B3> [list textwidget:contextMenu %W "" %X %Y]
+
     # Read file
     loadFile $w $filename
 }
@@ -106,7 +110,7 @@ proc createFileViewer {filename} {
 #
 # Create a context menu for a text widget
 #
-proc textwidget:contextMenu {txt wintype X Y} {
+proc textwidget:contextMenu {txt insp X Y} {
     global tmp config
 
     set tmp(hideprefix) [$txt tag cget prefix -elide]
@@ -115,21 +119,20 @@ proc textwidget:contextMenu {txt wintype X Y} {
     catch {destroy .popup}
     menu .popup -tearoff 0
 
-    .popup add command -command editCopy -label {Copy} -accel {Ctrl+C} -underline 0
+    .popup add command -command editCopy -label "Copy" -accel "Ctrl+C" -underline 0
     .popup add separator
-    .popup add command -command "editFind $txt" -label {Find...} -accel {Ctrl+F} -underline 0
-    .popup add command -command "editFindNext $txt" -label {Find next} -accel {Ctrl+N,F3} -underline 5
+    .popup add command -command "editFind $txt" -label "Find..." -accel "Ctrl+F" -underline 0
+    .popup add command -command "editFindNext $txt" -label "Find next" -accel "F3" -underline 5
     .popup add separator
-    if {$wintype=="modulewindow"} {
-        set w [winfo parent [winfo parent $txt]]
-        .popup add command -command "LogInspector:openFilterDialog $w" -label {Filter window contents...} -accel {Ctrl+H} -underline 0
+    if {$insp!=""} {
+        .popup add command -command "LogInspector:openFilterDialog $insp" -label "Filter window contents..." -accel "Ctrl+H" -underline 0
         .popup add separator
         .popup add checkbutton -command "textwidget:togglePrefix $txt" -variable tmp(hideprefix) -onvalue 0 -offvalue 1 -label {Show log prefix} -underline 0
     }
-    .popup add checkbutton -command "textwidget:toggleWrap $txt" -variable tmp(wrap) -onvalue "char" -offvalue "none" -label {Wrap lines} -underline 0
     .popup add command -label "Logging options..." -command "optionsDialog $txt g"
+    .popup add checkbutton -command "textwidget:toggleWrap $txt" -variable tmp(wrap) -onvalue "char" -offvalue "none" -label "Wrap lines" -underline 0
     .popup add separator
-    .popup add command -command "$txt tag add sel 1.0 end" -label {Select all} -accel {Ctrl+A} -underline 0
+    .popup add command -command "$txt tag add sel 1.0 end" -label "Select all" -accel "Ctrl+A" -underline 0
 
     tk_popup .popup $X $Y
 }

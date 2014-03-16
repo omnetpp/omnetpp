@@ -14,41 +14,51 @@
 #----------------------------------------------------------------#
 
 
-proc createGenericObjectInspector {w geom} {
-    createInspectorToplevel $w $geom
-    createGenericObjectViewer $w
+proc createGenericObjectInspector {insp geom} {
+    createInspectorToplevel $insp $geom
+    createGenericObjectViewer $insp
 }
 
-proc createEmbeddedGenericObjectInspector {w} {
-    global icons
+proc createEmbeddedGenericObjectInspector {insp} {
+    global icons help_tips
 
     # Create info bar
-    frame $w.infobar  -borderwidth 0
-    label $w.infobar.icon -anchor w -relief flat -image $icons(none_vs)
-    label $w.infobar.name -anchor w -relief flat -justify left
-    pack $w.infobar.icon -anchor n -side left -expand 0 -fill y -pady 1
-    pack $w.infobar.name -anchor n -side left -expand 1 -fill both -pady 1
-    pack $w.infobar -anchor w -side top -fill x -expand 0
+    frame $insp.infobar  -borderwidth 0
+    label $insp.infobar.icon -anchor w -relief flat -image $icons(none_vs)
+    label $insp.infobar.name -anchor w -relief flat -justify left
+    pack $insp.infobar.icon -anchor n -side left -expand 0 -fill y -pady 1
+    pack $insp.infobar.name -anchor n -side left -expand 1 -fill both -pady 1
+    pack $insp.infobar -anchor w -side top -fill x -expand 0
 
-    createGenericObjectViewer $w
+    createGenericObjectViewer $insp
+
+    set tb [inspector:createInternalToolbar $insp $insp]
+
+    packIconButton $tb.back    -image $icons(back)    -command "inspector:back $insp"
+    packIconButton $tb.forward -image $icons(forward) -command "inspector:forward $insp"
+    packIconButton $tb.parent  -image $icons(parent)  -command "inspector:inspectParent $insp"
+
+    set help_tips($tb.back)    "Back"
+    set help_tips($tb.forward) "Forward"
+    set help_tips($tb.parent)  "Go to parent"
 }
 
-proc createGenericObjectViewer {w} {
-    set nb $w.nb
+proc createGenericObjectViewer {insp} {
+    set nb $insp.nb
     ttk::notebook $nb -width 460 -height 260
     pack $nb -expand 1 -fill both
 
     $nb add [frame $nb.fields] -text "Fields"
-    createFieldsPage $nb.fields $w
+    createFieldsPage $nb.fields $insp
 
     $nb add [frame $nb.contents] -text "Contents"
-    createInspectorListbox $nb.contents $w
+    createInspectorListbox $nb.contents $insp
 }
 
-proc GenericObjectInspector:onSetObject {w} {
+proc GenericObjectInspector:onSetObject {insp} {
     global icons help_tips
 
-    set object [opp_inspector_getobject $w]
+    set object [opp_inspector_getobject $insp]
     if [opp_isnull $object] return  ;# leave inspector as it is
     set type [opp_getobjectbaseclass $object]
 
@@ -56,29 +66,29 @@ proc GenericObjectInspector:onSetObject {w} {
     set focusContentsPage [lcontains {cArray cQueue cMessageHeap cSimpleModule cCompoundModule cChannel cRegistrationList} $type]
 
     if {$showContentsPage} {
-        $w.nb tab $w.nb.contents -state normal
+        $insp.nb tab $insp.nb.contents -state normal
     } else {
-        $w.nb tab $w.nb.contents -state disabled
+        $insp.nb tab $insp.nb.contents -state disabled
     }
 
     if {$focusContentsPage} {
-        $w.nb select $w.nb.contents
+        $insp.nb select $insp.nb.contents
     } else {
-        $w.nb select $w.nb.fields
+        $insp.nb select $insp.nb.fields
     }
 }
 
-proc GenericObjectInspector:refresh {w} {
-    fieldsPage:refresh $w
+proc GenericObjectInspector:refresh {insp} {
+    fieldsPage:refresh $insp
 
-    set lb $w.nb.contents.main.list
+    set lb $insp.nb.contents.main.list
     ttkTreeview:deleteAll $lb
-    set ptr [opp_inspector_getobject $w]
+    set ptr [opp_inspector_getobject $insp]
     if [opp_isnull $ptr] {
-        $w.nb tab $w.nb.contents -text "Contents (0)"
+        $insp.nb tab $insp.nb.contents -text "Contents (0)"
     } else {
         set count [opp_fillinspectorlistbox $lb $ptr 0]
-        $w.nb tab $w.nb.contents -text "Contents ($count)"
+        $insp.nb tab $insp.nb.contents -text "Contents ($count)"
     }
 }
 

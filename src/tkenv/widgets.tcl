@@ -100,20 +100,21 @@ proc setupTkOptions {} {
    # which is called after .tkenvrc has been read
    if {[string equal [tk windowingsystem] x11]} {
       set normalfamily [getFirstAvailableFontFamily {Ubuntu Arial Verdana Helvetica Tahoma "DejaVu Sans" "Nimbus Sans L" FreeSans Sans} unknown]
-      set monofamily [getFirstAvailableFontFamily {"DejaVu Sans Mono" "Courier New" "FreeMono" "Courier"} unknown]
+      set condensedfamily [getFirstAvailableFontFamily {"Ubuntu Condensed" "Arial Narrow" "DejaVu Sans Condensed"} $normalfamily]
+      set monofamily [getFirstAvailableFontFamily {"Ubuntu Mono" "DejaVu Sans Mono" "Courier New" "FreeMono" "Courier"} unknown]
       # note: standard font names (not families!) are: TkCaptionFont TkSmallCaptionFont TkTooltipFont TkFixedFont TkHeadingFont TkMenuFont TkIconFont TkTextFont TkDefaultFont
       if {[tk scaling] > 1.5} {set size 11} else {set size 9}
       set fonts(normal)   [list $normalfamily $size]
       set fonts(bold)     [list $normalfamily $size bold]
       set fonts(big)      [list $normalfamily 18]
-      set fonts(text)     [list $normalfamily $size]
+      set fonts(text)     [list $normalfamily $size] ;# or: $monofamily
       set fonts(balloon)  [list $normalfamily $size]
       set fonts(canvas)   [list $normalfamily $size]
-      set fonts(timeline) [list $normalfamily $size]
-      set fonts(mono)     [list $monofamily $size]
+      set fonts(timeline) [list $condensedfamily $size]
    } elseif {[string equal [tk windowingsystem] aqua]} {
       # Mac
       set normalfamily [getFirstAvailableFontFamily {"Lucida Grande" Helvetica} unknown]
+      set condensedfamily [getFirstAvailableFontFamily {"Arial Narrow"} $normalfamily]
       set monofamily [getFirstAvailableFontFamily {"Monaco" "Courier"} unknown]
       set size 13
       set fonts(normal)   [list $normalfamily 12]
@@ -121,12 +122,12 @@ proc setupTkOptions {} {
       set fonts(big)      [list $normalfamily 18]
       set fonts(text)     [list $monofamily 12]
       set fonts(balloon)  [list $normalfamily 12]
-      set fonts(timeline) [list $normalfamily 11]
+      set fonts(timeline) [list $condensedfamily 11]
       set fonts(canvas)   [list $normalfamily 12]
-      set fonts(mono)     [list $monofamily $size]
    } else {
       # Windows
       set normalfamily [getFirstAvailableFontFamily {"Segoe UI" "MS Sans Serif" "Arial"} unknown]
+      set condensedfamily [getFirstAvailableFontFamily {"Segoe Condensed" "Gill Sans MT Condensed" "Liberation Sans Narrow"} $normalfamily]
       set monofamily [getFirstAvailableFontFamily {"DejaVu Sans Mono" "Courier New" "Consolas" "Terminal"} unknown]
       if {$normalfamily == "Segoe UI"} {
           set size 9  ;# text in this font appears to be smaller than in MS Sans Serif or Arial
@@ -136,11 +137,10 @@ proc setupTkOptions {} {
       set fonts(normal)   [list $normalfamily $size]
       set fonts(bold)     [list $normalfamily $size]
       set fonts(big)      [list $normalfamily 18]
-      set fonts(text)     [list $normalfamily $size]
+      set fonts(text)     [list $normalfamily $size] ;# or: $monofamily
       set fonts(balloon)  [list $normalfamily $size]
-      set fonts(timeline) [list $normalfamily $size]
+      set fonts(timeline) [list $condensedfamily $size]
       set fonts(canvas)   [list $normalfamily $size]
-      set fonts(mono)     [list $monofamily $size]
    }
 
    # remember default font settings (we'll only save the non-default ones to .tkenvrc)
@@ -521,7 +521,6 @@ proc fontcombo:set {w oldfont} {
     set fontlist {}
     foreach family [lsort [font families]] {
         if {[regexp {^[A-Za-z]} $family]} {
-            if {[llength $family]>1} {set family "\"$family\""}
             lappend fontlist [string trim "$family $size"]
         }
     }
@@ -529,7 +528,7 @@ proc fontcombo:set {w oldfont} {
     $w configure -values $fontlist
     catch {$w current 0}
 
-    regsub -all "\[{}\]" $oldfont "\"" oldfont
+    set oldfont [string map {"{" "" "}" "" "\"" ""} $oldfont]
     $w set $oldfont
 }
 
@@ -850,19 +849,44 @@ proc moveToScreen {w} {
     }
 }
 
+# rememberGeometry --
+#
+# Remember geometry of a dialog for the duration of the session.
+# Note: it is usually not a good idea to persist the dialog
+# position and size, as wrong settings may later cause confusion.
+#
+proc rememberGeometry {w} {
+    global session
+    set key "$w:geom"
+    regsub {^.*\.} $key "" key
+    set geom [wm geometry $w]
+    set session($key) $geom
+}
+
+# setGeometry --
+#
+# Restore geometry of a dialog, or center the dialog
+# if no remembered geometry information is available.
+#
+proc setGeometry {w} {
+    global session
+    set key "$w:geom"
+    regsub {^.*\.} $key "" key
+    if [info exists session($key)] {
+        wm geometry $w $session($key)
+    } else {
+        center $w
+    }
+}
+
 # createOkCancelDialog --
 #
 # creates dialog with OK and Cancel buttons
 # user's widgets can go into frame $w.f
 #
 proc createOkCancelDialog {w title} {
-    global tk_version tcl_platform
-
     catch {destroy $w}
     toplevel $w -class Toplevel
-    if {$tk_version<8.2 || $tcl_platform(platform)!="windows"} {
-        wm transient $w [winfo toplevel [winfo parent $w]]
-    }
     wm title $w $title
     wm iconname $w Dialog
     wm focusmodel $w passive
@@ -878,8 +902,8 @@ proc createOkCancelDialog {w title} {
 
     frame $w.f
     frame $w.buttons
-    ttk_button $w.buttons.okbutton  -text {OK} -width 10 -default active
-    ttk_button $w.buttons.cancelbutton  -text {Cancel} -width 10
+    ttk_button $w.buttons.okbutton  -text "OK" -width 10 -default active
+    ttk_button $w.buttons.cancelbutton  -text "Cancel" -width 10
 
     set padx 5
     set pady 5
@@ -920,7 +944,7 @@ proc execOkCancelDialog {w {validating_proc {}}} {
     # next line mysteriously solves "lost focus" problem of popup dialogs...
     after 1 "wm deiconify $w"
 
-    center $w
+    setGeometry $w
 
     set oldGrab [grab current $w]
     if {$oldGrab != ""} {
@@ -959,13 +983,8 @@ proc execOkCancelDialog {w {validating_proc {}}} {
 # User's widgets can go into frame $w.f, and extra buttons can go into frame $w.buttons.
 #
 proc createCloseDialog {w title} {
-    global tk_version tcl_platform
-
     catch {destroy $w}
     toplevel $w -class Toplevel
-    if {$tk_version<8.2 || $tcl_platform(platform)!="windows"} {
-        wm transient $w [winfo toplevel [winfo parent $w]]
-    }
     wm title $w $title
     wm iconname $w Dialog
     wm focusmodel $w passive
@@ -981,7 +1000,7 @@ proc createCloseDialog {w title} {
 
     frame $w.f
     frame $w.buttons
-    ttk_button $w.buttons.closebutton  -text {Close} -width 10 -default active
+    ttk_button $w.buttons.closebutton  -text "Close" -width 10 -default active
 
     set padx 5
     set pady 5
@@ -1001,7 +1020,6 @@ proc createCloseDialog {w title} {
 # Executes the dialog.
 #
 proc executeCloseDialog w {
-
     global opp
 
     $w.buttons.closebutton configure -command "set opp($w) 1"
@@ -1014,7 +1032,7 @@ proc executeCloseDialog w {
     # next line mysteriously solves "lost focus" problem of popup dialogs...
     after 1 "wm deiconify $w"
 
-    center $w
+    setGeometry $w
 
     set oldGrab [grab current $w]
     if {$oldGrab != ""} {
@@ -1090,7 +1108,7 @@ proc showTextOnceDialog {key} {
     text $w.f.text -relief solid -bd 1 -wrap word
     $w.f.text insert 1.0 $text
     $w.f.text config -state disabled
-    checkbutton $w.f.x -text {do not show this hint again} -variable tmp_once
+    checkbutton $w.f.x -text "do not show this hint again" -variable tmp_once
     pack $w.f.x -expand 0 -fill x -side bottom
     pack $w.f.text -expand 1 -fill both -side top -padx 5 -pady 5
 

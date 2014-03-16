@@ -14,34 +14,34 @@
 #----------------------------------------------------------------#
 
 
-proc createOutputVectorInspector {w geom} {
-    createInspectorToplevel $w $geom
-    createOutputVectorViewer $w
+proc createOutputVectorInspector {insp geom} {
+    createInspectorToplevel $insp $geom
+    createOutputVectorViewer $insp
 }
 
-proc createEmbeddedOutputVectorInspector {w geom} {
-    createOutputVectorViewer $w
+proc createEmbeddedOutputVectorInspector {insp geom} {
+    createOutputVectorViewer $insp
 }
 
-proc createOutputVectorViewer {w} {
-    frame $w.main
-    frame $w.bot
-    pack $w.bot -anchor center -expand 0 -fill x -side bottom
-    pack $w.main -anchor center -expand 1 -fill both -side top
+proc createOutputVectorViewer {insp} {
+    frame $insp.main
+    frame $insp.bot
+    pack $insp.bot -anchor center -expand 0 -fill x -side bottom
+    pack $insp.main -anchor center -expand 1 -fill both -side top
 
-    canvas $w.main.canvas -borderwidth 2 -relief raised -background wheat1
-    pack $w.main.canvas -anchor center -expand 1 -fill both -side top
+    canvas $insp.main.canvas -borderwidth 2 -relief raised -background wheat1
+    pack $insp.main.canvas -anchor center -expand 1 -fill both -side top
 
-    label $w.bot.info -width 50 -relief groove
-    ttk_button $w.bot.view -text {Options...} -command "OutputVectorInspector:options $w"
-    pack $w.bot.view -anchor center -expand 0 -fill none -side right
-    pack $w.bot.info -anchor center -expand 1 -fill x -side left
+    label $insp.bot.info -width 50 -relief groove
+    ttk_button $insp.bot.view -text "Options..." -command "OutputVectorInspector:options $insp"
+    pack $insp.bot.view -anchor center -expand 0 -fill none -side right
+    pack $insp.bot.info -anchor center -expand 1 -fill x -side left
 
-    $w.main.canvas bind all <Any-Enter> {OutputVectorInspector:mouse %W %x %y 1}
-    $w.main.canvas bind all <Any-Leave> {OutputVectorInspector:mouse %W %x %y 0}
+    $insp.main.canvas bind all <Any-Enter> "OutputVectorInspector:mouse $insp %x %y 1"
+    $insp.main.canvas bind all <Any-Leave> "OutputVectorInspector:mouse $insp %x %y 0"
 
     # make the window respond to resize events
-    bind $w <Configure> "opp_refreshinspector $w"
+    bind $insp <Configure> "opp_refreshinspector $insp"
 
     # we need to let the window display, otherwise the canvas size
     # (needed by the first draw) returned by [winfo width/height ...]
@@ -49,76 +49,76 @@ proc createOutputVectorViewer {w} {
     update idletasks
 }
 
-proc OutputVectorInspector:options {win} {
-    set w .ov-options
-    catch {destroy $w}
+proc OutputVectorInspector:options {insp} {
+    set dlg .ov-options
+    catch {destroy $dlg}
     global tmp
 
-    toplevel $w -class Toplevel
-    wm iconname $w Dialog
-    wm focusmodel $w passive
-    wm overrideredirect $w 0
-    wm resizable $w 1 1
-    wm deiconify $w
-    wm title $w {Plotting Options}
-    wm protocol $w WM_DELETE_WINDOW { }
+    toplevel $dlg -class Toplevel
+    wm iconname $dlg Dialog
+    wm focusmodel $dlg passive
+    wm overrideredirect $dlg 0
+    wm resizable $dlg 1 1
+    wm deiconify $dlg
+    wm title $dlg "Plotting Options"
+    wm protocol $dlg WM_DELETE_WINDOW { }
 
-    labelframe $w.main -text {Options}
-    checkbutton $w.main.auto -text {Autoscale time and value axes} -variable tmp(autoscale)
-    label $w.main.lbl -text {Manual axis settings:}
-    label-entry $w.main.time {Time scale (sec/px):}
-    label-entry $w.main.ymin {Ymin:}
-    label-entry $w.main.ymax {Ymax:}
-    label-combo $w.main.combo {Style:} {dots pins bars sample-hold lines}
-    label $w.main.pad -text { }
+    labelframe $dlg.main -text "Options"
+    checkbutton $dlg.main.auto -text "Autoscale time and value axes" -variable tmp(autoscale)
+    label $dlg.main.lbl -text "Manual axis settings:"
+    label-entry $dlg.main.time "Time scale (sec/px):"
+    label-entry $dlg.main.ymin "Ymin:"
+    label-entry $dlg.main.ymax "Ymax:"
+    label-combo $dlg.main.combo "Style:" {dots pins bars sample-hold lines}
+    label $dlg.main.pad -text " "
 
-    frame $w.buttons
-    ttk_button $w.buttons.okbutton -width 10 -text {OK}
-    ttk_button $w.buttons.applybutton -width 10 -text {Apply}
-    ttk_button $w.buttons.cancelbutton -width 10 -text {Cancel}
+    frame $dlg.buttons
+    ttk_button $dlg.buttons.okbutton -width 10 -text "OK"
+    ttk_button $dlg.buttons.applybutton -width 10 -text "Apply"
+    ttk_button $dlg.buttons.cancelbutton -width 10 -text "Cancel"
 
-    pack $w.main -anchor center -expand 1 -fill both -side top -padx 5 -pady 5
-    pack $w.main.auto -anchor w -expand 0 -fill none -padx 3m -side top
-    pack $w.main.lbl -anchor w -expand 0 -fill none -padx 3m -side top
-    pack $w.main.time -anchor center -expand 1 -fill x -padx 5m -side top
-    pack $w.main.ymin -anchor center -expand 1 -fill x -padx 5m -side top
-    pack $w.main.ymax -anchor center -expand 1 -fill x -padx 5m -side top
-    pack $w.main.combo -anchor center -expand 1 -fill x -padx 3m -side top
-    pack $w.main.pad -anchor center -expand 1 -fill x -padx 3m -side top
+    pack $dlg.main -anchor center -expand 1 -fill both -side top -padx 5 -pady 5
+    pack $dlg.main.auto -anchor w -expand 0 -fill none -padx 3m -side top
+    pack $dlg.main.lbl -anchor w -expand 0 -fill none -padx 3m -side top
+    pack $dlg.main.time -anchor center -expand 1 -fill x -padx 5m -side top
+    pack $dlg.main.ymin -anchor center -expand 1 -fill x -padx 5m -side top
+    pack $dlg.main.ymax -anchor center -expand 1 -fill x -padx 5m -side top
+    pack $dlg.main.combo -anchor center -expand 1 -fill x -padx 3m -side top
+    pack $dlg.main.pad -anchor center -expand 1 -fill x -padx 3m -side top
 
-    pack $w.buttons  -anchor center -expand 0 -fill x -side bottom -padx 5 -pady 5
-    pack $w.buttons.okbutton  -anchor n -expand 0 -side right
-    pack $w.buttons.applybutton -anchor n -expand 0 -side right
-    pack $w.buttons.cancelbutton  -anchor n -expand 0 -side right
+    pack $dlg.buttons  -anchor center -expand 0 -fill x -side bottom -padx 5 -pady 5
+    pack $dlg.buttons.okbutton  -anchor n -expand 0 -side right
+    pack $dlg.buttons.applybutton -anchor n -expand 0 -side right
+    pack $dlg.buttons.cancelbutton  -anchor n -expand 0 -side right
 
-    center $w
+    center $dlg
 
     # 2. Create bindings.
     global opp
 
-    $w.buttons.okbutton configure -command "OutputVectorInspector:apply $w $win; set opp(button) 1"
-    $w.buttons.applybutton configure -command "OutputVectorInspector:apply $w $win"
-    $w.buttons.cancelbutton configure -command "set opp(button) 1"
+    $dlg.buttons.okbutton configure -command "OutputVectorInspector:apply $dlg $insp; set opp(button) 1"
+    $dlg.buttons.applybutton configure -command "OutputVectorInspector:apply $dlg $insp"
+    $dlg.buttons.cancelbutton configure -command "set opp(button) 1"
 
-    bind $w <Return> "OutputVectorInspector:apply $w $win; set opp(button) 1"
-    bind $w <Escape> "set opp(button) 0"
+    bind $dlg <Return> "OutputVectorInspector:apply $dlg $insp; set opp(button) 1"
+    bind $dlg <Escape> "set opp(button) 0"
 
     # 3. set initial values
-    set settings [opp_inspectorcommand $win config]
+    set settings [opp_inspectorcommand $insp config]
     set tmp(autoscale) [lindex $settings 0]
-    $w.main.time.e insert 0 [lindex $settings 1]
-    $w.main.ymin.e insert 0 [lindex $settings 2]
-    $w.main.ymax.e insert 0 [lindex $settings 3]
-    $w.main.combo.e set [lindex $settings 4]
+    $dlg.main.time.e insert 0 [lindex $settings 1]
+    $dlg.main.ymin.e insert 0 [lindex $settings 2]
+    $dlg.main.ymax.e insert 0 [lindex $settings 3]
+    $dlg.main.combo.e set [lindex $settings 4]
 
     # 4. Set a grab and claim the focus too.
     set oldFocus [focus]
-    set oldGrab [grab current $w]
+    set oldGrab [grab current $dlg]
     if {$oldGrab != ""} {
         set grabStatus [grab status $oldGrab]
     }
-    grab $w
-    focus $w.main.time.e
+    grab $dlg
+    focus $dlg.main.time.e
 
     # 5. Wait for the user to respond, then restore the focus and
     # return the index of the selected button.  Restore the focus
@@ -129,7 +129,7 @@ proc OutputVectorInspector:options {win} {
     tkwait variable opp(button)
 
     catch {focus $oldFocus}
-    destroy $w
+    destroy $dlg
     if {$oldGrab != ""} {
         if {$grabStatus == "global"} {
             grab -global $oldGrab
@@ -139,44 +139,45 @@ proc OutputVectorInspector:options {win} {
     }
 }
 
-proc OutputVectorInspector:apply {w win} {
+proc OutputVectorInspector:apply {dlg insp} {
     global tmp
-    opp_inspectorcommand $win config \
+    opp_inspectorcommand $insp config \
                      $tmp(autoscale) \
-                     [$w.main.time.e get] \
-                     [$w.main.ymin.e get] \
-                     [$w.main.ymax.e get] \
-                     [$w.main.combo.e get]
-    opp_refreshinspector $win
+                     [$dlg.main.time.e get] \
+                     [$dlg.main.ymin.e get] \
+                     [$dlg.main.ymax.e get] \
+                     [$dlg.main.combo.e get]
+    opp_refreshinspector $insp
 }
 
-proc OutputVectorInspector:mouse {w x y on} {
+proc OutputVectorInspector:mouse {insp x y on} {
     global opp
+
     # mouse enters/leaves a data point's drawing in a outvector window
     # the index of the point is in the drawing's tag: "value12"
-    set tags [$w gettags current]
+    set c $insp.main.canvas
+    set tags [$c gettags current]
     if [regexp {.*value([0-9]+).*} $tags match value] {
-       set win [winfo toplevel $w]
-       set no_outline [catch {$w itemconfig current -outline}]
+       set no_outline [catch {$c itemconfig current -outline}]
        if {$on == 1} {
            # mouse enters a bar/dot/line/etc: paint it black
            if {$no_outline} {
-              set opp(oldfill)    [lindex [$w itemconfig current -fill] 4]
-              $w itemconfig current -fill black
+              set opp(oldfill)    [lindex [$c itemconfig current -fill] 4]
+              $c itemconfig current -fill black
            } else {
-              set opp(oldfill)    [lindex [$w itemconfig current -fill] 4]
-              set opp(oldoutline) [lindex [$w itemconfig current -outline] 4]
-              $w itemconfig current -fill black -outline black
+              set opp(oldfill)    [lindex [$c itemconfig current -fill] 4]
+              set opp(oldoutline) [lindex [$c itemconfig current -outline] 4]
+              $c itemconfig current -fill black -outline black
            }
-           $win.bot.info config -text [opp_inspectorcommand $win value $value]
+           $insp.bot.info config -text [opp_inspectorcommand $insp value $value]
        } else {
            # mouse leaves the bars/dots/lines: restore original color
            if {$no_outline} {
-              $w itemconfig current -fill $opp(oldfill)
+              $c itemconfig current -fill $opp(oldfill)
            } else {
-              $w itemconfig current -fill $opp(oldfill) -outline $opp(oldoutline)
+              $c itemconfig current -fill $opp(oldfill) -outline $opp(oldoutline)
            }
-           $win.bot.info config -text [opp_inspectorcommand $win value]
+           $insp.bot.info config -text [opp_inspectorcommand $insp value]
        }
     }
 }

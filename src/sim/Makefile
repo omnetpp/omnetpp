@@ -3925,7 +3925,9 @@ $O/parsim/cmemcommbuffer.o: parsim/cmemcommbuffer.cc \
   ../../include/simutil.h
 $O/parsim/cmpicomm.o: parsim/cmpicomm.cc \
   ../../include/regmacros.h \
+  ../../include/cexpression.h \
   ../../include/cnamedobject.h \
+  ../../include/ccomponent.h \
   ../../include/cregistrationlist.h \
   ../../include/cconfiguration.h \
   ../../include/ccommbuffer.h \
@@ -3934,6 +3936,7 @@ $O/parsim/cmpicomm.o: parsim/cmpicomm.cc \
   ../../include/onstartup.h \
   ../../include/clifetimelistener.h \
   ../../include/clistener.h \
+  ../../include/cpar.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
   ../../include/cobjectfactory.h \
@@ -3950,10 +3953,13 @@ $O/parsim/cmpicomm.o: parsim/cmpicomm.cc \
   ../../include/opp_string.h \
   ../../include/simkerneldefs.h \
   parsim/ccommbufferbase.h \
+  ../../include/csimulation.h \
   ../../include/cobject.h \
   parsim/cmpicomm.h \
   ../../include/cstringpool.h \
   ../../include/clog.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cmessageheap.h \
   ../../include/simutil.h
 $O/parsim/cmpicommbuffer.o: parsim/cmpicommbuffer.cc \
   ../../include/regmacros.h \
@@ -3982,7 +3988,9 @@ $O/parsim/cmpicommbuffer.o: parsim/cmpicommbuffer.cc \
 $O/parsim/cnamedpipecomm-win.o: parsim/cnamedpipecomm-win.cc \
   ../../include/regmacros.h \
   parsim/parsimutil.h \
+  ../../include/cexpression.h \
   ../../include/cnamedobject.h \
+  ../../include/ccomponent.h \
   ../../include/cregistrationlist.h \
   ../../include/cconfiguration.h \
   ../../include/ccommbuffer.h \
@@ -3991,6 +3999,7 @@ $O/parsim/cnamedpipecomm-win.o: parsim/cnamedpipecomm-win.cc \
   ../../include/onstartup.h \
   ../../include/clifetimelistener.h \
   ../../include/clistener.h \
+  ../../include/cpar.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
   ../../include/cobjectfactory.h \
@@ -4007,10 +4016,13 @@ $O/parsim/cnamedpipecomm-win.o: parsim/cnamedpipecomm-win.cc \
   ../../include/opp_string.h \
   ../../include/simkerneldefs.h \
   parsim/ccommbufferbase.h \
+  ../../include/csimulation.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   parsim/cnamedpipecomm.h \
   ../../include/clog.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cmessageheap.h \
   ../../include/simutil.h
 $O/parsim/cnamedpipecomm.o: parsim/cnamedpipecomm.cc \
   ../../include/regmacros.h \

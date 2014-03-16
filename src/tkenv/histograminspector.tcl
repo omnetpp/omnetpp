@@ -14,32 +14,32 @@
 #----------------------------------------------------------------#
 
 
-proc createHistogramInspector {w geom} {
-    createInspectorToplevel $w $geom
-    createHistogramViewer $w
+proc createHistogramInspector {insp geom} {
+    createInspectorToplevel $insp $geom
+    createHistogramViewer $insp
 }
 
-proc createEmbeddedHistogramInspector {w} {
-    createHistogramViewer $w
+proc createEmbeddedHistogramInspector {insp} {
+    createHistogramViewer $insp
 }
 
-proc createHistogramViewer {w} {
-    frame $w.main
-    frame $w.bot
-    pack $w.bot  -expand 0 -fill x -side bottom
-    pack $w.main -expand 1 -fill both -side top
+proc createHistogramViewer {insp} {
+    frame $insp.main
+    frame $insp.bot
+    pack $insp.bot  -expand 0 -fill x -side bottom
+    pack $insp.main -expand 1 -fill both -side top
 
-    canvas $w.main.canvas -borderwidth 2 -relief raised -background lightblue
-    pack $w.main.canvas -anchor center -expand 1 -fill both -side top
+    canvas $insp.main.canvas -borderwidth 2 -relief raised -background lightblue
+    pack $insp.main.canvas -anchor center -expand 1 -fill both -side top
 
-    label $w.bot.info -relief groove -width 50
-    pack $w.bot.info -anchor center -expand 1 -fill x -side left
+    label $insp.bot.info -relief groove -width 50
+    pack $insp.bot.info -anchor center -expand 1 -fill x -side left
 
-    $w.main.canvas bind all <Any-Enter> {HistogramInspector:mouse %W %x %y 1}
-    $w.main.canvas bind all <Any-Leave> {HistogramInspector:mouse %W %x %y 0}
+    $insp.main.canvas bind all <Any-Enter> "HistogramInspector:mouse $insp %x %y 1"
+    $insp.main.canvas bind all <Any-Leave> "HistogramInspector:mouse $insp %x %y 0"
 
     # make the window respond to resize events
-    bind $w <Configure> "opp_refreshinspector $w"
+    bind $insp <Configure> "opp_refreshinspector $insp"
 
     # we need to let the window display, otherwise the canvas size
     # (needed by the first draw) returned by [winfo width/height ...]
@@ -47,17 +47,16 @@ proc createHistogramViewer {w} {
     update idletasks
 }
 
-proc HistogramInspector:mouse {w x y on} {
-    #set obj [$w find closest $x $y]
-    set tags [$w gettags current]
+proc HistogramInspector:mouse {insp x y on} {
+    set c $insp.main.canvas
+    set tags [$c gettags current]
     if [regexp {.*cell([0-9]+).*} $tags match cell] {
-       set win [winfo toplevel $w]
        if {$on == 1} {
-           $w itemconfig current -fill gray -outline gray
-           $win.bot.info config -text [opp_inspectorcommand $win cell $cell]
+           $c itemconfig current -fill gray -outline gray
+           $insp.bot.info config -text [opp_inspectorcommand $insp cell $cell]
        } else {
-           $w itemconfig current -fill black -outline black
-           $win.bot.info config -text [opp_inspectorcommand $win cell]
+           $c itemconfig current -fill black -outline black
+           $insp.bot.info config -text [opp_inspectorcommand $insp cell]
        }
     }
 }
