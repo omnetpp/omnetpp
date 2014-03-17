@@ -67,6 +67,7 @@ proc createFileViewer {filename} {
 
     # creating widgets
     toplevel $w -class Toplevel
+    wm transient $w .
     wm focusmodel $w passive
     #wm maxsize $w 1009 738
     wm minsize $w 1 1

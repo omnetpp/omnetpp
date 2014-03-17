@@ -50,11 +50,12 @@ proc createOutputVectorViewer {insp} {
 }
 
 proc OutputVectorInspector:options {insp} {
-    set dlg .ov-options
+    set dlg $insp.ov-options
     catch {destroy $dlg}
     global tmp
 
     toplevel $dlg -class Toplevel
+    wm transient $dlg [winfo toplevel [winfo parent $dlg]]
     wm iconname $dlg Dialog
     wm focusmodel $dlg passive
     wm overrideredirect $dlg 0

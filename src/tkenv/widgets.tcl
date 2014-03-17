@@ -906,6 +906,7 @@ proc setGeometry {w} {
 proc createOkCancelDialog {w title} {
     catch {destroy $w}
     toplevel $w -class Toplevel
+    wm transient $w [winfo toplevel [winfo parent $w]]
     wm title $w $title
     wm iconname $w Dialog
     wm focusmodel $w passive
@@ -1004,6 +1005,7 @@ proc execOkCancelDialog {w {validating_proc {}}} {
 proc createCloseDialog {w title} {
     catch {destroy $w}
     toplevel $w -class Toplevel
+    wm transient $w [winfo toplevel [winfo parent $w]]
     wm title $w $title
     wm iconname $w Dialog
     wm focusmodel $w passive
