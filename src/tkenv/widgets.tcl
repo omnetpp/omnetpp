@@ -55,27 +55,14 @@ catch {set tk::mac::CGAntialiasLimit 1}
 proc setupTkOptions {} {
    global fonts defaultfonts icons tcl_platform tk_version
    global tcl_wordchars tcl_nonwordchars
-   global B2 B3
+   global B2 B3 CTRL CTRL_ Control
 
    # work around Tcl bug: these vars got reset when words.tcl was autoloaded
    catch {tcl_wordBreakAfter};
    set tcl_wordchars {\w}
    set tcl_nonwordchars {\W}
 
-   # by default, undo/redo bindings are platform-specific -- change it:
-   catch {
-       event add <<Undo>> <Control-Key-z>
-       event add <<Undo>> <Control-Key-Z>
-       event add <<Redo>> <Control-Key-y>
-       event add <<Redo>> <Control-Key-Y>
-   }
-
-   # for some reason, Ctrl+v (Paste) doesn't work out-of-the box with Tk 8.3/8.4 on Unix,
-   # we need the following lines:
-   bind Entry <Control-v> {}
-   bind Text <Control-v> {}
-
-   # on Mac OS/X, the Aqua version of Tcl/Tk (at least on older ones?) reports
+   # on Mac OS X, the Aqua version of Tcl/Tk (at least on older ones?) reports
    # right mouse button as button 2, and middle one as button 3. This is
    # quote the opposite of X11 and Windows.
    # see http://support.svi.nl/wiki/MouseButtonsInMacAqua
@@ -86,10 +73,33 @@ proc setupTkOptions {} {
        set B3 2
    }
 
+   # we want to use the Command key for shortcuts instead of Ctrl:
+   set Control Control  ;# for bind
+   set CTRL    Ctrl     ;# for -accel
+   set CTRL_   Ctrl+    ;# for help_tips
+   if {[string equal [tk windowingsystem] aqua]}  {
+       set Control M1
+       set CTRL    Meta
+       set CTRL_   \u2318
+   }
+
    # also, work around bug in Tk/Aqua image handling
    if {[string equal [tk windowingsystem] aqua]}  {
        iconsWorkaroundForOSX
    }
+
+   # by default, undo/redo bindings are platform-specific -- change it:
+   catch {
+       event add <<Undo>> <$Control-Key-z>
+       event add <<Undo>> <$Control-Key-Z>
+       event add <<Redo>> <$Control-Key-y>
+       event add <<Redo>> <$Control-Key-Y>
+   }
+
+   # for some reason, Ctrl+v (Paste) doesn't work out-of-the box with Tk 8.3/8.4 on Unix,
+   # we need the following lines:
+   bind Entry <$Control-v> {}
+   bind Text <$Control-v> {}
 
    # set up wheel support for a few extra widget types
    bindMouseWheel Canvas
@@ -122,7 +132,7 @@ proc setupTkOptions {} {
       set fonts(big)      [list $normalfamily 18]
       set fonts(text)     [list $monofamily 12]
       set fonts(balloon)  [list $normalfamily 12]
-      set fonts(timeline) [list $condensedfamily 11]
+      set fonts(timeline) [list $condensedfamily 12]
       set fonts(canvas)   [list $normalfamily 12]
    } else {
       # Windows

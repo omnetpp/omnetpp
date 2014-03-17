@@ -167,6 +167,8 @@ proc mainWindow:setApplicationIcon {} {
 }
 
 proc mainWindow:createMenu {} {
+    global CTRL
+
     menu .menubar
     . config -menu .menubar
 
@@ -194,19 +196,19 @@ proc mainWindow:createMenu {} {
       {separator}
       {command -command createSnapshot -label "Create Snapshot..." -underline 7}
       {separator}
-      {command -command exitOmnetpp -label "Exit" -accel "Ctrl+Q" -underline 1}
+      {command -command exitOmnetpp -label "Exit" -accel "$CTRL+Q" -underline 1}
     } {
       eval .menubar.filemenu$m add $i
     }
 
     # Edit menu
     foreach i {
-      {command -command editCopy -label "Copy" -accel "Ctrl+C" -underline 0}
+      {command -command editCopy -label "Copy" -accel "$CTRL+C" -underline 0}
       {separator}
-      {command -command editFind -label "Find..." -accel "Ctrl+F" -underline 0}
+      {command -command editFind -label "Find..." -accel "$CTRL+F" -underline 0}
       {command -command editFindNext -label "Find Next" -accel "F3" -underline 5}
       {separator}
-      {command -command editFilterWindowContents -label "Filter Window Contents..." -accel "Ctrl+H" -underline 0}
+      {command -command editFilterWindowContents -label "Filter Window Contents..." -accel "$CTRL+H" -underline 0}
     } {
       eval .menubar.editmenu$m add $i
     }
@@ -223,7 +225,7 @@ proc mainWindow:createMenu {} {
       {command -command runExpress -label "Express Run (tracing off)" -accel "F7" -underline 1}
       {command -command runUntil -label "Run Until..." -underline 4}
       {separator}
-      {command -command debugNextEvent -label "Debug Next Event" -accel "Ctrl+F9" -underline 1}
+      {command -command debugNextEvent -label "Debug Next Event" -accel "$CTRL+F9" -underline 1}
       {separator}
       {command -command stopSimulation -label "Stop Execution" -accel "F8" -underline 0}
       {separator}
@@ -244,7 +246,7 @@ proc mainWindow:createMenu {} {
       {separator}
       {cascade -label "Available Components" -underline 10 -menu .menubar.inspectmenu$m.components}
       {separator}
-      {command -command inspectFilteredObjectList -label "Show 'Find/Inspect Objects' Window" -accel "Ctrl+S" -underline 0}
+      {command -command inspectFilteredObjectList -label "Show 'Find/Inspect Objects' Window" -accel "$CTRL+S" -underline 0}
       {command -command inspectBypointer -label "Inspect by Pointer..." -underline 4}
       {separator}
       {command -command opp_refreshinspectors -label "Refresh Inspectors" -underline 0}
@@ -299,7 +301,7 @@ proc mainWindow:createMenu {} {
 }
 
 proc mainWindow:createToolbar {} {
-    global icons help_tips
+    global icons help_tips CTRL_
 
     frame .toolbar -relief raised -borderwidth 1
 
@@ -337,10 +339,10 @@ proc mainWindow:createToolbar {} {
 
     set help_tips(.toolbar.loadned) "Load NED file for compound module definitions"
     set help_tips(.toolbar.newrun)  "Set up an inifile configuration"
-    set help_tips(.toolbar.copy)    "Copy selected text to clipboard (Ctrl+C)"
-    set help_tips(.toolbar.find)    "Find string in main window (Ctrl+F)"
+    set help_tips(.toolbar.copy)    "Copy selected text to clipboard (${CTRL_}C)"
+    set help_tips(.toolbar.find)    "Find string in main window (${CTRL_}F)"
     set help_tips(.toolbar.save)    "Save main window contents to file"
-    set help_tips(.toolbar.filter)  "Filter main window contents (Ctrl+H)"
+    set help_tips(.toolbar.filter)  "Filter main window contents (${CTRL_}H)"
     set help_tips(.toolbar.newnet)  "Set up a network"
     set help_tips(.toolbar.step)    "Execute one event (F4)"
     set help_tips(.toolbar.run)     "Run with full animation (F5)"
@@ -351,7 +353,7 @@ proc mainWindow:createToolbar {} {
     set help_tips(.toolbar.restart) "Rebuild network"
     set help_tips(.toolbar.eventlog) "Eventlog recording on/off"
     set help_tips(.toolbar.finish)  "Call finish()"
-    set help_tips(.toolbar.objs)    "Find and inspect modules, messages, queues and other objects (Ctrl+S)"
+    set help_tips(.toolbar.objs)    "Find and inspect modules, messages, queues and other objects (${CTRL_}S)"
     set help_tips(.toolbar.tline)   "Show/hide timeline"
     set help_tips(.toolbar.tree)    "Show/hide object tree"
     set help_tips(.toolbar.options) "Simulation options"
@@ -559,6 +561,8 @@ proc animSpeedChanged {arr name op} {
 }
 
 proc bindRunCommands {w} {
+    global Control
+
     # Note: the "after 100" in the commands below is a workaround on Mac OS X:
     # without them, a few seconds after hitting e.g. F5 (Run) the app will
     # stop responding to UI events (beach ball appears and never goes away).
@@ -568,24 +572,25 @@ proc bindRunCommands {w} {
     bind $w <F6> {after 100 runFast}
     bind $w <F7> {after 100 runExpress}
     bind $w <F8> {stopSimulation}
-    bind $w <Control-F9> {debugNextEvent}
-    bind $w <Control-q>  {exitOmnetpp}
+    bind $w <$Control-F9> {debugNextEvent}
+    bind $w <$Control-q>  {exitOmnetpp}
 }
 
 proc bindOtherCommands {w {insp ""}} {
-    bind $w <Control-s> [list inspectFilteredObjectList $insp]
+    global Control
+    bind $w <$Control-s> [list inspectFilteredObjectList $insp]
 }
 
 proc bindCommandsToTextWidget {txt} {
-    global config B2 B3
+    global config B2 B3 Control
 
     # bindings for find; 'break' is needed below because Ctrl+F is already bound
     bind $txt <Key> {%W tag remove SELECT 0.0 end}
-    bind $txt <Control-f> {findDialog %W; break}
+    bind $txt <$Control-f> {findDialog %W; break}
     bind $txt <F3> {findNext %W}
 
     # bind Ctrl+A "Select all" ('break' is needed below because ^A=Home)
-    bind $txt <Control-a> {%W tag add sel 1.0 end; break}
+    bind $txt <$Control-a> {%W tag add sel 1.0 end; break}
 }
 
 #===================================================================

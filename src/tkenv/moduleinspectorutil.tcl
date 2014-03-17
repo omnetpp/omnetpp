@@ -15,16 +15,16 @@
 
 
 proc ModuleInspector:addRunButtons {insp} {
-    global icons help_tips
+    global icons help_tips Control CTRL_
 
     packIconButton $insp.toolbar.mrun    -image $icons(mrun)    -command "runSimulationLocal $insp normal"
     packIconButton $insp.toolbar.mfast   -image $icons(mfast)   -command "runSimulationLocal $insp fast"
     packIconButton $insp.toolbar.stop    -image $icons(stop)    -command {stopSimulation}
 
-    bind $insp <Control-F4> "runSimulationLocal $insp fast"
+    bind $insp <$Control-F4> "runSimulationLocal $insp fast"
 
     set help_tips($insp.toolbar.mrun)    "Run until next event in this module"
-    set help_tips($insp.toolbar.mfast)   "Fast run until next event in this module (Ctrl+F4)"
+    set help_tips($insp.toolbar.mfast)   "Fast run until next event in this module (${CTRL_}F4)"
     set help_tips($insp.toolbar.stop)    "Stop the simulation (F8)"
 }
 

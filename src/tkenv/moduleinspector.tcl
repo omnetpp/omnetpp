@@ -19,7 +19,7 @@
 #
 
 proc createModuleInspector {insp geom} {
-    global icons help_tips config inspectordata
+    global icons help_tips config inspectordata CTRL_
 
     if {$config(layout-may-resize-window)} {
         # remove size from geom
@@ -40,11 +40,11 @@ proc createModuleInspector {insp geom} {
     packIconButton $insp.toolbar.showarrowheads -image $icons(arrowhead) -command "ModuleInspector:toggleArrowheads $insp"
 
     set help_tips($insp.toolbar.parent)  "Go to parent module"
-    set help_tips($insp.toolbar.redraw)  "Re-layout (Ctrl+R)"
-    set help_tips($insp.toolbar.zoomin)  "Zoom in (Ctrl+M)"
-    set help_tips($insp.toolbar.zoomout) "Zoom out (Ctrl+N)"
-    set help_tips($insp.toolbar.showlabels) "Show module names (Ctrl+D)"
-    set help_tips($insp.toolbar.showarrowheads) "Show arrowheads (Ctrl+A)"
+    set help_tips($insp.toolbar.redraw)  "Re-layout (${CTRL_}R)"
+    set help_tips($insp.toolbar.zoomin)  "Zoom in (${CTRL_}M)"
+    set help_tips($insp.toolbar.zoomout) "Zoom out (${CTRL_}N)"
+    set help_tips($insp.toolbar.showlabels) "Show module names (${CTRL_}D)"
+    set help_tips($insp.toolbar.showarrowheads) "Show arrowheads (${CTRL_}A)"
 
     # create canvas
     createGraphicalModuleViewer $insp
@@ -59,7 +59,7 @@ proc createModuleInspector {insp geom} {
 }
 
 proc createEmbeddedModuleInspector {insp} {
-    global icons help_tips
+    global icons help_tips CTRL_
 
     createGraphicalModuleViewer $insp
 
@@ -83,20 +83,20 @@ proc createEmbeddedModuleInspector {insp} {
     set help_tips($tb.forward) "Forward"
     set help_tips($tb.parent)  "Go to parent module"
     set help_tips($tb.mrun)    "Run until next event in this module"
-    set help_tips($tb.mfast)   "Fast run until next event in this module (Ctrl+F4)"
+    set help_tips($tb.mfast)   "Fast run until next event in this module (${CTRL_}F4)"
     set help_tips($tb.stop)    "Stop the simulation (F8)"
-    set help_tips($tb.redraw)  "Re-layout (Ctrl+R)"
+    set help_tips($tb.redraw)  "Re-layout (${CTRL_}R)"
     set help_tips($tb.animspeed) "Animation speed -- see Options dialog"
-    set help_tips($tb.zoomin)  "Zoom in (Ctrl+M)"
-    set help_tips($tb.zoomout) "Zoom out (Ctrl+N)"
-    set help_tips($tb.showlabels) "Show module names (Ctrl+D)"
-    set help_tips($tb.showarrowheads) "Show arrowheads (Ctrl+A)"
+    set help_tips($tb.zoomin)  "Zoom in (${CTRL_}M)"
+    set help_tips($tb.zoomout) "Zoom out (${CTRL_}N)"
+    set help_tips($tb.showlabels) "Show module names (${CTRL_}D)"
+    set help_tips($tb.showarrowheads) "Show arrowheads (${CTRL_}A)"
 
 }
 
 proc createGraphicalModuleViewer {insp} {
     global inspectordata
-    global B2 B3
+    global B2 B3 CTRL Control
 
     # create widgets inside $insp
     ttk::frame $insp.grid
@@ -147,13 +147,13 @@ proc createGraphicalModuleViewer {insp} {
 
     # keyboard shortcuts
     set ww [winfo toplevel $insp]
-    bind $ww <Control-m> "ModuleInspector:zoomIn $insp"
-    bind $ww <Control-n> "ModuleInspector:zoomOut $insp"
-    bind $ww <Control-i> "ModuleInspector:zoomIconsBy $insp 1.25"
-    bind $ww <Control-o> "ModuleInspector:zoomIconsBy $insp 0.8"
-    bind $ww <Control-r> "ModuleInspector:relayout $insp"
-    bind $ww <Control-d> "ModuleInspector:toggleLabels $insp"
-    bind $ww <Control-a> "ModuleInspector:toggleArrowheads $insp"
+    bind $ww <$Control-m> "ModuleInspector:zoomIn $insp"
+    bind $ww <$Control-n> "ModuleInspector:zoomOut $insp"
+    bind $ww <$Control-i> "ModuleInspector:zoomIconsBy $insp 1.25"
+    bind $ww <$Control-o> "ModuleInspector:zoomIconsBy $insp 0.8"
+    bind $ww <$Control-r> "ModuleInspector:relayout $insp"
+    bind $ww <$Control-d> "ModuleInspector:toggleLabels $insp"
+    bind $ww <$Control-a> "ModuleInspector:toggleArrowheads $insp"
 }
 
 proc ModuleInspector:onSetObject {insp} {
@@ -1352,7 +1352,7 @@ proc ModuleInspector:getPtrsUnderMouse {c x y} {
 }
 
 proc ModuleInspector:rightClick {insp X Y x y} {
-   global inspectordata tmp
+   global inspectordata tmp CTRL
    set c $insp.c
    set ptrs [ModuleInspector:getPtrsUnderMouse $c $x $y]
 
@@ -1364,17 +1364,17 @@ proc ModuleInspector:rightClick {insp X Y x y} {
       set tmp($c:showarrowheads) $inspectordata($c:showarrowheads)
 
       $popup add separator
-      $popup add checkbutton -label "Show module names" -command "ModuleInspector:toggleLabels $insp" -accel "Ctrl+D" -variable tmp($c:showlabels)
-      $popup add checkbutton -label "Show arrowheads" -command "ModuleInspector:toggleArrowheads $insp" -accel "Ctrl+A" -variable tmp($c:showarrowheads)
+      $popup add checkbutton -label "Show module names" -command "ModuleInspector:toggleLabels $insp" -accel "$CTRL+D" -variable tmp($c:showlabels)
+      $popup add checkbutton -label "Show arrowheads" -command "ModuleInspector:toggleArrowheads $insp" -accel "$CTRL+A" -variable tmp($c:showarrowheads)
 
       $popup add separator
-      $popup add command -label "Increase icon size" -accel "Ctrl+I" -command "ModuleInspector:zoomIconsBy $insp 1.25"
-      $popup add command -label "Decrease icon size" -accel "Ctrl+O" -command "ModuleInspector:zoomIconsBy $insp 0.8"
+      $popup add command -label "Increase icon size" -accel "$CTRL+I" -command "ModuleInspector:zoomIconsBy $insp 1.25"
+      $popup add command -label "Decrease icon size" -accel "$CTRL+O" -command "ModuleInspector:zoomIconsBy $insp 0.8"
 
       $popup add separator
-      $popup add command -label "Zoom in"  -accel "Ctrl+M" -command "ModuleInspector:zoomIn $insp"
-      $popup add command -label "Zoom out" -accel "Ctrl+N" -command "ModuleInspector:zoomOut $insp"
-      $popup add command -label "Re-layout" -accel "Ctrl+R" -command "opp_inspectorcommand $insp relayout"
+      $popup add command -label "Zoom in"  -accel "$CTRL+M" -command "ModuleInspector:zoomIn $insp"
+      $popup add command -label "Zoom out" -accel "$CTRL+N" -command "ModuleInspector:zoomOut $insp"
+      $popup add command -label "Re-layout" -accel "$CTRL+R" -command "opp_inspectorcommand $insp relayout"
 
       $popup add separator
       $popup add command -label "Layouting options..." -command "optionsDialog $insp l"

@@ -19,7 +19,7 @@
 #
 proc createInspectorToplevel {insp geom} {
     global config fonts icons help_tips
-    global B2 B3
+    global B2 B3 CTRL_
 
     # Create window
     toplevel $insp -class Toplevel
@@ -56,7 +56,7 @@ proc createInspectorToplevel {insp geom} {
     set help_tips($insp.toolbar.parent) "Go to parent"
     set help_tips($insp.toolbar.inspectas) "Inspect"
     set help_tips($insp.toolbar.copyobj) "Copy name, type or pointer"
-    set help_tips($insp.toolbar.objs) "Find objects (Ctrl+S)"
+    set help_tips($insp.toolbar.objs) "Find objects (${CTRL_}S)"
 
     # Keyboard bindings
     bind $insp <Escape>     "catch {.popup unpost}"
