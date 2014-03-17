@@ -419,7 +419,7 @@ proc mainWindow:createTreeView {} {
 
     set f .main.mgr
     set widgets(manager) $f
-    frame $f -relief flat -borderwidth 1
+    ttk::frame $f -relief flat -borderwidth 1
 
     canvas $f.tree -bg #ffffe0 -bd 0 -yscrollcommand "$f.sb set"
     ttk::scrollbar $f.sb -command "$f.tree yview"
@@ -432,21 +432,21 @@ proc mainWindow:createTreeView {} {
 
 proc mainWindow:createInspectorView {} {
     set f .inspector
-    frame $f -borderwidth 0
+    ttk::frame $f -borderwidth 0
     createEmbeddedGenericObjectInspector $f
     return $f
 }
 
 proc mainWindow:createNetworkView {} {
     set insp .network
-    frame $insp -borderwidth 0
+    ttk::frame $insp -borderwidth 0
     createEmbeddedModuleInspector $insp
     return $insp
 }
 
 proc mainWindow:createLogView {} {
     set insp .log
-    frame $insp -borderwidth 0
+    ttk::frame $insp -borderwidth 0
     createEmbeddedLogInspector $insp
     return $insp
 }

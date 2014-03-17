@@ -99,7 +99,7 @@ proc createGraphicalModuleViewer {insp} {
     global B2 B3
 
     # create widgets inside $insp
-    frame $insp.grid
+    ttk::frame $insp.grid
     pack $insp.grid -expand yes -fill both -padx 1 -pady 1
 
     set c $insp.c

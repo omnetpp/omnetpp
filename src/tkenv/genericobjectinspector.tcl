@@ -23,9 +23,9 @@ proc createEmbeddedGenericObjectInspector {insp} {
     global icons help_tips
 
     # Create info bar
-    frame $insp.infobar  -borderwidth 0
-    label $insp.infobar.icon -anchor w -relief flat -image $icons(none_vs)
-    label $insp.infobar.name -anchor w -relief flat -justify left
+    ttk::frame $insp.infobar  -borderwidth 0
+    ttk::label $insp.infobar.icon -anchor w -relief flat -image $icons(none_vs)
+    ttk::label $insp.infobar.name -anchor w -relief flat -justify left
     pack $insp.infobar.icon -anchor n -side left -expand 0 -fill y -pady 1
     pack $insp.infobar.name -anchor n -side left -expand 1 -fill both -pady 1
     pack $insp.infobar -anchor w -side top -fill x -expand 0

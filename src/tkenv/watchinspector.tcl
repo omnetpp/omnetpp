@@ -17,14 +17,14 @@
 proc createWatchInspector {insp geom} {
     createInspectorToplevel $insp $geom
 
-    frame $insp.main
+    ttk::frame $insp.main
     pack $insp.main -expand 0 -fill both -side top
 
     createWatchViewer $insp.main
 }
 
 proc createEmbeddedWatchInspector {insp} {
-    frame $insp.main
+    ttk::frame $insp.main
     pack $insp.main -expand 0 -fill both -side top
 
     createWatchViewer $insp.main

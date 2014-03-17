@@ -24,7 +24,7 @@ proc createLogInspector {insp geom} {
     textWindowAddIcons $insp modulewindow
     ModuleInspector:addRunButtons $insp
 
-    frame $insp.main
+    ttk::frame $insp.main
     pack $insp.main -expand 1 -fill both -side top
     createLogViewer $insp $insp.main
 }
@@ -32,7 +32,7 @@ proc createLogInspector {insp geom} {
 proc createEmbeddedLogInspector {insp} {
     global icons help_tips
 
-    frame $insp.main
+    ttk::frame $insp.main
     pack $insp.main -expand 1 -fill both -side top
 
     createLogViewer $insp $insp.main

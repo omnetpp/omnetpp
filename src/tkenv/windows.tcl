@@ -74,7 +74,7 @@ proc createFileViewer {filename} {
     wm resizable $w 1 1
     wm title $w $filename
 
-    frame $w.toolbar
+    ttk::frame $w.toolbar
 
     packIconButton $w.toolbar.copy   -image $icons(copy) -command "editCopy $w.main.text"
     packIconButton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
@@ -88,7 +88,7 @@ proc createFileViewer {filename} {
 
     pack $w.toolbar  -anchor center -expand 0 -fill x -side top
 
-    frame $w.main  -borderwidth 1 -relief sunken
+    ttk::frame $w.main  -borderwidth 1 -relief sunken
     pack $w.main  -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 0 -pady 0 -side top
     ttk::scrollbar $w.main.sb -command "$w.main.text yview"
     pack $w.main.sb -anchor center -expand 0 -fill y -ipadx 0 -ipady 0 -padx 0 -pady 0 -side right

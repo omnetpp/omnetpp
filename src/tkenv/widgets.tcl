@@ -31,7 +31,7 @@ proc checkTclTkVersion {} {
    if {[string compare $tk_patchLevel "8.5.0"]<0} {
       wm deiconify .
       wm title . "Bad news..."
-      frame .f
+      ttk::frame .f
       pack .f -expand 1 -fill both -padx 2 -pady 2
       label .f.l1 -text "Your version of Tcl/Tk is too old, please upgrade!"
       label .f.l2 -text "Tcl/Tk 8.5.0 or later required."
@@ -165,6 +165,14 @@ proc setupTkOptions {} {
        option add *menubar.activeForeground $activefg
    }
 
+   # labelframe
+   ttk::style configure TLabelframe -padding {15 8}
+   if {[string equal [tk windowingsystem] win32]} {
+       # for some reason, the frame label was blue on Windows
+       set labelcolor [ttk::style lookup TLabel -foreground]
+       ttk::style configure TLabelframe.Label -foreground $labelcolor
+   }
+
    # patch icons on OS X
    foreach key [array names icons] {
        fixupImageIfNeeded $icons($key)
@@ -264,7 +272,7 @@ proc makeTransient {w {geom ""}} {
 #
 proc wsize {w width height} {
     set f ${w}_f
-    frame $f -width $width -height $height
+    ttk::frame $f -width $width -height $height
     place $w -in $f -x 0 -y 0 -width $width -height $height
     raise $w
     return $f
@@ -335,15 +343,6 @@ proc setClipboard {str} {
 #    PROCEDURES FOR CREATING NEW 'WIDGET TYPES'
 #===================================================================
 
-proc ttk_button {args} {
-    # on OS X, plain button is native widget and looks better than ttk::button
-    if {[string equal [tk windowingsystem] aqua]}  {
-        eval button $args
-    } else {
-        eval ttk::button $args
-    }
-}
-
 proc iconbutton {w args} {
     global fonts icons
 
@@ -392,9 +391,9 @@ proc iconButton:configure {w icon command tooltip} {
 
 proc label-entry {w label {text {}}} {
     # utility function: create a frame with a label+entry
-    frame $w
-    label $w.l -anchor w -width 16 -text $label
-    entry $w.e -highlightthickness 0
+    ttk::frame $w
+    ttk::label $w.l -anchor w -width 16 -text $label
+    ttk::entry $w.e
     pack $w.l -anchor center -expand 0 -fill x -padx 2 -pady 2 -side left
     pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side right
     $w.e insert 0 $text
@@ -403,9 +402,9 @@ proc label-entry {w label {text {}}} {
 proc label-entry-help {w label helptext {text {}}} {
     # utility function: create a frame with a label+entry
     global help_tips
-    frame $w
-    label $w.l -anchor w -text $label
-    entry $w.e -highlightthickness 0
+    ttk::frame $w
+    ttk::label $w.l -anchor w -text $label
+    ttk::entry $w.e
     #label $w.h -anchor w -text "(Help)" -fg "#0000a0"
     set help_tips($w.l) $helptext
     set help_tips($w.e) $helptext
@@ -420,10 +419,10 @@ proc label-entry-chooser {w label text chooserproc} {
     # utility function: create a frame with a label+entry+button
     # the button is expected to call a dialog where the user can select
     # a value for the entry
-    frame $w
-    label $w.l -anchor w -width 16 -text $label
-    entry $w.e -highlightthickness 0
-    button $w.c -text " ... " -command [list chooser:choose $w.e $chooserproc]
+    ttk::frame $w
+    ttk::label $w.l -anchor w -width 16 -text $label
+    ttk::entry $w.e
+    ttk::button $w.c -text " ... " -command [list chooser:choose $w.e $chooserproc]
     pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 2 -side left
     pack [wsize $w.c 20 20] -anchor center -expand 0 -fill none -padx 2 -pady 2 -side right
     pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side left
@@ -440,11 +439,21 @@ proc chooser:choose {w chooserproc} {
     }
 }
 
+proc label-spinbox {w label {value {}}} {
+    # utility function: create a frame with a label+spinbox
+    ttk::frame $w
+    ttk::label $w.l -anchor w -width 16 -text $label
+    ttk::spinbox $w.e
+    pack $w.l -anchor center -expand 0 -fill x -padx 2 -pady 2 -side left
+    pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side right
+    $w.e set $value
+}
+
 proc label-sunkenlabel {w label {text {}}} {
     # utility function: create a frame with a label+"readonly entry"
-    frame $w
-    label $w.l -anchor w -width 16 -text $label
-    label $w.e -relief groove -justify left -anchor w
+    ttk::frame $w
+    ttk::label $w.l -anchor w -width 16 -text $label
+    ttk::label $w.e -relief groove -justify left -anchor w
     pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 2 -side left
     pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side right
     $w.e config -text $text
@@ -452,8 +461,8 @@ proc label-sunkenlabel {w label {text {}}} {
 
 proc label-message {w label {text {}}} {
     # utility function: create a frame with a label+"readonly entry"
-    frame $w
-    label $w.l -anchor w -width 16 -text $label
+    ttk::frame $w
+    ttk::label $w.l -anchor w -width 16 -text $label
     message $w.e -relief groove -justify left -anchor w -aspect 10000
     pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 2 -side left
     pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side right
@@ -462,8 +471,8 @@ proc label-message {w label {text {}}} {
 
 proc label-combo {w label list {text {}} {cmd {}}} {
     # utility function: create a frame with a label+combo
-    frame $w
-    label $w.l -anchor w -width 16 -text $label
+    ttk::frame $w
+    ttk::label $w.l -anchor w -width 16 -text $label
     ttk::combobox $w.e -values $list
     pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 2 -side left
     pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side right
@@ -486,10 +495,10 @@ proc label-combo2 {w label list {text {}} {cmd {}}} {
 
 proc label-fontcombo {w label {font {}}} {
     # utility function: create a frame with a label+combo for font selection
-    frame $w
-    label $w.l -anchor w -width 16 -text $label
+    ttk::frame $w
+    ttk::label $w.l -anchor w -width 16 -text $label
     ttk::combobox $w.e
-    label $w.p -anchor w
+    ttk::label $w.p -anchor w
 
     grid $w.l $w.e -sticky news -padx 2 -pady 2
     grid x    $w.p -sticky news -padx 2 -pady 2
@@ -534,9 +543,9 @@ proc fontcombo:set {w oldfont} {
 
 proc label-text {w label height {text {}}} {
     # utility function: create a frame with a label+text
-    frame $w
-    label $w.l -anchor w -width 16 -text $label
-    text $w.t -highlightthickness 0 -height $height -width 40
+    ttk::frame $w
+    ttk::label $w.l -anchor w -width 16 -text $label
+    text $w.t -height $height -width 40
     catch {$w.t config -undo true}
     pack $w.l -anchor n -expand 0 -fill none -padx 2 -pady 2 -side left
     pack $w.t -anchor center -expand 1 -fill both -padx 2 -pady 2 -side right
@@ -545,8 +554,8 @@ proc label-text {w label height {text {}}} {
 
 proc label-scale {w label} {
     # utility function: create a frame with a label+scale
-    frame $w
-    label $w.l -anchor w -width 16 -text $label
+    ttk::frame $w
+    ttk::label $w.l -anchor w -width 30 -text $label
     scale $w.e -orient horizontal -width 10 -sliderlength 20
     pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 0 -side left
     pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 0 -side right
@@ -554,9 +563,9 @@ proc label-scale {w label} {
 
 proc label-button {w label {text {}}} {
     # utility function: create a frame with label+button
-    frame $w
-    label $w.l -anchor w -width 16 -text $label
-    button $w.e
+    ttk::frame $w
+    ttk::label $w.l -anchor w -width 16 -text $label
+    ttk::button $w.e
     pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 2 -side left
     pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side right
     $w.e config -text $text
@@ -564,10 +573,10 @@ proc label-button {w label {text {}}} {
 
 proc label-check {w label first var} {
     # utility function: create a frame with a label+radiobutton for choose
-    frame $w
-    label $w.l -anchor w -width 16 -text $label
-    frame $w.f
-    checkbutton $w.f.r1 -text $first -variable $var
+    ttk::frame $w
+    ttk::label $w.l -anchor w -width 16 -text $label
+    ttk::frame $w.f
+    ttk::checkbutton $w.f.r1 -text $first -variable $var
 
     pack $w.l -anchor w -expand 0 -fill none -side left
     pack $w.f -anchor w -expand 0 -side left -fill x
@@ -635,16 +644,16 @@ proc applyFont {class font {w .}} {
 proc label-colorchooser {w label {color ""}} {
     global gned
 
-    frame $w
-    label $w.l -anchor w -width 16 -text $label
-    frame $w.f
+    ttk::frame $w
+    ttk::label $w.l -anchor w -width 16 -text $label
+    ttk::frame $w.f
     pack $w.l -anchor nw -expand 0 -fill none -side left -padx 2 -pady 2
     pack $w.f -anchor n -expand 1 -fill x -side left
 
-    entry $w.f.e
+    ttk::entry $w.f.e
     pack $w.f.e -anchor center -expand 1 -fill x -side left -padx 2 -pady 2
 
-    button $w.f.b -relief groove -command [list colorChooser:setColor $w.f.b $w.f.e [winfo toplevel $w]] -width 6
+    ttk::button $w.f.b -relief groove -command [list colorChooser:setColor $w.f.b $w.f.e [winfo toplevel $w]] -width 6
     pack $w.f.b -anchor c -expand 0 -fill none -side left -padx 2 -pady 2
 
     $w.f.e insert 0 $color
@@ -668,15 +677,15 @@ proc colorChooser:setColor {b e pwin} {
 
 proc commentlabel {w text} {
     # utility function: create a frame with a message widget
-    frame $w
+    ttk::frame $w
     message $w.e -justify left -text $text -aspect 1000
     pack $w.e -anchor center -expand 0 -fill x -padx 2 -pady 2 -side left
 }
 
 proc labelwithhelp {w text helptext} {
     global help_tips
-    frame $w
-    label $w.l -justify left -text $text
+    ttk::frame $w
+    ttk::label $w.l -justify left -text $text
     #label $w.h -justify left -text "(Help)" -fg "#0000a0"
     set help_tips($w.l) $helptext
     #pack $w.l $w.h -expand 0 -side left -anchor center -fill none -padx 2 -pady 2
@@ -692,7 +701,7 @@ proc helplabel:showhelp {text x y} {
     wm overrideredirect .helpwin true
     wm positionfrom .helpwin program
     wm geometry .helpwin "+[expr $x-200]+[expr $y+5]"
-    label .helpwin.tip -text $text -padx 4 -wraplength $help_tips(width) \
+    ttk::label .helpwin.tip -text $text -padx 4 -wraplength $help_tips(width) \
                             -bg $help_tips(color) -border 1 -relief solid \
                             -font $help_tips(font) -justify left -takefocus 1
     pack .helpwin.tip
@@ -900,10 +909,10 @@ proc createOkCancelDialog {w title} {
     set pre_y [expr ([winfo screenheight $w]-250)/2-[winfo vrooty [winfo parent $w]]]
     wm geom $w +$pre_x+$pre_y
 
-    frame $w.f
-    frame $w.buttons
-    ttk_button $w.buttons.okbutton  -text "OK" -width 10 -default active
-    ttk_button $w.buttons.cancelbutton  -text "Cancel" -width 10
+    ttk::frame $w.f
+    ttk::frame $w.buttons
+    ttk::button $w.buttons.okbutton  -text "OK" -width 10 -default active
+    ttk::button $w.buttons.cancelbutton  -text "Cancel" -width 10
 
     set padx 5
     set pady 5
@@ -998,9 +1007,9 @@ proc createCloseDialog {w title} {
     set pre_y [expr ([winfo screenheight $w]-250)/2-[winfo vrooty [winfo parent $w]]]
     wm geom $w +$pre_x+$pre_y
 
-    frame $w.f
-    frame $w.buttons
-    ttk_button $w.buttons.closebutton  -text "Close" -width 10 -default active
+    ttk::frame $w.f
+    ttk::frame $w.buttons
+    ttk::button $w.buttons.closebutton  -text "Close" -width 10 -default active
 
     set padx 5
     set pady 5
@@ -1070,8 +1079,8 @@ proc aboutDialog {title part1 part2} {
     createOkCancelDialog $w $title
     $w.f config -padx 0 -pady 0 -bg #e0e0a0 -border 2 -relief groove
     # -font $fonts(big)
-    label $w.f.l1 -text "$part1" -bg #e0e0a0 -padx 30 -font $fonts(bold)
-    label $w.f.l2 -text "$part2\n\n" -bg #e0e0a0 -padx 30
+    ttk::label $w.f.l1 -text "$part1" -bg "#e0e0a0" -padx 30
+    ttk::label $w.f.l2 -text "$part2\n\n" -bg "#e0e0a0" -padx 30
     pack $w.f.l1 -expand 0 -fill x -side top
     pack $w.f.l2 -expand 1 -fill both -side top
     destroy $w.buttons.cancelbutton
@@ -1108,7 +1117,7 @@ proc showTextOnceDialog {key} {
     text $w.f.text -relief solid -bd 1 -wrap word
     $w.f.text insert 1.0 $text
     $w.f.text config -state disabled
-    checkbutton $w.f.x -text "do not show this hint again" -variable tmp_once
+    ttk::checkbutton $w.f.x -text "do not show this hint again" -variable tmp_once
     pack $w.f.x -expand 0 -fill x -side bottom
     pack $w.f.text -expand 1 -fill both -side top -padx 5 -pady 5
 

@@ -1085,7 +1085,7 @@ void Tkenv::setSilentEventFilters(const char *filterLines)
     // parsing successful, store the result
     for (int i = 0; i < (int)silentEventFilters.size(); i++)
         delete silentEventFilters[i];
-    silentEventFilterLines = filterLines;
+    silentEventFilterLines = opp_trim(filterLines) + "\n";
     silentEventFilters = tmp;
 }
 

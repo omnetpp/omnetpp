@@ -24,15 +24,15 @@ proc createEmbeddedHistogramInspector {insp} {
 }
 
 proc createHistogramViewer {insp} {
-    frame $insp.main
-    frame $insp.bot
+    ttk::frame $insp.main
+    ttk::frame $insp.bot
     pack $insp.bot  -expand 0 -fill x -side bottom
     pack $insp.main -expand 1 -fill both -side top
 
     canvas $insp.main.canvas -borderwidth 2 -relief raised -background lightblue
     pack $insp.main.canvas -anchor center -expand 1 -fill both -side top
 
-    label $insp.bot.info -relief groove -width 50
+    ttk::label $insp.bot.info -relief groove -width 50
     pack $insp.bot.info -anchor center -expand 1 -fill x -side left
 
     $insp.main.canvas bind all <Any-Enter> "HistogramInspector:mouse $insp %x %y 1"

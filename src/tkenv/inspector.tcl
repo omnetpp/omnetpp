@@ -41,7 +41,7 @@ proc createInspectorToplevel {insp geom} {
     }
 
     # Create toolbar
-    frame $insp.toolbar -relief raised -bd 1
+    ttk::frame $insp.toolbar -relief raised
     pack $insp.toolbar -anchor w -side top -fill x -expand 0
 
     packIconButton $insp.toolbar.sep0 -separator
@@ -69,7 +69,7 @@ proc createInspectorToplevel {insp geom} {
 
 proc inspector:createInternalToolbar {insp {parent ""}} {
     if {$parent==""} {set parent $insp}
-    frame $insp.toolbar -border 2 -relief groove
+    ttk::frame $insp.toolbar -border 2 -relief groove
     place $insp.toolbar -in $parent -relx 1.0 -rely 0 -anchor ne -x -2 -y 2
     return $insp.toolbar
 }

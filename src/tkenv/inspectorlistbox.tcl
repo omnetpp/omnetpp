@@ -17,7 +17,7 @@
 proc createInspectorListbox {f insp} {
     global B2 B3
 
-    frame $f.main
+    ttk::frame $f.main
     pack $f.main -expand 1 -fill both -side top
 
     set lb $f.main.list

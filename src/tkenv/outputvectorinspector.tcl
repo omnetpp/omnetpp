@@ -24,16 +24,16 @@ proc createEmbeddedOutputVectorInspector {insp geom} {
 }
 
 proc createOutputVectorViewer {insp} {
-    frame $insp.main
-    frame $insp.bot
+    ttk::frame $insp.main
+    ttk::frame $insp.bot
     pack $insp.bot -anchor center -expand 0 -fill x -side bottom
     pack $insp.main -anchor center -expand 1 -fill both -side top
 
     canvas $insp.main.canvas -borderwidth 2 -relief raised -background wheat1
     pack $insp.main.canvas -anchor center -expand 1 -fill both -side top
 
-    label $insp.bot.info -width 50 -relief groove
-    ttk_button $insp.bot.view -text "Options..." -command "OutputVectorInspector:options $insp"
+    ttk::label $insp.bot.info -width 50 -relief groove
+    ttk::button $insp.bot.view -text "Options..." -command "OutputVectorInspector:options $insp"
     pack $insp.bot.view -anchor center -expand 0 -fill none -side right
     pack $insp.bot.info -anchor center -expand 1 -fill x -side left
 
@@ -63,19 +63,19 @@ proc OutputVectorInspector:options {insp} {
     wm title $dlg "Plotting Options"
     wm protocol $dlg WM_DELETE_WINDOW { }
 
-    labelframe $dlg.main -text "Options"
-    checkbutton $dlg.main.auto -text "Autoscale time and value axes" -variable tmp(autoscale)
-    label $dlg.main.lbl -text "Manual axis settings:"
+    ttk::labelframe $dlg.main -text "Options"
+    ttk::checkbutton $dlg.main.auto -text "Autoscale time and value axes" -variable tmp(autoscale)
+    ttk::label $dlg.main.lbl -text "Manual axis settings:"
     label-entry $dlg.main.time "Time scale (sec/px):"
     label-entry $dlg.main.ymin "Ymin:"
     label-entry $dlg.main.ymax "Ymax:"
     label-combo $dlg.main.combo "Style:" {dots pins bars sample-hold lines}
-    label $dlg.main.pad -text " "
+    ttk::label $dlg.main.pad -text " "
 
-    frame $dlg.buttons
-    ttk_button $dlg.buttons.okbutton -width 10 -text "OK"
-    ttk_button $dlg.buttons.applybutton -width 10 -text "Apply"
-    ttk_button $dlg.buttons.cancelbutton -width 10 -text "Cancel"
+    ttk::frame $dlg.buttons
+    ttk::button $dlg.buttons.okbutton -width 10 -text "OK"
+    ttk::button $dlg.buttons.applybutton -width 10 -text "Apply"
+    ttk::button $dlg.buttons.cancelbutton -width 10 -text "Cancel"
 
     pack $dlg.main -anchor center -expand 1 -fill both -side top -padx 5 -pady 5
     pack $dlg.main.auto -anchor w -expand 0 -fill none -padx 3m -side top
