@@ -330,8 +330,6 @@ proc setGuiForRunmode {mode {modinspwin ""} {untilmode ""}} {  #FIXME needs to b
     if {$insp==""} {
         if {$mode=="step"} {
             .toolbar.step config -relief sunken
-        } elseif {$mode=="slow"} {
-            .toolbar.run config -relief sunken
         } elseif {$mode=="normal"} {
             .toolbar.run config -relief sunken
         } elseif {$mode=="fast"} {
@@ -412,11 +410,6 @@ proc runSimulation {mode} {
         opp_run $mode
         setGuiForRunmode notrunning
     }
-}
-
-proc runSlow {} {
-    # implements Simulate|Slow execution
-    runSimulation slow
 }
 
 proc runNormal {} {

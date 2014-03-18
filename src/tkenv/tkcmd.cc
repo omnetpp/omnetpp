@@ -199,7 +199,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_onestep",          oneStep_cmd        }, // args: -
    { "opp_run",              run_cmd            }, // args: none, or <timelimit> <eventlimit> <message>
    { "opp_onestepinmodule",  oneStepInModule_cmd}, // args: <inspectorwindow>
-   { "opp_set_run_mode",     setRunMode_cmd     }, // args: fast|normal|slow|express
+   { "opp_set_run_mode",     setRunMode_cmd     }, // args: fast|normal|express
    { "opp_set_run_until",    setRunUntil_cmd    }, // args: none, or <timelimit> <eventlimit> <message>
    { "opp_set_run_until_module",setRunUntilModule_cmd}, // args: <inspectorwindow>
    { "opp_rebuild",          rebuild_cmd        }, // args: -
@@ -429,9 +429,7 @@ int oneStep_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 
 static int resolveRunMode(const char *mode)
 {
-   if (!strcmp(mode,"slow"))
-       return Tkenv::RUNMODE_SLOW;
-   else if (!strcmp(mode,"normal"))
+   if (!strcmp(mode,"normal"))
        return Tkenv::RUNMODE_NORMAL;
    else if (!strcmp(mode,"fast"))
        return Tkenv::RUNMODE_FAST;
@@ -447,7 +445,7 @@ int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    Tkenv *app = getTkenv();
 
    int mode = resolveRunMode(argv[1]);
-   if (mode==-1) {Tcl_SetResult(interp, TCLCONST("wrong mode argument, should be slow, normal, fast or express"), TCL_STATIC);return TCL_ERROR;}
+   if (mode==-1) {Tcl_SetResult(interp, TCLCONST("wrong mode argument, should be normal, fast or express"), TCL_STATIC);return TCL_ERROR;}
 
    simtime_t until_time = 0;
    eventnumber_t until_eventnum = 0;
@@ -476,7 +474,7 @@ int setRunMode_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    Tkenv *app = getTkenv();
 
    int mode = resolveRunMode(argv[1]);
-   if (mode==-1) {Tcl_SetResult(interp, TCLCONST("wrong mode argument, should be slow, normal, fast or express"), TCL_STATIC);return TCL_ERROR;}
+   if (mode==-1) {Tcl_SetResult(interp, TCLCONST("wrong mode argument, should be normal, fast or express"), TCL_STATIC);return TCL_ERROR;}
 
    app->setSimulationRunMode(mode);
    return TCL_OK;
@@ -549,7 +547,7 @@ int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    if (argc==3)
    {
        mode = resolveRunMode(argv[2]);
-       if (mode==-1) {Tcl_SetResult(interp, TCLCONST("wrong mode argument, should be slow, normal, fast or express"), TCL_STATIC);return TCL_ERROR;}
+       if (mode==-1) {Tcl_SetResult(interp, TCLCONST("wrong mode argument, should be normal, fast or express"), TCL_STATIC);return TCL_ERROR;}
    }
 
    // fast run until we get to that module
@@ -1239,8 +1237,6 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       sprintf(buf,"%d", opt->showBubbles);
    else if (0==strcmp(argv[1], "animation_speed"))
       sprintf(buf,"%g", opt->animationSpeed);
-   else if (0==strcmp(argv[1], "stepdelay"))
-      sprintf(buf,"%ld", opt->stepDelay);
    else if (0==strcmp(argv[1], "event_banners"))
       sprintf(buf,"%d", opt->printEventBanners);
    else if (0==strcmp(argv[1], "init_banners"))
@@ -1271,9 +1267,7 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    Tkenv *app = getTkenv();
    TkenvOptions *opt = getTkenv()->opt;
 
-   if (0==strcmp(argv[1], "stepdelay"))
-      opt->stepDelay = atol(argv[2]);
-   else if (0==strcmp(argv[1], "animation_enabled"))
+   if (0==strcmp(argv[1], "animation_enabled"))
       opt->animationEnabled = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "nexteventmarkers"))
       opt->showNextEventMarkers = (argv[2][0]!='0');

@@ -327,13 +327,10 @@ proc optionsDialog {parent {defaultpage "g"}} {
     ttk::labelframe $nb.g.f1 -text "Simulation Execution"
     label-entry $nb.g.f1.updfreq_fast    "Display update frequency for Fast Run (ms):"
     label-entry $nb.g.f1.updfreq_express "Display update frequency for Express Run (ms):"
-    label-entry $nb.g.f1.stepdelay       "Per-event delay for slow execution (ms):"
     $nb.g.f1.updfreq_fast.l config -width 40
     $nb.g.f1.updfreq_express.l config -width 40
-    $nb.g.f1.stepdelay.l config -width 40
     pack $nb.g.f1.updfreq_fast -anchor w -fill x
     pack $nb.g.f1.updfreq_express -anchor w -fill x
-    pack $nb.g.f1.stepdelay -anchor w -fill x
 
     ttk::labelframe $nb.g.f2 -text "Logs"
     ttk::checkbutton $nb.g.f2.initbanners -text "Print initialization banners" -variable opp(initbanners)
@@ -458,7 +455,6 @@ proc optionsDialog {parent {defaultpage "g"}} {
     # Configure dialog
     $nb.g.f1.updfreq_fast.e insert 0 [opp_getsimoption updatefreq_fast_ms]
     $nb.g.f1.updfreq_express.e insert 0 [opp_getsimoption updatefreq_express_ms]
-    $nb.g.f1.stepdelay.e insert 0 [opp_getsimoption stepdelay]
     $nb.g.f2.numlines.e insert 0 $config(logwindow-scrollbacklines)
     $nb.l.f2.iconminsize.e insert 0 [opp_getsimoption iconminsize]
     $nb.t.f2.filterstext insert 1.0 [opp_getsimoption silent_event_filters]
@@ -498,7 +494,6 @@ proc optionsDialog {parent {defaultpage "g"}} {
     setInitialDialogFocus $nb.a.f1.anim
 
     if [execOkCancelDialog $w] {
-        opp_setsimoption stepdelay             [$nb.g.f1.stepdelay.e get]
         opp_setsimoption updatefreq_fast_ms    [$nb.g.f1.updfreq_fast.e get]
         opp_setsimoption updatefreq_express_ms [$nb.g.f1.updfreq_express.e get]
         opp_setsimoption silent_event_filters  [$nb.t.f2.filterstext get 1.0 end]

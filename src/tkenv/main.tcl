@@ -218,7 +218,6 @@ proc mainWindow:createMenu {} {
     #  {separator}
     foreach i {
       {command -command oneStep -label "One Step" -accel "F4" -underline 4}
-      {command -command runSlow -label "Slow Execution" -underline 1}
       {separator}
       {command -command runNormal -label "Run"  -accel "F5" -underline 0}
       {command -command runFast -label "Fast Run (rare display updates)" -accel "F6" -underline 0}

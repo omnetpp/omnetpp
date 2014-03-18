@@ -71,7 +71,6 @@ struct TkenvOptions : public EnvirOptions
     int iconMinimumSize;      // minimum size of icons when zooming out
     bool showBubbles;         // show result of bubble() calls
     double animationSpeed;    // msg animation speed: 0=slow 1=norm 2=fast
-    long stepDelay;           // delay between steps in ms
     long updateFreqFast;      // Fast Run updates display every N milliseconds
     long updateFreqExpress;   // Express Run updates display every N milliseconds
     bool autoupdateInExpress; // update inspectors at every display refresh in EXPRESS mode or not
@@ -102,7 +101,6 @@ class TKENV_API Tkenv : public EnvirBase
       };
 
       enum eRunMode {
-          RUNMODE_SLOW = 0,
           RUNMODE_NORMAL = 1,
           RUNMODE_FAST = 2,
           RUNMODE_EXPRESS = 3

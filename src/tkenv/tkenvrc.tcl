@@ -28,7 +28,6 @@ proc saveTkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
             foreach key {
                 updatefreq_fast_ms
                 updatefreq_express_ms
-                stepdelay
                 event_banners
                 init_banners
                 short_banners

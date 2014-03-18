@@ -109,7 +109,6 @@ static bool moduleContains(cModule *potentialparent, cModule *mod)
 TkenvOptions::TkenvOptions()
 {
     // note: these values will be overwritten in setup()/readOptions() before taking effect
-    stepDelay = 300;
     updateFreqFast = 500;
     updateFreqExpress = 1000;
     animationEnabled = true;
@@ -529,8 +528,8 @@ bool Tkenv::doRunSimulation()
             break;
         firstevent = false;
 
-        animating = (runmode==RUNMODE_NORMAL) || (runmode==RUNMODE_SLOW) || untilmodule_reached;
-        bool frequent_updates = (runmode==RUNMODE_NORMAL) || (runmode==RUNMODE_SLOW);
+        animating = (runmode==RUNMODE_NORMAL) || untilmodule_reached;
+        bool frequent_updates = (runmode==RUNMODE_NORMAL);
 
         speedometer.addEvent(simulation.getSimTime());
 
@@ -560,15 +559,6 @@ bool Tkenv::doRunSimulation()
         if (stopsimulation_flag) break;
         if (rununtil_time>0 && simulation.guessNextSimtime()>=rununtil_time) break;
         if (rununtil_eventnum>0 && simulation.getEventNumber()>=rununtil_eventnum) break;
-
-        // delay loop for slow simulation
-        if (runmode==RUNMODE_SLOW)
-        {
-            timeval start;
-            gettimeofday(&start, NULL);
-            while (!elapsed(opt->stepDelay, start) && !stopsimulation_flag)
-                Tcl_Eval(interp, "update");
-        }
 
         checkTimeLimits();
     }
