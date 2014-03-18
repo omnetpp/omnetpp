@@ -188,6 +188,12 @@ proc applyTkenvrc {} {
     set lb .inspector.nb.contents.main.list
     inspectorListbox:restoreColumnWidths $lb "inspector:columnwidths"
 
+    toggleStatusDetails
+    toggleStatusDetails
+
+    toggleTimeline
+    toggleTimeline
+
     reflectSettingsInGui
 }
 
@@ -249,8 +255,6 @@ proc reflectSettingsInGui {} {
    ttk::style configure Treeview -rowheight $h
 
    timeline:fontChanged
-   toggleTimeline
-   toggleTimeline
 
    redrawTimeline
 

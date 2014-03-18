@@ -43,7 +43,7 @@ proc createModuleInspector {insp geom} {
     set help_tips($insp.toolbar.redraw)  "Re-layout (${CTRL_}R)"
     set help_tips($insp.toolbar.zoomin)  "Zoom in (${CTRL_}M)"
     set help_tips($insp.toolbar.zoomout) "Zoom out (${CTRL_}N)"
-    set help_tips($insp.toolbar.showlabels) "Show module names (${CTRL_}D)"
+    set help_tips($insp.toolbar.showlabels) "Show module names (${CTRL_}L)"
     set help_tips($insp.toolbar.showarrowheads) "Show arrowheads (${CTRL_}A)"
 
     # create canvas
@@ -89,7 +89,7 @@ proc createEmbeddedModuleInspector {insp} {
     set help_tips($tb.animspeed) "Animation speed -- see Options dialog"
     set help_tips($tb.zoomin)  "Zoom in (${CTRL_}M)"
     set help_tips($tb.zoomout) "Zoom out (${CTRL_}N)"
-    set help_tips($tb.showlabels) "Show module names (${CTRL_}D)"
+    set help_tips($tb.showlabels) "Show module names (${CTRL_}L)"
     set help_tips($tb.showarrowheads) "Show arrowheads (${CTRL_}A)"
 
 }
@@ -152,7 +152,7 @@ proc createGraphicalModuleViewer {insp} {
     bind $ww <$Control-i> "ModuleInspector:zoomIconsBy $insp 1.25"
     bind $ww <$Control-o> "ModuleInspector:zoomIconsBy $insp 0.8"
     bind $ww <$Control-r> "ModuleInspector:relayout $insp"
-    bind $ww <$Control-d> "ModuleInspector:toggleLabels $insp"
+    bind $ww <$Control-l> "ModuleInspector:toggleLabels $insp"
     bind $ww <$Control-a> "ModuleInspector:toggleArrowheads $insp"
 }
 
@@ -1364,7 +1364,7 @@ proc ModuleInspector:rightClick {insp X Y x y} {
       set tmp($c:showarrowheads) $inspectordata($c:showarrowheads)
 
       $popup add separator
-      $popup add checkbutton -label "Show module names" -command "ModuleInspector:toggleLabels $insp" -accel "$CTRL+D" -variable tmp($c:showlabels)
+      $popup add checkbutton -label "Show module names" -command "ModuleInspector:toggleLabels $insp" -accel "$CTRL+L" -variable tmp($c:showlabels)
       $popup add checkbutton -label "Show arrowheads" -command "ModuleInspector:toggleArrowheads $insp" -accel "$CTRL+A" -variable tmp($c:showarrowheads)
 
       $popup add separator

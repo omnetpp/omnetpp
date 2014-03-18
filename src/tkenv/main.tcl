@@ -41,6 +41,7 @@ set config(rununtil-mode) "Express (tracing off)"
 set config(rununtil-time) ""
 set config(rununtil-event) ""
 set config(rununtil-msg) ""
+set config(display-statusdetails) 1
 set config(display-timeline) 1
 set config(timeline-maxnumevents) 1000
 set config(timeline-wantselfmsgs) 1
@@ -267,14 +268,17 @@ proc mainWindow:createMenu {} {
 
     # View menu
     foreach i {
+      {command -command toggleStatusDetails -label "Status Details" -accel "$CTRL+D" -underline 0}
+      {command -command toggleTimeline -label "Timeline" -accel "$CTRL+T" -underline 0}
+      {separator}
       {command -label "Ini File" -underline 0 -command viewIniFile}
       {command -label "README" -underline 0 -command {viewFile README}}
       {separator}
       {command -label "Output Vector File" -underline 7 -command viewOutputVectorFile}
-      {command -label "Output Scalar File" -underline 7 -command viewOutputScalarFile}
-      {command -label "Snapshot File" -underline 0 -command viewSnapshotFile}
+      {command -label "Output Scalar File" -underline 8 -command viewOutputScalarFile}
+      {command -label "Snapshot File" -underline 1 -command viewSnapshotFile}
       {separator}
-      {command -label "View Text File..." -underline 0 -command {editTextFile}}
+      {command -label "View Text File..." -underline 7 -command {editTextFile}}
     } {
       eval .menubar.viewmenu$m add $i
     }
@@ -282,7 +286,6 @@ proc mainWindow:createMenu {} {
     # Options menu
     foreach i {
       {command -command simulationOptions -label "Simulation Options..." -underline 0}
-      {command -command toggleTimeline -label "Show/Hide Timeline" -underline 10}
       {command -command toggleRecordEventlog -label "Eventlog Recording" -underline 10}
       {separator}
       {command -label "Load Config..." -underline 0 -command loadTkenvConfig}
@@ -353,8 +356,7 @@ proc mainWindow:createToolbar {} {
     set help_tips(.toolbar.eventlog) "Eventlog recording on/off"
     set help_tips(.toolbar.finish)  "Call finish()"
     set help_tips(.toolbar.objs)    "Find and inspect modules, messages, queues and other objects (${CTRL_}S)"
-    set help_tips(.toolbar.tline)   "Show/hide timeline"
-    set help_tips(.toolbar.tree)    "Show/hide object tree"
+    set help_tips(.toolbar.tline)   "Show/hide timeline (${CTRL_}T)"
     set help_tips(.toolbar.options) "Simulation options"
     set help_tips(.toolbar.animspeed) "Animation speed"
 }
@@ -455,11 +457,8 @@ proc mainWindow:createLogView {} {
 proc mainWindow:refreshToolbar {} {
     global config
 
-    if {$config(display-timeline)==0} {
-        .toolbar.tline config -relief flat
-    } else {
-        .toolbar.tline config -relief sunken
-    }
+    if {$config(display-timeline)==0} {set relief flat} else {set relief sunken}
+    .toolbar.tline config -relief $relief
 }
 
 proc mainWindow:selectionChanged {insp obj} {
@@ -481,6 +480,17 @@ proc animControl {w} {
     trace variable priv(animspeed) w animSpeedChanged
 }
 
+proc toggleStatusDetails {} {
+    global config
+
+    set config(display-statusdetails) [expr !$config(display-statusdetails)]
+    if {!$config(display-statusdetails)} {
+        pack forget .statusbar2
+        pack forget .statusbar3
+    }
+    mainWindow:updateStatusDisplay
+}
+
 proc mainWindow:updateNetworkRunDisplay {} {
     set configname [opp_getstatusvar activeconfig]
     set runnumber [opp_getstatusvar activerunnumber]
@@ -491,23 +501,27 @@ proc mainWindow:updateNetworkRunDisplay {} {
 }
 
 proc mainWindow:updateStatusDisplay {} {
+    global config
+
     mainWindow:updateSimtimeDisplay
 
-    set state [opp_getsimulationstate]
-    set runmode [opp_getrunmode]
+    if {$config(display-statusdetails)} {
+        set state [opp_getsimulationstate]
+        set runmode [opp_getrunmode]
 
-    if {$state=="SIM_RUNNING" && ($runmode=="fast" || $runmode=="express")} {
-        if {[winfo manager .statusbar2]!=""} {
-            pack forget .statusbar2
-            pack .statusbar3 -after .statusbar -expand 0 -fill x -side top
+        if {$state=="SIM_RUNNING" && ($runmode=="fast" || $runmode=="express")} {
+            if {[winfo manager .statusbar3]==""} {
+                pack .statusbar3 -after .statusbar -expand 0 -fill x -side top
+                pack forget .statusbar2
+            }
+            mainWindow:updatePerformanceDisplay
+        } else {
+            if {[winfo manager .statusbar2]==""} {
+                pack .statusbar2 -after .statusbar -expand 0 -fill x -side top
+                pack forget .statusbar3
+            }
+            mainWindow:updateNextModuleDisplay
         }
-        mainWindow:updatePerformanceDisplay
-    } else {
-        if {[winfo manager .statusbar3]!=""} {
-            pack forget .statusbar3
-            pack .statusbar2 -after .statusbar -expand 0 -fill x -side top
-        }
-        mainWindow:updateNextModuleDisplay
     }
 }
 
@@ -572,6 +586,8 @@ proc bindRunCommands {w} {
     bind $w <F7> {after 100 runExpress}
     bind $w <F8> {stopSimulation}
     bind $w <$Control-F9> {debugNextEvent}
+    bind $w <$Control-d>  {toggleStatusDetails}
+    bind $w <$Control-t>  {toggleTimeline}
     bind $w <$Control-q>  {exitOmnetpp}
 }
 
