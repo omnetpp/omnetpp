@@ -538,10 +538,8 @@ proc fontcombo:set {w oldfont} {
 
     # produce font list with the given size
     set fontlist {}
-    foreach family [lsort [font families]] {
-        if {[regexp {^[A-Za-z]} $family]} {
-            lappend fontlist [string trim "$family $size"]
-        }
+    foreach family [fontcombo:getfontfamilies] {
+        lappend fontlist [string trim "$family $size"]
     }
 
     $w configure -values $fontlist
@@ -549,6 +547,16 @@ proc fontcombo:set {w oldfont} {
 
     set oldfont [string map {"{" "" "}" "" "\"" ""} $oldfont]
     $w set $oldfont
+}
+
+proc fontcombo:getfontfamilies {} {
+    set list {}
+    foreach family [lsort [font families]] {
+        if {[regexp {^[A-Za-z]} $family] && [lsearch -exact $list $family]==-1} {
+            lappend list $family
+        }
+    }
+    return $list
 }
 
 proc label-text {w label height {text {}}} {
