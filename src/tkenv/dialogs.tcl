@@ -315,7 +315,7 @@ proc removeStopDialog {} {
     }
 }
 
-proc preferencesDialog {parent {defaultpage "g"}} {
+proc preferencesDialog {parent {defaultpage ""}} {
     global opp config fonts help_tips helptexts
 
     set parent [winfo toplevel $parent]
@@ -324,6 +324,10 @@ proc preferencesDialog {parent {defaultpage "g"}} {
         set w .preferencesdialog
     } else {
         set w $parent.preferencesdialog
+    }
+
+    if {$defaultpage==""} {
+        set defaultpage $config(preferences-dialog-page)
     }
 
     createOkCancelDialog $w "Preferences"
@@ -582,6 +586,9 @@ proc preferencesDialog {parent {defaultpage "g"}} {
 
         reflectSettingsInGui
     }
+
+    set config(preferences-dialog-page) [winfo name [$nb select]]
+
     destroy $w
 }
 
