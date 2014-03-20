@@ -60,6 +60,7 @@ proc setupTkOptions {} {
    if {[string equal [tk windowingsystem] x11]}  {
        package require ttk::theme::clearlooks
        ttk::style theme use clearlooks
+       #TODO adjust colors to theme! text background, mytree selection, slider background, etc!
    }
 
    # work around Tcl bug: these vars got reset when words.tcl was autoloaded
@@ -712,6 +713,7 @@ proc helplabel:showhelp {text x y} {
     wm overrideredirect .helpwin true
     wm positionfrom .helpwin program
     wm geometry .helpwin "+[expr $x-200]+[expr $y+5]"
+#TODO: add wm transient!!! maybe it will work
     ttk::label .helpwin.tip -text $text -padx 4 -wraplength $help_tips(width) \
                             -bg $help_tips(color) -border 1 -relief solid \
                             -font $help_tips(font) -justify left -takefocus 1

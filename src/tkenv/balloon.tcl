@@ -90,7 +90,7 @@ proc createBalloon {text x y} {
 
 proc initBalloons {args} {
     global help_tips use_balloons fonts
-    set help_tips(width) 500
+    set help_tips(width) 600
     set help_tips(color) #f0f0d0
     set help_tips(delay) 500
     set help_tips(font)  $fonts(balloon)

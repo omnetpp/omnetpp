@@ -54,6 +54,7 @@ proc OutputVectorInspector:options {insp} {
     catch {destroy $dlg}
     global tmp
 
+#TODO one frame!!!!
     toplevel $dlg -class Toplevel
     wm transient $dlg [winfo toplevel [winfo parent $dlg]]
     wm iconname $dlg Dialog
