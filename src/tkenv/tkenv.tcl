@@ -48,6 +48,8 @@ if [info exist OMNETPP_TKENV_DIR] {
    source [file join $dir watchinspector.tcl]
    source [file join $dir widgets.tcl]
    source [file join $dir windows.tcl]
+   source [file join $dir clearlooksimg.tcl]
+   source [file join $dir clearlooks.tcl]
 }
 
 #

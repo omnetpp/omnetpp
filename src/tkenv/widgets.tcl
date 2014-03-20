@@ -57,6 +57,11 @@ proc setupTkOptions {} {
    global tcl_wordchars tcl_nonwordchars
    global B2 B3 CTRL CTRL_ Control
 
+   if {[string equal [tk windowingsystem] x11]}  {
+       package require ttk::theme::clearlooks
+       ttk::style theme use clearlooks
+   }
+
    # work around Tcl bug: these vars got reset when words.tcl was autoloaded
    catch {tcl_wordBreakAfter};
    set tcl_wordchars {\w}
