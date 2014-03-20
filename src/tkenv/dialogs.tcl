@@ -82,6 +82,32 @@ proc comboSelectionDialog {title text label variable list} {
     return 0
 }
 
+proc aboutDialog {} {
+    global fonts
+    global OMNETPP_RELEASE OMNETPP_EDITION OMNETPP_BUILDID
+
+    set title "About OMNeT++/OMNEST"
+    set text "
+OMNeT++/OMNEST
+Discrete Event Simulation Framework
+
+(C) 1992-2014 Opensim Ltd.
+Release: $OMNETPP_RELEASE, build: $OMNETPP_BUILDID
+$OMNETPP_EDITION
+
+NO WARRANTY -- see license for details."
+
+    catch {destroy .about}
+    set w .about
+    createOkCancelDialog $w $title
+    $w.f config -border 2 -relief groove
+    ttk::label $w.f.l -text "$text\n\n" -justify center -anchor c
+    pack $w.f.l -expand 1 -fill both -side top -padx 30
+    destroy $w.buttons.cancelbutton
+    execOkCancelDialog $w
+    destroy $w
+}
+
 #
 # For selecting config and run number.
 #

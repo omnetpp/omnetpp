@@ -80,21 +80,6 @@ proc checkRunning {} {
 #    MENU PROCEDURES
 #===================================================================
 
-proc about {} {
-    # implements Help|About
-    global OMNETPP_RELEASE OMNETPP_EDITION OMNETPP_BUILDID
-    aboutDialog "About OMNeT++/OMNEST" "
-This simulation model is based on:
-
-OMNeT++/OMNEST
-Discrete Event Simulation Framework
-" \
-"(C) 1992-2008 Andras Varga
-Release: $OMNETPP_RELEASE, build: $OMNETPP_BUILDID, edition: $OMNETPP_EDITION
-
-NO WARRANTY -- see license for details."
-}
-
 proc exitOmnetpp {} {
     global config
 

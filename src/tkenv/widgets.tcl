@@ -1079,28 +1079,6 @@ proc executeCloseDialog w {
     return $opp($w)
 }
 
-
-# aboutDialog --
-#
-# Displays an About dialog.
-#
-proc aboutDialog {title part1 part2} {
-    global fonts
-    catch {destroy .about}
-    set w .about
-    createOkCancelDialog $w $title
-    $w.f config -padx 0 -pady 0 -bg #e0e0a0 -border 2 -relief groove
-    # -font $fonts(big)
-    ttk::label $w.f.l1 -text "$part1" -bg "#e0e0a0" -padx 30
-    ttk::label $w.f.l2 -text "$part2\n\n" -bg "#e0e0a0" -padx 30
-    pack $w.f.l1 -expand 0 -fill x -side top
-    pack $w.f.l2 -expand 1 -fill both -side top
-    destroy $w.buttons.cancelbutton
-    execOkCancelDialog $w
-    destroy $w
-}
-
-
 #
 # Show a hint once; state is saved into config(dontshow)
 #

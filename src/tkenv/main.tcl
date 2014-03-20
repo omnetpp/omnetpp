@@ -296,7 +296,7 @@ proc mainWindow:createMenu {} {
 
     # Help menu
     foreach i {
-      {command -command about -label "About OMNeT++/Tkenv" -underline 0}
+      {command -command aboutDialog -label "About OMNeT++/Tkenv" -underline 0}
     } {
       eval .menubar.helpmenu$m add $i
     }
