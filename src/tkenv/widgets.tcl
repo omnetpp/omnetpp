@@ -922,10 +922,10 @@ proc createOkCancelDialog {w title} {
     set pre_y [expr ([winfo screenheight $w]-250)/2-[winfo vrooty [winfo parent $w]]]
     wm geom $w +$pre_x+$pre_y
 
-    ttk::frame $w.f
-    ttk::frame $w.buttons
-    ttk::button $w.buttons.okbutton  -text "OK" -width 10 -default active
-    ttk::button $w.buttons.cancelbutton  -text "Cancel" -width 10
+    # $w.r is a workaround: the dialog must contain exactly one ttk::frame,
+    # otherwise toplevel's non-themed background will be visible through the gaps
+    ttk::frame $w.r
+    pack $w.r -expand 1 -fill both
 
     set padx 5
     set pady 5
@@ -934,8 +934,13 @@ proc createOkCancelDialog {w title} {
         set pady 10
     }
 
-    pack $w.buttons -expand 0 -fill x -padx $padx -pady $pady -side bottom
-    pack $w.f -expand 1 -fill both -padx $padx -pady $pady -side top
+    ttk::frame $w.f
+    ttk::frame $w.buttons
+    pack $w.buttons -in $w.r -expand 0 -fill x -padx $padx -pady $pady -side bottom
+    pack $w.f -in $w.r  -expand 1 -fill both -padx $padx -pady $pady -side top
+
+    ttk::button $w.buttons.okbutton  -text "OK" -width 10 -default active
+    ttk::button $w.buttons.cancelbutton  -text "Cancel" -width 10
     pack $w.buttons.cancelbutton -side right -padx 2
     pack $w.buttons.okbutton -side right -padx 2
 }
@@ -1021,9 +1026,10 @@ proc createCloseDialog {w title} {
     set pre_y [expr ([winfo screenheight $w]-250)/2-[winfo vrooty [winfo parent $w]]]
     wm geom $w +$pre_x+$pre_y
 
-    ttk::frame $w.f
-    ttk::frame $w.buttons
-    ttk::button $w.buttons.closebutton  -text "Close" -width 10 -default active
+    # $w.r is a workaround: the dialog must contain exactly one ttk::frame,
+    # otherwise toplevel's non-themed background will be visible through the gaps
+    ttk::frame $w.r
+    pack $w.r -expand 1 -fill both
 
     set padx 5
     set pady 5
@@ -1032,8 +1038,12 @@ proc createCloseDialog {w title} {
         set pady 10
     }
 
-    pack $w.buttons -expand 0 -fill x -padx $padx -pady $pady -side bottom
-    pack $w.f -expand 1 -fill both -padx $padx -pady $pady -side top
+    ttk::frame $w.f
+    ttk::frame $w.buttons
+    pack $w.buttons -in $w.r -expand 0 -fill x -padx $padx -pady $pady -side bottom
+    pack $w.f -in $w.r  -expand 1 -fill both -padx $padx -pady $pady -side top
+
+    ttk::button $w.buttons.closebutton  -text "Close" -width 10 -default active
     pack $w.buttons.closebutton  -anchor n -side right -padx 2
 }
 
