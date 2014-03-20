@@ -335,11 +335,11 @@ proc preferencesDialog {parent {defaultpage ""}} {
     ttk::notebook $w.f.nb
     set nb $w.f.nb
 
-    $nb add [frame $nb.g] -text "General"
-    $nb add [frame $nb.l] -text "Layouting"
-    $nb add [frame $nb.a] -text "Animation"
-    $nb add [frame $nb.t] -text "Filtering"
-    $nb add [frame $nb.f] -text "Fonts"
+    $nb add [ttk::frame $nb.g] -text "General"
+    $nb add [ttk::frame $nb.l] -text "Layouting"
+    $nb add [ttk::frame $nb.a] -text "Animation"
+    $nb add [ttk::frame $nb.t] -text "Filtering"
+    $nb add [ttk::frame $nb.f] -text "Fonts"
 
     pack $nb -expand 1 -fill both
 

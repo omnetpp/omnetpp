@@ -48,10 +48,10 @@ proc createGenericObjectViewer {insp} {
     ttk::notebook $nb -width 460 -height 260
     pack $nb -expand 1 -fill both
 
-    $nb add [frame $nb.fields] -text "Fields"
+    $nb add [ttk::frame $nb.fields] -text "Fields"
     createFieldsPage $nb.fields $insp
 
-    $nb add [frame $nb.contents] -text "Contents"
+    $nb add [ttk::frame $nb.contents] -text "Contents"
     set lb [createInspectorListbox $nb.contents $insp]
 
     # restore columns widths -- note: for the main embedded inspector this is too soon, as the config hasn't been loaded yet
