@@ -1377,9 +1377,9 @@ proc ModuleInspector:rightClick {insp X Y x y} {
       $popup add command -label "Re-layout" -accel "$CTRL+R" -command "opp_inspectorcommand $insp relayout"
 
       $popup add separator
-      $popup add command -label "Layouting options..." -command "optionsDialog $insp l"
-      $popup add command -label "Animation options..." -command "optionsDialog $insp a"
-      $popup add command -label "Filtering options..." -command "optionsDialog $insp t"
+      $popup add command -label "Layouting options..." -command "preferencesDialog $insp l"
+      $popup add command -label "Animation options..." -command "preferencesDialog $insp a"
+      $popup add command -label "Filtering options..." -command "preferencesDialog $insp t"
 
       tk_popup $popup $X $Y
    }

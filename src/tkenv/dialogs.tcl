@@ -315,18 +315,18 @@ proc removeStopDialog {} {
     }
 }
 
-proc optionsDialog {parent {defaultpage "g"}} {
+proc preferencesDialog {parent {defaultpage "g"}} {
     global opp config fonts help_tips helptexts
 
     set parent [winfo toplevel $parent]
 
     if {$parent == "."} {
-        set w .optionsdialog
+        set w .preferencesdialog
     } else {
-        set w $parent.optionsdialog
+        set w $parent.preferencesdialog
     }
 
-    createOkCancelDialog $w "Simulation Options"
+    createOkCancelDialog $w "Preferences"
 
     ttk::notebook $w.f.nb
     set nb $w.f.nb

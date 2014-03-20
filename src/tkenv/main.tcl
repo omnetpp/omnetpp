@@ -176,11 +176,9 @@ proc mainWindow:createMenu {} {
     # Create menus
     foreach i {
        {filemenu     -label "File" -underline 0}
-       {editmenu     -label "Edit" -underline 0}
        {simulatemenu -label "Simulate" -underline 0}
        {inspectmenu  -label "Inspect" -underline 0}
        {viewmenu     -label "View" -underline 0}
-       {optionsmenu  -label "Options" -underline 0}
        {helpmenu     -label "Help" -underline 0}
     } {
        eval .menubar add cascade -menu .menubar.$i
@@ -189,28 +187,21 @@ proc mainWindow:createMenu {} {
 
     # File menu
     foreach i {
-      {command -command newRun -label "Set Up a Configuration..." -underline 7}
+      {command -command newRun -label "Set Up a Configuration..." -underline 0}
       {separator}
       {command -command loadNedFile -label "Load NED File..." -underline 0}
-      {command -command newNetwork -label "Set Up an Unconfigured Network..." -underline 7}
+      {command -command newNetwork -label "Set Up an Unconfigured Network..." -underline 10}
       {separator}
-      {command -command createSnapshot -label "Create Snapshot..." -underline 7}
+      {command -command viewIniFile -label "Open Primary Ini File" -underline 13}
+      {command -command editTextFile -label "Open Text File..." -underline 0}
+      {separator}
+      {command -command createSnapshot -label "Create Snapshot..." -underline 0}
+      {separator}
+      {command -command preferences -label "Preferences..." -underline 0}
       {separator}
       {command -command exitOmnetpp -label "Exit" -accel "$CTRL+Q" -underline 1}
     } {
       eval .menubar.filemenu add $i
-    }
-
-    # Edit menu
-    foreach i {
-      {command -command editCopy -label "Copy" -accel "$CTRL+C" -underline 0}
-      {separator}
-      {command -command editFind -label "Find..." -accel "$CTRL+F" -underline 0}
-      {command -command editFindNext -label "Find Next" -accel "F3" -underline 5}
-      {separator}
-      {command -command editFilterWindowContents -label "Filter Window Contents..." -accel "$CTRL+H" -underline 0}
-    } {
-      eval .menubar.editmenu add $i
     }
 
     # Simulate menu
@@ -226,10 +217,12 @@ proc mainWindow:createMenu {} {
       {separator}
       {command -command debugNextEvent -label "Debug Next Event" -accel "$CTRL+F9" -underline 1}
       {separator}
-      {command -command stopSimulation -label "Stop Execution" -accel "F8" -underline 0}
+      {command -command stopSimulation -label "Stop Execution" -accel "F8" -underline 1}
+      {separator}
+      {command -command toggleRecordEventlog -label "Start/Stop Eventlog Recording" -underline 1}
       {separator}
       {command -command callFinish -label "Call finish() for All Modules" -underline 0}
-      {command -command rebuild -label "Rebuild Network" -underline 1}
+      {command -command rebuild -label "Rebuild Network" -underline 2}
     } {
       eval .menubar.simulatemenu add $i
     }
@@ -245,10 +238,8 @@ proc mainWindow:createMenu {} {
       {separator}
       {cascade -label "Available Components" -underline 10 -menu .menubar.inspectmenu.components}
       {separator}
-      {command -command inspectFilteredObjectList -label "Show 'Find/Inspect Objects' Window" -accel "$CTRL+S" -underline 0}
-      {command -command inspectBypointer -label "Inspect by Pointer..." -underline 4}
-      {separator}
-      {command -command opp_refreshinspectors -label "Refresh Inspectors" -underline 0}
+      {command -command inspectFilteredObjectList -label "Find/Inspect Objects..." -accel "$CTRL+S" -underline 0}
+      {command -command inspectBypointer -label "Inspect by Pointer..." -underline 3}
     } {
       eval .menubar.inspectmenu add $i
     }
@@ -269,28 +260,8 @@ proc mainWindow:createMenu {} {
     foreach i {
       {command -command toggleStatusDetails -label "Status Details" -accel "$CTRL+D" -underline 0}
       {command -command toggleTimeline -label "Timeline" -accel "$CTRL+T" -underline 0}
-      {separator}
-      {command -label "Ini File" -underline 0 -command viewIniFile}
-      {command -label "README" -underline 0 -command {viewFile README}}
-      {separator}
-      {command -label "Output Vector File" -underline 7 -command viewOutputVectorFile}
-      {command -label "Output Scalar File" -underline 8 -command viewOutputScalarFile}
-      {command -label "Snapshot File" -underline 1 -command viewSnapshotFile}
-      {separator}
-      {command -label "View Text File..." -underline 7 -command {editTextFile}}
     } {
       eval .menubar.viewmenu add $i
-    }
-
-    # Options menu
-    foreach i {
-      {command -command simulationOptions -label "Simulation Options..." -underline 0}
-      {command -command toggleRecordEventlog -label "Eventlog Recording" -underline 10}
-      {separator}
-      {command -label "Load Config..." -underline 0 -command loadTkenvConfig}
-      {command -label "Save Config..." -underline 1 -command saveTkenvConfig}
-    } {
-      eval .menubar.optionsmenu add $i
     }
 
     # Help menu
@@ -329,7 +300,7 @@ proc mainWindow:createToolbar {} {
       {sep6     -separator}
       {tline    -image $icons(fes)     -command {toggleTimeline}}
       {sep9     -separator}
-      {options  -image $icons(config)  -command {simulationOptions}}
+      {options  -image $icons(config)  -command {preferences}}
       {sep10    -separator}
     } {
       set b [eval iconbutton .toolbar.$i]
@@ -356,7 +327,7 @@ proc mainWindow:createToolbar {} {
     set help_tips(.toolbar.finish)  "Call finish()"
     set help_tips(.toolbar.objs)    "Find and inspect modules, messages, queues and other objects (${CTRL_}S)"
     set help_tips(.toolbar.tline)   "Show/hide timeline (${CTRL_}T)"
-    set help_tips(.toolbar.options) "Simulation options"
+    set help_tips(.toolbar.options) "Preferences"
     set help_tips(.toolbar.animspeed) "Animation speed"
 }
 

@@ -627,31 +627,9 @@ proc inspectFunctions {} {
     opp_inspect [opp_object_functions] {(default)}
 }
 
-proc simulationOptions {} {
-    optionsDialog .
+proc preferences {} {
+    preferencesDialog .
     opp_refreshinspectors
-}
-
-proc saveTkenvConfig {} {
-    set filename "tkenv.cfg"
-    set filename [tk_getSaveFile -title "Save Tkenv configuration" \
-                  -defaultextension "cfg" -initialfile $filename \
-                  -filetypes {{{Configuration files} {*.cfg}} {{All files} {*}}}]
-
-    if {$filename!=""} {
-       saveTkenvrc $filename 1 1 0 "# Tkenv config file"
-    }
-}
-
-proc loadTkenvConfig {} {
-    set filename "tkenv.cfg"
-    set filename [tk_getOpenFile -title "Load Tkenv configuration" \
-                  -defaultextension "cfg" -initialfile $filename \
-                  -filetypes {{{Configuration files} {*.cfg}} {{All files} {*}}}]
-
-    if {$filename!=""} {
-       loadTkenvrc $filename
-    }
 }
 
 proc editTextFile {} {
@@ -685,45 +663,6 @@ proc viewIniFile {} {
        return
     }
 
-    viewFile $fname
-}
-
-proc viewOutputVectorFile {} {
-    set fname [opp_getfilename outvector]
-    if {$fname == ""} {
-       messagebox {Info} "The current output vector manager doesn't use file output." info ok
-       return
-    }
-    if {![file exists $fname]} {
-       messagebox {Info} "Output vector file not yet created (no values recorded yet)." info ok
-       return
-    }
-    viewFile $fname
-}
-
-proc viewOutputScalarFile {} {
-    set fname [opp_getfilename outscalar]
-    if {$fname == ""} {
-       messagebox {Info} "The current output scalar manager doesn't use file output." info ok
-       return
-    }
-    if {![file exists $fname]} {
-       messagebox {Info} "Output scalar file not yet created (no output scalars written)." info ok
-       return
-    }
-    viewFile $fname
-}
-
-proc viewSnapshotFile {} {
-    set fname [opp_getfilename snapshot]
-    if {$fname == ""} {
-       messagebox {Info} "The current snapshot manager doesn't use file output." info ok
-       return
-    }
-    if {![file exists $fname]} {
-       messagebox {Info} "Snapshot file not yet created (no snapshots done yet)." info ok
-       return
-    }
     viewFile $fname
 }
 
