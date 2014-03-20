@@ -171,12 +171,11 @@ proc setupTkOptions {} {
        destroy .tmp
        option add *Scrollbar.width  12
        option add *Menu.activeBorderWidth 0
-       option add *Menu.relief raised
-       option add *Menu.activeBackground #800000
-       option add *Menu.activeForeground white
+       option add *Menu.activeBackground gray
+       option add *Menu.activeForeground $activefg
        option add *menubar.borderWidth 1
-       option add *menubar.activeBorderWidth 1
-       option add *menubar.activeBackground $activebg
+       option add *menubar.activeBorderWidth 0
+       option add *menubar.activeBackground gray
        option add *menubar.activeForeground $activefg
    }
 
