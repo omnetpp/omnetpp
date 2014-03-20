@@ -175,15 +175,14 @@ proc mainWindow:createMenu {} {
 
     # Create menus
     foreach i {
-       {filemenu     -$label_opt "File" -underline 0}
-       {editmenu     -$label_opt "Edit" -underline 0}
-       {simulatemenu -$label_opt "Simulate" -underline 0}
-       {inspectmenu  -$label_opt "Inspect" -underline 0}
-       {viewmenu     -$label_opt "View" -underline 0}
-       {optionsmenu  -$label_opt "Options" -underline 0}
-       {helpmenu     -$label_opt "Help" -underline 0}
+       {filemenu     -label "File" -underline 0}
+       {editmenu     -label "Edit" -underline 0}
+       {simulatemenu -label "Simulate" -underline 0}
+       {inspectmenu  -label "Inspect" -underline 0}
+       {viewmenu     -label "View" -underline 0}
+       {optionsmenu  -label "Options" -underline 0}
+       {helpmenu     -label "Help" -underline 0}
     } {
-       set label_opt "label"; set m ""
        eval .menubar add cascade -menu .menubar.$i
        menu ".menubar.[lindex $i 0]" -tearoff 0
     }
@@ -199,7 +198,7 @@ proc mainWindow:createMenu {} {
       {separator}
       {command -command exitOmnetpp -label "Exit" -accel "$CTRL+Q" -underline 1}
     } {
-      eval .menubar.filemenu$m add $i
+      eval .menubar.filemenu add $i
     }
 
     # Edit menu
@@ -211,7 +210,7 @@ proc mainWindow:createMenu {} {
       {separator}
       {command -command editFilterWindowContents -label "Filter Window Contents..." -accel "$CTRL+H" -underline 0}
     } {
-      eval .menubar.editmenu$m add $i
+      eval .menubar.editmenu add $i
     }
 
     # Simulate menu
@@ -232,7 +231,7 @@ proc mainWindow:createMenu {} {
       {command -command callFinish -label "Call finish() for All Modules" -underline 0}
       {command -command rebuild -label "Rebuild Network" -underline 1}
     } {
-      eval .menubar.simulatemenu$m add $i
+      eval .menubar.simulatemenu add $i
     }
 
     # Inspect menu
@@ -244,18 +243,18 @@ proc mainWindow:createMenu {} {
       {command -command inspectMessageQueue -label "Scheduled Events (FES)" -underline 0}
       {command -command inspectSimulation   -label "Simulation" -underline 1}
       {separator}
-      {cascade -label "Available Components" -underline 10 -menu .menubar.inspectmenu$m.components}
+      {cascade -label "Available Components" -underline 10 -menu .menubar.inspectmenu.components}
       {separator}
       {command -command inspectFilteredObjectList -label "Show 'Find/Inspect Objects' Window" -accel "$CTRL+S" -underline 0}
       {command -command inspectBypointer -label "Inspect by Pointer..." -underline 4}
       {separator}
       {command -command opp_refreshinspectors -label "Refresh Inspectors" -underline 0}
     } {
-      eval .menubar.inspectmenu$m add $i
+      eval .menubar.inspectmenu add $i
     }
 
     # Inspect|Components menu
-    menu .menubar.inspectmenu$m.components -tearoff 0
+    menu .menubar.inspectmenu.components -tearoff 0
     foreach i {
       {command -command inspectComponentTypes -label "NED Component Types" -underline 0}
       {command -command inspectClasses        -label "Registered Classes" -underline 0}
@@ -263,7 +262,7 @@ proc mainWindow:createMenu {} {
       {command -command inspectEnums          -label "Registered Enums" -underline 11}
       {command -command inspectConfigEntries  -label "Supported Configuration Options" -underline 0}
     } {
-      eval .menubar.inspectmenu$m.components add $i
+      eval .menubar.inspectmenu.components add $i
     }
 
     # View menu
@@ -280,7 +279,7 @@ proc mainWindow:createMenu {} {
       {separator}
       {command -label "View Text File..." -underline 7 -command {editTextFile}}
     } {
-      eval .menubar.viewmenu$m add $i
+      eval .menubar.viewmenu add $i
     }
 
     # Options menu
@@ -291,14 +290,14 @@ proc mainWindow:createMenu {} {
       {command -label "Load Config..." -underline 0 -command loadTkenvConfig}
       {command -label "Save Config..." -underline 1 -command saveTkenvConfig}
     } {
-      eval .menubar.optionsmenu$m add $i
+      eval .menubar.optionsmenu add $i
     }
 
     # Help menu
     foreach i {
       {command -command aboutDialog -label "About OMNeT++/Tkenv" -underline 0}
     } {
-      eval .menubar.helpmenu$m add $i
+      eval .menubar.helpmenu add $i
     }
 }
 
@@ -369,7 +368,7 @@ proc mainWindow:createStatusbars {} {
 
     label .networklabel -relief groove -text "(No network set up)" -width 40 -anchor w
     label .eventnumlabel -relief groove -text "Event #0" -width 15  -anchor w
-    label .timelabel -relief groove -text "t=0" -width 20 -anchor w -font "$fonts(normal) bold"
+    label .timelabel -relief groove -text "t=0" -width 20 -anchor w -font $fonts(bold)
     label .msgstatslabel -relief groove -text "Msg stats: 0 scheduled / 0 existing / 0 created" -width 40 -anchor w
 
     label .nexteventlabel -relief groove -text "Next: n/a" -anchor w -width 20
