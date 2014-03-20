@@ -69,7 +69,7 @@ proc createInspectorToplevel {insp geom} {
 
 proc inspector:createInternalToolbar {insp {parent ""}} {
     if {$parent==""} {set parent $insp}
-    ttk::frame $insp.toolbar -border 2 -relief groove
+    frame $insp.toolbar -border 2 -relief groove
     place $insp.toolbar -in $parent -relx 1.0 -rely 0 -anchor ne -x -2 -y 2
     return $insp.toolbar
 }

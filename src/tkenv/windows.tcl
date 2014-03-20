@@ -75,7 +75,7 @@ proc createFileViewer {filename} {
     wm resizable $w 1 1
     wm title $w $filename
 
-    ttk::frame $w.toolbar
+    frame $w.toolbar
 
     packIconButton $w.toolbar.copy   -image $icons(copy) -command "editCopy $w.main.text"
     packIconButton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"

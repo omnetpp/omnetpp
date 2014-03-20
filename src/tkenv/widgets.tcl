@@ -173,7 +173,7 @@ proc setupTkOptions {} {
        option add *Menu.activeBorderWidth 0
        option add *Menu.activeBackground gray
        option add *Menu.activeForeground $activefg
-       option add *menubar.borderWidth 1
+       option add *menubar.borderWidth 0
        option add *menubar.activeBorderWidth 0
        option add *menubar.activeBackground gray
        option add *menubar.activeForeground $activefg
