@@ -65,7 +65,7 @@ proc GenericObjectInspector:onSetObject {insp} {
     if [opp_isnull $object] return  ;# leave inspector as it is
     set type [opp_getobjectbaseclass $object]
 
-    set showContentsPage  [lcontains {cArray cQueue cMessageHeap cSimpleModule cCompoundModule cChannel cRegistrationList cSimulation } $type]
+    set showContentsPage  [lcontains {cArray cQueue cMessageHeap cSimpleModule cCompoundModule cChannel cRegistrationList cSimulation cMessage} $type]
     set focusContentsPage [lcontains {cArray cQueue cMessageHeap cSimpleModule cCompoundModule cChannel cRegistrationList} $type]
 
     if {$showContentsPage} {

@@ -236,7 +236,7 @@ class cMessage extends cOwnedObject
     short kind @group("message") @editable @hint("Generic user-settable attribute, usually carries \"type\" or \"role\" or \"category\" of message");
     short schedulingPriority @group("message") @editable @hint("Controls order of messages with equal timestamps in FES");
     string displayString @group("message") @hint("Controls appearance of the message in GUI");
-    cObject *controlInfo @group("message") @hint("Used with protocol stacks: carries extra information when a packet is sent between protocol layers");
+    cObject *controlInfo @hint("Used with protocol stacks: carries extra information when a packet is sent between protocol layers");
     cArray parList @group("message") @hint("OBSOLETE: use of \"parList\" should be replaced with message subclassing in the few models that still use it");
 
     bool isScheduled @getter(isScheduled) @group(sending) @hint("Whether message is currently scheduled/in transit or not");
@@ -262,9 +262,9 @@ class cMessage extends cOwnedObject
 class cPacket extends cMessage
 {
     @icon("packet");
-    int64 bitLength @group("message") @editable @hint("Simulated length of the message in bits, affects transmission time and probability of bit errors when sent through a channel");
-    int64 byteLength @group("message") @editable @hint("Length in bytes, i.e. length in bits divided by eight");
-    bool hasBitError @getter(hasBitError) @group("message") @setter(setBitError) @editable @hint("Indicates that a bit error occurred when the message was sent through a channel with nonzero bit error rate");
+    int64 bitLength @group("packet") @editable @hint("Simulated length of the message in bits, affects transmission time and probability of bit errors when sent through a channel");
+    int64 byteLength @group("packet") @editable @hint("Length in bytes, i.e. length in bits divided by eight");
+    bool hasBitError @getter(hasBitError) @group("packet") @setter(setBitError) @editable @hint("Indicates that a bit error occurred when the message was sent through a channel with nonzero bit error rate");
     cPacket *encapsulatedPacket @hint("Used with protocol stacks: stores an encapsulated higher-layer packet");
     bool isReceptionStart @getter(isReceptionStart) @group(sending) @hint("When duration is nonzero: whether this message represents the start or the end of the frame reception");
     simtime_t duration @group(sending) @hint("Transmission time over a channel with datarate");
