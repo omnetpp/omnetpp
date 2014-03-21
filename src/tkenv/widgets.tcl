@@ -474,16 +474,6 @@ proc label-sunkenlabel {w label {text {}}} {
     $w.e config -text $text
 }
 
-proc label-message {w label {text {}}} {
-    # utility function: create a frame with a label+"readonly entry"
-    ttk::frame $w
-    ttk::label $w.l -anchor w -width 16 -text $label
-    message $w.e -relief groove -justify left -anchor w -aspect 10000
-    pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 2 -side left
-    pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side right
-    $w.e config -text $text
-}
-
 proc label-combo {w label list {text {}} {cmd {}}} {
     # utility function: create a frame with a label+combo
     ttk::frame $w
@@ -698,11 +688,10 @@ proc colorChooser:setColor {b e pwin} {
     }
 }
 
-proc commentlabel {w text} {
-    # utility function: create a frame with a message widget
-    ttk::frame $w
-    message $w.e -justify left -text $text -aspect 1000
-    pack $w.e -anchor center -expand 0 -fill x -padx 2 -pady 2 -side left
+proc commentlabel {w text {preferredwidth 60}} {
+    # Note: make sure to specify -fill x when packing!
+    ttk::label $w -text $text -anchor nw -justify left -width $preferredwidth
+    bind $w <Configure> {%W configure -wraplength [expr {%w-4}] }
 }
 
 proc labelwithhelp {w text helptext} {

@@ -374,7 +374,7 @@ proc preferencesDialog {parent {defaultpage ""}} {
     pack $nb.g.f2.eventbanners -anchor w
     pack $nb.g.f2.shortbanners -anchor w -padx 10
     pack $nb.g.f2.numlines -anchor w -fill x
-    pack $nb.g.f2.c1 -anchor w
+    pack $nb.g.f2.c1 -anchor w -fill x
 
     pack $nb.g.f0 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
     pack $nb.g.f2 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
@@ -417,7 +417,7 @@ proc preferencesDialog {parent {defaultpage ""}} {
     ttk::labelframe $nb.t.f2 -text "Animation"
     ttk::label $nb.t.f2.filterslabel -text "Messages to exclude from animation:"
     text $nb.t.f2.filterstext -height 10 -width 20
-    commentlabel $nb.t.f2.c1 {One expression per line. Wildcards, AND, OR, NOT, numeric ranges ({5..10}), field matchers (className(..), kind(..), byteLength(..), etc.) are accepted.}
+    commentlabel $nb.t.f2.c1 "One expression per line. Wildcards, AND, OR, NOT, numeric ranges ({5..10}), field matchers (className(..), kind(..), byteLength(..), etc.) are accepted."
 
     pack $nb.t.f1.tlwantself -anchor w
     pack $nb.t.f1.tlwantnonself -anchor w
@@ -435,7 +435,7 @@ proc preferencesDialog {parent {defaultpage ""}} {
     label-scale $nb.a.f1.speed "    Animation speed:"
     $nb.a.f1.speed.e config -length 200 -from 0 -to 3 -resolution 0.01 -variable opp(speed)
     ttk::checkbutton $nb.a.f1.concanim -text "Broadcast animation" -variable opp(concanim)
-    commentlabel $nb.a.f1.ca "Animates send/sendDirect calls concurrently, after processing\neach event (i.e. out of sequence)"
+    commentlabel $nb.a.f1.ca "Animates send/sendDirect calls concurrently, after processing each event (i.e. out of sequence)"
     ttk::checkbutton $nb.a.f1.nextev -text "Show next event markers" -variable opp(nextev)
     ttk::checkbutton $nb.a.f1.sdarrows -text "Show arrows for sendDirect animation" -variable opp(sdarrows)
     ttk::checkbutton $nb.a.f1.bubbles -text "Show bubbles (bubble() calls)" -variable opp(bubbles)
@@ -452,7 +452,7 @@ proc preferencesDialog {parent {defaultpage ""}} {
     pack $nb.a.f1.anim -anchor w
     pack $nb.a.f1.speed -anchor w -expand 0 -fill x
     pack $nb.a.f1.concanim -anchor w
-    pack $nb.a.f1.ca -anchor w
+    pack $nb.a.f1.ca -anchor w -fill x
     pack $nb.a.f1.nextev -anchor w
     pack $nb.a.f1.sdarrows -anchor w
     pack $nb.a.f1.bubbles -anchor w
@@ -461,7 +461,7 @@ proc preferencesDialog {parent {defaultpage ""}} {
     pack $nb.a.f2.msgnam -anchor w
     pack $nb.a.f2.msgclass -anchor w
     pack $nb.a.f2.msgcol -anchor w
-    pack $nb.a.f2.c -anchor w
+    pack $nb.a.f2.c -anchor w -fill x
     pack $nb.a.f2.penguin -anchor w
 
     pack $nb.a.f1 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
