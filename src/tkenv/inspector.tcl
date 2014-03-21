@@ -41,7 +41,7 @@ proc createInspectorToplevel {insp geom} {
     }
 
     # Create toolbar
-    ttk::frame $insp.toolbar -relief raised
+    frame $insp.toolbar -relief raised
     pack $insp.toolbar -anchor w -side top -fill x -expand 0
 
     packIconButton $insp.toolbar.sep0 -separator
@@ -110,19 +110,19 @@ proc inspector:refresh {insp} {
 
     if [winfo exist $insp.toolbar.parent] {  ;#FIXME add proper condition
         if [opp_isnull $ptr] {
-            $insp.toolbar.parent config -state disabled
+            iconbutton:setstate $insp.toolbar.parent disabled
         } else {
             set parentptr [opp_getobjectparent $ptr]
             if [opp_isnull $parentptr] {set state disabled} else {set state normal}
-            $insp.toolbar.parent config -state $state
+            iconbutton:setstate $insp.toolbar.parent $state
         }
     }
 
     if [opp_inspectorcommand $insp cangoback] {set state normal} else {set state disabled}
-    catch {$insp.toolbar.back config -state $state} ;#FIXME add proper condition whether button exists
+    catch {iconbutton:setstate $insp.toolbar.back $state} ;#FIXME add proper condition whether button exists
 
     if [opp_inspectorcommand $insp cangoforward] {set state normal} else {set state disabled}
-    catch {$insp.toolbar.forward config -state $state}  ;#FIXME add proper condition whether button exists
+    catch {iconbutton:setstate $insp.toolbar.forward $state}  ;#FIXME add proper condition whether button exists
 
 }
 

@@ -278,8 +278,6 @@ proc mainWindow:createToolbar {} {
 
     frame .toolbar -relief raised -borderwidth 1
 
-    #TODO  {rebuild  -image $icons(rebuild) -command {rebuild}}
-
     foreach i {
       {sep00    -separator}
       {newrun   -image $icons(newrun)  -command {newRun}}
@@ -304,8 +302,7 @@ proc mainWindow:createToolbar {} {
       {options  -image $icons(config)  -command {preferences}}
       {sep10    -separator}
     } {
-      set b [eval iconbutton .toolbar.$i]
-      pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
+      eval packIconButton .toolbar.$i
     }
     animControl .toolbar.animspeed
     pack .toolbar.animspeed -anchor c -expand 0 -fill none -side left -padx 5 -pady 0
