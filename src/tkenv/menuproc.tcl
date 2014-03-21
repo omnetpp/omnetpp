@@ -94,7 +94,7 @@ proc exitOmnetpp {} {
                     return
                 }
             } elseif {$state == "SIM_READY"} {
-                set ans [messagebox {Warning} {Do you want to call finish() before exiting?} warning yesnocancel]
+                set ans [messagebox {Warning} {Do you want to conclude the simulation by invoking finish() before exiting?} warning yesnocancel]
                 if {$ans == "yes"} {
                     # no catch{}: exceptions are handled inside
                     opp_finish_simulation
