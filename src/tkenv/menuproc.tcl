@@ -198,7 +198,7 @@ proc newNetwork {} {
 
     # pop up dialog, with current network as default
     set netname [opp_getnetworktype]
-    set ok [comboSelectionDialog "Set up network" "Set up a network. NOTE: The network will use parameter values defined in the \n\[General\] section of the ini file." "Select network:" netname $networknames]
+    set ok [comboSelectionDialog "Set Up Network" "Set up a network. The network will use parameter values defined in the \n\[General\] section of the ini file." "Select network:" netname $networknames]
     if {$ok == 1} {
        busy "Setting up network..."
        inspectorList:addAll 1

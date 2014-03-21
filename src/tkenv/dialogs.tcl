@@ -113,7 +113,7 @@ NO WARRANTY -- see license for details."
 #
 proc runSelectionDialog {configname_var runnumber_var} {
     set w .runseldialog
-    createOkCancelDialog $w "Set up an Inifile Configuration"
+    createOkCancelDialog $w "Set Up Inifile Configuration"
 
     upvar $configname_var configname
     upvar $runnumber_var  runnumber
@@ -610,7 +610,7 @@ proc runUntilDialog {time_var event_var msg_var mode_var} {
     upvar $mode_var mode_var0
 
     set w .rununtil
-    createOkCancelDialog $w "Run until"
+    createOkCancelDialog $w "Run Until"
 
     # collect FES messages for combo
     set msglabels {""}
@@ -624,7 +624,7 @@ proc runUntilDialog {time_var event_var msg_var mode_var} {
     label-entry $w.f.time  "Simulation time to stop at:"
     label-entry $w.f.event "Event number to stop at:"
     label-combo $w.f.msg   "Message to stop at:" $msglabels
-    label-check $w.f.stop  "" "stop if message gets cancelled" tmp(stop)
+    label-check $w.f.stop  "" "Stop when message is cancelled" tmp(stop)
     label-combo $w.f.mode  "Running mode:"  {"Normal" "Fast (rare updates)" "Express (tracing off)"}
 
     foreach i {time event msg stop mode} {
@@ -860,7 +860,7 @@ proc moduleOutputFilterDialog {rootmodule excludedModuleIds} {
 
     if {[networkPresent] == 0} {return 0}
 
-    set title "Filter window contents"
+    set title "Filter Window Contents"
     set msg "Select modules to show log messages from:"
 
     set w .treedialog
@@ -989,7 +989,7 @@ proc filteredObjectList:window {{ptr ""}} {
     }
 
     # otherwise create
-    createCloseDialog $w "Find/inspect objects"
+    createCloseDialog $w "Find/Inspect Objects"
 
     # stay on top
     if {$config(keep-inspectors-on-top)} {
