@@ -433,15 +433,15 @@ proc preferencesDialog {parent {defaultpage ""}} {
     ttk::labelframe $nb.a.f1 -text "General"
     ttk::checkbutton $nb.a.f1.anim -text "Animate messages" -variable opp(anim)
     label-scale $nb.a.f1.speed "    Animation speed:"
-    $nb.a.f1.speed.e config -length 200 -from 0 -to 3 -resolution 0.01 -variable opp(speed)
+    $nb.a.f1.speed.e config -length 200 -from 0 -to 3 -variable opp(speed)
     ttk::checkbutton $nb.a.f1.concanim -text "Broadcast animation" -variable opp(concanim)
     commentlabel $nb.a.f1.ca "Animates send/sendDirect calls concurrently, after processing each event (i.e. out of sequence)"
     ttk::checkbutton $nb.a.f1.nextev -text "Show next event markers" -variable opp(nextev)
     ttk::checkbutton $nb.a.f1.sdarrows -text "Show arrows for sendDirect animation" -variable opp(sdarrows)
     ttk::checkbutton $nb.a.f1.bubbles -text "Show bubbles (bubble() calls)" -variable opp(bubbles)
     ttk::checkbutton $nb.a.f1.animmeth -text "Animate method calls" -variable opp(animmeth)
-    label-scale $nb.a.f1.methdelay "    Method call delay (ms):"
-    $nb.a.f1.methdelay.e config -length 200 -from 0 -to 3000 -resolution 1 -variable opp(methdelay)
+    label-entry $nb.a.f1.methdelay "    Method call delay (ms):"
+    $nb.a.f1.methdelay.l config -width 25
     ttk::labelframe $nb.a.f2 -text "Messages"
     ttk::checkbutton $nb.a.f2.msgnam -text "Display message names during animation" -variable opp(msgnam)
     ttk::checkbutton $nb.a.f2.msgclass -text "Display message class during animation" -variable opp(msgclass)
@@ -457,7 +457,7 @@ proc preferencesDialog {parent {defaultpage ""}} {
     pack $nb.a.f1.sdarrows -anchor w
     pack $nb.a.f1.bubbles -anchor w
     pack $nb.a.f1.animmeth -anchor w
-    pack $nb.a.f1.methdelay -anchor w -expand 0 -fill x
+    pack $nb.a.f1.methdelay -anchor w -fill x
     pack $nb.a.f2.msgnam -anchor w
     pack $nb.a.f2.msgclass -anchor w
     pack $nb.a.f2.msgcol -anchor w
@@ -496,7 +496,7 @@ proc preferencesDialog {parent {defaultpage ""}} {
     set opp(nextev)     [opp_getsimoption nexteventmarkers]
     set opp(sdarrows)   [opp_getsimoption senddirect_arrows]
     set opp(animmeth)   [opp_getsimoption anim_methodcalls]
-    set opp(methdelay)  [opp_getsimoption methodcalls_delay]
+    $nb.a.f1.methdelay.e insert 0 [opp_getsimoption methodcalls_delay]
     set opp(msgnam)     [opp_getsimoption animation_msgnames]
     set opp(msgclass)   [opp_getsimoption animation_msgclassnames]
     set opp(msgcol)     [opp_getsimoption animation_msgcolors]
@@ -540,7 +540,7 @@ proc preferencesDialog {parent {defaultpage ""}} {
         opp_setsimoption nexteventmarkers    $opp(nextev)
         opp_setsimoption senddirect_arrows   $opp(sdarrows)
         opp_setsimoption anim_methodcalls    $opp(animmeth)
-        opp_setsimoption methodcalls_delay   $opp(methdelay)
+        opp_setsimoption methodcalls_delay   [$nb.a.f1.methdelay.e get]
         opp_setsimoption animation_msgnames  $opp(msgnam)
         opp_setsimoption animation_msgclassnames $opp(msgclass)
         opp_setsimoption animation_msgcolors $opp(msgcol)

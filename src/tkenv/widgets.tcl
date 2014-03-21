@@ -569,7 +569,7 @@ proc label-scale {w label} {
     # utility function: create a frame with a label+scale
     ttk::frame $w
     ttk::label $w.l -anchor w -width 30 -text $label
-    scale $w.e -orient horizontal -width 10 -sliderlength 20
+    ttk::scale $w.e -orient horizontal
     pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 0 -side left
     pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 0 -side right
 }
