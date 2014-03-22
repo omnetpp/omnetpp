@@ -138,22 +138,14 @@ proc createInspectorContextMenu {insp ptrs} {
     menu .popup -tearoff 0
 
     if [opp_isinspector $insp] {
-       set ptr [opp_inspector_getobject $insp]
-       if [opp_isnotnull $ptr] {
-          set parentptr [opp_getobjectparent $ptr]
-          if {[opp_isnotnull $parentptr] && [opp_inspector_supportsobject $insp $parentptr]} {
-              .popup add command -label "Go up" -command "opp_inspector_setobject $insp $parentptr"
-              .popup add separator
-          }
-       }
-    }
-
-    # If there are more than one ptrs, remove the inspector object's own ptr:
-    # when someone right-clicks a submodule icon, we don't want the compound
-    # module to be in the list.
-    if {[llength $ptrs] > 1} {
-        set idx [lsearch -exact $ptrs $ptr]
-        set ptrs [lreplace $ptrs $idx $idx]  ;# no-op if $idx==-1
+        # If there are more than one ptrs, remove the inspector object's own ptr:
+        # when someone right-clicks a submodule icon, we don't want the compound
+        # module to be in the list.
+        if {[llength $ptrs] > 1} {
+            set ptr [opp_inspector_getobject $insp]
+            set idx [lsearch -exact $ptrs $ptr]
+            set ptrs [lreplace $ptrs $idx $idx]  ;# no-op if $idx==-1
+        }
     }
 
     if {[llength $ptrs] == 1} {
@@ -189,6 +181,17 @@ proc createInspectorContextMenu {insp ptrs} {
             fillInspectorContextMenu $submenu $insp $ptr
             .popup add cascade -label $label -menu $submenu
         }
+    }
+
+    if [opp_isinspector $insp] {
+       set ptr [opp_inspector_getobject $insp]
+       if [opp_isnotnull $ptr] {
+          set parentptr [opp_getobjectparent $ptr]
+          if {[opp_isnotnull $parentptr] && [opp_inspector_supportsobject $insp $parentptr]} {
+              .popup add separator
+              .popup add command -label "Go up" -command "opp_inspector_setobject $insp $parentptr"
+          }
+       }
     }
 
     return .popup
