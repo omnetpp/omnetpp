@@ -147,9 +147,18 @@ proc createInspectorContextMenu {insp ptrs} {
        }
     }
 
+    # If there are more than one ptrs, remove the inspector object's own ptr:
+    # when someone right-clicks a submodule icon, we don't want the compound
+    # module to be in the list.
+    if {[llength $ptrs] > 1} {
+        set idx [lsearch -exact $ptrs $ptr]
+        set ptrs [lreplace $ptrs $idx $idx]  ;# no-op if $idx==-1
+    }
+
     if {[llength $ptrs] == 1} {
         fillInspectorContextMenu .popup $insp $ptrs
-    } else {
+    } elseif {[llength $ptrs] > 1} {
+        # then create a submenu for each object
         foreach ptr $ptrs {
             set submenu .popup.$ptr
             catch {destroy $submenu}
