@@ -190,7 +190,7 @@ proc timeline:dblClick c {
    }
 
    if {$ptr!=""} {
-      opp_inspect $ptr "(default)"
+      opp_inspect $ptr
    }
 }
 

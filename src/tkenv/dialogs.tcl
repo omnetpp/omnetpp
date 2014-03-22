@@ -1266,7 +1266,7 @@ proc filteredObjectList:inspect {lb} {
 
     set ptr [inspectorListbox:getCurrent $lb]
     if [opp_isnotnull $ptr] {
-        opp_inspect $ptr {(default)}
+        opp_inspect $ptr
     }
 }
 

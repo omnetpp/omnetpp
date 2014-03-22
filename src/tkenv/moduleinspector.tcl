@@ -1542,7 +1542,7 @@ proc ModuleInspector:qlenClick insp {
 proc ModuleInspector:qlenDblclick insp {
    set qptr [ModuleInspector:qlenGetQptrCurrent $insp]
    if [opp_isnotnull $qptr] {
-       opp_inspect $qptr "(default)"
+       opp_inspect $qptr
    }
 }
 

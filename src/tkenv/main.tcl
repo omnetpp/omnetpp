@@ -776,7 +776,6 @@ proc startupCommands {} {
         opp_newrun $configname $runnumber
         reflectRecordEventlog
         if [opp_isnotnull [opp_object_systemmodule]] {
-            opp_inspect [opp_object_systemmodule] "(default)"
             notifyPlugins newNetwork
         }
     } else {

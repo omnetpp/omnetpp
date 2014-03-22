@@ -587,44 +587,44 @@ proc inspectBypointer {} {
     set pointer "ptr"
     set ok [inputbox {Inspect by pointer...} {Enter pointer (invalid pointer may cause segmentation fault!):} pointer]
     if {$ok == 1} {
-        opp_inspect $pointer (default)
+        opp_inspect $pointer
     }
 }
 
 proc inspectSystemModule {} {
     # implements Inspect|Toplevel modules...
     if {[networkPresent] == 0} return
-    opp_inspect [opp_object_systemmodule] (default)
+    opp_inspect [opp_object_systemmodule]
 }
 
 proc inspectMessageQueue {} {
     # implements Inspect|Message queue...
-    opp_inspect [opp_object_messagequeue] (default)
+    opp_inspect [opp_object_messagequeue]
 }
 
 proc inspectSimulation {} {
     # implements Inspect|Simulation...
-    opp_inspect [opp_object_simulation] (default)
+    opp_inspect [opp_object_simulation]
 }
 
 proc inspectComponentTypes {} {
-    opp_inspect [opp_object_componenttypes] {(default)}
+    opp_inspect [opp_object_componenttypes]
 }
 
 proc inspectClasses {} {
-    opp_inspect [opp_object_classes] {(default)}
+    opp_inspect [opp_object_classes]
 }
 
 proc inspectEnums {} {
-    opp_inspect [opp_object_enums] {(default)}
+    opp_inspect [opp_object_enums]
 }
 
 proc inspectConfigEntries {} {
-    opp_inspect [opp_object_configentries] {(default)}
+    opp_inspect [opp_object_configentries]
 }
 
 proc inspectFunctions {} {
-    opp_inspect [opp_object_functions] {(default)}
+    opp_inspect [opp_object_functions]
 }
 
 proc preferences {} {

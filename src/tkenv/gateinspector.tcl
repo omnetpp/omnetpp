@@ -152,7 +152,7 @@ proc GateInspector:drawConnection {c srcgateptr destgateptr chanptr chanstr disp
    }
 }
 
-proc GateInspector:dblClick {insp {type (default)}} {
+proc GateInspector:dblClick {insp {type ""}} {
    set c $insp.c
    set item [$c find withtag current]
    set tags [$c gettags $item]

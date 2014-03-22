@@ -207,7 +207,7 @@ proc inspectContextMenuRules {ptr key} {
         set objlist [lrange $objlist 0 4]
     }
     foreach objptr $objlist {
-        opp_inspect $objptr "(default)"
+        opp_inspect $objptr
     }
 }
 
@@ -227,7 +227,7 @@ proc inspectThis {insp type} {
     opp_inspect $object $type
 }
 
-proc inspectComponentType {insp {type "(default)"}} {
+proc inspectComponentType {insp {type ""}} {
     # extract object pointer from window path name and create inspector
     set ptr [opp_inspector_getobject $insp]
     set typeptr [opp_getcomponenttypeobject $ptr]

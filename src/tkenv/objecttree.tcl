@@ -117,7 +117,7 @@ proc treeManager:getNodeInfo {w op {key {}}} {
 
 proc treeManager:doubleClick {key} {
     # $key is the object pointer
-    opp_inspect $key "(default)"
+    opp_inspect $key
 }
 
 proc treeManager:popup {key x y} {

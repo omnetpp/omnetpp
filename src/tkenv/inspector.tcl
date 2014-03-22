@@ -169,7 +169,7 @@ proc inspector:inspectParent {insp} {
     if {[opp_inspector_supportsobject $insp $parentptr] && $config(reuse-inspectors)} {
         opp_inspector_setobject $insp $parentptr
     } else {
-        opp_inspect $parentptr "(default)"
+        opp_inspect $parentptr
     }
 }
 
@@ -180,7 +180,7 @@ proc inspector:dblClick {insp ptr} {
     if {[opp_inspector_supportsobject $insp $ptr] && $config(reuse-inspectors)} {
         opp_inspector_setobject $insp $ptr
     } else {
-        opp_inspect $ptr "(default)"
+        opp_inspect $ptr
     }
 }
 

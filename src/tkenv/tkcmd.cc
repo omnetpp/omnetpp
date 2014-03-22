@@ -262,7 +262,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_eventlogrecording", eventlogRecording_cmd },   // args: subcommand <args>
 
    // Inspector stuff
-   { "opp_inspect",           inspect_cmd           }, // args: <ptr> <type> ret: window
+   { "opp_inspect",           inspect_cmd           }, // args: <ptr> [<type>] ret: window
    { "opp_supported_insp_types",supportedInspTypes_cmd}, // args: <ptr>  ret: insp type list
    { "opp_inspectbyname",     inspectByName_cmd     }, // args: <objfullpath> <classname> <insptype> <geom>
    { "opp_isinspector",       isInspector_cmd       }, // args: <window>
@@ -1690,16 +1690,19 @@ int eventlogRecording_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 
 int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2 && argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    cObject *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
 
+   const char *arg2 = (argc>=3) ? argv[2] : "";
    int type;
-   if (argv[2][0]>='0' && argv[2][0]<='9')
-        type = atoi( argv[2] );
-   else if ((type=insptypeCodeFromName(argv[2])) < 0)
+   if (!*arg2)
+        type = INSP_DEFAULT;
+   else if (arg2[0]>='0' && arg2[0]<='9')
+        type = atoi(arg2);
+   else if ((type=insptypeCodeFromName(arg2)) < 0)
         {Tcl_SetResult(interp, TCLCONST("unrecognized inspector type"), TCL_STATIC);return TCL_ERROR;}
 
    Inspector *insp = app->inspect(object, type, true, "");
