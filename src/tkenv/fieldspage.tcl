@@ -568,7 +568,7 @@ proc fieldsPage:getNodeInfo:popup {w key x y} {
               set parentptr [opp_getobjectowner $ptr]
               if {[opp_isnotnull $parentptr] && [opp_inspector_supportsobject $insp $parentptr]} {
                   .popup add separator
-                  .popup add command -label "Go up" -command "opp_inspector_setobject $insp $parentptr"
+                  .popup add command -label "Go Up" -command "opp_inspector_setobject $insp $parentptr"
               }
            }
         }

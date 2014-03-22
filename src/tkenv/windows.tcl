@@ -122,15 +122,15 @@ proc textwidget:contextMenu {txt insp X Y} {
     .popup add command -command editCopy -label "Copy" -accel "$CTRL+C" -underline 0
     .popup add separator
     .popup add command -command "editFind $txt" -label "Find..." -accel "$CTRL+F" -underline 0
-    .popup add command -command "editFindNext $txt" -label "Find next" -accel "F3" -underline 5
+    .popup add command -command "editFindNext $txt" -label "Find Next" -accel "F3" -underline 5
     .popup add separator
     if {$insp!=""} {
-        .popup add command -command "LogInspector:openFilterDialog $insp" -label "Filter window contents..." -accel "$CTRL+H" -underline 0
+        .popup add command -command "LogInspector:openFilterDialog $insp" -label "Filter Window Contents..." -accel "$CTRL+H" -underline 0
         .popup add separator
     }
-    .popup add checkbutton -command "textwidget:toggleWrap $txt" -variable tmp(wrap) -onvalue "char" -offvalue "none" -label "Wrap lines" -underline 0
+    .popup add checkbutton -command "textwidget:toggleWrap $txt" -variable tmp(wrap) -onvalue "char" -offvalue "none" -label "Wrap Lines" -underline 0
     .popup add separator
-    .popup add command -command "$txt tag add sel 1.0 end" -label "Select all" -accel "$CTRL+A" -underline 0
+    .popup add command -command "$txt tag add sel 1.0 end" -label "Select All" -accel "$CTRL+A" -underline 0
 
     tk_popup .popup $X $Y
 }

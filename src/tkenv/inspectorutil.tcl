@@ -82,7 +82,7 @@ proc fillInspectorContextMenu {menu insp ptr} {
     set insptypes [opp_supported_insp_types $ptr]
     if {$insp!="" && $ptr!=[opp_inspector_getobject $insp]} {
         if [opp_inspector_supportsobject $insp $ptr] {set state normal} else {set state disabled}
-        $menu add command -label "Go into '$name'" -command "opp_inspector_setobject $insp $ptr" -state $state
+        $menu add command -label "Go Into '$name'" -command "opp_inspector_setobject $insp $ptr" -state $state
         $menu add separator
     }
     foreach type $insptypes {
@@ -95,17 +95,17 @@ proc fillInspectorContextMenu {menu insp ptr} {
     if {$baseclass=="cSimpleModule" || $baseclass=="cCompoundModule"} {
         set insp ".$ptr-0"  ;#hack
         $menu add separator
-        $menu add command -label "Run until next event in module '$name'" -command "runSimulationLocal $insp normal"
-        $menu add command -label "Fast run until next event in module '$name'" -command "runSimulationLocal $insp fast"
+        $menu add command -label "Run Until Next Event in Module '$name'" -command "runSimulationLocal $insp normal"
+        $menu add command -label "Fast Run Until Next Event in Module '$name'" -command "runSimulationLocal $insp fast"
     }
 
     if {$baseclass=="cMessage"} {
         $menu add separator
-        $menu add command -label "Run until message '$name'" -command "runUntilMsg $ptr normal"
-        $menu add command -label "Fast run until message '$name'" -command "runUntilMsg $ptr fast"
-        $menu add command -label "Express run until message '$name'" -command "runUntilMsg $ptr express"
+        $menu add command -label "Run Until Message '$name'" -command "runUntilMsg $ptr normal"
+        $menu add command -label "Fast Run Until Message '$name'" -command "runUntilMsg $ptr fast"
+        $menu add command -label "Express Run Until Message '$name'" -command "runUntilMsg $ptr express"
         $menu add separator
-        $menu add command -label "Exclude messages like '$name' from animation" -command "excludeMessageFromAnimation $ptr"
+        $menu add command -label "Exclude Messages Like '$name' From Animation" -command "excludeMessageFromAnimation $ptr"
     }
 
     # add further menu items
@@ -189,7 +189,7 @@ proc createInspectorContextMenu {insp ptrs} {
           set parentptr [opp_getobjectparent $ptr]
           if {[opp_isnotnull $parentptr] && [opp_inspector_supportsobject $insp $parentptr]} {
               .popup add separator
-              .popup add command -label "Go up" -command "opp_inspector_setobject $insp $parentptr"
+              .popup add command -label "Go Up" -command "opp_inspector_setobject $insp $parentptr"
           }
        }
     }

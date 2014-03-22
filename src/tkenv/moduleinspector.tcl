@@ -1364,22 +1364,22 @@ proc ModuleInspector:rightClick {insp X Y x y} {
       set tmp($c:showarrowheads) $inspectordata($c:showarrowheads)
 
       $popup add separator
-      $popup add checkbutton -label "Show module names" -command "ModuleInspector:toggleLabels $insp" -accel "$CTRL+L" -variable tmp($c:showlabels)
-      $popup add checkbutton -label "Show arrowheads" -command "ModuleInspector:toggleArrowheads $insp" -accel "$CTRL+A" -variable tmp($c:showarrowheads)
+      $popup add checkbutton -label "Show Module Names" -command "ModuleInspector:toggleLabels $insp" -accel "$CTRL+L" -variable tmp($c:showlabels)
+      $popup add checkbutton -label "Show Arrowheads" -command "ModuleInspector:toggleArrowheads $insp" -accel "$CTRL+A" -variable tmp($c:showarrowheads)
 
       $popup add separator
-      $popup add command -label "Increase icon size" -accel "$CTRL+I" -command "ModuleInspector:zoomIconsBy $insp 1.25"
-      $popup add command -label "Decrease icon size" -accel "$CTRL+O" -command "ModuleInspector:zoomIconsBy $insp 0.8"
+      $popup add command -label "Increase Icon Size" -accel "$CTRL+I" -command "ModuleInspector:zoomIconsBy $insp 1.25"
+      $popup add command -label "Decrease Icon Size" -accel "$CTRL+O" -command "ModuleInspector:zoomIconsBy $insp 0.8"
 
       $popup add separator
-      $popup add command -label "Zoom in"  -accel "$CTRL+M" -command "ModuleInspector:zoomIn $insp"
-      $popup add command -label "Zoom out" -accel "$CTRL+N" -command "ModuleInspector:zoomOut $insp"
-      $popup add command -label "Re-layout" -accel "$CTRL+R" -command "opp_inspectorcommand $insp relayout"
+      $popup add command -label "Zoom In"  -accel "$CTRL+M" -command "ModuleInspector:zoomIn $insp"
+      $popup add command -label "Zoom Out" -accel "$CTRL+N" -command "ModuleInspector:zoomOut $insp"
+      $popup add command -label "Re-Layout" -accel "$CTRL+R" -command "opp_inspectorcommand $insp relayout"
 
       $popup add separator
-      $popup add command -label "Layouting options..." -command "preferencesDialog $insp l"
-      $popup add command -label "Animation options..." -command "preferencesDialog $insp a"
-      $popup add command -label "Filtering options..." -command "preferencesDialog $insp t"
+      $popup add command -label "Layouting Settings..." -command "preferencesDialog $insp l"
+      $popup add command -label "Animation Settings..." -command "preferencesDialog $insp a"
+      $popup add command -label "Animation Filter..." -command "preferencesDialog $insp t"
 
       tk_popup $popup $X $Y
    }
