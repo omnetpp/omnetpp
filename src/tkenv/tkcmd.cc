@@ -198,7 +198,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_exitomnetpp",      exitOmnetpp_cmd    }, // args: -
    { "opp_onestep",          oneStep_cmd        }, // args: -
    { "opp_run",              run_cmd            }, // args: none, or <timelimit> <eventlimit> <message>
-   { "opp_onestepinmodule",  oneStepInModule_cmd}, // args: <inspectorwindow>
+   { "opp_onestepinmodule",  oneStepInModule_cmd}, // args: <modptr>
    { "opp_set_run_mode",     setRunMode_cmd     }, // args: fast|normal|express
    { "opp_set_run_until",    setRunUntil_cmd    }, // args: none, or <timelimit> <eventlimit> <message>
    { "opp_set_run_until_module",setRunUntilModule_cmd}, // args: <inspectorwindow>
@@ -536,10 +536,8 @@ int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
 {
    if (argc!=2 && argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
-   Inspector *insp = app->findInspector(argv[1]);
-   if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
-   cObject *object = insp->getObject();
-   if (!object) {Tcl_SetResult(interp, TCLCONST("inspector has no object"), TCL_STATIC); return TCL_ERROR;}
+   cObject *object = strToPtr(argv[1]);
+   if (!object) {Tcl_SetResult(interp, TCLCONST("null or invalid pointer"), TCL_STATIC); return TCL_ERROR;}
    cModule *mod = dynamic_cast<cModule *>(object);
    if (!mod) {Tcl_SetResult(interp, TCLCONST("object is not a module"), TCL_STATIC); return TCL_ERROR;}
 

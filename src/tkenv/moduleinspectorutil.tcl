@@ -51,7 +51,7 @@ proc ModuleInspector:setRunmode {insp} {
 
 }
 
-proc runSimulationLocal {insp mode} {
+proc runSimulationLocal {insp mode {ptr ""}} {
     # invoked from toolbar in module inspectors
     if [isRunning] {
         setGuiForRunmode $mode $insp
@@ -60,7 +60,8 @@ proc runSimulationLocal {insp mode} {
     } else {
         if {![networkReady]} {return}
         setGuiForRunmode $mode $insp
-        opp_onestepinmodule $insp $mode
+        if {$ptr==""} {set ptr [opp_inspector_getobject $insp]}
+        opp_onestepinmodule $ptr $mode
         setGuiForRunmode notrunning
     }
 }
