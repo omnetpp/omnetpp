@@ -31,34 +31,19 @@
 
 NAMESPACE_BEGIN
 
-//
-// Inspector type code <--> string conversions
-//
-struct InspTypeName {int code; const char *namestr;} insp_typenames[] =
-{
-     { INSP_DEFAULT,          "(default)"     },
-     { INSP_OBJECT,           "As Object"     },
-     { INSP_GRAPHICAL,        "As Graphics"   },
-     { INSP_MODULEOUTPUT,     "Module output" },
-     { -1,                     NULL           }
-};
+#define E(x) #x, x
+static cEnum inspTypes("", E(INSP_DEFAULT), E(INSP_OBJECT), E(INSP_GRAPHICAL), E(INSP_MODULEOUTPUT), NULL);
+#undef E
 
 const char *insptypeNameFromCode(int code)
 {
-   for (int i=0; insp_typenames[i].namestr!=NULL; i++)
-      if (insp_typenames[i].code == code)
-         return insp_typenames[i].namestr;
-   return NULL;
+    return inspTypes.getStringFor(code);
 }
 
-int insptypeCodeFromName(const char *namestr)
+int insptypeCodeFromName(const char *name)
 {
-   for (int i=0; insp_typenames[i].namestr!=NULL; i++)
-      if (strcmp(insp_typenames[i].namestr, namestr)==0)
-         return insp_typenames[i].code;
-   return -1;
+    return inspTypes.lookup(name, -1);
 }
-
 
 //----
 

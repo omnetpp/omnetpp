@@ -36,9 +36,6 @@ class cComponent;
 //
 #define TCLCONST(x)   const_cast<char*>(x)
 
-// enable when debugging Tcl errors (causes stack trace to be printed)
-//#define VERBOSE_TCL_ERRORS
-
 //
 // Print error message on console if Tcl code returns error
 //

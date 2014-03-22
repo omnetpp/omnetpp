@@ -1245,7 +1245,8 @@ proc filteredObjectList:popup {X Y w} {
     menu $p -tearoff 0
     if {[filteredobjectlist_isnotsafetoinspect]} {set state "disabled"} else {set state "normal"}
     foreach type $insptypes {
-       $p add command -label "$type..." -state $state -command "opp_inspect $ptr \{$type\}; after 500 \{catch \{raise $w; focus $lb\}\}"
+       set label [getInspectMenuLabel $type]
+       $p add command -label $label -state $state -command "opp_inspect $ptr \{$type\}; after 500 \{catch \{raise $w; focus $lb\}\}"
     }
     $p post $X $Y
 }

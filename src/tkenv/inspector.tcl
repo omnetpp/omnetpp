@@ -211,7 +211,8 @@ proc inspector:inspectAsPopup {insp toolbutton} {
     menu .popup -tearoff 0
     foreach type $typelist {
         if {$type==$curtype} {set state disabled} else {set state normal}
-        .popup add command -label "$type" -command [list opp_inspect $ptr $type] -state $state
+       set label [getInspectMenuLabel $type]
+        .popup add command -label $label -command [list opp_inspect $ptr $type] -state $state
     }
 
     set x [winfo rootx $toolbutton]

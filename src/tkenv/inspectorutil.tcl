@@ -86,7 +86,8 @@ proc fillInspectorContextMenu {menu insp ptr} {
         $menu add separator
     }
     foreach type $insptypes {
-       $menu add command -label "Inspect $type..." -command "opp_inspect $ptr \{$type\}"
+       set label "[getInspectMenuLabel $type] for '$name'"
+       $menu add command -label $label -command "opp_inspect $ptr \{$type\}"
     }
 
     # add "run until" menu items
@@ -205,6 +206,16 @@ proc inspectContextMenuRules {ptr key} {
     foreach objptr $objlist {
         opp_inspect $objptr "(default)"
     }
+}
+
+proc getInspectMenuLabel {typecode} {
+    array set ary {
+        INSP_DEFAULT      "Open Best View"
+        INSP_OBJECT       "Open Details"
+        INSP_GRAPHICAL    "Open Graphical View"
+        INSP_MODULEOUTPUT "Open Component Log"
+    }
+    return $ary($typecode)
 }
 
 proc inspectThis {insp type} {
