@@ -77,14 +77,15 @@ proc fillInspectorContextMenu {menu insp ptr} {
     # ptr should never be null, but check it anyway
     if [opp_isnull $ptr] {return $menu}
 
-    # add inspector types supported by the object
+    # add "Go Info" if applicable
     set name [opp_getobjectfullname $ptr]
-    set insptypes [opp_supported_insp_types $ptr]
-    if {$insp!="" && $ptr!=[opp_inspector_getobject $insp]} {
-        if [opp_inspector_supportsobject $insp $ptr] {set state normal} else {set state disabled}
-        $menu add command -label "Go Into '$name'" -command "opp_inspector_setobject $insp $ptr" -state $state
+    if {$insp!="" && $ptr!=[opp_inspector_getobject $insp] && [opp_inspector_supportsobject $insp $ptr]} {
+        $menu add command -label "Go Into '$name'" -command "opp_inspector_setobject $insp $ptr"
         $menu add separator
     }
+
+    # add inspector types supported by the object
+    set insptypes [opp_supported_insp_types $ptr]
     foreach type $insptypes {
        set label "[getInspectMenuLabel $type] for '$name'"
        $menu add command -label $label -command "opp_inspect $ptr \{$type\}"
