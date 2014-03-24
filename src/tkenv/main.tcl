@@ -45,7 +45,9 @@ set config(mainwin-state) "normal"
 set config(mainwin-geom) ""
 set config(mainwin-main-sashpos) {}
 set config(mainwin-left-sashpos) {}
-set config(mainwin-right-sashpos) {}
+set config(mainwin-right-sashpos-horizontal) {}
+set config(mainwin-right-sashpos-vertical) {}
+set config(mainwin-sash-orient) vertical
 set config(concurrent-anim) 1
 set config(logwindow-scrollbacklines) 100000
 set config(zoomby-factor) 1.1
@@ -254,6 +256,8 @@ proc mainWindow:createMenu {} {
     foreach i {
       {command -command toggleStatusDetails -label "Status Details" -accel "$CTRL+D" -underline 0}
       {command -command toggleTimeline -label "Timeline" -accel "$CTRL+T" -underline 0}
+      {separator}
+      {command -command mainWindow:toggleLayout -label "Flip Window Layout" -underline 0}
     } {
       eval .menubar.viewmenu add $i
     }
@@ -290,6 +294,8 @@ proc mainWindow:createToolbar {} {
       {objs     -image $icons(findobj) -command {inspectFilteredObjectList}}
       {filter   -image $icons(filter)  -command {editFilterWindowContents}}
       {sep6     -separator}
+      {vert     -image $icons(vertical)   -command {mainWindow:setLayout vertical}}
+      {horiz    -image $icons(horizontal) -command {mainWindow:setLayout horizontal}}
       {tline    -image $icons(fes)     -command {toggleTimeline}}
       {sep9     -separator}
       {options  -image $icons(config)  -command {preferences}}
@@ -317,6 +323,8 @@ proc mainWindow:createToolbar {} {
     set help_tips(.toolbar.eventlog) "Eventlog recording on/off (${CTRL_}G)"
     set help_tips(.toolbar.finish)  "Conclude simulation"
     set help_tips(.toolbar.objs)    "Find and inspect modules, messages, queues and other objects (${CTRL_}S)"
+    set help_tips(.toolbar.vert)    "Vertical main window layout"
+    set help_tips(.toolbar.horiz)   "Horizontal main window layout"
     set help_tips(.toolbar.tline)   "Show/hide timeline (${CTRL_}T)"
     set help_tips(.toolbar.options) "Preferences"
     set help_tips(.toolbar.animspeed) "Animation speed"
@@ -437,6 +445,29 @@ proc animControl {w} {
     $w config -from .5 -to 3 -resolution 0.1 -variable priv(animspeed)
 
     trace variable priv(animspeed) w animSpeedChanged
+}
+
+proc mainWindow:setLayout {orient} {
+    set oldOrient [.main.right cget -orient]
+    if {$oldOrient!=$orient} {mainWindow:toggleLayout}
+}
+
+proc mainWindow:toggleLayout {} {
+    global config
+
+    set oldOrient [.main.right cget -orient]
+    if {$oldOrient=="horizontal"} {set orient vertical} else {set orient horizontal}
+
+    # store old sash position
+    set config(mainwin-right-sashpos-$oldOrient) [panedwindow:getsashposition .main.right]
+
+    # switch to new $orient, and restore its sash position
+    set config(mainwin-sash-orient) $orient
+    .main.right config -orient $orient
+    panedwindow:setsashposition .main.right $config(mainwin-right-sashpos-$orient)
+
+    toolbutton:setsunken .toolbar.vert  [expr {$orient=="vertical"}]
+    toolbutton:setsunken .toolbar.horiz [expr {$orient!="vertical"}]
 }
 
 proc toggleStatusDetails {} {
@@ -751,6 +782,10 @@ proc genericBindings {} {
 }
 
 proc startupCommands {} {
+    # let the main window appear, otherwise startup dialogs will have
+    # problems figuring out where to come up (X11)
+    update
+
     set configname [opp_getsimoption default_config]
     set runnumber [opp_getsimoption default_run]
 

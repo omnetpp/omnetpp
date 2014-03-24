@@ -100,9 +100,12 @@ proc storeMainwinGeometry {} {
     set config(mainwin-state) $state
     set config(mainwin-geom) $geom
 
-    set config(mainwin-main-sashpos)  [.main sash coord 0]
-    set config(mainwin-left-sashpos)  [.main.left sash coord 0]
-    set config(mainwin-right-sashpos) [.main.right sash coord 0]
+    set orient [.main.right cget -orient]
+    set config(mainwin-sash-orient) $orient
+
+    set config(mainwin-main-sashpos)  [panedwindow:getsashposition .main]
+    set config(mainwin-left-sashpos)  [panedwindow:getsashposition .main.left]
+    set config(mainwin-right-sashpos-$orient) [panedwindow:getsashposition .main.right]
 
     set lb .inspector.nb.contents.main.list
     inspectorListbox:storeColumnWidths $lb "inspector:columnwidths"
@@ -173,15 +176,20 @@ proc applyTkenvrc {} {
     catch {wm state . $config(mainwin-state)}
     catch {wm geometry . $config(mainwin-geom)}
 
+    catch {.main.right config -orient $config(mainwin-sash-orient)}
+
+    set orient [.main.right cget -orient]
+    toolbutton:setsunken .toolbar.vert  [expr {$orient=="vertical"}]
+    toolbutton:setsunken .toolbar.horiz [expr {$orient!="vertical"}]
+
+    # note: simply using panedwindow:setsashposition without "after idle" doesn't work here
     after idle {after idle {
         catch {
             global config
-            set mpos $config(mainwin-main-sashpos)
-            set lpos $config(mainwin-left-sashpos)
-            set rpos $config(mainwin-right-sashpos)
-            .main sash place 0 [lindex $mpos 0] [lindex $mpos 1]
-            .main.left sash place 0 [lindex $lpos 0] [lindex $lpos 1]
-            .main.right sash place 0 [lindex $rpos 0] [lindex $rpos 1]
+            set orient [.main.right cget -orient]
+             panedwindow:dosetsashposition .main $config(mainwin-main-sashpos)
+             panedwindow:dosetsashposition .main.left $config(mainwin-left-sashpos)
+             panedwindow:dosetsashposition .main.right $config(mainwin-right-sashpos-$orient)
         }
     }}
 
@@ -259,5 +267,6 @@ proc reflectSettingsInGui {} {
    redrawTimeline
 
    opp_redrawinspectors
+
 }
 
