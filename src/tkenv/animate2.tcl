@@ -15,14 +15,6 @@
 
 
 #
-# Assigns variables from a list. Example: setvars {a b c} {1 2 3}
-#
-proc setvars {vars vals} {
-    if {[llength $vars] != [llength $vals]} {error "number of vars and length of values list don't match"}
-    uplevel [list foreach $vars $vals {}]
-}
-
-#
 # Perform concurrent animations. Each job in the $animjobs list should
 # look like this: <op> <window> <msg> <additional-args>...
 #

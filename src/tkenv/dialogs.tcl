@@ -94,9 +94,9 @@ $OMNETPP_EDITION
 
 NO WARRANTY -- see license for details."
 
-    catch {destroy .about}
-    set w .about
+    set w .aboutdialog
     createOkCancelDialog $w $title
+
     $w.f config -border 2 -relief groove
     ttk::label $w.f.l -text "$text\n\n" -justify center -anchor c
     pack $w.f.l -expand 1 -fill both -side top -padx 30
@@ -249,6 +249,7 @@ proc displayStopDialog {} {
     wm title $w "Running..."
     wm transient $w [winfo toplevel [winfo parent $w]]
     wm protocol $w WM_DELETE_WINDOW {opp_stopsimulation}
+    restoreDialogGeometry $w
 
     set red #f83030
     button $w.stopbutton  -text "STOP!" -background $red -activebackground $red \
@@ -267,10 +268,8 @@ proc displayStopDialog {} {
     set opp(autoupdate) [opp_getsimoption expressmode_autoupdate]
     stopDialogAutoupdate $w
 
-    # 2. Center window
-    setGeometry $w
 
-    # 3. Set a grab and claim the focus too.
+    # Set a grab and claim the focus too.
     set opp(oldFocus) [focus]
     set opp(oldGrab) [grab current $w]
     grab $w
@@ -303,7 +302,7 @@ proc removeStopDialog {} {
     # window manager may take the focus away so we can't redirect it.
     # Finally, restore any grab that was in effect.
 
-    rememberGeometry $w
+    saveDialogGeometry $w
     catch {focus $opp(oldFocus)}
     destroy $w
     if {$opp(oldGrab) != ""} {
@@ -315,29 +314,24 @@ proc preferencesDialog {parent {defaultpage ""}} {
     global opp config fonts help_tips helptexts
 
     set parent [winfo toplevel $parent]
-
     if {$parent == "."} {
         set w .preferencesdialog
     } else {
         set w $parent.preferencesdialog
     }
 
-    if {$defaultpage==""} {
-        set defaultpage $config(preferences-dialog-page)
-    }
-
     createOkCancelDialog $w "Preferences"
 
     ttk::notebook $w.f.nb
     set nb $w.f.nb
-
     $nb add [ttk::frame $nb.g] -text "General"
     $nb add [ttk::frame $nb.l] -text "Layouting"
     $nb add [ttk::frame $nb.a] -text "Animation"
     $nb add [ttk::frame $nb.t] -text "Filtering"
     $nb add [ttk::frame $nb.f] -text "Fonts"
-
     pack $nb -expand 1 -fill both
+
+    if {$defaultpage==""} {set defaultpage $config(preferences-dialog-page)}
 
     $nb select $nb.$defaultpage
 
@@ -605,7 +599,7 @@ proc runUntilDialog {time_var event_var msg_var mode_var} {
     upvar $msg_var msg_var0
     upvar $mode_var mode_var0
 
-    set w .rununtil
+    set w .rununtildialog
     createOkCancelDialog $w "Run Until"
 
     # collect FES messages for combo
@@ -685,9 +679,8 @@ proc findDialog {w} {
     set dlg [winfo toplevel $w].finddialog
     if {$dlg=="..finddialog"} {set dlg .finddialog}
 
-    # create dialog with OK and Cancel buttons
-    set title "Find"
-    createOkCancelDialog $dlg $title
+    # create dialog
+    createOkCancelDialog $dlg "Find" 1
 
     label-entry $dlg.f.find "Find string:"
     ttk::frame $dlg.f.opt
@@ -733,7 +726,6 @@ proc findDialog {w} {
     set config(editor-regexp) $regexp
     set config(editor-backwards) $backwards
 
-    rememberGeometry $dlg
     destroy $dlg
 
     if {$result == 1} {
@@ -970,7 +962,7 @@ proc filteredObjectList:window {{ptr ""}} {
     global config tmp icons help_tips helptexts fonts
     global B2 B3
 
-    set w .objdlg
+    set w .findobjectsdialog
 
     if {$ptr=="" || [opp_isnull $ptr]} {
         set ptr [opp_object_simulation]
@@ -985,7 +977,7 @@ proc filteredObjectList:window {{ptr ""}} {
     }
 
     # otherwise create
-    createCloseDialog $w "Find/Inspect Objects"
+    createCloseDialog $w "Find/Inspect Objects" 1
 
     # stay on top
     if {$config(keep-inspectors-on-top)} {
@@ -1075,8 +1067,6 @@ proc filteredObjectList:window {{ptr ""}} {
     bind $w <Escape> "$w.buttons.closebutton invoke"
     bindRunCommands $w
 
-    setGeometry $w
-
     setInitialDialogFocus $fp.nameentry
 }
 
@@ -1085,14 +1075,14 @@ proc filteredObjectList:window {{ptr ""}} {
 #
 proc filteredObjectList:windowClose {} {
     global config tmp
-    set w .objdlg
+    set w .findobjectsdialog
 
     set config(filtobjlist-class)    $tmp(class)
     set config(filtobjlist-name)     $tmp(name)
     set config(filtobjlist-order)    $tmp(order)
     set config(filtobjlist-category) $tmp(category)
 
-    rememberGeometry $w
+    saveDialogGeometry $w
 
     set lb $w.f.main.list
     inspectorListbox:storeColumnWidths $lb "objdialog:columnwidths"
@@ -1248,7 +1238,7 @@ proc filteredObjectList:popup {X Y w} {
 }
 
 proc filteredObjectList:inspect {lb} {
-    set w .objdlg
+    set w .findobjectsdialog
     if {[filteredobjectlist_isnotsafetoinspect]} {
         if {[isRunning]} {
             set advice "please stop the simulation and click Refresh first"
@@ -1433,11 +1423,8 @@ proc modelInfoDialog {{insp ""}} {
         append msg "\nModule licenses are declared in package.ned, with @license(<license>).\n"
     }
 
-    global fonts
-    set dlg $insp.dlg
-    catch {destroy $dlg}
+    set dlg $insp.modelinfodialog
     createOkCancelDialog $dlg "Model Information"
-    $dlg.f config -border 0
     message $dlg.f.txt -text $msg -width 400
     pack $dlg.f.txt -expand 1 -fill both
     destroy $dlg.buttons.cancelbutton

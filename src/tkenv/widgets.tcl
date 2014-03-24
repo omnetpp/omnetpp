@@ -250,40 +250,45 @@ proc iconsWorkaroundForOSX {} {
 #    UTILITY PROCEDURES
 #===================================================================
 
+#
+# Assigns variables from a list. Example: setvars {a b c} {1 2 3}
+#
+proc setvars {vars vals} {
+    if {[llength $vars] != [llength $vals]} {error "number of vars and length of values list don't match"}
+    uplevel [list foreach $vars $vals {}]
+}
+
+#
+# Make an inspector window transient, and optionally place it near the mouse pointer.
+#
 proc makeTransient {w {geom ""}} {
-    # note: "wm attribute $w -topmost 1" is no good here -- it keeps the window above ALL OTHER apps' windows as well
+    # Drawbacks of "transient": on Windows and OS X, inspector windows cannot be
+    # minimized or maximized; on OS X, inspectors move together with the main window
+    # (but this is not necessarily bad)
+    # Note: "wm attribute $w -topmost 1" is no substitute for transient -- it keeps
+    # the window above ALL OTHER apps' windows as well
+    wm transient $w .
+
+    # Platform-specific additional configuration
     if {[string equal [tk windowingsystem] win32]} {
-        # drawback of "transient": (1) inspector windows cannot be minimized or maximized
-        # (2) it places all windows to (0,0) and "positionfrom" doesn't help;
-        # workaround: place window explicitly (near the current mouse position);
-        # additional random jitter is useful when multiple windows are placed at once
-        wm transient $w .
+        # On Windows, toolwindow=1 makes the caption bar small
         wm attribute $w -toolwindow 1
-        if {$geom==""} {
-            set x [expr [winfo pointerx .] - 40 + int(rand()*20)]
-            set y [expr [winfo pointery .] + 30 + int(rand()*20)]
-            puts "$x $y"
-            wm geometry $w +$x+$y
-        }
     } elseif {[string equal [tk windowingsystem] x11]} {
         # "positionfrom" is for KDE 4.x, where minimize+restore would lose window position otherwise
-        wm transient $w .
         wm attribute $w -type normal
         wm positionfrom $w user
-        if {$geom==""} {
-            # at least Ubuntu (Unity) places the window at (0,0) by default, so use explicit placement;
-            # additional random jitter is useful when multiple windows are placed at once
-            set x [expr [winfo pointerx .] - 40 + int(rand()*20)]
-            set y [expr [winfo pointery .] + 30 + int(rand()*20)]
-            wm geometry $w +$x+$y
-        }
-    } elseif {[string equal [tk windowingsystem] aqua]}  {
-        # drawback of "transient": inspector windows cannot be minimized or maximized
-        # (and move together with the main window, but this is not necessarily bad)
-        wm transient $w .
-    } else {
-        wm transient $w .
     }
+}
+
+proc placeWindowNearMouse {w} {
+    # Position the window explicitly. This is needed because most platforms place the
+    # window inconveniently, e.g. Windows and KDE (kwin) places them at (0,0); OS X also
+    # near (0,0). "positionfrom" doesn't help. So place window explicitly, near the current
+    # mouse position. An additional random jitter is useful when multiple transient windows
+    # are created at the same time.
+    set x [expr [winfo pointerx .] - 40 + int(rand()*20)]
+    set y [expr [winfo pointery .] + 30 + int(rand()*20)]
+    wm geometry $w +$x+$y
 }
 
 # wsize --
@@ -731,37 +736,6 @@ proc panedwindow:dosetsashposition {w pos} {
     }
 }
 
-# center --
-#
-# utility function: centers a dialog on the screen
-#
-proc center {w} {
-
-    global tcl_platform
-
-    # preliminary placement...
-    if {[winfo reqwidth $w]!=0} {
-       set pre_x [expr ([winfo screenwidth $w]-[winfo reqwidth $w])/2-[winfo vrootx [winfo parent $w]]]
-       set pre_y [expr ([winfo screenheight $w]-[winfo reqheight $w])/2-[winfo vrooty [winfo parent $w]]]
-       wm geom $w +$pre_x+$pre_y
-    }
-
-    # withdraw the window, then update all the geometry information
-    # so we know how big it wants to be, then center the window in the
-    # display and de-iconify it.
-    if {$tcl_platform(platform) != "windows"} {
-        wm withdraw $w
-    }
-    update idletasks
-    set x [expr [winfo screenwidth $w]/2 - [winfo width $w]/2  - [winfo vrootx [winfo parent $w]]]
-    set y [expr [winfo screenheight $w]/2 - [winfo height $w]/2  - [winfo vrooty [winfo parent $w]]]
-    wm geom $w +$x+$y
-    if {$tcl_platform(platform) != "windows"} {
-        wm deiconify $w
-    }
-    focus $w
-}
-
 #
 # Returns the bounds of the space of the screen that is commonly available for
 # application windows. This is the screen area minus the system menu area,
@@ -856,42 +830,73 @@ proc moveToScreen {w} {
     }
 }
 
-# rememberGeometry --
-#
-# Remember geometry of a dialog for the duration of the session.
-# Note: it is usually not a good idea to persist the dialog
-# position and size, as wrong settings may later cause confusion.
-#
-proc rememberGeometry {w} {
-    global session
-    set key "$w:geom"
-    regsub {^.*\.} $key "" key
+proc saveDialogGeometry {w} {
+    global config session
+
+    # parse geometry string
     set geom [wm geometry $w]
-    set session($key) $geom
+    if {![regexp {^([0-9]+)x([0-9]+)\+(-?[0-9]+)\+(-?[0-9]+)$} $geom dummy width height x y]} {
+        error "unexpected window geometry string $geom"
+    }
+
+    # size: preserve it across sessions because we need it for centering the dialog on the screen
+    # position: remember for this session, but forget for new sessions to prevent accidents
+    regsub {^.*\.} $w "" w0
+    set session($w0:pos) [list $x $y]
+    set config($w0:size) [list $width $height]
 }
 
-# setGeometry --
-#
-# Restore geometry of a dialog, or center the dialog
-# if no remembered geometry information is available.
-#
-proc setGeometry {w} {
-    global session
-    set key "$w:geom"
-    regsub {^.*\.} $key "" key
-    if [info exists session($key)] {
-        wm geometry $w $session($key)
+proc centerDialog {w} {
+    # use the stored size for computing the position
+    global config
+    regsub {^.*\.} $w "" w0
+    if {![info exists config($w0:size)]} {error "config($w0:size) missing, should be set to dialog's expected size"}
+    setvars {width height} $config($w0:size)
+    setvars {x y} [getCenteredDialogPos $width $height [winfo parent $w]]
+    wm geometry $w "+$x+$y"
+}
+
+proc restoreDialogGeometry {w} {
+    global config session
+    regsub {^.*\.} $w "" w0
+    if {![info exists config($w0:size)]} {error "config($w0:size) missing, should be set to dialog's expected size"}
+    if {[info exists session($w0:pos)]} {
+        setvars {width height} $config($w0:size)
+        setvars {x y} $session($w0:pos)
+        set geom "${width}x${height}+$x+$y"
+        wm geometry $w $geom
     } else {
-        center $w
+        centerDialog $w
     }
 }
+
+proc getCenteredDialogPos {width height parentwin} {
+    # compute x and y
+    if {$parentwin==""} {
+        # Note: this solution has a problem with multi-monitor support, dialogs
+        # end up being centered in the space which is the *union* of all screens
+        # (often resulting in the dialog being split between two monitors).
+        set x [expr { ( [winfo vrootwidth  .] - $width  ) / 2 }]
+        set y [expr { ( [winfo vrootheight .] - $height ) / 2 }]
+    } else {
+        # Preferred solution: center above the parent window
+        set centerx [expr { [winfo x $parentwin] + [winfo width $parentwin]/2 }]
+        set centery [expr { [winfo y $parentwin] + [winfo height $parentwin]/2 }]
+        set x [expr { $centerx - $width / 2 }]
+        set y [expr { $centery - $height / 2 }]
+    }
+
+    return [list $x $y]
+}
+
 
 # createOkCancelDialog --
 #
 # creates dialog with OK and Cancel buttons
 # user's widgets can go into frame $w.f
 #
-proc createOkCancelDialog {w title} {
+proc createOkCancelDialog {w title {restoregeometry 0}} {
+    global config
     catch {destroy $w}
     toplevel $w -class Toplevel
     wm transient $w [winfo toplevel [winfo parent $w]]
@@ -903,10 +908,11 @@ proc createOkCancelDialog {w title} {
     wm deiconify $w
     wm protocol $w WM_DELETE_WINDOW { }
 
-    # preliminary placement (assumes 350x250 dialog)...
-    set pre_x [expr ([winfo screenwidth $w]-350)/2-[winfo vrootx [winfo parent $w]]]
-    set pre_y [expr ([winfo screenheight $w]-250)/2-[winfo vrooty [winfo parent $w]]]
-    wm geom $w +$pre_x+$pre_y
+    if {$restoregeometry} {
+        restoreDialogGeometry $w
+    } else {
+        centerDialog $w
+    }
 
     # $w.r is a workaround: the dialog must contain exactly one ttk::frame,
     # otherwise toplevel's non-themed background will be visible through the gaps
@@ -957,8 +963,6 @@ proc execOkCancelDialog {w {validating_proc {}}} {
     # next line mysteriously solves "lost focus" problem of popup dialogs...
     after 1 "wm deiconify $w"
 
-    setGeometry $w
-
     set oldGrab [grab current $w]
     if {$oldGrab != ""} {
         set grabStatus [grab status $oldGrab]
@@ -980,6 +984,8 @@ proc execOkCancelDialog {w {validating_proc {}}} {
         }
     }
 
+    saveDialogGeometry $w
+
     if {$oldGrab != ""} {
         if {$grabStatus == "global"} {
             grab -global $oldGrab
@@ -995,7 +1001,7 @@ proc execOkCancelDialog {w {validating_proc {}}} {
 # Creates dialog with a Close button.
 # User's widgets can go into frame $w.f, and extra buttons can go into frame $w.buttons.
 #
-proc createCloseDialog {w title} {
+proc createCloseDialog {w title {restoregeometry 0}} {
     catch {destroy $w}
     toplevel $w -class Toplevel
     wm transient $w [winfo toplevel [winfo parent $w]]
@@ -1007,10 +1013,11 @@ proc createCloseDialog {w title} {
     wm deiconify $w
     wm protocol $w WM_DELETE_WINDOW { }
 
-    # preliminary placement (assumes 350x250 dialog)...
-    set pre_x [expr ([winfo screenwidth $w]-350)/2-[winfo vrootx [winfo parent $w]]]
-    set pre_y [expr ([winfo screenheight $w]-250)/2-[winfo vrooty [winfo parent $w]]]
-    wm geom $w +$pre_x+$pre_y
+    if {$restoregeometry} {
+        restoreDialogGeometry $w
+    } else {
+        centerDialog $w
+    }
 
     # $w.r is a workaround: the dialog must contain exactly one ttk::frame,
     # otherwise toplevel's non-themed background will be visible through the gaps
@@ -1051,8 +1058,6 @@ proc executeCloseDialog w {
     # next line mysteriously solves "lost focus" problem of popup dialogs...
     after 1 "wm deiconify $w"
 
-    setGeometry $w
-
     set oldGrab [grab current $w]
     if {$oldGrab != ""} {
         set grabStatus [grab status $oldGrab]
@@ -1066,6 +1071,8 @@ proc executeCloseDialog w {
     # restore any grab that was in effect.
 
     tkwait variable opp($w)
+
+    saveDialogGeometry $w
 
     if {$oldGrab != ""} {
         if {$grabStatus == "global"} {
@@ -1097,10 +1104,9 @@ proc showTextOnceDialog {key} {
     set text $hints($key)
 
     # create dialog with OK button
-    set w .once
+    set w .oncedialog
     createOkCancelDialog $w "Hint"
     destroy $w.buttons.cancelbutton
-    wm geometry $w "360x180"
 
     text $w.f.text -relief solid -bd 1 -wrap word
     $w.f.text insert 1.0 $text

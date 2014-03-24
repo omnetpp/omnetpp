@@ -54,6 +54,18 @@ set config(zoomby-factor) 1.1
 set config(layout-may-resize-window) 1
 set config(layout-may-change-zoom) 1
 set config(preferences-dialog-page) "g"
+set config(finddialog:size) {316 132}
+set config(findobjectsdialog:size) {925 578}
+set config(preferencesdialog:size) {652 545}
+set config(runseldialog:size) {421 146}
+set config(treedialog:size) {353 446}
+set config(outvectoroptionsdialog:size) {300 300}
+set config(rununtildialog:size) {400 300}
+set config(inputbox:size) {400 300}
+set config(combodialog:size) {400 300}
+set config(oncedialog:size) {400 300}
+set config(aboutdialog:size) {400 300}
+set config(modelinfodialog:size) {400 400}
 
 set pluginlist {}
 

@@ -73,13 +73,5 @@ proc startTkenv {} {
   loadTkenvrc ".tkenvrc"
   reflectSettingsInGui
   determineClocksPerSec
-
-  global tcl_platform
-  if {$tcl_platform(platform) == "windows"} {
-      # without "update", the main window comes up on top of all others, it also
-      # obscures any dialog box (e.g. param prompt) that might appear at startup!
-      update
-  }
-
 }
 

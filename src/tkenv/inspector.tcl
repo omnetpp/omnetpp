@@ -39,6 +39,9 @@ proc createInspectorToplevel {insp geom} {
     if {$config(keep-inspectors-on-top)} {
         makeTransient $insp $geom
     }
+    if {$geom==""} {
+        placeWindowNearMouse $insp
+    }
 
     # Create toolbar
     ttk::frame $insp.toolbar -relief raised
