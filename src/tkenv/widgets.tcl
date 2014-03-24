@@ -250,12 +250,14 @@ proc makeTransient {w {geom ""}} {
     if {[string equal [tk windowingsystem] win32]} {
         # drawback of "transient": (1) inspector windows cannot be minimized or maximized
         # (2) it places all windows to (0,0) and "positionfrom" doesn't help;
-        # workaround: place window explicitly (near the current mouse position)
+        # workaround: place window explicitly (near the current mouse position);
+        # additional random jitter is useful when multiple windows are placed at once
         wm transient $w .
         wm attribute $w -toolwindow 1
         if {$geom==""} {
-            set x [expr [winfo pointerx .]-50]
-            set y [expr [winfo pointery .]+40]
+            set x [expr [winfo pointerx .] - 40 + int(rand()*20)]
+            set y [expr [winfo pointery .] + 30 + int(rand()*20)]
+            puts "$x $y"
             wm geometry $w +$x+$y
         }
     } elseif {[string equal [tk windowingsystem] x11]} {
@@ -264,9 +266,10 @@ proc makeTransient {w {geom ""}} {
         wm attribute $w -type normal
         wm positionfrom $w user
         if {$geom==""} {
-            # at least Ubuntu (Unity) places the window at (0,0) by default, so use explicit placement
-            set x [expr [winfo pointerx .]-50]
-            set y [expr [winfo pointery .]+40]
+            # at least Ubuntu (Unity) places the window at (0,0) by default, so use explicit placement;
+            # additional random jitter is useful when multiple windows are placed at once
+            set x [expr [winfo pointerx .] - 40 + int(rand()*20)]
+            set y [expr [winfo pointery .] + 30 + int(rand()*20)]
             wm geometry $w +$x+$y
         }
     } elseif {[string equal [tk windowingsystem] aqua]}  {
