@@ -132,7 +132,7 @@ void Inspector::refreshTitle()
     const char *prefix = getTkenv()->getWindowTitlePrefix();
     if (!object)
     {
-        sprintf(newTitle, "%s n/a", prefix);
+        sprintf(newTitle, "%s N/A", prefix);
     }
     else
     {
