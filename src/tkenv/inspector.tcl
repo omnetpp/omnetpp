@@ -50,7 +50,7 @@ proc createInspectorToplevel {insp geom} {
     packIconButton $insp.toolbar.parent -image $icons(parent) -command "inspector:inspectParent $insp"
     packIconButton $insp.toolbar.sep01 -separator
     packIconButton $insp.toolbar.inspectas -image $icons(inspectas) -command "inspector:inspectAsPopup $insp $insp.toolbar.inspectas"
-    packIconButton $insp.toolbar.copyobj -image $icons(copy) -command "inspector:namePopup $insp $insp.toolbar.copyobj"
+    packIconButton $insp.toolbar.copyobj -image $icons(copyptr) -command "inspector:namePopup $insp $insp.toolbar.copyobj"
     packIconButton $insp.toolbar.objs -image $icons(findobj) -command "inspectFilteredObjectList $insp"
 
     set help_tips($insp.toolbar.parent) "Go to parent"
@@ -186,16 +186,15 @@ proc inspector:dblClick {insp ptr} {
 
 proc inspector:namePopup {insp toolbutton} {
     set ptr [opp_inspector_getobject $insp]
-    regsub {^ptr} $ptr {0x} p
 
     catch {destroy .popup}
     menu .popup -tearoff 0
-    .popup add command -label "Copy pointer with cast (for debugger)" -command [list setClipboard "(([opp_getobjectfield $ptr className] *)$p)"]
-    .popup add command -label "Copy pointer value (for debugger)" -command [list setClipboard $p]
+    .popup add command -label "Copy Pointer With Cast (for Debugger)" -command [list copyToClipboard $ptr ptrWithCast]
+    .popup add command -label "Copy Pointer Value (for Debugger)" -command [list copyToClipboard $ptr ptr]
     .popup add separator
-    .popup add command -label "Copy full path" -command [list setClipboard [opp_getobjectfullpath $ptr]]
-    .popup add command -label "Copy name" -command [list setClipboard [opp_getobjectfullname $ptr]]
-    .popup add command -label "Copy class name" -command [list setClipboard [opp_getobjectfield $ptr className]]
+    .popup add command -label "Copy Full Path" -command [list copyToClipboard $ptr fullPath]
+    .popup add command -label "Copy Name" -command [list copyToClipboard $ptr fullName]
+    .popup add command -label "Copy Class Name" -command [list copyToClipboard $ptr className]
 
     set x [winfo rootx $toolbutton]
     set y [expr [winfo rooty $toolbutton]+[winfo height $toolbutton]]

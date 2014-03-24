@@ -108,6 +108,19 @@ proc fillInspectorContextMenu {menu insp ptr} {
         $menu add command -label "Exclude Messages Like '$name' From Animation" -command "excludeMessageFromAnimation $ptr"
     }
 
+    # add utilities menu
+    set submenu .copymenu$ptr
+    catch {destroy $submenu}
+    menu $submenu -tearoff 0
+    $menu add separator
+    $menu add cascade -label "Utilities for '$name'" -menu $submenu
+    $submenu add command -label "Copy Pointer With Cast (for Debugger)" -command [list copyToClipboard $ptr ptrWithCast]
+    $submenu add command -label "Copy Pointer Value (for Debugger)" -command [list copyToClipboard $ptr ptr]
+    $submenu add separator
+    $submenu add command -label "Copy Full Path" -command [list copyToClipboard $ptr fullPath]
+    $submenu add command -label "Copy Name" -command [list copyToClipboard $ptr fullName]
+    $submenu add command -label "Copy Class Name" -command [list copyToClipboard $ptr className]
+
     # add further menu items
     set name [opp_getobjectfullpath $ptr]
     set allcategories "mqsgvo"
@@ -195,6 +208,18 @@ proc createInspectorContextMenu {insp ptrs} {
     }
 
     return .popup
+}
+
+proc copyToClipboard {ptr what} {
+    regsub {^ptr} $ptr {0x} p
+    switch $what {
+        ptr         {setClipboard $p}
+        ptrWithCast {setClipboard "(([opp_getobjectfield $ptr className] *)$p)"}
+        fullPath    {setClipboard [opp_getobjectfullpath $ptr]}
+        fullName    {setClipboard [opp_getobjectfullname $ptr]}
+        className   {setClipboard [opp_getobjectfield $ptr className]}
+        default     {error "invalid value '$what'"}
+    }
 }
 
 proc inspectContextMenuRules {ptr key} {
