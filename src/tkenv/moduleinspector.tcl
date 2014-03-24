@@ -36,26 +36,14 @@ proc createModuleInspector {insp geom} {
     packIconButton $insp.toolbar.redraw  -image $icons(redraw) -command "ModuleInspector:relayout $insp"
     packIconButton $insp.toolbar.zoomin  -image $icons(zoomin)  -command "ModuleInspector:zoomIn $insp"
     packIconButton $insp.toolbar.zoomout -image $icons(zoomout) -command "ModuleInspector:zoomOut $insp"
-    packIconButton $insp.toolbar.showlabels -image $icons(modnames) -command "ModuleInspector:toggleLabels $insp"
-    packIconButton $insp.toolbar.showarrowheads -image $icons(arrowhead) -command "ModuleInspector:toggleArrowheads $insp"
 
     set help_tips($insp.toolbar.parent)  "Go to parent module"
     set help_tips($insp.toolbar.redraw)  "Re-layout (${CTRL_}R)"
     set help_tips($insp.toolbar.zoomin)  "Zoom in (${CTRL_}M)"
     set help_tips($insp.toolbar.zoomout) "Zoom out (${CTRL_}N)"
-    set help_tips($insp.toolbar.showlabels) "Show module names (${CTRL_}L)"
-    set help_tips($insp.toolbar.showarrowheads) "Show arrowheads (${CTRL_}A)"
 
     # create canvas
     createGraphicalModuleViewer $insp
-
-    set c $insp.c
-    if {$inspectordata($c:showlabels)} {
-        $insp.toolbar.showlabels config -relief sunken
-    }
-    if {$inspectordata($c:showarrowheads)} {
-        $insp.toolbar.showarrowheads config -relief sunken
-    }
 }
 
 proc createEmbeddedModuleInspector {insp} {
@@ -76,8 +64,6 @@ proc createEmbeddedModuleInspector {insp} {
     packIconButton $tb.redraw  -image $icons(redraw)  -command "ModuleInspector:relayout $insp"
     packIconButton $tb.zoomin  -image $icons(zoomin)  -command "ModuleInspector:zoomIn $insp"
     packIconButton $tb.zoomout -image $icons(zoomout) -command "ModuleInspector:zoomOut $insp"
-    packIconButton $tb.showlabels -image $icons(modnames) -command "ModuleInspector:toggleLabels $insp"
-    packIconButton $tb.showarrowheads -image $icons(arrowhead) -command "ModuleInspector:toggleArrowheads $insp"
 
     set help_tips($tb.back)    "Back"
     set help_tips($tb.forward) "Forward"
@@ -89,9 +75,6 @@ proc createEmbeddedModuleInspector {insp} {
     set help_tips($tb.animspeed) "Animation speed -- see Options dialog"
     set help_tips($tb.zoomin)  "Zoom in (${CTRL_}M)"
     set help_tips($tb.zoomout) "Zoom out (${CTRL_}N)"
-    set help_tips($tb.showlabels) "Show module names (${CTRL_}L)"
-    set help_tips($tb.showarrowheads) "Show arrowheads (${CTRL_}A)"
-
 }
 
 proc createGraphicalModuleViewer {insp} {
@@ -1264,9 +1247,6 @@ proc ModuleInspector:toggleLabels {insp} {
     set inspectordata($c:showlabels) [expr !$inspectordata($c:showlabels)]
     opp_inspectorcommand $insp redraw
 
-    if {$inspectordata($c:showlabels)} {set relief "sunken"} else {set relief "flat"}
-    $insp.toolbar.showlabels config -relief $relief
-
     ModuleInspector:updatePreferences $insp
 }
 
@@ -1275,9 +1255,6 @@ proc ModuleInspector:toggleArrowheads {insp} {
     set c $insp.c
     set inspectordata($c:showarrowheads) [expr !$inspectordata($c:showarrowheads)]
     opp_inspectorcommand $insp redraw
-
-    if {$inspectordata($c:showarrowheads)} {set relief "sunken"} else {set relief "flat"}
-    $insp.toolbar.showarrowheads config -relief $relief
 
     ModuleInspector:updatePreferences $insp
 }
