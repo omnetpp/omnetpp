@@ -149,6 +149,10 @@ proc createGraphicalModuleViewer {insp} {
     set ww [winfo toplevel $insp]
     bind $ww <$Control-m> "ModuleInspector:zoomIn $insp"
     bind $ww <$Control-n> "ModuleInspector:zoomOut $insp"
+    bind $ww <$Control-plus> "ModuleInspector:zoomIn $insp"
+    bind $ww <$Control-minus> "ModuleInspector:zoomOut $insp"
+    bind $ww <$Control-KP_Add> "ModuleInspector:zoomIn $insp"
+    bind $ww <$Control-KP_Subtract> "ModuleInspector:zoomOut $insp"
     bind $ww <$Control-i> "ModuleInspector:zoomIconsBy $insp 1.25"
     bind $ww <$Control-o> "ModuleInspector:zoomIconsBy $insp 0.8"
     bind $ww <$Control-r> "ModuleInspector:relayout $insp"
