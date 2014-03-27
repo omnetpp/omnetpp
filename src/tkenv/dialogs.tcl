@@ -13,9 +13,6 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-#===================================================================
-#    HELPER/GUI PROCEDURES
-#===================================================================
 
 proc inputbox {title prompt variable {checkboxlabel {}} {checkboxvar {}}} {
     # This procedure displays a dialog box, waits for a button in the dialog
@@ -252,7 +249,6 @@ proc displayStopDialog {} {
     wm title $w "Running..."
     wm transient $w [winfo toplevel [winfo parent $w]]
     wm protocol $w WM_DELETE_WINDOW {opp_stopsimulation}
-    # bind $w <Visibility> "raise $w"  ;# Keep modal window on top -- not good! (obscures error dialogs)
 
     set red #f83030
     button $w.stopbutton  -text "STOP!" -background $red -activebackground $red \

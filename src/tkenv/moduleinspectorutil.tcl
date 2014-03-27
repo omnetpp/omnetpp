@@ -28,29 +28,6 @@ proc ModuleInspector:addRunButtons {insp} {
     set help_tips($insp.toolbar.stop)    "Stop the simulation (F8)"
 }
 
-#
-# Invoked by the small down arrow next to the "Run" icon on the toolbar, and displays
-# a menu to select between Run, Fast, Express and Until. $insp is the icon button to configure.
-#
-proc ModuleInspector:setRunmode {insp} {
-    global icons help_tips
-
-    catch {destroy .popup}
-    menu .popup -tearoff 0
-
-    .popup add command -label "Run" \
-        -command [list iconButton:configure $insp $icons(run)  runNormal "Run with full animation (F5)"]
-    .popup add command -label "Fast Run" \
-        -command [list iconButton:configure $insp $icons(fast) runFast "Run faster: no animation and rare inspector updates (F6)"]
-    .popup add command -label "Express Run" \
-        -command [list iconButton:configure $insp $icons(express) runExpress "Run at full speed: no text output, animation or inspector updates (F7)"]
-    .popup add command -label "Until..."  \
-        -command [list iconButton:configure $insp $icons(until) runUntil "Run until time or event number"]
-
-    tk_popup .popup [winfo rootx $insp] [expr [winfo rooty $insp]+[winfo height $insp]]
-
-}
-
 proc runSimulationLocal {insp mode {ptr ""}} {
     # invoked from toolbar in module inspectors
     if [isRunning] {

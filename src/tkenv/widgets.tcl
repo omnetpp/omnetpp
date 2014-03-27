@@ -788,23 +788,6 @@ proc helplabel:showhelp {text x y} {
     waitForFocus .helpwin.tip
 }
 
-
-#TODO!
-proc multicolumnlistbox:bltSortColumn {w column} {
-    set old [$w sort cget -column]
-    set decreasing 0
-    if {$old==$column} {
-        set decreasing [$w sort cget -decreasing]
-        set decreasing [expr !$decreasing]
-    }
-    $w sort configure -decreasing $decreasing -column $column
-    $w configure -flat yes
-    $w sort auto yes
-    blt::busy hold $w
-    update
-    blt::busy release $w
-}
-
 proc ttkTreeview:deleteAll {tree} {
     $tree delete [$tree children {}]
 }

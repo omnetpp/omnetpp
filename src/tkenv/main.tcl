@@ -13,13 +13,6 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-#------
-# Parts of this file were created using Stewart Allen's Visual Tcl (vtcl)
-#------
-
-#===================================================================
-#    GLOBAL VARIABLES
-#===================================================================
 
 # default config settings
 set config(keep-inspectors-on-top) 1

@@ -13,13 +13,6 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-#------
-# Parts of this file were created using Stewart Allen's Visual Tcl (vtcl)
-#------
-
-#===================================================================
-#    HELPER/GUI PROCEDURES
-#===================================================================
 
 proc networkPresent {} {
     if [opp_isnull [opp_object_systemmodule]] {
