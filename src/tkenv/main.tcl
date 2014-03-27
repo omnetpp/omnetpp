@@ -220,7 +220,7 @@ proc mainWindow:createMenu {} {
       {separator}
       {command -command stopSimulation -label "Stop Execution" -accel "F8" -underline 1}
       {separator}
-      {command -command toggleRecordEventlog -label "Start/Stop Eventlog Recording" -underline 1}
+      {command -command toggleRecordEventlog -label "Start/Stop Eventlog Recording" -accel "$CTRL+G" -underline 1}
       {separator}
       {command -command callFinish -label "Conclude Simulation" -underline 0}
       {command -command rebuild -label "Rebuild Network" -underline 2}
@@ -321,7 +321,7 @@ proc mainWindow:createToolbar {} {
     set help_tips(.toolbar.until)   "Run until time or event number (${CTRL_}F5)"
     set help_tips(.toolbar.stop)    "Stop running simulation (F8)"
     set help_tips(.toolbar.restart) "Rebuild network"
-    set help_tips(.toolbar.eventlog) "Eventlog recording on/off"
+    set help_tips(.toolbar.eventlog) "Eventlog recording on/off (${CTRL_}G)"
     set help_tips(.toolbar.finish)  "Conclude simulation"
     set help_tips(.toolbar.objs)    "Find and inspect modules, messages, queues and other objects (${CTRL_}S)"
     set help_tips(.toolbar.tline)   "Show/hide timeline (${CTRL_}T)"
@@ -555,6 +555,7 @@ proc bindRunCommands {w} {
     bind $w <F8> {stopSimulation}
     bind $w <$Control-F5> {runUntil}
     bind $w <$Control-F9> {debugNextEvent}
+    bind $w <$Control-g>  {toggleRecordEventlog}
     bind $w <$Control-d>  {toggleStatusDetails}
     bind $w <$Control-t>  {toggleTimeline}
     bind $w <$Control-q>  {exitOmnetpp}
