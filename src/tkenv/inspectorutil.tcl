@@ -101,9 +101,9 @@ proc fillInspectorContextMenu {menu insp ptr} {
 
     if {$baseclass=="cMessage"} {
         $menu add separator
-        $menu add command -label "Run Until Message '$name'" -command "runUntilMsg $ptr normal"
-        $menu add command -label "Fast Run Until Message '$name'" -command "runUntilMsg $ptr fast"
-        $menu add command -label "Express Run Until Message '$name'" -command "runUntilMsg $ptr express"
+        $menu add command -label "Run Until Delivery of Message '$name'" -command "runUntilMsg $ptr normal"
+        $menu add command -label "Fast Run Until Delivery of Message '$name'" -command "runUntilMsg $ptr fast"
+        $menu add command -label "Express Run Until Delivery of Message '$name'" -command "runUntilMsg $ptr express"
         $menu add separator
         $menu add command -label "Exclude Messages Like '$name' From Animation" -command "excludeMessageFromAnimation $ptr"
     }
