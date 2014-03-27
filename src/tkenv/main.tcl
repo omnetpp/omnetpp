@@ -214,7 +214,7 @@ proc mainWindow:createMenu {} {
       {command -command runNormal -label "Run"  -accel "F5" -underline 0}
       {command -command runFast -label "Fast Run (rare display updates)" -accel "F6" -underline 0}
       {command -command runExpress -label "Express Run (tracing off)" -accel "F7" -underline 1}
-      {command -command runUntil -label "Run Until..." -underline 4}
+      {command -command runUntil -label "Run Until..." -accel "$CTRL+F5" -underline 4}
       {separator}
       {command -command debugNextEvent -label "Debug Next Event" -accel "$CTRL+F9" -underline 1}
       {separator}
@@ -318,7 +318,7 @@ proc mainWindow:createToolbar {} {
     set help_tips(.toolbar.run)     "Run with full animation (F5)"
     set help_tips(.toolbar.fastrun) "Run faster: no animation and rare inspector updates (F6)"
     set help_tips(.toolbar.exprrun) "Run at full speed: no text output, animation or inspector updates (F7)"
-    set help_tips(.toolbar.until)   "Run until time or event number"
+    set help_tips(.toolbar.until)   "Run until time or event number (${CTRL_}F5)"
     set help_tips(.toolbar.stop)    "Stop running simulation (F8)"
     set help_tips(.toolbar.restart) "Rebuild network"
     set help_tips(.toolbar.eventlog) "Eventlog recording on/off"
@@ -553,6 +553,7 @@ proc bindRunCommands {w} {
     bind $w <F6> {after 100 runFast}
     bind $w <F7> {after 100 runExpress}
     bind $w <F8> {stopSimulation}
+    bind $w <$Control-F5> {runUntil}
     bind $w <$Control-F9> {debugNextEvent}
     bind $w <$Control-d>  {toggleStatusDetails}
     bind $w <$Control-t>  {toggleTimeline}
