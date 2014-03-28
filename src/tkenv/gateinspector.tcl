@@ -20,8 +20,8 @@ proc createGateInspector {insp geom} {
     createInspectorToplevel $insp $geom
 
     # create toolbar
-    packIconButton $insp.toolbar.sep1   -separator
-    packIconButton $insp.toolbar.redraw -image $icons(redraw) -command "opp_inspectorcommand $insp redraw"
+    packToolbutton $insp.toolbar.sep1   -separator
+    packToolbutton $insp.toolbar.redraw -image $icons(redraw) -command "opp_inspectorcommand $insp redraw"
     set help_tips($insp.toolbar.redraw) "Redraw"
 
     createGateViewer $insp

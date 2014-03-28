@@ -41,17 +41,17 @@ proc createInspectorToplevel {insp geom} {
     }
 
     # Create toolbar
-    frame $insp.toolbar -relief raised
+    ttk::frame $insp.toolbar -relief raised
     pack $insp.toolbar -anchor w -side top -fill x -expand 0
 
-    packIconButton $insp.toolbar.sep0 -separator
-    packIconButton $insp.toolbar.back -image $icons(back) -command "inspector:back $insp"
-    packIconButton $insp.toolbar.forward -image $icons(forward) -command "inspector:forward $insp"
-    packIconButton $insp.toolbar.parent -image $icons(parent) -command "inspector:inspectParent $insp"
-    packIconButton $insp.toolbar.sep01 -separator
-    packIconButton $insp.toolbar.inspectas -image $icons(inspectas) -command "inspector:inspectAsPopup $insp $insp.toolbar.inspectas"
-    packIconButton $insp.toolbar.copyobj -image $icons(copyptr) -command "inspector:namePopup $insp $insp.toolbar.copyobj"
-    packIconButton $insp.toolbar.objs -image $icons(findobj) -command "inspectFilteredObjectList $insp"
+    packToolbutton $insp.toolbar.sep0 -separator
+    packToolbutton $insp.toolbar.back -image $icons(back) -command "inspector:back $insp"
+    packToolbutton $insp.toolbar.forward -image $icons(forward) -command "inspector:forward $insp"
+    packToolbutton $insp.toolbar.parent -image $icons(parent) -command "inspector:inspectParent $insp"
+    packToolbutton $insp.toolbar.sep01 -separator
+    packToolbutton $insp.toolbar.inspectas -image $icons(inspectas) -command "inspector:inspectAsPopup $insp $insp.toolbar.inspectas"
+    packToolbutton $insp.toolbar.copyobj -image $icons(copyptr) -command "inspector:namePopup $insp $insp.toolbar.copyobj"
+    packToolbutton $insp.toolbar.objs -image $icons(findobj) -command "inspectFilteredObjectList $insp"
 
     set help_tips($insp.toolbar.parent) "Go to parent"
     set help_tips($insp.toolbar.inspectas) "Inspect"
@@ -69,7 +69,7 @@ proc createInspectorToplevel {insp geom} {
 
 proc inspector:createInternalToolbar {insp {parent ""}} {
     if {$parent==""} {set parent $insp}
-    frame $insp.toolbar -border 2 -relief groove
+    ttk::frame $insp.toolbar -border 2 -relief groove
     place $insp.toolbar -in $parent -relx 1.0 -rely 0 -anchor ne -x -2 -y 2
     return $insp.toolbar
 }
@@ -110,19 +110,19 @@ proc inspector:refresh {insp} {
 
     if [winfo exist $insp.toolbar.parent] {  ;#FIXME add proper condition
         if [opp_isnull $ptr] {
-            iconbutton:setstate $insp.toolbar.parent disabled
+            toolbutton:setstate $insp.toolbar.parent disabled
         } else {
             set parentptr [opp_getobjectparent $ptr]
             if [opp_isnull $parentptr] {set state disabled} else {set state normal}
-            iconbutton:setstate $insp.toolbar.parent $state
+            toolbutton:setstate $insp.toolbar.parent $state
         }
     }
 
     if [opp_inspectorcommand $insp cangoback] {set state normal} else {set state disabled}
-    catch {iconbutton:setstate $insp.toolbar.back $state} ;#FIXME add proper condition whether button exists
+    catch {toolbutton:setstate $insp.toolbar.back $state} ;#FIXME add proper condition whether button exists
 
     if [opp_inspectorcommand $insp cangoforward] {set state normal} else {set state disabled}
-    catch {iconbutton:setstate $insp.toolbar.forward $state}  ;#FIXME add proper condition whether button exists
+    catch {toolbutton:setstate $insp.toolbar.forward $state}  ;#FIXME add proper condition whether button exists
 
 }
 

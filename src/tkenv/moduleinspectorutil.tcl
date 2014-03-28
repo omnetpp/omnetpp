@@ -17,9 +17,9 @@
 proc ModuleInspector:addRunButtons {insp} {
     global icons help_tips Control CTRL_
 
-    packIconButton $insp.toolbar.mrun    -image $icons(mrun)    -command "runSimulationLocal $insp normal"
-    packIconButton $insp.toolbar.mfast   -image $icons(mfast)   -command "runSimulationLocal $insp fast"
-    packIconButton $insp.toolbar.stop    -image $icons(stop)    -command {stopSimulation}
+    packToolbutton $insp.toolbar.mrun    -image $icons(mrun)    -command "runSimulationLocal $insp normal"
+    packToolbutton $insp.toolbar.mfast   -image $icons(mfast)   -command "runSimulationLocal $insp fast"
+    packToolbutton $insp.toolbar.stop    -image $icons(stop)    -command {stopSimulation}
 
     bind $insp <$Control-F4> "runSimulationLocal $insp fast"
 

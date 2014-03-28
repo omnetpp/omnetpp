@@ -29,13 +29,13 @@ proc createModuleInspector {insp geom} {
     createInspectorToplevel $insp $geom
 
     # create toolbar
-    packIconButton $insp.toolbar.sep1 -separator
+    packToolbutton $insp.toolbar.sep1 -separator
     ModuleInspector:addRunButtons $insp
 
-    packIconButton $insp.toolbar.sep2    -separator
-    packIconButton $insp.toolbar.redraw  -image $icons(redraw) -command "ModuleInspector:relayout $insp"
-    packIconButton $insp.toolbar.zoomin  -image $icons(zoomin)  -command "ModuleInspector:zoomIn $insp"
-    packIconButton $insp.toolbar.zoomout -image $icons(zoomout) -command "ModuleInspector:zoomOut $insp"
+    packToolbutton $insp.toolbar.sep2    -separator
+    packToolbutton $insp.toolbar.redraw  -image $icons(redraw) -command "ModuleInspector:relayout $insp"
+    packToolbutton $insp.toolbar.zoomin  -image $icons(zoomin)  -command "ModuleInspector:zoomIn $insp"
+    packToolbutton $insp.toolbar.zoomout -image $icons(zoomout) -command "ModuleInspector:zoomOut $insp"
 
     set help_tips($insp.toolbar.parent)  "Go to parent module"
     set help_tips($insp.toolbar.redraw)  "Re-layout (${CTRL_}R)"
@@ -53,17 +53,17 @@ proc createEmbeddedModuleInspector {insp} {
 
     set tb [inspector:createInternalToolbar $insp $insp.c]
 
-    packIconButton $tb.back    -image $icons(back)    -command "inspector:back $insp"
-    packIconButton $tb.forward -image $icons(forward) -command "inspector:forward $insp"
-    packIconButton $tb.parent  -image $icons(parent)  -command "inspector:inspectParent $insp"
-    packIconButton $tb.sep1    -separator
-    packIconButton $tb.mrun    -image $icons(mrun)    -command "runSimulationLocal $insp normal"
-    packIconButton $tb.mfast   -image $icons(mfast)   -command "runSimulationLocal $insp fast"
-    packIconButton $tb.stop    -image $icons(stop)    -command {stopSimulation}
-    packIconButton $tb.sep2    -separator
-    packIconButton $tb.redraw  -image $icons(redraw)  -command "ModuleInspector:relayout $insp"
-    packIconButton $tb.zoomin  -image $icons(zoomin)  -command "ModuleInspector:zoomIn $insp"
-    packIconButton $tb.zoomout -image $icons(zoomout) -command "ModuleInspector:zoomOut $insp"
+    packToolbutton $tb.back    -image $icons(back)    -command "inspector:back $insp"
+    packToolbutton $tb.forward -image $icons(forward) -command "inspector:forward $insp"
+    packToolbutton $tb.parent  -image $icons(parent)  -command "inspector:inspectParent $insp"
+    packToolbutton $tb.sep1    -separator
+    packToolbutton $tb.mrun    -image $icons(mrun)    -command "runSimulationLocal $insp normal"
+    packToolbutton $tb.mfast   -image $icons(mfast)   -command "runSimulationLocal $insp fast"
+    packToolbutton $tb.stop    -image $icons(stop)    -command {stopSimulation}
+    packToolbutton $tb.sep2    -separator
+    packToolbutton $tb.redraw  -image $icons(redraw)  -command "ModuleInspector:relayout $insp"
+    packToolbutton $tb.zoomin  -image $icons(zoomin)  -command "ModuleInspector:zoomIn $insp"
+    packToolbutton $tb.zoomout -image $icons(zoomout) -command "ModuleInspector:zoomOut $insp"
 
     set help_tips($tb.back)    "Back"
     set help_tips($tb.forward) "Forward"

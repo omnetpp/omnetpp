@@ -34,9 +34,9 @@ proc createEmbeddedGenericObjectInspector {insp} {
 
     set tb [inspector:createInternalToolbar $insp $insp]
 
-    packIconButton $tb.back    -image $icons(back)    -command "inspector:back $insp"
-    packIconButton $tb.forward -image $icons(forward) -command "inspector:forward $insp"
-    packIconButton $tb.parent  -image $icons(parent)  -command "inspector:inspectParent $insp"
+    packToolbutton $tb.back    -image $icons(back)    -command "inspector:back $insp"
+    packToolbutton $tb.forward -image $icons(forward) -command "inspector:forward $insp"
+    packToolbutton $tb.parent  -image $icons(parent)  -command "inspector:inspectParent $insp"
 
     set help_tips($tb.back)    "Back"
     set help_tips($tb.forward) "Forward"

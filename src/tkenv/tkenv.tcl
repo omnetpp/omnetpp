@@ -44,6 +44,7 @@ if [info exist OMNETPP_TKENV_DIR] {
    source [file join $dir outputvectorinspector.tcl]
    source [file join $dir timeline.tcl]
    source [file join $dir tkenvrc.tcl]
+   source [file join $dir toolbutton.tcl]
    source [file join $dir tree.tcl]
    source [file join $dir watchinspector.tcl]
    source [file join $dir widgets.tcl]

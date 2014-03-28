@@ -260,13 +260,12 @@ proc toggleTimeline {} {
    if {$config(display-timeline)==1} {
        set config(display-timeline) 0
        pack forget .timelineframe
-       .toolbar.tline config -relief flat
    } else {
        set config(display-timeline) 1
        pack .timelineframe -before .main -anchor center -expand 0 -fill x -side top -padx 0 -pady 0 -ipadx 0 -ipady 0
-       .toolbar.tline config -relief sunken
        redrawTimeline
    }
+   toolbutton:setsunken .toolbar.tline $config(display-timeline)
 }
 
 proc toggleRecordEventlog {} {
@@ -284,12 +283,7 @@ proc toggleRecordEventlog {} {
 
 proc reflectRecordEventlog {} {
    global config widgets
-
-   if {[opp_getsimoption record_eventlog]==1} {
-       .toolbar.eventlog config -relief sunken
-   } else {
-       .toolbar.eventlog config -relief flat
-   }
+   toolbutton:setsunken .toolbar.eventlog [opp_getsimoption record_eventlog]
 }
 
 proc setGuiForRunmode {mode {modinspwin ""} {untilmode ""}} {  #FIXME needs to be revised
@@ -297,49 +291,48 @@ proc setGuiForRunmode {mode {modinspwin ""} {untilmode ""}} {  #FIXME needs to b
     set insp $modinspwin
     if {$insp!="" && ![winfo exists $insp]} {set insp ""}
 
-    set default_iconbutton_relief "flat"
-    .toolbar.step config -relief $default_iconbutton_relief
-    .toolbar.run config -relief $default_iconbutton_relief
-    .toolbar.fastrun config -relief $default_iconbutton_relief
-    .toolbar.exprrun config -relief $default_iconbutton_relief
-    catch {$opp(sunken-run-button) config -relief $default_iconbutton_relief}
+    toolbutton:setsunken .toolbar.step 0
+    toolbutton:setsunken .toolbar.run 0
+    toolbutton:setsunken .toolbar.fastrun 0
+    toolbutton:setsunken .toolbar.exprrun 0
+    catch {toolbutton:setsunken $opp(sunken-run-button) 0}
     removeStopDialog
 
     if {$insp==""} {
         if {$mode=="step"} {
-            .toolbar.step config -relief sunken
+            toolbutton:setsunken .toolbar.step 1
         } elseif {$mode=="normal"} {
-            .toolbar.run config -relief sunken
+            toolbutton:setsunken .toolbar.run 1
         } elseif {$mode=="fast"} {
-            .toolbar.fastrun config -relief sunken
+            toolbutton:setsunken .toolbar.fastrun 1
         } elseif {$mode=="express"} {
-            .toolbar.exprrun config -relief sunken
+            toolbutton:setsunken .toolbar.exprrun 1
             displayStopDialog
         } elseif {$mode=="notrunning"} {
-            .toolbar.until config -relief $default_iconbutton_relief
+            toolbutton:setsunken .toolbar.until 0
         } else {
             error "wrong mode parameter $mode"
         }
     } else {
         if {$mode=="normal"} {
-            $insp.toolbar.mrun config -relief sunken
+            toolbutton:setsunken $insp.toolbar.mrun 1
             set opp(sunken-run-button) $insp.toolbar.mrun
         } elseif {$mode=="fast"} {
-            $insp.toolbar.mfast config -relief sunken
+            toolbutton:setsunken $insp.toolbar.mfast 1
             set opp(sunken-run-button) $insp.toolbar.mfast
         } elseif {$mode=="express"} {
             displayStopDialog
         } elseif {$mode=="notrunning"} {
-            .toolbar.until config -relief $default_iconbutton_relief
+            toolbutton:setsunken .toolbar.until 0
         } else {
             error "wrong mode parameter $mode with module inspector"
         }
     }
 
     if {$untilmode=="until_on"} {
-        .toolbar.until config -relief sunken
+        toolbutton:setsunken .toolbar.until 1
     } elseif {$untilmode=="until_off"} {
-        .toolbar.until config -relief $default_iconbutton_relief
+        toolbutton:setsunken .toolbar.until 0
     } elseif {$untilmode!=""} {
         error "wrong untilmode parameter $mode"
     }

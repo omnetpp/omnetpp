@@ -100,6 +100,7 @@ proc initBalloons {args} {
     enableBalloon Menubutton
     enableBalloon Label
     enableBalloon Entry
+    enableBalloon Toolbutton
     enableBalloon Menu "%W index active"
     enableBalloon Canvas "%W find withtag current"  ;#DO NOT CHANGE THIS
 }

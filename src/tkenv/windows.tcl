@@ -75,13 +75,13 @@ proc createFileViewer {filename} {
     wm resizable $w 1 1
     wm title $w $filename
 
-    frame $w.toolbar
+    ttk::frame $w.toolbar
 
-    packIconButton $w.toolbar.copy   -image $icons(copy) -command "editCopy $w.main.text"
-    packIconButton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
-    packIconButton $w.toolbar.sep20  -separator
-    packIconButton $w.toolbar.save   -image $icons(save) -command "saveFile $w $filename"
-    packIconButton $w.toolbar.sep21  -separator
+    packToolbutton $w.toolbar.copy   -image $icons(copy) -command "editCopy $w.main.text"
+    packToolbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
+    packToolbutton $w.toolbar.sep20  -separator
+    packToolbutton $w.toolbar.save   -image $icons(save) -command "saveFile $w $filename"
+    packToolbutton $w.toolbar.sep21  -separator
 
     set help_tips($w.toolbar.copy)   "Copy selected text to clipboard (${CTRL_}C)"
     set help_tips($w.toolbar.find)   "Find string in window (${CTRL_}F)"

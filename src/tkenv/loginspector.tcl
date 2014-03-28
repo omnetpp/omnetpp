@@ -20,7 +20,7 @@ proc createLogInspector {insp geom} {
     createInspectorToplevel $insp $geom
     set help_tips($insp.toolbar.parent)  "Go to parent module"
 
-    packIconButton $insp.toolbar.sep1 -separator
+    packToolbutton $insp.toolbar.sep1 -separator
     textWindowAddIcons $insp modulewindow
     ModuleInspector:addRunButtons $insp
 
@@ -38,9 +38,9 @@ proc createEmbeddedLogInspector {insp} {
     createLogViewer $insp $insp.main
 
     set tb [inspector:createInternalToolbar $insp $insp.main.text]
-    packIconButton $tb.copy   -image $icons(copy) -command "editCopy $insp.main.text"
-    packIconButton $tb.find   -image $icons(find) -command "findDialog $insp.main.text"
-    packIconButton $tb.filter -image $icons(filter) -command "editFilterWindowContents $insp"
+    packToolbutton $tb.copy   -image $icons(copy) -command "editCopy $insp.main.text"
+    packToolbutton $tb.find   -image $icons(find) -command "findDialog $insp.main.text"
+    packToolbutton $tb.filter -image $icons(filter) -command "editFilterWindowContents $insp"
 
     set help_tips($tb.copy)   "Copy selected text to clipboard (${CTRL_}C)"
     set help_tips($tb.find)   "Find string in window (${CTRL_}F)"

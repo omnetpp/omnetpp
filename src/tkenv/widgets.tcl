@@ -57,6 +57,11 @@ proc setupTkOptions {} {
    global tcl_wordchars tcl_nonwordchars
    global B2 B3 CTRL CTRL_ Control
 
+
+#package require ttk::theme::clearlooks
+#ttk::style theme use clearlooks
+
+
    if {[string equal [tk windowingsystem] x11]}  {
        package require ttk::theme::clearlooks
        ttk::style theme use clearlooks
@@ -361,110 +366,14 @@ proc setClipboard {str} {
 #    PROCEDURES FOR CREATING NEW 'WIDGET TYPES'
 #===================================================================
 
-proc iconbutton {w args} {
-    global fonts icons
-
-    if {$args=="-separator"} {
-        label $w -image $icons(toolbarsep) -bd 1
-    } else {
-        if {[string equal [tk windowingsystem] aqua]}  {
-            iconbutton:osx $w $args
-        } else {
-            # use button (plain button, as ttk::button doesn't support -relief)
-            eval button $w -bd 1 -relief flat $args
-            bind $w <Enter> [list iconbutton:changeRelief $w flat raised]
-            bind $w <Leave> [list iconbutton:changeRelief $w raised flat]
-        }
-    }
-    return $w
+proc packToolbutton {w args} {
+    eval toolbutton $w $args
+    pack $w -anchor n -side left -padx 1 -pady 2 -ipadx 1 -ipady 1
 }
 
-proc iconbutton:setstate {w state} {
-    if {[string equal [tk windowingsystem] aqua]}  {
-        iconbutton:osx:setstate $w $state
-    } else {
-        $w config -state $state
-    }
-}
-
-# private proc
-proc iconbutton:changeRelief {w from to} {
-    set current [$w cget -relief]
-    if {$current == $from} {
-        $w config -relief $to
-    }
-}
-
-# private proc
-proc iconbutton:osx {w arglist} {
-    # For OS X, we emulate button with label, because neither tk::button nor
-    # ttk::button can be configured to remain flat or sunken.
-    # We don't need hover effect in OS X (it's not customary to have one).
-    # However, we need to work around OS X Tcl's bug: disabled labels don't
-    # show the image (and print scary errors when hovering with the mouse):
-    # we always keep the label widget enabled, and manage the state ourselves.
-    global iconbutton
-
-    array set tmp $arglist
-    set cmd $tmp(-command)
-    set img $tmp(-image)
-
-    set img2 [image create photo]
-    $img2 copy $img
-    opp_colorizeimage $img2 "#f0f0f0" 80
-
-    set iconbutton($w:state) normal
-    set iconbutton($w:command) $cmd
-    set iconbutton($w:image:normal) $img
-    set iconbutton($w:image:disabled) $img2
-
-    label $w -bd 1 -relief flat
-    $w config -image $iconbutton($w:image:normal)
-    bind $w <ButtonPress-1> [list iconbutton:osx:press $w]
-    bind $w <ButtonRelease-1> [list iconbutton:osx:release $w %X %Y]
-}
-
-proc iconbutton:osx:setstate {w state} {
-    global iconbutton
-    set iconbutton($w:state) $state
-    $w config -image $iconbutton($w:image:$state)
-}
-
-proc iconbutton:osx:press {w} {
-    global iconbutton
-    if {$iconbutton($w:state)!="disabled"} {
-        $w config -relief sunken
-    }
-}
-
-proc iconbutton:osx:release {w x y} {
-    global iconbutton
-    $w config -relief flat
-    if {$iconbutton($w:state)!="disabled"} {
-        if [string equal [winfo containing $x $y] $w] { # still over the button
-            eval $iconbutton($w:command)
-        }
-    }
-}
-
-proc packIconButton {w args} {
-    eval iconbutton $w $args
-    if {[string equal [tk windowingsystem] aqua]} {set ipad 1} else {set ipad 0}
-    pack $w -anchor n -side left -padx 1 -pady 2 -ipadx $ipad -ipady $ipad
-}
-
-proc rpackIconButton {w args} {
-    eval iconbutton $w $args
-    if {[string equal [tk windowingsystem] aqua]} {set ipad 1} else {set ipad 0}
-    pack $w -anchor n -side right -padx 1 -pady 2 -ipadx $ipad -ipady $ipad
-}
-
-proc iconButton:configure {w icon command tooltip} {
-    global help_tips
-
-    $w config -image $icon
-    $w config -command $command
-    set help_tips($w) $tooltip
+proc rpackToolbutton {w args} {
+    eval toolbutton $w $args
+    pack $w -anchor n -side right -padx 1 -pady 2 -ipadx 1 -ipady 1
 }
 
 proc label-entry {w label {text {}}} {

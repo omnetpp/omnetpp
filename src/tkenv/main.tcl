@@ -269,7 +269,7 @@ proc mainWindow:createMenu {} {
 proc mainWindow:createToolbar {} {
     global icons help_tips CTRL_
 
-    frame .toolbar -relief raised -borderwidth 1
+    ttk::frame .toolbar
 
     foreach i {
       {sep00    -separator}
@@ -295,7 +295,7 @@ proc mainWindow:createToolbar {} {
       {options  -image $icons(config)  -command {preferences}}
       {sep10    -separator}
     } {
-      eval packIconButton .toolbar.$i
+      eval packToolbutton .toolbar.$i
     }
     animControl .toolbar.animspeed
     pack .toolbar.animspeed -anchor c -expand 0 -fill none -side left -padx 5 -pady 0
@@ -417,9 +417,7 @@ proc mainWindow:createLogView {} {
 
 proc mainWindow:refreshToolbar {} {
     global config
-
-    if {$config(display-timeline)==0} {set relief flat} else {set relief sunken}
-    .toolbar.tline config -relief $relief
+    toolbutton:setsunken .toolbar.tline $config(display-timeline)
 }
 
 proc mainWindow:selectionChanged {insp obj} {

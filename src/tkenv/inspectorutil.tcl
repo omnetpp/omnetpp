@@ -17,13 +17,13 @@
 proc textWindowAddIcons {insp {wintype ""}} {
     global icons help_tips CTRL_
 
-    packIconButton $insp.toolbar.copy   -image $icons(copy) -command "editCopy $insp.main.text"
-    packIconButton $insp.toolbar.find   -image $icons(find) -command "findDialog $insp.main.text"
-    packIconButton $insp.toolbar.save   -image $icons(save) -command "saveFile $insp"
+    packToolbutton $insp.toolbar.copy   -image $icons(copy) -command "editCopy $insp.main.text"
+    packToolbutton $insp.toolbar.find   -image $icons(find) -command "findDialog $insp.main.text"
+    packToolbutton $insp.toolbar.save   -image $icons(save) -command "saveFile $insp"
     if {$wintype=="modulewindow"} {
-        packIconButton $insp.toolbar.filter -image $icons(filter) -command "editFilterWindowContents $insp"
+        packToolbutton $insp.toolbar.filter -image $icons(filter) -command "editFilterWindowContents $insp"
     }
-    packIconButton $insp.toolbar.sep21  -separator
+    packToolbutton $insp.toolbar.sep21  -separator
 
     set help_tips($insp.toolbar.copy)   "Copy selected text to clipboard (${CTRL_}C)"
     set help_tips($insp.toolbar.find)   "Find string in window (${CTRL_}F)"
