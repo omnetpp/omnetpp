@@ -334,22 +334,22 @@ proc mainWindow:createToolbar {} {
 
 proc mainWindow:createStatusbars {} {
     global fonts help_tips
-    frame .statusbar
-    frame .statusbar2
-    frame .statusbar3
+    ttk::frame .statusbar
+    ttk::frame .statusbar2
+    ttk::frame .statusbar3
 
-    label .networklabel -relief groove -text "(No network set up)" -width 40 -anchor w
-    label .eventnumlabel -relief groove -text "Event #0" -width 15  -anchor w
-    label .timelabel -relief groove -text "t=0" -width 20 -anchor w -font $fonts(bold)
-    label .msgstatslabel -relief groove -text "Msg stats: 0 scheduled / 0 existing / 0 created" -width 40 -anchor w
+    ttk::label .networklabel -relief groove -text "(No network set up)" -width 40 -anchor w
+    ttk::label .eventnumlabel -relief groove -text "Event #0" -width 15  -anchor w
+    ttk::label .timelabel -relief groove -text "t=0" -width 20 -anchor w -font $fonts(bold)
+    ttk::label .msgstatslabel -relief groove -text "Msg stats: 0 scheduled / 0 existing / 0 created" -width 40 -anchor w
 
-    label .nexteventlabel -relief groove -text "Next: n/a" -anchor w -width 20
-    label .nextmodulelabel -relief groove -text "In: n/a" -anchor w -width 20
-    label .timedelta -relief groove -text "At: last event + 0s" -anchor w -width 20
+    ttk::label .nexteventlabel -relief groove -text "Next: n/a" -anchor w -width 20
+    ttk::label .nextmodulelabel -relief groove -text "In: n/a" -anchor w -width 20
+    ttk::label .timedelta -relief groove -text "At: last event + 0s" -anchor w -width 20
 
-    label .eventspersec -relief groove -text "Ev/sec: n/a" -anchor w -width 20
-    label .simsecpersec -relief groove -text "Simsec/sec: n/a" -anchor w -width 20
-    label .eventspersimsec -relief groove -text "Ev/simsec: n/a" -anchor w -width 20
+    ttk::label .eventspersec -relief groove -text "Ev/sec: n/a" -anchor w -width 20
+    ttk::label .simsecpersec -relief groove -text "Simsec/sec: n/a" -anchor w -width 20
+    ttk::label .eventspersimsec -relief groove -text "Ev/simsec: n/a" -anchor w -width 20
 
     pack .networklabel .eventnumlabel .timelabel .msgstatslabel -in .statusbar -anchor n -expand 1 -fill x -side left
     #pack .feslength .totalmsgs .livemsgs -in .statusbar2 -anchor n -expand 1 -fill x -side left
