@@ -445,8 +445,8 @@ proc mainWindow:networkViewInputChanged {obj} {
 proc animControl {w} {
     global priv
 
-    scale $w -orient horizontal -length 50 -sliderlength 8 -showvalue 0 -bd 1
-    $w config -from .5 -to 3 -resolution 0.01 -variable priv(animspeed)
+    scale $w -orient horizontal -length 100 -sliderlength 12 -showvalue 0 -bd 1
+    $w config -from .5 -to 3 -resolution 0.1 -variable priv(animspeed)
 
     trace variable priv(animspeed) w animSpeedChanged
 }
