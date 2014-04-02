@@ -181,7 +181,11 @@ void ModuleInspector::relayoutAndRedrawAll()
 
 void ModuleInspector::redrawAll()
 {
-   ASSERT(object != NULL);
+   if (object == NULL) {
+       CHK(Tcl_VarEval(interp, canvas," delete all", NULL));
+       return;
+   }
+
    refreshLayout();
    redrawModules();
    redrawNextEventMarker();
