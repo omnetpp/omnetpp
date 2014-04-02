@@ -77,19 +77,18 @@ namespace eval ttk::theme::clearlooks {
                 ] \
             -border 4 -sticky ew
 
-        #ttk::style configure Treeview -fieldbackground white
-        ttk::style configure Row -background "#efefef"
-        ttk::style map Row -background [list \
-                                       {focus selected} "#71869e" \
-                                       selected "#969286" \
-                                       alternate white]
-        ttk::style map Item -foreground [list selected white]
-        ttk::style map Cell -foreground [list selected white]
+        ttk::style configure Treeview -fieldbackground $colors(-frame)
+        ttk::style configure Treeview -background $colors(-frame)
+        ttk::style map Treeview -background [list \
+                                       {focus selected} $colors(-selectbg) \
+                                       selected $colors(-dark)]
+        ttk::style map Treeview -foreground [list {focus selected} $colors(-selectfg) \
+                                             selected black]
 
 
         ## Buttons.
         #
-        ttk::style configure TButton -padding {10 0}
+        ttk::style configure TButton -padding {10 0} -anchor center
         ttk::style layout TButton {
             Button.button -children {
                 Button.focus -children {
