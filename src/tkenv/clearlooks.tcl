@@ -77,8 +77,8 @@ namespace eval ttk::theme::clearlooks {
                 ] \
             -border 4 -sticky ew
 
-        ttk::style configure Treeview -fieldbackground $colors(-frame)
-        ttk::style configure Treeview -background $colors(-frame)
+        ttk::style configure Treeview -fieldbackground white
+        ttk::style configure Treeview -background white
         ttk::style map Treeview -background [list \
                                        {focus selected} $colors(-selectbg) \
                                        selected $colors(-dark)]
