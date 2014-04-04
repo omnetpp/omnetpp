@@ -79,6 +79,50 @@ proc comboSelectionDialog {title text label variable list} {
     return 0
 }
 
+set config(dontshow) {}
+
+#
+# "Did you know..." dialog. The text comes the hints() array;  state is saved
+# into config(dontshow)
+#
+proc hintDialog {key} {
+    global config tmp_once hints
+
+    if {[lsearch -exact $config(dontshow) $key]!=-1} {
+        # already shown
+        return
+    }
+
+    if {![info exists hints($key)]} {
+        debug "dbg: hintDialog: hint hints($key) not found"
+        return
+    }
+
+    set text $hints($key)
+
+    # create dialog with OK button
+    set w .oncedialog
+    createOkCancelDialog $w "Hint"
+    destroy $w.buttons.cancelbutton
+
+    text $w.f.text -relief solid -bd 1 -wrap word
+    $w.f.text insert 1.0 $text
+    $w.f.text config -state disabled
+    ttk::checkbutton $w.f.x -text "Do not show this hint again" -variable tmp_once
+    pack $w.f.x -expand 0 -fill x -side bottom
+    pack $w.f.text -expand 1 -fill both -side top -padx 5 -pady 5
+
+    set tmp_once 0
+
+    # exec the dialog
+    execOkCancelDialog $w
+    if {$tmp_once} {
+        lappend config(dontshow) $key
+    }
+    destroy $w
+}
+
+
 proc aboutDialog {} {
     global fonts
     global OMNETPP_RELEASE OMNETPP_EDITION OMNETPP_BUILDID

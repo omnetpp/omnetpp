@@ -25,6 +25,7 @@ if [info exist OMNETPP_TKENV_DIR] {
    source [file join $dir balloon.tcl]
    source [file join $dir canvaslabel.tcl]
    source [file join $dir dialogs.tcl]
+   source [file join $dir dialogutils.tcl]
    source [file join $dir fieldspage.tcl]
    source [file join $dir gateinspector.tcl]
    source [file join $dir genericobjectinspector.tcl]
