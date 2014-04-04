@@ -57,15 +57,76 @@ proc setupTkOptions {} {
    global tcl_wordchars tcl_nonwordchars
    global B2 B3 CTRL CTRL_ Control
 
-
-#package require ttk::theme::clearlooks
-#ttk::style theme use clearlooks
-
-
+   # set theme
    if {[string equal [tk windowingsystem] x11]}  {
        package require ttk::theme::clearlooks
        ttk::style theme use clearlooks
-       #TODO adjust colors to theme! text background, mytree selection, slider background, etc!
+   }
+
+   # set color of non-themed widgets we use match those of themed ones
+   set background [ttk::style lookup . -background]
+   option add *Canvas.Background $background
+   option add *Panedwindow.Background $background
+   option add *Scale.Background $background
+   option add *Toplevel.Background $background  ;# reduces dialog create/destroy time flicker
+   option add *Frame.Background $background
+
+   # additional options
+   if {[string equal [tk windowingsystem] x11]}  {
+       option add *Scrollbar.width  12
+       option add *Menu.activeBorderWidth 0
+       option add *menubar.borderWidth 0
+       option add *menubar.activeBorderWidth 0
+   }
+
+   # menu styling on Linux
+   if {[string equal [ttk::style theme use] clearlooks]} {
+       # from clearlooks.tcl:
+       array set colors {
+           -frame          "#efebe7"
+           -lighter        "#f5f3f0"
+           -dark           "#cfcdc8"
+           -darker         "#9e9a9e"
+           -darkest        "#d4cfca"
+           -selectbg       "#7c99ad"
+           -selectfg       "#ffffff"
+           -disabledfg     "#b5b3ac"
+           -entryfocus     "#6f9dc6"
+           -tabbg          "#c9c1bc"
+           -tabborder      "#b5aca7"
+           -troughcolor    "#d7cbbe"
+           -troughborder   "#ae9e8e"
+           -checklight     "#f5f3f0"
+       }
+
+       set foreground black
+       set background $colors(-frame)
+       set activefg   $colors(-selectfg)
+       set activebg   $colors(-selectbg)
+       set disabledfg $colors(-disabledfg)
+       set disabledbg $colors(-frame)
+
+       option add *menubar.Background $background
+       option add *menubar.Foreground $foreground
+       option add *menubar.activeBackground $activebg
+       option add *menubar.activeForeground $activefg
+       option add *menubar.disabledBackground $disabledbg
+       option add *menubar.disabledForeground $disabledfg
+
+       option add *Menu.Background $background
+       option add *Menu.Foreground $foreground
+       option add *Menu.activeBackground $activebg
+       option add *Menu.activeForeground $activefg
+       option add *Menu.disabledBackground $disabledbg
+       option add *Menu.disabledForeground $disabledfg
+   }
+
+   # labelframe
+   ttk::style configure TLabelframe -padding {15 8}
+   if {[string equal [tk windowingsystem] win32]} {
+       # for some reason, the frame label was blue on Windows
+       set labelcolor [ttk::style lookup TLabel -foreground]
+       ttk::style configure TLabelframe.Label -foreground $labelcolor
    }
 
    # work around Tcl bug: these vars got reset when words.tcl was autoloaded
@@ -167,30 +228,6 @@ proc setupTkOptions {} {
    # remember default font settings (we'll only save the non-default ones to .tkenvrc)
    foreach i [array names fonts] {
        set defaultfonts($i) $fonts($i)
-   }
-
-   if {[string equal [tk windowingsystem] x11]} {
-       # make menus look more contemporary
-       menu .tmp
-       set activebg [.tmp cget -activebackground]
-       set activefg [.tmp cget -activeforeground]
-       destroy .tmp
-       option add *Scrollbar.width  12
-       option add *Menu.activeBorderWidth 0
-       option add *Menu.activeBackground gray
-       option add *Menu.activeForeground $activefg
-       option add *menubar.borderWidth 0
-       option add *menubar.activeBorderWidth 0
-       option add *menubar.activeBackground gray
-       option add *menubar.activeForeground $activefg
-   }
-
-   # labelframe
-   ttk::style configure TLabelframe -padding {15 8}
-   if {[string equal [tk windowingsystem] win32]} {
-       # for some reason, the frame label was blue on Windows
-       set labelcolor [ttk::style lookup TLabel -foreground]
-       ttk::style configure TLabelframe.Label -foreground $labelcolor
    }
 
    # patch icons on OS X
