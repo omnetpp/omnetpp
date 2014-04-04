@@ -15,7 +15,7 @@
 
 
 proc createLogInspector {insp geom} {
-    global icons fonts help_tips B2 B3
+    global icons help_tips B2 B3
 
     createInspectorToplevel $insp $geom
     set help_tips($insp.toolbar.parent)  "Go to parent module"
@@ -48,9 +48,9 @@ proc createEmbeddedLogInspector {insp} {
 }
 
 proc createLogViewer {insp f} {
-    global config fonts B3 Control
+    global config B3 Control
 
-    text $f.text -yscrollcommand "$f.sb set" -width 80 -height 15 -font $fonts(text)
+    text $f.text -yscrollcommand "$f.sb set" -width 80 -height 15 -font LogFont
     ttk::scrollbar $f.sb -command "$f.text yview"
     logTextWidget:configureTags $f.text
 

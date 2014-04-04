@@ -89,7 +89,7 @@ proc debug {str} {
 proc createOmnetppWindow {} {
 
     global tcl_version tk_version tk_patchLevel tcl_platform
-    global icons fonts help_tips widgets config priv
+    global icons help_tips widgets config priv
     global B2 B3
 
     wm focusmodel . passive
@@ -343,14 +343,14 @@ proc mainWindow:createToolbar {} {
 }
 
 proc mainWindow:createStatusbars {} {
-    global fonts help_tips
+    global help_tips
     ttk::frame .statusbar
     ttk::frame .statusbar2
     ttk::frame .statusbar3
 
     ttk::label .networklabel -relief groove -text "(No network set up)" -width 40 -anchor w
     ttk::label .eventnumlabel -relief groove -text "Event #0" -width 15  -anchor w
-    ttk::label .timelabel -relief groove -text "t=0" -width 20 -anchor w -font $fonts(bold)
+    ttk::label .timelabel -relief groove -text "t=0" -width 20 -anchor w -font BoldFont
     ttk::label .msgstatslabel -relief groove -text "Msg stats: 0 scheduled / 0 existing / 0 created" -width 40 -anchor w
 
     ttk::label .nexteventlabel -relief groove -text "Next: n/a" -anchor w -width 20

@@ -18,11 +18,9 @@
 # Called from TkenvGraphLayouterEnvironment::debugDraw()
 #
 proc layouter:debugDrawFinish {c msg} {
-    global fonts
-
     # create label
     set bb [$c bbox bbox]
-    $c create text [lindex $bb 0] [lindex $bb 1] -tag bbox -anchor sw -text $msg -font $fonts(canvas)
+    $c create text [lindex $bb 0] [lindex $bb 1] -tag bbox -anchor sw -text $msg -font CanvasFont
     set bb [$c bbox bbox]
 
     # rescale to fit canvas

@@ -18,7 +18,7 @@
 # Invoked from concrete inspector subtypes
 #
 proc createInspectorToplevel {insp geom} {
-    global config fonts icons help_tips
+    global config icons help_tips
     global B2 B3 CTRL_
 
     # Create window

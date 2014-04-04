@@ -260,7 +260,7 @@ proc Tree:build {w} {
 # Build a single layer of the tree on the canvas.  Indent by $in pixels
 #
 proc Tree:buildlayer {w v in} {
-  global Tree fonts
+  global Tree
   if {$v==[$Tree($w:function) $w root]} {
     set vx {}
   } else {
@@ -328,7 +328,7 @@ proc Tree:buildlayer {w v in} {
 # Displays the given text. "\b" charachers switch *bold* on/off. Returns tag.
 #
 proc Tree:createtext {w x y txt isopen tags} {
-    global fonts Tree
+    global Tree
 
     if {!$isopen} {regsub -all "\n" $txt " \\ " txt}
 
@@ -341,8 +341,8 @@ proc Tree:createtext {w x y txt isopen tags} {
 
     set bold 0
     foreach txtfrag [split $txt "\b"] {
-        #set font [expr $bold ? {$fonts(bold)} : {$fonts(normal)}]
-        set font $fonts(normal)
+        #set font [expr {$bold ? "BoldFont" : "TkDefaultFont"}]
+        set font TkDefaultFont
         set color [expr {$bold ? "$Tree($w:boldfg)" : "$Tree($w:foreground)"}]
         set id [$w create text $x $y -text $txtfrag -anchor nw -font $font -fill $color -tags $tags]
         set x [lindex [$w bbox $id] 2]

@@ -124,7 +124,6 @@ proc hintDialog {key} {
 
 
 proc aboutDialog {} {
-    global fonts
     global OMNETPP_RELEASE OMNETPP_EDITION OMNETPP_BUILDID
 
     set title "About OMNeT++/OMNEST"
@@ -275,7 +274,7 @@ proc runSelectionDialog:update {w} {
 
 proc displayStopDialog {} {
     # Create a dialog that can be used to stop a running simulation
-    global opp fonts tmp
+    global opp tmp
 
     # 1. Create and configure dialog
     set topwindow "."
@@ -297,7 +296,7 @@ proc displayStopDialog {} {
 
     set red #f83030
     button $w.stopbutton  -text "STOP!" -background $red -activebackground $red \
-          -borderwidth 6 -font $fonts(big) -command {opp_stopsimulation}
+          -borderwidth 6 -font BIGFont -command {opp_stopsimulation}
     ttk::checkbutton $w.autoupdate -text "auto-update inspectors" -variable opp(autoupdate) -command "stopDialogAutoupdate $w"
     ttk::button $w.updatebutton  -text "  Update now  " -command {opp_refreshinspectors}
 
@@ -355,7 +354,7 @@ proc removeStopDialog {} {
 }
 
 proc preferencesDialog {parent {defaultpage ""}} {
-    global opp config fonts help_tips helptexts
+    global opp config help_tips helptexts
 
     set parent [winfo toplevel $parent]
     if {$parent == "."} {
@@ -503,16 +502,14 @@ proc preferencesDialog {parent {defaultpage ""}} {
 
     # "Fonts" page
     ttk::labelframe $nb.f.f1 -text "Fonts"
-    label-fontcombo $nb.f.f1.normalfont "User interface:" {}
-    label-fontcombo $nb.f.f1.timelinefont "Timeline:" {}
-    label-fontcombo $nb.f.f1.canvasfont "Canvas:" {}
-    label-fontcombo $nb.f.f1.textfont  "Log windows:" {}
-    commentlabel $nb.f.f1.note "Examples: Arial, Arial 10, Arial 10 bold. The system may silently use another font if the given font is not available."
+    label-fontcombo $nb.f.f1.normalfont "User interface:" TkDefaultFont
+    label-fontcombo $nb.f.f1.timelinefont "Timeline:" TimelineFont
+    label-fontcombo $nb.f.f1.canvasfont "Canvas:" CanvasFont
+    label-fontcombo $nb.f.f1.textfont  "Log windows:" LogFont
     pack $nb.f.f1.normalfont -anchor w -fill x
     pack $nb.f.f1.timelinefont -anchor w -fill x
     pack $nb.f.f1.canvasfont -anchor w -fill x
     pack $nb.f.f1.textfont -anchor w -fill x
-    pack $nb.f.f1.note -anchor w -fill x
 
     pack $nb.f.f1 -anchor center -expand 0 -fill x -ipadx 50 -ipady 0 -padx 10 -pady 5 -side top
 
@@ -549,11 +546,6 @@ proc preferencesDialog {parent {defaultpage ""}} {
     set opp(timeline-wantselfmsgs)      $config(timeline-wantselfmsgs)
     set opp(timeline-wantnonselfmsgs)   $config(timeline-wantnonselfmsgs)
     set opp(timeline-wantsilentmsgs)    $config(timeline-wantsilentmsgs)
-
-    fontcombo:set $nb.f.f1.normalfont.e $fonts(normal)
-    fontcombo:set $nb.f.f1.textfont.e $fonts(text)
-    fontcombo:set $nb.f.f1.timelinefont.e $fonts(timeline)
-    fontcombo:set $nb.f.f1.canvasfont.e $fonts(canvas)
 
     setInitialDialogFocus $nb.a.f1.anim
 
@@ -596,27 +588,15 @@ proc preferencesDialog {parent {defaultpage ""}} {
         set config(timeline-wantnonselfmsgs) $opp(timeline-wantnonselfmsgs)
         set config(timeline-wantsilentmsgs)  $opp(timeline-wantsilentmsgs)
 
-        set font [actualFont [fixupFontName [$nb.f.f1.normalfont.e get]]]
-        if {$font != ""} {
-            set fonts(normal)  $font
-            set fonts(bold)    $font
-            set fonts(balloon) $font
-        }
-
-        set font [actualFont [fixupFontName [$nb.f.f1.textfont.e get]]]
-        if {$font != ""} {
-            set fonts(text) $font
-        }
-
-        set font [actualFont [fixupFontName [$nb.f.f1.timelinefont.e get]]]
-        if {$font != ""} {
-            set fonts(timeline) $font
-        }
-
-        set font [actualFont [fixupFontName [$nb.f.f1.canvasfont.e get]]]
-        if {$font != ""} {
-            set fonts(canvas) $font
-        }
+        fontcombo:updatefont $nb.f.f1.normalfont TkDefaultFont
+        fontcombo:updatefont $nb.f.f1.normalfont TkTooltipFont
+        fontcombo:updatefont $nb.f.f1.normalfont TkTextFont
+        fontcombo:updatefont $nb.f.f1.normalfont BoldFont
+        #TODO: fontcombo:updatefont $nb.f.f1.normalfont BIGFont ----but keep size!!!
+        fontcombo:updatefont $nb.f.f1.textfont LogFont
+        fontcombo:updatefont $nb.f.f1.textfont TkFixedFont
+        fontcombo:updatefont $nb.f.f1.timelinefont TimelineFont
+        fontcombo:updatefont $nb.f.f1.canvasfont CanvasFont
 
         reflectSettingsInGui
     }
@@ -1003,7 +983,7 @@ proc moduleOutputFilterDialog:getModuleTreeInfo {w op {key {}}} {
 # Implements the "Find/inspect objects" dialog.
 #
 proc filteredObjectList:window {{ptr ""}} {
-    global config tmp icons help_tips helptexts fonts
+    global config tmp icons help_tips helptexts
     global B2 B3
 
     set w .findobjectsdialog

@@ -53,7 +53,7 @@ catch {set tk::mac::CGAntialiasLimit 1}
 # on Unix/Windows and across different Tk versions.
 #
 proc setupTkOptions {} {
-   global fonts defaultfonts icons tcl_platform tk_version
+   global icons tcl_platform tk_version
    global tcl_wordchars tcl_nonwordchars
    global B2 B3 CTRL CTRL_ Control
 
@@ -178,57 +178,41 @@ proc setupTkOptions {} {
    bindMouseWheel TreeView
 
    # set up fonts.
-   # Note: font settings will take effect in reflectSettingsInGui,
-   # which is called after .tkenvrc has been read
-   if {[string equal [tk windowingsystem] x11]} {
-      set normalfamily [getFirstAvailableFontFamily {Ubuntu Arial Verdana Helvetica Tahoma "DejaVu Sans" "Nimbus Sans L" FreeSans Sans} unknown]
-      set condensedfamily [getFirstAvailableFontFamily {"Ubuntu Condensed" "Arial Narrow" "DejaVu Sans Condensed"} $normalfamily]
-      set monofamily [getFirstAvailableFontFamily {"Ubuntu Mono" "DejaVu Sans Mono" "Courier New" "FreeMono" "Courier"} unknown]
-      # note: standard font names (not families!) are: TkCaptionFont TkSmallCaptionFont TkTooltipFont TkFixedFont TkHeadingFont TkMenuFont TkIconFont TkTextFont TkDefaultFont
-      if {[tk scaling] > 1.5} {set size 11} else {set size 9}
-      set fonts(normal)   [list $normalfamily $size]
-      set fonts(bold)     [list $normalfamily $size bold]
-      set fonts(big)      [list $normalfamily 18]
-      set fonts(text)     [list $normalfamily $size] ;# or: $monofamily
-      set fonts(balloon)  [list $normalfamily $size]
-      set fonts(canvas)   [list $normalfamily $size]
-      set fonts(timeline) [list $condensedfamily $size]
+   if {[string equal [tk windowingsystem] win32]} {
+      # Windows
+      set normalfamily [getFirstAvailableFontFamily {"Segoe UI" "MS Sans Serif" "Arial"} unknown]
+      set condensedfamily [getFirstAvailableFontFamily {"Segoe Condensed" "Gill Sans MT Condensed" "Liberation Sans Narrow"} $normalfamily]
+      set monofamily [getFirstAvailableFontFamily {"DejaVu Sans Mono" "Courier New" "Consolas" "Terminal"} unknown]
+      set size 9
+      if {$normalfamily == "Segoe UI"} {set size 9}  ;# text in this font appears to be smaller than in MS Sans Serif or Arial
    } elseif {[string equal [tk windowingsystem] aqua]} {
       # Mac
       set normalfamily [getFirstAvailableFontFamily {"Lucida Grande" Helvetica} unknown]
       set condensedfamily [getFirstAvailableFontFamily {"Arial Narrow"} $normalfamily]
       set monofamily [getFirstAvailableFontFamily {"Monaco" "Courier"} unknown]
       set size 13
-      set fonts(normal)   [list $normalfamily 12]
-      set fonts(bold)     [list $normalfamily 12 bold]
-      set fonts(big)      [list $normalfamily 18]
-      set fonts(text)     [list $monofamily 12]
-      set fonts(balloon)  [list $normalfamily 12]
-      set fonts(timeline) [list $condensedfamily 12]
-      set fonts(canvas)   [list $normalfamily 12]
    } else {
-      # Windows
-      set normalfamily [getFirstAvailableFontFamily {"Segoe UI" "MS Sans Serif" "Arial"} unknown]
-      set condensedfamily [getFirstAvailableFontFamily {"Segoe Condensed" "Gill Sans MT Condensed" "Liberation Sans Narrow"} $normalfamily]
-      set monofamily [getFirstAvailableFontFamily {"DejaVu Sans Mono" "Courier New" "Consolas" "Terminal"} unknown]
-      if {$normalfamily == "Segoe UI"} {
-          set size 9  ;# text in this font appears to be smaller than in MS Sans Serif or Arial
-      } else {
-          set size 8
-      }
-      set fonts(normal)   [list $normalfamily $size]
-      set fonts(bold)     [list $normalfamily $size]
-      set fonts(big)      [list $normalfamily 18]
-      set fonts(text)     [list $normalfamily $size] ;# or: $monofamily
-      set fonts(balloon)  [list $normalfamily $size]
-      set fonts(timeline) [list $condensedfamily $size]
-      set fonts(canvas)   [list $normalfamily $size]
+      # Linux and other systems
+      set normalfamily [getFirstAvailableFontFamily {Ubuntu Arial Verdana Helvetica Tahoma "DejaVu Sans" "Nimbus Sans L" FreeSans Sans} unknown]
+      set condensedfamily [getFirstAvailableFontFamily {"Ubuntu Condensed" "Arial Narrow" "DejaVu Sans Condensed"} $normalfamily]
+      set monofamily [getFirstAvailableFontFamily {"Ubuntu Mono" "DejaVu Sans Mono" "Courier New" "FreeMono" "Courier"} unknown]
+      if {[tk scaling] > 1.5} {set size 11} else {set size 9}
    }
 
-   # remember default font settings (we'll only save the non-default ones to .tkenvrc)
-   foreach i [array names fonts] {
-       set defaultfonts($i) $fonts($i)
-   }
+   # Note: standard font names (not families!) are: TkCaptionFont TkSmallCaptionFont
+   # TkTooltipFont TkFixedFont TkHeadingFont TkMenuFont TkIconFont TkTextFont TkDefaultFont
+   # but we use only 2 of them:
+
+   # create fonts: TimelineFont, CanvasFont, LogFont, BIGFont, BoldFont; additionally
+   # we'll use TkDefaultFont and TkTooltipFont, but not the other Tk default fonts.
+   font configure TkDefaultFont -family $normalfamily -size $size
+   font configure TkTooltipFont -family $normalfamily -size $size
+   font configure TkFixedFont -family $monofamily -size $size
+   font create BoldFont -family $normalfamily -size $size -weight bold
+   font create TimelineFont -family $condensedfamily -size $size
+   font create CanvasFont -family $normalfamily -size $size
+   font create LogFont -family $monofamily -size $size
+   font create BIGFont -family $normalfamily -size 18
 
    # patch icons on OS X
    foreach key [array names icons] {
@@ -391,50 +375,22 @@ proc label-combo2 {w label list {text {}} {cmd {}}} {
     $w.e delete 0 end
 }
 
-proc label-fontcombo {w label {font {}}} {
+proc label-fontcombo {w label fontname} {
     # utility function: create a frame with a label+combo for font selection
     ttk::frame $w
     ttk::label $w.l -anchor w -width 16 -text $label
     ttk::combobox $w.e
-    ttk::label $w.p -anchor w
+    ttk::combobox $w.s -width 4 -justify right
 
-    grid $w.l $w.e -sticky news -padx 2 -pady 2
-    grid x    $w.p -sticky news -padx 2 -pady 2
+    grid $w.l $w.e $w.s -sticky news -padx 2 -pady 2
     grid columnconfigure $w 1 -weight 1
 
-    $w.e set $font
+    $w.e configure -values [fontcombo:getfontfamilies]
+    $w.s configure -values {4 5 6 7 8 9 10 11 12 13 14 15 16 18 20 22 24 26 28 32 36 40 44 48}
 
-    bind $w.e <<ComboboxSelected>> "after idle {fontcombo:update $w}"
-    bind $w.e <KeyRelease> "after idle {fontcombo:update $w}"
-    after idle [list fontcombo:update $w]
-}
-
-# private proc for label-fontcombo
-proc fontcombo:update {w} {
-    set font [actualFont [fixupFontName [$w.e get]]]
-    if {$font==""} {set font "n/a"}
-    $w.p configure -text "Actual: $font"
-}
-
-proc fontcombo:set {w oldfont} {
-    # reuse size from existing font
-    set size ""
-    catch {
-        array set fontprops [font actual $oldfont]
-        set size $fontprops(-size)
-    }
-
-    # produce font list with the given size
-    set fontlist {}
-    foreach family [fontcombo:getfontfamilies] {
-        lappend fontlist [string trim "$family $size"]
-    }
-
-    $w configure -values $fontlist
-    catch {$w current 0}
-
-    set oldfont [string map {"{" "" "}" "" "\"" ""} $oldfont]
-    $w set $oldfont
+    array set attrs [font actual $fontname]
+    $w.e set $attrs(-family)
+    $w.s set $attrs(-size)
 }
 
 proc fontcombo:getfontfamilies {} {
@@ -445,6 +401,12 @@ proc fontcombo:getfontfamilies {} {
         }
     }
     return $list
+}
+
+proc fontcombo:updatefont {w fontname} {
+    set family [$w.e get]
+    set size [$w.s get]
+    font configure $fontname -family $family -size $size
 }
 
 proc label-text {w label height {text {}}} {
@@ -488,60 +450,6 @@ proc label-check {w label first var} {
     pack $w.f -anchor w -expand 0 -side left -fill x
     pack $w.f.r1 -anchor w -expand 0 -side left
 }
-
-proc fixupFontName {font} {
-    # remove special chars that may cause problems
-    set font [string map {"{" "" "}" "" "\"" ""} $font]
-    set font [string trim $font]
-    regsub -- {  +} $font { } font
-
-    # quote font family names that consist of more than one words (everything before the size is family)
-    regsub -- {(.+? +[^ ]+?) +([0-9]+)} $font {"\1" \2} font
-    return $font
-}
-
-# returns the "readable" name of the actual font a font maps to
-proc actualFont {font} {
-    set actualfont ""
-    catch {
-        # "font actual" sample output:
-        # -family Helvetica -size 24 -weight bold -slant roman -underline 0 -overstrike 0
-        array set fontprops [font actual $font]
-        set actualfont [list $fontprops(-family) $fontprops(-size)]
-        if {$fontprops(-weight)!="normal"} {lappend actualfont $fontprops(-weight)}
-        if {$fontprops(-slant)!="roman"} {lappend actualfont $fontprops(-slant)}
-        if {$fontprops(-underline)!="0"} {lappend actualfont "underline"}
-        if {$fontprops(-overstrike)!="0"} {lappend actualfont "overstrike"}
-        set actualfont [string map {"{" "\"" "}" "\""} $actualfont]
-    }
-    return $actualfont
-}
-
-proc changeFontSize {font size} {
-    catch {
-        return [lreplace $font 1 1 $size]
-    }
-    return $font
-}
-
-proc makeBoldFont {font} {
-    if {[lsearch $font "bold"] != -1} {
-        return $font
-    } else {
-        return [lappend $font "bold"]
-    }
-}
-
-# recurse widget tree and apply font to all text widgets
-proc applyFont {class font {w .}} {
-    if {"[winfo class $w]"=="$class"} {
-        catch {$w config -font $font}
-    }
-    foreach i [winfo children $w] {
-        applyFont $class $font $i
-    }
-}
-
 
 # label-colorchooser --
 #
@@ -606,10 +514,10 @@ proc helplabel:showhelp {text x y} {
     wm overrideredirect .helpwin true
     wm positionfrom .helpwin program
     wm geometry .helpwin "+[expr $x-200]+[expr $y+5]"
-#TODO: add wm transient!!! maybe it will work
-    ttk::label .helpwin.tip -text $text -padx 4 -wraplength $help_tips(width) \
-                            -bg $help_tips(color) -border 1 -relief solid \
-                            -font $help_tips(font) -justify left -takefocus 1
+    wm transient .helpwin [winfo toplevel $w]
+    ttk::label .helpwin.tip -text $text -wraplength $help_tips(width) \
+                            -background $help_tips(color) -border 1 -relief solid \
+                            -font TkTooltipFont -justify left -takefocus 1
     pack .helpwin.tip
     bind .helpwin.tip <Return> "catch { destroy .helpwin }"
     bind .helpwin.tip <Escape> "catch { destroy .helpwin }"

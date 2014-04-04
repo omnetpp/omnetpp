@@ -17,7 +17,7 @@ set tkenv(timeline-minexp) -1
 set tkenv(timeline-maxexp) +1
 
 proc redrawTimeline {} {
-    global fonts tkenv config widgets
+    global tkenv config widgets
 
     # spare work if we're not displayed
     if {$config(display-timeline)==0} {return}
@@ -25,7 +25,7 @@ proc redrawTimeline {} {
     set c $widgets(timeline)
 
     # figure out vertical layout (see also timeline:fontChanged)
-    set fontheight [font metrics $fonts(timeline) -linespace]
+    set fontheight [font metrics TimelineFont -linespace]
     set row1y       [expr 2]
     set row2y       [expr $row1y+$fontheight]
     set axisy       [expr $row2y+$fontheight+3]
@@ -60,7 +60,7 @@ proc redrawTimeline {} {
     set w [winfo width $c]
     incr w -10
     $c create line 20 $axisy $w $axisy -arrow last -fill black -width 1
-    $c create text [expr $w+4] $labely -anchor ne -text "sec" -font $fonts(timeline)
+    $c create text [expr $w+4] $labely -anchor ne -text "sec" -font TimelineFont
 
     # draw ticks
     set dx [expr $w/($maxexp-$minexp+1)]
@@ -77,7 +77,7 @@ proc redrawTimeline {} {
         } else {
             set txt "1e$i"
         }
-        $c create text $x $labely -anchor n -text "+$txt" -fill "#808080" -font $fonts(timeline)
+        $c create text $x $labely -anchor n -text "+$txt" -fill "#808080" -font TimelineFont
 
         # minor ticks at 2, 4, 6, 8
         foreach tick {0.301 0.602 0.778 0.903} {
@@ -122,14 +122,14 @@ proc redrawTimeline {} {
         # label for only those msgs past this label's right edge will be displayed
         set msglabel [opp_getobjectfullname $msgptr]
         if {$msglabel!=""} {
-            set estlabelwidth [font measure $fonts(timeline) $msglabel]
+            set estlabelwidth [font measure TimelineFont $msglabel]
             set estlabelx [expr $x-$estlabelwidth/2]
             if {$estlabelx>=$minlabelx} {
-                set labelid [$c create text $x $row2y -text $msglabel -anchor $anchor -font $fonts(timeline) -tags "dx tooltip msgname $msgptr"]
+                set labelid [$c create text $x $row2y -text $msglabel -anchor $anchor -font TimelineFont -tags "dx tooltip msgname $msgptr"]
                 set minlabelx [lindex [$c bbox $labelid] 2]
                 set labelssuppressed 0
             } elseif {$estlabelx>=$minlabelx2} {
-                set labelid [$c create text $x $row1y -text $msglabel -anchor $anchor -font $fonts(timeline) -tags "dx tooltip msgname $msgptr"]
+                set labelid [$c create text $x $row1y -text $msglabel -anchor $anchor -font TimelineFont -tags "dx tooltip msgname $msgptr"]
                 $c create line $x $arrowy1 $x $arrowy2 -fill "#ccc" -width 1 -tags "h"
                 set minlabelx2 [lindex [$c bbox $labelid] 2]
                 set labelssuppressed 0
@@ -145,9 +145,9 @@ proc redrawTimeline {} {
 }
 
 proc timeline:fontChanged {} {
-   global fonts widgets
+   global widgets
 
-   set h [font metrics $fonts(timeline) -linespace]
+   set h [font metrics TimelineFont -linespace]
    set h [expr 3*$h+6]
    $widgets(timeline) config -height $h
 }

@@ -19,7 +19,7 @@
 #
 #
 proc saveTkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
-    global config fonts defaultfonts
+    global config
 
     if [catch {
         set fout [open $fname w]
@@ -62,11 +62,9 @@ proc saveTkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
                 puts $fout "config $key\t{$value}"
             }
 
-            foreach key [lsort [array names fonts]] {
-                if {[info exists defaultfonts($key)] && $fonts($key)!=$defaultfonts($key)} {
-                    set value $fonts($key)
-                    puts $fout "fonts $key\t{$value}"
-                }
+            set fonts {TimelineFont CanvasFont LogFont BIGFont BoldFont TkDefaultFont TkTooltipFont TkTextFont TkFixedFont}
+            foreach font $fonts {
+                puts $fout "font $font\t[list [font actual $font]]"
             }
         }
 
@@ -115,7 +113,7 @@ proc storeMainwinGeometry {} {
 #
 #
 proc loadTkenvrc {fname} {
-    global config fonts
+    global config
 
     if [catch {open $fname r} fin] {
         return
@@ -141,13 +139,10 @@ proc loadTkenvrc {fname} {
                 set key [lindex $line 1]
                 set value [lindex $line 2]
                 set config($key) $value
-            } elseif {$cat == "fonts"} {
-                set key [lindex $line 1]
-                set value [lindex $line 2]
-                set value [actualFont [fixupFontName $value]] ;# some validation
-                if {$value!=""} {
-                    set fonts($key) $value
-                }
+            } elseif {$cat == "font"} {
+                set font [lindex $line 1]
+                set attrs [lindex $line 2]
+                catch {eval font configure $font $attrs}
             } elseif {[llength $line]==4} {
                 # old tkenvrc, patch it up
                 inspectorList:tkenvrcProcessLine [concat "inspector" $line]
@@ -158,9 +153,6 @@ proc loadTkenvrc {fname} {
         incr lineno
     }
     close $fin
-
-    set fonts(bold)     $fonts(normal)
-    set fonts(balloon)  $fonts(normal)
 
     inspectorList:openInspectors
     applyTkenvrc
@@ -211,55 +203,12 @@ proc applyTkenvrc {} {
 # Simulation Options dialog.
 #
 proc reflectSettingsInGui {} {
-   global config fonts help_tips
+   global config help_tips
 
    catch {.log.main.text config -wrap $config(editor-wrap)}
 
-   applyFont Menubutton  $fonts(normal)
-   applyFont Menu        $fonts(normal)
-   applyFont Label       $fonts(normal)
-   applyFont Message     $fonts(normal)
-   applyFont Entry       $fonts(normal)
-   applyFont Button      $fonts(normal)
-   applyFont Checkbutton $fonts(normal)
-   applyFont Radiobutton $fonts(normal)
-   applyFont Scale       $fonts(normal)
-   applyFont Labelframe  $fonts(normal)
-   applyFont Canvas      $fonts(normal)
-   applyFont Listbox     $fonts(normal)
-   applyFont Text        $fonts(text)
-
-   option add *Menubutton.font  $fonts(normal)
-   option add *Menu.font        $fonts(normal)
-   option add *Label.font       $fonts(normal)
-   option add *Message.font     $fonts(normal)
-   option add *Entry.font       $fonts(normal)
-   option add *Button.font      $fonts(normal)
-   option add *Checkbutton.font $fonts(normal)
-   option add *Radiobutton.font $fonts(normal)
-   option add *Scale.font       $fonts(normal)
-   option add *Labelframe       $fonts(normal)
-   option add *Canvas.font      $fonts(normal)
-   option add *Listbox.font     $fonts(normal)
-   option add *Text.font        $fonts(text)
-   option add *TCombobox.font   $fonts(normal)
-
-   ttk::style configure TLabel           -font $fonts(normal)
-   #TODO: how to do this??? ttk::style configure TEntry           -font $fonts(normal)
-   ttk::style configure TCheckbutton     -font $fonts(normal)
-   ttk::style configure TRadiobutton     -font $fonts(normal)
-   ttk::style configure TButton          -font $fonts(normal)
-   ttk::style configure TCombobox        -font $fonts(normal)
-   ttk::style configure TScale           -font $fonts(normal)
-   ttk::style configure TLabelframe.Label -font $fonts(normal)
-   ttk::style configure TNotebook.Tab    -font $fonts(normal)
-   ttk::style configure Treeview         -font $fonts(normal)
-   ttk::style configure Treeview.Heading -font $fonts(normal)
-
-   set help_tips(font)  $fonts(balloon)
-
-   set h [font metrics $fonts(normal) -displayof . -linespace]
-   set h [expr $h+3]
+   set h [font metrics TkDefaultFont -displayof . -linespace]
+   set h [expr $h+2]
    ttk::style configure Treeview -rowheight $h
 
    timeline:fontChanged

@@ -458,7 +458,7 @@ proc ModuleInspector:getSubmodCoords {c tag} {
 #
 proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplaceholder} {
    #puts "DEBUG: ModuleInspector:drawSubmodule $c $submodptr $x $y $name $dispstr $scaling $isplaceholder"
-   global icons inspectordata fonts
+   global icons inspectordata
 
    set zoomfactor $inspectordata($c:zoomfactor)
    if {$scaling!="" || $zoomfactor!=1} {
@@ -552,14 +552,14 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplace
                $c create image $x $y -image $img -anchor center -tags "dx tooltip submod $submodptr"
            }
            if {$inspectordata($c:showlabels)} {
-               $c create text $x [expr $y2+$width/2+3] -text $name -anchor n -tags "dx" -font $fonts(canvas)
+               $c create text $x [expr $y2+$width/2+3] -text $name -anchor n -tags "dx" -font CanvasFont
            }
 
        } else {
            # draw an icon when no shape is present (only i tag, or neither i nor b tag)
            $c create image $x $y -image $img -anchor center -tags "dx tooltip submod $submodptr"
            if {$inspectordata($c:showlabels)} {
-               $c create text $x [expr $y+$sy/2+3] -text $name -anchor n -tags "dx" -font $fonts(canvas)
+               $c create text $x [expr $y+$sy/2+3] -text $name -anchor n -tags "dx" -font CanvasFont
            }
        }
 
@@ -568,7 +568,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplace
            set r [ModuleInspector:getSubmodCoords $c $submodptr]
            set qx [expr [lindex $r 2]+1]
            set qy [lindex $r 1]
-           $c create text $qx $qy -text "q:?" -anchor nw -tags "dx tooltip qlen qlen-$submodptr" -font $fonts(canvas)
+           $c create text $qx $qy -text "q:?" -anchor nw -tags "dx tooltip qlen qlen-$submodptr" -font CanvasFont
        }
 
        # modifier icon (i2 tag)
@@ -611,7 +611,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplace
            } else {
                error "wrong position in t= tag, should be `l', `r' or `t'"
            }
-           $c create text $tx $ty -text $txt -fill $color -anchor $anch -justify $just -tags "dx" -font $fonts(canvas)
+           $c create text $tx $ty -text $txt -fill $color -anchor $anch -justify $just -tags "dx" -font CanvasFont
        }
 
        # r=<radius>,<fillcolor>,<color>,<width>; multiple r tags supported (r1,r2,etc)
@@ -656,7 +656,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplace
 # This function is invoked from the module inspector C++ code.
 #
 proc ModuleInspector:drawEnclosingModule {c ptr name dispstr scaling} {
-   global icons bitmaps inspectordata fonts
+   global icons bitmaps inspectordata
    # puts "DEBUG: ModuleInspector:drawEnclosingModule $c $ptr $name $dispstr $scaling"
 
    set zoomfactor $inspectordata($c:zoomfactor)
@@ -726,7 +726,7 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr scaling} {
        $c create rect [expr $bx-$width/2] [expr $by-$width/2] [expr $bx+$sx+$width/2] [expr $by+$sy+$width/2] \
            -fill $fill -width $width -outline $outline \
            -tags "dx mod $ptr"
-       $c create text [expr $bx+3] [expr $by+3] -text $name -anchor nw -tags "dx tooltip modname $ptr" -font $fonts(canvas)
+       $c create text [expr $bx+3] [expr $by+3] -text $name -anchor nw -tags "dx tooltip modname $ptr" -font CanvasFont
 
        # background image
        if {![info exists tags(bgi)]} {set tags(bgi) {}}
@@ -828,7 +828,7 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr scaling} {
            set color [lindex $tags($bgttag) 3]
            if {$color == ""} {set color black}
            if {[string index $color 0]== "@"} {set color [opp_hsb_to_rgb $color]}
-           $c create text $x $y -text $txt -fill $color -anchor nw -justify left -tags "dx" -font $fonts(canvas)
+           $c create text $x $y -text $txt -fill $color -anchor nw -justify left -tags "dx" -font CanvasFont
        }
 
        $c lower mod
@@ -910,7 +910,7 @@ proc resizeImage {img sx sy} {
 # This function is invoked from the module inspector C++ code.
 #
 proc ModuleInspector:drawConnection {c gateptr dispstr srcptr destptr chanptr src_i src_n dest_i dest_n two_way} {
-    global inspectordata fonts
+    global inspectordata
 
     # puts "DEBUG: ModuleInspector:drawConnection $c $gateptr $dispstr $srcptr $destptr $src_i $src_n $dest_i $dest_n $two_way"
 
@@ -1013,7 +1013,7 @@ proc ModuleInspector:drawConnection {c gateptr dispstr srcptr destptr chanptr sr
            } else {
                error "wrong position in connection t= tag, should be `l', `r' or `t' (for beginning, end, or middle, respectively)"
            }
-           $c create text $x $y -text $txt -fill $color -anchor $anch -justify $just -tags "dx" -font $fonts(canvas)
+           $c create text $x $y -text $txt -fill $color -anchor $anch -justify $just -tags "dx" -font CanvasFont
        }
 
     } errmsg] {
@@ -1028,7 +1028,7 @@ proc ModuleInspector:drawConnection {c gateptr dispstr srcptr destptr chanptr sr
 # This function is invoked from the message animation code.
 #
 proc ModuleInspector:drawMessage {c msgptr x y} {
-    global fonts inspectordata anim_msg
+    global inspectordata anim_msg
 
     set zoomfactor $inspectordata($c:zoomfactor)
     set imagesizefactor $inspectordata($c:imagesizefactor)
@@ -1148,7 +1148,7 @@ proc ModuleInspector:drawMessage {c msgptr x y} {
         append msglabel $msgname
     }
     if {$msglabel!=""} {
-        $c create text $labelx $labely -text $msglabel -anchor n -font $fonts(canvas) -tags "dx tooltip msgname $msgptr"
+        $c create text $labelx $labely -text $msglabel -anchor n -font CanvasFont -tags "dx tooltip msgname $msgptr"
     }
 
 }
@@ -1388,10 +1388,7 @@ proc ModuleInspector:relayout {insp} {
 # Called from inspector C++ code.
 #
 proc ModuleInspector:drawMessageOnGate {c gateptr msgptr} {
-
     #debug "ModuleInspector:drawMessageOnGate $msgptr"
-
-    global fonts
 
     # gate pointer + conn are the tags of the connection arrow
     set conn_id ""
@@ -1540,7 +1537,7 @@ proc ModuleInspector:qlenRightClick {insp X Y} {
 # This function is invoked from the module inspector C++ code.
 #
 proc ModuleInspector:bubble {c x y scaling txt} {
-    global inspectordata fonts
+    global inspectordata
 
     set zoom $inspectordata($c:zoomfactor)
     if {$scaling == ""} {set scaling 1}
@@ -1549,7 +1546,7 @@ proc ModuleInspector:bubble {c x y scaling txt} {
     set y [expr $y*$zoom*$scaling]
 
     while {[string length $txt]<5} {set txt " $txt "}
-    set txtid  [$c create text $x $y -text " $txt " -anchor c -tags "bubble" -font $fonts(canvas)]
+    set txtid  [$c create text $x $y -text " $txt " -anchor c -tags "bubble" -font CanvasFont]
     set color #F8F8D8
     set bb [$c bbox $txtid]
 

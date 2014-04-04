@@ -57,7 +57,7 @@ proc saveFile {win {filename ""}} {
 # Open file viewer window
 #
 proc createFileViewer {filename} {
-    global config icons fonts help_tips B3 CTRL_
+    global config icons help_tips B3 CTRL_
 
     if {$filename == ""} return
 
@@ -93,7 +93,7 @@ proc createFileViewer {filename} {
     pack $w.main  -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 0 -pady 0 -side top
     ttk::scrollbar $w.main.sb -command "$w.main.text yview"
     pack $w.main.sb -anchor center -expand 0 -fill y -ipadx 0 -ipady 0 -padx 0 -pady 0 -side right
-    text $w.main.text -yscrollcommand "$w.main.sb set" -width 88 -height 30 -font $fonts(text)
+    text $w.main.text -yscrollcommand "$w.main.sb set" -width 88 -height 30 -font LogFont
     pack $w.main.text -anchor center -expand 1 -fill both -side left
 
     logTextWidget:configureTags $w.main.text

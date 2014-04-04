@@ -28,18 +28,17 @@
 #       the return value of the proc.
 #
 proc editCanvasLabel {c id cmd} {
-    global tmp fonts
+    global tmp
 
     set id [$c find withtag $id]
     set xy [$c coords $id]
     set txt  [$c itemcget $id -text]
     regexp {^'(.*)'$} $txt match txt ;# strip quotes (apostrophes)
-    set font $fonts(normal)
     set anch [$c itemcget $id -anchor]
     set tmp(canvasentry_orig) $txt
     $c itemconfig $id -text ""
     catch {destroy $c.e}
-    entry $c.e -bd 1 -relief solid -font $font
+    entry $c.e -bd 1 -relief solid -font CanvasFont
     $c.e insert end $txt
     $c.e select range 0 end
     set eid [$c create window [lindex $xy 0] [expr [lindex $xy 1]-1] -window $c.e -anchor $anch]

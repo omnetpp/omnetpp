@@ -214,7 +214,7 @@ proc ModuleInspector:doAnimateSenddirect {insp x1 y1 x2 y2 msgptr mode} {
 # Ultimate helper function which in fact performs the animation.
 #
 proc ModuleInspector:doAnimate {insp x1 y1 x2 y2 msgptr {mode thru}} {
-    global fonts clicksPerSec
+    global clicksPerSec
     set c $insp.c
 
     # remove "phantom messages" if any
@@ -335,15 +335,13 @@ proc ModuleInspector:animateMethodcallHoriz {insp fromptr toptr methodlabel} {
 # Helper.
 #
 proc ModuleInspector:doDrawMethodcall {insp x1 y1 x2 y2 methodlabel} {
-    global fonts
-
     set c $insp.c
     #set arrow [$c create line $x1 $y1 $x2 $y2 -tags {methodcall} -width 2 -arrow last -arrowshape {15 20 6} -fill #808080]
     set arrow [$c create line $x1 $y1 $x2 $y2 -tags {methodcall}  -dash {-} -arrow last -fill red]
 
     set x [expr ($x1+$x2)/2]
     set y [expr ($y1+$y2)/2]
-    set txtid  [$c create text $x $y -tags {methodcall} -text " $methodlabel " -anchor c -font $fonts(canvas)]
+    set txtid  [$c create text $x $y -tags {methodcall} -text " $methodlabel " -anchor c -font CanvasFont]
     set color #F0F0F0
     #set color #F0F0D0
     #catch {set color [$c itemcget mod -fill]}

@@ -30,7 +30,7 @@
 #
 
 proc toolbutton {w args} {
-    global fonts icons
+    global icons
 
     if {$args=="-separator"} {
         ttk::label $w -image $icons(toolbarsep) -border 1
