@@ -266,7 +266,7 @@ proc Tree:buildlayer {w v in} {
   } else {
     set vx $v
   }
-  set start [expr $Tree($w:y)-10]
+  set start [expr $Tree($w:y)-12]
   set y $Tree($w:y)
   foreach c [$Tree($w:function) $w children $v] {
     set y $Tree($w:y)
@@ -305,7 +305,7 @@ proc Tree:buildlayer {w v in} {
     set top [lindex [$w bbox $j] 1]
     set bottom [lindex [$w bbox $j] 3]
     $w create line 0 $top 0 $bottom -tags [list "node-$c" "helper"] -fill ""
-    set Tree($w:y) [expr $bottom + 8]
+    set Tree($w:y) [expr $bottom + 10]
 
     # draw [+] or [-] symbols
     if {$ismultiline || [$Tree($w:function) $w haschildren $c]} {
@@ -366,6 +366,9 @@ proc Tree:drawselection w {
   $w itemconfigure "text-$v" -fill $Tree($w:selectfg);
   set bbox [$w bbox "text-$v"]
   if {[llength $bbox]==4} {
+    lset bbox 1 [expr [lindex $bbox 1]-1]
+    lset bbox 2 [expr [lindex $bbox 2]+1]
+    lset bbox 3 [expr [lindex $bbox 3]+1]
     set i [eval $w create rectangle $bbox -fill $Tree($w:selectbg) -outline {{}}]
     set Tree($w:selidx) $i
     $w lower $i
