@@ -74,6 +74,13 @@ proc Tree:init {w f} {
   set Tree($w:selection) {}
   set Tree($w:selidx) {}
   set Tree($w:lastid) 0
+  set Tree($w:boldfg) blue4
+  #set Tree($w:foreground) black
+  #set Tree($w:selectbg) skyblue
+  #set Tree($w:selectfg) black
+  set Tree($w:foreground) [ttk::style lookup Treeview -foreground]
+  set Tree($w:selectbg) [ttk::style lookup Treeview -background {focus selected}]
+  set Tree($w:selectfg) [ttk::style lookup Treeview -foreground {focus selected}]
 
   # forget tree checked state to force re-read
   foreach i [array names Tree "$w:*:checked"] {
@@ -92,6 +99,7 @@ proc Tree:setselection {w v} {
   global Tree
   set Tree($w:selection) $v
   $Tree($w:function) $w selectionchanged $v
+  Tree:build $w
   Tree:drawselection $w
   Tree:view $w $v
 }
@@ -335,7 +343,7 @@ proc Tree:createtext {w x y txt isopen tags} {
     foreach txtfrag [split $txt "\b"] {
         #set font [expr $bold ? {$fonts(bold)} : {$fonts(normal)}]
         set font $fonts(normal)
-        set color [expr $bold ? {"blue4"} : {"black"}]
+        set color [expr {$bold ? "$Tree($w:boldfg)" : "$Tree($w:foreground)"}]
         set id [$w create text $x $y -text $txtfrag -anchor nw -font $font -fill $color -tags $tags]
         set x [lindex [$w bbox $id] 2]
         set bold [expr !$bold]
@@ -355,9 +363,10 @@ proc Tree:drawselection w {
     $w delete $Tree($w:selidx)
   }
   set v $Tree($w:selection)
+  $w itemconfigure "text-$v" -fill $Tree($w:selectfg);
   set bbox [$w bbox "text-$v"]
   if {[llength $bbox]==4} {
-    set i [eval $w create rectangle $bbox -fill skyblue -outline {{}}]
+    set i [eval $w create rectangle $bbox -fill $Tree($w:selectbg) -outline {{}}]
     set Tree($w:selidx) $i
     $w lower $i
   } else {
