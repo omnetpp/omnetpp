@@ -94,12 +94,11 @@ proc initBalloons {args} {
     set help_tips(color) #f0f0d0
     set help_tips(delay) 500
     set use_balloons 1
-    enableBalloon Button
-    enableBalloon Scale
-    enableBalloon Menubutton
-    enableBalloon Label
-    enableBalloon Entry
-    enableBalloon Toolbutton
+    foreach c {Button TButton Label TLabel Entry TEntry Checkbutton TCheckbutton
+               Radiobutton TRadiobutton TCombobox Toolbutton Scale TScale Text
+               Menubutton} {
+        enableBalloon $c
+    }
     enableBalloon Menu "%W index active"
     enableBalloon Canvas "%W find withtag current"  ;#DO NOT CHANGE THIS
 }
