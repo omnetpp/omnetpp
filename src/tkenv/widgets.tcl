@@ -315,6 +315,11 @@ proc setvars {vars vals} {
     uplevel [list foreach $vars $vals {}]
 }
 
+proc lcontains {list item} {
+    set i [lsearch -exact $list $item]
+    return [expr $i != -1]
+}
+
 #
 # Dictionary compare
 #

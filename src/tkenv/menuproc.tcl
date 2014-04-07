@@ -107,8 +107,8 @@ proc exitOmnetpp {} {
     }
 
     # save settings (fonts etc) globally, and inspector list locally
-    saveTkenvrc "~/.tkenvrc" 1 0 1
-    saveTkenvrc ".tkenvrc"   0 1 1 "# Partial Tkenv config file -- see \$HOME/.tkenvrc as well"
+    saveTkenvrc "~/.tkenvrc" 1 1 "# Global OMNeT++/Tkenv config file"
+    saveTkenvrc ".tkenvrc"   0 1 "# Partial OMNeT++/Tkenv config file -- see \$HOME/.tkenvrc as well"
 
     opp_exitomnetpp
 }

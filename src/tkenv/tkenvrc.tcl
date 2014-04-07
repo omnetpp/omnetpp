@@ -18,13 +18,13 @@
 # saveTkenvrc --
 #
 #
-proc saveTkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
+proc saveTkenvrc {fname isglobal atexit {comment ""}} {
     global config
 
     if [catch {
         set fout [open $fname w]
         puts $fout $comment
-        if {$savesettings} {
+        if {$isglobal} {
             foreach key {
                 updatefreq_fast_ms
                 updatefreq_express_ms
@@ -57,18 +57,28 @@ proc saveTkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
 
             storeMainwinGeometry
             foreach key [lsort [array names config]] {
-                set value $config($key)
-                set value [string map {"\n" "\x2"} $value]
-                puts $fout "config $key\t{$value}"
+                if {![isLocalConfigKey $key]} {
+                    set value $config($key)
+                    set value [string map {"\n" "\x2"} $value]
+                    puts $fout "config $key\t{$value}"
+                }
             }
 
             set fonts {TimelineFont CanvasFont LogFont BIGFont BoldFont TkDefaultFont TkTooltipFont TkTextFont TkFixedFont}
             foreach font $fonts {
                 puts $fout "font $font\t[list [font actual $font]]"
             }
-        }
 
-        if {$saveinspectors} {
+        } else {
+            storeMainwinGeometry
+            foreach key [lsort [array names config]] {
+                if {[isLocalConfigKey $key]} {
+                    set value $config($key)
+                    set value [string map {"\n" "\x2"} $value]
+                    puts $fout "config $key\t{$value}"
+                }
+            }
+
             puts $fout [inspectorList:tkenvrcGetContents $atexit]
         }
 
@@ -78,6 +88,11 @@ proc saveTkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
        tk_messageBox -icon error -type ok -message "Error: $err" -title "Error"
        return
     }
+}
+
+proc isLocalConfigKey key {
+    set localKeys {default-configname default-runnumber}
+    return [lcontains $localKeys $key]
 }
 
 proc storeMainwinGeometry {} {

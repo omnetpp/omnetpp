@@ -95,7 +95,4 @@ proc GenericObjectInspector:refresh {insp} {
     }
 }
 
-proc lcontains {list item} {
-    set i [lsearch -exact $list $item]
-    return [expr $i != -1]
-}
+
