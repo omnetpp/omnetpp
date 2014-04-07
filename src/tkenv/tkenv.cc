@@ -84,21 +84,6 @@ extern "C" TKENV_API void _tkenv_lib() {}
 
 #define LL  INT64_PRINTF_FORMAT
 
-// widgets in the Tk user interface
-#define NETWORK_LABEL         ".statusbar.networklabel"
-#define EVENT_LABEL           ".statusbar.eventlabel"
-#define TIME_LABEL            ".statusbar.timelabel"
-#define NEXT_LABEL            ".statusbar.nextlabel"
-
-#define FESLENGTH_LABEL       ".statusbar2.feslength"
-#define TOTALMSGS_LABEL       ".statusbar2.totalmsgs"
-#define LIVEMSGS_LABEL        ".statusbar2.livemsgs"
-
-#define SIMSECPERSEC_LABEL    ".statusbar3.simsecpersec"
-#define EVENTSPERSEC_LABEL    ".statusbar3.eventspersec"
-#define EVENTSPERSIMSEC_LABEL ".statusbar3.eventspersimsec"
-
-
 #define SPEEDOMETER_UPDATEMILLISECS 1000
 
 
@@ -124,7 +109,6 @@ static bool moduleContains(cModule *potentialparent, cModule *mod)
 TkenvOptions::TkenvOptions()
 {
     // note: these values will be overwritten in setup()/readOptions() before taking effect
-    stepDelay = 300;
     updateFreqFast = 500;
     updateFreqExpress = 1000;
     animationEnabled = true;
@@ -350,15 +334,12 @@ void Tkenv::doOneStep()
 {
     ASSERT(simstate==SIM_NEW || simstate==SIM_READY);
 
-    clearNextModuleDisplay();
-    clearPerformanceDisplay();
-    updateSimtimeDisplay();
-
     animating = true;
-
     rununtil_msg = NULL; // deactivate corresponding checks in eventCancelled()/objectDeleted()
-
     simstate = SIM_RUNNING;
+
+    updateStatusDisplay();
+
     startClock();
     notifyListeners(LF_ON_SIMULATION_RESUME);
     try
@@ -371,8 +352,7 @@ void Tkenv::doOneStep()
             simulation.executeEvent(event);
             performAnimations();
         }
-        updateSimtimeDisplay();
-        updateNextModuleDisplay();
+        updateStatusDisplay();
         updateInspectors();
         simstate = SIM_READY;
         notifyListeners(LF_ON_SIMULATION_PAUSE);
@@ -418,13 +398,11 @@ void Tkenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
     rununtil_module = until_module;  // Note: this is NOT supported with RUNMODE_EXPRESS
 
     stopsimulation_flag = false;
+    simstate = SIM_RUNNING;
 
-    clearNextModuleDisplay();
-    clearPerformanceDisplay();
-    updateSimtimeDisplay();
+    updateStatusDisplay();
     Tcl_Eval(interp, "update");
 
-    simstate = SIM_RUNNING;
     startClock();
     notifyListeners(LF_ON_SIMULATION_RESUME);
     try
@@ -474,9 +452,7 @@ void Tkenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
         finishSimulation();
     }
 
-    updateNextModuleDisplay();
-    clearPerformanceDisplay();
-    updateSimtimeDisplay();
+    updateStatusDisplay();
     updateInspectors();
 }
 
@@ -525,7 +501,6 @@ bool Tkenv::doRunSimulation()
     //  - runmode, rununtil_time, rununtil_eventnum, rununtil_msg, rununtil_module;
     //  - stopsimulation_flag
     //
-    Speedometer speedometer;
     speedometer.start(simulation.getSimTime());
     disable_tracing = false;
     bool firstevent = true;
@@ -560,8 +535,8 @@ bool Tkenv::doRunSimulation()
         }
         firstevent = false;
 
-        animating = (runmode==RUNMODE_NORMAL) || (runmode==RUNMODE_SLOW) || untilmodule_reached;
-        bool frequent_updates = (runmode==RUNMODE_NORMAL) || (runmode==RUNMODE_SLOW);
+        animating = (runmode==RUNMODE_NORMAL) || untilmodule_reached;
+        bool frequent_updates = (runmode==RUNMODE_NORMAL);
 
         speedometer.addEvent(simulation.getSimTime());
 
@@ -577,13 +552,10 @@ bool Tkenv::doRunSimulation()
         // display update
         if (frequent_updates || ((simulation.getEventNumber()&0x0f)==0 && elapsed(opt->updateFreqFast, last_update)))
         {
-            updateSimtimeDisplay();
-            if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
-            {
-                speedometer.beginNewInterval();
-                updatePerformanceDisplay(speedometer);
-            }
+            updateStatusDisplay();
             updateInspectors();
+            if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
+                speedometer.beginNewInterval();
             Tcl_Eval(interp, "update");
             resetElapsedTime(last_update); // exclude UI update time [bug #52]
         }
@@ -593,15 +565,6 @@ bool Tkenv::doRunSimulation()
         if (stopsimulation_flag) break;
         if (rununtil_time>SIMTIME_ZERO && simulation.guessNextSimtime()>=rununtil_time) break;
         if (rununtil_eventnum>0 && simulation.getEventNumber()>=rununtil_eventnum) break;
-
-        // delay loop for slow simulation
-        if (runmode==RUNMODE_SLOW)
-        {
-            timeval start;
-            gettimeofday(&start, NULL);
-            while (!elapsed(opt->stepDelay, start) && !stopsimulation_flag)
-                Tcl_Eval(interp, "update");
-        }
 
         checkTimeLimits();
     }
@@ -628,7 +591,6 @@ bool Tkenv::doRunSimulationExpress()
     Tcl_Eval(interp, "update");
 
     // OK, let's begin
-    Speedometer speedometer;
     speedometer.start(simulation.getSimTime());
     disable_tracing = true;
     animating = false;
@@ -654,14 +616,11 @@ bool Tkenv::doRunSimulationExpress()
 
         if ((simulation.getEventNumber()&0xff)==0 && elapsed(opt->updateFreqExpress, last_update))
         {
-            updateSimtimeDisplay();
-            if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
-            {
-                speedometer.beginNewInterval();
-                updatePerformanceDisplay(speedometer);
-            }
+            updateStatusDisplay();
             if (opt->autoupdateInExpress)
                 updateInspectors();
+            if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
+                speedometer.beginNewInterval();
             Tcl_Eval(interp, "update");
             resetElapsedTime(last_update); // exclude UI update time [bug #52]
             if (runmode!=RUNMODE_EXPRESS)
@@ -722,8 +681,7 @@ void Tkenv::finishSimulation()
     }
     simstate = SIM_FINISHCALLED;
 
-    updateSimtimeDisplay();
-    updateNextModuleDisplay();
+    updateStatusDisplay();
     updateInspectors();
 }
 
@@ -776,8 +734,7 @@ void Tkenv::newNetwork(const char *networkname)
     // update GUI
     animating = false; // affects how network graphics is drawn!
     updateNetworkRunDisplay();
-    updateNextModuleDisplay();
-    updateSimtimeDisplay();
+    updateStatusDisplay();
     updateInspectors();
 }
 
@@ -827,8 +784,7 @@ void Tkenv::newRun(const char *configname, int runnumber)
     // update GUI
     animating = false; // affects how network graphics is drawn!
     updateNetworkRunDisplay();
-    updateNextModuleDisplay();
-    updateSimtimeDisplay();
+    updateStatusDisplay();
     updateInspectors();
 }
 
@@ -995,91 +951,14 @@ std::string Tkenv::getWindowTitle()
 
 void Tkenv::updateNetworkRunDisplay()
 {
-    const char *configName = getConfigEx()->getActiveConfigName();
-    if (opp_isempty(configName))
-        configName = "n/a";
-    std::string runNumber = opp_stringf("%d", getConfigEx()->getActiveRunNumber());
-    const char *networkName = (simulation.getNetworkType()==NULL) ? "(no network)" : simulation.getNetworkType()->getName();
-
-    CHK(Tcl_VarEval(interp, NETWORK_LABEL " config -text {",
-            TclQuotedString(configName).get(), " #",  runNumber.c_str(), ": ",
-            TclQuotedString(networkName).get(), "}", NULL ));
+    CHK(Tcl_VarEval(interp, "mainWindow:updateNetworkRunDisplay", NULL));
     CHK(Tcl_VarEval(interp, "wm title . ", TclQuotedString(getWindowTitle().c_str()).get(), NULL));
 }
 
-void Tkenv::updateSimtimeDisplay()
+void Tkenv::updateStatusDisplay()
 {
-    // event and time display
-    char buf[32];
-    sprintf(buf, "%" LL "d", simulation.getEventNumber());
-    CHK(Tcl_VarEval(interp, EVENT_LABEL " config -text {"
-                        "Event #", buf,
-                        "}", NULL ));
-    CHK(Tcl_VarEval(interp, TIME_LABEL " config -text {"
-                        "T=", SIMTIME_STR(simulation.guessNextSimtime()),
-                        "}", NULL ));
-
-    // statistics
-    sprintf(buf, "%u", simulation.msgQueue.getLength());
-    CHK(Tcl_VarEval(interp, FESLENGTH_LABEL " config -text {"
-                        "Msgs scheduled: ", buf,
-                        "}", NULL ));
-    sprintf(buf, "%lu", cMessage::getTotalMessageCount());
-    CHK(Tcl_VarEval(interp, TOTALMSGS_LABEL " config -text {"
-                        "Msgs created: ", buf,
-                        "}", NULL ));
-    sprintf(buf, "%lu", cMessage::getLiveMessageCount());
-    CHK(Tcl_VarEval(interp, LIVEMSGS_LABEL " config -text {"
-                        "Msgs present: ", buf,
-                        "}", NULL ));
-
-    // time axis
+    CHK(Tcl_VarEval(interp, "mainWindow:updateStatusDisplay", NULL));
     CHK(Tcl_Eval(interp, "redrawTimeline"));
-}
-
-void Tkenv::updateNextModuleDisplay()
-{
-    cSimpleModule *mod = NULL;
-
-    if (simstate==SIM_NEW || simstate==SIM_READY || simstate==SIM_RUNNING)
-        mod = simulation.guessNextModule();
-
-    char id[16];
-    std::string modname;
-    if (mod)
-    {
-        modname = mod->getFullPath();
-        sprintf(id," (id=%u)", mod->getId());
-    }
-    else
-    {
-        modname = "n/a";
-        id[0]=0;
-    }
-    CHK(Tcl_VarEval(interp, NEXT_LABEL " config -text {Next: ",modname.c_str(),id,"}",NULL));
-}
-
-void Tkenv::clearNextModuleDisplay()
-{
-    CHK(Tcl_VarEval(interp, NEXT_LABEL " config -text {Running...}", NULL ));
-}
-
-void Tkenv::updatePerformanceDisplay(Speedometer& speedometer)
-{
-    char buf[16];
-    sprintf(buf, "%g", speedometer.getSimSecPerSec());
-    CHK(Tcl_VarEval(interp, SIMSECPERSEC_LABEL " config -text {Simsec/sec: ", buf, "}", NULL));
-    sprintf(buf, "%g", speedometer.getEventsPerSec());
-    CHK(Tcl_VarEval(interp, EVENTSPERSEC_LABEL " config -text {Ev/sec: ", buf, "}", NULL));
-    sprintf(buf, "%g", speedometer.getEventsPerSimSec());
-    CHK(Tcl_VarEval(interp, EVENTSPERSIMSEC_LABEL " config -text {Ev/simsec: ", buf, "}", NULL));
-}
-
-void Tkenv::clearPerformanceDisplay()
-{
-    CHK(Tcl_VarEval(interp, SIMSECPERSEC_LABEL " config -text {Simsec/sec: n/a}", NULL));
-    CHK(Tcl_VarEval(interp, EVENTSPERSEC_LABEL " config -text {Ev/sec: n/a}", NULL));
-    CHK(Tcl_VarEval(interp, EVENTSPERSIMSEC_LABEL " config -text {Ev/simsec: n/a}", NULL));
 }
 
 void Tkenv::printEventBanner(cEvent *event)
@@ -1231,7 +1110,7 @@ void Tkenv::setSilentEventFilters(const char *filterLines)
     // parsing successful, store the result
     for (int i = 0; i < (int)silentEventFilters.size(); i++)
         delete silentEventFilters[i];
-    silentEventFilterLines = filterLines;
+    silentEventFilterLines = opp_trim(filterLines) + "\n";
     silentEventFilters = tmp;
 }
 
@@ -1329,7 +1208,7 @@ bool Tkenv::idle()
             return false;
 
         // refresh inspectors
-        updateSimtimeDisplay();
+        updateStatusDisplay();
         updateInspectors();
     }
 

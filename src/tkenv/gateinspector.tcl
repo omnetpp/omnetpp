@@ -20,8 +20,8 @@ proc createGateInspector {insp geom} {
     createInspectorToplevel $insp $geom
 
     # create toolbar
-    packIconButton $insp.toolbar.sep1   -separator
-    packIconButton $insp.toolbar.redraw -image $icons(redraw) -command "opp_inspectorcommand $insp redraw"
+    packToolbutton $insp.toolbar.sep1   -separator
+    packToolbutton $insp.toolbar.redraw -image $icons(redraw) -command "opp_inspectorcommand $insp redraw"
     set help_tips($insp.toolbar.redraw) "Redraw"
 
     createGateViewer $insp
@@ -45,7 +45,7 @@ proc createGateViewer {insp} {
     set inspectordata($c:showlabels) 1
     set inspectordata($c:showarrowheads) 1
 
-    frame $insp.grid
+    ttk::frame $insp.grid
     ttk::scrollbar $insp.hsb -orient horiz -command "$c xview"
     ttk::scrollbar $insp.vsb -command "$c yview"
     canvas $c -background #a0e0a0 -relief raised \
@@ -74,8 +74,6 @@ proc createGateViewer {insp} {
 }
 
 proc GateInspector:drawModuleGate {c modptr gateptr modname gatename k xsiz dir highlight} {
-    global fonts
-
     set y [expr 40+40*$k]
 
     if {$xsiz<-1} {set xsiz -1.5}
@@ -103,8 +101,8 @@ proc GateInspector:drawModuleGate {c modptr gateptr modname gatename k xsiz dir 
                              -width 2 -tags "tooltip gate $gateptr" ]
 
     if {$dir=="O"} {set anch "s"} else {set anch "n"}
-    $c create text 72 $y -text $gatename -anchor "$anch\e" -font $fonts(canvas)
-    $c create text [expr 88+$dx] $y -text $modname -anchor "$anch\w" -font $fonts(canvas)
+    $c create text 72 $y -text $gatename -anchor "$anch\e" -font CanvasFont
+    $c create text [expr 88+$dx] $y -text $modname -anchor "$anch\w" -font CanvasFont
 
     $c move $mod1 80 $y
     $c move $mod2 80 $y
@@ -121,8 +119,6 @@ proc GateInspector:drawModuleGate {c modptr gateptr modname gatename k xsiz dir 
 }
 
 proc GateInspector:drawConnection {c srcgateptr destgateptr chanptr chanstr dispstr} {
-    global fonts
-
     opp_displaystring $dispstr parse tags $chanptr 0
 
     if {![info exists tags(s)]} {set tags(s) {auto}}
@@ -144,7 +140,7 @@ proc GateInspector:drawConnection {c srcgateptr destgateptr chanptr chanstr disp
        $c create line $x $y0 $x $y1 -arrow last \
            -fill $fill -width $width -tags "tooltip conn $srcgateptr"
 
-       $c create text [expr $x+3] [expr ($y0+$y1)/2] -text $chanstr -anchor w -font $fonts(canvas)
+       $c create text [expr $x+3] [expr ($y0+$y1)/2] -text $chanstr -anchor w -font CanvasFont
 
    } errmsg] {
        tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focus]] \
@@ -152,7 +148,7 @@ proc GateInspector:drawConnection {c srcgateptr destgateptr chanptr chanstr disp
    }
 }
 
-proc GateInspector:dblClick {insp {type (default)}} {
+proc GateInspector:dblClick {insp {type ""}} {
    set c $insp.c
    set item [$c find withtag current]
    set tags [$c gettags $item]

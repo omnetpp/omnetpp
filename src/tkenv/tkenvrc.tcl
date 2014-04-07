@@ -18,17 +18,16 @@
 # saveTkenvrc --
 #
 #
-proc saveTkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
-    global config fonts defaultfonts
+proc saveTkenvrc {fname isglobal atexit {comment ""}} {
+    global config
 
     if [catch {
         set fout [open $fname w]
         puts $fout $comment
-        if {$savesettings} {
+        if {$isglobal} {
             foreach key {
                 updatefreq_fast_ms
                 updatefreq_express_ms
-                stepdelay
                 event_banners
                 init_banners
                 short_banners
@@ -60,20 +59,28 @@ proc saveTkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
 
             storeMainwinGeometry
             foreach key [lsort [array names config]] {
-                set value $config($key)
-                set value [string map {"\n" "\x2"} $value]
-                puts $fout "config $key\t{$value}"
-            }
-
-            foreach key [lsort [array names fonts]] {
-                if {[info exists defaultfonts($key)] && $fonts($key)!=$defaultfonts($key)} {
-                    set value $fonts($key)
-                    puts $fout "fonts $key\t{$value}"
+                if {![isLocalConfigKey $key]} {
+                    set value $config($key)
+                    set value [string map {"\n" "\x2"} $value]
+                    puts $fout "config $key\t{$value}"
                 }
             }
-        }
 
-        if {$saveinspectors} {
+            set fonts {TimelineFont CanvasFont LogFont BIGFont BoldFont TkDefaultFont TkTooltipFont TkTextFont TkFixedFont}
+            foreach font $fonts {
+                puts $fout "font $font\t[list [font actual $font]]"
+            }
+
+        } else {
+            storeMainwinGeometry
+            foreach key [lsort [array names config]] {
+                if {[isLocalConfigKey $key]} {
+                    set value $config($key)
+                    set value [string map {"\n" "\x2"} $value]
+                    puts $fout "config $key\t{$value}"
+                }
+            }
+
             puts $fout [inspectorList:tkenvrcGetContents $atexit]
         }
 
@@ -83,6 +90,11 @@ proc saveTkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
        tk_messageBox -icon error -type ok -message "Error: $err" -title "Error"
        return
     }
+}
+
+proc isLocalConfigKey key {
+    set localKeys {default-configname default-runnumber}
+    return [lcontains $localKeys $key]
 }
 
 proc storeMainwinGeometry {} {
@@ -103,16 +115,22 @@ proc storeMainwinGeometry {} {
     set config(mainwin-state) $state
     set config(mainwin-geom) $geom
 
-    set config(mainwin-main-sashpos)  [.main sash coord 0]
-    set config(mainwin-left-sashpos)  [.main.left sash coord 0]
-    set config(mainwin-right-sashpos) [.main.right sash coord 0]
+    set orient [.main.right cget -orient]
+    set config(mainwin-sash-orient) $orient
+
+    set config(mainwin-main-sashpos)  [panedwindow:getsashposition .main]
+    set config(mainwin-left-sashpos)  [panedwindow:getsashposition .main.left]
+    set config(mainwin-right-sashpos-$orient) [panedwindow:getsashposition .main.right]
+
+    set lb .inspector.nb.contents.main.list
+    inspectorListbox:storeColumnWidths $lb "inspector:columnwidths"
 }
 
 # loadTkenvrc --
 #
 #
 proc loadTkenvrc {fname} {
-    global config fonts
+    global config
 
     if [catch {open $fname r} fin] {
         return
@@ -138,13 +156,10 @@ proc loadTkenvrc {fname} {
                 set key [lindex $line 1]
                 set value [lindex $line 2]
                 set config($key) $value
-            } elseif {$cat == "fonts"} {
-                set key [lindex $line 1]
-                set value [lindex $line 2]
-                set value [actualFont [fixupFontName $value]] ;# some validation
-                if {$value!=""} {
-                    set fonts($key) $value
-                }
+            } elseif {$cat == "font"} {
+                set font [lindex $line 1]
+                set attrs [lindex $line 2]
+                catch {eval font configure $font $attrs}
             } elseif {[llength $line]==4} {
                 # old tkenvrc, patch it up
                 inspectorList:tkenvrcProcessLine [concat "inspector" $line]
@@ -156,84 +171,68 @@ proc loadTkenvrc {fname} {
     }
     close $fin
 
-    set fonts(bold)     $fonts(normal)
-    set fonts(balloon)  $fonts(normal)
-
     inspectorList:openInspectors
+    applyTkenvrc
+}
+
+# applyTkenvrc --
+#
+# Invoked on loading the tkenvrc file.
+#
+proc applyTkenvrc {} {
+    global config
+
+    catch {wm state . $config(mainwin-state)}
+    catch {wm geometry . $config(mainwin-geom)}
+
+    catch {.main.right config -orient $config(mainwin-sash-orient)}
+
+    set orient [.main.right cget -orient]
+    toolbutton:setsunken .toolbar.vert  [expr {$orient=="vertical"}]
+    toolbutton:setsunken .toolbar.horiz [expr {$orient!="vertical"}]
+
+    # note: simply using panedwindow:setsashposition without "after idle" doesn't work here
+    after idle {after idle {
+        catch {
+            global config
+            set orient [.main.right cget -orient]
+             panedwindow:dosetsashposition .main $config(mainwin-main-sashpos)
+             panedwindow:dosetsashposition .main.left $config(mainwin-left-sashpos)
+             panedwindow:dosetsashposition .main.right $config(mainwin-right-sashpos-$orient)
+        }
+    }}
+
+    set lb .inspector.nb.contents.main.list
+    inspectorListbox:restoreColumnWidths $lb "inspector:columnwidths"
+
+    toggleStatusDetails
+    toggleStatusDetails
+
+    toggleTimeline
+    toggleTimeline
+
     reflectSettingsInGui
 }
 
-
 # reflectSettingsInGui --
 #
+# Invoked whenever some preference setting is changed, e.g. on closing the
+# Simulation Options dialog.
 #
 proc reflectSettingsInGui {} {
-   global config fonts help_tips
-
-   catch {wm state . $config(mainwin-state)}
-   catch {wm geometry . $config(mainwin-geom)}
-
-   after idle {after idle {
-      catch {
-         global config
-         set mpos $config(mainwin-main-sashpos)
-         set lpos $config(mainwin-left-sashpos)
-         set rpos $config(mainwin-right-sashpos)
-         .main sash place 0 [lindex $mpos 0] [lindex $mpos 1]
-         .main.left sash place 0 [lindex $lpos 0] [lindex $lpos 1]
-         .main.right sash place 0 [lindex $rpos 0] [lindex $rpos 1]
-      }
-   }}
+   global config help_tips
 
    catch {.log.main.text config -wrap $config(editor-wrap)}
    catch {.log.main.text tag configure "prefix" -elide $config(editor-hideprefix)}
 
-   applyFont Menubutton  $fonts(normal)
-   applyFont Menu        $fonts(normal)
-   applyFont Label       $fonts(normal)
-   applyFont Message     $fonts(normal)
-   applyFont Entry       $fonts(normal)
-   applyFont Button      $fonts(normal)
-   applyFont Checkbutton $fonts(normal)
-   applyFont Radiobutton $fonts(normal)
-   applyFont Scale       $fonts(normal)
-   applyFont Labelframe  $fonts(normal)
-   applyFont Canvas      $fonts(normal)
-   applyFont Listbox     $fonts(normal)
-   applyFont Text        $fonts(text)
-
-   option add *Menubutton.font  $fonts(normal)
-   option add *Menu.font        $fonts(normal)
-   option add *Label.font       $fonts(normal)
-   option add *Message.font     $fonts(normal)
-   option add *Entry.font       $fonts(normal)
-   option add *Button.font      $fonts(normal)
-   option add *Checkbutton.font $fonts(normal)
-   option add *Radiobutton.font $fonts(normal)
-   option add *Scale.font       $fonts(normal)
-   option add *Labelframe       $fonts(normal)
-   option add *Canvas.font      $fonts(normal)
-   option add *Listbox.font     $fonts(normal)
-   option add *Text.font        $fonts(text)
-   option add *TCombobox.font   $fonts(normal)
-
-   ttk::style configure TButton          -font $fonts(normal)
-   ttk::style configure TCombobox        -font $fonts(normal)
-   ttk::style configure TNotebook.Tab    -font $fonts(normal)
-   ttk::style configure Treeview         -font $fonts(normal)
-   ttk::style configure Treeview.Heading -font $fonts(normal)
-
-   set help_tips(font)  $fonts(balloon)
-
-   set h [font metrics $fonts(normal) -displayof . -linespace]
-   set h [expr $h+3]
+   set h [font metrics TkDefaultFont -displayof . -linespace]
+   set h [expr $h+2]
    ttk::style configure Treeview -rowheight $h
 
    timeline:fontChanged
-   toggleTimeline
-   toggleTimeline
 
    redrawTimeline
 
    opp_redrawinspectors
+
 }

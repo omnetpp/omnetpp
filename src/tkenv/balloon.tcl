@@ -84,22 +84,24 @@ proc createBalloon {text x y} {
     }
     label .balloon_help.tip -text $text -padx 4 -wraplength $help_tips(width) \
                             -bg $help_tips(color) -border 1 -relief solid \
-                            -font $help_tips(font) -justify left
+                            -font TkTooltipFont -justify left
     pack .balloon_help.tip
 }
 
 proc initBalloons {args} {
-    global help_tips use_balloons fonts
-    set help_tips(width) 500
+    global help_tips use_balloons
+
+    set help_tips(width) 600
     set help_tips(color) #f0f0d0
     set help_tips(delay) 500
-    set help_tips(font)  $fonts(balloon)
+    set help_tips(helptip_proc) getHelpTip
     set use_balloons 1
-    enableBalloon Button
-    enableBalloon Scale
-    enableBalloon Menubutton
-    enableBalloon Label
-    enableBalloon Entry
+
+    foreach c {Button TButton Label TLabel Entry TEntry Checkbutton TCheckbutton
+               Radiobutton TRadiobutton TCombobox Toolbutton Scale TScale Text
+               Menubutton} {
+        enableBalloon $c
+    }
     enableBalloon Menu "%W index active"
     enableBalloon Canvas "%W find withtag current"  ;#DO NOT CHANGE THIS
 }

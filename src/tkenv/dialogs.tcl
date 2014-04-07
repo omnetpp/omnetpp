@@ -13,9 +13,6 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-#===================================================================
-#    HELPER/GUI PROCEDURES
-#===================================================================
 
 proc inputbox {title prompt variable {checkboxlabel {}} {checkboxvar {}}} {
     # This procedure displays a dialog box, waits for a button in the dialog
@@ -26,8 +23,8 @@ proc inputbox {title prompt variable {checkboxlabel {}} {checkboxvar {}}} {
     set w .inputbox
     createOkCancelDialog $w $title
 
-    label $w.f.l -text $prompt
-    entry $w.f.e -highlightthickness 0
+    ttk::label $w.f.l -text $prompt
+    ttk::entry $w.f.e
     pack $w.f.l -anchor w -expand 0 -fill none -padx 2 -pady 2 -side top
     pack $w.f.e -anchor w -expand 1 -fill x -padx 2 -pady 2 -side top
     $w.f.e insert 0 $var
@@ -37,7 +34,7 @@ proc inputbox {title prompt variable {checkboxlabel {}} {checkboxvar {}}} {
         global tmp
         upvar $checkboxvar cbvar
         set tmp(check) $cbvar
-        checkbutton $w.f.c -text $checkboxlabel -variable tmp(check)
+        ttk::checkbutton $w.f.c -text $checkboxlabel -variable tmp(check)
         pack $w.f.c -anchor w -expand 0 -fill x -padx 4 -pady 2 -side top
     }
 
@@ -65,7 +62,7 @@ proc comboSelectionDialog {title text label variable list} {
 
     upvar $variable var
 
-    label $w.f.m -text $text -anchor w -justify left
+    ttk::label $w.f.m -text $text -anchor w -justify left
     label-combo $w.f.c $label $list $var
     pack $w.f.m -fill x -padx 2 -pady 2 -side top
     pack $w.f.c -fill x -padx 2 -pady 2 -side top
@@ -82,12 +79,81 @@ proc comboSelectionDialog {title text label variable list} {
     return 0
 }
 
+set config(dontshow) {}
+
+#
+# "Did you know..." dialog. The text comes the hints() array;  state is saved
+# into config(dontshow)
+#
+proc hintDialog {key} {
+    global config tmp_once hints
+
+    if {[lsearch -exact $config(dontshow) $key]!=-1} {
+        # already shown
+        return
+    }
+
+    if {![info exists hints($key)]} {
+        debug "dbg: hintDialog: hint hints($key) not found"
+        return
+    }
+
+    set text $hints($key)
+
+    # create dialog with OK button
+    set w .oncedialog
+    createOkCancelDialog $w "Hint"
+    destroy $w.buttons.cancelbutton
+
+    text $w.f.text -relief solid -bd 1 -wrap word
+    $w.f.text insert 1.0 $text
+    $w.f.text config -state disabled
+    ttk::checkbutton $w.f.x -text "Do not show this hint again" -variable tmp_once
+    pack $w.f.x -expand 0 -fill x -side bottom
+    pack $w.f.text -expand 1 -fill both -side top -padx 5 -pady 5
+
+    set tmp_once 0
+
+    # exec the dialog
+    execOkCancelDialog $w
+    if {$tmp_once} {
+        lappend config(dontshow) $key
+    }
+    destroy $w
+}
+
+
+proc aboutDialog {} {
+    global OMNETPP_RELEASE OMNETPP_EDITION OMNETPP_BUILDID
+
+    set title "About OMNeT++/OMNEST"
+    set text "
+OMNeT++/OMNEST
+Discrete Event Simulation Framework
+
+(C) 1992-2014 Opensim Ltd.
+Release: $OMNETPP_RELEASE, build: $OMNETPP_BUILDID
+$OMNETPP_EDITION
+
+NO WARRANTY -- see license for details."
+
+    set w .aboutdialog
+    createOkCancelDialog $w $title
+
+    $w.f config -border 2 -relief groove
+    ttk::label $w.f.l -text "$text\n\n" -justify center -anchor c
+    pack $w.f.l -expand 1 -fill both -side top -padx 30
+    destroy $w.buttons.cancelbutton
+    execOkCancelDialog $w
+    destroy $w
+}
+
 #
 # For selecting config and run number.
 #
 proc runSelectionDialog {configname_var runnumber_var} {
     set w .runseldialog
-    createOkCancelDialog $w "Set up an Inifile Configuration"
+    createOkCancelDialog $w "Set Up Inifile Configuration"
 
     upvar $configname_var configname
     upvar $runnumber_var  runnumber
@@ -117,7 +183,7 @@ proc runSelectionDialog {configname_var runnumber_var} {
             set configname [lindex $configlist 0]
         }
 
-        label $w.f.m -anchor w -justify left -text "Set up one of the configurations defined in omnetpp.ini."
+        ttk::label $w.f.m -anchor w -justify left -text "Set up one of the configurations defined in omnetpp.ini."
         label-combo $w.f.c "Config name:" $configlist $configname
         label-combo $w.f.c2 "Run number:" {} $runnumber
         pack $w.f.m -fill x -padx 2 -pady 2 -side top
@@ -208,7 +274,7 @@ proc runSelectionDialog:update {w} {
 
 proc displayStopDialog {} {
     # Create a dialog that can be used to stop a running simulation
-    global opp fonts tmp
+    global opp tmp
 
     # 1. Create and configure dialog
     set topwindow "."
@@ -223,16 +289,16 @@ proc displayStopDialog {} {
     if {[winfo exists $w]} return
 
     toplevel $w
-    wm title $w {Running...}
+    wm title $w "Running..."
     wm transient $w [winfo toplevel [winfo parent $w]]
     wm protocol $w WM_DELETE_WINDOW {opp_stopsimulation}
-    # bind $w <Visibility> "raise $w"  ;# Keep modal window on top -- not good! (obscures error dialogs)
+    restoreDialogGeometry $w
 
     set red #f83030
     button $w.stopbutton  -text "STOP!" -background $red -activebackground $red \
-          -borderwidth 6 -font $fonts(big) -command {opp_stopsimulation}
-    checkbutton $w.autoupdate -text "auto-update inspectors" -variable opp(autoupdate) -command "stopDialogAutoupdate $w"
-    button $w.updatebutton  -text "  Update now  " -borderwidth 1 -command {opp_refreshinspectors}
+          -borderwidth 6 -font BIGFont -command {opp_stopsimulation}
+    ttk::checkbutton $w.autoupdate -text "auto-update inspectors" -variable opp(autoupdate) -command "stopDialogAutoupdate $w"
+    ttk::button $w.updatebutton  -text "  Update now  " -command {opp_refreshinspectors}
 
     grid $w.stopbutton   -sticky news -padx 4 -pady 3
     grid $w.autoupdate   -sticky nes -padx 4 -pady 0
@@ -245,10 +311,8 @@ proc displayStopDialog {} {
     set opp(autoupdate) [opp_getsimoption expressmode_autoupdate]
     stopDialogAutoupdate $w
 
-    # 2. Center window
-    setGeometry $w
 
-    # 3. Set a grab and claim the focus too.
+    # Set a grab and claim the focus too.
     set opp(oldFocus) [focus]
     set opp(oldGrab) [grab current $w]
     grab $w
@@ -281,7 +345,7 @@ proc removeStopDialog {} {
     # window manager may take the focus away so we can't redirect it.
     # Finally, restore any grab that was in effect.
 
-    rememberGeometry $w
+    saveDialogGeometry $w
     catch {focus $opp(oldFocus)}
     destroy $w
     if {$opp(oldGrab) != ""} {
@@ -289,56 +353,52 @@ proc removeStopDialog {} {
     }
 }
 
-proc optionsDialog {parent {defaultpage "g"}} {
-    global opp config fonts help_tips helptexts
+proc preferencesDialog {parent {defaultpage ""}} {
+    global opp config help_tips helptexts
 
     set parent [winfo toplevel $parent]
-
     if {$parent == "."} {
-        set w .optionsdialog
+        set w .preferencesdialog
     } else {
-        set w $parent.optionsdialog
+        set w $parent.preferencesdialog
     }
 
-    createOkCancelDialog $w {Simulation Options}
+    createOkCancelDialog $w "Preferences"
 
     ttk::notebook $w.f.nb
     set nb $w.f.nb
-
-    $nb add [frame $nb.g] -text "General"
-    $nb add [frame $nb.l] -text "Layouting"
-    $nb add [frame $nb.a] -text "Animation"
-    $nb add [frame $nb.t] -text "Filtering"
-    $nb add [frame $nb.f] -text "Fonts"
-
+    $nb add [ttk::frame $nb.g] -text "General"
+    $nb add [ttk::frame $nb.l] -text "Layouting"
+    $nb add [ttk::frame $nb.a] -text "Animation"
+    $nb add [ttk::frame $nb.t] -text "Filtering"
+    $nb add [ttk::frame $nb.f] -text "Fonts"
     pack $nb -expand 1 -fill both
+
+    if {$defaultpage==""} {set defaultpage $config(preferences-dialog-page)}
 
     $nb select $nb.$defaultpage
 
     # "General" page
-    labelframe $nb.g.f0 -text "User Interface" -relief groove -borderwidth 2 -font $fonts(normal)
-    checkbutton $nb.g.f0.keepontop -text "Keep inspector windows on top" -variable opp(keepontop)
-    checkbutton $nb.g.f0.reuseinsp -text "Reuse inspectors if possible" -variable opp(reuseinsp)
-    checkbutton $nb.g.f0.confirmexit -text "Confirm exit when simulation is in progress" -variable opp(confirmexit)
+    ttk::labelframe $nb.g.f0 -text "User Interface"
+    ttk::checkbutton $nb.g.f0.keepontop -text "Keep inspector windows on top" -variable opp(keepontop)
+    ttk::checkbutton $nb.g.f0.reuseinsp -text "Reuse inspectors if possible" -variable opp(reuseinsp)
+    ttk::checkbutton $nb.g.f0.confirmexit -text "Confirm exit when simulation is in progress" -variable opp(confirmexit)
     pack $nb.g.f0.keepontop -anchor w
     pack $nb.g.f0.reuseinsp -anchor w
     pack $nb.g.f0.confirmexit -anchor w
 
-    labelframe $nb.g.f1 -text "Simulation Execution" -relief groove -borderwidth 2 -font $fonts(normal)
+    ttk::labelframe $nb.g.f1 -text "Simulation Execution"
     label-entry $nb.g.f1.updfreq_fast    "Display update frequency for Fast Run (ms):"
     label-entry $nb.g.f1.updfreq_express "Display update frequency for Express Run (ms):"
-    label-entry $nb.g.f1.stepdelay       "Per-event delay for slow execution (ms):"
-    $nb.g.f1.updfreq_fast.l config -width 0
-    $nb.g.f1.updfreq_express.l config -width 0
-    $nb.g.f1.stepdelay.l config -width 0
+    $nb.g.f1.updfreq_fast.l config -width 40
+    $nb.g.f1.updfreq_express.l config -width 40
     pack $nb.g.f1.updfreq_fast -anchor w -fill x
     pack $nb.g.f1.updfreq_express -anchor w -fill x
-    pack $nb.g.f1.stepdelay -anchor w -fill x
 
-    labelframe $nb.g.f2 -text "Logs" -relief groove -borderwidth 2 -font $fonts(normal)
-    checkbutton $nb.g.f2.initbanners -text "Print initialization banners" -variable opp(initbanners)
-    checkbutton $nb.g.f2.eventbanners -text "Print event banners" -variable opp(eventbanners)
-    checkbutton $nb.g.f2.shortbanners -text "Short event banners" -variable opp(shortbanners)
+    ttk::labelframe $nb.g.f2 -text "Logs"
+    ttk::checkbutton $nb.g.f2.initbanners -text "Print initialization banners" -variable opp(initbanners)
+    ttk::checkbutton $nb.g.f2.eventbanners -text "Print event banners" -variable opp(eventbanners)
+    ttk::checkbutton $nb.g.f2.shortbanners -text "Short event banners" -variable opp(shortbanners)
     label-entry-help $nb.g.f2.logformat "Log prefix format:" $helptexts(logformat)
     label-combo $nb.g.f2.loglevel "Log level:" {FATAL ERROR WARN INFO DETAIL DEBUG TRACE} ""
     commentlabel $nb.g.f2.c0 "The above settings apply to subsequent simulation events. Hover mouse to get help on log format syntax."
@@ -353,24 +413,24 @@ proc optionsDialog {parent {defaultpage "g"}} {
     pack $nb.g.f2.loglevel -anchor w
     pack $nb.g.f2.c0 -anchor w
     pack $nb.g.f2.numlines -anchor w -fill x
-    pack $nb.g.f2.c1 -anchor w
+    pack $nb.g.f2.c1 -anchor w -fill x
 
     pack $nb.g.f0 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
     pack $nb.g.f2 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
     pack $nb.g.f1 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
 
     # "Layouting" page
-    labelframe $nb.l.f1 -text "Layouting" -relief groove -borderwidth 2 -font $fonts(normal)
-    label $nb.l.f1.layouterlabel -text "Layouting algorithm:"
-    frame $nb.l.f1.layouter
-    radiobutton  $nb.l.f1.layouter.fast -text "Fast" -variable opp(layouterchoice) -value "fast"
-    radiobutton  $nb.l.f1.layouter.advanced -text "Advanced" -variable opp(layouterchoice) -value "advanced"
-    radiobutton  $nb.l.f1.layouter.auto -text "Adaptive (Fast for large networks, Advanced for smaller ones)" -variable opp(layouterchoice) -value "auto"
-    checkbutton $nb.l.f1.layouting -text "Show layouting process" -variable opp(layouting)
-    labelframe $nb.l.f2 -text "Display" -relief groove -borderwidth 2 -font $fonts(normal)
-    checkbutton $nb.l.f2.arrangevectorconnections -text "Arrange connections on vector gates parallel to each other" -variable opp(arrangevectorconnections)
-    checkbutton $nb.l.f2.allowresize -text "Resize window to fit network with current zoom level first" -variable opp(allowresize)
-    checkbutton $nb.l.f2.allowzoom -text "Zoom out if necessary to fit network into window" -variable opp(allowzoom)
+    ttk::labelframe $nb.l.f1 -text "Layouting"
+    ttk::label $nb.l.f1.layouterlabel -text "Layouting algorithm:"
+    ttk::frame $nb.l.f1.layouter
+    ttk::radiobutton $nb.l.f1.layouter.fast -text "Fast" -variable opp(layouterchoice) -value "fast"
+    ttk::radiobutton $nb.l.f1.layouter.advanced -text "Advanced" -variable opp(layouterchoice) -value "advanced"
+    ttk::radiobutton $nb.l.f1.layouter.auto -text "Adaptive (Fast for large networks, Advanced for smaller ones)" -variable opp(layouterchoice) -value "auto"
+    ttk::checkbutton $nb.l.f1.layouting -text "Show layouting process" -variable opp(layouting)
+    ttk::labelframe $nb.l.f2 -text "Display"
+    ttk::checkbutton $nb.l.f2.arrangevectorconnections -text "Arrange connections on vector gates parallel to each other" -variable opp(arrangevectorconnections)
+    ttk::checkbutton $nb.l.f2.allowresize -text "Resize window to fit network with current zoom level first" -variable opp(allowresize)
+    ttk::checkbutton $nb.l.f2.allowzoom -text "Zoom out if necessary to fit network into window" -variable opp(allowzoom)
     label-entry $nb.l.f2.iconminsize  "Minimum icon size when zoomed out (pixels):"
     $nb.l.f2.iconminsize.l config -width 0
 
@@ -388,15 +448,15 @@ proc optionsDialog {parent {defaultpage "g"}} {
     pack $nb.l.f2 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
 
     # "Filtering" page
-    labelframe $nb.t.f1 -text "Timeline" -relief groove -borderwidth 2 -font $fonts(normal)
-    checkbutton $nb.t.f1.tlwantself -text "Show self-messages" -variable opp(timeline-wantselfmsgs)
-    checkbutton $nb.t.f1.tlwantnonself -text "Show non-self messages" -variable opp(timeline-wantnonselfmsgs)
-    checkbutton $nb.t.f1.tlwantsilent -text "Show silent (non-animated) messages, see below" -variable opp(timeline-wantsilentmsgs)
+    ttk::labelframe $nb.t.f1 -text "Timeline"
+    ttk::checkbutton $nb.t.f1.tlwantself -text "Show self-messages" -variable opp(timeline-wantselfmsgs)
+    ttk::checkbutton $nb.t.f1.tlwantnonself -text "Show non-self messages" -variable opp(timeline-wantnonselfmsgs)
+    ttk::checkbutton $nb.t.f1.tlwantsilent -text "Show silent (non-animated) messages, see below" -variable opp(timeline-wantsilentmsgs)
 
-    labelframe $nb.t.f2 -text "Animation" -relief groove -borderwidth 2 -font $fonts(normal)
-    label $nb.t.f2.filterslabel -text "Messages to exclude from animation:"
-    text $nb.t.f2.filterstext -highlightthickness 0 -height 10 -width 20
-    commentlabel $nb.t.f2.c1 {One expression per line. Wildcards, AND, OR, NOT, numeric ranges ({5..10}), field matchers (className(..), kind(..), byteLength(..), etc.) are accepted.}
+    ttk::labelframe $nb.t.f2 -text "Animation"
+    ttk::label $nb.t.f2.filterslabel -text "Messages to exclude from animation:"
+    text $nb.t.f2.filterstext -height 10 -width 20
+    commentlabel $nb.t.f2.c1 "One expression per line. Wildcards, AND, OR, NOT, numeric ranges ({5..10}), field matchers (className(..), kind(..), byteLength(..), etc.) are accepted."
 
     pack $nb.t.f1.tlwantself -anchor w
     pack $nb.t.f1.tlwantnonself -anchor w
@@ -409,62 +469,59 @@ proc optionsDialog {parent {defaultpage "g"}} {
     pack $nb.t.f2 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
 
     # "Animation" page
-    labelframe $nb.a.f1 -text "General" -relief groove -borderwidth 2 -font $fonts(normal)
-    checkbutton $nb.a.f1.anim -text "Animate messages" -variable opp(anim)
-    label-scale $nb.a.f1.speed {Animation speed:}
-    $nb.a.f1.speed.e config -length 200 -from 0 -to 3 -resolution 0.01 -variable opp(speed)
-    checkbutton $nb.a.f1.concanim -text "Broadcast animation" -variable opp(concanim)
-    commentlabel $nb.a.f1.ca "Animates send/sendDirect calls concurrently, after processing\neach event (i.e. out of sequence)"
-    checkbutton $nb.a.f1.nextev -text "Show next event markers" -variable opp(nextev)
-    checkbutton $nb.a.f1.sdarrows -text "Show arrows for sendDirect animation" -variable opp(sdarrows)
-    checkbutton $nb.a.f1.bubbles -text "Show bubbles (bubble() calls)" -variable opp(bubbles)
-    checkbutton $nb.a.f1.animmeth -text "Animate method calls" -variable opp(animmeth)
-    label-scale $nb.a.f1.methdelay {Method call delay (ms):}
-    $nb.a.f1.methdelay.e config -length 200 -from 0 -to 3000 -resolution 1 -variable opp(methdelay)
-    labelframe $nb.a.f2 -text "Messages" -relief groove -borderwidth 2 -font $fonts(normal)
-    checkbutton $nb.a.f2.msgnam -text "Display message names during animation" -variable opp(msgnam)
-    checkbutton $nb.a.f2.msgclass -text "Display message class during animation" -variable opp(msgclass)
-    checkbutton $nb.a.f2.msgcol -text "Color messages by message kind" -variable opp(msgcol)
-    commentlabel $nb.a.f2.c {Color code (message kind modulo 8): 0=red 1=green 2=blue 3=white 4=yellow 5=cyan 6=magenta 7=black}
-    checkbutton $nb.a.f2.penguin -text "Penguin mode" -variable opp(penguin)
+    ttk::labelframe $nb.a.f1 -text "General"
+    ttk::checkbutton $nb.a.f1.anim -text "Animate messages" -variable opp(anim)
+    label-scale $nb.a.f1.speed "    Animation speed:"
+    $nb.a.f1.speed.e config -length 200 -from 0 -to 3 -variable opp(speed)
+    ttk::checkbutton $nb.a.f1.concanim -text "Broadcast animation" -variable opp(concanim)
+    commentlabel $nb.a.f1.ca "Animates send/sendDirect calls concurrently, after processing each event (i.e. out of sequence)"
+    ttk::checkbutton $nb.a.f1.nextev -text "Show next event markers" -variable opp(nextev)
+    ttk::checkbutton $nb.a.f1.sdarrows -text "Show arrows for sendDirect animation" -variable opp(sdarrows)
+    ttk::checkbutton $nb.a.f1.bubbles -text "Show bubbles (bubble() calls)" -variable opp(bubbles)
+    ttk::checkbutton $nb.a.f1.animmeth -text "Animate method calls" -variable opp(animmeth)
+    label-entry $nb.a.f1.methdelay "    Method call delay (ms):"
+    $nb.a.f1.methdelay.l config -width 25
+    ttk::labelframe $nb.a.f2 -text "Messages"
+    ttk::checkbutton $nb.a.f2.msgnam -text "Display message names during animation" -variable opp(msgnam)
+    ttk::checkbutton $nb.a.f2.msgclass -text "Display message class during animation" -variable opp(msgclass)
+    ttk::checkbutton $nb.a.f2.msgcol -text "Color messages by message kind" -variable opp(msgcol)
+    commentlabel $nb.a.f2.c "Color code (message kind modulo 8): 0=red 1=green 2=blue 3=white 4=yellow 5=cyan 6=magenta 7=black"
+    ttk::checkbutton $nb.a.f2.penguin -text "Penguin mode" -variable opp(penguin)
 
     pack $nb.a.f1.anim -anchor w
     pack $nb.a.f1.speed -anchor w -expand 0 -fill x
     pack $nb.a.f1.concanim -anchor w
-    pack $nb.a.f1.ca -anchor w
+    pack $nb.a.f1.ca -anchor w -fill x
     pack $nb.a.f1.nextev -anchor w
     pack $nb.a.f1.sdarrows -anchor w
     pack $nb.a.f1.bubbles -anchor w
     pack $nb.a.f1.animmeth -anchor w
-    pack $nb.a.f1.methdelay -anchor w -expand 0 -fill x
+    pack $nb.a.f1.methdelay -anchor w -fill x
     pack $nb.a.f2.msgnam -anchor w
     pack $nb.a.f2.msgclass -anchor w
     pack $nb.a.f2.msgcol -anchor w
-    pack $nb.a.f2.c -anchor w
+    pack $nb.a.f2.c -anchor w -fill x
     pack $nb.a.f2.penguin -anchor w
 
     pack $nb.a.f1 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
     pack $nb.a.f2 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
 
     # "Fonts" page
-    labelframe $nb.f.f1 -text "Fonts" -relief groove -borderwidth 2 -font $fonts(normal)
-    label-fontcombo $nb.f.f1.normalfont {User interface:} {}
-    label-fontcombo $nb.f.f1.timelinefont {Timeline:} {}
-    label-fontcombo $nb.f.f1.canvasfont {Canvas:} {}
-    label-fontcombo $nb.f.f1.textfont  {Log windows:} {}
-    commentlabel $nb.f.f1.note {Examples: Arial, Arial 10, Arial 10 bold. The system may silently use another font if the given font is not available.}
+    ttk::labelframe $nb.f.f1 -text "Fonts"
+    label-fontcombo $nb.f.f1.normalfont "User interface:" TkDefaultFont
+    label-fontcombo $nb.f.f1.timelinefont "Timeline:" TimelineFont
+    label-fontcombo $nb.f.f1.canvasfont "Canvas:" CanvasFont
+    label-fontcombo $nb.f.f1.textfont  "Log windows:" LogFont
     pack $nb.f.f1.normalfont -anchor w -fill x
     pack $nb.f.f1.timelinefont -anchor w -fill x
     pack $nb.f.f1.canvasfont -anchor w -fill x
     pack $nb.f.f1.textfont -anchor w -fill x
-    pack $nb.f.f1.note -anchor w -fill x
 
-    pack $nb.f.f1 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
+    pack $nb.f.f1 -anchor center -expand 0 -fill x -ipadx 50 -ipady 0 -padx 10 -pady 5 -side top
 
     # Configure dialog
     $nb.g.f1.updfreq_fast.e insert 0 [opp_getsimoption updatefreq_fast_ms]
     $nb.g.f1.updfreq_express.e insert 0 [opp_getsimoption updatefreq_express_ms]
-    $nb.g.f1.stepdelay.e insert 0 [opp_getsimoption stepdelay]
     $nb.g.f2.numlines.e insert 0 $config(logwindow-scrollbacklines)
     $nb.l.f2.iconminsize.e insert 0 [opp_getsimoption iconminsize]
     $nb.t.f2.filterstext insert 1.0 [opp_getsimoption silent_event_filters]
@@ -479,7 +536,7 @@ proc optionsDialog {parent {defaultpage "g"}} {
     set opp(nextev)     [opp_getsimoption nexteventmarkers]
     set opp(sdarrows)   [opp_getsimoption senddirect_arrows]
     set opp(animmeth)   [opp_getsimoption anim_methodcalls]
-    set opp(methdelay)  [opp_getsimoption methodcalls_delay]
+    $nb.a.f1.methdelay.e insert 0 [opp_getsimoption methodcalls_delay]
     set opp(msgnam)     [opp_getsimoption animation_msgnames]
     set opp(msgclass)   [opp_getsimoption animation_msgclassnames]
     set opp(msgcol)     [opp_getsimoption animation_msgcolors]
@@ -499,15 +556,9 @@ proc optionsDialog {parent {defaultpage "g"}} {
     set opp(timeline-wantnonselfmsgs)   $config(timeline-wantnonselfmsgs)
     set opp(timeline-wantsilentmsgs)    $config(timeline-wantsilentmsgs)
 
-    fontcombo:set $nb.f.f1.normalfont.e $fonts(normal)
-    fontcombo:set $nb.f.f1.textfont.e $fonts(text)
-    fontcombo:set $nb.f.f1.timelinefont.e $fonts(timeline)
-    fontcombo:set $nb.f.f1.canvasfont.e $fonts(canvas)
-
     setInitialDialogFocus $nb.a.f1.anim
 
     if [execOkCancelDialog $w] {
-        opp_setsimoption stepdelay             [$nb.g.f1.stepdelay.e get]
         opp_setsimoption updatefreq_fast_ms    [$nb.g.f1.updfreq_fast.e get]
         opp_setsimoption updatefreq_express_ms [$nb.g.f1.updfreq_express.e get]
         opp_setsimoption silent_event_filters  [$nb.t.f2.filterstext get 1.0 end]
@@ -526,7 +577,7 @@ proc optionsDialog {parent {defaultpage "g"}} {
         opp_setsimoption nexteventmarkers    $opp(nextev)
         opp_setsimoption senddirect_arrows   $opp(sdarrows)
         opp_setsimoption anim_methodcalls    $opp(animmeth)
-        opp_setsimoption methodcalls_delay   $opp(methdelay)
+        opp_setsimoption methodcalls_delay   [$nb.a.f1.methdelay.e get]
         opp_setsimoption animation_msgnames  $opp(msgnam)
         opp_setsimoption animation_msgclassnames $opp(msgclass)
         opp_setsimoption animation_msgcolors $opp(msgcol)
@@ -548,30 +599,21 @@ proc optionsDialog {parent {defaultpage "g"}} {
         set config(timeline-wantnonselfmsgs) $opp(timeline-wantnonselfmsgs)
         set config(timeline-wantsilentmsgs)  $opp(timeline-wantsilentmsgs)
 
-        set font [actualFont [fixupFontName [$nb.f.f1.normalfont.e get]]]
-        if {$font != ""} {
-            set fonts(normal)  $font
-            set fonts(bold)    $font
-            set fonts(balloon) $font
-        }
-
-        set font [actualFont [fixupFontName [$nb.f.f1.textfont.e get]]]
-        if {$font != ""} {
-            set fonts(text) $font
-        }
-
-        set font [actualFont [fixupFontName [$nb.f.f1.timelinefont.e get]]]
-        if {$font != ""} {
-            set fonts(timeline) $font
-        }
-
-        set font [actualFont [fixupFontName [$nb.f.f1.canvasfont.e get]]]
-        if {$font != ""} {
-            set fonts(canvas) $font
-        }
+        fontcombo:updatefont $nb.f.f1.normalfont TkDefaultFont
+        fontcombo:updatefont $nb.f.f1.normalfont TkTooltipFont
+        fontcombo:updatefont $nb.f.f1.normalfont TkTextFont
+        fontcombo:updatefont $nb.f.f1.normalfont BoldFont
+        #TODO: fontcombo:updatefont $nb.f.f1.normalfont BIGFont ----but keep size!!!
+        fontcombo:updatefont $nb.f.f1.textfont LogFont
+        fontcombo:updatefont $nb.f.f1.textfont TkFixedFont
+        fontcombo:updatefont $nb.f.f1.timelinefont TimelineFont
+        fontcombo:updatefont $nb.f.f1.canvasfont CanvasFont
 
         reflectSettingsInGui
     }
+
+    set config(preferences-dialog-page) [winfo name [$nb select]]
+
     destroy $w
 }
 
@@ -592,8 +634,8 @@ proc runUntilDialog {time_var event_var msg_var mode_var} {
     upvar $msg_var msg_var0
     upvar $mode_var mode_var0
 
-    set w .rununtil
-    createOkCancelDialog $w {Run until}
+    set w .rununtildialog
+    createOkCancelDialog $w "Run Until"
 
     # collect FES messages for combo
     set msglabels {""}
@@ -607,7 +649,7 @@ proc runUntilDialog {time_var event_var msg_var mode_var} {
     label-entry $w.f.time  "Simulation time to stop at:"
     label-entry $w.f.event "Event number to stop at:"
     label-combo $w.f.msg   "Message to stop at:" $msglabels
-    label-check $w.f.stop  "" "stop if message gets cancelled" tmp(stop)
+    label-check $w.f.stop  "" "Stop when message is cancelled" tmp(stop)
     label-combo $w.f.mode  "Running mode:"  {"Normal" "Fast (rare updates)" "Express (tracing off)"}
 
     foreach i {time event msg stop mode} {
@@ -672,20 +714,19 @@ proc findDialog {w} {
     set dlg [winfo toplevel $w].finddialog
     if {$dlg=="..finddialog"} {set dlg .finddialog}
 
-    # create dialog with OK and Cancel buttons
-    set title "Find"
-    createOkCancelDialog $dlg $title
+    # create dialog
+    createOkCancelDialog $dlg "Find" 1
 
     label-entry $dlg.f.find "Find string:"
-    frame $dlg.f.opt
+    ttk::frame $dlg.f.opt
     pack $dlg.f.find -expand 0 -fill x
     pack $dlg.f.opt -expand 0 -fill none -anchor e
 
     # add entry fields
-    checkbutton $dlg.f.opt.regexp -text "Regular expression" -underline 0 -variable tmp(regexp)
-    checkbutton $dlg.f.opt.case -text "Case sensitive" -underline 0 -variable tmp(case-sensitive)
-    checkbutton $dlg.f.opt.words -text "Whole words only" -underline 0 -variable tmp(whole-words)
-    checkbutton $dlg.f.opt.backwards -text "Search backwards" -underline 7 -variable tmp(backwards)
+    ttk::checkbutton $dlg.f.opt.regexp -text "Regular expression" -underline 0 -variable tmp(regexp)
+    ttk::checkbutton $dlg.f.opt.case -text "Case sensitive" -underline 0 -variable tmp(case-sensitive)
+    ttk::checkbutton $dlg.f.opt.words -text "Whole words only" -underline 0 -variable tmp(whole-words)
+    ttk::checkbutton $dlg.f.opt.backwards -text "Search backwards" -underline 7 -variable tmp(backwards)
 
     grid $dlg.f.opt.regexp $dlg.f.opt.case      -sticky nw
     grid $dlg.f.opt.words  $dlg.f.opt.backwards -sticky nw
@@ -720,7 +761,6 @@ proc findDialog {w} {
     set config(editor-regexp) $regexp
     set config(editor-backwards) $backwards
 
-    rememberGeometry $dlg
     destroy $dlg
 
     if {$result == 1} {
@@ -843,14 +883,14 @@ proc moduleOutputFilterDialog {rootmodule excludedModuleIds} {
 
     if {[networkPresent] == 0} {return 0}
 
-    set title "Filter window contents"
+    set title "Filter Window Contents"
     set msg "Select modules to show log messages from:"
 
     set w .treedialog
     createOkCancelDialog $w $title
 
-    label $w.f.m -text $msg -anchor w -justify left
-    frame $w.f.f -bd 2 -relief sunken
+    ttk::label $w.f.m -text $msg -anchor w -justify left
+    ttk::frame $w.f.f -relief sunken
     pack $w.f.m -fill x -padx 10 -pady 5 -side top
     pack $w.f.f -expand 1 -fill both -padx 10 -pady 5 -side top
 
@@ -954,10 +994,10 @@ proc moduleOutputFilterDialog:getModuleTreeInfo {w op {key {}}} {
 # Implements the "Find/inspect objects" dialog.
 #
 proc filteredObjectList:window {{ptr ""}} {
-    global config tmp icons help_tips helptexts fonts
+    global config tmp icons help_tips helptexts
     global B2 B3
 
-    set w .objdlg
+    set w .findobjectsdialog
 
     if {$ptr=="" || [opp_isnull $ptr]} {
         set ptr [opp_object_simulation]
@@ -972,37 +1012,12 @@ proc filteredObjectList:window {{ptr ""}} {
     }
 
     # otherwise create
-    createCloseDialog $w "Find/inspect objects"
+    createCloseDialog $w "Find/Inspect Objects" 1
 
     # stay on top
     if {$config(keep-inspectors-on-top)} {
         makeTransient $w
     }
-
-    # Create toolbar
-    frame $w.toolbar -relief raised -borderwidth 1
-    pack $w.toolbar -anchor center -expand 0 -fill x -side top -before $w.f
-    foreach i {
-      {sep1     -separator}
-      {step     -image $icons(step)    -command {oneStep}}
-      {run      -image $icons(run)     -command {runNormal}}
-      {fastrun  -image $icons(fast)    -command {runFast}}
-      {exprrun  -image $icons(express) -command {runExpress}}
-      {until    -image $icons(until)   -command {runUntil}}
-      {sep2     -separator}
-      {stop     -image $icons(stop)    -command {stopSimulation}}
-    } {
-      set b [eval iconbutton $w.toolbar.$i]
-      pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
-    }
-
-    set help_tips($w.toolbar.step)    "Execute one event (F4)"
-    set help_tips($w.toolbar.run)     "Run with full animation (F5)"
-    set help_tips($w.toolbar.fastrun) "Run faster: no animation and rare inspector updates (F6)"
-    set help_tips($w.toolbar.exprrun) "Run at full speed: no text output, animation or inspector updates (F7)"
-    set help_tips($w.toolbar.until)   "Run until time or event number"
-    set help_tips($w.toolbar.stop)    "Stop running simulation (F8)"
-
 
     # vars
     set tmp(class)    $config(filtobjlist-class)
@@ -1014,7 +1029,7 @@ proc filteredObjectList:window {{ptr ""}} {
     # $w.f.main is the lower one with the listbox.
 
     # panel for filters
-    frame $w.f.filter
+    ttk::frame $w.f.filter
     pack $w.f.filter -anchor center -expand 0 -fill x -side top
 
     #label $w.f.filter.title -text "Filter list of all objects in the simulation:" -justify left -anchor w
@@ -1023,7 +1038,7 @@ proc filteredObjectList:window {{ptr ""}} {
     label-entry $w.f.filter.searchin "Search inside:" [opp_getobjectfullpath $ptr]
     pack $w.f.filter.searchin -anchor w -expand 0 -fill x -side top
 
-    labelframe $w.f.filter.pars -text "Search by class and object name:" -font $fonts(normal)
+    ttk::labelframe $w.f.filter.pars -text "Search by class and object name:"
     pack $w.f.filter.pars -anchor center -expand 0 -fill x -side top
     set fp $w.f.filter.pars
 
@@ -1033,12 +1048,12 @@ proc filteredObjectList:window {{ptr ""}} {
     ttk::combobox $fp.classentry -values [concat {{}} [filteredObjectList:getClassNames]]
     catch {$fp.classentry current 0}
     $fp.classentry config -textvariable tmp(class)
-    entry $fp.nameentry -textvariable tmp(name)
+    ttk::entry $fp.nameentry -textvariable tmp(name)
 
     set help_tips($fp.classentry) $helptexts(filterdialog-classnamepattern)
     set help_tips($fp.nameentry) $helptexts(filterdialog-namepattern)
 
-    ttk_button $fp.refresh -text "Refresh" -width 10 -command "filteredObjectList:refresh $w"
+    ttk::button $fp.refresh -text "Refresh" -width 10 -command "filteredObjectList:refresh $w"
 
     grid $fp.classlabel $fp.namelabel x -sticky ws -padx 5
     grid $fp.classentry $fp.nameentry $fp.refresh -sticky ew -padx 5 -pady 3
@@ -1046,16 +1061,16 @@ proc filteredObjectList:window {{ptr ""}} {
     grid columnconfig $fp 1 -weight 3
 
     # category filters
-    labelframe $w.f.filter.cat -text "Object categories:" -font $fonts(normal)
+    ttk::labelframe $w.f.filter.cat -text "Object categories:"
     set cf $w.f.filter.cat
-    checkbutton $cf.modules -text "modules" -variable tmp(cat-m)
-    checkbutton $cf.modpars -text "module parameters" -variable tmp(cat-p)
-    checkbutton $cf.queues -text "queues" -variable tmp(cat-q)
-    checkbutton $cf.statistics -text "outvectors, statistics, variables" -variable tmp(cat-s)
-    checkbutton $cf.messages -text "messages"  -variable tmp(cat-g)
-    checkbutton $cf.chansgates -text "gates, channels" -variable tmp(cat-c)
-    checkbutton $cf.variables -text "FSM states, variables"  -variable tmp(cat-v)
-    checkbutton $cf.other -text "other" -variable tmp(cat-o)
+    ttk::checkbutton $cf.modules -text "modules" -variable tmp(cat-m)
+    ttk::checkbutton $cf.modpars -text "module parameters" -variable tmp(cat-p)
+    ttk::checkbutton $cf.queues -text "queues" -variable tmp(cat-q)
+    ttk::checkbutton $cf.statistics -text "outvectors, statistics, variables" -variable tmp(cat-s)
+    ttk::checkbutton $cf.messages -text "messages"  -variable tmp(cat-g)
+    ttk::checkbutton $cf.chansgates -text "gates, channels" -variable tmp(cat-c)
+    ttk::checkbutton $cf.variables -text "FSM states, variables"  -variable tmp(cat-v)
+    ttk::checkbutton $cf.other -text "other" -variable tmp(cat-o)
     grid $cf.modules   $cf.modpars     $cf.queues     $cf.statistics  -sticky nw
     grid $cf.messages  $cf.chansgates  $cf.variables  $cf.other       -sticky nw
     grid columnconfigure $cf 3 -weight 1
@@ -1066,13 +1081,14 @@ proc filteredObjectList:window {{ptr ""}} {
     }
 
     # number of objects
-    label $w.f.numobj -text "Found 0 objects" -justify left -anchor w
+    ttk::label $w.f.numobj -text "Found 0 objects" -justify left -anchor w
     pack $w.f.numobj -anchor w -expand 0 -fill x -side top
 
     # Listbox
     set lb [createInspectorListbox $w.f ""]
     $lb column name  -stretch 0 -width 350
     $lb column info  -stretch 0 -width 200
+    inspectorListbox:restoreColumnWidths $lb "objdialog:columnwidths"
 
     # Configure dialog
     $w.buttons.closebutton config -command filteredObjectList:windowClose
@@ -1086,8 +1102,6 @@ proc filteredObjectList:window {{ptr ""}} {
     bind $w <Escape> "$w.buttons.closebutton invoke"
     bindRunCommands $w
 
-    setGeometry $w
-
     setInitialDialogFocus $fp.nameentry
 }
 
@@ -1096,14 +1110,17 @@ proc filteredObjectList:window {{ptr ""}} {
 #
 proc filteredObjectList:windowClose {} {
     global config tmp
-    set w .objdlg
+    set w .findobjectsdialog
 
     set config(filtobjlist-class)    $tmp(class)
     set config(filtobjlist-name)     $tmp(name)
     set config(filtobjlist-order)    $tmp(order)
     set config(filtobjlist-category) $tmp(category)
 
-    rememberGeometry $w
+    saveDialogGeometry $w
+
+    set lb $w.f.main.list
+    inspectorListbox:storeColumnWidths $lb "objdialog:columnwidths"
 
     destroy $w
 }
@@ -1249,13 +1266,14 @@ proc filteredObjectList:popup {X Y w} {
     menu $p -tearoff 0
     if {[filteredobjectlist_isnotsafetoinspect]} {set state "disabled"} else {set state "normal"}
     foreach type $insptypes {
-       $p add command -label "$type..." -state $state -command "opp_inspect $ptr \{$type\}; after 500 \{catch \{raise $w; focus $lb\}\}"
+       set label [getInspectMenuLabel $type]
+       $p add command -label $label -state $state -command "opp_inspect $ptr \{$type\}; after 500 \{catch \{raise $w; focus $lb\}\}"
     }
     $p post $X $Y
 }
 
 proc filteredObjectList:inspect {lb} {
-    set w .objdlg
+    set w .findobjectsdialog
     if {[filteredobjectlist_isnotsafetoinspect]} {
         if {[isRunning]} {
             set advice "please stop the simulation and click Refresh first"
@@ -1269,7 +1287,7 @@ proc filteredObjectList:inspect {lb} {
 
     set ptr [inspectorListbox:getCurrent $lb]
     if [opp_isnotnull $ptr] {
-        opp_inspect $ptr {(default)}
+        opp_inspect $ptr
     }
 }
 
@@ -1464,11 +1482,8 @@ proc modelInfoDialog {{insp ""}} {
         append msg "\nModule licenses are declared in package.ned, with @license(<license>).\n"
     }
 
-    global fonts
-    set dlg $insp.dlg
-    catch {destroy $dlg}
+    set dlg $insp.modelinfodialog
     createOkCancelDialog $dlg "Model Information"
-    $dlg.f config -border 0
     message $dlg.f.txt -text $msg -width 400
     pack $dlg.f.txt -expand 1 -fill both
     destroy $dlg.buttons.cancelbutton

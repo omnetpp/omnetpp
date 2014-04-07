@@ -13,13 +13,6 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-#------
-# Parts of this file were created using Stewart Allen's Visual Tcl (vtcl)
-#------
-
-#===================================================================
-#    HELPER/GUI PROCEDURES
-#===================================================================
 
 proc networkPresent {} {
     if [opp_isnull [opp_object_systemmodule]] {
@@ -80,21 +73,6 @@ proc checkRunning {} {
 #    MENU PROCEDURES
 #===================================================================
 
-proc about {} {
-    # implements Help|About
-    global OMNETPP_RELEASE OMNETPP_EDITION OMNETPP_BUILDID
-    aboutDialog "About OMNeT++/OMNEST" "
-This simulation model is based on:
-
-OMNeT++/OMNEST
-Discrete Event Simulation Framework
-" \
-"(C) 1992-2008 Andras Varga
-Release: $OMNETPP_RELEASE, build: $OMNETPP_BUILDID, edition: $OMNETPP_EDITION
-
-NO WARRANTY -- see license for details."
-}
-
 proc exitOmnetpp {} {
     global config
 
@@ -109,7 +87,7 @@ proc exitOmnetpp {} {
                     return
                 }
             } elseif {$state == "SIM_READY"} {
-                set ans [messagebox {Warning} {Do you want to call finish() before exiting?} warning yesnocancel]
+                set ans [messagebox {Warning} {Do you want to conclude the simulation by invoking finish() before exiting?} warning yesnocancel]
                 if {$ans == "yes"} {
                     # no catch{}: exceptions are handled inside
                     opp_finish_simulation
@@ -129,8 +107,8 @@ proc exitOmnetpp {} {
     }
 
     # save settings (fonts etc) globally, and inspector list locally
-    saveTkenvrc "~/.tkenvrc" 1 0 1
-    saveTkenvrc ".tkenvrc"   0 1 1 "# Partial Tkenv config file -- see \$HOME/.tkenvrc as well"
+    saveTkenvrc "~/.tkenvrc" 1 1 "# Global OMNeT++/Tkenv config file"
+    saveTkenvrc ".tkenvrc"   0 1 "# Partial OMNeT++/Tkenv config file -- see \$HOME/.tkenvrc as well"
 
     opp_exitomnetpp
 }
@@ -213,7 +191,7 @@ proc newNetwork {} {
 
     # pop up dialog, with current network as default
     set netname [opp_getnetworktype]
-    set ok [comboSelectionDialog "Set up network" "Set up a network. NOTE: The network will use parameter values defined in the \n\[General\] section of the ini file." "Select network:" netname $networknames]
+    set ok [comboSelectionDialog "Set Up Network" "Set up a network. The network will use parameter values defined in the \n\[General\] section of the ini file." "Select network:" netname $networknames]
     if {$ok == 1} {
        busy "Setting up network..."
        inspectorList:addAll 1
@@ -282,13 +260,12 @@ proc toggleTimeline {} {
    if {$config(display-timeline)==1} {
        set config(display-timeline) 0
        pack forget .timelineframe
-       .toolbar.tline config -relief flat
    } else {
        set config(display-timeline) 1
        pack .timelineframe -before .main -anchor center -expand 0 -fill x -side top -padx 0 -pady 0 -ipadx 0 -ipady 0
-       .toolbar.tline config -relief sunken
        redrawTimeline
    }
+   toolbutton:setsunken .toolbar.tline $config(display-timeline)
 }
 
 proc toggleRecordEventlog {} {
@@ -306,12 +283,7 @@ proc toggleRecordEventlog {} {
 
 proc reflectRecordEventlog {} {
    global config widgets
-
-   if {[opp_getsimoption record_eventlog]==1} {
-       .toolbar.eventlog config -relief sunken
-   } else {
-       .toolbar.eventlog config -relief flat
-   }
+   toolbutton:setsunken .toolbar.eventlog [opp_getsimoption record_eventlog]
 }
 
 proc setGuiForRunmode {mode {modinspwin ""} {untilmode ""}} {  #FIXME needs to be revised
@@ -319,51 +291,48 @@ proc setGuiForRunmode {mode {modinspwin ""} {untilmode ""}} {  #FIXME needs to b
     set insp $modinspwin
     if {$insp!="" && ![winfo exists $insp]} {set insp ""}
 
-    set default_iconbutton_relief "flat"
-    .toolbar.step config -relief $default_iconbutton_relief
-    .toolbar.run config -relief $default_iconbutton_relief
-    .toolbar.fastrun config -relief $default_iconbutton_relief
-    .toolbar.exprrun config -relief $default_iconbutton_relief
-    catch {$opp(sunken-run-button) config -relief $default_iconbutton_relief}
+    toolbutton:setsunken .toolbar.step 0
+    toolbutton:setsunken .toolbar.run 0
+    toolbutton:setsunken .toolbar.fastrun 0
+    toolbutton:setsunken .toolbar.exprrun 0
+    catch {toolbutton:setsunken $opp(sunken-run-button) 0}
     removeStopDialog
 
     if {$insp==""} {
         if {$mode=="step"} {
-            .toolbar.step config -relief sunken
-        } elseif {$mode=="slow"} {
-            .toolbar.run config -relief sunken
+            toolbutton:setsunken .toolbar.step 1
         } elseif {$mode=="normal"} {
-            .toolbar.run config -relief sunken
+            toolbutton:setsunken .toolbar.run 1
         } elseif {$mode=="fast"} {
-            .toolbar.fastrun config -relief sunken
+            toolbutton:setsunken .toolbar.fastrun 1
         } elseif {$mode=="express"} {
-            .toolbar.exprrun config -relief sunken
+            toolbutton:setsunken .toolbar.exprrun 1
             displayStopDialog
         } elseif {$mode=="notrunning"} {
-            .toolbar.until config -relief $default_iconbutton_relief
+            toolbutton:setsunken .toolbar.until 0
         } else {
             error "wrong mode parameter $mode"
         }
     } else {
         if {$mode=="normal"} {
-            $insp.toolbar.mrun config -relief sunken
+            toolbutton:setsunken $insp.toolbar.mrun 1
             set opp(sunken-run-button) $insp.toolbar.mrun
         } elseif {$mode=="fast"} {
-            $insp.toolbar.mfast config -relief sunken
+            toolbutton:setsunken $insp.toolbar.mfast 1
             set opp(sunken-run-button) $insp.toolbar.mfast
         } elseif {$mode=="express"} {
             displayStopDialog
         } elseif {$mode=="notrunning"} {
-            .toolbar.until config -relief $default_iconbutton_relief
+            toolbutton:setsunken .toolbar.until 0
         } else {
             error "wrong mode parameter $mode with module inspector"
         }
     }
 
     if {$untilmode=="until_on"} {
-        .toolbar.until config -relief sunken
+        toolbutton:setsunken .toolbar.until 1
     } elseif {$untilmode=="until_off"} {
-        .toolbar.until config -relief $default_iconbutton_relief
+        toolbutton:setsunken .toolbar.until 0
     } elseif {$untilmode!=""} {
         error "wrong untilmode parameter $mode"
     }
@@ -412,11 +381,6 @@ proc runSimulation {mode} {
         opp_run $mode
         setGuiForRunmode notrunning
     }
-}
-
-proc runSlow {} {
-    # implements Simulate|Slow execution
-    runSimulation slow
 }
 
 proc runNormal {} {
@@ -609,71 +573,49 @@ proc inspectBypointer {} {
     set pointer "ptr"
     set ok [inputbox {Inspect by pointer...} {Enter pointer (invalid pointer may cause segmentation fault!):} pointer]
     if {$ok == 1} {
-        opp_inspect $pointer (default)
+        opp_inspect $pointer
     }
 }
 
 proc inspectSystemModule {} {
     # implements Inspect|Toplevel modules...
     if {[networkPresent] == 0} return
-    opp_inspect [opp_object_systemmodule] (default)
+    opp_inspect [opp_object_systemmodule]
 }
 
 proc inspectMessageQueue {} {
     # implements Inspect|Message queue...
-    opp_inspect [opp_object_messagequeue] (default)
+    opp_inspect [opp_object_messagequeue]
 }
 
 proc inspectSimulation {} {
     # implements Inspect|Simulation...
-    opp_inspect [opp_object_simulation] (default)
+    opp_inspect [opp_object_simulation]
 }
 
 proc inspectComponentTypes {} {
-    opp_inspect [opp_object_componenttypes] {(default)}
+    opp_inspect [opp_object_componenttypes]
 }
 
 proc inspectClasses {} {
-    opp_inspect [opp_object_classes] {(default)}
+    opp_inspect [opp_object_classes]
 }
 
 proc inspectEnums {} {
-    opp_inspect [opp_object_enums] {(default)}
+    opp_inspect [opp_object_enums]
 }
 
 proc inspectConfigEntries {} {
-    opp_inspect [opp_object_configentries] {(default)}
+    opp_inspect [opp_object_configentries]
 }
 
 proc inspectFunctions {} {
-    opp_inspect [opp_object_functions] {(default)}
+    opp_inspect [opp_object_functions]
 }
 
-proc simulationOptions {} {
-    optionsDialog .
+proc preferences {} {
+    preferencesDialog .
     opp_refreshinspectors
-}
-
-proc saveTkenvConfig {} {
-    set filename "tkenv.cfg"
-    set filename [tk_getSaveFile -title "Save Tkenv configuration" \
-                  -defaultextension "cfg" -initialfile $filename \
-                  -filetypes {{{Configuration files} {*.cfg}} {{All files} {*}}}]
-
-    if {$filename!=""} {
-       saveTkenvrc $filename 1 1 0 "# Tkenv config file"
-    }
-}
-
-proc loadTkenvConfig {} {
-    set filename "tkenv.cfg"
-    set filename [tk_getOpenFile -title "Load Tkenv configuration" \
-                  -defaultextension "cfg" -initialfile $filename \
-                  -filetypes {{{Configuration files} {*.cfg}} {{All files} {*}}}]
-
-    if {$filename!=""} {
-       loadTkenvrc $filename
-    }
 }
 
 proc editTextFile {} {
@@ -707,45 +649,6 @@ proc viewIniFile {} {
        return
     }
 
-    viewFile $fname
-}
-
-proc viewOutputVectorFile {} {
-    set fname [opp_getfilename outvector]
-    if {$fname == ""} {
-       messagebox {Info} "The current output vector manager doesn't use file output." info ok
-       return
-    }
-    if {![file exists $fname]} {
-       messagebox {Info} "Output vector file not yet created (no values recorded yet)." info ok
-       return
-    }
-    viewFile $fname
-}
-
-proc viewOutputScalarFile {} {
-    set fname [opp_getfilename outscalar]
-    if {$fname == ""} {
-       messagebox {Info} "The current output scalar manager doesn't use file output." info ok
-       return
-    }
-    if {![file exists $fname]} {
-       messagebox {Info} "Output scalar file not yet created (no output scalars written)." info ok
-       return
-    }
-    viewFile $fname
-}
-
-proc viewSnapshotFile {} {
-    set fname [opp_getfilename snapshot]
-    if {$fname == ""} {
-       messagebox {Info} "The current snapshot manager doesn't use file output." info ok
-       return
-    }
-    if {![file exists $fname]} {
-       messagebox {Info} "Snapshot file not yet created (no snapshots done yet)." info ok
-       return
-    }
     viewFile $fname
 }
 

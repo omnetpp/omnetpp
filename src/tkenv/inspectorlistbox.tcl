@@ -17,7 +17,7 @@
 proc createInspectorListbox {f insp} {
     global B2 B3
 
-    frame $f.main
+    ttk::frame $f.main
     pack $f.main -expand 1 -fill both -side top
 
     set lb $f.main.list
@@ -119,4 +119,23 @@ proc inspectorListbox:dblClick {insp lb} {
         inspector:dblClick $insp $ptr
     }
 }
+
+proc inspectorListbox:storeColumnWidths {lb configkey} {
+    global config
+    set columnwidths [list "#0" [$lb column "#0" -width]]
+    foreach col [$lb cget -columns] {
+        lappend columnwidths $col [$lb column $col -width]
+    }
+    set config($configkey) $columnwidths
+}
+
+proc inspectorListbox:restoreColumnWidths {lb configkey} {
+    global config
+    if [info exists config($configkey)] {
+        foreach {col width} $config($configkey) {
+            $lb column $col -width $width
+        }
+    }
+}
+
 

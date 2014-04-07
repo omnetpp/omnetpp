@@ -57,7 +57,7 @@ proc saveFile {win {filename ""}} {
 # Open file viewer window
 #
 proc createFileViewer {filename} {
-    global config icons fonts help_tips B3
+    global config icons help_tips B3 CTRL_
 
     if {$filename == ""} return
 
@@ -67,6 +67,7 @@ proc createFileViewer {filename} {
 
     # creating widgets
     toplevel $w -class Toplevel
+    wm transient $w .
     wm focusmodel $w passive
     #wm maxsize $w 1009 738
     wm minsize $w 1 1
@@ -74,25 +75,25 @@ proc createFileViewer {filename} {
     wm resizable $w 1 1
     wm title $w $filename
 
-    frame $w.toolbar
+    ttk::frame $w.toolbar
 
-    packIconButton $w.toolbar.copy   -image $icons(copy) -command "editCopy $w.main.text"
-    packIconButton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
-    packIconButton $w.toolbar.sep20  -separator
-    packIconButton $w.toolbar.save   -image $icons(save) -command "saveFile $w $filename"
-    packIconButton $w.toolbar.sep21  -separator
+    packToolbutton $w.toolbar.copy   -image $icons(copy) -command "editCopy $w.main.text"
+    packToolbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
+    packToolbutton $w.toolbar.sep20  -separator
+    packToolbutton $w.toolbar.save   -image $icons(save) -command "saveFile $w $filename"
+    packToolbutton $w.toolbar.sep21  -separator
 
-    set help_tips($w.toolbar.copy)   "Copy selected text to clipboard (Ctrl+C)"
-    set help_tips($w.toolbar.find)   "Find string in window (Ctrl+F"
+    set help_tips($w.toolbar.copy)   "Copy selected text to clipboard (${CTRL_}C)"
+    set help_tips($w.toolbar.find)   "Find string in window (${CTRL_}F)"
     set help_tips($w.toolbar.save)   "Save window contents to file"
 
     pack $w.toolbar  -anchor center -expand 0 -fill x -side top
 
-    frame $w.main  -borderwidth 1 -relief sunken
+    ttk::frame $w.main  -borderwidth 1 -relief sunken
     pack $w.main  -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 0 -pady 0 -side top
     ttk::scrollbar $w.main.sb -command "$w.main.text yview"
     pack $w.main.sb -anchor center -expand 0 -fill y -ipadx 0 -ipady 0 -padx 0 -pady 0 -side right
-    text $w.main.text -yscrollcommand "$w.main.sb set" -width 88 -height 30 -font $fonts(text)
+    text $w.main.text -yscrollcommand "$w.main.sb set" -width 88 -height 30 -font LogFont
     pack $w.main.text -anchor center -expand 1 -fill both -side left
 
     logTextWidget:configureTags $w.main.text
@@ -111,7 +112,7 @@ proc createFileViewer {filename} {
 # Create a context menu for a text widget
 #
 proc textwidget:contextMenu {txt insp X Y} {
-    global tmp config
+    global tmp config CTRL
 
     set tmp(hideprefix) [$txt tag cget prefix -elide]
     set tmp(wrap) [$txt cget -wrap]
@@ -119,20 +120,20 @@ proc textwidget:contextMenu {txt insp X Y} {
     catch {destroy .popup}
     menu .popup -tearoff 0
 
-    .popup add command -command editCopy -label "Copy" -accel "Ctrl+C" -underline 0
+    .popup add command -command editCopy -label "Copy" -accel "$CTRL+C" -underline 0
     .popup add separator
-    .popup add command -command "editFind $txt" -label "Find..." -accel "Ctrl+F" -underline 0
-    .popup add command -command "editFindNext $txt" -label "Find next" -accel "F3" -underline 5
+    .popup add command -command "editFind $txt" -label "Find..." -accel "$CTRL+F" -underline 0
+    .popup add command -command "editFindNext $txt" -label "Find Next" -accel "F3" -underline 5
     .popup add separator
     if {$insp!=""} {
-        .popup add command -command "LogInspector:openFilterDialog $insp" -label "Filter window contents..." -accel "Ctrl+H" -underline 0
+        .popup add command -command "LogInspector:openFilterDialog $insp" -label "Filter Window Contents..." -accel "$CTRL+H" -underline 0
         .popup add separator
         .popup add checkbutton -command "textwidget:togglePrefix $txt" -variable tmp(hideprefix) -onvalue 0 -offvalue 1 -label {Show log prefix} -underline 0
     }
-    .popup add command -label "Logging options..." -command "optionsDialog $txt g"
-    .popup add checkbutton -command "textwidget:toggleWrap $txt" -variable tmp(wrap) -onvalue "char" -offvalue "none" -label "Wrap lines" -underline 0
+    .popup add command -label "Logging Options..." -command "preferencesDialog $txt g"
+    .popup add checkbutton -command "textwidget:toggleWrap $txt" -variable tmp(wrap) -onvalue "char" -offvalue "none" -label "Wrap Lines" -underline 0
     .popup add separator
-    .popup add command -command "$txt tag add sel 1.0 end" -label "Select all" -accel "Ctrl+A" -underline 0
+    .popup add command -command "$txt tag add sel 1.0 end" -label "Select All" -accel "$CTRL+A" -underline 0
 
     tk_popup .popup $X $Y
 }

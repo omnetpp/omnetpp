@@ -15,42 +15,42 @@
 
 
 proc createLogInspector {insp geom} {
-    global icons fonts help_tips B2 B3
+    global icons help_tips B2 B3
 
     createInspectorToplevel $insp $geom
-    set help_tips($insp.toolbar.parent)  "Inspect parent"
+    set help_tips($insp.toolbar.parent)  "Go to parent module"
 
-    packIconButton $insp.toolbar.sep1 -separator
+    packToolbutton $insp.toolbar.sep1 -separator
     textWindowAddIcons $insp modulewindow
     ModuleInspector:addRunButtons $insp
 
-    frame $insp.main
+    ttk::frame $insp.main
     pack $insp.main -expand 1 -fill both -side top
     createLogViewer $insp $insp.main
 }
 
 proc createEmbeddedLogInspector {insp} {
-    global icons help_tips
+    global icons help_tips CTRL_
 
-    frame $insp.main
+    ttk::frame $insp.main
     pack $insp.main -expand 1 -fill both -side top
 
     createLogViewer $insp $insp.main
 
     set tb [inspector:createInternalToolbar $insp $insp.main.text]
-    packIconButton $tb.copy   -image $icons(copy) -command "editCopy $insp.main.text"
-    packIconButton $tb.find   -image $icons(find) -command "findDialog $insp.main.text"
-    packIconButton $tb.filter -image $icons(filter) -command "editFilterWindowContents $insp"
+    packToolbutton $tb.copy   -image $icons(copy) -command "editCopy $insp.main.text"
+    packToolbutton $tb.find   -image $icons(find) -command "findDialog $insp.main.text"
+    packToolbutton $tb.filter -image $icons(filter) -command "editFilterWindowContents $insp"
 
-    set help_tips($tb.copy)   {Copy selected text to clipboard (Ctrl+C)}
-    set help_tips($tb.find)   {Find string in window (Ctrl+F)}
-    set help_tips($tb.filter) {Filter window contents (Ctrl+H)}
+    set help_tips($tb.copy)   "Copy selected text to clipboard (${CTRL_}C)"
+    set help_tips($tb.find)   "Find string in window (${CTRL_}F)"
+    set help_tips($tb.filter) "Filter window contents (${CTRL_}H)"
 }
 
 proc createLogViewer {insp f} {
-    global config fonts B3
+    global config B3 Control
 
-    text $f.text -yscrollcommand "$f.sb set" -width 80 -height 15 -font $fonts(text)
+    text $f.text -yscrollcommand "$f.sb set" -width 80 -height 15 -font LogFont
     ttk::scrollbar $f.sb -command "$f.text yview"
     logTextWidget:configureTags $f.text
 
@@ -63,13 +63,12 @@ proc createLogViewer {insp f} {
     # bind Ctrl+H to the whole (main or inspector) window
     # ('break' is needed because originally ^H is bound to DEL)
     set w [winfo toplevel $f]
-    bind $w <Control-h> "LogInspector:openFilterDialog $insp; break"
-    bind $w <Control-H> "LogInspector:openFilterDialog $insp; break"
+    bind $w <$Control-h> "LogInspector:openFilterDialog $insp; break"
+    bind $w <$Control-H> "LogInspector:openFilterDialog $insp; break"
 
     # bind a context menu as well
     catch {$f.text config -wrap $config(editor-wrap)}
     bind $f.text <Button-$B3> [list textwidget:contextMenu %W $insp %X %Y]
-
 }
 
 proc logTextWidget:configureTags {txt} {

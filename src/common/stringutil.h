@@ -231,6 +231,27 @@ COMMON_API std::string opp_join(const char *separator, const char *s1, const cha
 COMMON_API int strdictcmp(const char *s1, const char *s2);
 
 /**
+ * Prints the d integer into the given buffer, then returns the buffer pointer.
+ */
+COMMON_API char *opp_itoa(char *buf, int d);
+
+/**
+ * Prints the d integer into the given buffer, then returns the buffer pointer.
+ */
+COMMON_API char *opp_ltoa(char *buf, long d);
+
+/**
+ * Prints the d integer into the given buffer, then returns the buffer pointer.
+ */
+COMMON_API char *opp_i64toa(char *buf, int64_t d);
+
+/**
+ * Prints the d double into the given buffer with the given printf format (e.g. "%g"),
+ * then returns the buffer pointer.
+ */
+COMMON_API char *opp_dtoa(char *buf, const char *format, double d);
+
+/**
  * Like the standard strtol(), but throws opp_runtime_error if an overflow
  * occurs during conversion. Accepts decimal and C-style hexadecimal
  * notation, but not octal (leading zeroes are simply discarded and the number

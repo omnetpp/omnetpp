@@ -97,6 +97,7 @@ int getActiveRunNumber_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getValueFromConfig_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getNetworkType_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getFileName_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getStatusVar_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectFullName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectFullPath_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -120,6 +121,7 @@ int getSubObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getComponentTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSimulationState_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getRunMode_cmd(ClientData, Tcl_Interp *, int, const char **);
 int stopSimulation_cmd(ClientData, Tcl_Interp *, int, const char **);
 int simulationIsStopping_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSimOption_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -197,8 +199,8 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_exitomnetpp",      exitOmnetpp_cmd    }, // args: -
    { "opp_onestep",          oneStep_cmd        }, // args: -
    { "opp_run",              run_cmd            }, // args: none, or <timelimit> <eventlimit> <message>
-   { "opp_onestepinmodule",  oneStepInModule_cmd}, // args: <inspectorwindow>
-   { "opp_set_run_mode",     setRunMode_cmd     }, // args: fast|normal|slow|express
+   { "opp_onestepinmodule",  oneStepInModule_cmd}, // args: <modptr>
+   { "opp_set_run_mode",     setRunMode_cmd     }, // args: fast|normal|express
    { "opp_set_run_until",    setRunUntil_cmd    }, // args: none, or <timelimit> <eventlimit> <message>
    { "opp_set_run_until_module",setRunUntilModule_cmd}, // args: <inspectorwindow>
    { "opp_rebuild",          rebuild_cmd        }, // args: -
@@ -216,7 +218,8 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getconfigdescription",getConfigDescription_cmd}, // args: <configname>
    { "opp_getbaseconfigs",   getBaseConfigs_cmd        }, // args: <configname>
    { "opp_getnumrunsinconfig",getNumRunsInConfig_cmd  }, // args: <configname>
-   { "opp_getfilename",      getFileName_cmd          }, // args: <filetype>  ret: filename
+   { "opp_getfilename",      getFileName_cmd          }, // args: <filetype>  ret: <filename>
+   { "opp_getstatusvar",     getStatusVar_cmd         }, // args: <varname>  ret: <value>
    { "opp_getobjectname",    getObjectName_cmd        }, // args: <pointer>  ret: getName()
    { "opp_getobjectfullname",getObjectFullName_cmd    }, // args: <pointer>  ret: getFullName()
    { "opp_getobjectfullpath",getObjectFullPath_cmd    }, // args: <pointer>  ret: getFullPath()
@@ -240,6 +243,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getsubobjectsfilt",getSubObjectsFilt_cmd    }, // args: <pointer> <args> ret: filtered list of object ptrs in subtree
    { "opp_getcomponenttypes",getComponentTypes_cmd    }, // args: <module> ret: list of cComponentType ptrs
    { "opp_getsimulationstate", getSimulationState_cmd }, // args: -  ret: NONET,READY,RUNNING,ERROR,TERMINATED,etc.
+   { "opp_getrunmode",       getRunMode_cmd           }, // args: -  ret: fast|normal|express
    { "opp_stopsimulation",   stopSimulation_cmd       }, // args: -
    { "opp_simulationisstopping", simulationIsStopping_cmd}, // args: -
    { "opp_getsimoption",     getSimOption_cmd         }, // args: <option-namestr>
@@ -260,7 +264,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_eventlogrecording", eventlogRecording_cmd },   // args: subcommand <args>
 
    // Inspector stuff
-   { "opp_inspect",           inspect_cmd           }, // args: <ptr> <type> ret: window
+   { "opp_inspect",           inspect_cmd           }, // args: <ptr> [<type>] ret: window
    { "opp_supported_insp_types",supportedInspTypes_cmd}, // args: <ptr>  ret: insp type list
    { "opp_inspectbyname",     inspectByName_cmd     }, // args: <objfullpath> <classname> <insptype> <geom>
    { "opp_isinspector",       isInspector_cmd       }, // args: <window>
@@ -427,9 +431,7 @@ int oneStep_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 
 static int resolveRunMode(const char *mode)
 {
-   if (!strcmp(mode,"slow"))
-       return Tkenv::RUNMODE_SLOW;
-   else if (!strcmp(mode,"normal"))
+   if (!strcmp(mode,"normal"))
        return Tkenv::RUNMODE_NORMAL;
    else if (!strcmp(mode,"fast"))
        return Tkenv::RUNMODE_FAST;
@@ -445,7 +447,7 @@ int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    Tkenv *app = getTkenv();
 
    int mode = resolveRunMode(argv[1]);
-   if (mode==-1) {Tcl_SetResult(interp, TCLCONST("wrong mode argument, should be slow, normal, fast or express"), TCL_STATIC);return TCL_ERROR;}
+   if (mode==-1) {Tcl_SetResult(interp, TCLCONST("wrong mode argument, should be normal, fast or express"), TCL_STATIC);return TCL_ERROR;}
 
    simtime_t until_time = SIMTIME_ZERO;
    eventnumber_t until_eventnum = 0;
@@ -474,7 +476,7 @@ int setRunMode_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    Tkenv *app = getTkenv();
 
    int mode = resolveRunMode(argv[1]);
-   if (mode==-1) {Tcl_SetResult(interp, TCLCONST("wrong mode argument, should be slow, normal, fast or express"), TCL_STATIC);return TCL_ERROR;}
+   if (mode==-1) {Tcl_SetResult(interp, TCLCONST("wrong mode argument, should be normal, fast or express"), TCL_STATIC);return TCL_ERROR;}
 
    app->setSimulationRunMode(mode);
    return TCL_OK;
@@ -536,10 +538,8 @@ int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
 {
    if (argc!=2 && argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
-   Inspector *insp = app->findInspector(argv[1]);
-   if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
-   cObject *object = insp->getObject();
-   if (!object) {Tcl_SetResult(interp, TCLCONST("inspector has no object"), TCL_STATIC); return TCL_ERROR;}
+   cObject *object = strToPtr(argv[1]);
+   if (!object) {Tcl_SetResult(interp, TCLCONST("null or invalid pointer"), TCL_STATIC); return TCL_ERROR;}
    cModule *mod = dynamic_cast<cModule *>(object);
    if (!mod) {Tcl_SetResult(interp, TCLCONST("object is not a module"), TCL_STATIC); return TCL_ERROR;}
 
@@ -547,7 +547,7 @@ int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    if (argc==3)
    {
        mode = resolveRunMode(argv[2]);
-       if (mode==-1) {Tcl_SetResult(interp, TCLCONST("wrong mode argument, should be slow, normal, fast or express"), TCL_STATIC);return TCL_ERROR;}
+       if (mode==-1) {Tcl_SetResult(interp, TCLCONST("wrong mode argument, should be normal, fast or express"), TCL_STATIC);return TCL_ERROR;}
    }
 
    // fast run until we get to that module
@@ -616,8 +616,7 @@ int getActiveRunNumber_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    char buf[16];
    Tkenv *app = getTkenv();
-   sprintf(buf, "%d", app->getConfigEx()->getActiveRunNumber());
-   Tcl_SetResult(interp, buf, TCL_VOLATILE);
+   Tcl_SetResult(interp, opp_itoa(buf, app->getConfigEx()->getActiveRunNumber()), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -656,6 +655,50 @@ int getFileName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    else
         return TCL_ERROR;
    Tcl_SetResult(interp, TCLCONST(!s ? "" : s), TCL_VOLATILE);
+   return TCL_OK;
+}
+
+#define LL  INT64_PRINTF_FORMAT
+int getStatusVar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   Tkenv *app = getTkenv();
+
+   char buf[64];
+   if (0==strcmp(argv[1],"eventnumber"))
+       Tcl_SetResult(interp, opp_i64toa(buf, simulation.getEventNumber()), TCL_VOLATILE);
+   else if (0==strcmp(argv[1],"guessnextsimtime"))
+       Tcl_SetResult(interp, TCLCONST(SIMTIME_STR(simulation.guessNextSimtime())), TCL_VOLATILE);
+   else if (0==strcmp(argv[1],"guessnextevent"))
+       Tcl_SetResult(interp, ptrToStr(simulation.guessNextEvent(), buf), TCL_VOLATILE);
+   else if (0==strcmp(argv[1],"guessnextmodule"))
+       Tcl_SetResult(interp, ptrToStr(simulation.guessNextModule(), buf), TCL_VOLATILE);
+   else if (0==strcmp(argv[1],"timedelta")) {
+       cEvent *event = simulation.guessNextEvent();
+       Tcl_SetResult(interp, TCLCONST(!event ? "" : SIMTIME_STR(event->getArrivalTime()-simulation.getSimTime())), TCL_VOLATILE);
+   }
+   else if (0==strcmp(argv[1],"simsecpersec"))
+       Tcl_SetResult(interp, opp_dtoa(buf, "%g", app->getSpeedometer().getSimSecPerSec()), TCL_VOLATILE);
+   else if (0==strcmp(argv[1],"eventspersec"))
+       Tcl_SetResult(interp, opp_dtoa(buf, "%g", app->getSpeedometer().getEventsPerSec()), TCL_VOLATILE);
+   else if (0==strcmp(argv[1],"eventspersimsec"))
+       Tcl_SetResult(interp, opp_dtoa(buf, "%g", app->getSpeedometer().getEventsPerSimSec()), TCL_VOLATILE);
+   else if (0==strcmp(argv[1],"feslength"))
+       Tcl_SetResult(interp, opp_itoa(buf, simulation.msgQueue.getLength()), TCL_VOLATILE);
+   else if (0==strcmp(argv[1],"livemsgcount"))
+       Tcl_SetResult(interp, opp_ltoa(buf, cMessage::getLiveMessageCount()), TCL_VOLATILE);
+   else if (0==strcmp(argv[1],"totalmsgcount"))
+       Tcl_SetResult(interp, opp_ltoa(buf, cMessage::getTotalMessageCount()), TCL_VOLATILE);
+   else if (0==strcmp(argv[1],"activeconfig"))
+       Tcl_SetResult(interp, TCLCONST(opp_nulltoempty(app->getConfigEx()->getActiveConfigName())), TCL_VOLATILE);
+   else if (0==strcmp(argv[1],"activerunnumber"))
+       Tcl_SetResult(interp, opp_itoa(buf, app->getConfigEx()->getActiveRunNumber()), TCL_VOLATILE);
+   else if (0==strcmp(argv[1],"networktypename"))
+       Tcl_SetResult(interp, TCLCONST(!simulation.getNetworkType() ? "" : simulation.getNetworkType()->getName()), TCL_VOLATILE);
+   else {
+       Tcl_SetResult(interp, TCLCONST("unknown statusvar"), TCL_STATIC);
+        return TCL_ERROR;
+   }
    return TCL_OK;
 }
 
@@ -1129,6 +1172,23 @@ int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    return TCL_OK;
 }
 
+int getRunMode_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
+{
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   Tkenv *app = getTkenv();
+
+   const char *modename;
+   switch (app->getSimulationRunMode())
+   {
+       case Tkenv::RUNMODE_NORMAL:  modename = "normal"; break;
+       case Tkenv::RUNMODE_FAST:    modename = "fast"; break;
+       case Tkenv::RUNMODE_EXPRESS: modename = "express"; break;
+       default: modename = "?"; break;
+   }
+   Tcl_SetResult(interp, TCLCONST(modename), TCL_STATIC);
+   return TCL_OK;
+}
+
 int stopSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
@@ -1195,8 +1255,6 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       sprintf(buf,"%d", opt->showBubbles);
    else if (0==strcmp(argv[1], "animation_speed"))
       sprintf(buf,"%g", opt->animationSpeed);
-   else if (0==strcmp(argv[1], "stepdelay"))
-      sprintf(buf,"%ld", opt->stepDelay);
    else if (0==strcmp(argv[1], "event_banners"))
       sprintf(buf,"%d", opt->printEventBanners);
    else if (0==strcmp(argv[1], "init_banners"))
@@ -1231,9 +1289,7 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    Tkenv *app = getTkenv();
    TkenvOptions *opt = getTkenv()->opt;
 
-   if (0==strcmp(argv[1], "stepdelay"))
-      opt->stepDelay = atol(argv[2]);
-   else if (0==strcmp(argv[1], "animation_enabled"))
+   if (0==strcmp(argv[1], "animation_enabled"))
       opt->animationEnabled = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "nexteventmarkers"))
       opt->showNextEventMarkers = (argv[2][0]!='0');
@@ -1673,16 +1729,19 @@ int eventlogRecording_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 
 int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2 && argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    cObject *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
 
+   const char *arg2 = (argc>=3) ? argv[2] : "";
    int type;
-   if (argv[2][0]>='0' && argv[2][0]<='9')
-        type = atoi( argv[2] );
-   else if ((type=insptypeCodeFromName(argv[2])) < 0)
+   if (!*arg2)
+        type = INSP_DEFAULT;
+   else if (arg2[0]>='0' && arg2[0]<='9')
+        type = atoi(arg2);
+   else if ((type=insptypeCodeFromName(arg2)) < 0)
         {Tcl_SetResult(interp, TCLCONST("unrecognized inspector type"), TCL_STATIC);return TCL_ERROR;}
 
    Inspector *insp = app->inspect(object, type, true, "");

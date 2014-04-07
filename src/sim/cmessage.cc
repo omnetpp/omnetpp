@@ -148,6 +148,8 @@ void cMessage::forEachChild(cVisitor *v)
 {
     if (parlistp)
         v->visit(parlistp);
+    if (ctrlp)
+        v->visit(ctrlp);
 }
 
 std::string cMessage::detailedInfo() const

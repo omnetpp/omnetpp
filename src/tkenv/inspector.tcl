@@ -18,8 +18,8 @@
 # Invoked from concrete inspector subtypes
 #
 proc createInspectorToplevel {insp geom} {
-    global config fonts icons help_tips
-    global B2 B3
+    global config icons help_tips
+    global B2 B3 CTRL_
 
     # Create window
     toplevel $insp -class Toplevel
@@ -39,24 +39,27 @@ proc createInspectorToplevel {insp geom} {
     if {$config(keep-inspectors-on-top)} {
         makeTransient $insp $geom
     }
+    if {$geom==""} {
+        placeWindowNearMouse $insp
+    }
 
     # Create toolbar
-    frame $insp.toolbar -relief raised -bd 1
+    ttk::frame $insp.toolbar -relief raised
     pack $insp.toolbar -anchor w -side top -fill x -expand 0
 
-    packIconButton $insp.toolbar.sep0 -separator
-    packIconButton $insp.toolbar.back -image $icons(back) -command "inspector:back $insp"
-    packIconButton $insp.toolbar.forward -image $icons(forward) -command "inspector:forward $insp"
-    packIconButton $insp.toolbar.parent -image $icons(parent) -command "inspector:inspectParent $insp"
-    packIconButton $insp.toolbar.sep01 -separator
-    packIconButton $insp.toolbar.inspectas -image $icons(inspectas) -command "inspector:inspectAsPopup $insp $insp.toolbar.inspectas"
-    packIconButton $insp.toolbar.copyobj -image $icons(copy) -command "inspector:namePopup $insp $insp.toolbar.copyobj"
-    packIconButton $insp.toolbar.objs -image $icons(findobj) -command "inspectFilteredObjectList $insp"
+    packToolbutton $insp.toolbar.sep0 -separator
+    packToolbutton $insp.toolbar.back -image $icons(back) -command "inspector:back $insp"
+    packToolbutton $insp.toolbar.forward -image $icons(forward) -command "inspector:forward $insp"
+    packToolbutton $insp.toolbar.parent -image $icons(parent) -command "inspector:inspectParent $insp"
+    packToolbutton $insp.toolbar.sep01 -separator
+    packToolbutton $insp.toolbar.inspectas -image $icons(inspectas) -command "inspector:inspectAsPopup $insp $insp.toolbar.inspectas"
+    packToolbutton $insp.toolbar.copyobj -image $icons(copyptr) -command "inspector:namePopup $insp $insp.toolbar.copyobj"
+    packToolbutton $insp.toolbar.objs -image $icons(findobj) -command "inspectFilteredObjectList $insp"
 
-    set help_tips($insp.toolbar.parent) "Inspect parent"
+    set help_tips($insp.toolbar.parent) "Go to parent"
     set help_tips($insp.toolbar.inspectas) "Inspect"
     set help_tips($insp.toolbar.copyobj) "Copy name, type or pointer"
-    set help_tips($insp.toolbar.objs) "Find objects (Ctrl+S)"
+    set help_tips($insp.toolbar.objs) "Find objects (${CTRL_}S)"
 
     # Keyboard bindings
     bind $insp <Escape>     "catch {.popup unpost}"
@@ -69,7 +72,7 @@ proc createInspectorToplevel {insp geom} {
 
 proc inspector:createInternalToolbar {insp {parent ""}} {
     if {$parent==""} {set parent $insp}
-    frame $insp.toolbar -border 2 -relief groove
+    ttk::frame $insp.toolbar -border 2 -relief groove
     place $insp.toolbar -in $parent -relx 1.0 -rely 0 -anchor ne -x -2 -y 2
     return $insp.toolbar
 }
@@ -99,37 +102,30 @@ proc inspector:refresh {insp} {
     # Info bar
     if [winfo exist $insp.infobar] {  ;#FIXME add proper condition
         if [opp_isnull $ptr] {
-            $insp.infobar.name config -text "n/a"
+            $insp.infobar.name config -text "N/A"
         } else {
             set typename [opp_getobjectshorttypename $ptr]
             set fullpath [opp_getobjectfullpath $ptr]
-            #set info [opp_getobjectinfostring $ptr]
-            set str "($typename) $fullpath"   ;#TODO short info?
+            set str "($typename) $fullpath"
             $insp.infobar.name config -text $str
         }
     }
 
     if [winfo exist $insp.toolbar.parent] {  ;#FIXME add proper condition
         if [opp_isnull $ptr] {
-            $insp.toolbar.parent config -state disabled
+            toolbutton:setstate $insp.toolbar.parent disabled
         } else {
             set parentptr [opp_getobjectparent $ptr]
             if [opp_isnull $parentptr] {set state disabled} else {set state normal}
-            $insp.toolbar.parent config -state $state
-
-            if {[opp_inspector_supportsobject $insp $parentptr] && $config(reuse-inspectors)} {
-                set help_tips($insp.toolbar.parent) "Go up"
-            } else {
-                set help_tips($insp.toolbar.parent) "Inspect parent"
-            }
+            toolbutton:setstate $insp.toolbar.parent $state
         }
     }
 
     if [opp_inspectorcommand $insp cangoback] {set state normal} else {set state disabled}
-    catch {$insp.toolbar.back config -state $state} ;#FIXME add proper condition whether button exists
+    catch {toolbutton:setstate $insp.toolbar.back $state} ;#FIXME add proper condition whether button exists
 
     if [opp_inspectorcommand $insp cangoforward] {set state normal} else {set state disabled}
-    catch {$insp.toolbar.forward config -state $state}  ;#FIXME add proper condition whether button exists
+    catch {toolbutton:setstate $insp.toolbar.forward $state}  ;#FIXME add proper condition whether button exists
 
 }
 
@@ -176,7 +172,7 @@ proc inspector:inspectParent {insp} {
     if {[opp_inspector_supportsobject $insp $parentptr] && $config(reuse-inspectors)} {
         opp_inspector_setobject $insp $parentptr
     } else {
-        opp_inspect $parentptr "(default)"
+        opp_inspect $parentptr
     }
 }
 
@@ -187,22 +183,21 @@ proc inspector:dblClick {insp ptr} {
     if {[opp_inspector_supportsobject $insp $ptr] && $config(reuse-inspectors)} {
         opp_inspector_setobject $insp $ptr
     } else {
-        opp_inspect $ptr "(default)"
+        opp_inspect $ptr
     }
 }
 
 proc inspector:namePopup {insp toolbutton} {
     set ptr [opp_inspector_getobject $insp]
-    regsub {^ptr} $ptr {0x} p
 
     catch {destroy .popup}
     menu .popup -tearoff 0
-    .popup add command -label "Copy pointer with cast (for debugger)" -command [list setClipboard "(([opp_getobjectfield $ptr className] *)$p)"]
-    .popup add command -label "Copy pointer value (for debugger)" -command [list setClipboard $p]
+    .popup add command -label "Copy Pointer With Cast (for Debugger)" -command [list copyToClipboard $ptr ptrWithCast]
+    .popup add command -label "Copy Pointer Value (for Debugger)" -command [list copyToClipboard $ptr ptr]
     .popup add separator
-    .popup add command -label "Copy full path" -command [list setClipboard [opp_getobjectfullpath $ptr]]
-    .popup add command -label "Copy name" -command [list setClipboard [opp_getobjectfullname $ptr]]
-    .popup add command -label "Copy class name" -command [list setClipboard [opp_getobjectfield $ptr className]]
+    .popup add command -label "Copy Full Path" -command [list copyToClipboard $ptr fullPath]
+    .popup add command -label "Copy Name" -command [list copyToClipboard $ptr fullName]
+    .popup add command -label "Copy Class Name" -command [list copyToClipboard $ptr className]
 
     set x [winfo rootx $toolbutton]
     set y [expr [winfo rooty $toolbutton]+[winfo height $toolbutton]]
@@ -218,7 +213,8 @@ proc inspector:inspectAsPopup {insp toolbutton} {
     menu .popup -tearoff 0
     foreach type $typelist {
         if {$type==$curtype} {set state disabled} else {set state normal}
-        .popup add command -label "$type" -command [list opp_inspect $ptr $type] -state $state
+       set label [getInspectMenuLabel $type]
+        .popup add command -label $label -command [list opp_inspect $ptr $type] -state $state
     }
 
     set x [winfo rootx $toolbutton]

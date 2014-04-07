@@ -15,20 +15,20 @@
 
 
 proc textWindowAddIcons {insp {wintype ""}} {
-    global icons help_tips
+    global icons help_tips CTRL_
 
-    packIconButton $insp.toolbar.copy   -image $icons(copy) -command "editCopy $insp.main.text"
-    packIconButton $insp.toolbar.find   -image $icons(find) -command "findDialog $insp.main.text"
-    packIconButton $insp.toolbar.save   -image $icons(save) -command "saveFile $insp"
+    packToolbutton $insp.toolbar.copy   -image $icons(copy) -command "editCopy $insp.main.text"
+    packToolbutton $insp.toolbar.find   -image $icons(find) -command "findDialog $insp.main.text"
+    packToolbutton $insp.toolbar.save   -image $icons(save) -command "saveFile $insp"
     if {$wintype=="modulewindow"} {
-        packIconButton $insp.toolbar.filter -image $icons(filter) -command "editFilterWindowContents $insp"
+        packToolbutton $insp.toolbar.filter -image $icons(filter) -command "editFilterWindowContents $insp"
     }
-    packIconButton $insp.toolbar.sep21  -separator
+    packToolbutton $insp.toolbar.sep21  -separator
 
-    set help_tips($insp.toolbar.copy)   "Copy selected text to clipboard (Ctrl+C)"
-    set help_tips($insp.toolbar.find)   "Find string in window (Ctrl+F)"
+    set help_tips($insp.toolbar.copy)   "Copy selected text to clipboard (${CTRL_}C)"
+    set help_tips($insp.toolbar.find)   "Find string in window (${CTRL_}F)"
     set help_tips($insp.toolbar.save)   "Save window contents to file"
-    set help_tips($insp.toolbar.filter) "Filter window contents (Ctrl+H)"
+    set help_tips($insp.toolbar.filter) "Filter window contents (${CTRL_}H)"
 }
 
 #
@@ -77,35 +77,49 @@ proc fillInspectorContextMenu {menu insp ptr} {
     # ptr should never be null, but check it anyway
     if [opp_isnull $ptr] {return $menu}
 
-    # add inspector types supported by the object
+    # add "Go Info" if applicable
     set name [opp_getobjectfullname $ptr]
-    set insptypes [opp_supported_insp_types $ptr]
-    if {$insp!="" && $ptr!=[opp_inspector_getobject $insp]} {
-        if [opp_inspector_supportsobject $insp $ptr] {set state normal} else {set state disabled}
-        $menu add command -label "Go into '$name'" -command "opp_inspector_setobject $insp $ptr" -state $state
+    if {$insp!="" && $ptr!=[opp_inspector_getobject $insp] && [opp_inspector_supportsobject $insp $ptr]} {
+        $menu add command -label "Go Into '$name'" -command "opp_inspector_setobject $insp $ptr"
         $menu add separator
     }
+
+    # add inspector types supported by the object
+    set insptypes [opp_supported_insp_types $ptr]
     foreach type $insptypes {
-       $menu add command -label "Inspect $type..." -command "opp_inspect $ptr \{$type\}"
+       set label "[getInspectMenuLabel $type] for '$name'"
+       $menu add command -label $label -command "opp_inspect $ptr \{$type\}"
     }
 
     # add "run until" menu items
     set baseclass [opp_getobjectbaseclass $ptr]
     if {$baseclass=="cSimpleModule" || $baseclass=="cCompoundModule"} {
-        set insp ".$ptr-0"  ;#hack
         $menu add separator
-        $menu add command -label "Run until next event in module '$name'" -command "runSimulationLocal $insp normal"
-        $menu add command -label "Fast run until next event in module '$name'" -command "runSimulationLocal $insp fast"
+        $menu add command -label "Run Until Next Event in Module '$name'" -command "runSimulationLocal $insp normal $ptr"
+        $menu add command -label "Fast Run Until Next Event in Module '$name'" -command "runSimulationLocal $insp fast $ptr"
     }
 
     if {$baseclass=="cMessage"} {
         $menu add separator
-        $menu add command -label "Run until message '$name'" -command "runUntilMsg $ptr normal"
-        $menu add command -label "Fast run until message '$name'" -command "runUntilMsg $ptr fast"
-        $menu add command -label "Express run until message '$name'" -command "runUntilMsg $ptr express"
+        $menu add command -label "Run Until Delivery of Message '$name'" -command "runUntilMsg $ptr normal"
+        $menu add command -label "Fast Run Until Delivery of Message '$name'" -command "runUntilMsg $ptr fast"
+        $menu add command -label "Express Run Until Delivery of Message '$name'" -command "runUntilMsg $ptr express"
         $menu add separator
-        $menu add command -label "Exclude messages like '$name' from animation" -command "excludeMessageFromAnimation $ptr"
+        $menu add command -label "Exclude Messages Like '$name' From Animation" -command "excludeMessageFromAnimation $ptr"
     }
+
+    # add utilities menu
+    set submenu .copymenu$ptr
+    catch {destroy $submenu}
+    menu $submenu -tearoff 0
+    $menu add separator
+    $menu add cascade -label "Utilities for '$name'" -menu $submenu
+    $submenu add command -label "Copy Pointer With Cast (for Debugger)" -command [list copyToClipboard $ptr ptrWithCast]
+    $submenu add command -label "Copy Pointer Value (for Debugger)" -command [list copyToClipboard $ptr ptr]
+    $submenu add separator
+    $submenu add command -label "Copy Full Path" -command [list copyToClipboard $ptr fullPath]
+    $submenu add command -label "Copy Name" -command [list copyToClipboard $ptr fullName]
+    $submenu add command -label "Copy Class Name" -command [list copyToClipboard $ptr className]
 
     # add further menu items
     set name [opp_getobjectfullpath $ptr]
@@ -137,19 +151,20 @@ proc createInspectorContextMenu {insp ptrs} {
     menu .popup -tearoff 0
 
     if [opp_isinspector $insp] {
-       set ptr [opp_inspector_getobject $insp]
-       if [opp_isnotnull $ptr] {
-          set parentptr [opp_getobjectparent $ptr]
-          if {[opp_isnotnull $parentptr] && [opp_inspector_supportsobject $insp $parentptr]} {
-              .popup add command -label "Go up" -command "opp_inspector_setobject $insp $parentptr"
-              .popup add separator
-          }
-       }
+        # If there are more than one ptrs, remove the inspector object's own ptr:
+        # when someone right-clicks a submodule icon, we don't want the compound
+        # module to be in the list.
+        if {[llength $ptrs] > 1} {
+            set ptr [opp_inspector_getobject $insp]
+            set idx [lsearch -exact $ptrs $ptr]
+            set ptrs [lreplace $ptrs $idx $idx]  ;# no-op if $idx==-1
+        }
     }
 
     if {[llength $ptrs] == 1} {
         fillInspectorContextMenu .popup $insp $ptrs
-    } else {
+    } elseif {[llength $ptrs] > 1} {
+        # then create a submenu for each object
         foreach ptr $ptrs {
             set submenu .popup.$ptr
             catch {destroy $submenu}
@@ -181,7 +196,30 @@ proc createInspectorContextMenu {insp ptrs} {
         }
     }
 
+    if [opp_isinspector $insp] {
+       set ptr [opp_inspector_getobject $insp]
+       if [opp_isnotnull $ptr] {
+          set parentptr [opp_getobjectparent $ptr]
+          if {[opp_isnotnull $parentptr] && [opp_inspector_supportsobject $insp $parentptr]} {
+              .popup add separator
+              .popup add command -label "Go Up" -command "opp_inspector_setobject $insp $parentptr"
+          }
+       }
+    }
+
     return .popup
+}
+
+proc copyToClipboard {ptr what} {
+    regsub {^ptr} $ptr {0x} p
+    switch $what {
+        ptr         {setClipboard $p}
+        ptrWithCast {setClipboard "(([opp_getobjectfield $ptr className] *)$p)"}
+        fullPath    {setClipboard [opp_getobjectfullpath $ptr]}
+        fullName    {setClipboard [opp_getobjectfullname $ptr]}
+        className   {setClipboard [opp_getobjectfield $ptr className]}
+        default     {error "invalid value '$what'"}
+    }
 }
 
 proc inspectContextMenuRules {ptr key} {
@@ -194,8 +232,18 @@ proc inspectContextMenuRules {ptr key} {
         set objlist [lrange $objlist 0 4]
     }
     foreach objptr $objlist {
-        opp_inspect $objptr "(default)"
+        opp_inspect $objptr
     }
+}
+
+proc getInspectMenuLabel {typecode} {
+    array set ary {
+        INSP_DEFAULT      "Open Best View"
+        INSP_OBJECT       "Open Details"
+        INSP_GRAPHICAL    "Open Graphical View"
+        INSP_MODULEOUTPUT "Open Component Log"
+    }
+    return $ary($typecode)
 }
 
 proc inspectThis {insp type} {
@@ -204,7 +252,7 @@ proc inspectThis {insp type} {
     opp_inspect $object $type
 }
 
-proc inspectComponentType {insp {type "(default)"}} {
+proc inspectComponentType {insp {type ""}} {
     # extract object pointer from window path name and create inspector
     set ptr [opp_inspector_getobject $insp]
     set typeptr [opp_getcomponenttypeobject $ptr]

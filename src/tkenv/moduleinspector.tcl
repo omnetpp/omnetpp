@@ -19,7 +19,7 @@
 #
 
 proc createModuleInspector {insp geom} {
-    global icons help_tips config inspectordata
+    global icons help_tips config inspectordata CTRL_
 
     if {$config(layout-may-resize-window)} {
         # remove size from geom
@@ -29,75 +29,60 @@ proc createModuleInspector {insp geom} {
     createInspectorToplevel $insp $geom
 
     # create toolbar
-    packIconButton $insp.toolbar.sep1 -separator
+    packToolbutton $insp.toolbar.sep1 -separator
     ModuleInspector:addRunButtons $insp
 
-    packIconButton $insp.toolbar.sep2    -separator
-    packIconButton $insp.toolbar.redraw  -image $icons(redraw) -command "ModuleInspector:relayout $insp"
-    packIconButton $insp.toolbar.zoomin  -image $icons(zoomin)  -command "ModuleInspector:zoomIn $insp"
-    packIconButton $insp.toolbar.zoomout -image $icons(zoomout) -command "ModuleInspector:zoomOut $insp"
-    packIconButton $insp.toolbar.showlabels -image $icons(modnames) -command "ModuleInspector:toggleLabels $insp"
-    packIconButton $insp.toolbar.showarrowheads -image $icons(arrowhead) -command "ModuleInspector:toggleArrowheads $insp"
+    packToolbutton $insp.toolbar.sep2    -separator
+    packToolbutton $insp.toolbar.redraw  -image $icons(redraw) -command "ModuleInspector:relayout $insp"
+    packToolbutton $insp.toolbar.zoomin  -image $icons(zoomin)  -command "ModuleInspector:zoomIn $insp"
+    packToolbutton $insp.toolbar.zoomout -image $icons(zoomout) -command "ModuleInspector:zoomOut $insp"
 
-    set help_tips($insp.toolbar.parent)  "Inspect parent module"
-    set help_tips($insp.toolbar.redraw)  "Re-layout (Ctrl+R)"
-    set help_tips($insp.toolbar.zoomin)  "Zoom in (Ctrl+M)"
-    set help_tips($insp.toolbar.zoomout) "Zoom out (Ctrl+N"
-    set help_tips($insp.toolbar.showlabels) "Show module names (Ctrl+D)"
-    set help_tips($insp.toolbar.showarrowheads) "Show arrowheads (Ctrl+A)"
+    set help_tips($insp.toolbar.parent)  "Go to parent module"
+    set help_tips($insp.toolbar.redraw)  "Re-layout (${CTRL_}R)"
+    set help_tips($insp.toolbar.zoomin)  "Zoom in (${CTRL_}M)"
+    set help_tips($insp.toolbar.zoomout) "Zoom out (${CTRL_}N)"
 
     # create canvas
     createGraphicalModuleViewer $insp
-
-    set c $insp.c
-    if {$inspectordata($c:showlabels)} {
-        $insp.toolbar.showlabels config -relief sunken
-    }
-    if {$inspectordata($c:showarrowheads)} {
-        $insp.toolbar.showarrowheads config -relief sunken
-    }
 }
 
 proc createEmbeddedModuleInspector {insp} {
-    global icons help_tips
+    global icons help_tips CTRL_
 
     createGraphicalModuleViewer $insp
 
     set tb [inspector:createInternalToolbar $insp $insp.c]
 
-    packIconButton $tb.back    -image $icons(back)    -command "inspector:back $insp"
-    packIconButton $tb.forward -image $icons(forward) -command "inspector:forward $insp"
-    packIconButton $tb.parent  -image $icons(parent)  -command "inspector:inspectParent $insp"
-    packIconButton $tb.sep1    -separator
-    packIconButton $tb.mrun    -image $icons(mrun)    -command "runSimulationLocal $insp normal"
-    packIconButton $tb.mfast   -image $icons(mfast)   -command "runSimulationLocal $insp fast"
-    packIconButton $tb.stop    -image $icons(stop)    -command {stopSimulation}
-    packIconButton $tb.sep2    -separator
-    packIconButton $tb.redraw  -image $icons(redraw)  -command "ModuleInspector:relayout $insp"
-    packIconButton $tb.zoomin  -image $icons(zoomin)  -command "ModuleInspector:zoomIn $insp"
-    packIconButton $tb.zoomout -image $icons(zoomout) -command "ModuleInspector:zoomOut $insp"
-    packIconButton $tb.showlabels -image $icons(modnames) -command "ModuleInspector:toggleLabels $insp"
-    packIconButton $tb.showarrowheads -image $icons(arrowhead) -command "ModuleInspector:toggleArrowheads $insp"
+    packToolbutton $tb.back    -image $icons(back)    -command "inspector:back $insp"
+    packToolbutton $tb.forward -image $icons(forward) -command "inspector:forward $insp"
+    packToolbutton $tb.parent  -image $icons(parent)  -command "inspector:inspectParent $insp"
+    packToolbutton $tb.sep1    -separator
+    packToolbutton $tb.mrun    -image $icons(mrun)    -command "runSimulationLocal $insp normal"
+    packToolbutton $tb.mfast   -image $icons(mfast)   -command "runSimulationLocal $insp fast"
+    packToolbutton $tb.stop    -image $icons(stop)    -command {stopSimulation}
+    packToolbutton $tb.sep2    -separator
+    packToolbutton $tb.redraw  -image $icons(redraw)  -command "ModuleInspector:relayout $insp"
+    packToolbutton $tb.zoomin  -image $icons(zoomin)  -command "ModuleInspector:zoomIn $insp"
+    packToolbutton $tb.zoomout -image $icons(zoomout) -command "ModuleInspector:zoomOut $insp"
 
-    set help_tips($tb.parent)  "Inspect parent"
+    set help_tips($tb.back)    "Back"
+    set help_tips($tb.forward) "Forward"
+    set help_tips($tb.parent)  "Go to parent module"
     set help_tips($tb.mrun)    "Run until next event in this module"
-    set help_tips($tb.mfast)   "Fast run until next event in this module (Ctrl+F4)"
+    set help_tips($tb.mfast)   "Fast run until next event in this module (${CTRL_}F4)"
     set help_tips($tb.stop)    "Stop the simulation (F8)"
-    set help_tips($tb.redraw)  "Re-layout (Ctrl+R)"
+    set help_tips($tb.redraw)  "Re-layout (${CTRL_}R)"
     set help_tips($tb.animspeed) "Animation speed -- see Options dialog"
-    set help_tips($tb.zoomin)  "Zoom in (Ctrl+M)"
-    set help_tips($tb.zoomout) "Zoom out (Ctrl+N"
-    set help_tips($tb.showlabels) "Show module names (Ctrl+D)"
-    set help_tips($tb.showarrowheads) "Show arrowheads (Ctrl+A)"
-
+    set help_tips($tb.zoomin)  "Zoom in (${CTRL_}M)"
+    set help_tips($tb.zoomout) "Zoom out (${CTRL_}N)"
 }
 
 proc createGraphicalModuleViewer {insp} {
     global inspectordata
-    global B2 B3
+    global B2 B3 CTRL Control
 
     # create widgets inside $insp
-    frame $insp.grid
+    ttk::frame $insp.grid
     pack $insp.grid -expand yes -fill both -padx 1 -pady 1
 
     set c $insp.c
@@ -145,13 +130,17 @@ proc createGraphicalModuleViewer {insp} {
 
     # keyboard shortcuts
     set ww [winfo toplevel $insp]
-    bind $ww <Control-m> "ModuleInspector:zoomIn $insp"
-    bind $ww <Control-n> "ModuleInspector:zoomOut $insp"
-    bind $ww <Control-i> "ModuleInspector:zoomIconsBy $insp 1.25"
-    bind $ww <Control-o> "ModuleInspector:zoomIconsBy $insp 0.8"
-    bind $ww <Control-r> "ModuleInspector:relayout $insp"
-    bind $ww <Control-d> "ModuleInspector:toggleLabels $insp"
-    bind $ww <Control-a> "ModuleInspector:toggleArrowheads $insp"
+    bind $ww <$Control-m> "ModuleInspector:zoomIn $insp"
+    bind $ww <$Control-n> "ModuleInspector:zoomOut $insp"
+    bind $ww <$Control-plus> "ModuleInspector:zoomIn $insp"
+    bind $ww <$Control-minus> "ModuleInspector:zoomOut $insp"
+    bind $ww <$Control-KP_Add> "ModuleInspector:zoomIn $insp"
+    bind $ww <$Control-KP_Subtract> "ModuleInspector:zoomOut $insp"
+    bind $ww <$Control-i> "ModuleInspector:zoomIconsBy $insp 1.25"
+    bind $ww <$Control-o> "ModuleInspector:zoomIconsBy $insp 0.8"
+    bind $ww <$Control-r> "ModuleInspector:relayout $insp"
+    bind $ww <$Control-l> "ModuleInspector:toggleLabels $insp"
+    bind $ww <$Control-a> "ModuleInspector:toggleArrowheads $insp"
 }
 
 proc ModuleInspector:onSetObject {insp} {
@@ -469,7 +458,7 @@ proc ModuleInspector:getSubmodCoords {c tag} {
 #
 proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplaceholder} {
    #puts "DEBUG: ModuleInspector:drawSubmodule $c $submodptr $x $y $name $dispstr $scaling $isplaceholder"
-   global icons inspectordata fonts
+   global icons inspectordata
 
    set zoomfactor $inspectordata($c:zoomfactor)
    if {$scaling!="" || $zoomfactor!=1} {
@@ -563,14 +552,14 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplace
                $c create image $x $y -image $img -anchor center -tags "dx tooltip submod $submodptr"
            }
            if {$inspectordata($c:showlabels)} {
-               $c create text $x [expr $y2+$width/2+3] -text $name -anchor n -tags "dx" -font $fonts(canvas)
+               $c create text $x [expr $y2+$width/2+3] -text $name -anchor n -tags "dx" -font CanvasFont
            }
 
        } else {
            # draw an icon when no shape is present (only i tag, or neither i nor b tag)
            $c create image $x $y -image $img -anchor center -tags "dx tooltip submod $submodptr"
            if {$inspectordata($c:showlabels)} {
-               $c create text $x [expr $y+$sy/2+3] -text $name -anchor n -tags "dx" -font $fonts(canvas)
+               $c create text $x [expr $y+$sy/2+3] -text $name -anchor n -tags "dx" -font CanvasFont
            }
        }
 
@@ -579,7 +568,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplace
            set r [ModuleInspector:getSubmodCoords $c $submodptr]
            set qx [expr [lindex $r 2]+1]
            set qy [lindex $r 1]
-           $c create text $qx $qy -text "q:?" -anchor nw -tags "dx tooltip qlen qlen-$submodptr" -font $fonts(canvas)
+           $c create text $qx $qy -text "q:?" -anchor nw -tags "dx tooltip qlen qlen-$submodptr" -font CanvasFont
        }
 
        # modifier icon (i2 tag)
@@ -622,7 +611,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplace
            } else {
                error "wrong position in t= tag, should be `l', `r' or `t'"
            }
-           $c create text $tx $ty -text $txt -fill $color -anchor $anch -justify $just -tags "dx" -font $fonts(canvas)
+           $c create text $tx $ty -text $txt -fill $color -anchor $anch -justify $just -tags "dx" -font CanvasFont
        }
 
        # r=<radius>,<fillcolor>,<color>,<width>; multiple r tags supported (r1,r2,etc)
@@ -667,7 +656,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplace
 # This function is invoked from the module inspector C++ code.
 #
 proc ModuleInspector:drawEnclosingModule {c ptr name dispstr scaling} {
-   global icons bitmaps inspectordata fonts
+   global icons bitmaps inspectordata
    # puts "DEBUG: ModuleInspector:drawEnclosingModule $c $ptr $name $dispstr $scaling"
 
    set zoomfactor $inspectordata($c:zoomfactor)
@@ -737,7 +726,7 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr scaling} {
        $c create rect [expr $bx-$width/2] [expr $by-$width/2] [expr $bx+$sx+$width/2] [expr $by+$sy+$width/2] \
            -fill $fill -width $width -outline $outline \
            -tags "dx mod $ptr"
-       $c create text [expr $bx+3] [expr $by+3] -text $name -anchor nw -tags "dx tooltip modname $ptr" -font $fonts(canvas)
+       $c create text [expr $bx+3] [expr $by+3] -text $name -anchor nw -tags "dx tooltip modname $ptr" -font CanvasFont
 
        # background image
        if {![info exists tags(bgi)]} {set tags(bgi) {}}
@@ -839,7 +828,7 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr scaling} {
            set color [lindex $tags($bgttag) 3]
            if {$color == ""} {set color black}
            if {[string index $color 0]== "@"} {set color [opp_hsb_to_rgb $color]}
-           $c create text $x $y -text $txt -fill $color -anchor nw -justify left -tags "dx" -font $fonts(canvas)
+           $c create text $x $y -text $txt -fill $color -anchor nw -justify left -tags "dx" -font CanvasFont
        }
 
        $c lower mod
@@ -921,7 +910,7 @@ proc resizeImage {img sx sy} {
 # This function is invoked from the module inspector C++ code.
 #
 proc ModuleInspector:drawConnection {c gateptr dispstr srcptr destptr chanptr src_i src_n dest_i dest_n two_way} {
-    global inspectordata fonts
+    global inspectordata
 
     # puts "DEBUG: ModuleInspector:drawConnection $c $gateptr $dispstr $srcptr $destptr $src_i $src_n $dest_i $dest_n $two_way"
 
@@ -1024,7 +1013,7 @@ proc ModuleInspector:drawConnection {c gateptr dispstr srcptr destptr chanptr sr
            } else {
                error "wrong position in connection t= tag, should be `l', `r' or `t' (for beginning, end, or middle, respectively)"
            }
-           $c create text $x $y -text $txt -fill $color -anchor $anch -justify $just -tags "dx" -font $fonts(canvas)
+           $c create text $x $y -text $txt -fill $color -anchor $anch -justify $just -tags "dx" -font CanvasFont
        }
 
     } errmsg] {
@@ -1039,7 +1028,7 @@ proc ModuleInspector:drawConnection {c gateptr dispstr srcptr destptr chanptr sr
 # This function is invoked from the message animation code.
 #
 proc ModuleInspector:drawMessage {c msgptr x y} {
-    global fonts inspectordata anim_msg
+    global inspectordata anim_msg
 
     set zoomfactor $inspectordata($c:zoomfactor)
     set imagesizefactor $inspectordata($c:imagesizefactor)
@@ -1159,7 +1148,7 @@ proc ModuleInspector:drawMessage {c msgptr x y} {
         append msglabel $msgname
     }
     if {$msglabel!=""} {
-        $c create text $labelx $labely -text $msglabel -anchor n -font $fonts(canvas) -tags "dx tooltip msgname $msgptr"
+        $c create text $labelx $labely -text $msglabel -anchor n -font CanvasFont -tags "dx tooltip msgname $msgptr"
     }
 
 }
@@ -1225,9 +1214,6 @@ proc ModuleInspector:popOutToolbarButtons {insp} {
     # This is a weak attempt to fix it for the most commonly clicked buttons.
     # This could be called from many more places for better results.
     if [opp_inspector_istoplevel $insp] {
-        $insp.toolbar.minfo config -relief flat
-        $insp.toolbar.type config -relief flat
-        $insp.toolbar.objs config -relief flat
         $insp.toolbar.parent config -relief flat
         $insp.toolbar.stop config -relief flat
         $insp.toolbar.redraw config -relief flat
@@ -1261,9 +1247,6 @@ proc ModuleInspector:toggleLabels {insp} {
     set inspectordata($c:showlabels) [expr !$inspectordata($c:showlabels)]
     opp_inspectorcommand $insp redraw
 
-    if {$inspectordata($c:showlabels)} {set relief "sunken"} else {set relief "flat"}
-    $insp.toolbar.showlabels config -relief $relief
-
     ModuleInspector:updatePreferences $insp
 }
 
@@ -1272,9 +1255,6 @@ proc ModuleInspector:toggleArrowheads {insp} {
     set c $insp.c
     set inspectordata($c:showarrowheads) [expr !$inspectordata($c:showarrowheads)]
     opp_inspectorcommand $insp redraw
-
-    if {$inspectordata($c:showarrowheads)} {set relief "sunken"} else {set relief "flat"}
-    $insp.toolbar.showarrowheads config -relief $relief
 
     ModuleInspector:updatePreferences $insp
 }
@@ -1353,7 +1333,7 @@ proc ModuleInspector:getPtrsUnderMouse {c x y} {
 }
 
 proc ModuleInspector:rightClick {insp X Y x y} {
-   global inspectordata tmp
+   global inspectordata tmp CTRL
    set c $insp.c
    set ptrs [ModuleInspector:getPtrsUnderMouse $c $x $y]
 
@@ -1365,22 +1345,22 @@ proc ModuleInspector:rightClick {insp X Y x y} {
       set tmp($c:showarrowheads) $inspectordata($c:showarrowheads)
 
       $popup add separator
-      $popup add checkbutton -label "Show module names" -command "ModuleInspector:toggleLabels $insp" -accel "Ctrl+D" -variable tmp($c:showlabels)
-      $popup add checkbutton -label "Show arrowheads" -command "ModuleInspector:toggleArrowheads $insp" -accel "Ctrl+A" -variable tmp($c:showarrowheads)
+      $popup add checkbutton -label "Show Module Names" -command "ModuleInspector:toggleLabels $insp" -accel "$CTRL+L" -variable tmp($c:showlabels)
+      $popup add checkbutton -label "Show Arrowheads" -command "ModuleInspector:toggleArrowheads $insp" -accel "$CTRL+A" -variable tmp($c:showarrowheads)
 
       $popup add separator
-      $popup add command -label "Increase icon size" -accel "Ctrl+I" -command "ModuleInspector:zoomIconsBy $insp 1.25"
-      $popup add command -label "Decrease icon size" -accel "Ctrl+O" -command "ModuleInspector:zoomIconsBy $insp 0.8"
+      $popup add command -label "Increase Icon Size" -accel "$CTRL+I" -command "ModuleInspector:zoomIconsBy $insp 1.25"
+      $popup add command -label "Decrease Icon Size" -accel "$CTRL+O" -command "ModuleInspector:zoomIconsBy $insp 0.8"
 
       $popup add separator
-      $popup add command -label "Zoom in"  -accel "Ctrl+M" -command "ModuleInspector:zoomIn $insp"
-      $popup add command -label "Zoom out" -accel "Ctrl+N" -command "ModuleInspector:zoomOut $insp"
-      $popup add command -label "Re-layout" -accel "Ctrl+R" -command "opp_inspectorcommand $insp relayout"
+      $popup add command -label "Zoom In"  -accel "$CTRL+M" -command "ModuleInspector:zoomIn $insp"
+      $popup add command -label "Zoom Out" -accel "$CTRL+N" -command "ModuleInspector:zoomOut $insp"
+      $popup add command -label "Re-Layout" -accel "$CTRL+R" -command "opp_inspectorcommand $insp relayout"
 
       $popup add separator
-      $popup add command -label "Layouting options..." -command "optionsDialog $insp l"
-      $popup add command -label "Animation options..." -command "optionsDialog $insp a"
-      $popup add command -label "Filtering options..." -command "optionsDialog $insp t"
+      $popup add command -label "Layouting Settings..." -command "preferencesDialog $insp l"
+      $popup add command -label "Animation Settings..." -command "preferencesDialog $insp a"
+      $popup add command -label "Animation Filter..." -command "preferencesDialog $insp t"
 
       tk_popup $popup $X $Y
    }
@@ -1408,10 +1388,7 @@ proc ModuleInspector:relayout {insp} {
 # Called from inspector C++ code.
 #
 proc ModuleInspector:drawMessageOnGate {c gateptr msgptr} {
-
     #debug "ModuleInspector:drawMessageOnGate $msgptr"
-
-    global fonts
 
     # gate pointer + conn are the tags of the connection arrow
     set conn_id ""
@@ -1543,7 +1520,7 @@ proc ModuleInspector:qlenClick insp {
 proc ModuleInspector:qlenDblclick insp {
    set qptr [ModuleInspector:qlenGetQptrCurrent $insp]
    if [opp_isnotnull $qptr] {
-       opp_inspect $qptr "(default)"
+       opp_inspect $qptr
    }
 }
 
@@ -1560,7 +1537,7 @@ proc ModuleInspector:qlenRightClick {insp X Y} {
 # This function is invoked from the module inspector C++ code.
 #
 proc ModuleInspector:bubble {c x y scaling txt} {
-    global inspectordata fonts
+    global inspectordata
 
     set zoom $inspectordata($c:zoomfactor)
     if {$scaling == ""} {set scaling 1}
@@ -1569,7 +1546,7 @@ proc ModuleInspector:bubble {c x y scaling txt} {
     set y [expr $y*$zoom*$scaling]
 
     while {[string length $txt]<5} {set txt " $txt "}
-    set txtid  [$c create text $x $y -text " $txt " -anchor c -tags "bubble" -font $fonts(canvas)]
+    set txtid  [$c create text $x $y -text " $txt " -anchor c -tags "bubble" -font CanvasFont]
     set color #F8F8D8
     set bb [$c bbox $txtid]
 

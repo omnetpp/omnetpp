@@ -23,9 +23,9 @@ proc createEmbeddedGenericObjectInspector {insp} {
     global icons help_tips
 
     # Create info bar
-    frame $insp.infobar  -borderwidth 0
-    label $insp.infobar.icon -anchor w -relief flat -image $icons(none_vs)
-    label $insp.infobar.name -anchor w -relief flat -justify left
+    ttk::frame $insp.infobar  -borderwidth 0
+    ttk::label $insp.infobar.icon -anchor w -relief flat -image $icons(none_vs)
+    ttk::label $insp.infobar.name -anchor w -relief flat -justify left
     pack $insp.infobar.icon -anchor n -side left -expand 0 -fill y -pady 1
     pack $insp.infobar.name -anchor n -side left -expand 1 -fill both -pady 1
     pack $insp.infobar -anchor w -side top -fill x -expand 0
@@ -34,9 +34,9 @@ proc createEmbeddedGenericObjectInspector {insp} {
 
     set tb [inspector:createInternalToolbar $insp $insp]
 
-    packIconButton $tb.back    -image $icons(back)    -command "inspector:back $insp"
-    packIconButton $tb.forward -image $icons(forward) -command "inspector:forward $insp"
-    packIconButton $tb.parent  -image $icons(parent)  -command "inspector:inspectParent $insp"
+    packToolbutton $tb.back    -image $icons(back)    -command "inspector:back $insp"
+    packToolbutton $tb.forward -image $icons(forward) -command "inspector:forward $insp"
+    packToolbutton $tb.parent  -image $icons(parent)  -command "inspector:inspectParent $insp"
 
     set help_tips($tb.back)    "Back"
     set help_tips($tb.forward) "Forward"
@@ -48,11 +48,14 @@ proc createGenericObjectViewer {insp} {
     ttk::notebook $nb -width 460 -height 260
     pack $nb -expand 1 -fill both
 
-    $nb add [frame $nb.fields] -text "Fields"
+    $nb add [ttk::frame $nb.fields] -text "Fields"
     createFieldsPage $nb.fields $insp
 
-    $nb add [frame $nb.contents] -text "Contents"
-    createInspectorListbox $nb.contents $insp
+    $nb add [ttk::frame $nb.contents] -text "Contents"
+    set lb [createInspectorListbox $nb.contents $insp]
+
+    # restore columns widths -- note: for the main embedded inspector this is too soon, as the config hasn't been loaded yet
+    inspectorListbox:restoreColumnWidths $lb "inspector:columnwidths"
 }
 
 proc GenericObjectInspector:onSetObject {insp} {
@@ -62,7 +65,7 @@ proc GenericObjectInspector:onSetObject {insp} {
     if [opp_isnull $object] return  ;# leave inspector as it is
     set type [opp_getobjectbaseclass $object]
 
-    set showContentsPage  [lcontains {cArray cQueue cMessageHeap cSimpleModule cCompoundModule cChannel cRegistrationList cSimulation } $type]
+    set showContentsPage  [lcontains {cArray cQueue cMessageHeap cSimpleModule cCompoundModule cChannel cRegistrationList cSimulation cMessage} $type]
     set focusContentsPage [lcontains {cArray cQueue cMessageHeap cSimpleModule cCompoundModule cChannel cRegistrationList} $type]
 
     if {$showContentsPage} {
@@ -92,7 +95,4 @@ proc GenericObjectInspector:refresh {insp} {
     }
 }
 
-proc lcontains {list item} {
-    set i [lsearch -exact $list $item]
-    return [expr $i != -1]
-}
+

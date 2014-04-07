@@ -4,7 +4,9 @@
 
 $verbose = 1;
 
-$listfile = "tkenv.lst";
+$listfile = $ARGV[0];
+$tclfile = $ARGV[1];
+$varname = $ARGV[2];
 
 # parse listfile
 print "reading $listfile...\n" if ($verbose);
@@ -17,8 +19,8 @@ while (<INFILE>) {
 }
 
 $tmpfile = 'tmp.out';
-$tclcode = '#=================================================================
-#  ICONS.TCL - part of
+$tclcode = "#=================================================================
+#  $tclfile - part of
 #
 #                     OMNeT++/OMNEST
 #            Discrete System Simulation in C++
@@ -26,30 +28,30 @@ $tclcode = '#=================================================================
 #=================================================================
 
 #----------------------------------------------------------------#
-#  Copyright (C) 1992-2008 Andras Varga
+#  Copyright (C) 1992-2014 Opensim Ltd.
 #
 #  This file is distributed WITHOUT ANY WARRANTY. See the file
-#  `license\' for details on this and other legal matters.
+#  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-';
+";
 
 foreach $fname (@fnames)
 {
     print "processing $fname...\n" if ($verbose);
 
+    my $name = $fname;
+    $name =~ s|^(.*/)?(.*)\..*|$2|;
+
     my $txt = `base64  $fname `;
     $txt =~ s/^/    /mg;  # indent
 
-    my $name = $fname;
-    $name =~ s/\..*//;
-
-    $tclcode .= "set icons($name) [image create photo -data {\n";
+    $tclcode .= "set $varname($name) [image create photo -data {\n";
     $tclcode .= $txt;
     $tclcode .= "}]\n\n";
 }
 
-writefile("icons.tcl", $tclcode);
+writefile($tclfile, $tclcode);
 
 unlink($tmpfile);
 
