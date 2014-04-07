@@ -213,13 +213,11 @@ proc newRun {} {
 
     if [checkRunning] return
 
-    set configname [opp_getactiveconfigname]
-    set runnumber  [opp_getactiverunnumber]
-
     # pop up selection dialog
-    set ok [runSelectionDialog configname runnumber]
-    if {$ok == 1} {
-       # puts "DBG: selected $configname $runnumber"
+    set configandrun [runSelectionDialog]
+    if {[llength $configandrun] != 0} {
+       setvars {configname runnumber} $configandrun
+       debug "selected $configname $runnumber"
        busy "Setting up network..."
        inspectorList:addAll 1
        opp_newrun $configname $runnumber

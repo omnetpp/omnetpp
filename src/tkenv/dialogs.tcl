@@ -151,14 +151,13 @@ NO WARRANTY -- see license for details."
 #
 # For selecting config and run number.
 #
-proc runSelectionDialog {configname_var runnumber_var} {
+proc runSelectionDialog {} {
+    global config
+
     set w .runseldialog
     createOkCancelDialog $w "Set Up Inifile Configuration"
 
-    upvar $configname_var configname
-    upvar $runnumber_var  runnumber
-
-    set ok 0
+    set result {}
 
     if {[catch {
         set sortedconfignames [runSelectionDialog:groupAndSortConfigNames]
@@ -179,8 +178,15 @@ proc runSelectionDialog {configname_var runnumber_var} {
             lappend configlist $name
         }
 
-        if {($configname=="" || $configname=="General") && $configlist!={}} {
+        # if last choice looks valid, use that as default
+        if {[lcontains $sortedconfignames $config(default-configname)]} {
+            #TODO also validate run number
+            set configname $config(default-configname)
+            set runnumber $config(default-runnumber)
+        }
+        if {$configname=="" && $configlist!={}} {
             set configname [lindex $configlist 0]
+            set runnumber 0
         }
 
         ttk::label $w.f.m -anchor w -justify left -text "Set up one of the configurations defined in omnetpp.ini."
@@ -203,9 +209,10 @@ proc runSelectionDialog {configname_var runnumber_var} {
             set runnumber  [$w.f.c2.e get]
             if ![string is integer $runnumber] {
                 messagebox "Error" "Run number must be numeric." info ok
-                set runnumber 0
             } else {
-                set ok 1
+                set config(default-configname) $configname
+                set config(default-runnumber) $runnumber
+                set result [list $configname $runnumber] ;# return is not accepted here
             }
         }
 
@@ -213,7 +220,7 @@ proc runSelectionDialog {configname_var runnumber_var} {
         messagebox "Error" $err error ok
     }
     destroy $w
-    return $ok
+    return $result
 }
 
 proc runSelectionDialog:groupAndSortConfigNames {} {
@@ -256,15 +263,11 @@ proc runSelectionDialog:update {w} {
     set runs {}
     for {set i 0} {$i<$n} {incr i} {lappend runs $i}
     $w.f.c2.e configure -values $runs
-    catch {$w.f.c2.e current 0}
 
     # ensure run number is in the valid range
     set runnumber [$w.f.c2.e get]
-    if {$n<=1} {
-        $w.f.c2.e config -value ""
-    }
     if {![string is integer $runnumber] || $runnumber<0 || $runnumber>=$n} {
-        $w.f.c2.e config -value "0"
+        $w.f.c2.e set 0
     }
 
     if {$n<=1} {

@@ -54,6 +54,8 @@ set config(zoomby-factor) 1.1
 set config(layout-may-resize-window) 1
 set config(layout-may-change-zoom) 1
 set config(preferences-dialog-page) "g"
+set config(default-configname) {}
+set config(default-runnumber) {}
 set config(finddialog:size) {316 132}
 set config(findobjectsdialog:size) {925 578}
 set config(preferencesdialog:size) {652 545}
