@@ -43,6 +43,7 @@ if [info exist OMNETPP_TKENV_DIR] {
    source [file join $dir moduleinspectorutil.tcl]
    source [file join $dir objecttree.tcl]
    source [file join $dir outputvectorinspector.tcl]
+   source [file join $dir startup.tcl]
    source [file join $dir timeline.tcl]
    source [file join $dir tkenvrc.tcl]
    source [file join $dir toolbutton.tcl]
@@ -54,25 +55,4 @@ if [info exist OMNETPP_TKENV_DIR] {
    source [file join $dir clearlooks.tcl]
 }
 
-#
-# Execute startup code
-#
-proc startTkenv {} {
-  global OMNETPP_IMAGE_PATH
-  global OMNETPP_PLUGIN_PATH
-
-  wm withdraw .
-  checkTclTkVersion
-  setupTkOptions
-  genericBindings
-  initBalloons
-  createOmnetppWindow
-  puts ""
-  loadBitmaps $OMNETPP_IMAGE_PATH
-  loadPlugins $OMNETPP_PLUGIN_PATH
-  loadTkenvrc "~/.tkenvrc"
-  loadTkenvrc ".tkenvrc"
-  reflectSettingsInGui
-  determineClocksPerSec
-}
 

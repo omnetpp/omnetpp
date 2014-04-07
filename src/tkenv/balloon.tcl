@@ -90,10 +90,13 @@ proc createBalloon {text x y} {
 
 proc initBalloons {args} {
     global help_tips use_balloons
+
     set help_tips(width) 600
     set help_tips(color) #f0f0d0
     set help_tips(delay) 500
+    set help_tips(helptip_proc) getHelpTip
     set use_balloons 1
+
     foreach c {Button TButton Label TLabel Entry TEntry Checkbutton TCheckbutton
                Radiobutton TRadiobutton TCombobox Toolbutton Scale TScale Text
                Menubutton} {
