@@ -851,9 +851,7 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
        }
    } else if (!strcmp(field,"kind")) {
        if (dynamic_cast<cMessage *>(object)) {
-           char buf[20];
-           sprintf(buf,"%d", dynamic_cast<cMessage *>(object)->getKind());
-           Tcl_SetResult(interp, buf, TCL_VOLATILE);
+           Tcl_SetObjResult(interp, Tcl_NewIntObj(dynamic_cast<cMessage *>(object)->getKind()));
        } else {
            Tcl_SetResult(interp, TCLCONST("no such field in this object"), TCL_STATIC); return TCL_ERROR;
        }
@@ -863,9 +861,7 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
            sprintf(buf,"%" INT64_PRINTF_FORMAT "d", dynamic_cast<cPacket *>(object)->getBitLength());
            Tcl_SetResult(interp, buf, TCL_VOLATILE);
        } else if (dynamic_cast<cQueue *>(object)) {
-           char buf[20];
-           sprintf(buf,"%d", dynamic_cast<cQueue *>(object)->getLength());
-           Tcl_SetResult(interp, buf, TCL_VOLATILE);
+           Tcl_SetObjResult(interp, Tcl_NewIntObj(dynamic_cast<cQueue *>(object)->getLength()));
        } else {
            Tcl_SetResult(interp, TCLCONST("no such field in this object"), TCL_STATIC); return TCL_ERROR;
        }
@@ -929,21 +925,11 @@ int getObjectId_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
 
    if (dynamic_cast<cModule *>(object))
-   {
-       char buf[32];
-       sprintf(buf, "%d", dynamic_cast<cModule *>(object)->getId());
-       Tcl_SetResult(interp, buf, TCL_VOLATILE);
-   }
+       Tcl_SetObjResult(interp, Tcl_NewIntObj(dynamic_cast<cModule *>(object)->getId()));
    else if (dynamic_cast<cMessage *>(object))
-   {
-       char buf[32];
-       sprintf(buf, "%ld", dynamic_cast<cMessage *>(object)->getId());
-       Tcl_SetResult(interp, buf, TCL_VOLATILE);
-   }
+       Tcl_SetObjResult(interp, Tcl_NewLongObj(dynamic_cast<cMessage *>(object)->getId()));
    else
-   {
        Tcl_SetResult(interp, TCLCONST(""), TCL_STATIC);
-   }
    return TCL_OK;
 }
 
@@ -1009,10 +995,7 @@ int getNumChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    cCountChildrenVisitor visitor(object);
    visitor.process(object);
    int count = visitor.getCount();
-
-   char buf[20];
-   sprintf(buf, "%d", count);
-   Tcl_SetResult(interp, buf, TCL_VOLATILE);
+   Tcl_SetObjResult(interp, Tcl_NewIntObj(count));
    return TCL_OK;
 }
 
@@ -1816,9 +1799,7 @@ int inspectorGetType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
     Tkenv *app = getTkenv();
     Inspector *insp = app->findInspector(argv[1]);
     if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
-    char buf[20];
-    sprintf(buf, "%d", insp->getType());
-    Tcl_SetResult(interp, buf, TCL_VOLATILE);
+    Tcl_SetObjResult(interp, Tcl_NewIntObj(insp->getType()));
     return TCL_OK;
 }
 
@@ -1950,9 +1931,7 @@ int inspectorType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
         int type = insptypeCodeFromName( argv[1] );
         if (type<0)
            {Tcl_SetResult(interp, TCLCONST("unrecognized inspector type"), TCL_STATIC);return TCL_ERROR;}
-        char buf[20];
-        sprintf(buf, "%d", type);
-        Tcl_SetResult(interp, buf, TCL_VOLATILE);
+        Tcl_SetObjResult(interp, Tcl_NewIntObj(type));
    }
    return TCL_OK;
 }
@@ -2406,9 +2385,7 @@ int fillInspectorListbox_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
     int count;
     TRY(count = fillListboxWithChildObjects(object, interp, listbox, deep));
 
-    char buf[20];
-    sprintf(buf, "%d", count);
-    Tcl_SetResult(interp, buf, TCL_VOLATILE);
+    Tcl_SetObjResult(interp, Tcl_NewIntObj(count));
     return TCL_OK;
 }
 
@@ -2462,9 +2439,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    if (strcmp(cmd,"fieldcount")==0)
    {
       if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-      char buf[20];
-      sprintf(buf, "%d", sd->getFieldCount(object));
-      Tcl_SetResult(interp, buf, TCL_VOLATILE);
+      Tcl_SetObjResult(interp, Tcl_NewIntObj(sd->getFieldCount(object)));
       return TCL_OK;
    }
 
@@ -2545,9 +2520,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    {
       if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
-      char buf[20];
-      sprintf(buf, "%d", sd->getArraySize(object, fld));
-      Tcl_SetResult(interp, buf, TCL_VOLATILE);
+      Tcl_SetObjResult(interp, Tcl_NewIntObj(sd->getArraySize(object, fld)));
       return TCL_OK;
    }
 

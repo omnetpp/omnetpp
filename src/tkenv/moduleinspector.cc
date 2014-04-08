@@ -844,12 +844,11 @@ int ModuleInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char *
 
 int ModuleInspector::getSubmoduleCount(Tcl_Interp *interp, int argc, const char **argv)
 {
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
    int count = 0;
    for (cModule::SubmoduleIterator submod(static_cast<cModule *>(object)); !submod.end(); submod++)
        count++;
-   char buf[20];
-   sprintf(buf, "%d", count);
-   Tcl_SetResult(interp, buf, TCL_VOLATILE);
+   Tcl_SetObjResult(interp, Tcl_NewIntObj(count));
    return TCL_OK;
 }
 
@@ -876,10 +875,7 @@ int ModuleInspector::getSubmodQLen(Tcl_Interp *interp, int argc, const char **ar
    const char *qname = argv[2];
    cQueue *q = dynamic_cast<cQueue *>(mod->findObject(qname)); //FIXME THIS MUST BE REFINED! SEARCHES WAY TOO DEEEEEP!!!!
    if (!q) {Tcl_SetResult(interp, TCLCONST(""), TCL_STATIC); return TCL_OK;}
-
-   char buf[20];
-   sprintf(buf, "%d", q->length());
-   Tcl_SetResult(interp, buf, TCL_VOLATILE);
+   Tcl_SetObjResult(interp, Tcl_NewIntObj(q->length()));
    return TCL_OK;
 }
 
