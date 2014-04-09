@@ -80,7 +80,8 @@ $O/tkenv-e.obj : tkenv.cc tclcode.cc
 
 tclcode.cc : *.tcl tcl2c.pl
 	$(qecho) Running tcl2c.pl
-	$(Q)$(PERL) tcl2c.pl tclcode.cc *.tcl
+	@# clearlooksimg.tcl must precede clearlooks.tcl (tcl2c filters out duplicates)
+	$(Q)$(PERL) tcl2c.pl tclcode.cc clearlooksimg.tcl *.tcl
 
 $(OBJS): $O
 

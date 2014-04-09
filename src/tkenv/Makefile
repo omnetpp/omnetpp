@@ -102,7 +102,8 @@ $O/tkenv-e.o : tkenv.cc tclcode.cc
 	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" tkenv.cc -o $O/tkenv-e.o
 
 tclcode.cc: *.tcl tcl2c.pl
-	$(PERL) tcl2c.pl tclcode.cc *.tcl
+	@# clearlooksimg.tcl must precede clearlooks.tcl (tcl2c filters out duplicates)
+	$(PERL) tcl2c.pl tclcode.cc clearlooksimg.tcl *.tcl
 
 missing-dependency:
 	@echo '  *** No Tcl/Tk installation found -- skipping Tkenv.'
