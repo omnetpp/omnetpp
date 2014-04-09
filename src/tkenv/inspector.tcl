@@ -189,6 +189,7 @@ proc inspector:dblClick {insp ptr} {
 
 proc inspector:namePopup {insp toolbutton} {
     set ptr [opp_inspector_getobject $insp]
+    if [opp_isnull $ptr] {return}
 
     catch {destroy .popup}
     menu .popup -tearoff 0
@@ -206,6 +207,8 @@ proc inspector:namePopup {insp toolbutton} {
 
 proc inspector:inspectAsPopup {insp toolbutton} {
     set ptr [opp_inspector_getobject $insp]
+    if [opp_isnull $ptr] {return}
+
     set curtype [opp_inspectortype [opp_inspector_gettype $insp]]
     set typelist [opp_supported_insp_types $ptr]
 

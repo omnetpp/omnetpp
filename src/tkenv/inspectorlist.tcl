@@ -129,6 +129,7 @@ proc inspectorList:tkenvrcGetContents {allowdestructive} {
     foreach insp [opp_getinspectors 1] {
        set object [opp_inspector_getobject $insp]
        set type [opp_inspector_gettype $insp]
+       if [opp_isnull $object] continue
 
        set objname [opp_getobjectfullpath $object]
        set class [opp_getobjectshorttypename $object]
