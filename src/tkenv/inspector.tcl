@@ -44,7 +44,7 @@ proc createInspectorToplevel {insp geom} {
     }
 
     # Create toolbar
-    ttk::frame $insp.toolbar -relief raised
+    ttk::frame $insp.toolbar
     pack $insp.toolbar -anchor w -side top -fill x -expand 0
 
     packToolbutton $insp.toolbar.sep0 -separator
