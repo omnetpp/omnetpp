@@ -66,7 +66,7 @@ ModuleInspector::ModuleInspector(InspectorFactory *f) : Inspector(f)
 {
    needs_redraw = false;
    notDrawn = false;
-   randomSeed = 0;
+   layoutSeed = 0;
 }
 
 ModuleInspector::~ModuleInspector()
@@ -84,11 +84,7 @@ void ModuleInspector::doSetObject(cObject *obj)
 
     if (object)
     {
-        const cDisplayString blank;
-        cModule *parentModule = static_cast<cModule *>(object);
-        const cDisplayString& ds = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString() : blank;
-        randomSeed = resolveLongDispStrArg(ds.getTagArg("bgl",4), parentModule, 1);
-
+        layoutSeed = 0; // we'll read the "bgl" display string tag from Tcl
         CHK(Tcl_VarEval(interp, "ModuleInspector:onSetObject ", windowName, NULL ));
     }
 }
@@ -173,8 +169,6 @@ void ModuleInspector::relayoutAndRedrawAll()
        }
    }
 
-   // go to next seed
-   randomSeed++;
    recalculateLayout();
    redrawModules();
    redrawNextEventMarker();
@@ -333,7 +327,7 @@ void ModuleInspector::refreshLayout()
                                     (GraphLayouter *) new BasicSpringEmbedderLayout() :
                                     (GraphLayouter *) new ForceDirectedGraphLayouter();
 
-    layouter->setSeed(randomSeed);
+    layouter->setSeed(layoutSeed);
 
     // background size
     int sx = resolveLongDispStrArg(ds.getTagArg("bgb",0), parentModule, 0);
@@ -440,7 +434,7 @@ void ModuleInspector::refreshLayout()
         submodPosMap[submod] = pos;
     }
 
-    randomSeed = layouter->getSeed();
+    layoutSeed = layouter->getSeed();
 
     delete layouter;
 }
@@ -833,6 +827,18 @@ int ModuleInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char *
       TRY(redrawAll());
       return TCL_OK;
    }
+   else if (strcmp(argv[0],"getdefaultlayoutseed")==0)
+   {
+       return getDefaultLayoutSeed(interp,argc,argv);
+   }
+   else if (strcmp(argv[0],"getlayoutseed")==0)
+   {
+       return getLayoutSeed(interp,argc,argv);
+   }
+   else if (strcmp(argv[0],"setlayoutseed")==0)
+   {
+       return setLayoutSeed(interp,argc,argv);
+   }
    else if (strcmp(argv[0],"submodulecount")==0)
    {
       return getSubmoduleCount(interp,argc,argv);
@@ -849,14 +855,38 @@ int ModuleInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char *
    return Inspector::inspectorCommand(interp, argc, argv);
 }
 
+int ModuleInspector::getDefaultLayoutSeed(Tcl_Interp *interp, int argc, const char **argv)
+{
+    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
+    const cDisplayString blank;
+    cModule *parentModule = static_cast<cModule *>(object);
+    const cDisplayString& ds = parentModule && parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString() : blank;
+    long seed = resolveLongDispStrArg(ds.getTagArg("bgl",4), parentModule, 1);
+    Tcl_SetObjResult(interp, Tcl_NewIntObj((int)seed));
+    return TCL_OK;
+}
+
+int ModuleInspector::getLayoutSeed(Tcl_Interp *interp, int argc, const char **argv)
+{
+    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
+    Tcl_SetObjResult(interp, Tcl_NewIntObj((int)layoutSeed));
+    return TCL_OK;
+}
+
+int ModuleInspector::setLayoutSeed(Tcl_Interp *interp, int argc, const char **argv)
+{
+    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
+    layoutSeed = atol(argv[1]);
+    return TCL_OK;
+}
+
 int ModuleInspector::getSubmoduleCount(Tcl_Interp *interp, int argc, const char **argv)
 {
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
    int count = 0;
    for (cModule::SubmoduleIterator submod(static_cast<cModule *>(object)); !submod.end(); submod++)
        count++;
-   char buf[20];
-   sprintf(buf, "%d", count);
-   Tcl_SetResult(interp, buf, TCL_VOLATILE);
+   Tcl_SetObjResult(interp, Tcl_NewIntObj(count));
    return TCL_OK;
 }
 
@@ -883,10 +913,7 @@ int ModuleInspector::getSubmodQLen(Tcl_Interp *interp, int argc, const char **ar
    const char *qname = argv[2];
    cQueue *q = dynamic_cast<cQueue *>(mod->findObject(qname)); //FIXME THIS MUST BE REFINED! SEARCHES WAY TOO DEEEEEP!!!!
    if (!q) {Tcl_SetResult(interp, TCLCONST(""), TCL_STATIC); return TCL_OK;}
-
-   char buf[20];
-   sprintf(buf, "%d", q->length());
-   Tcl_SetResult(interp, buf, TCL_VOLATILE);
+   Tcl_SetObjResult(interp, Tcl_NewIntObj(q->length()));
    return TCL_OK;
 }
 

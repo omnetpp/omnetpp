@@ -37,7 +37,7 @@ class TKENV_API ModuleInspector : public Inspector
    protected:
       char canvas[128];
       bool needs_redraw;
-      int32 randomSeed;
+      int32 layoutSeed;
       bool notDrawn;
 
       struct Point {double x,y;};
@@ -62,6 +62,9 @@ class TKENV_API ModuleInspector : public Inspector
       bool needsRedraw() {return needs_redraw;}
 
       // implementations of inspector commands:
+      virtual int getDefaultLayoutSeed(Tcl_Interp *interp, int argc, const char **argv);
+      virtual int getLayoutSeed(Tcl_Interp *interp, int argc, const char **argv);
+      virtual int setLayoutSeed(Tcl_Interp *interp, int argc, const char **argv);
       virtual int getSubmoduleCount(Tcl_Interp *interp, int argc, const char **argv);
       virtual int getSubmodQ(Tcl_Interp *interp, int argc, const char **argv);
       virtual int getSubmodQLen(Tcl_Interp *interp, int argc, const char **argv);

@@ -169,6 +169,7 @@ proc ModuleInspector:recallPreferences {insp} {
     set inspectordata($c:imagesizefactor) 1
     set inspectordata($c:showlabels) 1
     set inspectordata($c:showarrowheads) 1
+    set inspectordata($c:layoutseed) [opp_inspectorcommand $insp getdefaultlayoutseed]
 
     # overwrite them with saved values if they exist
     set ptr [opp_inspector_getobject $insp]
@@ -181,6 +182,9 @@ proc ModuleInspector:recallPreferences {insp} {
     if [info exist config($key:imagesizefactor)] {set inspectordata($c:imagesizefactor) $config($key:imagesizefactor)}
     if [info exist config($key:showlabels)] {set inspectordata($c:showlabels) $config($key:showlabels)}
     if [info exist config($key:showarrowheads)] {set inspectordata($c:showarrowheads) $config($key:showarrowheads)}
+    if [info exist config($key:layoutseed)] {set inspectordata($c:layoutseed) $config($key:layoutseed)}
+
+    opp_inspectorcommand $insp setlayoutseed $inspectordata($c:layoutseed)
 }
 
 proc ModuleInspector:updatePreferences {insp} {
@@ -197,6 +201,7 @@ proc ModuleInspector:updatePreferences {insp} {
     set config($key:imagesizefactor) $inspectordata($c:imagesizefactor)
     set config($key:showlabels) $inspectordata($c:showlabels)
     set config($key:showarrowheads) $inspectordata($c:showarrowheads)
+    set config($key:layoutseed) $inspectordata($c:layoutseed)
 }
 
 proc ModuleInspector:adjustWindowSizeAndZoom {insp} {
@@ -1371,7 +1376,11 @@ proc ModuleInspector:rightClick {insp X Y x y} {
 # Relayout the compound module, and resize the window accordingly.
 #
 proc ModuleInspector:relayout {insp} {
-    global config
+    global config inspectordata
+
+    set c $insp.c
+    incr inspectordata($c:layoutseed)
+    opp_inspectorcommand $insp setlayoutseed $inspectordata($c:layoutseed)
 
     opp_inspectorcommand $insp relayout
 
