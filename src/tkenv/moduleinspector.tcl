@@ -108,6 +108,7 @@ proc createGraphicalModuleViewer {insp} {
     set inspectordata($c:showarrowheads) 1
 
     # mouse bindings
+    $c bind mod <1> "ModuleInspector:click $insp"
     $c bind submod <1> "ModuleInspector:click $insp"
     $c bind conn <1> "ModuleInspector:click $insp"
     $c bind msg <1> "ModuleInspector:click $insp"
