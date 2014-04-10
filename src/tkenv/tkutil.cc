@@ -169,12 +169,16 @@ char *voidPtrToStr(void *ptr, char *buffer)
 
 void *strToVoidPtr(const char *s)
 {
-    // Note: must accept "" and malformed strings too, and return them as NULL.
-    if (s[0]!='p' || s[1]!='t' || s[2]!='r')
-       return NULL;
+    // accept "" and malformed strings too, and return them as NULL
+    if (s[0]=='p' && s[1]=='t' && s[2]=='r')
+        s += 3;
+    else if (s[0]=='0' && s[1]=='x')
+        s += 2;
+    else
+        return NULL;
 
     void *ptr;
-    sscanf(s+3,"%p",&ptr);
+    sscanf(s, "%p", &ptr);
     return ptr;
 }
 
