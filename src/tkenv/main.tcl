@@ -56,17 +56,18 @@ set config(layout-may-change-zoom) 1
 set config(preferences-dialog-page) "g"
 set config(default-configname) {}
 set config(default-runnumber) {}
+set config(stopdialog:size) {188 148}
 set config(finddialog:size) {316 132}
 set config(findobjectsdialog:size) {925 578}
 set config(preferencesdialog:size) {652 545}
 set config(runseldialog:size) {421 146}
 set config(treedialog:size) {353 446}
 set config(outvectoroptionsdialog:size) {300 300}
-set config(rununtildialog:size) {400 300}
-set config(inputbox:size) {400 300}
-set config(combodialog:size) {400 300}
-set config(oncedialog:size) {400 300}
-set config(aboutdialog:size) {400 300}
+set config(rununtildialog:size) {455 206}
+set config(inputbox:size) {400 200}
+set config(combodialog:size) {400 200}
+set config(oncedialog:size) {500 300}
+set config(aboutdialog:size) {448 278}
 set config(modelinfodialog:size) {400 400}
 
 set pluginlist {}
