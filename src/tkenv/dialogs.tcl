@@ -1145,20 +1145,11 @@ proc filteredObjectList:refresh {w} {
 
     # resolve root object
     set rootobjectname [$w.f.filter.searchin.e get]
-    if {$rootobjectname=="simulation"} {
-        set rootobject [opp_object_simulation]
-    } else {
-        if [catch {
-            set rootobject [opp_modulebypath $rootobjectname]
-        } err] {
-            tk_messageBox -title "Error" -icon error -type ok -parent $w -message "Error: $err."
-            return
-        }
-        if [opp_isnull $rootobject] {
-            tk_messageBox -title "Error" -icon error -type ok -parent $w \
-                -message "Please enter a module name or 'simulation' in the 'Search inside' field -- '$rootobjectname' could not be resolved."
-            return
-        }
+    set rootobject [opp_findobjectbyfullpath $rootobjectname]
+    if [opp_isnull $rootobject] {
+        tk_messageBox -title "Error" -icon error -type ok -parent $w \
+            -message "Object to search in (\"$rootobjectname\") could not be resolved."
+        return
     }
 
     set tmp(category) ""

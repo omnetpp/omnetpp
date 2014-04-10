@@ -94,6 +94,48 @@ TclQuotedString::~TclQuotedString()
         Tcl_Free(quotedstr);
 }
 
+//----------------------------------------------------------------------
+
+void cFindByPathVisitor::visit(cObject *obj)
+{
+    // we have to do exhaustive search here, because full path may not exactly
+    // follow the object hierarchy (some objects may be omitted)
+    std::string objPath = obj->getFullPath();
+
+    // however, a module's name and the future event set's name is not hidden,
+    // so if this obj is a module (or cMessageHeap) and its name does not match
+    // the beginning of fullpath, we can prune the search here.
+    if ((dynamic_cast<cModule *>(obj) || dynamic_cast<cMessageHeap *>(obj))
+            && !opp_stringbeginswith(fullPath, objPath.c_str()))
+    {
+        // skip (do not search) this subtree
+        return;
+    }
+
+    // found it?
+    if (strcmp(fullPath, objPath.c_str())==0
+            && (!className || strcmp(className, getObjectShortTypeName(obj))==0)
+            && idMatches(obj))
+    {
+        // found, collect it
+        addPointer(obj);
+
+        // makes no sense to go further down
+        return;
+    }
+
+    // search recursively
+    obj->forEachChild(this);
+}
+
+bool cFindByPathVisitor::idMatches(cObject *obj)
+{
+    // for now we only take ID into account for messages; TODO for OMNeT++ 5.0: check cComponent id!
+    if (dynamic_cast<cMessage *>(obj))
+        return ((cMessage *)obj)->getId() == objectId;
+    return true;
+}
+
 //=======================================================================
 
 #define TRY2(CODE)  try { CODE; } catch (std::exception& e) {printf("<!> Warning: %s\n", e.what());}
@@ -253,78 +295,6 @@ int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char 
 bool isAPL()
 {
     return OMNETPP_EDITION[0]=='A';
-}
-
-
-//----------------------------------------------------------------------
-
-/**
- * Recursively finds an object by full path.
- */
-class cInspectByNameVisitor : public cVisitor
-{
-  protected:
-    const char *fullpath;
-    const char *classname;
-    int insptype;
-    const char *geometry;
-    int numopened;
-
-  public:
-    cInspectByNameVisitor(const char *_fullpath, const char *_classname,
-                          int _insptype, const char *_geometry) {
-        fullpath = _fullpath;
-        classname = _classname;
-        insptype = _insptype;
-        geometry = _geometry;
-        numopened = 0;
-    }
-
-    int getNumOpened() const {return numopened;}
-
-    virtual void visit(cObject *obj) {
-        // we have to do exhaustive search here... optimization, such as checking
-        // if objpath matches beginning of fullpath to see if we are on the
-        // right track is not usable, because some objects (simulation, modules'
-        // paramv, gatev members) don't appear in object's getFullPath()...
-
-        std::string objpath = obj->getFullPath();
-
-        // however, a module's name and the future event set's name is not hidden,
-        // so if this obj is a module (or cMessageHeap) and its name does not match
-        // the beginning of fullpath, we can cut the search here.
-        if ((dynamic_cast<cModule *>(obj) || dynamic_cast<cMessageHeap *>(obj))
-            && strncmp(objpath.c_str(), fullpath, strlen(objpath.c_str()))!=0)
-        {
-            // skip (do not search) this subtree
-            return;
-        }
-
-        // found it?
-        if (!strcmp(fullpath,objpath.c_str()) && !strcmp(classname,getObjectShortTypeName(obj)))
-        {
-            // found: inspect if inspector is not open
-            Tkenv *app = getTkenv();
-            if (!app->findFirstInspector(obj, insptype, true)) {
-                app->inspect(obj, insptype, true, geometry);
-                numopened++;
-            }
-
-            // makes no sense to go further down
-            return;
-        }
-
-        // search recursively
-        obj->forEachChild(this);
-    }
-};
-
-int inspectObjectByName(const char *fullpath, const char *classname, int insptype, const char *geometry)
-{
-    // open inspectors for object whose is the same as fullpath
-    cInspectByNameVisitor v(fullpath, classname, insptype, geometry);
-    v.process(&simulation);
-    return v.getNumOpened();
 }
 
 //----------------------------------------------------------------------

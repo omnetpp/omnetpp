@@ -18,6 +18,7 @@
 # Variables:
 # - pil_name()
 # - pil_class()
+# - pil_id()
 # - pil_type()
 # - pil_geom()
 #
@@ -40,28 +41,26 @@ proc inspectorUpdateCallback {} {
 # Try to open inspectors in 'pending inspectors' list
 #
 proc inspectorList:openInspectors {} {
-    global pil_name pil_class pil_type pil_geom
+    global pil_name pil_class pil_id pil_type pil_geom
 
     foreach key [array names pil_name] {
-        # check if element is still in the array: if an inspector was several times
-        # on the list (ie. both w/ type=0 and type!=0), opening it removes both elements...
         if [info exists pil_name($key)] {
             debug "trying to open inspector $key"
-            if [catch {set opened [opp_inspectbyname $pil_name($key) $pil_class($key) $pil_type($key) $pil_geom($key)]}] {
-                tk_messageBox -title "Error" -message "Error opening inspector for ($pil_class($key))$pil_name($key), ignoring."
+            set ptrs [opp_findobjectbyfullpath $pil_name($key) $pil_class($key) $pil_id($key)]
+            if {$ptrs!=""} {
+                debug "object(s) for inspector list element $key found, removing it from inspector list"
+                foreach ptr $ptrs {
+                    if [catch {
+                        opp_inspect $ptr $pil_type($key) $pil_geom($key)
+                    } err] {
+                        debug "error opening inspector for $key: $err"
+                    }
+                }
                 unset pil_name($key)
                 unset pil_class($key)
+                unset pil_id($key)
                 unset pil_type($key)
                 unset pil_geom($key)
-                debug "error opening inspector, discarding entry $key"
-            } elseif {$opened} {
-                unset pil_name($key)
-                unset pil_class($key)
-                unset pil_type($key)
-                unset pil_geom($key)
-                debug "success, removing $key from inspector list"
-            } else {
-                debug "no such object (yet)"
             }
         }
     }
@@ -71,7 +70,7 @@ proc inspectorList:openInspectors {} {
 # Add an inspector to the list. The underlying object must still exist.
 #
 proc inspectorList:add {insp allowdestructive} {
-    global pil_name pil_class pil_type pil_geom pil_nextindex
+    global pil_name pil_class pil_id pil_type pil_geom pil_nextindex
 
     set object [opp_inspector_getobject $insp]
     set type [opp_inspector_gettype $insp]
@@ -81,10 +80,13 @@ proc inspectorList:add {insp allowdestructive} {
 
     set objname [opp_getobjectfullpath $object]
     set classname [opp_getobjectshorttypename $object]
-    set key "$objname:$classname:$type"
+    set id [opp_getobjectid $object]
+
+    set key "$objname:$classname:$id:$type"
 
     set pil_name($key)   $objname
     set pil_class($key)  $classname
+    set pil_id($key)     $id
     set pil_type($key)   $type
     set pil_geom($key)   [inspectorList:getGeometry $insp $allowdestructive]
 
@@ -106,16 +108,20 @@ proc inspectorList:addAll {allowdestructive} {
 # called when an inspector window is opened.
 #
 proc inspectorList:remove {insp} {
-    global pil_name pil_class pil_type pil_geom
+    global pil_name pil_class pil_id pil_type pil_geom
 
     set object [opp_inspector_getobject $insp]
     set type [opp_inspector_gettype $insp]
+    set objname [opp_getobjectfullpath $object]
+    set classname [opp_getobjectshorttypename $object]
+    set id [opp_getobjectid $object]
 
-    set key "[opp_getobjectfullpath $object]:[opp_getobjectshorttypename $object]:$type"
+    set key "$objname:$classname:$id:$type"
 
     catch {
         unset pil_name($key)
         unset pil_class($key)
+        unset pil_id($key)
         unset pil_type($key)
         unset pil_geom($key)
         debug "$key removed from inspector list"
@@ -123,7 +129,7 @@ proc inspectorList:remove {insp} {
 }
 
 proc inspectorList:tkenvrcGetContents {allowdestructive} {
-    global pil_name pil_class pil_type pil_geom
+    global pil_name pil_class pil_id pil_type pil_geom
 
     set res ""
     foreach insp [opp_getinspectors 1] {
@@ -133,13 +139,16 @@ proc inspectorList:tkenvrcGetContents {allowdestructive} {
 
        set objname [opp_getobjectfullpath $object]
        set class [opp_getobjectshorttypename $object]
+       set id [opp_getobjectid $object]
        set geom [inspectorList:getGeometry $insp $allowdestructive]
 
-       append res "inspector \"$objname\" \"$class\" \"$type\" \"$geom\"\n"
+       append res [list inspector $objname $class $id $type $geom]
+       append res "\n"
     }
 
     foreach key [array names pil_name] {
-       append res "inspector \"$pil_name($key)\" \"$pil_class($key)\" \"$pil_type($key)\" \"$pil_geom($key)\"\n"
+       append res [list inspector $pil_name($key) $pil_class($key) $pil_id($key) $pil_type($key) $pil_geom($key)]
+       append res "\n"
     }
 
     debug "generated contents: >>>$res<<<"
@@ -148,12 +157,13 @@ proc inspectorList:tkenvrcGetContents {allowdestructive} {
 
 
 proc inspectorList:tkenvrcReset {} {
-    global pil_name pil_class pil_type pil_geom
+    global pil_name pil_class pil_id pil_type pil_geom
 
     # delete old array
     catch {
        unset pil_name
        unset pil_class
+       unset pil_id
        unset pil_type
        unset pil_geom
     }
@@ -162,21 +172,19 @@ proc inspectorList:tkenvrcReset {} {
 
 
 proc inspectorList:tkenvrcProcessLine {line} {
-    global pil_name pil_class pil_type pil_geom
+    global pil_name pil_class pil_id pil_type pil_geom
 
-    if {[llength $line]!=5} {error "wrong number of columns"}
-
-    set objname [lindex $line 1]
-    set class [lindex $line 2]
-    set type [lindex $line 3]
-    set geom [lindex $line 4]
+    if {[llength $line]==5} {return} ;# silently ignore inspector lines in older tkenvrc files
+    if {[llength $line]!=6} {error "wrong number of columns"}
+    setvars {dummy objname class id type geom} $line
 
     if [catch {opp_inspectortype $type}] {return}  ;# ignore obsolete inspector types
 
-    set key "$objname:$class:$type"
+    set key "$objname:$class:$id:$type"
 
     set pil_name($key)   $objname
     set pil_class($key)  $class
+    set pil_id($key)     $id
     set pil_type($key)   $type
     set pil_geom($key)   $geom
 
