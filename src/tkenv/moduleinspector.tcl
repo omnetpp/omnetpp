@@ -1154,7 +1154,7 @@ proc ModuleInspector:drawMessage {c msgptr x y} {
         append msglabel $msgname
     }
     if {$msglabel!=""} {
-        $c create text $labelx $labely -text $msglabel -anchor n -font CanvasFont -tags "dx tooltip msgname $msgptr"
+        $c create text $labelx $labely -text $msglabel -anchor n -font CanvasFont -tags "dx msgname $msgptr"
     }
 
 }
