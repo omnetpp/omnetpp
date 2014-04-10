@@ -320,6 +320,16 @@ proc lcontains {list item} {
     return [expr $i != -1]
 }
 
+proc uniq {list} {
+    set result {}
+    foreach elem $list {
+        if {[lsearch -exact $result $elem] == -1 } {
+            lappend result $elem
+        }
+    }
+    return $result
+}
+
 #
 # Dictionary compare
 #

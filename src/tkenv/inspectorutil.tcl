@@ -273,55 +273,66 @@ proc getHelpTip {w x y} {
    set tip ""
 
    if {[winfo class $w]=="Canvas"} {
-     set canvasx [$w canvasx $x]
-     set canvasy [$w canvasy $y]
-     set items [$w find overlapping [expr $canvasx-2] [expr $canvasy-2] [expr $canvasx+2] [expr $canvasy+2]]
+       set canvasx [$w canvasx $x]
+       set canvasy [$w canvasy $y]
+       set items [$w find overlapping [expr $canvasx-2] [expr $canvasy-2] [expr $canvasx+2] [expr $canvasy+2]]
 
-     set tip ""
-     foreach item $items {
-       # if this is a simulation object, get its pointer
-       set ptr ""
-       set tags [$w gettags $item]
-       if {[lsearch $tags "tooltip"] == -1} {
-          continue
+       set ptrs {}
+       foreach item $items {
+           # if this is a simulation object, get its pointer
+           set ptr ""
+           set tags [$w gettags $item]
+           if {[lsearch $tags "tooltip"] == -1} {
+               continue
+           }
+
+           if {[lsearch $tags "ptr*"] != -1} {
+               regexp "ptr.*" $tags ptr
+           } elseif {[lsearch $tags "qlen-ptr*"] != -1} {
+               regexp "ptr.*" $tags modptr
+               set ptr [ModuleInspector:qlenGetQptr [winfo parent $w] $modptr] ;# Khmm...
+           } elseif {[lsearch $tags "node-ptr*"] != -1} {
+               regexp "ptr.*" $tags ptr
+           } elseif {[lsearch $tags "node-*"] != -1} {
+               set i [lsearch $tags "node-*"]
+               set tag [lindex $tags $i]
+               regexp "node-(.*)" $tag match node
+               return [Tree:gettooltip $w $node]
+           }
+           set ptr [lindex $ptr 0]
+           if [opp_isnotnull $ptr] {
+               lappend ptrs $ptr
+           }
        }
 
-       if {[lsearch $tags "ptr*"] != -1} {
-          regexp "ptr.*" $tags ptr
-       } elseif {[lsearch $tags "qlen-ptr*"] != -1} {
-          regexp "ptr.*" $tags modptr
-          set ptr [ModuleInspector:qlenGetQptr [winfo parent $w] $modptr] ;# Khmm...
-       } elseif {[lsearch $tags "node-ptr*"] != -1} {
-          regexp "ptr.*" $tags ptr
-       } elseif {[lsearch $tags "node-*"] != -1} {
-          set i [lsearch $tags "node-*"]
-          set tag [lindex $tags $i]
-          regexp "node-(.*)" $tag match node
-          return [Tree:gettooltip $w $node]
-       }
-       set ptr [lindex $ptr 0]
+       # remove duplicate pointers and reverse the order
+       # so the topmost element will be the first in the list
+       set ptrs [lreverse [uniq $ptrs]]
 
-       if [opp_isnotnull $ptr] {
-          append tip "([opp_getobjectshorttypename $ptr]) [opp_getobjectfullname $ptr]"
-          set info [opp_getobjectinfostring $ptr]
-          if {$info!=""} {append tip ", $info"}
-          regsub {  +} $tip {  } tip
-          if {[lsearch $tags "modname"] == -1} {
-             set dispstr ""
-             catch { set dispstr [opp_getobjectfield $ptr displayString] }
-             set tt_tag [opp_displaystring $dispstr getTagArg "tt" 0 $ptr 1]
-          } else {
-             # if it has tag "modname", it is the enclosing module
-             set dispstr ""
-             catch { set dispstr [opp_getobjectfield $ptr displayString] }
-             set tt_tag [opp_displaystring $dispstr getTagArg "bgtt" 0 $ptr 0]
-          }
-          if {$tt_tag!=""} {
-             append tip "\n  $tt_tag"
-          }
+       set tip ""
+       foreach ptr $ptrs {
+           # append type, name, and info string
+           append tip "([opp_getobjectshorttypename $ptr]) [opp_getobjectfullname $ptr]"
+           set info [opp_getobjectinfostring $ptr]
+           if {$info!=""} {append tip ", $info"}
+           regsub {  +} $tip {  } tip
+
+           # if it's a module, append display string tooltip tag (tt=, bgtt=)
+           if {[lsearch $tags "modname"] == -1} {
+               set dispstr ""
+               catch { set dispstr [opp_getobjectfield $ptr displayString] }
+               set tt_tag [opp_displaystring $dispstr getTagArg "tt" 0 $ptr 1]
+           } else {
+               # if it has tag "modname", it is the enclosing module
+               set dispstr ""
+               catch { set dispstr [opp_getobjectfield $ptr displayString] }
+               set tt_tag [opp_displaystring $dispstr getTagArg "bgtt" 0 $ptr 0]
+           }
+           if {$tt_tag!=""} {
+               append tip "\n  $tt_tag"
+           }
+           append tip "\n"
        }
-       append tip "\n"
-     }
    }
    return [string trim $tip \n]
 }

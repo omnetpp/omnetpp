@@ -1318,11 +1318,7 @@ proc ModuleInspector:getPtrsUnderMouse {c x y} {
    if {$ptrs != {}} {
       # remove duplicate pointers and reverse the order
       # so the topmost element will be the first in the list
-      foreach ptr $ptrs {
-          if {[lsearch -exact $ptrs2 $ptr] == -1 } {
-              set ptrs2 [lreplace $ptrs2 0 -1 $ptr]
-          }
-      }
+      set ptrs2 [lreverse [uniq $ptrs]]
 
       set bgptr ""
       regexp {\.(ptr.*)-([0-9]+)} $c match bgptr dummy
