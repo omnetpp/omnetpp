@@ -71,6 +71,8 @@ proc createGateViewer {insp} {
     $c bind conn <$B3> "GateInspector:rightClick $insp %X %Y"
     $c bind msg <$B3> "GateInspector:rightClick $insp %X %Y"
     $c bind msgname <$B3> "GateInspector:rightClick $insp %X %Y"
+
+    inspector:bindSideButtons $insp
 }
 
 proc GateInspector:drawModuleGate {c modptr gateptr modname gatename k xsiz dir highlight} {

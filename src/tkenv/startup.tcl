@@ -107,7 +107,7 @@ proc checkTclTkVersion {} {
 proc setupTkOptions {} {
    global icons tcl_platform tk_version
    global tcl_wordchars tcl_nonwordchars
-   global B2 B3 CTRL CTRL_ Control
+   global B2 B3 BBack BFwd CTRL CTRL_ Control
 
    # set theme
    if {[string equal [tk windowingsystem] x11]}  {
@@ -198,6 +198,16 @@ proc setupTkOptions {} {
    if {[string equal [tk windowingsystem] aqua]}  {
        set B2 3
        set B3 2
+   }
+
+   # mouse side buttons (back/forward); they are numbered differently on Linux
+   # and OS X, and don't work at all on Windows
+   if {[string equal [tk windowingsystem] aqua]}  {
+       set BBack 4
+       set BFwd  5
+   } else {  # Linux
+       set BBack 8
+       set BFwd  9
    }
 
    # we want to use the Command key for shortcuts instead of Ctrl:

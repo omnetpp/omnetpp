@@ -56,6 +56,8 @@ proc createGenericObjectViewer {insp} {
 
     # restore columns widths -- note: for the main embedded inspector this is too soon, as the config hasn't been loaded yet
     inspectorListbox:restoreColumnWidths $lb "inspector:columnwidths"
+
+    inspector:bindSideButtons $insp
 }
 
 proc GenericObjectInspector:onSetObject {insp} {

@@ -159,6 +159,20 @@ proc inspector:forward {insp} {
     opp_inspectorcommand $insp goforward
 }
 
+proc inspector:bindSideButtons {insp} {
+    bindRec $insp <Button> "inspector:handleSideButtons $insp %b"
+}
+
+proc inspector:handleSideButtons {insp button} {
+    global BBack BFwd
+
+    if {$button==$BBack} {
+        inspector:back $insp
+    } elseif {$button==$BFwd} {
+        inspector:forward $insp
+    }
+}
+
 proc inspector:inspectParent {insp} {
     global config
 

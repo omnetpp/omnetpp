@@ -38,6 +38,8 @@ proc createHistogramViewer {insp} {
     $insp.main.canvas bind all <Any-Enter> "HistogramInspector:mouse $insp %x %y 1"
     $insp.main.canvas bind all <Any-Leave> "HistogramInspector:mouse $insp %x %y 0"
 
+    inspector:bindSideButtons $insp
+
     # make the window respond to resize events
     bind $insp <Configure> "opp_refreshinspector $insp"
 

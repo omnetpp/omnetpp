@@ -384,6 +384,15 @@ proc busy {{msg {}}} {
     }
 }
 
+proc bindRec {w event handler} {
+    if {[winfo class $w]!="Toplevel"} { # Tk bug: handler is invoked twice: once by specific widget, and also by the toplevel
+        bind $w $event $handler
+    }
+    foreach c [winfo children $w] {
+        bindRec $c $event $handler
+    }
+}
+
 #
 # Creates mouse wheel bindings for the given widget or widget class.
 # Note: wheel events are only delivered to the widget IF IT HAS FOCUS!

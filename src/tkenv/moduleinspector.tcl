@@ -129,6 +129,8 @@ proc createGraphicalModuleViewer {insp} {
     $c bind modname <$B3> "ModuleInspector:rightClick $insp %X %Y %x %y"
     $c bind qlen <$B3> "ModuleInspector:qlenRightClick $insp %X %Y %x %y"
 
+    inspector:bindSideButtons $insp
+
     # keyboard shortcuts
     set ww [winfo toplevel $insp]
     bind $ww <$Control-m> "ModuleInspector:zoomIn $insp"
