@@ -32,6 +32,7 @@ cGlobalRegistrationList classDescriptors("class descriptors");
 cGlobalRegistrationList configOptions("supported configuration options");
 cGlobalRegistrationList resultFilters("resultFilters");
 cGlobalRegistrationList resultRecorders("resultRecorders");
+cGlobalRegistrationList messagePrinters("messagePrinters");
 
 EXECUTE_ON_SHUTDOWN(
         componentTypes.clear();
@@ -42,6 +43,7 @@ EXECUTE_ON_SHUTDOWN(
         configOptions.clear();
         resultFilters.clear();
         resultRecorders.clear();
+        messagePrinters.clear();
 );
 
 

@@ -267,6 +267,14 @@ _OPPDEPRECATED inline void Define_Function_macro() {}
 #define Register_PerObjectConfigOptionU(ID, NAME, KIND, UNIT, DEFAULTVALUE, DESCRIPTION) \
   __REGISTER_CONFIGOPTION(ID, (NAME, cConfigOption::KIND, cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
+/**
+ * Registers a message printer class (cMessagePrinter)
+ *
+ * @hideinitializer
+ */
+#define Register_MessagePrinter(CLASSNAME) \
+  EXECUTE_ON_STARTUP(messagePrinters.getInstance()->add(new CLASSNAME());)
+
 //@}
 
 NAMESPACE_END
