@@ -1042,12 +1042,6 @@ void Tkenv::componentInitBegin(cComponent *component, int stage)
     printLastLogLine();
 }
 
-void Tkenv::setMainWindowExcludedModuleIds(const std::set<int>& ids)
-{
-    mainWindowExcludedModuleIds = ids;
-    LogInspector::redisplay(interp, ".log.text", logBuffer, simulation.getSystemModule(), mainWindowExcludedModuleIds);
-}
-
 void Tkenv::setSilentEventFilters(const char *filterLines)
 {
     // parse into tmp

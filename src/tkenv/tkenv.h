@@ -246,8 +246,6 @@ class TKENV_API Tkenv : public EnvirBase
       Speedometer& getSpeedometer() {return speedometer;}
       Tcl_Interp *getInterp() {return interp;}
       const LogBuffer& getLogBuffer() const {return logBuffer;}
-      const std::set<int>& getMainWindowExcludedModuleIds() const {return mainWindowExcludedModuleIds;}
-      void setMainWindowExcludedModuleIds(const std::set<int>& ids);
       const char *getSilentEventFilters() const {return silentEventFilterLines.c_str();}
       void setSilentEventFilters(const char *filterLines);
       bool isSilentEvent(cMessage *msg);

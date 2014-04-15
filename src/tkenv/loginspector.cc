@@ -85,16 +85,6 @@ void LogInspector::refresh()
 
 void LogInspector::printLastLineOf(const LogBuffer& logBuffer)
 {
-    printLastLineOf(getTkenv()->getInterp(), textWidget, logBuffer, excludedModuleIds);
-}
-
-void LogInspector::redisplay(const LogBuffer& logBuffer)
-{
-    redisplay(getTkenv()->getInterp(), textWidget, logBuffer, static_cast<cModule *>(object), excludedModuleIds);
-}
-
-void LogInspector::printLastLineOf(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, const std::set<int>& excludedModuleIds)
-{
     const LogBuffer::Entry& entry = logBuffer.getEntries().back();
     if (!entry.moduleIds)
     {
@@ -113,13 +103,14 @@ void LogInspector::printLastLineOf(Tcl_Interp *interp, const char *textWidget, c
     textWidget_gotoEnd(interp, textWidget);
 }
 
-void LogInspector::redisplay(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, cModule *mod, const std::set<int>& excludedModuleIds)
+void LogInspector::redisplay(const LogBuffer& logBuffer)
 {
     textWidget_clear(interp, textWidget);
 
-    if (!mod)
+    if (!object)
         return;
 
+    cModule *mod = static_cast<cModule *>(object);
     int inspModuleId = mod->getId();
     const std::list<LogBuffer::Entry>& entries = logBuffer.getEntries();
     for (std::list<LogBuffer::Entry>::const_iterator it=entries.begin(); it!=entries.end(); it++)

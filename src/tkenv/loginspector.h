@@ -42,9 +42,6 @@ class TKENV_API LogInspector : public Inspector
       virtual void redisplay(const LogBuffer& logBuffer);
 
       virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
-
-      static void printLastLineOf(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, const std::set<int>& excludedModuleIds);
-      static void redisplay(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, cModule *mod, const std::set<int>& excludedModuleIds);
 };
 
 NAMESPACE_END
