@@ -1036,7 +1036,7 @@ void Tkenv::componentInitBegin(cComponent *component, int stage)
         component->isModule() ? "module" : "channel", component->getFullPath().c_str(), stage);
 
     // insert into log buffer
-    logBuffer.addLogLine(banner);
+    logBuffer.addLogLine(NULL, banner);  //TODO prefix
 
     // print into module log windows
     printLastLogLine();
@@ -1807,7 +1807,7 @@ void Tkenv::sputn(const char *s, int n)
     // insert into log buffer
     cModule *module = simulation.getContextModule();
     if (module)
-        logBuffer.addLogLine(TclQuotedString(s,n).get()); //FIXME too much copying! reuse original string if no quoting needed
+        logBuffer.addLogLine(NULL, TclQuotedString(s,n).get()); //FIXME prefix! also: too much copying! reuse original string if no quoting needed
     else
         logBuffer.addInfo(TclQuotedString(s,n).get()); //FIXME too much copying! reuse original string if no quoting needed
 
