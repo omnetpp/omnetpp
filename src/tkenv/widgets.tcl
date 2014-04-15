@@ -320,6 +320,16 @@ proc lcontains {list item} {
     return [expr $i != -1]
 }
 
+proc uniq {list} {
+    set result {}
+    foreach elem $list {
+        if {[lsearch -exact $result $elem] == -1 } {
+            lappend result $elem
+        }
+    }
+    return $result
+}
+
 #
 # Dictionary compare
 #
@@ -371,6 +381,15 @@ proc busy {{msg {}}} {
         #$statusbar.mode config -text "Ready"
         . config -cursor ""
         update idletasks
+    }
+}
+
+proc bindRec {w event handler} {
+    if {[winfo class $w]!="Toplevel"} { # Tk bug: handler is invoked twice: once by specific widget, and also by the toplevel
+        bind $w $event $handler
+    }
+    foreach c [winfo children $w] {
+        bindRec $c $event $handler
     }
 }
 

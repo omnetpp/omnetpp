@@ -24,6 +24,7 @@
 
 #include "tkdefs.h"
 #include "cobject.h"
+#include "visitor.h"
 
 NAMESPACE_BEGIN
 
@@ -87,11 +88,27 @@ class TKENV_API TclQuotedString
     operator const char *() {return quotedstr;}
 };
 
+/**
+ * Find objects by full path, and optionally also matching class name and/or Id.
+ */
+class TKENV_API cFindByPathVisitor : public cCollectObjectsVisitor
+{
+  private:
+    const char *fullPath;
+    const char *className; // optional
+    long objectId; // optional message or component Id; use -1 for none
+  protected:
+    virtual void visit(cObject *obj);
+    bool idMatches(cObject *obj);
+  public:
+    cFindByPathVisitor(const char *fullPath, const char *className=NULL, long objectId=-1) :
+        fullPath(fullPath), className(className), objectId(objectId) {}
+    ~cFindByPathVisitor() {}
+};
+
 //
 // Utility functions:
 //
-class cCollectObjectsVisitor;
-
 const char *getObjectShortTypeName(cObject *object);
 const char *getObjectFullTypeName(cObject *object);
 
@@ -112,8 +129,6 @@ void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject
 void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath);
 
 int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep);
-
-int inspectObjectByName(const char *fullpath, const char *classname, int insptype, const char *geometry);
 
 void textWidget_insert(Tcl_Interp *interp, const char *textWidget, const char *text, const char *tags=NULL);
 

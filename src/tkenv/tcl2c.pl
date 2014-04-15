@@ -13,18 +13,22 @@ $result = "static unsigned char tcl_code[] = {";
 
 $outfile = shift @ARGV;
 
+my %processedFiles = ();
 while (@ARGV)
 {
     $arg = shift @ARGV;
 
     foreach $infile (glob($arg)) {
-        $txt = readTextFile($infile);
-        $result .= "\n  /* $infile */\n  ";
-        for ($i=0; $i<length($txt); $i++) {
-           $a = ord(substr($txt, $i, 1));
-           $a = 255 - $a;
-           $result .= "$a,";
-           $result .= "\n  " if ($i%20 == 19);
+        if ($processedFiles{$infile} != 1) {
+            $processedFiles{$infile} = 1;
+            $txt = readTextFile($infile);
+            $result .= "\n  /* $infile */\n  ";
+            for ($i=0; $i<length($txt); $i++) {
+                $a = ord(substr($txt, $i, 1));
+                $a = 255 - $a;
+                $result .= "$a,";
+                $result .= "\n  " if ($i%20 == 19);
+            }
         }
     }
 }

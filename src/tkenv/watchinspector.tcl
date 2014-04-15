@@ -35,6 +35,8 @@ proc createWatchViewer {f} {
     $f.name.l config -width 20
     focus $f.name.e
     pack $f.name -fill x -side top
+
+    inspector:bindSideButtons $insp
 }
 
 

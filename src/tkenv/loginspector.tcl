@@ -27,6 +27,8 @@ proc createLogInspector {insp geom} {
     ttk::frame $insp.main
     pack $insp.main -expand 1 -fill both -side top
     createLogViewer $insp $insp.main
+
+    inspector:bindSideButtons $insp
 }
 
 proc createEmbeddedLogInspector {insp} {
@@ -45,6 +47,9 @@ proc createEmbeddedLogInspector {insp} {
     set help_tips($tb.copy)   "Copy selected text to clipboard (${CTRL_}C)"
     set help_tips($tb.find)   "Find string in window (${CTRL_}F)"
     set help_tips($tb.filter) "Filter window contents (${CTRL_}H)"
+
+    # note: intentionally no bindSideButtons (embedded log inspector is tied to the canvas,
+    # and cannot be navigated independently)
 }
 
 proc createLogViewer {insp f} {

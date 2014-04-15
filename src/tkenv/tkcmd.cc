@@ -98,6 +98,7 @@ int getValueFromConfig_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getNetworkType_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getFileName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getStatusVar_cmd(ClientData, Tcl_Interp *, int, const char **);
+int findObjectByFullPath_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectFullName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectFullPath_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -143,7 +144,6 @@ int eventlogRecording_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int inspect_cmd(ClientData, Tcl_Interp *, int, const char **);
 int supportedInspTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
-int inspectByName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int isInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorSupportsObject_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorGetObject_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -220,6 +220,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getnumrunsinconfig",getNumRunsInConfig_cmd  }, // args: <configname>
    { "opp_getfilename",      getFileName_cmd          }, // args: <filetype>  ret: <filename>
    { "opp_getstatusvar",     getStatusVar_cmd         }, // args: <varname>  ret: <value>
+   { "opp_findobjectbyfullpath",findObjectByFullPath_cmd}, // args: <fullpath> <classname> <id> ret: list of ptrs
    { "opp_getobjectname",    getObjectName_cmd        }, // args: <pointer>  ret: getName()
    { "opp_getobjectfullname",getObjectFullName_cmd    }, // args: <pointer>  ret: getFullName()
    { "opp_getobjectfullpath",getObjectFullPath_cmd    }, // args: <pointer>  ret: getFullPath()
@@ -264,9 +265,8 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_eventlogrecording", eventlogRecording_cmd },   // args: subcommand <args>
 
    // Inspector stuff
-   { "opp_inspect",           inspect_cmd           }, // args: <ptr> [<type>] ret: window
+   { "opp_inspect",           inspect_cmd           }, // args: <ptr> [<type>] [<geom>] ret: window
    { "opp_supported_insp_types",supportedInspTypes_cmd}, // args: <ptr>  ret: insp type list
-   { "opp_inspectbyname",     inspectByName_cmd     }, // args: <objfullpath> <classname> <insptype> <geom>
    { "opp_isinspector",       isInspector_cmd       }, // args: <window>
    { "opp_inspector_supportsobject",inspectorSupportsObject_cmd}, // args: <window> <ptr>
    { "opp_inspector_getobject",inspectorGetObject_cmd}, // args: <window>
@@ -656,6 +656,19 @@ int getFileName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
         return TCL_ERROR;
    Tcl_SetResult(interp, TCLCONST(!s ? "" : s), TCL_VOLATILE);
    return TCL_OK;
+}
+
+int findObjectByFullPath_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+    if (argc<2 || argc>4) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+    const char *fullPath = argv[1];
+    const char *className = argc>=3 ? argv[2] : NULL;
+    long objectId = argc>=4 ? atol(argv[3]) : -1;
+
+    cFindByPathVisitor visitor(fullPath, className, objectId);
+    visitor.process(&simulation);
+    setObjectListResult(interp, &visitor);
+    return TCL_OK;
 }
 
 #define LL  INT64_PRINTF_FORMAT
@@ -1712,22 +1725,24 @@ int eventlogRecording_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 
 int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2 && argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   if (argc<2 || argc>4) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    cObject *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
 
-   const char *arg2 = (argc>=3) ? argv[2] : "";
+   const char *typestr = (argc>=3) ? argv[2] : NULL;
    int type;
-   if (!*arg2)
+   if (!typestr)
         type = INSP_DEFAULT;
-   else if (arg2[0]>='0' && arg2[0]<='9')
-        type = atoi(arg2);
-   else if ((type=insptypeCodeFromName(arg2)) < 0)
+   else if (typestr[0]>='0' && typestr[0]<='9')
+        type = atoi(typestr);
+   else if ((type=insptypeCodeFromName(typestr)) < 0)
         {Tcl_SetResult(interp, TCLCONST("unrecognized inspector type"), TCL_STATIC);return TCL_ERROR;}
 
-   Inspector *insp = app->inspect(object, type, true, "");
+   const char *geometry = (argc>=4) ? argv[3] : "";
+
+   Inspector *insp = app->inspect(object, type, true, geometry);
    Tcl_SetResult(interp, TCLCONST(insp ? insp->getWindowName() : ""), TCL_VOLATILE);
    return TCL_OK;
 }
@@ -1767,28 +1782,6 @@ int supportedInspTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
       strcat(buf, "} " );
    }
    Tcl_SetResult(interp, buf, TCL_DYNAMIC);
-   return TCL_OK;
-}
-
-
-int inspectByName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
-{
-   // args: <objfullpath> <classname> <insptype> ?geom?
-   if (argc!=4 && argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-
-   const char *fullpath = argv[1];
-   const char *classname = argv[2];
-
-   int insptype;
-   if (argv[3][0]>='0' && argv[3][0]<='9')
-        insptype = atoi( argv[3] );
-   else if ((insptype=insptypeCodeFromName(argv[3])) < 0)
-        {Tcl_SetResult(interp, TCLCONST("unrecognized inspector type"), TCL_STATIC);return TCL_ERROR;}
-
-   const char *geometry = (argc==5) ? argv[4] : NULL;
-
-   int numOpened = inspectObjectByName(fullpath, classname, insptype, geometry);
-   Tcl_SetResult(interp, TCLCONST(numOpened==0 ? "0" : "1"), TCL_STATIC);
    return TCL_OK;
 }
 

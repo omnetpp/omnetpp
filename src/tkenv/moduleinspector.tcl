@@ -108,6 +108,7 @@ proc createGraphicalModuleViewer {insp} {
     set inspectordata($c:showarrowheads) 1
 
     # mouse bindings
+    $c bind mod <1> "ModuleInspector:click $insp"
     $c bind submod <1> "ModuleInspector:click $insp"
     $c bind conn <1> "ModuleInspector:click $insp"
     $c bind msg <1> "ModuleInspector:click $insp"
@@ -127,6 +128,8 @@ proc createGraphicalModuleViewer {insp} {
     $c bind mod <$B3> "ModuleInspector:rightClick $insp %X %Y %x %y"
     $c bind modname <$B3> "ModuleInspector:rightClick $insp %X %Y %x %y"
     $c bind qlen <$B3> "ModuleInspector:qlenRightClick $insp %X %Y %x %y"
+
+    inspector:bindSideButtons $insp
 
     # keyboard shortcuts
     set ww [winfo toplevel $insp]
@@ -1153,7 +1156,7 @@ proc ModuleInspector:drawMessage {c msgptr x y} {
         append msglabel $msgname
     }
     if {$msglabel!=""} {
-        $c create text $labelx $labely -text $msglabel -anchor n -font CanvasFont -tags "dx tooltip msgname $msgptr"
+        $c create text $labelx $labely -text $msglabel -anchor n -font CanvasFont -tags "dx msgname $msgptr"
     }
 
 }
@@ -1318,11 +1321,7 @@ proc ModuleInspector:getPtrsUnderMouse {c x y} {
    if {$ptrs != {}} {
       # remove duplicate pointers and reverse the order
       # so the topmost element will be the first in the list
-      foreach ptr $ptrs {
-          if {[lsearch -exact $ptrs2 $ptr] == -1 } {
-              set ptrs2 [lreplace $ptrs2 0 -1 $ptr]
-          }
-      }
+      set ptrs2 [lreverse [uniq $ptrs]]
 
       set bgptr ""
       regexp {\.(ptr.*)-([0-9]+)} $c match bgptr dummy

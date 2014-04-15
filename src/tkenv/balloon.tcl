@@ -41,7 +41,7 @@ proc scheduleBalloon {window x y winx winy {item {}}} {
     if [info exists help_tips(helptip_proc)] {
         set tip [$help_tips(helptip_proc) $window $winx $winy]
         if [string length $tip] {
-            set balloon_after_ID [after $help_tips(delay) [list createBalloon $tip $x $y]]
+            set balloon_after_ID [after $help_tips(delay) [list createBalloon $window $tip $x $y]]
             return
         }
     }
@@ -51,7 +51,7 @@ proc scheduleBalloon {window x y winx winy {item {}}} {
         set index $window
     }
     if [info exists help_tips($index)] {
-        set balloon_after_ID [after $help_tips(delay) [list createBalloon $help_tips($index) $x $y]]
+        set balloon_after_ID [after $help_tips(delay) [list createBalloon $window $help_tips($index) $x $y]]
     }
 }
 
@@ -70,21 +70,34 @@ proc cancelBalloon {} {
     }
 }
 
-proc createBalloon {text x y} {
+proc createBalloon {window text x y} {
     global balloon_after_ID help_tips
+
+    if {![winfo exists $window]} return
+
+    set window [winfo toplevel $window]
+
     catch {destroy .balloon_help}
     toplevel .balloon_help -relief flat
     catch {unset balloon_after_ID}
     wm overrideredirect .balloon_help true
     wm positionfrom .balloon_help program
-    wm geometry .balloon_help "+[expr $x-5]+[expr $y+16]"
+
+    set l .balloon_help.tip
+    label $l -text $text -padx 4 -wraplength $help_tips(width) -bg $help_tips(color) \
+             -border 1 -relief solid -font TkTooltipFont -justify left
+
+    set balloonrect [list [expr $x-5] [expr $y+16] [winfo reqwidth $l] [winfo reqheight $l]]
+    set windowrect [list [winfo rootx $window] [winfo rooty $window] [winfo width $window] [winfo height $window]]
+    setvars {balloonx balloony} [moveRectIntoRect $balloonrect $windowrect]
+
+    wm geometry .balloon_help "+$balloonx+$balloony"
+
     if {[string equal [tk windowingsystem] aqua]}  {
         # from http://wiki.tcl.tk/3060
         catch { ::tk::unsupported::MacWindowStyle style .balloon_help help none }
     }
-    label .balloon_help.tip -text $text -padx 4 -wraplength $help_tips(width) \
-                            -bg $help_tips(color) -border 1 -relief solid \
-                            -font TkTooltipFont -justify left
+
     pack .balloon_help.tip
 }
 

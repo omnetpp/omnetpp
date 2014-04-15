@@ -44,7 +44,7 @@ proc createInspectorToplevel {insp geom} {
     }
 
     # Create toolbar
-    ttk::frame $insp.toolbar -relief raised
+    ttk::frame $insp.toolbar
     pack $insp.toolbar -anchor w -side top -fill x -expand 0
 
     packToolbutton $insp.toolbar.sep0 -separator
@@ -159,6 +159,20 @@ proc inspector:forward {insp} {
     opp_inspectorcommand $insp goforward
 }
 
+proc inspector:bindSideButtons {insp} {
+    bindRec $insp <Button> "inspector:handleSideButtons $insp %b"
+}
+
+proc inspector:handleSideButtons {insp button} {
+    global BBack BFwd
+
+    if {$button==$BBack} {
+        inspector:back $insp
+    } elseif {$button==$BFwd} {
+        inspector:forward $insp
+    }
+}
+
 proc inspector:inspectParent {insp} {
     global config
 
@@ -189,6 +203,7 @@ proc inspector:dblClick {insp ptr} {
 
 proc inspector:namePopup {insp toolbutton} {
     set ptr [opp_inspector_getobject $insp]
+    if [opp_isnull $ptr] {return}
 
     catch {destroy .popup}
     menu .popup -tearoff 0
@@ -206,6 +221,8 @@ proc inspector:namePopup {insp toolbutton} {
 
 proc inspector:inspectAsPopup {insp toolbutton} {
     set ptr [opp_inspector_getobject $insp]
+    if [opp_isnull $ptr] {return}
+
     set curtype [opp_inspectortype [opp_inspector_gettype $insp]]
     set typelist [opp_supported_insp_types $ptr]
 
