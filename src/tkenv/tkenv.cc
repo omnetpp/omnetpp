@@ -1594,7 +1594,6 @@ static cModule *findSubmoduleTowards(cModule *parentmod, cModule *towardsgrandch
     return m;
 }
 
-
 void Tkenv::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pathvec)
 {
     // for animation purposes, we assume that the message travels up
@@ -1604,22 +1603,8 @@ void Tkenv::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pathvec)
     // list of modules visited during the travel.
 
     // first, find "lowest common ancestor" module
-    cModule *commonparent = srcmod;
-    while (commonparent)
-    {
-        // try to find commonparent among ancestors of destmod
-        cModule *m = destmod;
-        while (m && commonparent!=m)
-            m = m->getParentModule();
-        if (commonparent==m)
-            break;
-        commonparent = commonparent->getParentModule();
-    }
-
-    // commonparent should exist, worst case it's the system module,
-    // but let's have the following "if" anyway...
-    if (!commonparent)
-        return;
+    cModule *commonparent = findCommonAncestor(srcmod, destmod);
+    Assert(commonparent!=NULL); // commonparent should exist, worst case it's the system module
 
     // animate the ascent of the message until commonparent (excluding).
     // The second condition, destmod==commonparent covers case when we're sending

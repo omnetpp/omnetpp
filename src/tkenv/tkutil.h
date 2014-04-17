@@ -118,6 +118,8 @@ void *strToVoidPtr(const char *s);
 inline char *ptrToStr(cObject *ptr, char *buffer=NULL) {return voidPtrToStr((void *)ptr, buffer);}
 inline cObject *strToPtr(const char *s) {return (cObject *)strToVoidPtr(s);}
 
+cModule *findCommonAncestor(cModule *src, cModule *dest);
+
 bool isAPL();
 
 std::string getObjectIcon(Tcl_Interp *interp, cObject *object);

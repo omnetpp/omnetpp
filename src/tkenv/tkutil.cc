@@ -296,6 +296,22 @@ int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char 
     return n;
 }
 
+cModule *findCommonAncestor(cModule *src, cModule *dest)
+{
+    cModule *candidate = src;
+    while (candidate)
+    {
+        // try to find common ancestor among ancestors of dest
+        cModule *m = dest;
+        while (m && candidate != m)
+            m = m->getParentModule();
+        if (candidate == m)
+            break;
+        candidate = candidate->getParentModule();
+    }
+    return candidate;
+}
+
 bool isAPL()
 {
     return OMNETPP_EDITION[0]=='A';
