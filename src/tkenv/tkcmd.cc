@@ -1236,6 +1236,8 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       sprintf(buf,"%d", app->record_eventlog);
    else if (0==strcmp(argv[1], "silent_event_filters"))
       buf = const_cast<char *>(app->getSilentEventFilters());
+   else if (0==strcmp(argv[1], "logbuffer_maxnumevents"))
+      sprintf(buf,"%d", getTkenv()->getLogBuffer()->getMaxNumEntries());
    else
       return TCL_ERROR;
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
@@ -1305,7 +1307,9 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       app->setEventlogRecording(argv[2][0]!='0');
    else if (0==strcmp(argv[1], "silent_event_filters")) {
       TRY(app->setSilentEventFilters(argv[2]));
-   } else
+   } else if (0==strcmp(argv[1], "logbuffer_maxnumevents"))
+      getTkenv()->getLogBuffer()->setMaxNumEntries(atoi(argv[2]));
+   else
       return TCL_ERROR;
    return TCL_OK;
 }

@@ -371,10 +371,10 @@ void textWidget_gotoEnd(Tcl_Interp *interp, const char *textWidget)
     CHK(Tcl_VarEval(interp, textWidget, " see end", NULL));
 }
 
-void textWidget_clear(Tcl_Interp *interp, const char *textWidget)
+void textWidget_bookmark(Tcl_Interp *interp, const char *textWidget, const char *bookmark)
 {
-    //CHK(Tcl_VarEval(interp, textWidget, " delete 1.0 end", NULL)); -- very slow if content is large
-    CHK(Tcl_VarEval(interp, "LogInspector:clear ", textWidget, NULL));
+    CHK(Tcl_VarEval(interp, textWidget, " mark set ", bookmark, " insert", NULL));
+    CHK(Tcl_VarEval(interp, textWidget, " mark gravity ", bookmark, " left", NULL));
 }
 
 //----------------------------------------------------------------------

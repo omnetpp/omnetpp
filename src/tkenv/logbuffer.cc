@@ -37,16 +37,15 @@ LogBuffer::Entry::~Entry()
 
 //----
 
-LogBuffer::LogBuffer(int memoryLimit)
+LogBuffer::LogBuffer()
 {
-    numEntries =0;
-    memLimit = memoryLimit;
-    totalChars = 0;
-    totalStrings = 0;
+    maxNumEntries = 100000;
+    entriesDiscarded = 0;
 }
 
 LogBuffer::~LogBuffer()
 {
+    clear();
 }
 
 void LogBuffer::addListener(ILogBufferListener *l)
@@ -61,12 +60,11 @@ void LogBuffer::removeListener(ILogBufferListener *l)
             {listeners.erase(listeners.begin()+i); break;}
 }
 
-void LogBuffer::fillEntry(Entry& entry, eventnumber_t e, simtime_t t, cModule *mod, const char *banner)
+void LogBuffer::fillEntry(Entry *entry, eventnumber_t e, simtime_t t, cModule *mod, const char *banner)
 {
-    entry.eventNumber = e;
-    entry.simtime = t;
-    entry.banner = opp_strdup(banner);
-    entry.numChars = banner ? strlen(banner) : 0;
+    entry->eventNumber = e;
+    entry->simtime = t;
+    entry->banner = opp_strdup(banner);
 
     // store all moduleIds up to the root
     if (mod)
@@ -74,22 +72,20 @@ void LogBuffer::fillEntry(Entry& entry, eventnumber_t e, simtime_t t, cModule *m
         int depth = 0;
         for (cModule *p=mod; p; p=p->getParentModule())
             depth++;
-        entry.moduleIds = new int[depth+1];
+        entry->moduleIds = new int[depth+1];
         int i = 0;
         for (cModule *p=mod; p; p=p->getParentModule(), i++)
-            entry.moduleIds[i] = p->getId();
-         entry.moduleIds[depth] = 0;
+            entry->moduleIds[i] = p->getId();
+         entry->moduleIds[depth] = 0;
     }
 }
 
 void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char *banner)
 {
-    entries.push_back(Entry());
-    numEntries++;
-    fillEntry(entries.back(), e, t, mod, banner);
-    totalStrings++;
-    totalChars += entries.back().numChars;
-    discardIfMemoryLimitExceeded();
+    Entry *entry = new Entry();
+    entries.push_back(entry);
+    fillEntry(entry, e, t, mod, banner);
+    discardEventsIfLimitExceeded();
 
     for (unsigned int i = 0; i < listeners.size(); i++)
         listeners[i]->logEntryAdded();
@@ -101,19 +97,15 @@ void LogBuffer::addLogLine(const char *prefix, const char *text)
     {
         // this is likely the initialize() phase -- hence no banner
         addEvent(0, SIMTIME_ZERO, NULL, "{}");
-        Entry& entry = entries.back();
-        entry.moduleIds = new int[1]; // add empty array, to distinguish entry from an info entry
-        entry.moduleIds[0] = 0;
+        Entry *entry = entries.back();
+        entry->moduleIds = new int[1]; // add empty array, to distinguish entry from an info entry
+        entry->moduleIds[0] = 0;
     }
 
     //FIXME if last line is "info" then we cannot append to it! create new entry with empty banner?
 
-    Entry& entry = entries.back();
-    entry.lines.push_back(Line(opp_strdup(prefix), opp_strdup(text)));
-    totalStrings += 2;
-    totalChars += opp_strlen(prefix) + opp_strlen(text);
-
-    discardIfMemoryLimitExceeded();
+    Entry *entry = entries.back();
+    entry->lines.push_back(Line(opp_strdup(prefix), opp_strdup(text)));
 
     for (unsigned int i = 0; i < listeners.size(); i++)
         listeners[i]->logLineAdded();
@@ -121,12 +113,10 @@ void LogBuffer::addLogLine(const char *prefix, const char *text)
 
 void LogBuffer::addInfo(const char *text)
 {
-    entries.push_back(Entry());
-    numEntries++;
-    fillEntry(entries.back(), 0, SIMTIME_ZERO, NULL, text);
-    totalStrings++;
-    totalChars += entries.back().numChars;
-    discardIfMemoryLimitExceeded();
+    Entry *entry = new Entry();
+    entries.push_back(entry);
+    fillEntry(entry, 0, SIMTIME_ZERO, NULL, text);
+    discardEventsIfLimitExceeded();
 
     for (unsigned int i = 0; i < listeners.size(); i++)
         listeners[i]->logEntryAdded();
@@ -138,16 +128,16 @@ void LogBuffer::beginSend(cMessage *msg)
     {
         // this is likely the initialize() phase -- hence no banner
         addEvent(0, SIMTIME_ZERO, NULL, "{}");
-        Entry& entry = entries.back();
-        entry.moduleIds = new int[1]; // add empty array, to distinguish entry from an info entry
-        entry.moduleIds[0] = 0;
+        Entry *entry = entries.back();
+        entry->moduleIds = new int[1]; // add empty array, to distinguish entry from an info entry
+        entry->moduleIds[0] = 0;
     }
 
     //FIXME if last line is "info" then we cannot append to it! create new entry with empty banner?
 
-    Entry& entry = entries.back();
-    entry.msgs.push_back(MessageSend());
-    MessageSend& msgsend = entry.msgs.back();
+    Entry *entry = entries.back();
+    entry->msgs.push_back(MessageSend());
+    MessageSend& msgsend = entry->msgs.back();
     msgsend.msg = msg->dup();  //FIXME this assigns a new ID!!!
     msgsend.msg->removeFromOwnershipTree();
     msgsend.hopModuleIds.push_back(msg->getSenderModuleId());
@@ -156,22 +146,22 @@ void LogBuffer::beginSend(cMessage *msg)
 void LogBuffer::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     ASSERT(!entries.empty());
-    Entry& entry = entries.back();
-    MessageSend& msgsend = entry.msgs.back();
+    Entry *entry = entries.back();
+    MessageSend& msgsend = entry->msgs.back();
     ASSERT(msgsend.msg->getTreeId() == msg->getTreeId());  //XXX IDs differ because dup() assigns a new ID!!!
 
     std::vector<cModule*> hops;
     resolveSendDirectHops(msg->getSenderModule(), toGate->getOwnerModule(), hops);
 
-    for (int i=1; i<hops.size(); i++)  // iterate from 1 because src module is already in hopModuleIds
+    for (unsigned i=1; i<hops.size(); i++)  // iterate from 1 because src module is already in hopModuleIds
         msgsend.hopModuleIds.push_back(hops[i]->getId());
 }
 
 void LogBuffer::messageSendHop(cMessage *msg, cGate *srcGate)
 {
     ASSERT(!entries.empty());
-    Entry& entry = entries.back();
-    MessageSend& msgsend = entry.msgs.back();
+    Entry *entry = entries.back();
+    MessageSend& msgsend = entry->msgs.back();
     ASSERT(msgsend.msg->getTreeId() == msg->getTreeId());  //XXX IDs differ because dup() assigns a new ID!!!
     msgsend.hopModuleIds.push_back(srcGate->getNextGate()->getOwnerModule()->getId());
 }
@@ -187,47 +177,67 @@ void LogBuffer::endSend(cMessage *msg)
         listeners[i]->messageSendAdded();
 }
 
-void LogBuffer::setMemoryLimit(size_t limit)
+void LogBuffer::setMaxNumEntries(int limit)
 {
-    memLimit = limit;
-    discardIfMemoryLimitExceeded();
+    maxNumEntries = limit;
+    discardEventsIfLimitExceeded();
 }
 
-void LogBuffer::discardIfMemoryLimitExceeded()
+void LogBuffer::discardEventsIfLimitExceeded()
 {
-    while (estimatedMemUsage() > memLimit && numEntries > 1)  // leave at least 1 entry
+    // discard first entry
+    while (maxNumEntries > 0 && entries.size() > maxNumEntries)
     {
-        // discard first entry
-        Entry& entry = entries.front();
-        totalChars -= entry.numChars;
-        totalStrings -= 2*entry.lines.size()+1;
+        delete entries.front();
         entries.pop_front();
-        numEntries--;
+        entriesDiscarded++;
     }
 }
 
 void LogBuffer::clear()
 {
+    for (int i = 0; i < entries.size(); i++)
+        delete entries[i];
     entries.clear();
-    numEntries = 0;
-    totalChars = 0;
-    totalStrings = 0;
+    entriesDiscarded = 0;
+}
+
+int LogBuffer::findEntryByEventNumber(eventnumber_t eventNumber)
+{
+    int first = 0, last = entries.size()-1;
+    int middle = (first + last)/2;
+    while (first <= last)
+    {
+        if (entries[middle]->eventNumber < eventNumber)
+            first = middle + 1;
+        else if (entries[middle]->eventNumber == eventNumber)
+            return middle;
+        else
+            last = middle - 1;
+
+        middle = (first + last)/2;
+    }
+    return -1;
+}
+
+LogBuffer::Entry *LogBuffer::getEntryByEventNumber(eventnumber_t eventNumber)
+{
+    int i = findEntryByEventNumber(eventNumber);
+    return i == -1 ? NULL : entries[i];
 }
 
 #define LL  INT64_PRINTF_FORMAT
 
 void LogBuffer::dump() const
 {
-    printf("LogBuffer: %lu entries\n", (unsigned long)numEntries);
+    printf("LogBuffer: %d entries\n", (int)entries.size());
 
-    int k=0;
-    for (std::list<Entry>::const_iterator it=entries.begin(); it!=entries.end(); it++)
+    for (int i = 0; i < entries.size(); i++)
     {
-        const LogBuffer::Entry& entry = *it;
-        printf("[%d] #%" LL "d t=%s moduleId=%d: %s", k, entry.eventNumber, SIMTIME_STR(entry.simtime), entry.moduleIds?entry.moduleIds[0]:-1, entry.banner);
-        for (int i=0; i<(int)entry.lines.size(); i++)
-            printf("\t[l%d]:%s%s", k, entry.lines[i].prefix, entry.lines[i].line);
-        k++;
+        const Entry *entry = entries[i];
+        printf("[%d] #%" LL "d t=%s moduleId=%d: %s", i, entry->eventNumber, SIMTIME_STR(entry->simtime), entry->moduleIds?entry->moduleIds[0]:-1, entry->banner);
+        for (int j=0; j<(int)entry->lines.size(); j++)
+            printf("\t[l%d]:%s%s", i, entry->lines[j].prefix, entry->lines[j].line);
     }
 }
 

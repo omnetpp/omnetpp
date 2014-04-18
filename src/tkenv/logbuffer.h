@@ -23,6 +23,7 @@
 #include <set>
 #include "simtime_t.h"
 #include "tkutil.h"
+#include "circularbuffer.h"
 
 NAMESPACE_BEGIN
 
@@ -51,9 +52,7 @@ class TKENV_API LogBuffer
     };
     struct MessageSend {
         cMessage *msg;
-        //TODO instead of hopModuleIds: int srcModuleId, int destModuleId, int* intermediateModuleIds
-        //TODO also: txStartTime, propagationDelay, duration for each hop
-        std::vector<int> hopModuleIds;
+        std::vector<int> hopModuleIds; //TODO also: txStartTime, propagationDelay, duration for each hop
     };
     struct Entry {
         eventnumber_t eventNumber;
@@ -61,30 +60,24 @@ class TKENV_API LogBuffer
         int *moduleIds;  // from this module up to the root; zero-terminated; NULL for info messages
         const char *banner;
         std::vector<Line> lines;
-        int numChars; // banner plus lines
-
         std::vector<MessageSend> msgs;
 
-        Entry() {eventNumber=0; simtime=0; moduleIds=NULL; banner=NULL; numChars=0;}
+        Entry() {eventNumber=0; simtime=0; moduleIds=NULL; banner=NULL;}
         ~Entry();
     };
 
   protected:
     std::vector<ILogBufferListener*> listeners;
-
-    size_t memLimit;  //TODO currently the stored msg lines are not counted!!!!
-    size_t totalChars;
-    size_t totalStrings;
-    std::list<Entry> entries;
-    size_t numEntries;  // gcc's list::size() is O(n)...
+    circular_buffer<Entry*> entries;
+    int maxNumEntries;
+    int entriesDiscarded;
 
   protected:
-    void discardIfMemoryLimitExceeded();
-    size_t estimatedMemUsage() {return totalChars + 8*totalStrings + numEntries*(8+2*sizeof(void*)+sizeof(Entry)+32); }
-    void fillEntry(Entry& entry, eventnumber_t e, simtime_t t, cModule *mod, const char *banner);
+    void discardEventsIfLimitExceeded();
+    void fillEntry(Entry *entry, eventnumber_t e, simtime_t t, cModule *mod, const char *banner);
 
   public:
-    LogBuffer(int memLimit=10*1024*1024);  // 10MB
+    LogBuffer();
     ~LogBuffer();
 
     void addListener(ILogBufferListener *l);
@@ -100,11 +93,14 @@ class TKENV_API LogBuffer
     void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
     void endSend(cMessage *msg);
 
-    void setMemoryLimit(size_t limit);
-    size_t getMemoryLimit()  {return memLimit;}
+    void setMaxNumEntries(int limit); // when exceeded, oldest entries are discarded
+    int getMaxNumEntries()  {return maxNumEntries;}
 
-    const std::list<Entry>& getEntries() const {return entries;}
-    size_t getNumEntries() const {return numEntries;}
+    const circular_buffer<Entry*>& getEntries() const {return entries;}
+    int getNumEntries() const {return entries.size();}
+    int getNumEntriesDiscarded() const {return entriesDiscarded;}
+    int findEntryByEventNumber(eventnumber_t eventNumber);
+    Entry *getEntryByEventNumber(eventnumber_t eventNumber);
 
     void clear();
 

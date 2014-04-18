@@ -81,7 +81,7 @@ void LogInspector::doSetObject(cObject *obj)
     if (object)
         redisplay();
     else
-        textWidget_clear(interp, textWidget);
+        CHK(Tcl_VarEval(interp, "LogInspector:clear ", windowName, NULL));
 }
 
 void LogInspector::logEntryAdded()
@@ -126,23 +126,23 @@ void LogInspector::printLastLogLine()
     if (mode != LOG)
         return;
 
-    const LogBuffer::Entry& entry = logBuffer->getEntries().back();
-    if (!entry.moduleIds)
+    const LogBuffer::Entry *entry = logBuffer->getEntries().back();
+    if (!entry->moduleIds)
     {
-        if (entry.lines.empty())
-            textWidget_insert(interp, textWidget, entry.banner, "log");
+        if (entry->lines.empty())
+            textWidget_insert(interp, textWidget, entry->banner, "log");
         else {
-            textWidget_insert(interp, textWidget, entry.lines.back().prefix, "prefix");
-            textWidget_insert(interp, textWidget, entry.lines.back().line);
+            textWidget_insert(interp, textWidget, entry->lines.back().prefix, "prefix");
+            textWidget_insert(interp, textWidget, entry->lines.back().line);
         }
     }
-    else if (excludedModuleIds.find(entry.moduleIds[0])==excludedModuleIds.end())
+    else if (excludedModuleIds.find(entry->moduleIds[0])==excludedModuleIds.end())
     {
-        if (entry.lines.empty())
-            textWidget_insert(interp, textWidget, entry.banner, "event");
+        if (entry->lines.empty())
+            textWidget_insert(interp, textWidget, entry->banner, "event");
         else {
-            textWidget_insert(interp, textWidget, entry.lines.back().prefix, "prefix");
-            textWidget_insert(interp, textWidget, entry.lines.back().line);
+            textWidget_insert(interp, textWidget, entry->lines.back().prefix, "prefix");
+            textWidget_insert(interp, textWidget, entry->lines.back().line);
         }
     }
     textWidget_gotoEnd(interp, textWidget);
@@ -153,59 +153,70 @@ void LogInspector::printLastMessageLine()
     if (mode != MESSAGES)
         return;
 
-    const LogBuffer::Entry& entry = logBuffer->getEntries().back();
-    for (int i=0; i<(int)entry.msgs.size(); i++)
+    const LogBuffer::Entry *entry = logBuffer->getEntries().back();
+    for (int i=0; i<(int)entry->msgs.size(); i++)
     {
-        const LogBuffer::MessageSend& msgsend = entry.msgs[i];
+        const LogBuffer::MessageSend& msgsend = entry->msgs[i];
         int hopIndex = findFirstRelevantHop(msgsend); //TODO in degenerate case , there may be more than one relevant hops of the same message (e.g. if one node is an empty compound module wired inside)
-        if (hopIndex != -1) {
-            printMessage(entry.eventNumber, entry.simtime, msgsend.hopModuleIds[hopIndex], msgsend.hopModuleIds[hopIndex+1], msgsend.msg);  //FIXME add up propdelays to simtime
-        }
+        if (hopIndex != -1)
+            printMessage(entry, i, hopIndex);
     }
     textWidget_gotoEnd(interp, textWidget);
 }
 
 void LogInspector::redisplay()
 {
-    textWidget_clear(interp, textWidget);
+    CHK(Tcl_VarEval(interp, "LogInspector:clear ", windowName, NULL));
 
     if (!object)
         return;
 
+    const circular_buffer<LogBuffer::Entry*>& entries = logBuffer->getEntries();
+
+    if (logBuffer->getNumEntriesDiscarded() > 0)
+    {
+        const LogBuffer::Entry *entry = entries.front();
+        std::stringstream os;
+        if (entry->eventNumber == 0)
+            os << "[Some initialization lines have been discarded from the log]\n";
+        else
+            os << "[Log starts at event #" << entry->eventNumber << " t=" << SIMTIME_STR(entry->simtime) << ", earlier history has been discarded]\n";
+        textWidget_insert(interp, textWidget, TclQuotedString(os.str().c_str()).get(), "warning");
+    }
+
     bool printEventBanners = getTkenv()->opt->printEventBanners;
     cModule *mod = static_cast<cModule *>(object);
     int inspModuleId = mod->getId();
-    const std::list<LogBuffer::Entry>& entries = logBuffer->getEntries();
     //simtime_t prevTime = -1;
-    for (std::list<LogBuffer::Entry>::const_iterator it=entries.begin(); it!=entries.end(); it++)
+    for (int k = 0; k < entries.size(); k++)
     {
-        const LogBuffer::Entry& entry = *it;
+        const LogBuffer::Entry *entry = entries[k];
         if (mode == LOG)
         {
-            if (!entry.moduleIds)
+            if (!entry->moduleIds)
             {
-                textWidget_insert(interp, textWidget, entry.banner, "log");
-                for (int i=0; i<(int)entry.lines.size(); i++) {
-                    textWidget_insert(interp, textWidget, entry.lines[i].prefix, "prefix");
-                    textWidget_insert(interp, textWidget, entry.lines[i].line);
+                textWidget_insert(interp, textWidget, entry->banner, "log");
+                for (int i=0; i<(int)entry->lines.size(); i++) {
+                    textWidget_insert(interp, textWidget, entry->lines[i].prefix, "prefix");
+                    textWidget_insert(interp, textWidget, entry->lines[i].line);
                 }
             }
             else
             {
-                // check that this module is covered in entry.moduleIds[] (module path up to the root)
+                // check that this module is covered in entry->moduleIds[] (module path up to the root)
                 bool found = false;
-                for (int *p = entry.moduleIds; !found && *p; p++)
+                for (int *p = entry->moduleIds; !found && *p; p++)
                     if (*p == inspModuleId)
                         found = true;
 
                 // if so, and is not excluded, display log
-                if (found && excludedModuleIds.find(entry.moduleIds[0])==excludedModuleIds.end())
+                if (found && excludedModuleIds.find(entry->moduleIds[0])==excludedModuleIds.end())
                 {
                     if (printEventBanners)
-                        textWidget_insert(interp, textWidget, entry.banner, "event");
-                    for (int i=0; i<(int)entry.lines.size(); i++) {
-                        textWidget_insert(interp, textWidget, entry.lines[i].prefix, "prefix");
-                        textWidget_insert(interp, textWidget, entry.lines[i].line);
+                        textWidget_insert(interp, textWidget, entry->banner, "event");
+                    for (int i=0; i<(int)entry->lines.size(); i++) {
+                        textWidget_insert(interp, textWidget, entry->lines[i].prefix, "prefix");
+                        textWidget_insert(interp, textWidget, entry->lines[i].line);
                     }
                 }
             }
@@ -214,21 +225,25 @@ void LogInspector::redisplay()
         if (mode == MESSAGES)
         {
             //bool bannerPrinted = false;
-            for (int i=0; i<(int)entry.msgs.size(); i++)
+            for (int i=0; i<(int)entry->msgs.size(); i++)
             {
-                const LogBuffer::MessageSend& msgsend = entry.msgs[i];
+                const LogBuffer::MessageSend& msgsend = entry->msgs[i];
                 int hopIndex = findFirstRelevantHop(msgsend); //TODO in degenerate case , there may be more than one relevant hops of the same message (e.g. if one node is an empty compound module wired inside)
                 if (hopIndex != -1) {
                     //if (printEventBanners && !bannerPrinted) {
-                    //    textWidget_insert(interp, textWidget, entry.banner, "event");
+                    //    textWidget_insert(interp, textWidget, entry->banner, "event");
                     //    bannerPrinted = true;
                     //}
-                    //simtime_t delta = prevTime<0 ? 0 : entry.simtime - prevTime;
-                    printMessage(entry.eventNumber, entry.simtime, msgsend.hopModuleIds[hopIndex], msgsend.hopModuleIds[hopIndex+1], msgsend.msg);  //FIXME add up propdelays to simtime
-                    //prevTime = entry.simtime;
+                    //simtime_t delta = prevTime<0 ? 0 : entry->simtime - prevTime;
+                    printMessage(entry, i, hopIndex);
+                    //prevTime = entry->simtime;
                 }
             }
         }
+
+        // trim to scrollback limit once in a while
+        if ((k % 100) == 0)
+            CHK(Tcl_VarEval(interp, "LogInspector:trimlines ", windowName, NULL));
     }
     textWidget_gotoEnd(interp, textWidget);
 }
@@ -259,16 +274,25 @@ int LogInspector::findFirstRelevantHop(const LogBuffer::MessageSend& msgsend)
     return -1;
 }
 
-void LogInspector::printMessage(eventnumber_t eventNum, simtime_t time, int srcModuleId, int destModuleId, cMessage *msg)
+#define LL  INT64_PRINTF_FORMAT
+
+void LogInspector::printMessage(const LogBuffer::Entry *entry, int msgIndex, int hopIndex)
 {
-    cMessagePrinter *printer = chooseMessagePrinter(msg);
+    char bookmark[256];
+    sprintf(bookmark, "msghop-%" LL "d:%d:%d", entry->eventNumber, msgIndex, hopIndex);
+    textWidget_bookmark(interp, textWidget, bookmark);
+
     std::stringstream os;
-    os << eventNum << "\t";
+    os << entry->eventNumber << "\t";
     textWidget_insert(interp, textWidget, TclQuotedString(os.str().c_str()).get(), "eventnumcol");
 
     std::stringstream os0;
-    os0 << time << "\t";
+    os0 << entry->simtime << "\t";    // TODO add propdelays of previous hops
     textWidget_insert(interp, textWidget, TclQuotedString(os0.str().c_str()).get(), "timecol");
+
+    const LogBuffer::MessageSend& msgsend = entry->msgs[msgIndex];
+    int srcModuleId = msgsend.hopModuleIds[hopIndex];
+    int destModuleId = msgsend.hopModuleIds[hopIndex+1];
 
     std::stringstream os1;
     int inspectedModuleId = static_cast<cModule *>(object)->getId();
@@ -280,6 +304,8 @@ void LogInspector::printMessage(eventnumber_t eventNum, simtime_t time, int srcM
     os1 << "\t";
     textWidget_insert(interp, textWidget, TclQuotedString(os1.str().c_str()).get(), "srcdestcol");
 
+    cMessage *msg = msgsend.msg;
+    cMessagePrinter *printer = chooseMessagePrinter(msg);
     std::stringstream os2;
     if (printer)
         printer->printMessage(os2, msg);

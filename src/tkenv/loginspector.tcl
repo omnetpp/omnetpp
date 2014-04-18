@@ -130,6 +130,7 @@ proc LogInspector:configureTags {insp} {
     $txt tag configure event -foreground blue
     $txt tag configure log -foreground #006000
     $txt tag configure prefix -foreground #909090
+    $txt tag configure warning -foreground #ff0000
 
     $txt tag configure eventnumcol -foreground #808080
     $txt tag configure timecol -foreground #808080
@@ -151,15 +152,16 @@ proc LogInspector:updateTabStops {insp} {
     $txt config -tabs $stops
 }
 
-proc LogInspector:clear {txt} {
+proc LogInspector:clear {insp} {
     # Note: the direct way ($txt delete 0.1 end) is very slow if there's
     # a lot of lines (100,000). Luckily, removing all tags beforehand
     # speeds up the whole process about a hundred times. We need to
     # re-define the tags afterwards though.
 
+    set txt $insp.main.text
     $txt tag delete log event prefix
     $txt delete 0.1 end
-    logTextWidget:configureTags $txt
+    LogInspector:configureTags $insp
 }
 
 proc LogInspector:openFilterDialog {insp} {
@@ -174,7 +176,17 @@ proc LogInspector:openFilterDialog {insp} {
 
 proc LogInspector:trimlines {insp} {
     global config
-    textwidget:trimLines $insp.main.text $config(logwindow-scrollbacklines)
+    set t $insp.main.text
+    set numlines $config(logwindow-scrollbacklines)
+
+    if {$numlines==""} {return}
+    set endline [$t index {end linestart}]
+    if {$endline > $numlines + 100} {  ;# for performance, we want to delete in at least 100-line chunks
+        set linestodelete [expr int($endline-$numlines)]
+        $t delete 1.0 $linestodelete.0
+        $t insert 1.0 "\[Lines have been discarded from here due to the scrollback limit, see Preferences\]\n" warning
+    }
+
 }
 
 

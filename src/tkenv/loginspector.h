@@ -48,7 +48,7 @@ class TKENV_API LogInspector : public Inspector, protected ILogBufferListener
 
       virtual int findFirstRelevantHop(const LogBuffer::MessageSend& msgsend);
       virtual cMessagePrinter *chooseMessagePrinter(cMessage *msg);
-      virtual void printMessage(eventnumber_t eventNum, simtime_t time, int srcModuleId, int destModuleId, cMessage *msg);
+      virtual void printMessage(const LogBuffer::Entry *entry, int msgIndex, int hopIndex);
 
    public:
       LogInspector(InspectorFactory *f);

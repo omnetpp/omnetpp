@@ -143,13 +143,3 @@ proc textwidget:toggleWrap {txt} {
     set config(editor-wrap) $tmp(wrap)
 }
 
-proc textwidget:trimLines {t numlines} {
-    if {$numlines==""} {return}
-    set endline [$t index {end linestart}]
-    if {$endline > $numlines + 100} {  ;# for performance, we want to delete in at least 100-line chunks
-        set linestodelete [expr int($endline-$numlines)]
-        $t delete 1.0 $linestodelete.0
-    }
-}
-
-

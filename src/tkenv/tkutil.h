@@ -138,7 +138,7 @@ void textWidget_insert(Tcl_Interp *interp, const char *textWidget, const char *t
 
 void textWidget_gotoEnd(Tcl_Interp *interp, const char *textWidget);
 
-void textWidget_clear(Tcl_Interp *interp, const char *textWidget);
+void textWidget_bookmark(Tcl_Interp *interp, const char *textWidget, const char *bookmark);
 
 /**
  * Looks up the given parameter
