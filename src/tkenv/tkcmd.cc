@@ -55,19 +55,6 @@ NAMESPACE_BEGIN
 using std::string;
 
 
-//
-// Handle Tk_PhotoPutBlock signature change in Tk 8.5:
-// "Added interp argument to these functions and made them return
-// a standard Tcl result, with error indicating memory allocation
-// failure instead of panic()ing."
-// See Tk ChangeLog entry from 2003-03-06 by Donal K. Fellows
-//
-#if TK_MAJOR_VERSION>8 || (TK_MAJOR_VERSION==8 && TK_MINOR_VERSION>=5)
-#define INTERP_IF_TK85 interp,
-#else
-#define INTERP_IF_TK85
-#endif
-
 // command functions
 int newNetwork_cmd(ClientData, Tcl_Interp *, int, const char **);
 int newRun_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -2235,7 +2222,7 @@ int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    // tkImgPhoto.c Tk source file...
    //
    Tk_PhotoHandle destImageHandle = Tk_FindPhoto(interp, TCLCONST(destImageName));
-   Tk_PhotoPutBlock(INTERP_IF_TK85 destImageHandle, &destImage, 0, 0, destWidth, destHeight, TK_PHOTO_COMPOSITE_SET);
+   Tk_PhotoPutBlock(interp, destImageHandle, &destImage, 0, 0, destWidth, destHeight, TK_PHOTO_COMPOSITE_SET);
 
    return TCL_OK;
 }
@@ -2273,7 +2260,7 @@ int imageSwapRedAndBlue_cmd(ClientData, Tcl_Interp *interp, int argc, const char
    // image will have no "valid region" and nothing will appear
    // on the canvas when the icon is drawn.
    Tk_PhotoHandle imghandle = Tk_FindPhoto(interp, TCLCONST(imgname));
-   Tk_PhotoPutBlock(INTERP_IF_TK85 imghandle, &img, 0, 0, img.width, img.height, TK_PHOTO_COMPOSITE_SET);
+   Tk_PhotoPutBlock(interp, imghandle, &img, 0, 0, img.width, img.height, TK_PHOTO_COMPOSITE_SET);
 
    return TCL_OK;
 }
@@ -2310,7 +2297,7 @@ int imageMultiplyAlpha_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    // image will have no "valid region" and nothing will appear
    // on the canvas when the icon is drawn.
    Tk_PhotoHandle imghandle = Tk_FindPhoto(interp, TCLCONST(imgname));
-   Tk_PhotoPutBlock(INTERP_IF_TK85 imghandle, &img, 0, 0, img.width, img.height, TK_PHOTO_COMPOSITE_SET);
+   Tk_PhotoPutBlock(interp, imghandle, &img, 0, 0, img.width, img.height, TK_PHOTO_COMPOSITE_SET);
 
    return TCL_OK;
 }
@@ -2343,7 +2330,7 @@ int imageReduceAlpha_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
    // image will have no "valid region" and nothing will appear
    // on the canvas when the icon is drawn.
    Tk_PhotoHandle imghandle = Tk_FindPhoto(interp, TCLCONST(imgname));
-   Tk_PhotoPutBlock(INTERP_IF_TK85 imghandle, &img, 0, 0, img.width, img.height, TK_PHOTO_COMPOSITE_SET);
+   Tk_PhotoPutBlock(interp, imghandle, &img, 0, 0, img.width, img.height, TK_PHOTO_COMPOSITE_SET);
 
    return TCL_OK;
 }
