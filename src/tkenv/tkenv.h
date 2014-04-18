@@ -206,7 +206,6 @@ class TKENV_API Tkenv : public EnvirBase
       virtual void readOptions();
       virtual void readPerRunOptions();
       virtual void askParameter(cPar *par, bool unassigned);
-      virtual void printLastLogLine();
       virtual void displayException(std::exception& e);
       virtual std::string getWindowTitle();
 
@@ -245,7 +244,7 @@ class TKENV_API Tkenv : public EnvirBase
       bool getStopSimulationFlag() {return stopsimulation_flag;}
       Speedometer& getSpeedometer() {return speedometer;}
       Tcl_Interp *getInterp() {return interp;}
-      const LogBuffer& getLogBuffer() const {return logBuffer;}
+      LogBuffer *getLogBuffer() {return &logBuffer;}
       const char *getSilentEventFilters() const {return silentEventFilterLines.c_str();}
       void setSilentEventFilters(const char *filterLines);
       bool isSilentEvent(cMessage *msg);

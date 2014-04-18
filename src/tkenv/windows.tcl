@@ -96,7 +96,6 @@ proc createFileViewer {filename} {
     text $w.main.text -yscrollcommand "$w.main.sb set" -width 88 -height 30 -font LogFont
     pack $w.main.text -anchor center -expand 1 -fill both -side left
 
-    logTextWidget:configureTags $w.main.text
     bindCommandsToTextWidget $w.main.text
 
     # bind a context menu as well

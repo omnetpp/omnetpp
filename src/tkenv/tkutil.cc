@@ -312,6 +312,43 @@ cModule *findCommonAncestor(cModule *src, cModule *dest)
     return candidate;
 }
 
+void resolveSendDirectHops(cModule *src, cModule *dest, std::vector<cModule*>& hops)
+{
+    // find common ancestor, and record modules from src up to it;
+    // the ancestor module itself is NOT recorded
+    cModule *ancestor = src;
+    while (ancestor)
+    {
+        // is 'ancestor' also an ancestor of dest? if so, break!
+        cModule *m = dest;
+        while (m && ancestor != m)
+            m = m->getParentModule();
+        if (ancestor == m)
+            break;
+        hops.push_back(ancestor);
+        ancestor = ancestor->getParentModule();
+    }
+    ASSERT(ancestor!=NULL);
+
+    if (src == ancestor)
+        hops.push_back(src);
+
+    if (dest == ancestor)
+        hops.push_back(dest);
+    else
+    {
+        // ascend from dest up to the common ancestor, and record modules in reverse order
+        cModule *m = dest;
+        int pos = hops.size();
+        while (m && ancestor != m)
+        {
+            hops.insert(hops.begin()+pos, m);
+            m = m->getParentModule();
+        }
+        ASSERT(m == ancestor);
+    }
+}
+
 bool isAPL()
 {
     return OMNETPP_EDITION[0]=='A';
@@ -337,7 +374,7 @@ void textWidget_gotoEnd(Tcl_Interp *interp, const char *textWidget)
 void textWidget_clear(Tcl_Interp *interp, const char *textWidget)
 {
     //CHK(Tcl_VarEval(interp, textWidget, " delete 1.0 end", NULL)); -- very slow if content is large
-    CHK(Tcl_VarEval(interp, "logTextWidget:clear ", textWidget, NULL));
+    CHK(Tcl_VarEval(interp, "LogInspector:clear ", textWidget, NULL));
 }
 
 //----------------------------------------------------------------------

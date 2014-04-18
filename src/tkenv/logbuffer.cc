@@ -18,6 +18,7 @@
 #include "tklib.h"
 #include "logbuffer.h"
 #include "cmodule.h"
+#include "cmessage.h"
 
 NAMESPACE_BEGIN
 
@@ -28,6 +29,9 @@ LogBuffer::Entry::~Entry()
     for (int i=0; i<(int)lines.size(); i++) {
         delete[] lines[i].prefix;
         delete[] lines[i].line;
+    }
+    for (int i=0; i<(int)msgs.size(); i++) {
+        delete msgs[i].msg;
     }
 }
 
@@ -43,6 +47,18 @@ LogBuffer::LogBuffer(int memoryLimit)
 
 LogBuffer::~LogBuffer()
 {
+}
+
+void LogBuffer::addListener(ILogBufferListener *l)
+{
+    listeners.push_back(l);
+}
+
+void LogBuffer::removeListener(ILogBufferListener *l)
+{
+    for (unsigned int i = 0; i < listeners.size(); i++)
+        if (listeners[i] == l)
+            {listeners.erase(listeners.begin()+i); break;}
 }
 
 void LogBuffer::fillEntry(Entry& entry, eventnumber_t e, simtime_t t, cModule *mod, const char *banner)
@@ -74,6 +90,9 @@ void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char 
     totalStrings++;
     totalChars += entries.back().numChars;
     discardIfMemoryLimitExceeded();
+
+    for (unsigned int i = 0; i < listeners.size(); i++)
+        listeners[i]->logEntryAdded();
 }
 
 void LogBuffer::addLogLine(const char *prefix, const char *text)
@@ -95,6 +114,9 @@ void LogBuffer::addLogLine(const char *prefix, const char *text)
     totalChars += opp_strlen(prefix) + opp_strlen(text);
 
     discardIfMemoryLimitExceeded();
+
+    for (unsigned int i = 0; i < listeners.size(); i++)
+        listeners[i]->logLineAdded();
 }
 
 void LogBuffer::addInfo(const char *text)
@@ -105,6 +127,64 @@ void LogBuffer::addInfo(const char *text)
     totalStrings++;
     totalChars += entries.back().numChars;
     discardIfMemoryLimitExceeded();
+
+    for (unsigned int i = 0; i < listeners.size(); i++)
+        listeners[i]->logEntryAdded();
+}
+
+void LogBuffer::beginSend(cMessage *msg)
+{
+    if (entries.empty())
+    {
+        // this is likely the initialize() phase -- hence no banner
+        addEvent(0, SIMTIME_ZERO, NULL, "{}");
+        Entry& entry = entries.back();
+        entry.moduleIds = new int[1]; // add empty array, to distinguish entry from an info entry
+        entry.moduleIds[0] = 0;
+    }
+
+    //FIXME if last line is "info" then we cannot append to it! create new entry with empty banner?
+
+    Entry& entry = entries.back();
+    entry.msgs.push_back(MessageSend());
+    MessageSend& msgsend = entry.msgs.back();
+    msgsend.msg = msg->dup();  //FIXME this assigns a new ID!!!
+    msgsend.msg->removeFromOwnershipTree();
+    msgsend.hopModuleIds.push_back(msg->getSenderModuleId());
+}
+
+void LogBuffer::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+{
+    ASSERT(!entries.empty());
+    Entry& entry = entries.back();
+    MessageSend& msgsend = entry.msgs.back();
+    ASSERT(msgsend.msg->getTreeId() == msg->getTreeId());  //XXX IDs differ because dup() assigns a new ID!!!
+
+    std::vector<cModule*> hops;
+    resolveSendDirectHops(msg->getSenderModule(), toGate->getOwnerModule(), hops);
+
+    for (int i=1; i<hops.size(); i++)  // iterate from 1 because src module is already in hopModuleIds
+        msgsend.hopModuleIds.push_back(hops[i]->getId());
+}
+
+void LogBuffer::messageSendHop(cMessage *msg, cGate *srcGate)
+{
+    ASSERT(!entries.empty());
+    Entry& entry = entries.back();
+    MessageSend& msgsend = entry.msgs.back();
+    ASSERT(msgsend.msg->getTreeId() == msg->getTreeId());  //XXX IDs differ because dup() assigns a new ID!!!
+    msgsend.hopModuleIds.push_back(srcGate->getNextGate()->getOwnerModule()->getId());
+}
+
+void LogBuffer::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+{
+    messageSendHop(msg, srcGate);  //TODO store propagationDelay and transmissionDelay as well
+}
+
+void LogBuffer::endSend(cMessage *msg)
+{
+    for (unsigned int i = 0; i < listeners.size(); i++)
+        listeners[i]->messageSendAdded();
 }
 
 void LogBuffer::setMemoryLimit(size_t limit)
@@ -124,6 +204,14 @@ void LogBuffer::discardIfMemoryLimitExceeded()
         entries.pop_front();
         numEntries--;
     }
+}
+
+void LogBuffer::clear()
+{
+    entries.clear();
+    numEntries = 0;
+    totalChars = 0;
+    totalStrings = 0;
 }
 
 #define LL  INT64_PRINTF_FORMAT

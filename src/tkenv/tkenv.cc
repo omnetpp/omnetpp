@@ -297,6 +297,9 @@ void Tkenv::run()
         delete insp;
     }
 
+    // clear log
+    logBuffer.clear();   //FIXME how is the log cleared between runs??????????????
+
     // delete network if not yet done
     if (simstate!=SIM_NONET && simstate!=SIM_FINISHCALLED)
         endRun();
@@ -345,8 +348,7 @@ void Tkenv::doOneStep()
         cSimpleModule *mod = simulation.selectNextModule();
         if (mod)  // selectNextModule() not interrupted
         {
-            if (opt->printEventBanners)
-               printEventBanner(simulation.msgQueue.peekFirst(), mod);
+            printEventBanner(simulation.msgQueue.peekFirst(), mod);
             simulation.doOneEvent(mod);
             performAnimations();
         }
@@ -534,8 +536,7 @@ bool Tkenv::doRunSimulation()
         speedometer.addEvent(simulation.getSimTime());
 
         // do a simulation step
-        if (opt->printEventBanners)
-            printEventBanner(simulation.msgQueue.peekFirst(), mod);
+        printEventBanner(simulation.msgQueue.peekFirst(), mod);
 
         simulation.doOneEvent(mod);
         performAnimations();
@@ -579,7 +580,6 @@ bool Tkenv::doRunSimulationExpress()
     //
 
     logBuffer.addInfo("{...running in Express mode...\n}");
-    printLastLogLine();
 
     // update, just to get the above notice displayed
     Tcl_Eval(interp, "update");
@@ -642,7 +642,6 @@ void Tkenv::finishSimulation()
     }
 
     logBuffer.addInfo("{** Calling finish() methods of modules\n}");
-    printLastLogLine();
 
     // now really call finish()
     try
@@ -973,41 +972,6 @@ void Tkenv::printEventBanner(cMessage *msg, cSimpleModule *module)
 
     // insert into log buffer
     logBuffer.addEvent(simulation.getEventNumber(), simulation.getSimTime(), module, banner);
-
-    // print into module log windows
-    printLastLogLine();
-}
-
-void Tkenv::printLastLogLine()
-{
-    const LogBuffer::Entry& entry = logBuffer.getEntries().back();
-
-    // print into module window and all parent module windows if they exist
-    if (!entry.moduleIds /*info*/ || !entry.moduleIds[0] /*initialize--FIXME how???*/)
-    {
-        // info message: insert into all log windows
-        for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
-        {
-            LogInspector *insp = dynamic_cast<LogInspector *>(*it);
-            if (insp)
-                insp->printLastLineOf(logBuffer);
-        }
-    }
-    else
-    {
-        // insert into the appropriate module windows
-        cModule *mod = simulation.getModule(entry.moduleIds[0]);
-        while (mod)
-        {
-            for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
-            {
-                LogInspector *insp = isLogInspectorFor(mod, *it);
-                if (insp)
-                    insp->printLastLineOf(logBuffer);
-            }
-            mod = mod->getParentModule();
-        }
-    }
 }
 
 void Tkenv::displayException(std::exception& ex)
@@ -1018,7 +982,6 @@ void Tkenv::displayException(std::exception& ex)
     {
         std::string txt = opp_stringf("<!> %s\n", e->getFormattedMessage().c_str());
         logBuffer.addInfo(TclQuotedString(txt.c_str()).get());
-        printLastLogLine();
     }
 
     // dialog via our printfmsg()
@@ -1037,9 +1000,6 @@ void Tkenv::componentInitBegin(cComponent *component, int stage)
 
     // insert into log buffer
     logBuffer.addLogLine(NULL, banner);  //TODO prefix
-
-    // print into module log windows
-    printLastLogLine();
 }
 
 void Tkenv::setSilentEventFilters(const char *filterLines)
@@ -1277,26 +1237,31 @@ void Tkenv::messageCancelled(cMessage *msg)
 void Tkenv::beginSend(cMessage *msg)
 {
     EnvirBase::beginSend(msg);
+    logBuffer.beginSend(msg);
 }
 
 void Tkenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     EnvirBase::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
+    logBuffer.messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
 }
 
 void Tkenv::messageSendHop(cMessage *msg, cGate *srcGate)
 {
     EnvirBase::messageSendHop(msg, srcGate);
+    logBuffer.messageSendHop(msg, srcGate);
 }
 
 void Tkenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     EnvirBase::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
+    logBuffer.messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
 }
 
 void Tkenv::endSend(cMessage *msg)
 {
     EnvirBase::endSend(msg);
+    logBuffer.endSend(msg);
 }
 
 void Tkenv::messageDeleted(cMessage *msg)
@@ -1810,9 +1775,6 @@ void Tkenv::sputn(const char *s, int n)
         logBuffer.addLogLine(NULL, TclQuotedString(s,n).get()); //FIXME prefix! also: too much copying! reuse original string if no quoting needed
     else
         logBuffer.addInfo(TclQuotedString(s,n).get()); //FIXME too much copying! reuse original string if no quoting needed
-
-    // print string into log windows
-    printLastLogLine();
 }
 
 cEnvir& Tkenv::flush()

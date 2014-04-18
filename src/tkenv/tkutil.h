@@ -120,6 +120,8 @@ inline cObject *strToPtr(const char *s) {return (cObject *)strToVoidPtr(s);}
 
 cModule *findCommonAncestor(cModule *src, cModule *dest);
 
+void resolveSendDirectHops(cModule *src, cModule *dest, std::vector<cModule*>& hops);
+
 bool isAPL();
 
 std::string getObjectIcon(Tcl_Interp *interp, cObject *object);
