@@ -57,12 +57,12 @@ class TKENV_API LogBuffer
     struct Entry {
         eventnumber_t eventNumber;
         simtime_t simtime;
-        int *moduleIds;  // from this module up to the root; zero-terminated; NULL for info messages
+        int moduleId;  // 0 for info log lines, -1 for initialize() log lines
         const char *banner;
         std::vector<Line> lines;
         std::vector<MessageSend> msgs;
 
-        Entry() {eventNumber=0; simtime=0; moduleIds=NULL; banner=NULL;}
+        Entry() {eventNumber=0; simtime=0; moduleId=0; banner=NULL;}
         ~Entry();
     };
 

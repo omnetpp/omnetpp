@@ -24,7 +24,6 @@ NAMESPACE_BEGIN
 
 LogBuffer::Entry::~Entry()
 {
-    delete[] moduleIds;
     delete[] banner;
     for (int i=0; i<(int)lines.size(); i++) {
         delete[] lines[i].prefix;
@@ -65,19 +64,7 @@ void LogBuffer::fillEntry(Entry *entry, eventnumber_t e, simtime_t t, cModule *m
     entry->eventNumber = e;
     entry->simtime = t;
     entry->banner = opp_strdup(banner);
-
-    // store all moduleIds up to the root
-    if (mod)
-    {
-        int depth = 0;
-        for (cModule *p=mod; p; p=p->getParentModule())
-            depth++;
-        entry->moduleIds = new int[depth+1];
-        int i = 0;
-        for (cModule *p=mod; p; p=p->getParentModule(), i++)
-            entry->moduleIds[i] = p->getId();
-         entry->moduleIds[depth] = 0;
-    }
+    entry->moduleId = mod ? mod->getId() : 0;
 }
 
 void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char *banner)
@@ -98,8 +85,7 @@ void LogBuffer::addLogLine(const char *prefix, const char *text)
         // this is likely the initialize() phase -- hence no banner
         addEvent(0, SIMTIME_ZERO, NULL, "{}");
         Entry *entry = entries.back();
-        entry->moduleIds = new int[1]; // add empty array, to distinguish entry from an info entry
-        entry->moduleIds[0] = 0;
+        entry->moduleId = -1; // add empty array, to distinguish entry from an info entry
     }
 
     //FIXME if last line is "info" then we cannot append to it! create new entry with empty banner?
@@ -129,8 +115,7 @@ void LogBuffer::beginSend(cMessage *msg)
         // this is likely the initialize() phase -- hence no banner
         addEvent(0, SIMTIME_ZERO, NULL, "{}");
         Entry *entry = entries.back();
-        entry->moduleIds = new int[1]; // add empty array, to distinguish entry from an info entry
-        entry->moduleIds[0] = 0;
+        entry->moduleId = -1;
     }
 
     //FIXME if last line is "info" then we cannot append to it! create new entry with empty banner?
@@ -235,7 +220,7 @@ void LogBuffer::dump() const
     for (int i = 0; i < entries.size(); i++)
     {
         const Entry *entry = entries[i];
-        printf("[%d] #%" LL "d t=%s moduleId=%d: %s", i, entry->eventNumber, SIMTIME_STR(entry->simtime), entry->moduleIds?entry->moduleIds[0]:-1, entry->banner);
+        printf("[%d] #%" LL "d t=%s moduleId=%d: %s", i, entry->eventNumber, SIMTIME_STR(entry->simtime), entry->moduleId, entry->banner);
         for (int j=0; j<(int)entry->lines.size(); j++)
             printf("\t[l%d]:%s%s", i, entry->lines[j].prefix, entry->lines[j].line);
     }

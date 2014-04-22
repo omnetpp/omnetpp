@@ -21,6 +21,7 @@
 #include "platmisc.h"   // must precede <tk.h> otherwise Visual Studio 2013 fails to compile
 #include <tk.h>
 #include "logbuffer.h"
+#include "componenthistory.h"
 #include "inspector.h"
 #include "cmessageprinter.h"
 
@@ -33,7 +34,8 @@ class TKENV_API LogInspector : public Inspector, protected ILogBufferListener
       enum Mode {LOG, MESSAGES};
 
    protected:
-      LogBuffer *logBuffer;
+      LogBuffer *logBuffer; // not owned
+      ComponentHistory *componentHistory; // not owned
       char textWidget[128];
       std::set<int> excludedModuleIds;
       Mode mode;
@@ -42,6 +44,8 @@ class TKENV_API LogInspector : public Inspector, protected ILogBufferListener
       virtual void logEntryAdded();
       virtual void logLineAdded();
       virtual void messageSendAdded();
+
+      virtual bool isAncestorModule(int moduleId, int potentialAncestorModuleId);
 
       virtual void printLastLogLine();
       virtual void printLastMessageLine();

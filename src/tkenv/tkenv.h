@@ -28,6 +28,7 @@
 #include "cchannel.h"
 #include "cmodule.h"
 #include "speedometer.h"
+#include "componenthistory.h"
 
 NAMESPACE_BEGIN
 
@@ -141,7 +142,7 @@ class TKENV_API Tkenv : public EnvirBase
       InspectorList inspectors;    // list of inspector objects
 
       LogBuffer logBuffer;         // text window contents
-      std::set<int> mainWindowExcludedModuleIds;
+      ComponentHistory componentHistory; // id-to-fullpath mapping for deleted modules  FIXME TODO clear this between runs!!!
 
       GenericObjectInspector *mainInspector;
       ModuleInspector *mainNetworkView;
@@ -245,6 +246,7 @@ class TKENV_API Tkenv : public EnvirBase
       Speedometer& getSpeedometer() {return speedometer;}
       Tcl_Interp *getInterp() {return interp;}
       LogBuffer *getLogBuffer() {return &logBuffer;}
+      ComponentHistory *getComponentHistory() {return &componentHistory;}
       const char *getSilentEventFilters() const {return silentEventFilterLines.c_str();}
       void setSilentEventFilters(const char *filterLines);
       bool isSilentEvent(cMessage *msg);

@@ -1391,6 +1391,8 @@ void Tkenv::moduleDeleted(cModule *module)
 {
     EnvirBase::moduleDeleted(module);
 
+    componentHistory.componentDeleted(module);
+
     cModule *mod = module->getParentModule();
 
     for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
@@ -1404,6 +1406,8 @@ void Tkenv::moduleDeleted(cModule *module)
 void Tkenv::moduleReparented(cModule *module, cModule *oldparent)
 {
     EnvirBase::moduleReparented(module, oldparent);
+
+    //TODO in 5.0: componentHistory.componentReparented(module, oldparent, oldId);
 
     // pretend it got deleted from under the 1st module, and got created under the 2nd
     for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
@@ -1444,6 +1448,9 @@ void Tkenv::connectionCreated(cGate *srcgate)
 void Tkenv::connectionDeleted(cGate *srcgate)
 {
     EnvirBase::connectionDeleted(srcgate);
+
+    if (srcgate->getChannel())
+        componentHistory.componentDeleted(srcgate->getChannel());
 
     // notify compound module where the connection (whose source is this gate) is displayed
     // note: almost the same code as above
