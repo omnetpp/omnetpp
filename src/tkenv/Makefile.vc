@@ -27,7 +27,7 @@ IMPLIBS= $O/../sim/oppsim$D.lib $O/../envir/oppenvir$D.lib $O/../layout/opplayou
 OBJS = $O/tkenv$(TKENV_EMBED_SUFFIX).obj $O/tkcmd.obj $O/tklib.obj $O/inspector.obj $O/logbuffer.obj \
        $O/inspectorfactory.obj  $O/genericobjectinspector.obj $O/watchinspector.obj \
        $O/moduleinspector.obj $O/loginspector.obj $O/gateinspector.obj \
-       $O/outputvectorinspector.obj $O/histograminspector.obj \
+       $O/outputvectorinspector.obj $O/histograminspector.obj $O/componenthistory.obj \
        $O/layouterenv.obj $O/arrow.obj $O/tkutil.obj $O/tkImgPNG.obj $O/tkImgPNGInit.obj
 
 !if "$(LIB_SUFFIX)"==".dll"
