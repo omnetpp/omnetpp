@@ -134,12 +134,6 @@ void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Int
 
 int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep);
 
-void textWidget_insert(Tcl_Interp *interp, const char *textWidget, const char *text, const char *tags=NULL);
-
-void textWidget_gotoEnd(Tcl_Interp *interp, const char *textWidget);
-
-void textWidget_bookmark(Tcl_Interp *interp, const char *textWidget, const char *bookmark);
-
 /**
  * Looks up the given parameter
  */

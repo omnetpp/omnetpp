@@ -356,29 +356,6 @@ bool isAPL()
 
 //----------------------------------------------------------------------
 
-void textWidget_insert(Tcl_Interp *interp, const char *textWidget, const char *quotedText, const char *tags)
-{
-    if (!quotedText || !quotedText[0])
-        return;
-    if (!tags)
-        CHK(Tcl_VarEval(interp, textWidget, " insert end ", quotedText, NULL));
-    else
-        CHK(Tcl_VarEval(interp, textWidget, " insert end ", quotedText, " {", tags, "}", NULL));
-}
-
-void textWidget_gotoEnd(Tcl_Interp *interp, const char *textWidget)
-{
-    CHK(Tcl_VarEval(interp, textWidget, " see end", NULL));
-}
-
-void textWidget_bookmark(Tcl_Interp *interp, const char *textWidget, const char *bookmark)
-{
-    CHK(Tcl_VarEval(interp, textWidget, " mark set ", bookmark, " insert", NULL));
-    CHK(Tcl_VarEval(interp, textWidget, " mark gravity ", bookmark, " left", NULL));
-}
-
-//----------------------------------------------------------------------
-
 cPar *displayStringPar(const char *parname, cComponent *component, bool searchparent)
 {
     // look up locally

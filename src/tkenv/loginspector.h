@@ -37,10 +37,16 @@ class TKENV_API LogInspector : public Inspector, protected ILogBufferListener
       LogBuffer *logBuffer; // not owned
       ComponentHistory *componentHistory; // not owned
       char textWidget[128];
+      Tcl_CmdInfo textWidgetCmdInfo;
       std::set<int> excludedModuleIds;
       Mode mode;
 
    protected:
+      void textWidgetCommand(const char *arg1, const char *arg2=NULL, const char *arg3=NULL, const char *arg4=NULL, const char *arg5=NULL, const char *arg6=NULL);
+      void textWidgetInsert(const char *text, const char *tags=NULL);
+      void textWidgetGotoEnd();
+      void textWidgetBookmark(const char *bookmark);
+
       virtual void logEntryAdded();
       virtual void logLineAdded();
       virtual void messageSendAdded();

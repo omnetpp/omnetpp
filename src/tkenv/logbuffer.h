@@ -89,7 +89,9 @@ class TKENV_API LogBuffer
     void addInitialize(cComponent *component, const char *banner);
     void addEvent(eventnumber_t e, simtime_t t, cModule *moduleIds, const char *banner);
     void addLogLine(const char *prefix, const char *text);
+    void addLogLine(const char *prefix, const char *text, int len);
     void addInfo(const char *text);
+    void addInfo(const char *text, int len);
 
     void beginSend(cMessage *msg);
     void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay);

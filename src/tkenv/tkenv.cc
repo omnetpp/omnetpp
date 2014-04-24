@@ -579,7 +579,7 @@ bool Tkenv::doRunSimulationExpress()
     // EXPRESS does not support rununtil_module!
     //
 
-    logBuffer.addInfo("{...running in Express mode...\n}");
+    logBuffer.addInfo("...running in Express mode...\n");
 
     // update, just to get the above notice displayed
     Tcl_Eval(interp, "update");
@@ -641,7 +641,7 @@ void Tkenv::finishSimulation()
         stoppedWithTerminationException(e);
     }
 
-    logBuffer.addInfo("{** Calling finish() methods of modules\n}");
+    logBuffer.addInfo("** Calling finish() methods of modules\n");
 
     // now really call finish()
     try
@@ -951,14 +951,14 @@ void Tkenv::printEventBanner(cMessage *msg, cSimpleModule *module)
     // produce banner text
     char banner[2*MAX_OBJECTFULLPATH+2*MAX_CLASSNAME+60];
     if (opt->shortBanners)
-        sprintf(banner,"{** Event #%" LL "d  T=%s  %s, on `%s'\n}",
+        sprintf(banner,"** Event #%" LL "d  T=%s  %s, on `%s'\n",
                 simulation.getEventNumber(),
                 SIMTIME_STR(simulation.getSimTime()),
                 module->getFullPath().c_str(),
                 TclQuotedString(msg->getFullName()).get()
               );
     else
-        sprintf(banner,"{** Event #%" LL "d  T=%s  %s (%s, id=%d), on %s`%s' (%s, id=%ld)\n}",
+        sprintf(banner,"** Event #%" LL "d  T=%s  %s (%s, id=%d), on %s`%s' (%s, id=%ld)\n",
                 simulation.getEventNumber(),
                 SIMTIME_STR(simulation.getSimTime()),
                 module->getFullPath().c_str(),
@@ -981,7 +981,7 @@ void Tkenv::displayException(std::exception& ex)
     if (e && e->getSimulationStage()!=CTX_NONE)
     {
         std::string txt = opp_stringf("<!> %s\n", e->getFormattedMessage().c_str());
-        logBuffer.addInfo(TclQuotedString(txt.c_str()).get());
+        logBuffer.addInfo(txt.c_str());
     }
 
     // dialog via our printfmsg()
@@ -995,7 +995,7 @@ void Tkenv::componentInitBegin(cComponent *component, int stage)
 
     // produce banner text
     char banner[MAX_OBJECTFULLPATH+60];
-    sprintf(banner, "{Initializing %s %s, stage %d\n}",
+    sprintf(banner, "Initializing %s %s, stage %d\n",
         component->isModule() ? "module" : "channel", component->getFullPath().c_str(), stage);
 
     // insert into log buffer
@@ -1779,9 +1779,9 @@ void Tkenv::sputn(const char *s, int n)
     // insert into log buffer
     cModule *module = simulation.getContextModule();
     if (module)
-        logBuffer.addLogLine(NULL, TclQuotedString(s,n).get()); //FIXME prefix! also: too much copying! reuse original string if no quoting needed
+        logBuffer.addLogLine(NULL, s, n); //TODO prefix!
     else
-        logBuffer.addInfo(TclQuotedString(s,n).get()); //FIXME too much copying! reuse original string if no quoting needed
+        logBuffer.addInfo(s, n);
 }
 
 cEnvir& Tkenv::flush()

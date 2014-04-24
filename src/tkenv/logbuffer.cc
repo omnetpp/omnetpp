@@ -63,7 +63,7 @@ void LogBuffer::fillEntry(Entry *entry, eventnumber_t e, simtime_t t, cModule *m
 {
     entry->eventNumber = e;
     entry->simtime = t;
-    entry->banner = opp_strdup(banner);
+    entry->banner = banner;
     entry->moduleId = mod ? mod->getId() : 0;
 }
 
@@ -71,7 +71,7 @@ void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char 
 {
     Entry *entry = new Entry();
     entries.push_back(entry);
-    fillEntry(entry, e, t, mod, banner);
+    fillEntry(entry, e, t, mod, opp_strdup(banner));
     discardEventsIfLimitExceeded();
 
     for (unsigned int i = 0; i < listeners.size(); i++)
@@ -98,6 +98,11 @@ void LogBuffer::addInitialize(cComponent *component, const char *banner)
 
 void LogBuffer::addLogLine(const char *prefix, const char *text)
 {
+    addLogLine(prefix, text, strlen(text));
+}
+
+void LogBuffer::addLogLine(const char *prefix, const char *text, int len)
+{
     if (entries.empty())
     {
         Entry *entry = new Entry();
@@ -110,7 +115,7 @@ void LogBuffer::addLogLine(const char *prefix, const char *text)
     Entry *entry = entries.back();
     cModule *contextMod = simulation.getContextModule();  //TODO use simulation.getContext() in 5.0!
     int contextComponentId =  contextMod ? contextMod->getId() : 0;
-    entry->lines.push_back(Line(contextComponentId, opp_strdup(prefix), opp_strdup(text)));
+    entry->lines.push_back(Line(contextComponentId, opp_strdup(prefix), opp_strdup(text,len)));
 
     for (unsigned int i = 0; i < listeners.size(); i++)
         listeners[i]->logLineAdded();
@@ -118,10 +123,15 @@ void LogBuffer::addLogLine(const char *prefix, const char *text)
 
 void LogBuffer::addInfo(const char *text)
 {
+    addInfo(text, strlen(text));
+}
+
+void LogBuffer::addInfo(const char *text, int len)
+{
     //TODO ha inline info (contextmodule!=NULL), sima logline-kent adjuk hozza!!!!
     Entry *entry = new Entry();
     entries.push_back(entry);
-    fillEntry(entry, 0, SIMTIME_ZERO, NULL, text);
+    fillEntry(entry, 0, SIMTIME_ZERO, NULL, opp_strdup(text,len));
     discardEventsIfLimitExceeded();
 
     for (unsigned int i = 0; i < listeners.size(); i++)
