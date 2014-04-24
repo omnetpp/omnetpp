@@ -46,18 +46,21 @@ class TKENV_API LogBuffer
 {
   public:
     struct Line {
-        const char *prefix;
-        const char *line;  // including newline
-        Line(const char *prefix, const char *line) : prefix(prefix), line(line) {}
+        int contextComponentId;
+        const char *prefix; // Tcl quoted
+        const char *line;  // including newline; Tcl quoted
+        Line(int contextComponentId, const char *prefix, const char *line) :
+            contextComponentId(contextComponentId), prefix(prefix), line(line) {}
     };
     struct MessageSend {
         cMessage *msg;
         std::vector<int> hopModuleIds; //TODO also: txStartTime, propagationDelay, duration for each hop
     };
     struct Entry {
-        eventnumber_t eventNumber;
+        eventnumber_t eventNumber; // 0 for initialization, >0 afterwards
         simtime_t simtime;
-        int moduleId;  // 0 for info log lines, -1 for initialize() log lines
+        int moduleId;  // 0 for info log lines, -1 for channels (TODO only until 5.0)
+        //TODO msg name, class, kind, previousEventNumber
         const char *banner;
         std::vector<Line> lines;
         std::vector<MessageSend> msgs;
@@ -83,6 +86,7 @@ class TKENV_API LogBuffer
     void addListener(ILogBufferListener *l);
     void removeListener(ILogBufferListener *l);
 
+    void addInitialize(cComponent *component, const char *banner);
     void addEvent(eventnumber_t e, simtime_t t, cModule *moduleIds, const char *banner);
     void addLogLine(const char *prefix, const char *text);
     void addInfo(const char *text);

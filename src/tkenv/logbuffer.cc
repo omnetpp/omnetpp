@@ -78,20 +78,39 @@ void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char 
         listeners[i]->logEntryAdded();
 }
 
+void LogBuffer::addInitialize(cComponent *component, const char *banner)
+{
+    if (component == simulation.getSystemModule())
+    {
+        Entry *entry = new Entry();
+        entries.push_back(entry);
+        fillEntry(entry, 0, SIMTIME_ZERO, NULL, NULL);
+    }
+
+    Entry *entry = entries.back();
+    cModule *contextMod = simulation.getContextModule();  //TODO use simulation.getContext() in 5.0!
+    int contextComponentId =  contextMod ? contextMod->getId() : 0;
+    entry->lines.push_back(Line(contextComponentId, NULL, opp_strdup(banner)));
+
+    for (unsigned int i = 0; i < listeners.size(); i++)
+        listeners[i]->logLineAdded();
+}
+
 void LogBuffer::addLogLine(const char *prefix, const char *text)
 {
     if (entries.empty())
     {
-        // this is likely the initialize() phase -- hence no banner
-        addEvent(0, SIMTIME_ZERO, NULL, "{}");
-        Entry *entry = entries.back();
-        entry->moduleId = -1; // add empty array, to distinguish entry from an info entry
+        Entry *entry = new Entry();
+        entries.push_back(entry);
+        fillEntry(entry, 0, SIMTIME_ZERO, NULL, NULL);
     }
 
     //FIXME if last line is "info" then we cannot append to it! create new entry with empty banner?
 
     Entry *entry = entries.back();
-    entry->lines.push_back(Line(opp_strdup(prefix), opp_strdup(text)));
+    cModule *contextMod = simulation.getContextModule();  //TODO use simulation.getContext() in 5.0!
+    int contextComponentId =  contextMod ? contextMod->getId() : 0;
+    entry->lines.push_back(Line(contextComponentId, opp_strdup(prefix), opp_strdup(text)));
 
     for (unsigned int i = 0; i < listeners.size(); i++)
         listeners[i]->logLineAdded();
@@ -99,6 +118,7 @@ void LogBuffer::addLogLine(const char *prefix, const char *text)
 
 void LogBuffer::addInfo(const char *text)
 {
+    //TODO ha inline info (contextmodule!=NULL), sima logline-kent adjuk hozza!!!!
     Entry *entry = new Entry();
     entries.push_back(entry);
     fillEntry(entry, 0, SIMTIME_ZERO, NULL, text);

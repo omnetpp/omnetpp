@@ -999,7 +999,7 @@ void Tkenv::componentInitBegin(cComponent *component, int stage)
         component->isModule() ? "module" : "channel", component->getFullPath().c_str(), stage);
 
     // insert into log buffer
-    logBuffer.addLogLine(NULL, banner);  //TODO prefix
+    logBuffer.addInitialize(component, banner);
 }
 
 void Tkenv::setSilentEventFilters(const char *filterLines)
