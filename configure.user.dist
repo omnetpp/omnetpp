@@ -76,13 +76,13 @@ SHARED_LIBS=yes
 # With gcc, settings typically look like this:
 #
 # exaple:TK_CFLAGS="-I/usr/local/include"
-# example:TK_LIBS="-L/usr/local/lib -ltk8.4 -ltcl8.4"
+# example:TK_LIBS="-L/usr/local/lib -ltk8.6 -ltcl8.6"
 #
 # /usr/local/include should be replaced with the directory where tcl.h and tk.h
 # live. If they are in two different directories, use two -I switches.
 #
 # /usr/local/lib should be replaced with the directory that contains the Tcl/Tk
-# library files (something like libtcl84.so, libtk8.4.a etc; search for libtcl*
+# library files (something like libtcl86.so, libtk8.6.a etc; search for libtcl*
 # and libtk* to find them.) The -l options contain the library names: the
 # library file names, with the leading 'lib' and trailing '.so*' or '.a*' cut
 # off. Sometimes you need to explicitly link with the X11 libraries too, in that
@@ -92,31 +92,22 @@ SHARED_LIBS=yes
 # Note that we are using the "bin" directory as the LIB dir.
 # i.e. directly linking to the DLLs instead of the importlibs in the "lib" directory.
 #
-#TK_CFLAGS="-I/c/Tools/Tcl-8.4.11/include"
-#TK_LIBS="-L/c/Tools/Tcl-8.4.11/bin -ltk84 -ltcl84"
+#TK_CFLAGS="-I/c/Tools/Tcl-8.6.0/include"
+#TK_LIBS="-L/c/Tools/Tcl-8.6.0/bin -ltk84 -ltcl84"
 # or:
-#TK_CFLAGS="-I$MSYS/include/tcl8.4"
-#TK_LIBS="-L$MSYS/bin -ltk84 -ltcl84"
+#TK_CFLAGS="-I$MSYS/include/tcl8.6"
+#TK_LIBS="-L$MSYS/bin -ltk86 -ltcl86"
 
 #
 # With Cygwin, you can try:
 # examle:TK_CFLAGS=
-# examle:TK_LIBS="-ltk84 -ltcl84"
+# examle:TK_LIBS="-ltk86 -ltcl86"
 #
 # If commented out, the configure script will try to autodetect it
 #
 # If you don't have Tcl/Tk installed, adding
 #  NO_TCL=true
 # below lets you build just the non-GUI components.
-
-#
-# BLT is a Tcl/Tk extension needed by the Tkenv component of OMNeT++.
-# BLT 2.4z is required. BLT_LIBS should contain the -l flag for BLT.
-# Default setting is:
-#  BLT_LIBS="-lBLT24"
-#
-#
-#BLT_LIBS=
 
 #
 # ZLib is a compression library needed by libxml2 and Tkenv's png support.

@@ -121,8 +121,6 @@ NO_TCL = @NO_TCL@
 HAVE_DLOPEN = @HAVE_DLOPEN@
 TK_CFLAGS = @TK_CFLAGS@
 TK_LIBS = @TK_LIBS@
-HAVE_BLT = @HAVE_BLT@
-BLT_LIBS = @BLT_LIBS@
 ZLIB_CFLAGS = @ZLIB_CFLAGS@
 ZLIB_LIBS = @ZLIB_LIBS@
 HAVE_MPI = @HAVE_MPI@
@@ -170,7 +168,7 @@ else
   LIB_SUFFIX = $(A_LIB_SUFFIX)
   # extra libs we are indirectly depend on. they are needed if we are building statically
   KERNEL_LIBS += -loppnedxml$D -loppcommon$D $(XML_LIBS) 
-  TKENV_LIBS += $(TK_LIBS) $(BLT_LIBS) $(ZLIB_LIBS)
+  TKENV_LIBS += $(TK_LIBS) $(ZLIB_LIBS)
 
   ifeq ($(WITH_PARSIM),yes)
     ifeq ($(HAVE_MPI),yes)

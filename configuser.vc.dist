@@ -32,15 +32,12 @@ OPT_DIR=$(OMNETPP_ROOT:\=/)/msys
 #OPT_DIR=$(TOOLS_DIR:\=/)/msys
 
 #
-# Directory and version of Tcl/Tk and BLT, for example "8.4" and "2.4".
-# Tcl/Tk 8.4 (minimum 8.4.0) and BLT 2.4 required.
-# Leave BLT_VER empty if you don't have BLT. BLT is expected to reside
-# in the same directory tree as Tcl/Tk.
+# Directory and version of Tcl/Tk, for example "8.6".
+# At least Tcl/Tk 8.5 is required.
 #
-#TK_DIR=$(TOOLS_DIR:\=/)/Tcl-8.4.11
+#TK_DIR=$(TOOLS_DIR:\=/)/Tcl-8.6.0
 TK_DIR=$(OPT_DIR:\=/)
-TK_VER=8.4
-BLT_VER=2.4
+TK_VER=8.6
 
 #
 # MPI directory. MPI is only needed for parallel distributed execution.
@@ -218,11 +215,6 @@ TCL_LIB=tcl$(TK_VER:.=).lib
 TK_LIB=tk$(TK_VER:.=).lib
 _TCL_LIBRARY=$(TK_DIR)/lib/tcl$(TK_VER)
 
-!if "$(BLT_VER)"!=""
-HAVE_BLT=yes
-BLT_LIB=blt$(BLT_VER:.=).lib
-!endif
-
 !if "$(MPI_DIR)"!=""
 HAVE_MPI=yes
 !endif
@@ -245,7 +237,7 @@ ZLIB_LIBS=zdll.lib /libpath:"$(ZLIB_DIR)/lib"
 # compiler and linker switches necessary to build an app with Tcl/Tk, MPI, expat, etc.
 # (NO_CONST is for testing code compatibility with systems where tcl.h comes without 'const')
 TK_CFLAGS=/I "$(TK_INCL_DIR)" /DNO_CONST
-TK_LIBS=$(TCL_LIB) $(TK_LIB) $(BLT_LIB) /libpath:"$(TK_LIB_DIR)"
+TK_LIBS=$(TCL_LIB) $(TK_LIB) /libpath:"$(TK_LIB_DIR)"
 MPI_CFLAGS=/I "$(MPI_DIR)/include"
 MPI_LIBS=/libpath:"$(MPI_DIR)/lib" mpi.lib
 

@@ -5,6 +5,11 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
+
+   - BLT is no longer used in Tkenv
+   - Tcl/Tk 8.4 is no longer supported
+   - Tcl/Tk 8.6 is preferred over 8.5
+
 OMNeT++ 4.4.1 (Feb 2014)
 ------------------------
 
