@@ -2363,6 +2363,8 @@ SYSTEMC=${SYSTEMC:-no}
 CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g -Wall}
 CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O2 -DNDEBUG=1}
 CXXFLAGS=${CXXFLAGS:-}
+PREFER_CLANG=${PREFER_CLANG:-}
+USE_CPP11=${USE_CPP11:-}
 
 WHOLE_ARCHIVE_ON=
 WHOLE_ARCHIVE_OFF=
@@ -2383,8 +2385,13 @@ if test "$TOOLCHAIN" = "mingw"; then
     cxx_candidates="i586-mingw32msvc-g++"
 else
     # icc, icpc: Intel compiler (further ones: Sun Studio: cxx, IBM: xlC)
-    cc_candidates="icc gcc cc xlc"
-    cxx_candidates="icpc g++ c++ cxx xlC"
+    cc_candidates="icc gcc clang cc xlc"
+    cxx_candidates="icpc g++ clang++ c++ cxx xlC"
+    if test "$PREFER_CLANG" = "yes"; then
+      # if we prefer clang over gcc put it at the beginning so it will be detected first
+      cc_candidates="clang $cc_candidates"
+      cxx_candidates="clang++ $cxx_candidates"
+    fi
 fi
 
 # the below macros should be present only ONCE in the whole file (otherwise bad things will happen)
@@ -3437,12 +3444,47 @@ fi
 #----------------------
 # check whether the compiler supports the C++11 standard - turned off for now, but should be enabled for OMNeT++ 5.0
 #----------------------
-#AC_PROG_CXX_OPTION(-std=c++11, CXXFLAGS="$CXXFLAGS -std=c++11")
+if test "$USE_CPP11" = "yes"; then
+
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports -std=c++11" >&5
+$as_echo_n "checking whether $CXX supports -std=c++11... " >&6; }
+    ac_save_CXX="$CXX"
+    CXX="$CXX -std=c++11"
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+        CXX="$ac_save_CXX"
+        CXXFLAGS="$CXXFLAGS -std=c++11"
+
+else
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        CXX="$ac_save_CXX"
+
+
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+fi
 
 #----------------------
 # check and disable stack checking to avoid opplibs.so dependence on glibc 2.4
 #----------------------
-
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports -fno-stack-protector" >&5
 $as_echo_n "checking whether $CXX supports -fno-stack-protector... " >&6; }

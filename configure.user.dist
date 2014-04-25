@@ -9,10 +9,21 @@
 
 #
 # Edit here if you want to use a different compiler from the one autodetected
-# by configure.
+# by configure. Turns off the compiler autodetection.
 #
 #CC=gcc
 #CXX=g++
+
+#
+# Set to "yes" if you want to use clang/clang++ instead of gcc/g++ when both
+# compiler is installed.
+#
+PREFER_CLANG=no
+
+#
+# Set to "yes" to compile with C++ 11 support enabled (-std=c++11)
+#
+USE_CPP11=yes
 
 #
 # Compiler optimization switches. There are two sets of switches,
