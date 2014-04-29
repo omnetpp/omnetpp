@@ -41,6 +41,7 @@ if [info exist OMNETPP_TKENV_DIR] {
    source [file join $dir menuproc.tcl]
    source [file join $dir moduleinspector.tcl]
    source [file join $dir moduleinspectorutil.tcl]
+   source [file join $dir ruler.tcl]
    source [file join $dir objecttree.tcl]
    source [file join $dir outputvectorinspector.tcl]
    source [file join $dir startup.tcl]

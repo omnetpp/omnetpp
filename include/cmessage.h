@@ -35,6 +35,7 @@ class cSimpleModule;
 class cCompoundModule;
 class cSimulation;
 class cMessageHeap;
+class LogBuffer;
 
 
 /**
@@ -110,6 +111,7 @@ enum eMessageKind
 class SIM_API cMessage : public cOwnedObject
 {
     friend class cMessageHeap;
+    friend class LogBuffer;  // for setMessageId()
 
   private:
     // note: fields are in an order that maximizes packing (minimizes sizeof(cMessage))
@@ -144,6 +146,9 @@ class SIM_API cMessage : public cOwnedObject
     void _createparlist();
 
     void copy(const cMessage& msg);
+
+    // internal: used by LogBuffer for creating an *exact* copy of a message
+    void setId(long id) {msgid = id;}
 
   public:
     // internal: returns the event number which scheduled this event, or the event in which

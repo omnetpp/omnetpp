@@ -131,6 +131,7 @@ TkenvOptions::TkenvOptions()
     shortBanners = false;
     autoupdateInExpress = true;
     stopOnMsgCancel = true;
+    scrollbackLimit = 10000;
 }
 
 Tkenv::Tkenv() : opt((TkenvOptions *&)EnvirBase::opt)
@@ -1843,6 +1844,19 @@ unsigned Tkenv::getExtraStackForEnvir() const
 
 void Tkenv::logTclError(const char *file, int line, Tcl_Interp *interp)
 {
+    logTclError(file, line, Tcl_GetVar(interp, "errorInfo", TCL_GLOBAL_ONLY));
+}
+
+void Tkenv::logTclError(const char *file, int line, const char *text)
+{
+    openTkenvlogIfNeeded();
+    FILE *f = ferrorlog ? ferrorlog : stderr;
+    ::fprintf(f, "Tcl error: %s#%d: %s\n\n\n",file, line, text);
+    ::fflush(f);
+}
+
+void Tkenv::openTkenvlogIfNeeded()
+{
     if (!ferrorlog)
     {
         ferrorlog = fopen(".tkenvlog", "a");
@@ -1851,10 +1865,6 @@ void Tkenv::logTclError(const char *file, int line, Tcl_Interp *interp)
         else
             ::fprintf(ferrorlog, "----------------------------------------------------------------------\n\n\n");
     }
-
-    FILE *f = ferrorlog ? ferrorlog : stderr;
-    ::fprintf(f, "Tcl error: %s#%d: %s\n\n\n",file, line, Tcl_GetVar(interp, "errorInfo", TCL_GLOBAL_ONLY));
-    ::fflush(f);
 }
 
 //======================================================================

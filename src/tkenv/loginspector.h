@@ -41,24 +41,41 @@ class TKENV_API LogInspector : public Inspector, protected ILogBufferListener
       std::set<int> excludedModuleIds;
       Mode mode;
 
+      // state used during incremental printing (printLastLogLine(), printLastMessageLine()):
+      // MESSAGES mode:
+      eventnumber_t lastMsgEventNumber;
+      simtime_t lastMsgTime;
+      // LOG mode:
+      bool entryMatches;
+      bool bannerPrinted;
+      bool bookmarkAdded;
+
    protected:
       void textWidgetCommand(const char *arg1, const char *arg2=NULL, const char *arg3=NULL, const char *arg4=NULL, const char *arg5=NULL, const char *arg6=NULL);
-      void textWidgetInsert(const char *text, const char *tags=NULL);
+      void textWidgetInsert(const char *text, const char *tags);
+      void textWidgetSeeEnd();
+      void textWidgetGotoBeginning();
       void textWidgetGotoEnd();
-      void textWidgetBookmark(const char *bookmark);
+      void textWidgetSetBookmark(const char *bookmark, const char *pos);
+      void textWidgetDumpBookmarks(const char *label);
 
       virtual void logEntryAdded();
       virtual void logLineAdded();
       virtual void messageSendAdded();
 
-      virtual bool isAncestorModule(int moduleId, int potentialAncestorModuleId);
+      bool isMatchingComponent(int componentId);
+      bool isAncestorModule(int moduleId, int potentialAncestorModuleId);
 
       virtual void printLastLogLine();
       virtual void printLastMessageLine();
 
-      virtual int findFirstRelevantHop(const LogBuffer::MessageSend& msgsend);
+      void printBannerIfNeeded(const LogBuffer::Entry *entry);
+      void addBookmarkIfNeeded(const LogBuffer::Entry *entry);
+      virtual void printLogLine(const LogBuffer::Entry *entry, const LogBuffer::Line& line);
+
+      virtual int findFirstRelevantHop(const LogBuffer::MessageSend& msgsend, int fromHop);
       virtual cMessagePrinter *chooseMessagePrinter(cMessage *msg);
-      virtual void printMessage(const LogBuffer::Entry *entry, int msgIndex, int hopIndex);
+      virtual void printMessage(const LogBuffer::Entry *entry, int msgIndex, int hopIndex, bool repeatedEvent, bool repeatedSimtime);
 
    public:
       LogInspector(InspectorFactory *f);

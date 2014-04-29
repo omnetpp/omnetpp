@@ -80,11 +80,11 @@ void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char 
 
 void LogBuffer::addInitialize(cComponent *component, const char *banner)
 {
-    if (component == simulation.getSystemModule())
+    if (entries.empty())
     {
         Entry *entry = new Entry();
         entries.push_back(entry);
-        fillEntry(entry, 0, SIMTIME_ZERO, NULL, NULL);
+        fillEntry(entry, 0, SIMTIME_ZERO, simulation.getSystemModule(), opp_strdup("** Initializing network\n"));
     }
 
     Entry *entry = entries.back();
@@ -153,7 +153,8 @@ void LogBuffer::beginSend(cMessage *msg)
     Entry *entry = entries.back();
     entry->msgs.push_back(MessageSend());
     MessageSend& msgsend = entry->msgs.back();
-    msgsend.msg = msg->dup();  //FIXME this assigns a new ID!!!
+    msgsend.msg = msg->dup();
+    msgsend.msg->setId(msg->getId()); // because dup() assigns a new Id
     msgsend.msg->removeFromOwnershipTree();
     msgsend.hopModuleIds.push_back(msg->getSenderModuleId());
 }
@@ -163,7 +164,7 @@ void LogBuffer::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propag
     ASSERT(!entries.empty());
     Entry *entry = entries.back();
     MessageSend& msgsend = entry->msgs.back();
-    ASSERT(msgsend.msg->getTreeId() == msg->getTreeId());  //XXX IDs differ because dup() assigns a new ID!!!
+    ASSERT(msgsend.msg->getId() == msg->getId());
 
     std::vector<cModule*> hops;
     resolveSendDirectHops(msg->getSenderModule(), toGate->getOwnerModule(), hops);
@@ -177,7 +178,7 @@ void LogBuffer::messageSendHop(cMessage *msg, cGate *srcGate)
     ASSERT(!entries.empty());
     Entry *entry = entries.back();
     MessageSend& msgsend = entry->msgs.back();
-    ASSERT(msgsend.msg->getTreeId() == msg->getTreeId());  //XXX IDs differ because dup() assigns a new ID!!!
+    ASSERT(msgsend.msg->getId() == msg->getId());
     msgsend.hopModuleIds.push_back(srcGate->getNextGate()->getOwnerModule()->getId());
 }
 

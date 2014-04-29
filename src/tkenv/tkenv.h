@@ -76,6 +76,7 @@ struct TkenvOptions : public EnvirOptions
     long updateFreqExpress;   // Express Run updates display every N milliseconds
     bool autoupdateInExpress; // update inspectors at every display refresh in EXPRESS mode or not
     bool stopOnMsgCancel;     // with rununtil_msg: whether to stop when the message gets cancelled
+    int scrollbackLimit;      // global setting for all LogInspectors
 };
 
 /**
@@ -197,6 +198,8 @@ class TKENV_API Tkenv : public EnvirBase
       virtual unsigned getExtraStackForEnvir() const;
 
       virtual void logTclError(const char *file, int line, Tcl_Interp *interp);
+      virtual void logTclError(const char *file, int line, const char *text);
+      virtual void openTkenvlogIfNeeded();
 
   protected:
       // redefined virtual functions from EnvirBase

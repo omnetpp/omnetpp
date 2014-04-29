@@ -31,7 +31,11 @@ int cDefaultMessagePrinter::getScoreFor(cMessage *msg) const
 
 void cDefaultMessagePrinter::printMessage(std::ostream& os, cMessage *msg) const
 {
-    os << "(" << msg->getClassName() << ")" << msg->getFullName() << "  id=" << msg->getId() << "  kind=" << msg->getKind();
+    os << "id=" << msg->getId() << "  kind=" << msg->getKind();
+    if (msg->isPacket()) {
+        cPacket *pk = (cPacket *)msg;
+        os << " length=" << pk->getByteLength() << " bytes";
+    }
 }
 
 

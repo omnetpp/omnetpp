@@ -391,6 +391,7 @@ $O/eventlogfilemgr.o: eventlogfilemgr.cc \
   intervals.h \
   ../../include/cclassdescriptor.h \
   ../../include/cconfigoption.h \
+  eventlogwriter.h \
   ../../include/cchannel.h \
   ../../include/opp_string.h \
   ../../include/simkerneldefs.h \
@@ -400,6 +401,40 @@ $O/eventlogfilemgr.o: eventlogfilemgr.cc \
   ../../include/cstringpool.h \
   ../../include/cdefaultlist.h \
   objectprinter.h \
+  ../../include/cmessageheap.h \
+  ../../include/simutil.h
+$O/eventlogwriter.o: eventlogwriter.cc \
+  ../../include/regmacros.h \
+  ../../include/cexpression.h \
+  ../../include/cnamedobject.h \
+  ../../include/ccomponent.h \
+  ../../include/cregistrationlist.h \
+  ../../include/errmsg.h \
+  ../../include/cownedobject.h \
+  ../../include/onstartup.h \
+  ../../include/clistener.h \
+  ../../include/cpar.h \
+  ../../include/globals.h \
+  ../../include/cvisitor.h \
+  ../../include/cobjectfactory.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/cmodule.h \
+  ../../include/cexception.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  envirdefs.h \
+  ../../include/cgate.h \
+  ../../include/simtime.h \
+  ../../include/cenvir.h \
+  ../../include/simtime_t.h \
+  ../../include/cconfigoption.h \
+  eventlogwriter.h \
+  ../../include/opp_string.h \
+  ../../include/simkerneldefs.h \
+  ../../include/csimulation.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cdefaultlist.h \
   ../../include/cmessageheap.h \
   ../../include/simutil.h
 $O/evmain.o: evmain.cc \

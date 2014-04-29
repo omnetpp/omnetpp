@@ -523,7 +523,7 @@ proc preferencesDialog {parent {defaultpage ""}} {
     $nb.g.f1.updfreq_fast.e insert 0 [opp_getsimoption updatefreq_fast_ms]
     $nb.g.f1.updfreq_express.e insert 0 [opp_getsimoption updatefreq_express_ms]
     $nb.g.f2.numevents.e insert 0 [opp_getsimoption logbuffer_maxnumevents]
-    $nb.g.f2.numlines.e insert 0 $config(logwindow-scrollbacklines)
+    $nb.g.f2.numlines.e insert 0 [opp_getsimoption scrollbacklimit]
     $nb.l.f2.iconminsize.e insert 0 [opp_getsimoption iconminsize]
     $nb.t.f2.filterstext insert 1.0 [opp_getsimoption silent_event_filters]
     set opp(eventbanners) [opp_getsimoption event_banners]
@@ -568,7 +568,7 @@ proc preferencesDialog {parent {defaultpage ""}} {
         set n [$nb.g.f2.numlines.e get]
         if {$n=="" || [string is integer $n]} {
             if {$n!="" && $n<500} {set n 500}
-            set config(logwindow-scrollbacklines) $n
+            opp_setsimoption scrollbacklimit $n
         }
 
         opp_setsimoption event_banners       $opp(eventbanners)

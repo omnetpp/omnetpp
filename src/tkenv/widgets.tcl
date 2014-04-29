@@ -394,6 +394,70 @@ proc bindRec {w event handler} {
 }
 
 #
+# Make a text widget generate a <<CursorMove>> event when the user
+# moves the cursor via keyboard/mouse
+#
+proc addCursorMoveEvent {txt} {
+    # note: "after idle" is mandatory, otherwise listeners will see the OLD cursor position
+    bind $txt <Key> +[list after idle "addCursorMoveEvent:fire $txt"]
+    bind $txt <ButtonRelease-1> +[list after idle "addCursorMoveEvent:fire $txt"]
+}
+
+proc addCursorMoveEvent:fire {w} {
+    if [winfo exists $w] {
+        event generate $w <<CursorMove>>
+    }
+}
+
+#
+# Make a text widget generate a <<CursorRest>> event whenever the cursor
+# is idle for 500ms after being moved by the user (via keyboard/mouse)
+#
+proc addCursorRestEvent {txt} {
+    bind $txt <Key> "+addCursorRestEvent:onChange %W"
+    bind $txt <ButtonRelease-1> "+addCursorRestEvent:onChange %W"
+}
+
+proc addCursorRestEvent:onChange {w} {
+    global opp
+    catch {after cancel $opp(cursorAfterID)}
+    set opp(cursorAfterID) [after 100 "addCursorRestEvent:fire $w"]
+}
+
+proc addCursorRestEvent:fire {w} {
+    if [winfo exists $w] {
+        event generate $w <<CursorRest>>
+    }
+}
+
+proc highlightcurrentline {txt} {
+    bind $txt <Key> +[list after idle "highlightcurrentline:onchange $txt"]
+    bind $txt <Button> +[list after idle "highlightcurrentline:onchange $txt"]
+    bind $txt <<Selection>> +[list $txt tag remove linehighlight 1.0 end]
+}
+
+proc highlightcurrentline:onchange {txt} {
+    $txt tag remove linehighlight 1.0 end
+    if {[$txt tag ranges sel]==""} {
+        $txt tag add linehighlight "insert linestart" "insert +1 line linestart"
+    }
+}
+
+proc makereadonly {txt} {
+    global Control B2
+    bind $txt <$B2> "break" ;# disable paste by middle button
+    bind $txt <Key> "+makereadonly:keypress %W %K" ;# CAUTION! This will mask global hotkeys!
+    bind $txt <$Control-c> "tk_textCopy %W"
+    bind $txt <$Control-Insert> "tk_textCopy %W"
+}
+
+proc makereadonly:keypress {w k} {
+    if {$k ni {Up Down Left Right Home End Prior Next}} {
+        return -code break
+    }
+}
+
+#
 # Creates mouse wheel bindings for the given widget or widget class.
 # Note: wheel events are only delivered to the widget IF IT HAS FOCUS!
 #

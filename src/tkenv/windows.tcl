@@ -98,6 +98,8 @@ proc createFileViewer {filename} {
 
     bindCommandsToTextWidget $w.main.text
 
+    $w.main.text tag configure SELECT -back #808080 -fore #ffffff
+
     # bind a context menu as well
     catch {$w.main.text config -wrap $config(editor-wrap)}
     bind $w.main.text <Button-$B3> [list textwidget:contextMenu %W "" %X %Y]

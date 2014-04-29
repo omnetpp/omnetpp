@@ -125,26 +125,76 @@ $O/arrow.o: arrow.cc \
   ../../include/cownedobject.h \
   tkdefs.h \
   ../../include/cobject.h \
+  ../envir/visitor.h \
   ../../include/platdep/platdefs.h \
+  ../../include/clistener.h \
+  ../envir/envirdefs.h \
   ../../include/cstringpool.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
-  ../../include/cvisitor.h \
   ../../include/simtime_t.h \
+  ../../include/cenvir.h \
+  ../../include/cvisitor.h \
   arrow.h \
   tkutil.h \
+  ../../include/platdep/platmisc.h \
   ../../include/opp_string.h \
+  ../envir/matchableobject.h \
+  ../../include/simutil.h \
+  ../../include/cexception.h \
+  ../../include/cmessageheap.h \
+  ../../include/simkerneldefs.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/errmsg.h \
+  ../../include/csimulation.h
+$O/componenthistory.o: componenthistory.cc \
+  ../../include/regmacros.h \
+  ../../include/ctimestampedvalue.h \
+  componenthistory.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/cexpression.h \
+  ../../include/cnamedobject.h \
+  ../../include/cgate.h \
+  ../../include/simtime.h \
+  ../../include/ccompoundmodule.h \
+  ../../include/carray.h \
+  ../../include/simtime_t.h \
+  ../../include/cenvir.h \
+  ../../include/cmsgpar.h \
+  ../../include/ccomponent.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cchannel.h \
+  ../../include/opp_string.h \
+  ../../include/simkerneldefs.h \
+  ../../include/csimulation.h \
+  ../../include/errmsg.h \
+  ../../include/cmessage.h \
+  ../../include/cownedobject.h \
+  tkdefs.h \
+  ../../include/onstartup.h \
+  ../../include/cobject.h \
+  ../../include/clistener.h \
+  ../../include/cstringpool.h \
+  ../../include/cpar.h \
+  ../../include/globals.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cvisitor.h \
+  ../../include/cnedmathfunction.h \
+  ../../include/csimplemodule.h \
+  ../../include/cobjectfactory.h \
+  ../../include/cmodule.h \
   ../../include/platdep/platmisc.h \
   ../../include/simutil.h \
   ../../include/cexception.h \
-  ../../include/simkerneldefs.h \
+  ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
-  ../../include/errmsg.h
+  ../../include/ccomponenttype.h
 $O/gateinspector.o: gateinspector.cc \
   ../envir/args.h \
   ../../include/regmacros.h \
   tklib.h \
   ../../include/ctimestampedvalue.h \
+  componenthistory.h \
   ../../include/platdep/platdefs.h \
   ../envir/envirdefs.h \
   logbuffer.h \
@@ -153,6 +203,7 @@ $O/gateinspector.o: gateinspector.cc \
   ../envir/eventlogfilemgr.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
+  ../envir/speedometer.h \
   ../../include/carray.h \
   ../envir/objectprinter.h \
   ../../include/cenvir.h \
@@ -167,8 +218,8 @@ $O/gateinspector.o: gateinspector.cc \
   ../envir/intervals.h \
   ../../include/opp_string.h \
   ../../include/simkerneldefs.h \
-  ../../include/csimulation.h \
   ../../include/errmsg.h \
+  ../../include/csimulation.h \
   ../../include/cmessage.h \
   ../../include/cownedobject.h \
   ../../include/cdisplaystring.h \
@@ -176,6 +227,7 @@ $O/gateinspector.o: gateinspector.cc \
   ../../include/cobject.h \
   tkdefs.h \
   ../../include/cresultlistener.h \
+  ../envir/visitor.h \
   ../envir/envirbase.h \
   ../../include/envirext.h \
   ../../include/clistener.h \
@@ -185,11 +237,13 @@ $O/gateinspector.o: gateinspector.cc \
   ../../include/cdefaultlist.h \
   gateinspector.h \
   ../../include/cvisitor.h \
+  circularbuffer.h \
   ../../include/cnedmathfunction.h \
   tkutil.h \
   ../../include/cobjectfactory.h \
   ../../include/cmodule.h \
   ../../include/platdep/platmisc.h \
+  ../envir/matchableobject.h \
   ../../include/cmessageheap.h \
   ../../include/cexception.h \
   ../../include/simutil.h \
@@ -201,6 +255,7 @@ $O/genericobjectinspector.o: genericobjectinspector.cc \
   ../envir/args.h \
   tklib.h \
   ../../include/ctimestampedvalue.h \
+  componenthistory.h \
   ../../include/platdep/platdefs.h \
   ../envir/envirdefs.h \
   ../../include/cqueue.h \
@@ -211,10 +266,11 @@ $O/genericobjectinspector.o: genericobjectinspector.cc \
   ../envir/eventlogfilemgr.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
+  ../envir/speedometer.h \
   ../envir/objectprinter.h \
   ../../include/carray.h \
-  ../../include/simtime_t.h \
   ../../include/cenvir.h \
+  ../../include/simtime_t.h \
   ../../include/ccomponent.h \
   ../../include/cmsgpar.h \
   inspectorfactory.h \
@@ -232,22 +288,25 @@ $O/genericobjectinspector.o: genericobjectinspector.cc \
   tkdefs.h \
   ../../include/cobject.h \
   ../../include/onstartup.h \
+  ../envir/visitor.h \
   ../../include/cresultlistener.h \
   ../envir/envirbase.h \
-  ../../include/envirext.h \
   ../../include/clistener.h \
+  ../../include/envirext.h \
   ../../include/cstringpool.h \
   ../../include/cpar.h \
   ../../include/globals.h \
   ../../include/cdefaultlist.h \
   ../../include/cvisitor.h \
+  circularbuffer.h \
   tkutil.h \
   ../../include/cnedmathfunction.h \
   ../../include/cobjectfactory.h \
   ../../include/cmodule.h \
   ../../include/platdep/platmisc.h \
-  ../../include/cexception.h \
+  ../envir/matchableobject.h \
   ../../include/simutil.h \
+  ../../include/cexception.h \
   ../../include/cmessageheap.h \
   tkenv.h \
   ../../include/platdep/intxtypes.h \
@@ -258,6 +317,7 @@ $O/histograminspector.o: histograminspector.cc \
   tklib.h \
   histograminspector.h \
   ../../include/ctimestampedvalue.h \
+  componenthistory.h \
   ../../include/platdep/platdefs.h \
   ../envir/envirdefs.h \
   logbuffer.h \
@@ -266,10 +326,11 @@ $O/histograminspector.o: histograminspector.cc \
   ../envir/eventlogfilemgr.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
+  ../envir/speedometer.h \
   ../envir/objectprinter.h \
   ../../include/carray.h \
-  ../../include/simtime_t.h \
   ../../include/cenvir.h \
+  ../../include/simtime_t.h \
   ../../include/ccomponent.h \
   ../../include/cmsgpar.h \
   inspectorfactory.h \
@@ -288,24 +349,27 @@ $O/histograminspector.o: histograminspector.cc \
   tkdefs.h \
   ../../include/cobject.h \
   ../../include/onstartup.h \
+  ../envir/visitor.h \
   ../../include/cresultlistener.h \
   ../envir/envirbase.h \
-  ../../include/envirext.h \
   ../../include/clistener.h \
+  ../../include/envirext.h \
   ../../include/cstringpool.h \
   ../../include/cpar.h \
   ../../include/globals.h \
   ../../include/cdefaultlist.h \
   ../../include/cdensityestbase.h \
   ../../include/cvisitor.h \
+  circularbuffer.h \
   tkutil.h \
   ../../include/cnedmathfunction.h \
   ../../include/cobjectfactory.h \
   ../../include/cstddev.h \
   ../../include/cmodule.h \
   ../../include/platdep/platmisc.h \
-  ../../include/cexception.h \
+  ../envir/matchableobject.h \
   ../../include/simutil.h \
+  ../../include/cexception.h \
   ../../include/cmessageheap.h \
   tkenv.h \
   ../../include/platdep/intxtypes.h \
@@ -324,9 +388,11 @@ $O/inspector.o: inspector.cc \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/ccompoundmodule.h \
+  ../envir/speedometer.h \
   ../envir/objectprinter.h \
   ../../include/ccomponent.h \
   ../../include/cmatchexpression.h \
+  inspectorfactory.h \
   ../../include/cproperties.h \
   ../../include/cregistrationlist.h \
   ../../include/cenum.h \
@@ -343,6 +409,7 @@ $O/inspector.o: inspector.cc \
   ../../include/clongparimpl.h \
   ../../include/cstlwatch.h \
   ../../include/onstartup.h \
+  ../envir/visitor.h \
   ../../include/cresultlistener.h \
   ../envir/envirbase.h \
   ../../include/clistener.h \
@@ -355,6 +422,7 @@ $O/inspector.o: inspector.cc \
   ../../include/cfsm.h \
   ../../include/omnetpp.h \
   ../../include/cvisitor.h \
+  circularbuffer.h \
   ../../include/cmersennetwister.h \
   tkutil.h \
   ../../include/cnedmathfunction.h \
@@ -364,6 +432,7 @@ $O/inspector.o: inspector.cc \
   ../../include/clcg32.h \
   ../../include/cmodule.h \
   ../../include/platdep/platmisc.h \
+  ../envir/matchableobject.h \
   ../../include/cexception.h \
   ../../include/cpsquare.h \
   ../../include/ctopology.h \
@@ -373,6 +442,7 @@ $O/inspector.o: inspector.cc \
   tklib.h \
   ../../include/ccoroutine.h \
   ../../include/cdetect.h \
+  componenthistory.h \
   ../../include/platdep/platdefs.h \
   ../../include/cnedvalue.h \
   ../../include/cwatch.h \
@@ -437,6 +507,7 @@ $O/inspectorfactory.o: inspectorfactory.cc \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/ccompoundmodule.h \
+  ../envir/speedometer.h \
   ../envir/objectprinter.h \
   ../../include/ccomponent.h \
   ../../include/cmatchexpression.h \
@@ -457,6 +528,7 @@ $O/inspectorfactory.o: inspectorfactory.cc \
   ../../include/clongparimpl.h \
   ../../include/cstlwatch.h \
   ../../include/onstartup.h \
+  ../envir/visitor.h \
   ../../include/cresultlistener.h \
   ../envir/envirbase.h \
   ../../include/clistener.h \
@@ -469,6 +541,7 @@ $O/inspectorfactory.o: inspectorfactory.cc \
   ../../include/cfsm.h \
   ../../include/omnetpp.h \
   ../../include/cvisitor.h \
+  circularbuffer.h \
   ../../include/cmersennetwister.h \
   tkutil.h \
   ../../include/cnedmathfunction.h \
@@ -478,6 +551,7 @@ $O/inspectorfactory.o: inspectorfactory.cc \
   ../../include/clcg32.h \
   ../../include/cmodule.h \
   ../../include/platdep/platmisc.h \
+  ../envir/matchableobject.h \
   ../../include/cexception.h \
   ../../include/cpsquare.h \
   ../../include/ctopology.h \
@@ -487,6 +561,7 @@ $O/inspectorfactory.o: inspectorfactory.cc \
   tklib.h \
   ../../include/ccoroutine.h \
   ../../include/cdetect.h \
+  componenthistory.h \
   ../../include/platdep/platdefs.h \
   ../../include/cnedvalue.h \
   ../../include/cqueue.h \
@@ -540,6 +615,7 @@ $O/inspectorfactory.o: inspectorfactory.cc \
 $O/layouterenv.o: layouterenv.cc \
   ../../include/regmacros.h \
   layouterenv.h \
+  ../envir/envirdefs.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/ccomponent.h \
@@ -547,6 +623,7 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
+  ../envir/visitor.h \
   ../../include/clistener.h \
   ../../include/cpar.h \
   ../../include/globals.h \
@@ -555,6 +632,7 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/cobjectfactory.h \
   ../../include/platdep/platmisc.h \
   ../../include/cmodule.h \
+  ../envir/matchableobject.h \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   tklib.h \
@@ -571,10 +649,11 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cdefaultlist.h \
-  ../../include/cmessageheap.h \
-  ../../include/simutil.h
+  ../../include/simutil.h \
+  ../../include/cmessageheap.h
 $O/logbuffer.o: logbuffer.cc \
   ../../include/regmacros.h \
+  ../envir/envirdefs.h \
   logbuffer.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -582,23 +661,30 @@ $O/logbuffer.o: logbuffer.cc \
   ../../include/cregistrationlist.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
+  ../../include/cmessage.h \
   ../../include/onstartup.h \
+  ../envir/visitor.h \
   ../../include/clistener.h \
   ../../include/cpar.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
+  circularbuffer.h \
+  ../../include/cnedmathfunction.h \
   tkutil.h \
   ../../include/cobjectfactory.h \
   ../../include/platdep/platmisc.h \
   ../../include/cmodule.h \
+  ../envir/matchableobject.h \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   tklib.h \
   ../../include/platdep/platdefs.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
-  ../../include/cenvir.h \
+  ../../include/carray.h \
   ../../include/simtime_t.h \
+  ../../include/cenvir.h \
+  ../../include/cmsgpar.h \
   ../../include/opp_string.h \
   ../../include/simkerneldefs.h \
   ../../include/csimulation.h \
@@ -616,6 +702,7 @@ $O/loginspector.o: loginspector.cc \
   logbuffer.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
+  ../envir/speedometer.h \
   ../envir/objectprinter.h \
   ../../include/ccomponent.h \
   inspectorfactory.h \
@@ -625,6 +712,7 @@ $O/loginspector.o: loginspector.cc \
   ../../include/cmessage.h \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
+  ../envir/visitor.h \
   ../../include/cresultlistener.h \
   ../envir/envirbase.h \
   ../../include/clistener.h \
@@ -632,22 +720,26 @@ $O/loginspector.o: loginspector.cc \
   ../../include/cpar.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
+  circularbuffer.h \
   ../../include/cnedmathfunction.h \
   tkutil.h \
   ../../include/cobjectfactory.h \
   ../../include/cmodule.h \
   ../../include/platdep/platmisc.h \
+  ../envir/matchableobject.h \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   tklib.h \
+  componenthistory.h \
   ../../include/platdep/platdefs.h \
   ../envir/eventlogfilemgr.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/carray.h \
-  ../../include/simtime_t.h \
+  ../../include/cmessageprinter.h \
   ../../include/cenvir.h \
+  ../../include/simtime_t.h \
   ../../include/cmsgpar.h \
   inspector.h \
   ../../include/cchannel.h \
@@ -672,6 +764,7 @@ $O/moduleinspector.o: moduleinspector.cc \
   logbuffer.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
+  ../envir/speedometer.h \
   ../envir/objectprinter.h \
   ../../include/ccomponent.h \
   arrow.h \
@@ -683,22 +776,26 @@ $O/moduleinspector.o: moduleinspector.cc \
   ../../include/cmessage.h \
   ../../include/onstartup.h \
   ../../include/cresultlistener.h \
+  ../envir/visitor.h \
   ../envir/envirbase.h \
-  ../../include/clistener.h \
   ../../include/envirext.h \
+  ../../include/clistener.h \
   ../../include/cpar.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
+  circularbuffer.h \
   ../../include/cnedmathfunction.h \
   tkutil.h \
   ../../include/csimplemodule.h \
   ../../include/cobjectfactory.h \
   ../../include/cmodule.h \
   ../../include/platdep/platmisc.h \
+  ../envir/matchableobject.h \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   tklib.h \
+  componenthistory.h \
   ../../include/platdep/platdefs.h \
   ../../include/cqueue.h \
   ../envir/eventlogfilemgr.h \
@@ -732,6 +829,7 @@ $O/outputvectorinspector.o: outputvectorinspector.cc \
   logbuffer.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
+  ../envir/speedometer.h \
   ../envir/objectprinter.h \
   ../../include/ccomponent.h \
   inspectorfactory.h \
@@ -741,30 +839,34 @@ $O/outputvectorinspector.o: outputvectorinspector.cc \
   ../../include/cownedobject.h \
   ../../include/cmessage.h \
   ../../include/onstartup.h \
+  ../envir/visitor.h \
   ../../include/cresultlistener.h \
   ../envir/envirbase.h \
-  ../../include/envirext.h \
   ../../include/clistener.h \
+  ../../include/envirext.h \
   ../../include/cpar.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
+  circularbuffer.h \
   tkutil.h \
   ../../include/cnedmathfunction.h \
   ../../include/cobjectfactory.h \
   ../../include/cmodule.h \
   ../../include/platdep/platmisc.h \
+  ../envir/matchableobject.h \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   tklib.h \
+  componenthistory.h \
   ../../include/platdep/platdefs.h \
   ../../include/coutvector.h \
   ../envir/eventlogfilemgr.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
   ../../include/carray.h \
-  ../../include/simtime_t.h \
   ../../include/cenvir.h \
+  ../../include/simtime_t.h \
   ../../include/cmsgpar.h \
   inspector.h \
   ../../include/cchannel.h \
@@ -789,6 +891,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/ccompoundmodule.h \
+  ../envir/speedometer.h \
   ../envir/objectprinter.h \
   ../../include/ccomponent.h \
   inspectorfactory.h \
@@ -808,6 +911,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/cpar.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
+  circularbuffer.h \
   ../../include/cnedmathfunction.h \
   tkutil.h \
   ../../include/csimplemodule.h \
@@ -819,6 +923,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   tklib.h \
+  componenthistory.h \
   ../../include/platdep/platdefs.h \
   ../../include/coutvector.h \
   ../../include/cqueue.h \
@@ -866,6 +971,7 @@ $O/tkenv.o: tkenv.cc \
   ../../include/cownedobject.h \
   ../../include/cmessage.h \
   ../../include/onstartup.h \
+  ../envir/visitor.h \
   ../../include/cresultlistener.h \
   ../envir/envirbase.h \
   ../../include/envirext.h \
@@ -876,6 +982,7 @@ $O/tkenv.o: tkenv.cc \
   ../envir/appreg.h \
   gateinspector.h \
   ../../include/cvisitor.h \
+  circularbuffer.h \
   tkutil.h \
   ../../include/cnedmathfunction.h \
   ../../include/csimplemodule.h \
@@ -888,12 +995,14 @@ $O/tkenv.o: tkenv.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   tklib.h \
+  componenthistory.h \
   ../../include/platdep/platdefs.h \
   genericobjectinspector.h \
   ../envir/eventlogfilemgr.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/carray.h \
+  ../../include/cmessageprinter.h \
   ../../include/cenvir.h \
   ../../include/simtime_t.h \
   ../../include/cmsgpar.h \
@@ -909,7 +1018,6 @@ $O/tkenv.o: tkenv.cc \
   tkdefs.h \
   ../../include/cstringpool.h \
   ../../include/cdefaultlist.h \
-  ../common/ver.h \
   ../../include/cmessageheap.h \
   ../../include/simutil.h \
   tkenv.h \
@@ -923,58 +1031,7 @@ $O/tklib.o: tklib.cc \
   logbuffer.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
-  ../envir/objectprinter.h \
-  ../../include/ccomponent.h \
-  ../../include/cregistrationlist.h \
-  ../../include/cconfiguration.h \
-  ../../include/errmsg.h \
-  ../../include/cmessage.h \
-  ../../include/cownedobject.h \
-  ../../include/onstartup.h \
-  ../../include/cresultlistener.h \
-  ../envir/envirbase.h \
-  ../../include/envirext.h \
-  ../../include/clistener.h \
-  ../../include/cpar.h \
-  ../../include/globals.h \
-  ../../include/cvisitor.h \
-  ../../include/cnedmathfunction.h \
-  tkutil.h \
-  ../../include/cobjectfactory.h \
-  ../../include/cmodule.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/cexception.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/ccomponenttype.h \
-  tklib.h \
-  ../../include/platdep/platdefs.h \
-  ../envir/eventlogfilemgr.h \
-  ../../include/cgate.h \
-  ../../include/simtime.h \
-  ../../include/carray.h \
-  ../../include/cenvir.h \
-  ../../include/simtime_t.h \
-  ../../include/cmsgpar.h \
-  ../../include/cchannel.h \
-  ../envir/intervals.h \
-  ../../include/opp_string.h \
-  ../../include/simkerneldefs.h \
-  ../../include/csimulation.h \
-  tkdefs.h \
-  ../../include/cobject.h \
-  ../../include/cstringpool.h \
-  ../../include/cdefaultlist.h \
-  ../../include/cmessageheap.h \
-  ../../include/simutil.h \
-  tkenv.h
-$O/tkutil.o: tkutil.cc \
-  ../envir/args.h \
-  ../../include/regmacros.h \
-  ../../include/ctimestampedvalue.h \
-  ../envir/envirdefs.h \
-  logbuffer.h \
-  ../../include/cexpression.h \
-  ../../include/cnamedobject.h \
+  ../envir/speedometer.h \
   ../envir/objectprinter.h \
   ../../include/ccomponent.h \
   ../../include/cregistrationlist.h \
@@ -991,15 +1048,18 @@ $O/tkutil.o: tkutil.cc \
   ../../include/cpar.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
+  circularbuffer.h \
   ../../include/cnedmathfunction.h \
   tkutil.h \
   ../../include/cobjectfactory.h \
-  ../../include/platdep/platmisc.h \
   ../../include/cmodule.h \
+  ../../include/platdep/platmisc.h \
   ../envir/matchableobject.h \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
+  tklib.h \
+  componenthistory.h \
   ../../include/platdep/platdefs.h \
   ../envir/eventlogfilemgr.h \
   ../../include/cgate.h \
@@ -1017,10 +1077,72 @@ $O/tkutil.o: tkutil.cc \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cdefaultlist.h \
-  ../common/ver.h \
-  ../../include/cmessageheap.h \
   ../../include/simutil.h \
+  ../../include/cmessageheap.h \
   tkenv.h
+$O/tkutil.o: tkutil.cc \
+  ../envir/args.h \
+  ../../include/regmacros.h \
+  ../../include/ctimestampedvalue.h \
+  ../envir/envirdefs.h \
+  logbuffer.h \
+  ../../include/cexpression.h \
+  ../../include/cnamedobject.h \
+  ../../include/ccompoundmodule.h \
+  ../envir/speedometer.h \
+  ../envir/objectprinter.h \
+  ../../include/ccomponent.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cconfiguration.h \
+  ../../include/errmsg.h \
+  ../../include/cmessage.h \
+  ../../include/cownedobject.h \
+  ../../include/onstartup.h \
+  ../../include/cresultlistener.h \
+  ../envir/visitor.h \
+  ../envir/envirbase.h \
+  ../../include/envirext.h \
+  ../../include/clistener.h \
+  ../../include/cpar.h \
+  ../../include/globals.h \
+  ../../include/cvisitor.h \
+  circularbuffer.h \
+  ../../include/cnedmathfunction.h \
+  tkutil.h \
+  ../../include/csimplemodule.h \
+  ../../include/cobjectfactory.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/cmodule.h \
+  ../envir/matchableobject.h \
+  ../../include/cexception.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/ccomponenttype.h \
+  componenthistory.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/cwatch.h \
+  ../../include/cqueue.h \
+  ../../include/coutvector.h \
+  ../envir/eventlogfilemgr.h \
+  ../../include/simtime.h \
+  ../../include/cgate.h \
+  ../../include/carray.h \
+  ../../include/cenvir.h \
+  ../../include/simtime_t.h \
+  ../../include/cmsgpar.h \
+  ../../include/cstatistic.h \
+  ../../include/cchannel.h \
+  ../envir/intervals.h \
+  ../../include/opp_string.h \
+  ../../include/simkerneldefs.h \
+  ../../include/csimulation.h \
+  tkdefs.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cdefaultlist.h \
+  ../common/ver.h \
+  ../../include/simutil.h \
+  tkenv.h \
+  ../../include/cmessageheap.h
 $O/watchinspector.o: watchinspector.cc \
   ../../include/regmacros.h \
   ../envir/args.h \
@@ -1029,6 +1151,7 @@ $O/watchinspector.o: watchinspector.cc \
   logbuffer.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
+  ../envir/speedometer.h \
   ../envir/objectprinter.h \
   ../../include/ccomponent.h \
   inspectorfactory.h \
@@ -1039,31 +1162,35 @@ $O/watchinspector.o: watchinspector.cc \
   ../../include/cmessage.h \
   ../../include/onstartup.h \
   ../../include/cstlwatch.h \
+  ../envir/visitor.h \
   ../../include/cresultlistener.h \
   ../envir/envirbase.h \
-  ../../include/envirext.h \
   ../../include/clistener.h \
+  ../../include/envirext.h \
   ../../include/cpar.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
+  circularbuffer.h \
   tkutil.h \
   ../../include/cnedmathfunction.h \
   ../../include/cobjectfactory.h \
   ../../include/cmodule.h \
   ../../include/platdep/platmisc.h \
+  ../envir/matchableobject.h \
   watchinspector.h \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   tklib.h \
+  componenthistory.h \
   ../../include/platdep/platdefs.h \
   ../../include/cwatch.h \
   ../envir/eventlogfilemgr.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
   ../../include/carray.h \
-  ../../include/simtime_t.h \
   ../../include/cenvir.h \
+  ../../include/simtime_t.h \
   ../../include/cmsgpar.h \
   inspector.h \
   ../../include/cchannel.h \

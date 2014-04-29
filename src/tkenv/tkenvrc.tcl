@@ -49,6 +49,7 @@ proc saveTkenvrc {fname isglobal atexit {comment ""}} {
                 animation_speed
                 expressmode_autoupdate
                 stoponmsgcancel
+                scrollbacklimit
                 logbuffer_maxnumevents
             } {
                 set value [opp_getsimoption $key]
