@@ -184,8 +184,8 @@ proc LogInspector:clear {insp} {
 
     set txt $insp.main.text
     $txt tag delete {*}[$txt tag names]
-    $txt delete 0.1 end
     $txt mark unset {*}[$txt mark names]
+    $txt delete 0.1 end
     LogInspector:configureTags $insp
 }
 
@@ -201,17 +201,27 @@ proc LogInspector:openFilterDialog {insp} {
 
 proc LogInspector:trimlines {insp} {
     global config
-    set t $insp.main.text
+    set txt $insp.main.text
     set numlines [opp_getsimoption scrollbacklimit]
 
     if {$numlines==""} {return}
-    set endline [$t index {end linestart}]
-    if {$endline > $numlines + 100} {  ;# for performance, we want to delete in at least 100-line chunks
+    set endline [$txt index {end linestart}]
+    if {$endline > $numlines + 1000} {  ;# for performance, we want to delete in at least 1000-line chunks
         set linestodelete [expr int($endline-$numlines)]
-        $t delete 1.0 $linestodelete.0
-        $t insert 1.0 "\[Lines have been discarded from here due to the scrollback limit, see Preferences\]\n" warning
+        # we need to remove tags and marks from the range to be deleted,
+        # otherwise "$txt delete" takes ages (really!)
+        foreach tag [$txt tag names] {
+            $txt tag remove $tag 1.0 $linestodelete.0
+        }
+        set mark [$txt mark previous $linestodelete.0]
+        while {$mark!=""} {
+            set prev [$txt mark previous $mark]
+            $txt mark unset $mark
+            set mark $prev
+        }
+        $txt delete 1.0 $linestodelete.0
+        $txt insert 1.0 "\[Lines have been discarded from here due to the scrollback limit, see Preferences\]\n" warning
     }
-
 }
 
 proc LogInspector:dump {insp label} {
