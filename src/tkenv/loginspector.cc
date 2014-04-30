@@ -128,9 +128,9 @@ void LogInspector::textWidgetCommand(const char *arg1, const char *arg2, const c
     const char *argv[] = {textWidget, arg1, arg2, arg3, arg4, arg5, arg6};
     int argc = !arg1 ? 1 : !arg2 ? 2 : !arg3 ? 3 : !arg4 ? 4 : !arg5 ? 5 : 6;
 
-    int (*cmdProc)(ClientData clientData, Tcl_Interp *interp, int argc, const char *argv[]);
-    cmdProc = textWidgetCmdInfo.proc;  // Tcl versions differ in the type of the last arg: char *argv[] vs const char *argv[] -- the purpose of this temp var is to make the code compile with both variants
-    int ret = ((*cmdProc)(textWidgetCmdInfo.clientData, interp, argc, argv));
+    typedef int (*TclCmdProc)(ClientData clientData, Tcl_Interp *interp, int argc, const char *argv[]);
+    TclCmdProc cmdProc = (TclCmdProc)textWidgetCmdInfo.proc;  // Tcl versions differ in the type of the last arg: char *argv[] vs const char *argv[] -- the purpose of this temp var is to make the code compile with both variants
+    int ret = cmdProc(textWidgetCmdInfo.clientData, interp, argc, argv);
     if (ret == TCL_ERROR)
         getTkenv()->logTclError(__FILE__, __LINE__, Tcl_GetStringResult(interp));
 }
@@ -448,7 +448,7 @@ void LogInspector::printMessage(const LogBuffer::Entry *entry, int msgIndex, int
     char buf[128];
 
     // add event number
-    sprintf(buf, "%" LL "d\t", entry->eventNumber);
+    sprintf(buf, "#%" LL "d\t", entry->eventNumber);
     textWidgetInsert(buf, repeatedEvent ? "repeatedeventnumcol" : "eventnumcol");
 
     // Add msghop bookmark at the START of the line. IMPORTANT:

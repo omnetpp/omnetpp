@@ -706,7 +706,6 @@ void Tkenv::newNetwork(const char *networkname)
         getConfigEx()->activateConfig("General", 0);
         readPerRunOptions();
         opt->networkName = network->getName();  // override config setting
-        answers.clear();
         setupNetwork(network);
         startRun();
 
@@ -752,11 +751,7 @@ void Tkenv::newRun(const char *configname, int runnumber)
         cModuleType *network = resolveNetwork(opt->networkName.c_str());
         ASSERT(network);
 
-        answers.clear();
         setupNetwork(network);
-        mainNetworkView->doSetObject(simulation.getSystemModule()); //FIXME factor out to setupNetwork()!
-        mainLogView->doSetObject(simulation.getSystemModule()); //FIXME factor out to setupNetwork()!
-        mainInspector->doSetObject(simulation.getSystemModule()); //FIXME just temporary, should come from tree/canvas selection
         startRun();
 
         simstate = SIM_NEW;
@@ -772,6 +767,18 @@ void Tkenv::newRun(const char *configname, int runnumber)
     updateNetworkRunDisplay();
     updateStatusDisplay();
     updateInspectors();
+}
+
+void Tkenv::setupNetwork(cModuleType *network)
+{
+    answers.clear();
+    logBuffer.clear();
+
+    EnvirBase::setupNetwork(network);
+
+    mainNetworkView->doSetObject(simulation.getSystemModule());
+    mainLogView->doSetObject(simulation.getSystemModule());
+    mainInspector->doSetObject(simulation.getSystemModule());
 }
 
 Inspector *Tkenv::inspect(cObject *obj, int type, bool ignoreEmbedded, const char *geometry)
@@ -1238,31 +1245,41 @@ void Tkenv::messageCancelled(cMessage *msg)
 void Tkenv::beginSend(cMessage *msg)
 {
     EnvirBase::beginSend(msg);
-    logBuffer.beginSend(msg);
+
+    if (!disable_tracing)
+        logBuffer.beginSend(msg);
 }
 
 void Tkenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     EnvirBase::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
-    logBuffer.messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
+
+    if (!disable_tracing)
+        logBuffer.messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
 }
 
 void Tkenv::messageSendHop(cMessage *msg, cGate *srcGate)
 {
     EnvirBase::messageSendHop(msg, srcGate);
-    logBuffer.messageSendHop(msg, srcGate);
+
+    if (!disable_tracing)
+        logBuffer.messageSendHop(msg, srcGate);
 }
 
 void Tkenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     EnvirBase::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
-    logBuffer.messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
+
+    if (!disable_tracing)
+        logBuffer.messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
 }
 
 void Tkenv::endSend(cMessage *msg)
 {
     EnvirBase::endSend(msg);
-    logBuffer.endSend(msg);
+
+    if (!disable_tracing)
+        logBuffer.endSend(msg);
 }
 
 void Tkenv::messageDeleted(cMessage *msg)

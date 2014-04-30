@@ -209,6 +209,7 @@ class TKENV_API Tkenv : public EnvirBase
       virtual EnvirOptions *createOptions() {return new TkenvOptions();}
       virtual void readOptions();
       virtual void readPerRunOptions();
+      virtual void setupNetwork(cModuleType *network);
       virtual void askParameter(cPar *par, bool unassigned);
       virtual void displayException(std::exception& e);
       virtual std::string getWindowTitle();
