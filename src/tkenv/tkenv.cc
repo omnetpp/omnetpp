@@ -580,7 +580,10 @@ bool Tkenv::doRunSimulationExpress()
     // EXPRESS does not support rununtil_module!
     //
 
-    logBuffer.addInfo("...running in Express mode...\n");
+    char info[128];
+    sprintf(info, "** Running in Express mode from event #%" LL "d  t=%s ...\n",
+            simulation.getEventNumber(), SIMTIME_STR(simulation.getSimTime()));
+    logBuffer.addInfo(info);
 
     // update, just to get the above notice displayed
     Tcl_Eval(interp, "update");
@@ -593,6 +596,7 @@ bool Tkenv::doRunSimulationExpress()
     struct timeval last_update;
     gettimeofday(&last_update, NULL);
 
+    bool result = false;
     do
     {
         cSimpleModule *mod = simulation.selectNextModule();
@@ -614,8 +618,10 @@ bool Tkenv::doRunSimulationExpress()
                 speedometer.beginNewInterval();
             Tcl_Eval(interp, "update");
             resetElapsedTime(last_update); // exclude UI update time [bug #52]
-            if (runmode!=RUNMODE_EXPRESS)
-                return true;  // should continue, but in a different mode
+            if (runmode!=RUNMODE_EXPRESS) {
+                result = true;  // should continue, but in a different mode
+                break;
+            }
         }
         checkTimeLimits();
     }
@@ -623,7 +629,12 @@ bool Tkenv::doRunSimulationExpress()
            (rununtil_time<=0 || simulation.guessNextSimtime() < rununtil_time) &&
            (rununtil_eventnum<=0 || simulation.getEventNumber() < rununtil_eventnum)
          );
-    return false;
+
+    sprintf(info, "** Leaving Express mode at event #%" LL "d  t=%s\n",
+            simulation.getEventNumber(), SIMTIME_STR(simulation.getSimTime()));
+    logBuffer.addInfo(info);
+
+    return result;
 }
 
 void Tkenv::startAll()
@@ -959,14 +970,14 @@ void Tkenv::printEventBanner(cMessage *msg, cSimpleModule *module)
     // produce banner text
     char banner[2*MAX_OBJECTFULLPATH+2*MAX_CLASSNAME+60];
     if (opt->shortBanners)
-        sprintf(banner,"** Event #%" LL "d  T=%s  %s, on `%s'\n",
+        sprintf(banner,"** Event #%" LL "d  t=%s  %s, on `%s'\n",
                 simulation.getEventNumber(),
                 SIMTIME_STR(simulation.getSimTime()),
                 module->getFullPath().c_str(),
                 TclQuotedString(msg->getFullName()).get()
               );
     else
-        sprintf(banner,"** Event #%" LL "d  T=%s  %s (%s, id=%d), on %s`%s' (%s, id=%ld)\n",
+        sprintf(banner,"** Event #%" LL "d  t=%s  %s (%s, id=%d), on %s`%s' (%s, id=%ld)\n",
                 simulation.getEventNumber(),
                 SIMTIME_STR(simulation.getSimTime()),
                 module->getFullPath().c_str(),
