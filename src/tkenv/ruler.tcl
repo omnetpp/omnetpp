@@ -72,7 +72,7 @@ proc ruler:getColumnTitles {c} {
     return $ruler($c:titles)
 }
 
-proc ruler:xscroll {c txt first last} {
+proc ruler:xscroll {c txt} {
     global ruler
     set ruler($c:xoffset) [lindex [$txt dlineinfo @0,0] 0]
     ruler:refresh $c

@@ -409,6 +409,38 @@ proc addCursorMoveEvent:fire {w} {
     }
 }
 
+proc addScrollbars {w {ingrid ""}} {
+    set f [winfo parent $w]
+    if {$ingrid!=""} {
+        if {[llength [winfo children $ingrid]] > 0} {error "target frame $ingrid should be empty"}
+    } else {
+        set ingrid $f
+        if {[llength [winfo children $f]] > 1} {error "$w should be the only child within its parent, see [winfo children $f]"}
+    }
+
+    ttk::scrollbar $f.vsb -command "$w yview"
+    ttk::scrollbar $f.hsb -orient horiz -command "$w xview"
+    $w configure -xscrollcommand "$f.hsb set" -yscrollcommand "$f.vsb set"
+
+    grid $w     -in $ingrid -row 0 -column 0 -sticky nsew
+    grid $f.vsb -in $ingrid -row 0 -column 1 -sticky ns
+    grid $f.hsb -in $ingrid -row 1 -column 0 -sticky ew
+
+    grid columnconfigure $ingrid 0 -weight 1
+    grid rowconfigure $ingrid 0 -weight 1
+
+    ::autoscroll::autoscroll $f.vsb
+    ::autoscroll::autoscroll $f.hsb
+}
+
+proc configureScrollbars {w vsb hsb} {
+    $vsb configure -command "$w yview"
+    $hsb configure -command "$w xview"
+    $w configure -xscrollcommand "$hsb set" -yscrollcommand "$vsb set"
+    ::autoscroll::autoscroll $vsb
+    ::autoscroll::autoscroll $hsb
+}
+
 #
 # Make a text widget generate a <<CursorRest>> event whenever the cursor
 # is idle for 500ms after being moved by the user (via keyboard/mouse)

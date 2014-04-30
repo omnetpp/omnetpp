@@ -61,13 +61,15 @@ proc createLogViewer {insp f} {
     createRuler $f.ruler
     pack $f.ruler -fill x
 
-    text $f.text -yscrollcommand "$f.sb set" -xscrollcommand "ruler:xscroll $f.ruler $f.text" -width 80 -height 15 -font LogFont -cursor arrow
-    ttk::scrollbar $f.sb -command "$f.text yview"
+    # create text widget
+    ttk::frame $f.grid
+    pack $f.grid -expand yes -fill both -padx 1 -pady 1
+    text $f.text -width 80 -height 15 -font LogFont -cursor arrow
+    addScrollbars $f.text $f.grid
+    $f.text config -xscrollcommand "ruler:xscroll $f.ruler $f.text; [$f.text cget -xscrollcommand]"
+
     LogInspector:configureTags $insp
     LogInspector:updateTabStops $insp
-
-    pack $f.sb -anchor center -expand 0 -fill y -side right
-    pack $f.text -anchor center -expand 1 -fill both -side left
 
     # bindings for the ruler
     bind $f.ruler <<Changed>> "LogInspector:updateTabStops $insp"

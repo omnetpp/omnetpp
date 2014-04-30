@@ -896,14 +896,9 @@ proc moduleOutputFilterDialog {rootmodule excludedModuleIds} {
     pack $w.f.m -fill x -padx 10 -pady 5 -side top
     pack $w.f.f -expand 1 -fill both -padx 10 -pady 5 -side top
 
-    canvas $w.f.f.c -width 300 -height 350 -bd 0 -relief flat -yscrollcommand "$w.f.f.vsb set"
-    #   -xscrollcommand "$w.f.f.hsb set"
-    #ttk::scrollbar $w.f.f.hsb -command "$w.f.f.c xview" -orient horiz
-    ttk::scrollbar $w.f.f.vsb -command "$w.f.f.c yview"
-    grid $w.f.f.c   $w.f.f.vsb  -sticky news
-    #grid $w.f.f.hsb x           -sticky news
-    grid rowconfig $w.f.f 0 -weight 1
-    grid columnconfig $w.f.f 0 -weight 1
+    # don't use sunken border due to rendering bug (checkboxes may erase part of the tree's border)
+    canvas $w.f.f.c -width 300 -height 350 -bd 0 -bg white
+    addScrollbars $w.f.f.c
 
     set tree $w.f.f.c
     set tmp(moduletreeroot) $rootmodule

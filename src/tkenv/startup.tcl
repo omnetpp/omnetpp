@@ -109,6 +109,8 @@ proc setupTkOptions {} {
    global tcl_wordchars tcl_nonwordchars
    global B2 B3 BBack BFwd CTRL CTRL_ Control
 
+   package require autoscroll
+
    # set theme
    if {[string equal [tk windowingsystem] x11]}  {
        package require ttk::theme::clearlooks
