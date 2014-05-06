@@ -32,7 +32,6 @@ class evbuf : public std::basic_stringbuf<char>
 {
   public:
     evbuf() {}
-    // gcc>=3.4 needs either this-> or std::basic_stringbuf<E,T>:: in front of pptr()/pbase()
     // note: this method is needed because pptr() and pbase() are protected
     bool isempty() {return this->pptr()==this->pbase();}
   protected:
@@ -41,12 +40,23 @@ class evbuf : public std::basic_stringbuf<char>
         setp(this->pbase(),this->epptr());
         return 0;
     }
-    virtual std::streamsize xsputn(const char *s, std::streamsize n) {
-        std::streamsize r = std::basic_stringbuf<char>::xsputn(s,n);
-        for(;n>0;n--,s++)
-            if (*s=='\n')
-               {sync();break;}
-        return r;
+    virtual std::streamsize xsputn(const char *str, std::streamsize n) {
+        const char *end = str + n;
+        std::streamsize res = 0;
+        for (const char *li = str; li < end; /**/) {
+            const char *s = li;
+            while (s < end && *s != '\n') // find end of line
+                s++;
+            if (*s != '\n')
+                res += std::basic_stringbuf<char>::xsputn(li, s-li);
+            else {
+                s++;
+                res += std::basic_stringbuf<char>::xsputn(li, s-li);
+                sync();
+            }
+            li = s;
+        }
+        return res;
     }
 };
 
