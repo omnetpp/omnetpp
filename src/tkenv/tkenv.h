@@ -28,6 +28,7 @@
 #include "cchannel.h"
 #include "cmodule.h"
 #include "speedometer.h"
+#include "componenthistory.h"
 
 NAMESPACE_BEGIN
 
@@ -77,6 +78,7 @@ struct TkenvOptions : public EnvirOptions
     bool stopOnMsgCancel;     // with rununtil_msg: whether to stop when the message gets cancelled
     opp_string logFormat;     // format of the log prefix, see the LogFormatter class
     LogLevel logLevel;        // global log level
+    int scrollbackLimit;      // global setting for all LogInspectors
 };
 
 /**
@@ -143,7 +145,7 @@ class TKENV_API Tkenv : public EnvirBase
       InspectorList inspectors;    // list of inspector objects
 
       LogBuffer logBuffer;         // text window contents
-      std::set<int> mainWindowExcludedModuleIds;
+      ComponentHistory componentHistory; // id-to-fullpath mapping for deleted modules  FIXME TODO clear this between runs!!!
 
       GenericObjectInspector *mainInspector;
       ModuleInspector *mainNetworkView;
@@ -197,6 +199,8 @@ class TKENV_API Tkenv : public EnvirBase
       virtual unsigned getExtraStackForEnvir() const;
 
       virtual void logTclError(const char *file, int line, Tcl_Interp *interp);
+      virtual void logTclError(const char *file, int line, const char *text);
+      virtual void openTkenvlogIfNeeded();
 
   protected:
       // redefined virtual functions from EnvirBase
@@ -206,8 +210,8 @@ class TKENV_API Tkenv : public EnvirBase
       virtual EnvirOptions *createOptions() {return new TkenvOptions();}
       virtual void readOptions();
       virtual void readPerRunOptions();
+      virtual void setupNetwork(cModuleType *network);
       virtual void askParameter(cPar *par, bool unassigned);
-      virtual void printLastLogLine();
       virtual void displayException(std::exception& e);
       virtual std::string getWindowTitle();
 
@@ -246,9 +250,8 @@ class TKENV_API Tkenv : public EnvirBase
       bool getStopSimulationFlag() {return stopsimulation_flag;}
       Speedometer& getSpeedometer() {return speedometer;}
       Tcl_Interp *getInterp() {return interp;}
-      const LogBuffer& getLogBuffer() const {return logBuffer;}
-      const std::set<int>& getMainWindowExcludedModuleIds() const {return mainWindowExcludedModuleIds;}
-      void setMainWindowExcludedModuleIds(const std::set<int>& ids);
+      LogBuffer *getLogBuffer() {return &logBuffer;}
+      ComponentHistory *getComponentHistory() {return &componentHistory;}
       const char *getSilentEventFilters() const {return silentEventFilterLines.c_str();}
       void setSilentEventFilters(const char *filterLines);
       bool isSilentEvent(cMessage *msg);

@@ -278,6 +278,8 @@ SYSTEMC=${SYSTEMC:-no}
 CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g -Wall}
 CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O2 -DNDEBUG=1}
 CXXFLAGS=${CXXFLAGS:-}
+PREFER_CLANG=${PREFER_CLANG:-}
+USE_CPP11=${USE_CPP11:-}
 
 WHOLE_ARCHIVE_ON=
 WHOLE_ARCHIVE_OFF=
@@ -299,8 +301,13 @@ if test "$TOOLCHAIN" = "mingw"; then
     cxx_candidates="i586-mingw32msvc-g++"
 else
     # icc, icpc: Intel compiler (further ones: Sun Studio: cxx, IBM: xlC)
-    cc_candidates="icc gcc cc xlc"
-    cxx_candidates="icpc g++ c++ cxx xlC"
+    cc_candidates="icc gcc clang cc xlc"
+    cxx_candidates="icpc g++ clang++ c++ cxx xlC"
+    if test "$PREFER_CLANG" = "yes"; then
+      # if we prefer clang over gcc put it at the beginning so it will be detected first
+      cc_candidates="clang $cc_candidates"
+      cxx_candidates="clang++ $cxx_candidates"
+    fi
 fi
 
 # the below macros should be present only ONCE in the whole file (otherwise bad things will happen)
@@ -373,7 +380,9 @@ fi
 #----------------------
 # check whether the compiler supports the C++11 standard - turned off for now, but should be enabled for OMNeT++ 5.0
 #----------------------
-#AC_PROG_CXX_OPTION(-std=c++11, CXXFLAGS="$CXXFLAGS -std=c++11")
+if test "$USE_CPP11" = "yes"; then
+  AC_PROG_CXX_OPTION(-std=c++11, CXXFLAGS="$CXXFLAGS -std=c++11")
+fi
 
 #----------------------
 # check and disable stack checking to avoid opplibs.so dependence on glibc 2.4
@@ -743,17 +752,13 @@ if test -n "$NO_TCL"; then
     # and build samples using Cmdenv (TBD)
     ALL_ENV_LIBS='$(CMDENV_LIBS)'
 
-else  #matching "fi" is after BLT testing
+else
 
-   if test -d /usr/include/tcl8.4; then
-        # this was reported to be the case on Debian 3.1 "sarge"
-        TK_CFLAGS84=${TK_CFLAGS:-"-I/usr/include/tcl8.4"}
+   if test -d /usr/include/tcl8.6; then
+        TK_CFLAGS86=${TK_CFLAGS:-"-I/usr/include/tcl8.6"}
    fi
    if test -d /usr/include/tcl8.5; then
         TK_CFLAGS85=${TK_CFLAGS:-"-I/usr/include/tcl8.5"}
-   fi
-   if test -d /usr/include/tcl8.6; then
-        TK_CFLAGS86=${TK_CFLAGS:-"-I/usr/include/tcl8.6"}
    fi
 
    if test -n "$TK_LIBS"; then
@@ -765,10 +770,6 @@ else  #matching "fi" is after BLT testing
         if test $tcltk_ok = no; then
            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $TK_CFLAGS85, -ltk8.5 -ltcl8.5,
                           tcltk_ok, TK_LIBS="-ltk8.5 -ltcl8.5" TK_CFLAGS=$TK_CFLAGS85)
-        fi
-        if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $TK_CFLAGS84, -ltk8.4 -ltcl8.4,
-                          tcltk_ok, TK_LIBS="-ltk8.4 -ltcl8.4" TK_CFLAGS=$TK_CFLAGS84)
         fi
         # look for X window libs and headers
         if test $tcltk_ok = no; then
@@ -811,19 +812,6 @@ else  #matching "fi" is after BLT testing
             OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85, $opp_x11lib -lcygtk85 -lcygtcl85,
                           tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk85 -lcygtcl85" TK_CFLAGS="$opp_x11inc $TK_CFLAGS85")
         fi
-        # check for 8.4
-        if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS84, $opp_x11lib -ltk84 -ltcl84,
-                          tcltk_ok, TK_LIBS="$opp_x11lib -ltk84 -ltcl84" TK_CFLAGS="$opp_x11inc $TK_CFLAGS84")
-        fi
-        if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS84, $opp_x11lib -ltk8.4 -ltcl8.4,
-                          tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.4 -ltcl8.4" TK_CFLAGS="$opp_x11inc $TK_CFLAGS84")
-        fi
-        if test $tcltk_ok = no -a "$cygwin" = yes; then
-            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS84, $opp_x11lib -lcygtk84 -lcygtcl84,
-                          tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84" TK_CFLAGS="$opp_x11inc $TK_CFLAGS84")
-        fi
     fi
 
     if test $tcltk_ok = no; then
@@ -840,7 +828,7 @@ else  #matching "fi" is after BLT testing
     fi
 
     # Check for wish.
-    AC_CHECK_PROGS(WISH, $WISH wish wish86 wish8.6 wish85 wish8.5 wish84 wish8.4 cygwish cygwish86 cygwish85 cygwish84, nope)
+    AC_CHECK_PROGS(WISH, $WISH wish wish86 wish8.6 wish85 wish8.5 cygwish cygwish86 cygwish85, nope)
     if test "$WISH" = nope; then
        AC_MSG_ERROR([Cannot find wish, part of Tcl/Tk -- maybe it is not in the PATH or has some exotic name (tested names were: wish wish86 wish8.6 wish85 wish8.5 wish84 wish8.4 cygwish cygwish86 cygwish85 cygwish84)])
     fi
@@ -853,21 +841,6 @@ else  #matching "fi" is after BLT testing
 
     # note: square brackets necessary otherwise M4 messes up the Tcl command
     [tcl_library=`echo 'puts [info library]; exit' | $WISH`]
-
-
-    #----------------------
-    # Check for BLT. NOTE: since plove and scalars are out, blt-devel is no longer needed
-    #----------------------
-    if echo 'catch {package require BLT 2.4; puts OK}; exit' | $WISH | grep OK >/dev/null; then
-        HAVE_BLT=yes
-    else
-        HAVE_BLT=no
-        # Native Tcl/Tk (aqua) on Mac OS does not support BLT so we do not annoy the users
-        if test "$PLATFORM" != "macosx"; then
-            OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT (optional)"
-            AC_MSG_WARN([Tcl cannot load BLT (wish command "package require BLT 2.4" failed), BLT not installed?])
-        fi
-    fi
 
     # if we got through until here, enable building of the following progs:
     TKENV_IF_POSSIBLE=tkenv
@@ -1204,8 +1177,6 @@ AC_SUBST(NO_TCL)
 AC_SUBST(HAVE_DLOPEN)
 AC_SUBST(TK_CFLAGS)
 AC_SUBST(TK_LIBS)
-AC_SUBST(HAVE_BLT)
-AC_SUBST(BLT_LIBS)
 AC_SUBST(ZLIB_CFLAGS)
 AC_SUBST(ZLIB_LIBS)
 AC_SUBST(HAVE_MPI)

@@ -23,10 +23,21 @@
 #include <set>
 #include "simtime_t.h"
 #include "tkutil.h"
+#include "circularbuffer.h"
 
 NAMESPACE_BEGIN
 
 class cModule;
+class LogBuffer;
+
+class ILogBufferListener
+{
+  public:
+    virtual ~ILogBufferListener() {}
+    virtual void logEntryAdded() = 0;
+    virtual void logLineAdded() = 0;
+    virtual void messageSendAdded() = 0;
+};
 
 /**
  * Stores textual debug output from modules.
@@ -35,47 +46,69 @@ class TKENV_API LogBuffer
 {
   public:
     struct Line {
-        const char *prefix;
-        const char *line;  // including newline
-        Line(const char *prefix, const char *line) : prefix(prefix), line(line) {}
+        int contextComponentId;
+        const char *prefix; // Tcl quoted
+        const char *line;  // including newline; Tcl quoted
+        Line(int contextComponentId, const char *prefix, const char *line) :
+            contextComponentId(contextComponentId), prefix(prefix), line(line) {}
+    };
+    struct MessageSend {
+        cMessage *msg;
+        std::vector<int> hopModuleIds; //TODO also: txStartTime, propagationDelay, duration for each hop
     };
     struct Entry {
-        eventnumber_t eventNumber;
+        eventnumber_t eventNumber; // 0 for initialization, >0 afterwards
         simtime_t simtime;
-        int *moduleIds;  // from this module up to the root; zero-terminated; NULL for info messages
+        int moduleId;  // 0 for info log lines, -1 for channels (TODO only until 5.0)
+        //TODO msg name, class, kind, previousEventNumber
         const char *banner;
         std::vector<Line> lines;
-        int numChars; // banner plus lines
+        std::vector<MessageSend> msgs;
 
-        Entry() {eventNumber=0; simtime=0; moduleIds=NULL; banner=NULL; numChars=0;}
+        Entry() {eventNumber=0; simtime=0; moduleId=0; banner=NULL;}
         ~Entry();
     };
 
   protected:
-    size_t memLimit;
-    size_t totalChars;
-    size_t totalStrings;
-    std::list<Entry> entries;
-    size_t numEntries;  // gcc's list::size() is O(n)...
+    std::vector<ILogBufferListener*> listeners;
+    circular_buffer<Entry*> entries;
+    int maxNumEntries;
+    int entriesDiscarded;
 
   protected:
-    void discardIfMemoryLimitExceeded();
-    size_t estimatedMemUsage() {return totalChars + 8*totalStrings + numEntries*(8+2*sizeof(void*)+sizeof(Entry)+32); }
-    void fillEntry(Entry& entry, eventnumber_t e, simtime_t t, cModule *mod, const char *banner);
+    void discardEventsIfLimitExceeded();
+    void fillEntry(Entry *entry, eventnumber_t e, simtime_t t, cModule *mod, const char *banner);
 
   public:
-    LogBuffer(int memLimit=10*1024*1024);  // 10MB
+    LogBuffer();
     ~LogBuffer();
 
+    void addListener(ILogBufferListener *l);
+    void removeListener(ILogBufferListener *l);
+
+    void addInitialize(cComponent *component, const char *banner);
     void addEvent(eventnumber_t e, simtime_t t, cModule *moduleIds, const char *banner);
     void addLogLine(const char *prefix, const char *text);
+    void addLogLine(const char *prefix, const char *text, int len);
     void addInfo(const char *text);
+    void addInfo(const char *text, int len);
 
-    void setMemoryLimit(size_t limit);
-    size_t getMemoryLimit()  {return memLimit;}
+    void beginSend(cMessage *msg);
+    void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay);
+    void messageSendHop(cMessage *msg, cGate *srcGate);
+    void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
+    void endSend(cMessage *msg);
 
-    const std::list<Entry>& getEntries() const {return entries;}
-    size_t getNumEntries() const {return numEntries;}
+    void setMaxNumEntries(int limit); // when exceeded, oldest entries are discarded
+    int getMaxNumEntries()  {return maxNumEntries;}
+
+    const circular_buffer<Entry*>& getEntries() const {return entries;}
+    int getNumEntries() const {return entries.size();}
+    int getNumEntriesDiscarded() const {return entriesDiscarded;}
+    int findEntryByEventNumber(eventnumber_t eventNumber);
+    Entry *getEntryByEventNumber(eventnumber_t eventNumber);
+
+    void clear();
 
     void dump() const;
 };

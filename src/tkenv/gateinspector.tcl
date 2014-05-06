@@ -35,7 +35,6 @@ proc createGateViewer {insp} {
     global inspectordata
     global B2 B3
 
-    # create canvas
     set c $insp.c
 
     # init some state vars (not all of them fully used, e.g. zoomfactor is only
@@ -45,19 +44,11 @@ proc createGateViewer {insp} {
     set inspectordata($c:showlabels) 1
     set inspectordata($c:showarrowheads) 1
 
+    # create canvas
     ttk::frame $insp.grid
-    ttk::scrollbar $insp.hsb -orient horiz -command "$c xview"
-    ttk::scrollbar $insp.vsb -command "$c yview"
-    canvas $c -background #a0e0a0 -relief raised \
-        -xscrollcommand "$insp.hsb set" \
-        -yscrollcommand "$insp.vsb set"
     pack $insp.grid -expand yes -fill both -padx 1 -pady 1
-    grid rowconfig    $insp.grid 0 -weight 1 -minsize 0
-    grid columnconfig $insp.grid 0 -weight 1 -minsize 0
-
-    grid $c -in $insp.grid -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
-    grid $insp.vsb -in $insp.grid -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
-    grid $insp.hsb -in $insp.grid -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
+    canvas $c -background #a0e0a0 -relief raised
+    addScrollbars $c $insp.grid
 
     # mouse bindings
     $c bind mod <Double-1> "GateInspector:dblClick $insp"

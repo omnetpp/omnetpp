@@ -34,7 +34,7 @@ OBJS_STD=\
     $O/cenum.o $O/cevent.o $O/cexception.o $O/cfsm.o $O/cnedmathfunction.o $O/cgate.o $O/chistogram.o \
     $O/cksplit.o $O/clcg32.o $O/clistener.o $O/clog.o $O/clongparimpl.o $O/cmersennetwister.o \
     $O/cmessage.o $O/cpacket.o $O/cmsgpar.o $O/cmodule.o $O/cmessageheap.o $O/chasher.o $O/ctimestampedvalue.o \
-    $O/cmatchexpression.o $O/cpatternmatcher.o $O/cnullenvir.o $O/envirext.o \
+    $O/cmatchexpression.o $O/cpatternmatcher.o $O/cmessageprinter.o $O/cnullenvir.o $O/envirext.o \
     $O/cnedfunction.o $O/cnedvalue.o $O/cobject.o $O/coutvector.o $O/cnamedobject.o \
     $O/cpar.o $O/cparimpl.o $O/cownedobject.o $O/cproperties.o $O/cproperty.o \
     $O/cresultfilter.o $O/cresultlistener.o $O/cresultrecorder.o $O/clifetimelistener.o \
@@ -1307,6 +1307,44 @@ $O/cmessageheap.o: cmessageheap.cc \
   ../../include/carray.h \
   ../../include/cenvir.h \
   ../../include/simtime_t.h \
+  ../../include/cmsgpar.h \
+  ../../include/ccomponent.h \
+  ../../include/cregistrationlist.h \
+  ../../include/opp_string.h \
+  ../../include/cevent.h \
+  ../../include/simkerneldefs.h \
+  ../../include/csimulation.h \
+  ../../include/errmsg.h \
+  ../../include/cownedobject.h \
+  ../../include/cmessage.h \
+  ../../include/onstartup.h \
+  ../../include/cobject.h \
+  ../../include/clifetimelistener.h \
+  ../../include/clistener.h \
+  ../../include/cstringpool.h \
+  ../../include/cpar.h \
+  ../../include/globals.h \
+  ../../include/clog.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cvisitor.h \
+  ../../include/cnedmathfunction.h \
+  ../../include/cobjectfactory.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/simutil.h \
+  ../../include/cexception.h \
+  ../../include/cmessageheap.h \
+  ../../include/platdep/intxtypes.h
+$O/cmessageprinter.o: cmessageprinter.cc \
+  ../../include/regmacros.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexpression.h \
+  ../../include/simtime.h \
+  ../../include/carray.h \
+  ../../include/cpacket.h \
+  ../../include/simtime_t.h \
+  ../../include/cenvir.h \
+  ../../include/cmessageprinter.h \
   ../../include/cmsgpar.h \
   ../../include/ccomponent.h \
   ../../include/cregistrationlist.h \

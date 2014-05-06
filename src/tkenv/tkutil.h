@@ -118,6 +118,10 @@ void *strToVoidPtr(const char *s);
 inline char *ptrToStr(cObject *ptr, char *buffer=NULL) {return voidPtrToStr((void *)ptr, buffer);}
 inline cObject *strToPtr(const char *s) {return (cObject *)strToVoidPtr(s);}
 
+cModule *findCommonAncestor(cModule *src, cModule *dest);
+
+void resolveSendDirectHops(cModule *src, cModule *dest, std::vector<cModule*>& hops);
+
 bool isAPL();
 
 std::string getObjectIcon(Tcl_Interp *interp, cObject *object);
@@ -129,12 +133,6 @@ void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject
 void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath);
 
 int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep);
-
-void textWidget_insert(Tcl_Interp *interp, const char *textWidget, const char *text, const char *tags=NULL);
-
-void textWidget_gotoEnd(Tcl_Interp *interp, const char *textWidget);
-
-void textWidget_clear(Tcl_Interp *interp, const char *textWidget);
 
 /**
  * Looks up the given parameter

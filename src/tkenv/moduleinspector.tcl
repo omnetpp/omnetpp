@@ -86,17 +86,8 @@ proc createGraphicalModuleViewer {insp} {
     pack $insp.grid -expand yes -fill both -padx 1 -pady 1
 
     set c $insp.c
-    ttk::scrollbar $insp.hsb -orient horiz -command "$c xview"
-    ttk::scrollbar $insp.vsb -command "$c yview"
-    canvas $c -background "#a0e0a0" -relief raised -closeenough 2 \
-        -xscrollcommand "$insp.hsb set" \
-        -yscrollcommand "$insp.vsb set"
-    grid rowconfig    $insp.grid 0 -weight 1 -minsize 0
-    grid columnconfig $insp.grid 0 -weight 1 -minsize 0
-
-    grid $c -in $insp.grid -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
-    grid $insp.vsb -in $insp.grid -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
-    grid $insp.hsb -in $insp.grid -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
+    canvas $c -background "#a0e0a0" -relief raised -closeenough 2
+    addScrollbars $c $insp.grid
 
     label $insp.zoominfo -borderwidth 0 -text "Zoom: 0.00x"
     place $insp.zoominfo -in $c -relx 1.0 -rely 1.0 -anchor se -x -2 -y -2

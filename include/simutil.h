@@ -291,6 +291,15 @@ inline char *opp_strdup(const char *s)
     return p;
 }
 
+inline char *opp_strdup(const char *s, int len)
+{
+    if (!s || !s[0]) return NULL;
+    char *p = new char[len+1];
+    strncpy(p,s,len);
+    p[len] = 0;
+    return p;
+}
+
 inline int opp_strcmp(const char *s1, const char *s2)
 {
     if (s1)

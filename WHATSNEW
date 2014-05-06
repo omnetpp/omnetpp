@@ -5,6 +5,13 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
+
+   - New configure.user option to prefer clang over gcc if both is installed
+   - New configure.user option to enable/disable C++11 compilance (-std=c++11)
+   - BLT is no longer used in Tkenv
+   - Tcl/Tk 8.4 is no longer supported
+   - Tcl/Tk 8.6 is preferred over 8.5
+
 OMNeT++ 4.4.1 (Feb 2014)
 ------------------------
 

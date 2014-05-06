@@ -56,6 +56,8 @@ proc createInspectorToplevel {insp geom} {
     packToolbutton $insp.toolbar.copyobj -image $icons(copyptr) -command "inspector:namePopup $insp $insp.toolbar.copyobj"
     packToolbutton $insp.toolbar.objs -image $icons(findobj) -command "inspectFilteredObjectList $insp"
 
+    set help_tips($insp.toolbar.back) "Back"
+    set help_tips($insp.toolbar.forward) "Forward"
     set help_tips($insp.toolbar.parent) "Go to parent"
     set help_tips($insp.toolbar.inspectas) "Inspect"
     set help_tips($insp.toolbar.copyobj) "Copy name, type or pointer"

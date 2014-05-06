@@ -91,13 +91,13 @@ proc createFileViewer {filename} {
 
     ttk::frame $w.main  -borderwidth 1 -relief sunken
     pack $w.main  -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 0 -pady 0 -side top
-    ttk::scrollbar $w.main.sb -command "$w.main.text yview"
-    pack $w.main.sb -anchor center -expand 0 -fill y -ipadx 0 -ipady 0 -padx 0 -pady 0 -side right
-    text $w.main.text -yscrollcommand "$w.main.sb set" -width 88 -height 30 -font LogFont
-    pack $w.main.text -anchor center -expand 1 -fill both -side left
 
-    logTextWidget:configureTags $w.main.text
+    text $w.main.text -width 88 -height 30 -font LogFont
+    addScrollbars $w.main.text
+
     bindCommandsToTextWidget $w.main.text
+
+    $w.main.text tag configure SELECT -back #808080 -fore #ffffff
 
     # bind a context menu as well
     catch {$w.main.text config -wrap $config(editor-wrap)}
@@ -147,6 +147,7 @@ proc textwidget:toggleWrap {txt} {
     set config(editor-wrap) $tmp(wrap)
 }
 
+# TODO move to LogInspector.tcl
 proc textwidget:togglePrefix {txt} {
     global tmp config
 
@@ -155,13 +156,3 @@ proc textwidget:togglePrefix {txt} {
     # set default for further windows
     set config(editor-hideprefix) $tmp(hideprefix)
 }
-
-proc textwidget:trimLines {t numlines} {
-    if {$numlines==""} {return}
-    set endline [$t index {end linestart}]
-    if {$endline > $numlines + 100} {  ;# for performance, we want to delete in at least 100-line chunks
-        set linestodelete [expr int($endline-$numlines)]
-        $t delete 1.0 $linestodelete.0
-    }
-}
-

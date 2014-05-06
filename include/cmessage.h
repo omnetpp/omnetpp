@@ -33,6 +33,7 @@ class cSimpleModule;
 class cCompoundModule;
 class cSimulation;
 class cMessageHeap;
+class LogBuffer;
 
 
 /**
@@ -101,6 +102,8 @@ enum eMessageKind
  */
 class SIM_API cMessage : public cEvent
 {
+    friend class LogBuffer;  // for setMessageId()
+
   private:
     // note: fields are in an order that maximizes packing (minimizes sizeof(cMessage))
     short msgkind;             // message kind -- 0>= user-defined meaning, <0 reserved
@@ -128,6 +131,9 @@ class SIM_API cMessage : public cEvent
     void _createparlist();
 
     void copy(const cMessage& msg);
+
+    // internal: used by LogBuffer for creating an *exact* copy of a message
+    void setId(long id) {msgid = id;}
 
   public:
     // internal: called by the simulation kernel as part of the send(),

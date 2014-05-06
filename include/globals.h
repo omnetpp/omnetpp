@@ -38,6 +38,7 @@ SIM_API extern cGlobalRegistrationList classDescriptors;///< List of all class d
 SIM_API extern cGlobalRegistrationList configOptions;   ///< List of supported configuration options (cConfigOption)
 SIM_API extern cGlobalRegistrationList resultFilters;   ///< List of result filters (cResultFilter)
 SIM_API extern cGlobalRegistrationList resultRecorders; ///< List of result recorders (cResultRecorder)
+SIM_API extern cGlobalRegistrationList messagePrinters; ///< List of message printers (cMessagePrinter)
 
 NAMESPACE_END
 

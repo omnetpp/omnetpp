@@ -296,32 +296,62 @@ int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char 
     return n;
 }
 
+cModule *findCommonAncestor(cModule *src, cModule *dest)
+{
+    cModule *candidate = src;
+    while (candidate)
+    {
+        // try to find common ancestor among ancestors of dest
+        cModule *m = dest;
+        while (m && candidate != m)
+            m = m->getParentModule();
+        if (candidate == m)
+            break;
+        candidate = candidate->getParentModule();
+    }
+    return candidate;
+}
+
+void resolveSendDirectHops(cModule *src, cModule *dest, std::vector<cModule*>& hops)
+{
+    // find common ancestor, and record modules from src up to it;
+    // the ancestor module itself is NOT recorded
+    cModule *ancestor = src;
+    while (ancestor)
+    {
+        // is 'ancestor' also an ancestor of dest? if so, break!
+        cModule *m = dest;
+        while (m && ancestor != m)
+            m = m->getParentModule();
+        if (ancestor == m)
+            break;
+        hops.push_back(ancestor);
+        ancestor = ancestor->getParentModule();
+    }
+    ASSERT(ancestor!=NULL);
+
+    if (src == ancestor)
+        hops.push_back(src);
+
+    if (dest == ancestor)
+        hops.push_back(dest);
+    else
+    {
+        // ascend from dest up to the common ancestor, and record modules in reverse order
+        cModule *m = dest;
+        int pos = hops.size();
+        while (m && ancestor != m)
+        {
+            hops.insert(hops.begin()+pos, m);
+            m = m->getParentModule();
+        }
+        ASSERT(m == ancestor);
+    }
+}
+
 bool isAPL()
 {
     return OMNETPP_EDITION[0]=='A';
-}
-
-//----------------------------------------------------------------------
-
-void textWidget_insert(Tcl_Interp *interp, const char *textWidget, const char *quotedText, const char *tags)
-{
-    if (!quotedText || !quotedText[0])
-        return;
-    if (!tags)
-        CHK(Tcl_VarEval(interp, textWidget, " insert end ", quotedText, NULL));
-    else
-        CHK(Tcl_VarEval(interp, textWidget, " insert end ", quotedText, " {", tags, "}", NULL));
-}
-
-void textWidget_gotoEnd(Tcl_Interp *interp, const char *textWidget)
-{
-    CHK(Tcl_VarEval(interp, textWidget, " see end", NULL));
-}
-
-void textWidget_clear(Tcl_Interp *interp, const char *textWidget)
-{
-    //CHK(Tcl_VarEval(interp, textWidget, " delete 1.0 end", NULL)); -- very slow if content is large
-    CHK(Tcl_VarEval(interp, "logTextWidget:clear ", textWidget, NULL));
 }
 
 //----------------------------------------------------------------------

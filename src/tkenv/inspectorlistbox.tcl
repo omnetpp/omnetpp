@@ -21,7 +21,7 @@ proc createInspectorListbox {f insp} {
     pack $f.main -expand 1 -fill both -side top
 
     set lb $f.main.list
-    ttk::treeview $lb -columns {name info ptr} -show {tree headings} -yscroll "$f.main.vsb set" -xscroll "$f.main.hsb set"
+    ttk::treeview $lb -columns {name info ptr} -show {tree headings}
     $lb heading "#0" -anchor c -text "Class"   ;#TODO: -command [list inspectorListbox:sortBy $lb "#0" 0]
     $lb heading name -anchor w -text "Name"    -command [list inspectorListbox:sortBy $lb name 0]
     $lb heading info -anchor w -text "Info"    -command [list inspectorListbox:sortBy $lb info 0]
@@ -29,13 +29,7 @@ proc createInspectorListbox {f insp} {
     $lb column "#0"  -stretch 0 -width 140
     $lb column name  -stretch 0 -width 120
     $lb column info  -stretch 0 -width 300
-
-    ttk::scrollbar $f.main.hsb  -command "$f.main.list xview" -orient horiz
-    ttk::scrollbar $f.main.vsb  -command "$f.main.list yview"
-    grid $f.main.list $f.main.vsb -sticky news
-    grid $f.main.hsb  x           -sticky news
-    grid rowconfig    $f.main 0 -weight 1 -minsize 0
-    grid columnconfig $f.main 0 -weight 1 -minsize 0
+    addScrollbars $lb
 
     bind $f.main.list <<TreeviewSelect>> [list inspectorListbox:selectionChanged $insp %W]
     bind $f.main.list <Double-Button-1> [list inspectorListbox:dblClick $insp %W]

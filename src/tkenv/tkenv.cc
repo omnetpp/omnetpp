@@ -133,6 +133,7 @@ TkenvOptions::TkenvOptions()
     stopOnMsgCancel = true;
     logFormat = "%l %C: ";
     logLevel = LOGLEVEL_TRACE;
+    scrollbackLimit = 10000;
 }
 
 Tkenv::Tkenv() : opt((TkenvOptions *&)EnvirBase::opt)
@@ -299,6 +300,9 @@ void Tkenv::doRun()
         delete insp;
     }
 
+    // clear log
+    logBuffer.clear();   //FIXME how is the log cleared between runs??????????????
+
     // delete network if not yet done
     if (simstate!=SIM_NONET && simstate!=SIM_FINISHCALLED)
         endRun();
@@ -347,8 +351,7 @@ void Tkenv::doOneStep()
         cEvent *event = simulation.takeNextEvent();
         if (event)  // takeNextEvent() not interrupted
         {
-            if (opt->printEventBanners)
-                printEventBanner(event);
+            printEventBanner(event);
             simulation.executeEvent(event);
             performAnimations();
         }
@@ -541,8 +544,7 @@ bool Tkenv::doRunSimulation()
         speedometer.addEvent(simulation.getSimTime());
 
         // do a simulation step
-        if (opt->printEventBanners)
-            printEventBanner(event);
+        printEventBanner(event);
         simulation.executeEvent(event);
         performAnimations();
 
@@ -584,8 +586,10 @@ bool Tkenv::doRunSimulationExpress()
     // EXPRESS does not support rununtil_module!
     //
 
-    logBuffer.addInfo("{...running in Express mode...\n}");
-    printLastLogLine();
+    char info[128];
+    sprintf(info, "** Running in Express mode from event #%" LL "d  t=%s ...\n",
+            simulation.getEventNumber(), SIMTIME_STR(simulation.getSimTime()));
+    logBuffer.addInfo(info);
 
     // update, just to get the above notice displayed
     Tcl_Eval(interp, "update");
@@ -598,6 +602,7 @@ bool Tkenv::doRunSimulationExpress()
     struct timeval last_update;
     gettimeofday(&last_update, NULL);
 
+    bool result = false;
     do
     {
         cEvent *event = simulation.takeNextEvent();
@@ -623,8 +628,10 @@ bool Tkenv::doRunSimulationExpress()
                 speedometer.beginNewInterval();
             Tcl_Eval(interp, "update");
             resetElapsedTime(last_update); // exclude UI update time [bug #52]
-            if (runmode!=RUNMODE_EXPRESS)
-                return true;  // should continue, but in a different mode
+            if (runmode!=RUNMODE_EXPRESS) {
+                result = true;  // should continue, but in a different mode
+                break;
+            }
         }
         checkTimeLimits();
     }
@@ -632,7 +639,12 @@ bool Tkenv::doRunSimulationExpress()
            (rununtil_time<=SIMTIME_ZERO || simulation.guessNextSimtime() < rununtil_time) &&
            (rununtil_eventnum<=0 || simulation.getEventNumber() < rununtil_eventnum)
          );
-    return false;
+
+    sprintf(info, "** Leaving Express mode at event #%" LL "d  t=%s\n",
+            simulation.getEventNumber(), SIMTIME_STR(simulation.getSimTime()));
+    logBuffer.addInfo(info);
+
+    return result;
 }
 
 void Tkenv::startAll()
@@ -651,8 +663,7 @@ void Tkenv::finishSimulation()
         stoppedWithTerminationException(e);
     }
 
-    logBuffer.addInfo("{** Calling finish() methods of modules\n}");
-    printLastLogLine();
+    logBuffer.addInfo("** Calling finish() methods of modules\n");
 
     // now really call finish()
     try
@@ -718,7 +729,6 @@ void Tkenv::newNetwork(const char *networkname)
         getConfigEx()->activateConfig("General", 0);
         readPerRunOptions();
         opt->networkName = network->getName();  // override config setting
-        answers.clear();
         setupNetwork(network);
         startRun();
 
@@ -765,11 +775,7 @@ void Tkenv::newRun(const char *configname, int runnumber)
         cModuleType *network = resolveNetwork(opt->networkName.c_str());
         ASSERT(network);
 
-        answers.clear();
         setupNetwork(network);
-        mainNetworkView->doSetObject(simulation.getSystemModule()); //FIXME factor out to setupNetwork()!
-        mainLogView->doSetObject(simulation.getSystemModule()); //FIXME factor out to setupNetwork()!
-        mainInspector->doSetObject(simulation.getSystemModule()); //FIXME just temporary, should come from tree/canvas selection
         startRun();
 
         simstate = SIM_NEW;
@@ -786,6 +792,18 @@ void Tkenv::newRun(const char *configname, int runnumber)
     updateNetworkRunDisplay();
     updateStatusDisplay();
     updateInspectors();
+}
+
+void Tkenv::setupNetwork(cModuleType *network)
+{
+    answers.clear();
+    logBuffer.clear();
+
+    EnvirBase::setupNetwork(network);
+
+    mainNetworkView->doSetObject(simulation.getSystemModule());
+    mainLogView->doSetObject(simulation.getSystemModule());
+    mainInspector->doSetObject(simulation.getSystemModule());
 }
 
 Inspector *Tkenv::inspect(cObject *obj, int type, bool ignoreEmbedded, const char *geometry)
@@ -970,7 +988,7 @@ void Tkenv::printEventBanner(cEvent *event)
     // produce banner text
     char banner[2*MAX_OBJECTFULLPATH+2*MAX_CLASSNAME+60];
     char *p = banner;
-    p += sprintf(p,"{** Event #%" LL "d  T=%s  ",
+    p += sprintf(p,"** Event #%" LL "d  T=%s  ",
             simulation.getEventNumber(),
             SIMTIME_STR(simulation.getSimTime()));
 
@@ -978,8 +996,8 @@ void Tkenv::printEventBanner(cEvent *event)
     {
         // just object names
         if (target)
-            p += sprintf(p, "%s ", TclQuotedString(target->getFullPath().c_str()).get());
-        p += sprintf(p, "on %s", TclQuotedString(event->getFullName()).get());
+            p += sprintf(p, "%s ", target->getFullPath().c_str());
+        p += sprintf(p, "on %s", event->getFullName());
     }
     else
     {
@@ -991,58 +1009,23 @@ void Tkenv::printEventBanner(cEvent *event)
                     module->getId());
         else if (target)
             p += sprintf(p, "%s (%s) ",
-                    TclQuotedString(target->getFullPath().c_str()).get(),
+                    target->getFullPath().c_str(),
                     target->getClassName());
         if (msg)
             p += sprintf(p, " on %s%s (%s, id=%ld)",
                     msg->isSelfMessage() ? "selfmsg " : "",
-                    TclQuotedString(msg->getFullName()).get(),
+                    msg->getFullName(),
                     msg->getClassName(),
                     msg->getId());
         else
             p += sprintf(p, " on %s (%s)",
-                    TclQuotedString(event->getFullName()).get(),
+                    event->getFullName(),
                     event->getClassName());
     }
-    strcpy(p, "\n}");
+    strcpy(p, "\n");
 
     // insert into log buffer
     logBuffer.addEvent(simulation.getEventNumber(), simulation.getSimTime(), module, banner);
-
-    // print into module log windows
-    printLastLogLine();
-}
-
-void Tkenv::printLastLogLine()
-{
-    const LogBuffer::Entry& entry = logBuffer.getEntries().back();
-
-    // print into module window and all parent module windows if they exist
-    if (!entry.moduleIds /*info*/ || !entry.moduleIds[0] /*initialize--FIXME how???*/)
-    {
-        // info message: insert into all log windows
-        for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
-        {
-            LogInspector *insp = dynamic_cast<LogInspector *>(*it);
-            if (insp)
-                insp->printLastLineOf(logBuffer);
-        }
-    }
-    else
-    {
-        // insert into the appropriate module windows
-        cModule *mod = simulation.getModule(entry.moduleIds[0]);
-        while (mod)
-        {
-            for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
-            {
-                LogInspector *insp = isLogInspectorFor(mod, *it);
-                if (insp)
-                    insp->printLastLineOf(logBuffer);
-            }
-            mod = mod->getParentModule();
-        }
-    }
 }
 
 void Tkenv::displayException(std::exception& ex)
@@ -1052,8 +1035,7 @@ void Tkenv::displayException(std::exception& ex)
     if (e && e->getSimulationStage()!=CTX_NONE)
     {
         std::string txt = opp_stringf("<!> %s\n", e->getFormattedMessage().c_str());
-        logBuffer.addInfo(TclQuotedString(txt.c_str()).get());
-        printLastLogLine();
+        logBuffer.addInfo(txt.c_str());
     }
 
     // dialog via our printfmsg()
@@ -1067,20 +1049,11 @@ void Tkenv::componentInitBegin(cComponent *component, int stage)
 
     // produce banner text
     char banner[MAX_OBJECTFULLPATH+60];
-    sprintf(banner, "{Initializing %s %s, stage %d\n}",
+    sprintf(banner, "Initializing %s %s, stage %d\n",
         component->isModule() ? "module" : "channel", component->getFullPath().c_str(), stage);
 
     // insert into log buffer
-    logBuffer.addLogLine(NULL, banner);
-
-    // print into module log windows
-    printLastLogLine();
-}
-
-void Tkenv::setMainWindowExcludedModuleIds(const std::set<int>& ids)
-{
-    mainWindowExcludedModuleIds = ids;
-    LogInspector::redisplay(interp, ".log.text", logBuffer, simulation.getSystemModule(), mainWindowExcludedModuleIds);
+    logBuffer.addInitialize(component, banner);
 }
 
 void Tkenv::setSilentEventFilters(const char *filterLines)
@@ -1319,26 +1292,41 @@ void Tkenv::messageCancelled(cMessage *msg)
 void Tkenv::beginSend(cMessage *msg)
 {
     EnvirBase::beginSend(msg);
+
+    if (!disable_tracing)
+        logBuffer.beginSend(msg);
 }
 
 void Tkenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     EnvirBase::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
+
+    if (!disable_tracing)
+        logBuffer.messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
 }
 
 void Tkenv::messageSendHop(cMessage *msg, cGate *srcGate)
 {
     EnvirBase::messageSendHop(msg, srcGate);
+
+    if (!disable_tracing)
+        logBuffer.messageSendHop(msg, srcGate);
 }
 
 void Tkenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     EnvirBase::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
+
+    if (!disable_tracing)
+        logBuffer.messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
 }
 
 void Tkenv::endSend(cMessage *msg)
 {
     EnvirBase::endSend(msg);
+
+    if (!disable_tracing)
+        logBuffer.endSend(msg);
 }
 
 void Tkenv::messageDeleted(cMessage *msg)
@@ -1468,6 +1456,8 @@ void Tkenv::moduleDeleted(cModule *module)
 {
     EnvirBase::moduleDeleted(module);
 
+    componentHistory.componentDeleted(module);
+
     cModule *mod = module->getParentModule();
 
     for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
@@ -1481,6 +1471,8 @@ void Tkenv::moduleDeleted(cModule *module)
 void Tkenv::moduleReparented(cModule *module, cModule *oldparent, int oldId)
 {
     EnvirBase::moduleReparented(module, oldparent, oldId);
+
+    //TODO in 5.0: componentHistory.componentReparented(module, oldparent, oldId);
 
     // pretend it got deleted from under the 1st module, and got created under the 2nd
     for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
@@ -1521,6 +1513,9 @@ void Tkenv::connectionCreated(cGate *srcgate)
 void Tkenv::connectionDeleted(cGate *srcgate)
 {
     EnvirBase::connectionDeleted(srcgate);
+
+    if (srcgate->getChannel())
+        componentHistory.componentDeleted(srcgate->getChannel());
 
     // notify compound module where the connection (whose source is this gate) is displayed
     // note: almost the same code as above
@@ -1636,7 +1631,6 @@ static cModule *findSubmoduleTowards(cModule *parentmod, cModule *towardsgrandch
     return m;
 }
 
-
 void Tkenv::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pathvec)
 {
     // for animation purposes, we assume that the message travels up
@@ -1646,22 +1640,8 @@ void Tkenv::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pathvec)
     // list of modules visited during the travel.
 
     // first, find "lowest common ancestor" module
-    cModule *commonparent = srcmod;
-    while (commonparent)
-    {
-        // try to find commonparent among ancestors of destmod
-        cModule *m = destmod;
-        while (m && commonparent!=m)
-            m = m->getParentModule();
-        if (commonparent==m)
-            break;
-        commonparent = commonparent->getParentModule();
-    }
-
-    // commonparent should exist, worst case it's the system module,
-    // but let's have the following "if" anyway...
-    if (!commonparent)
-        return;
+    cModule *commonparent = findCommonAncestor(srcmod, destmod);
+    Assert(commonparent!=NULL); // commonparent should exist, worst case it's the system module
 
     // animate the ascent of the message until commonparent (excluding).
     // The second condition, destmod==commonparent covers case when we're sending
@@ -1870,12 +1850,9 @@ void Tkenv::log(cLogEntry *entry)
     // insert into log buffer
     cModule *module = simulation.getContextModule();
     if (module)
-        logBuffer.addLogLine(TclQuotedString(prefix.c_str()).get(), TclQuotedString(s,n).get());
+        logBuffer.addLogLine(prefix.c_str(), s, n);
     else
-        logBuffer.addInfo(TclQuotedString(s,n).get()); // ignores prefix
-
-    // print string into log windows
-    printLastLogLine();
+        logBuffer.addInfo(s, n);
 }
 
 bool Tkenv::inputDialog(const char *title, const char *prompt,
@@ -1931,6 +1908,19 @@ unsigned Tkenv::getExtraStackForEnvir() const
 
 void Tkenv::logTclError(const char *file, int line, Tcl_Interp *interp)
 {
+    logTclError(file, line, Tcl_GetVar(interp, "errorInfo", TCL_GLOBAL_ONLY));
+}
+
+void Tkenv::logTclError(const char *file, int line, const char *text)
+{
+    openTkenvlogIfNeeded();
+    FILE *f = ferrorlog ? ferrorlog : stderr;
+    ::fprintf(f, "Tcl error: %s#%d: %s\n\n\n",file, line, text);
+    ::fflush(f);
+}
+
+void Tkenv::openTkenvlogIfNeeded()
+{
     if (!ferrorlog)
     {
         ferrorlog = fopen(".tkenvlog", "a");
@@ -1939,10 +1929,6 @@ void Tkenv::logTclError(const char *file, int line, Tcl_Interp *interp)
         else
             ::fprintf(ferrorlog, "----------------------------------------------------------------------\n\n\n");
     }
-
-    FILE *f = ferrorlog ? ferrorlog : stderr;
-    ::fprintf(f, "Tcl error: %s#%d: %s\n\n\n",file, line, Tcl_GetVar(interp, "errorInfo", TCL_GLOBAL_ONLY));
-    ::fflush(f);
 }
 
 //======================================================================

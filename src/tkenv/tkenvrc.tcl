@@ -51,6 +51,8 @@ proc saveTkenvrc {fname isglobal atexit {comment ""}} {
                 stoponmsgcancel
                 logformat
                 loglevel
+                scrollbacklimit
+                logbuffer_maxnumevents
             } {
                 set value [opp_getsimoption $key]
                 set value [string map {"\n" "\x2"} $value]

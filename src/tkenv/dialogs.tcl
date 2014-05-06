@@ -405,16 +405,19 @@ proc preferencesDialog {parent {defaultpage ""}} {
     label-entry-help $nb.g.f2.logformat "Log prefix format:" $helptexts(logformat)
     label-combo $nb.g.f2.loglevel "Log level:" {FATAL ERROR WARN INFO DETAIL DEBUG TRACE} ""
     commentlabel $nb.g.f2.c0 "The above settings apply to subsequent simulation events. Hover mouse to get help on log format syntax."
+    label-entry $nb.g.f2.numevents "Overall history size (in events):"
     label-entry $nb.g.f2.numlines "Scrollback buffer (lines):"
     commentlabel $nb.g.f2.c1 "Applies to main window and module log windows. Leave blank for unlimited. Minimum value is 500 lines."
 
-    $nb.g.f2.numlines.l config -width 0
+    $nb.g.f2.numevents.l config -width 30
+    $nb.g.f2.numlines.l config -width 30
     pack $nb.g.f2.initbanners -anchor w
     pack $nb.g.f2.eventbanners -anchor w
     pack $nb.g.f2.shortbanners -anchor w -padx 10
     pack $nb.g.f2.logformat -anchor w -fill x
     pack $nb.g.f2.loglevel -anchor w
     pack $nb.g.f2.c0 -anchor w
+    pack $nb.g.f2.numevents -anchor w -fill x
     pack $nb.g.f2.numlines -anchor w -fill x
     pack $nb.g.f2.c1 -anchor w -fill x
 
@@ -525,7 +528,8 @@ proc preferencesDialog {parent {defaultpage ""}} {
     # Configure dialog
     $nb.g.f1.updfreq_fast.e insert 0 [opp_getsimoption updatefreq_fast_ms]
     $nb.g.f1.updfreq_express.e insert 0 [opp_getsimoption updatefreq_express_ms]
-    $nb.g.f2.numlines.e insert 0 $config(logwindow-scrollbacklines)
+    $nb.g.f2.numevents.e insert 0 [opp_getsimoption logbuffer_maxnumevents]
+    $nb.g.f2.numlines.e insert 0 [opp_getsimoption scrollbacklimit]
     $nb.l.f2.iconminsize.e insert 0 [opp_getsimoption iconminsize]
     $nb.t.f2.filterstext insert 1.0 [opp_getsimoption silent_event_filters]
     set opp(eventbanners) [opp_getsimoption event_banners]
@@ -565,11 +569,17 @@ proc preferencesDialog {parent {defaultpage ""}} {
         opp_setsimoption updatefreq_fast_ms    [$nb.g.f1.updfreq_fast.e get]
         opp_setsimoption updatefreq_express_ms [$nb.g.f1.updfreq_express.e get]
         opp_setsimoption silent_event_filters  [$nb.t.f2.filterstext get 1.0 end]
+        set n [$nb.g.f2.numevents.e get]
+        if {$n=="" || [string is integer $n]} {
+            if {$n!="" && $n<100} {set n 100}
+            opp_setsimoption logbuffer_maxnumevents $n
+        }
         set n [$nb.g.f2.numlines.e get]
         if {$n=="" || [string is integer $n]} {
             if {$n!="" && $n<500} {set n 500}
-            set config(logwindow-scrollbacklines) $n
+            opp_setsimoption scrollbacklimit $n
         }
+
         opp_setsimoption event_banners       $opp(eventbanners)
         opp_setsimoption init_banners        $opp(initbanners)
         opp_setsimoption short_banners       $opp(shortbanners)
@@ -897,14 +907,9 @@ proc moduleOutputFilterDialog {rootmodule excludedModuleIds} {
     pack $w.f.m -fill x -padx 10 -pady 5 -side top
     pack $w.f.f -expand 1 -fill both -padx 10 -pady 5 -side top
 
-    canvas $w.f.f.c -width 300 -height 350 -bd 0 -relief flat -yscrollcommand "$w.f.f.vsb set"
-    #   -xscrollcommand "$w.f.f.hsb set"
-    #ttk::scrollbar $w.f.f.hsb -command "$w.f.f.c xview" -orient horiz
-    ttk::scrollbar $w.f.f.vsb -command "$w.f.f.c yview"
-    grid $w.f.f.c   $w.f.f.vsb  -sticky news
-    #grid $w.f.f.hsb x           -sticky news
-    grid rowconfig $w.f.f 0 -weight 1
-    grid columnconfig $w.f.f 0 -weight 1
+    # don't use sunken border due to rendering bug (checkboxes may erase part of the tree's border)
+    canvas $w.f.f.c -width 300 -height 350 -bd 0 -bg white
+    addScrollbars $w.f.f.c
 
     set tree $w.f.f.c
     set tmp(moduletreeroot) $rootmodule

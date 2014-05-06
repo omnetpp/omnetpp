@@ -55,19 +55,6 @@ NAMESPACE_BEGIN
 using std::string;
 
 
-//
-// Handle Tk_PhotoPutBlock signature change in Tk 8.5:
-// "Added interp argument to these functions and made them return
-// a standard Tcl result, with error indicating memory allocation
-// failure instead of panic()ing."
-// See Tk ChangeLog entry from 2003-03-06 by Donal K. Fellows
-//
-#if TK_MAJOR_VERSION>8 || (TK_MAJOR_VERSION==8 && TK_MINOR_VERSION>=5)
-#define INTERP_IF_TK85 interp,
-#else
-#define INTERP_IF_TK85
-#endif
-
 // command functions
 int newNetwork_cmd(ClientData, Tcl_Interp *, int, const char **);
 int newRun_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -76,6 +63,7 @@ int getConfigDescription_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getBaseConfigs_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getNumRunsInConfig_cmd(ClientData, Tcl_Interp *, int, const char **);
 int createSnapshot_cmd(ClientData, Tcl_Interp *, int, const char **);
+int logError_cmd(ClientData, Tcl_Interp *, int, const char **);
 int exitOmnetpp_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int oneStep_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -197,6 +185,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_newrun",           newRun_cmd         }, // args: <run#>
    { "opp_createsnapshot",   createSnapshot_cmd }, // args: <label>
    { "opp_exitomnetpp",      exitOmnetpp_cmd    }, // args: -
+   { "opp_logerror",         logError_cmd       }, // args: <text>
    { "opp_onestep",          oneStep_cmd        }, // args: -
    { "opp_run",              run_cmd            }, // args: none, or <timelimit> <eventlimit> <message>
    { "opp_onestepinmodule",  oneStepInModule_cmd}, // args: <modptr>
@@ -323,6 +312,13 @@ int exitOmnetpp_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    exitOmnetpp = 1;
+   return TCL_OK;
+}
+
+int logError_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   getTkenv()->logTclError(__FILE__, __LINE__, argv[1]);
    return TCL_OK;
 }
 
@@ -1265,6 +1261,8 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       sprintf(buf,"%d", opt->autoupdateInExpress);
    else if (0==strcmp(argv[1], "stoponmsgcancel"))
       sprintf(buf,"%d", opt->stopOnMsgCancel);
+   else if (0==strcmp(argv[1], "scrollbacklimit"))
+      sprintf(buf,"%d", opt->scrollbackLimit);
    else if (0==strcmp(argv[1], "record_eventlog"))
       sprintf(buf,"%d", app->record_eventlog);
    else if (0==strcmp(argv[1], "logformat"))
@@ -1273,6 +1271,8 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       strcpy(buf, cLogLevel::getName(opt->logLevel));
    else if (0==strcmp(argv[1], "silent_event_filters"))
       buf = const_cast<char *>(app->getSilentEventFilters());
+   else if (0==strcmp(argv[1], "logbuffer_maxnumevents"))
+      sprintf(buf,"%d", getTkenv()->getLogBuffer()->getMaxNumEntries());
    else
       return TCL_ERROR;
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
@@ -1338,6 +1338,8 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       opt->autoupdateInExpress = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "stoponmsgcancel"))
       opt->stopOnMsgCancel = (argv[2][0]!='0');
+   else if (0==strcmp(argv[1], "scrollbacklimit"))
+      opt->scrollbackLimit = atoi(argv[2]);
    else if (0==strcmp(argv[1], "record_eventlog"))
       app->setEventlogRecording(argv[2][0]!='0');
    else if (0==strcmp(argv[1], "logformat")) {
@@ -1350,7 +1352,9 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    }
    else if (0==strcmp(argv[1], "silent_event_filters")) {
       TRY(app->setSilentEventFilters(argv[2]));
-   } else
+   } else if (0==strcmp(argv[1], "logbuffer_maxnumevents"))
+      getTkenv()->getLogBuffer()->setMaxNumEntries(atoi(argv[2]));
+   else
       return TCL_ERROR;
    return TCL_OK;
 }
@@ -2276,7 +2280,7 @@ int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    // tkImgPhoto.c Tk source file...
    //
    Tk_PhotoHandle destImageHandle = Tk_FindPhoto(interp, TCLCONST(destImageName));
-   Tk_PhotoPutBlock(INTERP_IF_TK85 destImageHandle, &destImage, 0, 0, destWidth, destHeight, TK_PHOTO_COMPOSITE_SET);
+   Tk_PhotoPutBlock(interp, destImageHandle, &destImage, 0, 0, destWidth, destHeight, TK_PHOTO_COMPOSITE_SET);
 
    return TCL_OK;
 }
@@ -2314,7 +2318,7 @@ int imageSwapRedAndBlue_cmd(ClientData, Tcl_Interp *interp, int argc, const char
    // image will have no "valid region" and nothing will appear
    // on the canvas when the icon is drawn.
    Tk_PhotoHandle imghandle = Tk_FindPhoto(interp, TCLCONST(imgname));
-   Tk_PhotoPutBlock(INTERP_IF_TK85 imghandle, &img, 0, 0, img.width, img.height, TK_PHOTO_COMPOSITE_SET);
+   Tk_PhotoPutBlock(interp, imghandle, &img, 0, 0, img.width, img.height, TK_PHOTO_COMPOSITE_SET);
 
    return TCL_OK;
 }
@@ -2351,7 +2355,7 @@ int imageMultiplyAlpha_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    // image will have no "valid region" and nothing will appear
    // on the canvas when the icon is drawn.
    Tk_PhotoHandle imghandle = Tk_FindPhoto(interp, TCLCONST(imgname));
-   Tk_PhotoPutBlock(INTERP_IF_TK85 imghandle, &img, 0, 0, img.width, img.height, TK_PHOTO_COMPOSITE_SET);
+   Tk_PhotoPutBlock(interp, imghandle, &img, 0, 0, img.width, img.height, TK_PHOTO_COMPOSITE_SET);
 
    return TCL_OK;
 }
@@ -2384,7 +2388,7 @@ int imageReduceAlpha_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
    // image will have no "valid region" and nothing will appear
    // on the canvas when the icon is drawn.
    Tk_PhotoHandle imghandle = Tk_FindPhoto(interp, TCLCONST(imgname));
-   Tk_PhotoPutBlock(INTERP_IF_TK85 imghandle, &img, 0, 0, img.width, img.height, TK_PHOTO_COMPOSITE_SET);
+   Tk_PhotoPutBlock(interp, imghandle, &img, 0, 0, img.width, img.height, TK_PHOTO_COMPOSITE_SET);
 
    return TCL_OK;
 }

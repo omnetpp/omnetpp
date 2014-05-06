@@ -52,7 +52,6 @@ set config(mainwin-right-sashpos-horizontal) {}
 set config(mainwin-right-sashpos-vertical) {}
 set config(mainwin-sash-orient) vertical
 set config(concurrent-anim) 1
-set config(logwindow-scrollbacklines) 100000
 set config(zoomby-factor) 1.1
 set config(layout-may-resize-window) 1
 set config(layout-may-change-zoom) 1
@@ -411,10 +410,8 @@ proc mainWindow:createTreeView {} {
     set widgets(manager) $f
     ttk::frame $f -relief flat -borderwidth 1
 
-    canvas $f.tree -bg #ffffe0 -bd 0 -yscrollcommand "$f.sb set"
-    ttk::scrollbar $f.sb -command "$f.tree yview"
-    pack $f.sb -side right -expand 0 -fill y
-    pack $f.tree -side left -expand 1 -fill both -padx 0 -pady 0 -ipadx 0 -ipady 0
+    canvas $f.tree -bg #ffffe0 -bd 0
+    addScrollbars $f.tree
 
     initTreeManager
     return $f
