@@ -308,7 +308,7 @@ void LogInspector::redisplay()
                     const LogBuffer::Line& line = entry->lines[i];
                     if (entryMatches || isMatchingComponent(line.contextComponentId)) {
                         if (!bannerPrinted && printEventBanners) {
-                            textWidgetInsert(entry->banner, "banner");
+                            textWidgetInsert(entry->banner, "auxbanner");
                             numLinesPrinted++;
                             bannerPrinted = true;
                         }

@@ -140,7 +140,8 @@ proc LogInspector:configureTags {insp} {
     $txt tag configure linehighlight -back #e0e0e0
     $txt tag configure hyperlink -fore #0000ff -underline 1
 
-    $txt tag configure banner -foreground blue
+    $txt tag configure banner -foreground #0000f0
+    $txt tag configure auxbanner -foreground #7070ff
     $txt tag configure info -foreground #006000
     $txt tag configure prefix -foreground #909090
     $txt tag configure warning -foreground #ff0000
