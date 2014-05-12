@@ -67,7 +67,7 @@ all: $(TKENV_IF_POSSIBLE)
 
 tkenv : $L/$(LIBNAME)$(LIB_SUFFIX)
 	$(Q)cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && $(LN) $(TOOLCHAIN_NAME)/$(LIBNAME).* .
-
+	
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $L
 	@echo Creating static library: $@
@@ -78,6 +78,9 @@ $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
 $L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $L
 	@echo Creating shared library: $@
+ifeq ("$(PLATFORM)", "macosx")
+	$(Q)cp libtkdock1.0.dylib $(OMNETPP_LIB_DIR)
+endif
 	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS)
 	$(Q)$(SHLIB_POSTPROCESS) $O/$(LIBNAME)$(SO_LIB_SUFFIX)
 	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(SO_LIB_SUFFIX) $L
@@ -94,12 +97,12 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 $O/tkenv.o : tkenv.cc
 	@mkdir -p $O
 	$(qecho) "$<"
-	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" tkenv.cc -o $O/tkenv.o
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -DOMNETPP_LIB_DIR="\"$(OMNETPP_LIB_DIR)\"" -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" tkenv.cc -o $O/tkenv.o
 
 $O/tkenv-e.o : tkenv.cc tclcode.cc
 	@mkdir -p $O
 	$(qecho) "$<"
-	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" tkenv.cc -o $O/tkenv-e.o
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -DOMNETPP_LIB_DIR="\"$(OMNETPP_LIB_DIR)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" tkenv.cc -o $O/tkenv-e.o
 
 tclcode.cc: *.tcl tcl2c.pl
 	@# clearlooksimg.tcl must precede clearlooks.tcl (tcl2c filters out duplicates)
