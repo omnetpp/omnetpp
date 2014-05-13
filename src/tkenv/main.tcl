@@ -164,7 +164,6 @@ proc mainWindow:createMenu {} {
       {command -command newNetwork -label "Set Up an Unconfigured Network..." -underline 10}
       {separator}
       {command -command viewIniFile -label "Open Primary Ini File" -underline 13}
-      {command -command editTextFile -label "Open Text File..." -underline 0}
       {separator}
       {command -command createSnapshot -label "Create Snapshot..." -underline 0}
       {separator}
