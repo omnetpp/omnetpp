@@ -273,6 +273,8 @@ void Tkenv::doRun()
 
         mainLogView = (LogInspector *)InspectorFactory::get("LogInspectorFactory")->createInspector();
         addEmbeddedInspector(".log", mainLogView);
+
+        setLogFormat(opt->logFormat.c_str());
     }
     catch (std::exception& e)
     {
