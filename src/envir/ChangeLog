@@ -24,6 +24,15 @@
 	* Follow through with the introduction of cEvent; see related ChangeLog
 	entry in include/.
 
+////////////// fixes taken from omnetpp-4.x come here /////////////////
+
+2014-02-14  Andras Varga
+
+	* EnvirBase: opt_xxx members factored out to a separate class
+	EnvirOptions; Cmdenv and Tkenv were changed accordingly, too.
+
+2014-02-13  ------ omnetpp-4.4.1 released ------
+
 2013-01-28  Andras Varga
 
 	* cSimulation: startRun() renamed to callInitialize(), endRun() removed
@@ -39,7 +48,7 @@
 	renaming in sim/ (they became cIOutputVectorManager, etc.)
 
 2014-02-13  ------ omnetpp-4.4.1 released ------
-	
+
 2013-12-20  ------ omnetpp-4.4 released ------
 
 2014-01-07  Andras Varga
@@ -70,7 +79,7 @@
 	on the command line:
 	  - did not support relative filenames (basedir of its KeyValue was unfilled)
 	  - did not support ${} variables like ${configname}
-	  
+
 2013-09-12  ------ omnetpp-4.3.1 released ------
 
 2013-04-02  ------ omnetpp-4.3 released ------

@@ -106,7 +106,6 @@ proc createOmnetppWindow {} {
     wm title . "OMNeT++/Tkenv"
     wm protocol . WM_DELETE_WINDOW {exitOmnetpp}
 
-    mainWindow:setApplicationIcon
     mainWindow:createMenu
     mainWindow:createToolbar
     mainWindow:createStatusbars
@@ -140,44 +139,6 @@ proc createOmnetppWindow {} {
     # Hotkeys
     bindRunCommands .
     bindOtherCommands .
-}
-
-proc mainWindow:setApplicationIcon {} {
-    global tcl_platform icons
-
-    set iconphoto_main $icons(logo128m)
-    set iconphoto_other $icons(logo128w)
-    if {$tcl_platform(platform) == "windows"} {
-        if {![isTkAtLeast "8.5.6"]} {
-            # Tk bug #2504402: "On Windows the wm iconphoto command only works with
-            # 32-bit color displays. Other display settings produce a black icon."
-            # This bug appears to have been fixed in Tk 8.5.6. For earlier versions,
-            # only turn on icon for 32-bit displays.
-            if {[winfo screendepth .] == 32} {
-                # Bug #1467997: "the displayed icons have red and blue colors transposed."
-                # This bug was was fixed in 8.4.16. For earlier versions, we manually swap
-                # the R and B channels.
-                if {![isTkAtLeast "8.4.16"]} {
-                    opp_swapredandblue $iconphoto_other
-                    opp_swapredandblue $iconphoto_main
-                }
-                # note: on win7, without the "after" command wm iconphoto causes startup glitches (empty window+delay)
-                after 200 "wm iconphoto . -default $iconphoto_other; wm iconphoto . $iconphoto_main"
-            }
-        } else {
-            # note: on win7, without the "after" command wm iconphoto causes startup glitches (empty window+delay)
-            after 200 "wm iconphoto . -default $iconphoto_other; wm iconphoto . $iconphoto_main"
-        }
-    } elseif {[string equal [tk windowingsystem] aqua]}  {
-        # do nothing: on Mac OS X 10.5, wm iconphoto is not implemented (results in error);
-        # on 10.6, it does not cause an error but simply has no apparent effect
-    } else {
-        # On linux, 8.4.19 was tested and known to be working.
-        if {[isTkAtLeast "8.4.19"]} {
-            wm iconphoto . -default $iconphoto_other
-            wm iconphoto . $iconphoto_main
-        }
-    }
 }
 
 proc mainWindow:createMenu {} {

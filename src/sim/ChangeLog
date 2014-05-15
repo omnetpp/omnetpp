@@ -39,6 +39,14 @@
 	* Implemented simulation lifecycle listeners; see the ChangeLog in
 	include/.
 
+////////////// fixes taken from omnetpp-4.x come here /////////////////
+
+2014-04-15  Andras Varga
+
+	* Implementation of cMessagePrinter and Register_MessagePrinter()
+
+2014-02-13  ------ omnetpp-4.4.1 released ------
+
 2014-02-11  Andras Varga
 
 	* signal checking: fix #714: class name resolution for @signal type attr

@@ -27,6 +27,7 @@ proc startTkenv {} {
     setupTkOptions
     initBalloons
     createOmnetppWindow
+    setApplicationIcon
     puts ""
     loadBitmaps $OMNETPP_IMAGE_PATH
     loadPlugins $OMNETPP_PLUGIN_PATH
@@ -41,7 +42,8 @@ proc startTkenv {} {
 #
 proc startupCommands {} {
     # let the main window appear, otherwise startup dialogs will have
-    # problems figuring out where to come up (X11)
+    # problems figuring out where to come up;
+    # note: moving this 'update' into startTkenv will cause other problems
     update
 
     set configname [opp_getsimoption default_config]
@@ -347,27 +349,98 @@ proc isTkAtLeast {version} {
     }
 }
 
+proc setApplicationIcon {} {
+    global tcl_platform icons
+
+    set iconphoto_main $icons(logo128m)
+    set iconphoto_other $icons(logo128w)
+    if {$tcl_platform(platform) == "windows"} {
+        if {![isTkAtLeast "8.5.6"]} {
+            # Tk bug #2504402: "On Windows the wm iconphoto command only works with
+            # 32-bit color displays. Other display settings produce a black icon."
+            # This bug appears to have been fixed in Tk 8.5.6. For earlier versions,
+            # only turn on icon for 32-bit displays.
+            if {[winfo screendepth .] == 32} {
+                # Bug #1467997: "the displayed icons have red and blue colors transposed."
+                # This bug was was fixed in 8.4.16. For earlier versions, we manually swap
+                # the R and B channels.
+                if {![isTkAtLeast "8.4.16"]} {
+                    opp_swapredandblue $iconphoto_other
+                    opp_swapredandblue $iconphoto_main
+                }
+                # note: on win7, without the "after" command wm iconphoto causes startup glitches (empty window+delay)
+                after 200 "wm iconphoto . -default $iconphoto_other; wm iconphoto . $iconphoto_main"
+            }
+        } else {
+            # note: on win7, without the "after" command wm iconphoto causes startup glitches (empty window+delay)
+            after 200 "wm iconphoto . -default $iconphoto_other; wm iconphoto . $iconphoto_main"
+        }
+    } elseif {[string equal [tk windowingsystem] aqua]}  {
+        # On OS X, wm iconphoto doesn't work (does nothing or raises an error);
+        # instead, we need to use the TkDock extension.
+        setOSXDockIcon
+
+        # note: repeat because the first update resets the dock icon on OS X!
+        after idle setOSXDockIcon
+        # or maybe twice: after idle {after idle setOSXDockIcon}
+    } else {
+        # On linux, 8.4.19 was tested and known to be working.
+        wm iconphoto . -default $iconphoto_other
+        wm iconphoto . $iconphoto_main
+    }
+}
+
+proc setOSXDockIcon {} {
+    global OMNETPP_IMAGE_PATH OMNETPP_LIB_DIR
+
+    # find the icon to use
+    set icon ""
+    foreach dir [splitPath $OMNETPP_IMAGE_PATH] {
+        set f [file join $dir "logo/logo128m.png"]
+        if [file exists $f] {
+            set icon $f
+            break;
+        }
+    }
+    if {$icon==""} {
+        debug "application icon not found"
+        return
+    }
+
+    # load TkDock (first from $OMNETPP_LIB_DIR, then from DYLD_LIBRARY_PATH)
+    if {"AppKit" ni [winfo server .]} {error "TkAqua Cocoa required"}
+    if [catch {load [file join $OMNETPP_LIB_DIR "libtkdock1.0.dylib"] tkdock}] {
+        if [catch {load "libtkdock1.0.dylib" tkdock}] {
+            debug "could not load libtkdock1.0.dylib"
+        }
+    }
+
+    # set the icon
+    tkdock::switchIcon $icon
+}
+
+
 #===================================================================
 #    LOAD BITMAPS
 #===================================================================
 
 set bitmap_ctr 0
 
-proc loadBitmaps {path} {
-   global tcl_platform bitmaps bitmap_ctr
+proc splitPath {path} {
+   global tcl_platform
 
    # On Windows, we use ";" to separate directories in $path. Using ":" (the
    # Unix separator) would cause trouble with dirs containing drive letter
    # (like "c:\bitmaps"). Using a space is also not an option (think of
    # "C:\Program Files\...").
+   set sep [expr {$tcl_platform(platform) == "unix" ? ":;" : ";"}]
+   return [split $path $sep]
+}
 
-   if {$tcl_platform(platform) == "unix"} {
-       set sep {:;}
-   } else {
-       set sep {;}
-   }
+proc loadBitmaps {path} {
+   global tcl_platform bitmaps bitmap_ctr
 
-   foreach dir [split $path $sep] {
+   foreach dir [splitPath $path] {
        if {$dir!=""} {
            puts -nonewline "Loading images from $dir: "
            doLoadBitmaps $dir ""

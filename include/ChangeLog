@@ -136,7 +136,15 @@
 	cSnapshotManager to include an "I" (for interface) ->
 	cIOutputVectorManager, cIOutputScalarManager, cSnapshotManager.
 
-2014-02-13  ------ omnetpp-4.4.1 released -----
+////////////// fixes taken from omnetpp-4.x come here /////////////////
+
+2014-04-15  Andras Varga
+
+	* Added cMessagePrinter class and Register_MessagePrinter() macro.
+	Message printers are used by Tkenv to produce one-line descriptions
+	of network packets and other messages.
+
+2014-02-13  ------ omnetpp-4.4.1 released ------
 
 2013-12-20  ------ omnetpp-4.4 released ------
 
