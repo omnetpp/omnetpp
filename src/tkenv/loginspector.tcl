@@ -96,7 +96,7 @@ proc createLogViewer {insp f} {
 
     # bind a context menu as well
     catch {$f.text config -wrap $config(editor-wrap)}
-    bind $f.text <Button-$B3> [list textwidget:contextMenu %W $insp %X %Y]
+    bind $f.text <Button-$B3> [list LogInspector:contextMenu $insp %X %Y]
 
     after idle "LogInspector:setMode $insp messages"
 }
@@ -190,6 +190,31 @@ proc LogInspector:clear {insp} {
     $txt mark unset {*}[$txt mark names]
     $txt delete 0.1 end
     LogInspector:configureTags $insp
+}
+
+proc LogInspector:contextMenu {insp X Y} {
+    # note: this code has some overlap with textwidget:contextMenu
+    global tmp config CTRL
+
+    set txt $insp.main.text
+
+    set tmp(wrap) [$txt cget -wrap]
+
+    catch {destroy .popup}
+    menu .popup -tearoff 0
+
+    .popup add command -command editCopy -label "Copy" -accel "$CTRL+C" -underline 0
+    .popup add separator
+    .popup add command -command "editFind $txt" -label "Find..." -accel "$CTRL+F" -underline 0
+    .popup add command -command "editFindNext $txt" -label "Find Next" -accel "F3" -underline 5
+    .popup add separator
+    .popup add command -command "LogInspector:openFilterDialog $insp" -label "Filter Window Contents..." -accel "$CTRL+H" -underline 0
+    .popup add separator
+    .popup add checkbutton -command "textwidget:toggleWrap $txt" -variable tmp(wrap) -onvalue "char" -offvalue "none" -label "Wrap Lines" -underline 0
+    .popup add separator
+    .popup add command -command "$txt tag add sel 1.0 end" -label "Select All" -accel "$CTRL+A" -underline 0
+
+    tk_popup .popup $X $Y
 }
 
 proc LogInspector:openFilterDialog {insp} {
