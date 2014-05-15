@@ -1,3 +1,9 @@
+2014-04-15  Andras Varga
+
+	* Added cMessagePrinter class and Register_MessagePrinter() macro.
+	Message printers are used by Tkenv to produce one-line descriptions
+	of network packets and other messages.
+
 2014-02-13  ------ omnetpp-4.4.1 released ------
 
 2013-12-20  ------ omnetpp-4.4 released ------
@@ -6,11 +12,11 @@
 
 	* Added the EXECUTE_ON_SHUTDOWN() macro
 
-	* Embedding: Code registered with EXECUTE_ON_STARTUP() can now be run 
+	* Embedding: Code registered with EXECUTE_ON_STARTUP() can now be run
 	with CodeFragments::executeAll(CodeFragments::STARTUP) (instead of the
 	old ExecuteOnStartup::executeAll()) and code registered with the new
 	EXECUTE_ON_SHUTDOWN() macro can be run with CodeFragments::executeAll(
-	CodeFragments::SHUTDOWN). These calls usually occur at the top and 
+	CodeFragments::SHUTDOWN). These calls usually occur at the top and
 	bottom of the main() function of the simulation program.
 
 2013-12-20  Andras Varga

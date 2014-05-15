@@ -6,11 +6,52 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
-   - New configure.user option to prefer clang over gcc if both is installed
-   - New configure.user option to enable/disable C++11 compilance (-std=c++11)
-   - BLT is no longer used in Tkenv
-   - Tcl/Tk 8.4 is no longer supported
-   - Tcl/Tk 8.6 is preferred over 8.5
+
+OMNeT++ 4.5 beta 1 (May 2014)
+-----------------------------
+
+Tkenv:
+
+ - The Tkenv GUI has been redesigned for single-window mode to improve
+   usability and user experience. Tkenv has also received a new, modern look
+   and feel, due to the use of the Ttk widgets and a custom Ttk theme.
+
+   Details:
+   - single-window mode, with object navigator + 3 built-in inspectors
+     that interact in a meaningful way (new inspector windows can still
+     be opened)
+   - keep inpector windows on top of the main window at all times
+   - use Ttk widgets everywhere, with custom theme - this makes a huge
+     difference in looks on all platforms but esp. on OS X
+   - BLT no longer needed (we use Ttk instead)
+   - inspectors are no longer tied to a single object; visited objects
+     are remembered as navigable history (back/forward)
+   - module graphics now remembers zoom level and settings per NED type
+   - for each log line, the context module is now stored, and is shown
+     as a line prefix where it makes sense (differs from event's module)
+   - Tkenv now stores message sendings and also a clone of corresponding
+     message objects (cMessage), and can show them in the log window
+   - message printer classes can be contributed to customize the
+     messages view of log windows
+   - more concise status area that shows more information at the same time
+   - part of the status area can be turned off to free up vertical space
+   - timeline drawing now adapts to font size
+   - on-demand scrollbars (i.e. they are hidden when not needed)
+   - main menu cleanup (reorganized, removed obsolete items)
+   - dialogs where it makes sense now remember size and location
+   - additional hotkeys: Ctrl+Plus/Minu for Zoom, Ctrl+F5 Run Until,
+     Ctrl+Q Quit, etc.
+   - OS X: use Command key for hotkeys instead of Ctrl
+   - countless other, smaller improvements
+
+Other:
+
+  - In the Windows bundle, the compiler and the debugger have been upgraded
+    to gcc-4.8.1 and gdb-7.5; Tcl/Tk has been upgraded to version 8.6.0.
+  - New configure.user option to prefer clang over gcc if both are installed
+  - New configure.user option to enable/disable C++11 compilance (-std=c++11)
+  - Tcl/Tk version 8.5 is required, 8.6 is preferred; BLT is no longer in use
+
 
 OMNeT++ 4.4.1 (Feb 2014)
 ------------------------
