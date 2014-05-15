@@ -171,6 +171,7 @@ proc setupTkOptions {} {
 
        option add *Menu.Background $background
        option add *Menu.Foreground $foreground
+       option add *Menu.selectColor $foreground
        option add *Menu.activeBackground $activebg
        option add *Menu.activeForeground $activefg
        option add *Menu.disabledBackground $disabledbg
