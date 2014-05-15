@@ -56,7 +56,7 @@ proc createEmbeddedLogInspector {insp} {
 }
 
 proc createLogViewer {insp f} {
-    global config B3 Control
+    global config B3 Control config inspectordata
 
     createRuler $f.ruler
     pack $f.ruler -fill x
@@ -67,6 +67,8 @@ proc createLogViewer {insp f} {
     text $f.text -width 80 -height 15 -font LogFont -cursor arrow
     addScrollbars $f.text $f.grid
     $f.text config -xscrollcommand "ruler:xscroll $f.ruler $f.text; [$f.text cget -xscrollcommand]"
+
+    set inspectordata($insp:showprefix) $config(editor-showprefix)
 
     LogInspector:configureTags $insp
     LogInspector:updateTabStops $insp
@@ -134,6 +136,8 @@ proc LogInspector:refreshModeButtons {insp} {
 }
 
 proc LogInspector:configureTags {insp} {
+    global inspectordata
+
     set txt $insp.main.text
 
     $txt tag configure SELECT -back #808080 -fore #ffffff
@@ -157,6 +161,8 @@ proc LogInspector:configureTags {insp} {
     $txt tag raise hyperlink
     $txt tag raise SELECT
     $txt tag raise sel
+
+    $txt tag configure prefix -elide [expr {$inspectordata($insp:showprefix)=="0"}]
 }
 
 proc LogInspector:updateTabStops {insp} {
@@ -194,12 +200,11 @@ proc LogInspector:clear {insp} {
 
 proc LogInspector:contextMenu {insp X Y} {
     # note: this code has some overlap with textwidget:contextMenu
-    global tmp config CTRL
+    global tmp config CTRL inspectordata
 
     set txt $insp.main.text
 
     set tmp(wrap) [$txt cget -wrap]
-    set tmp(hideprefix) [$txt tag cget prefix -elide]
 
     catch {destroy .popup}
     menu .popup -tearoff 0
@@ -211,7 +216,7 @@ proc LogInspector:contextMenu {insp X Y} {
     .popup add separator
     .popup add command -command "LogInspector:openFilterDialog $insp" -label "Filter Window Contents..." -accel "$CTRL+H" -underline 0
     .popup add separator
-    .popup add checkbutton -command "textwidget:togglePrefix $txt" -variable tmp(hideprefix) -onvalue 0 -offvalue 1 -label "Show Log Prefix" -underline 0
+    .popup add checkbutton -command "LogInspector:refreshPrefix $insp" -variable inspectordata($insp:showprefix) -onvalue 1 -offvalue 0 -label "Show Log Prefix" -underline 0
     .popup add command -label "Logging Options..." -command "preferencesDialog $txt g"
     .popup add checkbutton -command "textwidget:toggleWrap $txt" -variable tmp(wrap) -onvalue "char" -offvalue "none" -label "Wrap Lines" -underline 0
     .popup add separator
@@ -228,6 +233,16 @@ proc LogInspector:openFilterDialog {insp} {
         opp_inspectorcommand $insp setexcludedmoduleids $excludedModuleIds
         opp_inspectorcommand $insp redisplay
     }
+}
+
+proc LogInspector:refreshPrefix {insp} {
+    global config inspectordata
+
+    set txt $insp.main.text
+    $txt tag configure prefix -elide [expr {$inspectordata($insp:showprefix)=="0"}]
+
+    # set default for further windows
+    set config(editor-showprefix) $inspectordata($insp:showprefix)
 }
 
 proc LogInspector:trimlines {insp} {

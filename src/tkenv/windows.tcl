@@ -139,13 +139,3 @@ proc textwidget:toggleWrap {txt} {
     # set default for further windows
     set config(editor-wrap) $tmp(wrap)
 }
-
-# TODO move to LogInspector.tcl
-proc textwidget:togglePrefix {txt} {
-    global tmp config
-
-    $txt tag configure "prefix" -elide $tmp(hideprefix)
-
-    # set default for further windows
-    set config(editor-hideprefix) $tmp(hideprefix)
-}
