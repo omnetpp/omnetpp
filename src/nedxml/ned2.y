@@ -480,9 +480,6 @@ simplemoduledefinition
                 }
             opt_paramblock
             opt_gateblock
-            opt_typeblock
-            opt_submodblock
-            opt_connblock
           '}'
                 {
                   ps.propertyscope.pop();
