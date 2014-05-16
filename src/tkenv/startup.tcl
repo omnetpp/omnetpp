@@ -109,7 +109,7 @@ proc checkTclTkVersion {} {
 proc setupTkOptions {} {
    global icons tcl_platform tk_version
    global tcl_wordchars tcl_nonwordchars
-   global B2 B3 BBack BFwd CTRL CTRL_ Control
+   global B2 B3 BBack BFwd CTRL CTRL_ Control arrowcursor
 
    package require autoscroll
 
@@ -190,6 +190,13 @@ proc setupTkOptions {} {
    catch {tcl_wordBreakAfter};
    set tcl_wordchars {\w}
    set tcl_nonwordchars {\W}
+
+   # on Linux and OS X, "arrow" points right not left
+   if {[string equal [tk windowingsystem] win32]} {
+       set arrowcursor arrow
+   } else {
+       set arrowcursor left_ptr
+   }
 
    # turn on anti-aliasing on OS/X
    catch {set tk::mac::CGAntialiasLimit 1}

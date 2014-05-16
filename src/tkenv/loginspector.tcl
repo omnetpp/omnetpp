@@ -56,7 +56,7 @@ proc createEmbeddedLogInspector {insp} {
 }
 
 proc createLogViewer {insp f} {
-    global config B3 Control config inspectordata
+    global config B3 Control config inspectordata arrowcursor
 
     createRuler $f.ruler
     pack $f.ruler -fill x
@@ -64,7 +64,7 @@ proc createLogViewer {insp f} {
     # create text widget
     ttk::frame $f.grid
     pack $f.grid -expand yes -fill both -padx 1 -pady 1
-    text $f.text -width 80 -height 15 -font LogFont -cursor arrow
+    text $f.text -width 80 -height 15 -font LogFont -cursor $arrowcursor -bg white ;# on some Linux versions the bg is grey by default
     addScrollbars $f.text $f.grid
     $f.text config -xscrollcommand "ruler:xscroll $f.ruler $f.text; [$f.text cget -xscrollcommand]"
 
