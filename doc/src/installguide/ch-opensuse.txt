@@ -39,15 +39,6 @@ log out and log in again, or source your `.profile` script:
 
   $ . ~/.profile
 
-[NOTE]
-===============================================================
-OpenSUSE provides no BLT package, so it is missing from the above list.
-BLT is optional in @OMNETPP@ and its absence will not result in loss
-of functionality, but you can download a BLT source package from sourceforge.net,
-and compile and install it yourself if you wish. See the 'Generic Unix'
-chapter of this Installation Guide for more information on BLT.
-===============================================================
-
 ==== Graphical Installation
 
 The graphical installer can be launched by choosing

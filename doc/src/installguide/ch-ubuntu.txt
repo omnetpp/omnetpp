@@ -39,7 +39,7 @@ Type in the terminal:
 To install the required packages, type in the terminal:
 
  $ sudo apt-get install build-essential gcc g++ bison flex perl \
-       tcl-dev tk-dev blt libxml2-dev zlib1g-dev default-jre \
+       tcl-dev tk-dev libxml2-dev zlib1g-dev default-jre \
        doxygen graphviz libwebkitgtk-1.0-0 openmpi-bin \
        libopenmpi-dev libpcap-dev
 
@@ -63,7 +63,7 @@ If the 'Mark additional required changes?' dialog comes up, choose the 'Mark' bu
 
 The packages:
 
-* build-essential, gcc, g++, bison, flex, perl, tcl-dev, tk-dev, blt, libxml2-dev,
+* build-essential, gcc, g++, bison, flex, perl, tcl-dev, tk-dev, libxml2-dev,
 zlib1g-dev, default-jre, doxygen, graphviz, libwebkitgtk-1.0-0, openmpi-bin,
 libopenmpi-dev, libpcap-dev
 

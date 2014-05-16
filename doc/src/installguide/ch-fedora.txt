@@ -28,7 +28,7 @@ from the terminal, whichever you prefer.
 To install the required packages, type in the terminal:
 
   $ su -c 'yum install make gcc gcc-c++ bison flex perl \
-      tcl-devel tk-devel blt libxml2-devel zlib-devel \
+      tcl-devel tk-devel libxml2-devel zlib-devel \
       java doxygen graphviz webkitgtk openmpi-devel libpcap-devel'
 
 then follow the instruction on the console.
@@ -55,7 +55,7 @@ in front of the names, and pick the latest version of each package.
 
 The packages:
 
-* bison, gcc, gcc-c++, flex, perl, tcl-devel, tk-devel, blt, libxml2-devel,
+* bison, gcc, gcc-c++, flex, perl, tcl-devel, tk-devel, libxml2-devel,
 zlib-devel, webkitgtk, make, java,
 doxygen, graphviz, openmpi-devel, libpcap-devel
 

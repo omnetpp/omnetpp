@@ -77,17 +77,6 @@ When in doubt, use `module avail` to display the list of available
 modules. If you need MPI in every session, you may add the `module load`
 command to your startup script (`.bashrc`).`
 
-[NOTE]
-===============================================================
-Red Hat provides no BLT package, so it is missing from the above list.
-BLT is optional in @OMNETPP@ and its absence will not result in loss
-of functionality, but you can download a BLT source package from sourceforge.net,
-and compile and install it yourself if you wish. See the 'Generic Unix'
-chapter of this Installation Guide for more information on BLT.
-Alternatively you may search for binary RPM packages using 
-`http://rpm.pbone.net`
-===============================================================
-
 
 ==== Graphical Installation
 
@@ -103,12 +92,6 @@ The packages:
 zlib-devel, make, java, doxygen, graphviz, openmpi-devel, libpcap
 
 Click 'Apply', then follow the instructions.
-
-[NOTE]
-===============================================================
-The above list does not contain BLT and GraphViz; see the previous section
-for more info about these packages.
-===============================================================
 
 === SELinux
 

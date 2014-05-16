@@ -163,22 +163,6 @@ it in an editor and search for phrases like 'error' or the name of the package
 associated with the problem.
 ===============================================================
 
-[NOTE]
-===============================================================
-@OMNETPP@ builds without the BLT Tcl/Tk extension, because BLT is
-not available for the native (Aqua) version of Tcl/Tk.
-
-As an alternative to the Aqua version of Tcl/Tk, you may also use
-the X11 version from the MacPorts repository (http://macports.org).
-The MacPorts version does not have the look and feel of OS X applications,
-but it may provide better performance with animations.
-To select the MacPorts version of Tk, you will need to adjust the
-Tcl/Tk settings in @OMNETPP@'s `configure.user` file and re-run the
-`./configure`. Please note that we do not provide support for
-using the MacPorts version of Tcl/Tk.
-===============================================================
-
-
 When `./configure` has finished, you can compile @OMNETPP@.
 Type in the terminal:
 
