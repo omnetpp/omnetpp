@@ -36,7 +36,6 @@ class  cComponent;
 class  cModule;
 class  cChannel;
 class  cSimpleModule;
-class  cCompoundModule;
 class  cSimulation;
 class  cException;
 class  cScheduler;

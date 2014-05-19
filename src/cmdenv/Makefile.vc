@@ -79,7 +79,6 @@ $O/cmdenv.obj: cmdenv.cc \
   ../../include/cregistrationlist.h \
   ../../include/carray.h \
   ../../include/cscheduler.h \
-  ../../include/ccompoundmodule.h \
   ../../include/cgate.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
@@ -95,8 +94,8 @@ $O/cmdenv.obj: cmdenv.cc \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
-  ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/simutil.h \
   ../../include/clog.h \
   ../../include/cwatch.h \
   ../../include/cconfigoption.h \
@@ -120,14 +119,14 @@ $O/cmdenv.obj: cmdenv.cc \
   ../../include/cstatistic.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
-  ../../include/cexpression.h \
   ../../include/cdisplaystring.h \
   ../../include/cownedobject.h \
+  ../../include/cexpression.h \
   ../../include/cnedmathfunction.h \
   ../../include/cobjectfactory.h \
   ../../include/cresultrecorder.h \
-  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
+  ../../include/clistener.h \
   ../../include/cpar.h \
   ../../include/cproperty.h \
   cmdenv.h \
@@ -143,7 +142,6 @@ $O/serializer.obj: serializer.cc \
   ../../include/cregistrationlist.h \
   ../../include/carray.h \
   ../../include/cscheduler.h \
-  ../../include/ccompoundmodule.h \
   ../../include/cgate.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \

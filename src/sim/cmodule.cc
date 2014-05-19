@@ -37,6 +37,8 @@
 
 NAMESPACE_BEGIN
 
+Register_Class(cModule);
+
 
 // static members:
 std::string cModule::lastmodulefullpath;
@@ -144,6 +146,13 @@ void cModule::setNameAndIndex(const char *s, int i, int n)
     idx = i;
     vectsize = n;
     updateFullName();
+}
+
+std::string cModule::info() const
+{
+    std::stringstream out;
+    out << "id=" << getId();
+    return out.str();
 }
 
 void cModule::insertSubmodule(cModule *mod)
@@ -1410,6 +1419,17 @@ void cModule::callFinish()
     } catch (std::exception& e) {
         throw cRuntimeError("%s: %s", opp_typename(typeid(e)), e.what());
     }
+}
+
+void cModule::arrived(cMessage *msg, cGate *ongate, simtime_t)
+{
+    // by default, cModule acts as compound module (cSimpleModule overrides this)
+    throw cRuntimeError("Gate `%s' of compound module (%s)%s is not connected on the %s, "
+                        "upon arrival of message (%s)%s",
+                        ongate->getFullName(),
+                        getClassName(), getFullPath().c_str(),
+                        (ongate->isConnectedOutside() ? "inside" : "outside"),
+                        msg->getClassName(), msg->getName());
 }
 
 //----

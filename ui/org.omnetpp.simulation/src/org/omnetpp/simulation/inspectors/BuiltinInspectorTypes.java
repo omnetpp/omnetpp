@@ -1,7 +1,6 @@
 package org.omnetpp.simulation.inspectors;
 
 import org.omnetpp.simulation.canvas.IInspectorContainer;
-import org.omnetpp.simulation.model.cCompoundModule;
 import org.omnetpp.simulation.model.cMessageHeap;
 import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
@@ -13,7 +12,7 @@ public class BuiltinInspectorTypes {
     public static class GraphicalModule implements IInspectorType {
         @Override
         public boolean supports(cObject object) {
-            return object instanceof cCompoundModule;
+            return object instanceof cModule && ((cModule)object).hasSubmodules();
         }
 
         @Override

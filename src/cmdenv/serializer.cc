@@ -28,7 +28,6 @@
 #include "cchannel.h"
 #include "coutvector.h"
 #include "csimplemodule.h"
-#include "ccompoundmodule.h"
 #include "cstatistic.h"
 #include "cdensityestbase.h"
 #include "cwatch.h"
@@ -369,8 +368,8 @@ const char *Serializer::getKnownBaseClass(cObject *object)
         return"cPlaceholderModule";
     else if (dynamic_cast<cSimpleModule *>(object))
         return "cSimpleModule";
-    else if (dynamic_cast<cCompoundModule *>(object))
-        return "cCompoundModule";
+    else if (dynamic_cast<cModule *>(object))
+        return "cModule";
     else if (dynamic_cast<cPacket *>(object))
         return "cPacket";
     else if (dynamic_cast<cMessage *>(object))

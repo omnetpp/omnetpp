@@ -50,7 +50,6 @@
 #include "cqueue.h"
 #include "cchannel.h"
 #include "coutvector.h"
-#include "ccompoundmodule.h"
 #include "cstatistic.h"
 #include "cdensityestbase.h"
 #include "cwatch.h"

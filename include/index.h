@@ -56,10 +56,9 @@
  * Simulation core classes:       <!-- blank line needed for autobrief=yes -->
  *
  *    - cObject and cOwnedObject are the base classes for most \opp classes
- *    - cModule, cCompoundModule and cSimpleModule represent modules
- *      in the simulation. The user implements new models by subclassing
- *      cSimpleModule and overriding at least its activity() or
- *      handleMessage() member function.
+ *    - cModule and cSimpleModule represent modules in the simulation.
+ *      The user implements new models by subclassing cSimpleModule and
+ *      overriding at least its activity() or handleMessage() member function.
  *    - cMessage represents events, and also messages sent among modules
  *    - cGate represents module gates
  *    - cPar represents parameters of modules and channels

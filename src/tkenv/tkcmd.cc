@@ -24,7 +24,6 @@
 #include "carray.h"
 #include "csimulation.h"
 #include "csimplemodule.h"
-#include "ccompoundmodule.h"
 #include "ccomponenttype.h"
 #include "cpar.h"
 #include "cpacket.h"
@@ -898,8 +897,8 @@ int getObjectBaseClass_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
        Tcl_SetResult(interp, TCLCONST("cPlaceholderModule"), TCL_STATIC);
    else if (dynamic_cast<cSimpleModule *>(object))
        Tcl_SetResult(interp, TCLCONST("cSimpleModule"), TCL_STATIC);
-   else if (dynamic_cast<cCompoundModule *>(object))
-       Tcl_SetResult(interp, TCLCONST("cCompoundModule"), TCL_STATIC);
+   else if (dynamic_cast<cModule *>(object))
+       Tcl_SetResult(interp, TCLCONST("cModule"), TCL_STATIC);
    else if (dynamic_cast<cMessage *>(object))
        Tcl_SetResult(interp, TCLCONST("cMessage"), TCL_STATIC);
    else if (dynamic_cast<cArray *>(object))

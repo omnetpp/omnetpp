@@ -31,9 +31,8 @@ class  cModule;
 class  cSimulation;
 class  cModuleType;
 
-
 /**
- * Common base for cSimpleModule and cCompoundModule.
+ * Common base for cSimpleModule. TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  * cModule provides gates, parameters, RNG mapping, display strings,
  * and a set of virtual methods.
  *
@@ -256,7 +255,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     // internal: called when a message arrives at a gate which is no further
     // connected (that is, getNextGate() is NULL)
-    virtual void arrived(cMessage *msg, cGate *ongate, simtime_t t) = 0;
+    virtual void arrived(cMessage *msg, cGate *ongate, simtime_t t);
 
     // internal: sets module name and its index within vector (if module is
     // part of a module vector). Called as part of the module creation process.
@@ -366,6 +365,11 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * instance from the path name.
      */
     virtual std::string getFullPath() const;
+
+    /**
+     * Overridden to add the module ID.
+     */
+    std::string info() const;
     //@}
 
     /** @name Setting up the module. */

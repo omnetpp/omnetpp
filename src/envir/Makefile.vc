@@ -153,27 +153,26 @@ $O/akaroarng.obj: akaroarng.cc \
   ../../include/platdep/platmisc.h \
   ../../include/cregistrationlist.h \
   ../../include/errmsg.h \
-  ../../include/cvisitor.h \
   ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/cconfiguration.h \
-  ../../include/cenvir.h \
-  ../../include/opp_string.h \
   ../../include/clifetimelistener.h \
+  ../../include/opp_string.h \
+  ../../include/cenvir.h \
   ../../include/cexception.h \
-  akaroarng.h \
   ../../include/cnamedobject.h \
+  akaroarng.h \
   ../../include/onstartup.h \
   ../../include/cownedobject.h \
-  ../../include/csimulation.h \
   ../../include/cobjectfactory.h \
   ../../include/crng.h \
   ../../include/platdep/platdefs.h \
+  ../../include/clistener.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   envirdefs.h \
-  ../../include/simkerneldefs.h \
   ../../include/simutil.h \
-  ../../include/cmessageheap.h \
+  ../../include/simkerneldefs.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/regmacros.h
@@ -195,8 +194,8 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   envirdefs.h \
-  ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/simutil.h \
   ../../include/clog.h \
   ../../include/cconfigoption.h \
   ../../include/cmessageheap.h \
@@ -218,8 +217,8 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
-  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
+  ../../include/clistener.h \
   ../../include/cpar.h \
   runattributes.h \
   objectprinter.h \
@@ -233,14 +232,12 @@ $O/appreg.obj: appreg.cc \
   ../../include/cstringpool.h \
   ../../include/cenvir.h \
   ../../include/onstartup.h \
-  ../../include/csimulation.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   envirdefs.h \
-  ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
   ../../include/platdep/intxtypes.h \
-  ../../include/cmessageheap.h \
   ../../include/cobject.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
@@ -252,25 +249,23 @@ $O/appreg.obj: appreg.cc \
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
   ../../include/platdep/platdefs.h \
+  ../../include/clistener.h \
   appreg.h \
   ../../include/regmacros.h
 $O/args.obj: args.cc \
   args.h \
   envirdefs.h
 $O/cxmldoccache.obj: cxmldoccache.cc \
-  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/cxmlelement.h \
   ../../include/cenvir.h \
   ../nedxml/saxparser.h \
-  ../../include/csimulation.h \
   cxmldoccache.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   envirdefs.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
-  ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/platdep/platmisc.h \
@@ -278,8 +273,7 @@ $O/cxmldoccache.obj: cxmldoccache.cc \
   ../../include/clifetimelistener.h \
   ../../include/opp_string.h \
   ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../nedxml/nedxmldefs.h \
   ../../include/regmacros.h
@@ -367,7 +361,6 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   envirbase.h \
   intervals.h \
   ../../include/carray.h \
-  ../../include/ccompoundmodule.h \
   ../../include/cgate.h \
   ../../include/cenvir.h \
   ../../include/cconfiguration.h \
@@ -920,7 +913,8 @@ $O/objectprinter.obj: objectprinter.cc \
   ../../include/regmacros.h
 $O/opp_run.obj: opp_run.cc \
   ../../include/platdep/intxtypes.h \
-  ../../include/platdep/platmisc.h
+  ../../include/platdep/platmisc.h \
+  ../../include/platdep/platdefs.h
 $O/runattributes.obj: runattributes.cc \
   envirbase.h \
   intervals.h \
@@ -1042,8 +1036,8 @@ $O/startup.obj: startup.cc \
   ../../include/clifetimelistener.h \
   ../../include/distrib.h \
   matchableobject.h \
-  ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/cexpression.h \
   ../../include/cobjectfactory.h \
   ../../include/crng.h \
   ../../include/clistener.h \
@@ -1103,8 +1097,8 @@ $O/visitor.obj: visitor.cc \
   ../../include/cmessage.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
-  ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/simutil.h \
   ../../include/cwatch.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
@@ -1144,47 +1138,3 @@ $O/visitor.obj: visitor.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/regmacros.h
-$O/xgridspec.obj: xgridspec.cc \
-  envirbase.h \
-  intervals.h \
-  ../../include/carray.h \
-  ../../include/cconfiguration.h \
-  ../../include/cenvir.h \
-  ../../include/csimulation.h \
-  ../../include/simtime.h \
-  ../../include/simutil.h \
-  ../../include/simkerneldefs.h \
-  ../../include/cobject.h \
-  ../../include/errmsg.h \
-  ../../include/clifetimelistener.h \
-  ../../include/cownedobject.h \
-  ../../include/cexpression.h \
-  ../../include/cobjectfactory.h \
-  ../../include/clistener.h \
-  ../../include/ccomponent.h \
-  ../../include/cevent.h \
-  eventlogfilemgr.h \
-  ../../include/cregistrationlist.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  args.h \
-  ../../include/onstartup.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
-  ../../include/clog.h \
-  xgridspec.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/cmessageheap.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/cresultlistener.h \
-  ../../include/cdefaultlist.h \
-  ../../include/opp_string.h \
-  ../../include/envirext.h \
-  ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  objectprinter.h \
-  ../../include/regmacros.h \
-  logformatter.h

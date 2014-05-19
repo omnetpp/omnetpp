@@ -152,6 +152,7 @@ class cGate extends cObject;
 
 class cModule extends cComponent
 {
+    @icon(compound);
     int id @group(fields) @hint("Unique module ID -- IDs of deleted modules are not issued again");
     bool isSimple @getter(isSimple) @group(fields) @hint("Whether this is a simple module");
     bool isVector @getter(isVector) @group(fields) @hint("Whether this module is part of a module vector");
@@ -168,11 +169,6 @@ class cSimpleModule extends cModule
     bool usesActivity @getter(usesActivity) @group(activity) @hint("Whether this simple module was programmed using the \"activity\" or the \"handleMessage\" C++ method");
     unsigned int stackSize @group(activity) @hint("If module uses \"activity\": stack size allocated for this module -- zero means info not available");
     unsigned int stackUsage @group(activity) @hint("If module uses \"activity\": stack actually used by this module -- zero means info not available");
-}
-
-class cCompoundModule extends cModule
-{
-    @icon(compound);
 }
 
 //TODO: use @icon(placeholder) for cPlaceholderModule
@@ -517,7 +513,7 @@ class cXMLElement
     string detailedInfo @getter(detailedInfo) @label(contents);
 }
 
-cplusplus 
+cplusplus
 {{
 
 NAMESPACE_END

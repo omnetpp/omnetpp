@@ -46,6 +46,11 @@ public class cModule extends cComponent {
         return submodules;
     }
 
+    public boolean hasSubmodules() {
+        checkState();
+        return submodules != null && submodules.length > 0;
+    }
+
     public cModule getSubmodule(String name) {
         // TODO: use more efficient data structure to avoid linear search! e.g. map of submodule vectors etc
         checkState();
