@@ -76,10 +76,6 @@ clean:
 $O/cmdenv.obj: cmdenv.cc \
   ../../include/cregistrationlist.h \
   ../../include/carray.h \
-<<<<<<< HEAD
-=======
-  ../../include/cscheduler.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cgate.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
@@ -91,80 +87,11 @@ $O/cmdenv.obj: cmdenv.cc \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
-  ../../include/simkerneldefs.h \
-<<<<<<< HEAD
-=======
   ../../include/simutil.h \
-  ../../include/clog.h \
-  ../../include/cwatch.h \
->>>>>>> cb3cebb... cCompoundModule killed
+  ../../include/simkerneldefs.h \
   ../../include/cconfigoption.h \
   ../../include/cmsgpar.h \
   ../../include/cmessageheap.h \
-<<<<<<< HEAD
-=======
-  ../../include/cobject.h \
-  ../../include/cstddev.h \
-  ../../include/globals.h \
-  cmddefs.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/cresultlistener.h \
-  ../../include/errmsg.h \
-  ../../include/cdefaultlist.h \
-  ../../include/clifetimelistener.h \
-  ../../include/opp_string.h \
-  ../../include/checkandcast.h \
-  ../../include/ccomponenttype.h \
-  ../../include/cstatistic.h \
-  ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/cdisplaystring.h \
-  ../../include/cownedobject.h \
-  ../../include/cexpression.h \
-  ../../include/cnedmathfunction.h \
-  ../../include/cobjectfactory.h \
-  ../../include/cresultrecorder.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/clistener.h \
-  ../../include/cpar.h \
-  ../../include/cproperty.h \
-  cmdenv.h \
-  ../../include/cchannel.h \
-  ../../include/cqueue.h \
-  ../../include/cproperties.h \
-  ../../include/ccomponent.h \
-  ../../include/cevent.h \
-  ../../include/regmacros.h
-$O/serializer.obj: serializer.cc \
-  ../../include/platdep/timeutil.h \
-  ../../include/ctimestampedvalue.h \
-  ../../include/cregistrationlist.h \
-  ../../include/carray.h \
-  ../../include/cscheduler.h \
-  ../../include/cgate.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  serializer.h \
-  ../../include/cenvir.h \
-  ../../include/cmodule.h \
-  ../../include/cclassdescriptor.h \
-  ../../include/cmessage.h \
-  ../../include/coutvector.h \
-  ../../include/csimulation.h \
-  ../../include/onstartup.h \
-  ../../include/simtime.h \
-  ../../include/simtime_t.h \
-  ../../include/csimplemodule.h \
-  ../../include/simutil.h \
-  ../../include/simkerneldefs.h \
-  ../../include/clog.h \
-  ../../include/cwatch.h \
-  ../../include/cpacket.h \
-  ../../include/cdensityestbase.h \
-  ../../include/cenum.h \
-  ../../include/cmessageheap.h \
-  ../../include/cmsgpar.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   cmddefs.h \

@@ -105,23 +105,16 @@ clean:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/arrow.obj: arrow.cc \
   ../../include/platdep/platmisc.h \
-  ../../include/errmsg.h \
-  arrow.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  ../../include/opp_string.h \
-  tkdefs.h \
-  ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/cownedobject.h \
   ../../include/platdep/platdefs.h \
   tkutil.h \
-  ../../include/simtime.h \
-  ../../include/simtime_t.h \
+  ../../include/errmsg.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  arrow.h \
+  ../../include/cvisitor.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
+  tkdefs.h \
   ../../include/regmacros.h
 $O/componenthistory.obj: componenthistory.cc \
   ../../include/ctimestampedvalue.h \
@@ -141,17 +134,15 @@ $O/componenthistory.obj: componenthistory.cc \
   ../../include/csimplemodule.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
-  ../../include/clog.h \
   ../../include/cmsgpar.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
-  ../../include/clifetimelistener.h \
   tkdefs.h \
   ../../include/ccomponenttype.h \
   ../../include/cexception.h \
@@ -165,7 +156,6 @@ $O/componenthistory.obj: componenthistory.cc \
   ../../include/cpar.h \
   ../../include/cchannel.h \
   ../../include/ccomponent.h \
-  ../../include/cevent.h \
   ../../include/regmacros.h
 $O/gateinspector.obj: gateinspector.cc \
   ../../include/ctimestampedvalue.h \
@@ -189,10 +179,6 @@ $O/gateinspector.obj: gateinspector.cc \
   ../../include/simtime_t.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
-<<<<<<< HEAD
-=======
-  ../../include/clog.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cmsgpar.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
@@ -201,24 +187,16 @@ $O/gateinspector.obj: gateinspector.cc \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cdefaultlist.h \
-<<<<<<< HEAD
-=======
-  ../../include/clifetimelistener.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/opp_string.h \
   ../../include/ccomponenttype.h \
   tkdefs.h \
   circularbuffer.h \
   ../../include/cexception.h \
-  inspectorfactory.h \
-<<<<<<< HEAD
   ../../include/cnamedobject.h \
-=======
->>>>>>> cb3cebb... cCompoundModule killed
+  inspectorfactory.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cdisplaystring.h \
-  ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
   ../../include/cnedmathfunction.h \
   ../../include/clistener.h \
@@ -233,9 +211,9 @@ $O/genericobjectinspector.obj: genericobjectinspector.cc \
   ../../include/cregistrationlist.h \
   componenthistory.h \
   ../../include/carray.h \
-  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/cgate.h \
+  ../../include/cstringpool.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   genericobjectinspector.h \
@@ -250,10 +228,6 @@ $O/genericobjectinspector.obj: genericobjectinspector.cc \
   ../../include/simtime_t.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
-<<<<<<< HEAD
-=======
-  ../../include/clog.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/platdep/intxtypes.h \
   ../../include/cmsgpar.h \
   ../../include/cmessageheap.h \
@@ -262,26 +236,15 @@ $O/genericobjectinspector.obj: genericobjectinspector.cc \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cdefaultlist.h \
-<<<<<<< HEAD
-  ../../include/opp_string.h \
-  tkdefs.h \
-  ../../include/ccomponenttype.h \
-=======
-  ../../include/clifetimelistener.h \
   ../../include/opp_string.h \
   tkdefs.h \
   ../../include/ccomponenttype.h \
   circularbuffer.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   inspectorfactory.h \
   ../../include/cexpression.h \
-<<<<<<< HEAD
-=======
   ../../include/cownedobject.h \
-  ../../include/cnedmathfunction.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cobjectfactory.h \
   ../../include/cnedmathfunction.h \
   ../../include/platdep/platdefs.h \
@@ -297,9 +260,9 @@ $O/histograminspector.obj: histograminspector.cc \
   ../../include/cregistrationlist.h \
   componenthistory.h \
   ../../include/carray.h \
-  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/cgate.h \
+  ../../include/cstringpool.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   inspector.h \
@@ -307,19 +270,12 @@ $O/histograminspector.obj: histograminspector.cc \
   tklib.h \
   logbuffer.h \
   ../../include/onstartup.h \
-<<<<<<< HEAD
   ../../include/csimulation.h \
-=======
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/simtime.h \
   tkutil.h \
   ../../include/simtime_t.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
-<<<<<<< HEAD
-=======
-  ../../include/clog.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cdensityestbase.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cmsgpar.h \
@@ -330,27 +286,16 @@ $O/histograminspector.obj: histograminspector.cc \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cdefaultlist.h \
-<<<<<<< HEAD
-=======
-  ../../include/clifetimelistener.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/opp_string.h \
   ../../include/cstatistic.h \
   tkdefs.h \
   ../../include/ccomponenttype.h \
-<<<<<<< HEAD
-=======
   circularbuffer.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   inspectorfactory.h \
   ../../include/cexpression.h \
-<<<<<<< HEAD
-=======
   ../../include/cownedobject.h \
-  ../../include/cnedmathfunction.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cobjectfactory.h \
   ../../include/cnedmathfunction.h \
   ../../include/platdep/platdefs.h \
@@ -460,6 +405,7 @@ $O/inspector.obj: inspector.cc \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cdynamicexpression.h \
+  inspectorfactory.h \
   ../../include/cnedmathfunction.h \
   ../../include/cresultrecorder.h \
   ../../include/cmodelchange.h \
@@ -585,8 +531,8 @@ $O/layouterenv.obj: layouterenv.cc \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   tkutil.h \
-  ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
   ../../include/cobject.h \
   ../../include/errmsg.h \
   tkdefs.h \
@@ -636,10 +582,9 @@ $O/logbuffer.obj: logbuffer.cc \
   ../../include/cobjectfactory.h \
   ../../include/clistener.h \
   ../../include/ccomponent.h \
-  ../../include/cevent.h \
   ../../include/cregistrationlist.h \
-  ../../include/cvisitor.h \
   ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   tklib.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
@@ -672,10 +617,7 @@ $O/loginspector.obj: loginspector.cc \
   ../../include/errmsg.h \
   ../../include/ccomponenttype.h \
   tkdefs.h \
-<<<<<<< HEAD
-=======
   circularbuffer.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
@@ -726,10 +668,7 @@ $O/moduleinspector.obj: moduleinspector.cc \
   moduleinspector.h \
   ../../include/ccomponenttype.h \
   tkdefs.h \
-<<<<<<< HEAD
-=======
   circularbuffer.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cdisplaystring.h \
@@ -780,16 +719,9 @@ $O/outputvectorinspector.obj: outputvectorinspector.cc \
   ../../include/cobject.h \
   outputvectorinspector.h \
   ../../include/errmsg.h \
-<<<<<<< HEAD
-  tkdefs.h \
-  ../../include/ccomponenttype.h \
-  ../../include/cownedobject.h \
-=======
-  ../../include/clifetimelistener.h \
   tkdefs.h \
   ../../include/ccomponenttype.h \
   circularbuffer.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
@@ -798,13 +730,9 @@ $O/outputvectorinspector.obj: outputvectorinspector.cc \
   ../../include/ccomponent.h \
   ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \
-<<<<<<< HEAD
-=======
   componenthistory.h \
   ../../include/cvisitor.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
   inspector.h \
   tklib.h \
   ../../include/coutvector.h \
@@ -924,11 +852,8 @@ $O/tkenv.obj: tkenv.cc \
   ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
   ../../include/platdep/intxtypes.h \
-<<<<<<< HEAD
   ../../include/cmessageheap.h \
-=======
   ../../include/cmessageprinter.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/cdefaultlist.h \
@@ -951,17 +876,14 @@ $O/tklib.obj: tklib.cc \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   tkutil.h \
-  ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/errmsg.h \
   ../../include/ccomponenttype.h \
   tkdefs.h \
-<<<<<<< HEAD
-=======
   circularbuffer.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
@@ -999,24 +921,22 @@ $O/tkutil.obj: tkutil.cc \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   tkutil.h \
-  ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
+  ../../include/cwatch.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/errmsg.h \
   tkdefs.h \
   ../../include/ccomponenttype.h \
-<<<<<<< HEAD
-=======
   ../../include/cstatistic.h \
   circularbuffer.h \
-  ../../include/cownedobject.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
   ../common/ver.h \
   ../../include/clistener.h \
+  ../../include/cqueue.h \
   ../../include/cchannel.h \
   ../../include/ccomponent.h \
   ../../include/ctimestampedvalue.h \
@@ -1024,10 +944,12 @@ $O/tkutil.obj: tkutil.cc \
   componenthistory.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
+  ../../include/coutvector.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
-  ../../include/cmessageheap.h \
+  ../../include/csimplemodule.h \
   ../../include/platdep/intxtypes.h \
+  ../../include/cmessageheap.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/cdefaultlist.h \
@@ -1057,16 +979,9 @@ $O/watchinspector.obj: watchinspector.cc \
   ../../include/cobject.h \
   watchinspector.h \
   ../../include/errmsg.h \
-<<<<<<< HEAD
-  tkdefs.h \
-  ../../include/ccomponenttype.h \
-  ../../include/cownedobject.h \
-=======
-  ../../include/clifetimelistener.h \
   tkdefs.h \
   ../../include/ccomponenttype.h \
   circularbuffer.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
@@ -1075,13 +990,9 @@ $O/watchinspector.obj: watchinspector.cc \
   ../../include/ccomponent.h \
   ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \
-<<<<<<< HEAD
-=======
   componenthistory.h \
   ../../include/cvisitor.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
   inspector.h \
   tklib.h \
   ../../include/onstartup.h \

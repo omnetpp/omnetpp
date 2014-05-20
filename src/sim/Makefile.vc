@@ -188,6 +188,7 @@ $O/cboolparimpl.obj: cboolparimpl.cc \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cdynamicexpression.h \
+  ../../include/csimulation.h \
   ../../include/cnedvalue.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
@@ -199,6 +200,7 @@ $O/cboolparimpl.obj: cboolparimpl.cc \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cparimpl.h \
+  ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/ccomponent.h \
@@ -221,13 +223,8 @@ $O/cchannel.obj: cchannel.cc \
   ../../include/simtime_t.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
-<<<<<<< HEAD
   ../../include/cmessageheap.h \
-=======
-  ../../include/clog.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/platdep/intxtypes.h \
-  ../../include/cmessageheap.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/globals.h \
@@ -239,13 +236,9 @@ $O/cchannel.obj: cchannel.cc \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
-<<<<<<< HEAD
   ../../include/cownedobject.h \
   ../../include/cnedmathfunction.h \
-=======
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cobjectfactory.h \
-  ../../include/cnedmathfunction.h \
   ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
@@ -305,16 +298,16 @@ $O/ccomponent.obj: ccomponent.cc \
   ../../include/cconfiguration.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
-  ../../include/csimulation.h \
   ../../include/onstartup.h \
+  ../../include/csimulation.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cconfigoption.h \
   ../../include/cmsgpar.h \
-  ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
+  ../../include/cmessageheap.h \
   ../../include/cobject.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
@@ -342,6 +335,7 @@ $O/ccomponent.obj: ccomponent.cc \
   ../../include/ccomponent.h \
   ../../include/regmacros.h
 $O/ccomponenttype.obj: ccomponenttype.cc \
+  ../common/commondefs.h \
   ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \
   parsim/cplaceholdermod.h \
@@ -362,12 +356,14 @@ $O/ccomponenttype.obj: ccomponenttype.cc \
   ../../include/csimplemodule.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/cenum.h \
   ../../include/cmsgpar.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
+  ../common/patternmatcher.h \
   ../../include/errmsg.h \
   ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
@@ -382,50 +378,12 @@ $O/ccomponenttype.obj: ccomponenttype.cc \
   ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
+  ../../include/cproperty.h \
   ../../include/cparimpl.h \
+  ../../include/cproperties.h \
   ../../include/cchannel.h \
   ../../include/ccomponent.h \
   ../../include/regmacros.h
-<<<<<<< HEAD
-$O/ccompoundmodule.obj: ccompoundmodule.cc \
-  ../../include/cregistrationlist.h \
-  ../../include/carray.h \
-  ../../include/ccompoundmodule.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  ../../include/cgate.h \
-  ../../include/cenvir.h \
-  ../../include/cmodule.h \
-  ../../include/cmessage.h \
-  ../../include/onstartup.h \
-  ../../include/csimulation.h \
-  ../../include/simtime.h \
-  ../../include/simtime_t.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simutil.h \
-  ../../include/cmsgpar.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/cmessageheap.h \
-  ../../include/cobject.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/errmsg.h \
-  ../../include/cdefaultlist.h \
-  ../../include/opp_string.h \
-  ../../include/ccomponenttype.h \
-  ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/cownedobject.h \
-  ../../include/cexpression.h \
-  ../../include/cnedmathfunction.h \
-  ../../include/cobjectfactory.h \
-  ../../include/clistener.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  ../../include/ccomponent.h \
-  ../../include/regmacros.h
-=======
->>>>>>> cb3cebb... cCompoundModule killed
 $O/cconfigoption.obj: cconfigoption.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
@@ -464,10 +422,16 @@ $O/cconfiguration.obj: cconfiguration.cc \
   ../../include/platdep/platdefs.h \
   ../../include/regmacros.h
 $O/ccoroutine.obj: ccoroutine.cc \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
   ../../include/simkerneldefs.h \
   ../../include/platdep/intxtypes.h \
   task.h \
   ../../include/platdep/platmisc.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/cexception.h \
   ../../include/platdep/platdefs.h \
   ../../include/ccoroutine.h
 $O/cdataratechannel.obj: cdataratechannel.cc \
@@ -489,8 +453,8 @@ $O/cdataratechannel.obj: cdataratechannel.cc \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cmsgpar.h \
-  ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
+  ../../include/cmessageheap.h \
   ../../include/cobject.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
@@ -503,8 +467,8 @@ $O/cdataratechannel.obj: cdataratechannel.cc \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
-  ../../include/cnedmathfunction.h \
   ../../include/cobjectfactory.h \
+  ../../include/cnedmathfunction.h \
   ../../include/crng.h \
   ../../include/platdep/platdefs.h \
   ../../include/clistener.h \
@@ -526,7 +490,6 @@ $O/cdefaultlist.obj: cdefaultlist.cc \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
-  ../../include/clog.h \
   ../../include/cwatch.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
@@ -538,13 +501,10 @@ $O/cdefaultlist.obj: cdefaultlist.cc \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
-  ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
   ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  ../../include/ccomponent.h \
   ../../include/regmacros.h
 $O/cdelaychannel.obj: cdelaychannel.cc \
   ../../include/ctimestampedvalue.h \
@@ -564,8 +524,8 @@ $O/cdelaychannel.obj: cdelaychannel.cc \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cmsgpar.h \
-  ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
+  ../../include/cmessageheap.h \
   ../../include/cobject.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
@@ -577,8 +537,8 @@ $O/cdelaychannel.obj: cdelaychannel.cc \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
-  ../../include/cnedmathfunction.h \
   ../../include/cobjectfactory.h \
+  ../../include/cnedmathfunction.h \
   ../../include/platdep/platdefs.h \
   ../../include/clistener.h \
   ../../include/cpar.h \
@@ -613,31 +573,23 @@ $O/cdensityestbase.obj: cdensityestbase.cc \
 $O/cdetect.obj: cdetect.cc \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/cenvir.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
-  ../../include/clog.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
-  ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
-  ../../include/clifetimelistener.h \
   ../../include/cstatistic.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
-  ../../include/cexpression.h \
   ../../include/platdep/platdefs.h \
-  ../../include/clistener.h \
   ../../include/cdetect.h \
-  ../../include/cpar.h \
-  ../../include/ccomponent.h \
   ../../include/regmacros.h
 $O/cdisplaystring.obj: cdisplaystring.cc \
   ../../include/ctimestampedvalue.h \
@@ -649,15 +601,15 @@ $O/cdisplaystring.obj: cdisplaystring.cc \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
-  ../../include/csimulation.h \
   ../../include/onstartup.h \
+  ../../include/csimulation.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cmsgpar.h \
-  ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
+  ../../include/cmessageheap.h \
   ../../include/cobject.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
@@ -683,16 +635,13 @@ $O/cdoubleparimpl.obj: cdoubleparimpl.cc \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   ../../include/cenvir.h \
+  ../../include/csimulation.h \
   ../../include/cnedvalue.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
-<<<<<<< HEAD
   ../../include/cmessageheap.h \
-=======
-  ../../include/clog.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/platdep/platmisc.h \
@@ -721,8 +670,8 @@ $O/cdynamicexpression.obj: cdynamicexpression.cc \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   expryydefs.h \
-  ../../include/csimulation.h \
   ../../include/onstartup.h \
+  ../../include/csimulation.h \
   ../../include/cnedvalue.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
@@ -753,14 +702,12 @@ $O/cenum.obj: cenum.cc \
   ../../include/cregistrationlist.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/cenvir.h \
   ../../include/onstartup.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
-  ../../include/clog.h \
   ../../include/cenum.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
@@ -768,18 +715,12 @@ $O/cenum.obj: cenum.cc \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
-  ../../include/cdefaultlist.h \
-  ../../include/clifetimelistener.h \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
-  ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
-  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  ../../include/ccomponent.h \
   ../../include/regmacros.h \
   ../../include/cstringtokenizer.h
 $O/cenvir.obj: cenvir.cc \
@@ -792,59 +733,18 @@ $O/cenvir.obj: cenvir.cc \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
-  ../../include/clog.h \
-  ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
+  ../../include/cmessageheap.h \
   ../../include/cobject.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
-  ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
-  ../../include/cexpression.h \
   ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  ../../include/ccomponent.h \
   ../../include/regmacros.h
-<<<<<<< HEAD
-=======
-$O/cevent.obj: cevent.cc \
-  ../../include/cregistrationlist.h \
-  ../../include/ccommbuffer.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  ../../include/cenvir.h \
-  ../../include/onstartup.h \
-  ../../include/csimulation.h \
-  ../../include/simtime.h \
-  ../../include/simtime_t.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simutil.h \
-  ../../include/clog.h \
-  ../../include/cmessageheap.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/cobject.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/errmsg.h \
-  ../../include/cdefaultlist.h \
-  ../../include/clifetimelistener.h \
-  ../../include/opp_string.h \
-  ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/cexpression.h \
-  ../../include/cownedobject.h \
-  ../../include/cobjectfactory.h \
-  ../../include/clistener.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  ../../include/ccomponent.h \
-  ../../include/regmacros.h \
-  ../../include/cevent.h
->>>>>>> cb3cebb... cCompoundModule killed
 $O/cexception.obj: cexception.cc \
   ../../include/cregistrationlist.h \
   ../../include/cgate.h \
@@ -869,8 +769,8 @@ $O/cexception.obj: cexception.cc \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
-  ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
   ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
@@ -925,25 +825,20 @@ $O/cgate.obj: cgate.cc \
   ../../include/errmsg.h \
   ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
-  ../../include/clifetimelistener.h \
   ../../include/ccomponenttype.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
-  ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/cownedobject.h \
   ../../include/cdisplaystring.h \
   ../../include/cobjectfactory.h \
   ../../include/cnedmathfunction.h \
   ../../include/cmodelchange.h \
-  ../../include/platdep/platdefs.h \
   ../../include/clistener.h \
+  ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/cchannel.h \
   ../../include/ccomponent.h \
-<<<<<<< HEAD
-=======
-  ../../include/cevent.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/regmacros.h
 $O/chasher.obj: chasher.cc \
   ../../include/cvisitor.h \
@@ -983,17 +878,13 @@ $O/chistogram.obj: chistogram.cc \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cdefaultlist.h \
-<<<<<<< HEAD
-=======
-  ../../include/clifetimelistener.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/opp_string.h \
   ../../include/cstatistic.h \
   ../../include/distrib.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
-  ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/cexpression.h \
   ../../include/cobjectfactory.h \
   ../../include/crng.h \
   ../../include/platdep/platdefs.h \
@@ -1049,8 +940,8 @@ $O/clcg32.obj: clcg32.cc \
   ../../include/cvisitor.h \
   ../../include/cconfiguration.h \
   ../../include/cenvir.h \
-  ../../include/onstartup.h \
   ../../include/csimulation.h \
+  ../../include/onstartup.h \
   ../../include/clcg32.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
@@ -1063,22 +954,14 @@ $O/clcg32.obj: clcg32.cc \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
-<<<<<<< HEAD
-=======
-  ../../include/cdefaultlist.h \
-  ../../include/clifetimelistener.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
-  ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
   ../../include/crng.h \
   ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  ../../include/ccomponent.h \
   ../../include/regmacros.h
 $O/clinkedlist.obj: clinkedlist.cc \
   ../../include/cregistrationlist.h \
@@ -1146,16 +1029,13 @@ $O/clongparimpl.obj: clongparimpl.cc \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   ../../include/cenvir.h \
+  ../../include/csimulation.h \
   ../../include/cnedvalue.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
-<<<<<<< HEAD
   ../../include/cmessageheap.h \
-=======
-  ../../include/clog.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/platdep/platmisc.h \
@@ -1174,6 +1054,14 @@ $O/clongparimpl.obj: clongparimpl.cc \
   ../../include/ccomponent.h \
   ../../include/regmacros.h \
   ../../include/cstringtokenizer.h
+$O/cmatchexpression.obj: cmatchexpression.cc \
+  ../common/commondefs.h \
+  ../common/matchexpression.h \
+  ../../include/simkerneldefs.h \
+  ../../include/platdep/intxtypes.h \
+  ../common/exception.h \
+  ../../include/cmatchexpression.h \
+  ../../include/platdep/platdefs.h
 $O/cmersennetwister.obj: cmersennetwister.cc \
   ../../include/cregistrationlist.h \
   ../../include/carray.h \
@@ -1183,8 +1071,8 @@ $O/cmersennetwister.obj: cmersennetwister.cc \
   ../../include/cconfiguration.h \
   ../../include/cenvir.h \
   ../../include/cmessage.h \
-  ../../include/csimulation.h \
   ../../include/onstartup.h \
+  ../../include/csimulation.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
@@ -1197,24 +1085,16 @@ $O/cmersennetwister.obj: cmersennetwister.cc \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
-  ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
   ../../include/cmersennetwister.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
-  ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cnedmathfunction.h \
   ../../include/cobjectfactory.h \
   ../../include/crng.h \
   ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
-<<<<<<< HEAD
-=======
-  ../../include/cpar.h \
-  ../../include/ccomponent.h \
-  ../../include/cevent.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/regmacros.h
 $O/cmessage.obj: cmessage.cc \
   ../../include/cregistrationlist.h \
@@ -1258,7 +1138,6 @@ $O/cmessageheap.obj: cmessageheap.cc \
   ../../include/carray.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/cenvir.h \
   ../../include/cmessage.h \
   ../../include/csimulation.h \
   ../../include/onstartup.h \
@@ -1266,7 +1145,6 @@ $O/cmessageheap.obj: cmessageheap.cc \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
-  ../../include/clog.h \
   ../../include/cmsgpar.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
@@ -1274,36 +1152,26 @@ $O/cmessageheap.obj: cmessageheap.cc \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
-  ../../include/cdefaultlist.h \
-  ../../include/clifetimelistener.h \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
-  ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cnedmathfunction.h \
   ../../include/cobjectfactory.h \
-  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  ../../include/ccomponent.h \
-  ../../include/cevent.h \
   ../../include/regmacros.h
 $O/cmessageprinter.obj: cmessageprinter.cc \
   ../../include/cregistrationlist.h \
   ../../include/carray.h \
-  ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/cenvir.h \
+  ../../include/cvisitor.h \
   ../../include/cmessage.h \
   ../../include/csimulation.h \
   ../../include/onstartup.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
-  ../../include/simkerneldefs.h \
   ../../include/simutil.h \
-  ../../include/clog.h \
-  ../../include/cpacket.h \
+  ../../include/simkerneldefs.h \
   ../../include/cmsgpar.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
@@ -1312,23 +1180,13 @@ $O/cmessageprinter.obj: cmessageprinter.cc \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
-  ../../include/cdefaultlist.h \
-  ../../include/clifetimelistener.h \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
-  ../../include/cexpression.h \
   ../../include/cownedobject.h \
-  ../../include/cnedmathfunction.h \
   ../../include/cobjectfactory.h \
-  ../../include/clistener.h \
+  ../../include/cnedmathfunction.h \
   ../../include/platdep/platdefs.h \
-<<<<<<< HEAD
-=======
-  ../../include/cpar.h \
-  ../../include/ccomponent.h \
-  ../../include/cevent.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/regmacros.h
 $O/cmodule.obj: cmodule.cc \
   ../../include/ctimestampedvalue.h \
@@ -1348,8 +1206,8 @@ $O/cmodule.obj: cmodule.cc \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cmsgpar.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
@@ -1387,7 +1245,6 @@ $O/cmsgpar.obj: cmsgpar.cc \
   ../../include/simtime_t.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
-  ../../include/clog.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cmsgpar.h \
@@ -1395,11 +1252,6 @@ $O/cmsgpar.obj: cmsgpar.cc \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
-<<<<<<< HEAD
-=======
-  ../../include/cdefaultlist.h \
-  ../../include/clifetimelistener.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/opp_string.h \
   ../../include/cstatistic.h \
   ../../include/cexception.h \
@@ -1412,8 +1264,6 @@ $O/cmsgpar.obj: cmsgpar.cc \
   ../../include/cnedmathfunction.h \
   ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  ../../include/ccomponent.h \
   ../../include/regmacros.h
 $O/cnamedobject.obj: cnamedobject.cc \
   ../../include/cregistrationlist.h \
@@ -1499,15 +1349,17 @@ $O/cnedmathfunction.obj: cnedmathfunction.cc \
   ../../include/ccomponent.h \
   ../../include/regmacros.h
 $O/cnedvalue.obj: cnedvalue.cc \
-  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
   ../../include/cxmlelement.h \
   ../../include/cenvir.h \
+  ../../include/csimulation.h \
   ../../include/cnedvalue.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/platdep/platmisc.h \
@@ -1515,49 +1367,12 @@ $O/cnedvalue.obj: cnedvalue.cc \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
-  ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/cownedobject.h \
   ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/regmacros.h
-<<<<<<< HEAD
-=======
-$O/cnullenvir.obj: cnullenvir.cc \
-  ../../include/cregistrationlist.h \
-  ../../include/mersennetwister.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  ../../include/cenvir.h \
-  ../../include/cconfiguration.h \
-  ../../include/onstartup.h \
-  ../../include/simtime.h \
-  ../../include/simtime_t.h \
-  ../../include/simutil.h \
-  ../../include/simkerneldefs.h \
-  ../../include/clog.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/cobject.h \
-  ../../include/cnullenvir.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/errmsg.h \
-  ../../include/cdefaultlist.h \
-  ../../include/cmersennetwister.h \
-  ../../include/clifetimelistener.h \
-  ../../include/opp_string.h \
-  ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/cexpression.h \
-  ../../include/cownedobject.h \
-  ../../include/cobjectfactory.h \
-  ../../include/crng.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/clistener.h \
-  ../../include/cpar.h \
-  ../../include/ccomponent.h \
-  ../../include/regmacros.h
->>>>>>> cb3cebb... cCompoundModule killed
 $O/cobject.obj: cobject.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
@@ -1568,7 +1383,6 @@ $O/cobject.obj: cobject.cc \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
-  ../../include/clog.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
@@ -1578,12 +1392,9 @@ $O/cobject.obj: cobject.cc \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
-  ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  ../../include/ccomponent.h \
   ../../include/regmacros.h
 $O/cobjectfactory.obj: cobjectfactory.cc \
   ../../include/cregistrationlist.h \
@@ -1665,7 +1476,6 @@ $O/cownedobject.obj: cownedobject.cc \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
-  ../../include/clog.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
@@ -1676,13 +1486,10 @@ $O/cownedobject.obj: cownedobject.cc \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
-  ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
   ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  ../../include/ccomponent.h \
   ../../include/regmacros.h
 $O/cpacketqueue.obj: cpacketqueue.cc \
   ../../include/cregistrationlist.h \
@@ -1690,7 +1497,6 @@ $O/cpacketqueue.obj: cpacketqueue.cc \
   ../../include/carray.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/cenvir.h \
   ../../include/cmessage.h \
   ../../include/csimulation.h \
   ../../include/onstartup.h \
@@ -1698,12 +1504,6 @@ $O/cpacketqueue.obj: cpacketqueue.cc \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
-<<<<<<< HEAD
-=======
-  ../../include/cpacket.h \
-  ../../include/clog.h \
-  ../../include/cmsgpar.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cmessageheap.h \
   ../../include/cmsgpar.h \
   ../../include/platdep/intxtypes.h \
@@ -1711,25 +1511,15 @@ $O/cpacketqueue.obj: cpacketqueue.cc \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
-  ../../include/cdefaultlist.h \
-  ../../include/clifetimelistener.h \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cpacketqueue.h \
-  ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cnedmathfunction.h \
   ../../include/cobjectfactory.h \
-  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
   ../../include/cqueue.h \
-<<<<<<< HEAD
-=======
-  ../../include/ccomponent.h \
-  ../../include/cevent.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/regmacros.h
 $O/cpar.obj: cpar.cc \
   ../../include/cregistrationlist.h \
@@ -1807,22 +1597,34 @@ $O/cparimpl.obj: cparimpl.cc \
   ../../include/regmacros.h
 $O/cparsimcomm.obj: cparsimcomm.cc \
   ../../include/ccommbuffer.h \
+  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/cenvir.h \
+  ../../include/csimulation.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
   ../../include/cexception.h \
+  ../../include/cnamedobject.h \
+  ../../include/cownedobject.h \
   ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cparsimcomm.h \
   ../../include/regmacros.h
+$O/cpatternmatcher.obj: cpatternmatcher.cc \
+  ../common/commondefs.h \
+  ../../include/simkerneldefs.h \
+  ../../include/platdep/intxtypes.h \
+  ../common/patternmatcher.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/cpatternmatcher.h
 $O/cproperties.obj: cproperties.cc \
   ../../include/cregistrationlist.h \
   ../../include/cstringpool.h \
@@ -2007,17 +1809,15 @@ $O/cresultrecorder.obj: cresultrecorder.cc \
   ../../include/cstringpool.h \
   ../../include/cenvir.h \
   ../../include/onstartup.h \
+  ../../include/csimulation.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
-<<<<<<< HEAD
-=======
   ../common/stringutil.h \
-  ../../include/clog.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cdensityestbase.h \
   ../../include/platdep/intxtypes.h \
+  ../../include/cmessageheap.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
   ../../include/globals.h \
@@ -2061,7 +1861,6 @@ $O/cscheduler.obj: cscheduler.cc \
   ../../include/simtime_t.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
-  ../../include/clog.h \
   ../../include/cconfigoption.h \
   ../../include/cmsgpar.h \
   ../../include/platdep/intxtypes.h \
@@ -2070,25 +1869,15 @@ $O/cscheduler.obj: cscheduler.cc \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
-  ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
-  ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
-<<<<<<< HEAD
   ../../include/cnedmathfunction.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/regmacros.h
-=======
   ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  ../../include/ccomponent.h \
-  ../../include/regmacros.h \
-  ../../include/cevent.h
->>>>>>> cb3cebb... cCompoundModule killed
+  ../../include/regmacros.h
 $O/csimplemodule.obj: csimplemodule.cc \
   ../../include/cregistrationlist.h \
   ../../include/carray.h \
@@ -2105,14 +1894,8 @@ $O/csimplemodule.obj: csimplemodule.cc \
   ../../include/csimplemodule.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
-<<<<<<< HEAD
   ../../include/platdep/intxtypes.h \
-=======
-  ../../include/clog.h \
-  ../../include/cpacket.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cmessageheap.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/globals.h \
@@ -2155,8 +1938,8 @@ $O/csimulation.obj: csimulation.cc \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
   ../../include/cmsgpar.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
@@ -2287,16 +2070,13 @@ $O/cstringparimpl.obj: cstringparimpl.cc \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   ../../include/cenvir.h \
+  ../../include/csimulation.h \
   ../../include/cnedvalue.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
-<<<<<<< HEAD
   ../../include/cmessageheap.h \
-=======
-  ../../include/clog.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/platdep/platmisc.h \
@@ -2348,29 +2128,22 @@ $O/ctimestampedvalue.obj: ctimestampedvalue.cc \
   ../../include/ctimestampedvalue.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/cenvir.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
-  ../../include/clog.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
-  ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
-  ../../include/clifetimelistener.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
-  ../../include/cexpression.h \
   ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  ../../include/ccomponent.h \
   ../../include/regmacros.h
 $O/ctopology.obj: ctopology.cc \
   ../../include/cregistrationlist.h \
@@ -2478,24 +2251,19 @@ $O/cwatch.obj: cwatch.cc \
 $O/cxmlelement.obj: cxmlelement.cc \
   ../../include/cregistrationlist.h \
   ../../include/cgate.h \
-  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
   ../../include/cxmlelement.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
-  ../../include/csimulation.h \
   ../../include/onstartup.h \
+  ../../include/csimulation.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
-<<<<<<< HEAD
   ../../include/platdep/intxtypes.h \
-=======
-  ../../include/clog.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cmessageheap.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
@@ -2519,16 +2287,13 @@ $O/cxmlparimpl.obj: cxmlparimpl.cc \
   ../../include/cxmlelement.h \
   ../../include/cenvir.h \
   ../../include/cnedvalue.h \
+  ../../include/csimulation.h \
   ../../include/cxmlparimpl.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
-<<<<<<< HEAD
   ../../include/cmessageheap.h \
-=======
-  ../../include/clog.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/platdep/platmisc.h \
@@ -2568,12 +2333,11 @@ $O/distrib.obj: distrib.cc \
   ../../include/errmsg.h \
   ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
-  ../../include/clifetimelistener.h \
   ../../include/distrib.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
-  ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
   ../../include/cnedmathfunction.h \
   ../../include/crng.h \
@@ -2596,11 +2360,13 @@ $O/expr.tab.obj: expr.tab.cc \
   ../../include/cenvir.h \
   expryydefs.h \
   ../../include/onstartup.h \
+  ../../include/csimulation.h \
   ../../include/cnedvalue.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/nedsupport.h \
@@ -2642,6 +2408,7 @@ $O/globals.obj: globals.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/regmacros.h
@@ -2667,12 +2434,15 @@ $O/lex.expryy.obj: lex.expryy.cc \
   ../../include/regmacros.h
 $O/minixpath.obj: minixpath.cc \
   ../../include/cxmlelement.h \
+  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/cenvir.h \
+  ../../include/csimulation.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/platdep/platmisc.h \
@@ -2680,6 +2450,8 @@ $O/minixpath.obj: minixpath.cc \
   ../../include/opp_string.h \
   minixpath.h \
   ../../include/cexception.h \
+  ../../include/cnamedobject.h \
+  ../../include/cownedobject.h \
   ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/regmacros.h
@@ -2706,15 +2478,14 @@ $O/nedfunctions.obj: nedfunctions.cc \
   ../../include/errmsg.h \
   ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
-  ../../include/clifetimelistener.h \
   ../../include/ccomponenttype.h \
   ../../include/distrib.h \
   ../../include/cexception.h \
   ../../include/cnedfunction.h \
   ../../include/cdynamicexpression.h \
   ../../include/cnamedobject.h \
-  ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
   ../../include/cnedmathfunction.h \
   ../../include/crng.h \
@@ -2733,8 +2504,8 @@ $O/nedsupport.obj: nedsupport.cc \
   ../../include/cxmlelement.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
-  ../../include/csimulation.h \
   ../../include/onstartup.h \
+  ../../include/csimulation.h \
   ../../include/cnedvalue.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
@@ -2786,7 +2557,6 @@ $O/resultfilters.obj: resultfilters.cc \
   ../../include/carray.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/cenvir.h \
   ../../include/cmessage.h \
   resultfilters.h \
   ../../include/cresultfilter.h \
@@ -2796,11 +2566,6 @@ $O/resultfilters.obj: resultfilters.cc \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
-<<<<<<< HEAD
-=======
-  ../../include/clog.h \
-  ../../include/cpacket.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cmsgpar.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
@@ -2809,28 +2574,15 @@ $O/resultfilters.obj: resultfilters.cc \
   ../../include/platdep/platmisc.h \
   ../../include/cresultlistener.h \
   ../../include/errmsg.h \
-  ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
-  ../../include/clifetimelistener.h \
   ../../include/cstatistic.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
-<<<<<<< HEAD
-=======
-  ../../include/cexpression.h \
   ../../include/cnedmathfunction.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cobjectfactory.h \
-  ../../include/cnedmathfunction.h \
   ../../include/platdep/platdefs.h \
   ../../include/clistener.h \
-<<<<<<< HEAD
-=======
-  ../../include/cpar.h \
-  ../../include/ccomponent.h \
-  ../../include/cevent.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/regmacros.h
 $O/resultrecorders.obj: resultrecorders.cc \
   ../../include/cregistrationlist.h \
@@ -2838,8 +2590,8 @@ $O/resultrecorders.obj: resultrecorders.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/cenvir.h \
-  ../../include/onstartup.h \
   ../../include/csimulation.h \
+  ../../include/onstartup.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
@@ -2904,16 +2656,12 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/ctopology.h \
   ../../include/distrib.h \
   ../../include/cstatistic.h \
-<<<<<<< HEAD
-=======
-  ../../include/checkandcast.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/ccomponenttype.h \
   ../../include/cnedfunction.h \
   ../../include/cpacketqueue.h \
   ../../include/cownedobject.h \
-  ../../include/cexpression.h \
   ../../include/cdisplaystring.h \
+  ../../include/cexpression.h \
   ../../include/compat.h \
   ../../include/cobjectfactory.h \
   ../../include/crng.h \
@@ -2923,6 +2671,7 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/cproperty.h \
   ../../include/cparimpl.h \
   ../../include/clinkedlist.h \
+  ../../include/cpatternmatcher.h \
   ../../include/cqueue.h \
   ../../include/cproperties.h \
   ../../include/cparsimcomm.h \
@@ -2957,6 +2706,7 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/cstringparimpl.h \
   ../../include/cresultlistener.h \
   ../../include/chasher.h \
+  ../../include/cmatchexpression.h \
   ../../include/index.h \
   ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
@@ -2983,6 +2733,7 @@ $O/simtime.obj: simtime.cc \
   ../../include/cexpression.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
+  ../../include/onstartup.h \
   ../../include/simtime_t.h \
   ../../include/platdep/intxtypes.h \
   ../../include/platdep/platmisc.h \
@@ -3021,8 +2772,8 @@ $O/util.obj: util.cc \
   ../../include/cstatistic.h \
   ../../include/distrib.h \
   ../../include/cpacketqueue.h \
-  ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
   ../../include/crng.h \
   ../../include/clistener.h \
@@ -3092,13 +2843,8 @@ $O/netbuilder/cdynamicchanneltype.obj: netbuilder/cdynamicchanneltype.cc \
   netbuilder/cnednetworkbuilder.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
-<<<<<<< HEAD
   ../../include/platdep/intxtypes.h \
-=======
-  ../../include/clog.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cmessageheap.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/cdefaultlist.h \
@@ -3137,13 +2883,8 @@ $O/netbuilder/cdynamicmoduletype.obj: netbuilder/cdynamicmoduletype.cc \
   ../../include/onstartup.h \
   netbuilder/cdynamicmoduletype.h \
   ../../include/simtime_t.h \
-<<<<<<< HEAD
   ../../include/platdep/intxtypes.h \
-=======
-  ../../include/clog.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cmessageheap.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/cdefaultlist.h \
@@ -3315,13 +3056,8 @@ $O/netbuilder/cnednetworkbuilder.obj: netbuilder/cnednetworkbuilder.cc \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   netbuilder/cexpressionbuilder.h \
-<<<<<<< HEAD
   ../../include/cmessageheap.h \
-=======
-  ../../include/clog.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/platdep/intxtypes.h \
-  ../../include/cmessageheap.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/cstringparimpl.h \
@@ -3354,8 +3090,8 @@ $O/parsim/cadvlinkdelaylookahead.obj: parsim/cadvlinkdelaylookahead.cc \
   parsim/cparsimprotocolbase.h \
   ../../include/errmsg.h \
   ../../include/ccomponenttype.h \
-  ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
   ../../include/clistener.h \
   parsim/cnullmessageprot.h \
@@ -3410,12 +3146,10 @@ $O/parsim/cfilecomm.obj: parsim/cfilecomm.cc \
   ../../include/cobject.h \
   ../../include/errmsg.h \
   parsim/cfilecomm.h \
-  ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
   ../../include/clistener.h \
   ../../include/cparsimcomm.h \
-  ../../include/ccomponent.h \
   ../../include/cregistrationlist.h \
   ../../include/ccommbuffer.h \
   ../../include/cstringpool.h \
@@ -3427,13 +3161,11 @@ $O/parsim/cfilecomm.obj: parsim/cfilecomm.cc \
   parsim/ccommbufferbase.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
-  ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
   parsim/cfilecommbuffer.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
   parsim/parsimutil.h \
   ../../include/regmacros.h
 $O/parsim/cfilecommbuffer.obj: parsim/cfilecommbuffer.cc \
@@ -3572,8 +3304,8 @@ $O/parsim/clinkdelaylookahead.obj: parsim/clinkdelaylookahead.cc \
   parsim/cparsimprotocolbase.h \
   ../../include/errmsg.h \
   ../../include/ccomponenttype.h \
-  ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
   ../../include/clistener.h \
   parsim/cnullmessageprot.h \
@@ -3636,17 +3368,11 @@ $O/parsim/cmpicomm.obj: parsim/cmpicomm.cc \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
   ../../include/errmsg.h \
-<<<<<<< HEAD
-=======
-  ../../include/clifetimelistener.h \
-  ../../include/cexpression.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
   parsim/cmpicomm.h \
   ../../include/clistener.h \
   ../../include/cparsimcomm.h \
-  ../../include/ccomponent.h \
   ../../include/cregistrationlist.h \
   ../../include/ccommbuffer.h \
   ../../include/cstringpool.h \
@@ -3658,12 +3384,10 @@ $O/parsim/cmpicomm.obj: parsim/cmpicomm.cc \
   parsim/ccommbufferbase.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
-  ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
   ../../include/regmacros.h
 $O/parsim/cmpicommbuffer.obj: parsim/cmpicommbuffer.cc \
   ../../include/simtime.h \
@@ -3700,16 +3424,10 @@ $O/parsim/cnamedpipecomm-win.obj: parsim/cnamedpipecomm-win.cc \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
   ../../include/errmsg.h \
-<<<<<<< HEAD
-=======
-  ../../include/clifetimelistener.h \
-  ../../include/cexpression.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
   ../../include/clistener.h \
   ../../include/cparsimcomm.h \
-  ../../include/ccomponent.h \
   ../../include/cregistrationlist.h \
   ../../include/ccommbuffer.h \
   ../../include/cstringpool.h \
@@ -3722,12 +3440,10 @@ $O/parsim/cnamedpipecomm-win.obj: parsim/cnamedpipecomm-win.cc \
   parsim/ccommbufferbase.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
-  ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
   parsim/parsimutil.h \
   ../../include/regmacros.h
 $O/parsim/cnamedpipecomm.obj: parsim/cnamedpipecomm.cc \
@@ -3741,16 +3457,10 @@ $O/parsim/cnamedpipecomm.obj: parsim/cnamedpipecomm.cc \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
   ../../include/errmsg.h \
-<<<<<<< HEAD
-=======
-  ../../include/clifetimelistener.h \
-  ../../include/cexpression.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
   ../../include/clistener.h \
   ../../include/cparsimcomm.h \
-  ../../include/ccomponent.h \
   ../../include/cregistrationlist.h \
   ../../include/ccommbuffer.h \
   ../../include/cstringpool.h \
@@ -3763,12 +3473,10 @@ $O/parsim/cnamedpipecomm.obj: parsim/cnamedpipecomm.cc \
   parsim/ccommbufferbase.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
-  ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
   parsim/parsimutil.h \
   ../../include/regmacros.h
 $O/parsim/cnosynchronization.obj: parsim/cnosynchronization.cc \
@@ -3958,39 +3666,6 @@ $O/parsim/cparsimprotocolbase.obj: parsim/cparsimprotocolbase.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/regmacros.h
-<<<<<<< HEAD
-=======
-$O/parsim/cparsimsynchr.obj: parsim/cparsimsynchr.cc \
-  ../../include/platdep/timeutil.h \
-  ../../include/cenvir.h \
-  ../../include/csimulation.h \
-  parsim/cparsimsynchr.h \
-  ../../include/simtime.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simutil.h \
-  ../../include/cobject.h \
-  ../../include/errmsg.h \
-  ../../include/clifetimelistener.h \
-  ../../include/cownedobject.h \
-  ../../include/cexpression.h \
-  ../../include/clistener.h \
-  ../../include/ccomponent.h \
-  ../../include/cscheduler.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  ../../include/simtime_t.h \
-  ../../include/clog.h \
-  ../../include/cmessageheap.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/cdefaultlist.h \
-  ../../include/opp_string.h \
-  ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  ../../include/regmacros.h
->>>>>>> cb3cebb... cCompoundModule killed
 $O/parsim/cplaceholdermod.obj: parsim/cplaceholdermod.cc \
   ../../include/platdep/timeutil.h \
   ../../include/carray.h \
@@ -4028,13 +3703,8 @@ $O/parsim/cplaceholdermod.obj: parsim/cplaceholdermod.cc \
   ../../include/onstartup.h \
   parsim/cnmplookahead.h \
   ../../include/simtime_t.h \
-<<<<<<< HEAD
   ../../include/platdep/intxtypes.h \
-=======
-  ../../include/clog.h \
->>>>>>> cb3cebb... cCompoundModule killed
   ../../include/cmessageheap.h \
-  ../../include/platdep/intxtypes.h \
   parsim/cidealsimulationprot.h \
   parsim/cnosynchronization.h \
   ../../include/globals.h \
@@ -4105,21 +3775,16 @@ $O/parsim/parsimutil.obj: parsim/parsimutil.cc \
   ../../include/cobject.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
-  ../../include/cexpression.h \
   ../../include/clistener.h \
-  ../../include/ccomponent.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/simtime_t.h \
-  ../../include/clog.h \
-  ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
+  ../../include/cmessageheap.h \
   ../../include/platdep/platmisc.h \
-  ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
   parsim/parsimutil.h \
   ../../include/regmacros.h

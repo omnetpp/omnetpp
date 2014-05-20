@@ -138,40 +138,26 @@ clean:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/lex.msg2yy.obj: lex.msg2yy.cc \
   nedyydefs.h \
-  nedparser.h \
-  msg2.tab.hh \
-  nederror.h \
-  nedyylib.h \
-  nedxmldefs.h \
-  nedelements.h \
   nedexception.h \
-  nedelement.h \
-  nedutil.h \
-  nedfilebuffer.h
+  msg2.tab.hh \
+  nedxmldefs.h
 $O/lex.ned1yy.obj: lex.ned1yy.cc \
   nedyydefs.h \
-  nedxmldefs.h \
   nedexception.h \
+  nedxmldefs.h \
   ned1.tab.hh
 $O/lex.ned2yy.obj: lex.ned2yy.cc \
   nedyydefs.h \
-  nedparser.h \
-  nederror.h \
-  nedyylib.h \
-  nedxmldefs.h \
-  ned2.tab.hh \
-  nedelements.h \
   nedexception.h \
-  nedelement.h \
-  nedutil.h \
-  nedfilebuffer.h
+  nedxmldefs.h \
+  ned2.tab.hh
 $O/msg2.tab.obj: msg2.tab.cc \
   nedyydefs.h \
   nedparser.h \
   msg2.tab.hh \
-  nederror.h \
-  nedyylib.h \
   nedxmldefs.h \
+  nedyylib.h \
+  nederror.h \
   nedelements.h \
   nedexception.h \
   nedelement.h \
@@ -198,10 +184,10 @@ $O/ned1generator.obj: ned1generator.cc \
 $O/ned2.tab.obj: ned2.tab.cc \
   nedyydefs.h \
   nedparser.h \
-  nederror.h \
-  nedyylib.h \
   nedxmldefs.h \
   ned2.tab.hh \
+  nedyylib.h \
+  nederror.h \
   nedelements.h \
   nedexception.h \
   nedelement.h \
