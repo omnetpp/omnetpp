@@ -114,13 +114,21 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
         // The @class property itself does NOT get inherited.
         const char *explicitClassName = NEDElementUtil::getLocalStringProperty(getTree(), "class");
         if (!opp_isempty(explicitClassName))
-            implClassName = opp_join("::", getCxxNamespace().c_str(), explicitClassName);
-        else if (numExtendsNames()!=0)
-            implClassName = opp_nulltoempty(getSuperDecl()->getImplementationClassName());
-        else if (getType()==COMPOUND_MODULE)
-            implClassName = OPP_PREFIX "cModule";
+        {
+            if (explicitClassName[0]==':' && explicitClassName[1]==':')
+                implClassName = explicitClassName+2;
+            else
+                implClassName = opp_join("::", getCxxNamespace().c_str(), explicitClassName); //note: if the name doesn't exist in the namespace, we could try the global namespace as C++ does, but doing so would have little to no (or even negative) benefit in practice
+        }
         else
-            implClassName = opp_join("::", getCxxNamespace().c_str(), getName());
+        {
+            if (numExtendsNames()!=0)
+                implClassName = opp_nulltoempty(getSuperDecl()->getImplementationClassName());
+            else if (getType()==COMPOUND_MODULE)
+                implClassName = OPP_PREFIX "cModule";
+            else
+                implClassName = opp_join("::", getCxxNamespace().c_str(), getName());
+        }
     }
 
     // TODO check that parameter, gate, submodule and inner type declarations don't conflict with those in super types
