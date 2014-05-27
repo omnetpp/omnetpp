@@ -185,11 +185,10 @@
 <!-- Note: value is in fact REQUIRED, but empty attr value should
      also be accepted because that represents the "" string literal;
      "spec" is for properties, to store the null value and "-",
-     the antivalue. Unit can only be present with "double".
+     the antivalue.
  -->
 <!ATTLIST literal
-     type  (double|int|string|bool|spec)  #REQUIRED
-     unit                CDATA     #IMPLIED
+     type  (double|quantity|int|bool|string|spec)  #REQUIRED
      text                CDATA     #IMPLIED
      value               CDATA     #IMPLIED>
 

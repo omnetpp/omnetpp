@@ -372,7 +372,7 @@ void NEDDTDValidator::validateElement(LiteralElement *node)
     checkSequence(node, tags, mult);
 
     checkRequiredAttribute(node, "type");
-    const char *vals0[] = {"double","int","string","bool","spec"};
+    const char *vals0[] = {"double","quantity","int","bool","string","spec"};
     checkEnumeratedAttribute(node, "type", vals0, sizeof(vals0)/sizeof(const char *));
 }
 

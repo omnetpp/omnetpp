@@ -188,7 +188,7 @@ foreach $element (@elements)
            elsif ($atttypes[$i] eq '(double|int|string|bool|xml)') {
               $enumname = "partype";
            }
-           elsif ($atttypes[$i] eq '(double|int|string|bool|spec)') {
+           elsif ($atttypes[$i] eq '(double|quantity|int|bool|string|spec)') {
               $enumname = "littype";
            }
            elsif ($atttypes[$i] eq '(i|o)') {
@@ -261,7 +261,7 @@ print H "};\n\n";
 print H "// Note: zero *must* be a valid value for all enums, because that gets set in the ctor if there's not default\n";
 print H "enum {NED_GATETYPE_NONE, NED_GATETYPE_INPUT, NED_GATETYPE_OUTPUT, NED_GATETYPE_INOUT};\n";
 print H "enum {NED_PARTYPE_NONE, NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};\n";
-print H "enum {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_SPEC};\n";
+print H "enum {NED_CONST_DOUBLE, NED_CONST_QUANTITY, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_SPEC};\n";
 print H "enum {NED_SUBGATE_NONE, NED_SUBGATE_I, NED_SUBGATE_O};\n";
 
 print H "\n";
@@ -274,9 +274,9 @@ print CC "static const char *partype_vals[] = {\"\", \"double\", \"int\", \"stri
 print CC "static int partype_nums[] = {NED_PARTYPE_NONE, NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};\n";
 print CC "static const int partype_n = 6;\n";
 print CC "\n";
-print CC "static const char *littype_vals[] = {\"double\", \"int\", \"string\", \"bool\", \"spec\"};\n";
-print CC "static int littype_nums[] = {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_SPEC};\n";
-print CC "static const int littype_n = 5;\n";
+print CC "static const char *littype_vals[] = {\"double\", \"quantity\", \"int\", \"string\", \"bool\", \"spec\"};\n";
+print CC "static int littype_nums[] = {NED_CONST_DOUBLE, NED_CONST_QUANTITY, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_SPEC};\n";
+print CC "static const int littype_n = 6;\n";
 print CC "\n";
 print CC "static const char *subgate_vals[] = {\"\", \"i\", \"o\"};\n";
 print CC "static int subgate_nums[] = {NED_SUBGATE_NONE, NED_SUBGATE_I, NED_SUBGATE_O};\n";

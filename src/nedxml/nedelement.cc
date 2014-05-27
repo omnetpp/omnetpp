@@ -75,7 +75,7 @@ void NEDElement::validateEnum(int b, const char *vals[], int nums[], int n)
         if (nums[i]==b)
             return;
     if (n==0) throw NEDException("call to validateEnum() with n=0");
-    throw NEDException("invalid integer value %d for enum attribute",b,vals[0],nums[0]);
+    throw NEDException("invalid integer value %d for enum attribute (not one of '%s'=%d etc)",b,vals[0],nums[0]);
 }
 
 NEDElement::NEDElement()

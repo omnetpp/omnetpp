@@ -1,0 +1,46 @@
+%description:
+Test quantities vs unary minus
+
+%file: test.ned
+
+simple Test
+{
+    parameters:
+        @isNetwork(true);
+        double p1 @unit(s) = -1s200ms; // interpreted as unary minus: -(1s200ms)
+        double p2 @unit(s) = 1s-200ms; // interpreted as subtraction
+        double p3 @unit(s) = -1s-200ms; // interpreted as subtraction
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class Test : public cSimpleModule
+{
+  public:
+    Test() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+
+Define_Module(Test);
+
+void Test::activity()
+{
+#define P(x) EV << #x << "=" << par(#x).doubleValue() << "\n"
+    P(p1);
+    P(p2);
+    P(p3);
+}
+
+}; //namespace
+
+%exitcode: 1
+
+%contains: stdout
+p1=-1.2
+p2=0.8
+p3=-1.2
+
