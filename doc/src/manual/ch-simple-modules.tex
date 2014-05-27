@@ -258,14 +258,15 @@ encapsulate channel behavior: propagation and transmission time modeling,
 error modeling, and possibly others. Channels are also programmable in C++
 by the user.
 
-Modules and channels are called \textit{components}. Components are
-represented with the C++ class \cclass{cComponent}. The abstract module
-class \cclass{cModule} and the abstract channel class \cclass{cChannel}
-both subclass from \cclass{cComponent}.
+Modules and channels are represented with the \cclass{cModule} and \cclass{cChannel}
+classes, respectively. \cclass{cModule} and \cclass{cChannel} are both
+derived from the \cclass{cComponent} class.
 
-\cclass{cModule} has two subclasses: \cclass{cSimpleModule} and
-\cclass{cCompoundModule}. The user defines simple module types by
-subclassing \cclass{cSimpleModule}.
+The user defines simple module types by subclassing \cclass{cSimpleModule}.
+Compound modules are instantiated with \cclass{cModule}, although
+the user can override it with \fprop{@class} in the NED file, and can even
+use a simple module C++ class (i.e. one derived from \cclass{cSimpleModule})
+for a compound module.
 
 The \cclass{cChannel}'s subclasses include the three built-in channel
 types: \cclass{cIdealChannel}, \cclass{cDelayChannel} and
@@ -541,7 +542,7 @@ with a runtime error.
 The calling order for \ffunc{finish()} is the reverse of the order of
 \ffunc{initialize()}: first submodules, then the encompassing compound module.
   \footnote{The way you can provide an \ffunc{initialize()} function
-  for a compound module is to subclass \cclass{cCompoundModule}, and tell
+  for a compound module is to subclass \cclass{cModule}, and tell
   {\opp} to use the new class for the compound module. The latter is done
   by adding the \ttt{@class(<classname>)} property into the NED declaration.}
 

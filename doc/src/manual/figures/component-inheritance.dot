@@ -8,7 +8,6 @@ digraph g {
         cComponent -> cModule;
         cComponent -> cChannel;
         cModule -> cSimpleModule;
-        cModule -> cCompoundModule;
         cChannel -> cIdealChannel;
         cChannel -> cDelayChannel;
         cChannel -> cDatarateChannel;

@@ -21,6 +21,19 @@ Legend:
 (i)     information
 
 
+OMNeT++ 4.5
+~~~~~~~~~~~
+(+)     Added cMessagePrinter and the Register_MessagePrinter() macro.
+
+(+)     Simple module classes can be used for compound modules (with @class),
+        and doing so will make the module behave as a normal simple module
+        would.
+
+(!)     Compound modules are now represented with cModule, and the (almost
+        empty) cCompoundModule class was removed. This change was made
+        to allow simple module classes to be used for compound modules.
+
+
 OMNeT++ 4.4
 ~~~~~~~~~~~
 
