@@ -407,10 +407,9 @@ unqualified name of the component.
     super type.
 \end{important}
 
-For compound modules, the built-in default compound module C++ class
-\cclass{cCompoundModule} will be used, unless the module contains the
-\fprop{@class} property. When \fprop{@class} is present, the resolution
-rules are the same as with simple modules.
+Compound modules will be instantiated with the built-in \cclass{cModule} class,
+unless the module contains the \fprop{@class} property. When \fprop{@class} is present,
+the resolution rules are the same as with simple modules.
 
 
 \subsubsection{Current Namespace}

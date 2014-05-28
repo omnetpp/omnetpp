@@ -1,3 +1,11 @@
+2014-05-28  Andras Varga
+
+	* opp_msgc: added support for @implements class property. Its expects
+	a comma-separated list as value, and adds the list items to the
+	generated class as public base classes. No additional code is generated.
+	E.g. @implements(Foo,Bar) adds "public Foo, public Bar" to the
+	generated class header.
+
 2014-02-13  ------ omnetpp-4.4.1 released ------
 
 2014-02-11  Andras Varga

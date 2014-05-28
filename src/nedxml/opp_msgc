@@ -1263,9 +1263,15 @@ sub generateClass
     if ($msgbaseclass eq "") {
         print H "class $exportdef$msgclass\n";
     } else {
-        print H "class $exportdef$msgclass : public \:\:$msgbaseclass\n";  # make namespace explicit and absolute to disambiguate the way opp_msgc understood it
+        print H "class $exportdef$msgclass : public \:\:$msgbaseclass";  # make namespace explicit and absolute to disambiguate the way opp_msgc understood it
     }
-    print H "{\n";
+    if (defined($props{"implements"})) {
+        foreach my $interface (split(',', $props{"implements"})) {
+            $interface =~ s/^\s+|\s+$//g;
+            print H ", public $interface";
+        }
+    }
+    print H "\n{\n";
     print H "  protected:\n";
     foreach my $fieldname (@fieldlist)
     {

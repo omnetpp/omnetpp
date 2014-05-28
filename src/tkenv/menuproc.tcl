@@ -616,30 +616,6 @@ proc preferences {} {
     opp_refreshinspectors
 }
 
-proc editTextFile {} {
-    # implements Options|File name...
-    set types {
-         {{Text files}             {*.txt}}
-         {{Ini files}              {*.ini}}
-         {{NED files}              {*.ned}}
-         {{C++ files}              {*.cc *.cpp}}
-         {{C++ headers}            {*.h}}
-         {{Saved log files}        {*.out}}
-         {{Output vectors}         {*.vec}}
-         {{Output scalars}         {*.sca}}
-         {{Snapshot files}         {*.sna}}
-         {{Inspector lists}        {*.lst}}
-         {{All files}              {*}}
-    }
-    set filename [tk_getOpenFile -title "View/Edit text file" \
-                  -defaultextension "out" -initialfile "" \
-                  -filetypes $types]
-
-    if {$filename!=""} {
-       createFileViewer $filename
-    }
-}
-
 proc viewIniFile {} {
     set fname [opp_getfilename ini]
     if {$fname == ""} {

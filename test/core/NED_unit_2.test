@@ -1,5 +1,5 @@
 %description:
-Negative test for a value with multiple units in NED.
+Test for a value with multiple units in NED.
 
 %file: test.ned
 

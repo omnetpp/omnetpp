@@ -26,6 +26,7 @@
 #include "nederror.h"
 #include "nedsyntaxvalidator.h"
 #include "stringutil.h"
+#include "unitconversion.h"
 
 NAMESPACE_BEGIN
 
@@ -642,8 +643,6 @@ void NEDSyntaxValidator::validateElement(LiteralElement *node)
         // check bool
         if (strcmp(value,"true") && strcmp(value,"false"))
             errors->addError(node, "bool constant should be 'true' or 'false'");
-        if (!opp_isempty(node->getUnit()))
-            errors->addError(node, "bool constant cannot have a unit");
         // TBD check that if text is present, it's the same as value
     }
     else if (type==NED_CONST_INT)
@@ -653,8 +652,6 @@ void NEDSyntaxValidator::validateElement(LiteralElement *node)
         (void) strtol(value, &s, 0);
         if (s && *s)
             errors->addError(node, "invalid integer constant '%s'", value);
-        if (!opp_isempty(node->getUnit()))
-            errors->addError(node, "integer constant cannot have a unit");
         // TBD check that if text is present, it's the same as value
     }
     else if (type==NED_CONST_DOUBLE)
@@ -665,14 +662,25 @@ void NEDSyntaxValidator::validateElement(LiteralElement *node)
         (void) strtod(value, &s);
         if (s && *s)
             errors->addError(node, "invalid real constant '%s'", value);
-        // TBD check that if text and/or unit is present, they're consistent
+        // TBD check that if text is present, it's the same as value
+    }
+    else if (type==NED_CONST_QUANTITY)
+    {
+        // check quantity
+        try {
+            // validate syntax and unit compatibility ("5s 2kg")
+            std::string unit;
+            UnitConversion::parseQuantity(value, unit);
+        }
+        catch (std::exception& e) {
+            errors->addError(node, e.what());
+        }
+        // TBD check that if text is present, it's the same as value (modulo whitespace)
     }
     else if (type==NED_CONST_STRING)
     {
         // string: no restriction on value
-        if (!opp_isempty(node->getUnit()))
-            errors->addError(node, "string constant cannot have a unit");
-        // TBD check that if text is present, it's the same as value
+        // TBD check that if text is present, it's a quoted version of the value
     }
 }
 

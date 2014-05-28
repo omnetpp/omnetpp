@@ -29,6 +29,7 @@
 #include "xmlgenerator.h"
 #include "nedsupport.h"
 #include "stringutil.h"
+#include "unitconversion.h"
 
 NAMESPACE_BEGIN
 
@@ -247,10 +248,14 @@ void cExpressionBuilder::doLiteral(LiteralElement *node)
     {
         case NED_CONST_BOOL:   elems[pos++] = !strcmp(val,"true"); break;
         case NED_CONST_INT:    elems[pos++] = opp_atol(node->getValue()); break; // this handles hex as well
-        case NED_CONST_DOUBLE: elems[pos++] = opp_atof(node->getValue());
-                               elems[pos-1].setUnit(node->getUnit());
-                               break;
+        case NED_CONST_DOUBLE: elems[pos++] = opp_atof(node->getValue()); break;
         case NED_CONST_STRING: elems[pos++] = node->getValue(); break;
+        case NED_CONST_QUANTITY: {
+            std::string unit;
+            elems[pos++] = UnitConversion::parseQuantity(node->getValue(), unit);
+            elems[pos-1].setUnit(unit.c_str());
+            break;
+        }
         default: throw cRuntimeError("Internal error: wrong constant type");
     }
 }

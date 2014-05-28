@@ -451,29 +451,20 @@ LiteralElement *createStringLiteral(YYLTYPE textpos)
 LiteralElement *createQuantityLiteral(YYLTYPE textpos)
 {
     LiteralElement *c = (LiteralElement *)createElementWithTag(NED_LITERAL);
-    c->setType(NED_CONST_DOUBLE);
+    c->setType(NED_CONST_QUANTITY);
 
     const char *text = toString(textpos);
     c->setText(text);
-
-    double d = 0;
-    std::string unit;
+    c->setValue(text);
 
     try {
-        // evaluate quantities like "5s 230ms"
-        d = UnitConversion::parseQuantity(text, unit);
+        // validate syntax and unit compatibility ("5s 2kg")
+        std::string unit;
+        UnitConversion::parseQuantity(text, unit);
     }
     catch (std::exception& e) {
         np->error(e.what(), pos.li);
     }
-
-    // convert value back to string
-    char buf[32];
-    sprintf(buf,"%g",d);
-    c->setValue(buf);
-
-    if (!unit.empty())
-        c->setUnit(unit.c_str());
     return c;
 }
 
@@ -484,6 +475,9 @@ NEDElement *unaryMinus(NEDElement *node)
         return createOperator("-", node);
 
     LiteralElement *constNode = (LiteralElement *)node;
+
+    if (constNode->getType()==NED_CONST_QUANTITY)
+        return createOperator("-", node);
 
     // only int and real constants can be negative, string, bool, etc cannot
     if (constNode->getType()!=NED_CONST_INT && constNode->getType()!=NED_CONST_DOUBLE)
