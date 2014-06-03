@@ -54,6 +54,7 @@
 #include "simtime.h"
 #include "simtime_t.h"
 #include "cmessage.h"
+#include "cmessageprinter.h"
 #include "cmsgpar.h"
 #include "cmodelchange.h"
 #include "cmodule.h"

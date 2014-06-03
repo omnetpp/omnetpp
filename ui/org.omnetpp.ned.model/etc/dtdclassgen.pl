@@ -175,7 +175,7 @@ foreach $element (@elements)
            elsif ($atttypes[$i] eq '(double|int|string|bool|xml)') {
               $enumname = "partype";
            }
-           elsif ($atttypes[$i] eq '(double|int|string|bool|spec)') {
+           elsif ($atttypes[$i] eq '(double|quantity|int|bool|string|spec)') {
               $enumname = "littype";
            }
            elsif ($atttypes[$i] eq '(i|o)') {
