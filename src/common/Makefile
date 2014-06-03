@@ -109,21 +109,21 @@ clean:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/bigdecimal.o: bigdecimal.cc \
   bigdecimal.h \
+  exception.h \
   commonutil.h \
-  commondefs.h \
   opp_ctype.h \
-  exception.h
+  commondefs.h
 $O/commonutil.o: commonutil.cc \
   commonutil.h \
   commondefs.h \
   exception.h
 $O/displaystring.o: displaystring.cc \
-  commonutil.h \
   commondefs.h \
-  stringutil.h \
-  displaystring.h \
   opp_ctype.h \
-  exception.h
+  stringutil.h \
+  commonutil.h \
+  exception.h \
+  displaystring.h
 $O/enumstr.o: enumstr.cc \
   commondefs.h \
   enumstr.h
@@ -132,112 +132,112 @@ $O/exception.o: exception.cc \
   commondefs.h \
   exception.h
 $O/expression.o: expression.cc \
+  expression.h \
+  exception.h \
   commonutil.h \
-  commondefs.h \
-  stringutil.h \
+  stringpool.h \
   unitconversion.h \
   expressionyydefs.h \
-  expression.h \
-  stringpool.h \
-  exception.h
+  stringutil.h \
+  commondefs.h
 $O/expression.tab.o: expression.tab.cc \
-  commonutil.h \
-  commondefs.h \
+  expressionyydefs.h \
   unitconversion.h \
   stringutil.h \
-  expressionyydefs.h \
+  commondefs.h \
   expression.h \
+  exception.h \
   stringpool.h \
-  exception.h
+  commonutil.h
 $O/fileglobber.o: fileglobber.cc \
   commondefs.h \
   fileglobber.h
 $O/filereader.o: filereader.cc \
+  filereader.h \
+  exception.h \
   commonutil.h \
   commondefs.h \
-  stringutil.h \
-  filereader.h \
-  exception.h
+  stringutil.h
 $O/fileutil.o: fileutil.cc \
   commondefs.h \
-  fileutil.h \
   opp_ctype.h \
+  fileutil.h \
   stringtokenizer.h \
   exception.h
 $O/fnamelisttokenizer.o: fnamelisttokenizer.cc \
+  exception.h \
   commonutil.h \
-  commondefs.h \
   fnamelisttokenizer.h \
-  exception.h
+  commondefs.h
 $O/lcgrandom.o: lcgrandom.cc \
   commondefs.h \
   lcgrandom.h \
   exception.h
 $O/lex.expressionyy.o: lex.expressionyy.cc \
-  commonutil.h \
   commondefs.h \
   stringutil.h \
-  expressionyydefs.h \
-  expression.h \
-  stringpool.h \
   expression.tab.hh \
-  exception.h
-$O/linetokenizer.o: linetokenizer.cc \
-  commondefs.h \
-  linetokenizer.h \
-  exception.h
-$O/matchexpression.o: matchexpression.cc \
+  expressionyydefs.h \
+  stringpool.h \
   commonutil.h \
+  exception.h \
+  expression.h
+$O/linetokenizer.o: linetokenizer.cc \
+  exception.h \
+  linetokenizer.h \
+  commondefs.h
+$O/matchexpression.o: matchexpression.cc \
   commondefs.h \
-  patternmatcher.h \
+  commonutil.h \
+  exception.h \
   matchexpression.h \
-  exception.h
+  patternmatcher.h
 $O/matchexpression.tab.o: matchexpression.tab.cc \
   commondefs.h \
+  exception.h \
+  matchexpressionlexer.h \
   patternmatcher.h \
-  matchexpression.h \
-  exception.h \
-  matchexpressionlexer.h
+  matchexpression.h
 $O/matchexpressionlexer.o: matchexpressionlexer.cc \
-  commonutil.h \
-  commondefs.h \
-  stringutil.h \
-  matchexpression.tab.hh \
   exception.h \
-  matchexpressionlexer.h
+  matchexpressionlexer.h \
+  commonutil.h \
+  matchexpression.tab.hh \
+  commondefs.h \
+  stringutil.h
 $O/patternmatcher.o: patternmatcher.cc \
   commonutil.h \
-  commondefs.h \
-  stringutil.h \
-  opp_ctype.h \
   patternmatcher.h \
-  exception.h
+  exception.h \
+  commondefs.h \
+  opp_ctype.h \
+  stringutil.h
 $O/rwlock.o: rwlock.cc \
+  exception.h \
   rwlock.h \
-  commondefs.h \
-  exception.h
+  commondefs.h
 $O/stringpool.o: stringpool.cc \
-  commondefs.h \
-  stringpool.h
+  stringpool.h \
+  commondefs.h
 $O/stringtokenizer.o: stringtokenizer.cc \
-  commondefs.h \
-  stringtokenizer.h
+  stringtokenizer.h \
+  commondefs.h
 $O/stringtokenizer2.o: stringtokenizer2.cc \
-  commonutil.h \
   commondefs.h \
   stringtokenizer2.h \
+  commonutil.h \
   exception.h
 $O/stringutil.o: stringutil.cc \
-  commonutil.h \
-  commondefs.h \
   stringutil.h \
+  commondefs.h \
   opp_ctype.h \
   stringtokenizer.h \
-  exception.h
+  exception.h \
+  commonutil.h
 $O/unitconversion.o: unitconversion.cc \
-  commonutil.h \
   commondefs.h \
-  unitconversion.h \
-  stringutil.h \
   opp_ctype.h \
+  stringutil.h \
+  unitconversion.h \
+  commonutil.h \
   exception.h

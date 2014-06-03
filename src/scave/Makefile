@@ -102,577 +102,577 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/arraybuilder.o: arraybuilder.cc \
-  commonnodes.h \
-  nodetype.h \
-  node.h \
   channel.h \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  ../common/progressmonitor.h \
-  scavedefs.h \
-  dataflowmanager.h \
-  ../common/commondefs.h \
+  nodetype.h \
   xyarray.h \
-  arraybuilder.h \
-  ../common/bigdecimal.h \
-  ../common/filereader.h
-$O/channel.o: channel.cc \
-  node.h \
-  channel.h \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  scavedefs.h \
-  ../common/commondefs.h \
-  ../common/bigdecimal.h
-$O/commonnodes.o: commonnodes.cc \
-  nodetype.h \
-  commonnodes.h \
-  node.h \
-  channel.h \
-  ../common/exception.h \
-  ../common/commonutil.h \
-  scavedefs.h \
-  ../common/progressmonitor.h \
-  ../common/commondefs.h \
   dataflowmanager.h \
-  ../common/bigdecimal.h \
-  ../common/filereader.h
-$O/compoundfilter.o: compoundfilter.cc \
-  nodetype.h \
-  commonnodes.h \
-  node.h \
-  channel.h \
-  ../common/exception.h \
-  ../common/commonutil.h \
+  ../common/filereader.h \
   ../common/progressmonitor.h \
+  scavedefs.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  node.h \
+  arraybuilder.h \
+  ../common/commondefs.h \
+  commonnodes.h \
+  ../common/bigdecimal.h
+$O/channel.o: channel.cc \
+  channel.h \
+  scavedefs.h \
+  node.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/bigdecimal.h \
+  ../common/commondefs.h
+$O/commonnodes.o: commonnodes.cc \
+  ../common/bigdecimal.h \
+  commonnodes.h \
+  ../common/commondefs.h \
+  node.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  scavedefs.h \
+  ../common/progressmonitor.h \
+  ../common/filereader.h \
+  dataflowmanager.h \
+  nodetype.h \
+  channel.h
+$O/compoundfilter.o: compoundfilter.cc \
+  channel.h \
+  nodetype.h \
+  ../common/filereader.h \
+  ../common/progressmonitor.h \
+  nodetyperegistry.h \
+  dataflowmanager.h \
   scavedefs.h \
   compoundfilter.h \
-  dataflowmanager.h \
+  ../common/exception.h \
+  ../common/commonutil.h \
+  node.h \
+  filternodes.h \
+  commonnodes.h \
   ../common/commondefs.h \
-  nodetyperegistry.h \
-  ../common/bigdecimal.h \
-  ../common/filereader.h \
-  filternodes.h
+  ../common/bigdecimal.h
 $O/customfilter.o: customfilter.cc \
   customfilter.h \
-  scavedefs.h \
-  ../common/commondefs.h \
   scaveutils.h \
-  ../common/stringutil.h \
+  dataflowmanager.h \
+  ../common/filereader.h \
   nodetype.h \
-  commonnodes.h \
-  node.h \
+  ../common/bigdecimal.h \
+  ../common/stringutil.h \
+  scavedefs.h \
   ../common/expression.h \
-  channel.h \
-  ../common/exception.h \
-  ../common/commonutil.h \
   ../common/progressmonitor.h \
-  dataflowmanager.h \
-  ../common/bigdecimal.h \
+  channel.h \
   ../common/stringpool.h \
-  ../common/filereader.h
-$O/dataflowmanager.o: dataflowmanager.cc \
-  scavedefs.h \
   ../common/commondefs.h \
   commonnodes.h \
-  nodetype.h \
   node.h \
-  channel.h \
+  ../common/commonutil.h \
+  ../common/exception.h
+$O/dataflowmanager.o: dataflowmanager.cc \
+  node.h \
   ../common/commonutil.h \
   ../common/exception.h \
-  ../common/progressmonitor.h \
-  dataflowmanager.h \
-  ../common/bigdecimal.h \
-  ../common/filereader.h
-$O/datasorter.o: datasorter.cc \
-  fields.h \
-  idlist.h \
-  datasorter.h \
-  scavedefs.h \
+  commonnodes.h \
   ../common/commondefs.h \
+  channel.h \
+  scavedefs.h \
+  ../common/progressmonitor.h \
+  ../common/bigdecimal.h \
+  nodetype.h \
+  ../common/filereader.h \
+  dataflowmanager.h
+$O/datasorter.o: datasorter.cc \
   scaveutils.h \
-  ../common/patternmatcher.h \
+  ../common/rwlock.h \
+  fields.h \
+  datasorter.h \
+  ../common/bigdecimal.h \
+  idlist.h \
+  scavedefs.h \
   ../common/stringutil.h \
+  ../common/patternmatcher.h \
   ../common/exception.h \
   ../common/commonutil.h \
-  enumtype.h \
   resultfilemanager.h \
-  ../common/rwlock.h \
-  ../common/bigdecimal.h \
-  statistics.h
+  statistics.h \
+  ../common/commondefs.h \
+  enumtype.h
 $O/diffquot.o: diffquot.cc \
-  scavedefs.h \
+  ../common/bigdecimal.h \
+  dataflowmanager.h \
+  ../common/filereader.h \
+  nodetype.h \
   ../common/commondefs.h \
   commonnodes.h \
-  nodetype.h \
+  ../common/exception.h \
+  ../common/commonutil.h \
   node.h \
   diffquot.h \
-  channel.h \
-  ../common/commonutil.h \
-  ../common/exception.h \
   ../common/progressmonitor.h \
-  dataflowmanager.h \
-  ../common/bigdecimal.h \
-  ../common/filereader.h
+  scavedefs.h \
+  channel.h
 $O/enumtype.o: enumtype.cc \
   scavedefs.h \
+  ../common/exception.h \
+  ../common/commonutil.h \
   ../common/commondefs.h \
+  enumtype.h \
   scaveutils.h \
   ../common/stringtokenizer.h \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  enumtype.h \
   ../common/bigdecimal.h
 $O/export.o: export.cc \
-  fields.h \
-  datasorter.h \
-  idlist.h \
+  statistics.h \
+  resultfilemanager.h \
+  ../common/exception.h \
+  ../common/commonutil.h \
+  enumtype.h \
   export.h \
-  ../common/opp_ctype.h \
-  scavedefs.h \
   ../common/commondefs.h \
   xyarray.h \
-  scaveutils.h \
   ../common/stringutil.h \
   ../common/patternmatcher.h \
-  ../common/exception.h \
-  ../common/commonutil.h \
-  enumtype.h \
-  resultfilemanager.h \
-  ../common/rwlock.h \
-  ../common/bigdecimal.h \
-  statistics.h
-$O/fields.o: fields.cc \
+  ../common/opp_ctype.h \
+  idlist.h \
+  scavedefs.h \
   fields.h \
-  idlist.h \
+  ../common/rwlock.h \
+  ../common/bigdecimal.h \
+  datasorter.h \
+  scaveutils.h
+$O/fields.o: fields.cc \
   scavedefs.h \
-  ../common/commondefs.h \
-  scaveutils.h \
+  idlist.h \
   ../common/patternmatcher.h \
   ../common/stringutil.h \
+  ../common/commondefs.h \
+  enumtype.h \
   ../common/exception.h \
   ../common/commonutil.h \
   resultfilemanager.h \
-  enumtype.h \
-  ../common/bigdecimal.h \
-  ../common/rwlock.h \
-  statistics.h
-$O/filewriter.o: filewriter.cc \
-  scavedefs.h \
-  ../common/commondefs.h \
-  filewriter.h \
-  commonnodes.h \
-  nodetype.h \
-  node.h \
-  channel.h \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  ../common/progressmonitor.h \
-  dataflowmanager.h \
-  ../common/bigdecimal.h \
-  ../common/filereader.h
-$O/filternodes.o: filternodes.cc \
-  scavedefs.h \
-  ../common/commondefs.h \
-  ../common/stringutil.h \
-  commonnodes.h \
-  nodetype.h \
-  node.h \
-  channel.h \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  ../common/progressmonitor.h \
-  dataflowmanager.h \
-  ../common/bigdecimal.h \
-  ../common/filereader.h \
-  filternodes.h
-$O/idlist.o: idlist.cc \
-  idlist.h \
-  scavedefs.h \
-  ../common/commondefs.h \
-  scaveutils.h \
-  ../common/stringutil.h \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  enumtype.h \
-  resultfilemanager.h \
-  ../common/bigdecimal.h \
-  ../common/rwlock.h \
-  statistics.h
-$O/indexedvectorfile.o: indexedvectorfile.cc \
-  idlist.h \
-  scavedefs.h \
-  indexfile.h \
-  ../common/commondefs.h \
-  scaveutils.h \
-  ../common/stringutil.h \
-  nodetype.h \
-  node.h \
-  channel.h \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  resultfilemanager.h \
-  ../common/progressmonitor.h \
-  enumtype.h \
-  dataflowmanager.h \
-  ../common/linetokenizer.h \
-  ../common/rwlock.h \
-  ../common/bigdecimal.h \
-  indexedvectorfile.h \
-  ../common/filereader.h \
-  statistics.h
-$O/indexedvectorfilereader.o: indexedvectorfilereader.cc \
-  idlist.h \
-  ../common/opp_ctype.h \
-  scavedefs.h \
-  indexfile.h \
-  ../common/commondefs.h \
-  scaveutils.h \
-  vectorfilereader.h \
-  nodetype.h \
-  commonnodes.h \
-  node.h \
-  channel.h \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  resultfilemanager.h \
-  ../common/progressmonitor.h \
-  enumtype.h \
-  ../common/linetokenizer.h \
-  dataflowmanager.h \
-  indexedvectorfilereader.h \
-  ../common/rwlock.h \
-  ../common/bigdecimal.h \
-  ../common/filereader.h \
-  statistics.h
-$O/indexedvectorfilereader2.o: indexedvectorfilereader2.cc \
-  idlist.h \
-  ../common/opp_ctype.h \
-  scavedefs.h \
-  indexfile.h \
-  ../common/commondefs.h \
-  indexedvectorfilereader2.h \
-  scaveutils.h \
-  vectorfilereader.h \
-  nodetype.h \
-  commonnodes.h \
-  node.h \
-  channel.h \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  resultfilemanager.h \
-  ../common/progressmonitor.h \
-  enumtype.h \
-  ../common/linetokenizer.h \
-  dataflowmanager.h \
-  ../common/rwlock.h \
-  ../common/bigdecimal.h \
-  ../common/filereader.h \
-  statistics.h
-$O/indexfile.o: indexfile.cc \
-  scaveexception.h \
-  scavedefs.h \
-  ../common/commondefs.h \
-  indexfile.h \
-  scaveutils.h \
-  ../common/stringutil.h \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  ../common/linetokenizer.h \
-  ../common/bigdecimal.h \
   statistics.h \
-  ../common/filereader.h
-$O/mergernodes.o: mergernodes.cc \
-  scavedefs.h \
-  ../common/commondefs.h \
-  mergernodes.h \
   scaveutils.h \
-  commonnodes.h \
+  ../common/bigdecimal.h \
+  fields.h \
+  ../common/rwlock.h
+$O/filewriter.o: filewriter.cc \
+  ../common/bigdecimal.h \
   nodetype.h \
+  ../common/filereader.h \
+  dataflowmanager.h \
   node.h \
-  channel.h \
   ../common/commonutil.h \
   ../common/exception.h \
-  ../common/progressmonitor.h \
-  dataflowmanager.h \
-  ../common/bigdecimal.h \
-  ../common/filereader.h
-$O/nodetype.o: nodetype.cc \
+  commonnodes.h \
+  ../common/commondefs.h \
+  channel.h \
   scavedefs.h \
+  filewriter.h \
+  ../common/progressmonitor.h
+$O/filternodes.o: filternodes.cc \
+  channel.h \
+  ../common/progressmonitor.h \
+  scavedefs.h \
+  ../common/stringutil.h \
+  ../common/exception.h \
+  ../common/commonutil.h \
+  node.h \
+  commonnodes.h \
+  filternodes.h \
   ../common/commondefs.h \
   nodetype.h \
-  node.h \
-  channel.h \
-  ../common/exception.h \
-  ../common/commonutil.h \
-  ../common/progressmonitor.h \
+  ../common/filereader.h \
   dataflowmanager.h \
   ../common/bigdecimal.h
-$O/nodetyperegistry.o: nodetyperegistry.cc \
-  teenode.h \
-  customfilter.h \
-  slidingwinavg.h \
-  indexfile.h \
-  ../common/commondefs.h \
-  indexedvectorfilereader2.h \
-  xyarray.h \
-  scaveutils.h \
+$O/idlist.o: idlist.cc \
+  scavedefs.h \
+  idlist.h \
   ../common/stringutil.h \
-  vectorfilereader.h \
-  ../common/expression.h \
-  node.h \
-  diffquot.h \
-  channel.h \
-  windowavg.h \
+  ../common/exception.h \
+  ../common/commonutil.h \
   resultfilemanager.h \
-  enumtype.h \
-  ../common/progressmonitor.h \
-  ../common/linetokenizer.h \
-  dataflowmanager.h \
-  indexedvectorfilereader.h \
-  arraybuilder.h \
-  ../common/rwlock.h \
-  ../common/stringpool.h \
   statistics.h \
-  filternodes.h \
-  xyplotnode.h \
-  vectorfilewriter.h \
+  ../common/commondefs.h \
+  enumtype.h \
+  scaveutils.h \
+  ../common/rwlock.h \
+  ../common/bigdecimal.h
+$O/indexedvectorfile.o: indexedvectorfile.cc \
+  indexfile.h \
+  ../common/bigdecimal.h \
+  ../common/rwlock.h \
+  ../common/filereader.h \
+  dataflowmanager.h \
+  scaveutils.h \
+  nodetype.h \
+  ../common/commondefs.h \
+  indexedvectorfile.h \
+  enumtype.h \
+  ../common/exception.h \
+  ../common/commonutil.h \
+  ../common/linetokenizer.h \
+  resultfilemanager.h \
+  statistics.h \
+  node.h \
+  ../common/progressmonitor.h \
+  scavedefs.h \
+  idlist.h \
+  ../common/stringutil.h \
+  channel.h
+$O/indexedvectorfilereader.o: indexedvectorfilereader.cc \
+  commonnodes.h \
+  ../common/commondefs.h \
+  enumtype.h \
+  ../common/exception.h \
+  ../common/commonutil.h \
+  resultfilemanager.h \
+  ../common/linetokenizer.h \
+  node.h \
+  statistics.h \
+  ../common/progressmonitor.h \
   idlist.h \
   scavedefs.h \
-  mergernodes.h \
-  nodetyperegistry.h \
-  filewriter.h \
-  ../common/stringtokenizer.h \
-  stddev.h \
+  ../common/opp_ctype.h \
+  channel.h \
+  indexfile.h \
+  ../common/bigdecimal.h \
+  ../common/rwlock.h \
+  indexedvectorfilereader.h \
+  ../common/filereader.h \
+  scaveutils.h \
+  dataflowmanager.h \
+  vectorfilereader.h \
+  nodetype.h
+$O/indexedvectorfilereader2.o: indexedvectorfilereader2.cc \
   nodetype.h \
-  commonnodes.h \
+  ../common/filereader.h \
+  scaveutils.h \
+  dataflowmanager.h \
+  vectorfilereader.h \
+  ../common/rwlock.h \
+  indexfile.h \
+  ../common/bigdecimal.h \
+  channel.h \
+  indexedvectorfilereader2.h \
+  ../common/progressmonitor.h \
+  idlist.h \
+  scavedefs.h \
+  ../common/opp_ctype.h \
   ../common/commonutil.h \
   ../common/exception.h \
+  ../common/linetokenizer.h \
+  resultfilemanager.h \
+  statistics.h \
+  node.h \
+  commonnodes.h \
+  ../common/commondefs.h \
+  enumtype.h
+$O/indexfile.o: indexfile.cc \
   ../common/bigdecimal.h \
+  indexfile.h \
+  scaveutils.h \
+  ../common/filereader.h \
+  ../common/commondefs.h \
+  statistics.h \
+  ../common/linetokenizer.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/stringutil.h \
+  scavedefs.h \
+  scaveexception.h
+$O/mergernodes.o: mergernodes.cc \
+  nodetype.h \
+  ../common/filereader.h \
+  dataflowmanager.h \
+  scaveutils.h \
+  ../common/bigdecimal.h \
+  channel.h \
+  scavedefs.h \
+  ../common/progressmonitor.h \
+  node.h \
+  ../common/exception.h \
+  ../common/commonutil.h \
+  mergernodes.h \
+  commonnodes.h \
+  ../common/commondefs.h
+$O/nodetype.o: nodetype.cc \
+  nodetype.h \
+  dataflowmanager.h \
+  ../common/bigdecimal.h \
+  channel.h \
+  ../common/progressmonitor.h \
+  scavedefs.h \
+  ../common/exception.h \
+  ../common/commonutil.h \
+  node.h \
+  ../common/commondefs.h
+$O/nodetyperegistry.o: nodetyperegistry.cc \
+  ../common/stringtokenizer.h \
+  ../common/rwlock.h \
+  indexfile.h \
+  ../common/bigdecimal.h \
+  xyplotnode.h \
+  stddev.h \
+  ../common/filereader.h \
+  vectorfilereader.h \
+  ../common/exception.h \
+  ../common/commonutil.h \
+  filternodes.h \
+  vectorfilewriter.h \
+  mergernodes.h \
+  windowavg.h \
+  ../common/stringpool.h \
+  ../common/progressmonitor.h \
+  diffquot.h \
+  scavedefs.h \
+  ../common/stringutil.h \
+  filewriter.h \
+  indexedvectorfilereader.h \
+  arraybuilder.h \
+  teenode.h \
+  nodetype.h \
+  dataflowmanager.h \
+  scaveutils.h \
+  customfilter.h \
+  ../common/linetokenizer.h \
+  resultfilemanager.h \
+  node.h \
+  statistics.h \
+  commonnodes.h \
+  ../common/commondefs.h \
+  slidingwinavg.h \
   indexedvectorfile.h \
-  ../common/filereader.h
+  enumtype.h \
+  channel.h \
+  indexedvectorfilereader2.h \
+  xyarray.h \
+  ../common/expression.h \
+  nodetyperegistry.h \
+  idlist.h
 $O/octaveexport.o: octaveexport.cc \
   octaveexport.h \
+  xyarray.h \
   ../common/opp_ctype.h \
   ../common/commondefs.h \
-  xyarray.h \
+  ../common/bigdecimal.h \
   scavedefs.h \
-  ../common/exception.h \
-  ../common/bigdecimal.h
+  ../common/exception.h
 $O/resultfilemanager.o: resultfilemanager.cc \
-  scaveexception.h \
+  enumtype.h \
+  ../common/commondefs.h \
+  statistics.h \
+  resultfilemanager.h \
+  ../common/linetokenizer.h \
+  idlist.h \
   ../common/opp_ctype.h \
+  scaveexception.h \
+  scaveutils.h \
   ../common/fileutil.h \
-  ../common/commondefs.h \
-  indexfile.h \
-  scaveutils.h \
-  ../common/stringutil.h \
-  ../common/patternmatcher.h \
-  ../common/matchexpression.h \
-  enumtype.h \
-  resultfilemanager.h \
-  ../common/linetokenizer.h \
-  ../common/rwlock.h \
-  statistics.h \
-  idlist.h \
-  scavedefs.h \
-  ../common/stringtokenizer.h \
   ../common/exception.h \
   ../common/commonutil.h \
+  scavedefs.h \
+  ../common/patternmatcher.h \
+  ../common/stringutil.h \
   ../common/bigdecimal.h \
-  ../common/filereader.h
+  indexfile.h \
+  ../common/stringtokenizer.h \
+  ../common/rwlock.h \
+  ../common/filereader.h \
+  ../common/matchexpression.h
 $O/scaveexception.o: scaveexception.cc \
-  scaveexception.h \
-  ../common/commondefs.h \
-  scavedefs.h \
+  ../common/bigdecimal.h \
   ../common/exception.h \
-  ../common/bigdecimal.h
+  scavedefs.h \
+  ../common/commondefs.h \
+  scaveexception.h
 $O/scavetool.o: scavetool.cc \
-  datasorter.h \
-  export.h \
-  ../common/commondefs.h \
-  xyarray.h \
-  scaveutils.h \
-  ../common/patternmatcher.h \
-  ../common/stringutil.h \
-  vectorfilereader.h \
-  node.h \
-  channel.h \
-  ../common/progressmonitor.h \
-  enumtype.h \
-  resultfilemanager.h \
+  nodetype.h \
   dataflowmanager.h \
-  ../common/linetokenizer.h \
+  scaveutils.h \
   arraybuilder.h \
-  ../common/rwlock.h \
-  statistics.h \
-  filternodes.h \
-  fields.h \
-  vectorfilewriter.h \
-  idlist.h \
-  scavedefs.h \
-  nodetyperegistry.h \
-  filewriter.h \
-  ../common/stringtokenizer.h \
-  commonnodes.h \
-  nodetype.h \
-  ../common/exception.h \
-  ../common/commonutil.h \
-  vectorfileindexer.h \
-  ../common/ver.h \
-  ../common/bigdecimal.h \
-  ../common/filereader.h
-$O/scaveutils.o: scaveutils.cc \
-  ../common/commondefs.h \
-  scaveutils.h \
-  scavedefs.h \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  ../common/bigdecimal.h
-$O/slidingwinavg.o: slidingwinavg.cc \
-  slidingwinavg.h \
-  ../common/commondefs.h \
-  node.h \
+  datasorter.h \
   channel.h \
-  ../common/progressmonitor.h \
-  dataflowmanager.h \
-  scavedefs.h \
-  commonnodes.h \
-  nodetype.h \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  ../common/bigdecimal.h \
-  ../common/filereader.h
-$O/stddev.o: stddev.cc \
-  ../common/commondefs.h \
   xyarray.h \
-  scaveutils.h \
-  node.h \
-  channel.h \
-  ../common/progressmonitor.h \
-  dataflowmanager.h \
-  scavedefs.h \
-  stddev.h \
-  commonnodes.h \
-  nodetype.h \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  ../common/bigdecimal.h \
-  ../common/filereader.h
-$O/teenode.o: teenode.cc \
-  teenode.h \
-  ../common/commondefs.h \
-  node.h \
-  channel.h \
-  ../common/progressmonitor.h \
-  dataflowmanager.h \
-  scavedefs.h \
-  commonnodes.h \
-  nodetype.h \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  ../common/bigdecimal.h \
-  ../common/filereader.h
-$O/vectorfileindexer.o: vectorfileindexer.cc \
-  scaveexception.h \
-  ../common/opp_ctype.h \
-  ../common/commondefs.h \
-  indexfile.h \
-  scaveutils.h \
-  ../common/stringutil.h \
-  node.h \
-  channel.h \
-  resultfilemanager.h \
-  enumtype.h \
-  ../common/progressmonitor.h \
-  dataflowmanager.h \
-  ../common/linetokenizer.h \
-  ../common/rwlock.h \
-  statistics.h \
-  idlist.h \
-  scavedefs.h \
   nodetyperegistry.h \
-  nodetype.h \
+  idlist.h \
+  ../common/ver.h \
+  resultfilemanager.h \
+  ../common/linetokenizer.h \
+  node.h \
+  statistics.h \
+  commonnodes.h \
+  ../common/commondefs.h \
+  export.h \
+  enumtype.h \
+  ../common/filereader.h \
+  vectorfilereader.h \
+  ../common/stringtokenizer.h \
+  ../common/rwlock.h \
+  fields.h \
+  ../common/bigdecimal.h \
+  vectorfileindexer.h \
+  ../common/progressmonitor.h \
+  scavedefs.h \
+  ../common/stringutil.h \
+  ../common/patternmatcher.h \
+  filewriter.h \
   ../common/commonutil.h \
   ../common/exception.h \
+  filternodes.h \
+  vectorfilewriter.h
+$O/scaveutils.o: scaveutils.cc \
+  scavedefs.h \
+  ../common/exception.h \
+  ../common/commonutil.h \
+  ../common/bigdecimal.h \
+  ../common/commondefs.h \
+  scaveutils.h
+$O/slidingwinavg.o: slidingwinavg.cc \
+  ../common/bigdecimal.h \
+  ../common/filereader.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  scavedefs.h \
+  ../common/progressmonitor.h \
+  dataflowmanager.h \
+  nodetype.h \
+  commonnodes.h \
+  ../common/commondefs.h \
+  slidingwinavg.h \
+  node.h \
+  channel.h
+$O/stddev.o: stddev.cc \
+  ../common/bigdecimal.h \
+  ../common/filereader.h \
+  stddev.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  scavedefs.h \
+  ../common/progressmonitor.h \
+  dataflowmanager.h \
+  scaveutils.h \
+  nodetype.h \
+  commonnodes.h \
+  ../common/commondefs.h \
+  node.h \
+  xyarray.h \
+  channel.h
+$O/teenode.o: teenode.cc \
+  scavedefs.h \
+  ../common/progressmonitor.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/filereader.h \
+  ../common/bigdecimal.h \
+  channel.h \
+  ../common/commondefs.h \
+  commonnodes.h \
+  node.h \
+  dataflowmanager.h \
+  teenode.h \
+  nodetype.h
+$O/vectorfileindexer.o: vectorfileindexer.cc \
+  dataflowmanager.h \
+  scaveutils.h \
+  nodetype.h \
+  ../common/commondefs.h \
+  indexedvectorfile.h \
+  enumtype.h \
+  resultfilemanager.h \
+  ../common/linetokenizer.h \
+  statistics.h \
+  node.h \
+  scaveexception.h \
+  nodetyperegistry.h \
+  idlist.h \
+  ../common/opp_ctype.h \
+  channel.h \
+  indexfile.h \
   vectorfileindexer.h \
   ../common/bigdecimal.h \
-  indexedvectorfile.h \
-  ../common/filereader.h
+  ../common/rwlock.h \
+  ../common/filereader.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/progressmonitor.h \
+  scavedefs.h \
+  ../common/stringutil.h
 $O/vectorfilereader.o: vectorfilereader.cc \
   scaveexception.h \
-  ../common/opp_ctype.h \
-  ../common/commondefs.h \
-  scaveutils.h \
-  vectorfilereader.h \
-  node.h \
-  channel.h \
-  resultfilemanager.h \
-  ../common/progressmonitor.h \
-  enumtype.h \
-  ../common/linetokenizer.h \
-  dataflowmanager.h \
-  ../common/rwlock.h \
-  statistics.h \
   idlist.h \
-  scavedefs.h \
-  nodetype.h \
+  ../common/opp_ctype.h \
+  channel.h \
   commonnodes.h \
+  ../common/commondefs.h \
+  enumtype.h \
+  resultfilemanager.h \
+  ../common/linetokenizer.h \
+  node.h \
+  statistics.h \
+  scaveutils.h \
+  dataflowmanager.h \
+  nodetype.h \
+  ../common/progressmonitor.h \
+  scavedefs.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/filereader.h \
+  vectorfilereader.h \
+  ../common/bigdecimal.h \
+  ../common/rwlock.h
+$O/vectorfilewriter.o: vectorfilewriter.cc \
+  ../common/stringutil.h \
+  scavedefs.h \
+  ../common/progressmonitor.h \
+  vectorfilewriter.h \
   ../common/commonutil.h \
   ../common/exception.h \
   ../common/bigdecimal.h \
-  ../common/filereader.h
-$O/vectorfilewriter.o: vectorfilewriter.cc \
-  ../common/commondefs.h \
-  scaveutils.h \
-  ../common/stringutil.h \
-  node.h \
-  channel.h \
-  resultfilemanager.h \
-  ../common/progressmonitor.h \
-  enumtype.h \
-  dataflowmanager.h \
   ../common/rwlock.h \
-  statistics.h \
-  vectorfilewriter.h \
   idlist.h \
-  scavedefs.h \
-  nodetype.h \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  ../common/bigdecimal.h
-$O/windowavg.o: windowavg.cc \
-  ../common/commondefs.h \
-  scaveutils.h \
-  node.h \
   channel.h \
+  enumtype.h \
+  ../common/commondefs.h \
+  node.h \
+  statistics.h \
+  resultfilemanager.h \
+  scaveutils.h \
+  dataflowmanager.h \
+  nodetype.h
+$O/windowavg.o: windowavg.cc \
   windowavg.h \
   ../common/progressmonitor.h \
-  dataflowmanager.h \
   scavedefs.h \
-  commonnodes.h \
-  nodetype.h \
   ../common/commonutil.h \
   ../common/exception.h \
+  ../common/filereader.h \
   ../common/bigdecimal.h \
-  ../common/filereader.h
-$O/xyarray.o: xyarray.cc \
-  ../common/commondefs.h \
-  xyarray.h \
-  scavedefs.h \
-  ../common/exception.h \
-  ../common/bigdecimal.h
-$O/xyplotnode.o: xyplotnode.cc \
-  ../common/commondefs.h \
-  node.h \
   channel.h \
-  ../common/progressmonitor.h \
-  dataflowmanager.h \
-  xyplotnode.h \
-  scavedefs.h \
+  node.h \
   commonnodes.h \
+  ../common/commondefs.h \
   nodetype.h \
+  scaveutils.h \
+  dataflowmanager.h
+$O/xyarray.o: xyarray.cc \
+  ../common/exception.h \
+  scavedefs.h \
+  ../common/bigdecimal.h \
+  ../common/commondefs.h \
+  xyarray.h
+$O/xyplotnode.o: xyplotnode.cc \
+  xyplotnode.h \
+  ../common/filereader.h \
+  ../common/bigdecimal.h \
+  scavedefs.h \
+  ../common/progressmonitor.h \
   ../common/commonutil.h \
   ../common/exception.h \
-  ../common/bigdecimal.h \
-  ../common/filereader.h
+  nodetype.h \
+  dataflowmanager.h \
+  channel.h \
+  node.h \
+  commonnodes.h \
+  ../common/commondefs.h
