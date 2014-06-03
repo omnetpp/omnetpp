@@ -592,7 +592,6 @@ DERIVEDCLASS(cDelayChannel, cObject);
 DERIVEDCLASS(cDatarateChannel, cObject);
 DERIVEDCLASS(cModule, cObject);
 DERIVEDCLASS(cSimpleModule, cObject);
-DERIVEDCLASS(cCompoundModule, cObject);
 DERIVEDCLASS(cDefaultList, cObject);
 //DERIVEDCLASS(cDoubleExpression, cExpression);
 DERIVEDCLASS(cGate, cObject);
@@ -632,7 +631,6 @@ typedef SimTime simtime_t;
 %include "cmodule.h"
 %include "ccoroutine.h"
 %include "csimplemodule.h"
-%include "ccompoundmodule.h"
 %include "ccomponenttype.h"
 %include "carray.h"
 //%include "clinkedlist.h"
