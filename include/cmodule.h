@@ -27,9 +27,9 @@ NAMESPACE_BEGIN
 
 class  cMessage;
 class  cGate;
-class  cModule;
 class  cSimulation;
 class  cModuleType;
+class  cCanvas;
 
 /**
  * This class represents modules in the simulation. cModule can be used directly
@@ -234,6 +234,8 @@ class SIM_API cModule : public cComponent //implies noncopyable
     int idx;      // index if module vector, 0 otherwise
     int vectsize; // vector size, -1 if not a vector
 
+    cCanvas *canvas;  // NULL when unused
+
   public:
     // internal: currently used by init
     void setRecordEvents(bool e)  {setFlag(FL_RECORD_EVENTS,e);}
@@ -315,6 +317,9 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     // internal utility function. Takes O(n) time as it iterates on the gates
     cGate *gateByOrdinal(int k) const;
+
+    // internal: return the canvas if exists, or NULL if not (i.e. no create-on-demand)
+    cCanvas *getCanvasIfExists() {return canvas;}
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -717,6 +722,11 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * module. If the parameter is not found, throws cRuntimeError.
      */
     cPar& getAncestorPar(const char *parname);
+
+    /**
+     * TODO
+     */
+    virtual cCanvas *getCanvas();
     //@}
 
     /** @name Public methods for invoking initialize()/finish(), redefined from cComponent.

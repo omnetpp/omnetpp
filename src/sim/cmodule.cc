@@ -31,6 +31,7 @@
 #include "cchannel.h"
 #include "cproperties.h"
 #include "cproperty.h"
+#include "ccanvas.h"
 #include "stringutil.h"
 #include "simutil.h"
 #include "cmodelchange.h"
@@ -63,6 +64,8 @@ cModule::cModule()
 
     descvSize = 0;
     descv = NULL;
+
+    canvas = NULL;
 
     // gates and parameters will be added by cModuleType
 }
@@ -116,6 +119,8 @@ cModule::~cModule()
     if (getParentModule())
         getParentModule()->removeSubmodule(this);
 
+    delete canvas;
+
     delete [] fullname;
     delete [] fullpath;
 }
@@ -136,6 +141,9 @@ void cModule::forEachChild(cVisitor *v)
 
     for (GateIterator i(this); !i.end(); i++)
         v->visit(i());
+
+    if (canvas)
+        v->visit(canvas);
 
     cDefaultList::forEachChild(v);
 }
@@ -1269,6 +1277,15 @@ void cModule::changeParentTo(cModule *mod)
         tmp.oldParentModule = oldparent;
         mod->emit(POST_MODEL_CHANGE, &tmp);
     }
+}
+
+cCanvas *cModule::getCanvas()
+{
+    if (!canvas) {
+        canvas = new cCanvas();
+        take(canvas);
+    }
+    return canvas;
 }
 
 void cModule::callInitialize()

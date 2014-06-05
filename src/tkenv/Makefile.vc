@@ -26,7 +26,7 @@ IMPLIBS= $O/../sim/oppsim$D.lib $O/../envir/oppenvir$D.lib $O/../layout/opplayou
 
 OBJS = $O/tkenv$(TKENV_EMBED_SUFFIX).obj $O/tkcmd.obj $O/tklib.obj $O/inspector.obj $O/logbuffer.obj \
        $O/inspectorfactory.obj  $O/genericobjectinspector.obj $O/watchinspector.obj \
-       $O/moduleinspector.obj $O/loginspector.obj $O/gateinspector.obj \
+       $O/moduleinspector.obj $O/loginspector.obj $O/gateinspector.obj $O/figurerenderers.obj \
        $O/outputvectorinspector.obj $O/histograminspector.obj $O/componenthistory.obj \
        $O/layouterenv.obj $O/arrow.obj $O/tkutil.obj $O/tkImgPNG.obj $O/tkImgPNGInit.obj
 
@@ -156,6 +156,27 @@ $O/componenthistory.obj: componenthistory.cc \
   ../../include/cpar.h \
   ../../include/cchannel.h \
   ../../include/ccomponent.h \
+  ../../include/regmacros.h
+$O/figurerenderers.obj: figurerenderers.cc \
+  figurerenderers.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/simtime.h \
+  tkutil.h \
+  ../../include/simtime_t.h \
+  ../../include/ccanvas.h \
+  ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/cobject.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  tkdefs.h \
+  ../../include/cexception.h \
+  ../../include/cnamedobject.h \
+  ../../include/cownedobject.h \
+  ../../include/platdep/platdefs.h \
   ../../include/regmacros.h
 $O/gateinspector.obj: gateinspector.cc \
   ../../include/ctimestampedvalue.h \
@@ -387,10 +408,12 @@ $O/inspector.obj: inspector.cc \
   ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
   ../../include/cdelaychannel.h \
+  ../../include/ccanvas.h \
   ../../include/cdensityestbase.h \
   ../../include/cmessageheap.h \
   ../../include/cvarhist.h \
   ../../include/platdep/intxtypes.h \
+  ../../include/cmessageprinter.h \
   ../../include/globals.h \
   ../../include/cstringparimpl.h \
   ../../include/platdep/platmisc.h \
@@ -496,10 +519,12 @@ $O/inspectorfactory.obj: inspectorfactory.cc \
   ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
   ../../include/cdelaychannel.h \
+  ../../include/ccanvas.h \
   ../../include/cdensityestbase.h \
   ../../include/cmessageheap.h \
   ../../include/cvarhist.h \
   ../../include/platdep/intxtypes.h \
+  ../../include/cmessageprinter.h \
   ../../include/globals.h \
   ../../include/cstringparimpl.h \
   ../../include/platdep/platmisc.h \
@@ -650,6 +675,7 @@ $O/loginspector.obj: loginspector.cc \
   tkenv.h \
   ../../include/regmacros.h
 $O/moduleinspector.obj: moduleinspector.cc \
+  figurerenderers.h \
   ../../include/carray.h \
   ../../include/cgate.h \
   arrow.h \
@@ -686,6 +712,7 @@ $O/moduleinspector.obj: moduleinspector.cc \
   tklib.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
+  ../../include/ccanvas.h \
   ../../include/csimplemodule.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \

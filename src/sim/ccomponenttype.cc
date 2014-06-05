@@ -30,6 +30,7 @@
 #include "cproperties.h"
 #include "cproperty.h"
 #include "cenum.h"
+#include "ccanvas.h"
 #include "cobjectfactory.h"
 #include "../common/patternmatcher.h"
 
@@ -338,6 +339,10 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     // add parameters and gates to the new module;
     // note: setupGateVectors() will be called from finalizeParameters()
     addParametersAndGatesTo(mod);
+
+    // initialize canvas
+    if (cCanvas::containsCanvasItems(mod->getProperties()))
+        mod->getCanvas()->addItemsFrom(mod->getProperties());
 
     // notify envir
     ev.configure(mod);

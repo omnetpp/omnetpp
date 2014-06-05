@@ -20,6 +20,7 @@
 #include <assert.h>
 
 #include "moduleinspector.h"
+#include "figurerenderers.h"
 #include "tkenv.h"
 #include "tklib.h"
 #include "tkutil.h"
@@ -182,6 +183,7 @@ void ModuleInspector::redrawAll()
 
    refreshLayout();
    redrawModules();
+   redrawFigures();
    redrawNextEventMarker();
    redrawMessages();
    updateSubmodules();
@@ -557,6 +559,31 @@ void ModuleInspector::drawConnection(cGate *gate)
              ));
 }
 
+void ModuleInspector::drawFigure(cFigure *figure)
+{
+    FigureRenderer *renderer = NULL;
+    if (dynamic_cast<cLineFigure*>(figure))
+        renderer = new LineFigureRenderer();
+    else if (dynamic_cast<cPolylineFigure*>(figure))
+        renderer = new PolylineFigureRenderer();
+    else if (dynamic_cast<cRectangleFigure*>(figure))
+        renderer = new RectangleFigureRenderer();
+    else if (dynamic_cast<cOvalFigure*>(figure))
+        renderer = new OvalFigureRenderer();
+    else if (dynamic_cast<cPolygonFigure*>(figure))
+        renderer = new PolygonFigureRenderer();
+    else if (dynamic_cast<cTextFigure*>(figure))
+        renderer = new TextFigureRenderer();
+    else if (dynamic_cast<cImageFigure*>(figure))
+        renderer = new ImageFigureRenderer();
+    else
+        throw cRuntimeError("No renderer for figure of type %s", figure->getClassName());
+
+    renderer->render(figure, interp, canvas);
+
+    delete renderer; //TODO reusable renderers
+}
+
 void ModuleInspector::redrawMessages()
 {
    // refresh & cleanup from prev. events
@@ -625,6 +652,26 @@ void ModuleInspector::redrawNextEventMarker()
                        ptrToStr(nextModParent), " ",
                        (nextMod==nextModParent ? "2" : "1"),
                        NULL));
+   }
+}
+
+void ModuleInspector::redrawFigures()
+{
+   cModule *mod = static_cast<cModule *>(object);
+
+   // remove existing figures
+   CHK(Tcl_VarEval(interp, canvas, " delete fig", NULL));
+
+   // draw figures
+   cCanvas *canvas = mod->getCanvasIfExists();
+   if (canvas)
+   {
+       for (int i=0; i<canvas->getNumFigures(); i++)
+       {
+           cFigure *figure = canvas->getFigure(i);
+           if (figure->isVisible())
+               drawFigure(figure);
+       }
    }
 }
 

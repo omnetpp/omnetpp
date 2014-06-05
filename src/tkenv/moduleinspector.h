@@ -26,6 +26,7 @@ NAMESPACE_BEGIN
 
 class cModule;
 class cGate;
+class cFigure;
 
 enum SendAnimMode {ANIM_BEGIN, ANIM_END, ANIM_THROUGH};
 
@@ -48,6 +49,7 @@ class TKENV_API ModuleInspector : public Inspector
       void drawSubmodule(cModule *submod, double x, double y, const char *scaling);
       void drawEnclosingModule(cModule *parentmodule, const char *scaling);
       void drawConnection(cGate *gate);
+      void drawFigure(cFigure *figure);
       static const char *animModeToStr(SendAnimMode mode);
 
    public:
@@ -86,6 +88,7 @@ class TKENV_API ModuleInspector : public Inspector
       virtual void redrawModules();
       virtual void redrawMessages();
       virtual void redrawNextEventMarker();
+      virtual void redrawFigures();
       virtual void updateSubmodules();
 
       // notifications from envir:

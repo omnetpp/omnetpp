@@ -28,7 +28,7 @@ IMPLIBS= -L$L -loppsim$D -loppenvir$D -lopplayout$D -loppcommon$D $(TK_LIBS) $(Z
 
 OBJS = $O/tkenv$(TKENV_EMBED_SUFFIX).o $O/tkcmd.o $O/tklib.o $O/inspector.o $O/logbuffer.o \
        $O/inspectorfactory.o $O/genericobjectinspector.o $O/watchinspector.o \
-       $O/moduleinspector.o $O/loginspector.o $O/gateinspector.o \
+       $O/moduleinspector.o $O/loginspector.o $O/gateinspector.o $O/figurerenderers.o \
        $O/outputvectorinspector.o $O/histograminspector.o $O/componenthistory.o \
        $O/layouterenv.o $O/arrow.o $O/tkutil.o $O/tkImgPNG.o $O/tkImgPNGInit.o
 
