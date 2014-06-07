@@ -30,7 +30,10 @@ class TKENV_API FigureRenderer
         char *color(const cFigure::Color& color, char *buf);
         char *itoa(int i, char *buf);
         char *arrows(cFigure::ArrowHead start, cFigure::ArrowHead end, char *buf);
+        const char *smooth(bool b);
         const char *lineStyle(cFigure::LineStyle style);
+        const char *capStyle(cFigure::CapStyle style);
+        const char *joinStyle(cFigure::JoinStyle style);
         const char *anchor(cFigure::Anchor anchor);
         const char *alignment(cFigure::Alignment alignment);
 

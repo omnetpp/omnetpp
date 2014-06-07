@@ -52,23 +52,48 @@ char *FigureRenderer::arrows(cFigure::ArrowHead start, cFigure::ArrowHead end, c
 {
     //TODO arrow shape!
     //XXX Tk cannot draw different arrows at the two ends of the line!
-    if (start == cFigure::NONE && end == cFigure::NONE)
+    if (start == cFigure::ARROW_NONE && end == cFigure::ARROW_NONE)
         buf[0] = 0;
-    else if (start == cFigure::NONE)
+    else if (start == cFigure::ARROW_NONE)
         sprintf(buf, " -arrow last ");
-    else if (end == cFigure::NONE)
+    else if (end == cFigure::ARROW_NONE)
         sprintf(buf, " -arrow first ");
     else
         sprintf(buf, " -arrow both ");
     return buf;
 }
 
+const char *FigureRenderer::smooth(bool smooth)
+{
+    return smooth ? " -smooth true " : "";
+}
+
 const char *FigureRenderer::lineStyle(cFigure::LineStyle style)
 {
     switch (style) {
-        case cFigure::SOLID: return "";
-        case cFigure::DOTTED: return "-dash .";
-        case cFigure::DASHED: return "-dash -";
+        case cFigure::LINE_SOLID: return "";
+        case cFigure::LINE_DOTTED: return " -dash . ";
+        case cFigure::LINE_DASHED: return " -dash - ";
+        default: throw cRuntimeError("Unexpected line style %d", style);
+    }
+}
+
+const char *FigureRenderer::capStyle(cFigure::CapStyle style)
+{
+    switch (style) {
+        case cFigure::CAP_BUTT: return "";
+        case cFigure::CAP_SQUARE: return " -capstyle projecting ";
+        case cFigure::CAP_ROUND: return " -capstyle round ";
+        default: throw cRuntimeError("Unexpected line style %d", style);
+    }
+}
+
+const char *FigureRenderer::joinStyle(cFigure::JoinStyle style)
+{
+    switch (style) {
+        case cFigure::JOIN_MITER: return "";
+        case cFigure::JOIN_BEVEL: return " -joinstyle bevel ";
+        case cFigure::JOIN_ROUND: return " -joinstyle round ";
         default: throw cRuntimeError("Unexpected line style %d", style);
     }
 }
@@ -76,15 +101,15 @@ const char *FigureRenderer::lineStyle(cFigure::LineStyle style)
 const char *FigureRenderer::anchor(cFigure::Anchor anchor)
 {
     switch (anchor) {
-        case cFigure::C: return " -anchor c ";
-        case cFigure::N: return " -anchor n ";
-        case cFigure::E: return " -anchor e ";
-        case cFigure::S: return " -anchor s ";
-        case cFigure::W: return " -anchor w ";
-        case cFigure::NW: return " -anchor nw ";
-        case cFigure::NE: return " -anchor ne ";
-        case cFigure::SE: return " -anchor se ";
-        case cFigure::SW: return " -anchor sw ";
+        case cFigure::ANCHOR_CENTER: return " -anchor c ";
+        case cFigure::ANCHOR_N: return " -anchor n ";
+        case cFigure::ANCHOR_E: return " -anchor e ";
+        case cFigure::ANCHOR_S: return " -anchor s ";
+        case cFigure::ANCHOR_W: return " -anchor w ";
+        case cFigure::ANCHOR_NW: return " -anchor nw ";
+        case cFigure::ANCHOR_NE: return " -anchor ne ";
+        case cFigure::ANCHOR_SE: return " -anchor se ";
+        case cFigure::ANCHOR_SW: return " -anchor sw ";
         default: throw cRuntimeError("Unexpected anchor %d", anchor);
     }
 }
@@ -92,9 +117,9 @@ const char *FigureRenderer::anchor(cFigure::Anchor anchor)
 const char *FigureRenderer::alignment(cFigure::Alignment alignment)
 {
     switch (alignment) {
-        case cFigure::LEFT: return "";
-        case cFigure::RIGHT: return " -justify right ";
-        case cFigure::CENTER: return " -justify center ";
+        case cFigure::ALIGN_LEFT: return "";
+        case cFigure::ALIGN_RIGHT: return " -justify right ";
+        case cFigure::ALIGN_CENTER: return " -justify center ";
         default: throw cRuntimeError("Unexpected alignment %d", alignment);
     }
 }
@@ -121,6 +146,9 @@ void PolylineFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const c
             " -fill ", color(polylineFigure->getLineColor(), buf2),
             " -width ", itoa(polylineFigure->getLineWidth(), buf3),
             lineStyle(polylineFigure->getLineStyle()),
+            capStyle(polylineFigure->getCapStyle()),
+            joinStyle(polylineFigure->getJoinStyle()),
+            smooth(polylineFigure->getSmooth()),
             arrows(polylineFigure->getStartArrowHead(), polylineFigure->getEndArrowHead(), buf4),
             " -tags fig ", NULL));
 }
@@ -161,6 +189,8 @@ void PolygonFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const ch
             " -outline ", color(polygonFigure->getLineColor(), buf2),
             " -width ", itoa(polygonFigure->getLineWidth(), buf3),
             lineStyle(polygonFigure->getLineStyle()),
+            joinStyle(polygonFigure->getJoinStyle()),
+            smooth(polygonFigure->getSmooth()),
             " -tags fig ", NULL));
 }
 

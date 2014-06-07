@@ -31,6 +31,7 @@ class cProperties;
 // changed flags
 // utility functions to cFigure: getBoundingBox(), translate(), etc
 // recognize color names
+// add "arc" items!
 //
 //TODO later:
 // add alpha to Color
@@ -88,15 +89,16 @@ class SIM_API cFigure : public cNamedObject
             std::string typeface;
             int pointSize;
             uint8_t style;
-            Font() : pointSize(8), style(0) {}
+            Font() : pointSize(8), style(FONT_NONE) {}
         };
 
-        enum FontStyle { BOLD=1, ITALIC=2, UNDERLINE=4 };
-
-        enum LineStyle { SOLID, DOTTED, DASHED };
-        enum ArrowHead { NONE, SIMPLE, TRIANGLE, BARBED };
-        enum Anchor {C, N, E, S, W, NW, NE, SE, SW };
-        enum Alignment { LEFT, RIGHT, CENTER }; // note: JUSTIFY is not supported by Tk
+        enum FontStyle { FONT_NONE=0, FONT_BOLD=1, FONT_ITALIC=2, FONT_UNDERLINE=4 };
+        enum LineStyle { LINE_SOLID, LINE_DOTTED, LINE_DASHED };
+        enum CapStyle { CAP_BUTT, CAP_SQUARE, CAP_ROUND };
+        enum JoinStyle { JOIN_BEVEL, JOIN_MITER, JOIN_ROUND };
+        enum ArrowHead { ARROW_NONE, ARROW_SIMPLE, ARROW_TRIANGLE, ARROW_BARBED };
+        enum Anchor {ANCHOR_CENTER, ANCHOR_N, ANCHOR_E, ANCHOR_S, ANCHOR_W, ANCHOR_NW, ANCHOR_NE, ANCHOR_SE, ANCHOR_SW };
+        enum Alignment { ALIGN_LEFT, ALIGN_RIGHT, ALIGN_CENTER }; // note: JUSTIFY is not supported by Tk
 
     private:
         cCanvas *canvas;
@@ -109,8 +111,11 @@ class SIM_API cFigure : public cNamedObject
     protected:
         Point parsePoint(cProperty *property, const char *key, int index);
         std::vector<Point> parsePoints(cProperty *property, const char *key);
+        bool parseBool(const char *s);
         Color parseColor(const char *s);
         LineStyle parseLineStyle(const char *s);
+        CapStyle parseCapStyle(const char *s);
+        JoinStyle parseJoinStyle(const char *s);
         ArrowHead parseArrowHead(const char *s);
         Anchor parseAnchor(const char *s);
         Alignment parseAlignment(const char *s);
@@ -140,7 +145,7 @@ class SIM_API cAbstractLineFigure : public cFigure
         int lineWidth;
         ArrowHead startArrowHead, endArrowHead;
     public:
-        cAbstractLineFigure() : lineColor(BLACK), lineStyle(SOLID), lineWidth(1), startArrowHead(NONE), endArrowHead(NONE) {}
+        cAbstractLineFigure() : lineColor(BLACK), lineStyle(LINE_SOLID), lineWidth(1), startArrowHead(ARROW_NONE), endArrowHead(ARROW_NONE) {}
         virtual void parse(cProperty *property);
         const Color& getLineColor() const  {return lineColor;}
         void setLineColor(const Color& lineColor)  {this->lineColor = lineColor;}
@@ -172,12 +177,21 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
 {
     private:
         std::vector<Point> points;
+        bool smooth;
+        CapStyle capStyle;
+        JoinStyle joinStyle;
     public:
-        cPolylineFigure() {}
+        cPolylineFigure() : smooth(false), capStyle(CAP_BUTT), joinStyle(JOIN_MITER) {}
         virtual void parse(cProperty *property);
         virtual void translate(double x, double y);
         const std::vector<Point>& getPoints() const  {return points;}
         void setPoints(const std::vector<Point>& points) {this->points = points;}
+        bool getSmooth() const {return smooth;}
+        void setSmooth(bool smooth) {this->smooth = smooth;}
+        CapStyle getCapStyle() const {return capStyle;}
+        void setCapStyle(CapStyle capStyle) {this->capStyle = capStyle;}
+        JoinStyle getJoinStyle() const {return joinStyle;}
+        void setJoinStyle(JoinStyle joinStyle) {this->joinStyle = joinStyle;}
 };
 
 class SIM_API cAbstractShapeFigure : public cFigure
@@ -189,7 +203,7 @@ class SIM_API cAbstractShapeFigure : public cFigure
         LineStyle lineStyle;
         int lineWidth;
     public:
-        cAbstractShapeFigure() : filled(false), lineColor(BLACK), fillColor(BLUE), lineStyle(SOLID), lineWidth(1) {}
+        cAbstractShapeFigure() : filled(false), lineColor(BLACK), fillColor(BLUE), lineStyle(LINE_SOLID), lineWidth(1) {}
         virtual void parse(cProperty *property);
         bool isFilled() const  {return filled;}
         void setFilled(bool filled)  {this->filled = filled;}
@@ -235,12 +249,18 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
 {
     private:
         std::vector<Point> points;
+        bool smooth;
+        JoinStyle joinStyle;
     public:
-        cPolygonFigure() {}
+        cPolygonFigure() : smooth(false), joinStyle(JOIN_MITER) {}
         virtual void parse(cProperty *property);
         virtual void translate(double x, double y);
         const std::vector<Point>& getPoints() const  {return points;}
         void setPoints(const std::vector<Point>& points) {this->points = points;}
+        bool getSmooth() const {return smooth;}
+        void setSmooth(bool smooth) {this->smooth = smooth;}
+        JoinStyle getJoinStyle() const {return joinStyle;}
+        void setJoinStyle(JoinStyle joinStyle) {this->joinStyle = joinStyle;}
 };
 
 
@@ -254,7 +274,7 @@ class SIM_API cTextFigure : public cFigure
         Anchor anchor;
         Alignment alignment;
     public:
-        cTextFigure() : color(BLACK), anchor(NW), alignment(LEFT) {}
+        cTextFigure() : color(BLACK), anchor(ANCHOR_NW), alignment(ALIGN_LEFT) {}
         virtual void parse(cProperty *property);
         virtual void translate(double x, double y);
         const Point& getPos() const  {return pos;}

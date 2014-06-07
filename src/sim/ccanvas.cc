@@ -50,6 +50,13 @@ std::vector<cFigure::Point> cFigure::parsePoints(cProperty *property, const char
     return points;
 }
 
+bool cFigure::parseBool(const char *s)
+{
+    if (!strcmp(s,"true")) return true;
+    if (!strcmp(s,"false")) return false;
+    throw cRuntimeError("invalid boolean value '%s'", s);
+}
+
 cFigure::Color cFigure::parseColor(const char *s)
 {
     if (s[0] == '#') {
@@ -63,40 +70,57 @@ cFigure::Color cFigure::parseColor(const char *s)
 
 cFigure::LineStyle cFigure::parseLineStyle(const char *s)
 {
-    if (!strcmp(s,"solid")) return SOLID;
-    if (!strcmp(s,"dotted")) return DOTTED;
-    if (!strcmp(s,"dashed")) return DASHED;
+    if (!strcmp(s,"solid")) return LINE_SOLID;
+    if (!strcmp(s,"dotted")) return LINE_DOTTED;
+    if (!strcmp(s,"dashed")) return LINE_DASHED;
     throw cRuntimeError("invalid line style '%s'", s);
+}
+
+cFigure::CapStyle cFigure::parseCapStyle(const char *s)
+{
+    if (!strcmp(s,"butt")) return CAP_BUTT;
+    if (!strcmp(s,"square")) return CAP_SQUARE;
+    if (!strcmp(s,"round")) return CAP_ROUND;
+    throw cRuntimeError("invalid cap style '%s'", s);
+}
+
+cFigure::JoinStyle cFigure::parseJoinStyle(const char *s)
+{
+    if (!strcmp(s,"bevel")) return JOIN_BEVEL;
+    if (!strcmp(s,"miter")) return JOIN_MITER;
+    if (!strcmp(s,"round")) return JOIN_ROUND;
+    throw cRuntimeError("invalid join style '%s'", s);
 }
 
 cFigure::ArrowHead cFigure::parseArrowHead(const char *s)
 {
-    if (!strcmp(s,"none")) return NONE;
-    if (!strcmp(s,"simple")) return SIMPLE;
-    if (!strcmp(s,"triangle")) return TRIANGLE;
-    if (!strcmp(s,"barbed")) return BARBED;
+    if (!strcmp(s,"none")) return ARROW_NONE;
+    if (!strcmp(s,"simple")) return ARROW_SIMPLE;
+    if (!strcmp(s,"triangle")) return ARROW_TRIANGLE;
+    if (!strcmp(s,"barbed")) return ARROW_BARBED;
     throw cRuntimeError("invalid arrowhead style '%s'", s);
 }
 
 cFigure::Anchor cFigure::parseAnchor(const char *s)
 {
-    if (!strcmp(s,"c")) return C;
-    if (!strcmp(s,"n")) return N;
-    if (!strcmp(s,"e")) return E;
-    if (!strcmp(s,"s")) return S;
-    if (!strcmp(s,"w")) return W;
-    if (!strcmp(s,"nw")) return NW;
-    if (!strcmp(s,"ne")) return NE;
-    if (!strcmp(s,"se")) return SE;
-    if (!strcmp(s,"sw")) return SW;
+    if (!strcmp(s,"c")) return ANCHOR_CENTER;
+    if (!strcmp(s,"center")) return ANCHOR_CENTER;
+    if (!strcmp(s,"n")) return ANCHOR_N;
+    if (!strcmp(s,"e")) return ANCHOR_E;
+    if (!strcmp(s,"s")) return ANCHOR_S;
+    if (!strcmp(s,"w")) return ANCHOR_W;
+    if (!strcmp(s,"nw")) return ANCHOR_NW;
+    if (!strcmp(s,"ne")) return ANCHOR_NE;
+    if (!strcmp(s,"se")) return ANCHOR_SE;
+    if (!strcmp(s,"sw")) return ANCHOR_SW;
     throw cRuntimeError("invalid anchor '%s'", s);
 }
 
 cFigure::Alignment cFigure::parseAlignment(const char *s)
 {
-    if (!strcmp(s,"left")) return LEFT;
-    if (!strcmp(s,"right")) return RIGHT;
-    if (!strcmp(s,"center")) return CENTER;
+    if (!strcmp(s,"left")) return ALIGN_LEFT;
+    if (!strcmp(s,"right")) return ALIGN_RIGHT;
+    if (!strcmp(s,"center")) return ALIGN_CENTER;
     throw cRuntimeError("invalid text alignment '%s'", s);
 }
 
@@ -142,7 +166,14 @@ void cPolylineFigure::parse(cProperty *property)
 {
     cAbstractLineFigure::parse(property);
 
+    const char *s;
     setPoints(parsePoints(property, "coords"));
+    if ((s = property->getValue("smooth", 0)) != NULL)
+        setSmooth(parseBool(s));
+    if ((s = property->getValue("capstyle", 0)) != NULL)
+        setCapStyle(parseCapStyle(s));
+    if ((s = property->getValue("joinstyle", 0)) != NULL)
+        setJoinStyle(parseJoinStyle(s));
 }
 
 void cPolylineFigure::translate(double x, double y)
@@ -209,7 +240,12 @@ void cPolygonFigure::parse(cProperty *property)
 {
     cAbstractShapeFigure::parse(property);
 
+    const char *s;
     setPoints(parsePoints(property, "coords"));
+    if ((s = property->getValue("smooth", 0)) != NULL)
+        setSmooth(parseBool(s));
+    if ((s = property->getValue("joinstyle", 0)) != NULL)
+        setJoinStyle(parseJoinStyle(s));
 }
 
 void cPolygonFigure::translate(double x, double y)
