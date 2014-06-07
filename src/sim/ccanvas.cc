@@ -159,7 +159,7 @@ void cLineFigure::translate(double x, double y)
     start.y += y;
     end.x += x;
     end.y += y;
-    //TODO set changed bit
+    changed();
 }
 
 void cPolylineFigure::parse(cProperty *property)
@@ -182,7 +182,7 @@ void cPolylineFigure::translate(double x, double y)
         points[i].x += x;
         points[i].y += y;
     }
-    //TODO set changed bit
+    changed();
 }
 
 void cAbstractShapeFigure::parse(cProperty *property)
@@ -216,7 +216,7 @@ void cRectangleFigure::translate(double x, double y)
     p1.y += y;
     p2.x += x;
     p2.y += y;
-    //TODO set changed bit
+    changed();
 }
 
 void cOvalFigure::parse(cProperty *property)
@@ -233,7 +233,7 @@ void cOvalFigure::translate(double x, double y)
     p1.y += y;
     p2.x += x;
     p2.y += y;
-    //TODO set changed bit
+    changed();
 }
 
 void cPolygonFigure::parse(cProperty *property)
@@ -254,7 +254,7 @@ void cPolygonFigure::translate(double x, double y)
         points[i].x += x;
         points[i].y += y;
     }
-    //TODO set changed bit
+    changed();
 }
 
 void cTextFigure::parse(cProperty *property)
@@ -277,7 +277,7 @@ void cTextFigure::translate(double x, double y)
 {
     pos.x += x;
     pos.y += y;
-    //TODO set changed bit
+    changed();
 }
 
 void cImageFigure::parse(cProperty *property)
@@ -301,7 +301,7 @@ void cImageFigure::translate(double x, double y)
 {
     pos.x += x;
     pos.y += y;
-    //TODO set changed bit
+    changed();
 }
 
 
