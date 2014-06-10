@@ -133,6 +133,7 @@ void LineFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char 
             " -fill ", color(lineFigure->getLineColor(), buf3),
             " -width ", itoa(lineFigure->getLineWidth(), buf4),
             lineStyle(lineFigure->getLineStyle()),
+            capStyle(lineFigure->getCapStyle()),
             arrows(lineFigure->getStartArrowHead(), lineFigure->getEndArrowHead(), buf5),
             " -tags fig ", NULL));
 }

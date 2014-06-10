@@ -149,8 +149,11 @@ void cLineFigure::parse(cProperty *property)
 {
     cAbstractLineFigure::parse(property);
 
+    const char *s;
     setStart(parsePoint(property, "coords", 0));
     setEnd(parsePoint(property, "coords", 2));
+    if ((s = property->getValue("capstyle", 0)) != NULL)
+        setCapStyle(parseCapStyle(s));
 }
 
 void cLineFigure::translate(double x, double y)
@@ -357,9 +360,9 @@ void cCanvas::deleteLayer(cLayer *layer)
 {
     if (layer->getCanvas() != this)
         throw cRuntimeError("cCanvas::deleteLayer(): layer hasn't been added to this canvas");
-    for (int i=0; i<figures.size(); i++)
-        if (figures[i]->getLayer() == layer)
-            throw cRuntimeError("cCanvas::deleteLayer(): refusing to delete layer: still has figures");
+//    for (int i=0; i<figures.size(); i++)
+//        if (figures[i]->getLayer() == layer)
+//            throw cRuntimeError("cCanvas::deleteLayer(): refusing to delete layer: still has figures");
     std::vector<cLayer*>::iterator it = std::find(layers.begin(), layers.end(), layer);
     ASSERT(it!=layers.end());
     layers.erase(it);

@@ -40,23 +40,12 @@ class cProperties;
 // add cTransformationFigure (wrong name propably)
 // layer hierarchy? (~named layer groups)
 
-// getName() should return layer name
-// getOwner() should return the canvas
-class SIM_API cLayer : public cNamedObject
-{
-    private:
-        cCanvas *canvas;
-    public:
-        cLayer() : canvas(NULL) {}
-        cCanvas *getCanvas() const {return canvas;}
-        void setCanvas(cCanvas *canvas) {this->canvas = canvas;}
-};
 
-// getName() should return id (NED property index)
-// getOwner() should return the canvas (or another figure)
-class SIM_API cFigure : public cNamedObject
+/**
+ * TODO
+ */
+class SIM_API cFigure : public cOwnedObject
 {
-        friend class cCanvas; // for setCanvas()
     public:
         struct Point {
             double x, y;
@@ -99,8 +88,8 @@ class SIM_API cFigure : public cNamedObject
         bool changedFlag;
         cCanvas *canvas;
         bool visible;
-        cLayer *layer; // may be NULL
         std::vector<std::string> tags; //TODO stringpool
+        std::vector<cFigure*> children; //TODO!!!
 
     protected:
         virtual void changed() {changedFlag = true;}
@@ -116,17 +105,23 @@ class SIM_API cFigure : public cNamedObject
         static Alignment parseAlignment(const char *s);
 
     public:
-        cFigure() : changedFlag(false), canvas(NULL), visible(true), layer(NULL) {}
+        cFigure(const char *name=NULL) : cOwnedObject(name), changedFlag(false), canvas(NULL), visible(true) {}
         virtual void parse(cProperty *property);
         virtual void translate(double x, double y) = 0;
         cCanvas *getCanvas() const {return canvas;}
         void setCanvas(cCanvas *canvas) {this->canvas = canvas;}
         bool isVisible() const {return visible;}
         void setVisible(bool visible) {this->visible = visible;}
-        cLayer *getLayer() const {return layer;}
-        void setLayer(cLayer *layer) {this->layer = layer;}
         const std::vector<std::string>& getTags() const {return tags;}
         void setTags(const std::vector<std::string>& tags) {this->tags = tags;}
+        //TODO addChild, removeChild, etc.
+};
+
+class SIM_API cLayer : public cFigure
+{
+    public:
+        cLayer(const char *name=NULL) : cFigure(name) {}
+        virtual void translate(double x, double y) {}  //TODO!!! add reference point as member?
 };
 
 class SIM_API cAbstractLineFigure : public cFigure
@@ -137,7 +132,7 @@ class SIM_API cAbstractLineFigure : public cFigure
         int lineWidth;
         ArrowHead startArrowHead, endArrowHead;
     public:
-        cAbstractLineFigure() : lineColor(BLACK), lineStyle(LINE_SOLID), lineWidth(1), startArrowHead(ARROW_NONE), endArrowHead(ARROW_NONE) {}
+        cAbstractLineFigure(const char *name=NULL) : cFigure(name), lineColor(BLACK), lineStyle(LINE_SOLID), lineWidth(1), startArrowHead(ARROW_NONE), endArrowHead(ARROW_NONE) {}
         virtual void parse(cProperty *property);
         const Color& getLineColor() const  {return lineColor;}
         void setLineColor(const Color& lineColor)  {this->lineColor = lineColor; changed();}
@@ -155,14 +150,17 @@ class SIM_API cLineFigure : public cAbstractLineFigure
 {
     private:
         Point start, end;
+        CapStyle capStyle;
     public:
-        cLineFigure() {}
+        cLineFigure(const char *name=NULL) : cAbstractLineFigure(name), capStyle(CAP_BUTT) {}
         virtual void parse(cProperty *property);
         virtual void translate(double x, double y);
         const Point& getStart() const  {return start;}
         void setStart(const Point& start)  {this->start = start; changed();}
         const Point& getEnd() const  {return end;}
         void setEnd(const Point& end)  {this->end = end; changed();}
+        CapStyle getCapStyle() const {return capStyle;}
+        void setCapStyle(CapStyle capStyle) {this->capStyle = capStyle; changed();}
 };
 
 class SIM_API cPolylineFigure : public cAbstractLineFigure
@@ -173,7 +171,7 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
         CapStyle capStyle;
         JoinStyle joinStyle;
     public:
-        cPolylineFigure() : smooth(false), capStyle(CAP_BUTT), joinStyle(JOIN_MITER) {}
+        cPolylineFigure(const char *name=NULL) : cAbstractLineFigure(name), smooth(false), capStyle(CAP_BUTT), joinStyle(JOIN_MITER) {}
         virtual void parse(cProperty *property);
         virtual void translate(double x, double y);
         const std::vector<Point>& getPoints() const  {return points;}
@@ -195,7 +193,7 @@ class SIM_API cAbstractShapeFigure : public cFigure
         LineStyle lineStyle;
         int lineWidth;
     public:
-        cAbstractShapeFigure() : filled(false), lineColor(BLACK), fillColor(BLUE), lineStyle(LINE_SOLID), lineWidth(1) {}
+        cAbstractShapeFigure(const char *name=NULL) : cFigure(name), filled(false), lineColor(BLACK), fillColor(BLUE), lineStyle(LINE_SOLID), lineWidth(1) {}
         virtual void parse(cProperty *property);
         bool isFilled() const  {return filled;}
         void setFilled(bool filled)  {this->filled = filled; changed();}
@@ -214,7 +212,7 @@ class SIM_API cRectangleFigure : public cAbstractShapeFigure
     private:
         Point p1, p2;
     public:
-        cRectangleFigure() {}
+        cRectangleFigure(const char *name=NULL) : cAbstractShapeFigure(name) {}
         virtual void parse(cProperty *property);
         virtual void translate(double x, double y);
         const Point& getP1() const  {return p1;}
@@ -228,7 +226,7 @@ class SIM_API cOvalFigure : public cAbstractShapeFigure
     private:
         Point p1, p2;
     public:
-        cOvalFigure() {}
+        cOvalFigure(const char *name=NULL) : cAbstractShapeFigure(name) {}
         virtual void parse(cProperty *property);
         virtual void translate(double x, double y);
         const Point& getP1() const  {return p1;}
@@ -244,7 +242,7 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
         bool smooth;
         JoinStyle joinStyle;
     public:
-        cPolygonFigure() : smooth(false), joinStyle(JOIN_MITER) {}
+        cPolygonFigure(const char *name=NULL) : cAbstractShapeFigure(name), smooth(false), joinStyle(JOIN_MITER) {}
         virtual void parse(cProperty *property);
         virtual void translate(double x, double y);
         const std::vector<Point>& getPoints() const  {return points;}
@@ -266,7 +264,7 @@ class SIM_API cTextFigure : public cFigure
         Anchor anchor;
         Alignment alignment;
     public:
-        cTextFigure() : color(BLACK), anchor(ANCHOR_NW), alignment(ALIGN_LEFT) {}
+        cTextFigure(const char *name=NULL) : cFigure(name), color(BLACK), anchor(ANCHOR_NW), alignment(ALIGN_LEFT) {}
         virtual void parse(cProperty *property);
         virtual void translate(double x, double y);
         const Point& getPos() const  {return pos;}
@@ -291,7 +289,7 @@ class SIM_API cImageFigure : public cFigure
         Color color;
         int colorization;
     public:
-        cImageFigure() : color(BLUE), colorization(0) {}
+        cImageFigure(const char *name=NULL) : cFigure(name), color(BLUE), colorization(0) {}
         virtual void parse(cProperty *property);
         virtual void translate(double x, double y);
         const Point& getPos() const  {return pos;}
