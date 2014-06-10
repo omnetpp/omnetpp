@@ -25,7 +25,6 @@ class cProperty;
 class cProperties;
 
 //TODO:
-// remove zOrder --> cannot be implemented efficiently with either Tk or GEF!
 // use flags field for booleans
 // work out details for Point, Color, Font
 // utilize "changed" and "visible" (==>enabled!) flags
@@ -47,13 +46,10 @@ class SIM_API cLayer : public cNamedObject
 {
     private:
         cCanvas *canvas;
-        int zOrder;
     public:
-        cLayer() : canvas(NULL), zOrder(0) {}
+        cLayer() : canvas(NULL) {}
         cCanvas *getCanvas() const {return canvas;}
         void setCanvas(cCanvas *canvas) {this->canvas = canvas;}
-        int getZOrder() const {return zOrder;}
-        void setZOrder(int order) {zOrder = order;}
 };
 
 // getName() should return id (NED property index)
@@ -62,7 +58,6 @@ class SIM_API cFigure : public cNamedObject
 {
         friend class cCanvas; // for setCanvas()
     public:
-        //TODO move these declarations into cCanvas?
         struct Point {
             double x, y;
             Point() : x(0), y(0) {}
@@ -106,8 +101,6 @@ class SIM_API cFigure : public cNamedObject
         bool visible;
         cLayer *layer; // may be NULL
         std::vector<std::string> tags; //TODO stringpool
-        bool hasZOrder;
-        int zOrder;
 
     protected:
         virtual void changed() {changedFlag = true;}
@@ -123,7 +116,7 @@ class SIM_API cFigure : public cNamedObject
         static Alignment parseAlignment(const char *s);
 
     public:
-        cFigure() : changedFlag(false), canvas(NULL), visible(true), layer(NULL), hasZOrder(false), zOrder(0) {}
+        cFigure() : changedFlag(false), canvas(NULL), visible(true), layer(NULL) {}
         virtual void parse(cProperty *property);
         virtual void translate(double x, double y) = 0;
         cCanvas *getCanvas() const {return canvas;}
@@ -134,9 +127,6 @@ class SIM_API cFigure : public cNamedObject
         void setLayer(cLayer *layer) {this->layer = layer;}
         const std::vector<std::string>& getTags() const {return tags;}
         void setTags(const std::vector<std::string>& tags) {this->tags = tags;}
-        int getZOrder() const {return hasZOrder ? zOrder : layer ? layer->getZOrder() : 0;}
-        void setZOrder(int zOrder) {this->zOrder = zOrder; hasZOrder = true; changed();}
-        void unsetZOrder() {hasZOrder = false;}
 };
 
 class SIM_API cAbstractLineFigure : public cFigure
