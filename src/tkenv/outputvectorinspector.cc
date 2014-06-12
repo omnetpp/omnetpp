@@ -375,7 +375,7 @@ void OutputVectorInspector::setConfig( bool autosc, double timefac, double min_y
        drawingMode = i;
 }
 
-int OutputVectorInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
+int OutputVectorInspector::inspectorCommand(int argc, const char **argv)
 {
    if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
 
@@ -409,7 +409,7 @@ int OutputVectorInspector::inspectorCommand(Tcl_Interp *interp, int argc, const 
       return TCL_OK;
    }
 
-   return Inspector::inspectorCommand(interp, argc, argv);
+   return Inspector::inspectorCommand(argc, argv);
 }
 
 NAMESPACE_END

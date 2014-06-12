@@ -68,7 +68,7 @@ class TKENV_API OutputVectorInspector : public Inspector
       virtual void createWindow(const char *window, const char *geometry);
       virtual void useWindow(const char *window);
       virtual void refresh();
-      virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
+      virtual int inspectorCommand(int argc, const char **argv);
 
       // return textual information in general or about a value/value pair
       void generalInfo( char *buf );

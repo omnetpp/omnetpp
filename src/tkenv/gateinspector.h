@@ -38,7 +38,7 @@ class TKENV_API GateInspector : public Inspector
       virtual void useWindow(const char *window);
       virtual void refresh();
       virtual int redraw();
-      virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
+      virtual int inspectorCommand(int argc, const char **argv);
 
       // notifications from envir:
       virtual void displayStringChanged(cGate *gate);

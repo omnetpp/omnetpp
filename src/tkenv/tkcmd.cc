@@ -1938,7 +1938,8 @@ int inspectorCommand_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
    Tkenv *app = getTkenv();
    Inspector *insp = app->findInspector(argv[1]);
    if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
-   TRY(return insp->inspectorCommand(interp, argc-2, argv+2));
+   if (interp!=app->getInterp()) {Tcl_SetResult(interp, TCLCONST("wrong Tcl_Interp instance"), TCL_STATIC); return TCL_ERROR;}
+   TRY(return insp->inspectorCommand(argc-2, argv+2));
 }
 
 int getClassDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)

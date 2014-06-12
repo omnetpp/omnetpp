@@ -453,11 +453,11 @@ void ModuleInspector::redrawModules()
         cModule *submod = it();
         assert(submodPosMap.find(submod)!=submodPosMap.end());
         Point& pos = submodPosMap[submod];
-        drawSubmodule(interp, submod, pos.x, pos.y, scaling);
+        drawSubmodule(submod, pos.x, pos.y, scaling);
     }
 
     // draw enclosing module
-    drawEnclosingModule(interp, parentModule, scaling);
+    drawEnclosingModule(parentModule, scaling);
 
     // loop through all submodules and enclosing module & draw their connections
     bool atParent = false;
@@ -470,7 +470,7 @@ void ModuleInspector::redrawModules()
             cGate *gate = i();
             if (gate->getType()==(atParent ? cGate::INPUT: cGate::OUTPUT) && gate->getNextGate()!=NULL)
             {
-                drawConnection(interp, gate);
+                drawConnection(gate);
             }
         }
     }
@@ -478,7 +478,7 @@ void ModuleInspector::redrawModules()
     CHK(Tcl_VarEval(interp, "ModuleInspector:setScrollRegion ", windowName, " 0",NULL));
 }
 
-void ModuleInspector::drawSubmodule(Tcl_Interp *interp, cModule *submod, double x, double y, const char *scaling)
+void ModuleInspector::drawSubmodule(cModule *submod, double x, double y, const char *scaling)
 {
     char coords[64];
     sprintf(coords,"%g %g ", x, y);
@@ -495,7 +495,7 @@ void ModuleInspector::drawSubmodule(Tcl_Interp *interp, cModule *submod, double 
                     NULL));
 }
 
-void ModuleInspector::drawEnclosingModule(Tcl_Interp *interp, cModule *parentModule, const char *scaling)
+void ModuleInspector::drawEnclosingModule(cModule *parentModule, const char *scaling)
 {
     const char *displayString = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString().str() : "";
     CHK(Tcl_VarEval(interp, "ModuleInspector:drawEnclosingModule ",
@@ -507,7 +507,7 @@ void ModuleInspector::drawEnclosingModule(Tcl_Interp *interp, cModule *parentMod
                        NULL ));
 }
 
-void ModuleInspector::drawConnection(Tcl_Interp *interp, cGate *gate)
+void ModuleInspector::drawConnection(cGate *gate)
 {
     cModule *mod = gate->getOwnerModule();
     cGate *destGate = gate->getNextGate();
@@ -802,7 +802,7 @@ void ModuleInspector::performAnimations(Tcl_Interp *interp)
     CHK(Tcl_VarEval(interp, "performAnimations", NULL));
 }
 
-int ModuleInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
+int ModuleInspector::inspectorCommand(int argc, const char **argv)
 {
    if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
 
@@ -822,33 +822,33 @@ int ModuleInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char *
    }
    else if (strcmp(argv[0],"getdefaultlayoutseed")==0)
    {
-       return getDefaultLayoutSeed(interp,argc,argv);
+       return getDefaultLayoutSeed(argc, argv);
    }
    else if (strcmp(argv[0],"getlayoutseed")==0)
    {
-       return getLayoutSeed(interp,argc,argv);
+       return getLayoutSeed(argc, argv);
    }
    else if (strcmp(argv[0],"setlayoutseed")==0)
    {
-       return setLayoutSeed(interp,argc,argv);
+       return setLayoutSeed(argc, argv);
    }
    else if (strcmp(argv[0],"submodulecount")==0)
    {
-      return getSubmoduleCount(interp,argc,argv);
+      return getSubmoduleCount(argc, argv);
    }
    else if (strcmp(argv[0],"getsubmodq")==0)
    {
-      return getSubmodQ(interp,argc,argv);
+      return getSubmodQ(argc, argv);
    }
    else if (strcmp(argv[0],"getsubmodqlen")==0)
    {
-      return getSubmodQLen(interp,argc,argv);
+      return getSubmodQLen(argc, argv);
    }
 
-   return Inspector::inspectorCommand(interp, argc, argv);
+   return Inspector::inspectorCommand(argc, argv);
 }
 
-int ModuleInspector::getDefaultLayoutSeed(Tcl_Interp *interp, int argc, const char **argv)
+int ModuleInspector::getDefaultLayoutSeed(int argc, const char **argv)
 {
     if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
     const cDisplayString blank;
@@ -859,21 +859,21 @@ int ModuleInspector::getDefaultLayoutSeed(Tcl_Interp *interp, int argc, const ch
     return TCL_OK;
 }
 
-int ModuleInspector::getLayoutSeed(Tcl_Interp *interp, int argc, const char **argv)
+int ModuleInspector::getLayoutSeed(int argc, const char **argv)
 {
     if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
     Tcl_SetObjResult(interp, Tcl_NewIntObj((int)layoutSeed));
     return TCL_OK;
 }
 
-int ModuleInspector::setLayoutSeed(Tcl_Interp *interp, int argc, const char **argv)
+int ModuleInspector::setLayoutSeed(int argc, const char **argv)
 {
     if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
     layoutSeed = atol(argv[1]);
     return TCL_OK;
 }
 
-int ModuleInspector::getSubmoduleCount(Tcl_Interp *interp, int argc, const char **argv)
+int ModuleInspector::getSubmoduleCount(int argc, const char **argv)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
    int count = 0;
@@ -883,7 +883,7 @@ int ModuleInspector::getSubmoduleCount(Tcl_Interp *interp, int argc, const char 
    return TCL_OK;
 }
 
-int ModuleInspector::getSubmodQ(Tcl_Interp *interp, int argc, const char **argv)
+int ModuleInspector::getSubmodQ(int argc, const char **argv)
 {
    // args: <module ptr> <qname>
    if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
@@ -897,7 +897,7 @@ int ModuleInspector::getSubmodQ(Tcl_Interp *interp, int argc, const char **argv)
    return TCL_OK;
 }
 
-int ModuleInspector::getSubmodQLen(Tcl_Interp *interp, int argc, const char **argv)
+int ModuleInspector::getSubmodQLen(int argc, const char **argv)
 {
    // args: <module ptr> <qname>
    if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}

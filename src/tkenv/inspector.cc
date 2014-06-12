@@ -212,7 +212,7 @@ void Inspector::goBack()
     }
 }
 
-int Inspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
+int Inspector::inspectorCommand(int argc, const char **argv)
 {
     if (argc != 1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
 

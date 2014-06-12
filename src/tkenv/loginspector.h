@@ -90,7 +90,7 @@ class TKENV_API LogInspector : public Inspector, protected ILogBufferListener
       virtual Mode getMode() const {return mode;}
       virtual void setMode(Mode mode);
 
-      virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
+      virtual int inspectorCommand(int argc, const char **argv);
 };
 
 NAMESPACE_END

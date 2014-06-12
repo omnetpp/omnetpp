@@ -45,9 +45,9 @@ class TKENV_API ModuleInspector : public Inspector
       PositionMap submodPosMap;  // recalculateLayout() fills this map
 
    protected:
-      void drawSubmodule(Tcl_Interp *interp, cModule *submod, double x, double y, const char *scaling);
-      void drawEnclosingModule(Tcl_Interp *interp, cModule *parentmodule, const char *scaling);
-      void drawConnection(Tcl_Interp *interp, cGate *gate);
+      void drawSubmodule(cModule *submod, double x, double y, const char *scaling);
+      void drawEnclosingModule(cModule *parentmodule, const char *scaling);
+      void drawConnection(cGate *gate);
       static const char *animModeToStr(SendAnimMode mode);
 
    public:
@@ -57,17 +57,17 @@ class TKENV_API ModuleInspector : public Inspector
       virtual void createWindow(const char *window, const char *geometry);
       virtual void useWindow(const char *window);
       virtual void refresh();
-      virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
+      virtual int inspectorCommand(int argc, const char **argv);
 
       bool needsRedraw() {return needs_redraw;}
 
       // implementations of inspector commands:
-      virtual int getDefaultLayoutSeed(Tcl_Interp *interp, int argc, const char **argv);
-      virtual int getLayoutSeed(Tcl_Interp *interp, int argc, const char **argv);
-      virtual int setLayoutSeed(Tcl_Interp *interp, int argc, const char **argv);
-      virtual int getSubmoduleCount(Tcl_Interp *interp, int argc, const char **argv);
-      virtual int getSubmodQ(Tcl_Interp *interp, int argc, const char **argv);
-      virtual int getSubmodQLen(Tcl_Interp *interp, int argc, const char **argv);
+      virtual int getDefaultLayoutSeed(int argc, const char **argv);
+      virtual int getLayoutSeed(int argc, const char **argv);
+      virtual int setLayoutSeed(int argc, const char **argv);
+      virtual int getSubmoduleCount(int argc, const char **argv);
+      virtual int getSubmodQ(int argc, const char **argv);
+      virtual int getSubmodQLen(int argc, const char **argv);
 
       // helper for layouting code
       void getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeyslayout,

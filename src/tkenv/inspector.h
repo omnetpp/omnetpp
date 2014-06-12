@@ -98,7 +98,7 @@ class TKENV_API Inspector
       virtual void refresh();
       virtual void commit() {}
 
-      virtual int inspectorCommand(Tcl_Interp *interp, int, const char **);
+      virtual int inspectorCommand(int, const char **);
 
       virtual void objectDeleted(cObject *);
 };
