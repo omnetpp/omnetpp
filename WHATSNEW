@@ -46,8 +46,8 @@ Tkenv:
 
 Other:
 
-  - In the Windows bundle, the compiler and the debugger have been upgraded
-    to gcc-4.8.1 and gdb-7.5; Tcl/Tk has been upgraded to version 8.6.0.
+  - In the Windows bundle, the debugger have been upgraded to gdb-7.5; 
+    Tcl/Tk has been upgraded to version 8.6.0.
   - New configure.user option to prefer clang over gcc if both are installed
   - New configure.user option to enable/disable C++11 compilance (-std=c++11)
   - Tcl/Tk version 8.5 is required, 8.6 is preferred; BLT is no longer in use
