@@ -50,6 +50,8 @@ Other:
     Tcl/Tk has been upgraded to version 8.6.0.
   - New configure.user option to prefer clang over gcc if both are installed
   - New configure.user option to enable/disable C++11 compilance (-std=c++11)
+    Note that this is NOT supported on Windows because of issues with the bundled
+    MinGW 4.7 compiler.
   - Tcl/Tk version 8.5 is required, 8.6 is preferred; BLT is no longer in use
 
 
