@@ -31,6 +31,7 @@ const cFigure::Color cFigure::YELLOW(255,255,0);
 const cFigure::Color cFigure::CYAN(0,255,255);
 const cFigure::Color cFigure::MAGENTA(255,0,255);
 
+int cFigure::lastId = 0;
 
 cFigure::Point cFigure::parsePoint(cProperty *property, const char *key, int index)
 {
@@ -126,7 +127,124 @@ cFigure::Alignment cFigure::parseAlignment(const char *s)
 
 void cFigure::parse(cProperty *property)
 {
-    //TODO layer, etc.
+}
+
+void cFigure::addChild(cFigure *figure)
+{
+    if (!figure)
+        throw cRuntimeError(this, "addChild(): cannot insert NULL pointer");
+    take(figure);
+    children.push_back(figure);
+}
+
+void cFigure::addChild(cFigure *figure, int pos)
+{
+    if (!figure)
+        throw cRuntimeError(this, "addChild(): cannot insert NULL pointer");
+    if (pos < 0 || pos > (int)children.size())
+        throw cRuntimeError(this,"addChild(): insert position %d out of bounds", pos);
+    take(figure);
+    children.insert(children.begin()+pos, figure);
+    doStructuralChange();
+}
+
+cFigure *cFigure::removeChild(int pos)
+{
+    if (pos < 0 || pos >= (int)children.size())
+        throw cRuntimeError(this,"removeChild(): index %d out of bounds", pos);
+    cFigure *figure = children[pos];
+    children.erase(children.begin()+pos);
+    drop(figure);
+    doStructuralChange();
+    return figure;
+}
+
+cFigure *cFigure::removeChild(cFigure *figure)
+{
+    int pos = findChild(figure);
+    if (pos == -1)
+        throw cRuntimeError(this,"removeChild(): figure is not a child");
+    return removeChild(pos);
+}
+
+int cFigure::findChild(const char *name)
+{
+    for (int i = 0; i < (int)children.size(); i++)
+        if (children[i]->isName(name))
+            return i;
+    return -1;
+}
+
+int cFigure::findChild(cFigure *figure)
+{
+    for (int i = 0; i < (int)children.size(); i++)
+        if (children[i] == figure)
+            return i;
+    return -1;
+}
+
+cFigure *cFigure::getChild(int pos)
+{
+    if (pos < 0 || pos >= (int)children.size())
+        throw cRuntimeError(this,"getChild(): index %d out of bounds", pos);
+    return children[pos];
+}
+
+cFigure *cFigure::getChild(const char *name)
+{
+    for (int i = 0; i < (int)children.size(); i++) {
+        cFigure *figure = children[i];
+        if (figure->isName(name))
+            return figure;
+    }
+    return NULL;
+}
+
+cFigure *cFigure::getFigureByName(const char *name)
+{
+    if (!strcmp(name, getFullName()))
+        return this;
+    for (int i = 0; i < (int)children.size(); i++) {
+        cFigure *figure = children[i]->getFigureByName(name);
+        if (figure)
+            return figure;
+    }
+    return NULL;
+}
+
+cCanvas *cFigure::getCanvas() const
+{
+    //TODO search up the owner chain
+    return NULL;
+}
+
+void cFigure::doChange(int flags)
+{
+    localChange |= flags;
+    for (cFigure *figure = getParent(); figure != NULL; figure = figure->getParent())
+        figure->treeChange |= flags;
+}
+
+void cFigure::clearChangeFlags()
+{
+    if (treeChange)
+        for (int i = 0; i < (int)children.size(); i++)
+            children[i]->clearChangeFlags();
+    localChange = treeChange = 0;
+}
+
+void cLayer::translate(double x, double y)
+{
+    loc.x += x;
+    loc.y += y;
+    doGeometryChange();
+}
+
+void cGroupFigure::translate(double x, double y)
+{
+    loc.x += x;
+    loc.y += y;
+    doGeometryChange();
 }
 
 void cAbstractLineFigure::parse(cProperty *property)
@@ -162,7 +280,7 @@ void cLineFigure::translate(double x, double y)
     start.y += y;
     end.x += x;
     end.y += y;
-    changed();
+    doGeometryChange();
 }
 
 void cPolylineFigure::parse(cProperty *property)
@@ -185,7 +303,7 @@ void cPolylineFigure::translate(double x, double y)
         points[i].x += x;
         points[i].y += y;
     }
-    changed();
+    doGeometryChange();
 }
 
 void cAbstractShapeFigure::parse(cProperty *property)
@@ -211,6 +329,7 @@ void cRectangleFigure::parse(cProperty *property)
 
     setP1(parsePoint(property, "coords", 0));
     setP2(parsePoint(property, "coords", 2));
+    //TODO understand this too: (coords=x,y;size=w,h;anchor=nw)
 }
 
 void cRectangleFigure::translate(double x, double y)
@@ -219,7 +338,7 @@ void cRectangleFigure::translate(double x, double y)
     p1.y += y;
     p2.x += x;
     p2.y += y;
-    changed();
+    doGeometryChange();
 }
 
 void cOvalFigure::parse(cProperty *property)
@@ -228,6 +347,7 @@ void cOvalFigure::parse(cProperty *property)
 
     setP1(parsePoint(property, "coords", 0));
     setP2(parsePoint(property, "coords", 2));
+    //TODO understand this too: (coords=x,y;size=w,h;anchor=nw)
 }
 
 void cOvalFigure::translate(double x, double y)
@@ -236,7 +356,29 @@ void cOvalFigure::translate(double x, double y)
     p1.y += y;
     p2.x += x;
     p2.y += y;
-    changed();
+    doGeometryChange();
+}
+
+void cArcFigure::parse(cProperty *property)
+{
+    cAbstractShapeFigure::parse(property);
+
+    const char *s;
+    setP1(parsePoint(property, "coords", 0));
+    setP2(parsePoint(property, "coords", 2));
+    if ((s = property->getValue("startangle")) != NULL)
+        setStartAngle(opp_atof(s));
+    if ((s = property->getValue("endangle")) != NULL)
+        setEndAngle(opp_atof(s));
+}
+
+void cArcFigure::translate(double x, double y)
+{
+    p1.x += x;
+    p1.y += y;
+    p2.x += x;
+    p2.y += y;
+    doGeometryChange();
 }
 
 void cPolygonFigure::parse(cProperty *property)
@@ -257,7 +399,7 @@ void cPolygonFigure::translate(double x, double y)
         points[i].x += x;
         points[i].y += y;
     }
-    changed();
+    doGeometryChange();
 }
 
 void cTextFigure::parse(cProperty *property)
@@ -280,7 +422,7 @@ void cTextFigure::translate(double x, double y)
 {
     pos.x += x;
     pos.y += y;
-    changed();
+    doGeometryChange();
 }
 
 void cImageFigure::parse(cProperty *property)
@@ -304,82 +446,57 @@ void cImageFigure::translate(double x, double y)
 {
     pos.x += x;
     pos.y += y;
-    changed();
+    doGeometryChange();
 }
 
+//------
+
+void cCanvas::cLayerContainerFigure::translate(double x, double y)
+{
+    throw cRuntimeError(this, "translate(): illegal operation");
+}
+
+cFigure::Point cCanvas::cLayerContainerFigure::getLocation() const
+{
+    return Point(0,0);
+}
+
+void cCanvas::cLayerContainerFigure::setLocation(const Point& loc)
+{
+    throw cRuntimeError(this, "setLocation(): illegal operation");
+}
+
+void cCanvas::cLayerContainerFigure::addChild(cFigure *figure)
+{
+    if (!dynamic_cast<cLayer*>(figure))
+        throw cRuntimeError(this, "addChild(): %s cannot be added, only cLayers", figure->getClassName());
+    cFigure::addChild(figure);
+}
+
+void cCanvas::cLayerContainerFigure::addChild(cFigure *figure, int pos)
+{
+    if (!dynamic_cast<cLayer*>(figure))
+        throw cRuntimeError(this, "addChild(): %s cannot be added, only cLayers", figure->getClassName());
+    cFigure::addChild(figure, pos);
+}
 
 //------
 
 cCanvas::cCanvas()
 {
+    rootFigure = new cLayerContainerFigure();
+    rootFigure->addChild(new cLayer("default"));
+    take(rootFigure);
 }
 
 cCanvas::~cCanvas()
 {
-    for (int i=0; i<figures.size(); i++)
-        delete figures[i];
-    for (int i=0; i<layers.size(); i++)
-        delete layers[i];
-}
-
-void cCanvas::addFigure(cFigure *figure)
-{
-    if (figure->getCanvas())
-        throw cRuntimeError("cCanvas::addFigure(): figure is already added to a canvas");
-    figures.push_back(figure);
-    figure->setCanvas(this);
-}
-
-void cCanvas::deleteFigure(cFigure *figure)
-{
-    if (figure->getCanvas() != this)
-        throw cRuntimeError("cCanvas::deleteFigure(): figure hasn't been added to this canvas");
-    std::vector<cFigure*>::iterator it = std::find(figures.begin(), figures.end(), figure);
-    ASSERT(it!=figures.end());
-    figures.erase(it);
-    delete figure;
-}
-
-cFigure *cCanvas::getFigureByName(const char *name)
-{
-    for (int i=0; i<figures.size(); i++)
-        if (!strcmp(name, figures[i]->getFullName()))
-            return figures[i];
-    return NULL;
-}
-
-void cCanvas::addLayer(cLayer *layer)
-{
-    if (layer->getCanvas())
-        throw cRuntimeError("cCanvas::addLayer(): layer is already added to a canvas");
-    layers.push_back(layer);
-    layer->setCanvas(this);
-}
-
-void cCanvas::deleteLayer(cLayer *layer)
-{
-    if (layer->getCanvas() != this)
-        throw cRuntimeError("cCanvas::deleteLayer(): layer hasn't been added to this canvas");
-//    for (int i=0; i<figures.size(); i++)
-//        if (figures[i]->getLayer() == layer)
-//            throw cRuntimeError("cCanvas::deleteLayer(): refusing to delete layer: still has figures");
-    std::vector<cLayer*>::iterator it = std::find(layers.begin(), layers.end(), layer);
-    ASSERT(it!=layers.end());
-    layers.erase(it);
-    delete layer;
-}
-
-cLayer *cCanvas::getLayerByName(const char *name)
-{
-    for (int i=0; i<layers.size(); i++)
-        if (!strcmp(name, layers[i]->getFullName()))
-            return layers[i];
-    return NULL;
+    dropAndDelete(rootFigure);
 }
 
 bool cCanvas::containsCanvasItems(cProperties *properties)
 {
-    for (int i=0; i<properties->getNumProperties(); i++)
+    for (int i = 0; i < properties->getNumProperties(); i++)
     {
         cProperty *property = properties->get(i);
         if (property->isName("layer") || property->isName("figure"))
@@ -388,16 +505,16 @@ bool cCanvas::containsCanvasItems(cProperties *properties)
     return false;
 }
 
-void cCanvas::addItemsFrom(cProperties *properties)
+void cCanvas::addLayersAndFiguresFrom(cProperties *properties)
 {
     // parse @layers first, then @figures
-    for (int i=0; i<properties->getNumProperties(); i++)
+    for (int i = 0; i < properties->getNumProperties(); i++)
     {
         cProperty *property = properties->get(i);
         if (property->isName("layer"))
             parseLayer(property);
     }
-    for (int i=0; i<properties->getNumProperties(); i++)
+    for (int i = 0; i < properties->getNumProperties(); i++)
     {
         cProperty *property = properties->get(i);
         if (property->isName("figure"))
@@ -408,46 +525,120 @@ void cCanvas::addItemsFrom(cProperties *properties)
 void cCanvas::parseLayer(cProperty *property)
 {
     const char *name = property->getIndex();
-    if (getLayerByName(name) == NULL) {
+    if (getToplevelLayerByName(name) == NULL) {
         cLayer *layer = new cLayer();
-        layer->setName(name);
-        addLayer(layer);
+        layer->setName(name); //TODO set description too
+        addToplevelLayer(layer);
     }
 }
 
 void cCanvas::parseFigure(cProperty *property)
 {
-    const char *name = property->getIndex();
-    if (!name)
-        throw cRuntimeError(property, "@figure is expected to have an index, e.g. @figure[foo62]");
-    cFigure *figure = getFigureByName(name);
-    if (!figure)
-    {
-        const char *type = property->getValue("type");
-        if (!strcmp(type, "line"))
-            figure = new cLineFigure();
-        else if (!strcmp(type, "polyline"))
-            figure = new cPolylineFigure();
-        else if (!strcmp(type, "rectangle"))
-            figure = new cRectangleFigure();
-        else if (!strcmp(type, "oval"))
-            figure = new cOvalFigure();
-        else if (!strcmp(type, "polygon"))
-            figure = new cPolygonFigure();
-        else if (!strcmp(type, "text"))
-            figure = new cTextFigure();
-        else if (!strcmp(type, "image"))
-            figure = new cImageFigure();
-        else
-            throw cRuntimeError(property, "Unknown figure type %s", type);
-        figure->setName(name);
-        addFigure(figure);
-    }
-
     try {
+        const char *name = property->getIndex();
+        if (!name)
+            throw cRuntimeError("@figure property is expected to have an index which will become the figure name, e.g. @figure[foo]");
+        cFigure *figure = getFigureByName(name);
+        if (!figure)
+        {
+            const char *type = property->getValue("type");
+            figure = createFigure(type);
+            figure->setName(name);
+
+            cFigure *parent = parseParentFigure(property);
+            parent->addChild(figure);
+        }
+
         figure->parse(property);
     }
     catch (std::exception& e) {
-        throw cRuntimeError(property, e.what());  //TODO add location info! cProperties doesn't know its owner!!!
+        throw cRuntimeError(this, "Error creating figure from NED property @%s: %s", property->getFullName(), e.what());
     }
+}
+
+cFigure *cCanvas::createFigure(const char *type)
+{
+    cFigure *figure;
+    if (!strcmp(type, "group"))
+        figure = new cGroupFigure();
+    else if (!strcmp(type, "line"))
+        figure = new cLineFigure();
+    else if (!strcmp(type, "polyline"))
+        figure = new cPolylineFigure();
+    else if (!strcmp(type, "rectangle"))
+        figure = new cRectangleFigure();
+    else if (!strcmp(type, "oval"))
+        figure = new cOvalFigure();
+    else if (!strcmp(type, "arc"))
+        figure = new cArcFigure();
+    else if (!strcmp(type, "polygon"))
+        figure = new cPolygonFigure();
+    else if (!strcmp(type, "text"))
+        figure = new cTextFigure();
+    else if (!strcmp(type, "image"))
+        figure = new cImageFigure();
+    else {
+        // find registered class named "<type>Figure" or "c<type>Figure"
+        std::string className = std::string("c") + type + "Figure";
+        cObjectFactory *factory = cObjectFactory::find(className.c_str() + 1); // type without leading "c"
+        if (!factory)
+            factory = cObjectFactory::find(className.c_str()); // try with leading "c"
+        if (!factory)
+            throw cRuntimeError("No figure class registered with name '%s' or '%s'", className.c_str()+1, className.c_str());
+        cObject *obj = factory->createOne();
+        figure = dynamic_cast<cFigure*>(obj);
+        if (!figure)
+            throw cRuntimeError("Wrong figure class: cannot cast %s to cFigure", obj->getClassName());
+    }
+    return figure;
+}
+
+cFigure *cCanvas::parseParentFigure(cProperty *property)
+{
+    cFigure *parent;
+    const char *s;
+    if ((s = property->getValue("parent")) != NULL) {
+        parent = getFigureByName(s);
+        if (!parent)
+            throw cRuntimeError("Wrong parent: no figure named '%s'", s);
+    }
+    else if ((s = property->getValue("layer")) != NULL) {
+        parent = getToplevelLayerByName(s);
+        if (!parent)
+            throw cRuntimeError("No such layer: '%s'", s);
+    }
+    else {
+        parent = getDefaultLayer();
+    }
+    return parent;
+}
+
+cFigure *cCanvas::getFigureByName(const char *name)
+{
+    return rootFigure->getFigureByName(name);
+}
+
+void cCanvas::addToplevelLayer(cLayer *layer)
+{
+    rootFigure->addChild(layer);
+}
+
+cLayer *cCanvas::removeToplevelLayer(cLayer *layer)
+{
+    if (layer->getParent() != rootFigure)
+        throw cRuntimeError("cCanvas::removeToplevelLayer(): layer is not a toplevel layer in this canvas");
+    return (cLayer *)rootFigure->removeChild(layer);
+}
+
+cLayer *cCanvas::getToplevelLayerByName(const char *name)
+{
+    return (cLayer *)rootFigure->getChild(name);
+}
+
+cLayer *cCanvas::getDefaultLayer() const
+{
+    cLayer *layer = (cLayer *)rootFigure->getChild("default");
+    if (!layer)
+        throw cRuntimeError("cCanvas::getDefaultLayer(): no toplevel layer named 'default' in this canvas");
+    return layer;
 }

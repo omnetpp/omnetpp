@@ -16,23 +16,25 @@
 
 #include "tkutil.h"
 #include "figurerenderers.h"
+#include "cobjectfactory.h"
 
 NAMESPACE_BEGIN
 
-//TODO obey: zoom, enabled/disabled, zOrder
-//TODO figure-ok legyenek a layer child-jai
 
-char *FigureRenderer::point(const cFigure::Point& point, char *buf)
+char *FigureRenderer::point(const cFigure::Point& point, ICoordMapping *mapping, char *buf)
 {
-    sprintf(buf, " %g %g ", point.x, point.y);
+    cFigure::Point p = mapping->apply(point);
+    sprintf(buf, " %g %g ", p.x, p.y);
     return buf;
 }
 
-std::string FigureRenderer::points(const std::vector<cFigure::Point>& points)
+std::string FigureRenderer::points(const std::vector<cFigure::Point>& points, ICoordMapping *mapping)
 {
     std::stringstream os;
-    for (int i=0; i<points.size(); i++)
-        os << points[i].x << " " << points[i].y << " ";
+    for (int i=0; i<points.size(); i++) {
+        cFigure::Point p = mapping->apply(points[i]);
+        os << p.x << " " << p.y << " ";
+    }
     return os.str();
 }
 
@@ -124,26 +126,116 @@ const char *FigureRenderer::alignment(cFigure::Alignment alignment)
     }
 }
 
-void LineFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+void FigureRenderer::remove(cFigure *figure, Tcl_Interp *interp, const char *canvas)
 {
-    char buf1[32], buf2[32], buf3[32], buf4[32], buf5[64];
+    char tag[32];
+    sprintf(tag, "f%d", figure->getId());
+    CHK(Tcl_VarEval(interp, canvas, " delete ", tag, NULL));
+}
+
+FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
+{
+    //FIXME dynamic_cast is not good --> derived figure classes would render with base class' renderer
+    //FIXME createOne also not good --> impossible to reuse base figure class' renderer for derived class
+    //FIXME cFigure::getRendererClassName --> encapsulation violation
+    //TODO best: make renderers compete, like inspectors!
+    FigureRenderer *renderer;
+    if (!strcmp(figure->getClassName(), "cCanvas::cLayerContainerFigure"))  //XXX this ain't pretty
+        renderer = new NullRenderer();
+    else if (dynamic_cast<cLayer*>(figure))
+        renderer = new NullRenderer();
+    else if (dynamic_cast<cGroupFigure*>(figure))
+        renderer = new NullRenderer();
+    else if (dynamic_cast<cLineFigure*>(figure))
+        renderer = new LineFigureRenderer();
+    else if (dynamic_cast<cPolylineFigure*>(figure))
+        renderer = new PolylineFigureRenderer();
+    else if (dynamic_cast<cRectangleFigure*>(figure))
+        renderer = new RectangleFigureRenderer();
+    else if (dynamic_cast<cOvalFigure*>(figure))
+        renderer = new OvalFigureRenderer();
+    else if (dynamic_cast<cArcFigure*>(figure))
+        renderer = new ArcFigureRenderer();
+    else if (dynamic_cast<cPolygonFigure*>(figure))
+        renderer = new PolygonFigureRenderer();
+    else if (dynamic_cast<cTextFigure*>(figure))
+        renderer = new TextFigureRenderer();
+    else if (dynamic_cast<cImageFigure*>(figure))
+        renderer = new ImageFigureRenderer();
+    else {
+        // find registered class named "<type>Renderer"
+        std::string className = figure->getClassName();
+        if (className[0] == 'c')
+            className = className.substr(1);
+        className += "Renderer";
+        cObjectFactory *factory = cObjectFactory::find(className.c_str());
+        if (!factory)
+            throw cRuntimeError("No renderer class '%s' for figure class '%s'", className.c_str(), figure->getClassName());
+        cObject *obj = factory->createOne();
+        renderer = dynamic_cast<FigureRenderer*>(obj);
+        if (!renderer)
+            throw cRuntimeError("Wrong figure renderer class: cannot cast %s to FigureRenderer", obj->getClassName());
+    }
+    return renderer;
+}
+
+void NullRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+{
+}
+
+void NullRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+{
+}
+
+void NullRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+{
+}
+
+void LineFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+{
+    char tag[32], buf1[32], buf2[32], buf3[32], buf4[32], buf5[64];
+    sprintf(tag, "f%d", figure->getId());
     cLineFigure *lineFigure = (cLineFigure*)figure;
     CHK(Tcl_VarEval(interp, canvas, " create line ",
-            point(lineFigure->getStart(), buf1), point(lineFigure->getEnd(), buf2),
+            point(lineFigure->getStart(), mapping, buf1), point(lineFigure->getEnd(), mapping, buf2),
             " -fill ", color(lineFigure->getLineColor(), buf3),
             " -width ", itoa(lineFigure->getLineWidth(), buf4),
             lineStyle(lineFigure->getLineStyle()),
             capStyle(lineFigure->getCapStyle()),
             arrows(lineFigure->getStartArrowHead(), lineFigure->getEndArrowHead(), buf5),
-            " -tags fig ", NULL));
+            " -tags {fig ", tag, "}", NULL));
 }
 
-void PolylineFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+void LineFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
 {
-    char buf1[32], buf2[32], buf3[32], buf4[64];
+    char tag[32], buf1[32], buf2[32];
+    sprintf(tag, "f%d", figure->getId());
+    cLineFigure *lineFigure = (cLineFigure*)figure;
+    CHK(Tcl_VarEval(interp, canvas, " create line ",
+            point(lineFigure->getStart(), mapping, buf1), point(lineFigure->getEnd(), mapping, buf2), NULL));
+}
+
+void LineFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+{
+    char tag[32], buf3[32], buf4[32], buf5[64];
+    sprintf(tag, "f%d", figure->getId());
+    cLineFigure *lineFigure = (cLineFigure*)figure;
+    CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
+            " -fill ", color(lineFigure->getLineColor(), buf3),
+            " -width ", itoa(lineFigure->getLineWidth(), buf4),
+            lineStyle(lineFigure->getLineStyle()),
+            capStyle(lineFigure->getCapStyle()),
+            arrows(lineFigure->getStartArrowHead(), lineFigure->getEndArrowHead(), buf5),
+            NULL));
+}
+
+void PolylineFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+{
+    char tag[32], buf1[32], buf2[32], buf3[32], buf4[64];
+    sprintf(tag, "f%d", figure->getId());
     cPolylineFigure *polylineFigure = (cPolylineFigure*)figure;
     CHK(Tcl_VarEval(interp, canvas, " create line ",
-            points(polylineFigure->getPoints()).c_str(),
+            points(polylineFigure->getPoints(), mapping).c_str(),
             " -fill ", color(polylineFigure->getLineColor(), buf2),
             " -width ", itoa(polylineFigure->getLineWidth(), buf3),
             lineStyle(polylineFigure->getLineStyle()),
@@ -151,65 +243,214 @@ void PolylineFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const c
             joinStyle(polylineFigure->getJoinStyle()),
             smooth(polylineFigure->getSmooth()),
             arrows(polylineFigure->getStartArrowHead(), polylineFigure->getEndArrowHead(), buf4),
-            " -tags fig ", NULL));
+            " -tags {fig ", tag, "}", NULL));
 }
 
-void RectangleFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+void PolylineFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
 {
-    char buf1[32], buf2[32], buf3[32], buf4[32], buf5[32];
+    char tag[32];
+    sprintf(tag, "f%d", figure->getId());
+    cPolylineFigure *polylineFigure = (cPolylineFigure*)figure;
+    CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
+            points(polylineFigure->getPoints(), mapping).c_str(), NULL));
+}
+
+void PolylineFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+{
+    char tag[32], buf2[32], buf3[32], buf4[64];
+    sprintf(tag, "f%d", figure->getId());
+    cPolylineFigure *polylineFigure = (cPolylineFigure*)figure;
+    CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
+            " -fill ", color(polylineFigure->getLineColor(), buf2),
+            " -width ", itoa(polylineFigure->getLineWidth(), buf3),
+            lineStyle(polylineFigure->getLineStyle()),
+            capStyle(polylineFigure->getCapStyle()),
+            joinStyle(polylineFigure->getJoinStyle()),
+            smooth(polylineFigure->getSmooth()),
+            arrows(polylineFigure->getStartArrowHead(), polylineFigure->getEndArrowHead(), buf4),
+            NULL));
+}
+
+void RectangleFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+{
+    ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
+    char tag[32], buf1[32], buf2[32], buf3[32], buf4[32], buf5[32];
+    sprintf(tag, "f%d", figure->getId());
     cRectangleFigure *rectangleFigure = (cRectangleFigure*)figure;
     CHK(Tcl_VarEval(interp, canvas, " create rect ",
-            point(rectangleFigure->getP1(), buf1), point(rectangleFigure->getP2(), buf2),
+            point(rectangleFigure->getP1(), mapping, buf1), point(rectangleFigure->getP2(), mapping, buf2),
             " -fill ", (rectangleFigure->isFilled() ? color(rectangleFigure->getFillColor(), buf3) : "\"\""),
             " -outline ", color(rectangleFigure->getLineColor(), buf4),
             " -width ", itoa(rectangleFigure->getLineWidth(), buf5),
             lineStyle(rectangleFigure->getLineStyle()),
-            " -tags fig ", NULL));
+            " -tags {fig ", tag, "}", NULL));
 }
 
-void OvalFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+void RectangleFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
 {
-    char buf1[32], buf2[32], buf3[32], buf4[32], buf5[32];
+    ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
+    char tag[32], buf1[32], buf2[32];
+    sprintf(tag, "f%d", figure->getId());
+    cRectangleFigure *rectangleFigure = (cRectangleFigure*)figure;
+    CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
+            point(rectangleFigure->getP1(), mapping, buf1), point(rectangleFigure->getP2(), mapping, buf2), NULL));
+}
+
+void RectangleFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+{
+    char tag[32], buf3[32], buf4[32], buf5[32];
+    sprintf(tag, "f%d", figure->getId());
+    cRectangleFigure *rectangleFigure = (cRectangleFigure*)figure;
+    CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
+            " -fill ", (rectangleFigure->isFilled() ? color(rectangleFigure->getFillColor(), buf3) : "\"\""),
+            " -outline ", color(rectangleFigure->getLineColor(), buf4),
+            " -width ", itoa(rectangleFigure->getLineWidth(), buf5),
+            lineStyle(rectangleFigure->getLineStyle()),
+            NULL));
+}
+
+void OvalFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+{
+    ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
+    char tag[32], buf1[32], buf2[32], buf3[32], buf4[32], buf5[32];
+    sprintf(tag, "f%d", figure->getId());
     cOvalFigure *ovalFigure = (cOvalFigure*)figure;
     CHK(Tcl_VarEval(interp, canvas, " create oval ",
-            point(ovalFigure->getP1(), buf1), point(ovalFigure->getP2(), buf2),
+            point(ovalFigure->getP1(), mapping, buf1), point(ovalFigure->getP2(), mapping, buf2),
             " -fill ", (ovalFigure->isFilled() ? color(ovalFigure->getFillColor(), buf3) : "\"\""),
             " -outline ", color(ovalFigure->getLineColor(), buf4),
             " -width ", itoa(ovalFigure->getLineWidth(), buf5),
             lineStyle(ovalFigure->getLineStyle()),
-            " -tags fig ", NULL));
+            " -tags {fig ", tag, "}", NULL));
 }
 
-void PolygonFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+void OvalFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
 {
-    char buf1[32], buf2[32], buf3[32];
+    ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
+    char tag[32], buf1[32], buf2[32];
+    sprintf(tag, "f%d", figure->getId());
+    cOvalFigure *ovalFigure = (cOvalFigure*)figure;
+    CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
+            point(ovalFigure->getP1(), mapping, buf1), point(ovalFigure->getP2(), mapping, buf2), NULL));
+}
+
+void OvalFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+{
+    char tag[32], buf3[32], buf4[32], buf5[32];
+    sprintf(tag, "f%d", figure->getId());
+    cOvalFigure *ovalFigure = (cOvalFigure*)figure;
+    CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
+            " -fill ", (ovalFigure->isFilled() ? color(ovalFigure->getFillColor(), buf3) : "\"\""),
+            " -outline ", color(ovalFigure->getLineColor(), buf4),
+            " -width ", itoa(ovalFigure->getLineWidth(), buf5),
+            lineStyle(ovalFigure->getLineStyle()),
+            NULL));
+}
+
+void ArcFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+{
+    //TODO
+}
+
+void ArcFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+{
+    //TODO
+}
+
+void ArcFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+{
+    //TODO
+}
+
+void PolygonFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+{
+    char tag[32], buf1[32], buf2[32], buf3[32];
+    sprintf(tag, "f%d", figure->getId());
     cPolygonFigure *polygonFigure = (cPolygonFigure*)figure;
     CHK(Tcl_VarEval(interp, canvas, " create polygon ",
-            points(polygonFigure->getPoints()).c_str(),
+            points(polygonFigure->getPoints(), mapping).c_str(),
             " -fill ", (polygonFigure->isFilled() ? color(polygonFigure->getFillColor(), buf1) : "\"\""),
             " -outline ", color(polygonFigure->getLineColor(), buf2),
             " -width ", itoa(polygonFigure->getLineWidth(), buf3),
             lineStyle(polygonFigure->getLineStyle()),
             joinStyle(polygonFigure->getJoinStyle()),
             smooth(polygonFigure->getSmooth()),
-            " -tags fig ", NULL));
+            " -tags {fig ", tag, "}", NULL));
 }
 
-void TextFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+void PolygonFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
 {
-    char buf1[32], buf2[32], buf3[32], buf4[32], buf5[32];
+    char tag[32];
+    sprintf(tag, "f%d", figure->getId());
+    cPolygonFigure *polygonFigure = (cPolygonFigure*)figure;
+    CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
+            points(polygonFigure->getPoints(), mapping).c_str(), NULL));
+}
+
+void PolygonFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+{
+    char tag[32], buf1[32], buf2[32], buf3[32];
+    sprintf(tag, "f%d", figure->getId());
+    cPolygonFigure *polygonFigure = (cPolygonFigure*)figure;
+    CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
+            " -fill ", (polygonFigure->isFilled() ? color(polygonFigure->getFillColor(), buf1) : "\"\""),
+            " -outline ", color(polygonFigure->getLineColor(), buf2),
+            " -width ", itoa(polygonFigure->getLineWidth(), buf3),
+            lineStyle(polygonFigure->getLineStyle()),
+            joinStyle(polygonFigure->getJoinStyle()),
+            smooth(polygonFigure->getSmooth()),
+            NULL));
+}
+
+void TextFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+{
+    char tag[32], buf1[32], buf2[32], buf3[32], buf4[32], buf5[32];
+    sprintf(tag, "f%d", figure->getId());
     cTextFigure *textFigure = (cTextFigure*)figure;
     CHK(Tcl_VarEval(interp, canvas, " create text ",
-            point(textFigure->getPos(), buf1),
+            point(textFigure->getPos(), mapping, buf1),
             " -text ", TclQuotedString(textFigure->getText()).get(),
             " -fill ", color(textFigure->getColor(), buf3),
             anchor(textFigure->getAnchor()),
             alignment(textFigure->getAlignment()),
             //TODO font
-            " -tags fig ", NULL));
+            " -tags {fig ", tag, "}", NULL));
 }
 
-void ImageFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+void TextFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+{
+    char tag[32], buf1[32];
+    sprintf(tag, "f%d", figure->getId());
+    cTextFigure *textFigure = (cTextFigure*)figure;
+    CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
+            point(textFigure->getPos(), mapping, buf1), NULL));
+}
+
+void TextFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+{
+    char tag[32], buf2[32], buf3[32], buf4[32], buf5[32];
+    sprintf(tag, "f%d", figure->getId());
+    cTextFigure *textFigure = (cTextFigure*)figure;
+    CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
+            " -text ", TclQuotedString(textFigure->getText()).get(),
+            " -fill ", color(textFigure->getColor(), buf3),
+            anchor(textFigure->getAnchor()),
+            alignment(textFigure->getAlignment()),
+            //TODO font
+            NULL));
+}
+
+void ImageFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+{
+    //TODO
+}
+
+void ImageFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+{
+    //TODO
+}
+
+void ImageFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
 {
     //TODO
 }

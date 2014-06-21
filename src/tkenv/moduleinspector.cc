@@ -126,9 +126,10 @@ void ModuleInspector::refresh()
    }
    else
    {
+       refreshFigures();
        redrawNextEventMarker();
        redrawMessages();
-       updateSubmodules();
+       refreshSubmodules();
    }
 }
 
@@ -169,9 +170,10 @@ void ModuleInspector::relayoutAndRedrawAll()
 
    recalculateLayout();
    redrawModules();
+   redrawFigures();
    redrawNextEventMarker();
    redrawMessages();
-   updateSubmodules();
+   refreshSubmodules();
 }
 
 void ModuleInspector::redrawAll()
@@ -186,7 +188,7 @@ void ModuleInspector::redrawAll()
    redrawFigures();
    redrawNextEventMarker();
    redrawMessages();
-   updateSubmodules();
+   refreshSubmodules();
 }
 
 void ModuleInspector::getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeysLayout,
@@ -559,31 +561,6 @@ void ModuleInspector::drawConnection(cGate *gate)
              ));
 }
 
-void ModuleInspector::drawFigure(cFigure *figure)
-{
-    FigureRenderer *renderer = NULL;
-    if (dynamic_cast<cLineFigure*>(figure))
-        renderer = new LineFigureRenderer();
-    else if (dynamic_cast<cPolylineFigure*>(figure))
-        renderer = new PolylineFigureRenderer();
-    else if (dynamic_cast<cRectangleFigure*>(figure))
-        renderer = new RectangleFigureRenderer();
-    else if (dynamic_cast<cOvalFigure*>(figure))
-        renderer = new OvalFigureRenderer();
-    else if (dynamic_cast<cPolygonFigure*>(figure))
-        renderer = new PolygonFigureRenderer();
-    else if (dynamic_cast<cTextFigure*>(figure))
-        renderer = new TextFigureRenderer();
-    else if (dynamic_cast<cImageFigure*>(figure))
-        renderer = new ImageFigureRenderer();
-    else
-        throw cRuntimeError("No renderer for figure of type %s", figure->getClassName());
-
-    renderer->render(figure, interp, canvas);
-
-    delete renderer; //TODO reusable renderers
-}
-
 void ModuleInspector::redrawMessages()
 {
    // refresh & cleanup from prev. events
@@ -666,20 +643,99 @@ void ModuleInspector::redrawFigures()
    cCanvas *canvas = mod->getCanvasIfExists();
    if (canvas)
    {
-       for (int i=0; i<canvas->getNumFigures(); i++)
+       LinearCoordMapping mapping;
+       drawFigureRec(canvas->getRootFigure(), mapping);
+   }
+}
+
+void ModuleInspector::refreshFigures()
+{
+   cModule *mod = static_cast<cModule *>(object);
+   cCanvas *canvas = mod->getCanvasIfExists();
+   if (canvas)
+   {
+       // if there is a structural change, we rebuild everything;
+       // otherwise we only adjust subtree or that particular figure
+       cFigure *rootFigure = canvas->getRootFigure();
+       if ((rootFigure->getTreeChangeFlags() | rootFigure->getLocalChangeFlags()) & cFigure::CHANGE_STRUCTURAL)
        {
-           cFigure *figure = canvas->getFigure(i);
-           if (figure->isVisible())
-               drawFigure(figure);
+           redrawFigures();
+           rootFigure->clearChangeFlags();
+       }
+       else if ((rootFigure->getTreeChangeFlags() | rootFigure->getLocalChangeFlags()) != 0)
+       {
+           LinearCoordMapping mapping;
+           refreshFigureGeometryRec(rootFigure, mapping);
+           refreshFigureVisualsRec(rootFigure);
+           rootFigure->clearChangeFlags();
        }
    }
 }
 
-void ModuleInspector::updateSubmodules()
+FigureRenderer *ModuleInspector::getRendererFor(cFigure *figure)
+{
+    return FigureRenderer::getRendererFor(figure);
+}
+
+void ModuleInspector::drawFigureRec(cFigure *figure, LinearCoordMapping& mapping)
+{
+    if (figure->isVisible())
+    {
+        FigureRenderer *renderer = getRendererFor(figure);
+        renderer->render(figure, interp, canvas, &mapping);
+        delete renderer; //TODO reusable renderers
+
+        if (figure->hasChildren())
+        {
+            cFigure::Point offset = figure->getLocation();
+            LinearCoordMapping childMapping(mapping.scaleX, mapping.offsetX + offset.x, mapping.scaleY, mapping.offsetY + offset.y);
+
+            for (int i = 0; i < figure->getNumChildren(); i++)
+                drawFigureRec(figure->getChild(i), childMapping);
+        }
+    }
+}
+
+void ModuleInspector::refreshFigureGeometryRec(cFigure *figure, LinearCoordMapping& mapping, bool forceGeometryRefresh)
+{
+    if (figure->getLocalChangeFlags() & cFigure::CHANGE_GEOMETRY)
+        forceGeometryRefresh = true;  // must refresh this figure and its entire subtree
+
+    if (forceGeometryRefresh)
+    {
+        FigureRenderer *renderer = getRendererFor(figure);
+        renderer->refreshGeometry(figure, interp, canvas, &mapping);
+        delete renderer; //TODO reusable renderers
+    }
+
+    if (forceGeometryRefresh || (figure->getTreeChangeFlags() & cFigure::CHANGE_GEOMETRY))
+    {
+        cFigure::Point offset = figure->getLocation();
+        LinearCoordMapping childMapping(mapping.scaleX, mapping.offsetX + offset.x, mapping.scaleY, mapping.offsetY + offset.y);
+        for (int i = 0; i < figure->getNumChildren(); i++)
+            refreshFigureGeometryRec(figure->getChild(i), childMapping, forceGeometryRefresh);
+    }
+}
+
+void ModuleInspector::refreshFigureVisualsRec(cFigure *figure)
+{
+    if (figure->getLocalChangeFlags() & cFigure::CHANGE_VISUAL)
+    {
+        FigureRenderer *renderer = getRendererFor(figure);
+        renderer->refreshVisuals(figure, interp, canvas);
+        delete renderer; //TODO reusable renderers
+    }
+
+    if (figure->getTreeChangeFlags() & cFigure::CHANGE_VISUAL)
+        for (int i = 0; i < figure->getNumChildren(); i++)
+            refreshFigureVisualsRec(figure->getChild(i));
+}
+
+void ModuleInspector::refreshSubmodules()
 {
    for (cModule::SubmoduleIterator submod(static_cast<cModule *>(object)); !submod.end(); submod++)
    {
-       CHK(Tcl_VarEval(interp, "ModuleInspector:updateSubmodule ",
+       CHK(Tcl_VarEval(interp, "ModuleInspector:refreshSubmodule ",
                        windowName, " ",
                        ptrToStr(submod()),
                        NULL));

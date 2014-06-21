@@ -25,18 +25,23 @@ class cProperty;
 class cProperties;
 
 //TODO:
-// use flags field for booleans
-// work out details for Point, Color, Font
-// utilize "changed" and "visible" (==>enabled!) flags
-// utility functions to cFigure: getBoundingBox(), translate(), etc -- how to implement text's bounding box??
+// USE HIERARCHICAL NAMES!
+// hierarchical name to appear in the API (would make "parent=foo" superfluous)! getFigurePath(), getFigureByPath(), etc
+// zorder= property key allow ordering of figures (NOT PUBLIC API, ONLY USED DURING PARSING!!!)
 // recognize color names
-// add "arc" items!
+// naming consistency: find/get; const!  byName suffix kell?
 //
 //TODO later:
+// use flags field for booleans
+// coordinates: pixels vs meters? location, size, linewidth???
+//  - 2 options: (1) Point to contain (xUnits,xPixels,yUnits,yPixels), or (2) cFigure to contain flags
+//  - also: what should zoom affect? size? (see icons vs rect!) linewidth?
+// ---> cLayer: isViewportRelative! (pixels only!)  cFigure: isDistanceInPixels() --> oroklodik, es lejjebb mar nem lehet kikapcsolni!!!
+//   kell tudni a viewport minden oldalahoz/sarkahoz anchorolni!!!
+//
 // add alpha to Color
 // add "constraints" (classes that compute and set attrs of figures, to serve e.g. as anchors)
 // rotation support? (needed for transformations)
-// figure hierarchy (figure coords to be relative to the parent)
 // add cTransformationFigure (wrong name propably)
 // layer hierarchy? (~named layer groups)
 
@@ -74,6 +79,7 @@ class SIM_API cFigure : public cOwnedObject
             int pointSize;
             uint8_t style;
             Font() : pointSize(8), style(FONT_NONE) {}
+            Font(std::string typeface, int pointSize, uint8_t style=FONT_NONE) : typeface(typeface), pointSize(pointSize), style(style) {}
         };
 
         enum FontStyle { FONT_NONE=0, FONT_BOLD=1, FONT_ITALIC=2, FONT_UNDERLINE=4 };
@@ -84,15 +90,24 @@ class SIM_API cFigure : public cOwnedObject
         enum Anchor {ANCHOR_CENTER, ANCHOR_N, ANCHOR_E, ANCHOR_S, ANCHOR_W, ANCHOR_NW, ANCHOR_NE, ANCHOR_SE, ANCHOR_SW };
         enum Alignment { ALIGN_LEFT, ALIGN_RIGHT, ALIGN_CENTER }; // note: JUSTIFY is not supported by Tk
 
+        // internal:
+        enum {CHANGE_VISUAL=1, CHANGE_GEOMETRY=2, CHANGE_STRUCTURAL=4};
+
     private:
-        bool changedFlag;
-        cCanvas *canvas;
-        bool visible;
+        static int lastId;
+        int id;
+        bool visible; // treated as structural change, for simpler handing
         std::vector<std::string> tags; //TODO stringpool
-        std::vector<cFigure*> children; //TODO!!!
+        std::vector<cFigure*> children;
+
+        int8_t localChange;
+        int8_t treeChange;
 
     protected:
-        virtual void changed() {changedFlag = true;}
+        virtual void doVisualChange() {doChange(CHANGE_VISUAL);}
+        virtual void doGeometryChange() {doChange(CHANGE_GEOMETRY);}
+        virtual void doStructuralChange() {doChange(CHANGE_STRUCTURAL);}
+        virtual void doChange(int flags);
         static Point parsePoint(cProperty *property, const char *key, int index);
         static std::vector<Point> parsePoints(cProperty *property, const char *key);
         static bool parseBool(const char *s);
@@ -105,23 +120,60 @@ class SIM_API cFigure : public cOwnedObject
         static Alignment parseAlignment(const char *s);
 
     public:
-        cFigure(const char *name=NULL) : cOwnedObject(name), changedFlag(false), canvas(NULL), visible(true) {}
+        // internal:
+        int getLocalChangeFlags() const {return localChange;}
+        int getTreeChangeFlags() const {return treeChange;}
+        void clearChangeFlags();
+
+    public:
+        cFigure(const char *name=NULL) : cOwnedObject(name), localChange(0), treeChange(0), visible(true), id(++lastId) {}
         virtual void parse(cProperty *property);
+        int getId() const {return id;}
+        virtual Point getLocation() const = 0;
         virtual void translate(double x, double y) = 0;
-        cCanvas *getCanvas() const {return canvas;}
-        void setCanvas(cCanvas *canvas) {this->canvas = canvas;}
-        bool isVisible() const {return visible;}
-        void setVisible(bool visible) {this->visible = visible;}
-        const std::vector<std::string>& getTags() const {return tags;}
-        void setTags(const std::vector<std::string>& tags) {this->tags = tags;}
-        //TODO addChild, removeChild, etc.
+        virtual cCanvas *getCanvas() const;
+        virtual bool isVisible() const {return visible;}
+        virtual void setVisible(bool visible) {this->visible = visible; doStructuralChange();}
+        virtual const std::vector<std::string>& getTags() const {return tags;}
+        virtual void setTags(const std::vector<std::string>& tags) {this->tags = tags;}
+
+        virtual void addChild(cFigure *figure);
+        virtual void addChild(cFigure *figure, int pos);
+        virtual cFigure *removeChild(int pos);
+        virtual cFigure *removeChild(cFigure *figure);
+        virtual int findChild(const char *name);
+        virtual int findChild(cFigure *figure);
+        virtual bool hasChildren() const {return !children.empty();}
+        virtual int getNumChildren() const {return children.size();}
+        virtual cFigure *getChild(int pos);
+        virtual cFigure *getChild(const char *name);
+        virtual cFigure *getParent()  {return dynamic_cast<cFigure*>(getOwner());}
+        virtual cFigure *getFigureByName(const char *name);
 };
 
 class SIM_API cLayer : public cFigure
 {
+    private:
+        Point loc;
+        std::string description;
     public:
         cLayer(const char *name=NULL) : cFigure(name) {}
-        virtual void translate(double x, double y) {}  //TODO!!! add reference point as member?
+        virtual void translate(double x, double y);
+        virtual Point getLocation() const  {return loc;}
+        virtual void setLocation(const Point& loc)  {this->loc = loc; doGeometryChange();}
+        virtual const char *getDescription() const {return description.c_str();}
+        virtual void setDescription(const char *description) { this->description = description;}
+};
+
+class SIM_API cGroupFigure : public cFigure
+{
+    private:
+        Point loc;
+    public:
+        cGroupFigure(const char *name=NULL) : cFigure(name) {}
+        virtual void translate(double x, double y);
+        virtual Point getLocation() const  {return loc;}
+        virtual void setLocation(const Point& loc)  {this->loc = loc; doGeometryChange();}
 };
 
 class SIM_API cAbstractLineFigure : public cFigure
@@ -134,16 +186,16 @@ class SIM_API cAbstractLineFigure : public cFigure
     public:
         cAbstractLineFigure(const char *name=NULL) : cFigure(name), lineColor(BLACK), lineStyle(LINE_SOLID), lineWidth(1), startArrowHead(ARROW_NONE), endArrowHead(ARROW_NONE) {}
         virtual void parse(cProperty *property);
-        const Color& getLineColor() const  {return lineColor;}
-        void setLineColor(const Color& lineColor)  {this->lineColor = lineColor; changed();}
-        int getLineWidth() const  {return lineWidth;}
-        void setLineWidth(int lineWidth)  {this->lineWidth = lineWidth; changed();}
-        LineStyle getLineStyle() const  {return lineStyle;}
-        void setLineStyle(LineStyle lineStyle)  {this->lineStyle = lineStyle; changed();}
-        ArrowHead getStartArrowHead() const  {return startArrowHead;}
-        void setStartArrowHead(ArrowHead startArrowHead)  {this->startArrowHead = startArrowHead; changed();}
-        ArrowHead getEndArrowHead() const  {return endArrowHead;}
-        void setEndArrowHead(ArrowHead endArrowHead)  {this->endArrowHead = endArrowHead; changed();}
+        virtual const Color& getLineColor() const  {return lineColor;}
+        virtual void setLineColor(const Color& lineColor)  {this->lineColor = lineColor; doVisualChange();}
+        virtual int getLineWidth() const  {return lineWidth;}
+        virtual void setLineWidth(int lineWidth)  {this->lineWidth = lineWidth; doVisualChange();}
+        virtual LineStyle getLineStyle() const  {return lineStyle;}
+        virtual void setLineStyle(LineStyle lineStyle)  {this->lineStyle = lineStyle; doVisualChange();}
+        virtual ArrowHead getStartArrowHead() const  {return startArrowHead;}
+        virtual void setStartArrowHead(ArrowHead startArrowHead)  {this->startArrowHead = startArrowHead; doVisualChange();}
+        virtual ArrowHead getEndArrowHead() const  {return endArrowHead;}
+        virtual void setEndArrowHead(ArrowHead endArrowHead)  {this->endArrowHead = endArrowHead; doVisualChange();}
 };
 
 class SIM_API cLineFigure : public cAbstractLineFigure
@@ -154,13 +206,14 @@ class SIM_API cLineFigure : public cAbstractLineFigure
     public:
         cLineFigure(const char *name=NULL) : cAbstractLineFigure(name), capStyle(CAP_BUTT) {}
         virtual void parse(cProperty *property);
+        virtual Point getLocation() const  {return start;}
         virtual void translate(double x, double y);
-        const Point& getStart() const  {return start;}
-        void setStart(const Point& start)  {this->start = start; changed();}
-        const Point& getEnd() const  {return end;}
-        void setEnd(const Point& end)  {this->end = end; changed();}
-        CapStyle getCapStyle() const {return capStyle;}
-        void setCapStyle(CapStyle capStyle) {this->capStyle = capStyle; changed();}
+        virtual const Point& getStart() const  {return start;}
+        virtual void setStart(const Point& start)  {this->start = start; doGeometryChange();}
+        virtual const Point& getEnd() const  {return end;}
+        virtual void setEnd(const Point& end)  {this->end = end; doGeometryChange();}
+        virtual CapStyle getCapStyle() const {return capStyle;}
+        virtual void setCapStyle(CapStyle capStyle) {this->capStyle = capStyle; doVisualChange();}
 };
 
 class SIM_API cPolylineFigure : public cAbstractLineFigure
@@ -173,66 +226,94 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
     public:
         cPolylineFigure(const char *name=NULL) : cAbstractLineFigure(name), smooth(false), capStyle(CAP_BUTT), joinStyle(JOIN_MITER) {}
         virtual void parse(cProperty *property);
+        virtual Point getLocation() const  {return points.empty() ? Point() : points[0];}
         virtual void translate(double x, double y);
-        const std::vector<Point>& getPoints() const  {return points;}
-        void setPoints(const std::vector<Point>& points) {this->points = points; changed();}
-        bool getSmooth() const {return smooth;}
-        void setSmooth(bool smooth) {this->smooth = smooth; changed();}
-        CapStyle getCapStyle() const {return capStyle;}
-        void setCapStyle(CapStyle capStyle) {this->capStyle = capStyle; changed();}
-        JoinStyle getJoinStyle() const {return joinStyle;}
-        void setJoinStyle(JoinStyle joinStyle) {this->joinStyle = joinStyle; changed();}
+        virtual const std::vector<Point>& getPoints() const  {return points;}
+        virtual void setPoints(const std::vector<Point>& points) {this->points = points; doGeometryChange();}
+        virtual bool getSmooth() const {return smooth;}
+        virtual void setSmooth(bool smooth) {this->smooth = smooth; doVisualChange();}
+        virtual CapStyle getCapStyle() const {return capStyle;}
+        virtual void setCapStyle(CapStyle capStyle) {this->capStyle = capStyle; doVisualChange();}
+        virtual JoinStyle getJoinStyle() const {return joinStyle;}
+        virtual void setJoinStyle(JoinStyle joinStyle) {this->joinStyle = joinStyle; doVisualChange();}
 };
 
 class SIM_API cAbstractShapeFigure : public cFigure
 {
     private:
+        bool outline; //TODO
         bool filled;
         Color lineColor;
         Color fillColor;
         LineStyle lineStyle;
         int lineWidth;
     public:
-        cAbstractShapeFigure(const char *name=NULL) : cFigure(name), filled(false), lineColor(BLACK), fillColor(BLUE), lineStyle(LINE_SOLID), lineWidth(1) {}
+        cAbstractShapeFigure(const char *name=NULL) : cFigure(name), filled(false), outline(true), lineColor(BLACK), fillColor(BLUE), lineStyle(LINE_SOLID), lineWidth(1) {}
         virtual void parse(cProperty *property);
-        bool isFilled() const  {return filled;}
-        void setFilled(bool filled)  {this->filled = filled; changed();}
-        const Color& getLineColor() const  {return lineColor;}
-        void setLineColor(const Color& lineColor)  {this->lineColor = lineColor; changed();}
-        const Color& getFillColor() const  {return fillColor;}
-        void setFillColor(const Color& fillColor)  {this->fillColor = fillColor; changed();}
-        LineStyle getLineStyle() const  {return lineStyle;}
-        void setLineStyle(LineStyle lineStyle)  {this->lineStyle = lineStyle; changed();}
-        int getLineWidth() const  {return lineWidth;}
-        void setLineWidth(int lineWidth)  {this->lineWidth = lineWidth; changed();}
+        virtual bool isFilled() const  {return filled;}
+        virtual void setFilled(bool filled)  {this->filled = filled; doVisualChange();}
+        virtual const Color& getLineColor() const  {return lineColor;}
+        virtual void setLineColor(const Color& lineColor)  {this->lineColor = lineColor; doVisualChange();}
+        virtual const Color& getFillColor() const  {return fillColor;}
+        virtual void setFillColor(const Color& fillColor)  {this->fillColor = fillColor; doVisualChange();}
+        virtual LineStyle getLineStyle() const  {return lineStyle;}
+        virtual void setLineStyle(LineStyle lineStyle)  {this->lineStyle = lineStyle; doVisualChange();}
+        virtual int getLineWidth() const  {return lineWidth;}
+        virtual void setLineWidth(int lineWidth)  {this->lineWidth = lineWidth; doVisualChange();}
 };
 
 class SIM_API cRectangleFigure : public cAbstractShapeFigure
 {
     private:
+        //TODO: location+width/height+anchor! +getTopLeft() +getCenter()?
         Point p1, p2;
     public:
         cRectangleFigure(const char *name=NULL) : cAbstractShapeFigure(name) {}
         virtual void parse(cProperty *property);
+        virtual Point getLocation() const  {return p1;}
         virtual void translate(double x, double y);
-        const Point& getP1() const  {return p1;}
-        void setP1(const Point& p1)  {this->p1 = p1; changed();}
-        const Point& getP2() const  {return p2;}
-        void setP2(const Point& p2)  {this->p2 = p2; changed();}
+        virtual const Point& getP1() const  {return p1;}
+        virtual void setP1(const Point& p1)  {this->p1 = p1; doGeometryChange();}
+        virtual const Point& getP2() const  {return p2;}
+        virtual void setP2(const Point& p2)  {this->p2 = p2; doGeometryChange();}
 };
 
 class SIM_API cOvalFigure : public cAbstractShapeFigure
 {
     private:
+        //TODO: location+width/height+anchor! +getCenter() +getTopLeft()
         Point p1, p2;
     public:
         cOvalFigure(const char *name=NULL) : cAbstractShapeFigure(name) {}
         virtual void parse(cProperty *property);
+        virtual Point getLocation() const  {return p1;}
         virtual void translate(double x, double y);
-        const Point& getP1() const  {return p1;}
-        void setP1(const Point& p1)  {this->p1 = p1; changed();}
-        const Point& getP2() const  {return p2;}
-        void setP2(const Point& p2)  {this->p2 = p2; changed();}
+        virtual const Point& getP1() const  {return p1;}
+        virtual void setP1(const Point& p1)  {this->p1 = p1; doGeometryChange();}
+        virtual const Point& getP2() const  {return p2;}
+        virtual void setP2(const Point& p2)  {this->p2 = p2; doGeometryChange();}
+};
+
+class SIM_API cArcFigure : public cAbstractShapeFigure
+{
+    private:
+        //TODO: location+width/height+anchor! +getCenter() +getTopLeft()
+        Point p1, p2; // of the oval that arc is part of
+        double startAngle, endAngle; // in degrees, CCW, 0=east
+        //TODO: outline mode (arc/piechart); note: tk doesn't support LineCap for arc items
+    public:
+        cArcFigure(const char *name=NULL) : startAngle(0), endAngle(0), cAbstractShapeFigure(name) {}
+        virtual void parse(cProperty *property);
+        virtual Point getLocation() const  {return p1;}
+        virtual void translate(double x, double y);
+        virtual const Point& getP1() const  {return p1;}
+        virtual void setP1(const Point& p1)  {this->p1 = p1; doGeometryChange();}
+        virtual const Point& getP2() const  {return p2;}
+        virtual void setP2(const Point& p2)  {this->p2 = p2; doGeometryChange();}
+        virtual double getStartAngle() const {return startAngle;}
+        virtual void setStartAngle(double startAngle) {this->startAngle = startAngle; doVisualChange();}
+        virtual double getEndAngle() const {return endAngle;}
+        virtual void setEndAngle(double endAngle) {this->endAngle = endAngle; doVisualChange();}
 };
 
 class SIM_API cPolygonFigure : public cAbstractShapeFigure
@@ -244,13 +325,14 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
     public:
         cPolygonFigure(const char *name=NULL) : cAbstractShapeFigure(name), smooth(false), joinStyle(JOIN_MITER) {}
         virtual void parse(cProperty *property);
+        virtual Point getLocation() const  {return points.empty() ? Point() : points[0];}
         virtual void translate(double x, double y);
-        const std::vector<Point>& getPoints() const  {return points;}
-        void setPoints(const std::vector<Point>& points) {this->points = points; changed();}
-        bool getSmooth() const {return smooth;}
-        void setSmooth(bool smooth) {this->smooth = smooth; changed();}
-        JoinStyle getJoinStyle() const {return joinStyle;}
-        void setJoinStyle(JoinStyle joinStyle) {this->joinStyle = joinStyle; changed();}
+        virtual const std::vector<Point>& getPoints() const  {return points;}
+        virtual void setPoints(const std::vector<Point>& points) {this->points = points; doGeometryChange();}
+        virtual bool getSmooth() const {return smooth;}
+        virtual void setSmooth(bool smooth) {this->smooth = smooth; doVisualChange();}
+        virtual JoinStyle getJoinStyle() const {return joinStyle;}
+        virtual void setJoinStyle(JoinStyle joinStyle) {this->joinStyle = joinStyle; doVisualChange();}
 };
 
 
@@ -266,19 +348,20 @@ class SIM_API cTextFigure : public cFigure
     public:
         cTextFigure(const char *name=NULL) : cFigure(name), color(BLACK), anchor(ANCHOR_NW), alignment(ALIGN_LEFT) {}
         virtual void parse(cProperty *property);
+        virtual Point getLocation() const  {return pos;}
         virtual void translate(double x, double y);
-        const Point& getPos() const  {return pos;}
-        void setPos(const Point& pos)  {this->pos = pos; changed();}
-        const Color& getColor() const  {return color;}
-        void setColor(const Color& color)  {this->color = color; changed();}
-        Font getFont() const  {return font;}
-        void setFont(Font font)  {this->font = font; changed();}
-        const char *getText() const  {return text.c_str();}
-        void setText(const char *text)  {this->text = text; changed();}
-        Anchor getAnchor() const  {return anchor;}
-        void setAnchor(Anchor anchor)  {this->anchor = anchor; changed();}
-        Alignment getAlignment() const  {return alignment;}
-        void setAlignment(Alignment alignment)  {this->alignment = alignment; changed();}
+        virtual const Point& getPos() const  {return pos;}
+        virtual void setPos(const Point& pos)  {this->pos = pos; doGeometryChange();}
+        virtual const Color& getColor() const  {return color;}
+        virtual void setColor(const Color& color)  {this->color = color; doVisualChange();}
+        virtual Font getFont() const  {return font;}
+        virtual void setFont(Font font)  {this->font = font; doVisualChange();}
+        virtual const char *getText() const  {return text.c_str();}
+        virtual void setText(const char *text)  {this->text = text; doVisualChange();}
+        virtual Anchor getAnchor() const  {return anchor;}
+        virtual void setAnchor(Anchor anchor)  {this->anchor = anchor; doVisualChange();}
+        virtual Alignment getAlignment() const  {return alignment;}
+        virtual void setAlignment(Alignment alignment)  {this->alignment = alignment; doVisualChange();}
 };
 
 class SIM_API cImageFigure : public cFigure
@@ -288,18 +371,22 @@ class SIM_API cImageFigure : public cFigure
         std::string imageName;
         Color color;
         int colorization;
+        Anchor anchor;  //TODO
     public:
-        cImageFigure(const char *name=NULL) : cFigure(name), color(BLUE), colorization(0) {}
+        cImageFigure(const char *name=NULL) : cFigure(name), color(BLUE), colorization(0), anchor(ANCHOR_CENTER) {}
         virtual void parse(cProperty *property);
+        virtual Point getLocation() const  {return pos;}
         virtual void translate(double x, double y);
-        const Point& getPos() const  {return pos;}
-        void setPos(const Point& pos)  {this->pos = pos; changed();}
-        const char *getImageName() const  {return imageName.c_str();}
-        void setImageName(const char *imageName)  {this->imageName = imageName; changed();}
-        const Color& getColor() const  {return color;}
-        void setColor(const Color& color)  {this->color = color; changed();}
-        int getColorization() const  {return colorization;}
-        void setColorization(int colorization)  {this->colorization = colorization; changed();}
+        virtual const Point& getPos() const  {return pos;}
+        virtual void setPos(const Point& pos)  {this->pos = pos; doGeometryChange();}
+        virtual const char *getImageName() const  {return imageName.c_str();}
+        virtual void setImageName(const char *imageName)  {this->imageName = imageName; doVisualChange();}
+        virtual const Color& getColor() const  {return color;}
+        virtual void setColor(const Color& color)  {this->color = color; doVisualChange();}
+        virtual int getColorization() const  {return colorization;}
+        virtual void setColorization(int colorization)  {this->colorization = colorization; doVisualChange();}
+        virtual Anchor getAnchor() const  {return anchor;}
+        virtual void setAnchor(Anchor anchor)  {this->anchor = anchor; doVisualChange();}
 };
 
 
@@ -309,27 +396,39 @@ class SIM_API cImageFigure : public cFigure
 class SIM_API cCanvas : public cOwnedObject
 {
     private:
-        std::vector<cFigure*> figures;
-        std::vector<cLayer*> layers;
+        class SIM_API cLayerContainerFigure : public cFigure
+        {
+            public:
+                cLayerContainerFigure(const char *name=NULL) : cFigure(name) {}
+                virtual void translate(double x, double y); // disallow
+                virtual void setLocation(const Point& loc); // disallow
+                virtual Point getLocation() const;  // (0,0)
+                virtual void addChild(cFigure *figure); // allow cLayer only
+                virtual void addChild(cFigure *figure, int pos); // allow cLayer only
+        };
+
+        cLayerContainerFigure *rootFigure;
     protected:
-        void parseLayer(cProperty *property);
-        void parseFigure(cProperty *property);
+        virtual void parseLayer(cProperty *property);
+        virtual void parseFigure(cProperty *property);
+        virtual cFigure *createFigure(const char *type);
+        virtual cFigure *parseParentFigure(cProperty *property);
+    public:
+        // internal:
+        static bool containsCanvasItems(cProperties *properties);
+        virtual void addLayersAndFiguresFrom(cProperties *properties);
     public:
         cCanvas();
-        ~cCanvas();
-        static bool containsCanvasItems(cProperties *properties);
-        void addItemsFrom(cProperties *properties);
-        void addFigure(cFigure *figure);
-        void deleteFigure(cFigure *figure);
-        cFigure *getFigureByName(const char *name);  // i.e. by property index string
-        int getNumFigures() const {return figures.size();}
-        cFigure *getFigure(int k) const {return figures[k];} //TODO bounds check
-
-        void addLayer(cLayer *layer);
-        void deleteLayer(cLayer *layer);
-        cLayer *getLayerByName(const char *name);
-        int getNumLayers() const {return layers.size();}
-        cLayer *getLayer(int k) const {return layers[k];} //TODO bounds check
+        virtual ~cCanvas();
+        virtual cFigure *getRootFigure() const {return rootFigure;} // it only accepts cLayer as children!
+        virtual cFigure *getFigureByName(const char *name); // recursive search
+        virtual void addToplevelLayer(cLayer *layer);
+        virtual cLayer *removeToplevelLayer(cLayer *layer);
+        virtual cLayer *getToplevelLayerByName(const char *name);
+        virtual int getNumToplevelLayers() const {return rootFigure->getNumChildren();}
+        virtual cLayer *getToplevelLayer(int k) const {return (cLayer *)rootFigure->getChild(k);}
+        virtual cLayer *getDefaultLayer() const;
+        //TODO getSubmodulesLayer(), int findLayer(name), moveLayer(cLayer *layer, int pos); also cFigure::moveChild(cFigure *figure, int pos)
 };
 
 NAMESPACE_END

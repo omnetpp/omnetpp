@@ -1463,11 +1463,11 @@ proc ModuleInspector:drawNextEventMarker {c modptr type} {
     }
 }
 
-# ModuleInspector:updateSubmodule --
+# ModuleInspector:refreshSubmodule --
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc ModuleInspector:updateSubmodule {insp modptr} {
+proc ModuleInspector:refreshSubmodule {insp modptr} {
     # currently the only thing to be updated is the number of elements in queue
     set c $insp.c
     set dispstr [opp_getobjectfield $modptr displayString]

@@ -27,6 +27,8 @@ NAMESPACE_BEGIN
 class cModule;
 class cGate;
 class cFigure;
+class FigureRenderer;
+class LinearCoordMapping;
 
 enum SendAnimMode {ANIM_BEGIN, ANIM_END, ANIM_THROUGH};
 
@@ -49,7 +51,10 @@ class TKENV_API ModuleInspector : public Inspector
       void drawSubmodule(cModule *submod, double x, double y, const char *scaling);
       void drawEnclosingModule(cModule *parentmodule, const char *scaling);
       void drawConnection(cGate *gate);
-      void drawFigure(cFigure *figure);
+      virtual FigureRenderer *getRendererFor(cFigure *figure);
+      void drawFigureRec(cFigure *figure, LinearCoordMapping& mapping);
+      void refreshFigureGeometryRec(cFigure *figure, LinearCoordMapping& mapping, bool forceGeometryRefresh=false);
+      void refreshFigureVisualsRec(cFigure *figure);
       static const char *animModeToStr(SendAnimMode mode);
 
    public:
@@ -89,7 +94,8 @@ class TKENV_API ModuleInspector : public Inspector
       virtual void redrawMessages();
       virtual void redrawNextEventMarker();
       virtual void redrawFigures();
-      virtual void updateSubmodules();
+      virtual void refreshFigures();
+      virtual void refreshSubmodules();
 
       // notifications from envir:
       virtual void submoduleCreated(cModule *newmodule);
