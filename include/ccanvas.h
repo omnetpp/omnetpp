@@ -128,6 +128,7 @@ class SIM_API cFigure : public cOwnedObject
     public:
         cFigure(const char *name=NULL) : cOwnedObject(name), localChange(0), treeChange(0), visible(true), id(++lastId) {}
         virtual void parse(cProperty *property);
+        virtual const char *getClassNameForRenderer() const {return getClassName();} // which figure class' renderer to use; override if you want to subclass a figure while reusing the base class' renderer
         int getId() const {return id;}
         virtual Point getLocation() const = 0;
         virtual void translate(double x, double y) = 0;
@@ -158,6 +159,7 @@ class SIM_API cLayer : public cFigure
         std::string description;
     public:
         cLayer(const char *name=NULL) : cFigure(name) {}
+        virtual const char *getClassNameForRenderer() const {return "";} // non-visual figure
         virtual void translate(double x, double y);
         virtual Point getLocation() const  {return loc;}
         virtual void setLocation(const Point& loc)  {this->loc = loc; doGeometryChange();}
@@ -171,6 +173,7 @@ class SIM_API cGroupFigure : public cFigure
         Point loc;
     public:
         cGroupFigure(const char *name=NULL) : cFigure(name) {}
+        virtual const char *getClassNameForRenderer() const {return "";} // non-visual figure
         virtual void translate(double x, double y);
         virtual Point getLocation() const  {return loc;}
         virtual void setLocation(const Point& loc)  {this->loc = loc; doGeometryChange();}
@@ -400,6 +403,7 @@ class SIM_API cCanvas : public cOwnedObject
         {
             public:
                 cLayerContainerFigure(const char *name=NULL) : cFigure(name) {}
+                virtual const char *getClassNameForRenderer() const {return "";} // non-visual figure
                 virtual void translate(double x, double y); // disallow
                 virtual void setLocation(const Point& loc); // disallow
                 virtual Point getLocation() const;  // (0,0)

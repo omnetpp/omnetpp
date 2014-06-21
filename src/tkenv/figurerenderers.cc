@@ -20,6 +20,17 @@
 
 NAMESPACE_BEGIN
 
+std::map<std::string, FigureRenderer*> FigureRenderer::rendererCache;
+
+Register_Class(NullRenderer);
+Register_Class(LineFigureRenderer);
+Register_Class(PolylineFigureRenderer);
+Register_Class(RectangleFigureRenderer);
+Register_Class(OvalFigureRenderer);
+Register_Class(ArcFigureRenderer);
+Register_Class(PolygonFigureRenderer);
+Register_Class(TextFigureRenderer);
+Register_Class(ImageFigureRenderer);
 
 char *FigureRenderer::point(const cFigure::Point& point, ICoordMapping *mapping, char *buf)
 {
@@ -135,46 +146,29 @@ void FigureRenderer::remove(cFigure *figure, Tcl_Interp *interp, const char *can
 
 FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
 {
-    //FIXME dynamic_cast is not good --> derived figure classes would render with base class' renderer
-    //FIXME createOne also not good --> impossible to reuse base figure class' renderer for derived class
-    //FIXME cFigure::getRendererClassName --> encapsulation violation
-    //TODO best: make renderers compete, like inspectors!
     FigureRenderer *renderer;
-    if (!strcmp(figure->getClassName(), "cCanvas::cLayerContainerFigure"))  //XXX this ain't pretty
-        renderer = new NullRenderer();
-    else if (dynamic_cast<cLayer*>(figure))
-        renderer = new NullRenderer();
-    else if (dynamic_cast<cGroupFigure*>(figure))
-        renderer = new NullRenderer();
-    else if (dynamic_cast<cLineFigure*>(figure))
-        renderer = new LineFigureRenderer();
-    else if (dynamic_cast<cPolylineFigure*>(figure))
-        renderer = new PolylineFigureRenderer();
-    else if (dynamic_cast<cRectangleFigure*>(figure))
-        renderer = new RectangleFigureRenderer();
-    else if (dynamic_cast<cOvalFigure*>(figure))
-        renderer = new OvalFigureRenderer();
-    else if (dynamic_cast<cArcFigure*>(figure))
-        renderer = new ArcFigureRenderer();
-    else if (dynamic_cast<cPolygonFigure*>(figure))
-        renderer = new PolygonFigureRenderer();
-    else if (dynamic_cast<cTextFigure*>(figure))
-        renderer = new TextFigureRenderer();
-    else if (dynamic_cast<cImageFigure*>(figure))
-        renderer = new ImageFigureRenderer();
+    std::string className = figure->getClassNameForRenderer();
+    std::map<std::string, FigureRenderer*>::iterator it = rendererCache.find(className);
+    if (it != rendererCache.end())
+        renderer = it->second;
     else {
-        // find registered class named "<type>Renderer"
-        std::string className = figure->getClassName();
-        if (className[0] == 'c')
-            className = className.substr(1);
-        className += "Renderer";
-        cObjectFactory *factory = cObjectFactory::find(className.c_str());
-        if (!factory)
-            throw cRuntimeError("No renderer class '%s' for figure class '%s'", className.c_str(), figure->getClassName());
-        cObject *obj = factory->createOne();
-        renderer = dynamic_cast<FigureRenderer*>(obj);
-        if (!renderer)
-            throw cRuntimeError("Wrong figure renderer class: cannot cast %s to FigureRenderer", obj->getClassName());
+        // create renderer and add to the cache
+        if (className == "")
+            renderer = new NullRenderer();
+        else {
+            // find registered class named "<type>Renderer"
+            std::string rendererClassName = className + "Renderer";
+            if (rendererClassName[0] == 'c')
+                rendererClassName = rendererClassName.substr(1);
+            cObjectFactory *factory = cObjectFactory::find(rendererClassName.c_str());
+            if (!factory)
+                throw cRuntimeError("No renderer class '%s' for figure class '%s'", rendererClassName.c_str(), figure->getClassName());
+            cObject *obj = factory->createOne();
+            renderer = dynamic_cast<FigureRenderer*>(obj);
+            if (!renderer)
+                throw cRuntimeError("Wrong figure renderer class: cannot cast %s to FigureRenderer", obj->getClassName());
+        }
+        rendererCache[className] = renderer;
     }
     return renderer;
 }

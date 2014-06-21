@@ -44,8 +44,10 @@ class TKENV_API LinearCoordMapping : public ICoordMapping
         virtual bool isLinear() const {return true;}
 };
 
-class TKENV_API FigureRenderer
+class TKENV_API FigureRenderer : public cObject // for because Register_Class() takes cObject*
 {
+    private:
+        static std::map<std::string, FigureRenderer*> rendererCache;
     protected:
         char *point(const cFigure::Point& point, ICoordMapping *mapping, char *buf);
         std::string points(const std::vector<cFigure::Point>& points, ICoordMapping *mapping);

@@ -683,7 +683,6 @@ void ModuleInspector::drawFigureRec(cFigure *figure, LinearCoordMapping& mapping
     {
         FigureRenderer *renderer = getRendererFor(figure);
         renderer->render(figure, interp, canvas, &mapping);
-        delete renderer; //TODO reusable renderers
 
         if (figure->hasChildren())
         {
@@ -705,7 +704,6 @@ void ModuleInspector::refreshFigureGeometryRec(cFigure *figure, LinearCoordMappi
     {
         FigureRenderer *renderer = getRendererFor(figure);
         renderer->refreshGeometry(figure, interp, canvas, &mapping);
-        delete renderer; //TODO reusable renderers
     }
 
     if (forceGeometryRefresh || (figure->getTreeChangeFlags() & cFigure::CHANGE_GEOMETRY))
@@ -723,7 +721,6 @@ void ModuleInspector::refreshFigureVisualsRec(cFigure *figure)
     {
         FigureRenderer *renderer = getRendererFor(figure);
         renderer->refreshVisuals(figure, interp, canvas);
-        delete renderer; //TODO reusable renderers
     }
 
     if (figure->getTreeChangeFlags() & cFigure::CHANGE_VISUAL)
