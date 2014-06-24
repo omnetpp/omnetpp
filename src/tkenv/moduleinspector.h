@@ -51,6 +51,9 @@ class TKENV_API ModuleInspector : public Inspector
       void drawSubmodule(cModule *submod, double x, double y, const char *scaling);
       void drawEnclosingModule(cModule *parentmodule, const char *scaling);
       void drawConnection(cGate *gate);
+      void initMapping(LinearCoordMapping& mapping);
+      double getScale();
+      double getZoom();
       virtual FigureRenderer *getRendererFor(cFigure *figure);
       void drawFigureRec(cFigure *figure, LinearCoordMapping& mapping);
       void refreshFigureGeometryRec(cFigure *figure, LinearCoordMapping& mapping, bool forceGeometryRefresh=false);

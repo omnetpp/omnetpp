@@ -1283,6 +1283,7 @@ cCanvas *cModule::getCanvas()
 {
     if (!canvas) {
         canvas = new cCanvas();
+        canvas->addToplevelLayer(new cLayer("submodules"));
         take(canvas);
     }
     return canvas;

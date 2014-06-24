@@ -14,9 +14,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <algorithm>
 #include "ccanvas.h"
 #include "cproperty.h"
 #include "cproperties.h"
+#include "cstringtokenizer.h"
 #include "stringutil.h"
 
 USING_NAMESPACE
@@ -49,6 +51,84 @@ std::vector<cFigure::Point> cFigure::parsePoints(cProperty *property, const char
     for (int i = 0; i < n; i += 2)
         points.push_back(parsePoint(property, key, i));
     return points;
+}
+
+void cFigure::parseBoundingBox(cProperty *property, Point& p1, Point& p2)
+{
+
+    int numCoords = property->getNumValues("coords");
+    if (numCoords == 4)
+    {
+        p1 = parsePoint(property, "coords", 0);
+        p2 = parsePoint(property, "coords", 2);
+    }
+    else if (numCoords == 2)
+    {
+        Point p = parsePoint(property, "coords", 0);
+        Point size = parsePoint(property, "size", 0);
+        Anchor anchor = parseAnchor(property->getValue("anchor"));
+        switch (anchor) {
+            case cFigure::ANCHOR_CENTER:
+                p1.x = p.x - size.x/2; p1.y = p.y - size.y/2;
+                p2.x = p.x + size.x/2; p2.y = p.y + size.y/2;
+                break;
+            case cFigure::ANCHOR_N:
+                p1.x = p.x - size.x/2; p1.y = p.y;
+                p2.x = p.x + size.x/2; p2.y = p.y + size.y;
+                break;
+            case cFigure::ANCHOR_E:
+                p1.x = p.x; p1.y = p.y - size.y/2;
+                p2.x = p.x + size.x; p2.y = p.y + size.y/2;
+                break;
+            case cFigure::ANCHOR_S:
+                p1.x = p.x - size.x/2; p1.y = p.y - size.y;
+                p2.x = p.x + size.x/2; p2.y = p.y;
+                break;
+            case cFigure::ANCHOR_W:
+                p1.x = p.x - size.x; p1.y = p.y - size.y/2;
+                p2.x = p.x; p2.y = p.y + size.y/2;
+                break;
+            case cFigure::ANCHOR_NW:
+                p1.x = p.x; p1.y = p.y;
+                p2.x = p.x + size.x; p2.y = p.y + size.y;
+                break;
+            case cFigure::ANCHOR_NE:
+                p1.x = p.x - size.x; p1.y = p.y;
+                p2.x = p.x; p2.y = p.y + size.y;
+                break;
+            case cFigure::ANCHOR_SE:
+                p1.x = p.x - size.x; p1.y = p.y - size.y;
+                p2.x = p.x; p2.y = p.y;
+                break;
+            case cFigure::ANCHOR_SW:
+                p1.x = p.x; p1.y = p.y - size.y;
+                p2.x = p.x + size.x; p2.y = p.y;
+                break;
+            default: throw cRuntimeError("Unexpected anchor %d", anchor);
+        }
+    }
+    else {
+        throw cRuntimeError("Wrong number of coordinates: 2 or 4 expected");
+    }
+}
+
+cFigure::Font cFigure::parseFont(cProperty *property, const char *key)
+{
+    const char *typeface = property->getValue(key, 0);
+    int size = opp_atol(opp_nulltoempty(property->getValue(key, 1)));
+    if (size <= 0)
+        size = 0;
+    int flags = 0;
+    cStringTokenizer tokenizer(property->getValue(key, 2));
+    while (tokenizer.hasMoreTokens()) {
+        const char *token = tokenizer.nextToken();
+        if (!strcmp(token, "normal")) /*no-op*/;
+        else if (!strcmp(token, "bold")) flags |= FONT_BOLD;
+        else if (!strcmp(token, "italic")) flags |= FONT_ITALIC;
+        else if (!strcmp(token, "underline")) flags |= FONT_UNDERLINE;
+        else throw cRuntimeError("wrong font style '%s', token");
+    }
+    return Font(opp_nulltoempty(typeface), size, flags);
 }
 
 bool cFigure::parseBool(const char *s)
@@ -127,6 +207,19 @@ cFigure::Alignment cFigure::parseAlignment(const char *s)
 
 void cFigure::parse(cProperty *property)
 {
+    const char *s;
+    if ((s = property->getValue("visible")) != NULL)
+        setVisible(parseBool(s));
+    if ((s = property->getValue("z")) != NULL)  //TODO localz?  zorder? weight? zweight?
+        localZ = opp_atof(s);
+
+    int numTags = property->getNumValues("tag");
+    if (numTags > 0) {
+        std::vector<std::string> tags;
+        for (int i = 0; i < numTags; i++)
+            tags.push_back(property->getValue("tag", i));
+        setTags(tags);
+    }
 }
 
 void cFigure::addChild(cFigure *figure)
@@ -146,6 +239,27 @@ void cFigure::addChild(cFigure *figure, int pos)
     take(figure);
     children.insert(children.begin()+pos, figure);
     doStructuralChange();
+}
+
+inline double getZ(cFigure *figure, const std::map<cFigure*,double>& orderMap)
+{
+    const double defaultZ = 0.0;
+    std::map<cFigure*,double>::const_iterator it = orderMap.find(figure);
+    return (it==orderMap.end()) ? defaultZ : it->second;
+}
+
+struct LessZ {
+    std::map<cFigure*,double>& orderMap;
+    LessZ(std::map<cFigure*,double>& orderMap) : orderMap(orderMap) {}
+    bool operator()(cFigure *figure1, cFigure *figure2) { return getZ(figure1, orderMap) < getZ(figure2, orderMap); }
+};
+
+void cFigure::insertChild(cFigure *figure, std::map<cFigure*,double>& orderMap)
+{
+    // Assuming that existing children are z-ordered, insert a new child at the appropriate place.
+    // Z-order comes from the orderMap; if a figure is not in the map, its Z is assumed to be zero.
+    std::vector<cFigure*>::iterator it = std::upper_bound(children.begin(), children.end(), figure, LessZ(orderMap));
+    children.insert(it, figure);
 }
 
 cFigure *cFigure::removeChild(int pos)
@@ -327,9 +441,10 @@ void cRectangleFigure::parse(cProperty *property)
 {
     cAbstractShapeFigure::parse(property);
 
-    setP1(parsePoint(property, "coords", 0));
-    setP2(parsePoint(property, "coords", 2));
-    //TODO understand this too: (coords=x,y;size=w,h;anchor=nw)
+    Point p1, p2;
+    parseBoundingBox(property, p1, p2);
+    setP1(p1);
+    setP2(p2);
 }
 
 void cRectangleFigure::translate(double x, double y)
@@ -345,9 +460,10 @@ void cOvalFigure::parse(cProperty *property)
 {
     cAbstractShapeFigure::parse(property);
 
-    setP1(parsePoint(property, "coords", 0));
-    setP2(parsePoint(property, "coords", 2));
-    //TODO understand this too: (coords=x,y;size=w,h;anchor=nw)
+    Point p1, p2;
+    parseBoundingBox(property, p1, p2);
+    setP1(p1);
+    setP2(p2);
 }
 
 void cOvalFigure::translate(double x, double y)
@@ -363,9 +479,12 @@ void cArcFigure::parse(cProperty *property)
 {
     cAbstractShapeFigure::parse(property);
 
+    Point p1, p2;
+    parseBoundingBox(property, p1, p2);
+    setP1(p1);
+    setP2(p2);
+
     const char *s;
-    setP1(parsePoint(property, "coords", 0));
-    setP2(parsePoint(property, "coords", 2));
     if ((s = property->getValue("startangle")) != NULL)
         setStartAngle(opp_atof(s));
     if ((s = property->getValue("endangle")) != NULL)
@@ -411,7 +530,8 @@ void cTextFigure::parse(cProperty *property)
     setText(opp_nulltoempty(property->getValue("text")));
     if ((s = property->getValue("color")) != NULL)
         setColor(parseColor(s));
-    //TODO font;
+    if (property->containsKey("font"))
+        setFont(parseFont(property, "font"));
     if ((s = property->getValue("anchor")) != NULL)
         setAnchor(parseAnchor(s));
     if ((s = property->getValue("alignment")) != NULL)
@@ -507,32 +627,40 @@ bool cCanvas::containsCanvasItems(cProperties *properties)
 
 void cCanvas::addLayersAndFiguresFrom(cProperties *properties)
 {
+    std::map<cFigure*,double> orderMap;
+
     // parse @layers first, then @figures
     for (int i = 0; i < properties->getNumProperties(); i++)
     {
         cProperty *property = properties->get(i);
         if (property->isName("layer"))
-            parseLayer(property);
+            parseLayer(property, orderMap);
     }
     for (int i = 0; i < properties->getNumProperties(); i++)
     {
         cProperty *property = properties->get(i);
         if (property->isName("figure"))
-            parseFigure(property);
+            parseFigure(property, orderMap);
     }
 }
 
-void cCanvas::parseLayer(cProperty *property)
+void cCanvas::parseLayer(cProperty *property, std::map<cFigure*,double>& orderMap)
 {
     const char *name = property->getIndex();
     if (getToplevelLayerByName(name) == NULL) {
         cLayer *layer = new cLayer();
-        layer->setName(name); //TODO set description too
-        addToplevelLayer(layer);
+        layer->setName(name);
+        const char *description = property->getValue("description");
+        if (description)
+            layer->setDescription(description);
+        const char *order = property->getValue("z");  //XXX better name! localZ?
+        if (order)
+            orderMap[layer] = opp_atof(order);
+        rootFigure->insertChild(layer, orderMap);
     }
 }
 
-void cCanvas::parseFigure(cProperty *property)
+void cCanvas::parseFigure(cProperty *property, std::map<cFigure*,double>& orderMap)
 {
     try {
         const char *name = property->getIndex();
@@ -544,9 +672,11 @@ void cCanvas::parseFigure(cProperty *property)
             const char *type = property->getValue("type");
             figure = createFigure(type);
             figure->setName(name);
-
+            const char *order = property->getValue("z");  //XXX better name! localZ?
+            if (order)
+                orderMap[figure] = opp_atof(order);
             cFigure *parent = parseParentFigure(property);
-            parent->addChild(figure);
+            parent->insertChild(figure, orderMap);
         }
 
         figure->parse(property);
@@ -641,4 +771,9 @@ cLayer *cCanvas::getDefaultLayer() const
     if (!layer)
         throw cRuntimeError("cCanvas::getDefaultLayer(): no toplevel layer named 'default' in this canvas");
     return layer;
+}
+
+cLayer *cCanvas::getSubmodulesLayer() const
+{
+    return (cLayer *)rootFigure->getChild("submodules");
 }

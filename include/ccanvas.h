@@ -27,11 +27,14 @@ class cProperties;
 //TODO:
 // USE HIERARCHICAL NAMES!
 // hierarchical name to appear in the API (would make "parent=foo" superfluous)! getFigurePath(), getFigureByPath(), etc
-// zorder= property key allow ordering of figures (NOT PUBLIC API, ONLY USED DURING PARSING!!!)
+// FINISH ARC AND IMAGE!
+// FINISH FONT and HASOUTLINE
 // recognize color names
 // naming consistency: find/get; const!  byName suffix kell?
+// property keys: camelcase? startangle vs startAngle; error msg kisbetu/nagybetu
 //
 //TODO later:
+// parse() methods: better error reporting (report excess keys, excess values, etc)
 // use flags field for booleans
 // coordinates: pixels vs meters? location, size, linewidth???
 //  - 2 options: (1) Point to contain (xUnits,xPixels,yUnits,yPixels), or (2) cFigure to contain flags
@@ -78,7 +81,7 @@ class SIM_API cFigure : public cOwnedObject
             std::string typeface;
             int pointSize;
             uint8_t style;
-            Font() : pointSize(8), style(FONT_NONE) {}
+            Font() : pointSize(0), style(FONT_NONE) {}
             Font(std::string typeface, int pointSize, uint8_t style=FONT_NONE) : typeface(typeface), pointSize(pointSize), style(style) {}
         };
 
@@ -96,6 +99,7 @@ class SIM_API cFigure : public cOwnedObject
     private:
         static int lastId;
         int id;
+        float localZ; // valid among children; only used during initialization
         bool visible; // treated as structural change, for simpler handing
         std::vector<std::string> tags; //TODO stringpool
         std::vector<cFigure*> children;
@@ -110,6 +114,8 @@ class SIM_API cFigure : public cOwnedObject
         virtual void doChange(int flags);
         static Point parsePoint(cProperty *property, const char *key, int index);
         static std::vector<Point> parsePoints(cProperty *property, const char *key);
+        static void parseBoundingBox(cProperty *property, Point& p1, Point& p2);
+        static Font parseFont(cProperty *property, const char *key);
         static bool parseBool(const char *s);
         static Color parseColor(const char *s);
         static LineStyle parseLineStyle(const char *s);
@@ -124,9 +130,10 @@ class SIM_API cFigure : public cOwnedObject
         int getLocalChangeFlags() const {return localChange;}
         int getTreeChangeFlags() const {return treeChange;}
         void clearChangeFlags();
+        void insertChild(cFigure *figure, std::map<cFigure*,double>& orderMap);
 
     public:
-        cFigure(const char *name=NULL) : cOwnedObject(name), localChange(0), treeChange(0), visible(true), id(++lastId) {}
+        cFigure(const char *name=NULL) : cOwnedObject(name), localChange(0), treeChange(0), visible(true), localZ(0), id(++lastId) {}
         virtual void parse(cProperty *property);
         virtual const char *getClassNameForRenderer() const {return getClassName();} // which figure class' renderer to use; override if you want to subclass a figure while reusing the base class' renderer
         int getId() const {return id;}
@@ -268,7 +275,6 @@ class SIM_API cAbstractShapeFigure : public cFigure
 class SIM_API cRectangleFigure : public cAbstractShapeFigure
 {
     private:
-        //TODO: location+width/height+anchor! +getTopLeft() +getCenter()?
         Point p1, p2;
     public:
         cRectangleFigure(const char *name=NULL) : cAbstractShapeFigure(name) {}
@@ -284,7 +290,6 @@ class SIM_API cRectangleFigure : public cAbstractShapeFigure
 class SIM_API cOvalFigure : public cAbstractShapeFigure
 {
     private:
-        //TODO: location+width/height+anchor! +getCenter() +getTopLeft()
         Point p1, p2;
     public:
         cOvalFigure(const char *name=NULL) : cAbstractShapeFigure(name) {}
@@ -300,7 +305,6 @@ class SIM_API cOvalFigure : public cAbstractShapeFigure
 class SIM_API cArcFigure : public cAbstractShapeFigure
 {
     private:
-        //TODO: location+width/height+anchor! +getCenter() +getTopLeft()
         Point p1, p2; // of the oval that arc is part of
         double startAngle, endAngle; // in degrees, CCW, 0=east
         //TODO: outline mode (arc/piechart); note: tk doesn't support LineCap for arc items
@@ -413,8 +417,8 @@ class SIM_API cCanvas : public cOwnedObject
 
         cLayerContainerFigure *rootFigure;
     protected:
-        virtual void parseLayer(cProperty *property);
-        virtual void parseFigure(cProperty *property);
+        virtual void parseLayer(cProperty *property, std::map<cFigure*,double>& orderMap);
+        virtual void parseFigure(cProperty *property, std::map<cFigure*,double>& orderMap);
         virtual cFigure *createFigure(const char *type);
         virtual cFigure *parseParentFigure(cProperty *property);
     public:
@@ -431,8 +435,9 @@ class SIM_API cCanvas : public cOwnedObject
         virtual cLayer *getToplevelLayerByName(const char *name);
         virtual int getNumToplevelLayers() const {return rootFigure->getNumChildren();}
         virtual cLayer *getToplevelLayer(int k) const {return (cLayer *)rootFigure->getChild(k);}
-        virtual cLayer *getDefaultLayer() const;
-        //TODO getSubmodulesLayer(), int findLayer(name), moveLayer(cLayer *layer, int pos); also cFigure::moveChild(cFigure *figure, int pos)
+        virtual cLayer *getDefaultLayer() const; // throws error if doesn't exist
+        virtual cLayer *getSubmodulesLayer() const; // may return NULL (extra canvases don't have submodules)
+        //TODO int findLayer(name), moveLayer(cLayer *layer, int pos); also cFigure::moveChild(cFigure *figure, int pos)
 };
 
 NAMESPACE_END

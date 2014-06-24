@@ -14,6 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <strstream>
 #include "tkutil.h"
 #include "figurerenderers.h"
 #include "cobjectfactory.h"
@@ -137,6 +138,19 @@ const char *FigureRenderer::alignment(cFigure::Alignment alignment)
     }
 }
 
+std::string FigureRenderer::font(cFigure::Font& font)
+{
+    if (font.typeface == "" && font.pointSize <= 0 && font.style == 0)
+        return "";
+    std::stringstream os;
+    os << " -font {{" << font.typeface << "} " << (font.pointSize <= 0 ? 8 : font.pointSize);
+    if (font.style & cFigure::FONT_BOLD) os << " bold";
+    if (font.style & cFigure::FONT_ITALIC) os << " italic";
+    if (font.style & cFigure::FONT_UNDERLINE) os << " underline";
+    os << "} ";
+    return os.str();
+}
+
 void FigureRenderer::remove(cFigure *figure, Tcl_Interp *interp, const char *canvas)
 {
     char tag[32];
@@ -175,6 +189,9 @@ FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
 
 void NullRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
 {
+    char tag[32];
+    sprintf(tag, "f%d", figure->getId());
+    CHK(Tcl_VarEval(interp, canvas, " create line 0 0 0 0 -fill \"\" -tags {fig ", tag, "}", NULL)); // layer marker for raise/lower commands
 }
 
 void NullRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
@@ -407,7 +424,7 @@ void TextFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char 
             " -fill ", color(textFigure->getColor(), buf3),
             anchor(textFigure->getAnchor()),
             alignment(textFigure->getAlignment()),
-            //TODO font
+            font(textFigure->getFont()).c_str(),
             " -tags {fig ", tag, "}", NULL));
 }
 
@@ -430,7 +447,7 @@ void TextFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, con
             " -fill ", color(textFigure->getColor(), buf3),
             anchor(textFigure->getAnchor()),
             alignment(textFigure->getAlignment()),
-            //TODO font
+            font(textFigure->getFont()).c_str(),
             NULL));
 }
 

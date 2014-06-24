@@ -37,6 +37,7 @@
 #include "cgate.h"
 #include "cchannel.h"
 #include "csimplemodule.h"
+#include "stringutil.h"
 
 NAMESPACE_BEGIN
 
@@ -447,7 +448,6 @@ void ModuleInspector::redrawModules()
 
     // then display all submodules
     CHK(Tcl_VarEval(interp, canvas, " delete dx",NULL)); // NOT "delete all" because that'd remove "bubbles" too!
-    const cDisplayString blank;
     std::string buffer;
     const char *rawScaling = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString().getTagArg("bgs",0) : "";
     const char *scaling = substituteDisplayStringParamRefs(rawScaling, buffer, parentModule, true);
@@ -644,7 +644,15 @@ void ModuleInspector::redrawFigures()
    if (canvas)
    {
        LinearCoordMapping mapping;
+       initMapping(mapping);
        drawFigureRec(canvas->getRootFigure(), mapping);
+
+       char tag[32];
+       cLayer *submodulesLayer = canvas->getSubmodulesLayer();
+       ASSERT(submodulesLayer); // should be present!
+       sprintf(tag, "f%d", submodulesLayer->getId());
+       CHK(Tcl_VarEval(interp, this->canvas, " lower submodext ", tag, NULL));
+       CHK(Tcl_VarEval(interp, this->canvas, " raise submodext ", tag, NULL));
    }
 }
 
@@ -665,11 +673,36 @@ void ModuleInspector::refreshFigures()
        else if ((rootFigure->getTreeChangeFlags() | rootFigure->getLocalChangeFlags()) != 0)
        {
            LinearCoordMapping mapping;
+           initMapping(mapping);
            refreshFigureGeometryRec(rootFigure, mapping);
            refreshFigureVisualsRec(rootFigure);
            rootFigure->clearChangeFlags();
        }
    }
+}
+
+double ModuleInspector::getScale()
+{
+    // read scale
+    cModule *parentModule = static_cast<cModule *>(object);
+    std::string buffer;
+    const char *rawScaling = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString().getTagArg("bgs",0) : "";
+    const char *scalingStr = substituteDisplayStringParamRefs(rawScaling, buffer, parentModule, true);
+    return opp_isblank(scalingStr) ? 1.0 : opp_atof(scalingStr);
+}
+
+double ModuleInspector::getZoom()
+{
+    // read zoom level ($inspectordata($c:zoomfactor)) -- TODO maybe move it into C++?
+    const char *zoomStr = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":zoomfactor").c_str()), TCL_GLOBAL_ONLY);
+    return opp_atof(zoomStr);
+}
+
+void ModuleInspector::initMapping(LinearCoordMapping& mapping)
+{
+    double scale = getScale();
+    double zoom = getZoom();
+    mapping.scaleX = mapping.scaleY = scale * zoom;
 }
 
 FigureRenderer *ModuleInspector::getRendererFor(cFigure *figure)
