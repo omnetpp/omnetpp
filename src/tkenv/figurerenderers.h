@@ -60,7 +60,7 @@ class TKENV_API FigureRenderer : public cObject // for because Register_Class() 
         const char *joinStyle(cFigure::JoinStyle style);
         const char *anchor(cFigure::Anchor anchor);
         const char *alignment(cFigure::Alignment alignment);
-        std::string font(cFigure::Font& font);
+        std::string font(const cFigure::Font& font);
 
     public:
         FigureRenderer() {}

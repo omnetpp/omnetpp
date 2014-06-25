@@ -14,7 +14,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <strstream>
 #include "tkutil.h"
 #include "figurerenderers.h"
 #include "cobjectfactory.h"
@@ -43,7 +42,7 @@ char *FigureRenderer::point(const cFigure::Point& point, ICoordMapping *mapping,
 std::string FigureRenderer::points(const std::vector<cFigure::Point>& points, ICoordMapping *mapping)
 {
     std::stringstream os;
-    for (int i=0; i<points.size(); i++) {
+    for (int i=0; i<(int)points.size(); i++) {
         cFigure::Point p = mapping->apply(points[i]);
         os << p.x << " " << p.y << " ";
     }
@@ -138,7 +137,7 @@ const char *FigureRenderer::alignment(cFigure::Alignment alignment)
     }
 }
 
-std::string FigureRenderer::font(cFigure::Font& font)
+std::string FigureRenderer::font(const cFigure::Font& font)
 {
     if (font.typeface == "" && font.pointSize <= 0 && font.style == 0)
         return "";
@@ -242,18 +241,18 @@ void LineFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, con
 
 void PolylineFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
 {
-    char tag[32], buf1[32], buf2[32], buf3[32], buf4[64];
+    char tag[32], buf1[32], buf2[32], buf3[32];
     sprintf(tag, "f%d", figure->getId());
     cPolylineFigure *polylineFigure = (cPolylineFigure*)figure;
     CHK(Tcl_VarEval(interp, canvas, " create line ",
             points(polylineFigure->getPoints(), mapping).c_str(),
-            " -fill ", color(polylineFigure->getLineColor(), buf2),
-            " -width ", itoa(polylineFigure->getLineWidth(), buf3),
+            " -fill ", color(polylineFigure->getLineColor(), buf1),
+            " -width ", itoa(polylineFigure->getLineWidth(), buf2),
             lineStyle(polylineFigure->getLineStyle()),
             capStyle(polylineFigure->getCapStyle()),
             joinStyle(polylineFigure->getJoinStyle()),
             smooth(polylineFigure->getSmooth()),
-            arrows(polylineFigure->getStartArrowHead(), polylineFigure->getEndArrowHead(), buf4),
+            arrows(polylineFigure->getStartArrowHead(), polylineFigure->getEndArrowHead(), buf3),
             " -tags {fig ", tag, "}", NULL));
 }
 
@@ -415,13 +414,13 @@ void PolygonFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, 
 
 void TextFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
 {
-    char tag[32], buf1[32], buf2[32], buf3[32], buf4[32], buf5[32];
+    char tag[32], buf1[32], buf2[32];
     sprintf(tag, "f%d", figure->getId());
     cTextFigure *textFigure = (cTextFigure*)figure;
     CHK(Tcl_VarEval(interp, canvas, " create text ",
             point(textFigure->getPos(), mapping, buf1),
             " -text ", TclQuotedString(textFigure->getText()).get(),
-            " -fill ", color(textFigure->getColor(), buf3),
+            " -fill ", color(textFigure->getColor(), buf2),
             anchor(textFigure->getAnchor()),
             alignment(textFigure->getAlignment()),
             font(textFigure->getFont()).c_str(),
@@ -439,12 +438,12 @@ void TextFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, co
 
 void TextFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
 {
-    char tag[32], buf2[32], buf3[32], buf4[32], buf5[32];
+    char tag[32], buf1[32];
     sprintf(tag, "f%d", figure->getId());
     cTextFigure *textFigure = (cTextFigure*)figure;
     CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
             " -text ", TclQuotedString(textFigure->getText()).get(),
-            " -fill ", color(textFigure->getColor(), buf3),
+            " -fill ", color(textFigure->getColor(), buf1),
             anchor(textFigure->getAnchor()),
             alignment(textFigure->getAlignment()),
             font(textFigure->getFont()).c_str(),

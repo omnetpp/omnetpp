@@ -191,6 +191,36 @@ $O/componenthistory.o: componenthistory.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h
+$O/figurerenderers.o: figurerenderers.cc \
+  ../../include/regmacros.h \
+  ../../include/platdep/platdefs.h \
+  figurerenderers.h \
+  ../envir/envirdefs.h \
+  ../../include/cnamedobject.h \
+  ../../include/simtime.h \
+  ../../include/cenvir.h \
+  ../../include/simtime_t.h \
+  ../../include/opp_string.h \
+  ../../include/simkerneldefs.h \
+  ../../include/errmsg.h \
+  ../../include/csimulation.h \
+  ../../include/cownedobject.h \
+  tkdefs.h \
+  ../../include/cobject.h \
+  ../envir/visitor.h \
+  ../../include/clistener.h \
+  ../../include/cstringpool.h \
+  ../../include/globals.h \
+  ../../include/ccanvas.h \
+  ../../include/cvisitor.h \
+  tkutil.h \
+  ../../include/cobjectfactory.h \
+  ../../include/platdep/platmisc.h \
+  ../envir/matchableobject.h \
+  ../../include/simutil.h \
+  ../../include/cexception.h \
+  ../../include/cmessageheap.h \
+  ../../include/platdep/intxtypes.h
 $O/gateinspector.o: gateinspector.cc \
   ../envir/args.h \
   ../../include/regmacros.h \
@@ -456,6 +486,7 @@ $O/inspector.o: inspector.cc \
   ../../include/cmodelchange.h \
   ../../include/carray.h \
   ../../include/cstringparimpl.h \
+  ../../include/cmessageprinter.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
   ../../include/cmsgpar.h \
@@ -480,6 +511,7 @@ $O/inspector.o: inspector.cc \
   ../../include/cobject.h \
   ../../include/cnedfunction.h \
   ../../include/cstringpool.h \
+  ../../include/ccanvas.h \
   ../../include/cresultfilter.h \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
@@ -574,6 +606,7 @@ $O/inspectorfactory.o: inspectorfactory.cc \
   ../../include/cmodelchange.h \
   ../../include/carray.h \
   ../../include/cstringparimpl.h \
+  ../../include/cmessageprinter.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
   ../../include/cmsgpar.h \
@@ -598,6 +631,7 @@ $O/inspectorfactory.o: inspectorfactory.cc \
   ../../include/cobject.h \
   ../../include/cnedfunction.h \
   ../../include/cstringpool.h \
+  ../../include/ccanvas.h \
   ../../include/cresultfilter.h \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
@@ -856,6 +890,7 @@ $O/moduleinspector.o: moduleinspector.cc \
   tklib.h \
   componenthistory.h \
   ../../include/platdep/platdefs.h \
+  figurerenderers.h \
   ../../include/cqueue.h \
   ../envir/eventlogfilemgr.h \
   ../../include/simtime.h \
@@ -874,6 +909,7 @@ $O/moduleinspector.o: moduleinspector.cc \
   ../../include/cobject.h \
   tkdefs.h \
   ../../include/cstringpool.h \
+  ../../include/ccanvas.h \
   ../../include/cdefaultlist.h \
   ../../include/cmessageheap.h \
   ../../include/simutil.h \

@@ -133,7 +133,7 @@ class SIM_API cFigure : public cOwnedObject
         void insertChild(cFigure *figure, std::map<cFigure*,double>& orderMap);
 
     public:
-        cFigure(const char *name=NULL) : cOwnedObject(name), localChange(0), treeChange(0), visible(true), localZ(0), id(++lastId) {}
+        cFigure(const char *name=NULL) : cOwnedObject(name), id(++lastId), localZ(0), visible(true), localChange(0), treeChange(0) {}
         virtual void parse(cProperty *property);
         virtual const char *getClassNameForRenderer() const {return getClassName();} // which figure class' renderer to use; override if you want to subclass a figure while reusing the base class' renderer
         int getId() const {return id;}
@@ -258,7 +258,7 @@ class SIM_API cAbstractShapeFigure : public cFigure
         LineStyle lineStyle;
         int lineWidth;
     public:
-        cAbstractShapeFigure(const char *name=NULL) : cFigure(name), filled(false), outline(true), lineColor(BLACK), fillColor(BLUE), lineStyle(LINE_SOLID), lineWidth(1) {}
+        cAbstractShapeFigure(const char *name=NULL) : cFigure(name), outline(true), filled(false), lineColor(BLACK), fillColor(BLUE), lineStyle(LINE_SOLID), lineWidth(1) {}
         virtual void parse(cProperty *property);
         virtual bool isFilled() const  {return filled;}
         virtual void setFilled(bool filled)  {this->filled = filled; doVisualChange();}
@@ -309,7 +309,7 @@ class SIM_API cArcFigure : public cAbstractShapeFigure
         double startAngle, endAngle; // in degrees, CCW, 0=east
         //TODO: outline mode (arc/piechart); note: tk doesn't support LineCap for arc items
     public:
-        cArcFigure(const char *name=NULL) : startAngle(0), endAngle(0), cAbstractShapeFigure(name) {}
+        cArcFigure(const char *name=NULL) : cAbstractShapeFigure(name), startAngle(0), endAngle(0) {}
         virtual void parse(cProperty *property);
         virtual Point getLocation() const  {return p1;}
         virtual void translate(double x, double y);

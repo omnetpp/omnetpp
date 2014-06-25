@@ -197,6 +197,31 @@ $O/cboolparimpl.o: cboolparimpl.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/csimulation.h \
   ../../include/errmsg.h
+$O/ccanvas.o: ccanvas.cc \
+  ../../include/regmacros.h \
+  ../../include/cownedobject.h \
+  ../../include/onstartup.h \
+  ../../include/cobject.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/cstringpool.h \
+  ../../include/globals.h \
+  ../../include/ccanvas.h \
+  ../../include/cnamedobject.h \
+  ../../include/simtime.h \
+  ../../include/cvisitor.h \
+  ../../include/simtime_t.h \
+  ../../include/cproperties.h \
+  ../../include/cobjectfactory.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cstringtokenizer.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/simutil.h \
+  ../../include/cexception.h \
+  ../../include/simkerneldefs.h \
+  ../../include/cproperty.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/errmsg.h
 $O/cchannel.o: cchannel.cc \
   ../../include/regmacros.h \
   ../../include/ctimestampedvalue.h \
@@ -360,6 +385,7 @@ $O/ccomponenttype.o: ccomponenttype.cc \
   ../../include/clistener.h \
   ../../include/cstringpool.h \
   ../../include/cpar.h \
+  ../../include/ccanvas.h \
   ../../include/globals.h \
   ../../include/cdefaultlist.h \
   ../../include/cparimpl.h \
@@ -1208,6 +1234,7 @@ $O/cmodule.o: cmodule.cc \
   ../../include/cstringpool.h \
   ../../include/cpar.h \
   ../../include/globals.h \
+  ../../include/ccanvas.h \
   ../../include/cdefaultlist.h \
   ../../include/cvisitor.h \
   ../../include/cnedmathfunction.h \
@@ -2862,6 +2889,7 @@ $O/sim_std_m.o: sim_std_m.cc \
   ../../include/carray.h \
   ../../include/cenvir.h \
   ../../include/simtime_t.h \
+  ../../include/cmessageprinter.h \
   ../../include/mersennetwister.h \
   ../../include/cboolparimpl.h \
   ../../include/cmsgpar.h \
@@ -2881,6 +2909,7 @@ $O/sim_std_m.o: sim_std_m.cc \
   ../../include/cnullenvir.h \
   ../../include/cnedfunction.h \
   ../../include/cstringpool.h \
+  ../../include/ccanvas.h \
   ../../include/cresultfilter.h \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
