@@ -36,7 +36,7 @@ class cOwnedObject;
 
 
 /**
- * Root of the \opp class hierarcy. cObject is a lightweight class, it
+ * Root of the \opp class hierarchy. cObject is a lightweight class, it
  * does not contain any data members.
  *
  * Note: In OMNeT++ 2.x and 3.x, cObject was called cPolymorphic.
