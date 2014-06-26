@@ -1129,13 +1129,13 @@ sub prepareForCodeGeneration()
             # $ftypeqname
             my @found = lookupExistingClassName($namespacename, $ftype);
             if (@found == 1) {
-                $ftypeqname = $found[0];
+                $ftypeqname = "::" . $found[0];
             } elsif (@found == 0) {
                 print "$filename: Error: unknown type '$ftype' for field '$fieldname' in '$msgname'\n"; $ret=1;
-                $ftypeqname = 'cObject';
+                $ftypeqname = '::cObject';
             } else {
                 print "$filename: Error: unknown type '$ftype' for field '$fieldname' in '$msgname'; possibilities: " .join(', ',@found)."\n"; $ret=1;
-                $ftypeqname = $found[0];
+                $ftypeqname = "::" . $found[0];
             }
         }
         $ftypeqname{$fieldname} = $ftypeqname;
@@ -2068,7 +2068,9 @@ sub generateDescriptorClass
         for (my $i=0; $i<$fieldcount; $i++)
         {
             if ($fkind{$fieldlist[$i]} eq 'struct') {
-                print CC "        \"$ftypeqname{$fieldlist[$i]}\",\n";
+                my $qname = $ftypeqname{$fieldlist[$i]};
+                $qname =~ s/^:://;
+                print CC "        \"$qname\",\n";
             } else {
                 print CC "        NULL,\n";
             }
