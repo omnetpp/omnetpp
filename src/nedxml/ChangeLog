@@ -1,3 +1,11 @@
+2014-06-27  Andras Varga, Zoltan Bojthe
+
+	* opp_msgc: fix: the generic templated operator<< in the generated
+	code caused compilation error when namespaces were involved.
+
+	* opp_msgc: added operator<< for vector field types (std::vector<T>,
+	where T must have operator<<).
+
 2014-05-28  Andras Varga
 
 	* opp_msgc: added support for @implements class property. Its expects
