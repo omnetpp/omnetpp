@@ -201,11 +201,11 @@ record-eventlog = true
 
 %contains: results/General-0.elog
 E # 0 t 0 m 1 ce -1 msg -1
-SB v 1028 rid SOME_RUN_ID b 1000
+SB v 1029 rid SOME_RUN_ID b 1000
 KF p -1 c "" s ""
-MC id 1 c cCompoundModule t Test n Test cm 1
+MC id 1 c cModule t Test n Test cm 1
 MS id 1 d ""
-MC id 2 c cCompoundModule t Compound pid 1 n compound cm 1
+MC id 2 c cModule t Compound pid 1 n compound cm 1
 GC m 2 g 3 n out o 1
 MS id 2 d ""
 MC id 3 c eventlogrecording_1::Node t Node pid 1 n node
