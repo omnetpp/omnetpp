@@ -24,7 +24,7 @@ network Test
 
 namespace @TESTNAME@ {
 
-class BaseModuleClass : public cCompoundModule
+class BaseModuleClass : public cModule
 {
   protected:
     void initialize() {EV << "Hello from " << getClassName() << "\n";}

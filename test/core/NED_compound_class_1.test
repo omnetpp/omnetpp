@@ -22,7 +22,7 @@ network Test
 
 #include <omnetpp.h>
 
-class CompoundModuleClassWithoutNamespace : public cCompoundModule
+class CompoundModuleClassWithoutNamespace : public cModule
 {
   protected:
     void initialize() {EV << "Hello from " << getClassName() << "\n";}
