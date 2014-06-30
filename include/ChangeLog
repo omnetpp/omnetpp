@@ -1,3 +1,5 @@
+2014-06-30  ------ omnetpp-4.5 released ------
+
 2014-04-15  Andras Varga
 
 	* Added cMessagePrinter class and Register_MessagePrinter() macro.
