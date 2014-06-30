@@ -235,8 +235,7 @@ ZLIB_CFLAGS=/I "$(ZLIB_DIR)/include"
 ZLIB_LIBS=zdll.lib /libpath:"$(ZLIB_DIR)/lib"
 
 # compiler and linker switches necessary to build an app with Tcl/Tk, MPI, expat, etc.
-# (NO_CONST is for testing code compatibility with systems where tcl.h comes without 'const')
-TK_CFLAGS=/I "$(TK_INCL_DIR)" /DNO_CONST
+TK_CFLAGS=/I "$(TK_INCL_DIR)"
 TK_LIBS=$(TCL_LIB) $(TK_LIB) /libpath:"$(TK_LIB_DIR)"
 MPI_CFLAGS=/I "$(MPI_DIR)/include"
 MPI_LIBS=/libpath:"$(MPI_DIR)/lib" mpi.lib
