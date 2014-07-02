@@ -1041,6 +1041,7 @@ $O/tkcmd.o: tkcmd.cc \
   tkdefs.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
+  ../../include/ccanvas.h \
   ../../include/cdefaultlist.h \
   ../../include/simutil.h \
   ../../include/cmessageheap.h \

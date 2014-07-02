@@ -24,10 +24,11 @@ std::map<std::string, FigureRenderer*> FigureRenderer::rendererCache;
 
 Register_Class(NullRenderer);
 Register_Class(LineFigureRenderer);
+Register_Class(ArcFigureRenderer);
 Register_Class(PolylineFigureRenderer);
 Register_Class(RectangleFigureRenderer);
 Register_Class(OvalFigureRenderer);
-Register_Class(ArcFigureRenderer);
+Register_Class(PieSliceFigureRenderer);
 Register_Class(PolygonFigureRenderer);
 Register_Class(TextFigureRenderer);
 Register_Class(ImageFigureRenderer);
@@ -63,16 +64,31 @@ char *FigureRenderer::itoa(int i, char *buf)
 
 char *FigureRenderer::arrows(cFigure::ArrowHead start, cFigure::ArrowHead end, char *buf)
 {
-    //TODO arrow shape!
-    //XXX Tk cannot draw different arrows at the two ends of the line!
-    if (start == cFigure::ARROW_NONE && end == cFigure::ARROW_NONE)
+    //Note: Tk cannot draw different arrows at the two ends of the line!
+    cFigure::ArrowHead type;
+    if (start == cFigure::ARROW_NONE && end == cFigure::ARROW_NONE) {
         buf[0] = 0;
-    else if (start == cFigure::ARROW_NONE)
+        return buf;
+    }
+
+    if (start == cFigure::ARROW_NONE) {
         sprintf(buf, " -arrow last ");
-    else if (end == cFigure::ARROW_NONE)
+        type = end;
+    }
+    else if (end == cFigure::ARROW_NONE) {
         sprintf(buf, " -arrow first ");
-    else
+        type = start;
+    }
+    else {
         sprintf(buf, " -arrow both ");
+        type = end;
+    }
+    switch (type) {
+        case cFigure::ARROW_SIMPLE:   strcat(buf, " -arrowshape {6 14 5} "); break;
+        case cFigure::ARROW_BARBED:   strcat(buf, " -arrowshape {10 14 5} "); break;
+        case cFigure::ARROW_TRIANGLE: strcat(buf, " -arrowshape {11 11 4} "); break;
+        default: throw cRuntimeError("Unexpected arrowhead type %d", type);
+    }
     return buf;
 }
 
@@ -239,9 +255,53 @@ void LineFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, con
             NULL));
 }
 
+void ArcFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+{
+    //TODO arrowheads, capstyle
+    ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
+    char tag[32], buf1[32], buf2[32], buf3[32], buf4[32], buf5[32], buf6[32];
+    sprintf(tag, "f%d", figure->getId());
+    cArcFigure *arcFigure = (cArcFigure*)figure;
+    CHK(Tcl_VarEval(interp, canvas, " create arc ",
+            point(arcFigure->getP1(), mapping, buf1), point(arcFigure->getP2(), mapping, buf2),
+            " -start ", itoa(arcFigure->getStartAngle(), buf3),
+            " -extent ", itoa(arcFigure->getEndAngle() - arcFigure->getStartAngle(), buf4),
+            " -style arc",
+            " -fill ", color(arcFigure->getLineColor(), buf5),
+            " -width ", itoa(arcFigure->getLineWidth(), buf6),
+            lineStyle(arcFigure->getLineStyle()),
+            " -tags {fig ", tag, "}", NULL));
+}
+
+void ArcFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+{
+    ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
+    char tag[32], buf1[32], buf2[32];
+    sprintf(tag, "f%d", figure->getId());
+    cArcFigure *arcFigure = (cArcFigure*)figure;
+    CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
+            point(arcFigure->getP1(), mapping, buf1), point(arcFigure->getP2(), mapping, buf2), NULL));
+}
+
+void ArcFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+{
+    //TODO arrowheads, capstyle
+    char tag[32], buf3[32], buf4[32], buf5[32], buf6[32];
+    sprintf(tag, "f%d", figure->getId());
+    cArcFigure *arcFigure = (cArcFigure*)figure;
+    CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
+            " -start ", itoa(arcFigure->getStartAngle(), buf3),
+            " -extent ", itoa(arcFigure->getEndAngle() - arcFigure->getStartAngle(), buf4),
+            " -style arc",
+            " -fill ", color(arcFigure->getLineColor(), buf5),
+            " -width ", itoa(arcFigure->getLineWidth(), buf6),
+            lineStyle(arcFigure->getLineStyle()),
+            NULL));
+}
+
 void PolylineFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
 {
-    char tag[32], buf1[32], buf2[32], buf3[32];
+    char tag[32], buf1[32], buf2[32], buf3[64];
     sprintf(tag, "f%d", figure->getId());
     cPolylineFigure *polylineFigure = (cPolylineFigure*)figure;
     CHK(Tcl_VarEval(interp, canvas, " create line ",
@@ -290,7 +350,7 @@ void RectangleFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const 
     CHK(Tcl_VarEval(interp, canvas, " create rect ",
             point(rectangleFigure->getP1(), mapping, buf1), point(rectangleFigure->getP2(), mapping, buf2),
             " -fill ", (rectangleFigure->isFilled() ? color(rectangleFigure->getFillColor(), buf3) : "\"\""),
-            " -outline ", color(rectangleFigure->getLineColor(), buf4),
+            " -outline ", (rectangleFigure->isOutlined() ? color(rectangleFigure->getLineColor(), buf4) : "\"\""),
             " -width ", itoa(rectangleFigure->getLineWidth(), buf5),
             lineStyle(rectangleFigure->getLineStyle()),
             " -tags {fig ", tag, "}", NULL));
@@ -308,13 +368,13 @@ void RectangleFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *inter
 
 void RectangleFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
 {
-    char tag[32], buf3[32], buf4[32], buf5[32];
+    char tag[32], buf1[32], buf2[32], buf3[32];
     sprintf(tag, "f%d", figure->getId());
     cRectangleFigure *rectangleFigure = (cRectangleFigure*)figure;
     CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
-            " -fill ", (rectangleFigure->isFilled() ? color(rectangleFigure->getFillColor(), buf3) : "\"\""),
-            " -outline ", color(rectangleFigure->getLineColor(), buf4),
-            " -width ", itoa(rectangleFigure->getLineWidth(), buf5),
+            " -fill ", (rectangleFigure->isFilled() ? color(rectangleFigure->getFillColor(), buf1) : "\"\""),
+            " -outline ", (rectangleFigure->isOutlined() ? color(rectangleFigure->getLineColor(), buf2) : "\"\""),
+            " -width ", itoa(rectangleFigure->getLineWidth(), buf3),
             lineStyle(rectangleFigure->getLineStyle()),
             NULL));
 }
@@ -328,7 +388,7 @@ void OvalFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char 
     CHK(Tcl_VarEval(interp, canvas, " create oval ",
             point(ovalFigure->getP1(), mapping, buf1), point(ovalFigure->getP2(), mapping, buf2),
             " -fill ", (ovalFigure->isFilled() ? color(ovalFigure->getFillColor(), buf3) : "\"\""),
-            " -outline ", color(ovalFigure->getLineColor(), buf4),
+            " -outline ", (ovalFigure->isOutlined() ? color(ovalFigure->getLineColor(), buf4) : "\"\""),
             " -width ", itoa(ovalFigure->getLineWidth(), buf5),
             lineStyle(ovalFigure->getLineStyle()),
             " -tags {fig ", tag, "}", NULL));
@@ -351,25 +411,53 @@ void OvalFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, con
     cOvalFigure *ovalFigure = (cOvalFigure*)figure;
     CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
             " -fill ", (ovalFigure->isFilled() ? color(ovalFigure->getFillColor(), buf3) : "\"\""),
-            " -outline ", color(ovalFigure->getLineColor(), buf4),
+            " -outline ", (ovalFigure->isOutlined() ? color(ovalFigure->getLineColor(), buf4) : "\"\""),
             " -width ", itoa(ovalFigure->getLineWidth(), buf5),
             lineStyle(ovalFigure->getLineStyle()),
             NULL));
 }
 
-void ArcFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+void PieSliceFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
 {
-    //TODO
+    ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
+    char tag[32], buf1[32], buf2[32], buf3[32], buf4[32], buf5[32], buf6[32], buf7[32];
+    sprintf(tag, "f%d", figure->getId());
+    cPieSliceFigure *piesliceFigure = (cPieSliceFigure*)figure;
+    CHK(Tcl_VarEval(interp, canvas, " create arc ",
+            point(piesliceFigure->getP1(), mapping, buf1), point(piesliceFigure->getP2(), mapping, buf2),
+            " -start ", itoa(piesliceFigure->getStartAngle(), buf3),
+            " -extent ", itoa(piesliceFigure->getEndAngle() - piesliceFigure->getStartAngle(), buf4),
+            " -style pieslice ",
+            " -fill ", (piesliceFigure->isFilled() ? color(piesliceFigure->getFillColor(), buf5) : "\"\""),
+            " -outline ", (piesliceFigure->isOutlined() ? color(piesliceFigure->getLineColor(), buf6) : "\"\""),
+            " -width ", itoa(piesliceFigure->getLineWidth(), buf7),
+            lineStyle(piesliceFigure->getLineStyle()),
+            " -tags {fig ", tag, "}", NULL));
 }
 
-void ArcFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+void PieSliceFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
 {
-    //TODO
+    ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
+    char tag[32], buf1[32], buf2[32];
+    sprintf(tag, "f%d", figure->getId());
+    cPieSliceFigure *piesliceFigure = (cPieSliceFigure*)figure;
+    CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
+            point(piesliceFigure->getP1(), mapping, buf1), point(piesliceFigure->getP2(), mapping, buf2), NULL));
 }
 
-void ArcFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+void PieSliceFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
 {
-    //TODO
+    char tag[32], buf1[32], buf2[32], buf3[32], buf4[32], buf5[32];
+    sprintf(tag, "f%d", figure->getId());
+    cPieSliceFigure *piesliceFigure = (cPieSliceFigure*)figure;
+    CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
+            " -start ", itoa(piesliceFigure->getStartAngle(), buf1),
+            " -extent ", itoa(piesliceFigure->getEndAngle() - piesliceFigure->getStartAngle(), buf2),
+            " -fill ", (piesliceFigure->isFilled() ? color(piesliceFigure->getFillColor(), buf3) : "\"\""),
+            " -outline ", (piesliceFigure->isOutlined() ? color(piesliceFigure->getLineColor(), buf4) : "\"\""),
+            " -width ", itoa(piesliceFigure->getLineWidth(), buf5),
+            lineStyle(piesliceFigure->getLineStyle()),
+            NULL));
 }
 
 void PolygonFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
@@ -380,7 +468,7 @@ void PolygonFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const ch
     CHK(Tcl_VarEval(interp, canvas, " create polygon ",
             points(polygonFigure->getPoints(), mapping).c_str(),
             " -fill ", (polygonFigure->isFilled() ? color(polygonFigure->getFillColor(), buf1) : "\"\""),
-            " -outline ", color(polygonFigure->getLineColor(), buf2),
+            " -outline ", (polygonFigure->isOutlined() ? color(polygonFigure->getLineColor(), buf2) : "\"\""),
             " -width ", itoa(polygonFigure->getLineWidth(), buf3),
             lineStyle(polygonFigure->getLineStyle()),
             joinStyle(polygonFigure->getJoinStyle()),
@@ -404,7 +492,7 @@ void PolygonFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, 
     cPolygonFigure *polygonFigure = (cPolygonFigure*)figure;
     CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
             " -fill ", (polygonFigure->isFilled() ? color(polygonFigure->getFillColor(), buf1) : "\"\""),
-            " -outline ", color(polygonFigure->getLineColor(), buf2),
+            " -outline ", (polygonFigure->isOutlined() ? color(polygonFigure->getLineColor(), buf2) : "\"\""),
             " -width ", itoa(polygonFigure->getLineWidth(), buf3),
             lineStyle(polygonFigure->getLineStyle()),
             joinStyle(polygonFigure->getJoinStyle()),

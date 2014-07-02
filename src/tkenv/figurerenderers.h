@@ -88,6 +88,14 @@ class TKENV_API LineFigureRenderer : public FigureRenderer
         virtual void refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas);
 };
 
+class TKENV_API ArcFigureRenderer : public FigureRenderer
+{
+    public:
+        virtual void render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping);
+        virtual void refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping);
+        virtual void refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas);
+};
+
 class TKENV_API PolylineFigureRenderer : public FigureRenderer
 {
     public:
@@ -112,7 +120,7 @@ class TKENV_API OvalFigureRenderer : public FigureRenderer
         virtual void refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas);
 };
 
-class TKENV_API ArcFigureRenderer : public FigureRenderer
+class TKENV_API PieSliceFigureRenderer : public FigureRenderer
 {
     public:
         virtual void render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping);

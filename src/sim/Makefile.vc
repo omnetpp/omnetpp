@@ -229,7 +229,8 @@ $O/ccanvas.obj: ccanvas.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/cproperties.h \
-  ../../include/regmacros.h
+  ../../include/regmacros.h \
+  ../../include/cstringtokenizer.h
 $O/cchannel.obj: cchannel.cc \
   ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \

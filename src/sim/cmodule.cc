@@ -142,9 +142,6 @@ void cModule::forEachChild(cVisitor *v)
     for (GateIterator i(this); !i.end(); i++)
         v->visit(i());
 
-    if (canvas)
-        v->visit(canvas);
-
     cDefaultList::forEachChild(v);
 }
 
@@ -1282,7 +1279,7 @@ void cModule::changeParentTo(cModule *mod)
 cCanvas *cModule::getCanvas()
 {
     if (!canvas) {
-        canvas = new cCanvas();
+        canvas = new cCanvas("canvas");
         canvas->addToplevelLayer(new cLayer("submodules"));
         take(canvas);
     }

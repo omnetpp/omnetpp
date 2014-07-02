@@ -717,13 +717,13 @@ void ModuleInspector::drawFigureRec(cFigure *figure, LinearCoordMapping& mapping
         FigureRenderer *renderer = getRendererFor(figure);
         renderer->render(figure, interp, canvas, &mapping);
 
-        if (figure->hasChildren())
+        if (figure->hasChildFigures())
         {
             cFigure::Point offset = figure->getLocation();
-            LinearCoordMapping childMapping(mapping.scaleX, mapping.offsetX + offset.x, mapping.scaleY, mapping.offsetY + offset.y);
+            LinearCoordMapping childMapping(mapping.scaleX, mapping.offsetX + mapping.scaleX*offset.x, mapping.scaleY, mapping.offsetY + mapping.scaleY*offset.y);
 
-            for (int i = 0; i < figure->getNumChildren(); i++)
-                drawFigureRec(figure->getChild(i), childMapping);
+            for (int i = 0; i < figure->getNumChildFigures(); i++)
+                drawFigureRec(figure->getChildFigure(i), childMapping);
         }
     }
 }
@@ -742,9 +742,9 @@ void ModuleInspector::refreshFigureGeometryRec(cFigure *figure, LinearCoordMappi
     if (forceGeometryRefresh || (figure->getTreeChangeFlags() & cFigure::CHANGE_GEOMETRY))
     {
         cFigure::Point offset = figure->getLocation();
-        LinearCoordMapping childMapping(mapping.scaleX, mapping.offsetX + offset.x, mapping.scaleY, mapping.offsetY + offset.y);
-        for (int i = 0; i < figure->getNumChildren(); i++)
-            refreshFigureGeometryRec(figure->getChild(i), childMapping, forceGeometryRefresh);
+        LinearCoordMapping childMapping(mapping.scaleX, mapping.offsetX + mapping.scaleX*offset.x, mapping.scaleY, mapping.offsetY + mapping.scaleY*offset.y);
+        for (int i = 0; i < figure->getNumChildFigures(); i++)
+            refreshFigureGeometryRec(figure->getChildFigure(i), childMapping, forceGeometryRefresh);
     }
 }
 
@@ -757,8 +757,8 @@ void ModuleInspector::refreshFigureVisualsRec(cFigure *figure)
     }
 
     if (figure->getTreeChangeFlags() & cFigure::CHANGE_VISUAL)
-        for (int i = 0; i < figure->getNumChildren(); i++)
-            refreshFigureVisualsRec(figure->getChild(i));
+        for (int i = 0; i < figure->getNumChildFigures(); i++)
+            refreshFigureVisualsRec(figure->getChildFigure(i));
 }
 
 void ModuleInspector::refreshSubmodules()

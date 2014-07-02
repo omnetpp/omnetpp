@@ -169,6 +169,7 @@ $O/figurerenderers.obj: figurerenderers.cc \
   ../../include/simkerneldefs.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
+  ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
@@ -176,6 +177,7 @@ $O/figurerenderers.obj: figurerenderers.cc \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
+  ../../include/cobjectfactory.h \
   ../../include/platdep/platdefs.h \
   ../../include/regmacros.h
 $O/gateinspector.obj: gateinspector.cc \
@@ -819,6 +821,7 @@ $O/tkcmd.obj: tkcmd.cc \
   ../../include/coutvector.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
+  ../../include/ccanvas.h \
   ../../include/csimplemodule.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \

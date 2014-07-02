@@ -2,14 +2,14 @@ module Group
 {
     @display("bgb=800,500");
 
-    @figure[root](type=rectangle;coords=100,100,500,400;fillcolor=#a0a0ff);
+    @figure[root](type=rectangle;coords=100,100,500,400;fillColor=#a0a0a0);
 
-    @figure[child1](parent=root;type=rectangle;coords=10,10,300,100;fillcolor=#8080ff);
-    @figure[child2](parent=root;type=rectangle;coords=10,110,300,200;fillcolor=#8080ff);
+    @figure[root.child1](type=rectangle;coords=10,10,300,100;fillColor=#a0a0ff);
+    @figure[root.child2](type=rectangle;coords=10,110,300,200;fillColor=#a0ffa0);
 
-    @figure[grandchild1](parent=child1;type=rectangle;coords=10,10,250,50;fillcolor=#6060ff);
-    @figure[grandchild2](parent=child1;type=rectangle;coords=10,60,250,80;fillcolor=#6060ff);
-    @figure[grandchild3](parent=child2;type=rectangle;coords=10,10,250,50;fillcolor=#6060ff);
-    @figure[grandchild4](parent=child2;type=rectangle;coords=10,60,250,80;fillcolor=#6060ff);
+    @figure[root.child1.grandchild1](type=rectangle;coords=10,10,250,50;fillColor=#4040ff);
+    @figure[root.child1.grandchild2](type=rectangle;coords=10,60,250,80;fillColor=#4040ff);
+    @figure[root.child2.grandchild1](type=rectangle;coords=10,10,250,50;fillColor=#40ff40);
+    @figure[root.child2.grandchild2](type=rectangle;coords=10,60,250,80;fillColor=#40ff40);
 }
 
