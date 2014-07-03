@@ -26,6 +26,8 @@ class cProperties;
 
 #define OMNETPP_CANVAS_VERSION  0x20140702  //XXX identifies canvas code version until API stabilizes
 
+//TODO dup()/op=, color names
+
 /**
  * TODO
  */
@@ -140,22 +142,6 @@ class SIM_API cFigure : public cOwnedObject
         virtual cFigure *getParentFigure()  {return dynamic_cast<cFigure*>(getOwner());}
         virtual cFigure *findFigureByName(const char *name);
         virtual cFigure *getFigureByPath(const char *path);  //NOTE: path has similar syntax to cModule::getModuleByPath()
-};
-
-class SIM_API cLayer : public cFigure
-{
-    private:
-        Point loc;
-        std::string description;
-    public:
-        cLayer(const char *name=NULL) : cFigure(name) {}
-        virtual std::string info() const;
-        virtual const char *getClassNameForRenderer() const {return "";} // non-visual figure
-        virtual void translate(double x, double y);
-        virtual const Point& getLocation() const  {return loc;}
-        virtual void setLocation(const Point& loc)  {this->loc = loc; doGeometryChange();}
-        virtual const char *getDescription() const {return description.c_str();}
-        virtual void setDescription(const char *description) { this->description = description;}
 };
 
 class SIM_API cGroupFigure : public cFigure
@@ -427,43 +413,34 @@ class SIM_API cImageFigure : public cFigure
 class SIM_API cCanvas : public cOwnedObject
 {
     private:
-        class SIM_API cLayerContainerFigure : public cFigure
-        {
-            public:
-                cLayerContainerFigure(const char *name=NULL) : cFigure(name) {}
-                virtual const char *getClassNameForRenderer() const {return "";} // non-visual figure
-                virtual void translate(double x, double y); // disallow
-                virtual void setLocation(const Point& loc); // disallow
-                virtual const Point& getLocation() const;  // (0,0)
-                virtual void addChildFigure(cFigure *figure); // allow cLayer only
-                virtual void addChildFigure(cFigure *figure, int pos); // allow cLayer only
-        };
-
-        cLayerContainerFigure *rootFigure;
+        cFigure *rootFigure;
     protected:
-        virtual void parseLayer(cProperty *property, std::map<cFigure*,double>& orderMap);
         virtual void parseFigure(cProperty *property, std::map<cFigure*,double>& orderMap);
         virtual cFigure *createFigure(const char *type);
     public:
         // internal:
         static bool containsCanvasItems(cProperties *properties);
-        virtual void addLayersAndFiguresFrom(cProperties *properties);
+        virtual void addFiguresFrom(cProperties *properties);
     public:
         cCanvas(const char *name = NULL);
         virtual ~cCanvas();
         virtual void forEachChild(cVisitor *v);
         virtual std::string info() const;
-        virtual cFigure *getRootFigure() const {return rootFigure;} // it only accepts cLayer as children!
-        virtual cFigure *findFigureByName(const char *name); // recursive search
-        virtual cFigure *getFigureByPath(const char *path);  //NOTE: path has similar syntax to cModule::getModuleByPath()
-        virtual void addToplevelLayer(cLayer *layer);
-        virtual cLayer *removeToplevelLayer(cLayer *layer);
-        virtual cLayer *getToplevelLayerByName(const char *name);
-        virtual int getNumToplevelLayers() const {return rootFigure->getNumChildFigures();}
-        virtual cLayer *getToplevelLayer(int k) const {return (cLayer *)rootFigure->getChildFigure(k);}
-        virtual cLayer *getDefaultLayer() const; // throws error if doesn't exist
-        virtual cLayer *getSubmodulesLayer() const; // may return NULL (extra canvases don't have submodules)
-        //TODO int findLayer(name), moveLayer(cLayer *layer, int pos); also cFigure::moveChild(cFigure *figure, int pos)
+
+        virtual cFigure *getRootFigure() const {return rootFigure;}
+        virtual void addFigure(cFigure *figure) {rootFigure->addChildFigure(figure);}
+        virtual void addFigure(cFigure *figure, int pos) {rootFigure->addChildFigure(figure, pos);}
+        virtual cFigure *removeFigure(int pos) {return rootFigure->removeChildFigure(pos);}
+        virtual cFigure *removeFigure(cFigure *figure) {return rootFigure->removeChildFigure(figure);}
+        virtual int findFigure(const char *name) {return rootFigure->findChildFigure(name);}
+        virtual int findFigure(cFigure *figure) {return rootFigure->findChildFigure(figure);}
+        virtual bool hasFigures() const {return rootFigure->hasChildFigures();}
+        virtual int getNumFigures() const {return rootFigure->getNumChildFigures();}
+        virtual cFigure *getFigure(int pos) {return rootFigure->getChildFigure(pos);}
+        virtual cFigure *getFigure(const char *name) {return rootFigure->getChildFigure(name);}
+        virtual cFigure *findFigureByName(const char *name) {return rootFigure->findFigureByName(name);}
+        virtual cFigure *getFigureByPath(const char *path) {return rootFigure->getFigureByPath(path);}
+        virtual cFigure *getSubmodulesLayer() const; // may return NULL (extra canvases don't have submodules)
 };
 
 NAMESPACE_END

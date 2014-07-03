@@ -1280,7 +1280,7 @@ cCanvas *cModule::getCanvas()
 {
     if (!canvas) {
         canvas = new cCanvas("canvas");
-        canvas->addToplevelLayer(new cLayer("submodules"));
+        canvas->addFigure(new cGroupFigure("submodules"));
         take(canvas);
     }
     return canvas;

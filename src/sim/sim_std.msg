@@ -581,12 +581,6 @@ class cFigure extends cOwnedObject
     cFigure *children[] @getter(getChildFigure) @sizeGetter(getNumChildFigures);
 }
 
-class cLayer extends cFigure
-{
-    Point location;
-    string description;
-}
-
 class cGroupFigure extends cFigure
 {
     Point location;

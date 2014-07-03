@@ -221,7 +221,7 @@ void LineFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char 
 {
     char tag[32], buf1[32], buf2[32], buf3[32], buf4[32], buf5[64];
     sprintf(tag, "f%d", figure->getId());
-    cLineFigure *lineFigure = (cLineFigure*)figure;
+    cLineFigure *lineFigure = check_and_cast<cLineFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " create line ",
             point(lineFigure->getStart(), mapping, buf1), point(lineFigure->getEnd(), mapping, buf2),
             " -fill ", color(lineFigure->getLineColor(), buf3),
@@ -236,8 +236,8 @@ void LineFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, co
 {
     char tag[32], buf1[32], buf2[32];
     sprintf(tag, "f%d", figure->getId());
-    cLineFigure *lineFigure = (cLineFigure*)figure;
-    CHK(Tcl_VarEval(interp, canvas, " create line ",
+    cLineFigure *lineFigure = check_and_cast<cLineFigure*>(figure);
+    CHK(Tcl_VarEval(interp, canvas, " coords ",
             point(lineFigure->getStart(), mapping, buf1), point(lineFigure->getEnd(), mapping, buf2), NULL));
 }
 
@@ -245,7 +245,7 @@ void LineFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, con
 {
     char tag[32], buf3[32], buf4[32], buf5[64];
     sprintf(tag, "f%d", figure->getId());
-    cLineFigure *lineFigure = (cLineFigure*)figure;
+    cLineFigure *lineFigure = check_and_cast<cLineFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
             " -fill ", color(lineFigure->getLineColor(), buf3),
             " -width ", itoa(lineFigure->getLineWidth(), buf4),
@@ -261,7 +261,7 @@ void ArcFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *
     ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
     char tag[32], buf1[32], buf2[32], buf3[32], buf4[32], buf5[32], buf6[32];
     sprintf(tag, "f%d", figure->getId());
-    cArcFigure *arcFigure = (cArcFigure*)figure;
+    cArcFigure *arcFigure = check_and_cast<cArcFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " create arc ",
             point(arcFigure->getP1(), mapping, buf1), point(arcFigure->getP2(), mapping, buf2),
             " -start ", itoa(arcFigure->getStartAngle(), buf3),
@@ -278,7 +278,7 @@ void ArcFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, con
     ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
     char tag[32], buf1[32], buf2[32];
     sprintf(tag, "f%d", figure->getId());
-    cArcFigure *arcFigure = (cArcFigure*)figure;
+    cArcFigure *arcFigure = check_and_cast<cArcFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
             point(arcFigure->getP1(), mapping, buf1), point(arcFigure->getP2(), mapping, buf2), NULL));
 }
@@ -288,7 +288,7 @@ void ArcFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, cons
     //TODO arrowheads, capstyle
     char tag[32], buf3[32], buf4[32], buf5[32], buf6[32];
     sprintf(tag, "f%d", figure->getId());
-    cArcFigure *arcFigure = (cArcFigure*)figure;
+    cArcFigure *arcFigure = check_and_cast<cArcFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
             " -start ", itoa(arcFigure->getStartAngle(), buf3),
             " -extent ", itoa(arcFigure->getEndAngle() - arcFigure->getStartAngle(), buf4),
@@ -303,7 +303,7 @@ void PolylineFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const c
 {
     char tag[32], buf1[32], buf2[32], buf3[64];
     sprintf(tag, "f%d", figure->getId());
-    cPolylineFigure *polylineFigure = (cPolylineFigure*)figure;
+    cPolylineFigure *polylineFigure = check_and_cast<cPolylineFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " create line ",
             points(polylineFigure->getPoints(), mapping).c_str(),
             " -fill ", color(polylineFigure->getLineColor(), buf1),
@@ -320,7 +320,7 @@ void PolylineFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp
 {
     char tag[32];
     sprintf(tag, "f%d", figure->getId());
-    cPolylineFigure *polylineFigure = (cPolylineFigure*)figure;
+    cPolylineFigure *polylineFigure = check_and_cast<cPolylineFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
             points(polylineFigure->getPoints(), mapping).c_str(), NULL));
 }
@@ -329,7 +329,7 @@ void PolylineFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp,
 {
     char tag[32], buf2[32], buf3[32], buf4[64];
     sprintf(tag, "f%d", figure->getId());
-    cPolylineFigure *polylineFigure = (cPolylineFigure*)figure;
+    cPolylineFigure *polylineFigure = check_and_cast<cPolylineFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
             " -fill ", color(polylineFigure->getLineColor(), buf2),
             " -width ", itoa(polylineFigure->getLineWidth(), buf3),
@@ -346,7 +346,7 @@ void RectangleFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const 
     ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
     char tag[32], buf1[32], buf2[32], buf3[32], buf4[32], buf5[32];
     sprintf(tag, "f%d", figure->getId());
-    cRectangleFigure *rectangleFigure = (cRectangleFigure*)figure;
+    cRectangleFigure *rectangleFigure = check_and_cast<cRectangleFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " create rect ",
             point(rectangleFigure->getP1(), mapping, buf1), point(rectangleFigure->getP2(), mapping, buf2),
             " -fill ", (rectangleFigure->isFilled() ? color(rectangleFigure->getFillColor(), buf3) : "\"\""),
@@ -361,7 +361,7 @@ void RectangleFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *inter
     ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
     char tag[32], buf1[32], buf2[32];
     sprintf(tag, "f%d", figure->getId());
-    cRectangleFigure *rectangleFigure = (cRectangleFigure*)figure;
+    cRectangleFigure *rectangleFigure = check_and_cast<cRectangleFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
             point(rectangleFigure->getP1(), mapping, buf1), point(rectangleFigure->getP2(), mapping, buf2), NULL));
 }
@@ -370,7 +370,7 @@ void RectangleFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp
 {
     char tag[32], buf1[32], buf2[32], buf3[32];
     sprintf(tag, "f%d", figure->getId());
-    cRectangleFigure *rectangleFigure = (cRectangleFigure*)figure;
+    cRectangleFigure *rectangleFigure = check_and_cast<cRectangleFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
             " -fill ", (rectangleFigure->isFilled() ? color(rectangleFigure->getFillColor(), buf1) : "\"\""),
             " -outline ", (rectangleFigure->isOutlined() ? color(rectangleFigure->getLineColor(), buf2) : "\"\""),
@@ -384,7 +384,7 @@ void OvalFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char 
     ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
     char tag[32], buf1[32], buf2[32], buf3[32], buf4[32], buf5[32];
     sprintf(tag, "f%d", figure->getId());
-    cOvalFigure *ovalFigure = (cOvalFigure*)figure;
+    cOvalFigure *ovalFigure = check_and_cast<cOvalFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " create oval ",
             point(ovalFigure->getP1(), mapping, buf1), point(ovalFigure->getP2(), mapping, buf2),
             " -fill ", (ovalFigure->isFilled() ? color(ovalFigure->getFillColor(), buf3) : "\"\""),
@@ -399,7 +399,7 @@ void OvalFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, co
     ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
     char tag[32], buf1[32], buf2[32];
     sprintf(tag, "f%d", figure->getId());
-    cOvalFigure *ovalFigure = (cOvalFigure*)figure;
+    cOvalFigure *ovalFigure = check_and_cast<cOvalFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
             point(ovalFigure->getP1(), mapping, buf1), point(ovalFigure->getP2(), mapping, buf2), NULL));
 }
@@ -408,7 +408,7 @@ void OvalFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, con
 {
     char tag[32], buf3[32], buf4[32], buf5[32];
     sprintf(tag, "f%d", figure->getId());
-    cOvalFigure *ovalFigure = (cOvalFigure*)figure;
+    cOvalFigure *ovalFigure = check_and_cast<cOvalFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
             " -fill ", (ovalFigure->isFilled() ? color(ovalFigure->getFillColor(), buf3) : "\"\""),
             " -outline ", (ovalFigure->isOutlined() ? color(ovalFigure->getLineColor(), buf4) : "\"\""),
@@ -422,7 +422,7 @@ void PieSliceFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const c
     ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
     char tag[32], buf1[32], buf2[32], buf3[32], buf4[32], buf5[32], buf6[32], buf7[32];
     sprintf(tag, "f%d", figure->getId());
-    cPieSliceFigure *piesliceFigure = (cPieSliceFigure*)figure;
+    cPieSliceFigure *piesliceFigure = check_and_cast<cPieSliceFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " create arc ",
             point(piesliceFigure->getP1(), mapping, buf1), point(piesliceFigure->getP2(), mapping, buf2),
             " -start ", itoa(piesliceFigure->getStartAngle(), buf3),
@@ -440,7 +440,7 @@ void PieSliceFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp
     ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
     char tag[32], buf1[32], buf2[32];
     sprintf(tag, "f%d", figure->getId());
-    cPieSliceFigure *piesliceFigure = (cPieSliceFigure*)figure;
+    cPieSliceFigure *piesliceFigure = check_and_cast<cPieSliceFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
             point(piesliceFigure->getP1(), mapping, buf1), point(piesliceFigure->getP2(), mapping, buf2), NULL));
 }
@@ -449,7 +449,7 @@ void PieSliceFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp,
 {
     char tag[32], buf1[32], buf2[32], buf3[32], buf4[32], buf5[32];
     sprintf(tag, "f%d", figure->getId());
-    cPieSliceFigure *piesliceFigure = (cPieSliceFigure*)figure;
+    cPieSliceFigure *piesliceFigure = check_and_cast<cPieSliceFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
             " -start ", itoa(piesliceFigure->getStartAngle(), buf1),
             " -extent ", itoa(piesliceFigure->getEndAngle() - piesliceFigure->getStartAngle(), buf2),
@@ -464,7 +464,7 @@ void PolygonFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const ch
 {
     char tag[32], buf1[32], buf2[32], buf3[32];
     sprintf(tag, "f%d", figure->getId());
-    cPolygonFigure *polygonFigure = (cPolygonFigure*)figure;
+    cPolygonFigure *polygonFigure = check_and_cast<cPolygonFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " create polygon ",
             points(polygonFigure->getPoints(), mapping).c_str(),
             " -fill ", (polygonFigure->isFilled() ? color(polygonFigure->getFillColor(), buf1) : "\"\""),
@@ -480,7 +480,7 @@ void PolygonFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp,
 {
     char tag[32];
     sprintf(tag, "f%d", figure->getId());
-    cPolygonFigure *polygonFigure = (cPolygonFigure*)figure;
+    cPolygonFigure *polygonFigure = check_and_cast<cPolygonFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
             points(polygonFigure->getPoints(), mapping).c_str(), NULL));
 }
@@ -489,7 +489,7 @@ void PolygonFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, 
 {
     char tag[32], buf1[32], buf2[32], buf3[32];
     sprintf(tag, "f%d", figure->getId());
-    cPolygonFigure *polygonFigure = (cPolygonFigure*)figure;
+    cPolygonFigure *polygonFigure = check_and_cast<cPolygonFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
             " -fill ", (polygonFigure->isFilled() ? color(polygonFigure->getFillColor(), buf1) : "\"\""),
             " -outline ", (polygonFigure->isOutlined() ? color(polygonFigure->getLineColor(), buf2) : "\"\""),
@@ -504,7 +504,7 @@ void TextFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char 
 {
     char tag[32], buf1[32], buf2[32];
     sprintf(tag, "f%d", figure->getId());
-    cTextFigure *textFigure = (cTextFigure*)figure;
+    cTextFigure *textFigure = check_and_cast<cTextFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " create text ",
             point(textFigure->getPos(), mapping, buf1),
             " -text ", TclQuotedString(textFigure->getText()).get(),
@@ -519,7 +519,7 @@ void TextFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, co
 {
     char tag[32], buf1[32];
     sprintf(tag, "f%d", figure->getId());
-    cTextFigure *textFigure = (cTextFigure*)figure;
+    cTextFigure *textFigure = check_and_cast<cTextFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
             point(textFigure->getPos(), mapping, buf1), NULL));
 }
@@ -528,7 +528,7 @@ void TextFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, con
 {
     char tag[32], buf1[32];
     sprintf(tag, "f%d", figure->getId());
-    cTextFigure *textFigure = (cTextFigure*)figure;
+    cTextFigure *textFigure = check_and_cast<cTextFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
             " -text ", TclQuotedString(textFigure->getText()).get(),
             " -fill ", color(textFigure->getColor(), buf1),

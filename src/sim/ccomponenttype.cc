@@ -342,7 +342,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
 
     // initialize canvas
     if (cCanvas::containsCanvasItems(mod->getProperties()))
-        mod->getCanvas()->addLayersAndFiguresFrom(mod->getProperties());
+        mod->getCanvas()->addFiguresFrom(mod->getProperties());
 
     // notify envir
     ev.configure(mod);

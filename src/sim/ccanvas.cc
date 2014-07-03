@@ -387,16 +387,8 @@ cFigure *cFigure::getFigureByPath(const char *path)
             ; /*skip empty path component*/
         else if (token[0] == '^' && token[1] == '\0')
             figure = figure->getParentFigure();
-        else {
-            cFigure *child = figure->getChildFigure(token);
-            if (!isRelative && figure == rootFigure && !child) {
-                // try as child of the default layer
-                cFigure *defaultLayer = figure->getChildFigure("default");
-                if (defaultLayer)
-                    child = defaultLayer->getChildFigure(token);
-            }
-            figure = child;
-        }
+        else
+            figure = figure->getChildFigure(token);
         token = nextToken(rest);
     }
     return figure;  // NULL if not found
@@ -416,18 +408,6 @@ void cFigure::clearChangeFlags()
         for (int i = 0; i < (int)children.size(); i++)
             children[i]->clearChangeFlags();
     localChange = treeChange = 0;
-}
-
-std::string cLayer::info() const
-{
-    return "";
-}
-
-void cLayer::translate(double x, double y)
-{
-    loc.x += x;
-    loc.y += y;
-    doGeometryChange();
 }
 
 std::string cGroupFigure::info() const
@@ -750,42 +730,9 @@ void cImageFigure::translate(double x, double y)
 
 //------
 
-void cCanvas::cLayerContainerFigure::translate(double x, double y)
-{
-    throw cRuntimeError(this, "translate(): illegal operation");
-}
-
-const cFigure::Point& cCanvas::cLayerContainerFigure::getLocation() const
-{
-    static Point dummy;
-    return dummy;
-}
-
-void cCanvas::cLayerContainerFigure::setLocation(const Point& loc)
-{
-    throw cRuntimeError(this, "setLocation(): illegal operation");
-}
-
-void cCanvas::cLayerContainerFigure::addChildFigure(cFigure *figure)
-{
-    if (!dynamic_cast<cLayer*>(figure))
-        throw cRuntimeError(this, "addChild(): %s cannot be added, only cLayers", figure->getClassName());
-    cFigure::addChildFigure(figure);
-}
-
-void cCanvas::cLayerContainerFigure::addChildFigure(cFigure *figure, int pos)
-{
-    if (!dynamic_cast<cLayer*>(figure))
-        throw cRuntimeError(this, "addChild(): %s cannot be added, only cLayers", figure->getClassName());
-    cFigure::addChildFigure(figure, pos);
-}
-
-//------
-
 cCanvas::cCanvas(const char *name) : cOwnedObject(name)
 {
-    rootFigure = new cLayerContainerFigure("rootFigure");
-    rootFigure->addChildFigure(new cLayer("default"));
+    rootFigure = new cGroupFigure("rootFigure");
     take(rootFigure);
 }
 
@@ -796,7 +743,6 @@ cCanvas::~cCanvas()
 
 void cCanvas::forEachChild(cVisitor *v)
 {
-    //v->visit(rootFigure);
     rootFigure->forEachChild(v); // skip the root figure from the tree
 }
 
@@ -810,44 +756,22 @@ bool cCanvas::containsCanvasItems(cProperties *properties)
     for (int i = 0; i < properties->getNumProperties(); i++)
     {
         cProperty *property = properties->get(i);
-        if (property->isName("layer") || property->isName("figure"))
+        if (property->isName("figure"))
             return true;
     }
     return false;
 }
 
-void cCanvas::addLayersAndFiguresFrom(cProperties *properties)
+void cCanvas::addFiguresFrom(cProperties *properties)
 {
     std::map<cFigure*,double> orderMap;
 
-    // parse @layers first, then @figures
-    for (int i = 0; i < properties->getNumProperties(); i++)
-    {
-        cProperty *property = properties->get(i);
-        if (property->isName("layer"))
-            parseLayer(property, orderMap);
-    }
+    //TODO currently fails with "parent not found" if child figure precedes parent in the property order
     for (int i = 0; i < properties->getNumProperties(); i++)
     {
         cProperty *property = properties->get(i);
         if (property->isName("figure"))
             parseFigure(property, orderMap);
-    }
-}
-
-void cCanvas::parseLayer(cProperty *property, std::map<cFigure*,double>& orderMap)
-{
-    const char *name = property->getIndex();
-    if (getToplevelLayerByName(name) == NULL) {
-        cLayer *layer = new cLayer();
-        layer->setName(name);
-        const char *description = property->getValue("description");
-        if (description)
-            layer->setDescription(description);
-        const char *order = property->getValue("z");  //XXX better name! localZ?
-        if (order)
-            orderMap[layer] = opp_atof(order);
-        rootFigure->insertChild(layer, orderMap);
     }
 }
 
@@ -868,7 +792,7 @@ void cCanvas::parseFigure(cProperty *property, std::map<cFigure*,double>& orderM
             name = lastDot+1;
         }
         else {
-            parent = getDefaultLayer();
+            parent = rootFigure;
             name = path;
         }
         if (!name[0])
@@ -880,7 +804,7 @@ void cCanvas::parseFigure(cProperty *property, std::map<cFigure*,double>& orderM
             const char *type = property->getValue("type");
             figure = createFigure(type);
             figure->setName(name);
-            const char *order = property->getValue("z");  //XXX better name! localZ?
+            const char *order = property->getValue("childZ");
             if (order)
                 orderMap[figure] = opp_atof(order);
             parent->insertChild(figure, orderMap);
@@ -933,44 +857,9 @@ cFigure *cCanvas::createFigure(const char *type)
     return figure;
 }
 
-cFigure *cCanvas::findFigureByName(const char *name)
+cFigure *cCanvas::getSubmodulesLayer() const
 {
-    return rootFigure->findFigureByName(name);
-}
-
-cFigure *cCanvas::getFigureByPath(const char *path)
-{
-    return rootFigure->getFigureByPath(path);
-}
-
-void cCanvas::addToplevelLayer(cLayer *layer)
-{
-    rootFigure->addChildFigure(layer);
-}
-
-cLayer *cCanvas::removeToplevelLayer(cLayer *layer)
-{
-    if (layer->getParentFigure() != rootFigure)
-        throw cRuntimeError("cCanvas::removeToplevelLayer(): layer is not a toplevel layer in this canvas");
-    return (cLayer *)rootFigure->removeChildFigure(layer);
-}
-
-cLayer *cCanvas::getToplevelLayerByName(const char *name)
-{
-    return (cLayer *)rootFigure->getChildFigure(name);
-}
-
-cLayer *cCanvas::getDefaultLayer() const
-{
-    cLayer *layer = (cLayer *)rootFigure->getChildFigure("default");
-    if (!layer)
-        throw cRuntimeError("cCanvas::getDefaultLayer(): no toplevel layer named 'default' in this canvas");
-    return layer;
-}
-
-cLayer *cCanvas::getSubmodulesLayer() const
-{
-    return (cLayer *)rootFigure->getChildFigure("submodules");
+    return rootFigure->getChildFigure("submodules");
 }
 
 //--------------------------------------

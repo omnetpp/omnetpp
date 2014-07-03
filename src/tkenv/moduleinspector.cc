@@ -648,7 +648,7 @@ void ModuleInspector::redrawFigures()
        drawFigureRec(canvas->getRootFigure(), mapping);
 
        char tag[32];
-       cLayer *submodulesLayer = canvas->getSubmodulesLayer();
+       cFigure *submodulesLayer = canvas->getSubmodulesLayer();
        ASSERT(submodulesLayer); // should be present!
        sprintf(tag, "f%d", submodulesLayer->getId());
        CHK(Tcl_VarEval(interp, this->canvas, " lower submodext ", tag, NULL));

@@ -21,13 +21,13 @@ void ArrangeFigures::initialize()
         cProperty *property = properties->get(i);
         if (property->isName("figure")) {
             const char *name = property->getIndex();
-            cFigure *figure = canvas->getDefaultLayer()->getChildFigure(name);
+            cFigure *figure = canvas->getFigure(name);
             ASSERT(figure!=NULL);
             figure->translate(0.0, dy);
             cTextFigure *label = new cTextFigure();
             label->setText(property->info().c_str());
             label->setPos(cFigure::Point(210, dy));
-            canvas->getDefaultLayer()->addChildFigure(label);
+            canvas->addFigure(label);
             dy += 20;
         }
     }
