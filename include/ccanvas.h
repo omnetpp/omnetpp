@@ -26,10 +26,11 @@ class cProperties;
 
 #define OMNETPP_CANVAS_VERSION  0x20140702  //XXX identifies canvas code version until API stabilizes
 
-//TODO dup()/op=, color names, moveBelow/moveAbove
+//TODO color names, moveBelow/moveAbove; clean up submoduleLayer stuff: use @figure[submodules](type=group) instead of explicitly adding one!; childZ=...
 
 /**
- * TODO
+ * TODO document.
+ * Note: dup() makes shallow copy (doesn't copy child figures)
  */
 class SIM_API cFigure : public cOwnedObject
 {
@@ -116,11 +117,17 @@ class SIM_API cFigure : public cOwnedObject
         int64 getTagBits() const {return tagBits;}
         void setTagBits(uint64 tagBits) {this->tagBits = tagBits;}
 
+    private:
+        void copy(const cFigure& other);
+
     public:
         cFigure(const char *name=NULL) : cOwnedObject(name), id(++lastId), visible(true), tagBits(0), localChange(0), treeChange(0) {}
+        cFigure(const cFigure& other) : cOwnedObject(other) {copy(other);}
+        cFigure& operator=(const cFigure& other);
         virtual void forEachChild(cVisitor *v);
         virtual std::string info() const;
         virtual void parse(cProperty *property);
+        virtual cFigure *dupTree();
         virtual const char *getClassNameForRenderer() const {return getClassName();} // denotes renderer of which figure class to use; override if you want to subclass a figure while reusing renderer of the base class
 
         int getId() const {return id;}
@@ -151,8 +158,13 @@ class SIM_API cGroupFigure : public cFigure
 {
     private:
         Point loc;
+    private:
+        void copy(const cGroupFigure& other);
     public:
         cGroupFigure(const char *name=NULL) : cFigure(name) {}
+        cGroupFigure(const cGroupFigure& other) : cFigure(other) {copy(other);}
+        cGroupFigure& operator=(const cGroupFigure& other);
+        virtual cGroupFigure *dup() const  {return new cGroupFigure(*this);}
         virtual std::string info() const;
         virtual const char *getClassNameForRenderer() const {return "";} // non-visual figure
         virtual void translate(double x, double y);
@@ -167,8 +179,12 @@ class SIM_API cAbstractLineFigure : public cFigure
         LineStyle lineStyle;
         int lineWidth;
         ArrowHead startArrowHead, endArrowHead;
+    private:
+        void copy(const cAbstractLineFigure& other);
     public:
         cAbstractLineFigure(const char *name=NULL) : cFigure(name), lineColor(BLACK), lineStyle(LINE_SOLID), lineWidth(1), startArrowHead(ARROW_NONE), endArrowHead(ARROW_NONE) {}
+        cAbstractLineFigure(const cAbstractLineFigure& other) : cFigure(other) {copy(other);}
+        cAbstractLineFigure& operator=(const cAbstractLineFigure& other);
         virtual std::string info() const;
         virtual void parse(cProperty *property);
         virtual const Color& getLineColor() const  {return lineColor;}
@@ -188,9 +204,14 @@ class SIM_API cLineFigure : public cAbstractLineFigure
 {
     private:
         Point start, end;
-        CapStyle capStyle;
+        CapStyle capStyle;  //TODO maybe into AbstractLineStyle?
+    private:
+        void copy(const cLineFigure& other);
     public:
         cLineFigure(const char *name=NULL) : cAbstractLineFigure(name), capStyle(CAP_BUTT) {}
+        cLineFigure(const cLineFigure& other) : cAbstractLineFigure(other) {copy(other);}
+        cLineFigure& operator=(const cLineFigure& other);
+        virtual cLineFigure *dup() const  {return new cLineFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
         virtual const Point& getLocation() const  {return start;}
@@ -209,8 +230,13 @@ class SIM_API cArcFigure : public cAbstractLineFigure
     private:
         Point p1, p2; // bounding box of the oval that arc is part of
         double startAngle, endAngle; // in degrees, CCW, 0=east
+    private:
+        void copy(const cArcFigure& other);
     public:
         cArcFigure(const char *name=NULL) : cAbstractLineFigure(name), startAngle(0), endAngle(0) {}
+        cArcFigure(const cArcFigure& other) : cAbstractLineFigure(other) {copy(other);}
+        cArcFigure& operator=(const cArcFigure& other);
+        virtual cArcFigure *dup() const  {return new cArcFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
         virtual const Point& getLocation() const  {return p1;}
@@ -233,8 +259,13 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
         bool smooth;
         CapStyle capStyle;
         JoinStyle joinStyle;
+    private:
+        void copy(const cPolylineFigure& other);
     public:
         cPolylineFigure(const char *name=NULL) : cAbstractLineFigure(name), smooth(false), capStyle(CAP_BUTT), joinStyle(JOIN_MITER) {}
+        cPolylineFigure(const cPolylineFigure& other) : cAbstractLineFigure(other) {copy(other);}
+        cPolylineFigure& operator=(const cPolylineFigure& other);
+        virtual cPolylineFigure *dup() const  {return new cPolylineFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
         virtual const Point& getLocation() const  {static Point dummy; return points.empty() ? dummy : points[0];}
@@ -260,8 +291,12 @@ class SIM_API cAbstractShapeFigure : public cFigure
         Color fillColor;
         LineStyle lineStyle;
         int lineWidth;
+    private:
+        void copy(const cAbstractShapeFigure& other);
     public:
         cAbstractShapeFigure(const char *name=NULL) : cFigure(name), outlined(true), filled(false), lineColor(BLACK), fillColor(BLUE), lineStyle(LINE_SOLID), lineWidth(1) {}
+        cAbstractShapeFigure(const cAbstractShapeFigure& other) : cFigure(other) {copy(other);}
+        cAbstractShapeFigure& operator=(const cAbstractShapeFigure& other);
         virtual std::string info() const;
         virtual void parse(cProperty *property);
         virtual bool isFilled() const  {return filled;}
@@ -282,8 +317,13 @@ class SIM_API cRectangleFigure : public cAbstractShapeFigure
 {
     private:
         Point p1, p2;
+    private:
+        void copy(const cRectangleFigure& other);
     public:
         cRectangleFigure(const char *name=NULL) : cAbstractShapeFigure(name) {}
+        cRectangleFigure(const cRectangleFigure& other) : cAbstractShapeFigure(other) {copy(other);}
+        cRectangleFigure& operator=(const cRectangleFigure& other);
+        virtual cRectangleFigure *dup() const  {return new cRectangleFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
         virtual const Point& getLocation() const  {return p1;}
@@ -298,8 +338,13 @@ class SIM_API cOvalFigure : public cAbstractShapeFigure
 {
     private:
         Point p1, p2; // bounding box
+    private:
+        void copy(const cOvalFigure& other);
     public:
         cOvalFigure(const char *name=NULL) : cAbstractShapeFigure(name) {}
+        cOvalFigure(const cOvalFigure& other) : cAbstractShapeFigure(other) {copy(other);}
+        cOvalFigure& operator=(const cOvalFigure& other);
+        virtual cOvalFigure *dup() const  {return new cOvalFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
         virtual const Point& getLocation() const  {return p1;}
@@ -315,8 +360,13 @@ class SIM_API cPieSliceFigure : public cAbstractShapeFigure
     private:
         Point p1, p2; // bounding box of oval
         double startAngle, endAngle; // in degrees, CCW, 0=east
+    private:
+        void copy(const cPieSliceFigure& other);
     public:
         cPieSliceFigure(const char *name=NULL) : cAbstractShapeFigure(name), startAngle(0), endAngle(45) {}
+        cPieSliceFigure(const cPieSliceFigure& other) : cAbstractShapeFigure(other) {copy(other);}
+        cPieSliceFigure& operator=(const cPieSliceFigure& other);
+        virtual cPieSliceFigure *dup() const  {return new cPieSliceFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
         virtual const Point& getLocation() const  {return p1;}
@@ -337,8 +387,13 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
         std::vector<Point> points;
         bool smooth;
         JoinStyle joinStyle;
+    private:
+        void copy(const cPolygonFigure& other);
     public:
         cPolygonFigure(const char *name=NULL) : cAbstractShapeFigure(name), smooth(false), joinStyle(JOIN_MITER) {}
+        cPolygonFigure(const cPolygonFigure& other) : cAbstractShapeFigure(other) {copy(other);}
+        cPolygonFigure& operator=(const cPolygonFigure& other);
+        virtual cPolygonFigure *dup() const  {return new cPolygonFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
         virtual const Point& getLocation() const  {static Point dummy; return points.empty() ? dummy : points[0];}
@@ -362,13 +417,18 @@ class SIM_API cTextFigure : public cFigure
         std::string text;
         Anchor anchor;
         Alignment alignment;
+    private:
+        void copy(const cTextFigure& other);
     public:
         cTextFigure(const char *name=NULL) : cFigure(name), color(BLACK), anchor(ANCHOR_NW), alignment(ALIGN_LEFT) {}
+        cTextFigure(const cTextFigure& other) : cFigure(other) {copy(other);}
+        cTextFigure& operator=(const cTextFigure& other);
+        virtual cTextFigure *dup() const  {return new cTextFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
         virtual const Point& getLocation() const  {return pos;}
         virtual void translate(double x, double y);
-        virtual const Point& getPos() const  {return pos;}
+        virtual const Point& getPos() const  {return pos;}  //TODO naming?
         virtual void setPos(const Point& pos)  {this->pos = pos; doGeometryChange();}
         virtual const Color& getColor() const  {return color;}
         virtual void setColor(const Color& color)  {this->color = color; doVisualChange();}
@@ -391,7 +451,12 @@ class SIM_API cImageFigure : public cFigure
         Color color;
         int colorization;
         Anchor anchor;
+    private:
+        void copy(const cImageFigure& other);
     public:
+        cImageFigure(const cImageFigure& other) : cFigure(other) {copy(other);}
+        cImageFigure& operator=(const cImageFigure& other);
+        virtual cImageFigure *dup() const  {return new cImageFigure(*this);}
         cImageFigure(const char *name=NULL) : cFigure(name), color(BLUE), colorization(0), anchor(ANCHOR_CENTER) {}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
@@ -411,7 +476,8 @@ class SIM_API cImageFigure : public cFigure
 
 
 /**
- * TODO
+ * TODO document
+ * Note: dup() makes deep copy (figure tree too)
  */
 class SIM_API cCanvas : public cOwnedObject
 {
@@ -426,8 +492,13 @@ class SIM_API cCanvas : public cOwnedObject
         static bool containsCanvasItems(cProperties *properties);
         virtual void addFiguresFrom(cProperties *properties);
         virtual uint64 parseTags(const char *s);
+    private:
+        void copy(const cCanvas& other);
     public:
         cCanvas(const char *name = NULL);
+        cCanvas(const cCanvas& other) : cOwnedObject(other) {copy(other);}
+        cCanvas& operator=(const cCanvas& other);
+        virtual cCanvas *dup() const  {return new cCanvas(*this);}
         virtual ~cCanvas();
         virtual void forEachChild(cVisitor *v);
         virtual std::string info() const;
@@ -453,4 +524,5 @@ NAMESPACE_END
 
 
 #endif
+
 

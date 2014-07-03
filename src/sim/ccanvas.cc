@@ -226,6 +226,28 @@ void cFigure::parse(cProperty *property)
     }
 }
 
+cFigure *cFigure::dupTree()
+{
+    cFigure *result = (cFigure *) dup();
+    for (int i = 0; i < (int)children.size(); i++)
+        result->addChildFigure(children[i]->dupTree());
+    return result;
+}
+
+void cFigure::copy(const cFigure& other)
+{
+    setVisible(other.isVisible());
+    setTags(other.getTags());
+}
+
+cFigure& cFigure::operator=(const cFigure& other)
+{
+    if (this == &other) return *this;
+    cOwnedObject::operator=(other);
+    copy(other);
+    return *this;
+}
+
 void cFigure::forEachChild(cVisitor *v)
 {
     for (int i = 0; i < (int)children.size(); i++)
@@ -411,9 +433,11 @@ void cFigure::refreshTagBits()
 
 void cFigure::doChange(int flags)
 {
-    localChange |= flags;
-    for (cFigure *figure = getParentFigure(); figure != NULL; figure = figure->getParentFigure())
-        figure->treeChange |= flags;
+    if ((localChange & flags) == 0) {  // not yet set
+        localChange |= flags;
+        for (cFigure *figure = getParentFigure(); figure != NULL; figure = figure->getParentFigure())
+            figure->treeChange |= flags;
+    }
 }
 
 void cFigure::clearChangeFlags()
@@ -422,6 +446,21 @@ void cFigure::clearChangeFlags()
         for (int i = 0; i < (int)children.size(); i++)
             children[i]->clearChangeFlags();
     localChange = treeChange = 0;
+}
+
+//----
+
+void cGroupFigure::copy(const cGroupFigure& other)
+{
+    setLocation(other.getLocation());
+}
+
+cGroupFigure& cGroupFigure::operator=(const cGroupFigure& other)
+{
+    if (this == &other) return *this;
+    cFigure::operator=(other);
+    copy(other);
+    return *this;
 }
 
 std::string cGroupFigure::info() const
@@ -434,6 +473,25 @@ void cGroupFigure::translate(double x, double y)
     loc.x += x;
     loc.y += y;
     doGeometryChange();
+}
+
+//----
+
+void cAbstractLineFigure::copy(const cAbstractLineFigure& other)
+{
+    setLineColor(other.getLineColor());
+    setLineStyle(other.getLineStyle());
+    setLineWidth(other.getLineWidth());
+    setStartArrowHead(other.getStartArrowHead());
+    setEndArrowHead(other.getEndArrowHead());
+}
+
+cAbstractLineFigure& cAbstractLineFigure::operator=(const cAbstractLineFigure& other)
+{
+    if (this == &other) return *this;
+    cFigure::operator=(other);
+    copy(other);
+    return *this;
 }
 
 std::string cAbstractLineFigure::info() const
@@ -455,6 +513,23 @@ void cAbstractLineFigure::parse(cProperty *property)
         setStartArrowHead(parseArrowHead(s));
     if ((s = property->getValue("endArrowhead")) != NULL)
         setEndArrowHead(parseArrowHead(s));
+}
+
+//----
+
+void cLineFigure::copy(const cLineFigure& other)
+{
+    setStart(other.getStart());
+    setEnd(other.getEnd());
+    setCapStyle(other.getCapStyle());
+}
+
+cLineFigure& cLineFigure::operator=(const cLineFigure& other)
+{
+    if (this == &other) return *this;
+    cAbstractLineFigure::operator=(other);
+    copy(other);
+    return *this;
 }
 
 std::string cLineFigure::info() const
@@ -482,6 +557,24 @@ void cLineFigure::translate(double x, double y)
     end.x += x;
     end.y += y;
     doGeometryChange();
+}
+
+//----
+
+void cArcFigure::copy(const cArcFigure& other)
+{
+    setP1(other.getP1());
+    setP2(other.getP2());
+    setStartAngle(other.getStartAngle());
+    setEndAngle(other.getEndAngle());
+}
+
+cArcFigure& cArcFigure::operator=(const cArcFigure& other)
+{
+    if (this == &other) return *this;
+    cAbstractLineFigure::operator=(other);
+    copy(other);
+    return *this;
 }
 
 std::string cArcFigure::info() const
@@ -512,6 +605,24 @@ void cArcFigure::translate(double x, double y)
     p2.x += x;
     p2.y += y;
     doGeometryChange();
+}
+
+//----
+
+void cPolylineFigure::copy(const cPolylineFigure& other)
+{
+    setPoints(other.getPoints());
+    setSmooth(other.getSmooth());
+    setCapStyle(other.getCapStyle());
+    setJoinStyle(other.getJoinStyle());
+}
+
+cPolylineFigure& cPolylineFigure::operator=(const cPolylineFigure& other)
+{
+    if (this == &other) return *this;
+    cAbstractLineFigure::operator=(other);
+    copy(other);
+    return *this;
 }
 
 std::string cPolylineFigure::info() const
@@ -545,6 +656,26 @@ void cPolylineFigure::translate(double x, double y)
     doGeometryChange();
 }
 
+//----
+
+void cAbstractShapeFigure::copy(const cAbstractShapeFigure& other)
+{
+    setOutlined(other.isOutlined());
+    setFilled(other.isFilled());
+    setLineColor(other.getLineColor());
+    setFillColor(other.getFillColor());
+    setLineStyle(other.getLineStyle());
+    setLineWidth(other.getLineWidth());
+}
+
+cAbstractShapeFigure& cAbstractShapeFigure::operator=(const cAbstractShapeFigure& other)
+{
+    if (this == &other) return *this;
+    cFigure::operator=(other);
+    copy(other);
+    return *this;
+}
+
 std::string cAbstractShapeFigure::info() const
 {
     return ""; //TODO
@@ -565,6 +696,22 @@ void cAbstractShapeFigure::parse(cProperty *property)
         setLineStyle(parseLineStyle(s));
     if ((s = property->getValue("lineWidth")) != NULL)
         setLineWidth(opp_atol(s));
+}
+
+//----
+
+void cRectangleFigure::copy(const cRectangleFigure& other)
+{
+    setP1(other.getP1());
+    setP2(other.getP2());
+}
+
+cRectangleFigure& cRectangleFigure::operator=(const cRectangleFigure& other)
+{
+    if (this == &other) return *this;
+    cAbstractShapeFigure::operator=(other);
+    copy(other);
+    return *this;
 }
 
 std::string cRectangleFigure::info() const
@@ -593,6 +740,22 @@ void cRectangleFigure::translate(double x, double y)
     doGeometryChange();
 }
 
+//----
+
+void cOvalFigure::copy(const cOvalFigure& other)
+{
+    setP1(other.getP1());
+    setP2(other.getP2());
+}
+
+cOvalFigure& cOvalFigure::operator=(const cOvalFigure& other)
+{
+    if (this == &other) return *this;
+    cAbstractShapeFigure::operator=(other);
+    copy(other);
+    return *this;
+}
+
 std::string cOvalFigure::info() const
 {
     std::stringstream os;
@@ -617,6 +780,24 @@ void cOvalFigure::translate(double x, double y)
     p2.x += x;
     p2.y += y;
     doGeometryChange();
+}
+
+//----
+
+void cPieSliceFigure::copy(const cPieSliceFigure& other)
+{
+    setP1(other.getP1());
+    setP2(other.getP2());
+    setStartAngle(other.getStartAngle());
+    setEndAngle(other.getEndAngle());
+}
+
+cPieSliceFigure& cPieSliceFigure::operator=(const cPieSliceFigure& other)
+{
+    if (this == &other) return *this;
+    cAbstractShapeFigure::operator=(other);
+    copy(other);
+    return *this;
 }
 
 std::string cPieSliceFigure::info() const
@@ -651,6 +832,23 @@ void cPieSliceFigure::translate(double x, double y)
     doGeometryChange();
 }
 
+//----
+
+void cPolygonFigure::copy(const cPolygonFigure& other)
+{
+    setPoints(other.getPoints());
+    setSmooth(other.getSmooth());
+    setJoinStyle(other.getJoinStyle());
+}
+
+cPolygonFigure& cPolygonFigure::operator=(const cPolygonFigure& other)
+{
+    if (this == &other) return *this;
+    cAbstractShapeFigure::operator=(other);
+    copy(other);
+    return *this;
+}
+
 std::string cPolygonFigure::info() const
 {
     std::stringstream os;
@@ -678,6 +876,27 @@ void cPolygonFigure::translate(double x, double y)
         points[i].y += y;
     }
     doGeometryChange();
+}
+
+//----
+
+void cTextFigure::copy(const cTextFigure& other)
+{
+    setPos(other.getPos());
+    setColor(other.getColor());
+    setFont(other.getFont());
+    setText(other.getText());
+    setAnchor(other.getAnchor());
+    Alignment alignment;
+    setAlignment(other.getAlignment());
+}
+
+cTextFigure& cTextFigure::operator=(const cTextFigure& other)
+{
+    if (this == &other) return *this;
+    cFigure::operator=(other);
+    copy(other);
+    return *this;
 }
 
 std::string cTextFigure::info() const
@@ -709,6 +928,25 @@ void cTextFigure::translate(double x, double y)
     pos.x += x;
     pos.y += y;
     doGeometryChange();
+}
+
+//----
+
+void cImageFigure::copy(const cImageFigure& other)
+{
+    setPos(other.getPos());
+    setImageName(other.getImageName());
+    setColor(other.getColor());
+    setColorization(other.getColorization());
+    setAnchor(other.getAnchor());
+}
+
+cImageFigure& cImageFigure::operator=(const cImageFigure& other)
+{
+    if (this == &other) return *this;
+    cFigure::operator=(other);
+    copy(other);
+    return *this;
 }
 
 std::string cImageFigure::info() const
@@ -753,6 +991,22 @@ cCanvas::cCanvas(const char *name) : cOwnedObject(name)
 cCanvas::~cCanvas()
 {
     dropAndDelete(rootFigure);
+}
+
+void cCanvas::copy(const cCanvas& other)
+{
+    dropAndDelete(rootFigure);
+    tagBitIndex.clear();
+    rootFigure = other.getRootFigure()->dupTree();
+    take(rootFigure);
+}
+
+cCanvas& cCanvas::operator=(const cCanvas& other)
+{
+    if (this == &other) return *this;
+    cOwnedObject::operator=(other);
+    copy(other);
+    return *this;
 }
 
 void cCanvas::forEachChild(cVisitor *v)
