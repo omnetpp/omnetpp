@@ -83,7 +83,8 @@ inline std::ostream& operator<<(std::ostream& os, const cFigure::Color& c) {
 }
 
 typedef cFigure::Font Font;
-inline std::ostream& operator<<(std::ostream& os, const cFigure::Font& f) {
+static std::ostream& operator<<(std::ostream& os, const cFigure::Font& f)
+{
     os << "(" << (f.typeface.empty()? "<default>" : f.typeface) << ", ";
     os << (int)f.pointSize << " pt";
     if (!f.style)
@@ -95,6 +96,19 @@ inline std::ostream& operator<<(std::ostream& os, const cFigure::Font& f) {
         if (f.style & cFigure::FONT_UNDERLINE)  os << " underline";
     }
     os << ")";
+    return os;
+}
+
+typedef std::vector<std::string> StringVector;
+
+static std::ostream& operator<<(std::ostream& os, const std::vector<std::string>& v)
+{
+    os << "[";
+    for (int i = 0; i < (int)v.size(); i++) {
+        if (i > 0) os << ", ";
+        os << v[i];
+    }
+    os << "]";
     return os;
 }
 
@@ -121,6 +135,8 @@ struct cDensityEstBase_Cell;
 struct Point;
 struct Color;
 struct Font;
+
+class noncobject StringVector;
 
 class cObject
 {
@@ -577,7 +593,7 @@ class cFigure extends cOwnedObject
 {
     int id;
     bool visible @getter(isVisible);
-    string tags[] @getter(getTag) @sizeGetter(getNumTags);
+    string tags;
     cFigure *children[] @getter(getChildFigure) @sizeGetter(getNumChildFigures);
 }
 
@@ -677,6 +693,7 @@ class cImageFigure extends cFigure
 class cCanvas extends cOwnedObject
 {
     cFigure *rootFigure;
+    StringVector allTags;
 }
 
 

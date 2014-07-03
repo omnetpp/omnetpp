@@ -26,7 +26,7 @@ class cProperties;
 
 #define OMNETPP_CANVAS_VERSION  0x20140702  //XXX identifies canvas code version until API stabilizes
 
-//TODO dup()/op=, color names
+//TODO dup()/op=, color names, moveBelow/moveAbove
 
 /**
  * TODO
@@ -79,8 +79,9 @@ class SIM_API cFigure : public cOwnedObject
         static int lastId;
         int id;
         bool visible; // treated as structural change, for simpler handing
-        std::vector<std::string> tags; //TODO stringpool
         std::vector<cFigure*> children;
+        opp_string tags; //TODO stringpool
+        uint64 tagBits;  // bit-to-tagname mapping is stored in cCanvas. Note: change to std::bitset if 64 tags are not enough
 
         int8_t localChange;
         int8_t treeChange;
@@ -110,9 +111,13 @@ class SIM_API cFigure : public cOwnedObject
         int getTreeChangeFlags() const {return treeChange;}
         void clearChangeFlags();
         void insertChild(cFigure *figure, std::map<cFigure*,double>& orderMap);
+        void refreshTagBits();
+        void refreshTagBitsRec();
+        int64 getTagBits() const {return tagBits;}
+        void setTagBits(uint64 tagBits) {this->tagBits = tagBits;}
 
     public:
-        cFigure(const char *name=NULL) : cOwnedObject(name), id(++lastId), visible(true), localChange(0), treeChange(0) {}
+        cFigure(const char *name=NULL) : cOwnedObject(name), id(++lastId), visible(true), tagBits(0), localChange(0), treeChange(0) {}
         virtual void forEachChild(cVisitor *v);
         virtual std::string info() const;
         virtual void parse(cProperty *property);
@@ -124,10 +129,8 @@ class SIM_API cFigure : public cOwnedObject
         virtual cCanvas *getCanvas();
         virtual bool isVisible() const {return visible;}
         virtual void setVisible(bool visible) {this->visible = visible; doStructuralChange();}
-        virtual const std::vector<std::string>& getTags() const {return tags;}
-        virtual void setTags(const std::vector<std::string>& tags) {this->tags = tags;}
-        virtual int getNumTags() const {return tags.size();}
-        virtual const char *getTag(int i) const {return tags[i].c_str();}
+        virtual const char *getTags() const {return tags.c_str();}
+        virtual void setTags(const char *tags) {this->tags = tags; refreshTagBits();}
 
         virtual void addChildFigure(cFigure *figure);
         virtual void addChildFigure(cFigure *figure, int pos);
@@ -414,6 +417,7 @@ class SIM_API cCanvas : public cOwnedObject
 {
     private:
         cFigure *rootFigure;
+        std::map<std::string,int> tagBitIndex;  // tag-to-bitindex
     protected:
         virtual void parseFigure(cProperty *property, std::map<cFigure*,double>& orderMap);
         virtual cFigure *createFigure(const char *type);
@@ -421,6 +425,7 @@ class SIM_API cCanvas : public cOwnedObject
         // internal:
         static bool containsCanvasItems(cProperties *properties);
         virtual void addFiguresFrom(cProperties *properties);
+        virtual uint64 parseTags(const char *s);
     public:
         cCanvas(const char *name = NULL);
         virtual ~cCanvas();
@@ -441,6 +446,7 @@ class SIM_API cCanvas : public cOwnedObject
         virtual cFigure *findFigureByName(const char *name) {return rootFigure->findFigureByName(name);}
         virtual cFigure *getFigureByPath(const char *path) {return rootFigure->getFigureByPath(path);}
         virtual cFigure *getSubmodulesLayer() const; // may return NULL (extra canvases don't have submodules)
+        virtual std::vector<std::string> getAllTags() const;
 };
 
 NAMESPACE_END

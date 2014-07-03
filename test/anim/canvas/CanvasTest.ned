@@ -8,5 +8,6 @@ network CanvasTest
         group: Group     { @display("p=500,50"); }
         animate: Animate { @display("p=600,50"); }
         zOrder: ZOrder   { @display("p=700,50"); }
+        tags: Tags       { @display("p=800,50"); }
 }
 

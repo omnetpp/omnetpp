@@ -72,7 +72,8 @@ void cFigure::parseBoundingBox(cProperty *property, Point& p1, Point& p2)
     {
         Point p = parsePoint(property, "coords", 0);
         Point size = parsePoint(property, "size", 0);
-        Anchor anchor = parseAnchor(property->getValue("anchor"));
+        const char *anchorStr = property->getValue("anchor");
+        Anchor anchor = opp_isblank(anchorStr) ? cFigure::ANCHOR_NW : parseAnchor(anchorStr);
         switch (anchor) {
             case cFigure::ANCHOR_CENTER:
                 p1.x = p.x - size.x/2; p1.y = p.y - size.y/2;
@@ -216,12 +217,12 @@ void cFigure::parse(cProperty *property)
     const char *s;
     if ((s = property->getValue("visible")) != NULL)
         setVisible(parseBool(s));
-    int numTags = property->getNumValues("tag");
+    int numTags = property->getNumValues("tags");
     if (numTags > 0) {
-        std::vector<std::string> tags;
+        std::string tags;
         for (int i = 0; i < numTags; i++)
-            tags.push_back(property->getValue("tag", i));
-        setTags(tags);
+            tags += std::string(" ") + property->getValue("tags", i);
+        setTags(tags.c_str());
     }
 }
 
@@ -242,6 +243,8 @@ void cFigure::addChildFigure(cFigure *figure)
         throw cRuntimeError(this, "addChild(): cannot insert NULL pointer");
     take(figure);
     children.push_back(figure);
+    refreshTagBits();
+    doStructuralChange();
 }
 
 void cFigure::addChildFigure(cFigure *figure, int pos)
@@ -252,6 +255,7 @@ void cFigure::addChildFigure(cFigure *figure, int pos)
         throw cRuntimeError(this,"addChild(): insert position %d out of bounds", pos);
     take(figure);
     children.insert(children.begin()+pos, figure);
+    refreshTagBits();
     doStructuralChange();
 }
 
@@ -275,6 +279,7 @@ void cFigure::insertChild(cFigure *figure, std::map<cFigure*,double>& orderMap)
     take(figure);
     std::vector<cFigure*>::iterator it = std::upper_bound(children.begin(), children.end(), figure, LessZ(orderMap));
     children.insert(it, figure);
+    refreshTagBits();
     doStructuralChange();
 }
 
@@ -394,6 +399,15 @@ cFigure *cFigure::getFigureByPath(const char *path)
     return figure;  // NULL if not found
 }
 
+void cFigure::refreshTagBits()
+{
+    cCanvas *canvas = getCanvas();
+    if (canvas) {
+        tagBits = canvas->parseTags(getTags());
+        for (int i = 0; i < (int)children.size(); i++)
+            children[i]->refreshTagBits();
+    }
+}
 
 void cFigure::doChange(int flags)
 {
@@ -860,6 +874,36 @@ cFigure *cCanvas::createFigure(const char *type)
 cFigure *cCanvas::getSubmodulesLayer() const
 {
     return rootFigure->getChildFigure("submodules");
+}
+
+uint64 cCanvas::parseTags(const char *s)
+{
+    uint64 result = 0;
+    cStringTokenizer tokenizer(s);
+    while (tokenizer.hasMoreTokens())
+    {
+        const char *tag = tokenizer.nextToken();
+        int bitIndex;
+        std::map<std::string,int>::const_iterator it = tagBitIndex.find(tag);
+        if (it != tagBitIndex.end())
+            bitIndex = it->second;
+        else {
+            bitIndex = tagBitIndex.size();
+            if (bitIndex >= 64)
+                throw cRuntimeError(this, "Cannot add figure tag \"%s\": maximum 64 tags supported", tag);
+            tagBitIndex[tag] = bitIndex;
+        }
+        result |= ((uint64)1) << bitIndex;
+    }
+    return result;
+}
+
+std::vector<std::string> cCanvas::getAllTags() const
+{
+    std::vector<std::string> result;
+    for (std::map<std::string,int>::const_iterator it = tagBitIndex.begin(); it != tagBitIndex.end(); ++it)
+        result.push_back(it->first);
+    return result;
 }
 
 //--------------------------------------
