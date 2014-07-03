@@ -1,0 +1,52 @@
+%description:
+Test cFigure's raiseAbove() and lowerBelow() methods
+
+%activity:
+
+#define P(txt, canvas)  EV << txt << ":\n"; for (int i=0; i<canvas->getNumFigures(); i++) EV << " " << canvas->getFigure(i)->getName(); EV << endl;
+
+cCanvas *canvas = getCanvas();
+cFigure *a, *b, *c, *d, *e, *f;
+canvas->addFigure(a = new cGroupFigure("a"));
+canvas->addFigure(b = new cGroupFigure("b"));
+canvas->addFigure(c = new cGroupFigure("c"));
+canvas->addFigure(d = new cGroupFigure("d"));
+canvas->addFigure(e = new cGroupFigure("e"));
+canvas->addFigure(f = new cGroupFigure("f"));
+
+P("initial", canvas);
+
+b->raiseAbove(a); // no-op
+d->raiseAbove(a); // no-op
+c->raiseAbove(b); // no-op
+d->raiseAbove(b); // no-op
+a->raiseAbove(a); // no-op
+
+a->lowerBelow(f); // no-op
+e->lowerBelow(f); // no-op
+c->lowerBelow(d); // no-op
+a->lowerBelow(d); // no-op
+d->lowerBelow(d); // no-op
+
+P("after no-ops", canvas);
+
+a->raiseAbove(b);
+e->raiseAbove(f);
+
+P("raised a above b, e above f", canvas);
+
+c->lowerBelow(b);
+f->lowerBelow(d);
+
+P("lowered c below b, f below d", canvas);
+
+%contains: stdout
+initial:
+ submodules a b c d e f
+after no-ops:
+ submodules a b c d e f
+raised a above b, e above f:
+ submodules b a c d f e
+lowered c below b, f below d:
+ submodules c b a f d e
+

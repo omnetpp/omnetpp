@@ -448,6 +448,32 @@ void cFigure::clearChangeFlags()
     localChange = treeChange = 0;
 }
 
+void cFigure::raiseAbove(cFigure *figure)
+{
+    cFigure *parent = getParentFigure();
+    int myPos = parent->findChildFigure(this);
+    int refPos = parent->findChildFigure(figure);
+    if (refPos == -1)
+        throw cRuntimeError(this, "raiseAbove(): reference figure must have the same parent");
+    if (myPos < refPos) {
+        parent->children.erase(parent->children.begin() + myPos); // note: reference figure will be shifted down
+        parent->children.insert(parent->children.begin() + refPos, this);
+    }
+}
+
+void cFigure::lowerBelow(cFigure *figure)
+{
+    cFigure *parent = getParentFigure();
+    int myPos = parent->findChildFigure(this);
+    int refPos = parent->findChildFigure(figure);
+    if (refPos == -1)
+        throw cRuntimeError(this, "lowerBelow(): reference figure must have the same parent");
+    if (myPos > refPos) {
+        parent->children.erase(parent->children.begin() + myPos);
+        parent->children.insert(parent->children.begin() + refPos, this);
+    }
+}
+
 //----
 
 void cGroupFigure::copy(const cGroupFigure& other)
