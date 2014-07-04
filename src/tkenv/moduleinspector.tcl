@@ -551,14 +551,14 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplace
                $c create image $x $y -image $img -anchor center -tags "dx tooltip submod submodext $submodptr"
            }
            if {$inspectordata($c:showlabels)} {
-               $c create text $x [expr $y2+$width/2+3] -text $name -anchor n -tags "dx" -font CanvasFont
+               $c create text $x [expr $y2+$width/2+3] -text $name -anchor n -tags "dx submodext" -font CanvasFont
            }
 
        } else {
            # draw an icon when no shape is present (only i tag, or neither i nor b tag)
            $c create image $x $y -image $img -anchor center -tags "dx tooltip submod submodext $submodptr"
            if {$inspectordata($c:showlabels)} {
-               $c create text $x [expr $y+$sy/2+3] -text $name -anchor n -tags "dx" -font CanvasFont
+               $c create text $x [expr $y+$sy/2+3] -text $name -anchor n -tags "dx submodext" -font CanvasFont
            }
        }
 

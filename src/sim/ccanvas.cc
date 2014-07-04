@@ -1105,6 +1105,10 @@ void cCanvas::parseFigure(cProperty *property, std::map<cFigure*,double>& orderM
                 orderMap[figure] = opp_atof(order);
             parent->insertChild(figure, orderMap);
         }
+        else {
+            parent->removeChildFigure(figure);
+            parent->addChildFigure(figure);  //TODO use raiseToTop() instead!
+        }
 
         figure->parse(property);
     }
