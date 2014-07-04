@@ -150,10 +150,12 @@ cFigure::Color cFigure::parseColor(const char *s)
     if (s[0] == '#') {
         int r, g, b;
         if (sscanf(s+1, "%2x%2x%2x", &r, &g, &b) != 3)
-            throw cRuntimeError("wrong color syntax '%s', #rrggbb expected", s); //TODO
+            throw cRuntimeError("wrong color syntax '%s', #rrggbb expected", s); //TODO better error checking
         return Color(r,g,b);
     }
-    throw cRuntimeError("unrecognized color '%s'", s);
+    else {
+        return Color::byName(s);
+    }
 }
 
 cFigure::LineStyle cFigure::parseLineStyle(const char *s)
@@ -1186,10 +1188,9 @@ std::vector<std::string> cCanvas::getAllTags() const
     return result;
 }
 
-//--------------------------------------
-//TODO temp code -- finish color support!
+//---
 
-std::map<std::string, cFigure::Color> colors;
+static std::map<std::string, cFigure::Color> colors;
 
 static std::string lc(const char *s)
 {
@@ -1198,7 +1199,7 @@ static std::string lc(const char *s)
     return tmp;
 }
 
-cFigure::Color getColor(const char *name)
+cFigure::Color cFigure::Color::byName(const char *name)
 {
     if (colors.empty()) {
         colors[lc("antiqueWhite")] = cFigure::Color(250,235,215);

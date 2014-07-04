@@ -26,7 +26,7 @@ class cProperties;
 
 #define OMNETPP_CANVAS_VERSION  0x20140702  //XXX identifies canvas code version until API stabilizes
 
-//TODO color names, moveBelow/moveAbove; clean up submoduleLayer stuff: use @figure[submodules](type=group) instead of explicitly adding one!; childZ=...
+//TODO clean up submoduleLayer stuff: use @figure[submodules](type=group) instead of explicitly adding one!; childZ=...
 
 /**
  * TODO document.
@@ -45,6 +45,7 @@ class SIM_API cFigure : public cOwnedObject
             uint8_t red, green, blue; // later: alpha
             Color() : red(0), green(0), blue(0) {}
             Color(uint8_t red, uint8_t green, uint8_t blue) : red(red), green(green), blue(blue) {}
+            static Color byName(const char *colorName); // throws exception for unknown names
         };
 
         static const Color BLACK;
