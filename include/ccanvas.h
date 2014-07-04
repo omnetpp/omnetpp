@@ -26,7 +26,14 @@ class cProperties;
 
 #define OMNETPP_CANVAS_VERSION  0x20140702  //XXX identifies canvas code version until API stabilizes
 
-//TODO clean up submoduleLayer stuff: use @figure[submodules](type=group) instead of explicitly adding one!; childZ=...
+//TODO MARK AS EXPERIMENTAL API!!!!!!!!!
+//TODO document: coordinates are in meters, line widths are in non-zooming pixels
+//TODO P1, P2 ===> change to width/height!!!!! (same for Arc/PieSlice/Oval!)
+//TODO document: line grows symmetrically if lineWidth grows
+//TODO lineWidth to be "double"
+//TODO P2 change is GEOMETRY change?
+//TODO childZ=..
+//TODO rounded rectangle, ring  (or linewidth mode?)
 
 /**
  * TODO document.
@@ -132,7 +139,7 @@ class SIM_API cFigure : public cOwnedObject
         virtual const char *getClassNameForRenderer() const {return getClassName();} // denotes renderer of which figure class to use; override if you want to subclass a figure while reusing renderer of the base class
 
         int getId() const {return id;}
-        virtual const Point& getLocation() const = 0;
+        virtual const Point& getLocation() const = 0; // TODO rename to getChildOrigin(); note Text, Image, etc!!!
         virtual void translate(double x, double y) = 0;
         virtual cCanvas *getCanvas();
         virtual bool isVisible() const {return visible;}
@@ -140,7 +147,7 @@ class SIM_API cFigure : public cOwnedObject
         virtual const char *getTags() const {return tags.c_str();}
         virtual void setTags(const char *tags) {this->tags = tags; refreshTagBits();}
 
-        virtual void addChildFigure(cFigure *figure);
+        virtual void addChildFigure(cFigure *figure);  //TODO remove "Child" word from everywhere
         virtual void addChildFigure(cFigure *figure, int pos);
         virtual cFigure *removeChildFigure(int pos);
         virtual cFigure *removeChildFigure(cFigure *figure);
@@ -154,7 +161,7 @@ class SIM_API cFigure : public cOwnedObject
         virtual cFigure *findFigureByName(const char *name);  // searches recursively
         virtual cFigure *getFigureByPath(const char *path);  //NOTE: path has similar syntax to cModule::getModuleByPath()
         virtual void raiseAbove(cFigure *figure);
-        virtual void lowerBelow(cFigure *figure);
+        virtual void lowerBelow(cFigure *figure); //TODO add before/after; send to back/send to front
 };
 
 class SIM_API cGroupFigure : public cFigure
@@ -451,8 +458,8 @@ class SIM_API cImageFigure : public cFigure
     private:
         Point pos;
         std::string imageName;
-        Color color;
-        int colorization;
+        Color color;  // colorization amount will come from alpha after it gets added to Color
+        int colorization; //TODO double tint ?  --->TODO REMOVE!!!
         Anchor anchor;
     private:
         void copy(const cImageFigure& other);
@@ -517,7 +524,7 @@ class SIM_API cCanvas : public cOwnedObject
         virtual int getNumFigures() const {return rootFigure->getNumChildFigures();} // TODO misnomer: returns num of *child* figures, not the total!!!
         virtual cFigure *getFigure(int pos) {return rootFigure->getChildFigure(pos);}
         virtual cFigure *getFigure(const char *name) {return rootFigure->getChildFigure(name);}
-        virtual cFigure *findFigureByName(const char *name) {return rootFigure->findFigureByName(name);}
+        virtual cFigure *findFigureByName(const char *name) {return rootFigure->findFigureByName(name);} //TODO findFigureInTree()
         virtual cFigure *getFigureByPath(const char *path) {return rootFigure->getFigureByPath(path);}
         virtual cFigure *getSubmodulesLayer() const; // may return NULL (extra canvases don't have submodules)
         virtual std::vector<std::string> getAllTags() const;
