@@ -38,6 +38,12 @@ class evbuf : public std::basic_stringbuf<char>
     virtual int sync()  {
         ev.sputn(this->pbase(), this->pptr()-this->pbase());
         setp(this->pbase(),this->epptr());
+#ifdef __MINGW32__
+        // Workaround: when using MinGW 4.7.2, sometimes failbit becomes set with no apparent reason,
+        // causing all further stream writes to be ignored. The workaround is just to clear the error bits.
+        if (ev.out.bad())
+            ev.out.clear();
+#endif
         return 0;
     }
     virtual std::streamsize xsputn(const char *str, std::streamsize n) {
