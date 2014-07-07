@@ -99,8 +99,8 @@ static std::ostream& operator<<(std::ostream& os, const cFigure::Font& f)
     return os;
 }
 
+/* XXX currently unused 
 typedef std::vector<std::string> StringVector;
-
 static std::ostream& operator<<(std::ostream& os, const std::vector<std::string>& v)
 {
     os << "[";
@@ -111,6 +111,7 @@ static std::ostream& operator<<(std::ostream& os, const std::vector<std::string>
     os << "]";
     return os;
 }
+*/
 
 //
 // This function is to be referenced from sim. kernel classes, to force the
@@ -693,7 +694,7 @@ class cImageFigure extends cFigure
 class cCanvas extends cOwnedObject
 {
     cFigure *rootFigure;
-    StringVector allTags;
+    string allTags;
 }
 
 

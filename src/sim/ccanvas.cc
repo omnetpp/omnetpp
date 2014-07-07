@@ -915,7 +915,6 @@ void cTextFigure::copy(const cTextFigure& other)
     setFont(other.getFont());
     setText(other.getText());
     setAnchor(other.getAnchor());
-    Alignment alignment;
     setAlignment(other.getAlignment());
 }
 
@@ -1184,7 +1183,18 @@ uint64 cCanvas::parseTags(const char *s)
     return result;
 }
 
-std::vector<std::string> cCanvas::getAllTags() const
+std::string cCanvas::getAllTags() const
+{
+    std::stringstream os;
+    for (std::map<std::string,int>::const_iterator it = tagBitIndex.begin(); it != tagBitIndex.end(); ++it) {
+        if (it != tagBitIndex.begin())
+            os << " ";
+        os << it->first;
+    }
+    return os.str();
+}
+
+std::vector<std::string> cCanvas::getAllTagsAsVector() const
 {
     std::vector<std::string> result;
     for (std::map<std::string,int>::const_iterator it = tagBitIndex.begin(); it != tagBitIndex.end(); ++it)

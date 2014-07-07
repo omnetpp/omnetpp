@@ -527,7 +527,8 @@ class SIM_API cCanvas : public cOwnedObject
         virtual cFigure *findFigureByName(const char *name) {return rootFigure->findFigureByName(name);} //TODO findFigureInTree()
         virtual cFigure *getFigureByPath(const char *path) {return rootFigure->getFigureByPath(path);}
         virtual cFigure *getSubmodulesLayer() const; // may return NULL (extra canvases don't have submodules)
-        virtual std::vector<std::string> getAllTags() const;
+        virtual std::string getAllTags() const;
+        virtual std::vector<std::string> getAllTagsAsVector() const;
 };
 
 NAMESPACE_END
