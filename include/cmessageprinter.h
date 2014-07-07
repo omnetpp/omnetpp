@@ -20,9 +20,9 @@
 
 #include "cownedobject.h"
 
-class cMessage;
-
 NAMESPACE_BEGIN
+
+class cMessage;
 
 /**
  * Base class for message printers.

@@ -23,7 +23,7 @@
 #include "stringutil.h"
 #include "opp_ctype.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 const cFigure::Color cFigure::BLACK(0,0,0);
 const cFigure::Color cFigure::WHITE(255,255,255);
@@ -1787,3 +1787,5 @@ cFigure::Color cFigure::Color::byName(const char *name)
         throw cRuntimeError("No such color: %s", name);
     return it->second;
 }
+
+NAMESPACE_END
