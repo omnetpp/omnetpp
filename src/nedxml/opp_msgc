@@ -2089,10 +2089,10 @@ sub generateDescriptorClass
         print CC "    switch (field) {\n";
         for (my $i=0; $i<$fieldcount; $i++)
         {
-            if ($fkind{$fieldlist[$i]} eq 'struct') {
+            my $fieldname = $fieldlist[$i];
+            my $opaque = propertyAsBool($fprops{$fieldname}->{opaque});  # TODO: @opaque should rather be the attribute of the field's type, not the field itself
+            if ($fkind{$fieldname} eq 'struct' && !$opaque) {
                 print CC "        case $i: return opp_typename(typeid($ftype{$fieldlist[$i]}));\n";
-            } else {
-                print CC "        case $i: return NULL;\n";
             }
         }
         print CC "        default: return NULL;\n";
@@ -2114,9 +2114,9 @@ sub generateDescriptorClass
     print CC "    switch (field) {\n";
     for (my $i=0; $i<$fieldcount; $i++)
     {
-        $fieldname = $fieldlist[$i];
-
-        if ($fkind{$fieldname} eq 'struct') {
+        my $fieldname = $fieldlist[$i];
+        my $opaque = propertyAsBool($fprops{$fieldname}->{opaque});  # TODO: @opaque should rather be the attribute of the field's type, not the field itself
+        if ($fkind{$fieldname} eq 'struct' && !$opaque) {
             if ($classtype eq 'struct') {
                 if ($fisarray{$fieldname}) {
                     $value = "pp->$var{$fieldname}\[i\]";
