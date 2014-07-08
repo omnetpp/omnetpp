@@ -717,13 +717,13 @@ void ModuleInspector::drawFigureRec(cFigure *figure, LinearCoordMapping& mapping
         FigureRenderer *renderer = getRendererFor(figure);
         renderer->render(figure, interp, canvas, &mapping);
 
-        if (figure->hasChildFigures())
+        if (figure->containsFigures())
         {
             cFigure::Point offset = figure->getLocation();
             LinearCoordMapping childMapping(mapping.scaleX, mapping.offsetX + mapping.scaleX*offset.x, mapping.scaleY, mapping.offsetY + mapping.scaleY*offset.y);
 
-            for (int i = 0; i < figure->getNumChildFigures(); i++)
-                drawFigureRec(figure->getChildFigure(i), childMapping);
+            for (int i = 0; i < figure->getNumFigures(); i++)
+                drawFigureRec(figure->getFigure(i), childMapping);
         }
     }
 }
@@ -743,8 +743,8 @@ void ModuleInspector::refreshFigureGeometryRec(cFigure *figure, LinearCoordMappi
     {
         cFigure::Point offset = figure->getLocation();
         LinearCoordMapping childMapping(mapping.scaleX, mapping.offsetX + mapping.scaleX*offset.x, mapping.scaleY, mapping.offsetY + mapping.scaleY*offset.y);
-        for (int i = 0; i < figure->getNumChildFigures(); i++)
-            refreshFigureGeometryRec(figure->getChildFigure(i), childMapping, forceGeometryRefresh);
+        for (int i = 0; i < figure->getNumFigures(); i++)
+            refreshFigureGeometryRec(figure->getFigure(i), childMapping, forceGeometryRefresh);
     }
 }
 
@@ -757,8 +757,8 @@ void ModuleInspector::refreshFigureVisualsRec(cFigure *figure)
     }
 
     if (figure->getTreeChangeFlags() & cFigure::CHANGE_VISUAL)
-        for (int i = 0; i < figure->getNumChildFigures(); i++)
-            refreshFigureVisualsRec(figure->getChildFigure(i));
+        for (int i = 0; i < figure->getNumFigures(); i++)
+            refreshFigureVisualsRec(figure->getFigure(i));
 }
 
 void ModuleInspector::refreshSubmodules()

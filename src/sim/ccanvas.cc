@@ -232,7 +232,7 @@ cFigure *cFigure::dupTree()
 {
     cFigure *result = (cFigure *) dup();
     for (int i = 0; i < (int)children.size(); i++)
-        result->addChildFigure(children[i]->dupTree());
+        result->addFigure(children[i]->dupTree());
     return result;
 }
 
@@ -261,42 +261,42 @@ std::string cFigure::info() const
     return "";
 }
 
-void cFigure::addChildFigure(cFigure *figure)
+void cFigure::addFigure(cFigure *figure)
 {
     if (!figure)
-        throw cRuntimeError(this, "addChild(): cannot insert NULL pointer");
+        throw cRuntimeError(this, "addFigure(): cannot insert NULL pointer");
     take(figure);
     children.push_back(figure);
     refreshTagBits();
     doStructuralChange();
 }
 
-void cFigure::addChildFigure(cFigure *figure, int pos)
+void cFigure::addFigure(cFigure *figure, int pos)
 {
     if (!figure)
-        throw cRuntimeError(this, "addChild(): cannot insert NULL pointer");
+        throw cRuntimeError(this, "addFigure(): cannot insert NULL pointer");
     if (pos < 0 || pos > (int)children.size())
-        throw cRuntimeError(this,"addChild(): insert position %d out of bounds", pos);
+        throw cRuntimeError(this,"addFigure(): insert position %d out of bounds", pos);
     take(figure);
     children.insert(children.begin()+pos, figure);
     refreshTagBits();
     doStructuralChange();
 }
 
-void cFigure::addChildFigureAbove(cFigure *figure, cFigure *referenceFigure)
+void cFigure::addFigureAbove(cFigure *figure, cFigure *referenceFigure)
 {
-    int refPos = findChildFigure(referenceFigure);
+    int refPos = findFigure(referenceFigure);
     if (refPos == -1)
-        throw cRuntimeError(this, "addChildFigureAbove(): reference figure is not a child");
-    addChildFigure(figure, refPos+1);
+        throw cRuntimeError(this, "addFigureAbove(): reference figure is not a child");
+    addFigure(figure, refPos+1);
 }
 
-void cFigure::addChildFigureBelow(cFigure *figure, cFigure *referenceFigure)
+void cFigure::addFigureBelow(cFigure *figure, cFigure *referenceFigure)
 {
-    int refPos = findChildFigure(referenceFigure);
+    int refPos = findFigure(referenceFigure);
     if (refPos == -1)
-        throw cRuntimeError(this, "addChildFigureBelow(): reference figure is not a child");
-    addChildFigure(figure, refPos);
+        throw cRuntimeError(this, "addFigureBelow(): reference figure is not a child");
+    addFigure(figure, refPos);
 }
 
 inline double getZ(cFigure *figure, const std::map<cFigure*,double>& orderMap)
@@ -323,10 +323,10 @@ void cFigure::insertChild(cFigure *figure, std::map<cFigure*,double>& orderMap)
     doStructuralChange();
 }
 
-cFigure *cFigure::removeChildFigure(int pos)
+cFigure *cFigure::removeFigure(int pos)
 {
     if (pos < 0 || pos >= (int)children.size())
-        throw cRuntimeError(this,"removeChild(): index %d out of bounds", pos);
+        throw cRuntimeError(this,"removeFigure(): index %d out of bounds", pos);
     cFigure *figure = children[pos];
     children.erase(children.begin()+pos);
     drop(figure);
@@ -334,15 +334,15 @@ cFigure *cFigure::removeChildFigure(int pos)
     return figure;
 }
 
-cFigure *cFigure::removeChildFigure(cFigure *figure)
+cFigure *cFigure::removeFigure(cFigure *figure)
 {
-    int pos = findChildFigure(figure);
+    int pos = findFigure(figure);
     if (pos == -1)
-        throw cRuntimeError(this,"removeChild(): figure is not a child");
-    return removeChildFigure(pos);
+        throw cRuntimeError(this,"removeFigure(): figure is not a child");
+    return removeFigure(pos);
 }
 
-int cFigure::findChildFigure(const char *name)
+int cFigure::findFigure(const char *name)
 {
     for (int i = 0; i < (int)children.size(); i++)
         if (children[i]->isName(name))
@@ -350,7 +350,7 @@ int cFigure::findChildFigure(const char *name)
     return -1;
 }
 
-int cFigure::findChildFigure(cFigure *figure)
+int cFigure::findFigure(cFigure *figure)
 {
     for (int i = 0; i < (int)children.size(); i++)
         if (children[i] == figure)
@@ -358,14 +358,14 @@ int cFigure::findChildFigure(cFigure *figure)
     return -1;
 }
 
-cFigure *cFigure::getChildFigure(int pos)
+cFigure *cFigure::getFigure(int pos)
 {
     if (pos < 0 || pos >= (int)children.size())
-        throw cRuntimeError(this,"getChild(): index %d out of bounds", pos);
+        throw cRuntimeError(this,"getFigure(): index %d out of bounds", pos);
     return children[pos];
 }
 
-cFigure *cFigure::getChildFigure(const char *name)
+cFigure *cFigure::getFigure(const char *name)
 {
     for (int i = 0; i < (int)children.size(); i++) {
         cFigure *figure = children[i];
@@ -375,12 +375,12 @@ cFigure *cFigure::getChildFigure(const char *name)
     return NULL;
 }
 
-cFigure *cFigure::findFigureByName(const char *name)
+cFigure *cFigure::findFigureRecursively(const char *name)
 {
     if (!strcmp(name, getFullName()))
         return this;
     for (int i = 0; i < (int)children.size(); i++) {
-        cFigure *figure = children[i]->findFigureByName(name);
+        cFigure *figure = children[i]->findFigureRecursively(name);
         if (figure)
             return figure;
     }
@@ -433,7 +433,7 @@ cFigure *cFigure::getFigureByPath(const char *path)
         else if (token[0] == '^' && token[1] == '\0')
             figure = figure->getParentFigure();
         else
-            figure = figure->getChildFigure(token);
+            figure = figure->getFigure(token);
         token = nextToken(rest);
     }
     return figure;  // NULL if not found
@@ -471,8 +471,8 @@ void cFigure::raiseAbove(cFigure *figure)
     cFigure *parent = getParentFigure();
     if (!parent)
         throw cRuntimeError(this, "raiseAbove(): figure has no parent figure");
-    int myPos = parent->findChildFigure(this);
-    int refPos = parent->findChildFigure(figure);
+    int myPos = parent->findFigure(this);
+    int refPos = parent->findFigure(figure);
     if (refPos == -1)
         throw cRuntimeError(this, "raiseAbove(): reference figure must have the same parent");
     if (myPos < refPos) {
@@ -487,8 +487,8 @@ void cFigure::lowerBelow(cFigure *figure)
     cFigure *parent = getParentFigure();
     if (!parent)
         throw cRuntimeError(this, "lowerBelow(): figure has no parent figure");
-    int myPos = parent->findChildFigure(this);
-    int refPos = parent->findChildFigure(figure);
+    int myPos = parent->findFigure(this);
+    int refPos = parent->findFigure(figure);
     if (refPos == -1)
         throw cRuntimeError(this, "lowerBelow(): reference figure must have the same parent");
     if (myPos > refPos) {
@@ -503,7 +503,7 @@ void cFigure::raiseToTop()
     cFigure *parent = getParentFigure();
     if (!parent)
         return; //done
-    int myPos = parent->findChildFigure(this);
+    int myPos = parent->findFigure(this);
     if (myPos != (int)parent->children.size()-1) {
         parent->children.erase(parent->children.begin() + myPos);
         parent->children.push_back(this);
@@ -516,7 +516,7 @@ void cFigure::lowerToBottom()
     cFigure *parent = getParentFigure();
     if (!parent)
         return; //done
-    int myPos = parent->findChildFigure(this);
+    int myPos = parent->findFigure(this);
     if (myPos != 0) {
         parent->children.erase(parent->children.begin() + myPos);
         parent->children.insert(parent->children.begin(), this);
@@ -1141,7 +1141,7 @@ void cCanvas::parseFigure(cProperty *property, std::map<cFigure*,double>& orderM
         if (!name[0])
             throw cRuntimeError("figure name cannot be empty");
 
-        cFigure *figure = parent->getChildFigure(name);
+        cFigure *figure = parent->getFigure(name);
         if (!figure)
         {
             const char *type = property->getValue("type");
@@ -1153,8 +1153,8 @@ void cCanvas::parseFigure(cProperty *property, std::map<cFigure*,double>& orderM
             parent->insertChild(figure, orderMap);
         }
         else {
-            parent->removeChildFigure(figure);
-            parent->addChildFigure(figure);  //TODO use raiseToTop() instead!
+            parent->removeFigure(figure);
+            parent->addFigure(figure);  //TODO use raiseToTop() instead!
         }
 
         figure->parse(property);
@@ -1206,7 +1206,7 @@ cFigure *cCanvas::createFigure(const char *type)
 
 cFigure *cCanvas::getSubmodulesLayer() const
 {
-    return rootFigure->getChildFigure("submodules");
+    return rootFigure->getFigure("submodules");
 }
 
 uint64 cCanvas::parseTags(const char *s)

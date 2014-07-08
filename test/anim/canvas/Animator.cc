@@ -15,10 +15,10 @@ void Animator::initialize()
 
 void Animator::handleMessage(cMessage *msg)
 {
-    cFigure *figure = getParentModule()->getCanvas()->findFigureByName("root");
+    cFigure *figure = getParentModule()->getCanvas()->findFigureRecursively("root");
     figure->translate(1,1);
 
-    cOvalFigure *oval = check_and_cast<cOvalFigure*>(getParentModule()->getCanvas()->findFigureByName("oval1"));
+    cOvalFigure *oval = check_and_cast<cOvalFigure*>(getParentModule()->getCanvas()->findFigureRecursively("oval1"));
     int w = (int)(simTime().dbl())%20;
     oval->setLineWidth(w);
 

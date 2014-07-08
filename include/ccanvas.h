@@ -147,25 +147,26 @@ class SIM_API cFigure : public cOwnedObject
         virtual const char *getTags() const {return tags.c_str();}
         virtual void setTags(const char *tags) {this->tags = tags; refreshTagBits();}
 
-        virtual void addChildFigure(cFigure *figure);  //TODO remove "Child" word from everywhere
-        virtual void addChildFigure(cFigure *figure, int pos);
-        virtual void addChildFigureAbove(cFigure *figure, cFigure *referenceFigure);
-        virtual void addChildFigureBelow(cFigure *figure, cFigure *referenceFigure);
-        virtual cFigure *removeChildFigure(int pos);
-        virtual cFigure *removeChildFigure(cFigure *figure);
-        virtual int findChildFigure(const char *name);
-        virtual int findChildFigure(cFigure *figure);
-        virtual bool hasChildFigures() const {return !children.empty();}
-        virtual int getNumChildFigures() const {return children.size();}
-        virtual cFigure *getChildFigure(int pos);
-        virtual cFigure *getChildFigure(const char *name);
+        virtual void addFigure(cFigure *figure);
+        virtual void addFigure(cFigure *figure, int pos);
+        virtual void addFigureAbove(cFigure *figure, cFigure *referenceFigure);
+        virtual void addFigureBelow(cFigure *figure, cFigure *referenceFigure);
+        virtual cFigure *removeFigure(int pos);
+        virtual cFigure *removeFigure(cFigure *figure);
+        virtual int findFigure(const char *name);
+        virtual int findFigure(cFigure *figure);
+        virtual bool containsFigures() const {return !children.empty();}
+        virtual int getNumFigures() const {return children.size();}
+        virtual cFigure *getFigure(int pos);
+        virtual cFigure *getFigure(const char *name);
         virtual cFigure *getParentFigure()  {return dynamic_cast<cFigure*>(getOwner());}
-        virtual cFigure *findFigureByName(const char *name);  // searches recursively
-        virtual cFigure *getFigureByPath(const char *path);  //NOTE: path has similar syntax to cModule::getModuleByPath()
         virtual void raiseAbove(cFigure *figure);
-        virtual void lowerBelow(cFigure *figure); //TODO add before/after; send to back/send to front
+        virtual void lowerBelow(cFigure *figure);
         virtual void raiseToTop();
         virtual void lowerToBottom();
+
+        virtual cFigure *findFigureRecursively(const char *name);
+        virtual cFigure *getFigureByPath(const char *path);  //NOTE: path has similar syntax to cModule::getModuleByPath()
 };
 
 class SIM_API cGroupFigure : public cFigure
@@ -518,21 +519,23 @@ class SIM_API cCanvas : public cOwnedObject
         virtual std::string info() const;
 
         virtual cFigure *getRootFigure() const {return rootFigure;}
-        virtual void addFigure(cFigure *figure) {rootFigure->addChildFigure(figure);}
-        virtual void addFigure(cFigure *figure, int pos) {rootFigure->addChildFigure(figure, pos);}
-        virtual void addFigureAbove(cFigure *figure, cFigure *referenceFigure) {rootFigure->addChildFigureAbove(figure, referenceFigure);}
-        virtual void addFigureBelow(cFigure *figure, cFigure *referenceFigure) {rootFigure->addChildFigureBelow(figure, referenceFigure);}
-        virtual cFigure *removeFigure(int pos) {return rootFigure->removeChildFigure(pos);}
-        virtual cFigure *removeFigure(cFigure *figure) {return rootFigure->removeChildFigure(figure);}
-        virtual int findFigure(const char *name) {return rootFigure->findChildFigure(name);}
-        virtual int findFigure(cFigure *figure) {return rootFigure->findChildFigure(figure);}
-        virtual bool hasFigures() const {return rootFigure->hasChildFigures();}
-        virtual int getNumFigures() const {return rootFigure->getNumChildFigures();} // TODO misnomer: returns num of *child* figures, not the total!!!
-        virtual cFigure *getFigure(int pos) {return rootFigure->getChildFigure(pos);}
-        virtual cFigure *getFigure(const char *name) {return rootFigure->getChildFigure(name);}
-        virtual cFigure *findFigureByName(const char *name) {return rootFigure->findFigureByName(name);} //TODO findFigureInTree()
-        virtual cFigure *getFigureByPath(const char *path) {return rootFigure->getFigureByPath(path);}
+        virtual void addFigure(cFigure *figure) {rootFigure->addFigure(figure);}
+        virtual void addFigure(cFigure *figure, int pos) {rootFigure->addFigure(figure, pos);}
+        virtual void addFigureAbove(cFigure *figure, cFigure *referenceFigure) {rootFigure->addFigureAbove(figure, referenceFigure);}
+        virtual void addFigureBelow(cFigure *figure, cFigure *referenceFigure) {rootFigure->addFigureBelow(figure, referenceFigure);}
+        virtual cFigure *removeFigure(int pos) {return rootFigure->removeFigure(pos);}
+        virtual cFigure *removeFigure(cFigure *figure) {return rootFigure->removeFigure(figure);}
+        virtual int findFigure(const char *name) {return rootFigure->findFigure(name);}
+        virtual int findFigure(cFigure *figure) {return rootFigure->findFigure(figure);}
+        virtual bool hasFigures() const {return rootFigure->containsFigures();}
+        virtual int getNumFigures() const {return rootFigure->getNumFigures();} // note: returns the number of *child* figures, not the total number
+        virtual cFigure *getFigure(int pos) {return rootFigure->getFigure(pos);}
+        virtual cFigure *getFigure(const char *name) {return rootFigure->getFigure(name);}
+
         virtual cFigure *getSubmodulesLayer() const; // may return NULL (extra canvases don't have submodules)
+        virtual cFigure *findFigureRecursively(const char *name) {return rootFigure->findFigureRecursively(name);}
+        virtual cFigure *getFigureByPath(const char *path) {return rootFigure->getFigureByPath(path);}
+
         virtual std::string getAllTags() const;
         virtual std::vector<std::string> getAllTagsAsVector() const;
 };

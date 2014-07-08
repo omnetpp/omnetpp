@@ -99,7 +99,7 @@ static std::ostream& operator<<(std::ostream& os, const cFigure::Font& f)
     return os;
 }
 
-/* XXX currently unused 
+/* XXX currently unused
 typedef std::vector<std::string> StringVector;
 static std::ostream& operator<<(std::ostream& os, const std::vector<std::string>& v)
 {
@@ -595,7 +595,7 @@ class cFigure extends cOwnedObject
     int id;
     bool visible @getter(isVisible);
     string tags;
-    cFigure *children[] @getter(getChildFigure) @sizeGetter(getNumChildFigures);
+    cFigure *children[] @getter(getFigure) @sizeGetter(getNumFigures);
 }
 
 class cGroupFigure extends cFigure
