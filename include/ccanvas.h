@@ -193,11 +193,12 @@ class SIM_API cAbstractLineFigure : public cFigure
         Color lineColor;
         LineStyle lineStyle;
         double lineWidth;
+        CapStyle capStyle;
         ArrowHead startArrowHead, endArrowHead;
     private:
         void copy(const cAbstractLineFigure& other);
     public:
-        cAbstractLineFigure(const char *name=NULL) : cFigure(name), lineColor(BLACK), lineStyle(LINE_SOLID), lineWidth(1), startArrowHead(ARROW_NONE), endArrowHead(ARROW_NONE) {}
+        cAbstractLineFigure(const char *name=NULL) : cFigure(name), lineColor(BLACK), lineStyle(LINE_SOLID), lineWidth(1), capStyle(CAP_BUTT), startArrowHead(ARROW_NONE), endArrowHead(ARROW_NONE) {}
         cAbstractLineFigure(const cAbstractLineFigure& other) : cFigure(other) {copy(other);}
         cAbstractLineFigure& operator=(const cAbstractLineFigure& other);
         virtual std::string info() const;
@@ -208,6 +209,8 @@ class SIM_API cAbstractLineFigure : public cFigure
         virtual void setLineWidth(double lineWidth)  {this->lineWidth = lineWidth; doVisualChange();}
         virtual LineStyle getLineStyle() const  {return lineStyle;}
         virtual void setLineStyle(LineStyle lineStyle)  {this->lineStyle = lineStyle; doVisualChange();}
+        virtual CapStyle getCapStyle() const {return capStyle;}
+        virtual void setCapStyle(CapStyle capStyle) {this->capStyle = capStyle; doVisualChange();}
         virtual ArrowHead getStartArrowHead() const  {return startArrowHead;}
         virtual void setStartArrowHead(ArrowHead startArrowHead)  {this->startArrowHead = startArrowHead; doVisualChange();}
         virtual ArrowHead getEndArrowHead() const  {return endArrowHead;}
@@ -219,11 +222,10 @@ class SIM_API cLineFigure : public cAbstractLineFigure
 {
     private:
         Point start, end;
-        CapStyle capStyle;  //TODO maybe into AbstractLineStyle?
     private:
         void copy(const cLineFigure& other);
     public:
-        cLineFigure(const char *name=NULL) : cAbstractLineFigure(name), capStyle(CAP_BUTT) {}
+        cLineFigure(const char *name=NULL) : cAbstractLineFigure(name) {}
         cLineFigure(const cLineFigure& other) : cAbstractLineFigure(other) {copy(other);}
         cLineFigure& operator=(const cLineFigure& other);
         virtual cLineFigure *dup() const  {return new cLineFigure(*this);}
@@ -235,8 +237,6 @@ class SIM_API cLineFigure : public cAbstractLineFigure
         virtual void setStart(const Point& start)  {this->start = start; doGeometryChange();}
         virtual const Point& getEnd() const  {return end;}
         virtual void setEnd(const Point& end)  {this->end = end; doGeometryChange();}
-        virtual CapStyle getCapStyle() const {return capStyle;}
-        virtual void setCapStyle(CapStyle capStyle) {this->capStyle = capStyle; doVisualChange();}
 };
 
 // Note: Tkenv limitation: capStyle not supported; arrowheads not supported
@@ -272,12 +272,11 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
     private:
         std::vector<Point> points;
         bool smooth;
-        CapStyle capStyle;
         JoinStyle joinStyle;
     private:
         void copy(const cPolylineFigure& other);
     public:
-        cPolylineFigure(const char *name=NULL) : cAbstractLineFigure(name), smooth(false), capStyle(CAP_BUTT), joinStyle(JOIN_MITER) {}
+        cPolylineFigure(const char *name=NULL) : cAbstractLineFigure(name), smooth(false), joinStyle(JOIN_MITER) {}
         cPolylineFigure(const cPolylineFigure& other) : cAbstractLineFigure(other) {copy(other);}
         cPolylineFigure& operator=(const cPolylineFigure& other);
         virtual cPolylineFigure *dup() const  {return new cPolylineFigure(*this);}
@@ -291,8 +290,6 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
         virtual const Point& getPoint(int i) const {return points[i];}
         virtual bool getSmooth() const {return smooth;}
         virtual void setSmooth(bool smooth) {this->smooth = smooth; doVisualChange();}
-        virtual CapStyle getCapStyle() const {return capStyle;}
-        virtual void setCapStyle(CapStyle capStyle) {this->capStyle = capStyle; doVisualChange();}
         virtual JoinStyle getJoinStyle() const {return joinStyle;}
         virtual void setJoinStyle(JoinStyle joinStyle) {this->joinStyle = joinStyle; doVisualChange();}
 };

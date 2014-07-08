@@ -558,6 +558,7 @@ void cAbstractLineFigure::copy(const cAbstractLineFigure& other)
     setLineColor(other.getLineColor());
     setLineStyle(other.getLineStyle());
     setLineWidth(other.getLineWidth());
+    setCapStyle(other.getCapStyle());
     setStartArrowHead(other.getStartArrowHead());
     setEndArrowHead(other.getEndArrowHead());
 }
@@ -585,6 +586,8 @@ void cAbstractLineFigure::parse(cProperty *property)
         setLineStyle(parseLineStyle(s));
     if ((s = property->getValue("lineWidth")) != NULL)
         setLineWidth(opp_atof(s));
+    if ((s = property->getValue("capStyle", 0)) != NULL)
+        setCapStyle(parseCapStyle(s));
     if ((s = property->getValue("startArrowhead")) != NULL)
         setStartArrowHead(parseArrowHead(s));
     if ((s = property->getValue("endArrowhead")) != NULL)
@@ -597,7 +600,6 @@ void cLineFigure::copy(const cLineFigure& other)
 {
     setStart(other.getStart());
     setEnd(other.getEnd());
-    setCapStyle(other.getCapStyle());
 }
 
 cLineFigure& cLineFigure::operator=(const cLineFigure& other)
@@ -619,11 +621,8 @@ void cLineFigure::parse(cProperty *property)
 {
     cAbstractLineFigure::parse(property);
 
-    const char *s;
     setStart(parsePoint(property, "coords", 0));
     setEnd(parsePoint(property, "coords", 2));
-    if ((s = property->getValue("capStyle", 0)) != NULL)
-        setCapStyle(parseCapStyle(s));
 }
 
 void cLineFigure::translate(double x, double y)
@@ -689,7 +688,6 @@ void cPolylineFigure::copy(const cPolylineFigure& other)
 {
     setPoints(other.getPoints());
     setSmooth(other.getSmooth());
-    setCapStyle(other.getCapStyle());
     setJoinStyle(other.getJoinStyle());
 }
 
@@ -717,8 +715,6 @@ void cPolylineFigure::parse(cProperty *property)
     setPoints(parsePoints(property, "coords"));
     if ((s = property->getValue("smooth", 0)) != NULL)
         setSmooth(parseBool(s));
-    if ((s = property->getValue("capStyle", 0)) != NULL)
-        setCapStyle(parseCapStyle(s));
     if ((s = property->getValue("joinStyle", 0)) != NULL)
         setJoinStyle(parseJoinStyle(s));
 }

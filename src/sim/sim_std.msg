@@ -609,6 +609,7 @@ class cAbstractLineFigure extends cFigure
     Color lineColor;
     int lineStyle @enum(cFigure_LineStyle);
     double lineWidth;
+    int capStyle @enum(cFigure_CapStyle);
     int startArrowHead @enum(cFigure_ArrowHead);
     int endArrowHead @enum(cFigure_ArrowHead);
 }
@@ -617,7 +618,6 @@ class cLineFigure extends cAbstractLineFigure
 {
     Point start;
     Point end;
-    int capStyle @enum(cFigure_CapStyle);
 }
 
 class cArcFigure extends cAbstractLineFigure
@@ -632,7 +632,6 @@ class cPolylineFigure extends cAbstractLineFigure
 {
     Point points[] @getter(getPoint) @sizeGetter(getNumPoints);
     bool smooth;
-    int capStyle @enum(cFigure_CapStyle);
     int joinStyle @enum(cFigure_JoinStyle);
 }
 
