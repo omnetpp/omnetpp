@@ -33,6 +33,7 @@ Register_Class(PolygonFigureRenderer);
 Register_Class(TextFigureRenderer);
 Register_Class(ImageFigureRenderer);
 
+
 char *FigureRenderer::point(const cFigure::Point& point, ICoordMapping *mapping, char *buf)
 {
     cFigure::Point p = mapping->apply(point);
@@ -225,7 +226,7 @@ void LineFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char 
     CHK(Tcl_VarEval(interp, canvas, " create line ",
             point(lineFigure->getStart(), mapping, buf1), point(lineFigure->getEnd(), mapping, buf2),
             " -fill ", color(lineFigure->getLineColor(), buf3),
-            " -width ", itoa(lineFigure->getLineWidth(), buf4),
+            " -width ", itoa(round(lineFigure->getLineWidth()), buf4),
             lineStyle(lineFigure->getLineStyle()),
             capStyle(lineFigure->getCapStyle()),
             arrows(lineFigure->getStartArrowHead(), lineFigure->getEndArrowHead(), buf5),
@@ -248,7 +249,7 @@ void LineFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, con
     cLineFigure *lineFigure = check_and_cast<cLineFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
             " -fill ", color(lineFigure->getLineColor(), buf3),
-            " -width ", itoa(lineFigure->getLineWidth(), buf4),
+            " -width ", itoa(round(lineFigure->getLineWidth()), buf4),
             lineStyle(lineFigure->getLineStyle()),
             capStyle(lineFigure->getCapStyle()),
             arrows(lineFigure->getStartArrowHead(), lineFigure->getEndArrowHead(), buf5),
@@ -268,7 +269,7 @@ void ArcFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *
             " -extent ", itoa(arcFigure->getEndAngle() - arcFigure->getStartAngle(), buf4),
             " -style arc",
             " -fill ", color(arcFigure->getLineColor(), buf5),
-            " -width ", itoa(arcFigure->getLineWidth(), buf6),
+            " -width ", itoa(round(arcFigure->getLineWidth()), buf6),
             lineStyle(arcFigure->getLineStyle()),
             " -tags {fig ", tag, "}", NULL));
 }
@@ -294,7 +295,7 @@ void ArcFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, cons
             " -extent ", itoa(arcFigure->getEndAngle() - arcFigure->getStartAngle(), buf4),
             " -style arc",
             " -fill ", color(arcFigure->getLineColor(), buf5),
-            " -width ", itoa(arcFigure->getLineWidth(), buf6),
+            " -width ", itoa(round(arcFigure->getLineWidth()), buf6),
             lineStyle(arcFigure->getLineStyle()),
             NULL));
 }
@@ -307,7 +308,7 @@ void PolylineFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const c
     CHK(Tcl_VarEval(interp, canvas, " create line ",
             points(polylineFigure->getPoints(), mapping).c_str(),
             " -fill ", color(polylineFigure->getLineColor(), buf1),
-            " -width ", itoa(polylineFigure->getLineWidth(), buf2),
+            " -width ", itoa(round(polylineFigure->getLineWidth()), buf2),
             lineStyle(polylineFigure->getLineStyle()),
             capStyle(polylineFigure->getCapStyle()),
             joinStyle(polylineFigure->getJoinStyle()),
@@ -332,7 +333,7 @@ void PolylineFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp,
     cPolylineFigure *polylineFigure = check_and_cast<cPolylineFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
             " -fill ", color(polylineFigure->getLineColor(), buf2),
-            " -width ", itoa(polylineFigure->getLineWidth(), buf3),
+            " -width ", itoa(round(polylineFigure->getLineWidth()), buf3),
             lineStyle(polylineFigure->getLineStyle()),
             capStyle(polylineFigure->getCapStyle()),
             joinStyle(polylineFigure->getJoinStyle()),
@@ -351,7 +352,7 @@ void RectangleFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const 
             point(rectangleFigure->getP1(), mapping, buf1), point(rectangleFigure->getP2(), mapping, buf2),
             " -fill ", (rectangleFigure->isFilled() ? color(rectangleFigure->getFillColor(), buf3) : "\"\""),
             " -outline ", (rectangleFigure->isOutlined() ? color(rectangleFigure->getLineColor(), buf4) : "\"\""),
-            " -width ", itoa(rectangleFigure->getLineWidth(), buf5),
+            " -width ", itoa(round(rectangleFigure->getLineWidth()), buf5),
             lineStyle(rectangleFigure->getLineStyle()),
             " -tags {fig ", tag, "}", NULL));
 }
@@ -374,7 +375,7 @@ void RectangleFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp
     CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
             " -fill ", (rectangleFigure->isFilled() ? color(rectangleFigure->getFillColor(), buf1) : "\"\""),
             " -outline ", (rectangleFigure->isOutlined() ? color(rectangleFigure->getLineColor(), buf2) : "\"\""),
-            " -width ", itoa(rectangleFigure->getLineWidth(), buf3),
+            " -width ", itoa(round(rectangleFigure->getLineWidth()), buf3),
             lineStyle(rectangleFigure->getLineStyle()),
             NULL));
 }
@@ -389,7 +390,7 @@ void OvalFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char 
             point(ovalFigure->getP1(), mapping, buf1), point(ovalFigure->getP2(), mapping, buf2),
             " -fill ", (ovalFigure->isFilled() ? color(ovalFigure->getFillColor(), buf3) : "\"\""),
             " -outline ", (ovalFigure->isOutlined() ? color(ovalFigure->getLineColor(), buf4) : "\"\""),
-            " -width ", itoa(ovalFigure->getLineWidth(), buf5),
+            " -width ", itoa(round(ovalFigure->getLineWidth()), buf5),
             lineStyle(ovalFigure->getLineStyle()),
             " -tags {fig ", tag, "}", NULL));
 }
@@ -412,7 +413,7 @@ void OvalFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, con
     CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
             " -fill ", (ovalFigure->isFilled() ? color(ovalFigure->getFillColor(), buf3) : "\"\""),
             " -outline ", (ovalFigure->isOutlined() ? color(ovalFigure->getLineColor(), buf4) : "\"\""),
-            " -width ", itoa(ovalFigure->getLineWidth(), buf5),
+            " -width ", itoa(round(ovalFigure->getLineWidth()), buf5),
             lineStyle(ovalFigure->getLineStyle()),
             NULL));
 }
@@ -430,7 +431,7 @@ void PieSliceFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const c
             " -style pieslice ",
             " -fill ", (piesliceFigure->isFilled() ? color(piesliceFigure->getFillColor(), buf5) : "\"\""),
             " -outline ", (piesliceFigure->isOutlined() ? color(piesliceFigure->getLineColor(), buf6) : "\"\""),
-            " -width ", itoa(piesliceFigure->getLineWidth(), buf7),
+            " -width ", itoa(round(piesliceFigure->getLineWidth()), buf7),
             lineStyle(piesliceFigure->getLineStyle()),
             " -tags {fig ", tag, "}", NULL));
 }
@@ -455,7 +456,7 @@ void PieSliceFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp,
             " -extent ", itoa(piesliceFigure->getEndAngle() - piesliceFigure->getStartAngle(), buf2),
             " -fill ", (piesliceFigure->isFilled() ? color(piesliceFigure->getFillColor(), buf3) : "\"\""),
             " -outline ", (piesliceFigure->isOutlined() ? color(piesliceFigure->getLineColor(), buf4) : "\"\""),
-            " -width ", itoa(piesliceFigure->getLineWidth(), buf5),
+            " -width ", itoa(round(piesliceFigure->getLineWidth()), buf5),
             lineStyle(piesliceFigure->getLineStyle()),
             NULL));
 }
@@ -469,7 +470,7 @@ void PolygonFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const ch
             points(polygonFigure->getPoints(), mapping).c_str(),
             " -fill ", (polygonFigure->isFilled() ? color(polygonFigure->getFillColor(), buf1) : "\"\""),
             " -outline ", (polygonFigure->isOutlined() ? color(polygonFigure->getLineColor(), buf2) : "\"\""),
-            " -width ", itoa(polygonFigure->getLineWidth(), buf3),
+            " -width ", itoa(round(polygonFigure->getLineWidth()), buf3),
             lineStyle(polygonFigure->getLineStyle()),
             joinStyle(polygonFigure->getJoinStyle()),
             smooth(polygonFigure->getSmooth()),
@@ -493,7 +494,7 @@ void PolygonFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, 
     CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
             " -fill ", (polygonFigure->isFilled() ? color(polygonFigure->getFillColor(), buf1) : "\"\""),
             " -outline ", (polygonFigure->isOutlined() ? color(polygonFigure->getLineColor(), buf2) : "\"\""),
-            " -width ", itoa(polygonFigure->getLineWidth(), buf3),
+            " -width ", itoa(round(polygonFigure->getLineWidth()), buf3),
             lineStyle(polygonFigure->getLineStyle()),
             joinStyle(polygonFigure->getJoinStyle()),
             smooth(polygonFigure->getSmooth()),

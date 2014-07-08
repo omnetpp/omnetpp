@@ -30,7 +30,6 @@ class cProperties;
 //TODO document: coordinates are in meters, line widths are in non-zooming pixels
 //TODO P1, P2 ===> change to width/height!!!!! (same for Arc/PieSlice/Oval!)
 //TODO document: line grows symmetrically if lineWidth grows
-//TODO lineWidth to be "double"
 //TODO P2 change is GEOMETRY change?
 //TODO childZ=..
 //TODO rounded rectangle, ring  (or linewidth mode?)
@@ -194,7 +193,7 @@ class SIM_API cAbstractLineFigure : public cFigure
     private:
         Color lineColor;
         LineStyle lineStyle;
-        int lineWidth;
+        double lineWidth;
         ArrowHead startArrowHead, endArrowHead;
     private:
         void copy(const cAbstractLineFigure& other);
@@ -206,8 +205,8 @@ class SIM_API cAbstractLineFigure : public cFigure
         virtual void parse(cProperty *property);
         virtual const Color& getLineColor() const  {return lineColor;}
         virtual void setLineColor(const Color& lineColor)  {this->lineColor = lineColor; doVisualChange();}
-        virtual int getLineWidth() const  {return lineWidth;}
-        virtual void setLineWidth(int lineWidth)  {this->lineWidth = lineWidth; doVisualChange();}
+        virtual double getLineWidth() const  {return lineWidth;}
+        virtual void setLineWidth(double lineWidth)  {this->lineWidth = lineWidth; doVisualChange();}
         virtual LineStyle getLineStyle() const  {return lineStyle;}
         virtual void setLineStyle(LineStyle lineStyle)  {this->lineStyle = lineStyle; doVisualChange();}
         virtual ArrowHead getStartArrowHead() const  {return startArrowHead;}
@@ -307,7 +306,7 @@ class SIM_API cAbstractShapeFigure : public cFigure
         Color lineColor;
         Color fillColor;
         LineStyle lineStyle;
-        int lineWidth;
+        double lineWidth;
     private:
         void copy(const cAbstractShapeFigure& other);
     public:
@@ -326,8 +325,8 @@ class SIM_API cAbstractShapeFigure : public cFigure
         virtual void setFillColor(const Color& fillColor)  {this->fillColor = fillColor; doVisualChange();}
         virtual LineStyle getLineStyle() const  {return lineStyle;}
         virtual void setLineStyle(LineStyle lineStyle)  {this->lineStyle = lineStyle; doVisualChange();}
-        virtual int getLineWidth() const  {return lineWidth;}
-        virtual void setLineWidth(int lineWidth)  {this->lineWidth = lineWidth; doVisualChange();}
+        virtual double getLineWidth() const  {return lineWidth;}
+        virtual void setLineWidth(double lineWidth)  {this->lineWidth = lineWidth; doVisualChange();}
 };
 
 class SIM_API cRectangleFigure : public cAbstractShapeFigure

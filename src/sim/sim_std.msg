@@ -608,7 +608,7 @@ class cAbstractLineFigure extends cFigure
 {
     Color lineColor;
     int lineStyle @enum(cFigure_LineStyle);
-    int lineWidth;
+    double lineWidth;
     int startArrowHead @enum(cFigure_ArrowHead);
     int endArrowHead @enum(cFigure_ArrowHead);
 }
@@ -643,7 +643,7 @@ class cAbstractShapeFigure extends cFigure
     Color lineColor;
     Color fillColor;
     int lineStyle @enum(cFigure_LineStyle);
-    int lineWidth;
+    double lineWidth;
 }
 
 class cRectangleFigure extends cAbstractShapeFigure

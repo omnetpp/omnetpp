@@ -53,6 +53,7 @@ class TKENV_API FigureRenderer : public cObject // for because Register_Class() 
         std::string points(const std::vector<cFigure::Point>& points, ICoordMapping *mapping);
         char *color(const cFigure::Color& color, char *buf);
         char *itoa(int i, char *buf);
+        static int round(double d) { return (int)floor(d+0.5);}
         char *arrows(cFigure::ArrowHead start, cFigure::ArrowHead end, char *buf);
         const char *smooth(bool b);
         const char *lineStyle(cFigure::LineStyle style);

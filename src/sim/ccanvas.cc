@@ -584,7 +584,7 @@ void cAbstractLineFigure::parse(cProperty *property)
     if ((s = property->getValue("lineStyle")) != NULL)
         setLineStyle(parseLineStyle(s));
     if ((s = property->getValue("lineWidth")) != NULL)
-        setLineWidth(opp_atol(s));
+        setLineWidth(opp_atof(s));
     if ((s = property->getValue("startArrowhead")) != NULL)
         setStartArrowHead(parseArrowHead(s));
     if ((s = property->getValue("endArrowhead")) != NULL)
@@ -771,7 +771,7 @@ void cAbstractShapeFigure::parse(cProperty *property)
     if ((s = property->getValue("lineStyle")) != NULL)
         setLineStyle(parseLineStyle(s));
     if ((s = property->getValue("lineWidth")) != NULL)
-        setLineWidth(opp_atol(s));
+        setLineWidth(opp_atof(s));
 }
 
 //----
