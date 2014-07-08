@@ -719,7 +719,7 @@ void ModuleInspector::drawFigureRec(cFigure *figure, LinearCoordMapping& mapping
 
         if (figure->containsFigures())
         {
-            cFigure::Point offset = figure->getLocation();
+            cFigure::Point offset = figure->getChildOrigin();
             LinearCoordMapping childMapping(mapping.scaleX, mapping.offsetX + mapping.scaleX*offset.x, mapping.scaleY, mapping.offsetY + mapping.scaleY*offset.y);
 
             for (int i = 0; i < figure->getNumFigures(); i++)
@@ -741,7 +741,7 @@ void ModuleInspector::refreshFigureGeometryRec(cFigure *figure, LinearCoordMappi
 
     if (forceGeometryRefresh || (figure->getTreeChangeFlags() & cFigure::CHANGE_GEOMETRY))
     {
-        cFigure::Point offset = figure->getLocation();
+        cFigure::Point offset = figure->getChildOrigin();
         LinearCoordMapping childMapping(mapping.scaleX, mapping.offsetX + mapping.scaleX*offset.x, mapping.scaleY, mapping.offsetY + mapping.scaleY*offset.y);
         for (int i = 0; i < figure->getNumFigures(); i++)
             refreshFigureGeometryRec(figure->getFigure(i), childMapping, forceGeometryRefresh);

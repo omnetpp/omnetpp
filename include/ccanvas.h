@@ -34,6 +34,7 @@ class cProperties;
 //TODO P2 change is GEOMETRY change?
 //TODO childZ=..
 //TODO rounded rectangle, ring  (or linewidth mode?)
+//TODO fullName to return canvas path?
 
 /**
  * TODO document.
@@ -139,7 +140,7 @@ class SIM_API cFigure : public cOwnedObject
         virtual const char *getClassNameForRenderer() const {return getClassName();} // denotes renderer of which figure class to use; override if you want to subclass a figure while reusing renderer of the base class
 
         int getId() const {return id;}
-        virtual const Point& getLocation() const = 0; // TODO rename to getChildOrigin(); note Text, Image, etc!!!
+        virtual const Point& getChildOrigin() const = 0;
         virtual void translate(double x, double y) = 0;
         virtual cCanvas *getCanvas();
         virtual bool isVisible() const {return visible;}
@@ -172,7 +173,7 @@ class SIM_API cFigure : public cOwnedObject
 class SIM_API cGroupFigure : public cFigure
 {
     private:
-        Point loc;
+        Point location;
     private:
         void copy(const cGroupFigure& other);
     public:
@@ -183,8 +184,9 @@ class SIM_API cGroupFigure : public cFigure
         virtual std::string info() const;
         virtual const char *getClassNameForRenderer() const {return "";} // non-visual figure
         virtual void translate(double x, double y);
-        virtual const Point& getLocation() const  {return loc;}
-        virtual void setLocation(const Point& loc)  {this->loc = loc; doGeometryChange();}
+        virtual const Point& getChildOrigin() const  {return location;}
+        virtual const Point& getLocation() const  {return location;}
+        virtual void setLocation(const Point& loc)  {this->location = loc; doGeometryChange();}
 };
 
 class SIM_API cAbstractLineFigure : public cFigure
@@ -229,7 +231,7 @@ class SIM_API cLineFigure : public cAbstractLineFigure
         virtual cLineFigure *dup() const  {return new cLineFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
-        virtual const Point& getLocation() const  {return start;}
+        virtual const Point& getChildOrigin() const  {return start;}
         virtual void translate(double x, double y);
         virtual const Point& getStart() const  {return start;}
         virtual void setStart(const Point& start)  {this->start = start; doGeometryChange();}
@@ -254,8 +256,8 @@ class SIM_API cArcFigure : public cAbstractLineFigure
         virtual cArcFigure *dup() const  {return new cArcFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
-        virtual const Point& getLocation() const  {return p1;}
         virtual void translate(double x, double y);
+        virtual const Point& getChildOrigin() const  {return p1;}
         virtual const Point& getP1() const  {return p1;}
         virtual void setP1(const Point& p1)  {this->p1 = p1; doGeometryChange();}
         virtual const Point& getP2() const  {return p2;}
@@ -283,8 +285,8 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
         virtual cPolylineFigure *dup() const  {return new cPolylineFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
-        virtual const Point& getLocation() const  {static Point dummy; return points.empty() ? dummy : points[0];}
         virtual void translate(double x, double y);
+        virtual const Point& getChildOrigin() const  {static Point dummy; return points.empty() ? dummy : points[0];}
         virtual const std::vector<Point>& getPoints() const  {return points;}
         virtual void setPoints(const std::vector<Point>& points) {this->points = points; doGeometryChange();}
         virtual int getNumPoints() const {return points.size();}
@@ -341,8 +343,8 @@ class SIM_API cRectangleFigure : public cAbstractShapeFigure
         virtual cRectangleFigure *dup() const  {return new cRectangleFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
-        virtual const Point& getLocation() const  {return p1;}
         virtual void translate(double x, double y);
+        virtual const Point& getChildOrigin() const  {return p1;}
         virtual const Point& getP1() const  {return p1;}
         virtual void setP1(const Point& p1)  {this->p1 = p1; doGeometryChange();}
         virtual const Point& getP2() const  {return p2;}
@@ -362,8 +364,8 @@ class SIM_API cOvalFigure : public cAbstractShapeFigure
         virtual cOvalFigure *dup() const  {return new cOvalFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
-        virtual const Point& getLocation() const  {return p1;}
         virtual void translate(double x, double y);
+        virtual const Point& getChildOrigin() const  {return p1;}
         virtual const Point& getP1() const  {return p1;}
         virtual void setP1(const Point& p1)  {this->p1 = p1; doGeometryChange();}
         virtual const Point& getP2() const  {return p2;}
@@ -384,8 +386,8 @@ class SIM_API cPieSliceFigure : public cAbstractShapeFigure
         virtual cPieSliceFigure *dup() const  {return new cPieSliceFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
-        virtual const Point& getLocation() const  {return p1;}
         virtual void translate(double x, double y);
+        virtual const Point& getChildOrigin() const  {return p1;}
         virtual const Point& getP1() const  {return p1;}
         virtual void setP1(const Point& p1)  {this->p1 = p1; doGeometryChange();}
         virtual const Point& getP2() const  {return p2;}
@@ -411,8 +413,8 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
         virtual cPolygonFigure *dup() const  {return new cPolygonFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
-        virtual const Point& getLocation() const  {static Point dummy; return points.empty() ? dummy : points[0];}
         virtual void translate(double x, double y);
+        virtual const Point& getChildOrigin() const  {static Point dummy; return points.empty() ? dummy : points[0];}
         virtual const std::vector<Point>& getPoints() const  {return points;}
         virtual void setPoints(const std::vector<Point>& points) {this->points = points; doGeometryChange();}
         virtual int getNumPoints() const {return points.size();}
@@ -426,7 +428,7 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
 class SIM_API cTextFigure : public cFigure
 {
     private:
-        Point pos;
+        Point location;
         Color color;
         Font font;
         std::string text;
@@ -441,10 +443,10 @@ class SIM_API cTextFigure : public cFigure
         virtual cTextFigure *dup() const  {return new cTextFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
-        virtual const Point& getLocation() const  {return pos;}
         virtual void translate(double x, double y);
-        virtual const Point& getPos() const  {return pos;}  //TODO naming?
-        virtual void setPos(const Point& pos)  {this->pos = pos; doGeometryChange();}
+        virtual const Point& getChildOrigin() const  {return location;}
+        virtual const Point& getLocation() const  {return location;}
+        virtual void setLocation(const Point& location)  {this->location = location; doGeometryChange();}
         virtual const Color& getColor() const  {return color;}
         virtual void setColor(const Color& color)  {this->color = color; doVisualChange();}
         virtual const Font& getFont() const  {return font;}
@@ -461,7 +463,7 @@ class SIM_API cTextFigure : public cFigure
 class SIM_API cImageFigure : public cFigure
 {
     private:
-        Point pos;
+        Point location;
         std::string imageName;
         Color color;  // colorization amount will come from alpha after it gets added to Color
         int colorization; //TODO double tint ?  --->TODO REMOVE!!!
@@ -475,10 +477,10 @@ class SIM_API cImageFigure : public cFigure
         cImageFigure(const char *name=NULL) : cFigure(name), color(BLUE), colorization(0), anchor(ANCHOR_CENTER) {}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
-        virtual const Point& getLocation() const  {return pos;}
         virtual void translate(double x, double y);
-        virtual const Point& getPos() const  {return pos;}
-        virtual void setPos(const Point& pos)  {this->pos = pos; doGeometryChange();}
+        virtual const Point& getChildOrigin() const  {return location;}
+        virtual const Point& getLocation() const  {return location;}
+        virtual void setLocation(const Point& pos)  {this->location = pos; doGeometryChange();}
         virtual const char *getImageName() const  {return imageName.c_str();}
         virtual void setImageName(const char *imageName)  {this->imageName = imageName; doVisualChange();}
         virtual const Color& getColor() const  {return color;}

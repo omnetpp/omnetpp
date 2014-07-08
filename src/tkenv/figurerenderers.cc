@@ -506,7 +506,7 @@ void TextFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char 
     sprintf(tag, "f%d", figure->getId());
     cTextFigure *textFigure = check_and_cast<cTextFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " create text ",
-            point(textFigure->getPos(), mapping, buf1),
+            point(textFigure->getLocation(), mapping, buf1),
             " -text ", TclQuotedString(textFigure->getText()).get(),
             " -fill ", color(textFigure->getColor(), buf2),
             anchor(textFigure->getAnchor()),
@@ -521,7 +521,7 @@ void TextFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, co
     sprintf(tag, "f%d", figure->getId());
     cTextFigure *textFigure = check_and_cast<cTextFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
-            point(textFigure->getPos(), mapping, buf1), NULL));
+            point(textFigure->getLocation(), mapping, buf1), NULL));
 }
 
 void TextFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)

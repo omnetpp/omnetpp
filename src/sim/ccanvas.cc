@@ -546,8 +546,8 @@ std::string cGroupFigure::info() const
 
 void cGroupFigure::translate(double x, double y)
 {
-    loc.x += x;
-    loc.y += y;
+    location.x += x;
+    location.y += y;
     doGeometryChange();
 }
 
@@ -958,7 +958,7 @@ void cPolygonFigure::translate(double x, double y)
 
 void cTextFigure::copy(const cTextFigure& other)
 {
-    setPos(other.getPos());
+    setLocation(other.getLocation());
     setColor(other.getColor());
     setFont(other.getFont());
     setText(other.getText());
@@ -986,7 +986,7 @@ void cTextFigure::parse(cProperty *property)
     cFigure::parse(property);
 
     const char *s;
-    setPos(parsePoint(property, "coords", 0));
+    setLocation(parsePoint(property, "coords", 0));
     setText(opp_nulltoempty(property->getValue("text")));
     if ((s = property->getValue("color")) != NULL)
         setColor(parseColor(s));
@@ -1000,8 +1000,8 @@ void cTextFigure::parse(cProperty *property)
 
 void cTextFigure::translate(double x, double y)
 {
-    pos.x += x;
-    pos.y += y;
+    location.x += x;
+    location.y += y;
     doGeometryChange();
 }
 
@@ -1009,7 +1009,7 @@ void cTextFigure::translate(double x, double y)
 
 void cImageFigure::copy(const cImageFigure& other)
 {
-    setPos(other.getPos());
+    setLocation(other.getLocation());
     setImageName(other.getImageName());
     setColor(other.getColor());
     setColorization(other.getColorization());
@@ -1036,7 +1036,7 @@ void cImageFigure::parse(cProperty *property)
     cFigure::parse(property);
 
     const char *s;
-    setPos(parsePoint(property, "coords", 0));
+    setLocation(parsePoint(property, "coords", 0));
     setImageName(opp_nulltoempty(property->getValue("image")));
     if ((s = property->getValue("color", 0)) != NULL)
         setColor(parseColor(s));
@@ -1050,8 +1050,8 @@ void cImageFigure::parse(cProperty *property)
 
 void cImageFigure::translate(double x, double y)
 {
-    pos.x += x;
-    pos.y += y;
+    location.x += x;
+    location.y += y;
     doGeometryChange();
 }
 

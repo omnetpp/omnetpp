@@ -26,7 +26,7 @@ void ArrangeFigures::initialize()
             figure->translate(0.0, dy);
             cTextFigure *label = new cTextFigure();
             label->setText(property->info().c_str());
-            label->setPos(cFigure::Point(210, dy));
+            label->setLocation(cFigure::Point(210, dy));
             canvas->addFigure(label);
             dy += 20;
         }

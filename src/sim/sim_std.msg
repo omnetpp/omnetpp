@@ -595,6 +595,7 @@ class cFigure extends cOwnedObject
     int id;
     bool visible @getter(isVisible);
     string tags;
+    Point childOrigin;
     cFigure *children[] @getter(getFigure) @sizeGetter(getNumFigures);
 }
 
