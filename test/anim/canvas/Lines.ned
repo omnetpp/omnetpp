@@ -20,6 +20,14 @@ module Lines
     @figure[li17](type=line;coords=10,5,200,5;startArrowhead=triangle;endArrowhead=triangle);
     @figure[li18](type=line;coords=10,5,200,5;startArrowhead=triangle;endArrowhead=barbed); //note: Tk doesn't support having different arrows at the two ends
 
+    @figure[ar1](type=arc;coords=10,0,50,10;startAngle=0;endAngle=250);
+    @figure[ar3](type=arc;coords=10,0,50,10;startAngle=0;endAngle=250;lineColor=#ff0000);
+    @figure[ar4](type=arc;coords=10,0,50,10;startAngle=0;endAngle=250;lineWidth=3);
+    @figure[ar5](type=arc;coords=10,0,50,10;startAngle=0;endAngle=250;lineStyle=solid);
+    @figure[ar6](type=arc;coords=10,0,50,10;startAngle=0;endAngle=250;lineStyle=dotted);
+    @figure[ar7](type=arc;coords=10,0,50,10;startAngle=0;endAngle=250;lineStyle=dashed);
+    @figure[ar8](type=arc;coords=10,0,50,10;startAngle=0;endAngle=250;lineColor=#ff0000;lineWidth=3;lineStyle=dashed);
+
     @figure[pli01](type=polyline;coords=10,0,30,18,100,0,200,5);
     @figure[pli02](type=polyline;coords=10,0,30,18,100,0,200,5;lineColor=#00ff00);
     @figure[pli04](type=polyline;coords=10,0,30,18,100,0,200,5;lineStyle=solid);

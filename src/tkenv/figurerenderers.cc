@@ -51,6 +51,14 @@ std::string FigureRenderer::points(const std::vector<cFigure::Point>& points, IC
     return os.str();
 }
 
+char *FigureRenderer::bounds(const cFigure::Rectangle& bounds, ICoordMapping *mapping, char *buf)
+{
+    cFigure::Point p1 = mapping->apply(cFigure::Point(bounds.x, bounds.y));
+    cFigure::Point p2 = mapping->apply(cFigure::Point(bounds.x+bounds.width, bounds.y+bounds.height));
+    sprintf(buf, " %g %g %g %g", p1.x, p1.y, p2.x, p2.y);
+    return buf;
+}
+
 char *FigureRenderer::color(const cFigure::Color& color, char *buf)
 {
     sprintf(buf, "#%2.2x%2.2x%2.2x ", color.red, color.green, color.blue);
@@ -260,11 +268,11 @@ void ArcFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *
 {
     //TODO arrowheads, capstyle
     ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
-    char tag[32], buf1[32], buf2[32], buf3[32], buf4[32], buf5[32], buf6[32];
+    char tag[32], buf1[80], buf3[32], buf4[32], buf5[32], buf6[32];
     sprintf(tag, "f%d", figure->getId());
     cArcFigure *arcFigure = check_and_cast<cArcFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " create arc ",
-            point(arcFigure->getP1(), mapping, buf1), point(arcFigure->getP2(), mapping, buf2),
+            bounds(arcFigure->getBounds(), mapping, buf1),
             " -start ", itoa(arcFigure->getStartAngle(), buf3),
             " -extent ", itoa(arcFigure->getEndAngle() - arcFigure->getStartAngle(), buf4),
             " -style arc",
@@ -277,11 +285,11 @@ void ArcFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *
 void ArcFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
 {
     ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
-    char tag[32], buf1[32], buf2[32];
+    char tag[32], buf1[80];
     sprintf(tag, "f%d", figure->getId());
     cArcFigure *arcFigure = check_and_cast<cArcFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
-            point(arcFigure->getP1(), mapping, buf1), point(arcFigure->getP2(), mapping, buf2), NULL));
+            bounds(arcFigure->getBounds(), mapping, buf1), NULL));
 }
 
 void ArcFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
@@ -345,11 +353,11 @@ void PolylineFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp,
 void RectangleFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
 {
     ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
-    char tag[32], buf1[32], buf2[32], buf3[32], buf4[32], buf5[32];
+    char tag[32], buf1[80], buf3[32], buf4[32], buf5[32];
     sprintf(tag, "f%d", figure->getId());
     cRectangleFigure *rectangleFigure = check_and_cast<cRectangleFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " create rect ",
-            point(rectangleFigure->getP1(), mapping, buf1), point(rectangleFigure->getP2(), mapping, buf2),
+            bounds(rectangleFigure->getBounds(), mapping, buf1),
             " -fill ", (rectangleFigure->isFilled() ? color(rectangleFigure->getFillColor(), buf3) : "\"\""),
             " -outline ", (rectangleFigure->isOutlined() ? color(rectangleFigure->getLineColor(), buf4) : "\"\""),
             " -width ", itoa(round(rectangleFigure->getLineWidth()), buf5),
@@ -360,11 +368,11 @@ void RectangleFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const 
 void RectangleFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
 {
     ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
-    char tag[32], buf1[32], buf2[32];
+    char tag[32], buf1[80];
     sprintf(tag, "f%d", figure->getId());
     cRectangleFigure *rectangleFigure = check_and_cast<cRectangleFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
-            point(rectangleFigure->getP1(), mapping, buf1), point(rectangleFigure->getP2(), mapping, buf2), NULL));
+            bounds(rectangleFigure->getBounds(), mapping, buf1), NULL));
 }
 
 void RectangleFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
@@ -383,11 +391,11 @@ void RectangleFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp
 void OvalFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
 {
     ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
-    char tag[32], buf1[32], buf2[32], buf3[32], buf4[32], buf5[32];
+    char tag[32], buf1[80], buf3[32], buf4[32], buf5[32];
     sprintf(tag, "f%d", figure->getId());
     cOvalFigure *ovalFigure = check_and_cast<cOvalFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " create oval ",
-            point(ovalFigure->getP1(), mapping, buf1), point(ovalFigure->getP2(), mapping, buf2),
+            bounds(ovalFigure->getBounds(), mapping, buf1),
             " -fill ", (ovalFigure->isFilled() ? color(ovalFigure->getFillColor(), buf3) : "\"\""),
             " -outline ", (ovalFigure->isOutlined() ? color(ovalFigure->getLineColor(), buf4) : "\"\""),
             " -width ", itoa(round(ovalFigure->getLineWidth()), buf5),
@@ -398,11 +406,11 @@ void OvalFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char 
 void OvalFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
 {
     ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
-    char tag[32], buf1[32], buf2[32];
+    char tag[32], buf1[80];
     sprintf(tag, "f%d", figure->getId());
     cOvalFigure *ovalFigure = check_and_cast<cOvalFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
-            point(ovalFigure->getP1(), mapping, buf1), point(ovalFigure->getP2(), mapping, buf2), NULL));
+            bounds(ovalFigure->getBounds(), mapping, buf1), NULL));
 }
 
 void OvalFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
@@ -421,11 +429,11 @@ void OvalFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, con
 void PieSliceFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
 {
     ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
-    char tag[32], buf1[32], buf2[32], buf3[32], buf4[32], buf5[32], buf6[32], buf7[32];
+    char tag[32], buf1[80], buf3[32], buf4[32], buf5[32], buf6[32], buf7[32];
     sprintf(tag, "f%d", figure->getId());
     cPieSliceFigure *piesliceFigure = check_and_cast<cPieSliceFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " create arc ",
-            point(piesliceFigure->getP1(), mapping, buf1), point(piesliceFigure->getP2(), mapping, buf2),
+            bounds(piesliceFigure->getBounds(), mapping, buf1),
             " -start ", itoa(piesliceFigure->getStartAngle(), buf3),
             " -extent ", itoa(piesliceFigure->getEndAngle() - piesliceFigure->getStartAngle(), buf4),
             " -style pieslice ",
@@ -439,11 +447,11 @@ void PieSliceFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const c
 void PieSliceFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
 {
     ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
-    char tag[32], buf1[32], buf2[32];
+    char tag[32], buf1[80];
     sprintf(tag, "f%d", figure->getId());
     cPieSliceFigure *piesliceFigure = check_and_cast<cPieSliceFigure*>(figure);
     CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
-            point(piesliceFigure->getP1(), mapping, buf1), point(piesliceFigure->getP2(), mapping, buf2), NULL));
+            bounds(piesliceFigure->getBounds(), mapping, buf1), NULL));
 }
 
 void PieSliceFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)

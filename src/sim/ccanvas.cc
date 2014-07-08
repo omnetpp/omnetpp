@@ -42,6 +42,10 @@ static std::ostream& operator<<(std::ostream& os, const cFigure::Point& p) {
     return os << "(" << p.x << ", " << p.y << ")";
 }
 
+static std::ostream& operator<<(std::ostream& os, const cFigure::Rectangle& r) {
+    return os << "(" << r.x << ", " << r.y << ", w="<< r.width << ", h=" << r.height << ")";
+}
+
 cFigure::Point cFigure::parsePoint(cProperty *property, const char *key, int index)
 {
     double x = opp_atof(property->getValue(key, index));
@@ -60,7 +64,7 @@ std::vector<cFigure::Point> cFigure::parsePoints(cProperty *property, const char
     return points;
 }
 
-void cFigure::parseBoundingBox(cProperty *property, Point& p1, Point& p2)
+void cFigure::parseBounds(cProperty *property, Point& p1, Point& p2)
 {
     int numCoords = property->getNumValues("coords");
     if (numCoords == 4)
@@ -117,6 +121,13 @@ void cFigure::parseBoundingBox(cProperty *property, Point& p1, Point& p2)
     else {
         throw cRuntimeError("Wrong number of coordinates: 2 or 4 expected");
     }
+}
+
+cFigure::Rectangle cFigure::parseBounds(cProperty *property)
+{
+    Point p1, p2;
+    parseBounds(property, p1, p2);
+    return Rectangle(p1.x, p1.y, p2.x-p1.x, p2.y-p1.y);
 }
 
 cFigure::Font cFigure::parseFont(cProperty *property, const char *key)
@@ -638,8 +649,7 @@ void cLineFigure::translate(double x, double y)
 
 void cArcFigure::copy(const cArcFigure& other)
 {
-    setP1(other.getP1());
-    setP2(other.getP2());
+    setBounds(other.getBounds());
     setStartAngle(other.getStartAngle());
     setEndAngle(other.getEndAngle());
 }
@@ -661,10 +671,7 @@ void cArcFigure::parse(cProperty *property)
 {
     cAbstractLineFigure::parse(property);
 
-    Point p1, p2;
-    parseBoundingBox(property, p1, p2);
-    setP1(p1);
-    setP2(p2);
+    setBounds(parseBounds(property));
 
     const char *s;
     if ((s = property->getValue("startAngle")) != NULL)
@@ -675,10 +682,8 @@ void cArcFigure::parse(cProperty *property)
 
 void cArcFigure::translate(double x, double y)
 {
-    p1.x += x;
-    p1.y += y;
-    p2.x += x;
-    p2.y += y;
+    bounds.x += x;
+    bounds.y += y;
     doGeometryChange();
 }
 
@@ -774,8 +779,7 @@ void cAbstractShapeFigure::parse(cProperty *property)
 
 void cRectangleFigure::copy(const cRectangleFigure& other)
 {
-    setP1(other.getP1());
-    setP2(other.getP2());
+    setBounds(other.getBounds());
 }
 
 cRectangleFigure& cRectangleFigure::operator=(const cRectangleFigure& other)
@@ -789,7 +793,7 @@ cRectangleFigure& cRectangleFigure::operator=(const cRectangleFigure& other)
 std::string cRectangleFigure::info() const
 {
     std::stringstream os;
-    os << getP1() << " to " << getP2();
+    os << getBounds();
     return os.str();
 }
 
@@ -797,18 +801,13 @@ void cRectangleFigure::parse(cProperty *property)
 {
     cAbstractShapeFigure::parse(property);
 
-    Point p1, p2;
-    parseBoundingBox(property, p1, p2);
-    setP1(p1);
-    setP2(p2);
+    setBounds(parseBounds(property));
 }
 
 void cRectangleFigure::translate(double x, double y)
 {
-    p1.x += x;
-    p1.y += y;
-    p2.x += x;
-    p2.y += y;
+    bounds.x += x;
+    bounds.y += y;
     doGeometryChange();
 }
 
@@ -816,8 +815,7 @@ void cRectangleFigure::translate(double x, double y)
 
 void cOvalFigure::copy(const cOvalFigure& other)
 {
-    setP1(other.getP1());
-    setP2(other.getP2());
+    setBounds(other.getBounds());
 }
 
 cOvalFigure& cOvalFigure::operator=(const cOvalFigure& other)
@@ -831,7 +829,7 @@ cOvalFigure& cOvalFigure::operator=(const cOvalFigure& other)
 std::string cOvalFigure::info() const
 {
     std::stringstream os;
-    os << getP1() << " to " << getP2();
+    os << getBounds();
     return os.str();
 }
 
@@ -839,18 +837,13 @@ void cOvalFigure::parse(cProperty *property)
 {
     cAbstractShapeFigure::parse(property);
 
-    Point p1, p2;
-    parseBoundingBox(property, p1, p2);
-    setP1(p1);
-    setP2(p2);
+    setBounds(parseBounds(property));
 }
 
 void cOvalFigure::translate(double x, double y)
 {
-    p1.x += x;
-    p1.y += y;
-    p2.x += x;
-    p2.y += y;
+    bounds.x += x;
+    bounds.y += y;
     doGeometryChange();
 }
 
@@ -858,8 +851,7 @@ void cOvalFigure::translate(double x, double y)
 
 void cPieSliceFigure::copy(const cPieSliceFigure& other)
 {
-    setP1(other.getP1());
-    setP2(other.getP2());
+    setBounds(other.getBounds());
     setStartAngle(other.getStartAngle());
     setEndAngle(other.getEndAngle());
 }
@@ -875,7 +867,7 @@ cPieSliceFigure& cPieSliceFigure::operator=(const cPieSliceFigure& other)
 std::string cPieSliceFigure::info() const
 {
     std::stringstream os;
-    os << getP1() << " to " << getP2();
+    os << getBounds();
     return os.str();
 }
 
@@ -883,10 +875,7 @@ void cPieSliceFigure::parse(cProperty *property)
 {
     cAbstractShapeFigure::parse(property);
 
-    Point p1, p2;
-    parseBoundingBox(property, p1, p2);
-    setP1(p1);
-    setP2(p2);
+    setBounds(parseBounds(property));
 
     const char *s;
     if ((s = property->getValue("startAngle")) != NULL)
@@ -897,10 +886,8 @@ void cPieSliceFigure::parse(cProperty *property)
 
 void cPieSliceFigure::translate(double x, double y)
 {
-    p1.x += x;
-    p1.y += y;
-    p2.x += x;
-    p2.y += y;
+    bounds.x += x;
+    bounds.y += y;
     doGeometryChange();
 }
 

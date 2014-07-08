@@ -77,6 +77,11 @@ inline std::ostream& operator<<(std::ostream& os, const cFigure::Point& p) {
     return os << "(" << p.x << ", " << p.y << ")";
 }
 
+typedef cFigure::Rectangle Rectangle;
+inline std::ostream& operator<<(std::ostream& os, const cFigure::Rectangle& r) {
+    return os << "(" << r.x << ", " << r.y << ", w=" << r.width << ", h=" << r.height << ")";
+}
+
 typedef cFigure::Color Color;
 inline std::ostream& operator<<(std::ostream& os, const cFigure::Color& c) {
     return os << "(" << (int)c.red << "," << (int)c.green << "," << (int)c.blue << ")";
@@ -134,6 +139,7 @@ enum cFigure_Alignment;
 struct cDensityEstBase_Cell;
 
 struct Point;
+struct Rectangle;
 struct Color;
 struct Font;
 
@@ -595,7 +601,7 @@ class cFigure extends cOwnedObject
     int id;
     bool visible @getter(isVisible);
     string tags;
-    Point childOrigin;
+    Point childOrigin @opaque;
     cFigure *children[] @getter(getFigure) @sizeGetter(getNumFigures);
 }
 
@@ -622,8 +628,7 @@ class cLineFigure extends cAbstractLineFigure
 
 class cArcFigure extends cAbstractLineFigure
 {
-    Point p1;
-    Point p2;
+    Rectangle bounds;
     double startAngle;
     double endAngle;
 }
@@ -647,20 +652,17 @@ class cAbstractShapeFigure extends cFigure
 
 class cRectangleFigure extends cAbstractShapeFigure
 {
-    Point p1;
-    Point p2;
+    Rectangle bounds;
 }
 
 class cOvalFigure extends cAbstractShapeFigure
 {
-    Point p1;
-    Point p2;
+    Rectangle bounds;
 }
 
 class cPieSliceFigure extends cAbstractShapeFigure
 {
-    Point p1;
-    Point p2;
+    Rectangle bounds;
     double startAngle;
     double endAngle;
 }

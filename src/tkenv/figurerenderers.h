@@ -51,6 +51,7 @@ class TKENV_API FigureRenderer : public cObject // for because Register_Class() 
     protected:
         char *point(const cFigure::Point& point, ICoordMapping *mapping, char *buf);
         std::string points(const std::vector<cFigure::Point>& points, ICoordMapping *mapping);
+        char *bounds(const cFigure::Rectangle& bounds, ICoordMapping *mapping, char *buf);
         char *color(const cFigure::Color& color, char *buf);
         char *itoa(int i, char *buf);
         static int round(double d) { return (int)floor(d+0.5);}
