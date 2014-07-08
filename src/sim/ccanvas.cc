@@ -283,6 +283,22 @@ void cFigure::addChildFigure(cFigure *figure, int pos)
     doStructuralChange();
 }
 
+void cFigure::addChildFigureAbove(cFigure *figure, cFigure *referenceFigure)
+{
+    int refPos = findChildFigure(referenceFigure);
+    if (refPos == -1)
+        throw cRuntimeError(this, "addChildFigureAbove(): reference figure is not a child");
+    addChildFigure(figure, refPos+1);
+}
+
+void cFigure::addChildFigureBelow(cFigure *figure, cFigure *referenceFigure)
+{
+    int refPos = findChildFigure(referenceFigure);
+    if (refPos == -1)
+        throw cRuntimeError(this, "addChildFigureBelow(): reference figure is not a child");
+    addChildFigure(figure, refPos);
+}
+
 inline double getZ(cFigure *figure, const std::map<cFigure*,double>& orderMap)
 {
     const double defaultZ = 0.0;
@@ -453,6 +469,8 @@ void cFigure::clearChangeFlags()
 void cFigure::raiseAbove(cFigure *figure)
 {
     cFigure *parent = getParentFigure();
+    if (!parent)
+        throw cRuntimeError(this, "raiseAbove(): figure has no parent figure");
     int myPos = parent->findChildFigure(this);
     int refPos = parent->findChildFigure(figure);
     if (refPos == -1)
@@ -460,12 +478,15 @@ void cFigure::raiseAbove(cFigure *figure)
     if (myPos < refPos) {
         parent->children.erase(parent->children.begin() + myPos); // note: reference figure will be shifted down
         parent->children.insert(parent->children.begin() + refPos, this);
+        doStructuralChange();
     }
 }
 
 void cFigure::lowerBelow(cFigure *figure)
 {
     cFigure *parent = getParentFigure();
+    if (!parent)
+        throw cRuntimeError(this, "lowerBelow(): figure has no parent figure");
     int myPos = parent->findChildFigure(this);
     int refPos = parent->findChildFigure(figure);
     if (refPos == -1)
@@ -473,6 +494,33 @@ void cFigure::lowerBelow(cFigure *figure)
     if (myPos > refPos) {
         parent->children.erase(parent->children.begin() + myPos);
         parent->children.insert(parent->children.begin() + refPos, this);
+        doStructuralChange();
+    }
+}
+
+void cFigure::raiseToTop()
+{
+    cFigure *parent = getParentFigure();
+    if (!parent)
+        return; //done
+    int myPos = parent->findChildFigure(this);
+    if (myPos != (int)parent->children.size()-1) {
+        parent->children.erase(parent->children.begin() + myPos);
+        parent->children.push_back(this);
+        doStructuralChange();
+    }
+}
+
+void cFigure::lowerToBottom()
+{
+    cFigure *parent = getParentFigure();
+    if (!parent)
+        return; //done
+    int myPos = parent->findChildFigure(this);
+    if (myPos != 0) {
+        parent->children.erase(parent->children.begin() + myPos);
+        parent->children.insert(parent->children.begin(), this);
+        doStructuralChange();
     }
 }
 

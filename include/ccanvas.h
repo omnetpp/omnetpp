@@ -149,6 +149,8 @@ class SIM_API cFigure : public cOwnedObject
 
         virtual void addChildFigure(cFigure *figure);  //TODO remove "Child" word from everywhere
         virtual void addChildFigure(cFigure *figure, int pos);
+        virtual void addChildFigureAbove(cFigure *figure, cFigure *referenceFigure);
+        virtual void addChildFigureBelow(cFigure *figure, cFigure *referenceFigure);
         virtual cFigure *removeChildFigure(int pos);
         virtual cFigure *removeChildFigure(cFigure *figure);
         virtual int findChildFigure(const char *name);
@@ -162,6 +164,8 @@ class SIM_API cFigure : public cOwnedObject
         virtual cFigure *getFigureByPath(const char *path);  //NOTE: path has similar syntax to cModule::getModuleByPath()
         virtual void raiseAbove(cFigure *figure);
         virtual void lowerBelow(cFigure *figure); //TODO add before/after; send to back/send to front
+        virtual void raiseToTop();
+        virtual void lowerToBottom();
 };
 
 class SIM_API cGroupFigure : public cFigure
@@ -516,6 +520,8 @@ class SIM_API cCanvas : public cOwnedObject
         virtual cFigure *getRootFigure() const {return rootFigure;}
         virtual void addFigure(cFigure *figure) {rootFigure->addChildFigure(figure);}
         virtual void addFigure(cFigure *figure, int pos) {rootFigure->addChildFigure(figure, pos);}
+        virtual void addFigureAbove(cFigure *figure, cFigure *referenceFigure) {rootFigure->addChildFigureAbove(figure, referenceFigure);}
+        virtual void addFigureBelow(cFigure *figure, cFigure *referenceFigure) {rootFigure->addChildFigureBelow(figure, referenceFigure);}
         virtual cFigure *removeFigure(int pos) {return rootFigure->removeChildFigure(pos);}
         virtual cFigure *removeFigure(cFigure *figure) {return rootFigure->removeChildFigure(figure);}
         virtual int findFigure(const char *name) {return rootFigure->findChildFigure(name);}
