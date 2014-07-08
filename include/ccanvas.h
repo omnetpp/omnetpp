@@ -31,7 +31,6 @@ class cProperties;
 //TODO P1, P2 ===> change to width/height!!!!! (same for Arc/PieSlice/Oval!)
 //TODO document: line grows symmetrically if lineWidth grows
 //TODO P2 change is GEOMETRY change?
-//TODO childZ=..
 //TODO rounded rectangle, ring  (or linewidth mode?)
 //TODO fullName to return canvas path?
 
