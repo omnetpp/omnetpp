@@ -686,8 +686,7 @@ class cImageFigure extends cFigure
 {
     Point location;
     string imageName;
-    Color color;
-    int colorization;
+    Color tint;
     int anchor @enum(cFigure_Anchor);
 }
 

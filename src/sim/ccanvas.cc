@@ -1007,8 +1007,8 @@ void cImageFigure::copy(const cImageFigure& other)
 {
     setLocation(other.getLocation());
     setImageName(other.getImageName());
-    setColor(other.getColor());
-    setColorization(other.getColorization());
+    setTint(other.getTint());
+    tinting = other.tinting;
     setAnchor(other.getAnchor());
 }
 
@@ -1034,14 +1034,8 @@ void cImageFigure::parse(cProperty *property)
     const char *s;
     setLocation(parsePoint(property, "coords", 0));
     setImageName(opp_nulltoempty(property->getValue("image")));
-    if ((s = property->getValue("color", 0)) != NULL)
-        setColor(parseColor(s));
-    if ((s = property->getValue("color", 1)) != NULL) {
-        int d = opp_atol(s);
-        if (d<0 || d>100)
-            throw cRuntimeError("image colorization percentage %d is out of range 0..100", d);
-        setColorization(d);
-    }
+    if ((s = property->getValue("tint", 0)) != NULL)
+        setTint(parseColor(s));
 }
 
 void cImageFigure::translate(double x, double y)

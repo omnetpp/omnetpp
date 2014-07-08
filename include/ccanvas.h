@@ -459,8 +459,8 @@ class SIM_API cImageFigure : public cFigure
     private:
         Point location;
         std::string imageName;
-        Color color;  // colorization amount will come from alpha after it gets added to Color
-        int colorization; //TODO double tint ?  --->TODO REMOVE!!!
+        Color tint;  // amount of tinting will come from alpha after it gets added to Color
+        bool tinting; // temporary -- we'll use tint color's alpha
         Anchor anchor;
     private:
         void copy(const cImageFigure& other);
@@ -468,7 +468,7 @@ class SIM_API cImageFigure : public cFigure
         cImageFigure(const cImageFigure& other) : cFigure(other) {copy(other);}
         cImageFigure& operator=(const cImageFigure& other);
         virtual cImageFigure *dup() const  {return new cImageFigure(*this);}
-        cImageFigure(const char *name=NULL) : cFigure(name), color(BLUE), colorization(0), anchor(ANCHOR_CENTER) {}
+        cImageFigure(const char *name=NULL) : cFigure(name), tint(BLUE), tinting(false), anchor(ANCHOR_CENTER) {}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
         virtual void translate(double x, double y);
@@ -477,10 +477,9 @@ class SIM_API cImageFigure : public cFigure
         virtual void setLocation(const Point& pos)  {this->location = pos; doGeometryChange();}
         virtual const char *getImageName() const  {return imageName.c_str();}
         virtual void setImageName(const char *imageName)  {this->imageName = imageName; doVisualChange();}
-        virtual const Color& getColor() const  {return color;}
-        virtual void setColor(const Color& color)  {this->color = color; doVisualChange();}
-        virtual int getColorization() const  {return colorization;}
-        virtual void setColorization(int colorization)  {this->colorization = colorization; doVisualChange();}
+        virtual const Color& getTint() const  {return tint;}
+        virtual void setTint(const Color& tint)  {this->tint = tint; tinting = true; doVisualChange();}
+        virtual void clearTint() { tinting = false; }
         virtual Anchor getAnchor() const  {return anchor;}
         virtual void setAnchor(Anchor anchor)  {this->anchor = anchor; doVisualChange();}
 };
