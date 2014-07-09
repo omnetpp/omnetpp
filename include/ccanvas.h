@@ -24,16 +24,23 @@ class cCanvas;
 class cProperty;
 class cProperties;
 
-#define OMNETPP_CANVAS_VERSION  0x20140702  //XXX identifies canvas code version until API stabilizes
-
-//TODO MARK AS EXPERIMENTAL API!!!!!!!!!
-//TODO document: coordinates are in meters, line widths are in non-zooming pixels
-//TODO document: line grows symmetrically if lineWidth grows
-//TODO fullName to return canvas path?
+#define OMNETPP_CANVAS_VERSION  0x20140709  //XXX identifies canvas code version until API stabilizes
 
 /**
- * TODO document.
- * Note: dup() makes shallow copy (doesn't copy child figures)
+ * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ *
+ * A figure in the canvas (see cCanvas).
+ *
+ * Notes:
+ * - figures can be hierarchical (resulting in a figure tree)
+ * - coordinates are in canvas units (usually meters), not in pixels! conversion uses the "bgs" (background scale) display string tag
+ * - child figures are relative to the point returned by getChildOrigin()
+ * - a figure subtree can be hidden by calling setVisible(false)
+ * - dup() makes shallow copy (doesn't copy child figures); see dupTree() as well
+ * - figures are only data storage classes, rendering is done in the back-end (e.g. Tkenv)
+ *   by separate renderer classes.
+ *
+ * @see cCanvas
  */
 class SIM_API cFigure : public cOwnedObject
 {
@@ -89,7 +96,7 @@ class SIM_API cFigure : public cOwnedObject
     private:
         static int lastId;
         int id;
-        bool visible; // treated as structural change, for simpler handing
+        bool visible; // treated as structural change, for simpler handling
         std::vector<cFigure*> children;
         opp_string tags; //TODO stringpool
         uint64 tagBits;  // bit-to-tagname mapping is stored in cCanvas. Note: change to std::bitset if 64 tags are not enough
@@ -145,10 +152,10 @@ class SIM_API cFigure : public cOwnedObject
         virtual Point getChildOrigin() const = 0;
         virtual void translate(double x, double y) = 0;
         virtual cCanvas *getCanvas();
-        virtual bool isVisible() const {return visible;}
+        virtual bool isVisible() const {return visible;} // affects figure subtree, not just this very figure
         virtual void setVisible(bool visible) {this->visible = visible; doStructuralChange();}
-        virtual const char *getTags() const {return tags.c_str();}
-        virtual void setTags(const char *tags) {this->tags = tags; refreshTagBits();}
+        virtual const char *getTags() const {return tags.c_str();} // returns space-separated list of tags
+        virtual void setTags(const char *tags) {this->tags = tags; refreshTagBits();} // accepts space-separated list of tags
 
         virtual void addFigure(cFigure *figure);
         virtual void addFigure(cFigure *figure, int pos);
@@ -172,6 +179,11 @@ class SIM_API cFigure : public cOwnedObject
         virtual cFigure *getFigureByPath(const char *path);  //NOTE: path has similar syntax to cModule::getModuleByPath()
 };
 
+/**
+ * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ *
+ * For grouping children. No visual appearance.
+ */
 class SIM_API cGroupFigure : public cFigure
 {
     private:
@@ -191,6 +203,12 @@ class SIM_API cGroupFigure : public cFigure
         virtual void setLocation(const Point& loc)  {this->location = loc; doGeometryChange();}
 };
 
+/**
+ * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ *
+ * Notes:
+ * - line widths are in non-zooming pixels
+ */
 class SIM_API cAbstractLineFigure : public cFigure
 {
     private:
@@ -221,7 +239,11 @@ class SIM_API cAbstractLineFigure : public cFigure
         virtual void setEndArrowHead(ArrowHead endArrowHead)  {this->endArrowHead = endArrowHead; doVisualChange();}
 };
 
-// Tkenv limitation: there is one arrowhead type for the whole line (cannot be different at the two ends)
+/**
+ * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ *
+ * Tkenv limitation: there is one arrowhead type for the whole line (cannot be different at the two ends)
+ */
 class SIM_API cLineFigure : public cAbstractLineFigure
 {
     private:
@@ -243,7 +265,14 @@ class SIM_API cLineFigure : public cAbstractLineFigure
         virtual void setEnd(const Point& end)  {this->end = end; doGeometryChange();}
 };
 
-// Note: Tkenv limitation: capStyle not supported; arrowheads not supported
+/**
+ * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ *
+ * Notes:
+ * - bounds are that of the oval that this arc is part of
+ *
+ * Tkenv limitation: capStyle and arrowheads not supported
+ */
 class SIM_API cArcFigure : public cAbstractLineFigure
 {
     private:
@@ -268,7 +297,15 @@ class SIM_API cArcFigure : public cAbstractLineFigure
         virtual void setEndAngle(double endAngle) {this->endAngle = endAngle; doVisualChange();}
 };
 
-// Tkenv limitation: there is one arrowhead type for the whole line (cannot be different at the two ends)
+/**
+ * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ *
+ * Notes:
+ * - smooth=true makes the polyline use Bezier curvers, using midpoints of line segments as control points
+ *   (except for the starting and ending Bezier curve, where the first and the last point is used)
+ *
+ * Tkenv limitation: there is one arrowhead type for the whole line (cannot be different at the two ends)
+ */
 class SIM_API cPolylineFigure : public cAbstractLineFigure
 {
     private:
@@ -296,6 +333,12 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
         virtual void setJoinStyle(JoinStyle joinStyle) {this->joinStyle = joinStyle; doVisualChange();}
 };
 
+/**
+ * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ *
+ * Notes:
+ * - line grows symmetrically (i.e. rectangle outline grows both inside and outside if lineWidth grows)
+ */
 class SIM_API cAbstractShapeFigure : public cFigure
 {
     private:
@@ -327,6 +370,9 @@ class SIM_API cAbstractShapeFigure : public cFigure
         virtual void setLineWidth(double lineWidth)  {this->lineWidth = lineWidth; doVisualChange();}
 };
 
+/**
+ * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ */
 class SIM_API cRectangleFigure : public cAbstractShapeFigure
 {
     private:
@@ -346,6 +392,9 @@ class SIM_API cRectangleFigure : public cAbstractShapeFigure
         virtual void setBounds(const Rectangle& bounds)  {this->bounds = bounds; doGeometryChange();}
 };
 
+/**
+ * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ */
 class SIM_API cOvalFigure : public cAbstractShapeFigure
 {
     private:
@@ -365,6 +414,11 @@ class SIM_API cOvalFigure : public cAbstractShapeFigure
         virtual void setBounds(const Rectangle& bounds)  {this->bounds = bounds; doGeometryChange();}
 };
 
+/**
+ * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ *
+ * Note: bounds are that of the oval that this pie slice is part of.
+ */
 class SIM_API cPieSliceFigure : public cAbstractShapeFigure
 {
     private:
@@ -389,6 +443,12 @@ class SIM_API cPieSliceFigure : public cAbstractShapeFigure
         virtual void setEndAngle(double endAngle) {this->endAngle = endAngle; doVisualChange();}
 };
 
+/**
+ * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ *
+ * Note:
+ * - smooth makes the polygon use Bezier curves, using midpoints of line segments as control points
+ */
 class SIM_API cPolygonFigure : public cAbstractShapeFigure
 {
     private:
@@ -416,6 +476,11 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
         virtual void setJoinStyle(JoinStyle joinStyle) {this->joinStyle = joinStyle; doVisualChange();}
 };
 
+/**
+ * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ *
+ * Note: font size is in non-zooming pixels (font doesn't grow with zoom)
+ */
 class SIM_API cTextFigure : public cFigure
 {
     private:
@@ -450,7 +515,13 @@ class SIM_API cTextFigure : public cFigure
         virtual void setAlignment(Alignment alignment)  {this->alignment = alignment; doVisualChange();}
 };
 
-//Note: currently not implemented in Tkenv
+/**
+ * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ *
+ * Displays an icon already known to Tkenv (i.e. one available in the "i" display string tag).
+ *
+ * Note: currently not implemented in Tkenv
+ */
 class SIM_API cImageFigure : public cFigure
 {
     private:
@@ -483,8 +554,23 @@ class SIM_API cImageFigure : public cFigure
 
 
 /**
- * TODO document
- * Note: dup() makes deep copy (figure tree too)
+ * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ *
+ * Provides a scene graph based 2D drawing API for modules.
+ *
+ * Notes:
+ * - all figures are under a root figure (which we try not to expose too much)
+ * - Z-order is defined by child order (bottom-to-top) and preorder traversal
+ * - layer-like functionality is provided via figure tags: the Tkenv UI will allow figures
+ *   to be shown or hidden according to tags they contain
+ * - cModule has one dedicated canvas, additional canvas objects can be created (and Tkenv *will* allow the user to inspect them)
+ * - initial module canvas contents comes from @figure properties inside the compound module NED file, see test/anim/canvas for examples!
+ * - extensibility: type=foo in a @figure property will cause the canvas to look for a registered FooFigure or cFooFigure class to instantiate
+ * - dup() makes deep copy (duplicates the figure tree too)
+ * - the submodules layer (see getSubmodulesLayer()) is currently an empty placeholder figure where Tkenv will
+ *   draw modules and connections (by means outside cCanvas/cFigure) -- it can be used for Z-order positioning
+ *   of other figures relative to the submodules and connections
+ *
  */
 class SIM_API cCanvas : public cOwnedObject
 {
@@ -504,9 +590,9 @@ class SIM_API cCanvas : public cOwnedObject
     public:
         cCanvas(const char *name = NULL);
         cCanvas(const cCanvas& other) : cOwnedObject(other) {copy(other);}
+        virtual ~cCanvas();
         cCanvas& operator=(const cCanvas& other);
         virtual cCanvas *dup() const  {return new cCanvas(*this);}
-        virtual ~cCanvas();
         virtual void forEachChild(cVisitor *v);
         virtual std::string info() const;
 
