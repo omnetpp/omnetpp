@@ -77,11 +77,11 @@ inline std::ostream& operator<<(std::ostream& os, const cFigure::Point& p) {
     return os << "(" << p.x << ", " << p.y << ")";
 }
 
-// typedef cFigure::Rectangle Rectangle; // conflicts with MINGW's WINGDI.H Rectangle
-#define Rectangle cFigure::Rectangle
 inline std::ostream& operator<<(std::ostream& os, const cFigure::Rectangle& r) {
     return os << "(" << r.x << ", " << r.y << ", w=" << r.width << ", h=" << r.height << ")";
 }
+// typedef cFigure::Rectangle Rectangle; // conflicts with MINGW's WINGDI.H Rectangle
+#define Rectangle cFigure::Rectangle
 
 
 typedef cFigure::Color Color;
