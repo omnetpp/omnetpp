@@ -34,6 +34,7 @@ OBJS= $O/nedelements.obj $O/nedelement.obj $O/nederror.obj $O/nedexception.obj \
       $O/nedxmlparser.obj $O/nedsaxhandler.obj $O/saxparser_$(XMLPARSER).obj \
       $O/ned1.tab.obj $O/lex.ned1yy.obj \
       $O/msg2.tab.obj $O/lex.msg2yy.obj \
+      $O/msgcppgenerator.obj \
       $O/nedresourcecache.obj $O/nedtypeinfo.obj
 
 GENERATED_SOURCES=nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h \
@@ -163,6 +164,13 @@ $O/msg2.tab.obj: msg2.tab.cc \
   nedelement.h \
   nedutil.h \
   nedfilebuffer.h
+$O/msgcppgenerator.obj: msgcppgenerator.cc \
+  nederror.h \
+  nedxmldefs.h \
+  nedelements.h \
+  ned1generator.h \
+  nedelement.h \
+  nedutil.h
 $O/ned1.tab.obj: ned1.tab.cc \
   nedyydefs.h \
   nedparser.h \
