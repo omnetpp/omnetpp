@@ -96,7 +96,7 @@ struct Resolver : public opp_substitutevariables_resolver
     const ValueIterator::VariableMap& map;
     Resolver(const ValueIterator::VariableMap& map) : map(map) {}
     virtual bool isVariableNameChar(char c) {
-        return isVariableNameChar(c);
+        return OPP::isVariableNameChar(c);
     }
     virtual std::string operator()(const std::string& name) {
         ValueIterator::VariableMap::const_iterator it = map.find(name);
