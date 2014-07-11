@@ -1,16 +1,23 @@
 %description:
 Check that submodule names must be unique.
 
+%activity:
+ev << "#UNRESOLVED: not yet implemented\n";
+
 %file: test.ned
 
-module Node { }
+simple Test { }
 
-network Test
+network TestNetwork
 {
     submodules:
-        a: Node;
-        a: Node;
+        a: Test;
+        a: Test;
 }
+
+%inifile: test.ini
+network = TestNetwork
+cmdenv-express-mode = false
 
 %exitcode: 1
 

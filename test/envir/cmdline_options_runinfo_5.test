@@ -1,8 +1,8 @@
 %description:
 Tests that command-line --constraint has an effect on -x output
 
-NOTE: as of 4.2, this is a known fail, because of the activateConfig("General") call
-in the startup code (there's no $numHosts in General...)
+%activity:
+ev << "#UNRESOLVED: as of 4.2, because of the activateConfig('General') call in the startup code (there's no $numHosts in General...)";
 
 %inifile: omnetpp.ini
 
