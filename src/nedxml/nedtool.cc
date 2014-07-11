@@ -24,6 +24,7 @@
 #include <fstream>
 #include <errno.h>
 
+#include "msgcppgenerator.h"
 #include "nedparser.h"
 #include "nederror.h"
 #include "nedexception.h"
@@ -317,7 +318,22 @@ bool processFile(const char *fname, NEDErrorStore *errors)
             generateNED(out, tree, errors, opt_oldsyntax);
             out.close();
         }
-
+        else
+        {
+            assert(!opt_gensrc && !opt_genxml); // already handled above
+            if (ftype == MSG_FILE)
+            {
+                MsgCppGenerator generator(errors, msg_options);
+                generator.generate(dynamic_cast<MsgFileElement *>(tree), outhdrfname, outfname);
+            }
+            else
+            {
+                fprintf(stderr,"nedtool: generating C++ source from %s files is not supported\n",
+                    (ftype == NED_FILE ? "NED" : ftype == XML_FILE ? "XML" : "unknown"));
+                delete tree;
+                return false;
+            }
+        }
         delete tree;
 
         if (errors->containsError())
@@ -564,11 +580,6 @@ int main(int argc, char **argv)
         {
             // process individual files on the command line
             //FIXME these checks get bypassed with list files
-            if (!opt_genxml && !opt_gensrc)
-            {
-                fprintf(stderr,"nedtool: generating C++ source not currently supported\n"); //XXX
-                return 1;
-            }
             if (opt_genxml && opt_gensrc)
             {
                 fprintf(stderr,"nedtool: conflicting options -n (generate source) and -x (generate XML)\n");
