@@ -208,7 +208,7 @@ if [ "$PLATFORM" = "windows" -a -f bin/opp_run.exe ]; then
   if [ -d src/systemc ]; then
         (checkfingerprints_systemc)
   fi
-  (runtest core 4)
+  (runtest core 0)
   (runtest common 0)
   (runtest envir 1)
   (runtest makemake 0)
@@ -230,7 +230,7 @@ contains "Cmdenv : command-line user interface" yes
 (TEST_PROG="opp_run -v" contains "large-file-support=yes" yes)
 (checkfingerprints)
 (checkfingerprints_sharedlibs)
-(runtest core 4)
+(runtest core 0)
 (runtest common 0)
 (runtest envir 1)
 (runtest makemake 0)
