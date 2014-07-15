@@ -133,244 +133,257 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/lex.msg2yy.o: lex.msg2yy.cc \
-  msg2.tab.hh \
-  nedyydefs.h \
   nedexception.h \
-  nedxmldefs.h
+  nedxmldefs.h \
+  nedyydefs.h \
+  msg2.tab.hh
 $O/lex.ned1yy.o: lex.ned1yy.cc \
-  nedyydefs.h \
-  ned1.tab.hh \
   nedexception.h \
-  nedxmldefs.h
+  nedxmldefs.h \
+  ned1.tab.hh \
+  nedyydefs.h
 $O/lex.ned2yy.o: lex.ned2yy.cc \
   ned2.tab.hh \
-  nedyydefs.h \
+  nedxmldefs.h \
   nedexception.h \
-  nedxmldefs.h
+  nedyydefs.h
 $O/msg2.tab.o: msg2.tab.cc \
   nedfilebuffer.h \
+  nedxmldefs.h \
+  nedelement.h \
+  msg2.tab.hh \
+  nedparser.h \
+  nedyylib.h \
+  nedutil.h \
   nederror.h \
   nedelements.h \
-  nedutil.h \
-  nedparser.h \
-  msg2.tab.hh \
-  nedyydefs.h \
-  nedelement.h \
   nedexception.h \
+  nedyydefs.h
+$O/msgcppgenerator.o: msgcppgenerator.cc \
+  ../../include/platdep/platdefs.h \
+  nedelement.h \
   nedxmldefs.h \
-  nedyylib.h
+  ../../include/simkerneldefs.h \
+  ../../include/platdep/intxtypes.h \
+  nedexception.h \
+  nedelements.h \
+  ned2generator.h \
+  msgcppgenerator.h \
+  nederror.h \
+  nedutil.h
 $O/ned1.tab.o: ned1.tab.cc \
   nedfilebuffer.h \
-  nederror.h \
-  nedelements.h \
-  nedutil.h \
-  nedparser.h \
-  nedyydefs.h \
-  nedelement.h \
-  nedexception.h \
   nedxmldefs.h \
-  nedyylib.h
-$O/ned1generator.o: ned1generator.cc \
-  ned1generator.h \
-  nederror.h \
-  nedelements.h \
-  nedutil.h \
   nedelement.h \
-  nedxmldefs.h
-$O/ned2.tab.o: ned2.tab.cc \
-  nedfilebuffer.h \
+  nedparser.h \
+  nedyylib.h \
   nederror.h \
-  nedelements.h \
   nedutil.h \
+  nedelements.h \
+  nedexception.h \
+  nedyydefs.h
+$O/ned1generator.o: ned1generator.cc \
+  nedxmldefs.h \
+  nedelement.h \
+  nedutil.h \
+  nederror.h \
+  ned1generator.h \
+  nedelements.h
+$O/ned2.tab.o: ned2.tab.cc \
+  nedelement.h \
+  nedxmldefs.h \
+  nedfilebuffer.h \
+  nedutil.h \
+  nederror.h \
+  nedyylib.h \
   nedparser.h \
   ned2.tab.hh \
   nedyydefs.h \
-  nedelement.h \
   nedexception.h \
-  nedxmldefs.h \
-  nedyylib.h
+  nedelements.h
 $O/ned2generator.o: ned2generator.cc \
-  nederror.h \
-  nedelements.h \
-  nedutil.h \
   nedelement.h \
   nedxmldefs.h \
-  ned2generator.h
+  nederror.h \
+  nedutil.h \
+  ned2generator.h \
+  nedelements.h
 $O/nedcrossvalidator.o: nedcrossvalidator.cc \
   nederror.h \
-  nedelements.h \
-  nedresourcecache.h \
   nedcrossvalidator.h \
-  nedtypeinfo.h \
-  nedelement.h \
   nedexception.h \
-  nedxmldefs.h \
-  nedvalidator.h
-$O/neddtdvalidator.o: neddtdvalidator.cc \
-  nederror.h \
   nedelements.h \
-  neddtdvalidatorbase.h \
-  neddtdvalidator.h \
+  nedvalidator.h \
+  nedxmldefs.h \
   nedelement.h \
+  nedresourcecache.h \
+  nedtypeinfo.h
+$O/neddtdvalidator.o: neddtdvalidator.cc \
+  nedelements.h \
   nedexception.h \
+  neddtdvalidatorbase.h \
+  nederror.h \
+  nedelement.h \
+  neddtdvalidator.h \
   nedxmldefs.h \
   nedvalidator.h
 $O/neddtdvalidatorbase.o: neddtdvalidatorbase.cc \
-  nederror.h \
-  nedelements.h \
+  nedvalidator.h \
+  nedelement.h \
+  nedxmldefs.h \
   neddtdvalidatorbase.h \
-  nedelement.h \
-  nedexception.h \
-  nedxmldefs.h \
-  nedvalidator.h
+  nederror.h \
+  nedelements.h \
+  nedexception.h
 $O/nedelement.o: nedelement.cc \
-  nederror.h \
-  nedelement.h \
-  nedexception.h \
-  nedxmldefs.h
-$O/nedelements.o: nedelements.cc \
-  nederror.h \
-  nedelements.h \
-  nedelement.h \
-  nedexception.h \
-  nedxmldefs.h
-$O/nederror.o: nederror.cc \
-  nederror.h \
-  nedelement.h \
-  nedxmldefs.h
-$O/nedexception.o: nedexception.cc \
-  nedelement.h \
-  nedexception.h \
-  nedxmldefs.h
-$O/nedfilebuffer.o: nedfilebuffer.cc \
-  nederror.h \
-  nedfilebuffer.h \
-  nedelements.h \
-  nedparser.h \
-  nedyydefs.h \
   nedelement.h \
   nedxmldefs.h \
-  nedyylib.h
-$O/nedparser.o: nedparser.cc \
+  nedexception.h \
+  nederror.h
+$O/nedelements.o: nedelements.cc \
+  nedxmldefs.h \
+  nedelement.h \
   nederror.h \
-  nedfilebuffer.h \
   nedelements.h \
+  nedexception.h
+$O/nederror.o: nederror.cc \
+  nedxmldefs.h \
+  nedelement.h \
+  nederror.h
+$O/nedexception.o: nedexception.cc \
+  nedexception.h \
+  nedxmldefs.h \
+  nedelement.h
+$O/nedfilebuffer.o: nedfilebuffer.cc \
+  nedelement.h \
+  nedxmldefs.h \
+  nedfilebuffer.h \
+  nederror.h \
+  nedyylib.h \
   nedparser.h \
   nedyydefs.h \
+  nedelements.h
+$O/nedparser.o: nedparser.cc \
+  nedelements.h \
+  nedyydefs.h \
+  nedparser.h \
+  nederror.h \
+  nedfilebuffer.h \
   nedelement.h \
   nedxmldefs.h
 $O/nedresourcecache.o: nedresourcecache.cc \
   nedsyntaxvalidator.h \
-  nederror.h \
-  nedelements.h \
-  neddtdvalidatorbase.h \
   nedresourcecache.h \
-  nedparser.h \
-  nedcrossvalidator.h \
-  neddtdvalidator.h \
-  nedyydefs.h \
   nedtypeinfo.h \
-  nedelement.h \
-  nedexception.h \
-  nedxmldefs.h \
-  nedvalidator.h \
-  nedxmlparser.h
-$O/nedsaxhandler.o: nedsaxhandler.cc \
-  nederror.h \
-  nedelements.h \
-  nedelement.h \
-  saxparser.h \
-  nedexception.h \
-  nedxmldefs.h \
-  nedsaxhandler.h
-$O/nedsyntaxvalidator.o: nedsyntaxvalidator.cc \
-  nedsyntaxvalidator.h \
-  nederror.h \
-  nedelements.h \
-  nedelement.h \
-  nedexception.h \
-  nedxmldefs.h \
-  nedvalidator.h
-$O/nedtool.o: nedtool.cc \
-  ned1generator.h \
-  nedparser.h \
-  nedyydefs.h \
-  nedelement.h \
-  nedexception.h \
-  nedtools.h \
-  ned2generator.h \
-  nedsyntaxvalidator.h \
-  nederror.h \
-  nedelements.h \
-  neddtdvalidatorbase.h \
-  xmlgenerator.h \
   neddtdvalidator.h \
-  nedcrossvalidator.h \
+  nedelement.h \
+  nedxmldefs.h \
+  nedxmlparser.h \
+  nedvalidator.h \
+  nedelements.h \
+  nedexception.h \
+  nedyydefs.h \
+  nedparser.h \
+  neddtdvalidatorbase.h \
+  nederror.h \
+  nedcrossvalidator.h
+$O/nedsaxhandler.o: nedsaxhandler.cc \
+  nedsaxhandler.h \
+  nedelement.h \
+  nedxmldefs.h \
+  saxparser.h \
+  nederror.h \
+  nedelements.h \
+  nedexception.h
+$O/nedsyntaxvalidator.o: nedsyntaxvalidator.cc \
+  nederror.h \
+  nedexception.h \
+  nedelements.h \
+  nedvalidator.h \
+  nedxmldefs.h \
+  nedelement.h \
+  nedsyntaxvalidator.h
+$O/nedtool.o: nedtool.cc \
+  nedtools.h \
+  nedvalidator.h \
+  nedsyntaxvalidator.h \
+  nedelement.h \
+  neddtdvalidator.h \
+  neddtdvalidatorbase.h \
+  ned1generator.h \
+  msgcppgenerator.h \
+  nederror.h \
+  ned2generator.h \
+  nedexception.h \
+  nedxmlparser.h \
   ../common/ver.h \
   nedxmldefs.h \
-  nedvalidator.h \
-  nedxmlparser.h
-$O/nedtools.o: nedtools.cc \
-  nedelement.h \
-  nedexception.h \
-  nedtools.h \
-  nederror.h \
-  nedelements.h \
-  neddtdvalidatorbase.h \
-  neddtdvalidator.h \
-  nedxmldefs.h \
-  nedvalidator.h
-$O/nedtypeinfo.o: nedtypeinfo.cc \
-  nedresourcecache.h \
-  nedelement.h \
-  nedexception.h \
-  ned2generator.h \
-  nederror.h \
-  nedelements.h \
-  nedutil.h \
-  nedtypeinfo.h \
-  nedxmldefs.h
-$O/nedutil.o: nedutil.cc \
-  nedelement.h \
-  nedexception.h \
-  nedelements.h \
-  nedutil.h \
-  nedxmldefs.h
-$O/nedvalidator.o: nedvalidator.cc \
-  nedelement.h \
-  nedexception.h \
-  nederror.h \
-  nedelements.h \
-  nedxmldefs.h \
-  nedvalidator.h
-$O/nedxmlparser.o: nedxmlparser.cc \
-  nedelement.h \
-  nedsaxhandler.h \
-  nederror.h \
-  saxparser.h \
-  nedxmldefs.h \
-  nedxmlparser.h
-$O/nedyylib.o: nedyylib.cc \
-  nedfilebuffer.h \
   nedparser.h \
-  nedyydefs.h \
-  nedelement.h \
-  nederror.h \
+  xmlgenerator.h \
+  nedcrossvalidator.h \
+  nedelements.h \
+  nedyydefs.h
+$O/nedtools.o: nedtools.cc \
   nedelements.h \
   nedxmldefs.h \
-  nedyylib.h
-$O/saxparser_expat.o: saxparser_expat.cc \
-  saxparser.h \
-  nedxmldefs.h
-$O/saxparser_libxml.o: saxparser_libxml.cc \
-  saxparser.h \
-  nedxmldefs.h
-$O/saxparser_none.o: saxparser_none.cc \
   nederror.h \
+  neddtdvalidatorbase.h \
+  nedexception.h \
+  nedvalidator.h \
+  nedtools.h \
+  neddtdvalidator.h \
+  nedelement.h
+$O/nedtypeinfo.o: nedtypeinfo.cc \
+  nedelement.h \
+  nederror.h \
+  ned2generator.h \
+  nedexception.h \
+  nedxmldefs.h \
+  nedresourcecache.h \
+  nedtypeinfo.h \
+  nedutil.h \
+  nedelements.h
+$O/nedutil.o: nedutil.cc \
+  nedxmldefs.h \
+  nedutil.h \
+  nedelements.h \
+  nedelement.h \
+  nedexception.h
+$O/nedvalidator.o: nedvalidator.cc \
+  nedxmldefs.h \
+  nedelements.h \
+  nedelement.h \
+  nedvalidator.h \
+  nedexception.h \
+  nederror.h
+$O/nedxmlparser.o: nedxmlparser.cc \
   saxparser.h \
-  nedxmldefs.h
+  nedxmlparser.h \
+  nedxmldefs.h \
+  nederror.h \
+  nedsaxhandler.h \
+  nedelement.h
+$O/nedyylib.o: nedyylib.cc \
+  nedyydefs.h \
+  nedelements.h \
+  nedparser.h \
+  nedxmldefs.h \
+  nedfilebuffer.h \
+  nederror.h \
+  nedyylib.h \
+  nedelement.h
+$O/saxparser_expat.o: saxparser_expat.cc \
+  nedxmldefs.h \
+  saxparser.h
+$O/saxparser_libxml.o: saxparser_libxml.cc \
+  nedxmldefs.h \
+  saxparser.h
+$O/saxparser_none.o: saxparser_none.cc \
+  saxparser.h \
+  nedxmldefs.h \
+  nederror.h
 $O/xmlgenerator.o: xmlgenerator.cc \
   nedelement.h \
+  nedxmldefs.h \
   nedelements.h \
-  xmlgenerator.h \
-  nedxmldefs.h
+  xmlgenerator.h
