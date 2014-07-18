@@ -132,6 +132,7 @@ import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.sequencechart.SequenceChartPlugin;
+import org.omnetpp.sequencechart.editors.SequenceChartContributor.CustomNonlinearOptionsDialog;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
 import org.omnetpp.sequencechart.widgets.SequenceChart.AxisSpacingMode;
 import org.omnetpp.sequencechart.widgets.axisrenderer.AxisLineRenderer;

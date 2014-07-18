@@ -14,8 +14,8 @@
 		<p2.mirror>
 			<repository location="${baseLocation}/target/cdt" name="Local CDT repo" append="false" />
 			<source>
-				<repository location="http://download.eclipse.org/eclipse/updates/4.3" />
-				<repository location="http://download.eclipse.org/releases/kepler" />
+				<repository location="http://download.eclipse.org/eclipse/updates/4.4" />
+				<repository location="http://download.eclipse.org/releases/luna" />
 			</source>
 			<iu id="org.eclipse.cdt.feature.group"/>
 			<slicingoptions followStrict="true" />
