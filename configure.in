@@ -1384,28 +1384,15 @@ EOT
 elif test "$PLATFORM" = "macosx"; then
     :
 elif test -z "$TCL_LIBRARY"; then
-
-    cat 1>&2 << EOT
-
-WARNING: The TCL_LIBRARY environment variable is not set. If Tkenv doesn't start
-("Can't find a usable init.tcl"), add the following line to your .profile or 
-.bash_profile (provided you use bash):
-  export TCL_LIBRARY=$tcl_library
-
-For additional information, please visit the "Common installation problems"
-page on www.omnetpp.org.
-EOT
-
+    : # not a problem -- if TCL_LIBRARY was needed, testing tclsh and wish would have failed already
 elif test ! -f "$TCL_LIBRARY/init.tcl" -a ! -f "$TCL_LIBRARY/tclConfig.sh"; then
 
     cat 1>&2 << EOT
 
 WARNING: Your TCL_LIBRARY variable seems to be set incorrectly: there is no
-init.tcl or tclConfig.sh file in that directory. (Usual TCL_LIBRARY is /usr/lib/tcl8.4.)
+init.tcl or tclConfig.sh file in that directory. (TCL_LIBRARY usually points
+to /usr/lib/tcl8.5)
 EOT
 
-else
-    echo
-    echo "TCL_LIBRARY is set. Good!"
 fi
 
