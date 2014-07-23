@@ -1050,8 +1050,8 @@ fi
 CFLAGS_DEBUG="$CFLAGS_DEBUG -DXMLPARSER=$XMLPARSER"
 CFLAGS_RELEASE="$CFLAGS_RELEASE -DXMLPARSER=$XMLPARSER"
 
-# zlib is required by the xml ppackages
-if test $libxml_ok = yes -o $expat_ok = yes; then
+# zlib is required by the XML parsers and also Tcl/Tk (and also the TkPNG package inside Tkenv)
+if test $libxml_ok = yes -o $expat_ok = yes -o -z "$NO_TCL"; then
     if test "$ZLIB_LIBS" = ""; then
         ZLIB_LIBS=-lz
     fi
