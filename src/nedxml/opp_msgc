@@ -587,6 +587,7 @@ sub processFile($)
         print H "/**\n";
         print H " * Enum generated from <tt>$filename</tt> by opp_msgc.\n";
         $source =~ s/^/ * /mg;
+        $source =~ s/;$//;
         print H " * <pre>\n$source\n * </pre>\n";
         print H " */\n";
         print H "enum $enumname {\n";
@@ -1241,6 +1242,7 @@ sub generateClass
     print H "/**\n";
     print H " * Class generated from <tt>$filename</tt> by opp_msgc.\n";
     $source =~ s/^/ * /mg;
+    $source =~ s/;$//;
     print H " * <pre>\n$source\n * </pre>\n";
 
     if ($gap)
@@ -1809,7 +1811,7 @@ sub generateDescriptorClass
     # getProperty()
     print CC "const char *$msgdescclass\:\:getProperty(const char *propertyname) const\n";
     print CC "{\n";
-    for $key (keys %props) {
+    for $key (sort(keys %props)) {
         $prop = quote($props{$key});
         print CC "    if (!strcmp(propertyname,\"$key\")) return \"$prop\";\n";
     }
@@ -1939,7 +1941,7 @@ sub generateDescriptorClass
         my $ref = $fprops{$fieldname};
         if (keys(%$ref) != ()) {
             print CC "        case $i:\n";
-            for my $key (keys %$ref) {
+            for my $key (sort(keys %$ref)) {
                 $prop = quote($fprops{$fieldname}->{$key});
                 print CC "            if (!strcmp(propertyname,\"$key\")) return \"$prop\";\n";
             }
