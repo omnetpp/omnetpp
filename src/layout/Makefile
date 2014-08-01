@@ -81,94 +81,94 @@ clean:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/basicspringembedderlayout.o: basicspringembedderlayout.cc \
   graphlayouter.h \
-  ../common/lcgrandom.h \
+  basicspringembedderlayout.h \
   ../common/exception.h \
   ../common/commonutil.h \
+  ../common/lcgrandom.h \
   layoutdefs.h \
-  basicspringembedderlayout.h \
   ../common/commondefs.h
 $O/concentrictreeembedding.o: concentrictreeembedding.cc \
+  geometry.h \
+  concentrictreeembedding.h \
+  ../common/exception.h \
+  ../common/commonutil.h \
   graphcomponent.h \
-  layoutdefs.h \
   ../common/commondefs.h \
-  ../common/commonutil.h \
-  geometry.h \
-  ../common/exception.h \
-  concentrictreeembedding.h
-$O/forcedirectedembedding.o: forcedirectedembedding.cc \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  forcedirectedparametersbase.h \
-  ../common/commondefs.h \
-  ../common/lcgrandom.h \
-  geometry.h \
-  forcedirectedembedding.h \
-  forcedirectedparameters.h \
   layoutdefs.h
-$O/forcedirectedgraphlayouter.o: forcedirectedgraphlayouter.cc \
-  ../common/commondefs.h \
-  startreeembedding.h \
-  forcedirectedgraphlayouter.h \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  graphlayouter.h \
-  forcedirectedparametersbase.h \
-  graphcomponent.h \
-  layoutdefs.h \
+$O/forcedirectedembedding.o: forcedirectedembedding.cc \
   geometry.h \
-  ../common/lcgrandom.h \
-  heapembedding.h \
-  forcedirectedembedding.h \
-  forcedirectedparameters.h
-$O/forcedirectedparameters.o: forcedirectedparameters.cc \
+  ../common/exception.h \
+  ../common/commonutil.h \
+  ../common/commondefs.h \
   layoutdefs.h \
   forcedirectedparameters.h \
+  forcedirectedparametersbase.h \
   forcedirectedembedding.h \
+  ../common/lcgrandom.h
+$O/forcedirectedgraphlayouter.o: forcedirectedgraphlayouter.cc \
+  startreeembedding.h \
   geometry.h \
-  ../common/commondefs.h \
-  forcedirectedparametersbase.h \
+  graphlayouter.h \
+  heapembedding.h \
   ../common/exception.h \
-  ../common/commonutil.h
+  ../common/commonutil.h \
+  graphcomponent.h \
+  layoutdefs.h \
+  ../common/commondefs.h \
+  forcedirectedparameters.h \
+  forcedirectedparametersbase.h \
+  forcedirectedembedding.h \
+  forcedirectedgraphlayouter.h \
+  ../common/lcgrandom.h
+$O/forcedirectedparameters.o: forcedirectedparameters.cc \
+  geometry.h \
+  ../common/exception.h \
+  ../common/commonutil.h \
+  ../common/commondefs.h \
+  layoutdefs.h \
+  forcedirectedparameters.h \
+  forcedirectedparametersbase.h \
+  forcedirectedembedding.h
 $O/forcedirectedparametersbase.o: forcedirectedparametersbase.cc \
-  ../common/commondefs.h \
-  forcedirectedparametersbase.h \
+  geometry.h \
   ../common/exception.h \
   ../common/commonutil.h \
+  ../common/commondefs.h \
   layoutdefs.h \
-  geometry.h
+  forcedirectedparametersbase.h
 $O/geometry.o: geometry.cc \
-  ../common/commondefs.h \
-  ../common/exception.h \
+  geometry.h \
   ../common/commonutil.h \
+  ../common/exception.h \
   layoutdefs.h \
-  geometry.h
+  ../common/commondefs.h
 $O/graphcomponent.o: graphcomponent.cc \
   geometry.h \
-  layoutdefs.h \
-  graphcomponent.h \
   ../common/exception.h \
   ../common/commonutil.h \
-  ../common/commondefs.h
+  ../common/commondefs.h \
+  layoutdefs.h \
+  graphcomponent.h
 $O/graphlayouter.o: graphlayouter.cc \
+  graphlayouter.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
   layoutdefs.h \
-  ../common/lcgrandom.h \
   ../common/commondefs.h \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  graphlayouter.h
+  ../common/lcgrandom.h
 $O/heapembedding.o: heapembedding.cc \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  ../common/commondefs.h \
-  heapembedding.h \
   geometry.h \
+  heapembedding.h \
+  ../common/exception.h \
+  ../common/commonutil.h \
   graphcomponent.h \
+  ../common/commondefs.h \
   layoutdefs.h
 $O/startreeembedding.o: startreeembedding.cc \
+  startreeembedding.h \
   geometry.h \
-  layoutdefs.h \
-  graphcomponent.h \
   ../common/exception.h \
   ../common/commonutil.h \
-  startreeembedding.h \
-  ../common/commondefs.h
+  graphcomponent.h \
+  ../common/commondefs.h \
+  layoutdefs.h
