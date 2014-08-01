@@ -6,9 +6,8 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
-
-OMNeT++ 4.5 beta 1 (May 2014)
------------------------------
+OMNeT++ 4.5 (June 2014)
+-----------------------
 
 Tkenv:
 
@@ -39,17 +38,19 @@ Tkenv:
    - on-demand scrollbars (i.e. they are hidden when not needed)
    - main menu cleanup (reorganized, removed obsolete items)
    - dialogs where it makes sense now remember size and location
-   - additional hotkeys: Ctrl+Plus/Minu for Zoom, Ctrl+F5 Run Until,
+   - additional hotkeys: Ctrl+Plus/Minus for Zoom, Ctrl+F5 Run Until,
      Ctrl+Q Quit, etc.
    - OS X: use Command key for hotkeys instead of Ctrl
    - countless other, smaller improvements
 
 Other:
 
-  - In the Windows bundle, the compiler and the debugger have been upgraded
-    to gcc-4.8.1 and gdb-7.5; Tcl/Tk has been upgraded to version 8.6.0.
+  - In the Windows bundle, the debugger have been upgraded to gdb-7.7;
+    Tcl/Tk has been upgraded to version 8.6.0.
   - New configure.user option to prefer clang over gcc if both are installed
-  - New configure.user option to enable/disable C++11 compilance (-std=c++11)
+  - New configure.user option to enable/disable C++ 11 compilance (-std=c++11)
+    Note that this is NOT supported on Windows because of issues with the bundled
+    MinGW 4.7 compiler.
   - Tcl/Tk version 8.5 is required, 8.6 is preferred; BLT is no longer in use
 
 

@@ -545,20 +545,20 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplace
 
            $c create $sh $x1 $y1 $x2 $y2 \
                -fill $fill -width $width -outline $outline -dash $dash \
-               -tags "dx tooltip submod $submodptr"
+               -tags "dx tooltip submod submodext $submodptr"
 
            if [info exists tags(i)] {
-               $c create image $x $y -image $img -anchor center -tags "dx tooltip submod $submodptr"
+               $c create image $x $y -image $img -anchor center -tags "dx tooltip submod submodext $submodptr"
            }
            if {$inspectordata($c:showlabels)} {
-               $c create text $x [expr $y2+$width/2+3] -text $name -anchor n -tags "dx" -font CanvasFont
+               $c create text $x [expr $y2+$width/2+3] -text $name -anchor n -tags "dx submodext" -font CanvasFont
            }
 
        } else {
            # draw an icon when no shape is present (only i tag, or neither i nor b tag)
-           $c create image $x $y -image $img -anchor center -tags "dx tooltip submod $submodptr"
+           $c create image $x $y -image $img -anchor center -tags "dx tooltip submod submodext $submodptr"
            if {$inspectordata($c:showlabels)} {
-               $c create text $x [expr $y+$sy/2+3] -text $name -anchor n -tags "dx" -font CanvasFont
+               $c create text $x [expr $y+$sy/2+3] -text $name -anchor n -tags "dx submodext" -font CanvasFont
            }
        }
 
@@ -567,7 +567,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplace
            set r [ModuleInspector:getSubmodCoords $c $submodptr]
            set qx [expr [lindex $r 2]+1]
            set qy [lindex $r 1]
-           $c create text $qx $qy -text "q:?" -anchor nw -tags "dx tooltip qlen qlen-$submodptr" -font CanvasFont
+           $c create text $qx $qy -text "q:?" -anchor nw -tags "dx tooltip qlen qlen-$submodptr submodext" -font CanvasFont
        }
 
        # modifier icon (i2 tag)
@@ -579,7 +579,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplace
            set mx [expr [lindex $r 2]+2]
            set my [expr [lindex $r 1]-2]
            set img2 [dispstrGetImage $tags(i2) $tags(is2) $zoomfactor $imagesizefactor $alphamult]
-           $c create image $mx $my -image $img2 -anchor ne -tags "dx tooltip submod $submodptr"
+           $c create image $mx $my -image $img2 -anchor ne -tags "dx tooltip submod submodext $submodptr"
        }
 
        # text (t=<text>,<position>,<color>); multiple t tags supported (t1,t2,etc)
@@ -610,7 +610,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplace
            } else {
                error "wrong position in t= tag, should be `l', `r' or `t'"
            }
-           $c create text $tx $ty -text $txt -fill $color -anchor $anch -justify $just -tags "dx" -font CanvasFont
+           $c create text $tx $ty -text $txt -fill $color -anchor $anch -justify $just -tags "dx submodext" -font CanvasFont
        }
 
        # r=<radius>,<fillcolor>,<color>,<width>; multiple r tags supported (r1,r2,etc)
@@ -638,7 +638,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplace
            set y2 [expr $y + $radius]
 
            set circle [$c create oval $x1 $y1 $x2 $y2 \
-               -fill $rfill -width $rwidth -outline $routline -tags "dx range"]
+               -fill $rfill -width $rwidth -outline $routline -tags "dx range submodext"]
            # has been moved to the beginning of ModuleInspector:drawEnclosingModule to maintain relative z order of range indicators
            # $c lower $circle
        }
@@ -975,7 +975,7 @@ proc ModuleInspector:drawConnection {c gateptr dispstr srcptr destptr chanptr sr
            set arrow none
        }
 
-       $c create line $arrow_coords -arrow $arrow -fill $fill -dash $pattern -width $width -tags "dx tooltip conn $gateptr"
+       $c create line $arrow_coords -arrow $arrow -fill $fill -dash $pattern -width $width -tags "dx tooltip conn submodext $gateptr"
 
        # if we have a two way connection we should draw only in one direction
        # the other line will be hidden (lowered under anything else)
@@ -1012,7 +1012,7 @@ proc ModuleInspector:drawConnection {c gateptr dispstr srcptr destptr chanptr sr
            } else {
                error "wrong position in connection t= tag, should be `l', `r' or `t' (for beginning, end, or middle, respectively)"
            }
-           $c create text $x $y -text $txt -fill $color -anchor $anch -justify $just -tags "dx" -font CanvasFont
+           $c create text $x $y -text $txt -fill $color -anchor $anch -justify $just -tags "dx submodext" -font CanvasFont
        }
 
     } errmsg] {
@@ -1463,11 +1463,11 @@ proc ModuleInspector:drawNextEventMarker {c modptr type} {
     }
 }
 
-# ModuleInspector:updateSubmodule --
+# ModuleInspector:refreshSubmodule --
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc ModuleInspector:updateSubmodule {insp modptr} {
+proc ModuleInspector:refreshSubmodule {insp modptr} {
     # currently the only thing to be updated is the number of elements in queue
     set c $insp.c
     set dispstr [opp_getobjectfield $modptr displayString]

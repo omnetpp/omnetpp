@@ -126,6 +126,8 @@ proc storeMainwinGeometry {} {
 
     set lb .inspector.nb.contents.main.list
     inspectorListbox:storeColumnWidths $lb "inspector:columnwidths"
+
+    set config(mainwin-log-mode) [LogInspector:getMode .log]
 }
 
 # loadTkenvrc --
@@ -206,6 +208,8 @@ proc applyTkenvrc {} {
 
     set lb .inspector.nb.contents.main.list
     inspectorListbox:restoreColumnWidths $lb "inspector:columnwidths"
+
+    after idle "LogInspector:setMode .log $config(mainwin-log-mode)"
 
     toggleStatusDetails
     toggleStatusDetails

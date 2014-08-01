@@ -22,6 +22,8 @@
 #include "simkerneldefs.h"
 #include "cownedobject.h"
 #include "cexception.h"
+#include "cmodule.h"
+#include "csimulation.h"
 
 NAMESPACE_BEGIN
 

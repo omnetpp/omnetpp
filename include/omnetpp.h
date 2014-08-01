@@ -21,6 +21,7 @@
 #include "carray.h"
 #include "cboolparimpl.h"
 #include "cobjectfactory.h"
+#include "ccanvas.h"
 #include "ccommbuffer.h"
 #include "ccomponent.h"
 #include "ccomponenttype.h"

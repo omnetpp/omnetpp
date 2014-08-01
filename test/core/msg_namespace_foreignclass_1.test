@@ -1,0 +1,164 @@
+%description:
+We used to have weird compilation errors when adding the "inet" namespace
+to the INET Framework, caused by the generic templated operator<<.
+
+%file: types.h
+#include <vector>
+
+// *** global namespace ***
+
+// class with operator<<
+class IPAddress { };
+inline std::ostream& operator<<(std::ostream& out, const IPAddress& addr) {out << "<IPAddress>"; return out;}
+
+// class without operator<<
+class Opaque { };
+
+// vectors with elements that have operator<<
+typedef std::vector<int> IntVector;
+typedef std::vector<IPAddress> IPAddressVector;
+
+// *** inet namespace ***
+
+namespace inet {
+// class with operator<<
+class IPAddress { };
+inline std::ostream& operator<<(std::ostream& out, const IPAddress& addr) {out << "<inet::IPAddress>"; return out;}
+
+// class without operator<<
+class Opaque { };
+
+// vectors with elements that have operator<<
+typedef std::vector<int> IntVector;
+typedef std::vector<IPAddress> IPAddressVector;
+}
+
+// *** foreign namespace ***
+
+namespace foreign {
+// class with operator<<
+class IPAddress { };
+inline std::ostream& operator<<(std::ostream& out, const IPAddress& addr) {out << "<foreign::IPAddress>"; return out;}
+
+// class without operator<<
+class Opaque { };
+
+// vectors with elements that have operator<<
+typedef std::vector<int> IntVector;
+typedef std::vector<IPAddress> IPAddressVector;
+}
+
+%file: options.msg
+class Options {
+    int a;
+    string b;
+}
+
+%file: inet_options.msg
+namespace inet;
+class Options {
+    int a;
+    string b;
+}
+
+%file: foreign_options.msg
+namespace foreign;
+class Options {
+    int a;
+    string b;
+}
+
+%file: test.msg
+cplusplus {{
+#include "types.h"
+#include "options_m.h"
+#include "inet_options_m.h"
+#include "foreign_options_m.h"
+}}
+
+namespace inet;
+
+class noncobject ::IPAddress;
+class noncobject ::Opaque;
+class noncobject ::IntVector;
+class noncobject ::IPAddressVector;
+class noncobject ::Options;
+
+class noncobject inet::IPAddress;
+class noncobject inet::Opaque;
+class noncobject inet::IntVector;
+class noncobject inet::IPAddressVector;
+class noncobject inet::Options;
+
+class noncobject foreign::IPAddress;
+class noncobject foreign::Opaque;
+class noncobject foreign::IntVector;
+class noncobject foreign::IPAddressVector;
+class noncobject foreign::Options;
+
+class Dummy {
+    string str = "Hello";
+
+    ::IPAddress addr;
+    ::Opaque opaque;
+    ::IntVector intvec;
+    ::IPAddressVector addrvec;
+    ::Options options;
+
+    inet::IPAddress inet_addr;
+    inet::Opaque inet_opaque;
+    inet::IntVector inet_intvec;
+    inet::IPAddressVector inet_addrvec;
+    inet::Options inet_options;
+
+    foreign::IPAddress foreign_addr;
+    foreign::Opaque foreign_opaque;
+    foreign::IntVector foreign_intvec;
+    foreign::IPAddressVector foreign_addrvec;
+    foreign::Options foreign_options;
+}
+
+%includes:
+#include "test_m.h"
+
+%activity:
+inet::Dummy *dummy = new inet::Dummy();
+
+dummy->setAddr(::IPAddress());
+dummy->getIntvec().push_back(13);
+dummy->getAddrvec().push_back(::IPAddress());
+
+dummy->setInet_addr(inet::IPAddress());
+dummy->getInet_intvec().push_back(42);
+dummy->getInet_addrvec().push_back(inet::IPAddress());
+
+dummy->setForeign_addr(foreign::IPAddress());
+dummy->getForeign_intvec().push_back(60);
+dummy->getForeign_addrvec().push_back(foreign::IPAddress());
+
+cClassDescriptor *desc = dummy->getDescriptor();
+for (int i = 0; i < desc->getFieldCount(dummy); i++)
+    EV << desc->getFieldName(dummy, i) << "=\"" << desc->getFieldAsString(dummy, i, 0) << "\"\n";
+
+%contains: stdout
+className="inet::Dummy"
+fullName=""
+fullPath=""
+info=""
+detailedInfo=""
+str="Hello"
+addr="<IPAddress>"
+opaque=""
+intvec="{13} (size=1)"
+addrvec="{<IPAddress>} (size=1)"
+options=""
+inet_addr="<inet::IPAddress>"
+inet_opaque=""
+inet_intvec="{42} (size=1)"
+inet_addrvec="{<inet::IPAddress>} (size=1)"
+inet_options=""
+foreign_addr="<foreign::IPAddress>"
+foreign_opaque=""
+foreign_intvec="{60} (size=1)"
+foreign_addrvec="{<foreign::IPAddress>} (size=1)"
+foreign_options=""

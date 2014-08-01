@@ -2422,8 +2422,11 @@ public class DocumentationGenerator {
 
         if (typeElement instanceof INedTypeElement)
             fileName += ((INedTypeElement)typeElement).getNedTypeInfo().getFullyQualifiedName();
-        else if (typeElement instanceof IMsgTypeElement)
-            fileName += typeElement.getName();
+        else if (typeElement instanceof IMsgTypeElement) {
+            MsgFileElementEx msgFileElement = typeElement.getContainingMsgFileElement();
+            IFile file = msgResources.getMsgFile(msgFileElement);
+            fileName += file.getProjectRelativePath().removeLastSegments(1).toPortableString().replace('/', '-') + "-" + typeElement.getName();
+        }
 
         if (discriminator != null)
             fileName += "-" + discriminator;

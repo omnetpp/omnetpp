@@ -378,10 +378,11 @@ if test "$TOOLCHAIN_NAME" = ""; then
 fi
 
 #----------------------
-# check whether the compiler supports the C++11 standard - turned off for now, but should be enabled for OMNeT++ 5.0
+# check whether the compiler supports the C++11 standard (gcc specific options)
+# turned off for now, but should be enabled for OMNeT++ 5.0
 #----------------------
 if test "$USE_CPP11" = "yes"; then
-  AC_PROG_CXX_OPTION(-std=c++11, CXXFLAGS="$CXXFLAGS -std=c++11")
+  AC_PROG_CXX_OPTION(-std=c++11 -Wno-deprecated-register, CXXFLAGS="$CXXFLAGS -std=c++11 -Wno-deprecated-register")
 fi
 
 #----------------------
@@ -830,13 +831,13 @@ else
     # Check for wish.
     AC_CHECK_PROGS(WISH, $WISH wish wish86 wish8.6 wish85 wish8.5 cygwish cygwish86 cygwish85, nope)
     if test "$WISH" = nope; then
-       AC_MSG_ERROR([Cannot find wish, part of Tcl/Tk -- maybe it is not in the PATH or has some exotic name (tested names were: wish wish86 wish8.6 wish85 wish8.5 wish84 wish8.4 cygwish cygwish86 cygwish85 cygwish84)])
+       AC_MSG_ERROR([Cannot find wish, part of Tcl/Tk -- maybe it is not in the PATH or has some exotic name (tested names were: wish wish86 wish8.6 wish85 wish8.5 cygwish cygwish86 cygwish85)])
     fi
     if echo 'puts OK; exit' | $WISH | grep OK >/dev/null; then :; else
         AC_MSG_ERROR([Cannot run wish (wish command "puts OK; exit" failed): maybe you are not running X or DISPLAY environment variable not set?])
     fi
-    if echo 'catch {package require Tk 8.4; puts OK}; exit' | $WISH | grep OK >/dev/null; then :; else
-        AC_MSG_ERROR([wish command "package require Tk 8.4" failed: probably old Tcl/Tk version, version 8.4.0+ required])
+    if echo 'catch {package require Tk 8.5; puts OK}; exit' | $WISH | grep OK >/dev/null; then :; else
+        AC_MSG_ERROR([wish command "package require Tk 8.5" failed: your Tcl/Tk installation is likely too old, version 8.5.0+ is required])
     fi
 
     # note: square brackets necessary otherwise M4 messes up the Tcl command
@@ -1050,8 +1051,8 @@ fi
 CFLAGS_DEBUG="$CFLAGS_DEBUG -DXMLPARSER=$XMLPARSER"
 CFLAGS_RELEASE="$CFLAGS_RELEASE -DXMLPARSER=$XMLPARSER"
 
-# zlib is required by the xml ppackages
-if test $libxml_ok = yes -o $expat_ok = yes; then
+# zlib is required by the XML parsers and also Tcl/Tk (and also the TkPNG package inside Tkenv)
+if test $libxml_ok = yes -o $expat_ok = yes -o -z "$NO_TCL"; then
     if test "$ZLIB_LIBS" = ""; then
         ZLIB_LIBS=-lz
     fi
@@ -1385,29 +1386,15 @@ EOT
 elif test "$PLATFORM" = "macosx"; then
     :
 elif test -z "$TCL_LIBRARY"; then
-
-    cat 1>&2 << EOT
-
-WARNING: The TCL_LIBRARY environment variable is not set, and without it
-Tkenv (the GUI runtime environment) may be unable to find the BLT library.
-
-Add the following line to your .profile or .bash_profile (provided you use bash):
-  export TCL_LIBRARY=$tcl_library
-
-For additional information, please visit the "Common installation problems"
-page on www.omnetpp.org.
-EOT
-
+    : # not a problem -- if TCL_LIBRARY was needed, testing tclsh and wish would have failed already
 elif test ! -f "$TCL_LIBRARY/init.tcl" -a ! -f "$TCL_LIBRARY/tclConfig.sh"; then
 
     cat 1>&2 << EOT
 
 WARNING: Your TCL_LIBRARY variable seems to be set incorrectly: there is no
-init.tcl or tclConfig.sh file in that directory. (Usual TCL_LIBRARY is /usr/lib/tcl8.4.)
+init.tcl or tclConfig.sh file in that directory. (TCL_LIBRARY usually points
+to /usr/lib/tcl8.5)
 EOT
 
-else
-    echo
-    echo "TCL_LIBRARY is set. Good!"
 fi
 

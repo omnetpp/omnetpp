@@ -167,7 +167,7 @@ void HistogramInspector::getCellInfo( char *buf, int cell )
           );
 }
 
-int HistogramInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
+int HistogramInspector::inspectorCommand(int argc, const char **argv)
 {
    if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
 
@@ -184,7 +184,7 @@ int HistogramInspector::inspectorCommand(Tcl_Interp *interp, int argc, const cha
       return TCL_OK;
    }
 
-   return Inspector::inspectorCommand(interp, argc, argv);
+   return Inspector::inspectorCommand(argc, argv);
 }
 
 NAMESPACE_END

@@ -87,9 +87,9 @@ void GenericObjectInspector::commit()
    Inspector::commit();
 }
 
-int GenericObjectInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
+int GenericObjectInspector::inspectorCommand(int argc, const char **argv)
 {
-   return Inspector::inspectorCommand(interp, argc, argv);
+   return Inspector::inspectorCommand(argc, argv);
 }
 
 NAMESPACE_END

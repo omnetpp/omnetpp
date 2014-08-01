@@ -40,6 +40,7 @@ static void getElement(const char *pathexpr)
 }
 
 %activity:
+ev << "#UNRESOLVED: not implemented\n";
 
 getElement(".");
 getElement("././.");

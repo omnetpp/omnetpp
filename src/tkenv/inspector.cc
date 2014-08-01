@@ -31,18 +31,29 @@
 
 NAMESPACE_BEGIN
 
-#define E(x) #x, x
-static cEnum inspTypes("", E(INSP_DEFAULT), E(INSP_OBJECT), E(INSP_GRAPHICAL), E(INSP_MODULEOUTPUT), NULL);
-#undef E
 
 const char *insptypeNameFromCode(int code)
 {
-    return inspTypes.getStringFor(code);
+#define CASE(x)  case x: return #x;
+    switch (code) {
+        CASE(INSP_DEFAULT);
+        CASE(INSP_OBJECT);
+        CASE(INSP_GRAPHICAL);
+        CASE(INSP_MODULEOUTPUT);
+        default: return "?";
+    }
+#undef CASE
 }
 
 int insptypeCodeFromName(const char *name)
 {
-    return inspTypes.lookup(name, -1);
+#define CASE(x)  if (strcmp(name, #x)==0) return x;
+    CASE(INSP_DEFAULT);
+    CASE(INSP_OBJECT);
+    CASE(INSP_GRAPHICAL);
+    CASE(INSP_MODULEOUTPUT);
+    return -1;
+#undef CASE
 }
 
 //----
@@ -212,7 +223,7 @@ void Inspector::goBack()
     }
 }
 
-int Inspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
+int Inspector::inspectorCommand(int argc, const char **argv)
 {
     if (argc != 1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
 

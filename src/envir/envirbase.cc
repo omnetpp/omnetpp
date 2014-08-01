@@ -220,6 +220,7 @@ EnvirOptions::EnvirOptions()
 
 EnvirBase::EnvirBase()
 {
+    opt = NULL;
     args = NULL;
     cfg = NULL;
     xmlcache = NULL;
@@ -250,6 +251,7 @@ EnvirBase::~EnvirBase()
         listeners.pop_back();
     }
 
+    delete opt;
     delete args;
     delete cfg;
     delete xmlcache;
@@ -271,6 +273,7 @@ EnvirBase::~EnvirBase()
 
 int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
 {
+    opt = createOptions();
     args = new ArgList();
     args->parse(argc, argv, "h?f:u:l:c:r:p:n:x:X:agGvw");  //TODO share spec with startup.cc!
     cfg = dynamic_cast<cConfigurationEx *>(configobject);
@@ -384,8 +387,6 @@ bool EnvirBase::setup()
 {
     try
     {
-        opt = createOptions();
-
         // ensure correct numeric format in output files
         setPosixLocale();
 

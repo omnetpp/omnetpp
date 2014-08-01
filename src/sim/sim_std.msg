@@ -42,18 +42,83 @@ typedef cGate::Type  cGate_Type;
 Register_Enum(cPar_Type,  (cPar::BOOL, cPar::DOUBLE, cPar::LONG, cPar::STRING, cPar::XML));
 Register_Enum(cGate_Type, (cGate::INPUT, cGate::OUTPUT, cGate::INOUT));
 
+typedef cFigure::LineStyle  cFigure_LineStyle;
+typedef cFigure::CapStyle   cFigure_CapStyle;
+typedef cFigure::JoinStyle  cFigure_JoinStyle;
+typedef cFigure::ArrowHead  cFigure_ArrowHead;
+typedef cFigure::Anchor     cFigure_Anchor;
+typedef cFigure::Alignment  cFigure_Alignment;
+
+namespace aux {
+#define cF cFigure
+Register_Enum(cFigure_LineStyle, (cF::LINE_SOLID, cF::LINE_DOTTED, cF::LINE_DASHED));
+Register_Enum(cFigure_CapStyle,  (cF::CAP_BUTT, cF::CAP_SQUARE, cF::CAP_ROUND));
+Register_Enum(cFigure_JoinStyle, (cF::JOIN_BEVEL, cF::JOIN_MITER, cF::JOIN_ROUND));
+Register_Enum(cFigure_ArrowHead, (cF::ARROW_NONE, cF::ARROW_SIMPLE, cF::ARROW_TRIANGLE, cF::ARROW_BARBED));
+Register_Enum(cFigure_Anchor,    (cF::ANCHOR_CENTER, cF::ANCHOR_N, cF::ANCHOR_E, cF::ANCHOR_S, cF::ANCHOR_W, cF::ANCHOR_NW, cF::ANCHOR_NE, cF::ANCHOR_SE, cF::ANCHOR_SW));
+Register_Enum(cFigure_Alignment, (cF::ALIGN_LEFT, cF::ALIGN_RIGHT, cF::ALIGN_CENTER));
+#undef cF
+};
 
 //
 // Define operator<< for some classes
 //
-std::ostream& operator<<(std::ostream& os, const cDisplayString& d) {
+inline std::ostream& operator<<(std::ostream& os, const cDisplayString& d) {
     return os << "\"" << d.str() << "\"";
 }
 
 typedef cDensityEstBase::Cell cDensityEstBase_Cell;
-std::ostream& operator<<(std::ostream& os, const cDensityEstBase::Cell& cell) {
+inline std::ostream& operator<<(std::ostream& os, const cDensityEstBase::Cell& cell) {
     return os << "[" << cell.lower << ", " << cell.upper << ")  ==>  " << cell.value << " (" << cell.relativeFreq << ")";
 }
+
+typedef cFigure::Point Point;
+inline std::ostream& operator<<(std::ostream& os, const cFigure::Point& p) {
+    return os << "(" << p.x << ", " << p.y << ")";
+}
+
+inline std::ostream& operator<<(std::ostream& os, const cFigure::Rectangle& r) {
+    return os << "(" << r.x << ", " << r.y << ", w=" << r.width << ", h=" << r.height << ")";
+}
+// typedef cFigure::Rectangle Rectangle; // conflicts with MINGW's WINGDI.H Rectangle
+#define Rectangle cFigure::Rectangle
+
+
+typedef cFigure::Color Color;
+inline std::ostream& operator<<(std::ostream& os, const cFigure::Color& c) {
+    return os << "(" << (int)c.red << "," << (int)c.green << "," << (int)c.blue << ")";
+}
+
+typedef cFigure::Font Font;
+static std::ostream& operator<<(std::ostream& os, const cFigure::Font& f)
+{
+    os << "(" << (f.typeface.empty()? "<default>" : f.typeface) << ", ";
+    os << (int)f.pointSize << " pt";
+    if (!f.style)
+        os << ", none";
+    else {
+        os << ",";
+        if (f.style & cFigure::FONT_BOLD)  os << " bold";
+        if (f.style & cFigure::FONT_ITALIC)  os << " italic";
+        if (f.style & cFigure::FONT_UNDERLINE)  os << " underline";
+    }
+    os << ")";
+    return os;
+}
+
+/* XXX currently unused
+typedef std::vector<std::string> StringVector;
+static std::ostream& operator<<(std::ostream& os, const std::vector<std::string>& v)
+{
+    os << "[";
+    for (int i = 0; i < (int)v.size(); i++) {
+        if (i > 0) os << ", ";
+        os << v[i];
+    }
+    os << "]";
+    return os;
+}
+*/
 
 //
 // This function is to be referenced from sim. kernel classes, to force the
@@ -66,7 +131,21 @@ void std_sim_descriptor_dummy() {}
 enum cPar_Type;
 enum cGate_Type;
 
+enum cFigure_LineStyle;
+enum cFigure_CapStyle;
+enum cFigure_JoinStyle;
+enum cFigure_ArrowHead;
+enum cFigure_Anchor;
+enum cFigure_Alignment;
+
 struct cDensityEstBase_Cell;
+
+struct Point;
+struct Rectangle;
+struct Color;
+struct Font;
+
+class noncobject StringVector;
 
 class cObject
 {
@@ -512,6 +591,109 @@ class cXMLElement
     bool hasChildren @getter(hasChildren) @hint("Whether this XML element has child elements");
     string detailedInfo @getter(detailedInfo) @label(contents);
 }
+
+class cFigure extends cOwnedObject
+{
+    int id;
+    bool visible @getter(isVisible);
+    string tags;
+    Point childOrigin @opaque;
+    cFigure *children[] @getter(getFigure) @sizeGetter(getNumFigures);
+}
+
+class cGroupFigure extends cFigure
+{
+    Point location;
+}
+
+class cAbstractLineFigure extends cFigure
+{
+    Color lineColor;
+    int lineStyle @enum(cFigure_LineStyle);
+    double lineWidth;
+    int capStyle @enum(cFigure_CapStyle);
+    int startArrowHead @enum(cFigure_ArrowHead);
+    int endArrowHead @enum(cFigure_ArrowHead);
+}
+
+class cLineFigure extends cAbstractLineFigure
+{
+    Point start;
+    Point end;
+}
+
+class cArcFigure extends cAbstractLineFigure
+{
+    Rectangle bounds;
+    double startAngle;
+    double endAngle;
+}
+
+class cPolylineFigure extends cAbstractLineFigure
+{
+    Point points[] @getter(getPoint) @sizeGetter(getNumPoints);
+    bool smooth;
+    int joinStyle @enum(cFigure_JoinStyle);
+}
+
+class cAbstractShapeFigure extends cFigure
+{
+    bool outlined @getter(isOutlined);
+    bool filled @getter(isFilled);
+    Color lineColor;
+    Color fillColor;
+    int lineStyle @enum(cFigure_LineStyle);
+    double lineWidth;
+}
+
+class cRectangleFigure extends cAbstractShapeFigure
+{
+    Rectangle bounds;
+}
+
+class cOvalFigure extends cAbstractShapeFigure
+{
+    Rectangle bounds;
+}
+
+class cPieSliceFigure extends cAbstractShapeFigure
+{
+    Rectangle bounds;
+    double startAngle;
+    double endAngle;
+}
+
+class cPolygonFigure extends cAbstractShapeFigure
+{
+    Point points[] @getter(getPoint) @sizeGetter(getNumPoints);
+    bool smooth;
+    int joinStyle @enum(cFigure_JoinStyle);
+}
+
+class cTextFigure extends cFigure
+{
+    Point location;
+    Color color;
+    Font font;
+    string text;
+    int anchor @enum(cFigure_Anchor);
+    int alignment @enum(cFigure_Alignment);
+}
+
+class cImageFigure extends cFigure
+{
+    Point location;
+    string imageName;
+    Color tint;
+    int anchor @enum(cFigure_Anchor);
+}
+
+class cCanvas extends cOwnedObject
+{
+    cFigure *rootFigure;
+    string allTags;
+}
+
 
 cplusplus
 {{

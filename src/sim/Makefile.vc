@@ -28,7 +28,7 @@ IMPLIBS=$O/../common/oppcommon$D.lib
 OBJS_STD=\
     $O/carray.obj $O/cdelaychannel.obj $O/cdataratechannel.obj $O/cboolparimpl.obj $O/cchannel.obj \
     $O/cobjectfactory.obj $O/ccomponent.obj $O/ccomponenttype.obj $O/cconfiguration.obj $O/cconfigoption.obj \
-    $O/ccoroutine.obj $O/cdefaultlist.obj $O/cdensityestbase.obj \
+    $O/ccanvas.obj $O/ccoroutine.obj $O/cdefaultlist.obj $O/cdensityestbase.obj \
     $O/cdetect.obj $O/cdisplaystring.obj $O/cdoubleparimpl.obj $O/cdynamicexpression.obj $O/cenvir.obj \
     $O/cenum.obj $O/cevent.obj $O/cexception.obj $O/cfsm.obj $O/cnedmathfunction.obj $O/cgate.obj $O/chistogram.obj \
     $O/cksplit.obj $O/clcg32.obj $O/clistener.obj $O/clog.obj $O/clongparimpl.obj $O/cmersennetwister.obj \
@@ -206,6 +206,31 @@ $O/cboolparimpl.obj: cboolparimpl.cc \
   ../../include/ccomponent.h \
   ../../include/regmacros.h \
   ../../include/cstringtokenizer.h
+$O/ccanvas.obj: ccanvas.cc \
+  ../../include/globals.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/cregistrationlist.h \
+  ../../include/errmsg.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/opp_string.h \
+  ../../include/cexception.h \
+  ../../include/cnamedobject.h \
+  ../../include/onstartup.h \
+  ../../include/cownedobject.h \
+  ../../include/cobjectfactory.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/cproperty.h \
+  ../../include/ccanvas.h \
+  ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/cobject.h \
+  ../../include/cproperties.h \
+  ../../include/regmacros.h \
+  ../../include/cstringtokenizer.h
 $O/cchannel.obj: cchannel.cc \
   ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \
@@ -358,6 +383,7 @@ $O/ccomponenttype.obj: ccomponenttype.cc \
   ../../include/onstartup.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
+  ../../include/ccanvas.h \
   ../../include/cdelaychannel.h \
   ../../include/csimplemodule.h \
   ../../include/simutil.h \
@@ -1354,6 +1380,7 @@ $O/cmodule.obj: cmodule.cc \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
+  ../../include/ccanvas.h \
   ../../include/csimplemodule.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
@@ -3016,6 +3043,7 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/cnedvalue.h \
   sim_std_m.h \
   ../../include/simtime_t.h \
+  ../../include/ccanvas.h \
   ../../include/cdelaychannel.h \
   ../../include/csimplemodule.h \
   ../../include/clog.h \
@@ -3024,6 +3052,7 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cvarhist.h \
   ../../include/cmessageheap.h \
+  ../../include/cmessageprinter.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/cstringparimpl.h \

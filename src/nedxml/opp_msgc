@@ -402,10 +402,6 @@ sub processFile($)
 
     print CC "USING_NAMESPACE\n\n";
 
-    print CC "// Template rule which fires if a struct or class doesn't have operator<<\n";
-    print CC "template<typename T>\n";
-    print CC "std::ostream& operator<<(std::ostream& out,const T&) {return out;}\n";
-
     if ($generate_classes)
     {
         print CC "\n";
@@ -441,6 +437,32 @@ sub processFile($)
         print CC "namespace $i {\n";
     }
     print H "\n";
+    print CC "\n";
+
+    print CC "// Template rule for outputting std::vector<T> types\n";
+    print CC "template<typename T, typename A>\n";
+    print CC "inline std::ostream& operator<<(std::ostream& out, const std::vector<T,A>& vec)\n";
+    print CC "{\n";
+    print CC "    out.put('{');\n";
+    print CC "    for(typename std::vector<T,A>::const_iterator it = vec.begin(); it != vec.end(); ++it)\n";
+    print CC "    {\n";
+    print CC "        if (it != vec.begin()) {\n";
+    print CC "            out.put(','); out.put(' ');\n";
+    print CC "        }\n";
+    print CC "        out << *it;\n";
+    print CC "    }\n";
+    print CC "    out.put('}');\n";
+    print CC "    \n";
+    print CC "    char buf[32];\n";
+    print CC "    sprintf(buf, \" (size=%u)\", (unsigned int)vec.size());\n";
+    print CC "    out.write(buf, strlen(buf));\n";
+    print CC "    return out;\n";
+    print CC "}\n";
+    print CC "\n";
+
+    print CC "// Template rule which fires if a struct or class doesn't have operator<<\n";
+    print CC "template<typename T>\n";
+    print CC "inline std::ostream& operator<<(std::ostream& out,const T&) {return out;}\n";
     print CC "\n";
 
     # cplusplus {{...}} blocks below the namespace declaration
@@ -1129,23 +1151,23 @@ sub prepareForCodeGeneration()
             # $ftypeqname
             my @found = lookupExistingClassName($namespacename, $ftype);
             if (@found == 1) {
-                $ftypeqname = $found[0];
+                $ftypeqname = "::" . $found[0];
             } elsif (@found == 0) {
                 print "$filename: Error: unknown type '$ftype' for field '$fieldname' in '$msgname'\n"; $ret=1;
-                $ftypeqname = 'cObject';
+                $ftypeqname = '::cObject';
             } else {
                 print "$filename: Error: unknown type '$ftype' for field '$fieldname' in '$msgname'; possibilities: " .join(', ',@found)."\n"; $ret=1;
-                $ftypeqname = $found[0];
+                $ftypeqname = "::" . $found[0];
             }
         }
-        $ftypeqname{$fieldname} = $ftypeqname;
+        $ftypeqname{$fieldname} = $ftypeqname;  # unused!
 
         # data type, argument type, conversion to/from string...
         $maybe_c_str{$fieldname} = "";
         if ($fkind{$fieldname} eq 'struct') {
-            $datatype{$fieldname} = "$ftypeqname";
-            $argtype{$fieldname} = "const $ftypeqname&";
-            $rettype{$fieldname} = "$ftypeqname&";
+            $datatype{$fieldname} = "$ftype";
+            $argtype{$fieldname} = "const $ftype&";
+            $rettype{$fieldname} = "$ftype&";
             $tostring{$fieldname} = "";
             $fromstring{$fieldname} = "";
             #$fval{$fieldname} = '' unless ($fval{$fieldname} ne '');
@@ -2117,17 +2139,17 @@ sub generateDescriptorClass
     if ($fieldcount == 0) {
         print CC "    return NULL;\n";
     } else {
-        print CC "    static const char *fieldStructNames[] = {\n";
+        print CC "    switch (field) {\n";
         for (my $i=0; $i<$fieldcount; $i++)
         {
-            if ($fkind{$fieldlist[$i]} eq 'struct') {
-                print CC "        \"$ftypeqname{$fieldlist[$i]}\",\n";
-            } else {
-                print CC "        NULL,\n";
+            my $fieldname = $fieldlist[$i];
+            my $opaque = propertyAsBool($fprops{$fieldname}->{opaque});  # TODO: @opaque should rather be the attribute of the field's type, not the field itself
+            if ($fkind{$fieldname} eq 'struct' && !$opaque) {
+                print CC "        case $i: return opp_typename(typeid($ftype{$fieldlist[$i]}));\n";
             }
         }
+        print CC "        default: return NULL;\n";
         print CC "    };\n";
-        print CC "    return (field>=0 && field<$fieldcount) ? fieldStructNames[field] : NULL;\n";
     }
     print CC "}\n";
     print CC "\n";
@@ -2145,9 +2167,9 @@ sub generateDescriptorClass
     print CC "    switch (field) {\n";
     for (my $i=0; $i<$fieldcount; $i++)
     {
-        $fieldname = $fieldlist[$i];
-
-        if ($fkind{$fieldname} eq 'struct') {
+        my $fieldname = $fieldlist[$i];
+        my $opaque = propertyAsBool($fprops{$fieldname}->{opaque});  # TODO: @opaque should rather be the attribute of the field's type, not the field itself
+        if ($fkind{$fieldname} eq 'struct' && !$opaque) {
             if ($classtype eq 'struct') {
                 if ($fisarray{$fieldname}) {
                     $value = "pp->$var{$fieldname}\[i\]";

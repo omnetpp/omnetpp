@@ -35,6 +35,7 @@
 #include "cqueue.h"
 #include "coutvector.h"
 #include "cenum.h"
+#include "ccanvas.h"
 
 #include "tkenv.h"
 #include "tklib.h"
@@ -919,6 +920,10 @@ int getObjectBaseClass_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
        Tcl_SetResult(interp, TCLCONST("cMessageHeap"), TCL_STATIC);
    else if (dynamic_cast<cWatchBase *>(object))
        Tcl_SetResult(interp, TCLCONST("cWatchBase"), TCL_STATIC);
+   else if (dynamic_cast<cCanvas *>(object))
+       Tcl_SetResult(interp, TCLCONST("cCanvas"), TCL_STATIC);
+   else if (dynamic_cast<cFigure *>(object))
+       Tcl_SetResult(interp, TCLCONST("cFigure"), TCL_STATIC);
    else if (dynamic_cast<cSimulation *>(object))
        Tcl_SetResult(interp, TCLCONST("cSimulation"), TCL_STATIC);
    else if (dynamic_cast<cRegistrationList *>(object))
@@ -1979,7 +1984,8 @@ int inspectorCommand_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
    Tkenv *app = getTkenv();
    Inspector *insp = app->findInspector(argv[1]);
    if (!insp) {Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC); return TCL_ERROR;}
-   TRY(return insp->inspectorCommand(interp, argc-2, argv+2));
+   if (interp!=app->getInterp()) {Tcl_SetResult(interp, TCLCONST("wrong Tcl_Interp instance"), TCL_STATIC); return TCL_ERROR;}
+   TRY(return insp->inspectorCommand(argc-2, argv+2));
 }
 
 int getClassDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)

@@ -31,6 +31,7 @@
 #include "cchannel.h"
 #include "cproperties.h"
 #include "cproperty.h"
+#include "ccanvas.h"
 #include "stringutil.h"
 #include "simutil.h"
 #include "cmodelchange.h"
@@ -65,6 +66,9 @@ cModule::cModule()
 #ifdef USE_OMNETPP4x_FINGERPRINTS
     version4ModuleId = -1;
 #endif
+
+    canvas = NULL;
+
     // gates and parameters will be added by cModuleType
 }
 
@@ -114,6 +118,8 @@ cModule::~cModule()
     // deregister ourselves
     if (getParentModule())
         getParentModule()->removeSubmodule(this);
+
+    delete canvas;
 
     delete [] fullname;
     delete [] fullpath;
@@ -1294,6 +1300,16 @@ void cModule::changeParentTo(cModule *mod)
         tmp.oldParentModule = oldparent;
         mod->emit(POST_MODEL_CHANGE, &tmp);
     }
+}
+
+cCanvas *cModule::getCanvas()
+{
+    if (!canvas) {
+        canvas = new cCanvas("canvas");
+        canvas->addFigure(new cGroupFigure("submodules"));
+        take(canvas);
+    }
+    return canvas;
 }
 
 void cModule::callInitialize()

@@ -178,6 +178,9 @@ proc runSelectionDialog {} {
             lappend configlist $name
         }
 
+        set configname ""
+        set runnumber 0
+
         # if last choice looks valid, use that as default
         if {[lcontains $sortedconfignames $config(default-configname)]} {
             #TODO also validate run number

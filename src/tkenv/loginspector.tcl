@@ -100,7 +100,7 @@ proc createLogViewer {insp f} {
     catch {$f.text config -wrap $config(editor-wrap)}
     bind $f.text <Button-$B3> [list LogInspector:contextMenu $insp %X %Y]
 
-    after idle "LogInspector:setMode $insp messages"
+    after idle "LogInspector:setMode $insp $config(new-loginspector-mode)"
 }
 
 proc LogInspector:addModeButtons {insp tb} {
@@ -113,6 +113,8 @@ proc LogInspector:addModeButtons {insp tb} {
 }
 
 proc LogInspector:setMode {insp mode} {
+    global config
+
     opp_inspectorcommand $insp setmode $mode
     LogInspector:refreshModeButtons $insp
 
@@ -126,6 +128,11 @@ proc LogInspector:setMode {insp mode} {
         ruler:setColumnWidths $ruler {}
     }
     LogInspector:updateTabStops $insp
+    set config(new-loginspector-mode) $mode
+}
+
+proc LogInspector:getMode {insp} {
+    return [opp_inspectorcommand $insp getmode]
 }
 
 proc LogInspector:refreshModeButtons {insp} {

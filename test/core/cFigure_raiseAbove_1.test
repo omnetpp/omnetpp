@@ -1,0 +1,109 @@
+%description:
+Test cFigure's raiseAbove(), lowerBelow(), raiseToTop(), lowerToBottom() methods
+
+%global:
+
+void printCanvas(cCanvas *canvas)
+{
+    for (int i=0; i<canvas->getNumFigures(); i++)
+        EV << " " << canvas->getFigure(i)->getName();
+    EV << endl;
+}
+
+%activity:
+
+#define M(name)       cFigure *name = new cGroupFigure(#name);
+#define P(statement)  try { EV << #statement << " ==> "; (void)statement; printCanvas(canvas); } catch (std::exception& e) { EV << e.what() << endl; }
+
+cCanvas *canvas = new cCanvas("canvas");
+M(a); M(b); M(c); M(d); M(e); M(f); M(x);
+
+EV << "add:\n";
+P(canvas->addFigure(c));
+P(canvas->addFigure(e));
+P(canvas->addFigure(d,1));
+P(canvas->addFigure(a,0));
+P(canvas->addFigureBelow(b,c));
+P(canvas->addFigureAbove(f,e));
+
+EV << "\nno-ops:\n";
+P("initial");
+P(b->raiseAbove(a)); // no-op
+P(d->raiseAbove(a)); // no-op
+P(c->raiseAbove(b)); // no-op
+P(d->raiseAbove(b)); // no-op
+P(a->raiseAbove(a)); // no-op
+
+P(a->lowerBelow(f)); // no-op
+P(e->lowerBelow(f)); // no-op
+P(c->lowerBelow(d)); // no-op
+P(a->lowerBelow(d)); // no-op
+P(d->lowerBelow(d)); // no-op
+
+P(a->lowerToBottom()); // no-op
+P(f->raiseToTop()); // no-op
+
+P(x->lowerToBottom()); // no parent - accepted as no-op
+P(x->raiseToTop());    // no parent - accepted as no-op
+
+EV << "\npositive test cases:\n";
+P(a->raiseAbove(b));
+P(e->raiseAbove(f));
+P(c->lowerBelow(b));
+P(f->lowerBelow(d));
+
+P(f->lowerToBottom());
+P(a->raiseToTop());
+
+EV << "\nnegative test cases:\n";
+
+P(a->raiseAbove(x));
+P(a->lowerBelow(x));
+
+P(x->raiseAbove(a));
+P(x->lowerBelow(a));
+
+delete canvas;
+delete x;
+
+%contains: stdout
+add:
+canvas->addFigure(c) ==>  c
+canvas->addFigure(e) ==>  c e
+canvas->addFigure(d,1) ==>  c d e
+canvas->addFigure(a,0) ==>  a c d e
+canvas->addFigureBelow(b,c) ==>  a b c d e
+canvas->addFigureAbove(f,e) ==>  a b c d e f
+
+no-ops:
+"initial" ==>  a b c d e f
+b->raiseAbove(a) ==>  a b c d e f
+d->raiseAbove(a) ==>  a b c d e f
+c->raiseAbove(b) ==>  a b c d e f
+d->raiseAbove(b) ==>  a b c d e f
+a->raiseAbove(a) ==>  a b c d e f
+a->lowerBelow(f) ==>  a b c d e f
+e->lowerBelow(f) ==>  a b c d e f
+c->lowerBelow(d) ==>  a b c d e f
+a->lowerBelow(d) ==>  a b c d e f
+d->lowerBelow(d) ==>  a b c d e f
+a->lowerToBottom() ==>  a b c d e f
+f->raiseToTop() ==>  a b c d e f
+x->lowerToBottom() ==>  a b c d e f
+x->raiseToTop() ==>  a b c d e f
+
+positive test cases:
+a->raiseAbove(b) ==>  b a c d e f
+e->raiseAbove(f) ==>  b a c d f e
+c->lowerBelow(b) ==>  c b a d f e
+f->lowerBelow(d) ==>  c b a f d e
+f->lowerToBottom() ==>  f c b a d e
+a->raiseToTop() ==>  f c b d e a
+
+negative test cases:
+a->raiseAbove(x) ==> (cGroupFigure)Test.canvas.rootFigure.a: raiseAbove(): reference figure must have the same parent
+a->lowerBelow(x) ==> (cGroupFigure)Test.canvas.rootFigure.a: lowerBelow(): reference figure must have the same parent
+x->raiseAbove(a) ==> (cGroupFigure)x: raiseAbove(): figure has no parent figure
+x->lowerBelow(a) ==> (cGroupFigure)x: lowerBelow(): figure has no parent figure
+
+

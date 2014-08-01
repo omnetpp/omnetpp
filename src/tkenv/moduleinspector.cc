@@ -20,6 +20,7 @@
 #include <assert.h>
 
 #include "moduleinspector.h"
+#include "figurerenderers.h"
 #include "tkenv.h"
 #include "tklib.h"
 #include "tkutil.h"
@@ -36,6 +37,7 @@
 #include "cgate.h"
 #include "cchannel.h"
 #include "csimplemodule.h"
+#include "stringutil.h"
 
 NAMESPACE_BEGIN
 
@@ -128,9 +130,10 @@ void ModuleInspector::refresh()
    }
    else
    {
+       refreshFigures();
        redrawNextEventMarker();
        redrawMessages();
-       updateSubmodules();
+       refreshSubmodules();
    }
 }
 
@@ -171,9 +174,10 @@ void ModuleInspector::relayoutAndRedrawAll()
 
    recalculateLayout();
    redrawModules();
+   redrawFigures();
    redrawNextEventMarker();
    redrawMessages();
-   updateSubmodules();
+   refreshSubmodules();
 }
 
 void ModuleInspector::redrawAll()
@@ -185,9 +189,10 @@ void ModuleInspector::redrawAll()
 
    refreshLayout();
    redrawModules();
+   redrawFigures();
    redrawNextEventMarker();
    redrawMessages();
-   updateSubmodules();
+   refreshSubmodules();
 }
 
 void ModuleInspector::getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeysLayout,
@@ -446,7 +451,6 @@ void ModuleInspector::redrawModules()
 
     // then display all submodules
     CHK(Tcl_VarEval(interp, canvas, " delete dx",NULL)); // NOT "delete all" because that'd remove "bubbles" too!
-    const cDisplayString blank;
     std::string buffer;
     const char *rawScaling = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString().getTagArg("bgs",0) : "";
     const char *scaling = substituteDisplayStringParamRefs(rawScaling, buffer, parentModule, true);
@@ -456,11 +460,11 @@ void ModuleInspector::redrawModules()
         cModule *submod = it();
         assert(submodPosMap.find(submod)!=submodPosMap.end());
         Point& pos = submodPosMap[submod];
-        drawSubmodule(interp, submod, pos.x, pos.y, scaling);
+        drawSubmodule(submod, pos.x, pos.y, scaling);
     }
 
     // draw enclosing module
-    drawEnclosingModule(interp, parentModule, scaling);
+    drawEnclosingModule(parentModule, scaling);
 
     // loop through all submodules and enclosing module & draw their connections
     bool atParent = false;
@@ -473,7 +477,7 @@ void ModuleInspector::redrawModules()
             cGate *gate = i();
             if (gate->getType()==(atParent ? cGate::INPUT: cGate::OUTPUT) && gate->getNextGate()!=NULL)
             {
-                drawConnection(interp, gate);
+                drawConnection(gate);
             }
         }
     }
@@ -481,7 +485,7 @@ void ModuleInspector::redrawModules()
     CHK(Tcl_VarEval(interp, "ModuleInspector:setScrollRegion ", windowName, " 0",NULL));
 }
 
-void ModuleInspector::drawSubmodule(Tcl_Interp *interp, cModule *submod, double x, double y, const char *scaling)
+void ModuleInspector::drawSubmodule(cModule *submod, double x, double y, const char *scaling)
 {
     char coords[64];
     sprintf(coords,"%g %g ", x, y);
@@ -498,7 +502,7 @@ void ModuleInspector::drawSubmodule(Tcl_Interp *interp, cModule *submod, double 
                     NULL));
 }
 
-void ModuleInspector::drawEnclosingModule(Tcl_Interp *interp, cModule *parentModule, const char *scaling)
+void ModuleInspector::drawEnclosingModule(cModule *parentModule, const char *scaling)
 {
     const char *displayString = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString().str() : "";
     CHK(Tcl_VarEval(interp, "ModuleInspector:drawEnclosingModule ",
@@ -510,7 +514,7 @@ void ModuleInspector::drawEnclosingModule(Tcl_Interp *interp, cModule *parentMod
                        NULL ));
 }
 
-void ModuleInspector::drawConnection(Tcl_Interp *interp, cGate *gate)
+void ModuleInspector::drawConnection(cGate *gate)
 {
     cModule *mod = gate->getOwnerModule();
     cGate *destGate = gate->getNextGate();
@@ -635,11 +639,140 @@ void ModuleInspector::redrawNextEventMarker()
    }
 }
 
-void ModuleInspector::updateSubmodules()
+void ModuleInspector::redrawFigures()
+{
+   cModule *mod = static_cast<cModule *>(object);
+
+   // remove existing figures
+   CHK(Tcl_VarEval(interp, canvas, " delete fig", NULL));
+
+   // draw figures
+   cCanvas *canvas = mod->getCanvasIfExists();
+   if (canvas)
+   {
+       LinearCoordMapping mapping;
+       initMapping(mapping);
+       drawFigureRec(canvas->getRootFigure(), mapping);
+
+       char tag[32];
+       cFigure *submodulesLayer = canvas->getSubmodulesLayer();
+       ASSERT(submodulesLayer); // should be present!
+       sprintf(tag, "f%d", submodulesLayer->getId());
+       CHK(Tcl_VarEval(interp, this->canvas, " lower submodext ", tag, NULL));
+       CHK(Tcl_VarEval(interp, this->canvas, " raise submodext ", tag, NULL));
+   }
+}
+
+void ModuleInspector::refreshFigures()
+{
+   cModule *mod = static_cast<cModule *>(object);
+   cCanvas *canvas = mod->getCanvasIfExists();
+   if (canvas)
+   {
+       // if there is a structural change, we rebuild everything;
+       // otherwise we only adjust subtree or that particular figure
+       cFigure *rootFigure = canvas->getRootFigure();
+       if ((rootFigure->getTreeChangeFlags() | rootFigure->getLocalChangeFlags()) & cFigure::CHANGE_STRUCTURAL)
+       {
+           redrawFigures();
+           rootFigure->clearChangeFlags();
+       }
+       else if ((rootFigure->getTreeChangeFlags() | rootFigure->getLocalChangeFlags()) != 0)
+       {
+           LinearCoordMapping mapping;
+           initMapping(mapping);
+           refreshFigureGeometryRec(rootFigure, mapping);
+           refreshFigureVisualsRec(rootFigure);
+           rootFigure->clearChangeFlags();
+       }
+   }
+}
+
+double ModuleInspector::getScale()
+{
+    // read scale
+    cModule *parentModule = static_cast<cModule *>(object);
+    std::string buffer;
+    const char *rawScaling = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString().getTagArg("bgs",0) : "";
+    const char *scalingStr = substituteDisplayStringParamRefs(rawScaling, buffer, parentModule, true);
+    return opp_isblank(scalingStr) ? 1.0 : opp_atof(scalingStr);
+}
+
+double ModuleInspector::getZoom()
+{
+    // read zoom level ($inspectordata($c:zoomfactor)) -- TODO maybe move it into C++?
+    const char *zoomStr = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":zoomfactor").c_str()), TCL_GLOBAL_ONLY);
+    return opp_atof(zoomStr);
+}
+
+void ModuleInspector::initMapping(LinearCoordMapping& mapping)
+{
+    double scale = getScale();
+    double zoom = getZoom();
+    mapping.scaleX = mapping.scaleY = scale * zoom;
+}
+
+FigureRenderer *ModuleInspector::getRendererFor(cFigure *figure)
+{
+    return FigureRenderer::getRendererFor(figure);
+}
+
+void ModuleInspector::drawFigureRec(cFigure *figure, LinearCoordMapping& mapping)
+{
+    if (figure->isVisible())
+    {
+        FigureRenderer *renderer = getRendererFor(figure);
+        renderer->render(figure, interp, canvas, &mapping);
+
+        if (figure->containsFigures())
+        {
+            cFigure::Point offset = figure->getChildOrigin();
+            LinearCoordMapping childMapping(mapping.scaleX, mapping.offsetX + mapping.scaleX*offset.x, mapping.scaleY, mapping.offsetY + mapping.scaleY*offset.y);
+
+            for (int i = 0; i < figure->getNumFigures(); i++)
+                drawFigureRec(figure->getFigure(i), childMapping);
+        }
+    }
+}
+
+void ModuleInspector::refreshFigureGeometryRec(cFigure *figure, LinearCoordMapping& mapping, bool forceGeometryRefresh)
+{
+    if (figure->getLocalChangeFlags() & cFigure::CHANGE_GEOMETRY)
+        forceGeometryRefresh = true;  // must refresh this figure and its entire subtree
+
+    if (forceGeometryRefresh)
+    {
+        FigureRenderer *renderer = getRendererFor(figure);
+        renderer->refreshGeometry(figure, interp, canvas, &mapping);
+    }
+
+    if (forceGeometryRefresh || (figure->getTreeChangeFlags() & cFigure::CHANGE_GEOMETRY))
+    {
+        cFigure::Point offset = figure->getChildOrigin();
+        LinearCoordMapping childMapping(mapping.scaleX, mapping.offsetX + mapping.scaleX*offset.x, mapping.scaleY, mapping.offsetY + mapping.scaleY*offset.y);
+        for (int i = 0; i < figure->getNumFigures(); i++)
+            refreshFigureGeometryRec(figure->getFigure(i), childMapping, forceGeometryRefresh);
+    }
+}
+
+void ModuleInspector::refreshFigureVisualsRec(cFigure *figure)
+{
+    if (figure->getLocalChangeFlags() & cFigure::CHANGE_VISUAL)
+    {
+        FigureRenderer *renderer = getRendererFor(figure);
+        renderer->refreshVisuals(figure, interp, canvas);
+    }
+
+    if (figure->getTreeChangeFlags() & cFigure::CHANGE_VISUAL)
+        for (int i = 0; i < figure->getNumFigures(); i++)
+            refreshFigureVisualsRec(figure->getFigure(i));
+}
+
+void ModuleInspector::refreshSubmodules()
 {
    for (cModule::SubmoduleIterator submod(static_cast<cModule *>(object)); !submod.end(); submod++)
    {
-       CHK(Tcl_VarEval(interp, "ModuleInspector:updateSubmodule ",
+       CHK(Tcl_VarEval(interp, "ModuleInspector:refreshSubmodule ",
                        windowName, " ",
                        ptrToStr(submod()),
                        NULL));
@@ -809,7 +942,7 @@ void ModuleInspector::performAnimations(Tcl_Interp *interp)
     CHK(Tcl_VarEval(interp, "performAnimations", NULL));
 }
 
-int ModuleInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
+int ModuleInspector::inspectorCommand(int argc, const char **argv)
 {
    if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
 
@@ -829,33 +962,33 @@ int ModuleInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char *
    }
    else if (strcmp(argv[0],"getdefaultlayoutseed")==0)
    {
-       return getDefaultLayoutSeed(interp,argc,argv);
+       return getDefaultLayoutSeed(argc, argv);
    }
    else if (strcmp(argv[0],"getlayoutseed")==0)
    {
-       return getLayoutSeed(interp,argc,argv);
+       return getLayoutSeed(argc, argv);
    }
    else if (strcmp(argv[0],"setlayoutseed")==0)
    {
-       return setLayoutSeed(interp,argc,argv);
+       return setLayoutSeed(argc, argv);
    }
    else if (strcmp(argv[0],"submodulecount")==0)
    {
-      return getSubmoduleCount(interp,argc,argv);
+      return getSubmoduleCount(argc, argv);
    }
    else if (strcmp(argv[0],"getsubmodq")==0)
    {
-      return getSubmodQ(interp,argc,argv);
+      return getSubmodQ(argc, argv);
    }
    else if (strcmp(argv[0],"getsubmodqlen")==0)
    {
-      return getSubmodQLen(interp,argc,argv);
+      return getSubmodQLen(argc, argv);
    }
 
-   return Inspector::inspectorCommand(interp, argc, argv);
+   return Inspector::inspectorCommand(argc, argv);
 }
 
-int ModuleInspector::getDefaultLayoutSeed(Tcl_Interp *interp, int argc, const char **argv)
+int ModuleInspector::getDefaultLayoutSeed(int argc, const char **argv)
 {
     if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
     const cDisplayString blank;
@@ -866,21 +999,21 @@ int ModuleInspector::getDefaultLayoutSeed(Tcl_Interp *interp, int argc, const ch
     return TCL_OK;
 }
 
-int ModuleInspector::getLayoutSeed(Tcl_Interp *interp, int argc, const char **argv)
+int ModuleInspector::getLayoutSeed(int argc, const char **argv)
 {
     if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
     Tcl_SetObjResult(interp, Tcl_NewIntObj((int)layoutSeed));
     return TCL_OK;
 }
 
-int ModuleInspector::setLayoutSeed(Tcl_Interp *interp, int argc, const char **argv)
+int ModuleInspector::setLayoutSeed(int argc, const char **argv)
 {
     if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
     layoutSeed = atol(argv[1]);
     return TCL_OK;
 }
 
-int ModuleInspector::getSubmoduleCount(Tcl_Interp *interp, int argc, const char **argv)
+int ModuleInspector::getSubmoduleCount(int argc, const char **argv)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
    int count = 0;
@@ -890,7 +1023,7 @@ int ModuleInspector::getSubmoduleCount(Tcl_Interp *interp, int argc, const char 
    return TCL_OK;
 }
 
-int ModuleInspector::getSubmodQ(Tcl_Interp *interp, int argc, const char **argv)
+int ModuleInspector::getSubmodQ(int argc, const char **argv)
 {
    // args: <module ptr> <qname>
    if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
@@ -904,7 +1037,7 @@ int ModuleInspector::getSubmodQ(Tcl_Interp *interp, int argc, const char **argv)
    return TCL_OK;
 }
 
-int ModuleInspector::getSubmodQLen(Tcl_Interp *interp, int argc, const char **argv)
+int ModuleInspector::getSubmodQLen(int argc, const char **argv)
 {
    // args: <module ptr> <qname>
    if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}

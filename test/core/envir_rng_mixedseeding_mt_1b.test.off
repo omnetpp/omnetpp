@@ -7,7 +7,7 @@ change the runs-to-execute parameter -- result should be the same,
 only in different order.
 
 %activity:
-EV << "#UNRESOLVED: test is not adopted to 4.x";
+EV << "#UNRESOLVED: test is not adopted to 4.x\n";
 for (int i=0; i<ev.getNumRNGs(); i++)
 {
     // note: the intRand() calls cannot be put into the EV<< statement directly, because
@@ -28,7 +28,7 @@ num-rngs = 3
 # Runs occurring more than once should get the same seeds every time.
 # Autoseeded runs should get the same seeds as in the autoseeding test cases.
 
-#cmdenv-runs-to-execute = 1,2,3,4,2,1,4,3
+#cmdenv-runs-to-execute = 2,1,4,3,1,2,3,4
 
 [Config c1]
 seed-0-mt = 793
@@ -47,25 +47,6 @@ seed-2-mt = 497
 # autoseeded
 
 %contains-regex: stdout
-Preparing for Run #1\..*
-ev.rng-0: 1773256507  3374371453, drawn 2
-ev.rng-1: 345413299  2799562883, drawn 2
-ev.rng-2: 227844297  4101779991, drawn 2
-.*
-Preparing for Run #2\..*
-ev.rng-0: 4069378761  3834805130, drawn 2
-ev.rng-1: 976413892  327741615, drawn 2
-ev.rng-2: 47736148  3751350723, drawn 2
-.*
-Preparing for Run #3\..*
-ev.rng-0: 1485903282  1518241553, drawn 2
-ev.rng-1: 2355297642  3233577405, drawn 2
-ev.rng-2: 762090162  3944582764, drawn 2
-.*
-Preparing for Run #4\..*
-ev.rng-0: 1916507803  662124363, drawn 2
-ev.rng-1: 2608511152  3340206418, drawn 2
-ev.rng-2: 3959502168  2207369835, drawn 2
 .*
 Preparing for Run #2\..*
 ev.rng-0: 4069378761  3834805130, drawn 2
@@ -86,4 +67,24 @@ Preparing for Run #3\..*
 ev.rng-0: 1485903282  1518241553, drawn 2
 ev.rng-1: 2355297642  3233577405, drawn 2
 ev.rng-2: 762090162  3944582764, drawn 2
+.*
+Preparing for Run #1\..*
+ev.rng-0: 1773256507  3374371453, drawn 2
+ev.rng-1: 345413299  2799562883, drawn 2
+ev.rng-2: 227844297  4101779991, drawn 2
+.*
+Preparing for Run #2\..*
+ev.rng-0: 4069378761  3834805130, drawn 2
+ev.rng-1: 976413892  327741615, drawn 2
+ev.rng-2: 47736148  3751350723, drawn 2
+.*
+Preparing for Run #3\..*
+ev.rng-0: 1485903282  1518241553, drawn 2
+ev.rng-1: 2355297642  3233577405, drawn 2
+ev.rng-2: 762090162  3944582764, drawn 2
+.*
+Preparing for Run #4\..*
+ev.rng-0: 1916507803  662124363, drawn 2
+ev.rng-1: 2608511152  3340206418, drawn 2
+ev.rng-2: 3959502168  2207369835, drawn 2
 

@@ -105,10 +105,20 @@ proc toolbutton:setstate {w state} {
     toolbutton:refresh $w 0
 }
 
+proc toolbutton:getstate {w} {
+    global toolbutton
+    return $toolbutton($w:state)
+}
+
 proc toolbutton:setsunken {w value} {
     global toolbutton
     set toolbutton($w:sunken) $value
     toolbutton:refresh $w 0
+}
+
+proc toolbutton:issunken {w} {
+    global toolbutton
+    return $toolbutton($w:sunken)
 }
 
 proc toolbutton:enter {w} {
