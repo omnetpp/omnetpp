@@ -113,6 +113,19 @@ class SIM_API cEnum : public cOwnedObject
     void insert(int value, const char *name);
 
     /**
+     * Adds several values to the enum. The argument list should be an
+     * alternating list of names and values, terminated by a NULL:
+     * name1, value1, name2, value2, ..., NULL.
+     *
+     * Example:
+     * <pre>
+     * cEnum stateEnum("state");
+     * stateEnum.bulkInsert("IDLE", IDLE, "BUSY", BUSY, NULL);
+     * </pre>
+     */
+    void bulkInsert(const char *name1, int value1,...);
+
+    /**
      * Look up value and return string representation. Return
      * NULL if not found.
      */

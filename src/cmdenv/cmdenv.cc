@@ -121,23 +121,27 @@ char *timeToStr(timeval t, char *buf=NULL)
    return b;
 }
 
-static cEnum stateEnum("State",
-        "nonetwork", Cmdenv::SIM_NONETWORK,
+#define Register_Enum_2(VAR, NAME, VALUES)  \
+    static cEnum *VAR; \
+    EXECUTE_ON_STARTUP(VAR = new cEnum(NAME); VAR->bulkInsert VALUES; enums.getInstance()->add(VAR))
+
+Register_Enum_2(stateEnum, "State",
+        ("nonetwork", Cmdenv::SIM_NONETWORK,
         "ready", Cmdenv::SIM_READY,
         "running", Cmdenv::SIM_RUNNING,
         "terminated", Cmdenv::SIM_TERMINATED,
         "error", Cmdenv::SIM_ERROR,
         "finishcalled", Cmdenv::SIM_FINISHCALLED,
-        NULL);
+        NULL));
 
-static cEnum runModeEnum("RunMode",
-        "normal", Cmdenv::RUNMODE_NORMAL,
+Register_Enum_2(runModeEnum, "RunMode",
+        ("normal", Cmdenv::RUNMODE_NORMAL,
         "fast", Cmdenv::RUNMODE_FAST,
         "express", Cmdenv::RUNMODE_EXPRESS,
-        NULL);
+        NULL));
 
-static cEnum stoppingReasonEnum("StoppingReason",
-        "none", Cmdenv::STOP_NONE,
+Register_Enum_2(stoppingReasonEnum, "StoppingReason",
+        ("none", Cmdenv::STOP_NONE,
         "untilsimtime", Cmdenv::STOP_UNTILSIMTIME,
         "untilevent", Cmdenv::STOP_UNTILEVENT,
         "untilmodule", Cmdenv::STOP_UNTILMODULE,
@@ -145,10 +149,10 @@ static cEnum stoppingReasonEnum("StoppingReason",
         "realtimechunk", Cmdenv::STOP_REALTIMECHUNK,
         "stopcommand", Cmdenv::STOP_STOPCOMMAND,
         "termination", Cmdenv::STOP_TERMINATION,
-        NULL);
+        NULL));
 
-static cEnum commandEnum("Command",
-        "none", Cmdenv::CMD_NONE,
+Register_Enum_2(commandEnum, "Command",
+        ("none", Cmdenv::CMD_NONE,
         "setupNetwork", Cmdenv::CMD_SETUPNETWORK,
         "setupRun", Cmdenv::CMD_SETUPRUN,
         "rebuild", Cmdenv::CMD_REBUILD,
@@ -157,23 +161,25 @@ static cEnum commandEnum("Command",
         "stop", Cmdenv::CMD_STOP,
         "finish", Cmdenv::CMD_FINISH,
         "quit", Cmdenv::CMD_QUIT,
-        NULL);
+        NULL));
 
-static cEnum userInputState("UserInputState",
-        "none", Cmdenv::INPSTATE_NONE,
+Register_Enum_2(userInputState, "UserInputState",
+        ("none", Cmdenv::INPSTATE_NONE,
         "initiated", Cmdenv::INPSTATE_INITIATED,
         "waitingForReply", Cmdenv::INPSTATE_WAITINGFORREPLY,
         "replyArrived", Cmdenv::INPSTATE_REPLYARRIVED,
-        NULL);
+        NULL));
 
-static cEnum userInputType("UserInputType",
-        "none", Cmdenv::INP_NONE,
+Register_Enum_2(userInputType, "UserInputType",
+        ("none", Cmdenv::INP_NONE,
         "error", Cmdenv::INP_ERROR,
         "askParameter", Cmdenv::INP_ASKPARAMETER,
         "gets", Cmdenv::INP_GETS,
         "askYesNo", Cmdenv::INP_ASKYESNO,
         "msgDialog", Cmdenv::INP_MSGDIALOG,
-    NULL);
+        NULL));
+
+#undef Register_Enum_2
 
 CmdenvOptions::CmdenvOptions()
 {
@@ -489,7 +495,7 @@ bool Cmdenv::handleHttpRequest(cHttpRequest *request)
     // if user input is in progress, we only allow requests that post the reply or are side effect free
     if (userInput.state != INPSTATE_NONE) {
         if (strcmp(uri, "/sim/reply") != 0 && strcmp(uri, "/sim/status") != 0 && strcmp(uri, "/sim/getObjectInfo") != 0) {
-            debug("[http] request %s not allowed in userInput.state=%s\n", uri, userInputState.getStringFor(userInput.state));
+            debug("[http] request %s not allowed in userInput.state=%s\n", uri, userInputState->getStringFor(userInput.state));
             request->print(ERROR_STATUS);
             return true;
         }
@@ -578,7 +584,7 @@ bool Cmdenv::handleHttpRequest(cHttpRequest *request)
         result->put("argv", jArgv);
         char wdbuf[1024] = "n/a";
         result->put("wd", jsonWrap(getcwd(wdbuf,sizeof(wdbuf))));
-        result->put("state", jsonWrap(stateEnum.getStringFor(state)));
+        result->put("state", jsonWrap(stateEnum->getStringFor(state)));
         result->put("changeCounter", jsonWrap(cObject::getChangeCounter()));
         result->put("eventlogfile", jsonWrap(toAbsolutePath(eventlogmgr->getFileName())));
         if (state != SIM_NONETWORK) {
@@ -596,7 +602,7 @@ bool Cmdenv::handleHttpRequest(cHttpRequest *request)
             cEvent *guessNextEvent = simulation.guessNextEvent();
             if (guessNextEvent && guessNextEvent->isMessage())
                 result->put("nextEventMessageIdGuess", jsonWrap(static_cast<cMessage*>(guessNextEvent)->getId()));
-            result->put("stoppingReason", jsonWrap(stoppingReasonEnum.getStringFor(stoppingReason)));
+            result->put("stoppingReason", jsonWrap(stoppingReasonEnum->getStringFor(stoppingReason)));
         }
 
         JsonObject *jRootObjects = new JsonObject();
@@ -621,7 +627,7 @@ bool Cmdenv::handleHttpRequest(cHttpRequest *request)
 
         if (userInput.state == INPSTATE_INITIATED) {
             ASSERT(userInput.request != NULL);
-            userInput.request->put("type", jsonWrap(userInputType.getStringFor(userInput.type)));
+            userInput.request->put("type", jsonWrap(userInputType->getStringFor(userInput.type)));
             result->put("userInput", userInput.request);
             userInput.request = NULL;
             userInput.state = INPSTATE_WAITINGFORREPLY;
@@ -768,7 +774,7 @@ bool Cmdenv::handleHttpRequest(cHttpRequest *request)
 
 void Cmdenv::processCommand(int command)
 {
-    debug("[cmdenv] processing \"%s\" command\n", commandEnum.getStringFor(command));
+    debug("[cmdenv] processing \"%s\" command\n", commandEnum->getStringFor(command));
     if (command == CMD_SETUPNETWORK) {
         const char *networkName = commandArgs["network"].c_str();
         newNetwork(networkName);
@@ -786,7 +792,7 @@ void Cmdenv::processCommand(int command)
     }
     else if (command == CMD_RUN) {
         //TODO exception handling!
-        RunMode mode = (RunMode)runModeEnum.lookup(commandArgs["mode"].c_str(), RUNMODE_NONE);
+        RunMode mode = (RunMode)runModeEnum->lookup(commandArgs["mode"].c_str(), RUNMODE_NONE);
         long realTimeMillis = commandArgs["rtlimit"]=="" ? 0 : opp_atof(commandArgs["rtlimit"].c_str());
         simtime_t untilSimTime = commandArgs["utime"]=="" ? 0 : STR_SIMTIME(commandArgs["utime"].c_str());
         eventnumber_t untilEventNumber = commandArgs["uevent"]=="" ? 0 : opp_atol(commandArgs["uevent"].c_str());
@@ -806,7 +812,7 @@ void Cmdenv::processCommand(int command)
     else {
         ASSERT(false);
     }
-    debug("[cmdenv] command \"%s\" done\n", commandEnum.getStringFor(command));
+    debug("[cmdenv] command \"%s\" done\n", commandEnum->getStringFor(command));
 }
 
 void Cmdenv::newNetwork(const char *networkname)
@@ -1682,7 +1688,7 @@ bool Cmdenv::askyesno(const char *question)
 
 std::string Cmdenv::getUserInput(UserInputType type, JsonObject *details)
 {
-    debug("[cmdenv] entering getUserInput(type='%s')\n", userInputType.getStringFor(type));
+    debug("[cmdenv] entering getUserInput(type='%s')\n", userInputType->getStringFor(type));
     ASSERT(userInput.state == INPSTATE_NONE);
     userInput.type = type;
     userInput.request = details;
@@ -1713,7 +1719,7 @@ void Cmdenv::debug(const char *fmt,...)
 
     ::fprintf(logStream, "[%02d:%02d:%02d.%03d event #%" LL "d %s] ",
              tm.tm_hour, tm.tm_min, tm.tm_sec, (int)(tv.tv_usec/1000),
-             simulation.getEventNumber(), stateEnum.getStringFor(state));
+             simulation.getEventNumber(), stateEnum->getStringFor(state));
     va_list va;
     va_start(va, fmt);
     ::vfprintf(logStream, fmt, va);

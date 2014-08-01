@@ -90,6 +90,23 @@ void cEnum::insert(int value, const char *name)
     nameToValueMap[name] = value;
 }
 
+void cEnum::bulkInsert(const char *name1, int value1, ...)
+{
+    va_list va;
+    va_start(va, name1);
+
+    const char *s = name1;
+    int v;
+    while (s)
+    {
+        v = va_arg(va, int);
+        insert(v, s);
+        s = va_arg(va, const char *);
+    }
+
+    va_end(va);
+}
+
 const char *cEnum::getStringFor(int value)
 {
     std::map<int,std::string>::const_iterator it = valueToNameMap.find(value);
