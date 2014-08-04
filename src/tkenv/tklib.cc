@@ -32,7 +32,9 @@
 NAMESPACE_BEGIN
 
 int exitOmnetpp;
+#if TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION <6
 extern "C" int Tkpng_Init(Tcl_Interp *interp);
+#endif
 
 // Procedure to handle X errors
 static int XErrorProc(ClientData, XErrorEvent *errEventPtr)
@@ -69,8 +71,10 @@ Tcl_Interp *initTk(int argc, char **argv)
 
     Tcl_StaticPackage(interp, "Tk", Tk_Init, (Tcl_PackageInitProc *) NULL);
 
+#if TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION <6
     if (Tkpng_Init(interp) != TCL_OK)
         throw opp_runtime_error("Tkenv: Tkpng_Init failed: %s\n", Tcl_GetStringResult(interp));
+#endif
 
 
     Tk_Window mainWindow = Tk_MainWindow(interp);
