@@ -55,7 +55,7 @@ enum {XML_FILE, NED_FILE, MSG_FILE, CPP_FILE, UNKNOWN_FILE};
 bool opt_genxml = false;           // -x
 bool opt_gensrc = false;           // -n
 bool opt_validateonly = false;     // -v
-int opt_nextfiletype = UNKNOWN_FILE; // -X
+int opt_nextfiletype = UNKNOWN_FILE; // -T
 bool opt_oldsyntax = false;        // -Q
 const char *opt_suffix = NULL;     // -s
 const char *opt_hdrsuffix = NULL;  // -t
@@ -93,7 +93,7 @@ void printUsage()
        "  -o <filename>: output file name (don't use when processing multiple files)\n"
        "  -h  place output file into current directory\n"
        "  -I <dir>: add directory to NED include path\n"
-       "  -X xml/ned/msg/off: following files are XML, NED or MSG up to '-X off'\n"
+       "  -T xml/ned/msg/off: following files are XML, NED or MSG up to '-T off'\n"
        "  -Q: with -n: use old (3.x) NED syntax\n"
        "  -s <suffix>: suffix for generated files\n"
        "  -t <suffix>: when generating C++, suffix for generated header files\n"
@@ -472,7 +472,7 @@ int main(int argc, char **argv)
         {
             // -I option is currently ignored
         }
-        else if (!strcmp(argv[i],"-X"))
+        else if (!strcmp(argv[i],"-T"))
         {
             i++;
             if (i==argc) {
@@ -488,7 +488,7 @@ int main(int argc, char **argv)
             else if (!strcmp(argv[i],"off"))
                 opt_nextfiletype = UNKNOWN_FILE;
             else {
-                fprintf(stderr,"nedtool: unknown file type %s after -X\n",argv[i]);
+                fprintf(stderr,"nedtool: unknown file type %s after -T\n",argv[i]);
                 return 1;
             }
         }
