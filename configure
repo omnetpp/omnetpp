@@ -2364,7 +2364,7 @@ CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g -Wall}
 CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O2 -DNDEBUG=1}
 CXXFLAGS=${CXXFLAGS:-}
 PREFER_CLANG=${PREFER_CLANG:-}
-USE_CPP11=${USE_CPP11:-}
+USE_CXX11=${USE_CXX11:-}
 
 WHOLE_ARCHIVE_ON=
 WHOLE_ARCHIVE_OFF=
@@ -3445,7 +3445,7 @@ fi
 # check whether the compiler supports the C++11 standard (gcc specific options)
 # turned off for now, but should be enabled for OMNeT++ 5.0
 #----------------------
-if test "$USE_CPP11" = "yes"; then
+if test "$USE_CXX11" = "yes"; then
 
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports -std=c++11 -Wno-deprecated-register" >&5
@@ -6240,8 +6240,8 @@ fi
 CFLAGS_DEBUG="$CFLAGS_DEBUG -DXMLPARSER=$XMLPARSER"
 CFLAGS_RELEASE="$CFLAGS_RELEASE -DXMLPARSER=$XMLPARSER"
 
-# zlib is required by the xml ppackages
-if test $libxml_ok = yes -o $expat_ok = yes; then
+# zlib is required by the XML parsers and also Tcl/Tk (and also the TkPNG package inside Tkenv)
+if test $libxml_ok = yes -o $expat_ok = yes -o -z "$NO_TCL"; then
     if test "$ZLIB_LIBS" = ""; then
         ZLIB_LIBS=-lz
     fi
@@ -6388,7 +6388,10 @@ if test "$WITH_NETBUILDER" = yes; then
    CFLAGS_DEBUG="$CFLAGS_DEBUG -DWITH_NETBUILDER"
    CFLAGS_RELEASE="$CFLAGS_RELEASE -DWITH_NETBUILDER"
 fi
-
+if test "$USE_NAMESPACE" = yes; then
+   CFLAGS_DEBUG="$CFLAGS_DEBUG -DUSE_NAMESPACE"
+   CFLAGS_RELEASE="$CFLAGS_RELEASE -DUSE_NAMESPACE"
+fi
 
 #----------------------
 # Files to be generated

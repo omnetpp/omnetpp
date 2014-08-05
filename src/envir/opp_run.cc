@@ -80,7 +80,11 @@
 #endif
 
 typedef int (*intfunc_t)();
+
+NAMESPACE_BEGIN
 extern "C" int evMain(int argc, char *argv[]);
+NAMESPACE_END
+
 std::string lastLoadLibError;  // contains the error message after calling oppLoadLibrary()
 
 static void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly)
@@ -297,6 +301,6 @@ int main(int argc, char *argv[])
         // The libs specified on the command line were compiled with release-mode simulation libraries
         // but opp_run is by definition a debug executable; we must delegate to opp_run_release with the
         // current command line arguments.
-        return OPP::oppExec("opp_run_release", argv);
+        return oppExec("opp_run_release", argv);
     }
 }

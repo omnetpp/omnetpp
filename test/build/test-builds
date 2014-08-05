@@ -28,6 +28,9 @@ export EXPAT_LIBS=
 export CFLAGS_DEBUG=
 export CFLAGS_RELEASE=
 export SYSTEMC=no
+export PREFER_CLANG=no
+export USE_CXX11=no
+export USE_NAMESPACE=no
 
 export TWEAKCONFIG="perl $TEST_DIR/tweakconfigfile.pl"
 
@@ -43,6 +46,10 @@ fi
 # default toolchain is gcc
 if [ "$TOOLCHAIN" = "" ]; then
     export TOOLCHAIN=gcc
+fi
+
+if [ "$TOOLCHAIN" = "clang" ]; then
+    export PREFER_CLANG=yes
 fi
 
 export MAKE_PROG=make
@@ -84,6 +91,7 @@ compile_gcc() {
     echo "*** Compiling with gcc: $CFG"
 
     # tweak
+    $TWEAKCONFIG setoradd configure.user PREFER_CLANG "$PREFER_CLANG" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
     $TWEAKCONFIG setoradd configure.user SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
@@ -92,6 +100,8 @@ compile_gcc() {
     $TWEAKCONFIG setoradd configure.user LIBXML_LIBS  "$LIBXML_LIBS" || failure $CFG
     $TWEAKCONFIG setoradd configure.user EXPAT_LIBS  "$EXPAT_LIBS" || failure $CFG
     $TWEAKCONFIG setoradd configure.user SYSTEMC  "$SYSTEMC" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user USE_CXX11 "$USE_CXX11" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user USE_NAMESPACE "$USE_NAMESPACE" || failure $CFG
 
     echo "    Configuring..."
     cp configure.user "$LOG_DIR/$CFG-configure.user"
@@ -106,7 +116,7 @@ compile_gcc() {
 
     echo "    Building..."
     $MAKE_PROG cleanall >"$LOG_DIR/$CFG-makeclean.out" 2>"$LOG_DIR/$CFG-makeclean.err" || failure "make cleanall failed - $CFG"
-    $MAKE_PROG >"$LOG_DIR/$CFG-make.out" 2>"$LOG_DIR/$CFG-make.err" || failure "make failed - $CFG"
+    $MAKE_PROG -j8 >"$LOG_DIR/$CFG-make.out" 2>"$LOG_DIR/$CFG-make.err" || failure "make failed - $CFG"
     samples/aloha/aloha -v >"$LOG_DIR/$CFG-buildinfo.out" 2>"$LOG_DIR/$CFG-buildinfo.err"
 }
 
@@ -128,9 +138,48 @@ compile_vc() {
     samples/aloha/aloha -v >"$LOG_DIR/$CFG-buildinfo.out" 2>"$LOG_DIR/$CFG-buildinfo.err"
 }
 
+compile_clang() {
+    echo "    Compiling with clang: $CFG"
+
+    PREFER_CLANG=yes
+
+    #tweak
+    $TWEAKCONFIG setoradd configure.user PREFER_CLANG "$PREFER_CLANG" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user NO_TCL  "$NO_TCL" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user MPI_LIBS  "$MPI_LIBS" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user LIBXML_LIBS  "$LIBXML_LIBS" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user EXPAT_LIBS  "$EXPAT_LIBS" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user SYSTEMC  "$SYSTEMC" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user USE_CXX11 "$USE_CXX11" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user USE_NAMESPACE "$USE_NAMESPACE" || failure $CFG
+
+
+
+    echo "    Configuring..."
+    cp configure.user "$LOG_DIR/$CFG-configure.user"
+    ./configure >"$LOG_DIR/$CFG-configure.out" 2>"$LOG_DIR/$CFG-configure.err"
+    cp Makefile.inc "$LOG_DIR/$CFG-Makefile.inc"
+
+    $TWEAKCONFIG assert Makefile.inc WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
+    $TWEAKCONFIG assert Makefile.inc WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
+    $TWEAKCONFIG assert Makefile.inc SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
+    $TWEAKCONFIG assert Makefile.inc NO_TCL  "$NO_TCL" || failure $CFG
+    $TWEAKCONFIG assert Makefile.inc SYSTEMC  "$SYSTEMC" || failure $CFG
+
+    echo "    Building..."
+    $MAKE_PROG cleanall >"$LOG_DIR/$CFG-makeclean.out" 2>"$LOG_DIR/$CFG-makeclean.err" || failure "make cleanall failed - $CFG"
+    $MAKE_PROG >"$LOG_DIR/$CFG-make.out" 2>"$LOG_DIR/$CFG-make.err" || failure "make failed - $CFG"
+    samples/aloha/aloha -v >"$LOG_DIR/$CFG-buildinfo.out" 2>"$LOG_DIR/$CFG-buildinfo.err"
+}
+
 compile() {
     if [ "$TOOLCHAIN" = "gcc" ]; then
         compile_gcc
+    elif [ "$TOOLCHAIN" = "clang" ]; then
+        compile_clang
     else
         compile_vc
     fi
@@ -150,7 +199,6 @@ checkfingerprints() {
     checkfingerprint samples/aloha     aloha     PureAloha1
     checkfingerprint samples/aloha     aloha     PureAloha2
     checkfingerprint samples/aloha     aloha     SlottedAloha1
-    checkfingerprint samples/aloha     aloha     SlottedAloha2
     checkfingerprint samples/aloha     aloha     SlottedAloha2
     checkfingerprint samples/cqn       cqn       CQN-B
     checkfingerprint samples/cqn       cqn       CQN-A
@@ -218,12 +266,18 @@ fi
 #
 # Compile tests
 #
+
 CFG=default
 (compile)
 
 contains cParsimPartition yes
 contains "Tkenv : graphical user interface" yes
 contains "Cmdenv : command-line user interface" yes
+
+if [ "$TOOLCHAIN" = "clang" ]; then
+    (TEST_PROG="opp_run -v" contains "Clang" yes)
+fi
+
 (TEST_PROG="opp_run -v" contains "XMLPARSER=libxml" yes)
 (TEST_PROG="opp_run -v" contains "WITH_NETBUILDER" yes)
 (TEST_PROG="opp_run -v" contains "simtime_t=SimTime" yes)
@@ -252,12 +306,49 @@ fi
 # check the static build
 CFG=default_static
 (SHARED_LIBS=no compile)
+
 # the static build does not contain opp_run so we must use the aloha sample
 (TEST_PROG="samples/aloha/aloha -h all" contains "Tkenv : graphical user interface" yes)
 (TEST_PROG="samples/aloha/aloha -h all" contains "Cmdenv : command-line user interface" yes)
 (TEST_PROG="samples/aloha/aloha -v" contains "XMLPARSER=libxml" yes)
 (TEST_PROG="samples/aloha/aloha -v" contains "WITH_NETBUILDER" yes)
 (checkfingerprints)
+
+########################################
+# CPP11 test
+# We don't compile, just check the Makefile.inc CXXFLAGS contains -std=c++11
+
+CFG=default_cpp11
+
+echo "    Testing C++11..."
+
+$TWEAKCONFIG setoradd configure.user PREFER_CLANG "$PREFER_CLANG" || failure $CFG
+$TWEAKCONFIG setoradd configure.user WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
+$TWEAKCONFIG setoradd configure.user WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
+$TWEAKCONFIG setoradd configure.user SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
+$TWEAKCONFIG setoradd configure.user NO_TCL  "$NO_TCL" || failure $CFG
+$TWEAKCONFIG setoradd configure.user MPI_LIBS  "$MPI_LIBS" || failure $CFG
+$TWEAKCONFIG setoradd configure.user LIBXML_LIBS  "$LIBXML_LIBS" || failure $CFG
+$TWEAKCONFIG setoradd configure.user EXPAT_LIBS  "$EXPAT_LIBS" || failure $CFG
+$TWEAKCONFIG setoradd configure.user SYSTEMC  "$SYSTEMC" || failure $CFG
+$TWEAKCONFIG setoradd configure.user USE_CXX11 "yes" || failure $CFG
+
+
+echo "    Configuring..."
+cp configure.user "$LOG_DIR/$CFG-configure.user"
+./configure >"$LOG_DIR/$CFG-configure.out" 2>"$LOG_DIR/$CFG-configure.err"
+cp Makefile.inc "$LOG_DIR/$CFG-Makefile.inc"
+
+$TWEAKCONFIG assert_contains Makefile.inc CXXFLAGS  "-std=c++11" || failure $CFG
+
+########################################
+# USE_NAMESPACE test
+# 
+
+CFG=default_only_use_namespace
+(USE_NAMESPACE=yes compile)
+(checkfingerprints)
+(runtest core 0)
 
 ########################################
 # Test MPI only on linux where MPI libs are available
