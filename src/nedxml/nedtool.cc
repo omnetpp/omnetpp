@@ -58,10 +58,10 @@ bool opt_validateonly = false;     // -v
 int opt_nextfiletype = UNKNOWN_FILE; // -X
 bool opt_oldsyntax = false;        // -Q
 const char *opt_suffix = NULL;     // -s
-const char *opt_hdrsuffix = NULL;  // -S
+const char *opt_hdrsuffix = NULL;  // -t
 bool opt_inplace = false;          // -k
 bool opt_unparsedexpr = false;     // -e
-bool opt_storesrc = false;         // -t
+bool opt_storesrc = false;         // -S
 bool opt_novalidation = false;     // -y
 bool opt_noimports = false;        // -z
 bool opt_srcloc = false;           // -p
@@ -96,14 +96,14 @@ void printUsage()
        "  -X xml/ned/msg/off: following files are XML, NED or MSG up to '-X off'\n"
        "  -Q: with -n: use old (3.x) NED syntax\n"
        "  -s <suffix>: suffix for generated files\n"
-       "  -S <suffix>: when generating C++, suffix for generated header files\n"
+       "  -t <suffix>: when generating C++, suffix for generated header files\n"
        "  -k: with -n: replace original file and create backup (.bak). If input is a\n"
        "      single XML file created by `nedtool -m -x': replace original NED files\n"
        "  -u: with -m or -k: split NED files to one NED component per file\n" //XXX refine help text
        "  -e: do not parse expressions in NED input; expect unparsed expressions in XML\n"
        "  -y: skip semantic validation (implies -z, skip processing imports)\n"
        "  -z: skip processing imports\n"
-       "  -t: with NED parsing: include source code of components in XML\n"
+       "  -S: with NED parsing: include source code of components in XML\n"
        "  -p: with -x: add source location info (src-loc attributes) to XML output\n"
        "  -V: verbose\n"
        "  @listfile: listfile should contain one file per line (@ or @@ listfiles\n"
@@ -505,11 +505,11 @@ int main(int argc, char **argv)
             }
             opt_suffix = argv[i];
         }
-        else if (!strcmp(argv[i],"-S"))
+        else if (!strcmp(argv[i],"-t"))
         {
             i++;
             if (i==argc) {
-                fprintf(stderr,"nedtool: unexpected end of arguments after -S\n");
+                fprintf(stderr,"nedtool: unexpected end of arguments after -t\n");
                 return 1;
             }
             opt_hdrsuffix = argv[i];
@@ -526,7 +526,7 @@ int main(int argc, char **argv)
         {
             opt_unparsedexpr = true;
         }
-        else if (!strcmp(argv[i],"-t"))
+        else if (!strcmp(argv[i],"-S"))
         {
             opt_storesrc = true;
         }
