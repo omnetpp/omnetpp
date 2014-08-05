@@ -71,6 +71,9 @@ const char *opt_outputfile = NULL; // -o
 bool opt_here = false;             // -h
 bool opt_splitnedfiles = false;    // -u
 
+// MSG specific option variables:
+MsgCppGeneratorOptions msg_options;
+
 FilesElement *outputtree;
 
 
@@ -112,7 +115,13 @@ void printUsage()
        "  @@listfile: like @listfile, but contents is interpreted as relative to\n"
        "      the current working directory. @@ listfiles can be put anywhere,\n"
        "      including /tmp -- effect only depends on the working directory.\n"
-       "Message (.msg) files should be processed with opp_msgc.\n"
+       "Message (.msg) file specific options:\n"
+       "  -P <symbol>: add dllexport/dllimport symbol to class declarations; if symbol\n"
+       "      name ends in _API, boilerplate code to conditionally define\n"
+       "      it as OPP_DLLEXPORT/OPP_DLLIMPORT is also generated\n"
+       "  -Xnc: do not generate the classes, only object descriptions\n"
+       "  -Xnd: do not generate object descriptions\n"
+       "  -Xns: do not generate setters in object descriptions\n"
     );
 }
 
@@ -563,6 +572,42 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i], "-h"))
         {
             opt_here = true;
+        }
+        else if (!strncmp(argv[i], "-P", 2))
+        {
+            if (argv[i][2])
+                msg_options.exportdef = argv[i]+2;
+            else {
+                if (++i == argc) {
+                    fprintf(stderr,"nedtool: unexpected end of arguments after %s\n", argv[i-1]);
+                    return 1;
+                }
+                msg_options.exportdef = argv[i];
+            }
+        }
+        else if (!strncmp(argv[i], "-X", 2))
+        {
+            const char *arg = argv[i]+2;
+            if (!*arg) {
+                if (++i == argc) {
+                    fprintf(stderr,"nedtool: unexpected end of arguments after %s\n", argv[i-1]);
+                    return 1;
+                }
+                arg = argv[i];
+            }
+            if (!strcmp(arg, "nc")) {
+                msg_options.generate_classes = false;
+            }
+            else if (!strcmp(arg, "nd")) {
+                msg_options.generate_descriptors = false;
+            }
+            else if (!strcmp(arg, "ns")) {
+                msg_options.generate_setters_in_descriptors = false;
+            }
+            else {
+                fprintf(stderr,"nedtool: unknown option -X %s\n",arg);
+                return 1;
+            }
         }
         else if (argv[i][0]=='-')
         {
