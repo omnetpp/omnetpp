@@ -468,36 +468,37 @@ int main(int argc, char **argv)
         {
             opt_validateonly = true;
         }
-        else if (!strcmp(argv[i],"-I"))
+        else if (!strncmp(argv[i], "-I", 2))
         {
-            i++;
-            if (i==argc) {
-                fprintf(stderr,"nedtool: unexpected end of arguments after -I\n");
-                return 1;
+            const char *arg = argv[i]+2;
+            if (!arg) {
+                if (++i == argc) {
+                    fprintf(stderr, "nedtool: unexpected end of arguments after %s\n", argv[i-1]);
+                    return 1;
+                }
             }
             // -I option is currently ignored
         }
-        else if (argv[i][0]=='-' && argv[i][1]=='I')
+        else if (!strncmp(argv[i], "-T", 2))
         {
-            // -I option is currently ignored
-        }
-        else if (!strcmp(argv[i],"-T"))
-        {
-            i++;
-            if (i==argc) {
-                fprintf(stderr,"nedtool: unexpected end of arguments after -X\n");
-                return 1;
+            const char *arg = argv[i]+2;
+            if (!*arg) {
+                if (++i == argc) {
+                    fprintf(stderr, "nedtool: unexpected end of arguments after %s\n", argv[i-1]);
+                    return 1;
+                }
+                arg = argv[i];
             }
-            if (!strcmp(argv[i],"ned"))
+            if (!strcmp(arg, "ned"))
                 opt_nextfiletype = NED_FILE;
-            else if (!strcmp(argv[i],"msg"))
+            else if (!strcmp(arg, "msg"))
                 opt_nextfiletype = MSG_FILE;
-            else if (!strcmp(argv[i],"xml"))
+            else if (!strcmp(arg, "xml"))
                 opt_nextfiletype = XML_FILE;
-            else if (!strcmp(argv[i],"off"))
+            else if (!strcmp(arg, "off"))
                 opt_nextfiletype = UNKNOWN_FILE;
             else {
-                fprintf(stderr,"nedtool: unknown file type %s after -T\n",argv[i]);
+                fprintf(stderr, "nedtool: unknown file type %s after -T\n", arg);
                 return 1;
             }
         }
