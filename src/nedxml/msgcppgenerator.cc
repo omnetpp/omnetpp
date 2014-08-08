@@ -37,7 +37,8 @@ using std::ostream;
 #define H  (*hOutp)
 #define CC (*ccOutp)
 
-#define COMPATIBILITY_MODE
+// compatibility mode makes output more similar to opp_msgc's
+//#define COMPATIBILITY_MODE
 
 #ifdef COMPATIBILITY_MODE
 #define PROGRAM "opp_msgc"

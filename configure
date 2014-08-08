@@ -4210,7 +4210,7 @@ else
    fi
 fi
 
-# perl is needed for opp_msgc
+# perl is needed for opp_makemake and some other scripts
 
 # Extract the first word of "perl", so it can be a program name with args.
 set dummy perl; ac_word=$2
@@ -4252,8 +4252,8 @@ fi
 
 if test "$PERL" = "not found"; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  perl"
-   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Perl not found -- please install it! Perl is required by opp_msgc" >&5
-$as_echo "$as_me: WARNING: Perl not found -- please install it! Perl is required by opp_msgc" >&2;}
+   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Perl not found -- please install it! Perl is required by opp_makemake and some other programs." >&5
+$as_echo "$as_me: WARNING: Perl not found -- please install it! Perl is required by opp_makemake and some other programs." >&2;}
 fi
 if test ! -x /usr/bin/perl; then
    this_perl=`which perl`

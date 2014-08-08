@@ -76,7 +76,7 @@ LIBXML_DIR=$(OPT_DIR:\=/)
 # Directory of various tools
 #
 
-# Perl: needed by opp_makedep, opp_msgc, opp_neddoc, opp_test etc.
+# Perl: needed by opp_makedep, opp_neddoc, opp_test etc.
 PERL=perl.exe
 DOXYGEN_DIR=$(TOOLS_DIR)/doxygen
 
@@ -326,7 +326,7 @@ CXXFLAGS=
 MAKEDEPEND=$(PERL) $(OMNETPP_ROOT)/src/utils/opp_makedep -Y --objsuffix .obj --objdirtree
 
 # OMNeT++ tools
-MSGC=$(OMNETPP_BIN_DIR)/opp_msgc
+MSGC=$(OMNETPP_BIN_DIR)/nedtool
 REPLACE=$(OMNETPP_SRC_DIR)/utils/opp_replace
 WISH=$(TK_DIR)/bin/wish$(TK_VER:.=).exe
 DOXYGEN=$(DOXYGEN_DIR)/bin/doxygen

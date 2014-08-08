@@ -77,7 +77,7 @@ opplibs:
 
 ui: check-ui-vars common layout eventlog scave nedxml $(JNILIBS)
 
-# dependencies (because of ver.h, opp_msgc, etc)
+# dependencies (because of ver.h, opp_msgc [nedtool], etc)
 clean depend: makefiles
 common layout eventlog scave nedxml sim envir cmdenv tkenv systemc makefiles: utils
 layout eventlog scave nedxml sim envir cmdenv tkenv : common
