@@ -572,6 +572,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
 
     it->fnopack = getPropertyAsBool(it->fprops, "nopack", false);
     it->feditable = getPropertyAsBool(it->fprops, "editable", false);
+    it->editNotDisabled = getPropertyAsBool(it->fprops, "editable", true);
     it->fopaque = getPropertyAsBool(it->fprops, "opaque", false);
 
     // resolve enum namespace
@@ -1491,7 +1492,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
             if (classType == COWNEDOBJECT)
                 flags.push_back("FD_ISCOBJECT | FD_ISCOWNEDOBJECT");
 
-            if (it->feditable || (info.generate_setters_in_descriptor && it->fkind == "basic"))
+            if (it->feditable || (info.generate_setters_in_descriptor && it->fkind == "basic" && it->editNotDisabled))
                 flags.push_back("FD_ISEDITABLE");
             std::string flagss;
             if (flags.empty())
@@ -1730,7 +1731,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    switch (field) {\n";
     for (size_t i=0; i < fieldcount; i++)
     {
-        if (info.fieldlist[i].feditable || (info.generate_setters_in_descriptor && info.fieldlist[i].fkind == "basic")) {
+        if (info.fieldlist[i].feditable || (info.generate_setters_in_descriptor && info.fieldlist[i].fkind == "basic" && info.fieldlist[i].editNotDisabled)) {
             CC << "        case " << i << ": ";
             if (info.classtype == STRUCT) {
                 if (info.fieldlist[i].fisarray) {

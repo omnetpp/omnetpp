@@ -117,6 +117,7 @@ class NEDXML_API MsgCppGenerator
             std::string enumqname;
             bool fnopack;           // @nopack(true)
             bool feditable;         // @editable(true)
+            bool editNotDisabled;   // true when field doesn't have property "@editable(false)"
             bool fopaque;         // @opaque(true)        // TODO: @opaque should rather be the attribute of the field's type, not the field itself
 
           public:
