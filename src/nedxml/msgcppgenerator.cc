@@ -20,7 +20,6 @@
 #include <algorithm>
 #include <cctype>
 #include <set>
-#include <unistd.h>
 
 #include "msgcppgenerator.h"
 #include "ned2generator.h"
@@ -28,6 +27,8 @@
 #include "nedutil.h"
 #include "stringtokenizer.h"
 #include "stringutil.h"
+#include "platmisc.h"  // unlink()
+
 #include "../../include/simkerneldefs.h"
 
 NAMESPACE_BEGIN
@@ -724,7 +725,7 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
         info.classtype = getClassType(info.msgqname);  // only for sim_std.msg
     }
     else if (info.msgbase == "") {
-        if (info.keyword == "message" or info.keyword == "packet") {
+        if (info.keyword == "message" || info.keyword == "packet") {
             info.classtype = COWNEDOBJECT;
         } else if (info.keyword == "class") {
             info.classtype = COBJECT; // Note: we never generate non-cObject classes
@@ -931,7 +932,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         H << "  public:\n";
     }
     if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT) {
-        if (info.keyword == "message" or info.keyword == "packet") {
+        if (info.keyword == "message" || info.keyword == "packet") {
             H << "    " << info.msgclass << "(const char *name=NULL, int kind=0);\n";
         } else {
             H << "    " << info.msgclass << "(const char *name=NULL);\n";
@@ -1232,12 +1233,12 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "}\n\n";
                 CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << it->fsizetype << " k)" << constifprimitivetype << "\n";
                 CC << "{\n";
-                CC << "    if (k>=" << it->farraysize << ") throw cRuntimeError(\"Array of size " << it->farraysize << " indexed by \%lu\", (unsigned long)k);\n";
+                CC << "    if (k>=" << it->farraysize << ") throw cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
                 CC << "    return " << it->var << "[k]" << it->maybe_c_str << ";\n";
                 CC << "}\n\n";
                 CC << "void " << info.msgclass << "::" << it->setter << "(" << it->fsizetype << " k, " << it->argtype << " " << it->argname << ")\n";
                 CC << "{\n";
-                CC << "    if (k>=" << it->farraysize << ") throw cRuntimeError(\"Array of size " << it->farraysize << " indexed by \%lu\", (unsigned long)k);\n";
+                CC << "    if (k>=" << it->farraysize << ") throw cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
                 CC << "    this->" << it->var << "[k] = " << it->argname << ";\n";
                 CC << "}\n\n";
             } else if (it->fisarray && it->farraysize.empty()) {
@@ -1265,12 +1266,12 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "}\n\n";
                 CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << it->fsizetype << " k)" << constifprimitivetype << "\n";
                 CC << "{\n";
-                CC << "    if (k>=" << it->varsize << ") throw cRuntimeError(\"Array of size \%d indexed by \%d\", " << it->varsize << ", k);\n";
+                CC << "    if (k>=" << it->varsize << ") throw cRuntimeError(\"Array of size %d indexed by %d\", " << it->varsize << ", k);\n";
                 CC << "    return " << it->var << "[k]" << it->maybe_c_str << ";\n";
                 CC << "}\n\n";
                 CC << "void " << info.msgclass << "::" << it->setter << "(" << it->fsizetype << " k, " << it->argtype << " " << it->argname << ")\n";
                 CC << "{\n";
-                CC << "    if (k>=" << it->varsize << ") throw cRuntimeError(\"Array of size \%d indexed by \%d\", " << it->varsize << ", k);\n";
+                CC << "    if (k>=" << it->varsize << ") throw cRuntimeError(\"Array of size %d indexed by %d\", " << it->varsize << ", k);\n";
                 CC << "    this->" << it->var << "[k] = " << it->argname << ";\n";
                 CC << "}\n\n";
             } else {
