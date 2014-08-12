@@ -49,18 +49,6 @@ static bool contains(const std::string& str, const std::string& substr)
     return str.find(substr) != std::string::npos;
 }
 
-static std::string substringBefore(const std::string& str, const std::string& substr)
-{
-    size_t pos = str.find(substr);
-    return pos==std::string::npos ? "" : str.substr(0,pos);
-}
-
-static std::string substringAfter(const std::string& str, const std::string& substr)
-{
-    size_t pos = str.find(substr);
-    return pos==std::string::npos ? "" : str.substr(pos+substr.size());
-}
-
 static char parseType(const std::string& str)
 {
     if (str=="bool")
@@ -108,7 +96,7 @@ static const char *syntaxErrorMessage =
 void cNEDFunction::parseSignature(const char *signature)
 {
     std::string str = opp_nulltoempty(signature);
-    std::string typeAndName = opp_trim(substringBefore(str, "(").c_str());
+    std::string typeAndName = opp_trim(opp_substringbefore(str, "(").c_str());
     char type;
     std::string name;
     if (!splitTypeAndName(typeAndName, type, name))
@@ -116,10 +104,10 @@ void cNEDFunction::parseSignature(const char *signature)
     setName(name.c_str());
     rettype = type;
 
-    std::string rest = opp_trim(substringAfter(str, "(").c_str());
+    std::string rest = opp_trim(opp_substringafter(str, "(").c_str());
     bool missingRParen = !contains(rest, ")");
-    std::string argList = opp_trim(substringBefore(rest, ")").c_str());
-    std::string trailingGarbage = opp_trim(substringAfter(rest, ")").c_str());
+    std::string argList = opp_trim(opp_substringbefore(rest, ")").c_str());
+    std::string trailingGarbage = opp_trim(opp_substringafter(rest, ")").c_str());
     if (missingRParen || trailingGarbage.size()!=0)
         throw cRuntimeError(syntaxErrorMessage, signature);
 
