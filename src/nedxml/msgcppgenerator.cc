@@ -1677,6 +1677,15 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     for (size_t i=0; i<fieldcount; i++)
     {
         if (info.fieldlist[i].fkind == "basic" || (info.fieldlist[i].fkind == "struct" && !info.fieldlist[i].tostring.empty())) {
+            std::string tostringB, tostringE;
+            if (info.fieldlist[i].tostring[0] == '.') {
+                tostringB = "";
+                tostringE = info.fieldlist[i].tostring;
+            }
+            else {
+                tostringB = info.fieldlist[i].tostring + "(";
+                tostringE = ")";
+            }
             CC << "        case " << i << ": ";
             if (info.classtype == STRUCT) {
                 if (info.fieldlist[i].fisarray) {
@@ -1685,15 +1694,15 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
                     } else {
                         CC << "if (i>=pp->" << info.fieldlist[i].varsize << ") return \"\";\n";
                     }
-                    CC << "                return " << info.fieldlist[i].tostring << "(pp->" << info.fieldlist[i].var << "[i]);\n";
+                    CC << "                return " << tostringB << "pp->" << info.fieldlist[i].var << "[i]" << tostringE << ";\n";
                 } else {
-                    CC << "return " << info.fieldlist[i].tostring << "(pp->" << info.fieldlist[i].var << ");\n";
+                    CC << "return " << tostringB << "pp->" << info.fieldlist[i].var << tostringE << ";\n";
                 }
             } else {
                 if (info.fieldlist[i].fisarray) {
-                    CC << "return " << info.fieldlist[i].tostring << "(pp->" << info.fieldlist[i].getter << "(i));\n";
+                    CC << "return " << tostringB << "pp->" << info.fieldlist[i].getter << "(i)" << tostringE << ";\n";
                 } else {
-                    CC << "return " << info.fieldlist[i].tostring << "(pp->" << info.fieldlist[i].getter << "());\n";
+                    CC << "return " << tostringB << "pp->" << info.fieldlist[i].getter << "()" << tostringE << ";\n";
                 }
             }
         } else if (info.fieldlist[i].fkind == "struct") {

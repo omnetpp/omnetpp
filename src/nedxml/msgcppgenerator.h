@@ -110,8 +110,16 @@ class NEDXML_API MsgCppGenerator
             std::string setter;     // Setter function name
             std::string alloc;      // setArraySize() function name
             std::string getsize;    // array size getter function name
-            std::string tostring;   // function to convert datamember to string, defined in property @tostring, default values for primitive types found in MsgCppGenerator::TypeMap MsgCppGenerator::PRIMITIVE_TYPES
-            std::string fromstring;   // function to convert string to datamember, defined in property @fromstring, default values for primitive types found in MsgCppGenerator::TypeMap MsgCppGenerator::PRIMITIVE_TYPES
+            std::string tostring;   // function to convert data to string, defined in property @tostring, default values for primitive types found in MsgCppGenerator::TypeMap MsgCppGenerator::PRIMITIVE_TYPES
+                                    // if tostring begins a dot, then uses as member function, parentheses needed in property; otherwise tostring implemented as name of a normal function, do not use parentheses
+                                    // std::string <function>(<datatype>);           // @tostring(function)
+                                    // std::string <function>(const <datatype>&);    // @tostring(function)
+                                    // const char * <function>(<datatype>);          // @tostring(function)
+                                    // const char * <function>(const <datatype>&);   // @tostring(function)
+                                    // std::string <datatype>::<function>(...);      // @tostring(.function(...))
+                                    // const char * <datatype>::<function>(...);     // @tostring(.function(...))
+            std::string fromstring; // function to convert string to data member, defined in property @fromstring, default values for primitive types found in MsgCppGenerator::TypeMap MsgCppGenerator::PRIMITIVE_TYPES
+                                    // <datatype> <function>(const char *);          // @fromstring(function)
             std::string maybe_c_str;       // uses ".c_str()"
             std::string enumname;
             std::string enumqname;
