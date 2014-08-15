@@ -1545,8 +1545,9 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
         CC << "    int base = basedesc ? basedesc->getFieldCount() : 0;\n";
         for (size_t i=0; i < info.fieldlist.size(); ++i)
         {
-            char c = info.fieldlist[i].fname[0];
-            CC << "    if (fieldName[0]=='" << c << "' && strcmp(fieldName, \""<<info.fieldlist[i].fname<<"\")==0) return base+" << i << ";\n";
+            const ClassInfo::FieldInfo& field = info.fieldlist[i];
+            char c = field.fname[0];
+            CC << "    if (fieldName[0]=='" << c << "' && strcmp(fieldName, \""<<field.fname<<"\")==0) return base+" << i << ";\n";
         }
     }
     CC << "    return basedesc ? basedesc->findField(fieldName) : -1;\n";
@@ -1619,7 +1620,8 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
 
     for (size_t i=0; i < fieldcount; ++i)
     {
-        const Properties &ref = info.fieldlist[i].fprops;
+        const ClassInfo::FieldInfo& field = info.fieldlist[i];
+        const Properties &ref = field.fprops;
         if (!ref.empty()) {
             CC << "        case " << i << ":\n";
             for (Properties::const_iterator it = ref.begin(); it != ref.end(); ++it) {
@@ -1647,14 +1649,15 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    " << info.msgclass << " *pp = (" << info.msgclass << " *)object; (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i=0; i < fieldcount; i++) {
-        if (info.fieldlist[i].fisarray) {
+        const ClassInfo::FieldInfo& field = info.fieldlist[i];
+        if (field.fisarray) {
             CC << "        case " << i << ": ";
-            if (!info.fieldlist[i].farraysize.empty()) {
-                CC << "return " << info.fieldlist[i].farraysize << ";\n";
+            if (!field.farraysize.empty()) {
+                CC << "return " << field.farraysize << ";\n";
             } else if (info.classtype == STRUCT) {
-                CC << "return pp->" << info.fieldlist[i].varsize << ";\n";
+                CC << "return pp->" << field.varsize << ";\n";
             } else {
-                CC << "return pp->" << info.fieldlist[i].getsize << "();\n";
+                CC << "return pp->" << field.getsize << "();\n";
             }
         }
     }
@@ -1676,48 +1679,49 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    switch (field) {\n";
     for (size_t i=0; i<fieldcount; i++)
     {
-        if (info.fieldlist[i].fkind == "basic" || (info.fieldlist[i].fkind == "struct" && !info.fieldlist[i].tostring.empty())) {
+        const ClassInfo::FieldInfo& field = info.fieldlist[i];
+        if (field.fkind == "basic" || (field.fkind == "struct" && !field.tostring.empty())) {
             std::string tostringB, tostringE;
-            if (info.fieldlist[i].tostring[0] == '.') {
+            if (field.tostring[0] == '.') {
                 tostringB = "";
-                tostringE = info.fieldlist[i].tostring;
+                tostringE = field.tostring;
             }
             else {
-                tostringB = info.fieldlist[i].tostring + "(";
+                tostringB = field.tostring + "(";
                 tostringE = ")";
             }
             CC << "        case " << i << ": ";
             if (info.classtype == STRUCT) {
-                if (info.fieldlist[i].fisarray) {
-                    if (!info.fieldlist[i].farraysize.empty()) {
-                        CC << "if (i>=" << info.fieldlist[i].farraysize << ") return \"\";\n";
+                if (field.fisarray) {
+                    if (!field.farraysize.empty()) {
+                        CC << "if (i>=" << field.farraysize << ") return \"\";\n";
                     } else {
-                        CC << "if (i>=pp->" << info.fieldlist[i].varsize << ") return \"\";\n";
+                        CC << "if (i>=pp->" << field.varsize << ") return \"\";\n";
                     }
-                    CC << "                return " << tostringB << "pp->" << info.fieldlist[i].var << "[i]" << tostringE << ";\n";
+                    CC << "                return " << tostringB << "pp->" << field.var << "[i]" << tostringE << ";\n";
                 } else {
-                    CC << "return " << tostringB << "pp->" << info.fieldlist[i].var << tostringE << ";\n";
+                    CC << "return " << tostringB << "pp->" << field.var << tostringE << ";\n";
                 }
             } else {
-                if (info.fieldlist[i].fisarray) {
-                    CC << "return " << tostringB << "pp->" << info.fieldlist[i].getter << "(i)" << tostringE << ";\n";
+                if (field.fisarray) {
+                    CC << "return " << tostringB << "pp->" << field.getter << "(i)" << tostringE << ";\n";
                 } else {
-                    CC << "return " << tostringB << "pp->" << info.fieldlist[i].getter << "()" << tostringE << ";\n";
+                    CC << "return " << tostringB << "pp->" << field.getter << "()" << tostringE << ";\n";
                 }
             }
-        } else if (info.fieldlist[i].fkind == "struct") {
+        } else if (field.fkind == "struct") {
             CC << "        case " << i << ": ";
             if (info.classtype == STRUCT) {
-                if (info.fieldlist[i].fisarray) {
-                    CC << "{std::stringstream out; out << pp->" << info.fieldlist[i].var << "[i]; return out.str();}\n";
+                if (field.fisarray) {
+                    CC << "{std::stringstream out; out << pp->" << field.var << "[i]; return out.str();}\n";
                 } else {
-                    CC << "{std::stringstream out; out << pp->" << info.fieldlist[i].var << "; return out.str();}\n";
+                    CC << "{std::stringstream out; out << pp->" << field.var << "; return out.str();}\n";
                 }
             } else {
-                if (info.fieldlist[i].fisarray) {
-                    CC << "{std::stringstream out; out << pp->" << info.fieldlist[i].getter << "(i); return out.str();}\n";
+                if (field.fisarray) {
+                    CC << "{std::stringstream out; out << pp->" << field.getter << "(i); return out.str();}\n";
                 } else {
-                    CC << "{std::stringstream out; out << pp->" << info.fieldlist[i].getter << "(); return out.str();}\n";
+                    CC << "{std::stringstream out; out << pp->" << field.getter << "(); return out.str();}\n";
                 }
             }
         } else {
@@ -1742,28 +1746,29 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    switch (field) {\n";
     for (size_t i=0; i < fieldcount; i++)
     {
-        if (info.fieldlist[i].feditable || (info.generate_setters_in_descriptor && info.fieldlist[i].fkind == "basic" && info.fieldlist[i].editNotDisabled)) {
-            if (info.fieldlist[i].fromstring.empty()) {
-                errors->addError(info.fieldlist[i].nedElement, "Field '%s' is editable, but fromstring() function is unspecified", info.fieldlist[i].fname.c_str());
+        const ClassInfo::FieldInfo& field = info.fieldlist[i];
+        if (field.feditable || (info.generate_setters_in_descriptor && field.fkind == "basic" && field.editNotDisabled)) {
+            if (field.fromstring.empty()) {
+                errors->addError(field.nedElement, "Field '%s' is editable, but fromstring() function is unspecified", field.fname.c_str());
                 continue;
             }
             CC << "        case " << i << ": ";
             if (info.classtype == STRUCT) {
-                if (info.fieldlist[i].fisarray) {
-                    if (!info.fieldlist[i].farraysize.empty()) {
-                        CC << "if (i>=" << info.fieldlist[i].farraysize << ") return false;\n";
+                if (field.fisarray) {
+                    if (!field.farraysize.empty()) {
+                        CC << "if (i>=" << field.farraysize << ") return false;\n";
                     } else {
-                        CC << "if (i>=pp->" << info.fieldlist[i].varsize << ") return false;\n";
+                        CC << "if (i>=pp->" << field.varsize << ") return false;\n";
                     }
-                    CC << "                pp->"<<info.fieldlist[i].var << "[i] = " << info.fieldlist[i].fromstring << "(value); return true;\n";
+                    CC << "                pp->"<<field.var << "[i] = " << field.fromstring << "(value); return true;\n";
                 } else {
-                    CC << "pp->" << info.fieldlist[i].var << " = " << info.fieldlist[i].fromstring << "(value); return true;\n";
+                    CC << "pp->" << field.var << " = " << field.fromstring << "(value); return true;\n";
                 }
             } else {
-                if (info.fieldlist[i].fisarray) {
-                    CC << "pp->" << info.fieldlist[i].setter << "(i," << info.fieldlist[i].fromstring << "(value)); return true;\n";
+                if (field.fisarray) {
+                    CC << "pp->" << field.setter << "(i," << field.fromstring << "(value)); return true;\n";
                 } else {
-                    CC << "pp->" << info.fieldlist[i].setter << "(" << info.fieldlist[i].fromstring << "(value)); return true;\n";
+                    CC << "pp->" << field.setter << "(" << field.fromstring << "(value)); return true;\n";
                 }
             }
         }
@@ -1788,9 +1793,10 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
         CC << "    switch (field) {\n";
         for (size_t i=0; i < fieldcount; i++)
         {
-            bool opaque = info.fieldlist[i].fopaque;  // TODO: @opaque should rather be the attribute of the field's type, not the field itself
-            if (info.fieldlist[i].fkind == "struct" && !opaque) {
-                CC << "        case " << i << ": return opp_typename(typeid(" << info.fieldlist[i].ftype << "));\n";
+            const ClassInfo::FieldInfo& field = info.fieldlist[i];
+            bool opaque = field.fopaque;  // TODO: @opaque should rather be the attribute of the field's type, not the field itself
+            if (field.fkind == "struct" && !opaque) {
+                CC << "        case " << i << ": return opp_typename(typeid(" << field.ftype << "));\n";
             }
         }
         CC << "        default: return NULL;\n";
@@ -1812,28 +1818,29 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    switch (field) {\n";
     for (size_t i=0; i < fieldcount; i++)
     {
-        bool opaque = info.fieldlist[i].fopaque;  //# TODO: @opaque should rather be the attribute of the field's type, not the field itself
-        if (info.fieldlist[i].fkind == "struct" && !opaque) {
+        const ClassInfo::FieldInfo& field = info.fieldlist[i];
+        bool opaque = field.fopaque;  //# TODO: @opaque should rather be the attribute of the field's type, not the field itself
+        if (field.fkind == "struct" && !opaque) {
             std::string cast;
             std::string value;
             if (info.classtype == STRUCT) {
-                if (info.fieldlist[i].fisarray) {
-                    value = std::string("pp->") + info.fieldlist[i].var + "[i]";
+                if (field.fisarray) {
+                    value = std::string("pp->") + field.var + "[i]";
                 } else {
-                    value = std::string("pp->") + info.fieldlist[i].var;
+                    value = std::string("pp->") + field.var;
                 }
             } else {
-                if (info.fieldlist[i].fisarray) {
-                    value = std::string("pp->") + info.fieldlist[i].getter + "(i)";
+                if (field.fisarray) {
+                    value = std::string("pp->") + field.getter + "(i)";
                 } else {
-                    value = std::string("pp->") + info.fieldlist[i].getter + "()";
+                    value = std::string("pp->") + field.getter + "()";
                 }
             }
-            ClassType fieldclasstype = getClassType(info.fieldlist[i].ftype);
+            ClassType fieldclasstype = getClassType(field.ftype);
             cast = "(void *)";
             if (fieldclasstype == COBJECT || fieldclasstype == CNAMEDOBJECT || fieldclasstype == COWNEDOBJECT)
                 cast = cast + "static_cast<cObject *>";
-            if (info.fieldlist[i].fispointer) {
+            if (field.fispointer) {
                 CC << "        case " << i << ": return " << cast << "(" << value << "); break;\n";
             } else {
                 CC << "        case " << i << ": return " << cast << "(&" << value << "); break;\n";
