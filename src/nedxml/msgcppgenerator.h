@@ -110,8 +110,8 @@ class NEDXML_API MsgCppGenerator
             std::string setter;     // Setter function name
             std::string alloc;      // setArraySize() function name
             std::string getsize;    // array size getter function name
-            std::string tostring;   // function to convert datamember to string
-            std::string fromstring;   // function to convert string to datamember
+            std::string tostring;   // function to convert datamember to string, defined in property @tostring, default values for primitive types found in MsgCppGenerator::TypeMap MsgCppGenerator::PRIMITIVE_TYPES
+            std::string fromstring;   // function to convert string to datamember, defined in property @fromstring, default values for primitive types found in MsgCppGenerator::TypeMap MsgCppGenerator::PRIMITIVE_TYPES
             std::string maybe_c_str;       // uses ".c_str()"
             std::string enumname;
             std::string enumqname;

@@ -144,7 +144,7 @@ const MsgCppGenerator::TypeMap MsgCppGenerator::PRIMITIVE_TYPES =
         ("float",           TypeDesc("string2double",   "double2string"))
         ("double",          TypeDesc("string2double",   "double2string"))
         ("simtime_t",       TypeDesc("string2double",   "double2string"))
-        ("string",          TypeDesc("",                "oppstring2string"))
+        ("string",          TypeDesc(" ",               "oppstring2string"))
         ("char",            TypeDesc("string2long",     "long2string"))
         ("short",           TypeDesc("string2long",     "long2string"))
         ("int",             TypeDesc("string2long",     "long2string"))
@@ -574,6 +574,8 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
     it->feditable = getPropertyAsBool(it->fprops, "editable", false);
     it->editNotDisabled = getPropertyAsBool(it->fprops, "editable", true);
     it->fopaque = getPropertyAsBool(it->fprops, "opaque", false);
+    it->tostring = getProperty(it->fprops, "tostring", "");
+    it->fromstring = getProperty(it->fprops, "fromstring", "");
 
     // resolve enum namespace
     it->enumname = getProperty(it->fprops, "enum");
@@ -665,8 +667,6 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
         it->datatype = it->ftype;
         it->argtype = std::string("const ") + it->ftype + "&";
         it->rettype = it->ftype + "&";
-        it->tostring = "";
-        it->fromstring = "";
         //it->fval = "" unless (it->fval != "");
     } else if (it->fkind == "basic") {
         if (tdIt == PRIMITIVE_TYPES.end())
@@ -677,8 +677,10 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
         it->rettype = it->ftype;
         if (it->fval.empty())
             it->fval = "0";
-        it->tostring = tdIt->second.tostring;
-        it->fromstring = tdIt->second.fromstring;
+        if (it->tostring.empty())
+            it->tostring = tdIt->second.tostring;
+        if (it->fromstring.empty())
+            it->fromstring = tdIt->second.fromstring;
 
         if (it->ftype == "bool") {
             // $datatype, $argtype, $rettype: default (same as $ftype)
@@ -1674,7 +1676,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    switch (field) {\n";
     for (size_t i=0; i<fieldcount; i++)
     {
-        if (info.fieldlist[i].fkind == "basic") {
+        if (info.fieldlist[i].fkind == "basic" || (info.fieldlist[i].fkind == "struct" && !info.fieldlist[i].tostring.empty())) {
             CC << "        case " << i << ": ";
             if (info.classtype == STRUCT) {
                 if (info.fieldlist[i].fisarray) {
@@ -1732,6 +1734,10 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     for (size_t i=0; i < fieldcount; i++)
     {
         if (info.fieldlist[i].feditable || (info.generate_setters_in_descriptor && info.fieldlist[i].fkind == "basic" && info.fieldlist[i].editNotDisabled)) {
+            if (info.fieldlist[i].fromstring.empty()) {
+                errors->addError(info.fieldlist[i].nedElement, "Field '%s' is editable, but fromstring() function is unspecified", info.fieldlist[i].fname.c_str());
+                continue;
+            }
             CC << "        case " << i << ": ";
             if (info.classtype == STRUCT) {
                 if (info.fieldlist[i].fisarray) {
