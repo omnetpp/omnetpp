@@ -1681,8 +1681,13 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     {
         const ClassInfo::FieldInfo& field = info.fieldlist[i];
         if (field.fkind == "basic" || (field.fkind == "struct" && !field.tostring.empty())) {
+            size_t pos = field.tostring.find('$');
             std::string tostringB, tostringE;
-            if (field.tostring[0] == '.') {
+            if (pos != field.tostring.npos) {
+                tostringB = field.tostring.substr(0, pos);
+                tostringE = field.tostring.substr(pos + 1);
+            }
+            else if (field.tostring[0] == '.') {
                 tostringB = "";
                 tostringE = field.tostring;
             }
@@ -1752,6 +1757,15 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
                 errors->addError(field.nedElement, "Field '%s' is editable, but fromstring() function is unspecified", field.fname.c_str());
                 continue;
             }
+            std::string fromstring;
+            size_t pos = field.fromstring.find('$');
+            if (pos != field.fromstring.npos) {
+                fromstring = field.fromstring.substr(0, pos) + "value" + field.fromstring.substr(pos + 1);
+            }
+            else {
+                fromstring = field.fromstring + "(value)";
+            }
+
             CC << "        case " << i << ": ";
             if (info.classtype == STRUCT) {
                 if (field.fisarray) {
@@ -1760,15 +1774,15 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
                     } else {
                         CC << "if (i>=pp->" << field.varsize << ") return false;\n";
                     }
-                    CC << "                pp->"<<field.var << "[i] = " << field.fromstring << "(value); return true;\n";
+                    CC << "                pp->"<<field.var << "[i] = " << fromstring << "; return true;\n";
                 } else {
-                    CC << "pp->" << field.var << " = " << field.fromstring << "(value); return true;\n";
+                    CC << "pp->" << field.var << " = " << fromstring << "; return true;\n";
                 }
             } else {
                 if (field.fisarray) {
-                    CC << "pp->" << field.setter << "(i," << field.fromstring << "(value)); return true;\n";
+                    CC << "pp->" << field.setter << "(i," << fromstring << "); return true;\n";
                 } else {
-                    CC << "pp->" << field.setter << "(" << field.fromstring << "(value)); return true;\n";
+                    CC << "pp->" << field.setter << "(" << fromstring << "); return true;\n";
                 }
             }
         }
