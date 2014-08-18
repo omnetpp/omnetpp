@@ -428,8 +428,6 @@ proc fieldsPage:getNodeInfo:getFieldText {obj sd fieldid index} {
         set enumname [opp_classdescriptor $obj $sd fieldproperty $fieldid "enum"]
         if {$enumname!=""} {
             append typename " - enum $enumname"
-            set symbolicname [opp_getnameforenum $enumname $value]
-            set value "$symbolicname ($value)"
         }
         #if {$typename=="string"} {set value "\"$value\""}
         if {$typename=="string"} {set value "'$value'"}
