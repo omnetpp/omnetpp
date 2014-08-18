@@ -119,6 +119,14 @@ int cEnum::lookup(const char *name, int fallback)
     return it==nameToValueMap.end() ? fallback : it->second;
 }
 
+int cEnum::parse(const char *name)
+{
+    std::map<std::string,int>::const_iterator it = nameToValueMap.find(name);
+    if (it == nameToValueMap.end())
+        throw cRuntimeError("Value '%s' not found in '%s' enum", name, getName());
+    return it->second;
+}
+
 cEnum *cEnum::find(const char *name)
 {
     return dynamic_cast<cEnum *>(enums.getInstance()->lookup(name));

@@ -136,6 +136,11 @@ class SIM_API cEnum : public cOwnedObject
      * second argument (or -1).
      */
     int lookup(const char *name, int fallback=-1);
+
+    /**
+     * Look up string and return numeric code. Throws an error if not found.
+     */
+    int parse(const char *name);
     //@}
 
     /**
