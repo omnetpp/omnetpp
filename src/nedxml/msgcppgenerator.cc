@@ -596,6 +596,10 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
             it->enumqname = found[0];
         }
         it->fprops["enum"] = it->enumqname; // need to modify the property in place
+        if (it->tostring.empty())
+            it->tostring = std::string("enum2string($, \"") + it->enumqname + "\")";
+        if (it->fromstring.empty())
+            it->fromstring = std::string("(") + it->enumqname + ")string2enum($, \"" + it->enumqname + "\")";
     }
 
     // variable name
