@@ -27,10 +27,8 @@ PREFER_CLANG=no
 
 #
 # Set to "yes" to compile with C++ 11 support enabled (-std=c++11)
-# (warning: Do NOT turn on this on on Windows. The bundled MinGW 4.7.x compiler
-# is not yet ready for C++11 support.)
 #
-USE_CXX11=no
+USE_CXX11=yes
 
 #
 # Compiler optimization switches. There are two sets of switches,
