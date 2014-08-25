@@ -14,24 +14,29 @@ IDE:
 
 Command line:
 
-  - The message compiler tool have been merged into the NEDTOOL. It is no longer
-    implemented as a perl script.
+  - The message compiler was reimplemented as a part of 'nedtool'. You can still use
+    'opp_msgc' as it is now a wrapper script pointing to 'nedtool'.
 
 Other:
   - OMNeT++ is now using C++11 by default (-std=c++11) when models are compiled.
-    The simulator is not yet using any of the C++11 features so C++11 support may
-    be disabled in configure.user.
-    Update your models to compile under C++11 standard as later OMNeT++ versions will
-    require C++11 compliance.
+    The simulator itself does not use any of the C++11 features so C++11 support may
+    be disabled in configure.user. Update your models to compile properly using the
+    C++11 standard as later OMNeT++ versions will require C++11 compliance.
+
+  - OMNeT++ can be configured to use the 'omnetpp' namespace by setting 
+    USE_NAMESPACE=yes in configure.user
+
   - CLANG is used by default on MAC, can be optionally turned on on Linux and 
     still not yet supported on Windows.
+
   - The bundled MSYS/MINGW toolchanin was updated to use MSYS2.
     Details:
     - No more memory errors during build
     - The 'make' command now properly supports parallel build (-j4, -j8 etc.)
     - The bundled MSYS2 toolchain now contains the 'pacman' package manager
-      so you can install new packages if you wish.
-    - The 'mingw' directory containing the compiler have been moved under the 'msys' directory.
+      so you can install additional packages if you wish.
+    - The 'mingw' directory containing the compiler have been moved under 
+      the 'msys' directory.
 
 
 OMNeT++ 4.5 (June 2014)
