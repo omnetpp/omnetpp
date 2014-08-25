@@ -31,6 +31,51 @@
 
 #include "../../include/simkerneldefs.h"
 
+#ifdef COMPATIBILITY_MODE
+// removes ":<linenumber>" from source location string
+inline std::string SL(const std::string& s)
+{
+    return s.substr(0, s.find_last_of(':'));
+}
+#else
+#define SL(x)  (x)
+#endif
+
+inline std::string TS(const std::string& s)
+{
+    return s.empty() ? s : s + " ";
+}
+
+char charToNameFilter(char ch)
+{
+    return (isalnum(ch)) ? ch : '_';
+}
+
+std::string canonicalizeQName(const std::string& namespac, const std::string& name)
+{
+    std::string qname;
+    if (name.find("::") != name.npos) {
+        qname = name.substr(0, 2) == "::" ? name.substr(2) : name; // remove leading "::", because names in @classes don't have it either
+    }
+    else if (!namespac.empty() && !name.empty()) {
+        qname = namespac + "::" + name;
+    }
+    else
+        qname = name;
+    return qname;
+}
+
+std::ostream& operator << (std::ostream& o, const std::pair<std::string,int>& p)
+{
+    return o << '(' << p.first << ':' << p.second << ')';
+}
+
+std::string ptr2str(const char *ptr)
+{
+    return ptr ? ptr : "";
+}
+
+
 NAMESPACE_BEGIN
 
 using std::ostream;
@@ -46,7 +91,6 @@ using std::ostream;
 #else
 #define PROGRAM "nedtool"
 #endif
-
 
 template <typename T>
 std::string join(const T& v, const std::string& delim)
@@ -186,55 +230,6 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement, const char *hFile, c
         unlink(ccFile);
     }
 }
-
-namespace {
-
-#ifdef COMPATIBILITY_MODE
-// removes ":<linenumber>" from source location string
-inline std::string SL(const std::string& s)
-{
-    return s.substr(0, s.find_last_of(':'));
-}
-#else
-#define SL(x)  (x)
-#endif
-
-inline std::string TS(const std::string& s)
-{
-    return s.empty() ? s : s + " ";
-}
-
-char charToNameFilter(char ch)
-{
-    return (isalnum(ch)) ? ch : '_';
-}
-
-std::string canonicalizeQName(const std::string& namespac, const std::string& name)
-{
-    std::string qname;
-    if (name.find("::") != name.npos) {
-        qname = name.substr(0, 2) == "::" ? name.substr(2) : name; // remove leading "::", because names in @classes don't have it either
-    }
-    else if (!namespac.empty() && !name.empty()) {
-        qname = namespac + "::" + name;
-    }
-    else
-        qname = name;
-    return qname;
-}
-
-std::ostream& operator << (std::ostream& o, const std::pair<std::string,int>& p)
-{
-    return o << '(' << p.first << ':' << p.second << ')';
-}
-
-
-std::string ptr2str(const char *ptr)
-{
-    return ptr ? ptr : "";
-}
-
-}; // namespace;
 
 void MsgCppGenerator::extractClassDecl(NEDElement *child)
 {
