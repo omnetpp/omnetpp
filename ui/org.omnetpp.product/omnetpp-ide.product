@@ -17,7 +17,8 @@
       <programArgs>-name
 &quot;OMNeT++ IDE&quot;
       </programArgs>
-      <vmArgs>-Xms256m
+      <vmArgs>-Dosgi.requiredJavaVersion=1.7
+-Xms256m
 -Xmx1024m
 -XX:MaxPermSize=320m
       </vmArgs>
