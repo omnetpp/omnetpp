@@ -16,6 +16,11 @@
    <launcherArgs>
       <programArgs>-name
 &quot;OMNeT++ IDE&quot;
+--launcher.XXMaxPermSize
+320m
+--launcher.defaultAction
+openFile
+--launcher.appendVmargs
       </programArgs>
       <vmArgs>-Dosgi.requiredJavaVersion=1.7
 -Xms256m
