@@ -10,7 +10,9 @@ OMNeT++ 4.6b1 (Sept 2014)
 
 IDE:
 
-  - Updated to use Eclipse 4.4 (Luna)
+  - Updated to use Eclipse 4.4 (Luna) (requires JDK 1.7+)
+  - The IDE is now a 64-bit application on Mac OS X (You must install
+    JDK 1.7 or later.)
 
 Command line:
 

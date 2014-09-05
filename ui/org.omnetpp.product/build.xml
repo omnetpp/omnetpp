@@ -190,7 +190,7 @@
             <property name="platdir" value="linux64"/>
           </ant>
           <ant target="package-config">
-            <property name="config" value="macosx.cocoa.x86"/>
+            <property name="config" value="macosx.cocoa.x86_64"/>
             <property name="platdir" value="macosx"/>
           </ant>
 	</target>
