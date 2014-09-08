@@ -377,11 +377,10 @@ if test "$TOOLCHAIN_NAME" = ""; then
 fi
 
 #----------------------
-# check whether the compiler supports the C++11 standard (gcc specific options)
-# turned off for now, but should be enabled for OMNeT++ 5.0
+# check whether the compiler supports the C++11 standard (gcc/clang specific option)
 #----------------------
 if test "$USE_CXX11" = "yes"; then
-  AC_PROG_CXX_OPTION(-std=c++11 -Wno-deprecated-register, CXXFLAGS="$CXXFLAGS -std=c++11 -Wno-deprecated-register")
+  AC_PROG_CXX_OPTION(-std=c++11, CXXFLAGS="$CXXFLAGS -std=c++11")
 fi
 
 #----------------------
