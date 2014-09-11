@@ -279,7 +279,7 @@ CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g -Wall}
 CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O2 -DNDEBUG=1}
 CXXFLAGS=${CXXFLAGS:-}
 PREFER_CLANG=${PREFER_CLANG:-}
-USE_CPP11=${USE_CPP11:-}
+USE_CXX11=${USE_CXX11:-}
 
 WHOLE_ARCHIVE_ON=
 WHOLE_ARCHIVE_OFF=
@@ -378,11 +378,10 @@ if test "$TOOLCHAIN_NAME" = ""; then
 fi
 
 #----------------------
-# check whether the compiler supports the C++11 standard (gcc specific options)
-# turned off for now, but should be enabled for OMNeT++ 5.0
+# check whether the compiler supports the C++11 standard (gcc/clang specific option)
 #----------------------
-if test "$USE_CPP11" = "yes"; then
-  AC_PROG_CXX_OPTION(-std=c++11 -Wno-deprecated-register, CXXFLAGS="$CXXFLAGS -std=c++11 -Wno-deprecated-register")
+if test "$USE_CXX11" = "yes"; then
+  AC_PROG_CXX_OPTION(-std=c++11, CXXFLAGS="$CXXFLAGS -std=c++11")
 fi
 
 #----------------------
@@ -680,12 +679,12 @@ else
    fi
 fi
 
-# perl is needed for opp_msgc
+# perl is needed for opp_makemake and some other scripts
 AC_ARG_VAR(PERL, The Perl interpreter)
 AC_CHECK_PROG(PERL, perl, perl, not found)
 if test "$PERL" = "not found"; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  perl"
-   AC_MSG_WARN(Perl not found -- please install it! Perl is required by opp_msgc, opp_makemake and other features.)
+   AC_MSG_WARN(Perl not found -- please install it! Perl is required by opp_makemake and some other programs.)
 fi
 if test ! -x /usr/bin/perl; then
    this_perl=`which perl`
@@ -855,10 +854,10 @@ fi # end of Tcl tests ($NO_TCL=="" branch)
 # Check for JRE
 #----------------------
 AC_CHECK_PROGS(JRE, $JRE java, nope)
-AC_CHECK_PROGS(PRIVATE_JRE, $PRIVATE_JRE ide/jre/bin/java, nope)
+AC_CHECK_PROGS(PRIVATE_JRE, $PRIVATE_JRE java, nope, [`pwd`/ide/jre/bin])
 if test "$JRE" = nope -a "$PRIVATE_JRE" = nope; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  JRE (recommended)"
-   AC_MSG_WARN([Cannot find a suitable Java Runtime Environment - The IDE requires JRE 1.6 or later. Please install it before configuring])
+   AC_MSG_WARN([Cannot find a suitable Java Runtime Environment - The IDE requires JRE 1.7 or later. Please install it before configuring])
 fi
 
 #----------------------
@@ -1099,7 +1098,10 @@ if test "$WITH_NETBUILDER" = yes; then
    CFLAGS_DEBUG="$CFLAGS_DEBUG -DWITH_NETBUILDER"
    CFLAGS_RELEASE="$CFLAGS_RELEASE -DWITH_NETBUILDER"
 fi
-
+if test "$USE_NAMESPACE" = yes; then
+   CFLAGS_DEBUG="$CFLAGS_DEBUG -DUSE_NAMESPACE"
+   CFLAGS_RELEASE="$CFLAGS_RELEASE -DUSE_NAMESPACE"
+fi
 
 #----------------------
 # Files to be generated

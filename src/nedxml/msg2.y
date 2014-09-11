@@ -454,8 +454,12 @@ fieldmodifiers
         ;
 
 fielddatatype
+        : fieldsimpledatatype
+        | fieldsimpledatatype '*'
+        ;
+
+fieldsimpledatatype
         : qname
-        | qname '*'
 
         | CHARTYPE
         | SHORTTYPE

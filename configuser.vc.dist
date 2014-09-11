@@ -28,7 +28,7 @@ OMNETPP_ROOT=$(OMNETPP_ROOT:\=/)
 # config file (i.e. other variables can simply refer to $(OPT_DIR)).
 # This is completely optional -- OPT_DIR is not referenced outside this file.
 #
-OPT_DIR=$(OMNETPP_ROOT:\=/)/msys
+OPT_DIR=$(OMNETPP_ROOT:\=/)/msys/usr
 #OPT_DIR=$(TOOLS_DIR:\=/)/msys
 
 #
@@ -36,7 +36,7 @@ OPT_DIR=$(OMNETPP_ROOT:\=/)/msys
 # At least Tcl/Tk 8.5 is required.
 #
 #TK_DIR=$(TOOLS_DIR:\=/)/Tcl-8.6.0
-TK_DIR=$(OPT_DIR:\=/)
+TK_DIR=$(OPT_DIR:\=/)/../mingw32
 TK_VER=8.6
 
 #
@@ -69,16 +69,14 @@ EXPAT_DIR=$(OPT_DIR:\=/)
 #
 #ICONV_DIR=$(TOOLS_DIR:\=/)/iconv-1.9.1.win32
 #LIBXML_DIR=$(TOOLS_DIR:\=/)/libxml2-2.6.20.win32
-#ZLIB_DIR=$(TOOLS_DIR:\=/)/zlib-1.2.3.win32
-ICONV_DIR=$(OPT_DIR:\=/)
+ICONV_DIR=$(OPT_DIR:\=/)/../mingw32
 LIBXML_DIR=$(OPT_DIR:\=/)
-ZLIB_DIR=$(OPT_DIR:\=/)
 
 #
 # Directory of various tools
 #
 
-# Perl: needed by opp_makedep, opp_msgc, opp_neddoc, opp_test etc.
+# Perl: needed by opp_makedep, opp_neddoc, opp_test etc.
 PERL=perl.exe
 DOXYGEN_DIR=$(TOOLS_DIR)/doxygen
 
@@ -209,7 +207,7 @@ OMNETPP_TKENV_DIR=$(OMNETPP_ROOT)/src/tkenv
 # Libraries
 #
 
-TK_INCL_DIR=$(TK_DIR)/include/tcl$(TK_VER)
+TK_INCL_DIR=$(TK_DIR)/include
 TK_LIB_DIR=$(TK_DIR)/lib
 TCL_LIB=tcl$(TK_VER:.=).lib
 TK_LIB=tk$(TK_VER:.=).lib
@@ -227,12 +225,8 @@ JAVA_LIBS = /libpath:"$(JAVA_HOME)/lib" jvm.lib
 EXPAT_CFLAGS=/I "$(EXPAT_DIR)/source/lib"
 EXPAT_LIBS=libexpat.lib /libpath:"$(EXPAT_DIR)/libs"
 
-LIBXML_CFLAGS=/I "$(ICONV_DIR)/include" /I "$(LIBXML_DIR)/include"
+LIBXML_CFLAGS=/I "$(ICONV_DIR)/include" /I "$(LIBXML_DIR)/include/libxml2"
 LIBXML_LIBS=libxml2.lib iconv.lib wsock32.lib /libpath:"$(LIBXML_DIR)/lib" /libpath:"$(ICONV_DIR)/lib"
-
-# zlib is needed for libxml and Tkenv's png support
-ZLIB_CFLAGS=/I "$(ZLIB_DIR)/include"
-ZLIB_LIBS=zdll.lib /libpath:"$(ZLIB_DIR)/lib"
 
 # compiler and linker switches necessary to build an app with Tcl/Tk, MPI, expat, etc.
 TK_CFLAGS=/I "$(TK_INCL_DIR)"
@@ -298,7 +292,7 @@ LIB_SUFFIX=.dll
 
 LIB_SUFFIX=.lib
 
-TKENV_LIBS = $(TKENV_LIBS) $(TK_LIBS) $(ZLIB_LIBS)
+TKENV_LIBS = $(TKENV_LIBS) $(TK_LIBS)
 
 !if "$(WITH_NETBUILDER)"=="yes"
 KERNEL_LIBS = $(KERNEL_LIBS) $(XML_LIBS)
@@ -332,7 +326,7 @@ CXXFLAGS=
 MAKEDEPEND=$(PERL) $(OMNETPP_ROOT)/src/utils/opp_makedep -Y --objsuffix .obj --objdirtree
 
 # OMNeT++ tools
-MSGC=$(OMNETPP_BIN_DIR)/opp_msgc
+MSGC=$(OMNETPP_BIN_DIR)/nedtool
 REPLACE=$(OMNETPP_SRC_DIR)/utils/opp_replace
 WISH=$(TK_DIR)/bin/wish$(TK_VER:.=).exe
 DOXYGEN=$(DOXYGEN_DIR)/bin/doxygen

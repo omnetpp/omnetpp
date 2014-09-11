@@ -15,6 +15,7 @@
 
 #include <tcl.h>
 #include <tk.h>
+#if TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION <6
 
 extern Tk_PhotoImageFormat tkImgFmtPNG;
 
@@ -59,3 +60,4 @@ Tkpng_Init(Tcl_Interp *interp)
 	return TCL_OK;
 }
 
+#endif

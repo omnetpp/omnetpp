@@ -19,7 +19,9 @@
 #include <stdlib.h>
 #include "envirdefs.h"
 
+NAMESPACE_BEGIN
 extern "C" ENVIR_API int evMain(int argc, char *argv[]);
+NAMESPACE_END
 
 int main(int argc, char *argv[])
 {

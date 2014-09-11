@@ -24,6 +24,7 @@
 #include <fstream>
 #include <errno.h>
 
+#include "msgcppgenerator.h"
 #include "nedparser.h"
 #include "nederror.h"
 #include "nedexception.h"
@@ -54,13 +55,13 @@ enum {XML_FILE, NED_FILE, MSG_FILE, CPP_FILE, UNKNOWN_FILE};
 bool opt_genxml = false;           // -x
 bool opt_gensrc = false;           // -n
 bool opt_validateonly = false;     // -v
-int opt_nextfiletype = UNKNOWN_FILE; // -X
+int opt_nextfiletype = UNKNOWN_FILE; // -T
 bool opt_oldsyntax = false;        // -Q
 const char *opt_suffix = NULL;     // -s
-const char *opt_hdrsuffix = NULL;  // -S
+const char *opt_hdrsuffix = NULL;  // -t
 bool opt_inplace = false;          // -k
 bool opt_unparsedexpr = false;     // -e
-bool opt_storesrc = false;         // -t
+bool opt_storesrc = false;         // -S
 bool opt_novalidation = false;     // -y
 bool opt_noimports = false;        // -z
 bool opt_srcloc = false;           // -p
@@ -69,6 +70,9 @@ bool opt_verbose = false;          // -V
 const char *opt_outputfile = NULL; // -o
 bool opt_here = false;             // -h
 bool opt_splitnedfiles = false;    // -u
+
+// MSG specific option variables:
+MsgCppGeneratorOptions msg_options;
 
 FilesElement *outputtree;
 
@@ -92,17 +96,17 @@ void printUsage()
        "  -o <filename>: output file name (don't use when processing multiple files)\n"
        "  -h  place output file into current directory\n"
        "  -I <dir>: add directory to NED include path\n"
-       "  -X xml/ned/msg/off: following files are XML, NED or MSG up to '-X off'\n"
+       "  -T xml/ned/msg/off: following files are XML, NED or MSG up to '-T off'\n"
        "  -Q: with -n: use old (3.x) NED syntax\n"
        "  -s <suffix>: suffix for generated files\n"
-       "  -S <suffix>: when generating C++, suffix for generated header files\n"
+       "  -t <suffix>: when generating C++, suffix for generated header files\n"
        "  -k: with -n: replace original file and create backup (.bak). If input is a\n"
        "      single XML file created by `nedtool -m -x': replace original NED files\n"
        "  -u: with -m or -k: split NED files to one NED component per file\n" //XXX refine help text
        "  -e: do not parse expressions in NED input; expect unparsed expressions in XML\n"
        "  -y: skip semantic validation (implies -z, skip processing imports)\n"
        "  -z: skip processing imports\n"
-       "  -t: with NED parsing: include source code of components in XML\n"
+       "  -S: with NED parsing: include source code of components in XML\n"
        "  -p: with -x: add source location info (src-loc attributes) to XML output\n"
        "  -V: verbose\n"
        "  @listfile: listfile should contain one file per line (@ or @@ listfiles\n"
@@ -111,7 +115,13 @@ void printUsage()
        "  @@listfile: like @listfile, but contents is interpreted as relative to\n"
        "      the current working directory. @@ listfiles can be put anywhere,\n"
        "      including /tmp -- effect only depends on the working directory.\n"
-       "Message (.msg) files should be processed with opp_msgc.\n"
+       "Message (.msg) file specific options:\n"
+       "  -P <symbol>: add dllexport/dllimport symbol to class declarations; if symbol\n"
+       "      name ends in _API, boilerplate code to conditionally define\n"
+       "      it as OPP_DLLEXPORT/OPP_DLLIMPORT is also generated\n"
+       "  -Xnc: do not generate the classes, only object descriptions\n"
+       "  -Xnd: do not generate object descriptions\n"
+       "  -Xns: do not generate setters in object descriptions\n"
     );
 }
 
@@ -317,7 +327,22 @@ bool processFile(const char *fname, NEDErrorStore *errors)
             generateNED(out, tree, errors, opt_oldsyntax);
             out.close();
         }
-
+        else
+        {
+            assert(!opt_gensrc && !opt_genxml); // already handled above
+            if (ftype == MSG_FILE)
+            {
+                MsgCppGenerator generator(errors, msg_options);
+                generator.generate(dynamic_cast<MsgFileElement *>(tree), outhdrfname, outfname);
+            }
+            else
+            {
+                fprintf(stderr,"nedtool: generating C++ source from %s files is not supported\n",
+                    (ftype == NED_FILE ? "NED" : ftype == XML_FILE ? "XML" : "unknown"));
+                delete tree;
+                return false;
+            }
+        }
         delete tree;
 
         if (errors->containsError())
@@ -443,36 +468,37 @@ int main(int argc, char **argv)
         {
             opt_validateonly = true;
         }
-        else if (!strcmp(argv[i],"-I"))
+        else if (!strncmp(argv[i], "-I", 2))
         {
-            i++;
-            if (i==argc) {
-                fprintf(stderr,"nedtool: unexpected end of arguments after -I\n");
-                return 1;
+            const char *arg = argv[i]+2;
+            if (!arg) {
+                if (++i == argc) {
+                    fprintf(stderr, "nedtool: unexpected end of arguments after %s\n", argv[i-1]);
+                    return 1;
+                }
             }
             // -I option is currently ignored
         }
-        else if (argv[i][0]=='-' && argv[i][1]=='I')
+        else if (!strncmp(argv[i], "-T", 2))
         {
-            // -I option is currently ignored
-        }
-        else if (!strcmp(argv[i],"-X"))
-        {
-            i++;
-            if (i==argc) {
-                fprintf(stderr,"nedtool: unexpected end of arguments after -X\n");
-                return 1;
+            const char *arg = argv[i]+2;
+            if (!*arg) {
+                if (++i == argc) {
+                    fprintf(stderr, "nedtool: unexpected end of arguments after %s\n", argv[i-1]);
+                    return 1;
+                }
+                arg = argv[i];
             }
-            if (!strcmp(argv[i],"ned"))
+            if (!strcmp(arg, "ned"))
                 opt_nextfiletype = NED_FILE;
-            else if (!strcmp(argv[i],"msg"))
+            else if (!strcmp(arg, "msg"))
                 opt_nextfiletype = MSG_FILE;
-            else if (!strcmp(argv[i],"xml"))
+            else if (!strcmp(arg, "xml"))
                 opt_nextfiletype = XML_FILE;
-            else if (!strcmp(argv[i],"off"))
+            else if (!strcmp(arg, "off"))
                 opt_nextfiletype = UNKNOWN_FILE;
             else {
-                fprintf(stderr,"nedtool: unknown file type %s after -X\n",argv[i]);
+                fprintf(stderr, "nedtool: unknown file type %s after -T\n", arg);
                 return 1;
             }
         }
@@ -489,11 +515,11 @@ int main(int argc, char **argv)
             }
             opt_suffix = argv[i];
         }
-        else if (!strcmp(argv[i],"-S"))
+        else if (!strcmp(argv[i],"-t"))
         {
             i++;
             if (i==argc) {
-                fprintf(stderr,"nedtool: unexpected end of arguments after -S\n");
+                fprintf(stderr,"nedtool: unexpected end of arguments after -t\n");
                 return 1;
             }
             opt_hdrsuffix = argv[i];
@@ -510,7 +536,7 @@ int main(int argc, char **argv)
         {
             opt_unparsedexpr = true;
         }
-        else if (!strcmp(argv[i],"-t"))
+        else if (!strcmp(argv[i],"-S"))
         {
             opt_storesrc = true;
         }
@@ -548,6 +574,42 @@ int main(int argc, char **argv)
         {
             opt_here = true;
         }
+        else if (!strncmp(argv[i], "-P", 2))
+        {
+            if (argv[i][2])
+                msg_options.exportdef = argv[i]+2;
+            else {
+                if (++i == argc) {
+                    fprintf(stderr,"nedtool: unexpected end of arguments after %s\n", argv[i-1]);
+                    return 1;
+                }
+                msg_options.exportdef = argv[i];
+            }
+        }
+        else if (!strncmp(argv[i], "-X", 2))
+        {
+            const char *arg = argv[i]+2;
+            if (!*arg) {
+                if (++i == argc) {
+                    fprintf(stderr,"nedtool: unexpected end of arguments after %s\n", argv[i-1]);
+                    return 1;
+                }
+                arg = argv[i];
+            }
+            if (!strcmp(arg, "nc")) {
+                msg_options.generate_classes = false;
+            }
+            else if (!strcmp(arg, "nd")) {
+                msg_options.generate_descriptors = false;
+            }
+            else if (!strcmp(arg, "ns")) {
+                msg_options.generate_setters_in_descriptors = false;
+            }
+            else {
+                fprintf(stderr,"nedtool: unknown option -X %s\n",arg);
+                return 1;
+            }
+        }
         else if (argv[i][0]=='-')
         {
             fprintf(stderr,"nedtool: unknown option %s\n",argv[i]);
@@ -564,11 +626,6 @@ int main(int argc, char **argv)
         {
             // process individual files on the command line
             //FIXME these checks get bypassed with list files
-            if (!opt_genxml && !opt_gensrc)
-            {
-                fprintf(stderr,"nedtool: generating C++ source not currently supported\n"); //XXX
-                return 1;
-            }
             if (opt_genxml && opt_gensrc)
             {
                 fprintf(stderr,"nedtool: conflicting options -n (generate source) and -x (generate XML)\n");

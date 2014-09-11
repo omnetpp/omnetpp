@@ -34,6 +34,7 @@ OBJS= $O/nedelements.obj $O/nedelement.obj $O/nederror.obj $O/nedexception.obj \
       $O/nedxmlparser.obj $O/nedsaxhandler.obj $O/saxparser_$(XMLPARSER).obj \
       $O/ned1.tab.obj $O/lex.ned1yy.obj \
       $O/msg2.tab.obj $O/lex.msg2yy.obj \
+      $O/msgcppgenerator.obj \
       $O/nedresourcecache.obj $O/nedtypeinfo.obj
 
 GENERATED_SOURCES=nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h \
@@ -57,7 +58,6 @@ COPTS= $(COPTS) -DNEDXML_EXPORT
 # Targets
 #
 all : $O/nedtool.exe $O/$(LIBNAME)$(LIB_SUFFIX)
-	$(Q)copy opp_msgc $(OMNETPP_BIN_DIR:/=\) 1>nul
 	$(Q)copy opp_msgc.cmd $(OMNETPP_BIN_DIR:/=\) 1>nul
 
 $O/nedtool.exe : $O/$(LIBNAME)$(LIB_SUFFIX) $O/nedtool.obj
@@ -133,7 +133,7 @@ clean:
 	-$(Q)del $(GENERATED_SOURCES) 2>nul
 	-$(Q)rmdir /s /q $(O:/=\) 2>nul
 	-$(Q)del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
-	-$(Q)cd $(OMNETPP_BIN_DIR:/=\) && del /q nedtool.exe* opp_msgc opp_msgc.cmd 2>nul
+	-$(Q)cd $(OMNETPP_BIN_DIR:/=\) && del /q nedtool.exe* opp_msgc.cmd 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/lex.msg2yy.obj: lex.msg2yy.cc \
@@ -163,6 +163,13 @@ $O/msg2.tab.obj: msg2.tab.cc \
   nedelement.h \
   nedutil.h \
   nedfilebuffer.h
+$O/msgcppgenerator.obj: msgcppgenerator.cc \
+  nederror.h \
+  nedxmldefs.h \
+  nedelements.h \
+  ned1generator.h \
+  nedelement.h \
+  nedutil.h
 $O/ned1.tab.obj: ned1.tab.cc \
   nedyydefs.h \
   nedparser.h \

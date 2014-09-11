@@ -6,6 +6,7 @@ This is a quick checklist what to do when updating to a new Eclipse version.
 - start it and access the Help / Install new software dialog. Install the following 
   featues:
 
+  o Install "Graphical Modeling Framework SDK"
   o ChangeLog management tools + ChangeLog management tools C++
   o C/C++ Developmnet Tools SDK
   o Eclipse Git team Provider, JGit, command line interface for jgit
@@ -33,16 +34,13 @@ This is a quick checklist what to do when updating to a new Eclipse version.
 
   after finishing, the CDT repo mirror should be present in the $ECLIPSE_HOME/target/cdt directory
 
-- Start the new eclipse install, select the 'ui' directory as a workspace. Open 
-  org.omnetpp.product/omnetpp-ide.target and click the 
-  "Set as Target Platform" link in the upper right corner.
-
   You are now ready to use the new version.
 
 =============================================================================
-Migrating the project.
+Migrating the project (changing OMNeT++ code)
 
 Start the newly created eclipse ide.
+IDE:
 - Set the ECLIPSE_HOME environment variable (pointing to the new installation 
   containing the required addon components. This is required only to build
   the IDE from the command line. The default value for ECLIPSE_HOME can be set in the 

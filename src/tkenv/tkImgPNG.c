@@ -15,10 +15,12 @@
 #include <memory.h>
 #include <limits.h>
 
-#include <zlib.h>
 #include <math.h>
 #include "tcl.h"
 #include "tk.h"
+
+#if TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION <6
+#include <zlib.h>
 
 /*
  * Change by Andras:
@@ -30,6 +32,7 @@
  * See Tk ChangeLog entry from 2003-03-06 by Donal K. Fellows
  * --
  */
+
 #if TK_MAJOR_VERSION>8 || (TK_MAJOR_VERSION==8 && TK_MINOR_VERSION>=5)
 #define INTERP_IF_TK85 interp,
 #else
@@ -2596,3 +2599,4 @@ Tk_PhotoImageFormat tkImgFmtPNG = {
 	NULL  /* StringWritePNG	*/	/* stringWriteProc */
 };
 
+#endif

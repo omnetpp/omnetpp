@@ -45,7 +45,7 @@
     </property>
     <property
           name="aboutImage"
-          value="icons/about-image.png">
+          value="/icons/about-image.png">
     </property>
     <property
           name="windowImages"

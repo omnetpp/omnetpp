@@ -80,95 +80,95 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/basicspringembedderlayout.o: basicspringembedderlayout.cc \
-  graphlayouter.h \
-  basicspringembedderlayout.h \
   ../common/exception.h \
-  ../common/commonutil.h \
+  ../common/commondefs.h \
   ../common/lcgrandom.h \
-  layoutdefs.h \
-  ../common/commondefs.h
-$O/concentrictreeembedding.o: concentrictreeembedding.cc \
-  geometry.h \
-  concentrictreeembedding.h \
-  ../common/exception.h \
   ../common/commonutil.h \
-  graphcomponent.h \
-  ../common/commondefs.h \
-  layoutdefs.h
-$O/forcedirectedembedding.o: forcedirectedembedding.cc \
-  geometry.h \
-  ../common/exception.h \
-  ../common/commonutil.h \
-  ../common/commondefs.h \
-  layoutdefs.h \
-  forcedirectedparameters.h \
-  forcedirectedparametersbase.h \
-  forcedirectedembedding.h \
-  ../common/lcgrandom.h
-$O/forcedirectedgraphlayouter.o: forcedirectedgraphlayouter.cc \
-  startreeembedding.h \
-  geometry.h \
   graphlayouter.h \
-  heapembedding.h \
+  layoutdefs.h \
+  basicspringembedderlayout.h
+$O/concentrictreeembedding.o: concentrictreeembedding.cc \
   ../common/exception.h \
+  ../common/commondefs.h \
+  geometry.h \
+  layoutdefs.h \
+  concentrictreeembedding.h \
+  ../common/commonutil.h \
+  graphcomponent.h
+$O/forcedirectedembedding.o: forcedirectedembedding.cc \
+  forcedirectedparameters.h \
+  forcedirectedembedding.h \
+  ../common/lcgrandom.h \
+  ../common/commondefs.h \
+  layoutdefs.h \
+  geometry.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  forcedirectedparametersbase.h
+$O/forcedirectedgraphlayouter.o: forcedirectedgraphlayouter.cc \
   ../common/commonutil.h \
   graphcomponent.h \
+  graphlayouter.h \
+  geometry.h \
   layoutdefs.h \
-  ../common/commondefs.h \
-  forcedirectedparameters.h \
+  startreeembedding.h \
+  ../common/exception.h \
   forcedirectedparametersbase.h \
+  forcedirectedparameters.h \
   forcedirectedembedding.h \
+  heapembedding.h \
+  ../common/commondefs.h \
   forcedirectedgraphlayouter.h \
   ../common/lcgrandom.h
 $O/forcedirectedparameters.o: forcedirectedparameters.cc \
-  geometry.h \
   ../common/exception.h \
-  ../common/commonutil.h \
-  ../common/commondefs.h \
-  layoutdefs.h \
-  forcedirectedparameters.h \
   forcedirectedparametersbase.h \
+  ../common/commonutil.h \
+  geometry.h \
+  layoutdefs.h \
+  ../common/commondefs.h \
+  forcedirectedparameters.h \
   forcedirectedembedding.h
 $O/forcedirectedparametersbase.o: forcedirectedparametersbase.cc \
-  geometry.h \
-  ../common/exception.h \
-  ../common/commonutil.h \
   ../common/commondefs.h \
-  layoutdefs.h \
-  forcedirectedparametersbase.h
-$O/geometry.o: geometry.cc \
-  geometry.h \
   ../common/commonutil.h \
-  ../common/exception.h \
+  geometry.h \
   layoutdefs.h \
+  forcedirectedparametersbase.h \
+  ../common/exception.h
+$O/geometry.o: geometry.cc \
+  ../common/commonutil.h \
+  layoutdefs.h \
+  geometry.h \
+  ../common/exception.h \
   ../common/commondefs.h
 $O/graphcomponent.o: graphcomponent.cc \
-  geometry.h \
-  ../common/exception.h \
-  ../common/commonutil.h \
   ../common/commondefs.h \
+  ../common/commonutil.h \
+  graphcomponent.h \
+  geometry.h \
   layoutdefs.h \
-  graphcomponent.h
+  ../common/exception.h
 $O/graphlayouter.o: graphlayouter.cc \
-  graphlayouter.h \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  layoutdefs.h \
   ../common/commondefs.h \
-  ../common/lcgrandom.h
+  ../common/lcgrandom.h \
+  ../common/commonutil.h \
+  graphlayouter.h \
+  layoutdefs.h \
+  ../common/exception.h
 $O/heapembedding.o: heapembedding.cc \
-  geometry.h \
+  ../common/commondefs.h \
   heapembedding.h \
   ../common/exception.h \
   ../common/commonutil.h \
   graphcomponent.h \
-  ../common/commondefs.h \
+  geometry.h \
   layoutdefs.h
 $O/startreeembedding.o: startreeembedding.cc \
-  startreeembedding.h \
+  ../common/commondefs.h \
+  layoutdefs.h \
   geometry.h \
-  ../common/exception.h \
+  startreeembedding.h \
   ../common/commonutil.h \
   graphcomponent.h \
-  ../common/commondefs.h \
-  layoutdefs.h
+  ../common/exception.h

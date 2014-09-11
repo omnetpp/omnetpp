@@ -77,7 +77,7 @@ opplibs:
 
 ui: check-ui-vars common layout eventlog scave nedxml $(JNILIBS)
 
-# dependencies (because of ver.h, opp_msgc, etc)
+# dependencies (because of ver.h, opp_msgc [nedtool], etc)
 clean depend: makefiles
 common layout eventlog scave nedxml sim envir cmdenv tkenv systemc makefiles: utils
 layout eventlog scave nedxml sim envir cmdenv tkenv : common
@@ -203,14 +203,14 @@ depend:
 
 makefiles:
 	$(Q)for i in $(SAMPLES) ""; do \
-	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && (opp_makemake -f --deep)); fi;\
+	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && (opp_makemake -f --deep -DAUTOIMPORT_NAMESPACE)); fi;\
 	done
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/embedding && (opp_makemake -f --deep --nolink))
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/embedding2 && (opp_makemake -f --deep --nolink))
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/google-earth && (opp_makemake -f -o google-earth-demo))
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queueinglib && (opp_makemake -f --make-so))
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queueinglibext && (opp_makemake -f --make-so -I../queueinglib -L../queueinglib/out/$(CONFIGNAME) -lqueueinglib -KQUEUEINGLIB_PROJ=../queueinglib))
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queuenet && (opp_makemake -f -n))
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/embedding && (opp_makemake -f --deep --nolink -DAUTOIMPORT_NAMESPACE))
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/embedding2 && (opp_makemake -f --deep --nolink -DAUTOIMPORT_NAMESPACE))
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/google-earth && (opp_makemake -f -o google-earth-demo -DAUTOIMPORT_NAMESPACE))
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queueinglib && (opp_makemake -f --make-so -DAUTOIMPORT_NAMESPACE))
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queueinglibext && (opp_makemake -f --make-so -I../queueinglib -L../queueinglib/out/$(CONFIGNAME) -lqueueinglib -KQUEUEINGLIB_PROJ=../queueinglib -DAUTOIMPORT_NAMESPACE))
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queuenet && (opp_makemake -f -n -DAUTOIMPORT_NAMESPACE))
 
 # copy the documentation to the UI doc folder too.
 # patch some files to have correct URLs and add generic eclipse stylesheet when needed

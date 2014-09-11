@@ -6,10 +6,11 @@ Bundle-Version: 5.0.0.qualifier
 Bundle-Activator: org.omnetpp.eventlogtable.EventLogTablePlugin
 Require-Bundle: org.eclipse.core.resources,
  org.eclipse.core.runtime,
- org.eclipse.core.expressions;bundle-version="3.4.0",
+ org.eclipse.core.expressions,
  org.eclipse.ui,
  org.eclipse.ui.ide,
  org.eclipse.ui.views,
+ org.eclipse.e4.ui.workbench,
  org.eclipse.ui.editors,
  org.eclipse.jface.text,
  org.eclipse.draw2d,

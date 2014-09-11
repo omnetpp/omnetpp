@@ -1,5 +1,18 @@
 ////////////// fixes taken from omnetpp-4.x come here /////////////////
 
+2014-08-05  Zoltan Bojthe
+	* opp_msgc: removed, use nedtool for compiling msg files
+
+	* nedtool: added msg compiler feature; nedtool can now be used as a 
+	a drop-in replacement for opp_msgc. Command line options: opp_msgc's
+	options have been added; some existing options needed to be renamed 
+	due to conflict with opp_msgc options.
+	    -X renamed to -T
+	    -X[nc|nd|ns] added (disable generating class/descriptor/setter at MSG files)
+	    -P <exportdef> added
+	    -S renamed to -t (header suffix)
+	    -t renamed to -S (store source)
+
 2014-06-30  ------ omnetpp-4.5 released ------
 
 2014-06-27  Andras Varga, Zoltan Bojthe

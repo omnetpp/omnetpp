@@ -507,6 +507,10 @@ public class Index {
                     ((IndexUndef)directive).dumpToDebug();
             }
         }
+
+        public String getReplacementHeader() throws CoreException {
+            return null;
+        }
     }
 
     static class IndexMacro implements IIndexMacro {
