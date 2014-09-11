@@ -232,6 +232,10 @@ std::string getObjectIcon(Tcl_Interp *interp, cObject *object)
         iconName = "outvect_vs";
     else if (dynamic_cast<cStatistic *>(object))
         iconName = "stat_vs";
+    else if (dynamic_cast<cFigure *>(object))
+        iconName = "figure_vs";
+    else if (dynamic_cast<cCanvas *>(object))
+        iconName = "canvas_vs";
     else if (dynamic_cast<cSimulation *>(object))
         iconName = "container_vs";
     else if (dynamic_cast<cMessageHeap *>(object))
