@@ -18,6 +18,7 @@
 #include "figurerenderers.h"
 #include "cobjectfactory.h"
 #include "checkandcast.h"
+#include "stringutil.h"
 
 NAMESPACE_BEGIN
 
@@ -29,159 +30,330 @@ Register_Class(ArcFigureRenderer);
 Register_Class(PolylineFigureRenderer);
 Register_Class(RectangleFigureRenderer);
 Register_Class(OvalFigureRenderer);
+Register_Class(RingFigureRenderer);
 Register_Class(PieSliceFigureRenderer);
 Register_Class(PolygonFigureRenderer);
 Register_Class(TextFigureRenderer);
+Register_Class(LabelFigureRenderer);
 Register_Class(ImageFigureRenderer);
+Register_Class(PixmapFigureRenderer);
+Register_Class(PathFigureRenderer);
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
-char *FigureRenderer::point(const cFigure::Point& point, ICoordMapping *mapping, char *buf)
+#define DEFAULT_FONTSIZE 14
+
+char *FigureRenderer::point(const cFigure::Point& p)
 {
-    cFigure::Point p = mapping->apply(point);
-    sprintf(buf, " %g %g ", p.x, p.y);
+    char *buf = getBuf(40);
+    sprintf(buf, "%g %g", p.x, p.y);
     return buf;
 }
 
-std::string FigureRenderer::points(const std::vector<cFigure::Point>& points, ICoordMapping *mapping)
+char *FigureRenderer::point2(const cFigure::Point& p1, const cFigure::Point& p2)
 {
-    std::stringstream os;
-    for (int i=0; i<(int)points.size(); i++) {
-        cFigure::Point p = mapping->apply(points[i]);
-        os << p.x << " " << p.y << " ";
-    }
-    return os.str();
-}
-
-char *FigureRenderer::bounds(const cFigure::Rectangle& bounds, ICoordMapping *mapping, char *buf)
-{
-    cFigure::Point p1 = mapping->apply(cFigure::Point(bounds.x, bounds.y));
-    cFigure::Point p2 = mapping->apply(cFigure::Point(bounds.x+bounds.width, bounds.y+bounds.height));
-    sprintf(buf, " %g %g %g %g", p1.x, p1.y, p2.x, p2.y);
+    char *buf = getBuf(80);
+    sprintf(buf, "%g %g %g %g", p1.x, p1.y, p2.x, p2.y);
     return buf;
 }
 
-char *FigureRenderer::color(const cFigure::Color& color, char *buf)
+char *FigureRenderer::bounds(const cFigure::Rectangle& bounds)
 {
-    sprintf(buf, "#%2.2x%2.2x%2.2x ", color.red, color.green, color.blue);
+    char *buf = getBuf(64);
+    sprintf(buf, " %g %g %g %g", bounds.x, bounds.y, bounds.x+bounds.width, bounds.y+bounds.height);
     return buf;
 }
 
-char *FigureRenderer::itoa(int i, char *buf)
+char *FigureRenderer::matrix(const cFigure::Transform& transform)
 {
-    sprintf(buf, "%d ", i);
+    char *buf = getBuf(128);
+    sprintf(buf, "{%g %g} {%g %g} {%g %g}", transform.a, transform.b, transform.c, transform.d, transform.t1, transform.t2);
     return buf;
 }
 
-char *FigureRenderer::arrows(cFigure::ArrowHead start, cFigure::ArrowHead end, char *buf)
+char *FigureRenderer::color(const cFigure::Color& color)
 {
-    //Note: Tk cannot draw different arrows at the two ends of the line!
-    cFigure::ArrowHead type;
-    if (start == cFigure::ARROW_NONE && end == cFigure::ARROW_NONE) {
-        buf[0] = 0;
-        return buf;
-    }
-
-    if (start == cFigure::ARROW_NONE) {
-        sprintf(buf, " -arrow last ");
-        type = end;
-    }
-    else if (end == cFigure::ARROW_NONE) {
-        sprintf(buf, " -arrow first ");
-        type = start;
-    }
-    else {
-        sprintf(buf, " -arrow both ");
-        type = end;
-    }
-    switch (type) {
-        case cFigure::ARROW_SIMPLE:   strcat(buf, " -arrowshape {6 14 5} "); break;
-        case cFigure::ARROW_BARBED:   strcat(buf, " -arrowshape {10 14 5} "); break;
-        case cFigure::ARROW_TRIANGLE: strcat(buf, " -arrowshape {11 11 4} "); break;
-        default: throw cRuntimeError("Unexpected arrowhead type %d", type);
-    }
+    char *buf = getBuf(16);
+    sprintf(buf, "#%2.2x%2.2x%2.2x", color.red, color.green, color.blue);
     return buf;
 }
 
-const char *FigureRenderer::smooth(bool smooth)
+char *FigureRenderer::itoa(int i)
 {
-    return smooth ? " -smooth true " : "";
+    char *buf = getBuf(16);
+    sprintf(buf, "%d", i);
+    return buf;
 }
 
-const char *FigureRenderer::lineStyle(cFigure::LineStyle style)
+char *FigureRenderer::dtoa(double d)
 {
+    char *buf = getBuf(20);
+    sprintf(buf, "%f", d);
+    return buf;
+}
+
+void FigureRenderer::lineStyle(cFigure::LineStyle style, int& argc, const char *argv[])
+{
+    argv[argc++] = "-strokedasharray";
+
     switch (style) {
-        case cFigure::LINE_SOLID: return "";
-        case cFigure::LINE_DOTTED: return " -dash . ";
-        case cFigure::LINE_DASHED: return " -dash - ";
+        case cFigure::LINE_SOLID: argv[argc++] = ""; break;
+        case cFigure::LINE_DOTTED: argv[argc++] = "1 2"; break;
+        case cFigure::LINE_DASHED: argv[argc++] = "3 3"; break;
         default: throw cRuntimeError("Unexpected line style %d", style);
     }
 }
 
-const char *FigureRenderer::capStyle(cFigure::CapStyle style)
+void FigureRenderer::capStyle(cFigure::CapStyle style, int& argc, const char *argv[])
 {
+    argv[argc++] = "-strokelinecap";
+
     switch (style) {
-        case cFigure::CAP_BUTT: return "";
-        case cFigure::CAP_SQUARE: return " -capstyle projecting ";
-        case cFigure::CAP_ROUND: return " -capstyle round ";
+        case cFigure::CAP_BUTT: argv[argc++] = "butt"; break;
+        case cFigure::CAP_SQUARE: argv[argc++] = "projecting"; break;
+        case cFigure::CAP_ROUND: argv[argc++] = "round"; break;
         default: throw cRuntimeError("Unexpected line style %d", style);
     }
 }
 
-const char *FigureRenderer::joinStyle(cFigure::JoinStyle style)
+void FigureRenderer::joinStyle(cFigure::JoinStyle style, int& argc, const char *argv[])
 {
+    argv[argc++] = "-strokelinejoin";
+
     switch (style) {
-        case cFigure::JOIN_MITER: return "";
-        case cFigure::JOIN_BEVEL: return " -joinstyle bevel ";
-        case cFigure::JOIN_ROUND: return " -joinstyle round ";
+        case cFigure::JOIN_MITER: argv[argc++] = "miter"; break;
+        case cFigure::JOIN_BEVEL: argv[argc++] = "bevel"; break;
+        case cFigure::JOIN_ROUND: argv[argc++] = "round"; break;
         default: throw cRuntimeError("Unexpected line style %d", style);
     }
 }
 
-const char *FigureRenderer::anchor(cFigure::Anchor anchor)
+void FigureRenderer::fillRule(cFigure::FillRule fill, int& argc, const char *argv[])
 {
+    argv[argc++] = "-fillrule";
+
+    switch (fill) {
+        case cFigure::FILL_EVENODD: argv[argc++] = "evenodd"; break;
+        case cFigure::FILL_NONZERO: argv[argc++] = "nonzero"; break;
+        default: throw cRuntimeError("Unexpected fill rule %d", fill);
+    }
+}
+
+static void doAnchor(cFigure::Anchor anchor, bool text, int& argc, const char *argv[])
+{
+    argv[argc++] = text ? "-textanchor" : "-anchor";
+
     switch (anchor) {
-        case cFigure::ANCHOR_CENTER: return " -anchor c ";
-        case cFigure::ANCHOR_N: return " -anchor n ";
-        case cFigure::ANCHOR_E: return " -anchor e ";
-        case cFigure::ANCHOR_S: return " -anchor s ";
-        case cFigure::ANCHOR_W: return " -anchor w ";
-        case cFigure::ANCHOR_NW: return " -anchor nw ";
-        case cFigure::ANCHOR_NE: return " -anchor ne ";
-        case cFigure::ANCHOR_SE: return " -anchor se ";
-        case cFigure::ANCHOR_SW: return " -anchor sw ";
+        case cFigure::ANCHOR_CENTER: argv[argc++] = "c"; break;
+        case cFigure::ANCHOR_N: argv[argc++] = "n"; break;
+        case cFigure::ANCHOR_E: argv[argc++] = "e"; break;
+        case cFigure::ANCHOR_S: argv[argc++] = "s"; break;
+        case cFigure::ANCHOR_W: argv[argc++] = "w"; break;
+        case cFigure::ANCHOR_NW: argv[argc++] = "nw"; break;
+        case cFigure::ANCHOR_NE: argv[argc++] = "ne"; break;
+        case cFigure::ANCHOR_SE: argv[argc++] = "se"; break;
+        case cFigure::ANCHOR_SW: argv[argc++] = "sw"; break;
+        case cFigure::ANCHOR_BASELINE_START: argv[argc++] = text ? "start" : "sw"; break;
+        case cFigure::ANCHOR_BASELINE_MIDDLE: argv[argc++] = text ? "middle" : "s"; break;
+        case cFigure::ANCHOR_BASELINE_END: argv[argc++] = text ? "end" : "se"; break;
         default: throw cRuntimeError("Unexpected anchor %d", anchor);
     }
 }
 
-const char *FigureRenderer::alignment(cFigure::Alignment alignment)
+void FigureRenderer::anchor(cFigure::Anchor anchor, int& argc, const char *argv[])
 {
-    switch (alignment) {
-        case cFigure::ALIGN_LEFT: return "";
-        case cFigure::ALIGN_RIGHT: return " -justify right ";
-        case cFigure::ALIGN_CENTER: return " -justify center ";
-        default: throw cRuntimeError("Unexpected alignment %d", alignment);
+    doAnchor(anchor, false, argc, argv);
+}
+
+void FigureRenderer::textanchor(cFigure::Anchor anchor, int& argc, const char *argv[])
+{
+    doAnchor(anchor, true, argc, argv);
+}
+
+void FigureRenderer::font(const cFigure::Font& font, int& argc, const char *argv[])
+{
+    if (!font.typeface.empty()) {
+        argv[argc++] = "-fontfamily";
+        argv[argc++] = font.typeface.c_str();
     }
+
+    int points = font.pointSize <= 0 ? DEFAULT_FONTSIZE : font.pointSize;
+    argv[argc++] = "-fontsize";
+    char *buf = getBuf(16);
+    sprintf(buf, "%d", points);
+    argv[argc++] = buf;
 }
 
-std::string FigureRenderer::font(const cFigure::Font& font)
+#define PT(p)  ((p).x) << " " << ((p).y)
+
+std::string FigureRenderer::polylinePath(const std::vector<cFigure::Point>& points, bool smooth)
 {
-    if (font.typeface == "" && font.pointSize <= 0 && font.style == 0)
-        return "";
-    std::stringstream os;
-    os << " -font {{" << font.typeface << "} " << (font.pointSize <= 0 ? 8 : font.pointSize);
-    if (font.style & cFigure::FONT_BOLD) os << " bold";
-    if (font.style & cFigure::FONT_ITALIC) os << " italic";
-    if (font.style & cFigure::FONT_UNDERLINE) os << " underline";
-    os << "} ";
-    return os.str();
+    if (points.size() < 2)
+        return std::string("M 0 0"); // empty path causes error (item will not be be created)
+
+    std::stringstream ss;
+
+    if (points.size() == 2) {
+        const cFigure::Point& from = points[0];
+        const cFigure::Point& to = points[1];
+        ss << "M " << PT(from) << " L " << PT(to);
+    } else {
+        const cFigure::Point& start = points[0];
+        ss << "M " << PT(start);
+
+        if (smooth) {
+            for (int i = 0; i < (int)points.size() - 2; i++) {
+                const cFigure::Point& control = points[i + 1];
+                cFigure::Point to = (i == ((int)points.size() - 3)) ? points[i + 2] : (points[i + 1] + points[i + 2]) * 0.5;
+                ss << " Q " << PT(control) << " " << PT(to);
+            }
+        } else {
+            for (int i = 0; i < (int)points.size(); i++) {
+                const cFigure::Point& p = points[i];
+                ss << " L " << PT(p);
+            }
+        }
+    }
+    return ss.str();
 }
 
-void FigureRenderer::remove(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+std::string FigureRenderer::polygonPath(const std::vector<cFigure::Point>& points, bool smooth)
 {
-    char tag[32];
-    sprintf(tag, "f%d", figure->getId());
-    CHK(Tcl_VarEval(interp, canvas, " delete ", tag, NULL));
+    if (points.size() < 2)
+        return std::string("M 0 0"); // empty path causes error (item will not be be created)
+
+    std::stringstream ss;
+
+    if (points.size() == 2) {
+        const cFigure::Point& from = points[0];
+        const cFigure::Point& to = points[1];
+        ss << "M " << PT(from) << " L " << PT(to);
+    } else {
+        if (smooth) {
+            cFigure::Point start = (points[0] + points[1]) * 0.5;
+            ss << "M " << PT(start);
+
+            for (int i = 0; i < (int)points.size(); i++) {
+                int i1 = (i + 1) % points.size();
+                int i2 = (i + 2) % points.size();
+
+                cFigure::Point control = points[i1];
+                cFigure::Point to = (points[i1] + points[i2]) * 0.5;
+
+                ss << " Q " << PT(control) << " " << PT(to);
+            }
+        } else {
+            const cFigure::Point& start = points[0];
+            ss << "M " << PT(start);
+
+            for (int i = 0; i < (int)points.size(); i++) {
+                const cFigure::Point& p = points[i];
+                ss << " L " << PT(p);
+            }
+        }
+    }
+
+    ss << " Z";
+    return ss.str();
 }
+
+std::string FigureRenderer::arcPath(const cFigure::Rectangle& rect, double start_rad, double end_rad)
+{
+    cFigure::Point center = rect.getCenter();
+    cFigure::Point radii = rect.getSize() * 0.5;
+
+    cFigure::Point from = center;
+    from.x += cos(start_rad) * radii.x;
+    from.y -= sin(start_rad) * radii.y;
+
+    cFigure::Point to = center;
+    to.x += cos(end_rad) * radii.x;
+    to.y -= sin(end_rad) * radii.y;
+
+    double d_rad = end_rad - start_rad;
+    while (d_rad < 0) d_rad += 2 * M_PI;
+    while (d_rad >= 2*M_PI) d_rad -= 2 * M_PI;
+    bool largeArc = d_rad > M_PI;
+
+    std::stringstream ss;
+
+    ss << "M " << PT(from)
+       << " A " << PT(radii) // <- rx ry
+        << " 0 " // <- phi
+        << (largeArc ? "1" : "0")
+        << " 0 " // <- sweep (CCW)
+        << PT(to);
+
+    return ss.str();
+}
+
+std::string FigureRenderer::pieSlicePath(const cFigure::Rectangle& rect, double start_rad, double end_rad)
+{
+    cFigure::Point center = rect.getCenter();
+    cFigure::Point radii = rect.getSize() * 0.5;
+
+    cFigure::Point from = center;
+    from.x += cos(start_rad) * radii.x;
+    from.y -= sin(start_rad) * radii.y;
+
+    cFigure::Point to = center;
+    to.x += cos(end_rad) * radii.x;
+    to.y -= sin(end_rad) * radii.y;
+
+    double d_rad = end_rad - start_rad;
+    while (d_rad < 0) d_rad += 2 * M_PI;
+    while (d_rad >= 2*M_PI) d_rad -= 2 * M_PI;
+    bool largeArc = d_rad > M_PI;
+
+    std::stringstream ss;
+
+    ss << "M " << PT(center)
+        << " L " << PT(from)
+        << " A " << PT(radii) // <- rx ry
+        << " 0 " // <- phi
+        << (largeArc ? "1" : "0")
+        << " 0 " // <- sweep (CCW)
+        << PT(to) << " Z";
+
+    return ss.str();
+}
+
+std::string FigureRenderer::ringPath(const cFigure::Rectangle& rect, double innerRx, double innerRy)
+{
+    cFigure::Point center = rect.getCenter();
+    double outerRx = rect.getSize().x * 0.5;
+    double outerRy = rect.getSize().y * 0.5;
+
+    std::stringstream ss;
+
+    // drawing the outer ellipse with a 270° and a 90° arc
+    // (to avoid undefined behavior, also 2*180° didn't work on windows)
+    ss << "M " << center.x + outerRx << " " << center.y
+        << " A " << outerRx << " " << outerRy // <- rx ry
+        << " 0 1 0 " // <- phi, largeArc, sweep (CCW)
+        << center.x << " " <<  center.y + outerRy
+        << " A " << outerRx << " " << outerRy // <- rx ry
+        << " 0 0 0 " // <- phi, largeArc, sweep (CCW)
+        << center.x + outerRx << " " <<  center.y << " Z ";
+
+    // then drawing the inner ellipse with another two, if applicable
+    if ((innerRx) > 0 && (innerRy > 0)) // avoiding undefined behaviour again
+    {
+        ss << "M " << center.x + innerRx << " " << center.y
+            << " A " << innerRx << " " << innerRy // <- rx ry
+            << " 0 1 0 " // <- phi, largeArc, sweep (CCW)
+            << center.x << " " <<  center.y + innerRy
+            << " A " << innerRx << " " << innerRy // <- rx ry
+            << " 0 0 0 " // <- phi, largeArc, sweep (CCW)
+            << center.x + innerRx << " " <<  center.y << " Z";
+    }
+
+    return ss.str();
+}
+
+#undef PT
 
 FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
 {
@@ -212,355 +384,423 @@ FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
     return renderer;
 }
 
-void NullRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+//----
+
+void AbstractCanvasItemFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, Tcl_CmdInfo *cmd, const cFigure::Transform& transform, double zoom)
+{
+    initBufs();
+    char tags[40];
+    sprintf(tags, "fig f%d ", figure->getId());
+    ptrToStr(figure, tags + strlen(tags));
+
+    int argc = 0;
+    const char *argv[32];
+    argv[argc++] = "dummy";
+    argv[argc++] = "create";
+    argv[argc++] = getItemType();
+    std::string coords = getCoords(figure, interp, transform, zoom);
+    argv[argc++] = coords.c_str();
+    addMatrix(figure, transform, argc, argv);
+    addOptions(figure, ~0, interp, argc, argv, transform, zoom);
+    argv[argc++] = "-tags";
+    argv[argc++] = tags;
+    invokeTclCommand(interp, cmd, argc, argv);
+}
+
+void AbstractCanvasItemFigureRenderer::refresh(cFigure *figure, int8_t what, Tcl_Interp *interp, Tcl_CmdInfo *cmd, const cFigure::Transform& transform, double zoom)
 {
     char tag[32];
     sprintf(tag, "f%d", figure->getId());
-    CHK(Tcl_VarEval(interp, canvas, " create line 0 0 0 0 -fill \"\" -tags {fig ", tag, "}", NULL)); // layer marker for raise/lower commands
+
+    if (what & cFigure::CHANGE_GEOMETRY) {
+        initBufs();
+        int argc = 0;
+        const char *argv[32];
+        argv[argc++] = "dummy";
+        argv[argc++] = "coords";
+        argv[argc++] = tag;
+        std::string coords = getCoords(figure, interp, transform, zoom);
+        argv[argc++] = coords.c_str();
+        invokeTclCommand(interp, cmd, argc, argv);
+    }
+
+    initBufs();
+    int argc = 0;
+    const char *argv[32];
+    argv[argc++] = "dummy";
+    argv[argc++] = "itemconfig";
+    argv[argc++] = tag;
+    int savedArgc = argc;
+    if (what & cFigure::CHANGE_TRANSFORM)
+        addMatrix(figure, transform, argc, argv);
+    addOptions(figure, what, interp, argc, argv, transform, zoom);
+    if (argc > savedArgc)
+        invokeTclCommand(interp, cmd, argc, argv);
 }
 
-void NullRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
-{
-}
-
-void NullRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
-{
-}
-
-void LineFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
-{
-    char tag[32], buf1[32], buf2[32], buf3[32], buf4[32], buf5[64];
-    sprintf(tag, "f%d", figure->getId());
-    cLineFigure *lineFigure = check_and_cast<cLineFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " create line ",
-            point(lineFigure->getStart(), mapping, buf1), point(lineFigure->getEnd(), mapping, buf2),
-            " -fill ", color(lineFigure->getLineColor(), buf3),
-            " -width ", itoa(round(lineFigure->getLineWidth()), buf4),
-            lineStyle(lineFigure->getLineStyle()),
-            capStyle(lineFigure->getCapStyle()),
-            arrows(lineFigure->getStartArrowHead(), lineFigure->getEndArrowHead(), buf5),
-            " -tags {fig ", tag, "}", NULL));
-}
-
-void LineFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
-{
-    char tag[32], buf1[32], buf2[32];
-    sprintf(tag, "f%d", figure->getId());
-    cLineFigure *lineFigure = check_and_cast<cLineFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " coords ",
-            point(lineFigure->getStart(), mapping, buf1), point(lineFigure->getEnd(), mapping, buf2), NULL));
-}
-
-void LineFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
-{
-    char tag[32], buf3[32], buf4[32], buf5[64];
-    sprintf(tag, "f%d", figure->getId());
-    cLineFigure *lineFigure = check_and_cast<cLineFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
-            " -fill ", color(lineFigure->getLineColor(), buf3),
-            " -width ", itoa(round(lineFigure->getLineWidth()), buf4),
-            lineStyle(lineFigure->getLineStyle()),
-            capStyle(lineFigure->getCapStyle()),
-            arrows(lineFigure->getStartArrowHead(), lineFigure->getEndArrowHead(), buf5),
-            NULL));
-}
-
-void ArcFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
-{
-    //TODO arrowheads, capstyle
-    ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
-    char tag[32], buf1[80], buf3[32], buf4[32], buf5[32], buf6[32];
-    sprintf(tag, "f%d", figure->getId());
-    cArcFigure *arcFigure = check_and_cast<cArcFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " create arc ",
-            bounds(arcFigure->getBounds(), mapping, buf1),
-            " -start ", itoa(arcFigure->getStartAngle(), buf3),
-            " -extent ", itoa(arcFigure->getEndAngle() - arcFigure->getStartAngle(), buf4),
-            " -style arc",
-            " -fill ", color(arcFigure->getLineColor(), buf5),
-            " -width ", itoa(round(arcFigure->getLineWidth()), buf6),
-            lineStyle(arcFigure->getLineStyle()),
-            " -tags {fig ", tag, "}", NULL));
-}
-
-void ArcFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
-{
-    ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
-    char tag[32], buf1[80];
-    sprintf(tag, "f%d", figure->getId());
-    cArcFigure *arcFigure = check_and_cast<cArcFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
-            bounds(arcFigure->getBounds(), mapping, buf1), NULL));
-}
-
-void ArcFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
-{
-    //TODO arrowheads, capstyle
-    char tag[32], buf3[32], buf4[32], buf5[32], buf6[32];
-    sprintf(tag, "f%d", figure->getId());
-    cArcFigure *arcFigure = check_and_cast<cArcFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
-            " -start ", itoa(arcFigure->getStartAngle(), buf3),
-            " -extent ", itoa(arcFigure->getEndAngle() - arcFigure->getStartAngle(), buf4),
-            " -style arc",
-            " -fill ", color(arcFigure->getLineColor(), buf5),
-            " -width ", itoa(round(arcFigure->getLineWidth()), buf6),
-            lineStyle(arcFigure->getLineStyle()),
-            NULL));
-}
-
-void PolylineFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
-{
-    char tag[32], buf1[32], buf2[32], buf3[64];
-    sprintf(tag, "f%d", figure->getId());
-    cPolylineFigure *polylineFigure = check_and_cast<cPolylineFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " create line ",
-            points(polylineFigure->getPoints(), mapping).c_str(),
-            " -fill ", color(polylineFigure->getLineColor(), buf1),
-            " -width ", itoa(round(polylineFigure->getLineWidth()), buf2),
-            lineStyle(polylineFigure->getLineStyle()),
-            capStyle(polylineFigure->getCapStyle()),
-            joinStyle(polylineFigure->getJoinStyle()),
-            smooth(polylineFigure->getSmooth()),
-            arrows(polylineFigure->getStartArrowHead(), polylineFigure->getEndArrowHead(), buf3),
-            " -tags {fig ", tag, "}", NULL));
-}
-
-void PolylineFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+void AbstractCanvasItemFigureRenderer::remove(cFigure *figure, Tcl_Interp *interp, Tcl_CmdInfo *cmd)
 {
     char tag[32];
     sprintf(tag, "f%d", figure->getId());
+
+    int argc = 0;
+    const char *argv[32];
+    argv[argc++] = "dummy";
+    argv[argc++] = "delete";
+    argv[argc++] = tag;
+
+    invokeTclCommand(interp, cmd, argc, argv);
+}
+
+void AbstractCanvasItemFigureRenderer::addMatrix(cFigure *figure, const cFigure::Transform& transform, int& argc, const char *argv[])
+{
+    argv[argc++] = "-matrix";
+    argv[argc++] = matrix(transform);
+}
+
+//----
+
+void AbstractLineFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
+{
+    if (what & cFigure::CHANGE_VISUAL) {
+        cAbstractLineFigure *lineFigure = check_and_cast<cAbstractLineFigure*>(figure);
+        argv[argc++] = "-stroke";
+        argv[argc++] = color(lineFigure->getLineColor());
+        argv[argc++] = "-strokewidth";
+        argv[argc++] = lineFigure->getScaleLineWidth() ? dtoa(lineFigure->getLineWidth()) : dtoa(lineFigure->getLineWidth() / zoom);
+        argv[argc++] = "-strokeopacity";
+        argv[argc++] = dtoa(lineFigure->getLineOpacity());
+        lineStyle(lineFigure->getLineStyle(), argc, argv);
+        capStyle(lineFigure->getCapStyle(), argc, argv);
+    }
+}
+
+//----
+
+std::string LineFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
+{
+    cLineFigure *lineFigure = check_and_cast<cLineFigure*>(figure);
+    return point2(lineFigure->getStart(), lineFigure->getEnd());
+}
+
+//----
+
+std::string ArcFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
+{
+    cArcFigure *arcFigure = check_and_cast<cArcFigure*>(figure);
+    return arcPath(arcFigure->getBounds(), arcFigure->getStartAngle(), arcFigure->getEndAngle());
+}
+
+//----
+
+std::string PolylineFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
+{
     cPolylineFigure *polylineFigure = check_and_cast<cPolylineFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
-            points(polylineFigure->getPoints(), mapping).c_str(), NULL));
+    return polylinePath(polylineFigure->getPoints(), polylineFigure->getSmooth());
 }
 
-void PolylineFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+//----
+
+void AbstractShapeRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
 {
-    char tag[32], buf2[32], buf3[32], buf4[64];
-    sprintf(tag, "f%d", figure->getId());
-    cPolylineFigure *polylineFigure = check_and_cast<cPolylineFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
-            " -fill ", color(polylineFigure->getLineColor(), buf2),
-            " -width ", itoa(round(polylineFigure->getLineWidth()), buf3),
-            lineStyle(polylineFigure->getLineStyle()),
-            capStyle(polylineFigure->getCapStyle()),
-            joinStyle(polylineFigure->getJoinStyle()),
-            smooth(polylineFigure->getSmooth()),
-            arrows(polylineFigure->getStartArrowHead(), polylineFigure->getEndArrowHead(), buf4),
-            NULL));
+    cAbstractShapeFigure *shapeFigure = check_and_cast<cAbstractShapeFigure*>(figure);
+    if (what & cFigure::CHANGE_VISUAL) {
+        if (shapeFigure->isOutlined()) {
+            argv[argc++] = "-stroke";
+            argv[argc++] = color(shapeFigure->getLineColor());
+            argv[argc++] = "-strokewidth";
+            argv[argc++] = shapeFigure->getScaleLineWidth() ? dtoa(shapeFigure->getLineWidth()) : dtoa(shapeFigure->getLineWidth() / zoom);
+            argv[argc++] = "-strokeopacity";
+            argv[argc++] = dtoa(shapeFigure->getLineOpacity());
+            lineStyle(shapeFigure->getLineStyle(), argc, argv);
+        } else {
+            argv[argc++] = "-stroke";
+            argv[argc++] = "";
+        }
+        if (shapeFigure->isFilled()) {
+            argv[argc++] = "-fill";
+            argv[argc++] = color(shapeFigure->getFillColor());
+            argv[argc++] = "-fillopacity";
+            argv[argc++] = dtoa(shapeFigure->getFillOpacity());
+        } else {
+            argv[argc++] = "-fill";
+            argv[argc++] = "";
+        }
+    }
 }
 
-void RectangleFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+//----
+
+std::string RectangleFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
 {
-    ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
-    char tag[32], buf1[80], buf3[32], buf4[32], buf5[32];
-    sprintf(tag, "f%d", figure->getId());
     cRectangleFigure *rectangleFigure = check_and_cast<cRectangleFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " create rect ",
-            bounds(rectangleFigure->getBounds(), mapping, buf1),
-            " -fill ", (rectangleFigure->isFilled() ? color(rectangleFigure->getFillColor(), buf3) : "\"\""),
-            " -outline ", (rectangleFigure->isOutlined() ? color(rectangleFigure->getLineColor(), buf4) : "\"\""),
-            " -width ", itoa(round(rectangleFigure->getLineWidth()), buf5),
-            lineStyle(rectangleFigure->getLineStyle()),
-            " -tags {fig ", tag, "}", NULL));
+    return bounds(rectangleFigure->getBounds());
 }
 
-void RectangleFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+void RectangleFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
 {
-    ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
-    char tag[32], buf1[80];
-    sprintf(tag, "f%d", figure->getId());
-    cRectangleFigure *rectangleFigure = check_and_cast<cRectangleFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
-            bounds(rectangleFigure->getBounds(), mapping, buf1), NULL));
+    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, zoom);
+
+    if (what & cFigure::CHANGE_GEOMETRY) {
+        cRectangleFigure *rectangleFigure = check_and_cast<cRectangleFigure*>(figure);
+        argv[argc++] = "-rx";
+        argv[argc++] = dtoa(rectangleFigure->getCornerRx());
+        argv[argc++] = "-ry";
+        argv[argc++] = dtoa(rectangleFigure->getCornerRy());
+    }
 }
 
-void RectangleFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
-{
-    char tag[32], buf1[32], buf2[32], buf3[32];
-    sprintf(tag, "f%d", figure->getId());
-    cRectangleFigure *rectangleFigure = check_and_cast<cRectangleFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
-            " -fill ", (rectangleFigure->isFilled() ? color(rectangleFigure->getFillColor(), buf1) : "\"\""),
-            " -outline ", (rectangleFigure->isOutlined() ? color(rectangleFigure->getLineColor(), buf2) : "\"\""),
-            " -width ", itoa(round(rectangleFigure->getLineWidth()), buf3),
-            lineStyle(rectangleFigure->getLineStyle()),
-            NULL));
-}
+//----
 
-void OvalFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+std::string OvalFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
 {
-    ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
-    char tag[32], buf1[80], buf3[32], buf4[32], buf5[32];
-    sprintf(tag, "f%d", figure->getId());
     cOvalFigure *ovalFigure = check_and_cast<cOvalFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " create oval ",
-            bounds(ovalFigure->getBounds(), mapping, buf1),
-            " -fill ", (ovalFigure->isFilled() ? color(ovalFigure->getFillColor(), buf3) : "\"\""),
-            " -outline ", (ovalFigure->isOutlined() ? color(ovalFigure->getLineColor(), buf4) : "\"\""),
-            " -width ", itoa(round(ovalFigure->getLineWidth()), buf5),
-            lineStyle(ovalFigure->getLineStyle()),
-            " -tags {fig ", tag, "}", NULL));
+    return point(ovalFigure->getBounds().getCenter());
 }
 
-void OvalFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+void OvalFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
 {
-    ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
-    char tag[32], buf1[80];
-    sprintf(tag, "f%d", figure->getId());
-    cOvalFigure *ovalFigure = check_and_cast<cOvalFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
-            bounds(ovalFigure->getBounds(), mapping, buf1), NULL));
+    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, zoom);
+
+    if (what & cFigure::CHANGE_GEOMETRY) {
+        cOvalFigure *ovalFigure = check_and_cast<cOvalFigure*>(figure);
+        cFigure::Point size = ovalFigure->getBounds().getSize();
+        argv[argc++] = "-rx";
+        argv[argc++] = dtoa(size.x * 0.5);
+        argv[argc++] = "-ry";
+        argv[argc++] = dtoa(size.y * 0.5);
+    }
 }
 
-void OvalFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+//----
+
+std::string RingFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
 {
-    char tag[32], buf3[32], buf4[32], buf5[32];
-    sprintf(tag, "f%d", figure->getId());
-    cOvalFigure *ovalFigure = check_and_cast<cOvalFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
-            " -fill ", (ovalFigure->isFilled() ? color(ovalFigure->getFillColor(), buf3) : "\"\""),
-            " -outline ", (ovalFigure->isOutlined() ? color(ovalFigure->getLineColor(), buf4) : "\"\""),
-            " -width ", itoa(round(ovalFigure->getLineWidth()), buf5),
-            lineStyle(ovalFigure->getLineStyle()),
-            NULL));
+    cRingFigure *ringFigure = check_and_cast<cRingFigure*>(figure);
+    return ringPath(ringFigure->getBounds(), ringFigure->getInnerRx(), ringFigure->getInnerRy());
 }
 
-void PieSliceFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+void RingFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
 {
-    ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
-    char tag[32], buf1[80], buf3[32], buf4[32], buf5[32], buf6[32], buf7[32];
-    sprintf(tag, "f%d", figure->getId());
-    cPieSliceFigure *piesliceFigure = check_and_cast<cPieSliceFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " create arc ",
-            bounds(piesliceFigure->getBounds(), mapping, buf1),
-            " -start ", itoa(piesliceFigure->getStartAngle(), buf3),
-            " -extent ", itoa(piesliceFigure->getEndAngle() - piesliceFigure->getStartAngle(), buf4),
-            " -style pieslice ",
-            " -fill ", (piesliceFigure->isFilled() ? color(piesliceFigure->getFillColor(), buf5) : "\"\""),
-            " -outline ", (piesliceFigure->isOutlined() ? color(piesliceFigure->getLineColor(), buf6) : "\"\""),
-            " -width ", itoa(round(piesliceFigure->getLineWidth()), buf7),
-            lineStyle(piesliceFigure->getLineStyle()),
-            " -tags {fig ", tag, "}", NULL));
+    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, zoom);
+
+    if (what & cFigure::CHANGE_VISUAL) {
+        //cRingFigure *ringFigure = check_and_cast<cRingFigure*>(figure);
+        argv[argc++] = "-fillrule";
+        argv[argc++] = "evenodd";
+    }
 }
 
-void PieSliceFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+//----
+
+std::string PieSliceFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
 {
-    ASSERT2(mapping->isLinear(), "nonlinear mapping not supported");
-    char tag[32], buf1[80];
-    sprintf(tag, "f%d", figure->getId());
-    cPieSliceFigure *piesliceFigure = check_and_cast<cPieSliceFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
-            bounds(piesliceFigure->getBounds(), mapping, buf1), NULL));
+    cPieSliceFigure *pieSliceFigure = check_and_cast<cPieSliceFigure*>(figure);
+    return pieSlicePath(pieSliceFigure->getBounds(), pieSliceFigure->getStartAngle(), pieSliceFigure->getEndAngle());
 }
 
-void PieSliceFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+void PieSliceFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
 {
-    char tag[32], buf1[32], buf2[32], buf3[32], buf4[32], buf5[32];
-    sprintf(tag, "f%d", figure->getId());
-    cPieSliceFigure *piesliceFigure = check_and_cast<cPieSliceFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
-            " -start ", itoa(piesliceFigure->getStartAngle(), buf1),
-            " -extent ", itoa(piesliceFigure->getEndAngle() - piesliceFigure->getStartAngle(), buf2),
-            " -fill ", (piesliceFigure->isFilled() ? color(piesliceFigure->getFillColor(), buf3) : "\"\""),
-            " -outline ", (piesliceFigure->isOutlined() ? color(piesliceFigure->getLineColor(), buf4) : "\"\""),
-            " -width ", itoa(round(piesliceFigure->getLineWidth()), buf5),
-            lineStyle(piesliceFigure->getLineStyle()),
-            NULL));
+    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, zoom);
 }
 
-void PolygonFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+//----
+
+std::string PolygonFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
 {
-    char tag[32], buf1[32], buf2[32], buf3[32];
-    sprintf(tag, "f%d", figure->getId());
     cPolygonFigure *polygonFigure = check_and_cast<cPolygonFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " create polygon ",
-            points(polygonFigure->getPoints(), mapping).c_str(),
-            " -fill ", (polygonFigure->isFilled() ? color(polygonFigure->getFillColor(), buf1) : "\"\""),
-            " -outline ", (polygonFigure->isOutlined() ? color(polygonFigure->getLineColor(), buf2) : "\"\""),
-            " -width ", itoa(round(polygonFigure->getLineWidth()), buf3),
-            lineStyle(polygonFigure->getLineStyle()),
-            joinStyle(polygonFigure->getJoinStyle()),
-            smooth(polygonFigure->getSmooth()),
-            " -tags {fig ", tag, "}", NULL));
+    return polygonPath(polygonFigure->getPoints(), polygonFigure->getSmooth());
 }
 
-void PolygonFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+void PolygonFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
 {
-    char tag[32];
-    sprintf(tag, "f%d", figure->getId());
-    cPolygonFigure *polygonFigure = check_and_cast<cPolygonFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
-            points(polygonFigure->getPoints(), mapping).c_str(), NULL));
+    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, zoom);
+
+    if (what & cFigure::CHANGE_VISUAL) {
+        cPolygonFigure *polygonFigure = check_and_cast<cPolygonFigure*>(figure);
+        joinStyle(polygonFigure->getJoinStyle(), argc, argv);
+        fillRule(polygonFigure->getFillRule(), argc, argv);
+    }
 }
 
-void PolygonFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+//----
+
+std::string PathFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
 {
-    char tag[32], buf1[32], buf2[32], buf3[32];
-    sprintf(tag, "f%d", figure->getId());
-    cPolygonFigure *polygonFigure = check_and_cast<cPolygonFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
-            " -fill ", (polygonFigure->isFilled() ? color(polygonFigure->getFillColor(), buf1) : "\"\""),
-            " -outline ", (polygonFigure->isOutlined() ? color(polygonFigure->getLineColor(), buf2) : "\"\""),
-            " -width ", itoa(round(polygonFigure->getLineWidth()), buf3),
-            lineStyle(polygonFigure->getLineStyle()),
-            joinStyle(polygonFigure->getJoinStyle()),
-            smooth(polygonFigure->getSmooth()),
-            NULL));
+    cPathFigure *pathFigure = check_and_cast<cPathFigure*>(figure);
+    const char *path = pathFigure->getPath();
+    return opp_isblank(path) ? "M 0 0" : path;  // empty path causes error (item will not be be created)
 }
 
-void TextFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+void PathFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
 {
-    char tag[32], buf1[32], buf2[32];
-    sprintf(tag, "f%d", figure->getId());
-    cTextFigure *textFigure = check_and_cast<cTextFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " create text ",
-            point(textFigure->getLocation(), mapping, buf1),
-            " -text ", TclQuotedString(textFigure->getText()).get(),
-            " -fill ", color(textFigure->getColor(), buf2),
-            anchor(textFigure->getAnchor()),
-            alignment(textFigure->getAlignment()),
-            font(textFigure->getFont()).c_str(),
-            " -tags {fig ", tag, "}", NULL));
+    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, zoom);
+
+    if (what & cFigure::CHANGE_VISUAL) {
+        cPathFigure *pathFigure = check_and_cast<cPathFigure*>(figure);
+        joinStyle(pathFigure->getJoinStyle(), argc, argv);
+        capStyle(pathFigure->getCapStyle(), argc, argv);
+        fillRule(pathFigure->getFillRule(), argc, argv);
+    }
 }
 
-void TextFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+//----
+
+std::string AbstractTextFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
 {
-    char tag[32], buf1[32];
-    sprintf(tag, "f%d", figure->getId());
-    cTextFigure *textFigure = check_and_cast<cTextFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " coords ", tag,
-            point(textFigure->getLocation(), mapping, buf1), NULL));
+    cAbstractTextFigure *textFigure = check_and_cast<cAbstractTextFigure*>(figure);
+    return point(textFigure->getLocation());
 }
 
-void TextFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+void AbstractTextFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
 {
-    char tag[32], buf1[32];
-    sprintf(tag, "f%d", figure->getId());
-    cTextFigure *textFigure = check_and_cast<cTextFigure*>(figure);
-    CHK(Tcl_VarEval(interp, canvas, " itemconfig ", tag,
-            " -text ", TclQuotedString(textFigure->getText()).get(),
-            " -fill ", color(textFigure->getColor(), buf1),
-            anchor(textFigure->getAnchor()),
-            alignment(textFigure->getAlignment()),
-            font(textFigure->getFont()).c_str(),
-            NULL));
+    cAbstractTextFigure *textFigure = check_and_cast<cAbstractTextFigure*>(figure);
+    if (what & cFigure::CHANGE_INPUTDATA) {
+        argv[argc++] = "-text";
+        argv[argc++] = textFigure->getText();
+    }
+    if (what & cFigure::CHANGE_GEOMETRY) {
+        textanchor(textFigure->getAnchor(), argc, argv);
+    }
+    if (what & cFigure::CHANGE_VISUAL) {
+        font(textFigure->getFont(), argc, argv);
+        argv[argc++] = "-fill";
+        argv[argc++] = color(textFigure->getColor());
+        argv[argc++] = "-fillopacity";
+        argv[argc++] = dtoa(textFigure->getOpacity());
+    }
 }
 
-void ImageFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+//----
+
+void LabelFigureRenderer::addMatrix(cFigure *figure, const cFigure::Transform& transform, int& argc, const char *argv[])
 {
-    //TODO
+    // no matrix -- label should not be affected by transforms
 }
 
-void ImageFigureRenderer::refreshGeometry(cFigure *figure, Tcl_Interp *interp, const char *canvas, ICoordMapping *mapping)
+std::string LabelFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
 {
-    //TODO
+    cLabelFigure *labelFigure = check_and_cast<cLabelFigure*>(figure);
+    return point(transform.applyTo(labelFigure->getLocation()));
 }
 
-void ImageFigureRenderer::refreshVisuals(cFigure *figure, Tcl_Interp *interp, const char *canvas)
+//----
+
+std::string AbstractImageFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
 {
-    //TODO
+    cAbstractImageFigure *imageFigure = check_and_cast<cAbstractImageFigure*>(figure);
+    return point(imageFigure->getLocation());
+}
+
+void AbstractImageFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
+{
+    cAbstractImageFigure *imageFigure = check_and_cast<cAbstractImageFigure*>(figure);
+    if (what & cFigure::CHANGE_GEOMETRY) {
+        anchor(imageFigure->getAnchor(), argc, argv);
+        argv[argc++] = "-width";
+        argv[argc++] = dtoa(imageFigure->getWidth());
+        argv[argc++] = "-height";
+        argv[argc++] = dtoa(imageFigure->getHeight());
+    }
+    if (what & cFigure::CHANGE_VISUAL) {
+        argv[argc++] = "-fillopacity";
+        argv[argc++] = dtoa(imageFigure->getOpacity());
+        argv[argc++] = "-tintcolor";
+        argv[argc++] = color(imageFigure->getTintColor());
+        argv[argc++] = "-tintamount";
+        argv[argc++] = dtoa(imageFigure->getTintAmount());
+    }
+}
+
+//----
+
+void ImageFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
+{
+    AbstractImageFigureRenderer::addOptions(figure, what, interp, argc, argv, transform, zoom);
+
+    cImageFigure *imageFigure = check_and_cast<cImageFigure*>(figure);
+    if (what & cFigure::CHANGE_INPUTDATA) {
+        const char *imageName = Tcl_GetVar2(interp, "bitmaps", TCLCONST(imageFigure->getImageName()), TCL_GLOBAL_ONLY);
+        if (!imageName)
+            imageName = Tcl_GetVar2(interp, "icons", "unknown", TCL_GLOBAL_ONLY);
+        ASSERT(imageName);
+        argv[argc++] = "-image";
+        argv[argc++] = imageName;
+    }
+}
+
+//----
+
+void PixmapFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
+{
+    AbstractImageFigureRenderer::addOptions(figure, what, interp, argc, argv, transform, zoom);
+
+    cPixmapFigure *pixmapFigure = check_and_cast<cPixmapFigure*>(figure);
+    if (what & cFigure::CHANGE_INPUTDATA) {
+        char *imageName = getBuf(32);
+        sprintf(imageName, "pixmap%d", figure->getId());
+        const cFigure::Pixmap& pixmap = pixmapFigure->getPixmap();
+        ensureImage(interp, imageName, pixmap);
+        argv[argc++] = "-image";
+        argv[argc++] = imageName;
+    }
+}
+
+void PixmapFigureRenderer::ensureImage(Tcl_Interp *interp, const char *imageName, const cFigure::Pixmap& pixmap)
+{
+    Tk_PhotoHandle handle = Tk_FindPhoto(interp, TCLCONST(imageName));
+    if (!handle)
+    {
+        char cmd[80];
+        sprintf(cmd, "image create photo %s -width %d -height %d", imageName, pixmap.getWidth(), pixmap.getHeight());
+        CHK(Tcl_Eval(interp, cmd));
+        handle = Tk_FindPhoto(interp, TCLCONST(imageName));
+        if (!handle)
+            return;
+    }
+
+    Tk_PhotoImageBlock imageBlock;
+    Tk_PhotoGetImage(handle, &imageBlock);
+
+    if (imageBlock.pixelSize != 4)
+    {
+        //TODO log error
+        return;
+    }
+
+    if (imageBlock.width != pixmap.getWidth() || imageBlock.height != pixmap.getHeight())
+        Tk_PhotoSetSize(interp, handle, pixmap.getWidth(), pixmap.getHeight());
+
+    int width = imageBlock.width;
+    int height = imageBlock.height;
+
+    // copy pixels
+    int redOffset = imageBlock.offset[0];
+    int greenOffset = imageBlock.offset[1];
+    int blueOffset = imageBlock.offset[2];
+    int alphaOffset = imageBlock.offset[3];
+    bool compatible = redOffset==0 && greenOffset==1 && blueOffset==2 && alphaOffset==3; // pixel layout is same as cFigure::RGBA
+    if (compatible && imageBlock.pitch == 4 * width)
+        memcpy(imageBlock.pixelPtr, pixmap.buffer(), width * height * 4);
+    else {
+        for (int y = 0; y < height; y++)
+        {
+            unsigned char *pixel = imageBlock.pixelPtr + y*imageBlock.pitch;
+            if (compatible)
+                memcpy(pixel, pixmap.buffer() + y * width * 4, width * 4);
+            else
+            {
+                for (int x = 0; x < width; x++, pixel += 4)
+                {
+                    cFigure::RGBA px = pixmap.pixel(x, y);
+                    pixel[redOffset] = px.red;
+                    pixel[greenOffset] = px.green;
+                    pixel[blueOffset] = px.blue;
+                    pixel[alphaOffset] = px.alpha;
+                }
+            }
+        }
+    }
 }
 
 NAMESPACE_END

@@ -45,18 +45,18 @@ Register_Enum(cGate_Type, (cGate::INPUT, cGate::OUTPUT, cGate::INOUT));
 typedef cFigure::LineStyle  cFigure_LineStyle;
 typedef cFigure::CapStyle   cFigure_CapStyle;
 typedef cFigure::JoinStyle  cFigure_JoinStyle;
+typedef cFigure::FillRule   cFigure_FillRule;
 typedef cFigure::ArrowHead  cFigure_ArrowHead;
 typedef cFigure::Anchor     cFigure_Anchor;
-typedef cFigure::Alignment  cFigure_Alignment;
 
 namespace aux {
 #define cF cFigure
 Register_Enum(cFigure_LineStyle, (cF::LINE_SOLID, cF::LINE_DOTTED, cF::LINE_DASHED));
 Register_Enum(cFigure_CapStyle,  (cF::CAP_BUTT, cF::CAP_SQUARE, cF::CAP_ROUND));
 Register_Enum(cFigure_JoinStyle, (cF::JOIN_BEVEL, cF::JOIN_MITER, cF::JOIN_ROUND));
+Register_Enum(cFigure_FillRule,  (cF::FILL_EVENODD, cF::FILL_NONZERO));
 Register_Enum(cFigure_ArrowHead, (cF::ARROW_NONE, cF::ARROW_SIMPLE, cF::ARROW_TRIANGLE, cF::ARROW_BARBED));
 Register_Enum(cFigure_Anchor,    (cF::ANCHOR_CENTER, cF::ANCHOR_N, cF::ANCHOR_E, cF::ANCHOR_S, cF::ANCHOR_W, cF::ANCHOR_NW, cF::ANCHOR_NE, cF::ANCHOR_SE, cF::ANCHOR_SW));
-Register_Enum(cFigure_Alignment, (cF::ALIGN_LEFT, cF::ALIGN_RIGHT, cF::ALIGN_CENTER));
 #undef cF
 };
 
@@ -73,52 +73,14 @@ inline std::ostream& operator<<(std::ostream& os, const cDensityEstBase::Cell& c
 }
 
 typedef cFigure::Point Point;
-inline std::ostream& operator<<(std::ostream& os, const cFigure::Point& p) {
-    return os << "(" << p.x << ", " << p.y << ")";
-}
-
-inline std::ostream& operator<<(std::ostream& os, const cFigure::Rectangle& r) {
-    return os << "(" << r.x << ", " << r.y << ", w=" << r.width << ", h=" << r.height << ")";
-}
-// typedef cFigure::Rectangle Rectangle; // conflicts with MINGW's WINGDI.H Rectangle
-#define Rectangle cFigure::Rectangle
-
-
+#define Rectangle cFigure::Rectangle  // typedef would conflict with MinGW's Rectangle in <wingdi.h>
+typedef cFigure::Transform Transform;
 typedef cFigure::Color Color;
-inline std::ostream& operator<<(std::ostream& os, const cFigure::Color& c) {
-    return os << "(" << (int)c.red << "," << (int)c.green << "," << (int)c.blue << ")";
-}
-
 typedef cFigure::Font Font;
-static std::ostream& operator<<(std::ostream& os, const cFigure::Font& f)
-{
-    os << "(" << (f.typeface.empty()? "<default>" : f.typeface) << ", ";
-    os << (int)f.pointSize << " pt";
-    if (!f.style)
-        os << ", none";
-    else {
-        os << ",";
-        if (f.style & cFigure::FONT_BOLD)  os << " bold";
-        if (f.style & cFigure::FONT_ITALIC)  os << " italic";
-        if (f.style & cFigure::FONT_UNDERLINE)  os << " underline";
-    }
-    os << ")";
-    return os;
-}
+typedef cFigure::Pixmap Pixmap;
 
-/* XXX currently unused
-typedef std::vector<std::string> StringVector;
-static std::ostream& operator<<(std::ostream& os, const std::vector<std::string>& v)
-{
-    os << "[";
-    for (int i = 0; i < (int)v.size(); i++) {
-        if (i > 0) os << ", ";
-        os << v[i];
-    }
-    os << "]";
-    return os;
-}
-*/
+using namespace canvas_stream_ops;
+
 
 //
 // This function is to be referenced from sim. kernel classes, to force the
@@ -134,16 +96,18 @@ enum cGate_Type;
 enum cFigure_LineStyle;
 enum cFigure_CapStyle;
 enum cFigure_JoinStyle;
+enum cFigure_FillRule;
 enum cFigure_ArrowHead;
 enum cFigure_Anchor;
-enum cFigure_Alignment;
 
 struct cDensityEstBase_Cell;
 
 struct Point;
 struct Rectangle;
+struct Transform;
 struct Color;
 struct Font;
+struct Pixmap;
 
 class noncobject StringVector;
 
@@ -595,97 +559,134 @@ class cXMLElement
 class cFigure extends cOwnedObject
 {
     int id;
-    bool visible @getter(isVisible);
-    string tags;
-    Point childOrigin @opaque;
+    bool visible @getter(isVisible) @editable;
+    string tags @editable;
+    Transform transform @editable @tostring(.str()) @fromstring(Transform().parse);
     cFigure *children[] @getter(getFigure) @sizeGetter(getNumFigures);
 }
 
 class cGroupFigure extends cFigure
 {
-    Point location;
 }
 
 class cAbstractLineFigure extends cFigure
 {
-    Color lineColor;
-    int lineStyle @enum(cFigure_LineStyle);
-    double lineWidth;
-    int capStyle @enum(cFigure_CapStyle);
-    int startArrowHead @enum(cFigure_ArrowHead);
-    int endArrowHead @enum(cFigure_ArrowHead);
+    Color lineColor @editable @tostring(.str()) @fromstring(Color().parse);
+    int lineStyle @editable @enum(cFigure_LineStyle);
+    double lineWidth @editable;
+    double lineOpacity @editable;
+    int capStyle @editable @enum(cFigure_CapStyle);
+    int startArrowHead @editable @enum(cFigure_ArrowHead);
+    int endArrowHead @editable @enum(cFigure_ArrowHead);
+    bool scaleLineWidth @editable;
 }
 
 class cLineFigure extends cAbstractLineFigure
 {
-    Point start;
-    Point end;
+    Point start @editable @tostring(.str()) @fromstring(Point().parse);
+    Point end @editable @tostring(.str()) @fromstring(Point().parse);
 }
 
 class cArcFigure extends cAbstractLineFigure
 {
-    Rectangle bounds;
-    double startAngle;
-    double endAngle;
+    Rectangle bounds @editable @tostring(.str()) @fromstring(Rectangle().parse);
+    double startAngle @editable;
+    double endAngle @editable;
 }
 
 class cPolylineFigure extends cAbstractLineFigure
 {
-    Point points[] @getter(getPoint) @sizeGetter(getNumPoints);
-    bool smooth;
-    int joinStyle @enum(cFigure_JoinStyle);
+    Point points[] @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints) @tostring(.str()) @fromstring(Point().parse);
+    bool smooth @editable;
+    int joinStyle @editable @enum(cFigure_JoinStyle);
 }
 
 class cAbstractShapeFigure extends cFigure
 {
-    bool outlined @getter(isOutlined);
-    bool filled @getter(isFilled);
-    Color lineColor;
-    Color fillColor;
-    int lineStyle @enum(cFigure_LineStyle);
-    double lineWidth;
+    bool outlined @getter(isOutlined) @editable;
+    bool filled @getter(isFilled) @editable;
+    Color lineColor @editable @tostring(.str()) @fromstring(Color().parse);
+    Color fillColor @editable @tostring(.str()) @fromstring(Color().parse);
+    int lineStyle @editable @enum(cFigure_LineStyle);
+    double lineWidth @editable;
+    double lineOpacity @editable;
+    double fillOpacity @editable;
+    bool scaleLineWidth @editable;
 }
 
 class cRectangleFigure extends cAbstractShapeFigure
 {
-    Rectangle bounds;
+    Rectangle bounds @editable @tostring(.str()) @fromstring(Rectangle().parse);
+    double cornerRx @editable;
+    double cornerRy @editable;
 }
 
 class cOvalFigure extends cAbstractShapeFigure
 {
-    Rectangle bounds;
+    Rectangle bounds @editable @tostring(.str()) @fromstring(Rectangle().parse);
 }
 
 class cPieSliceFigure extends cAbstractShapeFigure
 {
-    Rectangle bounds;
-    double startAngle;
-    double endAngle;
+    Rectangle bounds @editable @tostring(.str()) @fromstring(Rectangle().parse);
+    double startAngle @editable;
+    double endAngle @editable;
 }
 
 class cPolygonFigure extends cAbstractShapeFigure
 {
-    Point points[] @getter(getPoint) @sizeGetter(getNumPoints);
-    bool smooth;
-    int joinStyle @enum(cFigure_JoinStyle);
+    Point points[] @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints) @tostring(.str()) @fromstring(Point().parse);
+    bool smooth @editable;
+    int joinStyle @editable @enum(cFigure_JoinStyle);
+    int fillRule @editable @enum(cFigure_FillRule);
 }
 
-class cTextFigure extends cFigure
+class cPathFigure extends cAbstractShapeFigure
 {
-    Point location;
-    Color color;
-    Font font;
-    string text;
-    int anchor @enum(cFigure_Anchor);
-    int alignment @enum(cFigure_Alignment);
+    string path @editable;
+    Point offset @editable @tostring(.str()) @fromstring(Point().parse);
+    int joinStyle @editable @enum(cFigure_JoinStyle);
+    int capStyle @editable @enum(cFigure_CapStyle);
+    int fillRule @editable @enum(cFigure_FillRule);
 }
 
-class cImageFigure extends cFigure
+class cAbstractTextFigure extends cFigure
 {
-    Point location;
-    string imageName;
-    Color tint;
-    int anchor @enum(cFigure_Anchor);
+    Point location @editable @tostring(.str()) @fromstring(Point().parse);
+    int anchor @editable @enum(cFigure_Anchor);
+    string text @editable;
+    Font font @editable @tostring(.str()) @fromstring(Font().parse);
+    Color color @editable @tostring(.str()) @fromstring(Color().parse);
+    double opacity @editable;
+}
+
+class cTextFigure extends cAbstractTextFigure
+{
+}
+
+class cLabelFigure extends cAbstractTextFigure
+{
+}
+
+class cAbstractImageFigure extends cFigure
+{
+    Point location @editable @tostring(.str()) @fromstring(Point().parse);
+    int anchor @editable @enum(cFigure_Anchor);
+    double width @editable;
+    double height @editable;
+    double opacity @editable;
+    Color tintColor @editable @tostring(.str()) @fromstring(Color().parse);
+    double tintAmount @editable;
+}
+
+class cImageFigure extends cAbstractImageFigure
+{
+    string imageName @editable;
+}
+
+class cPixmapFigure extends cAbstractImageFigure
+{
+    Pixmap pixmap;
 }
 
 class cCanvas extends cOwnedObject

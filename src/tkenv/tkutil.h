@@ -164,6 +164,11 @@ double resolveDoubleDispStrArg(const char *arg, cComponent *component, double de
 
 void logTclError(const char *file, int line, Tcl_Interp *interp);
 
+
+typedef int (*TclCmdProc)(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+
+void invokeTclCommand(Tcl_Interp *interp, Tcl_CmdInfo *cmd, int argc, const char *argv[]);
+
 NAMESPACE_END
 
 

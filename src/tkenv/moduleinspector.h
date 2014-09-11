@@ -21,6 +21,7 @@
 #include "platmisc.h"   // must precede <tk.h> otherwise Visual Studio 2013 fails to compile
 #include <tk.h>
 #include "inspector.h"
+#include "ccanvas.h"
 
 NAMESPACE_BEGIN
 
@@ -28,10 +29,8 @@ class cModule;
 class cGate;
 class cFigure;
 class FigureRenderer;
-class LinearCoordMapping;
 
 enum SendAnimMode {ANIM_BEGIN, ANIM_END, ANIM_THROUGH};
-
 
 class TKENV_API ModuleInspector : public Inspector
 {
@@ -39,6 +38,7 @@ class TKENV_API ModuleInspector : public Inspector
 
    protected:
       char canvas[128];
+      Tcl_CmdInfo canvasCmdInfo;
       bool needs_redraw;
       int32 layoutSeed;
       bool notDrawn;
@@ -51,13 +51,11 @@ class TKENV_API ModuleInspector : public Inspector
       void drawSubmodule(cModule *submod, double x, double y, const char *scaling);
       void drawEnclosingModule(cModule *parentmodule, const char *scaling);
       void drawConnection(cGate *gate);
-      void initMapping(LinearCoordMapping& mapping);
       double getScale();
       double getZoom();
       virtual FigureRenderer *getRendererFor(cFigure *figure);
-      void drawFigureRec(cFigure *figure, LinearCoordMapping& mapping);
-      void refreshFigureGeometryRec(cFigure *figure, LinearCoordMapping& mapping, bool forceGeometryRefresh=false);
-      void refreshFigureVisualsRec(cFigure *figure);
+      void drawFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, double zoom);
+      void refreshFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, double zoom, bool ancestorTransformChanged=false);
       static const char *animModeToStr(SendAnimMode mode);
 
    public:

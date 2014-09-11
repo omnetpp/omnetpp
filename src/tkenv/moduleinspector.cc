@@ -99,6 +99,9 @@ void ModuleInspector::createWindow(const char *window, const char *geometry)
    strcat(canvas,".c");
 
    CHK(Tcl_VarEval(interp, "createModuleInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL ));
+
+   int success = Tcl_GetCommandInfo(interp, canvas, &canvasCmdInfo);
+   ASSERT(success);
 }
 
 void ModuleInspector::useWindow(const char *window)
@@ -106,6 +109,9 @@ void ModuleInspector::useWindow(const char *window)
     Inspector::useWindow(window);
     strcpy(canvas,windowName);
     strcat(canvas,".c");
+
+    int success = Tcl_GetCommandInfo(interp, canvas, &canvasCmdInfo);
+    ASSERT(success);
 }
 
 void ModuleInspector::refresh()
@@ -650,9 +656,10 @@ void ModuleInspector::redrawFigures()
    cCanvas *canvas = mod->getCanvasIfExists();
    if (canvas)
    {
-       LinearCoordMapping mapping;
-       initMapping(mapping);
-       drawFigureRec(canvas->getRootFigure(), mapping);
+       cFigure::Transform transform;
+       double scaleAndZoom = getScale() * getZoom();
+       transform.scale(scaleAndZoom);
+       drawFigureRec(canvas->getRootFigure(), transform, scaleAndZoom);
 
        char tag[32];
        cFigure *submodulesLayer = canvas->getSubmodulesLayer();
@@ -665,27 +672,28 @@ void ModuleInspector::redrawFigures()
 
 void ModuleInspector::refreshFigures()
 {
-   cModule *mod = static_cast<cModule *>(object);
-   cCanvas *canvas = mod->getCanvasIfExists();
-   if (canvas)
-   {
-       // if there is a structural change, we rebuild everything;
-       // otherwise we only adjust subtree or that particular figure
-       cFigure *rootFigure = canvas->getRootFigure();
-       if ((rootFigure->getTreeChangeFlags() | rootFigure->getLocalChangeFlags()) & cFigure::CHANGE_STRUCTURAL)
-       {
-           redrawFigures();
-           rootFigure->clearChangeFlags();
-       }
-       else if ((rootFigure->getTreeChangeFlags() | rootFigure->getLocalChangeFlags()) != 0)
-       {
-           LinearCoordMapping mapping;
-           initMapping(mapping);
-           refreshFigureGeometryRec(rootFigure, mapping);
-           refreshFigureVisualsRec(rootFigure);
-           rootFigure->clearChangeFlags();
-       }
-   }
+    cModule *mod = static_cast<cModule *>(object);
+    cCanvas *canvas = mod->getCanvasIfExists();
+    if (canvas)
+    {
+        // if there is a structural change, we rebuild everything;
+        // otherwise we only adjust subtree of that particular figure
+        cFigure *rootFigure = canvas->getRootFigure();
+        uint8 changes = rootFigure->getLocalChangeFlags() | rootFigure->getSubtreeChangeFlags();
+        if (changes & cFigure::CHANGE_STRUCTURAL)
+        {
+            redrawFigures();
+            rootFigure->clearChangeFlags();
+        }
+        else if (changes != 0)
+        {
+            cFigure::Transform transform;
+            double scaleAndZoom = getScale() * getZoom();
+            transform.scale(scaleAndZoom);
+            refreshFigureRec(rootFigure, transform, scaleAndZoom);
+            rootFigure->clearChangeFlags();
+        }
+    }
 }
 
 double ModuleInspector::getScale()
@@ -705,67 +713,50 @@ double ModuleInspector::getZoom()
     return opp_atof(zoomStr);
 }
 
-void ModuleInspector::initMapping(LinearCoordMapping& mapping)
-{
-    double scale = getScale();
-    double zoom = getZoom();
-    mapping.scaleX = mapping.scaleY = scale * zoom;
-}
-
 FigureRenderer *ModuleInspector::getRendererFor(cFigure *figure)
 {
     return FigureRenderer::getRendererFor(figure);
 }
 
-void ModuleInspector::drawFigureRec(cFigure *figure, LinearCoordMapping& mapping)
+void ModuleInspector::drawFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, double zoom)
 {
     if (figure->isVisible())
     {
+        cFigure::Transform transform(parentTransform);
+        transform.leftMultiply(figure->getTransform());
+
         FigureRenderer *renderer = getRendererFor(figure);
-        renderer->render(figure, interp, canvas, &mapping);
+        renderer->render(figure, interp, &canvasCmdInfo, transform, zoom);
 
-        if (figure->containsFigures())
-        {
-            cFigure::Point offset = figure->getChildOrigin();
-            LinearCoordMapping childMapping(mapping.scaleX, mapping.offsetX + mapping.scaleX*offset.x, mapping.scaleY, mapping.offsetY + mapping.scaleY*offset.y);
+        for (int i = 0; i < figure->getNumFigures(); i++)
+            drawFigureRec(figure->getFigure(i), transform, zoom);
+    }
+}
 
+void ModuleInspector::refreshFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, double zoom, bool ancestorTransformChanged)
+{
+    uint8 localChanges = figure->getLocalChangeFlags();
+    uint8 subtreeChanges = figure->getSubtreeChangeFlags();
+
+    if (localChanges & cFigure::CHANGE_TRANSFORM)
+        ancestorTransformChanged = true;  // must refresh this figure and its entire subtree
+
+    if (localChanges || subtreeChanges || ancestorTransformChanged)
+    {
+        cFigure::Transform transform(parentTransform);
+        transform.leftMultiply(figure->getTransform());
+
+        uint8 what = localChanges | (ancestorTransformChanged ? cFigure::CHANGE_TRANSFORM : 0);
+        if (what) {
+            FigureRenderer *renderer = getRendererFor(figure);
+            renderer->refresh(figure, what, interp, &canvasCmdInfo, transform, zoom);
+        }
+
+        if (subtreeChanges || ancestorTransformChanged) {
             for (int i = 0; i < figure->getNumFigures(); i++)
-                drawFigureRec(figure->getFigure(i), childMapping);
+                refreshFigureRec(figure->getFigure(i), transform, zoom, ancestorTransformChanged);
         }
     }
-}
-
-void ModuleInspector::refreshFigureGeometryRec(cFigure *figure, LinearCoordMapping& mapping, bool forceGeometryRefresh)
-{
-    if (figure->getLocalChangeFlags() & cFigure::CHANGE_GEOMETRY)
-        forceGeometryRefresh = true;  // must refresh this figure and its entire subtree
-
-    if (forceGeometryRefresh)
-    {
-        FigureRenderer *renderer = getRendererFor(figure);
-        renderer->refreshGeometry(figure, interp, canvas, &mapping);
-    }
-
-    if (forceGeometryRefresh || (figure->getTreeChangeFlags() & cFigure::CHANGE_GEOMETRY))
-    {
-        cFigure::Point offset = figure->getChildOrigin();
-        LinearCoordMapping childMapping(mapping.scaleX, mapping.offsetX + mapping.scaleX*offset.x, mapping.scaleY, mapping.offsetY + mapping.scaleY*offset.y);
-        for (int i = 0; i < figure->getNumFigures(); i++)
-            refreshFigureGeometryRec(figure->getFigure(i), childMapping, forceGeometryRefresh);
-    }
-}
-
-void ModuleInspector::refreshFigureVisualsRec(cFigure *figure)
-{
-    if (figure->getLocalChangeFlags() & cFigure::CHANGE_VISUAL)
-    {
-        FigureRenderer *renderer = getRendererFor(figure);
-        renderer->refreshVisuals(figure, interp, canvas);
-    }
-
-    if (figure->getTreeChangeFlags() & cFigure::CHANGE_VISUAL)
-        for (int i = 0; i < figure->getNumFigures(); i++)
-            refreshFigureVisualsRec(figure->getFigure(i));
 }
 
 void ModuleInspector::refreshSubmodules()

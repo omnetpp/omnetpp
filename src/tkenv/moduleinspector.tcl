@@ -86,7 +86,7 @@ proc createGraphicalModuleViewer {insp} {
     pack $insp.grid -expand yes -fill both -padx 1 -pady 1
 
     set c $insp.c
-    canvas $c -background "#a0e0a0" -relief raised -closeenough 2
+    tkp::canvas $c -background "#a0e0a0" -relief raised -closeenough 2
     addScrollbars $c $insp.grid
 
     label $insp.zoominfo -borderwidth 0 -text "Zoom: 0.00x"
@@ -104,6 +104,7 @@ proc createGraphicalModuleViewer {insp} {
     $c bind conn <1> "ModuleInspector:click $insp"
     $c bind msg <1> "ModuleInspector:click $insp"
     $c bind msgname <1> "ModuleInspector:click $insp"
+    $c bind fig <1> "ModuleInspector:click $insp"
     $c bind qlen <1> "ModuleInspector:qlenClick $insp"
 
     $c bind submod <Double-1> "ModuleInspector:dblClick $insp"

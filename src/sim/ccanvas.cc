@@ -23,7 +23,13 @@
 #include "stringutil.h"
 #include "opp_ctype.h"
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 NAMESPACE_BEGIN
+
+using namespace canvas_stream_ops;
 
 const cFigure::Color cFigure::BLACK(0,0,0);
 const cFigure::Color cFigure::WHITE(255,255,255);
@@ -35,21 +41,418 @@ const cFigure::Color cFigure::YELLOW(255,255,0);
 const cFigure::Color cFigure::CYAN(0,255,255);
 const cFigure::Color cFigure::MAGENTA(255,0,255);
 
+std::map<std::string, cFigure::Color> cFigure::colors;
+
+const cFigure::Color cFigure::GOOD_DARK_COLORS[] = {
+    cFigure::parseColor("darkBlue"),
+    cFigure::parseColor("red2"),
+    cFigure::parseColor("darkGreen"),
+    cFigure::parseColor("orange"),
+    cFigure::parseColor("#008000"),
+    cFigure::parseColor("darkGrey"),
+    cFigure::parseColor("#a00000"),
+    cFigure::parseColor("#008080"),
+    cFigure::parseColor("cyan"),
+    cFigure::parseColor("#808000"),
+    cFigure::parseColor("#8080ff"),
+    cFigure::parseColor("yellow"),
+    cFigure::parseColor("black"),
+    cFigure::parseColor("purple"),
+};
+
+const cFigure::Color cFigure::GOOD_LIGHT_COLORS[] = {
+    cFigure::parseColor("lightCyan"),
+    cFigure::parseColor("lightCoral"),
+    cFigure::parseColor("lightBlue"),
+    cFigure::parseColor("lightGreen"),
+    cFigure::parseColor("lightYellow"),
+    cFigure::parseColor("plum1"),
+    cFigure::parseColor("lightSalmon"),
+    cFigure::parseColor("lightPink"),
+    cFigure::parseColor("lightGrey"),
+    cFigure::parseColor("mediumPurple"),
+};
+
+static const char* PKEY_TYPE = "type";
+static const char* PKEY_VISIBLE = "visible";
+static const char* PKEY_TAGS = "tags";
+static const char* PKEY_TRANSFORM = "transform";
+static const char* PKEY_CHILDZ = "childZ";
+static const char* PKEY_COORDS = "coords";
+static const char* PKEY_ANCHOR = "anchor";
+static const char* PKEY_SIZE = "size";
+static const char* PKEY_INNERSIZE = "innerSize";
+static const char* PKEY_CORNERRADIUS = "cornerRadius";
+static const char* PKEY_STARTANGLE = "startAngle";
+static const char* PKEY_ENDANGLE = "endAngle";
+static const char* PKEY_PATH = "path";
+static const char* PKEY_SMOOTH = "smooth";
+static const char* PKEY_OFFSET = "offset";
+static const char* PKEY_LINECOLOR = "lineColor";
+static const char* PKEY_LINESTYLE = "lineStyle";
+static const char* PKEY_LINEWIDTH = "lineWidth";
+static const char* PKEY_LINEOPACITY = "lineOpacity";
+static const char* PKEY_CAPSTYLE = "capStyle";
+static const char* PKEY_JOINSTYLE = "joinStyle";
+static const char* PKEY_SCALELINEWIDTH = "scaleLineWidth";
+static const char* PKEY_FILLCOLOR = "fillColor";
+static const char* PKEY_FILLOPACITY = "fillOpacity";
+static const char* PKEY_FILLRULE = "fillRule";
+static const char* PKEY_STARTARROWHEAD = "startArrowhead";
+static const char* PKEY_ENDARROWHEAD = "endArrowhead";
+static const char* PKEY_TEXT = "text";
+static const char* PKEY_FONT = "font";
+static const char* PKEY_COLOR = "color";
+static const char* PKEY_OPACITY = "opacity";
+static const char* PKEY_IMAGE = "image";
+static const char* PKEY_RESOLUTION = "resolution";
+static const char* PKEY_TINT = "tint";
+
+
 int cFigure::lastId = 0;
+cStringPool cFigure::stringPool;
 
-
-static std::ostream& operator<<(std::ostream& os, const cFigure::Point& p) {
-    return os << "(" << p.x << ", " << p.y << ")";
+std::string cFigure::Point::str() const
+{
+    std::stringstream os;
+    os << "(" << x << ", " << y << ")";
+    return os.str();
 }
 
-static std::ostream& operator<<(std::ostream& os, const cFigure::Rectangle& r) {
-    return os << "(" << r.x << ", " << r.y << ", w="<< r.width << ", h=" << r.height << ")";
+cFigure::Point& cFigure::Point::parse(const char *s)
+{
+    int parsedChars = 0;
+    int count = sscanf(s, " ( %lf , %lf ) %n", &x, &y, &parsedChars);
+    if (count != 2 || s[parsedChars] != 0)
+        throw cRuntimeError("Invalid Point syntax, (x,y) expected");
+    return *this;
 }
+
+cFigure::Point cFigure::Point::operator + (const cFigure::Point& p) const
+{
+    return Point(x + p.x, y + p.y);
+}
+
+cFigure::Point cFigure::Point::operator - (const cFigure::Point& p) const
+{
+    return Point(x - p.x, y - p.y);
+}
+
+cFigure::Point cFigure::Point::operator * (double s) const
+{
+    return Point(x * s, y * s);
+}
+
+double cFigure::Point::operator * (const Point& p) const
+{
+    return x * p.x + y * p.y;
+}
+
+double cFigure::Point::getLength() const
+{
+    return sqrt(x * x + y * y);
+}
+
+double cFigure::Point::distanceTo(const Point& p) const
+{
+    double dx = p.x - x;
+    double dy = p.y - y;
+    return sqrt(dx * dx + dy * dy);
+}
+
+std::string cFigure::Rectangle::str() const
+{
+    std::stringstream os;
+    os << "(" << x << ", " << y << ", w="<< width << ", h=" << height << ")";
+    return os.str();
+}
+
+cFigure::Rectangle& cFigure::Rectangle::parse(const char *s)
+{
+    int parsedChars = 0;
+    int count = sscanf(s, " ( %lf , %lf , w = %lf , h = %lf ) %n", &x, &y, &width, &height, &parsedChars);
+    if (count != 4 || s[parsedChars] != 0)
+        throw cRuntimeError("Invalid Rectangle syntax, (x,y,w=n,h=m) expected");
+    return *this;
+}
+
+cFigure::Point cFigure::Rectangle::getCenter() const
+{
+    return Point(x + width / 2.0, y + height / 2.0);
+}
+
+cFigure::Point cFigure::Rectangle::getSize() const
+{
+    return Point(width, height);
+}
+
+std::string cFigure::Color::str() const
+{
+    std::stringstream os;
+    os << "(" << (int)red << ", " << (int)green << ", " << (int)blue << ")";
+    return os.str();
+}
+
+cFigure::Color& cFigure::Color::parse(const char *s)
+{
+    try {
+        *this = byName(s);
+    } catch (cRuntimeError& e) {
+        int parsedChars = 0;
+        int r,g,b;
+        int count = sscanf(s, " ( %d , %d , %d ) %n", &r, &g, &b, &parsedChars);
+        if (count != 3 || s[parsedChars] != 0)
+            throw cRuntimeError("Invalid Color syntax, colorname or (R,G,B) expected");
+        red = r; green = g; blue = b;
+    }
+    return *this;
+}
+
+std::string cFigure::Font::str() const
+{
+    std::stringstream os;
+    os << "(" << (typeface.empty()? "<default>" : typeface) << ", ";
+    os << (int)pointSize << "pt";
+    if (style) {
+        os << ",";
+        if (style & cFigure::FONT_BOLD)  os << " bold";
+        if (style & cFigure::FONT_ITALIC)  os << " italic";
+        if (style & cFigure::FONT_UNDERLINE)  os << " underline";
+    }
+    os << ")";
+    return os.str();
+}
+
+cFigure::Font& cFigure::Font::parse(const char *s)
+{
+    throw cRuntimeError("TODO"); //TODO
+}
+
+cFigure::Transform& cFigure::Transform::translate(double dx, double dy)
+{
+    t1 += dx;
+    t2 += dy;
+    return *this;
+}
+
+cFigure::Transform& cFigure::Transform::scale(double sx, double sy)
+{
+    *this = Transform(a*sx, b*sy, c*sx, d*sy, sx*t1, sy*t2);
+    return *this;
+}
+
+cFigure::Transform& cFigure::Transform::scale(double sx, double sy, double cx, double cy)
+{
+    *this = Transform(a*sx, b*sy, c*sx, d*sy, sx*t1-cx*sx+cx, sy*t2-cy*sy+cy);
+    return *this;
+}
+
+cFigure::Transform& cFigure::Transform::rotate(double phi)
+{
+    double cosPhi = cos(phi);
+    double sinPhi = sin(phi);
+    *this = Transform(
+            a*cosPhi - b*sinPhi, a*sinPhi + b*cosPhi,
+            c*cosPhi - d*sinPhi, c*sinPhi + d*cosPhi,
+            t1*cosPhi - t2*sinPhi, t1*sinPhi + t2*cosPhi);
+    return *this;
+}
+
+cFigure::Transform& cFigure::Transform::rotate(double phi, double cx, double cy)
+{
+    double cosPhi = cos(phi);
+    double sinPhi = sin(phi);
+    *this = Transform(
+            a*cosPhi - b*sinPhi, a*sinPhi + b*cosPhi,
+            c*cosPhi - d*sinPhi, c*sinPhi + d*cosPhi,
+            -t2*sinPhi+cy*sinPhi+t1*cosPhi-cx*cosPhi+cx, t1*sinPhi-cx*sinPhi+t2*cosPhi-cy*cosPhi+cy);
+    return *this;
+}
+
+cFigure::Transform& cFigure::Transform::skewx(double phi)
+{
+    double tanPhy = tan(phi);
+    double a_ = b*tanPhy+a;
+    double c_ = d*tanPhy+c;
+    double t1_ = t2*tanPhy+t1;
+    a = a_; c = c_; t1 = t1_;
+    return *this;
+}
+
+cFigure::Transform& cFigure::Transform::skewy(double phi)
+{
+    double tanPhy = tan(phi);
+    double b_ = a*tanPhy+b;
+    double d_ = c*tanPhy+d;
+    double t2_ = t1*tanPhy+t2;
+    b = b_; d = d_; t2 = t2_;
+    return *this;
+}
+
+cFigure::Transform& cFigure::Transform::skewx(double phi, double cy)
+{
+    double tanPhy = tan(phi);
+    double a_ = b*tanPhy+a;
+    double c_ = d*tanPhy+c;
+    double t1_ = t2*tanPhy-cy*tanPhy+t1;
+    a = a_; c = c_; t1 = t1_;
+    return *this;
+}
+
+cFigure::Transform& cFigure::Transform::skewy(double phi, double cx)
+{
+    double tanPhy = tan(phi);
+    double b_ = a*tanPhy+b;
+    double d_ = c*tanPhy+d;
+    double t2_ = t1*tanPhy-cx*tanPhy+t2;
+    b = b_; d = d_; t2 = t2_;
+    return *this;
+}
+
+cFigure::Transform& cFigure::Transform::multiply(const Transform& other)
+{
+    double a_ = a*other.a + b*other.c;
+    double b_ = a*other.b + b*other.d;
+    double c_ = c*other.a + d*other.c;
+    double d_ = c*other.b + d*other.d;
+    double t1_ = t1*other.a + t2*other.c + other.t1;
+    double t2_ = t1*other.b + t2*other.d + other.t2;
+
+    a = a_; b = b_;
+    c = c_; d = d_;
+    t1 = t1_; t2 = t2_;
+
+    return *this;
+}
+
+cFigure::Transform& cFigure::Transform::leftMultiply(const Transform& other)
+{
+    double a_ = other.a*a + other.b*c;
+    double b_ = other.a*b + other.b*d;
+    double c_ = other.c*a + other.d*c;
+    double d_ = other.c*b + other.d*d;
+    double t1_ = other.t1*a + other.t2*c + t1;
+    double t2_ = other.t1*b + other.t2*d + t2;
+
+    a = a_; b = b_;
+    c = c_; d = d_;
+    t1 = t1_; t2 = t2_;
+
+    return *this;
+}
+
+
+cFigure::Point cFigure::Transform::applyTo(const Point& p) const
+{
+    return Point(a*p.x + c*p.y + t1, b*p.x + d*p.y + t2);
+}
+
+std::string cFigure::Transform::str() const
+{
+    std::stringstream os;
+    os << "((" << a << " " << b << ")";
+    os << " (" << c << " " << d << ")";
+    os << " (" << t1 << " " << t2 << "))";
+    return os.str();
+}
+
+cFigure::Transform& cFigure::Transform::parse(const char *s)
+{
+    int parsedChars = 0;
+    int count = sscanf(s, " ( ( %lf %lf ) ( %lf %lf ) ( %lf %lf ) ) %n", &a, &b, &c, &d, &t1, &t2, &parsedChars);
+    if (count != 6 || s[parsedChars] != 0)
+        throw cRuntimeError("Invalid Transform syntax, ((a,b)(c,d)(t1,t2)) expected");
+    return *this;
+}
+
+//----
+
+cFigure::Pixmap::Pixmap() : width(0), height(0), data(NULL)
+{
+}
+
+cFigure::Pixmap::Pixmap(int width, int height) : width(width), height(height), data(NULL)
+{
+    doAlloc(width, height);
+    fill(WHITE, 0);
+}
+
+cFigure::Pixmap::Pixmap(int width, int height, const RGBA& fill_) : width(width), height(height), data(NULL)
+{
+    doAlloc(width, height);
+    fill(fill_);
+}
+
+cFigure::Pixmap::Pixmap(int width, int height, const Color& color, double opacity) : width(width), height(height), data(NULL)
+{
+    doAlloc(width, height);
+    fill(color, opacity);
+}
+
+cFigure::Pixmap::Pixmap(const Pixmap& other) : width(0), height(0), data(NULL)
+{
+    *this = other;
+}
+
+cFigure::Pixmap::~Pixmap()
+{
+    delete[] data;
+}
+
+void cFigure::Pixmap::doAlloc(int w, int h)
+{
+    if (w < 0 || h < 0)
+        throw cRuntimeError("cFigure::Pixmap: width/height cannot be negative");
+
+    delete [] data;
+
+    width = w;
+    height = h;
+    size_t size = width * height;
+    data = new RGBA[size];
+}
+
+void cFigure::Pixmap::fill(const RGBA& rgba)
+{
+    int size = width * height;
+    for (int i = 0; i < size; i++)
+        data[i] = rgba;
+}
+
+void cFigure::Pixmap::fill(const Color& color, double opacity)
+{
+    RGBA rgba(color.red, color.blue, color.green, alpha(opacity));
+    fill(rgba);
+}
+
+cFigure::Pixmap& cFigure::Pixmap::operator=(const Pixmap& other)
+{
+    if (width != other.width || height != other.height)
+        doAlloc(other.width, other.height);
+    memcpy(data, other.data, width*height*sizeof(RGBA));
+    return *this;
+}
+
+cFigure::RGBA& cFigure::Pixmap::pixel(int x, int y)
+{
+    if (x < 0 || x >= width || y < 0 || y >= height)
+        throw cRuntimeError("cFigure::Pixmap: x or y coordinate out of bounds");
+    return data[width*y + x];
+}
+
+std::string cFigure::Pixmap::str() const
+{
+    std::stringstream os;
+    os << "(" << width << " x " << height << ")";
+    return os.str();
+}
+
+//----
 
 cFigure::Point cFigure::parsePoint(cProperty *property, const char *key, int index)
 {
-    double x = opp_atof(property->getValue(key, index));
-    double y = opp_atof(property->getValue(key, index+1));
+    double x = opp_atof(opp_nulltoempty(property->getValue(key, index)));
+    double y = opp_atof(opp_nulltoempty(property->getValue(key, index+1)));
     return Point(x,y);
 }
 
@@ -66,17 +469,17 @@ std::vector<cFigure::Point> cFigure::parsePoints(cProperty *property, const char
 
 void cFigure::parseBounds(cProperty *property, Point& p1, Point& p2)
 {
-    int numCoords = property->getNumValues("coords");
+    int numCoords = property->getNumValues(PKEY_COORDS);
     if (numCoords == 4)
     {
-        p1 = parsePoint(property, "coords", 0);
-        p2 = parsePoint(property, "coords", 2);
+        p1 = parsePoint(property, PKEY_COORDS, 0);
+        p2 = parsePoint(property, PKEY_COORDS, 2);
     }
     else if (numCoords == 2)
     {
-        Point p = parsePoint(property, "coords", 0);
-        Point size = parsePoint(property, "size", 0);
-        const char *anchorStr = property->getValue("anchor");
+        Point p = parsePoint(property, PKEY_COORDS, 0);
+        Point size = parsePoint(property, PKEY_SIZE, 0);
+        const char *anchorStr = property->getValue(PKEY_ANCHOR);
         Anchor anchor = opp_isblank(anchorStr) ? cFigure::ANCHOR_NW : parseAnchor(anchorStr);
         switch (anchor) {
             case cFigure::ANCHOR_CENTER:
@@ -92,6 +495,7 @@ void cFigure::parseBounds(cProperty *property, Point& p1, Point& p2)
                 p2.x = p.x + size.x; p2.y = p.y + size.y/2;
                 break;
             case cFigure::ANCHOR_S:
+            case cFigure::ANCHOR_BASELINE_MIDDLE:
                 p1.x = p.x - size.x/2; p1.y = p.y - size.y;
                 p2.x = p.x + size.x/2; p2.y = p.y;
                 break;
@@ -108,10 +512,12 @@ void cFigure::parseBounds(cProperty *property, Point& p1, Point& p2)
                 p2.x = p.x; p2.y = p.y + size.y;
                 break;
             case cFigure::ANCHOR_SE:
+            case cFigure::ANCHOR_BASELINE_END:
                 p1.x = p.x - size.x; p1.y = p.y - size.y;
                 p2.x = p.x; p2.y = p.y;
                 break;
             case cFigure::ANCHOR_SW:
+            case cFigure::ANCHOR_BASELINE_START:
                 p1.x = p.x; p1.y = p.y - size.y;
                 p2.x = p.x + size.x; p2.y = p.y;
                 break;
@@ -128,6 +534,74 @@ cFigure::Rectangle cFigure::parseBounds(cProperty *property)
     Point p1, p2;
     parseBounds(property, p1, p2);
     return Rectangle(p1.x, p1.y, p2.x-p1.x, p2.y-p1.y);
+}
+
+inline bool contains(const std::string& str, const std::string& substr)
+{
+    return str.find(substr) != std::string::npos;
+}
+
+inline double deg2rad(double deg) {return deg * M_PI / 180;}
+inline double rad2deg(double rad) {return rad / M_PI * 180;}
+
+cFigure::Transform cFigure::parseTransform(cProperty *property, const char *key)
+{
+    Transform transform;
+    for (int index = 0; index < property->getNumValues(key); index++)
+    {
+        const char *step = property->getValue(key, index);
+        std::string operation = opp_trim(opp_substringbefore(step, "(").c_str());
+        std::string rest = opp_trim(opp_substringafter(step, "(").c_str());
+        bool missingRParen = !contains(rest, ")");
+        std::string argsStr = opp_trim(opp_substringbefore(rest, ")").c_str());
+        std::string trailingGarbage = opp_trim(opp_substringafter(rest, ")").c_str());
+        if (operation=="" || missingRParen || trailingGarbage.size()!=0)
+            throw cRuntimeError("Syntax error in '%s', 'operation(arg1,arg2...)' expected", step);
+        std::vector<double> args = cStringTokenizer(argsStr.c_str(), ",").asDoubleVector();
+
+        if (operation == "translate") {
+            if (args.size() == 2)
+                transform.translate(args[0], args[1]);
+            else
+                throw cRuntimeError("Wrong number of args in '%s', translate(dx,dxy) expected", step);
+        }
+        else if (operation == "rotate") {
+            if (args.size() == 1)
+                transform.rotate(deg2rad(args[0]));
+            else if (args.size() == 3)
+                transform.rotate(deg2rad(args[0]), args[1], args[2]);
+            else
+                throw cRuntimeError("Wrong number of args in '%s', rotate(deg) or rotate(deg,cx,cy) expected", step);
+        }
+        else if (operation == "scale") {
+            if (args.size() == 1)
+                transform.scale(args[0]);
+            else if (args.size() == 2)
+                transform.scale(args[0], args[1]);
+            else
+                throw cRuntimeError("Wrong number of args in '%s', scale(s) or scale(sx,sy) expected", step);
+        }
+        else if (operation == "skewx") {
+            if (args.size() == 1)
+                transform.skewx(deg2rad(args[0]));
+            else if (args.size() == 2)
+                transform.skewx(deg2rad(args[0]), args[1]);
+            else
+                throw cRuntimeError("Wrong number of args in '%s', skewx(deg) or skewx(deg,cy) expected", step);
+        }
+        else if (operation == "skewy") {
+            if (args.size() == 1)
+                transform.skewy(deg2rad(args[0]));
+            else if (args.size() == 2)
+                transform.skewy(deg2rad(args[0]), args[1]);
+            else
+                throw cRuntimeError("Wrong number of args in '%s', skewy(deg) or skewy(deg,cx) expected", step);
+        }
+        else {
+            throw cRuntimeError("Invalid operation %s, translate, rotate, scale, skewx or skewy expected: '%s'", operation.c_str(), step);
+        }
+    }
+    return transform;
 }
 
 cFigure::Font cFigure::parseFont(cProperty *property, const char *key)
@@ -193,6 +667,13 @@ cFigure::JoinStyle cFigure::parseJoinStyle(const char *s)
     throw cRuntimeError("invalid join style '%s'", s);
 }
 
+cFigure::FillRule cFigure::parseFillRule(const char *s)
+{
+    if (!strcmp(s,"evenodd")) return FILL_EVENODD;
+    if (!strcmp(s,"nonzero")) return FILL_NONZERO;
+    throw cRuntimeError("invalid fill rule '%s'", s);
+}
+
 cFigure::ArrowHead cFigure::parseArrowHead(const char *s)
 {
     if (!strcmp(s,"none")) return ARROW_NONE;
@@ -214,29 +695,73 @@ cFigure::Anchor cFigure::parseAnchor(const char *s)
     if (!strcmp(s,"ne")) return ANCHOR_NE;
     if (!strcmp(s,"se")) return ANCHOR_SE;
     if (!strcmp(s,"sw")) return ANCHOR_SW;
+    if (!strcmp(s,"start")) return ANCHOR_BASELINE_START;
+    if (!strcmp(s,"middle")) return ANCHOR_BASELINE_MIDDLE;
+    if (!strcmp(s,"end")) return ANCHOR_BASELINE_END;
     throw cRuntimeError("invalid anchor '%s'", s);
 }
 
-cFigure::Alignment cFigure::parseAlignment(const char *s)
+cFigure::~cFigure()
 {
-    if (!strcmp(s,"left")) return ALIGN_LEFT;
-    if (!strcmp(s,"right")) return ALIGN_RIGHT;
-    if (!strcmp(s,"center")) return ALIGN_CENTER;
-    throw cRuntimeError("invalid text alignment '%s'", s);
+    for (int i = 0; i < (int)children.size(); i++)
+        dropAndDelete(children[i]);
 }
 
 void cFigure::parse(cProperty *property)
 {
+    validatePropertyKeys(property);
+
     const char *s;
-    if ((s = property->getValue("visible")) != NULL)
+    if ((s = property->getValue(PKEY_VISIBLE)) != NULL)
         setVisible(parseBool(s));
-    int numTags = property->getNumValues("tags");
+    int numTags = property->getNumValues(PKEY_TAGS);
     if (numTags > 0) {
         std::string tags;
         for (int i = 0; i < numTags; i++)
-            tags += std::string(" ") + property->getValue("tags", i);
+            tags += std::string(" ") + property->getValue(PKEY_TAGS, i);
         setTags(tags.c_str());
     }
+    if (property->getNumValues(PKEY_TRANSFORM) != 0)
+        setTransform(parseTransform(property, PKEY_TRANSFORM));
+}
+
+void cFigure::validatePropertyKeys(cProperty *property) const
+{
+    const std::vector<const char*>& keys = property->getKeys();
+    for (int i = 0; i < (int)keys.size(); i++) {
+        const char *key = keys[i];
+        if (!isAllowedPropertyKey(key)) {
+            std::string allowedList = opp_join(getAllowedPropertyKeys(), ", ");
+            throw cRuntimeError(this, "Unknown property key '%s'; supported keys are: %s, and any string starting with 'x-'",
+                    key, allowedList.c_str());
+        }
+    }
+}
+
+bool cFigure::isAllowedPropertyKey(const char *key) const
+{
+    const char **allowedKeys = getAllowedPropertyKeys();
+    for (const char **allowedKeyPtr = allowedKeys; *allowedKeyPtr; allowedKeyPtr++)
+        if (strcmp(key, *allowedKeyPtr) == 0)
+            return true;
+    if (key[0] == 'x' && key[1] == '-')  // "x-*" keys can be added by the user
+        return true;
+    return false;
+}
+
+const char **cFigure::getAllowedPropertyKeys() const
+{
+    static const char *keys[] = { PKEY_TYPE, PKEY_VISIBLE, PKEY_TAGS, PKEY_CHILDZ, PKEY_TRANSFORM, NULL};
+    return keys;
+}
+
+void cFigure::concatArrays(const char **dest, const char **first, const char **second)
+{
+    while (*first)
+        *dest++ = *first++;
+    while (*second)
+        *dest++ = *second++;
+    *dest = NULL;
 }
 
 cFigure *cFigure::dupTree()
@@ -251,6 +776,7 @@ void cFigure::copy(const cFigure& other)
 {
     setVisible(other.isVisible());
     setTags(other.getTags());
+    setTransform(other.getTransform());
 }
 
 cFigure& cFigure::operator=(const cFigure& other)
@@ -272,6 +798,15 @@ std::string cFigure::info() const
     return "";
 }
 
+void cFigure::setTags(const char *tags)
+{
+    const char *oldTags = this->tags;
+    this->tags = stringPool.get(tags);
+    stringPool.release(oldTags);
+    refreshTagBits();
+    fire(CHANGE_TAGS);
+}
+
 void cFigure::addFigure(cFigure *figure)
 {
     if (!figure)
@@ -279,7 +814,8 @@ void cFigure::addFigure(cFigure *figure)
     take(figure);
     children.push_back(figure);
     refreshTagBits();
-    doStructuralChange();
+    figure->clearChangeFlags();
+    fireStructuralChange();
 }
 
 void cFigure::addFigure(cFigure *figure, int pos)
@@ -291,7 +827,8 @@ void cFigure::addFigure(cFigure *figure, int pos)
     take(figure);
     children.insert(children.begin()+pos, figure);
     refreshTagBits();
-    doStructuralChange();
+    figure->clearChangeFlags();
+    fireStructuralChange();
 }
 
 void cFigure::addFigureAbove(cFigure *figure, cFigure *referenceFigure)
@@ -331,7 +868,7 @@ void cFigure::insertChild(cFigure *figure, std::map<cFigure*,double>& orderMap)
     std::vector<cFigure*>::iterator it = std::upper_bound(children.begin(), children.end(), figure, LessZ(orderMap));
     children.insert(it, figure);
     refreshTagBits();
-    doStructuralChange();
+    fireStructuralChange();
 }
 
 cFigure *cFigure::removeFigure(int pos)
@@ -341,7 +878,7 @@ cFigure *cFigure::removeFigure(int pos)
     cFigure *figure = children[pos];
     children.erase(children.begin()+pos);
     drop(figure);
-    doStructuralChange();
+    fireStructuralChange();
     return figure;
 }
 
@@ -460,21 +997,21 @@ void cFigure::refreshTagBits()
     }
 }
 
-void cFigure::doChange(int flags)
+void cFigure::fire(uint8 flags)
 {
-    if ((localChange & flags) == 0) {  // not yet set
-        localChange |= flags;
+    if ((localChanges & flags) == 0) {  // not yet set
+        localChanges |= flags;
         for (cFigure *figure = getParentFigure(); figure != NULL; figure = figure->getParentFigure())
-            figure->treeChange |= flags;
+            figure->subtreeChanges |= flags;
     }
 }
 
 void cFigure::clearChangeFlags()
 {
-    if (treeChange)
+    if (subtreeChanges)
         for (int i = 0; i < (int)children.size(); i++)
             children[i]->clearChangeFlags();
-    localChange = treeChange = 0;
+    localChanges = subtreeChanges = 0;
 }
 
 void cFigure::raiseAbove(cFigure *figure)
@@ -489,7 +1026,7 @@ void cFigure::raiseAbove(cFigure *figure)
     if (myPos < refPos) {
         parent->children.erase(parent->children.begin() + myPos); // note: reference figure will be shifted down
         parent->children.insert(parent->children.begin() + refPos, this);
-        doStructuralChange();
+        fireStructuralChange();
     }
 }
 
@@ -505,7 +1042,7 @@ void cFigure::lowerBelow(cFigure *figure)
     if (myPos > refPos) {
         parent->children.erase(parent->children.begin() + myPos);
         parent->children.insert(parent->children.begin() + refPos, this);
-        doStructuralChange();
+        fireStructuralChange();
     }
 }
 
@@ -518,7 +1055,7 @@ void cFigure::raiseToTop()
     if (myPos != (int)parent->children.size()-1) {
         parent->children.erase(parent->children.begin() + myPos);
         parent->children.push_back(this);
-        doStructuralChange();
+        fireStructuralChange();
     }
 }
 
@@ -531,16 +1068,11 @@ void cFigure::lowerToBottom()
     if (myPos != 0) {
         parent->children.erase(parent->children.begin() + myPos);
         parent->children.insert(parent->children.begin(), this);
-        doStructuralChange();
+        fireStructuralChange();
     }
 }
 
 //----
-
-void cGroupFigure::copy(const cGroupFigure& other)
-{
-    setLocation(other.getLocation());
-}
 
 cGroupFigure& cGroupFigure::operator=(const cGroupFigure& other)
 {
@@ -555,13 +1087,6 @@ std::string cGroupFigure::info() const
     return "";
 }
 
-void cGroupFigure::translate(double x, double y)
-{
-    location.x += x;
-    location.y += y;
-    doGeometryChange();
-}
-
 //----
 
 void cAbstractLineFigure::copy(const cAbstractLineFigure& other)
@@ -569,6 +1094,7 @@ void cAbstractLineFigure::copy(const cAbstractLineFigure& other)
     setLineColor(other.getLineColor());
     setLineStyle(other.getLineStyle());
     setLineWidth(other.getLineWidth());
+    setLineOpacity(other.getLineOpacity());
     setCapStyle(other.getCapStyle());
     setStartArrowHead(other.getStartArrowHead());
     setEndArrowHead(other.getEndArrowHead());
@@ -584,25 +1110,39 @@ cAbstractLineFigure& cAbstractLineFigure::operator=(const cAbstractLineFigure& o
 
 std::string cAbstractLineFigure::info() const
 {
-    return ""; //TODO
+    return "";
 }
 
 void cAbstractLineFigure::parse(cProperty *property)
 {
     cFigure::parse(property);
     const char *s;
-    if ((s = property->getValue("lineColor")) != NULL)
+    if ((s = property->getValue(PKEY_LINECOLOR)) != NULL)
         setLineColor(parseColor(s));
-    if ((s = property->getValue("lineStyle")) != NULL)
+    if ((s = property->getValue(PKEY_LINESTYLE)) != NULL)
         setLineStyle(parseLineStyle(s));
-    if ((s = property->getValue("lineWidth")) != NULL)
+    if ((s = property->getValue(PKEY_LINEWIDTH)) != NULL)
         setLineWidth(opp_atof(s));
-    if ((s = property->getValue("capStyle", 0)) != NULL)
+    if ((s = property->getValue(PKEY_LINEOPACITY)) != NULL)
+        setLineOpacity(opp_atof(s));
+    if ((s = property->getValue(PKEY_CAPSTYLE, 0)) != NULL)
         setCapStyle(parseCapStyle(s));
-    if ((s = property->getValue("startArrowhead")) != NULL)
+    if ((s = property->getValue(PKEY_STARTARROWHEAD)) != NULL)
         setStartArrowHead(parseArrowHead(s));
-    if ((s = property->getValue("endArrowhead")) != NULL)
+    if ((s = property->getValue(PKEY_ENDARROWHEAD)) != NULL)
         setEndArrowHead(parseArrowHead(s));
+    if ((s = property->getValue(PKEY_SCALELINEWIDTH)) != NULL)
+        setScaleLineWidth(parseBool(s));
+}
+
+const char **cAbstractLineFigure::getAllowedPropertyKeys() const
+{
+    static const char *keys[32];
+    if (!keys[0]) {
+        const char *localKeys[] = { PKEY_LINECOLOR, PKEY_LINESTYLE, PKEY_LINEWIDTH, PKEY_LINEOPACITY, PKEY_CAPSTYLE, PKEY_STARTARROWHEAD, PKEY_ENDARROWHEAD, PKEY_SCALELINEWIDTH, NULL};
+        concatArrays(keys, cFigure::getAllowedPropertyKeys(), localKeys);
+    }
+    return keys;
 }
 
 //----
@@ -632,17 +1172,27 @@ void cLineFigure::parse(cProperty *property)
 {
     cAbstractLineFigure::parse(property);
 
-    setStart(parsePoint(property, "coords", 0));
-    setEnd(parsePoint(property, "coords", 2));
+    setStart(parsePoint(property, PKEY_COORDS, 0));
+    setEnd(parsePoint(property, PKEY_COORDS, 2));
 }
 
-void cLineFigure::translate(double x, double y)
+const char **cLineFigure::getAllowedPropertyKeys() const
+{
+    static const char *keys[32];
+    if (!keys[0]) {
+        const char *localKeys[] = { PKEY_COORDS, NULL};
+        concatArrays(keys, cAbstractLineFigure::getAllowedPropertyKeys(), localKeys);
+    }
+    return keys;
+}
+
+void cLineFigure::move(double x, double y)
 {
     start.x += x;
     start.y += y;
     end.x += x;
     end.y += y;
-    doGeometryChange();
+    fireGeometryChange();
 }
 
 //----
@@ -664,7 +1214,9 @@ cArcFigure& cArcFigure::operator=(const cArcFigure& other)
 
 std::string cArcFigure::info() const
 {
-    return ""; //TODO
+    std::stringstream os;
+    os << getBounds() << ", " << floor(rad2deg(getStartAngle())) << " to " << floor(rad2deg(getEndAngle())) << " degrees";
+    return os.str();
 }
 
 void cArcFigure::parse(cProperty *property)
@@ -674,17 +1226,27 @@ void cArcFigure::parse(cProperty *property)
     setBounds(parseBounds(property));
 
     const char *s;
-    if ((s = property->getValue("startAngle")) != NULL)
-        setStartAngle(opp_atof(s));
-    if ((s = property->getValue("endAngle")) != NULL)
-        setEndAngle(opp_atof(s));
+    if ((s = property->getValue(PKEY_STARTANGLE)) != NULL)
+        setStartAngle(deg2rad(opp_atof(s)));
+    if ((s = property->getValue(PKEY_ENDANGLE)) != NULL)
+        setEndAngle(deg2rad(opp_atof(s)));
 }
 
-void cArcFigure::translate(double x, double y)
+const char **cArcFigure::getAllowedPropertyKeys() const
+{
+    static const char *keys[32];
+    if (!keys[0]) {
+        const char *localKeys[] = { PKEY_COORDS, PKEY_SIZE, PKEY_ANCHOR, PKEY_STARTANGLE, PKEY_ENDANGLE, NULL};
+        concatArrays(keys, cAbstractLineFigure::getAllowedPropertyKeys(), localKeys);
+    }
+    return keys;
+}
+
+void cArcFigure::move(double x, double y)
 {
     bounds.x += x;
     bounds.y += y;
-    doGeometryChange();
+    fireGeometryChange();
 }
 
 //----
@@ -694,6 +1256,18 @@ void cPolylineFigure::copy(const cPolylineFigure& other)
     setPoints(other.getPoints());
     setSmooth(other.getSmooth());
     setJoinStyle(other.getJoinStyle());
+}
+
+void cPolylineFigure::checkIndex(int i) const
+{
+    if (i < 0 || i >= (int)points.size())
+        throw cRuntimeError(this, "Index %d is out of range", i);
+}
+
+void cPolylineFigure::checkInsIndex(int i) const
+{
+    if (i < 0 || i > (int)points.size())
+        throw cRuntimeError(this, "Insertion index %d is out of range", i);
 }
 
 cPolylineFigure& cPolylineFigure::operator=(const cPolylineFigure& other)
@@ -717,20 +1291,30 @@ void cPolylineFigure::parse(cProperty *property)
     cAbstractLineFigure::parse(property);
 
     const char *s;
-    setPoints(parsePoints(property, "coords"));
-    if ((s = property->getValue("smooth", 0)) != NULL)
+    setPoints(parsePoints(property, PKEY_COORDS));
+    if ((s = property->getValue(PKEY_SMOOTH, 0)) != NULL)
         setSmooth(parseBool(s));
-    if ((s = property->getValue("joinStyle", 0)) != NULL)
+    if ((s = property->getValue(PKEY_JOINSTYLE, 0)) != NULL)
         setJoinStyle(parseJoinStyle(s));
 }
 
-void cPolylineFigure::translate(double x, double y)
+const char **cPolylineFigure::getAllowedPropertyKeys() const
+{
+    static const char *keys[32];
+    if (!keys[0]) {
+        const char *localKeys[] = { PKEY_COORDS, PKEY_SMOOTH, PKEY_JOINSTYLE, NULL};
+        concatArrays(keys, cAbstractLineFigure::getAllowedPropertyKeys(), localKeys);
+    }
+    return keys;
+}
+
+void cPolylineFigure::move(double x, double y)
 {
     for (int i = 0; i < (int)points.size(); i++) {
         points[i].x += x;
         points[i].y += y;
     }
-    doGeometryChange();
+    fireGeometryChange();
 }
 
 //----
@@ -743,6 +1327,8 @@ void cAbstractShapeFigure::copy(const cAbstractShapeFigure& other)
     setFillColor(other.getFillColor());
     setLineStyle(other.getLineStyle());
     setLineWidth(other.getLineWidth());
+    setLineOpacity(other.getLineOpacity());
+    setFillOpacity(other.getFillOpacity());
 }
 
 cAbstractShapeFigure& cAbstractShapeFigure::operator=(const cAbstractShapeFigure& other)
@@ -755,7 +1341,7 @@ cAbstractShapeFigure& cAbstractShapeFigure::operator=(const cAbstractShapeFigure
 
 std::string cAbstractShapeFigure::info() const
 {
-    return ""; //TODO
+    return "";
 }
 
 void cAbstractShapeFigure::parse(cProperty *property)
@@ -763,16 +1349,36 @@ void cAbstractShapeFigure::parse(cProperty *property)
     cFigure::parse(property);
 
     const char *s;
-    if ((s = property->getValue("lineColor")) != NULL)
-        setLineColor(parseColor(s));
-    if ((s = property->getValue("fillColor")) != NULL) {
+    if ((s = property->getValue(PKEY_LINECOLOR)) != NULL) {
+        if (opp_isblank(s))
+            setOutlined(false);
+        else
+            setLineColor(parseColor(s));
+    }
+    if ((s = property->getValue(PKEY_FILLCOLOR)) != NULL) {
         setFillColor(parseColor(s));
         setFilled(true);
     }
-    if ((s = property->getValue("lineStyle")) != NULL)
+    if ((s = property->getValue(PKEY_LINESTYLE)) != NULL)
         setLineStyle(parseLineStyle(s));
-    if ((s = property->getValue("lineWidth")) != NULL)
+    if ((s = property->getValue(PKEY_LINEWIDTH)) != NULL)
         setLineWidth(opp_atof(s));
+    if ((s = property->getValue(PKEY_LINEOPACITY)) != NULL)
+            setLineOpacity(opp_atof(s));
+    if ((s = property->getValue(PKEY_FILLOPACITY)) != NULL)
+            setFillOpacity(opp_atof(s));
+    if ((s = property->getValue(PKEY_SCALELINEWIDTH)) != NULL)
+        setScaleLineWidth(parseBool(s));
+}
+
+const char **cAbstractShapeFigure::getAllowedPropertyKeys() const
+{
+    static const char *keys[32];
+    if (!keys[0]) {
+        const char *localKeys[] = { PKEY_LINECOLOR, PKEY_FILLCOLOR, PKEY_LINESTYLE, PKEY_LINEWIDTH, PKEY_LINEOPACITY, PKEY_FILLOPACITY, PKEY_SCALELINEWIDTH, NULL};
+        concatArrays(keys, cFigure::getAllowedPropertyKeys(), localKeys);
+    }
+    return keys;
 }
 
 //----
@@ -780,6 +1386,8 @@ void cAbstractShapeFigure::parse(cProperty *property)
 void cRectangleFigure::copy(const cRectangleFigure& other)
 {
     setBounds(other.getBounds());
+    setCornerRx(other.getCornerRx());
+    setCornerRy(other.getCornerRy());
 }
 
 cRectangleFigure& cRectangleFigure::operator=(const cRectangleFigure& other)
@@ -802,13 +1410,30 @@ void cRectangleFigure::parse(cProperty *property)
     cAbstractShapeFigure::parse(property);
 
     setBounds(parseBounds(property));
+    const char *s;
+    if ((s = property->getValue(PKEY_CORNERRADIUS, 0)) != NULL) {
+        setCornerRx(opp_atof(s));
+        setCornerRy(opp_atof(s));  // as default
+    }
+    if ((s = property->getValue(PKEY_CORNERRADIUS, 1)) != NULL)
+        setCornerRy(opp_atof(s));
 }
 
-void cRectangleFigure::translate(double x, double y)
+const char **cRectangleFigure::getAllowedPropertyKeys() const
+{
+    static const char *keys[32];
+    if (!keys[0]) {
+        const char *localKeys[] = { PKEY_COORDS, PKEY_SIZE, PKEY_ANCHOR, PKEY_CORNERRADIUS, NULL};
+        concatArrays(keys, cAbstractShapeFigure::getAllowedPropertyKeys(), localKeys);
+    }
+    return keys;
+}
+
+void cRectangleFigure::move(double x, double y)
 {
     bounds.x += x;
     bounds.y += y;
-    doGeometryChange();
+    fireGeometryChange();
 }
 
 //----
@@ -840,11 +1465,76 @@ void cOvalFigure::parse(cProperty *property)
     setBounds(parseBounds(property));
 }
 
-void cOvalFigure::translate(double x, double y)
+const char **cOvalFigure::getAllowedPropertyKeys() const
+{
+    static const char *keys[32];
+    if (!keys[0]) {
+        const char *localKeys[] = { PKEY_COORDS, PKEY_SIZE, PKEY_ANCHOR, NULL};
+        concatArrays(keys, cAbstractShapeFigure::getAllowedPropertyKeys(), localKeys);
+    }
+    return keys;
+}
+
+void cOvalFigure::move(double x, double y)
 {
     bounds.x += x;
     bounds.y += y;
-    doGeometryChange();
+    fireGeometryChange();
+}
+
+//----
+
+void cRingFigure::copy(const cRingFigure& other)
+{
+    setBounds(other.getBounds());
+    setInnerRx(other.getInnerRx());
+    setInnerRy(other.getInnerRy());
+}
+
+cRingFigure& cRingFigure::operator=(const cRingFigure& other)
+{
+    if (this == &other) return *this;
+    cAbstractShapeFigure::operator=(other);
+    copy(other);
+    return *this;
+}
+
+std::string cRingFigure::info() const
+{
+    std::stringstream os;
+    os << getBounds();
+    return os.str();
+}
+
+void cRingFigure::parse(cProperty *property)
+{
+    cAbstractShapeFigure::parse(property);
+
+    setBounds(parseBounds(property));
+    const char *s;
+    if ((s = property->getValue(PKEY_INNERSIZE, 0)) != NULL) {
+        setInnerRx(opp_atof(s) / 2);
+        setInnerRy(opp_atof(s) / 2);  // as default
+    }
+    if ((s = property->getValue(PKEY_INNERSIZE, 1)) != NULL)
+        setInnerRy(opp_atof(s) / 2);
+}
+
+const char **cRingFigure::getAllowedPropertyKeys() const
+{
+    static const char *keys[32];
+    if (!keys[0]) {
+        const char *localKeys[] = { PKEY_COORDS, PKEY_SIZE, PKEY_ANCHOR, PKEY_INNERSIZE, NULL};
+        concatArrays(keys, cAbstractShapeFigure::getAllowedPropertyKeys(), localKeys);
+    }
+    return keys;
+}
+
+void cRingFigure::move(double x, double y)
+{
+    bounds.x += x;
+    bounds.y += y;
+    fireGeometryChange();
 }
 
 //----
@@ -878,17 +1568,27 @@ void cPieSliceFigure::parse(cProperty *property)
     setBounds(parseBounds(property));
 
     const char *s;
-    if ((s = property->getValue("startAngle")) != NULL)
-        setStartAngle(opp_atof(s));
-    if ((s = property->getValue("endAngle")) != NULL)
-        setEndAngle(opp_atof(s));
+    if ((s = property->getValue(PKEY_STARTANGLE)) != NULL)
+        setStartAngle(deg2rad(opp_atof(s)));
+    if ((s = property->getValue(PKEY_ENDANGLE)) != NULL)
+        setEndAngle(deg2rad(opp_atof(s)));
 }
 
-void cPieSliceFigure::translate(double x, double y)
+const char **cPieSliceFigure::getAllowedPropertyKeys() const
+{
+    static const char *keys[32];
+    if (!keys[0]) {
+        const char *localKeys[] = { PKEY_COORDS, PKEY_SIZE, PKEY_ANCHOR, PKEY_STARTANGLE, PKEY_ENDANGLE, NULL};
+        concatArrays(keys, cAbstractShapeFigure::getAllowedPropertyKeys(), localKeys);
+    }
+    return keys;
+}
+
+void cPieSliceFigure::move(double x, double y)
 {
     bounds.x += x;
     bounds.y += y;
-    doGeometryChange();
+    fireGeometryChange();
 }
 
 //----
@@ -898,6 +1598,18 @@ void cPolygonFigure::copy(const cPolygonFigure& other)
     setPoints(other.getPoints());
     setSmooth(other.getSmooth());
     setJoinStyle(other.getJoinStyle());
+}
+
+void cPolygonFigure::checkIndex(int i) const
+{
+    if (i < 0 || i >= (int)points.size())
+        throw cRuntimeError(this, "Index %d is out of range", i);
+}
+
+void cPolygonFigure::checkInsIndex(int i) const
+{
+    if (i < 0 || i > (int)points.size())
+        throw cRuntimeError(this, "Insertion index %d is out of range", i);
 }
 
 cPolygonFigure& cPolygonFigure::operator=(const cPolygonFigure& other)
@@ -921,35 +1633,244 @@ void cPolygonFigure::parse(cProperty *property)
     cAbstractShapeFigure::parse(property);
 
     const char *s;
-    setPoints(parsePoints(property, "coords"));
-    if ((s = property->getValue("smooth", 0)) != NULL)
+    setPoints(parsePoints(property, PKEY_COORDS));
+    if ((s = property->getValue(PKEY_SMOOTH, 0)) != NULL)
         setSmooth(parseBool(s));
-    if ((s = property->getValue("joinStyle", 0)) != NULL)
+    if ((s = property->getValue(PKEY_JOINSTYLE, 0)) != NULL)
         setJoinStyle(parseJoinStyle(s));
+    if ((s = property->getValue(PKEY_FILLRULE, 0)) != NULL)
+        setFillRule(parseFillRule(s));
 }
 
-void cPolygonFigure::translate(double x, double y)
+const char **cPolygonFigure::getAllowedPropertyKeys() const
+{
+    static const char *keys[32];
+    if (!keys[0]) {
+        const char *localKeys[] = { PKEY_COORDS, PKEY_SMOOTH, PKEY_JOINSTYLE, PKEY_FILLRULE, NULL };
+        concatArrays(keys, cAbstractShapeFigure::getAllowedPropertyKeys(), localKeys);
+    }
+    return keys;
+}
+
+void cPolygonFigure::move(double x, double y)
 {
     for (int i = 0; i < (int)points.size(); i++) {
         points[i].x += x;
         points[i].y += y;
     }
-    doGeometryChange();
+    fireGeometryChange();
 }
 
 //----
 
-void cTextFigure::copy(const cTextFigure& other)
+void cPathFigure::copy(const cPathFigure& other)
+{
+    setPath(other.getPath());
+    setJoinStyle(other.getJoinStyle());
+    setCapStyle(other.getCapStyle());
+}
+
+cPathFigure& cPathFigure::operator=(const cPathFigure& other)
+{
+    if (this == &other) return *this;
+    cAbstractShapeFigure::operator=(other);
+    copy(other);
+    return *this;
+}
+
+std::string cPathFigure::info() const
+{
+    return path;
+}
+
+void cPathFigure::parse(cProperty *property)
+{
+    cAbstractShapeFigure::parse(property);
+
+    const char *s;
+    if ((s = property->getValue(PKEY_PATH, 0)) != NULL)
+        setPath(s);
+    if ((s = property->getValue(PKEY_OFFSET, 0)) != NULL)
+        setOffset(parsePoint(property, s, 0));
+    if ((s = property->getValue(PKEY_JOINSTYLE, 0)) != NULL)
+        setJoinStyle(parseJoinStyle(s));
+    if ((s = property->getValue(PKEY_CAPSTYLE, 0)) != NULL)
+        setCapStyle(parseCapStyle(s));
+    if ((s = property->getValue(PKEY_FILLRULE, 0)) != NULL)
+        setFillRule(parseFillRule(s));
+}
+
+const char **cPathFigure::getAllowedPropertyKeys() const
+{
+    static const char *keys[32];
+    if (!keys[0]) {
+        const char *localKeys[] = { PKEY_PATH, PKEY_OFFSET, PKEY_JOINSTYLE, PKEY_CAPSTYLE, PKEY_FILLRULE, NULL};
+        concatArrays(keys, cAbstractShapeFigure::getAllowedPropertyKeys(), localKeys);
+    }
+    return keys;
+}
+
+void cPathFigure::setPath(const char *path)
+{
+    this->path = path;
+    //TODO validate; add spaces around command letters if missing
+    fireGeometryChange();
+}
+
+void cPathFigure::appendPath(const std::string& s)
+{
+    path += s;
+    fireGeometryChange();
+}
+
+void cPathFigure::clearPath()
+{
+    path = "";
+    fireGeometryChange();
+}
+
+void cPathFigure::addMoveTo(double x, double y)
+{
+    std::stringstream os;
+    os << " M " << x << " " << y;
+    appendPath(os.str());
+}
+
+void cPathFigure::addMoveRel(double dx, double dy)
+{
+    std::stringstream os;
+    os << " m " << dx << " " << dy;
+    appendPath(os.str());
+}
+
+void cPathFigure::addLineTo(double x, double y)
+{
+    std::stringstream os;
+    os << " L " << x << " " << y;
+    appendPath(os.str());
+}
+
+void cPathFigure::addHorizontalLineTo(double x)
+{
+    std::stringstream os;
+    os << " H " << x;
+    appendPath(os.str());
+}
+
+void cPathFigure::addVerticalLineTo(double y)
+{
+    std::stringstream os;
+    os << " V " << y;
+    appendPath(os.str());
+}
+
+void cPathFigure::addLineRel(double dx, double dy)
+{
+    std::stringstream os;
+    if (dy == 0)
+        os << " h " << dx;
+    else if (dx == 0)
+        os << " v " << dy;
+    else
+        os << " l " << dx << " " << dy;
+    appendPath(os.str());
+}
+
+void cPathFigure::addArcTo(double rx, double ry, double phi, bool largeArc, bool sweep, double x, double y)
+{
+    std::stringstream os;
+    os << " A " << rx << " " << ry << " " << phi << " " << largeArc << " " << sweep << " " << x << " " << y;
+    appendPath(os.str());
+}
+
+void cPathFigure::addArcRel(double rx, double ry, double phi, bool largeArc, bool sweep, double dx, double dy)
+{
+    std::stringstream os;
+    os << " a " << rx << " " << ry << " " << phi << " " << largeArc << " " << sweep << " " << dx << " " << dy;
+    appendPath(os.str());
+}
+
+void cPathFigure::addCurveTo(double x1, double y1, double x, double y)
+{
+    std::stringstream os;
+    os << " Q " << x1 << " " << y1 << " " << x << " " << y;
+    appendPath(os.str());
+}
+
+void cPathFigure::addCurveRel(double dx1, double dy1, double dx, double dy)
+{
+    std::stringstream os;
+    os << " q " << dx1 << " " << dy1 << " " << dx << " " << dy;
+    appendPath(os.str());
+}
+
+void cPathFigure::addSmoothCurveTo(double x, double y)
+{
+    std::stringstream os;
+    os << " T " << x << " " << y;
+    appendPath(os.str());
+}
+
+void cPathFigure::addSmoothCurveRel(double dx, double dy)
+{
+    std::stringstream os;
+    os << " t " << dx << " " << dy;
+    appendPath(os.str());
+}
+
+void cPathFigure::addCubicBezierCurveTo(double x1, double y1, double x2, double y2, double x, double y)
+{
+    std::stringstream os;
+    os << " C " << x1 << " " << y1 << " " << x2 << " " << y2 << " " << x << " " << y;
+    appendPath(os.str());
+}
+
+void cPathFigure::addCubicBezierCurveRel(double dx1, double dy1, double dx2, double dy2, double dx, double dy)
+{
+    std::stringstream os;
+    os << " c " << dx1 << " " << dy1 << " " << dx2 << " " << dy2 << " " << dx << " " << dy;
+    appendPath(os.str());
+}
+
+void cPathFigure::addSmoothCubicBezierCurveTo(double x2, double y2, double x, double y)
+{
+    std::stringstream os;
+    os << " S " << x2 << " " << y2 << " " << x << " " << y;
+    appendPath(os.str());
+}
+
+void cPathFigure::addSmoothCubicBezierCurveRel(double dx2, double dy2, double dx, double dy)
+{
+    std::stringstream os;
+    os << " s " << dx2 << " " << dy2 << " " << dx << " " << dy;
+    appendPath(os.str());
+}
+
+void cPathFigure::addClosePath()
+{
+    appendPath("Z");
+}
+
+void cPathFigure::move(double x, double y)
+{
+    offset.x += x;
+    offset.y += y;
+    fireGeometryChange();
+}
+
+//----
+
+void cAbstractTextFigure::copy(const cAbstractTextFigure& other)
 {
     setLocation(other.getLocation());
     setColor(other.getColor());
+    setOpacity(other.getOpacity());
     setFont(other.getFont());
     setText(other.getText());
     setAnchor(other.getAnchor());
-    setAlignment(other.getAlignment());
 }
 
-cTextFigure& cTextFigure::operator=(const cTextFigure& other)
+cAbstractTextFigure& cAbstractTextFigure::operator=(const cAbstractTextFigure& other)
 {
     if (this == &other) return *this;
     cFigure::operator=(other);
@@ -957,55 +1878,127 @@ cTextFigure& cTextFigure::operator=(const cTextFigure& other)
     return *this;
 }
 
-std::string cTextFigure::info() const
+std::string cAbstractTextFigure::info() const
 {
     std::stringstream os;
     os << "\"" << getText() << "\" at " << getLocation();
     return os.str();
 }
 
-void cTextFigure::parse(cProperty *property)
+void cAbstractTextFigure::parse(cProperty *property)
 {
     cFigure::parse(property);
 
     const char *s;
-    setLocation(parsePoint(property, "coords", 0));
-    setText(opp_nulltoempty(property->getValue("text")));
-    if ((s = property->getValue("color")) != NULL)
+    setLocation(parsePoint(property, PKEY_COORDS, 0));
+    setText(opp_nulltoempty(property->getValue(PKEY_TEXT)));
+    if ((s = property->getValue(PKEY_COLOR)) != NULL)
         setColor(parseColor(s));
-    if (property->containsKey("font"))
-        setFont(parseFont(property, "font"));
-    if ((s = property->getValue("anchor")) != NULL)
+    if ((s = property->getValue(PKEY_OPACITY)) != NULL)
+        setOpacity(opp_atof(s));
+    if (property->containsKey(PKEY_FONT))
+        setFont(parseFont(property, PKEY_FONT));
+    if ((s = property->getValue(PKEY_ANCHOR)) != NULL)
         setAnchor(parseAnchor(s));
-    if ((s = property->getValue("alignment")) != NULL)
-        setAlignment(parseAlignment(s));
 }
 
-void cTextFigure::translate(double x, double y)
+const char **cAbstractTextFigure::getAllowedPropertyKeys() const
+{
+    static const char *keys[32];
+    if (!keys[0]) {
+        const char *localKeys[] = { PKEY_COORDS, PKEY_TEXT, PKEY_COLOR, PKEY_OPACITY, PKEY_FONT, PKEY_ANCHOR, NULL};
+        concatArrays(keys, cFigure::getAllowedPropertyKeys(), localKeys);
+    }
+    return keys;
+}
+
+void cAbstractTextFigure::move(double x, double y)
 {
     location.x += x;
     location.y += y;
-    doGeometryChange();
+    fireGeometryChange();
 }
 
 //----
 
-void cImageFigure::copy(const cImageFigure& other)
+cTextFigure& cTextFigure::operator=(const cTextFigure& other)
 {
-    setLocation(other.getLocation());
-    setImageName(other.getImageName());
-    setTint(other.getTint());
-    tinting = other.tinting;
-    setAnchor(other.getAnchor());
+    if (this == &other) return *this;
+    cAbstractTextFigure::operator=(other);
+    copy(other);
+    return *this;
 }
 
-cImageFigure& cImageFigure::operator=(const cImageFigure& other)
+//----
+
+cLabelFigure& cLabelFigure::operator=(const cLabelFigure& other)
+{
+    if (this == &other) return *this;
+    cAbstractTextFigure::operator=(other);
+    copy(other);
+    return *this;
+}
+
+//----
+
+void cAbstractImageFigure::copy(const cAbstractImageFigure& other)
+{
+    setLocation(other.getLocation());
+    setAnchor(other.getAnchor());
+    setWidth(other.getWidth());
+    setHeight(other.getHeight());
+    setOpacity(other.getOpacity());
+    setTintColor(other.getTintColor());
+    setTintAmount(other.getTintAmount());
+}
+
+cAbstractImageFigure& cAbstractImageFigure::operator=(const cAbstractImageFigure& other)
 {
     if (this == &other) return *this;
     cFigure::operator=(other);
     copy(other);
     return *this;
 }
+
+void cAbstractImageFigure::parse(cProperty *property)
+{
+    cFigure::parse(property);
+
+    const char *s;
+    setLocation(parsePoint(property, PKEY_COORDS, 0));
+    if ((s = property->getValue(PKEY_ANCHOR)) != NULL)
+        setAnchor(parseAnchor(s));
+    Point size = parsePoint(property, PKEY_SIZE, 0);
+    setWidth(size.x);
+    setHeight(size.y);
+    if ((s = property->getValue(PKEY_OPACITY)) != NULL)
+        setOpacity(opp_atof(s));
+    if ((s = property->getValue(PKEY_TINT, 0)) != NULL) {
+        setTintColor(parseColor(s));
+        setTintAmount(0.5);
+    }
+    if ((s = property->getValue(PKEY_TINT, 1)) != NULL)
+        setTintAmount(opp_atof(s));
+}
+
+const char **cAbstractImageFigure::getAllowedPropertyKeys() const
+{
+    static const char *keys[32];
+    if (!keys[0]) {
+        const char *localKeys[] = { PKEY_COORDS, PKEY_ANCHOR, PKEY_SIZE, PKEY_OPACITY, PKEY_TINT, NULL};
+        concatArrays(keys, cFigure::getAllowedPropertyKeys(), localKeys);
+    }
+    return keys;
+}
+
+void cAbstractImageFigure::move(double x, double y)
+{
+    location.x += x;
+    location.y += y;
+    fireGeometryChange();
+}
+
+//----
 
 std::string cImageFigure::info() const
 {
@@ -1014,22 +2007,79 @@ std::string cImageFigure::info() const
     return os.str();
 }
 
-void cImageFigure::parse(cProperty *property)
+cImageFigure& cImageFigure::operator=(const cImageFigure& other)
 {
-    cFigure::parse(property);
-
-    const char *s;
-    setLocation(parsePoint(property, "coords", 0));
-    setImageName(opp_nulltoempty(property->getValue("image")));
-    if ((s = property->getValue("tint", 0)) != NULL)
-        setTint(parseColor(s));
+    if (this == &other) return *this;
+    cAbstractImageFigure::operator=(other);
+    copy(other);
+    return *this;
 }
 
-void cImageFigure::translate(double x, double y)
+void cImageFigure::copy(const cImageFigure& other)
 {
-    location.x += x;
-    location.y += y;
-    doGeometryChange();
+    setImageName(other.getImageName());
+}
+
+void cImageFigure::parse(cProperty *property)
+{
+    setImageName(opp_nulltoempty(property->getValue(PKEY_IMAGE)));
+    cAbstractImageFigure::parse(property);
+}
+
+const char **cImageFigure::getAllowedPropertyKeys() const
+{
+    static const char *keys[32];
+    if (!keys[0]) {
+        const char *localKeys[] = { PKEY_IMAGE, NULL};
+        concatArrays(keys, cAbstractImageFigure::getAllowedPropertyKeys(), localKeys);
+    }
+    return keys;
+}
+
+//----
+
+std::string cPixmapFigure::info() const
+{
+    std::stringstream os;
+    os << "(" << getPixmapWidth() << " x " << getPixmapHeight() << ") at " << getLocation();
+    return os.str();
+}
+
+cPixmapFigure& cPixmapFigure::operator=(const cPixmapFigure& other)
+{
+    if (this == &other) return *this;
+    cAbstractImageFigure::operator=(other);
+    copy(other);
+    return *this;
+}
+
+void cPixmapFigure::copy(const cPixmapFigure& other)
+{
+    setPixmap(other.getPixmap());
+}
+
+void cPixmapFigure::parse(cProperty *property)
+{
+    cAbstractImageFigure::parse(property);
+
+    int width = 0, height = 0;
+    const char *s;
+    if ((s = property->getValue(PKEY_RESOLUTION, 0)) != NULL)
+        width = opp_atoul(s);
+    if ((s = property->getValue(PKEY_RESOLUTION, 1)) != NULL)
+        height = opp_atoul(s);
+    if (width > 0 || height > 0)
+        setPixmap(Pixmap(width, height));
+}
+
+const char **cPixmapFigure::getAllowedPropertyKeys() const
+{
+    static const char *keys[32];
+    if (!keys[0]) {
+        const char *localKeys[] = { PKEY_RESOLUTION, NULL };
+        concatArrays(keys, cAbstractImageFigure::getAllowedPropertyKeys(), localKeys);
+    }
+    return keys;
 }
 
 //------
@@ -1068,7 +2118,9 @@ void cCanvas::forEachChild(cVisitor *v)
 
 std::string cCanvas::info() const
 {
-    return ""; //TODO
+    std::stringstream os;
+    os << rootFigure->getNumFigures() << " toplevel figure(s)";
+    return os.str();
 }
 
 bool cCanvas::containsCanvasItems(cProperties *properties)
@@ -1121,17 +2173,16 @@ void cCanvas::parseFigure(cProperty *property, std::map<cFigure*,double>& orderM
         cFigure *figure = parent->getFigure(name);
         if (!figure)
         {
-            const char *type = property->getValue("type");
+            const char *type = opp_nulltoempty(property->getValue(PKEY_TYPE));
             figure = createFigure(type);
             figure->setName(name);
-            const char *order = property->getValue("childZ");
+            const char *order = property->getValue(PKEY_CHILDZ);
             if (order)
                 orderMap[figure] = opp_atof(order);
             parent->insertChild(figure, orderMap);
         }
         else {
-            parent->removeFigure(figure);
-            parent->addFigure(figure);  //TODO use raiseToTop() instead!
+            figure->raiseToTop();
         }
 
         figure->parse(property);
@@ -1156,14 +2207,22 @@ cFigure *cCanvas::createFigure(const char *type)
         figure = new cRectangleFigure();
     else if (!strcmp(type, "oval"))
         figure = new cOvalFigure();
+    else if (!strcmp(type, "ring"))
+        figure = new cRingFigure();
     else if (!strcmp(type, "pieslice"))
         figure = new cPieSliceFigure();
     else if (!strcmp(type, "polygon"))
         figure = new cPolygonFigure();
     else if (!strcmp(type, "text"))
         figure = new cTextFigure();
+    else if (!strcmp(type, "label"))
+            figure = new cLabelFigure();
     else if (!strcmp(type, "image"))
         figure = new cImageFigure();
+    else if (!strcmp(type, "pixmap"))
+        figure = new cPixmapFigure();
+    else if (!strcmp(type, "path"))
+        figure = new cPathFigure();
     else {
         // find registered class named "<type>Figure" or "c<type>Figure"
         std::string className = std::string("c") + type + "Figure";
@@ -1228,8 +2287,6 @@ std::vector<std::string> cCanvas::getAllTagsAsVector() const
 }
 
 //---
-
-static std::map<std::string, cFigure::Color> colors;
 
 static std::string lc(const char *s)
 {

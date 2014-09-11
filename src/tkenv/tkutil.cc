@@ -21,6 +21,7 @@
 #include <string.h>
 #include <time.h>
 #include <assert.h>
+#include <sstream>
 
 #include "csimulation.h"
 #include "cmessageheap.h"
@@ -32,6 +33,7 @@
 #include "cpar.h"
 #include "cstatistic.h"
 #include "coutvector.h"
+#include "ccanvas.h"
 #include "cqueue.h"
 #include "carray.h"
 #include "cwatch.h"
@@ -498,5 +500,21 @@ void logTclError(const char *file, int line, Tcl_Interp *interp)
 {
     getTkenv()->logTclError(file, line, interp);
 }
+
+void invokeTclCommand(Tcl_Interp *interp, Tcl_CmdInfo *cmd, int argc, const char *argv[])
+{
+    TclCmdProc cmdProc = (TclCmdProc)cmd->proc;
+    if (cmdProc(cmd->clientData, interp, argc, (char**)argv) == TCL_ERROR) {
+        std::stringstream os;
+        os << interp->result << "\n";
+        os << "  while directly invoking Tcl command proc at " << cmdProc << "\n";
+        os << "  with args: ";
+        for (int i = 0; i < argc; i++)
+            os << " '" << argv[i] << "'";
+        os << "\n";
+        getTkenv()->logTclError(__FILE__, __LINE__, os.str().c_str());
+    }
+}
+
 
 NAMESPACE_END
