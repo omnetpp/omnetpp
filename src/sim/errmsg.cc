@@ -25,14 +25,14 @@ NAMESPACE_BEGIN
 const char *cErrorMessages::get(OppErrorCode e)
 {
     switch (e)
-    {
+   {
       case E_OK:        return "No error -- everything's fine";
       case E_BACKSCHED: return "Cannot schedule message (%s)%s to the past, t=%g";
       case E_BADCAST:   return "Cannot cast from type %s to %s";
       case E_BADEXP:    return "Badly formed Reverse Polish expression";
       case E_BADINIT:   return "setValue(): Type %s does not suit arg types";
       case E_CANCEL:    return "Simulation cancelled";
-      case E_CANTCOPY:  return "Assignment, copying, dup() not supported by this class";
+      case E_CANTCOPY:  return "Assignment, copying and duplication are not supported by this class";
       case E_CANTDUP:   return "This object cannot dup() itself";
       case E_CANTPACK:  return "parsimPack()/parsimUnpack() not supported for this object";
       case E_CUSTOM:    return "%s";

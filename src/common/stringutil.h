@@ -234,6 +234,12 @@ COMMON_API char *opp_strlwr(char *s);
 COMMON_API std::string opp_join(const char *separator, const char *s1, const char *s2);
 
 /**
+ * Concatenate the strings passed in the NULL-terminated const char * array, using
+ * the given separator.
+ */
+COMMON_API std::string opp_join(const char **strings, const char *separator);
+
+/**
  * Dictionary-compare two strings, the main difference from strcasecmp()
  * being that integers embedded in the strings are compared in
  * numerical order.

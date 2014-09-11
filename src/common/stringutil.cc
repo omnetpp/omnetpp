@@ -446,6 +446,17 @@ std::string opp_join(const char *separator, const char *s1, const char *s2)
         return std::string(s1) + separator + s2;
 }
 
+std::string opp_join(const char **strings, const char *separator)
+{
+    std::stringstream os;
+    for (const char **stringPtr = strings; *stringPtr; stringPtr++) {
+        if (stringPtr != strings)
+            os << separator;
+        os << *stringPtr;
+    }
+    return os.str();
+}
+
 // returns 0 iff the two strings are equal by strcmp().
 int strdictcmp(const char *s1, const char *s2)
 {

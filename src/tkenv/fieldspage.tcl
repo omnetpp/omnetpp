@@ -526,6 +526,7 @@ proc fieldsPage:getNodeInfo:setValue {w key value} {
         }
     }
     Tree:build $w
+    opp_refreshinspectors
 }
 
 proc fieldsPage:getNodeInfo:objectSelected {w obj} {
