@@ -3,7 +3,7 @@ module Font
     @display("bgb=800,500");
     @class(ArrangeFigures);
 
-    @figure[t01](type=text;coords=50,0;text="Hello World!";anchor=nw;);
+    @figure[t01](type=text;coords=50,0;text="Hello World!";anchor=nw);
     @figure[t02](type=text;coords=50,0;text="Hello World!";anchor=nw;font=Arial);
     @figure[t03](type=text;coords=50,0;text="Hello World!";anchor=nw;font=Times New Roman,10);
     @figure[t04](type=text;coords=50,0;text="Hello World!";anchor=nw;font=Arial,10);

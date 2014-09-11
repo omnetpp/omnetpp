@@ -1,0 +1,3 @@
+#!/bin/sh
+export TCLLIBPATH=../../../../src/tkenv/
+rlwrap wish $*

@@ -1,0 +1,79 @@
+%description:
+Test the cFigure::Transform class.
+
+%includes:
+#include <math.h>
+
+%activity:
+
+#define P(x)  EV << #x << " --> " << x.str() << endl;
+#define M_PI 3.14159265358979323846
+
+typedef cFigure::Transform Transform;
+typedef cFigure::Point Point;
+
+// combining transformations
+
+P(Transform().translate(-1,-2).scale(1000,1000).translate(1,2).applyTo(Point(1,2)));
+EV << endl;
+
+// basic transformations
+
+P(Transform().translate(1,2).applyTo(Point(2,4)));
+EV << endl;
+
+P(Transform().scale(0.5,2).applyTo(Point(2,4)));
+P(Transform().scale(0.5,2,1,2).applyTo(Point(2,4)));
+P(Transform().translate(-1,-2).scale(0.5,2).translate(1,2).applyTo(Point(2,4))); // expanded form of previous one
+EV << endl;
+
+P(Transform().rotate(M_PI).applyTo(Point(1,2)));
+P(Transform().rotate(M_PI/2).applyTo(Point(1,2)));
+P(Transform().rotate(-M_PI/2).applyTo(Point(1,2)));
+P(Transform().rotate(M_PI/2).applyTo(Point(-1,-1)));
+
+EV << endl;
+
+P(Transform().rotate(M_PI/2,1,2).applyTo(Point(1,2)));
+P(Transform().rotate(M_PI/2,2,3).applyTo(Point(1,2)));
+P(Transform().translate(-2,-3).rotate(M_PI/2).translate(2,3).applyTo(Point(1,2))); // expanded form of previous one
+EV << endl;
+
+P(Transform().skewx(M_PI/6).applyTo(Point(1,0)));
+P(Transform().skewx(M_PI/6).applyTo(Point(1,1)));
+P(Transform().skewx(M_PI/6).applyTo(Point(1,2)));
+EV << endl;
+
+P(Transform().skewy(M_PI/6).applyTo(Point(0,1)));
+P(Transform().skewy(M_PI/6).applyTo(Point(1,1)));
+P(Transform().skewy(M_PI/6).applyTo(Point(2,1)));
+EV << ".\n";
+
+
+%contains: stdout
+Transform().translate(-1,-2).scale(1000,1000).translate(1,2).applyTo(Point(1,2)) --> (1, 2)
+
+Transform().translate(1,2).applyTo(Point(2,4)) --> (3, 6)
+
+Transform().scale(0.5,2).applyTo(Point(2,4)) --> (1, 8)
+Transform().scale(0.5,2,1,2).applyTo(Point(2,4)) --> (1.5, 6)
+Transform().translate(-1,-2).scale(0.5,2).translate(1,2).applyTo(Point(2,4)) --> (1.5, 6)
+
+Transform().rotate(M_PI).applyTo(Point(1,2)) --> (-1, -2)
+Transform().rotate(M_PI/2).applyTo(Point(1,2)) --> (-2, 1)
+Transform().rotate(-M_PI/2).applyTo(Point(1,2)) --> (2, -1)
+Transform().rotate(M_PI/2).applyTo(Point(-1,-1)) --> (1, -1)
+
+Transform().rotate(M_PI/2,1,2).applyTo(Point(1,2)) --> (1, 2)
+Transform().rotate(M_PI/2,2,3).applyTo(Point(1,2)) --> (3, 2)
+Transform().translate(-2,-3).rotate(M_PI/2).translate(2,3).applyTo(Point(1,2)) --> (3, 2)
+
+Transform().skewx(M_PI/6).applyTo(Point(1,0)) --> (1, 0)
+Transform().skewx(M_PI/6).applyTo(Point(1,1)) --> (1.5, 1)
+Transform().skewx(M_PI/6).applyTo(Point(1,2)) --> (2, 2)
+
+Transform().skewy(M_PI/6).applyTo(Point(0,1)) --> (0, 1)
+Transform().skewy(M_PI/6).applyTo(Point(1,1)) --> (1, 1.5)
+Transform().skewy(M_PI/6).applyTo(Point(2,1)) --> (2, 2)
+.
+

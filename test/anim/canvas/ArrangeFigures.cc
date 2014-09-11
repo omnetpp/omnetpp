@@ -23,8 +23,8 @@ void ArrangeFigures::initialize()
             const char *name = property->getIndex();
             cFigure *figure = canvas->getFigure(name);
             ASSERT(figure!=NULL);
-            figure->translate(0.0, dy);
-            cTextFigure *label = new cTextFigure();
+            figure->move(0.0, dy);
+            cLabelFigure *label = new cLabelFigure();
             label->setText(property->info().c_str());
             label->setLocation(cFigure::Point(210, dy));
             canvas->addFigure(label);

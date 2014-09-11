@@ -1,32 +1,7 @@
-module Lines
+module Polyline
 {
     @class(ArrangeFigures);
     @display("bgb=1000,1000");
-
-    @figure[li01](type=line;coords=10,5,200,5);
-    @figure[li02](type=line;coords=10,5,200,5;lineColor=#00ff00);
-    @figure[li04](type=line;coords=10,5,200,5;lineStyle=solid);
-    @figure[li05](type=line;coords=10,5,200,5;lineStyle=dashed);
-    @figure[li06](type=line;coords=10,5,200,5;lineStyle=dotted);
-    @figure[li08](type=line;coords=10,5,200,5;lineWidth=3;lineStyle=dashed);
-    @figure[li09](type=line;coords=10,5,200,5;lineWidth=3;lineStyle=dotted);
-    @figure[li10](type=line;coords=10,5,200,5;lineWidth=3;lineStyle=dotted);
-    @figure[li11](type=line;coords=10,5,200,5;endArrowhead=simple);
-    @figure[li12](type=line;coords=10,5,200,5;endArrowhead=triangle);
-    @figure[li13](type=line;coords=10,5,200,5;endArrowhead=barbed);
-    @figure[li14](type=line;coords=10,5,200,5;startArrowhead=simple);
-    @figure[li15](type=line;coords=10,5,200,5;startArrowhead=triangle);
-    @figure[li16](type=line;coords=10,5,200,5;startArrowhead=barbed);
-    @figure[li17](type=line;coords=10,5,200,5;startArrowhead=triangle;endArrowhead=triangle);
-    @figure[li18](type=line;coords=10,5,200,5;startArrowhead=triangle;endArrowhead=barbed); //note: Tk doesn't support having different arrows at the two ends
-
-    @figure[ar1](type=arc;coords=10,0,50,10;startAngle=0;endAngle=250);
-    @figure[ar3](type=arc;coords=10,0,50,10;startAngle=0;endAngle=250;lineColor=#ff0000);
-    @figure[ar4](type=arc;coords=10,0,50,10;startAngle=0;endAngle=250;lineWidth=3);
-    @figure[ar5](type=arc;coords=10,0,50,10;startAngle=0;endAngle=250;lineStyle=solid);
-    @figure[ar6](type=arc;coords=10,0,50,10;startAngle=0;endAngle=250;lineStyle=dotted);
-    @figure[ar7](type=arc;coords=10,0,50,10;startAngle=0;endAngle=250;lineStyle=dashed);
-    @figure[ar8](type=arc;coords=10,0,50,10;startAngle=0;endAngle=250;lineColor=#ff0000;lineWidth=3;lineStyle=dashed);
 
     @figure[pli01](type=polyline;coords=10,0,30,18,100,0,200,5);
     @figure[pli02](type=polyline;coords=10,0,30,18,100,0,200,5;lineColor=#00ff00);
