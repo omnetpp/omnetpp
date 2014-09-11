@@ -123,7 +123,7 @@ class SIM_API cEnum : public cOwnedObject
      * stateEnum.bulkInsert("IDLE", IDLE, "BUSY", BUSY, NULL);
      * </pre>
      */
-    void bulkInsert(const char *name1, int value1,...);
+    void bulkInsert(const char *name1, ...);
 
     /**
      * Look up value and return string representation. Return

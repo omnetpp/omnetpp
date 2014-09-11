@@ -90,7 +90,7 @@ void cEnum::insert(int value, const char *name)
     nameToValueMap[name] = value;
 }
 
-void cEnum::bulkInsert(const char *name1, int value1, ...)
+void cEnum::bulkInsert(const char *name1, ...)
 {
     va_list va;
     va_start(va, name1);
