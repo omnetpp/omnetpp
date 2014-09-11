@@ -1377,25 +1377,29 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
 {
     CC << "class " << info.msgdescclass << " : public cClassDescriptor\n";
     CC << "{\n";
+    CC << "  private:\n";
+    CC << "    mutable const char **propertynames;\n";
     CC << "  public:\n";
     CC << "    " << info.msgdescclass << "();\n";
     CC << "    virtual ~" << info.msgdescclass << "();\n";
     CC << "\n";
     CC << "    virtual bool doesSupport(cObject *obj) const;\n";
+    CC << "    virtual const char **getPropertyNames() const;\n";
     CC << "    virtual const char *getProperty(const char *propertyname) const;\n";
-    CC << "    virtual int getFieldCount(void *object) const;\n";
-    CC << "    virtual const char *getFieldName(void *object, int field) const;\n";
-    CC << "    virtual int findField(void *object, const char *fieldName) const;\n";
-    CC << "    virtual unsigned int getFieldTypeFlags(void *object, int field) const;\n";
-    CC << "    virtual const char *getFieldTypeString(void *object, int field) const;\n";
-    CC << "    virtual const char *getFieldProperty(void *object, int field, const char *propertyname) const;\n";
-    CC << "    virtual int getArraySize(void *object, int field) const;\n";
+    CC << "    virtual int getFieldCount() const;\n";
+    CC << "    virtual const char *getFieldName(int field) const;\n";
+    CC << "    virtual int findField(const char *fieldName) const;\n";
+    CC << "    virtual unsigned int getFieldTypeFlags(int field) const;\n";
+    CC << "    virtual const char *getFieldTypeString(int field) const;\n";
+    CC << "    virtual const char **getFieldPropertyNames(int field) const;\n";
+    CC << "    virtual const char *getFieldProperty(int field, const char *propertyname) const;\n";
+    CC << "    virtual int getFieldArraySize(void *object, int field) const;\n";
     CC << "\n";
-    CC << "    virtual std::string getFieldAsString(void *object, int field, int i) const;\n";
-    CC << "    virtual bool setFieldAsString(void *object, int field, int i, const char *value) const;\n";
+    CC << "    virtual std::string getFieldValueAsString(void *object, int field, int i) const;\n";
+    CC << "    virtual bool setFieldValueAsString(void *object, int field, int i, const char *value) const;\n";
     CC << "\n";
-    CC << "    virtual const char *getFieldStructName(void *object, int field) const;\n";
-    CC << "    virtual void *getFieldStructPointer(void *object, int field, int i) const;\n";
+    CC << "    virtual const char *getFieldStructName(int field) const;\n";
+    CC << "    virtual void *getFieldStructValuePointer(void *object, int field, int i) const;\n";
     CC << "};\n\n";
 
     // register class
@@ -1406,11 +1410,13 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     std::string qualifiedrealmsgclass = prefixWithNamespace(info.realmsgclass);
     CC << "" << info.msgdescclass << "::" << info.msgdescclass << "() : cClassDescriptor(\"" << qualifiedrealmsgclass << "\", \"" << info.msgbaseclass << "\")\n";
     CC << "{\n";
+    CC << "    propertynames = NULL;\n";
     CC << "}\n";
     CC << "\n";
 
     CC << "" << info.msgdescclass << "::~" << info.msgdescclass << "()\n";
     CC << "{\n";
+    CC << "    delete[] propertynames;\n";
     CC << "}\n";
     CC << "\n";
 
@@ -1421,36 +1427,50 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "}\n";
     CC << "\n";
 
+    // getPropertyNames()
+    CC << "const char **" << info.msgdescclass << "::getPropertyNames() const\n";
+    CC << "{\n";
+    CC << "    if (!propertynames) {\n";
+    CC << "        static const char *names[] = { ";
+    for (Properties::const_iterator key = info.props.begin(); key != info.props.end(); ++key) {
+        CC << opp_quotestr(key->first.c_str()) << ", ";
+    }
+    CC << " NULL };\n";
+    CC << "        cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    CC << "        const char **basenames = basedesc ? basedesc->getPropertyNames() : NULL;\n";
+    CC << "        propertynames = mergeLists(basenames, names);\n";
+    CC << "    }\n";
+    CC << "    return propertynames;\n";
+    CC << "}\n";
+    CC << "\n";
+
     // getProperty()
     CC << "const char *" << info.msgdescclass << "::getProperty(const char *propertyname) const\n";
     CC << "{\n";
-
-    //Properties
     for (Properties::const_iterator key = info.props.begin(); key != info.props.end(); ++key) {
         CC << "    if (!strcmp(propertyname,"<< opp_quotestr(key->first.c_str()) << ")) return " << opp_quotestr(key->second.c_str()) << ";\n";
     }
-
     CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    return basedesc ? basedesc->getProperty(propertyname) : NULL;\n";
     CC << "}\n";
     CC << "\n";
 
     // getFieldCount()
-    CC << "int " << info.msgdescclass << "::getFieldCount(void *object) const\n";
+    CC << "int " << info.msgdescclass << "::getFieldCount() const\n";
     CC << "{\n";
     CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
-    CC << "    return basedesc ? " << fieldcount << "+basedesc->getFieldCount(object) : " << fieldcount << ";\n";
+    CC << "    return basedesc ? " << fieldcount << "+basedesc->getFieldCount() : " << fieldcount << ";\n";
     CC << "}\n";
     CC << "\n";
 
     // getFieldTypeFlags()
-    CC << "unsigned int " << info.msgdescclass << "::getFieldTypeFlags(void *object, int field) const\n";
+    CC << "unsigned int " << info.msgdescclass << "::getFieldTypeFlags(int field) const\n";
     CC << "{\n";
     CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount(object))\n";
-    CC << "            return basedesc->getFieldTypeFlags(object, field);\n";
-    CC << "        field -= basedesc->getFieldCount(object);\n";
+    CC << "        if (field < basedesc->getFieldCount())\n";
+    CC << "            return basedesc->getFieldTypeFlags(field);\n";
+    CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
     if (fieldcount == 0) {
         CC << "    return 0;\n";
@@ -1492,13 +1512,13 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "\n";
 
     // getFieldName()
-    CC << "const char *" << info.msgdescclass << "::getFieldName(void *object, int field) const\n";
+    CC << "const char *" << info.msgdescclass << "::getFieldName(int field) const\n";
     CC << "{\n";
     CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount(object))\n";
-    CC << "            return basedesc->getFieldName(object, field);\n";
-    CC << "        field -= basedesc->getFieldCount(object);\n";
+    CC << "        if (field < basedesc->getFieldCount())\n";
+    CC << "            return basedesc->getFieldName(field);\n";
+    CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
     if (fieldcount == 0) {
         CC << "    return NULL;\n";
@@ -1515,29 +1535,29 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "\n";
 
     // findField()
-    CC << "int " << info.msgdescclass << "::findField(void *object, const char *fieldName) const\n";
+    CC << "int " << info.msgdescclass << "::findField(const char *fieldName) const\n";
     CC << "{\n";
     CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     if (fieldcount > 0) {
-        CC << "    int base = basedesc ? basedesc->getFieldCount(object) : 0;\n";
+        CC << "    int base = basedesc ? basedesc->getFieldCount() : 0;\n";
         for (size_t i=0; i < info.fieldlist.size(); ++i)
         {
             char c = info.fieldlist[i].fname[0];
             CC << "    if (fieldName[0]=='" << c << "' && strcmp(fieldName, \""<<info.fieldlist[i].fname<<"\")==0) return base+" << i << ";\n";
         }
     }
-    CC << "    return basedesc ? basedesc->findField(object, fieldName) : -1;\n";
+    CC << "    return basedesc ? basedesc->findField(fieldName) : -1;\n";
     CC << "}\n";
     CC << "\n";
 
     // getFieldTypeString()
-    CC << "const char *" << info.msgdescclass << "::getFieldTypeString(void *object, int field) const\n";
+    CC << "const char *" << info.msgdescclass << "::getFieldTypeString(int field) const\n";
     CC << "{\n";
     CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount(object))\n";
-    CC << "            return basedesc->getFieldTypeString(object, field);\n";
-    CC << "        field -= basedesc->getFieldCount(object);\n";
+    CC << "        if (field < basedesc->getFieldCount())\n";
+    CC << "            return basedesc->getFieldTypeString(field);\n";
+    CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
     if (fieldcount == 0) {
         CC << "    return NULL;\n";
@@ -1553,14 +1573,44 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "}\n";
     CC << "\n";
 
-    // getFieldProperty()
-    CC << "const char *" << info.msgdescclass << "::getFieldProperty(void *object, int field, const char *propertyname) const\n";
+    // getFieldPropertyNames()
+    CC << "const char **" << info.msgdescclass << "::getFieldPropertyNames(int field) const\n";
     CC << "{\n";
     CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount(object))\n";
-    CC << "            return basedesc->getFieldProperty(object, field, propertyname);\n";
-    CC << "        field -= basedesc->getFieldCount(object);\n";
+    CC << "        if (field < basedesc->getFieldCount())\n";
+    CC << "            return basedesc->getFieldPropertyNames(field);\n";
+    CC << "        field -= basedesc->getFieldCount();\n";
+    CC << "    }\n";
+    CC << "    switch (field) {\n";
+    for (size_t i=0; i < fieldcount; ++i)
+    {
+        const Properties &ref = info.fieldlist[i].fprops;
+        if (!ref.empty()) {
+            CC << "        case " << i << ": {\n";
+            CC << "            static const char *names[] = { ";
+            for (Properties::const_iterator it = ref.begin(); it != ref.end(); ++it) {
+                CC << opp_quotestr(it->first.c_str()) << ", ";
+            }
+            CC << " NULL };\n";
+            CC << "            return names;\n";
+            CC << "        }\n";
+        }
+    }
+    CC << "        default: return NULL;\n";
+    CC << "    }\n";
+    CC << "}\n";
+    CC << "\n";
+
+
+    // getFieldProperty()
+    CC << "const char *" << info.msgdescclass << "::getFieldProperty(int field, const char *propertyname) const\n";
+    CC << "{\n";
+    CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    CC << "    if (basedesc) {\n";
+    CC << "        if (field < basedesc->getFieldCount())\n";
+    CC << "            return basedesc->getFieldProperty(field, propertyname);\n";
+    CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
     CC << "    switch (field) {\n";
 
@@ -1582,14 +1632,14 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "}\n";
     CC << "\n";
 
-    // getArraySize()
-    CC << "int " << info.msgdescclass << "::getArraySize(void *object, int field) const\n";
+    // getFieldArraySize()
+    CC << "int " << info.msgdescclass << "::getFieldArraySize(void *object, int field) const\n";
     CC << "{\n";
     CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount(object))\n";
-    CC << "            return basedesc->getArraySize(object, field);\n";
-    CC << "        field -= basedesc->getFieldCount(object);\n";
+    CC << "        if (field < basedesc->getFieldCount())\n";
+    CC << "            return basedesc->getFieldArraySize(object, field);\n";
+    CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
     CC << "    " << info.msgclass << " *pp = (" << info.msgclass << " *)object; (void)pp;\n";
     CC << "    switch (field) {\n";
@@ -1610,14 +1660,14 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "}\n";
     CC << "\n";
 
-    // getFieldAsString()
-    CC << "std::string " << info.msgdescclass << "::getFieldAsString(void *object, int field, int i) const\n";
+    // getFieldValueAsString()
+    CC << "std::string " << info.msgdescclass << "::getFieldValueAsString(void *object, int field, int i) const\n";
     CC << "{\n";
     CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount(object))\n";
-    CC << "            return basedesc->getFieldAsString(object,field,i);\n";
-    CC << "        field -= basedesc->getFieldCount(object);\n";
+    CC << "        if (field < basedesc->getFieldCount())\n";
+    CC << "            return basedesc->getFieldValueAsString(object,field,i);\n";
+    CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
     CC << "    " << info.msgclass << " *pp = (" << info.msgclass << " *)object; (void)pp;\n";
     CC << "    switch (field) {\n";
@@ -1667,14 +1717,14 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "}\n";
     CC << "\n";
 
-    // setFieldAsString()
-    CC << "bool " << info.msgdescclass << "::setFieldAsString(void *object, int field, int i, const char *value) const\n";
+    // setFieldValueAsString()
+    CC << "bool " << info.msgdescclass << "::setFieldValueAsString(void *object, int field, int i, const char *value) const\n";
     CC << "{\n";
     CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount(object))\n";
-    CC << "            return basedesc->setFieldAsString(object,field,i,value);\n";
-    CC << "        field -= basedesc->getFieldCount(object);\n";
+    CC << "        if (field < basedesc->getFieldCount())\n";
+    CC << "            return basedesc->setFieldValueAsString(object,field,i,value);\n";
+    CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
     CC << "    " << info.msgclass << " *pp = (" << info.msgclass << " *)object; (void)pp;\n";
     CC << "    switch (field) {\n";
@@ -1708,13 +1758,13 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "\n";
 
     // getFieldStructName()
-    CC << "const char *" << info.msgdescclass << "::getFieldStructName(void *object, int field) const\n";
+    CC << "const char *" << info.msgdescclass << "::getFieldStructName(int field) const\n";
     CC << "{\n";
     CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount(object))\n";
-    CC << "            return basedesc->getFieldStructName(object, field);\n";
-    CC << "        field -= basedesc->getFieldCount(object);\n";
+    CC << "        if (field < basedesc->getFieldCount())\n";
+    CC << "            return basedesc->getFieldStructName(field);\n";
+    CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
     if (fieldcount == 0) {
         CC << "    return NULL;\n";
@@ -1733,14 +1783,14 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "}\n";
     CC << "\n";
 
-    // getFieldStructPointer()
-    CC << "void *" << info.msgdescclass << "::getFieldStructPointer(void *object, int field, int i) const\n";
+    // getFieldStructValuePointer()
+    CC << "void *" << info.msgdescclass << "::getFieldStructValuePointer(void *object, int field, int i) const\n";
     CC << "{\n";
     CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
-    CC << "        if (field < basedesc->getFieldCount(object))\n";
-    CC << "            return basedesc->getFieldStructPointer(object, field, i);\n";
-    CC << "        field -= basedesc->getFieldCount(object);\n";
+    CC << "        if (field < basedesc->getFieldCount())\n";
+    CC << "            return basedesc->getFieldStructValuePointer(object, field, i);\n";
+    CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
     CC << "    " << info.msgclass << " *pp = (" << info.msgclass << " *)object; (void)pp;\n";
     CC << "    switch (field) {\n";
