@@ -35,6 +35,7 @@ OBJS= $O/nedelements.o $O/nedelement.o $O/nederror.o $O/nedexception.o \
       $O/nedxmlparser.o $O/nedsaxhandler.o $O/saxparser_$(XMLPARSER).o \
       $O/ned1.tab.o $O/lex.ned1yy.o \
       $O/msg2.tab.o $O/lex.msg2yy.o \
+      $O/msgcppgenerator.o \
       $O/nedresourcecache.o $O/nedtypeinfo.o
 
 GENERATED_SOURCES=nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h \
@@ -158,6 +159,18 @@ $O/msg2.tab.o: msg2.tab.cc \
   nedexception.h \
   nedxmldefs.h \
   nedyylib.h
+$O/msgcppgenerator.o: msgcppgenerator.cc \
+  nederror.h \
+  nedelements.h \
+  ../../include/platdep/platdefs.h \
+  nedutil.h \
+  nedelement.h \
+  nedexception.h \
+  ../../include/simkerneldefs.h \
+  nedxmldefs.h \
+  ../../include/platdep/intxtypes.h \
+  ned2generator.h \
+  msgcppgenerator.h
 $O/ned1.tab.o: ned1.tab.cc \
   nedfilebuffer.h \
   nederror.h \
@@ -298,11 +311,12 @@ $O/nedtool.o: nedtool.cc \
   nedexception.h \
   nedtools.h \
   ned2generator.h \
+  msgcppgenerator.h \
   nedsyntaxvalidator.h \
   nederror.h \
   nedelements.h \
-  xmlgenerator.h \
   neddtdvalidatorbase.h \
+  xmlgenerator.h \
   neddtdvalidator.h \
   nedcrossvalidator.h \
   ../common/ver.h \

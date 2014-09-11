@@ -152,8 +152,8 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
   ../../include/cstddev.h \
-  ../../include/simutil.h \
   ../../include/cmessageheap.h \
+  ../../include/simutil.h \
   ../../include/cproperty.h
 $O/serializer.o: serializer.cc \
   ../../include/regmacros.h \

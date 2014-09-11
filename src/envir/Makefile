@@ -803,8 +803,8 @@ $O/logformatter.o: logformatter.cc \
   envirdefs.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
-  ../../include/cenvir.h \
   ../../include/simtime_t.h \
+  ../../include/cenvir.h \
   ../../include/opp_string.h \
   ../../include/simkerneldefs.h \
   ../../include/csimulation.h \
