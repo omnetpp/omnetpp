@@ -58,19 +58,24 @@ all: $(TKENV_IF_POSSIBLE)
 
 tkenv : $O/$(LIBNAME)$(LIB_SUFFIX)
 
-$O/$(LIBNAME).lib : $(OBJS) $L
+$O/$(LIBNAME).lib : $(OBJS) $L tcl-libs
 	@echo Creating LIB: $@
 	$(Q)$(AR) /out:"$@" $(OBJS)
 	$(Q)copy $(O:/=\)\$(LIBNAME).lib $(L:/=\) 1>nul
 	-$(Q)copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 1>nul
 
-$O/$(LIBNAME).dll : $(OBJS) $L
+$O/$(LIBNAME).dll : $(OBJS) $L tcl-libs
 	@echo Creating DLL: $@
 	$(Q)$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS) $(LDFLAGS)
 	$(Q)copy $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\) 1>nul
 	-$(Q)copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 1>nul
 	$(Q)copy $(O:/=\)\$(LIBNAME).lib $(L:/=\) 1>nul
 	-$(Q)copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 1>nul
+
+tcl-libs:
+	@echo Copying Tcl extensions to lib/
+	-$(Q)md $(OMNETPP_LIB_DIR:/=\)\tkpath 1>nul 2>nul
+	$(Q)copy /b tkpath\* $(OMNETPP_LIB_DIR:/=\)\tkpath 1>nul
 
 $O/tkenv.obj : tkenv.cc
 	$(Q)$(CXX) $(CXXFLAGS) -DOMNETPP_LIB_DIR="\"$(OMNETPP_LIB_DIR:\=/)\"" -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR:\=/)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH:\=/)\"" $(COPTS) /c /Fo"$@" /Tp tkenv.cc
@@ -753,8 +758,8 @@ $O/moduleinspector.obj: moduleinspector.cc \
   ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \
   componenthistory.h \
-  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
   inspector.h \
   tklib.h \
   ../../include/onstartup.h \
@@ -935,6 +940,7 @@ $O/tkenv.obj: tkenv.cc \
   ../../include/onstartup.h \
   gateinspector.h \
   ../../include/simtime_t.h \
+  ../../include/ccanvas.h \
   ../../include/csimplemodule.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \

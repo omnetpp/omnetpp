@@ -19,11 +19,13 @@
 # This proc is invoked from C++ to set up the Tkenv GUI
 #
 proc startTkenv {} {
-    global OMNETPP_IMAGE_PATH
-    global OMNETPP_PLUGIN_PATH
+    global OMNETPP_IMAGE_PATH OMNETPP_PLUGIN_PATH OMNETPP_LIB_DIR
+    global auto_path
 
     wm withdraw .
     checkTclTkVersion
+    lappend auto_path $OMNETPP_LIB_DIR
+    package require tkpath
     setupTkOptions
     initBalloons
     createOmnetppWindow
@@ -308,6 +310,8 @@ proc setupTkOptions {} {
        }
    }
 
+   # enabling antialiasing in tkpath
+   set tkp::antialias 1
 }
 
 #
@@ -399,7 +403,7 @@ proc setApplicationIcon {} {
 }
 
 proc setOSXDockIcon {} {
-    global OMNETPP_IMAGE_PATH OMNETPP_LIB_DIR
+    global OMNETPP_IMAGE_PATH
 
     # find the icon to use
     set icon ""
@@ -415,12 +419,9 @@ proc setOSXDockIcon {} {
         return
     }
 
-    # load TkDock (first from $OMNETPP_LIB_DIR, then from DYLD_LIBRARY_PATH)
-    if {"AppKit" ni [winfo server .]} {error "TkAqua Cocoa required"}
-    if [catch {load [file join $OMNETPP_LIB_DIR "libtkdock1.0.dylib"] tkdock}] {
-        if [catch {load "libtkdock1.0.dylib" tkdock}] {
-            debug "could not load libtkdock1.0.dylib"
-        }
+    if [catch {package require tkdock}] {
+        debug "could not load tkdock"
+        return
     }
 
     # set the icon

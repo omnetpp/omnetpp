@@ -67,25 +67,29 @@ all: $(TKENV_IF_POSSIBLE)
 
 tkenv : $L/$(LIBNAME)$(LIB_SUFFIX)
 	$(Q)cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && $(LN) $(TOOLCHAIN_NAME)/$(LIBNAME).* .
-	
-$L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
+
+$L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS) tcl-libs
 	@mkdir -p $L
 	@echo Creating static library: $@
 	$(Q)$(AR) $O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
 	$(Q)$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
 	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
 
-$L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
+$L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS) tcl-libs
 	@mkdir -p $L
 	@echo Creating shared library: $@
-ifeq ("$(PLATFORM)", "macosx")
-	$(Q)cp libtkdock1.0.dylib $(OMNETPP_LIB_DIR)
-endif
 	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS)
 	$(Q)$(SHLIB_POSTPROCESS) $O/$(LIBNAME)$(SO_LIB_SUFFIX)
 	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(SO_LIB_SUFFIX) $L
 	$(Q)rm -f $(OMNETPP_LIB_DIR)/$(LIBNAME)$(SO_LIB_SUFFIX) && $(LN) $L/$(LIBNAME)$(SO_LIB_SUFFIX) $(OMNETPP_LIB_DIR)
 	$(Q)$(SHLIB_POSTPROCESS) $(OMNETPP_LIB_DIR)/$(LIBNAME)$(SO_LIB_SUFFIX)
+
+tcl-libs:
+	@echo Copying Tcl extensions to lib/
+	$(Q)cp -R tkpath $(OMNETPP_LIB_DIR)
+ifeq ("$(PLATFORM)", "macosx")
+	$(Q)cp -R tkdock $(OMNETPP_LIB_DIR)
+endif
 
 $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $L
