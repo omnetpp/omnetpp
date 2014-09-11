@@ -30,6 +30,7 @@
 #include "stringtokenizer.h"
 #include "stringtokenizer2.h"
 #include "timeutil.h"
+#include "stringutil.h"
 #include "platmisc.h"   //getpid()
 
 NAMESPACE_BEGIN
@@ -284,17 +285,6 @@ int SectionBasedConfiguration::resolveConfigName(const char *configName) const
     if (id == -1)
         id = internalFindSection((std::string("Config ")+configName).c_str());
     return id;
-}
-
-static std::string opp_makedatetimestring()
-{
-    time_t t = time(NULL);
-    struct tm tm = *localtime(&t);
-    char timestr[32];
-    sprintf(timestr, "%04d%02d%02d-%02d:%02d:%02d",
-            1900+tm.tm_year, tm.tm_mon+1, tm.tm_mday,
-            tm.tm_hour, tm.tm_min, tm.tm_sec);
-    return timestr;
 }
 
 void SectionBasedConfiguration::activateConfig(const char *configName, int runNumber)

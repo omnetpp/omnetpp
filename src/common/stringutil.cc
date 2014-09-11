@@ -603,6 +603,17 @@ double opp_atof(const char *s)
     return d;
 }
 
+std::string opp_makedatetimestring()
+{
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    char timestr[32];
+    sprintf(timestr, "%04d%02d%02d-%02d:%02d:%02d",
+            1900+tm.tm_year, tm.tm_mon+1, tm.tm_mday,
+            tm.tm_hour, tm.tm_min, tm.tm_sec);
+    return timestr;
+}
+
 const char *opp_findmatchingquote(const char *s)
 {
     while (opp_isspace(*s))

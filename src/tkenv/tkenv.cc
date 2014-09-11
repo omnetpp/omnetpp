@@ -1927,10 +1927,11 @@ void Tkenv::openTkenvlogIfNeeded()
     if (!ferrorlog)
     {
         ferrorlog = fopen(".tkenvlog", "a");
-        if (!ferrorlog)
+        if (!ferrorlog) {
             ::fprintf(stderr, "Tkenv: could not open .tkenvlog for append\n");
-        else
-            ::fprintf(ferrorlog, "----------------------------------------------------------------------\n\n\n");
+            return;
+        }
+        ::fprintf(ferrorlog, "---- %s ---------------------------------------------------------\n\n\n", opp_makedatetimestring().c_str());
     }
 }
 

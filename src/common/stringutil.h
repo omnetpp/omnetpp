@@ -299,6 +299,11 @@ COMMON_API double opp_strtod(const char *s, char **endptr);
 COMMON_API double opp_atof(const char *s);
 
 /**
+ * Returns the current date/time as a string in the "yyyymmdd-hh:mm:ss" format.
+ */
+COMMON_API std::string opp_makedatetimestring();
+
+/**
  * s should point to a double quote '"'. The function returns a pointer to
  * the matching quote (i.e. the end of the string literal), or NULL if
  * not found. It recognizes escaping embedded quotes with backslashes
