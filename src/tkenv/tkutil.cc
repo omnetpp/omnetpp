@@ -506,7 +506,7 @@ void invokeTclCommand(Tcl_Interp *interp, Tcl_CmdInfo *cmd, int argc, const char
     TclCmdProc cmdProc = (TclCmdProc)cmd->proc;
     if (cmdProc(cmd->clientData, interp, argc, (char**)argv) == TCL_ERROR) {
         std::stringstream os;
-        os << interp->result << "\n";
+        os << Tcl_GetStringResult(interp) << "\n";
         os << "  while directly invoking Tcl command proc at " << cmdProc << "\n";
         os << "  with args: ";
         for (int i = 0; i < argc; i++)
