@@ -19,6 +19,7 @@
 #include "cobjectfactory.h"
 #include "checkandcast.h"
 #include "stringutil.h"
+#include "tkenv.h"
 
 NAMESPACE_BEGIN
 
@@ -141,6 +142,18 @@ void FigureRenderer::fillRule(cFigure::FillRule fill, int& argc, const char *arg
     }
 }
 
+void FigureRenderer::interpolation(cFigure::Interpolation interpolation, int& argc, const char *argv[])
+{
+    argv[argc++] = "-interpolation";
+
+    switch (interpolation) {
+        case cFigure::INTERPOLATION_NONE: argv[argc++] = "none"; break;
+        case cFigure::INTERPOLATION_FAST: argv[argc++] = "fast"; break;
+        case cFigure::INTERPOLATION_BEST: argv[argc++] = "best"; break;
+        default: throw cRuntimeError("Unexpected interpolation mode %d", interpolation);
+    }
+}
+
 static void doAnchor(cFigure::Anchor anchor, bool text, int& argc, const char *argv[])
 {
     argv[argc++] = text ? "-textanchor" : "-anchor";
@@ -184,6 +197,14 @@ void FigureRenderer::font(const cFigure::Font& font, int& argc, const char *argv
     char *buf = getBuf(16);
     sprintf(buf, "%d", points);
     argv[argc++] = buf;
+
+    argv[argc++] = "-fontweight";
+    argv[argc++] = (font.style & cFigure::FONT_BOLD) != 0 ?  "bold" : "normal";
+
+    argv[argc++] = "-fontslant";
+    argv[argc++] = (font.style & cFigure::FONT_ITALIC) != 0 ?  "italic" : "normal";
+
+    // note: no tkpath support for underline
 }
 
 #define PT(p)  ((p).x) << " " << ((p).y)
@@ -649,7 +670,7 @@ void PathFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *in
 std::string AbstractTextFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
 {
     cAbstractTextFigure *textFigure = check_and_cast<cAbstractTextFigure*>(figure);
-    return point(textFigure->getLocation());
+    return point(textFigure->getPosition());
 }
 
 void AbstractTextFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
@@ -681,7 +702,7 @@ void LabelFigureRenderer::addMatrix(cFigure *figure, const cFigure::Transform& t
 std::string LabelFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
 {
     cLabelFigure *labelFigure = check_and_cast<cLabelFigure*>(figure);
-    return point(transform.applyTo(labelFigure->getLocation()));
+    return point(transform.applyTo(labelFigure->getPosition()));
 }
 
 //----
@@ -689,7 +710,7 @@ std::string LabelFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, 
 std::string AbstractImageFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
 {
     cAbstractImageFigure *imageFigure = check_and_cast<cAbstractImageFigure*>(figure);
-    return point(imageFigure->getLocation());
+    return point(imageFigure->getPosition());
 }
 
 void AbstractImageFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
@@ -703,6 +724,7 @@ void AbstractImageFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_I
         argv[argc++] = dtoa(imageFigure->getHeight());
     }
     if (what & cFigure::CHANGE_VISUAL) {
+        interpolation(imageFigure->getInterpolation(), argc, argv);
         argv[argc++] = "-fillopacity";
         argv[argc++] = dtoa(imageFigure->getOpacity());
         argv[argc++] = "-tintcolor";
@@ -764,7 +786,7 @@ void PixmapFigureRenderer::ensureImage(Tcl_Interp *interp, const char *imageName
 
     if (imageBlock.pixelSize != 4)
     {
-        //TODO log error
+        getTkenv()->logTclError(__FILE__, __LINE__, "PixmapFigureRenderer: unsupported color depth (pixelSize!=4)");
         return;
     }
 

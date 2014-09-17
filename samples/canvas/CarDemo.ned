@@ -12,18 +12,18 @@ network CarDemo
 {
     parameters:
        @display("bgb=800,500");
-       @figure[road] (type=polygon; coords=100,200, 200,100, 300,50, 500,50, 650,100, 700,200, 600,300, 500,350, 400,350, 200,350, 100,300; smooth=true; lineWidth=60; lineColor=grey);
-       @figure[paint](type=polygon; coords=100,200, 200,100, 300,50, 500,50, 650,100, 700,200, 600,300, 500,350, 400,350, 200,350, 100,300; smooth=true; lineWidth=3; lineColor=white; lineStyle=dashed);
+       @figure[road] (type=polygon; points=100,200, 200,100, 300,50, 500,50, 650,100, 700,200, 600,300, 500,350, 400,350, 200,350, 100,300; smooth=true; lineWidth=60; lineColor=grey);
+       @figure[paint](type=polygon; points=100,200, 200,100, 300,50, 500,50, 650,100, 700,200, 600,300, 500,350, 400,350, 200,350, 100,300; smooth=true; lineWidth=3; lineColor=white; lineStyle=dashed);
        @figure[trail](type=polyline; lineWidth=5; lineOpacity=0.6; lineColor=orange);
-       @figure[car](type=image; image="car-top-view"; coords=-62,-30; anchor=nw); // center car at (0,0)
-       @figure[car.antenna](type=image; image="antenna"; coords=-10,-40; anchor=nw);
+       @figure[car](type=image; image="car-top-view"; position=-62,-30; anchor=nw); // center car at (0,0)
+       @figure[car.antenna](type=image; image="antenna"; position=-10,-40; anchor=nw);
        @figure[car.antenna.beam](type=path; path="M 10 0 L 10 -20 L 1200 -100 L 1200 100 L 10 20 Z"; fillColor=blue; fillOpacity=0.1; lineColor=blue; lineOpacity=0.1);
        @figure[status](type=group; transform=translate(700,20));
-       @figure[status.bg](type=rectangle; coords=0,0; size=150,100; anchor=n; cornerRadius=10; fillColor=#fafdb9; fillOpacity=0.2; lineColor=#fafdb9; lineOpacity=0.4);
-       @figure[status.distanceTitle](type=text; coords=0,20; text="Distance Travelled"; anchor=center);
-       @figure[status.distance](type=text; coords=0,40; text="0m"; anchor=center; font=Arial,22);
-       @figure[status.headingTitle](type=text; coords=0,70; text="Heading"; anchor=center);
-       @figure[status.heading](type=text; coords=0,90; text="0"; anchor=center; font=Arial,22);
+       @figure[status.bg](type=rectangle; position=0,0; size=150,100; anchor=n; cornerRadius=10; fillColor=#fafdb9; fillOpacity=0.2; lineColor=#fafdb9; lineOpacity=0.4);
+       @figure[status.distanceTitle](type=text; position=0,20; text="Distance Travelled"; anchor=center);
+       @figure[status.distance](type=text; position=0,40; text="0m"; anchor=center; font=Arial,22);
+       @figure[status.headingTitle](type=text; position=0,70; text="Heading"; anchor=center);
+       @figure[status.heading](type=text; position=0,90; text="0"; anchor=center; font=Arial,22);
 
     submodules:
        animator: CarAnimator;

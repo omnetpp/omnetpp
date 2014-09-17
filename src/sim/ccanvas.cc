@@ -78,7 +78,8 @@ static const char* PKEY_VISIBLE = "visible";
 static const char* PKEY_TAGS = "tags";
 static const char* PKEY_TRANSFORM = "transform";
 static const char* PKEY_CHILDZ = "childZ";
-static const char* PKEY_COORDS = "coords";
+static const char* PKEY_POSITION = "position";
+static const char* PKEY_POINTS = "points";
 static const char* PKEY_ANCHOR = "anchor";
 static const char* PKEY_SIZE = "size";
 static const char* PKEY_INNERSIZE = "innerSize";
@@ -106,6 +107,7 @@ static const char* PKEY_COLOR = "color";
 static const char* PKEY_OPACITY = "opacity";
 static const char* PKEY_IMAGE = "image";
 static const char* PKEY_RESOLUTION = "resolution";
+static const char* PKEY_INTERPOLATION = "interpolation";
 static const char* PKEY_TINT = "tint";
 
 
@@ -117,15 +119,6 @@ std::string cFigure::Point::str() const
     std::stringstream os;
     os << "(" << x << ", " << y << ")";
     return os.str();
-}
-
-cFigure::Point& cFigure::Point::parse(const char *s)
-{
-    int parsedChars = 0;
-    int count = sscanf(s, " ( %lf , %lf ) %n", &x, &y, &parsedChars);
-    if (count != 2 || s[parsedChars] != 0)
-        throw cRuntimeError("Invalid Point syntax, (x,y) expected");
-    return *this;
 }
 
 cFigure::Point cFigure::Point::operator + (const cFigure::Point& p) const
@@ -141,6 +134,11 @@ cFigure::Point cFigure::Point::operator - (const cFigure::Point& p) const
 cFigure::Point cFigure::Point::operator * (double s) const
 {
     return Point(x * s, y * s);
+}
+
+cFigure::Point cFigure::Point::operator / (double s) const
+{
+    return Point(x / s, y / s);
 }
 
 double cFigure::Point::operator * (const Point& p) const
@@ -167,15 +165,6 @@ std::string cFigure::Rectangle::str() const
     return os.str();
 }
 
-cFigure::Rectangle& cFigure::Rectangle::parse(const char *s)
-{
-    int parsedChars = 0;
-    int count = sscanf(s, " ( %lf , %lf , w = %lf , h = %lf ) %n", &x, &y, &width, &height, &parsedChars);
-    if (count != 4 || s[parsedChars] != 0)
-        throw cRuntimeError("Invalid Rectangle syntax, (x,y,w=n,h=m) expected");
-    return *this;
-}
-
 cFigure::Point cFigure::Rectangle::getCenter() const
 {
     return Point(x + width / 2.0, y + height / 2.0);
@@ -193,21 +182,6 @@ std::string cFigure::Color::str() const
     return os.str();
 }
 
-cFigure::Color& cFigure::Color::parse(const char *s)
-{
-    try {
-        *this = byName(s);
-    } catch (cRuntimeError& e) {
-        int parsedChars = 0;
-        int r,g,b;
-        int count = sscanf(s, " ( %d , %d , %d ) %n", &r, &g, &b, &parsedChars);
-        if (count != 3 || s[parsedChars] != 0)
-            throw cRuntimeError("Invalid Color syntax, colorname or (R,G,B) expected");
-        red = r; green = g; blue = b;
-    }
-    return *this;
-}
-
 std::string cFigure::Font::str() const
 {
     std::stringstream os;
@@ -221,11 +195,6 @@ std::string cFigure::Font::str() const
     }
     os << ")";
     return os.str();
-}
-
-cFigure::Font& cFigure::Font::parse(const char *s)
-{
-    throw cRuntimeError("TODO"); //TODO
 }
 
 cFigure::Transform& cFigure::Transform::translate(double dx, double dy)
@@ -356,15 +325,6 @@ std::string cFigure::Transform::str() const
     return os.str();
 }
 
-cFigure::Transform& cFigure::Transform::parse(const char *s)
-{
-    int parsedChars = 0;
-    int count = sscanf(s, " ( ( %lf %lf ) ( %lf %lf ) ( %lf %lf ) ) %n", &a, &b, &c, &d, &t1, &t2, &parsedChars);
-    if (count != 6 || s[parsedChars] != 0)
-        throw cRuntimeError("Invalid Transform syntax, ((a,b)(c,d)(t1,t2)) expected");
-    return *this;
-}
-
 //----
 
 cFigure::Pixmap::Pixmap() : width(0), height(0), data(NULL)
@@ -373,19 +333,19 @@ cFigure::Pixmap::Pixmap() : width(0), height(0), data(NULL)
 
 cFigure::Pixmap::Pixmap(int width, int height) : width(width), height(height), data(NULL)
 {
-    doAlloc(width, height);
-    fill(WHITE, 0);
+    allocate(width, height);
+    fill(BLACK, 0);
 }
 
 cFigure::Pixmap::Pixmap(int width, int height, const RGBA& fill_) : width(width), height(height), data(NULL)
 {
-    doAlloc(width, height);
+    allocate(width, height);
     fill(fill_);
 }
 
 cFigure::Pixmap::Pixmap(int width, int height, const Color& color, double opacity) : width(width), height(height), data(NULL)
 {
-    doAlloc(width, height);
+    allocate(width, height);
     fill(color, opacity);
 }
 
@@ -399,17 +359,39 @@ cFigure::Pixmap::~Pixmap()
     delete[] data;
 }
 
-void cFigure::Pixmap::doAlloc(int w, int h)
+void cFigure::Pixmap::allocate(int newWidth, int newHeight)
 {
-    if (w < 0 || h < 0)
+    if (newWidth < 0 || newHeight < 0)
         throw cRuntimeError("cFigure::Pixmap: width/height cannot be negative");
 
+    width = newWidth;
+    height = newHeight;
     delete [] data;
+    data = new RGBA[newWidth * newHeight];
+}
 
-    width = w;
-    height = h;
-    size_t size = width * height;
-    data = new RGBA[size];
+void cFigure::Pixmap::resize(int newWidth, int newHeight, const RGBA& fill_)
+{
+    if (newWidth < 0 || newWidth < 0)
+        throw cRuntimeError("cFigure::Pixmap: width/height cannot be negative");
+
+    RGBA *newData = new RGBA[newWidth * newHeight];
+
+    // pixel copying (could be more efficient)
+    for (int y = 0; y < newHeight; y++)
+        for (int x = 0; x < newWidth; x++)
+            newData[y*newWidth + x] = (x < width && y < height) ? data[y*width + x] : fill_;
+
+    width = newWidth;
+    height = newHeight;
+    delete [] data;
+    data = newData;
+}
+
+void cFigure::Pixmap::resize(int width, int height, const Color& color, double opacity)
+{
+    RGBA rgba(color.red, color.blue, color.green, alpha(opacity));
+    resize(width, height, rgba);
 }
 
 void cFigure::Pixmap::fill(const RGBA& rgba)
@@ -428,7 +410,7 @@ void cFigure::Pixmap::fill(const Color& color, double opacity)
 cFigure::Pixmap& cFigure::Pixmap::operator=(const Pixmap& other)
 {
     if (width != other.width || height != other.height)
-        doAlloc(other.width, other.height);
+        allocate(other.width, other.height);
     memcpy(data, other.data, width*height*sizeof(RGBA));
     return *this;
 }
@@ -469,63 +451,54 @@ std::vector<cFigure::Point> cFigure::parsePoints(cProperty *property, const char
 
 void cFigure::parseBounds(cProperty *property, Point& p1, Point& p2)
 {
-    int numCoords = property->getNumValues(PKEY_COORDS);
-    if (numCoords == 4)
-    {
-        p1 = parsePoint(property, PKEY_COORDS, 0);
-        p2 = parsePoint(property, PKEY_COORDS, 2);
-    }
-    else if (numCoords == 2)
-    {
-        Point p = parsePoint(property, PKEY_COORDS, 0);
-        Point size = parsePoint(property, PKEY_SIZE, 0);
-        const char *anchorStr = property->getValue(PKEY_ANCHOR);
-        Anchor anchor = opp_isblank(anchorStr) ? cFigure::ANCHOR_NW : parseAnchor(anchorStr);
-        switch (anchor) {
-            case cFigure::ANCHOR_CENTER:
-                p1.x = p.x - size.x/2; p1.y = p.y - size.y/2;
-                p2.x = p.x + size.x/2; p2.y = p.y + size.y/2;
-                break;
-            case cFigure::ANCHOR_N:
-                p1.x = p.x - size.x/2; p1.y = p.y;
-                p2.x = p.x + size.x/2; p2.y = p.y + size.y;
-                break;
-            case cFigure::ANCHOR_E:
-                p1.x = p.x; p1.y = p.y - size.y/2;
-                p2.x = p.x + size.x; p2.y = p.y + size.y/2;
-                break;
-            case cFigure::ANCHOR_S:
-            case cFigure::ANCHOR_BASELINE_MIDDLE:
-                p1.x = p.x - size.x/2; p1.y = p.y - size.y;
-                p2.x = p.x + size.x/2; p2.y = p.y;
-                break;
-            case cFigure::ANCHOR_W:
-                p1.x = p.x - size.x; p1.y = p.y - size.y/2;
-                p2.x = p.x; p2.y = p.y + size.y/2;
-                break;
-            case cFigure::ANCHOR_NW:
-                p1.x = p.x; p1.y = p.y;
-                p2.x = p.x + size.x; p2.y = p.y + size.y;
-                break;
-            case cFigure::ANCHOR_NE:
-                p1.x = p.x - size.x; p1.y = p.y;
-                p2.x = p.x; p2.y = p.y + size.y;
-                break;
-            case cFigure::ANCHOR_SE:
-            case cFigure::ANCHOR_BASELINE_END:
-                p1.x = p.x - size.x; p1.y = p.y - size.y;
-                p2.x = p.x; p2.y = p.y;
-                break;
-            case cFigure::ANCHOR_SW:
-            case cFigure::ANCHOR_BASELINE_START:
-                p1.x = p.x; p1.y = p.y - size.y;
-                p2.x = p.x + size.x; p2.y = p.y;
-                break;
-            default: throw cRuntimeError("Unexpected anchor %d", anchor);
-        }
-    }
-    else {
-        throw cRuntimeError("Wrong number of coordinates: 2 or 4 expected");
+    int numCoords = property->getNumValues(PKEY_POSITION);
+    if (numCoords != 2)
+        throw cRuntimeError("position: two coordinates expected");
+    Point p = parsePoint(property, PKEY_POSITION, 0);
+    Point size = parsePoint(property, PKEY_SIZE, 0);
+    const char *anchorStr = property->getValue(PKEY_ANCHOR);
+    Anchor anchor = opp_isblank(anchorStr) ? cFigure::ANCHOR_NW : parseAnchor(anchorStr);
+    switch (anchor) {
+        case cFigure::ANCHOR_CENTER:
+            p1.x = p.x - size.x/2; p1.y = p.y - size.y/2;
+            p2.x = p.x + size.x/2; p2.y = p.y + size.y/2;
+            break;
+        case cFigure::ANCHOR_N:
+            p1.x = p.x - size.x/2; p1.y = p.y;
+            p2.x = p.x + size.x/2; p2.y = p.y + size.y;
+            break;
+        case cFigure::ANCHOR_E:
+            p1.x = p.x; p1.y = p.y - size.y/2;
+            p2.x = p.x + size.x; p2.y = p.y + size.y/2;
+            break;
+        case cFigure::ANCHOR_S:
+        case cFigure::ANCHOR_BASELINE_MIDDLE:
+            p1.x = p.x - size.x/2; p1.y = p.y - size.y;
+            p2.x = p.x + size.x/2; p2.y = p.y;
+            break;
+        case cFigure::ANCHOR_W:
+            p1.x = p.x - size.x; p1.y = p.y - size.y/2;
+            p2.x = p.x; p2.y = p.y + size.y/2;
+            break;
+        case cFigure::ANCHOR_NW:
+            p1.x = p.x; p1.y = p.y;
+            p2.x = p.x + size.x; p2.y = p.y + size.y;
+            break;
+        case cFigure::ANCHOR_NE:
+            p1.x = p.x - size.x; p1.y = p.y;
+            p2.x = p.x; p2.y = p.y + size.y;
+            break;
+        case cFigure::ANCHOR_SE:
+        case cFigure::ANCHOR_BASELINE_END:
+            p1.x = p.x - size.x; p1.y = p.y - size.y;
+            p2.x = p.x; p2.y = p.y;
+            break;
+        case cFigure::ANCHOR_SW:
+        case cFigure::ANCHOR_BASELINE_START:
+            p1.x = p.x; p1.y = p.y - size.y;
+            p2.x = p.x + size.x; p2.y = p.y;
+            break;
+        default: throw cRuntimeError("Unexpected anchor %d", anchor);
     }
 }
 
@@ -630,16 +603,121 @@ bool cFigure::parseBool(const char *s)
     throw cRuntimeError("invalid boolean value '%s'", s);
 }
 
+//
+// HSB-to-RGB conversion
+// source: http://nuttybar.drama.uga.edu/pipermail/dirgames-l/2001-March/006061.html
+// Input:   hue, saturation, and brightness as floats scaled from 0.0 to 1.0
+// Output:  red, green, and blue as floats scaled from 0.0 to 1.0
+//
+static void hsbToRgb(double hue, double saturation, double brightness,
+                     double& red, double& green, double& blue)
+{
+   if (brightness == 0.0)
+   {   // safety short circuit again
+       red   = 0.0;
+       green = 0.0;
+       blue  = 0.0;
+       return;
+   }
+
+   if (saturation == 0.0)
+   {   // grey
+       red   = brightness;
+       green = brightness;
+       blue  = brightness;
+       return;
+   }
+
+   float domainOffset;         // hue mod 1/6
+   if (hue < 1.0/6)
+   {   // red domain; green ascends
+       domainOffset = hue;
+       red   = brightness;
+       blue  = brightness * (1.0 - saturation);
+       green = blue + (brightness - blue) * domainOffset * 6;
+   }
+     else if (hue < 2.0/6)
+     { // yellow domain; red descends
+       domainOffset = hue - 1.0/6;
+       green = brightness;
+       blue  = brightness * (1.0 - saturation);
+       red   = green - (brightness - blue) * domainOffset * 6;
+     }
+     else if (hue < 3.0/6)
+     { // green domain; blue ascends
+       domainOffset = hue - 2.0/6;
+       green = brightness;
+       red   = brightness * (1.0 - saturation);
+       blue  = red + (brightness - red) * domainOffset * 6;
+     }
+     else if (hue < 4.0/6)
+     { // cyan domain; green descends
+       domainOffset = hue - 3.0/6;
+       blue  = brightness;
+       red   = brightness * (1.0 - saturation);
+       green = blue - (brightness - red) * domainOffset * 6;
+     }
+     else if (hue < 5.0/6)
+     { // blue domain; red ascends
+       domainOffset = hue - 4.0/6;
+       blue  = brightness;
+       green = brightness * (1.0 - saturation);
+       red   = green + (brightness - green) * domainOffset * 6;
+     }
+     else
+     { // magenta domain; blue descends
+       domainOffset = hue - 5.0/6;
+       red   = brightness;
+       green = brightness * (1.0 - saturation);
+       blue  = red - (brightness - green) * domainOffset * 6;
+     }
+}
+
+inline int h2d(const char *s, int index)
+{
+    char c = s[index];
+    if (c>='0' && c<='9') return c-'0';
+    if (c>='A' && c<='F') return c-'A'+10;
+    if (c>='a' && c<='f') return c-'a'+10;
+    throw cRuntimeError("illegal hex digit '%c' in string '%s'", c, s);
+}
+
+static std::string lc(const char *s)
+{
+    std::string tmp = s;
+    std::transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
+    return tmp;
+}
+
 cFigure::Color cFigure::parseColor(const char *s)
 {
     if (s[0] == '#') {
-        int r, g, b;
-        if (sscanf(s+1, "%2x%2x%2x", &r, &g, &b) != 3)
-            throw cRuntimeError("wrong color syntax '%s', #rrggbb expected", s); //TODO better error checking
-        return Color(r,g,b);
+        if (strlen(s) != 7)
+            throw cRuntimeError("wrong color syntax '%s': 6 hex digits expected after '#'", s);
+        int red =   h2d(s,1)*16 + h2d(s,2);
+        int green = h2d(s,3)*16 + h2d(s,4);
+        int blue =  h2d(s,5)*16 + h2d(s,6);
+        return Color(red, green, blue);
+    }
+    else if (s[0] == '@') {
+        if (strlen(s) != 7)
+            throw cRuntimeError("wrong color syntax '%s': 6 hex digits expected after '@'", s);
+        double hue =        (h2d(s,1)*16 + h2d(s,2)) / 256.0;
+        double saturation = (h2d(s,3)*16 + h2d(s,4)) / 256.0;
+        double brightness = (h2d(s,5)*16 + h2d(s,6)) / 256.0;
+        double red, green, blue;
+        hsbToRgb(hue, saturation, brightness, red, green, blue);
+        return Color((int) std::min(red*256, 255.0),
+                     (int) std::min(green*256, 255.0),
+                     (int) std::min(blue*256, 255.0));
     }
     else {
-        return Color::byName(s);
+        if (colors.empty())
+            fillColorsMap();
+        std::map<std::string, Color>::const_iterator it = colors.find(lc(s));
+        if (it == colors.end())
+            throw cRuntimeError("No such color: %s", s);
+        return it->second;
     }
 }
 
@@ -682,6 +760,15 @@ cFigure::ArrowHead cFigure::parseArrowHead(const char *s)
     if (!strcmp(s,"barbed")) return ARROW_BARBED;
     throw cRuntimeError("invalid arrowhead style '%s'", s);
 }
+
+cFigure::Interpolation cFigure::parseInterpolation(const char *s)
+{
+    if (!strcmp(s,"none")) return INTERPOLATION_NONE;
+    if (!strcmp(s,"fast")) return INTERPOLATION_FAST;
+    if (!strcmp(s,"best")) return INTERPOLATION_BEST;
+    throw cRuntimeError("invalid interpolation mode '%s'", s);
+}
+
 
 cFigure::Anchor cFigure::parseAnchor(const char *s)
 {
@@ -764,7 +851,7 @@ void cFigure::concatArrays(const char **dest, const char **first, const char **s
     *dest = NULL;
 }
 
-cFigure *cFigure::dupTree()
+cFigure *cFigure::dupTree() const
 {
     cFigure *result = (cFigure *) dup();
     for (int i = 0; i < (int)children.size(); i++)
@@ -890,7 +977,7 @@ cFigure *cFigure::removeFigure(cFigure *figure)
     return removeFigure(pos);
 }
 
-int cFigure::findFigure(const char *name)
+int cFigure::findFigure(const char *name) const
 {
     for (int i = 0; i < (int)children.size(); i++)
         if (children[i]->isName(name))
@@ -898,7 +985,7 @@ int cFigure::findFigure(const char *name)
     return -1;
 }
 
-int cFigure::findFigure(cFigure *figure)
+int cFigure::findFigure(cFigure *figure) const
 {
     for (int i = 0; i < (int)children.size(); i++)
         if (children[i] == figure)
@@ -906,14 +993,14 @@ int cFigure::findFigure(cFigure *figure)
     return -1;
 }
 
-cFigure *cFigure::getFigure(int pos)
+cFigure *cFigure::getFigure(int pos) const
 {
     if (pos < 0 || pos >= (int)children.size())
         throw cRuntimeError(this,"getFigure(): index %d out of bounds", pos);
     return children[pos];
 }
 
-cFigure *cFigure::getFigure(const char *name)
+cFigure *cFigure::getFigure(const char *name) const
 {
     for (int i = 0; i < (int)children.size(); i++) {
         cFigure *figure = children[i];
@@ -923,10 +1010,10 @@ cFigure *cFigure::getFigure(const char *name)
     return NULL;
 }
 
-cFigure *cFigure::findFigureRecursively(const char *name)
+cFigure *cFigure::findFigureRecursively(const char *name) const
 {
     if (!strcmp(name, getFullName()))
-        return this;
+        return const_cast<cFigure*>(this);
     for (int i = 0; i < (int)children.size(); i++) {
         cFigure *figure = children[i]->findFigureRecursively(name);
         if (figure)
@@ -935,7 +1022,7 @@ cFigure *cFigure::findFigureRecursively(const char *name)
     return NULL;
 }
 
-cCanvas *cFigure::getCanvas()
+cCanvas *cFigure::getCanvas() const
 {
     return dynamic_cast<cCanvas*>(getRootFigure()->getOwner());
 }
@@ -949,16 +1036,16 @@ static char *nextToken(char *&rest)
     return token;
 }
 
-cFigure *cFigure::getRootFigure()
+cFigure *cFigure::getRootFigure() const
 {
-    cFigure *figure = this;
+    cFigure *figure = const_cast<cFigure*>(this);
     cFigure *parent;
     while ((parent = figure->getParentFigure()) != NULL)
         figure = parent;
     return figure;
 }
 
-cFigure *cFigure::getFigureByPath(const char *path)
+cFigure *cFigure::getFigureByPath(const char *path) const
 {
     if (!path || !path[0])
         return NULL;
@@ -966,7 +1053,7 @@ cFigure *cFigure::getFigureByPath(const char *path)
     // determine starting point
     bool isRelative = (path[0] == '.' || path[0] == '^');
     cFigure *rootFigure = isRelative ? NULL : getRootFigure();  // only needed when processing absolute paths
-    cFigure *figure = isRelative ? this : rootFigure;
+    cFigure *figure = isRelative ? const_cast<cFigure*>(this) : rootFigure;
     if (path[0] == '.')
         path++; // skip initial dot
 
@@ -1172,15 +1259,15 @@ void cLineFigure::parse(cProperty *property)
 {
     cAbstractLineFigure::parse(property);
 
-    setStart(parsePoint(property, PKEY_COORDS, 0));
-    setEnd(parsePoint(property, PKEY_COORDS, 2));
+    setStart(parsePoint(property, PKEY_POINTS, 0));
+    setEnd(parsePoint(property, PKEY_POINTS, 2));
 }
 
 const char **cLineFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_COORDS, NULL};
+        const char *localKeys[] = { PKEY_POINTS, NULL};
         concatArrays(keys, cAbstractLineFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1236,7 +1323,7 @@ const char **cArcFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_COORDS, PKEY_SIZE, PKEY_ANCHOR, PKEY_STARTANGLE, PKEY_ENDANGLE, NULL};
+        const char *localKeys[] = { PKEY_POSITION, PKEY_SIZE, PKEY_ANCHOR, PKEY_STARTANGLE, PKEY_ENDANGLE, NULL};
         concatArrays(keys, cAbstractLineFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1291,7 +1378,7 @@ void cPolylineFigure::parse(cProperty *property)
     cAbstractLineFigure::parse(property);
 
     const char *s;
-    setPoints(parsePoints(property, PKEY_COORDS));
+    setPoints(parsePoints(property, PKEY_POINTS));
     if ((s = property->getValue(PKEY_SMOOTH, 0)) != NULL)
         setSmooth(parseBool(s));
     if ((s = property->getValue(PKEY_JOINSTYLE, 0)) != NULL)
@@ -1302,7 +1389,7 @@ const char **cPolylineFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_COORDS, PKEY_SMOOTH, PKEY_JOINSTYLE, NULL};
+        const char *localKeys[] = { PKEY_POINTS, PKEY_SMOOTH, PKEY_JOINSTYLE, NULL};
         concatArrays(keys, cAbstractLineFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1423,7 +1510,7 @@ const char **cRectangleFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_COORDS, PKEY_SIZE, PKEY_ANCHOR, PKEY_CORNERRADIUS, NULL};
+        const char *localKeys[] = { PKEY_POSITION, PKEY_SIZE, PKEY_ANCHOR, PKEY_CORNERRADIUS, NULL};
         concatArrays(keys, cAbstractShapeFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1469,7 +1556,7 @@ const char **cOvalFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_COORDS, PKEY_SIZE, PKEY_ANCHOR, NULL};
+        const char *localKeys[] = { PKEY_POSITION, PKEY_SIZE, PKEY_ANCHOR, NULL};
         concatArrays(keys, cAbstractShapeFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1524,7 +1611,7 @@ const char **cRingFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_COORDS, PKEY_SIZE, PKEY_ANCHOR, PKEY_INNERSIZE, NULL};
+        const char *localKeys[] = { PKEY_POSITION, PKEY_SIZE, PKEY_ANCHOR, PKEY_INNERSIZE, NULL};
         concatArrays(keys, cAbstractShapeFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1578,7 +1665,7 @@ const char **cPieSliceFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_COORDS, PKEY_SIZE, PKEY_ANCHOR, PKEY_STARTANGLE, PKEY_ENDANGLE, NULL};
+        const char *localKeys[] = { PKEY_POSITION, PKEY_SIZE, PKEY_ANCHOR, PKEY_STARTANGLE, PKEY_ENDANGLE, NULL};
         concatArrays(keys, cAbstractShapeFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1633,7 +1720,7 @@ void cPolygonFigure::parse(cProperty *property)
     cAbstractShapeFigure::parse(property);
 
     const char *s;
-    setPoints(parsePoints(property, PKEY_COORDS));
+    setPoints(parsePoints(property, PKEY_POINTS));
     if ((s = property->getValue(PKEY_SMOOTH, 0)) != NULL)
         setSmooth(parseBool(s));
     if ((s = property->getValue(PKEY_JOINSTYLE, 0)) != NULL)
@@ -1646,7 +1733,7 @@ const char **cPolygonFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_COORDS, PKEY_SMOOTH, PKEY_JOINSTYLE, PKEY_FILLRULE, NULL };
+        const char *localKeys[] = { PKEY_POINTS, PKEY_SMOOTH, PKEY_JOINSTYLE, PKEY_FILLRULE, NULL };
         concatArrays(keys, cAbstractShapeFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1862,7 +1949,7 @@ void cPathFigure::move(double x, double y)
 
 void cAbstractTextFigure::copy(const cAbstractTextFigure& other)
 {
-    setLocation(other.getLocation());
+    setPosition(other.getPosition());
     setColor(other.getColor());
     setOpacity(other.getOpacity());
     setFont(other.getFont());
@@ -1881,7 +1968,7 @@ cAbstractTextFigure& cAbstractTextFigure::operator=(const cAbstractTextFigure& o
 std::string cAbstractTextFigure::info() const
 {
     std::stringstream os;
-    os << "\"" << getText() << "\" at " << getLocation();
+    os << "\"" << getText() << "\" at " << getPosition();
     return os.str();
 }
 
@@ -1890,7 +1977,7 @@ void cAbstractTextFigure::parse(cProperty *property)
     cFigure::parse(property);
 
     const char *s;
-    setLocation(parsePoint(property, PKEY_COORDS, 0));
+    setPosition(parsePoint(property, PKEY_POSITION, 0));
     setText(opp_nulltoempty(property->getValue(PKEY_TEXT)));
     if ((s = property->getValue(PKEY_COLOR)) != NULL)
         setColor(parseColor(s));
@@ -1906,7 +1993,7 @@ const char **cAbstractTextFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_COORDS, PKEY_TEXT, PKEY_COLOR, PKEY_OPACITY, PKEY_FONT, PKEY_ANCHOR, NULL};
+        const char *localKeys[] = { PKEY_POSITION, PKEY_TEXT, PKEY_COLOR, PKEY_OPACITY, PKEY_FONT, PKEY_ANCHOR, NULL};
         concatArrays(keys, cFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1914,8 +2001,8 @@ const char **cAbstractTextFigure::getAllowedPropertyKeys() const
 
 void cAbstractTextFigure::move(double x, double y)
 {
-    location.x += x;
-    location.y += y;
+    position.x += x;
+    position.y += y;
     fireGeometryChange();
 }
 
@@ -1943,10 +2030,11 @@ cLabelFigure& cLabelFigure::operator=(const cLabelFigure& other)
 
 void cAbstractImageFigure::copy(const cAbstractImageFigure& other)
 {
-    setLocation(other.getLocation());
+    setPosition(other.getPosition());
     setAnchor(other.getAnchor());
     setWidth(other.getWidth());
     setHeight(other.getHeight());
+    setInterpolation(other.getInterpolation());
     setOpacity(other.getOpacity());
     setTintColor(other.getTintColor());
     setTintAmount(other.getTintAmount());
@@ -1965,12 +2053,14 @@ void cAbstractImageFigure::parse(cProperty *property)
     cFigure::parse(property);
 
     const char *s;
-    setLocation(parsePoint(property, PKEY_COORDS, 0));
+    setPosition(parsePoint(property, PKEY_POSITION, 0));
     if ((s = property->getValue(PKEY_ANCHOR)) != NULL)
         setAnchor(parseAnchor(s));
     Point size = parsePoint(property, PKEY_SIZE, 0);
     setWidth(size.x);
     setHeight(size.y);
+    if ((s = property->getValue(PKEY_INTERPOLATION)) != NULL)
+        setInterpolation(parseInterpolation(s));
     if ((s = property->getValue(PKEY_OPACITY)) != NULL)
         setOpacity(opp_atof(s));
     if ((s = property->getValue(PKEY_TINT, 0)) != NULL) {
@@ -1985,7 +2075,7 @@ const char **cAbstractImageFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_COORDS, PKEY_ANCHOR, PKEY_SIZE, PKEY_OPACITY, PKEY_TINT, NULL};
+        const char *localKeys[] = { PKEY_POSITION, PKEY_ANCHOR, PKEY_SIZE, PKEY_INTERPOLATION, PKEY_OPACITY, PKEY_TINT, NULL};
         concatArrays(keys, cFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1993,8 +2083,8 @@ const char **cAbstractImageFigure::getAllowedPropertyKeys() const
 
 void cAbstractImageFigure::move(double x, double y)
 {
-    location.x += x;
-    location.y += y;
+    position.x += x;
+    position.y += y;
     fireGeometryChange();
 }
 
@@ -2003,7 +2093,7 @@ void cAbstractImageFigure::move(double x, double y)
 std::string cImageFigure::info() const
 {
     std::stringstream os;
-    os << "\"" << getImageName() << "\" at " << getLocation();
+    os << "\"" << getImageName() << "\" at " << getPosition();
     return os.str();
 }
 
@@ -2041,7 +2131,7 @@ const char **cImageFigure::getAllowedPropertyKeys() const
 std::string cPixmapFigure::info() const
 {
     std::stringstream os;
-    os << "(" << getPixmapWidth() << " x " << getPixmapHeight() << ") at " << getLocation();
+    os << "(" << getPixmapWidth() << " x " << getPixmapHeight() << ") at " << getPosition();
     return os.str();
 }
 
@@ -2138,7 +2228,7 @@ void cCanvas::addFiguresFrom(cProperties *properties)
 {
     std::map<cFigure*,double> orderMap;
 
-    //TODO currently fails with "parent not found" if child figure precedes parent in the property order
+    // Note: the following code assumes that parent figures precede their children, otherwise a "parent not found" error will occur
     for (int i = 0; i < properties->getNumProperties(); i++)
     {
         cProperty *property = properties->get(i);
@@ -2147,7 +2237,7 @@ void cCanvas::addFiguresFrom(cProperties *properties)
     }
 }
 
-void cCanvas::parseFigure(cProperty *property, std::map<cFigure*,double>& orderMap)
+void cCanvas::parseFigure(cProperty *property, std::map<cFigure*,double>& orderMap) const
 {
     try {
         const char *path = property->getIndex();
@@ -2192,7 +2282,7 @@ void cCanvas::parseFigure(cProperty *property, std::map<cFigure*,double>& orderM
     }
 }
 
-cFigure *cCanvas::createFigure(const char *type)
+cFigure *cCanvas::createFigure(const char *type) const
 {
     cFigure *figure;
     if (!strcmp(type, "group"))
@@ -2238,6 +2328,22 @@ cFigure *cCanvas::createFigure(const char *type)
             throw cRuntimeError("Wrong figure class: cannot cast %s to cFigure", obj->getClassName());
     }
     return figure;
+}
+
+void cCanvas::dumpSupportedPropertyKeys(std::ostream& out) const
+{
+    const char *types[] = {
+            "group", "line", "arc", "polyline", "rectangle", "oval", "ring", "pieslice",
+            "polygon", "path", "text", "label", "image", "pixmap", NULL
+    };
+
+    for (const char **p = types; *p; p++) {
+        const char *type = *p;
+        cFigure *figure = createFigure(type);
+        out << type << ": " << opp_join(figure->getAllowedPropertyKeys(), ", ") << "\n";
+        delete figure;
+    }
+
 }
 
 cFigure *cCanvas::getSubmodulesLayer() const
@@ -2288,561 +2394,548 @@ std::vector<std::string> cCanvas::getAllTagsAsVector() const
 
 //---
 
-static std::string lc(const char *s)
+void cFigure::fillColorsMap()
 {
-    std::string tmp = s;
-    std::transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
-    return tmp;
-}
-
-cFigure::Color cFigure::Color::byName(const char *name)
-{
-    if (colors.empty()) {
-        colors[lc("antiqueWhite")] = cFigure::Color(250,235,215);
-        colors[lc("antiqueWhite1")] = cFigure::Color(255,239,219);
-        colors[lc("antiqueWhite2")] = cFigure::Color(238,223,204);
-        colors[lc("antiqueWhite3")] = cFigure::Color(205,192,176);
-        colors[lc("antiqueWhite4")] = cFigure::Color(139,131,120);
-        colors[lc("blanchedAlmond")] = cFigure::Color(255,235,205);
-        colors[lc("blueViolet")] = cFigure::Color(138,43,226);
-        colors[lc("cadetBlue")] = cFigure::Color(95,158,160);
-        colors[lc("cadetBlue1")] = cFigure::Color(152,245,255);
-        colors[lc("cadetBlue2")] = cFigure::Color(142,229,238);
-        colors[lc("cadetBlue3")] = cFigure::Color(122,197,205);
-        colors[lc("cadetBlue4")] = cFigure::Color(83,134,139);
-        colors[lc("cornflowerBlue")] = cFigure::Color(100,149,237);
-        colors[lc("darkBlue")] = cFigure::Color(0,0,139);
-        colors[lc("darkCyan")] = cFigure::Color(0,139,139);
-        colors[lc("darkGoldenrod")] = cFigure::Color(184,134,11);
-        colors[lc("darkGoldenrod1")] = cFigure::Color(255,185,15);
-        colors[lc("darkGoldenrod2")] = cFigure::Color(238,173,14);
-        colors[lc("darkGoldenrod3")] = cFigure::Color(205,149,12);
-        colors[lc("darkGoldenrod4")] = cFigure::Color(139,101,8);
-        colors[lc("darkGreen")] = cFigure::Color(0,100,0);
-        colors[lc("darkGrey")] = cFigure::Color(169,169,169);
-        colors[lc("darkKhaki")] = cFigure::Color(189,183,107);
-        colors[lc("darkMagenta")] = cFigure::Color(139,0,139);
-        colors[lc("darkOliveGreen")] = cFigure::Color(85,107,47);
-        colors[lc("darkOliveGreen1")] = cFigure::Color(202,255,112);
-        colors[lc("darkOliveGreen2")] = cFigure::Color(188,238,104);
-        colors[lc("darkOliveGreen3")] = cFigure::Color(162,205,90);
-        colors[lc("darkOliveGreen4")] = cFigure::Color(110,139,61);
-        colors[lc("darkOrange")] = cFigure::Color(255,140,0);
-        colors[lc("darkOrange1")] = cFigure::Color(255,127,0);
-        colors[lc("darkOrange2")] = cFigure::Color(238,118,0);
-        colors[lc("darkOrange3")] = cFigure::Color(205,102,0);
-        colors[lc("darkOrange4")] = cFigure::Color(139,69,0);
-        colors[lc("darkOrchid")] = cFigure::Color(153,50,204);
-        colors[lc("darkOrchid1")] = cFigure::Color(191,62,255);
-        colors[lc("darkOrchid2")] = cFigure::Color(178,58,238);
-        colors[lc("darkOrchid3")] = cFigure::Color(154,50,205);
-        colors[lc("darkOrchid4")] = cFigure::Color(104,34,139);
-        colors[lc("darkRed")] = cFigure::Color(139,0,0);
-        colors[lc("darkSalmon")] = cFigure::Color(233,150,122);
-        colors[lc("darkSeaGreen")] = cFigure::Color(143,188,143);
-        colors[lc("darkSeaGreen1")] = cFigure::Color(193,255,193);
-        colors[lc("darkSeaGreen2")] = cFigure::Color(180,238,180);
-        colors[lc("darkSeaGreen3")] = cFigure::Color(155,205,155);
-        colors[lc("darkSeaGreen4")] = cFigure::Color(105,139,105);
-        colors[lc("darkSlateBlue")] = cFigure::Color(72,61,139);
-        colors[lc("darkSlateGrey")] = cFigure::Color(47,79,79);
-        colors[lc("darkTurquoise")] = cFigure::Color(0,206,209);
-        colors[lc("darkViolet")] = cFigure::Color(148,0,211);
-        colors[lc("deepPink")] = cFigure::Color(255,20,147);
-        colors[lc("deepPink1")] = cFigure::Color(255,20,147);
-        colors[lc("deepPink2")] = cFigure::Color(238,18,137);
-        colors[lc("deepPink3")] = cFigure::Color(205,16,118);
-        colors[lc("deepPink4")] = cFigure::Color(139,10,80);
-        colors[lc("deepSkyBlue")] = cFigure::Color(0,191,255);
-        colors[lc("deepSkyBlue1")] = cFigure::Color(0,191,255);
-        colors[lc("deepSkyBlue2")] = cFigure::Color(0,178,238);
-        colors[lc("deepSkyBlue3")] = cFigure::Color(0,154,205);
-        colors[lc("deepSkyBlue4")] = cFigure::Color(0,104,139);
-        colors[lc("dimGrey")] = cFigure::Color(105,105,105);
-        colors[lc("dodgerBlue")] = cFigure::Color(30,144,255);
-        colors[lc("dodgerBlue1")] = cFigure::Color(30,144,255);
-        colors[lc("dodgerBlue2")] = cFigure::Color(28,134,238);
-        colors[lc("dodgerBlue3")] = cFigure::Color(24,116,205);
-        colors[lc("dodgerBlue4")] = cFigure::Color(16,78,139);
-        colors[lc("floralWhite")] = cFigure::Color(255,250,240);
-        colors[lc("forestGreen")] = cFigure::Color(34,139,34);
-        colors[lc("ghostWhite")] = cFigure::Color(248,248,255);
-        colors[lc("greenYellow")] = cFigure::Color(173,255,47);
-        colors[lc("hotPink")] = cFigure::Color(255,105,180);
-        colors[lc("hotPink1")] = cFigure::Color(255,110,180);
-        colors[lc("hotPink2")] = cFigure::Color(238,106,167);
-        colors[lc("hotPink3")] = cFigure::Color(205,96,144);
-        colors[lc("hotPink4")] = cFigure::Color(139,58,98);
-        colors[lc("indianRed")] = cFigure::Color(205,92,92);
-        colors[lc("indianRed1")] = cFigure::Color(255,106,106);
-        colors[lc("indianRed2")] = cFigure::Color(238,99,99);
-        colors[lc("indianRed3")] = cFigure::Color(205,85,85);
-        colors[lc("indianRed4")] = cFigure::Color(139,58,58);
-        colors[lc("lavenderBlush")] = cFigure::Color(255,240,245);
-        colors[lc("lavenderBlush1")] = cFigure::Color(255,240,245);
-        colors[lc("lavenderBlush2")] = cFigure::Color(238,224,229);
-        colors[lc("lavenderBlush3")] = cFigure::Color(205,193,197);
-        colors[lc("lavenderBlush4")] = cFigure::Color(139,131,134);
-        colors[lc("lawnGreen")] = cFigure::Color(124,252,0);
-        colors[lc("lemonChiffon")] = cFigure::Color(255,250,205);
-        colors[lc("lemonChiffon1")] = cFigure::Color(255,250,205);
-        colors[lc("lemonChiffon2")] = cFigure::Color(238,233,191);
-        colors[lc("lemonChiffon3")] = cFigure::Color(205,201,165);
-        colors[lc("lemonChiffon4")] = cFigure::Color(139,137,112);
-        colors[lc("lightBlue")] = cFigure::Color(173,216,230);
-        colors[lc("lightBlue1")] = cFigure::Color(191,239,255);
-        colors[lc("lightBlue2")] = cFigure::Color(178,223,238);
-        colors[lc("lightBlue3")] = cFigure::Color(154,192,205);
-        colors[lc("lightBlue4")] = cFigure::Color(104,131,139);
-        colors[lc("lightCoral")] = cFigure::Color(240,128,128);
-        colors[lc("lightCyan")] = cFigure::Color(224,255,255);
-        colors[lc("lightCyan1")] = cFigure::Color(224,255,255);
-        colors[lc("lightCyan2")] = cFigure::Color(209,238,238);
-        colors[lc("lightCyan3")] = cFigure::Color(180,205,205);
-        colors[lc("lightCyan4")] = cFigure::Color(122,139,139);
-        colors[lc("lightGoldenrod")] = cFigure::Color(238,221,130);
-        colors[lc("lightGoldenrod1")] = cFigure::Color(255,236,139);
-        colors[lc("lightGoldenrod2")] = cFigure::Color(238,220,130);
-        colors[lc("lightGoldenrod3")] = cFigure::Color(205,190,112);
-        colors[lc("lightGoldenrod4")] = cFigure::Color(139,129,76);
-        colors[lc("lightGoldenrodYellow")] = cFigure::Color(250,250,210);
-        colors[lc("lightGreen")] = cFigure::Color(144,238,144);
-        colors[lc("lightGrey")] = cFigure::Color(211,211,211);
-        colors[lc("lightPink")] = cFigure::Color(255,182,193);
-        colors[lc("lightPink1")] = cFigure::Color(255,174,185);
-        colors[lc("lightPink2")] = cFigure::Color(238,162,173);
-        colors[lc("lightPink3")] = cFigure::Color(205,140,149);
-        colors[lc("lightPink4")] = cFigure::Color(139,95,101);
-        colors[lc("lightSalmon")] = cFigure::Color(255,160,122);
-        colors[lc("lightSalmon1")] = cFigure::Color(255,160,122);
-        colors[lc("lightSalmon2")] = cFigure::Color(238,149,114);
-        colors[lc("lightSalmon3")] = cFigure::Color(205,129,98);
-        colors[lc("lightSalmon4")] = cFigure::Color(139,87,66);
-        colors[lc("lightSeaGreen")] = cFigure::Color(32,178,170);
-        colors[lc("lightSkyBlue")] = cFigure::Color(135,206,250);
-        colors[lc("lightSkyBlue1")] = cFigure::Color(176,226,255);
-        colors[lc("lightSkyBlue2")] = cFigure::Color(164,211,238);
-        colors[lc("lightSkyBlue3")] = cFigure::Color(141,182,205);
-        colors[lc("lightSkyBlue4")] = cFigure::Color(96,123,139);
-        colors[lc("lightSlateBlue")] = cFigure::Color(132,112,255);
-        colors[lc("lightSlateGrey")] = cFigure::Color(119,136,153);
-        colors[lc("lightSteelBlue")] = cFigure::Color(176,196,222);
-        colors[lc("lightSteelBlue1")] = cFigure::Color(202,225,255);
-        colors[lc("lightSteelBlue2")] = cFigure::Color(188,210,238);
-        colors[lc("lightSteelBlue3")] = cFigure::Color(162,181,205);
-        colors[lc("lightSteelBlue4")] = cFigure::Color(110,123,139);
-        colors[lc("lightYellow")] = cFigure::Color(255,255,224);
-        colors[lc("lightYellow1")] = cFigure::Color(255,255,224);
-        colors[lc("lightYellow2")] = cFigure::Color(238,238,209);
-        colors[lc("lightYellow3")] = cFigure::Color(205,205,180);
-        colors[lc("lightYellow4")] = cFigure::Color(139,139,122);
-        colors[lc("limeGreen")] = cFigure::Color(50,205,50);
-        colors[lc("mediumAquamarine")] = cFigure::Color(102,205,170);
-        colors[lc("mediumBlue")] = cFigure::Color(0,0,205);
-        colors[lc("mediumOrchid")] = cFigure::Color(186,85,211);
-        colors[lc("mediumOrchid1")] = cFigure::Color(224,102,255);
-        colors[lc("mediumOrchid2")] = cFigure::Color(209,95,238);
-        colors[lc("mediumOrchid3")] = cFigure::Color(180,82,205);
-        colors[lc("mediumOrchid4")] = cFigure::Color(122,55,139);
-        colors[lc("mediumPurple")] = cFigure::Color(147,112,219);
-        colors[lc("mediumPurple1")] = cFigure::Color(171,130,255);
-        colors[lc("mediumPurple2")] = cFigure::Color(159,121,238);
-        colors[lc("mediumPurple3")] = cFigure::Color(137,104,205);
-        colors[lc("mediumPurple4")] = cFigure::Color(93,71,139);
-        colors[lc("mediumSeaGreen")] = cFigure::Color(60,179,113);
-        colors[lc("mediumSlateBlue")] = cFigure::Color(123,104,238);
-        colors[lc("mediumSpringGreen")] = cFigure::Color(0,250,154);
-        colors[lc("mediumTurquoise")] = cFigure::Color(72,209,204);
-        colors[lc("mediumVioletRed")] = cFigure::Color(199,21,133);
-        colors[lc("midnightBlue")] = cFigure::Color(25,25,112);
-        colors[lc("mintCream")] = cFigure::Color(245,255,250);
-        colors[lc("mistyRose")] = cFigure::Color(255,228,225);
-        colors[lc("mistyRose1")] = cFigure::Color(255,228,225);
-        colors[lc("mistyRose2")] = cFigure::Color(238,213,210);
-        colors[lc("mistyRose3")] = cFigure::Color(205,183,181);
-        colors[lc("mistyRose4")] = cFigure::Color(139,125,123);
-        colors[lc("navajoWhite")] = cFigure::Color(255,222,173);
-        colors[lc("navajoWhite1")] = cFigure::Color(255,222,173);
-        colors[lc("navajoWhite2")] = cFigure::Color(238,207,161);
-        colors[lc("navajoWhite3")] = cFigure::Color(205,179,139);
-        colors[lc("navajoWhite4")] = cFigure::Color(139,121,94);
-        colors[lc("navyBlue")] = cFigure::Color(0,0,128);
-        colors[lc("oldLace")] = cFigure::Color(253,245,230);
-        colors[lc("oliveDrab")] = cFigure::Color(107,142,35);
-        colors[lc("oliveDrab1")] = cFigure::Color(192,255,62);
-        colors[lc("oliveDrab2")] = cFigure::Color(179,238,58);
-        colors[lc("oliveDrab3")] = cFigure::Color(154,205,50);
-        colors[lc("oliveDrab4")] = cFigure::Color(105,139,34);
-        colors[lc("orangeRed")] = cFigure::Color(255,69,0);
-        colors[lc("orangeRed1")] = cFigure::Color(255,69,0);
-        colors[lc("orangeRed2")] = cFigure::Color(238,64,0);
-        colors[lc("orangeRed3")] = cFigure::Color(205,55,0);
-        colors[lc("orangeRed4")] = cFigure::Color(139,37,0);
-        colors[lc("paleGoldenrod")] = cFigure::Color(238,232,170);
-        colors[lc("paleGreen")] = cFigure::Color(152,251,152);
-        colors[lc("paleGreen1")] = cFigure::Color(154,255,154);
-        colors[lc("paleGreen2")] = cFigure::Color(144,238,144);
-        colors[lc("paleGreen3")] = cFigure::Color(124,205,124);
-        colors[lc("paleGreen4")] = cFigure::Color(84,139,84);
-        colors[lc("paleTurquoise")] = cFigure::Color(175,238,238);
-        colors[lc("paleTurquoise1")] = cFigure::Color(187,255,255);
-        colors[lc("paleTurquoise2")] = cFigure::Color(174,238,238);
-        colors[lc("paleTurquoise3")] = cFigure::Color(150,205,205);
-        colors[lc("paleTurquoise4")] = cFigure::Color(102,139,139);
-        colors[lc("paleVioletRed")] = cFigure::Color(219,112,147);
-        colors[lc("paleVioletRed1")] = cFigure::Color(255,130,171);
-        colors[lc("paleVioletRed2")] = cFigure::Color(238,121,159);
-        colors[lc("paleVioletRed3")] = cFigure::Color(205,104,137);
-        colors[lc("paleVioletRed4")] = cFigure::Color(139,71,93);
-        colors[lc("papayaWhip")] = cFigure::Color(255,239,213);
-        colors[lc("peachPuff")] = cFigure::Color(255,218,185);
-        colors[lc("peachPuff1")] = cFigure::Color(255,218,185);
-        colors[lc("peachPuff2")] = cFigure::Color(238,203,173);
-        colors[lc("peachPuff3")] = cFigure::Color(205,175,149);
-        colors[lc("peachPuff4")] = cFigure::Color(139,119,101);
-        colors[lc("powderBlue")] = cFigure::Color(176,224,230);
-        colors[lc("rosyBrown")] = cFigure::Color(188,143,143);
-        colors[lc("rosyBrown1")] = cFigure::Color(255,193,193);
-        colors[lc("rosyBrown2")] = cFigure::Color(238,180,180);
-        colors[lc("rosyBrown3")] = cFigure::Color(205,155,155);
-        colors[lc("rosyBrown4")] = cFigure::Color(139,105,105);
-        colors[lc("royalBlue")] = cFigure::Color(65,105,225);
-        colors[lc("royalBlue1")] = cFigure::Color(72,118,255);
-        colors[lc("royalBlue2")] = cFigure::Color(67,110,238);
-        colors[lc("royalBlue3")] = cFigure::Color(58,95,205);
-        colors[lc("royalBlue4")] = cFigure::Color(39,64,139);
-        colors[lc("saddleBrown")] = cFigure::Color(139,69,19);
-        colors[lc("sandyBrown")] = cFigure::Color(244,164,96);
-        colors[lc("seaGreen")] = cFigure::Color(46,139,87);
-        colors[lc("seaGreen1")] = cFigure::Color(84,255,159);
-        colors[lc("seaGreen2")] = cFigure::Color(78,238,148);
-        colors[lc("seaGreen3")] = cFigure::Color(67,205,128);
-        colors[lc("seaGreen4")] = cFigure::Color(46,139,87);
-        colors[lc("skyBlue")] = cFigure::Color(135,206,235);
-        colors[lc("skyBlue1")] = cFigure::Color(135,206,255);
-        colors[lc("skyBlue2")] = cFigure::Color(126,192,238);
-        colors[lc("skyBlue3")] = cFigure::Color(108,166,205);
-        colors[lc("skyBlue4")] = cFigure::Color(74,112,139);
-        colors[lc("slateBlue")] = cFigure::Color(106,90,205);
-        colors[lc("slateBlue1")] = cFigure::Color(131,111,255);
-        colors[lc("slateBlue2")] = cFigure::Color(122,103,238);
-        colors[lc("slateBlue3")] = cFigure::Color(105,89,205);
-        colors[lc("slateBlue4")] = cFigure::Color(71,60,139);
-        colors[lc("slateGrey")] = cFigure::Color(112,128,144);
-        colors[lc("springGreen")] = cFigure::Color(0,255,127);
-        colors[lc("springGreen1")] = cFigure::Color(0,255,127);
-        colors[lc("springGreen2")] = cFigure::Color(0,238,118);
-        colors[lc("springGreen3")] = cFigure::Color(0,205,102);
-        colors[lc("springGreen4")] = cFigure::Color(0,139,69);
-        colors[lc("steelBlue")] = cFigure::Color(70,130,180);
-        colors[lc("steelBlue1")] = cFigure::Color(99,184,255);
-        colors[lc("steelBlue2")] = cFigure::Color(92,172,238);
-        colors[lc("steelBlue3")] = cFigure::Color(79,148,205);
-        colors[lc("steelBlue4")] = cFigure::Color(54,100,139);
-        colors[lc("violetRed")] = cFigure::Color(208,32,144);
-        colors[lc("violetRed1")] = cFigure::Color(255,62,150);
-        colors[lc("violetRed2")] = cFigure::Color(238,58,140);
-        colors[lc("violetRed3")] = cFigure::Color(205,50,120);
-        colors[lc("violetRed4")] = cFigure::Color(139,34,82);
-        colors[lc("whiteSmoke")] = cFigure::Color(245,245,245);
-        colors[lc("yellowGreen")] = cFigure::Color(154,205,50);
-        colors[lc("aquamarine")] = cFigure::Color(127,255,212);
-        colors[lc("aquamarine1")] = cFigure::Color(127,255,212);
-        colors[lc("aquamarine2")] = cFigure::Color(118,238,198);
-        colors[lc("aquamarine3")] = cFigure::Color(102,205,170);
-        colors[lc("aquamarine4")] = cFigure::Color(69,139,116);
-        colors[lc("azure")] = cFigure::Color(240,255,255);
-        colors[lc("azure1")] = cFigure::Color(240,255,255);
-        colors[lc("azure2")] = cFigure::Color(224,238,238);
-        colors[lc("azure3")] = cFigure::Color(193,205,205);
-        colors[lc("azure4")] = cFigure::Color(131,139,139);
-        colors[lc("beige")] = cFigure::Color(245,245,220);
-        colors[lc("bisque")] = cFigure::Color(255,228,196);
-        colors[lc("bisque1")] = cFigure::Color(255,228,196);
-        colors[lc("bisque2")] = cFigure::Color(238,213,183);
-        colors[lc("bisque3")] = cFigure::Color(205,183,158);
-        colors[lc("bisque4")] = cFigure::Color(139,125,107);
-        colors[lc("black")] = cFigure::Color(0,0,0);
-        colors[lc("blue")] = cFigure::Color(0,0,255);
-        colors[lc("blue1")] = cFigure::Color(0,0,255);
-        colors[lc("blue2")] = cFigure::Color(0,0,238);
-        colors[lc("blue3")] = cFigure::Color(0,0,205);
-        colors[lc("blue4")] = cFigure::Color(0,0,139);
-        colors[lc("brown")] = cFigure::Color(165,42,42);
-        colors[lc("brown1")] = cFigure::Color(255,64,64);
-        colors[lc("brown2")] = cFigure::Color(238,59,59);
-        colors[lc("brown3")] = cFigure::Color(205,51,51);
-        colors[lc("brown4")] = cFigure::Color(139,35,35);
-        colors[lc("burlywood")] = cFigure::Color(222,184,135);
-        colors[lc("burlywood1")] = cFigure::Color(255,211,155);
-        colors[lc("burlywood2")] = cFigure::Color(238,197,145);
-        colors[lc("burlywood3")] = cFigure::Color(205,170,125);
-        colors[lc("burlywood4")] = cFigure::Color(139,115,85);
-        colors[lc("chartreuse")] = cFigure::Color(127,255,0);
-        colors[lc("chartreuse1")] = cFigure::Color(127,255,0);
-        colors[lc("chartreuse2")] = cFigure::Color(118,238,0);
-        colors[lc("chartreuse3")] = cFigure::Color(102,205,0);
-        colors[lc("chartreuse4")] = cFigure::Color(69,139,0);
-        colors[lc("chocolate")] = cFigure::Color(210,105,30);
-        colors[lc("chocolate1")] = cFigure::Color(255,127,36);
-        colors[lc("chocolate2")] = cFigure::Color(238,118,33);
-        colors[lc("chocolate3")] = cFigure::Color(205,102,29);
-        colors[lc("chocolate4")] = cFigure::Color(139,69,19);
-        colors[lc("coral")] = cFigure::Color(255,127,80);
-        colors[lc("coral1")] = cFigure::Color(255,114,86);
-        colors[lc("coral2")] = cFigure::Color(238,106,80);
-        colors[lc("coral3")] = cFigure::Color(205,91,69);
-        colors[lc("coral4")] = cFigure::Color(139,62,47);
-        colors[lc("cornsilk")] = cFigure::Color(255,248,220);
-        colors[lc("cornsilk1")] = cFigure::Color(255,248,220);
-        colors[lc("cornsilk2")] = cFigure::Color(238,232,205);
-        colors[lc("cornsilk3")] = cFigure::Color(205,200,177);
-        colors[lc("cornsilk4")] = cFigure::Color(139,136,120);
-        colors[lc("cyan")] = cFigure::Color(0,255,255);
-        colors[lc("cyan1")] = cFigure::Color(0,255,255);
-        colors[lc("cyan2")] = cFigure::Color(0,238,238);
-        colors[lc("cyan3")] = cFigure::Color(0,205,205);
-        colors[lc("cyan4")] = cFigure::Color(0,139,139);
-        colors[lc("firebrick")] = cFigure::Color(178,34,34);
-        colors[lc("firebrick1")] = cFigure::Color(255,48,48);
-        colors[lc("firebrick2")] = cFigure::Color(238,44,44);
-        colors[lc("firebrick3")] = cFigure::Color(205,38,38);
-        colors[lc("firebrick4")] = cFigure::Color(139,26,26);
-        colors[lc("gainsboro")] = cFigure::Color(220,220,220);
-        colors[lc("gold")] = cFigure::Color(255,215,0);
-        colors[lc("gold1")] = cFigure::Color(255,215,0);
-        colors[lc("gold2")] = cFigure::Color(238,201,0);
-        colors[lc("gold3")] = cFigure::Color(205,173,0);
-        colors[lc("gold4")] = cFigure::Color(139,117,0);
-        colors[lc("goldenrod")] = cFigure::Color(218,165,32);
-        colors[lc("goldenrod1")] = cFigure::Color(255,193,37);
-        colors[lc("goldenrod2")] = cFigure::Color(238,180,34);
-        colors[lc("goldenrod3")] = cFigure::Color(205,155,29);
-        colors[lc("goldenrod4")] = cFigure::Color(139,105,20);
-        colors[lc("green")] = cFigure::Color(0,255,0);
-        colors[lc("green1")] = cFigure::Color(0,255,0);
-        colors[lc("green2")] = cFigure::Color(0,238,0);
-        colors[lc("green3")] = cFigure::Color(0,205,0);
-        colors[lc("green4")] = cFigure::Color(0,139,0);
-        colors[lc("grey")] = cFigure::Color(192,192,192);
-        colors[lc("grey0")] = cFigure::Color(0,0,0);
-        colors[lc("grey1")] = cFigure::Color(3,3,3);
-        colors[lc("grey10")] = cFigure::Color(26,26,26);
-        colors[lc("grey100")] = cFigure::Color(255,255,255);
-        colors[lc("grey11")] = cFigure::Color(28,28,28);
-        colors[lc("grey12")] = cFigure::Color(31,31,31);
-        colors[lc("grey13")] = cFigure::Color(33,33,33);
-        colors[lc("grey14")] = cFigure::Color(36,36,36);
-        colors[lc("grey15")] = cFigure::Color(38,38,38);
-        colors[lc("grey16")] = cFigure::Color(41,41,41);
-        colors[lc("grey17")] = cFigure::Color(43,43,43);
-        colors[lc("grey18")] = cFigure::Color(46,46,46);
-        colors[lc("grey19")] = cFigure::Color(48,48,48);
-        colors[lc("grey2")] = cFigure::Color(5,5,5);
-        colors[lc("grey20")] = cFigure::Color(51,51,51);
-        colors[lc("grey21")] = cFigure::Color(54,54,54);
-        colors[lc("grey22")] = cFigure::Color(56,56,56);
-        colors[lc("grey23")] = cFigure::Color(59,59,59);
-        colors[lc("grey24")] = cFigure::Color(61,61,61);
-        colors[lc("grey25")] = cFigure::Color(64,64,64);
-        colors[lc("grey26")] = cFigure::Color(66,66,66);
-        colors[lc("grey27")] = cFigure::Color(69,69,69);
-        colors[lc("grey28")] = cFigure::Color(71,71,71);
-        colors[lc("grey29")] = cFigure::Color(74,74,74);
-        colors[lc("grey3")] = cFigure::Color(8,8,8);
-        colors[lc("grey30")] = cFigure::Color(77,77,77);
-        colors[lc("grey31")] = cFigure::Color(79,79,79);
-        colors[lc("grey32")] = cFigure::Color(82,82,82);
-        colors[lc("grey33")] = cFigure::Color(84,84,84);
-        colors[lc("grey34")] = cFigure::Color(87,87,87);
-        colors[lc("grey35")] = cFigure::Color(89,89,89);
-        colors[lc("grey36")] = cFigure::Color(92,92,92);
-        colors[lc("grey37")] = cFigure::Color(94,94,94);
-        colors[lc("grey38")] = cFigure::Color(97,97,97);
-        colors[lc("grey39")] = cFigure::Color(99,99,99);
-        colors[lc("grey4")] = cFigure::Color(10,10,10);
-        colors[lc("grey40")] = cFigure::Color(102,102,102);
-        colors[lc("grey41")] = cFigure::Color(105,105,105);
-        colors[lc("grey42")] = cFigure::Color(107,107,107);
-        colors[lc("grey43")] = cFigure::Color(110,110,110);
-        colors[lc("grey44")] = cFigure::Color(112,112,112);
-        colors[lc("grey45")] = cFigure::Color(115,115,115);
-        colors[lc("grey46")] = cFigure::Color(117,117,117);
-        colors[lc("grey47")] = cFigure::Color(120,120,120);
-        colors[lc("grey48")] = cFigure::Color(122,122,122);
-        colors[lc("grey49")] = cFigure::Color(125,125,125);
-        colors[lc("grey5")] = cFigure::Color(13,13,13);
-        colors[lc("grey50")] = cFigure::Color(127,127,127);
-        colors[lc("grey51")] = cFigure::Color(130,130,130);
-        colors[lc("grey52")] = cFigure::Color(133,133,133);
-        colors[lc("grey53")] = cFigure::Color(135,135,135);
-        colors[lc("grey54")] = cFigure::Color(138,138,138);
-        colors[lc("grey55")] = cFigure::Color(140,140,140);
-        colors[lc("grey56")] = cFigure::Color(143,143,143);
-        colors[lc("grey57")] = cFigure::Color(145,145,145);
-        colors[lc("grey58")] = cFigure::Color(148,148,148);
-        colors[lc("grey59")] = cFigure::Color(150,150,150);
-        colors[lc("grey6")] = cFigure::Color(15,15,15);
-        colors[lc("grey60")] = cFigure::Color(153,153,153);
-        colors[lc("grey61")] = cFigure::Color(156,156,156);
-        colors[lc("grey62")] = cFigure::Color(158,158,158);
-        colors[lc("grey63")] = cFigure::Color(161,161,161);
-        colors[lc("grey64")] = cFigure::Color(163,163,163);
-        colors[lc("grey65")] = cFigure::Color(166,166,166);
-        colors[lc("grey66")] = cFigure::Color(168,168,168);
-        colors[lc("grey67")] = cFigure::Color(171,171,171);
-        colors[lc("grey68")] = cFigure::Color(173,173,173);
-        colors[lc("grey69")] = cFigure::Color(176,176,176);
-        colors[lc("grey7")] = cFigure::Color(18,18,18);
-        colors[lc("grey70")] = cFigure::Color(179,179,179);
-        colors[lc("grey71")] = cFigure::Color(181,181,181);
-        colors[lc("grey72")] = cFigure::Color(184,184,184);
-        colors[lc("grey73")] = cFigure::Color(186,186,186);
-        colors[lc("grey74")] = cFigure::Color(189,189,189);
-        colors[lc("grey75")] = cFigure::Color(191,191,191);
-        colors[lc("grey76")] = cFigure::Color(194,194,194);
-        colors[lc("grey77")] = cFigure::Color(196,196,196);
-        colors[lc("grey78")] = cFigure::Color(199,199,199);
-        colors[lc("grey79")] = cFigure::Color(201,201,201);
-        colors[lc("grey8")] = cFigure::Color(20,20,20);
-        colors[lc("grey80")] = cFigure::Color(204,204,204);
-        colors[lc("grey81")] = cFigure::Color(207,207,207);
-        colors[lc("grey82")] = cFigure::Color(209,209,209);
-        colors[lc("grey83")] = cFigure::Color(212,212,212);
-        colors[lc("grey84")] = cFigure::Color(214,214,214);
-        colors[lc("grey85")] = cFigure::Color(217,217,217);
-        colors[lc("grey86")] = cFigure::Color(219,219,219);
-        colors[lc("grey87")] = cFigure::Color(222,222,222);
-        colors[lc("grey88")] = cFigure::Color(224,224,224);
-        colors[lc("grey89")] = cFigure::Color(227,227,227);
-        colors[lc("grey9")] = cFigure::Color(23,23,23);
-        colors[lc("grey90")] = cFigure::Color(229,229,229);
-        colors[lc("grey91")] = cFigure::Color(232,232,232);
-        colors[lc("grey92")] = cFigure::Color(235,235,235);
-        colors[lc("grey93")] = cFigure::Color(237,237,237);
-        colors[lc("grey94")] = cFigure::Color(240,240,240);
-        colors[lc("grey95")] = cFigure::Color(242,242,242);
-        colors[lc("grey96")] = cFigure::Color(245,245,245);
-        colors[lc("grey97")] = cFigure::Color(247,247,247);
-        colors[lc("grey98")] = cFigure::Color(250,250,250);
-        colors[lc("grey99")] = cFigure::Color(252,252,252);
-        colors[lc("honeydew")] = cFigure::Color(240,255,240);
-        colors[lc("honeydew1")] = cFigure::Color(240,255,240);
-        colors[lc("honeydew2")] = cFigure::Color(224,238,224);
-        colors[lc("honeydew3")] = cFigure::Color(193,205,193);
-        colors[lc("honeydew4")] = cFigure::Color(131,139,131);
-        colors[lc("ivory")] = cFigure::Color(255,255,240);
-        colors[lc("ivory1")] = cFigure::Color(255,255,240);
-        colors[lc("ivory2")] = cFigure::Color(238,238,224);
-        colors[lc("ivory3")] = cFigure::Color(205,205,193);
-        colors[lc("ivory4")] = cFigure::Color(139,139,131);
-        colors[lc("khaki")] = cFigure::Color(240,230,140);
-        colors[lc("khaki1")] = cFigure::Color(255,246,143);
-        colors[lc("khaki2")] = cFigure::Color(238,230,133);
-        colors[lc("khaki3")] = cFigure::Color(205,198,115);
-        colors[lc("khaki4")] = cFigure::Color(139,134,78);
-        colors[lc("lavender")] = cFigure::Color(230,230,250);
-        colors[lc("linen")] = cFigure::Color(250,240,230);
-        colors[lc("magenta")] = cFigure::Color(255,0,255);
-        colors[lc("magenta1")] = cFigure::Color(255,0,255);
-        colors[lc("magenta2")] = cFigure::Color(238,0,238);
-        colors[lc("magenta3")] = cFigure::Color(205,0,205);
-        colors[lc("magenta4")] = cFigure::Color(139,0,139);
-        colors[lc("maroon")] = cFigure::Color(176,48,96);
-        colors[lc("maroon1")] = cFigure::Color(255,52,179);
-        colors[lc("maroon2")] = cFigure::Color(238,48,167);
-        colors[lc("maroon3")] = cFigure::Color(205,41,144);
-        colors[lc("maroon4")] = cFigure::Color(139,28,98);
-        colors[lc("moccasin")] = cFigure::Color(255,228,181);
-        colors[lc("navy")] = cFigure::Color(0,0,128);
-        colors[lc("orange")] = cFigure::Color(255,165,0);
-        colors[lc("orange1")] = cFigure::Color(255,165,0);
-        colors[lc("orange2")] = cFigure::Color(238,154,0);
-        colors[lc("orange3")] = cFigure::Color(205,133,0);
-        colors[lc("orange4")] = cFigure::Color(139,90,0);
-        colors[lc("orchid")] = cFigure::Color(218,112,214);
-        colors[lc("orchid1")] = cFigure::Color(255,131,250);
-        colors[lc("orchid2")] = cFigure::Color(238,122,233);
-        colors[lc("orchid3")] = cFigure::Color(205,105,201);
-        colors[lc("orchid4")] = cFigure::Color(139,71,137);
-        colors[lc("peru")] = cFigure::Color(205,133,63);
-        colors[lc("pink")] = cFigure::Color(255,192,203);
-        colors[lc("pink1")] = cFigure::Color(255,181,197);
-        colors[lc("pink2")] = cFigure::Color(238,169,184);
-        colors[lc("pink3")] = cFigure::Color(205,145,158);
-        colors[lc("pink4")] = cFigure::Color(139,99,108);
-        colors[lc("plum")] = cFigure::Color(221,160,221);
-        colors[lc("plum1")] = cFigure::Color(255,187,255);
-        colors[lc("plum2")] = cFigure::Color(238,174,238);
-        colors[lc("plum3")] = cFigure::Color(205,150,205);
-        colors[lc("plum4")] = cFigure::Color(139,102,139);
-        colors[lc("purple")] = cFigure::Color(160,32,240);
-        colors[lc("purple1")] = cFigure::Color(155,48,255);
-        colors[lc("purple2")] = cFigure::Color(145,44,238);
-        colors[lc("purple3")] = cFigure::Color(125,38,205);
-        colors[lc("purple4")] = cFigure::Color(85,26,139);
-        colors[lc("red")] = cFigure::Color(255,0,0);
-        colors[lc("red1")] = cFigure::Color(255,0,0);
-        colors[lc("red2")] = cFigure::Color(238,0,0);
-        colors[lc("red3")] = cFigure::Color(205,0,0);
-        colors[lc("red4")] = cFigure::Color(139,0,0);
-        colors[lc("salmon")] = cFigure::Color(250,128,114);
-        colors[lc("salmon1")] = cFigure::Color(255,140,105);
-        colors[lc("salmon2")] = cFigure::Color(238,130,98);
-        colors[lc("salmon3")] = cFigure::Color(205,112,84);
-        colors[lc("salmon4")] = cFigure::Color(139,76,57);
-        colors[lc("seashell")] = cFigure::Color(255,245,238);
-        colors[lc("seashell1")] = cFigure::Color(255,245,238);
-        colors[lc("seashell2")] = cFigure::Color(238,229,222);
-        colors[lc("seashell3")] = cFigure::Color(205,197,191);
-        colors[lc("seashell4")] = cFigure::Color(139,134,130);
-        colors[lc("sienna")] = cFigure::Color(160,82,45);
-        colors[lc("sienna1")] = cFigure::Color(255,130,71);
-        colors[lc("sienna2")] = cFigure::Color(238,121,66);
-        colors[lc("sienna3")] = cFigure::Color(205,104,57);
-        colors[lc("sienna4")] = cFigure::Color(139,71,38);
-        colors[lc("snow")] = cFigure::Color(255,250,250);
-        colors[lc("snow1")] = cFigure::Color(255,250,250);
-        colors[lc("snow2")] = cFigure::Color(238,233,233);
-        colors[lc("snow3")] = cFigure::Color(205,201,201);
-        colors[lc("snow4")] = cFigure::Color(139,137,137);
-        colors[lc("tan")] = cFigure::Color(210,180,140);
-        colors[lc("tan1")] = cFigure::Color(255,165,79);
-        colors[lc("tan2")] = cFigure::Color(238,154,73);
-        colors[lc("tan3")] = cFigure::Color(205,133,63);
-        colors[lc("tan4")] = cFigure::Color(139,90,43);
-        colors[lc("thistle")] = cFigure::Color(216,191,216);
-        colors[lc("thistle1")] = cFigure::Color(255,225,255);
-        colors[lc("thistle2")] = cFigure::Color(238,210,238);
-        colors[lc("thistle3")] = cFigure::Color(205,181,205);
-        colors[lc("thistle4")] = cFigure::Color(139,123,139);
-        colors[lc("tomato")] = cFigure::Color(255,99,71);
-        colors[lc("tomato1")] = cFigure::Color(255,99,71);
-        colors[lc("tomato2")] = cFigure::Color(238,92,66);
-        colors[lc("tomato3")] = cFigure::Color(205,79,57);
-        colors[lc("tomato4")] = cFigure::Color(139,54,38);
-        colors[lc("turquoise")] = cFigure::Color(64,224,208);
-        colors[lc("turquoise1")] = cFigure::Color(0,245,255);
-        colors[lc("turquoise2")] = cFigure::Color(0,229,238);
-        colors[lc("turquoise3")] = cFigure::Color(0,197,205);
-        colors[lc("turquoise4")] = cFigure::Color(0,134,139);
-        colors[lc("violet")] = cFigure::Color(238,130,238);
-        colors[lc("wheat")] = cFigure::Color(245,222,179);
-        colors[lc("wheat1")] = cFigure::Color(255,231,186);
-        colors[lc("wheat2")] = cFigure::Color(238,216,174);
-        colors[lc("wheat3")] = cFigure::Color(205,186,150);
-        colors[lc("wheat4")] = cFigure::Color(139,126,102);
-        colors[lc("white")] = cFigure::Color(255,255,255);
-        colors[lc("yellow")] = cFigure::Color(255,255,0);
-        colors[lc("yellow1")] = cFigure::Color(255,255,0);
-        colors[lc("yellow2")] = cFigure::Color(238,238,0);
-        colors[lc("yellow3")] = cFigure::Color(205,205,0);
-        colors[lc("yellow4")] = cFigure::Color(139,139,0);
-    }
-    std::map<std::string, cFigure::Color>::const_iterator it = colors.find(lc(name));
-    if (it == colors.end())
-        throw cRuntimeError("No such color: %s", name);
-    return it->second;
+    colors[lc("antiqueWhite")] = cFigure::Color(250,235,215);
+    colors[lc("antiqueWhite1")] = cFigure::Color(255,239,219);
+    colors[lc("antiqueWhite2")] = cFigure::Color(238,223,204);
+    colors[lc("antiqueWhite3")] = cFigure::Color(205,192,176);
+    colors[lc("antiqueWhite4")] = cFigure::Color(139,131,120);
+    colors[lc("blanchedAlmond")] = cFigure::Color(255,235,205);
+    colors[lc("blueViolet")] = cFigure::Color(138,43,226);
+    colors[lc("cadetBlue")] = cFigure::Color(95,158,160);
+    colors[lc("cadetBlue1")] = cFigure::Color(152,245,255);
+    colors[lc("cadetBlue2")] = cFigure::Color(142,229,238);
+    colors[lc("cadetBlue3")] = cFigure::Color(122,197,205);
+    colors[lc("cadetBlue4")] = cFigure::Color(83,134,139);
+    colors[lc("cornflowerBlue")] = cFigure::Color(100,149,237);
+    colors[lc("darkBlue")] = cFigure::Color(0,0,139);
+    colors[lc("darkCyan")] = cFigure::Color(0,139,139);
+    colors[lc("darkGoldenrod")] = cFigure::Color(184,134,11);
+    colors[lc("darkGoldenrod1")] = cFigure::Color(255,185,15);
+    colors[lc("darkGoldenrod2")] = cFigure::Color(238,173,14);
+    colors[lc("darkGoldenrod3")] = cFigure::Color(205,149,12);
+    colors[lc("darkGoldenrod4")] = cFigure::Color(139,101,8);
+    colors[lc("darkGreen")] = cFigure::Color(0,100,0);
+    colors[lc("darkGrey")] = cFigure::Color(169,169,169);
+    colors[lc("darkKhaki")] = cFigure::Color(189,183,107);
+    colors[lc("darkMagenta")] = cFigure::Color(139,0,139);
+    colors[lc("darkOliveGreen")] = cFigure::Color(85,107,47);
+    colors[lc("darkOliveGreen1")] = cFigure::Color(202,255,112);
+    colors[lc("darkOliveGreen2")] = cFigure::Color(188,238,104);
+    colors[lc("darkOliveGreen3")] = cFigure::Color(162,205,90);
+    colors[lc("darkOliveGreen4")] = cFigure::Color(110,139,61);
+    colors[lc("darkOrange")] = cFigure::Color(255,140,0);
+    colors[lc("darkOrange1")] = cFigure::Color(255,127,0);
+    colors[lc("darkOrange2")] = cFigure::Color(238,118,0);
+    colors[lc("darkOrange3")] = cFigure::Color(205,102,0);
+    colors[lc("darkOrange4")] = cFigure::Color(139,69,0);
+    colors[lc("darkOrchid")] = cFigure::Color(153,50,204);
+    colors[lc("darkOrchid1")] = cFigure::Color(191,62,255);
+    colors[lc("darkOrchid2")] = cFigure::Color(178,58,238);
+    colors[lc("darkOrchid3")] = cFigure::Color(154,50,205);
+    colors[lc("darkOrchid4")] = cFigure::Color(104,34,139);
+    colors[lc("darkRed")] = cFigure::Color(139,0,0);
+    colors[lc("darkSalmon")] = cFigure::Color(233,150,122);
+    colors[lc("darkSeaGreen")] = cFigure::Color(143,188,143);
+    colors[lc("darkSeaGreen1")] = cFigure::Color(193,255,193);
+    colors[lc("darkSeaGreen2")] = cFigure::Color(180,238,180);
+    colors[lc("darkSeaGreen3")] = cFigure::Color(155,205,155);
+    colors[lc("darkSeaGreen4")] = cFigure::Color(105,139,105);
+    colors[lc("darkSlateBlue")] = cFigure::Color(72,61,139);
+    colors[lc("darkSlateGrey")] = cFigure::Color(47,79,79);
+    colors[lc("darkTurquoise")] = cFigure::Color(0,206,209);
+    colors[lc("darkViolet")] = cFigure::Color(148,0,211);
+    colors[lc("deepPink")] = cFigure::Color(255,20,147);
+    colors[lc("deepPink1")] = cFigure::Color(255,20,147);
+    colors[lc("deepPink2")] = cFigure::Color(238,18,137);
+    colors[lc("deepPink3")] = cFigure::Color(205,16,118);
+    colors[lc("deepPink4")] = cFigure::Color(139,10,80);
+    colors[lc("deepSkyBlue")] = cFigure::Color(0,191,255);
+    colors[lc("deepSkyBlue1")] = cFigure::Color(0,191,255);
+    colors[lc("deepSkyBlue2")] = cFigure::Color(0,178,238);
+    colors[lc("deepSkyBlue3")] = cFigure::Color(0,154,205);
+    colors[lc("deepSkyBlue4")] = cFigure::Color(0,104,139);
+    colors[lc("dimGrey")] = cFigure::Color(105,105,105);
+    colors[lc("dodgerBlue")] = cFigure::Color(30,144,255);
+    colors[lc("dodgerBlue1")] = cFigure::Color(30,144,255);
+    colors[lc("dodgerBlue2")] = cFigure::Color(28,134,238);
+    colors[lc("dodgerBlue3")] = cFigure::Color(24,116,205);
+    colors[lc("dodgerBlue4")] = cFigure::Color(16,78,139);
+    colors[lc("floralWhite")] = cFigure::Color(255,250,240);
+    colors[lc("forestGreen")] = cFigure::Color(34,139,34);
+    colors[lc("ghostWhite")] = cFigure::Color(248,248,255);
+    colors[lc("greenYellow")] = cFigure::Color(173,255,47);
+    colors[lc("hotPink")] = cFigure::Color(255,105,180);
+    colors[lc("hotPink1")] = cFigure::Color(255,110,180);
+    colors[lc("hotPink2")] = cFigure::Color(238,106,167);
+    colors[lc("hotPink3")] = cFigure::Color(205,96,144);
+    colors[lc("hotPink4")] = cFigure::Color(139,58,98);
+    colors[lc("indianRed")] = cFigure::Color(205,92,92);
+    colors[lc("indianRed1")] = cFigure::Color(255,106,106);
+    colors[lc("indianRed2")] = cFigure::Color(238,99,99);
+    colors[lc("indianRed3")] = cFigure::Color(205,85,85);
+    colors[lc("indianRed4")] = cFigure::Color(139,58,58);
+    colors[lc("lavenderBlush")] = cFigure::Color(255,240,245);
+    colors[lc("lavenderBlush1")] = cFigure::Color(255,240,245);
+    colors[lc("lavenderBlush2")] = cFigure::Color(238,224,229);
+    colors[lc("lavenderBlush3")] = cFigure::Color(205,193,197);
+    colors[lc("lavenderBlush4")] = cFigure::Color(139,131,134);
+    colors[lc("lawnGreen")] = cFigure::Color(124,252,0);
+    colors[lc("lemonChiffon")] = cFigure::Color(255,250,205);
+    colors[lc("lemonChiffon1")] = cFigure::Color(255,250,205);
+    colors[lc("lemonChiffon2")] = cFigure::Color(238,233,191);
+    colors[lc("lemonChiffon3")] = cFigure::Color(205,201,165);
+    colors[lc("lemonChiffon4")] = cFigure::Color(139,137,112);
+    colors[lc("lightBlue")] = cFigure::Color(173,216,230);
+    colors[lc("lightBlue1")] = cFigure::Color(191,239,255);
+    colors[lc("lightBlue2")] = cFigure::Color(178,223,238);
+    colors[lc("lightBlue3")] = cFigure::Color(154,192,205);
+    colors[lc("lightBlue4")] = cFigure::Color(104,131,139);
+    colors[lc("lightCoral")] = cFigure::Color(240,128,128);
+    colors[lc("lightCyan")] = cFigure::Color(224,255,255);
+    colors[lc("lightCyan1")] = cFigure::Color(224,255,255);
+    colors[lc("lightCyan2")] = cFigure::Color(209,238,238);
+    colors[lc("lightCyan3")] = cFigure::Color(180,205,205);
+    colors[lc("lightCyan4")] = cFigure::Color(122,139,139);
+    colors[lc("lightGoldenrod")] = cFigure::Color(238,221,130);
+    colors[lc("lightGoldenrod1")] = cFigure::Color(255,236,139);
+    colors[lc("lightGoldenrod2")] = cFigure::Color(238,220,130);
+    colors[lc("lightGoldenrod3")] = cFigure::Color(205,190,112);
+    colors[lc("lightGoldenrod4")] = cFigure::Color(139,129,76);
+    colors[lc("lightGoldenrodYellow")] = cFigure::Color(250,250,210);
+    colors[lc("lightGreen")] = cFigure::Color(144,238,144);
+    colors[lc("lightGrey")] = cFigure::Color(211,211,211);
+    colors[lc("lightPink")] = cFigure::Color(255,182,193);
+    colors[lc("lightPink1")] = cFigure::Color(255,174,185);
+    colors[lc("lightPink2")] = cFigure::Color(238,162,173);
+    colors[lc("lightPink3")] = cFigure::Color(205,140,149);
+    colors[lc("lightPink4")] = cFigure::Color(139,95,101);
+    colors[lc("lightSalmon")] = cFigure::Color(255,160,122);
+    colors[lc("lightSalmon1")] = cFigure::Color(255,160,122);
+    colors[lc("lightSalmon2")] = cFigure::Color(238,149,114);
+    colors[lc("lightSalmon3")] = cFigure::Color(205,129,98);
+    colors[lc("lightSalmon4")] = cFigure::Color(139,87,66);
+    colors[lc("lightSeaGreen")] = cFigure::Color(32,178,170);
+    colors[lc("lightSkyBlue")] = cFigure::Color(135,206,250);
+    colors[lc("lightSkyBlue1")] = cFigure::Color(176,226,255);
+    colors[lc("lightSkyBlue2")] = cFigure::Color(164,211,238);
+    colors[lc("lightSkyBlue3")] = cFigure::Color(141,182,205);
+    colors[lc("lightSkyBlue4")] = cFigure::Color(96,123,139);
+    colors[lc("lightSlateBlue")] = cFigure::Color(132,112,255);
+    colors[lc("lightSlateGrey")] = cFigure::Color(119,136,153);
+    colors[lc("lightSteelBlue")] = cFigure::Color(176,196,222);
+    colors[lc("lightSteelBlue1")] = cFigure::Color(202,225,255);
+    colors[lc("lightSteelBlue2")] = cFigure::Color(188,210,238);
+    colors[lc("lightSteelBlue3")] = cFigure::Color(162,181,205);
+    colors[lc("lightSteelBlue4")] = cFigure::Color(110,123,139);
+    colors[lc("lightYellow")] = cFigure::Color(255,255,224);
+    colors[lc("lightYellow1")] = cFigure::Color(255,255,224);
+    colors[lc("lightYellow2")] = cFigure::Color(238,238,209);
+    colors[lc("lightYellow3")] = cFigure::Color(205,205,180);
+    colors[lc("lightYellow4")] = cFigure::Color(139,139,122);
+    colors[lc("limeGreen")] = cFigure::Color(50,205,50);
+    colors[lc("mediumAquamarine")] = cFigure::Color(102,205,170);
+    colors[lc("mediumBlue")] = cFigure::Color(0,0,205);
+    colors[lc("mediumOrchid")] = cFigure::Color(186,85,211);
+    colors[lc("mediumOrchid1")] = cFigure::Color(224,102,255);
+    colors[lc("mediumOrchid2")] = cFigure::Color(209,95,238);
+    colors[lc("mediumOrchid3")] = cFigure::Color(180,82,205);
+    colors[lc("mediumOrchid4")] = cFigure::Color(122,55,139);
+    colors[lc("mediumPurple")] = cFigure::Color(147,112,219);
+    colors[lc("mediumPurple1")] = cFigure::Color(171,130,255);
+    colors[lc("mediumPurple2")] = cFigure::Color(159,121,238);
+    colors[lc("mediumPurple3")] = cFigure::Color(137,104,205);
+    colors[lc("mediumPurple4")] = cFigure::Color(93,71,139);
+    colors[lc("mediumSeaGreen")] = cFigure::Color(60,179,113);
+    colors[lc("mediumSlateBlue")] = cFigure::Color(123,104,238);
+    colors[lc("mediumSpringGreen")] = cFigure::Color(0,250,154);
+    colors[lc("mediumTurquoise")] = cFigure::Color(72,209,204);
+    colors[lc("mediumVioletRed")] = cFigure::Color(199,21,133);
+    colors[lc("midnightBlue")] = cFigure::Color(25,25,112);
+    colors[lc("mintCream")] = cFigure::Color(245,255,250);
+    colors[lc("mistyRose")] = cFigure::Color(255,228,225);
+    colors[lc("mistyRose1")] = cFigure::Color(255,228,225);
+    colors[lc("mistyRose2")] = cFigure::Color(238,213,210);
+    colors[lc("mistyRose3")] = cFigure::Color(205,183,181);
+    colors[lc("mistyRose4")] = cFigure::Color(139,125,123);
+    colors[lc("navajoWhite")] = cFigure::Color(255,222,173);
+    colors[lc("navajoWhite1")] = cFigure::Color(255,222,173);
+    colors[lc("navajoWhite2")] = cFigure::Color(238,207,161);
+    colors[lc("navajoWhite3")] = cFigure::Color(205,179,139);
+    colors[lc("navajoWhite4")] = cFigure::Color(139,121,94);
+    colors[lc("navyBlue")] = cFigure::Color(0,0,128);
+    colors[lc("oldLace")] = cFigure::Color(253,245,230);
+    colors[lc("oliveDrab")] = cFigure::Color(107,142,35);
+    colors[lc("oliveDrab1")] = cFigure::Color(192,255,62);
+    colors[lc("oliveDrab2")] = cFigure::Color(179,238,58);
+    colors[lc("oliveDrab3")] = cFigure::Color(154,205,50);
+    colors[lc("oliveDrab4")] = cFigure::Color(105,139,34);
+    colors[lc("orangeRed")] = cFigure::Color(255,69,0);
+    colors[lc("orangeRed1")] = cFigure::Color(255,69,0);
+    colors[lc("orangeRed2")] = cFigure::Color(238,64,0);
+    colors[lc("orangeRed3")] = cFigure::Color(205,55,0);
+    colors[lc("orangeRed4")] = cFigure::Color(139,37,0);
+    colors[lc("paleGoldenrod")] = cFigure::Color(238,232,170);
+    colors[lc("paleGreen")] = cFigure::Color(152,251,152);
+    colors[lc("paleGreen1")] = cFigure::Color(154,255,154);
+    colors[lc("paleGreen2")] = cFigure::Color(144,238,144);
+    colors[lc("paleGreen3")] = cFigure::Color(124,205,124);
+    colors[lc("paleGreen4")] = cFigure::Color(84,139,84);
+    colors[lc("paleTurquoise")] = cFigure::Color(175,238,238);
+    colors[lc("paleTurquoise1")] = cFigure::Color(187,255,255);
+    colors[lc("paleTurquoise2")] = cFigure::Color(174,238,238);
+    colors[lc("paleTurquoise3")] = cFigure::Color(150,205,205);
+    colors[lc("paleTurquoise4")] = cFigure::Color(102,139,139);
+    colors[lc("paleVioletRed")] = cFigure::Color(219,112,147);
+    colors[lc("paleVioletRed1")] = cFigure::Color(255,130,171);
+    colors[lc("paleVioletRed2")] = cFigure::Color(238,121,159);
+    colors[lc("paleVioletRed3")] = cFigure::Color(205,104,137);
+    colors[lc("paleVioletRed4")] = cFigure::Color(139,71,93);
+    colors[lc("papayaWhip")] = cFigure::Color(255,239,213);
+    colors[lc("peachPuff")] = cFigure::Color(255,218,185);
+    colors[lc("peachPuff1")] = cFigure::Color(255,218,185);
+    colors[lc("peachPuff2")] = cFigure::Color(238,203,173);
+    colors[lc("peachPuff3")] = cFigure::Color(205,175,149);
+    colors[lc("peachPuff4")] = cFigure::Color(139,119,101);
+    colors[lc("powderBlue")] = cFigure::Color(176,224,230);
+    colors[lc("rosyBrown")] = cFigure::Color(188,143,143);
+    colors[lc("rosyBrown1")] = cFigure::Color(255,193,193);
+    colors[lc("rosyBrown2")] = cFigure::Color(238,180,180);
+    colors[lc("rosyBrown3")] = cFigure::Color(205,155,155);
+    colors[lc("rosyBrown4")] = cFigure::Color(139,105,105);
+    colors[lc("royalBlue")] = cFigure::Color(65,105,225);
+    colors[lc("royalBlue1")] = cFigure::Color(72,118,255);
+    colors[lc("royalBlue2")] = cFigure::Color(67,110,238);
+    colors[lc("royalBlue3")] = cFigure::Color(58,95,205);
+    colors[lc("royalBlue4")] = cFigure::Color(39,64,139);
+    colors[lc("saddleBrown")] = cFigure::Color(139,69,19);
+    colors[lc("sandyBrown")] = cFigure::Color(244,164,96);
+    colors[lc("seaGreen")] = cFigure::Color(46,139,87);
+    colors[lc("seaGreen1")] = cFigure::Color(84,255,159);
+    colors[lc("seaGreen2")] = cFigure::Color(78,238,148);
+    colors[lc("seaGreen3")] = cFigure::Color(67,205,128);
+    colors[lc("seaGreen4")] = cFigure::Color(46,139,87);
+    colors[lc("skyBlue")] = cFigure::Color(135,206,235);
+    colors[lc("skyBlue1")] = cFigure::Color(135,206,255);
+    colors[lc("skyBlue2")] = cFigure::Color(126,192,238);
+    colors[lc("skyBlue3")] = cFigure::Color(108,166,205);
+    colors[lc("skyBlue4")] = cFigure::Color(74,112,139);
+    colors[lc("slateBlue")] = cFigure::Color(106,90,205);
+    colors[lc("slateBlue1")] = cFigure::Color(131,111,255);
+    colors[lc("slateBlue2")] = cFigure::Color(122,103,238);
+    colors[lc("slateBlue3")] = cFigure::Color(105,89,205);
+    colors[lc("slateBlue4")] = cFigure::Color(71,60,139);
+    colors[lc("slateGrey")] = cFigure::Color(112,128,144);
+    colors[lc("springGreen")] = cFigure::Color(0,255,127);
+    colors[lc("springGreen1")] = cFigure::Color(0,255,127);
+    colors[lc("springGreen2")] = cFigure::Color(0,238,118);
+    colors[lc("springGreen3")] = cFigure::Color(0,205,102);
+    colors[lc("springGreen4")] = cFigure::Color(0,139,69);
+    colors[lc("steelBlue")] = cFigure::Color(70,130,180);
+    colors[lc("steelBlue1")] = cFigure::Color(99,184,255);
+    colors[lc("steelBlue2")] = cFigure::Color(92,172,238);
+    colors[lc("steelBlue3")] = cFigure::Color(79,148,205);
+    colors[lc("steelBlue4")] = cFigure::Color(54,100,139);
+    colors[lc("violetRed")] = cFigure::Color(208,32,144);
+    colors[lc("violetRed1")] = cFigure::Color(255,62,150);
+    colors[lc("violetRed2")] = cFigure::Color(238,58,140);
+    colors[lc("violetRed3")] = cFigure::Color(205,50,120);
+    colors[lc("violetRed4")] = cFigure::Color(139,34,82);
+    colors[lc("whiteSmoke")] = cFigure::Color(245,245,245);
+    colors[lc("yellowGreen")] = cFigure::Color(154,205,50);
+    colors[lc("aquamarine")] = cFigure::Color(127,255,212);
+    colors[lc("aquamarine1")] = cFigure::Color(127,255,212);
+    colors[lc("aquamarine2")] = cFigure::Color(118,238,198);
+    colors[lc("aquamarine3")] = cFigure::Color(102,205,170);
+    colors[lc("aquamarine4")] = cFigure::Color(69,139,116);
+    colors[lc("azure")] = cFigure::Color(240,255,255);
+    colors[lc("azure1")] = cFigure::Color(240,255,255);
+    colors[lc("azure2")] = cFigure::Color(224,238,238);
+    colors[lc("azure3")] = cFigure::Color(193,205,205);
+    colors[lc("azure4")] = cFigure::Color(131,139,139);
+    colors[lc("beige")] = cFigure::Color(245,245,220);
+    colors[lc("bisque")] = cFigure::Color(255,228,196);
+    colors[lc("bisque1")] = cFigure::Color(255,228,196);
+    colors[lc("bisque2")] = cFigure::Color(238,213,183);
+    colors[lc("bisque3")] = cFigure::Color(205,183,158);
+    colors[lc("bisque4")] = cFigure::Color(139,125,107);
+    colors[lc("black")] = cFigure::Color(0,0,0);
+    colors[lc("blue")] = cFigure::Color(0,0,255);
+    colors[lc("blue1")] = cFigure::Color(0,0,255);
+    colors[lc("blue2")] = cFigure::Color(0,0,238);
+    colors[lc("blue3")] = cFigure::Color(0,0,205);
+    colors[lc("blue4")] = cFigure::Color(0,0,139);
+    colors[lc("brown")] = cFigure::Color(165,42,42);
+    colors[lc("brown1")] = cFigure::Color(255,64,64);
+    colors[lc("brown2")] = cFigure::Color(238,59,59);
+    colors[lc("brown3")] = cFigure::Color(205,51,51);
+    colors[lc("brown4")] = cFigure::Color(139,35,35);
+    colors[lc("burlywood")] = cFigure::Color(222,184,135);
+    colors[lc("burlywood1")] = cFigure::Color(255,211,155);
+    colors[lc("burlywood2")] = cFigure::Color(238,197,145);
+    colors[lc("burlywood3")] = cFigure::Color(205,170,125);
+    colors[lc("burlywood4")] = cFigure::Color(139,115,85);
+    colors[lc("chartreuse")] = cFigure::Color(127,255,0);
+    colors[lc("chartreuse1")] = cFigure::Color(127,255,0);
+    colors[lc("chartreuse2")] = cFigure::Color(118,238,0);
+    colors[lc("chartreuse3")] = cFigure::Color(102,205,0);
+    colors[lc("chartreuse4")] = cFigure::Color(69,139,0);
+    colors[lc("chocolate")] = cFigure::Color(210,105,30);
+    colors[lc("chocolate1")] = cFigure::Color(255,127,36);
+    colors[lc("chocolate2")] = cFigure::Color(238,118,33);
+    colors[lc("chocolate3")] = cFigure::Color(205,102,29);
+    colors[lc("chocolate4")] = cFigure::Color(139,69,19);
+    colors[lc("coral")] = cFigure::Color(255,127,80);
+    colors[lc("coral1")] = cFigure::Color(255,114,86);
+    colors[lc("coral2")] = cFigure::Color(238,106,80);
+    colors[lc("coral3")] = cFigure::Color(205,91,69);
+    colors[lc("coral4")] = cFigure::Color(139,62,47);
+    colors[lc("cornsilk")] = cFigure::Color(255,248,220);
+    colors[lc("cornsilk1")] = cFigure::Color(255,248,220);
+    colors[lc("cornsilk2")] = cFigure::Color(238,232,205);
+    colors[lc("cornsilk3")] = cFigure::Color(205,200,177);
+    colors[lc("cornsilk4")] = cFigure::Color(139,136,120);
+    colors[lc("cyan")] = cFigure::Color(0,255,255);
+    colors[lc("cyan1")] = cFigure::Color(0,255,255);
+    colors[lc("cyan2")] = cFigure::Color(0,238,238);
+    colors[lc("cyan3")] = cFigure::Color(0,205,205);
+    colors[lc("cyan4")] = cFigure::Color(0,139,139);
+    colors[lc("firebrick")] = cFigure::Color(178,34,34);
+    colors[lc("firebrick1")] = cFigure::Color(255,48,48);
+    colors[lc("firebrick2")] = cFigure::Color(238,44,44);
+    colors[lc("firebrick3")] = cFigure::Color(205,38,38);
+    colors[lc("firebrick4")] = cFigure::Color(139,26,26);
+    colors[lc("gainsboro")] = cFigure::Color(220,220,220);
+    colors[lc("gold")] = cFigure::Color(255,215,0);
+    colors[lc("gold1")] = cFigure::Color(255,215,0);
+    colors[lc("gold2")] = cFigure::Color(238,201,0);
+    colors[lc("gold3")] = cFigure::Color(205,173,0);
+    colors[lc("gold4")] = cFigure::Color(139,117,0);
+    colors[lc("goldenrod")] = cFigure::Color(218,165,32);
+    colors[lc("goldenrod1")] = cFigure::Color(255,193,37);
+    colors[lc("goldenrod2")] = cFigure::Color(238,180,34);
+    colors[lc("goldenrod3")] = cFigure::Color(205,155,29);
+    colors[lc("goldenrod4")] = cFigure::Color(139,105,20);
+    colors[lc("green")] = cFigure::Color(0,255,0);
+    colors[lc("green1")] = cFigure::Color(0,255,0);
+    colors[lc("green2")] = cFigure::Color(0,238,0);
+    colors[lc("green3")] = cFigure::Color(0,205,0);
+    colors[lc("green4")] = cFigure::Color(0,139,0);
+    colors[lc("grey")] = cFigure::Color(192,192,192);
+    colors[lc("grey0")] = cFigure::Color(0,0,0);
+    colors[lc("grey1")] = cFigure::Color(3,3,3);
+    colors[lc("grey10")] = cFigure::Color(26,26,26);
+    colors[lc("grey100")] = cFigure::Color(255,255,255);
+    colors[lc("grey11")] = cFigure::Color(28,28,28);
+    colors[lc("grey12")] = cFigure::Color(31,31,31);
+    colors[lc("grey13")] = cFigure::Color(33,33,33);
+    colors[lc("grey14")] = cFigure::Color(36,36,36);
+    colors[lc("grey15")] = cFigure::Color(38,38,38);
+    colors[lc("grey16")] = cFigure::Color(41,41,41);
+    colors[lc("grey17")] = cFigure::Color(43,43,43);
+    colors[lc("grey18")] = cFigure::Color(46,46,46);
+    colors[lc("grey19")] = cFigure::Color(48,48,48);
+    colors[lc("grey2")] = cFigure::Color(5,5,5);
+    colors[lc("grey20")] = cFigure::Color(51,51,51);
+    colors[lc("grey21")] = cFigure::Color(54,54,54);
+    colors[lc("grey22")] = cFigure::Color(56,56,56);
+    colors[lc("grey23")] = cFigure::Color(59,59,59);
+    colors[lc("grey24")] = cFigure::Color(61,61,61);
+    colors[lc("grey25")] = cFigure::Color(64,64,64);
+    colors[lc("grey26")] = cFigure::Color(66,66,66);
+    colors[lc("grey27")] = cFigure::Color(69,69,69);
+    colors[lc("grey28")] = cFigure::Color(71,71,71);
+    colors[lc("grey29")] = cFigure::Color(74,74,74);
+    colors[lc("grey3")] = cFigure::Color(8,8,8);
+    colors[lc("grey30")] = cFigure::Color(77,77,77);
+    colors[lc("grey31")] = cFigure::Color(79,79,79);
+    colors[lc("grey32")] = cFigure::Color(82,82,82);
+    colors[lc("grey33")] = cFigure::Color(84,84,84);
+    colors[lc("grey34")] = cFigure::Color(87,87,87);
+    colors[lc("grey35")] = cFigure::Color(89,89,89);
+    colors[lc("grey36")] = cFigure::Color(92,92,92);
+    colors[lc("grey37")] = cFigure::Color(94,94,94);
+    colors[lc("grey38")] = cFigure::Color(97,97,97);
+    colors[lc("grey39")] = cFigure::Color(99,99,99);
+    colors[lc("grey4")] = cFigure::Color(10,10,10);
+    colors[lc("grey40")] = cFigure::Color(102,102,102);
+    colors[lc("grey41")] = cFigure::Color(105,105,105);
+    colors[lc("grey42")] = cFigure::Color(107,107,107);
+    colors[lc("grey43")] = cFigure::Color(110,110,110);
+    colors[lc("grey44")] = cFigure::Color(112,112,112);
+    colors[lc("grey45")] = cFigure::Color(115,115,115);
+    colors[lc("grey46")] = cFigure::Color(117,117,117);
+    colors[lc("grey47")] = cFigure::Color(120,120,120);
+    colors[lc("grey48")] = cFigure::Color(122,122,122);
+    colors[lc("grey49")] = cFigure::Color(125,125,125);
+    colors[lc("grey5")] = cFigure::Color(13,13,13);
+    colors[lc("grey50")] = cFigure::Color(127,127,127);
+    colors[lc("grey51")] = cFigure::Color(130,130,130);
+    colors[lc("grey52")] = cFigure::Color(133,133,133);
+    colors[lc("grey53")] = cFigure::Color(135,135,135);
+    colors[lc("grey54")] = cFigure::Color(138,138,138);
+    colors[lc("grey55")] = cFigure::Color(140,140,140);
+    colors[lc("grey56")] = cFigure::Color(143,143,143);
+    colors[lc("grey57")] = cFigure::Color(145,145,145);
+    colors[lc("grey58")] = cFigure::Color(148,148,148);
+    colors[lc("grey59")] = cFigure::Color(150,150,150);
+    colors[lc("grey6")] = cFigure::Color(15,15,15);
+    colors[lc("grey60")] = cFigure::Color(153,153,153);
+    colors[lc("grey61")] = cFigure::Color(156,156,156);
+    colors[lc("grey62")] = cFigure::Color(158,158,158);
+    colors[lc("grey63")] = cFigure::Color(161,161,161);
+    colors[lc("grey64")] = cFigure::Color(163,163,163);
+    colors[lc("grey65")] = cFigure::Color(166,166,166);
+    colors[lc("grey66")] = cFigure::Color(168,168,168);
+    colors[lc("grey67")] = cFigure::Color(171,171,171);
+    colors[lc("grey68")] = cFigure::Color(173,173,173);
+    colors[lc("grey69")] = cFigure::Color(176,176,176);
+    colors[lc("grey7")] = cFigure::Color(18,18,18);
+    colors[lc("grey70")] = cFigure::Color(179,179,179);
+    colors[lc("grey71")] = cFigure::Color(181,181,181);
+    colors[lc("grey72")] = cFigure::Color(184,184,184);
+    colors[lc("grey73")] = cFigure::Color(186,186,186);
+    colors[lc("grey74")] = cFigure::Color(189,189,189);
+    colors[lc("grey75")] = cFigure::Color(191,191,191);
+    colors[lc("grey76")] = cFigure::Color(194,194,194);
+    colors[lc("grey77")] = cFigure::Color(196,196,196);
+    colors[lc("grey78")] = cFigure::Color(199,199,199);
+    colors[lc("grey79")] = cFigure::Color(201,201,201);
+    colors[lc("grey8")] = cFigure::Color(20,20,20);
+    colors[lc("grey80")] = cFigure::Color(204,204,204);
+    colors[lc("grey81")] = cFigure::Color(207,207,207);
+    colors[lc("grey82")] = cFigure::Color(209,209,209);
+    colors[lc("grey83")] = cFigure::Color(212,212,212);
+    colors[lc("grey84")] = cFigure::Color(214,214,214);
+    colors[lc("grey85")] = cFigure::Color(217,217,217);
+    colors[lc("grey86")] = cFigure::Color(219,219,219);
+    colors[lc("grey87")] = cFigure::Color(222,222,222);
+    colors[lc("grey88")] = cFigure::Color(224,224,224);
+    colors[lc("grey89")] = cFigure::Color(227,227,227);
+    colors[lc("grey9")] = cFigure::Color(23,23,23);
+    colors[lc("grey90")] = cFigure::Color(229,229,229);
+    colors[lc("grey91")] = cFigure::Color(232,232,232);
+    colors[lc("grey92")] = cFigure::Color(235,235,235);
+    colors[lc("grey93")] = cFigure::Color(237,237,237);
+    colors[lc("grey94")] = cFigure::Color(240,240,240);
+    colors[lc("grey95")] = cFigure::Color(242,242,242);
+    colors[lc("grey96")] = cFigure::Color(245,245,245);
+    colors[lc("grey97")] = cFigure::Color(247,247,247);
+    colors[lc("grey98")] = cFigure::Color(250,250,250);
+    colors[lc("grey99")] = cFigure::Color(252,252,252);
+    colors[lc("honeydew")] = cFigure::Color(240,255,240);
+    colors[lc("honeydew1")] = cFigure::Color(240,255,240);
+    colors[lc("honeydew2")] = cFigure::Color(224,238,224);
+    colors[lc("honeydew3")] = cFigure::Color(193,205,193);
+    colors[lc("honeydew4")] = cFigure::Color(131,139,131);
+    colors[lc("ivory")] = cFigure::Color(255,255,240);
+    colors[lc("ivory1")] = cFigure::Color(255,255,240);
+    colors[lc("ivory2")] = cFigure::Color(238,238,224);
+    colors[lc("ivory3")] = cFigure::Color(205,205,193);
+    colors[lc("ivory4")] = cFigure::Color(139,139,131);
+    colors[lc("khaki")] = cFigure::Color(240,230,140);
+    colors[lc("khaki1")] = cFigure::Color(255,246,143);
+    colors[lc("khaki2")] = cFigure::Color(238,230,133);
+    colors[lc("khaki3")] = cFigure::Color(205,198,115);
+    colors[lc("khaki4")] = cFigure::Color(139,134,78);
+    colors[lc("lavender")] = cFigure::Color(230,230,250);
+    colors[lc("linen")] = cFigure::Color(250,240,230);
+    colors[lc("magenta")] = cFigure::Color(255,0,255);
+    colors[lc("magenta1")] = cFigure::Color(255,0,255);
+    colors[lc("magenta2")] = cFigure::Color(238,0,238);
+    colors[lc("magenta3")] = cFigure::Color(205,0,205);
+    colors[lc("magenta4")] = cFigure::Color(139,0,139);
+    colors[lc("maroon")] = cFigure::Color(176,48,96);
+    colors[lc("maroon1")] = cFigure::Color(255,52,179);
+    colors[lc("maroon2")] = cFigure::Color(238,48,167);
+    colors[lc("maroon3")] = cFigure::Color(205,41,144);
+    colors[lc("maroon4")] = cFigure::Color(139,28,98);
+    colors[lc("moccasin")] = cFigure::Color(255,228,181);
+    colors[lc("navy")] = cFigure::Color(0,0,128);
+    colors[lc("orange")] = cFigure::Color(255,165,0);
+    colors[lc("orange1")] = cFigure::Color(255,165,0);
+    colors[lc("orange2")] = cFigure::Color(238,154,0);
+    colors[lc("orange3")] = cFigure::Color(205,133,0);
+    colors[lc("orange4")] = cFigure::Color(139,90,0);
+    colors[lc("orchid")] = cFigure::Color(218,112,214);
+    colors[lc("orchid1")] = cFigure::Color(255,131,250);
+    colors[lc("orchid2")] = cFigure::Color(238,122,233);
+    colors[lc("orchid3")] = cFigure::Color(205,105,201);
+    colors[lc("orchid4")] = cFigure::Color(139,71,137);
+    colors[lc("peru")] = cFigure::Color(205,133,63);
+    colors[lc("pink")] = cFigure::Color(255,192,203);
+    colors[lc("pink1")] = cFigure::Color(255,181,197);
+    colors[lc("pink2")] = cFigure::Color(238,169,184);
+    colors[lc("pink3")] = cFigure::Color(205,145,158);
+    colors[lc("pink4")] = cFigure::Color(139,99,108);
+    colors[lc("plum")] = cFigure::Color(221,160,221);
+    colors[lc("plum1")] = cFigure::Color(255,187,255);
+    colors[lc("plum2")] = cFigure::Color(238,174,238);
+    colors[lc("plum3")] = cFigure::Color(205,150,205);
+    colors[lc("plum4")] = cFigure::Color(139,102,139);
+    colors[lc("purple")] = cFigure::Color(160,32,240);
+    colors[lc("purple1")] = cFigure::Color(155,48,255);
+    colors[lc("purple2")] = cFigure::Color(145,44,238);
+    colors[lc("purple3")] = cFigure::Color(125,38,205);
+    colors[lc("purple4")] = cFigure::Color(85,26,139);
+    colors[lc("red")] = cFigure::Color(255,0,0);
+    colors[lc("red1")] = cFigure::Color(255,0,0);
+    colors[lc("red2")] = cFigure::Color(238,0,0);
+    colors[lc("red3")] = cFigure::Color(205,0,0);
+    colors[lc("red4")] = cFigure::Color(139,0,0);
+    colors[lc("salmon")] = cFigure::Color(250,128,114);
+    colors[lc("salmon1")] = cFigure::Color(255,140,105);
+    colors[lc("salmon2")] = cFigure::Color(238,130,98);
+    colors[lc("salmon3")] = cFigure::Color(205,112,84);
+    colors[lc("salmon4")] = cFigure::Color(139,76,57);
+    colors[lc("seashell")] = cFigure::Color(255,245,238);
+    colors[lc("seashell1")] = cFigure::Color(255,245,238);
+    colors[lc("seashell2")] = cFigure::Color(238,229,222);
+    colors[lc("seashell3")] = cFigure::Color(205,197,191);
+    colors[lc("seashell4")] = cFigure::Color(139,134,130);
+    colors[lc("sienna")] = cFigure::Color(160,82,45);
+    colors[lc("sienna1")] = cFigure::Color(255,130,71);
+    colors[lc("sienna2")] = cFigure::Color(238,121,66);
+    colors[lc("sienna3")] = cFigure::Color(205,104,57);
+    colors[lc("sienna4")] = cFigure::Color(139,71,38);
+    colors[lc("snow")] = cFigure::Color(255,250,250);
+    colors[lc("snow1")] = cFigure::Color(255,250,250);
+    colors[lc("snow2")] = cFigure::Color(238,233,233);
+    colors[lc("snow3")] = cFigure::Color(205,201,201);
+    colors[lc("snow4")] = cFigure::Color(139,137,137);
+    colors[lc("tan")] = cFigure::Color(210,180,140);
+    colors[lc("tan1")] = cFigure::Color(255,165,79);
+    colors[lc("tan2")] = cFigure::Color(238,154,73);
+    colors[lc("tan3")] = cFigure::Color(205,133,63);
+    colors[lc("tan4")] = cFigure::Color(139,90,43);
+    colors[lc("thistle")] = cFigure::Color(216,191,216);
+    colors[lc("thistle1")] = cFigure::Color(255,225,255);
+    colors[lc("thistle2")] = cFigure::Color(238,210,238);
+    colors[lc("thistle3")] = cFigure::Color(205,181,205);
+    colors[lc("thistle4")] = cFigure::Color(139,123,139);
+    colors[lc("tomato")] = cFigure::Color(255,99,71);
+    colors[lc("tomato1")] = cFigure::Color(255,99,71);
+    colors[lc("tomato2")] = cFigure::Color(238,92,66);
+    colors[lc("tomato3")] = cFigure::Color(205,79,57);
+    colors[lc("tomato4")] = cFigure::Color(139,54,38);
+    colors[lc("turquoise")] = cFigure::Color(64,224,208);
+    colors[lc("turquoise1")] = cFigure::Color(0,245,255);
+    colors[lc("turquoise2")] = cFigure::Color(0,229,238);
+    colors[lc("turquoise3")] = cFigure::Color(0,197,205);
+    colors[lc("turquoise4")] = cFigure::Color(0,134,139);
+    colors[lc("violet")] = cFigure::Color(238,130,238);
+    colors[lc("wheat")] = cFigure::Color(245,222,179);
+    colors[lc("wheat1")] = cFigure::Color(255,231,186);
+    colors[lc("wheat2")] = cFigure::Color(238,216,174);
+    colors[lc("wheat3")] = cFigure::Color(205,186,150);
+    colors[lc("wheat4")] = cFigure::Color(139,126,102);
+    colors[lc("white")] = cFigure::Color(255,255,255);
+    colors[lc("yellow")] = cFigure::Color(255,255,0);
+    colors[lc("yellow1")] = cFigure::Color(255,255,0);
+    colors[lc("yellow2")] = cFigure::Color(238,238,0);
+    colors[lc("yellow3")] = cFigure::Color(205,205,0);
+    colors[lc("yellow4")] = cFigure::Color(139,139,0);
 }
 
 NAMESPACE_END

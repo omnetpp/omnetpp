@@ -52,11 +52,11 @@ class SIM_API cFigure : public cOwnedObject
             Point operator + (const Point& p) const;
             Point operator - (const Point& p) const;
             Point operator * (double s) const;
+            Point operator / (double s) const;
             double operator * (const Point& p) const;
             double distanceTo(const Point& p) const;
             double getLength() const;
             std::string str() const;
-            Point& parse(const char *s);
         };
 
         struct SIM_API Rectangle {
@@ -66,16 +66,14 @@ class SIM_API cFigure : public cOwnedObject
             std::string str() const;
             Point getCenter() const;
             Point getSize() const;
-            Rectangle& parse(const char *s);
         };
 
         struct SIM_API Color {
             uint8_t red, green, blue;
             Color() : red(0), green(0), blue(0) {}
             Color(uint8_t red, uint8_t green, uint8_t blue) : red(red), green(green), blue(blue) {}
-            static Color byName(const char *colorName); // throws exception for unknown names
+            Color(const char *color) {*this = parseColor(color);}
             std::string str() const;
-            Color& parse(const char *s);  //FIXME ezeket attenni a sim_std.msg-be!!!!
         };
 
         static const Color BLACK;
@@ -88,7 +86,6 @@ class SIM_API cFigure : public cOwnedObject
         static const Color CYAN;
         static const Color MAGENTA;
 
-        static std::map<std::string, cFigure::Color> colors;
 
         static const Color GOOD_DARK_COLORS[14];
         static const Color GOOD_LIGHT_COLORS[10];
@@ -100,7 +97,6 @@ class SIM_API cFigure : public cOwnedObject
             Font() : pointSize(0), style(FONT_NONE) {}
             Font(std::string typeface, int pointSize, uint8_t style=FONT_NONE) : typeface(typeface), pointSize(pointSize), style(style) {}
             std::string str() const;
-            Font& parse(const char *s);
         };
 
         enum FontStyle { FONT_NONE=0, FONT_BOLD=1, FONT_ITALIC=2, FONT_UNDERLINE=4 };
@@ -109,6 +105,7 @@ class SIM_API cFigure : public cOwnedObject
         enum JoinStyle { JOIN_BEVEL, JOIN_MITER, JOIN_ROUND };
         enum FillRule { FILL_EVENODD, FILL_NONZERO };
         enum ArrowHead { ARROW_NONE, ARROW_SIMPLE, ARROW_TRIANGLE, ARROW_BARBED };
+        enum Interpolation { INTERPOLATION_NONE, INTERPOLATION_FAST, INTERPOLATION_BEST };
         enum Anchor {ANCHOR_CENTER, ANCHOR_N, ANCHOR_E, ANCHOR_S, ANCHOR_W, ANCHOR_NW, ANCHOR_NE, ANCHOR_SE, ANCHOR_SW, ANCHOR_BASELINE_START, ANCHOR_BASELINE_MIDDLE, ANCHOR_BASELINE_END };
         //enum Alignment { ALIGN_LEFT, ALIGN_RIGHT, ALIGN_CENTER }; // note: multi-line text is always left-aligned in tkpath
 
@@ -140,7 +137,6 @@ class SIM_API cFigure : public cOwnedObject
                 Transform& leftMultiply(const Transform& t);
                 Point applyTo(const Point& p) const;
                 std::string str() const;
-                Transform& parse(const char *s);
         };
 
         struct SIM_API RGBA {
@@ -157,7 +153,7 @@ class SIM_API cFigure : public cOwnedObject
                 int width, height; // zero is allowed
                 RGBA *data;
             private:
-                void doAlloc(int width, int height);
+                void allocate(int width, int height);
                 static uint8_t alpha(double opacity) {return opacity<=0 ? 0 : opacity>=1.0 ? 255 : (uint8_t)(opacity*255+0.5);}
             public:
                 Pixmap();
@@ -167,9 +163,9 @@ class SIM_API cFigure : public cOwnedObject
                 Pixmap(const Pixmap& other);
                 ~Pixmap();
                 Pixmap& operator=(const Pixmap& other);
-                void allocate(int width, int height) {doAlloc(width,height); fill(WHITE, 0);}
-                void allocate(int width, int height, const RGBA& fill_) {doAlloc(width, height); fill(fill_);}
-                void allocate(int width, int height, const Color& color, double opacity) {doAlloc(width, height); fill(color, opacity);}
+                void resize(int width, int height) {resize(width, height, BLACK, 0);}
+                void resize(int width, int height, const RGBA& fill_);
+                void resize(int width, int height, const Color& color, double opacity);
                 void fill(const RGBA& fill_);
                 void fill(const Color& color, double opacity);
                 int getWidth() const {return width;}
@@ -177,7 +173,7 @@ class SIM_API cFigure : public cOwnedObject
                 RGBA& pixel(int x, int y);
                 const RGBA pixel(int x, int y) const {return const_cast<Pixmap*>(this)->pixel(x,y);}
                 virtual void setPixel(int x, int y, const Color& color, double opacity=1.0) {RGBA& p = pixel(x,y); p.set(color.red, color.green, color.blue, alpha(opacity));}
-                virtual Color getColor(int x, int y) const {return (Color)pixel(x,y);}
+                virtual const Color getColor(int x, int y) const {return (Color)pixel(x,y);}
                 virtual void setColor(int x, int y, const Color& color) {RGBA& p = pixel(x,y); p.red = color.red; p.green = color.green; p.blue = color.blue;}
                 virtual double getOpacity(int x, int y) const {return pixel(x,y).alpha / 255.0;}
                 virtual void setOpacity(int x, int y, double opacity) {pixel(x,y).alpha = alpha(opacity);}
@@ -198,6 +194,7 @@ class SIM_API cFigure : public cOwnedObject
     private:
         static int lastId;
         static cStringPool stringPool;
+        static std::map<std::string, Color> colors;
         int id;
         bool visible; // treated as structural change, for simpler handling
         Transform transform;  // TODO make it optional (NULL = identity transform)
@@ -207,10 +204,9 @@ class SIM_API cFigure : public cOwnedObject
         uint8 localChanges;
         uint8 subtreeChanges;
     protected:
-        virtual const char **getAllowedPropertyKeys() const;
         virtual bool isAllowedPropertyKey(const char *key) const;
         virtual void validatePropertyKeys(cProperty *property) const;
-        virtual cFigure *getRootFigure();
+        virtual cFigure *getRootFigure() const;
         void fireStructuralChange() {fire(CHANGE_STRUCTURAL);}
         void fireTransformChange() {fire(CHANGE_TRANSFORM);}
         void fireGeometryChange() {fire(CHANGE_GEOMETRY);}
@@ -230,11 +226,14 @@ class SIM_API cFigure : public cOwnedObject
         static JoinStyle parseJoinStyle(const char *s);
         static FillRule parseFillRule(const char *s);
         static ArrowHead parseArrowHead(const char *s);
+        static Interpolation parseInterpolation(const char *s);
         static Anchor parseAnchor(const char *s);
         static void concatArrays(const char **dest, const char **first, const char **second);
+        static void fillColorsMap();
 
     public:
         // internal:
+        virtual const char **getAllowedPropertyKeys() const;
         uint8 getLocalChangeFlags() const {return localChanges;}
         uint8 getSubtreeChangeFlags() const {return subtreeChanges;}
         void clearChangeFlags();
@@ -255,12 +254,12 @@ class SIM_API cFigure : public cOwnedObject
         virtual void forEachChild(cVisitor *v);
         virtual std::string info() const;
         virtual void parse(cProperty *property);
-        virtual cFigure *dupTree();
+        virtual cFigure *dupTree() const;
         virtual const char *getClassNameForRenderer() const {return getClassName();} // denotes renderer of which figure class to use; override if you want to subclass a figure while reusing renderer of the base class
 
         int getId() const {return id;}
         virtual void move(double x, double y) = 0;
-        virtual cCanvas *getCanvas();
+        virtual cCanvas *getCanvas() const;
         virtual bool isVisible() const {return visible;} // affects figure subtree, not just this very figure
         virtual void setVisible(bool visible) {this->visible = visible; fireStructuralChange();}
         virtual const Transform& getTransform() const {return transform;}
@@ -287,20 +286,20 @@ class SIM_API cFigure : public cOwnedObject
         virtual void addFigureBelow(cFigure *figure, cFigure *referenceFigure);
         virtual cFigure *removeFigure(int pos);
         virtual cFigure *removeFigure(cFigure *figure);
-        virtual int findFigure(const char *name);
-        virtual int findFigure(cFigure *figure);
+        virtual int findFigure(const char *name) const;
+        virtual int findFigure(cFigure *figure) const;
         virtual bool containsFigures() const {return !children.empty();}
         virtual int getNumFigures() const {return children.size();}
-        virtual cFigure *getFigure(int pos);
-        virtual cFigure *getFigure(const char *name);
-        virtual cFigure *getParentFigure()  {return dynamic_cast<cFigure*>(getOwner());}
+        virtual cFigure *getFigure(int pos) const;
+        virtual cFigure *getFigure(const char *name) const;
+        virtual cFigure *getParentFigure() const {return dynamic_cast<cFigure*>(getOwner());}
         virtual void raiseAbove(cFigure *figure);
         virtual void lowerBelow(cFigure *figure);
         virtual void raiseToTop();
         virtual void lowerToBottom();
 
-        virtual cFigure *findFigureRecursively(const char *name);
-        virtual cFigure *getFigureByPath(const char *path);  //NOTE: path has similar syntax to cModule::getModuleByPath()
+        virtual cFigure *findFigureRecursively(const char *name) const;
+        virtual cFigure *getFigureByPath(const char *path) const;  //NOTE: path has similar syntax to cModule::getModuleByPath()
 };
 
 // import the namespace to be able to use the stream write operators
@@ -746,7 +745,7 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
 class SIM_API cAbstractTextFigure : public cFigure
 {
     private:
-        Point location;
+        Point position;
         Color color;  // note: tkpath's text supports separate colors and opacity for fill and outline -- ignore because probably SWT doesn't support it!
         double opacity;
         Font font;
@@ -764,8 +763,8 @@ class SIM_API cAbstractTextFigure : public cFigure
         virtual std::string info() const;
         virtual void parse(cProperty *property);
         virtual void move(double x, double y);
-        virtual const Point& getLocation() const  {return location;}
-        virtual void setLocation(const Point& location)  {this->location = location; fireGeometryChange();}
+        virtual const Point& getPosition() const  {return position;}
+        virtual void setPosition(const Point& position)  {this->position = position; fireGeometryChange();}
         virtual Anchor getAnchor() const  {return anchor;}
         virtual void setAnchor(Anchor anchor)  {this->anchor = anchor; fireGeometryChange();}
         virtual const Color& getColor() const  {return color;}
@@ -813,14 +812,15 @@ class SIM_API cLabelFigure : public cAbstractTextFigure
 /**
  * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
  *
- * Displays an icon already known to Tkenv (i.e. one available in the "i" display string tag).
+ * Base class for image figures.
  */
 class SIM_API cAbstractImageFigure : public cFigure
 {
     private:
-        Point location;
+        Point position;
         Anchor anchor;  // note: do not use the ANCHOR_BASELINE_START/MIDDLE/END constants
-        double width, height; // negative values mean using the image's own size
+        double width, height; // zero or negative values mean using the image's own size
+        Interpolation interpolation;
         double opacity;
         Color tintColor;
         double tintAmount; // in the range 0..1
@@ -829,20 +829,22 @@ class SIM_API cAbstractImageFigure : public cFigure
     protected:
         virtual const char **getAllowedPropertyKeys() const;
     public:
-        cAbstractImageFigure(const char *name=NULL) : cFigure(name), anchor(ANCHOR_CENTER), width(0), height(0), opacity(1), tintColor(BLUE), tintAmount(0) { }
+        cAbstractImageFigure(const char *name=NULL) : cFigure(name), anchor(ANCHOR_CENTER), width(0), height(0), interpolation(INTERPOLATION_FAST), opacity(1), tintColor(BLUE), tintAmount(0) { }
         cAbstractImageFigure(const cAbstractImageFigure& other) : cFigure(other) {copy(other);}
         cAbstractImageFigure& operator=(const cAbstractImageFigure& other);
         virtual cAbstractImageFigure *dup() const {throw cRuntimeError(this, E_CANTDUP);}
         virtual void parse(cProperty *property);
         virtual void move(double x, double y);
-        virtual const Point& getLocation() const  {return location;}
-        virtual void setLocation(const Point& pos)  {this->location = pos; fireGeometryChange();}
+        virtual const Point& getPosition() const  {return position;}
+        virtual void setPosition(const Point& position)  {this->position = position; fireGeometryChange();}
         virtual Anchor getAnchor() const  {return anchor;}
         virtual void setAnchor(Anchor anchor)  {this->anchor = anchor; fireGeometryChange();}
         virtual double getWidth() const  {return width;}
         virtual void setWidth(double w)  {this->width = w; fireGeometryChange();}
         virtual double getHeight() const  {return height;}
         virtual void setHeight(double h)  {this->height = h; fireGeometryChange();}
+        virtual Interpolation getInterpolation() const {return interpolation;}
+        virtual void setInterpolation(Interpolation interpolation) {this->interpolation = interpolation; fireVisualChange();}
         virtual double getOpacity() const  {return opacity;}
         virtual void setOpacity(double opacity)  {this->opacity = opacity; fireVisualChange();}
         virtual const Color& getTintColor() const  {return tintColor;}
@@ -900,20 +902,19 @@ class SIM_API cPixmapFigure : public cAbstractImageFigure
         virtual void setPixmap(const Pixmap& pixmap) {this->pixmap = pixmap; fireInputDataChange();}
         virtual int getPixmapHeight() const {return pixmap.getHeight();}
         virtual int getPixmapWidth() const {return pixmap.getWidth();}
-        virtual void allocate(int width, int height) {pixmap.allocate(width, height); fireInputDataChange();}
-        virtual void allocate(int width, int height, const RGBA& fill) {pixmap.allocate(width, height, fill); fireInputDataChange();}
-        virtual void allocate(int width, int height, const Color& color, double opacity) {pixmap.allocate(width, height, color, opacity); fireInputDataChange();}
+        virtual void resize(int width, int height) {pixmap.resize(width, height); fireInputDataChange();}
+        virtual void resize(int width, int height, const RGBA& fill) {pixmap.resize(width, height, fill); fireInputDataChange();} // set *newly added* pixels to this color
+        virtual void resize(int width, int height, const Color& color, double opacity) {pixmap.resize(width, height, color, opacity); fireInputDataChange();} // fills *newly added* pixels to this color
         virtual void fill(const RGBA& fill) {pixmap.fill(fill); fireInputDataChange();}
         virtual void fill(const Color& color, double opacity) {pixmap.fill(color, opacity); fireInputDataChange();}
         virtual const RGBA getPixel(int x, int y) const {return pixmap.pixel(x, y);}
         virtual void setPixel(int x, int y, const RGBA& argb) {pixmap.pixel(x, y) = argb; fireInputDataChange();}
         virtual void setPixel(int x, int y, const Color& color, double opacity=1.0) {pixmap.setPixel(x,y,color,opacity); fireInputDataChange();}
-        virtual Color getColor(int x, int y) const {return pixmap.getColor(x,y);}
+        virtual const Color getColor(int x, int y) const {return pixmap.getColor(x,y);}
         virtual void setColor(int x, int y, const Color& color) {pixmap.setColor(x,y,color); fireInputDataChange();}
         virtual double getOpacity(int x, int y) const {return pixmap.getOpacity(x,y);}
         virtual void setOpacity(int x, int y, double opacity) {pixmap.setOpacity(x,y,opacity); fireInputDataChange();}
 };
-
 
 /**
  * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
@@ -940,13 +941,14 @@ class SIM_API cCanvas : public cOwnedObject
         cFigure *rootFigure;
         std::map<std::string,int> tagBitIndex;  // tag-to-bitindex
     protected:
-        virtual void parseFigure(cProperty *property, std::map<cFigure*,double>& orderMap);
-        virtual cFigure *createFigure(const char *type);
+        virtual void parseFigure(cProperty *property, std::map<cFigure*,double>& orderMap) const;
+        virtual cFigure *createFigure(const char *type) const ;
     public:
         // internal:
         static bool containsCanvasItems(cProperties *properties);
         virtual void addFiguresFrom(cProperties *properties);
         virtual uint64 parseTags(const char *s);
+        void dumpSupportedPropertyKeys(std::ostream& out) const;
     private:
         void copy(const cCanvas& other);
     public:
@@ -965,16 +967,16 @@ class SIM_API cCanvas : public cOwnedObject
         virtual void addFigureBelow(cFigure *figure, cFigure *referenceFigure) {rootFigure->addFigureBelow(figure, referenceFigure);}
         virtual cFigure *removeFigure(int pos) {return rootFigure->removeFigure(pos);}
         virtual cFigure *removeFigure(cFigure *figure) {return rootFigure->removeFigure(figure);}
-        virtual int findFigure(const char *name) {return rootFigure->findFigure(name);}
-        virtual int findFigure(cFigure *figure) {return rootFigure->findFigure(figure);}
+        virtual int findFigure(const char *name) const  {return rootFigure->findFigure(name);}
+        virtual int findFigure(cFigure *figure) const  {return rootFigure->findFigure(figure);}
         virtual bool hasFigures() const {return rootFigure->containsFigures();}
         virtual int getNumFigures() const {return rootFigure->getNumFigures();} // note: returns the number of *child* figures, not the total number
-        virtual cFigure *getFigure(int pos) {return rootFigure->getFigure(pos);}
-        virtual cFigure *getFigure(const char *name) {return rootFigure->getFigure(name);}
+        virtual cFigure *getFigure(int pos) const {return rootFigure->getFigure(pos);}
+        virtual cFigure *getFigure(const char *name) const  {return rootFigure->getFigure(name);}
 
         virtual cFigure *getSubmodulesLayer() const; // may return NULL (extra canvases don't have submodules)
-        virtual cFigure *findFigureRecursively(const char *name) {return rootFigure->findFigureRecursively(name);}
-        virtual cFigure *getFigureByPath(const char *path) {return rootFigure->getFigureByPath(path);}
+        virtual cFigure *findFigureRecursively(const char *name) const {return rootFigure->findFigureRecursively(name);}
+        virtual cFigure *getFigureByPath(const char *path) const {return rootFigure->getFigureByPath(path);}
 
         virtual std::string getAllTags() const;
         virtual std::vector<std::string> getAllTagsAsVector() const;

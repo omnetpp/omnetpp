@@ -43,6 +43,7 @@ class TKENV_API FigureRenderer : public cObject // for because Register_Class() 
         void capStyle(cFigure::CapStyle style, int& argc, const char *argv[]);
         void joinStyle(cFigure::JoinStyle style, int& argc, const char *argv[]);
         void fillRule(cFigure::FillRule fill, int& argc, const char *argv[]);
+        void interpolation(cFigure::Interpolation interpolation, int& argc, const char *argv[]);
         void anchor(cFigure::Anchor anchor, int& argc, const char *argv[]);
         void textanchor(cFigure::Anchor anchor, int& argc, const char *argv[]);
         void font(const cFigure::Font& font, int& argc, const char *argv[]);

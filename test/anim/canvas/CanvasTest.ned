@@ -14,16 +14,16 @@ network CanvasTest
         image: Image         { @display("p=1100,50"); }
         path: Path           { @display("p=1200,50"); }
 
-        anchor: Anchor   { @display("p=100,150"); }
-        font: Font       { @display("p=200,150"); }
-        group: Group     { @display("p=300,150"); }
-        animate: Animate { @display("p=400,150"); }
-        zOrder: ZOrder   { @display("p=500,150"); }
-        tags: Tags       { @display("p=600,150"); }
-        submods: Submodules { @display("p=700,150"); }
+        anchor: Anchor       { @display("p=100,150"); }
+        font: Font           { @display("p=200,150"); }
+        group: Group         { @display("p=300,150"); }
+        animate: Animate     { @display("p=400,150"); }
+        zOrder: ZOrder       { @display("p=500,150"); }
+        tags: Tags           { @display("p=600,150"); }
+        submods: Submodules  { @display("p=700,150"); }
         transform: Transform { @display("p=800,150"); }
-        pixmap: Pixmap   { @display("p=900,150"); }
+        pixmap: Pixmap       { @display("p=900,150"); }
 
-        polygon2: Polygon2 { @display("p=100,250"); }
+        polygon2: Polygon2   { @display("p=100,250"); }
 }
 

@@ -521,7 +521,7 @@ proc fieldsPage:getNodeInfo:setValue {w key value} {
         #regexp {^"(.*)"$} $value match value  ;# strip quotes
         if [catch {opp_classdescriptor $obj $sd fieldsetvalue $fieldid $index $value} e] {
             Tree:build $w
-            tk_messageBox -parent [winfo toplevel $w] -title "Tkenv" -icon warning -type ok -message "Cannot set field value -- syntax error?"
+            tk_messageBox -parent [winfo toplevel $w] -title "Tkenv" -icon warning -type ok -message "Error: $e"
             return
         }
     }
