@@ -530,13 +530,12 @@ proc lookupImage {imgname {imgsize ""}} {
 #
 # helper function
 #
-proc dispstrGetImage {tags_i tags_is zoomfactor imagesizefactor {alphamult 1}} {
+proc dispstrGetImage {tags_i tags_is imagesizefactor {alphamult 1}} {
     global icons bitmaps imagecache
 
-    set zoomfactor [expr $zoomfactor * $imagesizefactor]
     set iconminsize [opp_getsimoption iconminsize]
 
-    set key "[join $tags_i ,]:[join $tags_is ,]:$zoomfactor:$iconminsize:$alphamult"
+    set key "[join $tags_i ,]:[join $tags_is ,]:$imagesizefactor:$iconminsize:$alphamult"
     if {![info exist imagecache($key)]} {
         # look up base image
         set imgsize [lindex $tags_is 0]
@@ -570,7 +569,7 @@ proc dispstrGetImage {tags_i tags_is zoomfactor imagesizefactor {alphamult 1}} {
         }
 
         # rescale if needed
-        if {$zoomfactor!=1} {
+        if {$imagesizefactor!=1} {
             set isx [image width $img]
             set isy [image height $img]
 
@@ -578,16 +577,16 @@ proc dispstrGetImage {tags_i tags_is zoomfactor imagesizefactor {alphamult 1}} {
             if {$isx < $iconminsize } { set iconminsize $isx}
             if {$isy < $iconminsize } { set iconminsize $isy}
 
-            # modify zoomfactor so that both width/height > iconwidthsize, and aspect ratio is kept
-            if {$zoomfactor * $isx < $iconminsize} {
-                set zoomfactor [expr $iconminsize / double($isx)]
+            # modify imagesizefactor so that both width/height > iconwidthsize, and aspect ratio is kept
+            if {$imagesizefactor * $isx < $iconminsize} {
+                set imagesizefactor [expr $iconminsize / double($isx)]
             }
-            if {$zoomfactor * $isy < $iconminsize} {
-                set zoomfactor [expr $iconminsize / double($isy)]
+            if {$imagesizefactor * $isy < $iconminsize} {
+                set imagesizefactor [expr $iconminsize / double($isy)]
             }
 
-            set newisx [expr int($zoomfactor * $isx)]
-            set newisy [expr int($zoomfactor * $isy)]
+            set newisx [expr int($imagesizefactor * $isx)]
+            set newisy [expr int($imagesizefactor * $isy)]
             if {$newisx < 1} {set newisx 1}
             if {$newisy < 1} {set newisy 1}
             if {$newisx>500 || $newisy>500} {
@@ -680,7 +679,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplace
            set tags(is) {}
        }
        if [info exists tags(i)] {
-           set img [dispstrGetImage $tags(i) $tags(is) $zoomfactor $imagesizefactor $alphamult]
+           set img [dispstrGetImage $tags(i) $tags(is) $imagesizefactor $alphamult]
            set isx [image width $img]
            set isy [image height $img]
        }
@@ -766,7 +765,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplace
            set r [ModuleInspector:getSubmodCoords $c $submodptr]
            set mx [expr [lindex $r 2]+2]
            set my [expr [lindex $r 1]-2]
-           set img2 [dispstrGetImage $tags(i2) $tags(is2) $zoomfactor $imagesizefactor $alphamult]
+           set img2 [dispstrGetImage $tags(i2) $tags(is2) $imagesizefactor $alphamult]
            $c create image $mx $my -image $img2 -anchor ne -tags "dx tooltip submod submodext $submodptr"
        }
 
@@ -1275,7 +1274,7 @@ proc ModuleInspector:drawMessage {c msgptr x y} {
                 set tags(i) [lreplace $tags(i) 1 1 $kindcolor]
             }
 
-            set img [dispstrGetImage $tags(i) $tags(is) $zoomfactor $imagesizefactor]
+            set img [dispstrGetImage $tags(i) $tags(is) $imagesizefactor]
             set sx [image width $img]
             set sy [image height $img]
         } elseif [info exists tags(b)] {
