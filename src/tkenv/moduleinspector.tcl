@@ -642,16 +642,11 @@ proc ModuleInspector:getSubmodCoords {c tag} {
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplaceholder} {
-   #puts "DEBUG: ModuleInspector:drawSubmodule $c $submodptr $x $y $name $dispstr $scaling $isplaceholder"
+proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr isplaceholder} {
+   #puts "DEBUG: ModuleInspector:drawSubmodule $c $submodptr $x $y $name $dispstr $isplaceholder"
    global icons inspectordata
 
-   set zoomfactor $inspectordata($c:zoomfactor)
-   if {$scaling!="" || $zoomfactor!=1} {
-       if {$scaling==""} {set scaling 1.0}
-       set scaling [expr $scaling*$zoomfactor]
-   }
-
+   set zoom $inspectordata($c:zoomfactor)
    set imagesizefactor $inspectordata($c:imagesizefactor)
 
    set alphamult 1
@@ -665,9 +660,9 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplace
        opp_displaystring $dispstr parse tags $submodptr 1
 
        # scale (x,y)
-       if {$scaling != ""} {
-           set x [expr $scaling*$x]
-           set y [expr $scaling*$y]
+       if {$zoom != ""} {
+           set x [expr $zoom*$x]
+           set y [expr $zoom*$y]
        }
 
        # set sx and sy (and look up image)
@@ -692,9 +687,9 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplace
            }
            if {$bsx==""} {set bsx $bsy}
            if {$bsy==""} {set bsy $bsx}
-           if {$scaling != ""} {
-               set bsx [expr $scaling*$bsx]
-               set bsy [expr $scaling*$bsy]
+           if {$zoom != ""} {
+               set bsx [expr $zoom*$bsx]
+               set bsy [expr $zoom*$bsy]
            }
        } elseif ![info exists tags(i)] {
            set img $icons(defaulticon)
@@ -814,8 +809,8 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplace
            if {[string index $routline 0]== "@"} {set routline [opp_hsb_to_rgb $routline]}
            set rwidth [lindex $tags($rtag) 3]
            if {$rwidth == ""} {set rwidth 1}
-           if {$scaling != ""} {
-               set radius [expr $scaling*$radius]
+           if {$zoom != ""} {
+               set radius [expr $zoom*$radius]
            }
            set radius [expr $radius-$rwidth/2]
 
@@ -841,15 +836,11 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr scaling isplace
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc ModuleInspector:drawEnclosingModule {c ptr name dispstr scaling} {
+proc ModuleInspector:drawEnclosingModule {c ptr name dispstr} {
    global icons bitmaps inspectordata
-   # puts "DEBUG: ModuleInspector:drawEnclosingModule $c $ptr $name $dispstr $scaling"
+   # puts "DEBUG: ModuleInspector:drawEnclosingModule $c $ptr $name $dispstr"
 
-   set zoomfactor $inspectordata($c:zoomfactor)
-   if {$scaling!="" || $zoomfactor!=1} {
-       if {$scaling==""} {set scaling 1.0}
-       set scaling [expr $scaling*$zoomfactor]
-   }
+   set zoom $inspectordata($c:zoomfactor)
 
    if [catch {
 
@@ -867,9 +858,9 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr scaling} {
        #set by [lindex $tags(bgp) 1]
        #if {$bx==""} {set bx 0}
        #if {$by==""} {set by 0}
-       #if {$scaling != ""} {
-       #    set bx [expr $scaling*$bx]
-       #    set by [expr $scaling*$by]
+       #if {$zoom != ""} {
+       #    set bx [expr $zoom*$bx]
+       #    set by [expr $zoom*$by]
        #}
        set bx 0
        set by 0
@@ -878,18 +869,18 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr scaling} {
        if {![info exists tags(bgb)]} {set tags(bgb) {{} {} {}}}
        set sx [lindex $tags(bgb) 0]
        set sy [lindex $tags(bgb) 1]
-       if {$scaling != ""} {
-           if {$sx!=""} {set sx [expr $scaling*$sx]}
-           if {$sy!=""} {set sy [expr $scaling*$sy]}
+       if {$zoom != ""} {
+           if {$sx!=""} {set sx [expr $zoom*$sx]}
+           if {$sy!=""} {set sy [expr $zoom*$sy]}
        }
 
        if {$sx=="" || $sy==""} {
            set bb [$c bbox submod]
            if {$bb==""} {
-               if {$scaling==""} {
+               if {$zoom==""} {
                    set bb [list $bx $by 300 200]
                } else {
-                   set bb [list $bx $by [expr $scaling*300] [expr $scaling*200]]
+                   set bb [list $bx $by [expr $zoom*300] [expr $zoom*200]]
                }
            }
            if {$sx==""} {set sx [expr [lindex $bb 2]+[lindex $bb 0]-2*$bx]}
@@ -923,8 +914,8 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr scaling} {
               [catch {set img $bitmaps(old/$imgname)}]} {
               set img $icons(unknown)
           }
-          set isx [expr [image width $img]*$zoomfactor]
-          set isy [expr [image height $img]*$zoomfactor]
+          set isx [expr [image width $img]*$zoom]
+          set isy [expr [image height $img]*$zoom]
           set imgx $bx
           set imgy $by
           set anchor nw
@@ -937,21 +928,21 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr scaling} {
                  # image must be clipped. a new image created with new dimensions
                  if {$sx < $isx} {set minx $sx} else {set minx $isx}
                  if {$sy < $isy} {set miny $sy} else {set miny $isy}
-                 set img [getCachedImage $img $zoomfactor [expr ($isx-$minx)/2] [expr ($isy-$miny)/2] [expr ($isx+$minx)/2] [expr ($isy+$miny)/2] $minx $miny 0]
+                 set img [getCachedImage $img $zoom [expr ($isx-$minx)/2] [expr ($isy-$miny)/2] [expr ($isx+$minx)/2] [expr ($isy+$miny)/2] $minx $miny 0]
               }
           } elseif {[string index $imgmode 0]== "s"} {
               # image stretched to fill the background area
-              set img [getCachedImage $img $zoomfactor 0 0 $isx $isy $sx $sy 1]
+              set img [getCachedImage $img $zoom 0 0 $isx $isy $sx $sy 1]
           } elseif {[string index $imgmode 0]== "t"} {
               # image "tile" mode
-              set img [getCachedImage $img $zoomfactor 0 0 $isx $isy $sx $sy 0]
+              set img [getCachedImage $img $zoom 0 0 $isx $isy $sx $sy 0]
           } else {
               # default mode: image top-left corner gets aligned to background top-left corner
-              if {$sx < $isx || $sy < $isy || $zoomfactor != 1} {
+              if {$sx < $isx || $sy < $isy || $zoom != 1} {
                  # image must be cropped
                  if {$sx < $isx} {set minx $sx} else {set minx $isx}
                  if {$sy < $isy} {set miny $sy} else {set miny $isy}
-                 set img [getCachedImage $img $zoomfactor 0 0 $minx $miny $minx $miny 0]
+                 set img [getCachedImage $img $zoom 0 0 $minx $miny $minx $miny 0]
               }
           }
           $c create image $imgx $imgy -image $img -anchor $anchor -tags "dx mod $ptr"
@@ -966,8 +957,8 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr scaling} {
        if {$gcolor == "-"} {set gcolor ""}
        if {[string index $gcolor 0]== "@"} {set gcolor [opp_hsb_to_rgb $gcolor]}
        if {$gdist!=""} {
-           if {$scaling != ""} {
-               set gdist [expr $scaling*$gdist]
+           if {$zoom != ""} {
+               set gdist [expr $zoom*$gdist]
            }
            if {$gminor=="" || $gminor < 1} {set gminor 1}
            for {set x $bx} {$x < $bx+$sx} {set x [expr $x+$gdist]} {
@@ -1006,10 +997,6 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr scaling} {
            set y [lindex $tags($bgttag) 1]
            if {$x==""} {set x 0}
            if {$y==""} {set y 0}
-           if {$scaling != ""} {
-               set x [expr $scaling*$x]
-               set y [expr $scaling*$y]
-           }
            set txt [lindex $tags($bgttag) 2]
            set color [lindex $tags($bgttag) 3]
            if {$color == ""} {set color black}
@@ -1745,14 +1732,13 @@ proc ModuleInspector:qlenRightClick {insp X Y} {
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc ModuleInspector:bubble {c x y scaling txt} {
+proc ModuleInspector:bubble {c x y txt} {
     global inspectordata
 
     set zoom $inspectordata($c:zoomfactor)
-    if {$scaling == ""} {set scaling 1}
 
-    set x [expr $x*$zoom*$scaling]
-    set y [expr $y*$zoom*$scaling]
+    set x [expr $x*$zoom]
+    set y [expr $y*$zoom]
 
     while {[string length $txt]<5} {set txt " $txt "}
     set txtid  [$c create text $x $y -text " $txt " -anchor c -tags "bubble" -font CanvasFont]

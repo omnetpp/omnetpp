@@ -48,10 +48,9 @@ class TKENV_API ModuleInspector : public Inspector
       PositionMap submodPosMap;  // recalculateLayout() fills this map
 
    protected:
-      void drawSubmodule(cModule *submod, double x, double y, const char *scaling);
-      void drawEnclosingModule(cModule *parentmodule, const char *scaling);
+      void drawSubmodule(cModule *submod, double x, double y);
+      void drawEnclosingModule(cModule *parentmodule);
       void drawConnection(cGate *gate);
-      double getScale();
       double getZoom();
       virtual FigureRenderer *getRendererFor(cFigure *figure);
       void drawFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, double zoom);

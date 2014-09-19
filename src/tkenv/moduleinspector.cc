@@ -350,9 +350,6 @@ void ModuleInspector::refreshLayout()
         border = sy/2;
     layouter->setSize(sx, sy, border);
     // TODO support "bgp" tag ("background position")
-    // TODO: scaling ("bgs") support for layouter.
-    // Layouter algorithm is NOT scale-independent, so we should divide ALL coordinates
-    // by "scale" before passing them to the layouter, then multiply back the results.
 
     // loop through all submodules, get their sizes and positions and feed them into layouting engine
     for (cModule::SubmoduleIterator it(parentModule); !it.end(); it++)
@@ -457,20 +454,17 @@ void ModuleInspector::redrawModules()
 
     // then display all submodules
     CHK(Tcl_VarEval(interp, canvas, " delete dx",NULL)); // NOT "delete all" because that'd remove "bubbles" too!
-    std::string buffer;
-    const char *rawScaling = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString().getTagArg("bgs",0) : "";
-    const char *scaling = substituteDisplayStringParamRefs(rawScaling, buffer, parentModule, true);
 
     for (cModule::SubmoduleIterator it(parentModule); !it.end(); it++)
     {
         cModule *submod = it();
         assert(submodPosMap.find(submod)!=submodPosMap.end());
         Point& pos = submodPosMap[submod];
-        drawSubmodule(submod, pos.x, pos.y, scaling);
+        drawSubmodule(submod, pos.x, pos.y);
     }
 
     // draw enclosing module
-    drawEnclosingModule(parentModule, scaling);
+    drawEnclosingModule(parentModule);
 
     // loop through all submodules and enclosing module & draw their connections
     bool atParent = false;
@@ -491,7 +485,7 @@ void ModuleInspector::redrawModules()
     CHK(Tcl_VarEval(interp, "ModuleInspector:setScrollRegion ", windowName, " 0",NULL));
 }
 
-void ModuleInspector::drawSubmodule(cModule *submod, double x, double y, const char *scaling)
+void ModuleInspector::drawSubmodule(cModule *submod, double x, double y)
 {
     char coords[64];
     sprintf(coords,"%g %g ", x, y);
@@ -503,20 +497,18 @@ void ModuleInspector::drawSubmodule(cModule *submod, double x, double y, const c
                     coords,
                     "{", submod->getFullName(), "} ",
                     TclQuotedString(dispstr).get(), " ",
-                    "{", scaling, "} ",
                     (submod->isPlaceholder() ? "1" : "0"),
                     NULL));
 }
 
-void ModuleInspector::drawEnclosingModule(cModule *parentModule, const char *scaling)
+void ModuleInspector::drawEnclosingModule(cModule *parentModule)
 {
     const char *displayString = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString().str() : "";
     CHK(Tcl_VarEval(interp, "ModuleInspector:drawEnclosingModule ",
                        canvas, " ",
                        ptrToStr(parentModule), " ",
                        "{", parentModule->getFullPath().c_str(), "} ",
-                       TclQuotedString(displayString).get(), " ",
-                       "{", scaling, "} ",
+                       TclQuotedString(displayString).get(),
                        NULL ));
 }
 
@@ -657,9 +649,9 @@ void ModuleInspector::redrawFigures()
    if (canvas)
    {
        cFigure::Transform transform;
-       double scaleAndZoom = getScale() * getZoom();
-       transform.scale(scaleAndZoom);
-       drawFigureRec(canvas->getRootFigure(), transform, scaleAndZoom);
+       double zoom = getZoom();
+       transform.scale(zoom);
+       drawFigureRec(canvas->getRootFigure(), transform, zoom);
 
        char tag[32];
        cFigure *submodulesLayer = canvas->getSubmodulesLayer();
@@ -688,22 +680,12 @@ void ModuleInspector::refreshFigures()
         else if (changes != 0)
         {
             cFigure::Transform transform;
-            double scaleAndZoom = getScale() * getZoom();
-            transform.scale(scaleAndZoom);
-            refreshFigureRec(rootFigure, transform, scaleAndZoom);
+            double zoom = getZoom();
+            transform.scale(zoom);
+            refreshFigureRec(rootFigure, transform, zoom);
             rootFigure->clearChangeFlags();
         }
     }
-}
-
-double ModuleInspector::getScale()
-{
-    // read scale
-    cModule *parentModule = static_cast<cModule *>(object);
-    std::string buffer;
-    const char *rawScaling = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString().getTagArg("bgs",0) : "";
-    const char *scalingStr = substituteDisplayStringParamRefs(rawScaling, buffer, parentModule, true);
-    return opp_isblank(scalingStr) ? 1.0 : opp_atof(scalingStr);
 }
 
 double ModuleInspector::getZoom()
@@ -818,16 +800,11 @@ void ModuleInspector::bubble(cComponent *subcomponent, const char *text)
     if (submodPosMap.find(submod)==submodPosMap.end())
         refreshLayout();
 
-    cModule *parentModule = static_cast<cModule *>(object);
-    std::string buffer;
-    const char *rawScaling = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString().getTagArg("bgs",0) : "";
-    const char *scaling = substituteDisplayStringParamRefs(rawScaling, buffer, parentModule, true);
-
     // invoke Tcl code to display bubble
     char coords[64];
     Point& pos = submodPosMap[submod];
     sprintf(coords, " %g %g ", pos.x, pos.y);
-    CHK(Tcl_VarEval(interp, "ModuleInspector:bubble ", canvas, coords, " ", TclQuotedString(scaling).get(), " ", TclQuotedString(text).get(), NULL));
+    CHK(Tcl_VarEval(interp, "ModuleInspector:bubble ", canvas, coords, " ", TclQuotedString(text).get(), NULL));
 }
 
 const char *ModuleInspector::animModeToStr(SendAnimMode mode)
