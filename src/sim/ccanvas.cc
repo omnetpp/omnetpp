@@ -31,6 +31,23 @@ NAMESPACE_BEGIN
 
 using namespace canvas_stream_ops;
 
+
+Register_Class(cGroupFigure);
+Register_Class(cLineFigure);
+Register_Class(cArcFigure);
+Register_Class(cPolylineFigure);
+Register_Class(cRectangleFigure);
+Register_Class(cOvalFigure);
+Register_Class(cRingFigure);
+Register_Class(cPieSliceFigure);
+Register_Class(cPolygonFigure);
+Register_Class(cPathFigure);
+Register_Class(cTextFigure);
+Register_Class(cLabelFigure);
+Register_Class(cImageFigure);
+Register_Class(cPixmapFigure);
+
+
 const cFigure::Color cFigure::BLACK(0,0,0);
 const cFigure::Color cFigure::WHITE(255,255,255);
 const cFigure::Color cFigure::GREY(128,128,128);
@@ -2303,6 +2320,8 @@ cFigure *cCanvas::createFigure(const char *type) const
         figure = new cPieSliceFigure();
     else if (!strcmp(type, "polygon"))
         figure = new cPolygonFigure();
+    else if (!strcmp(type, "path"))
+        figure = new cPathFigure();
     else if (!strcmp(type, "text"))
         figure = new cTextFigure();
     else if (!strcmp(type, "label"))
@@ -2311,8 +2330,6 @@ cFigure *cCanvas::createFigure(const char *type) const
         figure = new cImageFigure();
     else if (!strcmp(type, "pixmap"))
         figure = new cPixmapFigure();
-    else if (!strcmp(type, "path"))
-        figure = new cPathFigure();
     else {
         // find registered class named "<type>Figure" or "c<type>Figure"
         std::string className = std::string("c") + type + "Figure";

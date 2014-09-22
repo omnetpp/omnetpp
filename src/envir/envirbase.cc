@@ -33,12 +33,15 @@
 #include "cproperty.h"
 #include "random.h"
 #include "crng.h"
+#include "ccanvas.h"
 #include "cmodule.h"
 #include "cmessage.h"
 #include "ccomponenttype.h"
 #include "cxmlelement.h"
 #include "cxmldoccache.h"
 #include "chistogram.h"
+#include "cobjectfactory.h"
+#include "checkandcast.h"
 #include "stringtokenizer.h"
 #include "fnamelisttokenizer.h"
 #include "chasher.h"
@@ -559,6 +562,7 @@ void EnvirBase::printHelp()
     std::cout << "    -h enums          Lists registered enums\n";
     std::cout << "    -h resultfilters  Lists result filters\n";
     std::cout << "    -h resultrecorders Lists result recorders\n";
+    std::cout << "    -h figures        Lists available figure types\n";
     std::cout << "    -h all            Union of all the above\n";
     std::cout << "\n";
 
@@ -582,6 +586,7 @@ void EnvirBase::dumpComponentList(const char *category)
 {
     bool wantAll = !strcmp(category, "all");
     bool processed = false;
+    std::cout << "\n";
     if (wantAll || !strcmp(category, "config") || !strcmp(category, "configdetails"))
     {
         processed = true;
@@ -845,6 +850,31 @@ void EnvirBase::dumpComponentList(const char *category)
             cObject *obj = table->get(i);
             std::cout << "  " << obj->getFullName() << " : " << obj->info() << "\n";
         }
+    }
+
+    if (wantAll || !strcmp(category, "figures"))
+    {
+        processed = true;
+        std::cout << "Figure types and their accepted @figure property keys:\n";
+        cRegistrationList *table = classes.getInstance();
+        table->sort();
+        for (int i=0; i<table->size(); i++)
+        {
+            cObjectFactory *factory = check_and_cast<cObjectFactory*>(table->get(i));
+            const char *className = factory->getFullName();
+            if (opp_stringendswith(className, "Figure")) {
+                cObject *obj = factory->createOne();
+                cFigure *figure = dynamic_cast<cFigure *>(obj);
+                if (figure) {
+                    opp_string type = className[0]=='c' ? className+1 : className;
+                    opp_strlwr(type.buffer());
+                    type.buffer()[type.size()-6] = '\0';
+                    std::cout << "  " << type.c_str() << " (" << className << "): " << opp_join(figure->getAllowedPropertyKeys(), ", ") << "\n";
+                }
+                delete obj;
+            }
+        }
+        std::cout << "\n";
     }
 
     if (!processed)

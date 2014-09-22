@@ -92,6 +92,11 @@ class SIM_API opp_string
     char *buffer()  {return str;}
 
     /**
+     * Returns the length of the string.
+     */
+    int size() const {return str ? strlen(str) : 0;}
+
+    /**
      * Allocates a buffer of the given size.
      */
     char *reserve(unsigned size)  {delete[] str;str=new char[size];return str;}
