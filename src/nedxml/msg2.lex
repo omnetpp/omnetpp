@@ -145,6 +145,7 @@ USING_NAMESPACE
     ","                  { countChars(); return P(parenDepth==1 ? ',' : CHAR); }
     ";"                  { countChars(); return P(parenDepth==1 ? ';' : CHAR); }
     \"                   { countChars(); BEGIN(stringliteral); }
+    "\n"                 { countChars(); return P(CHAR); }
     .                    { countChars(); return P(CHAR); }
 }
 
