@@ -63,9 +63,6 @@ void countChars();
 void extendCount();
 int debugPrint(int c);
 
-#define TEXTBUF_LEN 1024
-static char textbuf[TEXTBUF_LEN];
-
 static int parenDepth = 0;
 
 #define P(x)  (x)
@@ -234,49 +231,31 @@ void comment()
 
 /*
  * - counts the line and column number of the current token in `pos'
- * - keeps a record of the complete current line in `textbuf[]'
  * - yytext[] is the current token passed by (f)lex
  */
 static void _count(bool updateprevpos)
 {
-    static int textbuflen;
     int i;
 
-    /* printf("DBG: countChars(): prev=%d,%d  pos=%d,%d yytext=>>%s<<\n",
-           prevpos.li, prevpos.co, pos.li, pos.co, yytext);
-    */
+    // printf("DBG: countChars(): prev=%d,%d  pos=%d,%d yytext=>>%s<<\n", prevpos.li, prevpos.co, pos.li, pos.co, yytext);
 
-    /* init textbuf */
-    if (pos.li==1 && pos.co==0) {
-        textbuf[0]='\0'; textbuflen=0;
+    if (pos.li==1 && pos.co==0)
         parenDepth = 0;
-    }
 
-    if (updateprevpos) {
+    if (updateprevpos)
         prevpos = pos;
-    }
+
     for (i = 0; yytext[i] != '\0'; i++) {
         if (yytext[i] == '\n') {
             pos.co = 0;
             pos.li++;
-            textbuflen=0; textbuf[0]='\0';
         } else if (yytext[i] == '\t')
             pos.co += 8 - (pos.co % 8);
         else
             pos.co++;
-        if (yytext[i] != '\n') {
-            if (textbuflen < TEXTBUF_LEN-5) {
-                textbuf[textbuflen++]=yytext[i]; textbuf[textbuflen]='\0';
-            }
-            else if (textbuflen == TEXTBUF_LEN-5) {
-                strcpy(textbuf+textbuflen, "...");
-                textbuflen++;
-            } else {
-                /* line too long -- ignore */
-            }
-        }
     }
-    /* printf("li=%d co=%d\n", pos.li, pos.co); good for debugging... */
+
+    // printf("count '%s': %d:%d-%d:%d\n", strcmp(yytext,"\n")==0?"\\n":yytext, prevpos.li, prevpos.co, pos.li, pos.co);
     yylloc.first_line   = prevpos.li;
     yylloc.first_column = prevpos.co;
     yylloc.last_line    = pos.li;
