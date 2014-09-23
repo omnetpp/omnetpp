@@ -396,6 +396,8 @@ IdentElement *createIdent(YYLTYPE parampos, YYLTYPE modulepos, NEDElement *modul
 
 LiteralElement *createPropertyValue(YYLTYPE textpos)  // which is a spec or a string literal
 {
+    np->getSource()->trimSpaceAndComments(textpos);
+
     bool isString = false;
     try {
         const char *text = toString(textpos);
