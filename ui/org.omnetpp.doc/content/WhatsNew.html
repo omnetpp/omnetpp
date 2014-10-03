@@ -579,6 +579,52 @@ about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.</p
 </div>
 
 <div class="sect1">
+<h2 id="_omnet_4_6_oct_2014">OMNeT++ 4.6 (Oct 2014)</h2>
+<div class="sectionbody">
+<div class="ulist">
+<p>IDE:</p>
+<ul>
+  <li><p>Updated to use Eclipse 4.4 (Luna) (requires JDK 1.7+)</li>
+  <li><p>The IDE is now a 64-bit application on Mac OS X (You must install
+    JDK 1.7 or later.)</li>
+</ul>
+<p>Command line:</p>
+  <ul><li><p>The message compiler was reimplemented as a part of 'nedtool'. You can still use
+    'opp_msgc' as it is now a wrapper script pointing to 'nedtool'.</li>
+  </ul>
+<p>Other:</p>
+<ul>
+  <li><p>OMNeT++ is now using C++11 by default (-std=c++11) when models are compiled.
+    The simulator itself does not use any of the C++11 features so C++11 support may
+    be disabled in configure.user. Update your models to compile properly using the
+    C++11 standard as later OMNeT++ versions will require C++11 compliance.</li>
+
+  <li><p>OMNeT++ can be configured to use the 'omnetpp' namespace by setting 
+    USE_NAMESPACE=yes in configure.user</li>
+
+  <li><p>'clang' is used by default on MAC and can be optionally turned on on Linux. 
+     (and still not supported on Windows.)</li>
+
+  <li><p>The bundled MSYS/MINGW toolchanin was updated to use MSYS2.
+    Details:
+    <ul>
+    <li><p>No more memory errors during build</li>
+    <li><p>The 'make' command now properly supports parallel build (-j4, -j8 etc.)</li>
+    <li><p>The bundled MSYS2 toolchain now contains the 'pacman' package manager
+      so you can install additional packages if you wish.</li>
+    <li><p>The 'mingw' directory containing the compiler have been moved under 
+      the 'tools/win32' directory.</li>
+    </ul>
+    </li>
+</ul>
+<p>Bugs fixed: <a href="http://tinyurl.com/omnetpp46-fixes">http://tinyurl.com/omnetpp46-fixes</a></p>
+</div>
+</div>
+</div>
+
+  
+</ul>
+<div class="sect1">
 <h2 id="_omnet_4_5_june_2014">OMNeT++ 4.5 (June 2014)</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>Tkenv:</p></div>

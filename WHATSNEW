@@ -29,8 +29,8 @@ Other:
   - OMNeT++ can be configured to use the 'omnetpp' namespace by setting 
     USE_NAMESPACE=yes in configure.user
 
-  - CLANG is used by default on MAC, can be optionally turned on on Linux and 
-    still not yet supported on Windows.
+  - 'clang' is used by default on MAC and can be optionally turned on on Linux. 
+     (and still not supported on Windows.)
 
   - The bundled MSYS/MINGW toolchanin was updated to use MSYS2.
     Details:
@@ -39,7 +39,7 @@ Other:
     - The bundled MSYS2 toolchain now contains the 'pacman' package manager
       so you can install additional packages if you wish.
     - The 'mingw' directory containing the compiler have been moved under 
-      the 'msys' directory.
+      the 'tools/win32' directory.
 
 Bugs fixed: http://tinyurl.com/omnetpp46-fixes
 
