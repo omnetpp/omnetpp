@@ -163,7 +163,7 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
         String oppRoot = getOmnetppRootDir();
         if (StringUtils.isBlank(oppRoot))
             return "";
-        return new Path(oppRoot).append("msys").append("usr").append("bin").toOSString();
+        return new Path(oppRoot).append("tools").append("win32").append("usr").append("bin").toOSString();
     }
 
     /**
@@ -175,7 +175,7 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
         String oppRoot = getOmnetppRootDir();
         if (StringUtils.isBlank(oppRoot))
             return "";
-        return new Path(oppRoot).append("msys").append("mingw32").append("bin").toOSString();
+        return new Path(oppRoot).append("tools").append("win32").append("mingw32").append("bin").toOSString();
     }
 
     /**
