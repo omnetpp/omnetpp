@@ -5,7 +5,7 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
-OMNeT++ 4.6b1 (Sept 2014)
+OMNeT++ 4.6 (Oct 2014)
 -------------------------
 
 IDE:
@@ -20,6 +20,7 @@ Command line:
     'opp_msgc' as it is now a wrapper script pointing to 'nedtool'.
 
 Other:
+
   - OMNeT++ is now using C++11 by default (-std=c++11) when models are compiled.
     The simulator itself does not use any of the C++11 features so C++11 support may
     be disabled in configure.user. Update your models to compile properly using the
@@ -40,6 +41,7 @@ Other:
     - The 'mingw' directory containing the compiler have been moved under 
       the 'msys' directory.
 
+Bugs fixed: http://tinyurl.com/omnetpp46-fixes
 
 OMNeT++ 4.5 (June 2014)
 -----------------------
