@@ -3483,6 +3483,13 @@ rm -f core conftest.err conftest.$ac_objext \
 fi
 
 #----------------------
+# check if clang++ is used as we wnat to specify -Wno-deprecated-register to avoid warning from generated code
+#----------------------
+if test "$CXX" = "clang++"; then
+  CFLAGS_ARCH="$CFLAGS_ARCH -Wno-deprecated-register"
+fi
+
+#----------------------
 # check and disable stack checking to avoid opplibs.so dependence on glibc 2.4
 #----------------------
 
