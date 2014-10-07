@@ -31,11 +31,12 @@
 #include "random.h"
 #include "distrib.h"
 #include "globals.h"
-#include "cdetect.h"  //NL
+#include "cdetect.h"
 #include "csimplemodule.h"
 #include "cexception.h"
 #include "cenvir.h"
 #include "stringutil.h"
+#include "commonutil.h"  //NaN
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -165,6 +166,21 @@ void cStdDev::merge(const cStatistic *other)
     doMerge(other);
 }
 
+double cStdDev::getMin() const
+{
+    return num_vals == 0 ? NaN : min_vals;
+}
+
+double cStdDev::getMax() const
+{
+    return num_vals == 0 ? NaN : max_vals;
+}
+
+double cStdDev::getMean() const
+{
+    return num_vals == 0 ? NaN : sum_vals / num_vals;
+}
+
 double cStdDev::getVariance() const
 {
     if (num_vals <= 1)
@@ -192,8 +208,8 @@ std::string cStdDev::detailedInfo() const
     {
         os << "  Mean value     = " << getMean() << "\n";
         os << "  Standard dev.  = " << getStddev() << "\n";
-        os << "  Minimal value  = " << min_vals << "\n";
-        os << "  Maximal value  = " << max_vals << "\n";
+        os << "  Minimal value  = " << getMin() << "\n";
+        os << "  Maximal value  = " << getMax() << "\n";
     }
     return os.str();
 }

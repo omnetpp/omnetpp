@@ -149,18 +149,18 @@ class SIM_API cStdDev : public cStatistic
     /**
      * Returns the minimum of the collected values.
      */
-    virtual double getMin() const  {return min_vals;}
+    virtual double getMin() const;
 
     /**
      * Returns the maximum of the collected values.
      */
-    virtual double getMax() const  {return max_vals;}
+    virtual double getMax() const;
 
     /**
      * Returns the mean of the observations.
      * Returns 0.0 if nothing was collected yet.
      */
-    virtual double getMean() const  {return num_vals==0 ? 0 : sum_vals/num_vals;}
+    virtual double getMean() const;
 
     /**
      * Returns the standard deviation of the observations.
