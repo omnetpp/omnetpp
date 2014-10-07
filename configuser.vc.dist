@@ -28,8 +28,7 @@ OMNETPP_ROOT=$(OMNETPP_ROOT:\=/)
 # config file (i.e. other variables can simply refer to $(OPT_DIR)).
 # This is completely optional -- OPT_DIR is not referenced outside this file.
 #
-OPT_DIR=$(OMNETPP_ROOT:\=/)/msys/usr
-#OPT_DIR=$(TOOLS_DIR:\=/)/msys
+OPT_DIR=$(OMNETPP_ROOT:\=/)/tools/win32/usr
 
 #
 # Directory and version of Tcl/Tk, for example "8.6".
@@ -61,14 +60,11 @@ XMLPARSER=libxml
 #
 # Location of Expat (only used if XMLPARSER=expat, see above)
 #
-#EXPAT_DIR=$(TOOLS_DIR:\=/)/expat-1.95.8
 EXPAT_DIR=$(OPT_DIR:\=/)
 
 #
 # Location of LibXML2 and its supporting library ICONV (only used if XMLPARSER=libxml)
 #
-#ICONV_DIR=$(TOOLS_DIR:\=/)/iconv-1.9.1.win32
-#LIBXML_DIR=$(TOOLS_DIR:\=/)/libxml2-2.6.20.win32
 ICONV_DIR=$(OPT_DIR:\=/)/../mingw32
 LIBXML_DIR=$(OPT_DIR:\=/)
 
