@@ -48,6 +48,9 @@ class cProperties;
 class SIM_API cFigure : public cOwnedObject
 {
     public:
+        /**
+         * Represents a point as (x,y) coordinates.
+         */
         struct SIM_API Point {
             double x, y;
             Point() : x(0), y(0) {}
@@ -63,6 +66,9 @@ class SIM_API cFigure : public cOwnedObject
             std::string str() const;
         };
 
+        /**
+         * Represents a rectangle as an (x,y,width,height) tuple.
+         */
         struct SIM_API Rectangle {
             double x, y, width, height;
             Rectangle() : x(0), y(0), width(0), height(0) {}
@@ -73,6 +79,14 @@ class SIM_API cFigure : public cOwnedObject
             std::string str() const;
         };
 
+        /**
+         * Represents an RGB color. Conversion from string exists, and accepts HTML colors (#rrggbb),
+         * HSB colors in a similar notation (@hhssbb), and English color names (X11 color names,
+         * to be more precise.) Predefined constants for the basic colors (see BLACK, WHITE,
+         * GREY, RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA), as well as a collection of good dark and
+         * light colors, suitable for e.g. chart drawing (see GOOD_DARK_COLORS and GOOD_LIGHT_COLORS)
+         * are provided.
+         */
         struct SIM_API Color {
             uint8_t red, green, blue;
             Color() : red(0), green(0), blue(0) {}
@@ -91,10 +105,12 @@ class SIM_API cFigure : public cOwnedObject
         static const Color CYAN;
         static const Color MAGENTA;
 
-
         static const Color GOOD_DARK_COLORS[14];
         static const Color GOOD_LIGHT_COLORS[10];
 
+        /**
+         * Represents a properties of a font.
+         */
         struct SIM_API Font {
             std::string typeface;
             int pointSize;
@@ -144,6 +160,10 @@ class SIM_API cFigure : public cOwnedObject
                 std::string str() const;
         };
 
+        /**
+         * RGBA pixel data, for Pixmap manipulation.
+         * @see Pixmap
+         */
         struct SIM_API RGBA {
             uint8_t red, green, blue, alpha;
             RGBA() : red(0), green(0), blue(0), alpha(0) {}
@@ -153,6 +173,10 @@ class SIM_API cFigure : public cOwnedObject
             operator Color() const {return Color(red, green, blue);}
         };
 
+        /**
+         * An RGBA rectangular pixel array.
+         * @see cPixmapImage
+         */
         class SIM_API Pixmap {
             private:
                 int width, height; // zero is allowed
@@ -208,6 +232,7 @@ class SIM_API cFigure : public cOwnedObject
         uint64_t tagBits;  // bit-to-tagname mapping is stored in cCanvas. Note: change to std::bitset if 64 tags are not enough
         uint8_t localChanges;
         uint8_t subtreeChanges;
+
     protected:
         virtual bool isAllowedPropertyKey(const char *key) const;
         virtual void validatePropertyKeys(cProperty *property) const;
@@ -252,28 +277,45 @@ class SIM_API cFigure : public cOwnedObject
         void copy(const cFigure& other);
 
     public:
+        /** @name Constructors, destructor, assignment */
+        //@{
         cFigure(const char *name=NULL) : cOwnedObject(name), id(++lastId), visible(true), tags(NULL), tagBits(0), localChanges(0), subtreeChanges(0) {}
         cFigure(const cFigure& other) : cOwnedObject(other) {copy(other);}
         virtual ~cFigure();
         cFigure& operator=(const cFigure& other);
+        //@}
+
+        /** @name Redefined cObject member functions. */
+        //@{
+        virtual cFigure *dup() const {throw cRuntimeError(this, E_CANTDUP);}  // see also dupTree()
         virtual void forEachChild(cVisitor *v);
         virtual std::string info() const;
+        //@}
+
+        /** @name Miscellaneous. */
+        //@{
         virtual void parse(cProperty *property);
-        virtual cFigure *dupTree() const;
 
         virtual const char *getClassNameForRenderer() const {return getClassName();} // denotes renderer of which figure class to use; override if you want to subclass a figure while reusing renderer of the base class
         virtual void updateParentTransform(Transform& transform) {transform.leftMultiply(getTransform());}
 
-        int getId() const {return id;}
         virtual void move(double x, double y) = 0;
         virtual cCanvas *getCanvas() const;
+        //@}
+
+        /** @name Common figure attributes. */
+        //@{
+        int getId() const {return id;}
         virtual bool isVisible() const {return visible;} // affects figure subtree, not just this very figure
         virtual void setVisible(bool visible) {this->visible = visible; fireStructuralChange();}
         virtual const Transform& getTransform() const {return transform;}
         virtual void setTransform(const Transform& transform) {this->transform = transform; fireTransformChange();}
         virtual const char *getTags() const {return tags;} // returns space-separated list of tags
         virtual void setTags(const char *tags); // accepts space-separated list of tags
+        //@}
 
+        /** @name Operations on the transformation matrix. */
+        //@{
         virtual void translate(double dx, double dy) {transform.translate(dx,dy); fireTransformChange();}
         virtual void scale(double s) {transform.scale(s); fireTransformChange();}
         virtual void scale(double sx, double sy) {transform.scale(sx,sy); fireTransformChange();}
@@ -286,7 +328,10 @@ class SIM_API cFigure : public cOwnedObject
         virtual void skewy(double phi) {transform.skewy(phi); fireTransformChange();}
         virtual void skewx(double phi, double cy) {transform.skewx(phi,cy); fireTransformChange();}
         virtual void skewy(double phi, double cx) {transform.skewy(phi,cx); fireTransformChange();}
+        //@}
 
+        /** @name Managing child figures. */
+        //@{
         virtual void addFigure(cFigure *figure);
         virtual void addFigure(cFigure *figure, int pos);
         virtual void addFigureAbove(cFigure *figure, cFigure *referenceFigure);
@@ -305,9 +350,14 @@ class SIM_API cFigure : public cOwnedObject
         virtual void lowerBelow(cFigure *figure);
         virtual void raiseToTop();
         virtual void lowerToBottom();
+        //@}
 
+        /** @name Accessing the figure tree. */
+        //@{
+        virtual cFigure *dupTree() const;
         virtual cFigure *findFigureRecursively(const char *name) const;
         virtual cFigure *getFigureByPath(const char *path) const;  //NOTE: path has similar syntax to cModule::getModuleByPath()
+        //@}
 };
 
 // import the namespace to be able to use the stream write operators
@@ -333,13 +383,20 @@ class SIM_API cGroupFigure : public cFigure
     private:
         void copy(const cGroupFigure& other) {}
     public:
+        /** @name Constructors, destructor, assignment. */
+        //@{
         cGroupFigure(const char *name=NULL) : cFigure(name) {}
         cGroupFigure(const cGroupFigure& other) : cFigure(other) {copy(other);}
         cGroupFigure& operator=(const cGroupFigure& other);
+        //@}
+
+        /** @name Redefined cObject and cFigure member functions. */
+        //@{
         virtual cGroupFigure *dup() const  {return new cGroupFigure(*this);}
         virtual std::string info() const;
         virtual const char *getClassNameForRenderer() const {return "";} // non-visual figure
         virtual void move(double x, double y) {}
+        //@}
 };
 
 /**
@@ -359,16 +416,27 @@ class SIM_API cPanelFigure : public cFigure
     private:
         void copy(const cPanelFigure& other);
     public:
+        /** @name Constructors, destructor, assignment. */
+        //@{
         cPanelFigure(const char *name=NULL) : cFigure(name) {}
         cPanelFigure(const cPanelFigure& other) : cFigure(other) {copy(other);}
         cPanelFigure& operator=(const cPanelFigure& other);
+        //@}
+
+        /** @name Redefined cObject and cFigure member functions. */
+        //@{
         virtual cPanelFigure *dup() const  {return new cPanelFigure(*this);}
         virtual std::string info() const;
         virtual const char *getClassNameForRenderer() const {return "";} // non-visual figure
         virtual void updateParentTransform(Transform& transform);
         virtual void move(double x, double y) {position.translate(x,y); fireTransformChange();}
+        //@}
+
+        /** @name Figure attributes */
+        //@{
         virtual const Point& getPosition() const  {return position;}
         virtual void setPosition(const Point& position)  {this->position = position; fireGeometryChange();}
+        //@}
 };
 
 /**
@@ -392,12 +460,22 @@ class SIM_API cAbstractLineFigure : public cFigure
     protected:
         virtual const char **getAllowedPropertyKeys() const;
     public:
+        /** @name Constructors, destructor, assignment. */
+        //@{
         cAbstractLineFigure(const char *name=NULL) : cFigure(name), lineColor(BLACK), lineStyle(LINE_SOLID), lineWidth(1), lineOpacity(1), capStyle(CAP_BUTT), startArrowHead(ARROW_NONE), endArrowHead(ARROW_NONE), scaleLineWidth(true) {}
         cAbstractLineFigure(const cAbstractLineFigure& other) : cFigure(other) {copy(other);}
         cAbstractLineFigure& operator=(const cAbstractLineFigure& other);
+        //@}
+
+        /** @name Redefined cObject and cFigure member functions. */
+        //@{
         virtual cAbstractLineFigure *dup() const {throw cRuntimeError(this, E_CANTDUP);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
+        //@}
+
+        /** @name Figure attributes */
+        //@{
         virtual const Color& getLineColor() const  {return lineColor;}
         virtual void setLineColor(const Color& lineColor)  {this->lineColor = lineColor; fireVisualChange();}
         virtual double getLineWidth() const  {return lineWidth;}
@@ -414,6 +492,7 @@ class SIM_API cAbstractLineFigure : public cFigure
         virtual void setEndArrowHead(ArrowHead endArrowHead)  {this->endArrowHead = endArrowHead; fireVisualChange();}
         virtual void setScaleLineWidth(bool scaleLineWidth) {this->scaleLineWidth = scaleLineWidth; fireVisualChange();}
         virtual bool getScaleLineWidth() const {return scaleLineWidth;}
+        //@}
 };
 
 /**
@@ -430,17 +509,28 @@ class SIM_API cLineFigure : public cAbstractLineFigure
     protected:
         virtual const char **getAllowedPropertyKeys() const;
     public:
+        /** @name Constructors, destructor, assignment. */
+        //@{
         cLineFigure(const char *name=NULL) : cAbstractLineFigure(name) {}
         cLineFigure(const cLineFigure& other) : cAbstractLineFigure(other) {copy(other);}
         cLineFigure& operator=(const cLineFigure& other);
+        //@}
+
+        /** @name Redefined cObject and cFigure member functions. */
+        //@{
         virtual cLineFigure *dup() const  {return new cLineFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
         virtual void move(double x, double y);
+        //@}
+
+        /** @name Figure attributes */
+        //@{
         virtual const Point& getStart() const  {return start;}
         virtual void setStart(const Point& start)  {this->start = start; fireGeometryChange();}
         virtual const Point& getEnd() const  {return end;}
         virtual void setEnd(const Point& end)  {this->end = end; fireGeometryChange();}
+        //@}
 };
 
 /**
@@ -461,19 +551,30 @@ class SIM_API cArcFigure : public cAbstractLineFigure
     protected:
         virtual const char **getAllowedPropertyKeys() const;
     public:
+        /** @name Constructors, destructor, assignment. */
+        //@{
         cArcFigure(const char *name=NULL) : cAbstractLineFigure(name), startAngle(0), endAngle(0) {}
         cArcFigure(const cArcFigure& other) : cAbstractLineFigure(other) {copy(other);}
         cArcFigure& operator=(const cArcFigure& other);
+        //@}
+
+        /** @name Redefined cObject and cFigure member functions. */
+        //@{
         virtual cArcFigure *dup() const  {return new cArcFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
         virtual void move(double x, double y);
+        //@}
+
+        /** @name Figure attributes */
+        //@{
         virtual const Rectangle& getBounds() const  {return bounds;}
         virtual void setBounds(const Rectangle& bounds)  {this->bounds = bounds; fireGeometryChange();}
         virtual double getStartAngle() const {return startAngle;}
         virtual void setStartAngle(double startAngle) {this->startAngle = startAngle; fireGeometryChange();}
         virtual double getEndAngle() const {return endAngle;}
         virtual void setEndAngle(double endAngle) {this->endAngle = endAngle; fireGeometryChange();}
+        //@}
 };
 
 /**
@@ -498,13 +599,23 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
     protected:
         virtual const char **getAllowedPropertyKeys() const;
     public:
+        /** @name Constructors, destructor, assignment. */
+        //@{
         cPolylineFigure(const char *name=NULL) : cAbstractLineFigure(name), smooth(false), joinStyle(JOIN_MITER) {}
         cPolylineFigure(const cPolylineFigure& other) : cAbstractLineFigure(other) {copy(other);}
         cPolylineFigure& operator=(const cPolylineFigure& other);
+        //@}
+
+        /** @name Redefined cObject and cFigure member functions. */
+        //@{
         virtual cPolylineFigure *dup() const  {return new cPolylineFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
         virtual void move(double x, double y);
+        //@}
+
+        /** @name Figure attributes */
+        //@{
         virtual int getNumPoints() const {return points.size();}
         virtual const std::vector<Point>& getPoints() const  {return points;}
         virtual void setPoints(const std::vector<Point>& points) {this->points = points; fireGeometryChange();}
@@ -517,6 +628,7 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
         virtual void setSmooth(bool smooth) {this->smooth = smooth; fireVisualChange();}
         virtual JoinStyle getJoinStyle() const {return joinStyle;}
         virtual void setJoinStyle(JoinStyle joinStyle) {this->joinStyle = joinStyle; fireVisualChange();}
+        //@}
 };
 
 /**
@@ -542,12 +654,22 @@ class SIM_API cAbstractShapeFigure : public cFigure
     protected:
         virtual const char **getAllowedPropertyKeys() const;
     public:
+        /** @name Constructors, destructor, assignment. */
+        //@{
         cAbstractShapeFigure(const char *name=NULL) : cFigure(name), outlined(true), filled(false), lineColor(BLACK), fillColor(BLUE), lineStyle(LINE_SOLID), lineWidth(1), lineOpacity(1), fillOpacity(1), scaleLineWidth(true) {}
         cAbstractShapeFigure(const cAbstractShapeFigure& other) : cFigure(other) {copy(other);}
         cAbstractShapeFigure& operator=(const cAbstractShapeFigure& other);
+        //@}
+
+        /** @name Redefined cObject and cFigure member functions. */
+        //@{
         virtual cAbstractShapeFigure *dup() const {throw cRuntimeError(this, E_CANTDUP);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
+        //@}
+
+        /** @name Figure attributes */
+        //@{
         virtual bool isFilled() const  {return filled;}
         virtual void setFilled(bool filled)  {this->filled = filled; fireVisualChange();}
         virtual bool isOutlined() const  {return outlined;}
@@ -566,6 +688,7 @@ class SIM_API cAbstractShapeFigure : public cFigure
         virtual void setFillOpacity(double fillOpacity)  {this->fillOpacity = fillOpacity; fireVisualChange();}
         virtual void setScaleLineWidth(bool scaleLineWidth) {this->scaleLineWidth = scaleLineWidth; fireVisualChange();}
         virtual bool getScaleLineWidth() const {return scaleLineWidth;}
+        //@}
 };
 
 /**
@@ -581,19 +704,33 @@ class SIM_API cRectangleFigure : public cAbstractShapeFigure
     private:
         void copy(const cRectangleFigure& other);
     public:
+        /** @name Constructors, destructor, assignment. */
+        //@{
         cRectangleFigure(const char *name=NULL) : cAbstractShapeFigure(name), cornerRx(0), cornerRy(0) {}
         cRectangleFigure(const cRectangleFigure& other) : cAbstractShapeFigure(other) {copy(other);}
         cRectangleFigure& operator=(const cRectangleFigure& other);
+        //@}
+
+        /** @name Redefined cObject and cFigure member functions. */
+        //@{
         virtual cRectangleFigure *dup() const  {return new cRectangleFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
+        /**
+         * Translates the bounding rectangle, see getBounds().
+         */
         virtual void move(double x, double y);
+        //@}
+
+        /** @name Figure attributes */
+        //@{
         virtual const Rectangle& getBounds() const  {return bounds;}
         virtual void setBounds(const Rectangle& bounds)  {this->bounds = bounds; fireGeometryChange();}
         virtual double getCornerRx() const  {return cornerRx;}
         virtual void setCornerRx(double rx)  {this->cornerRx = rx; fireGeometryChange();}
         virtual double getCornerRy() const  {return cornerRy;}
         virtual void setCornerRy(double ry)  {this->cornerRy = ry; fireGeometryChange();}
+        //@}
 };
 
 /**
@@ -608,15 +745,26 @@ class SIM_API cOvalFigure : public cAbstractShapeFigure
     protected:
         virtual const char **getAllowedPropertyKeys() const;
     public:
+        /** @name Constructors, destructor, assignment. */
+        //@{
         cOvalFigure(const char *name=NULL) : cAbstractShapeFigure(name) {}
         cOvalFigure(const cOvalFigure& other) : cAbstractShapeFigure(other) {copy(other);}
         cOvalFigure& operator=(const cOvalFigure& other);
+        //@}
+
+        /** @name Redefined cObject and cFigure member functions. */
+        //@{
         virtual cOvalFigure *dup() const  {return new cOvalFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
         virtual void move(double x, double y);
+        //@}
+
+        /** @name Figure attributes */
+        //@{
         virtual const Rectangle& getBounds() const  {return bounds;}
         virtual void setBounds(const Rectangle& bounds)  {this->bounds = bounds; fireGeometryChange();}
+        //@}
 };
 
 /**
@@ -632,23 +780,37 @@ class SIM_API cRingFigure : public cAbstractShapeFigure
     protected:
         virtual const char **getAllowedPropertyKeys() const;
     public:
+        /** @name Constructors, destructor, assignment. */
+        //@{
         cRingFigure(const char *name=NULL) : cAbstractShapeFigure(name), innerRx(0), innerRy(0) {}
         cRingFigure(const cRingFigure& other) : cAbstractShapeFigure(other) {copy(other);}
         cRingFigure& operator=(const cRingFigure& other);
+        //@}
+
+        /** @name Redefined cObject and cFigure member functions. */
+        //@{
         virtual cRingFigure *dup() const  {return new cRingFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
         virtual void move(double x, double y);
+        //@}
+
+        /** @name Figure attributes */
+        //@{
         virtual const Rectangle& getBounds() const  {return bounds;}
         virtual void setBounds(const Rectangle& bounds)  {this->bounds = bounds; fireGeometryChange();}
         virtual double getInnerRx() const  {return innerRx;}
         virtual void setInnerRx(double rx)  {this->innerRx = rx; fireGeometryChange();}
         virtual double getInnerRy() const  {return innerRy;}
         virtual void setInnerRy(double ry)  {this->innerRy = ry; fireGeometryChange();}
+        //@}
 };
 
 /**
  * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ *
+ * Draws a section of an axis-aligned ellipse (i.e. an arc), together with radii going to
+ * the endpoints of the arc. As with all shape figures, both the outline and the fill are optional.
  *
  * Note: bounds are that of the oval that this pie slice is part of.
  */
@@ -662,19 +824,30 @@ class SIM_API cPieSliceFigure : public cAbstractShapeFigure
     protected:
         virtual const char **getAllowedPropertyKeys() const;
     public:
+        /** @name Constructors, destructor, assignment. */
+        //@{
         cPieSliceFigure(const char *name=NULL) : cAbstractShapeFigure(name), startAngle(0), endAngle(45) {}
         cPieSliceFigure(const cPieSliceFigure& other) : cAbstractShapeFigure(other) {copy(other);}
         cPieSliceFigure& operator=(const cPieSliceFigure& other);
+        //@}
+
+        /** @name Redefined cObject and cFigure member functions. */
+        //@{
         virtual cPieSliceFigure *dup() const  {return new cPieSliceFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
         virtual void move(double x, double y);
+        //@}
+
+        /** @name Figure attributes */
+        //@{
         virtual const Rectangle& getBounds() const  {return bounds;}
         virtual void setBounds(const Rectangle& bounds)  {this->bounds = bounds; fireGeometryChange();}
         virtual double getStartAngle() const {return startAngle;}
         virtual void setStartAngle(double startAngle) {this->startAngle = startAngle; fireGeometryChange();}
         virtual double getEndAngle() const {return endAngle;}
         virtual void setEndAngle(double endAngle) {this->endAngle = endAngle; fireGeometryChange();}
+        //@}
 };
 
 /**
@@ -697,13 +870,23 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
     protected:
         virtual const char **getAllowedPropertyKeys() const;
     public:
+        /** @name Constructors, destructor, assignment. */
+        //@{
         cPolygonFigure(const char *name=NULL) : cAbstractShapeFigure(name), smooth(false), joinStyle(JOIN_MITER), fillRule(FILL_EVENODD) {}
         cPolygonFigure(const cPolygonFigure& other) : cAbstractShapeFigure(other) {copy(other);}
         cPolygonFigure& operator=(const cPolygonFigure& other);
+        //@}
+
+        /** @name Redefined cObject and cFigure member functions. */
+        //@{
         virtual cPolygonFigure *dup() const  {return new cPolygonFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
         virtual void move(double x, double y);
+        //@}
+
+        /** @name Figure attributes */
+        //@{
         virtual int getNumPoints() const {return points.size();}
         virtual const std::vector<Point>& getPoints() const  {return points;}
         virtual void setPoints(const std::vector<Point>& points) {this->points = points; fireGeometryChange();}
@@ -718,10 +901,15 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
         virtual void setJoinStyle(JoinStyle joinStyle) {this->joinStyle = joinStyle; fireVisualChange();}
         virtual FillRule getFillRule() const {return fillRule;}
         virtual void setFillRule(FillRule fillRule) {this->fillRule = fillRule; fireVisualChange();}
+        //@}
 };
 
 /**
  * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ *
+ * Draws a "path", modeled after the similar concept in SVG. A path is a line consisting any number
+ * of straight line segments, Bezier curves and arcs. The path can be disjoint as well. Closed paths
+ * may be filled.
  */
 class SIM_API cPathFigure : public cAbstractShapeFigure
 {
@@ -737,13 +925,27 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
     protected:
         virtual const char **getAllowedPropertyKeys() const;
     public:
+        /** @name Constructors, destructor, assignment. */
+        //@{
         cPathFigure(const char *name=NULL) : cAbstractShapeFigure(name), joinStyle(JOIN_MITER), capStyle(CAP_BUTT), fillRule(FILL_EVENODD) {}
         cPathFigure(const cPathFigure& other) : cAbstractShapeFigure(other) {copy(other);}
         cPathFigure& operator=(const cPathFigure& other);
+        //@}
+
+        /** @name Redefined cObject and cFigure member functions. */
+        //@{
         virtual cPathFigure *dup() const  {return new cPathFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
+        /**
+         * The move operation modifies the offset field (see getOffset()), in order to avoid having
+         * to update potentially all path atoms in the string.
+         */
         virtual void move(double x, double y);
+        //@}
+
+        /** @name Figure attributes */
+        //@{
         virtual const Point& getOffset() const {return offset;}
         virtual void setOffset(const Point& offset) {this->offset = offset; fireGeometryChange();}
         virtual const char *getPath() const {return path.c_str();}
@@ -772,6 +974,7 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
         virtual void setCapStyle(CapStyle capStyle) {this->capStyle = capStyle; fireVisualChange();}
         virtual FillRule getFillRule() const {return fillRule;}
         virtual void setFillRule(FillRule fillRule) {this->fillRule = fillRule; fireVisualChange();}
+        //@}
 };
 
 /**
@@ -793,13 +996,26 @@ class SIM_API cAbstractTextFigure : public cFigure
     protected:
         virtual const char **getAllowedPropertyKeys() const;
     public:
+        /** @name Constructors, destructor, assignment. */
+        //@{
         cAbstractTextFigure(const char *name=NULL) : cFigure(name), color(BLACK), opacity(1), anchor(ANCHOR_NW) {}
         cAbstractTextFigure(const cAbstractTextFigure& other) : cFigure(other) {copy(other);}
         cAbstractTextFigure& operator=(const cAbstractTextFigure& other);
+        //@}
+
+        /** @name Redefined cObject and cFigure member functions. */
+        //@{
         virtual cAbstractTextFigure *dup() const {throw cRuntimeError(this, E_CANTDUP);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
+        /**
+         * Updates the position of the text, see getPosition().
+         */
         virtual void move(double x, double y);
+        //@}
+
+        /** @name Figure attributes */
+        //@{
         virtual const Point& getPosition() const  {return position;}
         virtual void setPosition(const Point& position)  {this->position = position; fireGeometryChange();}
         virtual Anchor getAnchor() const  {return anchor;}
@@ -812,6 +1028,7 @@ class SIM_API cAbstractTextFigure : public cFigure
         virtual void setFont(Font font)  {this->font = font; fireVisualChange();}
         virtual const char *getText() const  {return text.c_str();}
         virtual void setText(const char *text)  {this->text = text; fireInputDataChange();}
+        //@}
 };
 
 /**
@@ -824,10 +1041,17 @@ class SIM_API cTextFigure : public cAbstractTextFigure
     private:
         void copy(const cTextFigure& other) {}
     public:
+        /** @name Constructors, destructor, assignment. */
+        //@{
         cTextFigure(const char *name=NULL) : cAbstractTextFigure(name) {}
         cTextFigure(const cTextFigure& other) : cAbstractTextFigure(other) {copy(other);}
         cTextFigure& operator=(const cTextFigure& other);
+        //@}
+
+        /** @name Redefined cObject and cFigure member functions. */
+        //@{
         virtual cTextFigure *dup() const  {return new cTextFigure(*this);}
+        //@}
 };
 
 /**
@@ -840,10 +1064,17 @@ class SIM_API cLabelFigure : public cAbstractTextFigure
     private:
         void copy(const cLabelFigure& other) {}
     public:
+        /** @name Constructors, destructor, assignment. */
+        //@{
         cLabelFigure(const char *name=NULL) : cAbstractTextFigure(name) {}
         cLabelFigure(const cLabelFigure& other) : cAbstractTextFigure(other) {copy(other);}
         cLabelFigure& operator=(const cLabelFigure& other);
+        //@}
+
+        /** @name Redefined cObject and cFigure member functions. */
+        //@{
         virtual cLabelFigure *dup() const  {return new cLabelFigure(*this);}
+        //@}
 };
 
 /**
@@ -866,12 +1097,25 @@ class SIM_API cAbstractImageFigure : public cFigure
     protected:
         virtual const char **getAllowedPropertyKeys() const;
     public:
+        /** @name Constructors, destructor, assignment. */
+        //@{
         cAbstractImageFigure(const char *name=NULL) : cFigure(name), anchor(ANCHOR_CENTER), width(0), height(0), interpolation(INTERPOLATION_FAST), opacity(1), tintColor(BLUE), tintAmount(0) { }
         cAbstractImageFigure(const cAbstractImageFigure& other) : cFigure(other) {copy(other);}
         cAbstractImageFigure& operator=(const cAbstractImageFigure& other);
+        //@}
+
+        /** @name Redefined cObject and cFigure member functions. */
+        //@{
         virtual cAbstractImageFigure *dup() const {throw cRuntimeError(this, E_CANTDUP);}
         virtual void parse(cProperty *property);
+        /**
+         * Updates the position of the image, see getPosition().
+         */
         virtual void move(double x, double y);
+        //@}
+
+        /** @name Figure attributes */
+        //@{
         virtual const Point& getPosition() const  {return position;}
         virtual void setPosition(const Point& position)  {this->position = position; fireGeometryChange();}
         virtual Anchor getAnchor() const  {return anchor;}
@@ -888,6 +1132,7 @@ class SIM_API cAbstractImageFigure : public cFigure
         virtual void setTintColor(const Color& tintColor)  {this->tintColor = tintColor; fireVisualChange();}
         virtual double getTintAmount() const  {return tintAmount;}
         virtual void setTintAmount(double tintAmount)  {this->tintAmount = std::max(0.0, std::min(1.0, tintAmount)); fireVisualChange();}
+        //@}
 };
 
 /**
@@ -904,14 +1149,25 @@ class SIM_API cImageFigure : public cAbstractImageFigure
     protected:
         virtual const char **getAllowedPropertyKeys() const;
     public:
+        /** @name Constructors, destructor, assignment. */
+        //@{
         cImageFigure(const char *name=NULL) : cAbstractImageFigure(name) {}
         cImageFigure(const cImageFigure& other) : cAbstractImageFigure(other) {copy(other);}
         cImageFigure& operator=(const cImageFigure& other);
+        //@}
+
+        /** @name Redefined cObject and cFigure member functions. */
+        //@{
         virtual cImageFigure *dup() const  {return new cImageFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
+        //@}
+
+        /** @name Figure attributes */
+        //@{
         virtual const char *getImageName() const  {return imageName.c_str();}
         virtual void setImageName(const char *imageName)  {this->imageName = imageName; fireInputDataChange();}
+        //@}
 };
 
 /**
@@ -924,10 +1180,17 @@ class SIM_API cIconFigure : public cImageFigure
     private:
         void copy(const cIconFigure& other) {}
     public:
+        /** @name Constructors, destructor, assignment. */
+        //@{
         cIconFigure(const char *name=NULL) : cImageFigure(name) {}
         cIconFigure(const cIconFigure& other) : cImageFigure(other) {copy(other);}
         cIconFigure& operator=(const cIconFigure& other);
+        //@}
+
+        /** @name Redefined cObject and cFigure member functions. */
+        //@{
         virtual cIconFigure *dup() const  {return new cIconFigure(*this);}
+        //@}
 };
 
 /**
@@ -944,13 +1207,23 @@ class SIM_API cPixmapFigure : public cAbstractImageFigure
     protected:
         virtual const char **getAllowedPropertyKeys() const;
     public:
+        /** @name Constructors, destructor, assignment. */
+        //@{
         cPixmapFigure(const char *name=NULL) : cAbstractImageFigure(name) {}
         cPixmapFigure(const cPixmapFigure& other) : cAbstractImageFigure(other) {copy(other);}
         virtual ~cPixmapFigure() {}
         cPixmapFigure& operator=(const cPixmapFigure& other);
+        //@}
+
+        /** @name Redefined cObject and cFigure member functions. */
+        //@{
         virtual cPixmapFigure *dup() const  {return new cPixmapFigure(*this);}
         virtual std::string info() const;
         virtual void parse(cProperty *property);
+        //@}
+
+        /** @name Figure attributes */
+        //@{
         virtual const Pixmap& getPixmap() const {return pixmap;}
         virtual void setPixmap(const Pixmap& pixmap) {this->pixmap = pixmap; fireInputDataChange();}
         virtual int getPixmapHeight() const {return pixmap.getHeight();}
@@ -967,6 +1240,7 @@ class SIM_API cPixmapFigure : public cAbstractImageFigure
         virtual void setColor(int x, int y, const Color& color) {pixmap.setColor(x,y,color); fireInputDataChange();}
         virtual double getOpacity(int x, int y) const {return pixmap.getOpacity(x,y);}
         virtual void setOpacity(int x, int y, double opacity) {pixmap.setOpacity(x,y,opacity); fireInputDataChange();}
+        //@}
 };
 
 /**
@@ -1007,16 +1281,29 @@ class SIM_API cCanvas : public cOwnedObject
     private:
         void copy(const cCanvas& other);
     public:
+        /** @name Constructors, destructor, assignment. */
+        //@{
         cCanvas(const char *name = NULL);
         cCanvas(const cCanvas& other) : cOwnedObject(other) {copy(other);}
         virtual ~cCanvas();
         cCanvas& operator=(const cCanvas& other);
+        //@}
+
+        /** @name Redefined cObject member functions. */
+        //@{
         virtual cCanvas *dup() const  {return new cCanvas(*this);}
         virtual void forEachChild(cVisitor *v);
         virtual std::string info() const;
+        //@}
 
-        virtual const cFigure::Color& getBackgroundColor() const { return backgroundColor; }
-        virtual void setBackgroundColor(const cFigure::Color& color) { this->backgroundColor = color; }  //TODO notify
+        /** @name Canvas attributes. */
+        //@{
+        virtual const cFigure::Color& getBackgroundColor() const {return backgroundColor;}
+        virtual void setBackgroundColor(const cFigure::Color& color) {this->backgroundColor = color;}
+        //@}
+
+        /** @name Managing child figures. */
+        //@{
         virtual cFigure *getRootFigure() const {return rootFigure;}
         virtual void addFigure(cFigure *figure) {rootFigure->addFigure(figure);}
         virtual void addFigure(cFigure *figure, int pos) {rootFigure->addFigure(figure, pos);}
@@ -1030,13 +1317,20 @@ class SIM_API cCanvas : public cOwnedObject
         virtual int getNumFigures() const {return rootFigure->getNumFigures();} // note: returns the number of *child* figures, not the total number
         virtual cFigure *getFigure(int pos) const {return rootFigure->getFigure(pos);}
         virtual cFigure *getFigure(const char *name) const  {return rootFigure->getFigure(name);}
+        //@}
 
+        /** @name Accessing the figure tree. */
+        //@{
         virtual cFigure *getSubmodulesLayer() const; // may return NULL (extra canvases don't have submodules)
         virtual cFigure *findFigureRecursively(const char *name) const {return rootFigure->findFigureRecursively(name);}
         virtual cFigure *getFigureByPath(const char *path) const {return rootFigure->getFigureByPath(path);}
+        //@}
 
+        /** @name Figure tags. */
+        //@{
         virtual std::string getAllTags() const;
         virtual std::vector<std::string> getAllTagsAsVector() const;
+        //@}
 };
 
 NAMESPACE_END
