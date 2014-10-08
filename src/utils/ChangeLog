@@ -1,4 +1,15 @@
 2014-10-03  ------ omnetpp-4.6 released ------
+2013-09-24  Andras Varga
+
+	* opp_test: always generate and add "_defaults.ini" to the simulation
+	program args. (So %inifile entries in the .test file no longer replace
+	the default inifile, but rather, "_defaults.ini" serves as a fallback
+	to %inifile-generated files). The practical consequence is that in
+	%inifile you no longer need to repeat the entries in the default
+	generated inifile.
+
+	* opp_test: default eventlog file name changed to test.elog, to be
+	consistent with vector and scalar files
 
 2014-06-30  ------ omnetpp-4.5 released ------
 
@@ -14,12 +25,12 @@
 
 2013-01-07  Rudolf Hornig
 
-	Visual C++ makefiles are now printing only the name of the compiled
+	* Visual C++ makefiles are now printing only the name of the compiled
 	file. Verbose mode can be turned on by specifying V=1.
 
 2012-10-27  Rudolf Hornig
 
-	GNU Makefiles now print only the name of the compiled
+	* GNU Makefiles now print only the name of the compiled
 	file, but not the whole command line. This makes the build output
 	a bit less verbose. Verbose mode can be turned on by specifying V=1
 	as a parameter for make.
