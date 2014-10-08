@@ -305,43 +305,39 @@ cWeightedStdDev& cWeightedStdDev::operator=(const cWeightedStdDev& res)
 
 void cWeightedStdDev::collect2(double value, double weight)
 {
-    if (weight > 0)
-    {
-        if (++num_vals <= 0)
-        {
-            // num_vals overflow: issue warning and stop collecting
-            ev.printf("\a\nWARNING: (%s)%s: collect2(): observation count overflow!\n\n",getClassName(),getFullPath().c_str());
-            num_vals--;  // restore
-            return;
-        }
-
-        sum_vals += value;
-        sqrsum_vals += value*value;
-
-        if (num_vals > 1)
-        {
-            if (value < min_vals)
-                min_vals = value;
-            else if (value > max_vals)
-                max_vals = value;
-        }
-        else
-        {
-            min_vals = max_vals = value;
-        }
-
-        sum_weights += weight;
-        sum_weighted_vals += weight * value;
-        sum_squared_weights += weight * weight;
-        sum_weights_squared_vals += weight * value * value;
-
-        if (getTransientDetectionObject()) td->collect(value);
-        if (getAccuracyDetectionObject()) ra->collect(value);
-    }
-    else if (weight < 0)
-    {
+    if (weight < 0)
         throw cRuntimeError(this, "collect2(): negative weight %g", weight);
+
+    if (++num_vals <= 0)
+    {
+        // num_vals overflow: issue warning and stop collecting
+        ev.printf("\a\nWARNING: (%s)%s: collect2(): observation count overflow!\n\n",getClassName(),getFullPath().c_str());
+        num_vals--;  // restore
+        return;
     }
+
+    sum_vals += value;
+    sqrsum_vals += value*value;
+
+    if (num_vals > 1)
+    {
+        if (value < min_vals)
+            min_vals = value;
+        else if (value > max_vals)
+            max_vals = value;
+    }
+    else
+    {
+        min_vals = max_vals = value;
+    }
+
+    sum_weights += weight;
+    sum_weighted_vals += weight * value;
+    sum_squared_weights += weight * weight;
+    sum_weights_squared_vals += weight * value * value;
+
+    if (getTransientDetectionObject()) td->collect(value);
+    if (getAccuracyDetectionObject()) ra->collect(value);
 }
 
 double cWeightedStdDev::getMean() const
