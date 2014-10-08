@@ -17,7 +17,7 @@ sub cwd {
 #
 # If no args, print usage
 #
-$Usage = 'opp_test - OMNeT++/OMNEST Regression Test Tool, (c) 2002-2005 Andras Varga
+$Usage = 'opp_test - OMNeT++/OMNEST Regression Test Tool, (c) 2002-2014 Andras Varga
 See the license for distribution terms and warranty disclaimer.
 
 Syntax: opp_test [-g|-r] [-v] [-d] [-w <dir>] <testcase-file> ...
