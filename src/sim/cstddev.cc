@@ -344,6 +344,11 @@ void cWeightedStdDev::collect2(double value, double weight)
     }
 }
 
+double cWeightedStdDev::getMean() const
+{
+    return sum_weights==0 ? NaN : sum_weighted_vals / sum_weights;
+}
+
 void cWeightedStdDev::merge(const cStatistic *other)
 {
     cStdDev::doMerge(other);

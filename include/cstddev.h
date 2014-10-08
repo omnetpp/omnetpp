@@ -147,18 +147,18 @@ class SIM_API cStdDev : public cStatistic
     virtual double getSqrSum() const  {return sqrsum_vals;}
 
     /**
-     * Returns the minimum of the collected values.
+     * Returns the minimum of the collected values or NaN if nothig was collected yet.
      */
     virtual double getMin() const;
 
     /**
-     * Returns the maximum of the collected values.
+     * Returns the maximum of the collected values or NaN if nothig was collected yet.
      */
     virtual double getMax() const;
 
     /**
      * Returns the mean of the observations.
-     * Returns 0.0 if nothing was collected yet.
+     * Returns NaN if nothing was collected yet.
      */
     virtual double getMean() const;
 
@@ -345,9 +345,9 @@ class SIM_API cWeightedStdDev : public cStdDev
 
     /**
      * Returns the mean of the observations collected.
-     * Returns 0.0 if nothing was collected yet.
+     * Returns NaN if nothing was collected yet or sum_weights is 0.
      */
-    virtual double getMean() const  {return sum_weights==0 ? 0 : sum_weighted_vals / sum_weights;}
+    virtual double getMean() const;
 
     /**
      * Returns the variance of the observations collected.
