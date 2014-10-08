@@ -147,28 +147,29 @@ class SIM_API cStdDev : public cStatistic
     virtual double getSqrSum() const  {return sqrsum_vals;}
 
     /**
-     * Returns the minimum of the collected values or NaN if nothig was collected yet.
+     * Returns the minimum of the collected values, or NaN if none have been collected yet.
      */
     virtual double getMin() const;
 
     /**
-     * Returns the maximum of the collected values or NaN if nothig was collected yet.
+     * Returns the maximum of the collected values, or NaN if none have been collected yet.
      */
     virtual double getMax() const;
 
     /**
-     * Returns the mean of the observations.
-     * Returns NaN if nothing was collected yet.
+     * Returns the mean of the collected values, or NaN if none have been collected yet.
      */
     virtual double getMean() const;
 
     /**
-     * Returns the standard deviation of the observations.
+     * Returns the standard deviation of the observations, or NaN if less than
+     * two observations have been collected.
      */
     virtual double getStddev() const;
 
     /**
-     * Returns the variance of the observations collected.
+     * Returns the variance of the observations collected, or NaN if less than
+     * two observations have been collected.
      */
     virtual double getVariance() const;
 
@@ -312,7 +313,7 @@ class SIM_API cWeightedStdDev : public cStdDev
     virtual bool isWeighted() const  {return true;}
 
     /**
-     * Collects one value with a given weight.
+     * Collects one value with a given weight. Negative weights will cause a runtime error.
      */
     virtual void collect2(double value, double weight);
 
@@ -344,13 +345,14 @@ class SIM_API cWeightedStdDev : public cStdDev
     virtual void clearResult();
 
     /**
-     * Returns the mean of the observations collected.
-     * Returns NaN if nothing was collected yet or sum_weights is 0.
+     * Returns the weighted mean of the observations collected, or NaN if
+     * no observations have been collected (or their weights were 0).
      */
     virtual double getMean() const;
 
     /**
-     * Returns the variance of the observations collected.
+     * Returns the variance of the observations collected, or NaN if
+     * less than two observations have been collected.
      */
     virtual double getVariance() const;
 
