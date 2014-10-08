@@ -69,7 +69,7 @@ qecho = @echo
 endif
 
 PERL = @PERL@
-YACC = @YACC@
+YACC = @YACC@ -Wno-deprecated
 LEX = @LEX@
 CC = @CC@
 CXX = @CXX@
