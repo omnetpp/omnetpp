@@ -16,7 +16,6 @@ import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_X_AXIS
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
 
 import java.math.BigDecimal;
-
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -206,7 +205,7 @@ public class LinearAxis {
         if (ticks != null) {
             graphics.setFont(tickFont);
             for (BigDecimal tick : ticks) {
-                String label = tick.toPlainString();
+                String label = tick.scale() < 0 ? tick.setScale(0).toString() : tick.toString();
                 Point size = GraphicsUtils.getTextExtent(graphics, label);
                 int tickLen = ticks.isMajorTick(tick) ? majorTickLength : minorTickLength;
                 if (vertical) {
