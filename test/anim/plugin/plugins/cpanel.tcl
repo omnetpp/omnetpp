@@ -42,7 +42,7 @@ proc cpanel_createControls {} {
     wm resizable $w 1 1
 
     # next line ensures this window cannot be closed
-    wm protocol $w WM_DELETE_WINDOW {exit_omnetpp}
+    wm protocol $w WM_DELETE_WINDOW {exitOmnetpp}
 
     # create sliders
     cpanel_slider $w.arrivalRate1 "Source 1 arrival rate"
@@ -84,7 +84,7 @@ proc cpanel_createControls {} {
     # create "speed" slider
     cpanel_slider $w.animspeed "Animation speed"
     $w.animspeed.e config -from 0.5 -to 3 -resolution 0.01 -variable priv(animspeed)
-    pack $w.animspeed -expand 0 -fill x
+    pack $w.animspeed -expand 0 -fill x -pady 10
 
     # arrange the paramChanged function to be called whenever sliders change
 
@@ -111,11 +111,11 @@ proc cpanel_readParams {} {
     global param
 
     catch {
-        set modp [opp_modulebypath "fifonet1.gen1"]
+        set modp [opp_modulebypath "FifoNet1.source1"]
         set param(arrivalRate1) [opp_getmodulepar $modp "arrivalRate"]
-        set modp [opp_modulebypath "fifonet1.gen2"]
+        set modp [opp_modulebypath "FifoNet1.source2"]
         set param(arrivalRate2) [opp_getmodulepar $modp "arrivalRate"]
-        set modp [opp_modulebypath "fifonet1"]
+        set modp [opp_modulebypath "FifoNet1"]
         set param(serviceRate1) [opp_getmodulepar $modp "serviceRate1"]
         set param(serviceRate2) [opp_getmodulepar $modp "serviceRate2"]
     }
@@ -137,16 +137,16 @@ proc cpanel_paramChanged {arr name op} {
         #debug "$name changed to $value"
 
         if {$name=="arrivalRate1"} {
-            set modp [opp_modulebypath "fifonet1.gen1"]
+            set modp [opp_modulebypath "FifoNet1.source1"]
             opp_setmodulepar $modp "arrivalRate" $value
         } elseif {$name=="arrivalRate2"} {
-            set modp [opp_modulebypath "fifonet1.gen2"]
+            set modp [opp_modulebypath "FifoNet1.source2"]
             opp_setmodulepar $modp "arrivalRate" $value
         } elseif {$name=="serviceRate1"} {
-            set modp [opp_modulebypath "fifonet1"]
+            set modp [opp_modulebypath "FifoNet1"]
             opp_setmodulepar $modp "serviceRate1" $value
         } elseif {$name=="serviceRate2"} {
-            set modp [opp_modulebypath "fifonet1"]
+            set modp [opp_modulebypath "FifoNet1"]
             opp_setmodulepar $modp "serviceRate2" $value
         } else {
             error "wrong param name"
