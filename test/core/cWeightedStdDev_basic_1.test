@@ -35,5 +35,5 @@ ev << "." << endl;
 
 %contains-regex: stdout
 n=250550 w=250550 sum=74855.5 sqrsum=43314.5 min=-0.199997 max=0.799978 mean=0.298765 stddev=0.289167 var=0.0836177
-n=83354 w=250550 sum=24975.3 sqrsum=14455.6 min=-0.199997 max=0.799978 mean=0.298765 stddev=0.289169 var=0.0836186
+n=100000 w=250550 sum=29967.2 sqrsum=17338.1 min=-0.199997 max=0.799995 mean=0.298765 stddev=0.289169 var=0.0836186
 .
