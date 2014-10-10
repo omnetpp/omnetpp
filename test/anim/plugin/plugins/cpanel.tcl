@@ -36,7 +36,7 @@ proc cpanel_createControls {} {
 
     set w ".cpanel"
     toplevel $w
-    wm title $w "Simulation parameters"
+    wm title $w "Simulation Parameters"
     wm focusmodel $w passive
     wm overrideredirect $w 0
     wm resizable $w 1 1
@@ -66,8 +66,8 @@ proc cpanel_createControls {} {
     set img_stop [image create photo -file "plugins/stop.gif"]
     frame $w.f
     pack $w.f -expand 1 -fill both
-    button $w.f.run -image $img_play -command "run_normal" -relief flat
-    button $w.f.stop -image $img_stop -command "stop_simulation" -relief flat
+    button $w.f.run -image $img_play -command "runNormal" -relief flat
+    button $w.f.stop -image $img_stop -command "stopSimulation" -relief flat
 
     # animation on/off button
     set img_anim [image create photo -file "plugins/anim.gif"]
@@ -102,11 +102,6 @@ proc cpanel_createControls {} {
 
     # following line uses undocumented Tkenv internals and will break next time Tkenv changes
     trace variable priv(animspeed) w animSpeedChanged
-
-    # this button brings back main window (if it was withdrawn originally)
-    set img_more [image create photo -file "plugins/more.gif"]
-    button $w.mainwin -relief flat -image $img_more -command "wm deiconify .; $w.mainwin config -state disabled"
-    pack $w.mainwin -side top -anchor e -expand 0 -fill none -padx 2 -pady 6
 }
 
 #
@@ -159,7 +154,7 @@ proc cpanel_paramChanged {arr name op} {
     } msg] {
         puts "Error in cpanel plugin's callback: $msg"
     }
-    opp_updateinspectors
+    opp_refreshinspectors
 }
 
 #
@@ -177,11 +172,9 @@ proc toggleAnimation {button img_on img_off} {
     }
 }
 
-
 #
 # Invoke initalization code
 #
 cpanel_createControls
 
-# remove main window (optional)
-wm withdraw .
+
