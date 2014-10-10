@@ -51,8 +51,6 @@ b=has body, f=value is filename)
     'includes'           => '1b',
     'global'             => '1b',
     'module'             => '1vb',
-    'module_a'           => '1vb',
-    'module_b'           => '1vb',
 
     'file'               => 'vbf',
     'inifile'            => 'vbf',
@@ -308,23 +306,9 @@ sub parse_testfile
     }
 
     # additional manual tests
-    if (defined($bodies{'activity(1)'}) && (defined($bodies{'module(1)'}) ||
-        defined($bodies{'module_a(1)'}) || defined($bodies{'module_b(1)'})))
+    if (defined($bodies{'activity(1)'}) && defined($bodies{'module(1)'}))
     {
-        print STDERR "$arg0: error in test file `$testfilename': %activity excludes %module... entries\n"; exit(1);
-    }
-    if (defined($bodies{'module(1)'}) &&
-        (defined($bodies{'module_a(1)'}) || defined($bodies{'module_b(1)'})))
-    {
-        print STDERR "$arg0: error in test file `$testfilename': %module excludes %module_[a|b] entries\n"; exit(1);
-    }
-    if (defined($bodies{'module_a(1)'}) && !defined($bodies{'module_b(1)'}))
-    {
-        print STDERR "$arg0: error in test file `$testfilename': %module_a without %module_b\n"; exit(1);
-    }
-    if (defined($bodies{'module_b(1)'}) && !defined($bodies{'module_a(1)'}))
-    {
-        print STDERR "$arg0: error in test file `$testfilename': %module_b without %module_a\n"; exit(1);
+        print STDERR "$arg0: error in test file `$testfilename': %activity excludes %module\n"; exit(1);
     }
 
     # fake a _defaults.ini after the other inifiles
@@ -409,37 +393,6 @@ sub testcase_generatesources
         $cpp =~ s/\@INCLUDES\@/$includescode/g;
         $cpp =~ s/\@MODULE\@/$module/g;
         $cpp =~ s/\@MODULE_SRC\@/$module_src/g;
-        $cppfname = $workdir."/".$testname."/test.cc";
-        writefile($cppfname, $cpp);
-    }
-
-    # 'module_a' + 'module_b' template
-    if (defined($bodies{'module_a(1)'}))
-    {
-        $module_a = $values{'module_a(1)'};
-        $module_b = $values{'module_b(1)'};
-        $module_a_src = $bodies{'module_a(1)'};
-        $module_b_src = $bodies{'module_b(1)'};
-        $includescode = $bodies{'includes(1)'};
-        $globalcode = $bodies{'global(1)'};
-
-        # generate NED
-        $ned = $ModuleABNEDTemplate;
-        $ned =~ s/\@TESTNAME\@/$testname/g;
-        $ned =~ s/\@NETWORKNAME\@/$networkname/g;
-        $ned =~ s/\@MODULE_A\@/$module_a/g;
-        $ned =~ s/\@MODULE_B\@/$module_b/g;
-        $nedfname = $workdir."/".$testname."/test.ned";
-        writefile($nedfname, $ned);
-
-        # generate C++
-        $cpp = $ModuleABCPPTemplate;
-        $cpp =~ s/\@TESTNAME\@/$testname/g;
-        $cpp =~ s/\@INCLUDES\@/$includescode/g;
-        $cpp =~ s/\@MODULE_A\@/$module_a/g;
-        $cpp =~ s/\@MODULE_B\@/$module_b/g;
-        $cpp =~ s/\@MODULE_A_SRC\@/$module_a_src/g;
-        $cpp =~ s/\@MODULE_B_SRC\@/$module_b_src/g;
         $cppfname = $workdir."/".$testname."/test.cc";
         writefile($cppfname, $cpp);
     }
@@ -940,32 +893,6 @@ simple @MODULE@
 }
 ';
 
-    $ModuleABNEDTemplate = '
-simple @MODULE_A@
-{
-    gates:
-        input in;
-        output out;
-}
-
-simple @MODULE_B@
-{
-    gates:
-        input in;
-        output out;
-}
-
-network @NETWORKNAME@
-{
-    submodules:
-        the@MODULE_A@ : @MODULE_A@;
-        the@MODULE_B@ : @MODULE_B@;
-    connections:
-        the@MODULE_A@.out --> the@MODULE_B@.in;
-        the@MODULE_A@.in  <-- the@MODULE_B@.out;
-}
-';
-
     $ActivityCPPTemplate = '
 #include <omnetpp.h>
 
@@ -1000,20 +927,6 @@ void @MODULE@::activity()
 namespace @TESTNAME@ {
 
 @MODULE_SRC@
-
-}; //namespace
-';
-
-    $ModuleABCPPTemplate = '
-#include <omnetpp.h>
-
-@INCLUDES@
-
-namespace @TESTNAME@ {
-
-@MODULE_A_SRC@
-
-@MODULE_B_SRC@
 
 }; //namespace
 ';
