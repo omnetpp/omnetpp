@@ -258,7 +258,7 @@ sub parse_testfile
     $key_index = '';
     while (<IN>)
     {
-        s/[\r\n]*$//;
+        s/ *[\r\n]*$//;
         if (/^%#/) {
             # ignore
         } elsif (/^%/) {
