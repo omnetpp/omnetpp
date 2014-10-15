@@ -13,7 +13,7 @@ TESTFILES=$*
 
 if [ "x$TESTFILES" = "x" ]; then TESTFILES='*.test'; fi
 if [ ! -d work ];  then mkdir work; fi
-opp_test $OPT -g -v $TESTFILES || exit 1
+opp_test gen $OPT -v $TESTFILES || exit 1
 
 cd work || exit 1
 echo > .project
@@ -32,7 +32,7 @@ opp_makemake -f -r --nolink && $MAKE || failure BUILD
 # Run the tests
 echo
 cd ..
-PATH=.:$PATH opp_test $OPT -r -v $TESTFILES || exit 1
+PATH=.:$PATH opp_test run $OPT -v $TESTFILES || exit 1
 
 echo
 echo Results can be found in ./work
