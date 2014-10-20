@@ -1028,6 +1028,12 @@ else
         OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS_RELEASE -I/usr/include/libxml2, -lxml2,
                       libxml_ok, LIBXML_CFLAGS="-I/usr/include/libxml2" LIBXML_LIBS="-lxml2")
     fi
+
+    # test also in the /mingw32 directory because on MSYS2 this is the default
+    if test $libxml_ok = no; then
+        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS_RELEASE -I/mingw32/include/libxml2, -lxml2,
+                      libxml_ok, LIBXML_CFLAGS="-I/mingw32/include/libxml2" LIBXML_LIBS="-lxml2")
+    fi
 fi
 if test -n "$EXPAT_LIBS"; then
     OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $CFLAGS_RELEASE $EXPAT_CFLAGS, $EXPAT_LIBS, expat_ok)
