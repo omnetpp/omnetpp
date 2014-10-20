@@ -273,7 +273,7 @@ proc ttkTreeview:deleteAll {tree} {
     $tree delete [$tree children {}]
 }
 
-proc panedwindow:getsashposition {w} {
+proc panedwindow:getSashPosition {w} {
     set pos [$w sash coord 0]
     if {[$w cget -orient]=="horizontal"} {
         return [lindex $pos 0]
@@ -282,25 +282,25 @@ proc panedwindow:getsashposition {w} {
     }
 }
 
-proc panedwindow:setsashposition {w pos} {
+proc panedwindow:setSashPosition {w pos} {
     # This essentially does {$w sash place 0 $pos}, but well:
     # 1. "sash place" does nothing if child hasn't been laid out yet, so we may need "after idle"
     # 2. "sash place" allows 0px too, which makes the sash completely unnoticeable to the user
     # 3. allows pos=="" for convenience (it is a no-op)
     if {$pos == ""} {return}
     if {$pos < 5} {set pos 5}
-    panedwindow:trysetsashposition $w $pos
+    panedwindow:trySetSashPosition $w $pos
 }
 
-proc panedwindow:trysetsashposition {w pos} {
-    puts "panedwindow:trysetsashposition $w $pos"
-    panedwindow:dosetsashposition $w $pos
-    if {[panedwindow:getsashposition $w] != $pos} {
-        after idle [list panedwindow:trysetsashposition $w $pos]
+proc panedwindow:trySetSashPosition {w pos} {
+    puts "panedwindow:trySetSashPosition $w $pos"
+    panedwindow:doSetSashPosition $w $pos
+    if {[panedwindow:getSashPosition $w] != $pos} {
+        after idle [list panedwindow:trySetSashPosition $w $pos]
     }
 }
 
-proc panedwindow:dosetsashposition {w pos} {
+proc panedwindow:doSetSashPosition {w pos} {
     if {[$w cget -orient]=="horizontal"} {
         $w sash place 0 $pos 0
     } else {

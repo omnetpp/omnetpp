@@ -118,9 +118,9 @@ proc storeMainwinGeometry {} {
     set orient [.main.right cget -orient]
     set config(mainwin-sash-orient) $orient
 
-    set config(mainwin-main-sashpos)  [panedwindow:getsashposition .main]
-    set config(mainwin-left-sashpos)  [panedwindow:getsashposition .main.left]
-    set config(mainwin-right-sashpos-$orient) [panedwindow:getsashposition .main.right]
+    set config(mainwin-main-sashpos)  [panedwindow:getSashPosition .main]
+    set config(mainwin-left-sashpos)  [panedwindow:getSashPosition .main.left]
+    set config(mainwin-right-sashpos-$orient) [panedwindow:getSashPosition .main.right]
 
     set lb .inspector.nb.contents.main.list
     inspectorListbox:storeColumnWidths $lb "inspector:columnwidths"
@@ -194,9 +194,9 @@ proc applyTkenvrc {} {
     toolbutton:setsunken .toolbar.horiz [expr {$orient!="vertical"}]
 
     set orient [.main.right cget -orient]
-    panedwindow:setsashposition .main $config(mainwin-main-sashpos)
-    panedwindow:setsashposition .main.left $config(mainwin-left-sashpos)
-    panedwindow:setsashposition .main.right $config(mainwin-right-sashpos-$orient)
+    panedwindow:setSashPosition .main $config(mainwin-main-sashpos)
+    panedwindow:setSashPosition .main.left $config(mainwin-left-sashpos)
+    panedwindow:setSashPosition .main.right $config(mainwin-right-sashpos-$orient)
 
     set lb .inspector.nb.contents.main.list
     inspectorListbox:restoreColumnWidths $lb "inspector:columnwidths"

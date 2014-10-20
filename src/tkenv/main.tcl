@@ -433,12 +433,12 @@ proc mainWindow:toggleLayout {} {
     if {$oldOrient=="horizontal"} {set orient vertical} else {set orient horizontal}
 
     # store old sash position
-    set config(mainwin-right-sashpos-$oldOrient) [panedwindow:getsashposition .main.right]
+    set config(mainwin-right-sashpos-$oldOrient) [panedwindow:getSashPosition .main.right]
 
     # switch to new $orient, and restore its sash position
     set config(mainwin-sash-orient) $orient
     .main.right config -orient $orient
-    panedwindow:setsashposition .main.right $config(mainwin-right-sashpos-$orient)
+    panedwindow:setSashPosition .main.right $config(mainwin-right-sashpos-$orient)
 
     toolbutton:setsunken .toolbar.vert  [expr {$orient=="vertical"}]
     toolbutton:setsunken .toolbar.horiz [expr {$orient!="vertical"}]
