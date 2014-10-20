@@ -283,20 +283,25 @@ proc panedwindow:getSashPosition {w} {
 }
 
 proc panedwindow:setSashPosition {w pos} {
+    global sash
     # This essentially does {$w sash place 0 $pos}, but well:
     # 1. "sash place" does nothing if child hasn't been laid out yet, so we may need "after idle"
     # 2. "sash place" allows 0px too, which makes the sash completely unnoticeable to the user
     # 3. allows pos=="" for convenience (it is a no-op)
     if {$pos == ""} {return}
     if {$pos < 5} {set pos 5}
+    set sash($w:retrycount) 0
     panedwindow:trySetSashPosition $w $pos
 }
 
 proc panedwindow:trySetSashPosition {w pos} {
-    puts "panedwindow:trySetSashPosition $w $pos"
     panedwindow:doSetSashPosition $w $pos
     if {[panedwindow:getSashPosition $w] != $pos} {
-        after idle [list panedwindow:trySetSashPosition $w $pos]
+        global sash
+        incr sash($w:retrycount)
+        if {$sash($w:retrycount) < 50} {
+            after idle [list panedwindow:trySetSashPosition $w $pos]
+        }
     }
 }
 
