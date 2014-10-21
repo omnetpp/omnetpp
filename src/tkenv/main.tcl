@@ -51,7 +51,7 @@ set config(mainwin-sash-orient) vertical
 set config(mainwin-log-mode) messages
 set config(new-loginspector-mode) messages
 set config(concurrent-anim) 1
-set config(zoomby-factor) 1.1
+set config(zoomby-factor) 1.3
 set config(layout-may-resize-window) 1
 set config(layout-may-change-zoom) 1
 set config(preferences-dialog-page) "g"
