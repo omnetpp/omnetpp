@@ -135,6 +135,9 @@ proc createGraphicalModuleViewer {insp} {
     bind $ww <$Control-r> "ModuleInspector:relayout $insp"
     bind $ww <$Control-l> "ModuleInspector:toggleLabels $insp"
     bind $ww <$Control-a> "ModuleInspector:toggleArrowheads $insp"
+
+    $c bind mod <Double-1> "ModuleInspector:zoomIn $insp %x %y"
+    $c bind mod <Shift-Double-1> "ModuleInspector:zoomOut $insp %x %y"
 }
 
 proc ModuleInspector:onSetObject {insp} {
@@ -1160,20 +1163,27 @@ proc mathMax {a b} {
     return [expr ($a > $b) ? $a : $b]
 }
 
-proc ModuleInspector:zoomIn {insp} {
+proc ModuleInspector:zoomIn {insp {x ""} {y ""}} {
     global config
-    ModuleInspector:zoomBy $insp $config(zoomby-factor) 1
+    ModuleInspector:zoomBy $insp $config(zoomby-factor) 1 $x $y
 }
 
-proc ModuleInspector:zoomOut {insp} {
+proc ModuleInspector:zoomOut {insp {x ""} {y ""}} {
     global config
-    ModuleInspector:zoomBy $insp [expr 1.0 / $config(zoomby-factor)] 1
+    ModuleInspector:zoomBy $insp [expr 1.0 / $config(zoomby-factor)] 1 $x $y
 }
 
-proc ModuleInspector:zoomBy {insp mult {snaptoone 0}} {
+proc ModuleInspector:zoomBy {insp mult {snaptoone 0}  {x ""} {y ""}} {
     global inspectordata
     set c $insp.c
     if {($mult<1 && $inspectordata($c:zoomfactor)>0.001) || ($mult>1 && $inspectordata($c:zoomfactor)<1000)} {
+        # remember canvas scroll position, we'll need it to zoom in/out around ($x,$y)
+        if {$x == ""} {set x [expr [winfo width $c] / 2]}
+        if {$y == ""} {set y [expr [winfo height $c] / 2]}
+        set origCanvasX [$c canvasx $x]
+        set origCanvasY [$c canvasy $y]
+        set origZoom $inspectordata($c:zoomfactor)
+
         # update zoom factor and redraw
         set inspectordata($c:zoomfactor) [expr $inspectordata($c:zoomfactor) * $mult]
 
@@ -1191,6 +1201,15 @@ proc ModuleInspector:zoomBy {insp mult {snaptoone 0}} {
         ModuleInspector:setScrollRegion $insp 0
 
         ModuleInspector:updateZoomLabel $insp
+
+        # pan the canvas so that we zoom in/out around ($x, $y)
+        set actualMult [expr $inspectordata($c:zoomfactor) / $origZoom]
+        set canvasX [expr $origCanvasX * $actualMult]
+        set canvasY [expr $origCanvasY * $actualMult]
+        set dx [expr int($canvasX - $origCanvasX)]
+        set dy [expr int($canvasY - $origCanvasY)]
+        $c scan mark 0 0
+        $c scan dragto $dx $dy -1
     }
 
     ModuleInspector:updatePreferences $insp
