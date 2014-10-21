@@ -138,6 +138,10 @@ proc createGraphicalModuleViewer {insp} {
 
     $c bind mod <Double-1> "ModuleInspector:zoomIn $insp %x %y"
     $c bind mod <Shift-Double-1> "ModuleInspector:zoomOut $insp %x %y"
+
+    bind $c <1> "ModuleInspector:panStart $insp %x %y"
+    bind $c <B1-Motion> "ModuleInspector:panUpdate $insp %x %y"
+    bind $c <ButtonRelease-1> "ModuleInspector:panEnd $insp %x %y"
 }
 
 proc ModuleInspector:onSetObject {insp} {
@@ -326,6 +330,19 @@ proc ModuleInspector:setScrollRegion {insp moveToOrigin} {
         $c xview moveto [expr ($mx1 - $x1) / double($x2 - $x1)]
         $c yview moveto [expr ($my1 - $y1) / double($y2 - $y1)]
     }
+}
+
+proc ModuleInspector:panStart {insp x y} {
+    set c $insp.c
+    $c scan mark $x $y
+}
+
+proc ModuleInspector:panUpdate {insp x y} {
+    set c $insp.c
+    $c scan dragto $x $y 1
+}
+
+proc ModuleInspector:panEnd {insp x y} {
 }
 
 proc lookupImage {imgname {imgsize ""}} {
