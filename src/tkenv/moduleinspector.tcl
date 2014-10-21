@@ -136,16 +136,19 @@ proc createGraphicalModuleViewer {insp} {
     bind $ww <$Control-l> "ModuleInspector:toggleLabels $insp"
     bind $ww <$Control-a> "ModuleInspector:toggleArrowheads $insp"
 
+    # pan / zoom
     $c bind mod <Double-1> "ModuleInspector:zoomIn $insp %x %y"
     $c bind mod <Shift-Double-1> "ModuleInspector:zoomOut $insp %x %y"
 
-    bind $c <2> "ModuleInspector:zoomMarqueeBegin $insp %x %y"
-    bind $c <B2-Motion> "ModuleInspector:zoomMarqueeUpdate $insp %x %y"
-    bind $c <ButtonRelease-2> "ModuleInspector:zoomMarqueeEnd $insp %x %y"
+    bind $c <$Control-1> "+ModuleInspector:zoomMarqueeBegin $insp %x %y"
+    bind $c <B1-Motion> "+ModuleInspector:zoomMarqueeUpdate $insp %x %y"
+    bind $c <ButtonRelease-1> "+ModuleInspector:zoomMarqueeEnd $insp %x %y"
+    bind $c <2> "+ModuleInspector:zoomMarqueeCancel $insp"
+    bind $c <3> "+ModuleInspector:zoomMarqueeCancel $insp"
 
-    bind $c <1> "ModuleInspector:panStart $insp %x %y"
-    bind $c <B1-Motion> "ModuleInspector:panUpdate $insp %x %y"
-    bind $c <ButtonRelease-1> "ModuleInspector:panEnd $insp %x %y"
+    bind $c <1> "+ModuleInspector:panStart $insp %x %y"
+    bind $c <B1-Motion> "+ModuleInspector:panUpdate $insp %x %y"
+    bind $c <ButtonRelease-1> "+ModuleInspector:panEnd $insp %x %y"
 }
 
 proc ModuleInspector:onSetObject {insp} {
@@ -356,8 +359,10 @@ proc ModuleInspector:zoomCanvasCoordsToRealCoords {insp x1 y1 x2 y2} {
 }
 
 proc ModuleInspector:zoomUpdateLabel {insp x1 y1 x2 y2} {
-    $insp.zoominfo config -text [format "Zoom: from %.1f, %.1f to %.1f %.1f" $x1 $y1 $x2 $y2]
+    $insp.zoominfo config -text [format "Zoom: from (%.1f, %.1f) to (%.1f, %.1f)" $x1 $y1 $x2 $y2]
 }
+
+set zoomMarquee ""
 
 proc ModuleInspector:zoomMarqueeBegin {insp x y} {
     global zoomMarquee
@@ -371,7 +376,7 @@ proc ModuleInspector:zoomMarqueeBegin {insp x y} {
     set zoomMarquee [list $x1 $y1 $x2 $y2]
 
     # add rectangle
-    $c create rectangle {*}$zoomMarquee -outline black -tag zoomMarqueeRect
+    $c create rectangle {*}$zoomMarquee -outline black -dash . -tag zoomMarqueeRect
 
     # update label
     set realCoords [ ModuleInspector:zoomCanvasCoordsToRealCoords $insp {*}$zoomMarquee ]
@@ -380,6 +385,8 @@ proc ModuleInspector:zoomMarqueeBegin {insp x y} {
 
 proc ModuleInspector:zoomMarqueeUpdate {insp x y} {
     global zoomMarquee
+
+    if {$zoomMarquee==""} return ;# marquee zoom not in progress
 
     # store coordinates
     set c $insp.c
@@ -399,24 +406,37 @@ proc ModuleInspector:zoomMarqueeUpdate {insp x y} {
 proc ModuleInspector:zoomMarqueeEnd {insp x y} {
     global zoomMarquee
 
-    # store coordinates
+    if {$zoomMarquee==""} return ;# marquee zoom not in progress
+
+    # obtain coordinates
     set c $insp.c
     lassign $zoomMarquee x1 y1 - -
     set x2 [$c canvasx $x]
     set y2 [$c canvasy $y]
-    set zoomMarquee [list $x1 $y1 $x2 $y2]
+    if {$x2 < $x1} {foreach {x1 x2} [list $x2 $x1] break}
+    if {$y2 < $y1} {foreach {y1 y2} [list $y2 $y1] break}
 
-    # delete rectangle
+    # marquee zoom finished
+    set zoomMarquee ""
     $c delete zoomMarqueeRect
 
-    # abort if invalid marquee
-    if {($x1>=$x2) || ($y1>=$y2)} {
+    # do nothing if marquee is too small
+    if {$x1==$x2 || $y1==$y2} {
         ModuleInspector:updateZoomLabel $insp
         return
     }
 
-    set realCoords [ ModuleInspector:zoomCanvasCoordsToRealCoords $insp {*}$zoomMarquee ]
+    set realCoords [ ModuleInspector:zoomCanvasCoordsToRealCoords $insp $x1 $y1 $x2 $y2 ]
     ModuleInspector:zoomToRegion $insp {*}$realCoords
+}
+
+proc ModuleInspector:zoomMarqueeCancel {insp} {
+    global zoomMarquee
+    if {$zoomMarquee==""} return ;# marquee zoom not in progress
+    set c $insp.c
+    set zoomMarquee ""
+    $c delete zoomMarqueeRect
+    ModuleInspector:updateZoomLabel $insp
 }
 
 proc ModuleInspector:zoomToRegion {insp x1 y1 x2 y2} {
@@ -463,6 +483,9 @@ proc ModuleInspector:panStart {insp x y} {
 }
 
 proc ModuleInspector:panUpdate {insp x y} {
+    global zoomMarquee
+    if {$zoomMarquee != ""} return
+
     set c $insp.c
     $c scan dragto $x $y 1
 }
@@ -1490,6 +1513,9 @@ proc ModuleInspector:getPtrsUnderMouse {c x y} {
 
 proc ModuleInspector:rightClick {insp X Y x y} {
    global inspectordata tmp CTRL
+
+   ModuleInspector:zoomMarqueeCancel $insp ;# just in case
+
    set c $insp.c
    set ptrs [ModuleInspector:getPtrsUnderMouse $c $x $y]
 
