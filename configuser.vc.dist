@@ -28,21 +28,24 @@ OMNETPP_ROOT=$(OMNETPP_ROOT:\=/)
 # config file (i.e. other variables can simply refer to $(OPT_DIR)).
 # This is completely optional -- OPT_DIR is not referenced outside this file.
 #
-OPT_DIR=$(OMNETPP_ROOT:\=/)/tools/win32/usr
+OPT_DIR=$(OMNETPP_ROOT:\=/)/tools/win32/mingw32
+
+#
+# Tools directory is the base of all programs used during the build process
+#
+TOOLS_DIR=$(OMNETPP_ROOT:\=/)/tools/win32/usr
 
 #
 # Directory and version of Tcl/Tk, for example "8.6".
 # At least Tcl/Tk 8.5 is required.
 #
-#TK_DIR=$(TOOLS_DIR:\=/)/Tcl-8.6.0
-TK_DIR=$(OPT_DIR:\=/)/../mingw32
+TK_DIR=$(OPT_DIR:\=/)
 TK_VER=8.6
 
 #
 # MPI directory. MPI is only needed for parallel distributed execution.
 # Leave empty if you don't have MPI. We recommend DeinoMPI
 #
-#MPI_DIR=$(TOOLS_DIR:\=/)/mpi
 #MPI_DIR=$(OPT_DIR:\=/)
 MPI_DIR=
 
@@ -65,7 +68,7 @@ EXPAT_DIR=$(OPT_DIR:\=/)
 #
 # Location of LibXML2 and its supporting library ICONV (only used if XMLPARSER=libxml)
 #
-ICONV_DIR=$(OPT_DIR:\=/)/../mingw32
+ICONV_DIR=$(OPT_DIR:\=/)
 LIBXML_DIR=$(OPT_DIR:\=/)
 
 #
@@ -74,15 +77,12 @@ LIBXML_DIR=$(OPT_DIR:\=/)
 
 # Perl: needed by opp_makedep, opp_neddoc, opp_test etc.
 PERL=perl.exe
-DOXYGEN_DIR=$(TOOLS_DIR)/doxygen
 
 #
 # GNU Bison and Flex. Bison 2.0+ is required, 1.x versions will not work!
 #
-#YACC=$(TOOLS_DIR:\=/)/bison-2.1/bin/bison.exe
-#LEX=$(TOOLS_DIR:\=/)/UnxUtils/usr/local/wbin/flex.exe
-YACC=$(OPT_DIR:\=/)/bin/bison.exe
-LEX=$(OPT_DIR:\=/)/bin/flex.exe
+YACC=$(TOOLS_DIR:\=/)/bin/bison.exe
+LEX=$(TOOLS_DIR:\=/)/bin/flex.exe
 
 #
 # WinPCap. For INET framework SCTP module.
@@ -213,16 +213,16 @@ _TCL_LIBRARY=$(TK_DIR)/lib/tcl$(TK_VER)
 HAVE_MPI=yes
 !endif
 
-SWIG = "$(TOOLS_DIR)\SWIGWIN-1.3.38\swig.exe"
+SWIG = "$(TOOLS_DIR)\bin\swig.exe"
 
 JAVA_CFLAGS = /I "$(JAVA_HOME)/include" /I "$(JAVA_HOME)/include/win32"
 JAVA_LIBS = /libpath:"$(JAVA_HOME)/lib" jvm.lib
 
-EXPAT_CFLAGS=/I "$(EXPAT_DIR)/source/lib"
-EXPAT_LIBS=libexpat.lib /libpath:"$(EXPAT_DIR)/libs"
+EXPAT_CFLAGS=/I "$(EXPAT_DIR)/include"
+EXPAT_LIBS=libexpat.dll.a /libpath:"$(EXPAT_DIR)/lib"
 
 LIBXML_CFLAGS=/I "$(ICONV_DIR)/include" /I "$(LIBXML_DIR)/include/libxml2"
-LIBXML_LIBS=libxml2.lib iconv.lib wsock32.lib /libpath:"$(LIBXML_DIR)/lib" /libpath:"$(ICONV_DIR)/lib"
+LIBXML_LIBS=libxml2.dll.a libiconv.dll.a wsock32.lib /libpath:"$(LIBXML_DIR)/lib" /libpath:"$(ICONV_DIR)/lib"
 
 # compiler and linker switches necessary to build an app with Tcl/Tk, MPI, expat, etc.
 TK_CFLAGS=/I "$(TK_INCL_DIR)"
@@ -240,8 +240,8 @@ XML_LIBS=$(LIBXML_LIBS)
 !error XMLPARSER must be set to "expat", "libxml" or "none" in configuser.vc
 !endif
 
-PCAP_CFLAGS=/I "$(PCAP_DIR)/Include"
-PCAP_LIBS=wpcap.lib /libpath:"$(PCAP_DIR)/Lib"
+PCAP_CFLAGS=/I "$(PCAP_DIR)/include"
+PCAP_LIBS=libpcap.a /libpath:"$(PCAP_DIR)/lib"
 
 !if "$(PTHREADS_DIR)"!=""
 PTHREAD_CFLAGS=/I "$(PTHREADS_DIR)/include"
@@ -325,7 +325,7 @@ MAKEDEPEND=$(PERL) $(OMNETPP_ROOT)/src/utils/opp_makedep -Y --objsuffix .obj --o
 MSGC=$(OMNETPP_BIN_DIR)/nedtool
 REPLACE=$(OMNETPP_SRC_DIR)/utils/opp_replace
 WISH=$(TK_DIR)/bin/wish$(TK_VER:.=).exe
-DOXYGEN=$(DOXYGEN_DIR)/bin/doxygen
+DOXYGEN=$(TOOLS_DIR)/bin/doxygen
 
 # flex puts an "#include <unistd.h>" line into the generated code, which we have to throw out
 FIXFLEX=$(PERL:/=\) -i.bak -pe "s/^.include .unistd.h.*//g"
