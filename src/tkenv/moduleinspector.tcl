@@ -313,6 +313,14 @@ proc ModuleInspector:adjustWindowSizeAndZoom {insp} {
     }
 }
 
+proc min {a b} {
+    if {$a < $b} {return $a} else {return $b}
+}
+
+proc max {a b} {
+    if {$a < $b} {return $b} else {return $a}
+}
+
 #
 # Sets the scrolling region for a graphical module inspector.
 # NOTE: This method is invoked from C++.
@@ -322,11 +330,20 @@ proc ModuleInspector:setScrollRegion {insp moveToOrigin} {
     set c $insp.c
 
     # scrolling region
-    set bb [$c bbox all]
-    set x1 [expr [lindex $bb 0]-10]
-    set y1 [expr [lindex $bb 1]-10]
-    set x2 [expr [lindex $bb 2]+10]
-    set y2 [expr [lindex $bb 3]+10]
+    set bbox [$c bbox all]
+    lassign $bbox x1 y1 x2 y2
+    incr x1 -10; incr y1 -10
+    incr x2 10; incr y2 10
+
+    # never shrink scrolling region as it may cause "jerking" when e.g. transmission circles come and go
+    set oldRegion [$c cget -scrollregion]
+    if {$oldRegion!={}} {
+        lassign $oldRegion rx1 ry1 rx2 ry2
+        set x1 [min $rx1 $x1]
+        set y1 [min $ry1 $y1]
+        set x2 [max $rx2 $x2]
+        set y2 [max $ry2 $y2]
+    }
     $c config -scrollregion [list $x1 $y1 $x2 $y2]
 
     # store for later use
@@ -1362,6 +1379,10 @@ proc ModuleInspector:zoomBy {insp mult {snaptoone 0}  {x ""} {y ""}} {
             }
         }
 
+        # clear scrollregion so that it will be set up afresh
+        $c config -scrollregion ""
+
+        # redraw
         opp_inspectorcommand $insp redraw
         ModuleInspector:setScrollRegion $insp 0
 
