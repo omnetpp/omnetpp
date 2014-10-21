@@ -500,13 +500,40 @@ proc makereadonly:keypress {w k} {
 }
 
 #
+# Sets up Ctrl+Wheel to generate <<ZoomIn>> and <<ZoomOut>> events.
+# PROBLEMS WITH WHEEL-ZOOM: redraw is too slow, sluggish ==> poor user experience
+# TODO: pass mouse position and amount of scroll to listeners (in global vars, there's no other way)
+#
+#proc setupZoomEvents {} {
+#    global Control
+#
+#    if {[string equal [tk windowingsystem] win32]} {
+#        # Windows: <MouseWheel> exists, %W is the FOCUSED widget not the one under mouse; %D is usually +-120, with some mouse +-28; or their multiples
+#        bind all <$Control-MouseWheel> {
+#            set w [winfo containing %X %Y]
+#            if {%D > 0} {set e <<ZoomIn>>} else {set e <<ZoomOut>>}
+#            event generate $w $e
+#        }
+#    } elseif {[string equal [tk windowingsystem] aqua]} {
+#        # OS X: <MouseWheel> exists, %W is widget under mouse; %D is +-1 (or multiple)
+#        bind all <$Control-MouseWheel> {
+#            if {%D > 0} {set e <<ZoomIn>>} else {set e <<ZoomOut>>}
+#            event generate %W $e
+#        }
+#    } elseif {[string equal [tk windowingsystem] x11]} {
+#        # Linux: no <MouseWheel>, bind buttons 4 and 5 instead; %W is widget under mouse
+#        bind all <$Control-Button-4> {event generate %W <<ZoomIn>>]}
+#        bind all <$Control-Button-5> {event generate %W <<ZoomOut>>]}
+#    }
+#}
+
+#
 # Creates mouse wheel bindings for the given widget or widget class.
 # Note: wheel events are only delivered to the widget IF IT HAS FOCUS!
 #
 # Code copied almost verbatim from lib/tk8.4/text.tcl.
 #
 proc bindMouseWheel {w} {
-
     # The MouseWheel will typically only fire on Windows.  However,
     # someone could use the "event generate" command to produce one
     # on other platforms.

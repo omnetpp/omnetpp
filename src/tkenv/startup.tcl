@@ -257,6 +257,9 @@ proc setupTkOptions {} {
    bindMouseWheel Canvas
    bindMouseWheel TreeView
 
+   # set up Control+wheel to send <<ZoomIn>> and <<ZoomOut>> events
+   #setupZoomEvents
+
    # set up fonts
    if {[string equal [tk windowingsystem] win32]} {
       # Windows
