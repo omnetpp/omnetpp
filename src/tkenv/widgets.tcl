@@ -289,9 +289,14 @@ proc panedwindow:setsashposition {w pos} {
     # 3. allows pos=="" for convenience (it is a no-op)
     if {$pos == ""} {return}
     if {$pos < 5} {set pos 5}
+    panedwindow:trysetsashposition $w $pos
+}
+
+proc panedwindow:trysetsashposition {w pos} {
+    puts "panedwindow:trysetsashposition $w $pos"
     panedwindow:dosetsashposition $w $pos
     if {[panedwindow:getsashposition $w] != $pos} {
-        after idle [list after idle [list panedwindow:dosetsashposition $w $pos]]
+        after idle [list panedwindow:trysetsashposition $w $pos]
     }
 }
 

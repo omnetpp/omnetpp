@@ -193,16 +193,10 @@ proc applyTkenvrc {} {
     toolbutton:setsunken .toolbar.vert  [expr {$orient=="vertical"}]
     toolbutton:setsunken .toolbar.horiz [expr {$orient!="vertical"}]
 
-    # note: simply using panedwindow:setsashposition without "after idle" doesn't work here
-    after idle {after idle {
-        catch {
-            global config
-            set orient [.main.right cget -orient]
-             panedwindow:dosetsashposition .main $config(mainwin-main-sashpos)
-             panedwindow:dosetsashposition .main.left $config(mainwin-left-sashpos)
-             panedwindow:dosetsashposition .main.right $config(mainwin-right-sashpos-$orient)
-        }
-    }}
+    set orient [.main.right cget -orient]
+    panedwindow:setsashposition .main $config(mainwin-main-sashpos)
+    panedwindow:setsashposition .main.left $config(mainwin-left-sashpos)
+    panedwindow:setsashposition .main.right $config(mainwin-right-sashpos-$orient)
 
     set lb .inspector.nb.contents.main.list
     inspectorListbox:restoreColumnWidths $lb "inspector:columnwidths"
