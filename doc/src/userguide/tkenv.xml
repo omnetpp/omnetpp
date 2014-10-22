@@ -405,10 +405,36 @@
         You can customize animation in the ``Animation'' page of the ``Preferences'' dialog.
       </para>
       <picture file="pictures/Tkenv-network.png">The network display</picture>
-      <para> The context menu of soubmodules contains makes further actions available.
+      <para> The context menu of submodules makes further actions available (see below).
       </para>
       <picture file="pictures/Tkenv-submod-contextmenu.png">Submodule context menu</picture>
       <picture file="pictures/Tkenv-submod-utilities.png">The Utilities submenu</picture>
+      <sect3>
+        <title>Zooming and Panning</title>
+        <para>
+          There are several ways for zooming the canvas, both using the mouse and the keyboard:
+        </para>
+        <itemizedlist>
+          <listitem>
+            <para>Use <keycap>Ctrl+M</keycap> to zoom in, <keycap>Ctrl+N</keycap> to zoom out;
+            the same functionality is also available in the canvas toolbar</para>
+          </listitem>
+          <listitem>
+            <para>To zoom in around a point, double-click the canvas; use <keycap>Shift</keycap> +
+            double-click to zoom out</para>
+          </listitem>
+          <listitem>
+            <para>For marquee zoom, drag out a rectangle with the left mouse button while
+            holding down <keycap>Ctrl</keycap>; you can cancel the operation with the right
+            mouse button.</para>
+          </listitem>
+          <listitem>
+            <para>Panning: moving the mouse while holding down the left mouse button will
+            move the canvas; this is often a more comfortable way to navigate the canvas
+            than using the scroll bars.</para>
+          </listitem>
+        </itemizedlist>
+      </sect3>
     </sect2>
     <sect2>
       <title>The Log Viewer</title>
