@@ -1,5 +1,23 @@
 2014-10-03  ------ omnetpp-4.6 released ------
 
+2014-10-21  Andras Varga
+
+	* implemented canvas panning using left mouse button
+
+	* implemented zooming in/out around a point:
+	- double click to zoom in
+	- Shift + double click to zoom out
+
+	* implemented marquee zoom, based on patch from Christoph Sommer
+	- use Ctrl + left mouse button to drag out a rectangle
+	- marquee can be dragged out in any direction
+	- right-click to cancel
+
+	* zoom-by factor changed to 1.3 (will only take effect for new users)
+
+	* fixed "jerking" of canvas caused by transmission circles coming and
+	going (large circles always caused the scrolling region to change)
+
 2014-06-30  ------ omnetpp-4.5 released ------
 
 2014-05-12  Andras Varga
@@ -31,7 +49,7 @@
 	- on-demand scrollbars (i.e. they are hidden when not needed)
 	- main menu cleanup (reorganized, removed obsolete items)
 	- dialogs where it makes sense now remember size and location
-	- additional hotkeys: Ctrl+Plus/Minu for Zoom, Ctrl+F5 Run Until, 
+	- additional hotkeys: Ctrl+Plus/Minus for Zoom, Ctrl+F5 Run Until,
 	  Ctrl+Q Quit, etc.
 	- OS X: use Command key for hotkeys instead of Ctrl
 	- countless other, smaller improvements
