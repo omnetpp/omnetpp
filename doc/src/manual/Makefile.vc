@@ -67,6 +67,7 @@ DOTPICS = \
 	figures\ned-net6-topology.dot \
 	figures\component-inheritance.dot \
 	figures\resultlistener-inheritance.dot \
+	figures\figure-inheritance.dot \
 	figures\statisticrecording.dot
 
 PDFPICS = $(SVGPICS:.svg=.pdf) $(DOTPICS:.dot=.pdf)
