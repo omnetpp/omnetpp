@@ -132,31 +132,6 @@
 #endif
 
 //
-// cCommBuffer and cHasher need to process long long and unsigned long long
-// (which should be a different type from long, and at least 64 bits in size).
-// However, earlier versions of MSVC (7.1 and before) don't understand
-// long long but have __int64 instead. MSVC 8.0 and above are OK.
-// The following typedefs can be removed when we drop support for MVSC 7.1.
-//
-// These types are NOT part of the OMNeT++ public API. Do not use them
-// except in cCommBuffer implementations.
-//
-#ifdef _MSC_VER
-typedef __int64            opp_long_long;
-typedef unsigned __int64   opp_unsigned_long_long;
-#else
-typedef long long          opp_long_long;
-typedef unsigned long long opp_unsigned_long_long;
-#endif
-
-#if defined(_MSC_VER) || defined(__MINGW32__)
-#define LONGLONG_PRINTF_FORMAT  "I64"
-#else
-#define LONGLONG_PRINTF_FORMAT  "ll"
-#endif
-
-
-//
 // string-to-int64_t conversion
 //
 #ifdef _MSC_VER

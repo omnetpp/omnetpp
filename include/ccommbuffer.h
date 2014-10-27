@@ -109,13 +109,13 @@ class SIM_API cCommBuffer : public cObject
      */
     virtual void pack(unsigned long d) = 0;
     /**
-     * Packs a long long (on MSVC, __int64).
+     * Packs a long long.
      */
-    virtual void pack(opp_long_long d) = 0;
+    virtual void pack(long long d) = 0;
     /**
-     * Packs an unsigned long long (on MSVC, __int64).
+     * Packs an unsigned long long.
      */
-    virtual void pack(opp_unsigned_long_long d) = 0;
+    virtual void pack(unsigned long long d) = 0;
     /**
      * Packs a float.
      */
@@ -181,13 +181,13 @@ class SIM_API cCommBuffer : public cObject
      */
     virtual void pack(const unsigned long *d, int size) = 0;
     /**
-     * Packs an array of long long's (on MSVC, __int64).
+     * Packs an array of long long's.
      */
-    virtual void pack(const opp_long_long *d, int size) = 0;
+    virtual void pack(const long long *d, int size) = 0;
     /**
-     * Packs an array of unsigned long long's (on MSVC, __int64).
+     * Packs an array of unsigned long long's.
      */
-    virtual void pack(const opp_unsigned_long_long *d, int size) = 0;
+    virtual void pack(const unsigned long long *d, int size) = 0;
     /**
      * Packs an array of floats.
      */
@@ -257,13 +257,13 @@ class SIM_API cCommBuffer : public cObject
      */
     virtual void unpack(unsigned long& d) = 0;
     /**
-     * Unpacks a long long (on MSVC, __int64).
+     * Unpacks a long long.
      */
-    virtual void unpack(opp_long_long& d) = 0;
+    virtual void unpack(long long& d) = 0;
     /**
-     * Unpacks an unsigned long long (on MSVC, __int64).
+     * Unpacks an unsigned long long.
      */
-    virtual void unpack(opp_unsigned_long_long& d) = 0;
+    virtual void unpack(unsigned long long& d) = 0;
     /**
      * Unpacks a float.
      */
@@ -333,13 +333,13 @@ class SIM_API cCommBuffer : public cObject
      */
     virtual void unpack(unsigned long *d, int size) = 0;
     /**
-     * Unpacks an array of long long's (on MSVC, __int64).
+     * Unpacks an array of long long's.
      */
-    virtual void unpack(opp_long_long *d, int size) = 0;
+    virtual void unpack(long long *d, int size) = 0;
     /**
-     * Unpacks an array of unsigned long long's (on MSVC, __int64).
+     * Unpacks an array of unsigned long long's.
      */
-    virtual void unpack(opp_unsigned_long_long *d, int size) = 0;
+    virtual void unpack(unsigned long long *d, int size) = 0;
     /**
      * Unpacks an array of floats.
      */
