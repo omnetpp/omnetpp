@@ -96,7 +96,7 @@ int FileReader::readFileEnd(void *dataPointer)
     opp_fseek(file, std::max((file_offset_t)0, (file_offset_t)(fileSize - bufferSize)), SEEK_SET);
     if (ferror(file))
         throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
-    int bytesRead = fread(dataPointer, 1, std::min((int64)bufferSize, fileSize), file);
+    int bytesRead = fread(dataPointer, 1, std::min((int64_t)bufferSize, fileSize), file);
     if (ferror(file))
         throw opp_runtime_error("Read error in file `%s'", fileName.c_str());
     return bytesRead;
@@ -140,7 +140,7 @@ void FileReader::checkConsistency(bool checkDataPointer) const
 
 FileReader::FileChangedState FileReader::checkFileForChanges()
 {
-    int64 newFileSize = getFileSizeInternal();
+    int64_t newFileSize = getFileSizeInternal();
     if (newFileSize == fileSize)
         return UNCHANGED; // NOTE: assuming that the content is not overwritten... :(
     else {
@@ -212,7 +212,7 @@ void FileReader::fillBuffer(bool forward)
         }
         else {
             dataPointer = dataEnd;
-            dataLength = std::min((int64)(bufferEnd - dataEnd), getFileSize() - pointerToFileOffset(dataEnd));
+            dataLength = std::min((int64_t)(bufferEnd - dataEnd), getFileSize() - pointerToFileOffset(dataEnd));
         }
     }
     else {
@@ -245,7 +245,7 @@ void FileReader::fillBuffer(bool forward)
         opp_fseek(file, fileOffset, SEEK_SET);
         if (ferror(file))
             throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
-        dataLength = std::min((int64)dataLength, fileSize - fileOffset);
+        dataLength = std::min((int64_t)dataLength, fileSize - fileOffset);
         int bytesRead = fread(dataPointer, 1, dataLength, file);
         if (ferror(file))
             throw opp_runtime_error("Read error in file `%s'", fileName.c_str());
@@ -551,7 +551,7 @@ int FileReader::getCurrentLineLength() const
     return result;
 }
 
-int64 FileReader::getFileSize()
+int64_t FileReader::getFileSize()
 {
     if (fileSize == -1) {
         ensureFileOpen();
@@ -560,7 +560,7 @@ int64 FileReader::getFileSize()
     return fileSize;
 }
 
-int64 FileReader::getFileSizeInternal()
+int64_t FileReader::getFileSizeInternal()
 {
     struct opp_stat_t s;
     if (!file)
@@ -593,7 +593,7 @@ void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeA
         return;
     }
 
-    file_offset_t newBufferFileOffset = std::min(std::max((int64)0L, getFileSize() - (int64)bufferSize), std::max((int64)0L, fileOffset - (int64)bufferSize / 2));
+    file_offset_t newBufferFileOffset = std::min(std::max((int64_t)0L, getFileSize() - (int64_t)bufferSize), std::max((int64_t)0L, fileOffset - (int64_t)bufferSize / 2));
     setCurrentDataPointer((char *)bufferBegin + fileOffset - newBufferFileOffset);
     Assert(currentDataPointer);
 

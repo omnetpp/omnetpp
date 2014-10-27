@@ -32,13 +32,13 @@ NAMESPACE_BEGIN
 class COMMON_API LCGRandom
 {
     private:
-        int32 seed;
+        int32_t seed;
 
     public:
-        LCGRandom(int32 seed=1);
+        LCGRandom(int32_t seed=1);
 
-        int32 getSeed() { return seed; }
-        void setSeed(int32 seed);
+        int32_t getSeed() { return seed; }
+        void setSeed(int32_t seed);
 
         double next01();
 

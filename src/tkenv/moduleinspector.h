@@ -40,7 +40,7 @@ class TKENV_API ModuleInspector : public Inspector
       char canvas[128];
       Tcl_CmdInfo canvasCmdInfo;
       bool needs_redraw;
-      int32 layoutSeed;
+      int32_t layoutSeed;
       bool notDrawn;
 
       struct Point {double x,y;};

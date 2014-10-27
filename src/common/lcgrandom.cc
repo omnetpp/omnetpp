@@ -20,7 +20,7 @@
 NAMESPACE_BEGIN
 
 
-LCGRandom::LCGRandom(int32 seed)
+LCGRandom::LCGRandom(int32_t seed)
 {
     // do a self-test the very first time this class is used
     static bool firstTime = true;
@@ -33,7 +33,7 @@ LCGRandom::LCGRandom(int32 seed)
     setSeed(seed);
 }
 
-void LCGRandom::setSeed(int32 seed)
+void LCGRandom::setSeed(int32_t seed)
 {
     this->seed = seed;
 

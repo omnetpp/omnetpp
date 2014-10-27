@@ -84,7 +84,7 @@ while (<FILE>)
          $fieldPrintfType = "%ld";
          $fieldDefault = "-1";
       }
-      elsif ($fieldType eq "int64")
+      elsif ($fieldType eq "int64_t")
       {
          $fieldPrintfType = "%\" INT64_PRINTF_FORMAT \"d";
          $fieldDefault = "-1";
@@ -307,7 +307,7 @@ foreach $class (@classes)
       {
         $parserFunction = "getLongToken";
       }
-      elsif ($field->{TYPE} eq "int64")
+      elsif ($field->{TYPE} eq "int64_t")
       {
         $parserFunction = "getInt64Token";
       }

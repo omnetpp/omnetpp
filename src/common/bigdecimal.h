@@ -27,7 +27,7 @@
 
 NAMESPACE_BEGIN
 
-// maximum number of digits in an int64 number, i.e. number of digits in INT64_MAX.
+// maximum number of digits in an int64_t number, i.e. number of digits in INT64_MAX.
 #define INT64_MAX_DIGITS 19
 
 /**
@@ -44,7 +44,7 @@ class COMMON_API BigDecimal
      * If two decimal is equal then they have the same intVal and scale (see normalize()).
      * Special values (NaN, +-infinity, Nil) use the scale INT_MAX.
      */
-    int64 intVal; // stores digits of the decimal number (up to 18 digits can be stored)
+    int64_t intVal; // stores digits of the decimal number (up to 18 digits can be stored)
     int scale;    // stores the position of the decimal point, must be in the [0,-18] range
 
     static const int minScale = -18; // XXX the range length must be <= 18, see buffer allocation in ttoa()
@@ -78,7 +78,7 @@ class COMMON_API BigDecimal
     /** @name Constructors. */
     //@{
     BigDecimal() {intVal=INT64_MAX; scale=INT_MAX;} // == Nil
-    explicit BigDecimal(int64 intVal, int scale=0) : intVal(intVal), scale(scale) { normalize(); }
+    explicit BigDecimal(int64_t intVal, int scale=0) : intVal(intVal), scale(scale) { normalize(); }
     BigDecimal(const BigDecimal &x) {operator=(x);}
     BigDecimal(double d) {operator=(d);}
     //@}
@@ -149,12 +149,12 @@ class COMMON_API BigDecimal
     /**
      * Returns the underlying 64-bit integer.
      */
-    int64 getIntValue() const  {return intVal;}
+    int64_t getIntValue() const  {return intVal;}
 
     /**
      * Directly sets the underlying 64-bit integer.
      */
-    const BigDecimal& setIntValue(int64 l) {intVal = l; return *this;}
+    const BigDecimal& setIntValue(int64_t l) {intVal = l; return *this;}
 
     /**
      * Returns the scale exponent.
@@ -169,7 +169,7 @@ class COMMON_API BigDecimal
     /**
      * Returns the mantissa as if scale was the given value;
      */
-    int64 getMantissaForScale(int scale) const;
+    int64_t getMantissaForScale(int scale) const;
 
     /**
      * Converts the given string to big decimal. Throws an error if
@@ -197,7 +197,7 @@ class COMMON_API BigDecimal
     //@}
 };
 
-inline bool haveSameSign(int64 a, int64 b) { return (a^b) >= 0; }
+inline bool haveSameSign(int64_t a, int64_t b) { return (a^b) >= 0; }
 
 inline const BigDecimal operator*(const BigDecimal& x, double d)
 {

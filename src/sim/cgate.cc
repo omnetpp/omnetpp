@@ -238,7 +238,7 @@ cProperties *cGate::getProperties() const
 }
 
 #ifdef SIMFRONTEND_SUPPORT
-bool cGate::hasChangedSince(int64 lastRefreshSerial)
+bool cGate::hasChangedSince(int64_t lastRefreshSerial)
 {
     return getOwnerModule()->hasChangedSince(lastRefreshSerial);
 }

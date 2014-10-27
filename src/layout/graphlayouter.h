@@ -147,7 +147,7 @@ class LAYOUT_API GraphLayouter
      * own RNG, i.e. does not use the simulation kernel's RNGs. The same seed
      * and same input results in the same layout.
      */
-    void setSeed(int32 seed) { 
+    void setSeed(int32_t seed) {
 #ifdef TRACE_LAYOUTER
         TRACE_CALL("GraphLayouter::setSeed(seed: %d)", seed);
 #endif
@@ -157,8 +157,8 @@ class LAYOUT_API GraphLayouter
     /**
      * Return the seed value
      */
-    int32 getSeed() {
-        int32 seed = lcgRandom.getSeed();
+    int32_t getSeed() {
+        int32_t seed = lcgRandom.getSeed();
 #ifdef TRACE_LAYOUTER
         TRACE_CALL("GraphLayouter::getSeed(): %d", seed);
 #endif

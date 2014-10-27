@@ -25,7 +25,7 @@ NAMESPACE_BEGIN
 
 class cPar;
 
-// the most positive int64 value, represented as double
+// the most positive int64_t value, represented as double
 #define INT64_MAX_DBL  9.22337203685e18
 
 /**
@@ -42,7 +42,7 @@ enum SimTimeUnit
 };
 
 /**
- * int64-based, fixed-point simulation time. Precision is determined by a scale
+ * int64_t-based, fixed-point simulation time. Precision is determined by a scale
  * exponent, which is global (shared by all SimTime instances), and falls in
  * the range -18..0. For example, a scale exponent of -6 means microsecond
  * precision.
@@ -50,20 +50,20 @@ enum SimTimeUnit
  * Conversions and arithmetic operations are provided specifically for double
  * and cPar, and via template functions for integer types. Performance note:
  * conversion from double uses the scale stored as double, and conversion from
- * integer types uses the scale stored as int64; the former eliminates an
- * int64-to-double conversion, and the latter allows the compiler
+ * integer types uses the scale stored as int64_t; the former eliminates an
+ * int64_t-to-double conversion, and the latter allows the compiler
  * to optimize expressions like <tt>if (time>0)</tt> to a trivial integer
- * operation, without floating-point or int64 multiplication.
+ * operation, without floating-point or int64_t multiplication.
  *
  * The underlying raw 64-bit integer is also made accessible.
  */
 class SIM_API SimTime
 {
   private:
-    int64 t;
+    int64_t t;
 
     static int scaleexp;     // scale exponent in the range -18..0
-    static int64 dscale;     // 10^-scaleexp, that is 1 or 1000 or 1000000...
+    static int64_t dscale;   // 10^-scaleexp, that is 1 or 1000 or 1000000...
     static double fscale;    // 10^-scaleexp, that is 1 or 1000 or 1000000...
     static double invfscale; // 1/fscale; we store it because floating-point multiplication is faster than division
 
@@ -77,15 +77,15 @@ class SIM_API SimTime
     template<typename T> void check(T d) {if (scaleexp==SCALEEXP_UNINITIALIZED) initError(d);}
     void initError(double d);
 
-    bool haveSameSign(int64 a, int64 b) { return (a^b) >= 0; }
+    bool haveSameSign(int64_t a, int64_t b) { return (a^b) >= 0; }
 
-    int64 toInt64(double i64) {
+    int64_t toInt64(double i64) {
 #ifndef USE_OMNETPP4x_FINGERPRINTS
          i64 = floor(i64 + 0.5);
 #endif
          if (fabs(i64) > INT64_MAX_DBL)
              rangeError(i64);
-         return (int64)i64;
+         return (int64_t)i64;
     }
 
     void checkedAdd(const SimTime& x) {
@@ -130,7 +130,7 @@ class SIM_API SimTime
      * Initialize simulation time from a double-precision number. This constructor
      * is recommended if the value is the result of some computation done in
      * <tt>double</tt>. For integer-based computations and time constants, the
-     * <tt>SimTime(int64 x, int exponent)</tt> constructor is usually a better
+     * <tt>SimTime(int64_t x, int exponent)</tt> constructor is usually a better
      * choice, because it does not have rounding errors caused by double-to-integer
      * conversion.
      */
@@ -162,7 +162,7 @@ class SIM_API SimTime
      *   Simtime(100, -5) -> 0.001s;
      *   Simtime(5, 2) -> 500s;
      */
-    SimTime(int64 significand, int exponent);
+    SimTime(int64_t significand, int exponent);
 
     /**
      * Copy constructor.
@@ -233,7 +233,7 @@ class SIM_API SimTime
      *   999ms in s --> 0
      *   261ms in 100ms --> 2;
      */
-    int64 inUnit(int exponent) const;
+    int64_t inUnit(int exponent) const;
 
     /**
      * Returns a new simulation time that is truncated to the precision of the
@@ -266,7 +266,7 @@ class SIM_API SimTime
      * outRemainder = t.remainderForUnit(exponent);
      * </pre>
      */
-    void split(int exponent, int64& outValue, SimTime& outRemainder) const;
+    void split(int exponent, int64_t& outValue, SimTime& outRemainder) const;
 
     /**
      * Converts to string.
@@ -285,12 +285,12 @@ class SIM_API SimTime
     /**
      * Returns the underlying 64-bit integer.
      */
-    int64 raw() const  {return t;}
+    int64_t raw() const  {return t;}
 
     /**
      * Directly sets the underlying 64-bit integer.
      */
-    const SimTime& setRaw(int64 l) {t = l; return *this;}
+    const SimTime& setRaw(int64_t l) {t = l; return *this;}
 
     /**
      * Returns the largest simulation time that can be represented using the
@@ -302,7 +302,7 @@ class SIM_API SimTime
      * Returns the time resolution as the number of units per second,
      * e.g. for microsecond resolution it returns 1000000.
      */
-    static int64 getScale()  {return dscale;}
+    static int64_t getScale()  {return dscale;}
 
     /**
      * Returns the scale exponent, which is an integer in the range -18..0.
@@ -351,14 +351,14 @@ class SIM_API SimTime
      * ATTENTION: For performance reasons, the returned pointer will point
      * *somewhere* into the buffer, but NOT necessarily at the beginning.
      */
-    static char *ttoa(char *buf, int64 t, int scaleexp, char *&endp);
+    static char *ttoa(char *buf, int64_t t, int scaleexp, char *&endp);
 };
 
 /*
  for *= and /=, we might need the following code:
     // linux bug workaround; don't change next two lines
     volatile double tmp = uint64_to_double( m_value ) * d;
-    m_value = static_cast<int64>( tmp );
+    m_value = static_cast<int64_t>( tmp );
     return *this;
 */
 
@@ -406,9 +406,9 @@ inline std::ostream& operator<<(std::ostream& os, const SimTime& x)
 NAMESPACE_END
 
 // used locally; needed because sign of a%b is implementation dependent if a<0
-inline int64 _i64mod(const int64& any_t, const int64& positive_u)
+inline int64_t _i64mod(const int64_t& any_t, const int64_t& positive_u)
 {
-    int64 m = any_t % positive_u;
+    int64_t m = any_t % positive_u;
     return m>=0 ? m : m+positive_u;
 }
 
@@ -417,8 +417,8 @@ inline int64 _i64mod(const int64& any_t, const int64& positive_u)
  */
 inline const OPP::SimTime floor(const OPP::SimTime& x)
 {
-    int64 u = OPP::SimTime::getScale();
-    int64 t = x.raw();
+    int64_t u = OPP::SimTime::getScale();
+    int64_t t = x.raw();
     return OPP::SimTime().setRaw(t - _i64mod(t,u));
 }
 
@@ -431,9 +431,9 @@ inline const OPP::SimTime floor(const OPP::SimTime& x)
  */
 inline const OPP::SimTime floor(const OPP::SimTime& x, const OPP::SimTime& unit, const OPP::SimTime& offset = OPP::SimTime())
 {
-    int64 off = offset.raw();
-    int64 u = unit.raw();
-    int64 t = x.raw() - off;
+    int64_t off = offset.raw();
+    int64_t u = unit.raw();
+    int64_t t = x.raw() - off;
     return OPP::SimTime().setRaw(t - _i64mod(t,u) + off);
 }
 
@@ -442,8 +442,8 @@ inline const OPP::SimTime floor(const OPP::SimTime& x, const OPP::SimTime& unit,
  */
 inline const OPP::SimTime ceil(const OPP::SimTime& x)
 {
-    int64 u = OPP::SimTime::getScale();
-    int64 t = x.raw() + u-1;
+    int64_t u = OPP::SimTime::getScale();
+    int64_t t = x.raw() + u-1;
     return OPP::SimTime().setRaw(t - _i64mod(t,u));
 }
 
@@ -453,9 +453,9 @@ inline const OPP::SimTime ceil(const OPP::SimTime& x)
  */
 inline const OPP::SimTime ceil(const OPP::SimTime& x, const OPP::SimTime& unit, const OPP::SimTime& offset = OPP::SimTime())
 {
-    int64 off = offset.raw();
-    int64 u = unit.raw();
-    int64 t = x.raw() - off + u-1;
+    int64_t off = offset.raw();
+    int64_t u = unit.raw();
+    int64_t t = x.raw() - off + u-1;
     return OPP::SimTime().setRaw(t - _i64mod(t,u) + off);
 }
 

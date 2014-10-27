@@ -113,44 +113,7 @@
 
 
 //
-// We prefer shorter names for ints. If they collide with other headers,
-// #undef them after #including omnetpp.h.
-//
-#ifndef int8
-#define int8     int8_t
-#endif
-
-#ifndef int16
-#define int16    int16_t
-#endif
-
-#ifndef int32
-#define int32    int32_t
-#endif
-
-#ifndef int64
-#define int64    int64_t
-#endif
-
-#ifndef uint8
-#define uint8    uint8_t
-#endif
-
-#ifndef uint16
-#define uint16   uint16_t
-#endif
-
-#ifndef uint32
-#define uint32   uint32_t
-#endif
-
-#ifndef uint64
-#define uint64   uint64_t
-#endif
-
-
-//
-// printf type specifier for int64.
+// printf type specifier for int64_t.
 //
 // Note: %I64d is only used with VC++ 7.1 and MinGW gcc 3.4.x; once we
 // drop support for these compilers, this macro can be dropped altogether
@@ -194,7 +157,7 @@ typedef unsigned long long opp_unsigned_long_long;
 
 
 //
-// string-to-int64 conversion
+// string-to-int64_t conversion
 //
 #ifdef _MSC_VER
 #define strtoll   _strtoi64

@@ -51,7 +51,7 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
 
 #ifdef SIMFRONTEND_SUPPORT
   private:
-    int64 lastChangeSerial;
+    int64_t lastChangeSerial;
 #endif
 
   private:
@@ -67,7 +67,7 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
 #ifdef SIMFRONTEND_SUPPORT
     // internal: used by the UI to optimize refreshes
     void updateLastChangeSerial()  {lastChangeSerial = changeCounter++;}
-    virtual bool hasChangedSince(int64 lastRefreshSerial);
+    virtual bool hasChangedSince(int64_t lastRefreshSerial);
 #endif
 
   protected:

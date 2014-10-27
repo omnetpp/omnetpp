@@ -679,7 +679,7 @@ void ModuleInspector::refreshFigures()
         // if there is a structural change, we rebuild everything;
         // otherwise we only adjust subtree of that particular figure
         cFigure *rootFigure = canvas->getRootFigure();
-        uint8 changes = rootFigure->getLocalChangeFlags() | rootFigure->getSubtreeChangeFlags();
+        uint8_t changes = rootFigure->getLocalChangeFlags() | rootFigure->getSubtreeChangeFlags();
         if (changes & cFigure::CHANGE_STRUCTURAL)
         {
             redrawFigures();
@@ -735,8 +735,8 @@ void ModuleInspector::drawFigureRec(cFigure *figure, const cFigure::Transform& p
 
 void ModuleInspector::refreshFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, double zoom, bool ancestorTransformChanged)
 {
-    uint8 localChanges = figure->getLocalChangeFlags();
-    uint8 subtreeChanges = figure->getSubtreeChangeFlags();
+    uint8_t localChanges = figure->getLocalChangeFlags();
+    uint8_t subtreeChanges = figure->getSubtreeChangeFlags();
 
     if (localChanges & cFigure::CHANGE_TRANSFORM)
         ancestorTransformChanged = true;  // must refresh this figure and its entire subtree
@@ -746,7 +746,7 @@ void ModuleInspector::refreshFigureRec(cFigure *figure, const cFigure::Transform
         cFigure::Transform transform(parentTransform);
         transform.leftMultiply(figure->getTransform());
 
-        uint8 what = localChanges | (ancestorTransformChanged ? cFigure::CHANGE_TRANSFORM : 0);
+        uint8_t what = localChanges | (ancestorTransformChanged ? cFigure::CHANGE_TRANSFORM : 0);
         if (what) {
             FigureRenderer *renderer = getRendererFor(figure);
             renderer->refresh(figure, what, interp, &canvasCmdInfo, transform, zoom);

@@ -200,9 +200,9 @@ class SIM_API cFigure : public cOwnedObject
         Transform transform;  // TODO make it optional (NULL = identity transform)
         std::vector<cFigure*> children;
         const char *tags; // stringpool'd
-        uint64 tagBits;  // bit-to-tagname mapping is stored in cCanvas. Note: change to std::bitset if 64 tags are not enough
-        uint8 localChanges;
-        uint8 subtreeChanges;
+        uint64_t tagBits;  // bit-to-tagname mapping is stored in cCanvas. Note: change to std::bitset if 64 tags are not enough
+        uint8_t localChanges;
+        uint8_t subtreeChanges;
     protected:
         virtual bool isAllowedPropertyKey(const char *key) const;
         virtual void validatePropertyKeys(cProperty *property) const;
@@ -212,7 +212,7 @@ class SIM_API cFigure : public cOwnedObject
         void fireGeometryChange() {fire(CHANGE_GEOMETRY);}
         void fireVisualChange() {fire(CHANGE_VISUAL);}
         void fireInputDataChange() {fire(CHANGE_INPUTDATA);}
-        virtual void fire(uint8 flags);
+        virtual void fire(uint8_t flags);
         static Point parsePoint(cProperty *property, const char *key, int index);
         static std::vector<Point> parsePoints(cProperty *property, const char *key);
         static void parseBounds(cProperty *property, Point& p1, Point& p2);
@@ -234,14 +234,14 @@ class SIM_API cFigure : public cOwnedObject
     public:
         // internal:
         virtual const char **getAllowedPropertyKeys() const;
-        uint8 getLocalChangeFlags() const {return localChanges;}
-        uint8 getSubtreeChangeFlags() const {return subtreeChanges;}
+        uint8_t getLocalChangeFlags() const {return localChanges;}
+        uint8_t getSubtreeChangeFlags() const {return subtreeChanges;}
         void clearChangeFlags();
         void insertChild(cFigure *figure, std::map<cFigure*,double>& orderMap);
         void refreshTagBits();
         void refreshTagBitsRec();
-        int64 getTagBits() const {return tagBits;}
-        void setTagBits(uint64 tagBits) {this->tagBits = tagBits;}
+        int64_t getTagBits() const {return tagBits;}
+        void setTagBits(uint64_t tagBits) {this->tagBits = tagBits;}
 
     private:
         void copy(const cFigure& other);
@@ -947,7 +947,7 @@ class SIM_API cCanvas : public cOwnedObject
         // internal:
         static bool containsCanvasItems(cProperties *properties);
         virtual void addFiguresFrom(cProperties *properties);
-        virtual uint64 parseTags(const char *s);
+        virtual uint64_t parseTags(const char *s);
         void dumpSupportedPropertyKeys(std::ostream& out) const;
     private:
         void copy(const cCanvas& other);

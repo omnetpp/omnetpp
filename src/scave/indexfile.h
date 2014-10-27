@@ -32,7 +32,7 @@ NAMESPACE_BEGIN
  */
 struct Block {
     file_offset_t startOffset;
-    int64 size;
+    int64_t size;
     long startSerial;
     eventnumber_t startEventNum;
     eventnumber_t endEventNum;
@@ -79,7 +79,7 @@ struct VectorData {
     std::string name;
     std::string columns;
     StringMap attributes;
-    int64 blockSize;
+    int64_t blockSize;
     eventnumber_t startEventNum;
     eventnumber_t endEventNum;
     simultime_t startTime;
@@ -91,7 +91,7 @@ struct VectorData {
      * Creates an index entry for a vector.
      */
     VectorData() : vectorId(-1), blockSize(0) {}
-    VectorData(int vectorId, std::string moduleName, std::string name, std::string columns, int64 blockSize)
+    VectorData(int vectorId, std::string moduleName, std::string name, std::string columns, int64_t blockSize)
         : vectorId(vectorId), moduleName(moduleName), name(name), columns(columns), blockSize(blockSize),
           startEventNum(-1), endEventNum(-1), startTime(0.0), endTime(0.0) {}
 
@@ -173,7 +173,7 @@ struct RunData {
 
     RunData() : runNumber(0) {}
 
-    bool parseLine(char **tokens, int numTokens, const char *filename, int64 lineNo);
+    bool parseLine(char **tokens, int numTokens, const char *filename, int64_t lineNo);
     void writeToFile(FILE *file, const char *filename) const;
 };
 
@@ -182,8 +182,8 @@ struct RunData {
  * check if it is up-to-date.
  */
 struct FingerPrint {
-    int64 lastModified;
-    int64 fileSize;
+    int64_t lastModified;
+    int64_t fileSize;
 
     FingerPrint() : lastModified(0), fileSize(0) {}
     FingerPrint(const char *vectorFileName);
@@ -280,7 +280,7 @@ class SCAVE_API IndexFileReader
         /**
          * Parse one line of the index file.
          */
-        void parseLine(char **tokens, int numTokens, VectorFileIndex *index, int64 lineNum);
+        void parseLine(char **tokens, int numTokens, VectorFileIndex *index, int64_t lineNum);
 };
 
 /**

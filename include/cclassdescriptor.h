@@ -70,10 +70,10 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     static long string2long(const char *s);
     static std::string ulong2string(unsigned long l);
     static unsigned long string2ulong(const char *s);
-    static std::string int642string(int64 l);
-    static int64 string2int64(const char *s);
-    static std::string uint642string(uint64 l);
-    static uint64 string2uint64(const char *s);
+    static std::string int642string(int64_t l);
+    static int64_t string2int64(const char *s);
+    static std::string uint642string(uint64_t l);
+    static uint64_t string2uint64(const char *s);
     static std::string bool2string(bool b);
     static bool string2bool(const char *s);
     static std::string double2string(double d);

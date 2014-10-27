@@ -93,7 +93,7 @@ void cIndexedFileOutputVectorManager::closeIndexFile()
         if (opp_stat(fname.c_str(), &s) == 0)
         {
             opp_fseek(fi, 0, SEEK_SET);
-            fprintf(fi, "file %" LL "d %" LL "d", (int64)s.st_size, (int64)s.st_mtime);
+            fprintf(fi, "file %" LL "d %" LL "d", (int64_t)s.st_size, (int64_t)s.st_mtime);
         }
 
         fclose(fi);

@@ -20,7 +20,7 @@
 #include <vector>
 #include <exception>
 #include <stdexcept>
-#include "scavedefs.h" // int64
+#include "scavedefs.h" // int64_t
 
 NAMESPACE_BEGIN
 
@@ -29,7 +29,7 @@ class ResultFileManager;
 /**
  * Result ID -- identifies a scalar or a vector in a ResultFileManager
  */
-typedef int64 ID;
+typedef int64_t ID;
 
 
 /**

@@ -86,8 +86,8 @@ void DataflowManager::execute(IProgressMonitor *monitor)
     // deadlock is when a node has not finished yet but none of the others are ready;
     // deadlock should not (i.e. will not) happen with proper scheduling
     //
-    int64 onePercentFileSize = 0;
-    int64 bytesRead = 0;
+    int64_t onePercentFileSize = 0;
+    int64_t bytesRead = 0;
     int readPercentage = 0;
     if (monitor)
     {
@@ -98,7 +98,7 @@ void DataflowManager::execute(IProgressMonitor *monitor)
     while (true)
     {
         ReaderNode *readerNode = NULL;
-        int64 readBefore = 0;
+        int64_t readBefore = 0;
         Node *node = selectNode();
         if (!node)
             break;
@@ -248,9 +248,9 @@ bool DataflowManager::isReaderNode(Node *node)
     return strcmp(node->getNodeType()->getCategory(), "reader-node") == 0;
 }
 
-int64 DataflowManager::getTotalBytesToBeRead()
+int64_t DataflowManager::getTotalBytesToBeRead()
 {
-    int64 totalFileSize = 0;
+    int64_t totalFileSize = 0;
     for (int i = 0; i < (int)nodes.size(); ++i)
     {
         if (isReaderNode(nodes[i]))

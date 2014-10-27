@@ -27,7 +27,7 @@
 NAMESPACE_BEGIN
 
 #ifdef SIMFRONTEND_SUPPORT
-int64 cObject::changeCounter = 0;
+int64_t cObject::changeCounter = 0;
 #endif
 
 cObject::~cObject()
@@ -47,7 +47,7 @@ cClassDescriptor *cObject::getDescriptor()
 }
 
 #ifdef SIMFRONTEND_SUPPORT
-bool cObject::hasChangedSince(int64 lastRefreshSerial)
+bool cObject::hasChangedSince(int64_t lastRefreshSerial)
 {
     return true;  // as we don't have more info
 }

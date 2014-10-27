@@ -26,20 +26,20 @@ void cHasher::add(const char *p, size_t length)
     size_t lengthmod4 = length&~3U;
     size_t i;
     for (i=0; i<lengthmod4; i+=4)
-        merge((uint32)(p[i] | (p[i+1]<<8) | (p[i+2]<<16) | (p[i+3]<<24)));
+        merge((uint32_t)(p[i] | (p[i+1]<<8) | (p[i+2]<<16) | (p[i+3]<<24)));
 
     // add the 1, 2 or 3 bytes left
     switch (length-i)
     {
         case 0: break;
-        case 1: merge((uint32)(p[i])); break;
-        case 2: merge((uint32)(p[i] | (p[i+1]<<8))); break;
-        case 3: merge((uint32)(p[i] | (p[i+1]<<8) | (p[i+2]<<16))); break;
+        case 1: merge((uint32_t)(p[i])); break;
+        case 2: merge((uint32_t)(p[i] | (p[i+1]<<8))); break;
+        case 3: merge((uint32_t)(p[i] | (p[i+1]<<8) | (p[i+2]<<16))); break;
         default: ASSERT(false);
     }
 }
 
-uint32 cHasher::parse(const char *fingerprint) const
+uint32_t cHasher::parse(const char *fingerprint) const
 {
     // remove spaces, hyphens and colons before parsing
     std::string s;
@@ -50,7 +50,7 @@ uint32 cHasher::parse(const char *fingerprint) const
     // parse
     char *e;
     unsigned long d = strtoul(s.c_str(), &e, 16);
-    uint32 hash = (uint32)d;
+    uint32_t hash = (uint32_t)d;
     if (*e || hash!=d)
         throw cRuntimeError("Error verifying fingerprint: invalid fingerprint text \"%s\"", fingerprint);
     return hash;
@@ -58,7 +58,7 @@ uint32 cHasher::parse(const char *fingerprint) const
 
 bool cHasher::equals(const char *fingerprint) const
 {
-    uint32 hash = parse(fingerprint);
+    uint32_t hash = parse(fingerprint);
     return getHash()==hash;
 }
 

@@ -89,7 +89,7 @@ void CallTracer::printf(const char *fmt, ...)
 #ifdef _MSC_VER
 // source: http://en.wikipedia.org/wiki/RDTSC
 __declspec(naked)
-uint64 __cdecl readCPUTimeStampCounter()
+uint64_t __cdecl readCPUTimeStampCounter()
 {
    __asm
    {
@@ -98,7 +98,7 @@ uint64 __cdecl readCPUTimeStampCounter()
    }
 }
 #else
-uint64 readCPUTimeStampCounter()
+uint64_t readCPUTimeStampCounter()
 {
     return 0;
 }

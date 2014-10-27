@@ -100,7 +100,7 @@ E EventEntry // an event that is processing a message
 
 KF KeyframeEntry
 {
-   p int64 previousKeyframeFileOffset  // file offset of the previous keyframe entry
+   p int64_t previousKeyframeFileOffset // file offset of the previous keyframe entry
    c string consequenceLookaheadLimits // consequence lookahead data
    s string simulationStateEntries     // simulation state data
 }
@@ -115,7 +115,7 @@ abstract MessageEntry // base class for entries referring to a message
    n string messageName                       // message name
    k short messageKind                  0     // message kind
    p short messagePriority              0     // message priority
-   l int64 messageLength                0     // message length in bits
+   l int64_t messageLength              0     // message length in bits
    er bool hasBitError                  false // true indicates that the message has bit errors
    d string detail                      NULL  // detailed information of message content when recording message data is turned on
    pe eventnumber_t previousEventNumber       // event number from which the message being cloned was sent, or -1 if the message was sent from initialize

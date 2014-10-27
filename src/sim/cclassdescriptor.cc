@@ -56,26 +56,26 @@ unsigned long cClassDescriptor::string2ulong(const char *s)
     return strtoul(s, NULL, 10);
 }
 
-std::string cClassDescriptor::int642string(int64 l)
+std::string cClassDescriptor::int642string(int64_t l)
 {
     char buf[32];
     sprintf(buf, "%" LL "d", l);
     return buf;
 }
 
-int64 cClassDescriptor::string2int64(const char *s)
+int64_t cClassDescriptor::string2int64(const char *s)
 {
     return strtoll(s, NULL, 10);
 }
 
-std::string cClassDescriptor::uint642string(uint64 l)
+std::string cClassDescriptor::uint642string(uint64_t l)
 {
     char buf[32];
     sprintf(buf, "%" LL "u", l);
     return buf;
 }
 
-uint64 cClassDescriptor::string2uint64(const char *s)
+uint64_t cClassDescriptor::string2uint64(const char *s)
 {
     return strtoull(s, NULL, 10);
 }

@@ -39,41 +39,41 @@ NAMESPACE_BEGIN
 class SIM_API cHasher : noncopyable
 {
   private:
-    uint32 value;
+    uint32_t value;
 
-    void merge(uint32 x) {
+    void merge(uint32_t x) {
         // rotate value left by one bit, and xor with new data
-        uint32 carry = (value & 0x80000000U) >> 31;
+        uint32_t carry = (value & 0x80000000U) >> 31;
         value = ((value<<1)|carry) ^ x;
     }
 
-    void merge2(uint64 x) {
-        merge((uint32)x);
-        merge((uint32)(x>>32));
+    void merge2(uint64_t x) {
+        merge((uint32_t)x);
+        merge((uint32_t)(x>>32));
     }
 
   public:
     /**
      * Constructor.
      */
-    cHasher() {ASSERT(sizeof(uint32)==4); ASSERT(sizeof(double)==8); value = 0;}
+    cHasher() {ASSERT(sizeof(uint32_t)==4); ASSERT(sizeof(double)==8); value = 0;}
 
     /** @name Updating the hash */
     //@{
     void reset() {value = 0;}
     void add(const char *p, size_t length);
-    void add(char d)           {merge((uint32)d);}
-    void add(short d)          {merge((uint32)d);}
-    void add(int d)            {merge((uint32)d);}
-    void add(long d)           {int64 tmp=d; merge2((uint64)tmp);}
-    void add(opp_long_long d)   {merge2((uint64)d);}
-    void add(unsigned char d)  {merge((uint32)d);}
-    void add(unsigned short d) {merge((uint32)d);}
-    void add(unsigned int d)   {merge((uint32)d);}
-    void add(unsigned long d)  {uint64 tmp=d; merge2(tmp);}
+    void add(char d)           {merge((uint32_t)d);}
+    void add(short d)          {merge((uint32_t)d);}
+    void add(int d)            {merge((uint32_t)d);}
+    void add(long d)           {int64_t tmp=d; merge2((uint64_t)tmp);}
+    void add(opp_long_long d)   {merge2((uint64_t)d);}
+    void add(unsigned char d)  {merge((uint32_t)d);}
+    void add(unsigned short d) {merge((uint32_t)d);}
+    void add(unsigned int d)   {merge((uint32_t)d);}
+    void add(unsigned long d)  {uint64_t tmp=d; merge2(tmp);}
     void add(opp_unsigned_long_long d)  {merge2(d);}
     // note: safe(r) type punning, see http://cocoawithlove.decenturl.com/type-punning
-    void add(double d)         {union _ {double d; uint64 i;}; merge2(((union _ *)&d)->i);}
+    void add(double d)         {union _ {double d; uint64_t i;}; merge2(((union _ *)&d)->i);}
     void add(const char *s)    {if (s) add(s, strlen(s)+1); else add(0);}
     //@}
 
@@ -82,14 +82,14 @@ class SIM_API cHasher : noncopyable
     /**
      * Returns the hash value.
      */
-    uint32 getHash() const {return value;}
+    uint32_t getHash() const {return value;}
 
     /**
      * Converts the given string to a numeric fingerprint value. The object is
      * not changed. Throws an error if the string does not contain a valid
      * fingerprint.
      */
-    uint32 parse(const char *fingerprint) const;
+    uint32_t parse(const char *fingerprint) const;
 
     /**
      * Parses the given fingerprint string, and compares it to the stored hash.

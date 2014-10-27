@@ -91,8 +91,8 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     SignalTable *signalTable; // ordered by signalID so we can do binary search
 
     // flags to speed up emit() for signals 0..63 when there are no or few listeners
-    uint64 signalHasLocalListeners;    // bit[k]==1: signalID k has local listeners
-    uint64 signalHasAncestorListeners; // bit[k]==1: signalID k has listener in parent or in any ancestor component
+    uint64_t signalHasLocalListeners;    // bit[k]==1: signalID k has local listeners
+    uint64_t signalHasAncestorListeners; // bit[k]==1: signalID k has listener in parent or in any ancestor component
 
     // string-to-simsignal_t mapping
     static struct SignalNameMapping {
@@ -102,7 +102,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     static int lastSignalID;
 
     // dynamic assignment of signalHasLocalListeners/signalHasAncestorListeners bits (64 of them) to signalIDs
-    static std::vector<uint64> signalMasks;  // index: signalID, value: mask (1<<bitIndex), or 0xffff... for "unfilled"
+    static std::vector<uint64_t> signalMasks;  // index: signalID, value: mask (1<<bitIndex), or 0xffff... for "unfilled"
     static int firstFreeSignalMaskBitIndex; // 0..63; 64 means "all sold out"
 
     // stack of listener lists being notified, to detect concurrent modification
@@ -117,10 +117,10 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     SignalData *findOrCreateSignalData(simsignal_t signalID);
     void removeSignalData(simsignal_t signalID);
     void checkNotFiring(simsignal_t, cIListener **listenerList);
-    template<typename T> void fire(cComponent *src, simsignal_t signalID, const uint64& mask, T x);
+    template<typename T> void fire(cComponent *src, simsignal_t signalID, const uint64_t& mask, T x);
     void fireFinish();
-    void signalListenerAdded(simsignal_t signalID, uint64 mask);
-    void signalListenerRemoved(simsignal_t signalID, uint64 mask);
+    void signalListenerAdded(simsignal_t signalID, uint64_t mask);
+    void signalListenerRemoved(simsignal_t signalID, uint64_t mask);
     void repairSignalFlags();
     bool computeHasListeners(simsignal_t signalID) const;
     void releaseLocalListeners();
@@ -173,7 +173,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     // internal: allocates a signalHasLocalListeners/signalHasAncestorListeners bit index to the
     // given signal and returns the corresponding mask (1<<index); returns 0 if there are no more
     // free bit indices. Result is remembered and returned in subsequent calls (until clearSignalState())
-    static uint64 getSignalMask(simsignal_t signalID);
+    static uint64_t getSignalMask(simsignal_t signalID);
 
     // internal: controls whether signals should be validated against @signal declarations in NED files
     static void setCheckSignals(bool b) {checkSignals = b;}
@@ -518,7 +518,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * (amortizes in constant time), but may return "false positive".
      */
     bool mayHaveListeners(simsignal_t signalID) const {
-        uint64 mask = getSignalMask(signalID);
+        uint64_t mask = getSignalMask(signalID);
         return (~signalHasLocalListeners & ~signalHasAncestorListeners & mask)==0; // always true for mask==0
     }
 
@@ -530,7 +530,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @see mayHaveListeners()
      */
     bool hasListeners(simsignal_t signalID) const {
-        uint64 mask = getSignalMask(signalID);
+        uint64_t mask = getSignalMask(signalID);
         return mask ? ((signalHasLocalListeners|signalHasAncestorListeners) & mask) : computeHasListeners(signalID);
     }
     //@}

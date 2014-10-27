@@ -27,9 +27,9 @@ NAMESPACE_BEGIN
 USING_NAMESPACE
 
 // helpers
-static inline int64 max(int64 x, int64 y) { return x > y ? x : y; }
-static inline int64 min(int64 x, int64 y) { return x < y ? x : y; }
-static inline int sgn(int64 x) { return (x > 0 ? 1 : (x < 0 ? -1 : 0)); }
+static inline int64_t max(int64_t x, int64_t y) { return x > y ? x : y; }
+static inline int64_t min(int64_t x, int64_t y) { return x < y ? x : y; }
+static inline int sgn(int64_t x) { return (x > 0 ? 1 : (x < 0 ? -1 : 0)); }
 
 BigDecimal BigDecimal::Zero(0, 0);
 BigDecimal BigDecimal::One(1, 0);
@@ -39,7 +39,7 @@ BigDecimal BigDecimal::PositiveInfinity(1, INT_MAX);
 BigDecimal BigDecimal::NegativeInfinity(-1, INT_MAX);
 BigDecimal BigDecimal::Nil;
 
-static int64 powersOfTen[21];
+static int64_t powersOfTen[21];
 static double negativePowersOfTen[21];
 
 class PowersOfTenInitializer
@@ -52,7 +52,7 @@ PowersOfTenInitializer initializer;
 
 PowersOfTenInitializer::PowersOfTenInitializer()
 {
-    int64 power = 1;
+    int64_t power = 1;
     for (unsigned int i = 0; i < sizeof(powersOfTen) / sizeof(*powersOfTen); i++) {
         powersOfTen[i] = power;
         power *= 10;
@@ -152,7 +152,7 @@ const BigDecimal& BigDecimal::operator=(double d)
         exponent--;
     }
 
-    int64 intVal = (int64)mantissa;   // d = intVal * 2 ^ exponent
+    int64_t intVal = (int64_t)mantissa;   // d = intVal * 2 ^ exponent
 
 
     // special case for 0.0, next loop would not terminate
@@ -242,17 +242,17 @@ bool BigDecimal::operator<(const BigDecimal &x) const
     int xm = x.scale - minScale;
     const int NUMPOWERS = sizeof(powersOfTen) / sizeof(*powersOfTen);
     assert(m < NUMPOWERS && xm < NUMPOWERS);
-    int64 v = intVal;
+    int64_t v = intVal;
     if (m != 0) {
-        int64 mp = powersOfTen[m];
+        int64_t mp = powersOfTen[m];
         v = intVal * mp;
         if (v / mp != intVal)
             // overflow
             return negatives;
     }
-    int64 xv = x.intVal;
+    int64_t xv = x.intVal;
     if (xm != 0) {
-        int64 xmp = powersOfTen[xm];
+        int64_t xmp = powersOfTen[xm];
         xv = x.intVal * xmp;
         if (xv / xmp != x.intVal)
             // overflow
@@ -261,7 +261,7 @@ bool BigDecimal::operator<(const BigDecimal &x) const
     return v < xv;
 }
 
-int64 BigDecimal::getMantissaForScale(int reqScale) const
+int64_t BigDecimal::getMantissaForScale(int reqScale) const
 {
     if (isSpecial())
         throw opp_runtime_error("BigDecimal: cannot return mantissa for Nil, NaN or +/-Inf value");
@@ -328,7 +328,7 @@ char *BigDecimal::ttoa(char *buf, const BigDecimal &x, char *&endp)
         return buf;
     }
 
-    int64 intVal = x.getIntValue();
+    int64_t intVal = x.getIntValue();
     int scale = x.getScale();
 
     // prepare for conversion
@@ -345,7 +345,7 @@ char *BigDecimal::ttoa(char *buf, const BigDecimal &x, char *&endp)
     bool skipzeros = true;
     int decimalplace = scale;
     do {
-        int64 res = intVal / 10;
+        int64_t res = intVal / 10;
         int digit = intVal - (10*res);
 
         if (skipzeros && (digit!=0 || decimalplace>=0))
@@ -384,7 +384,7 @@ const BigDecimal BigDecimal::parse(const char *s)
 
 const BigDecimal BigDecimal::parse(const char *s, const char *&endp)
 {
-    int64 intVal = 0;
+    int64_t intVal = 0;
     int digits = 0;
     int scale = 0;
     int sign = 1;
@@ -483,16 +483,16 @@ const BigDecimal operator+(const BigDecimal& x, const BigDecimal& y)
 
     if (!x.isSpecial() && !y.isSpecial() && 0 <= xm && xm < NUMPOWERS && 0 <= ym && ym < NUMPOWERS)
     {
-        int64 xmp = powersOfTen[xm];
-        int64 xv = x.intVal * xmp;
+        int64_t xmp = powersOfTen[xm];
+        int64_t xv = x.intVal * xmp;
 
         if (xv / xmp == x.intVal) {
-            int64 ymp = powersOfTen[ym];
-            int64 yv = y.intVal * ymp;
+            int64_t ymp = powersOfTen[ym];
+            int64_t yv = y.intVal * ymp;
 
             if (yv / ymp == y.intVal) {
                 bool sameSign = haveSameSign(xv, yv);
-                int64 intVal = xv + yv;
+                int64_t intVal = xv + yv;
 
                 if (!sameSign || haveSameSign(intVal, yv))
                     return BigDecimal(intVal, scale);
@@ -515,16 +515,16 @@ const BigDecimal operator-(const BigDecimal& x, const BigDecimal& y)
 
     if (!x.isSpecial() && !y.isSpecial() && 0 <= xm && xm < NUMPOWERS && 0 <= ym && ym < NUMPOWERS)
     {
-        int64 xmp = powersOfTen[xm];
-        int64 xv = x.intVal * xmp;
+        int64_t xmp = powersOfTen[xm];
+        int64_t xv = x.intVal * xmp;
 
         if (xv / xmp == x.intVal) {
-            int64 ymp = powersOfTen[ym];
-            int64 yv = y.intVal * ymp;
+            int64_t ymp = powersOfTen[ym];
+            int64_t yv = y.intVal * ymp;
 
             if (yv / ymp == y.intVal) {
                 bool differentSign = !haveSameSign(xv, yv);
-                int64 intVal = xv - yv;
+                int64_t intVal = xv - yv;
 
                 if (!differentSign || !haveSameSign(intVal, yv))
                     return BigDecimal(intVal, scale);

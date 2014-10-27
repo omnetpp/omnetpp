@@ -78,14 +78,14 @@ class SIM_API cObject
 
 #ifdef SIMFRONTEND_SUPPORT
     // internal: used by the UI to optimize refreshes
-    virtual bool hasChangedSince(int64 refreshSerial);
-    static int64 getChangeCounter() {return changeCounter;}
+    virtual bool hasChangedSince(int64_t refreshSerial);
+    static int64_t getChangeCounter() {return changeCounter;}
 #endif
 
   protected:
 #ifdef SIMFRONTEND_SUPPORT
     // internal
-    static int64 changeCounter;
+    static int64_t changeCounter;
 #endif
 
     // internal

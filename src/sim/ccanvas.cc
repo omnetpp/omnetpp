@@ -1101,7 +1101,7 @@ void cFigure::refreshTagBits()
     }
 }
 
-void cFigure::fire(uint8 flags)
+void cFigure::fire(uint8_t flags)
 {
     if ((localChanges & flags) == 0) {  // not yet set
         localChanges |= flags;
@@ -2368,9 +2368,9 @@ cFigure *cCanvas::getSubmodulesLayer() const
     return rootFigure->getFigure("submodules");
 }
 
-uint64 cCanvas::parseTags(const char *s)
+uint64_t cCanvas::parseTags(const char *s)
 {
-    uint64 result = 0;
+    uint64_t result = 0;
     cStringTokenizer tokenizer(s);
     while (tokenizer.hasMoreTokens())
     {
@@ -2385,7 +2385,7 @@ uint64 cCanvas::parseTags(const char *s)
                 throw cRuntimeError(this, "Cannot add figure tag \"%s\": maximum 64 tags supported", tag);
             tagBitIndex[tag] = bitIndex;
         }
-        result |= ((uint64)1) << bitIndex;
+        result |= ((uint64_t)1) << bitIndex;
     }
     return result;
 }

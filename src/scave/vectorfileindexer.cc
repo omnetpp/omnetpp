@@ -64,13 +64,13 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
 
     char *line;
     char **tokens;
-    int64 lineNo;
+    int64_t lineNo;
     int numTokens, numOfUnrecognizedLines = 0;
     VectorData *currentVectorRef = NULL;
     VectorData *lastVectorDecl = NULL;
     Block currentBlock;
 
-    int64 onePercentFileSize = reader.getFileSize() / 100;
+    int64_t onePercentFileSize = reader.getFileSize() / 100;
     int readPercentage = 0;
 
     if (monitor)
@@ -90,7 +90,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
                 }
                 if (onePercentFileSize > 0)
                 {
-                    int64 readBytes = reader.getNumReadBytes();
+                    int64_t readBytes = reader.getNumReadBytes();
                     int currentPercentage = readBytes / onePercentFileSize;
                     if (currentPercentage > readPercentage)
                     {
@@ -169,7 +169,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
                 {
                     if (currentVectorRef != NULL)
                     {
-                        currentBlock.size = (int64)(reader.getCurrentLineStartOffset() - currentBlock.startOffset);
+                        currentBlock.size = (int64_t)(reader.getCurrentLineStartOffset() - currentBlock.startOffset);
                         if (currentBlock.size > currentVectorRef->blockSize)
                             currentVectorRef->blockSize = currentBlock.size;
                         currentVectorRef->addBlock(currentBlock);
@@ -214,7 +214,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
         if (currentBlock.getCount() > 0)
         {
             assert(currentVectorRef != NULL);
-            currentBlock.size = (int64)(reader.getFileSize() - currentBlock.startOffset);
+            currentBlock.size = (int64_t)(reader.getFileSize() - currentBlock.startOffset);
             if (currentBlock.size > currentVectorRef->blockSize)
                 currentVectorRef->blockSize = currentBlock.size;
             currentVectorRef->addBlock(currentBlock);

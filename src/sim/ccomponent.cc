@@ -36,12 +36,12 @@ NAMESPACE_BEGIN
 
 Register_PerObjectConfigOption(CFGID_PARAM_RECORD_AS_SCALAR, "param-record-as-scalar", KIND_PARAMETER, CFG_BOOL, "false", "Applicable to module parameters: specifies whether the module parameter should be recorded into the output scalar file. Set it for parameters whose value you'll need for result analysis.");
 
-#define SIGNALMASK_UNFILLED (~(uint64)0)
+#define SIGNALMASK_UNFILLED (~(uint64_t)0)
 
 cComponent::SignalNameMapping *cComponent::signalNameMapping = NULL;
 int cComponent::lastSignalID = -1;
 
-std::vector<uint64> cComponent::signalMasks;
+std::vector<uint64_t> cComponent::signalMasks;
 int cComponent::firstFreeSignalMaskBitIndex;
 
 static const int NOTIFICATION_STACK_SIZE = 64;
@@ -520,12 +520,12 @@ void cComponent::emit(simsignal_t signalID, cObject *obj)
     fire(this, signalID, getSignalMask(signalID), obj);
 }
 
-uint64 cComponent::getSignalMask(simsignal_t signalID)
+uint64_t cComponent::getSignalMask(simsignal_t signalID)
 {
     if (signalID > lastSignalID)
         throw cRuntimeError("emit()/hasListeners(): not a valid signal: signalID=%d", signalID);
 
-    uint64 mask = signalMasks[signalID];
+    uint64_t mask = signalMasks[signalID];
 
     if (mask == SIGNALMASK_UNFILLED)
     {
@@ -533,13 +533,13 @@ uint64 cComponent::getSignalMask(simsignal_t signalID)
         if (firstFreeSignalMaskBitIndex == 64)
             mask = signalMasks[signalID] = 0; // no more bits
         else
-            mask = signalMasks[signalID] = (uint64)1 << firstFreeSignalMaskBitIndex++; // allocate bit index
+            mask = signalMasks[signalID] = (uint64_t)1 << firstFreeSignalMaskBitIndex++; // allocate bit index
     }
     return mask;
 }
 
 template<typename T>
-void cComponent::fire(cComponent *source, simsignal_t signalID, const uint64& mask, T x)
+void cComponent::fire(cComponent *source, simsignal_t signalID, const uint64_t& mask, T x)
 {
     if ((~signalHasLocalListeners & mask) == 0)  // always true for mask==0
     {
@@ -598,7 +598,7 @@ void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
     if (!data->addListener(listener))
         throw cRuntimeError(this, "subscribe(): listener already subscribed, signalID=%d (%s)", signalID, getSignalName(signalID));
 
-    uint64 mask = getSignalMask(signalID);
+    uint64_t mask = getSignalMask(signalID);
     signalHasLocalListeners |= mask;
 
     // update hasAncestorListener flag in the whole subtree.
@@ -614,7 +614,7 @@ void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
     listener->subscribedTo(this, signalID);
 }
 
-void cComponent::signalListenerAdded(simsignal_t signalID, uint64 mask)
+void cComponent::signalListenerAdded(simsignal_t signalID, uint64_t mask)
 {
     // set the flag recursively in the subtree. If it's already set,
     // no need to recurse because all components must already have it
@@ -652,7 +652,7 @@ void cComponent::unsubscribe(simsignal_t signalID, cIListener *listener)
         // no local listeners left: remove entry and adjust flags
         removeSignalData(signalID);
 
-        uint64 mask = getSignalMask(signalID);
+        uint64_t mask = getSignalMask(signalID);
         signalHasLocalListeners &= ~mask;
 
         // clear "has ancestor listeners" flags in the whole submodule tree,
@@ -665,7 +665,7 @@ void cComponent::unsubscribe(simsignal_t signalID, cIListener *listener)
     listener->unsubscribedFrom(this, signalID);
 }
 
-void cComponent::signalListenerRemoved(simsignal_t signalID, uint64 mask)
+void cComponent::signalListenerRemoved(simsignal_t signalID, uint64_t mask)
 {
     // clear the flag recursively in the subtree. If the signal
     // has a listener at a module, leave its subtree alone.
@@ -762,7 +762,7 @@ void cComponent::checkLocalSignalConsistency() const
         }
 
         // verify the mask bits
-        uint64 mask = signalMasks[signalID];
+        uint64_t mask = signalMasks[signalID];
         if (mask == SIGNALMASK_UNFILLED)
         {
             if (hasLocalListeners || hasAncestorListeners)

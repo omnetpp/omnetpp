@@ -53,7 +53,7 @@ bool VectorFileReaderNode::isReady() const
 /**
  * Parses columns of one line in the vector file.
  */
-Datum parseColumns(char **tokens, int numtokens, const string &columns, const char *file, int64 lineno, file_offset_t offset)
+Datum parseColumns(char **tokens, int numtokens, const string &columns, const char *file, int64_t lineno, file_offset_t offset)
 {
     Datum a;
     int colno = columns.size();
@@ -121,7 +121,7 @@ void VectorFileReaderNode::process()
     char *line;
     for (int k=0; k<1000 && (line=reader.getNextLineBufferPointer())!=NULL; k++)
     {
-        int64 lineNo = reader.getNumReadLines();
+        int64_t lineNo = reader.getNumReadLines();
         int length = reader.getCurrentLineLength();
         tokenizer.tokenize(line, length);
 

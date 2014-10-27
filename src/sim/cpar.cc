@@ -322,7 +322,7 @@ void cPar::afterChange()
 }
 
 #ifdef SIMFRONTEND_SUPPORT
-bool cPar::hasChangedSince(int64 lastRefreshSerial)
+bool cPar::hasChangedSince(int64_t lastRefreshSerial)
 {
     return ownercomponent->hasChangedSince(lastRefreshSerial);
 }

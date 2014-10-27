@@ -46,9 +46,9 @@ class CMDENV_API Serializer
     std::string getIdStringForObject(cObject *obj);
     void objectDeleted(cObject *obj);
 
-    JsonObject *serializeObject(cObject *obj, JsonObject *jObject, int64 lastRefreshSerial);
-    JsonObject *serializeObjectChildren(cObject *obj, JsonObject *jObject, int64 lastRefreshSerial);
-    JsonObject *serializeObjectFields(cObject *obj, JsonObject *jObject, int64 lastRefreshSerial);
+    JsonObject *serializeObject(cObject *obj, JsonObject *jObject, int64_t lastRefreshSerial);
+    JsonObject *serializeObjectChildren(cObject *obj, JsonObject *jObject, int64_t lastRefreshSerial);
+    JsonObject *serializeObjectFields(cObject *obj, JsonObject *jObject, int64_t lastRefreshSerial);
     const char *getKnownBaseClass(cObject *object);
 };
 

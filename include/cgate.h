@@ -154,7 +154,7 @@ class SIM_API cGate : public cObject, noncopyable
 
 #ifdef SIMFRONTEND_SUPPORT
     // internal
-    virtual bool hasChangedSince(int64 lastRefreshSerial);
+    virtual bool hasChangedSince(int64_t lastRefreshSerial);
 #endif
 
   public:

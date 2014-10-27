@@ -92,7 +92,7 @@ void Serializer::objectDeleted(cObject *obj)
     }
 }
 
-JsonObject *Serializer::serializeObject(cObject *obj, JsonObject *jObject, int64 lastRefreshSerial)
+JsonObject *Serializer::serializeObject(cObject *obj, JsonObject *jObject, int64_t lastRefreshSerial)
 {
     if (!obj->hasChangedSince(lastRefreshSerial))
         return jObject;
@@ -286,7 +286,7 @@ JsonObject *Serializer::serializeObject(cObject *obj, JsonObject *jObject, int64
     return jObject;
 }
 
-JsonObject *Serializer::serializeObjectChildren(cObject *obj, JsonObject *jObject, int64 lastRefreshSerial)
+JsonObject *Serializer::serializeObjectChildren(cObject *obj, JsonObject *jObject, int64_t lastRefreshSerial)
 {
     if (!obj->hasChangedSince(lastRefreshSerial))
         return jObject;
@@ -304,7 +304,7 @@ JsonObject *Serializer::serializeObjectChildren(cObject *obj, JsonObject *jObjec
     return jObject;
 }
 
-JsonObject *Serializer::serializeObjectFields(cObject *obj, JsonObject *jObject, int64 lastRefreshSerial)
+JsonObject *Serializer::serializeObjectFields(cObject *obj, JsonObject *jObject, int64_t lastRefreshSerial)
 {
     if (!obj->hasChangedSince(lastRefreshSerial))
         return jObject;

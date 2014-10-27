@@ -41,7 +41,7 @@ ForceDirectedEmbedding::~ForceDirectedEmbedding() {
         delete *it;
 }
 
-ForceDirectedParameters ForceDirectedEmbedding::getParameters(int32 seed) {
+ForceDirectedParameters ForceDirectedEmbedding::getParameters(int32_t seed) {
     LCGRandom lcgRandom(seed);
 
     ForceDirectedParameters parameters;

@@ -46,7 +46,7 @@ class ResultFileManager;
 
 typedef std::map<std::string, std::string> StringMap;
 
-typedef int64 ComputationID;
+typedef int64_t ComputationID;
 
 struct SCAVE_API IComputation {
     IComputation() {}
@@ -279,7 +279,7 @@ class SCAVE_API ResultFileManager
     {
         ResultFile *fileRef; /*in*/
         const char *fileName; /*in*/
-        int64 lineNo; /*inout*/
+        int64_t lineNo; /*inout*/
         FileRun *fileRunRef; /*inout*/
         // references to the result items which attributes should be added to
         int lastResultItemType; /*inout*/

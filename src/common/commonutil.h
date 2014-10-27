@@ -122,7 +122,7 @@ template <class T> struct ToString<T*>
  *
  * See http://en.wikipedia.org/wiki/RDTSC
  */
-uint64 readCPUTimeStampCounter();
+uint64_t readCPUTimeStampCounter();
 
 
 /**

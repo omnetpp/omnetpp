@@ -17,7 +17,7 @@
 #ifndef _SCAVEDEFS_H_
 #define _SCAVEDEFS_H_
 
-#include "intxtypes.h" // for int64, our equivalent of Java's "long" type
+#include "intxtypes.h" // for int64_t, our equivalent of Java's "long" type
 #include "platdefs.h"
 #include "bigdecimal.h"
 
@@ -38,7 +38,7 @@ typedef BigDecimal simultime_t;
 #define SIMTIME_MIN BigDecimal::NegativeInfinity
 #define SIMTIME_MAX BigDecimal::PositiveInfinity
 
-typedef int64 eventnumber_t;
+typedef int64_t eventnumber_t;
 
 /**
  * Used by VectorResult as well as filter nodes e.g. Integrate

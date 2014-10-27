@@ -224,7 +224,7 @@ bool cDefaultList::defaultListContains(cOwnedObject *obj) const
 }
 
 #ifdef SIMFRONTEND_SUPPORT
-bool cDefaultList::hasChangedSince(int64 lastRefreshSerial)
+bool cDefaultList::hasChangedSince(int64_t lastRefreshSerial)
 {
     return lastChangeSerial > lastRefreshSerial;
 }

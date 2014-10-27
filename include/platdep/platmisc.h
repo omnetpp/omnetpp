@@ -140,7 +140,7 @@ inline char *gcvt(double value, int ndigit, char *buf)
 //
 #include "intxtypes.h"
 
-typedef int64 file_offset_t;  // off_t on Linux
+typedef int64_t file_offset_t;  // off_t on Linux
 
 #if defined _MSC_VER
   #define opp_ftell _ftelli64

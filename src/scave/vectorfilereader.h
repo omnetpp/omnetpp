@@ -34,7 +34,7 @@ NAMESPACE_BEGIN
 #define VECFILEREADER_BUFSIZE  (64*1024)
 
 // shared with indexedvectorfilereadernode
-Datum parseColumns(char **tokens, int numtokens, const std::string &columns, const char* file, int64 lineno, file_offset_t offset);
+Datum parseColumns(char **tokens, int numtokens, const std::string &columns, const char* file, int64_t lineno, file_offset_t offset);
 
 /**
  * Producer node which reads an output vector file.

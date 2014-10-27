@@ -79,8 +79,8 @@ class SCAVE_API ReaderNode : public Node
     public:
         ReaderNode(const char* filename, size_t bufferSize)
             : filename(filename), reader(filename, bufferSize) {}
-        int64 getFileSize() { return reader.getFileSize(); }
-        int64 getNumReadBytes() { return reader.getNumReadBytes(); }
+        int64_t getFileSize() { return reader.getFileSize(); }
+        int64_t getNumReadBytes() { return reader.getNumReadBytes(); }
 };
 
 /**

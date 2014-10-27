@@ -40,7 +40,7 @@ cPacket::cPacket(const cPacket& pkt) : cMessage(pkt)
     copy(pkt);
 }
 
-cPacket::cPacket(const char *name, short k, int64 l) : cMessage(name, k)
+cPacket::cPacket(const char *name, short k, int64_t l) : cMessage(name, k)
 {
     len = l;
     encapmsg = NULL;
@@ -228,14 +228,14 @@ void cPacket::_detachEncapMsg()
 }
 #endif
 
-void cPacket::setBitLength(int64 l)
+void cPacket::setBitLength(int64_t l)
 {
     if (l<0)
         throw cRuntimeError(this,"setBitLength(): negative length %" INT64_PRINTF_FORMAT "d", l);
     len = l;
 }
 
-void cPacket::addBitLength(int64 l)
+void cPacket::addBitLength(int64_t l)
 {
     len += l;
     if (len<0)

@@ -61,20 +61,20 @@ Register_GlobalConfigOption(CFGID_USER_INTERFACE, "user-interface", CFG_STRING, 
 static void verifyIntTypes()
 {
 #define VERIFY(t,size) if (sizeof(t)!=size) {printf("INTERNAL ERROR: sizeof(%s)!=%d, please check typedefs in include/inttypes.h, and report this bug!\n\n", #t, size); abort();}
-    VERIFY(int8,  1);
-    VERIFY(int16, 2);
-    VERIFY(int32, 4);
-    VERIFY(int64, 8);
+    VERIFY(int8_t,  1);
+    VERIFY(int16_t, 2);
+    VERIFY(int32_t, 4);
+    VERIFY(int64_t, 8);
 
-    VERIFY(uint8, 1);
-    VERIFY(uint16,2);
-    VERIFY(uint32,4);
-    VERIFY(uint64,8);
+    VERIFY(uint8_t, 1);
+    VERIFY(uint16_t,2);
+    VERIFY(uint32_t,4);
+    VERIFY(uint64_t,8);
 #undef VERIFY
 
 #define LL  INT64_PRINTF_FORMAT
     char buf[32];
-    int64 a=1, b=2;
+    int64_t a=1, b=2;
     sprintf(buf, "%" LL "d %" LL "d", a, b);
     if (strcmp(buf, "1 2")!=0) {printf("INTERNAL ERROR: INT64_PRINTF_FORMAT incorrectly defined in include/inttypes.h, please report this bug!\n\n"); abort();}
 #undef LL
@@ -95,7 +95,7 @@ int setupUserInterface(int argc, char *argv[])
         // construct global lists
         CodeFragments::executeAll(CodeFragments::STARTUP);
 
-        // verify definitions of int64, int32, etc.
+        // verify definitions of int64_t, int32_t, etc.
         verifyIntTypes();
 
         // args

@@ -19,7 +19,7 @@
 
 #include "platdefs.h"
 #include "exception.h"
-#include "intxtypes.h" // for int64, our equivalent of Java's "long" type
+#include "intxtypes.h" // for int64_t, our equivalent of Java's "long" type
 #include "commonutil.h"
 #include "bigdecimal.h"
 
@@ -50,9 +50,9 @@ NAMESPACE_BEGIN
 // but not all supported compilers are C99 compatible
 typedef unsigned long ptr_t;
 
-typedef int64 eventnumber_t;
+typedef int64_t eventnumber_t;
 #define EVENTNUMBER_PRINTF_FORMAT INT64_PRINTF_FORMAT
-inline int64 abs64(int64 a)
+inline int64_t abs64(int64_t a)
 {
    return a < 0 ? -a : a;
 }

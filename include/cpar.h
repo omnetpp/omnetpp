@@ -107,7 +107,7 @@ class SIM_API cPar : public cObject
 
 #ifdef SIMFRONTEND_SUPPORT
     // internal
-    virtual bool hasChangedSince(int64 lastRefreshSerial);
+    virtual bool hasChangedSince(int64_t lastRefreshSerial);
 #endif
 
   public:

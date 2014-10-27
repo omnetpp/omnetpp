@@ -79,7 +79,7 @@ void L2Queue::startTransmitting(cMessage *msg)
     if (ev.isGUI()) displayStatus(true);
 
     EV << "Starting transmission of " << msg << endl;
-    int64 numBytes = check_and_cast<cPacket *>(msg)->getByteLength();
+    int64_t numBytes = check_and_cast<cPacket *>(msg)->getByteLength();
     send(msg, "line$o");
 
     emit(txBytesSignal, (long)numBytes);

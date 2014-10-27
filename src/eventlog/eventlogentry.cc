@@ -150,16 +150,16 @@ long EventLogTokenBasedEntry::getLongToken(char **tokens, int numTokens, const c
         return defaultValue;
 }
 
-int64 EventLogTokenBasedEntry::getInt64Token(char **tokens, int numTokens, const char *sign, bool mandatory, int64 defaultValue)
+int64_t EventLogTokenBasedEntry::getInt64Token(char **tokens, int numTokens, const char *sign, bool mandatory, int64_t defaultValue)
 {
     char *token = getToken(tokens, numTokens, sign, mandatory);
 
     if (token) {
         char *end;
         errno = 0;
-        int64 value = strtoll(token, &end, 10);
+        int64_t value = strtoll(token, &end, 10);
         if (errno)
-            throw opp_runtime_error("Invalid int64 %s in line: %.*s", token, currentLineLength, currentLine);
+            throw opp_runtime_error("Invalid int64_t %s in line: %.*s", token, currentLineLength, currentLine);
         return value;
     }
     else
@@ -173,7 +173,7 @@ eventnumber_t EventLogTokenBasedEntry::getEventNumberToken(char **tokens, int nu
     if (token) {
         char *end;
         errno = 0;
-        int64 value = strtoll(token, &end, 10);
+        int64_t value = strtoll(token, &end, 10);
         if (errno)
             throw opp_runtime_error("Invalid event number %s in line: %.*s", token, currentLineLength, currentLine);
         return value;

@@ -73,7 +73,7 @@ while (<FILE>)
       {
          $fieldPrintfType = "%ld";
       }
-      elsif ($fieldType eq "int64")
+      elsif ($fieldType eq "int64_t")
       {
          $fieldPrintfType = '%" LL "d';
       }

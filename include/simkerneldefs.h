@@ -80,7 +80,7 @@
  *
  * @ingroup EnumsTypes
  */
-typedef int64 eventnumber_t;
+typedef int64_t eventnumber_t;
 
 /**
  * Prototype for functions that are called by some objects (e.g. cMsgPar)

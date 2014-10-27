@@ -57,7 +57,7 @@ class SIM_API cPacket : public cMessage
         FL_ISRECEPTIONSTART = 8,
         FL_BITERROR = 16,
     };
-    int64 len;            // length of the packet in bits -- used for bit error and transmission delay modeling
+    int64_t len;            // length of the packet in bits -- used for bit error and transmission delay modeling
     simtime_t duration;   // transmission duration on last channel with datarate
     cPacket *encapmsg;    // ptr to the encapsulated message
     unsigned short sharecount; // num of messages MINUS ONE that have this message encapsulated.
@@ -113,7 +113,7 @@ class SIM_API cPacket : public cMessage
      * Constructor. It takes the packet name, message kind value, and the
      * packet length in bits; all optional.
      */
-    explicit cPacket(const char *name=NULL, short kind=0, int64 bitLength=0);
+    explicit cPacket(const char *name=NULL, short kind=0, int64_t bitLength=0);
 
     /**
      * Destructor
@@ -181,45 +181,45 @@ class SIM_API cPacket : public cMessage
      * channel, packet length affects the transmission duration and the
      * probability of setting the bit error flag.
      */
-    virtual void setBitLength(int64 l);
+    virtual void setBitLength(int64_t l);
 
     /**
      * Sets packet length (bytes). This is just a convenience function which
      * invokes setBitLength() with 8*l as argument. The caller must take care
-     * that the result does not overflow (i.e. fits into an int64).
+     * that the result does not overflow (i.e. fits into an int64_t).
      */
-    void setByteLength(int64 l)  {setBitLength(l<<3);}
+    void setByteLength(int64_t l)  {setBitLength(l<<3);}
 
     /**
      * Changes packet length by the given value (bits). This is useful for
      * modeling encapsulation/decapsulation. (See also encapsulate() and
      * decapsulate().) The caller must take care that the result does not
-     * overflow (i.e. fits into an int64).
+     * overflow (i.e. fits into an int64_t).
      *
      * The value may be negative (packet length may be decreased too).
      * If the resulting length would be negative, the method throws a
      * cRuntimeError.
      */
-    virtual void addBitLength(int64 delta);
+    virtual void addBitLength(int64_t delta);
 
     /**
      * Changes packet length by the given value (bytes). This is just a
      * convenience function which invokes addBitLength() with 8*l as argument.
      * The caller must take care that the result does not overflow (i.e.
-     * fits into an int64).
+     * fits into an int64_t).
      */
-    void addByteLength(int64 delta)  {addBitLength(delta<<3);}
+    void addByteLength(int64_t delta)  {addBitLength(delta<<3);}
 
     /**
      * Returns the packet length (in bits).
      */
-    virtual int64 getBitLength() const  {return len;}
+    virtual int64_t getBitLength() const  {return len;}
 
     /**
      * Returns the packet length in bytes, that is, bitlength/8. If bitlength
      * is not a multiple of 8, the result is rounded up.
      */
-    int64 getByteLength() const  {return (len+7)>>3;}
+    int64_t getByteLength() const  {return (len+7)>>3;}
 
     /**
      * Sets the bit error flag.

@@ -682,7 +682,7 @@ bool Cmdenv::handleHttpRequest(cHttpRequest *request)
         bool wantChildren = (what=="" || what.find('c') != std::string::npos);
         bool wantDetails = (what=="" || what.find('d') != std::string::npos);
         std::string sinceStr = commandArgs["since"];
-        int64 lastRefreshSerial = sinceStr=="" ? -1 : strtoll(sinceStr.c_str(), NULL, 10);
+        int64_t lastRefreshSerial = sinceStr=="" ? -1 : strtoll(sinceStr.c_str(), NULL, 10);
         JsonObject2 *result = new JsonObject2();
         StringTokenizer tokenizer(ids.c_str(), ",");
         while (tokenizer.hasMoreTokens())

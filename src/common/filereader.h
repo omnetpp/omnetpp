@@ -22,7 +22,7 @@
 #include "exception.h"
 #include "platmisc.h"
 #include "commondefs.h"
-#include "intxtypes.h"   // for int64
+#include "intxtypes.h"   // for int64_t
 
 NAMESPACE_BEGIN
 
@@ -57,7 +57,7 @@ class COMMON_API FileReader
 
     // file positions and size
     file_offset_t bufferFileOffset;
-    int64 fileSize;
+    int64_t fileSize;
 
     // the currently used (filled with data) region in buffer
     char *dataBegin; // must point between bufferBegin and bufferEnd
@@ -75,10 +75,10 @@ class COMMON_API FileReader
     file_offset_t currentLineEndOffset;
 
     // total number of lines read in so far
-    int64 numReadLines;
+    int64_t numReadLines;
 
     // total bytes read in so far
-    int64 numReadBytes;
+    int64_t numReadBytes;
 
   public:
     enum FileChangedState {
@@ -96,7 +96,7 @@ class COMMON_API FileReader
     void fillBuffer(bool forward);
     int readFileEnd(void *dataPointer);
     void ensureFileOpenInternal();
-    int64 getFileSizeInternal();
+    int64_t getFileSizeInternal();
     void checkConsistency(bool checkDataPointer = false) const;
 
     file_offset_t pointerToFileOffset(char *pointer) const;
@@ -209,7 +209,7 @@ class COMMON_API FileReader
     /**
      * Returns the size of the file when last time checkFileForChanges() was called.
      */
-    int64 getFileSize();
+    int64_t getFileSize();
 
     /**
      * Moves the current position to the given offset.
@@ -219,12 +219,12 @@ class COMMON_API FileReader
     /**
      * Returns the total number of lines requested so far.
      */
-    int64 getNumReadLines() const { return numReadLines; };
+    int64_t getNumReadLines() const { return numReadLines; };
 
     /**
      * Returns the total number of bytes read in so far.
      */
-    int64 getNumReadBytes() const { return numReadBytes; }
+    int64_t getNumReadBytes() const { return numReadBytes; }
 
     /**
      * Checks if the file has been changed. A file change is considered to be an append if it did not change the

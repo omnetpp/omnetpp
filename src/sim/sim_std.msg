@@ -368,8 +368,8 @@ class cMessage extends cOwnedObject
 class cPacket extends cMessage
 {
     @icon("packet");
-    int64 bitLength @group("packet") @editable @hint("Simulated length of the message in bits, affects transmission time and probability of bit errors when sent through a channel");
-    int64 byteLength @group("packet") @editable @hint("Length in bytes, i.e. length in bits divided by eight");
+    int64_t bitLength @group("packet") @editable @hint("Simulated length of the message in bits, affects transmission time and probability of bit errors when sent through a channel");
+    int64_t byteLength @group("packet") @editable @hint("Length in bytes, i.e. length in bits divided by eight");
     bool hasBitError @getter(hasBitError) @group("packet") @setter(setBitError) @editable @hint("Indicates that a bit error occurred when the message was sent through a channel with nonzero bit error rate");
     cPacket *encapsulatedPacket @hint("Used with protocol stacks: stores an encapsulated higher-layer packet");
     bool isReceptionStart @getter(isReceptionStart) @group(sending) @hint("When duration is nonzero: whether this message represents the start or the end of the frame reception");
@@ -529,8 +529,8 @@ class cQueue extends cOwnedObject
 
 class cPacketQueue extends cQueue
 {
-    int64 bitLength @hint("Total size of messages in the queue");
-    int64 byteLength @hint("Total size of messages in the queue, in bytes");
+    int64_t bitLength @hint("Total size of messages in the queue");
+    int64_t byteLength @hint("Total size of messages in the queue, in bytes");
 }
 
 class cHasher extends void
@@ -542,7 +542,7 @@ class cSimulation extends cNoncopyableOwnedObject
 {
     @icon(container);
     simtime_t simTime @hint("The current simulation time in seconds");
-    int64 eventNumber @hint("The current event number -- counts from 0 up");
+    int64_t eventNumber @hint("The current event number -- counts from 0 up");
     cMessageHeap messageQueue @label(futureEvents) @hint("Self-messages scheduled, and messages in transit");
     int lastComponentId @group(components) @hint("The largest component ID issued so far");
     cModule *systemModule @group(components) @hint("The top-level module");

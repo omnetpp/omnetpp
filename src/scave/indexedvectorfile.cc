@@ -60,7 +60,7 @@ IndexedVectorFileReader::~IndexedVectorFileReader()
             if (!(cond))\
             {\
                 throw opp_runtime_error("Invalid vector file syntax: %s, file %s, block offset %" LL "d, line in block %d", \
-                                        msg, fname.c_str(), (int64)block.startOffset, line);\
+                                        msg, fname.c_str(), (int64_t)block.startOffset, line);\
             }
 
 void IndexedVectorFileReader::loadBlock(const Block &block)
@@ -444,7 +444,7 @@ void IndexedVectorFileWriterNode::writeBufferToFile(VectorInputPort *port)
     currentBlock.startOffset = opp_ftell(f);
 
     CHECK(fputs(port->buffer, f));
-    currentBlock.size = (int64)(opp_ftell(f) - currentBlock.startOffset);
+    currentBlock.size = (int64_t)(opp_ftell(f) - currentBlock.startOffset);
     port->vector.collect(currentBlock);
     port->clearBuffer();
     port->vector.blocks.push_back(Block());
