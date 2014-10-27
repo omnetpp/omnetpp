@@ -8,12 +8,17 @@ about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 OMNeT++ 4.6 (Oct 2014)
 ----------------------
 
+IMPORTANT:
+    To install OMNeT++ on OS X, you must install both the Apple Java 
+    support package (http://support.apple.com/kb/DL1572) and (Oracle) JDK 1.7 
+    or later (from http://java.com).
+
 Tkenv:
 
   - Improved zooming/panning support: use double click to zoom in around
     a point, and Shift + double click to zoom out; use Ctrl + left mouse
     button to drag out a rectangle to zoom to (a.k.a. marquee zoom;
-    implementation based on patch from Christoph Sommer), righ-click
+    implementation based on patch from Christoph Sommer), right-click
     cancels marquee zoom; use left mouse button for panning
 
   - Further small UI fixes (see ChangeLog)
@@ -32,7 +37,6 @@ Core:
 IDE:
 
   - The IDE is now based on Eclipse 4.4 Luna, and requires JDK 1.7 or later.
-    On OS X, you need to install JDK 1.7 or later manually.
 
   - The IDE is now a 64-bit application on Mac OS X.
 
@@ -56,8 +60,9 @@ Other:
     - The make command now properly supports parallel build (-j4, -j8 etc.)
     - The bundled MSYS2 toolchain now contains the pacman package manager,
       so you can install additional packages if you wish
-    - Change in OMNeT++: The mingw/ directory that contains the compiler has
-      been moved under the tools/win32/ directory.
+    - Change in OMNeT++: The msys/ directory has been moved to tools/win32/ while
+      the mingw/ directory that contains the compiler has been moved to 
+      tools/win32/mingw32/.
 
 Bugs fixed: http://tinyurl.com/omnetpp46-fixes
 

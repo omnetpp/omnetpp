@@ -17,6 +17,24 @@ After this step, you have to remove all previous libraries and recompile @OMNETP
 
 Options:
 
+`USE_NAMESPACE=no`::
+  Allows you putting all @OMNETPP@ APIs into the `omnetpp` namespace to avoid name 
+  collisions with other libraries.
+
+`PREFER_CLANG=no`::
+  If both `gcc` and `clang` is installed on your system, setting this variable to `yes` 
+  will force the configure script to use `clang` as your compiler.
+
+`USE_CXX11=yes`::
+  By default @OMNETPP@ is configured to use C++11 language features. This can be disabled if
+  your model is not yet compatible with C++11. Future @OMNETPP@ versions may require C++11 so
+  it is strongly recommended to update your models as soon as possible.
+
+ifdef::OMNEST[]
+`SYSTEMC=no`::
+  Use this variable to enable integration whith the bundled SystemC reference implementation.
+endif::OMNEST[]
+
 `<COMPONENTNAME>_CFLAGS`, `<COMPONENTNAME>_LIBS`::
   The `configure.user` file contains variables for defining the compile and link options
   needed by various external libraries. By default, the `configure` command detects these
@@ -65,7 +83,7 @@ Options:
 
 `SHARED_LIBS`::
   This variable controls whether the @OMNETPP@ build process will create
-  static or dynamic libraries. By default, the @OMNETPP@ runtime is built as shared libraries.
+  static or dynamic libraries. By default, the @OMNETPP@ runtime is built as a set of shared libraries.
   If you want to build a single executable from your simulation, specify `SHARED_LIBS=no`
   in `configure.user` to create static @OMNETPP@ libraries and then reconfigure (`./configure`)
   and recompile @OMNETPP@ (`make cleanall; make`). Once the @OMNETPP@ static libraries are 
@@ -135,6 +153,7 @@ By default, the configure script detects the following compilers automatically i
 
 * Intel compiler (icc, icpc)
 * GNU C/C++ (gcc, g++)
+* Clang (clang, clang++)
 * Sun Studio (cc, cxx)
 * IBM compiler (xlc, xlC)
 
