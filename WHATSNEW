@@ -60,7 +60,7 @@ Other:
     - The make command now properly supports parallel build (-j4, -j8 etc.)
     - The bundled MSYS2 toolchain now contains the pacman package manager,
       so you can install additional packages if you wish
-    - Change in OMNeT++: The msys/ directory has been moved to tools/win32/ while
+    - Change in OMNeT++: The msys/ directory has been moved to tools/win32/, and
       the mingw/ directory that contains the compiler has been moved to 
       tools/win32/mingw32/.
 

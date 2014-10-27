@@ -18,16 +18,18 @@ After this step, you have to remove all previous libraries and recompile @OMNETP
 Options:
 
 `USE_NAMESPACE=no`::
-  Allows you putting all @OMNETPP@ APIs into the `omnetpp` namespace to avoid name 
-  collisions with other libraries.
+  Turning on this option will place all @OMNETPP@ APIs into the `omnetpp` namespace 
+  to prevent name collisions with other libraries. After that, models must be updated
+  to either import the namespace or use qualified names. To compile unmodified models, 
+  use -DAUTOIMPORT_NAMESPACE in the compiler flags (CFLAGS).
 
 `PREFER_CLANG=no`::
-  If both `gcc` and `clang` is installed on your system, setting this variable to `yes` 
-  will force the configure script to use `clang` as your compiler.
+  If both `gcc` and `clang` are installed on your system, setting this variable to `yes` 
+  will force the configure script to use `clang` as C++ compiler.
 
 `USE_CXX11=yes`::
   By default @OMNETPP@ is configured to use C++11 language features. This can be disabled if
-  your model is not yet compatible with C++11. Future @OMNETPP@ versions may require C++11 so
+  your model is not yet compatible with C++11. Future @OMNETPP@ versions may require C++11, so
   it is strongly recommended to update your models as soon as possible.
 
 ifdef::OMNEST[]
