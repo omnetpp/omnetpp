@@ -300,7 +300,8 @@ proc panedwindow:trySetSashPosition {w pos} {
         global sash
         incr sash($w:retrycount)
         if {$sash($w:retrycount) < 50} {
-            after idle [list panedwindow:trySetSashPosition $w $pos]
+            # note: "after idle" doesn't work on Linux, only on Windows
+            after 100 [list panedwindow:trySetSashPosition $w $pos]
         }
     }
 }
