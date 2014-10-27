@@ -157,6 +157,7 @@ proc loadTkenvrc {fname} {
             } elseif {$cat == "config"} {
                 set key [lindex $line 1]
                 set value [lindex $line 2]
+                if {$key=="zoomby-factor" && $value==1.1} {set value 1.3} ;# for OMNeT++ 4.5 --> 4.6 transition
                 set config($key) $value
             } elseif {$cat == "font"} {
                 set font [lindex $line 1]
