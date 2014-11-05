@@ -129,11 +129,7 @@ proc createSnapshot {} {
         if {$snapshotfile==""} {
             messagebox {Snapshot created} "Current state of simulation has been saved." info ok
         } else {
-            set ans [messagebox {Snapshot created} "Current state of simulation has been \
-saved into \"$snapshotfile\". Do you want to open it now in a file viewer window?" question yesno]
-            if {$ans == "yes"} {
-                viewSnapshotFile
-            }
+            messagebox {Snapshot created} "Current state of simulation has been saved into \"$snapshotfile\"." info ok
         }
     }
 }
