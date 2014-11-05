@@ -60,6 +60,8 @@ class SignalSource;
 struct ENVIR_API EnvirOptions
 {
     EnvirOptions();
+    virtual ~EnvirOptions() {}
+
     size_t totalStack;
     bool parsim;
     opp_string networkName;
