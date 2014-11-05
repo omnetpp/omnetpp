@@ -225,6 +225,12 @@ cFigure::Alignment cFigure::parseAlignment(const char *s)
     throw cRuntimeError("invalid text alignment '%s'", s);
 }
 
+cFigure::~cFigure()
+{
+    for (int i = 0; i < (int)children.size(); i++)
+        dropAndDelete(children[i]);
+}
+
 void cFigure::parse(cProperty *property)
 {
     const char *s;
