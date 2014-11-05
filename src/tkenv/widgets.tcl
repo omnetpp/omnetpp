@@ -582,6 +582,7 @@ proc canScrollY {w} {
         return 1
     } else {
         set bbox [$w bbox all]
+        if {$bbox == {}} {return 0}
         set contentHeight [expr [lindex $bbox 3] - [lindex $bbox 1]]
         set widgetHeight [winfo height $w]
         return [expr $contentHeight > $widgetHeight]

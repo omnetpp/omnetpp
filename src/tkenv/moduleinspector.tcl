@@ -224,6 +224,7 @@ proc ModuleInspector:adjustWindowSizeAndZoom {insp} {
 
     # if needed, resize window to fit graphics; if not enough, additionally zoom out as well
     set bb [$c bbox "mod"] ;# bounding box of the compound module
+    if {$bb == {}} {return}
     set graphicswidth [expr [lindex $bb 2]-[lindex $bb 0]]
     set graphicsheight [expr [lindex $bb 3]-[lindex $bb 1]]
 
@@ -331,6 +332,7 @@ proc ModuleInspector:setScrollRegion {insp moveToOrigin} {
 
     # scrolling region
     set bbox [$c bbox all]
+    if {$bbox == {}} {set bbox {0 0 0 0}}
     lassign $bbox x1 y1 x2 y2
     incr x1 -10; incr y1 -10
     incr x2 10; incr y2 10
