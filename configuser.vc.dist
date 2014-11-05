@@ -114,12 +114,6 @@ JNILIBS_IF_POSSIBLE=jnilibs
 EMBED_TCL_CODE=yes
 
 #
-# It is possible to compile Tkenv as a Windows GUI app (as opposed to
-# console app). Set the following variable to "yes" to enable that.
-#
-USE_WINMAIN=yes
-
-#
 # Set to "yes" to enable simulation executables to load NED files dynamically.
 #
 WITH_NETBUILDER=yes
