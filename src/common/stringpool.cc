@@ -33,6 +33,13 @@ CommonStringPool::~CommonStringPool()
     //}
 }
 
+void CommonStringPool::clear()
+{
+    for (StringSet::iterator it = pool.begin(); it!=pool.end(); ++it)
+        delete [] *it;
+    pool.clear();
+}
+
 const char *CommonStringPool::get(const char *s)
 {
     if (s==NULL)
