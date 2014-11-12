@@ -40,6 +40,9 @@ class SIM_API cPlaceholderModule : public cModule // so, noncopyable
     // internal: "virtual ctor" for cGate: creates cProxyGate
     virtual cGate *createGateObject(cGate::Type type);
 
+    // placeholder modules have no submodules
+    virtual void doBuildInside() {}
+
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
