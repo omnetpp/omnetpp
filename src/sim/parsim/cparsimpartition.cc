@@ -248,6 +248,7 @@ void cParsimPartition::processReceivedMessage(cMessage *msg, int destModuleId, i
     // has already been simulated in the originating partition. The following
     // portion of code is analogous to the code in cSimpleModule::sendDelayed().
     EVCB.beginSend(msg);
+    EVCB.messageSendHop(msg, srcg); //TODO store approx propagationDelay, transmissionDelay (they were already simulated remotely)
     bool keepit = g->deliver(msg, msg->getArrivalTime());
     EVCB.messageSent_OBSOLETE(msg);
     if (!keepit)

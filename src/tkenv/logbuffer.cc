@@ -190,7 +190,7 @@ void LogBuffer::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagat
 void LogBuffer::endSend(cMessage *msg)
 {
     for (unsigned int i = 0; i < listeners.size(); i++)
-        listeners[i]->messageSendAdded();
+        listeners[i]->messageSendAdded(); //TODO but endSend() is not called when msg is discarded in the channel!
 }
 
 void LogBuffer::setMaxNumEntries(int limit)
