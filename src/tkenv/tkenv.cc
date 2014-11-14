@@ -192,6 +192,10 @@ void Tkenv::run()
             fprintf(stderr, "\n<!> WARNING: Obsolete environment variable OMNETPP_BITMAP_PATH found -- "
                             "please change it to OMNETPP_IMAGE_PATH for " OMNETPP_PRODUCT " 4.0\n");
         std::string image_path = opp_isempty(image_path_env) ? OMNETPP_IMAGE_PATH : image_path_env;
+        // strip away the /; sequence from the beginning (a workaround for MinGW path conversion). See #785
+        if (image_path.find("/;") == 0)
+            image_path.erase(0, 2);
+
         if (!opt->imagePath.empty())
             image_path = std::string(opt->imagePath.c_str()) + ";" + image_path;
 

@@ -2303,6 +2303,7 @@ else
         mingw=yes
         jni_platform=win32
         PLATFORM=win32.x86
+        OMNETPP_IMAGE_PATH="/;$OMNETPP_IMAGE_PATH"
         EXE_SUFFIX=".exe"
         SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
         # on MinGW dll auto importing MUST be used with shared gcc and stdc++
