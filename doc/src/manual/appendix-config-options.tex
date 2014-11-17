@@ -113,13 +113,17 @@ debugger-attach-command=<string>, default:nemiver --attach=%u &; global setting
 
 debugger-attach-on-error=<bool>, default:false; global setting
     When set to true, runtime errors and crashes will trigger an external
-    debugger to be launched, allowing you to do just-in-time debugging on the
-    simulation process.
+    debugger to be launched, allowing you to perform just-in-time debugging on
+    the simulation process. The debugger command is configurable. Note that
+    debugging (i.e. attaching to) a non-child process needs to be explicitly
+    enabled on some systems, e.g. Ubuntu.
 
 debugger-attach-on-startup=<bool>, default:false; global setting
     When set to true, the simulation program will launch an external debugger
     attached to it, allowing you to set breakpoints before proceeding. The
-    debugger command is configurable.
+    debugger command is configurable.  Note that debugging (i.e. attaching to)
+    a non-child process needs to be explicitly enabled on some systems, e.g.
+    Ubuntu.
 
 debugger-attach-wait-time=<double>, unit="s", default:20s; global setting
     An interval to wait after launching the external debugger, to give the

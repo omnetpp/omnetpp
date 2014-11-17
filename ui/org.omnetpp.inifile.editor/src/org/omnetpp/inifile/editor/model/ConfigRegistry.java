@@ -258,13 +258,17 @@ public class ConfigRegistry {
     public static final ConfigOption CFGID_DEBUGGER_ATTACH_ON_ERROR = addGlobalOption(
         "debugger-attach-on-error", CFG_BOOL, "false",
         "When set to true, runtime errors and crashes will trigger an external " +
-        "debugger to be launched, allowing you to do just-in-time debugging on the " +
-        "simulation process.");
+        "debugger to be launched, allowing you to perform just-in-time debugging on " +
+        "the simulation process. The debugger command is configurable. Note that " +
+        "debugging (i.e. attaching to) a non-child process needs to be explicitly " +
+        "enabled on some systems, e.g. Ubuntu.");
     public static final ConfigOption CFGID_DEBUGGER_ATTACH_ON_STARTUP = addGlobalOption(
         "debugger-attach-on-startup", CFG_BOOL, "false",
         "When set to true, the simulation program will launch an external debugger " +
         "attached to it, allowing you to set breakpoints before proceeding. The " +
-        "debugger command is configurable.");
+        "debugger command is configurable.  Note that debugging (i.e. attaching to) " +
+        "a non-child process needs to be explicitly enabled on some systems, e.g. " +
+        "Ubuntu.");
     public static final ConfigOption CFGID_DEBUGGER_ATTACH_WAIT_TIME = addGlobalOptionU(
         "debugger-attach-wait-time", "s", "20s",
         "An interval to wait after launching the external debugger, to give the " +

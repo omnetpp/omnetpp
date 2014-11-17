@@ -200,8 +200,8 @@ There are several useful configuration options that control how a simulation is 
   \item \fconfig{cmdenv-status-frequency} -- Controls how often the status is written to the console.
   \item \fconfig{cpu-time-limit} -- Limits how long the simulation should run (in wall clock time)
   \item \fconfig{sim-time-limit} -- Limits how long the simulation should run (in simulation time)
-  \item \fconfig{debug-on-errors} -- If the runtime detects any error, it will generate a breakpoint
-          so you will be able to check the location and the context of the problem in your debugger.
+  \item \fconfig{record-eventlog} -- Turns on the recording of the simulator events into an event log file.
+           The resulting \ttt{.elog} file can be analyzed later in the IDE with the sequence chart tool.
   \item \fconfig{fingerprint} -- The simulation kernel computes a checksum while running the simulation.
           It is calculated from the module id and from the current simulation time of each event.
           If you specify the \fconfig{fingerprint} option in the config file, the simulation runtime will
@@ -215,8 +215,13 @@ There are several useful configuration options that control how a simulation is 
           Running under a processor emulator software like \fprog{valgrind} may also produce
           a different fingerprint. This is normal. Hint: see gcc options \ttt{-mfpmath=sse -msse2}.
           \end{warning}
-  \item \fconfig{record-eventlog} -- You can turn on the recording of the simulator events. The
-           resulting file can be analyzed later in the IDE with the sequence chart tool.
+  \item \fconfig{debug-on-errors} -- If the runtime detects any error, it will generate a breakpoint
+          so you will be able to check the location and the context of the problem in your debugger.
+  \item \fconfig{debugger-attach-on-error} -- Controls just-in-time debugging. When this option is enabled
+          and an error occurs during simulation, the simulation program will launch an external debugger,
+          and have it attached to the simulation process. Related configuration options are
+          \fconfig{debugger-attach-on-startup}, \fconfig{debugger-attach-command} and
+          \fconfig{debugger-attach-wait-time}.
 \end{itemize}
 
 \begin{note}

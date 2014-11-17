@@ -444,6 +444,25 @@
     </sect2>
   </sect1>
   <sect1>
+    <title>Just-in-Time Debugging</title>
+    <para>
+      The &Omnetpp; runtime has the ability to launch an external debugger and have it attached
+      to the simulation process. One can configure a simulation to launch the debugger immediately
+      on startup, or when an error (runtime error or crash) occurs. This just-in-time debugging
+      facility was primarily intended for use on Linux.
+    </para>
+    <para>
+      To turn on just-in-time debugging, set the [[debugger-attach-on-startup]] or [[debugger-attach-on-error]]
+      configuration option to [[true]]. You can do so by e.g. adding the appropriate line to [[omnetpp.ini]],
+      or specifying [[--debugger-attach-on-startup=true]] in the ``Additional arguments'' field
+      in the launch configuration dialog. It is also possible to configure the debugger command line.
+    </para>
+    <note>
+        On some systems (e.g. Ubuntu), just-in-time debugging requires extra setup beyond installing
+        external debugger. See the ``Install Guide'' for more details.
+    </note>
+  </sect1>
+  <sect1>
     <title>Profiling a Simulation on Linux</title>
     <para>
       On Linux systems, the &Omnetpp; IDE supports executing your simulation using the ``valgrind'' program.
