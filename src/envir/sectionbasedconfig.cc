@@ -387,10 +387,17 @@ void SectionBasedConfiguration::setupVariables(const char *configName, int runNu
     variables[CFGVAR_ITERATIONVARS2] = iterationvars2;
 
     // experiment/measurement/replication must be done as last, because they may depend on the above vars
-    variables[CFGVAR_SEEDSET] = substituteVariables(internalGetValue(sectionChain, CFGID_SEED_SET->getName(), CFGID_SEED_SET->getDefaultValue()), -1, -1);
-    variables[CFGVAR_EXPERIMENT] = substituteVariables(internalGetValue(sectionChain, CFGID_EXPERIMENT_LABEL->getName(), CFGID_EXPERIMENT_LABEL->getDefaultValue()), -1, -1);
-    variables[CFGVAR_MEASUREMENT] = substituteVariables(internalGetValue(sectionChain, CFGID_MEASUREMENT_LABEL->getName(), CFGID_MEASUREMENT_LABEL->getDefaultValue()), -1, -1);
-    variables[CFGVAR_REPLICATION] = substituteVariables(internalGetValue(sectionChain, CFGID_REPLICATION_LABEL->getName(), CFGID_REPLICATION_LABEL->getDefaultValue()), -1, -1);
+    variables[CFGVAR_SEEDSET] = resolveConfigOption(CFGID_SEED_SET, sectionChain);
+    variables[CFGVAR_EXPERIMENT] = resolveConfigOption(CFGID_EXPERIMENT_LABEL, sectionChain);
+    variables[CFGVAR_MEASUREMENT] = resolveConfigOption(CFGID_MEASUREMENT_LABEL, sectionChain);
+    variables[CFGVAR_REPLICATION] = resolveConfigOption(CFGID_REPLICATION_LABEL, sectionChain);
+}
+
+std::string SectionBasedConfiguration::resolveConfigOption(cConfigOption *option, const std::vector<int>& sectionChain) const
+{
+    int sectionId, entryId;
+    const char *value = internalGetValue(sectionChain, option->getName(), option->getDefaultValue(), &sectionId, &entryId);
+    return substituteVariables(value, sectionId, entryId);
 }
 
 int SectionBasedConfiguration::getNumRunsInConfig(const char *configName) const
@@ -980,8 +987,11 @@ int SectionBasedConfiguration::internalFindEntry(int sectionId, const char *key)
     return -1;
 }
 
-const char *SectionBasedConfiguration::internalGetValue(const std::vector<int>& sectionChain, const char *key, const char *fallbackValue) const
+const char *SectionBasedConfiguration::internalGetValue(const std::vector<int>& sectionChain, const char *key, const char *fallbackValue, int *outSectionIdPtr, int *outEntryIdPtr) const
 {
+    if (outSectionIdPtr) *outSectionIdPtr = -1;
+    if (outEntryIdPtr) *outEntryIdPtr = -1;
+
     for (int i=0; i<(int)commandLineOptions.size(); i++)
         if (strcmp(key, commandLineOptions[i].getKey())==0)
             return commandLineOptions[i].getValue();
@@ -990,8 +1000,11 @@ const char *SectionBasedConfiguration::internalGetValue(const std::vector<int>& 
     {
         int sectionId = sectionChain[i];
         int entryId = internalFindEntry(sectionId, key);
-        if (entryId != -1)
+        if (entryId != -1) {
+            if (outSectionIdPtr) *outSectionIdPtr = sectionId;
+            if (outEntryIdPtr) *outEntryIdPtr = entryId;
             return ini->getEntry(sectionId, entryId).getValue();
+        }
     }
     return fallbackValue;
 }

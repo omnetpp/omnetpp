@@ -171,7 +171,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     int internalFindSection(const char *section) const;
     int internalGetSectionId(const char *section) const;
     int internalFindEntry(int sectionId, const char *key) const;
-    const char *internalGetValue(const std::vector<int>& sectionChain, const char *key, const char *fallbackValue=NULL) const;
+    const char *internalGetValue(const std::vector<int>& sectionChain, const char *key, const char *fallbackValue=NULL, int *sectionIdPtr=NULL, int *entryIdPtr=NULL) const;
     int resolveConfigName(const char *configName) const;
     std::vector<int> resolveSectionChain(int sectionId) const;
     std::vector<int> resolveSectionChain(const char *configName) const;
@@ -185,6 +185,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     std::string substituteVariables(const char *text, int sectionId, int entryId) const;
     bool isPredefinedVariable(const char *varname) const;
     void setupVariables(const char *configName, int runNumber, Scenario *scenario, const std::vector<int>& sectionChain);
+    std::string resolveConfigOption(cConfigOption *option, const std::vector<int>& sectionChain) const;
     static bool isIgnorableConfigKey(const char *ignoredKeyPatterns, const char *key);
     static cConfigOption *lookupConfigOption(const char *key);
     const std::string *getPooledBaseDir(const char *basedir);
