@@ -409,17 +409,21 @@ FilteredEvent *FilteredEventLog::getEventForEventNumber(eventnumber_t eventNumbe
                     return cacheFilteredEvent(event->getEventNumber());
                 else if (!useCacheOnly)
                     return getMatchingEventInDirection(event, false);
+                break;
             case FIRST_OR_NEXT:
                 if (!useCacheOnly)
                     return getMatchingEventInDirection(event, true);
+                break;
             case LAST_OR_PREVIOUS:
                 if (!useCacheOnly)
                     return getMatchingEventInDirection(event, false);
+                break;
             case LAST_OR_NEXT:
                 if (event->getEventNumber() == eventNumber && matchesFilter(event))
                     return cacheFilteredEvent(event->getEventNumber());
                 else if (!useCacheOnly)
                     return getMatchingEventInDirection(event, true);
+                break;
         }
     }
     return NULL;
@@ -445,12 +449,15 @@ FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationT
                     }
                     return getMatchingEventInDirection(event, false);
                 }
+                break;
             case FIRST_OR_NEXT:
                 if (!useCacheOnly)
                     return getMatchingEventInDirection(event, true);
+                break;
             case LAST_OR_PREVIOUS:
                 if (!useCacheOnly)
                     return getMatchingEventInDirection(event, false);
+                break;
             case LAST_OR_NEXT:
                 if (!useCacheOnly) {
                     if (event->getSimulationTime() == simulationTime) {
@@ -462,6 +469,7 @@ FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationT
                     }
                     return getMatchingEventInDirection(event, true);
                 }
+                break;
         }
     }
 
