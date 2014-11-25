@@ -318,9 +318,10 @@ void EventlogFileManager::flush()
 void EventlogFileManager::simulationEvent(cMessage *msg)
 {
     cModule *mod = simulation.getContextModule();
+    bool isKeyframe = eventNumber % keyframeBlockSize == 0;
     isModuleEventLogRecordingEnabled = simulation.getContextModule()->isRecordEvents();
     isIntervalEventLogRecordingEnabled = !recordingIntervals || recordingIntervals->contains(simulation.getSimTime());
-    isEventLogRecordingEnabled = isModuleEventLogRecordingEnabled && isIntervalEventLogRecordingEnabled;
+    isEventLogRecordingEnabled = isKeyframe || (isModuleEventLogRecordingEnabled && isIntervalEventLogRecordingEnabled);
     if (isEventLogRecordingEnabled) {
         eventNumber = simulation.getEventNumber();
         fprintf(feventlog, "\n");
