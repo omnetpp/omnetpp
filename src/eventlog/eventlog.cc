@@ -296,18 +296,23 @@ Event *EventLog::getEventForEventNumber(eventnumber_t eventNumber, MatchKind mat
             // the following two are still faster than binary searching
             // but this may access the disk
             it = eventNumberToEventMap.find(eventNumber - 1);
-            if (it != eventNumberToEventMap.end())
-                return it->second->getNextEvent();
+            if (it != eventNumberToEventMap.end()) {
+                Event *event = it->second->getNextEvent();
+                // the file might be filtered
+                return event->getEventNumber() == eventNumber ? event : NULL;
+            }
 
             it = eventNumberToEventMap.find(eventNumber + 1);
-            if (it != eventNumberToEventMap.end())
-                return it->second->getPreviousEvent();
+            if (it != eventNumberToEventMap.end()) {
+                Event *event = it->second->getPreviousEvent();
+                // the file might be filtered
+                return event->getEventNumber() == eventNumber ? event : NULL;
+            }
         }
     }
     if (useCacheOnly)
         return NULL;
     else {
-        // TODO: shall we cache result
         file_offset_t offset = getOffsetForEventNumber(eventNumber, matchKind);
         if (offset == -1)
             return NULL;
