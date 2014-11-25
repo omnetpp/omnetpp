@@ -166,6 +166,12 @@ class EVENTLOG_API IEventLog
          */
         virtual IEvent *getApproximateEventAt(double percentage) = 0;
 
+        /**
+         * Prints the contents into specified file.
+         * The given event numbers may not be present in the log.
+         */
+        virtual void print(FILE *file = stdout, eventnumber_t fromEventNumber = -1, eventnumber_t toEventNumber = -1, bool outputEventLogMessages = true) = 0;
+
     public:
         /**
          * Returns the event at the given distance. 0 means the parameter event will be returned.
@@ -182,12 +188,6 @@ class EVENTLOG_API IEventLog
         virtual IEvent *getLastEventNotAfterSimulationTime(simtime_t simulationTime) { return getEventForSimulationTime(simulationTime, FIRST_OR_PREVIOUS); }
 
         virtual double getApproximatePercentageForEventNumber(eventnumber_t eventNumber);
-
-        /**
-         * Prints the contents into specified file.
-         * The given event numbers may not be present in the log.
-         */
-        virtual void print(FILE *file = stdout, eventnumber_t fromEventNumber = -1, eventnumber_t toEventNumber = -1, bool outputEventLogMessages = true);
 
     protected:
         void clearInternalState();

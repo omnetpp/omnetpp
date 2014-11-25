@@ -100,6 +100,62 @@ void FilteredEventLog::synchronize(FileReader::FileChangedState change)
     }
 }
 
+void FilteredEventLog::print(FILE *file, eventnumber_t fromEventNumber, eventnumber_t toEventNumber, bool outputEventLogMessages)
+{
+    int keyframeBlockSize = getKeyframeBlockSize();
+    file_offset_t previousKeyframeFileOffset = -1;
+    IEvent *event = fromEventNumber == -1 ? getFirstEvent() : getFirstEventNotBeforeEventNumber(fromEventNumber);
+
+    if (event && event->getEventNumber() != 0) {
+        IEvent *firstEvent = eventLog->getFirstEvent();
+        for (int i = 0; i < firstEvent->getNumEventLogEntries(); i++) {
+            EventLogEntry *eventLogEntry = firstEvent->getEventLogEntry(i);
+            if (dynamic_cast<KeyframeEntry *>(eventLogEntry))
+                previousKeyframeFileOffset = opp_ftell(file);
+            if (outputEventLogMessages || !dynamic_cast<EventLogMessageEntry *>(eventLogEntry))
+                eventLogEntry->print(file);
+        }
+        fprintf(file, "\n");
+    }
+
+    while (event != NULL && (toEventNumber == -1 || event->getEventNumber() <= toEventNumber))
+    {
+        eventnumber_t eventNumber = event->getEventNumber();
+        KeyframeEntry *keyframeEntry = event->getNumEventLogEntries() > 1 ? dynamic_cast<KeyframeEntry *>(event->getEventLogEntry(1)) : NULL;
+        if (keyframeEntry)
+            keyframeEntry->previousKeyframeFileOffset = previousKeyframeFileOffset;
+        for (int i = 0; i < event->getNumEventLogEntries(); i++) {
+            EventLogEntry *eventLogEntry = event->getEventLogEntry(i);
+            if (dynamic_cast<KeyframeEntry *>(eventLogEntry))
+                previousKeyframeFileOffset = opp_ftell(file);
+            if (outputEventLogMessages || !dynamic_cast<EventLogMessageEntry *>(eventLogEntry))
+                eventLogEntry->print(file);
+        }
+        event = event->getNextEvent();
+        if (event) {
+            eventnumber_t nextEventNumber = event->getEventNumber();
+            for (eventnumber_t i = eventNumber / keyframeBlockSize + 1; i <= nextEventNumber / keyframeBlockSize; i++) {
+                eventnumber_t candidateEventNumber = i * keyframeBlockSize;
+                if (eventNumber < candidateEventNumber && candidateEventNumber < nextEventNumber) {
+                    IEvent *keyframeEvent = eventLog->getEventForEventNumber(i * keyframeBlockSize);
+                    if (keyframeEvent) {
+                        fprintf(file, "\n");
+                        EventLogEntry *eventLogEntry = keyframeEvent->getEventLogEntry(0);
+                        eventLogEntry->print(file);
+                        KeyframeEntry *keyframeEntry = dynamic_cast<KeyframeEntry *>(keyframeEvent->getEventLogEntry(1));
+                        if (keyframeEntry) {
+                            keyframeEntry->previousKeyframeFileOffset = previousKeyframeFileOffset;
+                            previousKeyframeFileOffset = opp_ftell(file);
+                            keyframeEntry->print(file);
+                        }
+                    }
+                }
+            }
+            fprintf(file, "\n");
+        }
+    }
+}
+
 void FilteredEventLog::setPatternMatchers(std::vector<PatternMatcher> &patternMatchers, std::vector<std::string> &patterns, bool dottedPath)
 {
     for (std::vector<std::string>::iterator it = patterns.begin(); it != patterns.end(); it++) {

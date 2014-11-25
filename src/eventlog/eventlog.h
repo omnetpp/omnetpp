@@ -120,6 +120,8 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         virtual eventnumber_t getApproximateNumberOfEvents();
         virtual Event *getApproximateEventAt(double percentage);
 
+        virtual void print(FILE *file = stdout, eventnumber_t fromEventNumber = -1, eventnumber_t toEventNumber = -1, bool outputEventLogMessages = true);
+
     protected:
         void parseEvent(Event *event, file_offset_t beginOffset);
         void cacheEvent(Event *event);
