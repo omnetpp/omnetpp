@@ -132,6 +132,8 @@ cExpression *cLongParImpl::getExpression() const
 
 long cLongParImpl::evaluate(cComponent *context) const
 {
+	if ((flags & FL_ISSET) == 0)
+	    throw cRuntimeError(ePARNOTSET);
     return (flags & FL_ISEXPR) ? expr->longValue(context, getUnit()) : val;
 }
 

@@ -57,6 +57,7 @@ const char *cErrorMessages::get(OppErrorCode e)
       case eNORECV:    return "Cannot use receive..() or wait() with handleMessage()";
       case eNUMARGS:   return "Bad number of arguments, %d expected";
       case ePARAM:     return "Error evaluating parameter `%s': %s";
+      case ePARNOTSET: return "Parameter is not yet accessible";
       case ePARAMSNOTREADY: return "Attempt to access component parameters too early, they have not been set up yet";
       case eREALTIME:  return "CPU time limit reached -- simulation stopped";
       case eSIMTIME:   return "Simulation time limit reached -- simulation stopped";

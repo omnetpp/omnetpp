@@ -130,6 +130,8 @@ cExpression *cBoolParImpl::getExpression() const
 
 bool cBoolParImpl::evaluate(cComponent *context) const
 {
+	if ((flags & FL_ISSET) == 0)
+	    throw cRuntimeError(ePARNOTSET);
     return (flags & FL_ISEXPR) ? expr->boolValue(context) : val;
 }
 

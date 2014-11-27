@@ -136,6 +136,8 @@ cExpression *cXMLParImpl::getExpression() const
 
 cXMLElement *cXMLParImpl::evaluate(cComponent *context) const
 {
+	if ((flags & FL_ISSET) == 0)
+	    throw cRuntimeError(ePARNOTSET);
     return (flags & FL_ISEXPR) ? expr->xmlValue(context) : val;
 }
 

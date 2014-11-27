@@ -132,6 +132,8 @@ cExpression *cDoubleParImpl::getExpression() const
 
 double cDoubleParImpl::evaluate(cComponent *context) const
 {
+	if ((flags & FL_ISSET) == 0)
+	    throw cRuntimeError(ePARNOTSET);
     return (flags & FL_ISEXPR) ? expr->doubleValue(context, getUnit()) : val;
 }
 

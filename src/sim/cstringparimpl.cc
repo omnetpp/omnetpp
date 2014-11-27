@@ -133,6 +133,8 @@ cExpression *cStringParImpl::getExpression() const
 
 std::string cStringParImpl::evaluate(cComponent *context) const
 {
+	if ((flags & FL_ISSET) == 0)
+	    throw cRuntimeError(ePARNOTSET);
     return (flags & FL_ISEXPR) ? expr->stringValue(context) : val;
 }
 
