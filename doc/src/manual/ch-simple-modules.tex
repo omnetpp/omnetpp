@@ -4674,7 +4674,7 @@ The NED file would look like this:
 
 \begin{ned}
 @signal[session*-jitter](type=simtime_t); // note the wildcard
-@statisticTemplate[sessionJitter](record=mean,stddev,vector?);
+@statisticTemplate[sessionJitter](record=mean,vector?);
 \end{ned}
 
 In the C++ code of the module, you need to register each new signal with
