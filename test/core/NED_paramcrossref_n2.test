@@ -1,0 +1,19 @@
+%description:
+Verify that circular parameter references are reported as error.
+
+%file: test.ned
+
+network Test
+{
+    parameters:
+        int a = b;
+        int b = c;
+        int c = a;
+}
+
+%exitcode: 1
+
+%contains: stdout
+Evaluation nesting too deep (circular parameter references?)
+
+
