@@ -318,12 +318,13 @@ void cPar::afterChange()
 
 void cPar::read()
 {
-    //TRACE("read() of par=%s", getFullPath().c_str());
-
     // obtain value if parameter is not set yet
     if (!p->isSet())
         ev.readParameter(this);
+}
 
+void cPar::finalize()
+{
     // convert non-volatile expressions to constant
     if (p->isExpression() && !p->isVolatile())
         convertToConst();

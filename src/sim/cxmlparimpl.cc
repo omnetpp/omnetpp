@@ -126,19 +126,22 @@ std::string cXMLParImpl::stdstringValue(cComponent *) const
 
 cXMLElement *cXMLParImpl::xmlValue(cComponent *context) const
 {
-    return evaluate(context);
+    if ((flags & FL_ISSET) == 0)
+        throw cRuntimeError(ePARNOTSET);
+
+    if ((flags & FL_ISEXPR) == 0)
+        return val;
+    else {
+        cNEDValue v = evaluate(expr, context);
+        if (v.type != cNEDValue::XML)
+            throw cRuntimeError(eECANTCAST, "XML");
+        return v.xmlValue();
+    }
 }
 
 cExpression *cXMLParImpl::getExpression() const
 {
     return (flags | FL_ISEXPR) ? expr : NULL;
-}
-
-cXMLElement *cXMLParImpl::evaluate(cComponent *context) const
-{
-	if ((flags & FL_ISSET) == 0)
-	    throw cRuntimeError(ePARNOTSET);
-    return (flags & FL_ISEXPR) ? expr->xmlValue(context) : val;
 }
 
 void cXMLParImpl::deleteOld()

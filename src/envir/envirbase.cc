@@ -1200,6 +1200,8 @@ void EnvirBase::readParameter(cPar *par)
         else
             askParameter(par, true);
     }
+
+    ASSERT(par->isSet());  // and must be set after
 }
 
 bool EnvirBase::isModuleLocal(cModule *parentmod, const char *modname, int index)

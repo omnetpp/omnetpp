@@ -41,7 +41,6 @@ class SIM_API cDoubleParImpl : public cParImpl
     void copy(const cDoubleParImpl& other);
 
   protected:
-    double evaluate(cComponent *context) const;
     void deleteOld();
 
   public:

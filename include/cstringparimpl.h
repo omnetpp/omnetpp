@@ -41,7 +41,6 @@ class SIM_API cStringParImpl : public cParImpl
     void copy(const cStringParImpl& other);
 
   protected:
-    std::string evaluate(cComponent *context) const;
     void deleteOld();
 
   public:

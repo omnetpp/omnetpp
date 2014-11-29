@@ -95,7 +95,17 @@ void cBoolParImpl::setExpression(cExpression *e)
 
 bool cBoolParImpl::boolValue(cComponent *context) const
 {
-    return evaluate(context);
+    if ((flags & FL_ISSET) == 0)
+        throw cRuntimeError(ePARNOTSET);
+
+    if ((flags & FL_ISEXPR) == 0)
+        return val;
+    else {
+        cNEDValue v = evaluate(expr, context);
+        if (v.type != cNEDValue::BOOL)
+            throw cRuntimeError(eECANTCAST, "bool");
+        return v.boolValue();
+    }
 }
 
 long cBoolParImpl::longValue(cComponent *) const
@@ -126,13 +136,6 @@ cXMLElement *cBoolParImpl::xmlValue(cComponent *) const
 cExpression *cBoolParImpl::getExpression() const
 {
     return (flags | FL_ISEXPR) ? expr : NULL;
-}
-
-bool cBoolParImpl::evaluate(cComponent *context) const
-{
-	if ((flags & FL_ISSET) == 0)
-	    throw cRuntimeError(ePARNOTSET);
-    return (flags & FL_ISEXPR) ? expr->boolValue(context) : val;
 }
 
 void cBoolParImpl::deleteOld()

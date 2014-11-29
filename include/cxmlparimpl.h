@@ -38,7 +38,6 @@ class SIM_API cXMLParImpl : public cParImpl
     void copy(const cXMLParImpl& other);
 
   protected:
-    cXMLElement *evaluate(cComponent *context) const;
     void deleteOld();
 
   public:

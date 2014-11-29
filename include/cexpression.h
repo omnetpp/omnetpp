@@ -20,6 +20,7 @@
 
 #include "cobject.h"
 #include "cexception.h"
+#include "cnedvalue.h"
 
 NAMESPACE_BEGIN
 
@@ -84,6 +85,11 @@ class SIM_API cExpression : public cObject
 
     /** @name Getter functions. Note that overloaded conversion operators also exist. */
     //@{
+
+    /**
+     * TODO
+     */
+    virtual cNEDValue evaluate(cComponent *context=NULL) const {return cNEDValue();} //TODO in 5.0: make this pure virtual, and remove type-specific getters (boolValue(), etc)
 
     /**
      * Evaluate the expression and convert the result to bool if possible;
