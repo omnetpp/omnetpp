@@ -37,6 +37,9 @@ class SIM_API cDynamicModuleType : public cModuleType
     /** Redefined from cModuleType */
     virtual void addParametersAndGatesTo(cModule *module);
 
+    /** Redefined from cComponentType */
+    virtual void applyPatternAssignments(cComponent *component);
+
     /** Redefined from cModuleType */
     virtual void setupGateVectors(cModule *module);
 

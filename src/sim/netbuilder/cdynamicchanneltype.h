@@ -35,7 +35,10 @@ class SIM_API cDynamicChannelType : public cChannelType
     virtual cChannel *createChannelObject();
 
     /** Redefined from cChannelType */
-    virtual void addParametersTo(cChannel *module);
+    virtual void addParametersTo(cChannel *channel);
+
+    /** Redefined from cComponentType */
+    virtual void applyPatternAssignments(cComponent *component);
 
     // internal utility function
     cNEDDeclaration *getDecl() const;

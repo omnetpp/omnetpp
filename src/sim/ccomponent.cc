@@ -180,7 +180,10 @@ void cComponent::finalizeParameters()
     cContextSwitcher tmp(this);
     cContextTypeSwitcher tmp2(CTX_BUILD);
 
-    // read input parameters; two stages (read+finalize) needed because of possible cross-parameter references
+    getComponentType()->applyPatternAssignments(this);
+
+    // read parameters from that are still not set;
+    // we need two stages (read+finalize) because of possible cross-parameter references
     int n = getNumParams();
     for (int i = 0; i < n; i++)
         par(i).read();
