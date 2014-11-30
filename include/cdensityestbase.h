@@ -73,7 +73,7 @@ class SIM_API cDensityEstBase : public cStdDev
     /**
      * Constants for histogram range_mode
      */
-    enum {
+    enum RangeMode {
         RANGE_AUTO,      // automatic range setup, using precollected values and range extension (the default)
         RANGE_AUTOLOWER, // like RANGE_AUTO, but upper limit is fixed
         RANGE_AUTOUPPER, // like RANGE_AUTO, but lower limit is fixed
@@ -104,7 +104,7 @@ class SIM_API cDensityEstBase : public cStdDev
 
     double range_ext_factor;    // the range of histogram is: [min_vals, max_vals] made
                                 // range_ext_factor times larger
-    int range_mode;             // one of RANGE_xxx constants
+    RangeMode range_mode;       // one of RANGE_xxx constants
 
     bool transfd;
     double *firstvals;         // pointer to array of "pre-collected" observations
