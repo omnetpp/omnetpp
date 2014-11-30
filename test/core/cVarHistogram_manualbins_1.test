@@ -1,0 +1,33 @@
+%description:
+Verify collection after setting up bins manually.
+Note: here don't precollect values before adding the bins, but that would also be possible
+
+%activity:
+
+cVarHistogram hist("hist", 100, HIST_TR_NO_TRANSFORM);
+
+hist.addBinBound(10);
+hist.addBinBound(20);
+hist.addBinBound(40);
+hist.addBinBound(80);
+
+for (int i = 0; i < 100; i++)
+    hist.collect(i);
+
+hist.record();
+
+%contains: results/General-0.sca
+statistic Test 	hist
+field count 100
+field mean 49.5
+field stddev 29.011491975882
+field sum 4950
+field sqrsum 328350
+field min 0
+field max 99
+bin	-INF	10
+bin	10	10
+bin	20	20
+bin	40	40
+bin	80	20
+
