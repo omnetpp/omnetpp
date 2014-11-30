@@ -1,9 +1,9 @@
 %description:
-basic use of cLongHistogram
+basic use of cDoubleHistogram
 
 %activity:
 
-cLongHistogram h;
+cDoubleHistogram h;
 
 h.setNumCells(10);   // 10 cells
 h.setRangeAuto(2,1); // range set up after 2 observations, no range extension
@@ -24,14 +24,14 @@ for (int k=0; k<h.getNumCells(); k++)
 
 %contains-regex: stdout
 n=7:mean=13\.142.*:stddev=4\.488.*
-under=1:over=1
-10:11:2
-11:12:0
-12:13:2
-13:14:0
-14:15:0
-15:16:0
-16:17:0
-17:18:0
-18:19:0
-19:20:1
+under=1:over=2
+10:10.9:2
+10.9:11.8:0
+11.8:12.7:2
+12.7:13.6:0
+13.6:14.5:0
+14.5:15.4:0
+15.4:16.3:0
+16.3:17.2:0
+17.2:18.1:0
+18.1:19:0
