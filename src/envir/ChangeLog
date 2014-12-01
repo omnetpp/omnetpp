@@ -1,5 +1,10 @@
 2014-11-27  ------ omnetpp-4.6 released ------
 
+2014-11-28  Andras Varga
+
+	* Fix #788: seed-set=${1,2,3} syntax results in error
+	* Fix #789: inifilereader.cc: memory corruption
+
 2014-06-30  ------ omnetpp-4.5 released ------
 
 2014-02-14  Andras Varga
