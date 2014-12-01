@@ -80,13 +80,13 @@ class SIM_API CLINKEDLIST_DEPRECATED cLinkedList : public cOwnedObject
          * (if athead==false) item in the list.
          */
         Iterator(const cLinkedList& q, bool athead=true)
-                {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
+                {p = athead ? q.headp : q.tailp;}
 
         /**
          * Reinitializes the iterator object.
          */
         void init(const cLinkedList& q, bool athead=true)
-                {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
+                {p = athead ? q.headp : q.tailp;}
 
         /**
          * Returns the current item.
