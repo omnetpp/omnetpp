@@ -2001,22 +2001,25 @@ void MsgCppGenerator::generateNamespaceBegin(NEDElement *element)
         errors->addError(element, "namespace name is empty\n");
     }
 
-    for (size_t pos0 = 0; ; ) {
-        size_t pos1 = namespacename.find("::", pos0);
-        namespacenamevector.push_back(namespacename.substr(pos0, pos1));
-        if (pos1 == namespacename.npos)
+    // split namespacename into namespacenamevector
+    for (size_t pos = 0; ; ) {
+        size_t colonPos = namespacename.find("::", pos);
+        if (colonPos != namespacename.npos) {
+            namespacenamevector.push_back(namespacename.substr(pos, colonPos-pos));
+            pos = colonPos + 2;
+        }
+        else {
+            namespacenamevector.push_back(namespacename.substr(pos));
             break;
-        pos0 = pos1 + 2;
+        }
     }
 
+    // output namespace-begin lines; also check for reserved words
     H  << std::endl;
-    //CC << std::endl;
     for (StringVector::const_iterator it = namespacenamevector.begin(); it != namespacenamevector.end(); ++it)
     {
         if (RESERVED_WORDS.find(*it) != RESERVED_WORDS.end())
-        {
             errors->addError(element, "namespace name '%s' is a reserved word\n", (*it).c_str());
-        }
         H  << "namespace " << *it << " {\n";
         CC << "namespace " << *it << " {\n";
     }
