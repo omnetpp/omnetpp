@@ -29,7 +29,7 @@
 #define OMNETPP_VERSION 0x0500
 
 // temporarily use 4.x fingerprints -- TODO remove before first 5.0 alpha release!
-#define USE_OMNETPP4x_FINGERPRINTS
+//#define USE_OMNETPP4x_FINGERPRINTS
 
 #if defined(SIM_EXPORT)
 #  define SIM_API OPP_DLLEXPORT
