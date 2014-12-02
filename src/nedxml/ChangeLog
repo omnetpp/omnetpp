@@ -1,5 +1,7 @@
 ////////////// fixes taken from omnetpp-4.x come here /////////////////
 
+2014-11-27  ------ omnetpp-4.6 released ------
+
 2014-08-05  Zoltan Bojthe
 	* opp_msgc: removed, use nedtool for compiling msg files
 

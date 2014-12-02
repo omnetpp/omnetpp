@@ -102,12 +102,22 @@ bool cLongParImpl::boolValue(cComponent *) const
 
 long cLongParImpl::longValue(cComponent *context) const
 {
-    return evaluate(context);
+    if ((flags & FL_ISSET) == 0)
+        throw cRuntimeError(E_PARNOTSET);
+
+    if ((flags & FL_ISEXPR) == 0)
+        return val;
+    else {
+        cNEDValue v = evaluate(expr, context);
+        if (v.type != cNEDValue::DBL)
+            throw cRuntimeError(E_ECANTCAST, "long");
+        return double_to_long(v.doubleValueInUnit(getUnit()));
+    }
 }
 
 double cLongParImpl::doubleValue(cComponent *context) const
 {
-    return evaluate(context);
+    return (double) longValue(context);
 }
 
 const char *cLongParImpl::stringValue(cComponent *) const
@@ -128,11 +138,6 @@ cXMLElement *cLongParImpl::xmlValue(cComponent *) const
 cExpression *cLongParImpl::getExpression() const
 {
     return (flags | FL_ISEXPR) ? expr : NULL;
-}
-
-long cLongParImpl::evaluate(cComponent *context) const
-{
-    return (flags & FL_ISEXPR) ? expr->longValue(context, getUnit()) : val;
 }
 
 void cLongParImpl::deleteOld()

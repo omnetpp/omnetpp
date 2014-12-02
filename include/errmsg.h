@@ -61,6 +61,7 @@ enum OppErrorCode
     E_NOSUCHNET,
     E_NUMARGS,
     E_PARAM,
+    E_PARNOTSET,
     E_PARAMSNOTREADY,
     E_REALTIME,
     E_SIMTIME,

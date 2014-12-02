@@ -139,7 +139,7 @@ bool cChannel::initializeChannel(int stage)
     bool moreStages = stage < numStages-1;
 
     // as a last step, call handleParameterChange() to notify the component about
-    // parameter changes that occured during initialization phase
+    // parameter changes that occurred during initialization phase
     if (!moreStages)
     {
         setFlag(FL_INITIALIZED, true);

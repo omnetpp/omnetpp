@@ -273,7 +273,7 @@ proc ttkTreeview:deleteAll {tree} {
     $tree delete [$tree children {}]
 }
 
-proc panedwindow:getsashposition {w} {
+proc panedwindow:getSashPosition {w} {
     set pos [$w sash coord 0]
     if {[$w cget -orient]=="horizontal"} {
         return [lindex $pos 0]
@@ -282,20 +282,31 @@ proc panedwindow:getsashposition {w} {
     }
 }
 
-proc panedwindow:setsashposition {w pos} {
+proc panedwindow:setSashPosition {w pos} {
+    global sash
     # This essentially does {$w sash place 0 $pos}, but well:
     # 1. "sash place" does nothing if child hasn't been laid out yet, so we may need "after idle"
     # 2. "sash place" allows 0px too, which makes the sash completely unnoticeable to the user
     # 3. allows pos=="" for convenience (it is a no-op)
     if {$pos == ""} {return}
     if {$pos < 5} {set pos 5}
-    panedwindow:dosetsashposition $w $pos
-    if {[panedwindow:getsashposition $w] != $pos} {
-        after idle [list after idle [list panedwindow:dosetsashposition $w $pos]]
+    set sash($w:retrycount) 0
+    panedwindow:trySetSashPosition $w $pos
+}
+
+proc panedwindow:trySetSashPosition {w pos} {
+    panedwindow:doSetSashPosition $w $pos
+    if {[panedwindow:getSashPosition $w] != $pos} {
+        global sash
+        incr sash($w:retrycount)
+        if {$sash($w:retrycount) < 50} {
+            # note: "after idle" doesn't work on Linux, only on Windows
+            after 100 [list panedwindow:trySetSashPosition $w $pos]
+        }
     }
 }
 
-proc panedwindow:dosetsashposition {w pos} {
+proc panedwindow:doSetSashPosition {w pos} {
     if {[$w cget -orient]=="horizontal"} {
         $w sash place 0 $pos 0
     } else {
@@ -490,13 +501,40 @@ proc makereadonly:keypress {w k} {
 }
 
 #
+# Sets up Ctrl+Wheel to generate <<ZoomIn>> and <<ZoomOut>> events.
+# PROBLEMS WITH WHEEL-ZOOM: redraw is too slow, sluggish ==> poor user experience
+# TODO: pass mouse position and amount of scroll to listeners (in global vars, there's no other way)
+#
+#proc setupZoomEvents {} {
+#    global Control
+#
+#    if {[string equal [tk windowingsystem] win32]} {
+#        # Windows: <MouseWheel> exists, %W is the FOCUSED widget not the one under mouse; %D is usually +-120, with some mouse +-28; or their multiples
+#        bind all <$Control-MouseWheel> {
+#            set w [winfo containing %X %Y]
+#            if {%D > 0} {set e <<ZoomIn>>} else {set e <<ZoomOut>>}
+#            event generate $w $e
+#        }
+#    } elseif {[string equal [tk windowingsystem] aqua]} {
+#        # OS X: <MouseWheel> exists, %W is widget under mouse; %D is +-1 (or multiple)
+#        bind all <$Control-MouseWheel> {
+#            if {%D > 0} {set e <<ZoomIn>>} else {set e <<ZoomOut>>}
+#            event generate %W $e
+#        }
+#    } elseif {[string equal [tk windowingsystem] x11]} {
+#        # Linux: no <MouseWheel>, bind buttons 4 and 5 instead; %W is widget under mouse
+#        bind all <$Control-Button-4> {event generate %W <<ZoomIn>>]}
+#        bind all <$Control-Button-5> {event generate %W <<ZoomOut>>]}
+#    }
+#}
+
+#
 # Creates mouse wheel bindings for the given widget or widget class.
 # Note: wheel events are only delivered to the widget IF IT HAS FOCUS!
 #
 # Code copied almost verbatim from lib/tk8.4/text.tcl.
 #
 proc bindMouseWheel {w} {
-
     # The MouseWheel will typically only fire on Windows.  However,
     # someone could use the "event generate" command to produce one
     # on other platforms.
@@ -544,6 +582,7 @@ proc canScrollY {w} {
         return 1
     } else {
         set bbox [$w bbox all]
+        if {$bbox == {}} {return 0}
         set contentHeight [expr [lindex $bbox 3] - [lindex $bbox 1]]
         set widgetHeight [winfo height $w]
         return [expr $contentHeight > $widgetHeight]

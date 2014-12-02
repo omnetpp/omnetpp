@@ -10,11 +10,13 @@ The following releases are covered:
 * Mac OS X 10.7 ('Lion')
 * Mac OS X 10.8 ('Mountain Lion')
 * Mac OS X 10.9 ('Mavericks')
+* Mac OS X 10.10 ('Yosemite')
 
 === Installing the Prerequisite Packages
 
  * Install the Java Runtime from http://support.apple.com/kb/DL1572 , because
-   OS X does not provide it by default.
+   OS X does not provide it by default. Additionally you must install the latest
+   version of Java Runtime Environment from http://java.com (version 1.7 or later.)
  * Install the command line developer tools for OS X from
    http://developer.apple.com/downloads/index.action?=Command%20Line%20Tools
    (you will need a free Apple Developer Account for the download.)
@@ -39,7 +41,7 @@ you can install gdb:
 
     $ sudo port install gdb
 
-OS X 10.9 requires that you sign the `ggdb` executable with a self-signed
+OS X 10.9 and later requires that you sign the `ggdb` executable with a self-signed
 certificate (or with your own certificate, if you have one.)
 
 Start the 'Keychain Access' application. Choose 'Keychain Access > Certificate

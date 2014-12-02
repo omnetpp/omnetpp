@@ -86,7 +86,9 @@ void cDensityEstBase::parsimUnpack(cCommBuffer *buffer)
     buffer->unpack(cell_under);
     buffer->unpack(cell_over);
     buffer->unpack(range_ext_factor);
-    buffer->unpack(range_mode);
+    int tmp;
+    buffer->unpack(tmp);
+    range_mode = (RangeMode)tmp;
     buffer->unpack(transfd);
 
     delete[] firstvals;

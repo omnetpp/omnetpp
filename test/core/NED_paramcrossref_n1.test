@@ -1,0 +1,16 @@
+%description:
+Verify that trying to reference a nonexistent parameter causes an error.
+
+%file: test.ned
+
+network Test
+{
+    parameters:
+        int a = 3*(foo+1);
+}
+
+%exitcode: 1
+
+%contains: stdout
+While evaluating parameter `a': unknown parameter `foo'
+

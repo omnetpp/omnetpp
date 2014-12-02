@@ -326,12 +326,13 @@ bool cPar::hasChangedSince(int64 lastRefreshSerial)
 
 void cPar::read()
 {
-    //TRACE_CALL("read() of par=%s", getFullPath().c_str());
-
     // obtain value if parameter is not set yet
     if (!p->isSet())
         ev.readParameter(this);
+}
 
+void cPar::finalize()
+{
     // convert non-volatile expressions to constant
     if (p->isExpression() && !p->isVolatile())
         convertToConst();

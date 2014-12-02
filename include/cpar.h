@@ -345,14 +345,16 @@ class SIM_API cPar : public cObject
      *
      * - if the parameter is not set, gets the value from omnetpp.ini or
      *   interactively from the user, or sets the default value.
-     *
+     */
+    void read();  //XXX make private, as it no longer evaluates non-volatile parameters!
+    /**
      * - if the parameter is non-volatile, (isVolatile()==false), converts
      *   possible expression value to a constant (see convertToConst()).
      *
      * - if the parameter is volatile but contains "const" subexpressions,
      *   these parts are converted to a constant value.
      */
-    void read();
+    void finalize(); //XXX name not good! make private!
 
     /**
      * For non-const values, replaces the stored expression with its

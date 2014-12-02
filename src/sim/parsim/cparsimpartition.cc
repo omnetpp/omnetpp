@@ -255,9 +255,16 @@ void cParsimPartition::processReceivedMessage(cMessage *msg, int destModuleId, i
     msg->setSentFrom(srcg->getOwnerModule(), srcg->getId(), msg->getSendingTime());
 
     // deliver it to the "destination" gate of the connection -- the channel
-    // has already been simulated in the originating partition.
-    g->deliver(msg, msg->getArrivalTime());
-    ev.messageSent_OBSOLETE(msg); //FIXME change to the newer callback methods! messageSendHop() etc
+    // has already been simulated in the originating partition. The following
+    // portion of code is analogous to the code in cSimpleModule::sendDelayed().
+    EVCB.beginSend(msg);
+    EVCB.messageSendHop(msg, srcg); //TODO store approx propagationDelay, transmissionDelay (they were already simulated remotely)
+    bool keepit = g->deliver(msg, msg->getArrivalTime());
+    EVCB.messageSent_OBSOLETE(msg);
+    if (!keepit)
+        delete msg;
+    else
+        EVCB.endSend(msg);
 }
 
 void cParsimPartition::broadcastTerminationException(cTerminationException& e)

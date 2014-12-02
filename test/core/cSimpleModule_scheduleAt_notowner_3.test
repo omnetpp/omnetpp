@@ -1,12 +1,42 @@
 %description:
 test scheduleAt(): what if message has been sent and is currently underway
 
-%module_a: Sender
+%file: test.ned
+
+simple Sender
+{
+    gates:
+        input in;
+        output out;
+}
+
+simple Receiver
+{
+    gates:
+        input in;
+        output out;
+}
+
+network Test
+{
+    submodules:
+        theSender : Sender;
+        theReceiver : Receiver;
+    connections:
+        theSender.out --> theReceiver.in;
+        theSender.in  <-- theReceiver.out;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
 
 class Sender : public cSimpleModule
 {
   public:
-    Sender() : cSimpleModule(16384) { }
+    Sender() : cSimpleModule(32768) { }
     virtual void activity();
 };
 
@@ -21,8 +51,6 @@ void Sender::activity()
     scheduleAt(3,msg);
 }
 
-%module_b: Receiver
-
 class Receiver : public cSimpleModule
 {
   public:
@@ -30,6 +58,8 @@ class Receiver : public cSimpleModule
 };
 
 Define_Module(Receiver);
+
+}; //namespace
 
 %exitcode: 1
 

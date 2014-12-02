@@ -82,7 +82,6 @@ class SIM_API cNEDNetworkBuilder
     std::string getSubmoduleOrChannelTypeNameFromDeepAssignments(cModule *modp, const std::string& submodOrChannelKey, bool& outIsDefault);
     void addSubmodule(cModule *modp, SubmoduleElement *submod);
     void doAddParametersAndGatesTo(cComponent *component, cNEDDeclaration *decl);
-    void assignParametersFromPatterns(cComponent *component);
     void doAssignParametersFromPatterns(cComponent *component, const std::string& prefix, const std::vector<PatternData>& patterns, bool isInSubcomponent, cComponent *evalContext);
     void doAssignParameterFromPattern(cPar& par, ParamElement *patternNode, bool isInSubcomponent, cComponent *evalContext);
     static cPar::Type translateParamType(int t);
@@ -131,6 +130,12 @@ class SIM_API cNEDNetworkBuilder
      * Invoked from cDynamicModule.
      */
     void addParametersAndGatesTo(cComponent *component, cNEDDeclaration *decl);
+
+    /**
+     * Applies NED pattern (a.k.a. deep) parameter assignments to parameters of
+     * the component.
+     */
+    void assignParametersFromPatterns(cComponent *component);
 
     /**
      * Sets gate vector sizes on the module, using the given NED declaration.

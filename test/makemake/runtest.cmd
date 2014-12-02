@@ -9,7 +9,7 @@ if "x%TESTFILES%" == "x" set TESTFILES=*.test
 
 :: Extract files
 mkdir work 2>nul
-call opp_test %OPT% -g -v %TESTFILES% || goto end
+call opp_test gen %OPT% -v %TESTFILES% || goto end
 
 cd work || goto end
 echo > .project
@@ -25,7 +25,7 @@ call opp_nmakemake -f -r --nolink && nmake -f Makefile.vc || echo BUILD FAILED &
 :: Run the tests
 echo.
 cd %~dp0
-call opp_test %OPT% -r -v %TESTFILES% || goto end
+call opp_test run %OPT% -v %TESTFILES% || goto end
 
 echo.
 echo Results can be found in work/

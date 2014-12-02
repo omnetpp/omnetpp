@@ -1,12 +1,42 @@
 %description:
 Tests cGate::connectTo() and disconnect().
 
-%module_a: Sender
+%file: test.ned
+
+simple Sender
+{
+    gates:
+        input in;
+        output out;
+}
+
+simple Receiver
+{
+    gates:
+        input in;
+        output out;
+}
+
+network Test
+{
+    submodules:
+        theSender : Sender;
+        theReceiver : Receiver;
+    connections:
+        theSender.out --> theReceiver.in;
+        theSender.in  <-- theReceiver.out;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
 
 class Sender : public cSimpleModule
 {
   public:
-    Sender() : cSimpleModule(16384) { }
+    Sender() : cSimpleModule(32768) { }
     virtual void activity();
 };
 
@@ -50,12 +80,10 @@ void Sender::activity()
    out->connectTo(rcvin);
 }
 
-%module_b: Receiver
-
 class Receiver : public cSimpleModule
 {
   public:
-    Receiver() : cSimpleModule(16384) { }
+    Receiver() : cSimpleModule(32768) { }
     virtual void activity();
 };
 
@@ -67,6 +95,8 @@ void Receiver::activity()
     EV << "arrived:" << msg->getName() << endl;
     delete msg;
 }
+
+}; //namespace
 
 %exitcode: 1
 

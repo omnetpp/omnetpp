@@ -174,7 +174,7 @@ cPar& cComponent::par(const char *parname)
 {
     int k = findPar(parname);
     if (k<0)
-        throw cRuntimeError(this, "has no parameter named `%s'", parname);
+        throw cRuntimeError(this, "unknown parameter `%s'", parname);
     return paramv[k];
 }
 
@@ -196,10 +196,15 @@ void cComponent::finalizeParameters()
     cContextSwitcher tmp(this);
     cContextTypeSwitcher tmp2(CTX_BUILD);
 
-    // read input parameters
+    getComponentType()->applyPatternAssignments(this);
+
+    // read parameters from that are still not set;
+    // we need two stages (read+finalize) because of possible cross-parameter references
     int n = getNumParams();
-    for (int i=0; i<n; i++)
+    for (int i = 0; i < n; i++)
         par(i).read();
+    for (int i = 0; i < n; i++)
+        par(i).finalize();
 
     setFlag(FL_PARAMSFINALIZED, true);
 

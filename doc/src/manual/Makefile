@@ -26,6 +26,7 @@ TEXCHAPTERS = \
 	 ch-ana-sim.tex \
 	 ch-eventlog.tex \
 	 ch-neddoc.tex \
+	 ch-testing.tex \
 	 ch-parallel-exec.tex \
 	 ch-plugin-exts.tex \
 	 ch-embedding.tex \

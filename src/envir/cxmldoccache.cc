@@ -143,6 +143,8 @@ cXMLDocCache::~cXMLDocCache()
 {
     for (XMLDocMap::iterator i=documentCache.begin(); i!=documentCache.end(); ++i)
         delete i->second;
+    for (XMLDocMap::iterator i=contentCache.begin(); i!=contentCache.end(); ++i)
+        delete i->second;
 }
 
 cXMLElement *cXMLDocCache::parseDocument(const char *filename)
@@ -167,7 +169,7 @@ cXMLElement *cXMLDocCache::parseDocument(const char *filename)
 cXMLElement *cXMLDocCache::parseContent(const char *content)
 {
 #ifndef WITH_NETBUILDER
-    throw cRuntimeError("Cannot load parse XML string': XML support currently requires "
+    throw cRuntimeError("Cannot parse XML string: XML support currently requires "
                         "WITH_NETBUILDER option (check configure.user or configuser.vc, then "
                         "rebuild OMNeT++)");
 #else

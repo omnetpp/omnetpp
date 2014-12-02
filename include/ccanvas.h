@@ -249,7 +249,7 @@ class SIM_API cFigure : public cOwnedObject
     public:
         cFigure(const char *name=NULL) : cOwnedObject(name), id(++lastId), visible(true), tags(NULL), tagBits(0), localChanges(0), subtreeChanges(0) {}
         cFigure(const cFigure& other) : cOwnedObject(other) {copy(other);}
-        ~cFigure();
+        virtual ~cFigure();
         cFigure& operator=(const cFigure& other);
         virtual void forEachChild(cVisitor *v);
         virtual std::string info() const;

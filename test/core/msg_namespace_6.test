@@ -1,0 +1,16 @@
+%description:
+Test for #795: wrong parsing of compound namespaces with >=3 parts.
+
+%file: test.msg
+namespace inet6::foo::foobar::baz;
+
+class TestMsg {
+}
+
+%includes:
+#include "test_m.h"
+
+%activity:
+inet6::foo::foobar::baz::TestMsg *msg = new inet6::foo::foobar::baz::TestMsg();
+delete msg;
+

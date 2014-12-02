@@ -75,58 +75,58 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/basicspringembedderlayout.obj: basicspringembedderlayout.cc \
-  graphlayouter.h \
   layoutdefs.h \
-  basicspringembedderlayout.h
+  basicspringembedderlayout.h \
+  graphlayouter.h
 $O/concentrictreeembedding.obj: concentrictreeembedding.cc \
   graphcomponent.h \
-  concentrictreeembedding.h \
-  layoutdefs.h \
-  geometry.h
-$O/forcedirectedembedding.obj: forcedirectedembedding.cc \
-  forcedirectedparameters.h \
   layoutdefs.h \
   geometry.h \
-  forcedirectedparametersbase.h \
-  forcedirectedembedding.h
-$O/forcedirectedgraphlayouter.obj: forcedirectedgraphlayouter.cc \
-  forcedirectedgraphlayouter.h \
-  startreeembedding.h \
-  graphcomponent.h \
-  forcedirectedparameters.h \
+  concentrictreeembedding.h
+$O/forcedirectedembedding.obj: forcedirectedembedding.cc \
+  geometry.h \
   layoutdefs.h \
-  graphlayouter.h \
-  heapembedding.h \
   forcedirectedembedding.h \
   forcedirectedparametersbase.h \
-  geometry.h
+  forcedirectedparameters.h
+$O/forcedirectedgraphlayouter.obj: forcedirectedgraphlayouter.cc \
+  forcedirectedembedding.h \
+  geometry.h \
+  forcedirectedgraphlayouter.h \
+  forcedirectedparametersbase.h \
+  startreeembedding.h \
+  graphcomponent.h \
+  heapembedding.h \
+  layoutdefs.h \
+  graphlayouter.h \
+  forcedirectedparameters.h
 $O/forcedirectedparameters.obj: forcedirectedparameters.cc \
   forcedirectedparameters.h \
   layoutdefs.h \
+  forcedirectedparametersbase.h \
+  forcedirectedembedding.h \
+  geometry.h
+$O/forcedirectedparametersbase.obj: forcedirectedparametersbase.cc \
   geometry.h \
   forcedirectedparametersbase.h \
-  forcedirectedembedding.h
-$O/forcedirectedparametersbase.obj: forcedirectedparametersbase.cc \
-  layoutdefs.h \
-  geometry.h \
-  forcedirectedparametersbase.h
+  layoutdefs.h
 $O/geometry.obj: geometry.cc \
-  layoutdefs.h \
-  geometry.h
+  geometry.h \
+  layoutdefs.h
 $O/graphcomponent.obj: graphcomponent.cc \
   graphcomponent.h \
-  layoutdefs.h \
-  geometry.h
+  geometry.h \
+  layoutdefs.h
 $O/graphlayouter.obj: graphlayouter.cc \
   layoutdefs.h \
   graphlayouter.h
 $O/heapembedding.obj: heapembedding.cc \
-  graphcomponent.h \
   layoutdefs.h \
   heapembedding.h \
+  graphcomponent.h \
   geometry.h
 $O/startreeembedding.obj: startreeembedding.cc \
-  startreeembedding.h \
-  graphcomponent.h \
   layoutdefs.h \
-  geometry.h
+  geometry.h \
+  graphcomponent.h \
+  startreeembedding.h

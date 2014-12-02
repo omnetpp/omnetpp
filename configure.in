@@ -218,6 +218,9 @@ else
         mingw=yes
         jni_platform=win32
         PLATFORM=win32.x86
+        # add /; to the beginning of the path to prevent MSYS to convert from POSIX to WINDOWS path
+        # when the variable is passed to tkenv.cc. See bug#785
+        OMNETPP_IMAGE_PATH="/;$OMNETPP_IMAGE_PATH"
         EXE_SUFFIX=".exe"
         SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
         # on MinGW dll auto importing MUST be used with shared gcc and stdc++
@@ -382,6 +385,13 @@ fi
 #----------------------
 if test "$USE_CXX11" = "yes"; then
   AC_PROG_CXX_OPTION(-std=c++11, CXXFLAGS="$CXXFLAGS -std=c++11")
+fi
+
+#----------------------
+# check if clang++ is used as we wnat to specify -Wno-deprecated-register to avoid warning from generated code
+#----------------------
+if test "$CXX" = "clang++"; then
+  CFLAGS_ARCH="$CFLAGS_ARCH -Wno-deprecated-register"
 fi
 
 #----------------------
@@ -1021,6 +1031,12 @@ else
     if test $libxml_ok = no; then
         OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS_RELEASE -I/usr/include/libxml2, -lxml2,
                       libxml_ok, LIBXML_CFLAGS="-I/usr/include/libxml2" LIBXML_LIBS="-lxml2")
+    fi
+
+    # test also in the /mingw32 directory because on MSYS2 this is the default
+    if test $libxml_ok = no; then
+        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS_RELEASE -I/mingw32/include/libxml2, -lxml2,
+                      libxml_ok, LIBXML_CFLAGS="-I/mingw32/include/libxml2" LIBXML_LIBS="-lxml2")
     fi
 fi
 if test -n "$EXPAT_LIBS"; then

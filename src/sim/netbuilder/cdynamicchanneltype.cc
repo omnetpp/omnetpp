@@ -62,6 +62,11 @@ void cDynamicChannelType::addParametersTo(cChannel *channel)
     cNEDNetworkBuilder().addParametersAndGatesTo(channel, decl); // adds only parameters, because channels have no gates
 }
 
+void cDynamicChannelType::applyPatternAssignments(cComponent *component)
+{
+    cNEDNetworkBuilder().assignParametersFromPatterns(component);
+}
+
 cProperties *cDynamicChannelType::getProperties() const
 {
     cNEDDeclaration *decl = getDecl();

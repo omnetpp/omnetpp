@@ -119,6 +119,11 @@ void cVarHistogram::addBinBound(double x) //--LG
     bin_bounds[i]=x;
 
     num_cells++;
+
+    if (range_mode == RANGE_NOTSET || range_mode == RANGE_AUTO || range_mode == RANGE_AUTOLOWER)
+        rangemin = bin_bounds[0];
+    if (range_mode == RANGE_NOTSET || range_mode == RANGE_AUTO || range_mode == RANGE_AUTOUPPER)
+        rangemax = bin_bounds[num_cells];
 }
 
 void cVarHistogram::copy(const cVarHistogram& res)

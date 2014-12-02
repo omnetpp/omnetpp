@@ -1,0 +1,59 @@
+%description:
+Verify that parameters of the same channel can refer to each other,
+regardless of their order, as long as the references are not circular.
+
+%file: test.ned
+
+import testlib.Dump;
+
+channel C extends ned.DatarateChannel
+{
+    parameters:
+        int p = 2*r;  // fwd ref
+        int q = 3 * p + s;  // both fwd and backwd, plus extra indirection
+        int r; // input
+        int s = 10*r; // backward ref
+}
+
+module Node
+{
+    gates:
+        inout g;
+    connections allowunconnected:
+}
+
+network Test
+{
+    submodules:
+        a: Node;
+        b: Node;
+        dump: Dump;
+    connections:
+        a.g <--> C <--> b.g;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+
+**.r = 1
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.a: Node {
+            gates:
+                g$i: <-- b.g$o, (C)channel disabled=false delay=0 datarate=0 ber=0 per=0 p=2 q=16 r=1 s=10
+                g$o: --> b.g$i, (C)channel disabled=false delay=0 datarate=0 ber=0 per=0 p=2 q=16 r=1 s=10
+        }
+        module Test.b: Node {
+            gates:
+                g$i: <-- a.g$o, (C)channel disabled=false delay=0 datarate=0 ber=0 per=0 p=2 q=16 r=1 s=10
+                g$o: --> a.g$i, (C)channel disabled=false delay=0 datarate=0 ber=0 per=0 p=2 q=16 r=1 s=10
+        }
+}
+

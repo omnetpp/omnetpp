@@ -177,6 +177,8 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         virtual double getApproximatePercentageForEventNumber(eventnumber_t eventNumber);
         virtual FilteredEvent *getApproximateEventAt(double percentage);
 
+        virtual void print(FILE *file = stdout, eventnumber_t fromEventNumber = -1, eventnumber_t toEventNumber = -1, bool outputEventLogMessages = true);
+
     protected:
         /**
          * Caches the given filtered event in the event cache if not present yet.

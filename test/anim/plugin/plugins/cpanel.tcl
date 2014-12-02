@@ -36,13 +36,13 @@ proc cpanel_createControls {} {
 
     set w ".cpanel"
     toplevel $w
-    wm title $w "Simulation parameters"
+    wm title $w "Simulation Parameters"
     wm focusmodel $w passive
     wm overrideredirect $w 0
     wm resizable $w 1 1
 
     # next line ensures this window cannot be closed
-    wm protocol $w WM_DELETE_WINDOW {exit_omnetpp}
+    wm protocol $w WM_DELETE_WINDOW {exitOmnetpp}
 
     # create sliders
     cpanel_slider $w.arrivalRate1 "Source 1 arrival rate"
@@ -66,8 +66,8 @@ proc cpanel_createControls {} {
     set img_stop [image create photo -file "plugins/stop.gif"]
     frame $w.f
     pack $w.f -expand 1 -fill both
-    button $w.f.run -image $img_play -command "run_normal" -relief flat
-    button $w.f.stop -image $img_stop -command "stop_simulation" -relief flat
+    button $w.f.run -image $img_play -command "runNormal" -relief flat
+    button $w.f.stop -image $img_stop -command "stopSimulation" -relief flat
 
     # animation on/off button
     set img_anim [image create photo -file "plugins/anim.gif"]
@@ -84,7 +84,7 @@ proc cpanel_createControls {} {
     # create "speed" slider
     cpanel_slider $w.animspeed "Animation speed"
     $w.animspeed.e config -from 0.5 -to 3 -resolution 0.01 -variable priv(animspeed)
-    pack $w.animspeed -expand 0 -fill x
+    pack $w.animspeed -expand 0 -fill x -pady 10
 
     # arrange the paramChanged function to be called whenever sliders change
 
@@ -102,11 +102,6 @@ proc cpanel_createControls {} {
 
     # following line uses undocumented Tkenv internals and will break next time Tkenv changes
     trace variable priv(animspeed) w animSpeedChanged
-
-    # this button brings back main window (if it was withdrawn originally)
-    set img_more [image create photo -file "plugins/more.gif"]
-    button $w.mainwin -relief flat -image $img_more -command "wm deiconify .; $w.mainwin config -state disabled"
-    pack $w.mainwin -side top -anchor e -expand 0 -fill none -padx 2 -pady 6
 }
 
 #
@@ -116,11 +111,11 @@ proc cpanel_readParams {} {
     global param
 
     catch {
-        set modp [opp_modulebypath "fifonet1.gen1"]
+        set modp [opp_modulebypath "FifoNet1.source1"]
         set param(arrivalRate1) [opp_getmodulepar $modp "arrivalRate"]
-        set modp [opp_modulebypath "fifonet1.gen2"]
+        set modp [opp_modulebypath "FifoNet1.source2"]
         set param(arrivalRate2) [opp_getmodulepar $modp "arrivalRate"]
-        set modp [opp_modulebypath "fifonet1"]
+        set modp [opp_modulebypath "FifoNet1"]
         set param(serviceRate1) [opp_getmodulepar $modp "serviceRate1"]
         set param(serviceRate2) [opp_getmodulepar $modp "serviceRate2"]
     }
@@ -142,16 +137,16 @@ proc cpanel_paramChanged {arr name op} {
         #debug "$name changed to $value"
 
         if {$name=="arrivalRate1"} {
-            set modp [opp_modulebypath "fifonet1.gen1"]
+            set modp [opp_modulebypath "FifoNet1.source1"]
             opp_setmodulepar $modp "arrivalRate" $value
         } elseif {$name=="arrivalRate2"} {
-            set modp [opp_modulebypath "fifonet1.gen2"]
+            set modp [opp_modulebypath "FifoNet1.source2"]
             opp_setmodulepar $modp "arrivalRate" $value
         } elseif {$name=="serviceRate1"} {
-            set modp [opp_modulebypath "fifonet1"]
+            set modp [opp_modulebypath "FifoNet1"]
             opp_setmodulepar $modp "serviceRate1" $value
         } elseif {$name=="serviceRate2"} {
-            set modp [opp_modulebypath "fifonet1"]
+            set modp [opp_modulebypath "FifoNet1"]
             opp_setmodulepar $modp "serviceRate2" $value
         } else {
             error "wrong param name"
@@ -159,7 +154,7 @@ proc cpanel_paramChanged {arr name op} {
     } msg] {
         puts "Error in cpanel plugin's callback: $msg"
     }
-    opp_updateinspectors
+    opp_refreshinspectors
 }
 
 #
@@ -177,11 +172,9 @@ proc toggleAnimation {button img_on img_off} {
     }
 }
 
-
 #
 # Invoke initalization code
 #
 cpanel_createControls
 
-# remove main window (optional)
-wm withdraw .
+

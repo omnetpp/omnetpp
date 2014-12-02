@@ -88,15 +88,15 @@ const InifileReader::Section& InifileReader::getSection(int sectionId) const
     return sections[sectionId];
 }
 
-const InifileReader::Section& InifileReader::getOrCreateSection(const char *sectionName)
+int InifileReader::getOrCreateSection(const char *sectionName)
 {
     for (int i=0; i<(int)sections.size(); i++)
         if (!strcmp(sections[i].name.c_str(), sectionName))
-            return sections[i];
+            return i;
     Section section;
     section.name = sectionName;
     sections.push_back(section);
-    return sections.back();
+    return sections.size()-1;
 }
 
 void InifileReader::readFile(const char *filename)
@@ -108,10 +108,10 @@ void InifileReader::readFile(const char *filename)
         defaultbasedir = directoryOf(rootfilename.c_str());
 
     std::vector<std::string> includedFiles;
-    internalReadFile(filename, NULL, includedFiles);
+    internalReadFile(filename, -1, includedFiles);
 }
 
-void InifileReader::internalReadFile(const char *filename, Section *currentSection, std::vector<std::string> &includedFiles)
+void InifileReader::internalReadFile(const char *filename, int currentSectionIndex, std::vector<std::string> &includedFiles)
 {
     // create an entry for this file, checking against circular inclusion
     std::string tmpfname = tidyFilename(toAbsolutePath(filename).c_str(),true);
@@ -187,7 +187,7 @@ void InifileReader::internalReadFile(const char *filename, Section *currentSecti
 
             // process included inifile
             includedFiles.push_back(tmpfname);
-            internalReadFile(includeFilename.c_str(), currentSection, includedFiles);
+            internalReadFile(includeFilename.c_str(), currentSectionIndex, includedFiles);
             includedFiles.pop_back();
         }
         else if (*line=='[')
@@ -206,13 +206,13 @@ void InifileReader::internalReadFile(const char *filename, Section *currentSecti
             sectionsInFile.insert(sectionName);
 
             // add section of not yet seen (in another file)
-            currentSection = (Section *)&getOrCreateSection(sectionName.c_str());
+            currentSectionIndex = getOrCreateSection(sectionName.c_str());
         }
         else
         {
             // key = value
-            if (currentSection==NULL)
-                currentSection = (Section *)&getOrCreateSection("General");
+            if (currentSectionIndex == -1)
+                currentSectionIndex = getOrCreateSection("General");
             const char *endPos = findEndContent(line, filename, lineNumber);
             const char *equalSignPos = strchr(line, '=');
             if (equalSignPos==NULL || equalSignPos > endPos)
@@ -222,7 +222,7 @@ void InifileReader::internalReadFile(const char *filename, Section *currentSecti
             if (key.empty())
                 throw cRuntimeError(ERRPREFIX "line must be in the form key=value", filename, lineNumber);
 
-            currentSection->entries.push_back(KeyValue1(basedirRef, filenameRef, lineNumber, key.c_str(), value.c_str()));
+            sections[currentSectionIndex].entries.push_back(KeyValue1(basedirRef, filenameRef, lineNumber, key.c_str(), value.c_str()));
         }
     }
 

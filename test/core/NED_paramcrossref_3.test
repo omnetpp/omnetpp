@@ -1,0 +1,59 @@
+%description:
+Verify that inherited parameters can be assigned from other parameters.
+
+%file: test.ned
+
+import testlib.Dump;
+
+channel C extends ned.DatarateChannel
+{
+    parameters:
+        double length @unit(m);
+        delay = 1s*(length/1m)/(speedOfLight/1mps); // placed in between, to prove that order doesn't matter
+        double speedOfLight @unit(mps) = default(3e8mps);
+}
+
+module Node
+{
+    gates:
+        inout g;
+    connections allowunconnected:
+}
+
+network Test
+{
+    submodules:
+        a: Node;
+        b: Node;
+        dump: Dump;
+    connections:
+        a.g <--> C <--> b.g;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+
+**.length = 30m
+
+%subst: /e\+00/e+0/
+%subst: /e\-00/e-0/
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.a: Node {
+            gates:
+                g$i: <-- b.g$o, (C)channel disabled=false delay=1e-07 datarate=0 ber=0 per=0 length=30 speedOfLight=3e+08
+                g$o: --> b.g$i, (C)channel disabled=false delay=1e-07 datarate=0 ber=0 per=0 length=30 speedOfLight=3e+08
+        }
+        module Test.b: Node {
+            gates:
+                g$i: <-- a.g$o, (C)channel disabled=false delay=1e-07 datarate=0 ber=0 per=0 length=30 speedOfLight=3e+08
+                g$o: --> a.g$i, (C)channel disabled=false delay=1e-07 datarate=0 ber=0 per=0 length=30 speedOfLight=3e+08
+        }
+}

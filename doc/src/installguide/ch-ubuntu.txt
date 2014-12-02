@@ -75,6 +75,8 @@ In the 'Changes applied' window, click 'Close'.
 
 ==== Post-Installation Steps
 
+===== Fixing Tooltip Colors
+
 The default tooltip background color in Ubuntu is black, which causes certain tooltips
 in the @OMNETPP@ IDE to become unreadable (black-on-black). This annoyance can be resolved
 by changing the tooltip colors in Ubuntu.
@@ -94,4 +96,28 @@ pale yellow background. Click Apply.
 
 image::pictures/ubuntu-gnome-color-chooser.png[title="Fixing the tooltip color issue",align="center",scaledwidth="50%"]
 
+===== Setting Up Debugging
+
+By default, Ubuntu does not allow ptracing of non-child processes by non-root users. That is,
+if you want to be able to debug simulation processes by attaching to them with a debugger,
+or similar, you want to be able to use @OMNETPP@ just-in-time debugging
+(`debugger-attach-on-startup` and `debugger-attach-on-error` configuration options),
+you need to explicitly enable them.
+
+To temporarily allow ptracing non-child processes, enter the following command:
+
+  $ echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
+
+To permanently allow it, edit `/etc/sysctl.d/10-ptrace.conf` and change the line:
+
+  kernel.yama.ptrace_scope = 1
+
+to read
+
+  kernel.yama.ptrace_scope = 0
+
+Note that the default debugger for @OMNETPP@ just-in-time debugging is 'Nemiver',
+so it also needs to be installed:
+
+  $ sudo apt-get install nemiver
 

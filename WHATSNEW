@@ -5,40 +5,66 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
-OMNeT++ 4.6b1 (Sept 2014)
--------------------------
+OMNeT++ 4.6 (Nov 2014)
+----------------------
+
+IMPORTANT:
+    To install OMNeT++ on OS X, you must install both the Apple Java 
+    support package (http://support.apple.com/kb/DL1572) and (Oracle) JDK 1.7 
+    or later (from http://java.com).
+
+Tkenv:
+
+  - Improved zooming/panning support: use double click to zoom in around
+    a point, and Shift + double click to zoom out; use Ctrl + left mouse
+    button to drag out a rectangle to zoom to (a.k.a. marquee zoom;
+    implementation based on patch from Christoph Sommer), right-click
+    cancels marquee zoom; use left mouse button for panning
+
+  - Further small UI fixes (see ChangeLog)
+
+Core:
+
+  - The testing tool opp_test has been revised and is now an official part
+    of OMNeT++.
+
+  - The Manual now has a new chapter that covers the testing of simulation
+    models as well as the usage of the opp_test tool.
+
+  - The message compiler opp_msgc was reimplemented as a part of nedtool.
+    opp_msgc still exists as a wrapper script that points to nedtool.
 
 IDE:
 
-  - Updated to use Eclipse 4.4 (Luna) (requires JDK 1.7+)
-  - The IDE is now a 64-bit application on Mac OS X (You must install
-    JDK 1.7 or later.)
+  - The IDE is now based on Eclipse 4.4 Luna, and requires JDK 1.7 or later.
 
-Command line:
-
-  - The message compiler was reimplemented as a part of 'nedtool'. You can still use
-    'opp_msgc' as it is now a wrapper script pointing to 'nedtool'.
+  - The IDE is now a 64-bit application on Mac OS X.
 
 Other:
-  - OMNeT++ is now using C++11 by default (-std=c++11) when models are compiled.
-    The simulator itself does not use any of the C++11 features so C++11 support may
-    be disabled in configure.user. Update your models to compile properly using the
-    C++11 standard as later OMNeT++ versions will require C++11 compliance.
 
-  - OMNeT++ can be configured to use the 'omnetpp' namespace by setting 
+  - OMNeT++ is now using C++11 by default (-std=c++11) when models are compiled.
+    The simulator itself does not use any of the C++11 features, so C++11 support may
+    be disabled in configure.user. Update your models to compile properly using the
+    C++11 standard, as later OMNeT++ versions will require C++11 compliance.
+
+  - OMNeT++ can be configured to use the 'omnetpp' namespace by setting
     USE_NAMESPACE=yes in configure.user
 
-  - CLANG is used by default on MAC, can be optionally turned on on Linux and 
-    still not yet supported on Windows.
+  - Clang compiler support: Clang is used by default on OS X, and can be turned
+    on on Linux. Clang is still not supported on Windows (we are waiting for the
+    MSYS Clang packages to mature).
 
-  - The bundled MSYS/MINGW toolchanin was updated to use MSYS2.
-    Details:
+  - The bundled MSYS/MinGW toolchain was updated to use MSYS2. MSYS2 resolves
+    a number of issues:
     - No more memory errors during build
-    - The 'make' command now properly supports parallel build (-j4, -j8 etc.)
-    - The bundled MSYS2 toolchain now contains the 'pacman' package manager
-      so you can install additional packages if you wish.
-    - The 'mingw' directory containing the compiler have been moved under 
-      the 'msys' directory.
+    - The make command now properly supports parallel build (-j4, -j8 etc.)
+    - The bundled MSYS2 toolchain now contains the pacman package manager,
+      so you can install additional packages if you wish
+    - Change in OMNeT++: The msys/ directory has been moved to tools/win32/, and
+      the mingw/ directory that contains the compiler has been moved to 
+      tools/win32/mingw32/.
+
+Bugs fixed: http://tinyurl.com/omnetpp46-fixes
 
 
 OMNeT++ 4.5 (June 2014)

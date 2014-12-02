@@ -30,7 +30,7 @@ and select 'Extract All' from the menu. You can also use external programs
 like Winzip or 7zip. Rename the resulting directory to `@omnetpp@-@version@`.
 
 When you look into the new `@omnetpp@-@version@` directory, should see
-directories named `doc`, `images`, `include`, `msys`, etc., and files named
+directories named `doc`, `images`, `include`, `tools`, etc., and files named
 `mingwenv.cmd`, `configure`, `Makefile`, and others.
 
 

@@ -25,6 +25,7 @@ TEXCHAPTERS = \
          ch-ana-sim.tex \
          ch-eventlog.tex \
          ch-neddoc.tex \
+         ch-testing.tex \
          ch-parallel-exec.tex \
          ch-plugin-exts.tex \
          ch-embedding.tex \
@@ -141,12 +142,13 @@ html : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs
 	copy figures\*.png ..\..\manual
 
 clean:
-	-del usman.dvi usman.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html cover.svg cover.pdf
+	-del usman.dvi usman.pdf tmp.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html cover.svg cover.pdf
 	-del /s /q ..\..\manual 2>nul
 	-rmdir ..\..\manual 2>nul
 	-del /s /q eclipse
 	-rmdir eclipse
 	-del /q figures\*.pdf
+	-del /q tmp\*
 	-cd figures && for %%I in (*.svg) do del %%~nI.png
 	-cd figures && for %%I in (*.dot) do del %%~nI.svg
 

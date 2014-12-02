@@ -19,6 +19,28 @@
 
 ////////////// fixes taken from omnetpp-4.x come here /////////////////
 
+2014-11-27  ------ omnetpp-4.6 released ------
+
+2013-10-08  Andras Varga
+
+	* opp_test: always generate and add "_defaults.ini" to the simulation
+	program args. (So %inifile entries in the .test file no longer replace
+	the default inifile, but rather, "_defaults.ini" serves as a fallback
+	to %inifile-generated files). The practical consequence is that in
+	%inifile you no longer need to repeat the entries in the default
+	generated inifile. (Backported from 5.0)
+
+	* opp_test: leave result file names at their defaults. (Backported from 5.0)
+
+	* opp_test: added %prerun-command and %postrun-command. (Backported from 5.0)
+
+	* opp_test: removed %module_a/%module_b support (they were too specific
+	to be generally useful)
+
+	* opp_test: changed -g/-r/-c args to run/gen/check
+
+	* opp_test: remove trailing spaces from each line when reading the test file
+
 2014-06-30  ------ omnetpp-4.5 released ------
 
 2014-02-13  ------ omnetpp-4.4.1 released ------

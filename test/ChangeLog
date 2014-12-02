@@ -1,3 +1,5 @@
+2014-11-27  ------ omnetpp-4.6 released ------
+
 2014-06-30  ------ omnetpp-4.5 released ------
 
 2014-02-13  ------ omnetpp-4.4.1 released ------
@@ -79,7 +81,7 @@
 	* opp_test.pl: To make it easier to create new test cases from
         existing ones, removed %name from test file syntax; now test name
         is derived from the file name. Cleaned up error handling.
-        Changed some command-line switches. Introduced {} as synonim for
+        Changed some command-line switches. Introduced {} as synonym for
         @TESTNAME@. Improved reporting.
 
         * runtest: accepts command-line args

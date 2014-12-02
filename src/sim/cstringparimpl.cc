@@ -109,6 +109,9 @@ double cStringParImpl::doubleValue(cComponent *) const
 
 const char *cStringParImpl::stringValue(cComponent *context) const
 {
+    if ((flags & FL_ISSET) == 0)
+        throw cRuntimeError(E_PARNOTSET);
+
     if (flags & FL_ISEXPR)
         throw cRuntimeError(this, "stringValue() and conversion to `const char *' cannot be invoked "
                                   "on parameters declared `volatile string' in NED -- use stdstringValue() "
@@ -118,7 +121,17 @@ const char *cStringParImpl::stringValue(cComponent *context) const
 
 std::string cStringParImpl::stdstringValue(cComponent *context) const
 {
-    return evaluate(context);
+    if ((flags & FL_ISSET) == 0)
+        throw cRuntimeError(E_PARNOTSET);
+
+    if ((flags & FL_ISEXPR) == 0)
+        return val;
+    else {
+        cNEDValue v = evaluate(expr, context);
+        if (v.type != cNEDValue::STR)
+            throw cRuntimeError(E_ECANTCAST, "string");
+        return v.stringValue();
+    }
 }
 
 cXMLElement *cStringParImpl::xmlValue(cComponent *) const
@@ -129,11 +142,6 @@ cXMLElement *cStringParImpl::xmlValue(cComponent *) const
 cExpression *cStringParImpl::getExpression() const
 {
     return (flags | FL_ISEXPR) ? expr : NULL;
-}
-
-std::string cStringParImpl::evaluate(cComponent *context) const
-{
-    return (flags & FL_ISEXPR) ? expr->stringValue(context) : val;
 }
 
 void cStringParImpl::deleteOld()

@@ -46,7 +46,7 @@ Linux distribution.
 *See the chapter specific to your Linux distribution for
 instructions on installing the packages needed by @OMNETPP@.*
 
-You may need superuser permissions to install packages.
+Generally, you will need superuser permissions to install packages.
 
 Not all packages are available from software repositories; some (optional)
 ones need to be downloaded separately from their web sites, and
@@ -287,7 +287,6 @@ Configure, build and install the Akaroa library. By default, it will be installe
 Go to the @OMNETPP@ directory, and (re-)run the `configure` script. Akaroa will be
 automatically detected if you installed it to the default location.
 
-
 ==== PCAP
 
 The optional Pcap library allows simulation models to capture and 
@@ -305,4 +304,13 @@ systemc examples in the samples/systemc-embedding directory.
 
 endif::OMNEST[]
 
+==== Nemiver
+
+Nemiver is the default debugger for the @OMNETPP@ just-in-time debugging facility (see the
+`debugger-attach-on-startup` and `debugger-attach-on-error` configuration options).
+Nemiver can be installed via the package manager in most Linux distros.
+For example, on Ubuntu and other Debian-based distros you can install it by the
+following command:
+
+  $ sudo apt-get install nemiver
 

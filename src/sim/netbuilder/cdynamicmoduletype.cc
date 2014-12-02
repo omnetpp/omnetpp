@@ -74,6 +74,11 @@ void cDynamicModuleType::addParametersAndGatesTo(cModule *module)
     cNEDNetworkBuilder().addParametersAndGatesTo(module, decl);
 }
 
+void cDynamicModuleType::applyPatternAssignments(cComponent *component)
+{
+    cNEDNetworkBuilder().assignParametersFromPatterns(component);
+}
+
 void cDynamicModuleType::setupGateVectors(cModule *module)
 {
     cNEDDeclaration *decl = getDecl();

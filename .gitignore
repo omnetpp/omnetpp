@@ -17,9 +17,11 @@
 *.vci
 *.pyc
 .tkenvrc
+.tkenvlog
 .project
 .cproject
 lex.*yy.cc
+/tools
 /msys
 /mingw
 /config.log
@@ -34,6 +36,14 @@ Thumbs.db
 /Makefile.inc
 /makeui
 /mingwenv.cmd
+/include/systemc.h
+/include/systemc
+/include/systemcdefs.h
+/include/tlm.h
+/include/sysc
+/include/tlm_1
+/include/tlm_h
+/include/tlm_utils
 /src/common/ver.h
 /src/utils/opp_configfilepath
 /src/envir/eventlogwriter.cc

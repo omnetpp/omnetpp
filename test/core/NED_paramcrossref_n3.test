@@ -1,0 +1,24 @@
+%description:
+Referencing a later submodule's parameter is currently not implemented, should be reported as error.
+
+%file: test.ned
+
+module Node
+{
+    parameters:
+        int i;
+}
+
+network Test
+{
+    submodules:
+        a: Node {i = b.i;}
+        b: Node {i = 5;}
+}
+
+%exitcode: 1
+
+%contains: stdout
+While evaluating parameter `i': cannot find submodule for parameter `b.i'
+
+

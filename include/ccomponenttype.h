@@ -91,6 +91,9 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     // internal: returns the name of the C++ class that implements this NED type
     virtual const char *getImplementationClassName() const = 0;
 
+    // internal: apply pattern-based ("deep") parameter settings in NED
+    virtual void applyPatternAssignments(cComponent *component) = 0;
+
     // internal: sharedParMap access
     cParImpl *getSharedParImpl(const char *key) const;
     void putSharedParImpl(const char *key, cParImpl *value);
@@ -189,6 +192,7 @@ class SIM_API cModuleType : public cComponentType
      * call to setupGateVectors() will be needed once parameter values
      * have been finalized.
      */
+    //TODO in 5.0, these methods should be internal (i.e. nor public API)
     virtual void addParametersAndGatesTo(cModule *mod) = 0;
 
     /**

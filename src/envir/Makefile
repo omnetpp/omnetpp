@@ -188,6 +188,7 @@ $O/akoutvectormgr.o: akoutvectormgr.cc \
   akoutvectormgr.h \
   envirbase.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
   fileoutvectormgr.h \
   envirdefs.h \
   ../../include/cnamedobject.h \
@@ -210,8 +211,8 @@ $O/akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/errmsg.h \
   ../../include/csimulation.h \
   ../../include/cownedobject.h \
-  ../../include/cobject.h \
   ../../include/onstartup.h \
+  ../../include/cobject.h \
   ../../include/cresultlistener.h \
   ../../include/clifetimelistener.h \
   eventlogfilemgr.h \
@@ -287,6 +288,7 @@ $O/cxmldoccache.o: cxmldoccache.cc \
 $O/envirbase.o: envirbase.cc \
   ../../include/regmacros.h \
   envirbase.h \
+  ../../include/checkandcast.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/ccomponent.h \
@@ -351,6 +353,7 @@ $O/envirbase.o: envirbase.cc \
   ../../include/cobject.h \
   ../../include/cnedfunction.h \
   ../../include/cstringpool.h \
+  ../../include/ccanvas.h \
   ../../include/clog.h \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
@@ -396,6 +399,7 @@ $O/eventlogfilemgr.o: eventlogfilemgr.cc \
   ../../include/ccomponenttype.h \
   args.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
   envirdefs.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
@@ -441,6 +445,7 @@ $O/eventlogwriter.o: eventlogwriter.cc \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
   envirdefs.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
@@ -504,6 +509,7 @@ $O/fileoutscalarmgr.o: fileoutscalarmgr.cc \
   args.h \
   ../../include/ccomponenttype.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
   envirdefs.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
@@ -556,6 +562,7 @@ $O/fileoutvectormgr.o: fileoutvectormgr.cc \
   args.h \
   ../../include/ccomponenttype.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
   fileoutvectormgr.h \
   envirdefs.h \
   ../../include/cgate.h \
@@ -604,6 +611,7 @@ $O/filesnapshotmgr.o: filesnapshotmgr.cc \
   ../../include/platdep/intxtypes.h \
   args.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
   envirdefs.h \
   ../../include/simtime.h \
   ../../include/carray.h \
@@ -688,6 +696,7 @@ $O/indexedfileoutvectormgr.o: indexedfileoutvectormgr.cc \
   ../../include/platdep/intxtypes.h \
   args.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
   fileoutvectormgr.h \
   envirdefs.h \
   ../../include/cgate.h \
@@ -752,6 +761,7 @@ $O/intervals.o: intervals.cc \
   ../../include/platdep/intxtypes.h \
   args.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
   envirdefs.h \
   ../../include/simtime.h \
   ../../include/carray.h \
@@ -800,6 +810,7 @@ $O/logformatter.o: logformatter.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
   envirdefs.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
@@ -901,6 +912,7 @@ $O/objectprinter.o: objectprinter.cc \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
   envirdefs.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
@@ -947,6 +959,7 @@ $O/runattributes.o: runattributes.cc \
   ../../include/platdep/intxtypes.h \
   args.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
   envirdefs.h \
   ../../include/simtime.h \
   ../../include/carray.h \
@@ -1054,6 +1067,7 @@ $O/startup.o: startup.cc \
   args.h \
   akoutvectormgr.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
   fileoutvectormgr.h \
   inifilereader.h \
   envirdefs.h \
@@ -1123,6 +1137,7 @@ $O/visitor.o: visitor.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
   ../../include/cwatch.h \
   ../../include/coutvector.h \
   ../../include/cqueue.h \

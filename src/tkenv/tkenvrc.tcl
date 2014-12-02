@@ -120,9 +120,9 @@ proc storeMainwinGeometry {} {
     set orient [.main.right cget -orient]
     set config(mainwin-sash-orient) $orient
 
-    set config(mainwin-main-sashpos)  [panedwindow:getsashposition .main]
-    set config(mainwin-left-sashpos)  [panedwindow:getsashposition .main.left]
-    set config(mainwin-right-sashpos-$orient) [panedwindow:getsashposition .main.right]
+    set config(mainwin-main-sashpos)  [panedwindow:getSashPosition .main]
+    set config(mainwin-left-sashpos)  [panedwindow:getSashPosition .main.left]
+    set config(mainwin-right-sashpos-$orient) [panedwindow:getSashPosition .main.right]
 
     set lb .inspector.nb.contents.main.list
     inspectorListbox:storeColumnWidths $lb "inspector:columnwidths"
@@ -159,6 +159,7 @@ proc loadTkenvrc {fname} {
             } elseif {$cat == "config"} {
                 set key [lindex $line 1]
                 set value [lindex $line 2]
+                if {$key=="zoomby-factor" && $value==1.1} {set value 1.3} ;# for OMNeT++ 4.5 --> 4.6 transition
                 set config($key) $value
             } elseif {$cat == "font"} {
                 set font [lindex $line 1]
@@ -195,16 +196,10 @@ proc applyTkenvrc {} {
     toolbutton:setsunken .toolbar.vert  [expr {$orient=="vertical"}]
     toolbutton:setsunken .toolbar.horiz [expr {$orient!="vertical"}]
 
-    # note: simply using panedwindow:setsashposition without "after idle" doesn't work here
-    after idle {after idle {
-        catch {
-            global config
-            set orient [.main.right cget -orient]
-             panedwindow:dosetsashposition .main $config(mainwin-main-sashpos)
-             panedwindow:dosetsashposition .main.left $config(mainwin-left-sashpos)
-             panedwindow:dosetsashposition .main.right $config(mainwin-right-sashpos-$orient)
-        }
-    }}
+    set orient [.main.right cget -orient]
+    panedwindow:setSashPosition .main $config(mainwin-main-sashpos)
+    panedwindow:setSashPosition .main.left $config(mainwin-left-sashpos)
+    panedwindow:setSashPosition .main.right $config(mainwin-right-sashpos-$orient)
 
     set lb .inspector.nb.contents.main.list
     inspectorListbox:restoreColumnWidths $lb "inspector:columnwidths"

@@ -303,6 +303,11 @@
   \index{#1}%
   \textbf{\texttt{\hyphenchar\font=`\-\relax#2}}}
 
+%% opp_test directives
+\newcommand{\ftest}[2][\DefaultOpt]{\def\DefaultOpt{#2}%
+  \index{#1}%
+  \texttt{\hyphenchar\font=`\-\relax#2}}
+
 %% File names
 \newcommand{\ffilename}[2][\DefaultOpt]{\def\DefaultOpt{#2}%
   \index{#1}%
@@ -382,6 +387,9 @@
 \cleardoublepage
 
 \include{ch-neddoc}
+\cleardoublepage
+
+\include{ch-testing}
 \cleardoublepage
 
 \include{ch-parallel-exec}

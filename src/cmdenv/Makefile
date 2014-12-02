@@ -122,6 +122,7 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
   ../../include/cqueue.h \
   ../../include/coutvector.h \
   ../../include/cwatch.h \
@@ -190,6 +191,7 @@ $O/serializer.o: serializer.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
   ../../include/cwatch.h \
   ../../include/coutvector.h \
   ../../include/cqueue.h \

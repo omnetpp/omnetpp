@@ -84,7 +84,7 @@ void LogBuffer::addInitialize(cComponent *component, const char *banner)
     {
         Entry *entry = new Entry();
         entries.push_back(entry);
-        fillEntry(entry, 0, SIMTIME_ZERO, simulation.getSystemModule(), opp_strdup("** Initializing network\n"));
+        fillEntry(entry, 0, simTime(), simulation.getSystemModule(), opp_strdup("** Initializing network\n"));
     }
 
     Entry *entry = entries.back();
@@ -107,7 +107,7 @@ void LogBuffer::addLogLine(const char *prefix, const char *text, int len)
     {
         Entry *entry = new Entry();
         entries.push_back(entry);
-        fillEntry(entry, 0, SIMTIME_ZERO, NULL, NULL);
+        fillEntry(entry, 0, simTime(), NULL, NULL);
     }
 
     //FIXME if last line is "info" then we cannot append to it! create new entry with empty banner?
@@ -131,7 +131,7 @@ void LogBuffer::addInfo(const char *text, int len)
     //TODO ha inline info (contextmodule!=NULL), sima logline-kent adjuk hozza!!!!
     Entry *entry = new Entry();
     entries.push_back(entry);
-    fillEntry(entry, 0, SIMTIME_ZERO, NULL, opp_strdup(text,len));
+    fillEntry(entry, 0, simTime(), NULL, opp_strdup(text,len));
     discardEventsIfLimitExceeded();
 
     for (unsigned int i = 0; i < listeners.size(); i++)
@@ -190,7 +190,7 @@ void LogBuffer::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagat
 void LogBuffer::endSend(cMessage *msg)
 {
     for (unsigned int i = 0; i < listeners.size(); i++)
-        listeners[i]->messageSendAdded();
+        listeners[i]->messageSendAdded(); //TODO but endSend() is not called when msg is discarded in the channel!
 }
 
 void LogBuffer::setMaxNumEntries(int limit)

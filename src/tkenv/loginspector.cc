@@ -447,7 +447,10 @@ void LogInspector::printMessage(const LogBuffer::Entry *entry, int msgIndex, int
     char buf[128];
 
     // add event number
-    sprintf(buf, "#%" LL "d\t", entry->eventNumber);
+    if (!entry->eventNumber)
+        strcpy(buf, "-\t");
+    else
+        sprintf(buf, "#%" LL "d\t", entry->eventNumber);
     textWidgetInsert(buf, repeatedEvent ? "repeatedeventnumcol" : "eventnumcol");
 
     // Add msghop bookmark at the START of the line. IMPORTANT:

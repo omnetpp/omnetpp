@@ -2,7 +2,7 @@
 Check that submodule names must be unique.
 
 %activity:
-ev << "#UNRESOLVED: not yet implemented\n";
+EV << "#UNRESOLVED: not yet implemented\n";
 
 %file: test.ned
 

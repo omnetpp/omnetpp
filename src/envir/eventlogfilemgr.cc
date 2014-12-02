@@ -353,11 +353,12 @@ void EventlogFileManager::simulationEvent(cEvent *event)
     if (event->isMessage()) {
         cMessage *msg = static_cast<cMessage*>(event);
         cModule *mod = msg->getArrivalModule();
+        eventNumber = simulation.getEventNumber();
+        bool isKeyframe = eventNumber % keyframeBlockSize == 0;
         isModuleEventLogRecordingEnabled = mod->isRecordEvents();
         isIntervalEventLogRecordingEnabled = !recordingIntervals || recordingIntervals->contains(simulation.getSimTime());
-        isEventLogRecordingEnabled = isModuleEventLogRecordingEnabled && isIntervalEventLogRecordingEnabled;
+        isEventLogRecordingEnabled = isKeyframe || (isModuleEventLogRecordingEnabled && isIntervalEventLogRecordingEnabled);
         if (isEventLogRecordingEnabled) {
-            eventNumber = simulation.getEventNumber();
             fprintf(feventlog, "\n");
             EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog, eventNumber, simulation.getSimTime(), mod->getId(), msg->getPreviousEventNumber(), msg->getId());
             entryIndex = 0;

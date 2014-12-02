@@ -147,8 +147,10 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
             ArrayList<EntryDescriptor> newItems = new ArrayList<EntryDescriptor>();
             for (Object o : items) {
                 EntryDescriptor entry = (EntryDescriptor)o;
-                if (entry.getId().startsWith("org.omnetpp"))
+                if (entry.getId().startsWith("org.omnetpp") ) {
+                    entry.setParentId(null); // fix: CDTMainWIzardPage.updateData requires the parent ("Others") to be in the result list as well. We rather move the item to the top level.
                     newItems.add(entry);
+                }
             }
             return newItems;
         }

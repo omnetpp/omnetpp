@@ -31,11 +31,12 @@
 #include "random.h"
 #include "distrib.h"
 #include "globals.h"
-#include "cdetect.h"  //NL
+#include "cdetect.h"
 #include "csimplemodule.h"
 #include "cexception.h"
 #include "cenvir.h"
 #include "stringutil.h"
+#include "commonutil.h"  //NaN
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -165,6 +166,21 @@ void cStdDev::merge(const cStatistic *other)
     doMerge(other);
 }
 
+double cStdDev::getMin() const
+{
+    return num_vals == 0 ? NaN : min_vals;
+}
+
+double cStdDev::getMax() const
+{
+    return num_vals == 0 ? NaN : max_vals;
+}
+
+double cStdDev::getMean() const
+{
+    return num_vals == 0 ? NaN : sum_vals / num_vals;
+}
+
 double cStdDev::getVariance() const
 {
     if (num_vals <= 1)
@@ -192,8 +208,8 @@ std::string cStdDev::detailedInfo() const
     {
         os << "  Mean value     = " << getMean() << "\n";
         os << "  Standard dev.  = " << getStddev() << "\n";
-        os << "  Minimal value  = " << min_vals << "\n";
-        os << "  Maximal value  = " << max_vals << "\n";
+        os << "  Minimal value  = " << getMin() << "\n";
+        os << "  Maximal value  = " << getMax() << "\n";
     }
     return os.str();
 }
@@ -289,43 +305,44 @@ cWeightedStdDev& cWeightedStdDev::operator=(const cWeightedStdDev& res)
 
 void cWeightedStdDev::collect2(double value, double weight)
 {
-    if (weight > 0)
-    {
-        if (++num_vals <= 0)
-        {
-            // num_vals overflow: issue warning and stop collecting
-            ev.printfmsg("WARNING: (%s)%s: collect2(): observation count overflow", getClassName(), getFullPath().c_str());
-            num_vals--;  // restore
-            return;
-        }
-
-        sum_vals += value;
-        sqrsum_vals += value*value;
-
-        if (num_vals > 1)
-        {
-            if (value < min_vals)
-                min_vals = value;
-            else if (value > max_vals)
-                max_vals = value;
-        }
-        else
-        {
-            min_vals = max_vals = value;
-        }
-
-        sum_weights += weight;
-        sum_weighted_vals += weight * value;
-        sum_squared_weights += weight * weight;
-        sum_weights_squared_vals += weight * value * value;
-
-        if (getTransientDetectionObject()) td->collect(value);
-        if (getAccuracyDetectionObject()) ra->collect(value);
-    }
-    else if (weight < 0)
-    {
+    if (weight < 0)
         throw cRuntimeError(this, "collect2(): negative weight %g", weight);
+
+    if (++num_vals <= 0)
+    {
+        // num_vals overflow: issue warning and stop collecting
+        ev.printfmsg("\a\nWARNING: (%s)%s: collect2(): observation count overflow!\n\n",getClassName(),getFullPath().c_str());
+        num_vals--;  // restore
+        return;
     }
+
+    sum_vals += value;
+    sqrsum_vals += value*value;
+
+    if (num_vals > 1)
+    {
+        if (value < min_vals)
+            min_vals = value;
+        else if (value > max_vals)
+            max_vals = value;
+    }
+    else
+    {
+        min_vals = max_vals = value;
+    }
+
+    sum_weights += weight;
+    sum_weighted_vals += weight * value;
+    sum_squared_weights += weight * weight;
+    sum_weights_squared_vals += weight * value * value;
+
+    if (getTransientDetectionObject()) td->collect(value);
+    if (getAccuracyDetectionObject()) ra->collect(value);
+}
+
+double cWeightedStdDev::getMean() const
+{
+    return sum_weights==0 ? NaN : sum_weighted_vals / sum_weights;
 }
 
 void cWeightedStdDev::merge(const cStatistic *other)

@@ -41,7 +41,6 @@ class SIM_API cLongParImpl : public cParImpl
     void copy(const cLongParImpl& other);
 
   protected:
-    long evaluate(cComponent *context) const;
     void deleteOld();
 
   public:

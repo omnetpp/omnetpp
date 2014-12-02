@@ -2,7 +2,7 @@
 check backslash handling in cDisplayString
 
 %activity:
-ev << "#UNRESOLVED: tab parsing should be implemented\n";
+EV << "#UNRESOLVED: tab parsing should be implemented\n";
 
 // unfortunately, because of the C++ compiler we have to duplicate all backslashes :(
 cDisplayString ds("a=c:\\\\tmp\\\\;b=,the \\; mark,Hello\\, Dolly!;"

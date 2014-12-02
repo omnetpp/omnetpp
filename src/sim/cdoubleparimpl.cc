@@ -102,12 +102,22 @@ bool cDoubleParImpl::boolValue(cComponent *) const
 
 long cDoubleParImpl::longValue(cComponent *context) const
 {
-    return double_to_long(evaluate(context));
+    return double_to_long(doubleValue(context));
 }
 
 double cDoubleParImpl::doubleValue(cComponent *context) const
 {
-    return evaluate(context);
+    if ((flags & FL_ISSET) == 0)
+        throw cRuntimeError(E_PARNOTSET);
+
+    if ((flags & FL_ISEXPR) == 0)
+        return val;
+    else {
+        cNEDValue v = evaluate(expr, context);
+        if (v.type != cNEDValue::DBL)
+            throw cRuntimeError(E_ECANTCAST, "double");
+        return v.doubleValueInUnit(getUnit());
+    }
 }
 
 const char *cDoubleParImpl::stringValue(cComponent *) const
@@ -128,11 +138,6 @@ cXMLElement *cDoubleParImpl::xmlValue(cComponent *) const
 cExpression *cDoubleParImpl::getExpression() const
 {
     return (flags | FL_ISEXPR) ? expr : NULL;
-}
-
-double cDoubleParImpl::evaluate(cComponent *context) const
-{
-    return (flags & FL_ISEXPR) ? expr->doubleValue(context, getUnit()) : val;
 }
 
 void cDoubleParImpl::deleteOld()

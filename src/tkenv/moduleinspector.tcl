@@ -136,6 +136,20 @@ proc createGraphicalModuleViewer {insp} {
     bind $ww <$Control-r> "ModuleInspector:relayout $insp"
     bind $ww <$Control-l> "ModuleInspector:toggleLabels $insp"
     bind $ww <$Control-a> "ModuleInspector:toggleArrowheads $insp"
+
+    # pan / zoom
+    $c bind mod <Double-1> "ModuleInspector:zoomIn $insp %x %y"
+    $c bind mod <Shift-Double-1> "ModuleInspector:zoomOut $insp %x %y"
+
+    bind $c <$Control-1> "+ModuleInspector:zoomMarqueeBegin $insp %x %y"
+    bind $c <B1-Motion> "+ModuleInspector:zoomMarqueeUpdate $insp %x %y"
+    bind $c <ButtonRelease-1> "+ModuleInspector:zoomMarqueeEnd $insp %x %y"
+    bind $c <2> "+ModuleInspector:zoomMarqueeCancel $insp"
+    bind $c <3> "+ModuleInspector:zoomMarqueeCancel $insp"
+
+    bind $c <1> "+ModuleInspector:panStart $insp %x %y"
+    bind $c <B1-Motion> "+ModuleInspector:panUpdate $insp %x %y"
+    bind $c <ButtonRelease-1> "+ModuleInspector:panEnd $insp %x %y"
 }
 
 proc ModuleInspector:onSetObject {insp} {
@@ -211,6 +225,7 @@ proc ModuleInspector:adjustWindowSizeAndZoom {insp} {
 
     # if needed, resize window to fit graphics; if not enough, additionally zoom out as well
     set bb [$c bbox "mod"] ;# bounding box of the compound module
+    if {$bb == {}} {return}
     set graphicswidth [expr [lindex $bb 2]-[lindex $bb 0]]
     set graphicsheight [expr [lindex $bb 3]-[lindex $bb 1]]
 
@@ -300,20 +315,45 @@ proc ModuleInspector:adjustWindowSizeAndZoom {insp} {
     }
 }
 
+proc min {a b} {
+    if {$a < $b} {return $a} else {return $b}
+}
+
+proc max {a b} {
+    if {$a < $b} {return $b} else {return $a}
+}
+
 #
 # Sets the scrolling region for a graphical module inspector.
 # NOTE: This method is invoked from C++.
 #
 proc ModuleInspector:setScrollRegion {insp moveToOrigin} {
+    global myScrollRegion
     set c $insp.c
 
     # scrolling region
-    set bb [$c bbox all]
-    set x1 [expr [lindex $bb 0]-10]
-    set y1 [expr [lindex $bb 1]-10]
-    set x2 [expr [lindex $bb 2]+10]
-    set y2 [expr [lindex $bb 3]+10]
+    set bbox [$c bbox all]
+    if {$bbox == {}} {set bbox {0 0 0 0}}
+    lassign $bbox x1 y1 x2 y2
+    incr x1 -10; incr y1 -10
+    incr x2 10; incr y2 10
+
+    # never shrink scrolling region as it may cause "jerking" when e.g. transmission circles come and go
+    set oldRegion [$c cget -scrollregion]
+    if {$oldRegion!={}} {
+        lassign $oldRegion rx1 ry1 rx2 ry2
+        set x1 [min $rx1 $x1]
+        set y1 [min $ry1 $y1]
+        set x2 [max $rx2 $x2]
+        set y2 [max $ry2 $y2]
+    }
     $c config -scrollregion [list $x1 $y1 $x2 $y2]
+
+    # store for later use
+    set myScrollRegion(x1) $x1
+    set myScrollRegion(y1) $y1
+    set myScrollRegion(x2) $x2
+    set myScrollRegion(y2) $y2
 
     # scroll to top-left corner of compound module to top-left corner of window
     if {$moveToOrigin} {
@@ -324,6 +364,153 @@ proc ModuleInspector:setScrollRegion {insp moveToOrigin} {
         $c xview moveto [expr ($mx1 - $x1) / double($x2 - $x1)]
         $c yview moveto [expr ($my1 - $y1) / double($y2 - $y1)]
     }
+
+}
+
+proc ModuleInspector:zoomCanvasCoordsToRealCoords {insp x1 y1 x2 y2} {
+    global inspectordata
+    set c $insp.c
+    set factor $inspectordata($c:zoomfactor)
+    set x1 [expr { 1.0 * $x1 / $factor }]
+    set y1 [expr { 1.0 * $y1 / $factor }]
+    set x2 [expr { 1.0 * $x2 / $factor }]
+    set y2 [expr { 1.0 * $y2 / $factor }]
+    return [list $x1 $y1 $x2 $y2]
+}
+
+proc ModuleInspector:zoomUpdateLabel {insp x1 y1 x2 y2} {
+    $insp.zoominfo config -text [format "Zoom: from (%.1f, %.1f) to (%.1f, %.1f)" $x1 $y1 $x2 $y2]
+}
+
+set zoomMarquee ""
+
+proc ModuleInspector:zoomMarqueeBegin {insp x y} {
+    global zoomMarquee
+
+    # store coordinates
+    set c $insp.c
+    set x1 [$c canvasx $x]
+    set y1 [$c canvasy $y]
+    set x2 $x1
+    set y2 $y1
+    set zoomMarquee [list $x1 $y1 $x2 $y2]
+
+    # add rectangle
+    $c create rectangle {*}$zoomMarquee -outline black -dash . -tag zoomMarqueeRect
+
+    # update label
+    set realCoords [ ModuleInspector:zoomCanvasCoordsToRealCoords $insp {*}$zoomMarquee ]
+    ModuleInspector:zoomUpdateLabel $insp {*}$realCoords
+}
+
+proc ModuleInspector:zoomMarqueeUpdate {insp x y} {
+    global zoomMarquee
+
+    if {$zoomMarquee==""} return ;# marquee zoom not in progress
+
+    # store coordinates
+    set c $insp.c
+    lassign $zoomMarquee x1 y1 - -
+    set x2 [$c canvasx $x]
+    set y2 [$c canvasy $y]
+    set zoomMarquee [list $x1 $y1 $x2 $y2]
+
+    # update rectangle
+    $c coords zoomMarqueeRect {*}$zoomMarquee
+
+    # update label
+    set realCoords [ ModuleInspector:zoomCanvasCoordsToRealCoords $insp {*}$zoomMarquee ]
+    ModuleInspector:zoomUpdateLabel $insp {*}$realCoords
+}
+
+proc ModuleInspector:zoomMarqueeEnd {insp x y} {
+    global zoomMarquee
+
+    if {$zoomMarquee==""} return ;# marquee zoom not in progress
+
+    # obtain coordinates
+    set c $insp.c
+    lassign $zoomMarquee x1 y1 - -
+    set x2 [$c canvasx $x]
+    set y2 [$c canvasy $y]
+    if {$x2 < $x1} {foreach {x1 x2} [list $x2 $x1] break}
+    if {$y2 < $y1} {foreach {y1 y2} [list $y2 $y1] break}
+
+    # marquee zoom finished
+    set zoomMarquee ""
+    $c delete zoomMarqueeRect
+
+    # do nothing if marquee is too small
+    if {$x1==$x2 || $y1==$y2} {
+        ModuleInspector:updateZoomLabel $insp
+        return
+    }
+
+    set realCoords [ ModuleInspector:zoomCanvasCoordsToRealCoords $insp $x1 $y1 $x2 $y2 ]
+    ModuleInspector:zoomToRegion $insp {*}$realCoords
+}
+
+proc ModuleInspector:zoomMarqueeCancel {insp} {
+    global zoomMarquee
+    if {$zoomMarquee==""} return ;# marquee zoom not in progress
+    set c $insp.c
+    set zoomMarquee ""
+    $c delete zoomMarqueeRect
+    ModuleInspector:updateZoomLabel $insp
+}
+
+proc ModuleInspector:zoomToRegion {insp x1 y1 x2 y2} {
+    global inspectordata
+    global myScrollRegion
+
+    set c $insp.c
+
+    set winxlength [winfo width $c]
+    set winylength [winfo height $c]
+
+    # Calculate $factor
+    set xlength [expr {1.0*$x2-$x1}]
+    set ylength [expr {1.0*$y2-$y1}]
+    set xscale [expr {1.0*$winxlength/$xlength}]
+    set yscale [expr {1.0*$winylength/$ylength}]
+    if { $xscale > $yscale } {
+        set factor $yscale
+    } else {
+        set factor $xscale
+    }
+
+    # Set zoom to $factor
+    set inspectordata($c:zoomfactor) $factor
+    opp_inspectorcommand $insp redraw
+    ModuleInspector:setScrollRegion $insp 0
+    ModuleInspector:updateZoomLabel $insp
+
+    # Calculate
+    set xcenter [expr {($x1+$x2)/2.0}]
+    set ycenter [expr {($y1+$y2)/2.0}]
+    set xborder [expr { $xcenter * $factor - .5 * $winxlength}]
+    set yborder [expr { $ycenter * $factor - .5 * $winylength}]
+    set xfrac [ expr { ($xborder - $myScrollRegion(x1)) / ($myScrollRegion(x2) - $myScrollRegion(x1)) }]
+    set yfrac [ expr { ($yborder - $myScrollRegion(y1)) / ($myScrollRegion(y2) - $myScrollRegion(y1)) }]
+
+    $c xview moveto $xfrac
+    $c yview moveto $yfrac
+}
+
+proc ModuleInspector:panStart {insp x y} {
+    set c $insp.c
+    $c scan mark $x $y
+}
+
+proc ModuleInspector:panUpdate {insp x y} {
+    global zoomMarquee
+    if {$zoomMarquee != ""} return
+
+    set c $insp.c
+    $c scan dragto $x $y 1
+}
+
+proc ModuleInspector:panEnd {insp x y} {
 }
 
 proc lookupImage {imgname {imgsize ""}} {
@@ -1161,20 +1348,27 @@ proc mathMax {a b} {
     return [expr ($a > $b) ? $a : $b]
 }
 
-proc ModuleInspector:zoomIn {insp} {
+proc ModuleInspector:zoomIn {insp {x ""} {y ""}} {
     global config
-    ModuleInspector:zoomBy $insp $config(zoomby-factor) 1
+    ModuleInspector:zoomBy $insp $config(zoomby-factor) 1 $x $y
 }
 
-proc ModuleInspector:zoomOut {insp} {
+proc ModuleInspector:zoomOut {insp {x ""} {y ""}} {
     global config
-    ModuleInspector:zoomBy $insp [expr 1.0 / $config(zoomby-factor)] 1
+    ModuleInspector:zoomBy $insp [expr 1.0 / $config(zoomby-factor)] 1 $x $y
 }
 
-proc ModuleInspector:zoomBy {insp mult {snaptoone 0}} {
+proc ModuleInspector:zoomBy {insp mult {snaptoone 0}  {x ""} {y ""}} {
     global inspectordata
     set c $insp.c
     if {($mult<1 && $inspectordata($c:zoomfactor)>0.001) || ($mult>1 && $inspectordata($c:zoomfactor)<1000)} {
+        # remember canvas scroll position, we'll need it to zoom in/out around ($x,$y)
+        if {$x == ""} {set x [expr [winfo width $c] / 2]}
+        if {$y == ""} {set y [expr [winfo height $c] / 2]}
+        set origCanvasX [$c canvasx $x]
+        set origCanvasY [$c canvasy $y]
+        set origZoom $inspectordata($c:zoomfactor)
+
         # update zoom factor and redraw
         set inspectordata($c:zoomfactor) [expr $inspectordata($c:zoomfactor) * $mult]
 
@@ -1188,10 +1382,23 @@ proc ModuleInspector:zoomBy {insp mult {snaptoone 0}} {
             }
         }
 
+        # clear scrollregion so that it will be set up afresh
+        $c config -scrollregion ""
+
+        # redraw
         opp_inspectorcommand $insp redraw
         ModuleInspector:setScrollRegion $insp 0
 
         ModuleInspector:updateZoomLabel $insp
+
+        # pan the canvas so that we zoom in/out around ($x, $y)
+        set actualMult [expr $inspectordata($c:zoomfactor) / $origZoom]
+        set canvasX [expr $origCanvasX * $actualMult]
+        set canvasY [expr $origCanvasY * $actualMult]
+        set dx [expr int($canvasX - $origCanvasX)]
+        set dy [expr int($canvasY - $origCanvasY)]
+        $c scan mark 0 0
+        $c scan dragto $dx $dy -1
     }
 
     ModuleInspector:updatePreferences $insp
@@ -1330,6 +1537,9 @@ proc ModuleInspector:getPtrsUnderMouse {c x y} {
 
 proc ModuleInspector:rightClick {insp X Y x y} {
    global inspectordata tmp CTRL
+
+   ModuleInspector:zoomMarqueeCancel $insp ;# just in case
+
    set c $insp.c
    set ptrs [ModuleInspector:getPtrsUnderMouse $c $x $y]
 

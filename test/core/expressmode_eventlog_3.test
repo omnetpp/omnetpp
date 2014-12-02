@@ -29,7 +29,7 @@ After wait
 
 %contains: results/General-0.elog
 E # 0 t 0 m 1 ce -1 msg -1
-SB v 1280 rid SOME_RUN_ID b 1000
+SB ...
 KF p -1 c "" s ""
 MC id 1 c expressmode_eventlog_3::Test t Test n Test
 MS id 1 d ""

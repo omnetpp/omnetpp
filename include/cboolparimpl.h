@@ -41,7 +41,6 @@ class SIM_API cBoolParImpl : public cParImpl
     void copy(const cBoolParImpl& other);
 
   protected:
-    bool evaluate(cComponent *context) const;
     void deleteOld();
 
   public:

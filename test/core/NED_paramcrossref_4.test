@@ -1,0 +1,36 @@
+%description:
+Verify that referencing an earlier submodule's parameter works.
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Node
+{
+    parameters:
+        int i;
+}
+
+network Test
+{
+    submodules:
+        a: Node {i = 5;}
+        b: Node {i = 2*a.i;}
+        dump: Dump;
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.a: Node {
+            parameters:
+                i = 5
+        }
+        module Test.b: Node {
+            parameters:
+                i = 10
+        }
+}
+

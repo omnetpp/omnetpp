@@ -1,0 +1,38 @@
+%description:
+Verify that parameters of the same module can refer to each other,
+regardless of their order, as long as the references are not circular.
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Test
+{
+    parameters:
+        int p = 2*r;  // fwd ref
+        int q = 3 * p + s;  // both fwd and backwd, plus extra indirection
+        int r; // input
+        int s = 10*r; // backward ref
+    submodules:
+        dump: Dump;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+
+Test.r = 1
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        p = 2
+        q = 16
+        r = 1
+        s = 10
+    submodules:
+}
+

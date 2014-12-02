@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     if (argc==1)
     {
          fprintf(stderr,
-               "abspath -- part of " OMNETPP_PRODUCT ", (C) 2006-2008 OpenSim Ltd.\n"
+               "abspath -- part of " OMNETPP_PRODUCT ", (C) 2006-2014 OpenSim Ltd.\n"
                "Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
                "\n"
                "Returns the absolute path of the argument."

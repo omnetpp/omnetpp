@@ -41,6 +41,19 @@
 
 ////////////// fixes taken from omnetpp-4.x come here /////////////////
 
+2014-11-27  ------ omnetpp-4.6 released ------
+
+2014-12-01  Andras Varga
+
+	* Fix #769 cVarHistogram produces wrong results with custom (i.e. manually specified) cells
+	* Fix #794 NED: pattern assignments of channel parameters doesn't work
+	* Fix #793 NED: local parameters cannot be used to initialize an inherited parameter
+	* Fix #782 CQN examples are not running
+
+2014-10-07  Andras Varga
+
+	* cStdDev: fix: getMean(), getMin(), getMax() now return NaN if count==0
+
 2014-06-30  ------ omnetpp-4.5 released ------
 
 2014-04-15  Andras Varga
