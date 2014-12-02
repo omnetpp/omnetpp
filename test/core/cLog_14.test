@@ -26,6 +26,9 @@ namespace @TESTNAME@ {
 class TestModule : public cSimpleModule {
     protected:
         virtual void initialize() {
+#ifdef USE_OMNETPP4x_FINGERPRINTS
+            EV << "#UNRESOLVED: USE_OMNETPP4x_FINGERPRINTS mode produces different fingerprints from the expected ones\n";
+#endif
             scheduleAt(0, new cMessage("Foo"));
             scheduleAt(.9, new cMessage("Bar"));
             scheduleAt(0.999, new cMessage("Foobar"));
@@ -47,13 +50,13 @@ Define_Module(TestModule);
 }
 
 %contains: stdout
-0s Foo 0000-0001 : Received Foo
-0.9s Bar 30b8-a1a9 : Received Bar
-0.999s Foobar e1ec-149a : Received Foobar
-1s     Fubar  5df4-e505 : Received Fubar
-1.9999s Bazz  62f7-d78b : Received Bazz
-2.1s    Foo   d0ba-9f89 : Received Foo
-3s      Foobar 7268-393a : Received Foobar
-3.23s   Foo    bf43-7c32 : Received Foo
-3.999s  Bazz   a1fe-3ed2 : Received Bazz
+0s Foo bee5-04a5 : Received Foo
+0.9s Bar 5ac4-27d4 : Received Bar
+0.999s Foobar 3cec-d889 : Received Foobar
+1s     Fubar  c244-6208 : Received Fubar
+1.9999s Bazz  621e-fd02 : Received Bazz
+2.1s    Foo   4217-f490 : Received Foo
+3s      Foobar 7e3d-795c : Received Foobar
+3.23s   Foo    c4ba-c452 : Received Foo
+3.999s  Bazz   321a-70ba : Received Bazz
 

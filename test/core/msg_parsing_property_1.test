@@ -53,7 +53,7 @@ packet Foo {
         <property name="foo5">
             <property-key>
                 <literal type="string" text="&quot;Hello world&quot;" value="Hello world"/>
-                <literal type="spec" text=" 42" value="42"/>
+                <literal type="spec" text="42" value="42"/>
             </property-key>
         </property>
         <property name="foo6">

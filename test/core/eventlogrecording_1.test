@@ -217,17 +217,17 @@ CC sm 3 sg 1 dm 2 dg 1048576
 CS sm 3 sg 1 d ""
 GC m 3 g 3145728 n in i 0 o 0
 CC sm 2 sg 3 dm 3 dg 3145728
-MC id 4 c eventlogrecording_1::Node t Node pid 2 n node
-GC m 4 g 1 n out o 1
-GC m 4 g 6 n directIn o 0
-MS id 4 d ""
-GC m 4 g 3145728 n in i 0 o 0
-CC sm 2 sg 1048576 dm 4 dg 3145728
+MC id 5 c eventlogrecording_1::Node t Node pid 2 n node
+GC m 5 g 1 n out o 1
+GC m 5 g 6 n directIn o 0
+MS id 5 d ""
+GC m 5 g 3145728 n in i 0 o 0
+CC sm 2 sg 1048576 dm 5 dg 3145728
 CS sm 2 sg 1048576 d ""
-CC sm 4 sg 1 dm 2 dg 3
+CC sm 5 sg 1 dm 2 dg 3
 MB sm 1 tm 2 m initialize(0)
 ME
-MB sm 1 tm 4 m initialize(0)
+MB sm 1 tm 5 m initialize(0)
 - initializing...
 ME
 MB sm 1 tm 3 m initialize(0)
@@ -267,7 +267,7 @@ SH sm 2 sg 1048576 pd 0.001
 ES t 1.006096
 DM id 0 tid 0 eid 0 etid 0 c cMessage n send k 1 pe 1
 
-E # 2 t 1.006096 m 4 ce 1 msg 8
+E # 2 t 1.006096 m 5 ce 1 msg 8
 - message received: pk1
 DM id 8 tid 8 eid 8 etid 8 c cMessage n pk1 k 99 pe 2
 
@@ -275,20 +275,20 @@ E # 3 t 2 m 3 ce 0 msg 1
 - sending msg directly
 CM id 9 tid 9 eid 9 etid 9 c cMessage n directMsg pe -1
 BS id 9 tid 9 eid 9 etid 9 c cMessage n directMsg pe 3
-SD sm 3 dm 4 dg 6
+SD sm 3 dm 5 dg 6
 ES t 2
 - sending pk directly
 CM id 10 tid 10 eid 10 etid 10 c cMessage n directPk k 99 pe -1
 BS id 10 tid 10 eid 10 etid 10 c cPacket n directPk k 99 l 4096 pe 3
-SD sm 3 dm 4 dg 6 pd 0.001 td 0.004096
+SD sm 3 dm 5 dg 6 pd 0.001 td 0.004096
 ES t 2.005096
 DM id 1 tid 1 eid 1 etid 1 c cMessage n sendDirect k 2 pe 3
 
-E # 4 t 2 m 4 ce 3 msg 9
+E # 4 t 2 m 5 ce 3 msg 9
 - message received: directMsg
 DM id 9 tid 9 eid 9 etid 9 c cMessage n directMsg pe 4
 
-E # 5 t 2.005096 m 4 ce 3 msg 10
+E # 5 t 2.005096 m 5 ce 3 msg 10
 - message received: directPk
 DM id 10 tid 10 eid 10 etid 10 c cMessage n directPk k 99 pe 5
 
@@ -308,32 +308,32 @@ DM id 3 tid 3 eid 3 etid 3 c cMessage n cancel k 4 pe 7
 E # 8 t 5 m 3 ce 0 msg 4
 - displaying bubbles
 BU id 3 txt "this is the bubble text"
-BU id 4 txt "this is the peer's bubble text"
+BU id 5 txt "this is the peer's bubble text"
 DM id 4 tid 4 eid 4 etid 4 c cMessage n bubble k 5 pe 8
 
 E # 9 t 6 m 3 ce 0 msg 5
 - making three method calls
-MB sm 3 tm 4 m "publicMethod(\"dummy\", 42)"
+MB sm 3 tm 5 m "publicMethod(\"dummy\", 42)"
 - sending a message from the called method
 CM id 12 tid 12 eid 12 etid 12 c cMessage n msg1 pe -1
 BS id 12 tid 12 eid 12 etid 12 c cMessage n msg1 pe 9
-SH sm 4 sg 1
+SH sm 5 sg 1
 SH sm 2 sg 3
 ES t 6
 ME
-MB sm 3 tm 4 m ""
+MB sm 3 tm 5 m ""
 - sending a message from the called method
 CM id 13 tid 13 eid 13 etid 13 c cMessage n msg2 pe -1
 BS id 13 tid 13 eid 13 etid 13 c cMessage n msg2 pe 9
-SH sm 4 sg 1
+SH sm 5 sg 1
 SH sm 2 sg 3
 ES t 6
 ME
-MB sm 3 tm 4 m "publicMethod(\"dummy\", 42)"
+MB sm 3 tm 5 m "publicMethod(\"dummy\", 42)"
 - sending a message from the called method
 CM id 14 tid 14 eid 14 etid 14 c cMessage n msg3 pe -1
 BS id 14 tid 14 eid 14 etid 14 c cMessage n msg3 pe 9
-SH sm 4 sg 1
+SH sm 5 sg 1
 SH sm 2 sg 3
 ES t 6
 ME
@@ -353,20 +353,20 @@ DM id 14 tid 14 eid 14 etid 14 c cMessage n msg3 pe 12
 
 E # 13 t 7 m 3 ce 0 msg 6
 - creating and connecting a module
-MC id 5 c eventlogrecording_1::Node t Node pid 1 n dy
-GC m 5 g 1 n out o 1
-GC m 5 g 6 n directIn o 0
-MS id 5 d ""
-MB sm 3 tm 5 m initialize(0)
+MC id 7 c eventlogrecording_1::Node t Node pid 1 n dy
+GC m 7 g 1 n out o 1
+GC m 7 g 6 n directIn o 0
+MS id 7 d ""
+MB sm 3 tm 7 m initialize(0)
 - initializing...
 ME
 DM id 6 tid 6 eid 6 etid 6 c cMessage n createModule k 7 pe 13
 
 E # 14 t 8 m 3 ce 0 msg 7
 - deleting a module
-MD id 5
-GD m 5 g 1
-GD m 5 g 6
+MD id 7
+GD m 7 g 1
+GD m 7 g 6
 DM id 7 tid 7 eid 7 etid 7 c cMessage n deleteModule k 8 pe 14
 SE e 0 c 13 m "No more events -- simulation ended at event #15, t=8."
 - finishing...
