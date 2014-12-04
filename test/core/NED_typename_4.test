@@ -1,0 +1,46 @@
+%description:
+Check that fully qualified type names are accepted, and can be used to
+disambiguate types.
+
+%file: a/test.ned
+package a;
+import IApp;
+module App like IApp {}
+
+%file: b/test.ned
+package b;
+import IApp;
+module App like IApp {}
+
+%file: test.ned
+
+import testlib.*;
+
+moduleinterface IApp {}
+
+network Test
+{
+    submodules:
+        a : <> like IApp;
+        b : <> like IApp;
+        dump: Dump;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+**.a.typename = "a.App"
+**.b.typename = "b.App"
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.a: a.App {
+        }
+        module Test.b: b.App {
+        }
+}
+

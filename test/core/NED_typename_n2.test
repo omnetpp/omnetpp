@@ -1,0 +1,39 @@
+%description:
+Check that a typename ambiguity (unqualified name matches more than one
+type names) causes an error.
+
+Also check expression is evaluated in the right context
+
+%file: a/test.ned
+package a;
+import IApp;
+module App like IApp {}
+
+%file: b/test.ned
+package b;
+import IApp;
+module App like IApp {}
+
+%file: test.ned
+
+import testlib.*;
+
+moduleinterface IApp {}
+
+network Test
+{
+    submodules:
+        a : <> like IApp;
+        dump: Dump;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+**.a.typename = "App"
+
+%exitcode: 1
+
+%contains: stdout
+Submodule a: more than one module types named `App' found that implement module interface IApp (use fully qualified name to disambiguate)
