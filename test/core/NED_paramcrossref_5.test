@@ -1,0 +1,26 @@
+%description:
+Verify that random non-volatile parameters are converted to const
+at their first evaluation; that is, 'a' and 'b' must be set to the same
+value.
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Test
+{
+    parameters:
+        int a = b;
+        int b = uniform(0,1000);
+    submodules:
+        dump: Dump;
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        a = 548
+        b = 548
+    submodules:
+}
