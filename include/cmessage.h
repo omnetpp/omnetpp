@@ -113,6 +113,9 @@ class SIM_API cMessage : public cOwnedObject
     friend class LogBuffer;  // for setMessageId()
 
   private:
+    enum {
+        FL_ISPRIVATECOPY = 4,
+    };
     // note: fields are in an order that maximizes packing (minimizes sizeof(cMessage))
     short msgkind;             // message kind -- 0>= user-defined meaning, <0 reserved
     short prior;               // priority -- used for scheduling msgs with equal times
@@ -150,6 +153,9 @@ class SIM_API cMessage : public cOwnedObject
     void setId(long id) {msgid = id;}
 
   public:
+    // internal: create an exact clone (including msgid) that doesn't show up in the statistics
+    cMessage* privateDup() const;
+
     // internal: returns the event number which scheduled this event, or the event in which
     // this message was last delivered to a module. Stored for recording into the event log file.
     eventnumber_t getPreviousEventNumber() const {return prev_event_num;}
@@ -711,8 +717,8 @@ class SIM_API cPacket : public cMessage
 {
   private:
     enum {
-        FL_ISRECEPTIONSTART = 4,
-        FL_BITERROR = 8,
+        FL_ISRECEPTIONSTART = 8,
+        FL_BITERROR = 16,
     };
     int64 len;            // length of the packet in bits -- used for bit error and transmission delay modeling
     simtime_t duration;   // transmission duration on last channel with datarate

@@ -114,7 +114,9 @@ cMessage::~cMessage()
         else
             delete ctrlp;
     }
-    live_msgs--;
+
+    if ((flags & FL_ISPRIVATECOPY) == 0)
+        live_msgs--;
 }
 
 std::string cMessage::info() const
@@ -273,6 +275,17 @@ void cMessage::_createparlist()
 {
     parlistp = new cArray("parameters", 5, 5);
     take(parlistp);
+}
+
+cMessage *cMessage::privateDup() const
+{
+    cMessage *ret = dup();
+    ret->msgid = msgid;
+    ret->flags |= FL_ISPRIVATECOPY;
+    ret->removeFromOwnershipTree();
+    total_msgs--;
+    live_msgs--;
+    return ret;
 }
 
 void cMessage::setControlInfo(cObject *p)
