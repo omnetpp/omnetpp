@@ -1879,6 +1879,25 @@ module Node
 }
 \end{ned}
 
+There must be exactly one module type that goes by the simple name \ttt{Ieee80211b}
+and also implements the module interface \ttt{INic}, otherwise an error message
+will be issued. (The imports in \ttt{Node}'s the NED file play no role in the
+type resolution.)  If there are two or more such types, you can remove the ambiguity
+by specifying the fully qualified module type name, i.e. one that also includes
+the package name:
+
+\begin{ned}
+module Node
+{
+    submodules:
+        nic: <default("acme.wireless.Ieee80211b")> like INic; // made-up name
+        ...
+}
+\end{ned}
+
+
+
+
 
 \subsection{Parametric Connection Types}
 \label{sec:ch-ned-lang:connection-like}
