@@ -4645,7 +4645,7 @@ The next figure illustrates which filters and recorders are created and how
 they are connected for the following statistics:
 
 \begin{ned}
-@statistic[droppedBytes](source=8*packetBits(pkdrop); record=sum,vector(sum));
+@statistic[droppedBits](source=8*packetBytes(pkdrop); record=sum,vector(sum));
 \end{ned}
 
 \begin{figure}[htbp]

@@ -1,7 +1,7 @@
 /*
  * @statistic[result1](record=last,vector);
  * @statistic[result2](record=vector(timeavg));
- * @statistic[droppedBytes](source="8*packetBits(pkdrop)"; record="sum,vector(sum)");
+ * @statistic[droppedBits](source="8*packetBytes(pkdrop)"; record="sum,vector(sum)");
  */
 digraph g {
 
@@ -14,7 +14,7 @@ digraph g {
         pkdrop [shape=rectangle, height=0.7];
 
         /* filters */
-        packetBits [shape=circle];
+        packetBytes [shape=circle];
         expr1 [shape=circle, label="f(x) = x*8"];
         sum [shape=circle];
 
@@ -26,8 +26,8 @@ digraph g {
         /* result1_1 [shape=plaintext, label="result1: record=vector"]; */
 
         /* edges */
-        pkdrop -> packetBits;
-        packetBits -> expr1;
+        pkdrop -> packetBytes;
+        packetBytes -> expr1;
         expr1 -> sumrec;
         expr1 -> sum;
         sum -> vector;
