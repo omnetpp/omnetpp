@@ -149,6 +149,7 @@ htmlfile_spec := $BASE.htm
 :comm   :\fprop(\[.*?\])?{(.*?)}:<b><tt>$2</tt></b>::
 :comm   :\fconfig(\[.*?\])?{(.*?)}:<b><tt>$2</tt></b>::
 :comm   :\ffilename(\[.*?\])?{(.*?)}:<tt>$2</tt>::
+:comm   :\ftest(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\includegraphics(\[.*?\])?{figures/(.*?)}:<img src="$2.png">::
 :comm   :\ifcommercial:@ifcommercial@::
 :comm   :\fi:@fi@::
