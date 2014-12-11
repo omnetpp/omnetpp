@@ -21,6 +21,8 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
+
 #include "nedelements.h"
 #include "nederror.h"
 
@@ -54,15 +56,24 @@ class NEDXML_API MsgCppGenerator
   protected:
     struct TypeDesc
     {
+        const char *nedTypeName;
+        const char *cppTypeName;
         const char *fromstring;
         const char *tostring;
-        TypeDesc()
-            : fromstring(0), tostring(0) {};
-        TypeDesc(const char *fromstring, const char *tostring)
-            : fromstring(fromstring), tostring(tostring) {};
+        const char *emptyValue;
+//        TypeDesc()
+//            : nedTypeName(0), cppTypeName(0), fromstring(0), tostring(0) {};
+//        TypeDesc(const char *nedTypeName, const char *cppTypeName, const char *fromstring, const char *tostring)
+//            : nedTypeName(nedTypeName), cppTypeName(cppTypeName), fromstring(fromstring), tostring(tostring) {};
     };
-    typedef std::map<std::string,TypeDesc> TypeMap;
-    static const TypeMap PRIMITIVE_TYPES;
+
+    static TypeDesc _PRIMITIVE_TYPES[];
+    typedef std::map<std::string,TypeDesc> TypeDescMap;
+    TypeDescMap PRIMITIVE_TYPES;
+
+    static const char *_RESERVED_WORDS[];
+    typedef std::set<std::string> WordSet;
+    WordSet RESERVED_WORDS;
 
     std::string hFilename;
     std::string ccFilename;
@@ -205,6 +216,8 @@ class NEDXML_API MsgCppGenerator
      * passed DTD and syntax validation.
      */
     void generate(MsgFileElement *fileElement);
+
+    void initDescriptors();
 
   public:
     /**
