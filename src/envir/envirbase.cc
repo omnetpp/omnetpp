@@ -1133,9 +1133,8 @@ void EnvirBase::dumpResultRecorders(cComponent *component)
 
 void EnvirBase::dumpResultRecorderChain(cResultListener *listener, int depth)
 {
-    for (int i = 0; i < depth+2; i++)
-        ev << "    ";
-    ev << listener->str();
+    std::string indent(4*depth+8, ' ');
+    ev << indent << listener->str();
     if (dynamic_cast<cResultRecorder*>(listener))
         ev << " ==> " << ((cResultRecorder*)listener)->getResultName();
     ev << "\n";
