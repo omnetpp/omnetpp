@@ -1,0 +1,94 @@
+%description:
+Test recording of expressions computed from multiple scalars
+
+%file: test.ned
+
+simple Node
+{
+    parameters:
+        @signal[a](type=double);
+        @signal[b](type=double);
+        @statistic[aplusb](source=a+b; record=min,max,last,vector);
+}
+
+network Test
+{
+    submodules:
+       node: Node;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class Node : public cSimpleModule
+{
+  private:
+    simsignal_t a;
+    simsignal_t b;
+
+  protected:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+};
+
+Define_Module( Node );
+
+void Node::initialize()
+{
+    a = registerSignal("a");
+    b = registerSignal("b");
+    scheduleAt(0.1, new cMessage());
+}
+
+void Node::handleMessage(cMessage *msg)
+{
+    if (intrand(2)==0)
+       emit(a, intrand(2)==0 ? -1 : 1);
+    else
+       emit(b, intrand(2)==0 ? -10 : 10);
+    scheduleAt(simTime()+0.1, msg);
+}
+
+Define_Module(Node);
+
+}; //namespace
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+sim-time-limit=1s
+debug-statistics-recording = true
+
+%subst: /-?1\.#INF/inf/
+%subst: /-?1\.#IND/nan/
+%subst: /-?1\.#QNAN/nan/
+%subst: /-?NaN/nan/
+%subst: /-?\-nan/nan/
+
+%contains: results/General-0.sca
+scalar Test.node 	aplusb:min 	-11
+attr source  a+b
+scalar Test.node 	aplusb:max 	11
+attr source  a+b
+scalar Test.node 	aplusb:last 	-9
+attr source  a+b
+
+%contains: results/General-0.vec
+vector 0  Test.node  aplusb:vector  ETV
+attr source  a+b
+0	1	0.1	nan
+0	2	0.2	-9
+0	3	0.3	11
+0	4	0.4	11
+0	5	0.5	11
+0	6	0.6	-9
+0	7	0.7	-9
+0	8	0.8	-11
+0	9	0.9	-11
+0	10	1	-9
+

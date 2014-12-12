@@ -49,6 +49,7 @@ class SIM_API cResultListener : public cIListener
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj) = 0;
         virtual void subscribedTo(cResultFilter *prev);
         virtual void unsubscribedFrom(cResultFilter *prev);
+        virtual void callFinish(cResultFilter *prev) {finish(prev);}
         virtual void finish(cResultFilter *prev) {}
 
         // original listener API delegates to simplified API:

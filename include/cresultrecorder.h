@@ -56,6 +56,7 @@ class SIM_API cResultRecorder : public cResultListener
         const char *recordingMode;
         cProperty *attrsProperty;  // property to take result attributes from (normally @statistic[statisticName])
         opp_string_map *manualAttrs; // if non-null, overrides attrsProperty
+        bool finishCalled; // to prevent double-recording of scalar results based on multiple signals
 
     protected:
         virtual opp_string_map getStatisticAttributes(); // order: manualAttrs, then attrsProperty
@@ -76,6 +77,7 @@ class SIM_API cResultRecorder : public cResultListener
         virtual const char *getStatisticName() const {return statisticName;}
         virtual const char *getRecordingMode() const {return recordingMode;}
         virtual std::string getResultName() const {return std::string(getStatisticName())+":"+getRecordingMode();}
+        virtual void callFinish(cResultFilter *prev);
 };
 
 /**
