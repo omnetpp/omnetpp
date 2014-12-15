@@ -83,6 +83,12 @@ proc ::tkp::transform {cmd args} {
 	    }
 	    set matrix [list {1 0} {0 1} [lrange $args 0 1]]
 	}
+	mult {
+	    if {$len != 2} {
+		return -code error "usage: transform mult transform1 transform2"
+	    }
+	    return tkp::mmult [lindex $args 0] [lindex $args 1]
+	}
 	default {
 	    return -code error "unrecognized transform command: \"$cmd\""
 	}
