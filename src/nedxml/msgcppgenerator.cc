@@ -224,59 +224,57 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement, const char *hFile, c
 void MsgCppGenerator::extractClassDecl(NEDElement *child)
 {
     std::string name = ptr2str(child->getAttribute("name"));
-    if (RESERVED_WORDS.find(name) == RESERVED_WORDS.end())
-    {
-        std::string type0 = child->getTagName();
-        std::string myclass = name;
-        std::string baseclass = ptr2str(child->getAttribute("extends-name"));
-        ClassType type;
-        bool isCobject = (ptr2str(child->getAttribute("is-cobject")) == "true");
-
-        std::string classqname = canonicalizeQName(namespacename, myclass);
-
-        if (type0 == "struct-decl") {
-            type = STRUCT;
-        } else if (type0 == "message-decl" || type0 == "packet-decl") {
-            type = COWNEDOBJECT;
-        } else if (type0 == "class-decl") {
-            if (!isCobject) {
-                type = FOREIGN;
-                if (!baseclass.empty()) {
-                    errors->addError(child, "'%s': the keywords noncobject and extends cannot be used together", name.c_str());
-                }
-            }
-            else if (baseclass == "") {
-                type = COWNEDOBJECT;
-            } else if (baseclass == "void") {
-                type = FOREIGN;
-            } else {
-                StringVector found = lookupExistingClassName(baseclass);
-                if (found.size() == 1) {
-                    type = getClassType(found[0]);
-                } else if (found.empty()) {
-                    errors->addError(child, "'%s': unknown ancestor class '%s'\n", myclass.c_str(), baseclass.c_str());
-                    type = COBJECT;
-                } else {
-                    errors->addWarning(child, "'%s': ambiguous ancestor class '%s'; possibilities: '%s'\n", myclass.c_str(), baseclass.c_str(), join(found, "','").c_str());
-                    type = getClassType(found[0]);
-                }
-            }
-        } else {
-            errors->addError(child, "invalid type '%s' in class '%s'\n", type0.c_str(), myclass.c_str());
-        }
-
-        if (classtype.find(classqname) != classtype.end()) {
-            if (classtype[classqname] != type) {
-                errors->addError(child, "different declarations for '%s(=%s)' are inconsistent\n", myclass.c_str(), classqname.c_str());
-            }
-        } else {
-            //print "DBG: classtype{$type0 myclass $baseclass} = $type\n";
-            classtype[classqname] = type;
-        }
-    }
-    else
-    {
+    if (RESERVED_WORDS.find(name) != RESERVED_WORDS.end()) {
         errors->addError(child, "type name '%s' is a reserved word\n", name.c_str());
+        return;
+    }
+
+    std::string type0 = child->getTagName();
+    std::string myclass = name;
+    std::string baseclass = ptr2str(child->getAttribute("extends-name"));
+    ClassType type;
+    bool isCobject = (ptr2str(child->getAttribute("is-cobject")) == "true");
+
+    std::string classqname = canonicalizeQName(namespacename, myclass);
+
+    if (type0 == "struct-decl") {
+        type = STRUCT;
+    } else if (type0 == "message-decl" || type0 == "packet-decl") {
+        type = COWNEDOBJECT;
+    } else if (type0 == "class-decl") {
+        if (!isCobject) {
+            type = FOREIGN;
+            if (!baseclass.empty()) {
+                errors->addError(child, "'%s': the keywords noncobject and extends cannot be used together", name.c_str());
+            }
+        }
+        else if (baseclass == "") {
+            type = COWNEDOBJECT;
+        } else if (baseclass == "void") {
+            type = FOREIGN;
+        } else {
+            StringVector found = lookupExistingClassName(baseclass);
+            if (found.size() == 1) {
+                type = getClassType(found[0]);
+            } else if (found.empty()) {
+                errors->addError(child, "'%s': unknown ancestor class '%s'\n", myclass.c_str(), baseclass.c_str());
+                type = COBJECT;
+            } else {
+                errors->addWarning(child, "'%s': ambiguous ancestor class '%s'; possibilities: '%s'\n", myclass.c_str(), baseclass.c_str(), join(found, "','").c_str());
+                type = getClassType(found[0]);
+            }
+        }
+    } else {
+        errors->addError(child, "invalid type '%s' in class '%s'\n", type0.c_str(), myclass.c_str());
+    }
+
+    if (classtype.find(classqname) != classtype.end()) {
+        if (classtype[classqname] != type) {
+            errors->addError(child, "different declarations for '%s(=%s)' are inconsistent\n", myclass.c_str(), classqname.c_str());
+        }
+    } else {
+        //print "DBG: classtype{$type0 myclass $baseclass} = $type\n";
+        classtype[classqname] = type;
     }
 }
 
