@@ -32,8 +32,17 @@ void cResultRecorder::init(cComponent *comp, const char *statsName, const char *
     recordingMode = getPooled(recMode);
     attrsProperty = property;
     manualAttrs = attrs;
+    finishCalled = false;
     if ((!attrsProperty) == (!manualAttrs))
         throw cRuntimeError("cResultRecorder::init(): exactly one of attrsProperty and manualAttrs must be specified");
+}
+
+void cResultRecorder::callFinish(cResultFilter *prev)
+{
+    if (!finishCalled) {
+        finishCalled = true;
+        finish(prev);
+    }
 }
 
 opp_string_map cResultRecorder::getStatisticAttributes()

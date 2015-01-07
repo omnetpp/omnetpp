@@ -164,7 +164,7 @@ void cResultListener::unsubscribedFrom(cComponent *component, simsignal_t signal
 
 void cResultListener::finish(cComponent *component, simsignal_t signalID)
 {
-    finish(NULL);
+    callFinish(NULL);
 }
 
 NAMESPACE_END

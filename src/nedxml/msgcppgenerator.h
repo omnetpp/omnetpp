@@ -21,6 +21,8 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
+
 #include "nedelements.h"
 #include "nederror.h"
 
@@ -54,15 +56,20 @@ class NEDXML_API MsgCppGenerator
   protected:
     struct TypeDesc
     {
+        const char *nedTypeName;
+        const char *cppTypeName;
         const char *fromstring;
         const char *tostring;
-        TypeDesc()
-            : fromstring(0), tostring(0) {};
-        TypeDesc(const char *fromstring, const char *tostring)
-            : fromstring(fromstring), tostring(tostring) {};
+        const char *emptyValue;
     };
-    typedef std::map<std::string,TypeDesc> TypeMap;
-    static const TypeMap PRIMITIVE_TYPES;
+
+    static TypeDesc _PRIMITIVE_TYPES[];
+    typedef std::map<std::string,TypeDesc> TypeDescMap;
+    TypeDescMap PRIMITIVE_TYPES;
+
+    static const char *_RESERVED_WORDS[];
+    typedef std::set<std::string> WordSet;
+    WordSet RESERVED_WORDS;
 
     std::string hFilename;
     std::string ccFilename;
@@ -186,7 +193,9 @@ class NEDXML_API MsgCppGenerator
       public:
         EnumInfo() : nedElement(NULL) {}
     };
+
   protected:
+    void initDescriptors();
     std::string prefixWithNamespace(const std::string& s);
     StringVector lookupExistingClassName(const std::string& s);
     StringVector lookupExistingEnumName(const std::string& s);
@@ -208,11 +217,6 @@ class NEDXML_API MsgCppGenerator
     void generateTemplates();
     bool getPropertyAsBool(const Properties& p, const char *name, bool defval);
     std::string getProperty(const Properties& p, const char *name, const std::string& defval = std::string());
-
-    /**
-     * Generates C++ code from the specified message file. Assumes object tree has already
-     * passed DTD and syntax validation.
-     */
     void generate(MsgFileElement *fileElement);
 
   public:
@@ -227,7 +231,8 @@ class NEDXML_API MsgCppGenerator
     ~MsgCppGenerator();
 
     /**
-     * TODO
+     * Generates C++ code from the specified message file. Assumes that the
+     * object tree has already passed DTD and syntax validation.
      */
     void generate(MsgFileElement *fileElement, const char *hFile, const char *ccFile);
 };

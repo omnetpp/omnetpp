@@ -19,7 +19,6 @@
 #include <sstream>
 #include <algorithm>
 #include <cctype>
-#include <set>
 
 #include "msgcppgenerator.h"
 #include "ned2generator.h"
@@ -115,76 +114,67 @@ P check_and_cast(T *p)
     return ret;
 }
 
-template <typename T, typename U>
-class create_map
-{
-private:
-    std::map<T, U> m_map;
-public:
-    create_map(const T& key, const U& val)
-    {
-        m_map[key] = val;
-    }
-
-    create_map<T, U>& operator()(const T& key, const U& val)
-    {
-        m_map[key] = val;
-        return *this;
-    }
-
-    operator std::map<T, U>()
-    {
-        return m_map;
-    }
+MsgCppGenerator::TypeDesc MsgCppGenerator::_PRIMITIVE_TYPES[] =
+{ //     nedTypeName        cppTypeName        fromstring         tostring            emptyValue
+        {"bool",            "bool",            "string2bool",     "bool2string",      "false"},
+        {"float",           "float",           "string2double",   "double2string",    "0"},
+        {"double",          "double",          "string2double",   "double2string",    "0"},
+        {"simtime_t",       "simtime_t",       "string2double",   "double2string",    "0"},
+        {"string",          "opp_string",      "",                "oppstring2string", ""},
+        {"char",            "char",            "string2long",     "long2string",      "0"},
+        {"short",           "short",           "string2long",     "long2string",      "0"},
+        {"int",             "int",             "string2long",     "long2string",      "0"},
+        {"long",            "long",            "string2long",     "long2string",      "0"},
+        {"int8",            "int8_t",          "string2long",     "long2string",      "0"},
+        {"int8_t",          "int8_t",          "string2long",     "long2string",      "0"},
+        {"int16",           "int16_t",         "string2long",     "long2string",      "0"},
+        {"int16_t",         "int16_t",         "string2long",     "long2string",      "0"},
+        {"int32",           "int32_t",         "string2long",     "long2string",      "0"},
+        {"int32_t",         "int32_t",         "string2long",     "long2string",      "0"},
+        {"unsigned char",   "unsigned char",   "string2ulong",    "ulong2string",     "0"},
+        {"unsigned short",  "unsigned short",  "string2ulong",    "ulong2string",     "0"},
+        {"unsigned int",    "unsigned int",    "string2ulong",    "ulong2string",     "0"},
+        {"unsigned long",   "unsigned long",   "string2ulong",    "ulong2string",     "0"},
+        {"uint8",           "uint8_t",         "string2ulong",    "ulong2string",     "0"},
+        {"uint8_t",         "uint8_t",         "string2ulong",    "ulong2string",     "0"},
+        {"uint16",          "uint16_t",        "string2ulong",    "ulong2string",     "0"},
+        {"uint16_t",        "uint16_t",        "string2ulong",    "ulong2string",     "0"},
+        {"uint32",          "uint32_t",        "string2ulong",    "ulong2string",     "0"},
+        {"uint32_t",        "uint32_t",        "string2ulong",    "ulong2string",     "0"},
+        {"int64",           "int64_t",         "string2int64",    "int642string",     "0"},
+        {"int64_t",         "int64_t",         "string2int64",    "int642string",     "0"},
+        {"uint64",          "uint64_t",        "string2uint64",   "uint642string",    "0"},
+        {"uint64_t",        "uint64_t",        "string2uint64",   "uint642string",    "0"},
+        {0,0,0,0,0}
 };
 
-const MsgCppGenerator::TypeMap MsgCppGenerator::PRIMITIVE_TYPES =
-    create_map<std::string, MsgCppGenerator::TypeDesc>
-        ("bool",            TypeDesc("string2bool",     "bool2string"))
-        ("float",           TypeDesc("string2double",   "double2string"))
-        ("double",          TypeDesc("string2double",   "double2string"))
-        ("simtime_t",       TypeDesc("string2double",   "double2string"))
-        ("string",          TypeDesc(" ",               "oppstring2string"))
-        ("char",            TypeDesc("string2long",     "long2string"))
-        ("short",           TypeDesc("string2long",     "long2string"))
-        ("int",             TypeDesc("string2long",     "long2string"))
-        ("long",            TypeDesc("string2long",     "long2string"))
-        ("int8",            TypeDesc("string2long",     "long2string"))
-        ("int8_t",          TypeDesc("string2long",     "long2string"))
-        ("int16",           TypeDesc("string2long",     "long2string"))
-        ("int16_t",         TypeDesc("string2long",     "long2string"))
-        ("int32",           TypeDesc("string2long",     "long2string"))
-        ("int32_t",         TypeDesc("string2long",     "long2string"))
-        ("unsigned char",   TypeDesc("string2ulong",    "ulong2string"))
-        ("unsigned short",  TypeDesc("string2ulong",    "ulong2string"))
-        ("unsigned int",    TypeDesc("string2ulong",    "ulong2string"))
-        ("unsigned long",   TypeDesc("string2ulong",    "ulong2string"))
-        ("uint8",           TypeDesc("string2ulong",    "ulong2string"))
-        ("uint8_t",         TypeDesc("string2ulong",    "ulong2string"))
-        ("uint16",          TypeDesc("string2ulong",    "ulong2string"))
-        ("uint16_t",        TypeDesc("string2ulong",    "ulong2string"))
-        ("uint32",          TypeDesc("string2ulong",    "ulong2string"))
-        ("uint32_t",        TypeDesc("string2ulong",    "ulong2string"))
-        ("int64",           TypeDesc("string2int64",    "int642string"))
-        ("int64_t",         TypeDesc("string2int64",    "int642string"))
-        ("uint64",          TypeDesc("string2uint64",   "uint642string"))
-        ("uint64_t",        TypeDesc("string2uint64",   "uint642string"))
-        ;
 
-static const std::string _RESERVED_WORDS[] =
-       {"namespace", "cplusplus", "struct", "message", "packet", "class", "noncobject",
-        "enum", "extends", "abstract", "readonly", "properties", "fields", "bool", "char", "short",
-        "int", "long", "double", "unsigned", "string", "true", "false",
-        "float", "int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64",
-        "int8_t", "int16_t", "int32_t", "int64_t", "uint8_t", "uint16_t", "uint32_t", "uint64_t",
-        "for", "while", "if", "else", "do", "enum", "class", "struct", "typedef", "public", "private",
-        "protected", "auto", "register", "sizeof", "void", "new", "delete", "explicit", "static",
-        "extern", "return", "try", "catch"};
+const char *MsgCppGenerator::_RESERVED_WORDS[] =
+{
+        "namespace", "cplusplus", "struct", "message", "packet", "class", "noncobject",
+        "enum", "extends", "abstract", "readonly", "properties", "fields", "unsigned",
+        "true", "false", "for", "while", "if", "else", "do", "enum", "class", "struct",
+        "typedef", "public", "private", "protected", "auto", "register", "sizeof", "void",
+        "new", "delete", "explicit", "static", "extern", "return", "try", "catch",
+        0
+};
 
-static const std::set<std::string> RESERVED_WORDS(_RESERVED_WORDS, _RESERVED_WORDS + sizeof(_RESERVED_WORDS) / sizeof(_RESERVED_WORDS[0]));
+void MsgCppGenerator::initDescriptors()
+{
+    for (int i = 0; _PRIMITIVE_TYPES[i].nedTypeName; ++i) {
+        PRIMITIVE_TYPES[_PRIMITIVE_TYPES[i].nedTypeName] = _PRIMITIVE_TYPES[i];
+        RESERVED_WORDS.insert(_PRIMITIVE_TYPES[i].nedTypeName);
+    }
+    for (int i = 0; _RESERVED_WORDS[i]; ++i) {
+        RESERVED_WORDS.insert(_RESERVED_WORDS[i]);
+    }
+}
+
 
 MsgCppGenerator::MsgCppGenerator(NEDErrorStore *e, const MsgCppGeneratorOptions& options)
 {
+    initDescriptors();
+
     opts = options;
 
     hOutp = ccOutp = NULL;
@@ -234,59 +224,57 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement, const char *hFile, c
 void MsgCppGenerator::extractClassDecl(NEDElement *child)
 {
     std::string name = ptr2str(child->getAttribute("name"));
-    if (RESERVED_WORDS.find(name) == RESERVED_WORDS.end())
-    {
-        std::string type0 = child->getTagName();
-        std::string myclass = name;
-        std::string baseclass = ptr2str(child->getAttribute("extends-name"));
-        ClassType type;
-        bool isCobject = (ptr2str(child->getAttribute("is-cobject")) == "true");
-
-        std::string classqname = canonicalizeQName(namespacename, myclass);
-
-        if (type0 == "struct-decl") {
-            type = STRUCT;
-        } else if (type0 == "message-decl" || type0 == "packet-decl") {
-            type = COWNEDOBJECT;
-        } else if (type0 == "class-decl") {
-            if (!isCobject) {
-                type = FOREIGN;
-                if (!baseclass.empty()) {
-                    errors->addError(child, "'%s': the keywords noncobject and extends cannot be used together", name.c_str());
-                }
-            }
-            else if (baseclass == "") {
-                type = COWNEDOBJECT;
-            } else if (baseclass == "void") {
-                type = FOREIGN;
-            } else {
-                StringVector found = lookupExistingClassName(baseclass);
-                if (found.size() == 1) {
-                    type = getClassType(found[0]);
-                } else if (found.empty()) {
-                    errors->addError(child, "'%s': unknown ancestor class '%s'\n", myclass.c_str(), baseclass.c_str());
-                    type = COBJECT;
-                } else {
-                    errors->addWarning(child, "'%s': ambiguous ancestor class '%s'; possibilities: '%s'\n", myclass.c_str(), baseclass.c_str(), join(found, "','").c_str());
-                    type = getClassType(found[0]);
-                }
-            }
-        } else {
-            errors->addError(child, "invalid type '%s' in class '%s'\n", type0.c_str(), myclass.c_str());
-        }
-
-        if (classtype.find(classqname) != classtype.end()) {
-            if (classtype[classqname] != type) {
-                errors->addError(child, "different declarations for '%s(=%s)' are inconsistent\n", myclass.c_str(), classqname.c_str());
-            }
-        } else {
-            //print "DBG: classtype{$type0 myclass $baseclass} = $type\n";
-            classtype[classqname] = type;
-        }
-    }
-    else
-    {
+    if (RESERVED_WORDS.find(name) != RESERVED_WORDS.end()) {
         errors->addError(child, "type name '%s' is a reserved word\n", name.c_str());
+        return;
+    }
+
+    std::string type0 = child->getTagName();
+    std::string myclass = name;
+    std::string baseclass = ptr2str(child->getAttribute("extends-name"));
+    ClassType type;
+    bool isCobject = (ptr2str(child->getAttribute("is-cobject")) == "true");
+
+    std::string classqname = canonicalizeQName(namespacename, myclass);
+
+    if (type0 == "struct-decl") {
+        type = STRUCT;
+    } else if (type0 == "message-decl" || type0 == "packet-decl") {
+        type = COWNEDOBJECT;
+    } else if (type0 == "class-decl") {
+        if (!isCobject) {
+            type = FOREIGN;
+            if (!baseclass.empty()) {
+                errors->addError(child, "'%s': the keywords noncobject and extends cannot be used together", name.c_str());
+            }
+        }
+        else if (baseclass == "") {
+            type = COWNEDOBJECT;
+        } else if (baseclass == "void") {
+            type = FOREIGN;
+        } else {
+            StringVector found = lookupExistingClassName(baseclass);
+            if (found.size() == 1) {
+                type = getClassType(found[0]);
+            } else if (found.empty()) {
+                errors->addError(child, "'%s': unknown ancestor class '%s'\n", myclass.c_str(), baseclass.c_str());
+                type = COBJECT;
+            } else {
+                errors->addWarning(child, "'%s': ambiguous ancestor class '%s'; possibilities: '%s'\n", myclass.c_str(), baseclass.c_str(), join(found, "','").c_str());
+                type = getClassType(found[0]);
+            }
+        }
+    } else {
+        errors->addError(child, "invalid type '%s' in class '%s'\n", type0.c_str(), myclass.c_str());
+    }
+
+    if (classtype.find(classqname) != classtype.end()) {
+        if (classtype[classqname] != type) {
+            errors->addError(child, "different declarations for '%s(=%s)' are inconsistent\n", myclass.c_str(), classqname.c_str());
+        }
+    } else {
+        //print "DBG: classtype{$type0 myclass $baseclass} = $type\n";
+        classtype[classqname] = type;
     }
 }
 
@@ -644,7 +632,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
     }
 
     // determine field data type
-    TypeMap::const_iterator tdIt= PRIMITIVE_TYPES.find(it->ftype);
+    TypeDescMap::const_iterator tdIt = PRIMITIVE_TYPES.find(it->ftype);
     if (tdIt != PRIMITIVE_TYPES.end()) {
         it->fkind = "basic";
         it->ftypeqname = "";  // unused
@@ -676,26 +664,19 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
         if (tdIt == PRIMITIVE_TYPES.end())
             throw NEDException("internal error - unknown primitive data type '%s'", it->ftype.c_str());
         // defaults:
-        it->datatype = it->ftype;
-        it->argtype = it->ftype;
-        it->rettype = it->ftype;
+        it->datatype = tdIt->second.cppTypeName;
+        it->argtype = tdIt->second.cppTypeName;
+        it->rettype = tdIt->second.cppTypeName;
         if (it->fval.empty())
-            it->fval = "0";
+            it->fval = tdIt->second.emptyValue;
         if (it->tostring.empty())
             it->tostring = tdIt->second.tostring;
         if (it->fromstring.empty())
             it->fromstring = tdIt->second.fromstring;
 
-        if (it->ftype == "bool") {
-            // $datatype, $argtype, $rettype: default (same as $ftype)
-            if (it->fval.empty())
-                it->fval = "false";
-        } else if (it->ftype == "string") {
-            it->datatype = "opp_string";
+        if (it->ftype == "string") {
             it->argtype = "const char *";
             it->rettype = "const char *";
-            if (it->fval.empty())
-                it->fval = "\"\"";
             it->maybe_c_str = ".c_str()";
         }
     } else {

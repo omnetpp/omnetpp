@@ -261,8 +261,8 @@ Test files are composed of \%-directives of the syntax:
 <body>
 \end{filelisting}
 
-The body extends up to the next directive, that is, the next line starting with \%.
-Some directives require a value, others a body, or both.
+The body extends up to the next directive (the next line starting with \%),
+or to the end of the file. Some directives require a value, others a body, or both.
 
 Certain directives, e.g. \ftest{\%contains}, may occur several times in the file.
 
@@ -506,11 +506,11 @@ Syntax:
 \end{filelisting}
 
 \ftest{\%exitcode} and \ftest{\%ignore-exitcode} let you test the exit code of the
-test program. The former checks the exit code is one of the numbers specified in
+test program. The former checks that the exit code is one of the numbers specified in
 the directive; the other makes the test framework ignore the exit code.
 
 {\opp} simulations exit with zero if the simulation terminated
-without an error, and some >0 code if an runtime error occurred. Normally,
+without an error, and some >0 code if a runtime error occurred. Normally,
 a nonzero exit code makes the test fail. However, if the expected outcome
 is a runtime error (e.g. you want to test parameter validation code), you
 can use either \ftest{\%exitcode} to express that, or specify \ftest{\%ignore-exitcode}
@@ -692,7 +692,7 @@ to achieve that.
 \subsection{Writing the control script}
 
 Usually one writes a control script to automate the two invocations of \fprog{opp\_test}
-and the build of the simmulation model between them.
+and the build of the simulation model between them.
 
 A basic variant would look like this:
 

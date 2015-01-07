@@ -109,10 +109,11 @@ void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, cObject *obj)
         delegates[i]->receiveSignal(this, t, obj);
 }
 
-void cResultFilter::finish(cResultFilter *prev)
+void cResultFilter::callFinish(cResultFilter *prev)
 {
+    finish(prev);
     for (int i=0; delegates[i]; i++)
-        delegates[i]->finish(this);
+        delegates[i]->callFinish(this);
 }
 
 //---

@@ -70,7 +70,7 @@ class SIM_API cResultFilter : public cResultListener
         virtual void addDelegate(cResultListener *delegate);
         virtual int getNumDelegates() const;
         std::vector<cResultListener*> getDelegates() const;
-        virtual void finish(cResultFilter *prev);
+        virtual void callFinish(cResultFilter *prev);
 };
 
 /**

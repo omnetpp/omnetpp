@@ -104,6 +104,9 @@ class SIM_API cMessage : public cEvent
     friend class LogBuffer;  // for setMessageId()
 
   private:
+    enum {
+        FL_ISPRIVATECOPY = 4,
+    };
     // note: fields are in an order that maximizes packing (minimizes sizeof(cMessage))
     short msgkind;             // message kind -- 0>= user-defined meaning, <0 reserved
     short srcprocid;           // reserved for use by parallel execution: id of source partition
@@ -135,6 +138,9 @@ class SIM_API cMessage : public cEvent
     void setId(long id) {msgid = id;}
 
   public:
+    // internal: create an exact clone (including msgid) that doesn't show up in the statistics
+    cMessage* privateDup() const;
+
     // internal: called by the simulation kernel as part of the send(),
     // scheduleAt() calls to set the values returned by the
     // getSenderModuleId(), getSenderGate(), getSendingTime() methods.

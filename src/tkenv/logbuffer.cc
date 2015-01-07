@@ -153,9 +153,7 @@ void LogBuffer::beginSend(cMessage *msg)
     Entry *entry = entries.back();
     entry->msgs.push_back(MessageSend());
     MessageSend& msgsend = entry->msgs.back();
-    msgsend.msg = msg->dup();
-    msgsend.msg->setId(msg->getId()); // because dup() assigns a new Id
-    msgsend.msg->removeFromOwnershipTree();
+    msgsend.msg = msg->privateDup();
     msgsend.hopModuleIds.push_back(msg->getSenderModuleId());
 }
 
