@@ -120,7 +120,7 @@ MsgCppGenerator::TypeDesc MsgCppGenerator::_PRIMITIVE_TYPES[] =
         {"float",           "float",           "string2double",   "double2string",    "0"},
         {"double",          "double",          "string2double",   "double2string",    "0"},
         {"simtime_t",       "simtime_t",       "string2double",   "double2string",    "0"},
-        {"string",          "opp_string",      "",                "oppstring2string", ""},
+        {"string",          "opp_string",      " ",               "oppstring2string", ""},      // fromstring=" ": must be not empty, but do nothing (char* to char* conversion)
         {"char",            "char",            "string2long",     "long2string",      "0"},
         {"short",           "short",           "string2long",     "long2string",      "0"},
         {"int",             "int",             "string2long",     "long2string",      "0"},
