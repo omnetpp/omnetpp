@@ -149,992 +149,1007 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/akaroarng.obj: akaroarng.cc \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/cregistrationlist.h \
-  ../../include/errmsg.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
   ../../include/cconfiguration.h \
-  ../../include/clifetimelistener.h \
-  ../../include/opp_string.h \
   ../../include/cenvir.h \
   ../../include/cexception.h \
+  ../../include/clifetimelistener.h \
+  ../../include/clistener.h \
   ../../include/cnamedobject.h \
-  akaroarng.h \
-  ../../include/onstartup.h \
-  ../../include/cownedobject.h \
+  ../../include/cobject.h \
   ../../include/cobjectfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cregistrationlist.h \
   ../../include/crng.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/clistener.h \
-  ../../include/simtime.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
-  ../../include/simutil.h \
-  ../../include/simkerneldefs.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/cobject.h \
-  ../../include/regmacros.h
-$O/akoutvectormgr.obj: akoutvectormgr.cc \
-  eventlogfilemgr.h \
-  envirbase.h \
-  intervals.h \
-  ../../include/cregistrationlist.h \
-  ../../include/carray.h \
-  ../../include/cgate.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/cconfiguration.h \
-  ../../include/cenvir.h \
-  ../../include/cmodule.h \
-  args.h \
-  ../../include/onstartup.h \
-  ../../include/csimulation.h \
-  ../../include/simtime.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simutil.h \
-  ../../include/clog.h \
-  ../../include/cconfigoption.h \
-  ../../include/cmessageheap.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/cobject.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/cresultlistener.h \
   ../../include/errmsg.h \
-  akoutvectormgr.h \
-  ../../include/cdefaultlist.h \
-  fileoutvectormgr.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/clifetimelistener.h \
-  ../../include/envirext.h \
-  ../../include/cstatistic.h \
-  ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/cexpression.h \
-  ../../include/cownedobject.h \
-  ../../include/cobjectfactory.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
-  ../../include/clistener.h \
-  ../../include/cpar.h \
-  runattributes.h \
-  objectprinter.h \
-  ../../include/ccomponent.h \
-  ../../include/cevent.h \
+  ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
-  logformatter.h
-$O/appreg.obj: appreg.cc \
-  ../../include/cregistrationlist.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  ../../include/cenvir.h \
-  ../../include/onstartup.h \
+  ../../include/simkerneldefs.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
-  envirdefs.h \
   ../../include/simutil.h \
-  ../../include/simkerneldefs.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/cobject.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h \
-  ../../include/clifetimelistener.h \
+  akaroarng.h \
+  envirdefs.h
+$O/akoutvectormgr.obj: akoutvectormgr.cc \
+  ../../include/carray.h \
+  ../../include/ccomponent.h \
+  ../../include/cconfigoption.h \
+  ../../include/cconfiguration.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cenvir.h \
+  ../../include/cevent.h \
   ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/cownedobject.h \
-  ../../include/cobjectfactory.h \
-  ../../include/platdep/platdefs.h \
+  ../../include/cexpression.h \
+  ../../include/cgate.h \
+  ../../include/clifetimelistener.h \
   ../../include/clistener.h \
+  ../../include/clog.h \
+  ../../include/cmessageheap.h \
+  ../../include/cmodule.h \
+  ../../include/cnamedobject.h \
+  ../../include/cnedvalue.h \
+  ../../include/cobject.h \
+  ../../include/cobjectfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cpar.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cresultlistener.h \
+  ../../include/csimulation.h \
+  ../../include/cstatistic.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/envirext.h \
+  ../../include/errmsg.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  akoutvectormgr.h \
+  args.h \
+  envirbase.h \
+  envirdefs.h \
+  eventlogfilemgr.h \
+  fileoutvectormgr.h \
+  intervals.h \
+  logformatter.h \
+  objectprinter.h \
+  runattributes.h
+$O/appreg.obj: appreg.cc \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../../include/clifetimelistener.h \
+  ../../include/clistener.h \
+  ../../include/cnamedobject.h \
+  ../../include/cobject.h \
+  ../../include/cobjectfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/errmsg.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
   appreg.h \
-  ../../include/regmacros.h
+  envirdefs.h
 $O/args.obj: args.cc \
   args.h \
   envirdefs.h
 $O/cxmldoccache.obj: cxmldoccache.cc \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../../include/clifetimelistener.h \
+  ../../include/clistener.h \
+  ../../include/cobject.h \
   ../../include/cvisitor.h \
   ../../include/cxmlelement.h \
-  ../../include/cenvir.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  ../nedxml/nedxmldefs.h \
   ../nedxml/saxparser.h \
   cxmldoccache.h \
-  ../../include/simtime.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simutil.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/cobject.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/errmsg.h \
-  ../../include/clifetimelistener.h \
-  ../../include/opp_string.h \
-  ../../include/cexception.h \
-  ../../include/clistener.h \
-  ../../include/platdep/platdefs.h \
-  ../nedxml/nedxmldefs.h \
-  ../../include/regmacros.h
+  envirdefs.h
 $O/envirbase.obj: envirbase.cc \
-  ../../include/platdep/timeutil.h \
-  envirbase.h \
-  intervals.h \
   ../../include/carray.h \
-  ../../include/cgate.h \
-  ../nedxml/nederror.h \
-  ../../include/cenvir.h \
-  ../../include/cconfiguration.h \
-  ../../include/cmodule.h \
-  ../../include/cmessage.h \
-  ../../include/csimulation.h \
-  ../../include/simtime.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simutil.h \
-  ../../include/cconfigoption.h \
-  ../../include/cmsgpar.h \
-  ../../include/cobject.h \
-  httpserver.h \
-  ../../include/cstddev.h \
-  ../../include/errmsg.h \
-  ../nedxml/nedparser.h \
-  ../../include/clifetimelistener.h \
-  ../../include/cstatistic.h \
+  ../../include/ccanvas.h \
+  ../../include/ccomponent.h \
   ../../include/ccomponenttype.h \
-  ../../include/cnedfunction.h \
+  ../../include/cconfigoption.h \
+  ../../include/cconfiguration.h \
+  ../../include/ccoroutine.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cdensityestbase.h \
+  ../../include/cdynamicexpression.h \
+  ../../include/cenvir.h \
+  ../../include/cevent.h \
+  ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/cownedobject.h \
-  ../../include/cobjectfactory.h \
-  ../common/ver.h \
-  ../../include/crng.h \
+  ../../include/cgate.h \
+  ../../include/chasher.h \
+  ../../include/checkandcast.h \
+  ../../include/chistogram.h \
+  ../../include/clifetimelistener.h \
   ../../include/clistener.h \
-  ../../include/random.h \
-  ../../include/cproperty.h \
-  appreg.h \
+  ../../include/clog.h \
+  ../../include/cmessage.h \
+  ../../include/cmessageheap.h \
+  ../../include/cmodule.h \
+  ../../include/cmsgpar.h \
+  ../../include/cnamedobject.h \
+  ../../include/cnedfunction.h \
+  ../../include/cnedmathfunction.h \
+  ../../include/cnedvalue.h \
+  ../../include/cobject.h \
+  ../../include/cobjectfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cpar.h \
   ../../include/cparsimcomm.h \
   ../../include/cproperties.h \
-  ../../include/chistogram.h \
-  ../../include/ccomponent.h \
-  ../../include/cevent.h \
-  eventlogfilemgr.h \
+  ../../include/cproperty.h \
   ../../include/cregistrationlist.h \
-  ../../include/cscheduler.h \
-  ../../include/cxmlelement.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  mongoosehttpserver.h \
-  args.h \
-  statisticparser.h \
-  mongoose.h \
-  ../../include/cnedvalue.h \
-  ../../include/onstartup.h \
-  ../nedxml/nedelement.h \
-  cxmldoccache.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
-  ../../include/clog.h \
-  ../../include/cdensityestbase.h \
-  ../../include/cmessageheap.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
   ../../include/cresultlistener.h \
-  ../../include/chasher.h \
-  ../nedxml/nedyydefs.h \
-  ../../include/cdefaultlist.h \
-  ../../include/opp_string.h \
-  ../../include/envirext.h \
-  ../../include/cexception.h \
-  ../../include/cdynamicexpression.h \
-  ../../include/cnamedobject.h \
-  ../../include/cnedmathfunction.h \
   ../../include/cresultrecorder.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  ../../include/ccoroutine.h \
-  objectprinter.h \
-  ../nedxml/nedxmldefs.h \
-  ../../include/regmacros.h \
-  logformatter.h
-$O/eventlogfilemgr.obj: eventlogfilemgr.cc \
-  envirbase.h \
-  intervals.h \
-  ../../include/carray.h \
-  ../../include/cgate.h \
-  ../../include/cenvir.h \
-  ../../include/cconfiguration.h \
-  ../../include/cmodule.h \
-  ../../include/cclassdescriptor.h \
-  ../../include/cmessage.h \
+  ../../include/crng.h \
+  ../../include/cscheduler.h \
   ../../include/csimulation.h \
-  ../../include/simtime.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simutil.h \
-  ../../include/cconfigoption.h \
-  ../../include/cmsgpar.h \
-  ../../include/cobject.h \
-  ../../include/errmsg.h \
-  ../../include/clifetimelistener.h \
-  ../../include/ccomponenttype.h \
-  ../../include/cexpression.h \
-  ../../include/cownedobject.h \
-  ../../include/cdisplaystring.h \
-  ../../include/cobjectfactory.h \
-  eventlogwriter.h \
-  ../../include/clistener.h \
-  ../../include/cchannel.h \
-  ../../include/ccomponent.h \
-  ../../include/cevent.h \
-  eventlogfilemgr.h \
-  ../../include/ctimestampedvalue.h \
-  ../../include/cregistrationlist.h \
+  ../../include/cstatistic.h \
+  ../../include/cstddev.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  args.h \
-  ../../include/onstartup.h \
-  ../../include/simtime_t.h \
-  ../../include/csimplemodule.h \
-  envirdefs.h \
-  ../../include/clog.h \
-  ../../include/cpacket.h \
-  ../../include/cmessageheap.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/cresultlistener.h \
-  ../../include/cdefaultlist.h \
-  ../../include/opp_string.h \
+  ../../include/cxmlelement.h \
   ../../include/envirext.h \
+  ../../include/errmsg.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/platdep/timeutil.h \
+  ../../include/random.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  ../common/ver.h \
+  ../nedxml/nedelement.h \
+  ../nedxml/nederror.h \
+  ../nedxml/nedparser.h \
+  ../nedxml/nedxmldefs.h \
+  ../nedxml/nedyydefs.h \
+  appreg.h \
+  args.h \
+  cxmldoccache.h \
+  envirbase.h \
+  envirdefs.h \
+  eventlogfilemgr.h \
+  httpserver.h \
+  intervals.h \
+  logformatter.h \
+  mongoose.h \
+  mongoosehttpserver.h \
+  objectprinter.h \
+  statisticparser.h
+$O/eventlogfilemgr.obj: eventlogfilemgr.cc \
+  ../../include/carray.h \
+  ../../include/cchannel.h \
+  ../../include/cclassdescriptor.h \
+  ../../include/ccomponent.h \
+  ../../include/ccomponenttype.h \
+  ../../include/cconfigoption.h \
+  ../../include/cconfiguration.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cdisplaystring.h \
+  ../../include/cenvir.h \
+  ../../include/cevent.h \
   ../../include/cexception.h \
+  ../../include/cexpression.h \
+  ../../include/cgate.h \
+  ../../include/clifetimelistener.h \
+  ../../include/clistener.h \
+  ../../include/clog.h \
+  ../../include/cmessage.h \
+  ../../include/cmessageheap.h \
+  ../../include/cmodule.h \
+  ../../include/cmsgpar.h \
   ../../include/cnamedobject.h \
   ../../include/cnedmathfunction.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  objectprinter.h \
-  ../../include/regmacros.h \
-  logformatter.h
-$O/eventlogwriter.obj: eventlogwriter.cc \
-  ../../include/cgate.h \
-  ../../include/cenvir.h \
-  ../../include/cmodule.h \
-  ../../include/csimulation.h \
-  ../../include/simtime.h \
-  ../../include/simutil.h \
-  ../../include/simkerneldefs.h \
-  ../../include/cconfigoption.h \
+  ../../include/cnedvalue.h \
   ../../include/cobject.h \
-  ../../include/errmsg.h \
-  ../../include/clifetimelistener.h \
-  ../../include/cexpression.h \
-  ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cpacket.h \
+  ../../include/cpar.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cresultlistener.h \
+  ../../include/csimplemodule.h \
+  ../../include/csimulation.h \
+  ../../include/cstringpool.h \
+  ../../include/ctimestampedvalue.h \
+  ../../include/cvisitor.h \
+  ../../include/envirext.h \
+  ../../include/errmsg.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  args.h \
+  envirbase.h \
+  envirdefs.h \
+  eventlogfilemgr.h \
   eventlogwriter.h \
-  ../../include/clistener.h \
+  intervals.h \
+  logformatter.h \
+  objectprinter.h
+$O/eventlogwriter.obj: eventlogwriter.cc \
   ../../include/ccomponent.h \
-  ../../include/cregistrationlist.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  ../../include/onstartup.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
+  ../../include/cconfigoption.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../../include/cexpression.h \
+  ../../include/cgate.h \
+  ../../include/clifetimelistener.h \
+  ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/cdefaultlist.h \
-  ../../include/opp_string.h \
-  ../../include/cexception.h \
+  ../../include/cmodule.h \
   ../../include/cnamedobject.h \
-  ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
+  ../../include/cobject.h \
+  ../../include/cobjectfactory.h \
+  ../../include/cownedobject.h \
   ../../include/cpar.h \
-  ../../include/regmacros.h
+  ../../include/cregistrationlist.h \
+  ../../include/csimulation.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/errmsg.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  envirdefs.h \
+  eventlogwriter.h
 $O/evmain.obj: evmain.cc \
-  ../../include/simtime.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simutil.h \
+  ../../include/cexception.h \
+  ../../include/cnamedobject.h \
   ../../include/cobject.h \
-  ../../include/errmsg.h \
-  startup.h \
   ../../include/cownedobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
   ../common/ver.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  ../../include/simtime_t.h \
   envirdefs.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/opp_string.h \
-  ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/regmacros.h
+  startup.h
 $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
-  envirbase.h \
-  intervals.h \
   ../../include/carray.h \
-  ../../include/cgate.h \
-  ../../include/cenvir.h \
-  ../../include/cconfiguration.h \
-  ../../include/cmodule.h \
-  ../../include/csimulation.h \
-  ../../include/simtime.h \
-  ../../include/simutil.h \
-  ../../include/simkerneldefs.h \
-  ../../include/cconfigoption.h \
-  ../../include/cobject.h \
-  ../../include/cstddev.h \
-  ../../include/errmsg.h \
-  ../../include/clifetimelistener.h \
-  ../../include/ccomponenttype.h \
-  ../../include/cstatistic.h \
-  ../../include/cexpression.h \
-  ../../include/cownedobject.h \
-  ../../include/cobjectfactory.h \
-  ../../include/clistener.h \
-  runattributes.h \
   ../../include/ccomponent.h \
-  ../../include/cevent.h \
-  eventlogfilemgr.h \
-  ../../include/cregistrationlist.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  args.h \
-  ../../include/onstartup.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
-  ../../include/clog.h \
+  ../../include/ccomponenttype.h \
+  ../../include/cconfigoption.h \
+  ../../include/cconfiguration.h \
+  ../../include/cdefaultlist.h \
   ../../include/cdensityestbase.h \
-  ../../include/cmessageheap.h \
-  ../../include/platdep/intxtypes.h \
-  fileoutscalarmgr.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/cresultlistener.h \
-  ../../include/cdefaultlist.h \
-  ../../include/opp_string.h \
-  ../../include/envirext.h \
+  ../../include/cenvir.h \
+  ../../include/cevent.h \
   ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  objectprinter.h \
-  ../../include/regmacros.h \
-  logformatter.h
-$O/fileoutvectormgr.obj: fileoutvectormgr.cc \
-  envirbase.h \
-  intervals.h \
-  ../../include/carray.h \
+  ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/cenvir.h \
-  ../../include/cconfiguration.h \
+  ../../include/clifetimelistener.h \
+  ../../include/clistener.h \
+  ../../include/clog.h \
+  ../../include/cmessageheap.h \
   ../../include/cmodule.h \
-  ../../include/csimulation.h \
-  ../../include/simtime.h \
-  ../../include/simutil.h \
-  ../../include/simkerneldefs.h \
-  ../../include/cconfigoption.h \
+  ../../include/cnamedobject.h \
+  ../../include/cnedvalue.h \
   ../../include/cobject.h \
-  ../../include/errmsg.h \
-  ../../include/clifetimelistener.h \
-  ../../include/ccomponenttype.h \
-  ../../include/cexpression.h \
-  ../../include/cownedobject.h \
   ../../include/cobjectfactory.h \
-  ../../include/clistener.h \
-  runattributes.h \
-  ../../include/ccomponent.h \
-  ../../include/cevent.h \
-  eventlogfilemgr.h \
+  ../../include/cownedobject.h \
+  ../../include/cpar.h \
   ../../include/cregistrationlist.h \
+  ../../include/cresultlistener.h \
+  ../../include/csimulation.h \
+  ../../include/cstatistic.h \
+  ../../include/cstddev.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  args.h \
-  ../../include/onstartup.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
-  ../../include/clog.h \
-  ../../include/cmessageheap.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/cresultlistener.h \
-  ../../include/cdefaultlist.h \
-  ../../include/opp_string.h \
-  fileoutvectormgr.h \
   ../../include/envirext.h \
-  ../../include/cexception.h \
-  ../../include/cnamedobject.h \
+  ../../include/errmsg.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  objectprinter.h \
+  ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
-  logformatter.h
-$O/filesnapshotmgr.obj: filesnapshotmgr.cc \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  args.h \
   envirbase.h \
-  intervals.h \
-  ../../include/carray.h \
-  ../../include/cenvir.h \
-  ../../include/cconfiguration.h \
-  ../../include/csimulation.h \
-  ../../include/simtime.h \
-  ../../include/simutil.h \
-  ../../include/simkerneldefs.h \
-  ../../include/cconfigoption.h \
-  ../../include/cobject.h \
-  ../../include/errmsg.h \
-  ../../include/clifetimelistener.h \
-  ../../include/cexpression.h \
-  ../../include/cownedobject.h \
-  ../../include/cobjectfactory.h \
-  ../../include/clistener.h \
-  filesnapshotmgr.h \
-  ../../include/ccomponent.h \
-  ../../include/cevent.h \
-  eventlogfilemgr.h \
-  ../../include/cregistrationlist.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  args.h \
-  ../../include/onstartup.h \
-  ../../include/simtime_t.h \
   envirdefs.h \
+  eventlogfilemgr.h \
+  fileoutscalarmgr.h \
+  intervals.h \
+  logformatter.h \
+  objectprinter.h \
+  runattributes.h
+$O/fileoutvectormgr.obj: fileoutvectormgr.cc \
+  ../../include/carray.h \
+  ../../include/ccomponent.h \
+  ../../include/ccomponenttype.h \
+  ../../include/cconfigoption.h \
+  ../../include/cconfiguration.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cenvir.h \
+  ../../include/cevent.h \
+  ../../include/cexception.h \
+  ../../include/cexpression.h \
+  ../../include/cgate.h \
+  ../../include/clifetimelistener.h \
+  ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
+  ../../include/cmodule.h \
+  ../../include/cnamedobject.h \
+  ../../include/cnedvalue.h \
+  ../../include/cobject.h \
+  ../../include/cobjectfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cpar.h \
+  ../../include/cregistrationlist.h \
   ../../include/cresultlistener.h \
-  ../../include/cdefaultlist.h \
-  ../../include/opp_string.h \
+  ../../include/csimulation.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/envirext.h \
+  ../../include/errmsg.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  args.h \
+  envirbase.h \
+  envirdefs.h \
+  eventlogfilemgr.h \
+  fileoutvectormgr.h \
+  intervals.h \
+  logformatter.h \
+  objectprinter.h \
+  runattributes.h
+$O/filesnapshotmgr.obj: filesnapshotmgr.cc \
+  ../../include/carray.h \
+  ../../include/ccomponent.h \
+  ../../include/cconfigoption.h \
+  ../../include/cconfiguration.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cenvir.h \
+  ../../include/cevent.h \
+  ../../include/cexception.h \
+  ../../include/cexpression.h \
+  ../../include/clifetimelistener.h \
+  ../../include/clistener.h \
+  ../../include/clog.h \
+  ../../include/cmessageheap.h \
+  ../../include/cnamedobject.h \
+  ../../include/cnedvalue.h \
+  ../../include/cobject.h \
+  ../../include/cobjectfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cpar.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cresultlistener.h \
+  ../../include/csimulation.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/envirext.h \
+  ../../include/errmsg.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  args.h \
+  envirbase.h \
+  envirdefs.h \
+  eventlogfilemgr.h \
+  filesnapshotmgr.h \
+  intervals.h \
+  logformatter.h \
+  objectprinter.h
+$O/fsutils.obj: fsutils.cc \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  objectprinter.h \
-  ../../include/regmacros.h \
-  logformatter.h
-$O/fsutils.obj: fsutils.cc \
-  ../../include/simtime.h \
-  ../../include/simutil.h \
-  ../../include/simkerneldefs.h \
   ../../include/cobject.h \
-  ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
+  ../../include/errmsg.h \
   ../../include/onstartup.h \
-  fsutils.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/platdep/platmisc.h \
   ../../include/opp_string.h \
-  ../../include/cexception.h \
-  ../../include/cnamedobject.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
-  ../../include/regmacros.h
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  envirdefs.h \
+  fsutils.h
 $O/httpserver.obj: httpserver.cc \
   ../../include/cconfiguration.h \
-  ../../include/simtime.h \
-  ../../include/simutil.h \
-  ../../include/simkerneldefs.h \
-  ../../include/cobject.h \
-  httpserver.h \
-  ../../include/errmsg.h \
-  ../../include/clifetimelistener.h \
-  ../../include/cvisitor.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/opp_string.h \
-  ../../include/envirext.h \
   ../../include/cexception.h \
+  ../../include/clifetimelistener.h \
+  ../../include/cobject.h \
+  ../../include/cvisitor.h \
+  ../../include/envirext.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
-  ../../include/regmacros.h
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  envirdefs.h \
+  httpserver.h
 $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
-  envirbase.h \
-  intervals.h \
-  indexedfileoutvectormgr.h \
   ../../include/carray.h \
-  ../../include/cgate.h \
-  ../../include/cconfiguration.h \
-  ../../include/cenvir.h \
-  ../../include/cmodule.h \
-  ../../include/csimulation.h \
-  ../../include/simtime.h \
-  ../../include/simutil.h \
-  ../../include/simkerneldefs.h \
+  ../../include/ccomponent.h \
   ../../include/cconfigoption.h \
-  ../../include/cobject.h \
-  ../../include/errmsg.h \
-  ../../include/clifetimelistener.h \
-  ../../include/cstatistic.h \
-  ../../include/cexpression.h \
-  ../../include/cownedobject.h \
-  ../../include/cobjectfactory.h \
-  ../../include/clistener.h \
-  runattributes.h \
-  ../../include/ccomponent.h \
-  ../../include/cevent.h \
-  eventlogfilemgr.h \
-  ../../include/cregistrationlist.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  args.h \
-  ../../include/onstartup.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
-  ../../include/clog.h \
-  ../../include/cmessageheap.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/cresultlistener.h \
-  ../../include/cdefaultlist.h \
-  fileoutvectormgr.h \
-  ../../include/opp_string.h \
-  ../../include/envirext.h \
-  ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  objectprinter.h \
-  ../../include/regmacros.h \
-  logformatter.h
-$O/inifilereader.obj: inifilereader.cc \
-  ../../include/simtime.h \
-  ../../include/simutil.h \
-  ../../include/simkerneldefs.h \
-  ../../include/errmsg.h \
-  inifilereader.h \
-  fsutils.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/opp_string.h \
-  ../../include/cexception.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/cconfigreader.h
-$O/intervals.obj: intervals.cc \
-  envirbase.h \
-  intervals.h \
-  ../../include/carray.h \
-  ../../include/cenvir.h \
   ../../include/cconfiguration.h \
-  ../../include/csimulation.h \
-  ../../include/simtime.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simutil.h \
-  ../../include/cobject.h \
-  ../../include/errmsg.h \
-  ../../include/clifetimelistener.h \
-  ../../include/cexpression.h \
-  ../../include/cownedobject.h \
-  ../../include/cobjectfactory.h \
-  ../../include/clistener.h \
-  ../../include/ccomponent.h \
-  ../../include/cevent.h \
-  eventlogfilemgr.h \
-  ../../include/cregistrationlist.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  args.h \
-  ../../include/onstartup.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
-  ../../include/clog.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/cmessageheap.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/cresultlistener.h \
   ../../include/cdefaultlist.h \
-  ../../include/opp_string.h \
-  ../../include/envirext.h \
+  ../../include/cenvir.h \
+  ../../include/cevent.h \
   ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  objectprinter.h \
-  ../../include/regmacros.h \
-  logformatter.h
-$O/json.obj: json.cc \
-  ../../include/simtime.h \
-  ../../include/simkerneldefs.h \
-  envirdefs.h \
-  json.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/platdep/platdefs.h
-$O/logformatter.obj: logformatter.cc \
+  ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/cenvir.h \
-  ../../include/cconfiguration.h \
-  ../../include/cmodule.h \
-  ../../include/csimulation.h \
-  ../../include/simtime.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simutil.h \
-  ../../include/cobject.h \
-  ../../include/errmsg.h \
   ../../include/clifetimelistener.h \
-  ../../include/ccomponenttype.h \
-  ../../include/cexpression.h \
-  ../../include/cownedobject.h \
-  ../../include/cobjectfactory.h \
   ../../include/clistener.h \
-  ../../include/ccomponent.h \
-  ../../include/cregistrationlist.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  ../../include/onstartup.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/chasher.h \
-  ../../include/cdefaultlist.h \
-  ../../include/opp_string.h \
-  ../../include/cexception.h \
+  ../../include/cmodule.h \
   ../../include/cnamedobject.h \
-  ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
+  ../../include/cobject.h \
+  ../../include/cobjectfactory.h \
+  ../../include/cownedobject.h \
   ../../include/cpar.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cresultlistener.h \
+  ../../include/csimulation.h \
+  ../../include/cstatistic.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/envirext.h \
+  ../../include/errmsg.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  args.h \
+  envirbase.h \
+  envirdefs.h \
+  eventlogfilemgr.h \
+  fileoutvectormgr.h \
+  indexedfileoutvectormgr.h \
+  intervals.h \
+  logformatter.h \
+  objectprinter.h \
+  runattributes.h
+$O/inifilereader.obj: inifilereader.cc \
+  ../../include/cconfigreader.h \
+  ../../include/cexception.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  envirdefs.h \
+  fsutils.h \
+  inifilereader.h
+$O/intervals.obj: intervals.cc \
+  ../../include/carray.h \
+  ../../include/ccomponent.h \
+  ../../include/cconfiguration.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cenvir.h \
+  ../../include/cevent.h \
+  ../../include/cexception.h \
+  ../../include/cexpression.h \
+  ../../include/clifetimelistener.h \
+  ../../include/clistener.h \
+  ../../include/clog.h \
+  ../../include/cmessageheap.h \
+  ../../include/cnamedobject.h \
+  ../../include/cnedvalue.h \
+  ../../include/cobject.h \
+  ../../include/cobjectfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cpar.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cresultlistener.h \
+  ../../include/csimulation.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/envirext.h \
+  ../../include/errmsg.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  args.h \
+  envirbase.h \
+  envirdefs.h \
+  eventlogfilemgr.h \
+  intervals.h \
+  logformatter.h \
+  objectprinter.h
+$O/json.obj: json.cc \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  envirdefs.h \
+  json.h
+$O/logformatter.obj: logformatter.cc \
+  ../../include/ccomponent.h \
+  ../../include/ccomponenttype.h \
+  ../../include/cconfiguration.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../../include/cexpression.h \
+  ../../include/cgate.h \
+  ../../include/chasher.h \
+  ../../include/clifetimelistener.h \
+  ../../include/clistener.h \
+  ../../include/clog.h \
+  ../../include/cmessageheap.h \
+  ../../include/cmodule.h \
+  ../../include/cnamedobject.h \
+  ../../include/cnedvalue.h \
+  ../../include/cobject.h \
+  ../../include/cobjectfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cpar.h \
+  ../../include/cregistrationlist.h \
+  ../../include/csimulation.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/errmsg.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  envirdefs.h \
   logformatter.h
 $O/main.obj: main.cc \
   envirdefs.h
 $O/matchablefield.obj: matchablefield.cc \
   ../../include/cclassdescriptor.h \
-  ../../include/simtime.h \
-  ../../include/simutil.h \
-  ../../include/simkerneldefs.h \
+  ../../include/cexception.h \
+  ../../include/cnamedobject.h \
   ../../include/cobject.h \
-  ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
-  ../../include/platdep/intxtypes.h \
-  matchablefield.h \
-  ../../include/platdep/platmisc.h \
+  ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/cexception.h \
-  ../../include/cnamedobject.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
-  ../../include/regmacros.h
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  envirdefs.h \
+  matchablefield.h
 $O/matchableobject.obj: matchableobject.cc \
   ../../include/cclassdescriptor.h \
-  ../../include/simtime.h \
-  ../../include/simutil.h \
-  ../../include/simkerneldefs.h \
+  ../../include/cexception.h \
+  ../../include/cnamedobject.h \
   ../../include/cobject.h \
-  ../../include/errmsg.h \
-  matchableobject.h \
   ../../include/cownedobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/platdep/platmisc.h \
+  ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/cexception.h \
-  ../../include/cnamedobject.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
-  ../../include/regmacros.h
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  envirdefs.h \
+  matchableobject.h
 $O/mongoosehttpserver.obj: mongoosehttpserver.cc \
   ../../include/cconfiguration.h \
-  ../../include/simtime.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simutil.h \
-  ../../include/cobject.h \
-  httpserver.h \
-  ../../include/errmsg.h \
-  ../../include/clifetimelistener.h \
-  ../../include/cvisitor.h \
-  mongoosehttpserver.h \
-  mongoose.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/opp_string.h \
-  ../../include/envirext.h \
   ../../include/cexception.h \
+  ../../include/clifetimelistener.h \
+  ../../include/cobject.h \
+  ../../include/cvisitor.h \
+  ../../include/envirext.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
-  ../../include/regmacros.h
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  envirdefs.h \
+  httpserver.h \
+  mongoose.h \
+  mongoosehttpserver.h
 $O/objectprinter.obj: objectprinter.cc \
   ../../include/carray.h \
-  ../../include/cgate.h \
-  ../../include/cenvir.h \
-  ../../include/cconfiguration.h \
-  ../../include/cmodule.h \
   ../../include/cclassdescriptor.h \
-  ../../include/csimulation.h \
-  ../../include/simtime.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simutil.h \
-  ../../include/cobject.h \
-  ../../include/errmsg.h \
-  ../../include/clifetimelistener.h \
-  matchableobject.h \
-  ../../include/cexpression.h \
-  ../../include/cownedobject.h \
-  ../../include/cobjectfactory.h \
-  ../../include/clistener.h \
   ../../include/ccomponent.h \
-  ../../include/cregistrationlist.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  ../../include/onstartup.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
+  ../../include/cconfiguration.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../../include/cexpression.h \
+  ../../include/cgate.h \
+  ../../include/clifetimelistener.h \
+  ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
-  ../../include/platdep/intxtypes.h \
-  matchablefield.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/cdefaultlist.h \
-  ../../include/opp_string.h \
-  ../../include/cexception.h \
+  ../../include/cmodule.h \
   ../../include/cnamedobject.h \
-  ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
+  ../../include/cobject.h \
+  ../../include/cobjectfactory.h \
+  ../../include/cownedobject.h \
   ../../include/cpar.h \
-  objectprinter.h \
-  ../../include/regmacros.h
+  ../../include/cregistrationlist.h \
+  ../../include/csimulation.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/errmsg.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  envirdefs.h \
+  matchablefield.h \
+  matchableobject.h \
+  objectprinter.h
 $O/opp_run.obj: opp_run.cc \
   ../../include/platdep/intxtypes.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/platdep/platdefs.h
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h
 $O/runattributes.obj: runattributes.cc \
-  envirbase.h \
-  intervals.h \
   ../../include/carray.h \
-  ../../include/cenvir.h \
-  ../../include/cconfiguration.h \
-  ../../include/csimulation.h \
-  ../../include/simtime.h \
-  ../../include/simutil.h \
-  ../../include/simkerneldefs.h \
-  ../../include/cconfigoption.h \
-  ../../include/cobject.h \
-  ../../include/errmsg.h \
-  ../../include/clifetimelistener.h \
-  ../../include/cexpression.h \
-  ../../include/cownedobject.h \
-  ../../include/cobjectfactory.h \
-  ../../include/clistener.h \
-  runattributes.h \
   ../../include/ccomponent.h \
+  ../../include/cconfigoption.h \
+  ../../include/cconfiguration.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cenvir.h \
   ../../include/cevent.h \
-  eventlogfilemgr.h \
-  ../../include/cregistrationlist.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  args.h \
-  ../../include/onstartup.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
-  ../../include/clog.h \
-  ../../include/cmessageheap.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/cresultlistener.h \
-  ../../include/cdefaultlist.h \
-  ../../include/opp_string.h \
-  ../../include/envirext.h \
   ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  objectprinter.h \
-  ../../include/regmacros.h \
-  logformatter.h
-$O/scenario.obj: scenario.cc \
-  ../../include/cconfiguration.h \
-  ../../include/simtime.h \
-  sectionbasedconfig.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simutil.h \
-  scenario.h \
-  ../../include/cobject.h \
-  ../../include/errmsg.h \
-  ../../include/cvisitor.h \
-  valueiterator.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/opp_string.h \
-  ../../include/cexception.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/cconfigreader.h \
-  ../../include/regmacros.h
-$O/sectionbasedconfig.obj: sectionbasedconfig.cc \
-  ../../include/cconfiguration.h \
-  ../../include/simtime.h \
-  ../../include/simutil.h \
-  ../../include/simkerneldefs.h \
-  scenario.h \
-  sectionbasedconfig.h \
-  ../../include/cconfigoption.h \
-  ../../include/cobject.h \
-  ../../include/errmsg.h \
-  ../../include/cownedobject.h \
-  ../../include/cobjectfactory.h \
-  ../../include/cregistrationlist.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  valueiterator.h \
-  ../../include/onstartup.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/opp_string.h \
-  ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/cconfigreader.h \
-  ../../include/regmacros.h
-$O/speedometer.obj: speedometer.cc \
-  ../../include/simtime.h \
-  ../../include/simkerneldefs.h \
-  speedometer.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/platdep/platdefs.h
-$O/startup.obj: startup.cc \
-  intervals.h \
-  indexedfileoutvectormgr.h \
-  ../../include/cgate.h \
-  ../../include/cconfiguration.h \
-  ../../include/cenvir.h \
-  ../../include/cmodule.h \
-  akaroarng.h \
-  ../../include/csimulation.h \
-  ../../include/simtime.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simutil.h \
-  sectionbasedconfig.h \
-  ../../include/cconfigoption.h \
-  ../../include/cobject.h \
-  ../../include/errmsg.h \
-  startup.h \
-  ../../include/clifetimelistener.h \
-  ../../include/distrib.h \
-  matchableobject.h \
-  ../../include/cownedobject.h \
   ../../include/cexpression.h \
-  ../../include/cobjectfactory.h \
-  ../../include/crng.h \
+  ../../include/clifetimelistener.h \
   ../../include/clistener.h \
-  ../../include/random.h \
-  filesnapshotmgr.h \
-  runattributes.h \
-  appreg.h \
-  inifilereader.h \
-  ../../include/ccomponent.h \
-  ../../include/cregistrationlist.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  args.h \
-  ../../include/onstartup.h \
-  speedometer.h \
-  fsutils.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
   ../../include/clog.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
-  fileoutscalarmgr.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  akoutvectormgr.h \
-  ../../include/cdefaultlist.h \
-  ../../include/opp_string.h \
-  fileoutvectormgr.h \
+  ../../include/cnamedobject.h \
+  ../../include/cnedvalue.h \
+  ../../include/cobject.h \
+  ../../include/cobjectfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cpar.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cresultlistener.h \
+  ../../include/csimulation.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/envirext.h \
+  ../../include/errmsg.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  args.h \
+  envirbase.h \
+  envirdefs.h \
+  eventlogfilemgr.h \
+  intervals.h \
+  logformatter.h \
+  objectprinter.h \
+  runattributes.h
+$O/scenario.obj: scenario.cc \
+  ../../include/cconfigreader.h \
+  ../../include/cconfiguration.h \
+  ../../include/cexception.h \
+  ../../include/cobject.h \
+  ../../include/cvisitor.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  envirdefs.h \
+  scenario.h \
+  sectionbasedconfig.h \
+  valueiterator.h
+$O/sectionbasedconfig.obj: sectionbasedconfig.cc \
+  ../../include/cconfigoption.h \
+  ../../include/cconfigreader.h \
+  ../../include/cconfiguration.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  ../../include/cconfigreader.h \
-  ../../include/regmacros.h
-$O/statisticparser.obj: statisticparser.cc \
-  statisticparser.h \
-  envirdefs.h
-$O/valueiterator.obj: valueiterator.cc \
-  ../../include/simtime.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simutil.h \
+  ../../include/cobject.h \
+  ../../include/cobjectfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/errmsg.h \
-  valueiterator.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  envirdefs.h \
+  scenario.h \
+  sectionbasedconfig.h \
+  valueiterator.h
+$O/speedometer.obj: speedometer.cc \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
   ../../include/simtime_t.h \
   envirdefs.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/opp_string.h \
+  speedometer.h
+$O/startup.obj: startup.cc \
+  ../../include/ccomponent.h \
+  ../../include/cconfigoption.h \
+  ../../include/cconfigreader.h \
+  ../../include/cconfiguration.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cenvir.h \
   ../../include/cexception.h \
-  ../../include/platdep/platdefs.h
+  ../../include/cexpression.h \
+  ../../include/cgate.h \
+  ../../include/clifetimelistener.h \
+  ../../include/clistener.h \
+  ../../include/clog.h \
+  ../../include/cmessageheap.h \
+  ../../include/cmodule.h \
+  ../../include/cnamedobject.h \
+  ../../include/cnedvalue.h \
+  ../../include/cobject.h \
+  ../../include/cobjectfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cpar.h \
+  ../../include/cregistrationlist.h \
+  ../../include/crng.h \
+  ../../include/csimulation.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/distrib.h \
+  ../../include/envirext.h \
+  ../../include/errmsg.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/random.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  akaroarng.h \
+  akoutvectormgr.h \
+  appreg.h \
+  args.h \
+  envirdefs.h \
+  fileoutscalarmgr.h \
+  fileoutvectormgr.h \
+  filesnapshotmgr.h \
+  fsutils.h \
+  indexedfileoutvectormgr.h \
+  inifilereader.h \
+  intervals.h \
+  matchableobject.h \
+  runattributes.h \
+  sectionbasedconfig.h \
+  speedometer.h \
+  startup.h
+$O/statisticparser.obj: statisticparser.cc \
+  envirdefs.h \
+  statisticparser.h
+$O/valueiterator.obj: valueiterator.cc \
+  ../../include/cexception.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  envirdefs.h \
+  valueiterator.h
 $O/visitor.obj: visitor.cc \
   ../../include/carray.h \
-  ../../include/cgate.h \
-  ../../include/cenvir.h \
-  ../../include/cmodule.h \
-  ../../include/cmessage.h \
-  ../../include/csimulation.h \
-  ../../include/simtime.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simutil.h \
-  ../../include/cwatch.h \
-  ../../include/cmsgpar.h \
-  ../../include/cobject.h \
-  ../../include/cfsm.h \
-  ../../include/errmsg.h \
-  ../../include/clifetimelistener.h \
-  ../../include/ccomponenttype.h \
-  ../../include/cstatistic.h \
-  matchableobject.h \
-  ../../include/cexpression.h \
-  ../../include/cownedobject.h \
-  ../../include/cobjectfactory.h \
-  ../../include/clistener.h \
   ../../include/cchannel.h \
-  ../../include/cqueue.h \
   ../../include/ccomponent.h \
-  ../../include/cevent.h \
-  visitor.h \
-  ../../include/ctimestampedvalue.h \
-  ../../include/cregistrationlist.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  ../../include/coutvector.h \
-  ../../include/onstartup.h \
-  ../../include/simtime_t.h \
-  envirdefs.h \
-  ../../include/clog.h \
-  ../../include/cmessageheap.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
+  ../../include/ccomponenttype.h \
   ../../include/cdefaultlist.h \
-  ../../include/opp_string.h \
+  ../../include/cenvir.h \
+  ../../include/cevent.h \
   ../../include/cexception.h \
+  ../../include/cexpression.h \
+  ../../include/cfsm.h \
+  ../../include/cgate.h \
+  ../../include/clifetimelistener.h \
+  ../../include/clistener.h \
+  ../../include/clog.h \
+  ../../include/cmessage.h \
+  ../../include/cmessageheap.h \
+  ../../include/cmodule.h \
+  ../../include/cmsgpar.h \
   ../../include/cnamedobject.h \
   ../../include/cnedmathfunction.h \
-  ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
+  ../../include/cobject.h \
+  ../../include/cobjectfactory.h \
+  ../../include/coutvector.h \
+  ../../include/cownedobject.h \
   ../../include/cpar.h \
-  ../../include/regmacros.h
+  ../../include/cqueue.h \
+  ../../include/cregistrationlist.h \
+  ../../include/csimulation.h \
+  ../../include/cstatistic.h \
+  ../../include/cstringpool.h \
+  ../../include/ctimestampedvalue.h \
+  ../../include/cvisitor.h \
+  ../../include/cwatch.h \
+  ../../include/errmsg.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  envirdefs.h \
+  matchableobject.h \
+  visitor.h

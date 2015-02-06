@@ -109,113 +109,113 @@ clean:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/bigdecimal.o: bigdecimal.cc \
   bigdecimal.h \
-  commonutil.h \
   commondefs.h \
-  opp_ctype.h \
-  exception.h
+  commonutil.h \
+  exception.h \
+  opp_ctype.h
 $O/commonutil.o: commonutil.cc \
-  commonutil.h \
   commondefs.h \
+  commonutil.h \
   exception.h
 $O/displaystring.o: displaystring.cc \
-  commonutil.h \
   commondefs.h \
-  stringutil.h \
+  commonutil.h \
   displaystring.h \
+  exception.h \
   opp_ctype.h \
-  exception.h
+  stringutil.h
 $O/enumstr.o: enumstr.cc \
   commondefs.h \
   enumstr.h
 $O/exception.o: exception.cc \
-  commonutil.h \
   commondefs.h \
+  commonutil.h \
   exception.h
 $O/expression.o: expression.cc \
-  commonutil.h \
   commondefs.h \
-  stringutil.h \
-  unitconversion.h \
-  expressionyydefs.h \
+  commonutil.h \
+  exception.h \
   expression.h \
+  expressionyydefs.h \
   stringpool.h \
-  exception.h
+  stringutil.h \
+  unitconversion.h
 $O/expression.tab.o: expression.tab.cc \
-  commonutil.h \
   commondefs.h \
-  unitconversion.h \
-  stringutil.h \
-  expressionyydefs.h \
+  commonutil.h \
+  exception.h \
   expression.h \
+  expressionyydefs.h \
   stringpool.h \
-  exception.h
+  stringutil.h \
+  unitconversion.h
 $O/fileglobber.o: fileglobber.cc \
   commondefs.h \
   fileglobber.h
 $O/filereader.o: filereader.cc \
-  commonutil.h \
   commondefs.h \
-  stringutil.h \
+  commonutil.h \
+  exception.h \
   filereader.h \
-  exception.h
+  stringutil.h
 $O/fileutil.o: fileutil.cc \
   commondefs.h \
+  exception.h \
   fileutil.h \
   opp_ctype.h \
-  stringtokenizer.h \
-  exception.h
+  stringtokenizer.h
 $O/fnamelisttokenizer.o: fnamelisttokenizer.cc \
-  commonutil.h \
   commondefs.h \
-  fnamelisttokenizer.h \
-  exception.h
+  commonutil.h \
+  exception.h \
+  fnamelisttokenizer.h
 $O/lcgrandom.o: lcgrandom.cc \
   commondefs.h \
-  lcgrandom.h \
-  exception.h
+  exception.h \
+  lcgrandom.h
 $O/lex.expressionyy.o: lex.expressionyy.cc \
-  commonutil.h \
   commondefs.h \
-  stringutil.h \
-  expressionyydefs.h \
+  commonutil.h \
+  exception.h \
   expression.h \
-  stringpool.h \
   expression.tab.hh \
-  exception.h
+  expressionyydefs.h \
+  stringpool.h \
+  stringutil.h
 $O/linetokenizer.o: linetokenizer.cc \
   commondefs.h \
-  linetokenizer.h \
-  exception.h
+  exception.h \
+  linetokenizer.h
 $O/matchexpression.o: matchexpression.cc \
-  commonutil.h \
   commondefs.h \
-  patternmatcher.h \
+  commonutil.h \
+  exception.h \
   matchexpression.h \
-  exception.h
+  patternmatcher.h
 $O/matchexpression.tab.o: matchexpression.tab.cc \
   commondefs.h \
-  patternmatcher.h \
+  exception.h \
   matchexpression.h \
-  exception.h \
-  matchexpressionlexer.h
+  matchexpressionlexer.h \
+  patternmatcher.h
 $O/matchexpressionlexer.o: matchexpressionlexer.cc \
-  commonutil.h \
   commondefs.h \
-  stringutil.h \
-  matchexpression.tab.hh \
+  commonutil.h \
   exception.h \
-  matchexpressionlexer.h
+  matchexpression.tab.hh \
+  matchexpressionlexer.h \
+  stringutil.h
 $O/patternmatcher.o: patternmatcher.cc \
-  commonutil.h \
   commondefs.h \
-  stringutil.h \
+  commonutil.h \
+  exception.h \
   opp_ctype.h \
   patternmatcher.h \
-  exception.h
+  stringutil.h
 $O/rwlock.o: rwlock.cc \
-  rwlock.h \
   commondefs.h \
-  exception.h
+  exception.h \
+  rwlock.h
 $O/stringpool.o: stringpool.cc \
   commondefs.h \
   stringpool.h
@@ -223,21 +223,21 @@ $O/stringtokenizer.o: stringtokenizer.cc \
   commondefs.h \
   stringtokenizer.h
 $O/stringtokenizer2.o: stringtokenizer2.cc \
-  commonutil.h \
   commondefs.h \
-  stringtokenizer2.h \
-  exception.h
+  commonutil.h \
+  exception.h \
+  stringtokenizer2.h
 $O/stringutil.o: stringutil.cc \
-  commonutil.h \
   commondefs.h \
-  stringutil.h \
+  commonutil.h \
+  exception.h \
   opp_ctype.h \
   stringtokenizer.h \
-  exception.h
+  stringutil.h
 $O/unitconversion.o: unitconversion.cc \
-  commonutil.h \
   commondefs.h \
-  unitconversion.h \
-  stringutil.h \
+  commonutil.h \
+  exception.h \
   opp_ctype.h \
-  exception.h
+  stringutil.h \
+  unitconversion.h
