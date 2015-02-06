@@ -525,7 +525,7 @@ sub print_dep {
    $target = $ObjPrefix . $target;
 
    $dep = "$target: ";
-   $dep .= join( " \\\n  ", ("$SourceDirectory$filename", @includes) );
+   $dep .= join( " \\\n  ", ("$SourceDirectory$filename", sort @includes) );
    $dep .= "\n";
    return $dep;
 }
