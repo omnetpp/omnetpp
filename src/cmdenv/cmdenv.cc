@@ -121,11 +121,7 @@ char *timeToStr(timeval t, char *buf=NULL)
    return b;
 }
 
-#define Register_Enum_2(VAR, NAME, VALUES)  \
-    static cEnum *VAR; \
-    EXECUTE_ON_STARTUP(VAR = new cEnum(NAME); VAR->bulkInsert VALUES; enums.getInstance()->add(VAR))
-
-Register_Enum_2(stateEnum, "State",
+Register_Enum2(stateEnum, "State",
         ("nonetwork", Cmdenv::SIM_NONETWORK,
         "ready", Cmdenv::SIM_READY,
         "running", Cmdenv::SIM_RUNNING,
@@ -134,13 +130,13 @@ Register_Enum_2(stateEnum, "State",
         "finishcalled", Cmdenv::SIM_FINISHCALLED,
         NULL));
 
-Register_Enum_2(runModeEnum, "RunMode",
+Register_Enum2(runModeEnum, "RunMode",
         ("normal", Cmdenv::RUNMODE_NORMAL,
         "fast", Cmdenv::RUNMODE_FAST,
         "express", Cmdenv::RUNMODE_EXPRESS,
         NULL));
 
-Register_Enum_2(stoppingReasonEnum, "StoppingReason",
+Register_Enum2(stoppingReasonEnum, "StoppingReason",
         ("none", Cmdenv::STOP_NONE,
         "untilsimtime", Cmdenv::STOP_UNTILSIMTIME,
         "untilevent", Cmdenv::STOP_UNTILEVENT,
@@ -151,7 +147,7 @@ Register_Enum_2(stoppingReasonEnum, "StoppingReason",
         "termination", Cmdenv::STOP_TERMINATION,
         NULL));
 
-Register_Enum_2(commandEnum, "Command",
+Register_Enum2(commandEnum, "Command",
         ("none", Cmdenv::CMD_NONE,
         "setupNetwork", Cmdenv::CMD_SETUPNETWORK,
         "setupRun", Cmdenv::CMD_SETUPRUN,
@@ -163,14 +159,14 @@ Register_Enum_2(commandEnum, "Command",
         "quit", Cmdenv::CMD_QUIT,
         NULL));
 
-Register_Enum_2(userInputState, "UserInputState",
+Register_Enum2(userInputState, "UserInputState",
         ("none", Cmdenv::INPSTATE_NONE,
         "initiated", Cmdenv::INPSTATE_INITIATED,
         "waitingForReply", Cmdenv::INPSTATE_WAITINGFORREPLY,
         "replyArrived", Cmdenv::INPSTATE_REPLYARRIVED,
         NULL));
 
-Register_Enum_2(userInputType, "UserInputType",
+Register_Enum2(userInputType, "UserInputType",
         ("none", Cmdenv::INP_NONE,
         "error", Cmdenv::INP_ERROR,
         "askParameter", Cmdenv::INP_ASKPARAMETER,
@@ -179,7 +175,6 @@ Register_Enum_2(userInputType, "UserInputType",
         "msgDialog", Cmdenv::INP_MSGDIALOG,
         NULL));
 
-#undef Register_Enum_2
 
 CmdenvOptions::CmdenvOptions()
 {

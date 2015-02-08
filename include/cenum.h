@@ -25,9 +25,6 @@
 
 NAMESPACE_BEGIN
 
-#define Register_Enum(NAME, VALUES)  \
-    EXECUTE_ON_STARTUP(enums.getInstance()->add((new cEnum(#NAME))->registerNames(#VALUES)->registerValues VALUES))
-
 /**
  * Provides string representation for enums. The class basically implements
  * effective integer-to-string and string-to-integer mapping. Primary usage

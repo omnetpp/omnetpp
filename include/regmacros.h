@@ -225,6 +225,45 @@ NAMESPACE_BEGIN
 #define Register_MessagePrinter(CLASSNAME) \
   EXECUTE_ON_STARTUP(messagePrinters.getInstance()->add(new CLASSNAME());)
 
+/**
+ * Registers an enum.
+ *
+ * Example:
+ * <pre>
+ * enum State { IDLE, BUSY, SLEEPING };
+ * Register_Enum(State, (
+ *    "idle",     State::IDLE,
+ *    "busy",     State::BUSY,
+ *    "sleeping", State::SLEEPING,
+ *    NULL));
+ * </pre>
+ *
+ * @see cEnum
+ * @hideinitializer
+ */
+#define Register_Enum(NAME, VALUES)  \
+  EXECUTE_ON_STARTUP(enums.getInstance()->add((new cEnum(#NAME))->registerNames(#VALUES)->registerValues VALUES))
+
+/**
+ * Registers an enum, and makes it accessible via a global cEnum* pointer.
+ *
+ * Example:
+ * <pre>
+ * enum State { IDLE, BUSY, SLEEPING };
+ * Register_Enum2(stateEnum, "State", (
+ *    "idle",     State::IDLE,
+ *    "busy",     State::BUSY,
+ *    "sleeping", State::SLEEPING,
+ *    NULL));
+ * </pre>
+ *
+ * @see cEnum
+ * @hideinitializer
+ */
+#define Register_Enum2(VAR, NAME, VALUES)  \
+  static cEnum *VAR; \
+  EXECUTE_ON_STARTUP(VAR = new cEnum(NAME); VAR->bulkInsert VALUES; enums.getInstance()->add(VAR))
+
 //@}
 
 NAMESPACE_END
