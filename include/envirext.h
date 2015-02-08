@@ -312,7 +312,9 @@ class SIM_API cISnapshotManager : public cObject, public cISimulationLifetimeLis
 
 
 /**
- * FIXME
+ * Represents an HTTP request.
+ *
+ * @see cHttpRequestHandler, cEnvir::addHttpRequestHandler()
  */
 class SIM_API cHttpRequest
 {
@@ -355,7 +357,12 @@ class SIM_API cHttpRequest
 
 
 /**
- * FIXME to be used with cEnvir; multiple handlers may be registered, 1st one that can handle the request wins
+ * Represents a HTTP request handler for the build-in web server.
+ * Several handlers can ve registered. When the web server receives a HTTP
+ * request, it is offered the handlers one-by-one, and the first one that
+ * handles it will win.
+ *
+ * @see cEnvir::addHttpRequestHandler()
  */
 class SIM_API cHttpRequestHandler
 {
@@ -363,8 +370,11 @@ class SIM_API cHttpRequestHandler
     virtual ~cHttpRequestHandler() {}
 
     /**
-     * FIXME if it can handle the request, do it and return true;
-     * otherwise return false.
+     * This method is called by the web server with the data of an incoming
+     * HTTP request as parameter. The handler can examine the request, and
+     * decide whether it wants to handle it. If not, the method should
+     * return false. If yes, the handler should produce a response via
+     * the methods of the request object, and return true.
      */
     virtual bool handleHttpRequest(cHttpRequest *request) = 0;
 };

@@ -23,7 +23,7 @@
 #include "envirext.h"
 
 /**
- * TODO docu
+ * Abstract base class for the built-in web server.
  */
 class ENVIR_API cHttpServer
 {
@@ -33,7 +33,7 @@ class ENVIR_API cHttpServer
     virtual void stop() = 0;
     virtual void addHttpRequestHandler(cHttpRequestHandler *p) = 0;
     virtual void removeHttpRequestHandler(cHttpRequestHandler *p) = 0;
-    virtual bool handleOneRequest(bool blocking) = 0; //XXX document: false if queue was empty, true otherwise
+    virtual bool handleOneRequest(bool blocking) = 0; // TODO document: false if queue was empty, true otherwise
 };
 
 #endif
