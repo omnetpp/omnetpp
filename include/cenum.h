@@ -140,7 +140,7 @@ class SIM_API cEnum : public cOwnedObject
     /**
      * Look up string and return numeric code. Throws an error if not found.
      */
-    int parse(const char *name);
+    int resolve(const char *name);
     //@}
 
     /**

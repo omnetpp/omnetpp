@@ -143,7 +143,7 @@ int cClassDescriptor::string2enum(const char *s, const char *enumname)
             throw cRuntimeError("Unknown enum '%s'", enumname);
 
         // TBD should strip possible spaces, parens etc.
-        val = enump->parse(s);
+        val = enump->resolve(s);
     }
     return val;
 }

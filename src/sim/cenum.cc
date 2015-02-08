@@ -119,11 +119,11 @@ int cEnum::lookup(const char *name, int fallback)
     return it==nameToValueMap.end() ? fallback : it->second;
 }
 
-int cEnum::parse(const char *name)
+int cEnum::resolve(const char *name)
 {
     std::map<std::string,int>::const_iterator it = nameToValueMap.find(name);
     if (it == nameToValueMap.end())
-        throw cRuntimeError("Value '%s' not found in '%s' enum", name, getName());
+        throw cRuntimeError("Symbol \"%s\" not found in enum \"%s\"", name, getName());
     return it->second;
 }
 
