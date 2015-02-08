@@ -778,7 +778,7 @@ bool cMsgPar::parse(const char *text, char tp)
         else
            setDoubleValue(num);
     }
-    else if (strspn(tmp,"+-.E_E0123456789")==strlen(tmp)) // double?
+    else if (strspn(tmp,"+-.eE0123456789")==strlen(tmp)) // double?
     {
         double num;
         int len;
