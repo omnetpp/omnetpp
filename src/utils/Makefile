@@ -34,8 +34,6 @@ all: $O/opp_lcg32_seedtool$(EXE_SUFFIX) $O/abspath$(EXE_SUFFIX)
 	  cp opp_runall.cmd $(OMNETPP_BIN_DIR); \
 	  cp opp_test.cmd $(OMNETPP_BIN_DIR); \
 	  cp opp_makedep.cmd $(OMNETPP_BIN_DIR); \
-	  cp opp_smc.cmd $(OMNETPP_BIN_DIR); \
-	  cp Smc.jar $(OMNETPP_BIN_DIR); \
 	  cp omnetpp.cmd $(OMNETPP_BIN_DIR); \
 	  cp omnest.cmd $(OMNETPP_BIN_DIR); \
 	fi
@@ -43,8 +41,6 @@ all: $O/opp_lcg32_seedtool$(EXE_SUFFIX) $O/abspath$(EXE_SUFFIX)
 	$(Q)cp opp_makemake $(OMNETPP_BIN_DIR)
 	$(Q)cp opp_test $(OMNETPP_BIN_DIR)
 	$(Q)cp opp_makedep $(OMNETPP_BIN_DIR)
-	$(Q)cp opp_smc $(OMNETPP_BIN_DIR)
-	$(Q)cp Smc.jar $(OMNETPP_BIN_DIR)
 	$(Q)cp opp_shlib_postprocess $(OMNETPP_BIN_DIR)
 	$(Q)cp opp_runall $(OMNETPP_BIN_DIR)
 	$(Q)cp splitvec $(OMNETPP_BIN_DIR)

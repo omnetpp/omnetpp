@@ -1,21 +1,7 @@
-2013-09-24  Andras Varga
+2013-02-27  Andras Varga
 
-	* opp_test: always generate and add "_defaults.ini" to the simulation
-	program args. (So %inifile entries in the .test file no longer replace
-	the default inifile, but rather, "_defaults.ini" serves as a fallback
-	to %inifile-generated files). The practical consequence is that in
-	%inifile you no longer need to repeat the entries in the default
-	generated inifile.
-
-	* opp_test: default eventlog file name changed to test.elog, to be
-	consistent with vector and scalar files
-
-2013-02-07  Andras Varga
-
-	* added opp_smc: State Machine Compiler version 6.1.0. Source code,
-	license (Mozilla Public License) and documentation are available
-	from the SMC project web site, http://smc.sourceforge.net.
-	statemap.h, part of SMC, has also been added under omnetpp/include.
+	* opp_makedep, opp_makemake: added support for state machine files,
+	in preparation for a future state machine compiler in OMNeT++
 
 ////////////// fixes taken from omnetpp-4.x come here /////////////////
 

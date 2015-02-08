@@ -33,8 +33,6 @@ all: $O/opp_lcg32_seedtool.exe $O/ln.exe $O/opp_pefileversion.exe
 	$(Q)copy opp_makemake $(OMNETPP_BIN_DIR:/=\) 1>nul
 	$(Q)copy opp_makedep.cmd $(OMNETPP_BIN_DIR:/=\) 1>nul
 	$(Q)copy opp_makedep $(OMNETPP_BIN_DIR:/=\) 1>nul
-	$(Q)copy opp_smc.cmd $(OMNETPP_BIN_DIR:/=\) 1>nul
-	$(Q)copy Smc.jar $(OMNETPP_BIN_DIR:/=\) 1>nul
 	$(Q)copy opp_runall.cmd $(OMNETPP_BIN_DIR:/=\) 1>nul
 	$(Q)copy opp_runall $(OMNETPP_BIN_DIR:/=\) 1>nul
 	$(Q)copy opp_test.cmd $(OMNETPP_BIN_DIR:/=\) 1>nul
