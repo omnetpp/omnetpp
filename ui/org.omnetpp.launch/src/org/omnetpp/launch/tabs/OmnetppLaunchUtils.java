@@ -359,9 +359,7 @@ public class OmnetppLaunchUtils {
         String args = "";
 
         String envirStr = StringUtils.defaultIfEmpty(config.getAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "").trim(), IOmnetppLaunchConstants.UI_FALLBACKVALUE);
-        if (envirStr.equals(IOmnetppLaunchConstants.UI_IDE))
-            args += " -u Cmdenv -w";
-        else if (envirStr.equals(IOmnetppLaunchConstants.UI_DEFAULTEXTERNAL))
+        if (envirStr.equals(IOmnetppLaunchConstants.UI_DEFAULTEXTERNAL))
             /*nothing*/;
         else if (envirStr.equals(IOmnetppLaunchConstants.UI_CMDENV))
             args += " -u Cmdenv";
@@ -371,12 +369,6 @@ public class OmnetppLaunchUtils {
             args += " -u " + envirStr;
 
         int portNumber = config.getAttribute(IOmnetppLaunchConstants.OPP_HTTP_PORT, -1);
-        if (portNumber == -1 && envirStr.equals(IOmnetppLaunchConstants.UI_IDE)) {
-            portNumber = findFirstAvailableTcpPort(HTTP_PORT_START, HTTP_PORT_END);
-            if (portNumber == -1)
-                throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot find available TCP port for communication between the IDE and the simulation process (-p option)"));
-            newCfg.setAttribute(IOmnetppLaunchConstants.OPP_HTTP_PORT, portNumber);
-        }
         if (portNumber != -1)
             args += " -p " + portNumber;
 

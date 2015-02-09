@@ -102,7 +102,7 @@ public interface IOmnetppLaunchConstants {
     public static final String OPP_USER_INTERFACE = OMNETPP_LAUNCH_ID + ".USER_INTERFACE";
 
     /**
-     * TCP port number for the embedded web server that also serves requests 
+     * TCP port number for the embedded web server that also serves requests
      * from the Simulation Front-End (-p). Must be an integer.
      */
     public static final String OPP_HTTP_PORT = CDT_LAUNCH_ID + ".HTTP_PORT";
@@ -148,11 +148,6 @@ public interface IOmnetppLaunchConstants {
      * The default value for the gdbinit file (containing pretty printers)
      */
     public static final String OPP_GDB_INIT_FILE = "${opp_root}/misc/gdb/gdbinit.py";
-
-    /**
-     * Value for OPP_USER_INTERFACE: IDE plus Cmdenv (add -u Cmdenv -w to the command-line args)
-     */
-    public static final String UI_IDE = "<IDE>";
 
     /**
      * Value for OPP_USER_INTERFACE: launch the simulation program without explicit -u option

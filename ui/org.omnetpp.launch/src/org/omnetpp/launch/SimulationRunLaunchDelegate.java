@@ -8,15 +8,11 @@
 package org.omnetpp.launch;
 
 
-import static org.eclipse.jface.dialogs.MessageDialogWithToggle.ALWAYS;
-import static org.eclipse.jface.dialogs.MessageDialogWithToggle.NEVER;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
@@ -25,23 +21,12 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
 import org.eclipse.debug.ui.IDebugUIConstants;
-import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.MessageDialogWithToggle;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.ide.IDE;
-import org.omnetpp.common.CommonPlugin;
-import org.omnetpp.common.IConstants;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.simulation.AbstractSimulationProcess;
-import org.omnetpp.common.simulation.SimulationEditorInput;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
 
@@ -115,9 +100,6 @@ public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
             });
         }
 
-        String envirStr = StringUtils.defaultIfEmpty(configuration.getAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "").trim(), IOmnetppLaunchConstants.UI_FALLBACKVALUE);
-        boolean openSimulationEditor = envirStr.equals(IOmnetppLaunchConstants.UI_IDE);
-
         final int portNumber = configuration.getAttribute(IOmnetppLaunchConstants.OPP_HTTP_PORT, -1);
         int numProcesses = configuration.getAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
         boolean reportProgress = StringUtils.contains(configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, ""), "-u Cmdenv");
@@ -130,52 +112,6 @@ public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
             job = new BatchedSimulationLauncherJob(configuration, launch, runs, numProcesses);
 
         job.schedule();
-
-        // open simulation front-end
-        if (openSimulationEditor) {
-        	final String launchConfigurationName = configuration.getName();
-            final Job launcherjob = job;
-            Display.getDefault().asyncExec(new Runnable() {
-                public void run() {
-                    IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-                    IWorkbenchPage workbenchPage = workbenchWindow.getActivePage();
-                    try {
-                        // offer switching to "Simulation" perspective
-                        IPerspectiveDescriptor desc = workbenchWindow.getWorkbench().getPerspectiveRegistry().findPerspectiveWithId(IConstants.SIMULATE_PERSPECTIVE_ID);
-                        if (desc == null)
-                            LaunchPlugin.logError("Perspective " + IConstants.SIMULATE_PERSPECTIVE_ID + "not found", new RuntimeException());
-
-                        if (desc != null && !workbenchPage.getPerspective().equals(desc)) {
-                            IPreferenceStore preferences = LaunchPlugin.getDefault().getPreferenceStore();
-                            String pref = preferences.getString(PREF_SWITCH_TO_SIMULATE_PERSPECTIVE);
-                            boolean switchPerspective = ALWAYS.equals(pref);
-                            if (!NEVER.equals(pref) && !ALWAYS.equals(pref)) { // assuming PROMPT on null or "" too
-                                int result = MessageDialogWithToggle.openYesNoQuestion(
-                                        workbenchWindow.getShell(),
-                                        "Switch Perspective",
-                                        "Switch to the 'Simulate' perspective?",
-                                        "Remember choice and don't ask again", false,
-                                        preferences, PREF_SWITCH_TO_SIMULATE_PERSPECTIVE).getReturnCode();
-                                switchPerspective = (result == IDialogConstants.YES_ID);
-                            }
-
-                            if (switchPerspective) {
-                                CommonPlugin.getDefault().originalPerspective = workbenchPage.getPerspective();
-                                workbenchPage.setPerspective(desc);
-                            }
-                        }
-
-                        // open the editor
-                        IEditorInput input = new SimulationEditorInput(launchConfigurationName, "localhost", portNumber, new JobSimulationProcess(launcherjob), launchConfigurationName, true);
-                        IDE.openEditor(workbenchPage, input, IConstants.SIMULATION_EDITOR_ID);
-                    }
-                    catch (PartInitException e) {
-                        ErrorDialog.openError(workbenchWindow.getShell(), "Error", "Could not open animation window for the running simulation.", e.getStatus());
-                        LaunchPlugin.logError(e);
-                    }
-                }
-            });
-        }
     }
 
     @Override
