@@ -16,6 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#ifdef SIMFRONTEND_SUPPORT
+
 #include "serializer.h"
 #include "cproperties.h"
 #include "cproperty.h"
@@ -405,3 +407,5 @@ const char *Serializer::getKnownBaseClass(cObject *object)
     else
         return "cObject"; // note: cOwnedObject and cNamedObject are not interesting
 }
+
+#endif

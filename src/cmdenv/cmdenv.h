@@ -45,16 +45,22 @@ struct CMDENV_API CmdenvOptions : public EnvirOptions
     bool messageTrace; // if normal mode
     long statusFrequencyMs; // if express mode
     bool printPerformanceData; // if express mode
+#ifdef SIMFRONTEND_SUPPORT
     bool httpControlled;  // when true, user input is expected via HTTP
     long updatefreqExpress; //XXX from Tkenv
     long updatefreqFast; //XXX from Tkenv
+#endif
 };
 
 /**
  * Command line user interface.
  */
-class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
+class CMDENV_API Cmdenv : public EnvirBase
+#ifdef SIMFRONTEND_SUPPORT
+    , public cHttpRequestHandler
+#endif
 {
+#ifdef SIMFRONTEND_SUPPORT
     public:
        /**
         * Application state.
@@ -119,10 +125,12 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
            INP_ASKYESNO,
            INP_MSGDIALOG
        };
+#endif
 
     protected:
      CmdenvOptions *&opt;         // alias to EnvirBase::opt
 
+#ifdef SIMFRONTEND_SUPPORT
      typedef std::map<std::string,std::string> StringMap;
 
      State state;                 // simulation state
@@ -157,6 +165,7 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
          std::string reply;
          bool cancel;
      } userInput;
+#endif
 
      // set to true on SIGINT/SIGTERM signals
      static bool sigintReceived;
@@ -174,7 +183,9 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      virtual bool askyesno(const char *question);
      virtual void printEventBanner(cEvent *event);
      virtual void doStatusUpdate(Speedometer& speedometer);
+#ifdef SIMFRONTEND_SUPPORT
      JsonNode *jsonWrapObjectId(cObject *obj) {return jsonWrap(serializer->getIdStringForObject(obj));}
+#endif
 
    public:
      Cmdenv();
@@ -224,6 +235,7 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      virtual void readPerRunOptions();
      virtual void askParameter(cPar *par, bool unassigned);
 
+#ifdef SIMFRONTEND_SUPPORT
      virtual void processHttpRequests(bool blocking);
      virtual bool handleHttpRequest(cHttpRequest *request); // called back from processHttpRequests()
      virtual void processCommand(int command);
@@ -241,6 +253,7 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      virtual bool doRunSimulation();
      virtual bool doRunSimulationExpress();
      virtual void finishSimulation(); // wrapper around simulation.callFinish() and simulation.endRun()
+#endif
 
      void help();
      void simulate();

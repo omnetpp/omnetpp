@@ -77,11 +77,13 @@ Register_PerRunConfigOption(CFGID_GLOBAL_LOGLEVEL, "cmdenv-log-level", CFG_STRIN
 Register_PerObjectConfigOption(CFGID_CMDENV_EV_OUTPUT, "cmdenv-ev-output", KIND_MODULE, CFG_BOOL, "true", "When cmdenv-express-mode=false: whether Cmdenv should print log messages (EV<<, EV_INFO, etc.) from the selected modules.")
 
 
+#ifdef SIMFRONTEND_SUPPORT
 /*TODO:
 notifyListeners(LF_ON_SIMULATION_START);
 notifyListeners(LF_ON_SIMULATION_SUCCESS);
 notifyListeners(LF_ON_SIMULATION_ERROR);
 */
+#endif
 
 //
 // Register the Cmdenv user interface
@@ -121,6 +123,7 @@ char *timeToStr(timeval t, char *buf=NULL)
    return b;
 }
 
+#ifdef SIMFRONTEND_SUPPORT
 Register_Enum2(stateEnum, "State",
         ("nonetwork", Cmdenv::SIM_NONETWORK,
         "ready", Cmdenv::SIM_READY,
@@ -174,7 +177,7 @@ Register_Enum2(userInputType, "UserInputType",
         "askYesNo", Cmdenv::INP_ASKYESNO,
         "msgDialog", Cmdenv::INP_MSGDIALOG,
         NULL));
-
+#endif
 
 CmdenvOptions::CmdenvOptions()
 {
@@ -189,9 +192,11 @@ CmdenvOptions::CmdenvOptions()
     messageTrace = false;
     statusFrequencyMs = 2000;
     printPerformanceData = false;
+#ifdef SIMFRONTEND_SUPPORT
     httpControlled = false;
     updatefreqFast = 500; // ms
     updatefreqExpress = 1000; // ms
+#endif
 }
 
 
@@ -205,7 +210,7 @@ Cmdenv::Cmdenv() : opt((CmdenvOptions *&)EnvirBase::opt)
     // requested in the ini file
     fout = stdout;
 
-
+#ifdef SIMFRONTEND_SUPPORT
     state = SIM_NONETWORK;
     command = CMD_NONE;
     stoppingReason = STOP_NONE;
@@ -219,6 +224,7 @@ Cmdenv::Cmdenv() : opt((CmdenvOptions *&)EnvirBase::opt)
 
     userInput.state = INPSTATE_NONE;
     userInput.type = INP_NONE;
+#endif
 
     //XXX log settings should come from some configuration or commmand-line arg
     logging = true;
@@ -229,8 +235,10 @@ Cmdenv::Cmdenv() : opt((CmdenvOptions *&)EnvirBase::opt)
 
 Cmdenv::~Cmdenv()
 {
+#ifdef SIMFRONTEND_SUPPORT
     delete serializer;
     delete jsonLog;
+#endif
 }
 
 void Cmdenv::readOptions()
@@ -278,6 +286,7 @@ void Cmdenv::readPerRunOptions()
 
 void Cmdenv::doRun()
 {
+#ifdef SIMFRONTEND_SUPPORT
     httpServer->addHttpRequestHandler(this); //FIXME should go into setup()?
 
     if (args->optionGiven('w'))
@@ -291,6 +300,7 @@ void Cmdenv::doRun()
         processHttpRequests(true);
     }
     else
+#endif
     {
         // '-c' and '-r' option: configuration to activate, and run numbers to run.
         // Both command-line options take precedence over inifile settings.
@@ -445,6 +455,7 @@ void Cmdenv::doRun()
     }
 }
 
+#ifdef SIMFRONTEND_SUPPORT
 void Cmdenv::processHttpRequests(bool blocking)
 {
     //FIXME handle exceptions! (store them, and return them when status is requested)
@@ -1029,6 +1040,7 @@ void Cmdenv::runSimulation(RunMode mode, long realTimeMillis, simtime_t untilSim
         finishSimulation();
     }
 }
+#endif
 
 // note: also updates "since" (sets it to the current time) if answer is "true"
 inline bool elapsed(long millis, struct timeval& since)
@@ -1041,6 +1053,7 @@ inline bool elapsed(long millis, struct timeval& since)
     return ret;
 }
 
+#ifdef SIMFRONTEND_SUPPORT
 inline void resetElapsedTime(struct timeval& t)
 {
     gettimeofday(&t, NULL);
@@ -1290,12 +1303,15 @@ void Cmdenv::finishSimulation()
     }
     state = SIM_FINISHCALLED;
 }
+#endif
 
 void Cmdenv::objectDeleted(cObject *obj)
 {
     EnvirBase::objectDeleted(obj);
+#ifdef SIMFRONTEND_SUPPORT
     if (serializer)
         serializer->objectDeleted(obj);
+#endif
 }
 
 void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesting bits to other methods!
@@ -1538,7 +1554,11 @@ void Cmdenv::deinstallSignalHandler()
 
 bool Cmdenv::isGUI() const
 {
+#ifdef SIMFRONTEND_SUPPORT
     return opt->httpControlled;
+#else
+    return false;
+#endif
 }
 
 //-----------------------------------------------------
@@ -1578,12 +1598,14 @@ void Cmdenv::putsmsg(const char *s)
     ::fprintf(fout, "\n<!> %s\n\n", s);
     ::fflush(fout);
 
+#ifdef SIMFRONTEND_SUPPORT
     if (opt->httpControlled)
     {
         JsonObject *details = new JsonObject();
         details->put("message", jsonWrap(s));
         getUserInput(INP_MSGDIALOG, details);
     }
+#endif
 }
 
 void Cmdenv::log(cLogEntry *entry)
@@ -1603,6 +1625,7 @@ void Cmdenv::log(cLogEntry *entry)
             ::fflush(fout);
     }
 
+#ifdef SIMFRONTEND_SUPPORT
     if (collectJsonLog)
     {
         std::string prefix = logFormatter.formatPrefix(entry);  //TODO reuse previously formatted prefix...
@@ -1611,6 +1634,7 @@ void Cmdenv::log(cLogEntry *entry)
         jentry->put("txt", jsonWrap(prefix + std::string(entry->text, entry->textLength)));
         jsonLog->push_back(jentry);
     }
+#endif
 }
 
 std::string Cmdenv::gets(const char *prompt, const char *defaultReply)
@@ -1623,6 +1647,7 @@ std::string Cmdenv::gets(const char *prompt, const char *defaultReply)
         ::fprintf(fout, "(default: %s) ", defaultReply);
     ::fflush(fout);
 
+#ifdef SIMFRONTEND_SUPPORT
     if (opt->httpControlled)
     {
         JsonObject *details = new JsonObject();
@@ -1634,6 +1659,7 @@ std::string Cmdenv::gets(const char *prompt, const char *defaultReply)
         return reply;
     }
     else
+#endif
     {
         ::fgets(buffer, 512, stdin);
         buffer[strlen(buffer)-1] = '\0'; // chop LF
@@ -1650,6 +1676,7 @@ bool Cmdenv::askyesno(const char *question)
     if (!opt->interactive)
         throw cRuntimeError("Simulation needs user input in non-interactive mode (prompt text: \"%s (y/n)\")", question);
 
+#ifdef SIMFRONTEND_SUPPORT
     if (opt->httpControlled)
     {
         ::fprintf(fout, "%s (y/n) ", question);
@@ -1662,6 +1689,7 @@ bool Cmdenv::askyesno(const char *question)
         return reply == "y";
     }
     else
+#endif
     {
         for(;;)
         {
@@ -1681,6 +1709,7 @@ bool Cmdenv::askyesno(const char *question)
     }
 }
 
+#ifdef SIMFRONTEND_SUPPORT
 std::string Cmdenv::getUserInput(UserInputType type, JsonObject *details)
 {
     debug("[cmdenv] entering getUserInput(type='%s')\n", userInputType->getStringFor(type));
@@ -1701,6 +1730,7 @@ std::string Cmdenv::getUserInput(UserInputType type, JsonObject *details)
     debug("[cmdenv] leaving getUserInput(), reply=\"%s\"\n", userInput.reply.c_str());
     return userInput.reply;
 }
+#endif
 
 void Cmdenv::debug(const char *fmt,...)
 {
@@ -1714,7 +1744,13 @@ void Cmdenv::debug(const char *fmt,...)
 
     ::fprintf(logStream, "[%02d:%02d:%02d.%03d event #%" LL "d %s] ",
              tm.tm_hour, tm.tm_min, tm.tm_sec, (int)(tv.tv_usec/1000),
-             simulation.getEventNumber(), stateEnum->getStringFor(state));
+             simulation.getEventNumber(),
+#ifdef SIMFRONTEND_SUPPORT
+             stateEnum->getStringFor(state)
+#else
+             ""
+#endif
+             );
     va_list va;
     va_start(va, fmt);
     ::vfprintf(logStream, fmt, va);
@@ -1758,6 +1794,7 @@ void Cmdenv::simulationEvent(cEvent *event)
                 ::fflush(fout);
         }
 
+#ifdef SIMFRONTEND_SUPPORT
         if (collectJsonLog && event->isMessage())  //TODO also record non-message events
         {
             cMessage *msg = static_cast<cMessage*>(event);
@@ -1774,6 +1811,7 @@ void Cmdenv::simulationEvent(cEvent *event)
             entry->put("messageClassName", jsonWrap(msg->getClassName()));
             jsonLog->push_back(entry);
         }
+#endif
     }
 }
 
@@ -1786,6 +1824,7 @@ void Cmdenv::beginSend(cMessage *msg)
 {
     EnvirBase::beginSend(msg);
 
+#ifdef SIMFRONTEND_SUPPORT
     if (!disable_tracing && collectJsonLog)
     {
         JsonObject *entry = new JsonObject();
@@ -1793,6 +1832,7 @@ void Cmdenv::beginSend(cMessage *msg)
         entry->put("msg", jsonWrapObjectId(msg));
         jsonLog->push_back(entry);
     }
+#endif
 }
 
 void Cmdenv::messageScheduled(cMessage *msg)
@@ -1809,6 +1849,7 @@ void Cmdenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagati
 {
     EnvirBase::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
 
+#ifdef SIMFRONTEND_SUPPORT
     if (!disable_tracing && collectJsonLog)
     {
         cModule *srcModule = msg->getSenderModule();
@@ -1821,12 +1862,14 @@ void Cmdenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagati
         entry->put("transmissionDelay", jsonWrap(transmissionDelay));
         jsonLog->push_back(entry);
     }
+#endif
 }
 
 void Cmdenv::messageSendHop(cMessage *msg, cGate *srcGate)
 {
     EnvirBase::messageSendHop(msg, srcGate);
 
+#ifdef SIMFRONTEND_SUPPORT
     if (!disable_tracing && collectJsonLog)
     {
         JsonObject *entry = new JsonObject();
@@ -1834,12 +1877,14 @@ void Cmdenv::messageSendHop(cMessage *msg, cGate *srcGate)
         entry->put("srcGate", jsonWrapObjectId(srcGate));
         jsonLog->push_back(entry);
     }
+#endif
 }
 
 void Cmdenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     EnvirBase::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
 
+#ifdef SIMFRONTEND_SUPPORT
     if (!disable_tracing && collectJsonLog) //TODO we won't animate in fast mode, so BS/SH/ES entries won't be needed then!
     {
         // Note: the link or even the gate may be deleted by the time the client receives
@@ -1852,18 +1897,21 @@ void Cmdenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagation
         entry->put("transmissionDelay", jsonWrap(transmissionDelay));
         jsonLog->push_back(entry);
     }
+#endif
 }
 
 void Cmdenv::endSend(cMessage *msg)
 {
     EnvirBase::endSend(msg);
 
+#ifdef SIMFRONTEND_SUPPORT
     if (!disable_tracing && collectJsonLog)
     {
         JsonObject *entry = new JsonObject();
         entry->put("@", jsonWrap("ES"));  // note: msg is already in BeginSend
         jsonLog->push_back(entry);
     }
+#endif
 }
 
 void Cmdenv::messageCreated(cMessage *msg)
@@ -1888,6 +1936,7 @@ void Cmdenv::componentMethodBegin(cComponent *from, cComponent *to, const char *
     va_copy(va2, va);
     EnvirBase::componentMethodBegin(from, to, methodFmt, va2, silent);
 
+#ifdef SIMFRONTEND_SUPPORT
     if (!disable_tracing && collectJsonLog)
     {
         const char *methodText = "";  // for the Enter_Method_Silent case
@@ -1906,18 +1955,21 @@ void Cmdenv::componentMethodBegin(cComponent *from, cComponent *to, const char *
         entry->put("m", jsonWrap(methodText));
         jsonLog->push_back(entry);
     }
+#endif
 }
 
 void Cmdenv::componentMethodEnd()
 {
     EnvirBase::componentMethodEnd();
 
+#ifdef SIMFRONTEND_SUPPORT
     if (!disable_tracing && collectJsonLog)
     {
         JsonObject *entry = new JsonObject();
         entry->put("@", jsonWrap("ME"));
         jsonLog->push_back(entry);
     }
+#endif
 }
 
 void Cmdenv::moduleDeleted(cModule *module)
@@ -1958,8 +2010,6 @@ void Cmdenv::displayStringChanged(cComponent *component)
 void Cmdenv::printUISpecificHelp()
 {
     std::cout << "Cmdenv-specific options:\n";
-    std::cout << "  -w            Wait for commands over HTTP instead of starting a simulation\n";
-    std::cout << "                interactively. Overrides -c, -r, -a, -x, -g, -G, -X options.\n";
     std::cout << "  -c <configname>\n";
     std::cout << "                Select a given configuration for execution. With inifile-based\n";
     std::cout << "                configuration database, this selects the [Config <configname>]\n";
@@ -1976,6 +2026,10 @@ void Cmdenv::printUISpecificHelp()
     std::cout << "                variables, etc. -G provides more details than -g.\n";
     std::cout << "  -X <configname>\n";
     std::cout << "                Print the fallback chain of the given configuration, and exit.\n";
+#ifdef SIMFRONTEND_SUPPORT
+    std::cout << "  -w            Wait for commands over HTTP instead of starting a simulation\n";
+    std::cout << "                interactively. Overrides -c, -r, -a, -x, -g, -G, -X options.\n";
+#endif
 }
 
 unsigned Cmdenv::getExtraStackForEnvir() const

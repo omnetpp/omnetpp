@@ -18,6 +18,8 @@
 #ifndef __CMDENV_SERIALIZER_H
 #define __CMDENV_SERIALIZER_H
 
+#ifdef SIMFRONTEND_SUPPORT
+
 #include <map>
 #include "cmddefs.h"
 #include "cobject.h"
@@ -52,6 +54,7 @@ class CMDENV_API Serializer
 
 NAMESPACE_END
 
+#endif
 
 #endif
 
