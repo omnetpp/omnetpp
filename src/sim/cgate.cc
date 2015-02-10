@@ -237,10 +237,12 @@ cProperties *cGate::getProperties() const
     return props;
 }
 
+#ifdef SIMFRONTEND_SUPPORT
 bool cGate::hasChangedSince(int64 lastRefreshSerial)
 {
     return getOwnerModule()->hasChangedSince(lastRefreshSerial);
 }
+#endif
 
 cChannel *cGate::connectTo(cGate *g, cChannel *chan, bool leaveUninitialized)
 {
@@ -286,7 +288,9 @@ cChannel *cGate::connectTo(cGate *g, cChannel *chan, bool leaveUninitialized)
     if (chan)
         ev.configure(chan);
     EVCB.connectionCreated(this);
+#ifdef SIMFRONTEND_SUPPORT
     mod->updateLastChangeSerial();
+#endif
 
     // initialize the channel here, to simplify dynamic connection creation.
     // Heuristics: if parent module is not yet initialized, we expect that
@@ -361,7 +365,9 @@ void cGate::disconnect()
     cChannel *oldchannelp = channelp;
     channelp = NULL;
 
+#ifdef SIMFRONTEND_SUPPORT
     mod->updateLastChangeSerial();
+#endif
 
     // notify post-change listeners
     if (mod->hasListeners(POST_MODEL_CHANGE)) {

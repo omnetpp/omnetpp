@@ -239,7 +239,9 @@ void cModule::updateFullName()
     if (cachefullpath)
         updateFullPathRec();
 
+#ifdef SIMFRONTEND_SUPPORT
     updateLastChangeSerial();
+#endif
 }
 
 void cModule::reassignModuleIdRec()
@@ -362,7 +364,9 @@ void cModule::disposeGateDesc(cGate::Desc *desc, bool checkConnected)
     const char *gatename = desc->namep->name.c_str();
     cGate::Type gatetype = desc->getType();
     desc->namep = NULL; // mark as deleted, but leave shared Name struct in the pool
+#ifdef SIMFRONTEND_SUPPORT
     updateLastChangeSerial();
+#endif
 
     // notify post-change listeners
     if (hasListeners(POST_MODEL_CHANGE)) {
@@ -581,7 +585,9 @@ cGate *cModule::addGate(const char *gatename, cGate::Type type, bool isVector)
             result = newGate;
     }
 
+#ifdef SIMFRONTEND_SUPPORT
     updateLastChangeSerial();
+#endif
 
     // notify post-change listeners
     if (hasListeners(POST_MODEL_CHANGE)) {
@@ -710,8 +716,10 @@ void cModule::setGateSize(const char *gatename, int newSize)
         }
     }
 
+#ifdef SIMFRONTEND_SUPPORT
     if (newSize != oldSize)
         updateLastChangeSerial();
+#endif
 
     // notify post-change listeners
     if (hasListeners(POST_MODEL_CHANGE)) {
@@ -1291,7 +1299,9 @@ void cModule::changeParentTo(cModule *mod)
 
     // notify environment
     EVCB.moduleReparented(this,oldparent, oldId);
+#ifdef SIMFRONTEND_SUPPORT
     updateLastChangeSerial();
+#endif
 
     // notify post-change listeners
     if (hasListeners(POST_MODEL_CHANGE)) {

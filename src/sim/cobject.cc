@@ -26,7 +26,9 @@
 
 NAMESPACE_BEGIN
 
+#ifdef SIMFRONTEND_SUPPORT
 int64 cObject::changeCounter = 0;
+#endif
 
 cObject::~cObject()
 {
@@ -44,10 +46,12 @@ cClassDescriptor *cObject::getDescriptor()
     return cClassDescriptor::getDescriptorFor(this);
 }
 
+#ifdef SIMFRONTEND_SUPPORT
 bool cObject::hasChangedSince(int64 lastRefreshSerial)
 {
     return true;  // as we don't have more info
 }
+#endif
 
 std::string cObject::getFullPath() const
 {

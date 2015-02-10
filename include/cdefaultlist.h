@@ -49,8 +49,10 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
     int capacity;        // allocated size of vect[]
     int size;            // number of elements used in vect[] (0..size-1)
 
+#ifdef SIMFRONTEND_SUPPORT
   private:
     int64 lastChangeSerial;
+#endif
 
   private:
     void construct();
@@ -62,9 +64,11 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
     // internal: called from module creation code in ctypes.cc
     void takeAllObjectsFrom(cDefaultList& other);
 
+#ifdef SIMFRONTEND_SUPPORT
     // internal: used by the UI to optimize refreshes
     void updateLastChangeSerial()  {lastChangeSerial = changeCounter++;}
     virtual bool hasChangedSince(int64 lastRefreshSerial);
+#endif
 
   protected:
     /** @name Redefined cObject member functions */

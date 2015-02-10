@@ -300,7 +300,9 @@ void cPar::beforeChange()
 void cPar::afterChange()
 {
     ASSERT(ownercomponent);
+#ifdef SIMFRONTEND_SUPPORT
     ownercomponent->updateLastChangeSerial();
+#endif
 
     // call owner's component's handleParameterChange() method,
     // i.e. parameter change notification is allowed only on fully initialized components
@@ -319,10 +321,12 @@ void cPar::afterChange()
 
 }
 
+#ifdef SIMFRONTEND_SUPPORT
 bool cPar::hasChangedSince(int64 lastRefreshSerial)
 {
     return ownercomponent->hasChangedSince(lastRefreshSerial);
 }
+#endif
 
 void cPar::read()
 {

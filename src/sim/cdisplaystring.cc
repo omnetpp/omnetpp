@@ -98,7 +98,9 @@ void cDisplayString::afterChange()
     needsassemble = true;
 
     if (ownercomponent) {
+#ifdef SIMFRONTEND_SUPPORT
         ownercomponent->updateLastChangeSerial();
+#endif
         EVCB.displayStringChanged(ownercomponent);
 
         // notify post-change listeners
