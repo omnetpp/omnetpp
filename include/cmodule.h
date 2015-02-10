@@ -720,7 +720,8 @@ class SIM_API cModule : public cComponent //implies noncopyable
     cPar& getAncestorPar(const char *parname);
 
     /**
-     * TODO
+     * Returns the default canvas for this module, creating it if it hasn't
+     * existed before.
      */
     virtual cCanvas *getCanvas();
     //@}
