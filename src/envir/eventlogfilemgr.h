@@ -23,7 +23,7 @@
 #include "opp_string.h"
 #include "objectprinter.h"
 #include "intervals.h"
-#include "clifetimelistener.h"
+#include "clifecyclelistener.h"
 
 NAMESPACE_BEGIN
 
@@ -37,7 +37,7 @@ class cGate;
 /**
  * Responsible for writing the eventlog file.
  */
-class ENVIR_API EventlogFileManager : public cISimulationLifetimeListener
+class ENVIR_API EventlogFileManager : public cISimulationLifecycleListener
 {
   private:
     opp_string filename;
@@ -103,9 +103,9 @@ class ENVIR_API EventlogFileManager : public cISimulationLifetimeListener
 
   protected:
     /**
-     * A cISimulationLifetimeListener method. Delegates to startRun() and endRun(); override if needed.
+     * A cISimulationLifecycleListener method. Delegates to startRun() and endRun(); override if needed.
      */
-    virtual void lifetimeEvent(SimulationLifetimeEventType eventType, cObject *details);
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details);
 
   public:
     EventlogFileManager();

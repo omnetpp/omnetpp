@@ -129,7 +129,7 @@ clean:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/arrow.o: arrow.cc \
   ../../include/cenvir.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/cobject.h \
   ../../include/cvisitor.h \
@@ -160,7 +160,7 @@ $O/componenthistory.o: componenthistory.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -208,7 +208,7 @@ $O/figurerenderers.o: figurerenderers.cc \
   ../../include/cexpression.h \
   ../../include/cgate.h \
   ../../include/checkandcast.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -271,7 +271,7 @@ $O/gateinspector.o: gateinspector.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -336,7 +336,7 @@ $O/genericobjectinspector.o: genericobjectinspector.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -403,7 +403,7 @@ $O/histograminspector.o: histograminspector.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -490,7 +490,7 @@ $O/inspector.o: inspector.cc \
   ../../include/chistogram.h \
   ../../include/cksplit.h \
   ../../include/clcg32.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/clongparimpl.h \
@@ -615,7 +615,7 @@ $O/inspectorfactory.o: inspectorfactory.cc \
   ../../include/chistogram.h \
   ../../include/cksplit.h \
   ../../include/clcg32.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/clongparimpl.h \
@@ -716,7 +716,7 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -759,7 +759,7 @@ $O/logbuffer.o: logbuffer.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -809,7 +809,7 @@ $O/loginspector.o: loginspector.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -877,7 +877,7 @@ $O/moduleinspector.o: moduleinspector.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -948,7 +948,7 @@ $O/outputvectorinspector.o: outputvectorinspector.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -1019,7 +1019,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -1092,7 +1092,7 @@ $O/tkenv.o: tkenv.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -1169,7 +1169,7 @@ $O/tklib.o: tklib.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -1232,7 +1232,7 @@ $O/tkutil.o: tkutil.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -1299,7 +1299,7 @@ $O/watchinspector.o: watchinspector.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \

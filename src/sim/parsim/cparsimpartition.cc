@@ -61,7 +61,7 @@ void cParsimPartition::setContext(cSimulation *simul, cParsimCommunications *com
     synch = sync;
 }
 
-void cParsimPartition::lifetimeEvent(SimulationLifetimeEventType eventType, cObject *details)
+void cParsimPartition::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details)
 {
     switch (eventType) {
         case LF_PRE_NETWORK_INITIALIZE: startRun(); break;

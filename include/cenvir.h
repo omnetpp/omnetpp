@@ -23,7 +23,7 @@
 #include "simtime_t.h"
 #include "opp_string.h"
 #include "clistener.h"  // for simsignal_t
-#include "clifetimelistener.h"
+#include "clifecyclelistener.h"
 
 NAMESPACE_BEGIN
 
@@ -710,21 +710,21 @@ class SIM_API cEnvir
     virtual void removeHttpRequestHandler(cHttpRequestHandler *p) = 0;
     //@}
 
-    /** @name Lifetime listeners */
+    /** @name Lifecycle listeners */
     //@{
     /**
-     * Adds a listener that will be notified about simulation lifetime events.
+     * Adds a listener that will be notified about simulation lifecycle events.
      * The listeners will NOT be deleted when the program exits.
      */
-    virtual void addListener(cISimulationLifetimeListener *listener) = 0;
+    virtual void addListener(cISimulationLifecycleListener *listener) = 0;
 
     /**
      * Removes the given listener.
      */
-    virtual void removeListener(cISimulationLifetimeListener *listener) = 0;
+    virtual void removeListener(cISimulationLifecycleListener *listener) = 0;
 
     // internal
-    virtual void notifyListeners(SimulationLifetimeEventType eventType, cObject *details=NULL) = 0;
+    virtual void notifyListeners(SimulationLifecycleEventType eventType, cObject *details=NULL) = 0;
     //@}
 };
 

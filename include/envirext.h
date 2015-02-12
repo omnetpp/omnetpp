@@ -27,7 +27,7 @@
 #include "cobject.h"
 #include "simtime_t.h"
 #include "opp_string.h"
-#include "clifetimelistener.h"
+#include "clifecyclelistener.h"
 
 NAMESPACE_BEGIN
 
@@ -55,7 +55,7 @@ class cStatistic;
  *
  * @ingroup EnvirExtensions
  */
-class SIM_API cIOutputVectorManager : public cObject, public cISimulationLifetimeListener
+class SIM_API cIOutputVectorManager : public cObject, public cISimulationLifecycleListener
 {
   private:
     // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented
@@ -64,9 +64,9 @@ class SIM_API cIOutputVectorManager : public cObject, public cISimulationLifetim
 
   protected:
     /**
-     * A cISimulationLifetimeListener method. Delegates to startRun(), endRun() and flush(); override if needed.
+     * A cISimulationLifecycleListener method. Delegates to startRun(), endRun() and flush(); override if needed.
      */
-    virtual void lifetimeEvent(SimulationLifetimeEventType eventType, cObject *details);
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details);
 
   public:
     /** @name Constructor, destructor */
@@ -159,7 +159,7 @@ class SIM_API cIOutputVectorManager : public cObject, public cISimulationLifetim
  *
  * @ingroup EnvirExtensions
  */
-class SIM_API cIOutputScalarManager : public cObject, public cISimulationLifetimeListener
+class SIM_API cIOutputScalarManager : public cObject, public cISimulationLifecycleListener
 {
   private:
     // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented
@@ -168,9 +168,9 @@ class SIM_API cIOutputScalarManager : public cObject, public cISimulationLifetim
 
   protected:
     /**
-     * A cISimulationLifetimeListener method. Delegates to startRun(), endRun() and flush(); override if needed.
+     * A cISimulationLifecycleListener method. Delegates to startRun(), endRun() and flush(); override if needed.
      */
-    virtual void lifetimeEvent(SimulationLifetimeEventType eventType, cObject *details);
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details);
 
   public:
     /** @name Constructor, destructor */
@@ -248,7 +248,7 @@ class SIM_API cIOutputScalarManager : public cObject, public cISimulationLifetim
  *
  * @ingroup EnvirExtensions
  */
-class SIM_API cISnapshotManager : public cObject, public cISimulationLifetimeListener
+class SIM_API cISnapshotManager : public cObject, public cISimulationLifecycleListener
 {
   private:
     // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented
@@ -257,9 +257,9 @@ class SIM_API cISnapshotManager : public cObject, public cISimulationLifetimeLis
 
   protected:
     /**
-     * A cISimulationLifetimeListener method. Delegates to startRun() and endRun(); override if needed.
+     * A cISimulationLifecycleListener method. Delegates to startRun() and endRun(); override if needed.
      */
-    virtual void lifetimeEvent(SimulationLifetimeEventType eventType, cObject *details);
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details);
 
   public:
     /** @name Constructor, destructor */

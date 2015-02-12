@@ -22,7 +22,7 @@
 #define __CSCHEDULER_H
 
 #include "cobject.h"
-#include "clifetimelistener.h"
+#include "clifecyclelistener.h"
 #include "platdep/timeutil.h"  // for timeval
 
 NAMESPACE_BEGIN
@@ -50,17 +50,17 @@ class cSimulation;
  * @ingroup EnvirExtensions
  * @ingroup Internals
  */
-class SIM_API cScheduler : public cObject, public cISimulationLifetimeListener
+class SIM_API cScheduler : public cObject, public cISimulationLifecycleListener
 {
   protected:
     cSimulation *sim;
 
   protected:
     /**
-     * A cISimulationLifetimeListener method. Delegates to startRun(), endRun() and
+     * A cISimulationLifecycleListener method. Delegates to startRun(), endRun() and
      * executionResumed(); override if needed.
      */
-    virtual void lifetimeEvent(SimulationLifetimeEventType eventType, cObject *details);
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details);
 
   public:
     /**

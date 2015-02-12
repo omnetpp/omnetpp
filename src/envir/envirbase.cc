@@ -1911,35 +1911,35 @@ char **EnvirBase::getArgVector() const
     return args->getArgVector();
 }
 
-void EnvirBase::addListener(cISimulationLifetimeListener *listener)
+void EnvirBase::addListener(cISimulationLifecycleListener *listener)
 {
-    std::vector<cISimulationLifetimeListener*>::iterator it = std::find(listeners.begin(), listeners.end(), listener);
+    std::vector<cISimulationLifecycleListener*>::iterator it = std::find(listeners.begin(), listeners.end(), listener);
     if (it == listeners.end()) {
         listeners.push_back(listener);
         listener->listenerAdded();
     }
 }
 
-void EnvirBase::removeListener(cISimulationLifetimeListener *listener)
+void EnvirBase::removeListener(cISimulationLifecycleListener *listener)
 {
-    std::vector<cISimulationLifetimeListener*>::iterator it = std::find(listeners.begin(), listeners.end(), listener);
+    std::vector<cISimulationLifecycleListener*>::iterator it = std::find(listeners.begin(), listeners.end(), listener);
     if (it != listeners.end()) {
         listeners.erase(it);
         listener->listenerRemoved();
     }
 }
 
-void EnvirBase::notifyListeners(SimulationLifetimeEventType eventType, cObject *details)
+void EnvirBase::notifyListeners(SimulationLifecycleEventType eventType, cObject *details)
 {
     // make a copy of the listener list, to avoid problems from listeners
     // getting added/removed during notification
-    std::vector<cISimulationLifetimeListener*> copy = listeners;
+    std::vector<cISimulationLifecycleListener*> copy = listeners;
     for (int i = 0; i < (int)copy.size(); i++) {
         try {
-            copy[i]->lifetimeEvent(eventType, details);
+            copy[i]->lifecycleEvent(eventType, details);
         }
         catch (std::exception& e) {  //XXX perhaps we shouldn't hide the exception!!!! just re-throw? then all notifyListeners() calls MUST be surrounded with try-catch!!!!
-            const char *eventName = cISimulationLifetimeListener::getSimulationLifetimeEventName(eventType);
+            const char *eventName = cISimulationLifecycleListener::getSimulationLifecycleEventName(eventType);
             printfmsg("Error in %s listener: %s", eventName, e.what());
         }
     }

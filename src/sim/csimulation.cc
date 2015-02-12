@@ -39,7 +39,7 @@
 #include "chasher.h"
 #include "cconfiguration.h"
 #include "ccoroutine.h"
-#include "clifetimelistener.h"
+#include "clifecyclelistener.h"
 #include "platdep/platmisc.h"  // for DEBUG_TRAP
 
 #ifdef WITH_PARSIM
@@ -878,10 +878,10 @@ class StaticEnv : public cEnvir
     virtual void addHttpRequestHandler(cHttpRequestHandler *p) {}
     virtual void removeHttpRequestHandler(cHttpRequestHandler *p) {}
 
-    // lifetime listeners
-    virtual void addListener(cISimulationLifetimeListener *listener) {}
-    virtual void removeListener(cISimulationLifetimeListener *listener) {}
-    virtual void notifyListeners(SimulationLifetimeEventType eventType, cObject *details) {}
+    // lifecycle listeners
+    virtual void addListener(cISimulationLifecycleListener *listener) {}
+    virtual void removeListener(cISimulationLifecycleListener *listener) {}
+    virtual void notifyListeners(SimulationLifecycleEventType eventType, cObject *details) {}
 };
 
 void StaticEnv::undisposedObject(cObject *obj)

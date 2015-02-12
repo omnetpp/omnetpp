@@ -95,7 +95,7 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/cexpression.h \
   ../../include/cgate.h \
   ../../include/checkandcast.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -171,7 +171,7 @@ $O/serializer.o: serializer.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \

@@ -137,8 +137,8 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     // Data for getUniqueNumber()
     unsigned long nextuniquenumber;
 
-    // lifetime listeners
-    std::vector<cISimulationLifetimeListener*> listeners;
+    // lifecycle listeners
+    std::vector<cISimulationLifecycleListener*> listeners;
 
     // Built-in web server
     cHttpServer *httpServer;
@@ -254,9 +254,9 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual void removeHttpRequestHandler(cHttpRequestHandler *p);
     virtual bool idle();
 
-    virtual void addListener(cISimulationLifetimeListener *listener);
-    virtual void removeListener(cISimulationLifetimeListener *listener);
-    virtual void notifyListeners(SimulationLifetimeEventType eventType, cObject *details=NULL);
+    virtual void addListener(cISimulationLifecycleListener *listener);
+    virtual void removeListener(cISimulationLifecycleListener *listener);
+    virtual void notifyListeners(SimulationLifecycleEventType eventType, cObject *details=NULL);
     //@}
 
   protected:

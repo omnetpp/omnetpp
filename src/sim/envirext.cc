@@ -19,7 +19,7 @@
 
 USING_NAMESPACE
 
-void cIOutputVectorManager::lifetimeEvent(SimulationLifetimeEventType eventType, cObject *details)
+void cIOutputVectorManager::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details)
 {
     switch (eventType) {
         case LF_PRE_NETWORK_INITIALIZE: startRun(); break;
@@ -29,7 +29,7 @@ void cIOutputVectorManager::lifetimeEvent(SimulationLifetimeEventType eventType,
     }
 }
 
-void cIOutputScalarManager::lifetimeEvent(SimulationLifetimeEventType eventType, cObject *details)
+void cIOutputScalarManager::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details)
 {
     switch (eventType) {
         case LF_PRE_NETWORK_INITIALIZE: startRun(); break;
@@ -39,7 +39,7 @@ void cIOutputScalarManager::lifetimeEvent(SimulationLifetimeEventType eventType,
     }
 }
 
-void cISnapshotManager::lifetimeEvent(SimulationLifetimeEventType eventType, cObject *details)
+void cISnapshotManager::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details)
 {
     switch (eventType) {
         case LF_PRE_NETWORK_INITIALIZE: startRun(); break;

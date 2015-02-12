@@ -61,7 +61,7 @@ class SIM_API cNullEnvir : public cEnvir
     cConfiguration *cfg;
     cRNG *rng;
     unsigned long lastnum;
-    std::vector<cISimulationLifetimeListener*> listeners;
+    std::vector<cISimulationLifecycleListener*> listeners;
 
   protected:
     void unsupported() const {throw cRuntimeError("cNullEnvir: unsupported method called");}
@@ -151,10 +151,10 @@ class SIM_API cNullEnvir : public cEnvir
     virtual void addHttpRequestHandler(cHttpRequestHandler *p) {}
     virtual void removeHttpRequestHandler(cHttpRequestHandler *p) {}
 
-    // lifetime listeners
-    virtual void addListener(cISimulationLifetimeListener *listener);
-    virtual void removeListener(cISimulationLifetimeListener *listener);
-    virtual void notifyListeners(SimulationLifetimeEventType eventType, cObject *details);
+    // lifecycle listeners
+    virtual void addListener(cISimulationLifecycleListener *listener);
+    virtual void removeListener(cISimulationLifecycleListener *listener);
+    virtual void notifyListeners(SimulationLifecycleEventType eventType, cObject *details);
 };
 
 

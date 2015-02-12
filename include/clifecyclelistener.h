@@ -1,5 +1,5 @@
 //==========================================================================
-//   CILIFETIMELISTENER.H  -  header for
+//   CLIFECYCLELISTENER.H  -  header for
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -15,19 +15,19 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CLIFETIMELISTENER_H
-#define __CLIFETIMELISTENER_H
+#ifndef __CLIFECYCLELISTENER_H
+#define __CLIFECYCLELISTENER_H
 
 #include "cobject.h"
 
 NAMESPACE_BEGIN
 
 /**
- * Event type for cISimulationLifetimeListener's lifetimeEvent() method.
+ * Event type for cISimulationLifecycleListener's lifecycleEvent() method.
  *
  * @ingroup SimCore
  */
-enum SimulationLifetimeEventType
+enum SimulationLifecycleEventType
 {
     /**
      * Fired on the startup of the simulation program, after global
@@ -95,7 +95,7 @@ enum SimulationLifetimeEventType
     LF_ON_SIMULATION_SUCCESS,
 
     /**
-     * Fired on a runtime error, in any stage of a simulation run's lifetime
+     * Fired on a runtime error, in any stage of a simulation run's lifecycle
      * (during network setup, initialization, in an event during simulation,
      * during finalization and network deletion.)
      */
@@ -181,15 +181,15 @@ enum SimulationLifetimeEventType
  * @ingroup SimCore
  * @ingroup Internals
  */
-class SIM_API cISimulationLifetimeListener
+class SIM_API cISimulationLifecycleListener
 {
   public:
-    virtual ~cISimulationLifetimeListener() {}
+    virtual ~cISimulationLifecycleListener() {}
 
     /**
-     * The main listener method, called on simulation lifetime events.
+     * The main listener method, called on simulation lifecycle events.
      */
-    virtual void lifetimeEvent(SimulationLifetimeEventType eventType, cObject *details) = 0;
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) = 0;
 
     /**
      * Fired after this listener was added to cEnvir, via addListener().
@@ -204,9 +204,9 @@ class SIM_API cISimulationLifetimeListener
     virtual void listenerRemoved() {}
 
     /**
-     * Returns the string representation of the simulation lifetime event type.
+     * Returns the string representation of the simulation lifecycle event type.
      */
-    static const char *getSimulationLifetimeEventName(SimulationLifetimeEventType eventType);
+    static const char *getSimulationLifecycleEventName(SimulationLifecycleEventType eventType);
 };
 
 NAMESPACE_END

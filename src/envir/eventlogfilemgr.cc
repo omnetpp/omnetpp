@@ -144,7 +144,7 @@ void EventlogFileManager::configure()
     dynamic_cast<EnvirBase *>(&ev)->processFileName(filename);
 }
 
-void EventlogFileManager::lifetimeEvent(SimulationLifetimeEventType eventType, cObject *details)
+void EventlogFileManager::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details)
 {
     switch (eventType) {
         case LF_PRE_NETWORK_SETUP:

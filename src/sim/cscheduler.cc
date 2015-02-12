@@ -46,7 +46,7 @@ void cScheduler::setSimulation(cSimulation *_sim)
     sim = _sim;
 }
 
-void cScheduler::lifetimeEvent(SimulationLifetimeEventType eventType, cObject *details)
+void cScheduler::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details)
 {
     switch (eventType) {
         case LF_PRE_NETWORK_INITIALIZE: startRun(); break;

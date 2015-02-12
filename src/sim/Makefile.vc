@@ -36,7 +36,7 @@ OBJS_STD=\
     $O/cmatchexpression.obj $O/cpatternmatcher.obj $O/cmessageprinter.obj $O/cnullenvir.obj $O/envirext.obj \
     $O/cnedfunction.obj $O/cnedvalue.obj $O/cobject.obj $O/coutvector.obj $O/cnamedobject.obj \
     $O/cpar.obj $O/cparimpl.obj $O/cownedobject.obj $O/cproperties.obj $O/cproperty.obj \
-    $O/cresultfilter.obj $O/cresultlistener.obj $O/cresultrecorder.obj $O/clifetimelistener.obj \
+    $O/cresultfilter.obj $O/cresultlistener.obj $O/cresultrecorder.obj $O/clifecyclelistener.obj \
     $O/cpsquare.obj $O/cqueue.obj $O/cpacketqueue.obj $O/cscheduler.obj $O/csimplemodule.obj \
     $O/csimulation.obj $O/cstatistic.obj $O/cstddev.obj $O/cstlwatch.obj $O/cstringparimpl.obj \
     $O/cstringpool.obj $O/cstringtokenizer.obj $O/cclassdescriptor.obj $O/ctopology.obj $O/cvarhist.obj \
@@ -184,7 +184,7 @@ $O/cboolparimpl.obj: cboolparimpl.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cnamedobject.h \
@@ -243,7 +243,7 @@ $O/cchannel.obj: cchannel.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -330,7 +330,7 @@ $O/ccomponent.obj: ccomponent.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -383,7 +383,7 @@ $O/ccomponenttype.obj: ccomponenttype.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -485,7 +485,7 @@ $O/cdataratechannel.obj: cdataratechannel.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -528,7 +528,7 @@ $O/cdefaultlist.obj: cdefaultlist.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -568,7 +568,7 @@ $O/cdelaychannel.obj: cdelaychannel.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -630,7 +630,7 @@ $O/cdetect.obj: cdetect.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -665,7 +665,7 @@ $O/cdisplaystring.obj: cdisplaystring.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -705,7 +705,7 @@ $O/cdoubleparimpl.obj: cdoubleparimpl.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cnamedobject.h \
@@ -735,7 +735,7 @@ $O/cdynamicexpression.obj: cdynamicexpression.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -773,7 +773,7 @@ $O/cenum.obj: cenum.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -807,7 +807,7 @@ $O/cenvir.obj: cenvir.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -837,7 +837,7 @@ $O/cevent.obj: cevent.cc \
   ../../include/cevent.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -871,7 +871,7 @@ $O/cexception.obj: cexception.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -933,7 +933,7 @@ $O/cgate.obj: cgate.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -992,7 +992,7 @@ $O/chistogram.obj: chistogram.cc \
   ../../include/cexpression.h \
   ../../include/cgate.h \
   ../../include/chistogram.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -1034,7 +1034,7 @@ $O/cksplit.obj: cksplit.cc \
   ../../include/cexpression.h \
   ../../include/cgate.h \
   ../../include/cksplit.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -1075,7 +1075,7 @@ $O/clcg32.obj: clcg32.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/clcg32.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -1102,8 +1102,8 @@ $O/clcg32.obj: clcg32.cc \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/simutil.h
-$O/clifetimelistener.obj: clifetimelistener.cc \
-  ../../include/clifetimelistener.h \
+$O/clifecyclelistener.obj: clifecyclelistener.cc \
+  ../../include/clifecyclelistener.h \
   ../../include/cobject.h \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
@@ -1124,7 +1124,7 @@ $O/clistener.obj: clistener.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -1164,7 +1164,7 @@ $O/clog.obj: clog.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -1198,7 +1198,7 @@ $O/clongparimpl.obj: clongparimpl.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/clongparimpl.h \
@@ -1239,7 +1239,7 @@ $O/cmersennetwister.obj: cmersennetwister.cc \
   ../../include/cevent.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmersennetwister.h \
@@ -1281,7 +1281,7 @@ $O/cmessage.obj: cmessage.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -1320,7 +1320,7 @@ $O/cmessageheap.obj: cmessageheap.cc \
   ../../include/cevent.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -1357,7 +1357,7 @@ $O/cmessageprinter.obj: cmessageprinter.cc \
   ../../include/cevent.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -1400,7 +1400,7 @@ $O/cmodule.obj: cmodule.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -1444,7 +1444,7 @@ $O/cmsgpar.obj: cmsgpar.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -1530,7 +1530,7 @@ $O/cnedmathfunction.obj: cnedmathfunction.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -1565,7 +1565,7 @@ $O/cnedvalue.obj: cnedvalue.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/cnamedobject.h \
   ../../include/cnedvalue.h \
@@ -1592,7 +1592,7 @@ $O/cnullenvir.obj: cnullenvir.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmersennetwister.h \
@@ -1627,7 +1627,7 @@ $O/cobject.obj: cobject.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -1657,7 +1657,7 @@ $O/cobjectfactory.obj: cobjectfactory.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -1694,7 +1694,7 @@ $O/coutvector.obj: coutvector.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -1730,7 +1730,7 @@ $O/cownedobject.obj: cownedobject.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -1766,7 +1766,7 @@ $O/cpacket.obj: cpacket.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -1807,7 +1807,7 @@ $O/cpacketqueue.obj: cpacketqueue.cc \
   ../../include/cevent.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -1848,7 +1848,7 @@ $O/cpar.obj: cpar.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -1888,7 +1888,7 @@ $O/cparimpl.obj: cparimpl.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/clongparimpl.h \
@@ -1923,7 +1923,7 @@ $O/cparsimcomm.obj: cparsimcomm.cc \
   ../../include/ccommbuffer.h \
   ../../include/cenvir.h \
   ../../include/cexception.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/cobject.h \
   ../../include/cparsimcomm.h \
@@ -2000,7 +2000,7 @@ $O/cpsquare.obj: cpsquare.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -2104,7 +2104,7 @@ $O/cresultlistener.obj: cresultlistener.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -2136,7 +2136,7 @@ $O/cresultrecorder.obj: cresultrecorder.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/chistogram.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cnamedobject.h \
@@ -2181,7 +2181,7 @@ $O/cscheduler.obj: cscheduler.cc \
   ../../include/cevent.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -2219,7 +2219,7 @@ $O/csimplemodule.obj: csimplemodule.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -2266,7 +2266,7 @@ $O/csimulation.obj: csimulation.cc \
   ../../include/cexpression.h \
   ../../include/cgate.h \
   ../../include/chasher.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -2315,7 +2315,7 @@ $O/cstatistic.obj: cstatistic.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -2356,7 +2356,7 @@ $O/cstddev.obj: cstddev.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -2420,7 +2420,7 @@ $O/cstringparimpl.obj: cstringparimpl.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cnamedobject.h \
@@ -2477,7 +2477,7 @@ $O/ctimestampedvalue.obj: ctimestampedvalue.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -2508,7 +2508,7 @@ $O/ctopology.obj: ctopology.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -2548,7 +2548,7 @@ $O/cvarhist.obj: cvarhist.cc \
   ../../include/cexpression.h \
   ../../include/cgate.h \
   ../../include/chistogram.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -2616,7 +2616,7 @@ $O/cxmlelement.obj: cxmlelement.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -2652,7 +2652,7 @@ $O/cxmlparimpl.obj: cxmlparimpl.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cnamedobject.h \
@@ -2683,7 +2683,7 @@ $O/distrib.obj: distrib.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -2715,7 +2715,7 @@ $O/distrib.obj: distrib.cc \
   ../../include/simtime_t.h \
   ../../include/simutil.h
 $O/envirext.obj: envirext.cc \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/cobject.h \
   ../../include/cvisitor.h \
   ../../include/envirext.h \
@@ -2739,7 +2739,7 @@ $O/expr.tab.obj: expr.tab.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/cnamedobject.h \
   ../../include/cnedfunction.h \
@@ -2817,7 +2817,7 @@ $O/lex.expryy.obj: lex.expryy.cc \
 $O/minixpath.obj: minixpath.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/cobject.h \
   ../../include/cvisitor.h \
@@ -2843,7 +2843,7 @@ $O/nedfunctions.obj: nedfunctions.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -2885,7 +2885,7 @@ $O/nedsupport.obj: nedsupport.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -2942,7 +2942,7 @@ $O/resultfilters.obj: resultfilters.cc \
   ../../include/cevent.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -2984,7 +2984,7 @@ $O/resultrecorders.obj: resultrecorders.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/chistogram.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -3049,7 +3049,7 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/chistogram.h \
   ../../include/cksplit.h \
   ../../include/clcg32.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/clongparimpl.h \
@@ -3167,7 +3167,7 @@ $O/util.obj: util.cc \
   ../../include/chistogram.h \
   ../../include/cksplit.h \
   ../../include/clcg32.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmersennetwister.h \
@@ -3228,7 +3228,7 @@ $O/netbuilder/cdynamicchanneltype.obj: netbuilder/cdynamicchanneltype.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -3273,7 +3273,7 @@ $O/netbuilder/cdynamicmoduletype.obj: netbuilder/cdynamicmoduletype.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -3346,7 +3346,7 @@ $O/netbuilder/cneddeclaration.obj: netbuilder/cneddeclaration.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -3392,7 +3392,7 @@ $O/netbuilder/cnedloader.obj: netbuilder/cnedloader.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/clongparimpl.h \
@@ -3450,7 +3450,7 @@ $O/netbuilder/cnednetworkbuilder.obj: netbuilder/cnednetworkbuilder.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/clongparimpl.h \
@@ -3502,7 +3502,7 @@ $O/parsim/cadvlinkdelaylookahead.obj: parsim/cadvlinkdelaylookahead.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -3569,7 +3569,7 @@ $O/parsim/cfilecomm.obj: parsim/cfilecomm.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -3636,7 +3636,7 @@ $O/parsim/cidealsimulationprot.obj: parsim/cidealsimulationprot.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -3684,7 +3684,7 @@ $O/parsim/cispeventlogger.obj: parsim/cispeventlogger.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -3735,7 +3735,7 @@ $O/parsim/clinkdelaylookahead.obj: parsim/clinkdelaylookahead.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -3810,7 +3810,7 @@ $O/parsim/cmpicomm.obj: parsim/cmpicomm.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -3873,7 +3873,7 @@ $O/parsim/cnamedpipecomm-win.obj: parsim/cnamedpipecomm-win.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -3913,7 +3913,7 @@ $O/parsim/cnamedpipecomm.obj: parsim/cnamedpipecomm.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -3954,7 +3954,7 @@ $O/parsim/cnosynchronization.obj: parsim/cnosynchronization.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -4006,7 +4006,7 @@ $O/parsim/cnullmessageprot.obj: parsim/cnullmessageprot.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -4061,7 +4061,7 @@ $O/parsim/cparsimpartition.obj: parsim/cparsimpartition.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -4110,7 +4110,7 @@ $O/parsim/cparsimprotocolbase.obj: parsim/cparsimprotocolbase.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -4153,7 +4153,7 @@ $O/parsim/cparsimsynchr.obj: parsim/cparsimsynchr.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \
@@ -4187,7 +4187,7 @@ $O/parsim/cplaceholdermod.obj: parsim/cplaceholdermod.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -4242,7 +4242,7 @@ $O/parsim/cproxygate.obj: parsim/cproxygate.cc \
   ../../include/cexception.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessage.h \
@@ -4292,7 +4292,7 @@ $O/parsim/parsimutil.obj: parsim/parsimutil.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/clifetimelistener.h \
+  ../../include/clifecyclelistener.h \
   ../../include/clistener.h \
   ../../include/clog.h \
   ../../include/cmessageheap.h \

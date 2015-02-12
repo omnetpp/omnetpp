@@ -24,7 +24,7 @@
 #include "simkerneldefs.h"
 #include "cobject.h"
 #include "simtime_t.h"
-#include "clifetimelistener.h"
+#include "clifecyclelistener.h"
 
 NAMESPACE_BEGIN
 
@@ -60,7 +60,7 @@ class cTerminationException;
  *
  * @ingroup Parsim
  */
-class SIM_API cParsimPartition : public cObject, public cISimulationLifetimeListener
+class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleListener
 {
   protected:
     cSimulation *sim;
@@ -73,10 +73,10 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifetimeList
     void connectRemoteGates();
 
     /**
-     * A cISimulationLifetimeListener method. Delegates to startRun(), endRun() and
+     * A cISimulationLifecycleListener method. Delegates to startRun(), endRun() and
      * shutdown(); override if needed.
      */
-    virtual void lifetimeEvent(SimulationLifetimeEventType eventType, cObject *details);
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details);
 
   public:
     /**

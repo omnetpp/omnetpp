@@ -1,5 +1,5 @@
 //=========================================================================
-//  CILIFETIMELISTENER.CC - part of
+//  CLIFECYCLELISTENER.CC - part of
 //
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
@@ -16,9 +16,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "clifetimelistener.h"
+#include "clifecyclelistener.h"
 
-const char *cISimulationLifetimeListener::getSimulationLifetimeEventName(SimulationLifetimeEventType eventType)
+const char *cISimulationLifecycleListener::getSimulationLifecycleEventName(SimulationLifecycleEventType eventType)
 {
     switch(eventType) {
 #define CASE(X) case LF_ ## X: return #X
