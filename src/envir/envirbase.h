@@ -254,9 +254,9 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual void removeHttpRequestHandler(cHttpRequestHandler *p);
     virtual bool idle();
 
-    virtual void addListener(cISimulationLifecycleListener *listener);
-    virtual void removeListener(cISimulationLifecycleListener *listener);
-    virtual void notifyListeners(SimulationLifecycleEventType eventType, cObject *details=NULL);
+    virtual void addLifecycleListener(cISimulationLifecycleListener *listener);
+    virtual void removeLifecycleListener(cISimulationLifecycleListener *listener);
+    virtual void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details=NULL);
     //@}
 
   protected:
@@ -290,12 +290,12 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
 
     virtual void displayException(std::exception& e);
 
+    // Utility function: checks simulation fingerprint and displays a message accordingly
+    void checkFingerprint();
+
     // Called from configure(component); adds result recording listeners
     // for each declared signal (@statistic property) in the component.
     virtual void addResultRecorders(cComponent *component);
-
-    // Utility function: checks simulation fingerprint and displays a message accordingly
-    void checkFingerprint();
 
     // Utility function: adds result recording listeners for the given signal (if it's non-null) or for the given @statistic property.
     // If signal is specified, it will override the source= key in statisticProperty.

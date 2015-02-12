@@ -156,8 +156,9 @@ enum SimulationLifecycleEventType
 
 /**
  * A callback interface for receiving notifications at various stages of
- * setting up, running, and tearing down simulations. Listeners can be hooked
- * on cEnvir with its addListener() method, and removed with removeListener().
+ * setting up, running, and tearing down simulations. Listeners can be added
+ * to cEnvir with its addLifecycleListener() method, and removed with
+ * removeLifecycleListener().
  *
  * Simulation listeners are mainly intended for use by plug-in
  * objects extending the simulator's functionality: schedulers,
@@ -171,7 +172,7 @@ enum SimulationLifecycleEventType
  * listener when the program starts:
  *
  * <pre>
- * EXECUTE_ON_STARTUP(ev.addListener(new MyListener()));
+ * EXECUTE_ON_STARTUP(ev.addLifecycleListener(new MyListener()));
  * </pre>
  *
  * Note that listeners will not be deleted automatically when the program
@@ -192,12 +193,12 @@ class SIM_API cISimulationLifecycleListener
     virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) = 0;
 
     /**
-     * Fired after this listener was added to cEnvir, via addListener().
+     * Fired after this listener was added to cEnvir, via addLifecycleListener().
      */
     virtual void listenerAdded() {}
 
     /**
-     * Fired after this listener was removed from cEnvir, via removeListener().
+     * Fired after this listener was removed from cEnvir, via removeLifecycleListener().
      * It is OK for the listener to delete itself in the body of this method
      * (<tt>delete this</tt>).
      */

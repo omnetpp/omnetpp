@@ -242,13 +242,13 @@ void cSimulation::setScheduler(cScheduler *sch)
         throw cRuntimeError(this, "setScheduler(): scheduler pointer is NULL");
 
     if (schedulerp) {
-        ev.removeListener(schedulerp);
+        ev.removeLifecycleListener(schedulerp);
         delete schedulerp;
     }
 
     schedulerp = sch;
     schedulerp->setSimulation(this);
-    ev.addListener(schedulerp);
+    ev.addLifecycleListener(schedulerp);
 }
 
 void cSimulation::setSimulationTimeLimit(simtime_t simTimeLimit)
@@ -384,11 +384,11 @@ void cSimulation::setupNetwork(cModuleType *network)
     {
         // set up the network by instantiating the toplevel module
         cContextTypeSwitcher tmp(CTX_BUILD);
-        ev.notifyListeners(LF_PRE_NETWORK_SETUP);
+        ev.notifyLifecycleListeners(LF_PRE_NETWORK_SETUP);
         cModule *mod = networktype->create(networktype->getName(), NULL);
         mod->finalizeParameters();
         mod->buildInside();
-        ev.notifyListeners(LF_POST_NETWORK_SETUP);
+        ev.notifyLifecycleListeners(LF_POST_NETWORK_SETUP);
     }
     catch (std::exception& e)
     {
@@ -429,9 +429,9 @@ void cSimulation::callInitialize()
     {
         cContextSwitcher tmp(systemmodp);
         systemmodp->scheduleStart(SIMTIME_ZERO);
-        ev.notifyListeners(LF_PRE_NETWORK_INITIALIZE);
+        ev.notifyLifecycleListeners(LF_PRE_NETWORK_INITIALIZE);
         systemmodp->callInitialize();
-        ev.notifyListeners(LF_POST_NETWORK_INITIALIZE);
+        ev.notifyLifecycleListeners(LF_POST_NETWORK_INITIALIZE);
     }
 
     event_num = 1; // events are numbered from 1
@@ -448,9 +448,9 @@ void cSimulation::callFinish()
     // call user-defined finish() functions for all modules recursively
     if (systemmodp)
     {
-        ev.notifyListeners(LF_PRE_NETWORK_FINISH);
+        ev.notifyLifecycleListeners(LF_PRE_NETWORK_FINISH);
         systemmodp->callFinish();
-        ev.notifyListeners(LF_POST_NETWORK_FINISH);
+        ev.notifyLifecycleListeners(LF_POST_NETWORK_FINISH);
     }
 }
 
@@ -467,7 +467,7 @@ void cSimulation::deleteNetwork()
 
     simulationstage = CTX_CLEANUP;
 
-    ev.notifyListeners(LF_PRE_NETWORK_DELETE);
+    ev.notifyLifecycleListeners(LF_PRE_NETWORK_DELETE);
 
     // delete all modules recursively
     systemmodp->deleteModule();
@@ -490,7 +490,7 @@ void cSimulation::deleteNetwork()
     //FIXME todo delete cParImpl caches too (cParImplCache, cParImplCache2)
     cModule::clearNamePools();
 
-    ev.notifyListeners(LF_POST_NETWORK_DELETE);
+    ev.notifyLifecycleListeners(LF_POST_NETWORK_DELETE);
 
     // clear remaining messages (module dtors may have cancelled & deleted some of them)
     msgQueue.clear();
@@ -879,9 +879,9 @@ class StaticEnv : public cEnvir
     virtual void removeHttpRequestHandler(cHttpRequestHandler *p) {}
 
     // lifecycle listeners
-    virtual void addListener(cISimulationLifecycleListener *listener) {}
-    virtual void removeListener(cISimulationLifecycleListener *listener) {}
-    virtual void notifyListeners(SimulationLifecycleEventType eventType, cObject *details) {}
+    virtual void addLifecycleListener(cISimulationLifecycleListener *listener) {}
+    virtual void removeLifecycleListener(cISimulationLifecycleListener *listener) {}
+    virtual void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details) {}
 };
 
 void StaticEnv::undisposedObject(cObject *obj)

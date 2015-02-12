@@ -419,19 +419,19 @@ bool EnvirBase::setup()
 
         // install eventlog manager
         eventlogmgr = new EventlogFileManager();
-        addListener(eventlogmgr);
+        addLifecycleListener(eventlogmgr);
 
         // install output vector manager
         CREATE_BY_CLASSNAME(outvectormgr, opt->outputVectorManagerClass.c_str(), cIOutputVectorManager, "output vector manager");
-        addListener(outvectormgr);
+        addLifecycleListener(outvectormgr);
 
         // install output scalar manager
         CREATE_BY_CLASSNAME(outscalarmgr, opt->outputScalarManagerClass.c_str(), cIOutputScalarManager, "output scalar manager");
-        addListener(outscalarmgr);
+        addLifecycleListener(outscalarmgr);
 
         // install snapshot manager
         CREATE_BY_CLASSNAME(snapshotmgr, opt->snapshotmanagerClass.c_str(), cISnapshotManager, "snapshot manager");
-        addListener(snapshotmgr);
+        addLifecycleListener(snapshotmgr);
 
         // set up for sequential or distributed execution
         if (!opt->parsim)
@@ -449,7 +449,7 @@ bool EnvirBase::setup()
             parsimpartition = new cParsimPartition();
             cParsimSynchronizer *parsimsynchronizer;
             CREATE_BY_CLASSNAME(parsimsynchronizer, opt->parsimsynch_class.c_str(), cParsimSynchronizer, "parallel simulation synchronization layer");
-            addListener(parsimpartition);
+            addLifecycleListener(parsimpartition);
 
             // wire them together (note: 'parsimsynchronizer' is also the scheduler for 'simulation')
             parsimpartition->setContext(&simulation, parsimcomm, parsimsynchronizer);
@@ -503,7 +503,7 @@ bool EnvirBase::setup()
         //FIXME TODO also shutdown
 
         // notify listeners when global setup is complete
-        notifyListeners(LF_ON_STARTUP);
+        notifyLifecycleListeners(LF_ON_STARTUP);
     }
     catch (std::exception& e)
     {
@@ -916,7 +916,7 @@ void EnvirBase::shutdown()
     try
     {
         simulation.deleteNetwork();
-        ev.notifyListeners(LF_ON_SHUTDOWN);
+        ev.notifyLifecycleListeners(LF_ON_SHUTDOWN);
     }
     catch (std::exception& e)
     {
@@ -945,7 +945,7 @@ void EnvirBase::startRun()
 
 void EnvirBase::endRun()  //FIXME eliminate???
 {
-    notifyListeners(LF_ON_RUN_END);
+    notifyLifecycleListeners(LF_ON_RUN_END);
 }
 
 //-------------------------------------------------------------
@@ -1911,7 +1911,7 @@ char **EnvirBase::getArgVector() const
     return args->getArgVector();
 }
 
-void EnvirBase::addListener(cISimulationLifecycleListener *listener)
+void EnvirBase::addLifecycleListener(cISimulationLifecycleListener *listener)
 {
     std::vector<cISimulationLifecycleListener*>::iterator it = std::find(listeners.begin(), listeners.end(), listener);
     if (it == listeners.end()) {
@@ -1920,7 +1920,7 @@ void EnvirBase::addListener(cISimulationLifecycleListener *listener)
     }
 }
 
-void EnvirBase::removeListener(cISimulationLifecycleListener *listener)
+void EnvirBase::removeLifecycleListener(cISimulationLifecycleListener *listener)
 {
     std::vector<cISimulationLifecycleListener*>::iterator it = std::find(listeners.begin(), listeners.end(), listener);
     if (it != listeners.end()) {
@@ -1929,7 +1929,7 @@ void EnvirBase::removeListener(cISimulationLifecycleListener *listener)
     }
 }
 
-void EnvirBase::notifyListeners(SimulationLifecycleEventType eventType, cObject *details)
+void EnvirBase::notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details)
 {
     // make a copy of the listener list, to avoid problems from listeners
     // getting added/removed during notification
@@ -1938,9 +1938,10 @@ void EnvirBase::notifyListeners(SimulationLifecycleEventType eventType, cObject 
         try {
             copy[i]->lifecycleEvent(eventType, details);
         }
-        catch (std::exception& e) {  //XXX perhaps we shouldn't hide the exception!!!! just re-throw? then all notifyListeners() calls MUST be surrounded with try-catch!!!!
-            const char *eventName = cISimulationLifecycleListener::getSimulationLifecycleEventName(eventType);
-            printfmsg("Error in %s listener: %s", eventName, e.what());
+        catch (std::exception& e) {  //XXX perhaps we shouldn't hide the exception!!!! just re-throw? then all notifyLifecycleListeners() calls MUST be surrounded with try-catch!!!!
+            //XXX const char *eventName = cISimulationLifecycleListener::getSimulationLifecycleEventName(eventType);
+            //XXX printfmsg("Error in %s listener: %s", eventName, e.what());
+            displayException(e);
         }
     }
 }

@@ -79,9 +79,9 @@ Register_PerObjectConfigOption(CFGID_CMDENV_EV_OUTPUT, "cmdenv-ev-output", KIND_
 
 #ifdef SIMFRONTEND_SUPPORT
 /*TODO:
-notifyListeners(LF_ON_SIMULATION_START);
-notifyListeners(LF_ON_SIMULATION_SUCCESS);
-notifyListeners(LF_ON_SIMULATION_ERROR);
+notifyLifecycleListeners(LF_ON_SIMULATION_START);
+notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
+notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
 */
 #endif
 
@@ -392,7 +392,7 @@ void Cmdenv::doRun()
 
                 // simulate() should only throw exception if error occurred and
                 // finish() should not be called.
-                notifyListeners(LF_ON_SIMULATION_START);
+                notifyLifecycleListeners(LF_ON_SIMULATION_START);
                 simulate();
                 disable_tracing = false;
 
@@ -403,14 +403,14 @@ void Cmdenv::doRun()
 
                 checkFingerprint();
 
-                notifyListeners(LF_ON_SIMULATION_SUCCESS);
+                notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
             }
             catch (std::exception& e)
             {
                 hadError = true;
                 disable_tracing = false;
                 stoppedWithException(e);
-                notifyListeners(LF_ON_SIMULATION_ERROR);
+                notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
                 displayException(e);
             }
 
@@ -424,7 +424,7 @@ void Cmdenv::doRun()
                 catch (std::exception& e)
                 {
                     hadError = true;
-                    notifyListeners(LF_ON_SIMULATION_ERROR);
+                    notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
                     displayException(e);
                 }
             }
@@ -439,7 +439,7 @@ void Cmdenv::doRun()
                 catch (std::exception& e)
                 {
                     hadError = true;
-                    notifyListeners(LF_ON_SIMULATION_ERROR);
+                    notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
                     displayException(e);
                 }
             }
@@ -849,7 +849,7 @@ void Cmdenv::newNetwork(const char *networkname)
     }
     catch (std::exception& e)
     {
-        notifyListeners(LF_ON_SIMULATION_ERROR);
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
         state = SIM_ERROR;
     }
@@ -889,7 +889,7 @@ void Cmdenv::newRun(const char *configname, int runnumber)
     }
     catch (std::exception& e)
     {
-        notifyListeners(LF_ON_SIMULATION_ERROR);
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
         state = SIM_ERROR;
     }
@@ -915,7 +915,7 @@ void Cmdenv::doOneStep()
     stoppingReason = STOP_NONE;
 
     startClock();
-    notifyListeners(LF_ON_SIMULATION_RESUME);
+    notifyLifecycleListeners(LF_ON_SIMULATION_RESUME);
     try
     {
         cEvent *event = simulation.takeNextEvent();
@@ -925,20 +925,20 @@ void Cmdenv::doOneStep()
         }
 
         state = SIM_READY;
-        notifyListeners(LF_ON_SIMULATION_PAUSE);
+        notifyLifecycleListeners(LF_ON_SIMULATION_PAUSE);
     }
     catch (cTerminationException& e)
     {
         state = SIM_TERMINATED;
         stoppedWithTerminationException(e);
-        notifyListeners(LF_ON_SIMULATION_SUCCESS);
+        notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
         displayException(e);
     }
     catch (std::exception& e)
     {
         state = SIM_ERROR;
         stoppedWithException(e);
-        notifyListeners(LF_ON_SIMULATION_ERROR);
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
     }
     stopClock();
@@ -991,7 +991,7 @@ void Cmdenv::runSimulation(RunMode mode, long realTimeMillis, simtime_t untilSim
     //TODO: uzemmod valtogatast kiszedni belole!!!! nem kell!!!
 
     startClock();
-    notifyListeners(LF_ON_SIMULATION_RESUME);
+    notifyLifecycleListeners(LF_ON_SIMULATION_RESUME);
     try
     {
         // funky while loop to handle switching to and from EXPRESS mode....
@@ -1004,14 +1004,14 @@ void Cmdenv::runSimulation(RunMode mode, long realTimeMillis, simtime_t untilSim
                 cont = doRunSimulation();
         }
         state = SIM_READY;
-        notifyListeners(LF_ON_SIMULATION_PAUSE);
+        notifyLifecycleListeners(LF_ON_SIMULATION_PAUSE);
     }
     catch (cTerminationException& e)
     {
         state = SIM_TERMINATED;
         stoppingReason = STOP_TERMINATION;
         stoppedWithTerminationException(e);
-        notifyListeners(LF_ON_SIMULATION_SUCCESS);
+        notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
         displayException(e);
     }
     catch (std::exception& e)
@@ -1019,7 +1019,7 @@ void Cmdenv::runSimulation(RunMode mode, long realTimeMillis, simtime_t untilSim
         state = SIM_ERROR;
         stoppingReason = STOP_TERMINATION;
         stoppedWithException(e);
-        notifyListeners(LF_ON_SIMULATION_ERROR);
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
     }
     stopClock();
@@ -1287,7 +1287,7 @@ void Cmdenv::finishSimulation()
     catch (std::exception& e)
     {
         stoppedWithException(e);
-        notifyListeners(LF_ON_SIMULATION_ERROR);
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
     }
 
@@ -1298,7 +1298,7 @@ void Cmdenv::finishSimulation()
     }
     catch (std::exception& e)
     {
-        notifyListeners(LF_ON_SIMULATION_ERROR);
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
     }
     state = SIM_FINISHCALLED;

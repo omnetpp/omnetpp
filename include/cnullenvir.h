@@ -152,9 +152,9 @@ class SIM_API cNullEnvir : public cEnvir
     virtual void removeHttpRequestHandler(cHttpRequestHandler *p) {}
 
     // lifecycle listeners
-    virtual void addListener(cISimulationLifecycleListener *listener);
-    virtual void removeListener(cISimulationLifecycleListener *listener);
-    virtual void notifyListeners(SimulationLifecycleEventType eventType, cObject *details);
+    virtual void addLifecycleListener(cISimulationLifecycleListener *listener);
+    virtual void removeLifecycleListener(cISimulationLifecycleListener *listener);
+    virtual void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details);
 };
 
 
