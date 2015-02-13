@@ -26,6 +26,7 @@
 #include "simutil.h"
 #include "opp_ctype.h"
 #include "cobjectfactory.h"  // createOne()
+#include "platdep/platmisc.h" // INT64_PRINTF_FORMAT
 
 NAMESPACE_BEGIN
 

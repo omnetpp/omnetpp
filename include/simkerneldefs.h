@@ -22,8 +22,8 @@
 #include <stddef.h>
 #include <float.h>
 #include <math.h>
+#include <stdint.h>
 #include "platdep/platdefs.h"
-#include "platdep/intxtypes.h"
 
 // OMNeT++ version -- must match NEDC_VERSION and MSGC_VERSION in nedxml
 #define OMNETPP_VERSION 0x0500

@@ -18,12 +18,12 @@
 #define _COMMONUTIL_H_
 
 #include <assert.h>
+#include <stdint.h>
 #include <iostream>
 #include <sstream>
 #include <iomanip>
 #include "commondefs.h"
 #include "exception.h"
-#include "intxtypes.h"
 
 NAMESPACE_BEGIN
 

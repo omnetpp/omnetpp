@@ -21,9 +21,9 @@
 #ifndef __CCOMMBUFFER_H
 #define __CCOMMBUFFER_H
 
+#include <stdint.h>
 #include "cobject.h"
 #include "simtime.h"
-#include "platdep/intxtypes.h"
 
 NAMESPACE_BEGIN
 

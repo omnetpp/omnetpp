@@ -17,10 +17,10 @@
 #ifndef __FORCEDIRECTEDEMBEDDING_H
 #define __FORCEDIRECTEDEMBEDDING_H
 
+#include <stdint.h>
 #include <algorithm>
 #include <time.h>
 #include <iostream>
-#include "intxtypes.h"
 #include "geometry.h"
 #include "forcedirectedparametersbase.h"
 

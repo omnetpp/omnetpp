@@ -166,7 +166,6 @@ $O/akaroarng.obj: akaroarng.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -209,7 +208,6 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -243,7 +241,6 @@ $O/appreg.obj: appreg.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -266,7 +263,6 @@ $O/cxmldoccache.obj: cxmldoccache.cc \
   ../../include/cxmlelement.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -331,7 +327,6 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/platdep/timeutil.h \
@@ -402,7 +397,6 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -445,7 +439,6 @@ $O/eventlogwriter.obj: eventlogwriter.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -464,7 +457,6 @@ $O/evmain.obj: evmain.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -511,7 +503,6 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -561,7 +552,6 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -608,7 +598,6 @@ $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -634,7 +623,6 @@ $O/fsutils.obj: fsutils.cc \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -653,7 +641,6 @@ $O/httpserver.obj: httpserver.cc \
   ../../include/envirext.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -696,7 +683,6 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -719,7 +705,6 @@ $O/inifilereader.obj: inifilereader.cc \
   ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/simkerneldefs.h \
@@ -758,7 +743,6 @@ $O/intervals.obj: intervals.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -774,7 +758,6 @@ $O/intervals.obj: intervals.cc \
   logformatter.h \
   objectprinter.h
 $O/json.obj: json.cc \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/simkerneldefs.h \
   ../../include/simtime.h \
@@ -809,7 +792,6 @@ $O/logformatter.obj: logformatter.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -831,7 +813,6 @@ $O/matchablefield.obj: matchablefield.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -851,7 +832,6 @@ $O/matchableobject.obj: matchableobject.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -870,7 +850,6 @@ $O/mongoosehttpserver.obj: mongoosehttpserver.cc \
   ../../include/envirext.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -911,7 +890,6 @@ $O/objectprinter.obj: objectprinter.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -924,7 +902,6 @@ $O/objectprinter.obj: objectprinter.cc \
   matchableobject.h \
   objectprinter.h
 $O/opp_run.obj: opp_run.cc \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h
 $O/runattributes.obj: runattributes.cc \
@@ -957,7 +934,6 @@ $O/runattributes.obj: runattributes.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -981,7 +957,6 @@ $O/scenario.obj: scenario.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1009,7 +984,6 @@ $O/sectionbasedconfig.obj: sectionbasedconfig.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1022,7 +996,6 @@ $O/sectionbasedconfig.obj: sectionbasedconfig.cc \
   sectionbasedconfig.h \
   valueiterator.h
 $O/speedometer.obj: speedometer.cc \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/simkerneldefs.h \
   ../../include/simtime.h \
@@ -1061,7 +1034,6 @@ $O/startup.obj: startup.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/random.h \
@@ -1094,7 +1066,6 @@ $O/valueiterator.obj: valueiterator.cc \
   ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/simkerneldefs.h \
@@ -1142,7 +1113,6 @@ $O/visitor.obj: visitor.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \

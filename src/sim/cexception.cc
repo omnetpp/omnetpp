@@ -30,7 +30,7 @@
 #include "cconfiguration.h"
 #include "stringutil.h"
 #include "commonutil.h"
-#include "platdep/platmisc.h"  // for DEBUG_TRAP
+#include "platdep/platmisc.h" // INT64_PRINTF_FORMAT and DEBUG_TRAP
 
 NAMESPACE_BEGIN
 

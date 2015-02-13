@@ -53,7 +53,7 @@
 #include "matchableobject.h"
 #include "fileutil.h"
 #include "ver.h"
-#include "platdep/platmisc.h"  // va_copy
+#include "platdep/platmisc.h"
 
 
 // default plugin path -- allow overriding it via compiler option (-D)

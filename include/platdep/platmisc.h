@@ -17,6 +17,8 @@
 #ifndef __PLATMISC_H
 #define __PLATMISC_H
 
+#include <stdint.h>   // int64_t
+#include <limits.h>   // __WORDSIZE
 
 //
 // Breaking into the debugger
@@ -81,6 +83,8 @@
 #define gcvt _gcvt
 #define fdopen _fdopen
 typedef int pid_t;
+#define strtoll _strtoi64
+#define strtoull _strtoui64
 #endif
 
 //
@@ -138,8 +142,6 @@ inline char *gcvt(double value, int ndigit, char *buf)
 //
 // 64-bit file offsets
 //
-#include "intxtypes.h"
-
 typedef int64_t file_offset_t;  // off_t on Linux
 
 #if defined _MSC_VER
@@ -168,6 +170,24 @@ typedef int64_t file_offset_t;  // off_t on Linux
   #define opp_fstat fstat64
 #endif
 
+//
+// printf type specifier for int64_t.
+//
+// Note: %I64d is only used with VC++ 7.1 and MinGW gcc 3.4.x; once we
+// drop support for these compilers, this macro can be dropped altogether
+//
+// Note2: on 64-bit platforms, gcc defines int64_t to be long, so
+// we need to use %ld (%lld generates warnings). We recognize 64-bit
+// platforms by __WORDSIZE (from <bits/wordsize.h>, #included by <limits.h>)
+//
+#if defined(_MSC_VER) || defined(__MINGW32__)
+#   define INT64_PRINTF_FORMAT   "I64"
+#elif __WORDSIZE == 64 && !defined(__APPLE__)
+#   define INT64_PRINTF_FORMAT   "l"
+#   define INT64_IS_SAME_AS_LONG
+#else
+#   define INT64_PRINTF_FORMAT   "ll"
+#endif
 
 #endif
 

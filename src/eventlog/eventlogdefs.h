@@ -17,9 +17,9 @@
 #ifndef _EVENTLOGDEFS_H_
 #define _EVENTLOGDEFS_H_
 
+#include <stdint.h> // for int64_t, our equivalent of Java's "long" type
 #include "platdefs.h"
 #include "exception.h"
-#include "intxtypes.h" // for int64_t, our equivalent of Java's "long" type
 #include "commonutil.h"
 #include "bigdecimal.h"
 

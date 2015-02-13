@@ -18,6 +18,7 @@
 #ifndef __JSON_H
 #define __JSON_H
 
+#include <stdint.h>
 #include <string>
 #include <vector>
 #include <map>
@@ -25,7 +26,6 @@
 #include "envirdefs.h"
 #include "stringutil.h"
 #include "simtime.h"
-#include "intxtypes.h"
 
 
 class ENVIR_API JsonNode

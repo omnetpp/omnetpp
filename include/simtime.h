@@ -18,8 +18,8 @@
 
 #include <string>
 #include <iostream>
+#include <stdint.h>
 #include "simkerneldefs.h"
-#include "platdep/intxtypes.h"
 
 NAMESPACE_BEGIN
 

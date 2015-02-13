@@ -20,10 +20,10 @@
 #include <string>
 #include <iostream>
 #include <math.h>
+#include <stdint.h>
 #include <limits.h>
 #include "commondefs.h"
 #include "exception.h"
-#include "intxtypes.h"
 
 NAMESPACE_BEGIN
 

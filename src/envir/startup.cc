@@ -19,6 +19,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "opp_ctype.h"
 #include "args.h"
@@ -32,7 +33,6 @@
 #include "fnamelisttokenizer.h"
 #include "stringutil.h"
 #include "fileutil.h"
-#include "intxtypes.h"
 #include "startup.h"
 
 #include "speedometer.h"

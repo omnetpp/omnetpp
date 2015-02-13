@@ -18,12 +18,12 @@
 #ifndef __CHASHER_H
 #define __CHASHER_H
 
+#include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
 #include "simkerneldefs.h"
 #include "cobject.h"
 #include "cexception.h"
-#include "platdep/intxtypes.h"
 
 NAMESPACE_BEGIN
 

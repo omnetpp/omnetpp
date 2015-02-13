@@ -17,7 +17,7 @@
 #ifndef _SCAVEDEFS_H_
 #define _SCAVEDEFS_H_
 
-#include "intxtypes.h" // for int64_t, our equivalent of Java's "long" type
+#include <stdint.h> // for int64_t, our equivalent of Java's "long" type
 #include "platdefs.h"
 #include "bigdecimal.h"
 

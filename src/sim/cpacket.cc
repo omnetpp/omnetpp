@@ -19,6 +19,7 @@
 #include "globals.h"
 #include "cpacket.h"
 #include "csimplemodule.h"
+#include "platdep/platmisc.h" // INT64_PRINTF_FORMAT
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"

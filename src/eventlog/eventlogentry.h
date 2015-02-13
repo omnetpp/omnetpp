@@ -22,6 +22,7 @@
 #include "matchexpression.h"
 #include "eventlogdefs.h"
 #include "linetokenizer.h"
+#include "platmisc.h" // INT64_PRINTF_FORMAT
 
 NAMESPACE_BEGIN
 

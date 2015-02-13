@@ -19,10 +19,10 @@
 
 #include <vector>
 #include <string>
+#include <stdint.h>  // int64_t
 #include "exception.h"
 #include "platmisc.h"
 #include "commondefs.h"
-#include "intxtypes.h"   // for int64_t
 
 NAMESPACE_BEGIN
 

@@ -54,6 +54,7 @@
 #include "cdensityestbase.h"
 #include "cwatch.h"
 #include "cdisplaystring.h"
+#include "platdep/platmisc.h" // INT64_PRINTF_FORMAT
 
 
 NAMESPACE_BEGIN

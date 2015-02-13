@@ -160,7 +160,6 @@ $O/msg2.tab.o: msg2.tab.cc \
   nedyydefs.h \
   nedyylib.h
 $O/msgcppgenerator.o: msgcppgenerator.cc \
-  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/simkerneldefs.h \
   msgcppgenerator.h \

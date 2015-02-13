@@ -20,7 +20,7 @@
 #include <string>
 #include <set>
 #include <functional>
-#include "intxtypes.h"
+#include <stdint.h>
 #include "scavedefs.h"
 #include "timeutil.h"
 #include "commonutil.h"
