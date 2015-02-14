@@ -1201,6 +1201,53 @@ std::string cGroupFigure::info() const
 
 //----
 
+void cPanelFigure::copy(const cPanelFigure& other)
+{
+    setPosition(other.getPosition());
+}
+
+cPanelFigure& cPanelFigure::operator=(const cPanelFigure& other)
+{
+    if (this == &other) return *this;
+    cFigure::operator=(other);
+    copy(other);
+    return *this;
+}
+
+std::string cPanelFigure::info() const
+{
+    std::stringstream os;
+    os << "at " << getPosition();
+    return os.str();
+}
+
+void cPanelFigure::parse(cProperty *property)
+{
+    cFigure::parse(property);
+    setPosition(parsePoint(property, PKEY_POS, 0));
+}
+
+const char **cPanelFigure::getAllowedPropertyKeys() const
+{
+    static const char *keys[32];
+    if (!keys[0]) {
+        const char *localKeys[] = { PKEY_POS, NULL};
+        concatArrays(keys, cFigure::getAllowedPropertyKeys(), localKeys);
+    }
+    return keys;
+}
+
+void cPanelFigure::updateParentTransform(Transform& transform)
+{
+    // replace current transform with an axis-aligned, unscaled (thus also unzoomable)
+    // coordinate system, with the origin at getPosition()
+    Point origin = transform.applyTo(getPosition());
+    transform = Transform().translate(origin.x, origin.y);
+    transform.leftMultiply(getTransform());
+}
+
+//----
+
 void cAbstractLineFigure::copy(const cAbstractLineFigure& other)
 {
     setLineColor(other.getLineColor());

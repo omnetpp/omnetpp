@@ -104,7 +104,7 @@ void CanvasRenderer::drawFigureRec(cFigure *figure, const cFigure::Transform& pa
     if (figure->isVisible() && fulfillsTagFilter(figure))
     {
         cFigure::Transform transform(parentTransform);
-        transform.leftMultiply(figure->getTransform());
+        figure->updateParentTransform(transform);
 
         FigureRenderer *renderer = getRendererFor(figure);
         renderer->render(figure, interp, &canvasCmdInfo, transform, hints);
@@ -125,7 +125,7 @@ void CanvasRenderer::refreshFigureRec(cFigure *figure, const cFigure::Transform&
     if (localChanges || subtreeChanges || ancestorTransformChanged)
     {
         cFigure::Transform transform(parentTransform);
-        transform.leftMultiply(figure->getTransform());
+        figure->updateParentTransform(transform);
 
         uint8_t what = localChanges | (ancestorTransformChanged ? cFigure::CHANGE_TRANSFORM : 0);
         if (what) {

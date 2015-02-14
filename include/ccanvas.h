@@ -27,6 +27,7 @@ class cProperties;
 #define OMNETPP_CANVAS_VERSION  0x20140908  //XXX identifies canvas code version until API stabilizes
 
 //TODO: move methods out-of-line, and protect setters with if(new!=old) conditions
+//TODO: split up to several files: ccanvas.h, cfigure.h, figures.h?
 
 /**
  * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
@@ -259,7 +260,9 @@ class SIM_API cFigure : public cOwnedObject
         virtual std::string info() const;
         virtual void parse(cProperty *property);
         virtual cFigure *dupTree() const;
+
         virtual const char *getClassNameForRenderer() const {return getClassName();} // denotes renderer of which figure class to use; override if you want to subclass a figure while reusing renderer of the base class
+        virtual void updateParentTransform(Transform& transform) {transform.leftMultiply(getTransform());}
 
         int getId() const {return id;}
         virtual void move(double x, double y) = 0;
@@ -337,6 +340,35 @@ class SIM_API cGroupFigure : public cFigure
         virtual std::string info() const;
         virtual const char *getClassNameForRenderer() const {return "";} // non-visual figure
         virtual void move(double x, double y) {}
+};
+
+/**
+ * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ *
+ * Sets up an axis-aligned, unscaled coordinate system for children, making them
+ * immune to zooming, and allowing pixel-based, zoom-independent placement for them.
+ * The panel figure itself has no visual appearance.
+ */
+class SIM_API cPanelFigure : public cFigure
+{
+    private:
+        Point position;
+    protected:
+        virtual const char **getAllowedPropertyKeys() const;
+        virtual void parse(cProperty *property);
+    private:
+        void copy(const cPanelFigure& other);
+    public:
+        cPanelFigure(const char *name=NULL) : cFigure(name) {}
+        cPanelFigure(const cPanelFigure& other) : cFigure(other) {copy(other);}
+        cPanelFigure& operator=(const cPanelFigure& other);
+        virtual cPanelFigure *dup() const  {return new cPanelFigure(*this);}
+        virtual std::string info() const;
+        virtual const char *getClassNameForRenderer() const {return "";} // non-visual figure
+        virtual void updateParentTransform(Transform& transform);
+        virtual void move(double x, double y) {position.translate(x,y); fireTransformChange();}
+        virtual const Point& getPosition() const  {return position;}
+        virtual void setPosition(const Point& position)  {this->position = position; fireGeometryChange();}
 };
 
 /**
