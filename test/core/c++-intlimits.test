@@ -1,0 +1,44 @@
+%description:
+Test that values in platdep/intlimits.h are correct
+
+%includes:
+// ensure we really ge what's inside intlimits.h, and not the conditionally defined stuff from <stdint.h>
+#undef __INTLIMITS_H
+#undef INT8_MIN
+#undef INT16_MIN
+#undef INT32_MIN
+#undef INT64_MIN
+#undef INT8_MAX
+#undef INT16_MAX
+#undef INT32_MAX
+#undef INT64_MAX
+#undef UINT8_MAX
+#undef UINT16_MAX
+#undef UINT32_MAX
+#undef UINT64_MAX
+#include <platdep/intlimits.h>
+
+%activity:
+ASSERT(INT8_MIN < 0);
+ASSERT(INT16_MIN < 0);
+ASSERT(INT32_MIN < 0);
+ASSERT(INT64_MIN < 0);
+ASSERT(INT8_MAX > 0);
+ASSERT(INT16_MAX > 0);
+ASSERT(INT32_MAX > 0);
+ASSERT(INT64_MAX > 0);
+ASSERT(UINT8_MAX > 0U);
+ASSERT(UINT16_MAX > 0U);
+ASSERT(UINT32_MAX > 0U);
+ASSERT(UINT64_MAX > 0U);
+
+{ int8_t a = INT8_MAX; a++; ASSERT(a == INT8_MIN); }
+{ int16_t a = INT16_MAX; a++; ASSERT(a == INT16_MIN); }
+{ int32_t a = INT32_MAX; a++; ASSERT(a == INT32_MIN); }
+{ int64_t a = INT64_MAX; a++; ASSERT(a == INT64_MIN); }
+
+{ uint8_t a = UINT8_MAX; a++; ASSERT(a == 0); }
+{ uint16_t a = UINT16_MAX; a++; ASSERT(a == 0); }
+{ uint32_t a = UINT32_MAX; a++; ASSERT(a == 0); }
+{ uint64_t a = UINT64_MAX; a++; ASSERT(a == 0); }
+

@@ -168,6 +168,7 @@ $O/carray.obj: carray.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -197,6 +198,7 @@ $O/cboolparimpl.obj: cboolparimpl.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -221,6 +223,7 @@ $O/ccanvas.obj: ccanvas.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -263,6 +266,7 @@ $O/cchannel.obj: cchannel.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -284,6 +288,7 @@ $O/cclassdescriptor.obj: cclassdescriptor.cc \
   ../../include/errmsg.h \
   ../../include/globals.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -303,6 +308,7 @@ $O/ccommbuffer.obj: ccommbuffer.cc \
   ../../include/errmsg.h \
   ../../include/globals.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -353,6 +359,7 @@ $O/ccomponent.obj: ccomponent.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -404,6 +411,7 @@ $O/ccomponenttype.obj: ccomponenttype.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -424,6 +432,7 @@ $O/cconfigoption.obj: cconfigoption.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -442,6 +451,7 @@ $O/cconfiguration.obj: cconfiguration.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -454,6 +464,7 @@ $O/ccoroutine.obj: ccoroutine.cc \
   ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/simkerneldefs.h \
@@ -500,6 +511,7 @@ $O/cdataratechannel.obj: cdataratechannel.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/random.h \
@@ -535,6 +547,7 @@ $O/cdefaultlist.obj: cdefaultlist.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -577,6 +590,7 @@ $O/cdelaychannel.obj: cdelaychannel.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -601,6 +615,7 @@ $O/cdensityestbase.obj: cdensityestbase.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -630,6 +645,7 @@ $O/cdetect.obj: cdetect.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -673,6 +689,7 @@ $O/cdisplaystring.obj: cdisplaystring.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -702,6 +719,7 @@ $O/cdoubleparimpl.obj: cdoubleparimpl.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -739,6 +757,7 @@ $O/cdynamicexpression.obj: cdynamicexpression.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -773,6 +792,7 @@ $O/cenum.obj: cenum.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -801,6 +821,7 @@ $O/cenvir.obj: cenvir.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -834,6 +855,7 @@ $O/cevent.obj: cevent.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -868,6 +890,7 @@ $O/cexception.obj: cexception.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -889,6 +912,7 @@ $O/cfsm.obj: cfsm.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -934,6 +958,7 @@ $O/cgate.obj: cgate.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -948,6 +973,7 @@ $O/chasher.obj: chasher.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -989,6 +1015,7 @@ $O/chistogram.obj: chistogram.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/random.h \
@@ -1030,6 +1057,7 @@ $O/cksplit.obj: cksplit.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/random.h \
@@ -1066,6 +1094,7 @@ $O/clcg32.obj: clcg32.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1117,6 +1146,7 @@ $O/clistener.obj: clistener.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1152,6 +1182,7 @@ $O/clog.obj: clog.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1181,6 +1212,7 @@ $O/clongparimpl.obj: clongparimpl.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1229,6 +1261,7 @@ $O/cmersennetwister.obj: cmersennetwister.cc \
   ../../include/mersennetwister.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1269,6 +1302,7 @@ $O/cmessage.obj: cmessage.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1305,6 +1339,7 @@ $O/cmessageheap.obj: cmessageheap.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1343,6 +1378,7 @@ $O/cmessageprinter.obj: cmessageprinter.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1389,6 +1425,7 @@ $O/cmodule.obj: cmodule.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1428,6 +1465,7 @@ $O/cmsgpar.obj: cmsgpar.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1449,6 +1487,7 @@ $O/cnamedobject.obj: cnamedobject.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1473,6 +1512,7 @@ $O/cnedfunction.obj: cnedfunction.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1509,6 +1549,7 @@ $O/cnedmathfunction.obj: cnedmathfunction.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/random.h \
@@ -1534,6 +1575,7 @@ $O/cnedvalue.obj: cnedvalue.cc \
   ../../include/cxmlelement.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1568,6 +1610,7 @@ $O/cnullenvir.obj: cnullenvir.cc \
   ../../include/mersennetwister.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1596,6 +1639,7 @@ $O/cobject.obj: cobject.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1630,6 +1674,7 @@ $O/cobjectfactory.obj: cobjectfactory.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1667,6 +1712,7 @@ $O/coutvector.obj: coutvector.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1700,6 +1746,7 @@ $O/cownedobject.obj: cownedobject.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1741,6 +1788,7 @@ $O/cpacket.obj: cpacket.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1781,6 +1829,7 @@ $O/cpacketqueue.obj: cpacketqueue.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1820,6 +1869,7 @@ $O/cpar.obj: cpar.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1859,6 +1909,7 @@ $O/cparimpl.obj: cparimpl.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1877,6 +1928,7 @@ $O/cparsimcomm.obj: cparsimcomm.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1905,6 +1957,7 @@ $O/cproperties.obj: cproperties.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1927,6 +1980,7 @@ $O/cproperty.obj: cproperty.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1967,6 +2021,7 @@ $O/cpsquare.obj: cpsquare.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/random.h \
@@ -1990,6 +2045,7 @@ $O/cqueue.obj: cqueue.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2007,6 +2063,7 @@ $O/cregistrationlist.obj: cregistrationlist.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2030,6 +2087,7 @@ $O/cresultfilter.obj: cresultfilter.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2059,6 +2117,7 @@ $O/cresultlistener.obj: cresultlistener.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2097,6 +2156,7 @@ $O/cresultrecorder.obj: cresultrecorder.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2137,6 +2197,7 @@ $O/cscheduler.obj: cscheduler.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/platdep/timeutil.h \
@@ -2180,6 +2241,7 @@ $O/csimplemodule.obj: csimplemodule.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2230,6 +2292,7 @@ $O/csimulation.obj: csimulation.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/platdep/timeutil.h \
@@ -2272,6 +2335,7 @@ $O/cstatistic.obj: cstatistic.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/random.h \
@@ -2313,6 +2377,7 @@ $O/cstddev.obj: cstddev.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/random.h \
@@ -2337,6 +2402,7 @@ $O/cstlwatch.obj: cstlwatch.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2365,6 +2431,7 @@ $O/cstringparimpl.obj: cstringparimpl.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2381,6 +2448,7 @@ $O/cstringpool.obj: cstringpool.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2393,6 +2461,7 @@ $O/cstringtokenizer.obj: cstringtokenizer.cc \
   ../../include/cstringtokenizer.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/simkerneldefs.h \
@@ -2420,6 +2489,7 @@ $O/ctimestampedvalue.obj: ctimestampedvalue.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2457,6 +2527,7 @@ $O/ctopology.obj: ctopology.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2498,6 +2569,7 @@ $O/cvarhist.obj: cvarhist.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/random.h \
@@ -2525,6 +2597,7 @@ $O/cwatch.obj: cwatch.cc \
   ../../include/cwatch.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2559,6 +2632,7 @@ $O/cxmlelement.obj: cxmlelement.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2590,6 +2664,7 @@ $O/cxmlparimpl.obj: cxmlparimpl.cc \
   ../../include/cxmlparimpl.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2626,6 +2701,7 @@ $O/distrib.obj: distrib.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/random.h \
@@ -2641,6 +2717,7 @@ $O/envirext.obj: envirext.cc \
   ../../include/envirext.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2676,6 +2753,7 @@ $O/expr.tab.obj: expr.tab.cc \
   ../../include/nedsupport.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2703,6 +2781,7 @@ $O/globals.obj: globals.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2720,6 +2799,7 @@ $O/lex.expryy.obj: lex.expryy.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2739,6 +2819,7 @@ $O/minixpath.obj: minixpath.cc \
   ../../include/cxmlelement.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2781,6 +2862,7 @@ $O/nedfunctions.obj: nedfunctions.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/random.h \
@@ -2821,6 +2903,7 @@ $O/nedsupport.obj: nedsupport.cc \
   ../../include/nedsupport.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2838,6 +2921,7 @@ $O/onstartup.obj: onstartup.cc \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2878,6 +2962,7 @@ $O/resultfilters.obj: resultfilters.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -2918,6 +3003,7 @@ $O/resultrecorders.obj: resultrecorders.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -3022,6 +3108,7 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
   ../../include/packing.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/platdep/timeutil.h \
@@ -3045,6 +3132,7 @@ $O/simtime.obj: simtime.cc \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -3114,6 +3202,7 @@ $O/util.obj: util.cc \
   ../../include/mersennetwister.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/platdep/timeutil.h \
@@ -3159,6 +3248,7 @@ $O/netbuilder/cdynamicchanneltype.obj: netbuilder/cdynamicchanneltype.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -3200,6 +3290,7 @@ $O/netbuilder/cdynamicmoduletype.obj: netbuilder/cdynamicmoduletype.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -3232,6 +3323,7 @@ $O/netbuilder/cexpressionbuilder.obj: netbuilder/cexpressionbuilder.cc \
   ../../include/nedsupport.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -3271,6 +3363,7 @@ $O/netbuilder/cneddeclaration.obj: netbuilder/cneddeclaration.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -3321,6 +3414,7 @@ $O/netbuilder/cnedloader.obj: netbuilder/cnedloader.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -3380,6 +3474,7 @@ $O/netbuilder/cnednetworkbuilder.obj: netbuilder/cnednetworkbuilder.cc \
   ../../include/nedsupport.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -3427,6 +3522,7 @@ $O/parsim/cadvlinkdelaylookahead.obj: parsim/cadvlinkdelaylookahead.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/platdep/timeutil.h \
@@ -3450,6 +3546,7 @@ $O/parsim/ccommbufferbase.obj: parsim/ccommbufferbase.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -3486,6 +3583,7 @@ $O/parsim/cfilecomm.obj: parsim/cfilecomm.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -3511,6 +3609,7 @@ $O/parsim/cfilecommbuffer.obj: parsim/cfilecommbuffer.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -3556,6 +3655,7 @@ $O/parsim/cidealsimulationprot.obj: parsim/cidealsimulationprot.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/platdep/timeutil.h \
@@ -3603,6 +3703,7 @@ $O/parsim/cispeventlogger.obj: parsim/cispeventlogger.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/platdep/timeutil.h \
@@ -3654,6 +3755,7 @@ $O/parsim/clinkdelaylookahead.obj: parsim/clinkdelaylookahead.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/platdep/timeutil.h \
@@ -3684,6 +3786,7 @@ $O/parsim/cmemcommbuffer.obj: parsim/cmemcommbuffer.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -3721,6 +3824,7 @@ $O/parsim/cmpicomm.obj: parsim/cmpicomm.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -3745,6 +3849,7 @@ $O/parsim/cmpicommbuffer.obj: parsim/cmpicommbuffer.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -3782,6 +3887,7 @@ $O/parsim/cnamedpipecomm-win.obj: parsim/cnamedpipecomm-win.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -3821,6 +3927,7 @@ $O/parsim/cnamedpipecomm.obj: parsim/cnamedpipecomm.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -3866,6 +3973,7 @@ $O/parsim/cnosynchronization.obj: parsim/cnosynchronization.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/platdep/timeutil.h \
@@ -3918,6 +4026,7 @@ $O/parsim/cnullmessageprot.obj: parsim/cnullmessageprot.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/platdep/timeutil.h \
@@ -3971,6 +4080,7 @@ $O/parsim/cparsimpartition.obj: parsim/cparsimpartition.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/platdep/timeutil.h \
@@ -4019,6 +4129,7 @@ $O/parsim/cparsimprotocolbase.obj: parsim/cparsimprotocolbase.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/platdep/timeutil.h \
@@ -4052,6 +4163,7 @@ $O/parsim/cparsimsynchr.obj: parsim/cparsimsynchr.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/platdep/timeutil.h \
@@ -4094,6 +4206,7 @@ $O/parsim/cplaceholdermod.obj: parsim/cplaceholdermod.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/platdep/timeutil.h \
@@ -4146,6 +4259,7 @@ $O/parsim/cproxygate.obj: parsim/cproxygate.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -4159,6 +4273,7 @@ $O/parsim/creceivedexception.obj: parsim/creceivedexception.cc \
   ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/simkerneldefs.h \
@@ -4186,6 +4301,7 @@ $O/parsim/parsimutil.obj: parsim/parsimutil.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \

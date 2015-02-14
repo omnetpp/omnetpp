@@ -26,6 +26,7 @@
 #include "envirdefs.h"
 #include "stringutil.h"
 #include "simtime.h"
+#include "platmisc.h"  // INT64_IS_SAME_AS_LONG
 
 
 class ENVIR_API JsonNode

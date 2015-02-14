@@ -115,6 +115,7 @@
 #include "nedsupport.h"
 #include "packing.h"
 #include "compat.h"
+#include "platdep/intlimits.h"
 
 #ifdef AUTOIMPORT_NAMESPACE
 USING_NAMESPACE

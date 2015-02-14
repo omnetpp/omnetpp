@@ -22,6 +22,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <limits.h>
+#include "intlimits.h"
 #include "commondefs.h"
 #include "exception.h"
 

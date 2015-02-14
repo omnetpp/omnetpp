@@ -135,6 +135,7 @@ $O/arrow.o: arrow.cc \
   ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -183,6 +184,7 @@ $O/componenthistory.o: componenthistory.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -231,6 +233,7 @@ $O/figurerenderers.o: figurerenderers.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -293,6 +296,7 @@ $O/gateinspector.o: gateinspector.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -358,6 +362,7 @@ $O/genericobjectinspector.o: genericobjectinspector.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -425,6 +430,7 @@ $O/histograminspector.o: histograminspector.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -548,6 +554,7 @@ $O/inspector.o: inspector.cc \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
   ../../include/packing.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/platdep/timeutil.h \
@@ -672,6 +679,7 @@ $O/inspectorfactory.o: inspectorfactory.cc \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
   ../../include/packing.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/platdep/timeutil.h \
@@ -727,6 +735,7 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -772,6 +781,7 @@ $O/logbuffer.o: logbuffer.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -825,6 +835,7 @@ $O/loginspector.o: loginspector.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -893,6 +904,7 @@ $O/moduleinspector.o: moduleinspector.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -962,6 +974,7 @@ $O/outputvectorinspector.o: outputvectorinspector.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1036,6 +1049,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1107,6 +1121,7 @@ $O/tkenv.o: tkenv.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/platdep/timeutil.h \
@@ -1177,6 +1192,7 @@ $O/tklib.o: tklib.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1244,6 +1260,7 @@ $O/tkutil.o: tkutil.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \
@@ -1307,6 +1324,7 @@ $O/watchinspector.o: watchinspector.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/platmisc.h \
   ../../include/regmacros.h \

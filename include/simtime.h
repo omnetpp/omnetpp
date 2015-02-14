@@ -19,6 +19,7 @@
 #include <string>
 #include <iostream>
 #include <stdint.h>
+#include "platdep/intlimits.h"
 #include "simkerneldefs.h"
 
 NAMESPACE_BEGIN
