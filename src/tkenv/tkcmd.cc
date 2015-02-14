@@ -1932,7 +1932,7 @@ int refreshInspectors_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
-   app->updateInspectors();
+   app->refreshInspectors();
    return TCL_OK;
 }
 

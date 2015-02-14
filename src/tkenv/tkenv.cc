@@ -363,7 +363,7 @@ void Tkenv::doOneStep()
             performAnimations();
         }
         updateStatusDisplay();
-        updateInspectors();
+        refreshInspectors();
         simstate = SIM_READY;
         notifyLifecycleListeners(LF_ON_SIMULATION_PAUSE);
     }
@@ -463,7 +463,7 @@ void Tkenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
     }
 
     updateStatusDisplay();
-    updateInspectors();
+    refreshInspectors();
 }
 
 void Tkenv::setSimulationRunMode(int mode)
@@ -562,7 +562,7 @@ bool Tkenv::doRunSimulation()
         if (frequent_updates || ((simulation.getEventNumber()&0x0f)==0 && elapsed(opt->updateFreqFast, last_update)))
         {
             updateStatusDisplay();
-            updateInspectors();
+            refreshInspectors();
             if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
                 speedometer.beginNewInterval();
             Tcl_Eval(interp, "update");
@@ -630,7 +630,7 @@ bool Tkenv::doRunSimulationExpress()
         {
             updateStatusDisplay();
             if (opt->autoupdateInExpress)
-                updateInspectors();
+                refreshInspectors();
             if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
                 speedometer.beginNewInterval();
             Tcl_Eval(interp, "update");
@@ -700,7 +700,7 @@ void Tkenv::finishSimulation()
     simstate = SIM_FINISHCALLED;
 
     updateStatusDisplay();
-    updateInspectors();
+    refreshInspectors();
 }
 
 void Tkenv::loadNedFile(const char *fname, const char *expectedPackage, bool isXML)
@@ -752,7 +752,7 @@ void Tkenv::newNetwork(const char *networkname)
     animating = false; // affects how network graphics is drawn!
     updateNetworkRunDisplay();
     updateStatusDisplay();
-    updateInspectors();
+    refreshInspectors();
 }
 
 void Tkenv::newRun(const char *configname, int runnumber)
@@ -798,7 +798,7 @@ void Tkenv::newRun(const char *configname, int runnumber)
     animating = false; // affects how network graphics is drawn!
     updateNetworkRunDisplay();
     updateStatusDisplay();
-    updateInspectors();
+    refreshInspectors();
 }
 
 void Tkenv::setupNetwork(cModuleType *network)
@@ -890,7 +890,7 @@ void Tkenv::deleteInspector(Inspector *insp)
     delete insp;
 }
 
-void Tkenv::updateInspectors()
+void Tkenv::refreshInspectors()
 {
     // update inspectors
     for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end();)
@@ -914,7 +914,7 @@ void Tkenv::updateInspectors()
 void Tkenv::redrawInspectors()
 {
     // update inspectors (and close the ones marked for deletion)
-    updateInspectors();
+    refreshInspectors();
 
     // redraw them
     for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); it++)
@@ -1189,7 +1189,7 @@ bool Tkenv::idle()
 
         // refresh inspectors
         updateStatusDisplay();
-        updateInspectors();
+        refreshInspectors();
     }
 
     // process UI events
