@@ -34,17 +34,15 @@ Register_Class(OvalFigureRenderer);
 Register_Class(RingFigureRenderer);
 Register_Class(PieSliceFigureRenderer);
 Register_Class(PolygonFigureRenderer);
+Register_Class(PathFigureRenderer);
 Register_Class(TextFigureRenderer);
 Register_Class(LabelFigureRenderer);
 Register_Class(ImageFigureRenderer);
 Register_Class(PixmapFigureRenderer);
-Register_Class(PathFigureRenderer);
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
-
-#define DEFAULT_FONTSIZE 14
 
 char *FigureRenderer::point(const cFigure::Point& p)
 {
@@ -185,14 +183,12 @@ void FigureRenderer::textanchor(cFigure::Anchor anchor, int& argc, const char *a
     doAnchor(anchor, true, argc, argv);
 }
 
-void FigureRenderer::font(const cFigure::Font& font, int& argc, const char *argv[])
+void FigureRenderer::font(const cFigure::Font& font, FigureRenderingHints *hints, int& argc, const char *argv[])
 {
-    if (!font.typeface.empty()) {
-        argv[argc++] = "-fontfamily";
-        argv[argc++] = font.typeface.c_str();
-    }
+    argv[argc++] = "-fontfamily";
+    argv[argc++] = !font.typeface.empty() ? font.typeface.c_str() : hints->defaultFont.c_str();
 
-    int points = font.pointSize <= 0 ? DEFAULT_FONTSIZE : font.pointSize;
+    int points = font.pointSize > 0 ? font.pointSize : hints->defaultFontSize;
     argv[argc++] = "-fontsize";
     char *buf = getBuf(16);
     sprintf(buf, "%d", points);
@@ -376,6 +372,45 @@ std::string FigureRenderer::ringPath(const cFigure::Rectangle& rect, double inne
 
 #undef PT
 
+const char *FigureRenderer::resolveIcon(Tcl_Interp *interp, const char* iconName, int& outWidth, int& outHeight)
+{
+    //TODO result should be precomputed or cached
+    const char *imageName = Tcl_GetVar2(interp, "bitmaps", TCLCONST(iconName), TCL_GLOBAL_ONLY);
+    if (!imageName)
+        imageName = Tcl_GetVar2(interp, "icons", "unknown", TCL_GLOBAL_ONLY);
+    ASSERT(imageName);
+
+    CHK(Tcl_VarEval(interp, "image width ", imageName, NULL));
+    outWidth = opp_atol(Tcl_GetStringResult(interp));
+
+    CHK(Tcl_VarEval(interp, "image height ", imageName, NULL));
+    outHeight = opp_atol(Tcl_GetStringResult(interp));
+
+    return imageName;
+}
+
+void FigureRenderer::moveItemsAbove(Tcl_Interp *interp, Tcl_CmdInfo *cmd, const char *tag, const char *referenceTag)
+{
+    int argc = 0;
+    const char *argv[6];
+    argv[argc++] = "dummy";
+    argv[argc++] = "raise";
+    argv[argc++] = tag;
+    argv[argc++] = referenceTag;
+    invokeTclCommand(interp, cmd, argc, argv);
+}
+
+void FigureRenderer::removeItems(Tcl_Interp *interp, Tcl_CmdInfo *cmd, const char *tag)
+{
+    int argc = 0;
+    const char *argv[6];
+    argv[argc++] = "dummy";
+    argv[argc++] = "delete";
+    argv[argc++] = "withtag";
+    argv[argc++] = tag;
+    invokeTclCommand(interp, cmd, argc, argv);
+}
+
 FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
 {
     FigureRenderer *renderer;
@@ -407,7 +442,7 @@ FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
 
 //----
 
-void AbstractCanvasItemFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, Tcl_CmdInfo *cmd, const cFigure::Transform& transform, double zoom)
+void AbstractCanvasItemFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, Tcl_CmdInfo *cmd, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     initBufs();
     char tags[40];
@@ -419,16 +454,16 @@ void AbstractCanvasItemFigureRenderer::render(cFigure *figure, Tcl_Interp *inter
     argv[argc++] = "dummy";
     argv[argc++] = "create";
     argv[argc++] = getItemType();
-    std::string coords = getCoords(figure, interp, transform, zoom);
+    std::string coords = getCoords(figure, interp, transform, hints);
     argv[argc++] = coords.c_str();
     addMatrix(figure, transform, argc, argv);
-    addOptions(figure, ~0, interp, argc, argv, transform, zoom);
+    addOptions(figure, ~0, interp, argc, argv, transform, hints);
     argv[argc++] = "-tags";
     argv[argc++] = tags;
     invokeTclCommand(interp, cmd, argc, argv);
 }
 
-void AbstractCanvasItemFigureRenderer::refresh(cFigure *figure, int8_t what, Tcl_Interp *interp, Tcl_CmdInfo *cmd, const cFigure::Transform& transform, double zoom)
+void AbstractCanvasItemFigureRenderer::refresh(cFigure *figure, int8_t what, Tcl_Interp *interp, Tcl_CmdInfo *cmd, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     char tag[32];
     sprintf(tag, "f%d", figure->getId());
@@ -440,7 +475,7 @@ void AbstractCanvasItemFigureRenderer::refresh(cFigure *figure, int8_t what, Tcl
         argv[argc++] = "dummy";
         argv[argc++] = "coords";
         argv[argc++] = tag;
-        std::string coords = getCoords(figure, interp, transform, zoom);
+        std::string coords = getCoords(figure, interp, transform, hints);
         argv[argc++] = coords.c_str();
         invokeTclCommand(interp, cmd, argc, argv);
     }
@@ -454,7 +489,7 @@ void AbstractCanvasItemFigureRenderer::refresh(cFigure *figure, int8_t what, Tcl
     int savedArgc = argc;
     if (what & cFigure::CHANGE_TRANSFORM)
         addMatrix(figure, transform, argc, argv);
-    addOptions(figure, what, interp, argc, argv, transform, zoom);
+    addOptions(figure, what, interp, argc, argv, transform, hints);
     if (argc > savedArgc)
         invokeTclCommand(interp, cmd, argc, argv);
 }
@@ -463,14 +498,7 @@ void AbstractCanvasItemFigureRenderer::remove(cFigure *figure, Tcl_Interp *inter
 {
     char tag[32];
     sprintf(tag, "f%d", figure->getId());
-
-    int argc = 0;
-    const char *argv[32];
-    argv[argc++] = "dummy";
-    argv[argc++] = "delete";
-    argv[argc++] = tag;
-
-    invokeTclCommand(interp, cmd, argc, argv);
+    removeItems(interp, cmd, tag);
 }
 
 void AbstractCanvasItemFigureRenderer::addMatrix(cFigure *figure, const cFigure::Transform& transform, int& argc, const char *argv[])
@@ -481,14 +509,14 @@ void AbstractCanvasItemFigureRenderer::addMatrix(cFigure *figure, const cFigure:
 
 //----
 
-void AbstractLineFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
+void AbstractLineFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     if (what & cFigure::CHANGE_VISUAL) {
         cAbstractLineFigure *lineFigure = check_and_cast<cAbstractLineFigure*>(figure);
         argv[argc++] = "-stroke";
         argv[argc++] = color(lineFigure->getLineColor());
         argv[argc++] = "-strokewidth";
-        argv[argc++] = lineFigure->getScaleLineWidth() ? dtoa(lineFigure->getLineWidth()) : dtoa(lineFigure->getLineWidth() / zoom);
+        argv[argc++] = lineFigure->getScaleLineWidth() ? dtoa(lineFigure->getLineWidth()) : dtoa(lineFigure->getLineWidth() / hints->zoom);
         argv[argc++] = "-strokeopacity";
         argv[argc++] = dtoa(lineFigure->getLineOpacity());
         lineStyle(lineFigure->getLineStyle(), argc, argv);
@@ -498,7 +526,7 @@ void AbstractLineFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_In
 
 //----
 
-std::string LineFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
+std::string LineFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     cLineFigure *lineFigure = check_and_cast<cLineFigure*>(figure);
     return point2(lineFigure->getStart(), lineFigure->getEnd());
@@ -506,7 +534,7 @@ std::string LineFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, c
 
 //----
 
-std::string ArcFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
+std::string ArcFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     cArcFigure *arcFigure = check_and_cast<cArcFigure*>(figure);
     return arcPath(arcFigure->getBounds(), arcFigure->getStartAngle(), arcFigure->getEndAngle());
@@ -514,7 +542,7 @@ std::string ArcFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, co
 
 //----
 
-std::string PolylineFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
+std::string PolylineFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     cPolylineFigure *polylineFigure = check_and_cast<cPolylineFigure*>(figure);
     return polylinePath(polylineFigure->getPoints(), polylineFigure->getSmooth());
@@ -522,7 +550,7 @@ std::string PolylineFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *inter
 
 //----
 
-void AbstractShapeRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
+void AbstractShapeRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     cAbstractShapeFigure *shapeFigure = check_and_cast<cAbstractShapeFigure*>(figure);
     if (what & cFigure::CHANGE_VISUAL) {
@@ -530,7 +558,7 @@ void AbstractShapeRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp 
             argv[argc++] = "-stroke";
             argv[argc++] = color(shapeFigure->getLineColor());
             argv[argc++] = "-strokewidth";
-            argv[argc++] = shapeFigure->getScaleLineWidth() ? dtoa(shapeFigure->getLineWidth()) : dtoa(shapeFigure->getLineWidth() / zoom);
+            argv[argc++] = shapeFigure->getScaleLineWidth() ? dtoa(shapeFigure->getLineWidth()) : dtoa(shapeFigure->getLineWidth() / hints->zoom);
             argv[argc++] = "-strokeopacity";
             argv[argc++] = dtoa(shapeFigure->getLineOpacity());
             lineStyle(shapeFigure->getLineStyle(), argc, argv);
@@ -552,15 +580,15 @@ void AbstractShapeRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp 
 
 //----
 
-std::string RectangleFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
+std::string RectangleFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     cRectangleFigure *rectangleFigure = check_and_cast<cRectangleFigure*>(figure);
     return bounds(rectangleFigure->getBounds());
 }
 
-void RectangleFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
+void RectangleFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
-    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, zoom);
+    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, hints);
 
     if (what & cFigure::CHANGE_GEOMETRY) {
         cRectangleFigure *rectangleFigure = check_and_cast<cRectangleFigure*>(figure);
@@ -573,15 +601,15 @@ void RectangleFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Inter
 
 //----
 
-std::string OvalFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
+std::string OvalFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     cOvalFigure *ovalFigure = check_and_cast<cOvalFigure*>(figure);
     return point(ovalFigure->getBounds().getCenter());
 }
 
-void OvalFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
+void OvalFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
-    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, zoom);
+    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, hints);
 
     if (what & cFigure::CHANGE_GEOMETRY) {
         cOvalFigure *ovalFigure = check_and_cast<cOvalFigure*>(figure);
@@ -595,15 +623,15 @@ void OvalFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *in
 
 //----
 
-std::string RingFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
+std::string RingFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     cRingFigure *ringFigure = check_and_cast<cRingFigure*>(figure);
     return ringPath(ringFigure->getBounds(), ringFigure->getInnerRx(), ringFigure->getInnerRy());
 }
 
-void RingFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
+void RingFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
-    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, zoom);
+    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, hints);
 
     if (what & cFigure::CHANGE_VISUAL) {
         //cRingFigure *ringFigure = check_and_cast<cRingFigure*>(figure);
@@ -614,28 +642,28 @@ void RingFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *in
 
 //----
 
-std::string PieSliceFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
+std::string PieSliceFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     cPieSliceFigure *pieSliceFigure = check_and_cast<cPieSliceFigure*>(figure);
     return pieSlicePath(pieSliceFigure->getBounds(), pieSliceFigure->getStartAngle(), pieSliceFigure->getEndAngle());
 }
 
-void PieSliceFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
+void PieSliceFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
-    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, zoom);
+    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, hints);
 }
 
 //----
 
-std::string PolygonFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
+std::string PolygonFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     cPolygonFigure *polygonFigure = check_and_cast<cPolygonFigure*>(figure);
     return polygonPath(polygonFigure->getPoints(), polygonFigure->getSmooth());
 }
 
-void PolygonFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
+void PolygonFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
-    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, zoom);
+    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, hints);
 
     if (what & cFigure::CHANGE_VISUAL) {
         cPolygonFigure *polygonFigure = check_and_cast<cPolygonFigure*>(figure);
@@ -646,16 +674,16 @@ void PolygonFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp 
 
 //----
 
-std::string PathFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
+std::string PathFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     cPathFigure *pathFigure = check_and_cast<cPathFigure*>(figure);
     const char *path = pathFigure->getPath();
     return opp_isblank(path) ? "M 0 0" : path;  // empty path causes error (item will not be be created)
 }
 
-void PathFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
+void PathFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
-    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, zoom);
+    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, hints);
 
     if (what & cFigure::CHANGE_VISUAL) {
         cPathFigure *pathFigure = check_and_cast<cPathFigure*>(figure);
@@ -667,13 +695,13 @@ void PathFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *in
 
 //----
 
-std::string AbstractTextFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
+std::string AbstractTextFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     cAbstractTextFigure *textFigure = check_and_cast<cAbstractTextFigure*>(figure);
     return point(textFigure->getPosition());
 }
 
-void AbstractTextFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
+void AbstractTextFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     cAbstractTextFigure *textFigure = check_and_cast<cAbstractTextFigure*>(figure);
     if (what & cFigure::CHANGE_INPUTDATA) {
@@ -684,7 +712,7 @@ void AbstractTextFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_In
         textanchor(textFigure->getAnchor(), argc, argv);
     }
     if (what & cFigure::CHANGE_VISUAL) {
-        font(textFigure->getFont(), argc, argv);
+        font(textFigure->getFont(), hints, argc, argv);
         argv[argc++] = "-fill";
         argv[argc++] = color(textFigure->getColor());
         argv[argc++] = "-fillopacity";
@@ -699,7 +727,7 @@ void LabelFigureRenderer::addMatrix(cFigure *figure, const cFigure::Transform& t
     // no matrix -- label should not be affected by transforms
 }
 
-std::string LabelFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
+std::string LabelFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     cLabelFigure *labelFigure = check_and_cast<cLabelFigure*>(figure);
     return point(transform.applyTo(labelFigure->getPosition()));
@@ -707,13 +735,13 @@ std::string LabelFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, 
 
 //----
 
-std::string AbstractImageFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom)
+std::string AbstractImageFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     cAbstractImageFigure *imageFigure = check_and_cast<cAbstractImageFigure*>(figure);
     return point(imageFigure->getPosition());
 }
 
-void AbstractImageFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
+void AbstractImageFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     cAbstractImageFigure *imageFigure = check_and_cast<cAbstractImageFigure*>(figure);
     if (what & cFigure::CHANGE_GEOMETRY) {
@@ -736,9 +764,9 @@ void AbstractImageFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_I
 
 //----
 
-void ImageFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
+void ImageFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
-    AbstractImageFigureRenderer::addOptions(figure, what, interp, argc, argv, transform, zoom);
+    AbstractImageFigureRenderer::addOptions(figure, what, interp, argc, argv, transform, hints);
 
     cImageFigure *imageFigure = check_and_cast<cImageFigure*>(figure);
     if (what & cFigure::CHANGE_INPUTDATA) {
@@ -753,9 +781,9 @@ void ImageFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *i
 
 //----
 
-void PixmapFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom)
+void PixmapFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
-    AbstractImageFigureRenderer::addOptions(figure, what, interp, argc, argv, transform, zoom);
+    AbstractImageFigureRenderer::addOptions(figure, what, interp, argc, argv, transform, hints);
 
     cPixmapFigure *pixmapFigure = check_and_cast<cPixmapFigure*>(figure);
     if (what & cFigure::CHANGE_INPUTDATA) {

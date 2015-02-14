@@ -904,6 +904,10 @@ void Tkenv::refreshInspectors()
         it = next;
     }
 
+    // clear the change flags on all inspected canvases
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+        (*it)->clearObjectChangeFlags();
+
     // update object tree
     CHK(Tcl_VarEval(interp, "treeManager:update",NULL));
 
@@ -918,11 +922,7 @@ void Tkenv::redrawInspectors()
 
     // redraw them
     for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); it++)
-    {
-        Inspector *insp = *it;
-        if (dynamic_cast<ModuleInspector*>(insp))
-            ((ModuleInspector*)insp)->redrawAll();
-    }
+        (*it)->redraw();
 }
 
 inline LogInspector *isLogInspectorFor(cModule *mod, Inspector *insp)

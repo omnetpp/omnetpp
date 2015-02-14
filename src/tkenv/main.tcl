@@ -66,6 +66,7 @@ set config(findobjectsdialog:size) {925 578}
 set config(preferencesdialog:size) {652 545}
 set config(runseldialog:size) {421 146}
 set config(treedialog:size) {353 446}
+set config(layersdialog:size) {400 400}
 set config(outvectoroptionsdialog:size) {300 300}
 set config(rununtildialog:size) {455 206}
 set config(inputbox:size) {400 200}

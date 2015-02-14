@@ -26,6 +26,9 @@ class cProperties;
 
 #define OMNETPP_CANVAS_VERSION  0x20140908  //XXX identifies canvas code version until API stabilizes
 
+//TODO: move methods out-of-line, and protect setters with if(new!=old) conditions
+//TODO: nonscaled image? cIconFigure. Problem: cannot position stuff (e.g. labels) around it, because they'd move as zoom changes!!!
+
 /**
  * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
  *
@@ -56,6 +59,7 @@ class SIM_API cFigure : public cOwnedObject
             double operator * (const Point& p) const;
             double distanceTo(const Point& p) const;
             double getLength() const;
+            Point& translate(double dx, double dy) {x += dx; y += dy; return *this;}
             std::string str() const;
         };
 
@@ -63,9 +67,10 @@ class SIM_API cFigure : public cOwnedObject
             double x, y, width, height;
             Rectangle() : x(0), y(0), width(0), height(0) {}
             Rectangle(double x, double y, double width, double height) : x(x), y(y), width(width), height(height) {}
-            std::string str() const;
             Point getCenter() const;
             Point getSize() const;
+            Rectangle& translate(double dx, double dy) {x += dx; y += dy; return *this;}
+            std::string str() const;
         };
 
         struct SIM_API Color {
@@ -284,6 +289,7 @@ class SIM_API cFigure : public cOwnedObject
         virtual void addFigure(cFigure *figure, int pos);
         virtual void addFigureAbove(cFigure *figure, cFigure *referenceFigure);
         virtual void addFigureBelow(cFigure *figure, cFigure *referenceFigure);
+        virtual cFigure *removeFromParent();
         virtual cFigure *removeFigure(int pos);
         virtual cFigure *removeFigure(cFigure *figure);
         virtual int findFigure(const char *name) const;
@@ -938,6 +944,7 @@ class SIM_API cPixmapFigure : public cAbstractImageFigure
 class SIM_API cCanvas : public cOwnedObject
 {
     private:
+        cFigure::Color backgroundColor;
         cFigure *rootFigure;
         std::map<std::string,int> tagBitIndex;  // tag-to-bitindex
     protected:
@@ -948,6 +955,7 @@ class SIM_API cCanvas : public cOwnedObject
         static bool containsCanvasItems(cProperties *properties);
         virtual void addFiguresFrom(cProperties *properties);
         virtual uint64_t parseTags(const char *s);
+        virtual std::string getTags(uint64_t tagBits);
         void dumpSupportedPropertyKeys(std::ostream& out) const;
     private:
         void copy(const cCanvas& other);
@@ -960,6 +968,8 @@ class SIM_API cCanvas : public cOwnedObject
         virtual void forEachChild(cVisitor *v);
         virtual std::string info() const;
 
+        virtual const cFigure::Color& getBackgroundColor() const { return backgroundColor; }
+        virtual void setBackgroundColor(const cFigure::Color& color) { this->backgroundColor = color; }  //TODO notify
         virtual cFigure *getRootFigure() const {return rootFigure;}
         virtual void addFigure(cFigure *figure) {rootFigure->addFigure(figure);}
         virtual void addFigure(cFigure *figure, int pos) {rootFigure->addFigure(figure, pos);}

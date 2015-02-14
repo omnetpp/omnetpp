@@ -96,7 +96,10 @@ class TKENV_API Inspector
       virtual void showWindow();
 
       virtual void refresh();
+      virtual void redraw() {refresh();}
       virtual void commit() {}
+
+      virtual void clearObjectChangeFlags() {}
 
       virtual int inspectorCommand(int, const char **);
 

@@ -38,6 +38,7 @@
 #include "cchannel.h"
 #include "csimplemodule.h"
 #include "stringutil.h"
+#include "canvasrenderer.h"
 
 NAMESPACE_BEGIN
 
@@ -69,10 +70,12 @@ ModuleInspector::ModuleInspector(InspectorFactory *f) : Inspector(f)
    needs_redraw = false;
    notDrawn = false;
    layoutSeed = 0;
+   canvasRenderer = new CanvasRenderer();
 }
 
 ModuleInspector::~ModuleInspector()
 {
+    delete canvasRenderer;
 }
 
 void ModuleInspector::doSetObject(cObject *obj)
@@ -81,6 +84,8 @@ void ModuleInspector::doSetObject(cObject *obj)
         return;
 
     Inspector::doSetObject(obj);
+
+    canvasRenderer->setCanvas(getCanvas());
 
     CHK(Tcl_VarEval(interp, canvas, " delete all",NULL));
 
@@ -100,18 +105,24 @@ void ModuleInspector::createWindow(const char *window, const char *geometry)
 
    CHK(Tcl_VarEval(interp, "createModuleInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL ));
 
-   int success = Tcl_GetCommandInfo(interp, canvas, &canvasCmdInfo);
-   ASSERT(success);
+   canvasRenderer->setTkCanvas(interp, canvas);
 }
 
 void ModuleInspector::useWindow(const char *window)
 {
     Inspector::useWindow(window);
+
     strcpy(canvas,windowName);
     strcat(canvas,".c");
 
-    int success = Tcl_GetCommandInfo(interp, canvas, &canvasCmdInfo);
-    ASSERT(success);
+    canvasRenderer->setTkCanvas(interp, canvas);
+}
+
+cCanvas *ModuleInspector::getCanvas()
+{
+    cModule *mod = static_cast<cModule*>(object);
+    cCanvas *canvas = mod ? mod->getCanvasIfExists() : NULL;
+    return canvas;
 }
 
 void ModuleInspector::refresh()
@@ -127,12 +138,17 @@ void ModuleInspector::refresh()
    if (notDrawn)
        return;
 
+   cCanvas *canvas = getCanvas();
+   if (canvas != NULL && !canvasRenderer->hasCanvas())  // canvas was recently created
+       canvasRenderer->setCanvas(canvas);
+
+   updateBackgroundColor();
 
    // redraw modules only if really needed
    if (needs_redraw)
    {
        needs_redraw = false;
-       redrawAll();
+       redraw();
    }
    else
    {
@@ -186,12 +202,14 @@ void ModuleInspector::relayoutAndRedrawAll()
    refreshSubmodules();
 }
 
-void ModuleInspector::redrawAll()
+void ModuleInspector::redraw()
 {
    if (object == NULL) {
        CHK(Tcl_VarEval(interp, canvas," delete all", NULL));
        return;
    }
+
+   updateBackgroundColor();
 
    refreshLayout();
    redrawModules();
@@ -199,6 +217,13 @@ void ModuleInspector::redrawAll()
    redrawNextEventMarker();
    redrawMessages();
    refreshSubmodules();
+}
+
+void ModuleInspector::clearObjectChangeFlags()
+{
+    cCanvas *canvas = getCanvas();
+    if (canvas)
+        canvas->getRootFigure()->clearChangeFlags();
 }
 
 void ModuleInspector::getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeysLayout,
@@ -639,106 +664,44 @@ void ModuleInspector::redrawNextEventMarker()
 
 void ModuleInspector::redrawFigures()
 {
-   cModule *mod = static_cast<cModule *>(object);
-
-   // remove existing figures
-   CHK(Tcl_VarEval(interp, canvas, " delete fig", NULL));
-
-   // draw figures
-   cCanvas *canvas = mod->getCanvasIfExists();
-   if (canvas)
-   {
-       cFigure::Transform transform;
-       double zoom = getZoom();
-       transform.scale(zoom);
-       drawFigureRec(canvas->getRootFigure(), transform, zoom);
-
-       char tag[32];
-       cFigure *submodulesLayer = canvas->getSubmodulesLayer();
-       ASSERT(submodulesLayer); // should be present!
-       sprintf(tag, "f%d", submodulesLayer->getId());
-       CHK(Tcl_VarEval(interp, this->canvas, " lower submodext ", tag, NULL));
-       CHK(Tcl_VarEval(interp, this->canvas, " raise submodext ", tag, NULL));
-   }
+    FigureRenderingHints hints;
+    fillFigureRenderingHints(&hints);
+    canvasRenderer->redraw(&hints);
 }
 
 void ModuleInspector::refreshFigures()
 {
-    cModule *mod = static_cast<cModule *>(object);
-    cCanvas *canvas = mod->getCanvasIfExists();
-    if (canvas)
-    {
-        // if there is a structural change, we rebuild everything;
-        // otherwise we only adjust subtree of that particular figure
-        cFigure *rootFigure = canvas->getRootFigure();
-        uint8_t changes = rootFigure->getLocalChangeFlags() | rootFigure->getSubtreeChangeFlags();
-        if (changes & cFigure::CHANGE_STRUCTURAL)
-        {
-            redrawFigures();
-            rootFigure->clearChangeFlags();
-        }
-        else if (changes != 0)
-        {
-            cFigure::Transform transform;
-            double zoom = getZoom();
-            transform.scale(zoom);
-            refreshFigureRec(rootFigure, transform, zoom);
-            rootFigure->clearChangeFlags();
-        }
-    }
+    FigureRenderingHints hints;
+    fillFigureRenderingHints(&hints);
+    canvasRenderer->refresh(&hints);
 }
 
-double ModuleInspector::getZoom()
+void ModuleInspector::fillFigureRenderingHints(FigureRenderingHints *hints)
 {
-    // read zoom level ($inspectordata($c:zoomfactor)) -- TODO maybe move it into C++?
-    const char *zoomStr = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":zoomfactor").c_str()), TCL_GLOBAL_ONLY);
-    return opp_atof(zoomStr);
-}
+    const char *s;
 
-FigureRenderer *ModuleInspector::getRendererFor(cFigure *figure)
-{
-    return FigureRenderer::getRendererFor(figure);
-}
+    // read $inspectordata($c:zoomfactor)
+    s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":zoomfactor").c_str()), TCL_GLOBAL_ONLY);
+    hints->zoom = opp_atof(s);
 
-void ModuleInspector::drawFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, double zoom)
-{
-    if (figure->isVisible())
-    {
-        cFigure::Transform transform(parentTransform);
-        transform.leftMultiply(figure->getTransform());
+    // read $inspectordata($c:imagesizefactor)
+    s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":imagesizefactor").c_str()), TCL_GLOBAL_ONLY);
+    hints->iconMagnification = opp_atof(s);
 
-        FigureRenderer *renderer = getRendererFor(figure);
-        renderer->render(figure, interp, &canvasCmdInfo, transform, zoom);
+    // read $inspectordata($c:showlabels)
+    s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":showlabels").c_str()), TCL_GLOBAL_ONLY);
+    hints->showSubmoduleLabels = opp_atol(s) != 0;
 
-        for (int i = 0; i < figure->getNumFigures(); i++)
-            drawFigureRec(figure->getFigure(i), transform, zoom);
-    }
-}
+    // read $inspectordata($c:showarrowheads)
+    s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":showarrowheads").c_str()), TCL_GLOBAL_ONLY);
+    hints->showArrowHeads = opp_atol(s) != 0;
 
-void ModuleInspector::refreshFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, double zoom, bool ancestorTransformChanged)
-{
-    uint8_t localChanges = figure->getLocalChangeFlags();
-    uint8_t subtreeChanges = figure->getSubtreeChangeFlags();
+    Tcl_Eval(interp, "font actual CanvasFont -family");
+    hints->defaultFont = Tcl_GetStringResult(interp);
 
-    if (localChanges & cFigure::CHANGE_TRANSFORM)
-        ancestorTransformChanged = true;  // must refresh this figure and its entire subtree
-
-    if (localChanges || subtreeChanges || ancestorTransformChanged)
-    {
-        cFigure::Transform transform(parentTransform);
-        transform.leftMultiply(figure->getTransform());
-
-        uint8_t what = localChanges | (ancestorTransformChanged ? cFigure::CHANGE_TRANSFORM : 0);
-        if (what) {
-            FigureRenderer *renderer = getRendererFor(figure);
-            renderer->refresh(figure, what, interp, &canvasCmdInfo, transform, zoom);
-        }
-
-        if (subtreeChanges || ancestorTransformChanged) {
-            for (int i = 0; i < figure->getNumFigures(); i++)
-                refreshFigureRec(figure->getFigure(i), transform, zoom, ancestorTransformChanged);
-        }
-    }
+    Tcl_Eval(interp, "font actual CanvasFont -size");
+    s = Tcl_GetStringResult(interp);
+    hints->defaultFontSize = opp_atol(s) * 16 / 10;  //FIXME figure out conversion factor (point to pixel?)...
 }
 
 void ModuleInspector::refreshSubmodules()
@@ -751,7 +714,6 @@ void ModuleInspector::refreshSubmodules()
                        NULL));
    }
 }
-
 
 void ModuleInspector::submoduleCreated(cModule *newmodule)
 {
@@ -910,10 +872,22 @@ void ModuleInspector::performAnimations(Tcl_Interp *interp)
     CHK(Tcl_VarEval(interp, "performAnimations", NULL));
 }
 
+void ModuleInspector::updateBackgroundColor()
+{
+    cCanvas *canvas = getCanvas();
+    if (canvas) {
+        char buf[16];
+        cFigure::Color color = canvas->getBackgroundColor();
+        sprintf(buf, "#%2.2x%2.2x%2.2x", color.red, color.green, color.blue);
+        CHK(Tcl_VarEval(interp, this->canvas, " config -bg {", buf, "}", NULL));
+    }
+}
+
 int ModuleInspector::inspectorCommand(int argc, const char **argv)
 {
    if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
 
+   E_TRY
    if (strcmp(argv[0],"arrowcoords")==0)
    {
       return arrowcoords(interp,argc,argv);
@@ -925,7 +899,7 @@ int ModuleInspector::inspectorCommand(int argc, const char **argv)
    }
    else if (strcmp(argv[0],"redraw")==0)
    {
-      TRY(redrawAll());
+      TRY(redraw());
       return TCL_OK;
    }
    else if (strcmp(argv[0],"getdefaultlayoutseed")==0)
@@ -952,6 +926,33 @@ int ModuleInspector::inspectorCommand(int argc, const char **argv)
    {
       return getSubmodQLen(argc, argv);
    }
+   else if (strcmp(argv[0],"hascanvas")==0) { // needed because getalltags/getenabledtags/etc throw error if there's no canvas
+       Tcl_SetResult(interp, TCLCONST(canvasRenderer->hasCanvas()?"1":"0"), TCL_STATIC);
+       return TCL_OK;
+   }
+   else if (strcmp(argv[0],"getalltags")==0) {
+       Tcl_SetResult(interp, TCLCONST(canvasRenderer->getAllTags().c_str()), TCL_VOLATILE);
+       return TCL_OK;
+   }
+   else if (strcmp(argv[0],"getenabledtags")==0) {
+       Tcl_SetResult(interp, TCLCONST(canvasRenderer->getEnabledTags().c_str()), TCL_VOLATILE);
+       return TCL_OK;
+   }
+   else if (strcmp(argv[0],"getexcepttags")==0) {
+       Tcl_SetResult(interp, TCLCONST(canvasRenderer->getExceptTags().c_str()), TCL_VOLATILE);
+       return TCL_OK;
+   }
+   else if (strcmp(argv[0],"setenabledtags")==0) {
+       if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
+       canvasRenderer->setEnabledTags(argv[1]);
+       return TCL_OK;
+   }
+   else if (strcmp(argv[0],"setexcepttags")==0) {
+       if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
+       canvasRenderer->setExceptTags(argv[1]);
+       return TCL_OK;
+   }
+   E_CATCH
 
    return Inspector::inspectorCommand(argc, argv);
 }

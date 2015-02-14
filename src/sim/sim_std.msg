@@ -48,7 +48,8 @@ typedef cFigure::JoinStyle  cFigure_JoinStyle;
 typedef cFigure::FillRule   cFigure_FillRule;
 typedef cFigure::ArrowHead  cFigure_ArrowHead;
 typedef cFigure::Anchor     cFigure_Anchor;
-typedef cFigure::Interpolation  cFigure_Interpolation;
+typedef cFigure::Interpolation cFigure_Interpolation;
+
 
 namespace aux {
 #define cF cFigure
@@ -761,6 +762,7 @@ class cCanvas extends cOwnedObject
 {
     cFigure *rootFigure;
     string allTags;
+    Color backgroundColor @editable @tostring(.str()) @fromstring(parseColor);
 }
 
 

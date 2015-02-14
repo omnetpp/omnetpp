@@ -29,6 +29,8 @@ class cModule;
 class cGate;
 class cFigure;
 class FigureRenderer;
+class FigureRenderingHints;
+class CanvasRenderer;
 
 enum SendAnimMode {ANIM_BEGIN, ANIM_END, ANIM_THROUGH};
 
@@ -38,7 +40,8 @@ class TKENV_API ModuleInspector : public Inspector
 
    protected:
       char canvas[128];
-      Tcl_CmdInfo canvasCmdInfo;
+      CanvasRenderer *canvasRenderer;
+
       bool needs_redraw;
       int32_t layoutSeed;
       bool notDrawn;
@@ -48,13 +51,12 @@ class TKENV_API ModuleInspector : public Inspector
       PositionMap submodPosMap;  // recalculateLayout() fills this map
 
    protected:
+      cCanvas *getCanvas();
       void drawSubmodule(cModule *submod, double x, double y);
       void drawEnclosingModule(cModule *parentmodule);
       void drawConnection(cGate *gate);
-      double getZoom();
-      virtual FigureRenderer *getRendererFor(cFigure *figure);
-      void drawFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, double zoom);
-      void refreshFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, double zoom, bool ancestorTransformChanged=false);
+      void fillFigureRenderingHints(FigureRenderingHints *hints);
+      void updateBackgroundColor();
       static const char *animModeToStr(SendAnimMode mode);
 
    public:
@@ -64,6 +66,7 @@ class TKENV_API ModuleInspector : public Inspector
       virtual void createWindow(const char *window, const char *geometry);
       virtual void useWindow(const char *window);
       virtual void refresh();
+      virtual void clearObjectChangeFlags();
       virtual int inspectorCommand(int argc, const char **argv);
 
       bool needsRedraw() {return needs_redraw;}
@@ -88,7 +91,7 @@ class TKENV_API ModuleInspector : public Inspector
 
       // drawing methods:
       virtual void relayoutAndRedrawAll();
-      virtual void redrawAll();
+      virtual void redraw();
 
       virtual void redrawModules();
       virtual void redrawMessages();

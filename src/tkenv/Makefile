@@ -27,10 +27,11 @@ COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../envir -
 IMPLIBS= -L$L -loppsim$D -loppenvir$D -lopplayout$D -loppcommon$D $(TK_LIBS) $(ZLIB_LIBS)
 
 OBJS = $O/tkenv$(TKENV_EMBED_SUFFIX).o $O/tkcmd.o $O/tklib.o $O/inspector.o $O/logbuffer.o \
-       $O/inspectorfactory.o $O/genericobjectinspector.o $O/watchinspector.o \
+       $O/inspectorfactory.o $O/genericobjectinspector.o $O/watchinspector.o $O/canvasinspector.o \
        $O/moduleinspector.o $O/loginspector.o $O/gateinspector.o $O/figurerenderers.o \
        $O/outputvectorinspector.o $O/histograminspector.o $O/componenthistory.o \
-       $O/layouterenv.o $O/arrow.o $O/tkutil.o $O/tkImgPNG.o $O/tkImgPNGInit.o
+       $O/canvasrenderer.o $O/layouterenv.o $O/arrow.o \
+       $O/tkutil.o $O/tkImgPNG.o $O/tkImgPNGInit.o
 
 ifeq ("$(EMBED_TCL_CODE)","yes")
 TKENV_EMBED_SUFFIX=-e
@@ -148,6 +149,90 @@ $O/arrow.o: arrow.cc \
   ../envir/visitor.h \
   arrow.h \
   tkdefs.h \
+  tkutil.h
+$O/canvasinspector.o: canvasinspector.cc \
+  ../../include/carray.h \
+  ../../include/ccanvas.h \
+  ../../include/ccomponent.h \
+  ../../include/cconfiguration.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cenvir.h \
+  ../../include/cevent.h \
+  ../../include/cexception.h \
+  ../../include/cexpression.h \
+  ../../include/clifecyclelistener.h \
+  ../../include/clistener.h \
+  ../../include/clog.h \
+  ../../include/cmessageheap.h \
+  ../../include/cnamedobject.h \
+  ../../include/cnedvalue.h \
+  ../../include/cobject.h \
+  ../../include/cobjectfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cpar.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cresultlistener.h \
+  ../../include/csimulation.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/envirext.h \
+  ../../include/errmsg.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  ../envir/args.h \
+  ../envir/envirbase.h \
+  ../envir/envirdefs.h \
+  ../envir/eventlogfilemgr.h \
+  ../envir/intervals.h \
+  ../envir/logformatter.h \
+  ../envir/matchableobject.h \
+  ../envir/objectprinter.h \
+  ../envir/visitor.h \
+  canvasinspector.h \
+  canvasrenderer.h \
+  figurerenderers.h \
+  inspector.h \
+  inspectorfactory.h \
+  tkdefs.h \
+  tklib.h \
+  tkutil.h
+$O/canvasrenderer.o: canvasrenderer.cc \
+  ../../include/ccanvas.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../../include/clifecyclelistener.h \
+  ../../include/clistener.h \
+  ../../include/cnamedobject.h \
+  ../../include/cobject.h \
+  ../../include/cownedobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  ../envir/envirdefs.h \
+  ../envir/matchableobject.h \
+  ../envir/visitor.h \
+  canvasrenderer.h \
+  figurerenderers.h \
+  tkdefs.h \
+  tklib.h \
   tkutil.h
 $O/componenthistory.o: componenthistory.cc \
   ../../include/carray.h \
@@ -923,6 +1008,7 @@ $O/moduleinspector.o: moduleinspector.cc \
   ../envir/speedometer.h \
   ../envir/visitor.h \
   arrow.h \
+  canvasrenderer.h \
   circularbuffer.h \
   componenthistory.h \
   figurerenderers.h \

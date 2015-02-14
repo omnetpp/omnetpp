@@ -138,7 +138,7 @@ std::string cFigure::Point::str() const
     return os.str();
 }
 
-cFigure::Point cFigure::Point::operator + (const cFigure::Point& p) const
+cFigure::Point cFigure::Point::operator +(const Point& p) const
 {
     return Point(x + p.x, y + p.y);
 }
@@ -975,6 +975,12 @@ void cFigure::insertChild(cFigure *figure, std::map<cFigure*,double>& orderMap)
     fireStructuralChange();
 }
 
+cFigure *cFigure::removeFromParent()
+{
+    cFigure *parent = getParentFigure();
+    return !parent ? this : parent->removeFigure(this);
+}
+
 cFigure *cFigure::removeFigure(int pos)
 {
     if (pos < 0 || pos >= (int)children.size())
@@ -1468,9 +1474,9 @@ void cAbstractShapeFigure::parse(cProperty *property)
     if ((s = property->getValue(PKEY_LINEWIDTH)) != NULL)
         setLineWidth(opp_atof(s));
     if ((s = property->getValue(PKEY_LINEOPACITY)) != NULL)
-            setLineOpacity(opp_atof(s));
+        setLineOpacity(opp_atof(s));
     if ((s = property->getValue(PKEY_FILLOPACITY)) != NULL)
-            setFillOpacity(opp_atof(s));
+        setFillOpacity(opp_atof(s));
     if ((s = property->getValue(PKEY_SCALELINEWIDTH)) != NULL)
         setScaleLineWidth(parseBool(s));
 }
@@ -2191,7 +2197,7 @@ const char **cPixmapFigure::getAllowedPropertyKeys() const
 
 //------
 
-cCanvas::cCanvas(const char *name) : cOwnedObject(name)
+cCanvas::cCanvas(const char *name) : cOwnedObject(name), backgroundColor(cFigure::Color(160,224,160))
 {
     rootFigure = new cGroupFigure("rootFigure");
     take(rootFigure);
@@ -2204,6 +2210,7 @@ cCanvas::~cCanvas()
 
 void cCanvas::copy(const cCanvas& other)
 {
+    setBackgroundColor(other.getBackgroundColor());
     dropAndDelete(rootFigure);
     tagBitIndex.clear();
     rootFigure = other.getRootFigure()->dupTree();
@@ -2388,6 +2395,19 @@ uint64_t cCanvas::parseTags(const char *s)
         result |= ((uint64_t)1) << bitIndex;
     }
     return result;
+}
+
+std::string cCanvas::getTags(uint64_t tagBits)
+{
+    std::stringstream os;
+    for (std::map<std::string,int>::const_iterator it = tagBitIndex.begin(); it != tagBitIndex.end(); ++it) {
+        if ((tagBits & (((uint64_t)1) << it->second)) != 0) {
+            if (it != tagBitIndex.begin())
+                os << " ";
+            os << it->first;
+        }
+    }
+    return os.str();
 }
 
 std::string cCanvas::getAllTags() const

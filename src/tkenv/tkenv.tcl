@@ -24,6 +24,7 @@ if [info exist OMNETPP_TKENV_DIR] {
    source [file join $dir animate2.tcl]
    source [file join $dir autoscroll.tcl]
    source [file join $dir balloon.tcl]
+   source [file join $dir canvasinspector.tcl]
    source [file join $dir canvaslabel.tcl]
    source [file join $dir dialogs.tcl]
    source [file join $dir dialogutils.tcl]

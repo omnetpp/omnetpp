@@ -81,7 +81,7 @@ void GateInspector::doSetObject(cObject *obj)
     redraw();
 }
 
-int GateInspector::redraw()
+void GateInspector::redraw()
 {
    cGate *gate = (cGate *)object;
 
@@ -139,8 +139,6 @@ int GateInspector::redraw()
 
    // loop through all messages in the event queue
    refresh();
-
-   return TCL_OK;
 }
 
 void GateInspector::refresh()

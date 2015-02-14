@@ -22,6 +22,21 @@
 
 NAMESPACE_BEGIN
 
+struct TKENV_API FigureRenderingHints
+{
+        double zoom;
+        double iconMagnification;
+        std::string defaultFont;
+        int defaultFontSize;
+        bool showSubmoduleLabels;
+        bool showArrowHeads;
+        bool showMessageLabels;
+
+        FigureRenderingHints() :
+            zoom(1), iconMagnification(1), defaultFont("Arial"), defaultFontSize(12),
+            showSubmoduleLabels(true), showArrowHeads(true), showMessageLabels(true) {}
+};
+
 class TKENV_API FigureRenderer : public cObject // for because Register_Class() takes cObject*
 {
     private:
@@ -46,20 +61,22 @@ class TKENV_API FigureRenderer : public cObject // for because Register_Class() 
         void interpolation(cFigure::Interpolation interpolation, int& argc, const char *argv[]);
         void anchor(cFigure::Anchor anchor, int& argc, const char *argv[]);
         void textanchor(cFigure::Anchor anchor, int& argc, const char *argv[]);
-        void font(const cFigure::Font& font, int& argc, const char *argv[]);
-
+        void font(const cFigure::Font& font, FigureRenderingHints *hints, int& argc, const char *argv[]);
+        const char *resolveIcon(Tcl_Interp *interp, const char *iconName, int& outWidth, int& outHeight);
         std::string polygonPath(const std::vector<cFigure::Point>& points, bool smooth);
         std::string polylinePath(const std::vector<cFigure::Point>& points, bool smooth);
         std::string arcPath(const cFigure::Rectangle& rect, double start, double end);
         std::string pieSlicePath(const cFigure::Rectangle& rect, double start, double end);
         std::string ringPath(const cFigure::Rectangle& rect, double innerRx, double innerRy);
+        void moveItemsAbove(Tcl_Interp *interp, Tcl_CmdInfo *cmd, const char *tag, const char *referenceTag);
+        void removeItems(Tcl_Interp *interp, Tcl_CmdInfo *cmd, const char *tag);
 
     public:
         FigureRenderer() : bufferFreePtr(NULL) {}
         virtual ~FigureRenderer() {}
         static FigureRenderer *getRendererFor(cFigure *figure);
-        virtual void render(cFigure *figure, Tcl_Interp *interp, Tcl_CmdInfo *cmd, const cFigure::Transform& transform, double zoom) = 0;
-        virtual void refresh(cFigure *figure, int8_t what, Tcl_Interp *interp, Tcl_CmdInfo *cmd, const cFigure::Transform& transform, double zoom) = 0;
+        virtual void render(cFigure *figure, Tcl_Interp *interp, Tcl_CmdInfo *cmd, const cFigure::Transform& transform, FigureRenderingHints *hints) = 0;
+        virtual void refresh(cFigure *figure, int8_t what, Tcl_Interp *interp, Tcl_CmdInfo *cmd, const cFigure::Transform& transform, FigureRenderingHints *hints) = 0;
         virtual void remove(cFigure *figure, Tcl_Interp *interp, Tcl_CmdInfo *cmd) = 0;
 };
 
@@ -67,12 +84,12 @@ class TKENV_API AbstractCanvasItemFigureRenderer : public FigureRenderer
 {
     protected:
         virtual const char *getItemType() = 0;
-        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom) = 0;
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints) = 0;
         virtual void addMatrix(cFigure *figure, const cFigure::Transform& transform, int& argc, const char *argv[]);
-        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom) = 0;
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints) = 0;
     public:
-        virtual void render(cFigure *figure, Tcl_Interp *interp, Tcl_CmdInfo *cmd, const cFigure::Transform& transform, double zoom);
-        virtual void refresh(cFigure *figure, int8_t what, Tcl_Interp *interp, Tcl_CmdInfo *cmd, const cFigure::Transform& transform, double zoom);
+        virtual void render(cFigure *figure, Tcl_Interp *interp, Tcl_CmdInfo *cmd, const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void refresh(cFigure *figure, int8_t what, Tcl_Interp *interp, Tcl_CmdInfo *cmd, const cFigure::Transform& transform, FigureRenderingHints *hints);
         virtual void remove(cFigure *figure, Tcl_Interp *interp, Tcl_CmdInfo *cmd);
 };
 
@@ -80,97 +97,97 @@ class TKENV_API NullRenderer : public AbstractCanvasItemFigureRenderer
 {
     protected:
         virtual const char *getItemType() {return "pline";}
-        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom) {return "0 0 0 0";}
-        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom) {}
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints) {return "0 0 0 0";}
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints) {}
 };
 
 class TKENV_API AbstractLineFigureRenderer : public AbstractCanvasItemFigureRenderer
 {
     protected:
-        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
 class TKENV_API LineFigureRenderer : public AbstractLineFigureRenderer
 {
     protected:
         virtual const char *getItemType() {return "pline";}
-        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom);
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
 class TKENV_API ArcFigureRenderer : public AbstractLineFigureRenderer
 {
     protected:
         virtual const char *getItemType() {return "path";}
-        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom);
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
 class TKENV_API PolylineFigureRenderer : public AbstractLineFigureRenderer
 {
     protected:
         virtual const char *getItemType() {return "path";}
-        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom);
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
 class TKENV_API AbstractShapeRenderer : public AbstractCanvasItemFigureRenderer
 {
     protected:
-        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
 class TKENV_API RectangleFigureRenderer : public AbstractShapeRenderer
 {
     protected:
         virtual const char *getItemType() {return "prect";}
-        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom);
-        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom);
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
 class TKENV_API OvalFigureRenderer : public AbstractShapeRenderer
 {
     protected:
         virtual const char *getItemType() {return "ellipse";}
-        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom);
-        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom);
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
 class TKENV_API RingFigureRenderer : public AbstractShapeRenderer
 {
     protected:
         virtual const char *getItemType() {return "path";}
-        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom);
-        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom);
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
 class TKENV_API PieSliceFigureRenderer : public AbstractShapeRenderer
 {
     protected:
         virtual const char *getItemType() {return "path";}
-        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom);
-        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom);
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
 class TKENV_API PolygonFigureRenderer : public AbstractShapeRenderer
 {
     protected:
         virtual const char *getItemType() {return "path";}
-        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom);
-        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom);
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
 class TKENV_API PathFigureRenderer : public AbstractShapeRenderer
 {
     protected:
         virtual const char *getItemType() {return "path";}
-        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom);
-        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom);
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
 class TKENV_API AbstractTextFigureRenderer : public AbstractCanvasItemFigureRenderer
 {
     protected:
         virtual const char *getItemType() {return "ptext";}
-        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom);
-        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom);
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
 class TKENV_API TextFigureRenderer : public AbstractTextFigureRenderer
@@ -181,7 +198,7 @@ class TKENV_API LabelFigureRenderer : public AbstractTextFigureRenderer
 {
     protected:
         virtual void addMatrix(cFigure *figure, const cFigure::Transform& transform, int& argc, const char *argv[]);
-        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom);
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
 
 };
 
@@ -189,20 +206,20 @@ class TKENV_API AbstractImageFigureRenderer : public AbstractCanvasItemFigureRen
 {
     protected:
         virtual const char *getItemType() {return "pimage";}
-        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, double zoom);
-        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom);
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
 class TKENV_API ImageFigureRenderer : public AbstractImageFigureRenderer
 {
     protected:
-        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
 class TKENV_API PixmapFigureRenderer : public AbstractImageFigureRenderer
 {
     protected:
-        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, double zoom);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
         virtual void ensureImage(Tcl_Interp *interp, const char *imageName, const cFigure::Pixmap& pixmap);
 };
 

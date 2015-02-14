@@ -1,5 +1,5 @@
 //==========================================================================
-//  GATEINSPECTOR.H - part of
+//  CANVASINSPECTOR.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,34 +14,43 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __GATEINSPECTOR_H
-#define __GATEINSPECTOR_H
+#ifndef __CANVASINSPECTOR_H
+#define __CANVASINSPECTOR_H
 
 #include "platmisc.h"   // must precede <tk.h> otherwise Visual Studio 2013 fails to compile
 #include <tk.h>
 #include "inspector.h"
+#include "ccanvas.h"
+#include "canvasrenderer.h"
 
 NAMESPACE_BEGIN
 
+class cFigure;
+class FigureRenderer;
+class FigureRenderingHints;
+class CanvasRenderer;
 
-class TKENV_API GateInspector : public Inspector
+class TKENV_API CanvasInspector : public Inspector
 {
    protected:
       char canvas[128];
+      CanvasRenderer *canvasRenderer;
 
    protected:
-      virtual void doSetObject(cObject *obj);
+      virtual cCanvas *getCanvas();
+      virtual void fillFigureRenderingHints(FigureRenderingHints *hints);
+      virtual void updateBackgroundColor();
 
    public:
-      GateInspector(InspectorFactory *f);
+      CanvasInspector(InspectorFactory *f);
+      ~CanvasInspector();
+      virtual void doSetObject(cObject *obj);
       virtual void createWindow(const char *window, const char *geometry);
       virtual void useWindow(const char *window);
       virtual void refresh();
       virtual void redraw();
+      virtual void clearObjectChangeFlags();
       virtual int inspectorCommand(int argc, const char **argv);
-
-      // notifications from envir:
-      virtual void displayStringChanged(cGate *gate);
 };
 
 NAMESPACE_END

@@ -513,6 +513,27 @@ proc ModuleInspector:panUpdate {insp x y} {
 proc ModuleInspector:panEnd {insp x y} {
 }
 
+proc ModuleInspector:layers {insp} {
+    if {![opp_inspectorcommand $insp hascanvas]} {
+        messagebox Confirm "No default canvas has been created for this module yet." info ok
+        return
+    }
+
+    set allTags [opp_inspectorcommand $insp getalltags]
+    set enabledTags [opp_inspectorcommand $insp getenabledtags]
+    set exceptTags [opp_inspectorcommand $insp getexcepttags]
+
+    set result [CanvasInspectors:layersDialog $allTags $enabledTags $exceptTags]
+
+    if {$result != {}} {
+        set enabledTags [lindex $result 0]
+        set exceptTags [lindex $result 1]
+        opp_inspectorcommand $insp setenabledtags $enabledTags
+        opp_inspectorcommand $insp setexcepttags $exceptTags
+        opp_inspectorcommand $insp redraw
+    }
+}
+
 proc lookupImage {imgname {imgsize ""}} {
     global bitmaps icons
 
@@ -1535,6 +1556,9 @@ proc ModuleInspector:rightClick {insp X Y x y} {
 
       set tmp($c:showlabels) $inspectordata($c:showlabels)
       set tmp($c:showarrowheads) $inspectordata($c:showarrowheads)
+
+      $popup add separator
+      $popup add command     -label "Show/Hide Canvas Layers..." -command "ModuleInspector:layers $insp"
 
       $popup add separator
       $popup add checkbutton -label "Show Module Names" -command "ModuleInspector:toggleLabels $insp" -accel "$CTRL+L" -variable tmp($c:showlabels)
