@@ -469,7 +469,7 @@ void AbstractCanvasItemFigureRenderer::refresh(cFigure *figure, int8_t what, Tcl
     char tag[32];
     sprintf(tag, "f%d", figure->getId());
 
-    if (what & cFigure::CHANGE_GEOMETRY) {
+    if (what & (cFigure::CHANGE_GEOMETRY | cFigure::CHANGE_TRANSFORM)) {  // some getCoords() implementations use the transform as input
         initBufs();
         int argc = 0;
         const char *argv[32];
