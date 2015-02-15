@@ -27,7 +27,6 @@ class cProperties;
 #define OMNETPP_CANVAS_VERSION  0x20140908  //XXX identifies canvas code version until API stabilizes
 
 //TODO: move methods out-of-line, and protect setters with if(new!=old) conditions
-//TODO: nonscaled image? cIconFigure. Problem: cannot position stuff (e.g. labels) around it, because they'd move as zoom changes!!!
 
 /**
  * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
@@ -881,6 +880,22 @@ class SIM_API cImageFigure : public cAbstractImageFigure
         virtual void parse(cProperty *property);
         virtual const char *getImageName() const  {return imageName.c_str();}
         virtual void setImageName(const char *imageName)  {this->imageName = imageName; fireInputDataChange();}
+};
+
+/**
+ * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ *
+ * Note: not affected by transforms or zoom, except its position
+ */
+class SIM_API cIconFigure : public cImageFigure
+{
+    private:
+        void copy(const cIconFigure& other) {}
+    public:
+        cIconFigure(const char *name=NULL) : cImageFigure(name) {}
+        cIconFigure(const cIconFigure& other) : cImageFigure(other) {copy(other);}
+        cIconFigure& operator=(const cIconFigure& other);
+        virtual cIconFigure *dup() const  {return new cIconFigure(*this);}
 };
 
 /**

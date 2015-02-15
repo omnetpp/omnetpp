@@ -33,6 +33,7 @@ using namespace canvas_stream_ops;
 
 
 Register_Class(cGroupFigure);
+Register_Class(cPanelFigure);
 Register_Class(cLineFigure);
 Register_Class(cArcFigure);
 Register_Class(cPolylineFigure);
@@ -45,6 +46,7 @@ Register_Class(cPathFigure);
 Register_Class(cTextFigure);
 Register_Class(cLabelFigure);
 Register_Class(cImageFigure);
+Register_Class(cIconFigure);
 Register_Class(cPixmapFigure);
 
 
@@ -2151,6 +2153,16 @@ const char **cImageFigure::getAllowedPropertyKeys() const
 
 //----
 
+cIconFigure& cIconFigure::operator=(const cIconFigure& other)
+{
+    if (this == &other) return *this;
+    cImageFigure::operator=(other);
+    copy(other);
+    return *this;
+}
+
+//----
+
 std::string cPixmapFigure::info() const
 {
     std::stringstream os;
@@ -2311,6 +2323,8 @@ cFigure *cCanvas::createFigure(const char *type) const
     cFigure *figure;
     if (!strcmp(type, "group"))
         figure = new cGroupFigure();
+    if (!strcmp(type, "panel"))
+        figure = new cPanelFigure();
     else if (!strcmp(type, "line"))
         figure = new cLineFigure();
     else if (!strcmp(type, "arc"))
@@ -2335,6 +2349,8 @@ cFigure *cCanvas::createFigure(const char *type) const
             figure = new cLabelFigure();
     else if (!strcmp(type, "image"))
         figure = new cImageFigure();
+    else if (!strcmp(type, "icon"))
+        figure = new cIconFigure();
     else if (!strcmp(type, "pixmap"))
         figure = new cPixmapFigure();
     else {

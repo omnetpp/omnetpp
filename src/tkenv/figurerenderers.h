@@ -199,7 +199,6 @@ class TKENV_API LabelFigureRenderer : public AbstractTextFigureRenderer
     protected:
         virtual void addMatrix(cFigure *figure, const cFigure::Transform& transform, int& argc, const char *argv[]);
         virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
-
 };
 
 class TKENV_API AbstractImageFigureRenderer : public AbstractCanvasItemFigureRenderer
@@ -214,6 +213,14 @@ class TKENV_API ImageFigureRenderer : public AbstractImageFigureRenderer
 {
     protected:
         virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
+};
+
+class TKENV_API IconFigureRenderer : public ImageFigureRenderer
+{
+    protected:
+        virtual void addMatrix(cFigure *figure, const cFigure::Transform& transform, int& argc, const char *argv[]);
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
+
 };
 
 class TKENV_API PixmapFigureRenderer : public AbstractImageFigureRenderer

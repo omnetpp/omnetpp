@@ -38,6 +38,7 @@ Register_Class(PathFigureRenderer);
 Register_Class(TextFigureRenderer);
 Register_Class(LabelFigureRenderer);
 Register_Class(ImageFigureRenderer);
+Register_Class(IconFigureRenderer);
 Register_Class(PixmapFigureRenderer);
 
 #ifndef M_PI
@@ -777,6 +778,19 @@ void ImageFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *i
         argv[argc++] = "-image";
         argv[argc++] = imageName;
     }
+}
+
+//----
+
+void IconFigureRenderer::addMatrix(cFigure *figure, const cFigure::Transform& transform, int& argc, const char *argv[])
+{
+    // no matrix -- icon should not be affected by transforms
+}
+
+std::string IconFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
+{
+    cIconFigure *iconFigure = check_and_cast<cIconFigure*>(figure);
+    return point(transform.applyTo(iconFigure->getPosition()));
 }
 
 //----
