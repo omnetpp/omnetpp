@@ -1,3 +1,36 @@
+2014-09-19  Andras Varga
+
+	* Submodule icons are no longer scaled when zooming.
+
+	* Removed support for the "bgs" (background scaling) tag. It
+	specified a factor for translating canvas distances (e.g. icon
+	coordinates) to pixels, which effectively meant a preferred zoom
+	level. But since Tkenv handles zoom automatically, "bgs" had little
+	usefulness. (That little usefulness was connected to icon zooming,
+	but since icons don't zoom now, "bgs" became entirely pointless.)
+
+2014-09-17  Andras Varga
+
+	Finished implementation of the Canvas API Tkenv rendering. The
+	implementation is based on figure renderers (see FigureRenderer class)
+	that can be registered for various figure classes.
+
+	Limitations:
+	- only supports module canvases (extra canvas objects cannot be opened)
+	- layers (show/hide figures based on tags they contain) not implemented
+
+	The implementation is based on the TkPath Tcl/Tk plugin. It has been
+	significantly enhanced by our team (namely Zoltan Bojthe), and
+	the improvements were contributed back to the TkPath project.
+
+	The current TkPath maintainer is Andrew Shadura, and the repository
+	is at https://bitbucket.org/andrew_shadura/tkpath.
+	Our working repository is at git@github.com:omnetpp/tkpath.git
+
+2013-10-29  Andras Varga
+
+	* Made log prefix format and log level configurable via the Options dialog
+
 2013-09-26  Andras Varga
 
 	* Follow logging API changes (sputn() replaced by log() function); see
@@ -19,20 +52,20 @@
 
 2014-10-21  Andras Varga
 
-	* implemented canvas panning using left mouse button
+	* Implemented canvas panning using left mouse button
 
-	* implemented zooming in/out around a point:
+	* Implemented zooming in/out around a point:
 	- double click to zoom in
 	- Shift + double click to zoom out
 
-	* implemented marquee zoom, based on patch from Christoph Sommer
+	* Implemented marquee zoom, based on patch from Christoph Sommer
 	- use Ctrl + left mouse button to drag out a rectangle
 	- marquee can be dragged out in any direction
 	- right-click to cancel
 
-	* zoom-by factor changed to 1.3 (will only take effect for new users)
+	* Zoom-by factor changed to 1.3 (will only take effect for new users)
 
-	* fixed "jerking" of canvas caused by transmission circles coming and
+	* Fixed "jerking" of canvas caused by transmission circles coming and
 	going (large circles always caused the scrolling region to change)
 
 2014-06-30  ------ omnetpp-4.5 released ------

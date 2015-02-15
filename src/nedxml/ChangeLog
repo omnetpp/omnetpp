@@ -1,13 +1,45 @@
+2014-09-23  Andras Varga
+
+	* fix #772: trim property values in NED, as each reformatting added a space
+	  character after the property value
+
+	* fix #773: ned2.lex/msg2.lex: newline inside properties confused the parser
+
+	* lex files: emove obsolete and unused textbuf from _count() functions
+
+2014-08-18  Zoltan Bojthe
+
+	Changes on MsgCppGenerator (message compiler):
+
+	* adapted the generated descriptor code to cClassDescriptor changes in 5.0
+
+	* implemented @editable(false)
+
+	* added @tostring, @fromstring field properties: their values should be
+	  names of functions which will be used by the generated descriptors to
+	  convert the field value to / from string. This is most useful with
+	  compound field types (classes). Details:
+
+	 - @tostring accepts member functions, too: if the property value begins
+	   with a dot, it is assumed to be a member function of the value class
+
+	 - @tostring, @fromstring: if the property value contains a '$' character,
+	   '$' will be replaced by the value to be converted
+
+	 - if field has the @enum property, conversion to/from string will accept
+	   symbolic constants too (enum2string(), string2enum())
+
 ////////////// fixes taken from omnetpp-4.x come here /////////////////
 
 2014-11-27  ------ omnetpp-4.6 released ------
 
 2014-08-05  Zoltan Bojthe
+
 	* opp_msgc: removed, use nedtool for compiling msg files
 
-	* nedtool: added msg compiler feature; nedtool can now be used as a 
+	* nedtool: added msg compiler feature; nedtool can now be used as a
 	a drop-in replacement for opp_msgc. Command line options: opp_msgc's
-	options have been added; some existing options needed to be renamed 
+	options have been added; some existing options needed to be renamed
 	due to conflict with opp_msgc options.
 	    -X renamed to -T
 	    -X[nc|nd|ns] added (disable generating class/descriptor/setter at MSG files)

@@ -13,6 +13,15 @@
 	* Fire simulation lifecycle events; see related ChangeLog entry
 	in include/.
 
+2012-04-21  Andras Varga
+
+	* EXPERIMENTAL: Cmdenv now accepts commands like run, stop and object
+	queries via HTTP. This will be useful for controlling the simulation
+	remotely, e.g. via a simulation front-end GUI that's part of the IDE.
+
+	The code is currently surrounded with #ifdef SIMFRONTEND_SUPPORT,
+	turned off by default.
+
 ////////////// fixes taken from omnetpp-4.x come here /////////////////
 
 2014-11-27  ------ omnetpp-4.6 released ------

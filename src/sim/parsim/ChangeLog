@@ -1,3 +1,7 @@
+changed to new scheduler api
+EV<< instead of ev.printf
+
+
 2014-11-27  ------ omnetpp-4.6 released ------
 
 2014-06-30  ------ omnetpp-4.5 released ------

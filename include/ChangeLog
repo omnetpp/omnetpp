@@ -1,10 +1,85 @@
+2015-02-08  Andras Varga
+
+	* added Register_Enum2() macro, which registers an enum and at the same time
+	makes it accessible via a global cEnum* pointer.
+
+2014-12-12  Andras Varga
+
+	* cResultListener: added callFinish(), so that invoking finish() multiple
+	times can be prevented at the cost of one additional flag.
+	Fixes issue #799: double recording of scalars computed from multiple signals
+
+2014-09-17  Andras Varga
+
+	Canvas API implementation finished. This is a 2D figure-based drawing API.
+
+	One can create figure objects (derived from cFigure), and place them on
+	a canvas (cCanvas). Every module has its own canvas (cModule::getCanvas()),
+	and one may create additional ones directly. Figure classes are data
+	storage classes only, actual rendering is in the GUI code (e.g. Tkenv).
+	Figures form an object tree, where child figure coordinates are relative
+	to the parent figure.
+
+	cFigure contains the following utility classes:
+	Point, Rectangle, Color, Font, Transform, RGBA, Pixmap.
+
+	The following figure classes are available:
+	    cFigure - base class
+	      cGroupFigure - for grouping other figures, no visual appearance
+              cPanelFigure - non-zooming container, no visual appearance
+	      cAbstractLineFigure - line, with optional arrowheads
+	        cLineFigure - a single line segment
+	        cArcFigure - arc
+	        cPolylineFigure - (smoothed) polyline
+	      cAbstractShapeFigure - shape, both fill and outline is optional
+	        cRectangleFigure - (rounded) rectangle
+	        cOvalFigure - cirle or ellipse
+	        cRingFigure - ring
+	        cPieSliceFigure - pie slice
+	        cPolygonFigure - (smoothed) polygon
+	        cPathFigure - optinally filled path, modelled after SVG
+	      cAbstractTextFigure
+	        cTextFigure - text
+	        cLabelFigure - non-zooming text
+	      cAbstractImageFigure
+	        cImageFigure - image loaded from the image path
+	        cIconFigure - non-zooming image loaded from the image path
+	        cPixmapFigure - programmatically created image
+
+2014-10-27  Andras Varga
+
+	* Removed nonstandard fixed-size integer typedefs: int8, uint8, etc.
+	Use the standard ones with the _t suffix.
+
+	* Removed opp_long_long, which was an alias to long long, with a hack
+	to make the code compile with Visual C++ 7.1 and earlier. Modern 
+	Visual C++ versions support long long, so this typedef is no longer
+	needed.
+
+	* Removed platdep/intxtypes.h, which was our in-house version of <stdint.h>
+	Now that recent Visual C++ versions (and all other modern compilers)
+	have <stdint.h>, platdep/intxtypes.h is no longer needed.
+
+2014-09-22  Andras Varga
+
+	* opp_string: added size() method
+
+2014-08-18  Zoltan Bojthe
+
+	* cEnum: added resolve(): similar o lookup(), but throws error if
+	string is not found
+
+2014-08-01  Andras Varga
+
+	* cEnum: added bulkInsert()
+
 2014-01-30  Andras Varga
 
 	* cGate: added getConnectionId(). Connection ID is an integer that can
 	be used by tools like the Sequence Chart to globally and uniquely
 	identify the connection during the lifetime of the simulation.
 	(Reconnecting the gate assigns a fresh ID, and disconnecting it sets
-	-1 as ID.) There is no mechasnism for looking up a connection by ID
+	-1 as ID.) There is no mechanism for looking up a connection by ID
 	(apart from scanning through all gates in the simulation.)
 
 2014-01-18  Andras Varga
@@ -19,16 +94,36 @@
 	structures in GUI parts (Tkenv, Sequence Chart, Simulation Front-End,
 	etc.)
 
+	FIXME obsolete leiras!!!!!!
+
 2014-01-16  Andras Varga
 
-	* cSimulation: store cComponent* not cModule*, to give cChannels IDs
+	* Channel objects (cChannel) now have IDs, similarly to modules. This
+	was achieved by two changes:
+	- getId() was moved from cModule to cComponent, so now cChannel inherits it
+	- cSimulation internal vector now stores cComponent* ptrs, not cModule*
 
 	API changes:
-	- getId() was moved from cModule to cComponent, so now cChannel inherits it
 	- cSimulation: getLastModuleId() renamed to getLastComponentId()
 	- cSimulation: added getChannel(id) and getComponent(id) to already existing
 	  getModule(id)
 	- cSimulation: internal functions registerModule()/deregisterModule() renamed
+
+	Note: since the above change causes module IDs to be assigned differently
+	it would change the OMNeT++ 4.x fingerprint. Thus, code for the
+	USE_OMNETPP4x_FINGERPRINTS mode has been updated accordingly (i.e.
+	compute and store fictitous OMNeT++ 4.x module IDs as well)
+
+2013-11-21 Andras Varga
+
+	Code cleanup:
+	* renamed error codes: eXXX to E_XXX
+	* removed deprecated class cLinkedList
+	* removed deprecated operator[] from cSimulation
+	* removed double-simtime support (WITH_DOUBLE_SIMTIME)
+	* removed deprecated macros: Define_Function(), Define_Function2(),
+	  Define_Function3(), Define_Function4(). Use Define_NED_Math_Function()
+	  instead.
 
 2013-09-26  Andras Varga, Levente Meszaros
 
@@ -76,13 +171,20 @@
 
 2013-09-17  Andras Varga
 
-	* cpacket.h split from cmessage.h; removed WITHOUT_CPACKET (a
+	* cpacket.h split from cmessage.h; removed WITHOUT_CPACKET (it was a
 	compatibility macro to help code migration from OMNeT++ 3.x to 4.0)
 
-2013-02-27  Andras Varga
+2013-04-03  Andras Varga
 
-	* added statemap.h, part of smc version 6.1.0 (State Machine Compiler,
-	http://smc.sourceforge.net). See src/utils/opp_smc.
+	cTopology improvements (taken over from INET Framework)
+	* added factory methods for links and edges
+	* added methods to manipulate the graph (e.g. build a graph from scratch):
+	    int addNode(Node *node);
+	    void deleteNode(Node *node);
+	    void addLink(Link *link, Node *srcNode, Node *destNode);
+	    void addLink(Link *link, cGate *srcGate, cGate *destGate);
+	    void deleteLink(Link *link);
+	* code cleanup (variables renamed, use STL instead of arrays, etc.)
 
 2013-02-26  Andras Varga
 
@@ -97,9 +199,12 @@
 	* SimTime: conversion from double now uses rounding instead of truncation
 	(plain C-style cast). Motivation: some small time constants given as
 	doubles ended up with lots of trailing 9's after conversion to simtime_t.
+	Note that this change alters simulation fingerprints.
 
-	This change alters simulation fingerprints, so it is not done in
-	fingerprint compatibility mode (USE_OMNETPP4x_FINGERPRINTS).
+	* Introduced USE_OMNETPP4x_FINGERPRINTS. When OMNeT++ is compiled with
+	this symbol #defined, the simulation kernel will use OMNeT++ 4.x
+	compatible fingerprint computation. (For example, the above simtime
+	rounding is not applied.)
 
 2013-01-28  Andras Varga
 
@@ -114,14 +219,17 @@
 	* Revised cScheduler interface. The main methods in cScheduler are now
 	takeNextEvent() and guessNextEvent().
 
+	* Added putBackFirst(cEvent *event) to cMessageHeap, as it is sometimes
+	needed for schedulers
+
 2013-01-28  Andras Varga
 
 	* Implemented simulation lifecycle listeners. The listener class is
-	cISimulationLifetimeListener; listeners can be installed/removed
-	with Envir's addListener()/removeListener() methods. Event type
-	constants are in the SimulationLifetimeEventType enum: LF_ON_STARTUP,
-	LF_PRE_NETWORK_SETUP, LF_POST_NETWORK_SETUP, etc; see the full list
-	in the source.
+	cISimulationLifecycleListener; listeners can be installed/removed
+	with the addLifecycleListener() / removeLifecycleListener() cEnvir
+	methods. Event type constants are in the SimulationLifecycleEventType
+	enum: LF_ON_STARTUP, LF_PRE_NETWORK_SETUP, LF_POST_NETWORK_SETUP, etc;
+	see the full list in the source.
 
 	* Output scalar/vector/snapshot managers, schedulers and cParsimPartition
 	have been changed to use lifecycle events: the old startRun()/endRun()/etc
@@ -133,8 +241,52 @@
 2013-01-28  Andras Varga
 
 	* envirext.h: renamed cOutputVectorManager, cOutputScalarManager and
-	cSnapshotManager to include an "I" (for interface) ->
-	cIOutputVectorManager, cIOutputScalarManager, cSnapshotManager.
+	cSnapshotManager to include an "I" (for interface) in their names:
+	cIOutputVectorManager, cIOutputScalarManager, cISnapshotManager.
+
+2012-11-05  Andras Varga
+
+	* In preparation for a remote GUI simulation front-end, added a mechanism
+	for checking whether an object's stage has change since the last GUI
+	refresh. There is a global counter (cObject::changeCounter) that is
+	incremented on every change; and every object may store a lastChangeSerial,
+	changeCounter's value of at the tme of the last change. The GUI may supply
+	the changeCounter at the time of the last refresh, and ask objects whether
+	they've changed since then. Two methods in cObject:
+	    virtual bool hasChangedSince(int64 refreshSerial);
+	    static int64 getChangeCounter() {return changeCounter;}
+
+	Note: Currently all changes on cPar/cGate/cDisplayString/cModule are
+	lumped together, to cDefaultList's lastChangeSerial. This could be made
+	more fine-grained if needed. (Currently if you create, send or receive a
+	message, that already updates cDefaultList's lastChangeSerial, and thus
+	the module and all of its parameters and gates need to be reloaded!)
+
+	The code is now surrounded with #ifdef SIMFRONTEND_SUPPORT, turned off
+	by default.
+
+2012-09-04  Andras Varga
+
+	cClassDescriptor interface cleanup:
+	* removed redundant "void *object" first argument from methods that
+	  referred to the class and not instance: getFieldName(),
+	  getFieldProperty(), getFieldStructName(), etc.
+	* added getPropertyNames() and getFieldPropertyNames()
+	* renamed getArraySize() to getFieldArraySize()
+	* renamed getFieldAsString() to getFieldValueAsString()
+	* similarly, renamed setFieldAsString() to setFieldValueAsString()
+	* renamed getFieldStructPointer to getFieldStructValuePointer()
+	* old methods still exist as deprecated ones
+
+2012-04-21  Andras Varga
+
+	Expose web server capability via cEnvir (to simulations too!)
+
+	* New methods in cEnvir:
+	    void addHttpRequestHandler(cHttpRequestHandler *p)
+	    void removeHttpRequestHandler(cHttpRequestHandler *p)
+
+	* New classes in envirext.h: cHttpRequestHandler, cHttpRequest
 
 ////////////// fixes taken from omnetpp-4.x come here /////////////////
 

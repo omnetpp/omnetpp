@@ -1,3 +1,12 @@
+2015-02-07  Andras Varga
+
+	During development in the 5.0 branch (2013-2014):
+
+	* stringutil.cc/h: new utility functions: opp_strnistr(), opp_urldecode(),
+	opp_makedatetimestring(), opp_join()
+
+	* TRACE macro renamed to TRACE_CALL due to conflict with new module logging API
+
 ////////////// fixes taken from omnetpp-4.x come here /////////////////
 
 2014-11-27  ------ omnetpp-4.6 released ------

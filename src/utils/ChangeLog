@@ -1,3 +1,7 @@
+2015-02-15  Andras varga
+
+	* opp_makedep: sort the dependencies (minimizes conflicts during rebase)
+
 2013-02-27  Andras Varga
 
 	* opp_makedep, opp_makemake: added support for state machine files,

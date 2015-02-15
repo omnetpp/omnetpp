@@ -21,8 +21,161 @@ Legend:
 (i)     information
 
 
+OMNeT++ 5.0
+~~~~~~~~~~~
+
+(+)     Added the canvas API for 2D figure-based drawing.
+        - Principal classes: cCanvas, cFigure.
+        - cFigure inner classes: Point, Rectangle, Color, Font, Transform,
+          RGBA, Pixmap.
+        - cFigure subclasses: cGroupFigure, cAbstractLineFigure, cLineFigure,
+          cArcFigure, cPolylineFigure, cAbstractShapeFigure, cRectangleFigure,
+          cOvalFigure, cRingFigure, cPieSliceFigure, cPolygonFigure, cPathFigure,
+          cAbstractTextFigure cTextFigure, cLabelFigure, cAbstractImageFigure
+          cImageFigure, cPixmapFigure.
+
+(+)     Added log channel macros for 6 log levels:
+        EV_FATAL, EV_ERROR, EV_WARN, EV_INFO, EV_DETAIL, EV_DEBUG, EV_TRACE.
+        EV is equivalent to EV_INFO.
+
+(+)     Macros for logging with category strings:
+        EV_C(category), EV_FATAL_C(category), EV_ERROR_C(category),
+        EV_WARN_C(category), EV_INFO_C(category), EV_DETAIL_C(category),
+        EV_DEBUG_C(category), EV_TRACE_C(category).
+
+(+)     Added EV_STATICCONTEXT macro, needed for being able to log from
+        static member functions.
+
+(+)     Added GLOBAL_COMPILETIME_LOGLEVEL. Define it at compile time to control
+        which log statements are compiled into the code.
+
+(!)     cEnvir: new method log(cLogEntry&) replaces earlier stream operators,
+        getOStream() and sputn() methods as the mechanism underlying EV <<.
+        New class cLogEntry captures much more context of the log statement
+        than previously available.
+
+(!!!)   ev << is no longer legal, use EV << instead.
+
+(!!!)   ev.printf() was removed, use the stream API (EV <<) instead.
+
+(+)     check_and_cast<> may now be used to convert across arbitrary types,
+        i.e. argument no longer needs to be cObject*.
+
+(+)     Added check_and_cast_nullable<> that accepts NULL pointer as input
+
+(+)     Introduced cEvent as a base class of cMessage. cEvent allows scheduling
+        of execution of code that's not tied to a module.
+
+(!!!)   Revised cScheduler interface. The main methods in cScheduler are now
+        takeNextEvent() and guessNextEvent().
+
+(+)     Added putBackFirst(cEvent *event) to cMessageHeap
+
+(+)     New class: cISimulationLifecycleListener
+
+(+)     New enum: SimulationLifecycleEventType. Values:
+        LF_ON_STARTUP, LF_PRE_NETWORK_SETUP, LF_POST_NETWORK_SETUP,
+        LF_PRE_NETWORK_INITIALIZE, LF_POST_NETWORK_INITIALIZE,
+        LF_ON_SIMULATION_START, LF_ON_SIMULATION_PAUSE, LF_ON_SIMULATION_RESUME,
+        LF_ON_SIMULATION_SUCCESS, LF_ON_SIMULATION_ERROR, LF_PRE_NETWORK_FINISH,
+        LF_POST_NETWORK_FINISH, LF_ON_RUN_END, LF_PRE_NETWORK_DELETE,
+        LF_POST_NETWORK_DELETE, LF_ON_SHUTDOWN.
+
+(+)     cEnvir: added addLifecycleListener() and removeLifecycleListener().
+
+(!)     Renamed cOutputVectorManager, cOutputScalarManager and cSnapshotManager
+        to cIOutputVectorManager, cIOutputScalarManager and cISnapshotManager.
+
+(!!!)   Fingerprint computation has changed. To compute OMNeT++ 4.x fingerprints,
+        compile OMNeT++ and models with USE_OMNETPP4x_FINGERPRINTS.
+
+(!)     SimTime: conversion from double now uses rounding instead of truncation
+        (plain C-style cast). This change may alter simulation results.
+
+(+)     getId() moved from cModule to cComponent, so now it's inherited by
+        cChannel as well
+
+(!)     cSimulation: getLastModuleId() renamed to getLastComponentId()
+        (as cSimulation now stores cComponent pointers, not cModule pointers)
+
+(+)     cSimulation: added getComponent(id) and getChannel(id) to complement
+        getModule(id)
+
+(!)     cSimulation: getModule(id) also returns NULL if the ID is valid but
+        refers to a non-module (that is, channel) object. Previously it only
+        returned NULL if the ID was invalid or referred to a deleted module.
+
+(+)     cTopology: added factory methods for links and edges
+
+(+)     cTopology: added methods to manipulate the graph (e.g. build a graph from scratch):
+            int addNode(Node *node);
+            void deleteNode(Node *node);
+            void addLink(Link *link, Node *srcNode, Node *destNode);
+            void addLink(Link *link, cGate *srcGate, cGate *destGate);
+            void deleteLink(Link *link);
+
+(!)     cClassDescriptor interface cleanup:
+        - removed redundant "void *object" first argument from methods that
+          referred to the class and not instance: getFieldName(),
+          getFieldProperty(), getFieldStructName(), etc.
+        - added getPropertyNames() and getFieldPropertyNames()
+        - renamed getArraySize() to getFieldArraySize()
+        - renamed getFieldAsString() to getFieldValueAsString()
+        - similarly, renamed setFieldAsString() to setFieldValueAsString()
+        - renamed getFieldStructPointer to getFieldStructValuePointer()
+        - old methods still exist as deprecated ones
+
+(+)     cEnvir: added addHttpRequestHandler() and removeHttpRequestHandler()
+
+(+)     New classes: cHttpRequestHandler, cHttpRequest
+
+(+)     Added Register_Enum2() macro, which registers an enum and at the same
+        time makes it accessible via a global cEnum* pointer.
+
+(+)     cEnum: added resolve() and bulkInsert()
+
+(!)     cResultListener: added callFinish(), so that invoking finish() multiple
+        times can be eliminated at the cost of one additional flag.
+
+(+)     cGate: added getConnectionId(), mostly useful for tools.
+
+(!)     cModule: changeParentTo() will now assign a new ID to the module.
+        This usually causes no problem in the simulation's operation, but
+        if your model stores module IDs somewhere, you'll need to invalidate or
+        update them manually.
+
+(+)     opp_string: added size() method
+
+(!)     Renamed error codes: eXXX to E_XXX
+
+(!)     Removed nonstandard fixed-size integer typedefs: int8, uint8, etc.
+        Use the standard ones with the _t suffix. Note that the removed types
+        were never advertised as API.
+
+(x)     Removed deprecated class cLinkedList. Use std::list instead.
+
+(x)     Removed deprecated operator[] from cSimulation. Use getModule(id) or
+        getComponent(id) instead.
+
+(x)     Removed double-simtime support (WITH_DOUBLE_SIMTIME)
+
+(!)     Removed WITHOUT_CPACKET feature (it was a compatibility macro to help
+        code migration from OMNeT++ 3.x to 4.0)
+
+(x)     Removed deprecated macros: Define_Function(), Define_Function2(),
+        Define_Function3(), Define_Function4(). Use Define_NED_Math_Function()
+        instead.
+
+
+OMNeT++ 4.6
+~~~~~~~~~~~
+
+        None.
+
+
 OMNeT++ 4.5
 ~~~~~~~~~~~
+
 (+)     Added cMessagePrinter and the Register_MessagePrinter() macro.
 
 (+)     Simple module classes can be used for compound modules (with @class),
