@@ -24,10 +24,13 @@ class cCanvas;
 class cProperty;
 class cProperties;
 
-#define OMNETPP_CANVAS_VERSION  0x20140908  //XXX identifies canvas code version until API stabilizes
+#define OMNETPP_CANVAS_VERSION  0x20150216  //XXX identifies canvas code version until API stabilizes
 
-//TODO: move methods out-of-line, and protect setters with if(new!=old) conditions
-//TODO: split up to several files: ccanvas.h, cfigure.h, figures.h?
+//TODO move methods out-of-line, and protect setters with if(new!=old) conditions
+//TODO validation of input in setters, such as opacity, tintamount, size, etc (0<=x<=1, >=0, etc)
+//TODO more methods for Point and Rectangle? setPosition(), setSize(), getPosition(), setCenter()...
+//TODO split up to several files: ccanvas.h, cfigure.h, figures.h?
+//TODO utilize newest tkpath features, e.g. arrowheads, text halo, gradients, etc.
 
 /**
  * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
@@ -112,9 +115,9 @@ class SIM_API cFigure : public cOwnedObject
          * Represents a properties of a font.
          */
         struct SIM_API Font {
-            std::string typeface;
-            int pointSize;
-            uint8_t style;
+            std::string typeface; // empty string means default font
+            int pointSize;  // zero or negative value means default size
+            uint8_t style;  // binary OR of FontStyle constants
             Font() : pointSize(0), style(FONT_NONE) {}
             Font(std::string typeface, int pointSize, uint8_t style=FONT_NONE) : typeface(typeface), pointSize(pointSize), style(style) {}
             std::string str() const;
@@ -171,6 +174,7 @@ class SIM_API cFigure : public cOwnedObject
             void set(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {red=r; green=g; blue=b; alpha=a;}
             void operator=(const Color& color) {red = color.red; green = color.green; blue = color.blue; alpha = 255;}
             operator Color() const {return Color(red, green, blue);}
+            std::string str() const;
         };
 
         /**
@@ -192,7 +196,6 @@ class SIM_API cFigure : public cOwnedObject
                 Pixmap(const Pixmap& other);
                 ~Pixmap();
                 Pixmap& operator=(const Pixmap& other);
-                void resize(int width, int height) {resize(width, height, BLACK, 0);}
                 void resize(int width, int height, const RGBA& fill_);
                 void resize(int width, int height, const Color& color, double opacity);
                 void fill(const RGBA& fill_);
@@ -295,7 +298,6 @@ class SIM_API cFigure : public cOwnedObject
         /** @name Miscellaneous. */
         //@{
         virtual void parse(cProperty *property);
-
         virtual const char *getClassNameForRenderer() const {return getClassName();} // denotes renderer of which figure class to use; override if you want to subclass a figure while reusing renderer of the base class
         virtual void updateParentTransform(Transform& transform) {transform.leftMultiply(getTransform());}
 
@@ -368,6 +370,7 @@ STREAMOP(cFigure::Rectangle);
 STREAMOP(cFigure::Color);
 STREAMOP(cFigure::Font);
 STREAMOP(cFigure::Transform);
+STREAMOP(cFigure::RGBA);
 STREAMOP(cFigure::Pixmap);
 #undef STREAMOP
 };
@@ -402,8 +405,13 @@ class SIM_API cGroupFigure : public cFigure
 /**
  * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
  *
- * Sets up an axis-aligned, unscaled coordinate system for children, making them
- * immune to zooming, and allowing pixel-based, zoom-independent placement for them.
+ * Sets up an axis-aligned, unscaled coordinate system for children, cancelling the
+ * effect of any transformation (scaling, rotation, etc.) set up in ancestor figures.
+ * This allows pixel-based positioning of children, and makes them immune to zooming.
+ * The origin of the coordinate system is the position of the panel figure.
+ * Setting a transformation on the panel figure itself allows rotation, scaling,
+ * and adding pixel offset to the coordinate system.
+ *
  * The panel figure itself has no visual appearance.
  */
 class SIM_API cPanelFigure : public cFigure
@@ -826,7 +834,7 @@ class SIM_API cPieSliceFigure : public cAbstractShapeFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cPieSliceFigure(const char *name=NULL) : cAbstractShapeFigure(name), startAngle(0), endAngle(45) {}
+        cPieSliceFigure(const char *name=NULL) : cAbstractShapeFigure(name), startAngle(0), endAngle(0) {}
         cPieSliceFigure(const cPieSliceFigure& other) : cAbstractShapeFigure(other) {copy(other);}
         cPieSliceFigure& operator=(const cPieSliceFigure& other);
         //@}
@@ -894,7 +902,7 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
         virtual void setPoint(int i, const Point& point)  {checkIndex(i); this->points[i] = point; fireGeometryChange();}
         virtual void addPoint(const Point& point)  {this->points.push_back(point); fireGeometryChange();}
         virtual void removePoint(int i)  {checkIndex(i); this->points.erase(this->points.begin()+i); fireGeometryChange();}
-        virtual void insertPoint(int i, const Point& point)  {checkInsIndex(i); this->points.insert(this->points.begin()+i, point); fireVisualChange();}
+        virtual void insertPoint(int i, const Point& point)  {checkInsIndex(i); this->points.insert(this->points.begin()+i, point); fireGeometryChange();}
         virtual bool getSmooth() const {return smooth;}
         virtual void setSmooth(bool smooth) {this->smooth = smooth; fireVisualChange();}
         virtual JoinStyle getJoinStyle() const {return joinStyle;}
@@ -1131,7 +1139,7 @@ class SIM_API cAbstractImageFigure : public cFigure
         virtual const Color& getTintColor() const  {return tintColor;}
         virtual void setTintColor(const Color& tintColor)  {this->tintColor = tintColor; fireVisualChange();}
         virtual double getTintAmount() const  {return tintAmount;}
-        virtual void setTintAmount(double tintAmount)  {this->tintAmount = std::max(0.0, std::min(1.0, tintAmount)); fireVisualChange();}
+        virtual void setTintAmount(double tintAmount)  {this->tintAmount = tintAmount; fireVisualChange();}
         //@}
 };
 
@@ -1228,7 +1236,6 @@ class SIM_API cPixmapFigure : public cAbstractImageFigure
         virtual void setPixmap(const Pixmap& pixmap) {this->pixmap = pixmap; fireInputDataChange();}
         virtual int getPixmapHeight() const {return pixmap.getHeight();}
         virtual int getPixmapWidth() const {return pixmap.getWidth();}
-        virtual void resize(int width, int height) {pixmap.resize(width, height); fireInputDataChange();}
         virtual void resize(int width, int height, const RGBA& fill) {pixmap.resize(width, height, fill); fireInputDataChange();} // set *newly added* pixels to this color
         virtual void resize(int width, int height, const Color& color, double opacity) {pixmap.resize(width, height, color, opacity); fireInputDataChange();} // fills *newly added* pixels to this color
         virtual void fill(const RGBA& fill) {pixmap.fill(fill); fireInputDataChange();}

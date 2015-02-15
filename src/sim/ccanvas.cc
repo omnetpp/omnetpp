@@ -216,6 +216,13 @@ std::string cFigure::Font::str() const
     return os.str();
 }
 
+std::string cFigure::RGBA::str() const
+{
+    std::stringstream os;
+    os << "(" << (int)red << ", " << (int)green << ", " << (int)blue << ", " << (int)alpha << ")";
+    return os.str();
+}
+
 cFigure::Transform& cFigure::Transform::translate(double dx, double dy)
 {
     t1 += dx;
@@ -409,7 +416,7 @@ void cFigure::Pixmap::resize(int newWidth, int newHeight, const RGBA& fill_)
 
 void cFigure::Pixmap::resize(int width, int height, const Color& color, double opacity)
 {
-    RGBA rgba(color.red, color.blue, color.green, alpha(opacity));
+    RGBA rgba(color.red, color.green, color.blue, alpha(opacity));
     resize(width, height, rgba);
 }
 
@@ -422,7 +429,7 @@ void cFigure::Pixmap::fill(const RGBA& rgba)
 
 void cFigure::Pixmap::fill(const Color& color, double opacity)
 {
-    RGBA rgba(color.red, color.blue, color.green, alpha(opacity));
+    RGBA rgba(color.red, color.green, color.blue, alpha(opacity));
     fill(rgba);
 }
 
@@ -601,7 +608,7 @@ cFigure::Font cFigure::parseFont(cProperty *property, const char *key)
     const char *typeface = property->getValue(key, 0);
     int size = opp_atol(opp_nulltoempty(property->getValue(key, 1)));
     if (size <= 0)
-        size = 0;
+        size = 0; // default size
     int flags = 0;
     cStringTokenizer tokenizer(property->getValue(key, 2));
     while (tokenizer.hasMoreTokens()) {
@@ -610,7 +617,7 @@ cFigure::Font cFigure::parseFont(cProperty *property, const char *key)
         else if (!strcmp(token, "bold")) flags |= FONT_BOLD;
         else if (!strcmp(token, "italic")) flags |= FONT_ITALIC;
         else if (!strcmp(token, "underline")) flags |= FONT_UNDERLINE;
-        else throw cRuntimeError("wrong font style '%s', token");
+        else throw cRuntimeError("unknown font style '%s'", token);
     }
     return Font(opp_nulltoempty(typeface), size, flags);
 }
@@ -1162,7 +1169,7 @@ void cFigure::raiseToTop()
 {
     cFigure *parent = getParentFigure();
     if (!parent)
-        return; //done
+        throw cRuntimeError(this, "raiseToTop(): figure has no parent figure");
     int myPos = parent->findFigure(this);
     if (myPos != (int)parent->children.size()-1) {
         parent->children.erase(parent->children.begin() + myPos);
@@ -1175,7 +1182,7 @@ void cFigure::lowerToBottom()
 {
     cFigure *parent = getParentFigure();
     if (!parent)
-        return; //done
+        throw cRuntimeError(this, "lowerToBottom(): figure has no parent figure");
     int myPos = parent->findFigure(this);
     if (myPos != 0) {
         parent->children.erase(parent->children.begin() + myPos);
@@ -1243,6 +1250,8 @@ void cPanelFigure::updateParentTransform(Transform& transform)
     // coordinate system, with the origin at getPosition()
     Point origin = transform.applyTo(getPosition());
     transform = Transform().translate(origin.x, origin.y);
+
+    // then apply our own transform in the normal way (like all other figures do)
     transform.leftMultiply(getTransform());
 }
 
@@ -2370,7 +2379,7 @@ cFigure *cCanvas::createFigure(const char *type) const
     cFigure *figure;
     if (!strcmp(type, "group"))
         figure = new cGroupFigure();
-    if (!strcmp(type, "panel"))
+    else if (!strcmp(type, "panel"))
         figure = new cPanelFigure();
     else if (!strcmp(type, "line"))
         figure = new cLineFigure();
@@ -2393,7 +2402,7 @@ cFigure *cCanvas::createFigure(const char *type) const
     else if (!strcmp(type, "text"))
         figure = new cTextFigure();
     else if (!strcmp(type, "label"))
-            figure = new cLabelFigure();
+        figure = new cLabelFigure();
     else if (!strcmp(type, "image"))
         figure = new cImageFigure();
     else if (!strcmp(type, "icon"))
@@ -2430,7 +2439,6 @@ void cCanvas::dumpSupportedPropertyKeys(std::ostream& out) const
         out << type << ": " << opp_join(figure->getAllowedPropertyKeys(), ", ") << "\n";
         delete figure;
     }
-
 }
 
 cFigure *cCanvas::getSubmodulesLayer() const
