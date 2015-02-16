@@ -11,6 +11,8 @@
 #define LOG_JNI_CALL() (void)0
 //#define LOG_JNI_CALL() {printf("DEBUG: entered JNI method %s, jarg1=%lx\n", __FUNCTION__, (long)jarg1);fflush(stdout);}
 //jlong jarg1 = -1; // fallback for LOG_JNI_CALL() in JNI functions with no jarg1 arg
+
+USING_NAMESPACE
 %}
 
 %pragma(java) jniclasscode=%{

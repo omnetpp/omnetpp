@@ -17,8 +17,6 @@
 /*--------------------------------------------------------------------------
  * int32 <--> int mapping
  *--------------------------------------------------------------------------*/
-%include "platdep/intxtypes.h"
-
 %typemap(jni)    int32_t "jint"
 %typemap(jtype)  int32_t "int"
 %typemap(jstype) int32_t "int"
