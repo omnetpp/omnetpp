@@ -9,7 +9,7 @@ EV << "zero0:  " << SimTime::ttoa(buf, 0, 0, endp) << "\n";
 EV << "zero10: " << SimTime::ttoa(buf, 0, -10, endp) << "\n";
 EV << "zero18: " << SimTime::ttoa(buf, 0, -18, endp) << "\n";
 
-int64 t = 12345;
+int64_t t = 12345;
 for (int exp=0; exp<=18; exp++)
 {
     EV << "exp=" << -exp << ":\n";

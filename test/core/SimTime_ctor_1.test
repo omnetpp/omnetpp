@@ -6,7 +6,7 @@ SimTime: test the two-arg constructor
 
 %global:
 
-void test(int64 value, int exponent)
+void test(int64_t value, int exponent)
 {
     double d = value * pow(10.0, exponent);
     EV << value << "*10^" << exponent << " = ~" << d << " -> ";

@@ -18,8 +18,8 @@ EV << (int)1111 << endl;
 EV << (unsigned int)1111 << endl;
 EV << (1L << 30) << endl;
 EV << (1UL << 31) << endl;
-EV << ((int64)1 << 62) << endl;
-EV << ((uint64)1 << 63) << endl;
+EV << ((int64_t)1 << 62) << endl;
+EV << ((uint64_t)1 << 63) << endl;
 
 EV << (float)1.23 << endl;
 EV << 1.23 << endl;

@@ -8,9 +8,9 @@ unsigned int randint32()
     return intuniform(0,65535) | (intuniform(0,65535) << 16);
 }
 
-uint64 randint64()
+uint64_t randint64()
 {
-    return (int64)randint32() | ((int64)randint32() << 32);
+    return (int64_t)randint32() | ((int64_t)randint32() << 32);
 }
 
 %activity:
@@ -30,13 +30,13 @@ HASH(100, char,  intuniform(-128,127));
 HASH(100, short, intuniform(-32768, 32767));
 HASH(100, int,   (int)randint32());
 HASH(100, long,  (long)(int)randint32());
-HASH(100, int64, (int64)randint64());
+HASH(100, int64_t, (int64_t)randint64());
 
 // unsigned integers
 HASH(100, unsigned short, intuniform(-32768, 32767));
 HASH(100, unsigned int,   (unsigned int)randint32());
 HASH(100, unsigned long,  (unsigned long)randint32());
-HASH(100, uint64,         (uint64)randint64());
+HASH(100, uint64_t,         (uint64_t)randint64());
 
 // double
 HASH(100, double, (dblrand()-0.5)*2e100);
