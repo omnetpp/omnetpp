@@ -27,7 +27,6 @@ typedef unsigned long long  uint64_t;
 /*--------------------------------------------------------------------------
  * int32 <--> int mapping
  *--------------------------------------------------------------------------*/
-%include "intxtypes.h"
 
 %typemap(jni)    int32_t "jint"
 %typemap(jtype)  int32_t "int"

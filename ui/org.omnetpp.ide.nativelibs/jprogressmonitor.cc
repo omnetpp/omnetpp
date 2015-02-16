@@ -15,6 +15,8 @@
 #include <jni.h>
 #include "jprogressmonitor.h"
 
+NAMESPACE_BEGIN
+
 JniProgressMonitor::JniProgressMonitor(jobject jProgressMonitor, JNIEnv *env)
 	: jProgressMonitor(jProgressMonitor), env(env)
 {
@@ -86,3 +88,4 @@ void JniProgressMonitor::worked(int work)
 	}
 }
 
+NAMESPACE_END

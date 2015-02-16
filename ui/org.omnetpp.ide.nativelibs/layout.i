@@ -16,6 +16,8 @@
 // #include "forcedirectedparametersbase.h"
 // #include "forcedirectedparameters.h"
 // #include "forcedirectedembedding.h"
+
+USING_NAMESPACE
 %}
 
 // hide export/import macros from swig

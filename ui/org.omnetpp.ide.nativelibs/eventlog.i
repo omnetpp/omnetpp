@@ -27,6 +27,8 @@ COMMON_ENGINE_BIGDECIMAL();
 #include "sequencechartfacade.h"
 #include "filteredeventlog.h"
 #include "filereader.h"
+
+USING_NAMESPACE
 %}
 
 // hide export/import macros from swig
@@ -39,7 +41,6 @@ COMMON_ENGINE_BIGDECIMAL();
 #define NAMESPACE_END
 #define USING_NAMESPACE
 
-%include "intxtypes.h"
 %include "eventlogdefs.h"
 
 /*--------------------------------------------------------------------------

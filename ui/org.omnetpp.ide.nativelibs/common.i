@@ -11,6 +11,8 @@
 #include "rwlock.h"
 #include "expression.h"
 #include "stringtokenizer2.h"
+
+USING_NAMESPACE
 %}
 
 %include "commondefs.i"

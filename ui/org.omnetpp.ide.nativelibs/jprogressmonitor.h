@@ -19,6 +19,8 @@
 #include <jni.h>
 #include "progressmonitor.h"
 
+NAMESPACE_BEGIN
+
 /*
  * Implementation of the IProgressMonitor interface
  * that delegates to an org.eclipse.core.runtime.IProgressMonitor
@@ -45,6 +47,8 @@ class JniProgressMonitor : public IProgressMonitor
 	virtual void subTask(std::string name);
 	virtual void worked(int work);
 };
+
+NAMESPACE_END
 
 #endif
 

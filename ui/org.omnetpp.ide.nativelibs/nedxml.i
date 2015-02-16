@@ -27,6 +27,8 @@
 #include "nedfilebuffer.h"
 // #include "nedsemanticvalidator.h"
 // #include "cppgenerator.h"
+
+USING_NAMESPACE
 %}
 
 // hide export/import macros from swig

@@ -24,6 +24,8 @@
 #include "indexedvectorfilereader.h"
 #include "scaveexception.h"
 #include "export.h"
+
+USING_NAMESPACE
 %}
 
 #define THREADED
@@ -40,7 +42,6 @@
 #define NAMESPACE_END
 #define USING_NAMESPACE
 
-%include "intxtypes.h"
 %include "scavedefs.h"
 
 %typemap(jni) ID "jlong";
