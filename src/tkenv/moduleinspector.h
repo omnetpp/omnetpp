@@ -29,7 +29,7 @@ class cModule;
 class cGate;
 class cFigure;
 class FigureRenderer;
-class FigureRenderingHints;
+struct FigureRenderingHints;
 class CanvasRenderer;
 
 enum SendAnimMode {ANIM_BEGIN, ANIM_END, ANIM_THROUGH};

@@ -27,7 +27,7 @@ NAMESPACE_BEGIN
 
 class cFigure;
 class FigureRenderer;
-class FigureRenderingHints;
+struct FigureRenderingHints;
 class CanvasRenderer;
 
 class TKENV_API CanvasInspector : public Inspector
