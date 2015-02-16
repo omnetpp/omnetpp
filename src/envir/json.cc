@@ -17,6 +17,7 @@
 
 #include "json.h"
 
+NAMESPACE_BEGIN
 
 inline void writeStr(std::ostream& out, const char *s)
 {
@@ -80,3 +81,4 @@ void JsonObject2::printOn(std::ostream& out)
     out << " }";
 }
 
+NAMESPACE_END

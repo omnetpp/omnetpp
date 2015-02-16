@@ -22,6 +22,8 @@
 #include "httpserver.h"
 #include "mongoose.h"
 
+NAMESPACE_BEGIN
+
 /**
  * TODO docu
  */
@@ -69,6 +71,6 @@ class ENVIR_API cMongooseHttpRequest : public cHttpRequest
     virtual int write(void *buffer, size_t bytes);
 };
 
+NAMESPACE_END
+
 #endif
-
-

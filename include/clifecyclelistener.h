@@ -212,6 +212,4 @@ class SIM_API cISimulationLifecycleListener
 
 NAMESPACE_END
 
-
 #endif
-

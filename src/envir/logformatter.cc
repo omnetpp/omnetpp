@@ -23,6 +23,8 @@
 #include "chasher.h"
 #include "simutil.h"
 
+NAMESPACE_BEGIN
+
 LogFormatter::LogFormatter(const char *format)
 {
     parseFormat(format);
@@ -317,3 +319,5 @@ void LogFormatter::resetAdaptiveTabs()
     for (size_t i = 0; i < adaptiveTabColumns.size(); i++)
         adaptiveTabColumns[i] = 0;
 }
+
+NAMESPACE_END

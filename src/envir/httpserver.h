@@ -22,6 +22,8 @@
 #include "cconfiguration.h"
 #include "envirext.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Abstract base class for the built-in web server.
  */
@@ -36,6 +38,6 @@ class ENVIR_API cHttpServer
     virtual bool handleOneRequest(bool blocking) = 0; // TODO document: false if queue was empty, true otherwise
 };
 
+NAMESPACE_END
+
 #endif
-
-

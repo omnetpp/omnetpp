@@ -47,5 +47,4 @@ class ENVIR_API MatchableFieldAdapter : public MatchExpression::Matchable
 
 NAMESPACE_END
 
-
 #endif

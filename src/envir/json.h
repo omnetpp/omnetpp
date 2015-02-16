@@ -28,6 +28,7 @@
 #include "simtime.h"
 #include "platmisc.h"  // INT64_IS_SAME_AS_LONG
 
+NAMESPACE_BEGIN
 
 class ENVIR_API JsonNode
 {
@@ -152,6 +153,6 @@ inline JsonNode *jsonWrap(SimTime t) { return new JsonSimTime(t); }
 inline JsonNode *jsonWrap(const char *s) { return new JsonConstantString(s); }
 inline JsonNode *jsonWrap(const std::string& s) { return new JsonString(s); }
 
+NAMESPACE_END
+
 #endif
-
-

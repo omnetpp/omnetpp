@@ -21,6 +21,8 @@
 #include "cconfigoption.h"
 #include "cmodule.h"
 
+NAMESPACE_BEGIN
+
 Register_PerObjectConfigOption(CFGID_COMPONENT_LOGLEVEL, "log-level", KIND_MODULE, CFG_STRING, "DEBUG", "Specifies the per-component level of detail recorded by log statements, output below the specified level is omitted. Available values are (case insensitive): fatal, error, warn, info, detail, debug or trace. Note that the level of detail is also controlled by the globally specified runtime log level and the GLOBAL_COMPILETIME_LOGLEVEL macro that is used to completely remove log statements from the executable.")
 
 cLogProxy::LogBuffer cLogProxy::buffer;
@@ -176,3 +178,5 @@ void cLogProxy::fillEntry(const char *category, LogLevel loglevel, const char *s
     currentEntry.sourceFunction = sourceFunction;
     currentEntry.userTime = clock();
 }
+
+NAMESPACE_END

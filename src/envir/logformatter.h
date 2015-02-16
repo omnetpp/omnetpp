@@ -21,6 +21,8 @@
 #include "envirdefs.h"
 #include "clog.h"
 
+NAMESPACE_BEGIN
+
 /**
  * This class prints log messages to a stream based on a format string. The format string
  * contains constant parts and special format characters that are substituted runtime with
@@ -190,5 +192,7 @@ class ENVIR_API LogFormatter
     FormatDirective getDirective(char ch);
     void addPart(FormatDirective directive, char *textBegin, char *textEnd, bool conditional);
 };
+
+NAMESPACE_END
 
 #endif

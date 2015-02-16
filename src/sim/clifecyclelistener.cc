@@ -18,6 +18,8 @@
 
 #include "clifecyclelistener.h"
 
+NAMESPACE_BEGIN
+
 const char *cISimulationLifecycleListener::getSimulationLifecycleEventName(SimulationLifecycleEventType eventType)
 {
     switch(eventType) {
@@ -42,3 +44,5 @@ const char *cISimulationLifecycleListener::getSimulationLifecycleEventName(Simul
         default: return "???";
     }
 }
+
+NAMESPACE_END

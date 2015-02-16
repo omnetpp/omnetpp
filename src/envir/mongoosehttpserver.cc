@@ -19,8 +19,7 @@
 #include "mongoosehttpserver.h"
 #include "cexception.h"
 
-USING_NAMESPACE
-
+NAMESPACE_BEGIN
 
 cMongooseHttpServer::cMongooseHttpServer()
 {
@@ -142,3 +141,4 @@ int cMongooseHttpRequest::write(void *buffer, size_t bytes)
     return mg_write(conn, buffer, bytes);
 }
 
+NAMESPACE_END

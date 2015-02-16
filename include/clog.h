@@ -20,6 +20,8 @@
 #include <sstream>
 #include "simkerneldefs.h"
 
+NAMESPACE_BEGIN
+
 class cObject;
 class cComponent;
 
@@ -304,5 +306,7 @@ class SIM_API cLogProxy
   protected:
     void fillEntry(const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
 };
+
+NAMESPACE_END
 
 #endif
