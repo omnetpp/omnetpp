@@ -27,8 +27,6 @@ NAMESPACE_BEGIN
 USING_NAMESPACE
 
 // helpers
-static inline int64_t max(int64_t x, int64_t y) { return x > y ? x : y; }
-static inline int64_t min(int64_t x, int64_t y) { return x < y ? x : y; }
 static inline int sgn(int64_t x) { return (x > 0 ? 1 : (x < 0 ? -1 : 0)); }
 
 BigDecimal BigDecimal::Zero(0, 0);

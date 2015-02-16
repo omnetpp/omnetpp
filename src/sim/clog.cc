@@ -157,7 +157,7 @@ bool cLogProxy::isEnabled(const cComponent *sourceComponent, const char *categor
 bool cLogProxy::isComponentEnabled(const cComponent *component, const char *category, LogLevel loglevel)
 {
     LogLevel componentLoglevel = component->getLoglevel();
-    if (componentLoglevel == -1)
+    if ((int)componentLoglevel == -1)
     {
         componentLoglevel = cLogLevel::getLevel(ev.getConfig()->getAsString(component->getFullPath().c_str(), CFGID_COMPONENT_LOGLEVEL).c_str());
         // NOTE: this is just a cache
