@@ -1243,10 +1243,10 @@ class SIM_API cPixmapFigure : public cAbstractImageFigure
         virtual const RGBA getPixel(int x, int y) const {return pixmap.pixel(x, y);}
         virtual void setPixel(int x, int y, const RGBA& argb) {pixmap.pixel(x, y) = argb; fireInputDataChange();}
         virtual void setPixel(int x, int y, const Color& color, double opacity=1.0) {pixmap.setPixel(x,y,color,opacity); fireInputDataChange();}
-        virtual const Color getColor(int x, int y) const {return pixmap.getColor(x,y);}
-        virtual void setColor(int x, int y, const Color& color) {pixmap.setColor(x,y,color); fireInputDataChange();}
-        virtual double getOpacity(int x, int y) const {return pixmap.getOpacity(x,y);}
-        virtual void setOpacity(int x, int y, double opacity) {pixmap.setOpacity(x,y,opacity); fireInputDataChange();}
+        virtual const Color getPixelColor(int x, int y) const {return pixmap.getColor(x,y);}
+        virtual void setPixelColor(int x, int y, const Color& color) {pixmap.setColor(x,y,color); fireInputDataChange();}
+        virtual double getPixelOpacity(int x, int y) const {return pixmap.getOpacity(x,y);}
+        virtual void setPixelOpacity(int x, int y, double opacity) {pixmap.setOpacity(x,y,opacity); fireInputDataChange();}
         //@}
 };
 
