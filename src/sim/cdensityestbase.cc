@@ -285,6 +285,11 @@ void cDensityEstBase::setupRange()
          else
              rangemax = rangemin+(max_vals-rangemin)*range_ext_factor;
          break;
+      case RANGE_FIXED:
+         // no-op: rangemin, rangemax already set
+         break;
+      case RANGE_NOTSET:
+         throw cRuntimeError(this, "Histogram range mode is unset");
     }
 }
 

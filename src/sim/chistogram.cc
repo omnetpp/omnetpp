@@ -355,6 +355,11 @@ void cHistogram::setupRangeInteger()
            case RANGE_AUTOUPPER:
              rangemax = rangemin + newrange;
              break;
+           case RANGE_FIXED:
+             // no-op: rangemin, rangemax already set
+             break;
+           case RANGE_NOTSET:
+             throw cRuntimeError(this, "Histogram range mode is unset");
         }
     }
 
