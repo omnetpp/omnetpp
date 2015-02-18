@@ -65,8 +65,6 @@ void Node1::activity()
 
 class Node2 : public cSimpleModule
 {
-    int errors[5];
-
   public:
     virtual void handleMessage(cMessage *msg);
 };

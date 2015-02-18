@@ -38,6 +38,13 @@ void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, long
     simulation.getSystemModule()->checkSignalConsistency();
 }
 
+void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l)
+{
+    EV << "SIGNAL from "; printFrom(source, signalID);
+    EV << ", long " << l << "\n";
+    simulation.getSystemModule()->checkSignalConsistency();
+}
+
 void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, double d)
 {
     EV << "SIGNAL from "; printFrom(source, signalID);
@@ -45,7 +52,7 @@ void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, doub
     simulation.getSystemModule()->checkSignalConsistency();
 }
 
-void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t)
+void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t)
 {
     EV << "SIGNAL from "; printFrom(source, signalID);
     EV << ", simtime " << t << "\n";

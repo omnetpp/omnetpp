@@ -54,7 +54,6 @@ void Tester::activity()
 {
     cModule *root = simulation.getSystemModule();
     cModule *host0 = root->getSubmodule("host",0);
-    cModule *host0tcp = host0->getSubmodule("tcp");
 
     // absolute
     test(root, "server");

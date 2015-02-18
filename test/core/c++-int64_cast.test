@@ -11,7 +11,7 @@ Valgrind only supports 64-bit one, while most compilers do 80 bits.
 
 %activity:
 
-char *x = "\x19\x6d\xb2\x9a\xba\x7e\x15\x40";
+const char *x = "\x19\x6d\xb2\x9a\xba\x7e\x15\x40";
 double d = *(double *)x;
 char buf[80];
 sprintf(buf, "\ndouble: %.20f", d); EV << buf;

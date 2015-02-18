@@ -151,7 +151,7 @@ void Node::createSomeModule()
     cModuleType *selfType = getModuleType();
     cModule *newModule = selfType->createScheduleInit("dy", getParentModule());
     Node *newNode = check_and_cast<Node*>(newModule);
-    //TODO
+    // TODO connect the module
 }
 
 void Node::deleteSomeModule()
