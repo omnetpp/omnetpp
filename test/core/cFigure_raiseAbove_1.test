@@ -43,8 +43,6 @@ P(d->lowerBelow(d)); // no-op
 P(a->lowerToBottom()); // no-op
 P(f->raiseToTop()); // no-op
 
-P(x->lowerToBottom()); // no parent - accepted as no-op
-P(x->raiseToTop());    // no parent - accepted as no-op
 
 EV << "\npositive test cases:\n";
 P(a->raiseAbove(b));
@@ -56,6 +54,9 @@ P(f->lowerToBottom());
 P(a->raiseToTop());
 
 EV << "\nnegative test cases:\n";
+
+P(x->lowerToBottom());
+P(x->raiseToTop());
 
 P(a->raiseAbove(x));
 P(a->lowerBelow(x));
@@ -89,8 +90,6 @@ a->lowerBelow(d) ==>  a b c d e f
 d->lowerBelow(d) ==>  a b c d e f
 a->lowerToBottom() ==>  a b c d e f
 f->raiseToTop() ==>  a b c d e f
-x->lowerToBottom() ==>  a b c d e f
-x->raiseToTop() ==>  a b c d e f
 
 positive test cases:
 a->raiseAbove(b) ==>  b a c d e f
@@ -101,6 +100,8 @@ f->lowerToBottom() ==>  f c b a d e
 a->raiseToTop() ==>  f c b d e a
 
 negative test cases:
+x->lowerToBottom() ==> (cGroupFigure)x: lowerToBottom(): figure has no parent figure
+x->raiseToTop() ==> (cGroupFigure)x: raiseToTop(): figure has no parent figure
 a->raiseAbove(x) ==> (cGroupFigure)Test.canvas.rootFigure.a: raiseAbove(): reference figure must have the same parent
 a->lowerBelow(x) ==> (cGroupFigure)Test.canvas.rootFigure.a: lowerBelow(): reference figure must have the same parent
 x->raiseAbove(a) ==> (cGroupFigure)x: raiseAbove(): figure has no parent figure

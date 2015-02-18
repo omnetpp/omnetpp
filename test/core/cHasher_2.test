@@ -67,11 +67,11 @@ char: ca08-9f13
 short: 4f4f-727f
 int: 0c64-463b
 long: a787-9cac
-int64: c8eb-4418
+int64_t: c8eb-4418
 unsigned short: f1c9-fa54
 unsigned int: 266b-2736
 unsigned long: 0cc2-da08
-uint64: 927b-52b4
+uint64_t: 927b-52b4
 double: 626b-a100
 const char *: 0000-0000
 const char *: 0000-0048

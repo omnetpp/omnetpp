@@ -46,9 +46,9 @@ void Node::initialize()
 void Node::handleMessage(cMessage *msg)
 {
     if (intrand(2)==0)
-       emit(a, intrand(2)==0 ? -1 : 1);
+       emit(a, intrand(2)==0 ? -1.0 : 1.0);
     else
-       emit(b, intrand(2)==0 ? -10 : 10);
+       emit(b, intrand(2)==0 ? -10.0 : 10.0);
     scheduleAt(simTime()+0.1, msg);
 }
 
