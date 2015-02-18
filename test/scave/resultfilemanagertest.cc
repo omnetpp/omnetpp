@@ -18,6 +18,8 @@
 #include "resultfilemanager.h"
 #include "idlist.h"
 
+USING_NAMESPACE
+
 static void testUnload(const char *inputfile)
 {
     ResultFileManager manager;

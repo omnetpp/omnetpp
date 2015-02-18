@@ -11,6 +11,8 @@
 #include "stresscapsulate.h"
 #include "stress_m.h"
 
+USING_NAMESPACE
+
 Define_Module(StressCapsulate);
 
 void StressCapsulate::handleMessage(cMessage *msg)

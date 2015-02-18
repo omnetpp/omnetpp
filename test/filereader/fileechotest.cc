@@ -24,6 +24,8 @@
 #define _setmode(a,b)
 #endif
 
+USING_NAMESPACE
+
 void testFileEcho(const char *file, bool forward)
 {
     _setmode(_fileno(stdout), _O_BINARY);

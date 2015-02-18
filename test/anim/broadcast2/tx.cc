@@ -1,5 +1,7 @@
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 class Tx : public cSimpleModule
 {
   public:

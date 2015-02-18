@@ -19,6 +19,7 @@
 #include "filereader.h"
 #include "timeutil.h"
 
+USING_NAMESPACE
 
 void runConsumer(const char *filename, double duration)
 {

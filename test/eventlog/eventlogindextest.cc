@@ -20,6 +20,8 @@
 
 #define LL  INT64_PRINTF_FORMAT
 
+USING_NAMESPACE
+
 bool getReadForward(MatchKind matchKind)
 {
     switch (matchKind)

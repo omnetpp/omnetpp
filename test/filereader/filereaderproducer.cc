@@ -20,6 +20,7 @@
 #include "exception.h"
 #include "timeutil.h"
 
+USING_NAMESPACE
 
 void runProducer(const char *filename, double duration, int numberOfLines)
 {

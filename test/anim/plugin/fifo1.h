@@ -9,6 +9,8 @@
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 /**
  * FF1AbstractFifo : abstract base class for single-server queues
  */

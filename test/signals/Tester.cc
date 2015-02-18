@@ -11,6 +11,8 @@
 #endif
 #endif
 
+USING_NAMESPACE
+
 // register 64+ signals...
 #define Reg(name)  simsignal_t name##Signal  = cComponent::registerSignal(#name);
 Reg(a0) Reg(a1) Reg(a2) Reg(a3) Reg(a4) Reg(a5) Reg(a6) Reg(a7) Reg(a8) Reg(a9)

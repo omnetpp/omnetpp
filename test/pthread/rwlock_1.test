@@ -4,6 +4,7 @@ Tests the ReadWriteLock class
 %includes:
 
 #include "rwlock.h"
+USING_NAMESPACE
 
 %activity:
 

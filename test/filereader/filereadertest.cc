@@ -27,6 +27,8 @@
 
 #define LL  INT64_PRINTF_FORMAT
 
+USING_NAMESPACE
+
 int parseLineNumber(char *line)
 {
     return !line || *line == '\r' || *line == '\n' ? -1 : atol(line);
@@ -37,7 +39,7 @@ void testFileReader(const char *file, long numberOfLines, int numberOfSeeks, int
     _setmode(_fileno(stdout), _O_BINARY);
     FileReader fileReader(file);
     LCGRandom random;
-    int64 fileSize = fileReader.getFileSize();
+    int64_t fileSize = fileReader.getFileSize();
 
     while (numberOfSeeks--) {
         file_offset_t offset;

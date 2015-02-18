@@ -1,5 +1,7 @@
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 class ArrangeFigures : public cModule
 {
     virtual void initialize();

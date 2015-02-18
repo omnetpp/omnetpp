@@ -31,6 +31,7 @@
 #include "arraybuilder.h"
 #include "testutil.h"
 
+USING_NAMESPACE
 using namespace std;
 
 /**

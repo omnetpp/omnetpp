@@ -18,6 +18,7 @@
 #include "vectorfileindexer.h"
 #include "testutil.h"
 
+USING_NAMESPACE
 using namespace std;
 
 void testIndexer(const char *inputFile)

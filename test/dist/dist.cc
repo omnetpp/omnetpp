@@ -10,6 +10,8 @@
 #include <string.h>
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 class Dist : public cSimpleModule
 {
     public:

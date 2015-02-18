@@ -1,5 +1,6 @@
 #include <omnetpp.h>
 
+USING_NAMESPACE
 
 class Timer
 {

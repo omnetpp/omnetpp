@@ -11,6 +11,8 @@
 #endif
 #endif
 
+USING_NAMESPACE
+
 std::string stringf(const char *format, ...)
 {
     const int BUFLEN = 1024;

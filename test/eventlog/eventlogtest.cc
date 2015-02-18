@@ -20,6 +20,8 @@
 
 #define LL INT64_PRINTF_FORMAT
 
+USING_NAMESPACE
+
 void checkEvent(IEvent *event)
 {
     printf("Checking event: %" LL "d\n", event->getEventNumber());

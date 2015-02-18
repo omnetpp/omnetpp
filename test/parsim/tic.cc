@@ -10,6 +10,7 @@
 #include <string.h>
 #include <omnetpp.h>
 
+USING_NAMESPACE
 
 class Tic : public cSimpleModule
 {

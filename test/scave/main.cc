@@ -18,6 +18,7 @@
 #include <vector>
 #include "exception.h"
 
+USING_NAMESPACE
 using namespace std;
 
 void testReaderWriter(const char *inputfile, const char *outputfile);
