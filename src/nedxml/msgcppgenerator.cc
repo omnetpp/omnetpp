@@ -1018,7 +1018,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     {
         if (!it->fisabstract) {
             if (it->fisarray && !it->farraysize.empty()) {
-                if (it->fkind == "basic") {
+                if (it->fkind == "basic" && !it->fval.empty()) {
                     CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
                     CC << "        this->" << it->var << "[i] = " << it->fval << ";\n";
                 }
@@ -1317,7 +1317,7 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
         if (it->fisarray && it->farraysize.empty())
             throw NEDException("dynamic array not possible in struct");
         if (it->fisarray && !it->farraysize.empty()) {
-            if (it->fkind == "basic") {
+            if (it->fkind == "basic" && !it->fval.empty()) {
                 CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
                 CC << "        " << it->var << "[i] = " << it->fval << ";\n";
             }
