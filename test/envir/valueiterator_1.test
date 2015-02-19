@@ -8,18 +8,18 @@ Tests the ValueIterator class in envir
 
 static void expand(const char *txt)
 {
-    ev << "'" << txt << "' -> ";
+    EV << "'" << txt << "' -> ";
     try {
         ValueIterator it(txt);
         ValueIterator::VariableMap vars; // no vars
         it.restart(vars);
-        ev << "len=" << it.length() << ":";
+        EV << "len=" << it.length() << ":";
         for (; !it.end(); it++)
-            ev << " (" << it.get() << ")";
-        ev << "\n";
+            EV << " (" << it.get() << ")";
+        EV << "\n";
     }
     catch (std::exception& e) {
-        ev << "exception: " << e.what() << "\n";
+        EV << "exception: " << e.what() << "\n";
     }
 }
 
@@ -35,7 +35,7 @@ expand("1..2.10 step 0.1");
 expand("10..12, 19, -5..-3, 110..150 step 10");
 expand("-2.043e10..3E10 step 1e10, X");
 expand("-1.1e-1..1e-1 step 1e-1, X");
-ev << ".\n";
+EV << ".\n";
 
 %exitcode: 0
 

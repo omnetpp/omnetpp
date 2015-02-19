@@ -105,7 +105,7 @@ for (int i=0; i<2000; i++)
     // and compare them
     if (strcmp(value1, value2)!=0)
     {
-        ev << "ERROR: module=" << module << "  param=" << param
+        EV << "ERROR: module=" << module << "  param=" << param
            << "; value="<< value1 <<", correct=" << value2 << "\n";
         numerrors++;
     }
@@ -115,9 +115,9 @@ for (int i=0; i<2000; i++)
         maxvalue = value2asnum;
 }
 
-ev << "lines actually used in the inifile: " << maxvalue << "\n";
-ev << "errors found: " << numerrors << "\n";
-ev << ".\n";
+EV << "lines actually used in the inifile: " << maxvalue << "\n";
+EV << "errors found: " << numerrors << "\n";
+EV << ".\n";
 
 %exitcode: 0
 

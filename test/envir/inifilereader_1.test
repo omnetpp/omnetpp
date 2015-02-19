@@ -9,7 +9,7 @@ Tests the inifile reader
 
 //TODO
 
-ev << ".\n";
+EV << ".\n";
 
 
 %contains: stdout
