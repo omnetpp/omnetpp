@@ -85,19 +85,19 @@ $L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS) tcl-libs
 	$(Q)rm -f $(OMNETPP_LIB_DIR)/$(LIBNAME)$(SO_LIB_SUFFIX) && $(LN) $L/$(LIBNAME)$(SO_LIB_SUFFIX) $(OMNETPP_LIB_DIR)
 	$(Q)$(SHLIB_POSTPROCESS) $(OMNETPP_LIB_DIR)/$(LIBNAME)$(SO_LIB_SUFFIX)
 
+$L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS) tcl-libs
+	@mkdir -p $L
+	@echo Creating DLL: $@
+	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX)
+	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
+	$(Q)cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
+
 tcl-libs:
 	@echo Copying Tcl extensions to lib/
 	$(Q)cp -R tkpath $(OMNETPP_LIB_DIR)
 ifeq ("$(PLATFORM)", "macosx")
 	$(Q)cp -R tkdock $(OMNETPP_LIB_DIR)
 endif
-
-$L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
-	@mkdir -p $L
-	@echo Creating DLL: $@
-	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX)
-	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
-	$(Q)cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
 $O/tkenv.o : tkenv.cc
 	@mkdir -p $O
