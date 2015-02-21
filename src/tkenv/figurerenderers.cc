@@ -222,13 +222,14 @@ std::string FigureRenderer::polylinePath(const std::vector<cFigure::Point>& poin
         ss << "M " << PT(start);
 
         if (smooth) {
-            for (int i = 0; i < (int)points.size() - 2; i++) {
-                const cFigure::Point& control = points[i + 1];
-                cFigure::Point to = (i == ((int)points.size() - 3)) ? points[i + 2] : (points[i + 1] + points[i + 2]) * 0.5;
+            for (int i = 2; i < (int)points.size(); i++) {
+                const cFigure::Point& control = points[i-1];
+                bool isLast = (i == (int)points.size()-1);
+                cFigure::Point to = isLast ? points[i] : (points[i-1] + points[i]) * 0.5;
                 ss << " Q " << PT(control) << " " << PT(to);
             }
         } else {
-            for (int i = 0; i < (int)points.size(); i++) {
+            for (int i = 1; i < (int)points.size(); i++) {
                 const cFigure::Point& p = points[i];
                 ss << " L " << PT(p);
             }
