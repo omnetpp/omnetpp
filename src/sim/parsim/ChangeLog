@@ -1,6 +1,14 @@
-changed to new scheduler api
-EV<< instead of ev.printf
+2013-09-24  Andras Varga
 
+	* Follow logging API changes: use EV<< instead of ev.printf()
+
+2013-01-30  Andras Varga
+
+	* Ported to cEvent and the new cScheduler API
+
+2013-01-22  Andras Varga
+
+	* cParsimPartition is now a lifecycle listener
 
 2014-11-27  ------ omnetpp-4.6 released ------
 

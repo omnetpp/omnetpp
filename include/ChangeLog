@@ -94,8 +94,6 @@
 	structures in GUI parts (Tkenv, Sequence Chart, Simulation Front-End,
 	etc.)
 
-	FIXME obsolete leiras!!!!!!
-
 2014-01-16  Andras Varga
 
 	* Channel objects (cChannel) now have IDs, similarly to modules. This

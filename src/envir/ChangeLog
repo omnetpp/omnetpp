@@ -13,8 +13,6 @@
 	  containing the log statement; etc. The format of this prefix can be
 	  changed from ini files.
 
-	- New inifile config options: log-format, log-level.
-
 	- Implementation-wise, EnvirBase's printf() and sputn() methods were
 	  removed, and replaced by log(cLogEntry*). The LogFormatter class
 	  was added.

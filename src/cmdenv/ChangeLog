@@ -3,6 +3,12 @@
 	* Follow logging API changes (sputn() replaced by log() function); see
 	see related ChangeLog entry in envir/
 
+	* New configuration options, to control the format of the log prefix
+	(with % tags, e.g. %l stands for log level), and the detail level of
+	logging (INFO, DEBUG, TRACE, etc):
+	  - cmdenv-log-format=<string>, default: "[%l]\t"
+	  - cmdenv-log-level=<string>, default: "DEBUG"
+
 2013-01-28  Andras Varga
 
 	* Follow through with the introduction of cEvent; see related ChangeLog

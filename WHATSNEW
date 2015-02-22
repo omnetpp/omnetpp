@@ -5,12 +5,113 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
-OMNeT++ 4.6 (Nov 2014)
+
+OMNeT++ 5.0 beta 1 (Feb 2015)
+-----------------------------
+
+Core:
+
+ - Added the Canvas API, a figure-based 2D drawing API. The Canvas API allows
+   augmenting simulations with graphical elements. Item types include various
+   shapes, text and image, including an SVG-like "path" item (a generalized
+   polygon/polyline, with arcs and Bezier curves). Transformations (scaling,
+   rotation, skewing) are supported, as well as transparency.
+
+ - New logging API. It features six log levels (FATAL, ERROR, WARN, INFO,
+   DETAIL, DEBUG, TRACE), category support, compile-time and runtime global
+   and per-module log level thresholds.
+
+   Also, much more information is passed with each log line to the user
+   interface code, allowing one to display a wealth of information in the log
+   prefix (log level, file/line, event number, simulation time, module name
+   and type, object name and type, and so on).
+
+   Incompatibilities:
+     - lower-case ev<< is no longer legal, use EV<< instead
+     - ev.printf() was removed, use the stream API (EV<<) instead
+
+ - Introduced cEvent as a base class of cMessage. cEvent allows scheduling
+   of arbitrary code for a simulation time that runs independent of modules.
+   Override the execute() method of cEvent to specify the code. cEvent is
+   not intended for use in simulation models; the primary motivation is to
+   allow implementing simulation time limit with an "end-simulation" event,
+   and to encapsulate foreign events (e.g. SystemC events and crunching)
+   for seemless integration with the simulation event loop.
+
+ - Added support for simulation lifecycle listeners. Listeners are called back
+   before and after network setup, on network initialization, before and after
+   network finalization, and so on. The motivation was to allow more flexibility
+   when writing initialization and shutdown code for schedulers, result
+   file managers and other extensions.
+
+ - Expose web server capability via cEnvir, i.e. one can add HTTP request
+   handlers. This capability is somewhat experimental, and may be removed in
+   the final 5.0 version.
+
+ - Channel objects made equal to modules in the sense that now they also have
+   IDs (the getId() method was moved from cModule to cComponent, the common base
+   class of modules and channels), and they are also registered with cSimulation.
+
+ - cTopology improvements:
+   - added factory methods for links and edges
+   - added methods to manipulate the graph (e.g. build a graph from scratch)
+
+ - check_and_cast<> improved; added check_and_cast_nullable<> that accepts NULL
+   pointer as input
+
+ - New fingerprint computation algorithm. The goal was to make the fingerprint
+   less sensitive to uninteresting changes (e.g. removal of an inactive module),
+   and more sensitive to interesting ones (e.g. change in packet lengths).
+   To get the old fingerprints, define USE_OMNETPP4x_FINGERPRINTS when compiling
+   OMNeT++.
+
+ - cClassDescriptor interface changes (method renaming and arg list changes)
+
+ - Code cleanup, including:
+   - removal of 3.x backward compatilibity features (WITH_DOUBLE_SIMTIME,
+     WITHOUT_CPACKET)
+   - removal of deprecated classes, functions and macros (cLinkedList,
+     cSimulation::operator[], Define_Function(), etc.)
+   - cTopology: internals refactored (use STL instead of arrays, etc.)
+   - error code enum members renamed from eXXX to E_XXX
+
+Cmdenv:
+
+ - Log lines can now be prefixed with information such as the module
+   path; simulation time; event's class and object name; file/line
+   of the log statement; class, name and pointer of the object
+   containing the log statement; etc. The format of this prefix can be
+   changed from ini files.
+
+ - New inifile config options: cmdenv-log-format, cmdenv-log-level.
+
+Tkenv:
+
+ - Finished implementation of the Canvas API Tkenv rendering. The
+   implementation is based on figure renderers (see FigureRenderer class)
+   that can be registered for various figure classes.
+   The implementation is based on the TkPath Tcl/Tk extension, which was
+   significantly enhanced by our team.
+
+ - Display log prefix; log prefix format and log level configurable via the Options dialog
+
+IDE:
+
+ - Several minor improvements.
+
+Example simulations:
+
+ - Added samples/canvas, a demo for the Canvas API
+
+Bugs fixed: see http://dev.omnetpp.org/bugs/changelog_page.php?project_id=1
+
+
+OMNeT++ 4.6 (Dec 2014)
 ----------------------
 
 IMPORTANT:
-    To install OMNeT++ on OS X, you must install both the Apple Java 
-    support package (http://support.apple.com/kb/DL1572) and (Oracle) JDK 1.7 
+    To install OMNeT++ on OS X, you must install both the Apple Java
+    support package (http://support.apple.com/kb/DL1572) and (Oracle) JDK 1.7
     or later (from http://java.com).
 
 Tkenv:
@@ -61,7 +162,7 @@ Other:
     - The bundled MSYS2 toolchain now contains the pacman package manager,
       so you can install additional packages if you wish
     - Change in OMNeT++: The msys/ directory has been moved to tools/win32/, and
-      the mingw/ directory that contains the compiler has been moved to 
+      the mingw/ directory that contains the compiler has been moved to
       tools/win32/mingw32/.
 
 Bugs fixed: http://tinyurl.com/omnetpp46-fixes
@@ -142,14 +243,14 @@ Sim:
     in the module's or channel's NED description; undeclared signals will result
     in a runtime error. Signal declarations are of the form
 
-        @signal[<signalName>](type=<dataType>).
+	@signal[<signalName>](type=<dataType>).
 
     <signalName> may contain wildcards (?,*). Type is optional; if present,
     data type can be long, unsigned long, double, simtime_t, string, or a
     registered class name. To allow NULL pointers, append a question mark to
     the class name. Example:
 
-        @signal[receivedPk](type=cPacket?);
+	@signal[receivedPk](type=cPacket?);
 
     This feature is controlled by the check-signals=<bool> configuration
     option, and it is turned off by default for now.
@@ -639,9 +740,9 @@ NED:
    patterns that end in the new "typename" keyword. An example:
 
      network Net {
-         parameters:
-             host[*].tcp.typename = "TCP_lwIP";
-         ...
+	 parameters:
+	     host[*].tcp.typename = "TCP_lwIP";
+	 ...
      }
 
 Ini files:
@@ -806,9 +907,9 @@ Simulation runtime:
    an inifile-like pattern is used to name the parameter(s) to be set, as in:
 
       network Inet {
-          parameters:
-              host[*].tcp.nagleEnabled = true;
-          ...
+	  parameters:
+	      host[*].tcp.nagleEnabled = true;
+	  ...
       }
 
  - Resolved spurious errors: 'Class "..." not found -- perhaps its code
