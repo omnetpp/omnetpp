@@ -300,6 +300,12 @@
 	Message printers are used by Tkenv to produce one-line descriptions
 	of network packets and other messages.
 
+2014-02-03  Andras Varga
+
+	* Removed cCompoundModule. From now on, cModule is used to instantiate
+	compound modules. Motivation: allow a compound module to be instantiated
+	with a cSimpleModule-based C++ class, and still have submodules.
+
 2014-02-13  ------ omnetpp-4.4.1 released ------
 
 2013-12-20  ------ omnetpp-4.4 released ------

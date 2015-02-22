@@ -65,6 +65,10 @@
 	E.g. @implements(Foo,Bar) adds "public Foo, public Bar" to the
 	generated class header.
 
+2014-02-03  Andras Varga
+
+	* Follow removal of cCompoundModule from the simulation library.
+
 2014-02-13  ------ omnetpp-4.4.1 released ------
 
 2014-02-11  Andras Varga

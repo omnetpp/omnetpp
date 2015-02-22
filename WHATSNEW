@@ -70,6 +70,17 @@ Bugs fixed: http://tinyurl.com/omnetpp46-fixes
 OMNeT++ 4.5 (June 2014)
 -----------------------
 
+Core:
+
+ - Compound modules are now represented with cModule, and the (almost
+   empty) cCompoundModule class has been removed. This change was made
+   to allow simple module classes to be used for compound modules.
+
+ - Added cMessagePrinter and the Register_MessagePrinter() macro. By
+   implementing a message printer you can customize the line Tkenv prints
+   about a packet in the log's "Message/Packet Traffic" view. In a way,
+   message printers are analogous to Wireshark dissectors.
+
 Tkenv:
 
  - The Tkenv GUI has been redesigned for single-window mode to improve

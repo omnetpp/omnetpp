@@ -2,6 +2,11 @@
 
 2014-06-30  ------ omnetpp-4.5 released ------
 
+2014-02-03  Andras Varga
+
+	* Follow the removal of cCompoundModule from the simulation library.
+	From now on, compound modules are instantiated with cModule.
+
 2014-02-13  ------ omnetpp-4.4.1 released ------
 
 2013-12-20  ------ omnetpp-4.4 released ------

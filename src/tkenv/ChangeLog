@@ -104,6 +104,10 @@
 	- OS X: use Command key for hotkeys instead of Ctrl
 	- countless other, smaller improvements
 
+2014-02-03  Andras Varga
+
+	* Follow the removal of cCompoundModule from the simulation library.
+
 2014-02-13  ------ omnetpp-4.4.1 released ------
 
 2013-12-20  ------ omnetpp-4.4 released ------

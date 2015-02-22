@@ -104,6 +104,10 @@
 
 	* Implementation of cMessagePrinter and Register_MessagePrinter()
 
+2014-02-03  Andras Varga
+
+	* Removed cCompoundModule. See include/ChangeLog for context.
+
 2014-02-13  ------ omnetpp-4.4.1 released ------
 
 2014-02-11  Andras Varga
