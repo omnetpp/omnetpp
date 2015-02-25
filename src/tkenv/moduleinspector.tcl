@@ -161,7 +161,7 @@ proc ModuleInspector:onSetObject {insp} {
     if [catch {
        opp_inspectorcommand $insp relayout
     } errmsg] {
-       tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focus]] \
+       tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focusOrRoot]] \
                      -message "Error displaying network graphics: $errmsg"
     }
 
@@ -847,7 +847,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr isplaceholder} 
        }
 
    } errmsg] {
-       tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focus]] \
+       tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focusOrRoot]] \
                      -message "Error in display string of $name: $errmsg"
    }
 }
@@ -1028,7 +1028,7 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr} {
        $c lower mod
 
    } errmsg] {
-       tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focus]] \
+       tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focusOrRoot]] \
                      -message "Error in display string of $name: $errmsg"
    }
 }
@@ -1211,7 +1211,7 @@ proc ModuleInspector:drawConnection {c gateptr dispstr srcptr destptr chanptr sr
        }
 
     } errmsg] {
-       tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focus]] \
+       tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focusOrRoot]] \
                      -message "Error in display string of a connection: $errmsg"
     }
 }

@@ -24,6 +24,12 @@ proc rpackToolbutton {w args} {
     pack $w -anchor n -side right -padx 1 -pady 2 -ipadx 1 -ipady 1
 }
 
+proc focusOrRoot {} {
+    set f [focus]
+    if {$f==""} {set f "."}
+    return $f
+}
+
 proc label-entry {w label {text {}}} {
     # utility function: create a frame with a label+entry
     ttk::frame $w

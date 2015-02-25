@@ -136,7 +136,7 @@ proc GateInspector:drawConnection {c srcgateptr destgateptr chanptr chanstr disp
        $c create text [expr $x+3] [expr ($y0+$y1)/2] -text $chanstr -anchor w -font CanvasFont
 
    } errmsg] {
-       tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focus]] \
+       tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focusOrRoot]] \
                      -message "Error in display string of a connection: $errmsg"
    }
 }

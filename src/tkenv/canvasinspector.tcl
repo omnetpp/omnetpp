@@ -114,7 +114,7 @@ proc CanvasInspector:onSetObject {insp} {
     if [catch {
        opp_inspectorcommand $insp redraw
     } errmsg] {
-       tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focus]] \
+       tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focusOrRoot]] \
                      -message "Error displaying graphics: $errmsg"
     }
 
