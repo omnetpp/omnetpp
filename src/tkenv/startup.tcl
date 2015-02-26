@@ -26,6 +26,7 @@ proc startTkenv {} {
     checkTclTkVersion
     lappend auto_path $OMNETPP_LIB_DIR
     package require tkpath
+    determineFontScaling
     setupTkOptions
     initBalloons
     createOmnetppWindow
@@ -298,6 +299,7 @@ proc setupTkOptions {} {
    font create CanvasFont -family $normalfamily -size $size
    font create LogFont -family $monofamily -size $size
    font create BIGFont -family $normalfamily -size 18
+   updateTkpFonts
 
    # patch icons on OS X
    foreach key [array names icons] {
@@ -429,6 +431,68 @@ proc setOSXDockIcon {} {
 
     # set the icon
     tkdock::switchIcon $icon
+}
+
+#
+# Figure out the conversion rate between Tk font sizes (points)
+# and Tkpath font sizes (-fontsize, pixels), experimentally.
+#
+proc measureFontScaling {} {
+    set fontFamily "Arial"
+
+    canvas .c
+    font create tmpFont -family $fontFamily -size 100
+    .c create text 0 0 -text LTgy -font tmpFont -anchor nw -tags txt
+
+    tkp::canvas .cc
+    .cc create ptext 0 0 -text LTgy -fontfamily $fontFamily -fontsize 100 -textanchor nw -tags txt
+
+    set h1 [lindex [.c bbox txt] 3]
+    set h2 [lindex [.cc bbox txt] 3]
+    set f [expr $h1/double($h2)*1.1]; # 1.1 is an empirical correction factor, needed because canvas and tkp::canvas compute text bounding boxes slightly differently
+
+    destroy .c
+    destroy .cc
+    font delete tmpFont
+
+    return $f
+}
+
+proc determineFontScaling {} {
+    global fontScaling tcl_platform
+
+    # We only trust system DPI settings on Windows and OS X. On other platforms
+    # (e.g. Linux), manually measuring fonts gives more trustworthy results.
+    if {$tcl_platform(platform) == "unix"} {
+        set fontScaling [measureFontScaling]
+    } else {
+        #set dpi [winfo fpixels . 1i]
+        #set fontScaling [expr $dpi/72.0)]
+        set fontScaling [tk scaling]
+    }
+}
+
+#
+# Tkpath doesn't know about Tk fonts, instead it has -fontfamily and
+# -fontsize options for its ptext items. Moreover, -fontsize is in pixels,
+# while Tk fonts are in points.
+#
+proc getFontAsTkpOptions {font} {
+    global fontScaling
+    array set tmp [font actual $font]
+    set pxsize [expr int($tmp(-size) * $fontScaling + 0.5)];
+    return [list -fontfamily $tmp(-family) -fontsize $pxsize]
+}
+
+#
+# Update tkpFonts() array for all known fonts in Tkenv. Elements of
+# tkpFonts() can be used for ptext items on tkp::canvas widgets.
+#
+proc updateTkpFonts {} {
+    global tkpFont
+    foreach font {TkDefaultFont TkTooltipFont TkFixedFont BoldFont TimelineFont CanvasFont LogFont BIGFont} {
+        set tkpFont($font) [getFontAsTkpOptions $font]
+    }
 }
 
 

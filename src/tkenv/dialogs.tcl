@@ -624,6 +624,7 @@ proc preferencesDialog {parent {defaultpage ""}} {
         fontcombo:updatefont $nb.f.f1.textfont TkFixedFont
         fontcombo:updatefont $nb.f.f1.timelinefont TimelineFont
         fontcombo:updatefont $nb.f.f1.canvasfont CanvasFont
+        updateTkpFonts
 
         reflectSettingsInGui
     }

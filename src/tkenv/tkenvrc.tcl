@@ -212,6 +212,7 @@ proc applyTkenvrc {} {
     toggleTimeline
     toggleTimeline
 
+    updateTkpFonts
     reflectSettingsInGui
 }
 
