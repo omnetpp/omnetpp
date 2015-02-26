@@ -323,6 +323,7 @@ proc max {a b} {
     if {$a < $b} {return $b} else {return $a}
 }
 
+
 #
 # Sets the scrolling region for a graphical module inspector.
 # NOTE: This method is invoked from C++.
@@ -396,7 +397,7 @@ proc ModuleInspector:zoomMarqueeBegin {insp x y} {
     set zoomMarquee [list $x1 $y1 $x2 $y2]
 
     # add rectangle
-    $c create rectangle {*}$zoomMarquee -outline black -dash . -tag zoomMarqueeRect
+    $c create prect {*}$zoomMarquee -stroke black -strokedasharray {3 3} -tag zoomMarqueeRect
 
     # update label
     set realCoords [ ModuleInspector:zoomCanvasCoordsToRealCoords $insp {*}$zoomMarquee ]
@@ -549,51 +550,64 @@ proc lookupImage {imgname {imgsize ""}} {
 
 
 #
-# helper function
+# Resolves an image in the display string. Returns a 3-element list: (options, width, height)
 #
-proc dispstrGetImage {tags_i tags_is imagesizefactor {alphamult 1}} {
+proc dispstrGetImage {tags_i tags_is imagesizefactor {alphamult 1} {defaultimage ""}} {
     global icons bitmaps imagecache
 
     set iconminsize [opp_getsimoption iconminsize]
 
     set key "[join $tags_i ,]:[join $tags_is ,]:$imagesizefactor:$iconminsize:$alphamult"
     if {![info exist imagecache($key)]} {
+        set options {}
+
         # look up base image
         set imgsize [lindex $tags_is 0]
         if {$imgsize==""} {set imgsize "n"}
         set imgname [lindex $tags_i 0]
-        if {$imgname=="" || ([catch {set img $bitmaps($imgname,$imgsize)}] && \
-                             [catch {set img $bitmaps($imgname)}] && \
-                             [catch {set img $bitmaps(old/$imgname,$imgsize)}] && \
-                             [catch {set img $bitmaps(old/$imgname)}])} {
-            set img $icons(unknown)
+        if {$imgname==""} {
+            if {$defaultimage!=""} {
+                set img $defaultimage
+            } else {
+                set img $icons(unknown)
+            }
+        } else {
+            if {[catch {set img $bitmaps($imgname,$imgsize)}] && \
+                [catch {set img $bitmaps($imgname)}] && \
+                [catch {set img $bitmaps(old/$imgname,$imgsize)}] && \
+                [catch {set img $bitmaps(old/$imgname)}]} \
+            {
+                set img $icons(unknown)
+            }
         }
         if {[catch {image type $img}]} {
             error "internal error: image referred to in bitmaps() doesn't exist"
         }
+        lappend options -image $img
 
-        # colorize if needed
+        # colorization
         if {[llength $tags_i]>1} {
-            # check destcolor and weight for icon colorizing
-            # if destcolor=="", don't colorize at all
-            set destc [lindex $tags_i 1]
-            set cweight [lindex $tags_i 2]
-            if {$destc!=""} {
-                if {[string index $destc 0]== "@"} {set destc [opp_hsb_to_rgb $destc]}
-                if {$cweight==""} {set cweight 30}
-
-                set img2 [image create photo]
-                $img2 copy $img
-                opp_colorizeimage $img2 $destc $cweight
-                set img $img2
+            set tintColor [lindex $tags_i 1]
+            set tintPercent [lindex $tags_i 2]
+            if {$tintColor!=""} {
+                if {[string index $tintColor 0]== "@"} {set tintColor [opp_hsb_to_rgb $tintColor]}
+                if {$tintPercent==""} {set tintPercent 30}
+                lappend options -tintcolor $tintColor -tintamount [expr $tintPercent / 100.0]
             }
         }
 
-        # rescale if needed
-        if {$imagesizefactor!=1} {
-            set isx [image width $img]
-            set isy [image height $img]
+        # opacity
+        if {$alphamult != 1} {
+            lappend options -opacity $alphamult
+        }
 
+        # scaling
+        set isx [image width $img]
+        set isy [image height $img]
+        if {$imagesizefactor==1} {
+            set scaledsx $isx
+            set scaledsy $isy
+        } else {
             # iconminsize should not cause icon to grow above its original size
             if {$isx < $iconminsize } { set iconminsize $isx}
             if {$isy < $iconminsize } { set iconminsize $isy}
@@ -603,35 +617,22 @@ proc dispstrGetImage {tags_i tags_is imagesizefactor {alphamult 1}} {
                 set imagesizefactor [expr $iconminsize / double($isx)]
             }
             if {$imagesizefactor * $isy < $iconminsize} {
-                set imagesizefactor [expr $iconminsize / double($isy)]
+                set imagesizefactor [expr $iconminsize / double($isy)]"
             }
 
-            set newisx [expr int($imagesizefactor * $isx)]
-            set newisy [expr int($imagesizefactor * $isy)]
-            if {$newisx < 1} {set newisx 1}
-            if {$newisy < 1} {set newisy 1}
-            if {$newisx>500 || $newisy>500} {
-                set img $icons(imagetoobig)
-            } else {
-                set img [resizeImage $img $newisx $newisy]
-            }
+            set scaledsx [expr int($imagesizefactor * $isx)]
+            set scaledsy [expr int($imagesizefactor * $isy)]
+            if {$scaledsx < 1} {set scaledsx 1}
+            if {$scaledsy < 1} {set scaledsy 1}
+            lappend options -width $scaledsx
+            lappend options -height $scaledsy
         }
 
-        # multiply alpha channel if needed
-        if {$alphamult != 1} {
-            set img2 [image create photo]
-            $img2 copy $img
-            opp_multiplyalpha $img2 $alphamult
-            set img $img2
-        }
-
-        # patch image on OS X
-        fixupImageIfNeeded $img
-
-        set imagecache($key) $img
+        set imagecache($key) [list $options $scaledsx $scaledsy]
     }
     return $imagecache($key)
 }
+
 
 #
 # helper function
@@ -665,16 +666,14 @@ proc ModuleInspector:getSubmodCoords {c tag} {
 #
 proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr isplaceholder} {
    #puts "DEBUG: ModuleInspector:drawSubmodule $c $submodptr $x $y $name $dispstr $isplaceholder"
-   global icons inspectordata
+   global icons inspectordata tkpFont
 
    set zoom $inspectordata($c:zoomfactor)
    set imagesizefactor $inspectordata($c:imagesizefactor)
 
    set alphamult 1
    if {$isplaceholder} {
-       if {![string equal [tk windowingsystem] aqua]} {  # no transparency on OS X; see proc fixupImageIfNeeded why!
-           set alphamult 0.3
-       }
+       set alphamult 0.3
    }
 
    if [catch {
@@ -695,10 +694,9 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr isplaceholder} 
            set tags(is) {}
        }
        if [info exists tags(i)] {
-           set img [dispstrGetImage $tags(i) $tags(is) $imagesizefactor $alphamult]
-           set isx [image width $img]
-           set isy [image height $img]
+           setvars {img isx isy} [dispstrGetImage $tags(i) $tags(is) $imagesizefactor $alphamult $icons(defaulticon)]
        }
+
        if [info exists tags(b)] {
            set bsx [lindex $tags(b) 0]
            set bsy [lindex $tags(b) 1]
@@ -713,9 +711,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr isplaceholder} 
                set bsy [expr $zoom*$bsy]
            }
        } elseif ![info exists tags(i)] {
-           set img $icons(defaulticon)
-           set isx [image width $img]
-           set isy [image height $img]
+           setvars {img isx isy} [dispstrGetImage "" "" $imagesizefactor $alphamult $icons(defaulticon)]
        }
 
        set sx [expr {$isx<$bsx ? $bsx : $isx}]
@@ -726,13 +722,12 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr isplaceholder} 
            set width [lindex $tags(b) 5]
            if {$width == ""} {set width 2}
 
-           set x1 [expr $x - $bsx/2 + $width/2]
-           set y1 [expr $y - $bsy/2 + $width/2]
-           set x2 [expr $x + $bsx/2 - $width/2]
-           set y2 [expr $y + $bsy/2 - $width/2]
-
-           set sh [lindex $tags(b) 2]
-           if {$sh == ""} {set sh rect}
+           set rx [expr $bsx/2 - $width/2]
+           set ry [expr $bsy/2 - $width/2]
+           set x1 [expr $x - $rx]
+           set y1 [expr $y - $ry]
+           set x2 [expr $x + $rx]
+           set y2 [expr $y + $ry]
 
            set fill [lindex $tags(b) 3]
            if {$fill == ""} {set fill #8080ff}
@@ -742,26 +737,30 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr isplaceholder} 
            if {$outline == ""} {set outline black}
            if {$outline == "-"} {set outline ""}
            if {[string index $outline 0]== "@"} {set outline [opp_hsb_to_rgb $outline]}
+           if {$isplaceholder} {set dash "1 1"} else {set dash ""}
 
-           set dash ""
-           if {$isplaceholder} {set dash "."}
+           switch -regexp [lindex $tags(b) 2] {
+              "o.*"   {set what [list ellipse $x $y -rx $rx -ry $ry]}
+              "l.*"   {set what [list pline $x1 $y1 $x2 $y2]}
+              default {set what [list prect $x1 $y1 $x2 $y2 -strokelinejoin miter]}
+           }
 
-           $c create $sh $x1 $y1 $x2 $y2 \
-               -fill $fill -width $width -outline $outline -dash $dash \
+           $c create {*}$what \
+               -fill $fill -strokewidth $width -stroke $outline -strokedasharray $dash \
                -tags "dx tooltip submod submodext $submodptr"
 
            if [info exists tags(i)] {
-               $c create image $x $y -image $img -anchor center -tags "dx tooltip submod submodext $submodptr"
+               $c create pimage $x $y {*}$img -anchor c -tags "dx tooltip submod submodext $submodptr"
            }
            if {$inspectordata($c:showlabels)} {
-               $c create text $x [expr $y2+$width/2+3] -text $name -anchor n -tags "dx submodext" -font CanvasFont
+               $c create ptext $x [expr $y2+$width/2+3] -text $name -textanchor n {*}$tkpFont(CanvasFont) -tags "dx submodext"
            }
 
        } else {
            # draw an icon when no shape is present (only i tag, or neither i nor b tag)
-           $c create image $x $y -image $img -anchor center -tags "dx tooltip submod submodext $submodptr"
+           $c create pimage $x $y {*}$img -anchor c -tags "dx tooltip submod submodext $submodptr"
            if {$inspectordata($c:showlabels)} {
-               $c create text $x [expr $y+$sy/2+3] -text $name -anchor n -tags "dx submodext" -font CanvasFont
+               $c create ptext $x [expr $y+$sy/2+3] -text $name -textanchor n {*}$tkpFont(CanvasFont) -tags "dx submodext"
            }
        }
 
@@ -770,7 +769,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr isplaceholder} 
            set r [ModuleInspector:getSubmodCoords $c $submodptr]
            set qx [expr [lindex $r 2]+1]
            set qy [lindex $r 1]
-           $c create text $qx $qy -text "q:?" -anchor nw -tags "dx tooltip qlen qlen-$submodptr submodext" -font CanvasFont
+           $c create ptext $qx $qy -text "q:?" -textanchor nw {*}$tkpFont(CanvasFont) -tags "dx tooltip qlen qlen-$submodptr submodext"
        }
 
        # modifier icon (i2 tag)
@@ -781,8 +780,8 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr isplaceholder} 
            set r [ModuleInspector:getSubmodCoords $c $submodptr]
            set mx [expr [lindex $r 2]+2]
            set my [expr [lindex $r 1]-2]
-           set img2 [dispstrGetImage $tags(i2) $tags(is2) $imagesizefactor $alphamult]
-           $c create image $mx $my -image $img2 -anchor ne -tags "dx tooltip submod submodext $submodptr"
+           setvars {img2 dummy dummy} [dispstrGetImage $tags(i2) $tags(is2) $imagesizefactor $alphamult]
+           $c create pimage $mx $my {*}$img2 -anchor ne -tags "dx tooltip submod submodext $submodptr"
        }
 
        # text (t=<text>,<position>,<color>); multiple t tags supported (t1,t2,etc)
@@ -813,7 +812,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr isplaceholder} 
            } else {
                error "wrong position in t= tag, should be `l', `r' or `t'"
            }
-           $c create text $tx $ty -text $txt -fill $color -anchor $anch -justify $just -tags "dx submodext" -font CanvasFont
+           $c create ptext $tx $ty -text $txt -fill $color -textanchor $anch {*}$tkpFont(CanvasFont) -tags "dx submodext"
        }
 
        # r=<radius>,<fillcolor>,<color>,<width>; multiple r tags supported (r1,r2,etc)
@@ -840,8 +839,8 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr isplaceholder} 
            set x2 [expr $x + $radius]
            set y2 [expr $y + $radius]
 
-           set circle [$c create oval $x1 $y1 $x2 $y2 \
-               -fill $rfill -width $rwidth -outline $routline -tags "dx range submodext"]
+           set circle [$c create circle $x $y -r $radius -fillopacity 0.5 \
+               -fill $rfill -strokewidth $rwidth -stroke $routline -tags "dx range submodext"]
            # has been moved to the beginning of ModuleInspector:drawEnclosingModule to maintain relative z order of range indicators
            # $c lower $circle
        }
@@ -858,7 +857,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr isplaceholder} 
 # This function is invoked from the module inspector C++ code.
 #
 proc ModuleInspector:drawEnclosingModule {c ptr name dispstr} {
-   global icons bitmaps inspectordata
+   global icons bitmaps inspectordata tkpFont
    # puts "DEBUG: ModuleInspector:drawEnclosingModule $c $ptr $name $dispstr"
 
    set zoom $inspectordata($c:zoomfactor)
@@ -921,10 +920,9 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr} {
        if {$width == ""} {set width 2}
 
        # draw (note: width should grow *outside* the $sx-by-$sy inner rectangle)
-       $c create rect [expr $bx-$width/2] [expr $by-$width/2] [expr $bx+$sx+$width/2] [expr $by+$sy+$width/2] \
-           -fill $fill -width $width -outline $outline \
-           -tags "dx mod $ptr"
-       $c create text [expr $bx+3] [expr $by+3] -text $name -anchor nw -tags "dx tooltip modname $ptr" -font CanvasFont
+       $c create prect [expr $bx-$width/2] [expr $by-$width/2] [expr $bx+$sx+$width/2] [expr $by+$sy+$width/2] \
+           -fill $fill -strokewidth $width -stroke $outline -strokelinejoin miter -tags "dx mod $ptr"
+       $c create ptext [expr $bx+3] [expr $by+3] -text $name -textanchor nw {*}$tkpFont(CanvasFont) -tags "dx tooltip modname $ptr"
 
        # background image
        if {![info exists tags(bgi)]} {set tags(bgi) {}}
@@ -935,38 +933,49 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr} {
               [catch {set img $bitmaps(old/$imgname)}]} {
               set img $icons(unknown)
           }
-          set isx [expr [image width $img]*$zoom]
-          set isy [expr [image height $img]*$zoom]
-          set imgx $bx
-          set imgy $by
-          set anchor nw
+          set iwidth [image width $img]
+          set iheight [image height $img]
+          set isx [expr $iwidth*$zoom]
+          set isy [expr $iheight*$zoom]
           if {[string index $imgmode 0]== "c"} {
               # image centered
               set imgx [expr $bx+$sx/2]
               set imgy [expr $by+$sy/2]
-              set anchor center
-              if {$sx < $isx || $sy < $isy} {
-                 # image must be clipped. a new image created with new dimensions
-                 if {$sx < $isx} {set minx $sx} else {set minx $isx}
-                 if {$sy < $isy} {set miny $sy} else {set miny $isy}
-                 set img [getCachedImage $img $zoom [expr ($isx-$minx)/2] [expr ($isy-$miny)/2] [expr ($isx+$minx)/2] [expr ($isy+$miny)/2] $minx $miny 0]
+              set croppedsx [mathMin $sx $isx]
+              set croppedsy [mathMin $sy $isy]
+              if {$sx >= $isx} {
+                  set isrcx1 0
+                  set isrcx2 $iwidth
+              } else {
+                  set isrcx1 [expr ($isx-$sx)/2/$zoom]
+                  set isrcx2 [expr $iwidth - $isrcx1]
               }
+              if {$sy >= $isy} {
+                  set isrcy1 0
+                  set isrcy2 $iheight
+              } else {
+                  set isrcy1 [expr ($isy-$sy)/2/$zoom]
+                  set isrcy2 [expr $iheight - $isrcy1]
+              }
+              $c create pimage $imgx $imgy -image $img -anchor c -width $croppedsx -height $croppedsy -srcregion [list $isrcx1 $isrcy1 $isrcx2 $isrcy2] -tags "dx mod $ptr"
+
           } elseif {[string index $imgmode 0]== "s"} {
               # image stretched to fill the background area
-              set img [getCachedImage $img $zoom 0 0 $isx $isy $sx $sy 1]
+              $c create pimage $bx $by -image $img -anchor nw -width $sx -height $sy -tags "dx mod $ptr"
           } elseif {[string index $imgmode 0]== "t"} {
               # image "tile" mode
-              set img [getCachedImage $img $zoom 0 0 $isx $isy $sx $sy 0]
+              set tx [expr $sx / $zoom]
+              set ty [expr $sy / $zoom]
+              $c create pimage $bx $by -image $img -anchor nw -width $sx -height $sy -srcregion [list 0 0 $tx $ty] -tags "dx mod $ptr"
           } else {
               # default mode: image top-left corner gets aligned to background top-left corner
-              if {$sx < $isx || $sy < $isy || $zoom != 1} {
-                 # image must be cropped
-                 if {$sx < $isx} {set minx $sx} else {set minx $isx}
-                 if {$sy < $isy} {set miny $sy} else {set miny $isy}
-                 set img [getCachedImage $img $zoom 0 0 $minx $miny $minx $miny 0]
-              }
+              # we need cropping
+              set croppedsx [mathMin $sx $isx]
+              set croppedsy [mathMin $sy $isy]
+              set tx [expr $croppedsx / $zoom]
+              set ty [expr $croppedsy / $zoom]
+              $c create pimage $bx $by -image $img -anchor nw -width $croppedsx -height $croppedsy -srcregion [list 0 0 $tx $ty] -tags "dx mod $ptr"
           }
-          $c create image $imgx $imgy -image $img -anchor $anchor -tags "dx mod $ptr"
        }
 
        # grid display
@@ -984,7 +993,7 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr} {
            if {$gminor=="" || $gminor < 1} {set gminor 1}
            for {set x $bx} {$x < $bx+$sx} {set x [expr $x+$gdist]} {
                set coords [list $x $by $x [expr $by+$sy]]
-               $c create line $coords -width 1 -fill $gcolor -tags "dx mod $ptr"
+               $c create pline $coords -strokewidth 1 -stroke $gcolor -tags "dx mod $ptr"
                # create minor ticks
                set i 1
                for {set minorx [expr int($x+$gdist/$gminor)]} {$i < $gminor && $minorx < $bx+$sx} {
@@ -992,13 +1001,13 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr} {
                    set minorx [expr int($x+$i*$gdist/$gminor)]
                    if {$minorx < $bx+$sx} {
                        set coords [list $minorx $by $minorx [expr $by+$sy]]
-                       $c create line $coords -width 1 -dash . -fill $gcolor -tags "dx mod $ptr"
+                       $c create pline $coords -strokewidth 1 -strokedasharray {2 3} -stroke $gcolor -tags "dx mod $ptr"
                    }
                }
            }
            for {set y $by} {$y < $by+$sy} {set y [expr $y+$gdist]} {
                set coords [list $bx $y [expr $bx+$sx] $y]
-               $c create line $coords -width 1 -fill $gcolor -tags "dx mod $ptr"
+               $c create pline $coords -strokewidth 1 -stroke $gcolor -tags "dx mod $ptr"
                # create minor ticks
                set i 1
                for {set minory [expr int($y+$gdist/$gminor)]} {$i < $gminor && $minory < $by+$sy} {
@@ -1006,7 +1015,7 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr} {
                    set minory [expr int($y+$i*$gdist/$gminor)]
                    if {$minory < $by+$sy} {
                        set coords [list $bx $minory [expr $bx+$sx] $minory]
-                       $c create line $coords -width 1 -dash . -fill $gcolor -tags "dx mod $ptr"
+                       $c create pline $coords -strokewidth 1 -strokedasharray {2 3} -stroke $gcolor -tags "dx mod $ptr"
                    }
                }
            }
@@ -1022,7 +1031,7 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr} {
            set color [lindex $tags($bgttag) 3]
            if {$color == ""} {set color black}
            if {[string index $color 0]== "@"} {set color [opp_hsb_to_rgb $color]}
-           $c create text $x $y -text $txt -fill $color -anchor nw -justify left -tags "dx" -font CanvasFont
+           $c create ptext $x $y -text $txt -fill $color -textanchor nw {*}$tkpFont(CanvasFont) -tags "dx"
        }
 
        $c lower mod
@@ -1034,77 +1043,12 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr} {
 }
 
 
-# getCachedImage --
-#
-# Performs the following steps:
-#  - first zooms the image by zoomfactor
-#  - then takes the area (x1,y1,x2,y2) in the new (zoomed) coordinate system
-#  - then either stretches or tiles it to (targetWidth,targetHeight) size
-#  - result gets cached and returned
-# NOTE:  (x1,y1,x2,y2) cliprect does NOT WORK for stretch mode! always the
-# full image will be streched to the (targetWidth,targetHeight) size
-#
-proc getCachedImage {img zoomfactor x1 y1 x2 y2 targetWidth targetHeight doStretch} {
-    global icons img_cache
-
-    set x1 [expr int($x1)]
-    set y1 [expr int($y1)]
-    set x2 [expr int($x2)]
-    set y2 [expr int($y2)]
-    if {$x1>=$x2} {set x2 [expr $x1+1]}  ;# safety: Tk image copy may hang on zero-size source image
-    if {$y1>=$y2} {set y2 [expr $y1+1]}
-
-    set targetWidth [expr int($targetWidth)]
-    set targetHeight [expr int($targetHeight)]
-    if {$targetWidth<1} {set targetWidth 1}
-    if {$targetHeight<1} {set targetHeight 1}
-    if {$targetWidth>2500 || $targetHeight>2000} {return $icons(imagetoobig)}
-
-    set key "$img:$zoomfactor:$x1:$y1:$x2:$y2:$targetWidth:$targetHeight:$doStretch"
-
-    if {![info exists img_cache($key)]} {
-        if {!$doStretch} {
-            # "tile" mode: implementation relies on Tk "image copy" command's behavior
-            # to tile the image if dest area is larger than source area
-            # NOTE: "image copy" is incredibly slow! need to reimplement it ourselves in C++!
-            if {$zoomfactor!=1} {
-                set zoomedisx [expr int([image width $img]*$zoomfactor)]
-                set zoomedisy [expr int([image height $img]*$zoomfactor)]
-                set img [resizeImage $img $zoomedisx $zoomedisy]
-            }
-            set newimg [image create photo -width $targetWidth -height $targetHeight]
-            $newimg copy $img -from $x1 $y1 $x2 $y2 -to 0 0 $targetWidth $targetHeight
-        } else {
-            # stretch
-            # IMPORTANT: (x1,y1,x2,y2) gets ignored -- this proc may only be invoked with the full image!
-            set newimg [resizeImage $img $targetWidth $targetHeight]
-        }
-
-        # patch image on OS X
-        fixupImageIfNeeded $newimg
-
-        set img_cache($key) $newimg
-    }
-    return $img_cache($key)
-}
-
-
-#
-# creates and returns a new image, resized to the given size
-#
-proc resizeImage {img sx sy} {
-    set destimg [image create photo -width $sx -height $sy]
-    opp_resizeimage $destimg $img
-    return $destimg
-}
-
-
 # ModuleInspector:drawConnection --
 #
 # This function is invoked from the module inspector C++ code.
 #
 proc ModuleInspector:drawConnection {c gateptr dispstr srcptr destptr chanptr src_i src_n dest_i dest_n two_way} {
-    global inspectordata
+    global inspectordata tkpFont
 
     # puts "DEBUG: ModuleInspector:drawConnection $c $gateptr $dispstr $srcptr $destptr $src_i $src_n $dest_i $dest_n $two_way"
 
@@ -1155,22 +1099,20 @@ proc ModuleInspector:drawConnection {c gateptr dispstr srcptr destptr chanptr sr
        if {$width == ""} {set width 1}
        if {$width == "0"} {set fill ""}
        set style [lindex $tags(ls) 2]
-       if {[string match "da*" $style]} {
-           set pattern "-"
-       } elseif {[string match "d*" $style]} {
-           set pattern "."
-       } else {
-           set pattern ""
+       switch -glob $style {
+           "da*"   {set pattern "2 2"}
+           "d*"    {set pattern "1 1"}
+           default {set pattern ""}
        }
 
        set state "normal"
        if {$inspectordata($c:showarrowheads) && !$two_way} {
-           set arrow last
+           set arrow {-endarrow 1}
        } else {
-           set arrow none
+           set arrow {}
        }
 
-       $c create line $arrow_coords -arrow $arrow -fill $fill -dash $pattern -width $width -tags "dx tooltip conn submodext $gateptr"
+       $c create pline $arrow_coords {*}$arrow -stroke $fill -strokedasharray $pattern -strokewidth $width -tags "dx tooltip conn submodext $gateptr"
 
        # if we have a two way connection we should draw only in one direction
        # the other line will be hidden (lowered under anything else)
@@ -1189,7 +1131,7 @@ proc ModuleInspector:drawConnection {c gateptr dispstr srcptr destptr chanptr sr
            set y1 [lindex $arrow_coords 1]
            set x2 [lindex $arrow_coords 2]
            set y2 [lindex $arrow_coords 3]
-           set anch "center"
+           set anch "c"
            set just "center"
            if {$pos=="l"} {
                # "beginning"
@@ -1205,9 +1147,9 @@ proc ModuleInspector:drawConnection {c gateptr dispstr srcptr destptr chanptr sr
                set y [expr ($y1+$y2)/2]
                if {($x1==$x2)?($y1<$y2):($x1<$x2)} {set anch "n"} else {set anch "s"}
            } else {
-               error "wrong position in connection t= tag, should be `l', `r' or `t' (for beginning, end, or middle, respectively)"
+               error "wrong position \"$pos\" in connection t= tag, should be `l', `r' or `t' (for beginning, end, or middle, respectively)"
            }
-           $c create text $x $y -text $txt -fill $color -anchor $anch -justify $just -tags "dx submodext" -font CanvasFont
+           $c create ptext $x $y -text $txt -fill $color -textanchor $anch {*}$tkpFont(CanvasFont) -tags "dx submodext"
        }
 
     } errmsg] {
@@ -1222,7 +1164,7 @@ proc ModuleInspector:drawConnection {c gateptr dispstr srcptr destptr chanptr sr
 # This function is invoked from the message animation code.
 #
 proc ModuleInspector:drawMessage {c msgptr x y} {
-    global inspectordata anim_msg
+    global inspectordata anim_msg tkpFont
 
     set zoomfactor $inspectordata($c:zoomfactor)
     set imagesizefactor $inspectordata($c:imagesizefactor)
@@ -1239,13 +1181,14 @@ proc ModuleInspector:drawMessage {c msgptr x y} {
         set dispstr [opp_getobjectfield $msgptr displayString]
     }
 
+    # The following lines were used for testing only
+    #set dispstr "b=15,15,rect,white,kind,5"
+    #set dispstr "b="
+    #set dispstr "b=,,,kind"
+    #set dispstr "b=15,15,oval,yellow,green,6"
+    #set dispstr "i=handset2_s"
+
     if {$dispstr=="" && [opp_getsimoption penguin_mode]} {
-        # following lines were used for testing only...
-        #set dispstr "b=15,15,rect;o=white,kind,5"
-        #set dispstr "b="
-        #set dispstr "o=kind"
-        #set dispstr "b=15,15,oval;o=kind,white,6"
-        #set dispstr "i=handset2_s"
         set dispstr "i=penguin"
     }
 
@@ -1257,7 +1200,7 @@ proc ModuleInspector:drawMessage {c msgptr x y} {
         } else {
             set color red
         }
-        set ball [$c create oval -5 -5 5 5 -fill $color -outline $color -tags "dx tooltip msg $msgptr"]
+        set ball [$c create circle 0 0 -r 5 -fill $color -stroke $color -tags "dx tooltip msg $msgptr"]
         $c move $ball $x $y
 
         set labelx $x
@@ -1276,15 +1219,11 @@ proc ModuleInspector:drawMessage {c msgptr x y} {
             set tags(is) {}
         }
         if [info exists tags(i)] {
-
             if {[lindex $tags(i) 1] == "kind"} {
                 set kindcolor [lindex {red green blue white yellow cyan magenta black} [expr $msgkind % 8]]
                 set tags(i) [lreplace $tags(i) 1 1 $kindcolor]
             }
-
-            set img [dispstrGetImage $tags(i) $tags(is) $imagesizefactor]
-            set sx [image width $img]
-            set sy [image height $img]
+            setvars {img sx sy} [dispstrGetImage $tags(i) $tags(is) $imagesizefactor]
         } elseif [info exists tags(b)] {
             set sx [lindex $tags(b) 0]
             if {$sx==""} {set sx 10}
@@ -1298,20 +1237,19 @@ proc ModuleInspector:drawMessage {c msgptr x y} {
 
         if [info exists tags(i)] {
 
-            $c create image $x $y -image $img -anchor center -tags "dx tooltip msg $msgptr"
+            $c create pimage $x $y {*}$img -anchor c -tags "dx tooltip msg $msgptr"
 
             set labelx $x
             set labely [expr $y+$sy/2+3]
 
         } elseif [info exists tags(b)] {
 
-            set x1 [expr $x - $sx/2]
-            set y1 [expr $y - $sy/2]
-            set x2 [expr $x + $sx/2]
-            set y2 [expr $y + $sy/2]
-
-            set sh [lindex $tags(b) 2]
-            if {$sh == ""} {set sh oval}
+            set rx [expr $sx/2]
+            set ry [expr $sy/2]
+            set x1 [expr $x - $rx]
+            set y1 [expr $y - $ry]
+            set x2 [expr $x + $rx]
+            set y2 [expr $y + $ry]
 
             set fill [lindex $tags(b) 3]
             if {$fill == ""} {set fill red}
@@ -1326,7 +1264,12 @@ proc ModuleInspector:drawMessage {c msgptr x y} {
             set width [lindex $tags(b) 5]
             if {$width == ""} {set width 1}
 
-            $c create $sh $x1 $y1 $x2 $y2 -fill $fill -width $width -outline $outline -tags "dx tooltip msg $msgptr"
+            switch -regexp [lindex $tags(b) 2] {
+               "p.*"   {set what [list prect $x1 $y1 $x2 $y2 -strokelinejoin miter]}
+               default {set what [list ellipse $x $y -rx $rx -ry $ry]}
+            }
+
+            $c create {*}$what -fill $fill -strokewidth $width -stroke $outline -tags "dx tooltip msg $msgptr"
 
             set labelx $x
             set labely [expr $y2+$width/2+3]
@@ -1342,7 +1285,7 @@ proc ModuleInspector:drawMessage {c msgptr x y} {
         append msglabel $msgname
     }
     if {$msglabel!=""} {
-        $c create text $labelx $labely -text $msglabel -anchor n -font CanvasFont -tags "dx msgname $msgptr"
+        $c create ptext $labelx $labely -text $msglabel -textanchor n {*}$tkpFont(CanvasFont) -tags "dx msgname $msgptr"
     }
 
 }
@@ -1676,11 +1619,9 @@ proc ModuleInspector:drawNextEventMarker {c modptr type} {
     set y2 [expr [lindex $src 3]+2]
     # $type==1 compound module, $type==2 simple module
     if {$type==1} {
-        #$c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red -dash {.}
-        $c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red -width 1
+        $c create prect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -stroke red -strokewidth 1
     } else {
-        #$c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red
-        $c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red -width 2
+        $c create prect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -stroke red -strokewidth 2
     }
 }
 
@@ -1757,7 +1698,7 @@ proc ModuleInspector:qlenRightClick {insp X Y} {
 # This function is invoked from the module inspector C++ code.
 #
 proc ModuleInspector:bubble {c x y txt} {
-    global inspectordata
+    global inspectordata tkpFont
 
     set zoom $inspectordata($c:zoomfactor)
 
@@ -1765,7 +1706,7 @@ proc ModuleInspector:bubble {c x y txt} {
     set y [expr $y*$zoom]
 
     while {[string length $txt]<5} {set txt " $txt "}
-    set txtid  [$c create text $x $y -text " $txt " -anchor c -tags "bubble" -font CanvasFont]
+    set txtid  [$c create ptext $x $y -text " $txt " -textanchor c {*}$tkpFont(CanvasFont) -tags "bubble"]
     set color #F8F8D8
     set bb [$c bbox $txtid]
 
@@ -1807,7 +1748,7 @@ proc ModuleInspector:bubble {c x y txt} {
                  $x1o $ym  \
                  $x1o $ym ]
 
-    set bubbleid [$c create polygon $pp -outline black -fill $color -width 1 -smooth 1 -tags "bubble"]
+    set bubbleid [$c create ppolygon $pp -stroke black -fill $color -strokewidth 1 -tags "bubble"]
     $c lower $bubbleid $txtid
 
     set dx [expr $x-$xme]

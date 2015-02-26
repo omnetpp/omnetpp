@@ -1,3 +1,17 @@
+2015-02-26  Andras Varga
+
+	Use Tkpath canvas items (prect, ptext, pimage, etc) for module inspector
+
+	General benefits due to using Tkpath:
+	- unlimited background zooming
+	- antialiased drawing (Tk canvas didn't have antialiasing)
+	- OS X: images are not forced into 1-bit transparency
+	- better performance
+
+	Extra improvements:
+	- range indicator fill is now semi-transparent (because Tkpath supports that)
+	- scale default icon
+
 2015-02-14  Andras Varga
 
 	* Added CanvasInspector code (i.e. standalone cCanvas objects can

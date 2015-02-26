@@ -197,8 +197,7 @@ proc ModuleInspector:doAnimateSenddirect {insp x1 y1 x2 y2 msgptr mode} {
     set c $insp.c
 
     if [opp_getsimoption senddirect_arrows] {
-        #$c create line $x1 $y1 $x2 $y2 -tags {senddirect} -arrow last -fill gray
-        $c create line $x1 $y1 $x2 $y2 -tags {senddirect} -arrow last -fill blue -dash {.}
+        $c create pline $x1 $y1 $x2 $y2 -tags {senddirect} -endarrow 1 -stroke blue -strokedasharray {1 1}
         ModuleInspector:doAnimate $insp $x1 $y1 $x2 $y2 $msgptr "thru"
         #$c delete $arrow -- this will come in _cleanup
     } else {
@@ -335,17 +334,18 @@ proc ModuleInspector:animateMethodcallHoriz {insp fromptr toptr methodlabel} {
 # Helper.
 #
 proc ModuleInspector:doDrawMethodcall {insp x1 y1 x2 y2 methodlabel} {
+    global tkpFont
+
     set c $insp.c
-    #set arrow [$c create line $x1 $y1 $x2 $y2 -tags {methodcall} -width 2 -arrow last -arrowshape {15 20 6} -fill #808080]
-    set arrow [$c create line $x1 $y1 $x2 $y2 -tags {methodcall}  -dash {-} -arrow last -fill red]
+    set arrow [$c create pline $x1 $y1 $x2 $y2 -tags {methodcall} -strokedasharray {2 2} -endarrow 1 -stroke red]
 
     set x [expr ($x1+$x2)/2]
     set y [expr ($y1+$y2)/2]
-    set txtid  [$c create text $x $y -tags {methodcall} -text " $methodlabel " -anchor c -font CanvasFont]
+    set txtid  [$c create ptext $x $y -tags {methodcall} -text " $methodlabel " -textanchor c {*}$tkpFont(CanvasFont)]
     set color #F0F0F0
     #set color #F0F0D0
     #catch {set color [$c itemcget mod -fill]}
-    set rectid [$c create rect [$c bbox $txtid] -tags {methodcall} -outline "" -fill $color]
+    set rectid [$c create prect [$c bbox $txtid] -tags {methodcall} -stroke "" -fill $color]
     $c lower $rectid $txtid
 
     # flash arrow a bit

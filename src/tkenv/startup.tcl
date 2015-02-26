@@ -546,7 +546,7 @@ proc doLoadBitmaps {dir prefix} {
       set img "i[incr bitmap_ctr]$name"
       if [catch {
          image create photo $img -file $f
-         fixupImageIfNeeded $img
+         #fixupImageIfNeeded $img - no longer needed with tkpath
          set size "n" ;#default
          regexp -- {^(.*)_(vl|xl|l|n|s|vs|xs)$} $name dummy name size
          set loaded [doAddBitmap $img $prefix $name $size]
