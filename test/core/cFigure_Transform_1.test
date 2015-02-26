@@ -69,11 +69,11 @@ Transform().rotate(M_PI/2,2,3).applyTo(Point(1,2)) --> (3, 2)
 Transform().translate(-2,-3).rotate(M_PI/2).translate(2,3).applyTo(Point(1,2)) --> (3, 2)
 
 Transform().skewx(M_PI/6).applyTo(Point(1,0)) --> (1, 0)
-Transform().skewx(M_PI/6).applyTo(Point(1,1)) --> (1.5, 1)
-Transform().skewx(M_PI/6).applyTo(Point(1,2)) --> (2, 2)
+Transform().skewx(M_PI/6).applyTo(Point(1,1)) --> (1.57735, 1)
+Transform().skewx(M_PI/6).applyTo(Point(1,2)) --> (2.1547, 2)
 
 Transform().skewy(M_PI/6).applyTo(Point(0,1)) --> (0, 1)
-Transform().skewy(M_PI/6).applyTo(Point(1,1)) --> (1, 1.5)
-Transform().skewy(M_PI/6).applyTo(Point(2,1)) --> (2, 2)
+Transform().skewy(M_PI/6).applyTo(Point(1,1)) --> (1, 1.57735)
+Transform().skewy(M_PI/6).applyTo(Point(2,1)) --> (2, 2.1547)
 .
 
