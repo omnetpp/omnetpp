@@ -211,12 +211,12 @@ module ConnColors
         src14.out++ --> { @display("t=10px dashed;ls=,10,da"); } --> dest14.in++;
         src15.out++ --> { @display("t=0px (invisible);tt=tooltip text;ls=,0,da"); } --> dest13.in++;
         src16.out++ --> { @display("t=yellow;ls=yellow"); } --> dest16.in++;
-        src17.out++ --> { @display("t=yellow, blue text,,blue;ls=yellow"); } --> dest17.in++;
+        src17.out++ --> { @display("t=yellow\nblue text,,blue;ls=yellow"); } --> dest17.in++;
         src19.out++ --> { @display("t=3px dashed;ls=yellow,3,da"); } --> dest21.in++;
         src20.out++ --> { @display("t=3px dotted;ls=yellow,3,d"); } --> dest19.in++;
         src21.out++ --> { @display("t=3px width;ls=yellow,3"); } --> dest20.in++;
-        src18.out++ --> { @display("t=3px yellow, bluetxt,,blue;ls=yellow,3"); } --> dest18.in++;
-        src22.out++ --> { @display("t=3px dotted yellow blue,,blue;ls=yellow,3,d"); } --> dest22.in++;
-        src23.out++ --> { @display("t=3px dashed yellow blue,,blue;ls=yellow,3,da"); } --> dest23.in++;
+        src18.out++ --> { @display("t=3px yellow\nblue txt,,blue;ls=yellow,3"); } --> dest18.in++;
+        src22.out++ --> { @display("t=3px dotted yellow\nblue text,,blue;ls=yellow,3,d"); } --> dest22.in++;
+        src23.out++ --> { @display("t=3px dashed yellow\nblue text,,blue;ls=yellow,3,da"); } --> dest23.in++;
 }
 
