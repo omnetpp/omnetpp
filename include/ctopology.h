@@ -57,14 +57,6 @@ class cPar;
  * @ingroup SimSupport
  * @see cTopology::Node, cTopology::Link, cTopology::LinkIn, cTopology::LinkOut
  */
-
-//TODO terminology change: rename Link to Edge
-//TODO document: graph may be modified by hand; graph nodes/links may or may not correspond to modules/gates
-//TODO add notes: manually added nodes/links may not have cModule*/cGate* pointers (getModule() etc may be NULL)
-//TODO make more methods virtual
-//TODO inconsistency: Node takes cModule* in ctor, but Link's srcGate/destGate are set in addLink()!!!
-//TODO weight: how to compute automatically from link datarate?
-
 class SIM_API cTopology : public cOwnedObject
 {
   public:
