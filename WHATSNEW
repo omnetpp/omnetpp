@@ -44,10 +44,6 @@ Core:
    when writing initialization and shutdown code for schedulers, result
    file managers and other extensions.
 
- - Expose web server capability via cEnvir, i.e. one can add HTTP request
-   handlers. This capability is somewhat experimental, and may be removed in
-   the final 5.0 version.
-
  - Channel objects made equal to modules in the sense that now they also have
    IDs (the getId() method was moved from cModule to cComponent, the common base
    class of modules and channels), and they are also registered with cSimulation.

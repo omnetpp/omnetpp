@@ -875,9 +875,6 @@ class StaticEnv : public cEnvir
     virtual bool idle()  {return false;}
     virtual void attachDebugger() {}
 
-    virtual void addHttpRequestHandler(cHttpRequestHandler *p) {}
-    virtual void removeHttpRequestHandler(cHttpRequestHandler *p) {}
-
     // lifecycle listeners
     virtual void addLifecycleListener(cISimulationLifecycleListener *listener) {}
     virtual void removeLifecycleListener(cISimulationLifecycleListener *listener) {}

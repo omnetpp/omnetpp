@@ -44,7 +44,6 @@ class cXMLElement;
 class cEnvir;
 class cConfiguration;
 class cConfigurationEx;
-class cHttpRequestHandler;
 
 using std::endl;
 
@@ -691,23 +690,6 @@ class SIM_API cEnvir
      * The command line to start the debugger can be configured.
      */
     virtual void attachDebugger() = 0;
-
-    /**
-     * Registers the given HTTP request handler in the built-in web server.
-     * Several handlers can ve registered. When the web server receives a HTTP
-     * request, it is offered the handlers one-by-one, and the first one that
-     * handles it will win.
-     *
-     * The request handlers will NOT be deleted when the program exits.
-     * If the web server is not available, this method silently ignores the request.
-     */
-    virtual void addHttpRequestHandler(cHttpRequestHandler *p) = 0;
-
-    /**
-     * Removes the given HTTP request handler from the built-in web server.
-     * If the web server is not available, this method silently ignores the request.
-     */
-    virtual void removeHttpRequestHandler(cHttpRequestHandler *p) = 0;
     //@}
 
     /** @name Lifecycle listeners */

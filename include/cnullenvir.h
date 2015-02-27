@@ -148,8 +148,6 @@ class SIM_API cNullEnvir : public cEnvir
     virtual unsigned long getUniqueNumber()  {return ++lastnum;}
     virtual bool idle()  {return false;}
     virtual void attachDebugger() {}
-    virtual void addHttpRequestHandler(cHttpRequestHandler *p) {}
-    virtual void removeHttpRequestHandler(cHttpRequestHandler *p) {}
 
     // lifecycle listeners
     virtual void addLifecycleListener(cISimulationLifecycleListener *listener);

@@ -51,7 +51,6 @@ class cParsimPartition;
 class cParsimSynchronizer;
 class cResultRecorder;
 class SignalSource;
-class cHttpServer;
 
 // assumed maximum length for getFullPath() string.
 // note: this maximum actually not enforced anywhere
@@ -139,9 +138,6 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
 
     // lifecycle listeners
     std::vector<cISimulationLifecycleListener*> listeners;
-
-    // Built-in web server
-    cHttpServer *httpServer;
 
     timeval simbegtime;  // real time when sim. started
     timeval simendtime;  // real time when sim. ended
@@ -250,8 +246,6 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual int getParsimNumPartitions() const;
     virtual unsigned long getUniqueNumber();
     virtual void attachDebugger();
-    virtual void addHttpRequestHandler(cHttpRequestHandler *p);
-    virtual void removeHttpRequestHandler(cHttpRequestHandler *p);
     virtual bool idle();
 
     virtual void addLifecycleListener(cISimulationLifecycleListener *listener);

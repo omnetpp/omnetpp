@@ -276,16 +276,6 @@
 	* renamed getFieldStructPointer to getFieldStructValuePointer()
 	* old methods still exist as deprecated ones
 
-2012-04-21  Andras Varga
-
-	Expose web server capability via cEnvir (to simulations too!)
-
-	* New methods in cEnvir:
-	    void addHttpRequestHandler(cHttpRequestHandler *p)
-	    void removeHttpRequestHandler(cHttpRequestHandler *p)
-
-	* New classes in envirext.h: cHttpRequestHandler, cHttpRequest
-
 ////////////// fixes taken from omnetpp-4.x come here /////////////////
 
 2014-11-27  ------ omnetpp-4.6 released ------

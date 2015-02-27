@@ -842,6 +842,7 @@ $O/moduleinspector.obj: moduleinspector.cc \
   ../../include/simtime_t.h \
   ../../include/simutil.h \
   arrow.h \
+  canvasrenderer.h \
   circularbuffer.h \
   componenthistory.h \
   figurerenderers.h \

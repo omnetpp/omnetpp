@@ -26,7 +26,7 @@ COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../common 
 
 IMPLIBS= -L$L -loppsim$D -loppenvir$D -loppcommon$D
 
-OBJS = $O/cmdenv.o $O/serializer.o
+OBJS = $O/cmdenv.o
 
 #
 # Automatic rules
@@ -145,77 +145,11 @@ $O/cmdenv.o: cmdenv.cc \
   ../envir/envirbase.h \
   ../envir/envirdefs.h \
   ../envir/eventlogfilemgr.h \
-  ../envir/httpserver.h \
   ../envir/intervals.h \
-  ../envir/json.h \
   ../envir/logformatter.h \
   ../envir/matchableobject.h \
   ../envir/objectprinter.h \
   ../envir/speedometer.h \
   ../envir/visitor.h \
   cmddefs.h \
-  cmdenv.h \
-  serializer.h
-$O/serializer.o: serializer.cc \
-  ../../include/carray.h \
-  ../../include/cchannel.h \
-  ../../include/cclassdescriptor.h \
-  ../../include/ccomponent.h \
-  ../../include/ccomponenttype.h \
-  ../../include/cdefaultlist.h \
-  ../../include/cdensityestbase.h \
-  ../../include/cdisplaystring.h \
-  ../../include/cenum.h \
-  ../../include/cenvir.h \
-  ../../include/cevent.h \
-  ../../include/cexception.h \
-  ../../include/cexpression.h \
-  ../../include/cgate.h \
-  ../../include/clifecyclelistener.h \
-  ../../include/clistener.h \
-  ../../include/clog.h \
-  ../../include/cmessage.h \
-  ../../include/cmessageheap.h \
-  ../../include/cmodule.h \
-  ../../include/cmsgpar.h \
-  ../../include/cnamedobject.h \
-  ../../include/cnedmathfunction.h \
-  ../../include/cnedvalue.h \
-  ../../include/cobject.h \
-  ../../include/cobjectfactory.h \
-  ../../include/coutvector.h \
-  ../../include/cownedobject.h \
-  ../../include/cpacket.h \
-  ../../include/cpar.h \
-  ../../include/cproperties.h \
-  ../../include/cproperty.h \
-  ../../include/cqueue.h \
-  ../../include/cregistrationlist.h \
-  ../../include/cscheduler.h \
-  ../../include/csimplemodule.h \
-  ../../include/csimulation.h \
-  ../../include/cstatistic.h \
-  ../../include/cstddev.h \
-  ../../include/cstringpool.h \
-  ../../include/ctimestampedvalue.h \
-  ../../include/cvisitor.h \
-  ../../include/cwatch.h \
-  ../../include/errmsg.h \
-  ../../include/globals.h \
-  ../../include/onstartup.h \
-  ../../include/opp_string.h \
-  ../../include/platdep/intlimits.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/platdep/timeutil.h \
-  ../../include/regmacros.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simtime.h \
-  ../../include/simtime_t.h \
-  ../../include/simutil.h \
-  ../envir/envirdefs.h \
-  ../envir/json.h \
-  ../envir/matchableobject.h \
-  ../envir/visitor.h \
-  cmddefs.h \
-  serializer.h
+  cmdenv.h

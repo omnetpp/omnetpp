@@ -56,8 +56,6 @@
 #include "cresultrecorder.h"
 #include "resultfilters.h"
 #include "statisticparser.h"
-#include "httpserver.h"
-#include "mongoosehttpserver.h" //XXX not needed if httpserver-class option is implemented
 
 #ifdef WITH_PARSIM
 #include "cparsimcomm.h"
@@ -242,8 +240,6 @@ EnvirBase::EnvirBase()
     parsimpartition = NULL;
 #endif
 
-    httpServer = NULL;
-
     exitcode = 0;
 }
 
@@ -278,7 +274,7 @@ int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
 {
     opt = createOptions();
     args = new ArgList();
-    args->parse(argc, argv, "h?f:u:l:c:r:p:n:x:X:agGvw");  //TODO share spec with startup.cc!
+    args->parse(argc, argv, "h?f:u:l:c:r:n:x:X:agGvw");  //TODO share spec with startup.cc!
     cfg = dynamic_cast<cConfigurationEx *>(configobject);
     if (!cfg)
         throw cRuntimeError("Cannot cast configuration object %s to cConfigurationEx", configobject->getClassName());
@@ -490,17 +486,6 @@ bool EnvirBase::setup()
             }
         }
         simulation.doneLoadingNedFiles();
-
-        // initialize built-in web server
-        const char *portSpec = args->optionValue('p',0);
-        if (!portSpec)
-            portSpec = "8000+"; // default value
-        if (strcmp(portSpec, "-") != 0)
-        {
-            httpServer = new cMongooseHttpServer();
-            httpServer->start(portSpec);
-        }
-        //FIXME TODO also shutdown
 
         // notify listeners when global setup is complete
         notifyLifecycleListeners(LF_ON_STARTUP);
@@ -1873,18 +1858,6 @@ void EnvirBase::attachDebugger()
 void EnvirBase::crashHandler(int)
 {
     ev.attachDebugger();
-}
-
-void EnvirBase::addHttpRequestHandler(cHttpRequestHandler *p)
-{
-    if (httpServer)
-        httpServer->addHttpRequestHandler(p);
-}
-
-void EnvirBase::removeHttpRequestHandler(cHttpRequestHandler *p)
-{
-    if (httpServer)
-        httpServer->removeHttpRequestHandler(p);
 }
 
 void EnvirBase::displayException(std::exception& ex)

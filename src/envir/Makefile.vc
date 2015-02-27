@@ -34,9 +34,6 @@ OBJS= $O/appreg.obj $O/args.obj $O/startup.obj $O/evmain.obj $O/logformatter.obj
       $O/eventlogfilemgr.obj $O/runattributes.obj $O/intervals.obj \
       $O/statisticparser.obj $O/visitor.obj
 
-#TODO make configurable; put into separate lib? (src/httpserver)
-OBJS= $(OBJS) $O/httpserver.obj $O/mongoosehttpserver.obj $O/mongoose.obj $O/json.obj
-
 GENERATED_SOURCES= eventlogwriter.cc eventlogwriter.h
 
 !if "$(LIB_SUFFIX)"==".dll"
@@ -91,9 +88,6 @@ eventlogwriter.cc eventlogwriter.h : eventlogwriter.pl ../eventlog/eventlogentri
 	$(Q)$(PERL) eventlogwriter.pl
 
 $O/envirbase.obj: eventlogwriter.h
-
-$O/mongoose.obj : mongoose.c mongoose.h
-	$(CXX) /Fo"$@" $(COPTS) /DHAVE_STRTOUI64 /c /TC mongoose.c
 
 # default opp_run target - called only at the end once tkenv and cmdenv is done
 # opp_run is useless with static libs
@@ -353,11 +347,8 @@ $O/envirbase.obj: envirbase.cc \
   envirbase.h \
   envirdefs.h \
   eventlogfilemgr.h \
-  httpserver.h \
   intervals.h \
   logformatter.h \
-  mongoose.h \
-  mongoosehttpserver.h \
   objectprinter.h \
   statisticparser.h
 $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
@@ -644,25 +635,6 @@ $O/fsutils.obj: fsutils.cc \
   ../../include/simutil.h \
   envirdefs.h \
   fsutils.h
-$O/httpserver.obj: httpserver.cc \
-  ../../include/cconfiguration.h \
-  ../../include/cexception.h \
-  ../../include/clifecyclelistener.h \
-  ../../include/cobject.h \
-  ../../include/cvisitor.h \
-  ../../include/envirext.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h \
-  ../../include/platdep/intlimits.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/regmacros.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simtime.h \
-  ../../include/simtime_t.h \
-  ../../include/simutil.h \
-  envirdefs.h \
-  httpserver.h
 $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../../include/carray.h \
   ../../include/ccomponent.h \
@@ -773,13 +745,6 @@ $O/intervals.obj: intervals.cc \
   intervals.h \
   logformatter.h \
   objectprinter.h
-$O/json.obj: json.cc \
-  ../../include/platdep/intlimits.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simtime.h \
-  envirdefs.h \
-  json.h
 $O/logformatter.obj: logformatter.cc \
   ../../include/ccomponent.h \
   ../../include/ccomponenttype.h \
@@ -861,27 +826,6 @@ $O/matchableobject.obj: matchableobject.cc \
   ../../include/simutil.h \
   envirdefs.h \
   matchableobject.h
-$O/mongoosehttpserver.obj: mongoosehttpserver.cc \
-  ../../include/cconfiguration.h \
-  ../../include/cexception.h \
-  ../../include/clifecyclelistener.h \
-  ../../include/cobject.h \
-  ../../include/cvisitor.h \
-  ../../include/envirext.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h \
-  ../../include/platdep/intlimits.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/regmacros.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simtime.h \
-  ../../include/simtime_t.h \
-  ../../include/simutil.h \
-  envirdefs.h \
-  httpserver.h \
-  mongoose.h \
-  mongoosehttpserver.h
 $O/objectprinter.obj: objectprinter.cc \
   ../../include/carray.h \
   ../../include/cclassdescriptor.h \
