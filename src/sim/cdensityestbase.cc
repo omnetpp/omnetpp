@@ -289,7 +289,7 @@ void cDensityEstBase::setupRange()
          // no-op: rangemin, rangemax already set
          break;
       case RANGE_NOTSET:
-         throw cRuntimeError(this, "Histogram range mode is unset");
+         break; //TODO: throw cRuntimeError(this, "Histogram range mode is unset");
     }
 }
 
