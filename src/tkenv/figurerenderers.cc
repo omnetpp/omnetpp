@@ -130,6 +130,25 @@ void FigureRenderer::joinStyle(cFigure::JoinStyle style, int& argc, const char *
     }
 }
 
+void FigureRenderer::arrowHead(bool isStart, cFigure::ArrowHead arrowHead, int& argc, const char *argv[])
+{
+    bool hasArrow = arrowHead != cFigure::ARROW_NONE;
+    argv[argc++] = isStart ? "-startarrow" : "-endarrow";
+    argv[argc++] =  hasArrow ? "1" : "0";
+
+    if (hasArrow) {
+        const char *fill;
+        switch (arrowHead) {
+            case cFigure::ARROW_BARBED: fill = "0.6"; break;
+            case cFigure::ARROW_SIMPLE: fill = "0"; break;
+            case cFigure::ARROW_TRIANGLE: fill = "1"; break;
+            default: throw cRuntimeError("Unexpected arrow type %d", arrowHead);
+        }
+        argv[argc++] = isStart ? "-startarrowfill" : "-endarrowfill";
+        argv[argc++] =  fill;
+    }
+}
+
 void FigureRenderer::fillRule(cFigure::FillRule fill, int& argc, const char *argv[])
 {
     argv[argc++] = "-fillrule";
@@ -523,6 +542,8 @@ void AbstractLineFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_In
         argv[argc++] = dtoa(lineFigure->getLineOpacity());
         lineStyle(lineFigure->getLineStyle(), argc, argv);
         capStyle(lineFigure->getCapStyle(), argc, argv);
+        arrowHead(true, lineFigure->getStartArrowHead(), argc, argv);
+        arrowHead(false, lineFigure->getEndArrowHead(), argc, argv);
     }
 }
 
