@@ -13,6 +13,13 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
+
+# Halo effect around text items, to improve readability when bg is noisy or several text items overlap.
+# grey82 is the halo color that blends in with all kinds of backgrounds, yet doesn't affect readability;
+# it's also the default module background color.
+# To turn off halo: set canvasTextOptions {}
+set canvasTextOptions {-stroke grey82 -strokewidth 5 -strokeopacity 0.6 -filloverstroke on}
+
 #
 # Note: tooltips on canvas come from the proc whose name is stored in
 # $help_tips(helptip_proc). This is currently getHelpTip.
@@ -666,7 +673,7 @@ proc ModuleInspector:getSubmodCoords {c tag} {
 #
 proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr isplaceholder} {
    #puts "DEBUG: ModuleInspector:drawSubmodule $c $submodptr $x $y $name $dispstr $isplaceholder"
-   global icons inspectordata tkpFont
+   global icons inspectordata tkpFont canvasTextOptions
 
    set zoom $inspectordata($c:zoomfactor)
    set imagesizefactor $inspectordata($c:imagesizefactor)
@@ -753,14 +760,14 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr isplaceholder} 
                $c create pimage $x $y {*}$img -anchor c -tags "dx tooltip submod submodext $submodptr"
            }
            if {$inspectordata($c:showlabels)} {
-               $c create ptext $x [expr $y2+$width/2+3] -text $name -textanchor n {*}$tkpFont(CanvasFont) -tags "dx submodext"
+               $c create ptext $x [expr $y2+$width/2+3] -text $name -textanchor n {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx submodext"
            }
 
        } else {
            # draw an icon when no shape is present (only i tag, or neither i nor b tag)
            $c create pimage $x $y {*}$img -anchor c -tags "dx tooltip submod submodext $submodptr"
            if {$inspectordata($c:showlabels)} {
-               $c create ptext $x [expr $y+$sy/2+3] -text $name -textanchor n {*}$tkpFont(CanvasFont) -tags "dx submodext"
+               $c create ptext $x [expr $y+$sy/2+3] -text $name -textanchor n {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx submodext"
            }
        }
 
@@ -769,7 +776,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr isplaceholder} 
            set r [ModuleInspector:getSubmodCoords $c $submodptr]
            set qx [expr [lindex $r 2]+1]
            set qy [lindex $r 1]
-           $c create ptext $qx $qy -text "q:?" -textanchor nw {*}$tkpFont(CanvasFont) -tags "dx tooltip qlen qlen-$submodptr submodext"
+           $c create ptext $qx $qy -text "q:?" -textanchor nw {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx tooltip qlen qlen-$submodptr submodext"
        }
 
        # modifier icon (i2 tag)
@@ -812,7 +819,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr isplaceholder} 
            } else {
                error "wrong position in t= tag, should be `l', `r' or `t'"
            }
-           $c create ptext $tx $ty -text $txt -fill $color -textanchor $anch {*}$tkpFont(CanvasFont) -tags "dx submodext"
+           $c create ptext $tx $ty -text $txt -fill $color -textanchor $anch {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx submodext"
        }
 
        # r=<radius>,<fillcolor>,<color>,<width>; multiple r tags supported (r1,r2,etc)
@@ -857,7 +864,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr isplaceholder} 
 # This function is invoked from the module inspector C++ code.
 #
 proc ModuleInspector:drawEnclosingModule {c ptr name dispstr} {
-   global icons bitmaps inspectordata tkpFont
+   global icons bitmaps inspectordata tkpFont canvasTextOptions
    # puts "DEBUG: ModuleInspector:drawEnclosingModule $c $ptr $name $dispstr"
 
    set zoom $inspectordata($c:zoomfactor)
@@ -922,7 +929,7 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr} {
        # draw (note: width should grow *outside* the $sx-by-$sy inner rectangle)
        $c create prect [expr $bx-$width/2] [expr $by-$width/2] [expr $bx+$sx+$width/2] [expr $by+$sy+$width/2] \
            -fill $fill -strokewidth $width -stroke $outline -strokelinejoin miter -tags "dx mod $ptr"
-       $c create ptext [expr $bx+3] [expr $by+3] -text $name -textanchor nw {*}$tkpFont(CanvasFont) -tags "dx tooltip modname $ptr"
+       $c create ptext [expr $bx+3] [expr $by+3] -text $name -textanchor nw {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx tooltip modname $ptr"
 
        # background image
        if {![info exists tags(bgi)]} {set tags(bgi) {}}
@@ -1031,7 +1038,7 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr} {
            set color [lindex $tags($bgttag) 3]
            if {$color == ""} {set color black}
            if {[string index $color 0]== "@"} {set color [opp_hsb_to_rgb $color]}
-           $c create ptext $x $y -text $txt -fill $color -textanchor nw {*}$tkpFont(CanvasFont) -tags "dx"
+           $c create ptext $x $y -text $txt -fill $color -textanchor nw {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx"
        }
 
        $c lower mod
@@ -1048,7 +1055,7 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr} {
 # This function is invoked from the module inspector C++ code.
 #
 proc ModuleInspector:drawConnection {c gateptr dispstr srcptr destptr chanptr src_i src_n dest_i dest_n two_way} {
-    global inspectordata tkpFont
+    global inspectordata tkpFont canvasTextOptions
 
     # puts "DEBUG: ModuleInspector:drawConnection $c $gateptr $dispstr $srcptr $destptr $src_i $src_n $dest_i $dest_n $two_way"
 
@@ -1149,7 +1156,7 @@ proc ModuleInspector:drawConnection {c gateptr dispstr srcptr destptr chanptr sr
            } else {
                error "wrong position \"$pos\" in connection t= tag, should be `l', `r' or `t' (for beginning, end, or middle, respectively)"
            }
-           $c create ptext $x $y -text $txt -fill $color -textanchor $anch {*}$tkpFont(CanvasFont) -tags "dx submodext"
+           $c create ptext $x $y -text $txt -fill $color -textanchor $anch {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx submodext"
        }
 
     } errmsg] {
@@ -1164,7 +1171,7 @@ proc ModuleInspector:drawConnection {c gateptr dispstr srcptr destptr chanptr sr
 # This function is invoked from the message animation code.
 #
 proc ModuleInspector:drawMessage {c msgptr x y} {
-    global inspectordata anim_msg tkpFont
+    global inspectordata anim_msg tkpFont canvasTextOptions
 
     set zoomfactor $inspectordata($c:zoomfactor)
     set imagesizefactor $inspectordata($c:imagesizefactor)
@@ -1285,7 +1292,7 @@ proc ModuleInspector:drawMessage {c msgptr x y} {
         append msglabel $msgname
     }
     if {$msglabel!=""} {
-        $c create ptext $labelx $labely -text $msglabel -textanchor n {*}$tkpFont(CanvasFont) -tags "dx msgname $msgptr"
+        $c create ptext $labelx $labely -text $msglabel -textanchor n {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx msgname $msgptr"
     }
 
 }
