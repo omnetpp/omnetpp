@@ -29,6 +29,7 @@
  * - @ref Containers
  * - @ref RandomNumbers
  * - @ref Statistics
+ * - @ref Canvas
  * - @ref SimSupport
  * - @ref Envir
  * - @ref Logging
@@ -167,6 +168,49 @@
  * Some other classes closely related to the above ones are not listed
  * here explicitly, but you can find them via 'See also' links from their
  * main classes.
+ */
+
+/**
+ * @defgroup Canvas  Canvas and figure classes
+ *
+ * \opp provides a 2D figure-based drawing API. <!-- blank line needed for autobrief=yes -->
+ *
+ * One can create figure objects (derived from cFigure), and place them on
+ * a canvas (cCanvas). Every module has its own canvas (cModule::getCanvas()),
+ * and one may create additional ones directly. Figure classes are data
+ * storage classes only, actual rendering is in the GUI code (e.g. Tkenv).
+ * Figures form an object tree, where child figure coordinates are relative
+ * to the parent figure.
+ *
+ * cFigure contains the following utility classes:
+ *    - cFigure::Point, cFigure::Rectangle, cFigure::Color, cFigure::Font,
+ *      cFigure::Transform, cFigure::RGBA, cFigure::Pixmap.
+ *
+ * Figures for grouping:
+ *    - cGroupFigure - for grouping other figures, no visual appearance
+ *    - cPanelFigure - non-zooming container, no visual appearance
+ *
+ * Line figures:
+ *    - cLineFigure - a single line segment
+ *    - cArcFigure - arc
+ *    - cPolylineFigure - (smoothed) polyline
+ *
+ * Shape figures:
+ *    - cRectangleFigure - (rounded) rectangle
+ *    - cOvalFigure - circle or ellipse
+ *    - cRingFigure - ring
+ *    - cPieSliceFigure - pie slice
+ *    - cPolygonFigure - (smoothed) polygon
+ *    - cPathFigure - optionally filled path, modelled after SVG
+ *
+ * Text figures:
+ *    - cTextFigure - text
+ *    - cLabelFigure - non-zooming text
+ *
+ * Image figures:
+ *    - cImageFigure - image loaded from the image path
+ *    - cIconFigure - non-zooming image loaded from the image path
+ *    - cPixmapFigure - programmatically created image
  */
 
 /**

@@ -26,20 +26,14 @@ class cProperties;
 
 #define OMNETPP_CANVAS_VERSION  0x20150216  //XXX identifies canvas code version until API stabilizes
 
-//TODO move methods out-of-line, and protect setters with if(new!=old) conditions
-//TODO validation of input in setters, such as opacity, tintamount, size, etc (0<=x<=1, >=0, etc)
-//TODO more methods for Point and Rectangle? setPosition(), setSize(), getPosition(), setCenter()...
-//TODO split up to several files: ccanvas.h, cfigure.h, figures.h?
-//TODO utilize newest tkpath features, e.g. arrowheads, text halo, gradients, etc.
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
- *
- * A figure in the canvas (see cCanvas).
+ * A lightweight graphical object. Figures are rendered on a canvas (see cCanvas).
+ * Figures can be composed to create complex graphics.
  *
  * Notes:
  * - figures can be hierarchical (resulting in a figure tree)
- * - coordinates are in canvas units (usually meters), not in pixels! conversion uses the "bgs" (background scale) display string tag
+ * - coordinates are in canvas units (usually meters), not in pixels!
  * - coordinates are transformed with the figure's own transform plus the transforms of all ancestors
  * - a figure subtree can be hidden by calling setVisible(false)
  * - dup() makes shallow copy (doesn't copy child figures); see dupTree() as well
@@ -47,12 +41,14 @@ class cProperties;
  *   by separate renderer classes.
  *
  * @see cCanvas
+ * @ingroup Canvas
  */
 class SIM_API cFigure : public cOwnedObject
 {
     public:
         /**
          * Represents a point as (x,y) coordinates.
+         * @ingroup Canvas
          */
         struct SIM_API Point {
             double x, y;
@@ -71,6 +67,7 @@ class SIM_API cFigure : public cOwnedObject
 
         /**
          * Represents a rectangle as an (x,y,width,height) tuple.
+         * @ingroup Canvas
          */
         struct SIM_API Rectangle {
             double x, y, width, height;
@@ -89,6 +86,8 @@ class SIM_API cFigure : public cOwnedObject
          * GREY, RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA), as well as a collection of good dark and
          * light colors, suitable for e.g. chart drawing (see GOOD_DARK_COLORS and GOOD_LIGHT_COLORS)
          * are provided.
+         *
+         * @ingroup Canvas
          */
         struct SIM_API Color {
             uint8_t red, green, blue;
@@ -112,7 +111,8 @@ class SIM_API cFigure : public cOwnedObject
         static const Color GOOD_LIGHT_COLORS[10];
 
         /**
-         * Represents a properties of a font.
+         * Represents properties of a font.
+         * @ingroup Canvas
          */
         struct SIM_API Font {
             std::string typeface; // empty string means default font
@@ -134,10 +134,13 @@ class SIM_API cFigure : public cOwnedObject
         //enum Alignment { ALIGN_LEFT, ALIGN_RIGHT, ALIGN_CENTER }; // note: multi-line text is always left-aligned in tkpath
 
         /**
-         * Homogeneous transformation matrix (last column not stored)
+         * Homogeneous 2D transformation matrix (last column is not stored).
+         * <pre>
          *  | a  b  0 |
          *  | c  d  0 |
          *  | t1 t2 1 |
+         * </pre>
+         * @ingroup Canvas
          */
         struct SIM_API Transform {
                 double a, b, c, d, t1, t2;
@@ -164,8 +167,8 @@ class SIM_API cFigure : public cOwnedObject
         };
 
         /**
-         * RGBA pixel data, for Pixmap manipulation.
-         * @see Pixmap
+         * Represents an RGBA pixel, for Pixmap manipulation.
+         * @ingroup Canvas
          */
         struct SIM_API RGBA {
             uint8_t red, green, blue, alpha;
@@ -178,8 +181,9 @@ class SIM_API cFigure : public cOwnedObject
         };
 
         /**
-         * An RGBA rectangular pixel array.
+         * A rectangular RGBA pixel array.
          * @see cPixmapImage
+         * @ingroup Canvas
          */
         class SIM_API Pixmap {
             private:
@@ -297,7 +301,7 @@ class SIM_API cFigure : public cOwnedObject
 
         /** @name Miscellaneous. */
         //@{
-        virtual void parse(cProperty *property);
+        virtual void parse(cProperty *property);  // see getAllowedPropertyKeys(); plus, "x-*" keys can be added by the user
         virtual const char *getClassNameForRenderer() const {return getClassName();} // denotes renderer of which figure class to use; override if you want to subclass a figure while reusing renderer of the base class
         virtual void updateParentTransform(Transform& transform) {transform.leftMultiply(getTransform());}
 
@@ -377,9 +381,13 @@ STREAMOP(cFigure::Pixmap);
 
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ * A figure with the sole purpose of grouping its children. It has no visual
+ * appearance. The usefulness of a group figure comes from the fact that
+ * transformations are inherited from parent to child, thus, children
+ * of a group can be moved, scaled, rotated, etc. together by updating the
+ * group's transformation matrix.
  *
- * For grouping children. No visual appearance.
+ * @ingroup Canvas
  */
 class SIM_API cGroupFigure : public cFigure
 {
@@ -403,8 +411,6 @@ class SIM_API cGroupFigure : public cFigure
 };
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
- *
  * Sets up an axis-aligned, unscaled coordinate system for children, cancelling the
  * effect of any transformation (scaling, rotation, etc.) set up in ancestor figures.
  * This allows pixel-based positioning of children, and makes them immune to zooming.
@@ -413,6 +419,8 @@ class SIM_API cGroupFigure : public cFigure
  * and adding pixel offset to the coordinate system.
  *
  * The panel figure itself has no visual appearance.
+ *
+ * @ingroup Canvas
  */
 class SIM_API cPanelFigure : public cFigure
 {
@@ -448,10 +456,19 @@ class SIM_API cPanelFigure : public cFigure
 };
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ * Common base class for line figures. Provides line color, style, width,
+ * opacity, and other properties. Lines may also be augmented with arrowheads
+ * at either or both ends.
  *
- * Notes:
- * - line widths are in non-zooming pixels <- with tkpath, this is no longer the case (temporarily?)
+ * Transformations such as scaling or skew do affect the width of the line as it
+ * is rendered on the canvas. Whether zooming (by the user) should also affect
+ * it can be controlled by setting a flag (see setScaleLineWidth()).
+ *
+ * The rendering of zero-width lines is currently undefined. It is attempted
+ * to be rendered as a one pixel wide line, regardless of transforms and zoom
+ * level, but it is not possible on all platform.
+ *
+ * @ingroup Canvas
  */
 class SIM_API cAbstractLineFigure : public cFigure
 {
@@ -487,7 +504,7 @@ class SIM_API cAbstractLineFigure : public cFigure
         virtual const Color& getLineColor() const  {return lineColor;}
         virtual void setLineColor(const Color& lineColor)  {this->lineColor = lineColor; fireVisualChange();}
         virtual double getLineWidth() const  {return lineWidth;}
-        virtual void setLineWidth(double lineWidth)  {this->lineWidth = lineWidth; fireVisualChange();} // 0 is special: non-zooming 1-pixel wide, regardless of the scaleLineWidth flag
+        virtual void setLineWidth(double lineWidth)  {this->lineWidth = lineWidth; fireVisualChange();} // note: rendering of zero-width lines is undefined
         virtual double getLineOpacity() const  {return lineOpacity;}
         virtual void setLineOpacity(double lineOpacity)  {this->lineOpacity = lineOpacity; fireVisualChange();}
         virtual LineStyle getLineStyle() const  {return lineStyle;}
@@ -504,9 +521,11 @@ class SIM_API cAbstractLineFigure : public cFigure
 };
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ * A figure that displays a straight line segment. This class provides the
+ * coordinates of the end points. Other properties such as color and line style
+ * are inherited from cAbstractLineFigure.
  *
- * Tkenv limitation: there is one arrowhead type for the whole line (cannot be different at the two ends)
+ * @ingroup Canvas
  */
 class SIM_API cLineFigure : public cAbstractLineFigure
 {
@@ -542,12 +561,12 @@ class SIM_API cLineFigure : public cAbstractLineFigure
 };
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ * A figure that displays an arc. An arc's geometry is determined by the
+ * bounding box of the circle or ellipse the arc is part of, and the
+ * start and end angles. Other properties such as color and line style
+ * are inherited from cAbstractLineFigure.
  *
- * Notes:
- * - bounds are that of the oval that this arc is part of
- *
- * Tkenv limitation: capStyle and arrowheads not supported
+ * @ingroup Canvas
  */
 class SIM_API cArcFigure : public cAbstractLineFigure
 {
@@ -586,13 +605,19 @@ class SIM_API cArcFigure : public cAbstractLineFigure
 };
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ * A figure that displays a line consisting of multiple connecting straight
+ * line segments. The class stores geometry information as a sequence of
+ * points. The line may be <i>smoothed</i>. A smoothed line is drawn
+ * as a series of Bezier curves, which touch the start point of the first
+ * line segment, the end point of the last line segment, and the mindpoints
+ * of intermediate line segments, while intermediate points serve as control
+ * points.
  *
- * Notes:
- * - smooth=true makes the polyline use Bezier curvers, using midpoints of line segments as control points
- *   (except for the starting and ending Bezier curve, where the first and the last point is used)
+ * Additional properties such as color and line style are inherited from
+ * cAbstractLineFigure.
  *
- * Tkenv limitation: there is one arrowhead type for the whole line (cannot be different at the two ends)
+ * @see cPathFigure
+ * @ingroup Canvas
  */
 class SIM_API cPolylineFigure : public cAbstractLineFigure
 {
@@ -640,10 +665,23 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
 };
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ * Abstract base class for various shapes, providing line and fill color,
+ * line and fill opacity, line style, line width, and other properties
+ * for them. Both outline and fill are optional.
  *
- * Notes:
- * - line grows symmetrically (i.e. rectangle outline grows both inside and outside if lineWidth grows)
+ * When the outline is drawn with a width larger than one pixel, it will be
+ * drawn symmetrically, i.e. approximately 50-50% of its width will fall
+ * inside and outside the shape.
+ *
+ * Transformations such as scaling or skew do affect the width of the line as it
+ * is rendered on the canvas. Whether zooming (by the user) should also affect
+ * it can be controlled by setting a flag (see setScaleLineWidth()).
+ *
+ * The rendering of zero-width lines is currently undefined. It is attempted
+ * to be rendered as a one pixel wide line, regardless of transforms and zoom
+ * level, but it is not possible on all platform.
+ *
+ * @ingroup Canvas
  */
 class SIM_API cAbstractShapeFigure : public cFigure
 {
@@ -689,7 +727,7 @@ class SIM_API cAbstractShapeFigure : public cFigure
         virtual LineStyle getLineStyle() const  {return lineStyle;}
         virtual void setLineStyle(LineStyle lineStyle)  {this->lineStyle = lineStyle; fireVisualChange();}
         virtual double getLineWidth() const  {return lineWidth;}
-        virtual void setLineWidth(double lineWidth)  {this->lineWidth = lineWidth; fireVisualChange();}  // 0 is special: non-zooming 1-pixel wide, regardless of the scaleLineWidth flag
+        virtual void setLineWidth(double lineWidth)  {this->lineWidth = lineWidth; fireVisualChange();}  // note: rendering of zero-width lines undefined
         virtual double getLineOpacity() const  {return lineOpacity;}
         virtual void setLineOpacity(double lineOpacity)  {this->lineOpacity = lineOpacity; fireVisualChange();}
         virtual double getFillOpacity() const  {return fillOpacity;}
@@ -700,7 +738,12 @@ class SIM_API cAbstractShapeFigure : public cFigure
 };
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ * A figure that displays a rectangle, with optionally rounded corners.
+ * As with all shape figures, drawing of both the outline and the fill
+ * are optional. Line and fill color, and several other properties are
+ * inherited from cAbstractShapeFigure.
+ *
+ * @ingroup Canvas
  */
 class SIM_API cRectangleFigure : public cAbstractShapeFigure
 {
@@ -742,7 +785,11 @@ class SIM_API cRectangleFigure : public cAbstractShapeFigure
 };
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ * A figure that draws a circle or ellipse. As with all shape figures, drawing
+ * of both the outline and the fill are optional. Line and fill color, and
+ * several other properties are inherited from cAbstractShapeFigure.
+ *
+ * @ingroup Canvas
  */
 class SIM_API cOvalFigure : public cAbstractShapeFigure
 {
@@ -776,7 +823,13 @@ class SIM_API cOvalFigure : public cAbstractShapeFigure
 };
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ * A figure that displays a ring, with explicitly controllable inner/outer radii.
+ * The inner/outer circles (or ellipses) form the outline, and the area between
+ * them is filled. As with all shape figures, drawing of both the outline and
+ * the fill are optional. Line and fill color, and several other properties are
+ * inherited from cAbstractShapeFigure.
+ *
+ * @ingroup Canvas
  */
 class SIM_API cRingFigure : public cAbstractShapeFigure
 {
@@ -815,12 +868,14 @@ class SIM_API cRingFigure : public cAbstractShapeFigure
 };
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ * A figure that displays a pie slice, that is, a section of an axis-aligned disc
+ * or filled ellipse. A pie slice is determined by the bounding box of the full
+ * disc or ellipse, and a start and an end angle. The outline of the pie slice
+ * consists of an arc and two radii. As with all shape figures, drawing of
+ * both the outline and the fill are optional. Line and fill color, and several
+ * other properties are inherited from cAbstractShapeFigure.
  *
- * Draws a section of an axis-aligned ellipse (i.e. an arc), together with radii going to
- * the endpoints of the arc. As with all shape figures, both the outline and the fill are optional.
- *
- * Note: bounds are that of the oval that this pie slice is part of.
+ * @ingroup Canvas
  */
 class SIM_API cPieSliceFigure : public cAbstractShapeFigure
 {
@@ -859,10 +914,16 @@ class SIM_API cPieSliceFigure : public cAbstractShapeFigure
 };
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ * A figure that displays a (closed) polygon, determined by a sequence of points.
+ * The polygon may be <i>smoothed</i>. A smoothed polygon is drawn as a series
+ * of cubic Bezier curves, where the curves touch the midpoints of the sides,
+ * and vertices serve as control points. As with all shape figures, drawing of
+ * both the outline and the fill are optional. The drawing of filled self-
+ * intersecting polygons is controlled by the <i>fill rule</i> property.
+ * Line and fill color, and several other properties are inherited from
+ * cAbstractShapeFigure.
  *
- * Note:
- * - smooth makes the polygon use Bezier curves, using midpoints of line segments as control points
+ * @ingroup Canvas
  */
 class SIM_API cPolygonFigure : public cAbstractShapeFigure
 {
@@ -913,11 +974,18 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
 };
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ * A figure that displays a "path", a complex shape or line modeled after SVG
+ * paths. A path is may consist of any number of straight line segments, Bezier
+ * curves and arcs. The path can be disjoint as well. Closed paths may be filled.
+ * The drawing of filled self-intersecting polygons is controlled by the
+ * <i>fill rule</i> property. Line and fill color, and several other properties
+ * are inherited from cAbstractShapeFigure.
  *
- * Draws a "path", modeled after the similar concept in SVG. A path is a line consisting any number
- * of straight line segments, Bezier curves and arcs. The path can be disjoint as well. Closed paths
- * may be filled.
+ * The path may be specified with a string similar to an SVG path, or assembled
+ * by calling methods that append new segments (straight lines, arcs or Bezier
+ * curves) to the existing path.
+ *
+ * @ingroup Canvas
  */
 class SIM_API cPathFigure : public cAbstractShapeFigure
 {
@@ -986,9 +1054,10 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
 };
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ * Abstract base class for figures that display text. Text may be multi-line.
+ * Font, color, opacity, position and anchoring are specified in this class.
  *
- * Text may be multi-line, and in that case lines are left-aligned within the bounding box.
+ * @ingroup Canvas
  */
 class SIM_API cAbstractTextFigure : public cFigure
 {
@@ -1040,9 +1109,11 @@ class SIM_API cAbstractTextFigure : public cFigure
 };
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ * A figure that displays text which is affected by zooming and transformations.
+ * Font, color, position, anchoring and other properties are inherited from
+ * cAbstractTextFigure.
  *
- * Note: font size is in zooming pixels
+ * @ingroup Canvas
  */
 class SIM_API cTextFigure : public cAbstractTextFigure
 {
@@ -1063,9 +1134,12 @@ class SIM_API cTextFigure : public cAbstractTextFigure
 };
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ * A figure that displays text which is unaffected by zooming or
+ * transformations, except its position.
+ * Font, color, position, anchoring and other properties are inherited from
+ * cAbstractTextFigure.
  *
- * Note: not affected by transforms or zoom, except its position
+ * @ingroup Canvas
  */
 class SIM_API cLabelFigure : public cAbstractTextFigure
 {
@@ -1086,15 +1160,35 @@ class SIM_API cLabelFigure : public cAbstractTextFigure
 };
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ * Abstract base class for figures that display an image.
  *
- * Base class for image figures.
+ * The location of the image on the canvas is determined jointly by the
+ * <i>position</i> and <i>anchor</i> properties. The anchor tells how to
+ * position the image relative to the positioning point. For example,
+ * if anchor is ANCHOR_CENTER then the image is centered on the point;
+ * if anchor is ANCHOR_N then the image will be drawn so that its top center
+ * point is at the positioning point. Anchor defaults to ANCHOR_CENTER.
+ *
+ * Images may be drawn at their "natural" size, or may be scaled to a
+ * specified size by settign the width and/or height properties. One can
+ * choose from several interpolation modes that control how the image is
+ * rendered. Interpolation defaults to INTERPOLATION_FAST.
+ *
+ * Images can be tinted; this feature is controlled by a tint color and
+ * a tint amount, a [0,1] real number.
+ *
+ * Images may be rendered as partially transparent, which is controlled
+ * by the opacity property, a [0,1] real number. (The rendering process
+ * will combine this property with the transparency information contained
+ * within the image, i.e. the alpha channel.)
+ *
+ * @ingroup Canvas
  */
 class SIM_API cAbstractImageFigure : public cFigure
 {
     private:
         Point position;
-        Anchor anchor;  // note: do not use the ANCHOR_BASELINE_START/MIDDLE/END constants
+        Anchor anchor;  // note: do not use the ANCHOR_BASELINE_START/MIDDLE/END constants, as they are for text items
         double width, height; // zero or negative values mean using the image's own size
         Interpolation interpolation;
         double opacity;
@@ -1144,9 +1238,12 @@ class SIM_API cAbstractImageFigure : public cFigure
 };
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ * A figure that displays an image, typically an icon or a background image,
+ * loaded from the OMNeT++ image path. Positioning and other properties
+ * are inherited from cAbstractImageFigure.
  *
- * Displays an image (typically an icon or a background image) loaded from the image path
+ * @see cIconFigure, cPixmapFigure
+ * @ingroup Canvas
  */
 class SIM_API cImageFigure : public cAbstractImageFigure
 {
@@ -1179,9 +1276,14 @@ class SIM_API cImageFigure : public cAbstractImageFigure
 };
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ * A figure that displays an image, typically an icon or a background image,
+ * loaded from the OMNeT++ image path, in a non-zooming way.
+ *
+ * Positioning and other properties are inherited from cAbstractImageFigure.
  *
  * Note: not affected by transforms or zoom, except its position
+ *
+ * @ingroup Canvas
  */
 class SIM_API cIconFigure : public cImageFigure
 {
@@ -1202,9 +1304,12 @@ class SIM_API cIconFigure : public cImageFigure
 };
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
+ * A figure that displays an image that can be manipulated programmatically.
+ * A pixmap figure may be used to display e.g. a heat map. Support for scaling
+ * and various interpolation modes are useful here.
  *
- * Displays a pixel matrix created programmatically
+ * @see cFigure::Pixmap
+ * @ingroup Canvas
  */
 class SIM_API cPixmapFigure : public cAbstractImageFigure
 {
@@ -1251,8 +1356,6 @@ class SIM_API cPixmapFigure : public cAbstractImageFigure
 };
 
 /**
- * EXPERIMENTAL CLASS, NOT PART OF THE OFFICIAL OMNeT++ API! ALL DETAILS ARE SUBJECT TO CHANGE.
- *
  * Provides a scene graph based 2D drawing API for modules.
  *
  * Notes:
@@ -1260,14 +1363,15 @@ class SIM_API cPixmapFigure : public cAbstractImageFigure
  * - Z-order is defined by child order (bottom-to-top) and preorder traversal
  * - layer-like functionality is provided via figure tags: the Tkenv UI will allow figures
  *   to be shown or hidden according to tags they contain
- * - cModule has one dedicated canvas, additional canvas objects can be created (and Tkenv *will* allow the user to inspect them)
- * - initial module canvas contents comes from @figure properties inside the compound module NED file, see test/anim/canvas for examples!
+ * - cModule has one dedicated canvas, additional canvas objects can be created
+ * - initial module canvas contents comes from @figure properties inside the compound module NED file, see samples/canvas for examples!
  * - extensibility: type=foo in a @figure property will cause the canvas to look for a registered FooFigure or cFooFigure class to instantiate
  * - dup() makes deep copy (duplicates the figure tree too)
  * - the submodules layer (see getSubmodulesLayer()) is currently an empty placeholder figure where Tkenv will
  *   draw modules and connections (by means outside cCanvas/cFigure) -- it can be used for Z-order positioning
  *   of other figures relative to the submodules and connections
  *
+ * @ingroup Canvas
  */
 class SIM_API cCanvas : public cOwnedObject
 {
