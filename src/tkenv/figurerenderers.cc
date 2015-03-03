@@ -704,6 +704,17 @@ std::string PathFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, c
     return opp_isblank(path) ? "M 0 0" : path;  // empty path causes error (item will not be be created)
 }
 
+void PathFigureRenderer::addMatrix(cFigure *figure, const cFigure::Transform& transform, int& argc, const char *argv[])
+{
+    // modify transform with offset
+    cPathFigure *pathFigure = check_and_cast<cPathFigure*>(figure);
+    cFigure::Point offset = pathFigure->getOffset();
+
+    cFigure::Transform tmp = cFigure::Transform().translate(offset.x, offset.y).multiply(transform);
+
+    AbstractShapeRenderer::addMatrix(figure, tmp, argc, argv);
+}
+
 void PathFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, hints);

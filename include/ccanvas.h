@@ -955,7 +955,7 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
         /** @name Figure attributes */
         //@{
         virtual const Point& getOffset() const {return offset;}
-        virtual void setOffset(const Point& offset) {this->offset = offset; fireGeometryChange();}
+        virtual void setOffset(const Point& offset) {this->offset = offset; fireGeometryChange(); fireTransformChange();}
         virtual const char *getPath() const {return path.c_str();}
         virtual void setPath(const char *path);  // accepts SVG path string
         virtual void clearPath();

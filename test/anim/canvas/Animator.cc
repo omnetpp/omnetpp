@@ -25,10 +25,8 @@ void Animator::handleMessage(cMessage *msg)
 
     oval->rotate(-0.005, 500, 150);
 	
-	
-	cPathFigure *path = check_and_cast<cPathFigure*>(getParentModule()->getCanvas()->findFigureRecursively("path1"));
-	
-	path->move(sin(simTime().dbl() / 10.0) * 2, 0);
+    cPathFigure *path = check_and_cast<cPathFigure*>(getParentModule()->getCanvas()->findFigureRecursively("path1"));
+    path->move(10 * sin(simTime().dbl() / 10.0), 0);
 	
     scheduleAt(simTime()+1, msg);
 }

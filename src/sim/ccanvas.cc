@@ -2021,9 +2021,7 @@ void cPathFigure::addClosePath()
 
 void cPathFigure::move(double x, double y)
 {
-    offset.x += x;
-    offset.y += y;
-    fireGeometryChange();
+    setOffset(Point(getOffset()).translate(x,y));
 }
 
 //----
