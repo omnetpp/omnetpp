@@ -8,9 +8,10 @@
 	- OS X: images are not forced into 1-bit transparency
 	- better performance
 
-	Extra improvements:
+	Extra changes/improvements:
+	- labels are now outlined (have a "halo") to make them readable on noisy backgrounds
 	- range indicator fill is now semi-transparent (because Tkpath supports that)
-	- scale default icon
+	- "increase/decrease icon size" menu item now also affects the default icon
 
 2015-02-14  Andras Varga
 

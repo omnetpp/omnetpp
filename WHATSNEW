@@ -83,17 +83,33 @@ Cmdenv:
 
 Tkenv:
 
+ - The bgs (background scaling) display string tag has been removed. It was
+   originally introduced more or less as a default zoom level, but lost its
+   significance since interactive zoom has been introduced.
+
+ - Zooming no longer affects icon sizes on the screen (but you still have
+   the Increase/Decrease Icon Size, Ctrl+I/Ctrl+O menu items in Tkenv).
+
  - Finished implementation of the Canvas API Tkenv rendering. The
    implementation is based on figure renderers (see FigureRenderer class)
    that can be registered for various figure classes.
-   The implementation is based on the TkPath Tcl/Tk extension, which was
+   The implementation is based on the Tkpath Tcl/Tk extension, which was
    significantly enhanced by our team.
+
+ - Tkpath is now also used internally for drawing submodules, connections
+   and the like. Benefits include:
+   - unlimited zooming of image backgrounds
+   - antialiased drawing (Tk canvas didn't have antialiasing)
+   - OS X: images are no longer forced into 1-bit transparency
+   - labels are now outlined (have a "halo") to make them readable on noisy backgrounds
+   - range indicator fill is now semi-transparent (because Tkpath supports that)
+   - performance improvements e.g. on OS X, and with image backgrounds
 
  - Display log prefix; log prefix format and log level configurable via the Options dialog
 
 IDE:
 
- - Several minor improvements.
+ - Several minor improvements. NED editor support for canvas items is pending.
 
 Example simulations:
 

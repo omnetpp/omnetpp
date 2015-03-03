@@ -33,11 +33,11 @@
 	        cPolylineFigure - (smoothed) polyline
 	      cAbstractShapeFigure - shape, both fill and outline is optional
 	        cRectangleFigure - (rounded) rectangle
-	        cOvalFigure - cirle or ellipse
+	        cOvalFigure - circle or ellipse
 	        cRingFigure - ring
 	        cPieSliceFigure - pie slice
 	        cPolygonFigure - (smoothed) polygon
-	        cPathFigure - optinally filled path, modelled after SVG
+	        cPathFigure - optionally filled path, modelled after SVG
 	      cAbstractTextFigure
 	        cTextFigure - text
 	        cLabelFigure - non-zooming text
