@@ -1,7 +1,7 @@
 module scaling
 {
     parameters:
-        @display("bgi=misc/cloud_vl,s;bgb=,,,green4,10;bgg=50,2;bgs=2.5");
+        @display("bgi=misc/cloud_vl,s;bgb=,,,green4,10;bgg=50,2");
     submodules:
         icon: Dummy {
             @display("p=75.2,24.8;i=block/encrypt;r=20,,,10");

@@ -2,7 +2,7 @@
 module scaling2
 {
     parameters:
-        @display("bgb=5,3;bgs=100,km;bgg=1,2");
+        @display("bgb=5,3;bgg=1,2");
     types:
         module Host {
             double x = default(0);
