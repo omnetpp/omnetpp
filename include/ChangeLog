@@ -1,3 +1,21 @@
+2015-02-14  Andras Varga
+
+	* Eliminated platdep/intxtypes.h, as recent versions of MSVC finally
+	have <stdint.h>.
+
+	* Removed int8..int64 and uint8..uint64 typedefs (defined in the removed
+	platdep/intxtypes.h). We should use the standard ones from <stdint.h>
+	that end in "_t": int8_t, uint8_t, etc.
+
+	* Removed opp_long_long (and opp_unsigned_long_long), they only existed
+	because earler versions of MSVC didn't know about long long.
+
+	* Added platdeps/intlimits.h to contain INT64_MAX and similar macros.
+	They are supposed to come from <stdint.h> but that's problematic:
+	<stdint.h> only defines them when __STDC_LIMIT_MACROS is defined before
+	including the header *for the first time*. So if model code includes
+	<stdint.h> before us without __STDC_LIMIT_MACROS, we'd be toast.
+
 2015-02-08  Andras Varga
 
 	* added Register_Enum2() macro, which registers an enum and at the same time
@@ -52,7 +70,7 @@
 	Use the standard ones with the _t suffix.
 
 	* Removed opp_long_long, which was an alias to long long, with a hack
-	to make the code compile with Visual C++ 7.1 and earlier. Modern 
+	to make the code compile with Visual C++ 7.1 and earlier. Modern
 	Visual C++ versions support long long, so this typedef is no longer
 	needed.
 
@@ -1481,6 +1499,11 @@
 	to objects can also be watched with WATCH_OBJ() and WATCH_PTR().
 
 	* added cstlwatch.h: macros WATCH_VECTOR(), WATCH_PTRVECTOR, etc
+
+2005-07-09  Andras Varga
+
+	* platdep/time.h: added opp_asctime() which produces string
+	representation of time time in "yyyy-mm-dd hh:mm:ss" format
 
 2005-06-25  Andras Varga
 

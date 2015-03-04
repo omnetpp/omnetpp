@@ -18,10 +18,10 @@
 
 //
 // MIN/MAX macros for integral types, copied from <stdint.h>.
-// Note that we need to define them ourselves, because if
-// <stdint.h> is included somewhere without __STDC_LIMIT_MACROS,
-// nothing can be done anymore. Brilliant design from the C
-// standards commitee.
+// Note that we need to define them ourselves, because if <stdint.h>
+// is first included without __STDC_LIMIT_MACROS somewhere, these macros
+// remain unavailable and nothing can be done about it anymore.
+// Brilliant design from the C standards commitee.
 //
 
 // Minimum of signed integral types.

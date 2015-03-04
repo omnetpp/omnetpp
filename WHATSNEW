@@ -52,6 +52,9 @@ Core:
    - added factory methods for links and edges
    - added methods to manipulate the graph (e.g. build a graph from scratch)
 
+ - Removed int8..int64 and uint8..uint64. Models should use the standard integer
+   types from <stdint.h> that end in "_t": int8_t, uint8_t, etc.
+
  - check_and_cast<> improved; added check_and_cast_nullable<> that accepts NULL
    pointer as input
 
