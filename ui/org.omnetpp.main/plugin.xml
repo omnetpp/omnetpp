@@ -12,7 +12,7 @@
           <property name="preferenceCustomization" value="plugin_customization.ini"/>
          <property
           		name="introTitle"
-          		value="Introduction to OMNeT++ 4"/>
+          		value="Introduction to OMNeT++"/>
           <property
           		name="introBrandingImage"
 			value="product:/icons/intro-image.png"/>
