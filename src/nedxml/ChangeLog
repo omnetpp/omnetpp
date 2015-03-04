@@ -1,3 +1,5 @@
+2015-03-04  ------ omnetpp-5.0b1 released ------
+
 2014-09-23  Andras Varga
 
 	* fix #772: trim property values in NED, as each reformatting added a space

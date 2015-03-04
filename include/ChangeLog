@@ -1,3 +1,5 @@
+2015-03-04  ------ omnetpp-5.0b1 released ------
+
 2015-02-14  Andras Varga
 
 	* Eliminated platdep/intxtypes.h, as recent versions of MSVC finally

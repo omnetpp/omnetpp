@@ -1,3 +1,5 @@
+2015-03-04  ------ omnetpp-5.0b1 released ------
+
 2015-02-15  Andras varga
 
 	* opp_makedep: sort the dependencies (minimizes conflicts during rebase)
