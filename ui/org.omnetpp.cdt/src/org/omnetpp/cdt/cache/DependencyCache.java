@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -139,6 +140,7 @@ public class DependencyCache {
     }
 
     static class CachedData {
+        Map<IFile, List<IncludeStatement>> fileIncludeStatements;
         // per-project dependency data computed from the above
         Map<IProject,ProjectDependencyData> projectDependencyDataMap = new HashMap<IProject, ProjectDependencyData>();
     }
@@ -146,6 +148,7 @@ public class DependencyCache {
     // all cached data are stored in CachedData which is immutable (we don't change its content once it's created),
     // so we don't have any concurrency issues and need no locks
     private CachedData cachedData = null;
+    private boolean cachedDataInvalid = true;
 
     // listeners
     private ISourceFileChangeListener sourceFileChangeListener = new ISourceFileChangeListener() {
@@ -178,9 +181,22 @@ public class DependencyCache {
         CoreModel.getDefault().removeCProjectDescriptionListener(projectDescriptionListener);
     }
 
+    protected void invalidateFileIncludes(IFile file) {
+        cachedData.fileIncludeStatements.remove(file);
+        // go through all resolved includes in all projects, and invalidate those files which include the given file
+        for (ProjectDependencyData p : cachedData.projectDependencyDataMap.values())
+            for (Entry<IncludeStatement, List<IFile>> e : p.includeResolutions.entrySet())
+                for (IFile f : e.getValue())
+                    if (file.equals(f))
+                        invalidateFileIncludes(e.getKey().file);
+    }
+
     protected void sourceFileChanged(IResourceDelta delta) {
-        Debug.format("DependencyCache: source file %s changed, discarding dependency info\n", delta.getResource().getLocation());
-        cachedData = null;
+        IResource changedFile = delta.getResource();
+        Debug.format("DependencyCache: source file %s changed, discarding dependency info\n", changedFile.getLocation());
+        if (cachedData != null)
+            invalidateFileIncludes((IFile)changedFile);
+        cachedDataInvalid = true;
     }
 
     protected void projectDescriptionChanged(CProjectDescriptionEvent e) {
@@ -192,6 +208,7 @@ public class DependencyCache {
 
         // clear cache
         cachedData = null;
+        cachedDataInvalid = true;
     }
 
     /**
@@ -200,6 +217,7 @@ public class DependencyCache {
      */
     public synchronized void clean(IProject project) {
         cachedData = null;
+        cachedDataInvalid = true;
     }
 
     /**
@@ -209,8 +227,9 @@ public class DependencyCache {
      * where UI responsiveness is an issue.
      */
     public synchronized Map<IContainer,Set<IContainer>> getCrossFolderDependencies(IProject project, IProgressMonitor monitor) throws CoreException {
-        if (cachedData == null) {
+        if (cachedDataInvalid) {
             cachedData = computeCachedData(monitor);
+            cachedDataInvalid = false;
         }
         ProjectDependencyData projectData = cachedData.projectDependencyDataMap.get(project);
         return projectData.crossFolderDependencies;
@@ -227,8 +246,10 @@ public class DependencyCache {
      * where UI responsiveness is an issue.
      */
     public synchronized Map<IContainer,Map<IFile,Set<IFile>>> getPerFileDependencies(IProject project, IProgressMonitor monitor) throws CoreException {
-        if (cachedData == null)
+        if (cachedDataInvalid) {
             cachedData = computeCachedData(monitor);
+            cachedDataInvalid = false;
+        }
         ProjectDependencyData projectData = cachedData.projectDependencyDataMap.get(project);
         return projectData.perFileDependencies;
     }
@@ -238,8 +259,10 @@ public class DependencyCache {
      * Note: may take long: needs to invoked from a background job where UI responsiveness is an issue.
      */
     public synchronized IProject[] getProjectGroup(IProject project, IProgressMonitor monitor) throws CoreException {
-        if (cachedData == null)
+        if (cachedDataInvalid) {
             cachedData = computeCachedData(monitor);
+            cachedDataInvalid = false;
+        }
         ProjectDependencyData projectData = cachedData.projectDependencyDataMap.get(project);
         return projectData.projectGroup.toArray(new IProject[]{});
     }
@@ -280,6 +303,7 @@ public class DependencyCache {
             if (monitor != null)
                 monitor.subTask("Computing Dependencies");
             CachedData data = new CachedData();
+            data.fileIncludeStatements = fileIncludeStatements;
             for (IProject project : projects) {
                 data.projectDependencyDataMap.put(project, computeDependencies(project, fileIncludeStatements, markerSync));
                 if (monitor != null)
@@ -373,7 +397,12 @@ public class DependencyCache {
                     addMarker(markerSync, resource, IMarker.SEVERITY_ERROR, "Linked resources are not supported by Makefiles");
                 if (resource instanceof IFile) {
                     IFile file = (IFile) resource;
-                    result.put(file, collectFileIncludeStatements(file));
+                    List<IncludeStatement> includes = null;
+                    if (cachedData != null)
+                        includes = cachedData.fileIncludeStatements.get(file);
+                    if (includes == null)
+                        includes = collectFileIncludeStatements(file);
+                    result.put(file, includes);
                     count[0]++;
                     if (monitor != null)
                         monitor.worked(1);
