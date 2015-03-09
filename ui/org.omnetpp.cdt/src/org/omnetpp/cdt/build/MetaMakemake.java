@@ -72,7 +72,7 @@ public class MetaMakemake {
         MakemakeOptions options = buildSpec.getMakemakeOptions(makefileFolder);
         List<IContainer> makeFolders = buildSpec.getMakeFolders();
         IProject project = makefileFolder.getProject();
-        Map<IContainer, Set<IContainer>> folderDeps = Activator.getDependencyCache().getFolderDependencies(project, monitor);
+        Map<IContainer, Set<IContainer>> folderDeps = Activator.getDependencyCache().getCrossFolderDependencies(project, monitor);
 
         MakemakeOptions translatedOptions = options.clone();
 

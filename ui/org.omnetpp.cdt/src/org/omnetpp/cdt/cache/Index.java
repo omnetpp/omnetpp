@@ -46,7 +46,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.cache.CppScanner.IScannerEventListener;
-import org.omnetpp.cdt.cache.FileCache.ISourceFileChangeListener;
+import org.omnetpp.cdt.cache.CompressedSourceFileCache.ISourceFileChangeListener;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.StringUtils;
@@ -83,12 +83,12 @@ public class Index {
     };
 
     public void hookListeners() {
-        Activator.getFileCache().addFileChangeListener(sourceFileChangeListener);
+        Activator.getCompressedSourceFileCache().addFileChangeListener(sourceFileChangeListener);
         CoreModel.getDefault().addCProjectDescriptionListener(projectDescriptionListener, CProjectDescriptionEvent.APPLIED);
     }
 
     public void unhookListeners() {
-        Activator.getFileCache().removeFileChangeListener(sourceFileChangeListener);
+        Activator.getCompressedSourceFileCache().removeFileChangeListener(sourceFileChangeListener);
         CoreModel.getDefault().removeCProjectDescriptionListener(projectDescriptionListener);
     }
 

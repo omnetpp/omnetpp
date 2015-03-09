@@ -101,8 +101,8 @@ public class GenerateMakemakefileHandler extends AbstractHandler {
         BuildSpecification buildSpec = BuildSpecification.readBuildSpecFile(project); //XXX possible IllegalArgumentException
         IContainer[] makemakeFolders = buildSpec.getMakemakeFolders().toArray(new IContainer[]{});
         Map<IContainer, String> targetNames = generateTargetNames(makemakeFolders);
-        Map<IContainer, Set<IContainer>> folderDependencies = Activator.getDependencyCache().getFolderDependencies(project, monitor);
-        String makeMakeFile = generateMakeMakefile(makemakeFolders, folderDependencies, targetNames);
+        Map<IContainer, Set<IContainer>> crossFolderDependencies = Activator.getDependencyCache().getCrossFolderDependencies(project, monitor);
+        String makeMakeFile = generateMakeMakefile(makemakeFolders, crossFolderDependencies, targetNames);
         IFile file = project.getFile("Makemakefile");
         MakefileTools.ensureFileContent(file, makeMakeFile.getBytes(), monitor);
     }

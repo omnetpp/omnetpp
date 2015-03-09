@@ -37,7 +37,7 @@ import org.omnetpp.cdt.build.MakefileTools;
  * format of the file.
  * <p>
  * Paths of non-existing files are also cached. When the CPreprocessor resolves
- * the includes, it tries to load the file from each direcory in the include path.
+ * the includes, it tries to load the file from each directory in the include path.
  * Therefore it generates a lot of query with non-existing files, and we can spare
  * the time of File.exists() calls if we cache the results.
  * <p>
@@ -46,7 +46,7 @@ import org.omnetpp.cdt.build.MakefileTools;
  * @author tomi
  */
 @SuppressWarnings("restriction")
-public class FileCache {
+public class CompressedSourceFileCache {
 
     // relative paths of standard headers grouped by their last segment
     protected static final Map<String,IPath[]> standardHeaders;
@@ -77,11 +77,11 @@ public class FileCache {
 
     private IResourceChangeListener resourceChangeListener = new IResourceChangeListener() {
         public void resourceChanged(IResourceChangeEvent event) {
-            FileCache.this.resourceChanged(event);
+            CompressedSourceFileCache.this.resourceChanged(event);
         }
     };
 
-    public FileCache() {
+    public CompressedSourceFileCache() {
     }
 
     public void hookListeners() {

@@ -48,7 +48,7 @@ import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.build.MakefileBuilder;
 import org.omnetpp.cdt.build.MakefileTools;
-import org.omnetpp.cdt.cache.FileCache.ISourceFileChangeListener;
+import org.omnetpp.cdt.cache.CompressedSourceFileCache.ISourceFileChangeListener;
 import org.omnetpp.cdt.cache.Index.IndexFile;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
@@ -91,13 +91,13 @@ public class DependencyCache {
     /**
      * Represents an #include in a C++ file
      */
-    static class Include {
+    static class IncludeStatement {
         public String filename; // the included file name
         public boolean isSysInclude; // true: <foo.h>, false: "foo.h"
         public IFile file; // the file containing the #include (needed to make Include unique so we can use it as Map<> key)
         public int line = -1; // line number of the #include line
 
-        public Include(IFile file, int line, String filename, boolean isSysInclude) {
+        public IncludeStatement(IFile file, int line, String filename, boolean isSysInclude) {
             Assert.isTrue(filename != null);
             this.isSysInclude = isSysInclude;
             this.filename = filename;
@@ -125,7 +125,7 @@ public class DependencyCache {
         public boolean equals(Object obj) {
             if (obj == null || getClass() != obj.getClass())
                 return false;
-            Include other = (Include) obj;
+            IncludeStatement other = (IncludeStatement) obj;
             return this == obj || (file.equals(other.file) && line==other.line && filename.equals(other.filename) && isSysInclude == other.isSysInclude);
         }
     }
@@ -133,8 +133,8 @@ public class DependencyCache {
     static class ProjectDependencyData {
         IProject project;
         List<IProject> projectGroup;  // this project and its referenced projects
-        Map<Include,List<IFile>> includeResolutions; // ideally it would be Map<Include,IFile>, but we want to store all candidates for ambiguous #includes
-        Map<IContainer,Set<IContainer>> folderDependencies;
+        Map<IncludeStatement,List<IFile>> includeResolutions; // ideally it would be Map<Include,IFile>, but we want to store all candidates for ambiguous #includes
+        Map<IContainer,Set<IContainer>> crossFolderDependencies;
         Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies;
     }
 
@@ -168,13 +168,13 @@ public class DependencyCache {
 
     public void hookListeners() {
         //ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener);
-        Activator.getFileCache().addFileChangeListener(sourceFileChangeListener);
+        Activator.getCompressedSourceFileCache().addFileChangeListener(sourceFileChangeListener);
         CoreModel.getDefault().addCProjectDescriptionListener(projectDescriptionListener, CProjectDescriptionEvent.APPLIED);
     }
 
     public void unhookListeners() {
         //ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
-        Activator.getFileCache().removeFileChangeListener(sourceFileChangeListener);
+        Activator.getCompressedSourceFileCache().removeFileChangeListener(sourceFileChangeListener);
         CoreModel.getDefault().removeCProjectDescriptionListener(projectDescriptionListener);
     }
 
@@ -208,12 +208,12 @@ public class DependencyCache {
      * Note: may be a long-running operation, so it needs to invoked from a background job
      * where UI responsiveness is an issue.
      */
-    public synchronized Map<IContainer,Set<IContainer>> getFolderDependencies(IProject project, IProgressMonitor monitor) throws CoreException {
+    public synchronized Map<IContainer,Set<IContainer>> getCrossFolderDependencies(IProject project, IProgressMonitor monitor) throws CoreException {
         if (cachedData == null) {
             cachedData = computeCachedData(monitor);
         }
         ProjectDependencyData projectData = cachedData.projectDependencyDataMap.get(project);
-        return projectData.folderDependencies;
+        return projectData.crossFolderDependencies;
     }
 
     /**
@@ -272,16 +272,16 @@ public class DependencyCache {
             // collect list of #include directives per file in all open projects; cover .msg files but NOT _m.cc/h files
             if (monitor != null)
                 monitor.subTask("Collecting Includes");
-            Map<IFile,List<Include>> fileIncludes = new HashMap<IFile, List<Include>>();
+            Map<IFile,List<IncludeStatement>> fileIncludeStatements = new HashMap<IFile, List<IncludeStatement>>();
             for (IProject project : projects)
-                fileIncludes.putAll(collectIncludes(project, markerSync, monitor));
+                fileIncludeStatements.putAll(collectIncludeStatementsInProject(project, markerSync, monitor));
 
             // resolve includes and compute dependencies
             if (monitor != null)
                 monitor.subTask("Computing Dependencies");
             CachedData data = new CachedData();
             for (IProject project : projects) {
-                data.projectDependencyDataMap.put(project, computeDependencies(project, fileIncludes, markerSync));
+                data.projectDependencyDataMap.put(project, computeDependencies(project, fileIncludeStatements, markerSync));
                 if (monitor != null)
                     monitor.worked(1);
             }
@@ -353,17 +353,17 @@ public class DependencyCache {
         return count[0];
     }
 
-    protected Map<IFile, List<Include>> collectIncludes(IProject project, final ProblemMarkerSynchronizer markerSync, final IProgressMonitor monitor) throws CoreException {
+    protected Map<IFile, List<IncludeStatement>> collectIncludeStatementsInProject(IProject project, final ProblemMarkerSynchronizer markerSync, final IProgressMonitor monitor) throws CoreException {
 
         // collect #includes using the index, or (for msg files) by directly parsing the file
         Debug.println("DependencyCache: collecting #includes in project " + project.getName());
         long startTime = System.currentTimeMillis();
-        int startCachedFiles = Activator.getFileCache().getNumberOfFiles();
+        int startCachedFiles = Activator.getCompressedSourceFileCache().getNumberOfFiles();
         int startIndexedFiles = Activator.getIndex().getNumberOfFiles();
         final int[] count = new int[1];
 
         // collect active #includes from all C++ source files; also warn for linked-in files
-        final Map<IFile, List<Include>> result = new HashMap<IFile, List<Include>>();
+        final Map<IFile, List<IncludeStatement>> result = new HashMap<IFile, List<IncludeStatement>>();
         visitNonGeneratedSourceFiles(project, new IResourceVisitor() {
             public boolean visit(IResource resource) throws CoreException {
                 if (monitor != null && monitor.isCanceled())
@@ -373,7 +373,7 @@ public class DependencyCache {
                     addMarker(markerSync, resource, IMarker.SEVERITY_ERROR, "Linked resources are not supported by Makefiles");
                 if (resource instanceof IFile) {
                     IFile file = (IFile) resource;
-                    result.put(file, collectFileIncludes(file));
+                    result.put(file, collectFileIncludeStatements(file));
                     count[0]++;
                     if (monitor != null)
                         monitor.worked(1);
@@ -383,7 +383,7 @@ public class DependencyCache {
         });
 
         long endTime = System.currentTimeMillis();
-        int endCachedFiles = Activator.getFileCache().getNumberOfFiles();
+        int endCachedFiles = Activator.getCompressedSourceFileCache().getNumberOfFiles();
         int endIndexedFiles = Activator.getIndex().getNumberOfFiles();
         Debug.format("  processed %d files in %dms (cached: %d/%d, indexed: %d/%d)\n",
                             count[0], endTime - startTime,
@@ -396,10 +396,10 @@ public class DependencyCache {
     /**
      * Collect #includes from a C++ source file or a msg file
      */
-    protected static List<Include> collectFileIncludes(IFile file) throws CoreException {
+    protected static List<IncludeStatement> collectFileIncludeStatements(IFile file) throws CoreException {
         //Debug.println("Collect includes from " + file.getLocation());
 
-        List<Include> result = new ArrayList<Include>();
+        List<IncludeStatement> result = new ArrayList<IncludeStatement>();
         if (MakefileTools.isCppFile(file) || MakefileTools.isMsgFile(file) || MakefileTools.isSmFile(file)) {
             try {
                 Index index = Activator.getIndex();
@@ -422,7 +422,7 @@ public class DependencyCache {
                             //     the line numbers in the AST will be wrong. They cannot be cured by adding #line directives
                             //     to the generated file contents, because CPreprocessor ignores them. So we did not fill the line
                             //     numbers here. The line number can be computed by getLineForInclude() when needed.
-                            result.add(new Include(file, -1, include.getFullName(), include.isSystemInclude()));
+                            result.add(new IncludeStatement(file, -1, include.getFullName(), include.isSystemInclude()));
                         }
                     }
                 }
@@ -434,7 +434,7 @@ public class DependencyCache {
         return result;
     }
 
-    protected ProjectDependencyData computeDependencies(IProject project, Map<IFile, List<Include>> fileIncludes, ProblemMarkerSynchronizer markerSync) {
+    protected ProjectDependencyData computeDependencies(IProject project, Map<IFile, List<IncludeStatement>> fileIncludes, ProblemMarkerSynchronizer markerSync) {
         Debug.println("DependencyCache: computing dependency info for project " + project.getName());
 
         ProjectDependencyData data = new ProjectDependencyData();
@@ -451,24 +451,24 @@ public class DependencyCache {
         }
 
         // collect list of .h and .cc files in this project group (also, add _m.cc/_m.h for msg files)
-        Map<IFile,List<Include>> cppSourceFiles = collectCppSourceFilesInProjectGroup(data.projectGroup, fileIncludes, markerSync);
+        Map<IFile,List<IncludeStatement>> cppSourceFiles = collectCppSourceFilesInProjectGroup(data.projectGroup, fileIncludes, markerSync);
 
         // resolve includes
-        data.includeResolutions = resolveIncludes(cppSourceFiles, markerSync);
+        data.includeResolutions = resolveIncludeStatements(cppSourceFiles, markerSync);
 
         // calculate per-file dependencies
         data.perFileDependencies = calculatePerFileDependencies(data.includeResolutions, cppSourceFiles, markerSync);
 
         // calculate folder dependencies
-        data.folderDependencies = calculateFolderDependencies(data.includeResolutions, cppSourceFiles, markerSync);
+        data.crossFolderDependencies = calculateCrossFolderDependencies(data.includeResolutions, cppSourceFiles, markerSync);
 
         return data;
     }
 
-    protected Map<IFile,List<Include>> collectCppSourceFilesInProjectGroup(List<IProject> projectGroup, Map<IFile, List<Include>> fileIncludes, ProblemMarkerSynchronizer markerSync) {
+    protected Map<IFile,List<IncludeStatement>> collectCppSourceFilesInProjectGroup(List<IProject> projectGroup, Map<IFile, List<IncludeStatement>> fileIncludes, ProblemMarkerSynchronizer markerSync) {
         // collect list of .h and .cc files in this project group
         // (meanwhile resolve msg files to _m.cc and _m.h)
-        Map<IFile,List<Include>> cppSourceFiles = new HashMap<IFile,List<Include>>();
+        Map<IFile,List<IncludeStatement>> cppSourceFiles = new HashMap<IFile,List<IncludeStatement>>();
         for (IFile file : fileIncludes.keySet()) {
             if (projectGroup.contains(file.getProject())) {
                 if (file.getFileExtension().equals("msg")) {
@@ -478,8 +478,8 @@ public class DependencyCache {
                     IFile mhFile = file.getParent().getFile(new Path(file.getName().replaceFirst("\\.msg$", "_m.h")));
                     IFile mccFile = file.getParent().getFile(new Path(file.getName().replaceFirst("\\.msg$", "_m.cc")));
                     cppSourceFiles.put(mhFile, fileIncludes.get(file));
-                    List<Include> mccIncludes = new ArrayList<Include>();
-                    mccIncludes.add(new Include(mccFile, -1, mhFile.getName(), false));
+                    List<IncludeStatement> mccIncludes = new ArrayList<IncludeStatement>();
+                    mccIncludes.add(new IncludeStatement(mccFile, -1, mhFile.getName(), false));
                     cppSourceFiles.put(mccFile, mccIncludes);
                 }
                 else if (file.getFileExtension().equals("sm")) {
@@ -487,8 +487,8 @@ public class DependencyCache {
                     IFile smhFile = file.getParent().getFile(new Path(file.getName().replaceFirst("\\.sm$", "_sm.h")));
                     IFile smccFile = file.getParent().getFile(new Path(file.getName().replaceFirst("\\.sm$", "_sm.cc")));
                     cppSourceFiles.put(smhFile, fileIncludes.get(file));
-                    List<Include> smccIncludes = new ArrayList<Include>();
-                    smccIncludes.add(new Include(smccFile, -1, smhFile.getName(), false));
+                    List<IncludeStatement> smccIncludes = new ArrayList<IncludeStatement>();
+                    smccIncludes.add(new IncludeStatement(smccFile, -1, smhFile.getName(), false));
                     cppSourceFiles.put(smccFile, smccIncludes);
                 }
                 else {
@@ -499,8 +499,8 @@ public class DependencyCache {
         return cppSourceFiles;
     }
 
-    protected Map<Include,List<IFile>> resolveIncludes(Map<IFile,List<Include>> cppSourceFiles, ProblemMarkerSynchronizer markerSync) {
-        Map<Include,List<IFile>> includeResolutions = new HashMap<DependencyCache.Include, List<IFile>>();
+    protected Map<IncludeStatement,List<IFile>> resolveIncludeStatements(Map<IFile,List<IncludeStatement>> cppSourceFiles, ProblemMarkerSynchronizer markerSync) {
+        Map<IncludeStatement,List<IFile>> includeResolutions = new HashMap<DependencyCache.IncludeStatement, List<IFile>>();
 
         // build a hash table of files in this project group, for easy lookup by name
         Map<String,List<IFile>> filesByName = new HashMap<String, List<IFile>>();
@@ -512,10 +512,10 @@ public class DependencyCache {
         }
 
         // resolve includes in each file
-        includeResolutions = new HashMap<Include, List<IFile>>();
+        includeResolutions = new HashMap<IncludeStatement, List<IFile>>();
         for (IFile file : cppSourceFiles.keySet()) {
             IContainer container = file.getParent();
-            for (Include include : cppSourceFiles.get(file)) {
+            for (IncludeStatement include : cppSourceFiles.get(file)) {
                 if (include.isSysInclude && standardHeaders.contains(include.filename)) {
                     // this is a standard C/C++ header file, just ignore.
                     // Note: non-standards angle-bracket #includes will be resolved and
@@ -563,12 +563,12 @@ public class DependencyCache {
         return includeResolutions;
     }
 
-    protected Map<IContainer,Map<IFile,Set<IFile>>> calculatePerFileDependencies(Map<Include, List<IFile>> includeResolutions, Map<IFile, List<Include>> cppSourceFiles, ProblemMarkerSynchronizer markerSync) {
+    protected Map<IContainer,Map<IFile,Set<IFile>>> calculatePerFileDependencies(Map<IncludeStatement, List<IFile>> includeResolutions, Map<IFile, List<IncludeStatement>> cppSourceFiles, ProblemMarkerSynchronizer markerSync) {
         // for each file, collect the list of files it includes
         Map<IFile,Set<IFile>> includedFilesMap = new HashMap<IFile, Set<IFile>>();
         for (IFile file : cppSourceFiles.keySet()) {
             Set<IFile> includedFiles = new HashSet<IFile>();
-            for (Include include : cppSourceFiles.get(file))
+            for (IncludeStatement include : cppSourceFiles.get(file))
                 if (includeResolutions.containsKey(include))
                     for (IFile includedFile : includeResolutions.get(include))
                         includedFiles.add(includedFile);
@@ -599,7 +599,7 @@ public class DependencyCache {
         return result;
     }
 
-    protected Map<IContainer,Set<IContainer>> calculateFolderDependencies(Map<Include, List<IFile>> includeResolutions, Map<IFile, List<Include>> cppSourceFiles, ProblemMarkerSynchronizer markerSync) {
+    protected Map<IContainer,Set<IContainer>> calculateCrossFolderDependencies(Map<IncludeStatement, List<IFile>> includeResolutions, Map<IFile, List<IncludeStatement>> cppSourceFiles, ProblemMarkerSynchronizer markerSync) {
         // process each file, and gradually expand dependencies list
         Map<IContainer,Set<IContainer>> result = new HashMap<IContainer,Set<IContainer>>();
 
@@ -609,7 +609,7 @@ public class DependencyCache {
                 result.put(container, new HashSet<IContainer>());
             Set<IContainer> currentDeps = result.get(container);
 
-            for (Include include : cppSourceFiles.get(file)) {
+            for (IncludeStatement include : cppSourceFiles.get(file)) {
                 if (includeResolutions.containsKey(include)) {
                     for (IFile includedFile : includeResolutions.get(include)) {
                         IContainer dependency;
@@ -648,7 +648,7 @@ public class DependencyCache {
         return result;
     }
 
-    protected void addMarker(ProblemMarkerSynchronizer markerSynchronizer, Include include, int severity, String message) {
+    protected void addMarker(ProblemMarkerSynchronizer markerSynchronizer, IncludeStatement include, int severity, String message) {
         int line = include.line;
         if (line == -1) {
             // note: the CDT index doesn't store the line numbers of #includes, so we need to figure it out now
@@ -684,8 +684,8 @@ public class DependencyCache {
         return -1;
     }
 
-    public static void dumpFolderDependencies(Map<IContainer, Set<IContainer>> deps) {
-        Debug.println("Folder dependencies:");
+    public static void dumpCrossFolderDependencies(Map<IContainer, Set<IContainer>> deps) {
+        Debug.println("Cross-folder dependencies:");
         for (IContainer folder : deps.keySet()) {
             Debug.print("  " + folder.getFullPath().toString() + " depends on: ");
             for (IContainer dep : deps.get(folder)) {

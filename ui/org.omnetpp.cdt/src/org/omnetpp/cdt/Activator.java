@@ -22,7 +22,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.omnetpp.cdt.cache.DependencyCache;
-import org.omnetpp.cdt.cache.FileCache;
+import org.omnetpp.cdt.cache.CompressedSourceFileCache;
 import org.omnetpp.cdt.cache.IncludeFoldersCache;
 import org.omnetpp.cdt.cache.Index;
 import org.omnetpp.cdt.cache.NewConfigConfigurer;
@@ -47,7 +47,7 @@ public class Activator extends AbstractUIPlugin {
     private DependencyCache dependencyCache = new DependencyCache();
     private NewConfigConfigurer newConfigConfigurer = new NewConfigConfigurer();
     private CProjectChecker cprojectChecker = new CProjectChecker();
-    private FileCache fileCache = new FileCache();
+    private CompressedSourceFileCache compressedSourceFileCache = new CompressedSourceFileCache();
     private Index index = new Index();
 
     /**
@@ -69,7 +69,7 @@ public class Activator extends AbstractUIPlugin {
         dependencyCache.hookListeners();
         newConfigConfigurer.hookListeners();
         cprojectChecker.hookListeners();
-        fileCache.hookListeners();
+        compressedSourceFileCache.hookListeners();
         index.hookListeners();
 
         cprojectChecker.checkAllOpenProjects();
@@ -94,7 +94,7 @@ public class Activator extends AbstractUIPlugin {
         dependencyCache.unhookListeners();
         newConfigConfigurer.unhookListeners();
         cprojectChecker.unhookListeners();
-        fileCache.unhookListeners();
+        compressedSourceFileCache.unhookListeners();
         index.unhookListeners();
 
         plugin = null;
@@ -211,8 +211,8 @@ public class Activator extends AbstractUIPlugin {
         return getDefault().newConfigConfigurer;
     }
 
-    public static FileCache getFileCache() {
-        return getDefault().fileCache;
+    public static CompressedSourceFileCache getCompressedSourceFileCache() {
+        return getDefault().compressedSourceFileCache;
     }
 
     public static Index getIndex() {
