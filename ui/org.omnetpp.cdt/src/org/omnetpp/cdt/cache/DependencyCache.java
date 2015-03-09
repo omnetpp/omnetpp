@@ -186,9 +186,8 @@ public class DependencyCache {
         // go through all resolved includes in all projects, and invalidate those files which include the given file
         for (ProjectDependencyData p : cachedData.projectDependencyDataMap.values())
             for (Entry<IncludeStatement, List<IFile>> e : p.includeResolutions.entrySet())
-                for (IFile f : e.getValue())
-                    if (file.equals(f))
-                        invalidateFileIncludes(e.getKey().file);
+                if (e.getValue().contains(file))
+                    invalidateFileIncludes(e.getKey().file);
     }
 
     protected void sourceFileChanged(IResourceDelta delta) {
