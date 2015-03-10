@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -182,12 +183,24 @@ public class DependencyCache {
     }
 
     protected void invalidateFileIncludes(IFile file) {
+        invalidateFileIncludesRec(file, new Stack<IFile>());
+    }
+
+    protected void invalidateFileIncludesRec(IFile file, Stack<IFile> visitedFiles) {
+        if (visitedFiles.contains(file))
+            return;  // catch infinite recursion
+        visitedFiles.push(file);
+
+        // invalidate this file's #include statement list
         cachedData.fileIncludeStatements.remove(file);
+
         // go through all resolved includes in all projects, and invalidate those files which include the given file
         for (ProjectDependencyData p : cachedData.projectDependencyDataMap.values())
             for (Entry<IncludeStatement, List<IFile>> e : p.includeResolutions.entrySet())
                 if (e.getValue().contains(file))
-                    invalidateFileIncludes(e.getKey().file);
+                    invalidateFileIncludesRec(e.getKey().file, visitedFiles); // visit the file that #included this one
+
+        visitedFiles.pop();
     }
 
     protected void sourceFileChanged(IResourceDelta delta) {
