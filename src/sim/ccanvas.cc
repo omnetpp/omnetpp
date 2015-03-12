@@ -2016,7 +2016,7 @@ void cPathFigure::addSmoothCubicBezierCurveRel(double dx2, double dy2, double dx
 
 void cPathFigure::addClosePath()
 {
-    appendPath("Z");
+    appendPath(" Z");
 }
 
 void cPathFigure::move(double x, double y)
