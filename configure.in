@@ -760,7 +760,7 @@ if test -n "$NO_TCL"; then
     TKENV_IF_POSSIBLE=missing-dependency
 
     # and build samples using Cmdenv (TBD)
-    ALL_ENV_LIBS='$(CMDENV_LIBS)'
+    ALL_ENV_LIBS='$(CMDENV_LIBS) $(QTENV_LIBS)'
 
 else
 
@@ -856,7 +856,7 @@ else
     TKENV_IF_POSSIBLE=tkenv
 
     # and build samples using Tkenv
-    ALL_ENV_LIBS='$(TKENV_LIBS) $(CMDENV_LIBS)'
+    ALL_ENV_LIBS='$(TKENV_LIBS) $(CMDENV_LIBS) $(QTENV_LIBS)'
 
 fi # end of Tcl tests ($NO_TCL=="" branch)
 

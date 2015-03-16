@@ -171,6 +171,8 @@ int setupUserInterface(int argc, char *argv[])
             ignorablekeys += " cmdenv-*";
         if (omnetapps.getInstance()->lookup("Tkenv") == nullptr)
             ignorablekeys += " tkenv-*";
+        if (omnetapps.getInstance()->lookup("Qtenv")==NULL)
+            ignorablekeys += " qtenv-*";
         configobject->validate(ignorablekeys.c_str());
 
         //

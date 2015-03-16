@@ -30,8 +30,9 @@ PSAPI_LIB=-lpsapi
 endif
 
 COPTS=$(CFLAGS) $(AKAROA_CFLAGS) $(INCL_FLAGS) -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN) -DSHARED_LIB_SUFFIX="\"$(SHARED_LIB_SUFFIX)\""
+QTLIBS= -lQt5Gui -lQt5Widgets -lQt5Core
 
-IMPLIBS= -L$L -loppsim$D -loppnedxml$D -loppcommon$D $(XML_LIBS)
+IMPLIBS= -L$L -loppsim$D -loppnedxml$D -loppcommon$D $(XML_LIBS) $(QTLIBS)
 
 OBJS= $O/appreg.o $O/args.o $O/startup.o $O/evmain.o $O/logformatter.o $O/envirbase.o $O/fsutils.o \
       $O/sectionbasedconfig.o $O/inifilereader.o $O/scenario.o $O/valueiterator.o \

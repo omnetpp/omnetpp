@@ -1,0 +1,138 @@
+#
+# Global definitions
+#
+!include ..\..\configuser.vc
+
+# Make sure that output locations are set
+!if "$(OMNETPP_BIN_DIR)"==""
+!error OMNETPP_BIN_DIR must be correctly set
+!endif
+!if "$(OMNETPP_OUT_DIR)"==""
+!error OMNETPP_OUT_DIR must be correctly set
+!endif
+!if "$(OMNETPP_LIB_DIR)"==""
+!error OMNETPP_LIB_DIR must be correctly set
+!endif
+
+#
+# Local definitions
+#
+LIBNAME=oppqtenv$D
+O=$(OMNETPP_OUT_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)-$(MODE)/src/qtenv
+L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
+
+COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../common -I../envir /Fd"$O/$(LIBNAME).pdb"
+IMPLIBS= $O/../sim/oppsim$D.lib $O/../envir/oppenvir$D.lib $O/../common/oppcommon$D.lib
+
+OBJS= $O/qtenv.obj
+
+!if "$(LIB_SUFFIX)"==".dll"
+COPTS= $(COPTS) -DQTENV_EXPORT
+!endif
+
+#
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+{.}.cc{$O}.obj:
+	$(Q)$(CXX) /Fo"$@" $(CXXFLAGS) $(COPTS) /c /Tp $<
+
+
+#
+# Targets
+#
+all: $O/$(LIBNAME)$(LIB_SUFFIX)
+
+$O/$(LIBNAME).lib : $(OBJS) $L
+	@echo Creating LIB: $@
+	$(Q)$(AR) /out:"$@" $(OBJS)
+	$(Q)copy $(O:/=\)\$(LIBNAME).lib $(L:/=\) 1>nul
+	-$(Q)copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 1>nul
+
+$O/$(LIBNAME).dll : $(OBJS) $L
+	@echo Creating DLL: $@
+	$(Q)$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS) $(LDFLAGS)
+	$(Q)copy $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\) 1>nul
+	-$(Q)copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 1>nul
+	$(Q)copy $(O:/=\)\$(LIBNAME).lib $(L:/=\) 1>nul
+	-$(Q)copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 1>nul
+
+$(OBJS): $O
+
+$O $L:
+	@md $(@:/=\)
+
+depend:
+	$(qecho) Creating dependencies...
+	$(Q)$(MAKEDEPEND) -I../../include -fMakefile.vc -P^$O/ -- *.cc
+
+clean:
+	$(qecho) Cleaning...
+	-$(Q)rmdir /s /q $(O:/=\) 2>nul
+	-$(Q)del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+$O/qtenv.obj: qtenv.cc \
+  ../../include/carray.h \
+  ../../include/cchannel.h \
+  ../../include/cclassdescriptor.h \
+  ../../include/ccomponent.h \
+  ../../include/ccomponenttype.h \
+  ../../include/cconfigoption.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cdensityestbase.h \
+  ../../include/cdisplaystring.h \
+  ../../include/cenum.h \
+  ../../include/cenvir.h \
+  ../../include/cevent.h \
+  ../../include/cexception.h \
+  ../../include/cexpression.h \
+  ../../include/cgate.h \
+  ../../include/checkandcast.h \
+  ../../include/clifecyclelistener.h \
+  ../../include/clistener.h \
+  ../../include/clog.h \
+  ../../include/cmessage.h \
+  ../../include/cmessageheap.h \
+  ../../include/cmodule.h \
+  ../../include/cmsgpar.h \
+  ../../include/cnamedobject.h \
+  ../../include/cnedmathfunction.h \
+  ../../include/cnedvalue.h \
+  ../../include/cobject.h \
+  ../../include/cobjectfactory.h \
+  ../../include/coutvector.h \
+  ../../include/cownedobject.h \
+  ../../include/cpar.h \
+  ../../include/cproperties.h \
+  ../../include/cproperty.h \
+  ../../include/cqueue.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cresultfilter.h \
+  ../../include/cresultlistener.h \
+  ../../include/cresultrecorder.h \
+  ../../include/cscheduler.h \
+  ../../include/csimplemodule.h \
+  ../../include/csimulation.h \
+  ../../include/cstatistic.h \
+  ../../include/cstddev.h \
+  ../../include/cstringpool.h \
+  ../../include/ctimestampedvalue.h \
+  ../../include/cvisitor.h \
+  ../../include/cwatch.h \
+  ../../include/errmsg.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/intlimits.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/platdep/timeutil.h \
+  ../../include/regmacros.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  qtdefs.h \
+  qtenv.h

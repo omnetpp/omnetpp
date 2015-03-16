@@ -1023,6 +1023,7 @@ $O/outputvectorinspector.o: outputvectorinspector.cc \
   tkenv.h \
   tklib.h \
   tkutil.h
+$O/tclcode.o: tclcode.cc
 $O/tkcmd.o: tkcmd.cc \
   ../../include/omnetpp/carray.h \
   ../../include/omnetpp/ccanvas.h \
@@ -1194,6 +1195,7 @@ $O/tkenv.o: tkenv.cc \
   logbuffer.h \
   loginspector.h \
   moduleinspector.h \
+  tclcode.cc \
   tkdefs.h \
   tkenv.h \
   tklib.h \
