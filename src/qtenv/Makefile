@@ -33,9 +33,9 @@ COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../common 
 
 IMPLIBS= -L$L -loppsim$D -loppenvir$D -loppcommon$D
 
-QTENVUILIB= ui/libqtenv-ui.a
+QTENVUILIB= libqtenv-ui.a
 
-OBJS= $(QTENVUILIB) $O/qtenv.o
+OBJS= $O/$(QTENVUILIB) $O/qtenv.o
 
 #
 # Automatic rules
@@ -55,9 +55,9 @@ all: $L/$(LIBNAME)$(LIB_SUFFIX)
 	$(Q)cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && $(LN) $(TOOLCHAIN_NAME)/$(LIBNAME).* .
 
 
-$(QTENVUILIB):
+$O/$(QTENVUILIB):
 	@echo Creating the static UI library...
-	$(Q)cd ui && qmake && make && cd ..
+	$(Q)qmake -Wall -o $O/Makefile && (cd $O && make)
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $L
@@ -170,5 +170,4 @@ $O/qtenv.o: qtenv.cc \
   ../envir/speedometer.h \
   ../envir/visitor.h \
   qtdefs.h \
-  qtenv.h \
-  ui/mainwindow.h
+  qtenv.h

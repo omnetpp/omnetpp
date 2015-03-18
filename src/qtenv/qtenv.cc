@@ -58,7 +58,7 @@
 
 
 #include <QApplication>
-#include "ui/mainwindow.h"
+#include "mainwindow.h"
 
 NAMESPACE_BEGIN
 
