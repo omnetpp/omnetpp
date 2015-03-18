@@ -202,6 +202,18 @@ void Qtenv::readPerRunOptions()
 void Qtenv::doRun()
 {
     {
+   
+   int argc = 0;
+   char **argv = NULL;
+    QApplication a(argc, argv);
+
+    // this isn't in the right place either
+    mainwindow = new MainWindow();
+    
+    mainwindow->show();
+
+    a.exec();
+
         // '-c' and '-r' option: configuration to activate, and run numbers to run.
         // Both command-line options take precedence over inifile settings.
         // (NOTE: inifile settings *already* got read at this point! as EnvirBase::setup()
@@ -373,13 +385,6 @@ void Qtenv::simulate() //XXX probably not needed anymore -- take over interestin
     // XXX this really shouldn't be created here, and certainly not this way
     int argc = 1;
     char * argv[] = {"..."};
-    new QApplication(argc, argv);
-   
-    
-    // this isn't in the right place either
-    mainwindow = new MainWindow();
-    
-    mainwindow->show();
     
     // implement graceful exit when Ctrl-C is hit during simulation. We want
     // to finish the current event, then normally exit via callFinish() etc
