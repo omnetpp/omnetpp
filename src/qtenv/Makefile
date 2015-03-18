@@ -26,12 +26,12 @@ L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
 # when expanded, this is the output of
 # pkg-config --cflags Qt5Core Qt5Gui Qt5Widgets
 # FIXME hardcoded path. Shoud be handled with pkg-config 
-QTPREFIX= /usr/include/x86_64-linux-gnu
-QTINCLUDES= -I$(QTPREFIX)/qt5/QtGui -I$(QTPREFIX)/qt5 -I$(QTPREFIX)/qt5/QtCore -I$(QTPREFIX)/qt5/QtWidgets
+#QTPREFIX= /usr/include/x86_64-linux-gnu
+#QTINCLUDES= -I$(QTPREFIX)/qt5/QtGui -I$(QTPREFIX)/qt5 -I$(QTPREFIX)/qt5/QtCore -I$(QTPREFIX)/qt5/QtWidgets
 
-COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../common -I../envir -DBUILDING_QTENV $(QTINCLUDES)
+COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../common -I../envir -DBUILDING_QTENV $(QT_CFLAGS)
 
-IMPLIBS= -L$L -loppsim$D -loppenvir$D -loppcommon$D
+IMPLIBS= -L$L -loppsim$D -loppenvir$D -loppcommon$D $(QT_LIBS)
 
 QTENVUILIB= libqtenv-ui.a
 

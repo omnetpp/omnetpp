@@ -1,1 +1,0 @@
-LIBS = -lQt5Gui -lQt5Widgets -lQt5Core

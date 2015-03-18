@@ -122,6 +122,9 @@ NO_TCL = @NO_TCL@
 HAVE_DLOPEN = @HAVE_DLOPEN@
 TK_CFLAGS = @TK_CFLAGS@
 TK_LIBS = @TK_LIBS@
+QT_CFLAGS = @QT_CFLAGS@
+QT_LIBS = @QT_LIBS@
+QT_STATIC_LIBS = @QT_STATIC_LIBS@
 ZLIB_CFLAGS = @ZLIB_CFLAGS@
 ZLIB_LIBS = @ZLIB_LIBS@
 HAVE_MPI = @HAVE_MPI@
@@ -171,6 +174,7 @@ else
   # extra libs we are indirectly depend on. they are needed if we are building statically
   KERNEL_LIBS += -loppnedxml$D -loppcommon$D $(XML_LIBS) 
   TKENV_LIBS += $(TK_LIBS) $(ZLIB_LIBS)
+  QTENV_LIBS += $(QT_STATIC_LIBS)
 
   ifeq ($(WITH_PARSIM),yes)
     ifeq ($(HAVE_MPI),yes)
