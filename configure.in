@@ -750,26 +750,29 @@ fi
 # winsock (for MinGW)
 OPP_CHECK_LIB(winsock, winsock.h, socket(0,0,0), , -lwsock32, wsock_ok, SYS_LIBS="-lwsock32 $SYS_LIBS")
 
+# Cmdenv is always used
+ALL_ENV_LIBS='$(CMDENV_LIBS)'
 
 #-----------------------------
 # Check for QT cflags and libs
 #-----------------------------
+if test -n "$NO_QT"; then
+    # skip building QT
+    QTENV_IF_POSSIBLE=missing-dependency
+else
 # FIXME not sure whether it's ok to depend on the presence of the pkg-config
-QT_CFLAGS=`pkg-config --cflags Qt5Gui Qt5Widgets Qt5Core`
-QT_LIBS=`pkg-config --libs Qt5Gui Qt5Widgets Qt5Core`
-
+    QT_CFLAGS=`pkg-config --cflags Qt5Gui Qt5Widgets Qt5Core`
+    QT_LIBS=`pkg-config --libs Qt5Gui Qt5Widgets Qt5Core`
+    ALL_ENV_LIBS+=' $(QTENV_LIBS)'
+    QTENV_IF_POSSIBLE=qtenv
+fi
 
 #----------------------
 # Check for Tcl/Tk.
 #----------------------
 if test -n "$NO_TCL"; then
-
     # skip testing for TCL
     TKENV_IF_POSSIBLE=missing-dependency
-
-    # and build samples using Cmdenv (TBD)
-    ALL_ENV_LIBS='$(CMDENV_LIBS) $(QTENV_LIBS)'
-
 else
 
    if test -d /usr/include/tcl8.6; then
@@ -864,7 +867,7 @@ else
     TKENV_IF_POSSIBLE=tkenv
 
     # and build samples using Tkenv
-    ALL_ENV_LIBS='$(TKENV_LIBS) $(CMDENV_LIBS) $(QTENV_LIBS)'
+    ALL_ENV_LIBS+=' $(TKENV_LIBS)'
 
 fi # end of Tcl tests ($NO_TCL=="" branch)
 
@@ -1227,6 +1230,7 @@ AC_SUBST(AKAROA_CFLAGS)
 AC_SUBST(AKAROA_LIBS)
 
 AC_SUBST(TKENV_IF_POSSIBLE)
+AC_SUBST(QTENV_IF_POSSIBLE)
 AC_SUBST(JNILIBS_IF_POSSIBLE)
 
 AC_SUBST(ALL_ENV_LIBS)

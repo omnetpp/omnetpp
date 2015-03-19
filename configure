@@ -593,6 +593,7 @@ OMNETPP_TKENV_DIR
 EMBED_TCL_CODE
 ALL_ENV_LIBS
 JNILIBS_IF_POSSIBLE
+QTENV_IF_POSSIBLE
 TKENV_IF_POSSIBLE
 AKAROA_LIBS
 AKAROA_CFLAGS
@@ -4624,26 +4625,29 @@ rm -f core conftest.err conftest.$ac_objext \
    LIBS=$save_LIBS
 
 
+# Cmdenv is always used
+ALL_ENV_LIBS='$(CMDENV_LIBS)'
 
 #-----------------------------
 # Check for QT cflags and libs
 #-----------------------------
+if test -n "$NO_QT"; then
+    # skip building QT
+    QTENV_IF_POSSIBLE=missing-dependency
+else
 # FIXME not sure whether it's ok to depend on the presence of the pkg-config
-QT_CFLAGS=`pkg-config --cflags Qt5Gui Qt5Widgets Qt5Core`
-QT_LIBS=`pkg-config --libs Qt5Gui Qt5Widgets Qt5Core`
-
+    QT_CFLAGS=`pkg-config --cflags Qt5Gui Qt5Widgets Qt5Core`
+    QT_LIBS=`pkg-config --libs Qt5Gui Qt5Widgets Qt5Core`
+    ALL_ENV_LIBS+=' $(QTENV_LIBS)'
+    QTENV_IF_POSSIBLE=qtenv
+fi
 
 #----------------------
 # Check for Tcl/Tk.
 #----------------------
 if test -n "$NO_TCL"; then
-
     # skip testing for TCL
     TKENV_IF_POSSIBLE=missing-dependency
-
-    # and build samples using Cmdenv (TBD)
-    ALL_ENV_LIBS='$(CMDENV_LIBS) $(QTENV_LIBS)'
-
 else
 
    if test -d /usr/include/tcl8.6; then
@@ -5395,7 +5399,7 @@ test -n "$WISH" || WISH="nope"
     TKENV_IF_POSSIBLE=tkenv
 
     # and build samples using Tkenv
-    ALL_ENV_LIBS='$(TKENV_LIBS) $(CMDENV_LIBS) $(QTENV_LIBS)'
+    ALL_ENV_LIBS+=' $(TKENV_LIBS)'
 
 fi # end of Tcl tests ($NO_TCL=="" branch)
 
@@ -6461,6 +6465,7 @@ ac_config_files="$ac_config_files Makefile.inc test/core/runtest"
 #----------------------
 # Substitutions.
 #----------------------
+
 
 
 

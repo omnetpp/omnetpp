@@ -126,6 +126,22 @@ SHARED_LIBS=yes
 # below lets you build just the non-GUI components.
 
 #
+# Compiler and linker options for Qt
+#
+# You can explicitly tell 'configure' which compile switches (QT_CFLAGS)
+# and linker switches (QT_LIBS) are needed to build an application with Qt support.
+# Normally these settings are autodetected by 'configure', so you only need to
+# edit here if autodetection doesn't work.
+#
+#QT_CFLAGS=
+#QT_LIBS=
+
+
+# If you don't have QT installed, uncommenting
+# below lets you build without Qtenv
+#NO_QT=true
+
+#
 # ZLib is a compression library needed by libxml2 and Tkenv's png support.
 #
 # On MinGW we use the following (dynamically linking against the DLL)

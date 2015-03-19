@@ -51,7 +51,9 @@ $O/%.o: %.cc
 #
 # Targets
 #
-all: $L/$(LIBNAME)$(LIB_SUFFIX)
+all: $(QTENV_IF_POSSIBLE)
+
+qtenv: $L/$(LIBNAME)$(LIB_SUFFIX)
 	$(Q)cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && $(LN) $(TOOLCHAIN_NAME)/$(LIBNAME).* .
 
 
@@ -92,6 +94,9 @@ clean:
 	$(Q)rm -rf $O
 	$(Q)rm -f $L/$(LIBNAME).* $(OMNETPP_LIB_DIR)/$(LIBNAME).*
 
+missing-dependency:
+	@echo '  *** No QT installation found -- skipping Qtenv.'
+	@echo '  *** Install it, then run ./configure again.'
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/qtenv.o: qtenv.cc \
