@@ -611,7 +611,6 @@ MPI_CFLAGS
 HAVE_MPI
 ZLIB_LIBS
 ZLIB_CFLAGS
-QT_STATIC_LIBS
 QT_LIBS
 QT_CFLAGS
 TK_LIBS
@@ -4632,7 +4631,6 @@ rm -f core conftest.err conftest.$ac_objext \
 # FIXME not sure whether it's ok to depend on the presence of the pkg-config
 QT_CFLAGS=`pkg-config --cflags Qt5Gui Qt5Widgets Qt5Core`
 QT_LIBS=`pkg-config --libs Qt5Gui Qt5Widgets Qt5Core`
-QT_STATIC_LIBS=`pkg-config --libs --static Qt5Gui Qt5Widgets Qt5Core`
 
 
 #----------------------
@@ -6463,7 +6461,6 @@ ac_config_files="$ac_config_files Makefile.inc test/core/runtest"
 #----------------------
 # Substitutions.
 #----------------------
-
 
 
 

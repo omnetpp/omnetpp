@@ -63,28 +63,28 @@
 NAMESPACE_BEGIN
 
 
-Register_GlobalConfigOption(CFGID_CONFIG_NAME, "qtenv-config-name", CFG_STRING, NULL, "Specifies the name of the configuration to be run (for a value `Foo', section [Config Foo] will be used from the ini file). See also qtenv-runs-to-execute=. The -c command line option overrides this setting.")
-Register_GlobalConfigOption(CFGID_RUNS_TO_EXECUTE, "qtenv-runs-to-execute", CFG_STRING, NULL, "Specifies which runs to execute from the selected configuration (see qtenv-config-name=). It accepts a comma-separated list of run numbers or run number ranges, e.g. 1,3..4,7..9. If the value is missing, Qtenv executes all runs in the selected configuration. The -r command line option overrides this setting.")
-Register_GlobalConfigOptionU(CFGID_QTENV_EXTRA_STACK, "qtenv-extra-stack", "B",  "8KiB", "Specifies the extra amount of stack that is reserved for each activity() simple module when the simulation is run under Qtenv.")
-Register_GlobalConfigOption(CFGID_QTENV_INTERACTIVE, "qtenv-interactive", CFG_BOOL,  "false", "Defines what Qtenv should do when the model contains unassigned parameters. In interactive mode, it asks the user. In non-interactive mode (which is more suitable for batch execution), Qtenv stops with an error.")
-Register_GlobalConfigOption(CFGID_OUTPUT_FILE, "qtenv-output-file", CFG_FILENAME, NULL, "When a filename is specified, Qtenv redirects standard output into the given file. This is especially useful with parallel simulation. See the `fname-append-host' option as well.")
-Register_PerRunConfigOption(CFGID_EXPRESS_MODE, "qtenv-express-mode", CFG_BOOL, "true", "Selects ``normal'' (debug/trace) or ``express'' mode.")
-Register_PerRunConfigOption(CFGID_AUTOFLUSH, "qtenv-autoflush", CFG_BOOL, "false", "Call fflush(stdout) after each event banner or status update; affects both express and normal mode. Turning on autoflush may have a performance penalty, but it can be useful with printf-style debugging for tracking down program crashes.")
-Register_PerRunConfigOption(CFGID_MODULE_MESSAGES, "qtenv-module-messages", CFG_BOOL, "true", "When qtenv-express-mode=false: turns printing module ev<< output on/off.")
-Register_PerRunConfigOption(CFGID_EVENT_BANNERS, "qtenv-event-banners", CFG_BOOL, "true", "When qtenv-express-mode=false: turns printing event banners on/off.")
-Register_PerRunConfigOption(CFGID_EVENT_BANNER_DETAILS, "qtenv-event-banner-details", CFG_BOOL, "false", "When qtenv-express-mode=false: print extra information after event banners.")
-Register_PerRunConfigOption(CFGID_MESSAGE_TRACE, "qtenv-message-trace", CFG_BOOL, "false", "When qtenv-express-mode=false: print a line per message sending (by send(),scheduleAt(), etc) and delivery on the standard output.")
-Register_PerRunConfigOptionU(CFGID_STATUS_FREQUENCY, "qtenv-status-frequency", "s", "2s", "When qtenv-express-mode=true: print status update every n seconds.")
-Register_PerRunConfigOption(CFGID_PERFORMANCE_DISPLAY, "qtenv-performance-display", CFG_BOOL, "true", "When qtenv-express-mode=true: print detailed performance information. Turning it on results in a 3-line entry printed on each update, containing ev/sec, simsec/sec, ev/simsec, number of messages created/still present/currently scheduled in FES.")
-Register_PerRunConfigOption(CFGID_LOG_FORMAT, "qtenv-log-format", CFG_STRING, "[%l]\t", "Specifies the format string that determines the prefix of each log line. Log can be written using macros such as EV_FATAL, EV_ERROR, EV_WARN, EV_INFO, EV_DETAIL, EV_DEBUG and EV_TRACE. The format string may contain constant texts interleaved with format directives. A format directive is a '%' character followed by a single format character. See the manual for the list of available format characters.");
-Register_PerRunConfigOption(CFGID_GLOBAL_LOGLEVEL, "qtenv-log-level", CFG_STRING, "DEBUG", "Specifies the level of detail recorded by log statements, output below the specified level is omitted. This setting is with AND relationship with per-component log level settings. Available values are (case insensitive): fatal, error, warn, info, detail, debug or trace. Note that the level of detail is also controlled by the specified per component log levels and the GLOBAL_COMPILETIME_LOGLEVEL macro that is used to completely remove log statements from the executable.");
+// Register_GlobalConfigOption(CFGID_CONFIG_NAME, "qtenv-config-name", CFG_STRING, NULL, "Specifies the name of the configuration to be run (for a value `Foo', section [Config Foo] will be used from the ini file). See also qtenv-runs-to-execute=. The -c command line option overrides this setting.")
+// Register_GlobalConfigOption(CFGID_RUNS_TO_EXECUTE, "qtenv-runs-to-execute", CFG_STRING, NULL, "Specifies which runs to execute from the selected configuration (see qtenv-config-name=). It accepts a comma-separated list of run numbers or run number ranges, e.g. 1,3..4,7..9. If the value is missing, Qtenv executes all runs in the selected configuration. The -r command line option overrides this setting.")
+// Register_GlobalConfigOptionU(CFGID_QTENV_EXTRA_STACK, "qtenv-extra-stack", "B",  "8KiB", "Specifies the extra amount of stack that is reserved for each activity() simple module when the simulation is run under Qtenv.")
+// Register_GlobalConfigOption(CFGID_QTENV_INTERACTIVE, "qtenv-interactive", CFG_BOOL,  "false", "Defines what Qtenv should do when the model contains unassigned parameters. In interactive mode, it asks the user. In non-interactive mode (which is more suitable for batch execution), Qtenv stops with an error.")
+// Register_GlobalConfigOption(CFGID_OUTPUT_FILE, "qtenv-output-file", CFG_FILENAME, NULL, "When a filename is specified, Qtenv redirects standard output into the given file. This is especially useful with parallel simulation. See the `fname-append-host' option as well.")
+// Register_PerRunConfigOption(CFGID_EXPRESS_MODE, "qtenv-express-mode", CFG_BOOL, "true", "Selects ``normal'' (debug/trace) or ``express'' mode.")
+// Register_PerRunConfigOption(CFGID_AUTOFLUSH, "qtenv-autoflush", CFG_BOOL, "false", "Call fflush(stdout) after each event banner or status update; affects both express and normal mode. Turning on autoflush may have a performance penalty, but it can be useful with printf-style debugging for tracking down program crashes.")
+// Register_PerRunConfigOption(CFGID_MODULE_MESSAGES, "qtenv-module-messages", CFG_BOOL, "true", "When qtenv-express-mode=false: turns printing module ev<< output on/off.")
+// Register_PerRunConfigOption(CFGID_EVENT_BANNERS, "qtenv-event-banners", CFG_BOOL, "true", "When qtenv-express-mode=false: turns printing event banners on/off.")
+// Register_PerRunConfigOption(CFGID_EVENT_BANNER_DETAILS, "qtenv-event-banner-details", CFG_BOOL, "false", "When qtenv-express-mode=false: print extra information after event banners.")
+// Register_PerRunConfigOption(CFGID_MESSAGE_TRACE, "qtenv-message-trace", CFG_BOOL, "false", "When qtenv-express-mode=false: print a line per message sending (by send(),scheduleAt(), etc) and delivery on the standard output.")
+// Register_PerRunConfigOptionU(CFGID_STATUS_FREQUENCY, "qtenv-status-frequency", "s", "2s", "When qtenv-express-mode=true: print status update every n seconds.")
+// Register_PerRunConfigOption(CFGID_PERFORMANCE_DISPLAY, "qtenv-performance-display", CFG_BOOL, "true", "When qtenv-express-mode=true: print detailed performance information. Turning it on results in a 3-line entry printed on each update, containing ev/sec, simsec/sec, ev/simsec, number of messages created/still present/currently scheduled in FES.")
+// Register_PerRunConfigOption(CFGID_LOG_FORMAT, "qtenv-log-format", CFG_STRING, "[%l]\t", "Specifies the format string that determines the prefix of each log line. Log can be written using macros such as EV_FATAL, EV_ERROR, EV_WARN, EV_INFO, EV_DETAIL, EV_DEBUG and EV_TRACE. The format string may contain constant texts interleaved with format directives. A format directive is a '%' character followed by a single format character. See the manual for the list of available format characters.");
+// Register_PerRunConfigOption(CFGID_GLOBAL_LOGLEVEL, "qtenv-log-level", CFG_STRING, "DEBUG", "Specifies the level of detail recorded by log statements, output below the specified level is omitted. This setting is with AND relationship with per-component log level settings. Available values are (case insensitive): fatal, error, warn, info, detail, debug or trace. Note that the level of detail is also controlled by the specified per component log levels and the GLOBAL_COMPILETIME_LOGLEVEL macro that is used to completely remove log statements from the executable.");
 
 Register_PerObjectConfigOption(CFGID_QTENV_EV_OUTPUT, "qtenv-ev-output", KIND_MODULE, CFG_BOOL, "true", "When qtenv-express-mode=false: whether Qtenv should print log messages (EV<<, EV_INFO, etc.) from the selected modules.")
 
 
 
 // utility function for printing elapsed time
-char *timeToStr(timeval t, char *buf=NULL)
+static char *timeToStr(timeval t, char *buf=NULL)
 {
    static char buf2[64];
    char *b = buf ? buf : buf2;
@@ -165,11 +165,11 @@ void Qtenv::readOptions()
 
     // note: configname and runstoexec will possibly be overwritten
     // with the -c, -r command-line options in our setup() method
-    opt->configName = cfg->getAsString(CFGID_CONFIG_NAME);
-    opt->runsToExec = cfg->getAsString(CFGID_RUNS_TO_EXECUTE);
+    // opt->configName = cfg->getAsString(CFGID_CONFIG_NAME);
+    // opt->runsToExec = cfg->getAsString(CFGID_RUNS_TO_EXECUTE);
 
-    opt->extraStack = (size_t) cfg->getAsDouble(CFGID_QTENV_EXTRA_STACK);
-    opt->outputFile = cfg->getAsFilename(CFGID_OUTPUT_FILE).c_str();
+    // opt->extraStack = (size_t) cfg->getAsDouble(CFGID_QTENV_EXTRA_STACK);
+    // opt->outputFile = cfg->getAsFilename(CFGID_OUTPUT_FILE).c_str();
 
     if (!opt->outputFile.empty())
     {
@@ -186,17 +186,17 @@ void Qtenv::readPerRunOptions()
     EnvirBase::readPerRunOptions();
 
     cConfiguration *cfg = getConfig();
-    opt->expressMode = cfg->getAsBool(CFGID_EXPRESS_MODE);
-    opt->interactive = cfg->getAsBool(CFGID_QTENV_INTERACTIVE);
-    opt->autoflush = cfg->getAsBool(CFGID_AUTOFLUSH);
-    opt->printModuleMsgs = cfg->getAsBool(CFGID_MODULE_MESSAGES);
-    opt->printEventBanners = cfg->getAsBool(CFGID_EVENT_BANNERS);
-    opt->detailedEventBanners = cfg->getAsBool(CFGID_EVENT_BANNER_DETAILS);
-    opt->messageTrace = cfg->getAsBool(CFGID_MESSAGE_TRACE);
-    opt->statusFrequencyMs = 1000*cfg->getAsDouble(CFGID_STATUS_FREQUENCY);
-    opt->printPerformanceData = cfg->getAsBool(CFGID_PERFORMANCE_DISPLAY);
-    setLogLevel(cLogLevel::getLevel(getConfig()->getAsString(CFGID_GLOBAL_LOGLEVEL).c_str()));
-    setLogFormat(getConfig()->getAsString(CFGID_LOG_FORMAT).c_str());
+    // opt->expressMode = cfg->getAsBool(CFGID_EXPRESS_MODE);
+    // opt->interactive = cfg->getAsBool(CFGID_QTENV_INTERACTIVE);
+    // opt->autoflush = cfg->getAsBool(CFGID_AUTOFLUSH);
+    // opt->printModuleMsgs = cfg->getAsBool(CFGID_MODULE_MESSAGES);
+    // opt->printEventBanners = cfg->getAsBool(CFGID_EVENT_BANNERS);
+    // opt->detailedEventBanners = cfg->getAsBool(CFGID_EVENT_BANNER_DETAILS);
+    // opt->messageTrace = cfg->getAsBool(CFGID_MESSAGE_TRACE);
+    // opt->statusFrequencyMs = 1000*cfg->getAsDouble(CFGID_STATUS_FREQUENCY);
+    // opt->printPerformanceData = cfg->getAsBool(CFGID_PERFORMANCE_DISPLAY);
+    // setLogLevel(cLogLevel::getLevel(getConfig()->getAsString(CFGID_GLOBAL_LOGLEVEL).c_str()));
+    // setLogFormat(getConfig()->getAsString(CFGID_LOG_FORMAT).c_str());
 }
 
 void Qtenv::doRun()

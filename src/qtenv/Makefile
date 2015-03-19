@@ -56,17 +56,16 @@ all: $L/$(LIBNAME)$(LIB_SUFFIX)
 
 
 $O/$(QTENVUILIB):
-	@echo Creating the static UI library...
+	@echo Creating static UI library from the sources in qtcreator...
 	$(Q)qmake -Wall -o $O/Makefile && (cd $O && make)
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $L
 	@echo Creating static library: $@
-	$(Q)$(AR) $O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
+	$(Q)$(AR) $O/$(LIBNAME)$(A_LIB_SUFFIX) $(O)/*.o
 	$(Q)$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
 	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
 
-# call qmake and make in the ui directory here
 $L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $L
 	@echo Creating shared library: $@

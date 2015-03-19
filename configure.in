@@ -757,7 +757,6 @@ OPP_CHECK_LIB(winsock, winsock.h, socket(0,0,0), , -lwsock32, wsock_ok, SYS_LIBS
 # FIXME not sure whether it's ok to depend on the presence of the pkg-config
 QT_CFLAGS=`pkg-config --cflags Qt5Gui Qt5Widgets Qt5Core`
 QT_LIBS=`pkg-config --libs Qt5Gui Qt5Widgets Qt5Core`
-QT_STATIC_LIBS=`pkg-config --libs --static Qt5Gui Qt5Widgets Qt5Core`
 
 
 #----------------------
@@ -1207,7 +1206,6 @@ AC_SUBST(TK_CFLAGS)
 AC_SUBST(TK_LIBS)
 AC_SUBST(QT_CFLAGS)
 AC_SUBST(QT_LIBS)
-AC_SUBST(QT_STATIC_LIBS)
 AC_SUBST(ZLIB_CFLAGS)
 AC_SUBST(ZLIB_LIBS)
 AC_SUBST(HAVE_MPI)
