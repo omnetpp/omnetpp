@@ -127,6 +127,7 @@ class TKENV_API PolylineFigureRenderer : public AbstractLineFigureRenderer
     protected:
         virtual const char *getItemType() {return "path";}
         virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
 class TKENV_API AbstractShapeRenderer : public AbstractCanvasItemFigureRenderer

@@ -571,6 +571,16 @@ std::string PolylineFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *inter
     return polylinePath(polylineFigure->getPoints(), polylineFigure->getSmooth());
 }
 
+void PolylineFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
+{
+    AbstractLineFigureRenderer::addOptions(figure, what, interp, argc, argv, transform, hints);
+
+    if (what & cFigure::CHANGE_VISUAL) {
+        cPolylineFigure *lineFigure = check_and_cast<cPolylineFigure*>(figure);
+        joinStyle(lineFigure->getJoinStyle(), argc, argv);
+    }
+}
+
 //----
 
 void AbstractShapeRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
