@@ -51,6 +51,17 @@ class  cXMLElement;
  */
 class SIM_API cMsgPar : public cOwnedObject
 {
+  public:
+    /**
+     * Prototype for functions to free up a user-defined data structure.
+     */
+    typedef void (*VoidDelFunc)(void *);
+
+    /**
+     * Prototype for functions to duplicate a user-defined data structure.
+     */
+    typedef void *(*VoidDupFunc)(void *);
+
   protected:
     static const char *possibletypes;
 
