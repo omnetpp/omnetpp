@@ -156,6 +156,7 @@ void ModuleInspector::refresh()
        redrawNextEventMarker();
        redrawMessages();
        refreshSubmodules();
+       adjustSubmodulesZOrder();
    }
 }
 
@@ -200,6 +201,7 @@ void ModuleInspector::relayoutAndRedrawAll()
    redrawNextEventMarker();
    redrawMessages();
    refreshSubmodules();
+   adjustSubmodulesZOrder();
 }
 
 void ModuleInspector::redraw()
@@ -217,6 +219,23 @@ void ModuleInspector::redraw()
    redrawNextEventMarker();
    redrawMessages();
    refreshSubmodules();
+   adjustSubmodulesZOrder();
+}
+
+void ModuleInspector::adjustSubmodulesZOrder()
+{
+    cCanvas *canvas = getCanvas();
+    if (canvas)
+    {
+        cFigure *submodulesLayer = canvas->getSubmodulesLayer();
+        if (submodulesLayer)
+        {
+            char tag[32];
+            sprintf(tag, "f%d", submodulesLayer->getId());
+            CHK(Tcl_VarEval(interp, this->canvas, " lower submodext ", tag, NULL));
+            CHK(Tcl_VarEval(interp, this->canvas, " raise submodext ", tag, NULL));
+        }
+    }
 }
 
 void ModuleInspector::clearObjectChangeFlags()

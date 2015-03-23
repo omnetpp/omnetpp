@@ -99,6 +99,7 @@ class TKENV_API ModuleInspector : public Inspector
       virtual void redrawFigures();
       virtual void refreshFigures();
       virtual void refreshSubmodules();
+      virtual void adjustSubmodulesZOrder();
 
       // notifications from envir:
       virtual void submoduleCreated(cModule *newmodule);
