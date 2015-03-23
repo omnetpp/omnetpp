@@ -46,6 +46,13 @@ enum LayouterChoice
     LAYOUTER_AUTO
 };
 
+enum StripNamespace
+{
+	STRIPNAMESPACE_NONE,
+	STRIPNAMESPACE_OMNETPP,
+	STRIPNAMESPACE_ALL
+};
+
 struct TkenvOptions : public EnvirOptions
 {
     TkenvOptions();
@@ -76,6 +83,7 @@ struct TkenvOptions : public EnvirOptions
     long updateFreqExpress;   // Express Run updates display every N milliseconds
     bool autoupdateInExpress; // update inspectors at every display refresh in EXPRESS mode or not
     bool stopOnMsgCancel;     // with rununtil_msg: whether to stop when the message gets cancelled
+    StripNamespace stripNamespace; // whether to display type names with full C++ namespace prefix or not
     opp_string logFormat;     // format of the log prefix, see the LogFormatter class
     LogLevel logLevel;        // global log level
     int scrollbackLimit;      // global setting for all LogInspectors

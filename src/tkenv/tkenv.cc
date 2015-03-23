@@ -131,6 +131,7 @@ TkenvOptions::TkenvOptions()
     shortBanners = false;
     autoupdateInExpress = true;
     stopOnMsgCancel = true;
+    stripNamespace = STRIPNAMESPACE_ALL;
     logFormat = "%l %C: ";
     logLevel = LOGLEVEL_TRACE;
     scrollbackLimit = 10000;

@@ -389,9 +389,12 @@ proc preferencesDialog {parent {defaultpage ""}} {
     ttk::checkbutton $nb.g.f0.keepontop -text "Keep inspector windows on top" -variable opp(keepontop)
     ttk::checkbutton $nb.g.f0.reuseinsp -text "Reuse inspectors if possible" -variable opp(reuseinsp)
     ttk::checkbutton $nb.g.f0.confirmexit -text "Confirm exit when simulation is in progress" -variable opp(confirmexit)
+    label-combo $nb.g.f0.namespace "Hide namespaces from C++ class names:" {none omnetpp all} ""
+    $nb.g.f0.namespace.l config -width 40
     pack $nb.g.f0.keepontop -anchor w
     pack $nb.g.f0.reuseinsp -anchor w
     pack $nb.g.f0.confirmexit -anchor w
+    pack $nb.g.f0.namespace -anchor w
 
     ttk::labelframe $nb.g.f1 -text "Simulation Execution"
     label-entry $nb.g.f1.updfreq_fast    "Display update frequency for Fast Run (ms):"
@@ -529,6 +532,8 @@ proc preferencesDialog {parent {defaultpage ""}} {
     pack $nb.f.f1 -anchor center -expand 0 -fill x -ipadx 50 -ipady 0 -padx 10 -pady 5 -side top
 
     # Configure dialog
+    $nb.g.f0.namespace.e delete 0 end
+    $nb.g.f0.namespace.e insert 0 [opp_getsimoption stripnamespace]
     $nb.g.f1.updfreq_fast.e insert 0 [opp_getsimoption updatefreq_fast_ms]
     $nb.g.f1.updfreq_express.e insert 0 [opp_getsimoption updatefreq_express_ms]
     $nb.g.f2.numevents.e insert 0 [opp_getsimoption logbuffer_maxnumevents]
@@ -583,6 +588,7 @@ proc preferencesDialog {parent {defaultpage ""}} {
             opp_setsimoption scrollbacklimit $n
         }
 
+        catch {opp_setsimoption stripnamespace [$nb.g.f0.namespace.e get] }
         opp_setsimoption event_banners       $opp(eventbanners)
         opp_setsimoption init_banners        $opp(initbanners)
         opp_setsimoption short_banners       $opp(shortbanners)

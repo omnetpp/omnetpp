@@ -141,11 +141,31 @@ bool cFindByPathVisitor::idMatches(cObject *obj)
 
 #define TRY2(CODE)  try { CODE; } catch (std::exception& e) {printf("<!> Warning: %s\n", e.what());}
 
+const char *stripNamespace(const char *className)
+{
+    switch (getTkenv()->opt->stripNamespace) {
+        case STRIPNAMESPACE_ALL: {
+            const char *lastColon = strrchr(className, ':');
+            if (lastColon)
+                className = lastColon+1;
+            break;
+        }
+        case STRIPNAMESPACE_OMNETPP: {
+            if (className[0]=='o' && opp_stringbeginswith(className, "omnetpp::"))
+                className += sizeof("omnetpp::")-1;
+            break;
+        }
+        case STRIPNAMESPACE_NONE:
+            break;
+    }
+    return className;
+}
+
 const char *getObjectShortTypeName(cObject *object)
 {
     if (dynamic_cast<cComponent*>(object))
         TRY2( return ((cComponent*)object)->getComponentType()->getName() );
-    return object->getClassName();
+    return stripNamespace(object->getClassName());
 }
 
 const char *getObjectFullTypeName(cObject *object)

@@ -1265,6 +1265,13 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       sprintf(buf,"%d", opt->autoupdateInExpress);
    else if (0==strcmp(argv[1], "stoponmsgcancel"))
       sprintf(buf,"%d", opt->stopOnMsgCancel);
+   else if (0==strcmp(argv[1], "stripnamespace"))
+      switch (opt->stripNamespace) {
+          case STRIPNAMESPACE_ALL: strcpy(buf, "all"); break;
+          case STRIPNAMESPACE_OMNETPP: strcpy(buf, "omnetpp"); break;
+          case STRIPNAMESPACE_NONE: strcpy(buf, "none"); break;
+          default: strcpy(buf, "???");
+      }
    else if (0==strcmp(argv[1], "scrollbacklimit"))
       sprintf(buf,"%d", opt->scrollbackLimit);
    else if (0==strcmp(argv[1], "record_eventlog"))
@@ -1342,6 +1349,12 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       opt->autoupdateInExpress = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "stoponmsgcancel"))
       opt->stopOnMsgCancel = (argv[2][0]!='0');
+   else if (0==strcmp(argv[1], "stripnamespace")) {
+      opt->stripNamespace =
+          strcmp(argv[2],"all")==0 ? STRIPNAMESPACE_ALL :
+          strcmp(argv[2],"omnetpp")==0 ? STRIPNAMESPACE_OMNETPP :
+          STRIPNAMESPACE_NONE;
+   }
    else if (0==strcmp(argv[1], "scrollbacklimit"))
       opt->scrollbackLimit = atoi(argv[2]);
    else if (0==strcmp(argv[1], "record_eventlog"))
