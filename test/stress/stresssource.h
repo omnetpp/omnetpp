@@ -12,20 +12,22 @@
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 class StressSource : public cSimpleModule
 {
-	protected:
-		cMessage *timer;
+    protected:
+        cMessage *timer;
 
-	public:
-		StressSource();
-		virtual ~StressSource();
+    public:
+        StressSource();
+        virtual ~StressSource();
 
     protected:
-		void initialize();
+        void initialize();
         void handleMessage(cMessage *msg);
-		void sendOut(cMessage *msg);
-		cMessage *generateMessage();
+        void sendOut(cMessage *msg);
+        cMessage *generateMessage();
 };
 
 #endif

@@ -12,24 +12,26 @@
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 class RandomModuleSelector : public cVisitor
 {
-	protected:
-		int numberOfVisitedModules;
+    protected:
+        int numberOfVisitedModules;
 
-	public:
-		cModule *selectedModule;
+    public:
+        cModule *selectedModule;
 
-	public:
-		RandomModuleSelector();
+    public:
+        RandomModuleSelector();
 
-		virtual void visit(cObject *object);
+        virtual void visit(cObject *object);
 };
 
 class StressDirect : public cSimpleModule
 {
     protected:
-		cModule *getRandomModule();
+        cModule *getRandomModule();
         void handleMessage(cMessage *msg);
 };
 

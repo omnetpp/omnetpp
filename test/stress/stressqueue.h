@@ -12,14 +12,16 @@
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 class StressQueue : public cSimpleModule
 {
-	protected:
-		cMessage *timer;
+    protected:
+        cMessage *timer;
         cQueue queue;
 
-	public:
-    	StressQueue();
+    public:
+        StressQueue();
         virtual ~StressQueue();
 
     protected:

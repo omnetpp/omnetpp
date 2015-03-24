@@ -20,10 +20,10 @@ StressChannel::StressChannel()
 bool StressChannel::deliver(cMessage *msg, simtime_t at)
 {
     // drop if ongoing transmission
-	if (getTransmissionFinishTime() > at) {
-		EV << "Deleting message in channel due to ongoing transmission: " << msg << "\n";;
-		return false;
-	}
+    if (getTransmissionFinishTime() > at) {
+        EV << "Deleting message in channel due to ongoing transmission: " << msg << "\n";;
+        return false;
+    }
     else {
         result_t result;
         cDatarateChannel::processMessage(msg, at, result);

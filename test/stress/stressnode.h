@@ -12,6 +12,8 @@
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 class StressNode : public cSimpleModule
 {
     protected:

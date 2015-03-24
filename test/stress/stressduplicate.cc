@@ -15,7 +15,7 @@ Define_Module(StressDuplicate);
 
 void StressDuplicate::handleMessage(cMessage *msg)
 {
-	for (int i = par("numberOfDuplicates"); i >= 0; i--) {
+    for (int i = par("numberOfDuplicates"); i >= 0; i--) {
         cGate *outGate = gate("out", intrand(gateSize("out")));
         if (outGate->getTransmissionChannel()->isBusy())
             EV << "Output channel is busy, dropping message: " << msg << "\n";
@@ -25,7 +25,7 @@ void StressDuplicate::handleMessage(cMessage *msg)
             dupMsg->setName("Duplicate");
             send(dupMsg, outGate);
         }
-	}
+    }
 
     cGate *outGate = gate("out", intrand(gateSize("out")));
     if (outGate->getTransmissionChannel()->isBusy()) {

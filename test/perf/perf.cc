@@ -1,4 +1,4 @@
-#include <omnetpp.h>
+        #include <omnetpp.h>
 
 USING_NAMESPACE
 
@@ -23,7 +23,7 @@ class Queue_1 : public cSimpleModule
     int repCount;
     Timer tmr;
   public:
-    Module_Class_Members(Queue_1,cSimpleModule,32768);
+    Queue_1() : cSimpleModule(32768) {}
     virtual void activity();
     virtual void finish();
 };
@@ -58,41 +58,6 @@ void Queue_1::finish()
 
 //---------------
 
-class SelectNextModule_1 : public cSimpleModule
-{
-  protected:
-    int repCount;
-    Timer tmr;
-  public:
-    Module_Class_Members(SelectNextModule_1,cSimpleModule,32768);
-    virtual void activity();
-    virtual void finish();
-};
-
-Define_Module(SelectNextModule_1);
-
-void SelectNextModule_1::activity()
-{
-    repCount = par("repCount");
-
-    scheduleAt(0.0, new cMessage());
-
-    tmr.start();
-    for (int i=0; i<repCount; i++)
-    {
-        //simulation.msgQueue.peekFirst();
-        simulation.selectNextModule();
-    }
-    tmr.stop();
-}
-
-void SelectNextModule_1::finish()
-{
-    EV << "T=" << 1000000*tmr.get()/repCount << " us per cycle\n";
-}
-
-//---------------
-
 class Schedule_1 : public cSimpleModule
 {
   protected:
@@ -100,7 +65,6 @@ class Schedule_1 : public cSimpleModule
     int count;
     Timer tmr;
   public:
-    Module_Class_Members(Schedule_1,cSimpleModule,0);
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     virtual void finish();
@@ -138,7 +102,6 @@ class Send_1 : public cSimpleModule
     int count;
     Timer tmr;
   public:
-    Module_Class_Members(Send_1,cSimpleModule,0);
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     virtual void finish();
@@ -233,12 +196,12 @@ void ScheduleAndCancel_1::initialize()
 
 void ScheduleAndCancel_1::handleMessage(cMessage *msg)
 {
-  	for (int i=0; i<cancelsPerEvent; i++)
-	{
-             scheduleAt(simTime()+iaTime->doubleValue(), msg);
-	     cancelEvent(msg);
-        }
-  	scheduleAt(simTime()+iaTime->doubleValue(), msg);
+    for (int i=0; i<cancelsPerEvent; i++)
+    {
+        scheduleAt(simTime()+iaTime->doubleValue(), msg);
+        cancelEvent(msg);
+    }
+    scheduleAt(simTime()+iaTime->doubleValue(), msg);
 }
 
 void ScheduleAndCancel_1::finish()

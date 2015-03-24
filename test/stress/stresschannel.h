@@ -12,10 +12,12 @@
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 class StressChannel : public cDatarateChannel
 {
-	public:
-		StressChannel();
+    public:
+        StressChannel();
 
     protected:
         virtual bool deliver(cMessage *msg, simtime_t at);

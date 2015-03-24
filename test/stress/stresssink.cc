@@ -15,6 +15,6 @@ Define_Module(StressSink);
 
 void StressSink::handleMessage(cMessage *msg)
 {
-	EV << "Deleting message: "  << msg << "\n";;
-	delete msg;
+    EV << "Deleting message: "  << msg << "\n";;
+    delete msg;
 }

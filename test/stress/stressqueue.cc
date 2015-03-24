@@ -15,49 +15,49 @@ Define_Module(StressQueue);
 
 StressQueue::StressQueue()
 {
-	timer = new cMessage("Queue timer");
+    timer = new cMessage("Queue timer");
 }
 
 StressQueue::~StressQueue()
 {
-	EV << "Cancelling and deleting self message: "  << timer << "\n";;
-	cancelAndDelete(timer);
+    EV << "Cancelling and deleting self message: "  << timer << "\n";;
+    cancelAndDelete(timer);
 }
 
 void StressQueue::handleMessage(cMessage *msg)
 {
-	cMessage *sendOutMsg = NULL;
+    cMessage *sendOutMsg = NULL;
 
-	if (msg == timer) {
-		if (!queue.empty()) {
-			sendOutMsg = (cMessage*)queue.pop();
+    if (msg == timer) {
+        if (!queue.empty()) {
+            sendOutMsg = (cMessage*)queue.pop();
 
-			EV << "Sending out queued message: "  << sendOutMsg << "\n";;
-		}
- 	}
-	else {
-		if (!timer->isScheduled()) {
-			sendOutMsg = msg;
-			EV << "Immediately sending out message: "  << sendOutMsg << "\n";;
-		}
-		else {
-			EV << "Queuing message: "  << msg << "\n";;
-			queue.insert(msg);
-		}
-	}
+            EV << "Sending out queued message: "  << sendOutMsg << "\n";;
+        }
+     }
+    else {
+        if (!timer->isScheduled()) {
+            sendOutMsg = msg;
+            EV << "Immediately sending out message: "  << sendOutMsg << "\n";;
+        }
+        else {
+            EV << "Queuing message: "  << msg << "\n";;
+            queue.insert(msg);
+        }
+    }
 
-	if (sendOutMsg) {
-		cGate *outGate = gate("out", intrand(gateSize("out")));
+    if (sendOutMsg) {
+        cGate *outGate = gate("out", intrand(gateSize("out")));
         sendOutMsg->setName("Dequeued");
-		send(sendOutMsg, outGate);
-		scheduleAt(sendOutMsg->getArrivalTime(), timer);
-	}
+        send(sendOutMsg, outGate);
+        scheduleAt(sendOutMsg->getArrivalTime(), timer);
+    }
 
-	// colorize icon
-	if (!timer->isScheduled())
-		getDisplayString().setTagArg("i", 1, "");
-	else if (queue.empty())
-		getDisplayString().setTagArg("i", 1, "green");
-	else
-		getDisplayString().setTagArg("i", 1, "yellow");
+    // colorize icon
+    if (!timer->isScheduled())
+        getDisplayString().setTagArg("i", 1, "");
+    else if (queue.empty())
+        getDisplayString().setTagArg("i", 1, "green");
+    else
+        getDisplayString().setTagArg("i", 1, "yellow");
 }

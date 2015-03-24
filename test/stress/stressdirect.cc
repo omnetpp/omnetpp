@@ -15,41 +15,40 @@ Define_Module(StressDirect);
 
 RandomModuleSelector::RandomModuleSelector()
 {
-	selectedModule = NULL;
-	numberOfVisitedModules = 0;
+    selectedModule = NULL;
+    numberOfVisitedModules = 0;
 }
 
 void RandomModuleSelector::visit(cObject *object)
 {
-	cModule *module = dynamic_cast<cModule *>(object);
-	cCompoundModule *compoundModule = dynamic_cast<cCompoundModule *>(object);
+    cModule *module = dynamic_cast<cModule *>(object);
 
-	if (module && module->hasGate("directIn")) {
-		numberOfVisitedModules++;
+    if (module && module->hasGate("directIn")) {
+        numberOfVisitedModules++;
 
-		// this will result in a uniform distribution between modules
-		if (uniform(0, 1) <= 1.0 / numberOfVisitedModules)
-			selectedModule = module;
-	}
-	else if (compoundModule)
-		compoundModule->forEachChild(this);
+        // this will result in a uniform distribution between modules
+        if (uniform(0, 1) <= 1.0 / numberOfVisitedModules)
+            selectedModule = module;
+    }
+    else if (module->hasSubmodules())
+        module->forEachChild(this);
 }
 
 cModule* StressDirect::getRandomModule()
 {
-	RandomModuleSelector selector;
-	simulation.getSystemModule()->forEachChild(&selector);
-	return selector.selectedModule;
+    RandomModuleSelector selector;
+    simulation.getSystemModule()->forEachChild(&selector);
+    return selector.selectedModule;
 }
 
 void StressDirect::handleMessage(cMessage *msg)
 {
-	EV << "Sending direct message: "  << msg << "\n";;
-	cModule *randomModule = getRandomModule();
+    EV << "Sending direct message: "  << msg << "\n";;
+    cModule *randomModule = getRandomModule();
     msg->setName("Direct");
-	sendDirect(msg,
-	           par("propagationDelay").doubleValue(),
-	           par("transmissionDelay").doubleValue(),
-			   randomModule,
-			   "directIn");
+    sendDirect(msg,
+               par("propagationDelay").doubleValue(),
+               par("transmissionDelay").doubleValue(),
+               randomModule,
+               "directIn");
 }
