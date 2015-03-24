@@ -23,6 +23,8 @@ network Test
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 namespace ClassNamespace {
 
 class SimpleClass : public cSimpleModule

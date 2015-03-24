@@ -19,6 +19,8 @@ network Test {
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 namespace @TESTNAME@ {
 
 cNEDValue nedf_haveClass(cComponent *context, cNEDValue argv[], int argc)

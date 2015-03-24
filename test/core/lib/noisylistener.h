@@ -3,6 +3,8 @@
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 namespace testlib {
 
 class NoisyListener : public cListener

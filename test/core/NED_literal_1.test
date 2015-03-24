@@ -27,6 +27,8 @@ simple Test
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 namespace @TESTNAME@ {
 
 class Test : public cSimpleModule

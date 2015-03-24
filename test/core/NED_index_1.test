@@ -49,6 +49,8 @@ network Test extends Compound
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 namespace @TESTNAME@ {
 
 class Simple : public cSimpleModule

@@ -35,6 +35,8 @@ network Test
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 namespace @TESTNAME@ {
 
 #define NUM_MSGS         2000

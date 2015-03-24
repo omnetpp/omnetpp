@@ -29,6 +29,8 @@ struct Point
 #define TEST_H
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 namespace @TESTNAME@ {
 
 class Foo : public cObject

@@ -31,6 +31,8 @@ network Test {
 
 %file: tester.cc
 #include <omnetpp.h>
+
+USING_NAMESPACE
 namespace @TESTNAME@ {
 
 class Tester : public cSimpleModule

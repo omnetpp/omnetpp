@@ -1,5 +1,7 @@
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 namespace testlib {
 
 class Sink : public cSimpleModule

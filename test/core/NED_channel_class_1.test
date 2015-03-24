@@ -34,6 +34,8 @@ network Test
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 class ChannelWithoutNamespace: public cIdealChannel
 {
   public:

@@ -26,6 +26,8 @@ network Test
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 namespace @TESTNAME@ {
 
 class Node1 : public cSimpleModule

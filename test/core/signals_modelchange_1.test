@@ -48,6 +48,8 @@ network Test
 %file: test.cc
 
 #include <omnetpp.h>
+
+USING_NAMESPACE
 #include "../lib/noisylistener.h"
 using namespace testlib;
 
