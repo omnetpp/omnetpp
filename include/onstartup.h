@@ -52,7 +52,7 @@ NAMESPACE_BEGIN
 #define EXECUTE_ON_STARTUP(CODE)  \
   namespace { \
     void __ONSTARTUP_FUNC() {CODE;} \
-    static CodeFragments __ONSTARTUP_OBJ(__ONSTARTUP_FUNC, CodeFragments::STARTUP); \
+    static OPP::CodeFragments __ONSTARTUP_OBJ(__ONSTARTUP_FUNC, OPP::CodeFragments::STARTUP); \
   };
 
 /**
@@ -67,7 +67,7 @@ NAMESPACE_BEGIN
 #define EXECUTE_ON_SHUTDOWN(CODE)  \
   namespace { \
     void __ONSTARTUP_FUNC() {CODE;} \
-    static CodeFragments __ONSTARTUP_OBJ(__ONSTARTUP_FUNC, CodeFragments::SHUTDOWN); \
+    static OPP::CodeFragments __ONSTARTUP_OBJ(__ONSTARTUP_FUNC, OPP::CodeFragments::SHUTDOWN); \
   };
 
 /**

@@ -38,8 +38,8 @@ class cProperty;
  * @hideinitializer
  */
 #define Register_ResultRecorder(NAME, CLASSNAME) \
-  static cResultRecorder *__FILEUNIQUENAME__() {return new CLASSNAME;} \
-  EXECUTE_ON_STARTUP(resultRecorders.getInstance()->add(new cResultRecorderDescriptor(NAME,__FILEUNIQUENAME__));)
+  static OPP::cResultRecorder *__FILEUNIQUENAME__() {return new CLASSNAME;} \
+  EXECUTE_ON_STARTUP(OPP::resultRecorders.getInstance()->add(new OPP::cResultRecorderDescriptor(NAME,__FILEUNIQUENAME__));)
 
 
 /**

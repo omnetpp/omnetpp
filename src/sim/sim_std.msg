@@ -31,7 +31,7 @@ cplusplus
 #  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
-NAMESPACE_BEGIN
+USING_NAMESPACE
 
 //
 // Register enums from the sim. kernel
@@ -153,7 +153,9 @@ using namespace canvas_stream_ops;
 // This function is to be referenced from sim. kernel classes, to force the
 // linker to include this file in executables
 //
+NAMESPACE_BEGIN
 void std_sim_descriptor_dummy() {}
+NAMESPACE_END
 
 }}
 
@@ -765,10 +767,3 @@ class cCanvas extends cOwnedObject
     Color backgroundColor @editable @tostring(.str()) @fromstring(parseColor);
 }
 
-
-cplusplus
-{{
-
-NAMESPACE_END
-
-}}

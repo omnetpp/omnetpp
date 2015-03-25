@@ -330,7 +330,7 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
  *
  * @hideinitializer
  */
-#define WATCH(variable)    createWatch(#variable,(variable))
+#define WATCH(variable)  OPP::createWatch(#variable,(variable))
 
 /**
  * Makes types with operator\<\< and operator\>\> inspectable in Tkenv.
@@ -338,7 +338,7 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
  *
  * @hideinitializer
  */
-#define WATCH_RW(variable) createWatch_genericAssignable(#variable,(variable))
+#define WATCH_RW(variable)  OPP::createWatch_genericAssignable(#variable,(variable))
 
 /**
  * Makes classes derived from cObject inspectable in Tkenv.
@@ -346,7 +346,7 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
  *
  * @hideinitializer
  */
-#define WATCH_OBJ(variable) createWatch_cObject(#variable,(variable))
+#define WATCH_OBJ(variable)  OPP::createWatch_cObject(#variable,(variable))
 
 /**
  * Makes pointers to objects derived from cObject inspectable in Tkenv.
@@ -354,7 +354,7 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
  *
  * @hideinitializer
  */
-#define WATCH_PTR(variable) createWatch_cObjectPtr(#variable,(cObject*&)(variable),(variable))
+#define WATCH_PTR(variable)  OPP::createWatch_cObjectPtr(#variable,(cObject*&)(variable),(variable))
 //@}
 
 NAMESPACE_END

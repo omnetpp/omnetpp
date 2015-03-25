@@ -328,56 +328,56 @@ void createStdPointerMapWatcher(const char *varname, std::map<KeyT,ValueT,CmpT>&
  *
  * @hideinitializer
  */
-#define WATCH_VECTOR(variable)      createStdVectorWatcher(#variable,(variable))
+#define WATCH_VECTOR(variable)     OPP::createStdVectorWatcher(#variable,(variable))
 
 /**
  * Makes std::vectors storing pointers inspectable in Tkenv. See also WATCH_VECTOR().
  *
  * @hideinitializer
  */
-#define WATCH_PTRVECTOR(variable)   createStdPointerVectorWatcher(#variable,(variable))
+#define WATCH_PTRVECTOR(variable)  OPP::createStdPointerVectorWatcher(#variable,(variable))
 
 /**
  * Makes std::lists inspectable in Tkenv. See also WATCH_PTRLIST().
  *
  * @hideinitializer
  */
-#define WATCH_LIST(variable)        createStdListWatcher(#variable,(variable))
+#define WATCH_LIST(variable)       OPP::createStdListWatcher(#variable,(variable))
 
 /**
  * Makes std::lists storing pointers inspectable in Tkenv. See also WATCH_LIST().
  *
  * @hideinitializer
  */
-#define WATCH_PTRLIST(variable)     createStdPointerListWatcher(#variable,(variable))
+#define WATCH_PTRLIST(variable)    OPP::createStdPointerListWatcher(#variable,(variable))
 
 /**
  * Makes std::sets inspectable in Tkenv. See also WATCH_PTRSET().
  *
  * @hideinitializer
  */
-#define WATCH_SET(variable)        createStdSetWatcher(#variable,(variable))
+#define WATCH_SET(variable)        OPP::createStdSetWatcher(#variable,(variable))
 
 /**
  * Makes std::sets storing pointers inspectable in Tkenv. See also WATCH_SET().
  *
  * @hideinitializer
  */
-#define WATCH_PTRSET(variable)     createStdPointerSetWatcher(#variable,(variable))
+#define WATCH_PTRSET(variable)     OPP::createStdPointerSetWatcher(#variable,(variable))
 
 /**
  * Makes std::maps inspectable in Tkenv. See also WATCH_PTRMAP().
  *
  * @hideinitializer
  */
-#define WATCH_MAP(m)         createStdMapWatcher(#m,(m))
+#define WATCH_MAP(m)               OPP::createStdMapWatcher(#m,(m))
 
 /**
  * Makes std::maps storing pointers inspectable in Tkenv. See also WATCH_MAP().
  *
  * @hideinitializer
  */
-#define WATCH_PTRMAP(m)      createStdPointerMapWatcher(#m,(m))
+#define WATCH_PTRMAP(m)            OPP::createStdPointerMapWatcher(#m,(m))
 //@}
 
 NAMESPACE_END

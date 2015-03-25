@@ -38,8 +38,8 @@ class cResultFilter;
  * @hideinitializer
  */
 #define Register_ResultFilter(NAME, CLASSNAME) \
-  static cResultFilter *__FILEUNIQUENAME__() {return new CLASSNAME;} \
-  EXECUTE_ON_STARTUP(resultFilters.getInstance()->add(new cResultFilterDescriptor(NAME,__FILEUNIQUENAME__));)
+  static OPP::cResultFilter *__FILEUNIQUENAME__() {return new CLASSNAME;} \
+  EXECUTE_ON_STARTUP(OPP::resultFilters.getInstance()->add(new OPP::cResultFilterDescriptor(NAME,__FILEUNIQUENAME__));)
 
 
 /**

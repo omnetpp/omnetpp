@@ -146,9 +146,9 @@ class SIM_API cLogLevel
 #define OPP_LOGPROXY(object, classname, loglevel, category) \
         ((void)0, !(loglevel <= GLOBAL_COMPILETIME_LOGLEVEL && \
          !ev.isDisabled() && \
-         loglevel <= cLogLevel::globalRuntimeLoglevel && \
-         cLogProxy::isEnabled(object, category, loglevel))) ? \
-         cLogProxy::dummyStream : cLogProxy(object, category, loglevel, __FILE__, __LINE__, classname, __FUNCTION__)
+         loglevel <= OPP::cLogLevel::globalRuntimeLoglevel && \
+         OPP::cLogProxy::isEnabled(object, category, loglevel))) ? \
+         OPP::cLogProxy::dummyStream : OPP::cLogProxy(object, category, loglevel, __FILE__, __LINE__, classname, __FUNCTION__)
 
 
 // Returns NULL. Helper function for the logging macros.
@@ -169,7 +169,7 @@ inline const char *getClassName() {return NULL;}
  * @ingroup Logging
  * @hideinitializer
  */
-#define EV_STATICCONTEXT  void *(*getThisPtr)() = ::getThisPtr; const char *(*getClassName)() = ::getClassName;
+#define EV_STATICCONTEXT  void *(*getThisPtr)() = OPP::getThisPtr; const char *(*getClassName)() = OPP::getClassName;
 
 /**
  * This is the macro underlying EV_INFO, EV_DETAIL, EV_INFO_C, and similar log macros.

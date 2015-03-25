@@ -33,7 +33,7 @@ class cComponent;
  */
 typedef int simsignal_t;
 
-#define SIMSIGNAL_NULL   ((simsignal_t)-1)
+#define SIMSIGNAL_NULL   ((OPP::simsignal_t)-1)
 
 /**
  * Signal data types.

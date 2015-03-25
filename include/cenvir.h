@@ -68,7 +68,7 @@ using std::endl;
  *
  * @ingroup Envir
  */
-#define ev  (*cSimulation::getActiveEnvir())
+#define ev  (*OPP::cSimulation::getActiveEnvir())
 
 
 /**

@@ -53,7 +53,7 @@ SIM_API extern cDefaultList defaultList; // also in globals.h
  *
  * @ingroup SimCore
  */
-#define simulation  (*cSimulation::getActiveSimulation())
+#define simulation  (*OPP::cSimulation::getActiveSimulation())
 
 
 /**

@@ -166,7 +166,7 @@ SIM_API const char *opp_typename(const std::type_info& t);
  *
  * @see Enter_Method_Silent() macro
  */
-#define Enter_Method cMethodCallContextSwitcher __ctx(this); __ctx.methodCall
+#define Enter_Method  OPP::cMethodCallContextSwitcher __ctx(this); __ctx.methodCall
 
 /**
  * Denotes module class member function as callable from other modules.
@@ -184,7 +184,7 @@ SIM_API const char *opp_typename(const std::type_info& t);
  *
  * @see Enter_Method() macro
  */
-#define Enter_Method_Silent cMethodCallContextSwitcher __ctx(this); __ctx.methodCallSilent
+#define Enter_Method_Silent  OPP::cMethodCallContextSwitcher __ctx(this); __ctx.methodCallSilent
 
 /**
  * The constructor switches the context to the given component, and the
