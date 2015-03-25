@@ -2119,6 +2119,7 @@ void MsgCppGenerator::generateNamespaceEnd()
 #endif
     H  << std::endl;
     CC << std::endl;
+    namespacenamevector.clear();
 }
 
 MsgCppGenerator::ClassType MsgCppGenerator::getClassType(const std::string& s)
