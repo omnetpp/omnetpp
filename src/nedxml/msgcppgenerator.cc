@@ -30,7 +30,23 @@
 
 #include "../../include/simkerneldefs.h"
 
-#ifdef COMPATIBILITY_MODE
+NAMESPACE_BEGIN
+
+using std::ostream;
+
+#define H  (*hOutp)
+#define CC (*ccOutp)
+
+// compatibility mode makes output more similar to opp_msgc's
+//#define MSGC_COMPATIBILE
+
+#ifdef MSGC_COMPATIBILE
+#define PROGRAM "opp_msgc"
+#else
+#define PROGRAM "nedtool"
+#endif
+
+#ifdef MSGC_COMPATIBILE
 // removes ":<linenumber>" from source location string
 inline std::string SL(const std::string& s)
 {
@@ -73,23 +89,6 @@ std::string ptr2str(const char *ptr)
 {
     return ptr ? ptr : "";
 }
-
-
-NAMESPACE_BEGIN
-
-using std::ostream;
-
-#define H  (*hOutp)
-#define CC (*ccOutp)
-
-// compatibility mode makes output more similar to opp_msgc's
-//#define COMPATIBILITY_MODE
-
-#ifdef COMPATIBILITY_MODE
-#define PROGRAM "opp_msgc"
-#else
-#define PROGRAM "nedtool"
-#endif
 
 template <typename T>
 std::string join(const T& v, const std::string& delim)
@@ -451,7 +450,7 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
 
     generateNamespaceEnd();
 
-#ifdef COMPATIBILITY_MODE
+#ifdef MSGC_COMPATIBILE
     H << "#endif // " << hdef << "\n";
 #else
     H << "#endif // ifndef " << hdef << "\n\n";
@@ -807,7 +806,7 @@ std::string MsgCppGenerator::generatePreComment(NEDElement *nedElement)
     NED2Generator(errors).generate(s, nedElement, "");
     std::string str = s.str();
 
-#ifdef COMPATIBILITY_MODE
+#ifdef MSGC_COMPATIBILE
     // remove comments
     size_t p1;
     while ((p1 = str.find("//")) != str.npos)
@@ -1311,11 +1310,11 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
     for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
     {
         if (it->fisabstract)
-            throw NEDException("abstract field not possible in struct");
+            throw NEDException("abstract fields are not supported in a struct");
         if (getClassType(it->ftype) == COWNEDOBJECT)
-            throw NEDException("cOwnedObject field not possible in struct");
+            throw NEDException("cOwnedObject fields are not supported in a struct");
         if (it->fisarray && it->farraysize.empty())
-            throw NEDException("dynamic array not possible in struct");
+            throw NEDException("dynamic arrays are not supported in a struct");
         if (it->fisarray && !it->farraysize.empty()) {
             if (it->fkind == "basic" && !it->fval.empty()) {
                 CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
@@ -2104,7 +2103,7 @@ void MsgCppGenerator::generateNamespaceBegin(NEDElement *element)
 
 void MsgCppGenerator::generateNamespaceEnd()
 {
-#ifdef COMPATIBILITY_MODE
+#ifdef MSGC_COMPATIBILE
     for (StringVector::const_iterator it = namespacenamevector.begin(); it != namespacenamevector.end(); ++it)
     {
         H  << "}; // end namespace " << *it << std::endl;
