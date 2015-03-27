@@ -27,9 +27,6 @@
 
 NAMESPACE_BEGIN
 
-// forward declaration:
-class cCommBuffer;
-class cOwnedObject;
 class opp_string;
 
 
@@ -40,7 +37,7 @@ class opp_string;
  * For example, the MPI implementation, cMPICommBuffer encapsulates
  * MPI_Pack() and MPI_Unpack().
  *
- * @see cOwnedObject::parsimPack(), cOwnedObject::parsimUnpack()
+ * @see cObject::parsimPack(), cObject::parsimUnpack()
  *
  * @ingroup ParsimBrief
  * @ingroup Parsim
