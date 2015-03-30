@@ -31,7 +31,7 @@ cplusplus
 #  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 //
 // Register enums from the sim. kernel
@@ -153,11 +153,12 @@ using namespace canvas_stream_ops;
 // This function is to be referenced from sim. kernel classes, to force the
 // linker to include this file in executables
 //
-NAMESPACE_BEGIN
 void std_sim_descriptor_dummy() {}
 NAMESPACE_END
 
 }}
+
+namespace omnetpp;  //XXX this ought to be conditional on USE_NAMESPACE but cannot; remove it manually when compiling without USE_NAMESPACE
 
 enum cPar_Type;
 enum cGate_Type;
