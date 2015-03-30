@@ -18,6 +18,7 @@
 #define __MSGCPPGENERATOR_H
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <map>

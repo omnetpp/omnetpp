@@ -119,7 +119,7 @@ MsgCppGenerator::TypeDesc MsgCppGenerator::_PRIMITIVE_TYPES[] =
         {"float",           "float",           "string2double",   "double2string",    "0"},
         {"double",          "double",          "string2double",   "double2string",    "0"},
         {"simtime_t",       "simtime_t",       "string2double",   "double2string",    "0"},
-        {"string",          "opp_string",      " ",               "oppstring2string", ""},      // fromstring=" ": must be not empty, but do nothing (char* to char* conversion)
+        {"string",          OPP_PREFIX "opp_string", " ",         "oppstring2string", ""},      // fromstring=" ": must be not empty, but do nothing (char* to char* conversion)
         {"char",            "char",            "string2long",     "long2string",      "0"},
         {"short",           "short",           "string2long",     "long2string",      "0"},
         {"int",             "int",             "string2long",     "long2string",      "0"},
@@ -277,6 +277,128 @@ void MsgCppGenerator::extractClassDecl(NEDElement *child)
     }
 }
 
+const char *PARSIMPACK_BOILERPLATE =
+        "NAMESPACE_BEGIN\n"
+        "\n"
+        "// Template pack/unpack rules. They are declared *after* a1l type-specific pack functions for multiple reasons.\n"
+        "// They are in the omnetpp namespace, to allow them to be found by argument-dependent lookup via the cCommBuffer argument\n"
+        "\n"
+        "// Packing/unpacking an std::vector\n"
+        "template<typename T, typename A>\n"
+        "void doPacking(OPP::cCommBuffer *buffer, /*const*/ std::vector<T,A>& v)\n"
+        "{\n"
+        "    int n = v.size();\n"
+        "    doPacking(buffer, n);\n"
+        "    for (int i = 0; i < n; i++)\n"
+        "        doPacking(buffer, v[i]);\n"
+        "}\n"
+        "\n"
+        "template<typename T, typename A>\n"
+        "void doUnpacking(OPP::cCommBuffer *buffer, std::vector<T,A>& v)\n"
+        "{\n"
+        "    int n;\n"
+        "    doUnpacking(buffer, n);\n"
+        "    v.resize(n);\n"
+        "    for (int i = 0; i < n; i++)\n"
+        "        doUnpacking(buffer, v[i]);\n"
+        "}\n"
+        "\n"
+        "// Packing/unpacking an std::list\n"
+        "template<typename T, typename A>\n"
+        "void doPacking(OPP::cCommBuffer *buffer, /*const*/ std::list<T,A>& l)\n"
+        "{\n"
+        "    doPacking(buffer, (int)l.size());\n"
+        "    for (typename std::list<T,A>::const_iterator it = l.begin(); it != l.end(); it++)\n"
+        "        doPacking(buffer, (T&)*it);\n"
+        "}\n"
+        "\n"
+        "template<typename T, typename A>\n"
+        "void doUnpacking(OPP::cCommBuffer *buffer, std::list<T,A>& l)\n"
+        "{\n"
+        "    int n;\n"
+        "    doUnpacking(buffer, n);\n"
+        "    for (int i=0; i<n; i++) {\n"
+        "        l.push_back(T());\n"
+        "        doUnpacking(buffer, l.back());\n"
+        "    }\n"
+        "}\n"
+        "\n"
+        "// Packing/unpacking an std::set\n"
+        "template<typename T, typename Tr, typename A>\n"
+        "void doPacking(OPP::cCommBuffer *buffer, /*const*/ std::set<T,Tr,A>& s)\n"
+        "{\n"
+        "    doPacking(buffer, (int)s.size());\n"
+        "    for (typename std::set<T,Tr,A>::const_iterator it = s.begin(); it != s.end(); it++)\n"
+        "        doPacking(buffer, *it);\n"
+        "}\n"
+        "\n"
+        "template<typename T, typename Tr, typename A>\n"
+        "void doUnpacking(OPP::cCommBuffer *buffer, std::set<T,Tr,A>& s)\n"
+        "{\n"
+        "    int n;\n"
+        "    doUnpacking(buffer, n);\n"
+        "    for (int i=0; i<n; i++) {\n"
+        "        T x;\n"
+        "        doUnpacking(buffer, x);\n"
+        "        s.insert(x);\n"
+        "    }\n"
+        "}\n"
+        "\n"
+        "// Packing/unpacking an std::map\n"
+        "template<typename K, typename V, typename Tr, typename A>\n"
+        "void doPacking(OPP::cCommBuffer *buffer, /*const*/ std::map<K,V,Tr,A>& m)\n"
+        "{\n"
+        "    doPacking(buffer, (int)m.size());\n"
+        "    for (typename std::map<K,V,Tr,A>::const_iterator it = m.begin(); it != m.end(); it++) {\n"
+        "        doPacking(buffer, it->first);\n"
+        "        doPacking(buffer, it->second);\n"
+        "    }\n"
+        "}\n"
+        "\n"
+        "template<typename K, typename V, typename Tr, typename A>\n"
+        "void doUnpacking(OPP::cCommBuffer *buffer, std::map<K,V,Tr,A>& m)\n"
+        "{\n"
+        "    int n;\n"
+        "    doUnpacking(buffer, n);\n"
+        "    for (int i=0; i<n; i++) {\n"
+        "        K k; V v;\n"
+        "        doUnpacking(buffer, k);\n"
+        "        doUnpacking(buffer, v);\n"
+        "        m[k] = v;\n"
+        "    }\n"
+        "}\n"
+        "\n"
+        "// Default pack/unpack function for arrays\n"
+        "template<typename T>\n"
+        "void doArrayPacking(OPP::cCommBuffer *b, T *t, int n)\n"
+        "{\n"
+        "    for (int i = 0; i < n; i++)\n"
+        "        doPacking(b, t[i]);\n"
+        "}\n"
+        "\n"
+        "template<typename T>\n"
+        "void doArrayUnpacking(OPP::cCommBuffer *b, T *t, int n)\n"
+        "{\n"
+        "    for (int i = 0; i < n; i++)\n"
+        "        doUnpacking(b, t[i]);\n"
+        "}\n"
+        "\n"
+        "// Default rule to prevent compiler from choosing base class' doPacking() function\n"
+        "template<typename T>\n"
+        "void doPacking(OPP::cCommBuffer *, T& t)\n"
+        "{\n"
+        "    throw OPP::cRuntimeError(\"Parsim error: no doPacking() function for type %s\", OPP::opp_typename(typeid(t)));\n"
+        "}\n"
+        "\n"
+        "template<typename T>\n"
+        "void doUnpacking(OPP::cCommBuffer *, T& t)\n"
+        "{\n"
+        "    throw OPP::cRuntimeError(\"Parsim error: no doUnpacking() function for type %s\", OPP::opp_typename(typeid(t)));\n"
+        "}\n"
+        "\n"
+        "NAMESPACE_END\n"
+        "\n";
+
 void MsgCppGenerator::generate(MsgFileElement *fileElement)
 {
     std::string hfilenamewithoutdir = hFilename;
@@ -336,23 +458,13 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
     CC << "#include <sstream>\n";
     CC << "#include \"" << hfilenamewithoutdir << "\"\n\n";
 
-    CC << "USING_NAMESPACE\n\n";
+    CC << PARSIMPACK_BOILERPLATE;
 
-    if (opts.generate_classes)
-    {
-        CC << "\n";
-        CC << "// Another default rule (prevents compiler from choosing base class' doPacking())\n";
-        CC << "template<typename T>\n";
-        CC << "void doPacking(cCommBuffer *, T& t) {\n";
-        CC << "    throw cRuntimeError(\"Parsim error: no doPacking() function for type %s or its base class (check .msg and _m.cc/h files!)\",opp_typename(typeid(t)));\n";
-        CC << "}\n\n";
-        CC << "template<typename T>\n";
-        CC << "void doUnpacking(cCommBuffer *, T& t) {\n";
-        CC << "    throw cRuntimeError(\"Parsim error: no doUnpacking() function for type %s or its base class (check .msg and _m.cc/h files!)\",opp_typename(typeid(t)));\n";
-        CC << "}\n";
-        CC << "\n";
-    }
-    CC << "\n\n";
+    CC << "// Template rule which fires if a struct or class doesn't have operator<< (found via argument-dependent lookup aka ADT)\n";
+    CC << "namespace std {\n";
+    CC << "template<typename T>\n";
+    CC << "inline std::ostream& operator<<(std::ostream& out,const T&) {return out;}\n";
+    CC << "};\n";
 
     if (!firstNS)
     {
@@ -645,7 +757,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
             it->ftypeqname = "::" + found[0];
         } else if (found.empty()) {
             errors->addError(it->nedElement, "unknown type '%s' for field '%s' in '%s'\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str());
-            it->ftypeqname = "::cObject";
+            it->ftypeqname = OPP_PREFIX "cObject";
         } else {
             errors->addError(it->nedElement, "unknown type '%s' for field '%s' in '%s'; possibilities: %s\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str(), join(found, ", ").c_str());
             it->ftypeqname = "::" + found[0];
@@ -694,7 +806,7 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
             info.msgbaseqname = found[0];
         } else if (found.empty()) {
             errors->addError(info.nedElement, "'%s': unknown base class '%s', available classes '%s'", info.msgname.c_str(), info.msgbase.c_str(), join(classtype, "','").c_str());
-            info.msgbaseqname = "cMessage";
+            info.msgbaseqname = OPP_PREFIX "cMessage";
         } else {
             errors->addError(info.nedElement, "'%s': ambiguous base class '%s'; possibilities: '%s'",
                              info.msgname.c_str(), info.msgbase.c_str(), join(found, "','").c_str());
@@ -703,7 +815,7 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
     }
 
     // check base class and determine type of object
-    if (info.msgqname == "cObject" || info.msgqname == "cNamedObject" || info.msgqname == "cOwnedObject") {
+    if (info.msgqname == OPP_PREFIX "cObject" || info.msgqname == OPP_PREFIX "cNamedObject" || info.msgqname == OPP_PREFIX "cOwnedObject") {
         info.classtype = getClassType(info.msgqname);  // only for sim_std.msg
     }
     else if (info.msgbase == "") {
@@ -764,14 +876,14 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
         info.msgdescclass = info.msgclass + "Descriptor";
     }
     if (info.msgbase == "") {
-        if (info.msgqname == "cObject") {
+        if (info.msgqname == OPP_PREFIX "cObject") {
             info.msgbaseclass = "";
         } else if (info.keyword == "message") {
-            info.msgbaseclass = "cMessage";
+            info.msgbaseclass = OPP_PREFIX "cMessage";
         } else if (info.keyword == "packet") {
-            info.msgbaseclass = "cPacket";
+            info.msgbaseclass = OPP_PREFIX "cPacket";
         } else if (info.keyword == "class") {
-            info.msgbaseclass = "cObject";  // note: all classes we generate subclass from cObject!
+            info.msgbaseclass = OPP_PREFIX "cObject";  // note: all classes we generate subclass from cObject!
         } else if (info.keyword == "struct") {
             info.msgbaseclass = "";
         } else {
@@ -934,12 +1046,12 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         H << "    " << info.msgclass << "& operator=(const " << info.msgclass << "& other);\n";
     }
     if (info.gap) {
-        H << "    virtual " << info.msgclass << " *dup() const {throw cRuntimeError(\"You forgot to manually add a dup() function to class " << info.realmsgclass << "\");}\n";
+        H << "    virtual " << info.msgclass << " *dup() const {throw " OPP_PREFIX "cRuntimeError(\"You forgot to manually add a dup() function to class " << info.realmsgclass << "\");}\n";
     } else {
         H << "    virtual " << info.msgclass << " *dup() const {return new " << info.msgclass << "(*this);}\n";
     }
-    H << "    virtual void parsimPack(cCommBuffer *b);\n";
-    H << "    virtual void parsimUnpack(cCommBuffer *b);\n";
+    H << "    virtual void parsimPack(" OPP_PREFIX "cCommBuffer *b);\n";
+    H << "    virtual void parsimUnpack(" OPP_PREFIX "cCommBuffer *b);\n";
     H << "\n";
     H << "    // field getter/setter methods\n";
     for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
@@ -976,8 +1088,9 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT || info.classtype == COBJECT) {
             CC << "Register_Class(" << info.msgclass << ");\n\n";
         }
-        H << "inline void doPacking(cCommBuffer *b, " << info.realmsgclass << "& obj) {obj.parsimPack(b);}\n";
-        H << "inline void doUnpacking(cCommBuffer *b, " << info.realmsgclass << "& obj) {obj.parsimUnpack(b);}\n\n";
+
+        H << "inline void doPacking(" OPP_PREFIX "cCommBuffer *b, " << info.realmsgclass << "& obj) {obj.parsimPack(b);}\n";
+        H << "inline void doUnpacking(" OPP_PREFIX "cCommBuffer *b, " << info.realmsgclass << "& obj) {obj.parsimUnpack(b);}\n\n";
     }
 
     if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT) {
@@ -1139,11 +1252,11 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     // parsimUnpack() is NOT that of cOwnedObject. However it's still needed because a
     // "friend" doPacking() function could not access protected members otherwise.
     //
-    CC << "void " << info.msgclass << "::parsimPack(cCommBuffer *b)\n";
+    CC << "void " << info.msgclass << "::parsimPack(" OPP_PREFIX "cCommBuffer *b)\n";
     CC << "{\n";
     if (info.msgbaseclass != "") {
         if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT || info.classtype == COBJECT) {
-            if (info.msgbaseclass != "cObject")
+            if (info.msgbaseclass != OPP_PREFIX "cObject")
                 CC << "    ::" << info.msgbaseclass << "::parsimPack(b);\n" ;
         } else {
             CC << "    doPacking(b,(::" << info.msgbaseclass << "&)*this);\n"; // this would do for cOwnedObject too, but the other is nicer
@@ -1157,10 +1270,10 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
             CC << "    // field " << it->fname << " is abstract -- please do packing in customized class\n";
         } else {
             if (it->fisarray && !it->farraysize.empty()) {
-                CC << "    doPacking(b,this->" << it->var << "," << it->farraysize << ");\n";
+                CC << "    doArrayPacking(b,this->" << it->var << "," << it->farraysize << ");\n";
             } else if (it->fisarray && it->farraysize.empty()) {
                 CC << "    b->pack(" << it->varsize << ");\n";
-                CC << "    doPacking(b,this->" << it->var << "," << it->varsize << ");\n";
+                CC << "    doArrayPacking(b,this->" << it->var << "," << it->varsize << ");\n";
             } else {
                 CC << "    doPacking(b,this->" << it->var << ");\n";
             }
@@ -1168,11 +1281,11 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     }
     CC << "}\n\n";
 
-    CC << "void " << info.msgclass << "::parsimUnpack(cCommBuffer *b)\n";
+    CC << "void " << info.msgclass << "::parsimUnpack(" OPP_PREFIX "cCommBuffer *b)\n";
     CC << "{\n";
     if (info.msgbaseclass != "") {
         if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT || info.classtype == COBJECT) {
-            if (info.msgbaseclass != "cObject")
+            if (info.msgbaseclass != OPP_PREFIX "cObject")
                 CC << "    ::" << info.msgbaseclass << "::parsimUnpack(b);\n";
         } else {
             CC << "    doUnpacking(b,(::" << info.msgbaseclass << "&)*this);\n"; // this would do for cOwnedObject too, but the other is nicer
@@ -1186,7 +1299,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
             CC << "    // field " << it->fname << " is abstract -- please do unpacking in customized class\n";
         } else {
             if (it->fisarray && !it->farraysize.empty()) {
-                CC << "    doUnpacking(b,this->" << it->var << "," << it->farraysize << ");\n";
+                CC << "    doArrayUnpacking(b,this->" << it->var << "," << it->farraysize << ");\n";
             } else if (it->fisarray && it->farraysize.empty()) {
                 CC << "    delete [] this->" << it->var << ";\n";
                 CC << "    b->unpack(" << it->varsize << ");\n";
@@ -1194,7 +1307,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "        this->" << it->var << " = 0;\n";
                 CC << "    } else {\n";
                 CC << "        this->" << it->var << " = new " << it->datatype << "[" << it->varsize << "];\n";
-                CC << "        doUnpacking(b,this->" << it->var << "," << it->varsize << ");\n";
+                CC << "        doArrayUnpacking(b,this->" << it->var << "," << it->varsize << ");\n";
                 CC << "    }\n";
             } else {
                 CC << "    doUnpacking(b,this->" << it->var << ");\n";
@@ -1215,12 +1328,12 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "}\n\n";
                 CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << it->fsizetype << " k)" << constifprimitivetype << "\n";
                 CC << "{\n";
-                CC << "    if (k>=" << it->farraysize << ") throw cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
+                CC << "    if (k>=" << it->farraysize << ") throw " OPP_PREFIX "cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
                 CC << "    return " << it->var << "[k]" << it->maybe_c_str << ";\n";
                 CC << "}\n\n";
                 CC << "void " << info.msgclass << "::" << it->setter << "(" << it->fsizetype << " k, " << it->argtype << " " << it->argname << ")\n";
                 CC << "{\n";
-                CC << "    if (k>=" << it->farraysize << ") throw cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
+                CC << "    if (k>=" << it->farraysize << ") throw " OPP_PREFIX "cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
                 CC << "    this->" << it->var << "[k] = " << it->argname << ";\n";
                 CC << "}\n\n";
             } else if (it->fisarray && it->farraysize.empty()) {
@@ -1248,12 +1361,12 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "}\n\n";
                 CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << it->fsizetype << " k)" << constifprimitivetype << "\n";
                 CC << "{\n";
-                CC << "    if (k>=" << it->varsize << ") throw cRuntimeError(\"Array of size %d indexed by %d\", " << it->varsize << ", k);\n";
+                CC << "    if (k>=" << it->varsize << ") throw " OPP_PREFIX "cRuntimeError(\"Array of size %d indexed by %d\", " << it->varsize << ", k);\n";
                 CC << "    return " << it->var << "[k]" << it->maybe_c_str << ";\n";
                 CC << "}\n\n";
                 CC << "void " << info.msgclass << "::" << it->setter << "(" << it->fsizetype << " k, " << it->argtype << " " << it->argname << ")\n";
                 CC << "{\n";
-                CC << "    if (k>=" << it->varsize << ") throw cRuntimeError(\"Array of size %d indexed by %d\", " << it->varsize << ", k);\n";
+                CC << "    if (k>=" << it->varsize << ") throw " OPP_PREFIX "cRuntimeError(\"Array of size %d indexed by %d\", " << it->varsize << ", k);\n";
                 CC << "    this->" << it->var << "[k] = " << it->argname << ";\n";
                 CC << "}\n\n";
             } else {
@@ -1293,8 +1406,12 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
     }
     H << "};\n\n";
 
-    H << "void " << TS(opts.exportdef) << "doPacking(cCommBuffer *b, " << info.msgclass << "& a);\n";
-    H << "void " << TS(opts.exportdef) << "doUnpacking(cCommBuffer *b, " << info.msgclass << "& a);\n\n";
+    H << "// helpers for local use\n";
+    H << "void " << TS(opts.exportdef) << "__doPacking(" OPP_PREFIX "cCommBuffer *b, " << info.msgclass << "& a);\n";
+    H << "void " << TS(opts.exportdef) << "__doUnpacking(" OPP_PREFIX "cCommBuffer *b, " << info.msgclass << "& a);\n\n";
+
+    H << "inline void doPacking(" OPP_PREFIX "cCommBuffer *b, " << info.realmsgclass << "& obj) { " << "__doPacking(b, obj); }\n";
+    H << "inline void doUnpacking(" OPP_PREFIX "cCommBuffer *b, " << info.realmsgclass << "& obj) { " << "__doUnpacking(b, obj); }\n\n";
 
     // Constructor:
     CC << "" << info.msgclass << "::" << info.msgclass << "()\n";
@@ -1327,7 +1444,9 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
         }
     }
     CC << "}\n\n";
-    CC << "void doPacking(cCommBuffer *b, " << info.msgclass << "& a)\n";
+
+    // doPacking/doUnpacking go to the global namespace
+    CC << "void __doPacking(" OPP_PREFIX "cCommBuffer *b, " << info.msgclass << "& a)\n";
     CC << "{\n";
     if (!info.msgbaseclass.empty()) {
         CC << "    doPacking(b,(::" << info.msgbaseclass << "&)a);\n";
@@ -1336,14 +1455,14 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
     for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
     {
         if (it->fisarray) {
-            CC << "    doPacking(b,a." << it->var << "," << it->farraysize << ");\n";
+            CC << "    doArrayPacking(b,a." << it->var << "," << it->farraysize << ");\n";
         } else {
             CC << "    doPacking(b,a." << it->var << ");\n";
         }
     }
     CC << "}\n\n";
 
-    CC << "void doUnpacking(cCommBuffer *b, " << info.msgclass << "& a)\n";
+    CC << "void __doUnpacking(" OPP_PREFIX "cCommBuffer *b, " << info.msgclass << "& a)\n";
     CC << "{\n";
     if (!info.msgbaseclass.empty()) {
         CC << "    doUnpacking(b,(::" << info.msgbaseclass << "&)a);\n";
@@ -1352,7 +1471,7 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
     for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
     {
         if (it->fisarray) {
-            CC << "    doUnpacking(b,a." << it->var << "," << it->farraysize << ");\n";
+            CC << "    doArrayUnpacking(b,a." << it->var << "," << it->farraysize << ");\n";
         } else {
             CC << "    doUnpacking(b,a." << it->var << ");\n";
         }
@@ -1362,7 +1481,7 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
 
 void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
 {
-    CC << "class " << info.msgdescclass << " : public cClassDescriptor\n";
+    CC << "class " << info.msgdescclass << " : public " OPP_PREFIX "cClassDescriptor\n";
     CC << "{\n";
     CC << "  private:\n";
     CC << "    mutable const char **propertynames;\n";
@@ -1370,7 +1489,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    " << info.msgdescclass << "();\n";
     CC << "    virtual ~" << info.msgdescclass << "();\n";
     CC << "\n";
-    CC << "    virtual bool doesSupport(cObject *obj) const;\n";
+    CC << "    virtual bool doesSupport(" OPP_PREFIX "cObject *obj) const;\n";
     CC << "    virtual const char **getPropertyNames() const;\n";
     CC << "    virtual const char *getProperty(const char *propertyname) const;\n";
     CC << "    virtual int getFieldCount() const;\n";
@@ -1395,7 +1514,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     // ctor, dtor
     size_t fieldcount = info.fieldlist.size();
     std::string qualifiedrealmsgclass = prefixWithNamespace(info.realmsgclass);
-    CC << "" << info.msgdescclass << "::" << info.msgdescclass << "() : cClassDescriptor(\"" << qualifiedrealmsgclass << "\", \"" << info.msgbaseclass << "\")\n";
+    CC << "" << info.msgdescclass << "::" << info.msgdescclass << "() : " OPP_PREFIX "cClassDescriptor(\"" << qualifiedrealmsgclass << "\", \"" << info.msgbaseclass << "\")\n";
     CC << "{\n";
     CC << "    propertynames = NULL;\n";
     CC << "}\n";
@@ -1408,7 +1527,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "\n";
 
     // doesSupport()
-    CC << "bool " << info.msgdescclass << "::doesSupport(cObject *obj) const\n";
+    CC << "bool " << info.msgdescclass << "::doesSupport(" OPP_PREFIX "cObject *obj) const\n";
     CC << "{\n";
     CC << "    return dynamic_cast<" << info.msgclass << " *>(obj)!=NULL;\n";
     CC << "}\n";
@@ -1423,7 +1542,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
         CC << opp_quotestr(key->first.c_str()) << ", ";
     }
     CC << " NULL };\n";
-    CC << "        cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    CC << "        " OPP_PREFIX "cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "        const char **basenames = basedesc ? basedesc->getPropertyNames() : NULL;\n";
     CC << "        propertynames = mergeLists(basenames, names);\n";
     CC << "    }\n";
@@ -1437,7 +1556,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     for (Properties::const_iterator key = info.props.begin(); key != info.props.end(); ++key) {
         CC << "    if (!strcmp(propertyname,"<< opp_quotestr(key->first.c_str()) << ")) return " << opp_quotestr(key->second.c_str()) << ";\n";
     }
-    CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    CC << "    " OPP_PREFIX "cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    return basedesc ? basedesc->getProperty(propertyname) : NULL;\n";
     CC << "}\n";
     CC << "\n";
@@ -1445,7 +1564,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     // getFieldCount()
     CC << "int " << info.msgdescclass << "::getFieldCount() const\n";
     CC << "{\n";
-    CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    CC << "    " OPP_PREFIX "cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    return basedesc ? " << fieldcount << "+basedesc->getFieldCount() : " << fieldcount << ";\n";
     CC << "}\n";
     CC << "\n";
@@ -1453,7 +1572,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     // getFieldTypeFlags()
     CC << "unsigned int " << info.msgdescclass << "::getFieldTypeFlags(int field) const\n";
     CC << "{\n";
-    CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    CC << "    " OPP_PREFIX "cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
     CC << "        if (field < basedesc->getFieldCount())\n";
     CC << "            return basedesc->getFieldTypeFlags(field);\n";
@@ -1501,7 +1620,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     // getFieldName()
     CC << "const char *" << info.msgdescclass << "::getFieldName(int field) const\n";
     CC << "{\n";
-    CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    CC << "    " OPP_PREFIX "cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
     CC << "        if (field < basedesc->getFieldCount())\n";
     CC << "            return basedesc->getFieldName(field);\n";
@@ -1524,7 +1643,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     // findField()
     CC << "int " << info.msgdescclass << "::findField(const char *fieldName) const\n";
     CC << "{\n";
-    CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    CC << "    " OPP_PREFIX "cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     if (fieldcount > 0) {
         CC << "    int base = basedesc ? basedesc->getFieldCount() : 0;\n";
         for (size_t i=0; i < info.fieldlist.size(); ++i)
@@ -1541,7 +1660,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     // getFieldTypeString()
     CC << "const char *" << info.msgdescclass << "::getFieldTypeString(int field) const\n";
     CC << "{\n";
-    CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    CC << "    " OPP_PREFIX "cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
     CC << "        if (field < basedesc->getFieldCount())\n";
     CC << "            return basedesc->getFieldTypeString(field);\n";
@@ -1564,7 +1683,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     // getFieldPropertyNames()
     CC << "const char **" << info.msgdescclass << "::getFieldPropertyNames(int field) const\n";
     CC << "{\n";
-    CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    CC << "    " OPP_PREFIX "cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
     CC << "        if (field < basedesc->getFieldCount())\n";
     CC << "            return basedesc->getFieldPropertyNames(field);\n";
@@ -1594,7 +1713,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     // getFieldProperty()
     CC << "const char *" << info.msgdescclass << "::getFieldProperty(int field, const char *propertyname) const\n";
     CC << "{\n";
-    CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    CC << "    " OPP_PREFIX "cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
     CC << "        if (field < basedesc->getFieldCount())\n";
     CC << "            return basedesc->getFieldProperty(field, propertyname);\n";
@@ -1624,7 +1743,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     // getFieldArraySize()
     CC << "int " << info.msgdescclass << "::getFieldArraySize(void *object, int field) const\n";
     CC << "{\n";
-    CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    CC << "    " OPP_PREFIX "cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
     CC << "        if (field < basedesc->getFieldCount())\n";
     CC << "            return basedesc->getFieldArraySize(object, field);\n";
@@ -1653,7 +1772,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     // getFieldValueAsString()
     CC << "std::string " << info.msgdescclass << "::getFieldValueAsString(void *object, int field, int i) const\n";
     CC << "{\n";
-    CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    CC << "    " OPP_PREFIX "cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
     CC << "        if (field < basedesc->getFieldCount())\n";
     CC << "            return basedesc->getFieldValueAsString(object,field,i);\n";
@@ -1725,7 +1844,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     // setFieldValueAsString()
     CC << "bool " << info.msgdescclass << "::setFieldValueAsString(void *object, int field, int i, const char *value) const\n";
     CC << "{\n";
-    CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    CC << "    " OPP_PREFIX "cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
     CC << "        if (field < basedesc->getFieldCount())\n";
     CC << "            return basedesc->setFieldValueAsString(object,field,i,value);\n";
@@ -1779,7 +1898,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     // getFieldStructName()
     CC << "const char *" << info.msgdescclass << "::getFieldStructName(int field) const\n";
     CC << "{\n";
-    CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    CC << "    " OPP_PREFIX "cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
     CC << "        if (field < basedesc->getFieldCount())\n";
     CC << "            return basedesc->getFieldStructName(field);\n";
@@ -1794,7 +1913,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
             const ClassInfo::FieldInfo& field = info.fieldlist[i];
             bool opaque = field.fopaque;  // TODO: @opaque should rather be the attribute of the field's type, not the field itself
             if (field.fkind == "struct" && !opaque) {
-                CC << "        case " << i << ": return opp_typename(typeid(" << field.ftype << "));\n";
+                CC << "        case " << i << ": return " OPP_PREFIX "opp_typename(typeid(" << field.ftype << "));\n";
             }
         }
         CC << "        default: return NULL;\n";
@@ -1806,7 +1925,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     // getFieldStructValuePointer()
     CC << "void *" << info.msgdescclass << "::getFieldStructValuePointer(void *object, int field, int i) const\n";
     CC << "{\n";
-    CC << "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    CC << "    " OPP_PREFIX "cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
     CC << "        if (field < basedesc->getFieldCount())\n";
     CC << "            return basedesc->getFieldStructValuePointer(object, field, i);\n";
@@ -1837,7 +1956,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
             ClassType fieldclasstype = getClassType(field.ftype);
             cast = "(void *)";
             if (fieldclasstype == COBJECT || fieldclasstype == CNAMEDOBJECT || fieldclasstype == COWNEDOBJECT)
-                cast = cast + "static_cast<cObject *>";
+                cast = cast + "static_cast<" OPP_PREFIX "cObject *>";
             if (field.fispointer) {
                 CC << "        case " << i << ": return " << cast << "(" << value << "); break;\n";
             } else {
@@ -1909,9 +2028,10 @@ void MsgCppGenerator::generateEnum(const EnumInfo& enumInfo)
     }
     H << "};\n\n";
 
+    // TODO generate a Register_Enum() macro call instead
     CC << "EXECUTE_ON_STARTUP(\n";
-    CC << "    cEnum *e = cEnum::find(\"" << enumInfo.enumQName << "\");\n";
-    CC << "    if (!e) enums.getInstance()->add(e = new cEnum(\"" << enumInfo.enumQName << "\"));\n";
+    CC << "    " OPP_PREFIX "cEnum *e = " OPP_PREFIX "cEnum::find(\"" << enumInfo.enumQName << "\");\n";
+    CC << "    if (!e) " OPP_PREFIX "enums.getInstance()->add(e = new " OPP_PREFIX "cEnum(\"" << enumInfo.enumQName << "\"));\n";
     // enum inheritance: we should add fields from base enum as well, but that could only be done when importing is in place
     for (EnumInfo::FieldList::const_iterator it = enumInfo.fieldlist.begin(); it != enumInfo.fieldlist.end(); ++it)
     {
@@ -2058,11 +2178,6 @@ void MsgCppGenerator::generateTemplates()
     CC << "    out.write(buf, strlen(buf));\n";
     CC << "    return out;\n";
     CC << "}\n";
-    CC << "\n";
-
-    CC << "// Template rule which fires if a struct or class doesn't have operator<<\n";
-    CC << "template<typename T>\n";
-    CC << "inline std::ostream& operator<<(std::ostream& out,const T&) {return out;}\n";
     CC << "\n";
 }
 
