@@ -220,7 +220,7 @@ bool cClassDescriptor::extendsCObject() const
         const cClassDescriptor *current = this;
 
         while (current) {
-            if (!strcmp("cObject", current->getName())) {
+            if (!strcmp(OPP_PREFIX "cObject", current->getName())) {
                 this_->extendscobject = true;
                 break;
             }
