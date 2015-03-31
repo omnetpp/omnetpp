@@ -13,6 +13,8 @@
 #include "KmlUtil.h"
 #include "ChannelController.h"
 
+USING_NAMESPACE
+
 /**
  * A mobile node.
  */

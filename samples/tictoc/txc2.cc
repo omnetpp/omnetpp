@@ -11,6 +11,8 @@
 #include <string.h>
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 
 /**
  * In this class we add some debug messages to Txc1. When you run the

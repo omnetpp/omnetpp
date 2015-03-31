@@ -20,6 +20,8 @@
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 
 /**
  * An Output Scalar Manager that writes into a MySQL database instead of

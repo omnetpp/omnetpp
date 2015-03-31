@@ -14,6 +14,8 @@
 #include "KmlHttpServer.h"
 #include "KmlUtil.h"
 
+USING_NAMESPACE
+
 /**
  * Interface to be implemented by mobile nodes to be able to
  * register in ChannelController.

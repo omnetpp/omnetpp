@@ -11,6 +11,8 @@
 #include <omnetpp.h>
 #include "NetPkt_m.h"
 
+USING_NAMESPACE
+
 /**
  * Represents the network "cloud" between clients and the server;
  * see NED file for more info.

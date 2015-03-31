@@ -11,6 +11,8 @@
 #include <string.h>
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 
 /**
  * Let us take a step back, and remove random delaying from the code.

@@ -20,6 +20,8 @@
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 #include "intervals.h"
 
 

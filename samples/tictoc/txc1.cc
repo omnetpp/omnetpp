@@ -11,6 +11,8 @@
 #include <string.h>
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 
 /**
  * Derive the Txc1 class from cSimpleModule. In the Tictoc1 network,

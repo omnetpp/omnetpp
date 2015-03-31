@@ -11,6 +11,8 @@
 #include <string.h>
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 
 /**
  * Same as Txc4.

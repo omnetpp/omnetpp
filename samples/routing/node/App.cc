@@ -15,6 +15,8 @@
 #include <omnetpp.h>
 #include "Packet_m.h"
 
+USING_NAMESPACE
+
 
 /**
  * Generates traffic for the network.

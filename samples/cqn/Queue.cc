@@ -10,6 +10,8 @@
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 /**
  * Abstract base class for single-server queues. Subclasses are
  * expected to redefine the arrival(), startService() and endService()

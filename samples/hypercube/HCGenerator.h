@@ -13,6 +13,8 @@
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 #define STACKSIZE 16384
 
 /**

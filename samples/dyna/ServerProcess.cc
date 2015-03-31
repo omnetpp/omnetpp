@@ -7,11 +7,11 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include "DynaPacket_m.h"
 
-#define STACKSIZE 16384
+USING_NAMESPACE
 
+#define STACKSIZE 16384
 
 /**
  * Dynamically launched process in the server; see NED file for more info

@@ -11,6 +11,8 @@
 #include <omnetpp.h>
 #include "HttpMsg_m.h"
 
+USING_NAMESPACE
+
 
 class HTTPClient : public cSimpleModule
 {

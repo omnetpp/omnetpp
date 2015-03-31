@@ -18,6 +18,8 @@
 #include <omnetpp.h>
 #include "TokenRing_m.h"
 
+USING_NAMESPACE
+
 #define STACKSIZE 16384
 
 

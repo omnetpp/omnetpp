@@ -13,6 +13,8 @@
 #include "TelnetPkt_m.h"
 #include "SocketRTScheduler.h"
 
+USING_NAMESPACE
+
 
 /**
  * Simple model of a Telnet client.

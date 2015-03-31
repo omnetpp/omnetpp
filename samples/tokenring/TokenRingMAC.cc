@@ -11,9 +11,10 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include <omnetpp.h>
 #include "TokenRing_m.h"
+
+USING_NAMESPACE
 
 
 // Frame header and trailer are 21 octets (168 bits), with the following

@@ -7,9 +7,10 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include <omnetpp.h>
 #include "TelnetPkt_m.h"
+
+USING_NAMESPACE
 
 
 /**

@@ -11,6 +11,8 @@
 #include <omnetpp.h>
 #include "QueueBase.h"
 
+USING_NAMESPACE
+
 
 QueueBase::QueueBase()
 {

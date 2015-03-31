@@ -13,6 +13,8 @@
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 /**
  * Abstract base class for single-server queues.
  */

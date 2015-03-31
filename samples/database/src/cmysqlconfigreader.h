@@ -25,6 +25,8 @@
 #include <omnetpp.h>
 #include "cconfigreader.h"
 
+USING_NAMESPACE
+
 /**
  * Configuration class which reads data from a MYSQL database. The two
  * configurations, the boot-time omnetpp.ini and the database get merged.

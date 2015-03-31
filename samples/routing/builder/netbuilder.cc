@@ -19,6 +19,8 @@
 #include <string.h>
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 
 /**
  * Builds a network dynamically, with the topology coming from a

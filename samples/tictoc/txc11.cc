@@ -12,6 +12,8 @@
 #include <string.h>
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 
 /**
  * Let's make it more interesting by using several (n) `tic' modules,

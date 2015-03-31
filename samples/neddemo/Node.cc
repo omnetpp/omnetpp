@@ -10,6 +10,8 @@
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 /**
  * A module which does nothing.
  */

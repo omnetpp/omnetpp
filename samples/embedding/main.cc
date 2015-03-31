@@ -9,6 +9,8 @@
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 /**
  * Emulates an empty omnetpp.ini, causing config options' default values
  * to be used.

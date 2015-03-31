@@ -7,8 +7,9 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include "DynaPacket_m.h"
+
+USING_NAMESPACE
 
 #define STACKSIZE 16384
 

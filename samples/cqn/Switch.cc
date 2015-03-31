@@ -10,6 +10,8 @@
 
 #include <omnetpp.h>
 
+USING_NAMESPACE
+
 /**
  * Sends received packets to one of the outputs; see NED file for more info
  */

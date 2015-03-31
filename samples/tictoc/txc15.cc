@@ -13,6 +13,8 @@
 #include <omnetpp.h>
 #include "tictoc15_m.h"
 
+USING_NAMESPACE
+
 
 /**
  * This model is exciting enough so that we can collect some statistics.

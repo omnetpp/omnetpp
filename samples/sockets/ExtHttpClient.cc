@@ -13,6 +13,8 @@
 #include "HttpMsg_m.h"
 #include "SocketRTScheduler.h"
 
+USING_NAMESPACE
+
 
 /**
  * Model of a web browser.
