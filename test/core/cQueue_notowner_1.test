@@ -12,5 +12,6 @@ q2.insert(msg);
 
 %exitcode: 1
 
+%subst: /omnetpp:://
 %contains-regex: stdout
 Error in module .*: \(cMessage\)one is currently in \(cQueue\).*q1, it cannot be inserted into \(cQueue\).*q2

@@ -20,6 +20,7 @@ TRY(intVec.setEnum("Colors"))
 intVec.setName("intVec");
 intVec.record(1);
 
+%subst: /omnetpp:://
 %contains: stdout
 ERROR:(cOutVector): setType(): set the object name first, using setName()
 ERROR:(cOutVector): setMin(): set the object name first, using setName()

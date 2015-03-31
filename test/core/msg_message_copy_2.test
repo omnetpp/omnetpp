@@ -15,20 +15,20 @@ class MyClass
     int bb;
 }
 
-class ::cQueue;
+class OPP::cQueue;
 
 message Base
 {
     MyStruct ms;
     MyClass mc;
-    cQueue q;
+    OPP::cQueue q;
 }
 
 message MyMessage extends Base
 {
     MyStruct ms2;
     MyClass mc2;
-    cQueue q2;
+    OPP::cQueue q2;
 };
 
 %includes:

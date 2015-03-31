@@ -67,6 +67,7 @@ P(x->lowerBelow(a));
 delete canvas;
 delete x;
 
+%subst: /omnetpp:://
 %contains: stdout
 add:
 canvas->addFigure(c) ==>  c

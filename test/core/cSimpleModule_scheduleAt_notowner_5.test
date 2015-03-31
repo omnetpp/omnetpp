@@ -66,5 +66,7 @@ Define_Module(Receiver);
 
 %exitcode: 1
 
+%subst: /omnetpp:://
 %contains-regex: stdout
 Error in module .*: scheduleAt\(\): cannot schedule message \(cMessage\)one, it is currently scheduled as self-message for ANOTHER module
+

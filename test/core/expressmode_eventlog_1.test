@@ -25,6 +25,7 @@ Running simulation...
 
 %subst: /^SB .*/SB .../m
 
+%subst: /omnetpp:://
 %contains: results/General-0.elog
 E # 0 t 0 m 1 ce -1 msg -1
 SB ...
@@ -43,3 +44,4 @@ ES t 1
 E # 2 t 1 m 1 ce 1 msg 0
 - After wait
 SE e 0 c 13 m "No more events -- simulation ended at event #3, t=1."
+

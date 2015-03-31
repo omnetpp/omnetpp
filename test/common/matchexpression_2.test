@@ -48,6 +48,8 @@ EV << "done\n";
 
 %exitcode: 0
 
+%subst: /omnetpp:://
+
 %contains: stdout
 hello | (cPacket)hello --> true
 he* AND *lo | (cPacket)hello --> true

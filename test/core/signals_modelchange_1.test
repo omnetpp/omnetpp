@@ -86,6 +86,7 @@ network = Test
 cmdenv-express-mode = false
 cmdenv-event-banners = false
 
+%subst: /omnetpp:://
 %contains: stdout
 SUBSCRIBED at module "Test", signal "PRE_MODEL_CHANGE" (id=0)
 SUBSCRIBED at module "Test", signal "POST_MODEL_CHANGE" (id=1)

@@ -61,6 +61,7 @@ debug-statistics-recording = true
 **.rec30.result-recording-modes = +cos(mean+1),vector(max)       #works with expressions too
 **.rec31.result-recording-modes = -max(timeavg)/2,-vector(mean)  #NOTE: '-' means REMOVE, not negation!
 
+%subst: /omnetpp:://
 %contains: stdout
 Test.node (Node):
     "rec31" (signalID=17):

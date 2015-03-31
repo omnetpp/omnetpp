@@ -10,5 +10,6 @@ cmdenv-log-format = "text %% l='%l' c='%c' e='%e' t='%t' v='%v' a='%a' n='%n' m=
 
 EV_DEBUG_C("Test") << "Hello" << endl;
 
+%subst: /omnetpp:://
 %contains-regex: stdout
-text % l='DEBUG' c='Test' e='1' t='0' v='starter-1' a='cMessage' n='Test' m='Test' o='cLog_5::Test' s='Test' q='Test' N='Test' M='Test' O='cLog_5::Test' S='Test' Q='Test' G='General' R='0' X='cLog_5::Test' Y='Test' Z='Test' p='0x[0-9a-fA-F]+' b='Test' d='Test' x='Test' y='Test' f='cLog_5[\\/]test\.cc' i='22' z='Test' u='.*activity' w='[0-9.]+' W='.*' H='[0-9a-zA-Z-_]+' I='[0-9]+' Hello
+text % l='DEBUG' c='Test' e='1' t='0' v='starter-1' a='cMessage' n='Test' m='Test' o='cLog_5::Test' s='Test' q='Test' N='Test' M='Test' O='cLog_5::Test' S='Test' Q='Test' G='General' R='0' X='cLog_5::Test' Y='Test' Z='Test' p='0x[0-9a-fA-F]+' b='Test' d='Test' x='Test' y='Test' f='cLog_5[\\/]test\.cc' i='[0-9.]+' z='Test' u='.*activity' w='[0-9.]+' W='.*' H='[0-9a-zA-Z-_]+' I='[0-9]+' Hello

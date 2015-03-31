@@ -38,6 +38,7 @@ network = Test
 warmup-period = 10s
 debug-statistics-recording = true
 
+%subst: /omnetpp:://
 %contains: stdout
 Test.node (Node):
     "bar" (signalID=4):

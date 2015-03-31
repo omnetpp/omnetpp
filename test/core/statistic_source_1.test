@@ -36,6 +36,7 @@ network Test
 network = Test
 debug-statistics-recording = true
 
+%subst: /omnetpp:://
 %contains: stdout
 Test.node (Node):
     "bar" (signalID=4):

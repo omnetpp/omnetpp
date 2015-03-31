@@ -50,6 +50,7 @@ for (int i = 0; i < desc->getFieldCount(); i++) {
     EV << desc->getFieldName(i) << ": " << (s?s:"non-struct") << "\n";
 }
 
+%subst: /omnetpp:://
 %contains: stdout
 className: non-struct
 fullName: non-struct

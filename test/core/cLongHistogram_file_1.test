@@ -34,6 +34,7 @@ FILE *f3=fopen("h2.dat","w");
 h2.saveToFile(f3);
 fclose(f3);
 
+%subst: /omnetpp:://
 %contains: h.dat
 #
 # (cLongHistogram) Test.

@@ -79,38 +79,38 @@ msg2.parsimUnpack(buffer);
 EV << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
 
 EV << "v:";
-for (IntVector::iterator it=msg2.getV().begin(); it!=msg2.getV().end(); it++)
+for (IntVector::const_iterator it=msg2.getV().begin(); it!=msg2.getV().end(); it++)
     EV << " " << *it;
 EV << "\n";
 
 EV << "l:";
-for (IntList::iterator it=msg2.getL().begin(); it!=msg2.getL().end(); it++)
+for (IntList::const_iterator it=msg2.getL().begin(); it!=msg2.getL().end(); it++)
     EV << " " << *it;
 EV << "\n";
 
 EV << "s:";
-for (IntSet::iterator it=msg2.getS().begin(); it!=msg2.getS().end(); it++)
+for (IntSet::const_iterator it=msg2.getS().begin(); it!=msg2.getS().end(); it++)
     EV << " " << *it;
 EV << "\n";
 
 EV << "m:";
-for (IntDoubleMap::iterator it=msg2.getM().begin(); it!=msg2.getM().end(); it++)
+for (IntDoubleMap::const_iterator it=msg2.getM().begin(); it!=msg2.getM().end(); it++)
     EV << " " << it->first << ":" << it->second;
 EV << "\n";
 
 EV << "vl:";
-for (IntVectorList::iterator it=msg2.getVl().begin(); it!=msg2.getVl().end(); it++) {
+for (IntVectorList::const_iterator it=msg2.getVl().begin(); it!=msg2.getVl().end(); it++) {
     EV << " [";
-    for (IntVector::iterator it2=it->begin(); it2!=it->end(); it2++)
+    for (IntVector::const_iterator it2=it->begin(); it2!=it->end(); it2++)
         EV << " " << *it2;
     EV << " ]";
 }
 EV << "\n";
 
 EV << "lv:";
-for (IntListVector::iterator it=msg2.getLv().begin(); it!=msg2.getLv().end(); it++) {
+for (IntListVector::const_iterator it=msg2.getLv().begin(); it!=msg2.getLv().end(); it++) {
     EV << " [";
-    for (IntList::iterator it2=it->begin(); it2!=it->end(); it2++)
+    for (IntList::const_iterator it2=it->begin(); it2!=it->end(); it2++)
         EV << " " << *it2;
     EV << " ]";
 }

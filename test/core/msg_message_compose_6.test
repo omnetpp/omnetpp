@@ -5,11 +5,11 @@ Check cOwnedObject-based class as message member
 
 namespace @TESTNAME@;
 
-class ::cQueue;
+class OPP::cQueue;
 
 message MyMessage
 {
-    cQueue q;
+    OPP::cQueue q;
     char c;
 };
 

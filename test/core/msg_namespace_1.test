@@ -9,11 +9,13 @@ class Foo { }
 
 struct Struct { }
 
-message cMessage { } // that is, @TESTNAME@::cMessage extends ::cMessage
+class OPP::cMessage;
+
+message cMessage { } // that is, @TESTNAME@::cMessage extends OMNeT++'s cMessage
 
 message Derived1 extends cMessage { }  // extends @TESTNAME@::cMessage
 
-message Derived2 extends ::cMessage { }  // extends OMNeT++ class (::cMessage)
+message Derived2 extends OPP::cMessage { }  // extends OMNeT++ cMessage
 
 
 %includes:

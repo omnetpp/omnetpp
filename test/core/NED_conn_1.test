@@ -99,6 +99,7 @@ void Sink::handleMessage(cMessage *msg)
 
 }; //namespace
 
+%subst: /omnetpp:://
 %contains: stdout
 0:
 1:cDelayChannel disabled=0 delay=0.004

@@ -48,6 +48,7 @@ x.setI(11); PRINT(x.getI());
 
 EV << ObjectPrinter().printObjectToString(&x);
 
+%subst: /omnetpp:://
 %contains: stdout
 cOwnedObject
 @TESTNAME@::MyClass: myclass

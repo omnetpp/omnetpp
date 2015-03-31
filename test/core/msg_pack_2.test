@@ -44,6 +44,7 @@ EV << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
 
 EV << ObjectPrinter(NULL, "*:declaredOn(@TESTNAME@::TestMessage)",4).printObjectToString(&msg2);
 
+%subst: /omnetpp:://
 %contains: stdout
 isBufferEmpty:1
 class @TESTNAME@::TestMessage {

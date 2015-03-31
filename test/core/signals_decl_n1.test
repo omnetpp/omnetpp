@@ -21,26 +21,26 @@ simple Test extends testlib.SignalSource
     @signal[bogusSignal](type="foo");
     @signal[longSignal](type="long");
     @signal[stringSignal](type="string");
-    @signal[objectSignal](type="cMessage");
-    @signal[nullableSignal](type="cMessage?");
+    @signal[objectSignal](type="omnetpp::cMessage");
+    @signal[nullableSignal](type="omnetpp::cMessage?");
 
     script = xml("<root>\
        <e at='init' name='foo' type='long' value='99'/> \
        <e at='init' name='bogusSignal' type='long' value='99'/> \
        <e at='init' name='longSignal' type='unsigned long' value='153'/> \
        <e at='init' name='longSignal' type='unsigned long' value='153' timestamp='1'/> \
-       <e at='init' name='longSignal' type='cMessage' value=''/> \
-       <e at='init' name='longSignal' type='cMessage' value='' timestamp='1'/> \
+       <e at='init' name='longSignal' type='omnetpp::cMessage' value=''/> \
+       <e at='init' name='longSignal' type='omnetpp::cMessage' value='' timestamp='1'/> \
        <e at='init' name='longSignal' type='NULL' value=''/> \
        <e at='init' name='longSignal' type='NULL' value='' timestamp='1'/> \
        <e at='init' name='objectSignal' type='long' value='99'/> \
        <e at='init' name='objectSignal' type='long' value='99' timestamp='1'/> \
        <e at='init' name='objectSignal' type='NULL' value=''/> \
        <e at='init' name='objectSignal' type='NULL' value='' timestamp='1'/> \
-       <e at='init' name='objectSignal' type='cArray' value=''/> \
-       <e at='init' name='objectSignal' type='cArray' value='' timestamp='1'/> \
-       <e at='init' name='nullableSignal' type='cArray' value=''/> \
-       <e at='init' name='nullableSignal' type='cArray' value='' timestamp='1'/> \
+       <e at='init' name='objectSignal' type='omnetpp::cArray' value=''/> \
+       <e at='init' name='objectSignal' type='omnetpp::cArray' value='' timestamp='1'/> \
+       <e at='init' name='nullableSignal' type='omnetpp::cArray' value=''/> \
+       <e at='init' name='nullableSignal' type='omnetpp::cArray' value='' timestamp='1'/> \
     </root>");
 }
 
@@ -60,9 +60,9 @@ t=0s: emit "longSignal" type=unsigned long value=153
 ERROR: Signal "longSignal" emitted with wrong data type (expected=long, actual=unsigned long)
 t=0s: emit "longSignal" type=unsigned long value=153 timestamp=1s
 ERROR: Signal "longSignal" emitted as timestamped value with wrong data type (expected=long, actual=unsigned long)
-t=0s: emit "longSignal" type=cMessage value=
-ERROR: Signal "longSignal" emitted with wrong data type (expected=long, actual=cMessage)
-t=0s: emit "longSignal" type=cMessage value= timestamp=1s
+t=0s: emit "longSignal" type=omnetpp::cMessage value=
+ERROR: Signal "longSignal" emitted with wrong data type (expected=long, actual=omnetpp::cMessage)
+t=0s: emit "longSignal" type=omnetpp::cMessage value= timestamp=1s
 ERROR: Signal "longSignal" emitted as timestamped value with wrong data type (expected=long, actual=object)
 t=0s: emit "longSignal" type=NULL value=
 ERROR: Signal "longSignal" emitted with wrong data type (expected=long, actual=NULL)
@@ -73,14 +73,14 @@ ERROR: Signal "objectSignal" emitted with wrong data type (expected=object, actu
 t=0s: emit "objectSignal" type=long value=99 timestamp=1s
 ERROR: Signal "objectSignal" emitted as timestamped value with wrong type (long, but object expected)
 t=0s: emit "objectSignal" type=NULL value=
-ERROR: Signal "objectSignal" emitted a NULL pointer (specify 'type=cMessage?' in @signal to allow NULLs)
+ERROR: Signal "objectSignal" emitted a NULL pointer (specify 'type=omnetpp::cMessage?' in @signal to allow NULLs)
 t=0s: emit "objectSignal" type=NULL value= timestamp=1s
-ERROR: Signal "objectSignal" emitted as timestamped value with NULL pointer in it (specify 'type=cMessage?' in @signal to allow NULLs)
-t=0s: emit "objectSignal" type=cArray value=
-ERROR: Signal "objectSignal" emitted with wrong class (cArray does not subclass from cMessage as declared)
-t=0s: emit "objectSignal" type=cArray value= timestamp=1s
-ERROR: Signal "objectSignal" emitted as timestamped value with wrong class in it (cArray does not subclass from cMessage as declared)
-t=0s: emit "nullableSignal" type=cArray value=
-ERROR: Signal "nullableSignal" emitted with wrong class (cArray does not subclass from cMessage as declared)
-t=0s: emit "nullableSignal" type=cArray value= timestamp=1s
-ERROR: Signal "nullableSignal" emitted as timestamped value with wrong class in it (cArray does not subclass from cMessage as declared)
+ERROR: Signal "objectSignal" emitted as timestamped value with NULL pointer in it (specify 'type=omnetpp::cMessage?' in @signal to allow NULLs)
+t=0s: emit "objectSignal" type=omnetpp::cArray value=
+ERROR: Signal "objectSignal" emitted with wrong class (omnetpp::cArray does not subclass from omnetpp::cMessage as declared)
+t=0s: emit "objectSignal" type=omnetpp::cArray value= timestamp=1s
+ERROR: Signal "objectSignal" emitted as timestamped value with wrong class in it (omnetpp::cArray does not subclass from omnetpp::cMessage as declared)
+t=0s: emit "nullableSignal" type=omnetpp::cArray value=
+ERROR: Signal "nullableSignal" emitted with wrong class (omnetpp::cArray does not subclass from omnetpp::cMessage as declared)
+t=0s: emit "nullableSignal" type=omnetpp::cArray value= timestamp=1s
+ERROR: Signal "nullableSignal" emitted as timestamped value with wrong class in it (omnetpp::cArray does not subclass from omnetpp::cMessage as declared)

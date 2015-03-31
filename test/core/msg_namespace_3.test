@@ -69,6 +69,7 @@ EV << ObjectPrinter().printObjectToString(&msg2);
 EV << ObjectPrinter().printObjectToString(&msg3);
 EV << ".\n";
 
+%subst: /omnetpp:://
 %contains: stdout
 class @TESTNAME@::Msg1 {
     string className = @TESTNAME@::Msg1

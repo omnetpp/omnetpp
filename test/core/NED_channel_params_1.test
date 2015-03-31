@@ -23,6 +23,7 @@ network Test
         a.out++ --> C {length=200km;} --> b.in++;
 }
 
+%subst: /omnetpp:://
 %contains: stdout
 out[0]: --> b.in[0], (C)channel disabled=false delay=0.001 datarate=0 ber=0 per=0 length=200000  (cDatarateChannel)
 

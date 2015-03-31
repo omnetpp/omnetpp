@@ -40,6 +40,7 @@ SomePacket *msg = new SomePacket("some", 99);
 EV << ObjectPrinter().printObjectToString(msg);
 delete msg;
 
+%subst: /omnetpp:://
 %contains: stdout
 class @TESTNAME@::SomePacket {
     string className = @TESTNAME@::SomePacket

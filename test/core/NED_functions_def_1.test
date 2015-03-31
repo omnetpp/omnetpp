@@ -8,7 +8,7 @@ import testlib.*;
 network Test {
     parameters:
         bool p0 = @TESTNAME@_haveClass("foo%*&@");
-        bool p1 = @TESTNAME@_haveClass("cMessage");
+        bool p1 = @TESTNAME@_haveClass("omnetpp::cMessage");
         string p2 = @TESTNAME@_lindex(3, "one", "two", "three", "four");
         string p3 = @TESTNAME@_lindex(3, true, 42, "three", false);
     submodules:

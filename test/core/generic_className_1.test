@@ -30,6 +30,7 @@ PRINT_CLASSNAME( cWeightedStdDev )
 PRINT_CLASSNAME( cTopology )
 PRINT_CLASSNAME( cVarHistogram )
 
+%subst: /omnetpp:://
 %contains: stdout
 cArray: cArray
 cTDExpandingWindows: cTDExpandingWindows

@@ -5,11 +5,11 @@ Check static array of cOwnedObject-based class as message member
 
 namespace @TESTNAME@;
 
-class ::cQueue;
+class OPP::cQueue;
 
 message MyMessage
 {
-    cQueue q[3];
+    OPP::cQueue q[3];
     char c;
 };
 
@@ -41,6 +41,7 @@ PRINTOBJ(x.getQ(0));
 PRINTOBJ(x.getQ(1));
 PRINTOBJ(x.getQ(2));
 
+%subst: /omnetpp:://
 %contains: stdout
 x.getQ(0):cQueue:q0:owned:1
 x.getQ(1):cQueue:q1:owned:0
@@ -50,3 +51,4 @@ x.getC():x
 x.getQ(0):cQueue:q0:owned:2
 x.getQ(1):cQueue:q1:owned:0
 x.getQ(2):cQueue:q2:owned:2
+

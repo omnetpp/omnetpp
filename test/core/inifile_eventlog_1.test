@@ -15,6 +15,7 @@ eventlog-recording-intervals = ..1, 3..5, 7..
 
 %subst: /^SB .*/SB .../m
 
+%subst: /omnetpp:://
 %contains: results/General-0.elog
 E # 0 t 0 m 1 ce -1 msg -1
 SB ...

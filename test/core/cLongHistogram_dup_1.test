@@ -30,7 +30,7 @@ h2 = h.dup(); h2->saveToFile(f); delete h2;
 
 fclose(f);
 
-
+%subst: /omnetpp:://
 %contains: histograms.out
 
 #

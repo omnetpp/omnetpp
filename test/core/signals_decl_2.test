@@ -2,30 +2,30 @@
 Namespace lookup of class names in @signal type attr
 
 %file: test.msg
+
+message Foo {}  // ::Foo
+
 namespace @TESTNAME@;
 
-message Foo { }
-class cMessage { }  // so we have similarly named but unrelated classes in 2 different namespaces (@TESTNAME@::cMessage, ::cMessage)
+message Foo {} // @TESTNAME@::Foo
 
 %file: test.ned
 
 simple Test extends testlib.SignalSource
 {
     @isNetwork(true);
-    @signal[f0](type="Foo"); // should be understood as @TESTNAME@::Foo
-    @signal[m0](type="cMessage"); // should be understood as @TESTNAME@::cMessage
-    @signal[m1](type="@TESTNAME@::cMessage"); // ditto
-    @signal[m2](type="::cMessage"); // the OMNeT++ class
+    @signal[m0](type="Foo"); // should be understood as @TESTNAME@::Foo
+    @signal[m1](type="@TESTNAME@::Foo"); // ditto
+    @signal[m2](type="::Foo"); // the global Foo
 
     script = xml("<root>\
-       <e at='init' name='f0' type='@TESTNAME@::Foo' value=''/> \
-       <e at='init' name='m0' type='@TESTNAME@::cMessage' value=''/> \
-       <e at='init' name='m1' type='@TESTNAME@::cMessage' value=''/> \
-       <e at='init' name='m2' type='cMessage' value=''/> \
+       <e at='init' name='m0' type='@TESTNAME@::Foo' value=''/> \
+       <e at='init' name='m1' type='@TESTNAME@::Foo' value=''/> \
+       <e at='init' name='m2' type='Foo' value=''/> \
        <!-- bad: --> \
-       <e at='init' name='m0' type='cMessage' value=''/> \
-       <e at='init' name='m1' type='cMessage' value=''/> \
-       <e at='init' name='m2' type='@TESTNAME@::cMessage' value=''/> \
+       <e at='init' name='m0' type='Foo' value=''/> \
+       <e at='init' name='m1' type='Foo' value=''/> \
+       <e at='init' name='m2' type='@TESTNAME@::Foo' value=''/> \
     </root>");
 }
 
@@ -37,16 +37,16 @@ check-signals = true
 %exitcode: 0
 
 %contains: stdout
-t=0s: emit "f0" type=@TESTNAME@::Foo value=
-t=0s: emit "m0" type=@TESTNAME@::cMessage value=
-t=0s: emit "m1" type=@TESTNAME@::cMessage value=
-t=0s: emit "m2" type=cMessage value=
-t=0s: emit "m0" type=cMessage value=
-ERROR: Signal "m0" emitted with wrong class (cMessage does not subclass from @TESTNAME@::cMessage as declared)
-t=0s: emit "m1" type=cMessage value=
-ERROR: Signal "m1" emitted with wrong class (cMessage does not subclass from @TESTNAME@::cMessage as declared)
-t=0s: emit "m2" type=@TESTNAME@::cMessage value=
-ERROR: Signal "m2" emitted with wrong class (@TESTNAME@::cMessage does not subclass from cMessage as declared)
+t=0s: emit "m0" type=signals_decl_2::Foo value=
+t=0s: emit "m1" type=signals_decl_2::Foo value=
+t=0s: emit "m2" type=Foo value=
+t=0s: emit "m0" type=Foo value=
+ERROR: Signal "m0" emitted with wrong class (Foo does not subclass from signals_decl_2::Foo as declared)
+t=0s: emit "m1" type=Foo value=
+ERROR: Signal "m1" emitted with wrong class (Foo does not subclass from signals_decl_2::Foo as declared)
+t=0s: emit "m2" type=signals_decl_2::Foo value=
+ERROR: Signal "m2" emitted with wrong class (signals_decl_2::Foo does not subclass from Foo as declared)
 
-%contains-regex: stdout
-emitted 7 signals
+%contains: stdout
+emitted 6 signals
+
