@@ -67,7 +67,7 @@ std::string cPacketQueue::info() const
     return out.str();
 }
 
-void cPacketQueue::parsimPack(cCommBuffer *buffer)
+void cPacketQueue::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,E_NOPARSIM);

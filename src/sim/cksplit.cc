@@ -104,7 +104,7 @@ cKSplit::~cKSplit()
     delete iter;
 }
 
-void cKSplit::parsimPack(cCommBuffer *buffer)
+void cKSplit::parsimPack(cCommBuffer *buffer) const
 {
     // cDensityEstBase::parsimPack(buffer);
     throw cRuntimeError(this, "parsimPack() not implemented");

@@ -49,7 +49,7 @@ void cBoolParImpl::operator=(const cBoolParImpl& other)
     copy(other);
 }
 
-void cBoolParImpl::parsimPack(cCommBuffer *buffer)
+void cBoolParImpl::parsimPack(cCommBuffer *buffer) const
 {
     //TBD
 }

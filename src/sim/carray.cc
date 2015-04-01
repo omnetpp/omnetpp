@@ -160,7 +160,7 @@ void cArray::forEachChild(cVisitor *v)
             v->visit(vect[i]);
 }
 
-void cArray::parsimPack(cCommBuffer *buffer)
+void cArray::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,E_NOPARSIM);

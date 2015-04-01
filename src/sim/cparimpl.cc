@@ -66,7 +66,7 @@ cParImpl& cParImpl::operator=(const cParImpl& other)
     return *this;
 }
 
-void cParImpl::parsimPack(cCommBuffer *buffer)
+void cParImpl::parsimPack(cCommBuffer *buffer) const
 {
     //TBD
 }

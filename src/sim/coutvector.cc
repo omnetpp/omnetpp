@@ -86,7 +86,7 @@ std::string cOutVector::info() const
     return out.str();
 }
 
-void cOutVector::parsimPack(cCommBuffer *buffer)
+void cOutVector::parsimPack(cCommBuffer *buffer) const
 {
     throw cRuntimeError(this, "parsimPack() not supported");
 }

@@ -102,7 +102,7 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
      * Packing and unpacking cannot be supported with this class.
      * This methods raises an error.
      */
-    virtual void parsimPack(cCommBuffer *buffer);
+    virtual void parsimPack(cCommBuffer *buffer) const;
 
     /**
      * Packing and unpacking cannot be supported with this class.

@@ -60,7 +60,7 @@ cHistogramBase::~cHistogramBase()
     delete [] cellv;
 }
 
-void cHistogramBase::parsimPack(cCommBuffer *buffer)
+void cHistogramBase::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this, E_NOPARSIM);
@@ -191,7 +191,7 @@ cHistogramBase(name, numcells)
     this->mode = mode;
 }
 
-void cHistogram::parsimPack(cCommBuffer *buffer)
+void cHistogram::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this, E_NOPARSIM);

@@ -143,7 +143,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     /**
      * Serializes the object into a buffer.
      */
-    virtual void parsimPack(cCommBuffer *buffer);
+    virtual void parsimPack(cCommBuffer *buffer) const;
 
     /**
      * Deserializes the object from a buffer.

@@ -136,7 +136,7 @@ void cNamedObject::setNamePooling(bool pooling)
     }
 }
 
-void cNamedObject::parsimPack(cCommBuffer *buffer)
+void cNamedObject::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,E_NOPARSIM);

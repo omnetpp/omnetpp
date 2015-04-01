@@ -192,7 +192,7 @@ void cMsgPar::forEachChild(cVisitor *v)
     }
 }
 
-void cMsgPar::parsimPack(cCommBuffer *buffer)
+void cMsgPar::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,E_NOPARSIM);

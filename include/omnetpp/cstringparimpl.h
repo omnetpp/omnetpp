@@ -79,7 +79,7 @@ class SIM_API cStringParImpl : public cParImpl
     /**
      * Serializes the object into a buffer.
      */
-    virtual void parsimPack(cCommBuffer *buffer);
+    virtual void parsimPack(cCommBuffer *buffer) const;
 
     /**
      * Deserializes the object from a buffer.

@@ -125,7 +125,7 @@ void cObject::dropAndDelete(cOwnedObject *obj)
     delete obj;
 }
 
-void cObject::parsimPack(cCommBuffer *buffer)
+void cObject::parsimPack(cCommBuffer *buffer) const
 {
 }
 

@@ -159,7 +159,7 @@ std::string cMessage::detailedInfo() const
     return "";  // all fields are available via reflection, no point in repeating them here
 }
 
-void cMessage::parsimPack(cCommBuffer *buffer)
+void cMessage::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,E_NOPARSIM);

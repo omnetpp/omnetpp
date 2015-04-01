@@ -65,7 +65,7 @@ cStatistic::~cStatistic()
     dropAndDelete(ra);
 }
 
-void cStatistic::parsimPack(cCommBuffer *buffer)
+void cStatistic::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,E_NOPARSIM);

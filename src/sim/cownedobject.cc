@@ -149,7 +149,7 @@ cOwnedObject& cOwnedObject::operator=(const cOwnedObject& obj)
     return *this;
 }
 
-void cOwnedObject::parsimPack(cCommBuffer *buffer)
+void cOwnedObject::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,E_NOPARSIM);
@@ -175,7 +175,7 @@ cNoncopyableOwnedObject *cNoncopyableOwnedObject::dup() const
                               "and does not support dup()", getClassName());
 }
 
-void cNoncopyableOwnedObject::parsimPack(cCommBuffer *buffer)
+void cNoncopyableOwnedObject::parsimPack(cCommBuffer *buffer) const
 {
     throw cRuntimeError(this, "parsimPack(): %s subclasses from cNoncopyableOwnedObject, and "
                               "does not support pack/unpack operations", getClassName());

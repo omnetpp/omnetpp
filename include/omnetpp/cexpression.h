@@ -75,7 +75,7 @@ class SIM_API cExpression : public cObject
     /**
      * Redefined to "de-inherit" it.
      */
-    virtual void parsimPack(cCommBuffer *buffer)  {throw cRuntimeError(this, E_CANTPACK);}
+    virtual void parsimPack(cCommBuffer *buffer) const  {throw cRuntimeError(this, E_CANTPACK);}
 
     /**
      * Redefined to "de-inherit" it.

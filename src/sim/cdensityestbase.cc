@@ -52,7 +52,7 @@ cDensityEstBase::~cDensityEstBase()
     delete [] firstvals;
 }
 
-void cDensityEstBase::parsimPack(cCommBuffer *buffer)
+void cDensityEstBase::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this, E_NOPARSIM);

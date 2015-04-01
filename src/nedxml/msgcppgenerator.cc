@@ -285,7 +285,7 @@ const char *PARSIMPACK_BOILERPLATE =
         "\n"
         "// Packing/unpacking an std::vector\n"
         "template<typename T, typename A>\n"
-        "void doPacking(OPP::cCommBuffer *buffer, /*const*/ std::vector<T,A>& v)\n"
+        "void doPacking(OPP::cCommBuffer *buffer, const std::vector<T,A>& v)\n"
         "{\n"
         "    int n = v.size();\n"
         "    doPacking(buffer, n);\n"
@@ -305,7 +305,7 @@ const char *PARSIMPACK_BOILERPLATE =
         "\n"
         "// Packing/unpacking an std::list\n"
         "template<typename T, typename A>\n"
-        "void doPacking(OPP::cCommBuffer *buffer, /*const*/ std::list<T,A>& l)\n"
+        "void doPacking(OPP::cCommBuffer *buffer, const std::list<T,A>& l)\n"
         "{\n"
         "    doPacking(buffer, (int)l.size());\n"
         "    for (typename std::list<T,A>::const_iterator it = l.begin(); it != l.end(); it++)\n"
@@ -325,7 +325,7 @@ const char *PARSIMPACK_BOILERPLATE =
         "\n"
         "// Packing/unpacking an std::set\n"
         "template<typename T, typename Tr, typename A>\n"
-        "void doPacking(OPP::cCommBuffer *buffer, /*const*/ std::set<T,Tr,A>& s)\n"
+        "void doPacking(OPP::cCommBuffer *buffer, const std::set<T,Tr,A>& s)\n"
         "{\n"
         "    doPacking(buffer, (int)s.size());\n"
         "    for (typename std::set<T,Tr,A>::const_iterator it = s.begin(); it != s.end(); it++)\n"
@@ -346,7 +346,7 @@ const char *PARSIMPACK_BOILERPLATE =
         "\n"
         "// Packing/unpacking an std::map\n"
         "template<typename K, typename V, typename Tr, typename A>\n"
-        "void doPacking(OPP::cCommBuffer *buffer, /*const*/ std::map<K,V,Tr,A>& m)\n"
+        "void doPacking(OPP::cCommBuffer *buffer, const std::map<K,V,Tr,A>& m)\n"
         "{\n"
         "    doPacking(buffer, (int)m.size());\n"
         "    for (typename std::map<K,V,Tr,A>::const_iterator it = m.begin(); it != m.end(); it++) {\n"
@@ -370,7 +370,7 @@ const char *PARSIMPACK_BOILERPLATE =
         "\n"
         "// Default pack/unpack function for arrays\n"
         "template<typename T>\n"
-        "void doArrayPacking(OPP::cCommBuffer *b, T *t, int n)\n"
+        "void doArrayPacking(OPP::cCommBuffer *b, const T *t, int n)\n"
         "{\n"
         "    for (int i = 0; i < n; i++)\n"
         "        doPacking(b, t[i]);\n"
@@ -385,7 +385,7 @@ const char *PARSIMPACK_BOILERPLATE =
         "\n"
         "// Default rule to prevent compiler from choosing base class' doPacking() function\n"
         "template<typename T>\n"
-        "void doPacking(OPP::cCommBuffer *, T& t)\n"
+        "void doPacking(OPP::cCommBuffer *, const T& t)\n"
         "{\n"
         "    throw OPP::cRuntimeError(\"Parsim error: no doPacking() function for type %s\", OPP::opp_typename(typeid(t)));\n"
         "}\n"
@@ -1044,7 +1044,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     } else {
         H << "    virtual " << info.msgclass << " *dup() const {return new " << info.msgclass << "(*this);}\n";
     }
-    H << "    virtual void parsimPack(" OPP_PREFIX "cCommBuffer *b);\n";
+    H << "    virtual void parsimPack(" OPP_PREFIX "cCommBuffer *b) const;\n";
     H << "    virtual void parsimUnpack(" OPP_PREFIX "cCommBuffer *b);\n";
     H << "\n";
     H << "    // field getter/setter methods\n";
@@ -1083,7 +1083,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
             CC << "Register_Class(" << info.msgclass << ");\n\n";
         }
 
-        H << "inline void doPacking(" OPP_PREFIX "cCommBuffer *b, " << info.realmsgclass << "& obj) {obj.parsimPack(b);}\n";
+        H << "inline void doPacking(" OPP_PREFIX "cCommBuffer *b, const " << info.realmsgclass << "& obj) {obj.parsimPack(b);}\n";
         H << "inline void doUnpacking(" OPP_PREFIX "cCommBuffer *b, " << info.realmsgclass << "& obj) {obj.parsimUnpack(b);}\n\n";
     }
 
@@ -1246,7 +1246,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     // parsimUnpack() is NOT that of cOwnedObject. However it's still needed because a
     // "friend" doPacking() function could not access protected members otherwise.
     //
-    CC << "void " << info.msgclass << "::parsimPack(" OPP_PREFIX "cCommBuffer *b)\n";
+    CC << "void " << info.msgclass << "::parsimPack(" OPP_PREFIX "cCommBuffer *b) const\n";
     CC << "{\n";
     if (info.msgbaseclass != "") {
         if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT || info.classtype == COBJECT) {
@@ -1401,10 +1401,10 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
     H << "};\n\n";
 
     H << "// helpers for local use\n";
-    H << "void " << TS(opts.exportdef) << "__doPacking(" OPP_PREFIX "cCommBuffer *b, " << info.msgclass << "& a);\n";
+    H << "void " << TS(opts.exportdef) << "__doPacking(" OPP_PREFIX "cCommBuffer *b, const " << info.msgclass << "& a);\n";
     H << "void " << TS(opts.exportdef) << "__doUnpacking(" OPP_PREFIX "cCommBuffer *b, " << info.msgclass << "& a);\n\n";
 
-    H << "inline void doPacking(" OPP_PREFIX "cCommBuffer *b, " << info.realmsgclass << "& obj) { " << "__doPacking(b, obj); }\n";
+    H << "inline void doPacking(" OPP_PREFIX "cCommBuffer *b, const " << info.realmsgclass << "& obj) { " << "__doPacking(b, obj); }\n";
     H << "inline void doUnpacking(" OPP_PREFIX "cCommBuffer *b, " << info.realmsgclass << "& obj) { " << "__doUnpacking(b, obj); }\n\n";
 
     // Constructor:
@@ -1440,7 +1440,7 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
     CC << "}\n\n";
 
     // doPacking/doUnpacking go to the global namespace
-    CC << "void __doPacking(" OPP_PREFIX "cCommBuffer *b, " << info.msgclass << "& a)\n";
+    CC << "void __doPacking(" OPP_PREFIX "cCommBuffer *b, const " << info.msgclass << "& a)\n";
     CC << "{\n";
     if (!info.msgbaseclass.empty()) {
         CC << "    doPacking(b,(::" << info.msgbaseclass << "&)a);\n";

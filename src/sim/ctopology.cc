@@ -80,7 +80,7 @@ std::string cTopology::info() const
     return out.str();
 }
 
-void cTopology::parsimPack(cCommBuffer *buffer)
+void cTopology::parsimPack(cCommBuffer *buffer) const
 {
     throw cRuntimeError(this,"parsimPack() not implemented");
 }

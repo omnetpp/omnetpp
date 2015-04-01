@@ -179,7 +179,7 @@ class SIM_API cOwnedObject : public cNamedObject
     /**
      * Serializes the object into a buffer.
      */
-    virtual void parsimPack(cCommBuffer *buffer);
+    virtual void parsimPack(cCommBuffer *buffer) const;
 
     /**
      * Deserializes the object from a buffer.
@@ -266,7 +266,7 @@ class SIM_API cNoncopyableOwnedObject : public cOwnedObject, noncopyable
     /**
      * Redefined to throw an error.
      */
-    virtual void parsimPack(cCommBuffer *buffer);
+    virtual void parsimPack(cCommBuffer *buffer) const;
 
     /**
      * Redefined to throw an error.
@@ -298,7 +298,7 @@ SIM_API std::ostream& operator<< (std::ostream& os, const cOwnedObject& o);
 inline std::ostream& operator<< (std::ostream& os, cOwnedObject *p) {
     return os << (const cOwnedObject *)p;
 }
-			
+
 inline std::ostream& operator<< (std::ostream& os, cOwnedObject& o) {
     return os << (const cOwnedObject&)o;
 }

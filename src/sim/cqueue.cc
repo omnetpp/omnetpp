@@ -74,7 +74,7 @@ void cQueue::forEachChild(cVisitor *v)
          v->visit(p->obj);
 }
 
-void cQueue::parsimPack(cCommBuffer *buffer)
+void cQueue::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,E_NOPARSIM);

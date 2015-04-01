@@ -68,7 +68,7 @@ std::string cStdDev::info() const
     return out.str();
 }
 
-void cStdDev::parsimPack(cCommBuffer *buffer)
+void cStdDev::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,E_NOPARSIM);
@@ -261,7 +261,7 @@ std::string cWeightedStdDev::info() const
     return out.str();
 }
 
-void cWeightedStdDev::parsimPack(cCommBuffer *buffer)
+void cWeightedStdDev::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,E_NOPARSIM);

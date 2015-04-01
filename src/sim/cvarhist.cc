@@ -64,7 +64,7 @@ cVarHistogram::~cVarHistogram()
     delete [] bin_bounds;
 }
 
-void cVarHistogram::parsimPack(cCommBuffer *buffer)
+void cVarHistogram::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this, E_NOPARSIM);

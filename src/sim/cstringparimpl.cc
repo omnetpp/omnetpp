@@ -48,7 +48,7 @@ void cStringParImpl::operator=(const cStringParImpl& other)
     copy(other);
 }
 
-void cStringParImpl::parsimPack(cCommBuffer *buffer)
+void cStringParImpl::parsimPack(cCommBuffer *buffer) const
 {
     //TBD
 }

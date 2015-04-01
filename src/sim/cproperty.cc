@@ -148,7 +148,7 @@ std::string cProperty::info() const
     return os.str();
 }
 
-void cProperty::parsimPack(cCommBuffer *buffer)
+void cProperty::parsimPack(cCommBuffer *buffer) const
 {
     throw cRuntimeError(this, E_CANTPACK);
 }

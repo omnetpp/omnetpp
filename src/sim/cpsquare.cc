@@ -72,7 +72,7 @@ cPSquare::~cPSquare()
 }
 
 
-void cPSquare::parsimPack(cCommBuffer *buffer)
+void cPSquare::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,E_NOPARSIM);

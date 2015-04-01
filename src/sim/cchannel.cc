@@ -71,7 +71,7 @@ void cChannel::forEachChild(cVisitor *v)
     cDefaultList::forEachChild(v);
 }
 
-void cChannel::parsimPack(cCommBuffer *buffer)
+void cChannel::parsimPack(cCommBuffer *buffer) const
 {
     throw cRuntimeError(this,"parsimPack() not implemented");
 }

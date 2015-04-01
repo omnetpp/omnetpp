@@ -75,7 +75,7 @@ std::string cProperties::info() const
     return out.str();
 }
 
-void cProperties::parsimPack(cCommBuffer *buffer)
+void cProperties::parsimPack(cCommBuffer *buffer) const
 {
     // TBD
 }

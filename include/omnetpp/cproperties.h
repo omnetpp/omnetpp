@@ -95,7 +95,7 @@ class SIM_API cProperties : public cObject
     /**
      * Serializes the object into a buffer.
      */
-    virtual void parsimPack(cCommBuffer *buffer);
+    virtual void parsimPack(cCommBuffer *buffer) const;
 
     /**
      * Deserializes the object from a buffer.

@@ -388,7 +388,7 @@ class SIM_API cTopology : public cOwnedObject
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimPack(cCommBuffer *buffer);
+    virtual void parsimPack(cCommBuffer *buffer) const;
 
     /**
      * Deserializes the object from an MPI receive buffer
@@ -502,7 +502,7 @@ class SIM_API cTopology : public cOwnedObject
     /**
      * Adds the given link to the graph, between the nodes that correspond
      * to the specified gates. It is an error if the modules that contain
-     * the gates are not parts of the graph. If the link is already part 
+     * the gates are not parts of the graph. If the link is already part
      * of the graph it is removed first, i.e. this method also serves as
      * reconnectLink().
      */

@@ -64,7 +64,7 @@ std::string cFSM::info() const
     return out.str();
 }
 
-void cFSM::parsimPack(cCommBuffer *buffer)
+void cFSM::parsimPack(cCommBuffer *buffer) const
 {
     throw cRuntimeError(this,"parsimPack() not implemented");
 }

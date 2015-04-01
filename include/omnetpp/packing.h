@@ -23,12 +23,9 @@ NAMESPACE_BEGIN
 //
 // pack/unpack functions for primitive types
 //
-// TODO: pack doesn't use "const", as the template rule somehow doesn't fire
-// then (VC++ 7.1)
-//
 #define DOPACKING(T,R) \
-          inline void doPacking(OPP::cCommBuffer *b, /*const*/ T R a) {b->pack(a);}  \
-          inline void doPacking(OPP::cCommBuffer *b, /*const*/ T *a, int n) {b->pack(a,n);}  \
+          inline void doPacking(OPP::cCommBuffer *b, const T R a) {b->pack(a);}  \
+          inline void doPacking(OPP::cCommBuffer *b, const T *a, int n) {b->pack(a,n);}  \
           inline void doUnpacking(OPP::cCommBuffer *b, T& a) {b->unpack(a);}  \
           inline void doUnpacking(OPP::cCommBuffer *b, T *a, int n) {b->unpack(a,n);}
 #define _

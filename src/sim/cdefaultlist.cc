@@ -171,7 +171,7 @@ void cDefaultList::forEachChild(cVisitor *v)
         v->visit(vect[i]);
 }
 
-void cDefaultList::parsimPack(cCommBuffer *buffer)
+void cDefaultList::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,E_NOPARSIM);
