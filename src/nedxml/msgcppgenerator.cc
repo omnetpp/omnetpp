@@ -460,12 +460,6 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
 
     CC << PARSIMPACK_BOILERPLATE;
 
-    CC << "// Template rule which fires if a struct or class doesn't have operator<< (found via argument-dependent lookup aka ADT)\n";
-    CC << "namespace std {\n";
-    CC << "template<typename T>\n";
-    CC << "inline std::ostream& operator<<(std::ostream& out,const T&) {return out;}\n";
-    CC << "};\n";
-
     if (!firstNS)
     {
         H << "\n\n";
@@ -2159,7 +2153,15 @@ MsgCppGenerator::StringVector MsgCppGenerator::lookupExistingEnumName(const std:
 
 void MsgCppGenerator::generateTemplates()
 {
-    CC << "// Template rule for outputting std::vector<T> types\n";
+    CC << "// forward\n";
+    CC << "template<typename T, typename A>\n";
+    CC << "std::ostream& operator<<(std::ostream& out, const std::vector<T,A>& vec);\n\n";
+
+    CC << "// Template rule which fires if a struct or class doesn't have operator<<\n";
+    CC << "template<typename T>\n";
+    CC << "inline std::ostream& operator<<(std::ostream& out,const T&) {return out;}\n\n";
+
+    CC << "// operator<< for std::vector<T>\n";
     CC << "template<typename T, typename A>\n";
     CC << "inline std::ostream& operator<<(std::ostream& out, const std::vector<T,A>& vec)\n";
     CC << "{\n";
