@@ -8,6 +8,7 @@ class SignalSource : public cSimpleModule
 {
   protected:
     int count;
+    int numErrors;
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     virtual void finish();
@@ -18,7 +19,7 @@ Define_Module(SignalSource);
 
 void SignalSource::initialize()
 {
-    count = 0;
+    count = numErrors = 0;
     cXMLElement *script = par("script");
     for (cXMLElement *elem=script->getFirstChild(); elem; elem = elem->getNextSibling())
     {
@@ -57,7 +58,7 @@ void SignalSource::finish()
         if (strcmp(atAttr, "finish")==0)
             emitSignal(elem);
     }
-    EV << "emitted " << count << " signals\n";
+    EV << "emitted " << count << " signals with " << numErrors << " errors\n";
 }
 
 void SignalSource::emitSignal(cXMLElement *elem)
@@ -72,7 +73,8 @@ void SignalSource::emitSignal(cXMLElement *elem)
     ASSERT(value!=NULL);
 
     EV << "t=" << simTime() << "s: emit \"" << name << "\" type=" << type << " value=" << value;
-    if (timestamp) EV << " timestamp=" << timestamp << "s";
+    if (timestamp)
+        EV << " timestamp=" << timestamp << "s";
     EV << "\n";
 
     simsignal_t signalID = registerSignal(name);
@@ -95,7 +97,7 @@ void SignalSource::emitSignal(cXMLElement *elem)
                 emit(signalID, value);
             else if (strcmp(type, "NULL")==0)
                 emit(signalID, (cObject*)0);
-            else  // interpret as class name
+            else // interpret as class name
                 emit(signalID, obj = createOne(type));
         }
         else
@@ -116,13 +118,14 @@ void SignalSource::emitSignal(cXMLElement *elem)
                 tsval.set(t, value);
             else if (strcmp(type, "NULL")==0)
                 tsval.set(t, (cObject*)0);
-            else  // interpret as class name
+            else // interpret as class name
                 tsval.set(t, obj = createOne(type));
             emit(signalID, &tsval);
         }
     }
     catch (std::exception& e)
     {
+        numErrors++;
         EV << "ERROR: " << e.what() << "\n";
     }
 

@@ -47,5 +47,5 @@ t=0s: emit "foo.x.barX" type=long value=1
 ERROR: Undeclared signal "foo.x.barX" emitted (@signal missing from NED file?)
 
 %contains: stdout
-emitted 8 signals
+emitted 8 signals with 4 errors
 
