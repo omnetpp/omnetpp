@@ -1,0 +1,27 @@
+%description:
+Check inheritance for structs
+
+%file: test.msg
+
+cplusplus {{
+#include "../lib/Units.h"
+using namespace inet::units::values;
+}}
+
+namespace @TESTNAME@;
+
+class noncobject m;
+class noncobject W;
+
+message Foo {
+    m distance;
+    W power;
+}
+
+%includes:
+#include "test_m.h"
+
+%activity:
+
+Foo tmp;
+EV << tmp.info() << "\n";
