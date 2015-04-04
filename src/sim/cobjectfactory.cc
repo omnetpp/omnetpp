@@ -17,6 +17,7 @@
 #include <string.h>
 #include "cobjectfactory.h"
 #include "cexception.h"
+#include "stringutil.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -41,18 +42,47 @@ std::string cObjectFactory::info() const
     return std::string("(") + descr + ")";  //TODO isAbstract
 }
 
-cObjectFactory *cObjectFactory::find(const char *classname)
+cObjectFactory *cObjectFactory::doFind(const char *className)
 {
-    return dynamic_cast<cObjectFactory *>(classes.getInstance()->lookup(classname));
+    return dynamic_cast<cObjectFactory *>(classes.getInstance()->lookup(className));
 }
 
-cObjectFactory *cObjectFactory::get(const char *classname)
+cObjectFactory *cObjectFactory::find(const char *className, const char *contextNamespace, bool fallbackToOmnetpp)
 {
-    cObjectFactory *p = find(classname);
+    if (className[0] == ':' && className[1] == ':')
+        return doFind(className+2);
+
+    // try with contextNamespace
+    if (!opp_isempty(contextNamespace)) {
+        std::string ns = contextNamespace;
+        while (!ns.empty()) {
+            cObjectFactory *result = doFind((ns + "::" + className).c_str());
+            if (result)
+                return result;
+            // remove last segment of namespace, and try again
+            int pos = ns.rfind("::");
+            if (pos == std::string::npos)
+                break;
+            ns = ns.substr(0, pos);
+        }
+    }
+
+    // try in the global namespace, then in the omnetpp namespace if requested
+    cObjectFactory *result = doFind(className);
+//XXX note: NO #if USE_NAMESPACE here!
+    if (!result && fallbackToOmnetpp)
+        result = doFind((std::string("omnetpp::") + className).c_str());
+//#endif
+    return result;
+}
+
+cObjectFactory *cObjectFactory::get(const char *className, const char *contextNamespace, bool fallbackToOmnetpp)
+{
+    cObjectFactory *p = find(className, contextNamespace, fallbackToOmnetpp);
     if (!p)
         throw cRuntimeError("Class \"%s\" not found -- perhaps its code was not linked in, "
                             "or the class wasn't registered with Register_Class(), or in the case of "
-                            "modules and channels, with Define_Module()/Define_Channel()", classname);
+                            "modules and channels, with Define_Module()/Define_Channel()", className);
     return p;
 }
 

@@ -38,6 +38,9 @@ class SIM_API cObjectFactory : public cNoncopyableOwnedObject
     void *(*castfunc)(cObject *);
     std::string descr;
 
+  private:
+    static cObjectFactory *doFind(const char *className);
+
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
@@ -92,12 +95,12 @@ class SIM_API cObjectFactory : public cNoncopyableOwnedObject
      * potential namespace, enclosing class etc. The class must have been
      * registered previously with the Register_Class() macro.
      */
-    static cObjectFactory *find(const char *classname);
+    static cObjectFactory *find(const char *className, const char *contextNamespace=NULL, bool fallbackToOmnetpp=true);
 
     /**
      * Like find(), but throws an error if the object was not found.
      */
-    static cObjectFactory *get(const char *classname);
+    static cObjectFactory *get(const char *className, const char *contextNamespace=NULL, bool fallbackToOmnetpp=true);
 
     /**
      * Creates an instance of a particular class; the result has to be cast

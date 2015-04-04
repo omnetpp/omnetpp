@@ -248,15 +248,7 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
 
 cObjectFactory *cComponentType::lookupClass(const char *className) const
 {
-    if (className[0]==':' && className[1]==':')
-        return cObjectFactory::find(className+2);
-    cObjectFactory *result = NULL;
-    std::string cxxNamespace = getCxxNamespace();
-    if (!cxxNamespace.empty())
-        result = cObjectFactory::find((cxxNamespace + "::" + className).c_str());
-    if (!result)
-        result = cObjectFactory::find(className);
-    return result;
+    return cObjectFactory::find(className, getCxxNamespace().c_str(), true);
 }
 
 //----
