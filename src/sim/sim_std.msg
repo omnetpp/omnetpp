@@ -156,9 +156,13 @@ using namespace canvas_stream_ops;
 void std_sim_descriptor_dummy() {}
 NAMESPACE_END
 
+#ifndef USE_NAMESPACE
+#define omnetpp   //XXX horrible hack to make it compile with the omnetpp namespace turned off
+#endif
+
 }}
 
-namespace omnetpp;  //XXX this ought to be conditional on USE_NAMESPACE but cannot; remove it manually when compiling without USE_NAMESPACE
+namespace omnetpp;  //XXX this ought to be conditional on USE_NAMESPACE but cannot; see hack above!
 
 enum cPar_Type;
 enum cGate_Type;
