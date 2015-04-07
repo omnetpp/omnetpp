@@ -1,7 +1,7 @@
 %description:
 Tests the inifile reader
 
-%global:
+%includes:
 
 #include "inifilereader.h"
 
