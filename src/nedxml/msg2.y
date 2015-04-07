@@ -142,6 +142,7 @@ definitions
 
 definition
         : namespace_decl
+        | fileproperty
         | cplusplus
         | struct_decl
         | class_decl
@@ -180,6 +181,17 @@ qname0
 qname
         : DOUBLECOLON qname0
         | qname0
+        ;
+
+/*
+ * File Property
+ */
+fileproperty
+        : property_namevalue ';'
+                {
+                  storePos(ps.property, @$);
+                  storeBannerAndRightComments(ps.property,@$);
+                }
         ;
 
 /*
@@ -391,6 +403,7 @@ body
           opt_propertiesblock_old
           opt_fieldsblock_old
           '}' opt_semicolon
+                { ps.msgclassorstruct = NULL; }
         ;
 
 opt_fields_and_properties
@@ -547,7 +560,7 @@ property_namevalue
         | property_name '(' opt_property_keys ')'
         | ENUM '(' NAME ')' /* legacy syntax */
                 {
-                  NEDElement *propertyscope = ps.field ? ps.field : ps.msgclassorstruct;
+                  NEDElement *propertyscope = ps.field ? ps.field : ps.msgclassorstruct ? ps.msgclassorstruct : ps.msgfile;
                   ps.property = addProperty(propertyscope, toString(@1));
                   ps.propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, ps.property);
                   ps.propkey->appendChild(createPropertyValue(@3));
@@ -558,13 +571,13 @@ property_namevalue
 property_name
         : '@' PROPNAME
                 {
-                  NEDElement *propertyscope = ps.field ? ps.field : ps.msgclassorstruct;
+                  NEDElement *propertyscope = ps.field ? ps.field : ps.msgclassorstruct ? ps.msgclassorstruct : ps.msgfile;
                   ps.property = addProperty(propertyscope, toString(@2));
                   ps.propvals.clear(); // just to be safe
                 }
         | '@' PROPNAME '[' PROPNAME ']'
                 {
-                  NEDElement *propertyscope = ps.field ? ps.field : ps.msgclassorstruct;
+                  NEDElement *propertyscope = ps.field ? ps.field : ps.msgclassorstruct ? ps.msgclassorstruct : ps.msgfile;
                   ps.property = addProperty(propertyscope, toString(@2));
                   ps.property->setIndex(toString(@4));
                   ps.propvals.clear(); // just to be safe
