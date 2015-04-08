@@ -624,7 +624,7 @@ proc dispstrGetImage {tags_i tags_is imagesizefactor {alphamult 1} {defaultimage
                 set imagesizefactor [expr $iconminsize / double($isx)]
             }
             if {$imagesizefactor * $isy < $iconminsize} {
-                set imagesizefactor [expr $iconminsize / double($isy)]"
+                set imagesizefactor [expr $iconminsize / double($isy)]
             }
 
             set scaledsx [expr int($imagesizefactor * $isx)]
