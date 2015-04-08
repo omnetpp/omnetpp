@@ -14,7 +14,7 @@ message SomePacket
 }
 
 %includes:
-#include "objectprinter.h"   // from src/envir
+#include <envir/objectprinter.h>   // from src/envir
 #include "test_m.h"
 
 %global:

@@ -2,7 +2,7 @@
 Test LCGRandom
 
 %includes:
-#include "lcgrandom.h"
+#include <common/lcgrandom.h>
 
 %activity:
 

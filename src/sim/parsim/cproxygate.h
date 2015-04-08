@@ -21,7 +21,7 @@
 #ifndef __CPROXYGATE_H
 #define __CPROXYGATE_H
 
-#include "cgate.h"
+#include "omnetpp/cgate.h"
 
 NAMESPACE_BEGIN
 

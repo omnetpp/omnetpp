@@ -16,13 +16,13 @@
 *--------------------------------------------------------------*/
 
 #include <sstream>
-#include "globals.h"
-#include "cpacket.h"
-#include "csimplemodule.h"
-#include "platdep/platmisc.h" // INT64_PRINTF_FORMAT
+#include "omnetpp/globals.h"
+#include "omnetpp/cpacket.h"
+#include "omnetpp/csimplemodule.h"
+#include "omnetpp/platdep/platmisc.h" // INT64_PRINTF_FORMAT
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 USING_NAMESPACE

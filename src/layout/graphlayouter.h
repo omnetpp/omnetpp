@@ -20,8 +20,8 @@
 #include <string>
 #include <map>
 #include "layoutdefs.h"
-#include "lcgrandom.h"
-#include "commonutil.h"
+#include "common/lcgrandom.h"
+#include "common/commonutil.h"
 
 NAMESPACE_BEGIN
 

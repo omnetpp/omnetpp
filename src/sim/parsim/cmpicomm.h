@@ -23,7 +23,7 @@
 #ifndef __CMPICOMM_H__
 #define __CMPICOMM_H__
 
-#include "cparsimcomm.h"
+#include "omnetpp/cparsimcomm.h"
 
 NAMESPACE_BEGIN
 

@@ -18,12 +18,12 @@
 #ifndef __EVENTLOGFILEMGR_H
 #define __EVENTLOGFILEMGR_H
 
-#include "simkerneldefs.h"
+#include "omnetpp/simkerneldefs.h"
 #include "envirdefs.h"
-#include "opp_string.h"
+#include "omnetpp/opp_string.h"
 #include "objectprinter.h"
 #include "intervals.h"
-#include "clifecyclelistener.h"
+#include "omnetpp/clifecyclelistener.h"
 
 NAMESPACE_BEGIN
 

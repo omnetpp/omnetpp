@@ -22,12 +22,12 @@
 #include <assert.h>
 #include <algorithm>
 
-#include "omnetpp.h"
+#include <omnetpp.h>
 #include "tkenv.h"
 #include "tklib.h"
 #include "inspector.h"
 #include "inspectorfactory.h"
-#include "stringutil.h"
+#include "common/stringutil.h"
 
 NAMESPACE_BEGIN
 

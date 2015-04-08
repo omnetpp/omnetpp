@@ -14,22 +14,22 @@
 *--------------------------------------------------------------*/
 
 #include <algorithm>
-#include "ccomponent.h"
-#include "ccomponenttype.h"
-#include "cmodule.h"
-#include "cchannel.h"
-#include "cmodelchange.h"
-#include "cproperties.h"
-#include "cproperty.h"
-#include "cpar.h"
-#include "cparimpl.h"
-#include "crng.h"
-#include "cstatistic.h"
-#include "cconfiguration.h"
-#include "cconfigoption.h"
-#include "cdisplaystring.h"
-#include "stringutil.h"
-#include "cenvir.h"
+#include "omnetpp/ccomponent.h"
+#include "omnetpp/ccomponenttype.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/cchannel.h"
+#include "omnetpp/cmodelchange.h"
+#include "omnetpp/cproperties.h"
+#include "omnetpp/cproperty.h"
+#include "omnetpp/cpar.h"
+#include "omnetpp/cparimpl.h"
+#include "omnetpp/crng.h"
+#include "omnetpp/cstatistic.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/cconfigoption.h"
+#include "omnetpp/cdisplaystring.h"
+#include "common/stringutil.h"
+#include "omnetpp/cenvir.h"
 
 NAMESPACE_BEGIN
 

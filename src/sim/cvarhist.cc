@@ -24,14 +24,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "globals.h"
-#include "random.h"
-#include "distrib.h"
-#include "cvarhist.h"
-#include "cexception.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/random.h"
+#include "omnetpp/distrib.h"
+#include "omnetpp/cvarhist.h"
+#include "omnetpp/cexception.h"
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 NAMESPACE_BEGIN

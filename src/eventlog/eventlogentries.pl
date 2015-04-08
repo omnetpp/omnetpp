@@ -242,7 +242,7 @@ print ENTRIES_CC_FILE
 #include <stdio.h>
 #include \"event.h\"
 #include \"eventlogentries.h\"
-#include \"stringutil.h\"
+#include \"common/stringutil.h\"
 
 USING_NAMESPACE
 

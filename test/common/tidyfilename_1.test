@@ -2,7 +2,7 @@
 Tests tidyFilename() h function
 
 %includes:
-#include "fileutil.h"
+#include <common/fileutil.h>
 
 %global:
 

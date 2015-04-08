@@ -16,7 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include "matchableobject.h"
-#include "cclassdescriptor.h"
+#include "omnetpp/cclassdescriptor.h"
 
 NAMESPACE_BEGIN
 

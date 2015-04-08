@@ -19,10 +19,10 @@
 #ifndef __SPEEDOMETER_H
 #define __SPEEDOMETER_H
 
-#include "simkerneldefs.h"
+#include "omnetpp/simkerneldefs.h"
 #include "envirdefs.h"
-#include "simtime_t.h"
-#include "timeutil.h"
+#include "omnetpp/simtime_t.h"
+#include "omnetpp/platdep/timeutil.h"
 
 NAMESPACE_BEGIN
 

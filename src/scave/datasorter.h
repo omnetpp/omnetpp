@@ -25,8 +25,8 @@
 #include <string.h>
 #include <assert.h>
 #include "resultfilemanager.h"
-#include "commonutil.h"
-#include "patternmatcher.h"
+#include "common/commonutil.h"
+#include "common/patternmatcher.h"
 #include "scaveutils.h"
 #include "statistics.h"
 #include "fields.h"

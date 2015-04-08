@@ -18,11 +18,11 @@
 #ifndef __RESULTFILTERS_H
 #define __RESULTFILTERS_H
 
-#include "simkerneldefs.h"
-#include "cresultfilter.h"
-#include "csimulation.h"
-#include "cstatistic.h"
-#include "expression.h"
+#include "omnetpp/simkerneldefs.h"
+#include "omnetpp/cresultfilter.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/cstatistic.h"
+#include "common/expression.h"
 
 NAMESPACE_BEGIN
 

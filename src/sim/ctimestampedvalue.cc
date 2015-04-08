@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "ctimestampedvalue.h"
-#include "csimulation.h"
+#include "omnetpp/ctimestampedvalue.h"
+#include "omnetpp/csimulation.h"
 
 NAMESPACE_BEGIN
 

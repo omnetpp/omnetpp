@@ -19,12 +19,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <sstream>
-#include "globals.h"
-#include "cpacketqueue.h"
-#include "cexception.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cpacketqueue.h"
+#include "omnetpp/cexception.h"
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 NAMESPACE_BEGIN

@@ -19,10 +19,10 @@
 *--------------------------------------------------------------*/
 
 
-#include "ccommbuffer.h"
-#include "simutil.h"
-#include "cobject.h"
-#include "cobjectfactory.h"    // createOne()
+#include "omnetpp/ccommbuffer.h"
+#include "omnetpp/simutil.h"
+#include "omnetpp/cobject.h"
+#include "omnetpp/cobjectfactory.h"    // createOne()
 
 NAMESPACE_BEGIN
 

@@ -22,15 +22,15 @@
 #include <stdlib.h>  // for exit()
 #include <stdarg.h>  // for va_list
 #include <signal.h>  // raise()
-#include "cexception.h"
-#include "csimulation.h"
-#include "ccomponent.h"
-#include "cmodule.h"
-#include "cenvir.h"
-#include "cconfiguration.h"
-#include "stringutil.h"
-#include "commonutil.h"
-#include "platdep/platmisc.h" // INT64_PRINTF_FORMAT and DEBUG_TRAP
+#include "omnetpp/cexception.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/ccomponent.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/cconfiguration.h"
+#include "common/stringutil.h"
+#include "common/commonutil.h"
+#include "omnetpp/platdep/platmisc.h" // INT64_PRINTF_FORMAT and DEBUG_TRAP
 
 NAMESPACE_BEGIN
 

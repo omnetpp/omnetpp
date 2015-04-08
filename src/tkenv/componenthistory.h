@@ -20,7 +20,7 @@
 #include <string>
 #include <map>
 #include "tkdefs.h"
-#include "simutil.h"
+#include "omnetpp/simutil.h"
 
 NAMESPACE_BEGIN
 

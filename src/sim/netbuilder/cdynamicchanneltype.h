@@ -17,8 +17,8 @@
 #ifndef __CDYNAMICCHANNELTYPE_H
 #define __CDYNAMICCHANNELTYPE_H
 
-#include "cchannel.h"
-#include "ccomponenttype.h"
+#include "omnetpp/cchannel.h"
+#include "omnetpp/ccomponenttype.h"
 #include "cnednetworkbuilder.h"
 #include "cneddeclaration.h"
 

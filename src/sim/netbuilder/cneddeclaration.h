@@ -21,15 +21,15 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "simkerneldefs.h"
-#include "globals.h"
-#include "cownedobject.h"
-#include "cparimpl.h"
-#include "cgate.h"
-#include "cproperties.h"
-#include "cproperty.h"
+#include "omnetpp/simkerneldefs.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cownedobject.h"
+#include "omnetpp/cparimpl.h"
+#include "omnetpp/cgate.h"
+#include "omnetpp/cproperties.h"
+#include "omnetpp/cproperty.h"
 
-#include "nedtypeinfo.h"
+#include "nedxml/nedtypeinfo.h"
 
 NAMESPACE_BEGIN
 

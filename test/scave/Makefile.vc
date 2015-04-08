@@ -10,8 +10,7 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I. -I../../src/common -I../../include/platdep -I../../src/scave \
-      /Fd"vectorfilereadertest.pdb"
+COPTS=$(CFLAGS) -I../../include -I../../src /Fd"vectorfilereadertest.pdb"
 
 OBJS= main.obj vectorfilereadertest.obj resultfilemanagertest.obj \
       vectorfileindexertest.obj

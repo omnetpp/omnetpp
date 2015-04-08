@@ -6,7 +6,7 @@ include ../../Makefile.inc
 #
 # Local definitions
 #
-COPTS = $(CFLAGS) -I. -I../../src/common -I../../include/platdep
+COPTS = $(CFLAGS) -I../../include -I../../src
 
 OBJS= filereaderconsumer.o filereaderproducer.o
 LIBS= $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)/liboppcommon$D$(SO_LIB_SUFFIX)

@@ -23,20 +23,20 @@
 #define __ENVIRBASE_H
 
 #include "logformatter.h"
-#include "carray.h"
-#include "csimulation.h"
-#include "ccomponent.h"
-#include "globals.h"
-#include "cenvir.h"
-#include "cexception.h"
+#include "omnetpp/carray.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/ccomponent.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/cexception.h"
 #include "args.h"
 #include "envirdefs.h"
-#include "envirext.h"
+#include "omnetpp/envirext.h"
 #include "eventlogfilemgr.h"
-#include "cconfiguration.h"
-#include "timeutil.h"
-#include "cresultlistener.h"
-#include "cevent.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/platdep/timeutil.h"
+#include "omnetpp/cresultlistener.h"
+#include "omnetpp/cevent.h"
 
 NAMESPACE_BEGIN
 

@@ -15,14 +15,14 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "simkerneldefs.h"
+#include "omnetpp/simkerneldefs.h"
 
 #include <string.h>
-#include "cconfigoption.h"
-#include "platmisc.h"
+#include "omnetpp/cconfigoption.h"
+#include "omnetpp/platdep/platmisc.h"
 #include "envirbase.h"
-#include "csimulation.h"
-#include "stringutil.h"
+#include "omnetpp/csimulation.h"
+#include "common/stringutil.h"
 #include "runattributes.h"
 
 NAMESPACE_BEGIN

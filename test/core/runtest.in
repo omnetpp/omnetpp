@@ -12,7 +12,7 @@ if [ ! -d work ];  then mkdir work; fi
 rm -rf work/lib
 cp -pPR lib work/       # OSX dos not support cp -a
 export NEDPATH=.:../lib
-EXTRA_INCLUDES="-I../../../src/sim/parsim -I../../../src/envir -I../../../src/common -I../../../include/platdep"
+EXTRA_INCLUDES="-I../../../src"
 
 opp_test gen $OPT -v $TESTFILES || exit 1
 echo

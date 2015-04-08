@@ -19,7 +19,7 @@
 #define _PROGRESSMONITOR_H_
 
 #include <string>
-#include "platdefs.h"
+#include "omnetpp/platdep/platdefs.h"
 
 NAMESPACE_BEGIN
 

@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include "channel.h"
 #include "filternodes.h"
-#include "stringutil.h"
+#include "common/stringutil.h"
 
 NAMESPACE_BEGIN
 

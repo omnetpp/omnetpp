@@ -17,19 +17,19 @@
 *--------------------------------------------------------------*/
 
 #include <sstream>
-#include "cparimpl.h"
-#include "cproperties.h"
-#include "ccomponent.h"
-#include "csimulation.h"
+#include "omnetpp/cparimpl.h"
+#include "omnetpp/cproperties.h"
+#include "omnetpp/ccomponent.h"
+#include "omnetpp/csimulation.h"
 
-#include "cboolparimpl.h"
-#include "clongparimpl.h"
-#include "cdoubleparimpl.h"
-#include "cstringparimpl.h"
-#include "cxmlparimpl.h"
+#include "omnetpp/cboolparimpl.h"
+#include "omnetpp/clongparimpl.h"
+#include "omnetpp/cdoubleparimpl.h"
+#include "omnetpp/cstringparimpl.h"
+#include "omnetpp/cxmlparimpl.h"
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 NAMESPACE_BEGIN

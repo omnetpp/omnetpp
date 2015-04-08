@@ -22,11 +22,11 @@
 #include <stdio.h>
 #include "cispeventlogger.h"
 #include "cidealsimulationprot.h"
-#include "cparsimcomm.h"
+#include "omnetpp/cparsimcomm.h"
 #include "cplaceholdermod.h"
-#include "cmodule.h"
-#include "globals.h"
-#include "regmacros.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/regmacros.h"
 
 NAMESPACE_BEGIN
 

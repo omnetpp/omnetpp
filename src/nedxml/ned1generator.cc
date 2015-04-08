@@ -19,7 +19,7 @@
 #include <string>
 #include <sstream>
 #include "ned1generator.h"
-#include "stringutil.h"
+#include "common/stringutil.h"
 #include "nedutil.h"
 
 NAMESPACE_BEGIN

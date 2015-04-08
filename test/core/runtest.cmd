@@ -11,7 +11,7 @@ path %~dp0\..\bin;%PATH%
 mkdir work 2>nul
 xcopy /i /y lib work\lib
 set NEDPATH=.;../lib
-set EXTRA_INCLUDES=-I../../../src/sim/parsim -I../../../src/envir -I../../../src/common -I../../../include/platdep
+set EXTRA_INCLUDES=-I../../../src
 
 call opp_test gen %OPT% -v %TESTFILES% || goto end
 

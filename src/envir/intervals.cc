@@ -15,9 +15,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "opp_ctype.h"
+#include "common/opp_ctype.h"
 #include "envirbase.h"
-#include "stringtokenizer.h"
+#include "common/stringtokenizer.h"
 #include "intervals.h"
 
 NAMESPACE_BEGIN

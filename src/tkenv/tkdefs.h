@@ -18,7 +18,7 @@
 #ifndef __TKDEFS_H
 #define __TKDEFS_H
 
-#include "platdefs.h"
+#include "omnetpp/platdep/platdefs.h"
 
 NAMESPACE_BEGIN
 

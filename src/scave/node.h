@@ -19,7 +19,7 @@
 #define _NODE_H_
 
 #include "scavedefs.h"
-#include "commonutil.h"
+#include "common/commonutil.h"
 
 NAMESPACE_BEGIN
 

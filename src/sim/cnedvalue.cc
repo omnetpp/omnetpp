@@ -15,13 +15,13 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cnedvalue.h"
-#include "cxmlelement.h"
-#include "cexception.h"
-#include "cpar.h"
-#include "stringutil.h"
-#include "stringpool.h"
-#include "unitconversion.h"
+#include "omnetpp/cnedvalue.h"
+#include "omnetpp/cxmlelement.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/cpar.h"
+#include "common/stringutil.h"
+#include "common/stringpool.h"
+#include "common/unitconversion.h"
 
 NAMESPACE_BEGIN
 

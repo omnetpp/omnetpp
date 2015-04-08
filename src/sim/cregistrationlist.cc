@@ -19,9 +19,9 @@
 
 #include <sstream>
 #include <algorithm>
-#include "cregistrationlist.h"
-#include "cexception.h"
-#include "cownedobject.h"
+#include "omnetpp/cregistrationlist.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/cownedobject.h"
 
 NAMESPACE_BEGIN
 

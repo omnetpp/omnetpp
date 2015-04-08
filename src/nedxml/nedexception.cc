@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#include "commonutil.h"
+#include "common/commonutil.h"
 #include "nedexception.h"
 #include "nedelement.h"
 

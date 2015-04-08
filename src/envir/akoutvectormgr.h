@@ -25,7 +25,7 @@
 
 #include <stdio.h>
 #include "fileoutvectormgr.h"
-#include "simutil.h"
+#include "omnetpp/simutil.h"
 
 NAMESPACE_BEGIN
 

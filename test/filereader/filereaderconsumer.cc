@@ -14,10 +14,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "exception.h"
-#include "platmisc.h"
-#include "filereader.h"
-#include "timeutil.h"
+#include <common/exception.h>
+#include <omnetpp/platdep/platmisc.h>
+#include <common/filereader.h>
+#include <omnetpp/platdep/timeutil.h>
 
 USING_NAMESPACE
 

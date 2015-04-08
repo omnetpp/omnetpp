@@ -20,8 +20,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cwatch.h"
-#include "stringutil.h"
+#include "omnetpp/cwatch.h"
+#include "common/stringutil.h"
 
 NAMESPACE_BEGIN
 

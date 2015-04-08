@@ -18,12 +18,12 @@
 
 #include <stdio.h>           // sprintf
 #include <string.h>          // strcpy, strlen etc.
-#include "cnamedobject.h"
-#include "cownedobject.h"
-#include "globals.h"
+#include "omnetpp/cnamedobject.h"
+#include "omnetpp/cownedobject.h"
+#include "omnetpp/globals.h"
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 NAMESPACE_BEGIN

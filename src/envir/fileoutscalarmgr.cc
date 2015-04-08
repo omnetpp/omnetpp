@@ -15,24 +15,24 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "simkerneldefs.h"
+#include "omnetpp/simkerneldefs.h"
 
 #include <assert.h>
 #include <string.h>
 #include <fstream>
 #include <locale.h>
-#include "opp_ctype.h"
-#include "cconfigoption.h"
-#include "fileutil.h"
+#include "common/opp_ctype.h"
+#include "omnetpp/cconfigoption.h"
+#include "common/fileutil.h"
 #include "envirbase.h"
-#include "csimulation.h"
-#include "cmodule.h"
-#include "cstatistic.h"
-#include "cdensityestbase.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/cstatistic.h"
+#include "omnetpp/cdensityestbase.h"
 #include "fileoutscalarmgr.h"
-#include "ccomponenttype.h"
-#include "stringutil.h"
-#include "unitconversion.h"
+#include "omnetpp/ccomponenttype.h"
+#include "common/stringutil.h"
+#include "common/unitconversion.h"
 
 NAMESPACE_BEGIN
 

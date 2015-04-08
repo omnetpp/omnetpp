@@ -19,8 +19,8 @@
 #define __ENVIR_STATISTICPARSER_H
 
 #include "envirdefs.h"
-#include "expression.h"
-#include "resultrecorders.h"
+#include "common/expression.h"
+#include "sim/resultrecorders.h"
 
 NAMESPACE_BEGIN
 

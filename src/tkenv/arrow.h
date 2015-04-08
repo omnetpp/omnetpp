@@ -19,9 +19,9 @@
 #ifndef __ARROW_H
 #define __ARROW_H
 
-#include "platmisc.h"   // must precede tk.h otherwise Visual Studio 2013 fails to compile
+#include "omnetpp/platdep/platmisc.h"   // must precede tk.h otherwise Visual Studio 2013 fails to compile
 #include <tk.h>
-#include "platdefs.h"
+#include "omnetpp/platdep/platdefs.h"
 
 NAMESPACE_BEGIN
 

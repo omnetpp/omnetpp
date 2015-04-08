@@ -24,14 +24,14 @@
 #include <stdio.h>
 #include "cmpicomm.h"
 #include "cmpicommbuffer.h"
-#include "clog.h"
-#include "globals.h"
-#include "regmacros.h"
-#include "cenvir.h"
-#include "csimulation.h"
-#include "cconfiguration.h"
-#include "cconfigoption.h"
-#include "platmisc.h"
+#include "omnetpp/clog.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/regmacros.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/cconfigoption.h"
+#include "omnetpp/platdep/platmisc.h"
 
 NAMESPACE_BEGIN
 

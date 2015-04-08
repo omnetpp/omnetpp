@@ -3,7 +3,7 @@ Tests cMemCommBuffer.
 
 %includes:
 #include <string.h>
-#include "../src/sim/parsim/cmemcommbuffer.h"
+#include <sim/parsim/cmemcommbuffer.h>
 
 %activity:
 

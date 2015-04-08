@@ -20,21 +20,21 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "cmessage.h"
-#include "errmsg.h"
+#include "omnetpp/cmessage.h"
+#include "omnetpp/errmsg.h"
 #include "cplaceholdermod.h"
 #include "cproxygate.h"
 #include "cparsimpartition.h"
-#include "ccommbuffer.h"
-#include "cparsimcomm.h"
+#include "omnetpp/ccommbuffer.h"
+#include "omnetpp/cparsimcomm.h"
 #include "cparsimsynchr.h"
 #include "creceivedexception.h"
 #include "messagetags.h"
-#include "cenvir.h"
-#include "cconfiguration.h"
-#include "globals.h"
-#include "cconfigoption.h"
-#include "regmacros.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cconfigoption.h"
+#include "omnetpp/regmacros.h"
 
 NAMESPACE_BEGIN
 

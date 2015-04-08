@@ -16,10 +16,10 @@
 
 #include <float.h>
 #include <math.h>
-#include "distrib.h"
-#include "globals.h"
-#include "cnedmathfunction.h"
-#include "cexception.h"
+#include "omnetpp/distrib.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cnedmathfunction.h"
+#include "omnetpp/cexception.h"
 
 //
 // Linux - <math.h> supplies a PI, MS does not...

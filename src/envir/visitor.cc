@@ -18,20 +18,20 @@
 #include <string.h>
 #include <assert.h>
 
-#include "cenvir.h"
-#include "cobject.h"
-#include "cmodule.h"
-#include "cmessage.h"
-#include "cqueue.h"
-#include "cstatistic.h"
-#include "coutvector.h"
-#include "cwatch.h"
-#include "cfsm.h"
-#include "cpar.h"
-#include "cchannel.h"
-#include "cgate.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/cobject.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/cmessage.h"
+#include "omnetpp/cqueue.h"
+#include "omnetpp/cstatistic.h"
+#include "omnetpp/coutvector.h"
+#include "omnetpp/cwatch.h"
+#include "omnetpp/cfsm.h"
+#include "omnetpp/cpar.h"
+#include "omnetpp/cchannel.h"
+#include "omnetpp/cgate.h"
 
-#include "patternmatcher.h"
+#include "common/patternmatcher.h"
 #include "visitor.h"
 
 NAMESPACE_BEGIN

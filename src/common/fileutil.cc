@@ -30,7 +30,7 @@
 #include "fileutil.h"
 #include "stringtokenizer.h"
 #include "exception.h"
-#include "platmisc.h"  //mkdir
+#include "omnetpp/platdep/platmisc.h"  //mkdir
 
 NAMESPACE_BEGIN
 

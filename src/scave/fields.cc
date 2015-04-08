@@ -19,8 +19,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "commonutil.h"
-#include "stringutil.h"
+#include "common/commonutil.h"
+#include "common/stringutil.h"
 #include "fields.h"
 
 NAMESPACE_BEGIN

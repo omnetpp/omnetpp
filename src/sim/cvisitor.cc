@@ -19,8 +19,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cvisitor.h"
-#include "cobject.h"
+#include "omnetpp/cvisitor.h"
+#include "omnetpp/cobject.h"
 
 NAMESPACE_BEGIN
 

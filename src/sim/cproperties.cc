@@ -15,9 +15,9 @@
 
 #include <sstream>
 #include <algorithm>
-#include "cproperties.h"
-#include "cproperty.h"
-#include "stringutil.h"
+#include "omnetpp/cproperties.h"
+#include "omnetpp/cproperty.h"
+#include "common/stringutil.h"
 
 NAMESPACE_BEGIN
 

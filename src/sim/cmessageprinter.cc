@@ -15,11 +15,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "commonutil.h"
-#include "cmessage.h"
-#include "cpacket.h"
-#include "cmessageprinter.h"
-#include "regmacros.h"
+#include "common/commonutil.h"
+#include "omnetpp/cmessage.h"
+#include "omnetpp/cpacket.h"
+#include "omnetpp/cmessageprinter.h"
+#include "omnetpp/regmacros.h"
 
 NAMESPACE_BEGIN
 

@@ -18,17 +18,17 @@
 #include <set>
 #include <vector>
 
-#include "exception.h"
-#include "resultfilemanager.h"
-#include "idlist.h"
-#include "node.h"
-#include "nodetype.h"
-#include "nodetyperegistry.h"
-#include "dataflowmanager.h"
-#include "indexfile.h"
-#include "vectorfilereader.h"
-#include "vectorfilewriter.h"
-#include "arraybuilder.h"
+#include <common/exception.h>
+#include <scave/resultfilemanager.h>
+#include <scave/idlist.h>
+#include <scave/node.h>
+#include <scave/nodetype.h>
+#include <scave/nodetyperegistry.h>
+#include <scave/dataflowmanager.h>
+#include <scave/indexfile.h>
+#include <scave/vectorfilereader.h>
+#include <scave/vectorfilewriter.h>
+#include <scave/arraybuilder.h>
 #include "testutil.h"
 
 USING_NAMESPACE

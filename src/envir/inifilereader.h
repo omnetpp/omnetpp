@@ -22,7 +22,7 @@
 #include <set>
 #include <vector>
 #include "envirdefs.h"
-#include "cconfigreader.h"
+#include "omnetpp/cconfigreader.h"
 
 NAMESPACE_BEGIN
 

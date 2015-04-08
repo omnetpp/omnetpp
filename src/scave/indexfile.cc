@@ -18,10 +18,10 @@
 #include <algorithm>
 #include <locale.h>
 #include <sys/stat.h>
-#include "exception.h"
-#include "filereader.h"
-#include "linetokenizer.h"
-#include "stringutil.h"
+#include "common/exception.h"
+#include "common/filereader.h"
+#include "common/linetokenizer.h"
+#include "common/stringutil.h"
 #include "scaveutils.h"
 #include "scaveexception.h"
 #include "indexfile.h"

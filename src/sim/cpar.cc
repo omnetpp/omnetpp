@@ -16,20 +16,20 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cpar.h"
-#include "cparimpl.h"
-#include "cproperties.h"
-#include "cproperty.h"
-#include "ccomponent.h"
-#include "ccomponenttype.h"
-#include "cmodule.h"
-#include "csimulation.h"
-#include "commonutil.h"
-#include "cenvir.h"
-#include "cmodelchange.h"
+#include "omnetpp/cpar.h"
+#include "omnetpp/cparimpl.h"
+#include "omnetpp/cproperties.h"
+#include "omnetpp/cproperty.h"
+#include "omnetpp/ccomponent.h"
+#include "omnetpp/ccomponenttype.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/csimulation.h"
+#include "common/commonutil.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/cmodelchange.h"
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 NAMESPACE_BEGIN

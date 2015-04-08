@@ -18,8 +18,8 @@
 #ifndef __CSOCKETRTSCHEDULER_H__
 #define __CSOCKETRTSCHEDULER_H__
 
-#include <platdep/sockets.h>
-#include <platdep/timeutil.h>
+#include <omnetpp/platdep/sockets.h>
+#include <omnetpp/platdep/timeutil.h>
 #include <omnetpp.h>
 
 USING_NAMESPACE

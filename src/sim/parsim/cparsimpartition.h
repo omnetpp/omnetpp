@@ -21,10 +21,10 @@
 #ifndef __CPARSIMPARTITION_H__
 #define __CPARSIMPARTITION_H__
 
-#include "simkerneldefs.h"
-#include "cobject.h"
-#include "simtime_t.h"
-#include "clifecyclelistener.h"
+#include "omnetpp/simkerneldefs.h"
+#include "omnetpp/cobject.h"
+#include "omnetpp/simtime_t.h"
+#include "omnetpp/clifecyclelistener.h"
 
 NAMESPACE_BEGIN
 

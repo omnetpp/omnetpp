@@ -20,11 +20,11 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "errmsg.h"
-#include "ccommbuffer.h"
-#include "cparsimcomm.h"
-#include "cenvir.h"
-#include "cexception.h"
+#include "omnetpp/errmsg.h"
+#include "omnetpp/ccommbuffer.h"
+#include "omnetpp/cparsimcomm.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/cexception.h"
 
 NAMESPACE_BEGIN
 

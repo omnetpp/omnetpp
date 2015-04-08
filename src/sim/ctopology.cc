@@ -26,15 +26,15 @@
 #include <list>
 #include <algorithm>
 #include <sstream>
-#include "ctopology.h"
-#include "cpar.h"
-#include "globals.h"
-#include "cexception.h"
-#include "cproperty.h"
-#include "patternmatcher.h"
+#include "omnetpp/ctopology.h"
+#include "omnetpp/cpar.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/cproperty.h"
+#include "common/patternmatcher.h"
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 NAMESPACE_BEGIN

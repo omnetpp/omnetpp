@@ -17,8 +17,8 @@
 #ifndef __CIRCULARBUFFER_H
 #define __CIRCULARBUFFER_H
 
-#include "envirdefs.h"
-#include "simkerneldefs.h" // for ASSERT
+#include "envir/envirdefs.h"
+#include "omnetpp/simkerneldefs.h" // for ASSERT
 
 NAMESPACE_BEGIN
 

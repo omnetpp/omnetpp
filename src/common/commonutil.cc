@@ -18,7 +18,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <locale.h>
-#include "platmisc.h"
+#include "omnetpp/platdep/platmisc.h"
 #include "commonutil.h"
 #ifndef _WIN32
 #include <unistd.h>

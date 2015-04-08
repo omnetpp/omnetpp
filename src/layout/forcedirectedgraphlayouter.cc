@@ -21,11 +21,11 @@
 #include <stdlib.h>
 #include <sstream>
 
-#include "commonutil.h"
+#include "common/commonutil.h"
 #include "forcedirectedgraphlayouter.h"
 #include "startreeembedding.h"
 #include "heapembedding.h"
-#include "platmisc.h"
+#include "omnetpp/platdep/platmisc.h"
 
 NAMESPACE_BEGIN
 

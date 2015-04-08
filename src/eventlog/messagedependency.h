@@ -19,7 +19,7 @@
 
 #include <sstream>
 #include <vector>
-#include "filereader.h"
+#include "common/filereader.h"
 #include "eventlogentry.h"
 #include "eventlogentries.h"
 

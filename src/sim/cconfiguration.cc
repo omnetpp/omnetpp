@@ -18,14 +18,14 @@
 
 
 #include <errno.h>
-#include "cconfiguration.h"
-#include "cconfigoption.h"
-#include "unitconversion.h"
-#include "stringutil.h"
-#include "fileutil.h"
-#include "stringtokenizer.h"
-#include "fnamelisttokenizer.h"
-#include "exception.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/cconfigoption.h"
+#include "common/unitconversion.h"
+#include "common/stringutil.h"
+#include "common/fileutil.h"
+#include "common/stringtokenizer.h"
+#include "common/fnamelisttokenizer.h"
+#include "common/exception.h"
 
 NAMESPACE_BEGIN
 

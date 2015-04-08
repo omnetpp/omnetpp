@@ -15,7 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include <locale.h>
-#include "opp_ctype.h"
+#include "common/opp_ctype.h"
 #include "octaveexport.h"
 
 #ifdef CHECK

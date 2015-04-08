@@ -22,17 +22,17 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "commonutil.h"
-#include "unitconversion.h"
-#include "opp_ctype.h"
-#include "simutil.h"
-#include "cenvir.h"
-#include "csimulation.h"
-#include "globals.h"
-#include "cexception.h"
-#include "cnedmathfunction.h"
-#include "cscheduler.h" // dummy()
-#include "distrib.h" // dummy()
+#include "common/commonutil.h"
+#include "common/unitconversion.h"
+#include "common/opp_ctype.h"
+#include "omnetpp/simutil.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/cnedmathfunction.h"
+#include "omnetpp/cscheduler.h" // dummy()
+#include "omnetpp/distrib.h" // dummy()
 
 NAMESPACE_BEGIN
 
@@ -345,20 +345,20 @@ NAMESPACE_END
 // dummy function to force over-optimizing Unix linkers to include these symbols
 // in the library
 
-#include "cwatch.h"
-#include "cstlwatch.h"
-#include "clcg32.h"
-#include "cmersennetwister.h"
-#include "cksplit.h"
-#include "cpsquare.h"
-#include "cstringtokenizer.h"
-#include "cxmlelement.h"
-#include "cdelaychannel.h"
-#include "cdataratechannel.h"
-#include "cpacketqueue.h"
-#include "cfsm.h"
-#include "coutvector.h"
-#include "cvarhist.h"
+#include "omnetpp/cwatch.h"
+#include "omnetpp/cstlwatch.h"
+#include "omnetpp/clcg32.h"
+#include "omnetpp/cmersennetwister.h"
+#include "omnetpp/cksplit.h"
+#include "omnetpp/cpsquare.h"
+#include "omnetpp/cstringtokenizer.h"
+#include "omnetpp/cxmlelement.h"
+#include "omnetpp/cdelaychannel.h"
+#include "omnetpp/cdataratechannel.h"
+#include "omnetpp/cpacketqueue.h"
+#include "omnetpp/cfsm.h"
+#include "omnetpp/coutvector.h"
+#include "omnetpp/cvarhist.h"
 
 NAMESPACE_BEGIN
 

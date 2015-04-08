@@ -17,7 +17,7 @@
 
 #include <sstream>
 #include <algorithm>
-#include "stringtokenizer.h"
+#include "common/stringtokenizer.h"
 #include "scaveutils.h"
 #include "enumtype.h"
 

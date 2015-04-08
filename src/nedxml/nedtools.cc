@@ -17,7 +17,7 @@
 #include "nedtools.h"
 #include "nederror.h"
 #include "neddtdvalidator.h"
-#include "fileutil.h"
+#include "common/fileutil.h"
 
 NAMESPACE_BEGIN
 

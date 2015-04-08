@@ -12,11 +12,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "commonutil.h"
-#include "exception.h"
-#include "lcgrandom.h"
-#include "filereader.h"
-#include "eventlogindex.h"
+#include <common/commonutil.h>
+#include <common/exception.h>
+#include <common/lcgrandom.h>
+#include <common/filereader.h>
+#include <eventlog/eventlogindex.h>
 
 #define LL  INT64_PRINTF_FORMAT
 

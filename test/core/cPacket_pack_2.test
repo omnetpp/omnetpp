@@ -3,7 +3,7 @@ Tests cPacket.parsimPack/parsimUnpack and msg encapsulation.
 
 %includes:
 #include <string.h>
-#include "../src/sim/parsim/cfilecommbuffer.h"
+#include <sim/parsim/cfilecommbuffer.h>
 
 %activity:
 

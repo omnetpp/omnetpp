@@ -18,7 +18,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "simkerneldefs.h"
+#include "omnetpp/simkerneldefs.h"
 
 #include <assert.h>
 #include <string.h>
@@ -26,18 +26,18 @@
 #include <errno.h> // SGI
 #include <algorithm>
 #include <sys/stat.h>
-#include "cconfigoption.h"
-#include "timeutil.h"
-#include "platmisc.h"
-#include "cenvir.h"
+#include "omnetpp/cconfigoption.h"
+#include "omnetpp/platdep/timeutil.h"
+#include "omnetpp/platdep/platmisc.h"
+#include "omnetpp/cenvir.h"
 #include "envirbase.h"
-#include "csimulation.h"
-#include "regmacros.h"
-#include "cmodule.h"
-#include "cstatistic.h"
-#include "stringutil.h"
-#include "fileutil.h"
-#include "unitconversion.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/regmacros.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/cstatistic.h"
+#include "common/stringutil.h"
+#include "common/fileutil.h"
+#include "common/unitconversion.h"
 #include "indexedfileoutvectormgr.h"
 
 NAMESPACE_BEGIN

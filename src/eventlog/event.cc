@@ -16,7 +16,7 @@
 
 #include <stdio.h>
 #include "deque"
-#include "filereader.h"
+#include "common/filereader.h"
 #include "event.h"
 #include "eventlog.h"
 #include "eventlogentry.h"

@@ -23,8 +23,8 @@
 #include "tklib.h"
 #include "inspectorfactory.h"
 #include "watchinspector.h"
-#include "cwatch.h"
-#include "cstlwatch.h"
+#include "omnetpp/cwatch.h"
+#include "omnetpp/cstlwatch.h"
 
 NAMESPACE_BEGIN
 

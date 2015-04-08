@@ -20,7 +20,7 @@
 
 #include <vector>
 #include "node.h"
-#include "progressmonitor.h"
+#include "common/progressmonitor.h"
 #include "channel.h"
 
 NAMESPACE_BEGIN

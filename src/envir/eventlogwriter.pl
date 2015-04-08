@@ -144,7 +144,7 @@ print H
 
 #include <stdio.h>
 #include \"envirdefs.h\"
-#include \"simtime_t.h\"
+#include \"omnetpp/simtime_t.h\"
 
 USING_NAMESPACE
 
@@ -178,11 +178,11 @@ open(CC, ">eventlogwriter.cc");
 print CC makeFileBanner("eventlogwriter.cc");
 print CC "
 #include \"eventlogwriter.h\"
-#include \"stringutil.h\"
-#include \"cconfigoption.h\"
-#include \"csimulation.h\"
-#include \"cmodule.h\"
-#include \"cexception.h\"
+#include \"common/stringutil.h\"
+#include \"omnetpp/cconfigoption.h\"
+#include \"omnetpp/csimulation.h\"
+#include \"omnetpp/cmodule.h\"
+#include \"omnetpp/cexception.h\"
 
 #ifdef CHECK
 #undef CHECK

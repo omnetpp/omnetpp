@@ -21,15 +21,15 @@
 #include <string.h>
 #include <akaroa.H>
 #include <akaroa/ak_message.H>
-#include "cenvir.h"
+#include "omnetpp/cenvir.h"
 #include "envirbase.h"
-#include "csimulation.h"
-#include "cmodule.h"
-#include "cstatistic.h"
-#include "regmacros.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/cstatistic.h"
+#include "omnetpp/regmacros.h"
 #include "akoutvectormgr.h"
-#include "cconfiguration.h"
-#include "cconfigoption.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/cconfigoption.h"
 
 NAMESPACE_BEGIN
 

@@ -17,8 +17,8 @@
 #ifndef __CDYNAMICMODULETYPE_H
 #define __CDYNAMICMODULETYPE_H
 
-#include "cmodule.h"
-#include "ccomponenttype.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/ccomponenttype.h"
 #include "cneddeclaration.h"
 #include "cnednetworkbuilder.h"
 

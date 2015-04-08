@@ -22,21 +22,21 @@
 #include <math.h>            // pow
 #include <stdio.h>           // sprintf
 #include <string.h>          // strcpy
-#include "cpacket.h"
-#include "cmodule.h"
-#include "carray.h"
-#include "cenvir.h"
-#include "csimulation.h"
-#include "globals.h"
-#include "cgate.h"
-#include "cchannel.h"
-#include "cdataratechannel.h"
-#include "cdisplaystring.h"
-#include "ccomponenttype.h"
-#include "stringutil.h"
-#include "stringpool.h"
-#include "simutil.h"
-#include "cmodelchange.h"
+#include "omnetpp/cpacket.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/carray.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cgate.h"
+#include "omnetpp/cchannel.h"
+#include "omnetpp/cdataratechannel.h"
+#include "omnetpp/cdisplaystring.h"
+#include "omnetpp/ccomponenttype.h"
+#include "common/stringutil.h"
+#include "common/stringpool.h"
+#include "omnetpp/simutil.h"
+#include "omnetpp/cmodelchange.h"
 
 NAMESPACE_BEGIN
 

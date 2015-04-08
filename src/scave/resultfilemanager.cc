@@ -23,21 +23,21 @@
 #include <algorithm>
 #include <utility>
 #include <functional>
-#include "opp_ctype.h"
-#include "platmisc.h"
-#include "matchexpression.h"
-#include "patternmatcher.h"
-#include "filereader.h"
-#include "linetokenizer.h"
-#include "stringtokenizer.h"
-#include "filereader.h"
+#include "common/opp_ctype.h"
+#include "omnetpp/platdep/platmisc.h"
+#include "common/matchexpression.h"
+#include "common/patternmatcher.h"
+#include "common/filereader.h"
+#include "common/linetokenizer.h"
+#include "common/stringtokenizer.h"
+#include "common/filereader.h"
 #include "indexfile.h"
 #include "scaveutils.h"
 #include "scaveexception.h"
 #include "resultfilemanager.h"
-#include "fileutil.h"
-#include "commonutil.h"
-#include "stringutil.h"
+#include "common/fileutil.h"
+#include "common/commonutil.h"
+#include "common/stringutil.h"
 
 #ifdef THREADED
 #define READER_MUTEX Mutex __reader_mutex_(getReadLock());

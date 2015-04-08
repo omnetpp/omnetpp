@@ -22,10 +22,10 @@
 #include <vector>
 #include <map>
 #include "eventlogdefs.h"
-#include "exception.h"
+#include "common/exception.h"
 #include "eventlogdefs.h"
-#include "filereader.h"
-#include "linetokenizer.h"
+#include "common/filereader.h"
+#include "common/linetokenizer.h"
 
 NAMESPACE_BEGIN
 

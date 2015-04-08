@@ -23,9 +23,9 @@
 #include <string.h>
 #include <assert.h>
 #include "resultfilemanager.h"
-#include "commonutil.h"
-#include "patternmatcher.h"
-#include "stringutil.h"
+#include "common/commonutil.h"
+#include "common/patternmatcher.h"
+#include "common/stringutil.h"
 #include "scaveutils.h"
 
 NAMESPACE_BEGIN

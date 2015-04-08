@@ -18,8 +18,8 @@
 #define _SCAVEDEFS_H_
 
 #include <stdint.h> // for int64_t, our equivalent of Java's "long" type
-#include "platdefs.h"
-#include "bigdecimal.h"
+#include "omnetpp/platdep/platdefs.h"
+#include "common/bigdecimal.h"
 
 NAMESPACE_BEGIN
 

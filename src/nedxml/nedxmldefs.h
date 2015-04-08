@@ -18,7 +18,7 @@
 #ifndef __NEDXMLDEFS_H
 #define __NEDXMLDEFS_H
 
-#include "platdefs.h"
+#include "omnetpp/platdep/platdefs.h"
 
 NAMESPACE_BEGIN
 

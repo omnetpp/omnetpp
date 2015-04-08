@@ -22,14 +22,14 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
-#include "globals.h"
-#include "cpsquare.h"
-#include "cexception.h"
-#include "random.h"
-#include "distrib.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cpsquare.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/random.h"
+#include "omnetpp/distrib.h"
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 NAMESPACE_BEGIN

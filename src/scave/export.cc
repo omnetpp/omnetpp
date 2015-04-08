@@ -20,8 +20,8 @@
 #include <sstream>
 #include <algorithm>
 #include <functional>
-#include "opp_ctype.h"
-#include "commonutil.h"
+#include "common/opp_ctype.h"
+#include "common/commonutil.h"
 #include "scaveutils.h"
 #include "export.h"
 

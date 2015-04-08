@@ -14,9 +14,9 @@
 
 #include <iostream>
 #include <fstream>
-#include "exception.h"
-#include "resultfilemanager.h"
-#include "idlist.h"
+#include <common/exception.h>
+#include <scave/resultfilemanager.h>
+#include <scave/idlist.h>
 
 USING_NAMESPACE
 

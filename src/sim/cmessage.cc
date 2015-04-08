@@ -16,15 +16,15 @@
 *--------------------------------------------------------------*/
 
 #include <sstream>
-#include "globals.h"
-#include "cmodule.h"
-#include "csimplemodule.h"
-#include "cmessage.h"
-#include "cexception.h"
-#include "cenvir.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/csimplemodule.h"
+#include "omnetpp/cmessage.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/cenvir.h"
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 NAMESPACE_BEGIN

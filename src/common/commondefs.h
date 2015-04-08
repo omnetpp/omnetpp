@@ -17,7 +17,7 @@
 #ifndef _COMMONDEFS_H_
 #define _COMMONDEFS_H_
 
-#include "platdefs.h"
+#include "omnetpp/platdep/platdefs.h"
 
 NAMESPACE_BEGIN
 

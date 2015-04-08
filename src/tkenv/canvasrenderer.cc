@@ -23,7 +23,7 @@
 #include "figurerenderers.h"
 #include "tklib.h"
 #include "tkutil.h"
-#include "stringutil.h"
+#include "common/stringutil.h"
 
 NAMESPACE_BEGIN
 

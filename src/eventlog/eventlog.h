@@ -21,8 +21,8 @@
 #include <sstream>
 #include <set>
 #include <map>
-#include "stringpool.h"
-#include "filereader.h"
+#include "common/stringpool.h"
+#include "common/filereader.h"
 #include "event.h"
 #include "ieventlog.h"
 #include "eventlogindex.h"

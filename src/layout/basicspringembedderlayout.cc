@@ -25,7 +25,7 @@
 #include <deque>
 #include <algorithm>
 
-#include "commonutil.h"
+#include "common/commonutil.h"
 #include "basicspringembedderlayout.h"
 
 NAMESPACE_BEGIN

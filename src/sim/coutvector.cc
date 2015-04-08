@@ -20,16 +20,16 @@
 *--------------------------------------------------------------*/
 
 #include <string.h>   // strlen
-#include "globals.h"
-#include "coutvector.h"
-#include "cmodule.h"
-#include "csimulation.h"
-#include "cenvir.h"
-#include "cexception.h"
-#include "cenum.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/coutvector.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/cenum.h"
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 NAMESPACE_BEGIN

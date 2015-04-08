@@ -56,7 +56,7 @@ class Msg3 extends Base {
 
 %includes:
 #include "test_m.h"
-#include "objectprinter.h"   // from src/envir
+#include <envir/objectprinter.h>   // from src/envir
 
 %activity:
 

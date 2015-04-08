@@ -15,9 +15,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "commonutil.h"
+#include "common/commonutil.h"
 #include "nodetyperegistry.h"
-#include "stringtokenizer.h"
+#include "common/stringtokenizer.h"
 #include "arraybuilder.h"
 #include "vectorfilereader.h"
 #include "vectorfilewriter.h"

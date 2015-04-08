@@ -15,7 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "chasher.h"
+#include "omnetpp/chasher.h"
 
 NAMESPACE_BEGIN
 

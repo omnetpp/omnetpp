@@ -23,9 +23,9 @@
 #include <set>
 #include <string>
 #include "envirdefs.h"
-#include "cconfiguration.h"
-#include "cconfigreader.h"
-#include "stringpool.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/cconfigreader.h"
+#include "common/stringpool.h"
 
 NAMESPACE_BEGIN
 

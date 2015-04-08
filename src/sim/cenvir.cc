@@ -16,10 +16,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cenvir.h"
-#include "commonutil.h"
-#include "cconfiguration.h"
-#include "csimulation.h"
+#include "omnetpp/cenvir.h"
+#include "common/commonutil.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/csimulation.h"
 
 NAMESPACE_BEGIN
 

@@ -18,7 +18,7 @@
 #include <algorithm>
 #include "eventlogentry.h"
 #include "eventlogindex.h"
-#include "exception.h"
+#include "common/exception.h"
 
 NAMESPACE_BEGIN
 

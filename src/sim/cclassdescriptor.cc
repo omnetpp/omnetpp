@@ -20,13 +20,13 @@
 #include <stdio.h>   // sprintf
 #include <stdlib.h>  // atol
 #include <string.h>
-#include "cclassdescriptor.h"
-#include "carray.h"
-#include "cenum.h"
-#include "simutil.h"
-#include "opp_ctype.h"
-#include "cobjectfactory.h"  // createOne()
-#include "platdep/platmisc.h" // INT64_PRINTF_FORMAT
+#include "omnetpp/cclassdescriptor.h"
+#include "omnetpp/carray.h"
+#include "omnetpp/cenum.h"
+#include "omnetpp/simutil.h"
+#include "common/opp_ctype.h"
+#include "omnetpp/cobjectfactory.h"  // createOne()
+#include "omnetpp/platdep/platmisc.h" // INT64_PRINTF_FORMAT
 
 NAMESPACE_BEGIN
 

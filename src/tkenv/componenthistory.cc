@@ -14,9 +14,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cmodule.h"
-#include "cchannel.h"
-#include "csimplemodule.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/cchannel.h"
+#include "omnetpp/csimplemodule.h"
 #include "componenthistory.h"
 
 NAMESPACE_BEGIN

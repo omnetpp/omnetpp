@@ -2,7 +2,7 @@
 Tests the UnitConversion class
 
 %includes:
-#include "unitconversion.h"
+#include <common/unitconversion.h>
 
 %global:
 

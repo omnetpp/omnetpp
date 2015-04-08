@@ -23,18 +23,18 @@
 #include <stdio.h>           // sprintf
 #include <string.h>          // strcpy
 #include <exception>
-#include "csimplemodule.h"
-#include "cgate.h"
-#include "cpacket.h"
-#include "ccoroutine.h"
-#include "csimulation.h"
-#include "carray.h"
-#include "cmsgpar.h"
-#include "cqueue.h"
-#include "cenvir.h"
-#include "cexception.h"
-#include "commonutil.h"
-#include "platdep/platmisc.h"  // for DEBUG_TRAP
+#include "omnetpp/csimplemodule.h"
+#include "omnetpp/cgate.h"
+#include "omnetpp/cpacket.h"
+#include "omnetpp/ccoroutine.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/carray.h"
+#include "omnetpp/cmsgpar.h"
+#include "omnetpp/cqueue.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/cexception.h"
+#include "common/commonutil.h"
+#include "omnetpp/platdep/platmisc.h"  // for DEBUG_TRAP
 
 NAMESPACE_BEGIN
 

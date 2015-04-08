@@ -20,7 +20,7 @@
 
 
 #include "ccommbufferbase.h"
-#include "cexception.h"
+#include "omnetpp/cexception.h"
 
 NAMESPACE_BEGIN
 

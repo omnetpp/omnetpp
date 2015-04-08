@@ -17,7 +17,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
-#include "opp_ctype.h"
+#include "common/opp_ctype.h"
 #include "nederror.h"
 #include "neddtdvalidatorbase.h"
 

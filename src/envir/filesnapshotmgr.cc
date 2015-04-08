@@ -15,13 +15,13 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "simkerneldefs.h"
+#include "omnetpp/simkerneldefs.h"
 
 #include <assert.h>
 #include <string.h>
 #include <fstream>
-#include "cconfigoption.h"
-#include "fileutil.h"
+#include "omnetpp/cconfigoption.h"
+#include "common/fileutil.h"
 #include "envirbase.h"
 #include "filesnapshotmgr.h"
 

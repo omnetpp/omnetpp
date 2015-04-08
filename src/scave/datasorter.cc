@@ -22,9 +22,9 @@
 #include <string.h>
 #include <assert.h>
 #include "resultfilemanager.h"
-#include "commonutil.h"
+#include "common/commonutil.h"
 #include "datasorter.h"
-#include "stringutil.h"
+#include "common/stringutil.h"
 
 NAMESPACE_BEGIN
 

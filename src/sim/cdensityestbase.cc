@@ -23,12 +23,12 @@
 #include <string.h>
 #include <math.h>
 #include <sstream>
-#include "globals.h"
-#include "cdensityestbase.h"
-#include "cexception.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cdensityestbase.h"
+#include "omnetpp/cexception.h"
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 NAMESPACE_BEGIN

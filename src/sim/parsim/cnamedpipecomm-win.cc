@@ -29,15 +29,15 @@
 #include <string>
 #include <iostream>
 
-#include "cexception.h"
+#include "omnetpp/cexception.h"
 #include "cmemcommbuffer.h"
-#include "globals.h"
-#include "regmacros.h"
-#include "cenvir.h"
-#include "clog.h"
-#include "csimulation.h"
-#include "cconfiguration.h"
-#include "cconfigoption.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/regmacros.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/clog.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/cconfigoption.h"
 #include "parsimutil.h"
 
 NAMESPACE_BEGIN

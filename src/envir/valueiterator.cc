@@ -18,13 +18,13 @@
 #include <math.h>
 #include <locale.h>
 #include <algorithm>
-#include "opp_ctype.h"
+#include "common/opp_ctype.h"
 #include "valueiterator.h"
-#include "stringutil.h"
-#include "commonutil.h"
-#include "stringtokenizer2.h"
-#include "cexception.h"
-#include "unitconversion.h"
+#include "common/stringutil.h"
+#include "common/commonutil.h"
+#include "common/stringtokenizer2.h"
+#include "omnetpp/cexception.h"
+#include "common/unitconversion.h"
 
 NAMESPACE_BEGIN
 

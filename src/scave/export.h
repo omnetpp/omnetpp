@@ -24,7 +24,7 @@
 #include <fstream>
 #include <utility>
 #include "scavedefs.h"
-#include "bigdecimal.h"
+#include "common/bigdecimal.h"
 #include "xyarray.h"
 #include "resultfilemanager.h"
 #include "datasorter.h"

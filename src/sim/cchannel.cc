@@ -17,18 +17,18 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cchannel.h"
-#include "cpar.h"
-#include "cgate.h"
-#include "cmessage.h"
-#include "cmodule.h"
-#include "cenvir.h"
-#include "csimulation.h"
-#include "globals.h"
-#include "cexception.h"
+#include "omnetpp/cchannel.h"
+#include "omnetpp/cpar.h"
+#include "omnetpp/cgate.h"
+#include "omnetpp/cmessage.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cexception.h"
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 NAMESPACE_BEGIN

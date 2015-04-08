@@ -16,9 +16,9 @@
 *--------------------------------------------------------------*/
 
 #include "resultrecorders.h"
-#include "cproperty.h"
-#include "chistogram.h"
-#include "csimulation.h"
+#include "omnetpp/cproperty.h"
+#include "omnetpp/chistogram.h"
+#include "omnetpp/csimulation.h"
 
 NAMESPACE_BEGIN
 

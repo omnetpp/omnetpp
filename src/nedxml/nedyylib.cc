@@ -16,12 +16,12 @@
 
 
 #include <assert.h>
-#include "opp_ctype.h"
+#include "common/opp_ctype.h"
 #include "nedyylib.h"
 #include "nedfilebuffer.h"
 #include "nedyydefs.h"
-#include "stringutil.h"
-#include "unitconversion.h"
+#include "common/stringutil.h"
+#include "common/unitconversion.h"
 
 NAMESPACE_BEGIN
 

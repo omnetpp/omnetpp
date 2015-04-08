@@ -17,10 +17,10 @@
 *--------------------------------------------------------------*/
 
 #include <string.h>
-#include "opp_ctype.h"
-#include "platmisc.h"
+#include "common/opp_ctype.h"
+#include "omnetpp/platdep/platmisc.h"
 #include "minixpath.h"
-#include "cexception.h"
+#include "omnetpp/cexception.h"
 
 NAMESPACE_BEGIN
 

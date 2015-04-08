@@ -24,11 +24,11 @@
 #include "ned2generator.h"
 #include "nedexception.h"
 #include "nedutil.h"
-#include "stringtokenizer.h"
-#include "stringutil.h"
-#include "platmisc.h"  // unlink()
+#include "common/stringtokenizer.h"
+#include "common/stringutil.h"
+#include "omnetpp/platdep/platmisc.h"  // unlink()
 
-#include "../../include/simkerneldefs.h"
+#include "omnetpp/simkerneldefs.h"
 
 NAMESPACE_BEGIN
 

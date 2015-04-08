@@ -17,7 +17,7 @@
 #ifndef __EVENTLOGTABLEFACADE_H_
 #define __EVENTLOGTABLEFACADE_H_
 
-#include "matchexpression.h"
+#include "common/matchexpression.h"
 #include "ievent.h"
 #include "ieventlog.h"
 #include "eventlogfacade.h"

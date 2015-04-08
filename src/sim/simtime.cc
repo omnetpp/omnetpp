@@ -14,12 +14,12 @@
 *--------------------------------------------------------------*/
 
 #include <sstream>
-#include "opp_ctype.h"
-#include "simtime.h"
-#include "cexception.h"
-#include "unitconversion.h"
-#include "cpar.h"
-#include "onstartup.h"
+#include "common/opp_ctype.h"
+#include "omnetpp/simtime.h"
+#include "omnetpp/cexception.h"
+#include "common/unitconversion.h"
+#include "omnetpp/cpar.h"
+#include "omnetpp/onstartup.h"
 
 NAMESPACE_BEGIN
 

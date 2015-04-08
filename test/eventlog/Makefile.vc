@@ -10,7 +10,7 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I. -I../../src/common -I../../src/eventlog -I../../include/platdep /Fd"eventlogtest.pdb"
+COPTS=$(CFLAGS) -I../../include -I../../src /Fd"eventlogtest.pdb"
 
 OBJS= eventlogindextest.obj eventlogtest.obj
 LIBS= $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)/oppeventlogd.lib $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)/oppcommond.lib

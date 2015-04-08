@@ -21,8 +21,8 @@
 #ifndef __CPARSIMSYNCHR_H__
 #define __CPARSIMSYNCHR_H__
 
-#include "cscheduler.h"
-#include "simtime_t.h"
+#include "omnetpp/cscheduler.h"
+#include "omnetpp/simtime_t.h"
 
 NAMESPACE_BEGIN
 

@@ -21,7 +21,7 @@
 #ifndef __CRECEIVEDEXCEPTION_H__
 #define __CRECEIVEDEXCEPTION_H__
 
-#include "cexception.h"
+#include "omnetpp/cexception.h"
 
 NAMESPACE_BEGIN
 

@@ -18,15 +18,15 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cscheduler.h"
-#include "cevent.h"
-#include "csimulation.h"
-#include "cmessageheap.h"
-#include "globals.h"
-#include "cenvir.h"
-#include "cconfiguration.h"
-#include "cconfigoption.h"
-#include "platmisc.h" // usleep
+#include "omnetpp/cscheduler.h"
+#include "omnetpp/cevent.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/cmessageheap.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/cconfigoption.h"
+#include "omnetpp/platdep/platmisc.h" // usleep
 
 NAMESPACE_BEGIN
 

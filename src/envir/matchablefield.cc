@@ -15,9 +15,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "commonutil.h"
+#include "common/commonutil.h"
 #include "matchablefield.h"
-#include "cclassdescriptor.h"
+#include "omnetpp/cclassdescriptor.h"
 
 NAMESPACE_BEGIN
 

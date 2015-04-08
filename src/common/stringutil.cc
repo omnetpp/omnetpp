@@ -21,7 +21,7 @@
 #include <errno.h>
 #include <math.h>   //HUGE_VAL
 #include <locale.h>
-#include "platmisc.h"
+#include "omnetpp/platdep/platmisc.h"
 #include "commonutil.h"
 #include "opp_ctype.h"
 #include "stringutil.h"

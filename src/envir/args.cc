@@ -20,8 +20,8 @@
 #include <string.h>
 #include <stdio.h>
 #include "args.h"
-#include "opp_ctype.h"
-#include "exception.h"
+#include "common/opp_ctype.h"
+#include "common/exception.h"
 
 NAMESPACE_BEGIN
 

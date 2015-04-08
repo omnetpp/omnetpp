@@ -17,10 +17,10 @@
 #ifndef __CANVASINSPECTOR_H
 #define __CANVASINSPECTOR_H
 
-#include "platmisc.h"   // must precede <tk.h> otherwise Visual Studio 2013 fails to compile
+#include "omnetpp/platdep/platmisc.h"   // must precede <tk.h> otherwise Visual Studio 2013 fails to compile
 #include <tk.h>
 #include "inspector.h"
-#include "ccanvas.h"
+#include "omnetpp/ccanvas.h"
 #include "canvasrenderer.h"
 
 NAMESPACE_BEGIN

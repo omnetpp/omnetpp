@@ -17,7 +17,7 @@
 *--------------------------------------------------------------*/
 
 
-#include "csimulation.h"
+#include "omnetpp/csimulation.h"
 #include "cparsimsynchr.h"
 
 USING_NAMESPACE

@@ -23,7 +23,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "../common/ver.h"
+#include "common/ver.h"
 
 #define INTRAND_MAX  0x7ffffffeL  /* = 2**31-2 */
 

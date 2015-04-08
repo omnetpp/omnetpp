@@ -14,8 +14,8 @@
 *--------------------------------------------------------------*/
 
 #include <sstream>
-#include "cproperty.h"
-#include "cproperties.h"
+#include "omnetpp/cproperty.h"
+#include "omnetpp/cproperties.h"
 
 NAMESPACE_BEGIN
 

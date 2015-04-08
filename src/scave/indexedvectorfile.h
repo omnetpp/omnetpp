@@ -22,7 +22,7 @@
 #include <vector>
 #include <map>
 #include <stdarg.h>
-#include "filereader.h"
+#include "common/filereader.h"
 #include "scavedefs.h"
 #include "indexfile.h"
 #include "node.h"

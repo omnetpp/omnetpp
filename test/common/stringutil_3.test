@@ -2,7 +2,7 @@
 Tests stringutil.h functions
 
 %includes:
-#include "stringutil.h"
+#include <common/stringutil.h>
 
 %global:
 

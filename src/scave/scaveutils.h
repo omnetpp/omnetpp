@@ -22,8 +22,8 @@
 #include <functional>
 #include <stdint.h>
 #include "scavedefs.h"
-#include "timeutil.h"
-#include "commonutil.h"
+#include "omnetpp/platdep/timeutil.h"
+#include "common/commonutil.h"
 
 NAMESPACE_BEGIN
 

@@ -19,10 +19,10 @@
 *--------------------------------------------------------------*/
 
 #include <string.h>
-#include "cenvir.h"
-#include "csimulation.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/csimulation.h"
 #include "parsimutil.h"
-#include "cexception.h"
+#include "omnetpp/cexception.h"
 
 NAMESPACE_BEGIN
 

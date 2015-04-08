@@ -21,7 +21,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <algorithm>
-#include "platmisc.h"
+#include "omnetpp/platdep/platmisc.h"
 #include "commonutil.h"
 #include "filereader.h"
 #include "exception.h"

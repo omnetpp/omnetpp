@@ -19,7 +19,7 @@
 
 #include <string>
 #include "resultfilemanager.h"
-#include "progressmonitor.h"
+#include "common/progressmonitor.h"
 
 NAMESPACE_BEGIN
 

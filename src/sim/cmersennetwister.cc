@@ -16,13 +16,13 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "clog.h"
-#include "cenvir.h"
-#include "simutil.h"
-#include "cexception.h"
-#include "cmersennetwister.h"
-#include "cmessage.h"
-#include "cconfigoption.h"
+#include "omnetpp/clog.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/simutil.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/cmersennetwister.h"
+#include "omnetpp/cmessage.h"
+#include "omnetpp/cconfigoption.h"
 
 NAMESPACE_BEGIN
 

@@ -16,12 +16,12 @@
 
 #include <map>
 #include <algorithm>
-#include "ccanvas.h"
-#include "cproperty.h"
-#include "cproperties.h"
-#include "cstringtokenizer.h"
-#include "stringutil.h"
-#include "opp_ctype.h"
+#include "omnetpp/ccanvas.h"
+#include "omnetpp/cproperty.h"
+#include "omnetpp/cproperties.h"
+#include "omnetpp/cstringtokenizer.h"
+#include "common/stringutil.h"
+#include "common/opp_ctype.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846

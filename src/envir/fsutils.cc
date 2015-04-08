@@ -15,11 +15,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "platmisc.h"
-#include "fileutil.h"
+#include "omnetpp/platdep/platmisc.h"
+#include "common/fileutil.h"
 #include "fsutils.h"
-#include "onstartup.h"
-#include "cexception.h"
+#include "omnetpp/onstartup.h"
+#include "omnetpp/cexception.h"
 
 NAMESPACE_BEGIN
 

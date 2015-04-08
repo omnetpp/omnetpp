@@ -31,15 +31,15 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include "cexception.h"
+#include "omnetpp/cexception.h"
 #include "cmemcommbuffer.h"
-#include "clog.h"
-#include "globals.h"
-#include "regmacros.h"
-#include "cconfigoption.h"
-#include "cenvir.h"
-#include "csimulation.h"
-#include "cconfiguration.h"
+#include "omnetpp/clog.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/regmacros.h"
+#include "omnetpp/cconfigoption.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/cconfiguration.h"
 #include "parsimutil.h"
 
 NAMESPACE_BEGIN

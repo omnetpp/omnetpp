@@ -20,17 +20,17 @@
 *--------------------------------------------------------------*/
 
 #include <string.h>  // memcpy
-#include "globals.h"
-#include "carray.h"
-#include "cexception.h"
-#include "cdefaultlist.h"
-#include "csimulation.h"
-#include "cmessageheap.h"
-#include "cenvir.h"
-#include "cwatch.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/carray.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/cdefaultlist.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/cmessageheap.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/cwatch.h"
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 NAMESPACE_BEGIN

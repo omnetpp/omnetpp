@@ -3,7 +3,7 @@ Tests MatchExpression class.
 
 %includes:
 
-#include "matchexpression.h"
+#include <common/matchexpression.h>
 
 %global:
 

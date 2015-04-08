@@ -17,7 +17,7 @@
 *--------------------------------------------------------------*/
 
 
-#include "onstartup.h"
+#include "omnetpp/onstartup.h"
 
 NAMESPACE_BEGIN
 

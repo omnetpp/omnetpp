@@ -2,8 +2,8 @@
 Tests MatchExpression class.
 
 %includes:
-#include "matchexpression.h"
-#include "matchableobject.h"
+#include <common/matchexpression.h>
+#include <envir/matchableobject.h>
 
 %global:
 

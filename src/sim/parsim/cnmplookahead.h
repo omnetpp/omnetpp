@@ -21,8 +21,8 @@
 #ifndef __CNMPLOOKAHEAD_H__
 #define __CNMPLOOKAHEAD_H__
 
-#include "cobject.h"
-#include "simtime_t.h"
+#include "omnetpp/cobject.h"
+#include "omnetpp/simtime_t.h"
 
 NAMESPACE_BEGIN
 

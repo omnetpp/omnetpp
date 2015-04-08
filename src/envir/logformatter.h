@@ -19,7 +19,7 @@
 #include <ostream>
 #include <vector>
 #include "envirdefs.h"
-#include "clog.h"
+#include "omnetpp/clog.h"
 
 NAMESPACE_BEGIN
 

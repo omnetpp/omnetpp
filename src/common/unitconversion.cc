@@ -21,7 +21,7 @@
 #include <errno.h>
 #include "opp_ctype.h"
 #include "stringutil.h"
-#include "platmisc.h"  //strcasecmp
+#include "omnetpp/platdep/platmisc.h"  //strcasecmp
 #include "unitconversion.h"
 
 NAMESPACE_BEGIN

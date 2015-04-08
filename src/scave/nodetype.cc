@@ -15,7 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "commonutil.h"
+#include "common/commonutil.h"
 #include "nodetype.h"
 
 NAMESPACE_BEGIN

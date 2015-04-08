@@ -1,3 +1,5 @@
+my $progdir = "./";
+
 sub matchFiles
 {
    my($fileName1, $fileName2) = @_;
@@ -31,7 +33,7 @@ sub test
    $forwardResultFileName =~ s/^(.*)\//results\/forward-/;
    $backwardResultFileName =~ s/^(.*)\//results\/backward-/;
 
-   if (system("fileechotest $fileName forward > $forwardResultFileName") == 0 && matchFiles($fileName, $forwardResultFileName))
+   if (system("${progdir}fileechotest $fileName forward > $forwardResultFileName") == 0 && matchFiles($fileName, $forwardResultFileName))
    {
       print("PASS: Forward echoing $fileName\n\n");
    }
@@ -40,7 +42,7 @@ sub test
       print("FAIL: Forward echoing $fileName\n\n");
    }
 
-   if (system("fileechotest $fileName backward > $backwardResultFileName") == 0 && matchFiles($fileName, $forwardResultFileName))
+   if (system("${progdir}fileechotest $fileName backward > $backwardResultFileName") == 0 && matchFiles($fileName, $forwardResultFileName))
    {
       print("PASS: Backward echoing $fileName\n\n");
    }
@@ -49,7 +51,7 @@ sub test
       print("FAIL: Backward echoing $fileName\n\n");
    }
 
-   if (system("filereadertest $fileName $numberOfLines $numberOfSeeks $numberOfReadLines > $resultFileName") == 0)
+   if (system("${progdir}filereadertest $fileName $numberOfLines $numberOfSeeks $numberOfReadLines > $resultFileName") == 0)
    {
       print("PASS: Reader test on $fileName\n\n");
    }
@@ -113,14 +115,14 @@ sub concurrentTest
       print "resources not avilable.\n";
    } elsif ($pid == 0) {
       # child process
-      if (system("filereaderproducer $fileName $duration $numberOfLines") != 0)
+      if (system("${progdir}filereaderproducer $fileName $duration $numberOfLines") != 0)
       {
          print("FAIL: Cannot start filereaderproducer with $fileName\n\n");
       }
       exit(0);
    } else {
       # parent process
-      if (system("filereaderconsumer $fileName $duration") == 0)
+      if (system("${progdir}filereaderconsumer $fileName $duration") == 0)
       {
          print("PASS: Concurrent reader test on $fileName\n\n");
       }

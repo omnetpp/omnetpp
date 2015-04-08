@@ -24,9 +24,9 @@
 #define __AKAROARNG_H
 
 #include "envirdefs.h"
-#include "simkerneldefs.h"
-#include "crng.h"
-#include "cconfiguration.h"
+#include "omnetpp/simkerneldefs.h"
+#include "omnetpp/crng.h"
+#include "omnetpp/cconfiguration.h"
 
 NAMESPACE_BEGIN
 

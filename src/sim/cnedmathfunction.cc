@@ -17,17 +17,12 @@
 #include <math.h>
 #include <string.h>
 #include <stdarg.h>
-#include "cnedmathfunction.h"
-#include "globals.h"
-#include "cenvir.h"
-#include "cexception.h"
-#include "random.h"
-#include "stringutil.h"
-
-#ifdef WITH_PARSIM
-#include "ccommbuffer.h"
-#include "parsim/cplaceholdermod.h"
-#endif
+#include "omnetpp/cnedmathfunction.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/random.h"
+#include "common/stringutil.h"
 
 NAMESPACE_BEGIN
 

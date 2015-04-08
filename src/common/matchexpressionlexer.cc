@@ -17,7 +17,7 @@
 #include "stringutil.h"
 #include "matchexpression.tab.hh"  // token values
 #include "matchexpressionlexer.h"
-#include "platmisc.h"   // strncasecmp
+#include "omnetpp/platdep/platmisc.h"   // strncasecmp
 
 NAMESPACE_BEGIN
 

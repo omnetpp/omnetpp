@@ -15,10 +15,10 @@
 *--------------------------------------------------------------*/
 
 #include <time.h>
-#include "../common/ver.h"
-#include "platmisc.h"
-#include "filereader.h"
-#include "linetokenizer.h"
+#include "common/ver.h"
+#include "omnetpp/platdep/platmisc.h"
+#include "common/filereader.h"
+#include "common/linetokenizer.h"
 #include "eventlogindex.h"
 #include "eventlog.h"
 #include "filteredeventlog.h"

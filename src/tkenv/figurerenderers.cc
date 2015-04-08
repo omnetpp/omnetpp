@@ -16,9 +16,9 @@
 
 #include "tkutil.h"
 #include "figurerenderers.h"
-#include "cobjectfactory.h"
-#include "checkandcast.h"
-#include "stringutil.h"
+#include "omnetpp/cobjectfactory.h"
+#include "omnetpp/checkandcast.h"
+#include "common/stringutil.h"
 #include "tkenv.h"
 
 NAMESPACE_BEGIN

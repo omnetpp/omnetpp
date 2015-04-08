@@ -21,11 +21,11 @@
 #include <set>
 #include <vector>
 #include <algorithm>
-#include "opp_ctype.h"
-#include "fileutil.h"  // directoryOf
+#include "common/opp_ctype.h"
+#include "common/fileutil.h"  // directoryOf
 #include "inifilereader.h"
 #include "fsutils.h"
-#include "cexception.h"
+#include "omnetpp/cexception.h"
 
 NAMESPACE_BEGIN
 

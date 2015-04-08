@@ -16,21 +16,21 @@
 *--------------------------------------------------------------*/
 
 #include <algorithm>
-#include "opp_ctype.h"
-#include "commonutil.h"  //vsnprintf
+#include "common/opp_ctype.h"
+#include "common/commonutil.h"  //vsnprintf
 #include "eventlogfilemgr.h"
 #include "eventlogwriter.h"
-#include "cconfigoption.h"
-#include "fileutil.h"
-#include "cconfiguration.h"
+#include "omnetpp/cconfigoption.h"
+#include "common/fileutil.h"
+#include "omnetpp/cconfiguration.h"
 #include "envirbase.h"
-#include "cmodule.h"
-#include "cpacket.h"
-#include "cgate.h"
-#include "cchannel.h"
-#include "csimplemodule.h"
-#include "cdisplaystring.h"
-#include "cclassdescriptor.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/cpacket.h"
+#include "omnetpp/cgate.h"
+#include "omnetpp/cchannel.h"
+#include "omnetpp/csimplemodule.h"
+#include "omnetpp/cdisplaystring.h"
+#include "omnetpp/cclassdescriptor.h"
 
 NAMESPACE_BEGIN
 

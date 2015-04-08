@@ -24,19 +24,19 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
-#include "cexception.h"
+#include "omnetpp/cexception.h"
 #include "cfilecomm.h"
 #include "cfilecommbuffer.h"
-#include "globals.h"
-#include "cconfigoption.h"
-#include "regmacros.h"
-#include "cenvir.h"
-#include "csimulation.h"
-#include "cconfiguration.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cconfigoption.h"
+#include "omnetpp/regmacros.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/cconfiguration.h"
 #include "parsimutil.h"
-#include "fileglobber.h"
-#include "clog.h"
-#include "platmisc.h"
+#include "common/fileglobber.h"
+#include "omnetpp/clog.h"
+#include "omnetpp/platdep/platmisc.h"
 
 NAMESPACE_BEGIN
 

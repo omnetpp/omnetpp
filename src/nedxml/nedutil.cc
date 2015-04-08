@@ -22,8 +22,8 @@
 #include <math.h>
 #include "nedexception.h"
 #include "nedutil.h"
-#include "stringutil.h"
-#include "displaystring.h"
+#include "common/stringutil.h"
+#include "common/displaystring.h"
 #include "nedelements.h"
 
 NAMESPACE_BEGIN

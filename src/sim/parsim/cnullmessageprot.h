@@ -22,7 +22,7 @@
 #define __CNULLMESSAGEPROT_H__
 
 #include "cparsimprotocolbase.h"
-#include "cmessage.h"  // MK_PARSIM_BEGIN
+#include "omnetpp/cmessage.h"  // MK_PARSIM_BEGIN
 
 NAMESPACE_BEGIN
 

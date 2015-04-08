@@ -15,8 +15,8 @@
 *--------------------------------------------------------------*/
 
 #include <algorithm>
-#include "platmisc.h"
-#include "opp_ctype.h"
+#include "omnetpp/platdep/platmisc.h"
+#include "common/opp_ctype.h"
 #include "channel.h"
 #include "scaveutils.h"
 #include "vectorfilereader.h"

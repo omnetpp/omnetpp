@@ -15,16 +15,16 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cdynamicexpression.h"
-#include "cxmlelement.h"
-#include "cnedmathfunction.h"
-#include "cnedfunction.h"
-#include "cexception.h"
-#include "cenvir.h"
-#include "cmodule.h"
-#include "ccomponenttype.h"
-#include "nedsupport.h"
-#include "stringutil.h"
+#include "omnetpp/cdynamicexpression.h"
+#include "omnetpp/cxmlelement.h"
+#include "omnetpp/cnedmathfunction.h"
+#include "omnetpp/cnedfunction.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/ccomponenttype.h"
+#include "omnetpp/nedsupport.h"
+#include "common/stringutil.h"
 
 NAMESPACE_BEGIN
 

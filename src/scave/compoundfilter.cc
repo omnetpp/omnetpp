@@ -16,7 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include <string.h>
-#include "commonutil.h"
+#include "common/commonutil.h"
 #include "compoundfilter.h"
 #include "filternodes.h"
 #include "nodetyperegistry.h"

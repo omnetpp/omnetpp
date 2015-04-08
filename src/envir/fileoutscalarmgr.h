@@ -20,9 +20,9 @@
 
 #include <stdio.h>
 #include "envirdefs.h"
-#include "envirext.h"
-#include "simutil.h"
-#include "stringutil.h"
+#include "omnetpp/envirext.h"
+#include "omnetpp/simutil.h"
+#include "common/stringutil.h"
 #include "runattributes.h"
 
 NAMESPACE_BEGIN

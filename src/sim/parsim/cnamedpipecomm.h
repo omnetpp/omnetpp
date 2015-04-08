@@ -27,10 +27,10 @@
 
 #include <stdio.h>
 #include <deque>
-#include "simutil.h"
-#include "opp_string.h"
-#include "cparsimcomm.h"
-#include "platdep/platmisc.h"  // for <windows.h>
+#include "omnetpp/simutil.h"
+#include "omnetpp/opp_string.h"
+#include "omnetpp/cparsimcomm.h"
+#include "omnetpp/platdep/platmisc.h"  // for <windows.h>
 
 // decide platform
 #if defined(_WIN32)

@@ -18,10 +18,10 @@
 #define __INSPECTORFACTORY_H
 
 #include <tk.h>
-#include "onstartup.h"
-#include "cregistrationlist.h"
+#include "omnetpp/onstartup.h"
+#include "omnetpp/cregistrationlist.h"
 #include "inspector.h"
-#include "envirbase.h"
+#include "envir/envirbase.h"
 
 NAMESPACE_BEGIN
 

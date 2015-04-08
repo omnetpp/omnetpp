@@ -22,12 +22,12 @@
 #include <string.h>  // memcmp, memcpy, memset
 #include <algorithm>  // min, max
 #include <sstream>
-#include "carray.h"
-#include "globals.h"
-#include "cexception.h"
+#include "omnetpp/carray.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cexception.h"
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 NAMESPACE_BEGIN

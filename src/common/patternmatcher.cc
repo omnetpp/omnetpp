@@ -20,7 +20,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "opp_ctype.h"
-#include "platmisc.h"
+#include "omnetpp/platdep/platmisc.h"
 #include "patternmatcher.h"
 #include "stringutil.h"
 #include "exception.h"

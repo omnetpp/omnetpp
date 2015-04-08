@@ -20,7 +20,7 @@
 #include <sstream>
 #include <set>
 #include <vector>
-#include "filereader.h"
+#include "common/filereader.h"
 #include "eventlogdefs.h"
 #include "ievent.h"
 

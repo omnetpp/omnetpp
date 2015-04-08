@@ -20,8 +20,8 @@
 
 #include "channel.h"
 #include "vectorfilewriter.h"
-#include "stringutil.h"
-#include "platmisc.h" // INT64_PRINTF_FORMAT
+#include "common/stringutil.h"
+#include "omnetpp/platdep/platmisc.h" // INT64_PRINTF_FORMAT
 
 #define VECTOR_FILE_VERSION 2
 

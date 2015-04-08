@@ -16,7 +16,7 @@
 
 
 #include <string.h>
-#include "platmisc.h"
+#include "omnetpp/platdep/platmisc.h"
 #include "fileglobber.h"
 
 #ifdef _WIN32

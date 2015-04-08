@@ -15,7 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "envirext.h"
+#include "omnetpp/envirext.h"
 
 USING_NAMESPACE
 

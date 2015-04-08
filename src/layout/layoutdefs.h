@@ -17,7 +17,7 @@
 #ifndef __LAYOUTDEFS_H
 #define __LAYOUTDEFS_H
 
-#include "platdefs.h"
+#include "omnetpp/platdep/platdefs.h"
 
 NAMESPACE_BEGIN
 

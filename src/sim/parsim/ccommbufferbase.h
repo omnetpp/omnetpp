@@ -21,7 +21,7 @@
 #ifndef __CCOMMBUFFERBASE_H__
 #define __CCOMMBUFFERBASE_H__
 
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 
 NAMESPACE_BEGIN
 

@@ -16,7 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include "resultfilters.h"
-#include "cpacket.h"  // PacketBytesFilter
+#include "omnetpp/cpacket.h"  // PacketBytesFilter
 
 NAMESPACE_BEGIN
 

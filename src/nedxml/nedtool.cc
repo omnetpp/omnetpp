@@ -36,11 +36,11 @@
 #include "ned1generator.h"
 #include "xmlgenerator.h"
 #include "nedtools.h"
-#include "fileglobber.h"
-#include "fileutil.h"
-#include "stringutil.h"
-#include "platmisc.h"   // getcwd, chdir
-#include "../common/ver.h"
+#include "common/fileglobber.h"
+#include "common/fileutil.h"
+#include "common/stringutil.h"
+#include "omnetpp/platdep/platmisc.h"   // getcwd, chdir
+#include "common/ver.h"
 
 NAMESPACE_BEGIN
 

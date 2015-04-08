@@ -25,8 +25,8 @@
 #include "layouterenv.h"
 #include "tklib.h"
 #include "tkutil.h"
-#include "cmodule.h"
-#include "cdisplaystring.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/cdisplaystring.h"
 
 NAMESPACE_BEGIN
 

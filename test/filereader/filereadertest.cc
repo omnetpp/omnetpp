@@ -15,9 +15,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
-#include "lcgrandom.h"
-#include "exception.h"
-#include "filereader.h"
+#include <common/lcgrandom.h>
+#include <common/exception.h>
+#include <common/filereader.h>
 
 #ifdef _WIN32
 #include <io.h>

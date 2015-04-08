@@ -15,12 +15,12 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cresultrecorder.h"
-#include "cproperty.h"
-#include "chistogram.h"
-#include "cstringtokenizer.h"
-#include "../common/opp_ctype.h"
-#include "../common/stringutil.h"
+#include "omnetpp/cresultrecorder.h"
+#include "omnetpp/cproperty.h"
+#include "omnetpp/chistogram.h"
+#include "omnetpp/cstringtokenizer.h"
+#include "common/opp_ctype.h"
+#include "common/stringutil.h"
 
 NAMESPACE_BEGIN
 

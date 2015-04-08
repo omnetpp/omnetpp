@@ -19,8 +19,8 @@
 #define __CMDENV_H
 
 #include <map>
-#include "csimulation.h"
-#include "envirbase.h"
+#include "omnetpp/csimulation.h"
+#include "envir/envirbase.h"
 
 NAMESPACE_BEGIN
 

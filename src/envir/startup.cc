@@ -21,18 +21,18 @@
 #include <string.h>
 #include <stdint.h>
 
-#include "opp_ctype.h"
+#include "common/opp_ctype.h"
 #include "args.h"
-#include "distrib.h"
-#include "cconfigoption.h"
+#include "omnetpp/distrib.h"
+#include "omnetpp/cconfigoption.h"
 #include "inifilereader.h"
 #include "sectionbasedconfig.h"
 #include "appreg.h"
-#include "cmodule.h"
+#include "omnetpp/cmodule.h"
 #include "fsutils.h"
-#include "fnamelisttokenizer.h"
-#include "stringutil.h"
-#include "fileutil.h"
+#include "common/fnamelisttokenizer.h"
+#include "common/stringutil.h"
+#include "common/fileutil.h"
 #include "startup.h"
 
 #include "speedometer.h"

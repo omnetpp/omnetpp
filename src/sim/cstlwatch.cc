@@ -17,9 +17,9 @@
 *--------------------------------------------------------------*/
 
 #include <stdio.h>
-#include "cstlwatch.h"
-#include "cclassdescriptor.h"
-#include "globals.h"
+#include "omnetpp/cstlwatch.h"
+#include "omnetpp/cclassdescriptor.h"
+#include "omnetpp/globals.h"
 
 NAMESPACE_BEGIN
 

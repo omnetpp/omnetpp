@@ -20,7 +20,7 @@
 #ifndef __MINIXPATH_H__
 #define __MINIXPATH_H__
 
-#include "cxmlelement.h"
+#include "omnetpp/cxmlelement.h"
 
 NAMESPACE_BEGIN
 

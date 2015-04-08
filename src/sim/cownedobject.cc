@@ -18,17 +18,17 @@
 
 #include <stdio.h>           // sprintf
 #include <string.h>          // strcpy, strlen etc.
-#include "cownedobject.h"
-#include "csimulation.h"
-#include "cenvir.h"
-#include "globals.h"
-#include "cexception.h"
-#include "simutil.h"
-#include "cdefaultlist.h"
-#include "cclassdescriptor.h"
+#include "omnetpp/cownedobject.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/simutil.h"
+#include "omnetpp/cdefaultlist.h"
+#include "omnetpp/cclassdescriptor.h"
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 NAMESPACE_BEGIN

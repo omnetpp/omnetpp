@@ -24,10 +24,10 @@
 #include "neddtdvalidator.h"
 #include "nedsyntaxvalidator.h"
 #include "nedcrossvalidator.h"
-#include "fileutil.h"
-#include "stringutil.h"
-#include "fileglobber.h"
-#include "patternmatcher.h"
+#include "common/fileutil.h"
+#include "common/stringutil.h"
+#include "common/fileglobber.h"
+#include "common/patternmatcher.h"
 
 NAMESPACE_BEGIN
 

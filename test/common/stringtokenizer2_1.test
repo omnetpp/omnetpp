@@ -3,7 +3,7 @@ Positive test cases for StringTokenizer2.
 
 %includes:
 
-#include "stringtokenizer2.h"
+#include <common/stringtokenizer2.h>
 
 %global:
 

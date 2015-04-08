@@ -15,8 +15,8 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <string.h>
-#include "exception.h"
-#include "filereader.h"
+#include <common/exception.h>
+#include <common/filereader.h>
 
 #ifdef _WIN32
 #include <io.h>
@@ -38,11 +38,11 @@ void testFileEcho(const char *file, bool forward)
 
     char *line;
 
-    while (line = forward ? fileReader.getNextLineBufferPointer() : fileReader.getPreviousLineBufferPointer())
+    while ((line = (forward ? fileReader.getNextLineBufferPointer() : fileReader.getPreviousLineBufferPointer())) != NULL)
         printf("%.*s", fileReader.getCurrentLineLength(), line);
 }
 
-void usage(char *message)
+void usage(const char *message)
 {
     if (message)
         fprintf(stderr, "Error: %s\n\n", message);
@@ -58,18 +58,15 @@ int main(int argc, char **argv)
     try {
         if (argc < 3) {
             usage("Not enough arguments specified");
-
             return -1;
         }
         else {
             testFileEcho(argv[1], strcmp(argv[2], "backward"));
-
             return 0;
         }
     }
     catch (std::exception& e) {
         printf("FAIL: %s", e.what());
-
         return -2;
     }
 }

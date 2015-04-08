@@ -21,8 +21,8 @@
 #include <vector>
 #include <algorithm>
 #include "layoutdefs.h"
-#include "commonutil.h"
-#include "exception.h"
+#include "common/commonutil.h"
+#include "common/exception.h"
 
 NAMESPACE_BEGIN
 

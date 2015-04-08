@@ -20,7 +20,7 @@
 #define __TASK_H
 
 #include <setjmp.h>
-#include "platdep/platdefs.h"
+#include "omnetpp/platdep/platdefs.h"
 
 NAMESPACE_BEGIN
 

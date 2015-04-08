@@ -16,7 +16,7 @@
 #define _TESTUTIL_H_
 
 #include <iostream>
-#include "timeutil.h"
+#include <omnetpp/platdep/timeutil.h>
 
 class MeasureTime
 {

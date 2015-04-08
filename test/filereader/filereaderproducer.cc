@@ -16,9 +16,9 @@
 #include <stdlib.h>
 #include <ios>
 #include <fstream>
-#include "platmisc.h"
-#include "exception.h"
-#include "timeutil.h"
+#include <omnetpp/platdep/platmisc.h>
+#include <common/exception.h>
+#include <omnetpp/platdep/timeutil.h>
 
 USING_NAMESPACE
 

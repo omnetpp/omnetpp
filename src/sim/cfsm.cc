@@ -22,8 +22,8 @@
 #include <stdio.h>       // sprintf
 #include <string.h>      // strlen
 #include <sstream>
-#include "globals.h"
-#include "cfsm.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cfsm.h"
 
 NAMESPACE_BEGIN
 

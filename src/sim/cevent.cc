@@ -18,14 +18,14 @@
 
 #include <stdio.h>  // sprintf
 #include <sstream>
-#include "globals.h"
-#include "cevent.h"
-#include "csimulation.h"
-#include "cexception.h"
-#include "cenvir.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cevent.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/cenvir.h"
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 USING_NAMESPACE

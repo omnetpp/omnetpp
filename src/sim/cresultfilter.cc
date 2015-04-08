@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "commonutil.h"
-#include "cresultfilter.h"
+#include "common/commonutil.h"
+#include "omnetpp/cresultfilter.h"
 
 NAMESPACE_BEGIN
 

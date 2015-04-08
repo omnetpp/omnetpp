@@ -22,11 +22,11 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <locale.h>
-#include "opp_ctype.h"
+#include "common/opp_ctype.h"
 #include "nederror.h"
 #include "nedsyntaxvalidator.h"
-#include "stringutil.h"
-#include "unitconversion.h"
+#include "common/stringutil.h"
+#include "common/unitconversion.h"
 
 NAMESPACE_BEGIN
 

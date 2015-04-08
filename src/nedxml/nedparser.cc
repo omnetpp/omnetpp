@@ -27,7 +27,7 @@
 #include "nedfilebuffer.h"
 #include "nedelements.h"
 #include "nederror.h"
-#include "opp_ctype.h"
+#include "common/opp_ctype.h"
 
 #include "nedyydefs.h"
 

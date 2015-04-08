@@ -7,7 +7,7 @@ Tests pattern matcher class used e.g. for ini file wildcard resolution.
 #pragma warning(disable:4786)
 #endif
 
-#include "patternmatcher.h"
+#include <common/patternmatcher.h>
 
 %global:
 

@@ -24,7 +24,7 @@
 #include "tklib.h"
 #include "tkutil.h"
 #include "inspectorfactory.h"
-#include "stringutil.h"
+#include "common/stringutil.h"
 #include "canvasrenderer.h"
 
 NAMESPACE_BEGIN

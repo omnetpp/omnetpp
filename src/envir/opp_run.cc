@@ -73,7 +73,7 @@
 #include <string>
 #include <string.h>
 #include <errno.h>
-#include "platdep/platdefs.h"
+#include "omnetpp/platdep/platdefs.h"
 
 #ifdef NDEBUG
 #error "opp_run.cc must be compiled in 'debug' mode!"
@@ -145,7 +145,7 @@ static std::string makeLibFileName(const char *libname, const char *prefix, cons
 #include <windows.h>
 #include <psapi.h>
 #include <process.h>
-#include "platdep/platmisc.h"
+#include "omnetpp/platdep/platmisc.h"
 
 typedef HMODULE libhandle_t;
 

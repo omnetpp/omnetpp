@@ -26,8 +26,8 @@
 
 #include <math.h>
 #include <stdio.h>
-#include "csimulation.h"  // simTime()
-#include "cdetect.h"
+#include "omnetpp/csimulation.h"  // simTime()
+#include "omnetpp/cdetect.h"
 
 NAMESPACE_BEGIN
 

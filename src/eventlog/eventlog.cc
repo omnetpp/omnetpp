@@ -15,8 +15,8 @@
 *--------------------------------------------------------------*/
 
 #include <stdio.h>
-#include "filereader.h"
-#include "stringpool.h"
+#include "common/filereader.h"
+#include "common/stringpool.h"
 #include "eventlog.h"
 
 NAMESPACE_BEGIN

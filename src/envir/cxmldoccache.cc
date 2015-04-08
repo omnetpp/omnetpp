@@ -15,12 +15,12 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cobject.h"
+#include "omnetpp/cobject.h"
 #include "cxmldoccache.h"
-#include "cxmlelement.h"
-#include "cexception.h"
-#include "fileutil.h"
-#include "../nedxml/saxparser.h"
+#include "omnetpp/cxmlelement.h"
+#include "omnetpp/cexception.h"
+#include "common/fileutil.h"
+#include "nedxml/saxparser.h"
 
 NAMESPACE_BEGIN
 

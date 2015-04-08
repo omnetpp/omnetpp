@@ -29,7 +29,7 @@
 #include <unistd.h>
 #endif
 
-#include "../common/ver.h"
+#include "common/ver.h"
 
 std::string toAbsolutePath(const char *pathname)
 {

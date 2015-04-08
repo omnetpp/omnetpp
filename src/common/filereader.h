@@ -21,7 +21,7 @@
 #include <string>
 #include <stdint.h>  // int64_t
 #include "exception.h"
-#include "platmisc.h"
+#include "omnetpp/platdep/platmisc.h"
 #include "commondefs.h"
 
 NAMESPACE_BEGIN

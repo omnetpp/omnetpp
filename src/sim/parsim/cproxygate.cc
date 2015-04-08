@@ -24,8 +24,8 @@
 #include <sstream>
 #include "cproxygate.h"
 #include "cparsimpartition.h"
-#include "cmodule.h"
-#include "cmessage.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/cmessage.h"
 
 NAMESPACE_BEGIN
 

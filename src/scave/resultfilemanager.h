@@ -28,13 +28,13 @@
 
 #include "idlist.h"
 #include "enumtype.h"
-#include "exception.h"
-#include "commonutil.h"
+#include "common/exception.h"
+#include "common/commonutil.h"
 #include "statistics.h"
 #include "scaveutils.h"
 
 #ifdef THREADED
-#include "rwlock.h"
+#include "common/rwlock.h"
 #endif
 
 NAMESPACE_BEGIN

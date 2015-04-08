@@ -7,10 +7,10 @@ results as naive, linear lookups.
 
 %includes:
 #include <fstream>
-#include "inifilereader.h"
-#include "sectionbasedconfig.h"
-#include "lcgrandom.h"
-#include "patternmatcher.h"
+#include <envir/inifilereader.h>
+#include <envir/sectionbasedconfig.h>
+#include <common/lcgrandom.h>
+#include <common/patternmatcher.h>
 
 %global:
 

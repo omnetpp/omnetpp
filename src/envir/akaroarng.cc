@@ -22,11 +22,11 @@
 
 #include <akaroa.H>
 #include <akaroa/distributions.H>  // for UniformInt()
-#include "cenvir.h"
-#include "regmacros.h"
-#include "globals.h"
-#include "simutil.h"
-#include "cexception.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/regmacros.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/simutil.h"
+#include "omnetpp/cexception.h"
 #include "akaroarng.h"
 
 NAMESPACE_BEGIN

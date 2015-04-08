@@ -27,7 +27,7 @@
 #include "tklib.h"
 #include "tkutil.h"
 #include "tkenv.h"
-#include "exception.h"
+#include "common/exception.h"
 
 NAMESPACE_BEGIN
 

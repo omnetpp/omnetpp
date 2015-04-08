@@ -21,8 +21,8 @@
 #ifndef __CPLACEHOLDERMOD_H
 #define __CPLACEHOLDERMOD_H
 
-#include "cmodule.h"
-#include "csimulation.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/csimulation.h"
 
 NAMESPACE_BEGIN
 

@@ -15,25 +15,25 @@
 *--------------------------------------------------------------*/
 
 #include "cnedloader.h"
-#include "nedelements.h"
-#include "nederror.h"
+#include "nedxml/nedelements.h"
+#include "nedxml/nederror.h"
 
-#include "cproperty.h"
-#include "cproperties.h"
-#include "ccomponenttype.h"
-#include "cexception.h"
-#include "cenvir.h"
+#include "omnetpp/cproperty.h"
+#include "omnetpp/cproperties.h"
+#include "omnetpp/ccomponenttype.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/cenvir.h"
 #include "cexpressionbuilder.h"
-#include "cpar.h"
-#include "clongparimpl.h"
-#include "cdoubleparimpl.h"
-#include "globals.h"
+#include "omnetpp/cpar.h"
+#include "omnetpp/clongparimpl.h"
+#include "omnetpp/cdoubleparimpl.h"
+#include "omnetpp/globals.h"
 #include "cdynamicmoduletype.h"
 #include "cdynamicchanneltype.h"
-#include "cdisplaystring.h"
+#include "omnetpp/cdisplaystring.h"
 
-#include "stringutil.h"
-#include "fileutil.h"
+#include "common/stringutil.h"
+#include "common/fileutil.h"
 
 NAMESPACE_BEGIN
 

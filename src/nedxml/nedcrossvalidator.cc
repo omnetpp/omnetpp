@@ -17,7 +17,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "stringutil.h"
+#include "common/stringutil.h"
 #include "nederror.h"
 #include "nedexception.h"
 #include "nedresourcecache.h"

@@ -22,8 +22,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <new>  //bad::alloc
-#include "ccoroutine.h"
-#include "cexception.h"
+#include "omnetpp/ccoroutine.h"
+#include "omnetpp/cexception.h"
 
 NAMESPACE_BEGIN
 

@@ -19,7 +19,7 @@
 
 #include <tk.h>
 #include "tkutil.h"
-#include "envirbase.h"
+#include "envir/envirbase.h"
 
 NAMESPACE_BEGIN
 

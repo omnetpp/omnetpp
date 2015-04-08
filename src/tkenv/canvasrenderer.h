@@ -17,9 +17,9 @@
 #ifndef __CANVASRENDERER_H
 #define __CANVASRENDERER_H
 
-#include "platmisc.h"   // must precede <tk.h> otherwise Visual Studio 2013 fails to compile
+#include "omnetpp/platdep/platmisc.h"   // must precede <tk.h> otherwise Visual Studio 2013 fails to compile
 #include <tk.h>
-#include "ccanvas.h"
+#include "omnetpp/ccanvas.h"
 #include "tkdefs.h"
 
 NAMESPACE_BEGIN

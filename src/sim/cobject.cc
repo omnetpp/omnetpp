@@ -16,13 +16,13 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cobject.h"
-#include "cownedobject.h"
-#include "cdefaultlist.h"
-#include "cexception.h"
-#include "cclassdescriptor.h"
-#include "csimulation.h"
-#include "cenvir.h"
+#include "omnetpp/cobject.h"
+#include "omnetpp/cownedobject.h"
+#include "omnetpp/cdefaultlist.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/cclassdescriptor.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/cenvir.h"
 
 NAMESPACE_BEGIN
 

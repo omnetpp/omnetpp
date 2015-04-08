@@ -21,8 +21,8 @@
 #include <errno.h>
 #include <limits.h>  //LONG_MAX
 #include <locale.h>
-#include "cstringtokenizer.h"
-#include "cexception.h"
+#include "omnetpp/cstringtokenizer.h"
+#include "omnetpp/cexception.h"
 
 NAMESPACE_BEGIN
 

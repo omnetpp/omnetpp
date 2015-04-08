@@ -20,7 +20,7 @@
 #include "tklib.h"
 #include "inspectorfactory.h"
 #include "histograminspector.h"
-#include "cdensityestbase.h"
+#include "omnetpp/cdensityestbase.h"
 
 NAMESPACE_BEGIN
 

@@ -22,7 +22,7 @@
 #include <vector>
 #include <map>
 #include "envirdefs.h"
-#include "expression.h"
+#include "common/expression.h"
 
 NAMESPACE_BEGIN
 

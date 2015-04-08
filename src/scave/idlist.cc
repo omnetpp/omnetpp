@@ -24,11 +24,11 @@
 #include <functional>
 #include "idlist.h"
 #include "resultfilemanager.h"
-#include "stringutil.h"
+#include "common/stringutil.h"
 #include "scaveutils.h"
 
 #ifdef THREADED
-#include "rwlock.h"
+#include "common/rwlock.h"
 #define READER_MUTEX Mutex __reader_mutex_(mgr->getReadLock());
 #else
 #define READER_MUTEX

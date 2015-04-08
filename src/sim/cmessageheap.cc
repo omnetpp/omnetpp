@@ -24,9 +24,9 @@
 #include <string.h>          // strlen
 #include <stdlib.h>          // qsort
 #include <sstream>
-#include "globals.h"
-#include "cmessage.h"
-#include "cmessageheap.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cmessage.h"
+#include "omnetpp/cmessageheap.h"
 
 NAMESPACE_BEGIN
 

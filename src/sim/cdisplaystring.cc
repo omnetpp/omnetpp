@@ -16,14 +16,14 @@
 
 #include <string.h>
 #include <stdio.h>
-#include "opp_ctype.h"
-#include "cenvir.h"
-#include "cmodule.h"
-#include "cchannel.h"
-#include "cgate.h"
-#include "cdisplaystring.h"
-#include "stringutil.h"
-#include "cmodelchange.h"
+#include "common/opp_ctype.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/cchannel.h"
+#include "omnetpp/cgate.h"
+#include "omnetpp/cdisplaystring.h"
+#include "common/stringutil.h"
+#include "omnetpp/cmodelchange.h"
 
 NAMESPACE_BEGIN
 

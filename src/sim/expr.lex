@@ -43,7 +43,7 @@ S  [ \t\v\n\r\f]
 %{
 #include <string.h>
 #include "expryydefs.h"
-#include "cexception.h"
+#include "omnetpp/cexception.h"
 #include "expr.tab.hh"
 
 using OPP::opp_strdup;
@@ -66,7 +66,7 @@ static char textbuf[TEXTBUF_LEN];
 // buffer to collect characters during extendCount()
 static std::string extendbuf;
 
-#include "simutil.h"  // opp_strdup()
+#include "omnetpp/simutil.h"  // opp_strdup()
 %}
 
 %%

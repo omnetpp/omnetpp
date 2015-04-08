@@ -16,8 +16,8 @@
 *--------------------------------------------------------------*/
 
 #include "statisticparser.h"
-#include "resultfilters.h"    // WarmupFilter, ExpressionFilter
-#include "resultrecorders.h"  // ExpressionRecorder
+#include "sim/resultfilters.h"    // WarmupFilter, ExpressionFilter
+#include "sim/resultrecorders.h"  // ExpressionRecorder
 
 NAMESPACE_BEGIN
 

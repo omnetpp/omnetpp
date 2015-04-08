@@ -15,16 +15,16 @@
 *--------------------------------------------------------------*/
 
 #include "cneddeclaration.h"
-#include "cexception.h"
-#include "cproperties.h"
-#include "cdynamicexpression.h"
-#include "cgate.h"
-#include "cmodule.h"
-#include "cdisplaystring.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/cproperties.h"
+#include "omnetpp/cdynamicexpression.h"
+#include "omnetpp/cgate.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/cdisplaystring.h"
 #include "cnedloader.h"
-#include "nederror.h"
-#include "stringutil.h"
-#include "patternmatcher.h"
+#include "nedxml/nederror.h"
+#include "common/stringutil.h"
+#include "common/patternmatcher.h"
 
 NAMESPACE_BEGIN
 

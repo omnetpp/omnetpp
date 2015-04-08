@@ -2,7 +2,7 @@
 Tests the ValueIterator class in envir
 
 %includes:
-#include "valueiterator.h"
+#include <envir/valueiterator.h>
 
 %global:
 

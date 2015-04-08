@@ -19,7 +19,7 @@ void StressCapsulate::handleMessage(cMessage *msg)
 {
     cPacket *packet = check_and_cast<cPacket *>(msg);
 
-    if (packet->getEncapsulatedMsg() && uniform(0, 1) < par("decapsulateProbability").doubleValue()) {
+    if (packet->getEncapsulatedPacket() && uniform(0, 1) < par("decapsulateProbability").doubleValue()) {
         EV << "Decapsulating message: "  << packet << "\n";;
         cPacket *decapsulatedPacket = packet->decapsulate();
         decapsulatedPacket->setName("Decapsulated");

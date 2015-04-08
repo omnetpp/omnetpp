@@ -14,8 +14,8 @@
 
 #include <exception>
 
-#include "indexfile.h"
-#include "vectorfileindexer.h"
+#include <scave/indexfile.h>
+#include <scave/vectorfileindexer.h>
 #include "testutil.h"
 
 USING_NAMESPACE

@@ -17,7 +17,7 @@
 #ifndef __EXPRYYDEFS_H
 #define __EXPRYYDEFS_H
 
-#include "cdynamicexpression.h"
+#include "omnetpp/cdynamicexpression.h"
 
 //NAMESPACE_BEGIN
 

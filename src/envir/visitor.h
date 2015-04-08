@@ -18,11 +18,11 @@
 #define __VISITOR_H
 
 #include "envirdefs.h"
-#include "cenvir.h"
-#include "cobject.h"
-#include "cvisitor.h"
-#include "patternmatcher.h"
-#include "matchexpression.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/cobject.h"
+#include "omnetpp/cvisitor.h"
+#include "common/patternmatcher.h"
+#include "common/matchexpression.h"
 #include "matchableobject.h"
 
 NAMESPACE_BEGIN

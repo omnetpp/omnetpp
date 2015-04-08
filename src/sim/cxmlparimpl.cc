@@ -15,11 +15,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cxmlparimpl.h"
-#include "cxmlelement.h"
-#include "cstringtokenizer.h"
-#include "cdynamicexpression.h"
-#include "ccomponent.h"
+#include "omnetpp/cxmlparimpl.h"
+#include "omnetpp/cxmlelement.h"
+#include "omnetpp/cstringtokenizer.h"
+#include "omnetpp/cdynamicexpression.h"
+#include "omnetpp/ccomponent.h"
 
 NAMESPACE_BEGIN
 

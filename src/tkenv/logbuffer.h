@@ -21,7 +21,7 @@
 #include <list>
 #include <vector>
 #include <set>
-#include "simtime_t.h"
+#include "omnetpp/simtime_t.h"
 #include "tkutil.h"
 #include "circularbuffer.h"
 

@@ -15,14 +15,9 @@
 *--------------------------------------------------------------*/
 
 #include <string.h>
-#include "cobjectfactory.h"
-#include "cexception.h"
-#include "stringutil.h"
-
-#ifdef WITH_PARSIM
-#include "ccommbuffer.h"
-#include "parsim/cplaceholdermod.h"
-#endif
+#include "omnetpp/cobjectfactory.h"
+#include "omnetpp/cexception.h"
+#include "common/stringutil.h"
 
 NAMESPACE_BEGIN
 

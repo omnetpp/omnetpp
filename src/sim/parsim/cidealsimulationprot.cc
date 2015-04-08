@@ -19,20 +19,20 @@
 *--------------------------------------------------------------*/
 
 
-#include "cmessage.h"
-#include "cmodule.h"
-#include "cgate.h"
-#include "cenvir.h"
-#include "cconfiguration.h"
+#include "omnetpp/cmessage.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/cgate.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/cconfiguration.h"
 #include "cidealsimulationprot.h"
 #include "cplaceholdermod.h"
 #include "cparsimpartition.h"
-#include "cparsimcomm.h"
-#include "ccommbuffer.h"
+#include "omnetpp/cparsimcomm.h"
+#include "omnetpp/ccommbuffer.h"
 #include "messagetags.h"
-#include "globals.h"
-#include "cconfigoption.h"
-#include "regmacros.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cconfigoption.h"
+#include "omnetpp/regmacros.h"
 
 NAMESPACE_BEGIN
 

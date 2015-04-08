@@ -26,18 +26,18 @@
 #include <math.h>
 #include <string>
 
-#include "cstatistic.h"
-#include "random.h"
-#include "distrib.h"
-#include "globals.h"
-#include "cdetect.h"  //NL
-#include "csimplemodule.h"
-#include "cexception.h"
-#include "cenvir.h"
-#include "stringutil.h"
+#include "omnetpp/cstatistic.h"
+#include "omnetpp/random.h"
+#include "omnetpp/distrib.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cdetect.h"  //NL
+#include "omnetpp/csimplemodule.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/cenvir.h"
+#include "common/stringutil.h"
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 NAMESPACE_BEGIN

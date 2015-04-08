@@ -16,12 +16,12 @@
 *--------------------------------------------------------------*/
 
 #include "logformatter.h"
-#include "commonutil.h"
-#include "cmodule.h"
-#include "ccomponenttype.h"
-#include "cconfiguration.h"
-#include "chasher.h"
-#include "simutil.h"
+#include "common/commonutil.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/ccomponenttype.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/chasher.h"
+#include "omnetpp/simutil.h"
 
 NAMESPACE_BEGIN
 

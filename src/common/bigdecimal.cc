@@ -19,7 +19,7 @@
 #include <string.h>
 #include <algorithm>
 #include "opp_ctype.h"
-#include "platmisc.h"
+#include "omnetpp/platdep/platmisc.h"
 #include "bigdecimal.h"
 #include "commonutil.h"  //NaN & friends
 

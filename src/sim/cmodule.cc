@@ -19,22 +19,22 @@
 #include <stdio.h>           // sprintf
 #include <string.h>          // strcpy
 #include <algorithm>
-#include "cmodule.h"
-#include "csimplemodule.h"
-#include "cgate.h"
-#include "cmessage.h"
-#include "csimulation.h"
-#include "carray.h"
-#include "ccomponenttype.h"
-#include "cenvir.h"
-#include "cexception.h"
-#include "cchannel.h"
-#include "cproperties.h"
-#include "cproperty.h"
-#include "ccanvas.h"
-#include "stringutil.h"
-#include "simutil.h"
-#include "cmodelchange.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/csimplemodule.h"
+#include "omnetpp/cgate.h"
+#include "omnetpp/cmessage.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/carray.h"
+#include "omnetpp/ccomponenttype.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/cchannel.h"
+#include "omnetpp/cproperties.h"
+#include "omnetpp/cproperty.h"
+#include "omnetpp/ccanvas.h"
+#include "common/stringutil.h"
+#include "omnetpp/simutil.h"
+#include "omnetpp/cmodelchange.h"
 
 NAMESPACE_BEGIN
 

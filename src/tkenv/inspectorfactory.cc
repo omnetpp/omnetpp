@@ -15,7 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include <stdarg.h>
-#include "omnetpp.h"
+#include <omnetpp.h>
 #include "tkenv.h"
 #include "tklib.h"
 #include "inspector.h"

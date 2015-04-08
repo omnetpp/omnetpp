@@ -20,9 +20,9 @@
 #include <string>
 #include <map>
 #include <vector>
-#include "nedelements.h"
-#include "cdynamicexpression.h"
-#include "cexception.h"
+#include "nedxml/nedelements.h"
+#include "omnetpp/cdynamicexpression.h"
+#include "omnetpp/cexception.h"
 
 NAMESPACE_BEGIN
 

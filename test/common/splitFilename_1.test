@@ -3,7 +3,7 @@ Tests splitFileName() function.
 NOTE: the output is far from being perfect, but for canonical absolute paths it is OK (we use for that)...
 
 %includes:
-#include "fileutil.h"
+#include <common/fileutil.h>
 
 %global:
 

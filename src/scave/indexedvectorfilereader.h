@@ -22,8 +22,8 @@
 #include "node.h"
 #include "nodetype.h"
 #include "commonnodes.h"
-#include "filereader.h"
-#include "linetokenizer.h"
+#include "common/filereader.h"
+#include "common/linetokenizer.h"
 #include "indexfile.h"
 #include "resultfilemanager.h"
 

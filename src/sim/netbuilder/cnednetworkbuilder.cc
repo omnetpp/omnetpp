@@ -22,36 +22,36 @@
 #include <iostream>
 #include <algorithm>
 
-#include "cmodule.h"
-#include "cgate.h"
-#include "cchannel.h"
-#include "cdataratechannel.h"
-#include "ccomponenttype.h"
-#include "clongparimpl.h"
-#include "cboolparimpl.h"
-#include "cstringparimpl.h"
-#include "cdisplaystring.h"
-#include "cconfiguration.h"
-#include "cconfigoption.h"
-#include "cenvir.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/cgate.h"
+#include "omnetpp/cchannel.h"
+#include "omnetpp/cdataratechannel.h"
+#include "omnetpp/ccomponenttype.h"
+#include "omnetpp/clongparimpl.h"
+#include "omnetpp/cboolparimpl.h"
+#include "omnetpp/cstringparimpl.h"
+#include "omnetpp/cdisplaystring.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/cconfigoption.h"
+#include "omnetpp/cenvir.h"
 
-#include "nedelements.h"
-#include "nederror.h"
+#include "nedxml/nedelements.h"
+#include "nedxml/nederror.h"
 
-#include "nedparser.h"
-#include "nedxmlparser.h"
-#include "neddtdvalidator.h"
-#include "nedsyntaxvalidator.h"
-#include "nedutil.h"
-#include "xmlgenerator.h"  // for debugging
+#include "nedxml/nedparser.h"
+#include "nedxml/nedxmlparser.h"
+#include "nedxml/neddtdvalidator.h"
+#include "nedxml/nedsyntaxvalidator.h"
+#include "nedxml/nedutil.h"
+#include "nedxml/xmlgenerator.h"  // for debugging
 
 #include "cnednetworkbuilder.h"
 #include "cnedloader.h"
 #include "cexpressionbuilder.h"
-#include "nedsupport.h"
-#include "commonutil.h"  // TRACE_CALL()
-#include "stringutil.h"
-#include "patternmatcher.h"
+#include "omnetpp/nedsupport.h"
+#include "common/commonutil.h"  // TRACE_CALL()
+#include "common/stringutil.h"
+#include "common/patternmatcher.h"
 
 NAMESPACE_BEGIN
 

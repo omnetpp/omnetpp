@@ -25,29 +25,29 @@
 #include <string.h>
 #include <stdio.h>
 #include <limits.h>
-#include "stringutil.h"
-#include "cmodule.h"
-#include "csimplemodule.h"
-#include "cpacket.h"
-#include "csimulation.h"
-#include "cscheduler.h"
-#include "cenvir.h"
-#include "ccomponenttype.h"
-#include "cstatistic.h"
-#include "cexception.h"
-#include "cparimpl.h"
-#include "chasher.h"
-#include "cconfiguration.h"
-#include "ccoroutine.h"
-#include "clifecyclelistener.h"
-#include "platdep/platmisc.h"  // for DEBUG_TRAP
+#include "common/stringutil.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/csimplemodule.h"
+#include "omnetpp/cpacket.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/cscheduler.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/ccomponenttype.h"
+#include "omnetpp/cstatistic.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/cparimpl.h"
+#include "omnetpp/chasher.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/ccoroutine.h"
+#include "omnetpp/clifecyclelistener.h"
+#include "omnetpp/platdep/platmisc.h"  // for DEBUG_TRAP
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 #ifdef WITH_NETBUILDER
-#include "netbuilder/cnedloader.h"
+#include "sim/netbuilder/cnedloader.h"
 #endif
 
 NAMESPACE_BEGIN

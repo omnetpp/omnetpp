@@ -15,11 +15,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "clog.h"
-#include "globals.h"
-#include "cconfiguration.h"
-#include "cconfigoption.h"
-#include "cmodule.h"
+#include "omnetpp/clog.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/cconfigoption.h"
+#include "omnetpp/cmodule.h"
 
 NAMESPACE_BEGIN
 

@@ -16,27 +16,27 @@
 
 #include <algorithm>
 #include <string.h>
-#include "ccomponenttype.h"
-#include "cmodule.h"
-#include "csimplemodule.h"
-#include "cchannel.h"
-#include "cenvir.h"
-#include "cparimpl.h"
-#include "cexception.h"
-#include "globals.h"
-#include "cdelaychannel.h"
-#include "cdataratechannel.h"
-#include "cmodelchange.h"
-#include "cproperties.h"
-#include "cproperty.h"
-#include "cenum.h"
-#include "ccanvas.h"
-#include "cobjectfactory.h"
-#include "../common/patternmatcher.h"
+#include "omnetpp/ccomponenttype.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/csimplemodule.h"
+#include "omnetpp/cchannel.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/cparimpl.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cdelaychannel.h"
+#include "omnetpp/cdataratechannel.h"
+#include "omnetpp/cmodelchange.h"
+#include "omnetpp/cproperties.h"
+#include "omnetpp/cproperty.h"
+#include "omnetpp/cenum.h"
+#include "omnetpp/ccanvas.h"
+#include "omnetpp/cobjectfactory.h"
+#include "common/patternmatcher.h"
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
-#include "parsim/cplaceholdermod.h"
+#include "omnetpp/ccommbuffer.h"
+#include "sim/parsim/cplaceholdermod.h"
 #endif
 
 NAMESPACE_BEGIN

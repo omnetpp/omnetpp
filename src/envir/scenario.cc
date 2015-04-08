@@ -20,9 +20,9 @@
 #include <sstream>
 #include "scenario.h"
 #include "valueiterator.h"
-#include "cexception.h"
-#include "stringutil.h"
-#include "unitconversion.h"
+#include "omnetpp/cexception.h"
+#include "common/stringutil.h"
+#include "common/unitconversion.h"
 
 NAMESPACE_BEGIN
 

@@ -24,7 +24,7 @@
 #include "tklib.h"
 #include "tkutil.h"
 #include "inspectorfactory.h"
-#include "stringtokenizer.h"
+#include "common/stringtokenizer.h"
 
 NAMESPACE_BEGIN
 

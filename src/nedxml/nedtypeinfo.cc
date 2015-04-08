@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sstream>
-#include "stringutil.h"
+#include "common/stringutil.h"
 #include "nederror.h"
 #include "nedutil.h"
 #include "nedexception.h"

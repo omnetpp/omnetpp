@@ -17,8 +17,8 @@
 #include <string.h>
 #include "tklib.h"
 #include "logbuffer.h"
-#include "cmodule.h"
-#include "cmessage.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/cmessage.h"
 
 NAMESPACE_BEGIN
 

@@ -19,7 +19,7 @@
 #define _CUSTOMFILTER_H_
 
 #include "commonnodes.h"
-#include "expression.h"
+#include "common/expression.h"
 
 NAMESPACE_BEGIN
 

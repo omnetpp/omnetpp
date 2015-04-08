@@ -19,8 +19,8 @@
 
 #include <sstream>
 #include <deque>
-#include "patternmatcher.h"
-#include "matchexpression.h"
+#include "common/patternmatcher.h"
+#include "common/matchexpression.h"
 #include "eventlogdefs.h"
 #include "ieventlog.h"
 #include "eventlog.h"

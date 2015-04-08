@@ -2,8 +2,8 @@
 Test string quoting/parsing by converting random strings back and forth
 
 %includes:
-#include "stringutil.h"
-#include "lcgrandom.h"
+#include <common/stringutil.h>
+#include <common/lcgrandom.h>
 
 %activity:
 

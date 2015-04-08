@@ -22,7 +22,7 @@
 #include <set>
 #include "scavedefs.h"
 #include "xyarray.h"
-#include "exception.h"
+#include "common/exception.h"
 
 NAMESPACE_BEGIN
 

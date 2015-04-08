@@ -10,7 +10,7 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I. -I../../src/common -I../../include/platdep /Fd"filereadertest.pdb"
+COPTS=$(CFLAGS) -I../../include -I../../src /Fd"filereadertest.pdb"
 
 OBJS= fileechotest.obj filereadertest.obj filereaderconsumer.obj filereaderproducer.obj
 LIBS= $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)/oppcommond.lib

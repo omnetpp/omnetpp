@@ -13,9 +13,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cstringpool.h"
-#include "cownedobject.h"
-#include "stringutil.h"
+#include "omnetpp/cstringpool.h"
+#include "omnetpp/cownedobject.h"
+#include "common/stringutil.h"
 
 NAMESPACE_BEGIN
 

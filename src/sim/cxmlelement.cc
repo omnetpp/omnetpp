@@ -20,13 +20,13 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include "opp_ctype.h"
-#include "platmisc.h"
-#include "cxmlelement.h"
+#include "common/opp_ctype.h"
+#include "omnetpp/platdep/platmisc.h"
+#include "omnetpp/cxmlelement.h"
 #include "minixpath.h"
-#include "cexception.h"
-#include "cenvir.h"
-#include "cmodule.h" // for ModNameParamResolver
+#include "omnetpp/cexception.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/cmodule.h" // for ModNameParamResolver
 
 NAMESPACE_BEGIN
 

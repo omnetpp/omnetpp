@@ -27,19 +27,19 @@
 #include <math.h>
 #include <string>
 
-#include "cstddev.h"
-#include "random.h"
-#include "distrib.h"
-#include "globals.h"
-#include "cdetect.h"
-#include "csimplemodule.h"
-#include "cexception.h"
-#include "cenvir.h"
-#include "stringutil.h"
-#include "commonutil.h"  //NaN
+#include "omnetpp/cstddev.h"
+#include "omnetpp/random.h"
+#include "omnetpp/distrib.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cdetect.h"
+#include "omnetpp/csimplemodule.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/cenvir.h"
+#include "common/stringutil.h"
+#include "common/commonutil.h"  //NaN
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 NAMESPACE_BEGIN

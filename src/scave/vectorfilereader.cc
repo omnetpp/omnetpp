@@ -17,7 +17,7 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include "opp_ctype.h"
+#include "common/opp_ctype.h"
 #include "channel.h"
 #include "scaveutils.h"
 #include "scaveexception.h"

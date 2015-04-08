@@ -17,7 +17,7 @@
 *--------------------------------------------------------------*/
 
 #include <algorithm>
-#include "cnullenvir.h"
+#include "omnetpp/cnullenvir.h"
 
 USING_NAMESPACE
 

@@ -21,8 +21,8 @@
 #ifndef __CFILECOMM_H__
 #define __CFILECOMM_H__
 
-#include "cparsimcomm.h"
-#include "simutil.h"
+#include "omnetpp/cparsimcomm.h"
+#include "omnetpp/simutil.h"
 
 NAMESPACE_BEGIN
 

@@ -21,7 +21,7 @@
 #include <string>
 #include "node.h"
 #include "nodetype.h"
-#include "filereader.h"
+#include "common/filereader.h"
 
 NAMESPACE_BEGIN
 

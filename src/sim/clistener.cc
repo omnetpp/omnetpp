@@ -14,11 +14,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "clistener.h"
-#include "ccomponent.h"
-#include "cmodule.h"
-#include "cchannel.h"
-#include "csimulation.h"
+#include "omnetpp/clistener.h"
+#include "omnetpp/ccomponent.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/cchannel.h"
+#include "omnetpp/csimulation.h"
 
 NAMESPACE_BEGIN
 

@@ -20,7 +20,7 @@
 #ifndef __CMDDEFS_H
 #define __CMDDEFS_H
 
-#include "platdefs.h"
+#include "omnetpp/platdep/platdefs.h"
 
 NAMESPACE_BEGIN
 

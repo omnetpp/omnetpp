@@ -24,10 +24,10 @@
 
 #include "tkdefs.h"
 #include "logbuffer.h"
-#include "envirbase.h"
-#include "cchannel.h"
-#include "cmodule.h"
-#include "speedometer.h"
+#include "envir/envirbase.h"
+#include "omnetpp/cchannel.h"
+#include "omnetpp/cmodule.h"
+#include "envir/speedometer.h"
 #include "componenthistory.h"
 
 NAMESPACE_BEGIN

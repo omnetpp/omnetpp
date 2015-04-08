@@ -18,7 +18,7 @@
 #include <string.h>
 #include <utility>
 #include <locale.h>
-#include "platmisc.h"
+#include "omnetpp/platdep/platmisc.h"
 #include "scaveutils.h"
 
 

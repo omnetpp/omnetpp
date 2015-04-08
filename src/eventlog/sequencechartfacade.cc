@@ -18,7 +18,7 @@
 #include <algorithm>
 #include <set>
 #include <math.h>
-#include "lcgrandom.h"
+#include "common/lcgrandom.h"
 #include "ievent.h"
 #include "ieventlog.h"
 #include "event.h"

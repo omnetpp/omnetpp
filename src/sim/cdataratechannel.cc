@@ -14,20 +14,20 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cdataratechannel.h"
-#include "cpacket.h"
-#include "cmodule.h"
-#include "cenvir.h"
-#include "random.h"
-#include "distrib.h"
-#include "csimulation.h"
-#include "globals.h"
-#include "cgate.h"
-#include "cexception.h"
-#include "ctimestampedvalue.h"
+#include "omnetpp/cdataratechannel.h"
+#include "omnetpp/cpacket.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/random.h"
+#include "omnetpp/distrib.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cgate.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/ctimestampedvalue.h"
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 NAMESPACE_BEGIN

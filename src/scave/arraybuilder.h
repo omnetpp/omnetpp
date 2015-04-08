@@ -18,7 +18,7 @@
 #ifndef _ARRAYBUILDER_H_
 #define _ARRAYBUILDER_H_
 
-#include "commonutil.h"
+#include "common/commonutil.h"
 #include "commonnodes.h"
 #include "xyarray.h"
 

@@ -4,7 +4,7 @@ Tests the BigDecimal comparison operators
 %includes:
 
 #include <iostream>
-#include "bigdecimal.h"
+#include <common/bigdecimal.h>
 
 %global:
 

@@ -22,11 +22,11 @@
 #include <stdio.h>           // sprintf, fprintf
 #include <string.h>          // memcmp, memcpy, memset
 #include <sstream>
-#include "globals.h"
-#include "csimulation.h"
-#include "cenum.h"
-#include "cexception.h"
-#include "cstringtokenizer.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/cenum.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/cstringtokenizer.h"
 
 NAMESPACE_BEGIN
 

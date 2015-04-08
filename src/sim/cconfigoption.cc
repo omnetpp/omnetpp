@@ -17,8 +17,8 @@
 *--------------------------------------------------------------*/
 
 #include <sstream>
-#include "cconfigoption.h"
-#include "exception.h"
+#include "omnetpp/cconfigoption.h"
+#include "common/exception.h"
 
 NAMESPACE_BEGIN
 

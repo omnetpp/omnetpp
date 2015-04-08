@@ -20,7 +20,7 @@
 #include "tklib.h"
 #include "inspectorfactory.h"
 #include "outputvectorinspector.h"
-#include "coutvector.h"
+#include "omnetpp/coutvector.h"
 
 NAMESPACE_BEGIN
 

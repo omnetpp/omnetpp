@@ -24,10 +24,10 @@
 #include "tklib.h"
 #include "tkutil.h"
 #include "inspectorfactory.h"
-#include "cchannel.h"
-#include "cgate.h"
-#include "cdisplaystring.h"
-#include "cchannel.h"
+#include "omnetpp/cchannel.h"
+#include "omnetpp/cgate.h"
+#include "omnetpp/cdisplaystring.h"
+#include "omnetpp/cchannel.h"
 
 
 NAMESPACE_BEGIN

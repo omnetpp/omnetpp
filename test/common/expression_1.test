@@ -2,7 +2,7 @@
 Tests the expression evaluation class
 
 %includes:
-#include "expression.h"
+#include <common/expression.h>
 
 %global:
 

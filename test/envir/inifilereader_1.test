@@ -3,7 +3,7 @@ Tests the inifile reader
 
 %includes:
 
-#include "inifilereader.h"
+#include <envir/inifilereader.h>
 
 %activity:
 

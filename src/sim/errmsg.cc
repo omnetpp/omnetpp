@@ -17,7 +17,7 @@
 *--------------------------------------------------------------*/
 
 
-#include "errmsg.h"
+#include "omnetpp/errmsg.h"
 
 NAMESPACE_BEGIN
 

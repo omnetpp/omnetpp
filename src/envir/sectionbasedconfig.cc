@@ -18,20 +18,20 @@
 #include <assert.h>
 #include <algorithm>
 #include <sstream>
-#include "opp_ctype.h"
+#include "common/opp_ctype.h"
 #include "sectionbasedconfig.h"
-#include "cconfigreader.h"
-#include "patternmatcher.h"
+#include "omnetpp/cconfigreader.h"
+#include "common/patternmatcher.h"
 #include "valueiterator.h"
-#include "cexception.h"
+#include "omnetpp/cexception.h"
 #include "scenario.h"
-#include "globals.h"
-#include "cconfigoption.h"
-#include "stringtokenizer.h"
-#include "stringtokenizer2.h"
-#include "timeutil.h"
-#include "stringutil.h"
-#include "platmisc.h"   //getpid()
+#include "omnetpp/globals.h"
+#include "omnetpp/cconfigoption.h"
+#include "common/stringtokenizer.h"
+#include "common/stringtokenizer2.h"
+#include "omnetpp/platdep/timeutil.h"
+#include "common/stringutil.h"
+#include "omnetpp/platdep/platmisc.h"   //getpid()
 
 NAMESPACE_BEGIN
 

@@ -20,8 +20,8 @@
 
 #include <stdio.h>
 #include "envirdefs.h"
-#include "envirext.h"
-#include "simutil.h"
+#include "omnetpp/envirext.h"
+#include "omnetpp/simutil.h"
 
 NAMESPACE_BEGIN
 

@@ -23,20 +23,20 @@
 #include <stdlib.h>
 #include <string>
 #include <algorithm>
-#include "opp_ctype.h"
-#include "cmsgpar.h"
-#include "cstatistic.h"
-#include "globals.h"
-#include "cnedmathfunction.h"
-#include "cnedfunction.h"
-#include "cxmlelement.h"
-#include "cconfiguration.h"
-#include "cenvir.h"
-#include "cexception.h"
-#include "csimulation.h"
+#include "common/opp_ctype.h"
+#include "omnetpp/cmsgpar.h"
+#include "omnetpp/cstatistic.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cnedmathfunction.h"
+#include "omnetpp/cnedfunction.h"
+#include "omnetpp/cxmlelement.h"
+#include "omnetpp/cconfiguration.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/csimulation.h"
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 NAMESPACE_BEGIN

@@ -20,10 +20,10 @@
 
 #include <string.h>
 #include "cmemcommbuffer.h"
-#include "simutil.h"
-#include "cownedobject.h"
-#include "globals.h"
-#include "regmacros.h"
+#include "omnetpp/simutil.h"
+#include "omnetpp/cownedobject.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/regmacros.h"
 
 NAMESPACE_BEGIN
 

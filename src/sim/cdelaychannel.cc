@@ -17,16 +17,16 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cdelaychannel.h"
-#include "cmessage.h"
-#include "cenvir.h"
-#include "globals.h"
-#include "cgate.h"
-#include "cexception.h"
-#include "ctimestampedvalue.h"
+#include "omnetpp/cdelaychannel.h"
+#include "omnetpp/cmessage.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cgate.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/ctimestampedvalue.h"
 
 #ifdef WITH_PARSIM
-#include "ccommbuffer.h"
+#include "omnetpp/ccommbuffer.h"
 #endif
 
 NAMESPACE_BEGIN

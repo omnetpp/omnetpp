@@ -19,7 +19,7 @@
 
 #include <tk.h>
 #include "inspector.h"
-#include "envirbase.h"
+#include "envir/envirbase.h"
 
 NAMESPACE_BEGIN
 

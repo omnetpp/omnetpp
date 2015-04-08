@@ -20,7 +20,7 @@
 #include <sstream>
 #include "ned2generator.h"
 #include "nedutil.h"
-#include "stringutil.h"
+#include "common/stringutil.h"
 #include "nederror.h"
 
 NAMESPACE_BEGIN

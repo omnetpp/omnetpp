@@ -16,7 +16,7 @@
 #include <fstream>
 #include <strstream>
 #include <vector>
-#include "exception.h"
+#include <common/exception.h>
 
 USING_NAMESPACE
 using namespace std;

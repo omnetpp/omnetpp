@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "globals.h"
-#include "ccomponenttype.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/ccomponenttype.h"
 
 NAMESPACE_BEGIN
 
