@@ -21,6 +21,10 @@ endif
 O=$(OMNETPP_OUT_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)-$(MODE)/src/utils
 L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
 
+INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
+
+COPTS=$(CFLAGS) $(INCL_FLAGS)
+
 #
 # Rules
 #
@@ -55,16 +59,16 @@ all: $O/opp_lcg32_seedtool$(EXE_SUFFIX) $O/abspath$(EXE_SUFFIX)
 $O/opp_lcg32_seedtool$(EXE_SUFFIX) : opp_lcg32_seedtool.cc
 	@mkdir -p $O
 	@echo Creating executable: $@
-	$(Q)$(CXX) $(CXXFLAGS) opp_lcg32_seedtool.cc -o $O/opp_lcg32_seedtool$(EXE_SUFFIX)
+	$(Q)$(CXX) $(COPTS)  opp_lcg32_seedtool.cc -o $O/opp_lcg32_seedtool$(EXE_SUFFIX)
 
 $O/abspath$(EXE_SUFFIX) : abspath.cc
 	@mkdir -p $O
 	@echo Creating executable: $@
-	$(Q)$(CXX) $(CXXFLAGS) abspath.cc -o $O/abspath$(EXE_SUFFIX)
+	$(Q)$(CXX) $(COPTS)  abspath.cc -o $O/abspath$(EXE_SUFFIX)
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) -I. -P\$$O/ -- *.cc *.c
+	$(Q)$(MAKEDEPEND) -I../../include -I.. -P\$$O/ -- *.cc *.c
 
 clean:
 	$(qecho) Cleaning...

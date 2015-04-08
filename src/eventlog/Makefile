@@ -22,7 +22,9 @@ LIBNAME=liboppeventlog$D
 O=$(OMNETPP_OUT_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)-$(MODE)/src/eventlog
 L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
 
-COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR)/platdep -I. -I../common
+INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
+
+COPTS=$(CFLAGS) $(INCL_FLAGS)
 
 IMPLIBS= -L$L -loppcommon$D
 
@@ -82,7 +84,7 @@ $O/eventlogtool$(EXE_SUFFIX) : $O/eventlogtool.o  $L/$(LIBNAME)$(LIB_SUFFIX)
 
 depend: $(GENERATED_SOURCES)
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) -I. -I../common -P\$$O/ -- *.cc
+	$(Q)$(MAKEDEPEND) -I../../include -I.. -P\$$O/ -- *.cc
 
 clean:
 	$(qecho) Cleaning...
@@ -93,6 +95,9 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/event.o: event.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -111,6 +116,9 @@ $O/event.o: event.cc \
   ieventlog.h \
   messagedependency.h
 $O/eventlog.o: eventlog.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -129,6 +137,9 @@ $O/eventlog.o: eventlog.cc \
   ieventlog.h \
   messagedependency.h
 $O/eventlogentries.o: eventlogentries.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -144,6 +155,9 @@ $O/eventlogentries.o: eventlogentries.cc \
   ievent.h \
   messagedependency.h
 $O/eventlogentry.o: eventlogentry.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -163,6 +177,9 @@ $O/eventlogentry.o: eventlogentry.cc \
   ieventlog.h \
   messagedependency.h
 $O/eventlogentryfactory.o: eventlogentryfactory.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -178,6 +195,9 @@ $O/eventlogentryfactory.o: eventlogentryfactory.cc \
   ievent.h \
   messagedependency.h
 $O/eventlogfacade.o: eventlogfacade.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -200,6 +220,9 @@ $O/eventlogfacade.o: eventlogfacade.cc \
   ieventlog.h \
   messagedependency.h
 $O/eventlogindex.o: eventlogindex.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -211,6 +234,9 @@ $O/eventlogindex.o: eventlogindex.cc \
   eventlogentry.h \
   eventlogindex.h
 $O/eventlogtablefacade.o: eventlogtablefacade.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -228,6 +254,9 @@ $O/eventlogtablefacade.o: eventlogtablefacade.cc \
   ieventlog.h \
   messagedependency.h
 $O/eventlogtool.o: eventlogtool.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -250,6 +279,9 @@ $O/eventlogtool.o: eventlogtool.cc \
   ieventlog.h \
   messagedependency.h
 $O/filteredevent.o: filteredevent.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -271,6 +303,9 @@ $O/filteredevent.o: filteredevent.cc \
   ieventlog.h \
   messagedependency.h
 $O/filteredeventlog.o: filteredeventlog.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -292,6 +327,9 @@ $O/filteredeventlog.o: filteredeventlog.cc \
   ieventlog.h \
   messagedependency.h
 $O/ievent.o: ievent.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -305,6 +343,9 @@ $O/ievent.o: ievent.cc \
   ievent.h \
   messagedependency.h
 $O/ieventlog.o: ieventlog.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -319,6 +360,9 @@ $O/ieventlog.o: ieventlog.cc \
   ieventlog.h \
   messagedependency.h
 $O/messagedependency.o: messagedependency.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -334,6 +378,9 @@ $O/messagedependency.o: messagedependency.cc \
   ieventlog.h \
   messagedependency.h
 $O/sequencechartfacade.o: sequencechartfacade.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \

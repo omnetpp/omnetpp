@@ -22,7 +22,9 @@ LIBNAME=liboppscave$D
 O=$(OMNETPP_OUT_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)-$(MODE)/src/scave
 L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
 
-COPTS=$(CFLAGS) $(XML_CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR)/platdep
+INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
+
+COPTS=$(CFLAGS) $(XML_CFLAGS) $(INCL_FLAGS)
 IMPLIBS= -L$L -loppcommon$D
 
 ifeq ("$(BUILDING_UILIBS)","yes")
@@ -78,17 +80,17 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $L
 	@echo Creating DLL: $@
 	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX)
-	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L 
+	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
 	$(Q)cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
 $O/scavetool$(EXE_SUFFIX) : $O/scavetool.o  $L/$(LIBNAME)$(LIB_SUFFIX)
 	@echo Creating executable: $@
 	$(Q)$(CXX) $(LDFLAGS) -o $O/scavetool$(EXE_SUFFIX) $O/scavetool.o -L$L -loppscave$D $(IMPLIBS)
-	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-prog scavetool$(EXE_SUFFIX) $(OMNETPP_BIN_DIR) 
+	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-prog scavetool$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) -I. -I../common -P\$$O/ -- *.cc
+	$(Q)$(MAKEDEPEND) -I../../include -I.. -P\$$O/ -- *.cc
 
 doc:
 	# NOTE: doxy.cfg has the output directory hardcoded!
@@ -102,6 +104,9 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/arraybuilder.o: arraybuilder.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -117,6 +122,8 @@ $O/arraybuilder.o: arraybuilder.cc \
   scavedefs.h \
   xyarray.h
 $O/channel.o: channel.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -125,6 +132,9 @@ $O/channel.o: channel.cc \
   node.h \
   scavedefs.h
 $O/commonnodes.o: commonnodes.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -138,6 +148,9 @@ $O/commonnodes.o: commonnodes.cc \
   nodetype.h \
   scavedefs.h
 $O/compoundfilter.o: compoundfilter.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -154,6 +167,10 @@ $O/compoundfilter.o: compoundfilter.cc \
   nodetyperegistry.h \
   scavedefs.h
 $O/customfilter.o: customfilter.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/platdep/timeutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -172,6 +189,9 @@ $O/customfilter.o: customfilter.cc \
   scavedefs.h \
   scaveutils.h
 $O/dataflowmanager.o: dataflowmanager.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -185,6 +205,9 @@ $O/dataflowmanager.o: dataflowmanager.cc \
   nodetype.h \
   scavedefs.h
 $O/datasorter.o: datasorter.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/timeutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -201,6 +224,9 @@ $O/datasorter.o: datasorter.cc \
   scaveutils.h \
   statistics.h
 $O/diffquot.o: diffquot.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -215,6 +241,9 @@ $O/diffquot.o: diffquot.cc \
   nodetype.h \
   scavedefs.h
 $O/enumtype.o: enumtype.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/timeutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -224,6 +253,9 @@ $O/enumtype.o: enumtype.cc \
   scavedefs.h \
   scaveutils.h
 $O/export.o: export.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/timeutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -243,6 +275,9 @@ $O/export.o: export.cc \
   statistics.h \
   xyarray.h
 $O/fields.o: fields.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/timeutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -258,6 +293,9 @@ $O/fields.o: fields.cc \
   scaveutils.h \
   statistics.h
 $O/filewriter.o: filewriter.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -272,6 +310,9 @@ $O/filewriter.o: filewriter.cc \
   nodetype.h \
   scavedefs.h
 $O/filternodes.o: filternodes.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -287,6 +328,9 @@ $O/filternodes.o: filternodes.cc \
   nodetype.h \
   scavedefs.h
 $O/idlist.o: idlist.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/timeutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -300,6 +344,10 @@ $O/idlist.o: idlist.cc \
   scaveutils.h \
   statistics.h
 $O/indexedvectorfile.o: indexedvectorfile.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/platdep/timeutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -322,6 +370,10 @@ $O/indexedvectorfile.o: indexedvectorfile.cc \
   scaveutils.h \
   statistics.h
 $O/indexedvectorfilereader.o: indexedvectorfilereader.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/platdep/timeutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -346,6 +398,10 @@ $O/indexedvectorfilereader.o: indexedvectorfilereader.cc \
   statistics.h \
   vectorfilereader.h
 $O/indexedvectorfilereader2.o: indexedvectorfilereader2.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/platdep/timeutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -370,6 +426,10 @@ $O/indexedvectorfilereader2.o: indexedvectorfilereader2.cc \
   statistics.h \
   vectorfilereader.h
 $O/indexfile.o: indexfile.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/platdep/timeutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -383,6 +443,10 @@ $O/indexfile.o: indexfile.cc \
   scaveutils.h \
   statistics.h
 $O/mergernodes.o: mergernodes.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/platdep/timeutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -398,6 +462,8 @@ $O/mergernodes.o: mergernodes.cc \
   scavedefs.h \
   scaveutils.h
 $O/nodetype.o: nodetype.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -409,6 +475,10 @@ $O/nodetype.o: nodetype.cc \
   nodetype.h \
   scavedefs.h
 $O/nodetyperegistry.o: nodetyperegistry.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/platdep/timeutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -452,6 +522,8 @@ $O/nodetyperegistry.o: nodetyperegistry.cc \
   xyarray.h \
   xyplotnode.h
 $O/octaveexport.o: octaveexport.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/exception.h \
@@ -460,6 +532,10 @@ $O/octaveexport.o: octaveexport.cc \
   scavedefs.h \
   xyarray.h
 $O/resultfilemanager.o: resultfilemanager.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/platdep/timeutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -482,12 +558,19 @@ $O/resultfilemanager.o: resultfilemanager.cc \
   scaveutils.h \
   statistics.h
 $O/scaveexception.o: scaveexception.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \
   scaveexception.h
 $O/scavetool.o: scavetool.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/platdep/timeutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -523,6 +606,10 @@ $O/scavetool.o: scavetool.cc \
   vectorfilewriter.h \
   xyarray.h
 $O/scaveutils.o: scaveutils.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/platdep/timeutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -530,6 +617,9 @@ $O/scaveutils.o: scaveutils.cc \
   scavedefs.h \
   scaveutils.h
 $O/slidingwinavg.o: slidingwinavg.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -544,6 +634,10 @@ $O/slidingwinavg.o: slidingwinavg.cc \
   scavedefs.h \
   slidingwinavg.h
 $O/stddev.o: stddev.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/platdep/timeutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -560,6 +654,9 @@ $O/stddev.o: stddev.cc \
   stddev.h \
   xyarray.h
 $O/teenode.o: teenode.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -574,6 +671,10 @@ $O/teenode.o: teenode.cc \
   scavedefs.h \
   teenode.h
 $O/vectorfileindexer.o: vectorfileindexer.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/platdep/timeutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -600,6 +701,10 @@ $O/vectorfileindexer.o: vectorfileindexer.cc \
   statistics.h \
   vectorfileindexer.h
 $O/vectorfilereader.o: vectorfilereader.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/platdep/timeutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -623,6 +728,10 @@ $O/vectorfilereader.o: vectorfilereader.cc \
   statistics.h \
   vectorfilereader.h
 $O/vectorfilewriter.o: vectorfilewriter.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/platdep/timeutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -642,6 +751,10 @@ $O/vectorfilewriter.o: vectorfilewriter.cc \
   statistics.h \
   vectorfilewriter.h
 $O/windowavg.o: windowavg.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/platdep/timeutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -657,12 +770,17 @@ $O/windowavg.o: windowavg.cc \
   scaveutils.h \
   windowavg.h
 $O/xyarray.o: xyarray.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \
   xyarray.h
 $O/xyplotnode.o: xyplotnode.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/commonutil.h \

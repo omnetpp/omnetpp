@@ -20,7 +20,9 @@
 O=$(OMNETPP_OUT_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)-$(MODE)/src/utils
 L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
 
-COPTS=$(CFLAGS)
+INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
+
+COPTS=$(CFLAGS) $(INCL_FLAGS)
 
 #
 # Targets
@@ -49,22 +51,22 @@ all: $O/opp_lcg32_seedtool.exe $O/ln.exe $O/opp_pefileversion.exe
 
 $O/opp_lcg32_seedtool.exe : $O opp_lcg32_seedtool.cc
 	@echo Creating EXE: $@
-	$(Q)$(CXX) $(CXXFLAGS) $(CFLAGS) /Tp opp_lcg32_seedtool.cc /link /out:$(O:/=\)\opp_lcg32_seedtool.exe
+	$(Q)$(CXX) $(COPTS) /Tp opp_lcg32_seedtool.cc /link /out:$(O:/=\)\opp_lcg32_seedtool.exe
 
 $O/ln.exe : $O ln.c
 	@echo Creating EXE: $@
-	$(Q)$(CXX) $(CFLAGS) ln.c /link /out:$(O:/=\)\ln.exe
+	$(Q)$(CXX) $(COPTS) ln.c /link /out:$(O:/=\)\ln.exe
 
 $O/opp_pefileversion.exe : $O opp_pefileversion.cc
 	@echo Creating EXE: $@
-	$(Q)$(CXX) $(CXXFLAGS) $(CFLAGS) /Tp opp_pefileversion.cc /link version.lib /out:$(O:/=\)\opp_pefileversion.exe
+	$(Q)$(CXX) $(COPTS) /Tp opp_pefileversion.cc /link version.lib /out:$(O:/=\)\opp_pefileversion.exe
 
 $O:
 	@md $(O:/=\)
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) -fMakefile.vc -- *.cc *.c
+	$(Q)$(MAKEDEPEND) $(INCL_CFLAGS) -fMakefile.vc -- *.cc *.c
 
 clean:
 	$(qecho) Cleaning...
@@ -72,10 +74,8 @@ clean:
 	-$(Q)cd $(OMNETPP_BIN_DIR:/=\) && del /q opp_lcg32_seedtool.exe* ln.exe* opp_makemake* opp_runall* opp_test* opp_makedep* linkall* msvcver.pl opp_nmakemake.cmd 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-abspath.obj: abspath.cc \
-  ../common/ver.h
-opp_lcg32_seedtool.obj: opp_lcg32_seedtool.cc \
-  ../common/ver.h
+abspath.obj: abspath.cc
+opp_lcg32_seedtool.obj: opp_lcg32_seedtool.cc
 opp_pefileversion.obj: opp_pefileversion.cc
 ln.obj: ln.c
 opp_replace.obj: opp_replace.c

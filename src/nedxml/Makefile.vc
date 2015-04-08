@@ -22,7 +22,9 @@ LIBNAME=oppnedxml$D
 O=$(OMNETPP_OUT_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)-$(MODE)/src/nedxml
 L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
 
-COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/$(LIBNAME).pdb"
+INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
+
+COPTS= $(CFLAGS) $(XML_CFLAGS) $(INCL_FLAGS) /Fd"$O/$(LIBNAME).pdb"
 IMPLIBS= $O/../common/oppcommon$D.lib $(XML_LIBS)
 
 OBJS= $O/nedelements.obj $O/nedelement.obj $O/nederror.obj $O/nedexception.obj \
@@ -82,7 +84,7 @@ $O/$(LIBNAME).dll : $(OBJS) $L
 
 $O/nedtool.obj : nedtool.cc $O
 	@: Note: not in OBJS because nedtool.cc must be compiled *without* -DNEDXML_EXPORT
-	$(Q)$(CXX) $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /c /Fo"$@" /Tp nedtool.cc
+	$(Q)$(CXX) $(CFLAGS) $(INCL_FLAGS) /c /Fo"$@" /Tp nedtool.cc
 
 nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd
 	$(qecho) Running dtdclassgen.pl
@@ -126,7 +128,7 @@ doc:
 
 depend: $(GENERATED_SOURCES)
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) -I. -fMakefile.vc -P^$O/ -- *.cc
+	$(Q)$(MAKEDEPEND) -I../../include -I.. -fMakefile.vc -P^$O/ -- *.cc
 
 clean:
 	$(qecho) Cleaning...
@@ -137,21 +139,29 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/lex.msg2yy.obj: lex.msg2yy.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   msg2.tab.hh \
   nedexception.h \
   nedxmldefs.h \
   nedyydefs.h
 $O/lex.ned1yy.obj: lex.ned1yy.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   ned1.tab.hh \
   nedexception.h \
   nedxmldefs.h \
   nedyydefs.h
 $O/lex.ned2yy.obj: lex.ned2yy.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   ned2.tab.hh \
   nedexception.h \
   nedxmldefs.h \
   nedyydefs.h
 $O/msg2.tab.obj: msg2.tab.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../common/commondefs.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/stringutil.h \
   msg2.tab.hh \
   nedelement.h \
   nedelements.h \
@@ -164,8 +174,14 @@ $O/msg2.tab.obj: msg2.tab.cc \
   nedyydefs.h \
   nedyylib.h
 $O/msgcppgenerator.obj: msgcppgenerator.cc \
-  ../../include/platdep/platdefs.h \
-  ../../include/simkerneldefs.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/simkerneldefs.h \
+  ../common/commondefs.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/stringtokenizer.h \
+  ../common/stringutil.h \
   msgcppgenerator.h \
   ned2generator.h \
   nedelement.h \
@@ -175,6 +191,11 @@ $O/msgcppgenerator.obj: msgcppgenerator.cc \
   nedutil.h \
   nedxmldefs.h
 $O/ned1.tab.obj: ned1.tab.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../common/commondefs.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/stringutil.h \
   nedelement.h \
   nedelements.h \
   nederror.h \
@@ -186,6 +207,11 @@ $O/ned1.tab.obj: ned1.tab.cc \
   nedyydefs.h \
   nedyylib.h
 $O/ned1generator.obj: ned1generator.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../common/commondefs.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/stringutil.h \
   ned1generator.h \
   nedelement.h \
   nedelements.h \
@@ -193,6 +219,11 @@ $O/ned1generator.obj: ned1generator.cc \
   nedutil.h \
   nedxmldefs.h
 $O/ned2.tab.obj: ned2.tab.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../common/commondefs.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/stringutil.h \
   ned2.tab.hh \
   nedelement.h \
   nedelements.h \
@@ -205,6 +236,11 @@ $O/ned2.tab.obj: ned2.tab.cc \
   nedyydefs.h \
   nedyylib.h
 $O/ned2generator.obj: ned2generator.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../common/commondefs.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/stringutil.h \
   ned2generator.h \
   nedelement.h \
   nedelements.h \
@@ -212,6 +248,11 @@ $O/ned2generator.obj: ned2generator.cc \
   nedutil.h \
   nedxmldefs.h
 $O/nedcrossvalidator.obj: nedcrossvalidator.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../common/commondefs.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/stringutil.h \
   nedcrossvalidator.h \
   nedelement.h \
   nedelements.h \
@@ -222,6 +263,7 @@ $O/nedcrossvalidator.obj: nedcrossvalidator.cc \
   nedvalidator.h \
   nedxmldefs.h
 $O/neddtdvalidator.obj: neddtdvalidator.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   neddtdvalidator.h \
   neddtdvalidatorbase.h \
   nedelement.h \
@@ -231,6 +273,9 @@ $O/neddtdvalidator.obj: neddtdvalidator.cc \
   nedvalidator.h \
   nedxmldefs.h
 $O/neddtdvalidatorbase.obj: neddtdvalidatorbase.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../common/commondefs.h \
+  ../common/opp_ctype.h \
   neddtdvalidatorbase.h \
   nedelement.h \
   nedelements.h \
@@ -239,25 +284,38 @@ $O/neddtdvalidatorbase.obj: neddtdvalidatorbase.cc \
   nedvalidator.h \
   nedxmldefs.h
 $O/nedelement.obj: nedelement.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   nedelement.h \
   nederror.h \
   nedexception.h \
   nedxmldefs.h
 $O/nedelements.obj: nedelements.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   nedelement.h \
   nedelements.h \
   nederror.h \
   nedexception.h \
   nedxmldefs.h
 $O/nederror.obj: nederror.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../common/commondefs.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
   nedelement.h \
   nederror.h \
   nedxmldefs.h
 $O/nedexception.obj: nedexception.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../common/commondefs.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
   nedelement.h \
   nedexception.h \
   nedxmldefs.h
 $O/nedfilebuffer.obj: nedfilebuffer.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../common/commondefs.h \
+  ../common/opp_ctype.h \
   nedelement.h \
   nedelements.h \
   nederror.h \
@@ -267,6 +325,9 @@ $O/nedfilebuffer.obj: nedfilebuffer.cc \
   nedyydefs.h \
   nedyylib.h
 $O/nedparser.obj: nedparser.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../common/commondefs.h \
+  ../common/opp_ctype.h \
   nedelement.h \
   nedelements.h \
   nederror.h \
@@ -275,6 +336,14 @@ $O/nedparser.obj: nedparser.cc \
   nedxmldefs.h \
   nedyydefs.h
 $O/nedresourcecache.obj: nedresourcecache.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../common/commondefs.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/fileglobber.h \
+  ../common/fileutil.h \
+  ../common/patternmatcher.h \
+  ../common/stringutil.h \
   nedcrossvalidator.h \
   neddtdvalidator.h \
   neddtdvalidatorbase.h \
@@ -291,6 +360,7 @@ $O/nedresourcecache.obj: nedresourcecache.cc \
   nedxmlparser.h \
   nedyydefs.h
 $O/nedsaxhandler.obj: nedsaxhandler.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   nedelement.h \
   nedelements.h \
   nederror.h \
@@ -299,6 +369,13 @@ $O/nedsaxhandler.obj: nedsaxhandler.cc \
   nedxmldefs.h \
   saxparser.h
 $O/nedsyntaxvalidator.obj: nedsyntaxvalidator.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../common/commondefs.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/opp_ctype.h \
+  ../common/stringutil.h \
+  ../common/unitconversion.h \
   nedelement.h \
   nedelements.h \
   nederror.h \
@@ -307,6 +384,14 @@ $O/nedsyntaxvalidator.obj: nedsyntaxvalidator.cc \
   nedvalidator.h \
   nedxmldefs.h
 $O/nedtool.obj: nedtool.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../common/commondefs.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/fileglobber.h \
+  ../common/fileutil.h \
+  ../common/stringutil.h \
   ../common/ver.h \
   msgcppgenerator.h \
   ned1generator.h \
@@ -327,6 +412,9 @@ $O/nedtool.obj: nedtool.cc \
   nedyydefs.h \
   xmlgenerator.h
 $O/nedtools.obj: nedtools.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../common/commondefs.h \
+  ../common/fileutil.h \
   neddtdvalidator.h \
   neddtdvalidatorbase.h \
   nedelement.h \
@@ -337,6 +425,11 @@ $O/nedtools.obj: nedtools.cc \
   nedvalidator.h \
   nedxmldefs.h
 $O/nedtypeinfo.obj: nedtypeinfo.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../common/commondefs.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/stringutil.h \
   ned2generator.h \
   nedelement.h \
   nedelements.h \
@@ -347,12 +440,19 @@ $O/nedtypeinfo.obj: nedtypeinfo.cc \
   nedutil.h \
   nedxmldefs.h
 $O/nedutil.obj: nedutil.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../common/commondefs.h \
+  ../common/commonutil.h \
+  ../common/displaystring.h \
+  ../common/exception.h \
+  ../common/stringutil.h \
   nedelement.h \
   nedelements.h \
   nedexception.h \
   nedutil.h \
   nedxmldefs.h
 $O/nedvalidator.obj: nedvalidator.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   nedelement.h \
   nedelements.h \
   nederror.h \
@@ -360,6 +460,7 @@ $O/nedvalidator.obj: nedvalidator.cc \
   nedvalidator.h \
   nedxmldefs.h
 $O/nedxmlparser.obj: nedxmlparser.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   nedelement.h \
   nederror.h \
   nedsaxhandler.h \
@@ -367,6 +468,13 @@ $O/nedxmlparser.obj: nedxmlparser.cc \
   nedxmlparser.h \
   saxparser.h
 $O/nedyylib.obj: nedyylib.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../common/commondefs.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/opp_ctype.h \
+  ../common/stringutil.h \
+  ../common/unitconversion.h \
   nedelement.h \
   nedelements.h \
   nederror.h \
@@ -376,16 +484,20 @@ $O/nedyylib.obj: nedyylib.cc \
   nedyydefs.h \
   nedyylib.h
 $O/saxparser_expat.obj: saxparser_expat.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   nedxmldefs.h \
   saxparser.h
 $O/saxparser_libxml.obj: saxparser_libxml.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   nedxmldefs.h \
   saxparser.h
 $O/saxparser_none.obj: saxparser_none.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   nederror.h \
   nedxmldefs.h \
   saxparser.h
 $O/xmlgenerator.obj: xmlgenerator.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   nedelement.h \
   nedelements.h \
   nedxmldefs.h \

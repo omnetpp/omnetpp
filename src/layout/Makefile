@@ -22,7 +22,9 @@ LIBNAME=libopplayout$D
 O=$(OMNETPP_OUT_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)-$(MODE)/src/layout
 L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
 
-COPTS=$(CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR)/platdep
+INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
+
+COPTS=$(CFLAGS) $(INCL_FLAGS)
 
 IMPLIBS= -L$L -loppcommon$D
 
@@ -71,7 +73,7 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) -I. -I../common -P\$$O/ -- *.cc
+	$(Q)$(MAKEDEPEND) -I../../include -I.. -P\$$O/ -- *.cc
 
 clean:
 	$(qecho) Cleaning...
@@ -80,6 +82,7 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/basicspringembedderlayout.o: basicspringembedderlayout.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
   ../common/exception.h \
@@ -88,6 +91,7 @@ $O/basicspringembedderlayout.o: basicspringembedderlayout.cc \
   graphlayouter.h \
   layoutdefs.h
 $O/concentrictreeembedding.o: concentrictreeembedding.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
   ../common/exception.h \
@@ -96,6 +100,7 @@ $O/concentrictreeembedding.o: concentrictreeembedding.cc \
   graphcomponent.h \
   layoutdefs.h
 $O/forcedirectedembedding.o: forcedirectedembedding.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
   ../common/exception.h \
@@ -106,6 +111,8 @@ $O/forcedirectedembedding.o: forcedirectedembedding.cc \
   geometry.h \
   layoutdefs.h
 $O/forcedirectedgraphlayouter.o: forcedirectedgraphlayouter.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
   ../common/exception.h \
@@ -121,6 +128,7 @@ $O/forcedirectedgraphlayouter.o: forcedirectedgraphlayouter.cc \
   layoutdefs.h \
   startreeembedding.h
 $O/forcedirectedparameters.o: forcedirectedparameters.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
   ../common/exception.h \
@@ -130,6 +138,7 @@ $O/forcedirectedparameters.o: forcedirectedparameters.cc \
   geometry.h \
   layoutdefs.h
 $O/forcedirectedparametersbase.o: forcedirectedparametersbase.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
   ../common/exception.h \
@@ -137,12 +146,14 @@ $O/forcedirectedparametersbase.o: forcedirectedparametersbase.cc \
   geometry.h \
   layoutdefs.h
 $O/geometry.o: geometry.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
   ../common/exception.h \
   geometry.h \
   layoutdefs.h
 $O/graphcomponent.o: graphcomponent.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
   ../common/exception.h \
@@ -150,6 +161,7 @@ $O/graphcomponent.o: graphcomponent.cc \
   graphcomponent.h \
   layoutdefs.h
 $O/graphlayouter.o: graphlayouter.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
   ../common/exception.h \
@@ -157,6 +169,7 @@ $O/graphlayouter.o: graphlayouter.cc \
   graphlayouter.h \
   layoutdefs.h
 $O/heapembedding.o: heapembedding.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
   ../common/exception.h \
@@ -165,6 +178,7 @@ $O/heapembedding.o: heapembedding.cc \
   heapembedding.h \
   layoutdefs.h
 $O/startreeembedding.o: startreeembedding.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
   ../common/exception.h \

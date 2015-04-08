@@ -21,7 +21,9 @@ LIBNAME=oppcommon$D
 O=$(OMNETPP_OUT_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)-$(MODE)/src/common
 L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
 
-COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)/platdep" -I. /Fd"$O/$(LIBNAME).pdb"
+INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
+
+COPTS=$(CFLAGS) $(INCL_FLAGS) /Fd"$O/$(LIBNAME).pdb"
 IMPLIBS=
 
 !if "$(BUILDING_UILIBS)"=="yes"
@@ -100,7 +102,7 @@ doc:
 
 depend: $(GENERATED_SOURCES)
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) -I. -fMakefile.vc -P^$O/ -- *.cc
+	$(Q)$(MAKEDEPEND) -I../../include -I.. -fMakefile.vc -P^$O/ -- *.cc
 
 clean:
 	$(qecho) Cleaning...
@@ -110,16 +112,22 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/bigdecimal.obj: bigdecimal.cc \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   bigdecimal.h \
   commondefs.h \
   commonutil.h \
   exception.h \
   opp_ctype.h
 $O/commonutil.obj: commonutil.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   commondefs.h \
   commonutil.h \
   exception.h
 $O/displaystring.obj: displaystring.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   commondefs.h \
   commonutil.h \
   displaystring.h \
@@ -127,13 +135,16 @@ $O/displaystring.obj: displaystring.cc \
   opp_ctype.h \
   stringutil.h
 $O/enumstr.obj: enumstr.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   commondefs.h \
   enumstr.h
 $O/exception.obj: exception.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   commondefs.h \
   commonutil.h \
   exception.h
 $O/expression.obj: expression.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   commondefs.h \
   commonutil.h \
   exception.h \
@@ -143,6 +154,7 @@ $O/expression.obj: expression.cc \
   stringutil.h \
   unitconversion.h
 $O/expression.tab.obj: expression.tab.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   commondefs.h \
   commonutil.h \
   exception.h \
@@ -152,30 +164,39 @@ $O/expression.tab.obj: expression.tab.cc \
   stringutil.h \
   unitconversion.h
 $O/fileglobber.obj: fileglobber.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   commondefs.h \
   fileglobber.h
 $O/filereader.obj: filereader.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   commondefs.h \
   commonutil.h \
   exception.h \
   filereader.h \
   stringutil.h
 $O/fileutil.obj: fileutil.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   commondefs.h \
   exception.h \
   fileutil.h \
   opp_ctype.h \
   stringtokenizer.h
 $O/fnamelisttokenizer.obj: fnamelisttokenizer.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   commondefs.h \
   commonutil.h \
   exception.h \
   fnamelisttokenizer.h
 $O/lcgrandom.obj: lcgrandom.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   commondefs.h \
   exception.h \
   lcgrandom.h
 $O/lex.expressionyy.obj: lex.expressionyy.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   commondefs.h \
   commonutil.h \
   exception.h \
@@ -185,22 +206,27 @@ $O/lex.expressionyy.obj: lex.expressionyy.cc \
   stringpool.h \
   stringutil.h
 $O/linetokenizer.obj: linetokenizer.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   commondefs.h \
   exception.h \
   linetokenizer.h
 $O/matchexpression.obj: matchexpression.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   commondefs.h \
   commonutil.h \
   exception.h \
   matchexpression.h \
   patternmatcher.h
 $O/matchexpression.tab.obj: matchexpression.tab.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   commondefs.h \
   exception.h \
   matchexpression.h \
   matchexpressionlexer.h \
   patternmatcher.h
 $O/matchexpressionlexer.obj: matchexpressionlexer.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   commondefs.h \
   commonutil.h \
   exception.h \
@@ -208,6 +234,8 @@ $O/matchexpressionlexer.obj: matchexpressionlexer.cc \
   matchexpressionlexer.h \
   stringutil.h
 $O/patternmatcher.obj: patternmatcher.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   commondefs.h \
   commonutil.h \
   exception.h \
@@ -215,21 +243,27 @@ $O/patternmatcher.obj: patternmatcher.cc \
   patternmatcher.h \
   stringutil.h
 $O/rwlock.obj: rwlock.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   commondefs.h \
   exception.h \
   rwlock.h
 $O/stringpool.obj: stringpool.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   commondefs.h \
   stringpool.h
 $O/stringtokenizer.obj: stringtokenizer.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   commondefs.h \
   stringtokenizer.h
 $O/stringtokenizer2.obj: stringtokenizer2.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
   commondefs.h \
   commonutil.h \
   exception.h \
   stringtokenizer2.h
 $O/stringutil.obj: stringutil.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   commondefs.h \
   commonutil.h \
   exception.h \
@@ -237,6 +271,8 @@ $O/stringutil.obj: stringutil.cc \
   stringtokenizer.h \
   stringutil.h
 $O/unitconversion.obj: unitconversion.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
   commondefs.h \
   commonutil.h \
   exception.h \

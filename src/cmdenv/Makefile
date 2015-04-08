@@ -22,7 +22,9 @@ LIBNAME=liboppcmdenv$D
 O=$(OMNETPP_OUT_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)-$(MODE)/src/cmdenv
 L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
 
-COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../common -I../envir -DBUILDING_CMDENV
+INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
+
+COPTS=$(CFLAGS) $(INCL_FLAGS) -DBUILDING_CMDENV
 
 IMPLIBS= -L$L -loppsim$D -loppenvir$D -loppcommon$D
 
@@ -69,7 +71,7 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) -I. -I../envir -I../../include -P\$$O/ -- *.cc
+	$(Q)$(MAKEDEPEND) -I../../include -I.. -P\$$O/ -- *.cc
 
 clean:
 	$(qecho) Cleaning...
@@ -78,68 +80,78 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/cmdenv.o: cmdenv.cc \
-  ../../include/carray.h \
-  ../../include/cchannel.h \
-  ../../include/cclassdescriptor.h \
-  ../../include/ccomponent.h \
-  ../../include/ccomponenttype.h \
-  ../../include/cconfigoption.h \
-  ../../include/cconfiguration.h \
-  ../../include/cdefaultlist.h \
-  ../../include/cdensityestbase.h \
-  ../../include/cdisplaystring.h \
-  ../../include/cenum.h \
-  ../../include/cenvir.h \
-  ../../include/cevent.h \
-  ../../include/cexception.h \
-  ../../include/cexpression.h \
-  ../../include/cgate.h \
-  ../../include/checkandcast.h \
-  ../../include/clifecyclelistener.h \
-  ../../include/clistener.h \
-  ../../include/clog.h \
-  ../../include/cmessage.h \
-  ../../include/cmessageheap.h \
-  ../../include/cmodule.h \
-  ../../include/cmsgpar.h \
-  ../../include/cnamedobject.h \
-  ../../include/cnedmathfunction.h \
-  ../../include/cnedvalue.h \
-  ../../include/cobject.h \
-  ../../include/cobjectfactory.h \
-  ../../include/coutvector.h \
-  ../../include/cownedobject.h \
-  ../../include/cpar.h \
-  ../../include/cproperties.h \
-  ../../include/cproperty.h \
-  ../../include/cqueue.h \
-  ../../include/cregistrationlist.h \
-  ../../include/cresultfilter.h \
-  ../../include/cresultlistener.h \
-  ../../include/cresultrecorder.h \
-  ../../include/cscheduler.h \
-  ../../include/csimplemodule.h \
-  ../../include/csimulation.h \
-  ../../include/cstatistic.h \
-  ../../include/cstddev.h \
-  ../../include/cstringpool.h \
-  ../../include/ctimestampedvalue.h \
-  ../../include/cvisitor.h \
-  ../../include/cwatch.h \
-  ../../include/envirext.h \
-  ../../include/errmsg.h \
-  ../../include/globals.h \
-  ../../include/onstartup.h \
-  ../../include/opp_string.h \
-  ../../include/platdep/intlimits.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/platdep/timeutil.h \
-  ../../include/regmacros.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simtime.h \
-  ../../include/simtime_t.h \
-  ../../include/simutil.h \
+  ../../include/omnetpp/carray.h \
+  ../../include/omnetpp/cchannel.h \
+  ../../include/omnetpp/cclassdescriptor.h \
+  ../../include/omnetpp/ccomponent.h \
+  ../../include/omnetpp/ccomponenttype.h \
+  ../../include/omnetpp/cconfigoption.h \
+  ../../include/omnetpp/cconfiguration.h \
+  ../../include/omnetpp/cdefaultlist.h \
+  ../../include/omnetpp/cdensityestbase.h \
+  ../../include/omnetpp/cdisplaystring.h \
+  ../../include/omnetpp/cenum.h \
+  ../../include/omnetpp/cenvir.h \
+  ../../include/omnetpp/cevent.h \
+  ../../include/omnetpp/cexception.h \
+  ../../include/omnetpp/cexpression.h \
+  ../../include/omnetpp/cgate.h \
+  ../../include/omnetpp/checkandcast.h \
+  ../../include/omnetpp/clifecyclelistener.h \
+  ../../include/omnetpp/clistener.h \
+  ../../include/omnetpp/clog.h \
+  ../../include/omnetpp/cmessage.h \
+  ../../include/omnetpp/cmessageheap.h \
+  ../../include/omnetpp/cmodule.h \
+  ../../include/omnetpp/cmsgpar.h \
+  ../../include/omnetpp/cnamedobject.h \
+  ../../include/omnetpp/cnedmathfunction.h \
+  ../../include/omnetpp/cnedvalue.h \
+  ../../include/omnetpp/cobject.h \
+  ../../include/omnetpp/cobjectfactory.h \
+  ../../include/omnetpp/coutvector.h \
+  ../../include/omnetpp/cownedobject.h \
+  ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/cproperties.h \
+  ../../include/omnetpp/cproperty.h \
+  ../../include/omnetpp/cqueue.h \
+  ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/cresultfilter.h \
+  ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/cresultrecorder.h \
+  ../../include/omnetpp/cscheduler.h \
+  ../../include/omnetpp/csimplemodule.h \
+  ../../include/omnetpp/csimulation.h \
+  ../../include/omnetpp/cstatistic.h \
+  ../../include/omnetpp/cstddev.h \
+  ../../include/omnetpp/cstringpool.h \
+  ../../include/omnetpp/ctimestampedvalue.h \
+  ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/cwatch.h \
+  ../../include/omnetpp/envirext.h \
+  ../../include/omnetpp/errmsg.h \
+  ../../include/omnetpp/globals.h \
+  ../../include/omnetpp/onstartup.h \
+  ../../include/omnetpp/opp_string.h \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/platdep/timeutil.h \
+  ../../include/omnetpp/regmacros.h \
+  ../../include/omnetpp/simkerneldefs.h \
+  ../../include/omnetpp/simtime.h \
+  ../../include/omnetpp/simtime_t.h \
+  ../../include/omnetpp/simutil.h \
+  ../common/commondefs.h \
+  ../common/commonutil.h \
+  ../common/enumstr.h \
+  ../common/exception.h \
+  ../common/fileutil.h \
+  ../common/matchexpression.h \
+  ../common/opp_ctype.h \
+  ../common/patternmatcher.h \
+  ../common/stringtokenizer.h \
+  ../common/stringutil.h \
   ../envir/appreg.h \
   ../envir/args.h \
   ../envir/envirbase.h \
