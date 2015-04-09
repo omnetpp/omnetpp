@@ -19,12 +19,12 @@
 #include <math.h>
 #include <assert.h>
 
+#include "common/stringtokenizer.h"
 #include "loginspector.h"
 #include "tkenv.h"
 #include "tklib.h"
 #include "tkutil.h"
 #include "inspectorfactory.h"
-#include "common/stringtokenizer.h"
 
 NAMESPACE_BEGIN
 

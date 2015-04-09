@@ -20,10 +20,10 @@
 #include <string>
 #include <map>
 #include <vector>
-#include "omnetpp/globals.h"
-#include "omnetpp/cpar.h"
 #include "nedxml/nedelements.h"
 #include "nedxml/nedresourcecache.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cpar.h"
 #include "cneddeclaration.h"
 
 NAMESPACE_BEGIN

@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "omnetpp/cpatternmatcher.h"
 #include "common/patternmatcher.h"
+#include "omnetpp/cpatternmatcher.h"
 
 NAMESPACE_BEGIN
 

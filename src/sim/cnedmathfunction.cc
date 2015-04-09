@@ -17,12 +17,12 @@
 #include <math.h>
 #include <string.h>
 #include <stdarg.h>
+#include "common/stringutil.h"
 #include "omnetpp/cnedmathfunction.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/random.h"
-#include "common/stringutil.h"
 
 NAMESPACE_BEGIN
 

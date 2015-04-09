@@ -23,9 +23,9 @@
 #include <algorithm>
 #include "common/opp_ctype.h"
 #include "common/fileutil.h"  // directoryOf
+#include "omnetpp/cexception.h"
 #include "inifilereader.h"
 #include "fsutils.h"
-#include "omnetpp/cexception.h"
 
 NAMESPACE_BEGIN
 

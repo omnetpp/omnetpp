@@ -18,9 +18,9 @@
 #include <string.h>
 #include <string>
 #include <sstream>
+#include "common/stringutil.h"
 #include "ned2generator.h"
 #include "nedutil.h"
-#include "common/stringutil.h"
 #include "nederror.h"
 
 NAMESPACE_BEGIN

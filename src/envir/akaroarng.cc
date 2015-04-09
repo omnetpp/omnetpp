@@ -20,8 +20,8 @@
 
 #ifdef WITH_AKAROA
 
-#include <akaroa.H>
 #include <akaroa/distributions.H>  // for UniformInt()
+#include <akaroa.H>
 #include "omnetpp/cenvir.h"
 #include "omnetpp/regmacros.h"
 #include "omnetpp/globals.h"

@@ -18,8 +18,8 @@
 #ifndef __CNEDLOADER_H
 #define __CNEDLOADER_H
 
-#include "omnetpp/simkerneldefs.h"
 #include "nedxml/nedresourcecache.h"
+#include "omnetpp/simkerneldefs.h"
 #include "cneddeclaration.h"
 
 NAMESPACE_BEGIN

@@ -19,15 +19,15 @@
 #include <math.h>
 #include <assert.h>
 
+#include "omnetpp/cchannel.h"
+#include "omnetpp/cgate.h"
+#include "omnetpp/cdisplaystring.h"
+#include "omnetpp/cchannel.h"
 #include "gateinspector.h"
 #include "tkenv.h"
 #include "tklib.h"
 #include "tkutil.h"
 #include "inspectorfactory.h"
-#include "omnetpp/cchannel.h"
-#include "omnetpp/cgate.h"
-#include "omnetpp/cdisplaystring.h"
-#include "omnetpp/cchannel.h"
 
 
 NAMESPACE_BEGIN

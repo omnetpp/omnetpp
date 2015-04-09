@@ -20,11 +20,11 @@
 #include <stdio.h>   // sprintf
 #include <stdlib.h>  // atol
 #include <string.h>
+#include "common/opp_ctype.h"
 #include "omnetpp/cclassdescriptor.h"
 #include "omnetpp/carray.h"
 #include "omnetpp/cenum.h"
 #include "omnetpp/simutil.h"
-#include "common/opp_ctype.h"
 #include "omnetpp/cobjectfactory.h"  // createOne()
 #include "omnetpp/platdep/platmisc.h" // INT64_PRINTF_FORMAT
 

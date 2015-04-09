@@ -20,12 +20,12 @@
 #include <ostream>
 #include <stdlib.h>
 #include "common/opp_ctype.h"
-#include "omnetpp/platdep/platmisc.h"
 #include "common/stringutil.h"
-#include "scaveutils.h"
-#include "scaveexception.h"
 #include "common/filereader.h"
 #include "common/linetokenizer.h"
+#include "omnetpp/platdep/platmisc.h"
+#include "scaveutils.h"
+#include "scaveexception.h"
 #include "dataflowmanager.h"
 #include "indexfile.h"
 #include "indexedvectorfile.h"

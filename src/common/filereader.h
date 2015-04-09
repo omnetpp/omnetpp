@@ -20,8 +20,8 @@
 #include <vector>
 #include <string>
 #include <stdint.h>  // int64_t
-#include "exception.h"
 #include "omnetpp/platdep/platmisc.h"
+#include "exception.h"
 #include "commondefs.h"
 
 NAMESPACE_BEGIN

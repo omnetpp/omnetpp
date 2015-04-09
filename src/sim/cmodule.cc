@@ -19,6 +19,7 @@
 #include <stdio.h>           // sprintf
 #include <string.h>          // strcpy
 #include <algorithm>
+#include "common/stringutil.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/cgate.h"
@@ -32,7 +33,6 @@
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cproperty.h"
 #include "omnetpp/ccanvas.h"
-#include "common/stringutil.h"
 #include "omnetpp/simutil.h"
 #include "omnetpp/cmodelchange.h"
 

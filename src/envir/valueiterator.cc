@@ -19,12 +19,12 @@
 #include <locale.h>
 #include <algorithm>
 #include "common/opp_ctype.h"
-#include "valueiterator.h"
 #include "common/stringutil.h"
 #include "common/commonutil.h"
 #include "common/stringtokenizer2.h"
-#include "omnetpp/cexception.h"
 #include "common/unitconversion.h"
+#include "omnetpp/cexception.h"
+#include "valueiterator.h"
 
 NAMESPACE_BEGIN
 

@@ -19,9 +19,9 @@
 
 #include <string>
 #include <map>
-#include "layoutdefs.h"
 #include "common/lcgrandom.h"
 #include "common/commonutil.h"
+#include "layoutdefs.h"
 
 NAMESPACE_BEGIN
 

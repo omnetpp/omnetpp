@@ -15,10 +15,10 @@
 *--------------------------------------------------------------*/
 
 
+#include <sys/stat.h>
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
-#include <sys/stat.h>
 #include <assert.h>
 #include "common/opp_ctype.h"
 #include "nedfilebuffer.h"

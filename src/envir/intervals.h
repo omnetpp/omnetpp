@@ -19,8 +19,8 @@
 #define __INTERVALS_H
 
 #include "omnetpp/simkerneldefs.h"
-#include "envirdefs.h"
 #include "omnetpp/simtime_t.h"
+#include "envirdefs.h"
 
 NAMESPACE_BEGIN
 

@@ -20,9 +20,9 @@
 #include <stdio.h>
 #include <string>
 #include <set>
+#include "common/exception.h"
 #include "scavedefs.h"
 #include "xyarray.h"
-#include "common/exception.h"
 
 NAMESPACE_BEGIN
 

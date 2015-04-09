@@ -19,9 +19,9 @@
 #define _COMMONNODES_H_
 
 #include <string>
+#include "common/filereader.h"
 #include "node.h"
 #include "nodetype.h"
-#include "common/filereader.h"
 
 NAMESPACE_BEGIN
 

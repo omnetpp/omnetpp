@@ -18,8 +18,8 @@
 #ifndef __RESULTRECORDERS_H
 #define __RESULTRECORDERS_H
 
-#include "omnetpp/cresultrecorder.h"
 #include "common/expression.h"
+#include "omnetpp/cresultrecorder.h"
 #include "omnetpp/cstatistic.h"
 
 NAMESPACE_BEGIN

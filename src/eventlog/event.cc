@@ -15,8 +15,8 @@
 *--------------------------------------------------------------*/
 
 #include <stdio.h>
-#include "deque"
 #include "common/filereader.h"
+#include "deque"
 #include "event.h"
 #include "eventlog.h"
 #include "eventlogentry.h"

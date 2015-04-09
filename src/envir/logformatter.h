@@ -18,8 +18,8 @@
 
 #include <ostream>
 #include <vector>
-#include "envirdefs.h"
 #include "omnetpp/clog.h"
+#include "envirdefs.h"
 
 NAMESPACE_BEGIN
 

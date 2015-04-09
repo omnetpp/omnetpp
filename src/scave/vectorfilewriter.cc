@@ -18,10 +18,10 @@
 #include <stdlib.h>
 #include <locale.h>
 
-#include "channel.h"
-#include "vectorfilewriter.h"
 #include "common/stringutil.h"
 #include "omnetpp/platdep/platmisc.h" // INT64_PRINTF_FORMAT
+#include "channel.h"
+#include "vectorfilewriter.h"
 
 #define VECTOR_FILE_VERSION 2
 

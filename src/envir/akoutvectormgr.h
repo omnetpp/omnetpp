@@ -24,8 +24,8 @@
 #define __AKOUTVECTORMGR_H
 
 #include <stdio.h>
-#include "fileoutvectormgr.h"
 #include "omnetpp/simutil.h"
+#include "fileoutvectormgr.h"
 
 NAMESPACE_BEGIN
 

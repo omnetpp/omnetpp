@@ -22,17 +22,17 @@
 #include <fstream>
 #include <locale.h>
 #include "common/opp_ctype.h"
-#include "omnetpp/cconfigoption.h"
 #include "common/fileutil.h"
-#include "envirbase.h"
+#include "common/stringutil.h"
+#include "common/unitconversion.h"
+#include "omnetpp/cconfigoption.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cstatistic.h"
 #include "omnetpp/cdensityestbase.h"
-#include "fileoutscalarmgr.h"
 #include "omnetpp/ccomponenttype.h"
-#include "common/stringutil.h"
-#include "common/unitconversion.h"
+#include "envirbase.h"
+#include "fileoutscalarmgr.h"
 
 NAMESPACE_BEGIN
 

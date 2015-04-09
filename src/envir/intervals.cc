@@ -16,8 +16,8 @@
 *--------------------------------------------------------------*/
 
 #include "common/opp_ctype.h"
-#include "envirbase.h"
 #include "common/stringtokenizer.h"
+#include "envirbase.h"
 #include "intervals.h"
 
 NAMESPACE_BEGIN

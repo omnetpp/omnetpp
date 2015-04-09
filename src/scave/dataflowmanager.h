@@ -19,8 +19,8 @@
 #define _DATAFLOWMANAGER_H_
 
 #include <vector>
-#include "node.h"
 #include "common/progressmonitor.h"
+#include "node.h"
 #include "channel.h"
 
 NAMESPACE_BEGIN

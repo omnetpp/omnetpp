@@ -18,8 +18,8 @@
 #define _IVECTORFILEINDEXER_H_
 
 #include <string>
-#include "resultfilemanager.h"
 #include "common/progressmonitor.h"
+#include "resultfilemanager.h"
 
 NAMESPACE_BEGIN
 

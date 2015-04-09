@@ -17,8 +17,8 @@
 #ifndef __OUTPUTVECTORINSPECTOR_H
 #define __OUTPUTVECTORINSPECTOR_H
 
-#include "inspector.h"
 #include "envir/envirbase.h"
+#include "inspector.h"
 
 NAMESPACE_BEGIN
 

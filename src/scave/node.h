@@ -18,8 +18,8 @@
 #ifndef _NODE_H_
 #define _NODE_H_
 
-#include "scavedefs.h"
 #include "common/commonutil.h"
+#include "scavedefs.h"
 
 NAMESPACE_BEGIN
 

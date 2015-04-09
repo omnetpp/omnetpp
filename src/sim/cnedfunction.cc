@@ -18,12 +18,12 @@
 #include <string.h>
 #include <sstream>
 #include <algorithm>
-#include "omnetpp/cnedfunction.h"
-#include "omnetpp/globals.h"
-#include "omnetpp/cexception.h"
 #include "common/stringutil.h"
 #include "common/stringtokenizer.h"
 #include "common/opp_ctype.h"
+#include "omnetpp/cnedfunction.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cexception.h"
 
 NAMESPACE_BEGIN
 

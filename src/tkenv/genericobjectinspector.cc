@@ -16,17 +16,16 @@
 
 #include <string.h>
 #include <math.h>
-#include "tkenv.h"
-#include "tklib.h"
-#include "inspectorfactory.h"
-#include "genericobjectinspector.h"
-
 #include "omnetpp/carray.h"
 #include "omnetpp/cqueue.h"
 #include "omnetpp/cmessageheap.h"
 #include "omnetpp/cdefaultlist.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cregistrationlist.h"
+#include "tkenv.h"
+#include "tklib.h"
+#include "inspectorfactory.h"
+#include "genericobjectinspector.h"
 
 
 NAMESPACE_BEGIN

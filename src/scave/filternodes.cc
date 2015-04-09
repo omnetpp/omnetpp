@@ -17,9 +17,9 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include "common/stringutil.h"
 #include "channel.h"
 #include "filternodes.h"
-#include "common/stringutil.h"
 
 NAMESPACE_BEGIN
 

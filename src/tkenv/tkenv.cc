@@ -24,10 +24,16 @@
 #include <stdio.h>
 #include <string>
 
+#include "common/stringutil.h"
+#include "common/stringtokenizer.h"
+#include "common/matchexpression.h"
+#include "common/fileutil.h"
+#include "common/ver.h"
 #include "envir/appreg.h"
+#include "envir/speedometer.h"
+#include "envir/matchableobject.h"
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/cmessage.h"
-#include "envir/speedometer.h"
 #include "omnetpp/cscheduler.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/csimulation.h"
@@ -35,7 +41,8 @@
 #include "omnetpp/regmacros.h"
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cproperty.h"
-
+#include "omnetpp/platdep/timeutil.h"
+#include "omnetpp/platdep/platmisc.h"
 #include "tkdefs.h"
 #include "tkenv.h"
 #include "tklib.h"
@@ -46,14 +53,6 @@
 #include "gateinspector.h"
 #include "genericobjectinspector.h"
 #include "watchinspector.h"
-#include "omnetpp/platdep/timeutil.h"
-#include "common/stringutil.h"
-#include "common/stringtokenizer.h"
-#include "common/matchexpression.h"
-#include "envir/matchableobject.h"
-#include "common/fileutil.h"
-#include "common/ver.h"
-#include "omnetpp/platdep/platmisc.h"
 
 
 // default plugin path -- allow overriding it via compiler option (-D)

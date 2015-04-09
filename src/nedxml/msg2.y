@@ -51,11 +51,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "common/commonutil.h"
+#include "common/stringutil.h"
 #include "nedyydefs.h"
 #include "nederror.h"
 #include "nedexception.h"
-#include "common/commonutil.h"
-#include "common/stringutil.h"
 
 #define YYDEBUG 1           /* allow debugging */
 #define YYDEBUGGING_ON 0    /* turn on/off debugging */

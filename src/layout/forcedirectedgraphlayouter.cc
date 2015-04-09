@@ -22,10 +22,10 @@
 #include <sstream>
 
 #include "common/commonutil.h"
+#include "omnetpp/platdep/platmisc.h"
 #include "forcedirectedgraphlayouter.h"
 #include "startreeembedding.h"
 #include "heapembedding.h"
-#include "omnetpp/platdep/platmisc.h"
 
 NAMESPACE_BEGIN
 

@@ -16,6 +16,10 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "common/fileutil.h"
+#include "common/stringutil.h"
+#include "common/fileglobber.h"
+#include "common/patternmatcher.h"
 #include "nederror.h"
 #include "nedexception.h"
 #include "nedresourcecache.h"
@@ -24,10 +28,6 @@
 #include "neddtdvalidator.h"
 #include "nedsyntaxvalidator.h"
 #include "nedcrossvalidator.h"
-#include "common/fileutil.h"
-#include "common/stringutil.h"
-#include "common/fileglobber.h"
-#include "common/patternmatcher.h"
 
 NAMESPACE_BEGIN
 

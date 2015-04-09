@@ -21,11 +21,11 @@
 #include <list>
 #include <vector>
 #include <map>
-#include "eventlogdefs.h"
 #include "common/exception.h"
-#include "eventlogdefs.h"
 #include "common/filereader.h"
 #include "common/linetokenizer.h"
+#include "eventlogdefs.h"
+#include "eventlogdefs.h"
 
 NAMESPACE_BEGIN
 

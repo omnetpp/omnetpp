@@ -78,10 +78,10 @@ inline int initsocketlibonce() {
 //
 // Unix version
 //
-#include <errno.h>
+#include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
+#include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
 

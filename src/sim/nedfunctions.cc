@@ -17,13 +17,13 @@
 #include <math.h>
 #include <string.h>
 #include <algorithm>
+#include "common/stringutil.h"
+#include "common/opp_ctype.h"
 #include "omnetpp/distrib.h"
 #include "omnetpp/cnedmathfunction.h"
 #include "omnetpp/cnedfunction.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cstringtokenizer.h"
-#include "common/stringutil.h"
-#include "common/opp_ctype.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/ccomponenttype.h"
 

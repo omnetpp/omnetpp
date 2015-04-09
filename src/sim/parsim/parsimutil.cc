@@ -21,8 +21,8 @@
 #include <string.h>
 #include "omnetpp/cenvir.h"
 #include "omnetpp/csimulation.h"
-#include "parsimutil.h"
 #include "omnetpp/cexception.h"
+#include "parsimutil.h"
 
 NAMESPACE_BEGIN
 

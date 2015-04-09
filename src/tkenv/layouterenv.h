@@ -17,8 +17,8 @@
 #ifndef __LAYOUTERENV_H
 #define __LAYOUTERENV_H
 
-#include "tkdefs.h"
 #include "layout/graphlayouter.h"
+#include "tkdefs.h"
 
 NAMESPACE_BEGIN
 

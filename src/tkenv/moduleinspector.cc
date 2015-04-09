@@ -19,6 +19,17 @@
 #include <math.h>
 #include <assert.h>
 
+#include "common/stringtokenizer.h"
+#include "common/stringutil.h"
+#include "layout/graphlayouter.h"
+#include "layout/forcedirectedgraphlayouter.h"
+#include "layout/basicspringembedderlayout.h"
+#include "omnetpp/cdisplaystring.h"
+#include "omnetpp/cqueue.h"
+#include "omnetpp/cmessage.h"
+#include "omnetpp/cgate.h"
+#include "omnetpp/cchannel.h"
+#include "omnetpp/csimplemodule.h"
 #include "moduleinspector.h"
 #include "figurerenderers.h"
 #include "tkenv.h"
@@ -26,18 +37,7 @@
 #include "tkutil.h"
 #include "inspectorfactory.h"
 #include "arrow.h"
-#include "layout/graphlayouter.h"
 #include "layouterenv.h"
-#include "layout/forcedirectedgraphlayouter.h"
-#include "layout/basicspringembedderlayout.h"
-#include "common/stringtokenizer.h"
-#include "omnetpp/cdisplaystring.h"
-#include "omnetpp/cqueue.h"
-#include "omnetpp/cmessage.h"
-#include "omnetpp/cgate.h"
-#include "omnetpp/cchannel.h"
-#include "omnetpp/csimplemodule.h"
-#include "common/stringutil.h"
 #include "canvasrenderer.h"
 
 NAMESPACE_BEGIN

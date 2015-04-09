@@ -16,8 +16,8 @@
 *--------------------------------------------------------------*/
 
 #include "common/commonutil.h"
-#include "nodetyperegistry.h"
 #include "common/stringtokenizer.h"
+#include "nodetyperegistry.h"
 #include "arraybuilder.h"
 #include "vectorfilereader.h"
 #include "vectorfilewriter.h"

@@ -22,9 +22,9 @@
 
 #include <string.h>
 #include <mpi.h>
-#include "cmpicommbuffer.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/regmacros.h"
+#include "cmpicommbuffer.h"
 
 NAMESPACE_BEGIN
 

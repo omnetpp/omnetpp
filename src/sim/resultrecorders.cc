@@ -15,10 +15,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "resultrecorders.h"
 #include "omnetpp/cproperty.h"
 #include "omnetpp/chistogram.h"
 #include "omnetpp/csimulation.h"
+#include "resultrecorders.h"
 
 NAMESPACE_BEGIN
 

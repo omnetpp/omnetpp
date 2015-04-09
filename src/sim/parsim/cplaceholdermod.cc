@@ -21,6 +21,7 @@
 #include "cplaceholdermod.h"
 #include "cproxygate.h"
 
+#include <stdio.h>
 #include "cfilecomm.h"
 #include "cnamedpipecomm.h"
 #include "cmpicomm.h"
@@ -29,7 +30,6 @@
 #include "cispeventlogger.h"
 #include "cidealsimulationprot.h"
 #include "clinkdelaylookahead.h"
-#include <stdio.h>
 
 NAMESPACE_BEGIN
 

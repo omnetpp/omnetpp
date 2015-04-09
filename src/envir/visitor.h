@@ -17,12 +17,12 @@
 #ifndef __VISITOR_H
 #define __VISITOR_H
 
-#include "envirdefs.h"
+#include "common/patternmatcher.h"
+#include "common/matchexpression.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cobject.h"
 #include "omnetpp/cvisitor.h"
-#include "common/patternmatcher.h"
-#include "common/matchexpression.h"
+#include "envirdefs.h"
 #include "matchableobject.h"
 
 NAMESPACE_BEGIN

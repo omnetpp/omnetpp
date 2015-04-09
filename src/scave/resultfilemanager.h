@@ -26,10 +26,10 @@
 #include <map>
 #include <list>
 
-#include "idlist.h"
-#include "enumtype.h"
 #include "common/exception.h"
 #include "common/commonutil.h"
+#include "idlist.h"
+#include "enumtype.h"
 #include "statistics.h"
 #include "scaveutils.h"
 

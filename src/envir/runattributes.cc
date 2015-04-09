@@ -18,11 +18,11 @@
 #include "omnetpp/simkerneldefs.h"
 
 #include <string.h>
+#include "common/stringutil.h"
 #include "omnetpp/cconfigoption.h"
+#include "omnetpp/csimulation.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "envirbase.h"
-#include "omnetpp/csimulation.h"
-#include "common/stringutil.h"
 #include "runattributes.h"
 
 NAMESPACE_BEGIN

@@ -21,9 +21,9 @@
 #ifndef __CSCHEDULER_H
 #define __CSCHEDULER_H
 
+#include "platdep/timeutil.h"  // for timeval
 #include "cobject.h"
 #include "clifecyclelistener.h"
-#include "platdep/timeutil.h"  // for timeval
 
 NAMESPACE_BEGIN
 

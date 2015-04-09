@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "matchableobject.h"
 #include "omnetpp/cclassdescriptor.h"
+#include "matchableobject.h"
 
 NAMESPACE_BEGIN
 

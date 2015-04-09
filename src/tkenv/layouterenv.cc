@@ -22,11 +22,11 @@
 #include <math.h>
 #include <assert.h>
 
+#include "omnetpp/cmodule.h"
+#include "omnetpp/cdisplaystring.h"
 #include "layouterenv.h"
 #include "tklib.h"
 #include "tkutil.h"
-#include "omnetpp/cmodule.h"
-#include "omnetpp/cdisplaystring.h"
 
 NAMESPACE_BEGIN
 

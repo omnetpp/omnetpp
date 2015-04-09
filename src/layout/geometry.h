@@ -20,9 +20,9 @@
 #include <math.h>
 #include <vector>
 #include <algorithm>
-#include "layoutdefs.h"
 #include "common/commonutil.h"
 #include "common/exception.h"
+#include "layoutdefs.h"
 
 NAMESPACE_BEGIN
 

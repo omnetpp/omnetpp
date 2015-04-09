@@ -14,10 +14,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "common/fileutil.h"
 #include "nedtools.h"
 #include "nederror.h"
 #include "neddtdvalidator.h"
-#include "common/fileutil.h"
 
 NAMESPACE_BEGIN
 

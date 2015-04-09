@@ -23,11 +23,11 @@
 #include <sstream>
 #include <string>
 
+#include "common/opp_ctype.h"
 #include "nedparser.h"
 #include "nedfilebuffer.h"
 #include "nedelements.h"
 #include "nederror.h"
-#include "common/opp_ctype.h"
 
 #include "nedyydefs.h"
 

@@ -25,8 +25,8 @@
 #include <stdlib.h>  // for gcvt
 #include <typeinfo>  // for type_info
 #include <string>    // for std::string
-#include "simkerneldefs.h"
 #include "platdep/platmisc.h" // for gcvt, etc
+#include "simkerneldefs.h"
 #include "errmsg.h"
 
 NAMESPACE_BEGIN

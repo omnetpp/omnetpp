@@ -22,6 +22,8 @@
 #include <math.h>            // pow
 #include <stdio.h>           // sprintf
 #include <string.h>          // strcpy
+#include "common/stringutil.h"
+#include "common/stringpool.h"
 #include "omnetpp/cpacket.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/carray.h"
@@ -33,8 +35,6 @@
 #include "omnetpp/cdataratechannel.h"
 #include "omnetpp/cdisplaystring.h"
 #include "omnetpp/ccomponenttype.h"
-#include "common/stringutil.h"
-#include "common/stringpool.h"
 #include "omnetpp/simutil.h"
 #include "omnetpp/cmodelchange.h"
 

@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "resultfilters.h"
 #include "omnetpp/cpacket.h"  // PacketBytesFilter
+#include "resultfilters.h"
 
 NAMESPACE_BEGIN
 

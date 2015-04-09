@@ -18,8 +18,8 @@
 #ifndef _CUSTOMFILTER_H_
 #define _CUSTOMFILTER_H_
 
-#include "commonnodes.h"
 #include "common/expression.h"
+#include "commonnodes.h"
 
 NAMESPACE_BEGIN
 

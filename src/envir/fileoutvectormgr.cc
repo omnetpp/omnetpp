@@ -21,16 +21,16 @@
 #include <string.h>
 #include <fstream>
 #include "common/opp_ctype.h"
-#include "omnetpp/cconfigoption.h"
 #include "common/fileutil.h"
+#include "common/stringutil.h"
+#include "omnetpp/cconfigoption.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/ccomponenttype.h"
 #include "omnetpp/platdep/timeutil.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "envirbase.h"
-#include "omnetpp/csimulation.h"
-#include "omnetpp/cmodule.h"
 #include "fileoutvectormgr.h"
-#include "omnetpp/ccomponenttype.h"
-#include "common/stringutil.h"
 
 NAMESPACE_BEGIN
 

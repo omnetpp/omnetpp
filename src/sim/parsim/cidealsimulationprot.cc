@@ -24,15 +24,15 @@
 #include "omnetpp/cgate.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cconfiguration.h"
-#include "cidealsimulationprot.h"
-#include "cplaceholdermod.h"
-#include "cparsimpartition.h"
 #include "omnetpp/cparsimcomm.h"
 #include "omnetpp/ccommbuffer.h"
-#include "messagetags.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/regmacros.h"
+#include "cidealsimulationprot.h"
+#include "cplaceholdermod.h"
+#include "cparsimpartition.h"
+#include "messagetags.h"
 
 NAMESPACE_BEGIN
 

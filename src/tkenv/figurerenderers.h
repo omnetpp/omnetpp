@@ -17,8 +17,8 @@
 #ifndef __FIGURERENDERERS_H
 #define __FIGURERENDERERS_H
 
-#include "tkdefs.h"
 #include "omnetpp/ccanvas.h"
+#include "tkdefs.h"
 
 NAMESPACE_BEGIN
 

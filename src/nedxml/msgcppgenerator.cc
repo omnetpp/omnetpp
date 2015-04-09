@@ -20,13 +20,13 @@
 #include <algorithm>
 #include <cctype>
 
+#include "common/stringtokenizer.h"
+#include "common/stringutil.h"
+#include "omnetpp/platdep/platmisc.h"  // unlink()
 #include "msgcppgenerator.h"
 #include "ned2generator.h"
 #include "nedexception.h"
 #include "nedutil.h"
-#include "common/stringtokenizer.h"
-#include "common/stringutil.h"
-#include "omnetpp/platdep/platmisc.h"  // unlink()
 
 #include "omnetpp/simkerneldefs.h"
 

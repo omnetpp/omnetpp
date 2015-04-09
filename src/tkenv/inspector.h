@@ -17,8 +17,8 @@
 #ifndef __INSPECTOR_H
 #define __INSPECTOR_H
 
-#include "tkutil.h"
 #include "envir/envirbase.h"
+#include "tkutil.h"
 
 NAMESPACE_BEGIN
 

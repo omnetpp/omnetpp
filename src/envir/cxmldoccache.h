@@ -24,8 +24,8 @@
 #include <map>
 #include <string>
 #include "omnetpp/simkerneldefs.h"
-#include "envirdefs.h"
 #include "omnetpp/cxmlelement.h"
+#include "envirdefs.h"
 
 NAMESPACE_BEGIN
 

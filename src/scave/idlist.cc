@@ -22,9 +22,9 @@
 #include <stdlib.h>
 #include <algorithm>
 #include <functional>
+#include "common/stringutil.h"
 #include "idlist.h"
 #include "resultfilemanager.h"
-#include "common/stringutil.h"
 #include "scaveutils.h"
 
 #ifdef THREADED

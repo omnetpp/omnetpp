@@ -23,16 +23,15 @@
 
 #ifndef USE_WINDOWS_PIPES
 
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include "omnetpp/cexception.h"
-#include "cmemcommbuffer.h"
 #include "omnetpp/clog.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/regmacros.h"
@@ -40,6 +39,7 @@
 #include "omnetpp/cenvir.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cconfiguration.h"
+#include "cmemcommbuffer.h"
 #include "parsimutil.h"
 
 NAMESPACE_BEGIN

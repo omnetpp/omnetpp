@@ -20,16 +20,16 @@
 #include <time.h>
 #include <algorithm>
 
+#include "common/stringutil.h"
+#include "common/unitconversion.h"
 #include "nedxml/nedelements.h"
 #include "nedxml/nederror.h"
-#include "cexpressionbuilder.h"
+#include "nedxml/xmlgenerator.h"
 #include "omnetpp/cnedmathfunction.h"
 #include "omnetpp/cnedfunction.h"
 #include "omnetpp/cparimpl.h"
-#include "nedxml/xmlgenerator.h"
 #include "omnetpp/nedsupport.h"
-#include "common/stringutil.h"
-#include "common/unitconversion.h"
+#include "cexpressionbuilder.h"
 
 NAMESPACE_BEGIN
 

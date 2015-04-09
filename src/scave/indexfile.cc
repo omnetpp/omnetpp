@@ -14,10 +14,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <sys/stat.h>
 #include <stdint.h>
 #include <algorithm>
 #include <locale.h>
-#include <sys/stat.h>
 #include "common/exception.h"
 #include "common/filereader.h"
 #include "common/linetokenizer.h"

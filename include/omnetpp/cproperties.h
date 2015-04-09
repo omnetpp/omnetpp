@@ -16,10 +16,10 @@
 #ifndef __CPROPERTIES_H
 #define __CPROPERTIES_H
 
+#include <vector>
 #include "simkerneldefs.h"
 #include "globals.h"
 #include "cobject.h"
-#include <vector>
 
 NAMESPACE_BEGIN
 

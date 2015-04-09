@@ -20,12 +20,12 @@
 
 #include <map>
 #include <string>
+#include "common/filereader.h"
+#include "common/linetokenizer.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "node.h"
 #include "nodetype.h"
 #include "commonnodes.h"
-#include "common/filereader.h"
-#include "common/linetokenizer.h"
 #include "resultfilemanager.h"
 
 NAMESPACE_BEGIN

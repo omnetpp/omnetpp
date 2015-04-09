@@ -19,8 +19,8 @@
 #ifndef __CCOROUTINE_H
 #define __CCOROUTINE_H
 
-#include "simkerneldefs.h"
 #include "platdep/platmisc.h"  // for <windows.h>
+#include "simkerneldefs.h"
 
 // select coroutine library
 #ifdef _WIN32

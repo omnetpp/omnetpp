@@ -19,19 +19,19 @@
 #include <algorithm>
 #include <sstream>
 #include "common/opp_ctype.h"
-#include "sectionbasedconfig.h"
-#include "omnetpp/cconfigreader.h"
 #include "common/patternmatcher.h"
-#include "valueiterator.h"
-#include "omnetpp/cexception.h"
-#include "scenario.h"
-#include "omnetpp/globals.h"
-#include "omnetpp/cconfigoption.h"
 #include "common/stringtokenizer.h"
 #include "common/stringtokenizer2.h"
-#include "omnetpp/platdep/timeutil.h"
 #include "common/stringutil.h"
+#include "omnetpp/cconfigreader.h"
+#include "omnetpp/cexception.h"
+#include "omnetpp/globals.h"
+#include "omnetpp/cconfigoption.h"
+#include "omnetpp/platdep/timeutil.h"
 #include "omnetpp/platdep/platmisc.h"   //getpid()
+#include "sectionbasedconfig.h"
+#include "valueiterator.h"
+#include "scenario.h"
 
 NAMESPACE_BEGIN
 

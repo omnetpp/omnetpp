@@ -20,9 +20,9 @@
 #define __SPEEDOMETER_H
 
 #include "omnetpp/simkerneldefs.h"
-#include "envirdefs.h"
 #include "omnetpp/simtime_t.h"
 #include "omnetpp/platdep/timeutil.h"
+#include "envirdefs.h"
 
 NAMESPACE_BEGIN
 

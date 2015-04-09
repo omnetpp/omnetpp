@@ -19,11 +19,11 @@
 
 #include <map>
 #include <string>
+#include "common/filereader.h"
+#include "common/linetokenizer.h"
 #include "node.h"
 #include "nodetype.h"
 #include "commonnodes.h"
-#include "common/filereader.h"
-#include "common/linetokenizer.h"
 #include "indexfile.h"
 #include "resultfilemanager.h"
 

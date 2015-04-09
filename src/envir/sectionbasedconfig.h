@@ -22,10 +22,10 @@
 #include <vector>
 #include <set>
 #include <string>
-#include "envirdefs.h"
+#include "common/stringpool.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigreader.h"
-#include "common/stringpool.h"
+#include "envirdefs.h"
 
 NAMESPACE_BEGIN
 

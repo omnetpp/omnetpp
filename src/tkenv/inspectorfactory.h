@@ -17,10 +17,10 @@
 #ifndef __INSPECTORFACTORY_H
 #define __INSPECTORFACTORY_H
 
+#include "envir/envirbase.h"
 #include "omnetpp/onstartup.h"
 #include "omnetpp/cregistrationlist.h"
 #include "inspector.h"
-#include "envir/envirbase.h"
 
 NAMESPACE_BEGIN
 

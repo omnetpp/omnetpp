@@ -16,9 +16,9 @@
 
 #include <time.h>
 #include "common/ver.h"
-#include "omnetpp/platdep/platmisc.h"
 #include "common/filereader.h"
 #include "common/linetokenizer.h"
+#include "omnetpp/platdep/platmisc.h"
 #include "eventlogindex.h"
 #include "eventlog.h"
 #include "filteredeventlog.h"

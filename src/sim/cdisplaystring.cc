@@ -17,12 +17,12 @@
 #include <string.h>
 #include <stdio.h>
 #include "common/opp_ctype.h"
+#include "common/stringutil.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cgate.h"
 #include "omnetpp/cdisplaystring.h"
-#include "common/stringutil.h"
 #include "omnetpp/cmodelchange.h"
 
 NAMESPACE_BEGIN

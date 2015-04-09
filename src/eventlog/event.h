@@ -20,8 +20,8 @@
 #include <sstream>
 #include <algorithm>
 #include <vector>
-#include "ievent.h"
 #include "common/filereader.h"
+#include "ievent.h"
 #include "eventlogentry.h"
 #include "eventlogentries.h"
 #include "messagedependency.h"

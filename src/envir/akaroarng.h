@@ -23,10 +23,10 @@
 #ifndef __AKAROARNG_H
 #define __AKAROARNG_H
 
-#include "envirdefs.h"
 #include "omnetpp/simkerneldefs.h"
 #include "omnetpp/crng.h"
 #include "omnetpp/cconfiguration.h"
+#include "envirdefs.h"
 
 NAMESPACE_BEGIN
 

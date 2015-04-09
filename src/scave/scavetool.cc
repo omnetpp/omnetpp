@@ -19,6 +19,8 @@
 #include <sstream>
 #include "common/ver.h"
 #include "common/linetokenizer.h"
+#include "common/stringutil.h"
+#include "common/stringtokenizer.h"
 #include "resultfilemanager.h"
 #include "nodetype.h"
 #include "nodetyperegistry.h"
@@ -31,8 +33,6 @@
 #include "arraybuilder.h"
 #include "export.h"
 #include "fields.h"
-#include "common/stringutil.h"
-#include "common/stringtokenizer.h"
 #include "scaveutils.h"
 
 NAMESPACE_BEGIN

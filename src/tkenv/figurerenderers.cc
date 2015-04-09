@@ -14,11 +14,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "tkutil.h"
-#include "figurerenderers.h"
+#include "common/stringutil.h"
 #include "omnetpp/cobjectfactory.h"
 #include "omnetpp/checkandcast.h"
-#include "common/stringutil.h"
+#include "tkutil.h"
+#include "figurerenderers.h"
 #include "tkenv.h"
 
 NAMESPACE_BEGIN

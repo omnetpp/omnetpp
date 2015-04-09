@@ -30,7 +30,6 @@
 #include <iostream>
 
 #include "omnetpp/cexception.h"
-#include "cmemcommbuffer.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/regmacros.h"
 #include "omnetpp/cenvir.h"
@@ -38,6 +37,7 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
+#include "cmemcommbuffer.h"
 #include "parsimutil.h"
 
 NAMESPACE_BEGIN

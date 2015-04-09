@@ -24,18 +24,18 @@
 #include "omnetpp/cgate.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cconfiguration.h"
-#include "cnullmessageprot.h"
-#include "clinkdelaylookahead.h"
-#include "cparsimpartition.h"
 #include "omnetpp/cparsimcomm.h"
 #include "omnetpp/ccommbuffer.h"
-#include "messagetags.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/regmacros.h"
+#include "omnetpp/cchannel.h"
+#include "cnullmessageprot.h"
+#include "clinkdelaylookahead.h"
+#include "cparsimpartition.h"
+#include "messagetags.h"
 #include "cplaceholdermod.h"
 #include "cproxygate.h"
-#include "omnetpp/cchannel.h"
 
 NAMESPACE_BEGIN
 

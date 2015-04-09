@@ -22,10 +22,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <sstream>
-#include "cproxygate.h"
-#include "cparsimpartition.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cmessage.h"
+#include "cproxygate.h"
+#include "cparsimpartition.h"
 
 NAMESPACE_BEGIN
 

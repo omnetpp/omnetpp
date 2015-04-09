@@ -20,10 +20,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "nedexception.h"
-#include "nedutil.h"
 #include "common/stringutil.h"
 #include "common/displaystring.h"
+#include "nedexception.h"
+#include "nedutil.h"
 #include "nedelements.h"
 
 NAMESPACE_BEGIN

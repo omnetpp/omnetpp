@@ -19,10 +19,10 @@
 #define __FILEOUTPUTSCALARMGR_H
 
 #include <stdio.h>
-#include "envirdefs.h"
+#include "common/stringutil.h"
 #include "omnetpp/envirext.h"
 #include "omnetpp/simutil.h"
-#include "common/stringutil.h"
+#include "envirdefs.h"
 #include "runattributes.h"
 
 NAMESPACE_BEGIN

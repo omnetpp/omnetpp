@@ -15,10 +15,10 @@
 *--------------------------------------------------------------*/
 
 #include <string.h>
-#include "tklib.h"
-#include "logbuffer.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cmessage.h"
+#include "tklib.h"
+#include "logbuffer.h"
 
 NAMESPACE_BEGIN
 

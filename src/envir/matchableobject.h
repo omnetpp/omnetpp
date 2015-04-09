@@ -18,9 +18,9 @@
 #ifndef __MATCHABLEOBJECT_H
 #define __MATCHABLEOBJECT_H
 
-#include "envirdefs.h"
-#include "omnetpp/cobject.h"
 #include "common/matchexpression.h"
+#include "omnetpp/cobject.h"
+#include "envirdefs.h"
 
 NAMESPACE_BEGIN
 

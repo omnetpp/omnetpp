@@ -15,6 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "common/stringutil.h"
 #include "omnetpp/cdynamicexpression.h"
 #include "omnetpp/cxmlelement.h"
 #include "omnetpp/cnedmathfunction.h"
@@ -24,7 +25,6 @@
 #include "omnetpp/cmodule.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/nedsupport.h"
-#include "common/stringutil.h"
 
 NAMESPACE_BEGIN
 

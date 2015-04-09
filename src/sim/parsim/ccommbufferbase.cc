@@ -19,8 +19,8 @@
 *--------------------------------------------------------------*/
 
 
-#include "ccommbufferbase.h"
 #include "omnetpp/cexception.h"
+#include "ccommbufferbase.h"
 
 NAMESPACE_BEGIN
 

@@ -15,15 +15,15 @@
 *--------------------------------------------------------------*/
 
 
+#include <libxml/parser.h>
+#include <libxml/xinclude.h>
+#include <libxml/SAX.h>
 #include <string>
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include <libxml/parser.h>
-#include <libxml/xinclude.h>
-#include <libxml/SAX.h>
 #include "saxparser.h"
 
 NAMESPACE_BEGIN

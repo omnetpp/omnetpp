@@ -26,6 +26,7 @@
 #include <math.h>
 #include <string>
 
+#include "common/stringutil.h"
 #include "omnetpp/cstatistic.h"
 #include "omnetpp/random.h"
 #include "omnetpp/distrib.h"
@@ -34,7 +35,6 @@
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cenvir.h"
-#include "common/stringutil.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"

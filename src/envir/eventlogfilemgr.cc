@@ -18,12 +18,9 @@
 #include <algorithm>
 #include "common/opp_ctype.h"
 #include "common/commonutil.h"  //vsnprintf
-#include "eventlogfilemgr.h"
-#include "eventlogwriter.h"
-#include "omnetpp/cconfigoption.h"
 #include "common/fileutil.h"
+#include "omnetpp/cconfigoption.h"
 #include "omnetpp/cconfiguration.h"
-#include "envirbase.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cpacket.h"
 #include "omnetpp/cgate.h"
@@ -31,6 +28,9 @@
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/cdisplaystring.h"
 #include "omnetpp/cclassdescriptor.h"
+#include "eventlogfilemgr.h"
+#include "eventlogwriter.h"
+#include "envirbase.h"
 
 NAMESPACE_BEGIN
 

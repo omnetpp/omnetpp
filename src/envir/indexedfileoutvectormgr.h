@@ -24,9 +24,9 @@
 #include <stdio.h>
 #include <float.h>
 #include <deque>
-#include "omnetpp/platdep/platmisc.h"
 #include "omnetpp/envirext.h"
 #include "omnetpp/simutil.h"
+#include "omnetpp/platdep/platmisc.h"
 #include "fileoutvectormgr.h"
 
 NAMESPACE_BEGIN

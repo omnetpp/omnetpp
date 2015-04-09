@@ -14,26 +14,24 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cnedloader.h"
+#include "common/stringutil.h"
+#include "common/fileutil.h"
 #include "nedxml/nedelements.h"
 #include "nedxml/nederror.h"
-
 #include "omnetpp/cproperty.h"
 #include "omnetpp/cproperties.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cenvir.h"
-#include "cexpressionbuilder.h"
 #include "omnetpp/cpar.h"
 #include "omnetpp/clongparimpl.h"
 #include "omnetpp/cdoubleparimpl.h"
 #include "omnetpp/globals.h"
+#include "omnetpp/cdisplaystring.h"
+#include "cnedloader.h"
+#include "cexpressionbuilder.h"
 #include "cdynamicmoduletype.h"
 #include "cdynamicchanneltype.h"
-#include "omnetpp/cdisplaystring.h"
-
-#include "common/stringutil.h"
-#include "common/fileutil.h"
 
 NAMESPACE_BEGIN
 

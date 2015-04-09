@@ -14,10 +14,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "omnetpp/platdep/platmisc.h"   // strncasecmp
 #include "stringutil.h"
 #include "matchexpression.tab.hh"  // token values
 #include "matchexpressionlexer.h"
-#include "omnetpp/platdep/platmisc.h"   // strncasecmp
 
 NAMESPACE_BEGIN
 

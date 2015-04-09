@@ -15,9 +15,9 @@
 *--------------------------------------------------------------*/
 
 #include <float.h>
+#include "common/lcgrandom.h"
 #include "forcedirectedembedding.h"
 #include "forcedirectedparameters.h"
-#include "common/lcgrandom.h"
 
 NAMESPACE_BEGIN
 

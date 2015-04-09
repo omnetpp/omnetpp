@@ -16,14 +16,14 @@
 *--------------------------------------------------------------*/
 
 #include "common/stringutil.h"
+#include "common/commonutil.h"
+#include "common/stringtokenizer.h"
+#include "common/matchexpression.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/carray.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cgate.h"
 #include "omnetpp/cclassdescriptor.h"
-#include "common/commonutil.h"
-#include "common/stringtokenizer.h"
-#include "common/matchexpression.h"
 #include "matchablefield.h"
 #include "matchableobject.h"
 #include "objectprinter.h"

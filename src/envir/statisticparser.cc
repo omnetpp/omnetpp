@@ -15,9 +15,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "statisticparser.h"
 #include "sim/resultfilters.h"    // WarmupFilter, ExpressionFilter
 #include "sim/resultrecorders.h"  // ExpressionRecorder
+#include "statisticparser.h"
 
 NAMESPACE_BEGIN
 

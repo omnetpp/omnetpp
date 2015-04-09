@@ -17,19 +17,19 @@
 
 #ifdef WITH_AKAROA
 
+#include <akaroa/ak_message.H>
 #include <assert.h>
 #include <string.h>
 #include <akaroa.H>
-#include <akaroa/ak_message.H>
 #include "omnetpp/cenvir.h"
-#include "envirbase.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cstatistic.h"
 #include "omnetpp/regmacros.h"
-#include "akoutvectormgr.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
+#include "envirbase.h"
+#include "akoutvectormgr.h"
 
 NAMESPACE_BEGIN
 

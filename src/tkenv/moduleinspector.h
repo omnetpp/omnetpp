@@ -18,8 +18,8 @@
 #define __MODULEINSPECTOR_H
 
 #include <map>
-#include "inspector.h"
 #include "omnetpp/ccanvas.h"
+#include "inspector.h"
 
 NAMESPACE_BEGIN
 

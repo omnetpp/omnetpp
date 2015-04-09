@@ -22,6 +22,17 @@
 #include <iostream>
 #include <algorithm>
 
+#include "common/commonutil.h"  // TRACE_CALL()
+#include "common/stringutil.h"
+#include "common/patternmatcher.h"
+#include "nedxml/nedelements.h"
+#include "nedxml/nederror.h"
+#include "nedxml/nedparser.h"
+#include "nedxml/nedxmlparser.h"
+#include "nedxml/neddtdvalidator.h"
+#include "nedxml/nedsyntaxvalidator.h"
+#include "nedxml/nedutil.h"
+#include "nedxml/xmlgenerator.h"  // for debugging
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cgate.h"
 #include "omnetpp/cchannel.h"
@@ -34,24 +45,10 @@
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cenvir.h"
-
-#include "nedxml/nedelements.h"
-#include "nedxml/nederror.h"
-
-#include "nedxml/nedparser.h"
-#include "nedxml/nedxmlparser.h"
-#include "nedxml/neddtdvalidator.h"
-#include "nedxml/nedsyntaxvalidator.h"
-#include "nedxml/nedutil.h"
-#include "nedxml/xmlgenerator.h"  // for debugging
-
+#include "omnetpp/nedsupport.h"
 #include "cnednetworkbuilder.h"
 #include "cnedloader.h"
 #include "cexpressionbuilder.h"
-#include "omnetpp/nedsupport.h"
-#include "common/commonutil.h"  // TRACE_CALL()
-#include "common/stringutil.h"
-#include "common/patternmatcher.h"
 
 NAMESPACE_BEGIN
 
@@ -1189,7 +1186,7 @@ cChannel *cNEDNetworkBuilder::createChannel(ConnectionElement *conn, cModule *pa
 {
     // resolve channel type
     const char *channelName = conn->getName();
-    if (opp_isempty(channelName)) 
+    if (opp_isempty(channelName))
 		channelName = NULL; // use NULL to indicate "no name"
 
     cChannelType *channeltype;

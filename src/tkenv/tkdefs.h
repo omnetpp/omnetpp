@@ -18,10 +18,10 @@
 #ifndef __TKDEFS_H
 #define __TKDEFS_H
 
+#include <tk.h>                         // included here for all tkenv, to avoid troubles noted above
 #include "omnetpp/platdep/platdefs.h"
 #include "omnetpp/platdep/platmisc.h"   // must precede tk.h otherwise Visual Studio 2013 fails to compile
 #include "omnetpp/platdep/timeutil.h"   // must precede <tk.h>, due to collision with <windows.h>
-#include <tk.h>                         // included here for all tkenv, to avoid troubles noted above
 
 #if defined(TKENV_EXPORT)
 #  define TKENV_API OPP_DLLEXPORT

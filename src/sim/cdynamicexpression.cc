@@ -15,17 +15,17 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "common/stringutil.h"
+#include "common/unitconversion.h"
 #include "omnetpp/cdynamicexpression.h"
 #include "omnetpp/cxmlelement.h"
 #include "omnetpp/cnedmathfunction.h"
 #include "omnetpp/cnedfunction.h"
 #include "omnetpp/cexception.h"
-#include "expryydefs.h"
 #include "omnetpp/cpar.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cmodule.h"
-#include "common/stringutil.h"
-#include "common/unitconversion.h"
+#include "expryydefs.h"
 
 NAMESPACE_BEGIN
 

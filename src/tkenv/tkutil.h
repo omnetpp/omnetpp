@@ -18,9 +18,9 @@
 #ifndef __TKUTIL_H
 #define __TKUTIL_H
 
-#include "tkdefs.h"
-#include "omnetpp/cobject.h"
 #include "envir/visitor.h"
+#include "omnetpp/cobject.h"
+#include "tkdefs.h"
 
 NAMESPACE_BEGIN
 

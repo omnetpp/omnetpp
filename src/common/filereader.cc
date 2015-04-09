@@ -15,11 +15,11 @@
 *--------------------------------------------------------------*/
 
 
+#include <sys/stat.h>
 #include <sstream>
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
-#include <sys/stat.h>
 #include <algorithm>
 #include "omnetpp/platdep/platmisc.h"
 #include "commonutil.h"

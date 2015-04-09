@@ -14,6 +14,7 @@
 *--------------------------------------------------------------*/
 
 #include <algorithm>
+#include "common/stringutil.h"
 #include "omnetpp/ccomponent.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/cmodule.h"
@@ -28,7 +29,6 @@
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cdisplaystring.h"
-#include "common/stringutil.h"
 #include "omnetpp/cenvir.h"
 
 NAMESPACE_BEGIN

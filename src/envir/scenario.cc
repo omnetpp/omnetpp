@@ -18,11 +18,11 @@
 #include <assert.h>
 #include <algorithm>
 #include <sstream>
-#include "scenario.h"
-#include "valueiterator.h"
-#include "omnetpp/cexception.h"
 #include "common/stringutil.h"
 #include "common/unitconversion.h"
+#include "omnetpp/cexception.h"
+#include "scenario.h"
+#include "valueiterator.h"
 
 NAMESPACE_BEGIN
 

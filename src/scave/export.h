@@ -23,8 +23,8 @@
 #include <set>
 #include <fstream>
 #include <utility>
-#include "scavedefs.h"
 #include "common/bigdecimal.h"
+#include "scavedefs.h"
 #include "xyarray.h"
 #include "resultfilemanager.h"
 #include "datasorter.h"

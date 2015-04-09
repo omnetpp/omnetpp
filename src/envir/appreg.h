@@ -21,10 +21,10 @@
 #ifndef __APPREG_H
 #define __APPREG_H
 
-#include "envirdefs.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/onstartup.h"
+#include "envirdefs.h"
 
 NAMESPACE_BEGIN
 

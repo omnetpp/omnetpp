@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "omnetpp/cenvir.h"
 #include "common/commonutil.h"
+#include "omnetpp/cenvir.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/csimulation.h"
 

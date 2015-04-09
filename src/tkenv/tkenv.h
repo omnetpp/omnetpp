@@ -19,12 +19,12 @@
 
 #include <vector>
 #include <list>
-#include "tkdefs.h"
-#include "logbuffer.h"
 #include "envir/envirbase.h"
+#include "envir/speedometer.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cmodule.h"
-#include "envir/speedometer.h"
+#include "tkdefs.h"
+#include "logbuffer.h"
 #include "componenthistory.h"
 
 NAMESPACE_BEGIN

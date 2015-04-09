@@ -14,17 +14,17 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cneddeclaration.h"
+#include "common/stringutil.h"
+#include "common/patternmatcher.h"
+#include "nedxml/nederror.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cdynamicexpression.h"
 #include "omnetpp/cgate.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cdisplaystring.h"
+#include "cneddeclaration.h"
 #include "cnedloader.h"
-#include "nedxml/nederror.h"
-#include "common/stringutil.h"
-#include "common/patternmatcher.h"
 
 NAMESPACE_BEGIN
 

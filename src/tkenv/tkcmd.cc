@@ -20,6 +20,13 @@
 #include <algorithm>
 #include <locale.h>
 
+#include "common/patternmatcher.h"
+#include "common/opp_ctype.h"
+#include "common/stringutil.h"
+#include "common/stringtokenizer.h"
+#include "common/unitconversion.h"
+#include "envir/visitor.h"
+#include "envir/fsutils.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/carray.h"
 #include "omnetpp/csimulation.h"
@@ -36,19 +43,11 @@
 #include "omnetpp/coutvector.h"
 #include "omnetpp/cenum.h"
 #include "omnetpp/ccanvas.h"
-
 #include "tkenv.h"
 #include "tklib.h"
 #include "tkutil.h"
 #include "inspector.h"
 #include "inspectorfactory.h"
-#include "common/patternmatcher.h"
-#include "envir/visitor.h"
-#include "envir/fsutils.h"
-#include "common/opp_ctype.h"
-#include "common/stringutil.h"
-#include "common/stringtokenizer.h"
-#include "common/unitconversion.h"
 
 NAMESPACE_BEGIN
 

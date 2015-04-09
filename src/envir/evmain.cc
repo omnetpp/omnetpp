@@ -18,10 +18,10 @@
 *--------------------------------------------------------------*/
 
 #include <stdio.h>
+#include "common/ver.h"
 #include "omnetpp/cownedobject.h"
 #include "envirdefs.h"
 #include "startup.h"
-#include "common/ver.h"
 
 NAMESPACE_BEGIN
 //

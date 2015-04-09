@@ -20,10 +20,10 @@
 #include <string>
 #include <exception>
 #include <stdexcept>
-#include "omnetpp/platdep/platmisc.h"
 #include "common/commondefs.h"
-#include "scavedefs.h"
 #include "common/exception.h"
+#include "omnetpp/platdep/platmisc.h"
+#include "scavedefs.h"
 
 NAMESPACE_BEGIN
 

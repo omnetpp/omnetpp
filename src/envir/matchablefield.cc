@@ -16,8 +16,8 @@
 *--------------------------------------------------------------*/
 
 #include "common/commonutil.h"
-#include "matchablefield.h"
 #include "omnetpp/cclassdescriptor.h"
+#include "matchablefield.h"
 
 NAMESPACE_BEGIN
 

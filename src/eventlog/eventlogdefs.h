@@ -18,10 +18,10 @@
 #define _EVENTLOGDEFS_H_
 
 #include <stdint.h> // for int64_t, our equivalent of Java's "long" type
-#include "omnetpp/platdep/platdefs.h"
 #include "common/exception.h"
 #include "common/commonutil.h"
 #include "common/bigdecimal.h"
+#include "omnetpp/platdep/platdefs.h"
 
 NAMESPACE_BEGIN
 

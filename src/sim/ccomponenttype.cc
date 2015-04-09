@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include <string.h>
+#include "common/patternmatcher.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/csimplemodule.h"
@@ -32,7 +33,6 @@
 #include "omnetpp/cenum.h"
 #include "omnetpp/ccanvas.h"
 #include "omnetpp/cobjectfactory.h"
-#include "common/patternmatcher.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"

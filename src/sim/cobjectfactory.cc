@@ -15,9 +15,9 @@
 *--------------------------------------------------------------*/
 
 #include <string.h>
+#include "common/stringutil.h"
 #include "omnetpp/cobjectfactory.h"
 #include "omnetpp/cexception.h"
-#include "common/stringutil.h"
 
 NAMESPACE_BEGIN
 

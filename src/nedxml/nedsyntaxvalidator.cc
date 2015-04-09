@@ -23,10 +23,10 @@
 #include <assert.h>
 #include <locale.h>
 #include "common/opp_ctype.h"
-#include "nederror.h"
-#include "nedsyntaxvalidator.h"
 #include "common/stringutil.h"
 #include "common/unitconversion.h"
+#include "nederror.h"
+#include "nedsyntaxvalidator.h"
 
 NAMESPACE_BEGIN
 

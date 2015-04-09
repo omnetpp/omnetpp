@@ -21,12 +21,12 @@
 #include <math.h>
 #include <assert.h>
 #include <algorithm>
+#include "common/stringutil.h"
 #include "omnetpp/cobject.h"
 #include "tkenv.h"
 #include "tklib.h"
 #include "inspector.h"
 #include "inspectorfactory.h"
-#include "common/stringutil.h"
 
 NAMESPACE_BEGIN
 

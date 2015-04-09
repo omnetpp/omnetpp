@@ -19,9 +19,9 @@
 #include <locale.h>
 #include <cstdlib>
 #include <errno.h>
+#include "omnetpp/platdep/platmisc.h"  //strcasecmp
 #include "opp_ctype.h"
 #include "stringutil.h"
-#include "omnetpp/platdep/platmisc.h"  //strcasecmp
 #include "unitconversion.h"
 
 NAMESPACE_BEGIN

@@ -22,19 +22,19 @@
 #include <stdio.h>
 #include "omnetpp/cmessage.h"
 #include "omnetpp/errmsg.h"
-#include "cplaceholdermod.h"
-#include "cproxygate.h"
-#include "cparsimpartition.h"
 #include "omnetpp/ccommbuffer.h"
 #include "omnetpp/cparsimcomm.h"
-#include "cparsimsynchr.h"
-#include "creceivedexception.h"
-#include "messagetags.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/regmacros.h"
+#include "cplaceholdermod.h"
+#include "cproxygate.h"
+#include "cparsimpartition.h"
+#include "cparsimsynchr.h"
+#include "creceivedexception.h"
+#include "messagetags.h"
 
 NAMESPACE_BEGIN
 

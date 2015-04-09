@@ -21,12 +21,12 @@
 #include <sstream>
 #include <string>
 #include "common/opp_ctype.h"
-#include "omnetpp/platdep/platmisc.h"
 #include "omnetpp/cxmlelement.h"
-#include "minixpath.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cmodule.h" // for ModNameParamResolver
+#include "omnetpp/platdep/platmisc.h"
+#include "minixpath.h"
 
 NAMESPACE_BEGIN
 

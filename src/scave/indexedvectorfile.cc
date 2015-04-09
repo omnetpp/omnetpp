@@ -16,11 +16,11 @@
 
 #include <locale.h>
 #include <stdlib.h>
-#include "omnetpp/platdep/platmisc.h"
 #include "common/exception.h"
 #include "common/linetokenizer.h"
-#include "channel.h"
 #include "common/stringutil.h"
+#include "omnetpp/platdep/platmisc.h"
+#include "channel.h"
 #include "indexedvectorfile.h"
 #include "scaveutils.h"
 

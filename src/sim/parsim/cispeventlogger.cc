@@ -20,13 +20,13 @@
 
 
 #include <stdio.h>
-#include "cispeventlogger.h"
-#include "cidealsimulationprot.h"
 #include "omnetpp/cparsimcomm.h"
-#include "cplaceholdermod.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/regmacros.h"
+#include "cispeventlogger.h"
+#include "cidealsimulationprot.h"
+#include "cplaceholdermod.h"
 
 NAMESPACE_BEGIN
 

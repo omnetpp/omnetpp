@@ -17,8 +17,8 @@
 #ifndef __CANVASINSPECTOR_H
 #define __CANVASINSPECTOR_H
 
-#include "inspector.h"
 #include "omnetpp/ccanvas.h"
+#include "inspector.h"
 #include "canvasrenderer.h"
 
 NAMESPACE_BEGIN

@@ -23,6 +23,7 @@
 #include <stdio.h>           // sprintf
 #include <string.h>          // strcpy
 #include <exception>
+#include "common/commonutil.h"
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/cgate.h"
 #include "omnetpp/cpacket.h"
@@ -33,7 +34,6 @@
 #include "omnetpp/cqueue.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cexception.h"
-#include "common/commonutil.h"
 #include "omnetpp/platdep/platmisc.h"  // for DEBUG_TRAP
 
 NAMESPACE_BEGIN

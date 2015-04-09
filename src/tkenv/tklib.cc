@@ -24,10 +24,10 @@
 #include <time.h>
 #include <assert.h>
 
+#include "common/exception.h"
 #include "tklib.h"
 #include "tkutil.h"
 #include "tkenv.h"
-#include "common/exception.h"
 
 NAMESPACE_BEGIN
 

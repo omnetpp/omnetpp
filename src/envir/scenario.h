@@ -22,8 +22,8 @@
 #include <vector>
 #include <set>
 #include <string>
-#include "envirdefs.h"
 #include "common/expression.h"
+#include "envirdefs.h"
 #include "sectionbasedconfig.h"
 #include "valueiterator.h"
 

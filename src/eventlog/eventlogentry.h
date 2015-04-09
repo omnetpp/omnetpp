@@ -18,11 +18,11 @@
 #define __EVENTLOGENTRY_H_
 
 #include <sstream>
-#include "omnetpp/platdep/platmisc.h"
 #include "common/matchexpression.h"
-#include "eventlogdefs.h"
 #include "common/linetokenizer.h"
+#include "omnetpp/platdep/platmisc.h"
 #include "omnetpp/platdep/platmisc.h" // INT64_PRINTF_FORMAT
+#include "eventlogdefs.h"
 
 NAMESPACE_BEGIN
 

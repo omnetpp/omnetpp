@@ -21,6 +21,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include "nedxml/nedtypeinfo.h"
 #include "omnetpp/simkerneldefs.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cownedobject.h"
@@ -28,8 +29,6 @@
 #include "omnetpp/cgate.h"
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cproperty.h"
-
-#include "nedxml/nedtypeinfo.h"
 
 NAMESPACE_BEGIN
 

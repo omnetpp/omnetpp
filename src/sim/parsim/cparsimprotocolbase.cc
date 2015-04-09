@@ -23,9 +23,9 @@
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cgate.h"
 #include "omnetpp/cenvir.h"
-#include "cparsimpartition.h"
 #include "omnetpp/cparsimcomm.h"
 #include "omnetpp/ccommbuffer.h"
+#include "cparsimpartition.h"
 #include "messagetags.h"
 #include "cparsimprotocolbase.h"
 

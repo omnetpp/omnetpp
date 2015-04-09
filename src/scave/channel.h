@@ -18,8 +18,8 @@
 #ifndef _CHANNEL_H_
 #define _CHANNEL_H_
 
-#include "common/commonutil.h"
 #include <deque>
+#include "common/commonutil.h"
 #include "node.h"
 
 NAMESPACE_BEGIN

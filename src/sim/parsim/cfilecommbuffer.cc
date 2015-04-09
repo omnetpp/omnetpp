@@ -23,11 +23,11 @@
 #include <stdio.h>
 #include <locale.h>
 
-#include "cfilecommbuffer.h"
 #include "omnetpp/simutil.h"
 #include "omnetpp/cownedobject.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/regmacros.h"
+#include "cfilecommbuffer.h"
 
 NAMESPACE_BEGIN
 

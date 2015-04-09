@@ -18,9 +18,9 @@
 
 #include <string.h>
 #include "common/opp_ctype.h"
+#include "omnetpp/cexception.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "minixpath.h"
-#include "omnetpp/cexception.h"
 
 NAMESPACE_BEGIN
 

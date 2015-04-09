@@ -20,9 +20,9 @@
 #include <float.h>
 #include <map>
 #include <vector>
+#include "common/commonutil.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "scavedefs.h"
-#include "common/commonutil.h"
 #include "statistics.h"
 
 NAMESPACE_BEGIN

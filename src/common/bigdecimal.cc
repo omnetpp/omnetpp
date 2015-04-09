@@ -18,8 +18,8 @@
 #include <assert.h>
 #include <string.h>
 #include <algorithm>
-#include "opp_ctype.h"
 #include "omnetpp/platdep/platmisc.h"
+#include "opp_ctype.h"
 #include "bigdecimal.h"
 #include "commonutil.h"  //NaN & friends
 

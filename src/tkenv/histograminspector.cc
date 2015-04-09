@@ -16,11 +16,11 @@
 
 #include <string.h>
 #include <math.h>
+#include "omnetpp/cdensityestbase.h"
 #include "tkenv.h"
 #include "tklib.h"
 #include "inspectorfactory.h"
 #include "histograminspector.h"
-#include "omnetpp/cdensityestbase.h"
 
 NAMESPACE_BEGIN
 

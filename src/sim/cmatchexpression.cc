@@ -15,8 +15,8 @@
 *--------------------------------------------------------------*/
 
 
-#include "omnetpp/cmatchexpression.h"
 #include "common/matchexpression.h"
+#include "omnetpp/cmatchexpression.h"
 
 NAMESPACE_BEGIN
 

@@ -15,12 +15,12 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "common/exception.h"
+#include "common/stringpool.h"
 #include "omnetpp/cresultlistener.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/ccomponent.h"
 #include "omnetpp/ctimestampedvalue.h"
-#include "common/exception.h"
-#include "common/stringpool.h"
 
 NAMESPACE_BEGIN
 

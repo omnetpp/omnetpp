@@ -21,10 +21,18 @@
 #include <fstream>
 #include <set>
 #include <algorithm>
-
-#include "args.h"
-#include "envirbase.h"
-#include "appreg.h"
+#include "common/stringtokenizer.h"
+#include "common/fnamelisttokenizer.h"
+#include "common/stringutil.h"
+#include "common/enumstr.h"
+#include "common/opp_ctype.h"
+#include "common/stringtokenizer.h"
+#include "common/fileglobber.h"
+#include "common/unitconversion.h"
+#include "common/commonutil.h"
+#include "common/ver.h"
+#include "common/fileutil.h"  // splitFileName
+#include "nedxml/nedparser.h" // NEDParser::getBuiltInDeclarations()
 #include "omnetpp/ccoroutine.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cscheduler.h"
@@ -38,23 +46,23 @@
 #include "omnetpp/cmessage.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/cxmlelement.h"
-#include "cxmldoccache.h"
 #include "omnetpp/chistogram.h"
 #include "omnetpp/cobjectfactory.h"
 #include "omnetpp/checkandcast.h"
-#include "common/stringtokenizer.h"
-#include "common/fnamelisttokenizer.h"
 #include "omnetpp/chasher.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cnedmathfunction.h"
 #include "omnetpp/cnedfunction.h"
-#include "nedxml/nedparser.h" // NEDParser::getBuiltInDeclarations()
 #include "omnetpp/regmacros.h"
-#include "common/stringutil.h"
-#include "common/enumstr.h"
 #include "omnetpp/simtime.h"
 #include "omnetpp/cresultrecorder.h"
+#include "omnetpp/platdep/timeutil.h"
+#include "omnetpp/platdep/platmisc.h"
 #include "sim/resultfilters.h"
+#include "args.h"
+#include "envirbase.h"
+#include "appreg.h"
+#include "cxmldoccache.h"
 #include "statisticparser.h"
 
 #ifdef WITH_PARSIM
@@ -64,16 +72,6 @@
 #include "sim/parsim/creceivedexception.h"
 #endif
 
-#include "common/opp_ctype.h"
-#include "common/stringtokenizer.h"
-#include "common/fileglobber.h"
-#include "common/unitconversion.h"
-#include "common/commonutil.h"
-#include "common/ver.h"
-
-#include "omnetpp/platdep/timeutil.h"
-#include "omnetpp/platdep/platmisc.h"
-#include "common/fileutil.h"  // splitFileName
 
 #ifdef USE_PORTABLE_COROUTINES /* coroutine stacks reside in main stack area */
 

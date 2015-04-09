@@ -19,9 +19,9 @@
 #define __FILEOUTPUTVECTORMGR_H
 
 #include <stdio.h>
-#include "envirdefs.h"
 #include "omnetpp/envirext.h"
 #include "omnetpp/simutil.h"
+#include "envirdefs.h"
 #include "runattributes.h"
 #include "intervals.h"
 

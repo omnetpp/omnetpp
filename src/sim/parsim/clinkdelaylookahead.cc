@@ -19,18 +19,18 @@
 *--------------------------------------------------------------*/
 
 
-#include "clinkdelaylookahead.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cmessage.h"
 #include "omnetpp/cenvir.h"
-#include "cnullmessageprot.h"
 #include "omnetpp/cparsimcomm.h"
-#include "cparsimpartition.h"
-#include "cplaceholdermod.h"
-#include "cproxygate.h"
 #include "omnetpp/cdataratechannel.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/regmacros.h"
+#include "clinkdelaylookahead.h"
+#include "cnullmessageprot.h"
+#include "cparsimpartition.h"
+#include "cplaceholdermod.h"
+#include "cproxygate.h"
 
 NAMESPACE_BEGIN
 

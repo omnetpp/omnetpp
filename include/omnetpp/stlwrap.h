@@ -16,9 +16,9 @@
 #ifndef __STLWRAP_H
 #define __STLWRAP_H
 
-#include "simkerneldefs.h"
 #include <string>
 #include <vector>
+#include "simkerneldefs.h"
 
 NAMESPACE_BEGIN
 

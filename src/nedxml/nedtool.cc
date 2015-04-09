@@ -24,6 +24,11 @@
 #include <fstream>
 #include <errno.h>
 
+#include "common/fileglobber.h"
+#include "common/fileutil.h"
+#include "common/stringutil.h"
+#include "common/ver.h"
+#include "omnetpp/platdep/platmisc.h"   // getcwd, chdir
 #include "msgcppgenerator.h"
 #include "nedparser.h"
 #include "nederror.h"
@@ -36,11 +41,6 @@
 #include "ned1generator.h"
 #include "xmlgenerator.h"
 #include "nedtools.h"
-#include "common/fileglobber.h"
-#include "common/fileutil.h"
-#include "common/stringutil.h"
-#include "omnetpp/platdep/platmisc.h"   // getcwd, chdir
-#include "common/ver.h"
 
 NAMESPACE_BEGIN
 

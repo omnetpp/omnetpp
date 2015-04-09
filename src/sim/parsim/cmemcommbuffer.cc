@@ -19,11 +19,11 @@
 *--------------------------------------------------------------*/
 
 #include <string.h>
-#include "cmemcommbuffer.h"
 #include "omnetpp/simutil.h"
 #include "omnetpp/cownedobject.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/regmacros.h"
+#include "cmemcommbuffer.h"
 
 NAMESPACE_BEGIN
 

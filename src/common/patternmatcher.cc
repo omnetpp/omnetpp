@@ -19,8 +19,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "opp_ctype.h"
 #include "omnetpp/platdep/platmisc.h"
+#include "opp_ctype.h"
 #include "patternmatcher.h"
 #include "stringutil.h"
 #include "exception.h"

@@ -19,12 +19,12 @@
 
 #include <string.h>
 #include <math.h>
+#include "omnetpp/cwatch.h"
+#include "omnetpp/cstlwatch.h"
 #include "tkenv.h"
 #include "tklib.h"
 #include "inspectorfactory.h"
 #include "watchinspector.h"
-#include "omnetpp/cwatch.h"
-#include "omnetpp/cstlwatch.h"
 
 NAMESPACE_BEGIN
 

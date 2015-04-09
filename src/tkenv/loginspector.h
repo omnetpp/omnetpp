@@ -18,10 +18,10 @@
 #define __LOGINSPECTOR_H
 
 #include <map>
+#include "omnetpp/cmessageprinter.h"
 #include "logbuffer.h"
 #include "componenthistory.h"
 #include "inspector.h"
-#include "omnetpp/cmessageprinter.h"
 
 NAMESPACE_BEGIN
 

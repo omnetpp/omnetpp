@@ -21,10 +21,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "resultfilemanager.h"
 #include "common/commonutil.h"
-#include "datasorter.h"
 #include "common/stringutil.h"
+#include "resultfilemanager.h"
+#include "datasorter.h"
 
 NAMESPACE_BEGIN
 

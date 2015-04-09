@@ -18,8 +18,8 @@
 #include <string.h>
 #include <string>
 #include <sstream>
-#include "ned1generator.h"
 #include "common/stringutil.h"
+#include "ned1generator.h"
 #include "nedutil.h"
 
 NAMESPACE_BEGIN

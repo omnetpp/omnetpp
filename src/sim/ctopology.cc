@@ -26,12 +26,12 @@
 #include <list>
 #include <algorithm>
 #include <sstream>
+#include "common/patternmatcher.h"
 #include "omnetpp/ctopology.h"
 #include "omnetpp/cpar.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cproperty.h"
-#include "common/patternmatcher.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"

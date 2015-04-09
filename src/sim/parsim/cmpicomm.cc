@@ -22,8 +22,6 @@
 
 #include <mpi.h> // Intel MPI wants <mpi.h> to precede <stdio.h>
 #include <stdio.h>
-#include "cmpicomm.h"
-#include "cmpicommbuffer.h"
 #include "omnetpp/clog.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/regmacros.h"
@@ -32,6 +30,8 @@
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/platdep/platmisc.h"
+#include "cmpicomm.h"
+#include "cmpicommbuffer.h"
 
 NAMESPACE_BEGIN
 

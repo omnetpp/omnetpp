@@ -15,10 +15,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "common/stringutil.h"
 #include "omnetpp/cstringparimpl.h"
 #include "omnetpp/cdynamicexpression.h"
 #include "omnetpp/ccomponent.h"
-#include "common/stringutil.h"
 
 NAMESPACE_BEGIN
 

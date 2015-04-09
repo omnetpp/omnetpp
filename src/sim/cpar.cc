@@ -16,6 +16,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "common/commonutil.h"
 #include "omnetpp/cpar.h"
 #include "omnetpp/cparimpl.h"
 #include "omnetpp/cproperties.h"
@@ -24,7 +25,6 @@
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/csimulation.h"
-#include "common/commonutil.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cmodelchange.h"
 

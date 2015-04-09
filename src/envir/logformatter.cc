@@ -15,13 +15,13 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "logformatter.h"
 #include "common/commonutil.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/chasher.h"
 #include "omnetpp/simutil.h"
+#include "logformatter.h"
 
 NAMESPACE_BEGIN
 

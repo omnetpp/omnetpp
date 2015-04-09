@@ -44,8 +44,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "expryydefs.h"
 #include "common/commonutil.h"
+#include "expryydefs.h"
 
 #define YYDEBUG 1           /* allow debugging */
 #define YYDEBUGGING_ON 0    /* turn on/off debugging */
@@ -72,6 +72,8 @@ void yyerror (const char *s);
 LineColumn xpos, xprevpos;
 
 
+#include "common/stringutil.h"
+#include "common/unitconversion.h"
 #include "omnetpp/cdynamicexpression.h"
 #include "omnetpp/cpar.h"
 #include "omnetpp/cxmlelement.h"
@@ -80,8 +82,6 @@ LineColumn xpos, xprevpos;
 #include "omnetpp/cnedmathfunction.h"
 #include "omnetpp/cnedfunction.h"
 #include "omnetpp/nedsupport.h"
-#include "common/stringutil.h"
-#include "common/unitconversion.h"
 
 USING_NAMESPACE
 

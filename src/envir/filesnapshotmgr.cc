@@ -20,8 +20,8 @@
 #include <assert.h>
 #include <string.h>
 #include <fstream>
-#include "omnetpp/cconfigoption.h"
 #include "common/fileutil.h"
+#include "omnetpp/cconfigoption.h"
 #include "envirbase.h"
 #include "filesnapshotmgr.h"
 

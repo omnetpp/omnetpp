@@ -20,17 +20,17 @@
 #else
 #include <unistd.h>
 #endif
-#include <string.h>
 #include <sys/stat.h>
+#include <string.h>
 #include <errno.h>
 #include <string>
 #include <vector>
 
+#include "omnetpp/platdep/platmisc.h"  //mkdir
 #include "opp_ctype.h"
 #include "fileutil.h"
 #include "stringtokenizer.h"
 #include "exception.h"
-#include "omnetpp/platdep/platmisc.h"  //mkdir
 
 NAMESPACE_BEGIN
 

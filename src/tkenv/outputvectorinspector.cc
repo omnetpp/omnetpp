@@ -16,11 +16,11 @@
 
 #include <string.h>
 #include <math.h>
+#include "omnetpp/coutvector.h"
 #include "tkenv.h"
 #include "tklib.h"
 #include "inspectorfactory.h"
 #include "outputvectorinspector.h"
-#include "omnetpp/coutvector.h"
 
 NAMESPACE_BEGIN
 

@@ -19,12 +19,12 @@
 #include <math.h>
 #include <assert.h>
 
+#include "common/stringutil.h"
 #include "canvasinspector.h"
 #include "figurerenderers.h"
 #include "tklib.h"
 #include "tkutil.h"
 #include "inspectorfactory.h"
-#include "common/stringutil.h"
 #include "canvasrenderer.h"
 
 NAMESPACE_BEGIN

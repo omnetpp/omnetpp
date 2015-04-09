@@ -23,6 +23,11 @@
 #include <assert.h>
 #include <sstream>
 
+#include "common/stringutil.h"
+#include "common/opp_ctype.h"
+#include "common/patternmatcher.h"
+#include "common/ver.h"
+#include "envir/visitor.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cmessageheap.h"
 #include "omnetpp/cregistrationlist.h"
@@ -37,14 +42,8 @@
 #include "omnetpp/cqueue.h"
 #include "omnetpp/carray.h"
 #include "omnetpp/cwatch.h"
-
-#include "common/stringutil.h"
-#include "common/opp_ctype.h"
 #include "tkenv.h"
-#include "common/patternmatcher.h"
-#include "envir/visitor.h"
 #include "tkutil.h"
-#include "common/ver.h"
 
 NAMESPACE_BEGIN
 
