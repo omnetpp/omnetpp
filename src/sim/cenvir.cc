@@ -39,7 +39,7 @@ cConfigurationEx *cEnvir::getConfigEx()
 {
     cConfigurationEx *cfg = dynamic_cast<cConfigurationEx *>(getConfig());
     if (!cfg)
-        throw cRuntimeError("Illegal call to ev.getConfigEx(): configuration object is not subclassed from cConfigurationEx");
+        throw cRuntimeError("Illegal call to cEnvir::getConfigEx(): configuration object is not subclassed from cConfigurationEx");
     return cfg;
 }
 

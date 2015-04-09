@@ -167,7 +167,7 @@ NAMESPACE_BEGIN
 #ifdef FSM_DEBUG
 /**
  * #define FSM_DEBUG before #including "omnetpp.h" to enable reporting
- * all state changes to ev.
+ * all state changes to EV.
  *
  * @hideinitializer
  * @see FSM_Switch

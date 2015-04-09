@@ -349,7 +349,7 @@ class SIM_API cKSplit : public cDensityEstBase
     double getRealCellValue(Grid& grid, int cell) const;
 
     /**
-     * Dumps the contents of the k-split data structure to ev.
+     * Dumps the contents of the k-split data structure to EV.
      */
     void printGrids() const;
 

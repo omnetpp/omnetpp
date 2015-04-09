@@ -1167,7 +1167,7 @@ void Tkenv::askParameter(cPar *par, bool unassigned)
         }
         catch (std::exception& e)
         {
-            ev.printfmsg("%s -- please try again.", e.what());
+            printfmsg("%s -- please try again.", e.what());
         }
     }
 }

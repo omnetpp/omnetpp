@@ -53,7 +53,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     enum {
       FL_PARAMSFINALIZED  = 1 << 2, // whether finalizeParameters() has been called
       FL_INITIALIZED      = 1 << 3, // whether initialize() has been called
-      FL_EVLOGENABLED     = 1 << 4, // whether logging via ev<< is enabled
+      FL_EVLOGENABLED     = 1 << 4, // whether logging via EV<< is enabled
       FL_DISPSTR_CHECKED  = 1 << 5, // for hasDisplayString(): whether the FL_DISPSTR_NOTEMPTY flag is valid
       FL_DISPSTR_NOTEMPTY = 1 << 6, // for hasDisplayString(): whether the display string is not empty
       FL_LOGLEVEL_SHIFT   = 7,      // 3 bits wide (loglevel + 1), because 0 means unspecified (note: don't use << here)

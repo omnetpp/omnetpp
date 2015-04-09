@@ -311,7 +311,7 @@ class SIM_API cXMLElement
     cXMLElement *getElementByPath(const char *pathexpression, cXMLElement *root=NULL, ParamResolver *resolver=NULL) const;
 
     /**
-     * Prints detailedInfo() on ev.
+     * Prints detailedInfo() on EV.
      */
     void debugDump() const;
 

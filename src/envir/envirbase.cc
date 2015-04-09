@@ -899,7 +899,7 @@ void EnvirBase::shutdown()
     try
     {
         simulation.deleteNetwork();
-        ev.notifyLifecycleListeners(LF_ON_SHUTDOWN);
+        notifyLifecycleListeners(LF_ON_SHUTDOWN);
     }
     catch (std::exception& e)
     {
@@ -988,13 +988,13 @@ void EnvirBase::doAddResultRecorders(cComponent *component, std::string& compone
         componentFullPath = component->getFullPath();
     std::string statisticFullPath = componentFullPath + "." + statisticName;
 
-    bool scalarsEnabled = ev.getConfig()->getAsBool(statisticFullPath.c_str(), CFGID_SCALAR_RECORDING);
-    bool vectorsEnabled = ev.getConfig()->getAsBool(statisticFullPath.c_str(), CFGID_VECTOR_RECORDING);
+    bool scalarsEnabled = getConfig()->getAsBool(statisticFullPath.c_str(), CFGID_SCALAR_RECORDING);
+    bool vectorsEnabled = getConfig()->getAsBool(statisticFullPath.c_str(), CFGID_VECTOR_RECORDING);
     if (!scalarsEnabled && !vectorsEnabled)
         return;
 
     // collect the list of result recorders
-    std::string modesOption = ev.getConfig()->getAsString(statisticFullPath.c_str(), CFGID_RESULT_RECORDING_MODES, "");
+    std::string modesOption = getConfig()->getAsString(statisticFullPath.c_str(), CFGID_RESULT_RECORDING_MODES, "");
     std::vector<std::string> modes = extractRecorderList(modesOption.c_str(), statisticProperty);
 
     // if there are result recorders, add source filters and recorders
@@ -1576,8 +1576,8 @@ void EnvirBase::readOptions()
 
     opt->fnameAppendHost = cfg->getAsBool(CFGID_FNAME_APPEND_HOST, opt->parsim);
 
-    ev.debug_on_errors = cfg->getAsBool(CFGID_DEBUG_ON_ERRORS);
-    ev.attach_debugger_on_errors = cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR);
+    debug_on_errors = cfg->getAsBool(CFGID_DEBUG_ON_ERRORS);
+    attach_debugger_on_errors = cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR);
     opt->printUndisposed = cfg->getAsBool(CFGID_PRINT_UNDISPOSED);
 
     int scaleexp = (int) cfg->getAsInt(CFGID_SIMTIME_SCALE);
@@ -1855,16 +1855,16 @@ void EnvirBase::attachDebugger()
 
 void EnvirBase::crashHandler(int)
 {
-    ev.attachDebugger();
+    cSimulation::getActiveEnvir()->attachDebugger();
 }
 
 void EnvirBase::displayException(std::exception& ex)
 {
     cException *e = dynamic_cast<cException *>(&ex);
     if (!e)
-        ev.printfmsg("Error: %s.", ex.what());
+        printfmsg("Error: %s.", ex.what());
     else
-        ev.printfmsg("%s", e->getFormattedMessage().c_str());
+        printfmsg("%s", e->getFormattedMessage().c_str());
 }
 
 bool EnvirBase::idle()

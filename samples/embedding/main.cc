@@ -39,7 +39,7 @@ class EmptyConfig : public cConfiguration
 /**
  * Defines a minimal environment for the simulation. Module parameters get
  * initialized to their default values (causing an error if there's no
- * default); module log messages (ev<<) get printed on the standard output;
+ * default); module log messages (EV<<) get printed on the standard output;
  * calls to record results will be ignored.
  */
 class MinimalEnv : public cNullEnvir

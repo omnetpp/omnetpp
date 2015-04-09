@@ -298,7 +298,7 @@ class TKENV_API Tkenv : public EnvirBase
  */
 inline Tkenv *getTkenv()
 {
-    return (Tkenv *)(&ev);
+    return (Tkenv *)cSimulation::getActiveEnvir();
 }
 
 NAMESPACE_END

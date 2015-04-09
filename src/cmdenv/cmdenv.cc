@@ -66,7 +66,7 @@ Register_GlobalConfigOption(CFGID_CMDENV_INTERACTIVE, "cmdenv-interactive", CFG_
 Register_GlobalConfigOption(CFGID_OUTPUT_FILE, "cmdenv-output-file", CFG_FILENAME, NULL, "When a filename is specified, Cmdenv redirects standard output into the given file. This is especially useful with parallel simulation. See the `fname-append-host' option as well.")
 Register_PerRunConfigOption(CFGID_EXPRESS_MODE, "cmdenv-express-mode", CFG_BOOL, "true", "Selects ``normal'' (debug/trace) or ``express'' mode.")
 Register_PerRunConfigOption(CFGID_AUTOFLUSH, "cmdenv-autoflush", CFG_BOOL, "false", "Call fflush(stdout) after each event banner or status update; affects both express and normal mode. Turning on autoflush may have a performance penalty, but it can be useful with printf-style debugging for tracking down program crashes.")
-Register_PerRunConfigOption(CFGID_MODULE_MESSAGES, "cmdenv-module-messages", CFG_BOOL, "true", "When cmdenv-express-mode=false: turns printing module ev<< output on/off.")
+Register_PerRunConfigOption(CFGID_MODULE_MESSAGES, "cmdenv-module-messages", CFG_BOOL, "true", "When cmdenv-express-mode=false: turns printing module EV<< output on/off.")
 Register_PerRunConfigOption(CFGID_EVENT_BANNERS, "cmdenv-event-banners", CFG_BOOL, "true", "When cmdenv-express-mode=false: turns printing event banners on/off.")
 Register_PerRunConfigOption(CFGID_EVENT_BANNER_DETAILS, "cmdenv-event-banner-details", CFG_BOOL, "false", "When cmdenv-express-mode=false: print extra information after event banners.")
 Register_PerRunConfigOption(CFGID_MESSAGE_TRACE, "cmdenv-message-trace", CFG_BOOL, "false", "When cmdenv-express-mode=false: print a line per message sending (by send(),scheduleAt(), etc) and delivery on the standard output.")
@@ -221,7 +221,7 @@ void Cmdenv::doRun()
             int n = cfg->getNumRunsInConfig(opt->configName.c_str());  //note: may throw exception
             if (n==0)
             {
-                ev.printfmsg("Error: Configuration `%s' generates 0 runs", opt->configName.c_str());
+                printfmsg("Error: Configuration `%s' generates 0 runs", opt->configName.c_str());
                 exitcode = 1;
                 return;
             }
@@ -236,7 +236,7 @@ void Cmdenv::doRun()
         EnumStringIterator runiterator(opt->runsToExec.c_str());
         if (runiterator.hasError())
         {
-            ev.printfmsg("Error parsing list of runs to execute: `%s'", opt->runsToExec.c_str());
+            printfmsg("Error parsing list of runs to execute: `%s'", opt->runsToExec.c_str());
             exitcode = 1;
             return;
         }
@@ -627,7 +627,7 @@ void Cmdenv::askParameter(cPar *par, bool unassigned)
         }
         catch (std::exception& e)
         {
-            ev.printfmsg("%s -- please try again.", e.what());
+            printfmsg("%s -- please try again.", e.what());
         }
     }
 }

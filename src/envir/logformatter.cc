@@ -120,6 +120,7 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
     bool lastPartEmpty = true;
     std::stringstream stream;
     int adaptiveTabIndex = 0;
+    cEnvir *ev = cSimulation::getActiveEnvir();
     for (std::vector<FormatPart>::iterator it = formatParts.begin(); it != formatParts.end(); it++)
     {
         FormatPart& part = *it;
@@ -172,20 +173,20 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                 if (simulation.getHasher()) stream << simulation.getHasher()->str().c_str(); else lastPartEmpty = true; break;
 
             case EVENT_OBJECT_NAME:
-                if (ev.getCurrentEventName()) stream << ev.getCurrentEventName(); else lastPartEmpty = true; break;
+                if (ev->getCurrentEventName()) stream << ev->getCurrentEventName(); else lastPartEmpty = true; break;
             case EVENT_OBJECT_CLASSNAME:
-                if (ev.getCurrentEventClassName()) stream << ev.getCurrentEventClassName(); else lastPartEmpty = true; break;
+                if (ev->getCurrentEventClassName()) stream << ev->getCurrentEventClassName(); else lastPartEmpty = true; break;
 
             case EVENT_MODULE_NAME:
-                if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getFullName(); else lastPartEmpty = true; break;
+                if (ev->getCurrentEventModule()) stream << ev->getCurrentEventModule()->getFullName(); else lastPartEmpty = true; break;
             case EVENT_MODULE_FULLPATH:
-                if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getFullPath(); else lastPartEmpty = true; break;
+                if (ev->getCurrentEventModule()) stream << ev->getCurrentEventModule()->getFullPath(); else lastPartEmpty = true; break;
             case EVENT_MODULE_CLASSNAME:
-                if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getClassName(); else lastPartEmpty = true; break;
+                if (ev->getCurrentEventModule()) stream << ev->getCurrentEventModule()->getClassName(); else lastPartEmpty = true; break;
             case EVENT_MODULE_NEDTYPE_SIMPLENAME:
-                if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getComponentType()->getName(); else lastPartEmpty = true; break;
+                if (ev->getCurrentEventModule()) stream << ev->getCurrentEventModule()->getComponentType()->getName(); else lastPartEmpty = true; break;
             case EVENT_MODULE_NEDTYPE_QUALIFIEDNAME:
-                if (ev.getCurrentEventModule()) stream << ev.getCurrentEventModule()->getComponentType()->getFullName(); else lastPartEmpty = true; break;
+                if (ev->getCurrentEventModule()) stream << ev->getCurrentEventModule()->getComponentType()->getFullName(); else lastPartEmpty = true; break;
 
             case CONTEXT_COMPONENT_NAME:
                 if (simulation.getContext()) stream << simulation.getContext()->getFullName(); else lastPartEmpty = true; break;
@@ -254,14 +255,14 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
 
             // compound fields
             case EVENT_OBJECT: {
-                if (ev.getCurrentEventName())
-                    stream << "(" << ev.getCurrentEventClassName() << ")" << ev.getCurrentEventName();
+                if (ev->getCurrentEventName())
+                    stream << "(" << ev->getCurrentEventClassName() << ")" << ev->getCurrentEventName();
                 else
                     lastPartEmpty = true;
                 break;
             }
             case EVENT_MODULE: {
-                cModule *mod = ev.getCurrentEventModule();
+                cModule *mod = ev->getCurrentEventModule();
                 if (mod)
                     stream << "(" << mod->getComponentType()->getName() << ")" << mod->getFullPath();
                 else
@@ -269,7 +270,7 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                 break;
             }
             case CONTEXT_COMPONENT_IF_DIFFERENT:
-                if (simulation.getContext() == ev.getCurrentEventModule()) {
+                if (simulation.getContext() == ev->getCurrentEventModule()) {
                     lastPartEmpty = true;
                     break;
                 }

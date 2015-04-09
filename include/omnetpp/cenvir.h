@@ -48,7 +48,7 @@ class cConfigurationEx;
 using std::endl;
 
 // internal macro, usage: EVCB.beginSend(...)
-#define EVCB  ev.suppress_notifications ? (void)0 : ev
+#define EVCB  cSimulation::getActiveEnvir()->suppress_notifications ? (void)0 : (*cSimulation::getActiveEnvir())
 
 /**
  * Represents the "environment" or user interface of the simulation.
