@@ -12,7 +12,6 @@
 #include "HCPacket_m.h"
 
 
-// Module registration:
 Define_Module(HCSink);
 
 
@@ -46,11 +45,9 @@ void HCSink::handleMessage(cMessage *msg)
     emit(hopCountSignal, actualHops);
     emit(hopRatioSignal, actualHops / (double)minHops );
 
-#ifdef TRACE_MSG
-    ev.printf("Message received: '%s'\n", pkt->getName());
-    ev.printf("  - end-to-end delay=%g\n", eed);
-    ev.printf("  - distance=%d, actual hops=%d\n", minHops, actualHops);
-#endif
+    EV << "Received: " << pkt->getName() << endl;
+    EV << "  - end-to-end delay=" << eed << endl;
+    EV << "  - distance=" << minHops << ", actual hops=" << actualHops << endl;
 
     // message no longer needed
     delete pkt;

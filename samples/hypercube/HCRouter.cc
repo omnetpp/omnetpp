@@ -12,10 +12,8 @@
 #include "HCPacket_m.h"
 
 
-// Module registration:
-Define_Module( HCRouter );
+Define_Module(HCRouter);
 
-#define TRACE_MSG
 
 #define SLOT_TIME   1.0
 #define PROPDEL     (0.99*SLOT_TIME)
@@ -89,9 +87,6 @@ void deflectionRouting(int my_address,int dim,
 }
 
 
-//
-// Activity of the simple module
-//
 void HCRouter::activity()
 {
    int my_address = par("address");

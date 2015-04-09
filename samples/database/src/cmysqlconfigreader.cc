@@ -186,41 +186,41 @@ const cConfigurationReader::KeyValue& cMySQLConfigReader::getEntry(int sectionId
 
 void cMySQLConfigReader::dump() const
 {
-    ev.printf("INSERT INTO config (id,name) VALUES (10,'someconfig');\n");
+    ::printf("INSERT INTO config (id,name) VALUES (10,'someconfig');\n");
 
     const int base = 1000;
     int k = 0;
 
     for (int i=0; i < getNumSections(); i++)
     {
-        ev.printf("INSERT INTO configsection (configid,id,name) VALUES (10,%d,'%s');\n",
-                  base+i, escape(getSectionName(i)).c_str());
+        ::printf("INSERT INTO configsection (configid,id,name) VALUES (10,%d,'%s');\n",
+                 base+i, escape(getSectionName(i)).c_str());
         for (int j=0; j < getNumEntries(i); j++)
         {
             const KeyValue& entry = getEntry(i, j);
-            ev.printf("INSERT INTO configentry (sectionid,name,value,entryorder) VALUES (%d,'%s','%s',%d);\n",
-                      base+i, escape(entry.getKey()).c_str(), escape(entry.getValue()).c_str(), k++);
+            ::printf("INSERT INTO configentry (sectionid,name,value,entryorder) VALUES (%d,'%s','%s',%d);\n",
+                     base+i, escape(entry.getKey()).c_str(), escape(entry.getValue()).c_str(), k++);
         }
     }
 }
 
 void cMySQLConfigReader::dumpConfig(cConfigurationReader *cfg) const
 {
-    ev.printf("INSERT INTO config (id,name) VALUES (10,'someconfig');\n");
+    ::printf("INSERT INTO config (id,name) VALUES (10,'someconfig');\n");
 
     const int base = 1000;
     int k = 0;
 
     for (int i=0; i < cfg->getNumSections(); i++)
     {
-        ev.printf("INSERT INTO configsection (configid,id,name) VALUES (10,%d,'%s');\n",
-                  base+i, escape(cfg->getSectionName(i)).c_str());
+        ::printf("INSERT INTO configsection (configid,id,name) VALUES (10,%d,'%s');\n",
+                 base+i, escape(cfg->getSectionName(i)).c_str());
         for (int j=0; j < cfg->getNumEntries(i); j++)
         {
             const KeyValue& entry = cfg->getEntry(i, j);
 
-            ev.printf("INSERT INTO configentry (sectionid,name,value,entryorder) VALUES (%d,'%s','%s',%d);\n",
-                      base+i, escape(entry.getKey()).c_str(), escape(entry.getValue()).c_str(), k++);
+            ::printf("INSERT INTO configentry (sectionid,name,value,entryorder) VALUES (%d,'%s','%s',%d);\n",
+                     base+i, escape(entry.getKey()).c_str(), escape(entry.getValue()).c_str(), k++);
         }
     }
 }

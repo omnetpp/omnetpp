@@ -12,12 +12,9 @@
 #include "HCPacket_m.h"
 
 
-Define_Module( HCGenerator );
+Define_Module(HCGenerator);
 
 
-//
-// Activities of the simple modules
-//
 void HCGenerator::activity()
 {
     int numStations = par("numStations");
@@ -38,11 +35,9 @@ void HCGenerator::activity()
         pkt->setDestAddress(dest);
         pkt->setHops(0L);
         pkt->setTimestamp();
+        EV << "Generated " << pkt->getName() << endl;
 
         // send out the message
-#ifdef TRACE_MSG
-        ev.printf("gen[%d]: Generated new pkt: '%s'\n",my_address, pkt->getName());
-#endif
         send(pkt, "out");
 
         // wait between messages
@@ -50,7 +45,7 @@ void HCGenerator::activity()
         // Note that iaTime is a reference to the module parameter "iaTime"
         // that will be evaluated here. The module parameter can also take
         // a random value (for example: truncnormal(0.5,0.1) ).
-        wait( iaTime.doubleValue() );
+        wait(iaTime.doubleValue());
     }
 }
 

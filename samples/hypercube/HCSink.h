@@ -15,8 +15,6 @@
 
 USING_NAMESPACE
 
-#define STACKSIZE 16384
-
 /**
  * Packet sink; see NED file for more info.
  */
