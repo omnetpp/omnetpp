@@ -18,8 +18,6 @@
 #define __MODULEINSPECTOR_H
 
 #include <map>
-#include "omnetpp/platdep/platmisc.h"   // must precede <tk.h> otherwise Visual Studio 2013 fails to compile
-#include <tk.h>
 #include "inspector.h"
 #include "omnetpp/ccanvas.h"
 

@@ -17,11 +17,8 @@
 #ifndef __TKENV_H
 #define __TKENV_H
 
-#define WIN32_LEAN_AND_MEAN
-#include <tk.h>
 #include <vector>
 #include <list>
-
 #include "tkdefs.h"
 #include "logbuffer.h"
 #include "envir/envirbase.h"

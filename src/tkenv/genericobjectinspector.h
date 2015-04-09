@@ -17,7 +17,6 @@
 #ifndef __GENERICOBJECTINSPECTOR_H
 #define __GENERICOBJECTINSPECTOR_H
 
-#include <tk.h>
 #include "inspector.h"
 
 NAMESPACE_BEGIN

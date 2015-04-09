@@ -17,7 +17,6 @@
 #ifndef __WATCHINSPECTOR_H
 #define __WATCHINSPECTOR_H
 
-#include <tk.h>
 #include "inspector.h"
 
 NAMESPACE_BEGIN

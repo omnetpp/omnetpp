@@ -17,7 +17,6 @@
 #ifndef __HISTOGRAMINSPECTOR_H
 #define __HISTOGRAMINSPECTOR_H
 
-#include <tk.h>
 #include "inspector.h"
 
 NAMESPACE_BEGIN

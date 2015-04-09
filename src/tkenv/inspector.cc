@@ -21,8 +21,7 @@
 #include <math.h>
 #include <assert.h>
 #include <algorithm>
-
-#include <omnetpp.h>
+#include "omnetpp/cobject.h"
 #include "tkenv.h"
 #include "tklib.h"
 #include "inspector.h"

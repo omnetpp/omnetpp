@@ -17,7 +17,6 @@
 #ifndef __INSPECTOR_H
 #define __INSPECTOR_H
 
-#include <tk.h>
 #include "tkutil.h"
 #include "envir/envirbase.h"
 

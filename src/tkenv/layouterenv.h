@@ -17,9 +17,7 @@
 #ifndef __LAYOUTERENV_H
 #define __LAYOUTERENV_H
 
-#include "omnetpp/platdep/timeutil.h"   // must precede <tk.h>, due to collision with <windows.h>
-#include "omnetpp/platdep/platmisc.h"   // must precede <tk.h> otherwise Visual Studio 2013 fails to compile
-#include <tk.h>
+#include "tkdefs.h"
 #include "layout/graphlayouter.h"
 
 NAMESPACE_BEGIN

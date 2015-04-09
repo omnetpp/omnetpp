@@ -18,8 +18,6 @@
 #define __LOGINSPECTOR_H
 
 #include <map>
-#include "omnetpp/platdep/platmisc.h"   // must precede <tk.h> otherwise Visual Studio 2013 fails to compile
-#include <tk.h>
 #include "logbuffer.h"
 #include "componenthistory.h"
 #include "inspector.h"

@@ -17,7 +17,6 @@
 #ifndef __OUTPUTVECTORINSPECTOR_H
 #define __OUTPUTVECTORINSPECTOR_H
 
-#include <tk.h>
 #include "inspector.h"
 #include "envir/envirbase.h"
 
