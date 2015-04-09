@@ -53,7 +53,7 @@ void Server::handleMessage(cMessage *msg)
         jobServiced = NULL;
         emit(busySignal, false);
 
-        if (ev.isGUI()) getDisplayString().setTagArg("i",1,"");
+        if (hasGUI()) getDisplayString().setTagArg("i",1,"");
 
         // examine all input queues, and request a new job from a non empty queue
         int k = selectionStrategy->select();
@@ -74,7 +74,7 @@ void Server::handleMessage(cMessage *msg)
         scheduleAt(simTime()+serviceTime, endServiceMsg);
         emit(busySignal, true);
 
-        if (ev.isGUI()) getDisplayString().setTagArg("i",1,"cyan");
+        if (hasGUI()) getDisplayString().setTagArg("i",1,"cyan");
     }
 }
 

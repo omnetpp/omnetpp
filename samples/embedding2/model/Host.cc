@@ -48,7 +48,7 @@ void Host::initialize()
     WATCH((int&)state);
     WATCH(pkCounter);
 
-    if (ev.isGUI())
+    if (hasGUI())
         getDisplayString().setTagArg("t",2,"#808000");
 
     scheduleAt(getNextTransmissionTime(), endTxEvent);
@@ -69,7 +69,7 @@ void Host::handleMessage(cMessage *msg)
         state = TRANSMIT;
 
         // update network graphics
-        if (ev.isGUI())
+        if (hasGUI())
         {
             getDisplayString().setTagArg("i",1,"yellow");
             getDisplayString().setTagArg("t",0,"TRANSMIT");
@@ -91,7 +91,7 @@ void Host::handleMessage(cMessage *msg)
         scheduleAt(getNextTransmissionTime(), endTxEvent);
 
         // update network graphics
-        if (ev.isGUI())
+        if (hasGUI())
         {
             getDisplayString().setTagArg("i",1,"");
             getDisplayString().setTagArg("t",0,"");

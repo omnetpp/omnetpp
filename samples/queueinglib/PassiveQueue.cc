@@ -50,7 +50,7 @@ void PassiveQueue::handleMessage(cMessage *msg)
     if (capacity >=0 && queue.length() >= capacity)
     {
         EV << "Queue full! Job dropped.\n";
-        if (ev.isGUI()) bubble("Dropped!");
+        if (hasGUI()) bubble("Dropped!");
         emit(droppedSignal, 1);
         delete msg;
         return;
@@ -73,7 +73,7 @@ void PassiveQueue::handleMessage(cMessage *msg)
         error("This should not happen. Queue is NOT empty and there is an IDLE server attached to us.");
 
     // change the icon color
-    if (ev.isGUI())
+    if (hasGUI())
         getDisplayString().setTagArg("i",1, queue.empty() ? "" : "cyan3");
 }
 
@@ -108,7 +108,7 @@ void PassiveQueue::request(int gateIndex)
 
     send(job, "out", gateIndex);
 
-    if (ev.isGUI())
+    if (hasGUI())
         getDisplayString().setTagArg("i",1, queue.empty() ? "" : "cyan");
 }
 

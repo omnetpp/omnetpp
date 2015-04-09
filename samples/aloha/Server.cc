@@ -46,7 +46,7 @@ void Server::initialize()
     emit(receiveSignal, 0L);
     emit(receiveBeginSignal, 0L);
 
-    if (ev.isGUI())
+    if (hasGUI())
         getDisplayString().setTagArg("i2",0,"x_off");
 }
 
@@ -83,7 +83,7 @@ void Server::handleMessage(cMessage *msg)
         emit(receiveBeginSignal, receiveCounter);
 
         // update network graphics
-        if (ev.isGUI())
+        if (hasGUI())
         {
             getDisplayString().setTagArg("i2",0,"x_off");
             getDisplayString().setTagArg("t",0,"");
@@ -106,7 +106,7 @@ void Server::handleMessage(cMessage *msg)
             emit(channelStateSignal, TRANSMISSION);
             scheduleAt(endReceptionTime, endRxEvent);
 
-            if (ev.isGUI())
+            if (hasGUI())
             {
                 getDisplayString().setTagArg("i2",0,"x_yellow");
                 getDisplayString().setTagArg("t",0,"RECEIVE");
@@ -130,7 +130,7 @@ void Server::handleMessage(cMessage *msg)
             }
 
             // update network graphics
-            if (ev.isGUI())
+            if (hasGUI())
             {
                 getDisplayString().setTagArg("i2",0,"x_red");
                 getDisplayString().setTagArg("t",0,"COLLISION");

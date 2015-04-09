@@ -106,7 +106,7 @@ void App::handleMessage(cMessage *msg)
         send(pk,"out");
 
         scheduleAt(simTime() + sendIATime->doubleValue(), generatePacket);
-        if (ev.isGUI()) getParentModule()->bubble("Generating packet...");
+        if (hasGUI()) getParentModule()->bubble("Generating packet...");
     }
     else
     {
@@ -118,7 +118,7 @@ void App::handleMessage(cMessage *msg)
         emit(sourceAddressSignal, pk->getSrcAddr());
         delete pk;
 
-        if (ev.isGUI())
+        if (hasGUI())
         {
             getParentModule()->getDisplayString().setTagArg("i",1,"green");
             getParentModule()->bubble("Arrived!");

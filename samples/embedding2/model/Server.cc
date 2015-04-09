@@ -65,7 +65,7 @@ void Server::initialize()
     collisionLengthHistogram.setName("collision length");
     collisionLengthHistogram.setRangeAutoUpper(0.0);
 
-    if (ev.isGUI())
+    if (hasGUI())
         getDisplayString().setTagArg("i2",0,"x_off");
 }
 
@@ -97,7 +97,7 @@ void Server::handleMessage(cMessage *msg)
         currentCollisionNumFrames = 0;
 
         // update network graphics
-        if (ev.isGUI())
+        if (hasGUI())
         {
             getDisplayString().setTagArg("i2",0,"x_off");
             getDisplayString().setTagArg("t",0,"");
@@ -116,7 +116,7 @@ void Server::handleMessage(cMessage *msg)
             recvStartTime = simTime();
             channelBusy = true;
             scheduleAt(endReceptionTime, endRxEvent);
-            if (ev.isGUI())
+            if (hasGUI())
             {
                 getDisplayString().setTagArg("i2",0,"x_yellow");
                 getDisplayString().setTagArg("t",0,"RECEIVE");
@@ -140,7 +140,7 @@ void Server::handleMessage(cMessage *msg)
             }
 
             // update network graphics
-            if (ev.isGUI())
+            if (hasGUI())
             {
                 getDisplayString().setTagArg("i2",0,"x_red");
                 getDisplayString().setTagArg("t",0,"COLLISION");

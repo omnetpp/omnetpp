@@ -45,7 +45,7 @@ void Delay::handleMessage(cMessage *msg)
     }
     emit(delayedJobsSignal, currentlyStored);
 
-    if (ev.isGUI())
+    if (hasGUI())
         getDisplayString().setTagArg("i",1, currentlyStored==0 ? "" : "cyan4");
 }
 

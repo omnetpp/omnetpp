@@ -240,7 +240,7 @@ void TokenRingMAC::tokenFullyReceived()
     EV << "Token arrived (we can keep it for THT=" << tokenHoldingTime << ")" << endl;
     thtExpiryTime = simTime() + tokenHoldingTime;
 
-    if (ev.isGUI())
+    if (isGUI())
     {
         getParentModule()->getDisplayString().setTagArg("i",1,"gold");
         getParentModule()->getDisplayString().setTagArg("t",0,"ACTIVE");
@@ -293,7 +293,7 @@ void TokenRingMAC::dataFrameHeaderReceived()
 void TokenRingMAC::releaseToken()
 {
     EV << "Releasing token." << endl;
-    if (ev.isGUI())
+    if (isGUI())
     {
         getParentModule()->getDisplayString().setTagArg("i",1,"");
         getParentModule()->getDisplayString().setTagArg("t",0,"");

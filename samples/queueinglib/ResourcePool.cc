@@ -34,7 +34,7 @@ void ResourcePool::initialize()
     amount = par("amount");
     amountSignal = registerSignal("amount");
     emit(amountSignal, amount);
-    if (ev.isGUI())
+    if (hasGUI())
         updateDisplayString();
 }
 
@@ -44,7 +44,7 @@ bool ResourcePool::tryToAllocate(IResourceAllocator *allocator, long amountToAll
     if (amount >= amountToAllocate) {
         amount -= amountToAllocate;
         emit(amountSignal, amount);
-        if (ev.isGUI())
+        if (hasGUI())
             updateDisplayString();
         return true;
     }
@@ -55,7 +55,7 @@ bool ResourcePool::tryToAllocate(IResourceAllocator *allocator, long amountToAll
         req.amountToAllocate = amountToAllocate;
         req.allocator = allocator;
         add(req);
-        if (ev.isGUI())
+        if (hasGUI())
             updateDisplayString();
         return false;
     }
@@ -73,7 +73,7 @@ void ResourcePool::release(long amountToRelease)
         allocatorList.pop_front();
     }
     emit(amountSignal, amount);
-    if (ev.isGUI())
+    if (hasGUI())
         updateDisplayString();
 }
 

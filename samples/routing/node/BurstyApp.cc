@@ -114,7 +114,7 @@ void BurstyApp::handleMessage(cMessage *msg)
         processPacket(check_and_cast<Packet *>(msg));
 
     // update visual appearance of the module
-    if (ev.isGUI())
+    if (hasGUI())
         updateDisplayString();
 }
 

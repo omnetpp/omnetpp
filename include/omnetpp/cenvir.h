@@ -473,9 +473,11 @@ class SIM_API cEnvir
     /** @name Input/output methods called from simple modules or the simulation kernel. */
     //@{
     /**
-     * Tells if the current environment is graphical or not. (For Tkenv it returns true,
-     * and with Cmdenv it returns false.) Simple modules can examine this flag
-     * to decide whether or not they need to bother updating display strings.
+     * Returns true if the current environment is a graphical user interface.
+     * (For example, it returns true if the simulation is running over Tkenv,
+     * and false if it's running over Cmdenv.) Modules can examine this flag
+     * to decide whether or not they need to bother with visualization, e.g.
+     * dynamically updating display strings or drawing on canvases.
      */
     virtual bool isGUI() const = 0;
 

@@ -591,6 +591,15 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     /** @name Display strings, animation. */
     //@{
     /**
+     * Returns true if the current environment is a graphical user interface.
+     * (For example, it returns true if the simulation is running over Tkenv,
+     * and false if it's running over Cmdenv.) Modules can examine this flag
+     * to decide whether or not they need to bother with visualization, e.g.
+     * dynamically update display strings or draw on canvases.
+     */
+    bool hasGUI() const;
+
+    /**
      * Returns the display string which defines presentation when the module
      * is displayed as a submodule in a compound module graphics.
      */

@@ -212,6 +212,11 @@ void cComponent::finalizeParameters()
     EVCB.displayStringChanged(this);
 }
 
+bool cComponent::hasGUI() const
+{
+    return cSimulation::getActiveEnvir()->isGUI();
+}
+
 bool cComponent::hasDisplayString()
 {
     if (dispstr)

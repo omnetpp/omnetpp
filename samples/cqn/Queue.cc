@@ -67,7 +67,7 @@ void AbstractQueue::handleMessage(cMessage *msg)
         if (queue.empty())
         {
             msgServiced = NULL;
-            if (ev.isGUI()) getDisplayString().setTagArg("i",1,"");
+            if (hasGUI()) getDisplayString().setTagArg("i",1,"");
         }
         else
         {
@@ -80,7 +80,7 @@ void AbstractQueue::handleMessage(cMessage *msg)
     }
     else if (!msgServiced)
     {
-        if (ev.isGUI()) getDisplayString().setTagArg("i",1,"gold3");
+        if (hasGUI()) getDisplayString().setTagArg("i",1,"gold3");
 
         arrival( msg );
         msgServiced = msg;
@@ -131,7 +131,7 @@ void Queue::initialize()
         simtime_t serviceTime = startService( msgServiced );
         scheduleAt( simTime()+serviceTime, endServiceMsg );
 
-        if (ev.isGUI()) getDisplayString().setTagArg("i",1,"gold3");
+        if (hasGUI()) getDisplayString().setTagArg("i",1,"gold3");
     }
 }
 

@@ -78,7 +78,7 @@ void Queue::handleMessage(cMessage *msg)
             if (capacity >=0 && queue.length() >= capacity)
             {
                 EV << "Capacity full! Job dropped.\n";
-                if (ev.isGUI()) bubble("Dropped!");
+                if (hasGUI()) bubble("Dropped!");
                 emit(droppedSignal, 1);
                 delete job;
                 return;
@@ -89,7 +89,7 @@ void Queue::handleMessage(cMessage *msg)
         }
     }
 
-    if (ev.isGUI()) getDisplayString().setTagArg("i",1, !jobServiced ? "" : "cyan3");
+    if (hasGUI()) getDisplayString().setTagArg("i",1, !jobServiced ? "" : "cyan3");
 }
 
 Job *Queue::getFromQueue()

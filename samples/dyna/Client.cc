@@ -46,12 +46,12 @@ void Client::activity()
 
     for(;;)
     {
-        if (ev.isGUI()) getDisplayString().setTagArg("i",1,"");
+        if (hasGUI()) getDisplayString().setTagArg("i",1,"");
 
         // keep an interval between subsequent connections
         wait( (double)connectionIaTime );
 
-        if (ev.isGUI()) getDisplayString().setTagArg("i",1,"green");
+        if (hasGUI()) getDisplayString().setTagArg("i",1,"green");
 
         // connection setup
         EV << "sending DYNA_CONN_REQ\n";
@@ -69,7 +69,7 @@ void Client::activity()
            << serverprocId << endl;
         delete connAck;
 
-        if (ev.isGUI())
+        if (hasGUI())
         {
             getDisplayString().setTagArg("i",1,"gold");
             bubble("Connected!");
@@ -97,7 +97,7 @@ void Client::activity()
             wait( (double)queryIaTime );
         }
 
-        if (ev.isGUI()) getDisplayString().setTagArg("i",1,"blue");
+        if (hasGUI()) getDisplayString().setTagArg("i",1,"blue");
 
         // connection teardown
         EV << "sending DYNA_DISC_REQ\n";
@@ -114,14 +114,14 @@ void Client::activity()
         EV << "got DYNA_DISC_ACK\n";
         delete discAck;
 
-        if (ev.isGUI()) bubble("Disconnected!");
+        if (hasGUI()) bubble("Disconnected!");
 
         continue;
 
         // error handling
     broken:
         EV << "Timeout, connection broken!\n";
-        if (ev.isGUI()) bubble("Connection broken!");
+        if (hasGUI()) bubble("Connection broken!");
     }
 }
 

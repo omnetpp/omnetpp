@@ -50,7 +50,7 @@ void Switch::activity()
 
         // display status: normal=queue empty, yellow=queued packets; red=queue overflow
         int qLen = queue.length();
-        if (ev.isGUI()) getDisplayString().setTagArg("i",1, qLen==0 ? "" : qLen<queueMaxLen ? "gold" : "red");
+        if (hasGUI()) getDisplayString().setTagArg("i",1, qLen==0 ? "" : qLen<queueMaxLen ? "gold" : "red");
 
         // model finite queue size
         while (queue.length() > queueMaxLen)

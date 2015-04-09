@@ -74,7 +74,7 @@ void Txc14::handleMessage(cMessage *msg)
         forwardMessage(newmsg);
         numSent++;
 
-        if (ev.isGUI())
+        if (hasGUI())
             updateDisplay();
     }
     else
