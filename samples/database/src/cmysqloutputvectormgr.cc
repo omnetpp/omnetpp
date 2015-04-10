@@ -183,7 +183,7 @@ void cMySQLOutputVectorManager::insertRunIntoDB()
     {
         // insert run into the database
         std::string insertRunStmt = SQL_INSERT_VRUN;
-        int runNumber = getSimulation()->getActiveEnvir()->getConfigEx()->getActiveRunNumber();
+        int runNumber = getEnvir()->getConfigEx()->getActiveRunNumber();
         opp_mysql_substitute(insertRunStmt, "@runnumber@", runNumber, mysql);
         opp_mysql_substitute(insertRunStmt, "@network@", getSimulation()->getNetworkType()->getName(), mysql);
         if (mysql_query(mysql, insertRunStmt.c_str()))

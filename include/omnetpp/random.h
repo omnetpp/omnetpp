@@ -29,9 +29,10 @@ NAMESPACE_BEGIN
 
 
 // helper: return the "current" RNG.
-inline cRNG *__contextModuleRNG(int k) {
-    cComponent *context = getSimulation()->getContext();
-    return context ? context->getRNG(k) : getEnvir()->getRNG(k);
+inline cRNG *__contextModuleRNG(int k)
+{
+    cComponent *context = cSimulation::getActiveSimulation()->getContext();
+    return context ? context->getRNG(k) : cSimulation::getActiveEnvir()->getRNG(k);
 }
 
 /**
