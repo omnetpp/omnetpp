@@ -1,3 +1,3 @@
 @echo off
-call ..\..\setenv-vc.bat
+call ..\..\setenv.bat
 nmake -f Makefile.vc SHARED_LIBS=no %*

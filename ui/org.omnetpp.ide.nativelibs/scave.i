@@ -8,22 +8,22 @@
 #%javaconst(1);
 
 %{
-#include "scavedefs.h"
-#include "enumtype.h"
-#include "statistics.h"
-#include "idlist.h"
-#include "resultfilemanager.h"
-#include "fields.h"
-#include "datasorter.h"
-#include "stringutil.h"   // strdictcmp
-#include "indexfile.h"
-#include "commonnodes.h"
-#include "indexedvectorfile.h"
-#include "vectorfileindexer.h"
-#include "vectorfilereader.h"
-#include "indexedvectorfilereader.h"
-#include "scaveexception.h"
-#include "export.h"
+#include "scave/scavedefs.h"
+#include "scave/enumtype.h"
+#include "scave/statistics.h"
+#include "scave/idlist.h"
+#include "scave/resultfilemanager.h"
+#include "scave/fields.h"
+#include "scave/datasorter.h"
+#include "common/stringutil.h"   // strdictcmp
+#include "scave/indexfile.h"
+#include "scave/commonnodes.h"
+#include "scave/indexedvectorfile.h"
+#include "scave/vectorfileindexer.h"
+#include "scave/vectorfilereader.h"
+#include "scave/indexedvectorfilereader.h"
+#include "scave/scaveexception.h"
+#include "scave/export.h"
 
 USING_NAMESPACE
 %}
@@ -42,7 +42,7 @@ USING_NAMESPACE
 #define NAMESPACE_END
 #define USING_NAMESPACE
 
-%include "scavedefs.h"
+%include "scave/scavedefs.h"
 
 %typemap(jni) ID "jlong";
 
@@ -166,7 +166,7 @@ namespace std {
 %ignore EnumType::insert;
 %ignore EnumType::parseFromString;
 %ignore EnumType::operator=;
-%include "enumtype.h"
+%include "scave/enumtype.h"
 
 
 
@@ -324,7 +324,7 @@ int strdictcmp(const char *s1, const char *s2);
 
 /* ------------- statistics.h  ----------------- */
 %ignore Statistics::operator=;
-%include "statistics.h"
+%include "scave/statistics.h"
 
 /* ------------- idlist.h  ----------------- */
 %include "idlist.i"
@@ -489,10 +489,10 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(ResultFileManager::loadFile)
 %newobject ResultFileManager::getRunAttributeFilterHints(const RunList&, const char*) const;
 %newobject ResultFileManager::getModuleParamFilterHints(const RunList&, const char*) const;
 
-%include "resultfilemanager.h"
+%include "scave/resultfilemanager.h"
 
 /* ------------- datasorter.h  ----------------- */
-%include "datasorter.h"
+%include "scave/datasorter.h"
 
 
 /* ------------- dataflownetwork.h  ----------------- */
@@ -501,7 +501,7 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(DataflowManager::execute)
 %include scave-plove.i
 
 /* ------------- indexfile.h  ----------------- */
-// %include "indexfile.h"
+// %include "scave/indexfile.h"
 
 %javamethodmodifiers IndexFile::isIndexFileUpToDate "protected";
 
@@ -517,7 +517,7 @@ class IndexFile
 
 /* ------------- vectorfileindexer.h  ----------------- */
 CHECK_RESULTFILE_FORMAT_EXCEPTION(VectorFileIndexer::generateIndex)
-%include "vectorfileindexer.h"
+%include "scave/vectorfileindexer.h"
 
 /* ------------- indexedvectorfile.h  ----------------- */
 %typemap(javainterfaces) OutputVectorEntry "Comparable<OutputVectorEntry>"
@@ -541,7 +541,7 @@ namespace std {
 };
 %ignore IndexedVectorFileWriterNode;
 %ignore IndexedVectorFileWriterNodeType;
-%include "indexedvectorfile.h"
+%include "scave/indexedvectorfile.h"
 
 /* ------------- vectorfilereader.h  ----------------- */
 %ignore SingleSourceNode;
@@ -552,7 +552,7 @@ namespace std {
 %ignore SingleSinkNodeType;
 %ignore FilterNodeType;
 %ignore ReaderNodeType;
-%include "commonnodes.h"
+%include "scave/commonnodes.h"
 
 %extend VectorFileReaderNode {
     static VectorFileReaderNode *cast(Node* node) { return dynamic_cast<VectorFileReaderNode*>(node); }
@@ -560,10 +560,10 @@ namespace std {
 
 %ignore VectorFileReaderNodeType;
 %ignore parseColumns;
-%include "vectorfilereader.h"
+%include "scave/vectorfilereader.h"
 
 /* ------------- indexedvectorfilereader.h  ----------------- */
-%include "indexedvectorfilereader.h"
+%include "scave/indexedvectorfilereader.h"
 
 
 %extend IndexedVectorFileReaderNode {
@@ -626,10 +626,10 @@ namespace std {
   }
 %}
 
-%include "fields.h"
+%include "scave/fields.h"
 
 /* ------------------ datasorter.h --------------------- */
-%include "datasorter.h"
+%include "scave/datasorter.h"
 
 /* ------------------ export.h ----------------------- */
 %ignore Column;
@@ -644,4 +644,4 @@ namespace std {
 %ignore ScaveExport::saveVectors;
 %rename(EOL)    CsvExport::eol;
 %newobject ExporterFactory::createExporter;
-%include "export.h"
+%include "scave/export.h"

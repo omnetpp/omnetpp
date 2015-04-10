@@ -91,4 +91,4 @@ ADD_NOTIFY(sortVectorsByStartTime);
 ADD_NOTIFY(sortVectorsByEndTime);
 ADD_NOTIFY(sortByRunAttribute);
 
-%include "idlist.h"
+%include "scave/idlist.h"

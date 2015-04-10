@@ -4,13 +4,13 @@
 #pragma SWIG nowarn=822
 
 %{
-#include "stringutil.h"
-#include "patternmatcher.h"
-#include "unitconversion.h"
-#include "bigdecimal.h"
-#include "rwlock.h"
-#include "expression.h"
-#include "stringtokenizer2.h"
+#include "common/stringutil.h"
+#include "common/patternmatcher.h"
+#include "common/unitconversion.h"
+#include "common/bigdecimal.h"
+#include "common/rwlock.h"
+#include "common/expression.h"
+#include "common/stringtokenizer2.h"
 
 USING_NAMESPACE
 %}
@@ -57,8 +57,8 @@ int strdictcmp(const char *s1, const char *s2);
 
 %ignore UnitConversion::parseQuantity(const char *, std::string&);
 
-%include "patternmatcher.h"
-%include "unitconversion.h"
+%include "common/patternmatcher.h"
+%include "common/unitconversion.h"
 
 
 /* -------------------- BigDecimal -------------------------- */
@@ -118,7 +118,7 @@ SWIG_JAVABODY_METHODS(public, public, BigDecimal)
     }
 %}
 
-%include "bigdecimal.h"
+%include "common/bigdecimal.h"
 
 
 /* -------------------- rwlock.h -------------------------- */
@@ -126,7 +126,7 @@ SWIG_JAVABODY_METHODS(public, public, BigDecimal)
 %ignore WriterMutex;
 SWIG_JAVABODY_METHODS(public, public, ILock)
 
-%include "rwlock.h"
+%include "common/rwlock.h"
 
 class SimpleResolver;
 
@@ -166,7 +166,7 @@ class SimpleResolver : public Expression::Resolver {
 
 %ignore MathFunction;
 %ignore Expression::evaluate;  // swig does not support nested classes (Expression::Value)
-%include "expression.h"
+%include "common/expression.h"
 
 /* -------------------- stringtokenizer2.h -------------------------- */
 %define CHECK_STRINGTOKENIZER_EXCEPTION(METHOD)
@@ -192,4 +192,4 @@ CHECK_STRINGTOKENIZER_EXCEPTION(StringTokenizer2::nextToken)
 
 %ignore StringTokenizerException;
 
-%include "stringtokenizer2.h"
+%include "common/stringtokenizer2.h"

@@ -17,7 +17,7 @@
 #define _JPROGRESSMONITOR_H_
 
 #include <jni.h>
-#include "progressmonitor.h"
+#include "common/progressmonitor.h"
 
 NAMESPACE_BEGIN
 

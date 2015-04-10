@@ -1,5 +1,5 @@
 %{
-#include "bigdecimal.h"
+#include "common/bigdecimal.h"
 #include "jprogressmonitor.h"
 %}
 

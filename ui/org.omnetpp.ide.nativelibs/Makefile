@@ -21,12 +21,6 @@ O=$(OMNETPP_OUT_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)-$(MODE)/ui
 #
 # Local definitions
 #
-COMMON=$(OMNETPP_ROOT)/src/common
-NEDXML=$(OMNETPP_ROOT)/src/nedxml
-SCAVE=$(OMNETPP_ROOT)/src/scave
-LAYOUT=$(OMNETPP_ROOT)/src/layout
-EVENTLOG=$(OMNETPP_ROOT)/src/eventlog
-
 COMMON_JAVAPKG = org.omnetpp.common.engine
 NEDXML_JAVAPKG = org.omnetpp.ned.engine
 SCAVE_JAVAPKG = org.omnetpp.scave.engine
@@ -62,7 +56,7 @@ DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.$(PLATFORM)
 #
 # Local definitions
 #
-INCLUDES=-I$(COMMON) -I$(NEDXML) -I$(SCAVE) -I$(LAYOUT) -I$(EVENTLOG) -I$(OMNETPP_INCL_DIR)/platdep
+INCLUDES=-I$(OMNETPP_INCL_DIR) -I$(OMNETPP_SRC_DIR)
 COPTS=$(CFLAGS) $(JAVA_CFLAGS) $(INCLUDES) -DTHREADED $(PTHREAD_CFLAGS) 
 
 #

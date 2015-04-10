@@ -10,7 +10,7 @@
 //
 
 %{
-#include "exception.h"
+#include "common/exception.h"
 
 static void testExceptionHandling() {
     try {

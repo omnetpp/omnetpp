@@ -9,13 +9,13 @@
 %javaconst(1);
 
 %{
-#include "graphlayouter.h"
-#include "basicspringembedderlayout.h"
-#include "forcedirectedgraphlayouter.h"
-// #include "geometry.h"
-// #include "forcedirectedparametersbase.h"
-// #include "forcedirectedparameters.h"
-// #include "forcedirectedembedding.h"
+#include "layout/graphlayouter.h"
+#include "layout/basicspringembedderlayout.h"
+#include "layout/forcedirectedgraphlayouter.h"
+// #include "layout/geometry.h"
+// #include "layout/forcedirectedparametersbase.h"
+// #include "layout/forcedirectedparameters.h"
+// #include "layout/forcedirectedembedding.h"
 
 USING_NAMESPACE
 %}
@@ -185,11 +185,11 @@ FIXUP_GETNODEPOSITION(ForceDirectedGraphLayouter);
 //%ignore ForceDirectedEmbedding::writeDebugInformation;
 //%ignore LeastExpandedSpring::LeastExpandedSpring;   //XXX takes std::vector<AbstractSpring*>
 
-%include "graphlayouter.h"
-%include "basicspringembedderlayout.h"
-%include "forcedirectedgraphlayouter.h"
-// %include "geometry.h"
-// %include "forcedirectedparametersbase.h"
-// %include "forcedirectedparameters.h"
-// %include "forcedirectedembedding.h"
+%include "layout/graphlayouter.h"
+%include "layout/basicspringembedderlayout.h"
+%include "layout/forcedirectedgraphlayouter.h"
+// %include "layout/geometry.h"
+// %include "layout/forcedirectedparametersbase.h"
+// %include "layout/forcedirectedparameters.h"
+// %include "layout/forcedirectedembedding.h"
 

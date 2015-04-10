@@ -1,10 +1,10 @@
 %{
-#include "node.h"
-#include "dataflowmanager.h"
-#include "nodetype.h"
-#include "nodetyperegistry.h"
-#include "arraybuilder.h"
-#include "xyarray.h"
+#include "scave/node.h"
+#include "scave/dataflowmanager.h"
+#include "scave/nodetype.h"
+#include "scave/nodetyperegistry.h"
+#include "scave/arraybuilder.h"
+#include "scave/xyarray.h"
 %}
 
 // covariant return type warning disabled
@@ -76,9 +76,9 @@ class Node
 // NodeType, NodeTypeRegistry and DataflowManager are published in their entirety
 // to Java.
 //
-%include "nodetype.h"
-%include "nodetyperegistry.h"
-%include "dataflowmanager.h"
-%include "xyarray.h"
+%include "scave/nodetype.h"
+%include "scave/nodetyperegistry.h"
+%include "scave/dataflowmanager.h"
+%include "scave/xyarray.h"
 
 

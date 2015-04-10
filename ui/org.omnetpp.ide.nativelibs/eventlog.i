@@ -13,20 +13,20 @@
 COMMON_ENGINE_BIGDECIMAL();
 
 %{
-#include "ievent.h"
-#include "ieventlog.h"
-#include "event.h"
-#include "filteredevent.h"
-#include "messagedependency.h"
-#include "eventlogentry.h"
-#include "eventlogentries.h"
-#include "eventlogindex.h"
-#include "eventlog.h"
-#include "eventlogfacade.h"
-#include "eventlogtablefacade.h"
-#include "sequencechartfacade.h"
-#include "filteredeventlog.h"
-#include "filereader.h"
+#include "eventlog/ievent.h"
+#include "eventlog/ieventlog.h"
+#include "eventlog/event.h"
+#include "eventlog/filteredevent.h"
+#include "eventlog/messagedependency.h"
+#include "eventlog/eventlogentry.h"
+#include "eventlog/eventlogentries.h"
+#include "eventlog/eventlogindex.h"
+#include "eventlog/eventlog.h"
+#include "eventlog/eventlogfacade.h"
+#include "eventlog/eventlogtablefacade.h"
+#include "eventlog/sequencechartfacade.h"
+#include "eventlog/filteredeventlog.h"
+#include "common/filereader.h"
 
 USING_NAMESPACE
 %}
@@ -41,7 +41,7 @@ USING_NAMESPACE
 #define NAMESPACE_END
 #define USING_NAMESPACE
 
-%include "eventlogdefs.h"
+%include "eventlog/eventlogdefs.h"
 
 /*--------------------------------------------------------------------------
  * ptr_t <--> long mapping
@@ -377,17 +377,17 @@ FIX_CHARPTR_MEMBER(BeginSendEntry, messageClassName, MessageClassName);
 FIX_CHARPTR_MEMBER(BeginSendEntry, messageName, MessageName);
 FIX_CHARPTR_MEMBER(BeginSendEntry, detail, Detail);
 
-%include "ievent.h"
-%include "ieventlog.h"
-%include "event.h"
-%include "filteredevent.h"
-%include "messagedependency.h"
-%include "eventlogentry.h"
-%include "eventlogentries.h"
-%include "eventlogindex.h"
-%include "eventlog.h"
-%include "eventlogfacade.h"
-%include "eventlogtablefacade.h"
-%include "sequencechartfacade.h"
-%include "filteredeventlog.h"
-%include "filereader.h"
+%include "eventlog/ievent.h"
+%include "eventlog/ieventlog.h"
+%include "eventlog/event.h"
+%include "eventlog/filteredevent.h"
+%include "eventlog/messagedependency.h"
+%include "eventlog/eventlogentry.h"
+%include "eventlog/eventlogentries.h"
+%include "eventlog/eventlogindex.h"
+%include "eventlog/eventlog.h"
+%include "eventlog/eventlogfacade.h"
+%include "eventlog/eventlogtablefacade.h"
+%include "eventlog/sequencechartfacade.h"
+%include "eventlog/filteredeventlog.h"
+%include "common/filereader.h"

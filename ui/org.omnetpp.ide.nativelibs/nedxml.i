@@ -11,22 +11,17 @@
 %javaconst(1);
 
 %{
-#include "nedelement.h"
-#include "nederror.h"
-#include "nedparser.h"
-#include "ned2generator.h"
-#include "ned1generator.h"
-#include "xmlgenerator.h"
-#include "nedelements.h"
-
-#include "neddtdvalidator.h"
-#include "nedtools.h"
-#include "nedsyntaxvalidator.h"
-
-// #include "nedcompiler.h"
-#include "nedfilebuffer.h"
-// #include "nedsemanticvalidator.h"
-// #include "cppgenerator.h"
+#include "nedxml/nedelement.h"
+#include "nedxml/nederror.h"
+#include "nedxml/nedparser.h"
+#include "nedxml/ned2generator.h"
+#include "nedxml/ned1generator.h"
+#include "nedxml/xmlgenerator.h"
+#include "nedxml/nedelements.h"
+#include "nedxml/neddtdvalidator.h"
+#include "nedxml/nedtools.h"
+#include "nedxml/nedsyntaxvalidator.h"
+#include "nedxml/nedfilebuffer.h"
 
 USING_NAMESPACE
 %}
@@ -132,23 +127,23 @@ namespace std {
 
 
 /* Let's just grab the original header file here */
-%include "nedxmldefs.h"
-%include "nedelement.h"
-%include "nederror.h"
-%include "nedparser.h"
-%include "ned2generator.h"
-%include "ned1generator.h"
-%include "xmlgenerator.h"
-%include "nedelements.h"
+%include "nedxml/nedxmldefs.h"
+%include "nedxml/nedelement.h"
+%include "nedxml/nederror.h"
+%include "nedxml/nedparser.h"
+%include "nedxml/ned2generator.h"
+%include "nedxml/ned1generator.h"
+%include "nedxml/xmlgenerator.h"
+%include "nedxml/nedelements.h"
 
-%include "nedvalidator.h"
-%include "neddtdvalidatorbase.h"
-%include "neddtdvalidator.h"
-%include "nedtools.h"
-%include "nedsyntaxvalidator.h"
+%include "nedxml/nedvalidator.h"
+%include "nedxml/neddtdvalidatorbase.h"
+%include "nedxml/neddtdvalidator.h"
+%include "nedxml/nedtools.h"
+%include "nedxml/nedsyntaxvalidator.h"
 
 //%include "nedcompiler.h"
-//%include "nedfilebuffer.h"
+//%include "nedxml/nedfilebuffer.h"
 //%include "nedsemanticvalidator.h"
 //%include "cppgenerator.h"
 
