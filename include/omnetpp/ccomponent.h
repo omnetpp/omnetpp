@@ -301,6 +301,13 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     cComponentType *getComponentType() const;
 
     /**
+     * Returns the simulation the component is part of. Currently may only
+     * be invoked if the component's simulation is the active one (see
+     * cSimulation::getActiveSimulation()).
+     */
+    cSimulation *getSimulation() const;
+
+    /**
      * Returns the component's ID in the simulation object (cSimulation).
      * Component IDs are guaranteed to be unique during a simulation run
      * (that is, IDs of deleted components are not reused for new components.)
@@ -334,6 +341,12 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * module, it returns NULL.
      */
     virtual cModule *getParentModule() const = 0;
+
+    /**
+     * Returns the toplevel module in the current simulation.
+     * This is a shortcut to getSimulation()->getSystemModule().
+     */
+    virtual cModule *getSystemModule() const;
 
     /**
      * Returns the global RNG mapped to local RNG number k. For large indices

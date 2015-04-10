@@ -118,13 +118,23 @@ void cComponent::handleParameterChange(const char *)
 cComponentType *cComponent::getComponentType() const
 {
     if (!componenttype)
-        throw cRuntimeError(this, "Object has no associated cComponentType (maybe %s should not subclass cModule/cChannel?)", getClassName());
+        throw cRuntimeError(this, "Object has no associated cComponentType (maybe %s is not derived from cModule/cChannel?)", getClassName());
     return componenttype;
+}
+
+cSimulation *cComponent::getSimulation() const
+{
+    return cSimulation::getActiveSimulation();  //TODO store per-component cSimulation* ptrs and return that?
 }
 
 const char *cComponent::getNedTypeName() const
 {
     return getComponentType()->getFullName();
+}
+
+cModule *cComponent::getSystemModule() const
+{
+    return getSimulation()->getSystemModule();
 }
 
 cRNG *cComponent::getRNG(int k) const

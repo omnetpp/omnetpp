@@ -78,6 +78,11 @@ class SIM_API cScheduler : public cObject, public cISimulationLifecycleListener
     virtual void setSimulation(cSimulation *_sim);
 
     /**
+     * Returns the simulation the scheduler belongs to.
+     */
+    cSimulation *getSimulation() const {return sim;}
+
+    /**
      * Called at the beginning of a simulation run.
      */
     virtual void startRun() {}
