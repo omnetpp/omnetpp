@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CPAR_H
-#define __CPAR_H
+#ifndef __OMNETPP_CPAR_H
+#define __OMNETPP_CPAR_H
 
 #include "cownedobject.h"
 #include "cexpression.h"

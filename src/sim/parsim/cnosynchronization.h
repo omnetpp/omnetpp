@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __NOSYNCHRONIZATION_H__
-#define __NOSYNCHRONIZATION_H__
+#ifndef __OMNETPP_NOSYNCHRONIZATION_H
+#define __OMNETPP_NOSYNCHRONIZATION_H
 
 #include "cparsimprotocolbase.h"
 

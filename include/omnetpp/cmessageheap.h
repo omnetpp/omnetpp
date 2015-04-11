@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CMESSAGEHEAP_H
-#define __CMESSAGEHEAP_H
+#ifndef __OMNETPP_CMESSAGEHEAP_H
+#define __OMNETPP_CMESSAGEHEAP_H
 
 #include "cownedobject.h"
 

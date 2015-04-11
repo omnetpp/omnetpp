@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __FILEREADER_H_
-#define __FILEREADER_H_
+#ifndef __OMNETPP_FILEREADER_H
+#define __OMNETPP_FILEREADER_H
 
 #include <vector>
 #include <string>

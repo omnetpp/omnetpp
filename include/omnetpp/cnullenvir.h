@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CNULLENVIR_H
-#define __CNULLENVIR_H
+#ifndef __OMNETPP_CNULLENVIR_H
+#define __OMNETPP_CNULLENVIR_H
 
 #include "cenvir.h"
 #include "cexception.h"

@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _XYARRAY_H_
-#define _XYARRAY_H_
+#ifndef __OMNETPP_XYARRAY_H
+#define __OMNETPP_XYARRAY_H
 
 #include "scavedefs.h"
 

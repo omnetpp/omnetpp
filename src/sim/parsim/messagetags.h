@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __MESSAGETAGS_H
-#define __MESSAGETAGS_H
+#ifndef __OMNETPP_MESSAGETAGS_H
+#define __OMNETPP_MESSAGETAGS_H
 
 //
 // message tags:

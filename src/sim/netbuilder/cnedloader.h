@@ -15,8 +15,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __CNEDLOADER_H
-#define __CNEDLOADER_H
+#ifndef __OMNETPP_CNEDLOADER_H
+#define __OMNETPP_CNEDLOADER_H
 
 #include "nedxml/nedresourcecache.h"
 #include "omnetpp/simkerneldefs.h"

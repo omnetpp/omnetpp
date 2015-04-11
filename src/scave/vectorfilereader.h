@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _VECTORFILEREADER_H_
-#define _VECTORFILEREADER_H_
+#ifndef __OMNETPP_VECTORFILEREADER_H
+#define __OMNETPP_VECTORFILEREADER_H
 
 #include <map>
 #include <string>

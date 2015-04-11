@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _INDEXFILE_H_
-#define _INDEXFILE_H_
+#ifndef __OMNETPP_INDEXFILE_H
+#define __OMNETPP_INDEXFILE_H
 
 #include <float.h>
 #include <map>

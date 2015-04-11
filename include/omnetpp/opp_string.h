@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OPP_STRING_H
-#define __OPP_STRING_H
+#ifndef __OMNETPP_OPP_STRING_H
+#define __OMNETPP_OPP_STRING_H
 
 #include <vector>
 #include <map>

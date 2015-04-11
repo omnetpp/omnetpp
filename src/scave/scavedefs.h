@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _SCAVEDEFS_H_
-#define _SCAVEDEFS_H_
+#ifndef __OMNETPP_SCAVEDEFS_H
+#define __OMNETPP_SCAVEDEFS_H
 
 #include <stdint.h> // for int64_t, our equivalent of Java's "long" type
 #include "common/bigdecimal.h"

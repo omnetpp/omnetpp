@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _NODETYPE_H_
-#define _NODETYPE_H_
+#ifndef __OMNETPP_NODETYPE_H
+#define __OMNETPP_NODETYPE_H
 
 #include <map>
 #include <string>

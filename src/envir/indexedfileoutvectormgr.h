@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __INDEXEDFILEOUTVECTORMGR_H
-#define __INDEXEDFILEOUTVECTORMGR_H
+#ifndef __OMNETPP_INDEXEDFILEOUTVECTORMGR_H
+#define __OMNETPP_INDEXEDFILEOUTVECTORMGR_H
 
 #include <stdio.h>
 #include <float.h>

@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __COMPONENTHISTORY_H
-#define __COMPONENTHISTORY_H
+#ifndef __OMNETPP_COMPONENTHISTORY_H
+#define __OMNETPP_COMPONENTHISTORY_H
 
 #include <string>
 #include <map>

@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __INSPECTOR_H
-#define __INSPECTOR_H
+#ifndef __OMNETPP_INSPECTOR_H
+#define __OMNETPP_INSPECTOR_H
 
 #include "envir/envirbase.h"
 #include "tkutil.h"

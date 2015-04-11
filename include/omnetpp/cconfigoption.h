@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CCONFIGOPTION_H
-#define __CCONFIGOPTION_H
+#ifndef __OMNETPP_CCONFIGOPTION_H
+#define __OMNETPP_CCONFIGOPTION_H
 
 #include <string>
 #include "cownedobject.h"

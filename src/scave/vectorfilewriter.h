@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _VECTORFILEWRITER_H_
-#define _VECTORFILEWRITER_H_
+#ifndef __OMNETPP_VECTORFILEWRITER_H
+#define __OMNETPP_VECTORFILEWRITER_H
 
 #include <vector>
 #include "node.h"

@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __NEDFILEBUFFER_H
-#define __NEDFILEBUFFER_H
+#ifndef __OMNETPP_NEDFILEBUFFER_H
+#define __OMNETPP_NEDFILEBUFFER_H
 
 #include "nedparser.h"   // for YYLTYPE
 

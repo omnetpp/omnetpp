@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __ENVIR_STARTUP_H
-#define __ENVIR_STARTUP_H
+#ifndef __OMNETPP_ENVIR_STARTUP_H
+#define __OMNETPP_ENVIR_STARTUP_H
 
 #include "envirdefs.h"
 

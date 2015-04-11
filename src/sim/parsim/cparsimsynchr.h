@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CPARSIMSYNCHR_H__
-#define __CPARSIMSYNCHR_H__
+#ifndef __OMNETPP_CPARSIMSYNCHR_H
+#define __OMNETPP_CPARSIMSYNCHR_H
 
 #include "omnetpp/cscheduler.h"
 #include "omnetpp/simtime_t.h"

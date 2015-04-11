@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __PACKING_H
-#define __PACKING_H
+#ifndef __OMNETPP_PACKING_H
+#define __OMNETPP_PACKING_H
 
 #include "ccommbuffer.h"
 

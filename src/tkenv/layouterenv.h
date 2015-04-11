@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __LAYOUTERENV_H
-#define __LAYOUTERENV_H
+#ifndef __OMNETPP_LAYOUTERENV_H
+#define __OMNETPP_LAYOUTERENV_H
 
 #include "layout/graphlayouter.h"
 #include "tkdefs.h"

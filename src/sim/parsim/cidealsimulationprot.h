@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CIDEALSIMULATIONPROT_H__
-#define __CIDEALSIMULATIONPROT_H__
+#ifndef __OMNETPP_CIDEALSIMULATIONPROT_H
+#define __OMNETPP_CIDEALSIMULATIONPROT_H
 
 #include "cparsimprotocolbase.h"
 

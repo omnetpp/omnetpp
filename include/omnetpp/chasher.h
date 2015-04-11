@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CHASHER_H
-#define __CHASHER_H
+#ifndef __OMNETPP_CHASHER_H
+#define __OMNETPP_CHASHER_H
 
 #include <stdint.h>
 #include <string.h>

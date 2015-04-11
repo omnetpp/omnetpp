@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CVISITOR_H
-#define __CVISITOR_H
+#ifndef __OMNETPP_CVISITOR_H
+#define __OMNETPP_CVISITOR_H
 
 #include "simkerneldefs.h"
 

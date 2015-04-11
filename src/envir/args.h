@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __ARGS_H
-#define __ARGS_H
+#ifndef __OMNETPP_ARGS_H
+#define __OMNETPP_ARGS_H
 
 #include <string>
 #include <vector>

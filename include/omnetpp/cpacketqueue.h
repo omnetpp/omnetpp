@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CPACKETQUEUE_H
-#define __CPACKETQUEUE_H
+#ifndef __OMNETPP_CPACKETQUEUE_H
+#define __OMNETPP_CPACKETQUEUE_H
 
 #include "cqueue.h"
 #include "cpacket.h"

@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __LOGFORMATTER_H
-#define __LOGFORMATTER_H
+#ifndef __OMNETPP_LOGFORMATTER_H
+#define __OMNETPP_LOGFORMATTER_H
 
 #include <ostream>
 #include <vector>

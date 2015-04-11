@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __SEQUENCECHARTFACADE_H_
-#define __SEQUENCECHARTFACADE_H_
+#ifndef __OMNETPP_SEQUENCECHARTFACADE_H
+#define __OMNETPP_SEQUENCECHARTFACADE_H
 
 #include <float.h>
 #include <vector>

@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __LOGINSPECTOR_H
-#define __LOGINSPECTOR_H
+#ifndef __OMNETPP_LOGINSPECTOR_H
+#define __OMNETPP_LOGINSPECTOR_H
 
 #include <map>
 #include "omnetpp/cmessageprinter.h"

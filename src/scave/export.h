@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _EXPORT_H_
-#define _EXPORT_H_
+#ifndef __OMNETPP_EXPORT_H
+#define __OMNETPP_EXPORT_H
 
 #include <string>
 #include <vector>

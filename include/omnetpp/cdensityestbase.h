@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CDENSITYESTBASE_H
-#define __CDENSITYESTBASE_H
+#ifndef __OMNETPP_CDENSITYESTBASE_H
+#define __OMNETPP_CDENSITYESTBASE_H
 
 #include "cstddev.h"
 

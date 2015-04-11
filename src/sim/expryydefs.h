@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __EXPRYYDEFS_H
-#define __EXPRYYDEFS_H
+#ifndef __OMNETPP_EXPRYYDEFS_H
+#define __OMNETPP_EXPRYYDEFS_H
 
 #include "omnetpp/cdynamicexpression.h"
 

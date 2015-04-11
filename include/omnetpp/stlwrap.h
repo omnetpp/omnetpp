@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __STLWRAP_H
-#define __STLWRAP_H
+#ifndef __OMNETPP_STLWRAP_H
+#define __OMNETPP_STLWRAP_H
 
 #include <string>
 #include <vector>

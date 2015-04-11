@@ -14,8 +14,8 @@
   `terms' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CNETWORKBUILDER_H
-#define __CNETWORKBUILDER_H
+#ifndef __OMNETPP_CNETWORKBUILDER_H
+#define __OMNETPP_CNETWORKBUILDER_H
 
 #include <string>
 #include <map>

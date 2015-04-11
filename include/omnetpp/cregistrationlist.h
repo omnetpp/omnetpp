@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CREGISTRATIONLIST_H
-#define __CREGISTRATIONLIST_H
+#ifndef __OMNETPP_CREGISTRATIONLIST_H
+#define __OMNETPP_CREGISTRATIONLIST_H
 
 #include <vector>
 #include <map>

@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CGATE_H
-#define __CGATE_H
+#ifndef __OMNETPP_CGATE_H
+#define __OMNETPP_CGATE_H
 
 #include <set>
 #include <map>

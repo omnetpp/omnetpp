@@ -20,8 +20,8 @@
 
 #ifdef WITH_MPI
 
-#ifndef __CMPICOMMBUFFER_H__
-#define __CMPICOMMBUFFER_H__
+#ifndef __OMNETPP_CMPICOMMBUFFER_H
+#define __OMNETPP_CMPICOMMBUFFER_H
 
 #include "ccommbufferbase.h"
 

@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __PATTERNMATCHER_H
-#define __PATTERNMATCHER_H
+#ifndef __OMNETPP_PATTERNMATCHER_H
+#define __OMNETPP_PATTERNMATCHER_H
 
 #include <stdio.h>
 #include <string>

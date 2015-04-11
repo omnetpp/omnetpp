@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CRNG_H
-#define __CRNG_H
+#ifndef __OMNETPP_CRNG_H
+#define __OMNETPP_CRNG_H
 
 #include "simkerneldefs.h"
 #include "cobject.h"

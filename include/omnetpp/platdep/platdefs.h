@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __PLATDEFS_H
-#define __PLATDEFS_H
+#ifndef __OMNETPP_PLATDEFS_H
+#define __OMNETPP_PLATDEFS_H
 
 #include <stddef.h>
 

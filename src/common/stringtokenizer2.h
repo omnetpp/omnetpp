@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __STRINGTOKENIZER2_H
-#define __STRINGTOKENIZER2_H
+#ifndef __OMNETPP_STRINGTOKENIZER2_H
+#define __OMNETPP_STRINGTOKENIZER2_H
 
 #include <string>
 #include <vector>

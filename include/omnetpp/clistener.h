@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CLISTENER_H
-#define __CLISTENER_H
+#ifndef __OMNETPP_CLISTENER_H
+#define __OMNETPP_CLISTENER_H
 
 #include "simtime_t.h"
 #include "cobject.h"

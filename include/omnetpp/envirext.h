@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __ENVIREXT_H
-#define __ENVIREXT_H
+#ifndef __OMNETPP_ENVIREXT_H
+#define __OMNETPP_ENVIREXT_H
 
 #include <iostream>
 #include "simkerneldefs.h"

@@ -19,8 +19,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __ENVIRBASE_H
-#define __ENVIRBASE_H
+#ifndef __OMNETPP_ENVIRBASE_H
+#define __OMNETPP_ENVIRBASE_H
 
 #include "omnetpp/carray.h"
 #include "omnetpp/csimulation.h"

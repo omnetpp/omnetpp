@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __GRAPHLAYOUTER_H
-#define __GRAPHLAYOUTER_H
+#ifndef __OMNETPP_GRAPHLAYOUTER_H
+#define __OMNETPP_GRAPHLAYOUTER_H
 
 #include <string>
 #include <map>

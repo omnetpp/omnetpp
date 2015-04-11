@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CBOOLPARIMPL_H
-#define __CBOOLPARIMPL_H
+#ifndef __OMNETPP_CBOOLPARIMPL_H
+#define __OMNETPP_CBOOLPARIMPL_H
 
 #include "cparimpl.h"
 

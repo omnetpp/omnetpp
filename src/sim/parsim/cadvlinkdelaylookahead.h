@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CADVLINKDELAYLOOKAHEAD_H__
-#define __CADVLINKDELAYLOOKAHEAD_H__
+#ifndef __OMNETPP_CADVLINKDELAYLOOKAHEAD_H
+#define __OMNETPP_CADVLINKDELAYLOOKAHEAD_H
 
 #include "cnmplookahead.h"
 

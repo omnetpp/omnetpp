@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CFSM_H
-#define __CFSM_H
+#ifndef __OMNETPP_CFSM_H
+#define __OMNETPP_CFSM_H
 
 #include "cownedobject.h"
 

@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __FILEOUTPUTSCALARMGR_H
-#define __FILEOUTPUTSCALARMGR_H
+#ifndef __OMNETPP_FILEOUTPUTSCALARMGR_H
+#define __OMNETPP_FILEOUTPUTSCALARMGR_H
 
 #include <stdio.h>
 #include "common/stringutil.h"

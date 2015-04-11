@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CPROPERTIES_H
-#define __CPROPERTIES_H
+#ifndef __OMNETPP_CPROPERTIES_H
+#define __OMNETPP_CPROPERTIES_H
 
 #include <vector>
 #include "simkerneldefs.h"

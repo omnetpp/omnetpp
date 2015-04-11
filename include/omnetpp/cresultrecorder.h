@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CRESULTRECORDER_H
-#define __CRESULTRECORDER_H
+#ifndef __OMNETPP_CRESULTRECORDER_H
+#define __OMNETPP_CRESULTRECORDER_H
 
 #include "cresultlistener.h"
 #include "ccomponent.h"

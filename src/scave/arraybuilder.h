@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _ARRAYBUILDER_H_
-#define _ARRAYBUILDER_H_
+#ifndef __OMNETPP_ARRAYBUILDER_H
+#define __OMNETPP_ARRAYBUILDER_H
 
 #include "common/commonutil.h"
 #include "commonnodes.h"

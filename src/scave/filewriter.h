@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _FILEWRITER_H_
-#define _FILEWRITER_H_
+#ifndef __OMNETPP_FILEWRITER_H
+#define __OMNETPP_FILEWRITER_H
 
 #include <string>
 #include "commonnodes.h"

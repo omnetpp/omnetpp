@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __COMPAT_H
-#define __COMPAT_H
+#ifndef __OMNETPP_COMPAT_H
+#define __OMNETPP_COMPAT_H
 
 //
 // This header needs to be included *last* in omnetpp.h.

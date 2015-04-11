@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _RESULTFILEMANAGER_H_
-#define _RESULTFILEMANAGER_H_
+#ifndef __OMNETPP_RESULTFILEMANAGER_H
+#define __OMNETPP_RESULTFILEMANAGER_H
 
 #include <assert.h>
 #include <math.h>

@@ -14,8 +14,8 @@
   `terms' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CDYNAMICMODULETYPE_H
-#define __CDYNAMICMODULETYPE_H
+#ifndef __OMNETPP_CDYNAMICMODULETYPE_H
+#define __OMNETPP_CDYNAMICMODULETYPE_H
 
 #include "omnetpp/cmodule.h"
 #include "omnetpp/ccomponenttype.h"

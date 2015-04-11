@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CDELAYCHANNEL_H
-#define __CDELAYCHANNEL_H
+#ifndef __OMNETPP_CDELAYCHANNEL_H
+#define __OMNETPP_CDELAYCHANNEL_H
 
 #include "cchannel.h"
 #include "csimulation.h"

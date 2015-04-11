@@ -17,8 +17,8 @@
 //
 
 
-#ifndef __DTDVALIDATOR_H
-#define __DTDVALIDATOR_H
+#ifndef __OMNETPP_DTDVALIDATOR_H
+#define __OMNETPP_DTDVALIDATOR_H
 
 #include "nedelements.h"
 #include "neddtdvalidatorbase.h"

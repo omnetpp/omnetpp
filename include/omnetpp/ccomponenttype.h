@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CCOMPONENTTYPE_H
-#define __CCOMPONENTTYPE_H
+#ifndef __OMNETPP_CCOMPONENTTYPE_H
+#define __OMNETPP_CCOMPONENTTYPE_H
 
 #include <string>
 #include <map>

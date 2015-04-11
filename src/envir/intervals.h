@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __INTERVALS_H
-#define __INTERVALS_H
+#ifndef __OMNETPP_INTERVALS_H
+#define __OMNETPP_INTERVALS_H
 
 #include "omnetpp/simkerneldefs.h"
 #include "omnetpp/simtime_t.h"

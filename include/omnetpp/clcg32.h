@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CLCG32_H
-#define __CLCG32_H
+#ifndef __OMNETPP_CLCG32_H
+#define __OMNETPP_CLCG32_H
 
 #include "simkerneldefs.h"
 #include "globals.h"

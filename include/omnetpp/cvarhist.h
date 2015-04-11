@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CVARHIST_H
-#define __CVARHIST_H
+#ifndef __OMNETPP_CVARHIST_H
+#define __OMNETPP_CVARHIST_H
 
 #include "chistogram.h"
 

@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CISPEVENTLOGGER_H__
-#define __CISPEVENTLOGGER_H__
+#ifndef __OMNETPP_CISPEVENTLOGGER_H
+#define __OMNETPP_CISPEVENTLOGGER_H
 
 #include "cnullmessageprot.h"
 

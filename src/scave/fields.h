@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _FIELDS_H_
-#define _FIELDS_H_
+#ifndef __OMNETPP_FIELDS_H
+#define __OMNETPP_FIELDS_H
 
 #include <functional>
 #include <stdio.h>

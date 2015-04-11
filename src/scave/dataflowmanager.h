@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _DATAFLOWMANAGER_H_
-#define _DATAFLOWMANAGER_H_
+#ifndef __OMNETPP_DATAFLOWMANAGER_H
+#define __OMNETPP_DATAFLOWMANAGER_H
 
 #include <vector>
 #include "common/progressmonitor.h"

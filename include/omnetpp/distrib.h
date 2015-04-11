@@ -16,8 +16,8 @@
 //==========================================================================
 
 
-#ifndef __DISTRIB_H_
-#define __DISTRIB_H_
+#ifndef __OMNETPP_DISTRIB_H
+#define __OMNETPP_DISTRIB_H
 
 #include "simkerneldefs.h"
 #include "random.h"

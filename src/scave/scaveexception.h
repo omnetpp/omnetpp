@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _SCAVEEXCEPTION_H_
-#define _SCAVEEXCEPTION_H_
+#ifndef __OMNETPP_SCAVEEXCEPTION_H
+#define __OMNETPP_SCAVEEXCEPTION_H
 
 #include <string>
 #include <exception>

@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CSIMULATION_H
-#define __CSIMULATION_H
+#ifndef __OMNETPP_CSIMULATION_H
+#define __OMNETPP_CSIMULATION_H
 
 #include "simkerneldefs.h"
 #include "simtime_t.h"

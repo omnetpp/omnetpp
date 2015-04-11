@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CTIMESTAMPEDVALUE_H
-#define __CTIMESTAMPEDVALUE_H
+#ifndef __OMNETPP_CTIMESTAMPEDVALUE_H
+#define __OMNETPP_CTIMESTAMPEDVALUE_H
 
 #include "clistener.h"  // simsignal_t
 #include "simtime_t.h"

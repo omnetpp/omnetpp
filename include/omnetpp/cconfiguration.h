@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CCONFIGURATION_H
-#define __CCONFIGURATION_H
+#ifndef __OMNETPP_CCONFIGURATION_H
+#define __OMNETPP_CCONFIGURATION_H
 
 #include <vector>
 #include "simkerneldefs.h"

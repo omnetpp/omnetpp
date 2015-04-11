@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _MERGERNODES_H_
-#define _MERGERNODES_H_
+#ifndef __OMNETPP_MERGERNODES_H
+#define __OMNETPP_MERGERNODES_H
 
 #include "commonnodes.h"
 

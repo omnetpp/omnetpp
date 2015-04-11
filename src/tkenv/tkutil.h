@@ -15,8 +15,8 @@
 
 *--------------------------------------------------------------*/
 
-#ifndef __TKUTIL_H
-#define __TKUTIL_H
+#ifndef __OMNETPP_TKUTIL_H
+#define __OMNETPP_TKUTIL_H
 
 #include "envir/visitor.h"
 #include "omnetpp/cobject.h"

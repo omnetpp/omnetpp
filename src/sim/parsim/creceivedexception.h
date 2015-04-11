@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CRECEIVEDEXCEPTION_H__
-#define __CRECEIVEDEXCEPTION_H__
+#ifndef __OMNETPP_CRECEIVEDEXCEPTION_H
+#define __OMNETPP_CRECEIVEDEXCEPTION_H
 
 #include "omnetpp/cexception.h"
 

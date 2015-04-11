@@ -20,8 +20,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CKSPLIT_H
-#define __CKSPLIT_H
+#ifndef __OMNETPP_CKSPLIT_H
+#define __OMNETPP_CKSPLIT_H
 
 #include "cdensityestbase.h"
 

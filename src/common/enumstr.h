@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __ENUMSTR_H
-#define __ENUMSTR_H
+#ifndef __OMNETPP_ENUMSTR_H
+#define __OMNETPP_ENUMSTR_H
 
 #include "commondefs.h"
 

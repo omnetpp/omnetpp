@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __NEDXMLDEFS_H
-#define __NEDXMLDEFS_H
+#ifndef __OMNETPP_NEDXMLDEFS_H
+#define __OMNETPP_NEDXMLDEFS_H
 
 #include "omnetpp/platdep/platdefs.h"
 

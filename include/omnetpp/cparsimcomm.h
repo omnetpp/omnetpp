@@ -19,8 +19,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __CPARSIMCOMM_H__
-#define __CPARSIMCOMM_H__
+#ifndef __OMNETPP_CPARSIMCOMM_H
+#define __OMNETPP_CPARSIMCOMM_H
 
 #include "cobject.h"
 

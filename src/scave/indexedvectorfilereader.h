@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _INDEXEDVECTORFILEREADER_H_
-#define _INDEXEDVECTORFILEREADER_H_
+#ifndef __OMNETPP_INDEXEDVECTORFILEREADER_H
+#define __OMNETPP_INDEXEDVECTORFILEREADER_H
 
 #include <map>
 #include <string>

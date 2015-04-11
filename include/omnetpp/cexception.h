@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CEXCEPTION_H
-#define __CEXCEPTION_H
+#ifndef __OMNETPP_CEXCEPTION_H
+#define __OMNETPP_CEXCEPTION_H
 
 #include <stdarg.h>
 #include <exception>

@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __ONSTARTUP_H
-#define __ONSTARTUP_H
+#ifndef __OMNETPP_ONSTARTUP_H
+#define __OMNETPP_ONSTARTUP_H
 
 #include <vector>
 #include <map>

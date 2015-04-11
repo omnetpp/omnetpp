@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CMODELCHANGE_H
-#define __CMODELCHANGE_H
+#ifndef __OMNETPP_CMODELCHANGE_H
+#define __OMNETPP_CMODELCHANGE_H
 
 #include "cobject.h"
 

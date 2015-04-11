@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CSTRINGPOOL_H
-#define __CSTRINGPOOL_H
+#ifndef __OMNETPP_CSTRINGPOOL_H
+#define __OMNETPP_CSTRINGPOOL_H
 
 #include <string>
 #include <map>

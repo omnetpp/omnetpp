@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __DISPLAYSTRING_H
-#define __DISPLAYSTRING_H
+#ifndef __OMNETPP_DISPLAYSTRING_H
+#define __OMNETPP_DISPLAYSTRING_H
 
 #include "commondefs.h"
 

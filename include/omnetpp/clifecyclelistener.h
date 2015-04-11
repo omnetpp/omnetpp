@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CLIFECYCLELISTENER_H
-#define __CLIFECYCLELISTENER_H
+#ifndef __OMNETPP_CLIFECYCLELISTENER_H
+#define __OMNETPP_CLIFECYCLELISTENER_H
 
 #include "cobject.h"
 

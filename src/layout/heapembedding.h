@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __HEAPEMBEDDING_H_
-#define __HEAPEMBEDDING_H_
+#ifndef __OMNETPP_HEAPEMBEDDING_H
+#define __OMNETPP_HEAPEMBEDDING_H
 
 #include "vector"
 #include "geometry.h"

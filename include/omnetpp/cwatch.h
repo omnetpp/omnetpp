@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CWATCH_H
-#define __CWATCH_H
+#ifndef __OMNETPP_CWATCH_H
+#define __OMNETPP_CWATCH_H
 
 #include <iostream>
 #include <sstream>

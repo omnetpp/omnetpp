@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __COBJECT_H
-#define __COBJECT_H
+#ifndef __OMNETPP_COBJECT_H
+#define __OMNETPP_COBJECT_H
 
 #include <string>
 #include "simkerneldefs.h"

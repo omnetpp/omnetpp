@@ -18,8 +18,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __NEDCROSSVALIDATOR_H
-#define __NEDCROSSVALIDATOR_H
+#ifndef __OMNETPP_NEDCROSSVALIDATOR_H
+#define __OMNETPP_NEDCROSSVALIDATOR_H
 
 #include <string.h>
 #include "nedvalidator.h"

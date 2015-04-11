@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __TKDEFS_H
-#define __TKDEFS_H
+#ifndef __OMNETPP_TKDEFS_H
+#define __OMNETPP_TKDEFS_H
 
 #include <tk.h>                         // included here for all tkenv, to avoid troubles noted above
 #include "omnetpp/platdep/platdefs.h"

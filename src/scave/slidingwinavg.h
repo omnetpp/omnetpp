@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _SLIDINGWINAVG_H_
-#define _SLIDINGWINAVG_H_
+#ifndef __OMNETPP_SLIDINGWINAVG_H
+#define __OMNETPP_SLIDINGWINAVG_H
 
 #include "commonnodes.h"
 

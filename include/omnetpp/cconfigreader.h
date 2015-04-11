@@ -13,12 +13,12 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CCONFIGREADER_H
-#define __CCONFIGREADER_H
+#ifndef __OMNETPP_CCONFIGREADER_H
+#define __OMNETPP_CCONFIGREADER_H
 
 #include "simkerneldefs.h"
 
-NAMESPACE_BEGIN 
+NAMESPACE_BEGIN
 
 class cConfiguration;
 

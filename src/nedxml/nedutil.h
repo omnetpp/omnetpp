@@ -18,8 +18,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __NEDUTIL_H
-#define __NEDUTIL_H
+#ifndef __OMNETPP_NEDUTIL_H
+#define __OMNETPP_NEDUTIL_H
 
 #include <string>
 #include "nedelement.h"

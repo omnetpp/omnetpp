@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CMESSAGE_H
-#define __CMESSAGE_H
+#ifndef __OMNETPP_CMESSAGE_H
+#define __OMNETPP_CMESSAGE_H
 
 #include "cevent.h"
 #include "carray.h"

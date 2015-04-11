@@ -167,8 +167,8 @@ print ENTRIES_H_FILE
 //
 //=========================================================================
 
-#ifndef __EVENTLOGENTRIES_H_
-#define __EVENTLOGENTRIES_H_
+#ifndef __OMNETPP_EVENTLOGENTRIES_H
+#define __OMNETPP_EVENTLOGENTRIES_H
 
 #include <stdio.h>
 #include \"eventlogdefs.h\"

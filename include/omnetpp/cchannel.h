@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CCHANNEL_H
-#define __CCHANNEL_H
+#ifndef __OMNETPP_CCHANNEL_H
+#define __OMNETPP_CCHANNEL_H
 
 #include "ccomponent.h"
 #include "ccomponenttype.h"

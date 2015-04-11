@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CDYNAMICEXPRESSION_H
-#define __CDYNAMICEXPRESSION_H
+#ifndef __OMNETPP_CDYNAMICEXPRESSION_H
+#define __OMNETPP_CDYNAMICEXPRESSION_H
 
 #include "cnedvalue.h"
 #include "cexpression.h"

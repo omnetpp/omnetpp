@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CMSGPAR_H
-#define __CMSGPAR_H
+#ifndef __OMNETPP_CMSGPAR_H
+#define __OMNETPP_CMSGPAR_H
 
 #include "cownedobject.h"
 #include "cnedmathfunction.h"

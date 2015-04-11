@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CQUEUE_H
-#define __CQUEUE_H
+#ifndef __OMNETPP_CQUEUE_H
+#define __OMNETPP_CQUEUE_H
 
 #include "cownedobject.h"
 

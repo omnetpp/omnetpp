@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CARRAY_H
-#define __CARRAY_H
+#ifndef __OMNETPP_CARRAY_H
+#define __OMNETPP_CARRAY_H
 
 #include "cownedobject.h"
 

@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __FILTEREDEVENT_H_
-#define __FILTEREDEVENT_H_
+#ifndef __OMNETPP_FILTEREDEVENT_H
+#define __OMNETPP_FILTEREDEVENT_H
 
 #include <vector>
 #include "eventlogdefs.h"

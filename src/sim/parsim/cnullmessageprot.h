@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CNULLMESSAGEPROT_H__
-#define __CNULLMESSAGEPROT_H__
+#ifndef __OMNETPP_CNULLMESSAGEPROT_H
+#define __OMNETPP_CNULLMESSAGEPROT_H
 
 #include "omnetpp/cmessage.h"  // MK_PARSIM_BEGIN
 #include "cparsimprotocolbase.h"

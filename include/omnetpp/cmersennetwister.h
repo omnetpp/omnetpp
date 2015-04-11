@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CMERSENNETWISTER_H
-#define __CMERSENNETWISTER_H
+#ifndef __OMNETPP_CMERSENNETWISTER_H
+#define __OMNETPP_CMERSENNETWISTER_H
 
 #include "simkerneldefs.h"
 #include "globals.h"

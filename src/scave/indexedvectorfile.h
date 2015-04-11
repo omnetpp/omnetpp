@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _INDEXEDVECTORFILE_H_
-#define _INDEXEDVECTORFILE_H_
+#ifndef __OMNETPP_INDEXEDVECTORFILE_H
+#define __OMNETPP_INDEXEDVECTORFILE_H
 
 #include <assert.h>
 #include <float.h>

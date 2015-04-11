@@ -19,8 +19,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CPSQUARE_H
-#define __CPSQUARE_H
+#ifndef __OMNETPP_CPSQUARE_H
+#define __OMNETPP_CPSQUARE_H
 
 #include "cdensityestbase.h"
 

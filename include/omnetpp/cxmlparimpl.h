@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CXMLPARIMPL_H
-#define __CXMLPARIMPL_H
+#ifndef __OMNETPP_CXMLPARIMPL_H
+#define __OMNETPP_CXMLPARIMPL_H
 
 #include "cparimpl.h"
 

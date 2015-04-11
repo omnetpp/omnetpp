@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __XMLDOCCACHE_H
-#define __XMLDOCCACHE_H
+#ifndef __OMNETPP_XMLDOCCACHE_H
+#define __OMNETPP_XMLDOCCACHE_H
 
 #include <map>
 #include <string>

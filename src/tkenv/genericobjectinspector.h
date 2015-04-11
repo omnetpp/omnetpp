@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __GENERICOBJECTINSPECTOR_H
-#define __GENERICOBJECTINSPECTOR_H
+#ifndef __OMNETPP_GENERICOBJECTINSPECTOR_H
+#define __OMNETPP_GENERICOBJECTINSPECTOR_H
 
 #include "inspector.h"
 

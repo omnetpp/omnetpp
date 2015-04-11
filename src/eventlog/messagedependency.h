@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __MESSAGEDEPENDENCY_H_
-#define __MESSAGEDEPENDENCY_H_
+#ifndef __OMNETPP_MESSAGEDEPENDENCY_H
+#define __OMNETPP_MESSAGEDEPENDENCY_H
 
 #include <sstream>
 #include <vector>

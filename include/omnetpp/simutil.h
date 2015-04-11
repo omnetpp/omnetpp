@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __SIMUTIL_H
-#define __SIMUTIL_H
+#ifndef __OMNETPP_SIMUTIL_H
+#define __OMNETPP_SIMUTIL_H
 
 #include <string.h>  // for strlen, etc.
 #include <stdarg.h>  // for va_list
@@ -271,7 +271,7 @@ class SIM_API cContextTypeSwitcher
 //==========================================================================
 //=== Implementation of utility functions:
 
-#ifndef _STRINGUTIL_H_   // avoid clash with similar defs in common/stringutil.h
+#ifndef __OMNETPP_STRINGUTIL_H   // avoid clash with similar defs in common/stringutil.h
 
 inline char *opp_strcpy(char *s1,const char *s2)
 {

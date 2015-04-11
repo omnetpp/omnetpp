@@ -14,8 +14,8 @@
   `terms' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CDYNAMICCHANNELTYPE_H
-#define __CDYNAMICCHANNELTYPE_H
+#ifndef __OMNETPP_CDYNAMICCHANNELTYPE_H
+#define __OMNETPP_CDYNAMICCHANNELTYPE_H
 
 #include "omnetpp/cchannel.h"
 #include "omnetpp/ccomponenttype.h"

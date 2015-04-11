@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _WINDOWAVG_H_
-#define _WINDOWAVG_H_
+#ifndef __OMNETPP_WINDOWAVG_H
+#define __OMNETPP_WINDOWAVG_H
 
 #include "commonnodes.h"
 

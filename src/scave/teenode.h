@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _TEENODE_H_
-#define _TEENODE_H_
+#ifndef __OMNETPP_TEENODE_H
+#define __OMNETPP_TEENODE_H
 
 #include "commonnodes.h"
 

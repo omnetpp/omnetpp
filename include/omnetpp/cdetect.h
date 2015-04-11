@@ -24,8 +24,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CDETECT_H
-#define __CDETECT_H
+#ifndef __OMNETPP_CDETECT_H
+#define __OMNETPP_CDETECT_H
 
 #include "cownedobject.h"
 #include "cstatistic.h"

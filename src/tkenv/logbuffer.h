@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __LOGBUFFER_H
-#define __LOGBUFFER_H
+#ifndef __OMNETPP_LOGBUFFER_H
+#define __OMNETPP_LOGBUFFER_H
 
 #include <string>
 #include <list>

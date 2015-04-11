@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CPARIMPL_H
-#define __CPARIMPL_H
+#ifndef __OMNETPP_CPARIMPL_H
+#define __OMNETPP_CPARIMPL_H
 
 #include "cpar.h"
 #include "cexpression.h"

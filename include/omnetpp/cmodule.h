@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CMODULE_H
-#define __CMODULE_H
+#ifndef __OMNETPP_CMODULE_H
+#define __OMNETPP_CMODULE_H
 
 #include <vector>
 #include "ccomponent.h"

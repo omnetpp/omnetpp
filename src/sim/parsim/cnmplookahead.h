@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CNMPLOOKAHEAD_H__
-#define __CNMPLOOKAHEAD_H__
+#ifndef __OMNETPP_CNMPLOOKAHEAD_H
+#define __OMNETPP_CNMPLOOKAHEAD_H
 
 #include "omnetpp/cobject.h"
 #include "omnetpp/simtime_t.h"

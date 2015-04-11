@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __COBJECTFACTORY_H
-#define __COBJECTFACTORY_H
+#ifndef __OMNETPP_COBJECTFACTORY_H
+#define __OMNETPP_COBJECTFACTORY_H
 
 #include "simkerneldefs.h"
 #include "globals.h"

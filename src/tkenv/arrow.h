@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __ARROW_H
-#define __ARROW_H
+#ifndef __OMNETPP_ARROW_H
+#define __OMNETPP_ARROW_H
 
 #include "tkdefs.h"
 

@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _STATISTICS_H_
-#define _STATISTICS_H_
+#ifndef __OMNETPP_STATISTICS_H
+#define __OMNETPP_STATISTICS_H
 
 #include <float.h>
 #include "scavedefs.h"

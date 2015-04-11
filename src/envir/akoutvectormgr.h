@@ -20,8 +20,8 @@
 
 #ifdef WITH_AKAROA
 
-#ifndef __AKOUTVECTORMGR_H
-#define __AKOUTVECTORMGR_H
+#ifndef __OMNETPP_AKOUTVECTORMGR_H
+#define __OMNETPP_AKOUTVECTORMGR_H
 
 #include <stdio.h>
 #include "omnetpp/simutil.h"

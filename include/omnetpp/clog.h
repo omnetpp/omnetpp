@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CLOG_H
-#define __CLOG_H
+#ifndef __OMNETPP_CLOG_H
+#define __OMNETPP_CLOG_H
 
 #include <time.h>
 #include <sstream>

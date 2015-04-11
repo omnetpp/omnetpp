@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _NODETYPEREGISTRY_H_
-#define _NODETYPEREGISTRY_H_
+#ifndef __OMNETPP_NODETYPEREGISTRY_H
+#define __OMNETPP_NODETYPEREGISTRY_H
 
 #include <map>
 #include <vector>

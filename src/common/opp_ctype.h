@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _OPP_CTYPE_H_
-#define _OPP_CTYPE_H_
+#ifndef __OMNETPP_OPP_CTYPE_H
+#define __OMNETPP_OPP_CTYPE_H
 
 #include <assert.h>
 #include <ctype.h>

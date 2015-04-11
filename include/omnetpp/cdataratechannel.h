@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CDATARATECHANNEL_H
-#define __CDATARATECHANNEL_H
+#ifndef __OMNETPP_CDATARATECHANNEL_H
+#define __OMNETPP_CDATARATECHANNEL_H
 
 #include "cchannel.h"
 #include "csimulation.h"

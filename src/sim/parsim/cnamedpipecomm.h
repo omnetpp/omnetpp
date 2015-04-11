@@ -21,8 +21,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __CNAMEDPIPECOMM_H__
-#define __CNAMEDPIPECOMM_H__
+#ifndef __OMNETPP_CNAMEDPIPECOMM_H
+#define __OMNETPP_CNAMEDPIPECOMM_H
 
 
 #include <stdio.h>

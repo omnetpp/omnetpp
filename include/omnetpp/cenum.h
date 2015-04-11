@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CENUM_H
-#define __CENUM_H
+#ifndef __OMNETPP_CENUM_H
+#define __OMNETPP_CENUM_H
 
 #include "cownedobject.h"
 

@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __PLATDEP_SOCKETS_H
-#define __PLATDEP_SOCKETS_H
+#ifndef __OMNETPP_PLATDEP_SOCKETS_H
+#define __OMNETPP_PLATDEP_SOCKETS_H
 
 //
 // With some care, it's possible to write platform-independent socket code
@@ -29,7 +29,7 @@
 // of timeval definitions in timeutil.h (see more info in timeutil.h)
 //
 
-#ifdef __PLATDEP_TIMEUTIL_H
+#ifdef __OMNETPP_PLATDEP_TIMEUTIL_H
 # error "#include <platdep/sockets.h> must precede <omnetpp.h> (and <platdep/timeutil.h> if present)"
 #endif
 

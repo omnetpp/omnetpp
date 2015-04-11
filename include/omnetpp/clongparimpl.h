@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CLONGPARIMPL_H
-#define __CLONGPARIMPL_H
+#ifndef __OMNETPP_CLONGPARIMPL_H
+#define __OMNETPP_CLONGPARIMPL_H
 
 #include "cparimpl.h"
 

@@ -20,8 +20,8 @@
 
 #ifdef WITH_AKAROA
 
-#ifndef __AKAROARNG_H
-#define __AKAROARNG_H
+#ifndef __OMNETPP_AKAROARNG_H
+#define __OMNETPP_AKAROARNG_H
 
 #include "omnetpp/simkerneldefs.h"
 #include "omnetpp/crng.h"

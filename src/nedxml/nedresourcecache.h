@@ -15,8 +15,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __NEDRESOURCECACHE_H
-#define __NEDRESOURCECACHE_H
+#ifndef __OMNETPP_NEDRESOURCECACHE_H
+#define __OMNETPP_NEDRESOURCECACHE_H
 
 #include <map>
 #include <vector>

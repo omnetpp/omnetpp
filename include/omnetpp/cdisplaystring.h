@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CDISPLAYSTRING_H
-#define __CDISPLAYSTRING_H
+#ifndef __OMNETPP_CDISPLAYSTRING_H
+#define __OMNETPP_CDISPLAYSTRING_H
 
 #include "cobject.h"
 #include "cgate.h"

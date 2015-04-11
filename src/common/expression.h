@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __EXPRESSION_H
-#define __EXPRESSION_H
+#ifndef __OMNETPP_EXPRESSION_H
+#define __OMNETPP_EXPRESSION_H
 
 #include <string>
 #include "commondefs.h"

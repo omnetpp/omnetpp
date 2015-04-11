@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CSCHEDULER_H
-#define __CSCHEDULER_H
+#ifndef __OMNETPP_CSCHEDULER_H
+#define __OMNETPP_CSCHEDULER_H
 
 #include "platdep/timeutil.h"  // for timeval
 #include "cobject.h"

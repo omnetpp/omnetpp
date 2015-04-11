@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __LAYOUTDEFS_H
-#define __LAYOUTDEFS_H
+#ifndef __OMNETPP_LAYOUTDEFS_H
+#define __OMNETPP_LAYOUTDEFS_H
 
 #include "omnetpp/platdep/platdefs.h"
 

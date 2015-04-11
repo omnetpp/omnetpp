@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __GLOBALS_H
-#define __GLOBALS_H
+#ifndef __OMNETPP_GLOBALS_H
+#define __OMNETPP_GLOBALS_H
 
 #include "onstartup.h"
 #include "cregistrationlist.h"

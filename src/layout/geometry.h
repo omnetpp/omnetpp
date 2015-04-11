@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __GEOMETRY_H_
-#define __GEOMETRY_H_
+#ifndef __OMNETPP_GEOMETRY_H
+#define __OMNETPP_GEOMETRY_H
 
 #include <math.h>
 #include <vector>

@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CEVENT_H
-#define __CEVENT_H
+#ifndef __OMNETPP_CEVENT_H
+#define __OMNETPP_CEVENT_H
 
 #include "cownedobject.h"
 

@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CTOPOLOGY_H
-#define __CTOPOLOGY_H
+#ifndef __OMNETPP_CTOPOLOGY_H
+#define __OMNETPP_CTOPOLOGY_H
 
 #include <string>
 #include <vector>

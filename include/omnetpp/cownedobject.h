@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __COWNEDOBJECT_H
-#define __COWNEDOBJECT_H
+#ifndef __OMNETPP_COWNEDOBJECT_H
+#define __OMNETPP_COWNEDOBJECT_H
 
 #include <typeinfo>
 #include <iostream>

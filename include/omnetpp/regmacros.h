@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __REGMACROS_H
-#define __REGMACROS_H
+#ifndef __OMNETPP_REGMACROS_H
+#define __OMNETPP_REGMACROS_H
 
 #include "simkerneldefs.h"
 

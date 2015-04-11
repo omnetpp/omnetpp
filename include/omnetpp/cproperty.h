@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CPROPERTY_H
-#define __CPROPERTY_H
+#ifndef __OMNETPP_CPROPERTY_H
+#define __OMNETPP_CPROPERTY_H
 
 #include <map>
 #include <vector>

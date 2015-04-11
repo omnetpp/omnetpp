@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __RESULTRECORDERS_H
-#define __RESULTRECORDERS_H
+#ifndef __OMNETPP_RESULTRECORDERS_H
+#define __OMNETPP_RESULTRECORDERS_H
 
 #include "common/expression.h"
 #include "omnetpp/cresultrecorder.h"

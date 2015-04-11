@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __FILEOUTPUTVECTORMGR_H
-#define __FILEOUTPUTVECTORMGR_H
+#ifndef __OMNETPP_FILEOUTPUTVECTORMGR_H
+#define __OMNETPP_FILEOUTPUTVECTORMGR_H
 
 #include <stdio.h>
 #include "omnetpp/envirext.h"

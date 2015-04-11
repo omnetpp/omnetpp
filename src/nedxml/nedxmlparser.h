@@ -15,8 +15,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __NEDXMLPARSER_H
-#define __NEDXMLPARSER_H
+#ifndef __OMNETPP_NEDXMLPARSER_H
+#define __OMNETPP_NEDXMLPARSER_H
 
 #include "nedelement.h"
 #include "nederror.h"

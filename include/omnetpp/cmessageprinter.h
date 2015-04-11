@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CMESSAGEPRINTER_H
-#define __CMESSAGEPRINTER_H
+#ifndef __OMNETPP_CMESSAGEPRINTER_H
+#define __OMNETPP_CMESSAGEPRINTER_H
 
 #include "cownedobject.h"
 

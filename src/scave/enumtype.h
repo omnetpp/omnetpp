@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __ENUMTYPE_H
-#define __ENUMTYPE_H
+#ifndef __OMNETPP_ENUMTYPE_H
+#define __OMNETPP_ENUMTYPE_H
 
 #include <map>
 #include <vector>

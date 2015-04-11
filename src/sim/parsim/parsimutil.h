@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __PARSIMUTIL_H
-#define __PARSIMUTIL_H
+#ifndef __OMNETPP_PARSIMUTIL_H
+#define __OMNETPP_PARSIMUTIL_H
 
 NAMESPACE_BEGIN
 

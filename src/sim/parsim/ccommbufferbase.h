@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CCOMMBUFFERBASE_H__
-#define __CCOMMBUFFERBASE_H__
+#ifndef __OMNETPP_CCOMMBUFFERBASE_H
+#define __OMNETPP_CCOMMBUFFERBASE_H
 
 #include "omnetpp/ccommbuffer.h"
 

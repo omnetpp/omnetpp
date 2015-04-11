@@ -15,8 +15,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __MATCHEXPRESSIONLEXER_H__
-#define __MATCHEXPRESSIONLEXER_H__
+#ifndef __OMNETPP_MATCHEXPRESSIONLEXER_H
+#define __OMNETPP_MATCHEXPRESSIONLEXER_H
 
 
 NAMESPACE_BEGIN

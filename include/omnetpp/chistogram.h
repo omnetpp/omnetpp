@@ -21,8 +21,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CHISTOGRAM_H
-#define __CHISTOGRAM_H
+#ifndef __OMNETPP_CHISTOGRAM_H
+#define __OMNETPP_CHISTOGRAM_H
 
 #include "cdensityestbase.h"
 

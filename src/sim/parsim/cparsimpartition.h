@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CPARSIMPARTITION_H__
-#define __CPARSIMPARTITION_H__
+#ifndef __OMNETPP_CPARSIMPARTITION_H
+#define __OMNETPP_CPARSIMPARTITION_H
 
 #include "omnetpp/simkerneldefs.h"
 #include "omnetpp/cobject.h"

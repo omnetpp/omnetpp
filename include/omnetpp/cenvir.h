@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CENVIR_H
-#define __CENVIR_H
+#ifndef __OMNETPP_CENVIR_H
+#define __OMNETPP_CENVIR_H
 
 #include <sstream>
 #include <iostream>

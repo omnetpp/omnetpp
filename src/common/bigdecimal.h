@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __BIGDECIMAL_H
-#define __BIGDECIMAL_H
+#ifndef __OMNETPP_BIGDECIMAL_H
+#define __OMNETPP_BIGDECIMAL_H
 
 #include <string>
 #include <iostream>

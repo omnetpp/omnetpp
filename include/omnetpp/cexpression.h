@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CEXPRESSION_H
-#define __CEXPRESSION_H
+#ifndef __OMNETPP_CEXPRESSION_H
+#define __OMNETPP_CEXPRESSION_H
 
 #include "cobject.h"
 #include "cexception.h"

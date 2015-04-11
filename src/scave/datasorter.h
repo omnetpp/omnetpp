@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _DATASORTER_H_
-#define _DATASORTER_H_
+#ifndef __OMNETPP_DATASORTER_H
+#define __OMNETPP_DATASORTER_H
 
 #include <algorithm>
 #include <functional>

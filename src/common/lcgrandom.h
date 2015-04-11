@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __LCGRANDOM_H
-#define __LCGRANDOM_H
+#ifndef __OMNETPP_LCGRANDOM_H
+#define __OMNETPP_LCGRANDOM_H
 
 #include <stdint.h>
 #include "commondefs.h"

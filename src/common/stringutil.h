@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _STRINGUTIL_H_
-#define _STRINGUTIL_H_
+#ifndef __OMNETPP_STRINGUTIL_H
+#define __OMNETPP_STRINGUTIL_H
 
 #include <stdarg.h>
 #include <string.h>
@@ -46,7 +46,7 @@ COMMON_API bool opp_isblank(const char *txt);
 // The following few inline functions are present in the simkernel's utils.h too;
 // define them conditionally to prevent clashes.
 //
-#ifndef __SIMUTIL_H
+#ifndef __OMNETPP_SIMUTIL_H
 
 /**
  * Same as the standard strlen() function, except that does not crash

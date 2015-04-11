@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _EXCEPTION_H_
-#define _EXCEPTION_H_
+#ifndef __OMNETPP_EXCEPTION_H
+#define __OMNETPP_EXCEPTION_H
 
 #include <string>
 #include <exception>

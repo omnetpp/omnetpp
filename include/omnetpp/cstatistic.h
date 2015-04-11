@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CSTATISTIC_H
-#define __CSTATISTIC_H
+#ifndef __OMNETPP_CSTATISTIC_H
+#define __OMNETPP_CSTATISTIC_H
 
 #include <stdio.h>
 #include "cownedobject.h"

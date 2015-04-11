@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CCOROUTINE_H
-#define __CCOROUTINE_H
+#ifndef __OMNETPP_CCOROUTINE_H
+#define __OMNETPP_CCOROUTINE_H
 
 #include "platdep/platmisc.h"  // for <windows.h>
 #include "simkerneldefs.h"

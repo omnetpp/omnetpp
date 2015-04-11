@@ -15,8 +15,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __CMATCHEXPRESSION_H__
-#define __CMATCHEXPRESSION_H__
+#ifndef __OMNETPP_CMATCHEXPRESSION_H
+#define __OMNETPP_CMATCHEXPRESSION_H
 
 #include <string>
 #include "simkerneldefs.h"

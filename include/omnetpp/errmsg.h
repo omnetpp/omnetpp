@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __ERRMSG_H
-#define __ERRMSG_H
+#ifndef __OMNETPP_ERRMSG_H
+#define __OMNETPP_ERRMSG_H
 
 #include "simkerneldefs.h"
 

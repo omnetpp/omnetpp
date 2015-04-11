@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _FILTERNODES_H_
-#define _FILTERNODES_H_
+#ifndef __OMNETPP_FILTERNODES_H
+#define __OMNETPP_FILTERNODES_H
 
 #include "commonnodes.h"
 

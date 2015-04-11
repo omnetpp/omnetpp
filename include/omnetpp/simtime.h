@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __SIMTIME_H
-#define __SIMTIME_H
+#ifndef __OMNETPP_SIMTIME_H
+#define __OMNETPP_SIMTIME_H
 
 #include <string>
 #include <iostream>

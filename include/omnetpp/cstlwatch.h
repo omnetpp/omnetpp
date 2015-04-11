@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CSTLWATCH_H
-#define __CSTLWATCH_H
+#ifndef __OMNETPP_CSTLWATCH_H
+#define __OMNETPP_CSTLWATCH_H
 
 #include <vector>
 #include <list>

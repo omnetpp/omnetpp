@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CCANVAS_H
-#define __CCANVAS_H
+#ifndef __OMNETPP_CCANVAS_H
+#define __OMNETPP_CCANVAS_H
 
 #include "cownedobject.h"
 

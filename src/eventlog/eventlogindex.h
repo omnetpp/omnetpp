@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __EVENTLOGINDEX_H_
-#define __EVENTLOGINDEX_H_
+#ifndef __OMNETPP_EVENTLOGINDEX_H
+#define __OMNETPP_EVENTLOGINDEX_H
 
 #include <sstream>
 #include <list>

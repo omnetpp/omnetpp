@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef SECTIONBASEDCONFIG_H_
-#define SECTIONBASEDCONFIG_H_
+#ifndef __OMNETPP_SECTIONBASEDCONFIG_H
+#define __OMNETPP_SECTIONBASEDCONFIG_H
 
 #include <map>
 #include <vector>

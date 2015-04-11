@@ -14,8 +14,8 @@
   `terms' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CEXPRESSIONBUILDER_H
-#define __CEXPRESSIONBUILDER_H
+#ifndef __OMNETPP_CEXPRESSIONBUILDER_H
+#define __OMNETPP_CEXPRESSIONBUILDER_H
 
 #include <string>
 #include <map>

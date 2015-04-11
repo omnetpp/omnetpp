@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CFILECOMM_H__
-#define __CFILECOMM_H__
+#ifndef __OMNETPP_CFILECOMM_H
+#define __OMNETPP_CFILECOMM_H
 
 #include "omnetpp/cparsimcomm.h"
 #include "omnetpp/simutil.h"

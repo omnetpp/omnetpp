@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CPLACEHOLDERMOD_H
-#define __CPLACEHOLDERMOD_H
+#ifndef __OMNETPP_CPLACEHOLDERMOD_H
+#define __OMNETPP_CPLACEHOLDERMOD_H
 
 #include "omnetpp/cmodule.h"
 #include "omnetpp/csimulation.h"

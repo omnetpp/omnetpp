@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CMATHFUNCTION_H
-#define __CMATHFUNCTION_H
+#ifndef __OMNETPP_CMATHFUNCTION_H
+#define __OMNETPP_CMATHFUNCTION_H
 
 #include <stdarg.h>
 #include "simkerneldefs.h"

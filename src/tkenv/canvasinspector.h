@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CANVASINSPECTOR_H
-#define __CANVASINSPECTOR_H
+#ifndef __OMNETPP_CANVASINSPECTOR_H
+#define __OMNETPP_CANVASINSPECTOR_H
 
 #include "omnetpp/ccanvas.h"
 #include "inspector.h"

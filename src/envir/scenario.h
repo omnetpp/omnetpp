@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef SCENARIO_H_
-#define SCENARIO_H_
+#ifndef __OMNETPP_SCENARIO_H
+#define __OMNETPP_SCENARIO_H
 
 #include <map>
 #include <vector>

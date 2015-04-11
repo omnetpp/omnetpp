@@ -54,8 +54,8 @@
 // It would be nice to CC: rjwagner@writeme.com and Cokus@math.washington.edu
 // when you write.
 
-#ifndef MERSENNETWISTER_H
-#define MERSENNETWISTER_H
+#ifndef __OMNETPP_MERSENNETWISTER_H
+#define __OMNETPP_MERSENNETWISTER_H
 
 // Not thread safe (unless auto-initialization is avoided and each thread has
 // its own MTRand object)

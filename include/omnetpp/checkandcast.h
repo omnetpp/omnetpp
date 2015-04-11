@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CHECKANDCAST_H
-#define __CHECKANDCAST_H
+#ifndef __OMNETPP_CHECKANDCAST_H
+#define __OMNETPP_CHECKANDCAST_H
 
 #include <typeinfo>
 #include "simkerneldefs.h"

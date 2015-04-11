@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _EVENTLOGDEFS_H_
-#define _EVENTLOGDEFS_H_
+#ifndef __OMNETPP_EVENTLOGDEFS_H
+#define __OMNETPP_EVENTLOGDEFS_H
 
 #include <stdint.h> // for int64_t, our equivalent of Java's "long" type
 #include "common/exception.h"

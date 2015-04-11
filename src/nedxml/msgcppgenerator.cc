@@ -401,27 +401,29 @@ const char *PARSIMPACK_BOILERPLATE =
 
 void MsgCppGenerator::generate(MsgFileElement *fileElement)
 {
+    // make header guard using the file name
     std::string hfilenamewithoutdir = hFilename;
     size_t pos = hfilenamewithoutdir.find_last_of('/');
     if (pos != hfilenamewithoutdir.npos)
         hfilenamewithoutdir = hfilenamewithoutdir.substr(pos+1);
-    std::string hdef;
-    hdef = std::string("_") + hfilenamewithoutdir + "_";
+
+    std::string headerGuard = hfilenamewithoutdir;
 
     // add first namespace to headerguard
     NamespaceElement *firstNS = fileElement->getFirstNamespaceChild();
     if (firstNS)
-        hdef = std::string("_") + ptr2str(firstNS->getAttribute("name")) + hdef;
+        headerGuard = ptr2str(firstNS->getAttribute("name")) + "_" + headerGuard;
 
-    // replace non-alphanumeric characters to '_'
-    std::transform(hdef.begin(), hdef.end(), hdef.begin(), charToNameFilter);
+    // replace non-alphanumeric characters by '_'
+    std::transform(headerGuard.begin(), headerGuard.end(), headerGuard.begin(), charToNameFilter);
     // capitalize
-    std::transform(hdef.begin(), hdef.end(), hdef.begin(), ::toupper);
+    std::transform(headerGuard.begin(), headerGuard.end(), headerGuard.begin(), ::toupper);
+    headerGuard = std::string("__") + headerGuard;
 
     H << "//\n// Generated file, do not edit! Created by " PROGRAM " " << (OMNETPP_VERSION / 0x100) << "." << (OMNETPP_VERSION % 0x100)
       << " from " << fileElement->getFilename() << ".\n//\n\n";
-    H << "#ifndef " << hdef << "\n";
-    H << "#define " << hdef << "\n\n";
+    H << "#ifndef " << headerGuard << "\n";
+    H << "#define " << headerGuard << "\n\n";
     H << "#include <omnetpp.h>\n";
     H << "\n";
     H << "// " PROGRAM " version check\n";
@@ -557,9 +559,9 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
     generateNamespaceEnd();
 
 #ifdef MSGC_COMPATIBILE
-    H << "#endif // " << hdef << "\n";
+    H << "#endif // " << headerGuard << "\n";
 #else
-    H << "#endif // ifndef " << hdef << "\n\n";
+    H << "#endif // ifndef " << headerGuard << "\n\n";
 #endif
 }
 

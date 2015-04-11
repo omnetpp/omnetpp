@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __EVENTLOGENTRYFACTORY_H_
-#define __EVENTLOGENTRYFACTORY_H_
+#ifndef __OMNETPP_EVENTLOGENTRYFACTORY_H
+#define __OMNETPP_EVENTLOGENTRYFACTORY_H
 
 #include "eventlogentries.h"
 

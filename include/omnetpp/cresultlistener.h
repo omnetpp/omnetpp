@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CRESULTLISTENER_H
-#define __CRESULTLISTENER_H
+#ifndef __OMNETPP_CRESULTLISTENER_H
+#define __OMNETPP_CRESULTLISTENER_H
 
 #include "simkerneldefs.h"
 #include "clistener.h"

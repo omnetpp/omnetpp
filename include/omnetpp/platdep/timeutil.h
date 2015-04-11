@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __PLATDEP_TIMEUTIL_H
-#define __PLATDEP_TIMEUTIL_H
+#ifndef __OMNETPP_PLATDEP_TIMEUTIL_H
+#define __OMNETPP_PLATDEP_TIMEUTIL_H
 
 #include <time.h>  // localtime()
 #include <stdio.h> // sprintf()

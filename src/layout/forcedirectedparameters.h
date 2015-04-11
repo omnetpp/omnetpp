@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __FORCEDIRECTEDPARAMETERS_H_
-#define __FORCEDIRECTEDPARAMETERS_H_
+#ifndef __OMNETPP_FORCEDIRECTEDPARAMETERS_H
+#define __OMNETPP_FORCEDIRECTEDPARAMETERS_H
 
 #include <math.h>
 #include "geometry.h"
@@ -586,7 +586,7 @@ class LeastExpandedSpring : public AbstractForceProvider {
             for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); it++)
                 (*it)->setForceDirectedEmbedding(embedding);
          }
- 
+
         virtual void reinitialize() {
             AbstractForceProvider::reinitialize();
             for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); it++)

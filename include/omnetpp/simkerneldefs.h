@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __SIMKERNELDEFS_H
-#define __SIMKERNELDEFS_H
+#ifndef __OMNETPP_SIMKERNELDEFS_H
+#define __OMNETPP_SIMKERNELDEFS_H
 
 #include <stddef.h>
 #include <float.h>

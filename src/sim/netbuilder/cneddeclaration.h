@@ -15,8 +15,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __CNEDDECLARATION_H
-#define __CNEDDECLARATION_H
+#ifndef __OMNETPP_CNEDDECLARATION_H
+#define __OMNETPP_CNEDDECLARATION_H
 
 #include <string>
 #include <vector>

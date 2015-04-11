@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __TASK_H
-#define __TASK_H
+#ifndef __OMNETPP_TASK_H
+#define __OMNETPP_TASK_H
 
 #include <setjmp.h>
 #include "omnetpp/platdep/platdefs.h"

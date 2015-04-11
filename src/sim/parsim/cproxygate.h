@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CPROXYGATE_H
-#define __CPROXYGATE_H
+#ifndef __OMNETPP_CPROXYGATE_H
+#define __OMNETPP_CPROXYGATE_H
 
 #include "omnetpp/cgate.h"
 

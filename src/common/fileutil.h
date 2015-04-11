@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __FILEUTIL_H
-#define __FILEUTIL_H
+#ifndef __OMNETPP_FILEUTIL_H
+#define __OMNETPP_FILEUTIL_H
 
 #include <string>
 #include "commondefs.h"

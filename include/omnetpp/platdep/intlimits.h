@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __INTLIMITS_H
-#define __INTLIMITS_H
+#ifndef __OMNETPP_INTLIMITS_H
+#define __OMNETPP_INTLIMITS_H
 
 //
 // MIN/MAX macros for integral types, copied from <stdint.h>.

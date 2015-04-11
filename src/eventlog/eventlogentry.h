@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __EVENTLOGENTRY_H_
-#define __EVENTLOGENTRY_H_
+#ifndef __OMNETPP_EVENTLOGENTRY_H
+#define __OMNETPP_EVENTLOGENTRY_H
 
 #include <sstream>
 #include "common/matchexpression.h"

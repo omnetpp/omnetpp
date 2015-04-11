@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CPACKET_H
-#define __CPACKET_H
+#ifndef __OMNETPP_CPACKET_H
+#define __OMNETPP_CPACKET_H
 
 #include "cmessage.h"
 

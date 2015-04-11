@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CNAMEDOBJECT_H
-#define __CNAMEDOBJECT_H
+#ifndef __OMNETPP_CNAMEDOBJECT_H
+#define __OMNETPP_CNAMEDOBJECT_H
 
 #include <typeinfo>
 #include <iostream>

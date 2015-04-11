@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __RANDOM_H
-#define __RANDOM_H
+#ifndef __OMNETPP_RANDOM_H
+#define __OMNETPP_RANDOM_H
 
 #include "simkerneldefs.h"
 #include "csimulation.h"

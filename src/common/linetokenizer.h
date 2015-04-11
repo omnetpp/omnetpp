@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __LINETOKENIZER_H_
-#define __LINETOKENIZER_H_
+#ifndef __OMNETPP_LINETOKENIZER_H
+#define __OMNETPP_LINETOKENIZER_H
 
 #include <vector>
 #include <string>

@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __PLATMISC_H
-#define __PLATMISC_H
+#ifndef __OMNETPP_PLATMISC_H
+#define __OMNETPP_PLATMISC_H
 
 #include <stdint.h>   // int64_t
 #include <limits.h>   // __WORDSIZE

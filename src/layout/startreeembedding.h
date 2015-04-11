@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __STARTREEEMBEDDING_H_
-#define __STARTREEEMBEDDING_H_
+#ifndef __OMNETPP_STARTREEEMBEDDING_H
+#define __OMNETPP_STARTREEEMBEDDING_H
 
 #include "vector"
 #include "geometry.h"

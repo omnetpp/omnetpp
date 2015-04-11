@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CFILECOMMBUFFER_H__
-#define __CFILECOMMBUFFER_H__
+#ifndef __OMNETPP_CFILECOMMBUFFER_H
+#define __OMNETPP_CFILECOMMBUFFER_H
 
 #include "ccommbufferbase.h"
 

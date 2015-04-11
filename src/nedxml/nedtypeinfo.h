@@ -15,8 +15,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __NEDTYPEINFO_H
-#define __NEDTYPEINFO_H
+#ifndef __OMNETPP_NEDTYPEINFO_H
+#define __OMNETPP_NEDTYPEINFO_H
 
 #include <map>
 #include <vector>

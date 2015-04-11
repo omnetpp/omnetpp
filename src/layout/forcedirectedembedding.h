@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __FORCEDIRECTEDEMBEDDING_H
-#define __FORCEDIRECTEDEMBEDDING_H
+#ifndef __OMNETPP_FORCEDIRECTEDEMBEDDING_H
+#define __OMNETPP_FORCEDIRECTEDEMBEDDING_H
 
 #include <stdint.h>
 #include <algorithm>

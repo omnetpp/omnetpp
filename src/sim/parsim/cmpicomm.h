@@ -20,8 +20,8 @@
 
 #ifdef WITH_MPI
 
-#ifndef __CMPICOMM_H__
-#define __CMPICOMM_H__
+#ifndef __OMNETPP_CMPICOMM_H
+#define __OMNETPP_CMPICOMM_H
 
 #include "omnetpp/cparsimcomm.h"
 

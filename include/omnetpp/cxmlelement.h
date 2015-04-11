@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CXMLELEMENT_H
-#define __CXMLELEMENT_H
+#ifndef __OMNETPP_CXMLELEMENT_H
+#define __OMNETPP_CXMLELEMENT_H
 
 #include <string>
 #include <map>

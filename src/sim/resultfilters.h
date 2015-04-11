@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __RESULTFILTERS_H
-#define __RESULTFILTERS_H
+#ifndef __OMNETPP_RESULTFILTERS_H
+#define __OMNETPP_RESULTFILTERS_H
 
 #include "common/expression.h"
 #include "omnetpp/simkerneldefs.h"

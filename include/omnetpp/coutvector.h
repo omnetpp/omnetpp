@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __COUTVECTOR_H
-#define __COUTVECTOR_H
+#ifndef __OMNETPP_COUTVECTOR_H
+#define __OMNETPP_COUTVECTOR_H
 
 #include <stdio.h>
 #include "cownedobject.h"

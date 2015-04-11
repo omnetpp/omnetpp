@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CDEFAULTLIST_H
-#define __CDEFAULTLIST_H
+#ifndef __OMNETPP_CDEFAULTLIST_H
+#define __OMNETPP_CDEFAULTLIST_H
 
 #include "cownedobject.h"
 

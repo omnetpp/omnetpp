@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CNEDVALUE_H
-#define __CNEDVALUE_H
+#ifndef __OMNETPP_CNEDVALUE_H
+#define __OMNETPP_CNEDVALUE_H
 
 #include <string>
 #include "simkerneldefs.h"

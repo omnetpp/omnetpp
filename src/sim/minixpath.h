@@ -17,8 +17,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __MINIXPATH_H__
-#define __MINIXPATH_H__
+#ifndef __OMNETPP_MINIXPATH_H
+#define __OMNETPP_MINIXPATH_H
 
 #include "omnetpp/cxmlelement.h"
 

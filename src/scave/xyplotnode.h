@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _XYPLOTNODE_H_
-#define _XYPLOTNODE_H_
+#ifndef __OMNETPP_XYPLOTNODE_H
+#define __OMNETPP_XYPLOTNODE_H
 
 #include "commonnodes.h"
 

@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __NEDPARSER_H
-#define __NEDPARSER_H
+#ifndef __OMNETPP_NEDPARSER_H
+#define __OMNETPP_NEDPARSER_H
 
 #include <stdio.h>
 #include "nedelement.h"

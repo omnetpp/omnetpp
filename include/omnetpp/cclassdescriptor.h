@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CCLASSDESCRIPTOR_H
-#define __CCLASSDESCRIPTOR_H
+#ifndef __OMNETPP_CCLASSDESCRIPTOR_H
+#define __OMNETPP_CCLASSDESCRIPTOR_H
 
 #include <string>
 #include "cownedobject.h"

@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _CHANNEL_H_
-#define _CHANNEL_H_
+#ifndef __OMNETPP_CHANNEL_H
+#define __OMNETPP_CHANNEL_H
 
 #include <deque>
 #include "common/commonutil.h"

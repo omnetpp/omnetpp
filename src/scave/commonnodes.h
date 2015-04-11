@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _COMMONNODES_H_
-#define _COMMONNODES_H_
+#ifndef __OMNETPP_COMMONNODES_H
+#define __OMNETPP_COMMONNODES_H
 
 #include <string>
 #include "common/filereader.h"

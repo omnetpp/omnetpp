@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CSTDDEV_H
-#define __CSTDDEV_H
+#ifndef __OMNETPP_CSTDDEV_H
+#define __OMNETPP_CSTDDEV_H
 
 #include <stdio.h>
 #include "cstatistic.h"

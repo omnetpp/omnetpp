@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CPARSIMPROTOCOLBASE_H__
-#define __CPARSIMPROTOCOLBASE_H__
+#ifndef __OMNETPP_CPARSIMPROTOCOLBASE_H
+#define __OMNETPP_CPARSIMPROTOCOLBASE_H
 
 #include "cparsimsynchr.h"
 
