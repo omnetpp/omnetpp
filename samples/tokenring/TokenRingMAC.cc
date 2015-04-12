@@ -1,7 +1,7 @@
 //
 // This file is part of an OMNeT++/OMNEST simulation example.
 //
-// Copyright (C) 1992-2008 Andras Varga
+// Copyright (C) 1992-2015 Andras Varga
 //
 // Authors: Andras Varga, Gabor Lencse
 // Based on the code by: Maurits Andre, George van Montfort,
