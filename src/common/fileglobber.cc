@@ -8,7 +8,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2006-2008 OpenSim Ltd.
+  Copyright (C) 2006-2015 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -158,7 +158,7 @@ const char *FileGlobber::getNext()
 
         if (strchr(data->dir,'*') || strchr(data->dir,'?'))
             throw std::runtime_error(std::string(data->dir)+": wildcard characters in directory names are not allowed");
-		
+
 	// get first file
 	errno = 0;
 
@@ -166,10 +166,10 @@ const char *FileGlobber::getNext()
 	    data->pdir = opendir(".");
 	else
 	    data->pdir = opendir(data->dir);
-		
+
 	if (!data->pdir)
 	    throw std::runtime_error(std::string(data->dir)+": directory cannot be opened");
-		
+
 	data->pent = readdir(data->pdir);
 
 	if (errno)
@@ -177,7 +177,7 @@ const char *FileGlobber::getNext()
 
 	if (!data->pent)
 	    return NULL;
-		
+
 	if (fnmatch( fnamepattern.c_str(), data->pent->d_name, 0 ) != 0)
 	    return getNext();
 

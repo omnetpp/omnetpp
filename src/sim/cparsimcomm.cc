@@ -9,8 +9,8 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2003-2008 Andras Varga
-  Copyright (C) 2006-2008 OpenSim Ltd.
+  Copyright (C) 2003-2015 Andras Varga
+  Copyright (C) 2006-2015 OpenSim Ltd.
   Monash University, Dept. of Electrical and Computer Systems Eng.
   Melbourne, Australia
 

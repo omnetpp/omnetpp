@@ -14,8 +14,8 @@
 
 /*--------------------------------------------------------------*
   Copyright (C) 1992 Andras Varga, Gyorgy Pongor
-  Copyright (C) 1992-2008 Andras Varga
-  Copyright (C) 2006-2008 OpenSim Ltd.
+  Copyright (C) 1992-2015 Andras Varga
+  Copyright (C) 2006-2015 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
     if (argc==1)
     {
          fprintf(stderr,
-               "opp_lcg32_seedtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2014 Andras Varga, OpenSim Ltd.\n"
+               "opp_lcg32_seedtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2015 OpenSim Ltd.\n"
                "Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
                "\n"
                "Generates seeds for the LCG32 random number generator. This RNG has a\n"

@@ -1,5 +1,5 @@
 # tkpath.tcl --
-# 
+#
 # 03Sep06RT - fixes
 #       - "-return" in named gradient proc
 #       - braces all expressions
@@ -7,28 +7,28 @@
 #       - recode polygon helper switch pattern in ::coords (bug fix same as v0.1)
 #
 #       Various support procedures for the tkpath package.
-#       
-#  Copyright (c) 2005-2008  Mats Bengtsson
-#  
+#
+#  Copyright (c) 2005-2015  Mats Bengtsson
+#
 # $Id$
 
 namespace eval ::tkp {}
 
 
 # ::tkp::transform --
-# 
+#
 #       Helper for designing the -matrix option from simpler transformations.
-#       
+#
 # Arguments:
 #       cmd         any of rotate, scale, skewx, skewy, or translate
-#       
+#
 # Results:
 #       a transformation matrix
 
 proc ::tkp::transform {cmd args} {
-    
+
     set len [llength $args]
-    
+
     switch -- $cmd {
 	rotate {
 	    if {($len != 1) && ($len != 3)} {
@@ -96,57 +96,57 @@ proc ::tkp::transform {cmd args} {
     return $matrix
 }
 
-proc ::tkp::mmult {m1 m2} { 
-    seteach {{a1 b1} {c1 d1} {tx1 ty1}} $m1 
-    seteach {{a2 b2} {c2 d2} {tx2 ty2}} $m2 
+proc ::tkp::mmult {m1 m2} {
+    seteach {{a1 b1} {c1 d1} {tx1 ty1}} $m1
+    seteach {{a2 b2} {c2 d2} {tx2 ty2}} $m2
     return [list  \
       [list [expr {$a1*$a2 + $c1*$b2}] [expr {$b1*$a2 + $d1*$b2}]] \
       [list [expr {$a1*$c2 + $c1*$d2}] [expr {$b1*$c2 + $d1*$d2}]] \
       [list [expr {$a1*$tx2 + $c1*$ty2 + $tx1}] \
-      [expr {$b1*$tx2 + $d1*$ty2 + $ty1}]]] 
+      [expr {$b1*$tx2 + $d1*$ty2 + $ty1}]]]
 }
 
-# Function  : seteach 
-# ------------------------------ ------------------------------ ---- 
-# Returns : - 
-# Parameters : 
-# Description : set a list of variables 
-# Written : 01/10/2007, Arndt Roger Schneider 
-#  roger.schneider@addcom.de 
+# Function  : seteach
+# ------------------------------ ------------------------------ ----
+# Returns : -
+# Parameters :
+# Description : set a list of variables
+# Written : 01/10/2007, Arndt Roger Schneider
+#  roger.schneider@addcom.de
 #
-# Rewritten  : 09/24/2007, Roger -- for tkpath::mmult 
-# License   : Tcl-License 
-# ------------------------------ ------------------------------ ---- 
+# Rewritten  : 09/24/2007, Roger -- for tkpath::mmult
+# License   : Tcl-License
+# ------------------------------ ------------------------------ ----
 
 proc ::tkp::seteach {variables arglist} {
-    foreach i $variables j $arglist { 
+    foreach i $variables j $arglist {
 	set lgi [llength $i]
-	if {1 < $lgi && [llength $j] == $lgi} { 
+	if {1 < $lgi && [llength $j] == $lgi} {
 	    uplevel [list seteach $i $j]
-	} else {  
+	} else {
 	    uplevel [list set $i $j]
-	} 
+	}
     }
 }
 
 # ::tkp::gradientstopsstyle --
-# 
+#
 #       Utility function to create named example gradient definitions.
-#       
+#
 # Arguments:
 #       name      the name of the gradient
 #       args
-#       
+#
 # Results:
 #       the stops list.
 
 proc ::tkp::gradientstopsstyle {name args} {
-    
+
     switch -- $name {
 	rainbow {
 	    set stops {
-		{0.00 "#ff0000"} 
-		{0.15 "#ff7f00"} 
+		{0.00 "#ff0000"}
+		{0.15 "#ff7f00"}
 		{0.30 "#ffff00"}
 		{0.45 "#00ff00"}
 		{0.65 "#0000ff"}
@@ -158,7 +158,7 @@ proc ::tkp::gradientstopsstyle {name args} {
 	default {
 	    return -code error "the named gradient \"$name\" is unknown"
 	}
-    }    
+    }
 }
 
 proc ::tkp::ellipsepath {x y rx ry} {
@@ -168,5 +168,5 @@ proc ::tkp::ellipsepath {x y rx ry} {
 proc ::tkp::circlepath {x y r} {
     return [ellipsepath $x $y $r $r]
 }
- 	  	 
+
 

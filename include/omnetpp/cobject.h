@@ -9,8 +9,8 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2008 Andras Varga
-  Copyright (C) 2006-2008 OpenSim Ltd.
+  Copyright (C) 1992-2015 Andras Varga
+  Copyright (C) 2006-2015 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -316,7 +316,7 @@ class SIM_API cObject
  *
  * This class is from boost, which bears the following copyright:
  *
- * (C) Copyright Boost.org 1999-2003. Permission to copy, use, modify, sell
+ * (C) Copyright Boost.org 1999-2015. Permission to copy, use, modify, sell
  * and distribute this software is granted provided this copyright
  * notice appears in all copies. This software is provided "as is" without
  * express or implied warranty, and with no claim as to its suitability for

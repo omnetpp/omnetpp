@@ -8,7 +8,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2006-2008 OpenSim Ltd.
+  Copyright (C) 2006-2015 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -346,7 +346,7 @@ void usage(const char *message)
         fprintf(stderr, "Error: %s\n\n", message);
 
     fprintf(stderr, ""
-"eventlogtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2014 Andras Varga, OpenSim Ltd.\n"
+"eventlogtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2015 OpenSim Ltd.\n"
 "Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
 "\n"
 "Usage:\n"

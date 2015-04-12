@@ -7,7 +7,7 @@
 #=================================================================
 
 #----------------------------------------------------------------#
-#  Copyright (C) 1992-2008 Andras Varga
+#  Copyright (C) 1992-2015 Andras Varga
 #
 #  This file is distributed WITHOUT ANY WARRANTY. See the file
 #  `license' for details on this and other legal matters.
@@ -131,7 +131,7 @@ proc aboutDialog {} {
 OMNeT++/OMNEST
 Discrete Event Simulation Framework
 
-(C) 1992-2014 Opensim Ltd.
+(C) 1992-2015 Opensim Ltd.
 Release: $OMNETPP_RELEASE, build: $OMNETPP_BUILDID
 $OMNETPP_EDITION
 

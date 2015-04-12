@@ -7,7 +7,7 @@
 #=================================================================
 
 #----------------------------------------------------------------#
-#  Copyright (C) 1992-2014 Opensim Ltd.
+#  Copyright (C) 1992-2015 Opensim Ltd.
 #
 #  This file is distributed WITHOUT ANY WARRANTY. See the file
 #  `license' for details on this and other legal matters.
