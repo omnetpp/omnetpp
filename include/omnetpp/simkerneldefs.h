@@ -25,10 +25,13 @@
 #include <stdint.h>
 #include "platdep/platdefs.h"
 
-// OMNeT++ version -- must match NEDC_VERSION and MSGC_VERSION in nedxml
-#define OMNETPP_VERSION 0x0500
+// OMNeT++ version, (major<<8)|minor
+#define OMNETPP_VERSION  0x0500
 
-// temporarily use 4.x fingerprints -- TODO remove before first 5.0 alpha release!
+// OMNeT++ build number
+#define OMNETPP_BUILDNUM   1001
+
+// uncomment to switch fingerprint computation algorithm to OMNeT++ 4.x compatible mode
 //#define USE_OMNETPP4x_FINGERPRINTS
 
 #if defined(SIM_EXPORT)
