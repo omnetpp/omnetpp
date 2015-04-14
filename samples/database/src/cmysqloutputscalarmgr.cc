@@ -115,8 +115,8 @@ void cMySQLOutputScalarManager::insertRunIntoDB()
     {
         // insert run into the database
         std::string insertRunStmt = SQL_INSERT_RUN;
-        opp_mysql_substitute(insertRunStmt, "@runnumber@", simulation.getActiveEnvir()->getConfigEx()->getActiveRunNumber(), mysql);
-        opp_mysql_substitute(insertRunStmt, "@network@", simulation.getNetworkType()->getName(), mysql);
+        opp_mysql_substitute(insertRunStmt, "@runnumber@", getSimulation()->getActiveEnvir()->getConfigEx()->getActiveRunNumber(), mysql);
+        opp_mysql_substitute(insertRunStmt, "@network@", getSimulation()->getNetworkType()->getName(), mysql);
         if (mysql_query(mysql, insertRunStmt.c_str()))
             throw cRuntimeError("MySQL error: INSERT failed: %s", mysql_error(mysql));
 

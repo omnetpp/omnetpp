@@ -250,7 +250,7 @@ void cPacket::encapsulate(cPacket *msg)
 
     if (msg)
     {
-        if (msg->getOwner()!=simulation.getContextSimpleModule())
+        if (msg->getOwner()!=getSimulation()->getContextSimpleModule())
             throw cRuntimeError(this,"encapsulate(): not owner of message (%s)%s, owner is (%s)%s",
                                 msg->getClassName(), msg->getFullName(),
                                 msg->getOwner()->getClassName(), msg->getOwner()->getFullPath().c_str());

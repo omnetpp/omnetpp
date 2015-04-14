@@ -84,7 +84,7 @@ cModule::~cModule()
     // delete submodules
     for (SubmoduleIterator submod(this); !submod.end(); )
     {
-        if (submod() == (cModule *)simulation.getContextModule())
+        if (submod() == (cModule *)getSimulation()->getContextModule())
         {
             // NOTE: subclass destructors will not be called, but the simulation will stop anyway
             throw cRuntimeError("Cannot delete a compound module from one of its submodules!");
@@ -247,11 +247,11 @@ void cModule::updateFullName()
 void cModule::reassignModuleIdRec()
 {
     int oldId = getId();
-    simulation.deregisterComponent(this);
-    simulation.registerComponent(this);
+    getSimulation()->deregisterComponent(this);
+    getSimulation()->registerComponent(this);
     int newId = getId();
 
-    for (cMessageHeap::Iterator it = cMessageHeap::Iterator(simulation.getMessageQueue()); !it.end(); it++)
+    for (cMessageHeap::Iterator it = cMessageHeap::Iterator(getSimulation()->getMessageQueue()); !it.end(); it++)
     {
         cEvent *event = it();
         cMessage *msg = dynamic_cast<cMessage*>(event);
@@ -1131,7 +1131,7 @@ cModule *cModule::getModuleByPath(const char *path)
 
     // determine starting point
     bool isrelative = (path[0] == '.' || path[0] == '^');
-    cModule *modp = isrelative ? this : simulation.getSystemModule();
+    cModule *modp = isrelative ? this : getSimulation()->getSystemModule();
     if (path[0] == '.')
         path++; // skip initial dot
 
@@ -1227,7 +1227,7 @@ void cModule::doBuildInside()
 void cModule::deleteModule()
 {
     // check this module doesn't contain the executing module somehow
-    for (cModule *mod = simulation.getContextModule(); mod; mod = mod->getParentModule())
+    for (cModule *mod = getSimulation()->getContextModule(); mod; mod = mod->getParentModule())
         if (mod==this)
             throw cRuntimeError(this, "it is not supported to delete a module that contains "
                                       "the currently executing simple module");
@@ -1354,7 +1354,7 @@ bool cModule::callInitialize(int stage)
 
 bool cModule::initializeChannels(int stage)
 {
-    if (simulation.getContextType()!=CTX_INITIALIZE)
+    if (getSimulation()->getContextType()!=CTX_INITIALIZE)
         throw cRuntimeError("internal function initializeChannels() may only be called via callInitialize()");
 
     // initialize channels directly under this module
@@ -1373,7 +1373,7 @@ bool cModule::initializeChannels(int stage)
 
 bool cModule::initializeModules(int stage)
 {
-    if (simulation.getContextType()!=CTX_INITIALIZE)
+    if (getSimulation()->getContextType()!=CTX_INITIALIZE)
         throw cRuntimeError("internal function initializeModules() may only be called via callInitialize()");
 
     if (stage==0)

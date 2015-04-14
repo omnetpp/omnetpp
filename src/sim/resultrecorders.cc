@@ -130,7 +130,7 @@ void TimeAverageRecorder::collect(simtime_t_cref t, double value)
 void TimeAverageRecorder::finish(cResultFilter *prev)
 {
     bool empty = (startTime < SIMTIME_ZERO);
-    simtime_t t = simulation.getSimTime();
+    simtime_t t = getSimulation()->getSimTime();
     collect(t, NaN); // to get the last interval counted in; the value is just a dummy
     double interval = SIMTIME_DBL(t - startTime);
 
@@ -175,7 +175,7 @@ class RecTimeVariable : public Expression::Variable
     virtual Functor *dup() const {return new RecTimeVariable();}
     virtual const char *getName() const {return "<simtime>";}
     virtual char getReturnType() const {return Expression::Value::DBL;}
-    virtual Expression::Value evaluate(Expression::Value args[], int numargs) {return SIMTIME_DBL(simulation.getSimTime());}
+    virtual Expression::Value evaluate(Expression::Value args[], int numargs) {return SIMTIME_DBL(getSimulation()->getSimTime());}
 };
 
 Expression::Functor *ExpressionRecorder::makeValueVariable()

@@ -47,12 +47,12 @@ void Simple::activity()
     EV << "starting module\n";
 
     cModule *offspring = NULL;
-    ASSERT(simulation.getActivityModule() == this);
+    ASSERT(getSimulation()->getActivityModule() == this);
     for (int i = 0; i < 10; i++)
     {
         wait(exponential(1.0));
 
-        ASSERT(simulation.getActivityModule() == this);
+        ASSERT(getSimulation()->getActivityModule() == this);
         ASSERT(fill == (char)getId());
         for (int j = 0; j < (int)sizeof(data); j++)
             ASSERT(data[j] == fill);

@@ -47,13 +47,6 @@ class cDefaultList;
 
 SIM_API extern cDefaultList defaultList; // also in globals.h
 
-/**
- * The active simulation manager instance.
- *
- * @ingroup SimCore
- */
-#define simulation  (*OPP::cSimulation::getActiveSimulation())
-
 
 /**
  * Simulation manager class.  cSimulation is the central class in \opp.
@@ -569,6 +562,13 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
  * @ingroup SimCore
  */
 inline simtime_t simTime() {return cSimulation::getActiveSimulation()->getSimTime();}
+
+/**
+ * Returns the currently active simulation.
+ *
+ * @ingroup SimCore
+ */
+inline cSimulation *getSimulation()  {return cSimulation::getActiveSimulation();}
 
 /**
  * Returns the environment object for the currently active simulation.

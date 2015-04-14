@@ -203,7 +203,7 @@ void EventlogFileManager::recordSimulation()
     // TODO: the simulation state is something that is "just being there" and we cannot describe that properly with the current eventlog entries that specify changes
     // TODO: such as CreateModule, BeginSend, etc.
     if (entryIndex == -1) {
-        cModule *systemModule = simulation.getSystemModule();
+        cModule *systemModule = getSimulation()->getSystemModule();
         recordInitialize();
         recordModules(systemModule);
         recordConnections(systemModule);
@@ -227,7 +227,7 @@ void EventlogFileManager::recordInitialize()
 void EventlogFileManager::recordMessages()
 {
     std::vector<cMessage *> messages;
-    for (cMessageHeap::Iterator it = cMessageHeap::Iterator(simulation.getMessageQueue()); !it.end(); it++) {
+    for (cMessageHeap::Iterator it = cMessageHeap::Iterator(getSimulation()->getMessageQueue()); !it.end(); it++) {
         cEvent *event = it();
         cMessage *msg = dynamic_cast<cMessage*>(event);
         if (msg)
@@ -353,14 +353,14 @@ void EventlogFileManager::simulationEvent(cEvent *event)
     if (event->isMessage()) {
         cMessage *msg = static_cast<cMessage*>(event);
         cModule *mod = msg->getArrivalModule();
-        eventNumber = simulation.getEventNumber();
+        eventNumber = getSimulation()->getEventNumber();
         bool isKeyframe = eventNumber % keyframeBlockSize == 0;
         isModuleEventLogRecordingEnabled = mod->isRecordEvents();
-        isIntervalEventLogRecordingEnabled = !recordingIntervals || recordingIntervals->contains(simulation.getSimTime());
+        isIntervalEventLogRecordingEnabled = !recordingIntervals || recordingIntervals->contains(getSimulation()->getSimTime());
         isEventLogRecordingEnabled = isKeyframe || (isModuleEventLogRecordingEnabled && isIntervalEventLogRecordingEnabled);
         if (isEventLogRecordingEnabled) {
             fprintf(feventlog, "\n");
-            EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog, eventNumber, simulation.getSimTime(), mod->getId(), msg->getPreviousEventNumber(), msg->getId());
+            EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog, eventNumber, getSimulation()->getSimTime(), mod->getId(), msg->getPreviousEventNumber(), msg->getId());
             entryIndex = 0;
             removeBeginSendEntryReference(msg);
             recordKeyframe();

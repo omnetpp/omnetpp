@@ -76,7 +76,7 @@ cComponent::cComponent(const char *name) : cDefaultList(name)
 cComponent::~cComponent()
 {
     if (componentId!=-1)
-        simulation.deregisterComponent(this);
+        getSimulation()->deregisterComponent(this);
 
     ASSERT(signalTable==NULL); // note: releaseLocalListeners() gets called in subclasses, ~cModule and ~cChannel
     delete [] rngmap;

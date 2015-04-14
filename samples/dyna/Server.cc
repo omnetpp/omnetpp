@@ -46,7 +46,7 @@ void Server::handleMessage(cMessage *msg)
     {
         int serverProcId = pk->getServerProcId();
         EV << "Redirecting msg to process ID=" << serverProcId << endl;
-        cModule *mod = simulation.getModule(serverProcId);
+        cModule *mod = getSimulation()->getModule(serverProcId);
         if (!mod) {
             EV << " That process already exited, deleting msg\n";
             delete pk;

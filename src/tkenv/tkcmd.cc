@@ -592,7 +592,7 @@ int isAPL_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 int requestTrapOnNextEvent_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   simulation.requestTrapOnNextEvent();
+   getSimulation()->requestTrapOnNextEvent();
    return TCL_OK;
 }
 
@@ -628,7 +628,7 @@ int getValueFromConfig_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 int getNetworkType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   cModuleType *n = simulation.getNetworkType();
+   cModuleType *n = getSimulation()->getNetworkType();
    Tcl_SetResult(interp, TCLCONST(!n ? "" : n->getName()), TCL_VOLATILE);
    return TCL_OK;
 }
@@ -661,7 +661,7 @@ int findObjectByFullPath_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
     long objectId = argc>=4 ? atol(argv[3]) : -1;
 
     cFindByPathVisitor visitor(fullPath, className, objectId);
-    visitor.process(&simulation);
+    visitor.process(getSimulation());
     setObjectListResult(interp, &visitor);
     return TCL_OK;
 }
@@ -674,16 +674,16 @@ int getStatusVar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 
    char buf[64];
    if (0==strcmp(argv[1],"eventnumber"))
-       Tcl_SetResult(interp, opp_i64toa(buf, simulation.getEventNumber()), TCL_VOLATILE);
+       Tcl_SetResult(interp, opp_i64toa(buf, getSimulation()->getEventNumber()), TCL_VOLATILE);
    else if (0==strcmp(argv[1],"guessnextsimtime"))
-       Tcl_SetResult(interp, TCLCONST(SIMTIME_STR(simulation.guessNextSimtime())), TCL_VOLATILE);
+       Tcl_SetResult(interp, TCLCONST(SIMTIME_STR(getSimulation()->guessNextSimtime())), TCL_VOLATILE);
    else if (0==strcmp(argv[1],"guessnextevent"))
-       Tcl_SetResult(interp, ptrToStr(simulation.guessNextEvent(), buf), TCL_VOLATILE);
+       Tcl_SetResult(interp, ptrToStr(getSimulation()->guessNextEvent(), buf), TCL_VOLATILE);
    else if (0==strcmp(argv[1],"guessnextmodule"))
-       Tcl_SetResult(interp, ptrToStr(simulation.guessNextModule(), buf), TCL_VOLATILE);
+       Tcl_SetResult(interp, ptrToStr(getSimulation()->guessNextModule(), buf), TCL_VOLATILE);
    else if (0==strcmp(argv[1],"timedelta")) {
-       cEvent *event = simulation.guessNextEvent();
-       Tcl_SetResult(interp, TCLCONST(!event ? "" : SIMTIME_STR(event->getArrivalTime()-simulation.getSimTime())), TCL_VOLATILE);
+       cEvent *event = getSimulation()->guessNextEvent();
+       Tcl_SetResult(interp, TCLCONST(!event ? "" : SIMTIME_STR(event->getArrivalTime()-getSimulation()->getSimTime())), TCL_VOLATILE);
    }
    else if (0==strcmp(argv[1],"simsecpersec"))
        Tcl_SetResult(interp, opp_dtoa(buf, "%g", app->getSpeedometer().getSimSecPerSec()), TCL_VOLATILE);
@@ -692,7 +692,7 @@ int getStatusVar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    else if (0==strcmp(argv[1],"eventspersimsec"))
        Tcl_SetResult(interp, opp_dtoa(buf, "%g", app->getSpeedometer().getEventsPerSimSec()), TCL_VOLATILE);
    else if (0==strcmp(argv[1],"feslength"))
-       Tcl_SetResult(interp, opp_itoa(buf, simulation.msgQueue.getLength()), TCL_VOLATILE);
+       Tcl_SetResult(interp, opp_itoa(buf, getSimulation()->msgQueue.getLength()), TCL_VOLATILE);
    else if (0==strcmp(argv[1],"livemsgcount"))
        Tcl_SetResult(interp, opp_ltoa(buf, cMessage::getLiveMessageCount()), TCL_VOLATILE);
    else if (0==strcmp(argv[1],"totalmsgcount"))
@@ -702,7 +702,7 @@ int getStatusVar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    else if (0==strcmp(argv[1],"activerunnumber"))
        Tcl_SetResult(interp, opp_itoa(buf, app->getConfigEx()->getActiveRunNumber()), TCL_VOLATILE);
    else if (0==strcmp(argv[1],"networktypename"))
-       Tcl_SetResult(interp, TCLCONST(!simulation.getNetworkType() ? "" : simulation.getNetworkType()->getName()), TCL_VOLATILE);
+       Tcl_SetResult(interp, TCLCONST(!getSimulation()->getNetworkType() ? "" : getSimulation()->getNetworkType()->getName()), TCL_VOLATILE);
    else {
        Tcl_SetResult(interp, TCLCONST("unknown statusvar"), TCL_STATIC);
         return TCL_ERROR;
@@ -1625,7 +1625,7 @@ int moduleByPath_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    const char *path = argv[1];
    cModule *mod;
-   TRY(mod = simulation.getModuleByPath(path));
+   TRY(mod = getSimulation()->getModuleByPath(path));
    Tcl_SetResult(interp, ptrToStr(mod), TCL_VOLATILE);
    return TCL_OK;
 }
@@ -1639,7 +1639,7 @@ int checkPattern_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    MatchExpression matcher(pattern, false, true, true);
    // let's see if MatchableObjectAdapter can parse field names inside
    // (unmatched "[", etc.), by trying to match some random object
-   MatchableObjectAdapter objectAdapter(MatchableObjectAdapter::FULLNAME, &simulation);
+   MatchableObjectAdapter objectAdapter(MatchableObjectAdapter::FULLNAME, getSimulation());
    matcher.matches(&objectAdapter);
    return TCL_OK;
    E_CATCH
@@ -1657,7 +1657,7 @@ int fesEvents_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
    Tkenv *app = getTkenv();
    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
-   for (cMessageHeap::Iterator it(simulation.msgQueue); maxNum>0 && !it.end(); it++, maxNum--)
+   for (cMessageHeap::Iterator it(getSimulation()->msgQueue); maxNum>0 && !it.end(); it++, maxNum--)
    {
        cEvent *event = it();
        if (!event->isMessage()) {
@@ -1684,15 +1684,15 @@ int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
 
    // find smallest t!=simTime() element, and greatest element.
-   simulation.msgQueue.sort();
-   int len = simulation.msgQueue.getLength();
+   getSimulation()->msgQueue.sort();
+   int len = getSimulation()->msgQueue.getLength();
    if (len==0) {Tcl_SetResult(interp, TCLCONST("0 0"), TCL_STATIC); return TCL_OK;}
-   simtime_t now = simulation.getSimTime();
+   simtime_t now = getSimulation()->getSimTime();
    simtime_t tmin = now;
    for (int i=0; i<len; i++)
-       if (simulation.msgQueue.peek(i)->getArrivalTime()!=now)
-           {tmin = simulation.msgQueue.peek(i)->getArrivalTime(); break;}
-   simtime_t tmax = simulation.msgQueue.peek(len-1)->getArrivalTime();
+       if (getSimulation()->msgQueue.peek(i)->getArrivalTime()!=now)
+           {tmin = getSimulation()->msgQueue.peek(i)->getArrivalTime(); break;}
+   simtime_t tmax = getSimulation()->msgQueue.peek(len-1)->getArrivalTime();
 
    // return result
    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
@@ -1707,7 +1707,7 @@ int eventArrTimeFromNow_cmd(ClientData, Tcl_Interp *interp, int argc, const char
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cEvent *event = dynamic_cast<cEvent *>(strToPtr( argv[1] ));
    if (!event) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
-   simtime_t dt = event->getArrivalTime() - simulation.getSimTime();
+   simtime_t dt = event->getArrivalTime() - getSimulation()->getSimTime();
    Tcl_SetObjResult(interp, Tcl_NewDoubleObj(SIMTIME_DBL(dt)));
    return TCL_OK;
 }
@@ -2042,21 +2042,21 @@ int objectDefaultList_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 int objectSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr(&simulation), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr(getSimulation()), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectSystemModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr(simulation.getSystemModule()), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr(getSimulation()->getSystemModule()), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectMessageQueue_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr(&simulation.msgQueue), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr(&getSimulation()->msgQueue), TCL_VOLATILE);
    return TCL_OK;
 }
 

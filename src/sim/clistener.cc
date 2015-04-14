@@ -82,7 +82,7 @@ cIListener::~cIListener()
         // print components and signals where this listener is subscribed
         std::stringstream out;
         SubscriptionList list;
-        findListenerOccurences(simulation.getSystemModule(), this, list);
+        findListenerOccurences(getSimulation()->getSystemModule(), this, list);
         for (int i=0; i<(int)list.size(); i++) {
             out << "- signal \"" << cComponent::getSignalName(list[i].signalID) << "\" (id=" << list[i].signalID << ") ";
             out << "at (" << list[i].component->getClassName() << ")" << list[i].component->getFullPath() << "\n";

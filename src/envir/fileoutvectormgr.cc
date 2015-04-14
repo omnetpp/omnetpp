@@ -192,7 +192,7 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
         assert(f!=NULL);
         if (vp->recordEventNumbers)
         {
-            CHECK(fprintf(f,"%d\t%" LL "d\t%s\t%.*g\n", vp->id, simulation.getEventNumber(), SIMTIME_TTOA(buff, t), prec, value));
+            CHECK(fprintf(f,"%d\t%" LL "d\t%s\t%.*g\n", vp->id, getSimulation()->getEventNumber(), SIMTIME_TTOA(buff, t), prec, value));
         }
         else
         {

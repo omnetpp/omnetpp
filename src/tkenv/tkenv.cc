@@ -313,7 +313,7 @@ void Tkenv::doRun()
     // delete network if not yet done
     if (simstate!=SIM_NONET && simstate!=SIM_FINISHCALLED)
         endRun();
-    simulation.deleteNetwork();
+    getSimulation()->deleteNetwork();
 
     // pull down inspector factories
     inspectorfactories.clear();
@@ -335,8 +335,8 @@ void Tkenv::rebuildSim()
 {
     if (isconfigrun)
          newRun(std::string(getConfigEx()->getActiveConfigName()).c_str(), getConfigEx()->getActiveRunNumber());
-    else if (simulation.getNetworkType()!=NULL)
-         newNetwork(simulation.getNetworkType()->getName());
+    else if (getSimulation()->getNetworkType()!=NULL)
+         newNetwork(getSimulation()->getNetworkType()->getName());
     else
          confirm("Choose File|New Network or File|New Run.");
 }
@@ -355,11 +355,11 @@ void Tkenv::doOneStep()
     notifyLifecycleListeners(LF_ON_SIMULATION_RESUME);
     try
     {
-        cEvent *event = simulation.takeNextEvent();
+        cEvent *event = getSimulation()->takeNextEvent();
         if (event)  // takeNextEvent() not interrupted
         {
             printEventBanner(event);
-            simulation.executeEvent(event);
+            getSimulation()->executeEvent(event);
             performAnimations();
         }
         updateStatusDisplay();
@@ -511,7 +511,7 @@ bool Tkenv::doRunSimulation()
     //  - runmode, rununtil_time, rununtil_eventnum, rununtil_msg, rununtil_module;
     //  - stopsimulation_flag
     //
-    speedometer.start(simulation.getSimTime());
+    speedometer.start(getSimulation()->getSimTime());
     disable_tracing = false;
     bool firstevent = true;
 
@@ -524,13 +524,13 @@ bool Tkenv::doRunSimulation()
             return true;  // should continue, but in a different mode
 
         // query which module will execute the next event
-        cEvent *event = simulation.takeNextEvent();
+        cEvent *event = getSimulation()->takeNextEvent();
         if (!event)
             break; // takeNextEvent() interrupted (parsim)
 
         // "run until message": stop if desired event was reached
         if (rununtil_msg && event==rununtil_msg) {
-            simulation.putBackEvent(event);
+            getSimulation()->putBackEvent(event);
             break;
         }
 
@@ -540,7 +540,7 @@ bool Tkenv::doRunSimulation()
         cModule *mod = event->isMessage() ? static_cast<cMessage*>(event)->getArrivalModule() : NULL;
         bool untilmodule_reached = rununtil_module && moduleContains(rununtil_module,mod);
         if (untilmodule_reached && !firstevent) {
-            simulation.putBackEvent(event);
+            getSimulation()->putBackEvent(event);
             break;
         }
         firstevent = false;
@@ -548,18 +548,18 @@ bool Tkenv::doRunSimulation()
         animating = (runmode==RUNMODE_NORMAL) || untilmodule_reached;
         bool frequent_updates = (runmode==RUNMODE_NORMAL);
 
-        speedometer.addEvent(simulation.getSimTime());
+        speedometer.addEvent(getSimulation()->getSimTime());
 
         // do a simulation step
         printEventBanner(event);
-        simulation.executeEvent(event);
+        getSimulation()->executeEvent(event);
         performAnimations();
 
         // flush so that output from different modules don't get mixed
         cLogProxy::flushLastLine();
 
         // display update
-        if (frequent_updates || ((simulation.getEventNumber()&0x0f)==0 && elapsed(opt->updateFreqFast, last_update)))
+        if (frequent_updates || ((getSimulation()->getEventNumber()&0x0f)==0 && elapsed(opt->updateFreqFast, last_update)))
         {
             updateStatusDisplay();
             refreshInspectors();
@@ -572,8 +572,8 @@ bool Tkenv::doRunSimulation()
         // exit conditions
         if (untilmodule_reached) break;
         if (stopsimulation_flag) break;
-        if (rununtil_time>SIMTIME_ZERO && simulation.guessNextSimtime()>=rununtil_time) break;
-        if (rununtil_eventnum>0 && simulation.getEventNumber()>=rununtil_eventnum) break;
+        if (rununtil_time>SIMTIME_ZERO && getSimulation()->guessNextSimtime()>=rununtil_time) break;
+        if (rununtil_eventnum>0 && getSimulation()->getEventNumber()>=rununtil_eventnum) break;
 
         checkTimeLimits();
     }
@@ -595,14 +595,14 @@ bool Tkenv::doRunSimulationExpress()
 
     char info[128];
     sprintf(info, "** Running in Express mode from event #%" LL "d  t=%s ...\n",
-            simulation.getEventNumber(), SIMTIME_STR(simulation.getSimTime()));
+            getSimulation()->getEventNumber(), SIMTIME_STR(getSimulation()->getSimTime()));
     logBuffer.addInfo(info);
 
     // update, just to get the above notice displayed
     Tcl_Eval(interp, "update");
 
     // OK, let's begin
-    speedometer.start(simulation.getSimTime());
+    speedometer.start(getSimulation()->getSimTime());
     disable_tracing = true;
     animating = false;
 
@@ -612,21 +612,21 @@ bool Tkenv::doRunSimulationExpress()
     bool result = false;
     do
     {
-        cEvent *event = simulation.takeNextEvent();
+        cEvent *event = getSimulation()->takeNextEvent();
         if (!event)
             break; // takeNextEvent() interrupted (parsim)
 
         // "run until message": stop if desired event was reached
         if (rununtil_msg && event==rununtil_msg) {
-            simulation.putBackEvent(event);
+            getSimulation()->putBackEvent(event);
             break;
         }
 
-        speedometer.addEvent(simulation.getSimTime());
+        speedometer.addEvent(getSimulation()->getSimTime());
 
-        simulation.executeEvent(event);
+        getSimulation()->executeEvent(event);
 
-        if ((simulation.getEventNumber()&0xff)==0 && elapsed(opt->updateFreqExpress, last_update))
+        if ((getSimulation()->getEventNumber()&0xff)==0 && elapsed(opt->updateFreqExpress, last_update))
         {
             updateStatusDisplay();
             if (opt->autoupdateInExpress)
@@ -643,12 +643,12 @@ bool Tkenv::doRunSimulationExpress()
         checkTimeLimits();
     }
     while( !stopsimulation_flag &&
-           (rununtil_time<=SIMTIME_ZERO || simulation.guessNextSimtime() < rununtil_time) &&
-           (rununtil_eventnum<=0 || simulation.getEventNumber() < rununtil_eventnum)
+           (rununtil_time<=SIMTIME_ZERO || getSimulation()->guessNextSimtime() < rununtil_time) &&
+           (rununtil_eventnum<=0 || getSimulation()->getEventNumber() < rununtil_eventnum)
          );
 
     sprintf(info, "** Leaving Express mode at event #%" LL "d  t=%s\n",
-            simulation.getEventNumber(), SIMTIME_STR(simulation.getSimTime()));
+            getSimulation()->getEventNumber(), SIMTIME_STR(getSimulation()->getSimTime()));
     logBuffer.addInfo(info);
 
     return result;
@@ -675,7 +675,7 @@ void Tkenv::finishSimulation()
     // now really call finish()
     try
     {
-        simulation.callFinish();
+        getSimulation()->callFinish();
         cLogProxy::flushLastLine();
 
         checkFingerprint();
@@ -707,7 +707,7 @@ void Tkenv::loadNedFile(const char *fname, const char *expectedPackage, bool isX
 {
     try
     {
-        simulation.loadNedFile(fname, expectedPackage, isXML);
+        getSimulation()->loadNedFile(fname, expectedPackage, isXML);
     }
     catch (std::exception& e)
     {
@@ -724,7 +724,7 @@ void Tkenv::newNetwork(const char *networkname)
         {
             if (simstate!=SIM_FINISHCALLED)
                 endRun();
-            simulation.deleteNetwork();
+            getSimulation()->deleteNetwork();
             simstate = SIM_NONET;
         }
 
@@ -764,7 +764,7 @@ void Tkenv::newRun(const char *configname, int runnumber)
         {
             if (simstate!=SIM_FINISHCALLED)
                 endRun();
-            simulation.deleteNetwork();
+            getSimulation()->deleteNetwork();
             simstate = SIM_NONET;
         }
 
@@ -808,9 +808,9 @@ void Tkenv::setupNetwork(cModuleType *network)
 
     EnvirBase::setupNetwork(network);
 
-    mainNetworkView->doSetObject(simulation.getSystemModule());
-    mainLogView->doSetObject(simulation.getSystemModule());
-    mainInspector->doSetObject(simulation.getSystemModule());
+    mainNetworkView->doSetObject(getSimulation()->getSystemModule());
+    mainLogView->doSetObject(getSimulation()->getSystemModule());
+    mainInspector->doSetObject(getSimulation()->getSystemModule());
 }
 
 Inspector *Tkenv::inspect(cObject *obj, int type, bool ignoreEmbedded, const char *geometry)
@@ -941,7 +941,7 @@ inline ModuleInspector *isModuleInspectorFor(cModule *mod, Inspector *insp)
 
 void Tkenv::createSnapshot( const char *label )
 {
-    simulation.snapshot(&simulation, label );
+    getSimulation()->snapshot(getSimulation(), label );
 }
 
 void Tkenv::updateGraphicalInspectorsBeforeAnimation()
@@ -996,8 +996,8 @@ void Tkenv::printEventBanner(cEvent *event)
     char banner[2*MAX_OBJECTFULLPATH+2*MAX_CLASSNAME+60];
     char *p = banner;
     p += sprintf(p,"** Event #%" LL "d  T=%s  ",
-            simulation.getEventNumber(),
-            SIMTIME_STR(simulation.getSimTime()));
+            getSimulation()->getEventNumber(),
+            SIMTIME_STR(getSimulation()->getSimTime()));
 
     if (opt->shortBanners)
     {
@@ -1032,7 +1032,7 @@ void Tkenv::printEventBanner(cEvent *event)
     strcpy(p, "\n");
 
     // insert into log buffer
-    logBuffer.addEvent(simulation.getEventNumber(), simulation.getSimTime(), module, banner);
+    logBuffer.addEvent(getSimulation()->getEventNumber(), getSimulation()->getSimTime(), module, banner);
 }
 
 void Tkenv::displayException(std::exception& ex)
@@ -1212,7 +1212,7 @@ void Tkenv::objectDeleted(cObject *object)
     {
         // message to "run until" deleted -- stop the simulation by other means
         rununtil_msg = NULL;
-        rununtil_eventnum = simulation.getEventNumber();
+        rununtil_eventnum = getSimulation()->getEventNumber();
         if (simstate==SIM_RUNNING || simstate==SIM_BUSY)
             confirm("Message to run until has just been deleted.");
     }
@@ -1273,7 +1273,7 @@ void Tkenv::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate) //FIXME nee
         else
         {
             // sendDirect() was used
-            animateSendDirect(msg, simulation.getModule(msg->getSenderModuleId()), directToGate);
+            animateSendDirect(msg, getSimulation()->getModule(msg->getSenderModuleId()), directToGate);
             animateSend(msg, directToGate, msg->getArrivalGate());
         }
     }
@@ -1291,7 +1291,7 @@ void Tkenv::messageCancelled(cMessage *msg)
         if (simstate==SIM_RUNNING || simstate==SIM_BUSY)
             confirm(opp_stringf("Run-until message `%s' got cancelled.", msg->getName()).c_str());
         rununtil_msg = NULL;
-        rununtil_eventnum = simulation.getEventNumber(); // stop the simulation using the eventnumber limit
+        rununtil_eventnum = getSimulation()->getEventNumber(); // stop the simulation using the eventnumber limit
     }
     EnvirBase::messageCancelled(msg);
 }
@@ -1855,7 +1855,7 @@ void Tkenv::log(cLogEntry *entry)
     }
 
     // insert into log buffer
-    cModule *module = simulation.getContextModule();
+    cModule *module = getSimulation()->getContextModule();
     if (module)
         logBuffer.addLogLine(prefix.c_str(), s, n);
     else
@@ -1891,8 +1891,8 @@ bool Tkenv::inputDialog(const char *title, const char *prompt,
 
 std::string Tkenv::gets(const char *promt, const char *defaultReply)
 {
-    cModule *mod = simulation.getContextModule();
-    std::string title = mod ? mod->getFullPath() : simulation.getNetworkType()->getName();
+    cModule *mod = getSimulation()->getContextModule();
+    std::string title = mod ? mod->getFullPath() : getSimulation()->getNetworkType()->getName();
     std::string result;
     bool dummy;
     bool ok = inputDialog(title.c_str(), promt, NULL, defaultReply, result, dummy);

@@ -84,11 +84,11 @@ void LogBuffer::addInitialize(cComponent *component, const char *banner)
     {
         Entry *entry = new Entry();
         entries.push_back(entry);
-        fillEntry(entry, 0, simTime(), simulation.getSystemModule(), opp_strdup("** Initializing network\n"));
+        fillEntry(entry, 0, simTime(), getSimulation()->getSystemModule(), opp_strdup("** Initializing network\n"));
     }
 
     Entry *entry = entries.back();
-    cModule *contextMod = simulation.getContextModule();  //TODO use simulation.getContext() in 5.0!
+    cModule *contextMod = getSimulation()->getContextModule();  //TODO use simulation.getContext() in 5.0!
     int contextComponentId =  contextMod ? contextMod->getId() : 0;
     entry->lines.push_back(Line(contextComponentId, NULL, opp_strdup(banner)));
 
@@ -113,7 +113,7 @@ void LogBuffer::addLogLine(const char *prefix, const char *text, int len)
     //FIXME if last line is "info" then we cannot append to it! create new entry with empty banner?
 
     Entry *entry = entries.back();
-    cModule *contextMod = simulation.getContextModule();  //TODO use simulation.getContext() in 5.0!
+    cModule *contextMod = getSimulation()->getContextModule();  //TODO use simulation.getContext() in 5.0!
     int contextComponentId =  contextMod ? contextMod->getId() : 0;
     entry->lines.push_back(Line(contextComponentId, opp_strdup(prefix), opp_strdup(text,len)));
 

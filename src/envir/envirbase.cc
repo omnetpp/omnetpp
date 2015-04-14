@@ -433,7 +433,7 @@ bool EnvirBase::setup()
             // sequential
             cScheduler *scheduler;
             CREATE_BY_CLASSNAME(scheduler, opt->schedulerClass.c_str(), cScheduler, "event scheduler");
-            simulation.setScheduler(scheduler);
+            getSimulation()->setScheduler(scheduler);
         }
         else
         {
@@ -446,9 +446,9 @@ bool EnvirBase::setup()
             addLifecycleListener(parsimpartition);
 
             // wire them together (note: 'parsimsynchronizer' is also the scheduler for 'simulation')
-            parsimpartition->setContext(&simulation, parsimcomm, parsimsynchronizer);
-            parsimsynchronizer->setContext(&simulation, parsimpartition, parsimcomm);
-            simulation.setScheduler(parsimsynchronizer);
+            parsimpartition->setContext(getSimulation(), parsimcomm, parsimsynchronizer);
+            parsimsynchronizer->setContext(getSimulation(), parsimpartition, parsimcomm);
+            getSimulation()->setScheduler(parsimsynchronizer);
 
             // initialize them
             parsimcomm->init();
@@ -478,12 +478,12 @@ bool EnvirBase::setup()
             if (foldersloaded.find(folder)==foldersloaded.end())
             {
                 std::cout << "Loading NED files from " << folder << ": ";
-                int count = simulation.loadNedSourceFolder(folder);
+                int count = getSimulation()->loadNedSourceFolder(folder);
                 std::cout << " " << count << endl;
                 foldersloaded.insert(folder);
             }
         }
-        simulation.doneLoadingNedFiles();
+        getSimulation()->doneLoadingNedFiles();
 
         // notify listeners when global setup is complete
         notifyLifecycleListeners(LF_ON_STARTUP);
@@ -898,7 +898,7 @@ void EnvirBase::shutdown()
 {
     try
     {
-        simulation.deleteNetwork();
+        getSimulation()->deleteNetwork();
         notifyLifecycleListeners(LF_ON_SHUTDOWN);
     }
     catch (std::exception& e)
@@ -913,7 +913,7 @@ void EnvirBase::setupNetwork(cModuleType *network)
     currentEventClassName = NULL;
     currentModuleId = -1;
 
-    simulation.setupNetwork(network);
+    getSimulation()->setupNetwork(network);
     eventlogmgr->flush();
 }
 
@@ -921,8 +921,8 @@ void EnvirBase::startRun()
 {
     resetClock();
     if (opt->simtimeLimit > SIMTIME_ZERO)
-        simulation.setSimulationTimeLimit(opt->simtimeLimit);
-    simulation.callInitialize();
+        getSimulation()->setSimulationTimeLimit(opt->simtimeLimit);
+    getSimulation()->callInitialize();
     cLogProxy::flushLastLine();
 }
 
@@ -1322,7 +1322,7 @@ cXMLElement *EnvirBase::resolveXMLPath(cXMLElement *documentnode, const char *pa
     assert(documentnode);
     if (path)
     {
-        ModNameParamResolver resolver(simulation.getContextModule()); // resolves $MODULE_NAME etc in XPath expr.
+        ModNameParamResolver resolver(getSimulation()->getContextModule()); // resolves $MODULE_NAME etc in XPath expr.
         return cXMLElement::getDocumentElementByPath(documentnode, path, &resolver);
     }
     else
@@ -1607,13 +1607,13 @@ void EnvirBase::readPerRunOptions()
     opt->debugStatisticsRecording = cfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
     opt->checkSignals = cfg->getAsBool(CFGID_CHECK_SIGNALS);
 
-    simulation.setWarmupPeriod(opt->warmupPeriod);
+    getSimulation()->setWarmupPeriod(opt->warmupPeriod);
 
     // install hasher object
     if (!opt->expectedFingerprint.empty())
-        simulation.setHasher(new cHasher());
+        getSimulation()->setHasher(new cHasher());
     else
-        simulation.setHasher(NULL);
+        getSimulation()->setHasher(NULL);
 
     cComponent::setCheckSignals(opt->checkSignals);
 
@@ -1937,7 +1937,7 @@ void EnvirBase::stopClock()
 {
     gettimeofday(&simendtime, NULL);
     elapsedtime = elapsedtime + simendtime - laststarted;
-    simulatedtime = simulation.getSimTime();
+    simulatedtime = getSimulation()->getSimTime();
 }
 
 timeval EnvirBase::totalElapsed()
@@ -1950,12 +1950,12 @@ timeval EnvirBase::totalElapsed()
 void EnvirBase::checkTimeLimits()
 {
 #ifdef USE_OMNETPP4x_FINGERPRINTS
-    if (opt->simtimeLimit!=SIMTIME_ZERO && simulation.getSimTime()>=opt->simtimeLimit)
+    if (opt->simtimeLimit!=SIMTIME_ZERO && getSimulation()->getSimTime()>=opt->simtimeLimit)
          throw cTerminationException(E_SIMTIME);
 #endif
     if (opt->cpuTimeLimit==0) // no limit
          return;
-    if (disable_tracing && (simulation.getEventNumber()&0xFF)!=0) // optimize: in Express mode, don't call gettimeofday() on every event
+    if (disable_tracing && (getSimulation()->getEventNumber()&0xFF)!=0) // optimize: in Express mode, don't call gettimeofday() on every event
          return;
     timeval now;
     gettimeofday(&now, NULL);
@@ -1991,7 +1991,7 @@ void EnvirBase::stoppedWithException(std::exception& e)
 
 void EnvirBase::checkFingerprint()
 {
-    if (opt->expectedFingerprint.empty() || !simulation.getHasher())
+    if (opt->expectedFingerprint.empty() || !getSimulation()->getHasher())
         return;
 
     int k = 0;
@@ -1999,7 +1999,7 @@ void EnvirBase::checkFingerprint()
     while (tokenizer.hasMoreTokens())
     {
         const char *fingerprint = tokenizer.nextToken();
-        if (simulation.getHasher()->equals(fingerprint))
+        if (getSimulation()->getHasher()->equals(fingerprint))
         {
             printfmsg("Fingerprint successfully verified: %s", fingerprint);
             return;
@@ -2008,14 +2008,14 @@ void EnvirBase::checkFingerprint()
     }
 
     printfmsg("Fingerprint mismatch! calculated: %s, expected: %s%s",
-              simulation.getHasher()->str().c_str(),
+              getSimulation()->getHasher()->str().c_str(),
               (k>=2 ? "one of: " : ""), opt->expectedFingerprint.c_str());
 }
 
 cModuleType *EnvirBase::resolveNetwork(const char *networkname)
 {
     cModuleType *network = NULL;
-    std::string inifilePackage = simulation.getNedPackageForFolder(opt->inifileNetworkDir.c_str());
+    std::string inifilePackage = getSimulation()->getNedPackageForFolder(opt->inifileNetworkDir.c_str());
 
     bool hasInifilePackage = !inifilePackage.empty() && strcmp(inifilePackage.c_str(),"-")!=0;
     if (hasInifilePackage)

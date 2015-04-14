@@ -159,7 +159,7 @@ void GateInspector::refresh()
    CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", NULL));
    cGate *destGate = gate->getPathEndGate();
 
-   for (cMessageHeap::Iterator it(simulation.msgQueue); !it.end(); it++)
+   for (cMessageHeap::Iterator it(getSimulation()->msgQueue); !it.end(); it++)
    {
        cEvent *event = it();
        if (!event->isMessage())

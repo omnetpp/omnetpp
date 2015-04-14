@@ -36,7 +36,7 @@ Define_Module(Module);
 void Module::initialize()
 {
     scheduleAt(5.0, new cMessage("msg1"));
-    simulation.insertEvent(new SayHelloEvent("hello", 5.0));
+    getSimulation()->insertEvent(new SayHelloEvent("hello", 5.0));
     scheduleAt(5.0, new cMessage("msg2"));
 }
 void Module::handleMessage(cMessage *msg)

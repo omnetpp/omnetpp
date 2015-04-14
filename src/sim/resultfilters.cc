@@ -197,7 +197,7 @@ void PacketBitsFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObj
 bool SumPerDurationFilter::process(simtime_t& t, double& value)
 {
     sum += value;
-    value = sum / (t - simulation.getWarmupPeriod());
+    value = sum / (t - getSimulation()->getWarmupPeriod());
     return true;
 }
 

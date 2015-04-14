@@ -54,7 +54,7 @@ void Tester::test(cModule *base, const char *path)
 
 void Tester::activity()
 {
-    cModule *root = simulation.getSystemModule();
+    cModule *root = getSimulation()->getSystemModule();
     cModule *host0 = root->getSubmodule("host",0);
 
     // absolute

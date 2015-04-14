@@ -147,7 +147,7 @@ bool cSocketRTScheduler::receiveWithTimeout(long usec)
                 simtime_t t = curTime.tv_sec + curTime.tv_usec*1e-6;
                 // TBD assert that it's somehow not smaller than previous event's time
                 notificationMsg->setArrival(module->getId(), -1, t);
-                simulation.msgQueue.insert(notificationMsg);
+                getSimulation()->msgQueue.insert(notificationMsg);
                 return true;
             }
         }

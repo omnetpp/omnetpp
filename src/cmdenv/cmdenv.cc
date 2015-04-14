@@ -296,7 +296,7 @@ void Cmdenv::doRun()
 
                 ::fprintf(fout, "\nCalling finish() at end of Run #%d...\n", runNumber);
                 ::fflush(fout);
-                simulation.callFinish();
+                getSimulation()->callFinish();
                 cLogProxy::flushLastLine();
 
                 checkFingerprint();
@@ -332,7 +332,7 @@ void Cmdenv::doRun()
             {
                 try
                 {
-                    simulation.deleteNetwork();
+                    getSimulation()->deleteNetwork();
                 }
                 catch (std::exception& e)
                 {
@@ -384,7 +384,7 @@ void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesti
             disable_tracing = false;
             while (true)
             {
-                cEvent *event = simulation.takeNextEvent();
+                cEvent *event = getSimulation()->takeNextEvent();
                 if (!event)
                     throw cTerminationException("scheduler interrupted while waiting");
 
@@ -399,7 +399,7 @@ void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesti
                     ::fflush(fout);
 
                 // execute event
-                simulation.executeEvent(event);
+                getSimulation()->executeEvent(event);
 
                 // flush so that output from different modules don't get mixed
                 cLogProxy::flushLastLine();
@@ -412,7 +412,7 @@ void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesti
         else
         {
             disable_tracing = true;
-            speedometer.start(simulation.getSimTime());
+            speedometer.start(getSimulation()->getSimTime());
 
             struct timeval last_update;
             gettimeofday(&last_update, NULL);
@@ -421,18 +421,18 @@ void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesti
 
             while (true)
             {
-                cEvent *event = simulation.takeNextEvent();
+                cEvent *event = getSimulation()->takeNextEvent();
                 if (!event)
                     throw cTerminationException("scheduler interrupted while waiting");
 
-                speedometer.addEvent(simulation.getSimTime()); //XXX potential performance hog
+                speedometer.addEvent(getSimulation()->getSimTime()); //XXX potential performance hog
 
                 // print event banner from time to time
-                if ((simulation.getEventNumber()&0xff)==0 && elapsed(opt->statusFrequencyMs, last_update))
+                if ((getSimulation()->getEventNumber()&0xff)==0 && elapsed(opt->statusFrequencyMs, last_update))
                     doStatusUpdate(speedometer);
 
                 // execute event
-                simulation.executeEvent(event);
+                getSimulation()->executeEvent(event);
 
                 checkTimeLimits();  //XXX potential performance hog (maybe check every 256 events, unless "cmdenv-strict-limits" is on?)
                 if (sigintReceived)
@@ -473,8 +473,8 @@ void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesti
 void Cmdenv::printEventBanner(cEvent *event)
 {
     ::fprintf(fout, "** Event #%" LL "d  T=%s%s   ",
-            simulation.getEventNumber(),
-            SIMTIME_STR(simulation.getSimTime()),
+            getSimulation()->getEventNumber(),
+            SIMTIME_STR(getSimulation()->getSimTime()),
             progressPercentage()); // note: IDE launcher uses this to track progress
     if (event->isMessage()) {
         cModule *mod = static_cast<cMessage*>(event)->getArrivalModule();
@@ -500,7 +500,7 @@ void Cmdenv::printEventBanner(cEvent *event)
                 timeToStr(totalElapsed()),
                 cMessage::getTotalMessageCount(),
                 cMessage::getLiveMessageCount(),
-                simulation.msgQueue.getLength());
+                getSimulation()->msgQueue.getLength());
     }
 }
 
@@ -511,8 +511,8 @@ void Cmdenv::doStatusUpdate(Speedometer& speedometer)
     if (opt->printPerformanceData)
     {
         ::fprintf(fout, "** Event #%" LL "d   T=%s   Elapsed: %s%s\n",
-                simulation.getEventNumber(),
-                SIMTIME_STR(simulation.getSimTime()),
+                getSimulation()->getEventNumber(),
+                SIMTIME_STR(getSimulation()->getSimTime()),
                 timeToStr(totalElapsed()),
                 progressPercentage()); // note: IDE launcher uses this to track progress
         ::fprintf(fout, "     Speed:     ev/sec=%g   simsec/sec=%g   ev/simsec=%g\n",
@@ -523,13 +523,13 @@ void Cmdenv::doStatusUpdate(Speedometer& speedometer)
         ::fprintf(fout, "     Messages:  created: %ld   present: %ld   in FES: %d\n",
                 cMessage::getTotalMessageCount(),
                 cMessage::getLiveMessageCount(),
-                simulation.msgQueue.getLength());
+                getSimulation()->msgQueue.getLength());
     }
     else
     {
         ::fprintf(fout, "** Event #%" LL "d   T=%s   Elapsed: %s%s   ev/sec=%g\n",
-                simulation.getEventNumber(),
-                SIMTIME_STR(simulation.getSimTime()),
+                getSimulation()->getEventNumber(),
+                SIMTIME_STR(getSimulation()->getSimTime()),
                 timeToStr(totalElapsed()),
                 progressPercentage(), // note: IDE launcher uses this to track progress
                 speedometer.getEventsPerSec());
@@ -543,7 +543,7 @@ const char *Cmdenv::progressPercentage()
 {
     double simtimeRatio = -1;
     if (opt->simtimeLimit!=0)
-         simtimeRatio = simulation.getSimTime() / opt->simtimeLimit;
+         simtimeRatio = getSimulation()->getSimTime() / opt->simtimeLimit;
 
     double cputimeRatio = -1;
     if (opt->cpuTimeLimit!=0) {
@@ -645,8 +645,8 @@ void Cmdenv::log(cLogEntry *entry)
     if (disable_tracing)
         return;
 
-    cComponent *ctx = simulation.getContext();
-    if (!ctx || (opt->printModuleMsgs && ctx->isEvEnabled()) || simulation.getContextType()==CTX_FINISH)
+    cComponent *ctx = getSimulation()->getContext();
+    if (!ctx || (opt->printModuleMsgs && ctx->isEvEnabled()) || getSimulation()->getContextType()==CTX_FINISH)
     {
         std::string prefix = logFormatter.formatPrefix(entry);
         ::fputs(prefix.c_str(), fout);
@@ -713,7 +713,7 @@ void Cmdenv::debug(const char *fmt,...)
 
     ::fprintf(logStream, "[%02d:%02d:%02d.%03d event #%" LL "d %s] ",
              tm.tm_hour, tm.tm_min, tm.tm_sec, (int)(tv.tv_usec/1000),
-             simulation.getEventNumber(), "");
+             getSimulation()->getEventNumber(), "");
     va_list va;
     va_start(va, fmt);
     ::vfprintf(logStream, fmt, va);

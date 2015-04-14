@@ -37,7 +37,7 @@ void RandomModuleSelector::visit(cObject *object)
 cModule* StressDirect::getRandomModule()
 {
     RandomModuleSelector selector;
-    simulation.getSystemModule()->forEachChild(&selector);
+    getSimulation()->getSystemModule()->forEachChild(&selector);
     return selector.selectedModule;
 }
 

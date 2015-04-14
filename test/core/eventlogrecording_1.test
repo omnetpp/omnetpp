@@ -93,7 +93,7 @@ void Node::initialize()
 
 Node *Node::getPeer()
 {
-    cModule *peer = simulation.getModuleByPath(par("peer").stdstringValue().c_str());
+    cModule *peer = getSimulation()->getModuleByPath(par("peer").stdstringValue().c_str());
     Node *peerNode = check_and_cast<Node *>(peer);
     return peerNode;
 }

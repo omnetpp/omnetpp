@@ -188,9 +188,9 @@ void cTopology::extractFromNetwork(bool (*predicate)(cModule *,void *), void *da
     clear();
 
     // Loop through all modules and find those that satisfy the criteria
-    for (int modId=0; modId<=simulation.getLastComponentId(); modId++)
+    for (int modId=0; modId<=getSimulation()->getLastComponentId(); modId++)
     {
-        cModule *module = simulation.getModule(modId);
+        cModule *module = getSimulation()->getModule(modId);
         if (module && predicate(module, data)) {
             Node *node = createNode(module);
             nodes.push_back(node);
@@ -204,7 +204,7 @@ void cTopology::extractFromNetwork(bool (*predicate)(cModule *,void *), void *da
         // from or go to modules included in the topology.
 
         Node *node = nodes[k];
-        cModule *mod = simulation.getModule(node->moduleId);
+        cModule *mod = getSimulation()->getModule(node->moduleId);
 
         for (cModule::GateIterator i(mod); !i.end(); i++)
         {

@@ -37,21 +37,21 @@ class TestChannel: public cIdealChannel
     TestChannel() { }
 
     virtual void initialize() {
-        ASSERT(simulation.getContext() == this);
-        ASSERT(simulation.getContextType() == CTX_INITIALIZE);
+        ASSERT(getSimulation()->getContext() == this);
+        ASSERT(getSimulation()->getContextType() == CTX_INITIALIZE);
         EV << "- " << getFullPath() << " initialize\n";
     }
 
     virtual void processMessage(cMessage *msg, simtime_t t, result_t& result) {
-        //FIXME this fails: ASSERT(simulation.getContext() == this);
-        ASSERT(simulation.getContextType() == CTX_EVENT);
+        //FIXME this fails: ASSERT(getSimulation()->getContext() == this);
+        ASSERT(getSimulation()->getContextType() == CTX_EVENT);
         EV << "- " << getFullPath() << " process: \"" << msg->getName() << "\"\n";
         cIdealChannel::processMessage(msg, t, result);
     }
 
     virtual void finish() {
-        ASSERT(simulation.getContext() == this);
-        ASSERT(simulation.getContextType() == CTX_FINISH);
+        ASSERT(getSimulation()->getContext() == this);
+        ASSERT(getSimulation()->getContextType() == CTX_FINISH);
         EV << "- " << getFullPath() << " finish\n";
     }
 };
@@ -65,15 +65,15 @@ class Node : public cSimpleModule
     Node() { }
 
     virtual void initialize() {
-        ASSERT(simulation.getContext() == this);
-        ASSERT(simulation.getContextType() == CTX_INITIALIZE);
+        ASSERT(getSimulation()->getContext() == this);
+        ASSERT(getSimulation()->getContextType() == CTX_INITIALIZE);
         EV << "- " << getFullPath() << " initialize\n";
         scheduleAt(1, new cMessage("timer"));
     }
 
     virtual void handleMessage(cMessage *msg) {
-        ASSERT(simulation.getContext() == this);
-        ASSERT(simulation.getContextType() == CTX_EVENT);
+        ASSERT(getSimulation()->getContext() == this);
+        ASSERT(getSimulation()->getContextType() == CTX_EVENT);
         EV << "- " << getFullPath() << " handleMessage: \"" << msg->getName() << "\"\n";
         if (msg->isSelfMessage())
             send(new cMessage("packet"), "g$o");
@@ -81,8 +81,8 @@ class Node : public cSimpleModule
     }
 
     virtual void finish() {
-        ASSERT(simulation.getContext() == this);
-        ASSERT(simulation.getContextType() == CTX_FINISH);
+        ASSERT(getSimulation()->getContext() == this);
+        ASSERT(getSimulation()->getContextType() == CTX_FINISH);
         EV << "- " << getFullPath() << " finish\n";
     }
 };

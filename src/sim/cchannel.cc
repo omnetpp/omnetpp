@@ -107,7 +107,7 @@ bool cChannel::initializeChannel(int stage)
 {
     // channels don't contain further subcomponents, so just we just invoke
     // initialize(stage) in the right context here.
-    if (simulation.getContextType()!=CTX_INITIALIZE)
+    if (getSimulation()->getContextType()!=CTX_INITIALIZE)
         throw cRuntimeError("Internal function initializeChannel() may only be called via callInitialize()");
 
     if (stage==0)

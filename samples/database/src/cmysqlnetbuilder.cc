@@ -114,7 +114,7 @@ void cMySQLNetBuilder::readAndBuild(const char *networkName)
 
     // do the job, and close the database
     const char *modName = par("targetModule");
-    cModule *parentmod = (!modName || !modName[0]) ? getParentModule() : simulation.getModuleByPath(modName);
+    cModule *parentmod = (!modName || !modName[0]) ? getParentModule() : getSimulation()->getModuleByPath(modName);
     // read and create nodes
     std::string stmt = "SELECT n.id, n.name, n.type, n.display FROM node n, network t "
                        "WHERE n.networkid=t.id AND t.name='@networkname@' "

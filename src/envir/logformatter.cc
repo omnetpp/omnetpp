@@ -166,11 +166,11 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
 
             // current simulation state related
             case EVENT_NUMBER:
-                stream << simulation.getEventNumber(); break;
+                stream << getSimulation()->getEventNumber(); break;
             case SIMULATION_TIME:
-                stream << simulation.getSimTime(); break;
+                stream << getSimulation()->getSimTime(); break;
             case FINGERPRINT:
-                if (simulation.getHasher()) stream << simulation.getHasher()->str().c_str(); else lastPartEmpty = true; break;
+                if (getSimulation()->getHasher()) stream << getSimulation()->getHasher()->str().c_str(); else lastPartEmpty = true; break;
 
             case EVENT_OBJECT_NAME:
                 if (ev->getCurrentEventName()) stream << ev->getCurrentEventName(); else lastPartEmpty = true; break;
@@ -189,28 +189,28 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                 if (ev->getCurrentEventModule()) stream << ev->getCurrentEventModule()->getComponentType()->getFullName(); else lastPartEmpty = true; break;
 
             case CONTEXT_COMPONENT_NAME:
-                if (simulation.getContext()) stream << simulation.getContext()->getFullName(); else lastPartEmpty = true; break;
+                if (getSimulation()->getContext()) stream << getSimulation()->getContext()->getFullName(); else lastPartEmpty = true; break;
             case CONTEXT_COMPONENT_FULLPATH:
-                if (simulation.getContext()) stream << simulation.getContext()->getFullPath(); else lastPartEmpty = true; break;
+                if (getSimulation()->getContext()) stream << getSimulation()->getContext()->getFullPath(); else lastPartEmpty = true; break;
             case CONTEXT_COMPONENT_CLASSNAME:
-                if (simulation.getContext()) stream << simulation.getContext()->getClassName(); else lastPartEmpty = true; break;
+                if (getSimulation()->getContext()) stream << getSimulation()->getContext()->getClassName(); else lastPartEmpty = true; break;
             case CONTEXT_COMPONENT_NEDTYPE_SIMPLENAME:
-                if (simulation.getContext()) stream << simulation.getContext()->getComponentType()->getName(); else lastPartEmpty = true; break;
+                if (getSimulation()->getContext()) stream << getSimulation()->getContext()->getComponentType()->getName(); else lastPartEmpty = true; break;
             case CONTEXT_COMPONENT_NEDTYPE_QUALIFIEDNAME:
-                if (simulation.getContext()) stream << simulation.getContext()->getComponentType()->getFullName(); else lastPartEmpty = true; break;
+                if (getSimulation()->getContext()) stream << getSimulation()->getContext()->getComponentType()->getFullName(); else lastPartEmpty = true; break;
 
             // simulation run related
             case CONFIGNAME:
-                stream << simulation.getActiveEnvir()->getConfigEx()->getActiveConfigName(); break;
+                stream << getSimulation()->getActiveEnvir()->getConfigEx()->getActiveConfigName(); break;
             case RUNNUMBER:
-                stream << simulation.getActiveEnvir()->getConfigEx()->getActiveRunNumber(); break;
+                stream << getSimulation()->getActiveEnvir()->getConfigEx()->getActiveRunNumber(); break;
 
             case NETWORK_MODULE_CLASSNAME:
-                stream << simulation.getSystemModule()->getClassName(); break;
+                stream << getSimulation()->getSystemModule()->getClassName(); break;
             case NETWORK_MODULE_NEDTYPE_SIMPLENAME:
-                stream << simulation.getNetworkType()->getName(); break;
+                stream << getSimulation()->getNetworkType()->getName(); break;
             case NETWORK_MODULE_NEDTYPE_QUALIFIEDNAME:
-                stream << simulation.getNetworkType()->getFullName(); break;
+                stream << getSimulation()->getNetworkType()->getFullName(); break;
 
             // C++ source related
             case SOURCE_OBJECT_POINTER:
@@ -270,13 +270,13 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                 break;
             }
             case CONTEXT_COMPONENT_IF_DIFFERENT:
-                if (simulation.getContext() == ev->getCurrentEventModule()) {
+                if (getSimulation()->getContext() == ev->getCurrentEventModule()) {
                     lastPartEmpty = true;
                     break;
                 }
                 // no break
             case CONTEXT_COMPONENT: {
-                cComponent *component = simulation.getContext();
+                cComponent *component = getSimulation()->getContext();
                 if (component)
                     stream << "(" << component->getComponentType()->getName() << ")" << component->getFullPath();
                 else
@@ -284,7 +284,7 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                 break;
             }
             case SOURCE_COMPONENT_OR_OBJECT_IF_DIFFERENT:
-                if (entry->sourceComponent == simulation.getContext()) {
+                if (entry->sourceComponent == getSimulation()->getContext()) {
                     lastPartEmpty = true;
                     break;
                 }
@@ -294,7 +294,7 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                     stream << "(" << entry->sourceComponent->getComponentType()->getName() << ")" << entry->sourceComponent->getFullPath();
                 else if (entry->sourceObject) {
                     stream << "(" << entry->sourceClass << ")" <<
-                        (entry->sourceObject->getOwner() == simulation.getContext() ?
+                        (entry->sourceObject->getOwner() == getSimulation()->getContext() ?
                         entry->sourceObject->getFullName() : entry->sourceObject->getFullPath());
                 }
                 else if (entry->sourceClass || entry->sourcePointer) {

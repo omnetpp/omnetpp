@@ -142,7 +142,7 @@ void cStatistic::collect2(double, double)
 
 void cStatistic::recordAs(const char *scalarname, const char *unit)
 {
-    cSimpleModule *mod = dynamic_cast<cSimpleModule *>(simulation.getContextModule());
+    cSimpleModule *mod = dynamic_cast<cSimpleModule *>(getSimulation()->getContextModule());
     if (!mod)
         throw cRuntimeError(this,"record() may only be invoked from within a simple module");
     if (!scalarname)

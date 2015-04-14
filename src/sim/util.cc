@@ -74,14 +74,14 @@ void opp_warning(OppErrorCode errorcode...)
     char message[BUFLEN];
     VSNPRINTF2(message, BUFLEN, errorcode, cErrorMessages::get(errorcode));
 
-    if (!simulation.getContextModule())
+    if (!getSimulation()->getContextModule())
     {
         // we're called from global context
         getEnvir()->printfmsg("%s.", message);
     }
     else
     {
-        getEnvir()->printfmsg("Module %s: %s.", simulation.getContextModule()->getFullPath().c_str(), message);
+        getEnvir()->printfmsg("Module %s: %s.", getSimulation()->getContextModule()->getFullPath().c_str(), message);
     }
 }
 
@@ -90,14 +90,14 @@ void opp_warning(const char *msgformat...)
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, msgformat);
 
-    if (!simulation.getContextModule())
+    if (!getSimulation()->getContextModule())
     {
         // we're called from global context
         getEnvir()->printfmsg("%s.", message);
     }
     else
     {
-        getEnvir()->printfmsg("Module %s: %s.", simulation.getContextModule()->getFullPath().c_str(), message);
+        getEnvir()->printfmsg("Module %s: %s.", getSimulation()->getContextModule()->getFullPath().c_str(), message);
     }
 }
 
@@ -261,17 +261,17 @@ const char *opp_typename(const std::type_info& t)
 cContextSwitcher::cContextSwitcher(const cComponent *newContext)
 {
     // save current context and switch to new
-    callerContext = simulation.getContext();
-    simulation.setContext(const_cast<cComponent *>(newContext));
+    callerContext = getSimulation()->getContext();
+    getSimulation()->setContext(const_cast<cComponent *>(newContext));
 }
 
 cContextSwitcher::~cContextSwitcher()
 {
     // restore old context
     if (!callerContext)
-        simulation.setGlobalContext();
+        getSimulation()->setGlobalContext();
     else
-        simulation.setContext(callerContext);
+        getSimulation()->setContext(callerContext);
 }
 
 //----
@@ -288,7 +288,7 @@ cMethodCallContextSwitcher::cMethodCallContextSwitcher(const cComponent *newCont
 
 void cMethodCallContextSwitcher::methodCall(const char *methodFmt,...)
 {
-    cComponent *newContext = simulation.getContext();
+    cComponent *newContext = getSimulation()->getContext();
     if (newContext!=callerContext)
     {
         va_list va;
@@ -300,7 +300,7 @@ void cMethodCallContextSwitcher::methodCall(const char *methodFmt,...)
 
 void cMethodCallContextSwitcher::methodCallSilent(const char *methodFmt,...)
 {
-    cComponent *newContext = simulation.getContext();
+    cComponent *newContext = getSimulation()->getContext();
     if (newContext!=callerContext)
     {
         va_list va;
@@ -312,7 +312,7 @@ void cMethodCallContextSwitcher::methodCallSilent(const char *methodFmt,...)
 
 void cMethodCallContextSwitcher::methodCallSilent()
 {
-    cComponent *newContext = simulation.getContext();
+    cComponent *newContext = getSimulation()->getContext();
     if (newContext!=callerContext)
         EVCB.componentMethodBegin(callerContext, newContext, NULL, dummy_va, true);
 }
@@ -320,7 +320,7 @@ void cMethodCallContextSwitcher::methodCallSilent()
 cMethodCallContextSwitcher::~cMethodCallContextSwitcher()
 {
     depth--;
-    cComponent *methodContext = simulation.getContext();
+    cComponent *methodContext = getSimulation()->getContext();
     if (methodContext!=callerContext)
         EVCB.componentMethodEnd();
 }
@@ -330,13 +330,13 @@ cMethodCallContextSwitcher::~cMethodCallContextSwitcher()
 cContextTypeSwitcher::cContextTypeSwitcher(int contexttype)
 {
     // save current context type and switch to new one
-    savedcontexttype = simulation.getContextType();
-    simulation.setContextType(contexttype);
+    savedcontexttype = getSimulation()->getContextType();
+    getSimulation()->setContextType(contexttype);
 }
 
 cContextTypeSwitcher::~cContextTypeSwitcher()
 {
-    simulation.setContextType(savedcontexttype);
+    getSimulation()->setContextType(savedcontexttype);
 }
 
 NAMESPACE_END

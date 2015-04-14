@@ -53,7 +53,7 @@ void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, bo
 {
     try
     {
-        receiveSignal(NULL, simulation.getSimTime(), b);
+        receiveSignal(NULL, getSimulation()->getSimTime(), b);
     }
     catch (std::exception& e)
     {
@@ -65,7 +65,7 @@ void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, lo
 {
     try
     {
-        receiveSignal(NULL, simulation.getSimTime(), l);
+        receiveSignal(NULL, getSimulation()->getSimTime(), l);
     }
     catch (std::exception& e)
     {
@@ -77,7 +77,7 @@ void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, un
 {
     try
     {
-        receiveSignal(NULL, simulation.getSimTime(), l);
+        receiveSignal(NULL, getSimulation()->getSimTime(), l);
     }
     catch (std::exception& e)
     {
@@ -89,7 +89,7 @@ void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, do
 {
     try
     {
-        receiveSignal(NULL, simulation.getSimTime(), d);
+        receiveSignal(NULL, getSimulation()->getSimTime(), d);
     }
     catch (std::exception& e)
     {
@@ -101,7 +101,7 @@ void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, co
 {
     try
     {
-        receiveSignal(NULL, simulation.getSimTime(), v);
+        receiveSignal(NULL, getSimulation()->getSimTime(), v);
     }
     catch (std::exception& e)
     {
@@ -113,7 +113,7 @@ void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, co
 {
     try
     {
-        receiveSignal(NULL, simulation.getSimTime(), s);
+        receiveSignal(NULL, getSimulation()->getSimTime(), s);
     }
     catch (std::exception& e)
     {
@@ -127,7 +127,7 @@ void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, cO
     {
         cITimestampedValue *v = dynamic_cast<cITimestampedValue *>(obj);
         if (!v)
-            receiveSignal(NULL, simulation.getSimTime(), obj);
+            receiveSignal(NULL, getSimulation()->getSimTime(), obj);
         else
         {
             // dispatch cITimestampedValue by data type

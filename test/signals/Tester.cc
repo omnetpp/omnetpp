@@ -66,8 +66,8 @@ void Tester::activity()
     for (int i=0; i<numSignalIDs; i++)
         ASSERT(getSignalName(signalIDs[i]) != NULL); // make sure our test signals are all registered
 
-    simulation.getSystemModule()->subscribe(PRE_MODEL_CHANGE, this);
-    simulation.getSystemModule()->subscribe(POST_MODEL_CHANGE, this);
+    getSimulation()->getSystemModule()->subscribe(PRE_MODEL_CHANGE, this);
+    getSimulation()->getSystemModule()->subscribe(POST_MODEL_CHANGE, this);
 
     cModuleType *type = cModuleType::find("TestNode");
 
@@ -77,7 +77,7 @@ void Tester::activity()
         {
             // create a node
             int k = intuniform(0, nodes.size());
-            cModule *parent = k==(int)nodes.size() ? simulation.getSystemModule() : nodes[k];
+            cModule *parent = k==(int)nodes.size() ? getSimulation()->getSystemModule() : nodes[k];
             ASSERT(parent!=NULL);
             std::string name = stringf("node%d",i);
             EV << "CREATING NODE " << parent->getFullPath() << "." << name << "\n";
@@ -168,7 +168,7 @@ void Tester::receiveSignal(cComponent *source, simsignal_t signalID, cObject *ob
 
     EV << "Got " << obj->getClassName() << " " << obj->info() << " from " << source->getFullPath() << "\n";
 
-    simulation.getSystemModule()->checkSignalConsistency();
+    getSimulation()->getSystemModule()->checkSignalConsistency();
 
     if (dynamic_cast<cPostModuleDeleteNotification*>(obj)) {
         EV << "  - LISTENER: NODE DELETED\n";

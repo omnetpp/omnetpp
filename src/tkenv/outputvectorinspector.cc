@@ -143,7 +143,7 @@ void OutputVectorInspector::refresh()
    int canvasHeight = atoi( Tcl_GetStringResult(interp) );
    if (!canvasHeight) canvasHeight=1;
 
-   simtime_t tbase = simulation.getSimTime();
+   simtime_t tbase = getSimulation()->getSimTime();
    // simtime_t tbase = circbuf.entry[circbuf.headPos()].t;
 
    if (autoscale)
@@ -212,7 +212,7 @@ void OutputVectorInspector::refresh()
 
        if (i==circbuf.items())
        {
-           next_x = X(simulation.getSimTime());
+           next_x = X(getSimulation()->getSimTime());
        }
        else
        {

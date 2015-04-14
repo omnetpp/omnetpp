@@ -100,7 +100,7 @@ class SIM_API cTopology : public cOwnedObject
         /**
          * Returns the pointer to the network module to which this node corresponds.
          */
-        cModule *getModule() const  {return simulation.getModule(moduleId);}
+        cModule *getModule() const  {return getSimulation()->getModule(moduleId);}
 
         /**
          * Returns the weight of this node. Weight is used with the

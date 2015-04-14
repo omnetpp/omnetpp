@@ -30,7 +30,8 @@ NAMESPACE_BEGIN
 
 // helper: return the "current" RNG.
 inline cRNG *__contextModuleRNG(int k) {
-    return simulation.getContextModule() ? simulation.getContextModule()->getRNG(k) : getEnvir()->getRNG(k);
+    cComponent *context = getSimulation()->getContext();
+    return context ? context->getRNG(k) : getEnvir()->getRNG(k);
 }
 
 /**

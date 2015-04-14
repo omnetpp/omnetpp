@@ -310,7 +310,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     // set system module (must be done before takeAllObjectsFrom(tmplist) because
     // if parentmod==NULL, mod itself is on tmplist)
     if (!parentmod)
-         simulation.setSystemModule(mod);
+         getSimulation()->setSystemModule(mod);
 
     // put the object members of the new module to their place
     mod->takeAllObjectsFrom(tmplist);
@@ -319,7 +319,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     cOwnedObject::setDefaultOwner(oldlist);
 
     // register with cSimulation
-    simulation.registerComponent(mod);
+    getSimulation()->registerComponent(mod);
 
     // set up RNG mapping
     getEnvir()->getRNGMappingFor(mod);
@@ -378,7 +378,7 @@ cModule *cModuleType::createScheduleInit(const char *modname, cModule *parentmod
     cModule *mod = create(modname, parentmod);
     mod->finalizeParameters();
     mod->buildInside();
-    mod->scheduleStart(simulation.getSimTime());
+    mod->scheduleStart(getSimulation()->getSimTime());
     mod->callInitialize();
     return mod;
 }
@@ -458,7 +458,7 @@ cChannel *cChannelType::create(const char *name)
     cOwnedObject::setDefaultOwner(oldlist);
 
     // register with cSimulation
-    simulation.registerComponent(channel);
+    getSimulation()->registerComponent(channel);
 
     // set up RNG mapping
     getEnvir()->getRNGMappingFor(channel);

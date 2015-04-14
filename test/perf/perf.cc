@@ -163,7 +163,7 @@ void ScheduledEvents_1::handleMessage(cMessage *msg)
 void ScheduledEvents_1::finish()
 {
     tmr.stop();
-    double evPerSec = simulation.getEventNumber() / tmr.get();
+    double evPerSec = getSimulation()->getEventNumber() / tmr.get();
     EV << evPerSec << " event/sec\n";
 }
 
@@ -207,6 +207,6 @@ void ScheduleAndCancel_1::handleMessage(cMessage *msg)
 void ScheduleAndCancel_1::finish()
 {
     tmr.stop();
-    double evPerSec = simulation.getEventNumber() / tmr.get();
+    double evPerSec = getSimulation()->getEventNumber() / tmr.get();
     EV << evPerSec << " event/sec\n";
 }

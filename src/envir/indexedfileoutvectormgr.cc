@@ -197,7 +197,7 @@ bool cIndexedFileOutputVectorManager::record(void *vectorhandle, simtime_t t, do
             initVector(vp);
 
         sBlock &currentBlock = vp->currentBlock;
-        eventnumber_t eventNumber = simulation.getEventNumber();
+        eventnumber_t eventNumber = getSimulation()->getEventNumber();
         if (currentBlock.count == 0)
         {
             currentBlock.startTime = t;

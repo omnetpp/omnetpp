@@ -284,7 +284,7 @@ class TKENV_API Tkenv : public EnvirBase
 
       void findDirectPath(cModule *frommodule, cModule *tomodule, PathVec& pathvec);
 
-      std::string getLocalPackage()      {return simulation.getNedPackageForFolder(opt->inifileNetworkDir.c_str());}
+      std::string getLocalPackage()      {return getSimulation()->getNedPackageForFolder(opt->inifileNetworkDir.c_str());}
       const char *getIniFileName()       {return getConfigEx()->getFileName();}
       const char *getOutVectorFileName() {return outvectormgr->getFileName();}
       const char *getOutScalarFileName() {return outscalarmgr->getFileName();}

@@ -67,7 +67,7 @@ Define_Module(Tester);
 void Tester::activity()
 {
     cModuleType *type = cModuleType::find("TwoNodes");
-    cModule *root = simulation.getSystemModule();
+    cModule *root = getSimulation()->getSystemModule();
     root->subscribe(PRE_MODEL_CHANGE, this);
     root->subscribe(POST_MODEL_CHANGE, this);
 

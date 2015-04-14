@@ -54,7 +54,7 @@ cMessage::cMessage(const cMessage& msg) : cEvent(msg)
     EVCB.messageCloned(nonConstMsg, this);
 
     // after envir notification
-    nonConstMsg->prev_event_num = prev_event_num = simulation.getEventNumber();
+    nonConstMsg->prev_event_num = prev_event_num = getSimulation()->getEventNumber();
 }
 
 cMessage::cMessage(const char *name, short k) : cEvent(name)
@@ -68,7 +68,7 @@ cMessage::cMessage(const char *name, short k) : cEvent(name)
 
     frommod = fromgate = -1;
     tomod = togate = -1;
-    created = simulation.getSimTime();
+    created = getSimulation()->getSimTime();
     sent = tstamp = 0;
 
     msgtreeid = msgid = next_id++;
@@ -79,7 +79,7 @@ cMessage::cMessage(const char *name, short k) : cEvent(name)
     EVCB.messageCreated(this);
 
     // after envir notification
-    prev_event_num = simulation.getEventNumber();
+    prev_event_num = getSimulation()->getEventNumber();
 }
 
 cMessage::~cMessage()
@@ -109,32 +109,32 @@ std::string cMessage::info() const
     const char *deletedstr = "<deleted module>";
 
     simtime_t t = getArrivalTime();
-    if (t > simulation.getSimTime())
+    if (t > getSimulation()->getSimTime())
     {
         // if it arrived in the past, dt is usually unimportant, don't print it
-        out << "at T=" << t << ", in dt=" << (t - simulation.getSimTime()) << "; ";
+        out << "at T=" << t << ", in dt=" << (t - getSimulation()->getSimTime()) << "; ";
     }
 
 #define MODNAME(modp) ((modp) ? (modp)->getFullPath().c_str() : deletedstr)
     if (getKind()==MK_STARTER)
     {
-        cModule *tomodp = simulation.getModule(tomod);
+        cModule *tomodp = getSimulation()->getModule(tomod);
         out << "starter for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
     }
     else if (getKind()==MK_TIMEOUT)
     {
-        cModule *tomodp = simulation.getModule(tomod);
+        cModule *tomodp = getSimulation()->getModule(tomod);
         out << "timeoutmsg for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
     }
     else if (frommod==tomod)
     {
-        cModule *tomodp = simulation.getModule(tomod);
+        cModule *tomodp = getSimulation()->getModule(tomod);
         out << "selfmsg for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
     }
     else
     {
-        cModule *frommodp = simulation.getModule(frommod);
-        cModule *tomodp = simulation.getModule(tomod);
+        cModule *frommodp = getSimulation()->getModule(frommod);
+        cModule *tomodp = getSimulation()->getModule(tomod);
         out << "src=" << MODNAME(frommodp) << " (id=" << frommod << ") ";
         out << " dest=" << MODNAME(tomodp) << " (id=" << tomod << ") ";
     }
@@ -313,14 +313,14 @@ int cMessage::findPar(const char *s) const
 cGate *cMessage::getSenderGate() const
 {
     if (frommod<0 || fromgate<0)  return NULL;
-    cModule *mod = simulation.getModule(frommod);
+    cModule *mod = getSimulation()->getModule(frommod);
     return !mod ? NULL : mod->gate(fromgate);
 }
 
 cGate *cMessage::getArrivalGate() const
 {
     if (tomod<0 || togate<0)  return NULL;
-    cModule *mod = simulation.getModule(tomod);
+    cModule *mod = getSimulation()->getModule(tomod);
     return !mod ? NULL : mod->gate(togate);
 }
 
@@ -356,7 +356,7 @@ void cMessage::setArrival(cModule *module, int gateId, simtime_t_cref t)
 bool cMessage::isStale()
 {
     // check that destination module still exists and is alive
-    cSimpleModule *modp = dynamic_cast<cSimpleModule *>(simulation.getModule(tomod));
+    cSimpleModule *modp = dynamic_cast<cSimpleModule *>(getSimulation()->getModule(tomod));
     return !modp || modp->isTerminated();
 }
 

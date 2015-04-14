@@ -41,7 +41,7 @@ NAMESPACE_BEGIN
 #ifdef NDEBUG
 #define DEBUG_TRAP_IF_REQUESTED   /*no-op*/
 #else
-#define DEBUG_TRAP_IF_REQUESTED   {if (simulation.trap_on_next_event) {simulation.trap_on_next_event=false; DEBUG_TRAP;}}
+#define DEBUG_TRAP_IF_REQUESTED   {if (getSimulation()->trap_on_next_event) {getSimulation()->trap_on_next_event=false; DEBUG_TRAP;}}
 #endif
 
 bool cSimpleModule::stack_cleanup_requested;
@@ -51,6 +51,7 @@ cSimpleModule *cSimpleModule::after_cleanup_transfer_to;
 void cSimpleModule::activate(void *p)
 {
     cSimpleModule *mod = (cSimpleModule *)p;
+    cSimulation *simulation = cSimulation::getActiveSimulation();
 
     if (stack_cleanup_requested)
     {
@@ -58,23 +59,23 @@ void cSimpleModule::activate(void *p)
         mod->setFlag(FL_ISTERMINATED, true);
         mod->setFlag(FL_STACKALREADYUNWOUND, true);
         if (after_cleanup_transfer_to)
-            simulation.transferTo(after_cleanup_transfer_to);
+            simulation->transferTo(after_cleanup_transfer_to);
         else
-            simulation.transferToMain();
+            simulation->transferToMain();
         fprintf(stderr, "INTERNAL ERROR: switch to the fiber of a module already terminated");
         abort();
     }
 
     // The starter message should be the same as the timeoutmsg member of
     // cSimpleModule. If not, then something is wrong...
-    cMessage *starter = simulation.msg_for_activity;
+    cMessage *starter = simulation->msg_for_activity;
     if (starter!=mod->timeoutmsg)
     {
         // hand exception to cSimulation::transferTo() and switch back
         mod->setFlag(FL_ISTERMINATED, true);
         mod->setFlag(FL_STACKALREADYUNWOUND, true);
-        simulation.exception = new cRuntimeError("scheduleStart() should have been called for dynamically created module `%s'", mod->getFullPath().c_str());
-        simulation.transferToMain();
+        simulation->exception = new cRuntimeError("scheduleStart() should have been called for dynamically created module `%s'", mod->getFullPath().c_str());
+        simulation->transferToMain();
         fprintf(stderr, "INTERNAL ERROR: switch to the fiber of a module already terminated");
         abort();
     }
@@ -141,7 +142,7 @@ void cSimpleModule::activate(void *p)
     {
         // Module function terminated normally, without exception. Just mark
         // the module as finished, and transfer to the main coroutine (fiber).
-        simulation.transferToMain();
+        simulation->transferToMain();
         fprintf(stderr, "INTERNAL ERROR: switch to the fiber of a module already terminated");
         abort();
     }
@@ -153,9 +154,9 @@ void cSimpleModule::activate(void *p)
         // or some other simple module) and nothing else to do.
         delete exception;
         if (after_cleanup_transfer_to)
-            simulation.transferTo(after_cleanup_transfer_to);
+            simulation->transferTo(after_cleanup_transfer_to);
         else
-            simulation.transferToMain();
+            simulation->transferToMain();
         fprintf(stderr, "INTERNAL ERROR: switch to the fiber of a module already terminated");
         abort();
     }
@@ -165,8 +166,8 @@ void cSimpleModule::activate(void *p)
         // cDeleteModuleException) occurred within the activity() function.
         // Pass this exception to the main coroutine so that it can be displayed as
         // an error dialog or the like.
-        simulation.exception = exception;
-        simulation.transferToMain();
+        simulation->exception = exception;
+        simulation->transferToMain();
         fprintf(stderr, "INTERNAL ERROR: switch to the fiber of a module already terminated");
         abort();
     }
@@ -221,7 +222,7 @@ cSimpleModule::cSimpleModule(unsigned stksize)
 
 cSimpleModule::~cSimpleModule()
 {
-    if (simulation.getContext()==this)
+    if (getSimulation()->getContext()==this)
         // NOTE: subclass destructors will not be called, but the simulation will stop anyway
         throw cRuntimeError(this, "cannot delete itself, only via deleteModule()");
 
@@ -232,9 +233,9 @@ cSimpleModule::~cSimpleModule()
         {
             //FIXME: check this is OK for brand new modules too (no transferTo() yet)
             stack_cleanup_requested = true;
-            after_cleanup_transfer_to = simulation.getActivityModule();
+            after_cleanup_transfer_to = getSimulation()->getActivityModule();
             ASSERT(!after_cleanup_transfer_to || after_cleanup_transfer_to->usesActivity());
-            simulation.transferTo(this);
+            getSimulation()->transferTo(this);
             stack_cleanup_requested = false;
         }
 
@@ -276,7 +277,7 @@ void cSimpleModule::halt()
         throw cRuntimeError("halt() can only be invoked from activity()-based simple modules");
 
     setFlag(FL_ISTERMINATED, true);
-    simulation.transferToMain();
+    getSimulation()->transferToMain();
     assert(stack_cleanup_requested);
     throw cStackCleanupException();
 }
@@ -320,7 +321,7 @@ void cSimpleModule::scheduleStart(simtime_t t)
 
         // use timeoutmsg as the activation message; insert it into the FES
         EVCB.messageScheduled(timeoutmsg);
-        simulation.insertEvent(timeoutmsg);
+        getSimulation()->insertEvent(timeoutmsg);
     }
 
     // delegate to base class for doing the same for submodules
@@ -337,7 +338,7 @@ void cSimpleModule::deleteModule()
     // if deleteModule() is called (i.e. we are deleting ourselves)
     // the exception will be handled in the executeEvent loop and the module
     // will be deleted from the globalContext
-    if (simulation.getContextModule()==this)
+    if (getSimulation()->getContextModule()==this)
         throw cDeleteModuleException();
 
     // else fall back to the base class implementation
@@ -376,24 +377,24 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
         throw cRuntimeError("send()/sendDelayed(): message pointer is NULL");
     if (msg->getOwner()!=this)
     {
-        if (this!=simulation.getContextModule() && simulation.getContextModule()!=NULL)
+        if (this!=getSimulation()->getContextModule() && getSimulation()->getContextModule()!=NULL)
             throw cRuntimeError("send()/sendDelayed() of module (%s)%s called in the context of "
                                 "module (%s)%s: method called from the latter module "
                                 "lacks Enter_Method() or Enter_Method_Silent()? "
                                 "Also, if message to be sent is passed from that module, "
                                 "you'll need to call take(msg) after Enter_Method() as well",
                                 getClassName(), getFullPath().c_str(),
-                                simulation.getContextModule()->getClassName(),
-                                simulation.getContextModule()->getFullPath().c_str());
-        else if (msg->getOwner()==&simulation.msgQueue && msg->isSelfMessage() && msg->getArrivalModuleId()==getId())
+                                getSimulation()->getContextModule()->getClassName(),
+                                getSimulation()->getContextModule()->getFullPath().c_str());
+        else if (msg->getOwner()==&getSimulation()->msgQueue && msg->isSelfMessage() && msg->getArrivalModuleId()==getId())
             throw cRuntimeError("send()/sendDelayed(): cannot send message (%s)%s, it is "
                                 "currently scheduled as a self-message for this module",
                                 msg->getClassName(), msg->getName());
-        else if (msg->getOwner()==&simulation.msgQueue && msg->isSelfMessage())
+        else if (msg->getOwner()==&getSimulation()->msgQueue && msg->isSelfMessage())
             throw cRuntimeError("send()/sendDelayed(): cannot send message (%s)%s, it is "
                                 "currently scheduled as a self-message for ANOTHER module",
                                 msg->getClassName(), msg->getName());
-        else if (msg->getOwner()==&simulation.msgQueue)
+        else if (msg->getOwner()==&getSimulation()->msgQueue)
             throw cRuntimeError("send()/sendDelayed(): cannot send message (%s)%s, it is "
                                 "currently in scheduled-events, being underway between two modules",
                                 msg->getClassName(), msg->getName());
@@ -477,24 +478,24 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t dura
     if (msg->getOwner()!=this)
     {
         // try to give a meaningful error message
-        if (this!=simulation.getContextModule() && simulation.getContextModule()!=NULL)
+        if (this!=getSimulation()->getContextModule() && getSimulation()->getContextModule()!=NULL)
             throw cRuntimeError("sendDirect() of module (%s)%s called in the context of "
                                 "module (%s)%s: method called from the latter module "
                                 "lacks Enter_Method() or Enter_Method_Silent()? "
                                 "Also, if message to be sent is passed from that module, "
                                 "you'll need to call take(msg) after Enter_Method() as well",
                                 getClassName(), getFullPath().c_str(),
-                                simulation.getContextModule()->getClassName(),
-                                simulation.getContextModule()->getFullPath().c_str());
-        else if (msg->getOwner()==&simulation.msgQueue && msg->isSelfMessage() && msg->getArrivalModuleId()==getId())
+                                getSimulation()->getContextModule()->getClassName(),
+                                getSimulation()->getContextModule()->getFullPath().c_str());
+        else if (msg->getOwner()==&getSimulation()->msgQueue && msg->isSelfMessage() && msg->getArrivalModuleId()==getId())
             throw cRuntimeError("sendDirect(): cannot send message (%s)%s, it is "
                                 "currently scheduled as a self-message for this module",
                                 msg->getClassName(), msg->getName());
-        else if (msg->getOwner()==&simulation.msgQueue && msg->isSelfMessage())
+        else if (msg->getOwner()==&getSimulation()->msgQueue && msg->isSelfMessage())
             throw cRuntimeError("sendDirect(): cannot send message (%s)%s, it is "
                                 "currently scheduled as a self-message for ANOTHER module",
                                 msg->getClassName(), msg->getName());
-        else if (msg->getOwner()==&simulation.msgQueue)
+        else if (msg->getOwner()==&getSimulation()->msgQueue)
             throw cRuntimeError("sendDirect(): cannot send message (%s)%s, it is "
                                 "currently in scheduled-events, being underway between two modules",
                                 msg->getClassName(), msg->getName());
@@ -536,23 +537,23 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
         throw cRuntimeError(E_BACKSCHED, msg->getClassName(), msg->getName(), SIMTIME_DBL(t));
     if (msg->getOwner()!=this)
     {
-        if (this!=simulation.getContextModule() && simulation.getContextModule()!=NULL)
+        if (this!=getSimulation()->getContextModule() && getSimulation()->getContextModule()!=NULL)
             throw cRuntimeError("scheduleAt() of module (%s)%s called in the context of "
                                 "module (%s)%s: method called from the latter module "
                                 "lacks Enter_Method() or Enter_Method_Silent()?",
                                 getClassName(), getFullPath().c_str(),
-                                simulation.getContextModule()->getClassName(),
-                                simulation.getContextModule()->getFullPath().c_str());
-        else if (msg->getOwner()==&simulation.msgQueue && msg->isSelfMessage() && msg->getArrivalModuleId()==getId())
+                                getSimulation()->getContextModule()->getClassName(),
+                                getSimulation()->getContextModule()->getFullPath().c_str());
+        else if (msg->getOwner()==&getSimulation()->msgQueue && msg->isSelfMessage() && msg->getArrivalModuleId()==getId())
             throw cRuntimeError("scheduleAt(): message (%s)%s is currently scheduled, "
                                 "use cancelEvent() before rescheduling",
                                 msg->getClassName(), msg->getName());
-        else if (msg->getOwner()==&simulation.msgQueue && msg->isSelfMessage())
+        else if (msg->getOwner()==&getSimulation()->msgQueue && msg->isSelfMessage())
             throw cRuntimeError("scheduleAt(): cannot schedule message (%s)%s, it is "
                                 "currently scheduled as self-message for ANOTHER module",
                                 msg->getClassName(), msg->getName());
 
-         else if (msg->getOwner()==&simulation.msgQueue)
+         else if (msg->getOwner()==&getSimulation()->msgQueue)
             throw cRuntimeError("scheduleAt(): cannot schedule message (%s)%s, it is "
                                 "currently in scheduled-events, being underway between two modules",
                                 msg->getClassName(), msg->getName());
@@ -568,7 +569,7 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
     msg->setArrival(getId(), -1, t);
     EVCB.messageSent_OBSOLETE( msg ); //XXX obsolete but needed for Tkenv
     EVCB.messageScheduled(msg);
-    simulation.insertEvent(msg);
+    getSimulation()->insertEvent(msg);
     return 0;
 }
 
@@ -586,9 +587,9 @@ cMessage *cSimpleModule::cancelEvent(cMessage *msg)
         if (msg->getArrivalModuleId() != getId())
             throw cRuntimeError("cancelEvent(): cannot cancel another module's self-message");
 
-        simulation.msgQueue.remove(msg);
+        getSimulation()->msgQueue.remove(msg);
         EVCB.messageCancelled(msg);
-        msg->setPreviousEventNumber(simulation.getEventNumber());
+        msg->setPreviousEventNumber(getSimulation()->getEventNumber());
     }
 
     return msg;
@@ -618,7 +619,7 @@ void cSimpleModule::arrived(cMessage *msg, cGate *ongate, simtime_t t)
     else {
         msg->setArrivalTime(t);
     }
-    simulation.insertEvent(msg);
+    getSimulation()->insertEvent(msg);
 }
 
 void cSimpleModule::wait(simtime_t t)
@@ -630,13 +631,13 @@ void cSimpleModule::wait(simtime_t t)
 
     timeoutmsg->setArrival(getId(), -1, simTime()+t);
     EVCB.messageScheduled(timeoutmsg);
-    simulation.insertEvent(timeoutmsg);
+    getSimulation()->insertEvent(timeoutmsg);
 
-    simulation.transferToMain();
+    getSimulation()->transferToMain();
     if (stack_cleanup_requested)
         throw cStackCleanupException();
 
-    cMessage *newmsg = simulation.msg_for_activity;
+    cMessage *newmsg = getSimulation()->msg_for_activity;
 
     if (newmsg!=timeoutmsg)
         throw cRuntimeError("message arrived during wait() call ((%s)%s); if this "
@@ -657,15 +658,15 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
 
     timeoutmsg->setArrival(getId(), -1, simTime()+t);
     EVCB.messageScheduled(timeoutmsg);
-    simulation.insertEvent(timeoutmsg);
+    getSimulation()->insertEvent(timeoutmsg);
 
     for(;;)
     {
-        simulation.transferToMain();
+        getSimulation()->transferToMain();
         if (stack_cleanup_requested)
             throw cStackCleanupException();
 
-        cMessage *newmsg = simulation.msg_for_activity;
+        cMessage *newmsg = getSimulation()->msg_for_activity;
 
         if (newmsg==timeoutmsg)
             break;
@@ -683,11 +684,11 @@ cMessage *cSimpleModule::receive()
     if (!usesActivity())
         throw cRuntimeError(E_NORECV);
 
-    simulation.transferToMain();
+    getSimulation()->transferToMain();
     if (stack_cleanup_requested)
         throw cStackCleanupException();
 
-    cMessage *newmsg = simulation.msg_for_activity;
+    cMessage *newmsg = getSimulation()->msg_for_activity;
     DEBUG_TRAP_IF_REQUESTED; // MODULE IS ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP" IN YOUR DEBUGGER
     return newmsg;
 }
@@ -701,13 +702,13 @@ cMessage *cSimpleModule::receive(simtime_t t)
 
     timeoutmsg->setArrival(getId(), -1, simTime()+t);
     EVCB.messageScheduled(timeoutmsg);
-    simulation.insertEvent(timeoutmsg);
+    getSimulation()->insertEvent(timeoutmsg);
 
-    simulation.transferToMain();
+    getSimulation()->transferToMain();
     if (stack_cleanup_requested)
         throw cStackCleanupException();
 
-    cMessage *newmsg = simulation.msg_for_activity;
+    cMessage *newmsg = getSimulation()->msg_for_activity;
 
     if (newmsg==timeoutmsg)  // timeout expired
     {
@@ -748,7 +749,7 @@ void cSimpleModule::endSimulation()
 
 bool cSimpleModule::snapshot(cObject *object, const char *label)
 {
-    return simulation.snapshot(object ? object : &simulation, label);
+    return getSimulation()->snapshot(object ? object : getSimulation(), label);
 }
 
 bool cSimpleModule::hasStackOverflow() const

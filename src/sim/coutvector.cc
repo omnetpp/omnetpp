@@ -52,7 +52,7 @@ cOutVector::cOutVector(const char *name) : cNoncopyableOwnedObject(name)
 
     // register early if possible (only required by Akaroa)
     if (name) {
-        handle = getEnvir()->registerOutputVector(simulation.getContext()->getFullPath().c_str(), name);
+        handle = getEnvir()->registerOutputVector(getSimulation()->getContext()->getFullPath().c_str(), name);
         ASSERT(handle!=NULL);
     }
 }
@@ -72,7 +72,7 @@ void cOutVector::setName(const char *nam)
 
     // register early (only needed for Akaroa...)
     if (nam) {
-        handle = getEnvir()->registerOutputVector(simulation.getContext()->getFullPath().c_str(), getName());
+        handle = getEnvir()->registerOutputVector(getSimulation()->getContext()->getFullPath().c_str(), getName());
         ASSERT(handle!=NULL);
     }
 }
@@ -179,7 +179,7 @@ void cOutVector::setMax(double maxValue)
 
 bool cOutVector::record(double value)
 {
-    return recordWithTimestamp(simulation.getSimTime(), value);
+    return recordWithTimestamp(getSimulation()->getSimTime(), value);
 }
 
 bool cOutVector::recordWithTimestamp(simtime_t t, double value)
@@ -199,12 +199,12 @@ bool cOutVector::recordWithTimestamp(simtime_t t, double value)
     if (!isEnabled())
         return false;
 
-    if (!getRecordDuringWarmupPeriod() && t < simulation.getWarmupPeriod())
+    if (!getRecordDuringWarmupPeriod() && t < getSimulation()->getWarmupPeriod())
         return false;
 
     // initialize if not yet done
     if (!handle)
-        handle = getEnvir()->registerOutputVector(simulation.getContext()->getFullPath().c_str(), getName());
+        handle = getEnvir()->registerOutputVector(getSimulation()->getContext()->getFullPath().c_str(), getName());
 
     // pass data to envir for storage
     bool stored = getEnvir()->recordInOutputVector(handle, t, value);

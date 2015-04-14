@@ -34,7 +34,7 @@ void check_and_cast_failure(T *p, P ret)
     if (o)
         throw cRuntimeError("check_and_cast(): cannot cast (%s*)%s to type '%s'",
                 o->getClassName(),
-                o->getOwner()==simulation.getContextModule() ? o->getFullName() : o->getFullPath().c_str(),
+                o->getOwner()==getSimulation()->getContextModule() ? o->getFullName() : o->getFullPath().c_str(),
                 opp_typename(typeid(P)));
     else
         throw cRuntimeError("check_and_cast(): cannot cast '%s*' to type '%s'",

@@ -29,7 +29,7 @@ void Dump::handleMessage(cMessage *msg)
 
     printClassNames = par("printClassNames").boolValue();
     printf("==============================\n");
-    dump(simulation.getSystemModule(), std::string());
+    dump(getSimulation()->getSystemModule(), std::string());
     printf("==============================\n");
 }
 

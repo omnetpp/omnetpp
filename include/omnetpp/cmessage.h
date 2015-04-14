@@ -262,7 +262,7 @@ class SIM_API cMessage : public cEvent
     /**
      * Sets the message's time stamp to the current simulation time.
      */
-    void setTimestamp() {tstamp=simulation.getSimTime();}
+    void setTimestamp() {tstamp=getSimulation()->getSimTime();}
 
     /**
      * Directly sets the message's time stamp.
@@ -493,7 +493,7 @@ class SIM_API cMessage : public cEvent
      * has not been sent/scheduled yet, or if the sender module got deleted
      * in the meantime.
      */
-    cModule *getSenderModule() const {return simulation.getModule(frommod);}
+    cModule *getSenderModule() const {return getSimulation()->getModule(frommod);}
 
     /**
      * Returns pointers to the gate from which the message was sent and
@@ -507,7 +507,7 @@ class SIM_API cMessage : public cEvent
      * has not been sent/scheduled yet, or if the module was deleted
      * in the meantime.
      */
-    cModule *getArrivalModule() const {return simulation.getModule(tomod);}
+    cModule *getArrivalModule() const {return getSimulation()->getModule(tomod);}
 
     /**
      * Returns pointers to the gate from which the message was sent and

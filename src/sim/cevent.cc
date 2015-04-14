@@ -55,13 +55,13 @@ cEvent::~cEvent()
 
 std::string cEvent::info() const
 {
-    if (delivd == simulation.getSimTime())
+    if (delivd == getSimulation()->getSimTime())
         return "(now)";
-    if (delivd < simulation.getSimTime())
+    if (delivd < getSimulation()->getSimTime())
         return "(in the past)";
 
     std::stringstream out;
-    out << "at T=" << delivd << ", in dt=" << (delivd - simulation.getSimTime());
+    out << "at T=" << delivd << ", in dt=" << (delivd - getSimulation()->getSimTime());
     if (getTargetObject())
         out << ", for " << getTargetObject()->getFullPath();
     return out.str();

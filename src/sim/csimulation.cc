@@ -759,7 +759,7 @@ void cSimulation::setHasher(cHasher *hasher)
 void cSimulation::insertEvent(cEvent *event)
 {
     event->setPreviousEventNumber(event_num);
-    simulation.msgQueue.insert(event);
+    getSimulation()->msgQueue.insert(event);
 }
 
 

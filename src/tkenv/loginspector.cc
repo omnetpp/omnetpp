@@ -400,7 +400,7 @@ bool LogInspector::isMatchingComponent(int componentId)
 
 bool LogInspector::isAncestorModule(int moduleId, int potentialAncestorModuleId)
 {
-    cModule *component = simulation.getModule(moduleId);  //TODO use cModule and getComponent() in 5.0
+    cModule *component = getSimulation()->getModule(moduleId);  //TODO use cModule and getComponent() in 5.0
     if (component) {
         // more efficient version for live modules
         while (component) {

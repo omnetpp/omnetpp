@@ -29,7 +29,7 @@ NAMESPACE_BEGIN
 class SIM_API WarmupPeriodFilter : public cResultFilter
 {
     private:
-        simtime_t_cref getEndWarmupPeriod() {return simulation.getWarmupPeriod();}
+        simtime_t_cref getEndWarmupPeriod() {return getSimulation()->getWarmupPeriod();}
     public:
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b);
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l);

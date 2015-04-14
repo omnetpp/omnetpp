@@ -23,7 +23,7 @@ void Controller::handleMessage(cMessage *msg)
 {
     // delete some modules
     double p = par("deleteProbability");
-    for (cModule::SubmoduleIterator it(simulation.getSystemModule()); !it.end(); /**/) {
+    for (cModule::SubmoduleIterator it(getSimulation()->getSystemModule()); !it.end(); /**/) {
         cModule *mod = it++;
         if (strncmp(mod->getName(), "node-", 5)==0 && dblrand() < p)
             mod->deleteModule();
@@ -35,7 +35,7 @@ void Controller::handleMessage(cMessage *msg)
     for (int i = 0; i < n; i++) {
         char name[20];
         sprintf(name, "node-%d", ++k);
-        type->createScheduleInit(name, simulation.getSystemModule());
+        type->createScheduleInit(name, getSimulation()->getSystemModule());
     }
     bubble("created a bunch of modules");
 

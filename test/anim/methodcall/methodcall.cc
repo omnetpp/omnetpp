@@ -52,7 +52,7 @@ void Mod::activity()
 void Mod::callPrintX(const char *modname)
 {
     EV << "Calling doWhatever() of module " << modname << endl;
-    Target *target = dynamic_cast<Target *>(simulation.getModuleByPath(modname));
+    Target *target = dynamic_cast<Target *>(getSimulation()->getModuleByPath(modname));
     if (!target) error("target module not found");
 
     wait(0);

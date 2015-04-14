@@ -26,7 +26,7 @@ class Test : public cSimpleModule
     std::vector<cMessage*> shadow;  // t==simTime() events
     std::vector<cMessage*> future;  // future events
   public:
-    Test() : fes(simulation.getMessageQueue()) {}
+    Test() : fes(getSimulation()->getMessageQueue()) {}
     virtual void initialize();
     void verifyFES();
     void insertMessages(int n);

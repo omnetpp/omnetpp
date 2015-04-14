@@ -616,7 +616,7 @@ void ModuleInspector::redrawMessages()
        return;
 
    // loop through all messages in the event queue and display them
-   for (cMessageHeap::Iterator it(simulation.msgQueue); !it.end(); it++)
+   for (cMessageHeap::Iterator it(getSimulation()->msgQueue); !it.end(); it++)
    {
        cEvent *event = it();
        if (!event->isMessage())
@@ -667,7 +667,7 @@ void ModuleInspector::redrawNextEventMarker()
        return;
 
    // if any parent of the module containing the next event is on this canvas, draw marker
-   cModule *nextMod = simulation.guessNextModule();
+   cModule *nextMod = getSimulation()->guessNextModule();
    cModule *nextModParent = nextMod;
    while (nextModParent && nextModParent->getParentModule()!=mod)
        nextModParent = nextModParent->getParentModule();

@@ -71,20 +71,20 @@ void simulate(const char *networkName, simtime_t limit)
         printf("No such network: %s\n", networkName);
         return;
     }
-    simulation.setupNetwork(networkType); //XXX may throw exception
-    simulation.setSimulationTimeLimit(limit);
+    getSimulation()->setupNetwork(networkType); //XXX may throw exception
+    getSimulation()->setSimulationTimeLimit(limit);
 
     // prepare for running it
-    simulation.callInitialize();
+    getSimulation()->callInitialize();
 
     // run the simulation
     bool ok = true;
     try {
         while (true) {
-            cEvent *event = simulation.takeNextEvent();
+            cEvent *event = getSimulation()->takeNextEvent();
             if (!event)
                 break;  //XXX
-            simulation.executeEvent(event);
+            getSimulation()->executeEvent(event);
         }
     }
     catch (cTerminationException& e) {
@@ -96,10 +96,10 @@ void simulate(const char *networkName, simtime_t limit)
     }
 
     if (ok)
-        simulation.callFinish();  //XXX may throw exception
+        getSimulation()->callFinish();  //XXX may throw exception
 
     // finish the simulation and clean up the network
-    simulation.deleteNetwork();
+    getSimulation()->deleteNetwork();
 }
 
 int main(int argc, char *argv[])

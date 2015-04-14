@@ -145,7 +145,7 @@ cLogProxy::~cLogProxy()
 
 bool cLogProxy::isEnabled(const void *sourceObject, const char *category, LogLevel loglevel)
 {
-    const cModule *contextModule = simulation.getContextModule();
+    const cModule *contextModule = getSimulation()->getContextModule();
     return !contextModule || isComponentEnabled(contextModule, category, loglevel);
 }
 

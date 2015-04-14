@@ -25,7 +25,7 @@ void Dump::handleMessage(cMessage *msg)
     delete msg;
 
     printf("==============================\n");
-    dump(simulation.getSystemModule());
+    dump(getSimulation()->getSystemModule());
     printf("==============================\n");
 }
 
