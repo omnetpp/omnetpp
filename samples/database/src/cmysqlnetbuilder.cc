@@ -109,7 +109,7 @@ void cMySQLNetBuilder::readAndBuild(const char *networkName)
     if (*cfgobj == '\0')
         cfgobj = "mysql";
     MYSQL *mysql = mysql_init(NULL);
-    opp_mysql_connectToDB(mysql, ev.getConfig(), cfgobj);
+    opp_mysql_connectToDB(mysql, getEnvir()->getConfig(), cfgobj);
     EV << " OK\n";
 
     // do the job, and close the database

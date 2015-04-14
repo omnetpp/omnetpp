@@ -88,7 +88,7 @@ cDefaultList::~cDefaultList()
             if (dynamic_cast<cWatchBase *>(vect[i]))
                 delete vect[i--]; // "i--" used because delete will move last item to position i
             else
-                ev.undisposedObject(vect[i]);
+                getEnvir()->undisposedObject(vect[i]);
         }
 
         // we can free up the pointer array itself though

@@ -8,7 +8,7 @@ CDATA sections are merged with normal text nodes.
 </foo>
 
 %activity:
-cXMLElement *node = ev.getXMLDocument("test.xml");
+cXMLElement *node = getEnvir()->getXMLDocument("test.xml");
 node->debugDump();
 
 %contains: stdout

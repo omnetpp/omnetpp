@@ -29,8 +29,8 @@ NAMESPACE_BEGIN
 
 void getProcIdFromCommandLineArgs(int& myProcId, int& numPartitions, const char *caller)
 {
-    int argc = ev.getArgCount();
-    char **argv = ev.getArgVector();
+    int argc = getEnvir()->getArgCount();
+    char **argv = getEnvir()->getArgVector();
     int i;
     for (i=1; i<argc; i++)
         if (argv[i][0]=='-' && argv[i][1]=='p')

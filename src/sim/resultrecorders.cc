@@ -38,7 +38,7 @@ Register_ResultRecorder("histogram", HistogramRecorder);
 VectorRecorder::~VectorRecorder()
 {
     if (handle != NULL)
-        ev.deregisterOutputVector(handle);
+        getEnvir()->deregisterOutputVector(handle);
 }
 
 void VectorRecorder::subscribedTo(cResultFilter *prev)
@@ -48,10 +48,10 @@ void VectorRecorder::subscribedTo(cResultFilter *prev)
     // we can register the vector here, because base class ensures we are subscribed only at once place
     opp_string_map attributes = getStatisticAttributes();
 
-    handle = ev.registerOutputVector(getComponent()->getFullPath().c_str(), getResultName().c_str());
+    handle = getEnvir()->registerOutputVector(getComponent()->getFullPath().c_str(), getResultName().c_str());
     ASSERT(handle != NULL);
     for (opp_string_map::iterator it = attributes.begin(); it != attributes.end(); ++it)
-        ev.setVectorAttribute(handle, it->first.c_str(), it->second.c_str());
+        getEnvir()->setVectorAttribute(handle, it->first.c_str(), it->second.c_str());
 }
 
 void VectorRecorder::collect(simtime_t_cref t, double value)
@@ -64,7 +64,7 @@ void VectorRecorder::collect(simtime_t_cref t, double value)
     }
 
     lastTime = t;
-    ev.recordInOutputVector(handle, t, value);
+    getEnvir()->recordInOutputVector(handle, t, value);
 }
 
 //---
@@ -72,7 +72,7 @@ void VectorRecorder::collect(simtime_t_cref t, double value)
 void CountRecorder::finish(cResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
-    ev.recordScalar(getComponent(), getResultName().c_str(), count, &attributes);
+    getEnvir()->recordScalar(getComponent(), getResultName().c_str(), count, &attributes);
 }
 
 //---
@@ -80,7 +80,7 @@ void CountRecorder::finish(cResultFilter *prev)
 void LastValueRecorder::finish(cResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
-    ev.recordScalar(getComponent(), getResultName().c_str(), lastValue, &attributes);
+    getEnvir()->recordScalar(getComponent(), getResultName().c_str(), lastValue, &attributes);
 }
 
 //---
@@ -88,7 +88,7 @@ void LastValueRecorder::finish(cResultFilter *prev)
 void SumRecorder::finish(cResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
-    ev.recordScalar(getComponent(), getResultName().c_str(), sum, &attributes);
+    getEnvir()->recordScalar(getComponent(), getResultName().c_str(), sum, &attributes);
 }
 
 //---
@@ -96,7 +96,7 @@ void SumRecorder::finish(cResultFilter *prev)
 void MeanRecorder::finish(cResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
-    ev.recordScalar(getComponent(), getResultName().c_str(), sum/count, &attributes); // note: this is NaN if count==0
+    getEnvir()->recordScalar(getComponent(), getResultName().c_str(), sum/count, &attributes); // note: this is NaN if count==0
 }
 
 //---
@@ -104,7 +104,7 @@ void MeanRecorder::finish(cResultFilter *prev)
 void MinRecorder::finish(cResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
-    ev.recordScalar(getComponent(), getResultName().c_str(), isPositiveInfinity(min) ? NaN : min, &attributes);
+    getEnvir()->recordScalar(getComponent(), getResultName().c_str(), isPositiveInfinity(min) ? NaN : min, &attributes);
 }
 
 //---
@@ -112,7 +112,7 @@ void MinRecorder::finish(cResultFilter *prev)
 void MaxRecorder::finish(cResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
-    ev.recordScalar(getComponent(), getResultName().c_str(), isNegativeInfinity(max) ? NaN : max, &attributes);
+    getEnvir()->recordScalar(getComponent(), getResultName().c_str(), isNegativeInfinity(max) ? NaN : max, &attributes);
 }
 
 //---
@@ -135,7 +135,7 @@ void TimeAverageRecorder::finish(cResultFilter *prev)
     double interval = SIMTIME_DBL(t - startTime);
 
     opp_string_map attributes = getStatisticAttributes();
-    ev.recordScalar(getComponent(), getResultName().c_str(), empty ? NaN : (weightedSum / interval), &attributes);
+    getEnvir()->recordScalar(getComponent(), getResultName().c_str(), empty ? NaN : (weightedSum / interval), &attributes);
 }
 
 //---
@@ -143,7 +143,7 @@ void TimeAverageRecorder::finish(cResultFilter *prev)
 void StatisticsRecorder::finish(cResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
-    ev.recordStatistic(getComponent(), getResultName().c_str(), statistic, &attributes);
+    getEnvir()->recordStatistic(getComponent(), getResultName().c_str(), statistic, &attributes);
 }
 
 StatsRecorder::StatsRecorder() : StatisticsRecorder(new cStdDev())
@@ -191,7 +191,7 @@ Expression::Functor *ExpressionRecorder::makeTimeVariable()
 void ExpressionRecorder::finish(cResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
-    ev.recordScalar(getComponent(), getResultName().c_str(), expr.doubleValue(), &attributes);
+    getEnvir()->recordScalar(getComponent(), getResultName().c_str(), expr.doubleValue(), &attributes);
 }
 
 NAMESPACE_END

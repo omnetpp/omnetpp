@@ -4,7 +4,7 @@ Test inifile iteration variable parsing.
 %global:
 static void printValues(const char *configName, const char *iterationVariable)
 {
-    cConfigurationEx *config = ev.getConfigEx();
+    cConfigurationEx *config = getEnvir()->getConfigEx();
     int n = config->getNumRunsInConfig(configName);
     EV << iterationVariable << "\n";
     for (int i = 0; i < n; ++i)

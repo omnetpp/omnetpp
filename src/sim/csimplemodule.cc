@@ -188,11 +188,11 @@ cSimpleModule::cSimpleModule(const char *, cModule *, unsigned stksize)
     {
        // setup coroutine, allocate stack for it
        coroutine = new cCoroutine;
-       if (!coroutine->setup(cSimpleModule::activate, this, stksize+ev.getExtraStackForEnvir()))
+       if (!coroutine->setup(cSimpleModule::activate, this, stksize+getEnvir()->getExtraStackForEnvir()))
            throw cRuntimeError("Cannot create coroutine with %d+%d bytes of stack space for module `%s' -- "
                                "see Manual for hints on how to increase the number of coroutines that can be created, "
                                "or rewrite modules to use handleMessage() instead of activity()",
-                               stksize,ev.getExtraStackForEnvir(),getFullPath().c_str());
+                               stksize, getEnvir()->getExtraStackForEnvir(), getFullPath().c_str());
     }
 }
 
@@ -211,11 +211,11 @@ cSimpleModule::cSimpleModule(unsigned stksize)
     {
        // setup coroutine, allocate stack for it
        coroutine = new cCoroutine;
-       if (!coroutine->setup(cSimpleModule::activate, this, stksize+ev.getExtraStackForEnvir()))
+       if (!coroutine->setup(cSimpleModule::activate, this, stksize+getEnvir()->getExtraStackForEnvir()))
            throw cRuntimeError("Cannot create coroutine with %d+%d bytes of stack space for module `%s' -- "
                                "see Manual for hints on how to increase the number of coroutines that can be created, "
                                "or rewrite modules to use handleMessage() instead of activity()",
-                               stksize,ev.getExtraStackForEnvir(),getFullPath().c_str());
+                               stksize, getEnvir()->getExtraStackForEnvir(), getFullPath().c_str());
     }
 }
 

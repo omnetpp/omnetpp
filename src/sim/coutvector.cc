@@ -52,7 +52,7 @@ cOutVector::cOutVector(const char *name) : cNoncopyableOwnedObject(name)
 
     // register early if possible (only required by Akaroa)
     if (name) {
-        handle = ev.registerOutputVector(simulation.getContext()->getFullPath().c_str(), name);
+        handle = getEnvir()->registerOutputVector(simulation.getContext()->getFullPath().c_str(), name);
         ASSERT(handle!=NULL);
     }
 }
@@ -60,7 +60,7 @@ cOutVector::cOutVector(const char *name) : cNoncopyableOwnedObject(name)
 cOutVector::~cOutVector()
 {
     if (handle)
-        ev.deregisterOutputVector(handle);
+        getEnvir()->deregisterOutputVector(handle);
 }
 
 void cOutVector::setName(const char *nam)
@@ -72,7 +72,7 @@ void cOutVector::setName(const char *nam)
 
     // register early (only needed for Akaroa...)
     if (nam) {
-        handle = ev.registerOutputVector(simulation.getContext()->getFullPath().c_str(), getName());
+        handle = getEnvir()->registerOutputVector(simulation.getContext()->getFullPath().c_str(), getName());
         ASSERT(handle!=NULL);
     }
 }
@@ -100,7 +100,7 @@ void cOutVector::setUnit(const char *unit)
 {
     if (!handle)
         throw cRuntimeError(this,"setUnit(): set the object name first, using setName()");
-    ev.setVectorAttribute(handle, "unit", unit);
+    getEnvir()->setVectorAttribute(handle, "unit", unit);
 }
 
 void cOutVector::setEnum(const char *registeredEnumName)
@@ -115,8 +115,8 @@ void cOutVector::setEnum(cEnum *enumDecl)
 {
     if (!handle)
         throw cRuntimeError(this,"setEnum(): set the object name first, using setName()");
-    ev.setVectorAttribute(handle, "enumname", enumDecl->getName());
-    ev.setVectorAttribute(handle, "enum", enumDecl->str().c_str());
+    getEnvir()->setVectorAttribute(handle, "enumname", enumDecl->getName());
+    getEnvir()->setVectorAttribute(handle, "enum", enumDecl->str().c_str());
 }
 
 void cOutVector::setType(Type type)
@@ -134,7 +134,7 @@ void cOutVector::setType(Type type)
     }
     if (!typeString)
         throw cRuntimeError(this, "setType(): invalid type %d", type);
-    ev.setVectorAttribute(handle, "type", typeString);
+    getEnvir()->setVectorAttribute(handle, "type", typeString);
 }
 
 void cOutVector::setInterpolationMode(InterpolationMode mode)
@@ -153,7 +153,7 @@ void cOutVector::setInterpolationMode(InterpolationMode mode)
     }
     if (!modeString)
         throw cRuntimeError(this, "setInterpolationMode(): invalid interpolation mode %d", mode);
-    ev.setVectorAttribute(handle, "interpolationmode", modeString);
+    getEnvir()->setVectorAttribute(handle, "interpolationmode", modeString);
 }
 
 void cOutVector::setMin(double minValue)
@@ -163,7 +163,7 @@ void cOutVector::setMin(double minValue)
 
     char buf[32];
     sprintf(buf, "%g", minValue);
-    ev.setVectorAttribute(handle, "min", buf);
+    getEnvir()->setVectorAttribute(handle, "min", buf);
 }
 
 void cOutVector::setMax(double maxValue)
@@ -173,7 +173,7 @@ void cOutVector::setMax(double maxValue)
 
     char buf[32];
     sprintf(buf, "%g", maxValue);
-    ev.setVectorAttribute(handle, "max", buf);
+    getEnvir()->setVectorAttribute(handle, "max", buf);
 }
 
 
@@ -204,10 +204,10 @@ bool cOutVector::recordWithTimestamp(simtime_t t, double value)
 
     // initialize if not yet done
     if (!handle)
-        handle = ev.registerOutputVector(simulation.getContext()->getFullPath().c_str(), getName());
+        handle = getEnvir()->registerOutputVector(simulation.getContext()->getFullPath().c_str(), getName());
 
     // pass data to envir for storage
-    bool stored = ev.recordInOutputVector(handle, t, value);
+    bool stored = getEnvir()->recordInOutputVector(handle, t, value);
     if (stored)
         num_stored++;
     return stored;

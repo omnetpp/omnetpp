@@ -1393,7 +1393,7 @@ bool cModule::initializeModules(int stage)
     {
         // switch context for the duration of the call
         Enter_Method_Silent("initialize(%d)", stage);
-        ev.componentInitBegin(this, stage);
+        getEnvir()->componentInitBegin(this, stage);
         try {
             initialize(stage);
         } catch (cException&) {

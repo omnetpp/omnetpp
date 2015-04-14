@@ -31,8 +31,8 @@ class Node : public cSimpleModule {
         signal1 = registerSignal("foo");
         signal2 = registerSignal("bar");
         cProperty *statisticTemplate = getProperties()->get("statisticTemplate", "qlen");
-        ev.addResultRecorders(this, signal1, "queueLength1", statisticTemplate);
-        ev.addResultRecorders(this, signal2, "queueLength2", statisticTemplate);
+        getEnvir()->addResultRecorders(this, signal1, "queueLength1", statisticTemplate);
+        getEnvir()->addResultRecorders(this, signal2, "queueLength2", statisticTemplate);
 
         emit(signal1, 10);
         emit(signal1, 11);

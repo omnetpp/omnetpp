@@ -9,7 +9,7 @@ No DOCTYPE -- no complaint.
 </foo>
 
 %activity:
-cXMLElement *node = ev.getXMLDocument("test.xml");
+cXMLElement *node = getEnvir()->getXMLDocument("test.xml");
 node->debugDump();
 
 %contains-regex: stdout

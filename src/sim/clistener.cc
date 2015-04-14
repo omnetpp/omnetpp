@@ -65,13 +65,15 @@ cIListener::~cIListener()
         // cause other exceptions, and eventually crash
         if (subscribecount < 0)
         {
-            ev.printfmsg("cListener destructor: internal error: negative subscription "
-                         "count (%d) in listener at address %p", subscribecount, this);
+            getEnvir()->printfmsg(
+                "cListener destructor: internal error: negative subscription "
+                "count (%d) in listener at address %p", subscribecount, this);
             return;
         }
 
         // subscribecount > 0:
-        ev.printfmsg("cListener destructor: listener at address %p is still added to "
+        getEnvir()->printfmsg(
+                "cListener destructor: listener at address %p is still added to "
                 "%d listener list(s). This will likely result in a crash: "
                 "Listeners must be fully unsubscribed before deletion. "
                 "Trying to determine components where this listener is subscribed...",
@@ -85,7 +87,7 @@ cIListener::~cIListener()
             out << "- signal \"" << cComponent::getSignalName(list[i].signalID) << "\" (id=" << list[i].signalID << ") ";
             out << "at (" << list[i].component->getClassName() << ")" << list[i].component->getFullPath() << "\n";
         }
-        ev.printfmsg("Subscriptions for listener at address %p:\n%s", this, out.str().c_str());
+        getEnvir()->printfmsg("Subscriptions for listener at address %p:\n%s", this, out.str().c_str());
     }
 }
 

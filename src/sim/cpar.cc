@@ -332,7 +332,7 @@ void cPar::read()
 {
     // obtain value if parameter is not set yet
     if (!p->isSet())
-        ev.readParameter(this);
+        getEnvir()->readParameter(this);
 }
 
 void cPar::finalize()

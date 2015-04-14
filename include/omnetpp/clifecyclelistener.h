@@ -172,7 +172,7 @@ enum SimulationLifecycleEventType
  * listener when the program starts:
  *
  * <pre>
- * EXECUTE_ON_STARTUP(ev.addLifecycleListener(new MyListener()));
+ * EXECUTE_ON_STARTUP(getEnvir()->addLifecycleListener(new MyListener()));
  * </pre>
  *
  * Note that listeners will not be deleted automatically when the program

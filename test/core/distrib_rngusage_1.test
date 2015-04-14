@@ -14,21 +14,21 @@ to physical RNGs).
 // store numDrawn in array
 void storeNumDrawn(unsigned long *numDrawn)
 {
-    for (int rng=0; rng<ev.getNumRNGs(); rng++)
+    for (int rng=0; rng<getEnvir()->getNumRNGs(); rng++)
     {
-        numDrawn[rng] = ev.getRNG(rng)->getNumbersDrawn();
+        numDrawn[rng] = getEnvir()->getRNG(rng)->getNumbersDrawn();
     }
 }
 
 // check that only the given RNG was used, others have remained intact
 void checkNumDrawn(unsigned long *oldnumDrawn, int usedrng, const char *label)
 {
-    for (int rng=0; rng<ev.getNumRNGs(); rng++)
+    for (int rng=0; rng<getEnvir()->getNumRNGs(); rng++)
     {
-        if (rng!=usedrng && oldnumDrawn[rng]!=ev.getRNG(rng)->getNumbersDrawn())
+        if (rng!=usedrng && oldnumDrawn[rng]!=getEnvir()->getRNG(rng)->getNumbersDrawn())
             EV << "ERROR: " << label << " with rng=" << usedrng << " also changed rng=" << rng << "\n";
     }
-    if (oldnumDrawn[usedrng]==ev.getRNG(usedrng)->getNumbersDrawn())
+    if (oldnumDrawn[usedrng]==getEnvir()->getRNG(usedrng)->getNumbersDrawn())
         EV << "ERROR: " << label << " with rng=" << usedrng << " did NOT change rng=" << usedrng << "\n";
 }
 
@@ -36,7 +36,7 @@ void checkNumDrawn(unsigned long *oldnumDrawn, int usedrng, const char *label)
 
 #define CHECKNUMDRAWN(f) EV << "checking " << #f << "\n"; storeNumDrawn(numDrawn); f; checkNumDrawn(numDrawn,rng,#f);
 
-unsigned long *numDrawn = new unsigned long[ev.getNumRNGs()];
+unsigned long *numDrawn = new unsigned long[getEnvir()->getNumRNGs()];
 
 for (int rng=0; rng<=2; rng++)
 {

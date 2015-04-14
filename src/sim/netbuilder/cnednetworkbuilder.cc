@@ -440,7 +440,7 @@ void cNEDNetworkBuilder::buildInside(cModule *modp, cNEDDeclaration *decl)
     {
         // half-hearted attempt to catch "recursive compound module" bug (where
         // a compound module contains itself, directly or via other compound modules)
-        int limit = ev.getConfig()->getAsInt(CFGID_MAX_MODULE_NESTING);
+        int limit = getEnvir()->getConfig()->getAsInt(CFGID_MAX_MODULE_NESTING);
         if (limit>0)
         {
             int depth = 0;
@@ -642,7 +642,7 @@ std::string cNEDNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
         std::string key = modp->getFullPath() + "." + submodName;
         if (index != -1)
             key = opp_stringf("%s[%d]", key.c_str(), index);
-        submodTypeName = ev.getConfig()->getAsString(key.c_str(), CFGID_TYPENAME);
+        submodTypeName = getEnvir()->getConfig()->getAsString(key.c_str(), CFGID_TYPENAME);
         if (!submodTypeName.empty())
             return submodTypeName;
 
@@ -1162,7 +1162,7 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
 
         // then, use **.typename option in the configuration if exists
         std::string key = srcgate->getFullPath() + "." + channelName;
-        std::string channelTypeName = ev.getConfig()->getAsString(key.c_str(), CFGID_TYPENAME);
+        std::string channelTypeName = getEnvir()->getConfig()->getAsString(key.c_str(), CFGID_TYPENAME);
         if (!channelTypeName.empty())
             return channelTypeName;
 

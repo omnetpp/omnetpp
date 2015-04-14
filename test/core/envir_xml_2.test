@@ -3,7 +3,7 @@ ev.getXMLDocument(): file not found
 
 %activity:
 
-cXMLElement *node = ev.getXMLDocument("@TESTNAME@qwerty.xml");
+cXMLElement *node = getEnvir()->getXMLDocument("@TESTNAME@qwerty.xml");
 if (!node)
     EV << "NULL\n";
 else

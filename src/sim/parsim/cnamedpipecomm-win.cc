@@ -81,7 +81,7 @@ struct PipeHeader
 
 cNamedPipeCommunications::cNamedPipeCommunications()
 {
-    prefix = ev.getConfig()->getAsString(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX);
+    prefix = getEnvir()->getConfig()->getAsString(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX);
     rpipes = NULL;
     wpipes = NULL;
     rrBase = 0;
@@ -264,7 +264,7 @@ bool cNamedPipeCommunications::receiveBlocking(int filtTag, cCommBuffer *buffer,
     // between invocations, in order to save CPU cycles.
     while (!receive(filtTag, buffer, receivedTag, sourceProcId, true))
     {
-        if (ev.idle())
+        if (getEnvir()->idle())
             return false;
         usleep(10000); // be polite and wait 0.01s
     }

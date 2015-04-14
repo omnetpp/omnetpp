@@ -18,7 +18,7 @@ Tests XInclude error reporting when a well formed, xincluded file does not confo
 <bar_non>test</bar_non>
 
 %activity:
-cXMLElement *node = ev.getXMLDocument("foo.xml");
+cXMLElement *node = getEnvir()->getXMLDocument("foo.xml");
 node->debugDump();
 
 %exitcode: 1

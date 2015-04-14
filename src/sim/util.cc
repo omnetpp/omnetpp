@@ -77,11 +77,11 @@ void opp_warning(OppErrorCode errorcode...)
     if (!simulation.getContextModule())
     {
         // we're called from global context
-        ev.printfmsg("%s.", message);
+        getEnvir()->printfmsg("%s.", message);
     }
     else
     {
-        ev.printfmsg("Module %s: %s.", simulation.getContextModule()->getFullPath().c_str(), message);
+        getEnvir()->printfmsg("Module %s: %s.", simulation.getContextModule()->getFullPath().c_str(), message);
     }
 }
 
@@ -93,11 +93,11 @@ void opp_warning(const char *msgformat...)
     if (!simulation.getContextModule())
     {
         // we're called from global context
-        ev.printfmsg("%s.", message);
+        getEnvir()->printfmsg("%s.", message);
     }
     else
     {
-        ev.printfmsg("Module %s: %s.", simulation.getContextModule()->getFullPath().c_str(), message);
+        getEnvir()->printfmsg("Module %s: %s.", simulation.getContextModule()->getFullPath().c_str(), message);
     }
 }
 

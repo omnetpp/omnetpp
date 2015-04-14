@@ -39,7 +39,7 @@ static void getElement(cXMLElement *ctx, cXMLElement *root, const char *pathexpr
 
 %activity:
 
-cXMLElement *root = ev.getXMLDocument("test.xml");
+cXMLElement *root = getEnvir()->getXMLDocument("test.xml");
 cXMLElement *bar9 = root->getElementById("9");
 
 getElement(bar9, root, "../../..");

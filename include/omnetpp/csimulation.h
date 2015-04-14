@@ -565,8 +565,18 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
 /**
  * Returns the current simulation time.
+ *
+ * @ingroup SimCore
  */
 inline simtime_t simTime() {return cSimulation::getActiveSimulation()->getSimTime();}
+
+/**
+ * Returns the environment object for the currently active simulation.
+ *
+ * @ingroup SimCore
+ * @ingroup Envir
+ */
+inline cEnvir *getEnvir()  {return cSimulation::getActiveEnvir();}
 
 
 NAMESPACE_END

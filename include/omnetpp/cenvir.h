@@ -51,31 +51,16 @@ using std::endl;
 #define EVCB  cSimulation::getActiveEnvir()->suppress_notifications ? (void)0 : (*cSimulation::getActiveEnvir())
 
 /**
- * Represents the "environment" or user interface of the simulation.
+ * cEnvir represents the "environment" or user interface of the simulation.
+ * The active cEnvir object can be accessed via cSimulation::getActiveEnvir()
+ * or the getEnvir() global function.
  *
- * Most common usage from model code (simple modules) is to write log
- * messages, e.g.:
- *
- * <pre>
- * EV << "Received packet " << msg->getName() << ", length " << msg->getBitLength()/8 << " bytes\n";
- * EV << "Sending up to higher layer\n";
- * </pre>
- *
- * Other useful methods are cEnvir::isGUI() and cEnvir::isDisabled().
- *
- * The rest of cEnvir methods are used internally for communication between
+ * Methods useful for simulation models include isGUI() and isDisabled().
+ * Most other cEnvir methods are internal for communication between
  * the simulation kernel and the environment.
  *
- * @ingroup Envir
- */
-#define ev  (*OPP::cSimulation::getActiveEnvir())
-
-
-/**
- * cEnvir represents the "environment" of the simulation. cEnvir
- * is a common facade for the Cmdenv and Tkenv user interfaces (and any
- * other future user interface). The cEnvir object can be accessed
- * via cSimulation::getActiveEnvir() or the ev macro.
+ * cEnvir is a common facade for the Cmdenv and Tkenv user interfaces (and any
+ * other future user interface).
  *
  * The default implementation of cEnvir can be customized by subclassing
  * the classes declared in the envirext.h header (e.g. cConfiguration,

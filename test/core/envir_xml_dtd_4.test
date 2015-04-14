@@ -17,7 +17,7 @@ THIS TEST DOES NOT PASS WITH EXPAT -- IT DOES NOT SUPPORT DTD VALIDATION.
 </foo>
 
 %activity:
-cXMLElement *node = ev.getXMLDocument("test.xml");
+cXMLElement *node = getEnvir()->getXMLDocument("test.xml");
 node->debugDump();
 
 %exitcode: 1

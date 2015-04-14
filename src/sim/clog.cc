@@ -91,7 +91,7 @@ int cLogProxy::LogBuffer::sync()
             if (*s == '\n') {
                 cLogProxy::currentEntry.text = text;
                 cLogProxy::currentEntry.textLength = s - text + 1;
-                ev.log(&cLogProxy::currentEntry);
+                getEnvir()->log(&cLogProxy::currentEntry);
                 text = s + 1;
             }
         }
@@ -159,7 +159,7 @@ bool cLogProxy::isComponentEnabled(const cComponent *component, const char *cate
     LogLevel componentLoglevel = component->getLoglevel();
     if ((int)componentLoglevel == -1)
     {
-        componentLoglevel = cLogLevel::getLevel(ev.getConfig()->getAsString(component->getFullPath().c_str(), CFGID_COMPONENT_LOGLEVEL).c_str());
+        componentLoglevel = cLogLevel::getLevel(getEnvir()->getConfig()->getAsString(component->getFullPath().c_str(), CFGID_COMPONENT_LOGLEVEL).c_str());
         // NOTE: this is just a cache
         const_cast<cComponent *>(component)->setLoglevel(componentLoglevel);
     }

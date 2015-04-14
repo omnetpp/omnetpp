@@ -126,7 +126,7 @@ bool cChannel::initializeChannel(int stage)
     {
         // switch context for the duration of the call
         cContextSwitcher tmp(this);
-        ev.componentInitBegin(this, stage);
+        getEnvir()->componentInitBegin(this, stage);
         try {
             initialize(stage);
         } catch (cException&) {

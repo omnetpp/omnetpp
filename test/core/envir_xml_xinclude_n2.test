@@ -12,7 +12,7 @@ Tests XInclude error reporting when malformed file is xincluded.
 <bar>test</missingbar>
 
 %activity:
-cXMLElement *node = ev.getXMLDocument("foo.xml");
+cXMLElement *node = getEnvir()->getXMLDocument("foo.xml");
 node->debugDump();
 
 %exitcode: 1

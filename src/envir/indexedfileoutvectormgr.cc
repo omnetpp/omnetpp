@@ -69,7 +69,7 @@ cIndexedFileOutputVectorManager::cIndexedFileOutputVectorManager()
     fi = NULL;
     memoryUsed = 0;
 
-    long d = (long) ev.getConfig()->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
+    long d = (long) getEnvir()->getConfig()->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
     maxMemoryUsed = (size_t) std::max(d, (long)MIN_BUFFER_MEMORY);
 }
 
@@ -139,7 +139,7 @@ void cIndexedFileOutputVectorManager::endRun()
 void *cIndexedFileOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
 {
     sVector *vp = (sVector *)cFileOutputVectorManager::registerVector(modulename, vectorname);
-    vp->maxBufferedSamples = ev.getConfig()->getAsInt(modulename, CFGID_VECTOR_MAX_BUFFERED_VALUES);
+    vp->maxBufferedSamples = getEnvir()->getConfig()->getAsInt(modulename, CFGID_VECTOR_MAX_BUFFERED_VALUES);
     if (vp->maxBufferedSamples > 0)
         vp->allocateBuffer(vp->maxBufferedSamples);
 

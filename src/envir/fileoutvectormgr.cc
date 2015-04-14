@@ -58,7 +58,7 @@ cFileOutputVectorManager::cFileOutputVectorManager()
 {
     nextid = 0;
     f = NULL;
-    prec = ev.getConfig()->getAsInt(CFGID_OUTPUT_VECTOR_PRECISION);
+    prec = getEnvir()->getConfig()->getAsInt(CFGID_OUTPUT_VECTOR_PRECISION);
 }
 
 cFileOutputVectorManager::~cFileOutputVectorManager()
@@ -117,8 +117,8 @@ void cFileOutputVectorManager::startRun()
 {
     // clean up file from previous runs
     closeFile();
-    fname = ev.getConfig()->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
-    dynamic_cast<EnvirBase *>(&ev)->processFileName(fname);
+    fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
+    dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
     removeFile(fname.c_str(), "old output vector file");
 
     // clear run data
@@ -135,11 +135,11 @@ void cFileOutputVectorManager::getOutVectorConfig(const char *modname,const char
                                                   Intervals& outIntervals)
 {
     std::string vectorfullpath = std::string(modname) + "." + vecname;
-    outEnabled = ev.getConfig()->getAsBool(vectorfullpath.c_str(), CFGID_VECTOR_RECORDING);
-    outRecordEventNumbers = ev.getConfig()->getAsBool(vectorfullpath.c_str(), CFGID_VECTOR_RECORD_EVENTNUMBERS);
+    outEnabled = getEnvir()->getConfig()->getAsBool(vectorfullpath.c_str(), CFGID_VECTOR_RECORDING);
+    outRecordEventNumbers = getEnvir()->getConfig()->getAsBool(vectorfullpath.c_str(), CFGID_VECTOR_RECORD_EVENTNUMBERS);
 
     // get interval string
-    const char *text = ev.getConfig()->getAsCustom(vectorfullpath.c_str(), CFGID_VECTOR_RECORDING_INTERVALS);
+    const char *text = getEnvir()->getConfig()->getAsCustom(vectorfullpath.c_str(), CFGID_VECTOR_RECORDING_INTERVALS);
     if (text)
         outIntervals.parse(text);
 }

@@ -145,7 +145,7 @@ class SIM_API cLogLevel
 //
 #define OPP_LOGPROXY(object, classname, loglevel, category) \
         ((void)0, !(loglevel <= GLOBAL_COMPILETIME_LOGLEVEL && \
-         !ev.isDisabled() && \
+         !getEnvir()->isDisabled() && \
          loglevel <= OPP::cLogLevel::globalRuntimeLoglevel && \
          OPP::cLogProxy::isEnabled(object, category, loglevel))) ? \
          OPP::cLogProxy::dummyStream : OPP::cLogProxy(object, category, loglevel, __FILE__, __LINE__, classname, __FUNCTION__)
@@ -271,7 +271,7 @@ class SIM_API cLogProxy
         LogBuffer() { }
         bool isEmpty() { return pptr() == pbase(); }
       protected:
-        virtual int sync();  // invokes ev.log() for each log line
+        virtual int sync();  // invokes getEnvir()->log() for each log line
     };
 
     // act likes /dev/null
@@ -281,7 +281,7 @@ class SIM_API cLogProxy
     };
 
   public:
-    static nullstream dummyStream; // EV evaluates to this when in express mode (ev.disabled())
+    static nullstream dummyStream; // EV evaluates to this when in express mode (getEnvir()->disabled())
 
   private:
     static LogBuffer buffer;  // underlying buffer that contains the text that has been written so far

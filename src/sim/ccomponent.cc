@@ -129,7 +129,7 @@ const char *cComponent::getNedTypeName() const
 
 cRNG *cComponent::getRNG(int k) const
 {
-    return ev.getRNG(k<rngmapsize ? rngmap[k] : k);
+    return getEnvir()->getRNG(k<rngmapsize ? rngmap[k] : k);
 }
 
 void cComponent::setLoglevel(LogLevel loglevel)
@@ -261,7 +261,7 @@ void cComponent::setDisplayString(const char *s)
 
 void cComponent::bubble(const char *text)
 {
-    ev.bubble(this, text);
+    getEnvir()->bubble(this, text);
 }
 
 void cComponent::recordParametersAsScalars()
@@ -269,7 +269,7 @@ void cComponent::recordParametersAsScalars()
     int n = getNumParams();
     for (int i=0; i<n; i++)
     {
-        if (ev.getConfig()->getAsBool(par(i).getFullPath().c_str(), CFGID_PARAM_RECORD_AS_SCALAR, false))
+        if (getEnvir()->getConfig()->getAsBool(par(i).getFullPath().c_str(), CFGID_PARAM_RECORD_AS_SCALAR, false))
         {
             //TODO the following checks should probably produce a WARNING not an error;
             //TODO also, the values should probably be recorded as "param" in the scalar file
@@ -289,11 +289,11 @@ void cComponent::recordParametersAsScalars()
 void cComponent::recordScalar(const char *name, double value, const char *unit)
 {
     if (!unit)
-        ev.recordScalar(this, name, value);
+        getEnvir()->recordScalar(this, name, value);
     else {
         opp_string_map attributes;
         attributes["unit"] = unit;
-        ev.recordScalar(this, name, value, &attributes);
+        getEnvir()->recordScalar(this, name, value, &attributes);
     }
 }
 

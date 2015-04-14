@@ -813,7 +813,7 @@ bool cMsgPar::parse(const char *text, char tp)
         while (*s==' ' || *s=='\t') s++;
         if (*s) goto error;  // trailing rubbish
 
-        cXMLElement *node = ev.getXMLDocument(fname.c_str(), pathexpr.empty() ? NULL : pathexpr.c_str());
+        cXMLElement *node = getEnvir()->getXMLDocument(fname.c_str(), pathexpr.empty() ? NULL : pathexpr.c_str());
         if (!node)
             throw cRuntimeError(this,"%s: element not found", tmp);
         setXMLValue(node);

@@ -32,8 +32,7 @@ int64_t cObject::changeCounter = 0;
 
 cObject::~cObject()
 {
-    // notify environment
-    ev.objectDeleted(this);
+    cSimulation::getActiveEnvir()->objectDeleted(this);
 }
 
 const char *cObject::getClassName() const

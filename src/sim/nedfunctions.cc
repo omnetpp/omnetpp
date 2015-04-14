@@ -353,7 +353,7 @@ DEF(nedf_expand,
     "Expands ${} variables (${configname}, ${runnumber}, etc.) in the given string, and returns the result.",
 {
     std::string tmp = argv[0].stdstringValue();
-    tmp = ev.getConfig()->substituteVariables(tmp.c_str());
+    tmp = getEnvir()->getConfig()->substituteVariables(tmp.c_str());
     return tmp;
 })
 
@@ -676,7 +676,7 @@ DEF(nedf_xmldoc,
 {
     const char *filename = argv[0].stringValue();
     const char *xpath = argc==1 ? NULL : argv[1].stringValue();
-    cXMLElement *node = ev.getXMLDocument(filename, xpath);
+    cXMLElement *node = getEnvir()->getXMLDocument(filename, xpath);
     if (!node)
     {
         if (argc==1)
@@ -697,13 +697,13 @@ DEF(nedf_xml,
     cXMLElement *node;
     if (argc==1)
     {
-        node = ev.getParsedXMLString(argv[0].stdstringValue().c_str(), NULL);
+        node = getEnvir()->getParsedXMLString(argv[0].stdstringValue().c_str(), NULL);
         if (!node)
             throw cRuntimeError("xml(\"%s\"): element not found", argv[0].stdstringValue().c_str());
     }
     else
     {
-        node = ev.getParsedXMLString(argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str());
+        node = getEnvir()->getParsedXMLString(argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str());
         if (!node)
             throw cRuntimeError("xml(\"%s\", \"%s\"): element not found", argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str());
     }

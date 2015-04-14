@@ -72,7 +72,7 @@ void HistogramDemo::activity()
     varhist.setNumFirstVals(numFirstVals);
 
     FILE *f = fopen("hist.dat","r");
-    if (f && ev.askYesNo("HIST: Saved histogram file `hist.dat' found,"
+    if (f && getEnvir()->askYesNo("HIST: Saved histogram file `hist.dat' found,"
                          " load it and continue collecting from there?"))
     {
         longhist.loadFromFile(f);

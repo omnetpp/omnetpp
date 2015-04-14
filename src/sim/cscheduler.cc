@@ -98,7 +98,7 @@ cRealTimeScheduler::~cRealTimeScheduler()
 
 void cRealTimeScheduler::startRun()
 {
-    factor = ev.getConfig()->getAsDouble(CFGID_REALTIMESCHEDULER_SCALING);
+    factor = getEnvir()->getConfig()->getAsDouble(CFGID_REALTIMESCHEDULER_SCALING);
     if (factor!=0)
         factor = 1/factor;
     doScaling = (factor!=0);
@@ -115,14 +115,14 @@ void cRealTimeScheduler::executionResumed()
 bool cRealTimeScheduler::waitUntil(const timeval& targetTime)
 {
     // if there's more than 200ms to wait, wait in 100ms chunks
-    // in order to keep UI responsiveness by invoking ev.idle()
+    // in order to keep UI responsiveness by invoking getEnvir()->idle()
     timeval curTime;
     gettimeofday(&curTime, NULL);
     while (targetTime.tv_sec-curTime.tv_sec >=2 ||
            timeval_diff_usec(targetTime, curTime) >= 200000)
     {
         usleep(100000); // 100ms
-        if (ev.idle())
+        if (getEnvir()->idle())
             return false;
         gettimeofday(&curTime, NULL);
     }

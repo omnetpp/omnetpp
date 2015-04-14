@@ -286,7 +286,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     try {
         // create the new module object
 #ifdef WITH_PARSIM
-        bool isLocal = ev.isModuleLocal(parentmod, modname, vectorsize<0 ? -1 : index);
+        bool isLocal = getEnvir()->isModuleLocal(parentmod, modname, vectorsize<0 ? -1 : index);
         mod = isLocal ? createModuleObject() : new cPlaceholderModule();
 #else
         mod = createModuleObject();
@@ -322,7 +322,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     simulation.registerComponent(mod);
 
     // set up RNG mapping
-    ev.getRNGMappingFor(mod);
+    getEnvir()->getRNGMappingFor(mod);
 
     // should be called before any gateCreated calls on this module
     EVCB.moduleCreated(mod);
@@ -336,7 +336,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
         mod->getCanvas()->addFiguresFrom(mod->getProperties());
 
     // notify envir
-    ev.configure(mod);
+    getEnvir()->configure(mod);
 
     // notify post-change listeners
     if (mod->hasListeners(POST_MODEL_CHANGE)) {
@@ -461,7 +461,7 @@ cChannel *cChannelType::create(const char *name)
     simulation.registerComponent(channel);
 
     // set up RNG mapping
-    ev.getRNGMappingFor(channel);
+    getEnvir()->getRNGMappingFor(channel);
 
     // add parameters to the new module
     addParametersTo(channel);

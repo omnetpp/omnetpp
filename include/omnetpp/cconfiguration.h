@@ -58,7 +58,7 @@ class cConfigOption;
 
 /**
  * Represents the configuration, as accessed by the simulation kernel.
- * The configuration object can be accessed with ev.getConfig().
+ * The configuration object can be accessed with getEnvir()->getConfig().
  *
  * This class logically belongs to the cEnvir facade. (cEnvir presents
  * to the simulation kernel the UI, or generally, the program which embeds

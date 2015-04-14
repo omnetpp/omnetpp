@@ -57,14 +57,14 @@ void cMySQLOutputVectorManager::openDB()
     EV << getClassName() << " connecting to MySQL database...";
 
     // connect
-    std::string cfgobj = ev.getConfig()->getAsString(CFGID_MYSQLOUTVECTORMGR_CONNECTIONNAME);
+    std::string cfgobj = getEnvir()->getConfig()->getAsString(CFGID_MYSQLOUTVECTORMGR_CONNECTIONNAME);
     if (cfgobj.empty())
         cfgobj = "mysql";
     mysql = mysql_init(NULL);
-    opp_mysql_connectToDB(mysql, ev.getConfig(), cfgobj.c_str());
+    opp_mysql_connectToDB(mysql, getEnvir()->getConfig(), cfgobj.c_str());
     EV << " OK\n";
 
-    commitFreq = ev.getConfig()->getAsInt(CFGID_MYSQLOUTVECTORMGR_COMMIT_FREQ);
+    commitFreq = getEnvir()->getConfig()->getAsInt(CFGID_MYSQLOUTVECTORMGR_COMMIT_FREQ);
     insertCount = 0;
 
     // prepare and bind INSERT INTO VECTOR...

@@ -49,9 +49,9 @@ Register_GlobalConfigOption(CFGID_FILECOMM_PRESERVE_READ, "parsim-filecommunicat
 
 cFileCommunications::cFileCommunications()
 {
-    commDirPrefix = ev.getConfig()->getAsString(CFGID_FILECOMM_PREFIX);
-    readDirPrefix = ev.getConfig()->getAsString(CFGID_FILECOMM_READ_PREFIX);
-    preserveReadFiles = ev.getConfig()->getAsBool(CFGID_FILECOMM_PRESERVE_READ);
+    commDirPrefix = getEnvir()->getConfig()->getAsString(CFGID_FILECOMM_PREFIX);
+    readDirPrefix = getEnvir()->getConfig()->getAsString(CFGID_FILECOMM_READ_PREFIX);
+    preserveReadFiles = getEnvir()->getConfig()->getAsBool(CFGID_FILECOMM_PRESERVE_READ);
 
     seqNum = 0;
 }
@@ -125,7 +125,7 @@ bool cFileCommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int&
 {
     while (!receiveNonblocking(filtTag, buffer, receivedTag, sourceProcId))
     {
-        if (ev.idle())
+        if (getEnvir()->idle())
             return false;
         usleep(100000); // be nice and polite: wait 0.1s
     }

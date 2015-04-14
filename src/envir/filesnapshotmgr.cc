@@ -49,8 +49,8 @@ cFileSnapshotManager::~cFileSnapshotManager()
 void cFileSnapshotManager::startRun()
 {
     // clean up file from previous runs
-    fname = ev.getConfig()->getAsFilename(CFGID_SNAPSHOT_FILE).c_str();
-    dynamic_cast<EnvirBase *>(&ev)->processFileName(fname);
+    fname = getEnvir()->getConfig()->getAsFilename(CFGID_SNAPSHOT_FILE).c_str();
+    dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
     removeFile(fname.c_str(), "old snapshot file");
 }
 

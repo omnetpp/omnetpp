@@ -28,7 +28,7 @@ Check cXMLElement::getElementsByTagName()
 
 static void getElements(const char *tagname)
 {
-    cXMLElement *rootelement = ev.getXMLDocument("test.xml", NULL);
+    cXMLElement *rootelement = getEnvir()->getXMLDocument("test.xml", NULL);
     cXMLElementList list = rootelement->getElementsByTagName(tagname);
 
     EV << tagname << ":";

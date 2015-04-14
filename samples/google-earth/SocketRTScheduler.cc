@@ -49,7 +49,7 @@ void cSocketRTScheduler::startRun()
     recvBufferSize = 0;
     numBytesPtr = NULL;
 
-    port = ev.getConfig()->getAsInt(CFGID_SOCKETRTSCHEDULER_PORT);
+    port = getEnvir()->getConfig()->getAsInt(CFGID_SOCKETRTSCHEDULER_PORT);
     setupListener();
 }
 
@@ -168,7 +168,7 @@ bool cSocketRTScheduler::receiveWithTimeout(long usec)
 int cSocketRTScheduler::receiveUntil(const timeval& targetTime)
 {
     // if there's more than 200ms to wait, wait in 100ms chunks
-    // in order to keep UI responsiveness by invoking ev.idle()
+    // in order to keep UI responsiveness by invoking getEnvir()->idle()
     timeval curTime;
     gettimeofday(&curTime, NULL);
     while (targetTime.tv_sec-curTime.tv_sec >=2 ||
@@ -176,7 +176,7 @@ int cSocketRTScheduler::receiveUntil(const timeval& targetTime)
     {
         if (receiveWithTimeout(100000)) // 100ms
             return 1;
-        if (ev.idle())
+        if (getEnvir()->idle())
             return -1;
         gettimeofday(&curTime, NULL);
     }

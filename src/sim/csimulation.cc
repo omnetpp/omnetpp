@@ -207,7 +207,7 @@ bool cSimulation::snapshot(cObject *object, const char *label)
     if (!object)
         throw cRuntimeError("snapshot(): object pointer is NULL");
 
-    ostream *osptr = ev.getStreamForSnapshot();
+    ostream *osptr = getEnvir()->getStreamForSnapshot();
     if (!osptr)
         throw cRuntimeError("Could not create stream for snapshot");
 
@@ -227,7 +227,7 @@ bool cSimulation::snapshot(cObject *object, const char *label)
     os << "</snapshot>\n";
 
     bool success = !os.fail();
-    ev.releaseStreamForSnapshot(&os);
+    getEnvir()->releaseStreamForSnapshot(&os);
 
     if (!success)
         throw cRuntimeError("Could not write snapshot");
@@ -242,13 +242,13 @@ void cSimulation::setScheduler(cScheduler *sch)
         throw cRuntimeError(this, "setScheduler(): scheduler pointer is NULL");
 
     if (schedulerp) {
-        ev.removeLifecycleListener(schedulerp);
+        getEnvir()->removeLifecycleListener(schedulerp);
         delete schedulerp;
     }
 
     schedulerp = sch;
     schedulerp->setSimulation(this);
-    ev.addLifecycleListener(schedulerp);
+    getEnvir()->addLifecycleListener(schedulerp);
 }
 
 void cSimulation::setSimulationTimeLimit(simtime_t simTimeLimit)
@@ -384,11 +384,11 @@ void cSimulation::setupNetwork(cModuleType *network)
     {
         // set up the network by instantiating the toplevel module
         cContextTypeSwitcher tmp(CTX_BUILD);
-        ev.notifyLifecycleListeners(LF_PRE_NETWORK_SETUP);
+        getEnvir()->notifyLifecycleListeners(LF_PRE_NETWORK_SETUP);
         cModule *mod = networktype->create(networktype->getName(), NULL);
         mod->finalizeParameters();
         mod->buildInside();
-        ev.notifyLifecycleListeners(LF_POST_NETWORK_SETUP);
+        getEnvir()->notifyLifecycleListeners(LF_POST_NETWORK_SETUP);
     }
     catch (std::exception& e)
     {
@@ -429,9 +429,9 @@ void cSimulation::callInitialize()
     {
         cContextSwitcher tmp(systemmodp);
         systemmodp->scheduleStart(SIMTIME_ZERO);
-        ev.notifyLifecycleListeners(LF_PRE_NETWORK_INITIALIZE);
+        getEnvir()->notifyLifecycleListeners(LF_PRE_NETWORK_INITIALIZE);
         systemmodp->callInitialize();
-        ev.notifyLifecycleListeners(LF_POST_NETWORK_INITIALIZE);
+        getEnvir()->notifyLifecycleListeners(LF_POST_NETWORK_INITIALIZE);
     }
 
     event_num = 1; // events are numbered from 1
@@ -448,9 +448,9 @@ void cSimulation::callFinish()
     // call user-defined finish() functions for all modules recursively
     if (systemmodp)
     {
-        ev.notifyLifecycleListeners(LF_PRE_NETWORK_FINISH);
+        getEnvir()->notifyLifecycleListeners(LF_PRE_NETWORK_FINISH);
         systemmodp->callFinish();
-        ev.notifyLifecycleListeners(LF_POST_NETWORK_FINISH);
+        getEnvir()->notifyLifecycleListeners(LF_POST_NETWORK_FINISH);
     }
 }
 
@@ -467,7 +467,7 @@ void cSimulation::deleteNetwork()
 
     simulationstage = CTX_CLEANUP;
 
-    ev.notifyLifecycleListeners(LF_PRE_NETWORK_DELETE);
+    getEnvir()->notifyLifecycleListeners(LF_PRE_NETWORK_DELETE);
 
     // delete all modules recursively
     systemmodp->deleteModule();
@@ -490,7 +490,7 @@ void cSimulation::deleteNetwork()
     //FIXME todo delete cParImpl caches too (cParImplCache, cParImplCache2)
     cModule::clearNamePools();
 
-    ev.notifyLifecycleListeners(LF_POST_NETWORK_DELETE);
+    getEnvir()->notifyLifecycleListeners(LF_POST_NETWORK_DELETE);
 
     // clear remaining messages (module dtors may have cancelled & deleted some of them)
     msgQueue.clear();
@@ -746,7 +746,7 @@ cSimpleModule *cSimulation::getContextSimpleModule() const
 
 unsigned long cSimulation::getUniqueNumber()
 {
-    return ev.getUniqueNumber();
+    return getEnvir()->getUniqueNumber();
 }
 
 void cSimulation::setHasher(cHasher *hasher)
@@ -774,7 +774,7 @@ void cSimulation::insertEvent(cEvent *event)
  *
  * Many simulation library classes make calls to <i>ev</i> methods,
  * which would crash if <tt>evPtr</tt> was NULL; one example is
- * cObject's destructor which contains an <tt>ev.objectDeleted()</tt>.
+ * cObject's destructor which contains an <tt>getEnvir()->objectDeleted()</tt>.
  * The solution provided here is that <tt>evPtr</tt> is initialized
  * to point to a StaticEnv instance, thus enabling library classes to work.
  *

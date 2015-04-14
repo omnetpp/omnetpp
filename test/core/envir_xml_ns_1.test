@@ -11,7 +11,7 @@ name prefix; xmlns attribute may or may not be removed (parser dependent).
 </foo>
 
 %activity:
-cXMLElement *node = ev.getXMLDocument("test.xml");
+cXMLElement *node = getEnvir()->getXMLDocument("test.xml");
 node->debugDump();
 
 %contains-regex: stdout

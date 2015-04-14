@@ -123,25 +123,25 @@ void EventlogFileManager::clearInternalState()
 void EventlogFileManager::configure()
 {
     // main switch
-    recordEventlog = ev.getConfig()->getAsBool(CFGID_RECORD_EVENTLOG);
+    recordEventlog = getEnvir()->getConfig()->getAsBool(CFGID_RECORD_EVENTLOG);
 
     // setup eventlog object printer
     delete objectPrinter;
     objectPrinter = NULL;
-    const char *eventLogMessageDetailPattern = ev.getConfig()->getAsCustom(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN);
+    const char *eventLogMessageDetailPattern = getEnvir()->getConfig()->getAsCustom(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN);
     if (eventLogMessageDetailPattern)
         objectPrinter = new ObjectPrinter(recurseIntoMessageFields, eventLogMessageDetailPattern, 3);
 
     // setup eventlog recording intervals
-    const char *text = ev.getConfig()->getAsCustom(CFGID_EVENTLOG_RECORDING_INTERVALS);
+    const char *text = getEnvir()->getConfig()->getAsCustom(CFGID_EVENTLOG_RECORDING_INTERVALS);
     if (text) {
         recordingIntervals = new Intervals();
         recordingIntervals->parse(text);
     }
 
     // setup filename
-    filename = ev.getConfig()->getAsFilename(CFGID_EVENTLOG_FILE).c_str();
-    dynamic_cast<EnvirBase *>(&ev)->processFileName(filename);
+    filename = getEnvir()->getConfig()->getAsFilename(CFGID_EVENTLOG_FILE).c_str();
+    dynamic_cast<EnvirBase *>(getEnvir())->processFileName(filename);
 }
 
 void EventlogFileManager::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details)
@@ -218,7 +218,7 @@ void EventlogFileManager::recordInitialize()
     eventNumber = 0;
     EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog, eventNumber, 0, 1, -1, -1);
     entryIndex = 0;
-    const char *runId = ev.getConfigEx()->getVariable(CFGVAR_RUNID);
+    const char *runId = getEnvir()->getConfigEx()->getVariable(CFGVAR_RUNID);
     EventLogWriter::recordSimulationBeginEntry_v_rid_b(feventlog, OMNETPP_VERSION, runId, keyframeBlockSize);
     entryIndex++;
     recordKeyframe();
@@ -307,7 +307,7 @@ void EventlogFileManager::startRun()
 {
     if (isEventLogRecordingEnabled) {
         eventNumber = 0;
-        const char *runId = ev.getConfigEx()->getVariable(CFGVAR_RUNID);
+        const char *runId = getEnvir()->getConfigEx()->getVariable(CFGVAR_RUNID);
         // we can't use simulation.getEventNumber() and simulation.getSimTime(), because when we start a new run
         // these numbers are still set from the previous run (i.e. not zero)
         EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog, eventNumber, 0, 1, -1, -1);
@@ -585,7 +585,7 @@ void EventlogFileManager::componentMethodEnd()
 void EventlogFileManager::moduleCreated(cModule *module)
 {
     if (isEventLogRecordingEnabled) {
-        bool recordModuleEvents = ev.getConfig()->getAsBool(module->getFullPath().c_str(), CFGID_MODULE_EVENTLOG_RECORDING);
+        bool recordModuleEvents = getEnvir()->getConfig()->getAsBool(module->getFullPath().c_str(), CFGID_MODULE_EVENTLOG_RECORDING);
         module->setRecordEvents(recordModuleEvents);
         bool isCompoundModule = !module->isSimple();
         // FIXME: size() is missing

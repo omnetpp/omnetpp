@@ -152,7 +152,7 @@ void cStatistic::recordAs(const char *scalarname, const char *unit)
     if (unit)
         attributes["unit"] = unit;
     getAttributesToRecord(attributes);
-    ev.recordStatistic(mod, scalarname, this, &attributes);
+    getEnvir()->recordStatistic(mod, scalarname, this, &attributes);
 }
 
 void cStatistic::freadvarsf(FILE *f, const char *fmt, ...)

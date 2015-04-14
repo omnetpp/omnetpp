@@ -56,7 +56,7 @@ void *cAkOutputVectorManager::registerVector(const char *modulename, const char 
 
     // see if this vector needs Akaroa control
     std::string objectfullpath = std::string(modulename) + "." + vectorname;
-    vp->ak_controlled = ev.getConfig()->getAsBool(objectfullpath.c_str(), CFGID_WITH_AKAROA);
+    vp->ak_controlled = getEnvir()->getConfig()->getAsBool(objectfullpath.c_str(), CFGID_WITH_AKAROA);
 
     if (vp->ak_controlled)
     {

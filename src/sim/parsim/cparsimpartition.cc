@@ -47,7 +47,7 @@ cParsimPartition::cParsimPartition()
     sim = NULL;
     comm = NULL;
     synch = NULL;
-    debug = ev.getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
+    debug = getEnvir()->getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
 }
 
 cParsimPartition::~cParsimPartition()

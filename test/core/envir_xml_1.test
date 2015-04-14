@@ -14,7 +14,7 @@ Note: path expr testing is in cXMLElement_1.test.
 
 %activity:
 
-cXMLElement *node = ev.getXMLDocument("test.xml");
+cXMLElement *node = getEnvir()->getXMLDocument("test.xml");
 if (!node)
     EV << "NULL\n";
 else

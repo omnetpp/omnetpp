@@ -56,7 +56,7 @@ Register_Class(cFileOutputScalarManager);
 cFileOutputScalarManager::cFileOutputScalarManager()
 {
     f = NULL;
-    prec = ev.getConfig()->getAsInt(CFGID_OUTPUT_SCALAR_PRECISION);
+    prec = getEnvir()->getConfig()->getAsInt(CFGID_OUTPUT_SCALAR_PRECISION);
 }
 
 cFileOutputScalarManager::~cFileOutputScalarManager()
@@ -85,9 +85,9 @@ void cFileOutputScalarManager::startRun()
 {
     // clean up file from previous runs
     closeFile();
-    fname = ev.getConfig()->getAsFilename(CFGID_OUTPUT_SCALAR_FILE).c_str();
-    dynamic_cast<EnvirBase *>(&ev)->processFileName(fname);
-    if (ev.getConfig()->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND)==false)
+    fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_SCALAR_FILE).c_str();
+    dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
+    if (getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND)==false)
         removeFile(fname.c_str(), "old output scalar file");
     run.reset();
 }
@@ -115,11 +115,11 @@ void cFileOutputScalarManager::init()
         run.writeRunData(f, fname);
 
         // save iteration variables
-        std::vector<const char *> v = ev.getConfigEx()->getIterationVariableNames();
+        std::vector<const char *> v = getEnvir()->getConfigEx()->getIterationVariableNames();
         for (int i=0; i<(int)v.size(); i++)
         {
             const char *name = v[i];
-            const char *value = ev.getConfigEx()->getVariable(v[i]);
+            const char *value = getEnvir()->getConfigEx()->getVariable(v[i]);
             recordNumericIterationVariable(name, value);
         }
     }
@@ -166,7 +166,7 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
     if (!name || !name[0])
         name = "(unnamed)";
 
-    bool enabled = ev.getConfig()->getAsBool((component->getFullPath()+"."+name).c_str(), CFGID_SCALAR_RECORDING);
+    bool enabled = getEnvir()->getConfig()->getAsBool((component->getFullPath()+"."+name).c_str(), CFGID_SCALAR_RECORDING);
     if (enabled)
     {
         CHECK(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(component->getFullPath().c_str()), QUOTE(name), prec, value));
@@ -190,7 +190,7 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
 
     // check that recording this statistic is not disabled as a whole
     std::string objectFullPath = component->getFullPath() + "." + name;
-    bool enabled = ev.getConfig()->getAsBool(objectFullPath.c_str(), CFGID_SCALAR_RECORDING);
+    bool enabled = getEnvir()->getConfig()->getAsBool(objectFullPath.c_str(), CFGID_SCALAR_RECORDING);
     if (!enabled)
         return;
 
@@ -229,7 +229,7 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
     if (dynamic_cast<cDensityEstBase *>(statistic))
     {
         // check that recording the histogram is enabled
-        bool enabled = ev.getConfig()->getAsBool((objectFullPath+":histogram").c_str(), CFGID_SCALAR_RECORDING);
+        bool enabled = getEnvir()->getConfig()->getAsBool((objectFullPath+":histogram").c_str(), CFGID_SCALAR_RECORDING);
         if (enabled)
         {
             cDensityEstBase *hist = (cDensityEstBase *)statistic;

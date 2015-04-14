@@ -286,7 +286,7 @@ cChannel *cGate::connectTo(cGate *g, cChannel *chan, bool leaveUninitialized)
 
     // notify envir
     if (chan)
-        ev.configure(chan);
+        getEnvir()->configure(chan);
     EVCB.connectionCreated(this);
 #ifdef SIMFRONTEND_SUPPORT
     mod->updateLastChangeSerial();

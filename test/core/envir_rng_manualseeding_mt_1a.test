@@ -5,7 +5,7 @@ change the runs-to-execute parameter -- result should be the same,
 only in different order.
 
 %activity:
-for (int i=0; i<ev.getNumRNGs(); i++)
+for (int i=0; i<getEnvir()->getNumRNGs(); i++)
 {
     // note: the intRand() calls cannot be put into the EV<< statement directly, because
     // different compilers evaluate them in different order (see c++-evalorder_1.test)
