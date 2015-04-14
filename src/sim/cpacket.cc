@@ -67,32 +67,32 @@ std::string cPacket::info() const  //FIXME revise
     std::stringstream out;
 //    const char *deletedstr = "<deleted module>";
 //
-//    if (delivd > simulation.getSimTime())
+//    if (delivd > simTime())
 //    {
 //        // if it arrived in the past, dt is usually unimportant, don't print it
-//        out << "at T=" << delivd << ", in dt=" << (delivd - simulation.getSimTime()) << "; ";
+//        out << "at T=" << delivd << ", in dt=" << (delivd - simTime()) << "; ";
 //    }
 //
 //#define MODNAME(modp) ((modp) ? (modp)->getFullPath().c_str() : deletedstr)
 //    if (getKind()==MK_STARTER)
 //    {
-//        cModule *tomodp = simulation.getModule(tomod);
+//        cModule *tomodp = getSimulation()->getModule(tomod);
 //        out << "starter for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
 //    }
 //    else if (getKind()==MK_TIMEOUT)
 //    {
-//        cModule *tomodp = simulation.getModule(tomod);
+//        cModule *tomodp = getSimulation()->getModule(tomod);
 //        out << "timeoutmsg for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
 //    }
 //    else if (frommod==tomod)
 //    {
-//        cModule *tomodp = simulation.getModule(tomod);
+//        cModule *tomodp = getSimulation()->getModule(tomod);
 //        out << "selfmsg for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
 //    }
 //    else
 //    {
-//        cModule *frommodp = simulation.getModule(frommod);
-//        cModule *tomodp = simulation.getModule(tomod);
+//        cModule *frommodp = getSimulation()->getModule(frommod);
+//        cModule *tomodp = getSimulation()->getModule(tomod);
 //        out << "src=" << MODNAME(frommodp) << " (id=" << frommod << ") ";
 //        out << " dest=" << MODNAME(tomodp) << " (id=" << tomod << ") ";
 //    }
