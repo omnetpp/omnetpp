@@ -55,8 +55,8 @@ void ChannelController::removeMobileNode(IMobileNode* p)
 
 void ChannelController::initialize()
 {
-    playgroundLat = simulation.getSystemModule()->par("playgroundLatitude");
-    playgroundLon = simulation.getSystemModule()->par("playgroundLongitude");
+    playgroundLat = getSystemModule()->par("playgroundLatitude");
+    playgroundLon = getSystemModule()->par("playgroundLongitude");
     KmlHttpServer::getInstance()->addKmlFragmentProvider(this);
 }
 

@@ -79,10 +79,10 @@ void MobileNode::initialize()
     getDisplayString().setTagArg("p", 0, x);
     getDisplayString().setTagArg("p", 1, y);
 
-    playgroundLat = simulation.getSystemModule()->par("playgroundLatitude");
-    playgroundLon = simulation.getSystemModule()->par("playgroundLongitude");
-    playgroundHeight = simulation.getSystemModule()->par("playgroundHeight");
-    playgroundWidth = simulation.getSystemModule()->par("playgroundWidth");
+    playgroundLat = getSystemModule()->par("playgroundLatitude");
+    playgroundLon = getSystemModule()->par("playgroundLongitude");
+    playgroundHeight = getSystemModule()->par("playgroundHeight");
+    playgroundWidth = getSystemModule()->par("playgroundWidth");
 
     trailLength = par("trailLength");
     modelURL = par("modelURL").stringValue();

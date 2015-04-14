@@ -101,7 +101,7 @@ void cMySQLNetBuilder::initialize()
 
 void cMySQLNetBuilder::readAndBuild(const char *networkName)
 {
-    bool systemModuleInitialized = cSimulation::getActiveSimulation()->getSystemModule()->initialized();
+    bool systemModuleInitialized = getSystemModule()->initialized();
 
     // connect
     EV << getClassName() << " connecting to MySQL database...";

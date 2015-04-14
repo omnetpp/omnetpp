@@ -29,7 +29,7 @@ Host::~Host()
 
 void Host::initialize()
 {
-    server = simulation.getModuleByPath("server");
+    server = getModuleByPath("server");
     if (!server) error("server not found");
 
     txRate = par("txRate");
