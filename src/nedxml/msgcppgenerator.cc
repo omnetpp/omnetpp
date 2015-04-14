@@ -699,7 +699,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
     if (info.classtype == STRUCT) {
         it->var = it->fname;
     } else {
-        it->var = it->fname + "_var";
+        it->var = it->fname + info.fieldnamesuffix;
         it->argname = it->fname;
     }
 
@@ -890,6 +890,12 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
     }
 
     info.omitgetverb = getPropertyAsBool(info.props, "omitGetVerb", false);
+    info.fieldnamesuffix = getProperty(info.props, "fieldNameSuffix", "");
+    if (info.omitgetverb && info.fieldnamesuffix.empty()) {
+        errors->addWarning(info.nedElement, "@omitGetVerb(true) and (implicit) @fieldNameSuffix(\"\") collide: "
+                "adding '_var' suffix to data members to prevent name conflict between them and getter methods\n");
+        info.fieldnamesuffix = "_var";
+    }
 
     std::string s = getProperty(info.props, "implements");
     if (!s.empty()) {
@@ -1188,7 +1194,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 }
             }
             if (it->fisarray && it->farraysize.empty()) {
-                CC << "    delete [] " << it->var << ";\n";
+                CC << "    delete [] this->" << it->var << ";\n";
             }
         }
     }
@@ -1323,7 +1329,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << it->fsizetype << " k)" << constifprimitivetype << "\n";
                 CC << "{\n";
                 CC << "    if (k>=" << it->farraysize << ") throw " OPP_PREFIX "cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
-                CC << "    return " << it->var << "[k]" << it->maybe_c_str << ";\n";
+                CC << "    return this->" << it->var << "[k]" << it->maybe_c_str << ";\n";
                 CC << "}\n\n";
                 CC << "void " << info.msgclass << "::" << it->setter << "(" << it->fsizetype << " k, " << it->argtype << " " << it->argname << ")\n";
                 CC << "{\n";
@@ -1356,7 +1362,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << it->fsizetype << " k)" << constifprimitivetype << "\n";
                 CC << "{\n";
                 CC << "    if (k>=" << it->varsize << ") throw " OPP_PREFIX "cRuntimeError(\"Array of size %d indexed by %d\", " << it->varsize << ", k);\n";
-                CC << "    return " << it->var << "[k]" << it->maybe_c_str << ";\n";
+                CC << "    return this->" << it->var << "[k]" << it->maybe_c_str << ";\n";
                 CC << "}\n\n";
                 CC << "void " << info.msgclass << "::" << it->setter << "(" << it->fsizetype << " k, " << it->argtype << " " << it->argname << ")\n";
                 CC << "{\n";
@@ -1366,7 +1372,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
             } else {
                 CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "()" << constifprimitivetype << "\n";
                 CC << "{\n";
-                CC << "    return " << it->var << "" << it->maybe_c_str << ";\n";
+                CC << "    return this->" << it->var << "" << it->maybe_c_str << ";\n";
                 CC << "}\n\n";
                 CC << "void " << info.msgclass << "::" << it->setter << "(" << it->argtype << " " << it->argname << ")\n";
                 CC << "{\n";
@@ -1429,11 +1435,11 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
         if (it->fisarray && !it->farraysize.empty()) {
             if (it->fkind == "basic" && !it->fval.empty()) {
                 CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
-                CC << "        " << it->var << "[i] = " << it->fval << ";\n";
+                CC << "        this->" << it->var << "[i] = " << it->fval << ";\n";
             }
         } else {
             if (!it->fval.empty()) {
-                CC << "    " << it->var << " = " << it->fval << ";\n";
+                CC << "    this->" << it->var << " = " << it->fval << ";\n";
             }
         }
     }

@@ -154,6 +154,7 @@ class NEDXML_API MsgCppGenerator
         std::string realmsgclass;
         std::string msgbaseclass;
         std::string msgdescclass;
+        std::string fieldnamesuffix; // e.g. "_var"
         Fieldlist fieldlist;        // list of fields
         Fieldlist baseclassFieldlist;   //modified baseclass fields, e.g. baseclass.basefield = value
 
