@@ -22,8 +22,6 @@
 
 NAMESPACE_BEGIN
 
-
-
 /**
  * Resolves variables (x, y) and functions (sin, fabs, etc) in
  * ExpressionFilterNode expressions.

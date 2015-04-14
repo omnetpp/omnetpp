@@ -31,8 +31,6 @@
 
 NAMESPACE_BEGIN
 
-
-
 //
 // Internal class
 //

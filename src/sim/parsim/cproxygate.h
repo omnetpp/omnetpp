@@ -25,7 +25,6 @@
 
 NAMESPACE_BEGIN
 
-// forward declaration
 class cParsimPartition;
 
 /**

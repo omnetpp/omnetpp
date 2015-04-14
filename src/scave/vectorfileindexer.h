@@ -24,7 +24,7 @@
 NAMESPACE_BEGIN
 
 /**
- * FIXME comment
+ * Generate an index file (.vci) for an output vector file (.vec)
  */
 class SCAVE_API VectorFileIndexer
 {

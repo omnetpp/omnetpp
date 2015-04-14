@@ -26,7 +26,6 @@
 
 NAMESPACE_BEGIN
 
-// forward declarations
 class cMessage;
 class cSimulation;
 class cParsimCommunications;

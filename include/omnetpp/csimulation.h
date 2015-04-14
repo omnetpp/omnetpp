@@ -28,23 +28,22 @@
 
 NAMESPACE_BEGIN
 
-//=== classes mentioned:
-class  cEvent;
-class  cMessage;
-class  cGate;
-class  cComponent;
-class  cModule;
-class  cChannel;
-class  cSimpleModule;
-class  cSimulation;
-class  cException;
-class  cScheduler;
-class  cParsimPartition;
-class  cNEDFileLoader;
-class  cHasher;
-class  cModuleType;
-class  cEnvir;
-class  cDefaultList;
+class cEvent;
+class cMessage;
+class cGate;
+class cComponent;
+class cModule;
+class cChannel;
+class cSimpleModule;
+class cSimulation;
+class cException;
+class cScheduler;
+class cParsimPartition;
+class cNEDFileLoader;
+class cHasher;
+class cModuleType;
+class cEnvir;
+class cDefaultList;
 
 SIM_API extern cDefaultList defaultList; // also in globals.h
 

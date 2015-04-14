@@ -26,7 +26,6 @@
 
 NAMESPACE_BEGIN
 
-// forward declaration:
 class cCommBuffer;
 
 #define PARSIM_ANY_TAG  -1

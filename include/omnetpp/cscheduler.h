@@ -27,7 +27,6 @@
 
 NAMESPACE_BEGIN
 
-// forward declarations
 class cEvent;
 class cSimulation;
 

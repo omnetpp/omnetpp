@@ -26,8 +26,6 @@
 
 NAMESPACE_BEGIN
 
-//FIXME split to several files
-
 class DisplayString;
 class PropertyElement;
 class LiteralElement;
