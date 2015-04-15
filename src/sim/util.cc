@@ -28,6 +28,7 @@
 #include "omnetpp/simutil.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/csimulation.h"
+#include "omnetpp/cmodule.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cnedmathfunction.h"
@@ -371,12 +372,13 @@ void std_sim_descriptor_dummy();
 void nedfunctions_dummy();
 void _sim_dummy_func()
 {
-      bool bb;
+      bool bb = false;
+      cRNG *rng = NULL;
       cWatch_bool w(NULL,bb);
       std::vector<int> v;
       WATCH_VECTOR(v);
       w.supportsAssignment();
-      exponential(1.0);
+      exponential(rng, 1.0);
       cSequentialScheduler sch;
       (void)sch;
       cLCG32 lcg;

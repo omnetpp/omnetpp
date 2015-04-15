@@ -18,7 +18,6 @@
 #include "omnetpp/cpacket.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cenvir.h"
-#include "omnetpp/random.h"
 #include "omnetpp/distrib.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/globals.h"

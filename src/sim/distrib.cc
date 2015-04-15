@@ -19,6 +19,9 @@
 #include "omnetpp/distrib.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cnedmathfunction.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/cenvir.h"
+#include "omnetpp/ccomponent.h"
 #include "omnetpp/cexception.h"
 
 //
@@ -34,42 +37,41 @@
 
 NAMESPACE_BEGIN
 
-
 //----------------------------------------------------------------------------
 //
 //  C O N T I N U O U S
 //
 //----------------------------------------------------------------------------
 
-double uniform(double a, double b, int rng)
+double uniform(cRNG *rng, double a, double b)
 {
-    return a + genk_dblrand(rng) * (b-a);
+    return a + rng->doubleRand() * (b-a);
 }
 
-double exponential(double p, int rng)
+double exponential(cRNG *rng, double p)
 {
-    return -p * log(1.0 - genk_dblrand(rng));
+    return -p * log(1.0 - rng->doubleRand());
 }
 
-double unit_normal(int rng)
+double unit_normal(cRNG *rng)
 {
-    double U = 1.0 - genk_dblrand(rng);
-    double V = 1.0 - genk_dblrand(rng);
+    double U = 1.0 - rng->doubleRand();
+    double V = 1.0 - rng->doubleRand();
     return sqrt(-2.0*log(U)) * cos(PI*2*V);
 }
 
-double normal(double m, double d, int rng)
+double normal(cRNG *rng, double m, double d)
 {
-    double U = 1.0 - genk_dblrand(rng);
-    double V = 1.0 - genk_dblrand(rng);
+    double U = 1.0 - rng->doubleRand();
+    double V = 1.0 - rng->doubleRand();
     return m + d * sqrt(-2.0*log(U)) * cos(PI*2*V);
 }
 
-double truncnormal(double m, double d, int rng)
+double truncnormal(cRNG *rng, double m, double d)
 {
     double res;
     do {
-         res = normal(m,d,rng);
+         res = normal(rng, m, d);
     } while(res<0);
 
     return res;
@@ -80,7 +82,7 @@ double truncnormal(double m, double d, int rng)
  * gamma_MarsagliaTransf() instead.
  */
 /*
-static double gamma_AhrensDieter74(double alpha, int rng)
+static double gamma_AhrensDieter74(cRNG *rng, double alpha)
 {
     ASSERT(alpha<1);
 
@@ -92,13 +94,13 @@ static double gamma_AhrensDieter74(double alpha, int rng)
         double U1, U2, P;
 
         // step 1
-        U1 = normal(0, 1, rng);
+        U1 = unit_normal(rng);
         P = b * U1;
         if (P > 1)
         {
             // step 3
             Y = -log((b - P) / alpha);
-            U2 = normal(0, 1, rng);
+            U2 = unit_normal(rng);
             if (U2 <= pow(Y, alpha - 1.0))
                 break; // accept Y
         }
@@ -106,7 +108,7 @@ static double gamma_AhrensDieter74(double alpha, int rng)
         {
             // step 2
             Y = pow(P, (1 / alpha));
-            U2 = normal(0, 1, rng);
+            U2 = unit_normal(rng);
             if (U2 <= exp(-Y))
                 break;  // accept Y
         }
@@ -119,7 +121,7 @@ static double gamma_AhrensDieter74(double alpha, int rng)
  * internal, for alpha>1. Currently unused, we use gamma_Marsaglia2000() instead.
  */
 /*
-static double gamma_ChengFeast79(double alpha, int rng)
+static double gamma_ChengFeast79(cRNG *rng, double alpha)
 {
     ASSERT(alpha>1);
 
@@ -135,8 +137,8 @@ static double gamma_ChengFeast79(double alpha, int rng)
         double U1, U2, V, Z, W;
 
         // step 1
-        U1 = genk_dblrand(rng);
-        U2 = genk_dblrand(rng);
+        U1 = rng->doubleRand();
+        U2 = rng->doubleRand();
 
         // step 2
         V = a * log(U1 / (1.0 - U1));
@@ -163,7 +165,7 @@ static double gamma_ChengFeast79(double alpha, int rng)
  * Wai Wan Tsang, ACM Transactions on Mathematical Software, Vol. 26, No. 3,
  * September 2000. Available online.
  */
-static double gamma_Marsaglia2000(double a, int rng)
+static double gamma_Marsaglia2000(cRNG *rng, double a)
 {
     ASSERT(a>1);
 
@@ -173,7 +175,7 @@ static double gamma_Marsaglia2000(double a, int rng)
     for(;;)
     {
         do {x = unit_normal(rng); v = 1.0 + c*x;} while (v<=0);
-        v = v*v*v; u = genk_dblrand(rng);
+        v = v*v*v; u = rng->doubleRand();
         if (u < 1.0 - 0.0331*(x*x)*(x*x))
             return d*v;
         if (log(u)<0.5*x*x + d*(1.0-v+log(v)))
@@ -187,15 +189,15 @@ static double gamma_Marsaglia2000(double a, int rng)
  * We can derive the alpha<1 case from the alpha>1 case. See "Note" at the
  * end of Section 6 of the Marsaglia2000 paper (see above).
  */
-static double gamma_MarsagliaTransf(double alpha, int rng)
+static double gamma_MarsagliaTransf(cRNG *rng, double alpha)
 {
     ASSERT(alpha<1);
 
-    //return gamma_ChengFeast79(1+alpha,rng) * pow(genk_dblrand(rng), 1/alpha);
-    return gamma_Marsaglia2000(1+alpha,rng) * pow(genk_dblrand(rng), 1/alpha); // faster
+    //return gamma_ChengFeast79(rng, 1+alpha) * pow(rng->doubleRand(), 1/alpha);
+    return gamma_Marsaglia2000(rng, 1+alpha) * pow(rng->doubleRand(), 1/alpha); // faster
 }
 
-double gamma_d(double alpha, double theta, int rng)
+double gamma_d(cRNG *rng, double alpha, double theta)
 {
     if (alpha<=0 || theta<=0)
         throw cRuntimeError("gamma(): alpha and theta params must be positive "
@@ -203,78 +205,78 @@ double gamma_d(double alpha, double theta, int rng)
 
     if (fabs(alpha - 1.0) <= DBL_EPSILON)
     {
-        return exponential(theta, rng);
+        return exponential(rng, theta);
     }
     else if (alpha < 1.0)
     {
-        //return theta * gamma_AhrensDieter74(alpha, rng); // implementation is bogus, see above
-        return theta * gamma_MarsagliaTransf(alpha, rng);
+        //return theta * gamma_AhrensDieter74(rng, alpha); // implementation is bogus, see above
+        return theta * gamma_MarsagliaTransf(rng, alpha);
     }
     else // if (alpha > 1.0)
     {
-        //return theta * gamma_ChengFeast79(alpha, rng);
-        return theta * gamma_Marsaglia2000(alpha, rng);  // faster
+        //return theta * gamma_ChengFeast79(rng, alpha);
+        return theta * gamma_Marsaglia2000(rng, alpha);  // faster
     }
 }
 
 
-double beta(double alpha1, double alpha2, int rng)
+double beta(cRNG *rng, double alpha1, double alpha2)
 {
     if (alpha1<=0 || alpha2<=0)
         throw cRuntimeError("beta(): alpha1 and alpha2 parameters must be positive "
                             "(alpha1=%g, alpha2=%g)", alpha1, alpha2);
 
-    double Y1 = gamma_d(alpha1, 1.0, rng);
-    double Y2 = gamma_d(alpha2, 1.0, rng);
+    double Y1 = gamma_d(rng, alpha1, 1.0);
+    double Y2 = gamma_d(rng, alpha2, 1.0);
 
     return Y1 / (Y1 + Y2);
 }
 
 
-double erlang_k(unsigned int k, double m, int rng)
+double erlang_k(cRNG *rng, unsigned int k, double m)
 {
     double U = 1.0;
     for (unsigned int i = 0; i < k; i++)
-        U *= (1.0 - genk_dblrand(rng));
+        U *= (1.0 - rng->doubleRand());
 
     return -(m / (double) k) * log(U);
 }
 
 
-double chi_square(unsigned int k, int rng)
+double chi_square(cRNG *rng, unsigned int k)
 {
     if (!(k % 2))
-        return erlang_k(k >> 1, k, rng);
+        return erlang_k(rng, k >> 1, k);
     else
-        return gamma_d((double) k / 2.0, 2.0, rng);
+        return gamma_d(rng, (double) k / 2.0, 2.0);
 }
 
 
-double student_t(unsigned int i, int rng)
+double student_t(cRNG *rng, unsigned int i)
 {
-    double Z = normal(0, 1, rng);
-    double W = sqrt(chi_square(i, rng) / (double) i);
+    double Z = normal(rng, 0, 1);
+    double W = sqrt(chi_square(rng, i) / (double) i);
     return Z / W;
 }
 
 
-double cauchy(double a, double b, int rng)
+double cauchy(cRNG *rng, double a, double b)
 {
     if (b<=0)
         throw cRuntimeError("cauchy(): parameters must be b>0 (a=%g, b=%g)", a, b);
 
-    return a + b * tan(M_PI * genk_dblrand(rng));
+    return a + b * tan(M_PI * rng->doubleRand());
 }
 
 
-double triang(double a, double b, double c, int rng)
+double triang(cRNG *rng, double a, double b, double c)
 {
     if (b<a || c<b || a==c)
         throw cRuntimeError("triang(): parameters must be a<=b<=c, a<c (a=%g, b=%g, c=%g)", a, b, c);
 
     double U, beta, T;
 
-    U = genk_dblrand(rng);
+    U = rng->doubleRand();
     beta = (b - a) / (c - a);
 
     if (U < beta)
@@ -289,21 +291,21 @@ double triang(double a, double b, double c, int rng)
 // lognormal() is inline
 
 
-double weibull(double a, double b, int rng)
+double weibull(cRNG *rng, double a, double b)
 {
     if (a<=0 || b<=0)
         throw cRuntimeError("weibull(): a,b parameters must be positive (a=%g, b=%g)", a, b);
 
-    return a * pow(-log(1.0 - genk_dblrand(rng)), 1.0 / b);
+    return a * pow(-log(1.0 - rng->doubleRand()), 1.0 / b);
 }
 
 
-double pareto_shifted(double a, double b, double c, int rng)
+double pareto_shifted(cRNG *rng, double a, double b, double c)
 {
     if (a==0)
         throw cRuntimeError("pareto_shifted(): parameter a cannot be zero)");
 
-    double u_pow = pow(1.0 - genk_dblrand(rng), 1.0 / a);
+    double u_pow = pow(1.0 - rng->doubleRand(), 1.0 / a);
     return b / u_pow - c;
 }
 
@@ -316,7 +318,7 @@ double pareto_shifted(double a, double b, double c, int rng)
 
 /*
 // helper function, needed for hypergeometric distribution
-static double _factorial(int n)
+static double _factorial(cRNG *rng, int n)
 {
     if (n<0)
         throw cRuntimeError("internal error: _factorial() called with n=%d",n);
@@ -329,22 +331,22 @@ static double _factorial(int n)
 */
 
 
-int intuniform(int a, int b, int rng)
+int intuniform(cRNG *rng, int a, int b)
 {
-    return a + genk_intrand(rng, b-a+1);
+    return a + rng->intRand(b-a+1);
 }
 
 
 // bernoulli() is inline
 
 
-int binomial(int n, double p, int rng)
+int binomial(cRNG *rng, int n, double p)
 {
     int X = 0;
     // sum up n bernoulli trials
     for (int i = 0; i < n; i++)
     {
-        double U = genk_dblrand(rng);
+        double U = rng->doubleRand();
         if (p > U)
             X++;
     }
@@ -352,22 +354,22 @@ int binomial(int n, double p, int rng)
 }
 
 
-int geometric(double p, int rng)
+int geometric(cRNG *rng, double p)
 {
     if (p<0 || p>=1)
         throw cRuntimeError("geometric(): parameter p=%g out of range [0,1)", p);
 
     double a = 1.0 / (log(1.0 - p));
-    return (int)floor(a * log(1.0 - genk_dblrand(rng)));
+    return (int)floor(a * log(1.0 - rng->doubleRand()));
 }
 
 
-int negbinomial(int n, double p, int rng)
+int negbinomial(cRNG *rng, int n, double p)
 {
     int X = 0;
     for (int i = 0; i < n; i++)
     {
-        X += geometric(p, rng);
+        X += geometric(rng, p);
     }
     return X;
 }
@@ -376,13 +378,13 @@ int negbinomial(int n, double p, int rng)
 /*
  * TBD: hypergeometric() doesn't work yet
  *
-int hypergeometric(int a, int b, int n, int rng)
+int hypergeometric(cRNG *rng, int a, int b, int n)
 {
     if (a<0 || b<0 || n>a+b)
         throw cRuntimeError("hypergeometric(): params must be a>=0, b>=0, n=<a+b "
                             "(a=%d, b=%d, n=%d)", a,b,n);
 
-    double U = genk_dblrand(rng);
+    double U = rng->doubleRand();
     double alpha = _factorial(b) / (double) _factorial(a + b - n);
     double beta = _factorial(b - n) / (double) _factorial(a + b);
     double A = alpha / beta;
@@ -400,7 +402,7 @@ int hypergeometric(int a, int b, int n, int rng)
 }
 */
 
-int poisson(double lambda, int rng)
+int poisson(cRNG *rng, double lambda)
 {
     int X;
     if (lambda > 30.0)
@@ -415,13 +417,13 @@ int poisson(double lambda, int rng)
         {
             do
             {
-                U = genk_dblrand(rng);
+                U = rng->doubleRand();
                 Y = (a - log((1.0 - U) / U)) / b;
             }
             while (Y <= -0.5);
 
             X = (int)floor(Y + 0.5);
-            V = genk_dblrand(rng);
+            V = rng->doubleRand();
         }
         while (a - b * Y + log(V / 1.0 + pow(exp(a - b * Y), 2.0)) > d + X * log(lambda) - log(double(X)));
     }
@@ -433,7 +435,7 @@ int poisson(double lambda, int rng)
 
         while (p > a)
         {
-            p *= genk_dblrand(rng);
+            p *= rng->doubleRand();
             X++;
         }
     }

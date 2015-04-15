@@ -16,7 +16,7 @@
 *--------------------------------------------------------------*/
 
 #ifndef __OMNETPP_INIFILEREADER_H
-#define v__OMNETPP_INIFILEREADER_H
+#define __OMNETPP_INIFILEREADER_H
 
 #include <string>
 #include <set>

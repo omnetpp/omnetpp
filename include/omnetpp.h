@@ -109,7 +109,6 @@
 #include "omnetpp/mersennetwister.h"
 #include "omnetpp/onstartup.h"
 #include "omnetpp/opp_string.h"
-#include "omnetpp/random.h"
 #include "omnetpp/regmacros.h"
 #include "omnetpp/simutil.h"
 #include "omnetpp/nedsupport.h"

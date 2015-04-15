@@ -39,7 +39,6 @@
 #include "omnetpp/cpar.h"
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cproperty.h"
-#include "omnetpp/random.h"
 #include "omnetpp/crng.h"
 #include "omnetpp/ccanvas.h"
 #include "omnetpp/cmodule.h"

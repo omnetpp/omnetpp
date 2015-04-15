@@ -98,7 +98,7 @@ int RandomSelectionStrategy::select()
         if (isSelectable(selectableGate(i)->getOwnerModule()))
             noOfSelectables++;
 
-    int rnd = intuniform(1, noOfSelectables);
+    int rnd = hostModule->intuniform(1, noOfSelectables);
 
     for (int i=0; i<gateSize; i++)
         if (isSelectable(selectableGate(i)->getOwnerModule()) && (--rnd == 0))

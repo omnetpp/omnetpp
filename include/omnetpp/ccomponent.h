@@ -25,6 +25,7 @@
 #include "cenvir.h"
 #include "clistener.h"
 #include "clog.h"
+#include "distrib.h"
 
 NAMESPACE_BEGIN
 
@@ -347,12 +348,6 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * This is a shortcut to getSimulation()->getSystemModule().
      */
     virtual cModule *getSystemModule() const;
-
-    /**
-     * Returns the global RNG mapped to local RNG number k. For large indices
-     * (k >= map size) the global RNG k is returned, provided it exists.
-     */
-    cRNG *getRNG(int k) const;
     //@}
 
     /** @name Interface for calling initialize()/finish().
@@ -421,6 +416,350 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * Check if a parameter exists.
      */
     bool hasPar(const char *s) const {return findPar(s)>=0;}
+    //@}
+
+    /** @name Basic random number generation. */
+    //@{
+
+    /**
+     * Returns the global RNG mapped to local RNG number k. For large indices
+     * (k >= map size) the global RNG k is returned, provided it exists.
+     */
+    virtual cRNG *getRNG(int k) const;
+
+    /**
+     * Produces a random integer in the range [0,r) using the RNG given with its index.
+     */
+    unsigned long intrand(long r, int rng=0) const  {return getRNG(rng)->intRand(r);}
+
+    /**
+     * Produces a random double in the range [0,1) using the RNG given with its index.
+     */
+    double dblrand(int rng=0) const  {return getRNG(rng)->doubleRand();}
+    //@}
+
+    /** @name Random variate generation -- continuous distributions. */
+    //@{
+
+    /**
+     * Returns a random variate with uniform distribution in the range [a,b).
+     *
+     * @param a, b the interval, a<b
+     * @param rng index of the component RNG to use, see getRNG(int)
+     */
+    double uniform(double a, double b, int rng=0) const  {return OPP::uniform(getRNG(rng), a, b);}
+
+    /**
+     * SimTime version of uniform(double,double,int), for convenience.
+     */
+    SimTime uniform(SimTime a, SimTime b, int rng=0) const  {return uniform(a.dbl(), b.dbl(), rng);}
+
+    /**
+     * Returns a random variate from the exponential distribution with the
+     * given mean (that is, with parameter lambda=1/mean).
+     *
+     * @param mean mean value
+     * @param rng index of the component RNG to use, see getRNG(int)
+     */
+    double exponential(double mean, int rng=0) const  {return OPP::exponential(getRNG(rng), mean);};
+
+    /**
+     * SimTime version of exponential(double,int), for convenience.
+     */
+    SimTime exponential(SimTime mean, int rng=0) const  {return exponential(mean.dbl(), rng);}
+
+    /**
+     * Returns a random variate from the normal distribution with the given mean
+     * and standard deviation.
+     *
+     * @param mean mean of the normal distribution
+     * @param stddev standard deviation of the normal distribution
+     * @param rng index of the component RNG to use, see getRNG(int)
+     */
+    double normal(double mean, double stddev, int rng=0) const  {return OPP::normal(getRNG(rng), mean, stddev);};
+
+    /**
+     * SimTime version of normal(double,double,int), for convenience.
+     */
+    SimTime normal(SimTime mean, SimTime stddev, int rng=0) const  {return normal(mean.dbl(), stddev.dbl(), rng);}
+
+    /**
+     * Normal distribution truncated to nonnegative values.
+     * It is implemented with a loop that discards negative values until
+     * a nonnegative one comes. This means that the execution time is not bounded:
+     * a large negative mean with much smaller stddev is likely to result
+     * in a large number of iterations.
+     *
+     * The mean and stddev parameters serve as parameters to the normal
+     * distribution <i>before</i> truncation. The actual random variate returned
+     * will have a different mean and standard deviation.
+     *
+     * @param mean mean of the normal distribution
+     * @param stddev standard deviation of the normal distribution
+     * @param rng index of the component RNG to use, see getRNG(int)
+     */
+    double truncnormal(double mean, double stddev, int rng=0) const  {return OPP::truncnormal(getRNG(rng), mean, stddev);};
+
+    /**
+     * SimTime version of truncnormal(double,double,int), for convenience.
+     */
+    SimTime truncnormal(SimTime mean, SimTime stddev, int rng=0) const  {return truncnormal(mean.dbl(), stddev.dbl(), rng);}
+
+    /**
+     * Returns a random variate from the gamma distribution with parameters
+     * alpha>0, theta>0. Alpha is known as the "shape" parameter, and theta
+     * as the "scale" parameter.
+     *
+     * Some sources in the literature use the inverse scale parameter
+     * beta = 1 / theta, called the "rate" parameter. Various other notations
+     * can be found in the literature; our usage of (alpha,theta) is consistent
+     * with Wikipedia and Mathematica (Wolfram Research).
+     *
+     * Gamma is the generalization of the Erlang distribution for non-integer
+     * k values, which becomes the alpha parameter. The chi-square distribution
+     * is a special case of the gamma distribution.
+     *
+     * For alpha=1, Gamma becomes the exponential distribution with mean=theta.
+     *
+     * The mean of this distribution is alpha*theta, and variance is alpha*theta<sup>2</sup>.
+     *
+     * Generation: if alpha=1, it is generated as exponential(theta).
+     *
+     * For alpha>1, we make use of the acceptance-rejection method in
+     * "A Simple Method for Generating Gamma Variables", George Marsaglia and
+     * Wai Wan Tsang, ACM Transactions on Mathematical Software, Vol. 26, No. 3,
+     * September 2000.
+     *
+     * The alpha\<1 case makes use of the alpha\>1 algorithm, as suggested by the
+     * above paper.
+     *
+     * @remark the name gamma_d is chosen to avoid ambiguity with
+     * a function of the same name
+     *
+     * @param alpha >0  the "shape" parameter
+     * @param theta >0  the "scale" parameter
+     * @param rng index of the component RNG to use, see getRNG(int)
+     */
+    double gamma_d(double alpha, double theta, int rng=0) const  {return OPP::gamma_d(getRNG(rng), alpha, theta);};
+
+    /**
+     * Returns a random variate from the beta distribution with parameters
+     * alpha1, alpha2.
+     *
+     * Generation is using relationship to Gamma distribution: if Y1 has gamma
+     * distribution with alpha=alpha1 and beta=1 and Y2 has gamma distribution
+     * with alpha=alpha2 and beta=2, then Y = Y1/(Y1+Y2) has beta distribution
+     * with parameters alpha1 and alpha2.
+     *
+     * @param alpha1, alpha2 >0
+     * @param rng index of the component RNG to use, see getRNG(int)
+     */
+    double beta(double alpha1, double alpha2, int rng=0) const  {return OPP::beta(getRNG(rng), alpha1, alpha2);};
+
+    /**
+     * Returns a random variate from the Erlang distribution with k phases
+     * and mean mean.
+     *
+     * This is the sum of k mutually independent random variables, each with
+     * exponential distribution. Thus, the kth arrival time
+     * in the Poisson process follows the Erlang distribution.
+     *
+     * Erlang with parameters m and k is gamma-distributed with alpha=k
+     * and beta=m/k.
+     *
+     * Generation makes use of the fact that exponential distributions
+     * sum up to Erlang.
+     *
+     * @param k number of phases, k>0
+     * @param mean >0
+     * @param rng index of the component RNG to use, see getRNG(int)
+     */
+    double erlang_k(unsigned int k, double mean, int rng=0) const  {return OPP::erlang_k(getRNG(rng), k, mean);};
+
+    /**
+     * Returns a random variate from the chi-square distribution
+     * with k degrees of freedom.  The chi-square distribution arises
+     * in statistics. If Yi are k independent random variates from the normal
+     * distribution with unit variance, then the sum-of-squares (sum(Yi^2))
+     * has a chi-square distribution with k degrees of freedom.
+     *
+     * The expected value of this distribution is k. Chi_square with parameter
+     * k is gamma-distributed with alpha=k/2, beta=2.
+     *
+     * Generation is using relationship to gamma distribution.
+     *
+     * @param k degrees of freedom, k>0
+     * @param rng index of the component RNG to use, see getRNG(int)
+     */
+    double chi_square(unsigned int k, int rng=0) const  {return OPP::chi_square(getRNG(rng), k);};
+
+    /**
+     * Returns a random variate from the student-t distribution with
+     * i degrees of freedom. If Y1 has a normal distribution and Y2 has a chi-square
+     * distribution with k degrees of freedom then X = Y1 / sqrt(Y2/k)
+     * has a student-t distribution with k degrees of freedom.
+     *
+     * Generation is using relationship to gamma and chi-square.
+     *
+     * @param i degrees of freedom, i>0
+     * @param rng index of the component RNG to use, see getRNG(int)
+     */
+    double student_t(unsigned int i, int rng=0) const  {return OPP::student_t(getRNG(rng), i);};
+
+    /**
+     * Returns a random variate from the Cauchy distribution (also called
+     * Lorentzian distribution) with parameters a,b where b>0.
+     *
+     * This is a continuous distribution describing resonance behavior.
+     * It also describes the distribution of horizontal distances at which
+     * a line segment tilted at a random angle cuts the x-axis.
+     *
+     * Generation uses inverse transform.
+     *
+     * @param a
+     * @param b  b>0
+     * @param rng index of the component RNG to use, see getRNG(int)
+     */
+    double cauchy(double a, double b, int rng=0) const  {return OPP::cauchy(getRNG(rng), a, b);};
+
+    /**
+     * Returns a random variate from the triangular distribution with parameters
+     * a <= b <= c.
+     *
+     * Generation uses inverse transform.
+     *
+     * @param a, b, c   a <= b <= c
+     * @param rng index of the component RNG to use, see getRNG(int)
+     */
+    double triang(double a, double b, double c, int rng=0) const  {return OPP::triang(getRNG(rng), a, b, c);};
+
+    /**
+     * Returns a random variate from the lognormal distribution with "scale"
+     * parameter m and "shape" parameter w. m and w correspond to the parameters
+     * of the underlying normal distribution (m: mean, w: standard deviation.)
+     *
+     * Generation is using relationship to normal distribution.
+     *
+     * @param m  "scale" parameter, m>0
+     * @param w  "shape" parameter, w>0
+     * @param rng index of the component RNG to use, see getRNG(int)
+     */
+    double lognormal(double m, double w, int rng=0) const  {return OPP::lognormal(getRNG(rng), m, w);}
+
+    /**
+     * Returns a random variate from the Weibull distribution with parameters
+     * a, b > 0, where a is the "scale" parameter and b is the "shape" parameter.
+     * Sometimes Weibull is given with alpha and beta parameters, then alpha=b
+     * and beta=a.
+     *
+     * The Weibull distribution gives the distribution of lifetimes of objects.
+     * It was originally proposed to quantify fatigue data, but it is also used
+     * in reliability analysis of systems involving a "weakest link," e.g.
+     * in calculating a device's mean time to failure.
+     *
+     * When b=1, Weibull(a,b) is exponential with mean a.
+     *
+     * Generation uses inverse transform.
+     *
+     * @param a  the "scale" parameter, a>0
+     * @param b  the "shape" parameter, b>0
+     * @param rng index of the component RNG to use, see getRNG(int)
+     */
+    double weibull(double a, double b, int rng=0) const  {return OPP::weibull(getRNG(rng), a, b);};
+
+    /**
+     * Returns a random variate from the shifted generalized Pareto distribution.
+     *
+     * Generation uses inverse transform.
+     *
+     * @param a,b  the usual parameters for generalized Pareto
+     * @param c    shift parameter for left-shift
+     * @param rng index of the component RNG to use, see getRNG(int)
+     */
+    double pareto_shifted(double a, double b, double c, int rng=0) const  {return OPP::pareto_shifted(getRNG(rng), a, b, c);};
+    //@}
+
+    /** @name Random variate generation -- discrete distributions. */
+    //@{
+
+    /**
+     * Returns a random integer with uniform distribution in the range [a,b],
+     * inclusive. (Note that the function can also return b.)
+     *
+     * @param a, b  the interval, a<b
+     * @param rng index of the component RNG to use, see getRNG(int)
+     */
+    int intuniform(int a, int b, int rng=0) const  {return OPP::intuniform(getRNG(rng), a, b);};
+
+    /**
+     * Returns the result of a Bernoulli trial with probability p,
+     * that is, 1 with probability p and 0 with probability (1-p).
+     *
+     * Generation is using elementary look-up.
+     *
+     * @param p  0=<p<=1
+     * @param rng index of the component RNG to use, see getRNG(int)
+     */
+    int bernoulli(double p, int rng=0) const  {return OPP::bernoulli(getRNG(rng), p);};
+
+    /**
+     * Returns a random integer from the binomial distribution with
+     * parameters n and p, that is, the number of successes in n independent
+     * trials with probability p.
+     *
+     * Generation is using the relationship to Bernoulli distribution (runtime
+     * is proportional to n).
+     *
+     * @param n n>=0
+     * @param p 0<=p<=1
+     * @param rng index of the component RNG to use, see getRNG(int)
+     */
+    int binomial(int n, double p, int rng=0) const  {return OPP::binomial(getRNG(rng), n, p);};
+
+    /**
+     * Returns a random integer from the geometric distribution with parameter p,
+     * that is, the number of independent trials with probability p until the
+     * first success.
+     *
+     * This is the n=1 special case of the negative binomial distribution.
+     *
+     * Generation uses inverse transform.
+     *
+     * @param p  0<p<=1
+     * @param rng index of the component RNG to use, see getRNG(int)
+     */
+    int geometric(double p, int rng=0) const  {return OPP::geometric(getRNG(rng), p);};
+
+    /**
+     * Returns a random integer from the negative binomial distribution with
+     * parameters n and p, that is, the number of failures occurring before
+     * n successes in independent trials with probability p of success.
+     *
+     * Generation is using the relationship to geometric distribution (runtime is
+     * proportional to n).
+     *
+     * @param n  n>=0
+     * @param p  0<p<1
+     * @param rng index of the component RNG to use, see getRNG(int)
+     */
+    int negbinomial(int n, double p, int rng=0) const  {return OPP::negbinomial(getRNG(rng), n, p);};
+
+    /**
+     * Returns a random integer from the Poisson distribution with parameter lambda,
+     * that is, the number of arrivals over unit time where the time between
+     * successive arrivals follow exponential distribution with parameter lambda.
+     *
+     * Lambda is also the mean (and variance) of the distribution.
+     *
+     * Generation method depends on value of lambda:
+     *
+     *   - 0<lambda<=30: count number of events
+     *   - lambda>30: Acceptance-Rejection due to Atkinson (see Banks, page 166)
+     *
+     * @param lambda  > 0
+     * @param rng index of the component RNG to use, see getRNG(int)
+     */
+    int poisson(double lambda, int rng=0) const  {return OPP::poisson(getRNG(rng), lambda);};
     //@}
 
     /** @name Emitting simulation signals. */

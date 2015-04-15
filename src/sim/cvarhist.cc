@@ -25,9 +25,9 @@
 #include <string.h>
 #include <math.h>
 #include "omnetpp/globals.h"
-#include "omnetpp/random.h"
 #include "omnetpp/distrib.h"
 #include "omnetpp/cvarhist.h"
+#include "omnetpp/csimulation.h"  // __contextComponentRNG()
 #include "omnetpp/cexception.h"
 
 #ifdef WITH_PARSIM
@@ -374,17 +374,18 @@ double cVarHistogram::random() const //--LG
     if (num_vals == 0)
         return 0;
 
+    cRNG *rng = __contextComponentRNG(genk);
     if (num_vals < num_firstvals)
     {
         // randomly select a sample from the stored ones
-        return firstvals[genk_intrand(genk, num_vals)];
+        return firstvals[intrand(rng, num_vals)];
     }
     else
     {
         double lower, upper;
 
         // generate in [lower, upper)
-        double m = genk_intrand(genk, num_vals-cell_under-cell_over);
+        double m = intrand(rng, num_vals-cell_under-cell_over);
 
         // select a random interval (k-1) and return a random number from
         // that interval generated according to uniform distribution.
@@ -395,7 +396,7 @@ double cVarHistogram::random() const //--LG
         lower = bin_bounds[k-1];
         upper = bin_bounds[k];
 
-        return lower + genk_dblrand(genk)*(upper-lower);
+        return lower + dblrand(rng)*(upper-lower);
     }
 }
 

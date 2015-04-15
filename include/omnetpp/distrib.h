@@ -20,10 +20,21 @@
 #define __OMNETPP_DISTRIB_H
 
 #include "simkerneldefs.h"
-#include "random.h"
+#include "crng.h"
 #include "simtime.h"
 
 NAMESPACE_BEGIN
+
+//TODO @group etc
+/**
+ * Produces a random integer in the range [0,r) using the RNG given with its index.
+ */
+inline unsigned long intrand(cRNG *rng, long r)  {return rng->intRand(r);}
+
+/**
+ * Produces a random double in the range [0,1) using the RNG given with its index.
+ */
+inline double dblrand(cRNG *rng)  {return rng->doubleRand();}
 
 /**
  * @ingroup RandomNumbers
@@ -37,12 +48,12 @@ NAMESPACE_BEGIN
  * @param a, b the interval, a<b
  * @param rng the underlying random number generator
  */
-SIM_API double uniform(double a, double b, int rng=0);
+SIM_API double uniform(cRNG *rng, double a, double b);
 
 /**
  * SimTime version of uniform(double,double,int), for convenience.
  */
-inline SimTime uniform(SimTime a, SimTime b, int rng=0) {return uniform(a.dbl(), b.dbl(), rng);}
+inline SimTime uniform(cRNG *rng, SimTime a, SimTime b) {return uniform(rng, a.dbl(), b.dbl());}
 
 /**
  * Returns a random variate from the exponential distribution with the
@@ -51,12 +62,12 @@ inline SimTime uniform(SimTime a, SimTime b, int rng=0) {return uniform(a.dbl(),
  * @param mean mean value
  * @param rng the underlying random number generator
  */
-SIM_API double exponential(double mean, int rng=0);
+SIM_API double exponential(cRNG *rng, double mean);
 
 /**
  * SimTime version of exponential(double,int), for convenience.
  */
-inline SimTime exponential(SimTime mean, int rng=0) {return exponential(mean.dbl(), rng);}
+inline SimTime exponential(cRNG *rng, SimTime mean) {return exponential(rng, mean.dbl());}
 
 /**
  * Returns a random variate from the normal distribution with the given mean
@@ -66,12 +77,12 @@ inline SimTime exponential(SimTime mean, int rng=0) {return exponential(mean.dbl
  * @param stddev standard deviation of the normal distribution
  * @param rng the underlying random number generator
  */
-SIM_API double normal(double mean, double stddev, int rng=0);
+SIM_API double normal(cRNG *rng, double mean, double stddev);
 
 /**
  * SimTime version of normal(double,double,int), for convenience.
  */
-inline SimTime normal(SimTime mean, SimTime stddev, int rng=0) {return normal(mean.dbl(), stddev.dbl(), rng);}
+inline SimTime normal(cRNG *rng, SimTime mean, SimTime stddev) {return normal(rng, mean.dbl(), stddev.dbl());}
 
 /**
  * Normal distribution truncated to nonnegative values.
@@ -88,12 +99,12 @@ inline SimTime normal(SimTime mean, SimTime stddev, int rng=0) {return normal(me
  * @param stddev standard deviation of the normal distribution
  * @param rng the underlying random number generator
  */
-SIM_API double truncnormal(double mean, double stddev, int rng=0);
+SIM_API double truncnormal(cRNG *rng, double mean, double stddev);
 
 /**
  * SimTime version of truncnormal(double,double,int), for convenience.
  */
-inline SimTime truncnormal(SimTime mean, SimTime stddev, int rng=0) {return truncnormal(mean.dbl(), stddev.dbl(), rng);}
+inline SimTime truncnormal(cRNG *rng, SimTime mean, SimTime stddev) {return truncnormal(rng, mean.dbl(), stddev.dbl());}
 
 /**
  * Returns a random variate from the gamma distribution with parameters
@@ -130,7 +141,7 @@ inline SimTime truncnormal(SimTime mean, SimTime stddev, int rng=0) {return trun
  * @param theta >0  the "scale" parameter
  * @param rng the underlying random number generator
  */
-SIM_API double gamma_d(double alpha, double theta, int rng=0);
+SIM_API double gamma_d(cRNG *rng, double alpha, double theta);
 
 /**
  * Returns a random variate from the beta distribution with parameters
@@ -144,7 +155,7 @@ SIM_API double gamma_d(double alpha, double theta, int rng=0);
  * @param alpha1, alpha2 >0
  * @param rng the underlying random number generator
  */
-SIM_API double beta(double alpha1, double alpha2, int rng=0);
+SIM_API double beta(cRNG *rng, double alpha1, double alpha2);
 
 /**
  * Returns a random variate from the Erlang distribution with k phases
@@ -164,7 +175,7 @@ SIM_API double beta(double alpha1, double alpha2, int rng=0);
  * @param mean >0
  * @param rng the underlying random number generator
  */
-SIM_API double erlang_k(unsigned int k, double mean, int rng=0);
+SIM_API double erlang_k(cRNG *rng, unsigned int k, double mean);
 
 /**
  * Returns a random variate from the chi-square distribution
@@ -181,7 +192,7 @@ SIM_API double erlang_k(unsigned int k, double mean, int rng=0);
  * @param k degrees of freedom, k>0
  * @param rng the underlying random number generator
  */
-SIM_API double chi_square(unsigned int k, int rng=0);
+SIM_API double chi_square(cRNG *rng, unsigned int k);
 
 /**
  * Returns a random variate from the student-t distribution with
@@ -194,7 +205,7 @@ SIM_API double chi_square(unsigned int k, int rng=0);
  * @param i degrees of freedom, i>0
  * @param rng the underlying random number generator
  */
-SIM_API double student_t(unsigned int i, int rng=0);
+SIM_API double student_t(cRNG *rng, unsigned int i);
 
 /**
  * Returns a random variate from the Cauchy distribution (also called
@@ -210,7 +221,7 @@ SIM_API double student_t(unsigned int i, int rng=0);
  * @param b  b>0
  * @param rng the underlying random number generator
  */
-SIM_API double cauchy(double a, double b, int rng=0);
+SIM_API double cauchy(cRNG *rng, double a, double b);
 
 /**
  * Returns a random variate from the triangular distribution with parameters
@@ -221,7 +232,7 @@ SIM_API double cauchy(double a, double b, int rng=0);
  * @param a, b, c   a <= b <= c
  * @param rng the underlying random number generator
  */
-SIM_API double triang(double a, double b, double c, int rng=0);
+SIM_API double triang(cRNG *rng, double a, double b, double c);
 
 /**
  * Returns a random variate from the lognormal distribution with "scale"
@@ -234,9 +245,9 @@ SIM_API double triang(double a, double b, double c, int rng=0);
  * @param w  "shape" parameter, w>0
  * @param rng the underlying random number generator
  */
-inline double lognormal(double m, double w, int rng=0)
+inline double lognormal(cRNG *rng, double m, double w)
 {
-    return exp(normal(m, w, rng));
+    return exp(normal(rng, m, w));
 }
 
 /**
@@ -258,7 +269,7 @@ inline double lognormal(double m, double w, int rng=0)
  * @param b  the "shape" parameter, b>0
  * @param rng the underlying random number generator
  */
-SIM_API double weibull(double a, double b, int rng=0);
+SIM_API double weibull(cRNG *rng, double a, double b);
 
 /**
  * Returns a random variate from the shifted generalized Pareto distribution.
@@ -269,7 +280,7 @@ SIM_API double weibull(double a, double b, int rng=0);
  * @param c    shift parameter for left-shift
  * @param rng the underlying random number generator
  */
-SIM_API double pareto_shifted(double a, double b, double c, int rng=0);
+SIM_API double pareto_shifted(cRNG *rng, double a, double b, double c);
 
 //@}
 
@@ -286,7 +297,7 @@ SIM_API double pareto_shifted(double a, double b, double c, int rng=0);
  * @param a, b  the interval, a<b
  * @param rng the underlying random number generator
  */
-SIM_API int intuniform(int a, int b, int rng=0);
+SIM_API int intuniform(cRNG *rng, int a, int b);
 
 /**
  * Returns the result of a Bernoulli trial with probability p,
@@ -297,9 +308,9 @@ SIM_API int intuniform(int a, int b, int rng=0);
  * @param p  0=<p<=1
  * @param rng the underlying random number generator
  */
-inline int bernoulli(double p, int rng=0)
+inline int bernoulli(cRNG *rng, double p)
 {
-    double U = genk_dblrand(rng);
+    double U = rng->doubleRand();
     return (p > U) ? 1 : 0;
 }
 
@@ -315,7 +326,7 @@ inline int bernoulli(double p, int rng=0)
  * @param p 0<=p<=1
  * @param rng the underlying random number generator
  */
-SIM_API int binomial(int n, double p, int rng=0);
+SIM_API int binomial(cRNG *rng, int n, double p);
 
 /**
  * Returns a random integer from the geometric distribution with parameter p,
@@ -329,7 +340,7 @@ SIM_API int binomial(int n, double p, int rng=0);
  * @param p  0<p<=1
  * @param rng the underlying random number generator
  */
-SIM_API int geometric(double p, int rng=0);
+SIM_API int geometric(cRNG *rng, double p);
 
 /**
  * Returns a random integer from the negative binomial distribution with
@@ -343,7 +354,7 @@ SIM_API int geometric(double p, int rng=0);
  * @param p  0<p<1
  * @param rng the underlying random number generator
  */
-SIM_API int negbinomial(int n, double p, int rng=0);
+SIM_API int negbinomial(cRNG *rng, int n, double p);
 
 //
 // hypergeometric() doesn't work yet
@@ -362,7 +373,7 @@ SIM_API int negbinomial(int n, double p, int rng=0);
 //  * @param n     0<=n<=a+b
 //  * @param rng the underlying random number generator
 //  */
-// SIM_API int hypergeometric(int a, int b, int n, int rng=0);
+// SIM_API int hypergeometric(cRNG *rng, int a, int b, int n);
 
 /**
  * Returns a random integer from the Poisson distribution with parameter lambda,
@@ -379,7 +390,7 @@ SIM_API int negbinomial(int n, double p, int rng=0);
  * @param lambda  > 0
  * @param rng the underlying random number generator
  */
-SIM_API int poisson(double lambda, int rng=0);
+SIM_API int poisson(cRNG *rng, double lambda);
 
 //@}
 

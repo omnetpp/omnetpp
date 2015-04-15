@@ -22,11 +22,12 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <sstream>
 #include "omnetpp/globals.h"
 #include "omnetpp/cpsquare.h"
 #include "omnetpp/cexception.h"
-#include "omnetpp/random.h"
 #include "omnetpp/distrib.h"
+#include "omnetpp/csimulation.h" // for __contextComponentRNG()
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
@@ -308,12 +309,13 @@ double cPSquare::random() const
 {
     double s;
     int k=0, l;
+    cRNG *rng = __contextComponentRNG(genk);
 
     //if (num_obs==0)   // newer, from PUPPIS
     if (numobs<numcells+1)
         throw cRuntimeError(this,"must collect at least num_cells values before random() can be used");
 
-    s = numobs * genk_dblrand(genk);
+    s = numobs * dblrand(rng);
 
     for (int i=1; i<=numcells+1; i++)
     {
@@ -334,7 +336,7 @@ double cPSquare::random() const
        l += numcells-numobs+1;
     }
 
-    return dblrand()*(q[k]-q[l])+q[l];
+    return dblrand(rng)*(q[k]-q[l])+q[l];
 }
 
 int cPSquare::getNumCells() const

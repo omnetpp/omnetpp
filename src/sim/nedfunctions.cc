@@ -26,6 +26,8 @@
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/ccomponenttype.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/cmodule.h"
 
 NAMESPACE_BEGIN
 
@@ -34,7 +36,7 @@ NAMESPACE_BEGIN
 void nedfunctions_dummy() {} //see util.cc
 
 #define DEF(FUNCTION, SIGNATURE, CATEGORY, DESCRIPTION, BODY) \
-    static cNEDValue FUNCTION(cComponent *context, cNEDValue argv[], int argc) {BODY} \
+    static cNEDValue FUNCTION(cComponent *contextComponent, cNEDValue argv[], int argc) {BODY} \
     Define_NED_Function2(FUNCTION, SIGNATURE, CATEGORY, DESCRIPTION);
 
 
@@ -413,7 +415,7 @@ DEF(nedf_fullPath,
     "ned",
     "Returns the full path of the module or channel in context.",
 {
-    return context->getFullPath();
+    return contextComponent->getFullPath();
 })
 
 DEF(nedf_fullName,
@@ -421,7 +423,7 @@ DEF(nedf_fullName,
     "ned",
     "Returns the full name of the module or channel in context.",
 {
-    return context->getFullName();
+    return contextComponent->getFullName();
 })
 
 DEF(nedf_parentIndex,
@@ -429,9 +431,9 @@ DEF(nedf_parentIndex,
     "ned",
     "Returns the index of the parent module, which has to be part of module vector.",
 {
-    cModule *mod = context->getParentModule();
+    cModule *mod = contextComponent->getParentModule();
     if (!mod)
-        throw cRuntimeError("parentIndex(): `%s' has no parent module", context->getFullPath().c_str());
+        throw cRuntimeError("parentIndex(): `%s' has no parent module", contextComponent->getFullPath().c_str());
     if (!mod->isVector())
         throw cRuntimeError("parentIndex(): module `%s' is not a vector", mod->getFullPath().c_str());
     return (long)mod->getIndex();
@@ -445,9 +447,9 @@ DEF(nedf_ancestorIndex,
     int levels = (int)argv[0];
     if (levels<0)
         throw cRuntimeError("ancestorIndex(): negative number of levels");
-    if (levels==0 && !context->isModule())
+    if (levels==0 && !contextComponent->isModule())
         throw cRuntimeError("ancestorIndex(): numlevels==0 and this is not a module");
-    cModule *mod = dynamic_cast<cModule *>(context);
+    cModule *mod = dynamic_cast<cModule *>(contextComponent);
     for (int i=0; mod && i<levels; i++)
         mod = mod->getParentModule();
     if (!mod)
@@ -470,7 +472,7 @@ DEF(nedf_uniform,
 {
     int rng = argc==3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cNEDValue(uniform((double)argv[0], argv1converted, rng), argv[0].getUnit());
+    return cNEDValue(contextComponent->uniform((double)argv[0], argv1converted, rng), argv[0].getUnit());
 })
 
 DEF(nedf_exponential,
@@ -479,7 +481,7 @@ DEF(nedf_exponential,
     "Returns a random number from the Exponential distribution",
 {
     int rng = argc==2 ? (int)argv[1] : 0;
-    return cNEDValue(exponential((double)argv[0], rng), argv[0].getUnit());
+    return cNEDValue(contextComponent->exponential((double)argv[0], rng), argv[0].getUnit());
 })
 
 DEF(nedf_normal,
@@ -489,7 +491,7 @@ DEF(nedf_normal,
 {
     int rng = argc==3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cNEDValue(normal((double)argv[0], argv1converted, rng), argv[0].getUnit());
+    return cNEDValue(contextComponent->normal((double)argv[0], argv1converted, rng), argv[0].getUnit());
 })
 
 DEF(nedf_truncnormal,
@@ -499,7 +501,7 @@ DEF(nedf_truncnormal,
 {
     int rng = argc==3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cNEDValue(truncnormal((double)argv[0], argv1converted, rng), argv[0].getUnit());
+    return cNEDValue(contextComponent->truncnormal((double)argv[0], argv1converted, rng), argv[0].getUnit());
 })
 
 DEF(nedf_gamma_d,
@@ -508,7 +510,7 @@ DEF(nedf_gamma_d,
     "Returns a random number from the Gamma distribution",
 {
     int rng = argc==3 ? (int)argv[2] : 0;
-    return cNEDValue(gamma_d((double)argv[0], (double)argv[1], rng), argv[1].getUnit());
+    return cNEDValue(contextComponent->gamma_d((double)argv[0], (double)argv[1], rng), argv[1].getUnit());
 })
 
 DEF(nedf_beta,
@@ -517,7 +519,7 @@ DEF(nedf_beta,
     "Returns a random number from the Beta distribution",
 {
     int rng = argc==3 ? (int)argv[2] : 0;
-    argv[0] = beta((double)argv[0], (double)argv[1], rng);
+    argv[0] = contextComponent->beta((double)argv[0], (double)argv[1], rng);
     return argv[0];
 })
 
@@ -530,7 +532,7 @@ DEF(nedf_erlang_k,
     if (k < 0)
         throw cRuntimeError("erlang_k(): k parameter (number of phases) must be positive (k=%d)", k);
     int rng = argc==3 ? (int)argv[2] : 0;
-    return cNEDValue(erlang_k(k, (double)argv[1], rng), argv[1].getUnit());
+    return cNEDValue(contextComponent->erlang_k(k, (double)argv[1], rng), argv[1].getUnit());
 })
 
 DEF(nedf_chi_square,
@@ -542,7 +544,7 @@ DEF(nedf_chi_square,
     if (k < 0)
         throw cRuntimeError("chi_square(): k parameter (degrees of freedom) must be positive (k=%d)", k);
     int rng = argc==2 ? (int)argv[1] : 0;
-    return chi_square(k, rng);
+    return contextComponent->chi_square(k, rng);
 })
 
 DEF(nedf_student_t,
@@ -554,7 +556,7 @@ DEF(nedf_student_t,
     if (i < 0)
        throw cRuntimeError("student_t(): i parameter (degrees of freedom) must be positive (i=%d)", i);
     int rng = argc==2 ? (int)argv[1] : 0;
-    return student_t(i, rng);
+    return contextComponent->student_t(i, rng);
 })
 
 DEF(nedf_cauchy,
@@ -564,7 +566,7 @@ DEF(nedf_cauchy,
 {
     int rng = argc==3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cNEDValue(cauchy((double)argv[0], argv1converted, rng), argv[0].getUnit());
+    return cNEDValue(contextComponent->cauchy((double)argv[0], argv1converted, rng), argv[0].getUnit());
 })
 
 DEF(nedf_triang,
@@ -575,7 +577,7 @@ DEF(nedf_triang,
     int rng = argc==4 ? (int)argv[3] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
     double argv2converted = argv[2].doubleValueInUnit(argv[0].getUnit());
-    return cNEDValue(triang((double)argv[0], argv1converted, argv2converted, rng), argv[0].getUnit());
+    return cNEDValue(contextComponent->triang((double)argv[0], argv1converted, argv2converted, rng), argv[0].getUnit());
 })
 
 DEF(nedf_lognormal,
@@ -584,7 +586,7 @@ DEF(nedf_lognormal,
     "Returns a random number from the Lognormal distribution",
 {
     int rng = argc==3 ? (int)argv[2] : 0;
-    return lognormal((double)argv[0], (double)argv[1], rng);
+    return contextComponent->lognormal((double)argv[0], (double)argv[1], rng);
 })
 
 DEF(nedf_weibull,
@@ -594,7 +596,7 @@ DEF(nedf_weibull,
 {
     int rng = argc==3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cNEDValue(weibull((double)argv[0], argv1converted, rng), argv[0].getUnit());
+    return cNEDValue(contextComponent->weibull((double)argv[0], argv1converted, rng), argv[0].getUnit());
 })
 
 DEF(nedf_pareto_shifted,
@@ -604,7 +606,7 @@ DEF(nedf_pareto_shifted,
 {
     int rng = argc==4 ? (int)argv[3] : 0;
     double argv2converted = argv[2].doubleValueInUnit(argv[1].getUnit());
-    return cNEDValue(pareto_shifted((double)argv[0], (double)argv[1], argv2converted, rng), argv[1].getUnit());
+    return cNEDValue(contextComponent->pareto_shifted((double)argv[0], (double)argv[1], argv2converted, rng), argv[1].getUnit());
 })
 
 // discrete
@@ -615,7 +617,7 @@ DEF(nedf_intuniform,
     "Returns a random number from the Intuniform distribution",
 {
     int rng = argc==3 ? (int)argv[2] : 0;
-    return (long) intuniform((int)argv[0], (int)argv[1], rng);
+    return (long) contextComponent->intuniform((int)argv[0], (int)argv[1], rng);
 })
 
 DEF(nedf_bernoulli,
@@ -624,7 +626,7 @@ DEF(nedf_bernoulli,
     "Returns a random number from the Bernoulli distribution",
 {
     int rng = argc==2 ? (int)argv[1] : 0;
-    return (long) bernoulli((double)argv[0], rng);
+    return (long) contextComponent->bernoulli((double)argv[0], rng);
 })
 
 DEF(nedf_binomial,
@@ -633,7 +635,7 @@ DEF(nedf_binomial,
     "Returns a random number from the Binomial distribution",
 {
     int rng = argc==3 ? (int)argv[2] : 0;
-    return (long) binomial((int)argv[0], (double)argv[1], rng);
+    return (long) contextComponent->binomial((int)argv[0], (double)argv[1], rng);
 })
 
 DEF(nedf_geometric,
@@ -642,7 +644,7 @@ DEF(nedf_geometric,
     "Returns a random number from the Geometric distribution",
 {
     int rng = argc==2 ? (int)argv[1] : 0;
-    return (long) geometric((double)argv[0], rng);
+    return (long) contextComponent->geometric((double)argv[0], rng);
 })
 
 DEF(nedf_negbinomial,
@@ -651,7 +653,7 @@ DEF(nedf_negbinomial,
     "Returns a random number from the Negbinomial distribution",
 {
     int rng = argc==3 ? (int)argv[2] : 0;
-    return (long) negbinomial((int)argv[0], (double)argv[1], rng);
+    return (long) contextComponent->negbinomial((int)argv[0], (double)argv[1], rng);
 })
 
 DEF(nedf_poisson,
@@ -660,7 +662,7 @@ DEF(nedf_poisson,
     "Returns a random number from the Poisson distribution",
 {
     int rng = argc==2 ? (int)argv[1] : 0;
-    return (long) poisson((double)argv[0], rng);
+    return (long) contextComponent->poisson((double)argv[0], rng);
 })
 
 //

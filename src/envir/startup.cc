@@ -262,7 +262,8 @@ int setupUserInterface(int argc, char *argv[])
 //---------------------------------------------------------
 // A dummy function to force UNIX linkers collect all symbols we need
 void env_dummy_function() {
-    exponential(1.0);
+    cRNG *rng = NULL;
+    exponential(rng, 1.0);
     Speedometer a;
     cFileOutputVectorManager ovm;
     cFileOutputScalarManager osm;

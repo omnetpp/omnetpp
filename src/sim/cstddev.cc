@@ -30,7 +30,6 @@
 #include "common/stringutil.h"
 #include "common/commonutil.h"  //NaN
 #include "omnetpp/cstddev.h"
-#include "omnetpp/random.h"
 #include "omnetpp/distrib.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cdetect.h"
@@ -226,7 +225,7 @@ double cStdDev::random() const
     {
         case 0:  return 0.0;
         case 1:  return min_vals;
-        default: return normal(getMean(), getStddev(), genk);
+        default: return normal(__contextComponentRNG(genk), getMean(), getStddev());
     }
 }
 

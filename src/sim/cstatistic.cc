@@ -28,7 +28,6 @@
 
 #include "common/stringutil.h"
 #include "omnetpp/cstatistic.h"
-#include "omnetpp/random.h"
 #include "omnetpp/distrib.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cdetect.h"  //NL

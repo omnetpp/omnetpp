@@ -22,7 +22,6 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cexception.h"
-#include "omnetpp/random.h"
 
 NAMESPACE_BEGIN
 

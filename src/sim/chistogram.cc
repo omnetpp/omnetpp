@@ -26,13 +26,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "omnetpp/random.h"
 #include "omnetpp/distrib.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cdetect.h"
 #include "omnetpp/chistogram.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cenvir.h"
+#include "omnetpp/csimulation.h"  // __contextComponentRNG()
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
@@ -376,6 +376,7 @@ void cHistogram::setupRangeDouble()
 
 double cHistogram::random() const
 {
+    cRNG *rng = __contextComponentRNG(genk);
     if (num_vals == 0)
     {
         return 0L;
@@ -383,11 +384,11 @@ double cHistogram::random() const
     else if (num_vals < num_firstvals)
     {
         // randomly select a sample from the stored ones
-        return firstvals[genk_intrand(genk, num_vals)];
+        return firstvals[intrand(rng, num_vals)];
     }
     else
     {
-        long m = genk_intrand(genk, num_vals - cell_under - cell_over);
+        long m = intrand(rng, num_vals - cell_under - cell_over);
 
         // select a random cell (k-1) and return a random number from it
         int k;
@@ -399,12 +400,12 @@ double cHistogram::random() const
             // min_vals, max_vals: integer-valued doubles (e.g.: -3.0, 5.0)
             // rangemin, rangemax: doubles like -1.5, 4.5 (integer+0.5)
             // cellsize: integer-valued double, >0
-            return ceil(rangemin) + (k-1)*(long)cellsize + genk_intrand(genk, (long)cellsize);
+            return ceil(rangemin) + (k-1)*(long)cellsize + intrand(rng, (long)cellsize);
         }
         else
         {
             // return an uniform double from the given cell
-            return rangemin + (k-1)*cellsize + genk_dblrand(genk)*cellsize;
+            return rangemin + (k-1)*cellsize + dblrand(rng)*cellsize;
         }
     }
 }

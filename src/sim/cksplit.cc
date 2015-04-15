@@ -25,9 +25,10 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cksplit.h"
-#include "omnetpp/random.h"
 #include "omnetpp/distrib.h"
 #include "omnetpp/cexception.h"
+#include "omnetpp/clog.h"
+#include "omnetpp/csimulation.h" // __contextComponentRNG()
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
@@ -590,7 +591,8 @@ double cKSplit::random() const
    //int dp = getTreeDepth();
    int cd = 1;
 
-   double x = genk_intrand(genk, num_vals);
+   cRNG *rng = __contextComponentRNG(genk);
+   double x = intrand(rng, num_vals);
 
    int location = rootgrid;
 
