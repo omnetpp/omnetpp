@@ -113,7 +113,7 @@ void LogBuffer::addLogLine(const char *prefix, const char *text, int len)
     //FIXME if last line is "info" then we cannot append to it! create new entry with empty banner?
 
     Entry *entry = entries.back();
-    cModule *contextComponent = getSimulation()->getContext();
+    cComponent *contextComponent = getSimulation()->getContext();
     int contextComponentId =  contextComponent ? contextComponent->getId() : 0;
     entry->lines.push_back(Line(contextComponentId, opp_strdup(prefix), opp_strdup(text,len)));
 
