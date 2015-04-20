@@ -14,7 +14,7 @@ void print(cLongHistogram& s)
     EV << "\n";
 }
 
-void collect(int na, int nb)
+void collect(cModule *mod, int na, int nb)
 {
     cLongHistogram a("a");
     cLongHistogram b("b");
@@ -26,13 +26,13 @@ void collect(int na, int nb)
 
     for (int i=0; i<na; i++)
     {
-        double d = 5*dblrand()+8;
+        double d = 5*mod->dblrand()+8;
         s.collect(d);
         a.collect(d);
     }
     for (int i=0; i<nb; i++)
     {
-        double d = dblrand()*10;
+        double d = mod->dblrand()*10;
         s.collect(d);
         b.collect(d);
     }
@@ -46,7 +46,7 @@ void collect(int na, int nb)
 }
 
 %activity:
-collect(50,80);
+collect(this,50,80);
 
 %contains: stdout
 a n=50 min=8 max=12 mean=10.4 stddev=1.35526

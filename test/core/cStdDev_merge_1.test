@@ -11,7 +11,7 @@ void print(cStdDev& s)
          << " var=" << s.getVariance() << endl;
 }
 
-void collect(int na, int nb)
+void collect(cModule *mod, int na, int nb)
 {
     cStdDev a("a");
     cStdDev b("b");
@@ -19,13 +19,13 @@ void collect(int na, int nb)
 
     for (int i=0; i<na; i++)
     {
-        double d = 5*dblrand()+8;
+        double d = 5*mod->dblrand()+8;
         s.collect(d);
         a.collect(d);
     }
     for (int i=0; i<nb; i++)
     {
-        double d = dblrand()*10;
+        double d = mod->dblrand()*10;
         s.collect(d);
         b.collect(d);
     }
@@ -39,14 +39,14 @@ void collect(int na, int nb)
 }
 
 %activity:
-collect(10,20);
+collect(this,10,20);
 
 // corner cases
-collect(0,0);
-collect(0,1);
-collect(0,5);
-collect(1,0);
-collect(5,0);
+collect(this,0,0);
+collect(this,0,1);
+collect(this,0,5);
+collect(this,1,0);
+collect(this,5,0);
 
 %subst: /-?1\.#INF/inf/
 %subst: /-?1\.#IND/nan/

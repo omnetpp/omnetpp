@@ -3,14 +3,14 @@ Test cHasher, the class for calculating simulation fingerprints.
 
 %global:
 
-unsigned int randint32()
+unsigned int randint32(cModule *mod)
 {
-    return intuniform(0,65535) | (intuniform(0,65535) << 16);
+    return mod->intuniform(0,65535) | (mod->intuniform(0,65535) << 16);
 }
 
-uint64_t randint64()
+uint64_t randint64(cModule *mod)
 {
-    return (int64_t)randint32() | ((int64_t)randint32() << 32);
+    return randint32(mod) | ((int64_t)randint32(mod) << 32);
 }
 
 %activity:
@@ -28,15 +28,15 @@ EV << "rng start: " << intrand(1000000) << "\n";
 // signed integers
 HASH(100, char,  intuniform(-128,127));
 HASH(100, short, intuniform(-32768, 32767));
-HASH(100, int,   (int)randint32());
-HASH(100, long,  (long)(int)randint32());
-HASH(100, int64_t, (int64_t)randint64());
+HASH(100, int,   (int)randint32(this));
+HASH(100, long,  (long)(int)randint32(this));
+HASH(100, int64_t, (int64_t)randint64(this));
 
 // unsigned integers
 HASH(100, unsigned short, intuniform(-32768, 32767));
-HASH(100, unsigned int,   (unsigned int)randint32());
-HASH(100, unsigned long,  (unsigned long)randint32());
-HASH(100, uint64_t,         (uint64_t)randint64());
+HASH(100, unsigned int,   (unsigned int)randint32(this));
+HASH(100, unsigned long,  (unsigned long)randint32(this));
+HASH(100, uint64_t,         (uint64_t)randint64(this));
 
 // double
 HASH(100, double, (dblrand()-0.5)*2e100);

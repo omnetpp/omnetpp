@@ -2,8 +2,8 @@
 Test that values in platdep/intlimits.h are correct
 
 %includes:
-// ensure we really ge what's inside intlimits.h, and not the conditionally defined stuff from <stdint.h>
-#undef __INTLIMITS_H
+// ensure we really get what's inside intlimits.h, and not the conditionally defined stuff from <stdint.h>
+#undef __OMNETPP_INTLIMITS_H
 #undef INT8_MIN
 #undef INT16_MIN
 #undef INT32_MIN
@@ -16,6 +16,7 @@ Test that values in platdep/intlimits.h are correct
 #undef UINT16_MAX
 #undef UINT32_MAX
 #undef UINT64_MAX
+
 #include <omnetpp/platdep/intlimits.h>
 
 %activity:
