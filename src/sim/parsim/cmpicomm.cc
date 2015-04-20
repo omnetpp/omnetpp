@@ -21,7 +21,7 @@
 #ifdef WITH_MPI
 
 #include <mpi.h> // Intel MPI wants <mpi.h> to precede <stdio.h>
-#include <stdio.h>
+#include <cstdio>
 #include "omnetpp/clog.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/regmacros.h"

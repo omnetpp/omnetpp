@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <math.h>
-#include <string.h>
+#include <cmath>
+#include <cstring>
 #include <sstream>
 #include <algorithm>
 #include "common/stringutil.h"

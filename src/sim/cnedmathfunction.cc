@@ -14,9 +14,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <math.h>
-#include <string.h>
-#include <stdarg.h>
+#include <cmath>
+#include <cstring>
+#include <cstdarg>
 #include "common/stringutil.h"
 #include "omnetpp/cnedmathfunction.h"
 #include "omnetpp/globals.h"

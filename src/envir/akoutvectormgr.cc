@@ -18,8 +18,8 @@
 #ifdef WITH_AKAROA
 
 #include <akaroa/ak_message.H>
-#include <assert.h>
-#include <string.h>
+#include <cassert>
+#include <cstring>
 #include <akaroa.H>
 #include "omnetpp/cenvir.h"
 #include "omnetpp/csimulation.h"

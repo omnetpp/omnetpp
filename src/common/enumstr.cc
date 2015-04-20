@@ -14,7 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdlib.h>
+#include <cstdlib>
 #include "enumstr.h"
 
 NAMESPACE_BEGIN

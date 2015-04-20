@@ -41,7 +41,7 @@ S  [ \t\v\n\r\f]
 %option never-interactive
 
 %{
-#include <string.h>
+#include <cstring>
 #include "omnetpp/cexception.h"
 #include "expryydefs.h"
 #include "expr.tab.hh"

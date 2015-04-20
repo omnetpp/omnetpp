@@ -14,11 +14,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
-#include <assert.h>
-#include <locale.h>
+#include <cstdio>
+#include <cassert>
+#include <clocale>
 #include <cstdlib>
-#include <errno.h>
+#include <cerrno>
 #include "omnetpp/platdep/platmisc.h"  //strcasecmp
 #include "opp_ctype.h"
 #include "stringutil.h"

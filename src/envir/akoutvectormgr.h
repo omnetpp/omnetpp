@@ -23,7 +23,7 @@
 #ifndef __OMNETPP_AKOUTVECTORMGR_H
 #define __OMNETPP_AKOUTVECTORMGR_H
 
-#include <stdio.h>
+#include <cstdio>
 #include "omnetpp/simutil.h"
 #include "fileoutvectormgr.h"
 

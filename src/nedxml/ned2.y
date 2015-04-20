@@ -74,8 +74,8 @@
 
 %{
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <stack>
 #include "common/commonutil.h"
 #include "common/stringutil.h"
@@ -88,7 +88,7 @@
 
 #if YYDEBUG != 0
 #define YYERROR_VERBOSE     /* more detailed error messages */
-#include <string.h>         /* YYVERBOSE needs it */
+#include <cstring>         /* YYVERBOSE needs it */
 #endif
 
 /* increase GLR stack -- with the default 200 some NED files have reportedly caused a "memory exhausted" error */

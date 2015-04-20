@@ -18,7 +18,7 @@
 #ifndef __OMNETPP_RUNATTRIBUTES_H
 #define __OMNETPP_RUNATTRIBUTES_H
 
-#include <stdio.h>
+#include <cstdio>
 #include "envirdefs.h"
 
 NAMESPACE_BEGIN

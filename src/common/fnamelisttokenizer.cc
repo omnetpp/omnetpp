@@ -14,9 +14,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cassert>
+#include <cstdlib>
+#include <cstring>
 #include "fnamelisttokenizer.h"
 
 NAMESPACE_BEGIN

@@ -28,7 +28,7 @@ S  [ \t\v\n\r\f]
 %option never-interactive
 
 %{
-#include <string.h>
+#include <cstring>
 #include "nedyydefs.h"
 #include "nedexception.h"
 #include "ned1.tab.hh"

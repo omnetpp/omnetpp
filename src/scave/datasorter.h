@@ -20,10 +20,10 @@
 
 #include <algorithm>
 #include <functional>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cassert>
 #include "common/commonutil.h"
 #include "common/patternmatcher.h"
 #include "resultfilemanager.h"

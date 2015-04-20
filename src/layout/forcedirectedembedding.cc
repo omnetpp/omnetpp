@@ -14,7 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <float.h>
+#include <cfloat>
 #include "common/lcgrandom.h"
 #include "forcedirectedembedding.h"
 #include "forcedirectedparameters.h"

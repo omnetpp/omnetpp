@@ -16,7 +16,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
+#include <cstdio>
 #include "omnetpp/cstlwatch.h"
 #include "omnetpp/cclassdescriptor.h"
 #include "omnetpp/globals.h"

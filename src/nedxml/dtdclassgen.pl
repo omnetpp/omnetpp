@@ -229,7 +229,7 @@ print H "#include \"nedelement.h\"\n\n";
 print H "NAMESPACE_BEGIN\n\n";
 
 print CC "$copyright\n";
-print CC "#include <string.h>\n";
+print CC "#include <cstring>\n";
 print CC "#include \"nederror.h\"\n";
 print CC "#include \"nedexception.h\"\n";
 print CC "#include \"$hfile\"\n\n";
@@ -574,7 +574,7 @@ print VAL_H "#include \"nedelements.h\"\n\n";
 print VAL_H "NAMESPACE_BEGIN\n\n";
 
 print VAL_CC "$copyright\n";
-print VAL_CC "#include <stdio.h>\n";
+print VAL_CC "#include <cstdio>\n";
 print VAL_CC "#include \"nederror.h\"\n";
 print VAL_CC "#include \"nedexception.h\"\n";
 print VAL_CC "#include \"$validatorhfile\"\n\n";

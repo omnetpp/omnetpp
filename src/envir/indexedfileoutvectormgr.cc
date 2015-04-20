@@ -21,10 +21,10 @@
 #include "omnetpp/simkerneldefs.h"
 
 #include <sys/stat.h>
-#include <assert.h>
-#include <string.h>
+#include <cassert>
+#include <cstring>
 #include <fstream>
-#include <errno.h> // SGI
+#include <cerrno> // SGI
 #include <algorithm>
 #include "common/stringutil.h"
 #include "common/fileutil.h"

@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_PATTERNMATCHER_H
 #define __OMNETPP_PATTERNMATCHER_H
 
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <vector>
 #include "commondefs.h"

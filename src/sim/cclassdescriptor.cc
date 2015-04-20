@@ -17,9 +17,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>   // sprintf
-#include <stdlib.h>  // atol
-#include <string.h>
+#include <cstdio>   // sprintf
+#include <cstdlib>  // atol
+#include <cstring>
 #include "common/opp_ctype.h"
 #include "omnetpp/cclassdescriptor.h"
 #include "omnetpp/carray.h"

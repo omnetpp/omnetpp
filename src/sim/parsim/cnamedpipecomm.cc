@@ -25,10 +25,10 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <errno.h>
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+#include <cerrno>
 #include <fcntl.h>
 #include <unistd.h>
 #include "omnetpp/cexception.h"

@@ -16,7 +16,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>
+#include <cstring>
 #include "task.h"
 
 NAMESPACE_BEGIN

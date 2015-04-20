@@ -28,7 +28,7 @@ S  [ \t\v\n\r\f]
 %option never-interactive
 
 %{
-#include <string.h>
+#include <cstring>
 #include "expressionyydefs.h"
 #include "exception.h"
 #include "expression.tab.hh"

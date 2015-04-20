@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_GEOMETRY_H
 #define __OMNETPP_GEOMETRY_H
 
-#include <math.h>
+#include <cmath>
 #include <vector>
 #include <algorithm>
 #include "common/commonutil.h"

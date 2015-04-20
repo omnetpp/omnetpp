@@ -20,7 +20,7 @@
 #ifndef __OMNETPP_COUTVECTOR_H
 #define __OMNETPP_COUTVECTOR_H
 
-#include <stdio.h>
+#include <cstdio>
 #include "cownedobject.h"
 #include "simtime_t.h"
 

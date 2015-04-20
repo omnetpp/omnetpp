@@ -19,10 +19,10 @@
 #ifndef __OMNETPP_SIMUTIL_H
 #define __OMNETPP_SIMUTIL_H
 
-#include <string.h>  // for strlen, etc.
-#include <stdarg.h>  // for va_list
-#include <stdio.h>   // for sprintf
-#include <stdlib.h>  // for gcvt
+#include <cstring>  // for strlen, etc.
+#include <cstdarg>  // for va_list
+#include <cstdio>   // for sprintf
+#include <cstdlib>  // for gcvt
 #include <typeinfo>  // for type_info
 #include <string>    // for std::string
 #include "platdep/platmisc.h" // for gcvt, etc

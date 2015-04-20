@@ -14,11 +14,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
+#include <cstdio>
+#include <cstring>
+#include <cassert>
 #include <algorithm>
-#include <locale.h>
+#include <clocale>
 
 #include "common/patternmatcher.h"
 #include "common/opp_ctype.h"

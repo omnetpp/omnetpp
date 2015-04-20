@@ -18,7 +18,7 @@
 #ifndef __OMNETPP_STATISTICS_H
 #define __OMNETPP_STATISTICS_H
 
-#include <float.h>
+#include <cfloat>
 #include "scavedefs.h"
 #include "scaveutils.h"
 

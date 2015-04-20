@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_EVENTLOGDEFS_H
 #define __OMNETPP_EVENTLOGDEFS_H
 
-#include <stdint.h> // for int64_t, our equivalent of Java's "long" type
+#include <cstdint> // for int64_t, our equivalent of Java's "long" type
 #include "common/exception.h"
 #include "common/commonutil.h"
 #include "common/bigdecimal.h"

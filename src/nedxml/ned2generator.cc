@@ -15,7 +15,7 @@
 *--------------------------------------------------------------*/
 
 
-#include <string.h>
+#include <cstring>
 #include <string>
 #include <sstream>
 #include "common/stringutil.h"

@@ -20,7 +20,7 @@
 #ifndef __OMNETPP_CSTATISTIC_H
 #define __OMNETPP_CSTATISTIC_H
 
-#include <stdio.h>
+#include <cstdio>
 #include "cownedobject.h"
 #include "simtime.h"
 

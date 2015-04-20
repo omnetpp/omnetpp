@@ -16,7 +16,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdlib.h>
+#include <cstdlib>
 #include "envirdefs.h"
 
 NAMESPACE_BEGIN

@@ -42,8 +42,8 @@
 
 %{
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include "commonutil.h"
 #include "expressionyydefs.h"
 
@@ -52,7 +52,7 @@
 
 #if YYDEBUG != 0
 #define YYERROR_VERBOSE     /* more detailed error messages */
-#include <string.h>         /* YYVERBOSE needs it */
+#include <cstring>         /* YYVERBOSE needs it */
 #endif
 
 #include "expression.h"

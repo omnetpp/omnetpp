@@ -14,13 +14,13 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <limits.h>
-#include <errno.h>
-#include <math.h>   //HUGE_VAL
-#include <locale.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstdarg>
+#include <climits>
+#include <cerrno>
+#include <cmath>   //HUGE_VAL
+#include <clocale>
 #include "omnetpp/platdep/platmisc.h"
 #include "commonutil.h"
 #include "opp_ctype.h"
@@ -505,7 +505,7 @@ int strdictcmp(const char *s1, const char *s2)
 }
 
 /* for testing:
-#include <stdio.h>
+#include <cstdio>
 int qsortfunc(const void *a, const void *b)
 {
     return strdictcmp(*(char**)a, *(char**)b);

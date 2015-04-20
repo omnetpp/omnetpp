@@ -17,10 +17,10 @@
 *--------------------------------------------------------------*/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <math.h>
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+#include <cmath>
 #include <algorithm>
 
 #include "arrow.h"

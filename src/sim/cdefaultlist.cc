@@ -19,7 +19,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>  // memcpy
+#include <cstring>  // memcpy
 #include "omnetpp/globals.h"
 #include "omnetpp/carray.h"
 #include "omnetpp/cexception.h"

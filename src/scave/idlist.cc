@@ -19,7 +19,7 @@
 #pragma warning(disable:4996)
 #endif
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <algorithm>
 #include <functional>
 #include "common/stringutil.h"

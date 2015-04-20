@@ -16,13 +16,13 @@
 
 #ifdef _WIN32
 #include <direct.h>
-#include <stdlib.h> // _MAX_PATH
+#include <cstdlib> // _MAX_PATH
 #else
 #include <unistd.h>
 #endif
 #include <sys/stat.h>
-#include <string.h>
-#include <errno.h>
+#include <cstring>
+#include <cerrno>
 #include <string>
 #include <vector>
 

@@ -21,7 +21,7 @@
 #ifndef __OMNETPP_NEDCROSSVALIDATOR_H
 #define __OMNETPP_NEDCROSSVALIDATOR_H
 
-#include <string.h>
+#include <cstring>
 #include "nedvalidator.h"
 
 NAMESPACE_BEGIN

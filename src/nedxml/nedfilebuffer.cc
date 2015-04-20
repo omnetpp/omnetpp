@@ -16,10 +16,10 @@
 
 
 #include <sys/stat.h>
-#include <string.h>
-#include <stdio.h>
-#include <time.h>
-#include <assert.h>
+#include <cstring>
+#include <cstdio>
+#include <ctime>
+#include <cassert>
 #include "common/opp_ctype.h"
 #include "nedfilebuffer.h"
 #include "nedyylib.h"

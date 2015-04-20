@@ -17,10 +17,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdlib.h>
-#include <errno.h>
-#include <limits.h>  //LONG_MAX
-#include <locale.h>
+#include <cstdlib>
+#include <cerrno>
+#include <climits>  //LONG_MAX
+#include <clocale>
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/cexception.h"
 

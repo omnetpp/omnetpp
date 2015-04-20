@@ -21,7 +21,7 @@
 #ifndef __OMNETPP_CSTDDEV_H
 #define __OMNETPP_CSTDDEV_H
 
-#include <stdio.h>
+#include <cstdio>
 #include "cstatistic.h"
 
 NAMESPACE_BEGIN

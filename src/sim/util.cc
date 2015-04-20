@@ -18,10 +18,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <time.h>
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
+#include <ctime>
+#include <cstdio>
+#include <cstring>
+#include <cmath>
 #include "common/commonutil.h"
 #include "common/unitconversion.h"
 #include "common/opp_ctype.h"

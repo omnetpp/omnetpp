@@ -18,7 +18,7 @@
 #ifndef __OMNETPP_FILEOUTPUTSCALARMGR_H
 #define __OMNETPP_FILEOUTPUTSCALARMGR_H
 
-#include <stdio.h>
+#include <cstdio>
 #include "common/stringutil.h"
 #include "omnetpp/envirext.h"
 #include "omnetpp/simutil.h"

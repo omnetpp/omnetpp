@@ -14,7 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <float.h>
+#include <cfloat>
 #include "graphcomponent.h"
 
 NAMESPACE_BEGIN

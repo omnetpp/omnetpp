@@ -21,8 +21,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include "common/ver.h"
 
 #define INTRAND_MAX  0x7ffffffeL  /* = 2**31-2 */

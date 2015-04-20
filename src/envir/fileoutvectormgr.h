@@ -18,7 +18,7 @@
 #ifndef __OMNETPP_FILEOUTPUTVECTORMGR_H
 #define __OMNETPP_FILEOUTPUTVECTORMGR_H
 
-#include <stdio.h>
+#include <cstdio>
 #include "omnetpp/envirext.h"
 #include "omnetpp/simutil.h"
 #include "envirdefs.h"

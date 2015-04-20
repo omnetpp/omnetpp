@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_FORCEDIRECTEDPARAMETERSBASE_H
 #define __OMNETPP_FORCEDIRECTEDPARAMETERSBASE_H
 
-#include <math.h>
+#include <cmath>
 #include "geometry.h"
 
 NAMESPACE_BEGIN

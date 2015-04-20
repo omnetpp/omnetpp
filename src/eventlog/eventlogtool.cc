@@ -14,7 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <time.h>
+#include <ctime>
 #include "common/ver.h"
 #include "common/filereader.h"
 #include "common/linetokenizer.h"

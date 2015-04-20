@@ -19,10 +19,10 @@
 // being pulled in (we don't need the SmartCard API here anyway ;-)
 #define _WINSCARD_H_
 
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-#include <assert.h>
+#include <cstdio>
+#include <cstring>
+#include <ctime>
+#include <cassert>
 
 #include "common/exception.h"
 #include "tklib.h"

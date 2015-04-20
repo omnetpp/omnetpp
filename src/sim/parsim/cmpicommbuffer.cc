@@ -20,7 +20,7 @@
 
 #ifdef WITH_MPI
 
-#include <string.h>
+#include <cstring>
 #include <mpi.h>
 #include "omnetpp/globals.h"
 #include "omnetpp/regmacros.h"

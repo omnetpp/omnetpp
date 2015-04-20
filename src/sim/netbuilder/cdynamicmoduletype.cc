@@ -15,9 +15,9 @@
 *--------------------------------------------------------------*/
 
 
-#include <string.h>
-#include <stdio.h>
-#include <time.h>
+#include <cstring>
+#include <cstdio>
+#include <ctime>
 #include <iostream>
 
 #include "cdynamicmoduletype.h"

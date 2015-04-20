@@ -19,7 +19,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>  // memcmp, memcpy, memset
+#include <cstring>  // memcmp, memcpy, memset
 #include <algorithm>  // min, max
 #include <sstream>
 #include "omnetpp/carray.h"

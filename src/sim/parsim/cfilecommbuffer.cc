@@ -18,10 +18,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <locale.h>
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
+#include <clocale>
 
 #include "omnetpp/simutil.h"
 #include "omnetpp/cownedobject.h"

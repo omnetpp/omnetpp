@@ -15,8 +15,8 @@
 *--------------------------------------------------------------*/
 
 #include <sstream>
-#include <assert.h>
-#include <string.h>
+#include <cassert>
+#include <cstring>
 #include <algorithm>
 #include "omnetpp/platdep/platmisc.h"
 #include "opp_ctype.h"

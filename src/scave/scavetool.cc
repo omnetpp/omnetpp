@@ -15,7 +15,7 @@
 *--------------------------------------------------------------*/
 
 
-#include <assert.h>
+#include <cassert>
 #include <sstream>
 #include "common/ver.h"
 #include "common/linetokenizer.h"

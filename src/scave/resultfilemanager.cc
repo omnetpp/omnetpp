@@ -15,7 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <fstream>
 #include <sstream>
 #include <iostream>

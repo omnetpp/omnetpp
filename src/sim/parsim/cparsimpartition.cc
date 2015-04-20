@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include "omnetpp/cmessage.h"
 #include "omnetpp/errmsg.h"
 #include "omnetpp/ccommbuffer.h"

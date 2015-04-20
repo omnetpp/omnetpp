@@ -15,9 +15,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>
-#include <stdio.h>
-#include <errno.h>
+#include <cstring>
+#include <cstdio>
+#include <cerrno>
 #include <set>
 #include <vector>
 #include <algorithm>

@@ -15,7 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>
+#include <cstring>
 #include "common/commonutil.h"
 #include "compoundfilter.h"
 #include "filternodes.h"

@@ -14,7 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <math.h>
+#include <cmath>
 #include "lcgrandom.h"
 
 NAMESPACE_BEGIN

@@ -16,7 +16,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>  // sprintf
+#include <cstdio>  // sprintf
 #include <sstream>
 #include "omnetpp/globals.h"
 #include "omnetpp/cevent.h"

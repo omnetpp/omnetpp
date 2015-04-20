@@ -15,9 +15,9 @@
 *--------------------------------------------------------------*/
 
 #include <sys/stat.h>
-#include <stdint.h>
+#include <cstdint>
 #include <algorithm>
-#include <locale.h>
+#include <clocale>
 #include "common/exception.h"
 #include "common/filereader.h"
 #include "common/linetokenizer.h"

@@ -19,7 +19,7 @@
 
 #include <vector>
 #include <string>
-#include <stdint.h>  // int64_t
+#include <cstdint>  // int64_t
 #include "omnetpp/platdep/platmisc.h"
 #include "exception.h"
 #include "commondefs.h"

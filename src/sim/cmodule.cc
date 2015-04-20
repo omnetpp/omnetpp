@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>           // sprintf
-#include <string.h>          // strcpy
+#include <cstdio>           // sprintf
+#include <cstring>          // strcpy
 #include <algorithm>
 #include "common/stringutil.h"
 #include "omnetpp/cmodule.h"

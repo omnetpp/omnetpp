@@ -14,11 +14,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdarg>
+#include <cassert>
+#include <cstdlib>
+#include <cstring>
 #include <stack>
 
 #include "exception.h"

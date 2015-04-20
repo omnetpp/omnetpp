@@ -16,7 +16,7 @@
 #ifndef __OMNETPP_CLOG_H
 #define __OMNETPP_CLOG_H
 
-#include <time.h>
+#include <ctime>
 #include <sstream>
 #include "simkerneldefs.h"
 

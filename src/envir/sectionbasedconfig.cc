@@ -15,7 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <assert.h>
+#include <cassert>
 #include <algorithm>
 #include <sstream>
 #include "common/opp_ctype.h"

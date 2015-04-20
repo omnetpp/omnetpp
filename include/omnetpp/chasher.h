@@ -18,9 +18,9 @@
 #ifndef __OMNETPP_CHASHER_H
 #define __OMNETPP_CHASHER_H
 
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
+#include <cstdint>
+#include <cstring>
+#include <cstdlib>
 #include "simkerneldefs.h"
 #include "cobject.h"
 #include "cexception.h"

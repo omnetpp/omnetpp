@@ -18,8 +18,8 @@
 #ifndef __OMNETPP_RESULTFILEMANAGER_H
 #define __OMNETPP_RESULTFILEMANAGER_H
 
-#include <assert.h>
-#include <math.h>
+#include <cassert>
+#include <cmath>
 #include <string>
 #include <vector>
 #include <set>

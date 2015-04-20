@@ -19,8 +19,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>
-#include <stdio.h>
+#include <cstring>
+#include <cstdio>
 #include <new>  //bad::alloc
 #include "omnetpp/ccoroutine.h"
 #include "omnetpp/cexception.h"

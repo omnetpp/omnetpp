@@ -19,7 +19,7 @@
 *--------------------------------------------------------------*/
 
 
-#include <stdio.h>
+#include <cstdio>
 #include "omnetpp/cparsimcomm.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/globals.h"

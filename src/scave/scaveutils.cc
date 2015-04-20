@@ -14,10 +14,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 #include <utility>
-#include <locale.h>
+#include <clocale>
 #include "omnetpp/platdep/platmisc.h"
 #include "scaveutils.h"
 

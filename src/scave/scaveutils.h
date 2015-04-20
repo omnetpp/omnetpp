@@ -20,7 +20,7 @@
 #include <string>
 #include <set>
 #include <functional>
-#include <stdint.h>
+#include <cstdint>
 #include "common/commonutil.h"
 #include "omnetpp/platdep/timeutil.h"
 #include "scavedefs.h"

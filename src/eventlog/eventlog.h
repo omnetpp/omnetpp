@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_EVENTLOG_H
 #define __OMNETPP_EVENTLOG_H
 
-#include <time.h>
+#include <ctime>
 #include <sstream>
 #include <set>
 #include <map>

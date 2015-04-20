@@ -15,9 +15,9 @@
 *--------------------------------------------------------------*/
 
 
-#include <assert.h>
+#include <cassert>
 #include <sstream>
-#include <string.h>
+#include <cstring>
 #include "exception.h"
 #include "linetokenizer.h"
 
@@ -167,7 +167,7 @@ int LineTokenizer::tokenize(const char *line, int length)
 /*
 Example code:
 
-#include <string.h>
+#include <cstring>
 #include <iostream>
 using namespace std;
 

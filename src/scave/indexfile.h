@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_INDEXFILE_H
 #define __OMNETPP_INDEXFILE_H
 
-#include <float.h>
+#include <cfloat>
 #include <map>
 #include <vector>
 #include "common/commonutil.h"

@@ -19,10 +19,10 @@
 #ifndef __OMNETPP_SIMKERNELDEFS_H
 #define __OMNETPP_SIMKERNELDEFS_H
 
-#include <stddef.h>
-#include <float.h>
-#include <math.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cfloat>
+#include <cmath>
+#include <cstdint>
 #include "platdep/platdefs.h"
 
 // OMNeT++ version, (major<<8)|minor

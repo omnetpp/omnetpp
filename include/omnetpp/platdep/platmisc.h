@@ -17,8 +17,8 @@
 #ifndef __OMNETPP_PLATMISC_H
 #define __OMNETPP_PLATMISC_H
 
-#include <stdint.h>   // int64_t
-#include <limits.h>   // __WORDSIZE
+#include <cstdint>   // int64_t
+#include <climits>   // __WORDSIZE
 
 //
 // Breaking into the debugger
@@ -30,7 +30,7 @@
 #elif defined(__linux__) && (defined(__i386__) || defined(__x86_64__))
 #define DEBUG_TRAP  __asm__("int3")
 #else
-#include <signal.h>
+#include <csignal>
 #define DEBUG_TRAP  raise(SIGTRAP)
 #endif
 
@@ -42,7 +42,7 @@
 #include <process.h>
 #include <io.h>
 #include <direct.h>
-#include <stdlib.h> // _MAX_PATH
+#include <cstdlib> // _MAX_PATH
 
 #if defined(__MINGW32__)
 #include <unistd.h>  // getpid(), getcwd(), usleep() etc.

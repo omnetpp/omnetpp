@@ -17,7 +17,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
+#include <cstdio>
 #include "common/ver.h"
 #include "omnetpp/cownedobject.h"
 #include "envirdefs.h"

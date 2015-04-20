@@ -17,7 +17,7 @@
 
 #include "omnetpp/simkerneldefs.h"
 
-#include <string.h>
+#include <cstring>
 #include "common/stringutil.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/csimulation.h"

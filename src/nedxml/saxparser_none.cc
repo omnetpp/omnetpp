@@ -13,9 +13,9 @@
 *--------------------------------------------------------------*/
 
 
-#include <string.h>
-#include <stdio.h>
-#include <assert.h>
+#include <cstring>
+#include <cstdio>
+#include <cassert>
 #include "nederror.h"
 #include "saxparser.h"
 

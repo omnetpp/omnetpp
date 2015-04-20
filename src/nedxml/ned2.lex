@@ -46,7 +46,7 @@ S  [ \t\v\n\r\f]
 /*%option debug*/
 
 %{
-#include <string.h>
+#include <cstring>
 #include "nedyydefs.h"
 #include "nedexception.h"
 #include "ned2.tab.hh"

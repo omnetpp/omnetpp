@@ -16,7 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include <memory.h>
-#include <string.h>
+#include <cstring>
 #include "channel.h"
 #include "arraybuilder.h"
 

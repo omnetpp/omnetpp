@@ -20,9 +20,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>           // sprintf
-#include <string.h>          // strlen
-#include <stdlib.h>          // qsort
+#include <cstdio>           // sprintf
+#include <cstring>          // strlen
+#include <cstdlib>          // qsort
 #include <sstream>
 #include "omnetpp/globals.h"
 #include "omnetpp/cmessage.h"

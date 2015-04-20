@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_SEQUENCECHARTFACADE_H
 #define __OMNETPP_SEQUENCECHARTFACADE_H
 
-#include <float.h>
+#include <cfloat>
 #include <vector>
 #include <map>
 #include "ievent.h"

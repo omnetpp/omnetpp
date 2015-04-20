@@ -15,10 +15,10 @@
 *--------------------------------------------------------------*/
 
 #include <sys/stat.h>
-#include <errno.h>
+#include <cerrno>
 #include <sstream>
 #include <ostream>
-#include <stdlib.h>
+#include <cstdlib>
 #include "common/opp_ctype.h"
 #include "common/stringutil.h"
 #include "common/filereader.h"

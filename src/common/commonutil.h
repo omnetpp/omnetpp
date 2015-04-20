@@ -17,8 +17,8 @@
 #ifndef __OMNETPP_COMMONUTIL_H
 #define __OMNETPP_COMMONUTIL_H
 
-#include <assert.h>
-#include <stdint.h>
+#include <cassert>
+#include <cstdint>
 #include <iostream>
 #include <sstream>
 #include <iomanip>

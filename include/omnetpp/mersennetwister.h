@@ -61,10 +61,10 @@
 // its own MTRand object)
 
 #include <iostream>
-#include <limits.h>
-#include <stdio.h>
-#include <time.h>
-#include <math.h>
+#include <climits>
+#include <cstdio>
+#include <ctime>
+#include <cmath>
 
 NAMESPACE_BEGIN
 

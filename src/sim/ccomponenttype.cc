@@ -15,7 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include <algorithm>
-#include <string.h>
+#include <cstring>
 #include "common/patternmatcher.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/cmodule.h"

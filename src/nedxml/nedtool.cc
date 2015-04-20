@@ -17,12 +17,12 @@
 *--------------------------------------------------------------*/
 
 
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cassert>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <fstream>
-#include <errno.h>
+#include <cerrno>
 
 #include "common/fileglobber.h"
 #include "common/fileutil.h"

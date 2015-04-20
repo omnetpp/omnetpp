@@ -16,10 +16,10 @@
 *--------------------------------------------------------------*/
 
 
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdint.h>
+#include <cstdarg>
+#include <cstdio>
+#include <cstring>
+#include <cstdint>
 
 #include "common/opp_ctype.h"
 #include "common/fnamelisttokenizer.h"

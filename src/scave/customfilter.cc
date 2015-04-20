@@ -15,7 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <math.h>
+#include <cmath>
 #include "channel.h"
 #include "customfilter.h"
 #include "scaveutils.h"

@@ -15,7 +15,7 @@
 *--------------------------------------------------------------*/
 
 
-#include <string.h>
+#include <cstring>
 #include "omnetpp/platdep/platmisc.h"
 #include "fileglobber.h"
 
@@ -23,7 +23,7 @@
 
 #include <io.h>
 #include <direct.h>
-#include <stdlib.h> // _MAX_PATH
+#include <cstdlib> // _MAX_PATH
 
 NAMESPACE_BEGIN
 
@@ -108,7 +108,7 @@ NAMESPACE_END
 #elif defined __ANDROID__
 
 #include <dirent.h>
-#include <errno.h>
+#include <cerrno>
 #include <fnmatch.h>
 #include <limits.h>
 

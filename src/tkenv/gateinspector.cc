@@ -14,10 +14,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>
-#include <stdlib.h>
-#include <math.h>
-#include <assert.h>
+#include <cstring>
+#include <cstdlib>
+#include <cmath>
+#include <cassert>
 
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cgate.h"

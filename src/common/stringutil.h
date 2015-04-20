@@ -17,8 +17,8 @@
 #ifndef __OMNETPP_STRINGUTIL_H
 #define __OMNETPP_STRINGUTIL_H
 
-#include <stdarg.h>
-#include <string.h>
+#include <cstdarg>
+#include <cstring>
 #include <string>
 #include <map>
 #include "commondefs.h"

@@ -19,8 +19,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>       // sprintf
-#include <string.h>      // strlen
+#include <cstdio>       // sprintf
+#include <cstring>      // strlen
 #include <sstream>
 #include "omnetpp/globals.h"
 #include "omnetpp/cfsm.h"

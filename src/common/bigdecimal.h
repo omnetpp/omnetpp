@@ -19,9 +19,9 @@
 
 #include <string>
 #include <iostream>
-#include <math.h>
-#include <stdint.h>
-#include <limits.h>
+#include <cmath>
+#include <cstdint>
+#include <climits>
 #include "omnetpp/platdep/intlimits.h"
 #include "commondefs.h"
 #include "exception.h"

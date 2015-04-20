@@ -19,9 +19,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <assert.h>
-#include <stdio.h>           // sprintf
-#include <string.h>          // strcpy
+#include <cassert>
+#include <cstdio>           // sprintf
+#include <cstring>          // strcpy
 #include <exception>
 #include "common/commonutil.h"
 #include "omnetpp/csimplemodule.h"

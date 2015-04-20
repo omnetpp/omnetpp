@@ -15,7 +15,7 @@
 *--------------------------------------------------------------*/
 
 
-#include <assert.h>
+#include <cassert>
 #include "common/opp_ctype.h"
 #include "common/stringutil.h"
 #include "common/unitconversion.h"

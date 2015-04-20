@@ -14,9 +14,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
+#include <cstdio>
+#include <cstring>
+#include <cassert>
 
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cobject.h"

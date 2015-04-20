@@ -19,9 +19,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <math.h>            // pow
-#include <stdio.h>           // sprintf
-#include <string.h>          // strcpy
+#include <cmath>            // pow
+#include <cstdio>           // sprintf
+#include <cstring>          // strcpy
 #include "common/stringutil.h"
 #include "common/stringpool.h"
 #include "omnetpp/cpacket.h"

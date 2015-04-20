@@ -25,7 +25,7 @@
 #define __OMNETPP_CNAMEDPIPECOMM_H
 
 
-#include <stdio.h>
+#include <cstdio>
 #include <deque>
 #include "omnetpp/simutil.h"
 #include "omnetpp/opp_string.h"

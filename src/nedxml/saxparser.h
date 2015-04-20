@@ -18,7 +18,7 @@
 #ifndef __OMNETPP_SAXPARSER_H
 #define __OMNETPP_SAXPARSER_H
 
-#include <stdio.h>
+#include <cstdio>
 #include "nedxmldefs.h"
 
 NAMESPACE_BEGIN

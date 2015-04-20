@@ -17,11 +17,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>  // for exit()
-#include <stdarg.h>  // for va_list
-#include <signal.h>  // raise()
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>  // for exit()
+#include <cstdarg>  // for va_list
+#include <csignal>  // raise()
 #include "common/stringutil.h"
 #include "common/commonutil.h"
 #include "omnetpp/cexception.h"

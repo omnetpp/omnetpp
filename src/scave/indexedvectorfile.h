@@ -17,11 +17,11 @@
 #ifndef __OMNETPP_INDEXEDVECTORFILE_H
 #define __OMNETPP_INDEXEDVECTORFILE_H
 
-#include <assert.h>
-#include <float.h>
+#include <cassert>
+#include <cfloat>
 #include <vector>
 #include <map>
-#include <stdarg.h>
+#include <cstdarg>
 #include "common/filereader.h"
 #include "scavedefs.h"
 #include "indexfile.h"

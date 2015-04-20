@@ -170,7 +170,7 @@ print ENTRIES_H_FILE
 #ifndef __OMNETPP_EVENTLOGENTRIES_H
 #define __OMNETPP_EVENTLOGENTRIES_H
 
-#include <stdio.h>
+#include <cstdio>
 #include \"eventlogdefs.h\"
 #include \"eventlogentry.h\"
 

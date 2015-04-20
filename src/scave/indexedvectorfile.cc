@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <locale.h>
-#include <stdlib.h>
+#include <clocale>
+#include <cstdlib>
 #include "common/exception.h"
 #include "common/linetokenizer.h"
 #include "common/stringutil.h"

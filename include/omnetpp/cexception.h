@@ -19,7 +19,7 @@
 #ifndef __OMNETPP_CEXCEPTION_H
 #define __OMNETPP_CEXCEPTION_H
 
-#include <stdarg.h>
+#include <cstdarg>
 #include <exception>
 #include <stdexcept>
 #include "simkerneldefs.h"

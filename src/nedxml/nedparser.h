@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_NEDPARSER_H
 #define __OMNETPP_NEDPARSER_H
 
-#include <stdio.h>
+#include <cstdio>
 #include "nedelement.h"
 #include "nedyydefs.h"
 #include "nederror.h"

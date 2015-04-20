@@ -19,12 +19,12 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include <string>
 #ifdef _WIN32
 #include <direct.h>
-#include <stdlib.h>
+#include <cstdlib>
 #else
 #include <unistd.h>
 #endif

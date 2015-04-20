@@ -29,15 +29,15 @@
 
 %{
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 #define YYDEBUG 1           /* allow debugging */
 #define YYDEBUGGING_ON 0    /* turn on/off debugging */
 
 #if YYDEBUG != 0
 #define YYERROR_VERBOSE     /* more detailed error messages */
-#include <string.h>         /* YYVERBOSE needs it */
+#include <cstring>         /* YYVERBOSE needs it */
 #endif
 
 #include "matchexpression.h"

@@ -18,7 +18,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>
+#include <cstring>
 #include "omnetpp/cenvir.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cexception.h"

@@ -15,10 +15,10 @@
 *--------------------------------------------------------------*/
 
 
-#include <string.h>
-#include <stdio.h>
-#include <assert.h>
-#include <stdio.h>
+#include <cstring>
+#include <cstdio>
+#include <cassert>
+#include <cstdio>
 #include "expat.h"
 #include "saxparser.h"
 

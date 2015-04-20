@@ -19,7 +19,7 @@
 #ifndef __OMNETPP_TASK_H
 #define __OMNETPP_TASK_H
 
-#include <setjmp.h>
+#include <csetjmp>
 #include "omnetpp/platdep/platdefs.h"
 
 NAMESPACE_BEGIN

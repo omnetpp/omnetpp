@@ -24,8 +24,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <math.h>
-#include <stdio.h>
+#include <cmath>
+#include <cstdio>
 #include "omnetpp/csimulation.h"  // simTime()
 #include "omnetpp/cdetect.h"
 

@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>
-#include <math.h>
+#include <cstring>
+#include <cmath>
 #include "omnetpp/cdensityestbase.h"
 #include "tkenv.h"
 #include "tklib.h"

@@ -14,10 +14,10 @@
   `terms' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
 #include <algorithm>
 
 #include "common/stringutil.h"

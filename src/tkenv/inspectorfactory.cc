@@ -14,7 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdarg.h>
+#include <cstdarg>
 #include "omnetpp/cobject.h"
 #include "tkenv.h"
 #include "tklib.h"

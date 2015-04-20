@@ -68,11 +68,11 @@
  *
  */
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include <string>
-#include <string.h>
-#include <errno.h>
+#include <cstring>
+#include <cerrno>
 #include "omnetpp/platdep/platdefs.h"
 
 #ifdef NDEBUG

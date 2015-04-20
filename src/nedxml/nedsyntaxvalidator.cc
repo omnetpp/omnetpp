@@ -17,11 +17,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <locale.h>
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+#include <cassert>
+#include <clocale>
 #include "common/opp_ctype.h"
 #include "common/stringutil.h"
 #include "common/unitconversion.h"

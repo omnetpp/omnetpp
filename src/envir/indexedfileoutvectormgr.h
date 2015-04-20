@@ -21,8 +21,8 @@
 #ifndef __OMNETPP_INDEXEDFILEOUTVECTORMGR_H
 #define __OMNETPP_INDEXEDFILEOUTVECTORMGR_H
 
-#include <stdio.h>
-#include <float.h>
+#include <cstdio>
+#include <cfloat>
 #include <deque>
 #include "omnetpp/envirext.h"
 #include "omnetpp/simutil.h"

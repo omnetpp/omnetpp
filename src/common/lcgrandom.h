@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_LCGRANDOM_H
 #define __OMNETPP_LCGRANDOM_H
 
-#include <stdint.h>
+#include <cstdint>
 #include "commondefs.h"
 #include "exception.h"
 

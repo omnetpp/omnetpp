@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>           // sprintf
-#include <string.h>          // strcpy, strlen etc.
+#include <cstdio>           // sprintf
+#include <cstring>          // strcpy, strlen etc.
 #include "omnetpp/cnamedobject.h"
 #include "omnetpp/cownedobject.h"
 #include "omnetpp/globals.h"

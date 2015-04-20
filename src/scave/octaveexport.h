@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_OCTAVEEXPORT_H
 #define __OMNETPP_OCTAVEEXPORT_H
 
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <set>
 #include "common/exception.h"

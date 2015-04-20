@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <math.h>
-#include <locale.h>
+#include <cmath>
+#include <clocale>
 #include <algorithm>
 #include "common/opp_ctype.h"
 #include "common/stringutil.h"

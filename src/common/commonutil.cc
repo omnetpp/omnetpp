@@ -14,10 +14,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <locale.h>
+#include <cstdio>
+#include <cstdarg>
+#include <cstdlib>
+#include <clocale>
 #include "omnetpp/platdep/platmisc.h"
 #include "commonutil.h"
 #ifndef _WIN32

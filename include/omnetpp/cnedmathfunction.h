@@ -16,7 +16,7 @@
 #ifndef __OMNETPP_CMATHFUNCTION_H
 #define __OMNETPP_CMATHFUNCTION_H
 
-#include <stdarg.h>
+#include <cstdarg>
 #include "simkerneldefs.h"
 #include "globals.h"
 #include "cownedobject.h"

@@ -22,9 +22,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>
-#include <stdio.h>
-#include <limits.h>
+#include <cstring>
+#include <cstdio>
+#include <climits>
 #include "common/stringutil.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/csimplemodule.h"

@@ -18,7 +18,7 @@
 
 #include <string>
 #include <iostream>
-#include <stdint.h>
+#include <cstdint>
 #include "platdep/intlimits.h"
 #include "simkerneldefs.h"
 

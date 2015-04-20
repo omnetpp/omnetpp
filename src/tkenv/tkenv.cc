@@ -16,12 +16,12 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <assert.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <stdio.h>
+#include <cassert>
+#include <cstring>
+#include <cstdarg>
+#include <cstdlib>
+#include <csignal>
+#include <cstdio>
 #include <string>
 
 #include "common/stringutil.h"

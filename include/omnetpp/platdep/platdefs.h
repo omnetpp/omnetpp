@@ -19,7 +19,7 @@
 #ifndef __OMNETPP_PLATDEFS_H
 #define __OMNETPP_PLATDEFS_H
 
-#include <stddef.h>
+#include <cstddef>
 
 #ifndef _WIN32
 #  if defined(_WIN32) || defined(WIN32) || defined(__WIN32__)

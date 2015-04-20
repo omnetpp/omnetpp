@@ -18,9 +18,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
 #include <sstream>
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cmessage.h"

@@ -142,7 +142,7 @@ print H
 "#ifndef __OMNETPP_EVENTLOGWRITER_H
 #define __OMNETPP_EVENTLOGWRITER_H
 
-#include <stdio.h>
+#include <cstdio>
 #include \"envirdefs.h\"
 #include \"omnetpp/simtime_t.h\"
 

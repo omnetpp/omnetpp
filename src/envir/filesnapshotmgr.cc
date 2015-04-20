@@ -17,8 +17,8 @@
 
 #include "omnetpp/simkerneldefs.h"
 
-#include <assert.h>
-#include <string.h>
+#include <cassert>
+#include <cstring>
 #include <fstream>
 #include "common/fileutil.h"
 #include "omnetpp/cconfigoption.h"

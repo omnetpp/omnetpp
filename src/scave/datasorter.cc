@@ -17,10 +17,10 @@
 
 #include <algorithm>
 #include <utility>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cassert>
 #include "common/commonutil.h"
 #include "common/stringutil.h"
 #include "resultfilemanager.h"

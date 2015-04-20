@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_FORCEDIRECTEDPARAMETERS_H
 #define __OMNETPP_FORCEDIRECTEDPARAMETERS_H
 
-#include <math.h>
+#include <cmath>
 #include "geometry.h"
 #include "forcedirectedparametersbase.h"
 #include "forcedirectedembedding.h"

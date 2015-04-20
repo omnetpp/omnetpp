@@ -16,11 +16,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <locale.h>
-#include <math.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <clocale>
+#include <cmath>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
 #include <string>
 #include <algorithm>
 #include "common/opp_ctype.h"

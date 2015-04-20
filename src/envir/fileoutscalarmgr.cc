@@ -17,10 +17,10 @@
 
 #include "omnetpp/simkerneldefs.h"
 
-#include <assert.h>
-#include <string.h>
+#include <cassert>
+#include <cstring>
 #include <fstream>
-#include <locale.h>
+#include <clocale>
 #include "common/opp_ctype.h"
 #include "common/fileutil.h"
 #include "common/stringutil.h"

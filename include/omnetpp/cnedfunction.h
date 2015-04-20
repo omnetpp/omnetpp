@@ -16,7 +16,7 @@
 #ifndef __OMNETPP_CNEDFUNCTION_H
 #define __OMNETPP_CNEDFUNCTION_H
 
-#include <stdarg.h>
+#include <cstdarg>
 #include "simkerneldefs.h"
 #include "globals.h"
 #include "cownedobject.h"

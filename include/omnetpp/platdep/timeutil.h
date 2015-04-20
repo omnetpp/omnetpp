@@ -21,9 +21,9 @@
 #ifndef __OMNETPP_PLATDEP_TIMEUTIL_H
 #define __OMNETPP_PLATDEP_TIMEUTIL_H
 
-#include <time.h>  // localtime()
-#include <stdio.h> // sprintf()
-#include <math.h>  // fmod()
+#include <ctime>  // localtime()
+#include <cstdio> // sprintf()
+#include <cmath>  // fmod()
 
 //
 // Platform-independent gettimeofday(), and some basic timeval operations

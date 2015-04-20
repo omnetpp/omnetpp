@@ -16,10 +16,10 @@
 #ifndef __OMNETPP_SIMTIME_T_H
 #define __OMNETPP_SIMTIME_T_H
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <string>
-#include <math.h>
-#include <float.h>
+#include <cmath>
+#include <cfloat>
 #include "simkerneldefs.h"
 #include "simtime.h"
 

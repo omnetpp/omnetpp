@@ -23,9 +23,9 @@
 
 #ifdef USE_WINDOWS_PIPES
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
 #include <string>
 #include <iostream>
 

@@ -15,7 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdlib.h>
+#include <cstdlib>
 #include "channel.h"
 #include "scaveutils.h"
 #include "windowavg.h"

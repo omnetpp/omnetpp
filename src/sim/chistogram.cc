@@ -22,10 +22,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
 #include "omnetpp/distrib.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cdetect.h"

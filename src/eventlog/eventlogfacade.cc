@@ -14,7 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
+#include <cstdio>
 #include "ievent.h"
 #include "ieventlog.h"
 #include "event.h"

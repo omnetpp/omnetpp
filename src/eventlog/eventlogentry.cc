@@ -14,9 +14,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
-#include <errno.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cerrno>
+#include <cstdlib>
 #include "eventlog.h"
 #include "eventlogentry.h"
 #include "eventlogentryfactory.h"

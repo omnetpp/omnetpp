@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_CPATTERNMATCHER_H
 #define __OMNETPP_CPATTERNMATCHER_H
 
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <vector>
 #include "simkerneldefs.h"

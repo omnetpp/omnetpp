@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdlib.h>
-#include <locale.h>
+#include <cstdlib>
+#include <clocale>
 
 #include "common/stringutil.h"
 #include "omnetpp/platdep/platmisc.h" // INT64_PRINTF_FORMAT

@@ -15,9 +15,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
-#include <assert.h>
-#include <signal.h>
+#include <cstdio>
+#include <cassert>
+#include <csignal>
 #include <fstream>
 #include <set>
 #include <algorithm>

@@ -14,8 +14,8 @@
 //
 //==========================================================================
 
-#include <float.h>
-#include <math.h>
+#include <cfloat>
+#include <cmath>
 #include "omnetpp/distrib.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cnedmathfunction.h"

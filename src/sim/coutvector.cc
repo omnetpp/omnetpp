@@ -19,7 +19,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>   // strlen
+#include <cstring>   // strlen
 #include "omnetpp/globals.h"
 #include "omnetpp/coutvector.h"
 #include "omnetpp/cmodule.h"

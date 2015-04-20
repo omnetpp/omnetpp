@@ -17,9 +17,9 @@
 #ifndef __OMNETPP_FORCEDIRECTEDEMBEDDING_H
 #define __OMNETPP_FORCEDIRECTEDEMBEDDING_H
 
-#include <stdint.h>
+#include <cstdint>
 #include <algorithm>
-#include <time.h>
+#include <ctime>
 #include <iostream>
 #include "geometry.h"
 #include "forcedirectedparametersbase.h"

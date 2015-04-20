@@ -17,8 +17,8 @@
 #ifndef __OMNETPP_OPP_CTYPE_H
 #define __OMNETPP_OPP_CTYPE_H
 
-#include <assert.h>
-#include <ctype.h>
+#include <cassert>
+#include <cctype>
 #include "commondefs.h"
 
 /**

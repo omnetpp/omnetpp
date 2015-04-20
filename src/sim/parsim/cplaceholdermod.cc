@@ -21,7 +21,7 @@
 #include "cplaceholdermod.h"
 #include "cproxygate.h"
 
-#include <stdio.h>
+#include <cstdio>
 #include "cfilecomm.h"
 #include "cnamedpipecomm.h"
 #include "cmpicomm.h"

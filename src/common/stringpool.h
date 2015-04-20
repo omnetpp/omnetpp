@@ -18,7 +18,7 @@
 #define __OMNETPP_STRINGPOOL_H
 
 #include <set>
-#include <string.h>
+#include <cstring>
 #include "commondefs.h"
 
 NAMESPACE_BEGIN

@@ -17,9 +17,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>
-#include <math.h>
-#include <assert.h>
+#include <cstring>
+#include <cmath>
+#include <cassert>
 #include <algorithm>
 #include "common/stringutil.h"
 #include "omnetpp/cobject.h"

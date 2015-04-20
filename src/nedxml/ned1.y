@@ -85,9 +85,9 @@
  */
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cassert>
 #include "common/stringutil.h"
 #include "common/commonutil.h"
 #include "nedyydefs.h"
@@ -100,7 +100,7 @@
 
 #if YYDEBUG != 0
 #define YYERROR_VERBOSE     /* more detailed error messages */
-#include <string.h>         /* YYVERBOSE needs it */
+#include <cstring>         /* YYVERBOSE needs it */
 #endif
 
 #define yylloc ned1yylloc

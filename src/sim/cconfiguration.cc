@@ -17,7 +17,7 @@
 *--------------------------------------------------------------*/
 
 
-#include <errno.h>
+#include <cerrno>
 #include "common/unitconversion.h"
 #include "common/stringutil.h"
 #include "common/fileutil.h"
