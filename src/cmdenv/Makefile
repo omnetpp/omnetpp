@@ -119,6 +119,7 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/omnetpp/cresultfilter.h \
   ../../include/omnetpp/cresultlistener.h \
   ../../include/omnetpp/cresultrecorder.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cscheduler.h \
   ../../include/omnetpp/csimplemodule.h \
   ../../include/omnetpp/csimulation.h \
@@ -128,6 +129,7 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
   ../../include/omnetpp/cwatch.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \

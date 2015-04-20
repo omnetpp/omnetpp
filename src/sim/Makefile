@@ -185,9 +185,11 @@ $O/cboolparimpl.o: cboolparimpl.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cparimpl.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cstringtokenizer.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
@@ -255,10 +257,12 @@ $O/cchannel.o: cchannel.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -354,6 +358,7 @@ $O/ccomponent.o: ccomponent.cc \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -405,11 +410,13 @@ $O/ccomponenttype.o: ccomponenttype.cc \
   ../../include/omnetpp/cproperties.h \
   ../../include/omnetpp/cproperty.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimplemodule.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -527,7 +534,6 @@ $O/cdataratechannel.o: cdataratechannel.cc \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
-  ../../include/omnetpp/random.h \
   ../../include/omnetpp/regmacros.h \
   ../../include/omnetpp/simkerneldefs.h \
   ../../include/omnetpp/simtime.h \
@@ -552,10 +558,12 @@ $O/cdefaultlist.o: cdefaultlist.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
   ../../include/omnetpp/cwatch.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -595,10 +603,12 @@ $O/cdelaychannel.o: cdelaychannel.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -652,10 +662,12 @@ $O/cdetect.o: cdetect.cc \
   ../../include/omnetpp/cobject.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstatistic.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
@@ -694,10 +706,12 @@ $O/cdisplaystring.o: cdisplaystring.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -732,9 +746,11 @@ $O/cdoubleparimpl.o: cdoubleparimpl.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cparimpl.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cstringtokenizer.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
@@ -767,10 +783,12 @@ $O/cdynamicexpression.o: cdynamicexpression.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
   ../../include/omnetpp/cxmlelement.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -807,10 +825,12 @@ $O/cenum.o: cenum.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cstringtokenizer.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -839,9 +859,11 @@ $O/cenvir.o: cenvir.cc \
   ../../include/omnetpp/cobject.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
@@ -874,9 +896,11 @@ $O/cevent.o: cevent.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -909,9 +933,11 @@ $O/cexception.o: cexception.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -980,10 +1006,12 @@ $O/cgate.o: cgate.cc \
   ../../include/omnetpp/cpacket.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -1025,13 +1053,11 @@ $O/chistogram.o: chistogram.cc \
   ../../include/omnetpp/cenvir.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cexpression.h \
-  ../../include/omnetpp/cgate.h \
   ../../include/omnetpp/chistogram.h \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessageheap.h \
-  ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cnamedobject.h \
   ../../include/omnetpp/cnedvalue.h \
   ../../include/omnetpp/cobject.h \
@@ -1053,7 +1079,6 @@ $O/chistogram.o: chistogram.cc \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
-  ../../include/omnetpp/random.h \
   ../../include/omnetpp/regmacros.h \
   ../../include/omnetpp/simkerneldefs.h \
   ../../include/omnetpp/simtime.h \
@@ -1067,13 +1092,11 @@ $O/cksplit.o: cksplit.cc \
   ../../include/omnetpp/cenvir.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cexpression.h \
-  ../../include/omnetpp/cgate.h \
   ../../include/omnetpp/cksplit.h \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessageheap.h \
-  ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cnamedobject.h \
   ../../include/omnetpp/cnedvalue.h \
   ../../include/omnetpp/cobject.h \
@@ -1095,7 +1118,6 @@ $O/cksplit.o: cksplit.cc \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
-  ../../include/omnetpp/random.h \
   ../../include/omnetpp/regmacros.h \
   ../../include/omnetpp/simkerneldefs.h \
   ../../include/omnetpp/simtime.h \
@@ -1125,6 +1147,7 @@ $O/clcg32.o: clcg32.cc \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -1173,10 +1196,12 @@ $O/clistener.o: clistener.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -1210,9 +1235,11 @@ $O/clog.o: clog.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -1242,9 +1269,11 @@ $O/clongparimpl.o: clongparimpl.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cparimpl.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cstringtokenizer.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
@@ -1291,6 +1320,7 @@ $O/cmersennetwister.o: cmersennetwister.cc \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/mersennetwister.h \
@@ -1329,10 +1359,12 @@ $O/cmessage.o: cmessage.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimplemodule.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -1367,9 +1399,11 @@ $O/cmessageheap.o: cmessageheap.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -1406,9 +1440,11 @@ $O/cmessageprinter.o: cmessageprinter.cc \
   ../../include/omnetpp/cpacket.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -1454,11 +1490,13 @@ $O/cmodule.o: cmodule.cc \
   ../../include/omnetpp/cproperties.h \
   ../../include/omnetpp/cproperty.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimplemodule.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -1498,11 +1536,13 @@ $O/cmsgpar.o: cmsgpar.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstatistic.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
   ../../include/omnetpp/cxmlelement.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -1571,27 +1611,16 @@ $O/cnedfunction.o: cnedfunction.cc \
   ../common/stringtokenizer.h \
   ../common/stringutil.h
 $O/cnedmathfunction.o: cnedmathfunction.cc \
-  ../../include/omnetpp/ccomponent.h \
-  ../../include/omnetpp/cdefaultlist.h \
   ../../include/omnetpp/cenvir.h \
   ../../include/omnetpp/cexception.h \
-  ../../include/omnetpp/cexpression.h \
-  ../../include/omnetpp/cgate.h \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
-  ../../include/omnetpp/clog.h \
-  ../../include/omnetpp/cmessageheap.h \
-  ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cnamedobject.h \
   ../../include/omnetpp/cnedmathfunction.h \
-  ../../include/omnetpp/cnedvalue.h \
   ../../include/omnetpp/cobject.h \
   ../../include/omnetpp/cobjectfactory.h \
   ../../include/omnetpp/cownedobject.h \
-  ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
-  ../../include/omnetpp/crng.h \
-  ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
   ../../include/omnetpp/errmsg.h \
@@ -1601,7 +1630,6 @@ $O/cnedmathfunction.o: cnedmathfunction.cc \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
-  ../../include/omnetpp/random.h \
   ../../include/omnetpp/regmacros.h \
   ../../include/omnetpp/simkerneldefs.h \
   ../../include/omnetpp/simtime.h \
@@ -1663,6 +1691,7 @@ $O/cnullenvir.o: cnullenvir.cc \
   ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/mersennetwister.h \
@@ -1692,9 +1721,11 @@ $O/cobject.o: cobject.cc \
   ../../include/omnetpp/cobject.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
@@ -1750,9 +1781,11 @@ $O/coutvector.o: coutvector.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -1784,9 +1817,11 @@ $O/cownedobject.o: cownedobject.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -1825,10 +1860,12 @@ $O/cpacket.o: cpacket.cc \
   ../../include/omnetpp/cpacket.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimplemodule.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -1867,9 +1904,11 @@ $O/cpacketqueue.o: cpacketqueue.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cqueue.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -1907,9 +1946,11 @@ $O/cpar.o: cpar.cc \
   ../../include/omnetpp/cproperties.h \
   ../../include/omnetpp/cproperty.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -1948,11 +1989,13 @@ $O/cparimpl.o: cparimpl.cc \
   ../../include/omnetpp/cparimpl.h \
   ../../include/omnetpp/cproperties.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringparimpl.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
   ../../include/omnetpp/cxmlparimpl.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -2048,12 +2091,10 @@ $O/cpsquare.o: cpsquare.cc \
   ../../include/omnetpp/cenvir.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cexpression.h \
-  ../../include/omnetpp/cgate.h \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessageheap.h \
-  ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cnamedobject.h \
   ../../include/omnetpp/cnedvalue.h \
   ../../include/omnetpp/cobject.h \
@@ -2076,7 +2117,6 @@ $O/cpsquare.o: cpsquare.cc \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
-  ../../include/omnetpp/random.h \
   ../../include/omnetpp/regmacros.h \
   ../../include/omnetpp/simkerneldefs.h \
   ../../include/omnetpp/simtime.h \
@@ -2166,10 +2206,12 @@ $O/cresultlistener.o: cresultlistener.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
@@ -2205,11 +2247,13 @@ $O/cresultrecorder.o: cresultrecorder.cc \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
   ../../include/omnetpp/cresultrecorder.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cstatistic.h \
   ../../include/omnetpp/cstddev.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cstringtokenizer.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -2247,10 +2291,12 @@ $O/cscheduler.o: cscheduler.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cscheduler.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -2291,10 +2337,12 @@ $O/csimplemodule.o: csimplemodule.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cqueue.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimplemodule.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -2343,12 +2391,14 @@ $O/csimulation.o: csimulation.cc \
   ../../include/omnetpp/cproperties.h \
   ../../include/omnetpp/cproperty.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cscheduler.h \
   ../../include/omnetpp/csimplemodule.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstatistic.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -2408,7 +2458,6 @@ $O/cstatistic.o: cstatistic.cc \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
-  ../../include/omnetpp/random.h \
   ../../include/omnetpp/regmacros.h \
   ../../include/omnetpp/simkerneldefs.h \
   ../../include/omnetpp/simtime.h \
@@ -2454,7 +2503,6 @@ $O/cstddev.o: cstddev.cc \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
-  ../../include/omnetpp/random.h \
   ../../include/omnetpp/regmacros.h \
   ../../include/omnetpp/simkerneldefs.h \
   ../../include/omnetpp/simtime.h \
@@ -2504,9 +2552,11 @@ $O/cstringparimpl.o: cstringparimpl.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cparimpl.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cstringparimpl.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
@@ -2569,10 +2619,12 @@ $O/ctimestampedvalue.o: ctimestampedvalue.cc \
   ../../include/omnetpp/cobject.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
@@ -2605,10 +2657,12 @@ $O/ctopology.o: ctopology.cc \
   ../../include/omnetpp/cproperties.h \
   ../../include/omnetpp/cproperty.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctopology.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -2631,13 +2685,11 @@ $O/cvarhist.o: cvarhist.cc \
   ../../include/omnetpp/cenvir.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cexpression.h \
-  ../../include/omnetpp/cgate.h \
   ../../include/omnetpp/chistogram.h \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessageheap.h \
-  ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cnamedobject.h \
   ../../include/omnetpp/cnedvalue.h \
   ../../include/omnetpp/cobject.h \
@@ -2660,7 +2712,6 @@ $O/cvarhist.o: cvarhist.cc \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
-  ../../include/omnetpp/random.h \
   ../../include/omnetpp/regmacros.h \
   ../../include/omnetpp/simkerneldefs.h \
   ../../include/omnetpp/simtime.h \
@@ -2716,10 +2767,12 @@ $O/cxmlelement.o: cxmlelement.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
   ../../include/omnetpp/cxmlelement.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -2751,11 +2804,13 @@ $O/cxmlparimpl.o: cxmlparimpl.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cparimpl.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cstringtokenizer.h \
   ../../include/omnetpp/cvisitor.h \
   ../../include/omnetpp/cxmlelement.h \
   ../../include/omnetpp/cxmlparimpl.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
@@ -2772,12 +2827,10 @@ $O/distrib.o: distrib.cc \
   ../../include/omnetpp/cenvir.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cexpression.h \
-  ../../include/omnetpp/cgate.h \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessageheap.h \
-  ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cnamedobject.h \
   ../../include/omnetpp/cnedmathfunction.h \
   ../../include/omnetpp/cnedvalue.h \
@@ -2798,7 +2851,6 @@ $O/distrib.o: distrib.cc \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
-  ../../include/omnetpp/random.h \
   ../../include/omnetpp/regmacros.h \
   ../../include/omnetpp/simkerneldefs.h \
   ../../include/omnetpp/simtime.h \
@@ -2966,7 +3018,6 @@ $O/nedfunctions.o: nedfunctions.cc \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
-  ../../include/omnetpp/random.h \
   ../../include/omnetpp/regmacros.h \
   ../../include/omnetpp/simkerneldefs.h \
   ../../include/omnetpp/simtime.h \
@@ -3000,10 +3051,12 @@ $O/nedsupport.o: nedsupport.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
   ../../include/omnetpp/cxmlelement.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/nedsupport.h \
@@ -3064,10 +3117,12 @@ $O/resultfilters.o: resultfilters.cc \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultfilter.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstatistic.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -3110,11 +3165,13 @@ $O/resultrecorders.o: resultrecorders.cc \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
   ../../include/omnetpp/cresultrecorder.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstatistic.h \
   ../../include/omnetpp/cstddev.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -3199,6 +3256,7 @@ $O/sim_std_m.o: sim_std_m.cc \
   ../../include/omnetpp/cproperty.h \
   ../../include/omnetpp/cpsquare.h \
   ../../include/omnetpp/cqueue.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultfilter.h \
   ../../include/omnetpp/cresultlistener.h \
@@ -3234,7 +3292,6 @@ $O/sim_std_m.o: sim_std_m.cc \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
   ../../include/omnetpp/platdep/timeutil.h \
-  ../../include/omnetpp/random.h \
   ../../include/omnetpp/regmacros.h \
   ../../include/omnetpp/simkerneldefs.h \
   ../../include/omnetpp/simtime.h \
@@ -3332,7 +3389,6 @@ $O/util.o: util.cc \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
   ../../include/omnetpp/platdep/timeutil.h \
-  ../../include/omnetpp/random.h \
   ../../include/omnetpp/regmacros.h \
   ../../include/omnetpp/simkerneldefs.h \
   ../../include/omnetpp/simtime.h \
@@ -3371,10 +3427,12 @@ $O/netbuilder/cdynamicchanneltype.o: netbuilder/cdynamicchanneltype.cc \
   ../../include/omnetpp/cproperties.h \
   ../../include/omnetpp/cproperty.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -3422,9 +3480,11 @@ $O/netbuilder/cdynamicmoduletype.o: netbuilder/cdynamicmoduletype.cc \
   ../../include/omnetpp/cproperties.h \
   ../../include/omnetpp/cproperty.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -3513,9 +3573,11 @@ $O/netbuilder/cneddeclaration.o: netbuilder/cneddeclaration.cc \
   ../../include/omnetpp/cproperties.h \
   ../../include/omnetpp/cproperty.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -3574,10 +3636,12 @@ $O/netbuilder/cnedloader.o: netbuilder/cnedloader.cc \
   ../../include/omnetpp/cproperties.h \
   ../../include/omnetpp/cproperty.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -3643,11 +3707,13 @@ $O/netbuilder/cnednetworkbuilder.o: netbuilder/cnednetworkbuilder.cc \
   ../../include/omnetpp/cproperties.h \
   ../../include/omnetpp/cproperty.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringparimpl.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/nedsupport.h \
@@ -3713,11 +3779,13 @@ $O/parsim/cadvlinkdelaylookahead.o: parsim/cadvlinkdelaylookahead.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cparsimcomm.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cscheduler.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -3776,9 +3844,11 @@ $O/parsim/cfilecomm.o: parsim/cfilecomm.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cparsimcomm.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -3849,10 +3919,12 @@ $O/parsim/cidealsimulationprot.o: parsim/cidealsimulationprot.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cparsimcomm.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cscheduler.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -3897,10 +3969,12 @@ $O/parsim/cispeventlogger.o: parsim/cispeventlogger.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cparsimcomm.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cscheduler.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -3948,11 +4022,13 @@ $O/parsim/clinkdelaylookahead.o: parsim/clinkdelaylookahead.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cparsimcomm.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cscheduler.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -4019,9 +4095,11 @@ $O/parsim/cmpicomm.o: parsim/cmpicomm.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cparsimcomm.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -4082,9 +4160,11 @@ $O/parsim/cnamedpipecomm-win.o: parsim/cnamedpipecomm-win.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cparsimcomm.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -4122,9 +4202,11 @@ $O/parsim/cnamedpipecomm.o: parsim/cnamedpipecomm.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cparsimcomm.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -4167,10 +4249,12 @@ $O/parsim/cnosynchronization.o: parsim/cnosynchronization.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cparsimcomm.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cscheduler.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -4219,11 +4303,13 @@ $O/parsim/cnullmessageprot.o: parsim/cnullmessageprot.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cparsimcomm.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cscheduler.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -4274,10 +4360,12 @@ $O/parsim/cparsimpartition.o: parsim/cparsimpartition.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cparsimcomm.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cscheduler.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -4323,10 +4411,12 @@ $O/parsim/cparsimprotocolbase.o: parsim/cparsimprotocolbase.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cparsimcomm.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cscheduler.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -4359,10 +4449,12 @@ $O/parsim/cparsimsynchr.o: parsim/cparsimsynchr.cc \
   ../../include/omnetpp/cobject.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cscheduler.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
@@ -4400,10 +4492,12 @@ $O/parsim/cplaceholdermod.o: parsim/cplaceholdermod.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cparsimcomm.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cscheduler.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -4454,9 +4548,11 @@ $O/parsim/cproxygate.o: parsim/cproxygate.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -4498,9 +4594,11 @@ $O/parsim/parsimutil.o: parsim/parsimutil.cc \
   ../../include/omnetpp/cobject.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \

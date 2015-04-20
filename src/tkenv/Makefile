@@ -179,9 +179,11 @@ $O/canvasinspector.o: canvasinspector.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -281,11 +283,13 @@ $O/componenthistory.o: componenthistory.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimplemodule.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -331,10 +335,12 @@ $O/figurerenderers.o: figurerenderers.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -401,10 +407,12 @@ $O/gateinspector.o: gateinspector.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -472,10 +480,12 @@ $O/genericobjectinspector.o: genericobjectinspector.cc \
   ../../include/omnetpp/cqueue.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -543,12 +553,14 @@ $O/histograminspector.o: histograminspector.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstatistic.h \
   ../../include/omnetpp/cstddev.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -615,10 +627,12 @@ $O/inspector.o: inspector.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -686,10 +700,12 @@ $O/inspectorfactory.o: inspectorfactory.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -747,9 +763,11 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -802,9 +820,11 @@ $O/logbuffer.o: logbuffer.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -859,10 +879,12 @@ $O/loginspector.o: loginspector.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -933,11 +955,13 @@ $O/moduleinspector.o: moduleinspector.cc \
   ../../include/omnetpp/cqueue.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimplemodule.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -1023,10 +1047,12 @@ $O/outputvectorinspector.o: outputvectorinspector.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -1100,6 +1126,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/omnetpp/cqueue.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimplemodule.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstatistic.h \
@@ -1107,6 +1134,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
   ../../include/omnetpp/cwatch.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -1183,12 +1211,14 @@ $O/tkenv.o: tkenv.cc \
   ../../include/omnetpp/cproperty.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cscheduler.h \
   ../../include/omnetpp/csimplemodule.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -1265,10 +1295,12 @@ $O/tklib.o: tklib.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -1335,6 +1367,7 @@ $O/tkutil.o: tkutil.cc \
   ../../include/omnetpp/cqueue.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimplemodule.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstatistic.h \
@@ -1342,6 +1375,7 @@ $O/tkutil.o: tkutil.cc \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
   ../../include/omnetpp/cwatch.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -1408,12 +1442,14 @@ $O/watchinspector.o: watchinspector.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstlwatch.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
   ../../include/omnetpp/cwatch.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
