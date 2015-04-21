@@ -73,7 +73,7 @@ void LogInspector::createWindow(const char *window, const char *geometry)
     CHK(Tcl_VarEval(interp, "createLogInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL ));
 
     int success = Tcl_GetCommandInfo(interp, textWidget, &textWidgetCmdInfo);
-    ASSERT(success);
+    //ASSERT(success);
 }
 
 void LogInspector::useWindow(const char *window)
@@ -84,7 +84,7 @@ void LogInspector::useWindow(const char *window)
     strcat(textWidget, ".main.text");
 
     int success = Tcl_GetCommandInfo(interp, textWidget, &textWidgetCmdInfo);
-    ASSERT(success);
+    //ASSERT(success);
 }
 
 void LogInspector::setMode(Mode m)

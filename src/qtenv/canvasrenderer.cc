@@ -42,7 +42,7 @@ void CanvasRenderer::setTkCanvas(Tcl_Interp *interp, const char *canvas)
     this->canvasWidget = canvas;
 
     int success = Tcl_GetCommandInfo(interp, TCLCONST(canvasWidget.c_str()), &canvasCmdInfo);
-    ASSERT(success);
+    //ASSERT(success);
 }
 
 void CanvasRenderer::setCanvas(cCanvas *canvas)

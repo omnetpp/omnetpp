@@ -28,6 +28,9 @@
 #include "componenthistory.h"
 
 NAMESPACE_BEGIN
+
+class MainWindow;
+
 namespace qtenv {
 
 class Inspector;
@@ -130,6 +133,7 @@ class TKENV_API Qtenv : public EnvirBase
       bool animating;              // while execution, do message animation or not
 
    protected:
+      MainWindow *mainwindow;
       Tcl_Interp *interp;          // Tcl interpreter
       opp_string windowtitleprefix;// contains "procId=.." when using parsim
 

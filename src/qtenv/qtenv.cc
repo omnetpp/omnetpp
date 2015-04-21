@@ -53,6 +53,8 @@
 #include "gateinspector.h"
 #include "genericobjectinspector.h"
 #include "watchinspector.h"
+#include "mainwindow.h"
+#include <QApplication>
 
 
 // default plugin path -- allow overriding it via compiler option (-D)
@@ -210,8 +212,8 @@ void Qtenv::doRun()
 
         // set up Tcl/Tk
         interp = initTk(args->getArgCount(), args->getArgVector());
-        if (!interp)
-            throw opp_runtime_error("Tkenv: cannot create Tcl interpreter");
+//        if (!interp)
+//            throw opp_runtime_error("Tkenv: cannot create Tcl interpreter");
 
         // add OMNeT++'s commands to Tcl
         createTkCommands(interp, tcl_commands);
@@ -258,6 +260,11 @@ void Qtenv::doRun()
         }
 #endif
 
+        int argc = 0;
+        QApplication a(argc, (char**)0);
+        mainwindow = new MainWindow();
+        mainwindow->show();
+
         // evaluate main script and build user interface
         if (Tcl_Eval(interp,"startTkenv")==TCL_ERROR) {
             logTclError(__FILE__,__LINE__, interp);
@@ -281,18 +288,19 @@ void Qtenv::doRun()
         addEmbeddedInspector(".log", mainLogView);
 
         setLogFormat(opt->logFormat.c_str());
+
+        //
+        // RUN
+        //
+        CHK(Tcl_Eval(interp,"startupCommands"));
+        a.exec();
+        //runTk(interp);
     }
     catch (std::exception& e)
     {
         interp = NULL;
         throw;
     }
-
-    //
-    // RUN
-    //
-    CHK(Tcl_Eval(interp,"startupCommands"));
-    runTk(interp);
 
     //
     // SHUTDOWN

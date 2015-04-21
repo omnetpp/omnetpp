@@ -108,17 +108,18 @@ int createTkCommands(Tcl_Interp *interp, OmnetTclCommand *commands)
 }
 
 // run the Tk application
-int runTk(Tcl_Interp *)
-{
-    // Custom event loop
-    //  the C++ variable exitOmnetpp is used for exiting
-    while (!exitOmnetpp)
-    {
-       Tk_DoOneEvent(TK_ALL_EVENTS);
-    }
+//int runTk(Tcl_Interp *)
+//{
+//    // Custom event loop
+//    //  the C++ variable exitOmnetpp is used for exiting
+//    while (!exitOmnetpp)
+//    {
 
-    return TCL_OK;
-}
+//       //Tk_DoOneEvent(TK_ALL_EVENTS);
+//    }
+
+//    return TCL_OK;
+//}
 
 } //namespace
 NAMESPACE_END
