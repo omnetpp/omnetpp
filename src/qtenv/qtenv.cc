@@ -59,6 +59,7 @@
 
 #include <QApplication>
 #include "mainwindow.h"
+#include "figurerenderers.h"
 
 NAMESPACE_BEGIN
 
@@ -211,8 +212,6 @@ void Qtenv::doRun()
     mainwindow = new MainWindow();
     
     mainwindow->show();
-
-    a.exec();
 
         // '-c' and '-r' option: configuration to activate, and run numbers to run.
         // Both command-line options take precedence over inifile settings.
@@ -381,7 +380,8 @@ inline bool elapsed(long millis, struct timeval& since)
 
 void Qtenv::simulate() //XXX probably not needed anymore -- take over interesting bits to other methods!
 {
-    
+    cCanvas *canvas = simulation.getSystemModule()->getCanvas();
+    cRenderer.setQtCanvas(mainwindow->scene, canvas);
     // XXX this really shouldn't be created here, and certainly not this way
     int argc = 1;
     char * argv[] = {"..."};
@@ -394,6 +394,7 @@ void Qtenv::simulate() //XXX probably not needed anymore -- take over interestin
     startClock();
     sigintReceived = false;
 
+    FigureRenderingHints hints;
     Speedometer speedometer;  // only used by Express mode, but we need it in catch blocks too
 
     try
@@ -403,6 +404,7 @@ void Qtenv::simulate() //XXX probably not needed anymore -- take over interestin
             disable_tracing = false;
             while (true)
             {
+                cRenderer.redraw(&hints);
                 QApplication::processEvents();
 
                 cEvent *event = simulation.takeNextEvent();

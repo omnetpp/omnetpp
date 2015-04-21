@@ -12,8 +12,17 @@ TARGET = qtenv-ui
 TEMPLATE = lib
 CONFIG += static
 
-SOURCES += mainwindow.cpp
+SOURCES += mainwindow.cpp \
+    qtenv.cc \
+    graphicspatharrowitem.cc \
+    figurerenderers.cc \
+    canvasrenderer.cc
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    qtenv.h \
+    qtdefs.h \
+    canvasrenderer.h \
+    figurerenderers.h \
+    graphicspatharrowitem.h
 
 FORMS    += mainwindow.ui

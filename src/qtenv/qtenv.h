@@ -25,6 +25,8 @@
 #include <csimulation.h>
 
 #include <envirbase.h>
+#include "ccanvas.h"
+#include "canvasrenderer.h"
 
 class MainWindow;
 class QApplication;
@@ -67,6 +69,7 @@ class QTENV_API Qtenv : public EnvirBase
      FILE *logStream;
      
      MainWindow *mainwindow;
+     CanvasRenderer cRenderer;
 
    protected:
      virtual void log(cLogEntry *entry);

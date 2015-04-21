@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 
+class QGraphicsScene;
+class cCanvas;
+
 namespace Ui {
 class MainWindow;
 }
@@ -12,6 +15,8 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    QGraphicsScene *scene;
+
     explicit MainWindow(QWidget *parent = 0);
 
     void displayText(const char* t);

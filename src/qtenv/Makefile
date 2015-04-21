@@ -35,7 +35,7 @@ IMPLIBS= -L$L -loppsim$D -loppenvir$D -loppcommon$D $(QT_LIBS)
 
 QTENVUILIB= libqtenv-ui.a
 
-OBJS= $O/$(QTENVUILIB) $O/qtenv.o
+OBJS= $O/$(QTENVUILIB) $O/qtenv.o $O/canvasrenderer.o $O/figurerenderers.o $O/graphicspatharrowitem.o
 
 #
 # Automatic rules
@@ -101,6 +101,7 @@ missing-dependency:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/qtenv.o: qtenv.cc \
   ../../include/carray.h \
+  ../../include/ccanvas.h \
   ../../include/cchannel.h \
   ../../include/cclassdescriptor.h \
   ../../include/ccomponent.h \
@@ -173,5 +174,8 @@ $O/qtenv.o: qtenv.cc \
   ../envir/objectprinter.h \
   ../envir/speedometer.h \
   ../envir/visitor.h \
+  canvasrenderer.h \
+  figurerenderers.h \
+  mainwindow.h \
   qtdefs.h \
   qtenv.h
