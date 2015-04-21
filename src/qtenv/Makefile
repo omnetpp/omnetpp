@@ -29,7 +29,7 @@ L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
 #QTPREFIX= /usr/include/x86_64-linux-gnu
 #QTINCLUDES= -I$(QTPREFIX)/qt5/QtGui -I$(QTPREFIX)/qt5 -I$(QTPREFIX)/qt5/QtCore -I$(QTPREFIX)/qt5/QtWidgets
 
-COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../common -I../envir -DBUILDING_QTENV $(QT_CFLAGS)
+COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_SRC_DIR) -DBUILDING_QTENV $(QT_CFLAGS)
 
 IMPLIBS= -L$L -loppsim$D -loppenvir$D -loppcommon$D $(QT_LIBS)
 
@@ -99,70 +99,54 @@ missing-dependency:
 	@echo '  *** Install it, then run ./configure again.'
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+$O/canvasrenderer.o: canvasrenderer.cc \
+  canvasrenderer.h \
+  figurerenderers.h
+$O/figurerenderers.o: figurerenderers.cc \
+  figurerenderers.h \
+  graphicspatharrowitem.h
+$O/graphicspatharrowitem.o: graphicspatharrowitem.cc \
+  graphicspatharrowitem.h
 $O/qtenv.o: qtenv.cc \
-  ../../include/carray.h \
-  ../../include/ccanvas.h \
-  ../../include/cchannel.h \
-  ../../include/cclassdescriptor.h \
-  ../../include/ccomponent.h \
-  ../../include/ccomponenttype.h \
-  ../../include/cconfigoption.h \
-  ../../include/cconfiguration.h \
-  ../../include/cdefaultlist.h \
-  ../../include/cdensityestbase.h \
-  ../../include/cdisplaystring.h \
-  ../../include/cenum.h \
-  ../../include/cenvir.h \
-  ../../include/cevent.h \
-  ../../include/cexception.h \
-  ../../include/cexpression.h \
-  ../../include/cgate.h \
-  ../../include/checkandcast.h \
-  ../../include/clifecyclelistener.h \
-  ../../include/clistener.h \
-  ../../include/clog.h \
-  ../../include/cmessage.h \
-  ../../include/cmessageheap.h \
-  ../../include/cmodule.h \
-  ../../include/cmsgpar.h \
-  ../../include/cnamedobject.h \
-  ../../include/cnedmathfunction.h \
-  ../../include/cnedvalue.h \
-  ../../include/cobject.h \
-  ../../include/cobjectfactory.h \
-  ../../include/coutvector.h \
-  ../../include/cownedobject.h \
-  ../../include/cpar.h \
-  ../../include/cproperties.h \
-  ../../include/cproperty.h \
-  ../../include/cqueue.h \
-  ../../include/cregistrationlist.h \
-  ../../include/cresultfilter.h \
-  ../../include/cresultlistener.h \
-  ../../include/cresultrecorder.h \
-  ../../include/cscheduler.h \
-  ../../include/csimplemodule.h \
-  ../../include/csimulation.h \
-  ../../include/cstatistic.h \
-  ../../include/cstddev.h \
-  ../../include/cstringpool.h \
-  ../../include/ctimestampedvalue.h \
-  ../../include/cvisitor.h \
-  ../../include/cwatch.h \
-  ../../include/envirext.h \
-  ../../include/errmsg.h \
-  ../../include/globals.h \
-  ../../include/onstartup.h \
-  ../../include/opp_string.h \
-  ../../include/platdep/intlimits.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/platdep/timeutil.h \
-  ../../include/regmacros.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simtime.h \
-  ../../include/simtime_t.h \
-  ../../include/simutil.h \
+  ../../include/omnetpp/carray.h \
+  ../../include/omnetpp/ccomponent.h \
+  ../../include/omnetpp/cconfiguration.h \
+  ../../include/omnetpp/cdefaultlist.h \
+  ../../include/omnetpp/cenvir.h \
+  ../../include/omnetpp/cevent.h \
+  ../../include/omnetpp/cexception.h \
+  ../../include/omnetpp/cexpression.h \
+  ../../include/omnetpp/clifecyclelistener.h \
+  ../../include/omnetpp/clistener.h \
+  ../../include/omnetpp/clog.h \
+  ../../include/omnetpp/cmessageheap.h \
+  ../../include/omnetpp/cnamedobject.h \
+  ../../include/omnetpp/cnedvalue.h \
+  ../../include/omnetpp/cobject.h \
+  ../../include/omnetpp/cobjectfactory.h \
+  ../../include/omnetpp/cownedobject.h \
+  ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
+  ../../include/omnetpp/csimulation.h \
+  ../../include/omnetpp/cstringpool.h \
+  ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
+  ../../include/omnetpp/envirext.h \
+  ../../include/omnetpp/errmsg.h \
+  ../../include/omnetpp/globals.h \
+  ../../include/omnetpp/onstartup.h \
+  ../../include/omnetpp/opp_string.h \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/platdep/timeutil.h \
+  ../../include/omnetpp/regmacros.h \
+  ../../include/omnetpp/simkerneldefs.h \
+  ../../include/omnetpp/simtime.h \
+  ../../include/omnetpp/simtime_t.h \
+  ../../include/omnetpp/simutil.h \
   ../envir/appreg.h \
   ../envir/args.h \
   ../envir/envirbase.h \

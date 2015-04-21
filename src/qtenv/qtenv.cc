@@ -22,39 +22,39 @@
 #include <signal.h>
 #include <algorithm>
 
-#include "opp_ctype.h"
-#include "commonutil.h"
-#include "fileutil.h"
+#include "common/opp_ctype.h"
+#include "common/commonutil.h"
+#include "common/fileutil.h"
 #include "qtdefs.h"
 #include "qtenv.h"
-#include "enumstr.h"
-#include "appreg.h"
-#include "csimplemodule.h"
-#include "ccomponenttype.h"
-#include "cmessage.h"
-#include "args.h"
-#include "speedometer.h"
-#include "timeutil.h"
-#include "stringutil.h"
-#include "cconfigoption.h"
-#include "checkandcast.h"
-#include "cproperties.h"
-#include "cproperty.h"
-#include "cenum.h"
-#include "cscheduler.h"
-#include "stringtokenizer.h"
-#include "cresultfilter.h"
-#include "cresultrecorder.h"
-#include "visitor.h"
-#include "cclassdescriptor.h"
-#include "cqueue.h"
-#include "cchannel.h"
-#include "coutvector.h"
-#include "cstatistic.h"
-#include "cdensityestbase.h"
-#include "cwatch.h"
-#include "cdisplaystring.h"
-#include "platdep/platmisc.h" // INT64_PRINTF_FORMAT
+#include "common/enumstr.h"
+#include "envir/appreg.h"
+#include "omnetpp/csimplemodule.h"
+#include "omnetpp/ccomponenttype.h"
+#include "omnetpp/cmessage.h"
+#include "envir/args.h"
+#include "envir/speedometer.h"
+#include "omnetpp/platdep/timeutil.h"
+#include "common/stringutil.h"
+#include "omnetpp/cconfigoption.h"
+#include "omnetpp/checkandcast.h"
+#include "omnetpp/cproperties.h"
+#include "omnetpp/cproperty.h"
+#include "omnetpp/cenum.h"
+#include "omnetpp/cscheduler.h"
+#include "common/stringtokenizer.h"
+#include "omnetpp/cresultfilter.h"
+#include "omnetpp/cresultrecorder.h"
+#include "envir/visitor.h"
+#include "omnetpp/cclassdescriptor.h"
+#include "omnetpp/cqueue.h"
+#include "omnetpp/cchannel.h"
+#include "omnetpp/coutvector.h"
+#include "omnetpp/cstatistic.h"
+#include "omnetpp/cdensityestbase.h"
+#include "omnetpp/cwatch.h"
+#include "omnetpp/cdisplaystring.h"
+#include "omnetpp/platdep/platmisc.h" // INT64_PRINTF_FORMAT
 
 
 #include <QApplication>
@@ -63,6 +63,8 @@
 
 NAMESPACE_BEGIN
 
+#define simulation (*cSimulation::getActiveSimulation())
+#define ev (*cSimulation::getActiveEnvir())
 
 // Register_GlobalConfigOption(CFGID_CONFIG_NAME, "qtenv-config-name", CFG_STRING, NULL, "Specifies the name of the configuration to be run (for a value `Foo', section [Config Foo] will be used from the ini file). See also qtenv-runs-to-execute=. The -c command line option overrides this setting.")
 // Register_GlobalConfigOption(CFGID_RUNS_TO_EXECUTE, "qtenv-runs-to-execute", CFG_STRING, NULL, "Specifies which runs to execute from the selected configuration (see qtenv-config-name=). It accepts a comma-separated list of run numbers or run number ranges, e.g. 1,3..4,7..9. If the value is missing, Qtenv executes all runs in the selected configuration. The -r command line option overrides this setting.")

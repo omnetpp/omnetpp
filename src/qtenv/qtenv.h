@@ -21,11 +21,10 @@
 
 
 #include <map>
-#include <clistener.h>
-#include <csimulation.h>
-
-#include <envirbase.h>
-#include "ccanvas.h"
+#include "omnetpp/clistener.h"
+#include "omnetpp/csimulation.h"
+#include "envir/envirbase.h"
+#include "omnetpp/ccanvas.h"
 #include "canvasrenderer.h"
 
 class MainWindow;

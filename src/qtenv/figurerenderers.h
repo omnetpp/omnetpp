@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 
-#include "ccanvas.h"
+#include "omnetpp/ccanvas.h"
 
 class QPen;
 class QGraphicsScene;

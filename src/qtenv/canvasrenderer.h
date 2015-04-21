@@ -1,7 +1,7 @@
 #ifndef CANVASRENDERER_H
 #define CANVASRENDERER_H
 
-#include "ccanvas.h"
+#include "omnetpp/ccanvas.h"
 #include <QGraphicsScene>
 
 class FigureRenderingHints;
