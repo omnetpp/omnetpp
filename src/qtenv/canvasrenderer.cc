@@ -54,6 +54,8 @@ void CanvasRenderer::setCanvas(cCanvas *canvas)
 
 void CanvasRenderer::refresh(FigureRenderingHints *hints)
 {
+    //FIXME
+    return;
     if (canvas)
     {
         // if there is a structural change, we rebuild everything;
@@ -77,6 +79,8 @@ void CanvasRenderer::refresh(FigureRenderingHints *hints)
 
 void CanvasRenderer::redraw(FigureRenderingHints *hints)
 {
+    //FIXME
+    return;
     // remove existing figures
     CHK(Tcl_VarEval(interp, canvasWidget.c_str(), " delete fig", NULL));
 

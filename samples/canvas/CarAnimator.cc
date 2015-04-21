@@ -98,6 +98,7 @@ void CarAnimator::refresh()
 
 void CarAnimator::handleMessage(cMessage *msg)
 {
+    EV << "Valami\n";
     // steer
     Point target = road->getPoint(targetPointIndex);
     Point vectorToTarget = target - loc;

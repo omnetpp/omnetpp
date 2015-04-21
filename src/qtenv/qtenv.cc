@@ -1847,6 +1847,9 @@ void Qtenv::log(cLogEntry *entry)
     const char *s = entry->text;
     int n = entry->textLength;
 
+    ::fputs(prefix.c_str(), stdout);
+    (void) ::fwrite(s,1,n,stdout);
+
     if (!interp)
     {
         // fallback in case Tkenv didn't fire up correctly

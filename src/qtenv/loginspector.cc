@@ -125,14 +125,15 @@ void LogInspector::messageSendAdded()
 
 void LogInspector::textWidgetCommand(const char *arg1, const char *arg2, const char *arg3, const char *arg4, const char *arg5, const char *arg6)
 {
-    // Note: args do NOT need to be quoted, because they are directly passed to the text widget's cmd proc as (argc,argv)
-    const char *argv[] = {textWidget, arg1, arg2, arg3, arg4, arg5, arg6};
-    int argc = !arg1 ? 1 : !arg2 ? 2 : !arg3 ? 3 : !arg4 ? 4 : !arg5 ? 5 : 6;
+    //QT!
+//    // Note: args do NOT need to be quoted, because they are directly passed to the text widget's cmd proc as (argc,argv)
+//    const char *argv[] = {textWidget, arg1, arg2, arg3, arg4, arg5, arg6};
+//    int argc = !arg1 ? 1 : !arg2 ? 2 : !arg3 ? 3 : !arg4 ? 4 : !arg5 ? 5 : 6;
 
-    TclCmdProc cmdProc = (TclCmdProc)textWidgetCmdInfo.proc;  // Tcl versions differ in the type of the last arg: char *argv[] vs const char *argv[] -- the purpose of this temp var is to make the code compile with both variants
-    int ret = cmdProc(textWidgetCmdInfo.clientData, interp, argc, (char **)argv);
-    if (ret == TCL_ERROR)
-        getTkenv()->logTclError(__FILE__, __LINE__, Tcl_GetStringResult(interp));
+//    TclCmdProc cmdProc = (TclCmdProc)textWidgetCmdInfo.proc;  // Tcl versions differ in the type of the last arg: char *argv[] vs const char *argv[] -- the purpose of this temp var is to make the code compile with both variants
+//    int ret = cmdProc(textWidgetCmdInfo.clientData, interp, argc, (char **)argv);
+//    if (ret == TCL_ERROR)
+//        getTkenv()->logTclError(__FILE__, __LINE__, Tcl_GetStringResult(interp));
 }
 
 void LogInspector::textWidgetInsert(const char *text, const char *tags)
