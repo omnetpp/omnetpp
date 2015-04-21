@@ -16,4 +16,6 @@ SOURCES += mainwindow.cpp
 
 HEADERS  += mainwindow.h
 
+INCLUDEPATH += ../../../../src ../../../../include
+
 FORMS    += mainwindow.ui

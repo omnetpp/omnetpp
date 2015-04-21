@@ -533,6 +533,7 @@ void logTclError(const char *file, int line, Tcl_Interp *interp)
 
 void invokeTclCommand(Tcl_Interp *interp, Tcl_CmdInfo *cmd, int argc, const char *argv[])
 {
+/*Qt!
     TclCmdProc cmdProc = (TclCmdProc)cmd->proc;
     if (cmdProc(cmd->clientData, interp, argc, (char**)argv) == TCL_ERROR) {
         std::stringstream os;
@@ -544,6 +545,7 @@ void invokeTclCommand(Tcl_Interp *interp, Tcl_CmdInfo *cmd, int argc, const char
         os << "\n";
         getTkenv()->logTclError(__FILE__, __LINE__, os.str().c_str());
     }
+*/
 }
 
 

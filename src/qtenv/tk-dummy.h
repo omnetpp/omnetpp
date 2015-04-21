@@ -18,6 +18,8 @@
 #ifndef __OMNETPP_TKDUMMY_H
 #define __OMNETPP_TKDUMMY_H
 
+#include <cstdlib>  // NULL
+
 struct Tcl_Interp {};
 typedef void *ClientData;
 struct Tcl_Namespace {};

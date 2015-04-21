@@ -262,7 +262,7 @@ void Qtenv::doRun()
 
         int argc = 0;
         QApplication a(argc, (char**)0);
-        mainwindow = new MainWindow();
+        mainwindow = new MainWindow(this);
         mainwindow->show();
 
         // evaluate main script and build user interface
