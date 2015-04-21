@@ -1,371 +1,491 @@
 //==========================================================================
-//  QTENV.CC - part of
+//  TKENV.CC - part of
+//
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//
-//  Author: Andras Varga
+//  contains:  Tkenv member functions
 //
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2008 Andras Varga
-  Copyright (C) 2006-2008 OpenSim Ltd.
+  Copyright (C) 1992-2015 Andras Varga
+  Copyright (C) 2006-2015 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <assert.h>
 #include <string.h>
+#include <stdarg.h>
+#include <stdlib.h>
 #include <signal.h>
-#include <algorithm>
+#include <stdio.h>
+#include <string>
 
-#include "common/opp_ctype.h"
-#include "common/commonutil.h"
-#include "common/fileutil.h"
-#include "qtdefs.h"
-#include "qtenv.h"
-#include "common/enumstr.h"
-#include "envir/appreg.h"
-#include "omnetpp/csimplemodule.h"
-#include "omnetpp/ccomponenttype.h"
-#include "omnetpp/cmessage.h"
-#include "envir/args.h"
-#include "envir/speedometer.h"
-#include "omnetpp/platdep/timeutil.h"
 #include "common/stringutil.h"
+#include "common/stringtokenizer.h"
+#include "common/matchexpression.h"
+#include "common/fileutil.h"
+#include "common/ver.h"
+#include "envir/appreg.h"
+#include "envir/speedometer.h"
+#include "envir/matchableobject.h"
+#include "omnetpp/csimplemodule.h"
+#include "omnetpp/cmessage.h"
+#include "omnetpp/cscheduler.h"
+#include "omnetpp/ccomponenttype.h"
+#include "omnetpp/csimulation.h"
 #include "omnetpp/cconfigoption.h"
-#include "omnetpp/checkandcast.h"
+#include "omnetpp/regmacros.h"
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cproperty.h"
-#include "omnetpp/cenum.h"
-#include "omnetpp/cscheduler.h"
-#include "common/stringtokenizer.h"
-#include "omnetpp/cresultfilter.h"
-#include "omnetpp/cresultrecorder.h"
-#include "envir/visitor.h"
-#include "omnetpp/cclassdescriptor.h"
-#include "omnetpp/cqueue.h"
-#include "omnetpp/cchannel.h"
-#include "omnetpp/coutvector.h"
-#include "omnetpp/cstatistic.h"
-#include "omnetpp/cdensityestbase.h"
-#include "omnetpp/cwatch.h"
-#include "omnetpp/cdisplaystring.h"
-#include "omnetpp/platdep/platmisc.h" // INT64_PRINTF_FORMAT
+#include "omnetpp/platdep/timeutil.h"
+#include "omnetpp/platdep/platmisc.h"
+#include "qtenvdefs.h"
+#include "qtenv.h"
+#include "tklib.h"
+#include "inspector.h"
+#include "inspectorfactory.h"
+#include "moduleinspector.h"
+#include "loginspector.h"
+#include "gateinspector.h"
+#include "genericobjectinspector.h"
+#include "watchinspector.h"
 
 
-#include <QApplication>
-#include "mainwindow.h"
-#include "figurerenderers.h"
+// default plugin path -- allow overriding it via compiler option (-D)
+// (default image path comes from makefile)
+#ifndef OMNETPP_PLUGIN_PATH
+#define OMNETPP_PLUGIN_PATH "./plugins"
+#endif
+
+#ifdef __APPLE__
+void OSXTransformProcess();
+#endif
+
 
 NAMESPACE_BEGIN
-
-#define simulation (*cSimulation::getActiveSimulation())
-#define ev (*cSimulation::getActiveEnvir())
-
-// Register_GlobalConfigOption(CFGID_CONFIG_NAME, "qtenv-config-name", CFG_STRING, NULL, "Specifies the name of the configuration to be run (for a value `Foo', section [Config Foo] will be used from the ini file). See also qtenv-runs-to-execute=. The -c command line option overrides this setting.")
-// Register_GlobalConfigOption(CFGID_RUNS_TO_EXECUTE, "qtenv-runs-to-execute", CFG_STRING, NULL, "Specifies which runs to execute from the selected configuration (see qtenv-config-name=). It accepts a comma-separated list of run numbers or run number ranges, e.g. 1,3..4,7..9. If the value is missing, Qtenv executes all runs in the selected configuration. The -r command line option overrides this setting.")
-// Register_GlobalConfigOptionU(CFGID_QTENV_EXTRA_STACK, "qtenv-extra-stack", "B",  "8KiB", "Specifies the extra amount of stack that is reserved for each activity() simple module when the simulation is run under Qtenv.")
-// Register_GlobalConfigOption(CFGID_QTENV_INTERACTIVE, "qtenv-interactive", CFG_BOOL,  "false", "Defines what Qtenv should do when the model contains unassigned parameters. In interactive mode, it asks the user. In non-interactive mode (which is more suitable for batch execution), Qtenv stops with an error.")
-// Register_GlobalConfigOption(CFGID_OUTPUT_FILE, "qtenv-output-file", CFG_FILENAME, NULL, "When a filename is specified, Qtenv redirects standard output into the given file. This is especially useful with parallel simulation. See the `fname-append-host' option as well.")
-// Register_PerRunConfigOption(CFGID_EXPRESS_MODE, "qtenv-express-mode", CFG_BOOL, "true", "Selects ``normal'' (debug/trace) or ``express'' mode.")
-// Register_PerRunConfigOption(CFGID_AUTOFLUSH, "qtenv-autoflush", CFG_BOOL, "false", "Call fflush(stdout) after each event banner or status update; affects both express and normal mode. Turning on autoflush may have a performance penalty, but it can be useful with printf-style debugging for tracking down program crashes.")
-// Register_PerRunConfigOption(CFGID_MODULE_MESSAGES, "qtenv-module-messages", CFG_BOOL, "true", "When qtenv-express-mode=false: turns printing module ev<< output on/off.")
-// Register_PerRunConfigOption(CFGID_EVENT_BANNERS, "qtenv-event-banners", CFG_BOOL, "true", "When qtenv-express-mode=false: turns printing event banners on/off.")
-// Register_PerRunConfigOption(CFGID_EVENT_BANNER_DETAILS, "qtenv-event-banner-details", CFG_BOOL, "false", "When qtenv-express-mode=false: print extra information after event banners.")
-// Register_PerRunConfigOption(CFGID_MESSAGE_TRACE, "qtenv-message-trace", CFG_BOOL, "false", "When qtenv-express-mode=false: print a line per message sending (by send(),scheduleAt(), etc) and delivery on the standard output.")
-// Register_PerRunConfigOptionU(CFGID_STATUS_FREQUENCY, "qtenv-status-frequency", "s", "2s", "When qtenv-express-mode=true: print status update every n seconds.")
-// Register_PerRunConfigOption(CFGID_PERFORMANCE_DISPLAY, "qtenv-performance-display", CFG_BOOL, "true", "When qtenv-express-mode=true: print detailed performance information. Turning it on results in a 3-line entry printed on each update, containing ev/sec, simsec/sec, ev/simsec, number of messages created/still present/currently scheduled in FES.")
-// Register_PerRunConfigOption(CFGID_LOG_FORMAT, "qtenv-log-format", CFG_STRING, "[%l]\t", "Specifies the format string that determines the prefix of each log line. Log can be written using macros such as EV_FATAL, EV_ERROR, EV_WARN, EV_INFO, EV_DETAIL, EV_DEBUG and EV_TRACE. The format string may contain constant texts interleaved with format directives. A format directive is a '%' character followed by a single format character. See the manual for the list of available format characters.");
-// Register_PerRunConfigOption(CFGID_GLOBAL_LOGLEVEL, "qtenv-log-level", CFG_STRING, "DEBUG", "Specifies the level of detail recorded by log statements, output below the specified level is omitted. This setting is with AND relationship with per-component log level settings. Available values are (case insensitive): fatal, error, warn, info, detail, debug or trace. Note that the level of detail is also controlled by the specified per component log levels and the GLOBAL_COMPILETIME_LOGLEVEL macro that is used to completely remove log statements from the executable.");
-
-Register_PerObjectConfigOption(CFGID_QTENV_EV_OUTPUT, "qtenv-ev-output", KIND_MODULE, CFG_BOOL, "true", "When qtenv-express-mode=false: whether Qtenv should print log messages (EV<<, EV_INFO, etc.) from the selected modules.")
-
-
-
-// utility function for printing elapsed time
-static char *timeToStr(timeval t, char *buf=NULL)
-{
-   static char buf2[64];
-   char *b = buf ? buf : buf2;
-
-   if (t.tv_sec<3600)
-       sprintf(b,"%ld.%.3ds (%dm %02ds)", (long)t.tv_sec, (int)(t.tv_usec/1000), int(t.tv_sec/60L), int(t.tv_sec%60L));
-   else if (t.tv_sec<86400)
-       sprintf(b,"%ld.%.3ds (%dh %02dm)", (long)t.tv_sec, (int)(t.tv_usec/1000), int(t.tv_sec/3600L), int((t.tv_sec%3600L)/60L));
-   else
-       sprintf(b,"%ld.%.3ds (%dd %02dh)", (long)t.tv_sec, (int)(t.tv_usec/1000), int(t.tv_sec/86400L), int((t.tv_sec%86400L)/3600L));
-
-   return b;
-}
-
+namespace qtenv {
 
 //
-// Register the Qtenv user interface
+// Register the Tkenv user interface
 //
-Register_OmnetApp("Qtenv", Qtenv, 30, "Qt user interface");
+Register_OmnetApp("Tkenv", Qtenv, 20, "graphical user interface");
 
 //
-// The following function can be used to force linking with Qtenv; specify
-// -u _qtenv_lib (gcc) or /include:_qtenv_lib (vc++) in the link command.
+// The following function can be used to force linking with Tkenv; specify
+// -u _tkenv_lib (gcc) or /include:_tkenv_lib (vc++) in the link command.
 //
-extern "C" QTENV_API void qtenv_lib() {}
+extern "C" TKENV_API void tkenv_lib() {}
 // on some compilers (e.g. linux gcc 4.2) the functions are generated without _
-extern "C" QTENV_API void _qtenv_lib() {}
-
-#define SPEEDOMETER_UPDATEMILLISECS 1000
+extern "C" TKENV_API void _tkenv_lib() {}
 
 #define LL  INT64_PRINTF_FORMAT
 
-static char buffer[1024];
+#define SPEEDOMETER_UPDATEMILLISECS 1000
 
-bool Qtenv::sigintReceived;
 
+Register_GlobalConfigOptionU(CFGID_TKENV_EXTRA_STACK, "tkenv-extra-stack", "B", "48KiB", "Specifies the extra amount of stack that is reserved for each activity() simple module when the simulation is run under Tkenv.");
+Register_GlobalConfigOption(CFGID_TKENV_DEFAULT_CONFIG, "tkenv-default-config", CFG_STRING, NULL, "Specifies which config Tkenv should set up automatically on startup. The default is to ask the user.");
+Register_GlobalConfigOption(CFGID_TKENV_DEFAULT_RUN, "tkenv-default-run", CFG_INT, "0", "Specifies which run (of the default config, see tkenv-default-config) Tkenv should set up automatically on startup. The default is to ask the user.");
+Register_GlobalConfigOption(CFGID_TKENV_IMAGE_PATH, "tkenv-image-path", CFG_PATH, "", "Specifies the path for loading module icons.");
+Register_GlobalConfigOption(CFGID_TKENV_PLUGIN_PATH, "tkenv-plugin-path", CFG_PATH, "", "Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files that get evaluated on startup.");
+
+
+// utility function
+static bool moduleContains(cModule *potentialparent, cModule *mod)
+{
+   while (mod)
+   {
+       if (mod==potentialparent)
+           return true;
+       mod = mod->getParentModule();
+   }
+   return false;
+}
 
 QtenvOptions::QtenvOptions()
 {
     // note: these values will be overwritten in setup()/readOptions() before taking effect
-    extraStack = 0;
-    autoflush = true;
-    expressMode = false;
-    interactive = false;
-    printModuleMsgs = true;
+    updateFreqFast = 500;
+    updateFreqExpress = 1000;
+    animationEnabled = true;
+    showNextEventMarkers = true;
+    showSendDirectArrows = true;
+    animateMethodCalls = true;
+    methodCallAnimDelay = 200;
+    animationMsgNames = true;
+    animationMsgClassNames = true;
+    animationMsgColors = true;
+    penguinMode = false;
+    showLayouting = false;
+    layouterChoice = LAYOUTER_AUTO;
+    arrangeVectorConnections = false;
+    iconMinimumSize = 5;
+    showBubbles = true;
+    animationSpeed = 1.5;
     printEventBanners = true;
-    detailedEventBanners = false;
-    messageTrace = false;
-    statusFrequencyMs = 2000;
-    printPerformanceData = false;
+    printInitBanners = true;
+    shortBanners = false;
+    autoupdateInExpress = true;
+    stopOnMsgCancel = true;
+    stripNamespace = STRIPNAMESPACE_ALL;
+    logFormat = "%l %C: ";
+    logLevel = LOGLEVEL_TRACE;
+    scrollbackLimit = 10000;
 }
 
-
 Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt)
-{		
+{
     // Note: ctor should only contain trivial initializations, because
     // the class may be instantiated only for the purpose of calling
     // printUISpecificHelp() on it
 
-    // initialize fout to stdout, then we'll replace it if redirection is
-    // requested in the ini file
+    interp = NULL;  // Tcl/Tk not set up yet
+    ferrorlog = NULL;
+    simstate = SIM_NONET;
+    stopsimulation_flag = false;
+    animating = false;
+    isconfigrun = false;
+    rununtil_msg = NULL; // deactivate corresponding checks in eventCancelled()/objectDeleted()
+    gettimeofday(&idleLastUICheck, NULL);
 
-    //XXX log settings should come from some configuration or commmand-line arg
-    logging = true;
-    logStream = fopen(".qtenv-log", "w");
-    if (!logStream) logStream = stdout;
+    // set the name here, to prevent warning from cStringPool on shutdown when Cmdenv runs
+    inspectorfactories.getInstance()->setName("inspectorfactories");
 }
 
 Qtenv::~Qtenv()
 {
+    for (int i = 0; i < (int)silentEventFilters.size(); i++)
+        delete silentEventFilters[i];
 }
 
-void Qtenv::readOptions()
+static void signalHandler(int signum)
 {
-    EnvirBase::readOptions();
-
-    cConfiguration *cfg = getConfig();
-
-    // note: configname and runstoexec will possibly be overwritten
-    // with the -c, -r command-line options in our setup() method
-    // opt->configName = cfg->getAsString(CFGID_CONFIG_NAME);
-    // opt->runsToExec = cfg->getAsString(CFGID_RUNS_TO_EXECUTE);
-
-    // opt->extraStack = (size_t) cfg->getAsDouble(CFGID_QTENV_EXTRA_STACK);
-    // opt->outputFile = cfg->getAsFilename(CFGID_OUTPUT_FILE).c_str();
-
-    if (!opt->outputFile.empty())
-    {
-        processFileName(opt->outputFile);
-        ::printf("Qtenv: redirecting output to file `%s'...\n",opt->outputFile.c_str());
-        FILE *out = fopen(opt->outputFile.c_str(), "w");
-        if (!out)
-            throw cRuntimeError("Cannot open output redirection file `%s'",opt->outputFile.c_str());
-    }
-}
-
-void Qtenv::readPerRunOptions()
-{
-    EnvirBase::readPerRunOptions();
-
-    cConfiguration *cfg = getConfig();
-    // opt->expressMode = cfg->getAsBool(CFGID_EXPRESS_MODE);
-    // opt->interactive = cfg->getAsBool(CFGID_QTENV_INTERACTIVE);
-    // opt->autoflush = cfg->getAsBool(CFGID_AUTOFLUSH);
-    // opt->printModuleMsgs = cfg->getAsBool(CFGID_MODULE_MESSAGES);
-    // opt->printEventBanners = cfg->getAsBool(CFGID_EVENT_BANNERS);
-    // opt->detailedEventBanners = cfg->getAsBool(CFGID_EVENT_BANNER_DETAILS);
-    // opt->messageTrace = cfg->getAsBool(CFGID_MESSAGE_TRACE);
-    // opt->statusFrequencyMs = 1000*cfg->getAsDouble(CFGID_STATUS_FREQUENCY);
-    // opt->printPerformanceData = cfg->getAsBool(CFGID_PERFORMANCE_DISPLAY);
-    // setLogLevel(cLogLevel::getLevel(getConfig()->getAsString(CFGID_GLOBAL_LOGLEVEL).c_str()));
-    // setLogFormat(getConfig()->getAsString(CFGID_LOG_FORMAT).c_str());
+   cStaticFlag::setExiting();
+   exit(2);
 }
 
 void Qtenv::doRun()
 {
+    //
+    // SETUP
+    //
+    try
     {
-   
-   int argc = 0;
-   char **argv = NULL;
-    QApplication a(argc, argv);
+        // set signal handler
+        signal(SIGINT, signalHandler);
+        signal(SIGTERM, signalHandler);
 
-    // this isn't in the right place either
-    mainwindow = new MainWindow();
-    
-    mainwindow->show();
+#ifdef __APPLE__
+        OSXTransformProcess();
+#endif
+        // path for the Tcl user interface files
+#ifdef OMNETPP_TKENV_DIR
+        tkenv_dir = getenv("OMNETPP_TKENV_DIR");
+        if (tkenv_dir.empty())
+            tkenv_dir = OMNETPP_TKENV_DIR;
+#endif
 
-        // '-c' and '-r' option: configuration to activate, and run numbers to run.
-        // Both command-line options take precedence over inifile settings.
-        // (NOTE: inifile settings *already* got read at this point! as EnvirBase::setup()
-        // invokes readOptions()).
-        
-        const char *configName = args->optionValue('c');
-        if (configName)
-            opt->configName = configName;
-        if (opt->configName.empty())
-            opt->configName = "General";
+        // path for icon directories
+        const char *image_path_env = getenv("OMNETPP_IMAGE_PATH");
+        if (image_path_env==NULL && getenv("OMNETPP_BITMAP_PATH")!=NULL)
+            fprintf(stderr, "\n<!> WARNING: Obsolete environment variable OMNETPP_BITMAP_PATH found -- "
+                            "please change it to OMNETPP_IMAGE_PATH for " OMNETPP_PRODUCT " 4.0\n");
+        std::string image_path = opp_isempty(image_path_env) ? OMNETPP_IMAGE_PATH : image_path_env;
+        // strip away the /; sequence from the beginning (a workaround for MinGW path conversion). See #785
+        if (image_path.find("/;") == 0)
+            image_path.erase(0, 2);
 
-        const char *runsToExec = args->optionValue('r');
-        if (runsToExec)
-            opt->runsToExec = runsToExec;
+        if (!opt->imagePath.empty())
+            image_path = std::string(opt->imagePath.c_str()) + ";" + image_path;
 
-        // if the list of runs is not given explicitly, must execute all runs
-        if (opt->runsToExec.empty())
-        {
-            int n = cfg->getNumRunsInConfig(opt->configName.c_str());  //note: may throw exception
-            if (n==0)
-            {
-                ev.printfmsg("Error: Configuration `%s' generates 0 runs", opt->configName.c_str());
-                exitcode = 1;
-                return;
-            }
-            else
-            {
-                char buf[32];
-                sprintf(buf, (n==1 ? "%d" : "0..%d"), n-1);
-                opt->runsToExec = buf;
-            }
+        // path for plugins
+        const char *plugin_path_env = getenv("OMNETPP_PLUGIN_PATH");
+        std::string plugin_path = plugin_path_env ? plugin_path_env : OMNETPP_PLUGIN_PATH;
+        if (!opt->pluginPath.empty())
+            plugin_path = std::string(opt->pluginPath.c_str()) + ";" + plugin_path;
+
+        // set up Tcl/Tk
+        interp = initTk(args->getArgCount(), args->getArgVector());
+        if (!interp)
+            throw opp_runtime_error("Tkenv: cannot create Tcl interpreter");
+
+        // add OMNeT++'s commands to Tcl
+        createTkCommands(interp, tcl_commands);
+
+        Tcl_SetVar(interp, "OMNETPP_IMAGE_PATH", TCLCONST(image_path.c_str()), TCL_GLOBAL_ONLY);
+        Tcl_SetVar(interp, "OMNETPP_PLUGIN_PATH", TCLCONST(plugin_path.c_str()), TCL_GLOBAL_ONLY);
+//Qt!        Tcl_SetVar(interp, "OMNETPP_LIB_DIR", OMNETPP_LIB_DIR, TCL_GLOBAL_ONLY);
+
+        Tcl_SetVar(interp, "OMNETPP_RELEASE", OMNETPP_RELEASE, TCL_GLOBAL_ONLY);
+        Tcl_SetVar(interp, "OMNETPP_EDITION", OMNETPP_EDITION, TCL_GLOBAL_ONLY);
+        Tcl_SetVar(interp, "OMNETPP_BUILDID", OMNETPP_BUILDID, TCL_GLOBAL_ONLY);
+
+        // we need to flush streams, otherwise output written from Tcl tends to overtake
+        // output written from C++ so far, at least in the IDE's console view
+        fflush(stdout);
+        fflush(stderr);
+
+        // eval Tcl sources: either from .tcl files or from compiled-in string
+        // literal (tclcode.cc)...
+
+#ifdef OMNETPP_TKENV_DIR
+        //
+        // Case A: TCL code in separate .tcl files
+        //
+        Tcl_SetVar(interp, "OMNETPP_TKENV_DIR",  TCLCONST(tkenv_dir.c_str()), TCL_GLOBAL_ONLY);
+        if (Tcl_EvalFile(interp,opp_concat(tkenv_dir.c_str(),"/tkenv.tcl"))==TCL_ERROR) {
+            logTclError(__FILE__,__LINE__, interp);
+            throw opp_runtime_error("Tkenv: %s. (Is the OMNETPP_TKENV_DIR environment variable "
+                                    "set correctly? When not set, it defaults to " OMNETPP_TKENV_DIR ")",
+                                    Tcl_GetStringResult(interp));
+        }
+#else
+        //
+        // Case B: compiled-in TCL code
+        //
+        // The tclcode.cc file is generated from the Tcl scripts
+        // with the tcl2c program (to be compiled from tcl2c.c).
+        //
+        const char *tcl_code = "";
+//Qt! #include "tclcode.cc"
+        if (Tcl_Eval(interp,(char *)tcl_code)==TCL_ERROR) {
+            logTclError(__FILE__,__LINE__, interp);
+            throw opp_runtime_error("Tkenv: %s", Tcl_GetStringResult(interp));
+        }
+#endif
+
+        // evaluate main script and build user interface
+        if (Tcl_Eval(interp,"startTkenv")==TCL_ERROR) {
+            logTclError(__FILE__,__LINE__, interp);
+            throw opp_runtime_error("Tkenv: %s\n", Tcl_GetStringResult(interp));
         }
 
-        EnumStringIterator runiterator(opt->runsToExec.c_str());
-        if (runiterator.hasError())
+        // create windowtitle prefix
+        if (getParsimNumPartitions()>0)
         {
-            ev.printfmsg("Error parsing list of runs to execute: `%s'", opt->runsToExec.c_str());
-            exitcode = 1;
-            return;
+            windowtitleprefix.reserve(24);
+            sprintf(windowtitleprefix.buffer(), "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
         }
 
-        // we'll return nonzero exitcode if any run was terminated with error
-        bool hadError = false;
+        mainInspector = (GenericObjectInspector *)InspectorFactory::get("GenericObjectInspectorFactory")->createInspector();
+        addEmbeddedInspector(".inspector", mainInspector);
 
-        for (; runiterator()!=-1; runiterator++)
-        {
-            int runNumber = runiterator();
-            bool networkSetupDone = false;
-            bool startrunDone = false;
-            try
-            {
-                cfg->activateConfig(opt->configName.c_str(), runNumber);
-/*
-                const char *itervars = cfg->getVariable(CFGVAR_ITERATIONVARS2);
-                if (itervars && strlen(itervars)>0)
-                    ::fprintf(fout, "Scenario: %s\n", itervars);
-                ::fprintf(fout, "Assigned runID=%s\n", cfg->getVariable(CFGVAR_RUNID));
-*/
-                //cfg->dump();
+        mainNetworkView = (ModuleInspector *)InspectorFactory::get("ModuleInspectorFactory")->createInspector();
+        addEmbeddedInspector(".network", mainNetworkView);
 
-                readPerRunOptions();
+        mainLogView = (LogInspector *)InspectorFactory::get("LogInspectorFactory")->createInspector();
+        addEmbeddedInspector(".log", mainLogView);
 
-                // find network
-                cModuleType *network = resolveNetwork(opt->networkName.c_str());
-                ASSERT(network);
-
-                // set up network
-          //      ::fprintf(fout, "Setting up network `%s'...\n", opt->networkName.c_str());
-             //   ::fflush(fout);
-
-                setupNetwork(network);
-                networkSetupDone = true;
-
-                // prepare for simulation run
-            //    ::fprintf(fout, "Initializing...\n");
-             //   ::fflush(fout);
-
-                disable_tracing = opt->expressMode;
-                startRun();
-                startrunDone = true;
-
-                // run the simulation
-              //  ::fprintf(fout, "\nRunning simulation...\n");
-                //app->processEvents();
-
-                
-//                ::fflush(fout);
-
-                // simulate() should only throw exception if error occurred and
-                // finish() should not be called.
-                notifyLifecycleListeners(LF_ON_SIMULATION_START);
-                simulate();
-                disable_tracing = false;
-
-             //   ::fprintf(fout, "\nCalling finish() at end of Run #%d...\n", runNumber);
-              //  ::fflush(fout);
-                simulation.callFinish();
-                cLogProxy::flushLastLine();
-
-                checkFingerprint();
-
-                notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
-            }
-            catch (std::exception& e)
-            {
-                hadError = true;
-                disable_tracing = false;
-                stoppedWithException(e);
-                notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
-                displayException(e);
-            }
-
-            // call endRun()
-            if (startrunDone)
-            {
-                try
-                {
-                    endRun();
-                }
-                catch (std::exception& e)
-                {
-                    hadError = true;
-                    notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
-                    displayException(e);
-                }
-            }
-
-            // delete network
-            if (networkSetupDone)
-            {
-                try
-                {
-                    simulation.deleteNetwork();
-                }
-                catch (std::exception& e)
-                {
-                    hadError = true;
-                    notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
-                    displayException(e);
-                }
-            }
-
-            // skip further runs if signal was caught
-            if (sigintReceived)
-                break;
-        }
-
-//        ::fflush(fout);
-
-        exitcode = hadError ? 1 : sigintReceived ? 2 : 0;
+        setLogFormat(opt->logFormat.c_str());
     }
+    catch (std::exception& e)
+    {
+        interp = NULL;
+        throw;
+    }
+
+    //
+    // RUN
+    //
+    CHK(Tcl_Eval(interp,"startupCommands"));
+    runTk(interp);
+
+    //
+    // SHUTDOWN
+    //
+
+    // close all inspectors before exiting
+    for(;;)
+    {
+        InspectorList::iterator it = inspectors.begin();
+        if (it==inspectors.end())
+            break;
+        Inspector *insp = *it;
+        inspectors.erase(it);
+        delete insp;
+    }
+
+    // clear log
+    logBuffer.clear();   //FIXME how is the log cleared between runs??????????????
+
+    // delete network if not yet done
+    if (simstate!=SIM_NONET && simstate!=SIM_FINISHCALLED)
+        endRun();
+    getSimulation()->deleteNetwork();
+
+    // pull down inspector factories
+    inspectorfactories.clear();
+}
+
+void Qtenv::printUISpecificHelp()
+{
+    std::cout << "Tkenv-specific options:\n";
+    std::cout << "  -c <configname>\n";
+    std::cout << "                Select a given configuration for execution. With inifile-based\n";
+    std::cout << "                configuration database, this selects the [Config <configname>]\n";
+    std::cout << "                section; the default is the [General] section.\n";
+    std::cout << "                See also: -r.\n";
+    std::cout << "  -r <run>      Set up the specified run number in the configuration selected with\n";
+    std::cout << "                the -c option\n";
+}
+
+void Qtenv::rebuildSim()
+{
+    if (isconfigrun)
+         newRun(std::string(getConfigEx()->getActiveConfigName()).c_str(), getConfigEx()->getActiveRunNumber());
+    else if (getSimulation()->getNetworkType()!=NULL)
+         newNetwork(getSimulation()->getNetworkType()->getName());
+    else
+         confirm("Choose File|New Network or File|New Run.");
+}
+
+void Qtenv::doOneStep()
+{
+    ASSERT(simstate==SIM_NEW || simstate==SIM_READY);
+
+    animating = true;
+    rununtil_msg = NULL; // deactivate corresponding checks in eventCancelled()/objectDeleted()
+    simstate = SIM_RUNNING;
+
+    updateStatusDisplay();
+
+    startClock();
+    notifyLifecycleListeners(LF_ON_SIMULATION_RESUME);
+    try
+    {
+        cEvent *event = getSimulation()->takeNextEvent();
+        if (event)  // takeNextEvent() not interrupted
+        {
+            printEventBanner(event);
+            getSimulation()->executeEvent(event);
+            performAnimations();
+        }
+        updateStatusDisplay();
+        refreshInspectors();
+        simstate = SIM_READY;
+        notifyLifecycleListeners(LF_ON_SIMULATION_PAUSE);
+    }
+    catch (cTerminationException& e)
+    {
+        simstate = SIM_TERMINATED;
+        stoppedWithTerminationException(e);
+        notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
+        displayException(e);
+    }
+    catch (std::exception& e)
+    {
+        simstate = SIM_ERROR;
+        stoppedWithException(e);
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
+        displayException(e);
+    }
+    stopClock();
+    stopsimulation_flag = false;
+
+    if (simstate==SIM_TERMINATED)
+    {
+        // call wrapper around simulation.callFinish() and simulation.endRun()
+        //
+        // NOTE: if the simulation is in SIM_ERROR, we don't want endRun() to be
+        // called yet, because we want to allow the user to force finish() from
+        // the GUI -- and finish() has to precede endRun(). endRun() will be called
+        // just before a new network gets set up, or on Tkenv shutdown.
+        //
+        finishSimulation();
+    }
+}
+
+void Qtenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, cModule *until_module)
+{
+    ASSERT(simstate==SIM_NEW || simstate==SIM_READY);
+
+    runmode = mode;
+    rununtil_time = until_time;
+    rununtil_eventnum = until_eventnum;
+    rununtil_msg = until_msg;
+    rununtil_module = until_module;  // Note: this is NOT supported with RUNMODE_EXPRESS
+
+    stopsimulation_flag = false;
+    simstate = SIM_RUNNING;
+
+    updateStatusDisplay();
+    Tcl_Eval(interp, "update");
+
+    startClock();
+    notifyLifecycleListeners(LF_ON_SIMULATION_RESUME);
+    try
+    {
+        // funky while loop to handle switching to and from EXPRESS mode....
+        bool cont = true;
+        while (cont)
+        {
+            if (runmode==RUNMODE_EXPRESS)
+                cont = doRunSimulationExpress();
+            else
+                cont = doRunSimulation();
+        }
+        simstate = SIM_READY;
+        notifyLifecycleListeners(LF_ON_SIMULATION_PAUSE);
+    }
+    catch (cTerminationException& e)
+    {
+        simstate = SIM_TERMINATED;
+        stoppedWithTerminationException(e);
+        notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
+        displayException(e);
+    }
+    catch (std::exception& e)
+    {
+        simstate = SIM_ERROR;
+        stoppedWithException(e);
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
+        displayException(e);
+    }
+    stopClock();
+    stopsimulation_flag = false;
+
+    animating = true;
+    disable_tracing = false;
+    rununtil_msg = NULL;
+
+    if (simstate==SIM_TERMINATED)
+    {
+        // call wrapper around simulation.callFinish() and simulation.endRun()
+        //
+        // NOTE: if the simulation is in SIM_ERROR, we don't want endRun() to be
+        // called yet, because we want to allow the user to force finish() from
+        // the GUI -- and finish() has to precede endRun(). endRun() will be called
+        // just before a new network gets set up, or on Tkenv shutdown.
+        //
+        finishSimulation();
+    }
+
+    updateStatusDisplay();
+    refreshInspectors();
+}
+
+void Qtenv::setSimulationRunMode(int mode)
+{
+    // This function (and the next one too) is called while runSimulation() is
+    // underway, from Tcl code that gets a chance to run via the
+    // Tcl_Eval(interp, "update") commands
+    runmode = mode;
+}
+
+void Qtenv::setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg)
+{
+    rununtil_time = until_time;
+    rununtil_eventnum = until_eventnum;
+    rununtil_msg = until_msg;
+}
+
+void Qtenv::setSimulationRunUntilModule(cModule *until_module)
+{
+    rununtil_module = until_module;
 }
 
 // note: also updates "since" (sets it to the current time) if answer is "true"
@@ -379,294 +499,1333 @@ inline bool elapsed(long millis, struct timeval& since)
     return ret;
 }
 
-
-void Qtenv::simulate() //XXX probably not needed anymore -- take over interesting bits to other methods!
+inline void resetElapsedTime(struct timeval& t)
 {
-    cCanvas *canvas = simulation.getSystemModule()->getCanvas();
-    cRenderer.setQtCanvas(mainwindow->scene, canvas);
-    // XXX this really shouldn't be created here, and certainly not this way
-    int argc = 1;
-    char * argv[] = {"..."};
-    
-    // implement graceful exit when Ctrl-C is hit during simulation. We want
-    // to finish the current event, then normally exit via callFinish() etc
-    // so that simulation results are not lost.
-    installSignalHandler();
+    gettimeofday(&t, NULL);
+}
 
-    startClock();
-    sigintReceived = false;
+bool Qtenv::doRunSimulation()
+{
+    //
+    // IMPORTANT:
+    // The following variables may change during execution (as a result of user interaction
+    // during Tcl_Eval("update"):
+    //  - runmode, rununtil_time, rununtil_eventnum, rununtil_msg, rununtil_module;
+    //  - stopsimulation_flag
+    //
+    speedometer.start(getSimulation()->getSimTime());
+    disable_tracing = false;
+    bool firstevent = true;
 
-    FigureRenderingHints hints;
-    Speedometer speedometer;  // only used by Express mode, but we need it in catch blocks too
+    struct timeval last_update;
+    gettimeofday(&last_update, NULL);
 
+    while (true)
+    {
+        if (runmode==RUNMODE_EXPRESS)
+            return true;  // should continue, but in a different mode
+
+        // query which module will execute the next event
+        cEvent *event = getSimulation()->takeNextEvent();
+        if (!event)
+            break; // takeNextEvent() interrupted (parsim)
+
+        // "run until message": stop if desired event was reached
+        if (rununtil_msg && event==rununtil_msg) {
+            getSimulation()->putBackEvent(event);
+            break;
+        }
+
+        // if stepping locally in module, we stop both immediately
+        // *before* and *after* executing the event in that module,
+        // but we always execute at least one event
+        cModule *mod = event->isMessage() ? static_cast<cMessage*>(event)->getArrivalModule() : NULL;
+        bool untilmodule_reached = rununtil_module && moduleContains(rununtil_module,mod);
+        if (untilmodule_reached && !firstevent) {
+            getSimulation()->putBackEvent(event);
+            break;
+        }
+        firstevent = false;
+
+        animating = (runmode==RUNMODE_NORMAL) || untilmodule_reached;
+        bool frequent_updates = (runmode==RUNMODE_NORMAL);
+
+        speedometer.addEvent(getSimulation()->getSimTime());
+
+        // do a simulation step
+        printEventBanner(event);
+        getSimulation()->executeEvent(event);
+        performAnimations();
+
+        // flush so that output from different modules don't get mixed
+        cLogProxy::flushLastLine();
+
+        // display update
+        if (frequent_updates || ((getSimulation()->getEventNumber()&0x0f)==0 && elapsed(opt->updateFreqFast, last_update)))
+        {
+            updateStatusDisplay();
+            refreshInspectors();
+            if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
+                speedometer.beginNewInterval();
+            Tcl_Eval(interp, "update");
+            resetElapsedTime(last_update); // exclude UI update time [bug #52]
+        }
+
+        // exit conditions
+        if (untilmodule_reached) break;
+        if (stopsimulation_flag) break;
+        if (rununtil_time>SIMTIME_ZERO && getSimulation()->guessNextSimtime()>=rununtil_time) break;
+        if (rununtil_eventnum>0 && getSimulation()->getEventNumber()>=rununtil_eventnum) break;
+
+        checkTimeLimits();
+    }
+    return false;
+}
+
+bool Qtenv::doRunSimulationExpress()
+{
+    //
+    // IMPORTANT:
+    // The following variables may change during execution (as a result of user interaction
+    // during Tcl_Eval("update"):
+    //  - runmode, rununtil_time, rununtil_eventnum, rununtil_msg, rununtil_module;
+    //  - stopsimulation_flag
+    //  - opt->expressmode_autoupdate
+    //
+    // EXPRESS does not support rununtil_module!
+    //
+
+    char info[128];
+    sprintf(info, "** Running in Express mode from event #%" LL "d  t=%s ...\n",
+            getSimulation()->getEventNumber(), SIMTIME_STR(getSimulation()->getSimTime()));
+    logBuffer.addInfo(info);
+
+    // update, just to get the above notice displayed
+    Tcl_Eval(interp, "update");
+
+    // OK, let's begin
+    speedometer.start(getSimulation()->getSimTime());
+    disable_tracing = true;
+    animating = false;
+
+    struct timeval last_update;
+    gettimeofday(&last_update, NULL);
+
+    bool result = false;
+    do
+    {
+        cEvent *event = getSimulation()->takeNextEvent();
+        if (!event)
+            break; // takeNextEvent() interrupted (parsim)
+
+        // "run until message": stop if desired event was reached
+        if (rununtil_msg && event==rununtil_msg) {
+            getSimulation()->putBackEvent(event);
+            break;
+        }
+
+        speedometer.addEvent(getSimulation()->getSimTime());
+
+        getSimulation()->executeEvent(event);
+
+        if ((getSimulation()->getEventNumber()&0xff)==0 && elapsed(opt->updateFreqExpress, last_update))
+        {
+            updateStatusDisplay();
+            if (opt->autoupdateInExpress)
+                refreshInspectors();
+            if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
+                speedometer.beginNewInterval();
+            Tcl_Eval(interp, "update");
+            resetElapsedTime(last_update); // exclude UI update time [bug #52]
+            if (runmode!=RUNMODE_EXPRESS) {
+                result = true;  // should continue, but in a different mode
+                break;
+            }
+        }
+        checkTimeLimits();
+    }
+    while( !stopsimulation_flag &&
+           (rununtil_time<=SIMTIME_ZERO || getSimulation()->guessNextSimtime() < rununtil_time) &&
+           (rununtil_eventnum<=0 || getSimulation()->getEventNumber() < rununtil_eventnum)
+         );
+
+    sprintf(info, "** Leaving Express mode at event #%" LL "d  t=%s\n",
+            getSimulation()->getEventNumber(), SIMTIME_STR(getSimulation()->getSimTime()));
+    logBuffer.addInfo(info);
+
+    return result;
+}
+
+void Qtenv::startAll()
+{
+    confirm("Not implemented.");
+}
+
+void Qtenv::finishSimulation()
+{
+    // strictly speaking, we shouldn't allow callFinish() after SIM_ERROR, but it comes handy in practice...
+    ASSERT(simstate==SIM_NEW || simstate==SIM_READY || simstate==SIM_TERMINATED || simstate==SIM_ERROR);
+
+    if (simstate==SIM_NEW || simstate==SIM_READY)
+    {
+        cTerminationException e("The user has finished the simulation");
+        stoppedWithTerminationException(e);
+    }
+
+    logBuffer.addInfo("** Calling finish() methods of modules\n");
+
+    // now really call finish()
     try
     {
-        if (!opt->expressMode)
-        {
-            disable_tracing = false;
-            while (true)
-            {
-                cRenderer.redraw(&hints);
-                QApplication::processEvents();
+        getSimulation()->callFinish();
+        cLogProxy::flushLastLine();
 
-                cEvent *event = simulation.takeNextEvent();
-                if (!event)
-                    throw cTerminationException("scheduler interrupted while waiting");
-
-                // print event banner if necessary
-                if (opt->printEventBanners)
-                    if (!event->isMessage() || static_cast<cMessage*>(event)->getArrivalModule()->isEvEnabled())
-                        printEventBanner(event);
-
-                // flush *between* printing event banner and event processing, so that
-                // if event processing crashes, it can be seen which event it was
-  //              if (opt->autoflush)
-//                    ::fflush(fout);
-
-                // execute event
-                simulation.executeEvent(event);
-
-                // flush so that output from different modules don't get mixed
-                cLogProxy::flushLastLine();
-
-                checkTimeLimits();
-                if (sigintReceived)
-                    throw cTerminationException("SIGINT or SIGTERM received, exiting");
-            }
-        }
-        else
-        {
-        
-            disable_tracing = true;
-            speedometer.start(simulation.getSimTime());
-
-            struct timeval last_update;
-            gettimeofday(&last_update, NULL);
-
-            doStatusUpdate(speedometer);
-
-            while (true)
-            {
-                QApplication::processEvents();
-                
-                cEvent *event = simulation.takeNextEvent();
-                if (!event)
-                    throw cTerminationException("scheduler interrupted while waiting");
-                speedometer.addEvent(simulation.getSimTime()); //XXX potential performance hog
-                // print event banner from time to time
-                if ((simulation.getEventNumber()&0xff)==0 && elapsed(opt->statusFrequencyMs, last_update))
-                    doStatusUpdate(speedometer);
-                // execute event
-                simulation.executeEvent(event);
-                checkTimeLimits();  //XXX potential performance hog (maybe check every 256 events, unless "qtenv-strict-limits" is on?)
-                if (sigintReceived)
-                    throw cTerminationException("SIGINT or SIGTERM received, exiting");
-            }
-        }
-    }
-    catch (cTerminationException& e)
-    {
-        if (opt->expressMode)
-            doStatusUpdate(speedometer);
-        disable_tracing = false;
-        stopClock();
-        deinstallSignalHandler();
-
-        stoppedWithTerminationException(e);
-        displayException(e);
-        return;
+        checkFingerprint();
     }
     catch (std::exception& e)
     {
-        if (opt->expressMode)
-            doStatusUpdate(speedometer);
-        disable_tracing = false;
-        stopClock();
-        deinstallSignalHandler();
-        throw;
+        stoppedWithException(e);
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
+        displayException(e);
     }
 
-    // note: C++ lacks "finally": lines below need to be manually kept in sync with catch{...} blocks above!
-    if (opt->expressMode)
-        doStatusUpdate(speedometer);
-    disable_tracing = false;
-    stopClock();
-    deinstallSignalHandler();
+    // then endrun
+    try
+    {
+        endRun();
+    }
+    catch (std::exception& e)
+    {
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
+        displayException(e);
+    }
+    simstate = SIM_FINISHCALLED;
+
+    updateStatusDisplay();
+    refreshInspectors();
+}
+
+void Qtenv::loadNedFile(const char *fname, const char *expectedPackage, bool isXML)
+{
+    try
+    {
+        getSimulation()->loadNedFile(fname, expectedPackage, isXML);
+    }
+    catch (std::exception& e)
+    {
+        displayException(e);
+    }
+}
+
+void Qtenv::newNetwork(const char *networkname)
+{
+    try
+    {
+        // finish & cleanup previous run if we haven't done so yet
+        if (simstate!=SIM_NONET)
+        {
+            if (simstate!=SIM_FINISHCALLED)
+                endRun();
+            getSimulation()->deleteNetwork();
+            simstate = SIM_NONET;
+        }
+
+        cModuleType *network = resolveNetwork(networkname);
+        ASSERT(network);
+
+        // set up new network with config General.
+        isconfigrun = false;
+        getConfigEx()->activateConfig("General", 0);
+        readPerRunOptions();
+        opt->networkName = network->getName();  // override config setting
+        setupNetwork(network);
+        startRun();
+
+        simstate = SIM_NEW;
+    }
+    catch (std::exception& e)
+    {
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
+        displayException(e);
+        simstate = SIM_ERROR;
+    }
+
+    // update GUI
+    animating = false; // affects how network graphics is drawn!
+    updateNetworkRunDisplay();
+    updateStatusDisplay();
+    refreshInspectors();
+}
+
+void Qtenv::newRun(const char *configname, int runnumber)
+{
+    try
+    {
+        // finish & cleanup previous run if we haven't done so yet
+        if (simstate!=SIM_NONET)
+        {
+            if (simstate!=SIM_FINISHCALLED)
+                endRun();
+            getSimulation()->deleteNetwork();
+            simstate = SIM_NONET;
+        }
+
+        // set up new network
+        isconfigrun = true;
+        getConfigEx()->activateConfig(configname, runnumber);
+        readPerRunOptions();
+
+        if (opt->networkName.empty())
+        {
+            confirm("No network specified in the configuration.");
+            return;
+        }
+
+        cModuleType *network = resolveNetwork(opt->networkName.c_str());
+        ASSERT(network);
+
+        setupNetwork(network);
+        startRun();
+
+        simstate = SIM_NEW;
+    }
+    catch (std::exception& e)
+    {
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
+        displayException(e);
+        simstate = SIM_ERROR;
+    }
+
+    // update GUI
+    animating = false; // affects how network graphics is drawn!
+    updateNetworkRunDisplay();
+    updateStatusDisplay();
+    refreshInspectors();
+}
+
+void Qtenv::setupNetwork(cModuleType *network)
+{
+    answers.clear();
+    logBuffer.clear();
+
+    EnvirBase::setupNetwork(network);
+
+    mainNetworkView->doSetObject(getSimulation()->getSystemModule());
+    mainLogView->doSetObject(getSimulation()->getSystemModule());
+    mainInspector->doSetObject(getSimulation()->getSystemModule());
+}
+
+Inspector *Qtenv::inspect(cObject *obj, int type, bool ignoreEmbedded, const char *geometry)
+{
+    // create inspector object & window or display existing one
+    Inspector *existing_insp = findFirstInspector(obj, type, ignoreEmbedded);
+    if (existing_insp)
+    {
+        existing_insp->showWindow();
+        return existing_insp;
+    }
+
+    // create inspector
+    InspectorFactory *p = findInspectorFactoryFor(obj,type);
+    if (!p)
+    {
+        confirm(opp_stringf("Class `%s' has no associated inspectors.", obj->getClassName()).c_str());
+        return NULL;
+    }
+
+    int actualtype = p->getInspectorType();
+    existing_insp = findFirstInspector(obj, actualtype, ignoreEmbedded);
+    if (existing_insp)
+    {
+        existing_insp->showWindow();
+        return existing_insp;
+    }
+
+    Inspector *insp = p->createInspector();
+    if (!insp)
+    {
+        // message: object has no such inspector
+        confirm(opp_stringf("Class `%s' has no `%s' inspector.",obj->getClassName(),insptypeNameFromCode(type)).c_str());
+        return NULL;
+    }
+
+    // everything ok, finish inspector
+    inspectors.push_back(insp);
+    insp->createWindow(Inspector::makeWindowName().c_str(), geometry);
+    insp->setObject(obj);
+
+    return insp;
+}
+
+void Qtenv::addEmbeddedInspector(const char *widget, Inspector *insp)
+{
+    inspectors.push_back(insp);
+    insp->useWindow(widget);
+    insp->refresh();
+}
+
+Inspector *Qtenv::findFirstInspector(cObject *obj, int type, bool ignoreEmbedded)
+{
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    {
+        Inspector *insp = *it;
+        if (insp->getObject()==obj && insp->getType()==type && (!ignoreEmbedded || insp->isToplevel()))
+            return insp;
+    }
+    return NULL;
+}
+
+Inspector *Qtenv::findInspector(const char *widget)
+{
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    {
+        Inspector *insp = *it;
+        if (strcmp(insp->getWindowName(), widget) == 0)
+            return insp;
+    }
+    return NULL;
+}
+
+void Qtenv::deleteInspector(Inspector *insp)
+{
+    inspectors.remove(insp);
+    delete insp;
+}
+
+void Qtenv::refreshInspectors()
+{
+    // update inspectors
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end();)
+    {
+        Inspector *insp = *it;
+        InspectorList::iterator next = ++it;
+        if (insp->isMarkedForDeletion())
+            deleteInspector(insp);
+        else
+            insp->refresh();
+        it = next;
+    }
+
+    // clear the change flags on all inspected canvases
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+        (*it)->clearObjectChangeFlags();
+
+    // update object tree
+    CHK(Tcl_VarEval(interp, "treeManager:update",NULL));
+
+    // try opening "pending" inspectors
+    CHK(Tcl_VarEval(interp, "inspectorUpdateCallback",NULL));
+}
+
+void Qtenv::redrawInspectors()
+{
+    // update inspectors (and close the ones marked for deletion)
+    refreshInspectors();
+
+    // redraw them
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); it++)
+        (*it)->redraw();
+}
+
+inline LogInspector *isLogInspectorFor(cModule *mod, Inspector *insp)
+{
+    if (insp->getObject() != mod || insp->getType() != INSP_MODULEOUTPUT)
+        return NULL;
+    return dynamic_cast<LogInspector *>(insp);
+}
+
+inline ModuleInspector *isModuleInspectorFor(cModule *mod, Inspector *insp)
+{
+    if (insp->getObject() != mod || insp->getType() != INSP_GRAPHICAL)
+        return NULL;
+    return dynamic_cast<ModuleInspector *>(insp);
+}
+
+void Qtenv::createSnapshot( const char *label )
+{
+    getSimulation()->snapshot(getSimulation(), label );
+}
+
+void Qtenv::updateGraphicalInspectorsBeforeAnimation()
+{
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    {
+        Inspector *insp = *it;
+        if (dynamic_cast<ModuleInspector *>(insp) && static_cast<ModuleInspector *>(insp)->needsRedraw())
+        {
+            insp->refresh();
+        }
+    }
+}
+
+std::string Qtenv::getWindowTitle()
+{
+    const char *configName = getConfigEx()->getActiveConfigName();
+    int runNumber = getConfigEx()->getActiveRunNumber();
+    const char *inifile = getConfigEx()->getFileName();
+
+    std::stringstream os;
+    os << OMNETPP_PRODUCT "/Tkenv - " << getWindowTitlePrefix();
+    if (opp_isempty(configName))
+        os << "No network";
+    else
+        os << configName << " #" << runNumber;
+    if (!opp_isempty(inifile))
+        os << " - " << inifile;
+    os << " - " << getWorkingDir();
+    return os.str();
+}
+
+void Qtenv::updateNetworkRunDisplay()
+{
+    CHK(Tcl_VarEval(interp, "mainWindow:updateNetworkRunDisplay", NULL));
+    CHK(Tcl_VarEval(interp, "wm title . ", TclQuotedString(getWindowTitle().c_str()).get(), NULL));
+}
+
+void Qtenv::updateStatusDisplay()
+{
+    CHK(Tcl_VarEval(interp, "mainWindow:updateStatusDisplay", NULL));
+    CHK(Tcl_Eval(interp, "redrawTimeline"));
 }
 
 void Qtenv::printEventBanner(cEvent *event)
 {
+    cObject *target = event->getTargetObject();
+    cMessage *msg = event->isMessage() ? static_cast<cMessage*>(event) : NULL;
+    cModule *module = msg ? msg->getArrivalModule() : NULL;
 
-char buf[100];
+    // produce banner text
+    char banner[2*MAX_OBJECTFULLPATH+2*MAX_CLASSNAME+60];
+    char *p = banner;
+    p += sprintf(p,"** Event #%" LL "d  T=%s  ",
+            getSimulation()->getEventNumber(),
+            SIMTIME_STR(getSimulation()->getSimTime()));
 
-    sprintf(buf, "** Event #%" LL "d  T=%s%s   ",
-            simulation.getEventNumber(),
-            SIMTIME_STR(simulation.getSimTime()),
-            progressPercentage()); // note: IDE launcher uses this to track progress
-            mainwindow->displayText(buf);
-            printf("evtnr %s\n",buf);
-    if (event->isMessage()) {
-        cModule *mod = static_cast<cMessage*>(event)->getArrivalModule();
-        
-/*        ::fprintf(fout, "%s (%s, id=%d)\n",
-                mod->getFullPath().c_str(),
-                mod->getComponentType()->getName(),
-                mod->getId());*/
-    }
-    else if (event->getTargetObject())
+    if (opt->shortBanners)
     {
-        cObject *target = event->getTargetObject();
-      ///  ::fprintf(fout, "%s (%s)\n",
-        //        target->getFullPath().c_str(),
-         //       target->getClassName());
-    }
-//TODO:
-//    ::fprintf(fout, "on %s (%s)\n",
-//            event->getName(),
-//            event->getClassName());
-    if (opt->detailedEventBanners)
-    {
-     /*   ::fprintf(fout, "   Elapsed: %s   Messages: created: %ld  present: %ld  in FES: %d\n",
-                timeToStr(totalElapsed()),
-                cMessage::getTotalMessageCount(),
-                cMessage::getLiveMessageCount(),
-                simulation.msgQueue.getLength());*/
-    }
-}
-
-void Qtenv::doStatusUpdate(Speedometer& speedometer)
-{
-    char buf[1000];
-
-    speedometer.beginNewInterval();
-
-    if (opt->printPerformanceData)
-    {
-        sprintf(buf, "** Event #%" LL "d   T=%s   Elapsed: %s%s\n",
-                simulation.getEventNumber(),
-                SIMTIME_STR(simulation.getSimTime()),
-                timeToStr(totalElapsed()),
-                progressPercentage()); // note: IDE launcher uses this to track progress
-        sprintf(buf, "     Speed:     ev/sec=%g   simsec/sec=%g   ev/simsec=%g\n",
-                speedometer.getEventsPerSec(),
-                speedometer.getSimSecPerSec(),
-                speedometer.getEventsPerSimSec());
-
-        sprintf(buf, "     Messages:  created: %ld   present: %ld   in FES: %d\n",
-                cMessage::getTotalMessageCount(),
-                cMessage::getLiveMessageCount(),
-                simulation.msgQueue.getLength());
+        // just object names
+        if (target)
+            p += sprintf(p, "%s ", target->getFullPath().c_str());
+        p += sprintf(p, "on %s", event->getFullName());
     }
     else
     {
-        sprintf(buf, "** Event #%" LL "d   T=%s   Elapsed: %s%s   ev/sec=%g\n",
-                simulation.getEventNumber(),
-                SIMTIME_STR(simulation.getSimTime()),
-                timeToStr(totalElapsed()),
-                progressPercentage(), // note: IDE launcher uses this to track progress
-                speedometer.getEventsPerSec());
+        // print event and module type names and IDs, too
+        if (module)
+            p += sprintf(p, "%s (%s, id=%d) ",
+                    module->getFullPath().c_str(),
+                    module->getComponentType()->getName(),
+                    module->getId());
+        else if (target)
+            p += sprintf(p, "%s (%s) ",
+                    target->getFullPath().c_str(),
+                    target->getClassName());
+        if (msg)
+            p += sprintf(p, " on %s%s (%s, id=%ld)",
+                    msg->isSelfMessage() ? "selfmsg " : "",
+                    msg->getFullName(),
+                    msg->getClassName(),
+                    msg->getId());
+        else
+            p += sprintf(p, " on %s (%s)",
+                    event->getFullName(),
+                    event->getClassName());
     }
-    
-    mainwindow->displayText(buf);
-}
+    strcpy(p, "\n");
 
-const char *Qtenv::progressPercentage()
-{
-    double simtimeRatio = -1;
-    if (opt->simtimeLimit!=0)
-         simtimeRatio = simulation.getSimTime() / opt->simtimeLimit;
-
-    double cputimeRatio = -1;
-    if (opt->cpuTimeLimit!=0) {
-        timeval now;
-        gettimeofday(&now, NULL);
-        long elapsedsecs = now.tv_sec - laststarted.tv_sec + elapsedtime.tv_sec;
-        cputimeRatio = elapsedsecs / (double)opt->cpuTimeLimit;
-    }
-
-    double ratio = std::max(simtimeRatio, cputimeRatio);
-    if (ratio == -1)
-        return "";
-    else {
-        static char buf[32];
-        // DO NOT change the "% completed" string. The IDE launcher plugin matches
-        // against this string for detecting user input
-        sprintf(buf, "  %d%% completed", (int)(100*ratio));
-        return buf;
-    }
+    // insert into log buffer
+    logBuffer.addEvent(getSimulation()->getEventNumber(), getSimulation()->getSimTime(), module, banner);
 }
 
 void Qtenv::displayException(std::exception& ex)
 {
-    EnvirBase::displayException(ex); // will end up in putsmsg()
+    // print exception text into main window
+    cException *e = dynamic_cast<cException *>(&ex);
+    if (e && e->getSimulationStage()!=CTX_NONE)
+    {
+        std::string txt = opp_stringf("<!> %s\n", e->getFormattedMessage().c_str());
+        logBuffer.addInfo(txt.c_str());
+    }
+
+    // dialog via our printfmsg()
+    EnvirBase::displayException(ex);
 }
 
 void Qtenv::componentInitBegin(cComponent *component, int stage)
 {
-   /* if (!opt->expressMode && opt->printEventBanners && component->isEvEnabled())
-        ::fprintf(fout, "Initializing %s %s, stage %d\n",
-                component->isModule() ? "module" : "channel", component->getFullPath().c_str(), stage);*/
+    if (!opt->printInitBanners || runmode == RUNMODE_EXPRESS)
+        return;
+
+    // produce banner text
+    char banner[MAX_OBJECTFULLPATH+60];
+    sprintf(banner, "Initializing %s %s, stage %d\n",
+        component->isModule() ? "module" : "channel", component->getFullPath().c_str(), stage);
+
+    // insert into log buffer
+    logBuffer.addInitialize(component, banner);
 }
 
-void Qtenv::signalHandler(int signum)
+void Qtenv::setSilentEventFilters(const char *filterLines)
 {
-    if (signum == SIGINT || signum == SIGTERM)
-        sigintReceived = true;
+    // parse into tmp
+    MatchExpressions tmp;
+    try
+    {
+        StringTokenizer tokenizer(filterLines, "\n");
+        while (tokenizer.hasMoreTokens())
+        {
+            const char *line = tokenizer.nextToken();
+            if (!opp_isblank(line))
+            {
+                tmp.push_back(new MatchExpression());
+                tmp.back()->setPattern(line, false, true, true);
+            }
+        }
+    }
+    catch (std::exception& e) // parse error
+    {
+        for (int i = 0; i < (int)tmp.size(); i++)
+            delete tmp[i];
+        throw;
+    }
+
+    // parsing successful, store the result
+    for (int i = 0; i < (int)silentEventFilters.size(); i++)
+        delete silentEventFilters[i];
+    silentEventFilterLines = opp_trim(filterLines) + "\n";
+    silentEventFilters = tmp;
 }
 
-void Qtenv::installSignalHandler()
+bool Qtenv::isSilentEvent(cMessage *msg)
 {
-    signal(SIGINT, signalHandler);
-    signal(SIGTERM, signalHandler);
-}
-
-void Qtenv::deinstallSignalHandler()
-{
-    signal(SIGINT, SIG_DFL);
-    signal(SIGTERM, SIG_DFL);
-}
-
-bool Qtenv::isGUI() const
-{
+    MatchableObjectAdapter wrappedMsg(MatchableObjectAdapter::FULLNAME, msg);
+    for (int i = 0; i < (int)silentEventFilters.size(); i++)
+        if (silentEventFilters[i]->matches(&wrappedMsg))
+            return true;
     return false;
 }
 
-//-----------------------------------------------------
+//=========================================================================
+
+void Qtenv::readOptions()
+{
+    EnvirBase::readOptions();
+
+    cConfiguration *cfg = getConfig();
+
+    opt->extraStack = (size_t) cfg->getAsDouble(CFGID_TKENV_EXTRA_STACK);
+
+    const char *s = args->optionValue('c');
+    opt->defaultConfig = s ? s : cfg->getAsString(CFGID_TKENV_DEFAULT_CONFIG);
+
+    const char *r = args->optionValue('r');
+    opt->defaultRun = r ? atoi(r) : cfg->getAsInt(CFGID_TKENV_DEFAULT_RUN);
+
+    opt->imagePath = cfg->getAsPath(CFGID_TKENV_IMAGE_PATH).c_str();
+    opt->pluginPath = cfg->getAsPath(CFGID_TKENV_PLUGIN_PATH).c_str();
+}
+
+void Qtenv::readPerRunOptions()
+{
+    EnvirBase::readPerRunOptions();
+}
 
 void Qtenv::askParameter(cPar *par, bool unassigned)
 {
+    // use a value entered by the user earlier ("[x] use this value for similar parameters")
+    std::string key = std::string(((cComponent*)par->getOwner())->getNedTypeName()) + ":" + par->getName();
+    if (answers.find(key) != answers.end())
+    {
+        std::string answer = answers[key];
+        par->parse(answer.c_str());
+        return;
+    }
+
+    // really ask
     bool success = false;
+    bool useForAll = false;
     while (!success)
     {
         cProperties *props = par->getProperties();
         cProperty *prop = props->get("prompt");
         std::string prompt = prop ? prop->getValue(cProperty::DEFAULTKEY) : "";
-        std::string reply;
+        if (prompt.empty())
+            prompt = std::string("Enter parameter `") + par->getFullPath() + "':";
 
-        // ask the user. note: gets() will signal "cancel" by throwing an exception
-        if (!prompt.empty())
-            reply = this->gets(prompt.c_str(), par->str().c_str());
-        else
-            // DO NOT change the "Enter parameter" string. The IDE launcher plugin matches
-            // against this string for detecting user input
-            reply = this->gets((std::string("Enter parameter `")+par->getFullPath()+"' ("+(unassigned?"unassigned":"ask")+"):").c_str(), par->str().c_str());
+        std::string reply;
+        std::string title = unassigned ? "Unassigned Parameter" : "Requested to Ask Parameter";
+        bool ok = inputDialog(title.c_str(), prompt.c_str(),
+                              "Use this value for all similar parameters",
+                              par->str().c_str(), reply, useForAll);
+        if (!ok)
+            throw cRuntimeError(E_CANCEL);
 
         try
         {
             par->parse(reply.c_str());
             success = true;
+            if (useForAll)
+                answers[key] = reply;
         }
         catch (std::exception& e)
         {
-            ev.printfmsg("%s -- please try again.", e.what());
+            printfmsg("%s -- please try again.", e.what());
         }
     }
 }
 
-void Qtenv::putsmsg(const char *s)
+bool Qtenv::idle()
 {
- //   ::fprintf(fout, "\n<!> %s\n\n", s);
-  //  ::fflush(fout);
+    // bug #56: refresh inspectors so that there aren't dead objects on the UI
+    // while running Tk "update" (below). This only needs to be done in Fast
+    // mode, because in normal Run mode inspectors are already up to date here
+    // (they are refreshed after every event), and in Express mode all user
+    // interactions are disabled except for the STOP button.
+    if (runmode == RUNMODE_FAST)
+    {
+        // updateInspectors() may be costly, so do not check the UI too often
+        timeval now;
+        gettimeofday(&now, NULL);
+        if (timeval_msec(now - idleLastUICheck) < 500)
+            return false;
+
+        // refresh inspectors
+        updateStatusDisplay();
+        refreshInspectors();
+    }
+
+    // process UI events
+    eState origsimstate = simstate;
+    simstate = SIM_BUSY;
+    Tcl_Eval(interp, "update");
+    simstate = origsimstate;
+
+    bool stop = stopsimulation_flag;
+    stopsimulation_flag = false;
+
+    if (runmode == RUNMODE_FAST)
+        gettimeofday(&idleLastUICheck, NULL);
+    return stop;
+}
+
+void Qtenv::objectDeleted(cObject *object)
+{
+    if (object==rununtil_msg)
+    {
+        // message to "run until" deleted -- stop the simulation by other means
+        rununtil_msg = NULL;
+        rununtil_eventnum = getSimulation()->getEventNumber();
+        if (simstate==SIM_RUNNING || simstate==SIM_BUSY)
+            confirm("Message to run until has just been deleted.");
+    }
+
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); )
+    {
+        InspectorList::iterator next = it;
+        ++next;
+        Inspector *insp = *it;
+
+        insp->objectDeleted(object);
+
+        if (insp->getObject() == object && insp->isToplevel())
+        {
+            inspectors.erase(it);
+            delete insp;
+        }
+        it = next;
+    }
+}
+
+void Qtenv::simulationEvent(cEvent *event)
+{
+    EnvirBase::simulationEvent(event);
+
+    if (animating && opt->animationEnabled && event->isMessage())
+    {
+        cMessage *msg = static_cast<cMessage*>(event);
+        cGate *arrivalGate = msg->getArrivalGate();
+        if (!arrivalGate)
+            return;
+
+        // if arrivalgate is connected, msg arrived on a connection, otherwise via sendDirect()
+        updateGraphicalInspectorsBeforeAnimation();
+        if (arrivalGate->getPreviousGate())
+        {
+            animateDelivery(msg);
+        }
+        else
+        {
+            animateDeliveryDirect(msg);
+        }
+    }
+}
+
+void Qtenv::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate) //FIXME needed?
+{
+    if (animating && opt->animationEnabled && !isSilentEvent(msg))
+    {
+        // find suitable inspectors and do animate the message...
+        updateGraphicalInspectorsBeforeAnimation(); // actually this will draw `msg' too (which would cause "phantom message"),
+                                                    // but we'll manually remove it before animation
+        if (!directToGate)
+        {
+            // message was sent via a gate (send())
+            animateSend(msg, msg->getSenderGate(), msg->getArrivalGate());
+        }
+        else
+        {
+            // sendDirect() was used
+            animateSendDirect(msg, getSimulation()->getModule(msg->getSenderModuleId()), directToGate);
+            animateSend(msg, directToGate, msg->getArrivalGate());
+        }
+    }
+}
+
+void Qtenv::messageScheduled(cMessage *msg)
+{
+    EnvirBase::messageScheduled(msg);
+}
+
+void Qtenv::messageCancelled(cMessage *msg)
+{
+    if (msg==rununtil_msg && opt->stopOnMsgCancel)
+    {
+        if (simstate==SIM_RUNNING || simstate==SIM_BUSY)
+            confirm(opp_stringf("Run-until message `%s' got cancelled.", msg->getName()).c_str());
+        rununtil_msg = NULL;
+        rununtil_eventnum = getSimulation()->getEventNumber(); // stop the simulation using the eventnumber limit
+    }
+    EnvirBase::messageCancelled(msg);
+}
+
+void Qtenv::beginSend(cMessage *msg)
+{
+    EnvirBase::beginSend(msg);
+
+    if (!disable_tracing)
+        logBuffer.beginSend(msg);
+}
+
+void Qtenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+{
+    EnvirBase::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
+
+    if (!disable_tracing)
+        logBuffer.messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
+}
+
+void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate)
+{
+    EnvirBase::messageSendHop(msg, srcGate);
+
+    if (!disable_tracing)
+        logBuffer.messageSendHop(msg, srcGate);
+}
+
+void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+{
+    EnvirBase::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
+
+    if (!disable_tracing)
+        logBuffer.messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
+}
+
+void Qtenv::endSend(cMessage *msg)
+{
+    EnvirBase::endSend(msg);
+
+    if (!disable_tracing)
+        logBuffer.endSend(msg);
+}
+
+void Qtenv::messageDeleted(cMessage *msg)
+{
+    EnvirBase::messageDeleted(msg);
+}
+
+void Qtenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const char *methodFmt, va_list va, bool silent)
+{
+    va_list va2;
+    va_copy(va2, va); // see bug #107
+    EnvirBase::componentMethodBegin(fromComp, toComp, methodFmt, va2, silent);
+    va_end(va2);
+
+    if (silent || !animating || !opt->animateMethodCalls)
+        return;
+
+    if (!methodFmt)
+       return;  // Enter_Method_Silent
+
+    if (!fromComp->isModule() || !toComp->isModule())
+        return;  // calls to/from channels are not yet animated
+
+    updateGraphicalInspectorsBeforeAnimation();
+
+    static char methodText[MAX_METHODCALL];
+    vsnprintf(methodText, MAX_METHODCALL, methodFmt, va);
+    methodText[MAX_METHODCALL-1] = '\0';
+
+    cModule *from = (cModule *)fromComp;
+    cModule *to = (cModule *)toComp;
+
+    // find modules along the way
+    PathVec pathvec;
+    findDirectPath(from, to, pathvec);
+
+    PathVec::iterator i;
+    int numinsp = 0;
+    for (i=pathvec.begin(); i!=pathvec.end(); i++)
+    {
+        if (i->to==NULL)
+        {
+            // animate ascent from source module
+            cModule *mod = i->from;
+            cModule *enclosingmod = mod->getParentModule();
+            for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+            {
+                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
+                if (insp)
+                {
+                    numinsp++;
+                    insp->animateMethodcallAscent(mod, methodText);
+                }
+            }
+        }
+        else if (i->from==NULL)
+        {
+            // animate descent towards destination module
+            cModule *mod = i->to;
+            cModule *enclosingmod = mod->getParentModule();
+            for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+            {
+                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
+                if (insp)
+                {
+                    numinsp++;
+                    insp->animateMethodcallDescent(mod, methodText);
+                }
+            }
+        }
+        else
+        {
+            cModule *enclosingmod = i->from->getParentModule();
+            for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+            {
+                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
+                if (insp)
+                {
+                    numinsp++;
+                    insp->animateMethodcallHoriz(i->from, i->to, methodText);
+                }
+            }
+        }
+    }
+
+    if (numinsp>0)
+    {
+        // leave it there for a while
+        ModuleInspector::animateMethodcallDelay(interp);
+
+        // then remove all arrows
+        for (i=pathvec.begin(); i!=pathvec.end(); i++)
+        {
+            cModule *mod= i->from ? i->from : i->to;
+            cModule *enclosingmod = mod->getParentModule();
+
+            for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+            {
+                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
+                if (insp)
+                    insp->animateMethodcallCleanup();
+            }
+        }
+    }
+}
+
+void Qtenv::componentMethodEnd()
+{
+    EnvirBase::componentMethodEnd();
+}
+
+void Qtenv::moduleCreated(cModule *newmodule)
+{
+    EnvirBase::moduleCreated(newmodule);
+
+    cModule *mod = newmodule->getParentModule();
+
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    {
+        ModuleInspector *insp = isModuleInspectorFor(mod, *it);
+        if (insp)
+            insp->submoduleCreated(newmodule);
+    }
+}
+
+void Qtenv::moduleDeleted(cModule *module)
+{
+    EnvirBase::moduleDeleted(module);
+
+    componentHistory.componentDeleted(module);
+
+    cModule *mod = module->getParentModule();
+
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    {
+        ModuleInspector *insp = isModuleInspectorFor(mod, *it);
+        if (insp)
+            insp->submoduleDeleted(module);
+    }
+}
+
+void Qtenv::moduleReparented(cModule *module, cModule *oldparent, int oldId)
+{
+    EnvirBase::moduleReparented(module, oldparent, oldId);
+
+    //TODO in 5.0: componentHistory.componentReparented(module, oldparent, oldId);
+
+    // pretend it got deleted from under the 1st module, and got created under the 2nd
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    {
+        ModuleInspector *insp = isModuleInspectorFor(oldparent, *it);
+        if (insp)
+            insp->submoduleDeleted(module);
+    }
+
+    cModule *mod = module->getParentModule();
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    {
+        ModuleInspector *insp = isModuleInspectorFor(mod, *it);
+        if (insp)
+            insp->submoduleCreated(module);
+    }
+}
+
+void Qtenv::connectionCreated(cGate *srcgate)
+{
+    EnvirBase::connectionCreated(srcgate);
+
+    // notify compound module where the connection (whose source is this gate) is displayed
+    cModule *notifymodule = NULL;
+    if (srcgate->getType()==cGate::OUTPUT)
+        notifymodule = srcgate->getOwnerModule()->getParentModule();
+    else
+        notifymodule = srcgate->getOwnerModule();
+
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    {
+        ModuleInspector *insp = isModuleInspectorFor(notifymodule, *it);
+        if (insp)
+            insp->connectionCreated(srcgate);
+    }
+}
+
+void Qtenv::connectionDeleted(cGate *srcgate)
+{
+    EnvirBase::connectionDeleted(srcgate);
+
+    if (srcgate->getChannel())
+        componentHistory.componentDeleted(srcgate->getChannel());
+
+    // notify compound module where the connection (whose source is this gate) is displayed
+    // note: almost the same code as above
+    cModule *notifymodule;
+    if (srcgate->getType()==cGate::OUTPUT)
+        notifymodule = srcgate->getOwnerModule()->getParentModule();
+    else
+        notifymodule = srcgate->getOwnerModule();
+
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    {
+        ModuleInspector *insp = isModuleInspectorFor(notifymodule, *it);
+        if (insp)
+            insp->connectionDeleted(srcgate);
+    }
+}
+
+void Qtenv::displayStringChanged(cComponent *component)
+{
+    EnvirBase::displayStringChanged(component);
+
+    if (dynamic_cast<cModule *>(component))
+        moduleDisplayStringChanged((cModule *)component);
+    else if (dynamic_cast<cChannel *>(component))
+        channelDisplayStringChanged((cChannel *)component);
+}
+
+void Qtenv::channelDisplayStringChanged(cChannel *channel)
+{
+    cGate *gate = channel->getSourceGate();
+
+    // notify module inspector which displays connection
+    cModule *notifymodule;
+    if (gate->getType()==cGate::OUTPUT)
+        notifymodule = gate->getOwnerModule()->getParentModule();
+    else
+        notifymodule = gate->getOwnerModule();
+
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    {
+        ModuleInspector *insp = isModuleInspectorFor(notifymodule, *it);
+        if (insp)
+            insp->displayStringChanged(gate);
+    }
+
+    // graphical gate inspector windows: normally a user doesn't have many such windows open
+    // (typically, none at all), so we can afford simply refreshing all of them
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    {
+        Inspector *insp = *it;
+        GateInspector *gateinsp = dynamic_cast<GateInspector *>(insp);
+        if (gateinsp)
+            gateinsp->displayStringChanged(gate);
+    }
+}
+
+void Qtenv::moduleDisplayStringChanged(cModule *module)
+{
+    // refresh inspector where this module is a submodule
+    cModule *parentmodule = module->getParentModule();
+
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    {
+        ModuleInspector *insp = isModuleInspectorFor(parentmodule, *it);
+        if (insp)
+            insp->displayStringChanged(module);
+    }
+
+    // refresh inspector where this module is the parent (i.e. this is a
+    // background display string change)
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    {
+        ModuleInspector *insp = isModuleInspectorFor(module, *it);
+        if (insp)
+            insp->displayStringChanged();
+    }
+}
+
+void Qtenv::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
+{
+    char msgptr[32];
+    ptrToStr(msg,msgptr);
+
+    cGate *g = fromgate;
+    cGate *arrivalgate = togate;
+
+    while (g && g->getNextGate())
+    {
+        cModule *mod = g->getOwnerModule();
+        if (g->getType()==cGate::OUTPUT)
+            mod = mod->getParentModule();
+        bool isLastGate = (g->getNextGate()==arrivalgate);
+        for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+        {
+            ModuleInspector *insp = isModuleInspectorFor(mod, *it);
+            if (insp)
+                insp->animateSendOnConn(g, msg, (isLastGate ? ANIM_BEGIN : ANIM_THROUGH));
+        }
+        g = g->getNextGate();
+    }
+}
+
+// helper for animateSendDirect() functions
+static cModule *findSubmoduleTowards(cModule *parentmod, cModule *towardsgrandchild)
+{
+    if (parentmod==towardsgrandchild)
+       return NULL; // shortcut -- we don't have to go up to the top to see we missed
+
+    // search upwards from 'towardsgrandchild'
+    cModule *m = towardsgrandchild;
+    while (m && m->getParentModule()!=parentmod)
+       m = m->getParentModule();
+    return m;
+}
+
+void Qtenv::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pathvec)
+{
+    // for animation purposes, we assume that the message travels up
+    // in the module hierarchy until it finds the first compound module
+    // that also contains the destination module (possibly somewhere deep),
+    // and then it descends to the destination module. We have to find the
+    // list of modules visited during the travel.
+
+    // first, find "lowest common ancestor" module
+    cModule *commonparent = findCommonAncestor(srcmod, destmod);
+    Assert(commonparent!=NULL); // commonparent should exist, worst case it's the system module
+
+    // animate the ascent of the message until commonparent (excluding).
+    // The second condition, destmod==commonparent covers case when we're sending
+    // to an output gate of the parent (grandparent, etc) gate.
+    cModule *mod = srcmod;
+    while (mod!=commonparent && (mod->getParentModule()!=commonparent || destmod==commonparent))
+    {
+        pathvec.push_back(sPathEntry(mod,NULL));
+        mod = mod->getParentModule();
+    }
+
+    // animate within commonparent
+    if (commonparent!=srcmod && commonparent!=destmod)
+    {
+        cModule *from = findSubmoduleTowards(commonparent, srcmod);
+        cModule *to = findSubmoduleTowards(commonparent, destmod);
+        pathvec.push_back(sPathEntry(from,to));
+    }
+
+    // descend from commonparent to destmod
+    mod = findSubmoduleTowards(commonparent, destmod);
+    if (mod && srcmod!=commonparent)
+        mod = findSubmoduleTowards(mod, destmod);
+    while (mod)
+    {
+        // animate descent towards destmod
+        pathvec.push_back(sPathEntry(NULL,mod));
+        // find module 'under' mod, towards destmod (this will return NULL if mod==destmod)
+        mod = findSubmoduleTowards(mod, destmod);
+    }
+}
+
+void Qtenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
+{
+    PathVec pathvec;
+    findDirectPath(frommodule, togate->getOwnerModule(), pathvec);
+
+    cModule *arrivalmod = msg->getArrivalGate()->getOwnerModule();
+
+    PathVec::iterator i;
+    for (i=pathvec.begin(); i!=pathvec.end(); i++)
+    {
+        if (i->to==NULL)
+        {
+            // ascent
+            cModule *mod = i->from;
+            cModule *enclosingmod = mod->getParentModule();
+            for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+            {
+                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
+                if (insp)
+                    insp->animateSenddirectAscent(mod, msg);
+            }
+        }
+        else if (i->from==NULL)
+        {
+            // descent
+            cModule *mod = i->to;
+            cModule *enclosingmod = mod->getParentModule();
+            bool isArrival = (mod==arrivalmod);
+            for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+            {
+                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
+                if (insp)
+                    insp->animateSenddirectDescent(mod, msg, isArrival ? ANIM_BEGIN : ANIM_THROUGH);
+            }
+        }
+        else
+        {
+            cModule *enclosingmod = i->from->getParentModule();
+            bool isArrival = (i->to == arrivalmod);
+            for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+            {
+                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
+                if (insp)
+                    insp->animateSenddirectHoriz(i->from, i->to, msg, isArrival ? ANIM_BEGIN : ANIM_THROUGH);
+            }
+        }
+    }
+
+    // then remove all arrows
+    for (i=pathvec.begin(); i!=pathvec.end(); i++)
+    {
+        cModule *mod = i->from ? i->from : i->to;
+        cModule *enclosingmod = mod->getParentModule();
+
+        for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+        {
+            ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
+            if (insp)
+                insp->animateSenddirectCleanup();
+        }
+    }
+}
+
+
+void Qtenv::animateDelivery(cMessage *msg)
+{
+    char msgptr[32];
+    ptrToStr(msg,msgptr);
+
+    // find suitable inspectors and do animate the message...
+    cGate *g = msg->getArrivalGate();
+    ASSERT(g);
+    g = g->getPreviousGate();
+    ASSERT(g);
+
+    cModule *mod = g->getOwnerModule();
+    if (g->getType()==cGate::OUTPUT) mod = mod->getParentModule();
+
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    {
+        ModuleInspector *insp = isModuleInspectorFor(mod, *it);
+        if (insp)
+            insp->animateSendOnConn(g, msg, ANIM_END);
+    }
+}
+
+void Qtenv::animateDeliveryDirect(cMessage *msg)
+{
+    char msgptr[32];
+    ptrToStr(msg,msgptr);
+
+    // find suitable inspectors and do animate the message...
+    cGate *g = msg->getArrivalGate();
+    ASSERT(g);
+    cModule *destmod = g->getOwnerModule();
+    cModule *mod = destmod->getParentModule();
+
+    for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    {
+        ModuleInspector *insp = isModuleInspectorFor(mod, *it);
+        if (insp)
+            insp->animateSenddirectDelivery(destmod, msg);
+    }
+}
+
+void Qtenv::performAnimations()
+{
+    ModuleInspector::performAnimations(interp);
+}
+
+void Qtenv::bubble(cComponent *component, const char *text)
+{
+    EnvirBase::bubble(component, text);
+
+    if (disable_tracing)
+        return;
+
+    if (!opt->showBubbles)
+        return;
+
+    if (component->getParentModule())
+    {
+        cModule *enclosingmod = component->getParentModule();
+        for (InspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+        {
+            ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
+            if (insp)
+                insp->bubble(component, text);
+        }
+    }
+}
+
+void Qtenv::confirm(const char *msg)
+{
+    if (!interp)
+        ::printf("\n<!> %s\n\n", msg); // fallback in case Tkenv didn't fire up correctly
+    else
+        CHK(Tcl_VarEval(interp, "messagebox {Confirm} ",TclQuotedString(msg).get()," info ok", NULL));
+}
+
+void Qtenv::putsmsg(const char *msg)
+{
+    confirm(msg);
 }
 
 void Qtenv::log(cLogEntry *entry)
@@ -676,140 +1835,79 @@ void Qtenv::log(cLogEntry *entry)
     if (disable_tracing)
         return;
 
-    cComponent *ctx = simulation.getContext();
-    if (!ctx || (opt->printModuleMsgs && ctx->isEvEnabled()) || simulation.getContextType()==CTX_FINISH)
+    std::string prefix = logFormatter.formatPrefix(entry);
+    const char *s = entry->text;
+    int n = entry->textLength;
+
+    if (!interp)
     {
-        std::string prefix = logFormatter.formatPrefix(entry);
-      //  ::fputs(prefix.c_str(), fout);
-    //    ::fwrite(entry->text, 1, entry->textLength, fout);
-      //  if (opt->autoflush)
-      //      ::fflush(fout);
+        // fallback in case Tkenv didn't fire up correctly
+        ::fputs(prefix.c_str(), stdout);
+        (void) ::fwrite(s,1,n,stdout);
+        return;
+    }
+
+    // rough guard against forgotten "\n"'s in the code
+    const int maxLen = 5000;
+    if (n > maxLen)
+    {
+        const char *ellipsis = "... [line too long, truncated]\n";
+        strcpy(const_cast<char *>(s) + maxLen - strlen(ellipsis), ellipsis);  //khmm...
+        n = maxLen;
+    }
+
+    // insert into log buffer
+    cModule *module = getSimulation()->getContextModule();
+    if (module)
+        logBuffer.addLogLine(prefix.c_str(), s, n);
+    else
+        logBuffer.addInfo(s, n);
+}
+
+bool Qtenv::inputDialog(const char *title, const char *prompt,
+                        const char *checkboxLabel, const char *defaultValue,
+                        std::string& outResult, bool& inoutCheckState)
+{
+    CHK(Tcl_Eval(interp, "global opp"));
+    Tcl_SetVar2(interp, "opp", "result", (char *)defaultValue, TCL_GLOBAL_ONLY);
+    Tcl_SetVar2(interp, "opp", "check", (char *)(inoutCheckState ? "1" : "0"), TCL_GLOBAL_ONLY);
+    if (checkboxLabel==NULL)
+        CHK(Tcl_VarEval(interp, "inputbox ",
+                        TclQuotedString(title).get()," ",
+                        TclQuotedString(prompt).get()," opp(result) ", NULL));
+    else
+        CHK(Tcl_VarEval(interp, "inputbox ",
+                        TclQuotedString(title).get()," ",
+                        TclQuotedString(prompt).get()," opp(result) ",
+                        TclQuotedString(checkboxLabel).get(), " opp(check)", NULL));
+
+    if (Tcl_GetStringResult(interp)[0]=='0') {
+        return false;  // cancel
+    }
+    else {
+        outResult = Tcl_GetVar2(interp, "opp", "result", TCL_GLOBAL_ONLY);
+        inoutCheckState = Tcl_GetVar2(interp, "opp", "check", TCL_GLOBAL_ONLY)[0]=='1';
+        return true; // OK
     }
 }
 
-std::string Qtenv::gets(const char *prompt, const char *defaultReply)
+std::string Qtenv::gets(const char *promt, const char *defaultReply)
 {
-    if (!opt->interactive)
-        throw cRuntimeError("The simulation wanted to ask a question, set qtenv-interactive=true to allow it: \"%s\"", prompt);
-        return std::string("");
-/*
-    ::fprintf(fout, "%s", prompt);
-    if (!opp_isempty(defaultReply))
-        ::fprintf(fout, "(default: %s) ", defaultReply);
-    ::fflush(fout);
-
-    {
-        ::fgets(buffer, 512, stdin);
-        buffer[strlen(buffer)-1] = '\0'; // chop LF
-
-        if (buffer[0]=='\x1b') // ESC?
-           throw cRuntimeError(E_CANCEL);
-
-        return std::string(buffer);
-    }*/
+    cModule *mod = getSimulation()->getContextModule();
+    std::string title = mod ? mod->getFullPath() : getSimulation()->getNetworkType()->getName();
+    std::string result;
+    bool dummy;
+    bool ok = inputDialog(title.c_str(), promt, NULL, defaultReply, result, dummy);
+    if (!ok)
+        throw cRuntimeError(E_CANCEL);
+    return result;
 }
 
 bool Qtenv::askyesno(const char *question)
 {
-    if (!opt->interactive)
-        throw cRuntimeError("Simulation needs user input in non-interactive mode (prompt text: \"%s (y/n)\")", question);
-return false;/*
-    {
-        for(;;)
-        {
-            ::fprintf(fout, "%s (y/n) ", question);
-            ::fflush(fout);
-            ::fgets(buffer, 512, stdin);
-            buffer[strlen(buffer)-1] = '\0'; // chop LF
-            if (buffer[0]=='\x1b') // ESC?
-               throw cRuntimeError(E_CANCEL);
-            if (opp_toupper(buffer[0])=='Y' && !buffer[1])
-                return true;
-            else if (opp_toupper(buffer[0])=='N' && !buffer[1])
-                return false;
-            else
-                putsmsg("Please type 'y' or 'n'!\n");
-        }
-    }*/
-}
-
-void Qtenv::debug(const char *fmt,...)
-{
-    if (!logging)
-        return;
-
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    time_t t = (time_t) tv.tv_sec;
-    struct tm tm = *localtime(&t);
-
-    ::fprintf(logStream, "[%02d:%02d:%02d.%03d event #%" LL "d %s] ",
-             tm.tm_hour, tm.tm_min, tm.tm_sec, (int)(tv.tv_usec/1000),
-             simulation.getEventNumber(), "");
-    va_list va;
-    va_start(va, fmt);
-    ::vfprintf(logStream, fmt, va);
-    va_end(va);
-    ::fflush(logStream); // needed for sensible output in the IDE console
-}
-
-bool Qtenv::idle()
-{
-    return sigintReceived;
-}
-
-void Qtenv::moduleCreated(cModule *mod)
-{
-    EnvirBase::moduleCreated(mod);
-
-    bool ev_enabled = getConfig()->getAsBool(mod->getFullPath().c_str(), CFGID_QTENV_EV_OUTPUT);
-    mod->setEvEnabled(ev_enabled);
-}
-
-void Qtenv::messageSent_OBSOLETE(cMessage *msg, cGate *)
-{
-    /*if (!opt->expressMode && opt->messageTrace)
-    {
-        ::fprintf(fout, "SENT:   %s\n", msg->info().c_str());
-        if (opt->autoflush)
-            ::fflush(fout);
-    }*/
-}
-
-void Qtenv::simulationEvent(cEvent *event)
-{
-    EnvirBase::simulationEvent(event);
-
-    if (!disable_tracing)
-    {
-        if (opt->messageTrace)
-        {
-         //   ::fprintf(fout, "DELIVD: %s\n", event->info().c_str());  //TODO can go out!
-           // if (opt->autoflush)
-             //   ::fflush(fout);
-        }
-    }
-}
-
-void Qtenv::printUISpecificHelp()
-{
-    std::cout << "Qtenv-specific options:\n";
-    std::cout << "  -c <configname>\n";
-    std::cout << "                Select a given configuration for execution. With inifile-based\n";
-    std::cout << "                configuration database, this selects the [Config <configname>]\n";
-    std::cout << "                section; the default is the [General] section.\n";
-    std::cout << "                See also: -r.\n";
-    std::cout << "  -r <runs>     Execute the specified runs in the configuration selected with the\n";
-    std::cout << "                -c option. <runs> is a comma-separated list of run numbers or\n";
-    std::cout << "                run number ranges, for example 1,2,5-10. When not present, all\n" ;
-    std::cout << "                runs of that configuration will be executed.\n" ;
-    std::cout << "  -a            Print all config names and number of runs it them, and exit.\n";
-    std::cout << "  -x <configname>\n";
-    std::cout << "                Print the number of runs in the given configuration, and exit.\n";
-    std::cout << "  -g, -G        Make -x verbose: print the unrolled configuration, iteration\n";
-    std::cout << "                variables, etc. -G provides more details than -g.\n";
-    std::cout << "  -X <configname>\n";
-    std::cout << "                Print the fallback chain of the given configuration, and exit.\n";
+    // should return -1 when CANCEL is pressed
+    CHK(Tcl_VarEval(interp, "messagebox {Tkenv} ",TclQuotedString(question).get()," question yesno", NULL));
+    return Tcl_GetStringResult(interp)[0]=='y';
 }
 
 unsigned Qtenv::getExtraStackForEnvir() const
@@ -817,5 +1915,53 @@ unsigned Qtenv::getExtraStackForEnvir() const
     return opt->extraStack;
 }
 
+void Qtenv::logTclError(const char *file, int line, Tcl_Interp *interp)
+{
+    logTclError(file, line, Tcl_GetVar(interp, "errorInfo", TCL_GLOBAL_ONLY));
+}
+
+void Qtenv::logTclError(const char *file, int line, const char *text)
+{
+    openTkenvlogIfNeeded();
+    FILE *f = ferrorlog ? ferrorlog : stderr;
+    ::fprintf(f, "Tcl error: %s#%d: %s\n\n\n",file, line, text);
+    ::fflush(f);
+}
+
+void Qtenv::openTkenvlogIfNeeded()
+{
+    if (!ferrorlog)
+    {
+        ferrorlog = fopen(".tkenvlog", "a");
+        if (!ferrorlog) {
+            ::fprintf(stderr, "Tkenv: could not open .tkenvlog for append\n");
+            return;
+        }
+        ::fprintf(ferrorlog, "---- %s ---------------------------------------------------------\n\n\n", opp_makedatetimestring().c_str());
+    }
+}
+
+//======================================================================
+// dummy function to force Unix linkers collect all symbols needed
+
+void _dummy_for_genericobjectinspector();
+void _dummy_for_watchinspector();
+void _dummy_for_moduleinspector();
+void _dummy_for_loginspector();
+void _dummy_for_gateinspector();
+void _dummy_for_histograminspector();
+void _dummy_for_outputvectorinspector();
+
+void _dummy_func() {
+  _dummy_for_genericobjectinspector();
+  _dummy_for_watchinspector();
+  _dummy_for_moduleinspector();
+  _dummy_for_loginspector();
+  _dummy_for_gateinspector();
+  _dummy_for_histograminspector();
+  _dummy_for_outputvectorinspector();
+}
+
+} //namespace
 NAMESPACE_END
 

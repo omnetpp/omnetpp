@@ -1,0 +1,42 @@
+//==========================================================================
+//  TKLIB.H - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
+//
+//==========================================================================
+
+/*--------------------------------------------------------------*
+  Copyright (C) 1992-2015 Andras Varga
+  Copyright (C) 2006-2015 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
+#ifndef __OMNETPP_TKLIB_H
+#define __OMNETPP_TKLIB_H
+
+#include "qtenvdefs.h"
+
+NAMESPACE_BEGIN
+namespace qtenv {
+
+struct OmnetTclCommand {
+    const char *namestr;
+    int (*func)(ClientData, Tcl_Interp *, int, const char **);
+};
+extern OmnetTclCommand tcl_commands[];
+
+extern int exitOmnetpp;
+
+Tcl_Interp *initTk(int argc, char **argv);
+int createTkCommands(Tcl_Interp *interp, OmnetTclCommand *tcl_commands);
+int runTk(Tcl_Interp *interp);
+
+} //namespace
+NAMESPACE_END
+
+
+#endif
+

@@ -1,21 +1,29 @@
-#ifndef FIGURERENDERERS_H
-#define FIGURERENDERERS_H
+//==========================================================================
+//  FIGURERENDERERS.H - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
+//
+//==========================================================================
 
-#include <string>
-#include <map>
+/*--------------------------------------------------------------*
+  Copyright (C) 1992-2015 Andras Varga
+  Copyright (C) 2006-2015 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
+#ifndef __OMNETPP_FIGURERENDERERS_H
+#define __OMNETPP_FIGURERENDERERS_H
 
 #include "omnetpp/ccanvas.h"
+#include "qtenvdefs.h"
 
-class QPen;
-class QGraphicsScene;
-class QGraphicsItem;
-class QGraphicsLineItem;
-class QGraphicsPathItem;
-class QBrush;
-class QPainterPath;
-class QPointF;
+NAMESPACE_BEGIN
+namespace qtenv {
 
-struct FigureRenderingHints
+struct TKENV_API FigureRenderingHints
 {
         double zoom;
         double iconMagnification;
@@ -30,183 +38,203 @@ struct FigureRenderingHints
             showSubmoduleLabels(true), showArrowHeads(true), showMessageLabels(true) {}
 };
 
-class FigureRenderer
+class TKENV_API FigureRenderer : public cObject // for because Register_Class() takes cObject*
 {
-private:
-    enum ArcShape { ARC_NOTHING, ARC_LINE, ARC_ARC };
-    static std::map<std::string, FigureRenderer*> rendererCache;
+    private:
+        static std::map<std::string, FigureRenderer*> rendererCache;
+        char bufferSpace[512];
+        char *bufferFreePtr;
+    protected:
+        void initBufs() {bufferFreePtr = bufferSpace;}
+        char *getBuf(int len) {char *ret = bufferFreePtr; bufferFreePtr += len; ASSERT(bufferFreePtr < bufferSpace+sizeof(bufferSpace)); return ret;}
+        char *point(const cFigure::Point& p);
+        char *point2(const cFigure::Point& p1, const cFigure::Point& p2);
+        char *bounds(const cFigure::Rectangle& bounds);
+        char *matrix(const cFigure::Transform& transform);
+        char *color(const cFigure::Color& color);
+        char *itoa(int i);
+        char *dtoa(double d);
+        static int round(double d) { return (int)floor(d+0.5);}
+        void lineStyle(cFigure::LineStyle style, int& argc, const char *argv[]);
+        void capStyle(cFigure::CapStyle style, int& argc, const char *argv[]);
+        void joinStyle(cFigure::JoinStyle style, int& argc, const char *argv[]);
+        void arrowHead(bool isStart, cFigure::ArrowHead arrowHead, int& argc, const char *argv[]);
+        void fillRule(cFigure::FillRule fill, int& argc, const char *argv[]);
+        void interpolation(cFigure::Interpolation interpolation, int& argc, const char *argv[]);
+        void anchor(cFigure::Anchor anchor, int& argc, const char *argv[]);
+        void textanchor(cFigure::Anchor anchor, int& argc, const char *argv[]);
+        void font(const cFigure::Font& font, FigureRenderingHints *hints, int& argc, const char *argv[]);
+        const char *resolveIcon(Tcl_Interp *interp, const char *iconName, int& outWidth, int& outHeight);
+        std::string polygonPath(const std::vector<cFigure::Point>& points, bool smooth);
+        std::string polylinePath(const std::vector<cFigure::Point>& points, bool smooth);
+        std::string arcPath(const cFigure::Rectangle& rect, double start, double end);
+        std::string pieSlicePath(const cFigure::Rectangle& rect, double start, double end);
+        std::string ringPath(const cFigure::Rectangle& rect, double innerRx, double innerRy);
+        void moveItemsAbove(Tcl_Interp *interp, Tcl_CmdInfo *cmd, const char *tag, const char *referenceTag);
+        void removeItems(Tcl_Interp *interp, Tcl_CmdInfo *cmd, const char *tag);
 
-    inline bool doubleEquals(double x, double y) const;
-    double calcVectorAngle(double ux, double uy, double vx, double vy) const;
-    ArcShape endPointToCentralFromArcParameters(double startX, double startY,
-                                            double endX, double endY,
-                                            bool largeArcFlag, bool sweepFlag,
-                                            double &rx, double &ry, double angle,
-                                            double &centerX, double &centerY,
-                                            double &startAngle, double &sweepLength) const;
-
-protected:
-    static std::map<int, QGraphicsItem*> items;
-
-    inline cFigure::Point polarToCertasian(cFigure::Point center, double rx, double ry, double rad) const;
-    void arcToUsingBezier(QPainterPath &painter, double currentX,
-                          double currentY, double x, double y,
-                          double rx, double ry, double angle,
-                          bool largeArcFlag, bool sweepFlag, bool isRel) const;
-
-    void calcSmoothBezierCP(QPainterPath &painter, char prevCommand,
-                            double currentX, double currentY,
-                            double &cpx, double &cpy,
-                            double x, double y,
-                            bool isRel = false) const;
-
-    void calcSmoothQuadBezierCP(QPainterPath &painter, char prevCommand,
-                                double currentX, double currentY,
-                                double &prevCpx, double &prevCpy,
-                                double cpx, double cpy,
-                                double x, double y, bool isRel = false) const;
-
-    QPen createPen(const cAbstractLineFigure *figure) const;
-    QPen createPen(const cAbstractShapeFigure * figure) const;
-    QBrush createBrush(const cAbstractShapeFigure *figure) const;
-
-    virtual void setTransform(const cFigure::Transform &transform, QGraphicsItem *item, const QPointF *offset = 0) const;
-
-    virtual void refreshGeometry(cFigure* figure);
-    virtual void refreshVisual(cFigure* figure);
-    virtual void refreshTransform(cFigure *figure, const cFigure::Transform &transform);
-
-    virtual QGraphicsItem *newItem() = 0;
-    QGraphicsItem *createGeometry(cFigure *figure);
-    virtual void createVisual(cFigure *figure, QGraphicsItem *item) = 0;
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item) = 0;
-
-public:
-    FigureRenderer() {}
-    virtual ~FigureRenderer() {}
-
-    static FigureRenderer *getRendererFor(cFigure *figure);
-    static void deleteItems() { items.clear(); }
-    virtual void render(cFigure *figure, QGraphicsScene *scene, const cFigure::Transform &transform, FigureRenderingHints *hints);
-    void refresh(cFigure *figure, int8_t what, const cFigure::Transform &transform, FigureRenderingHints *hints);
+    public:
+        FigureRenderer() : bufferFreePtr(NULL) {}
+        virtual ~FigureRenderer() {}
+        static FigureRenderer *getRendererFor(cFigure *figure);
+        virtual void render(cFigure *figure, Tcl_Interp *interp, Tcl_CmdInfo *cmd, const cFigure::Transform& transform, FigureRenderingHints *hints) = 0;
+        virtual void refresh(cFigure *figure, int8_t what, Tcl_Interp *interp, Tcl_CmdInfo *cmd, const cFigure::Transform& transform, FigureRenderingHints *hints) = 0;
+        virtual void remove(cFigure *figure, Tcl_Interp *interp, Tcl_CmdInfo *cmd) = 0;
 };
 
-class AbstractShapeFigureRenderer : public FigureRenderer
+class TKENV_API AbstractCanvasItemFigureRenderer : public FigureRenderer
 {
-    virtual void createVisual(cFigure *figure, QGraphicsItem *item);
+    protected:
+        virtual const char *getItemType() = 0;
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints) = 0;
+        virtual void addMatrix(cFigure *figure, const cFigure::Transform& transform, int& argc, const char *argv[]);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints) = 0;
+    public:
+        virtual void render(cFigure *figure, Tcl_Interp *interp, Tcl_CmdInfo *cmd, const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void refresh(cFigure *figure, int8_t what, Tcl_Interp *interp, Tcl_CmdInfo *cmd, const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void remove(cFigure *figure, Tcl_Interp *interp, Tcl_CmdInfo *cmd);
 };
 
-//TODO remove?
-class AbstractTextFigureRenderer : public FigureRenderer
+class TKENV_API NullRenderer : public AbstractCanvasItemFigureRenderer
 {
-protected:
-    virtual void refreshTransform(cFigure *figure, const cFigure::Transform &transform);
+    protected:
+        virtual const char *getItemType() {return "pline";}
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints) {return "0 0 0 0";}
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints) {}
 };
 
-class AbstractImageFigureRenderer : public FigureRenderer
+class TKENV_API AbstractLineFigureRenderer : public AbstractCanvasItemFigureRenderer
 {
-    virtual void refreshTransform(cFigure *figure, const cFigure::Transform &transform);
+    protected:
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
-class NullRenderer : public FigureRenderer
+class TKENV_API LineFigureRenderer : public AbstractLineFigureRenderer
 {
-protected:
-    virtual void setTransform(const cFigure::Transform&, QGraphicsItem*, const QPointF* = 0) const {}
-    virtual QGraphicsItem *newItem() { return nullptr; }
-    virtual void createVisual(cFigure*, QGraphicsItem*) {}
-    virtual void setItemGeometryProperties(cFigure*, QGraphicsItem*) {}
+    protected:
+        virtual const char *getItemType() {return "pline";}
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
-class LineFigureRenderer : public FigureRenderer
+class TKENV_API ArcFigureRenderer : public AbstractLineFigureRenderer
 {
-protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item);
-    virtual void createVisual(cFigure *figure, QGraphicsItem *item);
-    virtual QGraphicsItem *newItem();
+    protected:
+        virtual const char *getItemType() {return "path";}
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
-class ArcFigureRenderer : public FigureRenderer
+class TKENV_API PolylineFigureRenderer : public AbstractLineFigureRenderer
 {
-protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item);
-    virtual void createVisual(cFigure *figure, QGraphicsItem *item);
-    virtual QGraphicsItem *newItem();
+    protected:
+        virtual const char *getItemType() {return "path";}
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
-class PolylineFigureRenderer : public FigureRenderer
+class TKENV_API AbstractShapeRenderer : public AbstractCanvasItemFigureRenderer
 {
-protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item);
-    virtual void createVisual(cFigure *figure, QGraphicsItem *item);
-    virtual QGraphicsItem *newItem();
+    protected:
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
-class RectangleFigureRenderer : public AbstractShapeFigureRenderer
+class TKENV_API RectangleFigureRenderer : public AbstractShapeRenderer
 {
-protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item);
-    virtual QGraphicsItem *newItem();
+    protected:
+        virtual const char *getItemType() {return "prect";}
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
-class OvalFigureRenderer : public AbstractShapeFigureRenderer
+class TKENV_API OvalFigureRenderer : public AbstractShapeRenderer
 {
-protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item);
-    virtual QGraphicsItem *newItem();
+    protected:
+        virtual const char *getItemType() {return "ellipse";}
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
-class RingFigureRenderer : public AbstractShapeFigureRenderer
+class TKENV_API RingFigureRenderer : public AbstractShapeRenderer
 {
-protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item);
-    virtual QGraphicsItem *newItem();
+    protected:
+        virtual const char *getItemType() {return "path";}
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
-class PieSliceFigureRenderer : public AbstractShapeFigureRenderer
+class TKENV_API PieSliceFigureRenderer : public AbstractShapeRenderer
 {
-protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item);
-    virtual QGraphicsItem *newItem();
+    protected:
+        virtual const char *getItemType() {return "path";}
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
-class PolygonFigureRenderer : public AbstractShapeFigureRenderer
+class TKENV_API PolygonFigureRenderer : public AbstractShapeRenderer
 {
-protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item);
-    virtual void createVisual(cFigure *figure, QGraphicsItem *item);
-    virtual QGraphicsItem *newItem();
+    protected:
+        virtual const char *getItemType() {return "path";}
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
-class PathFigureRenderer : public AbstractShapeFigureRenderer
+class TKENV_API PathFigureRenderer : public AbstractShapeRenderer
 {
-protected:
-    virtual void refreshTransform(cFigure *figure, const cFigure::Transform &transform);
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item);
-    virtual void createVisual(cFigure *figure, QGraphicsItem *item);
-    virtual QGraphicsItem *newItem();
+    protected:
+        virtual const char *getItemType() {return "path";}
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void addMatrix(cFigure *figure, const cFigure::Transform& transform, int& argc, const char *argv[]);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
-class TextFigureRenderer : public AbstractTextFigureRenderer
+class TKENV_API AbstractTextFigureRenderer : public AbstractCanvasItemFigureRenderer
 {
-protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item);
-    virtual void createVisual(cFigure *figure, QGraphicsItem *item);
-    virtual QGraphicsItem *newItem();
+    protected:
+        virtual const char *getItemType() {return "ptext";}
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
-class LabelFigureRenderer : public TextFigureRenderer
+class TKENV_API TextFigureRenderer : public AbstractTextFigureRenderer
 {
-protected:
-    virtual void setTransform(const cFigure::Transform&, QGraphicsItem*, const QPointF* = 0) const {}
-    virtual void refreshTransform(cFigure *figure, const cFigure::Transform &transform);
 };
 
-class ImageFigureRenderer : public AbstractImageFigureRenderer
+class TKENV_API LabelFigureRenderer : public AbstractTextFigureRenderer
 {
-protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item);
-    virtual void createVisual(cFigure *figure, QGraphicsItem *item);
-    virtual QGraphicsItem *newItem();
+    protected:
+        virtual void addMatrix(cFigure *figure, const cFigure::Transform& transform, int& argc, const char *argv[]);
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
 };
 
-#endif // FIGURERENDERERS_H
+class TKENV_API AbstractImageFigureRenderer : public AbstractCanvasItemFigureRenderer
+{
+    protected:
+        virtual const char *getItemType() {return "pimage";}
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
+};
+
+class TKENV_API ImageFigureRenderer : public AbstractImageFigureRenderer
+{
+    protected:
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
+};
+
+class TKENV_API IconFigureRenderer : public ImageFigureRenderer
+{
+    protected:
+        virtual void addMatrix(cFigure *figure, const cFigure::Transform& transform, int& argc, const char *argv[]);
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints);
+
+};
+
+class TKENV_API PixmapFigureRenderer : public AbstractImageFigureRenderer
+{
+    protected:
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints);
+        virtual void ensureImage(Tcl_Interp *interp, const char *imageName, const cFigure::Pixmap& pixmap);
+};
+
+} //namespace
+NAMESPACE_END
+
+#endif
