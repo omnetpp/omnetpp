@@ -14,7 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <Carbon/Carbon.h>
+// #include <Carbon/Carbon.h>
 
 //
 // The following is required to display the menu correctly on Mac OS X 10.5.
@@ -23,9 +23,12 @@
 // or even creating Contents directory next to the executable would do,
 // but its not an elegant solution.
 //
+
+/*
 void OSXTransformProcess()
 {
     ProcessSerialNumber psn;
     GetCurrentProcess( &psn );
     TransformProcessType( &psn, kProcessTransformToForegroundApplication);
 }
+*/
