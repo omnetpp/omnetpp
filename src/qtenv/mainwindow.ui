@@ -49,6 +49,8 @@
     <addaction name="actionOne_Step"/>
     <addaction name="separator"/>
     <addaction name="actionRun"/>
+    <addaction name="separator"/>
+    <addaction name="actionStop"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSimulate"/>
@@ -71,6 +73,11 @@
   <action name="actionSet_Up_a_Configuration">
    <property name="text">
     <string>Set Up a Configuration...</string>
+   </property>
+  </action>
+  <action name="actionStop">
+   <property name="text">
+    <string>Stop</string>
    </property>
   </action>
  </widget>

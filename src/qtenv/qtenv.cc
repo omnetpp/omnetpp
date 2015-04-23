@@ -421,7 +421,8 @@ void Qtenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
     simstate = SIM_RUNNING;
 
     updateStatusDisplay();
-    Tcl_Eval(interp, "update");
+    //Tcl_Eval(interp, "update");
+    QCoreApplication::processEvents();
 
     startClock();
     notifyLifecycleListeners(LF_ON_SIMULATION_RESUME);
@@ -479,8 +480,7 @@ void Qtenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
 void Qtenv::setSimulationRunMode(int mode)
 {
     // This function (and the next one too) is called while runSimulation() is
-    // underway, from Tcl code that gets a chance to run via the
-    // Tcl_Eval(interp, "update") commands
+    // underway, from Tcl code that gets a chance to run via Tcl_Eval(interp, "update") commands
     runmode = mode;
 }
 
@@ -575,7 +575,8 @@ bool Qtenv::doRunSimulation()
             refreshInspectors();
             if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
                 speedometer.beginNewInterval();
-            Tcl_Eval(interp, "update");
+            //Qt: Tcl_Eval(interp, "update");
+            QCoreApplication::processEvents();
             resetElapsedTime(last_update); // exclude UI update time [bug #52]
         }
 
@@ -609,7 +610,8 @@ bool Qtenv::doRunSimulationExpress()
     logBuffer.addInfo(info);
 
     // update, just to get the above notice displayed
-    Tcl_Eval(interp, "update");
+    //Qt: Tcl_Eval(interp, "update");
+    QCoreApplication::processEvents();
 
     // OK, let's begin
     speedometer.start(getSimulation()->getSimTime());
@@ -643,7 +645,8 @@ bool Qtenv::doRunSimulationExpress()
                 refreshInspectors();
             if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
                 speedometer.beginNewInterval();
-            Tcl_Eval(interp, "update");
+            //Qt: Tcl_Eval(interp, "update");
+            QCoreApplication::processEvents();
             resetElapsedTime(last_update); // exclude UI update time [bug #52]
             if (runmode!=RUNMODE_EXPRESS) {
                 result = true;  // should continue, but in a different mode
@@ -1205,7 +1208,8 @@ bool Qtenv::idle()
     // process UI events
     eState origsimstate = simstate;
     simstate = SIM_BUSY;
-    Tcl_Eval(interp, "update");
+    //Qt:Tcl_Eval(interp, "update");
+    QCoreApplication::processEvents();
     simstate = origsimstate;
 
     bool stop = stopsimulation_flag;

@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <assert.h>
+#include <QCoreApplication>
 
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cdisplaystring.h"
@@ -137,7 +138,8 @@ bool TkenvGraphLayouterEnvironment::okToProceed()
 
     // process UI events; we assume that a "grab" is in effect to the Stop button
     // (i.e. the user can only interact with the Stop button, but nothing else)
-    CHK(Tcl_VarEval(interp, "update\n", NULL));
+    //Qt: CHK(Tcl_VarEval(interp, "update\n", NULL));
+    QCoreApplication::processEvents();
     const char *var = Tcl_GetVar(interp, "stoplayouting", TCL_GLOBAL_ONLY);
     bool stopNow = var && var[0] && var[0]!='0';
     return !stopNow;

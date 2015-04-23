@@ -35,6 +35,7 @@ public slots:
     void setUpConfiguration();//tkenv: newRun
     void oneStep();
     void runSimulation();
+    void stopSimulation();
 
 private:
     Ui::MainWindow *ui;

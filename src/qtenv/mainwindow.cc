@@ -19,6 +19,7 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     connect(ui->actionOne_Step, SIGNAL(triggered()), this, SLOT(oneStep()));
     connect(ui->actionRun, SIGNAL(triggered()), this, SLOT(runSimulation()));
     connect(ui->actionSet_Up_a_Configuration, SIGNAL(triggered()), this, SLOT(setUpConfiguration()));
+    connect(ui->actionStop, SIGNAL(triggered()), this, SLOT(stopSimulation()));
 }
 
 void MainWindow::exitOmnetpp()
@@ -87,6 +88,25 @@ void MainWindow::runSimulation()
 //        }
 
     env->runSimulation(Qtenv::RUNMODE_NORMAL);
+}
+
+void MainWindow::stopSimulation()
+{
+//    proc stopSimulation {} {
+//        # implements Simulate|Stop
+//        if {[opp_getsimulationstate] == "SIM_RUNNING" || [opp_getsimulationstate] == "SIM_BUSY"} {
+//           # "opp_stopsimulation" just *asks* the simulation to stop, causing it to return
+//           # from the "opp_run" command.
+//           # "setGuiForRunmode notrunning" will be called after "opp_run" has returned.
+//           opp_stopsimulation
+//        }
+//
+//        # this proc doubles as "stop layouting", when in graphical module inspectors
+//        global stoplayouting
+//        set stoplayouting 1
+//    }
+
+    env->setStopSimulationFlag();
 }
 
 MainWindow::~MainWindow()
