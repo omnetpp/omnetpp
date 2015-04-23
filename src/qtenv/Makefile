@@ -35,7 +35,7 @@ qtenv: $L/$(LIBNAME)$(LIB_SUFFIX)
 
 qmake:
 	@echo Invoking qmake and building qtenv sources...
-	$(Q)qmake -o $O/Makefile && (cd $O && OPP_CFLAGS="$(CFLAGS) -DOMNETPP_IMAGE_PATH=\"\\\"$(OMNETPP_IMAGE_PATH)\\\"\"" make)
+	$(Q)qmake "QMAKE_CXX=$(CXX)" "QMAKE_CC=$(CC)" "CONFIG+=$(MODE)" -o $O/Makefile && (cd $O && OPP_CFLAGS="$(CFLAGS) -DOMNETPP_IMAGE_PATH=\"\\\"$(OMNETPP_IMAGE_PATH)\\\"\"" make)
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : qmake
 	@mkdir -p $L
