@@ -15,19 +15,56 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
     ui->graphicsView->setRenderHints(QPainter::Antialiasing);
-    connect(ui->actionQuit, SIGNAL(triggered()), this, SLOT(exitOmnetpp()));
-    connect(ui->actionOne_Step, SIGNAL(triggered()), this, SLOT(oneStep()));
-    connect(ui->actionRun, SIGNAL(triggered()), this, SLOT(runSimulation()));
-    connect(ui->actionSet_Up_a_Configuration, SIGNAL(triggered()), this, SLOT(setUpConfiguration()));
-    connect(ui->actionStop, SIGNAL(triggered()), this, SLOT(stopSimulation()));
 }
 
-void MainWindow::exitOmnetpp()
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::displayText(const char *t) {
+    ui->textBrowser->append(QString(t));
+}
+
+void MainWindow::on_actionOneStep_triggered()
+{
+    //# implements Simulate|One step
+
+    //    if [isRunning] {
+    //        setGuiForRunmode step
+    //        opp_stopsimulation
+    //    } else {
+    //        if {![networkReady]} {return}
+    //        setGuiForRunmode step
+    //        opp_onestep
+    //        setGuiForRunmode notrunning
+    //    }
+
+    env->doOneStep();
+}
+
+void MainWindow::on_actionQuit_triggered()
 {
     close();
 }
 
-void MainWindow::setUpConfiguration()//tkenv: newRun
+void MainWindow::on_actionRun_triggered()
+{
+//    if [isRunning] {
+//            setGuiForRunmode $mode
+//            opp_set_run_mode $mode
+//            opp_set_run_until_module
+//        } else {
+//            if {![networkReady]} {return}
+//            setGuiForRunmode $mode
+//            opp_run $mode
+//            setGuiForRunmode notrunning
+//        }
+
+    env->runSimulation(Qtenv::RUNMODE_NORMAL);
+}
+
+void MainWindow::on_actionSetUpConfiguration_triggered()
 {
 //    proc newRun {} {
 //        # implements File|New run...
@@ -57,40 +94,7 @@ void MainWindow::setUpConfiguration()//tkenv: newRun
     env->newRun("CarDemo", 0);
 }
 
-void MainWindow::oneStep()
-{
-//# implements Simulate|One step
-
-//    if [isRunning] {
-//        setGuiForRunmode step
-//        opp_stopsimulation
-//    } else {
-//        if {![networkReady]} {return}
-//        setGuiForRunmode step
-//        opp_onestep
-//        setGuiForRunmode notrunning
-//    }
-
-    env->doOneStep();
-}
-
-void MainWindow::runSimulation()
-{
-//    if [isRunning] {
-//            setGuiForRunmode $mode
-//            opp_set_run_mode $mode
-//            opp_set_run_until_module
-//        } else {
-//            if {![networkReady]} {return}
-//            setGuiForRunmode $mode
-//            opp_run $mode
-//            setGuiForRunmode notrunning
-//        }
-
-    env->runSimulation(Qtenv::RUNMODE_NORMAL);
-}
-
-void MainWindow::stopSimulation()
+void MainWindow::on_actionStop_triggered()
 {
 //    proc stopSimulation {} {
 //        # implements Simulate|Stop
@@ -107,13 +111,4 @@ void MainWindow::stopSimulation()
 //    }
 
     env->setStopSimulationFlag();
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
-
-void MainWindow::displayText(const char *t) {
-    ui->textBrowser->append(QString(t));
 }

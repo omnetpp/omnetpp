@@ -40,3 +40,6 @@ INCLUDEPATH += ../../../../src ../../../../include
 INCLUDEPATH += .. ../../include
 
 FORMS += mainwindow.ui
+
+RESOURCES += \
+    icons.qrc

@@ -39,14 +39,14 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionSet_Up_a_Configuration"/>
+    <addaction name="actionSetUpConfiguration"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuSimulate">
     <property name="title">
      <string>Simulate</string>
     </property>
-    <addaction name="actionOne_Step"/>
+    <addaction name="actionOneStep"/>
     <addaction name="separator"/>
     <addaction name="actionRun"/>
     <addaction name="separator"/>
@@ -55,33 +55,68 @@
    <addaction name="menuFile"/>
    <addaction name="menuSimulate"/>
   </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionSetUpConfiguration"/>
+   <addaction name="separator"/>
+   <addaction name="actionOneStep"/>
+   <addaction name="actionRun"/>
+   <addaction name="actionStop"/>
+   <addaction name="separator"/>
+  </widget>
   <action name="actionQuit">
    <property name="text">
     <string>Quit</string>
    </property>
   </action>
-  <action name="actionOne_Step">
+  <action name="actionOneStep">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/tools/icons/tools/step.png</normaloff>:/tools/icons/tools/step.png</iconset>
+   </property>
    <property name="text">
     <string>One Step</string>
    </property>
   </action>
   <action name="actionRun">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/tools/icons/tools/run.png</normaloff>:/tools/icons/tools/run.png</iconset>
+   </property>
    <property name="text">
     <string>Run</string>
    </property>
   </action>
-  <action name="actionSet_Up_a_Configuration">
+  <action name="actionSetUpConfiguration">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/tools/icons/tools/newrun.png</normaloff>:/tools/icons/tools/newrun.png</iconset>
+   </property>
    <property name="text">
     <string>Set Up a Configuration...</string>
    </property>
   </action>
   <action name="actionStop">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/tools/icons/tools/stop.png</normaloff>:/tools/icons/tools/stop.png</iconset>
+   </property>
    <property name="text">
     <string>Stop</string>
    </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

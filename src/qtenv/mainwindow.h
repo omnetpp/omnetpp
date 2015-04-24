@@ -30,12 +30,14 @@ public:
 
     ~MainWindow();
 
-public slots:
-    void exitOmnetpp();
-    void setUpConfiguration();//tkenv: newRun
-    void oneStep();
-    void runSimulation();
-    void stopSimulation();
+private slots:
+    void on_actionOneStep_triggered();
+    void on_actionQuit_triggered();
+    void on_actionRun_triggered();
+
+    void on_actionSetUpConfiguration_triggered();
+
+    void on_actionStop_triggered();
 
 private:
     Ui::MainWindow *ui;
