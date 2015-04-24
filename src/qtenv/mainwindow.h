@@ -34,14 +34,16 @@ private slots:
     void on_actionOneStep_triggered();
     void on_actionQuit_triggered();
     void on_actionRun_triggered();
-
     void on_actionSetUpConfiguration_triggered();
-
     void on_actionStop_triggered();
 
 private:
+    //enum Mode{};
     Ui::MainWindow *ui;
     qtenv::Qtenv *env;
+
+    bool isRunning();
+    bool checkRunning();
 };
 
 #endif // MAINWINDOW_H

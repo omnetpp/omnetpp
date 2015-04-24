@@ -24,7 +24,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = qtenv
 TEMPLATE = lib
-CONFIG += static warn_off
+CONFIG += static warn_off c++11
 DEFINES += "BUILDING_QTENV"
 QMAKE_CXXFLAGS += $$(OPP_CFLAGS)
 QMAKE_CFLAGS += $$(OPP_CFLAGS)
