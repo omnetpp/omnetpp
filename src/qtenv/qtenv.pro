@@ -3,6 +3,20 @@
 # Project created by QtCreator 2015-03-13T00:38:46
 #
 #-------------------------------------------------
+#
+# To properly set up the project/build process for QtCreator you need to invoke only
+# the 'make' command in this directory (by default QtCreator invokes also qmake)
+#
+# - be sure to start QtCreator from the command line (where the path contains the omnetpp/bin directory)
+# - open this file as a project
+# - select the "Projects" pane on the left
+# - press "Configure Project" button
+# - select the "Projects" pane again
+# - turn off "Shadow build"
+# - on the build steps, delete the "qmake" build step
+# - optional (if you want to create release builds from QtCreator):
+#   for the release configuration add the MODE=release argument to the make line
+#
 
 QT += core gui
 
@@ -19,9 +33,10 @@ SOURCES += mainwindow.cc arrow.cc figurerenderers.cc histograminspector.cc logbu
 
 HEADERS += mainwindow.h arrow.h componenthistory.h graphicspatharrowitem.h layouterenv.h moduleinspector.h qtenv.h watchinspector.h canvasinspector.h figurerenderers.h histograminspector.h logbuffer.h outputvectorinspector.h tk-dummy.h canvasrenderer.h gateinspector.h inspectorfactory.h loginspector.h qtdefs.h tklib.h circularbuffer.h genericobjectinspector.h inspector.h mainwindow.h qtenvdefs.h tkutil.h
 
-
+# include path is relative to the current build directory (e.g. out/src/gcc-debug/qtenv)
 INCLUDEPATH += ../../../../src ../../../../include 
-# next line is for the QtCreator (not needed for build)
+
+# next line is for the QtCreator only to be able to show the OMNeT++ sources (not needed for the actual build process)
 INCLUDEPATH += .. ../../include
 
 FORMS += mainwindow.ui
