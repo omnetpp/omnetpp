@@ -196,10 +196,12 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstatistic.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -330,6 +332,7 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
   ../../include/omnetpp/cxmlelement.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -339,7 +342,6 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
   ../../include/omnetpp/platdep/timeutil.h \
-  ../../include/omnetpp/random.h \
   ../../include/omnetpp/regmacros.h \
   ../../include/omnetpp/simkerneldefs.h \
   ../../include/omnetpp/simtime.h \
@@ -411,11 +413,13 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimplemodule.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -463,9 +467,11 @@ $O/eventlogwriter.obj: eventlogwriter.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -530,11 +536,13 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstatistic.h \
   ../../include/omnetpp/cstddev.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -590,9 +598,11 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -644,9 +654,11 @@ $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -717,10 +729,12 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstatistic.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -790,9 +804,11 @@ $O/intervals.obj: intervals.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -839,9 +855,11 @@ $O/logformatter.obj: logformatter.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -931,9 +949,11 @@ $O/objectprinter.obj: objectprinter.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -981,9 +1001,11 @@ $O/runattributes.obj: runattributes.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
@@ -1121,7 +1143,6 @@ $O/startup.obj: startup.cc \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
   ../../include/omnetpp/platdep/timeutil.h \
-  ../../include/omnetpp/random.h \
   ../../include/omnetpp/regmacros.h \
   ../../include/omnetpp/simkerneldefs.h \
   ../../include/omnetpp/simtime.h \
@@ -1173,10 +1194,12 @@ $O/statisticparser.obj: statisticparser.cc \
   ../../include/omnetpp/cresultfilter.h \
   ../../include/omnetpp/cresultlistener.h \
   ../../include/omnetpp/cresultrecorder.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstatistic.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -1250,12 +1273,14 @@ $O/visitor.obj: visitor.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cqueue.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstatistic.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
   ../../include/omnetpp/cwatch.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
