@@ -551,6 +551,7 @@ $O/histograminspector.o: histograminspector.cc \
   ../../include/omnetpp/cobjectfactory.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
   ../../include/omnetpp/crng.h \
@@ -1124,6 +1125,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/omnetpp/cpacket.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cqueue.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
   ../../include/omnetpp/crng.h \
@@ -1365,6 +1367,7 @@ $O/tkutil.o: tkutil.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cqueue.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
   ../../include/omnetpp/crng.h \

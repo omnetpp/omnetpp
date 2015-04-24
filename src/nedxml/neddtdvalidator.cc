@@ -17,7 +17,7 @@
 //
 
 
-#include <cstdio>
+#include <stdio.h>
 #include "nederror.h"
 #include "neddtdvalidator.h"
 

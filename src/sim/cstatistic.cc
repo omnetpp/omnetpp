@@ -44,18 +44,17 @@ NAMESPACE_BEGIN
 using std::ostream;
 
 
-cStatistic::cStatistic(const cStatistic& r) : cOwnedObject(r)
+cStatistic::cStatistic(const cStatistic& r) : cRandom(r)
 {
     td = NULL;
     ra = NULL;
     copy(r);
 }
 
-cStatistic::cStatistic(const char *name) : cOwnedObject(name)
+cStatistic::cStatistic(const char *name) : cRandom(name)
 {
     td = NULL;
     ra = NULL;
-    genk = 0;
 }
 
 cStatistic::~cStatistic()
@@ -69,9 +68,7 @@ void cStatistic::parsimPack(cCommBuffer *buffer) const
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,E_NOPARSIM);
 #else
-    cOwnedObject::parsimPack(buffer);
-
-    buffer->pack(genk);
+    cRandom::parsimPack(buffer);
 
     if (buffer->packFlag(td!=NULL))
         buffer->packObject(td);
@@ -85,9 +82,7 @@ void cStatistic::parsimUnpack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,E_NOPARSIM);
 #else
-    cOwnedObject::parsimUnpack(buffer);
-
-    buffer->unpack(genk);
+    cRandom::parsimUnpack(buffer);
 
     if (buffer->checkFlag())
         take(td = (cTransientDetection *) buffer->unpackObject());
@@ -98,7 +93,6 @@ void cStatistic::parsimUnpack(cCommBuffer *buffer)
 
 void cStatistic::copy(const cStatistic& res)
 {
-    genk = res.genk;
     dropAndDelete(td);
     dropAndDelete(ra);
     td = res.td;

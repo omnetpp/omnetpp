@@ -288,9 +288,9 @@ class SIM_API cKSplit : public cDensityEstBase
     virtual void merge(const cStatistic *other);
 
     /**
-     * Generates a random number based on the collected data. Uses the random number generator set by setGenK().
+     * Generates a random number based on the collected data.
      */
-    virtual double random() const;
+    virtual double draw() const;
 
     /**
      * Writes the contents of the object into a text file.

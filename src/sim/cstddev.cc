@@ -219,13 +219,13 @@ void cStdDev::clearResult()
     sum_vals=sqrsum_vals=min_vals=max_vals=0;
 }
 
-double cStdDev::random() const
+double cStdDev::draw() const
 {
     switch (num_vals)
     {
         case 0:  return 0.0;
         case 1:  return min_vals;
-        default: return normal(__contextComponentRNG(genk), getMean(), getStddev());
+        default: return normal(getRNG(), getMean(), getStddev());
     }
 }
 

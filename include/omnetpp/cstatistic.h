@@ -20,8 +20,7 @@
 #ifndef __OMNETPP_CSTATISTIC_H
 #define __OMNETPP_CSTATISTIC_H
 
-#include <cstdio>
-#include "cownedobject.h"
+#include "crandom.h"
 #include "simtime.h"
 
 NAMESPACE_BEGIN
@@ -31,21 +30,17 @@ class cAccuracyDetection;
 
 
 /**
- * Base class of different statistic collecting classes.
- * cStatistic is the base class for all statistical data
- * collection classes. cStatistic itself adds no data members
- * or algorithms to cOwnedObject, it only defines virtual functions
- * that will be redefined in descendants. No instance of cStatistic
- * can be created.
+ * cStatistic is an abstract class for computing statistical properties of
+ * a random variable.  It subclasses from cRandom, because instances are
+ * able to generate random variates from the estimated distribution.
  *
  * @ingroup Statistics
  */
-class SIM_API cStatistic : public cOwnedObject
+class SIM_API cStatistic : public cRandom
 {
   public:
     cTransientDetection *td;    // ptr to associated object
     cAccuracyDetection *ra;     // ptr to associated object
-    int genk;                   // index of random number generator to use
 
   private:
     void copy(const cStatistic& other);
@@ -236,19 +231,10 @@ class SIM_API cStatistic : public cOwnedObject
 
     /** @name Generating random numbers based on the collected data */
     //@{
-
     /**
-     * Sets the index of the random number generator to use when the
-     * object has to generate a random number based on the statistics
-     * stored.
+     * Please use draw() to obtain a random number from the collected data.
      */
-    void setGenK(int gen_nr)   {genk=gen_nr;}
-
-    /**
-     * Generates a random number based on the collected data. Uses the random number generator set by setGenK().
-     * This method is pure virtual, implementation is provided in subclasses.
-     */
-    virtual double random() const = 0;
+    _OPPDEPRECATED double random() const {return draw();}
     //@}
 
     /** @name Writing to text file, reading from text file, recording to scalar file. */

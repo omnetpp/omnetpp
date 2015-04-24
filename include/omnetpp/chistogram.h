@@ -290,7 +290,7 @@ class SIM_API cHistogram : public cHistogramBase
      * has been set up, a random integer or double is returned, depending on
      * mode.
      */
-    virtual double random() const;
+    virtual double draw() const;
 
     /**
      * Writes the contents of the object into a text file.

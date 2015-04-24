@@ -585,13 +585,13 @@ double cKSplit::getBasepoint(int nr) const
 //  CODE NOT CLEANED UP BY VA YET!
 /////////////////////////////////////////////////////////////////
 
-double cKSplit::random() const
+double cKSplit::draw() const
 {
    int i;
    //int dp = getTreeDepth();
    int cd = 1;
 
-   cRNG *rng = __contextComponentRNG(genk);
+   cRNG *rng = getRNG();
    double x = intrand(rng, num_vals);
 
    int location = rootgrid;

@@ -181,9 +181,9 @@ class SIM_API cPSquare : public cDensityEstBase
     virtual double getPDF(double x) const;
 
     /**
-     * Generates a random number based on the collected data. Uses the random number generator set by setGenK().
+     * Generates a random number based on the collected data.
      */
-    virtual double random() const;
+    virtual double draw() const;
 
     /**
      * Merging is not supported by this class. This method throws an error.

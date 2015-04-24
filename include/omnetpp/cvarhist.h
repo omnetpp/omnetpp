@@ -169,9 +169,9 @@ class SIM_API cVarHistogram : public cHistogramBase
     virtual void collectTransformed(double val);
 
     /**
-     * Generates a random number based on the collected data. Uses the random number generator set by setGenK().
+     * Generates a random number based on the collected data.
      */
-    virtual double random() const;
+    virtual double draw() const;
 
     /**
      * Returns the value of the Probability Density Function at a given x.

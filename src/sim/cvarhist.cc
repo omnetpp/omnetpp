@@ -369,12 +369,12 @@ double cVarHistogram::getCellValue(int k) const
         throw cRuntimeError(this, "invalid cell index %u", k);
 }
 
-double cVarHistogram::random() const //--LG
+double cVarHistogram::draw() const
 {
     if (num_vals == 0)
         return 0;
 
-    cRNG *rng = __contextComponentRNG(genk);
+    cRNG *rng = getRNG();
     if (num_vals < num_firstvals)
     {
         // randomly select a sample from the stored ones

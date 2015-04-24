@@ -115,6 +115,7 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/omnetpp/cproperties.h \
   ../../include/omnetpp/cproperty.h \
   ../../include/omnetpp/cqueue.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultfilter.h \
   ../../include/omnetpp/cresultlistener.h \

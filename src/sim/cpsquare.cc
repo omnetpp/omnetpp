@@ -305,13 +305,12 @@ void cPSquare::doMergeCellValues(const cDensityEstBase *other)
     ASSERT(false); // never comes here, as merge() already throws an error
 }
 
-double cPSquare::random() const
+double cPSquare::draw() const
 {
     double s;
     int k=0, l;
-    cRNG *rng = __contextComponentRNG(genk);
+    cRNG *rng = getRNG();
 
-    //if (num_obs==0)   // newer, from PUPPIS
     if (numobs<numcells+1)
         throw cRuntimeError(this,"must collect at least num_cells values before random() can be used");
 

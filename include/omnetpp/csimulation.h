@@ -578,14 +578,6 @@ inline cSimulation *getSimulation()  {return cSimulation::getActiveSimulation();
  */
 inline cEnvir *getEnvir()  {return cSimulation::getActiveEnvir();}
 
-// internal helper
-inline cRNG *__contextComponentRNG(int k)
-{
-    cComponent *contextComponent = cSimulation::getActiveSimulation()->getContext();
-    return contextComponent ? contextComponent->getRNG(k) : cSimulation::getActiveEnvir()->getRNG(k);
-}
-
-
 NAMESPACE_END
 
 

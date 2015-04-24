@@ -405,7 +405,7 @@ void _sim_dummy_func()
       cOutVector ov;
       ov.info();
       cVarHistogram vh;
-      vh.random();
+      vh.draw();
 
       nedfunctions_dummy();
       //_dummy_for_env();

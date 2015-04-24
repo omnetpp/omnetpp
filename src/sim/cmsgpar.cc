@@ -930,7 +930,7 @@ double cMsgPar::getFromstat()
 {
     if (typechar!='T')
         throw cRuntimeError(this,E_BADCAST,getTypeName(typechar),getTypeName('T'));
-    return  dtr.res->random();
+    return  dtr.res->draw();
 }
 
 void cMsgPar::copy(const cMsgPar& val)

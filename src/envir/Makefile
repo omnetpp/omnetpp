@@ -201,6 +201,7 @@ $O/akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/omnetpp/cobjectfactory.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
   ../../include/omnetpp/crng.h \
@@ -327,6 +328,7 @@ $O/envirbase.o: envirbase.cc \
   ../../include/omnetpp/cparsimcomm.h \
   ../../include/omnetpp/cproperties.h \
   ../../include/omnetpp/cproperty.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultfilter.h \
   ../../include/omnetpp/cresultlistener.h \
@@ -541,6 +543,7 @@ $O/fileoutscalarmgr.o: fileoutscalarmgr.cc \
   ../../include/omnetpp/cobjectfactory.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
   ../../include/omnetpp/crng.h \
@@ -734,6 +737,7 @@ $O/indexedfileoutvectormgr.o: indexedfileoutvectormgr.cc \
   ../../include/omnetpp/cobjectfactory.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
   ../../include/omnetpp/crng.h \
@@ -1197,6 +1201,7 @@ $O/statisticparser.o: statisticparser.cc \
   ../../include/omnetpp/cobjectfactory.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultfilter.h \
   ../../include/omnetpp/cresultlistener.h \
@@ -1279,6 +1284,7 @@ $O/visitor.o: visitor.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cqueue.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \

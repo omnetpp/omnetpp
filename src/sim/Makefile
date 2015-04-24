@@ -351,6 +351,7 @@ $O/ccomponent.o: ccomponent.cc \
   ../../include/omnetpp/cparimpl.h \
   ../../include/omnetpp/cproperties.h \
   ../../include/omnetpp/cproperty.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
@@ -629,11 +630,14 @@ $O/cdensityestbase.o: cdensityestbase.cc \
   ../../include/omnetpp/cobject.h \
   ../../include/omnetpp/cobjectfactory.h \
   ../../include/omnetpp/cownedobject.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cstatistic.h \
   ../../include/omnetpp/cstddev.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
@@ -662,6 +666,7 @@ $O/cdetect.o: cdetect.cc \
   ../../include/omnetpp/cobject.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstatistic.h \
@@ -1064,6 +1069,7 @@ $O/chistogram.o: chistogram.cc \
   ../../include/omnetpp/cobjectfactory.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
@@ -1103,6 +1109,7 @@ $O/cksplit.o: cksplit.cc \
   ../../include/omnetpp/cobjectfactory.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
@@ -1535,6 +1542,7 @@ $O/cmsgpar.o: cmsgpar.cc \
   ../../include/omnetpp/cobjectfactory.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
@@ -2102,6 +2110,7 @@ $O/cpsquare.o: cpsquare.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cpsquare.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
@@ -2244,6 +2253,7 @@ $O/cresultrecorder.o: cresultrecorder.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cproperties.h \
   ../../include/omnetpp/cproperty.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
   ../../include/omnetpp/cresultrecorder.h \
@@ -2390,6 +2400,7 @@ $O/csimulation.o: csimulation.cc \
   ../../include/omnetpp/cparimpl.h \
   ../../include/omnetpp/cproperties.h \
   ../../include/omnetpp/cproperty.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cscheduler.h \
@@ -2443,6 +2454,7 @@ $O/cstatistic.o: cstatistic.cc \
   ../../include/omnetpp/cobjectfactory.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimplemodule.h \
@@ -2487,6 +2499,7 @@ $O/cstddev.o: cstddev.cc \
   ../../include/omnetpp/cobjectfactory.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimplemodule.h \
@@ -2696,6 +2709,7 @@ $O/cvarhist.o: cvarhist.cc \
   ../../include/omnetpp/cobjectfactory.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
@@ -3114,6 +3128,7 @@ $O/resultfilters.o: resultfilters.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpacket.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultfilter.h \
   ../../include/omnetpp/cresultlistener.h \
@@ -3162,6 +3177,7 @@ $O/resultrecorders.o: resultrecorders.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cproperties.h \
   ../../include/omnetpp/cproperty.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
   ../../include/omnetpp/cresultrecorder.h \
@@ -3365,6 +3381,7 @@ $O/util.o: util.cc \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cpsquare.h \
   ../../include/omnetpp/cqueue.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/crng.h \
   ../../include/omnetpp/cscheduler.h \

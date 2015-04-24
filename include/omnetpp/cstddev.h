@@ -197,10 +197,10 @@ class SIM_API cStdDev : public cStatistic
     virtual double getWeightedSqrSum() const  {return getSqrSum();}
 
     /**
-     * Returns numbers from a normal distribution with the current mean and
+     * Returns a number from a normal distribution with the current mean and
      * standard deviation.
      */
-    virtual double random() const;
+    virtual double draw() const;
 
     /**
      * Clears the results collected so far.

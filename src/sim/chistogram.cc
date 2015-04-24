@@ -374,9 +374,9 @@ void cHistogram::setupRangeDouble()
     cellsize = (rangemax - rangemin) / num_cells;
 }
 
-double cHistogram::random() const
+double cHistogram::draw() const
 {
-    cRNG *rng = __contextComponentRNG(genk);
+    cRNG *rng = getRNG();
     if (num_vals == 0)
     {
         return 0L;
