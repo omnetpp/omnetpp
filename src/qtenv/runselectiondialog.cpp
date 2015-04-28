@@ -13,7 +13,6 @@ RunSelectionDialog::RunSelectionDialog(qtenv::Qtenv *env, QWidget *parent) :
 {
     ui->setupUi(this);
     adjustSize();
-    setWindowFlags(Qt::WindowStaysOnTopHint);
 
     bool isBase = false;
     for(auto name : groupAndSortConfigNames())

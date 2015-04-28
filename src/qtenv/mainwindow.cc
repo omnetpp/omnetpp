@@ -34,58 +34,36 @@ bool MainWindow::isRunning()
     return state == Qtenv::SIM_RUNNING || state == Qtenv::SIM_BUSY;
 }
 
-//void MainWindow::setGuiForRunmode(Mode mode, bool untilmode)
-//{  #FIXME needs to be revised
-//    global opp
-//    set insp $modinspwin
-//    if {$insp!="" && ![winfo exists $insp]} {set insp ""}
+void MainWindow::setGuiForRunmode(Mode mode, bool untilMode)
+{
+    ui->actionOneStep->setChecked(false);
+    ui->actionRun->setChecked(false);
+    ui->actionFastRun->setChecked(false);
+    ui->actionExpressRun->setChecked(false);
+    //TODO Remove Stop Dialog
 
-//    toolbutton:setsunken .toolbar.step 0
-//    toolbutton:setsunken .toolbar.run 0
-//    toolbutton:setsunken .toolbar.fastrun 0
-//    toolbutton:setsunken .toolbar.exprrun 0
-//    catch {toolbutton:setsunken $opp(sunken-run-button) 0}
-//    removeStopDialog
+    switch(mode)
+    {
+        case STEP:
+            ui->actionOneStep->setChecked(true);
+            break;
+        case NORMAL:
+            ui->actionRun->setChecked(true);
+            break;
+        case FAST:
+            ui->actionFastRun->setChecked(true);
+            break;
+        case EXPRESS:
+            ui->actionExpressRun->setChecked(true);
+            //TODO display Stop Dialog
+            break;
+        case NOT_RUNNING:
+            ui->actionRunUntil->setChecked(false);
+            break;
+    }
 
-//    if {$insp==""} {
-//        if {$mode=="step"} {
-//            toolbutton:setsunken .toolbar.step 1
-//        } elseif {$mode=="normal"} {
-//            toolbutton:setsunken .toolbar.run 1         //Ha rákattintok a gombra lenyomva marad kivéve a one step-nél
-//        } elseif {$mode=="fast"} {
-//            toolbutton:setsunken .toolbar.fastrun 1
-//        } elseif {$mode=="express"} {
-//            toolbutton:setsunken .toolbar.exprrun 1
-//            displayStopDialog                       //Express gombra egy stop ablak előugrik
-//        } elseif {$mode=="notrunning"} {
-//            toolbutton:setsunken .toolbar.until 0
-//        } else {
-//            error "wrong mode parameter $mode"
-//        }
-//    } else {
-//        if {$mode=="normal"} {
-//            toolbutton:setsunken $insp.toolbar.mrun 1
-//            set opp(sunken-run-button) $insp.toolbar.mrun
-//        } elseif {$mode=="fast"} {
-//            toolbutton:setsunken $insp.toolbar.mfast 1
-//            set opp(sunken-run-button) $insp.toolbar.mfast
-//        } elseif {$mode=="express"} {
-//            displayStopDialog
-//        } elseif {$mode=="notrunning"} {
-//            toolbutton:setsunken .toolbar.until 0
-//        } else {
-//            error "wrong mode parameter $mode with module inspector"
-//        }
-//    }
-
-//    if {$untilmode=="until_on"} {
-//        toolbutton:setsunken .toolbar.until 1
-//    } elseif {$untilmode=="until_off"} {
-//        toolbutton:setsunken .toolbar.until 0
-//    } elseif {$untilmode!=""} {
-//        error "wrong untilmode parameter $mode"
-//    }
-//}
+    ui->actionRunUntil->setChecked(untilMode);
+}
 
 bool MainWindow::checkRunning()
 {
@@ -147,40 +125,19 @@ void MainWindow::on_actionRun_triggered()
 //            setGuiForRunmode notrunning
 //        }
 
+    if(isRunning())
+    {
+
+    }
     env->runSimulation(Qtenv::RUNMODE_NORMAL);
 }
 
 void MainWindow::on_actionSetUpConfiguration_triggered()
 {
-//    proc newRun {} {
-//        # implements File|New run...
-
-//        if [checkRunning] return
-
-//        # pop up selection dialog
-//        set configandrun [runSelectionDialog]
-//        if {[llength $configandrun] != 0} {
-//           setvars {configname runnumber} $configandrun
-//           debug "selected $configname $runnumber"
-//           busy "Setting up network..."
-//           inspectorList:addAll 1
-//           opp_newrun $configname $runnumber
-//           reflectRecordEventlog
-//           busy
-
-//           if [opp_isnotnull [opp_object_systemmodule]] {
-//               # tell plugins about it
-//               busy "Notifying Tcl plugins..."
-//               notifyPlugins newNetwork
-//               busy
-//           }
-//        }
-//    }
-
     if(checkRunning())
         return;
 
-    RunSelectionDialog *dialog = new RunSelectionDialog(env);
+    RunSelectionDialog *dialog = new RunSelectionDialog(env, this);
     dialog->exec();
     //TODO Add all open inspectors to the inspector list.
     //TODO log

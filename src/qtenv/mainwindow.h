@@ -38,12 +38,13 @@ private slots:
     void on_actionStop_triggered();
 
 private:
-    //enum Mode{};
+    enum Mode { STEP, NORMAL, FAST, EXPRESS, NOT_RUNNING};
     Ui::MainWindow *ui;
     qtenv::Qtenv *env;
 
     bool isRunning();
     bool checkRunning();
+    void setGuiForRunmode(Mode mode, bool untilMode);
 };
 
 #endif // MAINWINDOW_H

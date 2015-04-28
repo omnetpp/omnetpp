@@ -49,6 +49,9 @@
     <addaction name="actionOneStep"/>
     <addaction name="separator"/>
     <addaction name="actionRun"/>
+    <addaction name="actionFastRun"/>
+    <addaction name="actionExpressRun"/>
+    <addaction name="actionRunUntil"/>
     <addaction name="separator"/>
     <addaction name="actionStop"/>
    </widget>
@@ -69,6 +72,9 @@
    <addaction name="separator"/>
    <addaction name="actionOneStep"/>
    <addaction name="actionRun"/>
+   <addaction name="actionFastRun"/>
+   <addaction name="actionExpressRun"/>
+   <addaction name="actionRunUntil"/>
    <addaction name="actionStop"/>
    <addaction name="separator"/>
   </widget>
@@ -78,6 +84,9 @@
    </property>
   </action>
   <action name="actionOneStep">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="icons.qrc">
      <normaloff>:/tools/icons/tools/step.png</normaloff>:/tools/icons/tools/step.png</iconset>
@@ -87,6 +96,9 @@
    </property>
   </action>
   <action name="actionRun">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="icons.qrc">
      <normaloff>:/tools/icons/tools/run.png</normaloff>:/tools/icons/tools/run.png</iconset>
@@ -110,7 +122,43 @@
      <normaloff>:/tools/icons/tools/stop.png</normaloff>:/tools/icons/tools/stop.png</iconset>
    </property>
    <property name="text">
-    <string>Stop</string>
+    <string>Stop Execution</string>
+   </property>
+  </action>
+  <action name="actionFastRun">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/tools/icons/tools/fast.png</normaloff>:/tools/icons/tools/fast.png</iconset>
+   </property>
+   <property name="text">
+    <string>Fast Run (rare display updates)</string>
+   </property>
+  </action>
+  <action name="actionExpressRun">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/tools/icons/tools/express.png</normaloff>:/tools/icons/tools/express.png</iconset>
+   </property>
+   <property name="text">
+    <string>Express Run (tracing off)</string>
+   </property>
+  </action>
+  <action name="actionRunUntil">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/tools/icons/tools/until.png</normaloff>:/tools/icons/tools/until.png</iconset>
+   </property>
+   <property name="text">
+    <string>Run Until...</string>
    </property>
   </action>
  </widget>
