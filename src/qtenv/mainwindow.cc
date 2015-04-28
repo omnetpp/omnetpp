@@ -3,6 +3,7 @@
 #include <QGraphicsItem>
 #include <QMessageBox>
 #include "qtenv.h"
+#include "runselectiondialog.h"
 
 using namespace qtenv;
 
@@ -32,8 +33,6 @@ bool MainWindow::isRunning()
     Qtenv::eState state = (Qtenv::eState)env->getSimulationState();
     return state == Qtenv::SIM_RUNNING || state == Qtenv::SIM_BUSY;
 }
-
-
 
 //void MainWindow::setGuiForRunmode(Mode mode, bool untilmode)
 //{  #FIXME needs to be revised
@@ -180,7 +179,20 @@ void MainWindow::on_actionSetUpConfiguration_triggered()
 
     if(checkRunning())
         return;
-    env->newRun("CarDemo", 0);
+
+    RunSelectionDialog *dialog = new RunSelectionDialog(env);
+    dialog->exec();
+    //TODO Add all open inspectors to the inspector list.
+    //TODO log
+    env->newRun(dialog->getConfigName().c_str(), dialog->getRunNumber());
+
+    if(getSimulation()->getSystemModule() != nullptr)
+    {
+        //TODO log
+        //TODO notify plugins newNetwork
+    }
+
+    delete dialog;
 }
 
 void MainWindow::on_actionStop_triggered()

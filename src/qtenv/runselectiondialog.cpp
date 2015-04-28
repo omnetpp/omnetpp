@@ -1,0 +1,91 @@
+#include "runselectiondialog.h"
+#include "ui_runselectiondialog.h"
+#include "qtenv.h"
+#include <iterator>
+#include <algorithm>
+#include <vector>
+#include <set>
+
+RunSelectionDialog::RunSelectionDialog(qtenv::Qtenv *env, QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::RunSelectionDialog),
+    env(env)
+{
+    ui->setupUi(this);
+    adjustSize();
+    setWindowFlags(Qt::WindowStaysOnTopHint);
+
+    bool isBase = false;
+    for(auto name : groupAndSortConfigNames())
+    {
+        if (name == "")
+        {
+            isBase = true;
+            continue;
+        }
+
+        std::string desc = env->getConfigEx()->getConfigDescription(name.c_str());
+        int runs = env->getConfigEx()->getNumRunsInConfig(name.c_str());
+
+        std::string displayName = name;
+        if(isBase)
+            displayName = "(" + name + ")";
+        if(desc != "")
+            displayName += " -- " + desc;
+        if(runs == 0)
+            displayName += " (invalid config, generates 0 runs)";
+        if(runs > 1)
+            displayName += " (config with " + std::to_string(runs) + " runs)";
+
+        ui->comboBox->addItem(displayName.c_str(), QVariant(name.c_str()));
+    }
+
+    //TODO if last choice looks valid, use that as default
+    std::string configName = "";
+    int runNumber = 0;
+    if(configName == "" && ui->comboBox->size().rheight() != 0)
+    {
+        configName = ui->comboBox->itemText(0).toStdString();
+        runNumber = 0;
+    }
+
+    ui->comboBox->setCurrentText(configName.c_str());
+    for(int i = 0; i <= runNumber; ++i)
+        ui->comboBox_2->addItem(QString::number(i), QVariant(i));
+}
+
+RunSelectionDialog::~RunSelectionDialog()
+{
+    //TODO save selection item to config file
+    delete ui;
+}
+
+std::vector<std::string> RunSelectionDialog::groupAndSortConfigNames()
+{
+    std::set<std::string> hasderivedconfig;
+
+    for(auto c : env->getConfigEx()->getConfigNames())
+        for(auto base : env->getConfigEx()->getBaseConfigs(c.c_str()))
+            hasderivedconfig.insert(base);
+
+    std::vector<std::string> leaf;
+    for(auto c : env->getConfigEx()->getConfigNames())
+        if(hasderivedconfig.end() == hasderivedconfig.find(c))
+            leaf.push_back(c);
+
+    leaf.push_back("");
+    leaf.insert(leaf.cend(), hasderivedconfig.begin(),
+                hasderivedconfig.end());
+
+    return std::move(leaf);
+}
+
+std::string RunSelectionDialog::getConfigName()
+{
+    return ui->comboBox->currentData().value<QString>().toStdString();
+}
+
+int RunSelectionDialog::getRunNumber()
+{
+    return ui->comboBox_2->currentData().value<int>();
+}
