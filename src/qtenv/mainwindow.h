@@ -10,7 +10,8 @@ NAMESPACE_BEGIN
 class cCanvas;
 namespace qtenv {
 class Qtenv;
-};
+}
+
 NAMESPACE_END
 
 namespace Ui {
@@ -44,7 +45,8 @@ private:
 
     bool isRunning();
     bool checkRunning();
-    void setGuiForRunmode(Mode mode, bool untilMode);
+    void setGuiForRunmode(Mode mode, bool untilMode = false);
+    void runSimulation(Mode mode);
 };
 
 #endif // MAINWINDOW_H

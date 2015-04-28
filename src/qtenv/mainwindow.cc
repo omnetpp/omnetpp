@@ -112,24 +112,55 @@ void MainWindow::on_actionQuit_triggered()
     close();
 }
 
-void MainWindow::on_actionRun_triggered()
+void MainWindow::runSimulation(Mode mode)
 {
-//    if [isRunning] {
-//            setGuiForRunmode $mode
-//            opp_set_run_mode $mode
-//            opp_set_run_until_module
-//        } else {
-//            if {![networkReady]} {return}
-//            setGuiForRunmode $mode
-//            opp_run $mode
-//            setGuiForRunmode notrunning
-//        }
+    //    if [isRunning] {
+    //            setGuiForRunmode $mode
+    //            opp_set_run_mode $mode
+    //            opp_set_run_until_module
+    //        } else {
+    //            if {![networkReady]} {return}
+    //            setGuiForRunmode $mode
+    //            opp_run $mode
+    //            setGuiForRunmode notrunning
+    //        }
+    Qtenv::eRunMode runMode;
+
+    switch(mode)
+    {
+        case NOT_RUNNING:
+        case STEP:
+            break;
+        case NORMAL:
+            runMode = Qtenv::RUNMODE_NORMAL;
+            break;
+        case FAST:
+            runMode = Qtenv::RUNMODE_FAST;
+            break;
+        case EXPRESS:
+            runMode = Qtenv::RUNMODE_EXPRESS;
+            break;
+    }
 
     if(isRunning())
     {
-
+        setGuiForRunmode(mode);
+        env->setSimulationRunMode(runMode);
+        //TODO Set Run Until Module
     }
-    env->runSimulation(Qtenv::RUNMODE_NORMAL);
+    else
+    {
+        //TODO Network Ready
+        setGuiForRunmode(mode);
+        //TODO opp_run
+        env->runSimulation(mode);
+        setGuiForRunmode(NOT_RUNNING);
+    }
+}
+
+void MainWindow::on_actionRun_triggered()
+{
+    runSimulation(NORMAL);
 }
 
 void MainWindow::on_actionSetUpConfiguration_triggered()
