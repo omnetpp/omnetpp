@@ -84,27 +84,18 @@ bool MainWindow::checkRunning()
 
 void MainWindow::on_actionOneStep_triggered()
 {
-    //# implements Simulate|One step
-
-    //    if [isRunning] {
-    //        setGuiForRunmode step
-    //        opp_stopsimulation
-    //    } else {
-    //        if {![networkReady]} {return}
-    //        setGuiForRunmode step
-    //        opp_onestep
-    //        setGuiForRunmode notrunning
-    //    }
-
     if(isRunning())
     {
-
+        setGuiForRunmode(STEP);
+        env->setStopSimulationFlag();
     }
     else
     {
-
+        //TODO Network Ready
+        setGuiForRunmode(STEP);
+        env->doOneStep();
+        setGuiForRunmode(NOT_RUNNING);
     }
-    env->doOneStep();
 }
 
 void MainWindow::on_actionQuit_triggered()
@@ -114,16 +105,6 @@ void MainWindow::on_actionQuit_triggered()
 
 void MainWindow::runSimulation(Mode mode)
 {
-    //    if [isRunning] {
-    //            setGuiForRunmode $mode
-    //            opp_set_run_mode $mode
-    //            opp_set_run_until_module
-    //        } else {
-    //            if {![networkReady]} {return}
-    //            setGuiForRunmode $mode
-    //            opp_run $mode
-    //            setGuiForRunmode notrunning
-    //        }
     Qtenv::eRunMode runMode;
 
     switch(mode)
@@ -200,4 +181,19 @@ void MainWindow::on_actionStop_triggered()
 //    }
 
     env->setStopSimulationFlag();
+}
+
+void MainWindow::on_actionFastRun_triggered()
+{
+    runSimulation(FAST);
+}
+
+void MainWindow::on_actionExpressRun_triggered()
+{
+    runSimulation(EXPRESS);
+}
+
+void MainWindow::on_actionRunUntil_triggered()
+{
+
 }

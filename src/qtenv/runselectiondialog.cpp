@@ -36,21 +36,21 @@ RunSelectionDialog::RunSelectionDialog(qtenv::Qtenv *env, QWidget *parent) :
         if(runs > 1)
             displayName += " (config with " + std::to_string(runs) + " runs)";
 
-        ui->comboBox->addItem(displayName.c_str(), QVariant(name.c_str()));
+        ui->configName->addItem(displayName.c_str(), QVariant(name.c_str()));
     }
 
     //TODO if last choice looks valid, use that as default
     std::string configName = "";
     int runNumber = 0;
-    if(configName == "" && ui->comboBox->size().rheight() != 0)
+    if(configName == "" && ui->configName->size().rheight() != 0)
     {
-        configName = ui->comboBox->itemText(0).toStdString();
+        configName = ui->configName->itemText(0).toStdString();
         runNumber = 0;
     }
 
-    ui->comboBox->setCurrentText(configName.c_str());
+    ui->configName->setCurrentText(configName.c_str());
     for(int i = 0; i <= runNumber; ++i)
-        ui->comboBox_2->addItem(QString::number(i), QVariant(i));
+        ui->runNumber->addItem(QString::number(i), QVariant(i));
 }
 
 RunSelectionDialog::~RunSelectionDialog()
@@ -81,10 +81,10 @@ std::vector<std::string> RunSelectionDialog::groupAndSortConfigNames()
 
 std::string RunSelectionDialog::getConfigName()
 {
-    return ui->comboBox->currentData().value<QString>().toStdString();
+    return ui->configName->currentData().value<QString>().toStdString();
 }
 
 int RunSelectionDialog::getRunNumber()
 {
-    return ui->comboBox_2->currentData().value<int>();
+    return ui->runNumber->currentData().value<int>();
 }

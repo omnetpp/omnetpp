@@ -37,6 +37,10 @@ private slots:
     void on_actionRun_triggered();
     void on_actionSetUpConfiguration_triggered();
     void on_actionStop_triggered();
+    void on_actionFastRun_triggered();
+    void on_actionExpressRun_triggered();
+
+    void on_actionRunUntil_triggered();
 
 private:
     enum Mode { STEP, NORMAL, FAST, EXPRESS, NOT_RUNNING};
