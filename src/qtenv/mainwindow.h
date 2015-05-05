@@ -5,6 +5,9 @@
 #include <QMainWindow>
 
 class QGraphicsScene;
+class QStandardItemModel;
+class QStandardItem;
+class cObject;
 
 NAMESPACE_BEGIN
 class cCanvas;
@@ -46,6 +49,11 @@ private:
     enum Mode { STEP, NORMAL, FAST, EXPRESS, NOT_RUNNING};
     Ui::MainWindow *ui;
     qtenv::Qtenv *env;
+    QStandardItemModel *treeModel;
+
+    void initTreeManager();
+    void setNode(cObject *node, QStandardItem *parent);
+    QString getObjectIcon(cObject *object);
 
     bool isRunning();
     bool checkRunning();
