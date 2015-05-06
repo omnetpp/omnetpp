@@ -83,7 +83,7 @@ QString MainWindow::getObjectIcon(cObject *object)
 {
     QString iconName;
     if (object == NULL)
-        iconName = "none_vs";
+        iconName = "none_vs.png";
     else if (dynamic_cast<cModule *>(object) && ((cModule *)object)->isPlaceholder())
         iconName = "placeholder_vs.png";
     else if (dynamic_cast<cSimpleModule *>(object))

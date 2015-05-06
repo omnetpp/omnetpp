@@ -67,13 +67,13 @@ std::vector<std::string> RunSelectionDialog::groupAndSortConfigNames()
         for(auto base : env->getConfigEx()->getBaseConfigs(c.c_str()))
             hasderivedconfig.insert(base);
 
-    std::vector<std::string> leaf;
+    std::vector<std::string> leaf;  //TODO rename to leaves
     for(auto c : env->getConfigEx()->getConfigNames())
         if(hasderivedconfig.end() == hasderivedconfig.find(c))
             leaf.push_back(c);
 
     leaf.push_back("");
-    leaf.insert(leaf.cend(), hasderivedconfig.begin(),
+    leaf.insert(leaf.end(), hasderivedconfig.begin(),
                 hasderivedconfig.end());
 
     return std::move(leaf);
