@@ -30,10 +30,12 @@ QMAKE_CXXFLAGS += $$(OPP_CFLAGS)
 QMAKE_CFLAGS += $$(OPP_CFLAGS)
 
 SOURCES += mainwindow.cc arrow.cc figurerenderers.cc histograminspector.cc logbuffer.cc outputvectorinspector.cc tkutil.cc canvasinspector.cc gateinspector.cc inspector.cc loginspector.cc qtenv.cc watchinspector.cc canvasrenderer.cc genericobjectinspector.cc inspectorfactory.cc moduleinspector.cc tkcmd.cc componenthistory.cc graphicspatharrowitem.cc layouterenv.cc osxproctype.cc tklib.cc \
-    runselectiondialog.cpp
+    runselectiondialog.cpp \
+    treeitemmodel.cpp
 
 HEADERS += mainwindow.h arrow.h componenthistory.h graphicspatharrowitem.h layouterenv.h moduleinspector.h qtenv.h watchinspector.h canvasinspector.h figurerenderers.h histograminspector.h logbuffer.h outputvectorinspector.h tk-dummy.h canvasrenderer.h gateinspector.h inspectorfactory.h loginspector.h qtdefs.h tklib.h circularbuffer.h genericobjectinspector.h inspector.h mainwindow.h qtenvdefs.h tkutil.h \
-    runselectiondialog.h
+    runselectiondialog.h \
+    treeitemmodel.h
 
 # include path is relative to the current build directory (e.g. out/src/gcc-debug/qtenv)
 INCLUDEPATH += ../../../../src ../../../../include 
