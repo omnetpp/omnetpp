@@ -51,7 +51,7 @@ inline double dblrand(cRNG *rng)  {return rng->doubleRand();}
 SIM_API double uniform(cRNG *rng, double a, double b);
 
 /**
- * SimTime version of uniform(double,double,int), for convenience.
+ * SimTime version of uniform(cRNG*,double,double), for convenience.
  */
 inline SimTime uniform(cRNG *rng, SimTime a, SimTime b) {return uniform(rng, a.dbl(), b.dbl());}
 
@@ -65,7 +65,7 @@ inline SimTime uniform(cRNG *rng, SimTime a, SimTime b) {return uniform(rng, a.d
 SIM_API double exponential(cRNG *rng, double mean);
 
 /**
- * SimTime version of exponential(double,int), for convenience.
+ * SimTime version of exponential(cRNG*,double), for convenience.
  */
 inline SimTime exponential(cRNG *rng, SimTime mean) {return exponential(rng, mean.dbl());}
 
@@ -80,7 +80,7 @@ inline SimTime exponential(cRNG *rng, SimTime mean) {return exponential(rng, mea
 SIM_API double normal(cRNG *rng, double mean, double stddev);
 
 /**
- * SimTime version of normal(double,double,int), for convenience.
+ * SimTime version of normal(cRNG*,double,double), for convenience.
  */
 inline SimTime normal(cRNG *rng, SimTime mean, SimTime stddev) {return normal(rng, mean.dbl(), stddev.dbl());}
 
@@ -102,7 +102,7 @@ inline SimTime normal(cRNG *rng, SimTime mean, SimTime stddev) {return normal(rn
 SIM_API double truncnormal(cRNG *rng, double mean, double stddev);
 
 /**
- * SimTime version of truncnormal(double,double,int), for convenience.
+ * SimTime version of truncnormal(cRNG*,double,double), for convenience.
  */
 inline SimTime truncnormal(cRNG *rng, SimTime mean, SimTime stddev) {return truncnormal(rng, mean.dbl(), stddev.dbl());}
 
