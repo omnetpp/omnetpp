@@ -386,6 +386,128 @@ class cPacket extends cMessage
 
 //----
 
+class cRNG extends cObject
+{
+}
+
+class cRandom extends cOwnedObject
+{
+    @icon(cogwheel); //TODO
+    cRNG *rng @getter(getRNG) @setter(setRNG);
+}
+
+class cUniform extends cRandom
+{
+    double a;
+    double b;
+}
+
+class cExponential extends cRandom
+{
+    double mean;
+}
+
+class cNormal extends cRandom
+{
+    double mean;
+    double stddev;
+}
+
+class cTruncNormal extends cRandom
+{
+    double mean;
+    double stddev;
+}
+
+class cGamma extends cRandom
+{
+    double alpha;
+    double theta;
+}
+
+class cBeta extends cRandom
+{
+    double alpha1;
+    double alpha2;
+}
+
+class cErlang extends cRandom
+{
+    unsigned int k;
+    double mean;
+}
+
+class cChiSquare extends cRandom
+{
+    unsigned int k;
+}
+
+class cStudentT extends cRandom
+{
+    unsigned int i;
+}
+
+class cCauchy extends cRandom
+{
+    double a;
+    double b;
+}
+
+class cTriang extends cRandom
+{
+    double a;
+    double b;
+    double c;
+}
+
+class cWeibull extends cRandom
+{
+    double a;
+    double b;
+}
+
+class cParetoShifted extends cRandom
+{
+    double a;
+    double b;
+    double c;
+}
+
+class cIntUniform extends cRandom
+{
+    int a;
+    int b;
+}
+
+class cBernoulli extends cRandom
+{
+    double p;
+}
+
+class cBinomial extends cRandom
+{
+    int n;
+    double p;
+}
+
+class cGeometric extends cRandom
+{
+    double p;
+}
+
+class cNegBinomial extends cRandom
+{
+    int n;
+    double p;
+}
+
+class cPoisson extends cRandom
+{
+    double lambda;
+}
+
+//----
+
 class cStatistic extends cOwnedObject
 {
     @icon(statistic);
