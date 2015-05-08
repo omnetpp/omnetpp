@@ -1,97 +1,9 @@
-//==========================================================================
-//  CANVASRENDERER.CC - part of
-//
-//                     OMNeT++/OMNEST
-//            Discrete System Simulation in C++
-//
-//==========================================================================
-
-/*--------------------------------------------------------------*
-  Copyright (C) 1992-2015 Andras Varga
-  Copyright (C) 2006-2015 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  `license' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
-#include <string.h>
-#include <stdlib.h>
-#include <math.h>
-#include <assert.h>
-
-#include "common/stringutil.h"
 #include "canvasrenderer.h"
 #include "figurerenderers.h"
-#include "tklib.h"
-#include "tkutil.h"
 
-NAMESPACE_BEGIN
+#include <QDebug>
+
 namespace qtenv {
-
-CanvasRenderer::CanvasRenderer() : interp(NULL), canvas(NULL), enabledTagBits(0), exceptTagBits(0)
-{
-}
-
-CanvasRenderer::~CanvasRenderer()
-{
-}
-
-void CanvasRenderer::setTkCanvas(Tcl_Interp *interp, const char *canvas)
-{
-    this->interp = interp;
-    this->canvasWidget = canvas;
-
-    int success = Tcl_GetCommandInfo(interp, TCLCONST(canvasWidget.c_str()), &canvasCmdInfo);
-    //ASSERT(success);
-}
-
-void CanvasRenderer::setCanvas(cCanvas *canvas)
-{
-    this->canvas = canvas;
-    enabledTagBits = ~(uint64_t)0;  // all enabled
-    exceptTagBits = 0;
-}
-
-void CanvasRenderer::refresh(FigureRenderingHints *hints)
-{
-    //FIXME
-    return;
-    if (canvas)
-    {
-        // if there is a structural change, we rebuild everything;
-        // otherwise we only adjust subtree of that particular figure
-        cFigure *rootFigure = canvas->getRootFigure();
-        uint8_t changes = rootFigure->getLocalChangeFlags() | rootFigure->getSubtreeChangeFlags();
-        if (changes & cFigure::CHANGE_STRUCTURAL)
-        {
-            redraw(hints);
-            // note: no rootFigure->clearChangeFlags() here, as there might be others inspecting the same canvas object
-        }
-        else if (changes != 0)
-        {
-            cFigure::Transform transform;
-            transform.scale(hints->zoom);
-            refreshFigureRec(rootFigure, transform, hints);
-            // note: no rootFigure->clearChangeFlags() here, as there might be others inspecting the same canvas object
-        }
-    }
-}
-
-void CanvasRenderer::redraw(FigureRenderingHints *hints)
-{
-    //FIXME
-    return;
-    // remove existing figures
-    CHK(Tcl_VarEval(interp, canvasWidget.c_str(), " delete fig", NULL));
-
-    // draw
-    if (canvas)
-    {
-        cFigure::Transform transform;
-        transform.scale(hints->zoom);
-        drawFigureRec(canvas->getRootFigure(), transform, hints);
-    }
-}
 
 FigureRenderer *CanvasRenderer::getRendererFor(cFigure *figure)
 {
@@ -104,51 +16,41 @@ bool CanvasRenderer::fulfillsTagFilter(cFigure *figure)
     return figureTagBits==0 || ((figureTagBits & enabledTagBits) != 0 && (figureTagBits & exceptTagBits) == 0);
 }
 
-void CanvasRenderer::drawFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, FigureRenderingHints *hints)
+//TODO: delete comment when ASSERT is available
+void CanvasRenderer::setQtCanvas(QGraphicsScene *scene, cCanvas *canvas)
 {
-    if (figure->isVisible() && fulfillsTagFilter(figure))
+    this->scene = scene;
+    this->canvas = canvas;
+
+    //ASSERT(canvas);
+}
+
+void CanvasRenderer::setCanvas(cCanvas *canvas)
+{
+    this->canvas = canvas;
+    enabledTagBits = ~(uint64_t)0;  // all enabled
+    exceptTagBits = 0;
+}
+
+void CanvasRenderer::redraw(FigureRenderingHints *hints)
+{
+    scene->clear();
+    FigureRenderer::deleteItems();
+
+    // draw
+    if (canvas)
     {
-        cFigure::Transform transform(parentTransform);
-        figure->updateParentTransform(transform);
-
-        FigureRenderer *renderer = getRendererFor(figure);
-        renderer->render(figure, interp, &canvasCmdInfo, transform, hints);
-
-        for (int i = 0; i < figure->getNumFigures(); i++)
-            drawFigureRec(figure->getFigure(i), transform, hints);
+        cFigure::Transform transform;
+        transform.scale(hints->zoom);
+        drawFigureRec(canvas->getRootFigure(), transform, hints);
     }
 }
 
-void CanvasRenderer::refreshFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, FigureRenderingHints *hints, bool ancestorTransformChanged)
-{
-    uint8_t localChanges = figure->getLocalChangeFlags();
-    uint8_t subtreeChanges = figure->getSubtreeChangeFlags();
-
-    if (localChanges & cFigure::CHANGE_TRANSFORM)
-        ancestorTransformChanged = true;  // must refresh this figure and its entire subtree
-
-    if (localChanges || subtreeChanges || ancestorTransformChanged)
-    {
-        cFigure::Transform transform(parentTransform);
-        figure->updateParentTransform(transform);
-
-        uint8_t what = localChanges | (ancestorTransformChanged ? cFigure::CHANGE_TRANSFORM : 0);
-        if (what) {
-            FigureRenderer *renderer = getRendererFor(figure);
-            renderer->refresh(figure, what, interp, &canvasCmdInfo, transform, hints);
-        }
-
-        if (subtreeChanges || ancestorTransformChanged) {
-            for (int i = 0; i < figure->getNumFigures(); i++)
-                refreshFigureRec(figure->getFigure(i), transform, hints, ancestorTransformChanged);
-        }
-    }
-}
-
+//TODO: delete comment when cRuntimeError class is available
 void CanvasRenderer::assertCanvas()
 {
     if (!canvas)
-        throw cRuntimeError("CanvasRenderer: no canvas object");
+        {}//throw cRuntimeError("CanvasRenderer: no canvas object");
 }
 
 std::string CanvasRenderer::getAllTags()
@@ -183,6 +85,70 @@ void CanvasRenderer::setExceptTags(const char* tags)
     exceptTagBits = canvas->parseTags(tags);
 }
 
-} //namespace
-NAMESPACE_END
+void CanvasRenderer::drawFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, FigureRenderingHints *hints)
+{
+    if(figure->isVisible() && fulfillsTagFilter(figure))
+    {
+        cFigure::Transform transform(parentTransform);
+        figure->updateParentTransform(transform);
 
+        FigureRenderer *renderer = getRendererFor(figure);
+        renderer->render(figure, scene, transform, hints);
+
+        for (int i = 0; i < figure->getNumFigures(); i++)
+            drawFigureRec(figure->getFigure(i), transform, hints);
+    }
+}
+
+void CanvasRenderer::refresh(FigureRenderingHints *hints)
+{
+    if (canvas)
+    {
+        // if there is a structural change, we rebuild everything;
+        // otherwise we only adjust subtree of that particular figure
+        cFigure *rootFigure = canvas->getRootFigure();
+        uint8_t changes = rootFigure->getLocalChangeFlags() | rootFigure->getSubtreeChangeFlags();
+        if (changes & cFigure::CHANGE_STRUCTURAL)
+        {
+            redraw(hints);
+            // note: no rootFigure->clearChangeFlags() here, as there might be others inspecting the same canvas object
+        }
+        else if (changes != 0)
+        {
+            cFigure::Transform transform;
+            transform.scale(hints->zoom);
+            refreshFigureRec(rootFigure, transform, hints);
+            // note: no rootFigure->clearChangeFlags() here, as there might be others inspecting the same canvas object
+        }
+    }
+}
+
+void CanvasRenderer::refreshFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, FigureRenderingHints *hints, bool ancestorTransformChanged)
+{
+    uint8_t localChanges = figure->getLocalChangeFlags();
+    uint8_t subtreeChanges = figure->getSubtreeChangeFlags();
+
+    if (localChanges & cFigure::CHANGE_TRANSFORM)
+        ancestorTransformChanged = true;  // must refresh this figure and its entire subtree
+
+    if (localChanges || subtreeChanges || ancestorTransformChanged)
+    {
+        cFigure::Transform transform(parentTransform);
+        figure->updateParentTransform(transform);
+
+        uint8_t what = localChanges | (ancestorTransformChanged ? cFigure::CHANGE_TRANSFORM : 0);
+        if (what)
+        {
+            FigureRenderer *renderer = getRendererFor(figure);
+            renderer->refresh(figure, what, transform, hints);
+        }
+
+        if (subtreeChanges || ancestorTransformChanged)
+        {
+            for (int i = 0; i < figure->getNumFigures(); i++)
+                refreshFigureRec(figure->getFigure(i), transform, hints, ancestorTransformChanged);
+        }
+    }
+}
+
+}

@@ -106,7 +106,7 @@ void ModuleInspector::createWindow(const char *window, const char *geometry)
 
    CHK(Tcl_VarEval(interp, "createModuleInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL ));
 
-   canvasRenderer->setTkCanvas(interp, canvas);
+   //TODO canvasRenderer->setTkCanvas(interp, canvas);
 }
 
 void ModuleInspector::useWindow(const char *window)
@@ -116,7 +116,7 @@ void ModuleInspector::useWindow(const char *window)
     strcpy(canvas,windowName);
     strcat(canvas,".c");
 
-    canvasRenderer->setTkCanvas(interp, canvas);
+    //TODO canvasRenderer->setTkCanvas(interp, canvas);
 }
 
 cCanvas *ModuleInspector::getCanvas()
@@ -128,6 +128,7 @@ cCanvas *ModuleInspector::getCanvas()
 
 void ModuleInspector::refresh()
 {
+   return;  //FIXME
    Inspector::refresh();
 
    if (!object)

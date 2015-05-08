@@ -27,6 +27,9 @@
 #include "inspectorfactory.h"
 #include "canvasrenderer.h"
 
+#include <QGraphicsScene>
+#include <QGraphicsView>
+
 NAMESPACE_BEGIN
 namespace qtenv {
 
@@ -67,29 +70,32 @@ void CanvasInspector::doSetObject(cObject *obj)
     CHK(Tcl_VarEval(interp, canvas, " delete all",NULL));
 
     if (object)
-        CHK(Tcl_VarEval(interp, "CanvasInspector:onSetObject ", windowName, NULL ));
+    {
+        FigureRenderingHints hint;
+        canvasRenderer->redraw(&hint);  //TODO CHK(Tcl_VarEval(interp, "CanvasInspector:onSetObject ", windowName, NULL ));
+    }
 }
 
 void CanvasInspector::createWindow(const char *window, const char *geometry)
 {
     Inspector::createWindow(window, geometry);
 
-    strcpy(canvas,windowName);
-    strcat(canvas,".c");
+    QGraphicsView *view = new QGraphicsView();
+    view->setScene(new QGraphicsScene());
+    this->window = view;
 
     CHK(Tcl_VarEval(interp, "createCanvasInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL ));
 
-    canvasRenderer->setTkCanvas(interp, canvas);
+    canvasRenderer->setQtCanvas(view->scene(), getCanvas());
+    this->window->show();
 }
 
 void CanvasInspector::useWindow(const char *window)
 {
     Inspector::useWindow(window);
 
-    strcpy(canvas,windowName);
-    strcat(canvas,".c");
-
-    canvasRenderer->setTkCanvas(interp, canvas);
+    //TODO create window
+    canvasRenderer->setQtCanvas(static_cast<QGraphicsView*>(this->window)->scene(), getCanvas());
 }
 
 void CanvasInspector::refresh()

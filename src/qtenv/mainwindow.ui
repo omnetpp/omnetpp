@@ -169,6 +169,7 @@
    <addaction name="actionStop"/>
    <addaction name="separator"/>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionQuit">
    <property name="text">
     <string>Quit</string>
@@ -257,5 +258,25 @@
  <resources>
   <include location="icons.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>treeView</sender>
+   <signal>doubleClicked(QModelIndex)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>inspectObject(QModelIndex)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>170</x>
+     <y>241</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>157</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>inspectObject(QModelIndex)</slot>
+ </slots>
 </ui>

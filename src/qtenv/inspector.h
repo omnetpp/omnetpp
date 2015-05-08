@@ -20,6 +20,8 @@
 #include "envir/envirbase.h"
 #include "tkutil.h"
 
+class QWidget;
+
 NAMESPACE_BEGIN
 namespace qtenv {
 
@@ -53,6 +55,7 @@ class TKENV_API Inspector
       cObject *object;        // the inspected object or NULL if inspector is empty
       int type;               // INSP_OBJECT, etc.
       char windowName[24];    // Tk widget path   --FIXME use std::string here! (and for canvas etc)
+      QWidget *window;
       std::string windowTitle;// window title string
       bool isToplevelWindow;  // if so: has window title, has infobar, and destructor should destroy window
       bool closeRequested;    // "mark for deletion" flag (set if user wants to close inspector during animation)

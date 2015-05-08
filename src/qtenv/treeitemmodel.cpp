@@ -25,14 +25,14 @@ void TreeItemModel::setRootObject(cObject *root)
 {
     beginResetModel();
     if(root == nullptr)
-        {qDebug() << "TreeItemModel::setRootObject: root is null";}//TODO log: TreeItemModel::setRootObject: root is null
+    {}//qDebug() << "TreeItemModel::setRootObject: root is null";}//TODO log: TreeItemModel::setRootObject: root is null
     rootNode = root;
     endResetModel();
 }
 
 QModelIndex TreeItemModel::index(int row, int, const QModelIndex &parent) const
 {
-    qDebug() << "index" << row << 1;
+    //qDebug() << "index" << row << 1;
     if(!rootNode)
         return QModelIndex();
 
@@ -55,7 +55,7 @@ cObject *TreeItemModel::getObjectFromIndex(const QModelIndex &index) const
 
 QModelIndex TreeItemModel::parent(const QModelIndex &index) const
 {
-    qDebug() << "parent";
+    //qDebug() << "parent";
 
     cObject *parent = index.isValid() ? static_cast<cObject*>(index.internalPointer()) :
                                         rootNode;
@@ -87,19 +87,19 @@ int TreeItemModel::findObjectInParent(cObject *obj, cObject *parent) const
 
 int TreeItemModel::rowCount(const QModelIndex & parent) const
 {
-    qDebug() << "RowCount";
+    //qDebug() << "RowCount";
     cObject *node = getObjectFromIndex(parent);
     if(!node)
         return 0;
     cCountChildrenVisitor visitor(node);
     visitor.process(node);
-    qDebug() << visitor.getCount();
+    //qDebug() << visitor.getCount();
     return visitor.getCount();
 }
 
 QVariant TreeItemModel::data(const QModelIndex &index, int role) const
 {
-    qDebug() << "data" << index;
+    //qDebug() << "data" << index;
     cObject *node = getObjectFromIndex(index);
     if(!node)
         return QVariant();

@@ -1,920 +1,1301 @@
-//==========================================================================
-//  FIGURERENDERERS.CC - part of
-//
-//                     OMNeT++/OMNEST
-//            Discrete System Simulation in C++
-//
-//==========================================================================
-
-/*--------------------------------------------------------------*
-  Copyright (C) 1992-2015 Andras Varga
-  Copyright (C) 2006-2015 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  `license' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
-#include "common/stringutil.h"
-#include "omnetpp/cobjectfactory.h"
-#include "omnetpp/checkandcast.h"
-#include "tkutil.h"
 #include "figurerenderers.h"
-#include "qtenv.h"
 
-NAMESPACE_BEGIN
+#include "graphicspatharrowitem.h"
+#include <sstream>
+#include <cfloat>
+#include <QGraphicsScene>
+#include <QGraphicsItem>
+#include <QFontMetrics>
+#include <QGraphicsColorizeEffect>
+
 namespace qtenv {
 
 std::map<std::string, FigureRenderer*> FigureRenderer::rendererCache;
-
-Register_Class(NullRenderer);
-Register_Class(LineFigureRenderer);
-Register_Class(ArcFigureRenderer);
-Register_Class(PolylineFigureRenderer);
-Register_Class(RectangleFigureRenderer);
-Register_Class(OvalFigureRenderer);
-Register_Class(RingFigureRenderer);
-Register_Class(PieSliceFigureRenderer);
-Register_Class(PolygonFigureRenderer);
-Register_Class(PathFigureRenderer);
-Register_Class(TextFigureRenderer);
-Register_Class(LabelFigureRenderer);
-Register_Class(ImageFigureRenderer);
-Register_Class(IconFigureRenderer);
-Register_Class(PixmapFigureRenderer);
-
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
-
-char *FigureRenderer::point(const cFigure::Point& p)
-{
-    char *buf = getBuf(40);
-    sprintf(buf, "%g %g", p.x, p.y);
-    return buf;
-}
-
-char *FigureRenderer::point2(const cFigure::Point& p1, const cFigure::Point& p2)
-{
-    char *buf = getBuf(80);
-    sprintf(buf, "%g %g %g %g", p1.x, p1.y, p2.x, p2.y);
-    return buf;
-}
-
-char *FigureRenderer::bounds(const cFigure::Rectangle& bounds)
-{
-    char *buf = getBuf(64);
-    sprintf(buf, " %g %g %g %g", bounds.x, bounds.y, bounds.x+bounds.width, bounds.y+bounds.height);
-    return buf;
-}
-
-char *FigureRenderer::matrix(const cFigure::Transform& transform)
-{
-    char *buf = getBuf(128);
-    sprintf(buf, "{%g %g} {%g %g} {%g %g}", transform.a, transform.b, transform.c, transform.d, transform.t1, transform.t2);
-    return buf;
-}
-
-char *FigureRenderer::color(const cFigure::Color& color)
-{
-    char *buf = getBuf(16);
-    sprintf(buf, "#%2.2x%2.2x%2.2x", color.red, color.green, color.blue);
-    return buf;
-}
-
-char *FigureRenderer::itoa(int i)
-{
-    char *buf = getBuf(16);
-    sprintf(buf, "%d", i);
-    return buf;
-}
-
-char *FigureRenderer::dtoa(double d)
-{
-    char *buf = getBuf(20);
-    sprintf(buf, "%f", d);
-    return buf;
-}
-
-void FigureRenderer::lineStyle(cFigure::LineStyle style, int& argc, const char *argv[])
-{
-    argv[argc++] = "-strokedasharray";
-
-    switch (style) {
-        case cFigure::LINE_SOLID: argv[argc++] = ""; break;
-        case cFigure::LINE_DOTTED: argv[argc++] = "1 2"; break;
-        case cFigure::LINE_DASHED: argv[argc++] = "3 3"; break;
-        default: throw cRuntimeError("Unexpected line style %d", style);
-    }
-}
-
-void FigureRenderer::capStyle(cFigure::CapStyle style, int& argc, const char *argv[])
-{
-    argv[argc++] = "-strokelinecap";
-
-    switch (style) {
-        case cFigure::CAP_BUTT: argv[argc++] = "butt"; break;
-        case cFigure::CAP_SQUARE: argv[argc++] = "projecting"; break;
-        case cFigure::CAP_ROUND: argv[argc++] = "round"; break;
-        default: throw cRuntimeError("Unexpected line style %d", style);
-    }
-}
-
-void FigureRenderer::joinStyle(cFigure::JoinStyle style, int& argc, const char *argv[])
-{
-    argv[argc++] = "-strokelinejoin";
-
-    switch (style) {
-        case cFigure::JOIN_MITER: argv[argc++] = "miter"; break;
-        case cFigure::JOIN_BEVEL: argv[argc++] = "bevel"; break;
-        case cFigure::JOIN_ROUND: argv[argc++] = "round"; break;
-        default: throw cRuntimeError("Unexpected line style %d", style);
-    }
-}
-
-void FigureRenderer::arrowHead(bool isStart, cFigure::ArrowHead arrowHead, int& argc, const char *argv[])
-{
-    bool hasArrow = arrowHead != cFigure::ARROW_NONE;
-    argv[argc++] = isStart ? "-startarrow" : "-endarrow";
-    argv[argc++] =  hasArrow ? "1" : "0";
-
-    if (hasArrow) {
-        const char *fill;
-        switch (arrowHead) {
-            case cFigure::ARROW_BARBED: fill = "0.6"; break;
-            case cFigure::ARROW_SIMPLE: fill = "0"; break;
-            case cFigure::ARROW_TRIANGLE: fill = "1"; break;
-            default: throw cRuntimeError("Unexpected arrow type %d", arrowHead);
-        }
-        argv[argc++] = isStart ? "-startarrowfill" : "-endarrowfill";
-        argv[argc++] =  fill;
-    }
-}
-
-void FigureRenderer::fillRule(cFigure::FillRule fill, int& argc, const char *argv[])
-{
-    argv[argc++] = "-fillrule";
-
-    switch (fill) {
-        case cFigure::FILL_EVENODD: argv[argc++] = "evenodd"; break;
-        case cFigure::FILL_NONZERO: argv[argc++] = "nonzero"; break;
-        default: throw cRuntimeError("Unexpected fill rule %d", fill);
-    }
-}
-
-void FigureRenderer::interpolation(cFigure::Interpolation interpolation, int& argc, const char *argv[])
-{
-    argv[argc++] = "-interpolation";
-
-    switch (interpolation) {
-        case cFigure::INTERPOLATION_NONE: argv[argc++] = "none"; break;
-        case cFigure::INTERPOLATION_FAST: argv[argc++] = "fast"; break;
-        case cFigure::INTERPOLATION_BEST: argv[argc++] = "best"; break;
-        default: throw cRuntimeError("Unexpected interpolation mode %d", interpolation);
-    }
-}
-
-static void doAnchor(cFigure::Anchor anchor, bool text, int& argc, const char *argv[])
-{
-    argv[argc++] = text ? "-textanchor" : "-anchor";
-
-    switch (anchor) {
-        case cFigure::ANCHOR_CENTER: argv[argc++] = "c"; break;
-        case cFigure::ANCHOR_N: argv[argc++] = "n"; break;
-        case cFigure::ANCHOR_E: argv[argc++] = "e"; break;
-        case cFigure::ANCHOR_S: argv[argc++] = "s"; break;
-        case cFigure::ANCHOR_W: argv[argc++] = "w"; break;
-        case cFigure::ANCHOR_NW: argv[argc++] = "nw"; break;
-        case cFigure::ANCHOR_NE: argv[argc++] = "ne"; break;
-        case cFigure::ANCHOR_SE: argv[argc++] = "se"; break;
-        case cFigure::ANCHOR_SW: argv[argc++] = "sw"; break;
-        case cFigure::ANCHOR_BASELINE_START: argv[argc++] = text ? "start" : "sw"; break;
-        case cFigure::ANCHOR_BASELINE_MIDDLE: argv[argc++] = text ? "middle" : "s"; break;
-        case cFigure::ANCHOR_BASELINE_END: argv[argc++] = text ? "end" : "se"; break;
-        default: throw cRuntimeError("Unexpected anchor %d", anchor);
-    }
-}
-
-void FigureRenderer::anchor(cFigure::Anchor anchor, int& argc, const char *argv[])
-{
-    doAnchor(anchor, false, argc, argv);
-}
-
-void FigureRenderer::textanchor(cFigure::Anchor anchor, int& argc, const char *argv[])
-{
-    doAnchor(anchor, true, argc, argv);
-}
-
-void FigureRenderer::font(const cFigure::Font& font, FigureRenderingHints *hints, int& argc, const char *argv[])
-{
-    argv[argc++] = "-fontfamily";
-    argv[argc++] = !font.typeface.empty() ? font.typeface.c_str() : hints->defaultFont.c_str();
-
-    int points = font.pointSize > 0 ? font.pointSize : hints->defaultFontSize;
-    argv[argc++] = "-fontsize";
-    char *buf = getBuf(16);
-    sprintf(buf, "%d", points);
-    argv[argc++] = buf;
-
-    argv[argc++] = "-fontweight";
-    argv[argc++] = (font.style & cFigure::FONT_BOLD) != 0 ?  "bold" : "normal";
-
-    argv[argc++] = "-fontslant";
-    argv[argc++] = (font.style & cFigure::FONT_ITALIC) != 0 ?  "italic" : "normal";
-
-    // note: no tkpath support for underline
-}
-
-#define PT(p)  ((p).x) << " " << ((p).y)
-
-std::string FigureRenderer::polylinePath(const std::vector<cFigure::Point>& points, bool smooth)
-{
-    if (points.size() < 2)
-        return std::string("M 0 0"); // empty path causes error (item will not be be created)
-
-    std::stringstream ss;
-
-    if (points.size() == 2) {
-        const cFigure::Point& from = points[0];
-        const cFigure::Point& to = points[1];
-        ss << "M " << PT(from) << " L " << PT(to);
-    } else {
-        const cFigure::Point& start = points[0];
-        ss << "M " << PT(start);
-
-        if (smooth) {
-            for (int i = 2; i < (int)points.size(); i++) {
-                const cFigure::Point& control = points[i-1];
-                bool isLast = (i == (int)points.size()-1);
-                cFigure::Point to = isLast ? points[i] : (points[i-1] + points[i]) * 0.5;
-                ss << " Q " << PT(control) << " " << PT(to);
-            }
-        } else {
-            for (int i = 1; i < (int)points.size(); i++) {
-                const cFigure::Point& p = points[i];
-                ss << " L " << PT(p);
-            }
-        }
-    }
-    return ss.str();
-}
-
-std::string FigureRenderer::polygonPath(const std::vector<cFigure::Point>& points, bool smooth)
-{
-    if (points.size() < 2)
-        return std::string("M 0 0"); // empty path causes error (item will not be be created)
-
-    std::stringstream ss;
-
-    if (points.size() == 2) {
-        const cFigure::Point& from = points[0];
-        const cFigure::Point& to = points[1];
-        ss << "M " << PT(from) << " L " << PT(to);
-    } else {
-        if (smooth) {
-            cFigure::Point start = (points[0] + points[1]) * 0.5;
-            ss << "M " << PT(start);
-
-            for (int i = 0; i < (int)points.size(); i++) {
-                int i1 = (i + 1) % points.size();
-                int i2 = (i + 2) % points.size();
-
-                cFigure::Point control = points[i1];
-                cFigure::Point to = (points[i1] + points[i2]) * 0.5;
-
-                ss << " Q " << PT(control) << " " << PT(to);
-            }
-        } else {
-            const cFigure::Point& start = points[0];
-            ss << "M " << PT(start);
-
-            for (int i = 0; i < (int)points.size(); i++) {
-                const cFigure::Point& p = points[i];
-                ss << " L " << PT(p);
-            }
-        }
-    }
-
-    ss << " Z";
-    return ss.str();
-}
-
-std::string FigureRenderer::arcPath(const cFigure::Rectangle& rect, double start_rad, double end_rad)
-{
-    cFigure::Point center = rect.getCenter();
-    cFigure::Point radii = rect.getSize() * 0.5;
-
-    cFigure::Point from = center;
-    from.x += cos(start_rad) * radii.x;
-    from.y -= sin(start_rad) * radii.y;
-
-    cFigure::Point to = center;
-    to.x += cos(end_rad) * radii.x;
-    to.y -= sin(end_rad) * radii.y;
-
-    double d_rad = end_rad - start_rad;
-    while (d_rad < 0) d_rad += 2 * M_PI;
-    while (d_rad >= 2*M_PI) d_rad -= 2 * M_PI;
-    bool largeArc = d_rad > M_PI;
-
-    std::stringstream ss;
-
-    ss << "M " << PT(from)
-       << " A " << PT(radii) // <- rx ry
-        << " 0 " // <- phi
-        << (largeArc ? "1" : "0")
-        << " 0 " // <- sweep (CCW)
-        << PT(to);
-
-    return ss.str();
-}
-
-std::string FigureRenderer::pieSlicePath(const cFigure::Rectangle& rect, double start_rad, double end_rad)
-{
-    cFigure::Point center = rect.getCenter();
-    cFigure::Point radii = rect.getSize() * 0.5;
-
-    cFigure::Point from = center;
-    from.x += cos(start_rad) * radii.x;
-    from.y -= sin(start_rad) * radii.y;
-
-    cFigure::Point to = center;
-    to.x += cos(end_rad) * radii.x;
-    to.y -= sin(end_rad) * radii.y;
-
-    double d_rad = end_rad - start_rad;
-    while (d_rad < 0) d_rad += 2 * M_PI;
-    while (d_rad >= 2*M_PI) d_rad -= 2 * M_PI;
-    bool largeArc = d_rad > M_PI;
-
-    std::stringstream ss;
-
-    ss << "M " << PT(center)
-        << " L " << PT(from)
-        << " A " << PT(radii) // <- rx ry
-        << " 0 " // <- phi
-        << (largeArc ? "1" : "0")
-        << " 0 " // <- sweep (CCW)
-        << PT(to) << " Z";
-
-    return ss.str();
-}
-
-std::string FigureRenderer::ringPath(const cFigure::Rectangle& rect, double innerRx, double innerRy)
-{
-    cFigure::Point center = rect.getCenter();
-    double outerRx = rect.getSize().x * 0.5;
-    double outerRy = rect.getSize().y * 0.5;
-
-    std::stringstream ss;
-
-    // drawing the outer ellipse with a 270° and a 90° arc
-    // (to avoid undefined behavior, also 2*180° didn't work on windows)
-    ss << "M " << center.x + outerRx << " " << center.y
-        << " A " << outerRx << " " << outerRy // <- rx ry
-        << " 0 1 0 " // <- phi, largeArc, sweep (CCW)
-        << center.x << " " <<  center.y + outerRy
-        << " A " << outerRx << " " << outerRy // <- rx ry
-        << " 0 0 0 " // <- phi, largeArc, sweep (CCW)
-        << center.x + outerRx << " " <<  center.y << " Z ";
-
-    // then drawing the inner ellipse with another two, if applicable
-    if ((innerRx) > 0 && (innerRy > 0)) // avoiding undefined behaviour again
-    {
-        ss << "M " << center.x + innerRx << " " << center.y
-            << " A " << innerRx << " " << innerRy // <- rx ry
-            << " 0 1 0 " // <- phi, largeArc, sweep (CCW)
-            << center.x << " " <<  center.y + innerRy
-            << " A " << innerRx << " " << innerRy // <- rx ry
-            << " 0 0 0 " // <- phi, largeArc, sweep (CCW)
-            << center.x + innerRx << " " <<  center.y << " Z";
-    }
-
-    return ss.str();
-}
-
-#undef PT
-
-const char *FigureRenderer::resolveIcon(Tcl_Interp *interp, const char* iconName, int& outWidth, int& outHeight)
-{
-    //TODO result should be precomputed or cached
-    const char *imageName = Tcl_GetVar2(interp, "bitmaps", TCLCONST(iconName), TCL_GLOBAL_ONLY);
-    if (!imageName)
-        imageName = Tcl_GetVar2(interp, "icons", "unknown", TCL_GLOBAL_ONLY);
-    ASSERT(imageName);
-
-    CHK(Tcl_VarEval(interp, "image width ", imageName, NULL));
-    outWidth = opp_atol(Tcl_GetStringResult(interp));
-
-    CHK(Tcl_VarEval(interp, "image height ", imageName, NULL));
-    outHeight = opp_atol(Tcl_GetStringResult(interp));
-
-    return imageName;
-}
-
-void FigureRenderer::moveItemsAbove(Tcl_Interp *interp, Tcl_CmdInfo *cmd, const char *tag, const char *referenceTag)
-{
-    int argc = 0;
-    const char *argv[6];
-    argv[argc++] = "dummy";
-    argv[argc++] = "raise";
-    argv[argc++] = tag;
-    argv[argc++] = referenceTag;
-    invokeTclCommand(interp, cmd, argc, argv);
-}
-
-void FigureRenderer::removeItems(Tcl_Interp *interp, Tcl_CmdInfo *cmd, const char *tag)
-{
-    int argc = 0;
-    const char *argv[6];
-    argv[argc++] = "dummy";
-    argv[argc++] = "delete";
-    argv[argc++] = "withtag";
-    argv[argc++] = tag;
-    invokeTclCommand(interp, cmd, argc, argv);
-}
+std::map<int, QGraphicsItem*> FigureRenderer::items;
 
 FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
 {
-    FigureRenderer *renderer;
-    std::string className = figure->getClassNameForRenderer();
-    std::map<std::string, FigureRenderer*>::iterator it = rendererCache.find(className);
-    if (it != rendererCache.end())
-        renderer = it->second;
-    else {
-        // create renderer and add to the cache
-        if (className == "")
-            renderer = new NullRenderer();
-        else {
-            // find registered class named "<type>Renderer"
-            std::string rendererClassName = className + "Renderer";
-            if (rendererClassName[0] == 'c')
-                rendererClassName.erase(0, 1);
-            if (opp_stringbeginswith(rendererClassName.c_str(), "omnetpp::c"))
-                rendererClassName.erase(sizeof("omnetpp::c")-2, 1);  // remove the "c"
-            cObjectFactory *factory = cObjectFactory::find(rendererClassName.c_str());
-            if (!factory)
-                throw cRuntimeError("No renderer class '%s' for figure class '%s'", rendererClassName.c_str(), figure->getClassName());
-            cObject *obj = factory->createOne();
-            renderer = dynamic_cast<FigureRenderer*>(obj);
-            if (!renderer)
-                throw cRuntimeError("Wrong figure renderer class: cannot cast %s to FigureRenderer", obj->getClassName());
+    FigureRenderer *renderer = nullptr;
+    std::string className;
+
+    if(dynamic_cast<cArcFigure*>(figure))
+    {
+        className = "ArcFigure";
+        auto it = rendererCache.find(className);
+        if(it != rendererCache.end())
+            renderer = it->second;
+        else
+        {
+            renderer = new ArcFigureRenderer();
+            rendererCache[className] = renderer;
         }
-        rendererCache[className] = renderer;
     }
+    else if(dynamic_cast<cLineFigure*>(figure))
+    {
+        className = "LineFigure";
+        auto it = rendererCache.find(className);
+        if(it != rendererCache.end())
+            renderer = it->second;
+        else
+        {
+            renderer = new LineFigureRenderer();
+            rendererCache[className] = renderer;
+        }
+    }
+    else if(dynamic_cast<cPolylineFigure*>(figure))
+    {
+        className = "PolylineFigure";
+        auto it = rendererCache.find(className);
+        if(it != rendererCache.end())
+            renderer = it->second;
+        else
+        {
+            renderer = new PolylineFigureRenderer();
+            rendererCache[className] = renderer;
+        }
+    }
+    else if(dynamic_cast<cRectangleFigure*>(figure))
+    {
+        className = "RectangleFigure";
+        auto it = rendererCache.find(className);
+        if(it != rendererCache.end())
+            renderer = it->second;
+        else
+        {
+            renderer = new RectangleFigureRenderer();
+            rendererCache[className] = renderer;
+        }
+    }
+    else if(dynamic_cast<cOvalFigure*>(figure))
+    {
+        className = "OvalFigure";
+        auto it = rendererCache.find(className);
+        if(it != rendererCache.end())
+            renderer = it->second;
+        else
+        {
+            renderer = new OvalFigureRenderer();
+            rendererCache[className] = renderer;
+        }
+    }
+    else if(dynamic_cast<cRingFigure*>(figure))
+    {
+        className = "RingFigure";
+        auto it = rendererCache.find(className);
+        if(it != rendererCache.end())
+            renderer = it->second;
+        else
+        {
+            renderer = new RingFigureRenderer();
+            rendererCache[className] = renderer;
+        }
+    }
+    else if(dynamic_cast<cPieSliceFigure*>(figure))
+    {
+        className = "PieSliceFigure";
+        auto it = rendererCache.find(className);
+        if(it != rendererCache.end())
+            renderer = it->second;
+        else
+        {
+            renderer = new PieSliceFigureRenderer();
+            rendererCache[className] = renderer;
+        }
+    }
+    else if(dynamic_cast<cPolygonFigure*>(figure))
+    {
+        className = "PolygonFigure";
+        auto it = rendererCache.find(className);
+        if(it != rendererCache.end())
+            renderer = it->second;
+        else
+        {
+            renderer = new PolygonFigureRenderer();
+            rendererCache[className] = renderer;
+        }
+    }
+    else if(dynamic_cast<cPathFigure*>(figure))
+    {
+        className = "PathFigure";
+        auto it = rendererCache.find(className);
+        if(it != rendererCache.end())
+            renderer = it->second;
+        else
+        {
+            renderer = new PathFigureRenderer();
+            rendererCache[className] = renderer;
+        }
+    }
+    else if(dynamic_cast<cTextFigure*>(figure))
+    {
+        className = "TextFigure";
+        auto it = rendererCache.find(className);
+        if(it != rendererCache.end())
+            renderer = it->second;
+        else
+        {
+            renderer = new TextFigureRenderer();
+            rendererCache[className] = renderer;
+        }
+    }
+    else if(dynamic_cast<cLabelFigure*>(figure))
+    {
+        className = "LabelFigure";
+        auto it = rendererCache.find(className);
+        if(it != rendererCache.end())
+            renderer = it->second;
+        else
+        {
+            renderer = new LabelFigureRenderer();
+            rendererCache[className] = renderer;
+        }
+    }
+    else if(dynamic_cast<cImageFigure*>(figure))
+    {
+        className = "ImageFigure";
+        auto it = rendererCache.find(className);
+        if(it != rendererCache.end())
+            renderer = it->second;
+        else
+        {
+            renderer = new ImageFigureRenderer();
+            rendererCache[className] = renderer;
+        }
+    }
+    else
+    {
+        className = "Null";
+        auto it = rendererCache.find(className);
+        if(it != rendererCache.end())
+            renderer = it->second;
+        else
+        {
+            renderer = new NullRenderer();
+            rendererCache[className] = renderer;
+        }
+    }
+
     return renderer;
 }
 
-//----
-
-void AbstractCanvasItemFigureRenderer::render(cFigure *figure, Tcl_Interp *interp, Tcl_CmdInfo *cmd, const cFigure::Transform& transform, FigureRenderingHints *hints)
+cFigure::Point FigureRenderer::polarToCertasian(cFigure::Point center,  double rx,  double ry,  double rad) const
 {
-    initBufs();
-    char tags[40];
-    sprintf(tags, "fig f%d ", figure->getId());
-    ptrToStr(figure, tags + strlen(tags));
-
-    int argc = 0;
-    const char *argv[32];
-    argv[argc++] = "dummy";
-    argv[argc++] = "create";
-    argv[argc++] = getItemType();
-    std::string coords = getCoords(figure, interp, transform, hints);
-    argv[argc++] = coords.c_str();
-    addMatrix(figure, transform, argc, argv);
-    addOptions(figure, ~0, interp, argc, argv, transform, hints);
-    argv[argc++] = "-tags";
-    argv[argc++] = tags;
-    invokeTclCommand(interp, cmd, argc, argv);
+    return cFigure::Point(
+                center.x + rx * cos(rad),
+                center.y - ry * sin(rad)
+    );
 }
 
-void AbstractCanvasItemFigureRenderer::refresh(cFigure *figure, int8_t what, Tcl_Interp *interp, Tcl_CmdInfo *cmd, const cFigure::Transform& transform, FigureRenderingHints *hints)
+//from mozilla
+double FigureRenderer::calcVectorAngle(double ux, double uy, double vx, double vy) const
 {
-    char tag[32];
-    sprintf(tag, "f%d", figure->getId());
+    double ta = atan2(uy, ux);
+    double tb = atan2(vy, vx);
 
-    if (what & (cFigure::CHANGE_GEOMETRY | cFigure::CHANGE_TRANSFORM)) {  // some getCoords() implementations use the transform as input
-        initBufs();
-        int argc = 0;
-        const char *argv[32];
-        argv[argc++] = "dummy";
-        argv[argc++] = "coords";
-        argv[argc++] = tag;
-        std::string coords = getCoords(figure, interp, transform, hints);
-        argv[argc++] = coords.c_str();
-        invokeTclCommand(interp, cmd, argc, argv);
-    }
-
-    initBufs();
-    int argc = 0;
-    const char *argv[32];
-    argv[argc++] = "dummy";
-    argv[argc++] = "itemconfig";
-    argv[argc++] = tag;
-    int savedArgc = argc;
-    if (what & cFigure::CHANGE_TRANSFORM)
-        addMatrix(figure, transform, argc, argv);
-    addOptions(figure, what, interp, argc, argv, transform, hints);
-    if (argc > savedArgc)
-        invokeTclCommand(interp, cmd, argc, argv);
+    if (tb >= ta)
+        return tb-ta;
+    else
+        return 2.0*M_PI - (ta-tb);
 }
 
-void AbstractCanvasItemFigureRenderer::remove(cFigure *figure, Tcl_Interp *interp, Tcl_CmdInfo *cmd)
+bool FigureRenderer::doubleEquals(double x, double y) const
 {
-    char tag[32];
-    sprintf(tag, "f%d", figure->getId());
-    removeItems(interp, cmd, tag);
+    return fabs(x - y) < DBL_EPSILON;
 }
 
-void AbstractCanvasItemFigureRenderer::addMatrix(cFigure *figure, const cFigure::Transform& transform, int& argc, const char *argv[])
+//http://www.w3.org/TR/SVG/implnote.html#ArcConversionEndpointToCenter
+FigureRenderer::ArcShape FigureRenderer::endPointToCentralFromArcParameters(double startX, double startY, double endX, double endY, bool largeArcFlag, bool sweepFlag,
+                                                double &rx, double &ry, double angle, double &centerX, double &centerY, double &startAngle, double &sweepLength) const
 {
-    argv[argc++] = "-matrix";
-    argv[argc++] = matrix(transform);
-}
+    /* 1. Treat out-of-range parameters as described in
+     * http://www.w3.org/TR/SVG/implnote.html#ArcImplementationNotes
+     *
+     * If the endpoints (x1, y1) and (x2, y2) are identical, then this
+     * is equivalent to omitting the elliptical arc segment entirely
+     */
+    if (doubleEquals(startX, endX) && doubleEquals(startY, endY))
+        return ARC_NOTHING;
 
-//----
+    /* If rx = 0 or ry = 0 then this arc is treated as a straight line
+     * segment (a "lineto") joining the endpoints.
+     */
+    if (rx == 0 || ry == 0)
+        return ARC_LINE;
 
-void AbstractLineFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    if (what & cFigure::CHANGE_VISUAL) {
-        cAbstractLineFigure *lineFigure = check_and_cast<cAbstractLineFigure*>(figure);
-        argv[argc++] = "-stroke";
-        argv[argc++] = color(lineFigure->getLineColor());
-        argv[argc++] = "-strokewidth";
-        argv[argc++] = lineFigure->getScaleLineWidth() ? dtoa(lineFigure->getLineWidth()) : dtoa(lineFigure->getLineWidth() / hints->zoom);
-        argv[argc++] = "-strokeopacity";
-        argv[argc++] = dtoa(lineFigure->getLineOpacity());
-        lineStyle(lineFigure->getLineStyle(), argc, argv);
-        capStyle(lineFigure->getCapStyle(), argc, argv);
-        arrowHead(true, lineFigure->getStartArrowHead(), argc, argv);
-        arrowHead(false, lineFigure->getEndArrowHead(), argc, argv);
-    }
-}
+    /* If rx or ry have negative signs, these are dropped; the absolute
+     * value is used instead.
+     */
+    if (rx < 0.0)
+        rx = -rx;
+    if (ry < 0.0)
+        ry = -ry;
 
-//----
+    //Step 1
+    double dx = (startX-endX)/2;
+    double dy = (startY-endY)/2;
+    double x1Dash = cos(angle)*dx + sin(angle)*dy;
+    double y1Dash = -sin(angle)*dx + cos(angle)*dy;
 
-std::string LineFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    cLineFigure *lineFigure = check_and_cast<cLineFigure*>(figure);
-    return point2(lineFigure->getStart(), lineFigure->getEnd());
-}
+    //Step 2
+    int sign = largeArcFlag == sweepFlag ? -1 : 1;
+    double numerator = rx*rx*ry*ry - rx*rx*y1Dash*y1Dash - ry*ry*x1Dash*x1Dash;
+    double rootFactor;
 
-//----
-
-std::string ArcFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    cArcFigure *arcFigure = check_and_cast<cArcFigure*>(figure);
-    return arcPath(arcFigure->getBounds(), arcFigure->getStartAngle(), arcFigure->getEndAngle());
-}
-
-//----
-
-std::string PolylineFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    cPolylineFigure *polylineFigure = check_and_cast<cPolylineFigure*>(figure);
-    return polylinePath(polylineFigure->getPoints(), polylineFigure->getSmooth());
-}
-
-void PolylineFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    AbstractLineFigureRenderer::addOptions(figure, what, interp, argc, argv, transform, hints);
-
-    if (what & cFigure::CHANGE_VISUAL) {
-        cPolylineFigure *lineFigure = check_and_cast<cPolylineFigure*>(figure);
-        joinStyle(lineFigure->getJoinStyle(), argc, argv);
-    }
-}
-
-//----
-
-void AbstractShapeRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    cAbstractShapeFigure *shapeFigure = check_and_cast<cAbstractShapeFigure*>(figure);
-    if (what & cFigure::CHANGE_VISUAL) {
-        if (shapeFigure->isOutlined()) {
-            argv[argc++] = "-stroke";
-            argv[argc++] = color(shapeFigure->getLineColor());
-            argv[argc++] = "-strokewidth";
-            argv[argc++] = shapeFigure->getScaleLineWidth() ? dtoa(shapeFigure->getLineWidth()) : dtoa(shapeFigure->getLineWidth() / hints->zoom);
-            argv[argc++] = "-strokeopacity";
-            argv[argc++] = dtoa(shapeFigure->getLineOpacity());
-            lineStyle(shapeFigure->getLineStyle(), argc, argv);
-        } else {
-            argv[argc++] = "-stroke";
-            argv[argc++] = "";
-        }
-        if (shapeFigure->isFilled()) {
-            argv[argc++] = "-fill";
-            argv[argc++] = color(shapeFigure->getFillColor());
-            argv[argc++] = "-fillopacity";
-            argv[argc++] = dtoa(shapeFigure->getFillOpacity());
-        } else {
-            argv[argc++] = "-fill";
-            argv[argc++] = "";
-        }
-    }
-}
-
-//----
-
-std::string RectangleFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    cRectangleFigure *rectangleFigure = check_and_cast<cRectangleFigure*>(figure);
-    return bounds(rectangleFigure->getBounds());
-}
-
-void RectangleFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, hints);
-
-    if (what & cFigure::CHANGE_GEOMETRY) {
-        cRectangleFigure *rectangleFigure = check_and_cast<cRectangleFigure*>(figure);
-        argv[argc++] = "-rx";
-        argv[argc++] = dtoa(rectangleFigure->getCornerRx());
-        argv[argc++] = "-ry";
-        argv[argc++] = dtoa(rectangleFigure->getCornerRy());
-    }
-}
-
-//----
-
-std::string OvalFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    cOvalFigure *ovalFigure = check_and_cast<cOvalFigure*>(figure);
-    return point(ovalFigure->getBounds().getCenter());
-}
-
-void OvalFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, hints);
-
-    if (what & cFigure::CHANGE_GEOMETRY) {
-        cOvalFigure *ovalFigure = check_and_cast<cOvalFigure*>(figure);
-        cFigure::Point size = ovalFigure->getBounds().getSize();
-        argv[argc++] = "-rx";
-        argv[argc++] = dtoa(size.x * 0.5);
-        argv[argc++] = "-ry";
-        argv[argc++] = dtoa(size.y * 0.5);
-    }
-}
-
-//----
-
-std::string RingFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    cRingFigure *ringFigure = check_and_cast<cRingFigure*>(figure);
-    return ringPath(ringFigure->getBounds(), ringFigure->getInnerRx(), ringFigure->getInnerRy());
-}
-
-void RingFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, hints);
-
-    if (what & cFigure::CHANGE_VISUAL) {
-        //cRingFigure *ringFigure = check_and_cast<cRingFigure*>(figure);
-        argv[argc++] = "-fillrule";
-        argv[argc++] = "evenodd";
-    }
-}
-
-//----
-
-std::string PieSliceFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    cPieSliceFigure *pieSliceFigure = check_and_cast<cPieSliceFigure*>(figure);
-    return pieSlicePath(pieSliceFigure->getBounds(), pieSliceFigure->getStartAngle(), pieSliceFigure->getEndAngle());
-}
-
-void PieSliceFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, hints);
-}
-
-//----
-
-std::string PolygonFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    cPolygonFigure *polygonFigure = check_and_cast<cPolygonFigure*>(figure);
-    return polygonPath(polygonFigure->getPoints(), polygonFigure->getSmooth());
-}
-
-void PolygonFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, hints);
-
-    if (what & cFigure::CHANGE_VISUAL) {
-        cPolygonFigure *polygonFigure = check_and_cast<cPolygonFigure*>(figure);
-        joinStyle(polygonFigure->getJoinStyle(), argc, argv);
-        fillRule(polygonFigure->getFillRule(), argc, argv);
-    }
-}
-
-//----
-
-std::string PathFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    cPathFigure *pathFigure = check_and_cast<cPathFigure*>(figure);
-    const char *path = pathFigure->getPath();
-    return opp_isblank(path) ? "M 0 0" : path;  // empty path causes error (item will not be be created)
-}
-
-void PathFigureRenderer::addMatrix(cFigure *figure, const cFigure::Transform& transform, int& argc, const char *argv[])
-{
-    // modify transform with offset
-    cPathFigure *pathFigure = check_and_cast<cPathFigure*>(figure);
-    cFigure::Point offset = pathFigure->getOffset();
-
-    cFigure::Transform tmp = cFigure::Transform().translate(offset.x, offset.y).multiply(transform);
-
-    AbstractShapeRenderer::addMatrix(figure, tmp, argc, argv);
-}
-
-void PathFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    AbstractShapeRenderer::addOptions(figure, what, interp, argc, argv, transform, hints);
-
-    if (what & cFigure::CHANGE_VISUAL) {
-        cPathFigure *pathFigure = check_and_cast<cPathFigure*>(figure);
-        joinStyle(pathFigure->getJoinStyle(), argc, argv);
-        capStyle(pathFigure->getCapStyle(), argc, argv);
-        fillRule(pathFigure->getFillRule(), argc, argv);
-    }
-}
-
-//----
-
-std::string AbstractTextFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    cAbstractTextFigure *textFigure = check_and_cast<cAbstractTextFigure*>(figure);
-    return point(textFigure->getPosition());
-}
-
-void AbstractTextFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    cAbstractTextFigure *textFigure = check_and_cast<cAbstractTextFigure*>(figure);
-    if (what & cFigure::CHANGE_INPUTDATA) {
-        argv[argc++] = "-text";
-        argv[argc++] = textFigure->getText();
-    }
-    if (what & cFigure::CHANGE_GEOMETRY) {
-        textanchor(textFigure->getAnchor(), argc, argv);
-    }
-    if (what & cFigure::CHANGE_VISUAL) {
-        font(textFigure->getFont(), hints, argc, argv);
-        argv[argc++] = "-fill";
-        argv[argc++] = color(textFigure->getColor());
-        argv[argc++] = "-fillopacity";
-        argv[argc++] = dtoa(textFigure->getOpacity());
-    }
-}
-
-//----
-
-void LabelFigureRenderer::addMatrix(cFigure *figure, const cFigure::Transform& transform, int& argc, const char *argv[])
-{
-    // no matrix -- label should not be affected by transforms
-}
-
-std::string LabelFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    cLabelFigure *labelFigure = check_and_cast<cLabelFigure*>(figure);
-    return point(transform.applyTo(labelFigure->getPosition()));
-}
-
-//----
-
-std::string AbstractImageFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    cAbstractImageFigure *imageFigure = check_and_cast<cAbstractImageFigure*>(figure);
-    return point(imageFigure->getPosition());
-}
-
-void AbstractImageFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    cAbstractImageFigure *imageFigure = check_and_cast<cAbstractImageFigure*>(figure);
-    if (what & cFigure::CHANGE_GEOMETRY) {
-        anchor(imageFigure->getAnchor(), argc, argv);
-        argv[argc++] = "-width";
-        argv[argc++] = dtoa(imageFigure->getWidth());
-        argv[argc++] = "-height";
-        argv[argc++] = dtoa(imageFigure->getHeight());
-    }
-    if (what & cFigure::CHANGE_VISUAL) {
-        interpolation(imageFigure->getInterpolation(), argc, argv);
-        argv[argc++] = "-fillopacity";
-        argv[argc++] = dtoa(imageFigure->getOpacity());
-        argv[argc++] = "-tintcolor";
-        argv[argc++] = color(imageFigure->getTintColor());
-        argv[argc++] = "-tintamount";
-        argv[argc++] = dtoa(imageFigure->getTintAmount());
-    }
-}
-
-//----
-
-void ImageFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    AbstractImageFigureRenderer::addOptions(figure, what, interp, argc, argv, transform, hints);
-
-    cImageFigure *imageFigure = check_and_cast<cImageFigure*>(figure);
-    if (what & cFigure::CHANGE_INPUTDATA) {
-        const char *imageName = Tcl_GetVar2(interp, "bitmaps", TCLCONST(imageFigure->getImageName()), TCL_GLOBAL_ONLY);
-        if (!imageName)
-            imageName = Tcl_GetVar2(interp, "icons", "unknown", TCL_GLOBAL_ONLY);
-        ASSERT(imageName);
-        argv[argc++] = "-image";
-        argv[argc++] = imageName;
-    }
-}
-
-//----
-
-void IconFigureRenderer::addMatrix(cFigure *figure, const cFigure::Transform& transform, int& argc, const char *argv[])
-{
-    // no matrix -- icon should not be affected by transforms
-}
-
-std::string IconFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    cIconFigure *iconFigure = check_and_cast<cIconFigure*>(figure);
-    return point(transform.applyTo(iconFigure->getPosition()));
-}
-
-//----
-
-void PixmapFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    AbstractImageFigureRenderer::addOptions(figure, what, interp, argc, argv, transform, hints);
-
-    cPixmapFigure *pixmapFigure = check_and_cast<cPixmapFigure*>(figure);
-    if (what & cFigure::CHANGE_INPUTDATA) {
-        char *imageName = getBuf(32);
-        sprintf(imageName, "pixmap%d", figure->getId());
-        const cFigure::Pixmap& pixmap = pixmapFigure->getPixmap();
-        ensureImage(interp, imageName, pixmap);
-        argv[argc++] = "-image";
-        argv[argc++] = imageName;
-    }
-}
-
-void PixmapFigureRenderer::ensureImage(Tcl_Interp *interp, const char *imageName, const cFigure::Pixmap& pixmap)
-{
-/*Qt!
-    Tk_PhotoHandle handle = Tk_FindPhoto(interp, TCLCONST(imageName));
-    if (!handle)
+    /* If rx , ry and are such that there is no solution (basically,
+     * the ellipse is not big enough to reach from (x1, y1) to (x2,
+     * y2)) then the ellipse is scaled up uniformly until there is
+     * exactly one solution (until the ellipse is just big enough).
+     * 	-> find factor s, such that numerator' with rx'=s*rx and
+     *    ry'=s*ry becomes 0 :
+     */
+    if(numerator < 0)
     {
-        char cmd[80];
-        sprintf(cmd, "image create photo %s -width %d -height %d", imageName, pixmap.getWidth(), pixmap.getHeight());
-        CHK(Tcl_Eval(interp, cmd));
-        handle = Tk_FindPhoto(interp, TCLCONST(imageName));
-        if (!handle)
-            return;
+        double s = sqrt(1.0 - numerator/(rx*rx*ry*ry));
+        rx *= s;
+        ry *= s;
+        rootFactor = 0;
     }
+    else
+        rootFactor = sqrt(numerator/(rx*rx*y1Dash*y1Dash + ry*ry*x1Dash*x1Dash));
 
-    Tk_PhotoImageBlock imageBlock;
-    Tk_PhotoGetImage(handle, &imageBlock);
+    double cxDash = sign*rootFactor*rx*y1Dash/ry;
+    double cyDash = -sign*rootFactor*ry*x1Dash/rx;
 
-    if (imageBlock.pixelSize != 4)
+    //Step 3
+    centerX = cos(angle)*cxDash - sin(angle)*cyDash + (startX+endX)/2;
+    centerY = sin(angle)*cxDash + cos(angle)*cyDash + (startY+endY)/2;
+
+    //Step 4?
+    startAngle = calcVectorAngle(1, 0, (x1Dash-cxDash)/rx, (y1Dash-cyDash)/ry);
+    sweepLength = calcVectorAngle((x1Dash-cxDash)/rx, (y1Dash-cyDash)/ry, (-x1Dash-cxDash)/rx, (-y1Dash-cyDash)/ry);
+
+    if(sweepFlag && sweepLength < 0)
+        sweepLength += 2*M_PI;
+    else if(!sweepFlag && sweepLength > 0)
+        sweepLength -= 2*M_PI;
+
+    return ARC_ARC;
+}
+
+void FigureRenderer::arcToUsingBezier(QPainterPath &painter, double currentX, double currentY, double x, double y, double rx, double ry, double angle,
+                              bool largeArcFlag, bool sweepFlag, bool isRel) const
+{
+    double centerX, centerY;
+    double startAngle, sweepLength;
+    double phi = angle * M_PI/180;
+
+    double endX, endY;
+    if(isRel)
     {
-        getTkenv()->logTclError(__FILE__, __LINE__, "PixmapFigureRenderer: unsupported color depth (pixelSize!=4)");
-        return;
+        endX = x + currentX;
+        endY = y + currentY;
     }
+    else
+    {
+        endX = x;
+        endY = y;
+    }
+    ArcShape shape = endPointToCentralFromArcParameters(currentX, currentY, endX, endY, largeArcFlag, sweepFlag, rx, ry, phi, centerX, centerY, startAngle, sweepLength);
 
-    if (imageBlock.width != pixmap.getWidth() || imageBlock.height != pixmap.getHeight())
-        Tk_PhotoSetSize(interp, handle, pixmap.getWidth(), pixmap.getHeight());
-
-    int width = imageBlock.width;
-    int height = imageBlock.height;
-
-    // copy pixels
-    int redOffset = imageBlock.offset[0];
-    int greenOffset = imageBlock.offset[1];
-    int blueOffset = imageBlock.offset[2];
-    int alphaOffset = imageBlock.offset[3];
-    bool compatible = redOffset==0 && greenOffset==1 && blueOffset==2 && alphaOffset==3; // pixel layout is same as cFigure::RGBA
-    if (compatible && imageBlock.pitch == 4 * width)
-        memcpy(imageBlock.pixelPtr, pixmap.buffer(), width * height * 4);
-    else {
-        for (int y = 0; y < height; y++)
+    switch(shape)
+    {
+        case ARC_LINE:
         {
-            unsigned char *pixel = imageBlock.pixelPtr + y*imageBlock.pitch;
-            if (compatible)
-                memcpy(pixel, pixmap.buffer() + y * width * 4, width * 4);
-            else
+            painter.moveTo(endX, endY);
+            break;
+        }
+        case ARC_ARC:
+        {
+            int segments = (int) ceil(fabs(sweepLength/(M_PI/2.0)));
+            double delta = sweepLength/segments;
+            double t = 8.0/3.0 * sin(delta/4.0) * sin(delta/4.0) / sin(delta/2.0);
+
+            double x1 = currentX;
+            double y1 = currentY;
+            for (int j = 0; j < segments; ++j)
             {
-                for (int x = 0; x < width; x++, pixel += 4)
-                {
-                    cFigure::RGBA px = pixmap.pixel(x, y);
-                    pixel[redOffset] = px.red;
-                    pixel[greenOffset] = px.green;
-                    pixel[blueOffset] = px.blue;
-                    pixel[alphaOffset] = px.alpha;
-                }
+                double theta2 = startAngle + delta;
+                double cosTheta2 = cos(theta2);
+                double sinTheta2 = sin(theta2);
+
+                // a) calculate endpoint of the segment:
+                double xe = cos(phi) * rx*cosTheta2 - sin(phi) * ry*sinTheta2 + centerX;
+                double ye = sin(phi) * rx*cosTheta2 + cos(phi) * ry*sinTheta2 + centerY;
+
+                // b) calculate gradients at start/end points of segment:
+                double dx1 = t * ( - cos(phi) * rx*sin(startAngle) - sin(phi) * ry*cos(startAngle));
+                double dy1 = t * ( - sin(phi) * rx*sin(startAngle) + cos(phi) * ry*cos(startAngle));
+                double dxe = t * ( cos(phi) * rx*sinTheta2 + sin(phi) * ry*cosTheta2);
+                double dye = t * ( sin(phi) * rx*sinTheta2 - cos(phi) * ry*cosTheta2);
+
+                // c) draw the cubic bezier:
+                painter.cubicTo(x1+dx1, y1+dy1, xe+dxe, ye+dye, xe, ye);
+
+                // do next segment
+                startAngle = theta2;
+                x1 = xe;
+                y1 = ye;
+            }
+            break;
+        }
+        case ARC_NOTHING: break;
+    }
+}
+
+//for Svg's T statement
+void FigureRenderer::calcSmoothBezierCP(QPainterPath &painter, char prevCommand, double currentX, double currentY,
+                                        double &cpx, double &cpy, double x, double y, bool isRel) const
+{
+    if(tolower(prevCommand) == 'q' || tolower(prevCommand) == 't')
+    {
+        if(cpx < currentX)
+            cpx = currentX + fabs(currentX - cpx);
+        else
+            cpx = currentX - fabs(currentX - cpx);
+
+        if(cpy < currentY)
+            cpy = currentY + fabs(currentY - cpy);
+        else
+            cpy = currentY - fabs(currentY - cpy);
+    }
+    else
+    {
+        cpx = currentX;
+        cpy = currentY;
+    }
+
+    if(isRel)
+        painter.quadTo(cpx, cpy, x + currentX, y + currentY);
+    else
+        painter.quadTo(cpx, cpy, x, y);
+}
+
+//for Svg's S statement
+void FigureRenderer::calcSmoothQuadBezierCP(QPainterPath &painter, char prevCommand, double currentX, double currentY, double &prevCpx, double &prevCpy, double cpx, double cpy,
+                                    double x, double y, bool isRel) const
+{
+    if(tolower(prevCommand) == 's' || tolower(prevCommand) == 'c')
+    {
+        if(prevCpx < currentX)
+            prevCpx = currentX + fabs(currentX - prevCpx);
+        else
+            prevCpx = currentX - fabs(currentX - prevCpx);
+
+        if(prevCpy < currentY)
+            prevCpy = currentY + fabs(currentY - prevCpy);
+        else
+            prevCpy = currentY - fabs(currentY - prevCpy);
+    }
+    else
+    {
+        prevCpx = currentX;
+        prevCpy = currentY;
+    }
+    if(isRel)
+        painter.cubicTo(prevCpx, prevCpy, cpx, cpy, x + currentX, y + currentY);
+    else
+        painter.cubicTo(prevCpx, prevCpy, cpx, cpy, x, y);
+}
+
+
+QPen FigureRenderer::createPen(const cAbstractLineFigure *figure) const
+{
+    cFigure::Color color = figure->getLineColor();
+    QPen pen;
+    pen.setColor(QColor(color.red, color.green, color.blue, figure->getLineOpacity()*255));
+    pen.setWidthF(figure->getLineWidth());
+
+    Qt::PenStyle style;
+    switch(figure->getLineStyle())
+    {
+        case cFigure::LINE_SOLID: style = Qt::SolidLine; break;
+        case cFigure::LINE_DOTTED: style = Qt::DotLine; break;
+        case cFigure::LINE_DASHED: style = Qt::DashLine; break;
+    }
+    pen.setStyle(style);
+
+    Qt::PenCapStyle cap;
+    switch(figure->getCapStyle())
+    {
+        case cFigure::CAP_BUTT: cap = Qt::FlatCap; break;
+        case cFigure::CAP_SQUARE: cap = Qt::SquareCap; break;
+        case cFigure::CAP_ROUND: cap = Qt::RoundCap; break;
+    }
+    pen.setCapStyle(cap);
+
+    return pen;
+}
+
+QPen FigureRenderer::createPen(const cAbstractShapeFigure * figure) const
+{
+    QPen pen;
+    if(figure->isOutlined())
+    {
+        cFigure::Color color = figure->getLineColor();
+        pen.setColor(QColor(color.red, color.green, color.blue, figure->getLineOpacity()*255));
+        pen.setWidthF(figure->getLineWidth());
+
+        Qt::PenStyle style;
+        switch(figure->getLineStyle())
+        {
+            case cFigure::LINE_SOLID: style = Qt::SolidLine; break;
+            case cFigure::LINE_DOTTED: style = Qt::DotLine; break;
+            case cFigure::LINE_DASHED: style = Qt::DashLine; break;
+        }
+        pen.setStyle(style);
+    }
+    else
+        pen.setStyle(Qt::NoPen);
+
+    return pen;
+}
+
+QBrush FigureRenderer::createBrush(const cAbstractShapeFigure *figure) const
+{
+    if(figure->isFilled())
+    {
+        cFigure::Color color = figure->getFillColor();
+        return QBrush(QColor(color.red, color.green, color.blue, figure->getFillOpacity()*255));//setColor not working
+    }
+    else
+        return QBrush(Qt::NoBrush);
+}
+
+//TODO setScaleLineWidth when is in omnet++
+void FigureRenderer::setTransform(const cFigure::Transform &transform, QGraphicsItem* item, const QPointF *offset) const
+{
+    QTransform qTrans(transform.a, transform.b, 0, transform.c, transform.d, 0, transform.t1, transform.t2, 1);
+    if(offset)
+        qTrans.translate(offset->x(), offset->y());
+    item->setTransform(qTrans);
+}
+
+//TODO hints
+void FigureRenderer::render(cFigure *figure, QGraphicsScene *scene, const cFigure::Transform &transform, FigureRenderingHints *hints)
+{
+    QGraphicsItem *item = createGeometry(figure);
+    createVisual(figure, item);
+
+    items[figure->getId()] = item;
+    refreshTransform(figure, transform);
+
+    if(item)
+        scene->addItem(item);
+}
+
+void FigureRenderer::refresh(cFigure *figure, int8_t what, const cFigure::Transform &transform, FigureRenderingHints *hints)
+{
+    if(what & cFigure::CHANGE_VISUAL)
+        refreshVisual(figure);
+    if(what & (cFigure::CHANGE_GEOMETRY | cFigure::CHANGE_INPUTDATA))
+        refreshGeometry(figure);
+    if(what & cFigure::CHANGE_TRANSFORM)
+        refreshTransform(figure, transform);
+}
+
+void FigureRenderer::refreshTransform(cFigure *figure, const cFigure::Transform &transform)
+{
+    setTransform(transform, items[figure->getId()]);
+}
+
+QGraphicsItem *FigureRenderer::createGeometry(cFigure *figure)
+{
+    QGraphicsItem *item = newItem();
+    setItemGeometryProperties(figure, item);
+    return item;
+}
+
+void FigureRenderer::refreshGeometry(cFigure *figure)
+{
+    setItemGeometryProperties(figure, items[figure->getId()]);
+}
+
+void FigureRenderer::refreshVisual(cFigure *figure)
+{
+    createVisual(figure, items[figure->getId()]);
+}
+
+void AbstractShapeFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
+{
+    cAbstractShapeFigure *shapeFigure = static_cast<cAbstractShapeFigure*>(figure);
+    QAbstractGraphicsShapeItem *shapeItem = static_cast<QAbstractGraphicsShapeItem*>(item);
+    shapeItem->setPen(createPen(shapeFigure));
+    shapeItem->setBrush(createBrush(shapeFigure));
+}
+
+void AbstractTextFigureRenderer::refreshTransform(cFigure *figure, const cFigure::Transform &transform)
+{
+    QGraphicsSimpleTextItem *item = static_cast<QGraphicsSimpleTextItem*>(items[figure->getId()]);
+    cAbstractTextFigure *textFigure = static_cast<cAbstractTextFigure*>(figure);
+
+    cFigure::Point pos = textFigure->getPosition();
+
+    QFontMetrics fontMetric(item->font());
+    QRectF bounds = item->boundingRect();
+    QPointF anchor;
+    switch(textFigure->getAnchor())
+    {
+        case cFigure::ANCHOR_CENTER:
+            anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height()/2);
+            break;
+        case cFigure::ANCHOR_N:
+            anchor = QPointF(pos.x - bounds.width()/2, pos.y);
+            break;
+        case cFigure::ANCHOR_E:
+            anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height()/2);
+            break;
+        case cFigure::ANCHOR_S:
+            anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height());
+            break;
+        case cFigure::ANCHOR_W:
+            anchor = QPointF(pos.x, pos.y - bounds.height()/2);
+            break;
+        case cFigure::ANCHOR_NE:
+            anchor = QPointF(pos.x - bounds.width(), pos.y);
+            break;
+        case cFigure::ANCHOR_SE:
+            anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height());
+            break;
+        case cFigure::ANCHOR_SW:
+            anchor = QPointF(pos.x, pos.y - bounds.height());
+            break;
+        case cFigure::ANCHOR_NW:
+            anchor = QPointF(pos.x, pos.y);
+            break;
+        case cFigure::ANCHOR_BASELINE_START:
+            anchor = QPointF(pos.x, pos.y - fontMetric.ascent());
+            break;
+        case cFigure::ANCHOR_BASELINE_MIDDLE:
+            anchor = QPointF(pos.x - bounds.width()/2, pos.y - fontMetric.ascent());
+            break;
+        case cFigure::ANCHOR_BASELINE_END:
+            anchor = QPointF(pos.x - bounds.width(), pos.y - fontMetric.ascent());
+            break;
+    }
+
+    setTransform(transform, items[figure->getId()], &anchor);
+}
+
+void AbstractImageFigureRenderer::refreshTransform(cFigure *figure, const cFigure::Transform &transform)
+{
+    QGraphicsPixmapItem *item = static_cast<QGraphicsPixmapItem*>(items[figure->getId()]);
+    cAbstractImageFigure *imageFigure = static_cast<cAbstractImageFigure*>(figure);
+
+    QRectF bounds = item->boundingRect();
+    cFigure::Point pos = imageFigure->getPosition();
+    QPointF anchor;
+
+    switch(imageFigure->getAnchor())
+    {
+        case cFigure::ANCHOR_CENTER:
+            anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height()/2);
+            break;
+        case cFigure::ANCHOR_N:
+            anchor = QPointF(pos.x - bounds.width()/2, pos.y);
+            break;
+        case cFigure::ANCHOR_E:
+            anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height()/2);
+            break;
+        case cFigure::ANCHOR_S:
+            anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height());
+            break;
+        case cFigure::ANCHOR_W:
+            anchor = QPointF(pos.x, pos.y - bounds.height()/2);
+            break;
+        case cFigure::ANCHOR_NE:
+            anchor = QPointF(pos.x - bounds.width(), pos.y);
+            break;
+        case cFigure::ANCHOR_SE:
+            anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height());
+            break;
+        case cFigure::ANCHOR_SW:
+            anchor = QPointF(pos.x, pos.y - bounds.height());
+            break;
+        case cFigure::ANCHOR_NW:
+            anchor = QPointF(pos.x, pos.y);
+            break;
+        case cFigure::ANCHOR_BASELINE_START:
+        case cFigure::ANCHOR_BASELINE_MIDDLE:
+        case cFigure::ANCHOR_BASELINE_END:
+            break;
+    }
+
+    setTransform(transform, items[figure->getId()], &anchor);
+}
+
+//TODO: Start/End Arrow
+void LineFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+{
+    cLineFigure *lineFigure = static_cast<cLineFigure*>(figure);
+    GraphicsPathArrowItem *lineItem = static_cast<GraphicsPathArrowItem*>(item);
+
+    cFigure::Point startPoint = lineFigure->getStart();
+    cFigure::Point endPoint = lineFigure->getEnd();
+    QPainterPath painter(QPointF(startPoint.x, startPoint.y));
+    painter.lineTo(endPoint.x, endPoint.y);
+    lineItem->setPath(painter);
+}
+
+void LineFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
+{
+    GraphicsPathArrowItem *lineItem = static_cast<GraphicsPathArrowItem*>(item);
+    lineItem->setPen(createPen(static_cast<cAbstractLineFigure*>(figure)));
+}
+
+QGraphicsItem *LineFigureRenderer::newItem()
+{
+    return new GraphicsPathArrowItem();
+}
+
+void ArcFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+{
+    cArcFigure *arcFigure = static_cast<cArcFigure*>(figure);
+    QGraphicsPathItem* arcItem = static_cast<QGraphicsPathItem*>(item);
+
+    cFigure::Rectangle bounds = arcFigure->getBounds();
+    cFigure::Point startPoint = polarToCertasian(bounds.getCenter(), bounds.width/2, bounds.height/2 ,arcFigure->getStartAngle());
+    QPainterPath painter(QPointF(startPoint.x, startPoint.y));
+    painter.arcTo(bounds.x, bounds.y, bounds.width, bounds.height, arcFigure->getStartAngle()*180/M_PI, qAbs(arcFigure->getStartAngle()-arcFigure->getEndAngle())*180/M_PI);
+    arcItem->setPath(painter);
+}
+
+void ArcFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
+{
+    QGraphicsPathItem *arcItem = static_cast<QGraphicsPathItem*>(item);
+    arcItem->setPen(createPen(static_cast<cAbstractLineFigure*>(figure)));
+}
+
+QGraphicsItem *ArcFigureRenderer::newItem()
+{
+    return new QGraphicsPathItem();
+}
+
+void PolylineFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+{
+    cPolylineFigure *polyFigure = static_cast<cPolylineFigure*>(figure);
+    QGraphicsPathItem *polyItem = static_cast<QGraphicsPathItem*>(item);
+
+    std::vector<cFigure::Point> points = polyFigure->getPoints();
+    if (points.size() < 2)
+        {}//throw cRuntimeError("PolylineFigureRenderer: points.size() < 2");
+
+    QPainterPath painter;
+
+    painter.moveTo(points[0].x, points[0].y);
+
+    if(points.size() == 2)
+        painter.lineTo(points[1].x, points[1].y);
+    else if(polyFigure->getSmooth())
+    {
+        for (size_t i = 2; i < points.size(); i++)
+        {
+            const cFigure::Point &control = points[i-1];
+            bool isLast = (i == points.size()-1);
+            cFigure::Point to = isLast ? points[i] : (points[i-1] + points[i]) * 0.5;
+            painter.quadTo(control.x, control.y, to.x, to.y);
+        }
+    }
+    else
+        for (size_t i = 1; i < points.size(); i++)
+            painter.lineTo(points[i].x, points[i].y);
+
+    polyItem->setPath(painter);
+}
+
+void PolylineFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
+{
+    cPolylineFigure *polyFigure = static_cast<cPolylineFigure*>(figure);
+    QGraphicsPathItem *polyItem = static_cast<QGraphicsPathItem*>(item);
+
+    if(!(figure->getParentFigure()->getLocalChangeFlags() & cFigure::CHANGE_STRUCTURAL || figure->getLocalChangeFlags() & cFigure::CHANGE_GEOMETRY))
+        setItemGeometryProperties(polyFigure, polyItem);
+
+    QPen pen = createPen(polyFigure);
+    Qt::PenJoinStyle joinStyle;
+
+    switch(polyFigure->getJoinStyle())
+    {
+        case cFigure::JOIN_BEVEL: joinStyle = Qt::BevelJoin; break;
+        case cFigure::JOIN_MITER: joinStyle = Qt::MiterJoin; break;
+        case cFigure::JOIN_ROUND: joinStyle = Qt::RoundJoin; break;
+    }
+    pen.setJoinStyle(joinStyle);
+
+    polyItem->setPen(pen);
+}
+
+QGraphicsItem *PolylineFigureRenderer::newItem()
+{
+    return new QGraphicsPathItem();
+}
+
+void RectangleFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+{
+    cRectangleFigure *rectFigure = static_cast<cRectangleFigure*>(figure);
+    QGraphicsPathItem *rectItem = static_cast<QGraphicsPathItem*>(item);
+    cFigure::Rectangle bounds = rectFigure->getBounds();
+    QPainterPath painter;
+
+    painter.addRoundedRect(bounds.x, bounds.y, bounds.width, bounds.height, rectFigure->getCornerRx(), rectFigure->getCornerRy());
+    rectItem->setPath(painter);
+}
+
+QGraphicsItem *RectangleFigureRenderer::newItem()
+{
+    return new QGraphicsPathItem();
+}
+
+void OvalFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+{
+    cOvalFigure *ovalFigure = static_cast<cOvalFigure*>(figure);
+    QGraphicsEllipseItem *ellipseItem = static_cast<QGraphicsEllipseItem*>(item);
+
+    cFigure::Rectangle bounds = ovalFigure->getBounds();
+    ellipseItem->setRect(bounds.x, bounds.y, bounds.width, bounds.height);
+}
+
+QGraphicsItem *OvalFigureRenderer::newItem()
+{
+    return new QGraphicsEllipseItem();
+}
+
+void RingFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+{
+    cRingFigure *ringFigure = static_cast<cRingFigure*>(figure);
+    QGraphicsPathItem *ringItem = static_cast<QGraphicsPathItem*>(item);
+    QPainterPath painter;
+    cFigure::Rectangle bounds = ringFigure->getBounds();
+    cFigure::Point center = bounds.getCenter();
+
+    painter.addEllipse(bounds.x, bounds.y, bounds.width, bounds.height);
+
+    double innerRx = ringFigure->getInnerRx();
+    double innerRy = ringFigure->getInnerRy();
+    painter.addEllipse(center.x-innerRx, center.y-innerRy, 2*innerRx, 2*innerRy);
+
+    ringItem->setPath(painter);
+}
+
+QGraphicsItem *RingFigureRenderer::newItem()
+{
+    return new QGraphicsPathItem();
+}
+
+void PieSliceFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+{
+    cPieSliceFigure *pieSliceFigure = static_cast<cPieSliceFigure*>(figure);
+    QGraphicsEllipseItem *pieSliceItem = static_cast<QGraphicsEllipseItem*>(item);
+    cFigure::Rectangle bounds = pieSliceFigure->getBounds();
+    pieSliceItem->setRect(bounds.x, bounds.y, bounds.width, bounds.height);
+
+    pieSliceItem->setStartAngle(16*pieSliceFigure->getStartAngle()*180/M_PI);
+    double endAngle = std::abs(std::abs(pieSliceFigure->getEndAngle())-std::abs(pieSliceFigure->getStartAngle())) * 180/M_PI;
+    pieSliceItem->setSpanAngle(16*endAngle);
+}
+
+QGraphicsItem *PieSliceFigureRenderer::newItem()
+{
+    return new QGraphicsEllipseItem();
+}
+
+void PolygonFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+{
+    cPolygonFigure *polyFigure = static_cast<cPolygonFigure*>(figure);
+    QGraphicsPathItem *polyItem = static_cast<QGraphicsPathItem*>(item);
+
+    QPainterPath painter;
+
+    std::vector<cFigure::Point> points = polyFigure->getPoints();
+    if (points.size() < 2)
+        {}//throw cRuntimeError("PolylineFigureRenderer: points.size() < 2");
+
+    if (points.size() == 2)
+    {
+        painter.moveTo(points[0].x, points[0].y);
+        painter.lineTo(points[1].x, points[1].y);
+    }
+    else if (polyFigure->getSmooth())
+    {
+        cFigure::Point start = (points[0] + points[1]) * 0.5;
+        painter.moveTo(start.x, start.y);
+
+        for (size_t i = 0; i < points.size(); i++)
+        {
+            int i1 = (i + 1) % points.size();
+            int i2 = (i + 2) % points.size();
+
+            cFigure::Point control = points[i1];
+            cFigure::Point to = (points[i1] + points[i2]) * 0.5;
+
+            painter.quadTo(control.x, control.y, to.x, to.y);
+        }
+    }
+    else
+    {
+        painter.moveTo(points[0].x, points[0].y);
+
+        for (size_t i = 0; i < points.size(); i++)
+            painter.lineTo(points[i].x, points[i].y);
+    }
+
+    painter.closeSubpath();
+
+    polyItem->setPath(painter);
+}
+
+void PolygonFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
+{
+    cPolygonFigure *polyFigure = static_cast<cPolygonFigure*>(figure);
+    QGraphicsPathItem *polyItem = static_cast<QGraphicsPathItem*>(item);
+
+    if(!(figure->getParentFigure()->getLocalChangeFlags() & cFigure::CHANGE_STRUCTURAL || figure->getLocalChangeFlags() & cFigure::CHANGE_GEOMETRY))
+        setItemGeometryProperties(polyFigure, polyItem);
+
+    QPainterPath painter = polyItem->path();
+
+    if(polyFigure->getFillRule() == cFigure::FILL_EVENODD)
+        painter.setFillRule(Qt::WindingFill);
+    else
+        painter.setFillRule(Qt::OddEvenFill);
+
+    polyItem->setPath(painter);
+
+    QPen pen = createPen(polyFigure);
+    Qt::PenJoinStyle joinStyle;
+
+    switch(polyFigure->getJoinStyle())
+    {
+        case cFigure::JOIN_BEVEL: joinStyle = Qt::BevelJoin; break;
+        case cFigure::JOIN_MITER: joinStyle = Qt::MiterJoin; break;
+        case cFigure::JOIN_ROUND: joinStyle = Qt::RoundJoin; break;
+    }
+
+    pen.setJoinStyle(joinStyle);
+    polyItem->setPen(pen);
+    polyItem->setBrush(createBrush(polyFigure));
+}
+
+QGraphicsItem *PolygonFigureRenderer::newItem()
+{
+    return new QGraphicsPathItem();
+}
+
+void PathFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+{
+    cPathFigure *pathFigure = static_cast<cPathFigure*>(figure);
+    QGraphicsPathItem *pathItem = static_cast<QGraphicsPathItem*>(item);
+    QPainterPath painter;
+
+    //parse
+    std::stringstream path(pathFigure->getPath());
+    std::string token;
+    std::vector<std::string> tokens;
+
+    while(getline(path, token, ' '))
+        tokens.push_back(token);
+
+    char prevCommand;
+    cFigure::Point controlPoint;
+
+    //figure->getPath will be validate
+    for(size_t i = 0; i < tokens.size(); ++i)
+    {
+        char command = tokens[i][0];
+        QPointF pos = painter.currentPosition();
+        switch(tokens[i][0])
+        {
+            case 'M':
+            {
+                painter.moveTo(stod(tokens[i+1]), stod(tokens[i+2]));
+                i += 2;
+                break;
+            }
+            case 'm':
+            {
+                painter.moveTo(pos.x() + stod(tokens[i+1]), pos.y() + stod(tokens[i+2]));
+                i += 2;
+                break;
+            }
+            case 'L':
+            {
+                painter.lineTo(stod(tokens[i+1]), stod(tokens[i+2]));
+                i += 2;
+                break;
+            }
+            case 'l':
+            {
+                painter.lineTo(pos.x() + stod(tokens[i+1]), pos.y() + stod(tokens[i+2]));
+                i += 2;
+                break;
+            }
+            case 'H':
+            {
+                painter.lineTo(stod(tokens[i+1]), pos.y());
+                ++i;
+                break;
+            }
+            case 'h':
+            {
+                painter.lineTo(pos.x() + stod(tokens[i+1]), pos.y());
+                ++i;
+                break;
+            }
+            case 'V':
+            {
+                painter.lineTo(pos.x(), stod(tokens[i+1]));
+                ++i;
+                break;
+            }
+            case 'v':
+            {
+                painter.lineTo(pos.x(), pos.y() + stod(tokens[i+1]));
+                ++i;
+                break;
+            }
+            case 'A':
+            {
+                arcToUsingBezier(painter, pos.x(), pos.y(), stod(tokens[i+6]), stod(tokens[i+7]), stod(tokens[i+1]), stod(tokens[i+2]),
+                        stod(tokens[i+3]), stoi(tokens[i+4]), stoi(tokens[i+5]), false);
+                i += 7;
+                break;
+            }
+            case 'a':
+            {
+                arcToUsingBezier(painter, pos.x(), pos.y(), stod(tokens[i+6]), stod(tokens[i+7]), stod(tokens[i+1]), stod(tokens[i+2]),
+                        stod(tokens[i+3]), stoi(tokens[i+4]), stoi(tokens[i+5]), true);
+                i += 7;
+                break;
+            }
+            case 'Q':
+            {
+                controlPoint = cFigure::Point(stod(tokens[i+1]), stod(tokens[i+2]));
+                painter.quadTo(controlPoint.x, controlPoint.y, stod(tokens[i+3]), stod(tokens[i+4]));
+                i += 4;
+                break;
+            }
+            case 'q':
+            {
+                QPointF pos = painter.currentPosition();
+                controlPoint = cFigure::Point(stod(tokens[i+1]), stod(tokens[i+2]));
+                painter.quadTo(controlPoint.x, controlPoint.y, pos.x() + stod(tokens[i+3]), pos.y() + stod(tokens[i+4]));
+                i += 4;
+                break;
+            }
+            case 'T':
+            {
+                calcSmoothBezierCP(painter, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y, stod(tokens[i+1]), stod(tokens[i+2]));
+                i += 2;
+                break;
+            }
+            case 't':
+            {
+                calcSmoothBezierCP(painter, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y, stod(tokens[i+1]), stod(tokens[i+2]), true);
+                i += 2;
+                break;
+            }
+            case 'C':
+            {
+                controlPoint = cFigure::Point(stod(tokens[i+3]), stod(tokens[i+4]));
+                painter.cubicTo(stod(tokens[i+1]), stod(tokens[i+2]), stod(tokens[i+3]), stod(tokens[i+4]), stod(tokens[i+5]),
+                        stod(tokens[i+6]));
+                i += 6;
+                break;
+            }
+            case 'c':
+            {
+                controlPoint = cFigure::Point(stod(tokens[i+3]), stod(tokens[i+4]));
+                painter.cubicTo(stod(tokens[i+1]), stod(tokens[i+2]), stod(tokens[i+3]), stod(tokens[i+4]), pos.x() + stod(tokens[i+5]),
+                        pos.y() + stod(tokens[i+6]));
+                i += 6;
+                break;
+            }
+            case 'S':
+            {
+                calcSmoothQuadBezierCP(painter, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y, stod(tokens[i+1]), stod(tokens[i+2]), stod(tokens[i+3]), stod(tokens[i+4]));
+                i += 4;
+                break;
+            }
+            case 's':
+            {
+                calcSmoothQuadBezierCP(painter, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y, stod(tokens[i+1]), stod(tokens[i+2]), stod(tokens[i+3]), stod(tokens[i+4]), true);
+                i += 4;
+                break;
+            }
+            case 'Z':
+            {
+                painter.closeSubpath();
+                break;
             }
         }
+        prevCommand = command;
     }
-*/
+
+    pathItem->setPath(painter);
+    cFigure::Point offset = pathFigure->getOffset();
+    pathItem->setTransform(QTransform().scale(offset.x, offset.y));
 }
 
-} //namespace
-NAMESPACE_END
+void PathFigureRenderer::refreshTransform(cFigure *figure, const cFigure::Transform &transform)
+{
+    cFigure::Point offset = static_cast<cPathFigure*>(figure)->getOffset();
+    QPointF qOffset = QPointF(offset.x, offset.y);
+    setTransform(transform, items[figure->getId()], &qOffset);
+}
 
+void PathFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
+{
+    cPathFigure *pathFigure = static_cast<cPathFigure*>(figure);
+    QGraphicsPathItem *shapeItem = static_cast<QGraphicsPathItem*>(item);
+
+    QPainterPath painter = shapeItem->path();
+    if(pathFigure->getFillRule() == cFigure::FILL_EVENODD)
+        painter.setFillRule(Qt::WindingFill);
+    else
+        painter.setFillRule(Qt::OddEvenFill);
+    shapeItem->setPath(painter);
+
+    QPen pen = createPen(pathFigure);
+    Qt::PenJoinStyle joinStyle;
+
+    switch(pathFigure->getJoinStyle())
+    {
+        case cFigure::JOIN_BEVEL: joinStyle = Qt::BevelJoin; break;
+        case cFigure::JOIN_MITER: joinStyle = Qt::MiterJoin; break;
+        case cFigure::JOIN_ROUND: joinStyle = Qt::RoundJoin; break;
+    }
+    pen.setJoinStyle(joinStyle);
+
+    Qt::PenCapStyle cap;
+    switch(pathFigure->getCapStyle())
+    {
+        case cFigure::CAP_BUTT: cap = Qt::FlatCap; break;
+        case cFigure::CAP_SQUARE: cap = Qt::SquareCap; break;
+        case cFigure::CAP_ROUND: cap = Qt::RoundCap; break;
+    }
+    pen.setCapStyle(cap);
+
+    shapeItem->setPen(pen);
+    shapeItem->setBrush(createBrush(pathFigure));
+}
+
+QGraphicsItem *PathFigureRenderer::newItem()
+{
+    return new QGraphicsPathItem();
+}
+
+void TextFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+{
+    cAbstractTextFigure *textFigure = static_cast<cAbstractTextFigure*>(figure);
+    QGraphicsSimpleTextItem *textItem = static_cast<QGraphicsSimpleTextItem*>(item);
+    textItem->setText(textFigure->getText());
+
+    cFigure::Point pos = textFigure->getPosition();
+    cFigure::Font font = textFigure->getFont();
+    QFont qFont(font.typeface.c_str());
+
+    qFont.setBold(font.style & cFigure::FONT_BOLD);
+    qFont.setItalic(font.style & cFigure::FONT_ITALIC);
+    qFont.setUnderline(font.style & cFigure::FONT_UNDERLINE);
+    qFont.setPixelSize(font.pointSize <= 0 ? 16 : font.pointSize);
+
+    textItem->setFont(qFont);
+
+    QRectF bounds = textItem->boundingRect();
+
+    QFontMetrics fontMetric(qFont);
+    textItem->setPos(0,0);
+    QPointF anchor;
+
+    switch(textFigure->getAnchor())
+    {
+        case cFigure::ANCHOR_CENTER:
+            anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height()/2);
+            break;
+        case cFigure::ANCHOR_N:
+            anchor = QPointF(pos.x - bounds.width()/2, pos.y);
+            break;
+        case cFigure::ANCHOR_E:
+            anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height()/2);
+            break;
+        case cFigure::ANCHOR_S:
+            anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height());
+            break;
+        case cFigure::ANCHOR_W:
+            anchor = QPointF(pos.x, pos.y - bounds.height()/2);
+            break;
+        case cFigure::ANCHOR_NE:
+            anchor = QPointF(pos.x - bounds.width(), pos.y);
+            break;
+        case cFigure::ANCHOR_SE:
+            anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height());
+            break;
+        case cFigure::ANCHOR_SW:
+            anchor = QPointF(pos.x, pos.y - bounds.height());
+            break;
+        case cFigure::ANCHOR_NW:
+            anchor = QPointF(pos.x, pos.y);
+            break;
+        case cFigure::ANCHOR_BASELINE_START:
+            anchor = QPointF(pos.x, pos.y - fontMetric.ascent());
+            break;
+        case cFigure::ANCHOR_BASELINE_MIDDLE:
+            anchor = QPointF(pos.x - bounds.width()/2, pos.y - fontMetric.ascent());
+            break;
+        case cFigure::ANCHOR_BASELINE_END:
+            anchor = QPointF(pos.x - bounds.width(), pos.y - fontMetric.ascent());
+            break;
+    }
+    textItem->setTransform(QTransform().translate(anchor.x(), anchor.y()));
+}
+
+void TextFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
+{
+    cAbstractTextFigure *textFigure = static_cast<cAbstractTextFigure*>(figure);
+    QGraphicsSimpleTextItem *textItem = static_cast<QGraphicsSimpleTextItem*>(item);
+
+    cFigure::Color color = textFigure->getColor();
+    QColor qColor(color.red, color.green, color.blue, textFigure->getOpacity()*255);
+    textItem->setPen(QPen(Qt::NoPen));
+    textItem->setBrush(QBrush(qColor));
+}
+
+QGraphicsItem *TextFigureRenderer::newItem()
+{
+    return new QGraphicsSimpleTextItem();
+}
+
+void LabelFigureRenderer::refreshTransform(cFigure *figure, const cFigure::Transform &transform)
+{
+    QGraphicsSimpleTextItem *item = static_cast<QGraphicsSimpleTextItem*>(items[figure->getId()]);
+    cAbstractTextFigure *textFigure = static_cast<cAbstractTextFigure*>(figure);
+
+    QFontMetrics fontMetric(item->font());
+    QRectF bounds = item->boundingRect();
+    QPointF anchor;
+    switch(textFigure->getAnchor())
+    {
+        case cFigure::ANCHOR_CENTER:
+            anchor = QPointF(-bounds.width()/2, -bounds.height()/2);
+            break;
+        case cFigure::ANCHOR_N:
+            anchor = QPointF(-bounds.width()/2, 0);
+            break;
+        case cFigure::ANCHOR_E:
+            anchor = QPointF(-bounds.width(), -bounds.height()/2);
+            break;
+        case cFigure::ANCHOR_S:
+            anchor = QPointF(-bounds.width()/2, -bounds.height());
+            break;
+        case cFigure::ANCHOR_W:
+            anchor = QPointF(0, -bounds.height()/2);
+            break;
+        case cFigure::ANCHOR_NE:
+            anchor = QPointF(-bounds.width(), 0);
+            break;
+        case cFigure::ANCHOR_SE:
+            anchor = QPointF(-bounds.width(), -bounds.height());
+            break;
+        case cFigure::ANCHOR_SW:
+            anchor = QPointF(0, -bounds.height());
+            break;
+        case cFigure::ANCHOR_NW:
+            anchor = QPointF(0, 0);
+            break;
+        case cFigure::ANCHOR_BASELINE_START:
+            anchor = QPointF(0, -fontMetric.ascent());
+            break;
+        case cFigure::ANCHOR_BASELINE_MIDDLE:
+            anchor = QPointF(-bounds.width()/2, -fontMetric.ascent());
+            break;
+        case cFigure::ANCHOR_BASELINE_END:
+            anchor = QPointF(-bounds.width(), -fontMetric.ascent());
+            break;
+    }
+
+    QTransform qTrans;
+    cFigure::Point p = transform.applyTo(textFigure->getPosition());
+    qTrans.translate(p.x, p.y);
+    qTrans.translate(anchor.x(), anchor.y());
+    item->setTransform(qTrans);
+}
+
+void ImageFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+{
+    cImageFigure *imageFigure = static_cast<cImageFigure*>(figure);
+    //TODO image location
+    QImage image(QString("./images/") + imageFigure->getImageName() + ".png");
+    QGraphicsPixmapItem *imageItem = static_cast<QGraphicsPixmapItem*>(item);
+
+    if(imageFigure->getWidth() != 0 && imageFigure->getHeight() != 0)
+        imageItem->setPixmap(QPixmap::fromImage(image.scaled(imageFigure->getWidth(), imageFigure->getHeight())));
+    else
+        imageItem->setPixmap(QPixmap::fromImage(image));
+
+    QRectF bounds = imageItem->boundingRect();
+    cFigure::Point pos = imageFigure->getPosition();
+    QPointF anchor;
+
+    imageItem->setPos(0,0);
+
+    switch(imageFigure->getAnchor())
+    {
+        case cFigure::ANCHOR_CENTER:
+            anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height()/2);
+            break;
+        case cFigure::ANCHOR_N:
+            anchor = QPointF(pos.x - bounds.width()/2, pos.y);
+            break;
+        case cFigure::ANCHOR_E:
+            anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height()/2);
+            break;
+        case cFigure::ANCHOR_S:
+            anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height());
+            break;
+        case cFigure::ANCHOR_W:
+            anchor = QPointF(pos.x, pos.y - bounds.height()/2);
+            break;
+        case cFigure::ANCHOR_NE:
+            anchor = QPointF(pos.x - bounds.width(), pos.y);
+            break;
+        case cFigure::ANCHOR_SE:
+            anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height());
+            break;
+        case cFigure::ANCHOR_SW:
+            anchor = QPointF(pos.x, pos.y - bounds.height());
+            break;
+        case cFigure::ANCHOR_NW:
+            anchor = QPointF(pos.x, pos.y);
+            break;
+        case cFigure::ANCHOR_BASELINE_START:
+        case cFigure::ANCHOR_BASELINE_MIDDLE:
+        case cFigure::ANCHOR_BASELINE_END:
+            break;
+    }
+    imageItem->setTransform(QTransform().translate(anchor.x(), anchor.y()));
+}
+
+void ImageFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
+{
+    cImageFigure *imageFigure = static_cast<cImageFigure*>(figure);
+    QGraphicsPixmapItem *imageItem = static_cast<QGraphicsPixmapItem*>(item);
+
+    if(imageFigure->getInterpolation() == cFigure::INTERPOLATION_BEST)
+        imageItem->setTransformationMode(Qt::SmoothTransformation);
+    else
+        imageItem->setTransformationMode(Qt::FastTransformation);
+
+    imageItem->setOpacity(imageFigure->getOpacity());
+
+    QGraphicsColorizeEffect *colorizeEffect = new QGraphicsColorizeEffect();
+    cFigure::Color color = imageFigure->getTintColor();
+    colorizeEffect->setColor(QColor(color.red, color.green, color.blue));
+    colorizeEffect->setStrength(imageFigure->getTintAmount());
+    imageItem->setGraphicsEffect(colorizeEffect);
+}
+
+QGraphicsItem *ImageFigureRenderer::newItem()
+{
+    return new QGraphicsPixmapItem();
+}
+
+}

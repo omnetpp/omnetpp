@@ -13,8 +13,7 @@ using namespace qtenv;
 MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    env(env),
-    treeModel(new TreeItemModel())
+    env(env)
 {
     ui->setupUi(this);
 
@@ -22,18 +21,24 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     ui->graphicsView->setScene(scene);
     ui->graphicsView->setRenderHints(QPainter::Antialiasing);
 
-    ui->treeView->setModel(treeModel);
+    TreeItemModel *model = new TreeItemModel();
+    model->setRootObject(getSimulation());
+    ui->treeView->setModel(model);
     ui->treeView->setHeaderHidden(true);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete treeModel;
 }
 
 void MainWindow::displayText(const char *t) {
     ui->textBrowser->append(QString(t));
+}
+
+QTreeView *MainWindow::getObjectTree()
+{
+    return ui->treeView;
 }
 
 bool MainWindow::isRunning()
@@ -159,15 +164,19 @@ void MainWindow::on_actionSetUpConfiguration_triggered()
 
     RunSelectionDialog *dialog = new RunSelectionDialog(env, this);
     dialog->exec();
-    //TODO Add all open inspectors to the inspector list.
-    //TODO log
+//    debug "selected $configname $runnumber"
+//    busy "Setting up network..."
+//    inspectorList:addAll 1
     env->newRun(dialog->getConfigName().c_str(), dialog->getRunNumber());
+//    reflectRecordEventlog
+//    busy
 
     if(getSimulation()->getSystemModule() != nullptr)
     {
-        //TODO log
-        //TODO notify plugins newNetwork
-        treeModel->setRootObject(getSimulation());
+//        # tell plugins about it
+//        busy "Notifying Tcl plugins..."
+//        notifyPlugins newNetwork
+//        busy
     }
 
     delete dialog;
@@ -205,4 +214,18 @@ void MainWindow::on_actionExpressRun_triggered()
 void MainWindow::on_actionRunUntil_triggered()
 {
 
+}
+
+void MainWindow::inspectObject(QModelIndex index)
+{
+    qDebug() << "Inspecting object.";
+    if(!index.isValid())
+        return;
+
+    cObject *parent = static_cast<cObject*>(index.internalPointer());
+    cCollectChildrenVisitor visitor(parent);
+    visitor.process(parent);
+    cObject **objs = visitor.getArray();
+    if(visitor.getArraySize() > index.row())
+        env->inspect(objs[index.row()], 0, true, "");
 }

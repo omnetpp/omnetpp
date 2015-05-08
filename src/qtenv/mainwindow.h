@@ -3,10 +3,13 @@
 
 #include "qtenvdefs.h"
 #include <QMainWindow>
+#include <QModelIndex>
+
+#include <QDebug>
 
 class QGraphicsScene;
 class QStandardItem;
-class TreeItemModel;
+class QTreeView;
 class cObject;
 
 NAMESPACE_BEGIN
@@ -31,6 +34,7 @@ public:
     explicit MainWindow(qtenv::Qtenv *env, QWidget *parent = 0);
 
     void displayText(const char* t);
+    QTreeView *getObjectTree();
 
     ~MainWindow();
 
@@ -42,14 +46,13 @@ private slots:
     void on_actionStop_triggered();
     void on_actionFastRun_triggered();
     void on_actionExpressRun_triggered();
-
     void on_actionRunUntil_triggered();
+    void inspectObject(QModelIndex index);
 
 private:
     enum Mode { STEP, NORMAL, FAST, EXPRESS, NOT_RUNNING};
     Ui::MainWindow *ui;
     qtenv::Qtenv *env;
-    TreeItemModel *treeModel;
 
     bool isRunning();
     bool checkRunning();

@@ -1,68 +1,47 @@
-//==========================================================================
-//  CANVASRENDERER.H - part of
-//
-//                     OMNeT++/OMNEST
-//            Discrete System Simulation in C++
-//
-//==========================================================================
-
-/*--------------------------------------------------------------*
-  Copyright (C) 1992-2015 Andras Varga
-  Copyright (C) 2006-2015 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  `license' for details on this and other legal matters.
- *--------------------------------------------------------------*/
-
-#ifndef __OMNETPP_CANVASRENDERER_H
-#define __OMNETPP_CANVASRENDERER_H
+#ifndef CANVASRENDERER_H
+#define CANVASRENDERER_H
 
 #include "omnetpp/ccanvas.h"
-#include "qtenvdefs.h"
-
-NAMESPACE_BEGIN
-
-class cFigure;
+#include <QGraphicsScene>
 
 namespace qtenv {
 
+class FigureRenderingHints;
 class FigureRenderer;
-struct FigureRenderingHints;
 
-class TKENV_API CanvasRenderer
+class CanvasRenderer
 {
-    protected:
-        Tcl_Interp *interp;
-        std::string canvasWidget;
-        Tcl_CmdInfo canvasCmdInfo;
-        cCanvas *canvas; // NULL is allowed
-        uint64_t enabledTagBits, exceptTagBits;
+protected:
+    QGraphicsScene *scene;
+    cCanvas *canvas;    // NULL is allowed
+    uint64_t enabledTagBits, exceptTagBits;
 
-    protected:
-        void assertCanvas();
-        virtual FigureRenderer *getRendererFor(cFigure *figure);
-        virtual void drawFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, FigureRenderingHints *hints);
-        virtual void refreshFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, FigureRenderingHints *hints, bool ancestorTransformChanged=false);
-        virtual bool fulfillsTagFilter(cFigure *figure);
+protected:
+    void assertCanvas();
+    virtual FigureRenderer *getRendererFor(cFigure *figure);
+    virtual void drawFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, FigureRenderingHints *hints);
+    virtual void refreshFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, FigureRenderingHints *hints, bool ancestorTransformChanged = false);
+    virtual bool fulfillsTagFilter(cFigure *figure);
 
-    public:
-        CanvasRenderer();
-        virtual ~CanvasRenderer();
-        virtual void setTkCanvas(Tcl_Interp *interp, const char *canvas);
-        virtual void setCanvas(cCanvas *canvas);
-        virtual bool hasCanvas() {return canvas != NULL;}
-        virtual void refresh(FigureRenderingHints *hints);
-        virtual void redraw(FigureRenderingHints *hints);
+public:
+    CanvasRenderer() :
+        canvas(NULL), enabledTagBits(0), exceptTagBits(0) {}
+    virtual ~CanvasRenderer() {}
 
-        // tag-based filtering
-        virtual std::string getAllTags();
-        virtual std::string getEnabledTags();
-        virtual std::string getExceptTags();
-        virtual void setEnabledTags(const char* tags);
-        virtual void setExceptTags(const char* tags);
+    virtual void setQtCanvas(QGraphicsScene *scene, cCanvas *canvas);
+    virtual void setCanvas(cCanvas *canvas);
+    virtual bool hasCanvas() {return canvas != NULL;}
+    virtual void redraw(FigureRenderingHints *hints);
+    virtual void refresh(FigureRenderingHints *hints);
+
+    // tag-based filtering
+    virtual std::string getAllTags();
+    virtual std::string getEnabledTags();
+    virtual std::string getExceptTags();
+    virtual void setEnabledTags(const char* tags);
+    virtual void setExceptTags(const char* tags);
 };
 
-} //namespace
-NAMESPACE_END
+}
 
-#endif
+#endif // CANVASRENDERER_H

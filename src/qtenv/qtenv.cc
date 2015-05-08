@@ -55,6 +55,7 @@
 #include "watchinspector.h"
 #include "mainwindow.h"
 #include <QApplication>
+#include <QTreeView>
 
 
 // default plugin path -- allow overriding it via compiler option (-D)
@@ -922,7 +923,7 @@ void Qtenv::refreshInspectors()
         (*it)->clearObjectChangeFlags();
 
     // update object tree
-    CHK(Tcl_VarEval(interp, "treeManager:update",NULL));
+    mainwindow->getObjectTree()->reset();   //TODO keep nodes open
 
     // try opening "pending" inspectors
     CHK(Tcl_VarEval(interp, "inspectorUpdateCallback",NULL));
