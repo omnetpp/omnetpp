@@ -26,6 +26,7 @@
 #include "cstringpool.h"
 #include "opp_string.h"
 #include "simtime_t.h"
+#include "cexception.h"
 
 NAMESPACE_BEGIN
 

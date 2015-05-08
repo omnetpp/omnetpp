@@ -61,8 +61,7 @@ bool SelectionStrategy::isSelectable(cModule *module)
     if (server != NULL)
         return server->isIdle();
 
-    opp_error("Only IPassiveQueue and IServer is supported by this Strategy");
-    return true;
+    throw cRuntimeError("Only IPassiveQueue and IServer is supported by this Strategy");
 }
 
 // --------------------------------------------------------------------------------------------

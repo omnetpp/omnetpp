@@ -78,6 +78,8 @@ class SIM_API cChannel : public cComponent //implies noncopyable
         simtime_t timestamp;
         cMessage *msg;
         result_t *result;
+      private:
+        void error() const;
       public:
         /** Constructor. */
         MessageSentSignalValue(simtime_t_cref t, cMessage *m, result_t *r) {timestamp=t; msg=m; result=r;}
@@ -108,7 +110,6 @@ class SIM_API cChannel : public cComponent //implies noncopyable
         virtual double doubleValue(simsignal_t signalID) const {error(); return 0;}
         virtual SimTime simtimeValue(simsignal_t signalID) const {error(); return timestamp;}
         virtual const char *stringValue(simsignal_t signalID) const {error(); return NULL;}
-        void error() const;
         //@}
     };
 

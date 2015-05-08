@@ -88,9 +88,9 @@ NAMESPACE_BEGIN
 #define FSM_Switch(fsm)  \
    for (int __i=1, __savedstate;  \
         (__i<3 || (__i&1)==0 || (fsm).isInTransientState()) &&  \
-        (__i<2*FSM_MAXT || (opp_error(E_INFLOOP,(fsm).getStateName()),0));  \
+        (__i<2*FSM_MAXT || (throw cRuntimeError(E_INFLOOP,(fsm).getStateName()),0));  \
         ((__i&1)==0 && __savedstate!=(fsm).getState() &&  \
-         (opp_error(E_STATECHG,(fsm).getStateName()),0)),  \
+         (throw cRuntimeError(E_STATECHG,(fsm).getStateName()),0)),  \
          __savedstate=(fsm).getState(),++__i)  \
      switch (FSM_Print(fsm,__i&1),(((fsm).getState()<<1)|(__i&1)))
 

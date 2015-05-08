@@ -80,66 +80,6 @@ SIM_API char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen);
 
 //@}
 
-/**
- * DEPRECATED: Error handling functions.
- */
-//@{
-
-/**
- * DEPRECATED: use <tt>throw cRuntimeError(...)</tt> instead!
- *
- * Terminates the simulation with an error message.
- */
-SIM_API void opp_error(OppErrorCode errcode,...);
-
-/**
- * DEPRECATED: use <tt>throw cRuntimeError(...)</tt> instead!
- *
- * Same as function with the same name, but using custom message string.
- * To be called like printf().
- */
-SIM_API void opp_error(const char *msg,...);
-
-/**
- * This method can be used to report non-fatal discrepancies to the user.
- * Generally, warnings should VERY RARELY be used, if ever.
- * Argument list is like printf().
- *
- * Unlike in earlier versions, the user will NOT be offered the possibility
- * to stop the simulation. (In Cmdenv, warnings will be written
- * to the standard error, and in Tkenv it will probably pop up an
- * [OK] dialog.
- */
-SIM_API void opp_warning(OppErrorCode errcode,...);
-
-/**
- * This method can be used to report non-fatal discrepancies to the user.
- * Generally, warnings should VERY RARELY be used, if ever.
- * Argument list works like printf().
- *
- * Unlike in earlier versions, the user will NOT be offered the possibility
- * to stop the simulation. (In Cmdenv, warnings will be written
- * to the standard error, and in Tkenv it will probably pop up an
- * [OK] dialog.
- */
-SIM_API void opp_warning(const char *msg,...);
-
-/**
- * DEPRECATED.
- *
- * Print message and set error number.
- */
-SIM_API void opp_terminate(OppErrorCode errcode,...);
-
-/**
- * DEPRECATED.
- *
- * Same as function with the same name, but using custom message string.
- * To be called like printf().
- */
-SIM_API void opp_terminate(const char *msg,...);
-//@}
-
 // INTERNAL: returns the name of a C++ type, correcting the quirks of various compilers.
 SIM_API const char *opp_demangle_typename(const char *mangledName);
 
