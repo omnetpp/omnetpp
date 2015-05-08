@@ -45,9 +45,9 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
     enum {FL_PERFORMFINALGC = 2};  // whether to delete owned objects in the destructor
 
   private:
-    cOwnedObject **vect; // vector of objects
-    int capacity;        // allocated size of vect[]
-    int size;            // number of elements used in vect[] (0..size-1)
+    cOwnedObject **objs; // array of owned objects
+    int numObjs;         // number of elements used in objects[] (0..num-1)
+    int capacity;        // allocated size of objs[]
 
 #ifdef SIMFRONTEND_SUPPORT
   private:
@@ -167,7 +167,7 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
     /**
      * Returns the number of elements stored.
      */
-    int defaultListSize() const {return size;}
+    int defaultListSize() const {return numObjs;}
 
     /**
      * Get the element at the given position. k must be between 0 and

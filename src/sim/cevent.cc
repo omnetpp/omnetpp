@@ -35,18 +35,18 @@ using std::ostream;
 
 cEvent::cEvent(const cEvent& event) : cOwnedObject(event)
 {
-    heapindex = -1;
-    prev_event_num = -1;
+    heapIndex = -1;
+    previousEventNumber = -1;
     operator=(event);
 }
 
 cEvent::cEvent(const char *name) : cOwnedObject(name, false)
 {
     // name pooling is off for messages by default, as unique names are quite common
-    prior = 0;
-    delivd = 0;
-    heapindex = -1;
-    prev_event_num = -1;
+    priority = 0;
+    arrivalTime = 0;
+    heapIndex = -1;
+    previousEventNumber = -1;
 }
 
 cEvent::~cEvent()
@@ -55,13 +55,13 @@ cEvent::~cEvent()
 
 std::string cEvent::info() const
 {
-    if (delivd == getSimulation()->getSimTime())
+    if (arrivalTime == getSimulation()->getSimTime())
         return "(now)";
-    if (delivd < getSimulation()->getSimTime())
+    if (arrivalTime < getSimulation()->getSimTime())
         return "(in the past)";
 
     std::stringstream out;
-    out << "at T=" << delivd << ", in dt=" << (delivd - getSimulation()->getSimTime());
+    out << "at T=" << arrivalTime << ", in dt=" << (arrivalTime - getSimulation()->getSimTime());
     if (getTargetObject())
         out << ", for " << getTargetObject()->getFullPath();
     return out.str();
@@ -83,10 +83,10 @@ void cEvent::parsimPack(cCommBuffer *buffer) const
 #else
     cOwnedObject::parsimPack(buffer);
 
-    buffer->pack(prior);
-    buffer->pack(delivd);
-    buffer->pack(heapindex);
-    buffer->pack(insertordr);
+    buffer->pack(priority);
+    buffer->pack(arrivalTime);
+    buffer->pack(heapIndex);
+    buffer->pack(insertOrder);
 #endif
 }
 
@@ -97,10 +97,10 @@ void cEvent::parsimUnpack(cCommBuffer *buffer)
 #else
     cOwnedObject::parsimUnpack(buffer);
 
-    buffer->unpack(prior);
-    buffer->unpack(delivd);
-    buffer->unpack(heapindex);
-    buffer->unpack(insertordr);
+    buffer->unpack(priority);
+    buffer->unpack(arrivalTime);
+    buffer->unpack(heapIndex);
+    buffer->unpack(insertOrder);
 #endif
 }
 
@@ -110,8 +110,8 @@ cEvent& cEvent::operator=(const cEvent& event)
 
     cOwnedObject::operator=(event);
 
-    prior = event.prior;
-    delivd = event.delivd;
+    priority = event.priority;
+    arrivalTime = event.arrivalTime;
 
     return *this;
 }

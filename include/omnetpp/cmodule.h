@@ -139,7 +139,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
         /**
          * Reinitializes the iterator.
          */
-        void init(const cModule *m)  {p = m ? const_cast<cModule *>(m->firstsubmodp) : NULL;}
+        void init(const cModule *m)  {p = m ? const_cast<cModule *>(m->firstSubmodule) : NULL;}
 
         /**
          * Returns pointer to the current module. The pointer then
@@ -158,7 +158,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
          * next module. Returns NULL if the iterator has already reached
          * the end of the list.
          */
-        cModule *operator++(int)  {if (!p) return NULL; cModule *t=p; p=p->nextp; return t;}
+        cModule *operator++(int)  {if (!p) return NULL; cModule *t=p; p=p->nextSibling; return t;}
     };
 
     /**
@@ -198,14 +198,14 @@ class SIM_API cModule : public cComponent //implies noncopyable
          * Returns the current object, then moves the iterator to the next item.
          * If the iterator has reached end, nothing happens; you have to call
          * init() again to restart iterating. If modules, gates or channels
-         * are added or removed during interation, the behaviour is undefined.
+         * are added or removed during iteration, the behaviour is undefined.
          */
         cChannel *operator++(int) {return end() ? NULL : channels[k++];}
     };
 
   private:
-    static std::string lastmodulefullpath; // cached result of last getFullPath() call
-    static const cModule *lastmodulefullpathmod; // module of lastmodulefullpath
+    static std::string lastModuleFullPath; // cached result of last getFullPath() call
+    static const cModule *lastModuleFullPathModule; // module of lastModuleFullPath
 
   private:
     enum {
@@ -214,24 +214,24 @@ class SIM_API cModule : public cComponent //implies noncopyable
     };
 
   private:
-    mutable char *fullpath; // cached fullPath string (caching is optional, so it may be NULL)
-    mutable char *fullname; // buffer to store full name of object
-    static bool cachefullpath; // whether to cache the fullPath string or not
+    mutable char *fullPath; // cached fullPath string (caching is optional, so it may be NULL)
+    mutable char *fullName; // buffer to store full name of object
+    static bool cacheFullPath; // whether to cache the fullPath string or not
 
     // Note: parent module is stored in ownerp -- a module is always owned by its parent
     // module. If ownerp cannot be cast to a cModule, the module has no parent module
     // (e.g. the system module which is owned by the global object 'simulation').
-    cModule *prevp, *nextp; // pointers to sibling submodules
-    cModule *firstsubmodp;  // pointer to first submodule
-    cModule *lastsubmodp;   // pointer to last submodule (needed for efficient append operation)
+    cModule *prevSibling, *nextSibling; // pointers to sibling submodules
+    cModule *firstSubmodule;  // pointer to first submodule
+    cModule *lastSubmodule;   // pointer to last submodule (needed for efficient append operation)
 
     typedef std::set<cGate::Name> NamePool;
     static NamePool namePool;
-    int descvSize;    // size of the descv array
-    cGate::Desc *descv; // array with one element per gate or gate vector
+    int gateDescArraySize;    // size of the descv array
+    cGate::Desc *gateDescArray; // array with one element per gate or gate vector
 
-    int idx;      // index if module vector, 0 otherwise
-    int vectsize; // vector size, -1 if not a vector
+    int vectorIndex;      // index if module vector, 0 otherwise
+    int vectorSize;       // vector size, -1 if not a vector
 #ifdef USE_OMNETPP4x_FINGERPRINTS
     int version4ModuleId;   // OMNeT++ V4.x compatible module ID
 #endif
@@ -498,18 +498,18 @@ class SIM_API cModule : public cComponent //implies noncopyable
     /**
      * Returns true if this module is in a module vector.
      */
-    bool isVector() const  {return vectsize>=0;}
+    bool isVector() const  {return vectorSize>=0;}
 
     /**
      * Returns the index of the module if it is in a module vector, otherwise 0.
      */
-    int getIndex() const  {return idx;}
+    int getIndex() const  {return vectorIndex;}
 
     /**
      * Returns the size of the module vector the module is in. For non-vector
      * modules it returns 1.
      */
-    int getVectorSize() const  {return vectsize<0 ? 1 : vectsize;}
+    int getVectorSize() const  {return vectorSize<0 ? 1 : vectorSize;}
 
     /**
      * Alias for getVectorSize().
@@ -523,7 +523,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Returns true if the module has submodules, and false otherwise.
      * To enumerate the submodules use SubmoduleIterator.
      */
-    bool hasSubmodules() const {return firstsubmodp!=NULL;}
+    bool hasSubmodules() const {return firstSubmodule!=NULL;}
 
     /**
      * Finds a direct submodule with the given name and index, and returns

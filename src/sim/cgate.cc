@@ -196,7 +196,7 @@ cModule *cGate::getOwnerModule() const
 
 int cGate::getId() const
 {
-    int descIndex = desc - desc->ownerp->descv;
+    int descIndex = desc - desc->ownerp->gateDescArray;
     int id;
     if (!desc->isVector())
         id = (descIndex<<1)|(pos&1);
@@ -208,7 +208,7 @@ int cGate::getId() const
 
 int cGate::getBaseId() const
 {
-    int descIndex = desc - desc->ownerp->descv;
+    int descIndex = desc - desc->ownerp->gateDescArray;
     int id;
     if (!desc->isVector())
         id = (descIndex<<1)|(pos&1);

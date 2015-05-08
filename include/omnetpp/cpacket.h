@@ -57,10 +57,11 @@ class SIM_API cPacket : public cMessage
         FL_ISRECEPTIONSTART = 8,
         FL_BITERROR = 16,
     };
-    int64_t len;            // length of the packet in bits -- used for bit error and transmission delay modeling
+
+    int64_t bitLength;    // length of the packet in bits -- used for bit error and transmission delay modeling
     simtime_t duration;   // transmission duration on last channel with datarate
-    cPacket *encapmsg;    // ptr to the encapsulated message
-    unsigned short sharecount; // num of messages MINUS ONE that have this message encapsulated.
+    cPacket *encapsulatedPacket; // ptr to the encapsulated message
+    unsigned short shareCount; // num of messages MINUS ONE that have this message encapsulated.
                                // 0: not shared (not encapsulated or encapsulated in one message);
                                // 1: shared once (shared among two messages);
                                // 2: shared twice (shared among three messages); etc.
@@ -84,7 +85,7 @@ class SIM_API cPacket : public cMessage
     // or itself if there is no encapsulated message
     long getEncapsulationTreeId() const;
 
-    cPacket *_getEncapMsg() { return encapmsg; }
+    cPacket *_getEncapMsg() { return encapsulatedPacket; }
 
     // internal: if encapmsg is shared (sharecount>0), creates a private copy for this packet,
     // and in any case it sets encapmsg's owner to be this object. This method
@@ -99,7 +100,7 @@ class SIM_API cPacket : public cMessage
     void _deleteEncapMsg();
 
     // internal: only to be used by test cases
-    int getShareCount() const {return sharecount;}
+    int getShareCount() const {return shareCount;}
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -213,13 +214,13 @@ class SIM_API cPacket : public cMessage
     /**
      * Returns the packet length (in bits).
      */
-    virtual int64_t getBitLength() const  {return len;}
+    virtual int64_t getBitLength() const  {return bitLength;}
 
     /**
      * Returns the packet length in bytes, that is, bitlength/8. If bitlength
      * is not a multiple of 8, the result is rounded up.
      */
-    int64_t getByteLength() const  {return (len+7)>>3;}
+    int64_t getByteLength() const  {return (bitLength+7)>>3;}
 
     /**
      * Sets the bit error flag.

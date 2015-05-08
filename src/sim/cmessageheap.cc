@@ -179,7 +179,7 @@ void cMessageHeap::sort()
 {
     qsort(h+1,n,sizeof(cEvent *),qsort_cmp_msgs);
     for (int i=1; i<=n; i++)
-        h[i]->heapindex=i;
+        h[i]->heapIndex=i;
 }
 
 void cMessageHeap::insert(cEvent *event)
@@ -190,7 +190,7 @@ void cMessageHeap::insert(cEvent *event)
     {
         // scheduled for *now* -- use circular buffer
         cb[cbtail] = event;
-        event->heapindex = CBHEAPINDEX(cbtail);
+        event->heapIndex = CBHEAPINDEX(cbtail);
         CBINC(cbtail);
         if (cbtail==cbhead)
             cbgrow();
@@ -200,7 +200,7 @@ void cMessageHeap::insert(cEvent *event)
         // use heap
         int i,j;
 
-        event->insertordr = insertcntr++;
+        event->insertOrder = insertcntr++;
 
         if (++n > size)
         {
@@ -218,9 +218,9 @@ void cMessageHeap::insert(cEvent *event)
             if (*h[i] <= *event)   // direction
                 break;
 
-            (h[j]=h[i])->heapindex=j;
+            (h[j]=h[i])->heapIndex=j;
         }
-        (h[j]=event)->heapindex=j;
+        (h[j]=event)->heapIndex=j;
     }
 }
 
@@ -229,7 +229,7 @@ void cMessageHeap::cbgrow()
     int newsize = 2*cbsize; // cbsize MUST be power of 2
     cEvent **newcb = new cEvent*[newsize];
     for (int i=0; i<cbsize; i++)
-        (newcb[i] = cb[(cbhead+i)&(cbsize-1)])->heapindex = CBHEAPINDEX(i);
+        (newcb[i] = cb[(cbhead+i)&(cbsize-1)])->heapIndex = CBHEAPINDEX(i);
     delete [] cb;
 
     cb = newcb;
@@ -252,8 +252,8 @@ void cMessageHeap::shiftup(int from)
         if (*h[i] > *h[j])  //is change necessary?
         {
             temp=h[j];
-            (h[j]=h[i])->heapindex=j;
-            (h[i]=temp)->heapindex=i;
+            (h[j]=h[i])->heapIndex=j;
+            (h[i]=temp)->heapIndex=i;
             i=j;
         }
         else
@@ -274,17 +274,17 @@ cEvent *cMessageHeap::removeFirst()
         cEvent *event = cb[cbhead];
         CBINC(cbhead);
         drop(event);
-        event->heapindex=-1;
+        event->heapIndex=-1;
         return event;
     }
     else if (n>0)
     {
         // heap: first is taken out and replaced by the last one
         cEvent *event = h[1];
-        (h[1]=h[n--])->heapindex=1;
+        (h[1]=h[n--])->heapIndex=1;
         shiftup();
         drop(event);
-        event->heapindex=-1;
+        event->heapIndex=-1;
         return event;
     }
     return NULL;
@@ -293,19 +293,19 @@ cEvent *cMessageHeap::removeFirst()
 cEvent *cMessageHeap::remove(cEvent *event)
 {
     // make sure it is really on the heap
-    if (event->heapindex==-1)
+    if (event->heapIndex==-1)
         return NULL;
 
-    if (event->heapindex<0)
+    if (event->heapIndex<0)
     {
         // event is in the circular buffer
-        int i = -event->heapindex-2;
+        int i = -event->heapIndex-2;
         ASSERT(cb[i]==event); // sanity check
 
         // remove
         int iminus1 = i; CBINC(i);
         for (/**/; i!=cbtail; iminus1=i, CBINC(i))
-            (cb[iminus1] = cb[i])->heapindex = CBHEAPINDEX(iminus1);
+            (cb[iminus1] = cb[i])->heapIndex = CBHEAPINDEX(iminus1);
         CBDEC(cbtail);
     }
     else
@@ -316,19 +316,19 @@ cEvent *cMessageHeap::remove(cEvent *event)
         // ASSERT(h[event->heapindex]==event);
 
         // last element will be used to fill the hole
-        int father, out = event->heapindex;
+        int father, out = event->heapIndex;
         cEvent *fill = h[n--];
         while ((father=out>>1)!=0 && *h[father] > *fill)
         {
-            (h[out]=h[father])->heapindex=out;  // father is moved down
+            (h[out]=h[father])->heapIndex=out;  // father is moved down
             out=father;
         }
-        (h[out]=fill)->heapindex=out;
+        (h[out]=fill)->heapIndex=out;
         shiftup(out);
     }
 
     drop(event);
-    event->heapindex=-1;
+    event->heapIndex=-1;
     return event;
 }
 
@@ -338,7 +338,7 @@ void cMessageHeap::putBackFirst(cEvent *event)
 
     CBDEC(cbhead);
     cb[cbhead] = event;
-    event->heapindex = CBHEAPINDEX(cbhead);
+    event->heapIndex = CBHEAPINDEX(cbhead);
 
     if (cbtail==cbhead)
         cbgrow();

@@ -58,15 +58,15 @@ EXECUTE_ON_SHUTDOWN( cComponent::clearSignalRegistrations() );
 
 cComponent::cComponent(const char *name) : cDefaultList(name)
 {
-    componenttype = NULL;
+    componentType = NULL;
     componentId = -1;
-    rngmapsize = 0;
-    rngmap = 0;
+    rngMapSize = 0;
+    rngMap = 0;
 
-    paramvsize = numparams = 0;
-    paramv = NULL;
+    parArraySize = numPars = 0;
+    parArray = NULL;
 
-    dispstr = NULL;
+    displayString = NULL;
     setEvEnabled(true);
 
     signalTable = NULL;
@@ -79,22 +79,22 @@ cComponent::~cComponent()
         getSimulation()->deregisterComponent(this);
 
     ASSERT(signalTable==NULL); // note: releaseLocalListeners() gets called in subclasses, ~cModule and ~cChannel
-    delete [] rngmap;
-    delete [] paramv;
-    delete dispstr;
+    delete [] rngMap;
+    delete [] parArray;
+    delete displayString;
 }
 
 void cComponent::forEachChild(cVisitor *v)
 {
-    for (int i=0; i<numparams; i++)
-        v->visit(&paramv[i]);
+    for (int i=0; i<numPars; i++)
+        v->visit(&parArray[i]);
 
     cDefaultList::forEachChild(v);
 }
 
 void cComponent::setComponentType(cComponentType *componenttype)
 {
-    this->componenttype = componenttype;
+    this->componentType = componenttype;
 }
 
 void cComponent::initialize()
@@ -117,9 +117,9 @@ void cComponent::handleParameterChange(const char *)
 
 cComponentType *cComponent::getComponentType() const
 {
-    if (!componenttype)
+    if (!componentType)
         throw cRuntimeError(this, "Object has no associated cComponentType (maybe %s is not derived from cModule/cChannel?)", getClassName());
-    return componenttype;
+    return componentType;
 }
 
 cSimulation *cComponent::getSimulation() const
@@ -139,7 +139,7 @@ cModule *cComponent::getSystemModule() const
 
 cRNG *cComponent::getRNG(int k) const
 {
-    return getEnvir()->getRNG(k<rngmapsize ? rngmap[k] : k);
+    return getEnvir()->getRNG(k<rngMapSize ? rngMap[k] : k);
 }
 
 void cComponent::setLoglevel(LogLevel loglevel)
@@ -151,15 +151,15 @@ void cComponent::setLoglevel(LogLevel loglevel)
 
 void cComponent::reallocParamv(int size)
 {
-    ASSERT(size>=numparams);
+    ASSERT(size>=numPars);
     if (size!=(short)size)
         throw cRuntimeError(this, "reallocParamv(%d): at most %d parameters allowed", size, 0x7fff);
     cPar *newparamv = new cPar[size];
-    for (int i=0; i<numparams; i++)
-        paramv[i].moveto(newparamv[i]);
-    delete [] paramv;
-    paramv = newparamv;
-    paramvsize = (short)size;
+    for (int i=0; i<numPars; i++)
+        parArray[i].moveto(newparamv[i]);
+    delete [] parArray;
+    parArray = newparamv;
+    parArraySize = (short)size;
 }
 
 void cComponent::addPar(cParImpl *value)
@@ -168,16 +168,16 @@ void cComponent::addPar(cParImpl *value)
         throw cRuntimeError(this, "cannot add parameters at runtime");
     if (findPar(value->getName())>=0)
         throw cRuntimeError(this, "cannot add parameter `%s': already exists", value->getName());
-    if (numparams==paramvsize)
-        reallocParamv(paramvsize+1);
-    paramv[numparams++].init(this, value);
+    if (numPars==parArraySize)
+        reallocParamv(parArraySize+1);
+    parArray[numPars++].init(this, value);
 }
 
 cPar& cComponent::par(int k)
 {
-    if (k<0 || k>=numparams)
+    if (k<0 || k>=numPars)
         throw cRuntimeError(this, "parameter id %d out of range", k);
-    return paramv[k];
+    return parArray[k];
 }
 
 cPar& cComponent::par(const char *parname)
@@ -185,14 +185,14 @@ cPar& cComponent::par(const char *parname)
     int k = findPar(parname);
     if (k<0)
         throw cRuntimeError(this, "unknown parameter `%s'", parname);
-    return paramv[k];
+    return parArray[k];
 }
 
 int cComponent::findPar(const char *parname) const
 {
     int n = getNumParams();
     for (int i=0; i<n; i++)
-        if (paramv[i].isName(parname))
+        if (parArray[i].isName(parname))
             return i;
     return -1;
 }
@@ -229,7 +229,7 @@ bool cComponent::hasGUI() const
 
 bool cComponent::hasDisplayString()
 {
-    if (dispstr)
+    if (displayString)
         return true;
     if (flags & FL_DISPSTR_CHECKED)
         return flags & FL_DISPSTR_NOTEMPTY;
@@ -247,7 +247,7 @@ bool cComponent::hasDisplayString()
 
 cDisplayString& cComponent::getDisplayString()
 {
-    if (!dispstr)
+    if (!displayString)
     {
         // set display string (it may depend on parameter values via "$param" references)
         if (!parametersFinalized())
@@ -256,12 +256,12 @@ cDisplayString& cComponent::getDisplayString()
         cProperty *prop = props->get("display");
         const char *propValue = prop ? prop->getValue(cProperty::DEFAULTKEY) : NULL;
         if (propValue)
-            dispstr = new cDisplayString(propValue);
+            displayString = new cDisplayString(propValue);
         else
-            dispstr = new cDisplayString();
-        dispstr->setHostObject(this);
+            displayString = new cDisplayString();
+        displayString->setHostObject(this);
     }
-    return *dispstr;
+    return *displayString;
 }
 
 void cComponent::setDisplayString(const char *s)

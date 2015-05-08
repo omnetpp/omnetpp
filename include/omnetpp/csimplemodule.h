@@ -72,11 +72,12 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
         FL_ISTERMINATED        = 1 << 13, // for both activity and handleMessage modules
         FL_STACKALREADYUNWOUND = 1 << 14, // only for activity modules
     };
-    cMessage *timeoutmsg;   // msg used in wait() and receive() with timeout
+
+    cMessage *timeoutMessage;   // msg used in wait() and receive() with timeout
     cCoroutine *coroutine;
 
-    static bool stack_cleanup_requested; // 'true' value asks activity() to throw a cStackCleanupException
-    static cSimpleModule *after_cleanup_transfer_to; // transfer back to this module (or to main)
+    static bool stackCleanupRequested; // 'true' value asks activity() to throw a cStackCleanupException
+    static cSimpleModule *afterCleanupTransferTo; // transfer back to this module (or to main)
 
   private:
     // internal use

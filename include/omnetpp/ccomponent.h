@@ -61,17 +61,17 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     };
 
   private:
-    cComponentType *componenttype;  // component type object
+    cComponentType *componentType;  // component type object
     int componentId;   // id in cSimulation
 
-    short rngmapsize;  // size of rngmap array (RNGs>=rngmapsize are mapped one-to-one to physical RNGs)
-    int *rngmap;       // maps local RNG numbers (may be NULL if rngmapsize==0)
+    short rngMapSize;  // size of the rngMap array (RNGs with index >= rngMapSize are mapped one-to-one to global RNGs)
+    int *rngMap;       // maps local RNG numbers (may be NULL if rngMapSize==0)
 
-    short paramvsize;
-    short numparams;
-    cPar *paramv;  // array of cPar objects
+    short numPars;
+    short parArraySize;
+    cPar *parArray;  // array of cPar objects
 
-    cDisplayString *dispstr; // display string (created on demand)
+    cDisplayString *displayString; // display string (created on demand)
 
     struct SignalData
     {
@@ -136,7 +136,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     void setLoglevel(LogLevel loglevel);
 
     // internal: invoked from within cEnvir::getRNGMappingFor(component)
-    void setRNGMap(short size, int *map) {rngmapsize=size; rngmap=map;}
+    void setRNGMap(short size, int *map) {rngMapSize=size; rngMap=map;}
 
     // internal: sets associated cComponentType for the component;
     // called as part of the creation process.
@@ -380,7 +380,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     /**
      * Returns total number of the component's parameters.
      */
-    virtual int getNumParams() const  {return numparams;}
+    virtual int getNumParams() const  {return numPars;}
 
     /**
      * Returns reference to the parameter identified with its

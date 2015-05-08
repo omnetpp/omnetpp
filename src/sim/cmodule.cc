@@ -42,27 +42,27 @@ Register_Class(cModule);
 
 
 // static members:
-std::string cModule::lastmodulefullpath;
-const cModule *cModule::lastmodulefullpathmod = NULL;
+std::string cModule::lastModuleFullPath;
+const cModule *cModule::lastModuleFullPathModule = NULL;
 
 #ifdef NDEBUG
-bool cModule::cachefullpath = false; // in release mode keep memory usage low
+bool cModule::cacheFullPath = false; // in release mode keep memory usage low
 #else
-bool cModule::cachefullpath = true;  // fullpath is useful during debugging
+bool cModule::cacheFullPath = true;  // fullpath is useful during debugging
 #endif
 
 
 cModule::cModule()
 {
-    idx = 0;
-    vectsize = -1;
-    fullpath = NULL;
-    fullname = NULL;
+    vectorIndex = 0;
+    vectorSize = -1;
+    fullPath = NULL;
+    fullName = NULL;
 
-    prevp = nextp = firstsubmodp = lastsubmodp = NULL;
+    prevSibling = nextSibling = firstSubmodule = lastSubmodule = NULL;
 
-    descvSize = 0;
-    descv = NULL;
+    gateDescArraySize = 0;
+    gateDescArray = NULL;
 #ifdef USE_OMNETPP4x_FINGERPRINTS
     version4ModuleId = -1;
 #endif
@@ -121,8 +121,8 @@ cModule::~cModule()
 
     delete canvas;
 
-    delete [] fullname;
-    delete [] fullpath;
+    delete [] fullName;
+    delete [] fullPath;
 }
 
 void cModule::releaseListeners()
@@ -136,8 +136,8 @@ void cModule::releaseListeners()
 
 void cModule::forEachChild(cVisitor *v)
 {
-    for (int i=0; i<numparams; i++)
-        v->visit(&paramv[i]);
+    for (int i=0; i<numPars; i++)
+        v->visit(&parArray[i]);
 
     for (GateIterator i(this); !i.end(); i++)
         v->visit(i());
@@ -149,8 +149,8 @@ void cModule::setNameAndIndex(const char *s, int i, int n)
 {
     // a two-in-one function, so that we don't end up calling updateFullPath() twice
     cOwnedObject::setName(s);
-    idx = i;
-    vectsize = n;
+    vectorIndex = i;
+    vectorSize = n;
     updateFullName();
 }
 
@@ -167,19 +167,19 @@ void cModule::insertSubmodule(cModule *mod)
     take(mod);
 
     // append at end of submodule list
-    mod->nextp = NULL;
-    mod->prevp = lastsubmodp;
-    if (mod->prevp)
-        mod->prevp->nextp = mod;
-    if (!firstsubmodp)
-        firstsubmodp = mod;
-    lastsubmodp = mod;
+    mod->nextSibling = NULL;
+    mod->prevSibling = lastSubmodule;
+    if (mod->prevSibling)
+        mod->prevSibling->nextSibling = mod;
+    if (!firstSubmodule)
+        firstSubmodule = mod;
+    lastSubmodule = mod;
 
     // update cached signal state
     mod->repairSignalFlags();
 
     // cached module getFullPath() possibly became invalid
-    lastmodulefullpathmod = NULL;
+    lastModuleFullPathModule = NULL;
 }
 
 void cModule::removeSubmodule(cModule *mod)
@@ -189,23 +189,23 @@ void cModule::removeSubmodule(cModule *mod)
     // on its own DefaultList)
 
     // remove from submodule list
-    if (mod->nextp)
-         mod->nextp->prevp = mod->prevp;
-    if (mod->prevp)
-         mod->prevp->nextp = mod->nextp;
-    if (firstsubmodp==mod)
-         firstsubmodp = mod->nextp;
-    if (lastsubmodp==mod)
-         lastsubmodp = mod->prevp;
+    if (mod->nextSibling)
+         mod->nextSibling->prevSibling = mod->prevSibling;
+    if (mod->prevSibling)
+         mod->prevSibling->nextSibling = mod->nextSibling;
+    if (firstSubmodule==mod)
+         firstSubmodule = mod->nextSibling;
+    if (lastSubmodule==mod)
+         lastSubmodule = mod->prevSibling;
 
     // this is not strictly needed but makes it cleaner
-    mod->prevp = mod->nextp = NULL;
+    mod->prevSibling = mod->nextSibling = NULL;
 
     // update cached signal state
     mod->repairSignalFlags();
 
     // cached module getFullPath() possibly became invalid
-    lastmodulefullpathmod = NULL;
+    lastModuleFullPathModule = NULL;
 }
 
 cModule *cModule::getParentModule() const
@@ -221,22 +221,22 @@ void cModule::setName(const char *s)
 
 void cModule::updateFullName()
 {
-    if (fullname)
+    if (fullName)
     {
-        delete [] fullname;
-        fullname = NULL;
+        delete [] fullName;
+        fullName = NULL;
     }
     if (isVector())
     {
-        fullname = new char[opp_strlen(getName())+10];
-        strcpy(fullname, getName());
-        opp_appendindex(fullname, getIndex());
+        fullName = new char[opp_strlen(getName())+10];
+        strcpy(fullName, getName());
+        opp_appendindex(fullName, getIndex());
     }
 
-    if (lastmodulefullpathmod == this)
-        lastmodulefullpathmod = NULL;  // invalidate
+    if (lastModuleFullPathModule == this)
+        lastModuleFullPathModule = NULL;  // invalidate
 
-    if (cachefullpath)
+    if (cacheFullPath)
         updateFullPathRec();
 
 #ifdef SIMFRONTEND_SUPPORT
@@ -259,43 +259,43 @@ void cModule::reassignModuleIdRec()
             msg->setArrival(newId, msg->getArrivalGateId());
     }
 
-    for (cModule *child = firstsubmodp; child; child = child->nextp)
+    for (cModule *child = firstSubmodule; child; child = child->nextSibling)
         child->reassignModuleIdRec();
 }
 
 void cModule::updateFullPathRec()
 {
-    delete [] fullpath;
-    fullpath = NULL; // for the next getFullPath() call
-    fullpath = opp_strdup(getFullPath().c_str());
+    delete [] fullPath;
+    fullPath = NULL; // for the next getFullPath() call
+    fullPath = opp_strdup(getFullPath().c_str());
 
-    for (cModule *child = firstsubmodp; child; child = child->nextp)
+    for (cModule *child = firstSubmodule; child; child = child->nextSibling)
         child->updateFullPathRec();
 }
 
 const char *cModule::getFullName() const
 {
     // if not in a vector, normal getName() will do
-    return isVector() ? fullname : getName();
+    return isVector() ? fullName : getName();
 }
 
 std::string cModule::getFullPath() const
 {
     // use cached value if filled in
-    if (fullpath)
-        return fullpath;
+    if (fullPath)
+        return fullPath;
 
-    if (lastmodulefullpathmod != this)
+    if (lastModuleFullPathModule != this)
     {
         // stop at the toplevel module (don't go up to cSimulation);
         // plus, cache the result, expecting more hits from this module
         if (getParentModule()==NULL)
-            lastmodulefullpath = getFullName();
+            lastModuleFullPath = getFullName();
         else
-            lastmodulefullpath = getParentModule()->getFullPath() + "." + getFullName();
-        lastmodulefullpathmod = this;
+            lastModuleFullPath = getParentModule()->getFullPath() + "." + getFullName();
+        lastModuleFullPathModule = this;
     }
-    return lastmodulefullpath;
+    return lastModuleFullPath;
 }
 
 bool cModule::isSimple() const
@@ -382,11 +382,11 @@ void cModule::disposeGateDesc(cGate::Desc *desc, bool checkConnected)
 
 void cModule::clearGates()
 {
-    for (int i=0; i<descvSize; i++)
-        disposeGateDesc(descv + i, false);
-    delete [] descv;
-    descv = NULL;
-    descvSize = 0;
+    for (int i=0; i<gateDescArraySize; i++)
+        disposeGateDesc(gateDescArray + i, false);
+    delete [] gateDescArray;
+    gateDescArray = NULL;
+    gateDescArraySize = 0;
 }
 
 void cModule::clearNamePools()
@@ -399,8 +399,8 @@ void cModule::adjustGateDesc(cGate *gate, cGate::Desc *newvec)
 {
     if (gate) {
         // the "desc" pointer in each gate needs to be updated when descv[] gets reallocated
-        ASSERT(descv <= gate->desc && gate->desc < descv+descvSize);
-        gate->desc = newvec + (gate->desc - descv);
+        ASSERT(gateDescArray <= gate->desc && gate->desc < gateDescArray+gateDescArraySize);
+        gate->desc = newvec + (gate->desc - gateDescArray);
     }
 }
 
@@ -408,23 +408,23 @@ cGate::Desc *cModule::addGateDesc(const char *gatename, cGate::Type type, bool i
 {
     // check limits
     if (isVector) {
-        if (descvSize >= MAX_VECTORGATES)
+        if (gateDescArraySize >= MAX_VECTORGATES)
             throw cRuntimeError(this, "cannot add gate `%s[]': too many vector gates (limit is %d)", gatename, MAX_VECTORGATES);
     }
     else {
-        if (descvSize >= MAX_SCALARGATES)
+        if (gateDescArraySize >= MAX_SCALARGATES)
             throw cRuntimeError(this, "cannot add gate `%s': too many scalar gates (limit is %d)", gatename, MAX_SCALARGATES);
     }
 
     // allocate new array
     //TODO preallocate a larger descv[] in advance?
-    cGate::Desc *newv = new cGate::Desc[descvSize+1];
-    memcpy(newv, descv, descvSize*sizeof(cGate::Desc));
+    cGate::Desc *newv = new cGate::Desc[gateDescArraySize+1];
+    memcpy(newv, gateDescArray, gateDescArraySize*sizeof(cGate::Desc));
 
     // adjust desc pointers in already existing gates
-    for (int i=0; i<descvSize; i++)
+    for (int i=0; i<gateDescArraySize; i++)
     {
-        cGate::Desc *desc = descv + i;
+        cGate::Desc *desc = gateDescArray + i;
         if (desc->namep) {
             if (!desc->isVector()) {
                 adjustGateDesc(desc->input.gate, newv);
@@ -442,9 +442,9 @@ cGate::Desc *cModule::addGateDesc(const char *gatename, cGate::Type type, bool i
     }
 
     // install the new array and get its last element
-    delete [] descv;
-    descv = newv;
-    cGate::Desc *newDesc = descv + descvSize++;
+    delete [] gateDescArray;
+    gateDescArray = newv;
+    cGate::Desc *newDesc = gateDescArray + gateDescArraySize++;
 
     // configure this gatedesc with name and type
     cGate::Name key(gatename, type);
@@ -467,22 +467,22 @@ int cModule::findGateDesc(const char *gatename, char& suffix) const
     // and search accordingly
     switch (suffix) {
         case '\0':
-            for (int i=0; i<descvSize; i++) {
-                const cGate::Desc *desc = descv + i;
+            for (int i=0; i<gateDescArraySize; i++) {
+                const cGate::Desc *desc = gateDescArray + i;
                 if (desc->namep && strcmp(desc->namep->name.c_str(), gatename)==0)
                     return i;
             }
             break;
         case 'i':
-            for (int i=0; i<descvSize; i++) {
-                const cGate::Desc *desc = descv + i;
+            for (int i=0; i<gateDescArraySize; i++) {
+                const cGate::Desc *desc = gateDescArray + i;
                 if (desc->namep && strcmp(desc->namep->namei.c_str(), gatename)==0)
                     return i;
             }
             break;
         case 'o':
-            for (int i=0; i<descvSize; i++) {
-                const cGate::Desc *desc = descv + i;
+            for (int i=0; i<gateDescArraySize; i++) {
+                const cGate::Desc *desc = gateDescArray + i;
                 if (desc->namep && strcmp(desc->namep->nameo.c_str(), gatename)==0)
                     return i;
             }
@@ -496,7 +496,7 @@ cGate::Desc *cModule::gateDesc(const char *gatename, char& suffix) const
     int descIndex = findGateDesc(gatename, suffix);
     if (descIndex<0)
         throw cRuntimeError(this, "no such gate or gate vector: `%s'", gatename);
-    return descv + descIndex;
+    return gateDescArray + descIndex;
 }
 
 #define ENSURE(x)  if (!(x)) throw cRuntimeError(this, E_GATEID, id)
@@ -509,8 +509,8 @@ cGate *cModule::gate(int id)
     if (h==0) {
         // scalar gate
         unsigned int descIndex = id>>1;
-        ENSURE(descIndex < (unsigned int) descvSize);
-        cGate::Desc *desc = descv + descIndex;
+        ENSURE(descIndex < (unsigned int) gateDescArraySize);
+        cGate::Desc *desc = gateDescArray + descIndex;
         ENSURE(desc->namep); // not deleted
         ENSURE(!desc->isVector());
         ENSURE((id&1)==0 ? desc->getType()!=cGate::OUTPUT : desc->getType()!=cGate::INPUT);
@@ -521,8 +521,8 @@ cGate *cModule::gate(int id)
     else {
         // vector gate
         unsigned int descIndex = (h>>GATEID_LBITS)-1;
-        ENSURE(descIndex < (unsigned int) descvSize);
-        cGate::Desc *desc = descv + descIndex;
+        ENSURE(descIndex < (unsigned int) gateDescArraySize);
+        cGate::Desc *desc = gateDescArray + descIndex;
         ENSURE(desc->namep); // not deleted
         ENSURE(desc->isVector());
         bool isOutput = id & (1<<(GATEID_LBITS-1));  // L's MSB
@@ -620,7 +620,7 @@ void cModule::setGateSize(const char *gatename, int newSize)
         throw cRuntimeError(this, "no `%s' or `%s[]' gate", gatename, gatename);
     if (suffix)
         throw cRuntimeError(this, "setGateSize(): wrong gate name `%s', suffix `$i'/`$o' not accepted here", gatename);
-    cGate::Desc *desc = descv + descIndex;
+    cGate::Desc *desc = gateDescArray + descIndex;
     if (!desc->isVector())
         throw cRuntimeError(this, "setGateSize(): gate `%s' is not a vector gate", gatename);
     if (newSize<0)
@@ -745,7 +745,7 @@ int cModule::gateBaseId(const char *gatename) const
     int descIndex = findGateDesc(gatename, suffix);
     if (descIndex<0)
         throw cRuntimeError(this, "gateBaseId(): no such gate or gate vector: `%s'", gatename);
-    const cGate::Desc *desc = descv+descIndex;
+    const cGate::Desc *desc = gateDescArray+descIndex;
     if (desc->getType()==cGate::INOUT && !suffix)
         throw cRuntimeError(this, "gateBaseId(): inout gate `%s' cannot be referenced without $i/$o suffix", gatename);
     bool isInput = (suffix=='i' || desc->getType()==cGate::INPUT);
@@ -792,7 +792,7 @@ int cModule::findGate(const char *gatename, int index) const
     int descIndex = findGateDesc(gatename, suffix);
     if (descIndex<0)
         return -1;  // no such gate name
-    const cGate::Desc *desc = descv + descIndex;
+    const cGate::Desc *desc = gateDescArray + descIndex;
     if (desc->getType()==cGate::INOUT && !suffix)
         return -1;  // inout gate cannot be referenced without "$i" or "$o" suffix
     bool isInput = (suffix=='i' || desc->getType()==cGate::INPUT);
@@ -827,7 +827,7 @@ bool cModule::hasGate(const char *gatename, int index) const
     int descIndex = findGateDesc(gatename, suffix);
     if (descIndex<0)
         return false;
-    const cGate::Desc *desc = descv + descIndex;
+    const cGate::Desc *desc = gateDescArray + descIndex;
     return index==-1 ? true : (index>=0 && index<desc->size);
 }
 
@@ -843,9 +843,9 @@ void cModule::deleteGate(const char *gatename)
 std::vector<const char *> cModule::getGateNames() const
 {
     std::vector<const char *> result;
-    for (int i=0; i<descvSize; i++)
-        if (descv[i].namep)
-            result.push_back(descv[i].namep->name.c_str());
+    for (int i=0; i<gateDescArraySize; i++)
+        if (gateDescArray[i].namep)
+            result.push_back(gateDescArray[i].namep->name.c_str());
     return result;
 }
 
@@ -1012,9 +1012,9 @@ void cModule::getOrCreateFirstUnconnectedGatePair(const char *gatename,
 int cModule::gateCount() const
 {
     int n = 0;
-    for (int i=0; i<descvSize; i++)
+    for (int i=0; i<gateDescArraySize; i++)
     {
-        cGate::Desc *desc = descv + i;
+        cGate::Desc *desc = gateDescArray + i;
         if (desc->namep) {
             if (!desc->isVector())
                 n += (desc->getType()==cGate::INOUT) ? 2 : 1;
@@ -1294,7 +1294,7 @@ void cModule::changeParentTo(cModule *mod)
     mod->insertSubmodule(this);
     int oldId = getId();
     reassignModuleIdRec();
-    if (cachefullpath)
+    if (cacheFullPath)
         updateFullPathRec();
 
     // notify environment
@@ -1473,7 +1473,7 @@ void cModule::GateIterator::init(const cModule *module)
 
 void cModule::GateIterator::advance()
 {
-    cGate::Desc *desc = module->descv + descIndex;
+    cGate::Desc *desc = module->gateDescArray + descIndex;
 
     if (desc->namep) {
         if (isOutput==false && desc->getType()==cGate::OUTPUT) {
@@ -1493,7 +1493,7 @@ void cModule::GateIterator::advance()
             return;
         }
     }
-    if (descIndex < module->descvSize) {
+    if (descIndex < module->gateDescArraySize) {
         descIndex++;
         isOutput = false;
         index = 0;
@@ -1502,14 +1502,14 @@ void cModule::GateIterator::advance()
 
 bool cModule::GateIterator::end() const
 {
-    return descIndex >= module->descvSize;
+    return descIndex >= module->gateDescArraySize;
 }
 
 cGate *cModule::GateIterator::current() const
 {
-    if (descIndex >= module->descvSize)
+    if (descIndex >= module->gateDescArraySize)
         return NULL;
-    cGate::Desc *desc = module->descv + descIndex;
+    cGate::Desc *desc = module->gateDescArray + descIndex;
     if (!desc->namep)
         return NULL; // deleted gate
     if (isOutput==false && desc->getType()==cGate::OUTPUT)

@@ -818,6 +818,7 @@ cFigure::~cFigure()
 {
     for (int i = 0; i < (int)children.size(); i++)
         dropAndDelete(children[i]);
+    stringPool.release(tags);
 }
 
 void cFigure::parse(cProperty *property)

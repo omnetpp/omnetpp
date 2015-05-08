@@ -108,25 +108,27 @@ class SIM_API cMessage : public cEvent
         FL_ISPRIVATECOPY = 4,
     };
     // note: fields are in an order that maximizes packing (minimizes sizeof(cMessage))
-    short msgkind;             // message kind -- 0>= user-defined meaning, <0 reserved
-    short srcprocid;           // reserved for use by parallel execution: id of source partition
-    cArray *parlistp;          // ptr to list of parameters
-    cObject *ctrlp;            // ptr to "control info"
-    void *contextptr;          // a stored pointer -- user-defined meaning, used with self-messages
+    short messageKind;         // message kind -- 0>= user-defined meaning, <0 reserved
+    short srcProcId;           // reserved for use by parallel execution: id of source partition
+    cArray *parList;           // ptr to list of parameters
+    cObject *controlInfo;      // ptr to "control info"
+    void *contextPointer;      // a stored pointer -- user-defined meaning, used with self-messages
 
-    int frommod, fromgate;     // source module and gate IDs -- set internally
-    int tomod, togate;         // dest. module and gate IDs -- set internally
-    simtime_t created;         // creation time -- set be constructor
-    simtime_t sent;            // time of sending -- set internally
-    simtime_t tstamp;          // time stamp -- user-defined meaning
+    int senderModuleId;        // sender module ID -- set internally
+    int senderGateId;          // source gate ID -- set internally
+    int targetModuleId;        // destination module ID -- set internally
+    int targetGateId;          // destination gate ID -- set internally
+    simtime_t creationTime;    // creation time -- set be constructor
+    simtime_t sendTime;        // time of sending -- set internally
+    simtime_t timestamp;       // time stamp -- user-defined meaning
 
-    long msgid;                // a unique message identifier assigned upon message creation
-    long msgtreeid;            // a message identifier that is inherited by dup, if non dupped it is msgid
-    static long next_id;       // the next unique message identifier to be assigned upon message creation
+    long messageId;            // a unique message identifier assigned upon message creation
+    long messageTreeId;        // a message identifier that is inherited by dup, if non dupped it is msgid
+    static long nextMessageId; // the next unique message identifier to be assigned upon message creation
 
     // global variables for statistics
-    static long total_msgs;
-    static long live_msgs;
+    static long totalMsgCount;
+    static long liveMsgCount;
 
   private:
     // internal: create parlist
@@ -135,7 +137,7 @@ class SIM_API cMessage : public cEvent
     void copy(const cMessage& msg);
 
     // internal: used by LogBuffer for creating an *exact* copy of a message
-    void setId(long id) {msgid = id;}
+    void setId(long id) {messageId = id;}
 
   public:
     // internal: create an exact clone (including msgid) that doesn't show up in the statistics
@@ -150,13 +152,13 @@ class SIM_API cMessage : public cEvent
     _OPPDEPRECATED void setArrival(cModule *module, int gateId, simtime_t_cref t);
 
     // internal: used by the parallel simulation kernel.
-    void setSrcProcId(int procId) {srcprocid = (short)procId;}
+    void setSrcProcId(int procId) {srcProcId = (short)procId;}
 
     // internal: used by the parallel simulation kernel.
-    virtual int getSrcProcId() const {return srcprocid;}
+    virtual int getSrcProcId() const {return srcProcId;}
 
     // internal: returns the parameter list object, or NULL if it hasn't been used yet
-    cArray *getParListPtr()  {return parlistp;}
+    cArray *getParListPtr()  {return parList;}
 
   private: // hide cEvent methods from the cMessage API
 
@@ -257,17 +259,17 @@ class SIM_API cMessage : public cEvent
      * the user; negative values are reserved by OMNeT++ for internal
      * purposes.
      */
-    void setKind(short k)  {msgkind=k;}
+    void setKind(short k)  {messageKind=k;}
 
     /**
      * Sets the message's time stamp to the current simulation time.
      */
-    void setTimestamp() {tstamp=getSimulation()->getSimTime();}
+    void setTimestamp() {timestamp=getSimulation()->getSimTime();}
 
     /**
      * Directly sets the message's time stamp.
      */
-    void setTimestamp(simtime_t t) {tstamp=t;}
+    void setTimestamp(simtime_t t) {timestamp=t;}
 
     /**
      * Sets the context pointer. This pointer may store an arbitrary value.
@@ -277,7 +279,7 @@ class SIM_API cMessage : public cEvent
      * the message represents), so that when the self-message arrives it is
      * easier to identify where it belongs.
      */
-    void setContextPointer(void *p) {contextptr=p;}
+    void setContextPointer(void *p) {contextPointer=p;}
 
     /**
      * Attaches a "control info" structure (object) to the message.
@@ -306,22 +308,22 @@ class SIM_API cMessage : public cEvent
     /**
      * Returns the message kind.
      */
-    short getKind() const  {return msgkind;}
+    short getKind() const  {return messageKind;}
 
     /**
      * Returns the message's time stamp.
      */
-    simtime_t_cref getTimestamp() const {return tstamp;}
+    simtime_t_cref getTimestamp() const {return timestamp;}
 
     /**
      * Returns the context pointer.
      */
-    void *getContextPointer() const {return contextptr;}
+    void *getContextPointer() const {return contextPointer;}
 
     /**
      * Returns pointer to the attached "control info".
      */
-    cObject *getControlInfo() const {return ctrlp;}
+    cObject *getControlInfo() const {return controlInfo;}
     //@}
 
     /** @name Dynamically attaching objects. */
@@ -340,7 +342,7 @@ class SIM_API cMessage : public cEvent
      * suit your needs. For more information, see class description for discussion
      * about message subclassing vs dynamically attached objects.</i>
      */
-    virtual cArray& getParList()  {if (!parlistp) _createparlist(); return *parlistp;}
+    virtual cArray& getParList()  {if (!parList) _createparlist(); return *parList;}
 
     /**
      * Add a new, empty parameter (cMsgPar object) with the given name
@@ -453,7 +455,7 @@ class SIM_API cMessage : public cEvent
      *
      * @see getParList()
      */
-    virtual bool hasObject(const char *s)  {return !parlistp ? false : parlistp->find(s)>=0;}
+    virtual bool hasObject(const char *s)  {return !parList ? false : parList->find(s)>=0;}
 
     /**
      * Remove the object with the given name from the message's object list, and
@@ -486,14 +488,14 @@ class SIM_API cMessage : public cEvent
     /**
      * Return true if message was posted by scheduleAt().
      */
-    bool isSelfMessage() const {return togate==-1;}
+    bool isSelfMessage() const {return targetGateId==-1;}
 
     /**
      * Returns a pointer to the sender module. It returns NULL if the message
      * has not been sent/scheduled yet, or if the sender module got deleted
      * in the meantime.
      */
-    cModule *getSenderModule() const {return getSimulation()->getModule(frommod);}
+    cModule *getSenderModule() const {return getSimulation()->getModule(senderModuleId);}
 
     /**
      * Returns pointers to the gate from which the message was sent and
@@ -507,7 +509,7 @@ class SIM_API cMessage : public cEvent
      * has not been sent/scheduled yet, or if the module was deleted
      * in the meantime.
      */
-    cModule *getArrivalModule() const {return getSimulation()->getModule(tomod);}
+    cModule *getArrivalModule() const {return getSimulation()->getModule(targetModuleId);}
 
     /**
      * Returns pointers to the gate from which the message was sent and
@@ -522,7 +524,7 @@ class SIM_API cMessage : public cEvent
      *
      * @see cModule::getId(), cSimulation::getModule()
      */
-    int getSenderModuleId() const {return frommod;}
+    int getSenderModuleId() const {return senderModuleId;}
 
     /**
      * Returns the gate ID of the gate in the sender module on which the
@@ -531,7 +533,7 @@ class SIM_API cMessage : public cEvent
      *
      * @see cGate::getId(), cModule::gate(int)
      */
-    int getSenderGateId() const   {return fromgate;}
+    int getSenderGateId() const   {return senderGateId;}
 
     /**
      * Returns the module ID of the receiver module, or -1 if the
@@ -539,7 +541,7 @@ class SIM_API cMessage : public cEvent
      *
      * @see cModule::getId(), cSimulation::getModule()
      */
-    int getArrivalModuleId() const {return tomod;}
+    int getArrivalModuleId() const {return targetModuleId;}
 
     /**
      * Returns the gate ID of the gate in the receiver module on which the
@@ -548,20 +550,20 @@ class SIM_API cMessage : public cEvent
      *
      * @see cGate::getId(), cModule::gate(int)
      */
-    int getArrivalGateId() const  {return togate;}
+    int getArrivalGateId() const  {return targetGateId;}
 
     /**
      * Returns time when the message was created; for cloned messages, it
      * returns the creation time of the original message, not the time of the
      * dup() call.
      */
-    simtime_t_cref getCreationTime() const {return created;}
+    simtime_t_cref getCreationTime() const {return creationTime;}
 
     /**
      * Returns time when the message was sent/scheduled or 0 if the message
      * has not been sent yet.
      */
-    simtime_t_cref getSendingTime()  const {return sent;}
+    simtime_t_cref getSendingTime()  const {return sendTime;}
 
     /**
      * Returns time when the message arrived (or will arrive if it
@@ -578,12 +580,12 @@ class SIM_API cMessage : public cEvent
      * @see getDuration()
      */
     // note: overridden to provide more specific documentation
-    simtime_t_cref getArrivalTime()  const {return delivd;}
+    simtime_t_cref getArrivalTime()  const {return arrivalTime;}
 
     /**
      * Return true if the message arrived through the given gate.
      */
-    bool arrivedOn(int gateId) const {return gateId==togate;}
+    bool arrivedOn(int gateId) const {return gateId==targetGateId;}
 
     /**
      * Return true if the message arrived on the gate given with its name.
@@ -601,13 +603,13 @@ class SIM_API cMessage : public cEvent
     /**
      * Returns a unique message identifier assigned upon message creation.
      */
-    long getId() const {return msgid;}
+    long getId() const {return messageId;}
 
     /**
      * Returns an identifier which is shared among a message object and all messages
      * created by copying it (i.e. by dup() or the copy constructor).
      */
-    long getTreeId() const {return msgtreeid;}
+    long getTreeId() const {return messageTreeId;}
     //@}
 
     /** @name Miscellaneous. */
@@ -625,13 +627,13 @@ class SIM_API cMessage : public cEvent
      * scheduler. If you pass gateId=-1, the message will arrive as a
      * self-message.
      */
-    void setArrival(int moduleId, int gateId) {tomod = moduleId; togate = gateId;}
+    void setArrival(int moduleId, int gateId) {targetModuleId = moduleId; targetGateId = gateId;}
 
     /**
      * Like setArrival(int moduleId, int gateId), but also sets the arrival
      * time for the message.
      */
-    void setArrival(int moduleId, int gateId, simtime_t_cref t) {tomod = moduleId; togate = gateId; setArrivalTime(t);}
+    void setArrival(int moduleId, int gateId, simtime_t_cref t) {targetModuleId = moduleId; targetGateId = gateId; setArrivalTime(t);}
     //@}
 
     /** @name Statistics. */
@@ -644,7 +646,7 @@ class SIM_API cMessage : public cEvent
      * during very long simulation runs.
      * May be useful for profiling or debugging memory leaks.
      */
-    static long getTotalMessageCount() {return total_msgs;}
+    static long getTotalMessageCount() {return totalMsgCount;}
 
     /**
      * Returns the number of message objects that currently exist in the
@@ -653,12 +655,12 @@ class SIM_API cMessage : public cEvent
      * May be useful for profiling or debugging memory leaks caused by forgetting
      * to delete messages.
      */
-    static long getLiveMessageCount() {return live_msgs;}
+    static long getLiveMessageCount() {return liveMsgCount;}
 
     /**
      * Reset counters used by getTotalMessageCount() and getLiveMessageCount().
      */
-    static void resetMessageCounters()  {total_msgs=live_msgs=0;}
+    static void resetMessageCounters()  {totalMsgCount=liveMsgCount=0;}
     //@}
 };
 

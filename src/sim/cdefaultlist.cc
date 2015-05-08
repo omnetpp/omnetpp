@@ -58,10 +58,10 @@ cDefaultList::cDefaultList(const char *name) : cNoncopyableOwnedObject(name)
 void cDefaultList::construct()
 {
     capacity = 2;
-    size = 0;
-    vect = new cOwnedObject *[capacity];
+    numObjs = 0;
+    objs = new cOwnedObject *[capacity];
     for (int i=0; i<capacity; i++)
-        vect[i] = NULL;
+        objs[i] = NULL;
 #ifdef SIMFRONTEND_SUPPORT
     lastChangeSerial = 0;
 #endif
@@ -76,23 +76,23 @@ cDefaultList::~cDefaultList()
         // allocated objects held by the module. But: deletion has dangers,
         // i.e. if we try to delete objects embedded in other objects/structs or
         // arrays, it will crash mysteriously to the user -- so consider not deleting.
-        while (size>0)
-            delete vect[0];
-        delete [] vect;
+        while (numObjs>0)
+            delete objs[0];
+        delete [] objs;
     }
     else
     {
         // experimental: do not delete objects (except cWatches), just print their names
-        for (int i=0; i<size; i++)
+        for (int i=0; i<numObjs; i++)
         {
-            if (dynamic_cast<cWatchBase *>(vect[i]))
-                delete vect[i--]; // "i--" used because delete will move last item to position i
+            if (dynamic_cast<cWatchBase *>(objs[i]))
+                delete objs[i--]; // "i--" used because delete will move last item to position i
             else
-                getEnvir()->undisposedObject(vect[i]);
+                getEnvir()->undisposedObject(objs[i]);
         }
 
         // we can free up the pointer array itself though
-        delete [] vect;
+        delete [] objs;
     }
 }
 
@@ -100,7 +100,7 @@ void cDefaultList::doInsert(cOwnedObject *obj)
 {
     ASSERT(obj!=this || this==&defaultList);
 
-    if (size>=capacity)
+    if (numObjs>=capacity)
     {
         if (capacity==0)
         {
@@ -112,14 +112,14 @@ void cDefaultList::doInsert(cOwnedObject *obj)
             // must allocate bigger vector (grow 25% but at least 2)
             capacity += (capacity<8) ? 2 : (capacity>>2);
             cOwnedObject **v = new cOwnedObject *[capacity];
-            memcpy(v, vect, sizeof(cOwnedObject*)*size);
-            delete [] vect;
-            vect = v;
+            memcpy(v, objs, sizeof(cOwnedObject*)*numObjs);
+            delete [] objs;
+            objs = v;
         }
     }
 
-    obj->ownerp = this;
-    vect[obj->pos = size++] = obj;
+    obj->owner = this;
+    objs[obj->pos = numObjs++] = obj;
 #ifdef SIMFRONTEND_SUPPORT
     lastChangeSerial = changeCounter++;
 #endif
@@ -127,11 +127,11 @@ void cDefaultList::doInsert(cOwnedObject *obj)
 
 void cDefaultList::ownedObjectDeleted(cOwnedObject *obj)
 {
-    ASSERT(obj && obj->ownerp==this);
+    ASSERT(obj && obj->owner==this);
 
     // move last object to obj's old position
     int pos = obj->pos;
-    (vect[pos] = vect[--size])->pos = pos;
+    (objs[pos] = objs[--numObjs])->pos = pos;
 #ifdef SIMFRONTEND_SUPPORT
     lastChangeSerial = changeCounter++;
 #endif
@@ -139,14 +139,14 @@ void cDefaultList::ownedObjectDeleted(cOwnedObject *obj)
 
 void cDefaultList::yieldOwnership(cOwnedObject *obj, cObject *newowner)
 {
-    ASSERT(obj && obj->ownerp==this && size>0);
+    ASSERT(obj && obj->owner==this && numObjs>0);
 
     // give object to its new owner
-    obj->ownerp = newowner;
+    obj->owner = newowner;
 
     // move last object to obj's old position
     int pos = obj->pos;
-    (vect[pos] = vect[--size])->pos = pos;
+    (objs[pos] = objs[--numObjs])->pos = pos;
 #ifdef SIMFRONTEND_SUPPORT
     lastChangeSerial = changeCounter++;
 #endif
@@ -161,14 +161,14 @@ void cDefaultList::takeAllObjectsFrom(cDefaultList& other)
 std::string cDefaultList::info() const
 {
     std::stringstream out;
-    out << "n=" << size;
+    out << "n=" << numObjs;
     return out.str();
 }
 
 void cDefaultList::forEachChild(cVisitor *v)
 {
-    for (int i=0; i<size; i++)
-        v->visit(vect[i]);
+    for (int i=0; i<numObjs; i++)
+        v->visit(objs[i]);
 }
 
 void cDefaultList::parsimPack(cCommBuffer *buffer) const
@@ -178,7 +178,7 @@ void cDefaultList::parsimPack(cCommBuffer *buffer) const
 #else
     cOwnedObject::parsimPack(buffer);
 
-    if (size>0)
+    if (numObjs>0)
         throw cRuntimeError(this, "parsimPack() not supported (makes no sense)");
 #endif
 }
@@ -189,7 +189,7 @@ void cDefaultList::parsimUnpack(cCommBuffer *buffer)
     throw cRuntimeError(this,E_NOPARSIM);
 #else
     cOwnedObject::parsimUnpack(buffer);
-    if (size>0)
+    if (numObjs>0)
         throw cRuntimeError(this, "parsimUnpack(): can only unpack into empty object");
 #endif
 }
@@ -197,25 +197,25 @@ void cDefaultList::parsimUnpack(cCommBuffer *buffer)
 void cDefaultList::take(cOwnedObject *obj)
 {
     // ask current owner to release it -- if it's a cDefaultList, it will.
-    obj->ownerp->yieldOwnership(obj, this);
+    obj->owner->yieldOwnership(obj, this);
     doInsert(obj);
 }
 
 void cDefaultList::drop(cOwnedObject *obj)
 {
-    if (obj->ownerp!=this)
+    if (obj->owner!=this)
         throw cRuntimeError(this,"drop(): not owner of object (%s)%s",
                                 obj->getClassName(), obj->getFullPath().c_str());
     // the following 2 lines are actually the same as defaultOwner->take(obj);
-    yieldOwnership(obj, defaultowner);
-    defaultowner->doInsert(obj);
+    yieldOwnership(obj, defaultOwner);
+    defaultOwner->doInsert(obj);
 }
 
 cOwnedObject *cDefaultList::defaultListGet(int k)
 {
-    if (k<0 || k>=size)
+    if (k<0 || k>=numObjs)
         return NULL;
-    return vect[k];
+    return objs[k];
 }
 
 bool cDefaultList::defaultListContains(cOwnedObject *obj) const

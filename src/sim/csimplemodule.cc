@@ -41,11 +41,11 @@ NAMESPACE_BEGIN
 #ifdef NDEBUG
 #define DEBUG_TRAP_IF_REQUESTED   /*no-op*/
 #else
-#define DEBUG_TRAP_IF_REQUESTED   {if (getSimulation()->trap_on_next_event) {getSimulation()->trap_on_next_event=false; DEBUG_TRAP;}}
+#define DEBUG_TRAP_IF_REQUESTED   {if (getSimulation()->trapOnNextEvent) {getSimulation()->trapOnNextEvent=false; DEBUG_TRAP;}}
 #endif
 
-bool cSimpleModule::stack_cleanup_requested;
-cSimpleModule *cSimpleModule::after_cleanup_transfer_to;
+bool cSimpleModule::stackCleanupRequested;
+cSimpleModule *cSimpleModule::afterCleanupTransferTo;
 
 
 void cSimpleModule::activate(void *p)
@@ -53,13 +53,13 @@ void cSimpleModule::activate(void *p)
     cSimpleModule *mod = (cSimpleModule *)p;
     cSimulation *simulation = cSimulation::getActiveSimulation();
 
-    if (stack_cleanup_requested)
+    if (stackCleanupRequested)
     {
         // module has just been created, but already deleted
         mod->setFlag(FL_ISTERMINATED, true);
         mod->setFlag(FL_STACKALREADYUNWOUND, true);
-        if (after_cleanup_transfer_to)
-            simulation->transferTo(after_cleanup_transfer_to);
+        if (afterCleanupTransferTo)
+            simulation->transferTo(afterCleanupTransferTo);
         else
             simulation->transferToMain();
         fprintf(stderr, "INTERNAL ERROR: switch to the fiber of a module already terminated");
@@ -68,8 +68,8 @@ void cSimpleModule::activate(void *p)
 
     // The starter message should be the same as the timeoutmsg member of
     // cSimpleModule. If not, then something is wrong...
-    cMessage *starter = simulation->msg_for_activity;
-    if (starter!=mod->timeoutmsg)
+    cMessage *starter = simulation->msgForActivity;
+    if (starter!=mod->timeoutMessage)
     {
         // hand exception to cSimulation::transferTo() and switch back
         mod->setFlag(FL_ISTERMINATED, true);
@@ -153,8 +153,8 @@ void cSimpleModule::activate(void *p)
         // Just transfer back to whoever forced the stack cleanup (the main coroutine
         // or some other simple module) and nothing else to do.
         delete exception;
-        if (after_cleanup_transfer_to)
-            simulation->transferTo(after_cleanup_transfer_to);
+        if (afterCleanupTransferTo)
+            simulation->transferTo(afterCleanupTransferTo);
         else
             simulation->transferToMain();
         fprintf(stderr, "INTERNAL ERROR: switch to the fiber of a module already terminated");
@@ -183,7 +183,7 @@ cSimpleModule::cSimpleModule(const char *, cModule *, unsigned stksize)
 
     // for an activity() module, timeoutmsg will be created in scheduleStart()
     // which must always be called
-    timeoutmsg = NULL;
+    timeoutMessage = NULL;
 
     if (usesActivity())
     {
@@ -206,7 +206,7 @@ cSimpleModule::cSimpleModule(unsigned stksize)
 
     // for an activity() module, timeoutmsg will be created in scheduleStart()
     // which must always be called
-    timeoutmsg = NULL;
+    timeoutMessage = NULL;
 
     if (usesActivity())
     {
@@ -232,16 +232,16 @@ cSimpleModule::~cSimpleModule()
         if ((flags&FL_STACKALREADYUNWOUND)==0)
         {
             //FIXME: check this is OK for brand new modules too (no transferTo() yet)
-            stack_cleanup_requested = true;
-            after_cleanup_transfer_to = getSimulation()->getActivityModule();
-            ASSERT(!after_cleanup_transfer_to || after_cleanup_transfer_to->usesActivity());
+            stackCleanupRequested = true;
+            afterCleanupTransferTo = getSimulation()->getActivityModule();
+            ASSERT(!afterCleanupTransferTo || afterCleanupTransferTo->usesActivity());
             getSimulation()->transferTo(this);
-            stack_cleanup_requested = false;
+            stackCleanupRequested = false;
         }
 
         // delete timeoutmsg if not currently scheduled (then it'll be deleted by message queue)
-        if (timeoutmsg && !timeoutmsg->isScheduled())
-            delete timeoutmsg;
+        if (timeoutMessage && !timeoutMessage->isScheduled())
+            delete timeoutMessage;
 
         // deallocate coroutine
         delete coroutine;
@@ -278,7 +278,7 @@ void cSimpleModule::halt()
 
     setFlag(FL_ISTERMINATED, true);
     getSimulation()->transferToMain();
-    assert(stack_cleanup_requested);
+    assert(stackCleanupRequested);
     throw cStackCleanupException();
 }
 
@@ -305,7 +305,7 @@ void cSimpleModule::scheduleStart(simtime_t t)
     // contains a call to scheduleStart()) can be used for both.
     if (usesActivity())
     {
-        if (timeoutmsg!=NULL)
+        if (timeoutMessage!=NULL)
             throw cRuntimeError("scheduleStart(): module `%s' already started",getFullPath().c_str());
 
         Enter_Method_Silent("scheduleStart()");
@@ -313,15 +313,15 @@ void cSimpleModule::scheduleStart(simtime_t t)
         // create timeoutmsg, used as internal timeout message
         char buf[24];
         sprintf(buf,"starter-%d", getId());
-        timeoutmsg = new cMessage(buf,MK_STARTER);
+        timeoutMessage = new cMessage(buf,MK_STARTER);
 
         // initialize message fields
-        timeoutmsg->setSentFrom(NULL, -1, SIMTIME_ZERO);
-        timeoutmsg->setArrival(getId(), -1, t);
+        timeoutMessage->setSentFrom(NULL, -1, SIMTIME_ZERO);
+        timeoutMessage->setArrival(getId(), -1, t);
 
         // use timeoutmsg as the activation message; insert it into the FES
-        EVCB.messageScheduled(timeoutmsg);
-        getSimulation()->insertEvent(timeoutmsg);
+        EVCB.messageScheduled(timeoutMessage);
+        getSimulation()->insertEvent(timeoutMessage);
     }
 
     // delegate to base class for doing the same for submodules
@@ -629,17 +629,17 @@ void cSimpleModule::wait(simtime_t t)
     if (t<SIMTIME_ZERO)
         throw cRuntimeError(E_NEGTIME);
 
-    timeoutmsg->setArrival(getId(), -1, simTime()+t);
-    EVCB.messageScheduled(timeoutmsg);
-    getSimulation()->insertEvent(timeoutmsg);
+    timeoutMessage->setArrival(getId(), -1, simTime()+t);
+    EVCB.messageScheduled(timeoutMessage);
+    getSimulation()->insertEvent(timeoutMessage);
 
     getSimulation()->transferToMain();
-    if (stack_cleanup_requested)
+    if (stackCleanupRequested)
         throw cStackCleanupException();
 
-    cMessage *newmsg = getSimulation()->msg_for_activity;
+    cMessage *newmsg = getSimulation()->msgForActivity;
 
-    if (newmsg!=timeoutmsg)
+    if (newmsg!=timeoutMessage)
         throw cRuntimeError("message arrived during wait() call ((%s)%s); if this "
                             "should be allowed, use waitAndEnqueue() instead of wait()",
                             newmsg->getClassName(), newmsg->getFullName());
@@ -656,19 +656,19 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
     if (!queue)
         throw cRuntimeError("waitAndEnqueue(): queue pointer is NULL");
 
-    timeoutmsg->setArrival(getId(), -1, simTime()+t);
-    EVCB.messageScheduled(timeoutmsg);
-    getSimulation()->insertEvent(timeoutmsg);
+    timeoutMessage->setArrival(getId(), -1, simTime()+t);
+    EVCB.messageScheduled(timeoutMessage);
+    getSimulation()->insertEvent(timeoutMessage);
 
     for(;;)
     {
         getSimulation()->transferToMain();
-        if (stack_cleanup_requested)
+        if (stackCleanupRequested)
             throw cStackCleanupException();
 
-        cMessage *newmsg = getSimulation()->msg_for_activity;
+        cMessage *newmsg = getSimulation()->msgForActivity;
 
-        if (newmsg==timeoutmsg)
+        if (newmsg==timeoutMessage)
             break;
         else
             queue->insert(newmsg);
@@ -685,10 +685,10 @@ cMessage *cSimpleModule::receive()
         throw cRuntimeError(E_NORECV);
 
     getSimulation()->transferToMain();
-    if (stack_cleanup_requested)
+    if (stackCleanupRequested)
         throw cStackCleanupException();
 
-    cMessage *newmsg = getSimulation()->msg_for_activity;
+    cMessage *newmsg = getSimulation()->msgForActivity;
     DEBUG_TRAP_IF_REQUESTED; // MODULE IS ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP" IN YOUR DEBUGGER
     return newmsg;
 }
@@ -700,25 +700,25 @@ cMessage *cSimpleModule::receive(simtime_t t)
     if (t<SIMTIME_ZERO)
         throw cRuntimeError(E_NEGTOUT);
 
-    timeoutmsg->setArrival(getId(), -1, simTime()+t);
-    EVCB.messageScheduled(timeoutmsg);
-    getSimulation()->insertEvent(timeoutmsg);
+    timeoutMessage->setArrival(getId(), -1, simTime()+t);
+    EVCB.messageScheduled(timeoutMessage);
+    getSimulation()->insertEvent(timeoutMessage);
 
     getSimulation()->transferToMain();
-    if (stack_cleanup_requested)
+    if (stackCleanupRequested)
         throw cStackCleanupException();
 
-    cMessage *newmsg = getSimulation()->msg_for_activity;
+    cMessage *newmsg = getSimulation()->msgForActivity;
 
-    if (newmsg==timeoutmsg)  // timeout expired
+    if (newmsg==timeoutMessage)  // timeout expired
     {
-        take(timeoutmsg);
+        take(timeoutMessage);
         DEBUG_TRAP_IF_REQUESTED; // MODULE IS ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP" IN YOUR DEBUGGER
         return NULL;
     }
     else  // message received OK
     {
-        take(cancelEvent(timeoutmsg));
+        take(cancelEvent(timeoutMessage));
         DEBUG_TRAP_IF_REQUESTED; // MODULE IS ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP" IN YOUR DEBUGGER
         return newmsg;
     }

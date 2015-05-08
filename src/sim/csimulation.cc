@@ -63,7 +63,7 @@ void printAllObjects();
 #ifdef NDEBUG
 #define DEBUG_TRAP_IF_REQUESTED   /*no-op*/
 #else
-#define DEBUG_TRAP_IF_REQUESTED   {if (trap_on_next_event) {trap_on_next_event=false; DEBUG_TRAP;}}
+#define DEBUG_TRAP_IF_REQUESTED   {if (trapOnNextEvent) {trapOnNextEvent=false; DEBUG_TRAP;}}
 #endif
 
 /**
@@ -86,31 +86,31 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
 {
     ASSERT(cStaticFlag::isSet()); // cannot be instantiated as global variable
 
-    ownEvPtr = env;
+    envir = env;
 
-    activitymodp = NULL;
-    contextmodp = NULL;
+    currentActivityModule = NULL;
+    contextComponent = NULL;
 
-    simulationstage = CTX_NONE;
-    contexttype = CTX_NONE;
+    simulationStage = CTX_NONE;
+    contextType = CTX_NONE;
 
-    systemmodp = NULL;
-    schedulerp = NULL;
+    systemModule = NULL;
+    scheduler = NULL;
 
     delta = 32;
     size = 0;
-    last_id = 0;  // vect[0] is not used for historical reasons
+    lastComponentId = 0;  // vect[0] is not used for historical reasons
 #ifdef USE_OMNETPP4x_FINGERPRINTS
     lastVersion4ModuleId = 0;
 #endif
-    vect = NULL;
+    componentv = NULL;
 
-    networktype = NULL;
-    hasherp = NULL;
+    networkType = NULL;
+    hasher = NULL;
 
-    sim_time = SIMTIME_ZERO;
-    event_num = 0;
-    trap_on_next_event = false;
+    currentSimtime = SIMTIME_ZERO;
+    currentEventNumber = 0;
+    trapOnNextEvent = false;
 
     msgQueue.setName("scheduled-events");
     take(&msgQueue);
@@ -121,35 +121,35 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
 
 cSimulation::~cSimulation()
 {
-    if (this==simPtr)
+    if (this==activeSimulation)
         // NOTE: subclass destructors will not be called, but the simulation will stop anyway
         throw cRuntimeError(this, "cannot delete the active simulation manager object");
 
     deleteNetwork();
 
-    delete ownEvPtr;
-    delete hasherp;
-    delete schedulerp;
+    delete envir;
+    delete hasher;
+    delete scheduler;
     drop(&msgQueue);
 }
 
 void cSimulation::setActiveSimulation(cSimulation *sim)
 {
-    simPtr = sim;
-    evPtr = sim==NULL ? staticEvPtr : sim->ownEvPtr;
+    activeSimulation = sim;
+    activeEnvir = sim==NULL ? staticEnvir : sim->envir;
 }
 
 void cSimulation::setStaticEnvir(cEnvir *env)
 {
     if (!env)
          throw cRuntimeError("cSimulation::setStaticEnvir(): argument cannot be NULL");
-    staticEvPtr = env;
+    staticEnvir = env;
 }
 
 void cSimulation::forEachChild(cVisitor *v)
 {
-    if (systemmodp!=NULL)
-        v->visit(systemmodp);
+    if (systemModule!=NULL)
+        v->visit(systemModule);
     v->visit(&msgQueue);
 }
 
@@ -218,7 +218,7 @@ bool cSimulation::snapshot(cObject *object, const char *label)
     os << "    object=\"" << xmlquote(object->getFullPath()) << "\"\n";
     os << "    label=\"" << xmlquote(label?label:"") << "\"\n";
     os << "    simtime=\"" << xmlquote(SIMTIME_STR(simTime())) << "\"\n";
-    os << "    network=\"" << xmlquote(networktype?networktype->getName():"") << "\"\n";
+    os << "    network=\"" << xmlquote(networkType?networkType->getName():"") << "\"\n";
     os << "    >\n";
 
     cSnapshotWriterVisitor v(os);
@@ -236,19 +236,19 @@ bool cSimulation::snapshot(cObject *object, const char *label)
 
 void cSimulation::setScheduler(cScheduler *sch)
 {
-    if (systemmodp)
+    if (systemModule)
         throw cRuntimeError(this, "setScheduler(): cannot switch schedulers when a network is already set up");
     if (!sch)
         throw cRuntimeError(this, "setScheduler(): scheduler pointer is NULL");
 
-    if (schedulerp) {
-        getEnvir()->removeLifecycleListener(schedulerp);
-        delete schedulerp;
+    if (scheduler) {
+        getEnvir()->removeLifecycleListener(scheduler);
+        delete scheduler;
     }
 
-    schedulerp = sch;
-    schedulerp->setSimulation(this);
-    getEnvir()->addLifecycleListener(schedulerp);
+    scheduler = sch;
+    scheduler->setSimulation(this);
+    getEnvir()->addLifecycleListener(scheduler);
 }
 
 void cSimulation::setSimulationTimeLimit(simtime_t simTimeLimit)
@@ -308,21 +308,21 @@ std::string cSimulation::getNedPackageForFolder(const char *folder)
 
 int cSimulation::registerComponent(cComponent *component)
 {
-    last_id++;
+    lastComponentId++;
 
-    if (last_id>=size)
+    if (lastComponentId>=size)
     {
         // vector full, grow by delta
         cComponent **v = new cComponent *[size+delta];
-        memcpy(v, vect, sizeof(cComponent*)*size );
+        memcpy(v, componentv, sizeof(cComponent*)*size );
         for (int i=size; i<size+delta; i++) v[i]=NULL;
-        delete [] vect;
-        vect = v;
+        delete [] componentv;
+        componentv = v;
         size += delta;
     }
 
-    int id = last_id;
-    vect[id] = component;
+    int id = lastComponentId;
+    componentv[id] = component;
     component->componentId = id;
 #ifdef USE_OMNETPP4x_FINGERPRINTS
     if (component->isModule())
@@ -335,18 +335,18 @@ void cSimulation::deregisterComponent(cComponent *component)
 {
     int id = component->componentId;
     component->componentId = -1;
-    vect[id] = NULL;
+    componentv[id] = NULL;
 
-    if (component==systemmodp)
+    if (component==systemModule)
     {
-        drop(systemmodp);
-        systemmodp = NULL;
+        drop(systemModule);
+        systemModule = NULL;
     }
 }
 
 void cSimulation::setSystemModule(cModule *p)
 {
-    systemmodp = p;
+    systemModule = p;
     take(p);
 }
 
@@ -372,20 +372,20 @@ void cSimulation::setupNetwork(cModuleType *network)
         throw cRuntimeError("setupNetwork: `%s' is not a network", network->getFullName());
 
     // set cNetworkType pointer
-    networktype = network;
+    networkType = network;
 
     // just to be sure
     msgQueue.clear();
     cComponent::clearSignalState();
 
-    simulationstage = CTX_BUILD;
+    simulationStage = CTX_BUILD;
 
     try
     {
         // set up the network by instantiating the toplevel module
         cContextTypeSwitcher tmp(CTX_BUILD);
         getEnvir()->notifyLifecycleListeners(LF_PRE_NETWORK_SETUP);
-        cModule *mod = networktype->create(networktype->getName(), NULL);
+        cModule *mod = networkType->create(networkType->getName(), NULL);
         mod->finalizeParameters();
         mod->buildInside();
         getEnvir()->notifyLifecycleListeners(LF_POST_NETWORK_SETUP);
@@ -412,12 +412,12 @@ void cSimulation::callInitialize()
     checkActive();
 
     // reset counters. Note msgQueue.clear() was already called from setupNetwork()
-    sim_time = 0;
-    event_num = 0; // initialize() has event number 0
-    trap_on_next_event = false;
+    currentSimtime = 0;
+    currentEventNumber = 0; // initialize() has event number 0
+    trapOnNextEvent = false;
     cMessage::resetMessageCounters();
 
-    simulationstage = CTX_INITIALIZE;
+    simulationStage = CTX_INITIALIZE;
 
     // prepare simple modules for simulation run:
     //    1. create starter message for all modules,
@@ -425,38 +425,38 @@ void cSimulation::callInitialize()
     //  This order is important because initialize() functions might contain
     //  send() calls which could otherwise insert msgs BEFORE starter messages
     //  for the destination module and cause trouble in cSimpleMod's activate().
-    if (systemmodp)
+    if (systemModule)
     {
-        cContextSwitcher tmp(systemmodp);
-        systemmodp->scheduleStart(SIMTIME_ZERO);
+        cContextSwitcher tmp(systemModule);
+        systemModule->scheduleStart(SIMTIME_ZERO);
         getEnvir()->notifyLifecycleListeners(LF_PRE_NETWORK_INITIALIZE);
-        systemmodp->callInitialize();
+        systemModule->callInitialize();
         getEnvir()->notifyLifecycleListeners(LF_POST_NETWORK_INITIALIZE);
     }
 
-    event_num = 1; // events are numbered from 1
+    currentEventNumber = 1; // events are numbered from 1
 
-    simulationstage = CTX_EVENT;
+    simulationStage = CTX_EVENT;
 }
 
 void cSimulation::callFinish()
 {
     checkActive();
 
-    simulationstage = CTX_FINISH;
+    simulationStage = CTX_FINISH;
 
     // call user-defined finish() functions for all modules recursively
-    if (systemmodp)
+    if (systemModule)
     {
         getEnvir()->notifyLifecycleListeners(LF_PRE_NETWORK_FINISH);
-        systemmodp->callFinish();
+        systemModule->callFinish();
         getEnvir()->notifyLifecycleListeners(LF_POST_NETWORK_FINISH);
     }
 }
 
 void cSimulation::deleteNetwork()
 {
-    if (!systemmodp)
+    if (!systemModule)
         return;  // network already deleted
 
     if (cSimulation::getActiveSimulation() != this)
@@ -465,27 +465,27 @@ void cSimulation::deleteNetwork()
     if (getContextModule()!=NULL)
         throw cRuntimeError("Attempt to delete network during simulation");
 
-    simulationstage = CTX_CLEANUP;
+    simulationStage = CTX_CLEANUP;
 
     getEnvir()->notifyLifecycleListeners(LF_PRE_NETWORK_DELETE);
 
     // delete all modules recursively
-    systemmodp->deleteModule();
+    systemModule->deleteModule();
 
     // make sure it was successful
     for (int i=1; i<size; i++)
-        ASSERT(vect[i]==NULL);
+        ASSERT(componentv[i]==NULL);
 
     // and clean up
-    delete [] vect;
-    vect = NULL;
+    delete [] componentv;
+    componentv = NULL;
     size = 0;
-    last_id = 0;
+    lastComponentId = 0;
 #ifdef USE_OMNETPP4x_FINGERPRINTS
     lastVersion4ModuleId = 0;
 #endif
 
-    networktype = NULL;
+    networkType = NULL;
 
     //FIXME todo delete cParImpl caches too (cParImplCache, cParImplCache2)
     cModule::clearNamePools();
@@ -495,7 +495,7 @@ void cSimulation::deleteNetwork()
     // clear remaining messages (module dtors may have cancelled & deleted some of them)
     msgQueue.clear();
 
-    simulationstage = CTX_NONE;
+    simulationStage = CTX_NONE;
 
 #ifdef DEVELOPER_DEBUG
     printf("DEBUG: after deleteNetwork: %d objects\n", cOwnedObject::getLiveObjectCount());
@@ -508,26 +508,26 @@ cEvent *cSimulation::takeNextEvent()
 {
     // determine next event. Normally (with sequential simulation),
     // the scheduler just returns msgQueue->peekFirst().
-    cEvent *event = schedulerp->takeNextEvent();
+    cEvent *event = scheduler->takeNextEvent();
     if (!event)
         return NULL;
 
     ASSERT(!event->isStale()); // it's the scheduler's task to discard stale events
 
     // advance simulation time
-    sim_time = event->getArrivalTime();
+    currentSimtime = event->getArrivalTime();
 
     return event;
 }
 
 void cSimulation::putBackEvent(cEvent *event)
 {
-    schedulerp->putBackEvent(event);
+    scheduler->putBackEvent(event);
 }
 
 cEvent *cSimulation::guessNextEvent()
 {
-    return schedulerp->guessNextEvent();
+    return scheduler->guessNextEvent();
 }
 
 simtime_t cSimulation::guessNextSimtime()
@@ -546,7 +546,7 @@ cSimpleModule *cSimulation::guessNextModule()
     // check if dest module exists and still running
     if (msg->getArrivalModuleId()==-1)
         return NULL;
-    cSimpleModule *modp = (cSimpleModule *)vect[msg->getArrivalModuleId()];
+    cSimpleModule *modp = (cSimpleModule *)componentv[msg->getArrivalModuleId()];
     if (!modp || modp->isTerminated())
         return NULL;
     return modp;
@@ -559,7 +559,7 @@ void cSimulation::transferTo(cSimpleModule *modp)
 
     // switch to activity() of the simple module
     exception = NULL;
-    activitymodp = modp;
+    currentActivityModule = modp;
     cCoroutine::switchTo(modp->coroutine);
 
     if (modp->hasStackOverflow())
@@ -617,7 +617,7 @@ void cSimulation::executeEvent(cEvent *event)
     // store arrival event number of this message; it is useful input for the
     // sequence chart tool if the message doesn't get immediately deleted or
     // sent out again
-    event->setPreviousEventNumber(event_num);
+    event->setPreviousEventNumber(currentEventNumber);
 
     cSimpleModule *mod = NULL;
     try
@@ -657,7 +657,7 @@ void cSimulation::executeEvent(cEvent *event)
     setGlobalContext();
 
     // increment event count
-    event_num++;
+    currentEventNumber++;
 
     // Note: simulation time (as read via simTime() from modules) will be updated
     // in takeNextEvent(), called right before the next executeEvent().
@@ -703,7 +703,7 @@ void cSimulation::doMessageEvent(cMessage *msg, cSimpleModule *mod)
         // when the module executes a receive() or wait() call.
         // If there was an error during simulation, the call will throw an exception
         // (which originally occurred inside activity()).
-        msg_for_activity = msg;
+        msgForActivity = msg;
         transferTo(mod);
     }
     else
@@ -715,33 +715,33 @@ void cSimulation::doMessageEvent(cMessage *msg, cSimpleModule *mod)
 
 void cSimulation::transferToMain()
 {
-    if (activitymodp!=NULL)
+    if (currentActivityModule!=NULL)
     {
-        activitymodp = NULL;
+        currentActivityModule = NULL;
         cCoroutine::switchToMain();     // stack switch
     }
 }
 
 void cSimulation::setContext(cComponent *p)
 {
-    contextmodp = p;
+    contextComponent = p;
     cOwnedObject::setDefaultOwner(p);
 }
 
 cModule *cSimulation::getContextModule() const
 {
     // cannot go inline (upward cast would require including cmodule.h in csimulation.h)
-    if (!contextmodp || !contextmodp->isModule())
+    if (!contextComponent || !contextComponent->isModule())
         return NULL;
-    return (cModule *)contextmodp;
+    return (cModule *)contextComponent;
 }
 
 cSimpleModule *cSimulation::getContextSimpleModule() const
 {
     // cannot go inline (upward cast would require including cmodule.h in csimulation.h)
-    if (!contextmodp || !contextmodp->isModule() || !((cModule *)contextmodp)->isSimple())
+    if (!contextComponent || !contextComponent->isModule() || !((cModule *)contextComponent)->isSimple())
         return NULL;
-    return (cSimpleModule *)contextmodp;
+    return (cSimpleModule *)contextComponent;
 }
 
 unsigned long cSimulation::getUniqueNumber()
@@ -749,16 +749,16 @@ unsigned long cSimulation::getUniqueNumber()
     return getEnvir()->getUniqueNumber();
 }
 
-void cSimulation::setHasher(cHasher *hasher)
+void cSimulation::setHasher(cHasher *h)
 {
-    if (hasherp)
-        delete hasherp;
-    hasherp = hasher;
+    if (hasher)
+        delete hasher;
+    hasher = h;
 }
 
 void cSimulation::insertEvent(cEvent *event)
 {
-    event->setPreviousEventNumber(event_num);
+    event->setPreviousEventNumber(currentEventNumber);
     msgQueue.insert(event);
 }
 
@@ -893,9 +893,9 @@ void StaticEnv::undisposedObject(cObject *obj)
 static StaticEnv staticEnv;
 
 // cSimulation's global variables
-cEnvir *cSimulation::evPtr = &staticEnv;
-cEnvir *cSimulation::staticEvPtr = &staticEnv;
+cEnvir *cSimulation::activeEnvir = &staticEnv;
+cEnvir *cSimulation::staticEnvir = &staticEnv;
 
-cSimulation *cSimulation::simPtr = NULL;
+cSimulation *cSimulation::activeSimulation = NULL;
 
 NAMESPACE_END

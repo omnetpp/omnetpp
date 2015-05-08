@@ -114,17 +114,17 @@ class SIM_API cOwnedObject : public cNamedObject
     friend class cPacket;   // because of refcounting business
 
   private:
-    cObject *ownerp;   // owner pointer
+    cObject *owner;    // owner pointer
     unsigned int pos;  // used only when owner is a cDefaultList
 
   private:
     // list in which objects are accumulated if there is no simple module in context
     // (see also setDefaultOwner() and cSimulation::setContextModule())
-    static cDefaultList *defaultowner;
+    static cDefaultList *defaultOwner;
 
     // global variables for statistics
-    static long total_objs;
-    static long live_objs;
+    static long totalObjectCount;
+    static long liveObjectCount;
 
   private:
     void copy(const cOwnedObject& obj);
@@ -192,7 +192,7 @@ class SIM_API cOwnedObject : public cNamedObject
     /**
      * Returns pointer to the owner of the object.
      */
-    virtual cObject *getOwner() const {return ownerp;}
+    virtual cObject *getOwner() const {return owner;}
 
     /**
      * Returns true.
@@ -224,7 +224,7 @@ class SIM_API cOwnedObject : public cNamedObject
      * during very long simulation runs.
      * May be useful for profiling or debugging memory leaks.
      */
-    static long getTotalObjectCount() {return total_objs;}
+    static long getTotalObjectCount() {return totalObjectCount;}
 
     /**
      * Returns the number of objects that currently exist in the program.
@@ -232,13 +232,13 @@ class SIM_API cOwnedObject : public cNamedObject
      * the destructor.
      * May be useful for profiling or debugging memory leaks.
      */
-    static long getLiveObjectCount() {return live_objs;}
+    static long getLiveObjectCount() {return liveObjectCount;}
 
     /**
      * Reset counters used by getTotalObjectCount() and getLiveObjectCount().
      * (Note that getLiveObjectCount() may go negative after a reset call.)
      */
-    static void resetObjectCounters()  {total_objs=live_objs=0L;}
+    static void resetObjectCounters()  {totalObjectCount=liveObjectCount=0L;}
     //@}
 };
 
@@ -281,15 +281,15 @@ class SIM_API cNoncopyableOwnedObject : public cOwnedObject, noncopyable
 class SIM_API cStaticFlag
 {
   private:
-    static bool staticflag;  // set to true while in main()
-    static bool exitingflag; // set on getting a TERM or INT signal (Windows)
+    static bool staticFlag;  // set to true while in main()
+    static bool exitingFlag; // set on getting a TERM or INT signal (Windows)
   public:
-    cStaticFlag()  {staticflag = true;}
-    ~cStaticFlag() {staticflag = false;}
-    static void set(bool b) {staticflag = b;}
-    static void setExiting() {exitingflag = true;}
-    static bool isExiting() {return exitingflag;}
-    static bool isSet() {return staticflag;}
+    cStaticFlag()  {staticFlag = true;}
+    ~cStaticFlag() {staticFlag = false;}
+    static void set(bool b) {staticFlag = b;}
+    static void setExiting() {exitingFlag = true;}
+    static bool isExiting() {return exitingFlag;}
+    static bool isSet() {return staticFlag;}
 };
 
 SIM_API std::ostream& operator<< (std::ostream& os, const cOwnedObject *p);

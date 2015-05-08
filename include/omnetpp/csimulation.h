@@ -68,38 +68,38 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     friend class cSimpleModule;
   private:
     // global variables
-    static cSimulation *simPtr; // the active cSimulation instance
-    static cEnvir *evPtr;       // the active cEnvir instance
-    static cEnvir *staticEvPtr; // the environment to activate when simPtr becomes NULL
+    static cSimulation *activeSimulation;
+    static cEnvir *activeEnvir;
+    static cEnvir *staticEnvir; // the environment to activate when activeSimulation becomes NULL
 
     // variables of the module vector
-    int size;                 // size of vector
+    int size;                 // size of componentv[]
     int delta;                // if needed, grows by delta
-    cComponent **vect;        // vector of modules/channels, vect[0] is not used
-    int last_id;               // index of last used pos. in vect[]
+    cComponent **componentv;  // vector of modules/channels, componentv[0] is not used
+    int lastComponentId;      // index of last used pos. in componentv[]
 #ifdef USE_OMNETPP4x_FINGERPRINTS
     int lastVersion4ModuleId;   // last used OMNeT++ V4.x compatible module ID
 #endif
 
     // simulation vars
-    cEnvir *ownEvPtr;         // the environment that belongs to this simulation object
-    cModule *systemmodp;      // pointer to system (root) module
-    cSimpleModule *activitymodp; // the module currently executing activity() (NULL if handleMessage() or in main)
-    cComponent *contextmodp;  // component in context (or NULL)
-    int contexttype;          // the innermost context type (one of CTX_BUILD, CTX_EVENT, CTX_INITIALIZE, CTX_FINISH)
-    cModuleType *networktype; // network type
-    cScheduler *schedulerp;   // event scheduler
-    simtime_t warmup_period;  // warm-up period
+    cEnvir *envir;            // the environment that belongs to this simulation object
+    cModule *systemModule;    // pointer to system (root) module
+    cSimpleModule *currentActivityModule; // the module currently executing activity() (NULL if handleMessage() or in main)
+    cComponent *contextComponent;  // component in context (or NULL)
+    int contextType;          // the innermost context type (one of CTX_BUILD, CTX_EVENT, CTX_INITIALIZE, CTX_FINISH)
+    cModuleType *networkType; // network type
+    cScheduler *scheduler;    // event scheduler
+    simtime_t warmupPeriod;   // warm-up period
 
-    int simulationstage;      // simulation stage (one of CTX_NONE, CTX_BUILD, CTX_EVENT, CTX_INITIALIZE, CTX_FINISH or CTX_CLEANUP)
-    simtime_t sim_time;       // simulation time (time of current event)
-    eventnumber_t event_num;  // sequence number of current event
+    int simulationStage;      // simulation stage (one of CTX_NONE, CTX_BUILD, CTX_EVENT, CTX_INITIALIZE, CTX_FINISH or CTX_CLEANUP)
+    simtime_t currentSimtime; // simulation time (time of current event)
+    eventnumber_t currentEventNumber; // sequence number of current event
 
-    cMessage *msg_for_activity; // helper variable to pass the received message into activity()
+    cMessage *msgForActivity; // helper variable to pass the received message into activity()
     cException *exception;    // helper variable to get exceptions back from activity()
-    bool trap_on_next_event;  // when set, next handleMessage or activity() will execute debugger interrupt
+    bool trapOnNextEvent;  // when set, next handleMessage or activity() will execute debugger interrupt
 
-    cHasher *hasherp;         // used for fingerprint calculation
+    cHasher *hasher;         // used for fingerprint calculation
 
   private:
     // internal
@@ -147,13 +147,13 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /**
      * Returns the active simulation object. May be NULL.
      */
-    static cSimulation *getActiveSimulation()  {return simPtr;}
+    static cSimulation *getActiveSimulation()  {return activeSimulation;}
 
     /**
      * Returns the environment object for the active simulation. Never returns NULL;
      * setActiveSimulation(NULL) will cause a static "do-nothing" instance to step in.
      */
-    static cEnvir *getActiveEnvir()  {return evPtr;}
+    static cEnvir *getActiveEnvir()  {return activeEnvir;}
 
     /**
      * Activate the given simulation object, and its associated environment
@@ -171,12 +171,12 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /**
      * Returns the environment object to use when there is no active simulation object.
      */
-    static cEnvir *getStaticEnvir()  {return staticEvPtr;}
+    static cEnvir *getStaticEnvir()  {return staticEnvir;}
 
     /**
      * Returns the environment object associated with this simulation object.
      */
-    cEnvir *getEnvir() const  {return ownEvPtr;}
+    cEnvir *getEnvir() const  {return envir;}
     //@}
 
     /** @name Accessing modules. */
@@ -199,7 +199,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /**
      * Returns the highest used component ID.
      */
-    int getLastComponentId() const    {return last_id;}
+    int getLastComponentId() const    {return lastComponentId;}
 
     /**
      * Finds a module by its path. The path is a string of module names
@@ -212,19 +212,19 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Looks up a component (module or channel) by ID. If the ID does not identify
      * a component (e.g. invalid ID or component already deleted), it returns NULL.
      */
-    cComponent *getComponent(int id) const  {return id<0 || id>=size ? NULL : vect[id];}
+    cComponent *getComponent(int id) const  {return id<0 || id>=size ? NULL : componentv[id];}
 
     /**
      * Looks up a module by ID. If the ID does not identify a module (e.g. invalid ID,
      * module already deleted, or object is not a module), it returns NULL.
      */
-    cModule *getModule(int id) const  {return id<0 || id>=size || !vect[id] ? NULL : vect[id]->isModule() ? (cModule *)vect[id] : NULL;}
+    cModule *getModule(int id) const  {return id<0 || id>=size || !componentv[id] ? NULL : componentv[id]->isModule() ? (cModule *)componentv[id] : NULL;}
 
     /**
      * Looks up a channel by ID. If the ID does not identify a channel (e.g. invalid ID,
      * channel already deleted, or object is not a channel), it returns NULL.
      */
-    cChannel *getChannel(int id) const  {return id<0 || id>=size || !vect[id] ? NULL : vect[id]->isChannel() ? (cChannel *)vect[id] : NULL;}
+    cChannel *getChannel(int id) const  {return id<0 || id>=size || !componentv[id] ? NULL : componentv[id]->isChannel() ? (cChannel *)componentv[id] : NULL;}
 
     /**
      * Designates the system module, the top-level module in the model.
@@ -234,7 +234,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /**
      * Returns pointer to the system module, the top-level module in the model.
      */
-    cModule *getSystemModule() const  {return systemmodp;}
+    cModule *getSystemModule() const  {return systemModule;}
     //@}
 
     /** @name Loading NED files.
@@ -307,7 +307,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /**
      * Returns the scheduler object.
      */
-    cScheduler *getScheduler() const  {return schedulerp;}
+    cScheduler *getScheduler() const  {return scheduler;}
 
     /**
      * Sets the simulation stop time be scheduling an appropriate
@@ -348,33 +348,33 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * simulation finalization (CTX_FINISH), network cleanup (CTX_CLEANUP),
      * or other (CTX_NONE).
      */
-    int getSimulationStage() const  {return simulationstage;}
+    int getSimulationStage() const  {return simulationStage;}
 
     /**
      * Returns the cModuleType object that was instantiated to set up
      * the current simulation model.
      */
-    cModuleType *getNetworkType() const  {return networktype;}
+    cModuleType *getNetworkType() const  {return networkType;}
 
     /**
      * INTERNAL USE ONLY. This method should NEVER be invoked from
      * simulation models, only from scheduler classes subclassed from
      * cScheduler.
      */
-    void setSimTime(simtime_t time)  {sim_time = time;}
+    void setSimTime(simtime_t time)  {currentSimtime = time;}
 
     /**
      * Returns the current simulation time. (It is also available via the
      * global simTime() function.) Between events it returns the time of
      * the last executed event.
      */
-    simtime_t_cref getSimTime() const  {return sim_time;}
+    simtime_t_cref getSimTime() const  {return currentSimtime;}
 
     /**
      * Returns the sequence number of current event. Between events it returns
      * the time of the next executed event.  FIXME this is inconsistent with getSimTime()!!!!! TODO also check what Tkenv and Cmdenv displays!!!!!
      */
-    eventnumber_t getEventNumber() const  {return event_num;}
+    eventnumber_t getEventNumber() const  {return currentEventNumber;}
 
     /**
      * Returns the length of the initial warm-up period from the configuration.
@@ -385,12 +385,12 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * the warm-up period and need not be modified. The warm-up period is useful
      * for steady-state simulations.
      */
-    simtime_t_cref getWarmupPeriod() const  {return warmup_period;}
+    simtime_t_cref getWarmupPeriod() const  {return warmupPeriod;}
 
     /**
      * INTERNAL USE ONLY. Sets the warm-up period.
      */
-    void setWarmupPeriod(simtime_t t)  {warmup_period = t;}
+    void setWarmupPeriod(simtime_t t)  {warmupPeriod = t;}
     //@}
 
     /** @name Scheduling and simulation execution. */
@@ -466,24 +466,24 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /**
      * Sets the context type (see CTX_xxx constants). Used internally.
      */
-    void setContextType(int ctxtype)  {contexttype = ctxtype;}
+    void setContextType(int ctxtype)  {contextType = ctxtype;}
 
     /**
      * Sets global context. Used internally.
      */
-    void setGlobalContext()  {contextmodp=NULL; cOwnedObject::setDefaultOwner(&defaultList);}
+    void setGlobalContext()  {contextComponent=NULL; cOwnedObject::setDefaultOwner(&defaultList);}
 
     /**
      * Returns the module whose activity() method is currently active.
      * Returns NULL if no module is running, or the current module uses
      * handleMessage().
      */
-    cSimpleModule *getActivityModule() const {return activitymodp;}
+    cSimpleModule *getActivityModule() const {return currentActivityModule;}
 
     /**
      * Returns the component (module or channel) currently in context.
      */
-    cComponent *getContext() const {return contextmodp;}
+    cComponent *getContext() const {return contextComponent;}
 
     /**
      * Returns value only valid if getContextModule()!=NULL. Returns one of:
@@ -492,7 +492,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * (e.g. when a module is dynamically created, initialized or manually
      * finalized during simulation), the innermost context type is returned.
      */
-    int getContextType() const {return contexttype;}
+    int getContextType() const {return contextType;}
 
     /**
      * If the current context is a module, returns its pointer,
@@ -512,18 +512,18 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * interrupt. (If the program is not run under a debugger, that will
      * usually result in a crash.)
      */
-    void requestTrapOnNextEvent() {trap_on_next_event = true;}
+    void requestTrapOnNextEvent() {trapOnNextEvent = true;}
 
     /**
      * Clear the previous requestTrapOnNextEvent() call.
      */
-    void clearTrapOnNextEvent() {trap_on_next_event = false;}
+    void clearTrapOnNextEvent() {trapOnNextEvent = false;}
 
     /**
      * Returns true if there is a pending request to execute a debugger
      * interrupt on the next event.
      */
-    bool isTrapOnNextEventRequested() const {return trap_on_next_event;}
+    bool isTrapOnNextEventRequested() const {return trapOnNextEvent;}
     //@}
 
     /** @name Miscellaneous. */
@@ -547,7 +547,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Returns the object used for fingerprint calculation. It returns NULL
      * if no fingerprint is being calculated during this simulation run.
      */
-    cHasher *getHasher() {return hasherp;}
+    cHasher *getHasher() {return hasher;}
 
     /**
      * Installs a new hasher object, used for fingerprint calculation.

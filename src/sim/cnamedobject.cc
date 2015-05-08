@@ -38,24 +38,24 @@ cStringPool cNamedObject::stringPool("cNamedObject::stringPool");
 
 cNamedObject::cNamedObject()
 {
-    namep = NULL;
+    name = NULL;
     flags = FL_NAMEPOOLING;
 }
 
-cNamedObject::cNamedObject(const char *name, bool namepooling)
+cNamedObject::cNamedObject(const char *s, bool namepooling)
 {
     flags = namepooling ? FL_NAMEPOOLING : 0;
-    if (!name)
-        namep = NULL;
+    if (!s)
+        name = NULL;
     else if (namepooling)
-        namep = stringPool.get(name);
+        name = stringPool.get(s);
     else
-        namep  = opp_strdup(name);
+        name  = opp_strdup(s);
 }
 
 cNamedObject::cNamedObject(const cNamedObject& obj) : cObject(obj)
 {
-    namep = NULL;
+    name = NULL;
     flags = obj.flags & FL_NAMEPOOLING;
     setName(obj.getName());
     copy(obj);
@@ -63,12 +63,12 @@ cNamedObject::cNamedObject(const cNamedObject& obj) : cObject(obj)
 
 cNamedObject::~cNamedObject()
 {
-    if (namep)
+    if (name)
     {
         if (flags & FL_NAMEPOOLING)
-            stringPool.release(namep);
+            stringPool.release(name);
         else
-            delete [] namep;
+            delete [] name;
     }
 }
 
@@ -91,21 +91,21 @@ cNamedObject& cNamedObject::operator=(const cNamedObject& obj)
 void cNamedObject::setName(const char *s)
 {
     // release name string
-    if (namep)
+    if (name)
     {
         if (flags & FL_NAMEPOOLING)
-            stringPool.release(namep);
+            stringPool.release(name);
         else
-            delete [] namep;
+            delete [] name;
     }
 
     // set new string
     if (!s)
-        namep = NULL;
+        name = NULL;
     else if (flags & FL_NAMEPOOLING)
-        namep = stringPool.get(s);
+        name = stringPool.get(s);
     else
-        namep = opp_strdup(s);
+        name = opp_strdup(s);
 }
 
 void cNamedObject::setNamePooling(bool pooling)
@@ -116,10 +116,10 @@ void cNamedObject::setNamePooling(bool pooling)
     {
         // turn on
         flags |= FL_NAMEPOOLING;
-        if (namep)
+        if (name)
         {
-            const char *oldname = namep;
-            namep = stringPool.get(oldname);
+            const char *oldname = name;
+            name = stringPool.get(oldname);
             delete [] oldname;
         }
     }
@@ -127,10 +127,10 @@ void cNamedObject::setNamePooling(bool pooling)
     {
         // turn off
         flags &= ~FL_NAMEPOOLING;
-        if (namep)
+        if (name)
         {
-            const char *oldname = namep;
-            namep = opp_strdup(oldname);
+            const char *oldname = name;
+            name = opp_strdup(oldname);
             stringPool.release(oldname);
         }
     }

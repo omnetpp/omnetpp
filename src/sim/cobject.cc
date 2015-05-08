@@ -102,25 +102,25 @@ void cObject::yieldOwnership(cOwnedObject *obj, cObject *newowner)
 void cObject::take(cOwnedObject *obj)
 {
     // ask current owner to release it -- if it's a cDefaultList, it will.
-    obj->ownerp->yieldOwnership(obj, this);
+    obj->owner->yieldOwnership(obj, this);
 }
 
 void cObject::drop(cOwnedObject *obj)
 {
-    if (obj->ownerp!=this)
+    if (obj->owner!=this)
         throw cRuntimeError(this, "drop(): not owner of object (%s)%s",
                                   obj->getClassName(), obj->getFullPath().c_str());
-    cOwnedObject::defaultowner->doInsert(obj);
+    cOwnedObject::defaultOwner->doInsert(obj);
 }
 
 void cObject::dropAndDelete(cOwnedObject *obj)
 {
     if (!obj)
         return;
-    if (obj->ownerp!=this)
+    if (obj->owner!=this)
         throw cRuntimeError(this, "dropAndDelete(): not owner of object (%s)%s",
                                   obj->getClassName(), obj->getFullPath().c_str());
-    obj->ownerp = NULL;
+    obj->owner = NULL;
     delete obj;
 }
 

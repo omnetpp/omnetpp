@@ -38,7 +38,7 @@ NAMESPACE_BEGIN
 class SIM_API cNamedObject : public cObject
 {
   private:
-    const char *namep;  // object name (stringpooled if flags&FL_NAMEPOOLING!=0)
+    const char *name;  // object name (stringpooled if flags&FL_NAMEPOOLING!=0)
 
   protected:
     unsigned short flags;  // FL_NAMEPOOLING flag; other bits used by derived classes
@@ -116,7 +116,7 @@ class SIM_API cNamedObject : public cObject
      * Returns pointer to the object's name, a string stored in the object.
      * This function never returns NULL.
      */
-    virtual const char *getName() const  {return namep ? namep : "";}
+    virtual const char *getName() const  {return name ? name : "";}
 
     /**
      * Turn name pooling on/off. Name pooling is an optimization technique that saves

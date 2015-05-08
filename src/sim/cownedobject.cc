@@ -35,8 +35,8 @@ NAMESPACE_BEGIN
 
 using std::ostream;
 
-bool cStaticFlag::staticflag;
-bool cStaticFlag::exitingflag;
+bool cStaticFlag::staticFlag;
+bool cStaticFlag::exitingFlag;
 
 Register_Class(cOwnedObject);
 
@@ -56,9 +56,9 @@ void printAllObjects()
 
 
 // static class members
-cDefaultList *cOwnedObject::defaultowner = &defaultList;
-long cOwnedObject::total_objs = 0;
-long cOwnedObject::live_objs = 0;
+cDefaultList *cOwnedObject::defaultOwner = &defaultList;
+long cOwnedObject::totalObjectCount = 0;
+long cOwnedObject::liveObjectCount = 0;
 
 cDefaultList defaultList;
 
@@ -66,11 +66,11 @@ cDefaultList defaultList;
 cOwnedObject::cOwnedObject()
 {
     //TODO: in DEBUG mode, assert that this is not a static member / global variable! (using cStaticFlag)
-    defaultowner->doInsert(this);
+    defaultOwner->doInsert(this);
 
     // statistics
-    total_objs++;
-    live_objs++;
+    totalObjectCount++;
+    liveObjectCount++;
 #ifdef DEVELOPER_DEBUG
     objectlist.insert(this);
 #endif
@@ -78,11 +78,11 @@ cOwnedObject::cOwnedObject()
 
 cOwnedObject::cOwnedObject(const char *name, bool namepooling) : cNamedObject(name, namepooling)
 {
-    defaultowner->doInsert(this);
+    defaultOwner->doInsert(this);
 
     // statistics
-    total_objs++;
-    live_objs++;
+    totalObjectCount++;
+    liveObjectCount++;
 #ifdef DEVELOPER_DEBUG
     objectlist.insert(this);
 #endif
@@ -90,12 +90,12 @@ cOwnedObject::cOwnedObject(const char *name, bool namepooling) : cNamedObject(na
 
 cOwnedObject::cOwnedObject(const cOwnedObject& obj) : cNamedObject(obj)
 {
-    defaultowner->doInsert(this);
+    defaultOwner->doInsert(this);
     copy(obj);
 
     // statistics
-    total_objs++;
-    live_objs++;
+    totalObjectCount++;
+    liveObjectCount++;
 #ifdef DEVELOPER_DEBUG
     objectlist.insert(this);
 #endif
@@ -107,29 +107,29 @@ cOwnedObject::~cOwnedObject()
     objectlist.erase(this);
 #endif
 
-    if (ownerp)
-        ownerp->ownedObjectDeleted(this);
+    if (owner)
+        owner->ownedObjectDeleted(this);
 
     // statistics
-    live_objs--;
+    liveObjectCount--;
 }
 
 void cOwnedObject::removeFromOwnershipTree()
 {
     // set ownership of this object to null
-    if (ownerp)
-        ownerp->yieldOwnership(this, NULL);
+    if (owner)
+        owner->yieldOwnership(this, NULL);
 }
 
 void cOwnedObject::setDefaultOwner(cDefaultList *list)
 {
     ASSERT(list!=NULL);
-    defaultowner = list;
+    defaultOwner = list;
 }
 
 cDefaultList *cOwnedObject::getDefaultOwner()
 {
-    return defaultowner;
+    return defaultOwner;
 }
 
 void cOwnedObject::copy(const cOwnedObject& obj)

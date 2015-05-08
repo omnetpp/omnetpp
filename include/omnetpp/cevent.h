@@ -45,27 +45,27 @@ class SIM_API cEvent : public cOwnedObject
     friend class cMessage;  //getArrivalTime()
     friend class cMessageHeap;
   private:
-    simtime_t delivd;          //XXX rename ("arrivaltime" or "delivtime)! time of sending & delivery -- set internally
-    short prior;               // priority -- used for scheduling events with equal timestamps
-    int heapindex;             // used by cMessageHeap (-1 if not on heap; all other values, including negative ones, means "on the heap")
-    unsigned long insertordr;  //XXX rename (add "e")! used by cMessageHeap
-    eventnumber_t prev_event_num; // most recent event number when envir was notified about this event object (e.g. creating/cloning/sending/scheduling/deleting of this event object)
+    simtime_t arrivalTime;     // time of delivery -- set internally
+    short priority;            // priority -- used for scheduling events with equal arrival times
+    int heapIndex;             // used by cMessageHeap (-1 if not on heap; all other values, including negative ones, means "on the heap")
+    unsigned long insertOrder; // used by cMessageHeap to keep order of events with equal time and priority
+    eventnumber_t previousEventNumber; // most recent event number when envir was notified about this event object (e.g. creating/cloning/sending/scheduling/deleting of this event object)
 
   public:
     // internal: returns the event number which scheduled this event object, or the event
     // number in which this event object was last executed (e.g. delivered to a module);
     // stored for recording into the event log file.
-    eventnumber_t getPreviousEventNumber() const {return prev_event_num;}
+    eventnumber_t getPreviousEventNumber() const {return previousEventNumber;}
 
     // internal: sets previousEventNumber.
-    void setPreviousEventNumber(eventnumber_t num) {prev_event_num = num;}
+    void setPreviousEventNumber(eventnumber_t num) {previousEventNumber = num;}
 
     // internal: used by cMessageHeap.
-    unsigned long getInsertOrder() const {return insertordr;}
+    unsigned long getInsertOrder() const {return insertOrder;}
 
     // internal: called by the simulation kernel to set the value returned
     // by the getArrivalTime() method
-    void setArrivalTime(simtime_t t) {delivd = t;}
+    void setArrivalTime(simtime_t t) {arrivalTime = t;}
 
     // internal: used by the parallel simulation kernel.
     virtual int getSrcProcId() const {return -1;}
@@ -144,12 +144,12 @@ class SIM_API cEvent : public cOwnedObject
      * used when the simulator inserts messages into the future events set
      * (FES), to order events with identical arrival time values.
      */
-    void setSchedulingPriority(short p)  {prior=p;}
+    void setSchedulingPriority(short p)  {priority=p;}
 
     /**
      * Returns the scheduling priority of this event.
      */
-    short getSchedulingPriority() const  {return prior;}
+    short getSchedulingPriority() const  {return priority;}
     //@}
 
     /** @name Arrival information. */
@@ -158,14 +158,14 @@ class SIM_API cEvent : public cOwnedObject
     /**
      * Returns true if this event is in the future events set (FES).
      */
-    bool isScheduled() const  {return heapindex!=-1;}
+    bool isScheduled() const  {return heapIndex!=-1;}
 
     /**
      * Returns the simulation time this event object has been last scheduled for
      * (regardless whether it is currently scheduled), or zero if the event
      * hasn't been scheduled yet.
      */
-    simtime_t_cref getArrivalTime() const  {return delivd;}
+    simtime_t_cref getArrivalTime() const  {return arrivalTime;}
 
     /**
      * Return the object that this event will be delivered to or act upon,

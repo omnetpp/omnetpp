@@ -34,75 +34,75 @@ using std::ostream;
 Register_Class(cMessage);
 
 // static members of cMessage
-long cMessage::next_id = 0;
-long cMessage::total_msgs = 0;
-long cMessage::live_msgs = 0;
+long cMessage::nextMessageId = 0;
+long cMessage::totalMsgCount = 0;
+long cMessage::liveMsgCount = 0;
 
 
 cMessage::cMessage(const cMessage& msg) : cEvent(msg)
 {
-    parlistp = NULL;
-    ctrlp = NULL;
-    heapindex = -1;
+    parList = NULL;
+    controlInfo = NULL;
+    heapIndex = -1;
     copy(msg);
 
-    msgid = next_id++;
-    total_msgs++;
-    live_msgs++;
+    messageId = nextMessageId++;
+    totalMsgCount++;
+    liveMsgCount++;
 
     cMessage *nonConstMsg = const_cast<cMessage*>(&msg);
     EVCB.messageCloned(nonConstMsg, this);
 
     // after envir notification
-    nonConstMsg->prev_event_num = prev_event_num = getSimulation()->getEventNumber();
+    nonConstMsg->previousEventNumber = previousEventNumber = getSimulation()->getEventNumber();
 }
 
 cMessage::cMessage(const char *name, short k) : cEvent(name)
 {
     // name pooling is off for messages by default, as unique names are quite common
-    msgkind = k;
-    parlistp = NULL;
-    contextptr = NULL;
-    ctrlp = NULL;
-    srcprocid = -1;
+    messageKind = k;
+    parList = NULL;
+    contextPointer = NULL;
+    controlInfo = NULL;
+    srcProcId = -1;
 
-    frommod = fromgate = -1;
-    tomod = togate = -1;
-    created = getSimulation()->getSimTime();
-    sent = tstamp = 0;
+    senderModuleId = senderGateId = -1;
+    targetModuleId = targetGateId = -1;
+    creationTime = getSimulation()->getSimTime();
+    sendTime = timestamp = 0;
 
-    msgtreeid = msgid = next_id++;
-    total_msgs++;
-    live_msgs++;
+    messageTreeId = messageId = nextMessageId++;
+    totalMsgCount++;
+    liveMsgCount++;
 
-    prev_event_num = -1;
+    previousEventNumber = -1;
     EVCB.messageCreated(this);
 
     // after envir notification
-    prev_event_num = getSimulation()->getEventNumber();
+    previousEventNumber = getSimulation()->getEventNumber();
 }
 
 cMessage::~cMessage()
 {
     EVCB.messageDeleted(this);
 
-    if (parlistp)
-        dropAndDelete(parlistp);
+    if (parList)
+        dropAndDelete(parList);
 
-    if (ctrlp) {
-        if (ctrlp->isOwnedObject())
-            dropAndDelete((cOwnedObject *)ctrlp);
+    if (controlInfo) {
+        if (controlInfo->isOwnedObject())
+            dropAndDelete((cOwnedObject *)controlInfo);
         else
-            delete ctrlp;
+            delete controlInfo;
     }
 
     if ((flags & FL_ISPRIVATECOPY) == 0)
-        live_msgs--;
+        liveMsgCount--;
 }
 
 std::string cMessage::info() const
 {
-    if (tomod<0)
+    if (targetModuleId<0)
         return std::string("(new msg)");
 
     std::stringstream out;
@@ -118,40 +118,40 @@ std::string cMessage::info() const
 #define MODNAME(modp) ((modp) ? (modp)->getFullPath().c_str() : deletedstr)
     if (getKind()==MK_STARTER)
     {
-        cModule *tomodp = getSimulation()->getModule(tomod);
-        out << "starter for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
+        cModule *tomodp = getSimulation()->getModule(targetModuleId);
+        out << "starter for " << MODNAME(tomodp) << " (id=" << targetModuleId << ") ";
     }
     else if (getKind()==MK_TIMEOUT)
     {
-        cModule *tomodp = getSimulation()->getModule(tomod);
-        out << "timeoutmsg for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
+        cModule *tomodp = getSimulation()->getModule(targetModuleId);
+        out << "timeoutmsg for " << MODNAME(tomodp) << " (id=" << targetModuleId << ") ";
     }
-    else if (frommod==tomod)
+    else if (senderModuleId==targetModuleId)
     {
-        cModule *tomodp = getSimulation()->getModule(tomod);
-        out << "selfmsg for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
+        cModule *tomodp = getSimulation()->getModule(targetModuleId);
+        out << "selfmsg for " << MODNAME(tomodp) << " (id=" << targetModuleId << ") ";
     }
     else
     {
-        cModule *frommodp = getSimulation()->getModule(frommod);
-        cModule *tomodp = getSimulation()->getModule(tomod);
-        out << "src=" << MODNAME(frommodp) << " (id=" << frommod << ") ";
-        out << " dest=" << MODNAME(tomodp) << " (id=" << tomod << ") ";
+        cModule *frommodp = getSimulation()->getModule(senderModuleId);
+        cModule *tomodp = getSimulation()->getModule(targetModuleId);
+        out << "src=" << MODNAME(frommodp) << " (id=" << senderModuleId << ") ";
+        out << " dest=" << MODNAME(tomodp) << " (id=" << targetModuleId << ") ";
     }
 #undef MODNAME
 
-    if (ctrlp)
-        out << "  control info: (" << ctrlp->getClassName() << ") " << ctrlp->getFullName() << "\n";
+    if (controlInfo)
+        out << "  control info: (" << controlInfo->getClassName() << ") " << controlInfo->getFullName() << "\n";
 
     return out.str();
 }
 
 void cMessage::forEachChild(cVisitor *v)
 {
-    if (parlistp)
-        v->visit(parlistp);
-    if (ctrlp)
-        v->visit(ctrlp);
+    if (parList)
+        v->visit(parList);
+    if (controlInfo)
+        v->visit(controlInfo);
 }
 
 std::string cMessage::detailedInfo() const
@@ -166,23 +166,23 @@ void cMessage::parsimPack(cCommBuffer *buffer) const
 #else
     cEvent::parsimPack(buffer);
 
-    if (contextptr || ctrlp)
+    if (contextPointer || controlInfo)
         throw cRuntimeError(this,"parsimPack(): cannot pack object with contextPointer or controlInfo set");
 
-    buffer->pack(msgkind);
-    buffer->pack(tstamp);
-    buffer->pack(frommod);
-    buffer->pack(fromgate);
-    buffer->pack(tomod);
-    buffer->pack(togate);
-    buffer->pack(created);
-    buffer->pack(sent);
+    buffer->pack(messageKind);
+    buffer->pack(timestamp);
+    buffer->pack(senderModuleId);
+    buffer->pack(senderGateId);
+    buffer->pack(targetModuleId);
+    buffer->pack(targetGateId);
+    buffer->pack(creationTime);
+    buffer->pack(sendTime);
 
     // note: do not pack msgid and treeid, because they'd conflict
     // with ids assigned at the destination partition
 
-    if (buffer->packFlag(parlistp!=NULL))
-        buffer->packObject(parlistp);
+    if (buffer->packFlag(parList!=NULL))
+        buffer->packObject(parList);
 #endif
 }
 
@@ -193,17 +193,17 @@ void cMessage::parsimUnpack(cCommBuffer *buffer)
 #else
     cEvent::parsimUnpack(buffer);
 
-    buffer->unpack(msgkind);
-    buffer->unpack(tstamp);
-    buffer->unpack(frommod);
-    buffer->unpack(fromgate);
-    buffer->unpack(tomod);
-    buffer->unpack(togate);
-    buffer->unpack(created);
-    buffer->unpack(sent);
+    buffer->unpack(messageKind);
+    buffer->unpack(timestamp);
+    buffer->unpack(senderModuleId);
+    buffer->unpack(senderGateId);
+    buffer->unpack(targetModuleId);
+    buffer->unpack(targetGateId);
+    buffer->unpack(creationTime);
+    buffer->unpack(sendTime);
 
     if (buffer->checkFlag())
-        take(parlistp = (cArray *) buffer->unpackObject());
+        take(parList = (cArray *) buffer->unpackObject());
 #endif
 }
 
@@ -217,44 +217,44 @@ cMessage& cMessage::operator=(const cMessage& msg)
 
 void cMessage::copy(const cMessage& msg)
 {
-    msgkind = msg.msgkind;
-    tstamp = msg.tstamp;
-    srcprocid = msg.srcprocid;
+    messageKind = msg.messageKind;
+    timestamp = msg.timestamp;
+    srcProcId = msg.srcProcId;
 
-    created = msg.created;
+    creationTime = msg.creationTime;
 
-    dropAndDelete(parlistp);
-    if (msg.parlistp)
-        take(parlistp = (cArray *)msg.parlistp->dup());
+    dropAndDelete(parList);
+    if (msg.parList)
+        take(parList = (cArray *)msg.parList->dup());
     else
-        parlistp = NULL;
+        parList = NULL;
 
-    contextptr = msg.contextptr;
+    contextPointer = msg.contextPointer;
 
-    frommod = msg.frommod;
-    fromgate = msg.fromgate;
-    tomod = msg.tomod;
-    togate = msg.togate;
+    senderModuleId = msg.senderModuleId;
+    senderGateId = msg.senderGateId;
+    targetModuleId = msg.targetModuleId;
+    targetGateId = msg.targetGateId;
 
-    sent = msg.sent;
+    sendTime = msg.sendTime;
 
-    msgtreeid = msg.msgtreeid;
+    messageTreeId = msg.messageTreeId;
 }
 
 void cMessage::_createparlist()
 {
-    parlistp = new cArray("parameters", 5, 5);
-    take(parlistp);
+    parList = new cArray("parameters", 5, 5);
+    take(parList);
 }
 
 cMessage *cMessage::privateDup() const
 {
     cMessage *ret = dup();
-    ret->msgid = msgid;
+    ret->messageId = messageId;
     ret->flags |= FL_ISPRIVATECOPY;
     ret->removeFromOwnershipTree();
-    total_msgs--;
-    live_msgs--;
+    totalMsgCount--;
+    liveMsgCount--;
     return ret;
 }
 
@@ -262,17 +262,17 @@ void cMessage::setControlInfo(cObject *p)
 {
     if (!p)
         throw cRuntimeError(this,"setControlInfo(): pointer is NULL");
-    if (ctrlp)
+    if (controlInfo)
         throw cRuntimeError(this,"setControlInfo(): message already has control info attached");
     if (p->isOwnedObject())
         take((cOwnedObject *)p);
-    ctrlp = p;
+    controlInfo = p;
 }
 
 cObject *cMessage::removeControlInfo()
 {
-    cObject *p = ctrlp;
-    ctrlp = NULL;
+    cObject *p = controlInfo;
+    controlInfo = NULL;
     if (p && p->isOwnedObject())
         drop((cOwnedObject *)p);
     return p;
@@ -307,21 +307,21 @@ cMsgPar& cMessage::par(const char *s)
 
 int cMessage::findPar(const char *s) const
 {
-    return !parlistp ? -1 : parlistp->find(s);
+    return !parList ? -1 : parList->find(s);
 }
 
 cGate *cMessage::getSenderGate() const
 {
-    if (frommod<0 || fromgate<0)  return NULL;
-    cModule *mod = getSimulation()->getModule(frommod);
-    return !mod ? NULL : mod->gate(fromgate);
+    if (senderModuleId<0 || senderGateId<0)  return NULL;
+    cModule *mod = getSimulation()->getModule(senderModuleId);
+    return !mod ? NULL : mod->gate(senderGateId);
 }
 
 cGate *cMessage::getArrivalGate() const
 {
-    if (tomod<0 || togate<0)  return NULL;
-    cModule *mod = getSimulation()->getModule(tomod);
-    return !mod ? NULL : mod->gate(togate);
+    if (targetModuleId<0 || targetGateId<0)  return NULL;
+    cModule *mod = getSimulation()->getModule(targetModuleId);
+    return !mod ? NULL : mod->gate(targetGateId);
 }
 
 bool cMessage::arrivedOn(const char *gatename) const
@@ -343,9 +343,9 @@ const char *cMessage::getDisplayString() const
 
 void cMessage::setSentFrom(cModule *module, int gateId, simtime_t_cref t)
 {
-    frommod = module ? module->getId() : -1;
-    fromgate = gateId;
-    sent = t;
+    senderModuleId = module ? module->getId() : -1;
+    senderGateId = gateId;
+    sendTime = t;
 }
 
 void cMessage::setArrival(cModule *module, int gateId, simtime_t_cref t)
@@ -356,7 +356,7 @@ void cMessage::setArrival(cModule *module, int gateId, simtime_t_cref t)
 bool cMessage::isStale()
 {
     // check that destination module still exists and is alive
-    cSimpleModule *modp = dynamic_cast<cSimpleModule *>(getSimulation()->getModule(tomod));
+    cSimpleModule *modp = dynamic_cast<cSimpleModule *>(getSimulation()->getModule(targetModuleId));
     return !modp || modp->isTerminated();
 }
 
