@@ -26,6 +26,7 @@
 #include "tkutil.h"
 #include "inspectorfactory.h"
 #include "canvasrenderer.h"
+#include "canvasinspectorform.h"
 
 #include <QGraphicsScene>
 #include <QGraphicsView>
@@ -51,6 +52,7 @@ Register_InspectorFactory(CanvasInspectorFactory);
 CanvasInspector::CanvasInspector(InspectorFactory *f) : Inspector(f)
 {
     canvasRenderer = new CanvasRenderer();
+    window = new CanvasInspectorForm(this);
 }
 
 CanvasInspector::~CanvasInspector()
@@ -80,13 +82,9 @@ void CanvasInspector::createWindow(const char *window, const char *geometry)
 {
     Inspector::createWindow(window, geometry);
 
-    QGraphicsView *view = new QGraphicsView();
-    view->setScene(new QGraphicsScene());
-    this->window = view;
-
     CHK(Tcl_VarEval(interp, "createCanvasInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL ));
 
-    canvasRenderer->setQtCanvas(view->scene(), getCanvas());
+    canvasRenderer->setQtCanvas(static_cast<CanvasInspectorForm*>(this->window)->getScene(), getCanvas());
     this->window->show();
 }
 
