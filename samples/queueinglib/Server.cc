@@ -39,7 +39,7 @@ void Server::initialize()
     jobServiced = NULL;
     selectionStrategy = SelectionStrategy::create(par("fetchingAlgorithm"), this, true);
     if (!selectionStrategy)
-        error("invalid selection strategy");
+        throw cRuntimeError("invalid selection strategy");
 }
 
 void Server::handleMessage(cMessage *msg)
@@ -67,7 +67,7 @@ void Server::handleMessage(cMessage *msg)
     else
     {
         if (jobServiced)
-            error("job arrived while already servicing one");
+            throw cRuntimeError("job arrived while already servicing one");
 
         jobServiced = check_and_cast<Job *>(msg);
         simtime_t serviceTime = par("serviceTime");

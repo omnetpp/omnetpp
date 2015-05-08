@@ -20,7 +20,7 @@ KmlHttpServer::KmlHttpServer()
 {
     rtEvent = NULL;
     if (instance)
-        error("There can be only one KmlHttpServer instance in the network");
+        throw cRuntimeError("There can be only one KmlHttpServer instance in the network");
     instance = this;
 }
 
@@ -68,7 +68,7 @@ void KmlHttpServer::removeKmlFragmentProvider(IKmlFragmentProvider* p)
 void KmlHttpServer::handleMessage(cMessage *msg)
 {
     if (msg != rtEvent)
-        error("This module does not handle messages"); // only those from the SocketRTScheduler
+        throw cRuntimeError("This module does not handle messages"); // only those from the SocketRTScheduler
 
     handleSocketEvent();
 }

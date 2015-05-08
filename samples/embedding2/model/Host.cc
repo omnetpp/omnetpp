@@ -30,7 +30,8 @@ Host::~Host()
 void Host::initialize()
 {
     server = getModuleByPath("server");
-    if (!server) error("server not found");
+    if (!server)
+        throw cRuntimeError("server not found");
 
     txRate = par("txRate");
     radioDelay = par("radioDelay");
@@ -99,7 +100,7 @@ void Host::handleMessage(cMessage *msg)
     }
     else
     {
-        error("invalid state");
+        throw cRuntimeError("invalid state");
     }
 }
 

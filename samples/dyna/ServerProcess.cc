@@ -69,7 +69,7 @@ void ServerProcess::activity()
             break;
 
         if (type!=DYNA_DATA)
-            error("protocol error!");
+            throw cRuntimeError("protocol error!");
 
         datapk = (DynaDataPacket *) pk;
 

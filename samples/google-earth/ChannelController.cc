@@ -16,7 +16,7 @@ ChannelController *ChannelController::instance = NULL;
 ChannelController::ChannelController()
 {
     if (instance)
-        error("There can be only one ChannelController instance in the network");
+        throw cRuntimeError("There can be only one ChannelController instance in the network");
     instance = this;
 }
 
@@ -62,7 +62,7 @@ void ChannelController::initialize()
 
 void ChannelController::handleMessage(cMessage *msg)
 {
-    error("This module does not process messages");
+    throw cRuntimeError("This module does not process messages");
 }
 
 std::string ChannelController::getKmlFragment()

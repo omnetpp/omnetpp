@@ -151,7 +151,7 @@ void BurstyApp::processTimer(cMessage *msg)
 
             // transition to ACTIVE state:
             if (msg!=startStopBurst)
-                error("invalid event in state ACTIVE");
+                throw cRuntimeError("invalid event in state ACTIVE");
             FSM_Goto(fsm,ACTIVE);
             break;
 
@@ -170,7 +170,7 @@ void BurstyApp::processTimer(cMessage *msg)
                 cancelEvent(sendMessage);
                 FSM_Goto(fsm,SLEEP);
             } else
-                error("invalid event in state ACTIVE");
+                throw cRuntimeError("invalid event in state ACTIVE");
             break;
 
         case FSM_Exit(SEND):

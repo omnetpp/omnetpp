@@ -28,8 +28,7 @@ void Classifier::handleMessage(cMessage *msg)
     else if (strcmp(dispatchField, "priority") == 0)
         outGateIndex = job->getPriority();
     else
-        error("invalid dispatchField parameter, must be \"type\" or \"priority\"");
-    // TODO we could look for the value in the dynamically added parameters too
+        throw cRuntimeError("invalid dispatchField parameter, must be \"type\" or \"priority\"");  // TODO we could look for the value in the dynamically added parameters too
 
     if (outGateIndex < 0 || outGateIndex >= gateSize("out"))
         send(job, "rest");

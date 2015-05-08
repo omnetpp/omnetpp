@@ -62,7 +62,7 @@ void Router::handleMessage(cMessage *msg)
 
     // send out if the index is legal
     if (outGateIndex < 0 || outGateIndex >= gateSize("out"))
-        error("Invalid output gate selected during routing");
+        throw cRuntimeError("Invalid output gate selected during routing");
 
     send(msg, "out", outGateIndex);
 }

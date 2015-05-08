@@ -49,7 +49,7 @@ void NetBuilder::initialize()
 void NetBuilder::handleMessage(cMessage *msg)
 {
     if (!msg->isSelfMessage())
-        error("This module does not process messages.");
+        throw cRuntimeError("This module does not process messages.");
 
     delete msg;
     buildNetwork(getParentModule());

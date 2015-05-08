@@ -38,7 +38,7 @@ void PassiveQueue::initialize()
 
     selectionStrategy = SelectionStrategy::create(par("sendingAlgorithm"), this, false);
     if (!selectionStrategy)
-        error("invalid selection strategy");
+        throw cRuntimeError("invalid selection strategy");
 }
 
 void PassiveQueue::handleMessage(cMessage *msg)
@@ -70,7 +70,7 @@ void PassiveQueue::handleMessage(cMessage *msg)
         send(job, "out", k);
     }
     else
-        error("This should not happen. Queue is NOT empty and there is an IDLE server attached to us.");
+        throw cRuntimeError("This should not happen. Queue is NOT empty and there is an IDLE server attached to us.");
 
     // change the icon color
     if (hasGUI())
