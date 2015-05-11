@@ -39,8 +39,8 @@ class cAccuracyDetection;
 class SIM_API cStatistic : public cRandom
 {
   private:
-    cTransientDetection *td;    // ptr to associated object
-    cAccuracyDetection *ra;     // ptr to associated object
+    cTransientDetection *td;
+    cAccuracyDetection *ra;
 
   private:
     void copy(const cStatistic& other);
@@ -210,13 +210,13 @@ class SIM_API cStatistic : public cRandom
      * Assigns transient and accuracy detection objects to the statistic
      * object.
      */
-    void addTransientDetection(cTransientDetection *object);
+    void setTransientDetectionObject(cTransientDetection *object);
 
     /**
      * Assigns transient and accuracy detection objects to the statistic
      * object.
      */
-    void addAccuracyDetection(cAccuracyDetection *object);
+    void setAccuracyDetectionObject(cAccuracyDetection *object);
 
     /**
      * Returns the assigned transient and accuracy detection objects.

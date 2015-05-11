@@ -43,7 +43,7 @@ cTDExpandingWindows::cTDExpandingWindows(const char *name,
     PostTDFunc f, void *p) :
   cTransientDetection(name)
 {
-    pdf = f; pdfdata = p;
+    callback = f; callbackData = p;
     setParameters(reps, minw, wind, acc);
     func = NULL; size = 0;
     go = true;
@@ -65,8 +65,8 @@ void cTDExpandingWindows::copy(const cTDExpandingWindows& res)
     windexp=res.windexp;
     repeats=res.repeats;
     detreps=res.detreps;
-    pdf=res.pdf;
-    pdfdata=res.pdfdata;
+    callback=res.callback;
+    callbackData=res.callbackData;
 
     // copy actual contents  --VA
     size=res.size;
@@ -205,9 +205,9 @@ void cTDExpandingWindows::detectTransient()
       transval = (detreps <= 0);
 
       // If the transient period over, call registered function
-      if (transval && (pdf!=NULL))
+      if (transval && (callback!=NULL))
       {
-         (*pdf)(this,pdfdata);
+         (*callback)(this,callbackData);
       }
   }
 }
@@ -226,7 +226,7 @@ cADByStddev::cADByStddev(const char *name,
                          double acc, int reps, PostADFunc f, void *p) :
   cAccuracyDetection(name)
 {
-   pdf = f; pdfdata = p;
+   callback = f; callbackData = p;
    accuracy = acc;
    repeats=detreps=reps;
    go=resaccval=false;
@@ -241,7 +241,7 @@ void cADByStddev::copy(const cADByStddev& res)
     accuracy=res.accuracy; sctr=res.sctr;
     ssum=res.ssum; sqrsum=res.sqrsum;
     repeats=res.repeats; detreps=res.detreps;
-    pdf=res.pdf; pdfdata=res.pdfdata;
+    callback=res.callback; callbackData=res.callbackData;
 }
 
 cADByStddev& cADByStddev::operator=(const cADByStddev& res)
@@ -294,9 +294,9 @@ void cADByStddev::detectAccuracy()
    resaccval = (detreps <= 0);
 
    // If we have the accuracy, call registered function
-   if (resaccval && pdf!=NULL)
+   if (resaccval && callback!=NULL)
    {
-      (*pdf)(this, pdfdata);
+      (*callback)(this, callbackData);
    }
 }
 

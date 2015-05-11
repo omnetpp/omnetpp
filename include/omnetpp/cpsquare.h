@@ -36,8 +36,8 @@ NAMESPACE_BEGIN
 class SIM_API cPSquare : public cDensityEstBase
 {
   protected:
-    int numcells;      // number of observations
-    long numobs;       // number of cells,
+    int numCells;      // number of cells
+    long numObs;       // number of observations
     int *n;            // array of positions
     double *q;         // array of heights
 
@@ -151,7 +151,7 @@ class SIM_API cPSquare : public cDensityEstBase
      * setRange() and setNumFirstVals() methods are not used with cPSquare
      * (the algorithm does not require them), but they could not remain pure virtual.
      */
-    virtual void setNumFirstVals(int) {giveError();}
+    virtual void setNumPrecollectedValues(int) {giveError();}
 
     /**
      * Returns the number of cells used.

@@ -27,15 +27,6 @@ NAMESPACE_BEGIN
 
 
 /**
- * Transform types for cVarHistogram
- */
-enum {
-   HIST_TR_NO_TRANSFORM=1, ///< no transformation; uses bin boundaries previously defined by addBinBound()/appendBinBound()
-   HIST_TR_AUTO_EPC_DBL=0, ///< automatically creates equi-probable cells
-   HIST_TR_AUTO_EPC_INT=2  ///< a variation of HIST_TR_AUTO_EPC_DBL
-};
-
-/**
  * Variable bin size histogram. You may add cell (bin) boundaries
  * manually, or let the object create cells with equal number of
  * observations in them (or as close to that as possible).
@@ -74,14 +65,20 @@ enum {
  */
 class SIM_API cVarHistogram : public cHistogramBase
 {
-  protected:
-    int transform_type;     // one of the HIST_TR_xxx constants
-    int max_num_cells;      // the length of the allocated cellv
-    double *bin_bounds;     // bin/cell boundaries
+  public:
+    enum TransformType {
+       HIST_TR_NO_TRANSFORM, ///< no transformation; uses bin boundaries previously defined by addBinBound()/appendBinBound()
+       HIST_TR_AUTO_EPC_DBL, ///< automatically creates equi-probable cells
+       HIST_TR_AUTO_EPC_INT  ///< a variation of HIST_TR_AUTO_EPC_DBL
+    };
 
-    // the boundaries of the ordinary cells/bins are:
-    // rangemin=bin_bounds[0], bin_bounds[1], ... bin_bounds[num_cells]=rangemax
-    // consequence: sizeof(binbounds)=sizeof(cellv)+1
+  protected:
+    TransformType transformType;
+
+    // cell lower boundaries, plus an extra one for the upper bound of the last cell
+    // Note: cellLowerBounds[0] = rangeMin, and cellLowerBounds[numCells] = rangeMax
+    double *cellLowerBounds;
+    int maxNumCells;      // allocated size of cellLowerBounds[] during setup
 
   private:
     void copy(const cVarHistogram& other);
@@ -101,7 +98,7 @@ class SIM_API cVarHistogram : public cHistogramBase
     /**
      * Copy constructor.
      */
-    cVarHistogram(const cVarHistogram& r) : cHistogramBase(r) {bin_bounds=NULL;copy(r);}
+    cVarHistogram(const cVarHistogram& r) : cHistogramBase(r) {cellLowerBounds=NULL;copy(r);}
 
     /**
      * Constructor. The third argument can be one of HIST_TR_NO_TRANSFORM,
@@ -111,7 +108,7 @@ class SIM_API cVarHistogram : public cHistogramBase
      */
     explicit cVarHistogram(const char *name=NULL,
                            int numcells=11,
-                           int transformtype=HIST_TR_AUTO_EPC_DBL);
+                           TransformType transformtype=HIST_TR_AUTO_EPC_DBL);
 
     /**
      * Destructor.

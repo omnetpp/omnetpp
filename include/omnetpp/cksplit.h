@@ -139,21 +139,21 @@ class SIM_API cKSplit : public cDensityEstBase
     friend class Iterator;
 
   protected:
-    int num_cells;            // number of cells
+    int numCells;             // number of cells
 
     Grid *gridv;              // grid vector
-    int gridv_size;           // size of gridv[]+1
-    int rootgrid, lastgrid;   // indices into gridv[]
-    bool rangeext_enabled;    // enable/disable range extension
+    int gridvSize;            // size of gridv[]+1
+    int rootGridIndex, lastGridIndex;   // indices into gridv[]
+    bool rangeExtEnabled;     // enable/disable range extension
 
-    CritFunc critfunc;        // function that determines when to split a cell
-    double *critdata;         // data array to pass to crit. function
+    CritFunc critFunc;        // function that determines when to split a cell
+    double *critData;         // data array to pass to crit. function
 
-    DivFunc divfunc;          // function to calc. lambda for cell division
-    double *divdata;          // data array to pass to div. function
+    DivFunc divFunc;          // function to calc. lambda for cell division
+    double *divData;          // data array to pass to div. function
 
     mutable Iterator *iter;   // iterator used by getBasepoint(), getCellValue() etc.
-    mutable long iter_num_vals; // num_vals when iterator was created
+    mutable long iterNumValues; // numValues when iterator was created
 
   private:
     void copy(const cKSplit& other);
@@ -361,7 +361,7 @@ class SIM_API cKSplit : public cDensityEstBase
     /**
      * Returns the root grid of the k-split data structure.
      */
-    Grid& getRootGrid() const {return gridv[rootgrid];}
+    Grid& getRootGrid() const {return gridv[rootGridIndex];}
     //@}
 };
 

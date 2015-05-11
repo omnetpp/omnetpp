@@ -56,9 +56,9 @@ typedef void (*PostADFunc)(cAccuracyDetection *, void *);
 class SIM_API cTransientDetection : public cOwnedObject
 {
   protected:
-    cStatistic *back;    // ptr to cStatistic that uses this object
-    PostTDFunc pdf;      // function to call after detection
-    void *pdfdata;       // data for PostDetectFunct
+    cStatistic *hostObject;   // ptr to cStatistic that uses this object
+    PostTDFunc callback;      // function to call after detection
+    void *callbackData;       // data for PostDetectFunct
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -66,7 +66,7 @@ class SIM_API cTransientDetection : public cOwnedObject
     /**
      * Constructor.
      */
-    explicit cTransientDetection(const char *name=NULL) : cOwnedObject(name) {}
+    explicit cTransientDetection(const char *name=NULL) : cOwnedObject(name) {hostObject=NULL; callback=NULL; callbackData=NULL;}
 
     /**
      * Destructor.
@@ -115,7 +115,7 @@ class SIM_API cTransientDetection : public cOwnedObject
      * Adds a function that will be called when accuracy has reached the
      * configured limit.
      */
-    void setPostDetectFunction(PostTDFunc f, void *p) {pdf = f; pdfdata = p;}
+    void setPostDetectFunction(PostTDFunc f, void *p) {callback = f; callbackData = p;}
     //@}
 
     /** @name Host object. */
@@ -125,12 +125,12 @@ class SIM_API cTransientDetection : public cOwnedObject
      * Sets the host object. This is internally called by cStatistic's
      * addTransientDetection() method.
      */
-    virtual void setHostObject(cStatistic *ptr)  {back = ptr;}
+    virtual void setHostObject(cStatistic *ptr)  {hostObject = ptr;}
 
     /**
      * Returns a pointer to the host object.
      */
-    virtual cStatistic *getHostObject() const  {return back;}
+    virtual cStatistic *getHostObject() const  {return hostObject;}
     //@}
 };
 
@@ -145,9 +145,9 @@ class SIM_API cTransientDetection : public cOwnedObject
 class SIM_API cAccuracyDetection : public cOwnedObject
 {
   protected:
-    cStatistic *back;           // ptr to cStatistic that uses this object
-    PostADFunc pdf;             // function to call after detection
-    void *pdfdata;              // data for PostDetectFunc
+    cStatistic *hostObject;     // ptr to cStatistic that uses this object
+    PostADFunc callback;        // function to call after detection
+    void *callbackData;         // data for PostDetectFunc
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -155,7 +155,7 @@ class SIM_API cAccuracyDetection : public cOwnedObject
     /**
      * Constructor.
      */
-    explicit cAccuracyDetection(const char *name=NULL) : cOwnedObject(name)  {}
+    explicit cAccuracyDetection(const char *name=NULL) : cOwnedObject(name)  {hostObject=NULL; callback=NULL; callbackData=NULL;}
 
     /**
      * Destructor.
@@ -208,7 +208,7 @@ class SIM_API cAccuracyDetection : public cOwnedObject
      * Adds a function that will be called when accuracy has reached the
      * configured limit.
      */
-    void setPostDetectFunction(PostADFunc f, void *p) {pdf=f; pdfdata=p;}
+    void setPostDetectFunction(PostADFunc f, void *p) {callback=f; callbackData=p;}
     //@}
 
     /** @name Host object. */
@@ -218,12 +218,12 @@ class SIM_API cAccuracyDetection : public cOwnedObject
      * Sets the host object. This is internally called by cStatistic's
      * addTransientDetection() method.
      */
-    virtual void setHostObject(cStatistic *ptr)  {back = ptr;}
+    virtual void setHostObject(cStatistic *ptr)  {hostObject = ptr;}
 
     /**
      * Returns a pointer to the host object.
      */
-    virtual cStatistic *getHostObject() const  {return back;}
+    virtual cStatistic *getHostObject() const  {return hostObject;}
     //@}
 };
 

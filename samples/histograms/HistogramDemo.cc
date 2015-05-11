@@ -52,7 +52,7 @@ void HistogramDemo::activity()
 
     cDoubleHistogram dblhist("DoubleHistogram", numCells);
     cLongHistogram longhist("LongHistogram", numCells);
-    cVarHistogram varhist("VarHistogram", numCells,HIST_TR_AUTO_EPC_DBL);
+    cVarHistogram varhist("VarHistogram", numCells, cVarHistogram::HIST_TR_AUTO_EPC_DBL);
     cPSquare psquare("PSquare", numCells);
     cKSplit ksplit("K-Split");
 
@@ -69,7 +69,7 @@ void HistogramDemo::activity()
         longhist.setRangeAutoUpper(0.0, numFirstVals, rangeExtFactor);
         ksplit.setRangeAutoUpper(0.0, numFirstVals, rangeExtFactor);
     }
-    varhist.setNumFirstVals(numFirstVals);
+    varhist.setNumPrecollectedValues(numFirstVals);
 
     FILE *f = fopen("hist.dat","r");
     if (f && getEnvir()->askYesNo("HIST: Saved histogram file `hist.dat' found,"

@@ -96,18 +96,19 @@ class SIM_API cDensityEstBase : public cStdDev
     };
 
   protected:
-    double rangemin, rangemax;   // range for distribution density collection
-    int num_firstvals;         // number of "pre-collected" observations
-                                // before transform() is performed.
-    unsigned long cell_under;
-    unsigned long cell_over;    // for counting observations that fall out of range
+    // we can precollect observations to automatically determine the range before histogram cells are set up
+    bool transformed;   // whether precollected values have been transformed into a histogram
+    double *precollectedValues;
+    int numPrecollected;
 
-    double range_ext_factor;    // the range of histogram is: [min_vals, max_vals] made
-                                // range_ext_factor times larger
-    RangeMode range_mode;       // one of RANGE_xxx constants
+    // range for distribution density collection
+    RangeMode rangeMode;
+    double rangeExtFactor;    // we extend the range of precollected values by rangeExtFactor
+    double rangeMin, rangeMax;
 
-    bool transfd;
-    double *firstvals;         // pointer to array of "pre-collected" observations
+    // variables for counting out-of-range observations
+    unsigned long cellUnder;
+    unsigned long cellOver;
 
   private:
     void copy(const cDensityEstBase& other);
@@ -128,7 +129,7 @@ class SIM_API cDensityEstBase : public cStdDev
     /**
      * Copy constructor.
      */
-    cDensityEstBase(const cDensityEstBase& other) : cStdDev(other) {firstvals=NULL;copy(other);}
+    cDensityEstBase(const cDensityEstBase& other) : cStdDev(other) {precollectedValues=NULL;copy(other);}
 
     /**
      * Constructor.
@@ -256,19 +257,19 @@ class SIM_API cDensityEstBase : public cStdDev
      * Sets the number of values to be pre-collected before transformation takes
      * place. See transform().
      */
-    virtual void setNumFirstVals(int num_firstvals);
+    virtual void setNumPrecollectedValues(int num_firstvals);
 
     /**
      * Returns the number of values to be pre-collected before transformation
      * takes place. See transform().
      */
-    virtual int getNumFirstVals() const {return num_firstvals;}
+    virtual int getNumPrecollectedValues() const {return numPrecollected;}
 
     /**
      * Returns the range extension factor, used with histogram range setup.
      * See setRangeAuto() and transform().
      */
-    virtual double getRangeExtensionFactor() const {return range_ext_factor;}
+    virtual double getRangeExtensionFactor() const {return rangeExtFactor;}
     //@}
 
   protected:
@@ -296,7 +297,7 @@ class SIM_API cDensityEstBase : public cStdDev
     /**
      * Returns whether the object is transformed. See transform().
      */
-    virtual bool isTransformed() const   {return transfd;}
+    virtual bool isTransformed() const   {return transformed;}
 
     /**
      * Transforms the table of pre-collected values into an internal
@@ -345,13 +346,13 @@ class SIM_API cDensityEstBase : public cStdDev
      * Returns number of observations that, being too small, fell out of the histogram
      * range.
      */
-    virtual unsigned long getUnderflowCell() const {return cell_under;}
+    virtual unsigned long getUnderflowCell() const {return cellUnder;}
 
     /**
      * Returns number of observations that, being too large, fell out of the histogram
      * range.
      */
-    virtual unsigned long getOverflowCell() const {return cell_over;}
+    virtual unsigned long getOverflowCell() const {return cellOver;}
 
     /**
      * Combines the functionality of getBasepoint(), getCellValue() and getCellPDF() into a

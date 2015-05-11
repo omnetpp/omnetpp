@@ -110,19 +110,19 @@ cStatistic& cStatistic::operator=(const cStatistic& res)
     return *this;
 }
 
-void cStatistic::addTransientDetection(cTransientDetection *obj)  //NL
+void cStatistic::setTransientDetectionObject(cTransientDetection *obj)
 {
     if (td)
-        throw cRuntimeError(this,"addTransientDetection(): object already has a transient detection algorithm");
+        throw cRuntimeError(this,"setTransientDetection(): object already has a transient detection algorithm");
     td = obj;                       // create pointer to td object
     td->setHostObject(this);        // and create one back
     take(td);
 }
 
-void cStatistic::addAccuracyDetection(cAccuracyDetection *obj)  //NL
+void cStatistic::setAccuracyDetectionObject(cAccuracyDetection *obj)
 {
     if (ra)
-        throw cRuntimeError(this,"addAccuracyDetection(): object already has an accuracy detection algorithm");
+        throw cRuntimeError(this,"setAccuracyDetection(): object already has an accuracy detection algorithm");
     ra = obj;                       // create pointer to ra object
     ra->setHostObject(this);        // and create one back
     take(ra);

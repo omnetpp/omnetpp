@@ -38,8 +38,8 @@ NAMESPACE_BEGIN
 class SIM_API cHistogramBase : public cDensityEstBase
 {
   protected:
-    int num_cells;        // nr. of categories
-    unsigned *cellv;      // array of counters
+    int numCells;     // number of histogram cells or bins
+    unsigned *cellv;  // array of counters
 
   private:
     void copy(const cHistogramBase& other);
@@ -192,11 +192,11 @@ class SIM_API cHistogramBase : public cDensityEstBase
 class SIM_API cHistogram : public cHistogramBase
 {
   public:
-    enum Mode {MODE_AUTO, MODE_INTEGERS, MODE_DOUBLES};
+    enum HistogramMode {MODE_AUTO, MODE_INTEGERS, MODE_DOUBLES};
 
   protected:
-    Mode mode;
-    double cellsize;  // cell/category sizes; <=0 if unset
+    HistogramMode mode;
+    double cellSize;  // cell (bin) size; <=0 if unset
 
   private:
     void copy(const cHistogram& other);
@@ -218,7 +218,7 @@ class SIM_API cHistogram : public cHistogramBase
     /**
      * Constructor.
      */
-    explicit cHistogram(const char *name=NULL, int numcells=-1, Mode mode=MODE_AUTO);
+    explicit cHistogram(const char *name=NULL, int numcells=-1, HistogramMode mode=MODE_AUTO);
 
     /**
      * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
@@ -309,13 +309,13 @@ class SIM_API cHistogram : public cHistogramBase
      * Sets the histogram mode: MODE_AUTO, MODE_INTEGERS or MODE_DOUBLES.
      * Cannot be called when the cells have been set up already.
      */
-    virtual void setMode(Mode mode);
+    virtual void setMode(HistogramMode mode);
 
     /**
      * Returns the histogram mode, which is MODE_AUTO, MODE_INTEGERS or
      * MODE_DOUBLES.
      */
-    virtual Mode getMode() const {return mode;}
+    virtual HistogramMode getMode() const {return mode;}
 
     /**
      * Sets the cell size. Cannot be called when the cells have been
@@ -327,7 +327,7 @@ class SIM_API cHistogram : public cHistogramBase
      * Returns the cell size, or 0 when unknow (i.e. the cells have not
      * been set up yet, and setCellSize() has not been called).
      */
-    virtual double getCellSize() const {return cellsize;}
+    virtual double getCellSize() const {return cellSize;}
     //@}
 
 };

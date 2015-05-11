@@ -34,9 +34,9 @@ NAMESPACE_BEGIN
 class SIM_API cStdDev : public cStatistic
 {
   protected:
-    long num_vals;
-    double min_vals, max_vals;
-    double sum_vals, sqrsum_vals;
+    long numValues;
+    double minValue, maxValue;
+    double sumValues, sumSquaredValues;
 
   private:
     void copy(const cStdDev& other);
@@ -134,17 +134,17 @@ class SIM_API cStdDev : public cStatistic
     /**
      * Returns the number of observations collected.
      */
-    virtual long getCount() const  {return num_vals;}
+    virtual long getCount() const  {return numValues;}
 
     /**
      * Returns the sum of the values.
      */
-    virtual double getSum() const  {return sum_vals;}
+    virtual double getSum() const  {return sumValues;}
 
     /**
      * Returns the squared sum of the collected values.
      */
-    virtual double getSqrSum() const  {return sqrsum_vals;}
+    virtual double getSqrSum() const  {return sumSquaredValues;}
 
     /**
      * Returns the minimum of the collected values, or NaN if none have been collected yet.
@@ -231,10 +231,10 @@ class SIM_API cStdDev : public cStatistic
 class SIM_API cWeightedStdDev : public cStdDev
 {
   protected:
-    double sum_weights;
-    double sum_weighted_vals;
-    double sum_squared_weights;
-    double sum_weights_squared_vals;
+    double sumWeights;
+    double sumWeightedValues;
+    double sumSquaredWeights;
+    double sumWeightedSquaredValues;
 
   private:
     void copy(const cWeightedStdDev& other);
@@ -251,7 +251,7 @@ class SIM_API cWeightedStdDev : public cStdDev
     /**
      * Constructors, destructor, duplication and assignment.
      */
-    explicit cWeightedStdDev(const char *name=NULL) : cStdDev(name)  {sum_weights=sum_weighted_vals=sum_squared_weights=sum_weights_squared_vals=0.0;}
+    explicit cWeightedStdDev(const char *name=NULL) : cStdDev(name)  {sumWeights=sumWeightedValues=sumSquaredWeights=sumWeightedSquaredValues=0.0;}
 
     /**
      * Constructors, destructor, duplication and assignment.
@@ -359,22 +359,22 @@ class SIM_API cWeightedStdDev : public cStdDev
     /**
      * Returns the sum of weights.
      */
-    virtual double getWeights() const  {return sum_weights;}
+    virtual double getWeights() const  {return sumWeights;}
 
     /**
      * Returns the sum of weight*value products.
      */
-    virtual double getWeightedSum() const  {return sum_weighted_vals;}
+    virtual double getWeightedSum() const  {return sumWeightedValues;}
 
     /**
      * Returns the sum of squared weights.
      */
-    virtual double getSqrSumWeights() const  {return sum_squared_weights;}
+    virtual double getSqrSumWeights() const  {return sumSquaredWeights;}
 
     /**
      * Returns the sum of weight*value*value products.
      */
-    virtual double getWeightedSqrSum() const  {return sum_weights_squared_vals;}
+    virtual double getWeightedSqrSum() const  {return sumWeightedSquaredValues;}
 
     /**
      * Writes the contents of the object into a text file.
