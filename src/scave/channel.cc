@@ -22,8 +22,8 @@ NAMESPACE_BEGIN
 
 Channel::Channel()
 {
-    consumernode = producernode = NULL;
-    consumerfinished = producerfinished = false;
+    consumerNode = producerNode = NULL;
+    consumerFinished = producerFinished = false;
 }
 
 const Datum *Channel::peek() const
@@ -36,7 +36,7 @@ const Datum *Channel::peek() const
 
 int Channel::read(Datum *a, int max)
 {
-    Assert(!consumerfinished);
+    Assert(!consumerFinished);
     int n = buffer.size();
     if (n>max)
         n = max;
@@ -50,8 +50,8 @@ int Channel::read(Datum *a, int max)
 
 void Channel::write(Datum *a, int n)
 {
-    Assert(!producerfinished);
-    if (consumerfinished)
+    Assert(!producerFinished);
+    if (consumerFinished)
         return;  // discard data if consumer finished
     for (int i=0; i<n; i++)
         buffer.push_back(a[i]);

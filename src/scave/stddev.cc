@@ -24,7 +24,7 @@ NAMESPACE_BEGIN
 
 
 StddevNode::StddevNode()
-    : num_vals(0), min_vals(NaN), max_vals(NaN), sum_vals(0.0), sqrsum_vals(0.0)
+    : numValues(0), minValue(NaN), maxValue(NaN), sumValues(0.0), sqrsumValues(0.0)
 {
 }
 
@@ -55,32 +55,32 @@ bool StddevNode::isFinished() const
 
 void StddevNode::collect(double val)
 {
-    if (++num_vals <= 0)
+    if (++numValues <= 0)
         throw opp_runtime_error("StddevNode: observation count overflow");
 
-    sum_vals += val;
-    sqrsum_vals += val*val;
+    sumValues += val;
+    sqrsumValues += val*val;
 
-    if (num_vals>1)
+    if (numValues>1)
     {
-        if (val<min_vals)
-            min_vals = val;
-        else if (val>max_vals)
-            max_vals = val;
+        if (val<minValue)
+            minValue = val;
+        else if (val>maxValue)
+            maxValue = val;
     }
     else
     {
-        min_vals = max_vals = val;
+        minValue = maxValue = val;
     }
 }
 
 double StddevNode::getVariance() const
 {
-    if (num_vals<=1)
+    if (numValues<=1)
         return 0.0;
     else
     {
-        double devsqr = (sqrsum_vals - sum_vals*sum_vals/num_vals)/(num_vals-1);
+        double devsqr = (sqrsumValues - sumValues*sumValues/numValues)/(numValues-1);
         if (devsqr<=0)
             return 0.0;
         else

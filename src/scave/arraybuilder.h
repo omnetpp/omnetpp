@@ -35,8 +35,8 @@ class SCAVE_API ArrayBuilderNode : public SingleSinkNode
     private:
         double *xvec;
         double *yvec;
-        size_t veccapacity;
-        size_t veclen;
+        size_t vecCapacity;
+        size_t vecLength;
         BigDecimal *xpvec;
         bool collectEvec;
         eventnumber_t *evec; // event numbers
@@ -49,7 +49,7 @@ class SCAVE_API ArrayBuilderNode : public SingleSinkNode
         virtual bool isFinished() const;
 
         void sort();
-        size_t length() {return veclen;}
+        size_t length() {return vecLength;}
         XYArray *getArray();
 };
 

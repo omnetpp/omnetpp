@@ -39,7 +39,7 @@ class SCAVE_API CompoundFilter : public FilterNode
     protected:
         FilterNode *first;
         FilterNode *last;
-        StringMap _attrvalues;  // _attrs[name] = value
+        StringMap attrValues;  // _attrs[name] = value
     public:
         CompoundFilter() {}
         virtual ~CompoundFilter() {}

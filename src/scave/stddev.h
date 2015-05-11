@@ -30,9 +30,9 @@ NAMESPACE_BEGIN
 class SCAVE_API StddevNode : public SingleSinkNode
 {
     protected:
-         long num_vals;
-         double min_vals, max_vals;
-         double sum_vals, sqrsum_vals;
+         long numValues;
+         double minValue, maxValue;
+         double sumValues, sqrsumValues;
 
     protected:
         virtual void collect(double val);
@@ -44,12 +44,12 @@ class SCAVE_API StddevNode : public SingleSinkNode
         virtual void process();
         virtual bool isFinished() const;
 
-        virtual long getCount() const     {return num_vals;}
-        virtual double getSum() const     {return sum_vals;}
-        virtual double getSqrSum() const  {return sqrsum_vals;}
-        virtual double getMin() const     {return min_vals;}
-        virtual double getMax() const     {return max_vals;}
-        virtual double getMean() const    {return num_vals ? sum_vals/num_vals : 0.0;}
+        virtual long getCount() const     {return numValues;}
+        virtual double getSum() const     {return sumValues;}
+        virtual double getSqrSum() const  {return sqrsumValues;}
+        virtual double getMin() const     {return minValue;}
+        virtual double getMax() const     {return maxValue;}
+        virtual double getMean() const    {return numValues ? sumValues/numValues : 0.0;}
         virtual double getStddev() const;
         virtual double getVariance() const;
 };

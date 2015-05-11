@@ -27,7 +27,7 @@ NAMESPACE_BEGIN
 
 DataflowManager::DataflowManager()
 {
-    lastnode = 0;
+    lastNode = 0;
     threshold = 1000;
 }
 
@@ -213,7 +213,7 @@ Node *DataflowManager::selectNode()
 
     // round robin scheduling
     int n = nodes.size();
-    int i = lastnode;
+    int i = lastNode;
     assert(n!=0);
     do
     {
@@ -226,19 +226,19 @@ Node *DataflowManager::selectNode()
                 {
                     // When a node finished, some node might get ready that was
                     // not ready before (e.g. has some buffered data), so start over the loop.
-                    i = lastnode;
+                    i = lastNode;
                     goto CONTINUE;
                 }
                 else if (node->isReady())
                 {
-                    if (i==lastnode)
+                    if (i==lastNode)
                         DBG(("DBG: %s invoked again -- perhaps its process() doesn't do as much at once as it could?\n", node->getNodeType()->getName()));
-                    lastnode = i;
+                    lastNode = i;
                     return node;
                 }
             }
     }
-    while (i!=lastnode);
+    while (i!=lastNode);
 
     return NULL;
 }

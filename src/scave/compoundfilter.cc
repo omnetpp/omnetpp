@@ -132,7 +132,7 @@ Node *CompoundFilterType::create(DataflowManager *mgr, StringMap& attrs) const
     CompoundFilter *node = new CompoundFilter();
     node->setNodeType(this);
     mgr->addNode(node);
-    node->_attrvalues = attrs;
+    node->attrValues = attrs;
 
     int n = getNumSubfilters();
     if (n==0)

@@ -80,8 +80,8 @@ class SCAVE_API Node
 
     private:
         DataflowManager *mgr;
-        NodeType *nodetype;
-        bool alreadyfinished;
+        NodeType *nodeType;
+        bool alreadyFinished;
 
     protected:
         /**
@@ -93,7 +93,7 @@ class SCAVE_API Node
         /**
          * Constructor
          */
-        Node() {mgr=NULL; nodetype=NULL; alreadyfinished=false;}
+        Node() {mgr=NULL; nodeType=NULL; alreadyFinished=false;}
 
         /**
          * Virtual destructor
@@ -109,12 +109,12 @@ class SCAVE_API Node
          * Should be called right after construction by the corresponding
          * NodeType class.
          */
-        void setNodeType(const NodeType *t)  {nodetype = const_cast<NodeType *>(t);}
+        void setNodeType(const NodeType *t)  {nodeType = const_cast<NodeType *>(t);}
 
         /**
          * Returns the corresponding NodeType class.
          */
-        NodeType *getNodeType() const {return nodetype;}
+        NodeType *getNodeType() const {return nodeType;}
 
         /** @name Execution and scheduling */
         //@{
@@ -142,13 +142,13 @@ class SCAVE_API Node
          * returns true. It sets a status flag so that further invocations
          * of isFinished() can be avoided.
          */
-        void setAlreadyFinished() {alreadyfinished = true;}
+        void setAlreadyFinished() {alreadyFinished = true;}
 
         /**
          * Used by the dataflow manager. Returns true if setAlreadyFinished()
          * has already been invoked.
          */
-        bool getAlreadyFinished() {return alreadyfinished;}
+        bool getAlreadyFinished() {return alreadyFinished;}
 };
 
 NAMESPACE_END

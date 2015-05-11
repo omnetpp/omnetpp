@@ -37,7 +37,7 @@ class SCAVE_API DataflowManager
         std::vector<Node *> nodes;
         std::vector<Channel *> channels;
         int threshold; // channel buffer upper limit
-        int lastnode; // for round robin
+        int lastNode; // for round robin
 
     protected:
         // utility called from connect()

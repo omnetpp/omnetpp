@@ -25,8 +25,8 @@ NAMESPACE_BEGIN
 
 ArrayBuilderNode::ArrayBuilderNode()
 {
-    veccapacity = 0;
-    veclen = 0;
+    vecCapacity = 0;
+    vecLength = 0;
     xvec = NULL;
     yvec = NULL;
     xpvec = NULL;
@@ -44,36 +44,36 @@ ArrayBuilderNode::~ArrayBuilderNode()
 
 void ArrayBuilderNode::resize()
 {
-    size_t newsize = 3*veccapacity/2;
+    size_t newsize = 3*vecCapacity/2;
 
     if (!newsize)
         newsize = 1024;
 
     double *newxvec = new double[newsize];
-    memcpy(newxvec, xvec, veclen*sizeof(double));
+    memcpy(newxvec, xvec, vecLength*sizeof(double));
     delete [] xvec;
     xvec = newxvec;
 
     double *newyvec = new double[newsize];
-    memcpy(newyvec, yvec, veclen*sizeof(double));
+    memcpy(newyvec, yvec, vecLength*sizeof(double));
     delete [] yvec;
     yvec = newyvec;
 
     if (xpvec) {
         BigDecimal *newxpvec = new BigDecimal[newsize];
-        memcpy(newxpvec, xpvec, veccapacity*sizeof(BigDecimal));
+        memcpy(newxpvec, xpvec, vecCapacity*sizeof(BigDecimal));
         delete[] xpvec;
         xpvec = newxpvec;
     }
 
     if (collectEvec) {
         eventnumber_t *newevec = new eventnumber_t[newsize];
-        memcpy(newevec, evec, veccapacity*sizeof(eventnumber_t));
+        memcpy(newevec, evec, vecCapacity*sizeof(eventnumber_t));
         delete [] evec;
         evec = newevec;
     }
 
-    veccapacity = newsize;
+    vecCapacity = newsize;
 }
 
 bool ArrayBuilderNode::isReady() const
@@ -88,21 +88,21 @@ void ArrayBuilderNode::process()
     {
         Datum a;
         in()->read(&a,1);
-        if (veclen==veccapacity)
+        if (vecLength==vecCapacity)
             resize();
         Assert(xvec && yvec);
-        xvec[veclen] = a.x;
-        yvec[veclen] = a.y;
+        xvec[vecLength] = a.x;
+        yvec[vecLength] = a.y;
         if (!a.xp.isNil()) {
             if (!xpvec)
-                xpvec = new BigDecimal[veccapacity];
+                xpvec = new BigDecimal[vecCapacity];
 
-            xpvec[veclen] = a.xp;
+            xpvec[vecLength] = a.xp;
         }
         if (collectEvec)
-            evec[veclen] = a.eventNumber;
+            evec[vecLength] = a.eventNumber;
 
-        veclen++;
+        vecLength++;
     }
 }
 
@@ -125,11 +125,11 @@ void ArrayBuilderNode::sort()
 XYArray *ArrayBuilderNode::getArray()
 {
     // transfer ownership to XYArray
-    XYArray *array = new XYArray(veclen, xvec, yvec, xpvec, evec);
+    XYArray *array = new XYArray(vecLength, xvec, yvec, xpvec, evec);
     xvec = yvec = NULL;
     xpvec = NULL;
     evec = NULL;
-    veclen = 0;
+    vecLength = 0;
     return array;
 }
 

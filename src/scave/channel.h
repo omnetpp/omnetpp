@@ -37,19 +37,19 @@ class SCAVE_API Channel
         // because ports may be copied after having been assigned to channels
         // (e.g. in VectorFileReader which uses std::vector). Node ptrs are OK.
         std::deque<Datum> buffer;  //XXX deque has very poor performance under VC++ (pagesize==1!), consider using std::vector here instead
-        Node *producernode;
-        Node *consumernode;
-        bool producerfinished;
-        bool consumerfinished;
+        Node *producerNode;
+        Node *consumerNode;
+        bool producerFinished;
+        bool consumerFinished;
     public:
         Channel();
         ~Channel() {}
 
-        void setProducerNode(Node *node) {producernode = node;}
-        Node *getProducerNode() const {return producernode;}
+        void setProducerNode(Node *node) {producerNode = node;}
+        Node *getProducerNode() const {return producerNode;}
 
-        void setConsumerNode(Node *node) {consumernode = node;}
-        Node *getConsumerNode() const {return consumernode;}
+        void setConsumerNode(Node *node) {consumerNode = node;}
+        Node *getConsumerNode() const {return consumerNode;}
 
         /**
          * Returns ptr to the first buffered data item (next one to be read), or NULL
@@ -70,30 +70,30 @@ class SCAVE_API Channel
          * Returns true if producer has already called close() which means
          * there will not be any more data except those already in the buffer
          */
-        bool isClosing()  {return producerfinished;}
+        bool isClosing()  {return producerFinished;}
 
         /**
          * Returns true if close() has been called and there is no buffered data
          */
-        bool eof()  {return producerfinished && length()==0;}
+        bool eof()  {return producerFinished && length()==0;}
 
         /**
          * Called by the producer to declare it will not write any more --
          * if also there is no more buffered data (length()==0), that means EOF.
          */
-        void close()  {producerfinished=true;}
+        void close()  {producerFinished=true;}
 
         /**
          * Called when consumer has finished. Causes channel to ignore
          * further writes (discard any data written).
          */
-        void consumerClose() {buffer.clear();consumerfinished=true;}
+        void consumerClose() {buffer.clear();consumerFinished=true;}
 
         /**
          * Returns true when the consumer has closed the channel, that is,
          * it will not read any more data from the channel.
          */
-        bool isConsumerClosed() {return consumerfinished;}
+        bool isConsumerClosed() {return consumerFinished;}
 
         /**
          * Number of currently buffered items.
