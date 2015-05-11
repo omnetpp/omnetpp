@@ -47,7 +47,7 @@ class NEDXML_API NEDSAXHandler : public SAXHandler
 {
     NEDElement *root;
     NEDElement *current;
-    const char *sourcefilename;
+    const char *sourceFilename;
     NEDErrorStore *errors;
 
   public:

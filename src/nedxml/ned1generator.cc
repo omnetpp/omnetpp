@@ -44,7 +44,7 @@ void generateNED1(ostream& out, NEDElement *node, NEDErrorStore *e)
 NED1Generator::NED1Generator(NEDErrorStore *e)
 {
     outp = NULL;
-    indentsize = 4;
+    indentSize = 4;
     errors = e;
 }
 
@@ -54,7 +54,7 @@ NED1Generator::~NED1Generator()
 
 void NED1Generator::setIndentSize(int indentsiz)
 {
-    indentsize = indentsiz;
+    indentSize = indentsiz;
 }
 
 void NED1Generator::generate(ostream& out, NEDElement *node, const char *indent)
@@ -78,15 +78,15 @@ const char *NED1Generator::increaseIndent(const char *indent)
 
     // bump...
     int ilen = strlen(indent);
-    if (ilen+indentsize <= (int)sizeof(spaces)-1)
-        ilen+=indentsize;
+    if (ilen+indentSize <= (int)sizeof(spaces)-1)
+        ilen+=indentSize;
     const char *newindent = spaces+sizeof(spaces)-1-ilen;
     return newindent;
 }
 
 const char *NED1Generator::decreaseIndent(const char *indent)
 {
-    return indent + indentsize;
+    return indent + indentSize;
 }
 
 //---------------------------------------------------------------------------

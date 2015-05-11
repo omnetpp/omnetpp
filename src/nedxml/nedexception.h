@@ -32,7 +32,7 @@ class NEDElement;
 class NEDXML_API NEDException : public std::runtime_error
 {
   protected:
-    std::string errormsg;
+    std::string msg;
 
   public:
     /**
@@ -53,7 +53,7 @@ class NEDXML_API NEDException : public std::runtime_error
     /**
      * Returns the text of the error. Redefined from std::exception.
      */
-    virtual const char *what() const throw() {return errormsg.c_str();}
+    virtual const char *what() const throw() {return msg.c_str();}
 };
 
 

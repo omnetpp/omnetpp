@@ -58,8 +58,8 @@ class NEDXML_API NEDTypeInfo
 
     // inheritance. Vectors contain fully qualifies names, and include
     // indirect base types/interfaces as well (transitive closure).
-    StringVector extendsnames;
-    StringVector interfacenames;
+    StringVector extendsNames;
+    StringVector interfaceNames;
 
     std::string enclosingTypeName;
 
@@ -114,7 +114,7 @@ class NEDXML_API NEDTypeInfo
      * Returns the number of "extends" names. This includes indirect
      * base types as well (i.e. base types of base types, etc).
      */
-    virtual int numExtendsNames() const  {return extendsnames.size();}
+    virtual int numExtendsNames() const  {return extendsNames.size();}
 
     /**
      * Returns the name of the kth "extends" name (k=0..numExtendsNames()-1),
@@ -128,7 +128,7 @@ class NEDXML_API NEDTypeInfo
      * by this type and all its base types, plus base types of all those
      * interfaces).
      */
-    virtual int numInterfaceNames() const  {return interfacenames.size();}
+    virtual int numInterfaceNames() const  {return interfaceNames.size();}
 
     /**
      * Returns the name of the kth interface (k=0..numInterfaceNames()-1),

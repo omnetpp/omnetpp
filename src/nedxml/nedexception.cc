@@ -30,7 +30,7 @@ NEDException::NEDException(const char *messagefmt...) : std::runtime_error("")
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
-    errormsg = message;
+    msg = message;
 }
 
 NEDException::NEDException(NEDElement *context, const char *messagefmt...) : std::runtime_error("")
@@ -40,11 +40,11 @@ NEDException::NEDException(NEDElement *context, const char *messagefmt...) : std
 
     const char *loc = context ? context->getSourceLocation() : NULL;
     if (loc)
-        errormsg = std::string(message) + ", at " + std::string(loc);
+        msg = std::string(message) + ", at " + std::string(loc);
     else if (context)
-        errormsg = std::string(context->getTagName()) + ": " + message;
+        msg = std::string(context->getTagName()) + ": " + message;
     else
-        errormsg = message;
+        msg = message;
 }
 
 NAMESPACE_END

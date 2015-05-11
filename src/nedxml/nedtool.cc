@@ -577,13 +577,13 @@ int main(int argc, char **argv)
         else if (!strncmp(argv[i], "-P", 2))
         {
             if (argv[i][2])
-                msg_options.exportdef = argv[i]+2;
+                msg_options.exportDef = argv[i]+2;
             else {
                 if (++i == argc) {
                     fprintf(stderr,"nedtool: unexpected end of arguments after %s\n", argv[i-1]);
                     return 1;
                 }
-                msg_options.exportdef = argv[i];
+                msg_options.exportDef = argv[i];
             }
         }
         else if (!strncmp(argv[i], "-X", 2))
@@ -597,13 +597,13 @@ int main(int argc, char **argv)
                 arg = argv[i];
             }
             if (!strcmp(arg, "nc")) {
-                msg_options.generate_classes = false;
+                msg_options.generateClasses = false;
             }
             else if (!strcmp(arg, "nd")) {
-                msg_options.generate_descriptors = false;
+                msg_options.generateDescriptors = false;
             }
             else if (!strcmp(arg, "ns")) {
-                msg_options.generate_setters_in_descriptors = false;
+                msg_options.generateSettersInDescriptors = false;
             }
             else {
                 fprintf(stderr,"nedtool: unknown option -X %s\n",arg);

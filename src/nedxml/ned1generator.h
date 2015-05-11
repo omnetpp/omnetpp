@@ -40,7 +40,7 @@ NEDXML_API void generateNED1(std::ostream& out, NEDElement *node, NEDErrorStore 
 class NEDXML_API NED1Generator
 {
   protected:
-    int indentsize;
+    int indentSize;
     std::ostream *outp;
     NEDErrorStore *errors;
 

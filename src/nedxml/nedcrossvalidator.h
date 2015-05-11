@@ -43,7 +43,7 @@ class NEDXML_API NEDCrossValidator : public NEDValidatorBase
     NEDResourceCache *resolver;
 
     // temporary variables:
-    NEDElement *moduletypedecl;
+    NEDElement *moduleTypeDecl;
 
     NEDElement *findChildWithTagAndAttribute(NEDElement *node, int tag, const char *attr, const char *value);
     void checkGate(GateElement *gate, bool hasGateIndex, bool isInput, NEDElement *conn, bool isSrcGate);

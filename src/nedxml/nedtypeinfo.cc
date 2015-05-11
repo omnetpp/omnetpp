@@ -54,7 +54,7 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
             const char *extendsname = ((ExtendsElement *)child)->getName();
             std::string extendsqname = getResolver()->resolveNedType(context, extendsname);
             Assert(!extendsqname.empty());
-            extendsnames.push_back(extendsqname);
+            extendsNames.push_back(extendsqname);
 
             // check the type
             NEDTypeInfo *decl = getResolver()->lookup(extendsqname.c_str());
@@ -65,17 +65,17 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
             // collect interfaces from our base types
             if (isInterface)
                 for (int i=0; i<decl->numExtendsNames(); i++)
-                    extendsnames.push_back(decl->extendsName(i));
+                    extendsNames.push_back(decl->extendsName(i));
             else
                 for (int i=0; i<decl->numInterfaceNames(); i++)
-                    interfacenames.push_back(decl->interfaceName(i));
+                    interfaceNames.push_back(decl->interfaceName(i));
         }
         if (child->getTagCode()==NED_INTERFACE_NAME) {
             // resolve and store base type
             const char *interfacename = ((InterfaceNameElement *)child)->getName();
             std::string interfaceqname = getResolver()->resolveNedType(context, interfacename);
             Assert(!interfaceqname.empty());
-            interfacenames.push_back(interfaceqname);
+            interfaceNames.push_back(interfaceqname);
 
             // check the type (must be an interface)
             NEDTypeInfo *decl = getResolver()->lookup(interfaceqname.c_str());
@@ -85,15 +85,15 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
 
             // we support all interfaces that our base interfaces extend
             for (int i=0; i<decl->numExtendsNames(); i++)
-                interfacenames.push_back(decl->extendsName(i));
+                interfaceNames.push_back(decl->extendsName(i));
         }
     }
 
     if (!isInterface)
     {
         // check that we have all parameters and gates required by the interfaces we support
-        for (int i=0; i<(int)interfacenames.size(); i++) {
-            NEDTypeInfo *interfaceDecl = getResolver()->lookup(interfacenames[i].c_str());
+        for (int i=0; i<(int)interfaceNames.size(); i++) {
+            NEDTypeInfo *interfaceDecl = getResolver()->lookup(interfaceNames[i].c_str());
             Assert(interfaceDecl);
             checkComplianceToInterface(interfaceDecl);
         }
@@ -218,25 +218,25 @@ std::string NEDTypeInfo::nedSource() const
 
 const char *NEDTypeInfo::interfaceName(int k) const
 {
-    if (k<0 || k>=(int)interfacenames.size())
-        throw NEDException("NEDTypeInfo: interface index %d out of range 0..%d", k, interfacenames.size()-1);
-    return interfacenames[k].c_str();
+    if (k<0 || k>=(int)interfaceNames.size())
+        throw NEDException("NEDTypeInfo: interface index %d out of range 0..%d", k, interfaceNames.size()-1);
+    return interfaceNames[k].c_str();
 }
 
 bool NEDTypeInfo::supportsInterface(const char *qname)
 {
     // linear search is OK because #interfaces is typically just one or two
-    for (int i=0; i<(int)interfacenames.size(); i++)
-        if (interfacenames[i] == qname)
+    for (int i=0; i<(int)interfaceNames.size(); i++)
+        if (interfaceNames[i] == qname)
             return true;
     return false;
 }
 
 const char *NEDTypeInfo::extendsName(int k) const
 {
-    if (k<0 || k>=(int)extendsnames.size())
-        throw NEDException("NEDTypeInfo: extendsName(): index %d out of range 0..%d", k, extendsnames.size()-1);
-    return extendsnames[k].c_str();
+    if (k<0 || k>=(int)extendsNames.size())
+        throw NEDException("NEDTypeInfo: extendsName(): index %d out of range 0..%d", k, extendsNames.size()-1);
+    return extendsNames[k].c_str();
 }
 
 const char *NEDTypeInfo::getEnclosingTypeName() const

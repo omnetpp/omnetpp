@@ -75,18 +75,18 @@ class NEDXML_API NEDElement
 {
   private:
     long id;
-    std::string srcloc;
-    NEDSourceRegion srcregion;
+    std::string srcLoc;
+    NEDSourceRegion srcRegion;
     NEDElement *parent;
-    NEDElement *firstchild;
-    NEDElement *lastchild;
-    NEDElement *prevsibling;
-    NEDElement *nextsibling;
-    NEDElementUserData *userdata;
+    NEDElement *firstChild;
+    NEDElement *lastChild;
+    NEDElement *prevSibling;
+    NEDElement *nextSibling;
+    NEDElementUserData *userData;
 
-    static long lastid;
-    static long numcreated;
-    static long numexisting;
+    static long lastId;
+    static long numCreated;
+    static long numExisting;
 
   protected:
     static bool stringToBool(const char *s);
@@ -385,13 +385,13 @@ class NEDXML_API NEDElement
     /**
      * Returns NEDElements constructed so far (this number can only increase).
      */
-    static long getNumCreated() {return numcreated;}
+    static long getNumCreated() {return numCreated;}
 
     /**
      * Returns NEDElements currently existing (created minus deleted).
      * Useful for detecting memory leaks.
      */
-    static long getNumExisting() {return numexisting;}
+    static long getNumExisting() {return numExisting;}
     //@}
 
 

@@ -42,7 +42,7 @@ void generateNED2(ostream& out, NEDElement *node, NEDErrorStore *e)
 NED2Generator::NED2Generator(NEDErrorStore *e)
 {
     outp = NULL;
-    indentsize = 4;
+    indentSize = 4;
     errors = e;
 }
 
@@ -52,7 +52,7 @@ NED2Generator::~NED2Generator()
 
 void NED2Generator::setIndentSize(int indentsiz)
 {
-    indentsize = indentsiz;
+    indentSize = indentsiz;
 }
 
 void NED2Generator::generate(ostream& out, NEDElement *node, const char *indent)
@@ -76,15 +76,15 @@ const char *NED2Generator::increaseIndent(const char *indent)
 
     // bump...
     int ilen = strlen(indent);
-    if (ilen+indentsize <= (int)sizeof(spaces)-1)
-        ilen+=indentsize;
+    if (ilen+indentSize <= (int)sizeof(spaces)-1)
+        ilen+=indentSize;
     const char *newindent = spaces+sizeof(spaces)-1-ilen;
     return newindent;
 }
 
 const char *NED2Generator::decreaseIndent(const char *indent)
 {
-    return indent + indentsize;
+    return indent + indentSize;
 }
 
 //---------------------------------------------------------------------------

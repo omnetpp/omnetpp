@@ -190,11 +190,11 @@ MsgCppGenerator::MsgCppGenerator(NEDErrorStore *e, const MsgCppGeneratorOptions&
     //  'foreign'      ==> non-cObject class (classes announced as "class noncobject" or "extends void")
     //  'struct'       ==> struct (no member functions)
     //
-    classtype[OPP_PREFIX "cObject"] = COBJECT;
-    classtype[OPP_PREFIX "cNamedObject"] = CNAMEDOBJECT;
-    classtype[OPP_PREFIX "cOwnedObject"] = COWNEDOBJECT;
-    classtype[OPP_PREFIX "cMessage"] = COWNEDOBJECT;
-    classtype[OPP_PREFIX "cPacket"] = COWNEDOBJECT;
+    classType[OPP_PREFIX "cObject"] = COBJECT;
+    classType[OPP_PREFIX "cNamedObject"] = CNAMEDOBJECT;
+    classType[OPP_PREFIX "cOwnedObject"] = COWNEDOBJECT;
+    classType[OPP_PREFIX "cMessage"] = COWNEDOBJECT;
+    classType[OPP_PREFIX "cPacket"] = COWNEDOBJECT;
 }
 
 MsgCppGenerator::~MsgCppGenerator()
@@ -234,7 +234,7 @@ void MsgCppGenerator::extractClassDecl(NEDElement *child)
     ClassType type;
     bool isCobject = (ptr2str(child->getAttribute("is-cobject")) == "true");
 
-    std::string classqname = canonicalizeQName(namespacename, myclass);
+    std::string classqname = canonicalizeQName(namespaceName, myclass);
 
     if (type0 == "struct-decl") {
         type = STRUCT;
@@ -267,13 +267,13 @@ void MsgCppGenerator::extractClassDecl(NEDElement *child)
         errors->addError(child, "invalid type '%s' in class '%s'\n", type0.c_str(), myclass.c_str());
     }
 
-    if (classtype.find(classqname) != classtype.end()) {
-        if (classtype[classqname] != type) {
+    if (classType.find(classqname) != classType.end()) {
+        if (classType[classqname] != type) {
             errors->addError(child, "different declarations for '%s(=%s)' are inconsistent\n", myclass.c_str(), classqname.c_str());
         }
     } else {
         //print "DBG: classtype{$type0 myclass $baseclass} = $type\n";
-        classtype[classqname] = type;
+        classType[classqname] = type;
     }
 }
 
@@ -433,17 +433,17 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
     H << "#endif\n";
     H << "\n";
 
-    if (opts.exportdef.length() > 4 && opts.exportdef.substr(opts.exportdef.length()-4) == "_API") {
+    if (opts.exportDef.length() > 4 && opts.exportDef.substr(opts.exportDef.length()-4) == "_API") {
         //# generate boilerplate code for dll export
-        std::string exportbase = opts.exportdef.substr(0, opts.exportdef.length()-4);
+        std::string exportbase = opts.exportDef.substr(0, opts.exportDef.length()-4);
         H << "// dll export symbol\n";
-        H << "#ifndef " << opts.exportdef << "\n";
+        H << "#ifndef " << opts.exportDef << "\n";
         H << "#  if defined(" << exportbase << "_EXPORT)\n";
-        H << "#    define " << opts.exportdef << "  OPP_DLLEXPORT\n";
+        H << "#    define " << opts.exportDef << "  OPP_DLLEXPORT\n";
         H << "#  elif defined(" << exportbase << "_IMPORT)\n";
-        H << "#    define " << opts.exportdef << "  OPP_DLLIMPORT\n";
+        H << "#    define " << opts.exportDef << "  OPP_DLLIMPORT\n";
         H << "#  else\n";
-        H << "#    define " << opts.exportdef << "\n";
+        H << "#    define " << opts.exportDef << "\n";
         H << "#  endif\n";
         H << "#endif\n";
         H << "\n";
@@ -479,11 +479,11 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
         switch (child->getTagCode()) {
             case NED_NAMESPACE:
                 // open namespace(s)
-                if (!namespacename.empty())
+                if (!namespaceName.empty())
                 {
                     generateNamespaceEnd();
                 }
-                namespacename = ptr2str(child->getAttribute("name"));
+                namespaceName = ptr2str(child->getAttribute("name"));
                 generateNamespaceBegin(child);
                 break;
 
@@ -514,7 +514,7 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
                 // forward declaration -- add to table
                 std::string name = ptr2str(child->getAttribute("name"));
                 if (RESERVED_WORDS.find(name) == RESERVED_WORDS.end())
-                    enumtype[name] = canonicalizeQName(namespacename, name);
+                    enumType[name] = canonicalizeQName(namespaceName, name);
                 else
                 {
                     errors->addError(child, "Namespace name is reserved word: '%s'", name.c_str());
@@ -524,7 +524,7 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
 
             case NED_ENUM: {
                 EnumInfo info = extractEnumInfo(check_and_cast<EnumElement *>(child));
-                enumtype[info.enumName] = info.enumQName;
+                enumType[info.enumName] = info.enumQName;
                 generateEnum(info);
                 break;
             }
@@ -532,7 +532,7 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
             case NED_STRUCT: {
                 ClassInfo classInfo = extractClassInfo(child);
                 prepareForCodeGeneration(classInfo);
-                classtype[classInfo.msgname] = classInfo.classtype;
+                classType[classInfo.msgname] = classInfo.classtype;
                 if (classInfo.generate_class)
                     generateStruct(classInfo);
                 if (classInfo.generate_descriptor)
@@ -545,7 +545,7 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
             case NED_PACKET: {
                 ClassInfo classInfo = extractClassInfo(child);
                 prepareForCodeGeneration(classInfo);
-                classtype[classInfo.msgname] = classInfo.classtype;
+                classType[classInfo.msgname] = classInfo.classtype;
                 if (classInfo.generate_class)
                     generateClass(classInfo);
                 if (classInfo.generate_descriptor)
@@ -683,7 +683,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
             it->enumqname = "";
             CC << "\n\n/*\n Undeclared enum: " << it->enumname << "\n";
             CC << "  Declared enums:\n";
-            for (std::map<std::string,std::string>::iterator x=enumtype.begin(); x != enumtype.end(); ++x)
+            for (std::map<std::string,std::string>::iterator x=enumType.begin(); x != enumType.end(); ++x)
                 CC << "    " << x->first << " : " << x->second << "\n";
             CC << "\n*/\n\n";
         } else {
@@ -801,7 +801,7 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
         if (found.size() == 1) {
             info.msgbaseqname = found[0];
         } else if (found.empty()) {
-            errors->addError(info.nedElement, "'%s': unknown base class '%s', available classes '%s'", info.msgname.c_str(), info.msgbase.c_str(), join(classtype, "','").c_str());
+            errors->addError(info.nedElement, "'%s': unknown base class '%s', available classes '%s'", info.msgname.c_str(), info.msgbase.c_str(), join(classType, "','").c_str());
             info.msgbaseqname = OPP_PREFIX "cMessage";
         } else {
             errors->addError(info.nedElement, "'%s': ambiguous base class '%s'; possibilities: '%s'",
@@ -850,15 +850,15 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
             errors->addError(info.nedElement, "definition of '%s' inconsistent with earlier declaration(s)\n", info.msgname.c_str());
         }
     } else {
-        classtype[info.msgqname] = info.classtype;
+        classType[info.msgqname] = info.classtype;
     }
 
     //
     // produce all sorts of derived names
     //
-    info.generate_class = opts.generate_classes && !getPropertyAsBool(info.props, "existingClass", false);
-    info.generate_descriptor = opts.generate_descriptors && getPropertyAsBool(info.props, "descriptor", true);
-    info.generate_setters_in_descriptor = opts.generate_setters_in_descriptors && (getProperty(info.props, "descriptor") != "readonly");
+    info.generate_class = opts.generateClasses && !getPropertyAsBool(info.props, "existingClass", false);
+    info.generate_descriptor = opts.generateDescriptors && getPropertyAsBool(info.props, "descriptor", true);
+    info.generate_setters_in_descriptor = opts.generateSettersInDescriptors && (getProperty(info.props, "descriptor") != "readonly");
 
     if (getPropertyAsBool(info.props, "customize", false)) {
         info.gap = 1;
@@ -953,7 +953,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         H << " * The minimum code to be written for " << info.realmsgclass << " is the following:\n";
         H << " *\n";
         H << " * <pre>\n";
-        H << " * class " << TS(opts.exportdef) << info.realmsgclass << " : public " << info.msgclass << "\n";
+        H << " * class " << TS(opts.exportDef) << info.realmsgclass << " : public " << info.msgclass << "\n";
         H << " * {\n";
         H << " *   private:\n";
         H << " *     void copy(const " << info.realmsgclass << "& other) { ... }\n\n";
@@ -986,7 +986,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     }
     H << " */\n";
 
-    H << "class " << TS(opts.exportdef) << info.msgclass;
+    H << "class " << TS(opts.exportDef) << info.msgclass;
     const char *baseclassSepar = " : ";
     if (!info.msgbaseclass.empty()) {
         H << baseclassSepar << "public ::" << info.msgbaseclass;  // make namespace explicit and absolute to disambiguate the way PROGRAM understood it
@@ -1392,9 +1392,9 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
     H << " * Struct generated from " << SL(info.nedElement->getSourceLocation()) << " by " PROGRAM ".\n";
     H << " */\n";
     if (info.msgbaseclass.empty()) {
-        H << "struct " << TS(opts.exportdef) << info.msgclass << "\n";
+        H << "struct " << TS(opts.exportDef) << info.msgclass << "\n";
     } else {
-        H << "struct " << TS(opts.exportdef) << info.msgclass << " : public ::" << info.msgbaseqname << "\n";
+        H << "struct " << TS(opts.exportDef) << info.msgclass << " : public ::" << info.msgbaseqname << "\n";
     }
     H << "{\n";
     H << "    " << info.msgclass << "();\n";
@@ -1409,8 +1409,8 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
     H << "};\n\n";
 
     H << "// helpers for local use\n";
-    H << "void " << TS(opts.exportdef) << "__doPacking(" OPP_PREFIX "cCommBuffer *b, const " << info.msgclass << "& a);\n";
-    H << "void " << TS(opts.exportdef) << "__doUnpacking(" OPP_PREFIX "cCommBuffer *b, " << info.msgclass << "& a);\n\n";
+    H << "void " << TS(opts.exportDef) << "__doPacking(" OPP_PREFIX "cCommBuffer *b, const " << info.msgclass << "& a);\n";
+    H << "void " << TS(opts.exportDef) << "__doUnpacking(" OPP_PREFIX "cCommBuffer *b, " << info.msgclass << "& a);\n\n";
 
     H << "inline void doPacking(" OPP_PREFIX "cCommBuffer *b, const " << info.realmsgclass << "& obj) { " << "__doPacking(b, obj); }\n";
     H << "inline void doUnpacking(" OPP_PREFIX "cCommBuffer *b, " << info.realmsgclass << "& obj) { " << "__doUnpacking(b, obj); }\n\n";
@@ -1977,7 +1977,7 @@ MsgCppGenerator::EnumInfo MsgCppGenerator::extractEnumInfo(EnumElement *node)
     EnumInfo info;
     info.nedElement = node;
     info.enumName = ptr2str(node->getAttribute("name"));
-    info.enumQName = canonicalizeQName(namespacename, info.enumName);
+    info.enumQName = canonicalizeQName(namespaceName, info.enumName);
 
     // prepare enum items:
     for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling())
@@ -2045,7 +2045,7 @@ void MsgCppGenerator::generateEnum(const EnumInfo& enumInfo)
 
 std::string MsgCppGenerator::prefixWithNamespace(const std::string& name)
 {
-    return !namespacename.empty() ? namespacename + "::" + name : name; // prefer name from local namespace
+    return !namespaceName.empty() ? namespaceName + "::" + name : name; // prefer name from local namespace
 }
 
 bool MsgCppGenerator::getPropertyAsBool(const Properties& p, const char *name, bool defval)
@@ -2080,8 +2080,8 @@ MsgCppGenerator::StringVector MsgCppGenerator::lookupExistingClassName(const std
     // if $name contains "::" then user means explicitly qualified name; otherwise he means 'in whichever namespace it is'
     if (name.find("::") != name.npos) {
         std::string qname = name.substr(0, 2) == "::" ? name.substr(2) : name; // remove leading "::", because names in @classes don't have it either
-        it = classtype.find(qname);
-        if (it != classtype.end())
+        it = classType.find(qname);
+        if (it != classType.end())
         {
             ret.push_back(it->first);
             return ret;
@@ -2089,15 +2089,15 @@ MsgCppGenerator::StringVector MsgCppGenerator::lookupExistingClassName(const std
     }
     else {
         std::string qname = prefixWithNamespace(name);
-        it = classtype.find(qname);
-        if (it != classtype.end())
+        it = classType.find(qname);
+        if (it != classType.end())
         {
             ret.push_back(it->first);
             return ret;
         }
     }
     size_t namelength = name.length();
-    for (it = classtype.begin(); it != classtype.end(); ++it)
+    for (it = classType.begin(); it != classType.end(); ++it)
     {
         size_t l = it->first.length();
         if (l >= namelength)
@@ -2126,8 +2126,8 @@ MsgCppGenerator::StringVector MsgCppGenerator::lookupExistingEnumName(const std:
     // if $name contains "::" then user means explicitly qualified name; otherwise he means 'in whichever namespace it is'
     if (name.find("::") != name.npos) {
         std::string qname = name.substr(0, 2) == "::" ? name.substr(2) : name; // remove leading "::", because names in @classes don't have it either
-        it = enumtype.find(qname);
-        if (it != enumtype.end())
+        it = enumType.find(qname);
+        if (it != enumType.end())
         {
             ret.push_back(it->second);
             return ret;
@@ -2135,8 +2135,8 @@ MsgCppGenerator::StringVector MsgCppGenerator::lookupExistingEnumName(const std:
     }
     else {
         std::string qname = prefixWithNamespace(name); // prefer name from local namespace
-        it = enumtype.find(qname);
-        if (it != enumtype.end())
+        it = enumType.find(qname);
+        if (it != enumType.end())
         {
             ret.push_back(it->second);
             return ret;
@@ -2144,7 +2144,7 @@ MsgCppGenerator::StringVector MsgCppGenerator::lookupExistingEnumName(const std:
     }
 
     size_t namelength = name.length();
-    for (it = enumtype.begin(); it != enumtype.end(); ++it)
+    for (it = enumType.begin(); it != enumType.end(); ++it)
     {
         size_t l = it->second.length();
         if (l >= namelength)
@@ -2193,26 +2193,26 @@ void MsgCppGenerator::generateTemplates()
 
 void MsgCppGenerator::generateNamespaceBegin(NEDElement *element)
 {
-    if (namespacename.empty()) {
+    if (namespaceName.empty()) {
         errors->addError(element, "namespace name is empty\n");
     }
 
     // split namespacename into namespacenamevector
     for (size_t pos = 0; ; ) {
-        size_t colonPos = namespacename.find("::", pos);
-        if (colonPos != namespacename.npos) {
-            namespacenamevector.push_back(namespacename.substr(pos, colonPos-pos));
+        size_t colonPos = namespaceName.find("::", pos);
+        if (colonPos != namespaceName.npos) {
+            namespaceNameVector.push_back(namespaceName.substr(pos, colonPos-pos));
             pos = colonPos + 2;
         }
         else {
-            namespacenamevector.push_back(namespacename.substr(pos));
+            namespaceNameVector.push_back(namespaceName.substr(pos));
             break;
         }
     }
 
     // output namespace-begin lines; also check for reserved words
     H  << std::endl;
-    for (StringVector::const_iterator it = namespacenamevector.begin(); it != namespacenamevector.end(); ++it)
+    for (StringVector::const_iterator it = namespaceNameVector.begin(); it != namespaceNameVector.end(); ++it)
     {
         if (RESERVED_WORDS.find(*it) != RESERVED_WORDS.end())
             errors->addError(element, "namespace name '%s' is a reserved word\n", (*it).c_str());
@@ -2229,13 +2229,13 @@ void MsgCppGenerator::generateNamespaceBegin(NEDElement *element)
 void MsgCppGenerator::generateNamespaceEnd()
 {
 #ifdef MSGC_COMPATIBILE
-    for (StringVector::const_iterator it = namespacenamevector.begin(); it != namespacenamevector.end(); ++it)
+    for (StringVector::const_iterator it = namespaceNameVector.begin(); it != namespaceNameVector.end(); ++it)
     {
         H  << "}; // end namespace " << *it << std::endl;
         CC << "}; // end namespace " << *it << std::endl;
     }
 #else
-    for (StringVector::const_reverse_iterator it = namespacenamevector.rbegin(); it != namespacenamevector.rend(); ++it)
+    for (StringVector::const_reverse_iterator it = namespaceNameVector.rbegin(); it != namespaceNameVector.rend(); ++it)
     {
         H  << "} // namespace " << *it << std::endl;
         CC << "} // namespace " << *it << std::endl;
@@ -2243,13 +2243,13 @@ void MsgCppGenerator::generateNamespaceEnd()
 #endif
     H  << std::endl;
     CC << std::endl;
-    namespacenamevector.clear();
+    namespaceNameVector.clear();
 }
 
 MsgCppGenerator::ClassType MsgCppGenerator::getClassType(const std::string& s)
 {
-    std::map<std::string,ClassType>::iterator it = classtype.find(s);
-    return it != classtype.end() ? it->second : UNKNOWN;
+    std::map<std::string,ClassType>::iterator it = classType.find(s);
+    return it != classType.end() ? it->second : UNKNOWN;
 }
 
 NAMESPACE_END

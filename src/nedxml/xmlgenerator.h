@@ -46,8 +46,8 @@ NEDXML_API std::string generateXML(NEDElement *tree, bool srcloc, int indentsize
 class NEDXML_API NEDXMLGenerator
 {
   protected:
-    bool printsrcloc;
-    int indentsize;
+    bool printSrcLoc;
+    int indentSize;
     virtual void printAttrValue(std::ostream& out, const char *s);
     virtual void doGenerate(std::ostream& out, NEDElement *node, int level);
 

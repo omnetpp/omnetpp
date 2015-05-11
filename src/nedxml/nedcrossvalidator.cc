@@ -139,14 +139,14 @@ void NEDCrossValidator::validateElement(ParametersElement *node)
 void NEDCrossValidator::validateElement(ParamElement *node)
 {
     // FIXME code comes from substparamnode -- REVISE
-    if (!moduletypedecl)
+    if (!moduleTypeDecl)
         return;
 
     // make sure parameter exists in module type
     const char *paramName = node->getName();
-    NEDElement *params = moduletypedecl->getFirstChildWithTag(NED_PARAMETERS);
+    NEDElement *params = moduleTypeDecl->getFirstChildWithTag(NED_PARAMETERS);
     if (!params || params->getFirstChildWithAttribute(NED_PARAM, "name", paramName)==NULL)
-        {errors->addError(node, "module type '%s' has no parameter named '%s'", moduletypedecl->getAttribute("name"), paramName);return;}
+        {errors->addError(node, "module type '%s' has no parameter named '%s'", moduleTypeDecl->getAttribute("name"), paramName);return;}
 
     // TBD compile-time check for type mismatch
 }
@@ -169,12 +169,12 @@ void NEDCrossValidator::validateElement(GatesElement *node)
 void NEDCrossValidator::validateElement(GateElement *node)
 {
     // FIXME the following lines come from gatesizenode -- REVISE!
-    if (!moduletypedecl)
+    if (!moduleTypeDecl)
         return;
 
     // make sure gate exists in module type
     const char *gatename = node->getName();
-    GatesElement *gatesdecl = (GatesElement *)moduletypedecl->getFirstChildWithTag(NED_GATES);
+    GatesElement *gatesdecl = (GatesElement *)moduleTypeDecl->getFirstChildWithTag(NED_GATES);
     if (!gatesdecl)
     {
         errors->addError(node, "module type does not have gates");
@@ -207,8 +207,8 @@ void NEDCrossValidator::validateElement(SubmoduleElement *node)
     // FIXME revise
     // make sure module type exists
     const char *type_name = node->getType();
-    moduletypedecl = getModuleDeclaration(type_name);
-    if (!moduletypedecl)
+    moduleTypeDecl = getModuleDeclaration(type_name);
+    if (!moduleTypeDecl)
         errors->addError(node, "unknown module type '%s'",type_name);
 }
 

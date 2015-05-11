@@ -29,9 +29,9 @@ NAMESPACE_BEGIN
 using std::ostream;
 
 
-long NEDElement::lastid = 0;
-long NEDElement::numcreated = 0;
-long NEDElement::numexisting = 0;
+long NEDElement::lastId = 0;
+long NEDElement::numCreated = 0;
+long NEDElement::numExisting = 0;
 
 bool NEDElement::stringToBool(const char *s)
 {
@@ -81,29 +81,29 @@ void NEDElement::validateEnum(int b, const char *vals[], int nums[], int n)
 NEDElement::NEDElement()
 {
     parent = 0;
-    firstchild = 0;
-    lastchild = 0;
-    prevsibling = 0;
-    nextsibling = 0;
-    userdata = 0;
+    firstChild = 0;
+    lastChild = 0;
+    prevSibling = 0;
+    nextSibling = 0;
+    userData = 0;
 
-    id = ++lastid;
-    numcreated++;
-    numexisting++;
+    id = ++lastId;
+    numCreated++;
+    numExisting++;
 }
 
 NEDElement::NEDElement(NEDElement *parent)
 {
     this->parent = 0;
-    firstchild = 0;
-    lastchild = 0;
-    prevsibling = 0;
-    nextsibling = 0;
-    userdata = 0;
+    firstChild = 0;
+    lastChild = 0;
+    prevSibling = 0;
+    nextSibling = 0;
+    userData = 0;
 
-    id = ++lastid;
-    numcreated++;
-    numexisting++;
+    id = ++lastId;
+    numCreated++;
+    numExisting++;
 
     parent->appendChild(this);
 }
@@ -114,12 +114,12 @@ NEDElement::~NEDElement()
     {
         parent->removeChild(this);
     }
-    delete userdata;
-    while (firstchild)
+    delete userData;
+    while (firstChild)
     {
-        delete removeChild(firstchild);
+        delete removeChild(firstChild);
     }
-    numexisting--;
+    numExisting--;
 }
 
 NEDElement *NEDElement::dupTree() const
@@ -153,22 +153,22 @@ void NEDElement::setId(long _id)
 
 const char *NEDElement::getSourceLocation() const
 {
-    return srcloc.c_str();
+    return srcLoc.c_str();
 }
 
 void NEDElement::setSourceLocation(const char *loc)
 {
-    srcloc = loc ? loc : "";
+    srcLoc = loc ? loc : "";
 }
 
 const NEDSourceRegion& NEDElement::getSourceRegion() const
 {
-    return srcregion;
+    return srcRegion;
 }
 
 void NEDElement::setSourceRegion(const NEDSourceRegion& region)
 {
-    srcregion = region;
+    srcRegion = region;
 }
 
 int NEDElement::lookupAttribute(const char *attr) const
@@ -210,22 +210,22 @@ NEDElement *NEDElement::getParent() const
 
 NEDElement *NEDElement::getFirstChild() const
 {
-   return firstchild;
+   return firstChild;
 }
 
 NEDElement *NEDElement::getLastChild() const
 {
-    return lastchild;
+    return lastChild;
 }
 
 NEDElement *NEDElement::getNextSibling() const
 {
-    return nextsibling;
+    return nextSibling;
 }
 
 NEDElement *NEDElement::getPrevSibling() const
 {
-    return prevsibling;
+    return prevSibling;
 }
 
 void NEDElement::appendChild(NEDElement *node)
@@ -233,13 +233,13 @@ void NEDElement::appendChild(NEDElement *node)
     if (node->parent)
         node->parent->removeChild(node);
     node->parent = this;
-    node->prevsibling = lastchild;
-    node->nextsibling = 0;
-    if (node->prevsibling)
-        node->prevsibling->nextsibling = node;
+    node->prevSibling = lastChild;
+    node->nextSibling = 0;
+    if (node->prevSibling)
+        node->prevSibling->nextSibling = node;
     else
-        firstchild = node;
-    lastchild = node;
+        firstChild = node;
+    lastChild = node;
 }
 
 void NEDElement::insertChildBefore(NEDElement *where, NEDElement *node)
@@ -252,32 +252,32 @@ void NEDElement::insertChildBefore(NEDElement *where, NEDElement *node)
         return;
     }
     node->parent = this;
-    node->prevsibling = where->prevsibling;
-    node->nextsibling = where;
-    where->prevsibling = node;
-    if (node->prevsibling)
-        node->prevsibling->nextsibling = node;
+    node->prevSibling = where->prevSibling;
+    node->nextSibling = where;
+    where->prevSibling = node;
+    if (node->prevSibling)
+        node->prevSibling->nextSibling = node;
     else
-        firstchild = node;
+        firstChild = node;
 }
 
 NEDElement *NEDElement::removeChild(NEDElement *node)
 {
-    if (node->prevsibling)
-        node->prevsibling->nextsibling = node->nextsibling;
+    if (node->prevSibling)
+        node->prevSibling->nextSibling = node->nextSibling;
     else
-        firstchild = node->nextsibling;
-    if (node->nextsibling)
-        node->nextsibling->prevsibling = node->prevsibling;
+        firstChild = node->nextSibling;
+    if (node->nextSibling)
+        node->nextSibling->prevSibling = node->prevSibling;
     else
-        lastchild = node->prevsibling;
-    node->parent = node->prevsibling = node->nextsibling = 0;
+        lastChild = node->prevSibling;
+    node->parent = node->prevSibling = node->nextSibling = 0;
     return node;
 }
 
 NEDElement *NEDElement::getFirstChildWithTag(int tagcode) const
 {
-    NEDElement *node = firstchild;
+    NEDElement *node = firstChild;
     while (node)
     {
         if (node->getTagCode()==tagcode)
@@ -289,7 +289,7 @@ NEDElement *NEDElement::getFirstChildWithTag(int tagcode) const
 
 NEDElement *NEDElement::getNextSiblingWithTag(int tagcode) const
 {
-    NEDElement *node = this->nextsibling;
+    NEDElement *node = this->nextSibling;
     while (node)
     {
         if (node->getTagCode()==tagcode)
@@ -303,7 +303,7 @@ NEDElement *NEDElement::getNextSiblingWithTag(int tagcode) const
 int NEDElement::getNumChildren() const
 {
     int n=0;
-    for (NEDElement *node = firstchild; node; node = node->getNextSibling())
+    for (NEDElement *node = firstChild; node; node = node->getNextSibling())
         n++;
     return n;
 }
@@ -311,7 +311,7 @@ int NEDElement::getNumChildren() const
 int NEDElement::getNumChildrenWithTag(int tagcode) const
 {
     int n=0;
-    for (NEDElement *node = firstchild; node; node = node->getNextSibling())
+    for (NEDElement *node = firstChild; node; node = node->getNextSibling())
         if (node->getTagCode()==tagcode)
             n++;
     return n;
@@ -338,13 +338,13 @@ NEDElement *NEDElement::getParentWithTag(int tagcode)
 
 void NEDElement::setUserData(NEDElementUserData *data)
 {
-    delete userdata;
-    userdata = data;
+    delete userData;
+    userData = data;
 }
 
 NEDElementUserData *NEDElement::getUserData() const
 {
-    return userdata;
+    return userData;
 }
 
 NAMESPACE_END

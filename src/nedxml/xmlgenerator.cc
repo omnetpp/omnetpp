@@ -46,7 +46,7 @@ std::string generateXML(NEDElement *tree, bool srcloc, int indentsize)
 
 NEDXMLGenerator::NEDXMLGenerator()
 {
-    indentsize = 2;
+    indentSize = 2;
 }
 
 NEDXMLGenerator::~NEDXMLGenerator()
@@ -55,13 +55,13 @@ NEDXMLGenerator::~NEDXMLGenerator()
 
 void NEDXMLGenerator::setSourceLocationAttributes(bool srcloc)
 {
-    printsrcloc = srcloc;
+    printSrcLoc = srcloc;
 }
 
 void NEDXMLGenerator::setIndentSize(int indentsiz)
 {
-    indentsize = indentsiz;
-    if (indentsize>16) indentsize=16;
+    indentSize = indentsiz;
+    if (indentSize>16) indentSize=16;
 }
 
 void NEDXMLGenerator::generate(ostream& out, NEDElement *tree)
@@ -103,7 +103,7 @@ void NEDXMLGenerator::printAttrValue(ostream& out, const char *s)
 void NEDXMLGenerator::doGenerate(ostream& out, NEDElement *node, int level)
 {
     const char *indent = "                ";
-    indent = indent + strlen(indent) - indentsize;
+    indent = indent + strlen(indent) - indentSize;
 
     // indent + opening tag
     int i;
@@ -112,7 +112,7 @@ void NEDXMLGenerator::doGenerate(ostream& out, NEDElement *node, int level)
     out << "<" << node->getTagName();
 
     // location info
-    if (printsrcloc && node->getSourceLocation())
+    if (printSrcLoc && node->getSourceLocation())
     {
         out << " src-loc=\"";
         printAttrValue(out, node->getSourceLocation());

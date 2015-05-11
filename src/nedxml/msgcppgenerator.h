@@ -31,15 +31,15 @@ NAMESPACE_BEGIN
 
 struct MsgCppGeneratorOptions
 {
-    std::string exportdef;
-    bool generate_classes;
-    bool generate_descriptors;
-    bool generate_setters_in_descriptors;
+    std::string exportDef;
+    bool generateClasses;
+    bool generateDescriptors;
+    bool generateSettersInDescriptors;
 
     MsgCppGeneratorOptions() :
-        generate_classes(true),
-        generate_descriptors(true),
-        generate_setters_in_descriptors(true)
+        generateClasses(true),
+        generateDescriptors(true),
+        generateSettersInDescriptors(true)
         {}
 };
 
@@ -77,10 +77,10 @@ class NEDXML_API MsgCppGenerator
     std::ostream *hOutp;
     std::ostream *ccOutp;
     NEDErrorStore *errors;
-    std::map<std::string,ClassType> classtype;
-    std::map<std::string,std::string> enumtype;
-    std::string namespacename;      // as MSG
-    StringVector namespacenamevector;   // namespacename split by '::'
+    std::map<std::string,ClassType> classType;
+    std::map<std::string,std::string> enumType;
+    std::string namespaceName;      // as MSG
+    StringVector namespaceNameVector;   // namespacename split by '::'
 
     // command line options:
     MsgCppGeneratorOptions opts;
@@ -201,7 +201,7 @@ class NEDXML_API MsgCppGenerator
     std::string prefixWithNamespace(const std::string& s);
     StringVector lookupExistingClassName(const std::string& s);
     StringVector lookupExistingEnumName(const std::string& s);
-    bool isClassDeclared(const std::string& s) { return classtype.find(s) != classtype.end(); }
+    bool isClassDeclared(const std::string& s) { return classType.find(s) != classType.end(); }
     ClassType getClassType(const std::string& s);
     ClassInfo extractClassInfo(NEDElement *node); // accepts StructElement, ClassElement, MessageElement, PacketElement
     void extractClassDecl(NEDElement *node); // accepts StructElementDecl, ClassElementDecl, MessageElementDecl, PacketElementDecl

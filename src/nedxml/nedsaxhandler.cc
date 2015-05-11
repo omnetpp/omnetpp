@@ -26,7 +26,7 @@ NAMESPACE_BEGIN
 NEDSAXHandler::NEDSAXHandler(const char *fname, NEDErrorStore *e)
 {
     root = current = 0;
-    sourcefilename = fname;
+    sourceFilename = fname;
     errors = e;
 }
 
@@ -58,7 +58,7 @@ void NEDSAXHandler::startElement(const char *name, const char **atts)
 
     // "debug info"
     char buf[200];
-    sprintf(buf,"%s:%d",sourcefilename, parser->getCurrentLineNumber());
+    sprintf(buf,"%s:%d",sourceFilename, parser->getCurrentLineNumber());
     node->setSourceLocation(buf);
 
     // set attributes
