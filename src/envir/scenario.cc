@@ -43,7 +43,7 @@ Scenario::Scenario(const std::vector<IterationVariable>& iterationVariables, con
     variterators.resize(vars.size());
     for (int i=0; i<(int)vars.size(); i++)
     {
-        ASSERT(!vars[i].varid.empty() && !vars[i].value.empty());
+        ASSERT(!vars[i].varId.empty() && !vars[i].value.empty());
         try
         {
             variterators[i].parse(vars[i].value.c_str());
@@ -51,14 +51,14 @@ Scenario::Scenario(const std::vector<IterationVariable>& iterationVariables, con
         catch (std::exception& e)
         {
             throw cRuntimeError("Cannot parse iteration variable '%s' (%s in %s)",
-                                    vars[i].varname.c_str(), e.what(), vars[i].value.c_str());
+                                    vars[i].varName.c_str(), e.what(), vars[i].value.c_str());
         }
     }
 
     // create map for variable lookup
     for (int i = 0; i < (int)vars.size(); i++)
     {
-        varmap[vars[i].varid] = &variterators[i];
+        varmap[vars[i].varId] = &variterators[i];
     }
 
     // check for undefined variables early, for better error reporting
@@ -68,13 +68,13 @@ Scenario::Scenario(const std::vector<IterationVariable>& iterationVariables, con
         for (std::set<std::string>::const_iterator varname=referencedVars.begin(); varname!=referencedVars.end(); ++varname)
             if (varmap.find(*varname) == varmap.end())
                 throw cRuntimeError("Undefined variable $%s, referenced from the definition of $%s (%s)",
-                                        varname->c_str(), vars[i].varname.c_str(), vars[i].value.c_str());
+                                        varname->c_str(), vars[i].varName.c_str(), vars[i].value.c_str());
 
         if (!vars[i].parvar.empty())
         {
             if (varmap.find(vars[i].parvar) == varmap.end())
                 throw cRuntimeError("Undefined variable $%s, referenced from the definition of $%s as parallel variable",
-                                        vars[i].parvar.c_str(), vars[i].varname.c_str());
+                                        vars[i].parvar.c_str(), vars[i].varName.c_str());
 
         }
     }
@@ -89,7 +89,7 @@ Scenario::Scenario(const std::vector<IterationVariable>& iterationVariables, con
 
     std::map<std::string, int> index;
     for (int i=0; i<(int)vars.size(); i++)
-        index[vars[i].varid] = i;
+        index[vars[i].varId] = i;
     sortOrder.clear();
     while(!index.empty())
     {
@@ -97,7 +97,7 @@ Scenario::Scenario(const std::vector<IterationVariable>& iterationVariables, con
         int indexOfVar = -1;
         for (int i = 0; i < (int)vars.size(); ++i)
         {
-            if (index.find(vars[i].varid) != index.end())
+            if (index.find(vars[i].varId) != index.end())
             {
                 bool allReferencedVariablesAreAdded = true;
                 std::set<std::string> varrefs = variterators[i].getReferencedVariableNames();
@@ -119,7 +119,7 @@ Scenario::Scenario(const std::vector<IterationVariable>& iterationVariables, con
         if (indexOfVar >= 0)
         {
             sortOrder.push_back(indexOfVar);
-            index.erase(vars[indexOfVar].varid);
+            index.erase(vars[indexOfVar].varId);
         }
         else
             throw cRuntimeError("Cycle detected in iteration variable references");
@@ -300,7 +300,7 @@ std::string Scenario::str() const
     for (int i=0; i<(int)sortOrder.size(); i++)
     {
         int j = sortOrder[i];
-        out << (i>0?", ":"") << "$" << vars[j].varname << "=" << variterators[j].get();
+        out << (i>0?", ":"") << "$" << vars[j].varName << "=" << variterators[j].get();
     }
     return out.str();
 }

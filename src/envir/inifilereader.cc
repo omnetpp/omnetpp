@@ -48,12 +48,12 @@ void InifileReader::initializeFrom(cConfiguration *bootConfig)
 
 const char *InifileReader::getFileName() const
 {
-    return rootfilename.c_str();
+    return rootFilename.c_str();
 }
 
 const char *InifileReader::getDefaultBaseDirectory() const
 {
-    return defaultbasedir.c_str();
+    return defaultBasedir.c_str();
 }
 
 int InifileReader::getNumSections() const
@@ -101,11 +101,11 @@ int InifileReader::getOrCreateSection(const char *sectionName)
 
 void InifileReader::readFile(const char *filename)
 {
-    rootfilename = filename;
+    rootFilename = filename;
 
     // use the first ini file's location as default base dir
-    if (defaultbasedir.empty())
-        defaultbasedir = directoryOf(rootfilename.c_str());
+    if (defaultBasedir.empty())
+        defaultBasedir = directoryOf(rootFilename.c_str());
 
     std::vector<std::string> includedFiles;
     internalReadFile(filename, -1, includedFiles);

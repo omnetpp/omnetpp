@@ -40,7 +40,6 @@
 
 NAMESPACE_BEGIN
 
-
 class cXMLDocCache;
 class cScheduler;
 class cModuleType;
@@ -79,8 +78,8 @@ struct ENVIR_API EnvirOptions
     opp_string outputScalarManagerClass;
     opp_string snapshotmanagerClass;
 #ifdef WITH_PARSIM
-    opp_string parsimcomm_class; // if parsim: cParsimCommunications class to use
-    opp_string parsimsynch_class; // if parsim: cParsimSynchronizer class to use
+    opp_string parsimcommClass; // if parsim: cParsimCommunications class to use
+    opp_string parsimsynchClass; // if parsim: cParsimSynchronizer class to use
 #endif
 
     bool debugStatisticsRecording;
@@ -106,18 +105,18 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
   protected:
     cConfigurationEx *cfg;
     ArgList *args;
-    cXMLDocCache *xmlcache;
-    int exitcode;
+    cXMLDocCache *xmlCache;
+    int exitCode;
 
     EnvirOptions *opt;
 
 #ifdef WITH_PARSIM
-    cParsimCommunications *parsimcomm;
-    cParsimPartition *parsimpartition;
+    cParsimCommunications *parsimComm;
+    cParsimPartition *parsimPartition;
 #endif
 
     // Random number generators. Module RNG's map to these RNG objects.
-    int num_rngs;
+    int numRNGs;
     cRNG **rngs;
 
     // log related
@@ -128,22 +127,22 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     int currentModuleId;
 
     // Output file managers
-    EventlogFileManager *eventlogmgr;  // NULL if no eventlog is being written, must be non NULL if record_eventlog is true
-    cIOutputVectorManager *outvectormgr;
-    cIOutputScalarManager *outscalarmgr;
-    cISnapshotManager *snapshotmgr;
+    EventlogFileManager *eventlogManager;  // NULL if no eventlog is being written, must be non NULL if record_eventlog is true
+    cIOutputVectorManager *outvectorManager;
+    cIOutputScalarManager *outScalarManager;
+    cISnapshotManager *snapshotManager;
 
     // Data for getUniqueNumber()
-    unsigned long nextuniquenumber;
+    unsigned long nextUniqueNumber;
 
     // lifecycle listeners
     std::vector<cISimulationLifecycleListener*> listeners;
 
-    timeval simbegtime;  // real time when sim. started
-    timeval simendtime;  // real time when sim. ended
-    timeval laststarted; // real time from where sim. was last cont'd
-    timeval elapsedtime; // time spent simulating
-    simtime_t simulatedtime;  // sim. time after finishing simulation
+    timeval simBegTime;  // real time when sim. started
+    timeval simEndTime;  // real time when sim. ended
+    timeval lastStarted; // real time from where sim. was last cont'd
+    timeval elapsedTime; // time spent simulating
+    simtime_t simulatedTime;  // sim. time after finishing simulation
 
   protected:
     // leave to subclasses: virtual void putsmsg(const char *msg);

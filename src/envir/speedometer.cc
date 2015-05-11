@@ -29,13 +29,13 @@ Speedometer::Speedometer()
 void Speedometer::start(simtime_t t)
 {
     // begin 1st interval
-    events = 0;
-    gettimeofday(&intvstart_walltime, NULL);
-    intvstart_simtime = t;
+    numEvents = 0;
+    gettimeofday(&intervalStartWalltime, NULL);
+    intervalStartSimtime = t;
 
-    last_eventspersec = 0;
-    last_eventspersimsec = 0;
-    last_simsecpersec = 0;
+    lastIntervalEventsPerSec = 0;
+    lastIntervalEventsPerSimsec = 0;
+    lastIntervalSimsecPerSec = 0;
 
     started = true;
 }
@@ -45,8 +45,8 @@ void Speedometer::addEvent(simtime_t t)
     // start() mush have been called already
     assert(started);
 
-    events++;
-    current_simtime = t;
+    numEvents++;
+    currentSimtime = t;
 }
 
 unsigned long Speedometer::getMillisSinceIntervalStart()
@@ -56,7 +56,7 @@ unsigned long Speedometer::getMillisSinceIntervalStart()
 
     timeval now;
     gettimeofday(&now, NULL);
-    return timeval_msec(now - intvstart_walltime);
+    return timeval_msec(now - intervalStartWalltime);
 }
 
 void Speedometer::beginNewInterval()
@@ -66,45 +66,45 @@ void Speedometer::beginNewInterval()
 
     timeval now;
     gettimeofday(&now, NULL);
-    unsigned long elapsed_msecs = timeval_msec(now - intvstart_walltime);
-    if (elapsed_msecs<10 || events==0)
+    unsigned long elapsed_msecs = timeval_msec(now - intervalStartWalltime);
+    if (elapsed_msecs<10 || numEvents==0)
     {
         // if we're called too often, refuse to give readings as probably
         // they'd be very misleading
-        last_eventspersec = 0;
-        last_simsecpersec = 0;
-        last_eventspersimsec = 0;
+        lastIntervalEventsPerSec = 0;
+        lastIntervalSimsecPerSec = 0;
+        lastIntervalEventsPerSimsec = 0;
     }
     else
     {
         double elapsed_sec = (double)elapsed_msecs/1000.0;
-        simtime_t elapsed_simsec = current_simtime-intvstart_simtime;
+        simtime_t elapsed_simsec = currentSimtime-intervalStartSimtime;
 
-        last_eventspersec = events / elapsed_sec;
-        last_simsecpersec = SIMTIME_DBL(elapsed_simsec) / elapsed_sec;
-        last_eventspersimsec = (elapsed_simsec==SIMTIME_ZERO) ? 0 : (events / SIMTIME_DBL(elapsed_simsec));
+        lastIntervalEventsPerSec = numEvents / elapsed_sec;
+        lastIntervalSimsecPerSec = SIMTIME_DBL(elapsed_simsec) / elapsed_sec;
+        lastIntervalEventsPerSimsec = (elapsed_simsec==SIMTIME_ZERO) ? 0 : (numEvents / SIMTIME_DBL(elapsed_simsec));
     }
-    events = 0;
-    intvstart_walltime = now;
-    intvstart_simtime = current_simtime;
+    numEvents = 0;
+    intervalStartWalltime = now;
+    intervalStartSimtime = currentSimtime;
 }
 
 double Speedometer::getEventsPerSec()
 {
     if (!started) return 0;
-    return last_eventspersec;
+    return lastIntervalEventsPerSec;
 }
 
 double Speedometer::getEventsPerSimSec()
 {
     if (!started) return 0;
-    return last_eventspersimsec;
+    return lastIntervalEventsPerSimsec;
 }
 
 double Speedometer::getSimSecPerSec()
 {
     if (!started) return 0;
-    return last_simsecpersec;
+    return lastIntervalSimsecPerSec;
 }
 
 NAMESPACE_END

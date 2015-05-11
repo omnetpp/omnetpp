@@ -39,10 +39,10 @@ NAMESPACE_BEGIN
 class ENVIR_API cCollectObjectsVisitor : public cVisitor
 {
   private:
-    int sizelimit;
-    cObject **arr;
-    int count;
-    int size;
+    int sizeLimit;
+    cObject **objs;
+    int numObjs;
+    int capacity;
 
   protected:
     // Used during visiting process
@@ -53,8 +53,8 @@ class ENVIR_API cCollectObjectsVisitor : public cVisitor
     cCollectObjectsVisitor();
     virtual ~cCollectObjectsVisitor();
     void setSizeLimit(int limit);
-    cObject **getArray()  {return arr;}
-    int getArraySize()  {return count;}
+    cObject **getArray()  {return objs;}
+    int getArraySize()  {return numObjs;}
 };
 
 
@@ -78,8 +78,8 @@ class ENVIR_API cFilteredCollectObjectsVisitor : public cCollectObjectsVisitor
 {
   private:
     unsigned int category;
-    MatchExpression *classnamepattern;
-    MatchExpression *objfullpathpattern;
+    MatchExpression *classnamePattern;
+    MatchExpression *objFullpathPattern;
   protected:
     virtual void visit(cObject *obj);
   public:

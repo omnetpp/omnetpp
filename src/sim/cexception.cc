@@ -275,11 +275,11 @@ cRuntimeError::cRuntimeError(const cObject *where, const char *msgformat...)
 
 void cRuntimeError::breakIntoDebuggerIfRequested()
 {
-    if (getEnvir()->attach_debugger_on_errors)
+    if (getEnvir()->attachDebuggerOnErrors)
     {
         getEnvir()->attachDebugger();
     }
-    else if (getEnvir()->debug_on_errors)
+    else if (getEnvir()->debugOnErrors)
     {
 #ifdef NDEBUG
         printf("\n[Warning: Program was compiled without debug info, ignoring debug-on-error=true setting.]\n");

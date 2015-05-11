@@ -286,9 +286,9 @@ class TKENV_API Tkenv : public EnvirBase
 
       std::string getLocalPackage()      {return getSimulation()->getNedPackageForFolder(opt->inifileNetworkDir.c_str());}
       const char *getIniFileName()       {return getConfigEx()->getFileName();}
-      const char *getOutVectorFileName() {return outvectormgr->getFileName();}
-      const char *getOutScalarFileName() {return outscalarmgr->getFileName();}
-      const char *getSnapshotFileName()  {return snapshotmgr->getFileName();}
+      const char *getOutVectorFileName() {return outvectorManager->getFileName();}
+      const char *getOutScalarFileName() {return outScalarManager->getFileName();}
+      const char *getSnapshotFileName()  {return snapshotManager->getFileName();}
       const char *getWindowTitlePrefix() {return windowtitleprefix.c_str();}
 };
 

@@ -106,7 +106,7 @@ void cFileOutputVectorManager::initVector(sVectorData *vp)
     }
 
     CHECK(fprintf(f,"vector %d  %s  %s  %s\n",
-                  vp->id, QUOTE(vp->modulename.c_str()), QUOTE(vp->vectorname.c_str()), vp->getColumns()));
+                  vp->id, QUOTE(vp->moduleName.c_str()), QUOTE(vp->vectorName.c_str()), vp->getColumns()));
     for (opp_string_map::iterator it=vp->attributes.begin(); it!=vp->attributes.end(); it++)
         CHECK(fprintf(f,"attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 
@@ -149,8 +149,8 @@ void *cFileOutputVectorManager::registerVector(const char *modulename, const cha
     sVectorData *vp = createVectorData();
     vp->id = nextid++;
     vp->initialized = false;
-    vp->modulename = modulename;
-    vp->vectorname = vectorname;
+    vp->moduleName = modulename;
+    vp->vectorName = vectorname;
     getOutVectorConfig(modulename, vectorname, vp->enabled, vp->recordEventNumbers, vp->intervals);
     return vp;
 }

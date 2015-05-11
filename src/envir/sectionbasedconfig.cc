@@ -78,7 +78,7 @@ static struct ConfigVarDescription { const char *name, *description; } configVar
 
 #define VARPOS_PREFIX  std::string("&")
 
-std::string SectionBasedConfiguration::KeyValue1::nullbasedir;
+std::string SectionBasedConfiguration::KeyValue1::nullBasedir;
 
 SectionBasedConfiguration::KeyValue2::KeyValue2(const KeyValue2& e) : KeyValue1(e)
 {
@@ -360,7 +360,7 @@ void SectionBasedConfiguration::setupVariables(const char *configName, int runNu
     const std::vector<IterationVariable>& itervars = scenario->getIterationVariables();
     for (int i=0; i<(int)itervars.size(); i++)
     {
-        const char *varid = itervars[i].varid.c_str();
+        const char *varid = itervars[i].varId.c_str();
         variables[varid] = scenario->getVariable(varid);
     }
 
@@ -368,8 +368,8 @@ void SectionBasedConfiguration::setupVariables(const char *configName, int runNu
     std::string iterationvars, iterationvars2;
     for (int i=0; i<(int)itervars.size(); i++)
     {
-        std::string txt = "$" + itervars[i].varname + "=" + scenario->getVariable(itervars[i].varid.c_str());
-        if (itervars[i].varname != CFGVAR_REPETITION)
+        std::string txt = "$" + itervars[i].varName + "=" + scenario->getVariable(itervars[i].varId.c_str());
+        if (itervars[i].varName != CFGVAR_REPETITION)
             iterationvars += std::string(i>0?", ":"") + txt;
         iterationvars2 += std::string(i>0?", ":"") + txt;
     }
@@ -487,7 +487,7 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
             {
                 IterationVariable loc;
                 try {
-                    parseVariable(pos, loc.varname, loc.value, loc.parvar, pos);
+                    parseVariable(pos, loc.varName, loc.value, loc.parvar, pos);
                 } catch (std::exception& e) {
                     throw cRuntimeError("Scenario generator: %s at %s=%s", e.what(), entry.getKey(), entry.getValue());
                 }
@@ -495,22 +495,22 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
                 if (!loc.value.empty())
                 {
                     // store variable
-                    if (!loc.varname.empty())
+                    if (!loc.varName.empty())
                     {
                         // check it does not conflict with other iteration variables or predefined variables
                         for (int j=0; j<(int)v.size(); j++)
-                            if (v[j].varname==loc.varname)
-                                throw cRuntimeError("Scenario generator: redefinition of iteration variable ${%s} in the configuration", loc.varname.c_str());
-                        if (isPredefinedVariable(loc.varname.c_str()))
-                            throw cRuntimeError("Scenario generator: ${%s} is a predefined variable and cannot be changed", loc.varname.c_str());
+                            if (v[j].varName==loc.varName)
+                                throw cRuntimeError("Scenario generator: redefinition of iteration variable ${%s} in the configuration", loc.varName.c_str());
+                        if (isPredefinedVariable(loc.varName.c_str()))
+                            throw cRuntimeError("Scenario generator: ${%s} is a predefined variable and cannot be changed", loc.varName.c_str());
                         // use name for id
-                        loc.varid = loc.varname;
+                        loc.varId = loc.varName;
                     }
                     else
                     {
                         // unnamed variable: generate id (identifies location) and name ($0,$1,$2,etc)
-                        loc.varid = opp_stringf("%d-%d-%d", sectionId, entryId, k);
-                        loc.varname = opp_stringf("%d", unnamedCount++);
+                        loc.varId = opp_stringf("%d-%d-%d", sectionId, entryId, k);
+                        loc.varName = opp_stringf("%d", unnamedCount++);
                     }
                     v.push_back(loc);
                 }
@@ -523,7 +523,7 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
     const char *repeat = internalGetValue(sectionChain, CFGID_REPEAT->getName());
     int repeatCount = (int) parseLong(repeat, NULL, 1);
     IterationVariable repetition;
-    repetition.varid = repetition.varname = CFGVAR_REPETITION;
+    repetition.varId = repetition.varName = CFGVAR_REPETITION;
     repetition.value = opp_stringf("0..%d", repeatCount-1);
     v.push_back(repetition);
 

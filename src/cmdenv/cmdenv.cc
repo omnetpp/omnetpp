@@ -222,7 +222,7 @@ void Cmdenv::doRun()
             if (n==0)
             {
                 printfmsg("Error: Configuration `%s' generates 0 runs", opt->configName.c_str());
-                exitcode = 1;
+                exitCode = 1;
                 return;
             }
             else
@@ -237,7 +237,7 @@ void Cmdenv::doRun()
         if (runiterator.hasError())
         {
             printfmsg("Error parsing list of runs to execute: `%s'", opt->runsToExec.c_str());
-            exitcode = 1;
+            exitCode = 1;
             return;
         }
 
@@ -280,7 +280,7 @@ void Cmdenv::doRun()
                 ::fprintf(fout, "Initializing...\n");
                 ::fflush(fout);
 
-                disable_tracing = opt->expressMode;
+                disableTracing = opt->expressMode;
                 startRun();
                 startrunDone = true;
 
@@ -292,7 +292,7 @@ void Cmdenv::doRun()
                 // finish() should not be called.
                 notifyLifecycleListeners(LF_ON_SIMULATION_START);
                 simulate();
-                disable_tracing = false;
+                disableTracing = false;
 
                 ::fprintf(fout, "\nCalling finish() at end of Run #%d...\n", runNumber);
                 ::fflush(fout);
@@ -306,7 +306,7 @@ void Cmdenv::doRun()
             catch (std::exception& e)
             {
                 hadError = true;
-                disable_tracing = false;
+                disableTracing = false;
                 stoppedWithException(e);
                 notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
                 displayException(e);
@@ -349,7 +349,7 @@ void Cmdenv::doRun()
 
         ::fflush(fout);
 
-        exitcode = hadError ? 1 : sigintReceived ? 2 : 0;
+        exitCode = hadError ? 1 : sigintReceived ? 2 : 0;
     }
 }
 
@@ -381,7 +381,7 @@ void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesti
     {
         if (!opt->expressMode)
         {
-            disable_tracing = false;
+            disableTracing = false;
             while (true)
             {
                 cEvent *event = getSimulation()->takeNextEvent();
@@ -411,7 +411,7 @@ void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesti
         }
         else
         {
-            disable_tracing = true;
+            disableTracing = true;
             speedometer.start(getSimulation()->getSimTime());
 
             struct timeval last_update;
@@ -444,7 +444,7 @@ void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesti
     {
         if (opt->expressMode)
             doStatusUpdate(speedometer);
-        disable_tracing = false;
+        disableTracing = false;
         stopClock();
         deinstallSignalHandler();
 
@@ -456,7 +456,7 @@ void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesti
     {
         if (opt->expressMode)
             doStatusUpdate(speedometer);
-        disable_tracing = false;
+        disableTracing = false;
         stopClock();
         deinstallSignalHandler();
         throw;
@@ -465,7 +465,7 @@ void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesti
     // note: C++ lacks "finally": lines below need to be manually kept in sync with catch{...} blocks above!
     if (opt->expressMode)
         doStatusUpdate(speedometer);
-    disable_tracing = false;
+    disableTracing = false;
     stopClock();
     deinstallSignalHandler();
 }
@@ -549,7 +549,7 @@ const char *Cmdenv::progressPercentage()
     if (opt->cpuTimeLimit!=0) {
         timeval now;
         gettimeofday(&now, NULL);
-        long elapsedsecs = now.tv_sec - laststarted.tv_sec + elapsedtime.tv_sec;
+        long elapsedsecs = now.tv_sec - lastStarted.tv_sec + elapsedTime.tv_sec;
         cputimeRatio = elapsedsecs / (double)opt->cpuTimeLimit;
     }
 
@@ -642,7 +642,7 @@ void Cmdenv::log(cLogEntry *entry)
 {
     EnvirBase::log(entry);
 
-    if (disable_tracing)
+    if (disableTracing)
         return;
 
     cComponent *ctx = getSimulation()->getContext();
@@ -748,7 +748,7 @@ void Cmdenv::simulationEvent(cEvent *event)
 {
     EnvirBase::simulationEvent(event);
 
-    if (!disable_tracing)
+    if (!disableTracing)
     {
         if (opt->messageTrace)
         {

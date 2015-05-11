@@ -47,11 +47,11 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     // if we make our own copy, we only need cConfigurationReader for initialization, and after that it can be disposed of
     class KeyValue1 : public cConfiguration::KeyValue {
       public:
-        static std::string nullbasedir;
+        static std::string nullBasedir;
         const std::string *basedirRef; // points into basedirs[]
         std::string key;
         std::string value;
-        KeyValue1() {basedirRef = &nullbasedir;}
+        KeyValue1() {basedirRef = &nullBasedir;}
         KeyValue1(const std::string *bd, const char *k, const char *v) {basedirRef = bd; key = k; value = v;}
 
         // virtual functions implementing the KeyValue interface
@@ -160,8 +160,8 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
      * varname's iterator are advanced in lockstep.
      */
     struct IterationVariable {
-        std::string varid;   // identifies the variable, see above
-        std::string varname; // printable variable name ("x"); may be a generated one like "0"; never empty
+        std::string varId;   // identifies the variable, see above
+        std::string varName; // printable variable name ("x"); may be a generated one like "0"; never empty
         std::string value;   // "1,2,5..10"; never empty
         std::string parvar;  // "in parallel to" variable", as in the ${1,2,5..10 ! var} notation
     };

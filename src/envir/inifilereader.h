@@ -55,8 +55,8 @@ class ENVIR_API InifileReader : public cConfigurationReader
         virtual int getLineNumber() const  {return lineNumber;}
     };
 
-    std::string rootfilename;  // name of "root" ini file read
-    std::string defaultbasedir; // the default base directory
+    std::string rootFilename;  // name of "root" ini file read
+    std::string defaultBasedir; // the default base directory
 
     typedef std::set<std::string> StringSet;
     StringSet filenames; // stores ini file names (absolute paths)

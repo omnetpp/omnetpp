@@ -25,10 +25,10 @@ NAMESPACE_BEGIN
 
 cEnvir::cEnvir()
 {
-    disable_tracing = false;
-    debug_on_errors = false;
-    attach_debugger_on_errors = false;
-    suppress_notifications = false; //FIXME set to true when not needed!
+    disableTracing = false;
+    debugOnErrors = false;
+    attachDebuggerOnErrors = false;
+    suppressNotifications = false; //FIXME set to true when not needed!
 }
 
 cEnvir::~cEnvir()

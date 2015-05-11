@@ -41,8 +41,8 @@ class ENVIR_API cFileOutputVectorManager : public cIOutputVectorManager
 
     struct sVectorData { //XXX use stringPool for vectorname etc?
        int id;              // vector ID
-       opp_string modulename; // module of cOutVector object
-       opp_string vectorname; // cOutVector object name
+       opp_string moduleName; // module of cOutVector object
+       opp_string vectorName; // cOutVector object name
        opp_string_map attributes; // vector attributes
        bool initialized;    // true if the vector declaration has been written out
        bool enabled;        // write to the output file can be enabled/disabled

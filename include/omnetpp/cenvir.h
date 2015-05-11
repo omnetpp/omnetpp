@@ -48,7 +48,7 @@ class cConfigurationEx;
 using std::endl;
 
 // internal macro, usage: EVCB.beginSend(...)
-#define EVCB  cSimulation::getActiveEnvir()->suppress_notifications ? (void)0 : (*cSimulation::getActiveEnvir())
+#define EVCB  cSimulation::getActiveEnvir()->suppressNotifications ? (void)0 : (*cSimulation::getActiveEnvir())
 
 /**
  * cEnvir represents the "environment" or user interface of the simulation.
@@ -75,10 +75,10 @@ class SIM_API cEnvir
     friend class evbuf;
   public:
     // Internal flag for express mode.
-    bool disable_tracing;
+    bool disableTracing;
 
     // Indicates whether eventlog recording is currently enabled
-    bool record_eventlog;  //FIXME remove!!!! use flag inside eventlogmgr
+    bool recordEventlog;  //FIXME remove!!!! use flag inside eventlogmgr
 
     // Internal flag. When set to true, the simulation kernel MAY omit calling
     // the following cEnvir methods: messageScheduled(), messageCancelled(),
@@ -86,11 +86,11 @@ class SIM_API cEnvir
     // messageSendHop(), messageDeleted(), moduleReparented(), simulationEvent(),
     // componentMethodBegin(), moduleCreated(), moduleDeleted(), connectionCreated(),
     // connectionDeleted(), displayStringChanged().
-    bool suppress_notifications;
+    bool suppressNotifications;
 
     // Internal flags. When set, cRuntimeError constructor executes a debug trap/launches debugger
-    bool debug_on_errors;
-    bool attach_debugger_on_errors;
+    bool debugOnErrors;
+    bool attachDebuggerOnErrors;
 
   protected:
     // internal: pop up a dialog with the given message; called from printfmsg()
@@ -471,7 +471,7 @@ class SIM_API cEnvir
      * where output from <tt>EV&lt;&lt;</tt> statements is not printed or logged
      * anywhere but discarded. The <tt>EV</tt> macro already makes use of this function.
      */
-    bool isDisabled() const {return disable_tracing && !record_eventlog;}
+    bool isDisabled() const {return disableTracing && !recordEventlog;}
 
     /**
      * In graphical user interfaces (Tkenv), it pops up a "bubble" over the

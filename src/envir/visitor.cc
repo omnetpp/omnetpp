@@ -40,39 +40,39 @@ NAMESPACE_BEGIN
 
 cCollectObjectsVisitor::cCollectObjectsVisitor()
 {
-    sizelimit = 0; // no limit by default
-    size = 16;
-    arr = new cObject *[size];
-    count = 0;
+    sizeLimit = 0; // no limit by default
+    capacity = 16;
+    objs = new cObject *[capacity];
+    numObjs = 0;
 }
 
 cCollectObjectsVisitor::~cCollectObjectsVisitor()
 {
-    delete [] arr;
+    delete [] objs;
 }
 
 void cCollectObjectsVisitor::setSizeLimit(int limit)
 {
-    sizelimit = limit;
+    sizeLimit = limit;
 }
 
 void cCollectObjectsVisitor::addPointer(cObject *obj)
 {
-    if (sizelimit && count==sizelimit)
+    if (sizeLimit && numObjs==sizeLimit)
         throw EndTraversalException();
 
     // if array is full, reallocate
-    if (count==size)
+    if (numObjs==capacity)
     {
-        cObject **arr2 = new cObject *[2*size];
-        for (int i=0; i<count; i++) arr2[i] = arr[i];
-        delete [] arr;
-        arr = arr2;
-        size = 2*size;
+        cObject **arr2 = new cObject *[2*capacity];
+        for (int i=0; i<numObjs; i++) arr2[i] = objs[i];
+        delete [] objs;
+        objs = arr2;
+        capacity = 2*capacity;
     }
 
     // add pointer to array
-    arr[count++] = obj;
+    objs[numObjs++] = obj;
 }
 
 void cCollectObjectsVisitor::visit(cObject *obj)
@@ -88,14 +88,14 @@ void cCollectObjectsVisitor::visit(cObject *obj)
 cFilteredCollectObjectsVisitor::cFilteredCollectObjectsVisitor()
 {
     category = ~0U;
-    classnamepattern = NULL;
-    objfullpathpattern = NULL;
+    classnamePattern = NULL;
+    objFullpathPattern = NULL;
 }
 
 cFilteredCollectObjectsVisitor::~cFilteredCollectObjectsVisitor()
 {
-    delete classnamepattern;
-    delete objfullpathpattern;
+    delete classnamePattern;
+    delete objFullpathPattern;
 }
 
 void cFilteredCollectObjectsVisitor::setFilterPars(unsigned int cat,
@@ -105,10 +105,10 @@ void cFilteredCollectObjectsVisitor::setFilterPars(unsigned int cat,
     // Note: pattern matcher will throw exception on pattern syntax error
     category = cat;
     if (classnamepatt && classnamepatt[0])
-        classnamepattern = new MatchExpression(classnamepatt, false, true, true);
+        classnamePattern = new MatchExpression(classnamepatt, false, true, true);
 
     if (objfullpathpatt && objfullpathpatt[0])
-        objfullpathpattern = new MatchExpression(objfullpathpatt, false, true, true);
+        objFullpathPattern = new MatchExpression(objfullpathpatt, false, true, true);
 }
 
 void cFilteredCollectObjectsVisitor::visit(cObject *obj)
@@ -135,12 +135,12 @@ void cFilteredCollectObjectsVisitor::visit(cObject *obj)
                                         !dynamic_cast<cPar *>(obj) &&
                                         !dynamic_cast<cChannel *>(obj) &&
                                         !dynamic_cast<cGate *>(obj)));
-    if (objfullpathpattern || classnamepattern)
+    if (objFullpathPattern || classnamePattern)
     {
         MatchableObjectAdapter objAdapter(MatchableObjectAdapter::FULLPATH, obj);
-        ok = ok && (!objfullpathpattern || objfullpathpattern->matches(&objAdapter));
+        ok = ok && (!objFullpathPattern || objFullpathPattern->matches(&objAdapter));
         objAdapter.setDefaultAttribute(MatchableObjectAdapter::CLASSNAME);
-        ok = ok && (!classnamepattern || classnamepattern->matches(&objAdapter));
+        ok = ok && (!classnamePattern || classnamePattern->matches(&objAdapter));
     }
 
     if (ok)

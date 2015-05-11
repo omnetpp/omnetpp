@@ -167,7 +167,7 @@ void cIndexedFileOutputVectorManager::initVector(sVectorData *vp)
 
     // write vector declaration and vector attributes to the index file too
     CHECK(fprintf(fi,"vector %d  %s  %s  %s\n",
-                  vp->id, QUOTE(vp->modulename.c_str()), QUOTE(vp->vectorname.c_str()), vp->getColumns()),
+                  vp->id, QUOTE(vp->moduleName.c_str()), QUOTE(vp->vectorName.c_str()), vp->getColumns()),
           ifname);
     for (opp_string_map::iterator it=vp->attributes.begin(); it!=vp->attributes.end(); it++)
         CHECK(fprintf(fi,"attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())),

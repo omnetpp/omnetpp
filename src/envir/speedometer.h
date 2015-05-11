@@ -34,13 +34,13 @@ class ENVIR_API Speedometer
 {
   private:
     bool started;
-    long events;
-    simtime_t current_simtime;
-    simtime_t intvstart_simtime;
-    timeval intvstart_walltime;
-    double last_eventspersec;
-    double last_eventspersimsec;
-    double last_simsecpersec;
+    long numEvents;
+    simtime_t currentSimtime;
+    simtime_t intervalStartSimtime;
+    timeval intervalStartWalltime;
+    double lastIntervalEventsPerSec;
+    double lastIntervalEventsPerSimsec;
+    double lastIntervalSimsecPerSec;
 
   public:
     Speedometer();

@@ -221,23 +221,23 @@ EnvirBase::EnvirBase()
     opt = NULL;
     args = NULL;
     cfg = NULL;
-    xmlcache = NULL;
+    xmlCache = NULL;
 
-    record_eventlog = false;
-    eventlogmgr = NULL;
-    outvectormgr = NULL;
-    outscalarmgr = NULL;
-    snapshotmgr = NULL;
+    recordEventlog = false;
+    eventlogManager = NULL;
+    outvectorManager = NULL;
+    outScalarManager = NULL;
+    snapshotManager = NULL;
 
-    num_rngs = 0;
+    numRNGs = 0;
     rngs = NULL;
 
 #ifdef WITH_PARSIM
-    parsimcomm = NULL;
-    parsimpartition = NULL;
+    parsimComm = NULL;
+    parsimPartition = NULL;
 #endif
 
-    exitcode = 0;
+    exitCode = 0;
 }
 
 EnvirBase::~EnvirBase()
@@ -250,20 +250,20 @@ EnvirBase::~EnvirBase()
     delete opt;
     delete args;
     delete cfg;
-    delete xmlcache;
+    delete xmlCache;
 
-    delete eventlogmgr;
-    delete outvectormgr;
-    delete outscalarmgr;
-    delete snapshotmgr;
+    delete eventlogManager;
+    delete outvectorManager;
+    delete outScalarManager;
+    delete snapshotManager;
 
-    for (int i = 0; i < num_rngs; i++)
+    for (int i = 0; i < numRNGs; i++)
          delete rngs[i];
     delete [] rngs;
 
 #ifdef WITH_PARSIM
-    delete parsimcomm;
-    delete parsimpartition;
+    delete parsimComm;
+    delete parsimPartition;
 #endif
 }
 
@@ -284,7 +284,7 @@ int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
             run();   // must not throw, because we want shutdown() always to be called
         shutdown();
     }
-    return exitcode;
+    return exitCode;
 }
 
 bool EnvirBase::simulationRequired()
@@ -408,23 +408,23 @@ bool EnvirBase::setup()
         cCoroutine::init(opt->totalStack, MAIN_STACK_SIZE);
 
         // install XML document cache
-        xmlcache = new cXMLDocCache();
+        xmlCache = new cXMLDocCache();
 
         // install eventlog manager
-        eventlogmgr = new EventlogFileManager();
-        addLifecycleListener(eventlogmgr);
+        eventlogManager = new EventlogFileManager();
+        addLifecycleListener(eventlogManager);
 
         // install output vector manager
-        CREATE_BY_CLASSNAME(outvectormgr, opt->outputVectorManagerClass.c_str(), cIOutputVectorManager, "output vector manager");
-        addLifecycleListener(outvectormgr);
+        CREATE_BY_CLASSNAME(outvectorManager, opt->outputVectorManagerClass.c_str(), cIOutputVectorManager, "output vector manager");
+        addLifecycleListener(outvectorManager);
 
         // install output scalar manager
-        CREATE_BY_CLASSNAME(outscalarmgr, opt->outputScalarManagerClass.c_str(), cIOutputScalarManager, "output scalar manager");
-        addLifecycleListener(outscalarmgr);
+        CREATE_BY_CLASSNAME(outScalarManager, opt->outputScalarManagerClass.c_str(), cIOutputScalarManager, "output scalar manager");
+        addLifecycleListener(outScalarManager);
 
         // install snapshot manager
-        CREATE_BY_CLASSNAME(snapshotmgr, opt->snapshotmanagerClass.c_str(), cISnapshotManager, "snapshot manager");
-        addLifecycleListener(snapshotmgr);
+        CREATE_BY_CLASSNAME(snapshotManager, opt->snapshotmanagerClass.c_str(), cISnapshotManager, "snapshot manager");
+        addLifecycleListener(snapshotManager);
 
         // set up for sequential or distributed execution
         if (!opt->parsim)
@@ -438,19 +438,19 @@ bool EnvirBase::setup()
         {
 #ifdef WITH_PARSIM
             // parsim: create components
-            CREATE_BY_CLASSNAME(parsimcomm, opt->parsimcomm_class.c_str(), cParsimCommunications, "parallel simulation communications layer");
-            parsimpartition = new cParsimPartition();
-            cParsimSynchronizer *parsimsynchronizer;
-            CREATE_BY_CLASSNAME(parsimsynchronizer, opt->parsimsynch_class.c_str(), cParsimSynchronizer, "parallel simulation synchronization layer");
-            addLifecycleListener(parsimpartition);
+            CREATE_BY_CLASSNAME(parsimComm, opt->parsimcommClass.c_str(), cParsimCommunications, "parallel simulation communications layer");
+            parsimPartition = new cParsimPartition();
+            cParsimSynchronizer *parsimSynchronizer;
+            CREATE_BY_CLASSNAME(parsimSynchronizer, opt->parsimsynchClass.c_str(), cParsimSynchronizer, "parallel simulation synchronization layer");
+            addLifecycleListener(parsimPartition);
 
-            // wire them together (note: 'parsimsynchronizer' is also the scheduler for 'simulation')
-            parsimpartition->setContext(getSimulation(), parsimcomm, parsimsynchronizer);
-            parsimsynchronizer->setContext(getSimulation(), parsimpartition, parsimcomm);
-            getSimulation()->setScheduler(parsimsynchronizer);
+            // wire them together (note: 'parsimSynchronizer' is also the scheduler for 'simulation')
+            parsimPartition->setContext(getSimulation(), parsimComm, parsimSynchronizer);
+            parsimSynchronizer->setContext(getSimulation(), parsimPartition, parsimComm);
+            getSimulation()->setScheduler(parsimSynchronizer);
 
             // initialize them
-            parsimcomm->init();
+            parsimComm->init();
 #else
             throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
@@ -490,7 +490,7 @@ bool EnvirBase::setup()
     catch (std::exception& e)
     {
         displayException(e);
-        exitcode = 1;
+        exitCode = 1;
         return false; // don't run the app
     }
     return true;
@@ -866,7 +866,7 @@ void EnvirBase::dumpComponentList(const char *category)
 int EnvirBase::getParsimProcId() const
 {
 #ifdef WITH_PARSIM
-    return parsimcomm ? parsimcomm->getProcId() : 0;
+    return parsimComm ? parsimComm->getProcId() : 0;
 #else
     return 0;
 #endif
@@ -875,7 +875,7 @@ int EnvirBase::getParsimProcId() const
 int EnvirBase::getParsimNumPartitions() const
 {
 #ifdef WITH_PARSIM
-    return parsimcomm ? parsimcomm->getNumPartitions() : 0;
+    return parsimComm ? parsimComm->getNumPartitions() : 0;
 #else
     return 0;
 #endif
@@ -913,7 +913,7 @@ void EnvirBase::setupNetwork(cModuleType *network)
     currentModuleId = -1;
 
     getSimulation()->setupNetwork(network);
-    eventlogmgr->flush();
+    eventlogManager->flush();
 }
 
 void EnvirBase::startRun()
@@ -1287,8 +1287,8 @@ bool EnvirBase::isModuleLocal(cModule *parentmod, const char *modname, int index
             throw cRuntimeError("wrong partitioning: syntax error in value '%s' for '%s' "
                                 "(allowed syntax: '', '*', '1', '0,3,5-7')",
                                 procIds.c_str(), parname);
-        int numPartitions = parsimcomm->getNumPartitions();
-        int myProcId = parsimcomm->getProcId();
+        int numPartitions = parsimComm->getNumPartitions();
+        int myProcId = parsimComm->getProcId();
         for (; procIdIter()!=-1; procIdIter++)
         {
             if (procIdIter() >= numPartitions)
@@ -1306,13 +1306,13 @@ bool EnvirBase::isModuleLocal(cModule *parentmod, const char *modname, int index
 
 cXMLElement *EnvirBase::getXMLDocument(const char *filename, const char *path)
 {
-    cXMLElement *documentnode = xmlcache->getDocument(filename);
+    cXMLElement *documentnode = xmlCache->getDocument(filename);
     return resolveXMLPath(documentnode, path);
 }
 
 cXMLElement *EnvirBase::getParsedXMLString(const char *content, const char *path)
 {
-    cXMLElement *documentnode = xmlcache->getParsed(content);
+    cXMLElement *documentnode = xmlCache->getParsed(content);
     return resolveXMLPath(documentnode, path);
 }
 
@@ -1333,22 +1333,22 @@ cXMLElement *EnvirBase::resolveXMLPath(cXMLElement *documentnode, const char *pa
 
 void EnvirBase::forgetXMLDocument(const char *filename)
 {
-    xmlcache->forgetDocument(filename);
+    xmlCache->forgetDocument(filename);
 }
 
 void EnvirBase::forgetParsedXMLString(const char *content)
 {
-    xmlcache->forgetParsed(content);
+    xmlCache->forgetParsed(content);
 }
 
 void EnvirBase::flushXMLDocumentCache()
 {
-    xmlcache->flushDocumentCache();
+    xmlCache->flushDocumentCache();
 }
 
 void EnvirBase::flushXMLParsedContentCache()
 {
-    xmlcache->flushParsedContentCache();
+    xmlCache->flushParsedContentCache();
 }
 
 cConfiguration *EnvirBase::getConfig()
@@ -1365,8 +1365,8 @@ cConfigurationEx *EnvirBase::getConfigEx()
 
 void EnvirBase::bubble(cComponent *component, const char *text)
 {
-    if (record_eventlog)
-        eventlogmgr->bubble(component, text);
+    if (recordEventlog)
+        eventlogManager->bubble(component, text);
 }
 
 void EnvirBase::objectDeleted(cObject *object)
@@ -1380,136 +1380,136 @@ void EnvirBase::simulationEvent(cEvent *event)
         currentEventName = event->getFullName();
     currentEventClassName = event->getClassName();
     currentModuleId = event->isMessage() ? (static_cast<cMessage *>(event))->getArrivalModule()->getId() : -1;
-    if (record_eventlog)
-        eventlogmgr->simulationEvent(event);
+    if (recordEventlog)
+        eventlogManager->simulationEvent(event);
 }
 
 void EnvirBase::beginSend(cMessage *msg)
 {
-    if (record_eventlog)
-        eventlogmgr->beginSend(msg);
+    if (recordEventlog)
+        eventlogManager->beginSend(msg);
 }
 
 void EnvirBase::messageScheduled(cMessage *msg)
 {
-    if (record_eventlog)
-        eventlogmgr->messageScheduled(msg);
+    if (recordEventlog)
+        eventlogManager->messageScheduled(msg);
 }
 
 void EnvirBase::messageCancelled(cMessage *msg)
 {
-    if (record_eventlog)
-        eventlogmgr->messageCancelled(msg);
+    if (recordEventlog)
+        eventlogManager->messageCancelled(msg);
 }
 
 void EnvirBase::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
-    if (record_eventlog)
-        eventlogmgr->messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
+    if (recordEventlog)
+        eventlogManager->messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
 }
 
 void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate)
 {
-    if (record_eventlog)
-        eventlogmgr->messageSendHop(msg, srcGate);
+    if (recordEventlog)
+        eventlogManager->messageSendHop(msg, srcGate);
 }
 
 void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
-    if (record_eventlog)
-        eventlogmgr->messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
+    if (recordEventlog)
+        eventlogManager->messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
 }
 
 void EnvirBase::endSend(cMessage *msg)
 {
-    if (record_eventlog)
-        eventlogmgr->endSend(msg);
+    if (recordEventlog)
+        eventlogManager->endSend(msg);
 }
 
 void EnvirBase::messageCreated(cMessage *msg)
 {
-    if (record_eventlog)
-        eventlogmgr->messageCreated(msg);
+    if (recordEventlog)
+        eventlogManager->messageCreated(msg);
 }
 
 void EnvirBase::messageCloned(cMessage *msg, cMessage *clone)
 {
-    if (record_eventlog)
-        eventlogmgr->messageCloned(msg, clone);
+    if (recordEventlog)
+        eventlogManager->messageCloned(msg, clone);
 }
 
 void EnvirBase::messageDeleted(cMessage *msg)
 {
-    if (record_eventlog)
-        eventlogmgr->messageDeleted(msg);
+    if (recordEventlog)
+        eventlogManager->messageDeleted(msg);
 }
 
 void EnvirBase::componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent)
 {
-    if (record_eventlog)
-        eventlogmgr->componentMethodBegin(from, to, methodFmt, va);
+    if (recordEventlog)
+        eventlogManager->componentMethodBegin(from, to, methodFmt, va);
 }
 
 void EnvirBase::componentMethodEnd()
 {
-    if (record_eventlog)
-        eventlogmgr->componentMethodEnd();
+    if (recordEventlog)
+        eventlogManager->componentMethodEnd();
 }
 
 void EnvirBase::moduleCreated(cModule *newmodule)
 {
-    if (record_eventlog)
-        eventlogmgr->moduleCreated(newmodule);
+    if (recordEventlog)
+        eventlogManager->moduleCreated(newmodule);
 }
 
 void EnvirBase::moduleDeleted(cModule *module)
 {
-    if (record_eventlog)
-        eventlogmgr->moduleDeleted(module);
+    if (recordEventlog)
+        eventlogManager->moduleDeleted(module);
 }
 
 void EnvirBase::moduleReparented(cModule *module, cModule *oldparent, int oldId)
 {
-    if (record_eventlog)
-        eventlogmgr->moduleReparented(module, oldparent, oldId);
+    if (recordEventlog)
+        eventlogManager->moduleReparented(module, oldparent, oldId);
 }
 
 void EnvirBase::gateCreated(cGate *newgate)
 {
-    if (record_eventlog)
-        eventlogmgr->gateCreated(newgate);
+    if (recordEventlog)
+        eventlogManager->gateCreated(newgate);
 }
 
 void EnvirBase::gateDeleted(cGate *gate)
 {
-    if (record_eventlog)
-        eventlogmgr->gateDeleted(gate);
+    if (recordEventlog)
+        eventlogManager->gateDeleted(gate);
 }
 
 void EnvirBase::connectionCreated(cGate *srcgate)
 {
-    if (record_eventlog)
-        eventlogmgr->connectionCreated(srcgate);
+    if (recordEventlog)
+        eventlogManager->connectionCreated(srcgate);
 }
 
 void EnvirBase::connectionDeleted(cGate *srcgate)
 {
-    if (record_eventlog)
-        eventlogmgr->connectionDeleted(srcgate);
+    if (recordEventlog)
+        eventlogManager->connectionDeleted(srcgate);
 }
 
 void EnvirBase::displayStringChanged(cComponent *component)
 {
-    if (record_eventlog)
-        eventlogmgr->displayStringChanged(component);
+    if (recordEventlog)
+        eventlogManager->displayStringChanged(component);
 }
 
 void EnvirBase::log(cLogEntry *entry)
 {
-    if (record_eventlog)
+    if (recordEventlog)
     {
         std::string prefix = logFormatter.formatPrefix(entry);
-        eventlogmgr->logLine(prefix.c_str(), entry->text, entry->textLength);
+        eventlogManager->logLine(prefix.c_str(), entry->text, entry->textLength);
     }
 }
 
@@ -1562,8 +1562,8 @@ void EnvirBase::readOptions()
     else
     {
 #ifdef WITH_PARSIM
-        opt->parsimcomm_class = cfg->getAsString(CFGID_PARSIM_COMMUNICATIONS_CLASS);
-        opt->parsimsynch_class = cfg->getAsString(CFGID_PARSIM_SYNCHRONIZATION_CLASS);
+        opt->parsimcommClass = cfg->getAsString(CFGID_PARSIM_COMMUNICATIONS_CLASS);
+        opt->parsimsynchClass = cfg->getAsString(CFGID_PARSIM_SYNCHRONIZATION_CLASS);
 #else
         throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
@@ -1575,8 +1575,8 @@ void EnvirBase::readOptions()
 
     opt->fnameAppendHost = cfg->getAsBool(CFGID_FNAME_APPEND_HOST, opt->parsim);
 
-    debug_on_errors = cfg->getAsBool(CFGID_DEBUG_ON_ERRORS);
-    attach_debugger_on_errors = cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR);
+    debugOnErrors = cfg->getAsBool(CFGID_DEBUG_ON_ERRORS);
+    attachDebuggerOnErrors = cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR);
     opt->printUndisposed = cfg->getAsBool(CFGID_PRINT_UNDISPOSED);
 
     int scaleexp = (int) cfg->getAsInt(CFGID_SIMTIME_SCALE);
@@ -1624,53 +1624,53 @@ void EnvirBase::readPerRunOptions()
 
     // set up RNGs
     int i;
-    for (i=0; i<num_rngs; i++)
+    for (i=0; i<numRNGs; i++)
          delete rngs[i];
     delete [] rngs;
 
-    num_rngs = opt->numRNGs;
-    rngs = new cRNG *[num_rngs];
-    for (i=0; i<num_rngs; i++)
+    numRNGs = opt->numRNGs;
+    rngs = new cRNG *[numRNGs];
+    for (i=0; i<numRNGs; i++)
     {
         cRNG *rng;
         CREATE_BY_CLASSNAME(rng, opt->rngClass.c_str(), cRNG, "random number generator");
         rngs[i] = rng;
-        rngs[i]->initialize(opt->seedset, i, num_rngs, getParsimProcId(), getParsimNumPartitions(), getConfig());
+        rngs[i]->initialize(opt->seedset, i, numRNGs, getParsimProcId(), getParsimNumPartitions(), getConfig());
     }
 
     // init nextuniquenumber -- startRun() is too late because simple module ctors have run by then
-    nextuniquenumber = 0;
+    nextUniqueNumber = 0;
 #ifdef WITH_PARSIM
     if (opt->parsim)
-        nextuniquenumber = (unsigned)parsimcomm->getProcId() * ((~0UL) / (unsigned)parsimcomm->getNumPartitions());
+        nextUniqueNumber = (unsigned)parsimComm->getProcId() * ((~0UL) / (unsigned)parsimComm->getNumPartitions());
 #endif
 
     // open eventlog file.
     // Note: in startRun() it would be too late, because modules are created earlier
-    eventlogmgr->configure();
-    record_eventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
+    eventlogManager->configure();
+    recordEventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
 }
 
 void EnvirBase::setEventlogRecording(bool enabled)
 {
     // NOTE: eventlogmgr must be non-NULL when record_eventlog is true
-    if (enabled && !record_eventlog) {   //FIXME not good!!!!
-        eventlogmgr->open();
-        eventlogmgr->recordSimulation();
+    if (enabled && !recordEventlog) {   //FIXME not good!!!!
+        eventlogManager->open();
+        eventlogManager->recordSimulation();
     }
-    record_eventlog = enabled;
-    eventlogmgr->flush();
+    recordEventlog = enabled;
+    eventlogManager->flush();
 }
 
 bool EnvirBase::hasEventlogRecordingIntervals() const
 {
-    return eventlogmgr && eventlogmgr->hasRecordingIntervals();
+    return eventlogManager && eventlogManager->hasRecordingIntervals();
 }
 
 void EnvirBase::clearEventlogRecordingIntervals()
 {
-    if (eventlogmgr)
-        eventlogmgr->clearRecordingIntervals();
+    if (eventlogManager)
+        eventlogManager->clearRecordingIntervals();
 }
 
 void EnvirBase::setLogLevel(LogLevel logLevel)
@@ -1688,13 +1688,13 @@ void EnvirBase::setLogFormat(const char *logFormat)
 
 int EnvirBase::getNumRNGs() const
 {
-    return num_rngs;
+    return numRNGs;
 }
 
 cRNG *EnvirBase::getRNG(int k)
 {
-    if (k<0 || k>=num_rngs)
-        throw cRuntimeError("RNG index %d is out of range (num-rngs=%d, check the configuration)", k, num_rngs);
+    if (k<0 || k>=numRNGs)
+        throw cRuntimeError("RNG index %d is out of range (num-rngs=%d, check the configuration)", k, numRNGs);
     return rngs[k];
 }
 
@@ -1754,52 +1754,52 @@ void EnvirBase::getRNGMappingFor(cComponent *component)
 
 void *EnvirBase::registerOutputVector(const char *modulename, const char *vectorname)
 {
-    assert(outvectormgr);
-    return outvectormgr->registerVector(modulename, vectorname);
+    assert(outvectorManager);
+    return outvectorManager->registerVector(modulename, vectorname);
 }
 
 void EnvirBase::deregisterOutputVector(void *vechandle)
 {
-    assert(outvectormgr);
-    outvectormgr->deregisterVector(vechandle);
+    assert(outvectorManager);
+    outvectorManager->deregisterVector(vechandle);
 }
 
 void EnvirBase::setVectorAttribute(void *vechandle, const char *name, const char *value)
 {
-    assert(outvectormgr);
-    outvectormgr->setVectorAttribute(vechandle, name, value);
+    assert(outvectorManager);
+    outvectorManager->setVectorAttribute(vechandle, name, value);
 }
 
 bool EnvirBase::recordInOutputVector(void *vechandle, simtime_t t, double value)
 {
-    assert(outvectormgr);
-    return outvectormgr->record(vechandle, t, value);
+    assert(outvectorManager);
+    return outvectorManager->record(vechandle, t, value);
 }
 
 //-------------------------------------------------------------
 
 void EnvirBase::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
 {
-    assert(outscalarmgr);
-    outscalarmgr->recordScalar(component, name, value, attributes);
+    assert(outScalarManager);
+    outScalarManager->recordScalar(component, name, value, attributes);
 }
 
 void EnvirBase::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
-    assert(outscalarmgr);
-    outscalarmgr->recordStatistic(component, name, statistic, attributes);
+    assert(outScalarManager);
+    outScalarManager->recordStatistic(component, name, statistic, attributes);
 }
 
 //-------------------------------------------------------------
 
 std::ostream *EnvirBase::getStreamForSnapshot()
 {
-    return snapshotmgr->getStreamForSnapshot();
+    return snapshotManager->getStreamForSnapshot();
 }
 
 void EnvirBase::releaseStreamForSnapshot(std::ostream *os)
 {
-    snapshotmgr->releaseStreamForSnapshot(os);
+    snapshotManager->releaseStreamForSnapshot(os);
 }
 
 //-------------------------------------------------------------
@@ -1807,7 +1807,7 @@ void EnvirBase::releaseStreamForSnapshot(std::ostream *os)
 unsigned long EnvirBase::getUniqueNumber()
 {
     // TBD check for overflow
-    return nextuniquenumber++;
+    return nextUniqueNumber++;
 }
 
 std::string EnvirBase::makeDebuggerCommand()
@@ -1923,27 +1923,27 @@ void EnvirBase::resetClock()
 {
     timeval now;
     gettimeofday(&now, NULL);
-    laststarted = simendtime = simbegtime = now;
-    elapsedtime.tv_sec = elapsedtime.tv_usec = 0;
+    lastStarted = simEndTime = simBegTime = now;
+    elapsedTime.tv_sec = elapsedTime.tv_usec = 0;
 }
 
 void EnvirBase::startClock()
 {
-    gettimeofday(&laststarted, NULL);
+    gettimeofday(&lastStarted, NULL);
 }
 
 void EnvirBase::stopClock()
 {
-    gettimeofday(&simendtime, NULL);
-    elapsedtime = elapsedtime + simendtime - laststarted;
-    simulatedtime = getSimulation()->getSimTime();
+    gettimeofday(&simEndTime, NULL);
+    elapsedTime = elapsedTime + simEndTime - lastStarted;
+    simulatedTime = getSimulation()->getSimTime();
 }
 
 timeval EnvirBase::totalElapsed()
 {
     timeval now;
     gettimeofday(&now, NULL);
-    return now - laststarted + elapsedtime;
+    return now - lastStarted + elapsedTime;
 }
 
 void EnvirBase::checkTimeLimits()
@@ -1954,11 +1954,11 @@ void EnvirBase::checkTimeLimits()
 #endif
     if (opt->cpuTimeLimit==0) // no limit
          return;
-    if (disable_tracing && (getSimulation()->getEventNumber()&0xFF)!=0) // optimize: in Express mode, don't call gettimeofday() on every event
+    if (disableTracing && (getSimulation()->getEventNumber()&0xFF)!=0) // optimize: in Express mode, don't call gettimeofday() on every event
          return;
     timeval now;
     gettimeofday(&now, NULL);
-    long elapsedsecs = now.tv_sec - laststarted.tv_sec + elapsedtime.tv_sec;
+    long elapsedsecs = now.tv_sec - lastStarted.tv_sec + elapsedTime.tv_sec;
     if (elapsedsecs>=opt->cpuTimeLimit)
          throw cTerminationException(E_REALTIME);
 }
@@ -1969,10 +1969,10 @@ void EnvirBase::stoppedWithTerminationException(cTerminationException& e)
     // from other partitions, then notify other partitions
 #ifdef WITH_PARSIM
     if (opt->parsim && !dynamic_cast<cReceivedTerminationException *>(&e))
-        parsimpartition->broadcastTerminationException(e);
+        parsimPartition->broadcastTerminationException(e);
 #endif
-    if (record_eventlog)
-        eventlogmgr->endRun(e.isError(), e.getErrorCode(), e.getFormattedMessage().c_str());
+    if (recordEventlog)
+        eventlogManager->endRun(e.isError(), e.getErrorCode(), e.getFormattedMessage().c_str());
 }
 
 void EnvirBase::stoppedWithException(std::exception& e)
@@ -1981,11 +1981,11 @@ void EnvirBase::stoppedWithException(std::exception& e)
     // from other partitions, then notify other partitions
 #ifdef WITH_PARSIM
     if (opt->parsim && !dynamic_cast<cReceivedException *>(&e))
-        parsimpartition->broadcastException(e);
+        parsimPartition->broadcastException(e);
 #endif
-    if (record_eventlog)
+    if (recordEventlog)
         // TODO: get error code from the exception?
-        eventlogmgr->endRun(true, E_CUSTOM, e.what());
+        eventlogManager->endRun(true, E_CUSTOM, e.what());
 }
 
 void EnvirBase::checkFingerprint()
