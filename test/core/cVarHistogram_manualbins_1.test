@@ -4,7 +4,7 @@ Note: here don't precollect values before adding the bins, but that would also b
 
 %activity:
 
-cVarHistogram hist("hist", 100, HIST_TR_NO_TRANSFORM);
+cVarHistogram hist("hist", 100, cVarHistogram::HIST_TR_NO_TRANSFORM);
 
 hist.addBinBound(10);
 hist.addBinBound(20);

@@ -11,7 +11,7 @@ cLongHistogram h;
 cLongHistogram *h2;
 
 h.setNumCells(10);   // 10 cells
-h.setNumFirstVals(5);
+h.setNumPrecollectedValues(5);
 
 h.collect(10);
 h.collect(19);
