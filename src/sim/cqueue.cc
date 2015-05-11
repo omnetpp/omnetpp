@@ -47,7 +47,7 @@ cQueue::cQueue(const cQueue& queue) : cOwnedObject(queue)
 
 cQueue::cQueue(const char *name, CompareFunc cmp) : cOwnedObject(name)
 {
-    tkownership = true;
+    takeOwnership = true;
     frontp = backp = NULL;
     n = 0;
     compare = cmp;
@@ -146,7 +146,7 @@ void cQueue::copy(const cQueue& queue)
             {setTakeOwnership(false); insert(obj);}
     }
 
-    tkownership = queue.tkownership;
+    takeOwnership = queue.takeOwnership;
     compare = queue.compare;
 }
 

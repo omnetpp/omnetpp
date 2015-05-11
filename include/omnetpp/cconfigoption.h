@@ -62,11 +62,11 @@ class SIM_API cConfigOption : public cNoncopyableOwnedObject
     // note: option name (e.g. "sim-time-limit") is stored in object's name field
     bool isPerObject_;         // if true, entries must be in <object-full-path>.config-name format
     bool isGlobal_;            // if true, entries may only occur in the [General] section
-    ObjectKind objectKind_;    // kind of the object if isPerObject is true, KIND_NONE otherwise
-    Type type_;                // option data type
-    std::string unit_;         // if numeric, its unit ("s") or empty string
-    std::string defaultValue_; // the default value in string form
-    std::string description_;  // help text
+    ObjectKind objectKind;     // kind of the object if isPerObject is true, KIND_NONE otherwise
+    Type type;                 // option data type
+    std::string unit;          // if numeric, its unit ("s") or empty string
+    std::string defaultValue;  // the default value in string form
+    std::string description;   // help text
 
   public:
     /** @name Constructors, destructor */
@@ -109,7 +109,7 @@ class SIM_API cConfigOption : public cNoncopyableOwnedObject
      * Returns the object kind for per-object configuration options,
      * KIND_NONE otherwise.
      */
-    ObjectKind getObjectKind() const {return objectKind_;}
+    ObjectKind getObjectKind() const {return objectKind;}
 
     /**
      * Returns the human-readable name of a per-object option object kind.
@@ -119,7 +119,7 @@ class SIM_API cConfigOption : public cNoncopyableOwnedObject
     /**
      * Data type of the option.
      */
-    Type getType() const  {return type_;}
+    Type getType() const  {return type;}
 
     /**
      * Returns the human-readable name of an option data type.
@@ -130,18 +130,18 @@ class SIM_API cConfigOption : public cNoncopyableOwnedObject
      * Returns the unit of the option (e.g. "s" for seconds, "b" for bytes, etc),
      * or NULL if the option does not have a unit.
      */
-    const char *getUnit() const  {return unit_.empty() ? NULL : unit_.c_str();}
+    const char *getUnit() const  {return unit.empty() ? NULL : unit.c_str();}
 
     /**
      * Returns the default value in string form, or NULL if there is no default.
      */
-    const char *getDefaultValue() const  {return defaultValue_.empty() ? NULL : defaultValue_.c_str();}
+    const char *getDefaultValue() const  {return defaultValue.empty() ? NULL : defaultValue.c_str();}
 
     /**
      * Returns a brief textual description of the option, which can be used as
      * help text or hint.
      */
-    const char *getDescription() const  {return description_.c_str();}
+    const char *getDescription() const  {return description.c_str();}
     //@}
 };
 

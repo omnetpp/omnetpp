@@ -34,9 +34,9 @@ NAMESPACE_BEGIN
 class SIM_API cObjectFactory : public cNoncopyableOwnedObject
 {
   private:
-    cObject *(*creatorfunc)();
-    void *(*castfunc)(cObject *);
-    std::string descr;
+    cObject *(*creatorFunc)();
+    void *(*castFunc)(cObject *);
+    std::string description;
 
   private:
     static cObjectFactory *doFind(const char *className);
@@ -65,7 +65,7 @@ class SIM_API cObjectFactory : public cNoncopyableOwnedObject
      * Returns true if the class this object stands for is abstract.
      * createOne() cannot be called for abstract classes.
      */
-    virtual bool isAbstract() const  {return creatorfunc==NULL;}
+    virtual bool isAbstract() const  {return creatorFunc==NULL;}
 
     /**
      * Creates an instance of a particular class by calling the creator
@@ -79,12 +79,12 @@ class SIM_API cObjectFactory : public cNoncopyableOwnedObject
      * Returns true if the given object can be cast (via dynamic_cast) to the
      * class represented by this factory object, and false otherwise.
      */
-    virtual bool isInstance(cObject *obj) const  {return castfunc(obj)!=NULL;}
+    virtual bool isInstance(cObject *obj) const  {return castFunc(obj)!=NULL;}
 
     /**
      * Returns a description string.
      */
-    const char *getDescription() const  {return descr.c_str();}
+    const char *getDescription() const  {return description.c_str();}
     //@}
 
     /** @name Static factory methods */

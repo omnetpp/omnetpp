@@ -34,8 +34,8 @@ class cProperty;
 class SIM_API cProperties : public cObject
 {
   protected:
-    bool islocked;
-    int refcount;
+    bool isLocked;
+    int refCount;
     std::vector<cProperty *> propv;
 
   private:
@@ -48,8 +48,8 @@ class SIM_API cProperties : public cObject
     virtual void lock();
 
     // internal: increment/decrement reference count
-    int addRef()  {return ++refcount;}
-    int removeRef()  {return --refcount;}
+    int addRef()  {return ++refCount;}
+    int removeRef()  {return --refCount;}
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -62,7 +62,7 @@ class SIM_API cProperties : public cObject
     /**
      * Copy constructor.
      */
-    cProperties(const cProperties& other) : cObject(other) {refcount=0; islocked=false; copy(other);}
+    cProperties(const cProperties& other) : cObject(other) {refCount=0; isLocked=false; copy(other);}
 
     /**
      * Destructor.

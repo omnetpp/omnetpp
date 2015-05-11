@@ -100,24 +100,24 @@ class SIM_API cGate : public cObject, noncopyable
     //
     struct Desc
     {
-        cModule *ownerp;
-        Name *namep;  // pooled (points into cModule::namePool)
-        int size; // gate vector size, or -1 if scalar gate; actually allocated size is capacityFor(size)
+        cModule *owner;
+        Name *name;  // pooled (points into cModule::namePool)
+        int vectorSize; // gate vector size, or -1 if scalar gate; actually allocated size is capacityFor(size)
         union Gates { cGate *gate; cGate **gatev; };
         Gates input;
         Gates output;
 
-        Desc() {ownerp=NULL; size=-1; namep=NULL; input.gate=output.gate=NULL;}
-        bool inUse() const {return namep!=NULL;}
-        Type getType() const {return namep->type;}
-        bool isVector() const {return size>=0;}
-        const char *nameFor(Type t) const {return (t==INOUT||namep->type!=INOUT) ? namep->name.c_str() : t==INPUT ? namep->namei.c_str() : namep->nameo.c_str();}
+        Desc() {owner=NULL; vectorSize=-1; name=NULL; input.gate=output.gate=NULL;}
+        bool inUse() const {return name!=NULL;}
+        Type getType() const {return name->type;}
+        bool isVector() const {return vectorSize>=0;}
+        const char *nameFor(Type t) const {return (t==INOUT||name->type!=INOUT) ? name->name.c_str() : t==INPUT ? name->namei.c_str() : name->nameo.c_str();}
         int indexOf(const cGate *g) const {return (g->pos>>2)==-1 ? 0 : g->pos>>2;}
         bool deliverOnReceptionStart(const cGate *g) const {return g->pos&2;}
         Type getTypeOf(const cGate *g) const {return (g->pos&1)==0 ? INPUT : OUTPUT;}
         bool isInput(const cGate *g) const {return (g->pos&1)==0;}
         bool isOutput(const cGate *g) const {return (g->pos&1)==1;}
-        int gateSize() const {return size>=0 ? size : 1;}
+        int gateSize() const {return vectorSize>=0 ? vectorSize : 1;}
         void setInputGate(cGate *g) {ASSERT(getType()!=OUTPUT && !isVector()); input.gate=g; g->desc=this; g->pos=(-1<<2);}
         void setOutputGate(cGate *g) {ASSERT(getType()!=INPUT && !isVector()); output.gate=g; g->desc=this; g->pos=(-1<<2)|1;}
         void setInputGate(cGate *g, int index) {ASSERT(getType()!=OUTPUT && isVector()); input.gatev[index]=g; g->desc=this; g->pos=(index<<2);}
@@ -126,14 +126,14 @@ class SIM_API cGate : public cObject, noncopyable
     };
 
   protected:
-    Desc *desc; // descriptor of gate/gate vector, stored in cModule
+    Desc *desc; // descriptor of the gate or gate vector, stored in cModule
     int pos;    // b0: input(0) or output(1); b1: deliverOnReceptionStart bit;
                 // rest (pos>>2): array index, or -1 if scalar gate
 
     int connectionId;   // uniquely identifies the connection between *this and *nextgatep; -1 if unconnected
-    cChannel *channelp; // channel object (if exists)
-    cGate *prevgatep;   // previous and next gate in the path
-    cGate *nextgatep;
+    cChannel *channel;  // channel object (if exists)
+    cGate *prevGate;    // previous and next gate in the path
+    cGate *nextGate;
 
     static int lastConnectionId;
 
@@ -332,7 +332,7 @@ class SIM_API cGate : public cObject, noncopyable
      * no channel. This is the channel between this gate and this->getNextGate(),
      * that is, channels are stored on the "from" side of the connections.
      */
-    cChannel *getChannel() const  {return channelp;}
+    cChannel *getChannel() const  {return channel;}
 
     /**
      * This method may only be invoked on input gates of simple modules.
@@ -410,14 +410,14 @@ class SIM_API cGate : public cObject, noncopyable
      * contains this gate, or a NULL pointer if this gate is the first one in the path.
      * (E.g. for a simple module output gate, this function will return NULL.)
      */
-    cGate *getPreviousGate() const {return prevgatep;}
+    cGate *getPreviousGate() const {return prevGate;}
 
     /**
      * Returns the next gate in the series of connections (the path) that
      * contains this gate, or a NULL pointer if this gate is the last one in the path.
      * (E.g. for a simple module input gate, this function will return NULL.)
      */
-    cGate *getNextGate() const   {return nextgatep;}
+    cGate *getNextGate() const   {return nextGate;}
 
     /**
      * Returns an ID that uniquely identifies the connection between this gate

@@ -53,17 +53,17 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
     };
 
     void *handle;        // identifies output vector for the output vector manager
-    simtime_t last_t;    // last timestamp written, needed to ensure increasing timestamp order
-    long num_received;   // total number of values passed to the output vector object
-    long num_stored;     // number of values actually stored
+    simtime_t lastTimestamp; // last timestamp written, needed to ensure increasing timestamp order
+    long numReceived;   // total number of values passed to the output vector object
+    long numStored;     // number of values actually stored
 
     // the following members will be used directly by inspectors
-    RecordFunc record_in_inspector; // to notify inspector about file writes
-    void *data_for_inspector;
+    RecordFunc recordInInspector; // to notify inspector about file writes
+    void *dataForInspector;
 
   public:
     // internal: called from behind cEnvir
-    void setCallback(RecordFunc f, void *d) {record_in_inspector=f; data_for_inspector=d;}
+    void setCallback(RecordFunc f, void *d) {recordInInspector=f; dataForInspector=d;}
 
   public:
     enum Type { TYPE_INT, TYPE_DOUBLE, TYPE_ENUM };
@@ -243,14 +243,14 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
      * this output vector object. This includes the values passed while
      * the object was disabled (see disable()).
      */
-    long getValuesReceived() const  {return num_received;}
+    long getValuesReceived() const  {return numReceived;}
 
     /**
      * Returns the number of values actually stored by this output vector object.
      * The values passed while the object was disabled (via disable(),
      * environment configuration, filtering, etc.) do not count.
      */
-    long getValuesStored() const  {return num_stored;}
+    long getValuesStored() const  {return numStored;}
     //@}
 };
 

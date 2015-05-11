@@ -40,17 +40,17 @@ class cComponent;
 class SIM_API cException : public std::exception
 {
   protected:
-    int errorcode;
+    int errorCode;
     std::string msg;
 
-    int simulationstage;
-    eventnumber_t eventnumber;
+    int simulationStage;
+    eventnumber_t eventNumber;
     simtime_t simtime;
 
-    bool hascontext;
-    std::string contextclassname;
-    std::string contextfullpath;
-    int moduleid;
+    bool hasContext_;
+    std::string contextClassName;
+    std::string contextFullPath;
+    int contextModuleId;   // TODO for 5.0, change to getContextComponentId
 
     /**
      * Helper function for constructors: assembles and stores the message text.
@@ -60,7 +60,7 @@ class SIM_API cException : public std::exception
     void init(const cObject *obj, OppErrorCode errorcode, const char *fmt, va_list va);
 
     // helper for init()
-    void storeCtx();
+    void storeContext();
 
     // default constructor, for subclasses only.
     cException();
@@ -149,7 +149,7 @@ class SIM_API cException : public std::exception
     /**
      * Returns the error code.
      */
-    virtual int getErrorCode() const {return errorcode;}
+    virtual int getErrorCode() const {return errorCode;}
 
     /**
      * Returns the text of the error. Redefined from std::exception.
@@ -169,12 +169,12 @@ class SIM_API cException : public std::exception
      * simulation execution (CTX_EVENT), finalization (CTX_FINISH), or network
      * cleanup (CTX_CLEANUP).
      */
-    virtual int getSimulationStage() const {return simulationstage;}
+    virtual int getSimulationStage() const {return simulationStage;}
 
     /**
      * Returns the event number at the creation of the exception object.
      */
-    virtual eventnumber_t getEventNumber() const {return eventnumber;}
+    virtual eventnumber_t getEventNumber() const {return eventNumber;}
 
     /**
      * Returns the simulation time at the creation of the exception object.
@@ -186,19 +186,19 @@ class SIM_API cException : public std::exception
      * within a known module or channel. getContextClassName(), getContextFullPath()
      * and getModuleID() may only be called if this method returns true.
      */
-    virtual bool hasContext() const {return hascontext;}
+    virtual bool hasContext() const {return hasContext_;}
 
     /**
-     * Returns the class name (NED type name) of the context where the
+     * Returns the class name (NED type name) of the component in context when the
      * exception occurred.
      */
-    virtual const char *getContextClassName() const {return contextclassname.c_str();}
+    virtual const char *getContextClassName() const {return contextClassName.c_str();}
 
     /**
      * Returns the full path of the context where the exception
      * occurred.
      */
-    virtual const char *getContextFullPath() const {return contextfullpath.c_str();}
+    virtual const char *getContextFullPath() const {return contextFullPath.c_str();}
 
     /**
      * Returns the ID of the module where the exception occurred,
@@ -206,7 +206,7 @@ class SIM_API cException : public std::exception
      * any more when the exception is caught (ie. if the exception occurs
      * during network setup, the network is cleaned up immediately).
      */
-    virtual int getModuleID() const {return moduleid;}
+    virtual int getContextModuleID() const {return contextModuleId;}
     //@}
 };
 

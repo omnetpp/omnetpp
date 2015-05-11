@@ -117,7 +117,7 @@ class SIM_API cQueue : public cOwnedObject
     friend class Iterator;
 
   private:
-    bool tkownership; //FIXME move it info flags
+    bool takeOwnership; //FIXME move it info flags
     QElem *frontp, *backp;  // inserting at back(), removal at front()
     int n;  // number of items in the queue
     CompareFunc compare;   // comparison function; NULL for FIFO
@@ -311,14 +311,14 @@ class SIM_API cQueue : public cOwnedObject
      * that are NOT cOwnedObject. Since they do not support the ownership
      * protocol, they will always be treated by the queue as owned objects.
      */
-    void setTakeOwnership(bool tk) {tkownership=tk;}
+    void setTakeOwnership(bool tk) {takeOwnership=tk;}
 
     /**
      * Returns the flag which determines whether the container object
      * should automatically take ownership of the objects that are inserted
      * into it. See setTakeOwnedship() for more details.
      */
-    bool getTakeOwnership() const {return tkownership;}
+    bool getTakeOwnership() const {return takeOwnership;}
     //@}
 };
 

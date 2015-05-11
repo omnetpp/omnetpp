@@ -24,8 +24,8 @@ NAMESPACE_BEGIN
 
 cProperties::cProperties()
 {
-    islocked = false;
-    refcount = 0;
+    isLocked = false;
+    refCount = 0;
 }
 
 cProperties::~cProperties()
@@ -36,7 +36,7 @@ cProperties::~cProperties()
 
 void cProperties::copy(const cProperties& other)
 {
-    if (islocked)
+    if (isLocked)
         throw cRuntimeError(this, E_LOCKED);
 
     // note: do NOT copy islocked flag
@@ -82,7 +82,7 @@ void cProperties::parsimPack(cCommBuffer *buffer) const
 
 void cProperties::parsimUnpack(cCommBuffer *buffer)
 {
-    if (islocked)
+    if (isLocked)
         throw cRuntimeError(this, E_LOCKED);
     // TBD
 }
@@ -116,7 +116,7 @@ bool cProperties::getAsBool(const char *name, const char *index) const
 
 void cProperties::add(cProperty *p)
 {
-    if (islocked)
+    if (isLocked)
         throw cRuntimeError(this, E_LOCKED);
     propv.push_back(p);
     p->setOwner(this);
@@ -124,7 +124,7 @@ void cProperties::add(cProperty *p)
 
 void cProperties::remove(int k)
 {
-    if (islocked)
+    if (isLocked)
         throw cRuntimeError(this, E_LOCKED);
 
     if (k < 0 || k >= (int)propv.size())
@@ -163,7 +163,7 @@ std::vector<const char *> cProperties::getIndicesFor(const char *name) const
 
 void cProperties::lock()
 {
-    islocked = true;
+    isLocked = true;
     for (int i = 0; i < (int)propv.size(); i++)
         propv[i]->lock();
 }

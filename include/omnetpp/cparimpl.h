@@ -59,8 +59,8 @@ class SIM_API cParImpl : public cNamedObject
     const char *unitp; // stringpooled
 
     // global variables for statistics
-    static long total_parimpl_objs;
-    static long live_parimpl_objs;
+    static long totalParimplObjs;
+    static long liveParimplObjs;
     static cStringPool unitStringPool;
 
   private:
@@ -344,7 +344,7 @@ class SIM_API cParImpl : public cNamedObject
      * during very long simulation runs.
      * May be useful for profiling or debugging memory leaks.
      */
-    static long getTotalParImplObjectCount() {return total_parimpl_objs;}
+    static long getTotalParImplObjectCount() {return totalParimplObjs;}
 
     /**
      * Returns the number of objects that currently exist in the program.
@@ -352,13 +352,13 @@ class SIM_API cParImpl : public cNamedObject
      * the destructor.
      * May be useful for profiling or debugging memory leaks.
      */
-    static long getLiveParImplObjectCount() {return live_parimpl_objs;}
+    static long getLiveParImplObjectCount() {return liveParimplObjs;}
 
     /**
      * Reset counters used by getTotalObjectCount() and getLiveObjectCount().
      * (Note that getLiveObjectCount() may go negative after a reset call.)
      */
-    static void resetParImplObjectCounters()  {total_parimpl_objs=live_parimpl_objs=0L;}
+    static void resetParImplObjectCounters()  {totalParimplObjs=liveParimplObjs=0L;}
     //@}
 };
 

@@ -40,10 +40,10 @@ cXMLElement::cXMLElement(const char *tagname, const char *srclocation, cXMLEleme
     srcloc = srclocation;
 
     this->parent = 0;
-    firstchild = 0;
-    lastchild = 0;
-    prevsibling = 0;
-    nextsibling = 0;
+    firstChild = 0;
+    lastChild = 0;
+    prevSibling = 0;
+    nextSibling = 0;
 
     if (parent)
         parent->appendChild(this);
@@ -55,9 +55,9 @@ cXMLElement::~cXMLElement()
     {
         parent->removeChild(this);
     }
-    while (firstchild)
+    while (firstChild)
     {
-        delete removeChild(firstchild);
+        delete removeChild(firstChild);
     }
 }
 
@@ -106,22 +106,22 @@ cXMLElement *cXMLElement::getParentNode() const
 
 cXMLElement *cXMLElement::getFirstChild() const
 {
-   return firstchild;
+   return firstChild;
 }
 
 cXMLElement *cXMLElement::getLastChild() const
 {
-    return lastchild;
+    return lastChild;
 }
 
 cXMLElement *cXMLElement::getNextSibling() const
 {
-    return nextsibling;
+    return nextSibling;
 }
 
 cXMLElement *cXMLElement::getPreviousSibling() const
 {
-    return prevsibling;
+    return prevSibling;
 }
 
 void cXMLElement::appendChild(cXMLElement *node)
@@ -129,13 +129,13 @@ void cXMLElement::appendChild(cXMLElement *node)
     if (node->parent)
         node->parent->removeChild(node);
     node->parent = this;
-    node->prevsibling = lastchild;
-    node->nextsibling = 0;
-    if (node->prevsibling)
-        node->prevsibling->nextsibling = node;
+    node->prevSibling = lastChild;
+    node->nextSibling = 0;
+    if (node->prevSibling)
+        node->prevSibling->nextSibling = node;
     else
-        firstchild = node;
-    lastchild = node;
+        firstChild = node;
+    lastChild = node;
 }
 
 void cXMLElement::insertChildBefore(cXMLElement *where, cXMLElement *node)
@@ -143,32 +143,32 @@ void cXMLElement::insertChildBefore(cXMLElement *where, cXMLElement *node)
     if (node->parent)
         node->parent->removeChild(node);
     node->parent = this;
-    node->prevsibling = where->prevsibling;
-    node->nextsibling = where;
-    where->prevsibling = node;
-    if (node->prevsibling)
-        node->prevsibling->nextsibling = node;
+    node->prevSibling = where->prevSibling;
+    node->nextSibling = where;
+    where->prevSibling = node;
+    if (node->prevSibling)
+        node->prevSibling->nextSibling = node;
     else
-        firstchild = node;
+        firstChild = node;
 }
 
 cXMLElement *cXMLElement::removeChild(cXMLElement *node)
 {
-    if (node->prevsibling)
-        node->prevsibling->nextsibling = node->nextsibling;
+    if (node->prevSibling)
+        node->prevSibling->nextSibling = node->nextSibling;
     else
-        firstchild = node->nextsibling;
-    if (node->nextsibling)
-        node->nextsibling->prevsibling = node->prevsibling;
+        firstChild = node->nextSibling;
+    if (node->nextSibling)
+        node->nextSibling->prevSibling = node->prevSibling;
     else
-        lastchild = node->prevsibling;
-    node->parent = node->prevsibling = node->nextsibling = 0;
+        lastChild = node->prevSibling;
+    node->parent = node->prevSibling = node->nextSibling = 0;
     return node;
 }
 
 bool cXMLElement::hasChildren() const
 {
-    return firstchild!=NULL;
+    return firstChild!=NULL;
 }
 
 bool cXMLElement::hasAttributes() const

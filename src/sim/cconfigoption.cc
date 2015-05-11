@@ -27,30 +27,30 @@ cConfigOption::cConfigOption(const char *name, bool isGlobal, Type type, const c
                        const char *defaultValue, const char *description) :
     cNoncopyableOwnedObject(name, false)
 {
-    isPerObject_ = false;
-    isGlobal_ = isGlobal;
-    objectKind_ = KIND_NONE;
-    type_ = type;
-    unit_ = unit ? unit : "";
-    if (type_==CFG_BOOL && defaultValue)
+    this->isPerObject_ = false;
+    this->isGlobal_ = isGlobal;
+    this->objectKind = KIND_NONE;
+    this->type = type;
+    this->unit = unit ? unit : "";
+    if (type==CFG_BOOL && defaultValue)
         defaultValue = (defaultValue[0]=='0' || defaultValue[0]=='f') ? "false" : "true";
-    defaultValue_ = defaultValue ? defaultValue : "";
-    description_ = description ? description : "";
+    this->defaultValue = defaultValue ? defaultValue : "";
+    this->description = description ? description : "";
 }
 
 cConfigOption::cConfigOption(const char *name, ObjectKind kind, Type type, const char *unit,
                        const char *defaultValue, const char *description) :
     cNoncopyableOwnedObject(name, false)
 {
-    isPerObject_ = true;
-    isGlobal_ = false;
-    objectKind_ = kind;
-    type_ = type;
-    unit_ = unit ? unit : "";
-    if (type_==CFG_BOOL && defaultValue)
+    this->isPerObject_ = true;
+    this->isGlobal_ = false;
+    this->objectKind = kind;
+    this->type = type;
+    this->unit = unit ? unit : "";
+    if (type==CFG_BOOL && defaultValue)
         defaultValue = (defaultValue[0]=='0' || defaultValue[0]=='f') ? "false" : "true";
-    defaultValue_ = defaultValue ? defaultValue : "";
-    description_ = description ? description : "";
+    this->defaultValue = defaultValue ? defaultValue : "";
+    this->description = description ? description : "";
 
     // per-object config option names must contain hyphen, except for "typename" (named so for consistency with NED)
     if (strchr(name,'-')==NULL && strcmp(name, "typename")!=0)
@@ -62,11 +62,11 @@ std::string cConfigOption::info() const
     std::stringstream out;
     out << (isPerObject_ ? "per-object " : "");
     out << (isGlobal_ ? "global" : "per-run");
-    if (isPerObject_) out << ", object-kind=\"" << getObjectKindName(objectKind_) << "\"";
-    out << ", type=" << getTypeName(type_);
-    if (!unit_.empty()) out << ", unit=\"" << unit_ << "\"";
-    if (!defaultValue_.empty()) out << ", default=\"" << defaultValue_ << "\"";
-    if (!description_.empty()) out << ", hint: " << description_;
+    if (isPerObject_) out << ", object-kind=\"" << getObjectKindName(objectKind) << "\"";
+    out << ", type=" << getTypeName(type);
+    if (!unit.empty()) out << ", unit=\"" << unit << "\"";
+    if (!defaultValue.empty()) out << ", default=\"" << defaultValue << "\"";
+    if (!description.empty()) out << ", hint: " << description;
     return out.str();
 }
 

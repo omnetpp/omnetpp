@@ -202,8 +202,8 @@ class SIM_API cFSM : public cOwnedObject
     //  negative state codes are transient states
     //  positive state codes are steady states
     //
-    int _state;
-    const char *_statename;   // just a ptr to an external string
+    int state;
+    const char *stateName;   // just a ptr to an external string
 
   private:
     void copy(const cFSM& other);
@@ -265,17 +265,17 @@ class SIM_API cFSM : public cOwnedObject
     /**
      * Returns the state the FSM is currently in.
      */
-    int getState() const  {return _state;}
+    int getState() const  {return state;}
 
     /**
      * Returns the name of the state the FSM is currently in.
      */
-    const char *getStateName() const {return _statename?_statename:"";}
+    const char *getStateName() const {return stateName?stateName:"";}
 
     /**
      * Returns true if the FSM is currently in a transient state.
      */
-    int isInTransientState() const  {return _state<0;}
+    int isInTransientState() const  {return state<0;}
 
     /**
      * Sets the state of the FSM. This method is usually invoked through
@@ -287,7 +287,7 @@ class SIM_API cFSM : public cOwnedObject
      *
      * @see FSM_Goto
      */
-    void setState(int state, const char *stn=NULL)  {_state=state;_statename=stn;}
+    void setState(int state, const char *stateName=NULL)  {this->state=state;this->stateName=stateName;}
     //@}
 };
 

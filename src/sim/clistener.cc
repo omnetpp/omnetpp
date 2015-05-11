@@ -54,20 +54,20 @@ static void findListenerOccurences(cComponent *component, cIListener *listener, 
 
 cIListener::cIListener()
 {
-    subscribecount = 0;
+    subscribeCount = 0;
 }
 
 cIListener::~cIListener()
 {
-    if (subscribecount)
+    if (subscribeCount)
     {
         // note: throwing an exception would is risky here: it would typically
         // cause other exceptions, and eventually crash
-        if (subscribecount < 0)
+        if (subscribeCount < 0)
         {
             getEnvir()->printfmsg(
                 "cListener destructor: internal error: negative subscription "
-                "count (%d) in listener at address %p", subscribecount, this);
+                "count (%d) in listener at address %p", subscribeCount, this);
             return;
         }
 
@@ -77,7 +77,7 @@ cIListener::~cIListener()
                 "%d listener list(s). This will likely result in a crash: "
                 "Listeners must be fully unsubscribed before deletion. "
                 "Trying to determine components where this listener is subscribed...",
-                this, subscribecount);
+                this, subscribeCount);
 
         // print components and signals where this listener is subscribed
         std::stringstream out;

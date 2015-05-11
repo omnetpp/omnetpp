@@ -33,13 +33,11 @@ cNEDFunction::cNEDFunction(NEDFunction f, const char *signature,
   cNoncopyableOwnedObject(NULL,false)
 {
     ASSERT(f);
-    signature = opp_nulltoempty(signature);
 
     this->f = f;
-    this->sign = opp_nulltoempty(signature);
-
-    this->categ = opp_nulltoempty(category);
-    this->desc = opp_nulltoempty(description);
+    this->signature = opp_nulltoempty(signature);
+    this->category = opp_nulltoempty(category);
+    this->description = opp_nulltoempty(description);
 
     parseSignature(signature);
 }
@@ -102,7 +100,7 @@ void cNEDFunction::parseSignature(const char *signature)
     if (!splitTypeAndName(typeAndName, type, name))
         throw cRuntimeError(syntaxErrorMessage, signature);
     setName(name.c_str());
-    rettype = type;
+    returnType = type;
 
     std::string rest = opp_trim(opp_substringafter(str, "(").c_str());
     bool missingRParen = !contains(rest, ")");
@@ -111,39 +109,39 @@ void cNEDFunction::parseSignature(const char *signature)
     if (missingRParen || trailingGarbage.size()!=0)
         throw cRuntimeError(syntaxErrorMessage, signature);
 
-    minargc = -1;
-    hasvarargs = false;
+    minArgc = -1;
+    hasVarargs_ = false;
     std::vector<std::string> args = StringTokenizer(argList.c_str(), ",").asVector();
     for (int i=0; i < (int)args.size(); i++)
     {
         if (opp_trim(args[i].c_str()) == "...") {
             if (i != (int)args.size()-1)
                 throw cRuntimeError(syntaxErrorMessage, signature); // "..." must be the last one
-            hasvarargs = true;
+            hasVarargs_ = true;
         }
         else {
             char argType;
             std::string argName;
             if (!splitTypeAndName(args[i], argType, argName))
                 throw cRuntimeError(syntaxErrorMessage, signature);
-            argtypes += argType;
-            if (contains(argName,"?") && minargc==-1)
-                minargc = i;
+            argTypes += argType;
+            if (contains(argName,"?") && minArgc==-1)
+                minArgc = i;
         }
     }
-    maxargc = argtypes.size();
-    if (minargc==-1)
-        minargc = maxargc;
+    maxArgc = argTypes.size();
+    if (minArgc==-1)
+        minArgc = maxArgc;
 }
 
 void cNEDFunction::checkArgs(cNEDValue argv[], int argc)
 {
-    if (argc < minargc || (argc > maxargc && !hasvarargs))
+    if (argc < minArgc || (argc > maxArgc && !hasVarargs_))
         throw cRuntimeError("%s: called with wrong number of arguments", getName());
 
-    int n = std::min(argc, maxargc);
+    int n = std::min(argc, maxArgc);
     for (int i=0; i<n; i++) {
-        char declType = argtypes[i];
+        char declType = argTypes[i];
         if (declType=='D' || declType=='L') {
             if (argv[i].type != cNEDValue::DBL)
                 throw cRuntimeError(E_EBADARGS, getName());

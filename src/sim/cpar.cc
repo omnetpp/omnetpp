@@ -44,7 +44,7 @@ cPar::~cPar()
 void cPar::init(cComponent *component, cParImpl *newp)
 {
     ASSERT(!p && newp);
-    ownercomponent = evalcontext = component;
+    ownerComponent = evalContext = component;
     p = newp;
 }
 
@@ -58,11 +58,11 @@ void cPar::setImpl(cParImpl *newp)
 
 void cPar::moveto(cPar& other)
 {
-    other.ownercomponent = ownercomponent;
+    other.ownerComponent = ownerComponent;
     other.p = p;
-    other.evalcontext = evalcontext;
+    other.evalContext = evalContext;
     p = NULL;
-    evalcontext = NULL;
+    evalContext = NULL;
 }
 
 const char *cPar::getName() const
@@ -91,7 +91,7 @@ cParImpl *cPar::copyIfShared()
 
 cObject *cPar::getOwner() const
 {
-    return ownercomponent;
+    return ownerComponent;
 }
 
 void cPar::operator=(const cPar& other)
@@ -100,9 +100,9 @@ void cPar::operator=(const cPar& other)
     // simulation models to copy parameters
     if (other.isExpression())
     {
-        cComponent *ctx = other.evalcontext;
-        if (ctx == other.ownercomponent)
-            ctx = ownercomponent;  // best effort to fix up evaluation context
+        cComponent *ctx = other.evalContext;
+        if (ctx == other.ownerComponent)
+            ctx = ownerComponent;  // best effort to fix up evaluation context
         setExpression(other.getExpression()->dup(), ctx);
     }
     else
@@ -189,17 +189,17 @@ bool cPar::isExpression() const
 
 bool cPar::boolValue() const
 {
-    TRY(return p->boolValue(evalcontext));
+    TRY(return p->boolValue(evalContext));
 }
 
 long cPar::longValue() const
 {
-    TRY(return p->longValue(evalcontext));
+    TRY(return p->longValue(evalContext));
 }
 
 double cPar::doubleValue() const
 {
-    TRY(return p->doubleValue(evalcontext));
+    TRY(return p->doubleValue(evalContext));
 }
 
 const char *cPar::getUnit() const
@@ -209,17 +209,17 @@ const char *cPar::getUnit() const
 
 const char *cPar::stringValue() const
 {
-    TRY(return p->stringValue(evalcontext));
+    TRY(return p->stringValue(evalContext));
 }
 
 std::string cPar::stdstringValue() const
 {
-    TRY(return p->stdstringValue(evalcontext));
+    TRY(return p->stdstringValue(evalContext));
 }
 
 cXMLElement *cPar::xmlValue() const
 {
-    TRY(return p->xmlValue(evalcontext));
+    TRY(return p->xmlValue(evalContext));
 }
 
 cExpression *cPar::getExpression() const
@@ -232,7 +232,7 @@ cPar& cPar::setBoolValue(bool b)
     beforeChange();
     copyIfShared();
     p->setBoolValue(b);
-    evalcontext = NULL;
+    evalContext = NULL;
     afterChange();
     return *this;
 }
@@ -242,7 +242,7 @@ cPar& cPar::setLongValue(long l)
     beforeChange();
     copyIfShared();
     p->setLongValue(l);
-    evalcontext = NULL;
+    evalContext = NULL;
     afterChange();
     return *this;
 }
@@ -252,7 +252,7 @@ cPar& cPar::setDoubleValue(double d)
     beforeChange();
     copyIfShared();
     p->setDoubleValue(d);
-    evalcontext = NULL;
+    evalContext = NULL;
     afterChange();
     return *this;
 }
@@ -262,7 +262,7 @@ cPar& cPar::setStringValue(const char *s)
     beforeChange();
     copyIfShared();
     p->setStringValue(s);
-    evalcontext = NULL;
+    evalContext = NULL;
     afterChange();
     return *this;
 }
@@ -272,7 +272,7 @@ cPar& cPar::setXMLValue(cXMLElement *node)
     beforeChange();
     copyIfShared();
     p->setXMLValue(node);
-    evalcontext = NULL;
+    evalContext = NULL;
     afterChange();
     return *this;
 }
@@ -282,7 +282,7 @@ cPar& cPar::setExpression(cExpression *e, cComponent *ctx)
     beforeChange();
     copyIfShared();
     p->setExpression(e);
-    evalcontext = ctx ? ctx : ownercomponent;
+    evalContext = ctx ? ctx : ownerComponent;
     afterChange();
     return *this;
 }
@@ -290,33 +290,33 @@ cPar& cPar::setExpression(cExpression *e, cComponent *ctx)
 void cPar::beforeChange()
 {
     // notify pre-change listeners
-    if (ownercomponent->hasListeners(PRE_MODEL_CHANGE)) {
+    if (ownerComponent->hasListeners(PRE_MODEL_CHANGE)) {
         cPreParameterChangeNotification tmp;
         tmp.par = this;
-        ownercomponent->emit(PRE_MODEL_CHANGE, &tmp);
+        ownerComponent->emit(PRE_MODEL_CHANGE, &tmp);
     }
 }
 
 void cPar::afterChange()
 {
-    ASSERT(ownercomponent);
+    ASSERT(ownerComponent);
 #ifdef SIMFRONTEND_SUPPORT
-    ownercomponent->updateLastChangeSerial();
+    ownerComponent->updateLastChangeSerial();
 #endif
 
     // call owner's component's handleParameterChange() method,
     // i.e. parameter change notification is allowed only on fully initialized components
-    if (ownercomponent->initialized())
+    if (ownerComponent->initialized())
     {
-        cContextSwitcher tmp(ownercomponent);
-        ownercomponent->handleParameterChange(getFullName());
+        cContextSwitcher tmp(ownerComponent);
+        ownerComponent->handleParameterChange(getFullName());
     }
 
     // notify post-change listeners
-    if (ownercomponent->hasListeners(POST_MODEL_CHANGE)) {
+    if (ownerComponent->hasListeners(POST_MODEL_CHANGE)) {
         cPostParameterChangeNotification tmp;
         tmp.par = this;
-        ownercomponent->emit(POST_MODEL_CHANGE, &tmp);
+        ownerComponent->emit(POST_MODEL_CHANGE, &tmp);
     }
 
 }
@@ -324,7 +324,7 @@ void cPar::afterChange()
 #ifdef SIMFRONTEND_SUPPORT
 bool cPar::hasChangedSince(int64_t lastRefreshSerial)
 {
-    return ownercomponent->hasChangedSince(lastRefreshSerial);
+    return ownerComponent->hasChangedSince(lastRefreshSerial);
 }
 #endif
 
@@ -346,7 +346,7 @@ void cPar::finalize()
     {
         beforeChange();
         copyIfShared();
-        p->evaluateConstSubexpressions(evalcontext); //XXX sharing?
+        p->evaluateConstSubexpressions(evalContext); //XXX sharing?
         afterChange();
     }
 }
@@ -366,7 +366,7 @@ void cPar::acceptDefault()
     // try to look up the value in the value cache (temporarily setting
     // isSet=true so that we can use this object as key)
     p->setIsSet(true);
-    cComponentType *componentType = ownercomponent->getComponentType();
+    cComponentType *componentType = ownerComponent->getComponentType();
     cParImpl *cachedValue = componentType->getSharedParImpl(p);
     p->setIsSet(false);
 
@@ -386,14 +386,14 @@ void cPar::convertToConst()
     beforeChange();
     copyIfShared();
     try {
-        p->convertToConst(evalcontext);
+        p->convertToConst(evalContext);
     }
     catch (std::exception& e) {
         throw cRuntimeError(E_PARAM, getFullName(), e.what());
     }
 
     // maybe replace it with a shared copy
-    cComponentType *componentType = ownercomponent->getComponentType();
+    cComponentType *componentType = ownerComponent->getComponentType();
     cParImpl *cachedValue = componentType->getSharedParImpl(p);
     if (cachedValue)
         setImpl(cachedValue);
@@ -418,7 +418,7 @@ void cPar::parse(const char *text)
     // cParImpl::parse() which throws an error on them.
     //
     beforeChange();
-    cComponentType *componentType = ownercomponent->getComponentType();
+    cComponentType *componentType = ownerComponent->getComponentType();
     std::string key = std::string(componentType->getName()) + ":" + getName() + ":" + text;
     cParImpl *cachedValue = componentType->getSharedParImpl(key.c_str());
     if (cachedValue)

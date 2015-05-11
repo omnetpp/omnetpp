@@ -97,10 +97,10 @@ class SIM_API cXMLElement
     std::string value;
     cXMLAttributeMap attrs;
     cXMLElement *parent;
-    cXMLElement *firstchild;
-    cXMLElement *lastchild;
-    cXMLElement *prevsibling;
-    cXMLElement *nextsibling;
+    cXMLElement *firstChild;
+    cXMLElement *lastChild;
+    cXMLElement *prevSibling;
+    cXMLElement *nextSibling;
 
   private:
      void doGetElementsByTagName(const char *tagname, cXMLElementList& list) const;

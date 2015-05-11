@@ -68,7 +68,7 @@ class SIM_API cIListener
     friend class cComponent; // for subscribecount
     friend class cResultFilter; // for subscribecount
   private:
-    int subscribecount;
+    int subscribeCount;
   public:
     cIListener();
     virtual ~cIListener();
@@ -144,7 +144,7 @@ class SIM_API cIListener
     /**
      * Returns the number of listener lists that contain this listener.
      */
-    int getSubscribeCount() const  { return subscribecount; }
+    int getSubscribeCount() const  { return subscribeCount; }
 };
 
 /**

@@ -94,14 +94,14 @@ cGate::cGate()
 {
     desc = NULL;
     pos = 0;
-    prevgatep = nextgatep = NULL;
-    channelp = NULL;
+    prevGate = nextGate = NULL;
+    channel = NULL;
     connectionId = -1;
 }
 
 cGate::~cGate()
 {
-    dropAndDelete(channelp);
+    dropAndDelete(channel);
 }
 
 void cGate::clearFullnamePool()
@@ -111,26 +111,26 @@ void cGate::clearFullnamePool()
 
 void cGate::forEachChild(cVisitor *v)
 {
-    if (channelp)
-        v->visit(channelp);
+    if (channel)
+        v->visit(channel);
 }
 
 const char *cGate::getBaseName() const
 {
-    return desc->namep->name.c_str();
+    return desc->name->name.c_str();
 }
 
 const char *cGate::getName() const
 {
-    if (desc->namep->type==INOUT)
-        return desc->isInput(this) ? desc->namep->namei.c_str() : desc->namep->nameo.c_str();
+    if (desc->name->type==INOUT)
+        return desc->isInput(this) ? desc->name->namei.c_str() : desc->name->nameo.c_str();
     else
-        return desc->namep->name.c_str();
+        return desc->name->name.c_str();
 }
 
 const char *cGate::getNameSuffix() const
 {
-    if (desc->namep->type==INOUT)
+    if (desc->name->type==INOUT)
         return desc->isInput(this) ? "$i" : "$o";
     else
         return "";
@@ -161,9 +161,9 @@ std::string cGate::info() const
     cChannel const *chan;
 
     if (getType()==OUTPUT)
-        {arrow = "--> "; g = nextgatep; chan = channelp; }
+        {arrow = "--> "; g = nextGate; chan = channel; }
     else if (getType()==INPUT)
-        {arrow = "<-- "; g = prevgatep; chan = prevgatep ? prevgatep->channelp : NULL;}
+        {arrow = "<-- "; g = prevGate; chan = prevGate ? prevGate->channel : NULL;}
     else
         ASSERT(0);  // a cGate is never INOUT
 
@@ -186,17 +186,17 @@ std::string cGate::info() const
 cObject *cGate::getOwner() const
 {
     // note: this function cannot go inline because of circular dependencies
-    return desc->ownerp;
+    return desc->owner;
 }
 
 cModule *cGate::getOwnerModule() const
 {
-    return desc->ownerp;
+    return desc->owner;
 }
 
 int cGate::getId() const
 {
-    int descIndex = desc - desc->ownerp->gateDescArray;
+    int descIndex = desc - desc->owner->gateDescArray;
     int id;
     if (!desc->isVector())
         id = (descIndex<<1)|(pos&1);
@@ -208,7 +208,7 @@ int cGate::getId() const
 
 int cGate::getBaseId() const
 {
-    int descIndex = desc - desc->ownerp->gateDescArray;
+    int descIndex = desc - desc->owner->gateDescArray;
     int id;
     if (!desc->isVector())
         id = (descIndex<<1)|(pos&1);
@@ -246,11 +246,11 @@ bool cGate::hasChangedSince(int64_t lastRefreshSerial)
 
 cChannel *cGate::connectTo(cGate *g, cChannel *chan, bool leaveUninitialized)
 {
-    if (nextgatep)
+    if (nextGate)
         throw cRuntimeError(this, "connectTo(): gate already connected");
     if (!g)
         throw cRuntimeError(this, "connectTo(): destination gate cannot be NULL pointer");
-    if (g->prevgatep)
+    if (g->prevGate)
         throw cRuntimeError(this, "connectTo(): destination gate already connected");
 
     // notify pre-change listeners
@@ -276,8 +276,8 @@ cChannel *cGate::connectTo(cGate *g, cChannel *chan, bool leaveUninitialized)
     }
 
     // build new connection
-    nextgatep = g;
-    nextgatep->prevgatep = this;
+    nextGate = g;
+    nextGate->prevGate = this;
     connectionId = ++lastConnectionId;
     if (chan)
         installChannel(chan);
@@ -319,18 +319,18 @@ cChannel *cGate::connectTo(cGate *g, cChannel *chan, bool leaveUninitialized)
 
 void cGate::installChannel(cChannel *chan)
 {
-    ASSERT(channelp==NULL && chan!=NULL);
-    channelp = chan;
-    channelp->setSourceGate(this);
-    take(channelp);
+    ASSERT(channel==NULL && chan!=NULL);
+    channel = chan;
+    channel->setSourceGate(this);
+    take(channel);
 
     // update cached signal state
-    channelp->repairSignalFlags();
+    channel->repairSignalFlags();
 }
 
 void cGate::disconnect()
 {
-    if (!nextgatep)
+    if (!nextGate)
         return;
 
     // notify pre-change listeners
@@ -341,7 +341,7 @@ void cGate::disconnect()
         mod->emit(PRE_MODEL_CHANGE, &tmp);
     }
     cGate *pathStartGate = getPathStartGate();
-    cGate *pathEndGate = nextgatep->getPathEndGate();
+    cGate *pathEndGate = nextGate->getPathEndGate();
     cModule *pathStartModule = pathStartGate->getOwnerModule();
     cModule *pathEndModule = pathEndGate->getOwnerModule();
     if (pathStartModule->hasListeners(PRE_MODEL_CHANGE) || pathEndModule->hasListeners(PRE_MODEL_CHANGE)) {
@@ -357,13 +357,13 @@ void cGate::disconnect()
     EVCB.connectionDeleted(this);
 
     // remove connection (but preserve channel object for the notification)
-    cGate *oldnextgatep = nextgatep;
-    nextgatep->prevgatep = NULL;
-    nextgatep = NULL;
+    cGate *oldnextgatep = nextGate;
+    nextGate->prevGate = NULL;
+    nextGate = NULL;
     connectionId = -1;
 
-    cChannel *oldchannelp = channelp;
-    channelp = NULL;
+    cChannel *oldchannelp = channel;
+    channel = NULL;
 
 #ifdef SIMFRONTEND_SUPPORT
     mod->updateLastChangeSerial();
@@ -393,8 +393,8 @@ void cGate::disconnect()
 void cGate::checkChannels() const
 {
     int n = 0;
-    for (const cGate *g=getPathStartGate(); g->nextgatep!=NULL; g=g->nextgatep)
-        if (g->channelp && g->channelp->isTransmissionChannel())
+    for (const cGate *g=getPathStartGate(); g->nextGate!=NULL; g=g->nextGate)
+        if (g->channel && g->channel->isTransmissionChannel())
             n++;
     if (n>1)
         throw cRuntimeError("More than one channel with data rate found in the "
@@ -415,14 +415,14 @@ cChannel *cGate::reconnectWith(cChannel *channel, bool leaveUninitialized)
 cGate *cGate::getPathStartGate() const
 {
     const cGate *g;
-    for (g=this; g->prevgatep!=NULL; g=g->prevgatep);
+    for (g=this; g->prevGate!=NULL; g=g->prevGate);
     return const_cast<cGate *>(g);
 }
 
 cGate *cGate::getPathEndGate() const
 {
     const cGate *g;
-    for (g=this; g->nextgatep!=NULL; g=g->nextgatep);
+    for (g=this; g->nextGate!=NULL; g=g->nextGate);
     return const_cast<cGate *>(g);
 }
 
@@ -442,36 +442,36 @@ void cGate::setDeliverOnReceptionStart(bool d)
 
 bool cGate::deliver(cMessage *msg, simtime_t t)
 {
-    if (!nextgatep)
+    if (!nextGate)
     {
         getOwnerModule()->arrived(msg, this, t);
         return true;
     }
-    else if (!channelp)
+    else if (!channel)
     {
         EVCB.messageSendHop(msg, this);
-        return nextgatep->deliver(msg, t);
+        return nextGate->deliver(msg, t);
     }
     else
     {
-        if (!channelp->initialized())
-            throw cRuntimeError(channelp, "Channel not initialized (did you forget to invoke "
+        if (!channel->initialized())
+            throw cRuntimeError(channel, "Channel not initialized (did you forget to invoke "
                                           "callInitialize() for a dynamically created channel or "
                                           "a dynamically created compound module that contains it?)");
-        if (!channelp->isTransmissionChannel())
+        if (!channel->isTransmissionChannel())
         {
             cChannel::result_t tmp;
-            channelp->processMessage(msg, t, tmp);
+            channel->processMessage(msg, t, tmp);
             if (tmp.discard)
                 return false;
             EVCB.messageSendHop(msg, this, tmp.delay, SIMTIME_ZERO); // tmp.duration ignored for non-transmission channels
-            return nextgatep->deliver(msg, t + tmp.delay);
+            return nextGate->deliver(msg, t + tmp.delay);
         }
         else
         {
             // transmission channel:
             // channel must be idle
-            if (channelp->getTransmissionFinishTime() > t)
+            if (channel->getTransmissionFinishTime() > t)
                 throw cRuntimeError("Error sending message (%s)%s on gate %s: channel is currently "
                                     "busy with an ongoing transmission -- please rewrite the sender "
                                     "simple module to only send when the previous transmission has "
@@ -489,22 +489,22 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
 
             // process
             cChannel::result_t tmp;
-            channelp->processMessage(msg, t, tmp);
+            channel->processMessage(msg, t, tmp);
             if (tmp.discard)
                 return false;
             if (isPacket)
                 ((cPacket *)msg)->setDuration(tmp.duration);
             EVCB.messageSendHop(msg, this, tmp.delay, tmp.duration);
-            return nextgatep->deliver(msg, t + tmp.delay);
+            return nextGate->deliver(msg, t + tmp.delay);
         }
     }
 }
 
 cChannel *cGate::findTransmissionChannel() const
 {
-    for (const cGate *g=this; g->nextgatep!=NULL; g=g->nextgatep)
-        if (g->channelp && g->channelp->isTransmissionChannel())
-            return g->channelp;
+    for (const cGate *g=this; g->nextGate!=NULL; g=g->nextGate)
+        if (g->channel && g->channel->isTransmissionChannel())
+            return g->channel;
     return NULL;
 }
 
@@ -515,7 +515,7 @@ cChannel *cGate::getTransmissionChannel() const
         return chan;
 
     // transmission channel not found, try to issue a helpful error message
-    if (nextgatep)
+    if (nextGate)
         throw cRuntimeError(this, "getTransmissionChannel(): no transmission channel "
                             "found in the connection path between gates %s and %s",
                             getFullPath().c_str(),
@@ -531,9 +531,9 @@ cChannel *cGate::getTransmissionChannel() const
 
 cChannel *cGate::findIncomingTransmissionChannel() const
 {
-    for (const cGate *g=this->prevgatep; g!=NULL; g=g->prevgatep)
-        if (g->channelp && g->channelp->isTransmissionChannel())
-            return g->channelp;
+    for (const cGate *g=this->prevGate; g!=NULL; g=g->prevGate)
+        if (g->channel && g->channel->isTransmissionChannel())
+            return g->channel;
     return NULL;
 }
 
@@ -544,7 +544,7 @@ cChannel *cGate::getIncomingTransmissionChannel() const
         return chan;
 
     // transmission channel not found, try to issue a helpful error message
-    if (prevgatep)
+    if (prevGate)
         throw cRuntimeError(this, "getIncomingTransmissionChannel(): no transmission channel "
                             "found in the connection path between gates %s and %s",
                             getFullPath().c_str(),
@@ -562,10 +562,10 @@ bool cGate::pathContains(cModule *mod, int gate)
 {
     cGate *g;
 
-    for (g=this; g!=NULL; g=g->prevgatep)
+    for (g=this; g!=NULL; g=g->prevGate)
         if (g->getOwnerModule()==mod && (gate==-1 || g->getId()==gate))
             return true;
-    for (g=nextgatep; g!=NULL; g=g->nextgatep)
+    for (g=nextGate; g!=NULL; g=g->nextGate)
         if (g->getOwnerModule()==mod && (gate==-1 || g->getId()==gate))
             return true;
     return false;
@@ -574,17 +574,17 @@ bool cGate::pathContains(cModule *mod, int gate)
 bool cGate::isConnectedOutside() const
 {
     if (getType()==INPUT)
-        return prevgatep!=NULL;
+        return prevGate!=NULL;
     else
-        return nextgatep!=NULL;
+        return nextGate!=NULL;
 }
 
 bool cGate::isConnectedInside() const
 {
     if (getType()==INPUT)
-        return nextgatep!=NULL;
+        return nextGate!=NULL;
     else
-        return prevgatep!=NULL;
+        return prevGate!=NULL;
 }
 
 bool cGate::isConnected() const
@@ -592,7 +592,7 @@ bool cGate::isConnected() const
     // for compound modules, both inside and outside must be non-NULL,
     // for simple modules, only check outside.
     if (!getOwnerModule()->isSimple())
-        return prevgatep!=NULL && nextgatep!=NULL;
+        return prevGate!=NULL && nextGate!=NULL;
     else
         return isConnectedOutside();
 }
@@ -608,7 +608,7 @@ cDisplayString& cGate::getDisplayString()
     if (!getChannel())
     {
         installChannel(cIdealChannel::create("channel"));
-        channelp->callInitialize();
+        channel->callInitialize();
     }
     return getChannel()->getDisplayString();
 }

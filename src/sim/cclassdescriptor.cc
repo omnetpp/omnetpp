@@ -190,10 +190,10 @@ const char **cClassDescriptor::mergeLists(const char **list1, const char **list2
 cClassDescriptor::cClassDescriptor(const char *classname, const char *_baseclassname) :
 cNoncopyableOwnedObject(classname, false)
 {
-    baseclassname = _baseclassname ? _baseclassname : "";
-    baseclassdesc = NULL;
-    inheritancechainlength = 1;
-    extendscobject = -1;
+    baseClassName = _baseclassname ? _baseclassname : "";
+    baseClassDesc = NULL;
+    inheritanceChainLength = 1;
+    extendscObject = -1;
 }
 
 cClassDescriptor::~cClassDescriptor()
@@ -202,26 +202,26 @@ cClassDescriptor::~cClassDescriptor()
 
 cClassDescriptor *cClassDescriptor::getBaseClassDescriptor() const
 {
-    if (!baseclassdesc && !baseclassname.empty())
+    if (!baseClassDesc && !baseClassName.empty())
     {
         cClassDescriptor *this_ = const_cast<cClassDescriptor*>(this);
-        this_->baseclassdesc = getDescriptorFor(baseclassname.c_str());
-        if (baseclassdesc)
-            this_->inheritancechainlength = 1 + baseclassdesc->getInheritanceChainLength();
+        this_->baseClassDesc = getDescriptorFor(baseClassName.c_str());
+        if (baseClassDesc)
+            this_->inheritanceChainLength = 1 + baseClassDesc->getInheritanceChainLength();
     }
-    return baseclassdesc;
+    return baseClassDesc;
 }
 
 bool cClassDescriptor::extendsCObject() const
 {
-    if (extendscobject == -1) {
+    if (extendscObject == -1) {
         cClassDescriptor *this_ = const_cast<cClassDescriptor*>(this);
-        this_->extendscobject = false;
+        this_->extendscObject = false;
         const cClassDescriptor *current = this;
 
         while (current) {
             if (!strcmp(OPP_PREFIX "cObject", current->getName())) {
-                this_->extendscobject = true;
+                this_->extendscObject = true;
                 break;
             }
             else {
@@ -229,13 +229,13 @@ bool cClassDescriptor::extendsCObject() const
             }
         }
     }
-    return extendscobject;
+    return extendscObject;
 }
 
 int cClassDescriptor::getInheritanceChainLength() const
 {
     getBaseClassDescriptor(); // force resolution of inheritance
-    return inheritancechainlength;
+    return inheritanceChainLength;
 }
 
 const char *cClassDescriptor::getFieldDeclaredOn(int field) const

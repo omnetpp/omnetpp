@@ -25,16 +25,16 @@ NAMESPACE_BEGIN
 cObjectFactory::cObjectFactory(const char *name, cObject *(*creatorf)(), void *(*castf)(cObject *), const char *description)
   : cNoncopyableOwnedObject(name, false)
 {
-    creatorfunc = creatorf;
-    castfunc = castf;
-    descr = description ? description : "";
+    this->creatorFunc = creatorf;
+    this->castFunc = castf;
+    this->description = description ? description : "";
 }
 
 std::string cObjectFactory::info() const
 {
-    if (descr.empty())
+    if (description.empty())
         return "";
-    return std::string("(") + descr + ")";  //TODO isAbstract
+    return std::string("(") + description + ")";  //TODO isAbstract
 }
 
 cObjectFactory *cObjectFactory::doFind(const char *className)
@@ -83,9 +83,9 @@ cObjectFactory *cObjectFactory::get(const char *className, const char *contextNa
 
 cObject *cObjectFactory::createOne() const
 {
-    if (!creatorfunc)
+    if (!creatorFunc)
         throw cRuntimeError("Class \"%s\" is registered as abstract, and cannot be instantiated", getFullName());
-    return creatorfunc();
+    return creatorFunc();
 }
 
 cObject *cObjectFactory::createOne(const char *classname)

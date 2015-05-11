@@ -45,10 +45,10 @@ cOutVector::cOutVector(const char *name) : cNoncopyableOwnedObject(name)
 {
     setFlag(FL_ENABLED, true);
     handle = NULL;
-    num_received = 0;
-    num_stored = 0;
-    record_in_inspector = NULL;
-    last_t = 0;
+    numReceived = 0;
+    numStored = 0;
+    recordInInspector = NULL;
+    lastTimestamp = 0;
 
     // register early if possible (only required by Akaroa)
     if (name) {
@@ -82,7 +82,7 @@ std::string cOutVector::info() const
     if (!handle)
         return std::string("(no values recorded yet)");
     std::stringstream out;
-    out << "received " << num_received << " values, stored " << num_stored;
+    out << "received " << numReceived << " values, stored " << numStored;
     return out.str();
 }
 
@@ -185,16 +185,16 @@ bool cOutVector::record(double value)
 bool cOutVector::recordWithTimestamp(simtime_t t, double value)
 {
     // check timestamp
-    if (t<last_t)
+    if (t<lastTimestamp)
         throw cRuntimeError(this,"Cannot record data with an earlier timestamp (t=%s) "
                                  "than the previously recorded value", SIMTIME_STR(t));
-    last_t = t;
+    lastTimestamp = t;
 
-    num_received++;
+    numReceived++;
 
     // pass data to inspector
-    if (record_in_inspector)
-        record_in_inspector(data_for_inspector,t,value,0.0);
+    if (recordInInspector)
+        recordInInspector(dataForInspector,t,value,0.0);
 
     if (!isEnabled())
         return false;
@@ -209,7 +209,7 @@ bool cOutVector::recordWithTimestamp(simtime_t t, double value)
     // pass data to envir for storage
     bool stored = getEnvir()->recordInOutputVector(handle, t, value);
     if (stored)
-        num_stored++;
+        numStored++;
     return stored;
 }
 

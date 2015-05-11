@@ -86,8 +86,8 @@ class SIM_API cNEDMathFunction : public cNoncopyableOwnedObject
   private:
     MathFunc f;            // pointer to the function
     int argc;              // argument count (up to 4 doubles)
-    std::string categ;     // category string; only used when listing all functions
-    std::string desc;      // optional documentation string
+    std::string category;  // category string; only used when listing all functions
+    std::string description;  // optional documentation string
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -179,12 +179,12 @@ class SIM_API cNEDMathFunction : public cNoncopyableOwnedObject
      * Returns a string that can be useful in classifying NED functions,
      * e.g. "trigonometric".
      */
-    const char *getCategory() const  {return categ.c_str();}
+    const char *getCategory() const  {return category.c_str();}
 
     /**
      * Returns the function's documentation as a string.
      */
-    const char *getDescription() const  {return desc.c_str();}
+    const char *getDescription() const  {return description.c_str();}
     //@}
 
     /**

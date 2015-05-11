@@ -34,22 +34,22 @@
 
 NAMESPACE_BEGIN
 
-long cParImpl::total_parimpl_objs;
-long cParImpl::live_parimpl_objs;
+long cParImpl::totalParimplObjs;
+long cParImpl::liveParimplObjs;
 cStringPool cParImpl::unitStringPool("cParImpl::unitStringPool");
 
 
 cParImpl::cParImpl()
 {
     unitp = NULL;
-    total_parimpl_objs++;
-    live_parimpl_objs++;
+    totalParimplObjs++;
+    liveParimplObjs++;
 }
 
 cParImpl::~cParImpl()
 {
     unitStringPool.release(unitp);
-    live_parimpl_objs--;
+    liveParimplObjs--;
 }
 
 void cParImpl::copy(const cParImpl& other)

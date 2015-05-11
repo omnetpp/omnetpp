@@ -59,10 +59,10 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     };
 
   private:
-    std::string baseclassname;
-    cClassDescriptor *baseclassdesc;
-    int inheritancechainlength;
-    int extendscobject;
+    std::string baseClassName;
+    cClassDescriptor *baseClassDesc;
+    int inheritanceChainLength;
+    int extendscObject;  // 0:false, 1:true, -1:unset
 
   protected:
     // utility functions for converting from/to strings

@@ -43,8 +43,8 @@ static char buffer2[BUFLEN];
 
 cException::cException() : std::exception()
 {
-    errorcode = E_CUSTOM;
-    storeCtx();
+    errorCode = E_CUSTOM;
+    storeContext();
     msg = "n/a";
 }
 
@@ -82,47 +82,47 @@ cException::cException(const cObject *where, const char *msgformat...) : std::ex
 
 cException::cException(const cException& e) : std::exception(e)
 {
-    errorcode = e.errorcode;
+    errorCode = e.errorCode;
     msg = e.msg;
 
-    simulationstage = e.simulationstage;
-    eventnumber = e.eventnumber;
+    simulationStage = e.simulationStage;
+    eventNumber = e.eventNumber;
     simtime = e.simtime;
 
-    hascontext = e.hascontext;
-    contextclassname = e.contextclassname;
-    contextfullpath = e.contextfullpath;
-    moduleid = e.moduleid;
+    hasContext_ = e.hasContext_;
+    contextClassName = e.contextClassName;
+    contextFullPath = e.contextFullPath;
+    contextModuleId = e.contextModuleId;
 }
 
-void cException::storeCtx()
+void cException::storeContext()
 {
     cSimulation *sim = cSimulation::getActiveSimulation();
 
     if (!sim)
     {
-        simulationstage = CTX_NONE;
-        eventnumber = 0;
+        simulationStage = CTX_NONE;
+        eventNumber = 0;
         simtime = SIMTIME_ZERO;
     }
     else
     {
-        simulationstage = sim->getSimulationStage();
-        eventnumber = sim->getEventNumber();
+        simulationStage = sim->getSimulationStage();
+        eventNumber = sim->getEventNumber();
         simtime = sim->getSimTime();
     }
 
     if (!sim || !sim->getContext())
     {
-        hascontext = false;
-        moduleid = -1;
+        hasContext_ = false;
+        contextModuleId = -1;
     }
     else
     {
-        hascontext = true;
-        contextclassname = sim->getContext()->getClassName();
-        contextfullpath = sim->getContext()->getFullPath().c_str();
-        moduleid = sim->getContextModule() ? sim->getContextModule()->getId() : -1;
+        hasContext_ = true;
+        contextClassName = sim->getContext()->getClassName();
+        contextFullPath = sim->getContext()->getFullPath().c_str();
+        contextModuleId = sim->getContext()->getId();
     }
 }
 
@@ -139,7 +139,7 @@ void cException::exitIfStartupError()
 void cException::init(const cObject *where, OppErrorCode errorcode, const char *fmt, va_list va)
 {
     // store error code
-    this->errorcode = errorcode;
+    this->errorCode = errorcode;
 
     // prefix message with "where" object conditionally, as "(%s)%s:"
     //  - if object is the module itself: skip
@@ -161,7 +161,7 @@ void cException::init(const cObject *where, OppErrorCode errorcode, const char *
     msg = buffer;
 
     // store context
-    storeCtx();
+    storeContext();
 
     // if a global object's ctor/dtor throws an exception, there won't be
     // anyone around to catch it, so print it and abort here.
@@ -186,19 +186,19 @@ std::string cException::getFormattedMessage() const
     {
         if (!hasContext())
             result = opp_stringf("Error%s: %s.", when.c_str(), what());
-        else if (getModuleID()==-1)
+        else if (getContextModuleID()==-1)
             result = opp_stringf("Error in component (%s) %s%s: %s.", getContextClassName(), getContextFullPath(), when.c_str(), what());
         else
-            result = opp_stringf("Error in module (%s) %s (id=%d)%s: %s.", getContextClassName(), getContextFullPath(), getModuleID(), when.c_str(), what());
+            result = opp_stringf("Error in module (%s) %s (id=%d)%s: %s.", getContextClassName(), getContextFullPath(), getContextModuleID(), when.c_str(), what());
     }
     else
     {
         if (!hasContext())
             result = opp_stringf("%s%s.", what(), when.c_str());
-        else if (getModuleID()==-1)
+        else if (getContextModuleID()==-1)
             result = opp_stringf("Component (%s) %s%s: %s.", getContextClassName(), getContextFullPath(), when.c_str(), what());
         else
-            result = opp_stringf("Module (%s) %s (id=%d)%s: %s.", getContextClassName(), getContextFullPath(), getModuleID(), when.c_str(), what());
+            result = opp_stringf("Module (%s) %s (id=%d)%s: %s.", getContextClassName(), getContextFullPath(), getContextModuleID(), when.c_str(), what());
     }
 
     return result;

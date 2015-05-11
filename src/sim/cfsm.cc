@@ -36,14 +36,14 @@ Register_Class(cFSM);
 cFSM::cFSM(const char *name) :
   cOwnedObject(name)
 {
-  _state=0;
-  _statename="INIT";
+  state=0;
+  stateName="INIT";
 }
 
 void cFSM::copy(const cFSM& vs)
 {
-    _statename=vs._statename;
-    _state=vs._state;
+    stateName=vs.stateName;
+    state=vs.state;
 }
 
 cFSM& cFSM::operator=(const cFSM& vs)
@@ -57,10 +57,10 @@ cFSM& cFSM::operator=(const cFSM& vs)
 std::string cFSM::info() const
 {
     std::stringstream out;
-    if (!_statename)
-        out << "state: " << _state;
+    if (!stateName)
+        out << "state: " << state;
     else
-        out << "state: " << _statename << " (" << _state << ")";
+        out << "state: " << stateName << " (" << state << ")";
     return out.str();
 }
 

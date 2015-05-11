@@ -625,7 +625,7 @@ void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
         signalHasAncestorListeners &= ~mask; // restore it after signalListenerAdded() set it to true
     }
 
-    listener->subscribecount++;
+    listener->subscribeCount++;
     listener->subscribedTo(this, signalID);
 }
 
@@ -676,7 +676,7 @@ void cComponent::unsubscribe(simsignal_t signalID, cIListener *listener)
             signalListenerRemoved(signalID, mask);
     }
 
-    listener->subscribecount--;
+    listener->subscribeCount--;
     listener->unsubscribedFrom(this, signalID);
 }
 

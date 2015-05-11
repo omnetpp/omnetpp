@@ -79,13 +79,13 @@ class SIM_API cPar : public cObject
     };
 
   private:
-    cComponent *ownercomponent;
+    cComponent *ownerComponent;
     cParImpl *p;
-    cComponent *evalcontext;
+    cComponent *evalContext;
 
   private:
     // private constructor -- only cComponent is allowed to create parameters
-    cPar() {ownercomponent = evalcontext = NULL; p = NULL;}
+    cPar() {ownerComponent = evalContext = NULL; p = NULL;}
     // internal, called from cComponent
     void init(cComponent *ownercomponent, cParImpl *p);
     // internal
@@ -260,7 +260,7 @@ class SIM_API cPar : public cObject
      *
      * @see getEvaluationContext(), isExpression(), setExpression()
      */
-    void setEvaluationContext(cComponent *ctx)  {evalcontext = ctx;}
+    void setEvaluationContext(cComponent *ctx)  {evalContext = ctx;}
 
     //@}
 
@@ -336,7 +336,7 @@ class SIM_API cPar : public cObject
      *
      * @see isExpression(), setEvaluationContext()
      */
-    cComponent *getEvaluationContext() const  {return evalcontext;}
+    cComponent *getEvaluationContext() const  {return evalContext;}
     //@}
 
     /** @name Miscellaneous utility functions. */

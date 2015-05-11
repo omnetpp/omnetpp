@@ -335,14 +335,14 @@ void cModule::disposeGateObject(cGate *gate, bool checkConnected)
 
 void cModule::disposeGateDesc(cGate::Desc *desc, bool checkConnected)
 {
-    if (!desc->namep)
+    if (!desc->name)
         return;  // already deleted
 
     // notify pre-change listeners
     if (hasListeners(PRE_MODEL_CHANGE)) {
         cPreGateDeleteNotification tmp;
         tmp.module = this;
-        tmp.gateName = desc->namep->name.c_str();
+        tmp.gateName = desc->name->name.c_str();
         emit(PRE_MODEL_CHANGE, &tmp);
     }
 
@@ -361,9 +361,9 @@ void cModule::disposeGateDesc(cGate::Desc *desc, bool checkConnected)
         delete [] desc->input.gatev;
         delete [] desc->output.gatev;
     }
-    const char *gatename = desc->namep->name.c_str();
+    const char *gatename = desc->name->name.c_str();
     cGate::Type gatetype = desc->getType();
-    desc->namep = NULL; // mark as deleted, but leave shared Name struct in the pool
+    desc->name = NULL; // mark as deleted, but leave shared Name struct in the pool
 #ifdef SIMFRONTEND_SUPPORT
     updateLastChangeSerial();
 #endif
@@ -425,7 +425,7 @@ cGate::Desc *cModule::addGateDesc(const char *gatename, cGate::Type type, bool i
     for (int i=0; i<gateDescArraySize; i++)
     {
         cGate::Desc *desc = gateDescArray + i;
-        if (desc->namep) {
+        if (desc->name) {
             if (!desc->isVector()) {
                 adjustGateDesc(desc->input.gate, newv);
                 adjustGateDesc(desc->output.gate, newv);
@@ -451,8 +451,8 @@ cGate::Desc *cModule::addGateDesc(const char *gatename, cGate::Type type, bool i
     NamePool::iterator it = namePool.find(key);
     if (it==namePool.end())
         it = namePool.insert(key).first;
-    newDesc->namep = const_cast<cGate::Name*>(&(*it));
-    newDesc->size = isVector ? 0 : -1;
+    newDesc->name = const_cast<cGate::Name*>(&(*it));
+    newDesc->vectorSize = isVector ? 0 : -1;
     return newDesc;
 }
 
@@ -469,21 +469,21 @@ int cModule::findGateDesc(const char *gatename, char& suffix) const
         case '\0':
             for (int i=0; i<gateDescArraySize; i++) {
                 const cGate::Desc *desc = gateDescArray + i;
-                if (desc->namep && strcmp(desc->namep->name.c_str(), gatename)==0)
+                if (desc->name && strcmp(desc->name->name.c_str(), gatename)==0)
                     return i;
             }
             break;
         case 'i':
             for (int i=0; i<gateDescArraySize; i++) {
                 const cGate::Desc *desc = gateDescArray + i;
-                if (desc->namep && strcmp(desc->namep->namei.c_str(), gatename)==0)
+                if (desc->name && strcmp(desc->name->namei.c_str(), gatename)==0)
                     return i;
             }
             break;
         case 'o':
             for (int i=0; i<gateDescArraySize; i++) {
                 const cGate::Desc *desc = gateDescArray + i;
-                if (desc->namep && strcmp(desc->namep->nameo.c_str(), gatename)==0)
+                if (desc->name && strcmp(desc->name->nameo.c_str(), gatename)==0)
                     return i;
             }
             break;
@@ -511,7 +511,7 @@ cGate *cModule::gate(int id)
         unsigned int descIndex = id>>1;
         ENSURE(descIndex < (unsigned int) gateDescArraySize);
         cGate::Desc *desc = gateDescArray + descIndex;
-        ENSURE(desc->namep); // not deleted
+        ENSURE(desc->name); // not deleted
         ENSURE(!desc->isVector());
         ENSURE((id&1)==0 ? desc->getType()!=cGate::OUTPUT : desc->getType()!=cGate::INPUT);
         cGate *g = (id&1)==0 ? desc->input.gate : desc->output.gate;
@@ -523,7 +523,7 @@ cGate *cModule::gate(int id)
         unsigned int descIndex = (h>>GATEID_LBITS)-1;
         ENSURE(descIndex < (unsigned int) gateDescArraySize);
         cGate::Desc *desc = gateDescArray + descIndex;
-        ENSURE(desc->namep); // not deleted
+        ENSURE(desc->name); // not deleted
         ENSURE(desc->isVector());
         bool isOutput = id & (1<<(GATEID_LBITS-1));  // L's MSB
         ENSURE(isOutput ? desc->getType()!=cGate::INPUT : desc->getType()!=cGate::OUTPUT);
@@ -562,7 +562,7 @@ cGate *cModule::addGate(const char *gatename, cGate::Type type, bool isVector)
 
     // create desc for new gate (or gate vector)
     cGate::Desc *desc = addGateDesc(gatename, type, isVector);
-    desc->ownerp = this;
+    desc->owner = this;
 
     // if scalar gate, create gate object(s); gate vectors are created with size 0.
     cGate *result = NULL;
@@ -637,7 +637,7 @@ void cModule::setGateSize(const char *gatename, int newSize)
         emit(PRE_MODEL_CHANGE, &tmp);
     }
 
-    int oldSize = desc->size;
+    int oldSize = desc->vectorSize;
     cGate::Type type = desc->getType();
 
     // we need to allocate more (to have good gate++ performance) but we
@@ -668,7 +668,7 @@ void cModule::setGateSize(const char *gatename, int newSize)
             }
 
             // actually delete
-            desc->size = i;
+            desc->vectorSize = i;
             if (type!=cGate::OUTPUT) {
                 delete desc->input.gatev[i];
                 desc->input.gatev[i] = NULL;
@@ -684,7 +684,7 @@ void cModule::setGateSize(const char *gatename, int newSize)
             reallocGatev(desc->input.gatev, oldCapacity, newCapacity);
         if (type!=cGate::INPUT)
             reallocGatev(desc->output.gatev, oldCapacity, newCapacity);
-        desc->size = newSize;
+        desc->vectorSize = newSize;
     }
 
     // expand?
@@ -698,7 +698,7 @@ void cModule::setGateSize(const char *gatename, int newSize)
 
         // set new size beforehand, because EVCB.gateCreate() calls getId()
         // which assumes that gate->index < gateSize.
-        desc->size = newSize;
+        desc->vectorSize = newSize;
 
         // and create the additional gates
         for (int i=oldSize; i<newSize; i++)
@@ -780,8 +780,8 @@ cGate *cModule::gate(const char *gatename, int index)
         // gate is vector
         if (index<0)
             throw cRuntimeError(this, "%s when accessing vector gate `%s'", (index==-1?"No gate index specified":"Negative gate index specified"), gatename);
-        if (index>=desc->size)
-            throw cRuntimeError(this, "Gate index %d out of range when accessing vector gate `%s[]' with size %d", index, gatename, desc->size);
+        if (index>=desc->vectorSize)
+            throw cRuntimeError(this, "Gate index %d out of range when accessing vector gate `%s[]' with size %d", index, gatename, desc->vectorSize);
         return isInput ? desc->input.gatev[index] : desc->output.gatev[index];
     }
 }
@@ -807,7 +807,7 @@ int cModule::findGate(const char *gatename, int index) const
     else
     {
         // gate is vector
-        if (index<0 || index>=desc->size)
+        if (index<0 || index>=desc->vectorSize)
             return -1;  // index not specified (-1) or out of range
         return isInput ? desc->input.gatev[index]->getId() : desc->output.gatev[index]->getId();
     }
@@ -817,7 +817,7 @@ cGate *cModule::gateHalf(const char *gatename, cGate::Type type, int index)
 {
     char dummy;
     const cGate::Desc *desc = gateDesc(gatename, dummy);
-    const char *nameWithSuffix = (type==cGate::INPUT) ? desc->namep->namei.c_str() : desc->namep->nameo.c_str();
+    const char *nameWithSuffix = (type==cGate::INPUT) ? desc->name->namei.c_str() : desc->name->nameo.c_str();
     return gate(nameWithSuffix, index);
 }
 
@@ -828,7 +828,7 @@ bool cModule::hasGate(const char *gatename, int index) const
     if (descIndex<0)
         return false;
     const cGate::Desc *desc = gateDescArray + descIndex;
-    return index==-1 ? true : (index>=0 && index<desc->size);
+    return index==-1 ? true : (index>=0 && index<desc->vectorSize);
 }
 
 void cModule::deleteGate(const char *gatename)
@@ -844,8 +844,8 @@ std::vector<const char *> cModule::getGateNames() const
 {
     std::vector<const char *> result;
     for (int i=0; i<gateDescArraySize; i++)
-        if (gateDescArray[i].namep)
-            result.push_back(gateDescArray[i].namep->name.c_str());
+        if (gateDescArray[i].name)
+            result.push_back(gateDescArray[i].name->name.c_str());
     return result;
 }
 
@@ -856,7 +856,7 @@ cGate::Type cModule::gateType(const char *gatename) const
     if (suffix)
         return suffix=='i' ? cGate::INPUT : cGate::OUTPUT;
     else
-        return desc->namep->type;
+        return desc->name->type;
 }
 
 bool cModule::isGateVector(const char *gatename) const
@@ -931,7 +931,7 @@ cGate *cModule::getOrCreateFirstUnconnectedGate(const char *gatename, char suffi
 
     // gate array we'll be looking at
     cGate **gatev = inputSide ? desc->input.gatev : desc->output.gatev;
-    int oldSize = desc->size;
+    int oldSize = desc->vectorSize;
 
     // since gates get connected from the beginning of the vector, we can do
     // binary search for the first unconnected gate. In the (rare) case when
@@ -948,7 +948,7 @@ cGate *cModule::getOrCreateFirstUnconnectedGate(const char *gatename, char suffi
     // no unconnected gate: expand gate vector
     if (expand)
     {
-        setGateSize(desc->namep->name.c_str(), oldSize+1);   //FIXME spare extra name lookup!!!
+        setGateSize(desc->name->name.c_str(), oldSize+1);   //FIXME spare extra name lookup!!!
         return inputSide ? desc->input.gatev[oldSize] : desc->output.gatev[oldSize];
     }
     else
@@ -975,7 +975,7 @@ void cModule::getOrCreateFirstUnconnectedGatePair(const char *gatename,
         throw cRuntimeError(this,"getOrCreateFirstUnconnectedGatePair(): inout gate expected, without `$i'/`$o' suffix");
 
     // the gate arrays we'll work with
-    int oldSize = desc->size;
+    int oldSize = desc->vectorSize;
     cGate **inputgatev = desc->input.gatev;
     cGate **outputgatev = desc->output.gatev;
 
@@ -992,7 +992,7 @@ void cModule::getOrCreateFirstUnconnectedGatePair(const char *gatename,
     // no unconnected gate: expand gate vector
     if (expand)
     {
-        setGateSize(desc->namep->name.c_str(), oldSize+1); //FIXME spare extra name lookup!!!
+        setGateSize(desc->name->name.c_str(), oldSize+1); //FIXME spare extra name lookup!!!
         gatein = desc->input.gatev[oldSize];
         gateout = desc->output.gatev[oldSize];
         return;
@@ -1015,11 +1015,11 @@ int cModule::gateCount() const
     for (int i=0; i<gateDescArraySize; i++)
     {
         cGate::Desc *desc = gateDescArray + i;
-        if (desc->namep) {
+        if (desc->name) {
             if (!desc->isVector())
                 n += (desc->getType()==cGate::INOUT) ? 2 : 1;
             else
-                n += (desc->getType()==cGate::INOUT) ? 2*desc->size : desc->size;
+                n += (desc->getType()==cGate::INOUT) ? 2*desc->vectorSize : desc->vectorSize;
         }
     }
     return n;
@@ -1475,14 +1475,14 @@ void cModule::GateIterator::advance()
 {
     cGate::Desc *desc = module->gateDescArray + descIndex;
 
-    if (desc->namep) {
+    if (desc->name) {
         if (isOutput==false && desc->getType()==cGate::OUTPUT) {
             isOutput = true;
             return;
         }
 
         if (desc->isVector()) {
-            if (index < desc->size-1) {
+            if (index < desc->vectorSize-1) {
                 index++;
                 return;
             }
@@ -1510,13 +1510,13 @@ cGate *cModule::GateIterator::current() const
     if (descIndex >= module->gateDescArraySize)
         return NULL;
     cGate::Desc *desc = module->gateDescArray + descIndex;
-    if (!desc->namep)
+    if (!desc->name)
         return NULL; // deleted gate
     if (isOutput==false && desc->getType()==cGate::OUTPUT)
         return NULL; // isOutput still incorrect
     if (!desc->isVector())
         return isOutput ? desc->output.gate : desc->input.gate;
-    else if (desc->size==0)
+    else if (desc->vectorSize==0)
         return NULL;
     else
         return isOutput ? desc->output.gatev[index] : desc->input.gatev[index];

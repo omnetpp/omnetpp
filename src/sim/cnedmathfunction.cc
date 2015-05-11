@@ -28,8 +28,8 @@ NAMESPACE_BEGIN
 cNEDMathFunction::cNEDMathFunction(const char *name, MathFuncNoArg f, int ac, const char *category, const char *description) :
     cNoncopyableOwnedObject(name, false)
 {
-    this->categ = opp_nulltoempty(category);
-    this->desc = opp_nulltoempty(description);
+    this->category = opp_nulltoempty(category);
+    this->description = opp_nulltoempty(description);
     this->f = (MathFunc)f;
     argc = 0;
     if (ac!=-1 && ac!=0)
@@ -41,8 +41,8 @@ cNEDMathFunction::cNEDMathFunction(const char *name, MathFuncNoArg f, int ac, co
 cNEDMathFunction::cNEDMathFunction(const char *name, MathFunc1Arg f, int ac, const char *category, const char *description) :
     cNoncopyableOwnedObject(name, false)
 {
-    this->categ = opp_nulltoempty(category);
-    this->desc = opp_nulltoempty(description);
+    this->category = opp_nulltoempty(category);
+    this->description = opp_nulltoempty(description);
     this->f = (MathFunc)f;
     argc = 1;
     if (ac!=-1 && ac!=1)
@@ -54,8 +54,8 @@ cNEDMathFunction::cNEDMathFunction(const char *name, MathFunc1Arg f, int ac, con
 cNEDMathFunction::cNEDMathFunction(const char *name, MathFunc2Args f, int ac, const char *category, const char *description) :
     cNoncopyableOwnedObject(name, false)
 {
-    this->categ = opp_nulltoempty(category);
-    this->desc = opp_nulltoempty(description);
+    this->category = opp_nulltoempty(category);
+    this->description = opp_nulltoempty(description);
     this->f = (MathFunc)f;
     argc = 2;
     if (ac!=-1 && ac!=2)
@@ -67,8 +67,8 @@ cNEDMathFunction::cNEDMathFunction(const char *name, MathFunc2Args f, int ac, co
 cNEDMathFunction::cNEDMathFunction(const char *name, MathFunc3Args f, int ac, const char *category, const char *description) :
     cNoncopyableOwnedObject(name, false)
 {
-    this->categ = opp_nulltoempty(category);
-    this->desc = opp_nulltoempty(description);
+    this->category = opp_nulltoempty(category);
+    this->description = opp_nulltoempty(description);
     this->f = (MathFunc)f;
     argc = 3;
     if (ac!=-1 && ac!=3)
@@ -80,8 +80,8 @@ cNEDMathFunction::cNEDMathFunction(const char *name, MathFunc3Args f, int ac, co
 cNEDMathFunction::cNEDMathFunction(const char *name, MathFunc4Args f, int ac, const char *category, const char *description) :
     cNoncopyableOwnedObject(name, false)
 {
-    this->categ = opp_nulltoempty(category);
-    this->desc = opp_nulltoempty(description);
+    this->category = opp_nulltoempty(category);
+    this->description = opp_nulltoempty(description);
     this->f = (MathFunc)f;
     argc = 4;
     if (ac!=-1 && ac!=4)

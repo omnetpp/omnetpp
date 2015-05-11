@@ -44,14 +44,14 @@ typedef cNEDValue (*NEDFunction)(cComponent *context, cNEDValue argv[], int argc
 class SIM_API cNEDFunction : public cNoncopyableOwnedObject
 {
   private:
-    std::string sign;      // function signature, as passed to the ctor
-    std::string argtypes;  // sequence of B,L,D,Q,S,X,*
-    bool hasvarargs;       // if true, signature contains "..." after the last typed arg
-    char rettype;          // one of B,L,D,Q,S,X,*
-    int minargc, maxargc;  // minimum and maximum argument count
+    std::string signature; // function signature, as passed to the ctor
+    std::string argTypes;  // sequence of B,L,D,Q,S,X,*
+    bool hasVarargs_;      // if true, signature contains "..." after the last typed arg
+    char returnType;       // one of B,L,D,Q,S,X,*
+    int minArgc, maxArgc;  // minimum and maximum argument count
     NEDFunction f;         // function ptr
-    std::string categ;     // category string; only used when listing all functions
-    std::string desc;      // optional documentation string
+    std::string category;  // category string; only used when listing all functions
+    std::string description;  // optional documentation string
 
   protected:
     void parseSignature(const char *signature);
@@ -108,50 +108,50 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
     /**
      * Returns the functions signature, as passed to the constructor
      */
-    const char *getSignature() const {return sign.c_str();}
+    const char *getSignature() const {return signature.c_str();}
 
     /**
      * Returns the function return type, one of the characters B,L,D,Q,S,X,*
      * for bool, long, double, quantity, string, xml and any, respectively.
      */
-    char getReturnType() const  {return rettype;}
+    char getReturnType() const  {return returnType;}
 
     /**
      * Returns the type of the kth argument; result is one of the characters
      * B,L,D,Q,S,X,* for bool, long, double, quantity, string, xml and any,
      * respectively.
      */
-    char getArgType(int k) const  {return argtypes[k];}
+    char getArgType(int k) const  {return argTypes[k];}
 
     /**
      * Returns the minimum number of arguments (i.e. the number
      * of mandatory arguments).
      */
-    int getMinArgs() const  {return minargc;}
+    int getMinArgs() const  {return minArgc;}
 
     /**
      * Returns the maximum number of typed arguments (i.e. the last max-min
      * args are optional). If hasVarArgs() is true, the function actually
      * accepts more than getMaxArgs() arguments.
      */
-    int getMaxArgs() const  {return maxargc;}
+    int getMaxArgs() const  {return maxArgc;}
 
     /**
      * Returns true if the function signature ends in an ellipsis ("..."),
      * that is, the function supports varargs.
      */
-    bool hasVarArgs() const  {return hasvarargs;}
+    bool hasVarArgs() const  {return hasVarargs_;}
 
     /**
      * Returns a string that can be useful in classifying NED functions,
      * e.g. "trigonometric".
      */
-    const char *getCategory() const  {return categ.c_str();}
+    const char *getCategory() const  {return category.c_str();}
 
     /**
      * Returns the function's documentation as a string.
      */
-    const char *getDescription() const  {return desc.c_str();}
+    const char *getDescription() const  {return description.c_str();}
     //@}
 
     /**

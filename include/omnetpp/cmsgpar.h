@@ -63,14 +63,14 @@ class SIM_API cMsgPar : public cOwnedObject
     typedef void *(*VoidDupFunc)(void *);
 
   protected:
-    static const char *possibletypes;
+    static const char *possibleTypes;
 
   private:
     enum { SHORTSTR_MAXLEN = 27 };
 
-    char typechar;     // S/B/L/D/F/T/P/O
-    bool changedflag;
-    bool tkownership;
+    char typeChar;     // S/B/L/D/F/T/P/O
+    bool changedFlag;
+    bool takeOwnership;
 
     union {
        struct { bool sht; char *str;  } ls;   // S:long string
@@ -312,12 +312,12 @@ class SIM_API cMsgPar : public cOwnedObject
      * setDoubleValue(cStatistic *) should automatically take ownership of
      * the objects.
      */
-    void setTakeOwnership(bool tk) {tkownership=tk;}
+    void setTakeOwnership(bool tk) {takeOwnership=tk;}
 
     /**
      * Returns the takeOwnership flag, see getTakeOwnership().
      */
-    bool getTakeOwnership() const   {return tkownership;}
+    bool getTakeOwnership() const   {return takeOwnership;}
     //@}
 
     /** @name Getter functions. Note that overloaded conversion operators also exist. */

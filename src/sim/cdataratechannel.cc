@@ -41,7 +41,7 @@ simsignal_t cDatarateChannel::messageDiscardedSignal;
 
 cDatarateChannel::cDatarateChannel(const char *name) : cChannel(name)
 {
-    txfinishtime = 0;
+    txFinishTime = 0;
     delay = 0;
     datarate = 0;
     ber = 0;
@@ -149,10 +149,10 @@ void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& resu
         cPacket *pkt = (cPacket *)msg;
         simtime_t duration = pkt->getBitLength() / datarate;
         result.duration = duration;
-        txfinishtime = t + duration;
+        txFinishTime = t + duration;
     }
     else {
-        txfinishtime = t;
+        txFinishTime = t;
     }
 
     // propagation delay modeling
@@ -181,7 +181,7 @@ void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& resu
         cTimestampedValue tmp(t, 1L);
         emit(channelBusySignal, &tmp);
 
-        tmp.timestamp = txfinishtime; tmp.l = 0L;
+        tmp.timestamp = txFinishTime; tmp.l = 0L;
         emit(channelBusySignal, &tmp);
     }
 }
@@ -189,7 +189,7 @@ void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& resu
 void cDatarateChannel::forceTransmissionFinishTime(simtime_t t)
 {
     //TODO record this into the eventlog so that it can be visualized in the sequence chart
-    txfinishtime = t;
+    txFinishTime = t;
     cTimestampedValue tmp(t, 0L);
     emit(channelBusySignal, &tmp);
 }

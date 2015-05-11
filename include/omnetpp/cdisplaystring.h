@@ -67,21 +67,21 @@ class SIM_API cDisplayString
     // holds one tag
     struct Tag {
        char *name;
-       int numargs;
+       int numArgs;
        char *args[MAXARGS];
-       Tag() {name=NULL; numargs=0;}
+       Tag() {name=NULL; numArgs=0;}
     };
 
     char *buffer;       // holds pieces of display string (sliced with zeroes)
-    char *bufferend;    // points to last byte of buffer allocated
+    char *bufferEnd;    // points to last byte of buffer allocated
     Tag *tags;          // table of tags
-    int numtags;        // number of tags
+    int numTags;        // number of tags
 
-    mutable char *dispstr; // cached copy of assembled display string
-    mutable bool needsassemble; // if dispstr is up-to-date
+    mutable char *assembledString; // cached copy of assembled display string
+    mutable bool assembledStringValid; // if cached copy is up-to-date
 
     // needed for notifications
-    cComponent *ownercomponent;
+    cComponent *ownerComponent;
 
   private:
     void copy(const cDisplayString& other) {parse(other.str());}
@@ -97,7 +97,7 @@ class SIM_API cDisplayString
     void doParse();
     void assemble() const;
     void clearTags();
-    bool pointsIntoBuffer(char *s) const {return s>=buffer && s<=bufferend;}
+    bool pointsIntoBuffer(char *s) const {return s>=buffer && s<=bufferEnd;}
     static void strcatescaped(char *d, const char *s);
 
     // internal: called before the stored display string changes
@@ -107,7 +107,7 @@ class SIM_API cDisplayString
 
   public:
     // internal:
-    void setHostObject(cComponent *o) {ownercomponent=o;}
+    void setHostObject(cComponent *o) {ownerComponent=o;}
     void dump() const;
 
   public:

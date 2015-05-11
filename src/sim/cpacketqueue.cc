@@ -37,7 +37,7 @@ Register_Class(cPacketQueue);
 
 cPacketQueue::cPacketQueue(const char *name, CompareFunc cmp) : cQueue(name,cmp)
 {
-    bitlength = 0;
+    bitLength = 0;
 }
 
 cPacketQueue::cPacketQueue(const cPacketQueue& queue) : cQueue(queue)
@@ -47,7 +47,7 @@ cPacketQueue::cPacketQueue(const cPacketQueue& queue) : cQueue(queue)
 
 void cPacketQueue::copy(const cPacketQueue& queue)
 {
-    bitlength = queue.bitlength;
+    bitLength = queue.bitLength;
 }
 
 cPacketQueue& cPacketQueue::operator=(const cPacketQueue& queue)
@@ -73,7 +73,7 @@ void cPacketQueue::parsimPack(cCommBuffer *buffer) const
     throw cRuntimeError(this,E_NOPARSIM);
 #else
     cQueue::parsimPack(buffer);
-    buffer->pack(bitlength);
+    buffer->pack(bitLength);
 #endif
 }
 
@@ -83,13 +83,13 @@ void cPacketQueue::parsimUnpack(cCommBuffer *buffer)
     throw cRuntimeError(this,E_NOPARSIM);
 #else
     cQueue::parsimUnpack(buffer);
-    buffer->unpack(bitlength);
+    buffer->unpack(bitLength);
 #endif
 }
 
 void cPacketQueue::addLength(cPacket *pkt)
 {
-    bitlength += pkt->getBitLength();
+    bitLength += pkt->getBitLength();
 }
 
 cPacket *cPacketQueue::checkPacket(cObject *obj)
@@ -127,14 +127,14 @@ cPacket *cPacketQueue::pop()
 {
     cPacket *pkt = (cPacket *)cQueue::pop();
     if (pkt)
-        bitlength -= pkt->getBitLength();
+        bitLength -= pkt->getBitLength();
     return pkt;
 }
 
 void cPacketQueue::clear()
 {
     cQueue::clear();
-    bitlength = 0;
+    bitLength = 0;
 }
 
 void cPacketQueue::insert(cObject *obj)
@@ -156,7 +156,7 @@ cObject *cPacketQueue::remove(cObject *obj)
 {
     cPacket *pkt = (cPacket *)cQueue::remove(obj);
     if (pkt)
-        bitlength -= pkt->getBitLength();
+        bitLength -= pkt->getBitLength();
     return pkt;
 }
 

@@ -50,7 +50,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     double per;      // packet error rate
 
     // stores the end of the last transmission; used if there is a datarate
-    simtime_t txfinishtime;
+    simtime_t txFinishTime;
 
   private:
     // internal: checks whether parameters have been set up
@@ -197,13 +197,13 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
      * The transmission duration of a message depends on the message length
      * and the data rate assigned to the channel.
      */
-    virtual simtime_t getTransmissionFinishTime() const {return txfinishtime;}
+    virtual simtime_t getTransmissionFinishTime() const {return txFinishTime;}
 
     /**
      * Returns whether the sender gate is currently transmitting, ie. whether
      * transmissionFinishTime() is greater than the current simulation time.
      */
-    virtual bool isBusy() const {return simTime() < txfinishtime;}
+    virtual bool isBusy() const {return simTime() < txFinishTime;}
 
     /**
      * Forcibly overwrites the finish time of the current transmission in the
