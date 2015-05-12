@@ -55,9 +55,9 @@ MatchExpression::MatchExpression(const char *pattern, bool dottedpath, bool full
 
 void MatchExpression::setPattern(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive)
 {
-    this->dottedpath = dottedpath;
-    this->fullstring = fullstring;
-    this->casesensitive = casesensitive;
+    this->matchDottedPath = dottedpath;
+    this->matchFullString = fullstring;
+    this->caseSensitive = casesensitive;
 
     elems.clear();
 

@@ -25,43 +25,43 @@ NAMESPACE_BEGIN
 
 DisplayString::DisplayString()
 {
-    dispstr = NULL;
+    assembledString = NULL;
     buffer = NULL;
-    bufferend = NULL;
+    bufferEnd = NULL;
     tags = NULL;
-    numtags = 0;
-    needsassemble = false;
+    numTags = 0;
+    assembledStringValid = false;
 }
 
 
 DisplayString::DisplayString(const char *displaystr)
 {
-    dispstr = opp_strdup(displaystr);
+    assembledString = opp_strdup(displaystr);
     buffer = NULL;
-    bufferend = NULL;
+    bufferEnd = NULL;
     tags = NULL;
-    numtags = 0;
-    needsassemble = false;
+    numTags = 0;
+    assembledStringValid = false;
 
     parse();
 }
 
 DisplayString::DisplayString(const DisplayString& ds)
 {
-    dispstr = NULL;
+    assembledString = NULL;
     buffer = NULL;
-    bufferend = NULL;
+    bufferEnd = NULL;
     tags = NULL;
-    numtags = 0;
-    needsassemble = false;
+    numTags = 0;
+    assembledStringValid = false;
 
     copy(ds);
 }
 
 DisplayString::~DisplayString()
 {
-    delete [] dispstr;
-    cleartags();
+    delete [] assembledString;
+    clearTags();
 }
 
 DisplayString& DisplayString::operator=(const DisplayString& other)
@@ -73,24 +73,24 @@ DisplayString& DisplayString::operator=(const DisplayString& other)
 
 const char *DisplayString::str() const
 {
-    if (needsassemble)
+    if (assembledStringValid)
         assemble();
-    return dispstr ? dispstr : "";
+    return assembledString ? assembledString : "";
 }
 
 
 bool DisplayString::parse(const char *displaystr)
 {
     // if it's the same, nothing to do
-    if (needsassemble)
+    if (assembledStringValid)
         assemble();
-    if (!opp_strcmp(dispstr,displaystr))
+    if (!opp_strcmp(assembledString,displaystr))
         return true;
 
     // parse and store new string
-    delete [] dispstr;
-    cleartags();
-    dispstr = opp_strdup(displaystr);
+    delete [] assembledString;
+    clearTags();
+    assembledString = opp_strdup(displaystr);
     bool fullyOK = parse();
 
     return fullyOK;
@@ -124,26 +124,26 @@ void DisplayString::updateWith(const char *s)
 
 bool DisplayString::containsTag(const char *tagname) const
 {
-    int t = gettagindex(tagname);
+    int t = getTagIndex(tagname);
     return t!=-1;
 }
 
 
 int DisplayString::getNumArgs(const char *tagname) const
 {
-    return getNumArgs(gettagindex(tagname));
+    return getNumArgs(getTagIndex(tagname));
 }
 
 
 const char *DisplayString::getTagArg(const char *tagname, int index) const
 {
-    return getTagArg(gettagindex(tagname), index);
+    return getTagArg(getTagIndex(tagname), index);
 }
 
 
 bool DisplayString::setTagArg(const char *tagname, int index, const char *value)
 {
-    int t = gettagindex(tagname);
+    int t = getTagIndex(tagname);
     if (t==-1)
         t = insertTag(tagname);
     return setTagArg(t, index, value);
@@ -158,34 +158,34 @@ bool DisplayString::setTagArg(const char *tagname, int index, long value)
 
 bool DisplayString::removeTag(const char *tagname)
 {
-    return removeTag(gettagindex(tagname));
+    return removeTag(getTagIndex(tagname));
 }
 
 
 int DisplayString::getNumTags() const
 {
-    return numtags;
+    return numTags;
 }
 
 
 const char *DisplayString::getTagName(int tagindex) const
 {
-    if (tagindex<0 || tagindex>=numtags) return NULL;
+    if (tagindex<0 || tagindex>=numTags) return NULL;
     return tags[tagindex].name;
 }
 
 
 int DisplayString::getNumArgs(int tagindex) const
 {
-    if (tagindex<0 || tagindex>=numtags) return -1;
-    return tags[tagindex].numargs;
+    if (tagindex<0 || tagindex>=numTags) return -1;
+    return tags[tagindex].numArgs;
 }
 
 
 const char *DisplayString::getTagArg(int tagindex, int index) const
 {
-    if (tagindex<0 || tagindex>=numtags) return "";
-    if (index<0 || index>=tags[tagindex].numargs) return "";
+    if (tagindex<0 || tagindex>=numTags) return "";
+    if (index<0 || index>=tags[tagindex].numArgs) return "";
     return opp_nulltoempty(tags[tagindex].args[index]);
 }
 
@@ -193,13 +193,13 @@ const char *DisplayString::getTagArg(int tagindex, int index) const
 bool DisplayString::setTagArg(int tagindex, int index, const char *value)
 {
     // check indices
-    if (tagindex<0 || tagindex>=numtags) return false;
+    if (tagindex<0 || tagindex>=numTags) return false;
     if (index<0 || index>=MAXARGS) return false;
     Tag& tag = tags[tagindex];
 
     // adjust numargs if necessary
-    if (index>=tag.numargs)
-        tag.numargs = index+1;
+    if (index>=tag.numArgs)
+        tag.numArgs = index+1;
 
     // if it's the same, nothing to do
     char *&slot = tag.args[index];
@@ -207,15 +207,15 @@ bool DisplayString::setTagArg(int tagindex, int index, const char *value)
         return true;
 
     // set value
-    if (slot && !isinbuffer(slot))
+    if (slot && !isInBuffer(slot))
         delete [] slot;
     slot = opp_strdup(value);
 
     // get rid of possible empty trailing args
-    while (tag.numargs>0 && tag.args[tag.numargs-1]==NULL)
-        tag.numargs--;
+    while (tag.numArgs>0 && tag.args[tag.numArgs-1]==NULL)
+        tag.numArgs--;
 
-    needsassemble = true;
+    assembledStringValid = true;
     return true;
 }
 
@@ -223,117 +223,117 @@ bool DisplayString::setTagArg(int tagindex, int index, const char *value)
 int DisplayString::insertTag(const char *tagname, int atindex)
 {
     // check uniqueness
-    int t = gettagindex(tagname);
+    int t = getTagIndex(tagname);
     if (t!=-1)
         return t;
 
     // check index
     if (atindex<0) atindex=0;
-    if (atindex>numtags) atindex=numtags;
+    if (atindex>numTags) atindex=numTags;
 
     // create new tags[] array with hole at atindex
-    Tag *newtags = new Tag[numtags+1];
-    for (int s=0,d=0; s<numtags; s++,d++)
+    Tag *newtags = new Tag[numTags+1];
+    for (int s=0,d=0; s<numTags; s++,d++)
     {
        if (d==atindex) d++; // make room for new item
        newtags[d] = tags[s];
     }
     delete [] tags;
     tags = newtags;
-    numtags++;
+    numTags++;
 
     // fill in new tag
     tags[atindex].name = opp_strdup(tagname);
-    tags[atindex].numargs = 0;
+    tags[atindex].numArgs = 0;
     for (int i=0; i<MAXARGS; i++) tags[atindex].args[i] = NULL;
 
     // success
-    needsassemble = true;
+    assembledStringValid = true;
     return atindex;
 }
 
 
 bool DisplayString::removeTag(int tagindex)
 {
-    if (tagindex<0 || tagindex>=numtags) return false;
+    if (tagindex<0 || tagindex>=numTags) return false;
 
     // dealloc strings in tag
-    if (!isinbuffer(tags[tagindex].name))
+    if (!isInBuffer(tags[tagindex].name))
         delete [] tags[tagindex].name;
-    for (int i=0; i<tags[tagindex].numargs; i++)
-        if (!isinbuffer(tags[tagindex].args[i]))
+    for (int i=0; i<tags[tagindex].numArgs; i++)
+        if (!isInBuffer(tags[tagindex].args[i]))
             delete [] tags[tagindex].args[i];
 
     // eliminate hole in tags[] array
-    for (int t=tagindex; t<numtags-1; t++)
+    for (int t=tagindex; t<numTags-1; t++)
         tags[t] = tags[t+1];
-    numtags--;
+    numTags--;
 
     // success
-    needsassemble = true;
+    assembledStringValid = true;
     return true;
 }
 
 
-int DisplayString::gettagindex(const char *tagname) const
+int DisplayString::getTagIndex(const char *tagname) const
 {
-    for (int t=0; t<numtags; t++)
+    for (int t=0; t<numTags; t++)
         if (!strcmp(tagname,tags[t].name))
             return t;
     return -1;
 }
 
-void DisplayString::cleartags()
+void DisplayString::clearTags()
 {
     // delete tags array. string pointers that do not point inside the
     // buffer were allocated individually via new char[] and have to be
     // deleted.
-    for (int t=0; t<numtags; t++)
+    for (int t=0; t<numTags; t++)
     {
-        if (!isinbuffer(tags[t].name))
+        if (!isInBuffer(tags[t].name))
             delete [] tags[t].name;
-        for (int i=0; i<tags[t].numargs; i++)
-            if (!isinbuffer(tags[t].args[i]))
+        for (int i=0; i<tags[t].numArgs; i++)
+            if (!isInBuffer(tags[t].args[i]))
                 delete [] tags[t].args[i];
     }
     delete [] tags;
     tags = NULL;
-    numtags = 0;
+    numTags = 0;
 
     // must be done after deleting tags[] because of isinbuffer()
     delete [] buffer;
-    buffer = bufferend = NULL;
-    needsassemble = true;
+    buffer = bufferEnd = NULL;
+    assembledStringValid = true;
 }
 
 bool DisplayString::parse()
 {
-    cleartags();
-    if (dispstr==NULL)
+    clearTags();
+    if (assembledString==NULL)
         return true;
 
     bool fully_ok = true;
 
-    buffer = new char[opp_strlen(dispstr)+1];
-    bufferend = buffer + opp_strlen(dispstr);
+    buffer = new char[opp_strlen(assembledString)+1];
+    bufferEnd = buffer + opp_strlen(assembledString);
 
     // count tags (#(';')+1) & allocate tags[] array
     int n = 1;
-    for (char *s1 = dispstr; *s1; s1++)
+    for (char *s1 = assembledString; *s1; s1++)
         if (*s1==';')
             n++;
     tags = new Tag[n];
 
     // parse string into tags[]. To avoid several small allocations,
     // pointers in tags[] will point into the buffer.
-    numtags = 1;
+    numTags = 1;
     tags[0].name = buffer;
-    tags[0].numargs = 0;
+    tags[0].numArgs = 0;
     for (int i=0; i<MAXARGS; i++)
         tags[0].args[i] = NULL;
 
     char *s, *d;
-    for (s=dispstr,d=buffer; *s; s++,d++)
+    for (s=assembledString,d=buffer; *s; s++,d++)
     {
         if (*s=='\\' && *(s+1))
         {
@@ -346,30 +346,30 @@ bool DisplayString::parse()
         {
             // new tag begins
             *d = '\0';
-            numtags++;
-            tags[numtags-1].name = d+1;
-            tags[numtags-1].numargs = 0;
-            for (int i=0; i<MAXARGS; i++) tags[numtags-1].args[i] = NULL;
+            numTags++;
+            tags[numTags-1].name = d+1;
+            tags[numTags-1].numArgs = 0;
+            for (int i=0; i<MAXARGS; i++) tags[numTags-1].args[i] = NULL;
         }
         else if (*s=='=')
         {
             // first argument of new tag begins
             *d = '\0';
-            tags[numtags-1].numargs = 1;
-            tags[numtags-1].args[0] = d+1;
+            tags[numTags-1].numArgs = 1;
+            tags[numTags-1].args[0] = d+1;
         }
         else if (*s==',')
         {
             // new argument of current tag begins
             *d = '\0';
-            if (tags[numtags-1].numargs>=MAXARGS)
+            if (tags[numTags-1].numArgs>=MAXARGS)
             {
                 fully_ok = false; // extra args ignored (there were too many)
             }
             else
             {
-                tags[numtags-1].numargs++;
-                tags[numtags-1].args[ tags[numtags-1].numargs-1 ] = d+1;
+                tags[numTags-1].numArgs++;
+                tags[numTags-1].args[ tags[numTags-1].numArgs-1 ] = d+1;
             }
         }
         else
@@ -380,7 +380,7 @@ bool DisplayString::parse()
     *d = '\0';
 
     // check tag names are OK (matching [a-zA-Z0-9:]+)
-    for (int i=0; i<numtags; i++)
+    for (int i=0; i<numTags; i++)
     {
         if (!tags[i].name[0])
             fully_ok = false; // empty string as tagname
@@ -395,37 +395,37 @@ void DisplayString::assemble() const
 {
     // calculate length of display string
     int size = 0;
-    for (int t0=0; t0<numtags; t0++)
+    for (int t0=0; t0<numTags; t0++)
     {
         size += opp_strlen(tags[t0].name)+2;
-        for (int i=0; i<tags[t0].numargs; i++)
+        for (int i=0; i<tags[t0].numArgs; i++)
             size += opp_strlen(tags[t0].args[i])+1;
     }
     size = 2*size+1;  // 2* for worst case if every char has to be escaped
 
     // allocate display string
-    delete [] dispstr;
-    dispstr = new char[size];
-    dispstr[0] = '\0';
+    delete [] assembledString;
+    assembledString = new char[size];
+    assembledString[0] = '\0';
 
     // assemble string
-    for (int t=0; t<numtags; t++)
+    for (int t=0; t<numTags; t++)
     {
         if (t!=0)
-            strcat(dispstr, ";");
-        strcatescaped(dispstr, tags[t].name);
-        if (tags[t].numargs>0)
-            strcat(dispstr, "=");
-        for (int i=0; i<tags[t].numargs; i++)
+            strcat(assembledString, ";");
+        strcatEscaped(assembledString, tags[t].name);
+        if (tags[t].numArgs>0)
+            strcat(assembledString, "=");
+        for (int i=0; i<tags[t].numArgs; i++)
         {
-            if (i!=0) strcat(dispstr, ",");
-            strcatescaped(dispstr, tags[t].args[i]);
+            if (i!=0) strcat(assembledString, ",");
+            strcatEscaped(assembledString, tags[t].args[i]);
         }
     }
-    needsassemble = false;
+    assembledStringValid = false;
 }
 
-void DisplayString::strcatescaped(char *d, const char *s)
+void DisplayString::strcatEscaped(char *d, const char *s)
 {
     if (!s) return;
 

@@ -62,26 +62,26 @@ class COMMON_API DisplayString
   private:
     struct Tag {
        char *name;
-       int numargs;
+       int numArgs;
        char *args[MAXARGS];
     };
     char *buffer;       // holds pieces of display string (sliced with zeroes)
-    char *bufferend;    // points to last byte of buffer allocated
+    char *bufferEnd;    // points to last byte of buffer allocated
     Tag *tags;          // table of tags
-    int numtags;        // number of tags
+    int numTags;        // number of tags
 
-    mutable char *dispstr; // cached copy of assembled display string
-    mutable bool needsassemble; // if dispstr is up-to-date
+    mutable char *assembledString; // cached copy of assembled display string
+    mutable bool assembledStringValid; // whether cached copy is up-to-date
 
   private:
     // helper functions
     void copy(const DisplayString& ds) {parse(ds.str());}
     bool parse();
     void assemble() const;
-    int gettagindex(const char *tagname) const;
-    void cleartags();
-    bool isinbuffer(char *s) const {return s>=buffer && s<=bufferend;}
-    static void strcatescaped(char *d, const char *s);
+    int getTagIndex(const char *tagname) const;
+    void clearTags();
+    bool isInBuffer(char *s) const {return s>=buffer && s<=bufferEnd;}
+    static void strcatEscaped(char *d, const char *s);
 
   public:
     /** @name Constructors, destructor. */

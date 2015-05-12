@@ -87,13 +87,13 @@ class COMMON_API PatternMatcher
 
     struct Elem {
       ElemType type;
-      std::string literalstring; // if type==LITERALSTRING
-      std::string setchars; // SET/NEGSET: character pairs (0,1),(2,3) etc denote char ranges
-      long fromnum, tonum; // NUMRANGE; -1 means "unset"
+      std::string literalString; // if type==LITERALSTRING
+      std::string setOfChars; // SET/NEGSET: character pairs (0,1),(2,3) etc denote char ranges
+      long numStart, numEnd; // NUMRANGE; -1 means "unset"
     };
 
     std::vector<Elem> pattern;
-    bool iscasesensitive;
+    bool caseSensitive;
 
     std::string rest; // used to pass return value from doMatch() to patternPrefixMatches()
 

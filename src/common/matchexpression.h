@@ -109,9 +109,9 @@ class COMMON_API MatchExpression
 
   protected:
     // options
-    bool dottedpath;
-    bool fullstring;
-    bool casesensitive;
+    bool matchDottedPath;
+    bool matchFullString;
+    bool caseSensitive;
 
     // stores the expression
     std::vector<Elem> elems;

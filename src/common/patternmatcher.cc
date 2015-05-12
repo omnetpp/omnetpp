@@ -30,7 +30,7 @@ NAMESPACE_BEGIN
 
 PatternMatcher::PatternMatcher()
 {
-    iscasesensitive = true;
+    caseSensitive = true;
 }
 
 PatternMatcher::PatternMatcher(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive)
@@ -41,7 +41,7 @@ PatternMatcher::PatternMatcher(const char *pattern, bool dottedpath, bool fullst
 PatternMatcher::PatternMatcher(const PatternMatcher& other)
 {
     pattern = other.pattern;
-    iscasesensitive = other.iscasesensitive;
+    caseSensitive = other.caseSensitive;
     rest = other.rest;
 }
 
@@ -52,7 +52,7 @@ PatternMatcher::~PatternMatcher()
 void PatternMatcher::setPattern(const char *patt, bool dottedpath, bool fullstring, bool casesensitive)
 {
     pattern.clear();
-    iscasesensitive = casesensitive;
+    caseSensitive = casesensitive;
 
     // "tokenize" pattern
     const char *s = patt;
@@ -62,12 +62,12 @@ void PatternMatcher::setPattern(const char *patt, bool dottedpath, bool fullstri
         switch(*s)
         {
            case '?':  e.type = dottedpath ? COMMONCHAR : ANYCHAR; s++; break;
-           case '[':  if (pattern.empty() || pattern.back().type!=LITERALSTRING || !parseNumRange(s, ']', e.fromnum, e.tonum))
+           case '[':  if (pattern.empty() || pattern.back().type!=LITERALSTRING || !parseNumRange(s, ']', e.numStart, e.numEnd))
                           parseLiteralString(s,e);
                       else
                           e.type = NUMRANGE;
                       break;
-           case '{':  if (parseNumRange(s, '}', e.fromnum, e.tonum))
+           case '{':  if (parseNumRange(s, '}', e.numStart, e.numEnd))
                           {e.type = NUMRANGE; s++;}
                       else
                           parseSet(s,e);
@@ -125,13 +125,13 @@ void PatternMatcher::parseSet(const char *&s, Elem& e)
             range[0] = range[1] = *s;
             s++;
         }
-        if (!iscasesensitive)
+        if (!caseSensitive)
         {
             // if one end of range is alpha and the other is not, funny things will happen
             range[0] = opp_toupper(range[0]);
             range[1] = opp_toupper(range[1]);
         }
-        e.setchars += range;
+        e.setOfChars += range;
     }
     if (!*s)
         throw opp_runtime_error("unmatched '}' in expression");
@@ -146,9 +146,9 @@ void PatternMatcher::parseLiteralString(const char *&s, Elem& e)
         long dummy;
         const char *s1;
         if (*s=='\\')
-            e.literalstring += *(++s);
+            e.literalString += *(++s);
         else
-            e.literalstring += *s;
+            e.literalString += *s;
         if (*s=='[' && parseNumRange((s1=s),']',dummy,dummy))
             break;
         s++;
@@ -192,12 +192,12 @@ std::string PatternMatcher::debugStrFrom(int from)
         Elem& e = pattern[k];
         switch (e.type)
         {
-            case LITERALSTRING: result += opp_quotestr(e.literalstring.c_str()); break;
+            case LITERALSTRING: result += opp_quotestr(e.literalString.c_str()); break;
             case ANYCHAR: result += "?!"; break;
             case COMMONCHAR: result += "?"; break;
-            case SET: result += opp_stringf("SET(%s)", e.setchars.c_str()); break;
-            case NEGSET: result += opp_stringf("NEGSET(%s)", e.setchars.c_str()); break;
-            case NUMRANGE: result += opp_stringf("%ld..%ld", e.fromnum, e.tonum); break;
+            case SET: result += opp_stringf("SET(%s)", e.setOfChars.c_str()); break;
+            case NEGSET: result += opp_stringf("NEGSET(%s)", e.setOfChars.c_str()); break;
+            case NUMRANGE: result += opp_stringf("%ld..%ld", e.numStart, e.numEnd); break;
             case ANYSEQ: result += "**"; break;
             case COMMONSEQ: result += "*"; break;
             case END: break;
@@ -211,7 +211,7 @@ std::string PatternMatcher::debugStrFrom(int from)
 bool PatternMatcher::isInSet(char c, const char *set)
 {
     assert((strlen(set)&1)==0);
-    if (!iscasesensitive)
+    if (!caseSensitive)
         c = opp_toupper(c); // set is already uppercase here
     while (*set)
     {
@@ -232,14 +232,14 @@ bool PatternMatcher::doMatch(const char *s, int k, int suffixlen)
         switch (e.type)
         {
             case LITERALSTRING:
-                len = e.literalstring.length();
+                len = e.literalString.length();
                 // special case: last string literal with prefix match: allow s to be shorter
                 if (suffixlen>0 && k==(int)pattern.size()-2)
                     len -= suffixlen;
                 // compare
-                if (iscasesensitive ?
-                    strncmp(s, e.literalstring.c_str(), len) :
-                    strncasecmp(s, e.literalstring.c_str(), len)
+                if (caseSensitive ?
+                    strncmp(s, e.literalString.c_str(), len) :
+                    strncasecmp(s, e.literalString.c_str(), len)
                    )
                     return false;
                 s += len;
@@ -257,14 +257,14 @@ bool PatternMatcher::doMatch(const char *s, int k, int suffixlen)
             case SET:
                 if (!*s)
                     return false;
-                if (!isInSet(*s, e.setchars.c_str()))
+                if (!isInSet(*s, e.setOfChars.c_str()))
                     return false;
                 s++;
                 break;
             case NEGSET:
                 if (!*s)
                     return false;
-                if (isInSet(*s, e.setchars.c_str()))
+                if (isInSet(*s, e.setOfChars.c_str()))
                     return false;
                 s++;
                 break;
@@ -273,7 +273,7 @@ bool PatternMatcher::doMatch(const char *s, int k, int suffixlen)
                     return false;
                 num = atol(s);
                 while (opp_isdigit(*s)) s++;
-                if ((e.fromnum>=0 && num<e.fromnum) || (e.tonum>=0 && num>e.tonum))
+                if ((e.numStart>=0 && num<e.numStart) || (e.numEnd>=0 && num>e.numEnd))
                     return false;
                 break;
             case ANYSEQ:
@@ -283,7 +283,7 @@ bool PatternMatcher::doMatch(const char *s, int k, int suffixlen)
                 if (k==(int)pattern.size()-2)
                     return true;
                 if (k==(int)pattern.size()-3 && pattern[k+1].type==LITERALSTRING)
-                    return opp_stringendswith(s, pattern[k+1].literalstring.c_str());
+                    return opp_stringendswith(s, pattern[k+1].literalString.c_str());
 
                 // general case
                 while (true)
@@ -325,16 +325,16 @@ bool PatternMatcher::matches(const char *line)
     // the end of the string. (We do the shortcut only in the case-sensitive
     // case. omnetpp.ini is case sensitive.)
 
-    if (pattern.size()>=2 && iscasesensitive)
+    if (pattern.size()>=2 && caseSensitive)
     {
         Elem& e = pattern[pattern.size()-2];
         if (e.type==LITERALSTRING)
         {
             // return if last 2 chars don't match
-            int pattlen = e.literalstring.size();
+            int pattlen = e.literalString.size();
             int linelen = strlen(line);
-            if (pattlen>=2 && linelen>=2 && (line[linelen-1]!=e.literalstring.at(pattlen-1) ||
-                line[linelen-2]!=e.literalstring.at(pattlen-2))) //FIXME why doesn't work for pattlen==1 ?
+            if (pattlen>=2 && linelen>=2 && (line[linelen-1]!=e.literalString.at(pattlen-1) ||
+                line[linelen-2]!=e.literalString.at(pattlen-2))) //FIXME why doesn't work for pattlen==1 ?
                 return false;
         }
     }
@@ -345,7 +345,7 @@ bool PatternMatcher::matches(const char *line)
 
 const char *PatternMatcher::patternPrefixMatches(const char *line, int suffixoffset)
 {
-    if (!iscasesensitive)
+    if (!caseSensitive)
         throw opp_runtime_error("PatternMatcher: patternPrefixMatches() doesn't support case-insensitive match");
 
     // pattern must end in a literal string...
@@ -357,13 +357,13 @@ const char *PatternMatcher::patternPrefixMatches(const char *line, int suffixoff
         return NULL;
 
     // ...with the suffixlen characters at the end of 'line'
-    const char *pattstring  = e.literalstring.c_str();
+    const char *pattstring  = e.literalString.c_str();
     const char *p = strstr(pattstring, line+suffixoffset);
     if (!p)
         return NULL;
     p += strlen(line+suffixoffset);
     rest = p;
-    int pattsuffixlen = e.literalstring.size() - (p-pattstring);
+    int pattsuffixlen = e.literalString.size() - (p-pattstring);
 
     // pattern, if we cut off the 'rest', must exactly match 'line'
     return doMatch(line, 0, pattsuffixlen) ? rest.c_str() : NULL;
