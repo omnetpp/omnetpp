@@ -179,6 +179,11 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     /** @name Channel information. */
     //@{
     /**
+     * Redefined from cComponent to return KIND_CHANNEL.
+     */
+    virtual ComponentKind getComponentKind() const  {return KIND_CHANNEL;}
+
+    /**
      * Returns the compound module containing this channel. That is,
      * the channel is either between two submodules of getParentModule(),
      * or between getParentModule() and one of its submodules.

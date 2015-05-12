@@ -92,7 +92,7 @@ cException::cException(const cException& e) : std::exception(e)
     hasContext_ = e.hasContext_;
     contextClassName = e.contextClassName;
     contextFullPath = e.contextFullPath;
-    contextModuleId = e.contextModuleId;
+    contextComponentId = e.contextComponentId;
 }
 
 void cException::storeContext()
@@ -115,14 +115,15 @@ void cException::storeContext()
     if (!sim || !sim->getContext())
     {
         hasContext_ = false;
-        contextModuleId = -1;
+        contextComponentId = -1;
     }
     else
     {
         hasContext_ = true;
         contextClassName = sim->getContext()->getClassName();
         contextFullPath = sim->getContext()->getFullPath().c_str();
-        contextModuleId = sim->getContext()->getId();
+        contextComponentId = sim->getContext()->getId();
+        contextComponentKind = sim->getContext()->getComponentKind();
     }
 }
 
@@ -168,6 +169,15 @@ void cException::init(const cObject *where, OppErrorCode errorcode, const char *
     exitIfStartupError();
 }
 
+static const char *getKindStr(cComponent::ComponentKind kind, bool capitalized)
+{
+    switch (kind) {
+    case cComponent::KIND_MODULE: return capitalized ? "Module" : "module";
+    case cComponent::KIND_CHANNEL: return capitalized ? "Channel" : "channel";
+    default: return capitalized ? "Component" : "component";
+    }
+}
+
 std::string cException::getFormattedMessage() const
 {
     std::string when;
@@ -186,19 +196,21 @@ std::string cException::getFormattedMessage() const
     {
         if (!hasContext())
             result = opp_stringf("Error%s: %s.", when.c_str(), what());
-        else if (getContextModuleID()==-1)
-            result = opp_stringf("Error in component (%s) %s%s: %s.", getContextClassName(), getContextFullPath(), when.c_str(), what());
         else
-            result = opp_stringf("Error in module (%s) %s (id=%d)%s: %s.", getContextClassName(), getContextFullPath(), getContextModuleID(), when.c_str(), what());
+            result = opp_stringf("Error in %s (%s) %s (id=%d)%s: %s.",
+                    getKindStr((cComponent::ComponentKind)getContextComponentKind(), false),
+                    getContextClassName(), getContextFullPath(), getContextComponentId(),
+                    when.c_str(), what());
     }
     else
     {
         if (!hasContext())
             result = opp_stringf("%s%s.", what(), when.c_str());
-        else if (getContextModuleID()==-1)
-            result = opp_stringf("Component (%s) %s%s: %s.", getContextClassName(), getContextFullPath(), when.c_str(), what());
         else
-            result = opp_stringf("Module (%s) %s (id=%d)%s: %s.", getContextClassName(), getContextFullPath(), getContextModuleID(), when.c_str(), what());
+            result = opp_stringf("%s (%s) %s (id=%d)%s: %s.",
+                    getKindStr((cComponent::ComponentKind)getContextComponentKind(), true),
+                    getContextClassName(), getContextFullPath(), getContextComponentId(),
+                    when.c_str(), what());
     }
 
     return result;

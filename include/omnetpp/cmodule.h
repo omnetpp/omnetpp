@@ -468,9 +468,9 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual bool isSimple() const;
 
     /**
-     * Redefined from cComponent to return true.
+     * Redefined from cComponent to return KIND_MODULE.
      */
-    virtual bool isModule() const  {return true;}
+    virtual ComponentKind getComponentKind() const  {return KIND_MODULE;}
 
     /**
      * Returns true if this module is a placeholder module, i.e.

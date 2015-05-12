@@ -50,7 +50,8 @@ class SIM_API cException : public std::exception
     bool hasContext_;
     std::string contextClassName;
     std::string contextFullPath;
-    int contextModuleId;   // TODO for 5.0, change to getContextComponentId
+    int contextComponentId;
+    int contextComponentKind; // actually cComponent::ComponentKind
 
     /**
      * Helper function for constructors: assembles and stores the message text.
@@ -184,7 +185,7 @@ class SIM_API cException : public std::exception
     /**
      * Returns true if the exception has "context info", that is, it occurred
      * within a known module or channel. getContextClassName(), getContextFullPath()
-     * and getModuleID() may only be called if this method returns true.
+     * and getContextComponentId() may only be called if this method returns true.
      */
     virtual bool hasContext() const {return hasContext_;}
 
@@ -195,18 +196,24 @@ class SIM_API cException : public std::exception
     virtual const char *getContextClassName() const {return contextClassName.c_str();}
 
     /**
-     * Returns the full path of the context where the exception
+     * Returns the full path of the component in context when the exception
      * occurred.
      */
     virtual const char *getContextFullPath() const {return contextFullPath.c_str();}
 
     /**
-     * Returns the ID of the module where the exception occurred,
-     * or -1 if it was not inside a module. The module may not exist
+     * Returns the ID of the component in context when the exception occurred,
+     * or -1 if there was no component in context. The component may not exist
      * any more when the exception is caught (ie. if the exception occurs
      * during network setup, the network is cleaned up immediately).
      */
-    virtual int getContextModuleID() const {return contextModuleId;}
+    virtual int getContextComponentId() const {return contextComponentId;}
+
+    /**
+     * Returns the kind of the component in context when the exception
+     * occurred. (The return value can be safely cast to cComponent::ComponentKind.)
+     */
+    virtual int getContextComponentKind() const {return contextComponentKind;}
     //@}
 };
 

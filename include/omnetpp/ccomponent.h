@@ -50,6 +50,9 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     friend class cGate;   // because of repairSignalFlags()
     friend class cSimulation; // sets componentId
 
+  public:
+    enum ComponentKind { KIND_MODULE, KIND_CHANNEL, KIND_OTHER };
+
   private:
     enum {
       FL_PARAMSFINALIZED  = 1 << 2, // whether finalizeParameters() has been called
@@ -327,14 +330,19 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     virtual const char *getNedTypeName() const;
 
     /**
-     * Redefined to return true in cModule and subclasses, otherwise returns false.
+     * TODO
      */
-    virtual bool isModule() const  {return false;}
+    virtual ComponentKind getComponentKind() const = 0;
 
     /**
-     * Returns true for channels, and false for modules.
+     * Returns true for cModule and subclasses, otherwise false.
      */
-    bool isChannel() const  {return !isModule();}
+    bool isModule() const  {return getComponentKind() == KIND_MODULE;}
+
+    /**
+     * Returns true for channels, and false otherwise.
+     */
+    bool isChannel() const  {return getComponentKind() == KIND_CHANNEL;}
 
     /**
      * Returns the module containing this module/channel. This is not necessarily
