@@ -27,7 +27,7 @@ cNullEnvir::cNullEnvir(int ac, char **av, cConfiguration *c)
     argv = av;
     cfg = c;
     rng = new cMersenneTwister();
-    lastnum = 0;
+    nextUniqueNumber = 0;
 }
 
 cNullEnvir::~cNullEnvir()

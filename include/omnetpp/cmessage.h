@@ -354,7 +354,7 @@ class SIM_API cMessage : public cEvent
      *
      * @see getParList()
      */
-    virtual cMsgPar& addPar(const char *s)  {cMsgPar *p=new cMsgPar(s);getParList().add(p);return *p;}
+    virtual cMsgPar& addPar(const char *name)  {cMsgPar *p=new cMsgPar(name);getParList().add(p);return *p;}
 
     /**
      * Add a parameter object to the message's object list.
@@ -365,12 +365,12 @@ class SIM_API cMessage : public cEvent
      *
      * @see getParList()
      */
-    virtual cMsgPar& addPar(cMsgPar *p)  {getParList().add(p); return *p;}
+    virtual cMsgPar& addPar(cMsgPar *par)  {getParList().add(par); return *par;}
 
     /**
      * DEPRECATED! Use addPar(cMsgPar *p) instead.
      */
-    _OPPDEPRECATED cMsgPar& addPar(cMsgPar& p)  {return addPar(&p);}
+    _OPPDEPRECATED cMsgPar& addPar(cMsgPar& par)  {return addPar(&par);}
 
     /**
      * Returns the nth object in the message's object list, converting it to a cMsgPar.
@@ -383,7 +383,7 @@ class SIM_API cMessage : public cEvent
      *
      * @see getParList()
      */
-    virtual cMsgPar& par(int n);
+    virtual cMsgPar& par(int index);
 
     /**
      * Returns the object with the given name in the message's object list,
@@ -397,7 +397,7 @@ class SIM_API cMessage : public cEvent
      *
      * @see getParList()
      */
-    virtual cMsgPar& par(const char *s);
+    virtual cMsgPar& par(const char *name);
 
     /**
      * Returns the index of the parameter with the given name in the message's
@@ -409,7 +409,7 @@ class SIM_API cMessage : public cEvent
      *
      * @see getParList()
      */
-    virtual int findPar(const char *s) const;
+    virtual int findPar(const char *name) const;
 
     /**
      * Check if a parameter with the given name exists in the message's
@@ -421,7 +421,7 @@ class SIM_API cMessage : public cEvent
      *
      * @see getParList()
      */
-    virtual bool hasPar(const char *s) const {return findPar(s)>=0;}
+    virtual bool hasPar(const char *name) const {return findPar(name)>=0;}
 
     /**
      * Add an object to the message's object list.
@@ -432,7 +432,7 @@ class SIM_API cMessage : public cEvent
      *
      * @see getParList()
      */
-    virtual cObject *addObject(cObject *p)  {getParList().add(p); return p;}
+    virtual cObject *addObject(cObject *par)  {getParList().add(par); return par;}
 
     /**
      * Returns the object with the given name in the message's object list.
@@ -444,7 +444,7 @@ class SIM_API cMessage : public cEvent
      *
      * @see getParList()
      */
-    virtual cObject *getObject(const char *s)  {return getParList().get(s);}
+    virtual cObject *getObject(const char *name)  {return getParList().get(name);}
 
     /**
      * Check if an object with the given name exists in the message's object list.
@@ -455,7 +455,7 @@ class SIM_API cMessage : public cEvent
      *
      * @see getParList()
      */
-    virtual bool hasObject(const char *s)  {return !parList ? false : parList->find(s)>=0;}
+    virtual bool hasObject(const char *name)  {return !parList ? false : parList->find(name)>=0;}
 
     /**
      * Remove the object with the given name from the message's object list, and
@@ -467,7 +467,7 @@ class SIM_API cMessage : public cEvent
      *
      * @see getParList()
      */
-    virtual cObject *removeObject(const char *s)  {return getParList().remove(s);}
+    virtual cObject *removeObject(const char *name)  {return getParList().remove(name);}
 
     /**
      * Remove the object with the given name from the message's object list, and
@@ -479,7 +479,7 @@ class SIM_API cMessage : public cEvent
      *
      * @see getParList()
      */
-    virtual cObject *removeObject(cObject *p)  {return getParList().remove(p);}
+    virtual cObject *removeObject(cObject *par)  {return getParList().remove(par);}
     //@}
 
     /** @name Sending/arrival information. */
@@ -592,13 +592,13 @@ class SIM_API cMessage : public cEvent
      * If it is a vector gate, the method returns true if the message arrived
      * on any gate in the vector.
      */
-    bool arrivedOn(const char *gatename) const;
+    bool arrivedOn(const char *gateName) const;
 
     /**
      * Return true if the message arrived through the given gate
      * in the named gate vector.
      */
-    bool arrivedOn(const char *gatename, int gateindex) const;
+    bool arrivedOn(const char *gateName, int gateIndex) const;
 
     /**
      * Returns a unique message identifier assigned upon message creation.

@@ -35,12 +35,12 @@ NAMESPACE_BEGIN
  *
  * Automatic range estimation works in the following way:
  * <OL>
- *   <LI>The first <I>num_firstvals</I> observations are stored.
+ *   <LI>The first <I>numPrecollect</I> observations are stored.
  *   <LI>After having collected a given number of observations, the actual
  *   histogram is set up. The range (<I>min</I>, <I>max</I>) of the
- *   initial values is expanded <I>range_ext_factor</I> times, and
- *   the result will become the histogram's range (<I>rangemin</I>,
- *   <I>rangemax</I>). Based on the range, the cells are layed out.
+ *   initial values is expanded <I>rangeExtensionFactoror</I> times, and
+ *   the result will become the histogram's range (<I>rangeMin</I>,
+ *   <I>rangeMax</I>). Based on the range, the cells are layed out.
  *   Then the initial values that have been stored up to this point
  *   will be transferred into the new histogram structure and their
  *   store is deleted -- this is done by the transform() function.
@@ -218,7 +218,7 @@ class SIM_API cDensityEstBase : public cStdDev
 
     /**
      * Sets the histogram range explicitly to [lower, upper]. When this method is
-     * used, setNumFirstVals() is not needed.
+     * used, setNumPrecollectedValues() is not needed.
      */
     virtual void setRange(double lower, double upper);
 
@@ -227,37 +227,37 @@ class SIM_API cDensityEstBase : public cStdDev
      * entirely from a set of pre-collected values.
      *
      * When called, the histogram range will be determined from the first
-     * num_firstvals values, extending their range symmetrically by
-     * range_ext_fact. For example, after a call to setRangeAuto(100, 1.3),
+     * numPrecollect values, extending their range symmetrically by
+     * rangeExtensionFactor. For example, after a call to setRangeAuto(100, 1.3),
      * the histogram will be set up after pre-collecting 100 values, the range
      * being the range of the 100 pre-collected values extended 1.3 times
      * symmetrically.
      */
-    virtual void setRangeAuto(int num_firstvals=100, double range_ext_fact=2.0);
+    virtual void setRangeAuto(int numPrecollect=100, double rangeExtensionFactor=2.0);
 
     /**
      * Selects a histogram range setup method where the upper bound of the range
      * is fixed and the lower bound is determined from a set of pre-collected values.
      *
      * The lower bound is calculated by extending the range (minimum of observations, upper)
-     * range_ext_fact times.
+     * rangeExtensionFactor times.
      */
-    virtual void setRangeAutoLower(double upper, int num_firstvals=100, double range_ext_fact=2.0);
+    virtual void setRangeAutoLower(double upper, int numPrecollect=100, double rangeExtensionFactor=2.0);
 
     /**
      * Selects a histogram range setup method where the lower bound of the range
      * is fixed and the upper bound is determined from a set of pre-collected values.
      *
      * The upper bound is calculated by extending the range (lower, maximum of observations)
-     * range_ext_fact times.
+     * rangeExtensionFactor times.
      */
-    virtual void setRangeAutoUpper(double lower, int num_firstvals=100, double range_ext_fact=2.0);
+    virtual void setRangeAutoUpper(double lower, int numPrecollect=100, double rangeExtensionFactor=2.0);
 
     /**
      * Sets the number of values to be pre-collected before transformation takes
      * place. See transform().
      */
-    virtual void setNumPrecollectedValues(int num_firstvals);
+    virtual void setNumPrecollectedValues(int numPrecollect);
 
     /**
      * Returns the number of values to be pre-collected before transformation
@@ -318,10 +318,10 @@ class SIM_API cDensityEstBase : public cStdDev
     virtual int getNumCells() const = 0;
 
     /**
-     * Returns the kth cell boundary. Legal values for k are 0 through getNumCells(),
-     * that is, there' one more basepoint than the number of cells.
-     * Basepoint(0) returns the low end of the first cell, and getBasepoint(getNumCells())
-     * returns the high end of the last histogram cell.
+     * Returns the kth histogram cell boundary. Legal values for k are 0 through
+     * getNumCells(), that is, there's one more basepoint than the number of cells.
+     * getBasepoint(0) returns the lower bound of the first cell, and
+     * getBasepoint(getNumCells()) returns the upped bound of the last cell.
      * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual double getBasepoint(int k) const = 0;

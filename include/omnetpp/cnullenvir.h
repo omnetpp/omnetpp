@@ -60,7 +60,7 @@ class SIM_API cNullEnvir : public cEnvir
     char **argv;
     cConfiguration *cfg;
     cRNG *rng;
-    unsigned long lastnum;
+    unsigned long nextUniqueNumber;
     std::vector<cISimulationLifecycleListener*> listeners;
 
   protected:
@@ -145,7 +145,7 @@ class SIM_API cNullEnvir : public cEnvir
     virtual char **getArgVector() const  {return argv;}
     virtual int getParsimProcId() const {return 0;}
     virtual int getParsimNumPartitions() const {return 1;}
-    virtual unsigned long getUniqueNumber()  {return ++lastnum;}
+    virtual unsigned long getUniqueNumber()  {return nextUniqueNumber++;}
     virtual bool idle()  {return false;}
     virtual void attachDebugger() {}
 

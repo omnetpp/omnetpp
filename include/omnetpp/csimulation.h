@@ -78,7 +78,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cComponent **componentv;  // vector of modules/channels, componentv[0] is not used
     int lastComponentId;      // index of last used pos. in componentv[]
 #ifdef USE_OMNETPP4x_FINGERPRINTS
-    int lastVersion4ModuleId;   // last used OMNeT++ V4.x compatible module ID
+    int lastVersion4ModuleId; // last used OMNeT++ V4.x compatible module ID
 #endif
 
     // simulation vars
@@ -206,7 +206,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * separated by dots. Inclusion of the toplevel module's name in the
      * path is optional. Returns NULL if the module is not found.
      */
-    cModule *getModuleByPath(const char *modulepath) const;
+    cModule *getModuleByPath(const char *modulePath) const;
 
     /**
      * Looks up a component (module or channel) by ID. If the ID does not identify
@@ -229,7 +229,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /**
      * Designates the system module, the top-level module in the model.
      */
-    void setSystemModule(cModule *p);
+    void setSystemModule(cModule *module);
 
     /**
      * Returns pointer to the system module, the top-level module in the model.
@@ -256,7 +256,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Note: doneLoadingNedFiles() must be called after the last
      * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
-    static int loadNedSourceFolder(const char *foldername);
+    static int loadNedSourceFolder(const char *folderName);
 
     /**
      * Load a single NED file. If the expected package is given (non-NULL),
@@ -265,7 +265,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Note: doneLoadingNedFiles() must be called after the last
      * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
-    static void loadNedFile(const char *nedfname, const char *expectedPackage=NULL, bool isXML=false);
+    static void loadNedFile(const char *nedFilename, const char *expectedPackage=NULL, bool isXML=false);
 
     /**
      * Parses and loads the NED source code passed in the nedtext argument.
@@ -277,7 +277,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Note: doneLoadingNedFiles() must be called after the last
      * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
-    static void loadNedText(const char *name, const char *nedtext, const char *expectedPackage=NULL, bool isXML=false);
+    static void loadNedText(const char *name, const char *nedText, const char *expectedPackage=NULL, bool isXML=false);
 
     /**
      * To be called after all NED folders / files have been loaded
@@ -444,7 +444,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Switches to the given simple module's coroutine. This method is invoked
      * from executeEvent() for activity()-based modules.
      */
-    void transferTo(cSimpleModule *p);
+    void transferTo(cSimpleModule *module);
 
     /**
      * Switches to main coroutine.
@@ -461,12 +461,12 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /**
      * Sets the component (module or channel) in context. Used internally.
      */
-    void setContext(cComponent *p);
+    void setContext(cComponent *component);
 
     /**
      * Sets the context type (see CTX_xxx constants). Used internally.
      */
-    void setContextType(int ctxtype)  {contextType = ctxtype;}
+    void setContextType(int type)  {contextType = type;}
 
     /**
      * Sets global context. Used internally.

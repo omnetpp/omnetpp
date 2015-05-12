@@ -51,8 +51,8 @@ NAMESPACE_BEGIN
  *              bin_bounds[0]                       bin_bounds[numcells]
  * </TT></PRE>
  *
- * Rangemin and rangemax is chosen after collecting the num_firstvals initial
- * observations. It is not possible to add cell boundaries when histogram is
+ * Rangemin and rangemax are chosen after precollection of initial observations
+ * has finished. It is not possible to add cell boundaries when histogram is
  * already transformed.
  *
  * Now we do support the following 2 uses of cVarHistogram:

@@ -533,11 +533,11 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName,
     if (qname.empty())
         throw cRuntimeError(modp, "Submodule %s: cannot resolve module type `%s' (not in the loaded NED files?)",
                             submodName, modTypeName);
-    cComponentType *componenttype = cComponentType::find(qname.c_str());
-    if (!dynamic_cast<cModuleType *>(componenttype))
+    cComponentType *componentType = cComponentType::find(qname.c_str());
+    if (!dynamic_cast<cModuleType *>(componentType))
         throw cRuntimeError(modp, "Submodule %s: `%s' is not a module type",
                             submodName, qname.c_str());
-    return (cModuleType *)componenttype;
+    return (cModuleType *)componentType;
 }
 
 cModuleType *cNEDNetworkBuilder::findAndCheckModuleTypeLike(const char *modTypeName, const char *likeType, cModule *modp, const char *submodName)
@@ -547,11 +547,11 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleTypeLike(const char *modTypeN
     // resolve the interface
     NEDLookupContext context(currentDecl->getTree(), currentDecl->getFullName());
     std::string interfaceQName = cNEDLoader::getInstance()->resolveNedType(context, likeType);
-    cNEDDeclaration *interfacedecl = interfaceQName.empty() ? NULL : (cNEDDeclaration *)cNEDLoader::getInstance()->lookup(interfaceQName.c_str());
-    if (!interfacedecl)
+    cNEDDeclaration *interfaceDecl = interfaceQName.empty() ? NULL : (cNEDDeclaration *)cNEDLoader::getInstance()->lookup(interfaceQName.c_str());
+    if (!interfaceDecl)
         throw cRuntimeError(modp, "Submodule %s: cannot resolve module interface `%s'",
                             submodName, likeType);
-    if (interfacedecl->getTree()->getTagCode()!=NED_MODULE_INTERFACE)
+    if (interfaceDecl->getTree()->getTagCode()!=NED_MODULE_INTERFACE)
         throw cRuntimeError(modp, "Submodule %s: `%s' is not a module interface",
                             submodName, interfaceQName.c_str());
 
@@ -750,7 +750,7 @@ std::string cNEDNetworkBuilder::getSubmoduleOrChannelTypeNameFromDeepAssignments
     return defaultTypeName;
 }
 
-void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
+void cNEDNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement *submod)
 {
     // if there is a @dynamic or @dynamic(true), do not instantiate the submodule
     ParametersElement *paramsNode = submod->getFirstParametersChild();
@@ -763,30 +763,30 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
     ConditionElement *condition = submod->getFirstConditionChild();
     if (condition)
     {
-        ExpressionElement *condexpr = findExpression(condition, "condition");
-        if (condexpr && evaluateAsBool(condexpr, modp, false)==false)
+        ExpressionElement *conditionExpr = findExpression(condition, "condition");
+        if (conditionExpr && evaluateAsBool(conditionExpr, compoundModule, false)==false)
             return;
     }
 
     // create submodule
     const char *submodName = submod->getName();
     bool usesLike = !opp_isempty(submod->getLikeType());
-    ExpressionElement *vectorsizeexpr = findExpression(submod, "vector-size");
+    ExpressionElement *vectorSizeExpr = findExpression(submod, "vector-size");
 
-    if (!vectorsizeexpr)
+    if (!vectorSizeExpr)
     {
         cModuleType *submodType;
         try {
-            std::string submodTypeName = getSubmoduleTypeName(modp, submod);
+            std::string submodTypeName = getSubmoduleTypeName(compoundModule, submod);
             submodType = usesLike ?
-                findAndCheckModuleTypeLike(submodTypeName.c_str(), submod->getLikeType(), modp, submodName) :
-                findAndCheckModuleType(submodTypeName.c_str(), modp, submodName);
+                findAndCheckModuleTypeLike(submodTypeName.c_str(), submod->getLikeType(), compoundModule, submodName) :
+                findAndCheckModuleType(submodTypeName.c_str(), compoundModule, submodName);
         }
         catch (std::exception& e) {
             updateOrRethrowException(e, submod); throw;
         }
 
-        cModule *submodp = submodType->create(submodName, modp);
+        cModule *submodp = submodType->create(submodName, compoundModule);
         ModulePtrVector& v = submodMap[submodName];
         v.push_back(submodp);
 
@@ -797,22 +797,22 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
     else
     {
         // note: we don't try to resolve moduleType if vector size is zero
-        int vectorsize = (int) evaluateAsLong(vectorsizeexpr, modp, false);
+        int vectorsize = (int) evaluateAsLong(vectorSizeExpr, compoundModule, false);
         ModulePtrVector& v = submodMap[submodName];
         cModuleType *submodType = NULL;
         for (int i=0; i<vectorsize; i++) {
             if (!submodType || usesLike) {
                 try {
-                    std::string submodTypeName = getSubmoduleTypeName(modp, submod, i);
+                    std::string submodTypeName = getSubmoduleTypeName(compoundModule, submod, i);
                     submodType = usesLike ?
-                        findAndCheckModuleTypeLike(submodTypeName.c_str(), submod->getLikeType(), modp, submodName) :
-                        findAndCheckModuleType(submodTypeName.c_str(), modp, submodName);
+                        findAndCheckModuleTypeLike(submodTypeName.c_str(), submod->getLikeType(), compoundModule, submodName) :
+                        findAndCheckModuleType(submodTypeName.c_str(), compoundModule, submodName);
                 }
                 catch (std::exception& e) {
                     updateOrRethrowException(e, submod); throw;
                 }
             }
-            cModule *submodp = submodType->create(submodName, modp, vectorsize, i);
+            cModule *submodp = submodType->create(submodName, compoundModule, vectorsize, i);
             v.push_back(submodp);
 
             cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
@@ -928,24 +928,24 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *conn)
         if (!conn->getIsBidirectional())
         {
             // find gates and create connection
-            cGate *srcg = resolveGate(modp, conn->getSrcModule(), findExpression(conn, "src-module-index"),
-                                            conn->getSrcGate(), findExpression(conn, "src-gate-index"),
-                                            conn->getSrcGateSubg(), conn->getSrcGatePlusplus());
-            cGate *destg = resolveGate(modp, conn->getDestModule(), findExpression(conn, "dest-module-index"),
-                                             conn->getDestGate(), findExpression(conn, "dest-gate-index"),
-                                             conn->getDestGateSubg(), conn->getDestGatePlusplus());
+            cGate *srcGate = resolveGate(modp, conn->getSrcModule(), findExpression(conn, "src-module-index"),
+                                               conn->getSrcGate(), findExpression(conn, "src-gate-index"),
+                                               conn->getSrcGateSubg(), conn->getSrcGatePlusplus());
+            cGate *destGate = resolveGate(modp, conn->getDestModule(), findExpression(conn, "dest-module-index"),
+                                                conn->getDestGate(), findExpression(conn, "dest-gate-index"),
+                                                conn->getDestGateSubg(), conn->getDestGatePlusplus());
 
             // check directions
-            cGate *errg = NULL;
-            if (srcg->getOwnerModule()==modp ? srcg->getType()!=cGate::INPUT : srcg->getType()!=cGate::OUTPUT)
-                errg = srcg;
-            if (destg->getOwnerModule()==modp ? destg->getType()!=cGate::OUTPUT : destg->getType()!=cGate::INPUT)
-                errg = destg;
-            if (errg)
+            cGate *errorGate = NULL;
+            if (srcGate->getOwnerModule()==modp ? srcGate->getType()!=cGate::INPUT : srcGate->getType()!=cGate::OUTPUT)
+                errorGate = srcGate;
+            if (destGate->getOwnerModule()==modp ? destGate->getType()!=cGate::OUTPUT : destGate->getType()!=cGate::INPUT)
+                errorGate = destGate;
+            if (errorGate)
                 throw cRuntimeError(modp, "Gate %s is being connected in the wrong direction",
-                                    errg->getFullPath().c_str());
+                                    errorGate->getFullPath().c_str());
 
-            doConnectGates(modp, srcg, destg, conn);
+            doConnectGates(modp, srcGate, destGate, conn);
         }
         else
         {
@@ -955,18 +955,18 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *conn)
 
             // now: 1 is input, 2 is output, except for parent module gates where it is the other way round
             // (because we connect xx.out --> yy.in, but xx.out --> out!)
-            cGate *srcg1, *srcg2, *destg1, *destg2;
+            cGate *srcGate1, *srcGate2, *destGate1, *destGate2;
             resolveInoutGate(modp, conn->getSrcModule(), findExpression(conn, "src-module-index"),
                              conn->getSrcGate(), findExpression(conn, "src-gate-index"),
                              conn->getSrcGatePlusplus(),
-                             srcg1, srcg2);
+                             srcGate1, srcGate2);
             resolveInoutGate(modp, conn->getDestModule(), findExpression(conn, "dest-module-index"),
                              conn->getDestGate(), findExpression(conn, "dest-gate-index"),
                              conn->getDestGatePlusplus(),
-                             destg1, destg2);
+                             destGate1, destGate2);
 
-            doConnectGates(modp, srcg2, destg1, conn);
-            doConnectGates(modp, destg2, srcg1, conn);
+            doConnectGates(modp, srcGate2, destGate1, conn);
+            doConnectGates(modp, destGate2, srcGate1, conn);
         }
     }
     catch (std::exception& e) {
@@ -974,140 +974,140 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *conn)
     }
 }
 
-void cNEDNetworkBuilder::doConnectGates(cModule *modp, cGate *srcg, cGate *destg, ConnectionElement *conn)
+void cNEDNetworkBuilder::doConnectGates(cModule *modp, cGate *srcGate, cGate *destGate, ConnectionElement *conn)
 {
     if (opp_isempty(conn->getName()) && opp_isempty(conn->getType()) &&
         opp_isempty(conn->getLikeType()) && !conn->getFirstParametersChild())
     {
-        srcg->connectTo(destg);
+        srcGate->connectTo(destGate);
     }
     else
     {
-        cChannel *channel = createChannel(conn, modp, srcg);
+        cChannel *channel = createChannel(conn, modp, srcGate);
         channel->setNedConnectionElementId(conn->getId()); // so that properties will be found
-        srcg->connectTo(destg, channel);
+        srcGate->connectTo(destGate, channel);
         assignSubcomponentParams(channel, conn);
         channel->finalizeParameters();
     }
 }
 
-cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
-                                       const char *modname, ExpressionElement *modindexp,
-                                       const char *gatename, ExpressionElement *gateindexp,
-                                       int subg, bool isplusplus)
+cGate *cNEDNetworkBuilder::resolveGate(cModule *compoundModule,
+                                       const char *moduleName, ExpressionElement *moduleIndexExpr,
+                                       const char *gateName, ExpressionElement *gateIndexExpr,
+                                       int subgate, bool isPlusPlus)
 {
-    if (isplusplus && gateindexp)
-        throw cRuntimeError(parentmodp, "Both `++' and gate index expression used in a connection");
+    if (isPlusPlus && gateIndexExpr)
+        throw cRuntimeError(compoundModule, "Both `++' and gate index expression used in a connection");
 
-    cModule *modp = resolveModuleForConnection(parentmodp, modname, modindexp);
+    cModule *module = resolveModuleForConnection(compoundModule, moduleName, moduleIndexExpr);
 
     // add "$i" or "$o" suffix to gate name if needed
     std::string tmp;
-    const char *gatename2 = gatename;
-    if (subg!=NED_SUBGATE_NONE)
+    const char *gateName2 = gateName;
+    if (subgate!=NED_SUBGATE_NONE)
     {
-        const char *suffix = subg==NED_SUBGATE_I ? "$i" : "$o";
-        tmp = gatename;
+        const char *suffix = subgate==NED_SUBGATE_I ? "$i" : "$o";
+        tmp = gateName;
         tmp += suffix;
-        gatename2 = tmp.c_str();
+        gateName2 = tmp.c_str();
     }
 
     // look up gate
-    cGate *gatep = NULL;
-    if (!gateindexp && !isplusplus)
+    cGate *gate = NULL;
+    if (!gateIndexExpr && !isPlusPlus)
     {
-        gatep = modp->gate(gatename2);
+        gate = module->gate(gateName2);
     }
-    else if (isplusplus)
+    else if (isPlusPlus)
     {
-        if (modp == parentmodp)
+        if (module == compoundModule)
         {
-            gatep = modp->getOrCreateFirstUnconnectedGate(gatename2, 0, true, false); // inside, don't expand
-            if (!gatep)
-                throw cRuntimeError(modp, "%s[] gates are all connected, no gate left for `++' operator", gatename);
+            gate = module->getOrCreateFirstUnconnectedGate(gateName2, 0, true, false); // inside, don't expand
+            if (!gate)
+                throw cRuntimeError(module, "%s[] gates are all connected, no gate left for `++' operator", gateName);
         }
         else
         {
-            gatep = modp->getOrCreateFirstUnconnectedGate(gatename2, 0, false, true); // outside, expand
-            ASSERT(gatep!=NULL);
+            gate = module->getOrCreateFirstUnconnectedGate(gateName2, 0, false, true); // outside, expand
+            ASSERT(gate!=NULL);
         }
     }
-    else // (gateindexp)
+    else // (gateIndexExpr)
     {
-        int gateindex = (int) evaluateAsLong(gateindexp, parentmodp, false);
-        gatep = modp->gate(gatename2, gateindex);
+        int gateIndex = (int) evaluateAsLong(gateIndexExpr, compoundModule, false);
+        gate = module->gate(gateName2, gateIndex);
     }
-    return gatep;
+    return gate;
 }
 
-void cNEDNetworkBuilder::resolveInoutGate(cModule *parentmodp,
-                                          const char *modname, ExpressionElement *modindexp,
-                                          const char *gatename, ExpressionElement *gateindexp,
-                                          bool isplusplus,
-                                          cGate *&gate1, cGate *&gate2)
+void cNEDNetworkBuilder::resolveInoutGate(cModule *compoundModule,
+                                          const char *moduleName, ExpressionElement *moduleIndexExpr,
+                                          const char *gateName, ExpressionElement *gateIndexExpr,
+                                          bool isPlusPlus,
+                                          cGate *&outGate1, cGate *&outGate2)
 {
-    if (isplusplus && gateindexp)
-        throw cRuntimeError(parentmodp, "Both `++' and gate index expression used in a connection");
+    if (isPlusPlus && gateIndexExpr)
+        throw cRuntimeError(compoundModule, "Both `++' and gate index expression used in a connection");
 
-    cModule *modp = resolveModuleForConnection(parentmodp, modname, modindexp);
+    cModule *module = resolveModuleForConnection(compoundModule, moduleName, moduleIndexExpr);
 
-    gate1 = gate2 = NULL;
-    if (!gateindexp && !isplusplus)
+    outGate1 = outGate2 = NULL;
+    if (!gateIndexExpr && !isPlusPlus)
     {
         // optimization possibility: add gatePair() method to cModule to spare one lookup
-        gate1 = modp->gateHalf(gatename, cGate::INPUT);
-        gate2 = modp->gateHalf(gatename, cGate::OUTPUT);
+        outGate1 = module->gateHalf(gateName, cGate::INPUT);
+        outGate2 = module->gateHalf(gateName, cGate::OUTPUT);
     }
-    else if (isplusplus)
+    else if (isPlusPlus)
     {
-        if (modp == parentmodp)
+        if (module == compoundModule)
         {
-            modp->getOrCreateFirstUnconnectedGatePair(gatename, true, false, gate1, gate2); // inside, don't expand
-            if (!gate1 || !gate2)
-                throw cRuntimeError(parentmodp, "%s[] gates are all connected, no gate left for `++' operator", gatename);
+            module->getOrCreateFirstUnconnectedGatePair(gateName, true, false, outGate1, outGate2); // inside, don't expand
+            if (!outGate1 || !outGate2)
+                throw cRuntimeError(compoundModule, "%s[] gates are all connected, no gate left for `++' operator", gateName);
         }
         else
         {
-            modp->getOrCreateFirstUnconnectedGatePair(gatename, false, true, gate1, gate2); // outside, expand
-            ASSERT(gate1 && gate2);
+            module->getOrCreateFirstUnconnectedGatePair(gateName, false, true, outGate1, outGate2); // outside, expand
+            ASSERT(outGate1 && outGate2);
         }
     }
-    else // (gateindexp)
+    else // (gateIndexExpr)
     {
-        // optimization possiblity: add gatePair() method to cModule to spare one lookup
-        int gateindex = (int) evaluateAsLong(gateindexp, parentmodp, false);
-        gate1 = modp->gateHalf(gatename, cGate::INPUT, gateindex);
-        gate2 = modp->gateHalf(gatename, cGate::OUTPUT, gateindex);
+        // optimization possibility: add gatePair() method to cModule to spare one lookup
+        int gateIndex = (int) evaluateAsLong(gateIndexExpr, compoundModule, false);
+        outGate1 = module->gateHalf(gateName, cGate::INPUT, gateIndex);
+        outGate2 = module->gateHalf(gateName, cGate::OUTPUT, gateIndex);
     }
 
-    if (modp==parentmodp)
+    if (module==compoundModule)
     {
-        std::swap(gate1, gate2);
+        std::swap(outGate1, outGate2);
     }
 }
 
-cModule *cNEDNetworkBuilder::resolveModuleForConnection(cModule *parentmodp, const char *modname, ExpressionElement *modindexp)
+cModule *cNEDNetworkBuilder::resolveModuleForConnection(cModule *compoundModule, const char *moduleName, ExpressionElement *moduleIndexExpr)
 {
-    if (opp_isempty(modname))
+    if (opp_isempty(moduleName))
     {
-        return parentmodp;
+        return compoundModule;
     }
     else
     {
-        int modindex = !modindexp ? 0 : (int) evaluateAsLong(modindexp, parentmodp, false);
-        cModule *modp = _submodule(parentmodp, modname,modindex);
-        if (!modp)
+        int moduleIndex = !moduleIndexExpr ? 0 : (int) evaluateAsLong(moduleIndexExpr, compoundModule, false);
+        cModule *module = _submodule(compoundModule, moduleName, moduleIndex);
+        if (!module)
         {
-            if (!modindexp)
-                throw cRuntimeError(modp, "No submodule `%s' to be connected", modname);
+            if (!moduleIndexExpr)
+                throw cRuntimeError(module, "No submodule `%s' to be connected", moduleName);
             else
-                throw cRuntimeError(modp, "No submodule `%s[%d]' to be connected", modname, modindex);
+                throw cRuntimeError(module, "No submodule `%s[%d]' to be connected", moduleName, moduleIndex);
         }
-        return modp;
+        return module;
     }
 }
 
-std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *srcgate, ConnectionElement *conn, const char *channelName)
+std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *srcGate, ConnectionElement *conn, const char *channelName)
 {
     // note: this code is nearly identical to getSubmoduleTypeName(), with subtle differences
     if (opp_isempty(conn->getLikeType()))
@@ -1119,9 +1119,9 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
         else
         {
             bool hasDelayChannelParams = false, hasOtherParams = false;
-            ParametersElement *channelparams = conn->getFirstParametersChild();
-            if (channelparams) {
-                for (ParamElement *param=channelparams->getFirstParamChild(); param; param=param->getNextParamSibling())
+            ParametersElement *channelParams = conn->getFirstParametersChild();
+            if (channelParams) {
+                for (ParamElement *param=channelParams->getFirstParamChild(); param; param=param->getNextParamSibling())
                     if (strcmp(param->getName(),"delay")==0 || strcmp(param->getName(),"disabled")==0)
                         hasDelayChannelParams = true;
                     else
@@ -1145,9 +1145,9 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
 
         // produce key to identify channel within the parent module, e.g. "in[3].channel" or "queue.out.channel"
         std::string channelKey;
-        if (srcgate->getOwnerModule() != parentmodp)
-            channelKey = std::string(srcgate->getOwnerModule()->getFullName()) + ".";  // src submodule name
-        channelKey += std::string(srcgate->getFullName()) + "." + channelName;
+        if (srcGate->getOwnerModule() != parentmodp)
+            channelKey = std::string(srcGate->getOwnerModule()->getFullName()) + ".";  // src submodule name
+        channelKey += std::string(srcGate->getFullName()) + "." + channelName;
 
         // then, use **.typename from NED deep param assignments (using channelKey above)
         std::string defaultDeepConnTypeName;
@@ -1161,7 +1161,7 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
         }
 
         // then, use **.typename option in the configuration if exists
-        std::string key = srcgate->getFullPath() + "." + channelName;
+        std::string key = srcGate->getFullPath() + "." + channelName;
         std::string channelTypeName = getEnvir()->getConfig()->getAsString(key.c_str(), CFGID_TYPENAME);
         if (!channelTypeName.empty())
             return channelTypeName;
@@ -1182,19 +1182,19 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
     }
 }
 
-cChannel *cNEDNetworkBuilder::createChannel(ConnectionElement *conn, cModule *parentmodp, cGate *srcgate)
+cChannel *cNEDNetworkBuilder::createChannel(ConnectionElement *conn, cModule *parentmodp, cGate *srcGate)
 {
     // resolve channel type
     const char *channelName = conn->getName();
     if (opp_isempty(channelName))
 		channelName = NULL; // use NULL to indicate "no name"
 
-    cChannelType *channeltype;
+    cChannelType *channelType;
     try {
         // note: for **.channelname.liketype= lookups we cannot take the channel type @defaultname into account, because we don't have the type yet!
-        std::string channelTypeName = getChannelTypeName(parentmodp, srcgate, conn, (channelName ? channelName : "channel"));
+        std::string channelTypeName = getChannelTypeName(parentmodp, srcGate, conn, (channelName ? channelName : "channel"));
         bool usesLike = !opp_isempty(conn->getLikeType());
-        channeltype = usesLike ?
+        channelType = usesLike ?
             findAndCheckChannelTypeLike(channelTypeName.c_str(), conn->getLikeType(), parentmodp) :
             findAndCheckChannelType(channelTypeName.c_str(), parentmodp);
     }
@@ -1203,7 +1203,7 @@ cChannel *cNEDNetworkBuilder::createChannel(ConnectionElement *conn, cModule *pa
     }
 
     // create channel object
-    cChannel *channelp = channeltype->create(channelName); // it will choose a name if it's NULL
+    cChannel *channelp = channelType->create(channelName); // it will choose a name if it's NULL
     return channelp;
 }
 
@@ -1215,10 +1215,10 @@ cChannelType *cNEDNetworkBuilder::findAndCheckChannelType(const char *channelTyp
     if (qname.empty())
         throw cRuntimeError(modp, "Cannot resolve channel type `%s' (not in the loaded NED files?)", channelTypeName);
 
-    cComponentType *componenttype = cComponentType::find(qname.c_str());
-    if (!dynamic_cast<cChannelType *>(componenttype))
+    cComponentType *componentType = cComponentType::find(qname.c_str());
+    if (!dynamic_cast<cChannelType *>(componentType))
         throw cRuntimeError(modp, "`%s' is not a channel type", qname.c_str());
-    return (cChannelType *)componenttype;
+    return (cChannelType *)componentType;
 }
 
 cChannelType *cNEDNetworkBuilder::findAndCheckChannelTypeLike(const char *channelTypeName, const char *likeType, cModule *modp)
@@ -1228,10 +1228,10 @@ cChannelType *cNEDNetworkBuilder::findAndCheckChannelTypeLike(const char *channe
     // resolve the interface
     NEDLookupContext context(currentDecl->getTree(), currentDecl->getFullName());
     std::string interfaceQName = cNEDLoader::getInstance()->resolveNedType(context, likeType);
-    cNEDDeclaration *interfacedecl = interfaceQName.empty() ? NULL : (cNEDDeclaration *)cNEDLoader::getInstance()->lookup(interfaceQName.c_str());
-    if (!interfacedecl)
+    cNEDDeclaration *interfaceDecl = interfaceQName.empty() ? NULL : (cNEDDeclaration *)cNEDLoader::getInstance()->lookup(interfaceQName.c_str());
+    if (!interfaceDecl)
         throw cRuntimeError(modp, "Cannot resolve channel interface `%s'", likeType);
-    if (interfacedecl->getTree()->getTagCode()!=NED_CHANNEL_INTERFACE)
+    if (interfaceDecl->getTree()->getTagCode()!=NED_CHANNEL_INTERFACE)
         throw cRuntimeError(modp, "`%s' is not a channel interface", interfaceQName.c_str());
 
     // search for channel type that implements the interface

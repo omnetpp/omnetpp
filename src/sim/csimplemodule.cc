@@ -174,10 +174,10 @@ void cSimpleModule::activate(void *p)
 }
 
 // legacy constructor, only for backwards compatiblity; first two args are unused
-cSimpleModule::cSimpleModule(const char *, cModule *, unsigned stksize)
+cSimpleModule::cSimpleModule(const char *, cModule *, unsigned stackSize)
 {
     coroutine = NULL;
-    setFlag(FL_USESACTIVITY, stksize!=0);
+    setFlag(FL_USESACTIVITY, stackSize!=0);
     setFlag(FL_ISTERMINATED, false);
     setFlag(FL_STACKALREADYUNWOUND, false);
 
@@ -189,18 +189,18 @@ cSimpleModule::cSimpleModule(const char *, cModule *, unsigned stksize)
     {
        // setup coroutine, allocate stack for it
        coroutine = new cCoroutine;
-       if (!coroutine->setup(cSimpleModule::activate, this, stksize+getEnvir()->getExtraStackForEnvir()))
+       if (!coroutine->setup(cSimpleModule::activate, this, stackSize+getEnvir()->getExtraStackForEnvir()))
            throw cRuntimeError("Cannot create coroutine with %d+%d bytes of stack space for module `%s' -- "
                                "see Manual for hints on how to increase the number of coroutines that can be created, "
                                "or rewrite modules to use handleMessage() instead of activity()",
-                               stksize, getEnvir()->getExtraStackForEnvir(), getFullPath().c_str());
+                               stackSize, getEnvir()->getExtraStackForEnvir(), getFullPath().c_str());
     }
 }
 
-cSimpleModule::cSimpleModule(unsigned stksize)
+cSimpleModule::cSimpleModule(unsigned stackSize)
 {
     coroutine = NULL;
-    setFlag(FL_USESACTIVITY, stksize!=0);
+    setFlag(FL_USESACTIVITY, stackSize!=0);
     setFlag(FL_ISTERMINATED, false);
     setFlag(FL_STACKALREADYUNWOUND, false);
 
@@ -212,11 +212,11 @@ cSimpleModule::cSimpleModule(unsigned stksize)
     {
        // setup coroutine, allocate stack for it
        coroutine = new cCoroutine;
-       if (!coroutine->setup(cSimpleModule::activate, this, stksize+getEnvir()->getExtraStackForEnvir()))
+       if (!coroutine->setup(cSimpleModule::activate, this, stackSize+getEnvir()->getExtraStackForEnvir()))
            throw cRuntimeError("Cannot create coroutine with %d+%d bytes of stack space for module `%s' -- "
                                "see Manual for hints on how to increase the number of coroutines that can be created, "
                                "or rewrite modules to use handleMessage() instead of activity()",
-                               stksize, getEnvir()->getExtraStackForEnvir(), getFullPath().c_str());
+                               stackSize, getEnvir()->getExtraStackForEnvir(), getFullPath().c_str());
     }
 }
 
@@ -349,30 +349,30 @@ void cSimpleModule::deleteModule()
 
 int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, const char *gateName, int gateIndex)
 {
-    cGate *outgate;
-    TRY(outgate = gate(gateName,gateIndex), "send()/sendDelayed()");
-    return sendDelayed(msg, delay, outgate);
+    cGate *outGate;
+    TRY(outGate = gate(gateName,gateIndex), "send()/sendDelayed()");
+    return sendDelayed(msg, delay, outGate);
 }
 
 int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, int gateId)
 {
-    cGate *outgate;
-    TRY(outgate = gate(gateId), "send()/sendDelayed()");
-    return sendDelayed(msg, delay, outgate);
+    cGate *outGate;
+    TRY(outGate = gate(gateId), "send()/sendDelayed()");
+    return sendDelayed(msg, delay, outGate);
 }
 
-int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
+int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outGate)
 {
     // error checking:
-    if (outgate==NULL)
+    if (outGate==NULL)
        throw cRuntimeError("send()/sendDelayed(): gate pointer is NULL");
-    if (outgate->getType()==cGate::INPUT)
-       throw cRuntimeError("send()/sendDelayed(): cannot send via an input gate (`%s')", outgate->getFullName());
-    if (!outgate->getNextGate())  // NOTE: without this error check, msg would become self-message
-       throw cRuntimeError("send()/sendDelayed(): gate `%s' not connected", outgate->getFullName());
-    if (outgate->getPreviousGate())
+    if (outGate->getType()==cGate::INPUT)
+       throw cRuntimeError("send()/sendDelayed(): cannot send via an input gate (`%s')", outGate->getFullName());
+    if (!outGate->getNextGate())  // NOTE: without this error check, msg would become self-message
+       throw cRuntimeError("send()/sendDelayed(): gate `%s' not connected", outGate->getFullName());
+    if (outGate->getPreviousGate())
        throw cRuntimeError("send()/sendDelayed(): gate `%s' is not the start of a connection path (path starts at gate %s)",
-                           outgate->getFullName(), outgate->getPathStartGate()->getFullPath().c_str());
+                           outGate->getFullName(), outGate->getPathStartGate()->getFullPath().c_str());
     if (msg==NULL)
         throw cRuntimeError("send()/sendDelayed(): message pointer is NULL");
     if (msg->getOwner()!=this)
@@ -409,12 +409,12 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
 
     // set message parameters and send it
     simtime_t delayEndTime = simTime()+delay;
-    msg->setSentFrom(this, outgate->getId(), delayEndTime);
+    msg->setSentFrom(this, outGate->getId(), delayEndTime);
     if (msg->isPacket())
         ((cPacket *)msg)->setDuration(SIMTIME_ZERO);
 
     EVCB.beginSend(msg);
-    bool keepit = outgate->deliver(msg, delayEndTime);
+    bool keepit = outGate->deliver(msg, delayEndTime);
     EVCB.messageSent_OBSOLETE(msg); // TODO: Tkenv currently takes animation input from this call; to be rewritten
     if (!keepit)
     {
@@ -437,9 +437,9 @@ int cSimpleModule::sendDirect(cMessage *msg, cModule *mod, int gateId)
     return sendDirect(msg, SIMTIME_ZERO, SIMTIME_ZERO, mod, gateId);
 }
 
-int cSimpleModule::sendDirect(cMessage *msg, cGate *togate)
+int cSimpleModule::sendDirect(cMessage *msg, cGate *toGate)
 {
-    return sendDirect(msg, SIMTIME_ZERO, SIMTIME_ZERO, togate);
+    return sendDirect(msg, SIMTIME_ZERO, SIMTIME_ZERO, toGate);
 }
 
 int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t duration,
@@ -447,9 +447,9 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t dura
 {
     if (!mod)
         throw cRuntimeError("sendDirect(): destination module pointer is NULL");
-    cGate *togate;
-    TRY(togate = mod->gate(gateName, gateIndex), "sendDirect()");
-    return sendDirect(msg, propdelay, duration, togate);
+    cGate *toGate;
+    TRY(toGate = mod->gate(gateName, gateIndex), "sendDirect()");
+    return sendDirect(msg, propdelay, duration, toGate);
 }
 
 int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t duration, cModule *mod, int gateId)
@@ -462,16 +462,16 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t dura
 }
 
 
-int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t duration, cGate *togate)
+int cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cGate *toGate)
 {
     // Note: it is permitted to send to an output gate. It is especially useful
     // with several submodules sending to a single output gate of their parent module.
-    if (togate==NULL)
+    if (toGate==NULL)
         throw cRuntimeError("sendDirect(): destination gate pointer is NULL");
-    if (togate->getPreviousGate())
+    if (toGate->getPreviousGate())
         throw cRuntimeError("sendDirect(): module must have dedicated gate(s) for receiving via sendDirect()"
-                            " (\"from\" side of dest. gate `%s' should NOT be connected)",togate->getFullPath().c_str());
-    if (propdelay<SIMTIME_ZERO || duration<SIMTIME_ZERO)
+                            " (\"from\" side of dest. gate `%s' should NOT be connected)",toGate->getFullPath().c_str());
+    if (propagationDelay<SIMTIME_ZERO || duration<SIMTIME_ZERO)
         throw cRuntimeError("sendDirect(): the propagation time and duration parameters cannot be negative");
     if (msg==NULL)
         throw cRuntimeError("sendDirect(): message pointer is NULL");
@@ -515,15 +515,15 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t dura
     else if (duration!=SIMTIME_ZERO)
         throw cRuntimeError("sendDirect(): cannot send non-packet message (%s)%s when nonzero duration is specified",
                             msg->getClassName(), msg->getName());
-    EVCB.messageSendDirect(msg, togate, propdelay, duration);
-    bool keepit = togate->deliver(msg, simTime() + propdelay);
+    EVCB.messageSendDirect(msg, toGate, propagationDelay, duration);
+    bool keepit = toGate->deliver(msg, simTime() + propagationDelay);
     if (!keepit)
     {
         delete msg; //FIXME problem: tell tkenv somehow that msg has been deleted, otherwise animation will crash
     }
     else
     {
-        EVCB.messageSent_OBSOLETE(msg, togate); //FIXME obsolete
+        EVCB.messageSent_OBSOLETE(msg, toGate); //FIXME obsolete
         EVCB.endSend(msg);
     }
     return 0;
@@ -666,12 +666,12 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
         if (stackCleanupRequested)
             throw cStackCleanupException();
 
-        cMessage *newmsg = getSimulation()->msgForActivity;
+        cMessage *newMsg = getSimulation()->msgForActivity;
 
-        if (newmsg==timeoutMessage)
+        if (newMsg==timeoutMessage)
             break;
         else
-            queue->insert(newmsg);
+            queue->insert(newMsg);
     }
 
     DEBUG_TRAP_IF_REQUESTED; // MODULE IS ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP" IN YOUR DEBUGGER
@@ -708,9 +708,9 @@ cMessage *cSimpleModule::receive(simtime_t t)
     if (stackCleanupRequested)
         throw cStackCleanupException();
 
-    cMessage *newmsg = getSimulation()->msgForActivity;
+    cMessage *newMsg = getSimulation()->msgForActivity;
 
-    if (newmsg==timeoutMessage)  // timeout expired
+    if (newMsg==timeoutMessage)  // timeout expired
     {
         take(timeoutMessage);
         DEBUG_TRAP_IF_REQUESTED; // MODULE IS ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP" IN YOUR DEBUGGER
@@ -720,7 +720,7 @@ cMessage *cSimpleModule::receive(simtime_t t)
     {
         take(cancelEvent(timeoutMessage));
         DEBUG_TRAP_IF_REQUESTED; // MODULE IS ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP" IN YOUR DEBUGGER
-        return newmsg;
+        return newMsg;
     }
 }
 

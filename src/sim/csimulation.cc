@@ -270,20 +270,20 @@ int cSimulation::loadNedSourceFolder(const char *folder)
 #endif
 }
 
-void cSimulation::loadNedFile(const char *nedfile, const char *expectedPackage, bool isXML)
+void cSimulation::loadNedFile(const char *nedFilename, const char *expectedPackage, bool isXML)
 {
 #ifdef WITH_NETBUILDER
-    cNEDLoader::getInstance()->loadNedFile(nedfile, expectedPackage, isXML);
+    cNEDLoader::getInstance()->loadNedFile(nedFilename, expectedPackage, isXML);
 #else
     throw cRuntimeError("cannot load `%s': simulation kernel was compiled without "
-                        "support for dynamic loading of NED files (WITH_NETBUILDER=no)", nedfile);
+                        "support for dynamic loading of NED files (WITH_NETBUILDER=no)", nedFilename);
 #endif
 }
 
-void cSimulation::loadNedText(const char *name, const char *nedtext, const char *expectedPackage, bool isXML)
+void cSimulation::loadNedText(const char *name, const char *nedText, const char *expectedPackage, bool isXML)
 {
 #ifdef WITH_NETBUILDER
-    cNEDLoader::getInstance()->loadNedText(name, nedtext, expectedPackage, isXML);
+    cNEDLoader::getInstance()->loadNedText(name, nedText, expectedPackage, isXML);
 #else
     throw cRuntimeError("cannot source NED text: simulation kernel was compiled without "
                         "support for dynamic loading of NED files (WITH_NETBUILDER=no)");
@@ -344,10 +344,10 @@ void cSimulation::deregisterComponent(cComponent *component)
     }
 }
 
-void cSimulation::setSystemModule(cModule *p)
+void cSimulation::setSystemModule(cModule *module)
 {
-    systemModule = p;
-    take(p);
+    systemModule = module;
+    take(module);
 }
 
 cModule *cSimulation::getModuleByPath(const char *path) const
@@ -543,29 +543,30 @@ cSimpleModule *cSimulation::guessNextModule()
     if (!msg)
         return NULL;
 
-    // check if dest module exists and still running
+    // check that destination module still exists and hasn't terminated yet
     if (msg->getArrivalModuleId()==-1)
         return NULL;
-    cSimpleModule *modp = (cSimpleModule *)componentv[msg->getArrivalModuleId()];
-    if (!modp || modp->isTerminated())
+    cComponent *component = componentv[msg->getArrivalModuleId()];
+    cSimpleModule *module = dynamic_cast<cSimpleModule *>(component);
+    if (!module || module->isTerminated())
         return NULL;
-    return modp;
+    return module;
 }
 
-void cSimulation::transferTo(cSimpleModule *modp)
+void cSimulation::transferTo(cSimpleModule *module)
 {
-    if (!modp)
+    if (!module)
         throw cRuntimeError("transferTo(): attempt to transfer to NULL");
 
     // switch to activity() of the simple module
     exception = NULL;
-    currentActivityModule = modp;
-    cCoroutine::switchTo(modp->coroutine);
+    currentActivityModule = module;
+    cCoroutine::switchTo(module->coroutine);
 
-    if (modp->hasStackOverflow())
+    if (module->hasStackOverflow())
         throw cRuntimeError("Stack violation in module (%s)%s: module stack too small? "
                             "Try increasing it in the class' Module_Class_Members() or constructor",
-                            modp->getClassName(), modp->getFullPath().c_str());
+                            module->getClassName(), module->getFullPath().c_str());
 
     // if exception occurred in activity(), re-throw it. This allows us to handle
     // handleMessage() and activity() in an uniform way in the upper layer.
@@ -619,14 +620,14 @@ void cSimulation::executeEvent(cEvent *event)
     // sent out again
     event->setPreviousEventNumber(currentEventNumber);
 
-    cSimpleModule *mod = NULL;
+    cSimpleModule *module = NULL;
     try
     {
         if (event->isMessage())
         {
             cMessage *msg = static_cast<cMessage*>(event);
-            mod = static_cast<cSimpleModule *>(msg->getArrivalModule());  // existence and simpleness is asserted in cMessage::isStale()
-            doMessageEvent(msg, mod);
+            module = static_cast<cSimpleModule *>(msg->getArrivalModule());  // existence and simpleness is asserted in cMessage::isStale()
+            doMessageEvent(msg, module);
         }
         else
         {
@@ -637,7 +638,7 @@ void cSimulation::executeEvent(cEvent *event)
     catch (cDeleteModuleException& e)
     {
         setGlobalContext();
-        mod->deleteModule();
+        module->deleteModule();
     }
     catch (cException&)
     {
@@ -667,13 +668,13 @@ void cSimulation::executeEvent(cEvent *event)
     // the time of the next event, it should call guessNextSimtime().
 }
 
-void cSimulation::doMessageEvent(cMessage *msg, cSimpleModule *mod)
+void cSimulation::doMessageEvent(cMessage *msg, cSimpleModule *module)
 {
     // switch to the module's context
-    setContext(mod);
+    setContext(module);
 
     // give msg to mod (set ownership)
-    mod->take(msg);
+    module->take(msg);
 
     if (getHasher())
     {
@@ -681,9 +682,9 @@ void cSimulation::doMessageEvent(cMessage *msg, cSimpleModule *mod)
         cHasher *hasher = getHasher();
         hasher->add(SIMTIME_RAW(simTime()));
 #ifdef USE_OMNETPP4x_FINGERPRINTS
-        hasher->add(mod->getVersion4ModuleId());
+        hasher->add(module->getVersion4ModuleId());
 #else
-        hasher->add(mod->getFullPath().c_str());
+        hasher->add(module->getFullPath().c_str());
         hasher->add(msg->getClassName());
         hasher->add(msg->getKind());
         if (msg->getControlInfo())
@@ -693,23 +694,23 @@ void cSimulation::doMessageEvent(cMessage *msg, cSimpleModule *mod)
 #endif
     }
 
-    if (!mod->initialized())
-        throw cRuntimeError(mod, "Module not initialized (did you forget to invoke "
+    if (!module->initialized())
+        throw cRuntimeError(module, "Module not initialized (did you forget to invoke "
                 "callInitialize() for a dynamically created module?)");
 
-    if (mod->usesActivity())
+    if (module->usesActivity())
     {
         // switch to the coroutine of the module's activity(). We'll get back control
         // when the module executes a receive() or wait() call.
         // If there was an error during simulation, the call will throw an exception
         // (which originally occurred inside activity()).
         msgForActivity = msg;
-        transferTo(mod);
+        transferTo(module);
     }
     else
     {
         DEBUG_TRAP_IF_REQUESTED; // YOU ARE ABOUT TO ENTER THE handleMessage() CALL YOU REQUESTED -- SELECT "STEP INTO" IN YOUR DEBUGGER
-        mod->handleMessage(msg);
+        module->handleMessage(msg);
     }
 }
 

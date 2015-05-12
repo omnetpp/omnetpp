@@ -283,31 +283,31 @@ cObject *cMessage::getTargetObject() const
     return getArrivalModule();
 }
 
-cMsgPar& cMessage::par(int n)
+cMsgPar& cMessage::par(int index)
 {
     cArray& parlist = getParList();
-    cObject *p = parlist.get(n);
+    cObject *p = parlist.get(index);
     if (!p)
-        throw cRuntimeError(this,"par(int): has no parameter #%d",n);
+        throw cRuntimeError(this,"par(int): has no parameter #%d", index);
     if (!dynamic_cast<cMsgPar *>(p))
-        throw cRuntimeError(this,"par(int): parameter #%d is of type %s, not cMsgPar",n, p->getClassName());
+        throw cRuntimeError(this,"par(int): parameter #%d is of type %s, not cMsgPar", index, p->getClassName());
     return *(cMsgPar *)p;
 }
 
-cMsgPar& cMessage::par(const char *s)
+cMsgPar& cMessage::par(const char *name)
 {
     cArray& parlist = getParList();
-    cObject *p = parlist.get(s);
+    cObject *p = parlist.get(name);
     if (!p)
-        throw cRuntimeError(this,"par(const char *): has no parameter called `%s'",s);
+        throw cRuntimeError(this,"par(const char *): has no parameter called `%s'", name);
     if (!dynamic_cast<cMsgPar *>(p))
-        throw cRuntimeError(this,"par(const char *): parameter `%s' is of type %s, not cMsgPar",s, p->getClassName());
+        throw cRuntimeError(this,"par(const char *): parameter `%s' is of type %s, not cMsgPar", name, p->getClassName());
     return *(cMsgPar *)p;
 }
 
-int cMessage::findPar(const char *s) const
+int cMessage::findPar(const char *name) const
 {
-    return !parList ? -1 : parList->find(s);
+    return !parList ? -1 : parList->find(name);
 }
 
 cGate *cMessage::getSenderGate() const
@@ -324,16 +324,16 @@ cGate *cMessage::getArrivalGate() const
     return !mod ? NULL : mod->gate(targetGateId);
 }
 
-bool cMessage::arrivedOn(const char *gatename) const
+bool cMessage::arrivedOn(const char *gateName) const
 {
     cGate *arrgate = getArrivalGate();
-    return arrgate && arrgate->isName(gatename);
+    return arrgate && arrgate->isName(gateName);
 }
 
-bool cMessage::arrivedOn(const char *gatename, int gateindex) const
+bool cMessage::arrivedOn(const char *gateName, int gateIndex) const
 {
     cGate *arrgate = getArrivalGate();
-    return arrgate && arrgate->isName(gatename) && arrgate->getIndex()==gateindex;
+    return arrgate && arrgate->isName(gateName) && arrgate->getIndex()==gateIndex;
 }
 
 const char *cMessage::getDisplayString() const
@@ -356,8 +356,8 @@ void cMessage::setArrival(cModule *module, int gateId, simtime_t_cref t)
 bool cMessage::isStale()
 {
     // check that destination module still exists and is alive
-    cSimpleModule *modp = dynamic_cast<cSimpleModule *>(getSimulation()->getModule(targetModuleId));
-    return !modp || modp->isTerminated();
+    cSimpleModule *module = dynamic_cast<cSimpleModule *>(getSimulation()->getModule(targetModuleId));
+    return !module || module->isTerminated();
 }
 
 void cMessage::execute()
