@@ -127,7 +127,7 @@ void cIndexedFileOutputVectorManager::startRun()
 void cIndexedFileOutputVectorManager::endRun()
 {
     if (f!=NULL) {
-        for (std::vector<sVector*>::iterator it=vectors.begin(); it!=vectors.end(); ++it)
+        for (std::vector<Vector*>::iterator it=vectors.begin(); it!=vectors.end(); ++it)
             finalizeVector(*it);
     }
 
@@ -138,7 +138,7 @@ void cIndexedFileOutputVectorManager::endRun()
 
 void *cIndexedFileOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
 {
-    sVector *vp = (sVector *)cFileOutputVectorManager::registerVector(modulename, vectorname);
+    Vector *vp = (Vector *)cFileOutputVectorManager::registerVector(modulename, vectorname);
     vp->maxBufferedSamples = getEnvir()->getConfig()->getAsInt(modulename, CFGID_VECTOR_MAX_BUFFERED_VALUES);
     if (vp->maxBufferedSamples > 0)
         vp->allocateBuffer(vp->maxBufferedSamples);
@@ -147,21 +147,21 @@ void *cIndexedFileOutputVectorManager::registerVector(const char *modulename, co
     return vp;
 }
 
-cFileOutputVectorManager::sVectorData *cIndexedFileOutputVectorManager::createVectorData()
+cFileOutputVectorManager::VectorData *cIndexedFileOutputVectorManager::createVectorData()
 {
-    return new sVector();
+    return new Vector();
 }
 
 void cIndexedFileOutputVectorManager::deregisterVector(void *vectorhandle)
 {
-    sVector *vp = (sVector *)vectorhandle;
+    Vector *vp = (Vector *)vectorhandle;
     Vectors::iterator newEnd = std::remove(vectors.begin(), vectors.end(), vp);
     vectors.erase(newEnd, vectors.end());
     finalizeVector(vp);
     cFileOutputVectorManager::deregisterVector(vectorhandle);
 }
 
-void cIndexedFileOutputVectorManager::initVector(sVectorData *vp)
+void cIndexedFileOutputVectorManager::initVector(VectorData *vp)
 {
     cFileOutputVectorManager::initVector(vp);
 
@@ -175,7 +175,7 @@ void cIndexedFileOutputVectorManager::initVector(sVectorData *vp)
 }
 
 
-void cIndexedFileOutputVectorManager::finalizeVector(sVector *vp)
+void cIndexedFileOutputVectorManager::finalizeVector(Vector *vp)
 {
     if (f)
     {
@@ -186,7 +186,7 @@ void cIndexedFileOutputVectorManager::finalizeVector(sVector *vp)
 
 bool cIndexedFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double value)
 {
-    sVector *vp = (sVector *)vectorhandle;
+    Vector *vp = (Vector *)vectorhandle;
 
     if (!vp->enabled)
         return false;
@@ -196,7 +196,7 @@ bool cIndexedFileOutputVectorManager::record(void *vectorhandle, simtime_t t, do
         if (!vp->initialized)
             initVector(vp);
 
-        sBlock &currentBlock = vp->currentBlock;
+        Block &currentBlock = vp->currentBlock;
         eventnumber_t eventNumber = getSimulation()->getEventNumber();
         if (currentBlock.count == 0)
         {
@@ -211,8 +211,8 @@ bool cIndexedFileOutputVectorManager::record(void *vectorhandle, simtime_t t, do
         currentBlock.sum += value;
         currentBlock.sumSqr += value*value;
 
-        vp->buffer.push_back(sSample(t, eventNumber, value));
-        memoryUsed += sizeof(sSample);
+        vp->buffer.push_back(Sample(t, eventNumber, value));
+        memoryUsed += sizeof(Sample);
 
         if (vp->maxBufferedSamples > 0 && (int)vp->buffer.size() >= vp->maxBufferedSamples)
             writeBlock(vp);
@@ -249,7 +249,7 @@ void cIndexedFileOutputVectorManager::writeRecords()
     }
 }
 
-void cIndexedFileOutputVectorManager::writeBlock(sVector *vp)
+void cIndexedFileOutputVectorManager::writeBlock(Vector *vp)
 {
     assert(f!=NULL);
     assert(vp!=NULL);
@@ -257,34 +257,34 @@ void cIndexedFileOutputVectorManager::writeBlock(sVector *vp)
 
     static char buff[64];
 
-    sBlock &currentBlock = vp->currentBlock;
+    Block &currentBlock = vp->currentBlock;
     currentBlock.offset = opp_ftell(f);
 
     if (vp->recordEventNumbers)
     {
-        for (std::vector<sSample>::iterator it = vp->buffer.begin(); it != vp->buffer.end(); ++it)
+        for (std::vector<Sample>::iterator it = vp->buffer.begin(); it != vp->buffer.end(); ++it)
             CHECK(fprintf(f,"%d\t%" LL "d\t%s\t%.*g\n", vp->id, it->eventNumber, SIMTIME_TTOA(buff, it->simtime), prec, it->value), fname);
     }
     else
     {
-        for (std::vector<sSample>::iterator it = vp->buffer.begin(); it != vp->buffer.end(); ++it)
+        for (std::vector<Sample>::iterator it = vp->buffer.begin(); it != vp->buffer.end(); ++it)
             CHECK(fprintf(f,"%d\t%s\t%.*g\n", vp->id, SIMTIME_TTOA(buff, it->simtime), prec, it->value), fname);
     }
 
     currentBlock.size = opp_ftell(f) - currentBlock.offset;
     writeBlockToIndexFile(vp);
 
-    memoryUsed -= vp->buffer.size()*sizeof(sSample);
+    memoryUsed -= vp->buffer.size()*sizeof(Sample);
     vp->buffer.clear();
 }
 
-void cIndexedFileOutputVectorManager::writeBlockToIndexFile(sVector *vp)
+void cIndexedFileOutputVectorManager::writeBlockToIndexFile(Vector *vp)
 {
     assert(f!=NULL);
     assert(fi!=NULL);
 
     static char buff1[64], buff2[64];
-    sBlock &block = vp->currentBlock;
+    Block &block = vp->currentBlock;
 
     if (block.count > 0)
     {

@@ -34,7 +34,7 @@ NAMESPACE_BEGIN
 #define CHECK(fprintf)    if (fprintf<0) throw cRuntimeError("Cannot write output vector file `%s'", fname.c_str())
 
 
-void sRunData::initRun()
+void RunData::initRun()
 {
     if (!initialized)
     {
@@ -69,7 +69,7 @@ void sRunData::initRun()
     }
 }
 
-void sRunData::reset()
+void RunData::reset()
 {
     initialized = false;
     attributes.clear();
@@ -77,7 +77,7 @@ void sRunData::reset()
 }
 
 
-void sRunData::writeRunData(FILE *f, opp_string fname)
+void RunData::writeRunData(FILE *f, opp_string fname)
 {
     CHECK(fprintf(f, "run %s\n", QUOTE(runId.c_str())));
     for (opp_string_map::const_iterator it = attributes.begin(); it != attributes.end(); ++it)

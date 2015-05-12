@@ -39,7 +39,7 @@ class ENVIR_API cFileOutputVectorManager : public cIOutputVectorManager
 {
   protected:
 
-    struct sVectorData { //XXX use stringPool for vectorname etc?
+    struct VectorData { //XXX use stringPool for vectorname etc?
        int id;              // vector ID
        opp_string moduleName; // module of cOutVector object
        opp_string vectorName; // cOutVector object name
@@ -50,10 +50,10 @@ class ENVIR_API cFileOutputVectorManager : public cIOutputVectorManager
        Intervals intervals;
 
        const char *getColumns() { return recordEventNumbers ? "ETV" : "TV"; }
-       virtual ~sVectorData() {}
+       virtual ~VectorData() {}
     };
 
-    sRunData run;      // holds data of the current run
+    RunData run;      // holds data of the current run
     int nextid;        // holds next free ID for output vectors
     opp_string fname;  // output file name
     FILE *f;           // file ptr of output file
@@ -62,8 +62,8 @@ class ENVIR_API cFileOutputVectorManager : public cIOutputVectorManager
   protected:
     void openFile();
     void closeFile();
-    virtual void initVector(sVectorData *vp);
-    virtual sVectorData *createVectorData();
+    virtual void initVector(VectorData *vp);
+    virtual VectorData *createVectorData();
     virtual void writeRunData();
 
   public:

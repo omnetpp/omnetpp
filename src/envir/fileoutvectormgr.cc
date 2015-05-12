@@ -89,7 +89,7 @@ void cFileOutputVectorManager::writeRunData()
     run.writeRunData(f, fname);
 }
 
-void cFileOutputVectorManager::initVector(sVectorData *vp)
+void cFileOutputVectorManager::initVector(VectorData *vp)
 {
     if (!f)
     {
@@ -146,7 +146,7 @@ void cFileOutputVectorManager::getOutVectorConfig(const char *modname,const char
 
 void *cFileOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
 {
-    sVectorData *vp = createVectorData();
+    VectorData *vp = createVectorData();
     vp->id = nextid++;
     vp->initialized = false;
     vp->moduleName = modulename;
@@ -155,22 +155,22 @@ void *cFileOutputVectorManager::registerVector(const char *modulename, const cha
     return vp;
 }
 
-cFileOutputVectorManager::sVectorData *cFileOutputVectorManager::createVectorData()
+cFileOutputVectorManager::VectorData *cFileOutputVectorManager::createVectorData()
 {
-    return new sVectorData;
+    return new VectorData;
 }
 
 void cFileOutputVectorManager::deregisterVector(void *vectorhandle)
 {
     ASSERT(vectorhandle!=NULL);
-    sVectorData *vp = (sVectorData *)vectorhandle;
+    VectorData *vp = (VectorData *)vectorhandle;
     delete vp;
 }
 
 void cFileOutputVectorManager::setVectorAttribute(void *vectorhandle, const char *name, const char *value)
 {
     ASSERT(vectorhandle!=NULL);
-    sVectorData *vp = (sVectorData *)vectorhandle;
+    VectorData *vp = (VectorData *)vectorhandle;
     vp->attributes[name] = value;
 }
 
@@ -179,7 +179,7 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
     static char buff[64];
 
     ASSERT(vectorhandle!=NULL);
-    sVectorData *vp = (sVectorData *)vectorhandle;
+    VectorData *vp = (VectorData *)vectorhandle;
 
     if (!vp->enabled)
         return false;

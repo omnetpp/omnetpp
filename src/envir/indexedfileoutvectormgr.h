@@ -43,7 +43,7 @@ NAMESPACE_BEGIN
 class ENVIR_API cIndexedFileOutputVectorManager : public cFileOutputVectorManager
 {
   protected:
-    struct sBlock {
+    struct Block {
       file_offset_t offset; // file offset of the block
       file_offset_t size;   // size of the block
       eventnumber_t startEventNum; // event number of the first sample in the block
@@ -56,33 +56,33 @@ class ENVIR_API cIndexedFileOutputVectorManager : public cFileOutputVectorManage
       double sum;           // sum of values of the samples
       double sumSqr;        // sum of squares of values
 
-      sBlock() { reset(); }
+      Block() { reset(); }
       void reset() { offset=-1; size=0; count=0; min=DBL_MAX; max=-DBL_MAX; sum=0.0; sumSqr=0.0; }
     };
 
-    typedef std::vector<sBlock> Blocks;
+    typedef std::vector<Block> Blocks;
 
-    struct sSample {
+    struct Sample {
         simtime_t simtime;
         eventnumber_t eventNumber;
         double value;
 
-        sSample(simtime_t t, eventnumber_t eventNumber, double val) : simtime(t), eventNumber(eventNumber), value(val) {}
+        Sample(simtime_t t, eventnumber_t eventNumber, double val) : simtime(t), eventNumber(eventNumber), value(val) {}
     };
 
-    typedef std::vector<sSample> Samples;
+    typedef std::vector<Sample> Samples;
 
-    struct sVector : sVectorData {
-      std::vector<sSample> buffer; // buffer holding recorded data not yet written to the file
+    struct Vector : VectorData {
+      std::vector<Sample> buffer; // buffer holding recorded data not yet written to the file
       long maxBufferedSamples;     // maximum number of samples gathered in the buffer
-      sBlock currentBlock;
+      Block currentBlock;
 
-      sVector() : buffer(), maxBufferedSamples(0) {}
-      virtual ~sVector() {}
+      Vector() : buffer(), maxBufferedSamples(0) {}
+      virtual ~Vector() {}
       void allocateBuffer(long count) { buffer.reserve(count); }
     };
 
-    typedef std::vector<sVector*> Vectors;
+    typedef std::vector<Vector*> Vectors;
 
     opp_string ifname;  // index file name
     FILE *fi;           // file ptr of index file
@@ -91,15 +91,15 @@ class ENVIR_API cIndexedFileOutputVectorManager : public cFileOutputVectorManage
     Vectors vectors; // registered output vectors
 
   protected:
-    virtual sVectorData *createVectorData();
+    virtual VectorData *createVectorData();
     void openIndexFile();
     void closeIndexFile();
-    virtual void initVector(sVectorData *vp);
-    virtual void finalizeVector(sVector *vector);
+    virtual void initVector(VectorData *vp);
+    virtual void finalizeVector(Vector *vector);
     virtual void writeRunData();
     virtual void writeRecords();
-    virtual void writeBlock(sVector *vector);
-    virtual void writeBlockToIndexFile(sVector *vector);
+    virtual void writeBlock(Vector *vector);
+    virtual void writeBlockToIndexFile(Vector *vector);
   public:
     /** @name Constructors, destructor */
     //@{

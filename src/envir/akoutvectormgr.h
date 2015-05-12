@@ -40,7 +40,7 @@ NAMESPACE_BEGIN
  */
 class ENVIR_API cAkOutputVectorManager : public cFileOutputVectorManager
 {
-    struct sAkVectorData : sVectorData {
+    struct AkVectorData : VectorData {
        bool ak_controlled;  // under Akaroa control or not
        long ak_id;          // Akaroa vector ID
     };
@@ -50,7 +50,7 @@ class ENVIR_API cAkOutputVectorManager : public cFileOutputVectorManager
     int ak_count;      // number of Akaroa vectors already registered
 
   protected:
-    virtual sVectorData *createVectorData();
+    virtual VectorData *createVectorData();
 
   public:
     /** @name Constructors, destructor */

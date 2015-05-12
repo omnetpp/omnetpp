@@ -52,7 +52,7 @@ cAkOutputVectorManager::~cAkOutputVectorManager()
 
 void *cAkOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
 {
-    sAkVectorData *vp = (sAkVectorData *)cFileOutputVectorManager::registerVector(modulename, vectorname);
+    AkVectorData *vp = (AkVectorData *)cFileOutputVectorManager::registerVector(modulename, vectorname);
 
     // see if this vector needs Akaroa control
     std::string objectfullpath = std::string(modulename) + "." + vectorname;
@@ -71,14 +71,14 @@ void *cAkOutputVectorManager::registerVector(const char *modulename, const char 
     return vp;
 }
 
-cFileOutputVectorManager::sVectorData *cAkOutputVectorManager::createVectorData()
+cFileOutputVectorManager::VectorData *cAkOutputVectorManager::createVectorData()
 {
-    return new sAkVectorData;
+    return new AkVectorData;
 }
 
 bool cAkOutputVectorManager::record(void *vectorhandle, simtime_t t, double value)
 {
-    sAkVectorData *vp = (sAkVectorData *)vectorhandle;
+    AkVectorData *vp = (AkVectorData *)vectorhandle;
     if (vp->ak_controlled)
     {
         // 1. register the parameters to Akaroa
