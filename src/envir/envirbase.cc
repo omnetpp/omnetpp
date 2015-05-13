@@ -1638,7 +1638,7 @@ void EnvirBase::readPerRunOptions()
         rngs[i]->initialize(opt->seedset, i, numRNGs, getParsimProcId(), getParsimNumPartitions(), getConfig());
     }
 
-    // init nextuniquenumber -- startRun() is too late because simple module ctors have run by then
+    // init nextUniqueNumber -- startRun() is too late because simple module ctors have run by then
     nextUniqueNumber = 0;
 #ifdef WITH_PARSIM
     if (opt->parsim)
@@ -1806,8 +1806,17 @@ void EnvirBase::releaseStreamForSnapshot(std::ostream *os)
 
 unsigned long EnvirBase::getUniqueNumber()
 {
-    // TBD check for overflow
-    return nextUniqueNumber++;
+    unsigned long ret = nextUniqueNumber++;
+    if (nextUniqueNumber == 0)
+        throw cRuntimeError("getUniqueNumber(): all values have been consumed");
+#ifdef WITH_PARSIM
+    if (opt->parsim) {
+        unsigned long limit = (unsigned)(parsimComm->getProcId()+1) * ((~0UL) / (unsigned)parsimComm->getNumPartitions());
+        if (nextUniqueNumber == limit)
+            throw cRuntimeError("getUniqueNumber(): all values have been consumed");
+    }
+#endif
+    return ret;
 }
 
 std::string EnvirBase::makeDebuggerCommand()
