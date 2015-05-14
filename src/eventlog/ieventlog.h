@@ -32,32 +32,18 @@ class EVENTLOG_API ProgressMonitor
 {
     public:
         typedef void (*MonitorFunction)(IEventLog *, void *);
-
         MonitorFunction monitorFunction;
         void *data;
 
     public:
-        ProgressMonitor()
-        {
-            monitorFunction = NULL;
-            data = NULL;
-        }
-
-        ProgressMonitor(MonitorFunction monitorFunction, void *data)
-        {
-            this->monitorFunction = monitorFunction;
-            this->data = data;
-        }
-
+        ProgressMonitor(MonitorFunction monitorFunction=NULL, void *data=NULL) : monitorFunction(monitorFunction), data(data) {}
         void progress(IEventLog *eventLog) { if (monitorFunction) monitorFunction(eventLog, data); }
 };
 
 class EVENTLOG_API IEventLog
 {
     protected:
-        /**
-         * Remembers the last IEvent returned by getNeighbourEvent so that subsequent calls might return much faster.
-         */
+        // Remembers the last IEvent returned by getNeighbourEvent so that subsequent calls might return much faster.
         eventnumber_t lastNeighbourEventNumber;
         IEvent *lastNeighbourEvent;
 
@@ -69,10 +55,12 @@ class EVENTLOG_API IEventLog
          * Sets the progress monitor which will be notified when a long running operation has some progress.
          */
         virtual ProgressMonitor setProgressMonitor(ProgressMonitor progressMonitor) = 0;
+
         /**
          * Set the minimum interval between progress callbacks for long running event log operations.
          */
         virtual void setProgressCallInterval(double seconds) = 0;
+
         /**
          * Progress notification. May be used to cancel long running operations.
          */
@@ -98,26 +86,32 @@ class EVENTLOG_API IEventLog
          * Returns the number of events parsed so far.
          */
         virtual eventnumber_t getNumParsedEvents() = 0;
+
         /**
          * Returns the message names parsed so far.
          */
         virtual std::set<const char *>& getMessageNames() = 0;
+
         /**
          * Returns the message class names parsed so far.
          */
         virtual std::set<const char *>& getMessageClassNames() = 0;
+
         /**
          * Returns the number of module created entries which is actually the next unused module id.
          */
         virtual int getNumModuleCreatedEntries() = 0;
+
         /**
          * Returns the entry with the given index.
          */
         virtual std::vector<ModuleCreatedEntry *> getModuleCreatedEntries() = 0;
+
         /**
          * Returns the entry which describes the module with the given id.
          */
         virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId) = 0;
+
         /**
          * Returns the entry which describes the gate with the given ids.
          */
@@ -132,19 +126,23 @@ class EVENTLOG_API IEventLog
          * Returns true if the event log does not contain any events.
          */
         virtual bool isEmpty() { return !getFirstEvent(); }
+
         /**
          * Returns the first event or NULL if the log is empty.
          */
         virtual IEvent *getFirstEvent() = 0;
+
         /**
          * Returns the last event or NULL if the log is empty.
          */
         virtual IEvent *getLastEvent() = 0;
+
         /**
          * Returns the requested event or NULL if there is no such event included in the log.
          * The given event number may not be included in the log.
          */
         virtual IEvent *getEventForEventNumber(eventnumber_t eventNumber, MatchKind matchKind = EXACT, bool useCacheOnly = false) = 0;
+
         /**
          * Returns the requested event or NULL if there is no such event included in the log.
          * The given simulation time may not be included in the log.
@@ -161,6 +159,7 @@ class EVENTLOG_API IEventLog
          * This value may be less, equal or greater than the real number of events if there are many.
          */
         virtual eventnumber_t getApproximateNumberOfEvents() = 0;
+
         /**
          * Returns an event approximately at the given percentage in terms of eventlog size.
          */
