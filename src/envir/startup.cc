@@ -43,6 +43,8 @@
 #include "akoutvectormgr.h"
 #include "matchableobject.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 Register_GlobalConfigOption(CFGID_LOAD_LIBS, "load-libs", CFG_FILENAMES, "", "A space-separated list of dynamic libraries to be loaded on startup. The libraries should be given without the `.dll' or `.so' suffix -- that will be automatically appended.");

@@ -23,6 +23,7 @@
 #include "commondefs.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 //FIXME rename this file
 
@@ -52,6 +53,7 @@ class COMMON_API opp_runtime_error : public std::runtime_error
     virtual const char *what() const throw() override {return errormsg.c_str();}
 };
 
+} // namespace common
 NAMESPACE_END
 
 

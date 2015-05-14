@@ -32,9 +32,11 @@
 #include "nodetyperegistry.h"
 #include "vectorfileindexer.h"
 
+using namespace std;
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
-using namespace std;
 
 static inline bool existsFile(const string fileName)
 {

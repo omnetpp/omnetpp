@@ -22,6 +22,8 @@
 #undef CHECK
 #endif
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 #define CHECK(fprintf)    if ((fprintf)<0) throw opp_runtime_error("Cannot write file `%s'", fileName.c_str())
 

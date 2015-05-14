@@ -25,6 +25,8 @@
 #include "nedresourcecache.h"
 #include "ned2generator.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

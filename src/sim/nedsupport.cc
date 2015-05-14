@@ -26,6 +26,8 @@
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/nedsupport.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 namespace NEDSupport {

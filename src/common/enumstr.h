@@ -20,6 +20,7 @@
 #include "commondefs.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 /**
  * Loops through numbers in a string like "1,2,5..10", expanding ranges.
@@ -40,6 +41,7 @@ class COMMON_API EnumStringIterator
      bool hasError() const {return err;}
 };
 
+} // namespace common
 NAMESPACE_END
 
 

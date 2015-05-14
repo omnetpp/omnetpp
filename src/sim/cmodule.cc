@@ -36,6 +36,8 @@
 #include "omnetpp/simutil.h"
 #include "omnetpp/cmodelchange.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 Register_Class(cModule);

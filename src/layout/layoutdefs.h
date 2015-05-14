@@ -18,6 +18,7 @@
 #define __OMNETPP_LAYOUTDEFS_H
 
 #include "omnetpp/platdep/platdefs.h"
+#include "common/commonutil.h"
 
 NAMESPACE_BEGIN
 
@@ -28,6 +29,12 @@ NAMESPACE_BEGIN
 #else
 #  define LAYOUT_API
 #endif
+
+using OPP::common::opp_runtime_error;
+using OPP::common::NaN;
+using OPP::common::isNaN;
+using OPP::common::POSITIVE_INFINITY;
+using OPP::common::NEGATIVE_INFINITY;
 
 NAMESPACE_END
 

@@ -35,6 +35,8 @@
 #include "omnetpp/cscheduler.h" // dummy()
 #include "omnetpp/distrib.h" // dummy()
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen)
@@ -294,6 +296,8 @@ NAMESPACE_END
 #include "omnetpp/cfsm.h"
 #include "omnetpp/coutvector.h"
 #include "omnetpp/cvarhist.h"
+
+using namespace OPP::common;
 
 NAMESPACE_BEGIN
 

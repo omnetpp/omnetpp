@@ -23,6 +23,8 @@
 #include "omnetpp/cexception.h"
 #include "omnetpp/cpar.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 void cNEDValue::operator=(const cNEDValue& other)

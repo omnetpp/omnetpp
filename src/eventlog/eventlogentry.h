@@ -20,6 +20,7 @@
 #include <sstream>
 #include "common/matchexpression.h"
 #include "common/linetokenizer.h"
+#include "common/filereader.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "omnetpp/platdep/platmisc.h" // INT64_PRINTF_FORMAT
 #include "eventlogdefs.h"
@@ -29,11 +30,12 @@ NAMESPACE_BEGIN
 class Event;
 class EventLog;
 
+
 /**
  * Base class for all kind of event log entries.
  * An entry is represented by a single line in the log file.
  */
-class EVENTLOG_API EventLogEntry : public MatchExpression::Matchable
+class EVENTLOG_API EventLogEntry : public OPP::common::MatchExpression::Matchable
 {
     public:
         int contextModuleId;
@@ -43,7 +45,7 @@ class EVENTLOG_API EventLogEntry : public MatchExpression::Matchable
         Event* event; // back pointer
         int entryIndex;
         static char buffer[128];
-        static LineTokenizer tokenizer; // not thread safe
+        static OPP::common::LineTokenizer tokenizer; // not thread safe
 
     public:
         EventLogEntry();

@@ -40,6 +40,8 @@
 #include "envirbase.h"
 #include "indexedfileoutvectormgr.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 #define INDEX_FILE_VERSION 2

@@ -22,6 +22,7 @@
 #include "exception.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 #define GLRAND_MAX  0x7ffffffeL  /* = 2**31-2 */
 
@@ -47,6 +48,7 @@ class COMMON_API LCGRandom
         void selfTest();
 };
 
+} // namespace common
 NAMESPACE_END
 
 

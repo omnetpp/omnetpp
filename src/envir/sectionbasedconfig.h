@@ -29,7 +29,8 @@
 
 NAMESPACE_BEGIN
 
-class PatternMatcher;
+namespace common { class PatternMatcher; };
+
 class Scenario;
 
 
@@ -43,6 +44,10 @@ class Scenario;
  */
 class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
 {
+  private:
+    typedef OPP::common::CommonStringPool CommonStringPool;
+    typedef OPP::common::PatternMatcher PatternMatcher;
+
   private:
     // if we make our own copy, we only need cConfigurationReader for initialization, and after that it can be disposed of
     class KeyValue1 : public cConfiguration::KeyValue {
@@ -137,7 +142,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     StringMap variables;
 
     // storage for values returned by substituteVariables()
-    CommonStringPool stringPool;
+    StringPool stringPool;
 
     // storage of section inheritance chains (precedence lists)
     mutable std::vector<std::vector<int> > sectionChains;

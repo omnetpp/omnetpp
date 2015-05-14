@@ -21,6 +21,7 @@
 #define __OMNETPP_ENVIRDEFS_H
 
 #include "omnetpp/platdep/platdefs.h"
+#include "common/exception.h"
 
 NAMESPACE_BEGIN
 
@@ -32,8 +33,8 @@ NAMESPACE_BEGIN
 #  define ENVIR_API
 #endif
 
+using OPP::common::opp_runtime_error;
 
 NAMESPACE_END
-
 
 #endif

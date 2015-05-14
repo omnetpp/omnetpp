@@ -19,6 +19,8 @@
 #include "forcedirectedembedding.h"
 #include "forcedirectedparameters.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 ForceDirectedEmbedding::ForceDirectedEmbedding() {

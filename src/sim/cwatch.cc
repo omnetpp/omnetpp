@@ -23,6 +23,8 @@
 #include "common/stringutil.h"
 #include "omnetpp/cwatch.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 std::string cWatch_stdstring::info() const

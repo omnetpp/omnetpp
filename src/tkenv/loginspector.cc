@@ -26,6 +26,8 @@
 #include "tkutil.h"
 #include "inspectorfactory.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 #define LL  INT64_PRINTF_FORMAT

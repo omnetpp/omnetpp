@@ -20,6 +20,7 @@
 #include "commondefs.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 #define MAXARGS 16
 
@@ -262,6 +263,7 @@ class COMMON_API DisplayString
     //@}
 };
 
+} // namespace common
 NAMESPACE_END
 
 

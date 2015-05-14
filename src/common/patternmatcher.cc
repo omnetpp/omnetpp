@@ -26,6 +26,7 @@
 #include "exception.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 
 PatternMatcher::PatternMatcher()
@@ -376,5 +377,6 @@ bool PatternMatcher::containsWildcards(const char *pattern)
            strstr(pattern,"..");
 }
 
+} // namespace common
 NAMESPACE_END
 

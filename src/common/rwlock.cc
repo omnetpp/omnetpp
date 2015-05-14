@@ -19,6 +19,7 @@
 #include "exception.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 #ifdef _WIN32
 #ifdef PTW32_STATIC_LIB
@@ -250,5 +251,6 @@ void ReentrantReadWriteLock::unlockWrite()
     }
 }
 
+} // namespace common
 NAMESPACE_END
 

@@ -8,6 +8,7 @@ Tests the BigDecimal::BigDecimal(double) method
 #include <common/bigdecimal.h>
 
 %global:
+using namespace OPP::common;
 
 static double zero = 0.0;
 

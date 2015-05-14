@@ -20,6 +20,8 @@
 #include "common/exception.h"
 #include "omnetpp/cconfigoption.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

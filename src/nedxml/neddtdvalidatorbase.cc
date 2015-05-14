@@ -21,6 +21,8 @@
 #include "nederror.h"
 #include "neddtdvalidatorbase.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

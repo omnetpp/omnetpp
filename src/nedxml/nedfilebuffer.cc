@@ -24,6 +24,8 @@
 #include "nedfilebuffer.h"
 #include "nedyylib.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 //-----------------------------------------------------------

@@ -32,6 +32,8 @@
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/platdep/platmisc.h" // INT64_PRINTF_FORMAT and DEBUG_TRAP
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

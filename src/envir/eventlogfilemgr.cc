@@ -32,6 +32,8 @@
 #include "eventlogwriter.h"
 #include "envirbase.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

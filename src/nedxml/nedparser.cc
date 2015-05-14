@@ -31,6 +31,8 @@
 
 #include "nedyydefs.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 #define MAGIC_PREFIX   "@expr@"  // note: must agree with ned2.lex

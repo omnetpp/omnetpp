@@ -21,6 +21,7 @@
 
 NAMESPACE_BEGIN
 
+using namespace OPP::common;
 
 void SignalSource::subscribe(cResultListener *listener) const
 {

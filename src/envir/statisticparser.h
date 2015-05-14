@@ -50,6 +50,8 @@ class ENVIR_API SignalSource
 class ENVIR_API StatisticSourceParser
 {
   protected:
+    typedef OPP::common::Expression Expression;
+  protected:
     // create and install a cResultFilter; its input is the expression at the top of the stack (length 'len').
     // filterRef may be nullptr; in that case, only the expression filter needs to be created
     SignalSource createFilter(FilterOrRecorderReference *filterRef, const std::vector<Expression::Elem>& stack, int len);
@@ -60,6 +62,8 @@ class ENVIR_API StatisticSourceParser
 
 class ENVIR_API StatisticRecorderParser
 {
+  protected:
+    typedef OPP::common::Expression Expression;
   protected:
     // create and install a cResultFilter or a cResultRecorder, depending on the makeRecorder flag;
     // its input is the expression at the top of the stack (length 'len').

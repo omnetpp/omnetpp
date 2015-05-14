@@ -26,6 +26,7 @@
 #include "exception.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 #ifdef NDEBUG
 #  define Assert(x)
@@ -137,6 +138,7 @@ uint64_t readCPUTimeStampCounter();
       ~Guard() {active=false;} \
     } __guard;
 
+} // namespace common
 NAMESPACE_END
 
 #endif

@@ -23,6 +23,7 @@
 #include "commondefs.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 /**
  * Glob-style pattern matching class, adopted to special OMNeT++ requirements.
@@ -184,6 +185,7 @@ class COMMON_API PatternMatcher
 
 };
 
+} // namespace common
 NAMESPACE_END
 
 

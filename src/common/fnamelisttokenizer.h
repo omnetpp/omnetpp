@@ -23,6 +23,7 @@
 #include "commonutil.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 
 /**
@@ -74,6 +75,7 @@ class COMMON_API FilenamesListTokenizer
     std::vector<std::string> asVector();
 };
 
+} // namespace common
 NAMESPACE_END
 
 

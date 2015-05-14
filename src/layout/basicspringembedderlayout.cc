@@ -28,6 +28,8 @@
 #include "common/commonutil.h"
 #include "basicspringembedderlayout.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

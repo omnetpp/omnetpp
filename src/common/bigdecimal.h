@@ -27,6 +27,7 @@
 #include "exception.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 // maximum number of digits in an int64_t number, i.e. number of digits in INT64_MAX.
 #define INT64_MAX_DIGITS 19
@@ -226,44 +227,45 @@ inline std::ostream& operator<<(std::ostream& os, const BigDecimal& x)
     return os << BigDecimal::ttoa(buf, x, endp);
 }
 
+} // namespace common
 NAMESPACE_END
 
 /**
  * BigDecimal version of floor(double) from math.h.
  */
-inline const OPP::BigDecimal floor(const OPP::BigDecimal& x)
+inline const OPP::common::BigDecimal floor(const OPP::common::BigDecimal& x)
 {
-    return OPP::BigDecimal(floor(x.dbl()));
+    return OPP::common::BigDecimal(floor(x.dbl()));
 }
 
 /**
  * BigDecimal version of ceil(double) from math.h.
  */
-inline const OPP::BigDecimal ceil(const OPP::BigDecimal& x)
+inline const OPP::common::BigDecimal ceil(const OPP::common::BigDecimal& x)
 {
-    return OPP::BigDecimal(ceil(x.dbl()));
+    return OPP::common::BigDecimal(ceil(x.dbl()));
 }
 
 /**
  * BigDecimal version of fabs(double) from math.h.
  */
-inline const OPP::BigDecimal fabs(const OPP::BigDecimal& x)
+inline const OPP::common::BigDecimal fabs(const OPP::common::BigDecimal& x)
 {
-    return x.getIntValue()<0 ? OPP::BigDecimal(x).setIntValue(-x.getIntValue()) : x;
+    return x.getIntValue()<0 ? OPP::common::BigDecimal(x).setIntValue(-x.getIntValue()) : x;
 }
 
 /**
  * BigDecimal version of fmod(double,double) from math.h.
  */
-inline const OPP::BigDecimal fmod(const OPP::BigDecimal& x, const OPP::BigDecimal& y)
+inline const OPP::common::BigDecimal fmod(const OPP::common::BigDecimal& x, const OPP::common::BigDecimal& y)
 {
-    return OPP::BigDecimal(fmod(x.dbl(), y.dbl()));
+    return OPP::common::BigDecimal(fmod(x.dbl(), y.dbl()));
 }
 
 /**
  * Returns the greater of the two arguments.
  */
-inline const OPP::BigDecimal max(const OPP::BigDecimal& x, const OPP::BigDecimal& y)
+inline const OPP::common::BigDecimal max(const OPP::common::BigDecimal& x, const OPP::common::BigDecimal& y)
 {
     return x > y ? x : y;
 }
@@ -271,7 +273,7 @@ inline const OPP::BigDecimal max(const OPP::BigDecimal& x, const OPP::BigDecimal
 /**
  * Returns the smaller of the two arguments.
  */
-inline const OPP::BigDecimal min(const OPP::BigDecimal& x, const OPP::BigDecimal& y)
+inline const OPP::common::BigDecimal min(const OPP::common::BigDecimal& x, const OPP::common::BigDecimal& y)
 {
     return x < y ? x : y;
 }

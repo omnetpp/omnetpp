@@ -22,6 +22,7 @@
 
 NAMESPACE_BEGIN
 
+using namespace OPP::common;  // Expression
 
 Register_ResultRecorder("vector", VectorRecorder);
 Register_ResultRecorder("count", CountRecorder);

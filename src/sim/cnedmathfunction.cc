@@ -23,6 +23,8 @@
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cexception.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 cNEDMathFunction::cNEDMathFunction(const char *name, MathFuncNoArg f, int ac, const char *category, const char *description) :

@@ -28,6 +28,7 @@
 
 NAMESPACE_BEGIN
 
+using namespace OPP::common;
 
 cNEDDeclaration::cNEDDeclaration(NEDResourceCache *resolver, const char *qname, bool isInnerType, NEDElement *tree) : NEDTypeInfo(resolver, qname, isInnerType, tree)
 {

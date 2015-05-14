@@ -27,6 +27,8 @@
 #include "inifilereader.h"
 #include "fsutils.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

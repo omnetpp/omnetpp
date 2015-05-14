@@ -28,6 +28,7 @@
 #include "stringtokenizer.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 bool opp_isblank(const char *txt)
 {
@@ -728,4 +729,5 @@ const char *opp_strnistr(const char *haystack, const char *needle, int n, bool c
     return nullptr;
 }
 
+} // namespace common
 NAMESPACE_END

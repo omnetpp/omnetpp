@@ -29,6 +29,8 @@
 #include "nedsyntaxvalidator.h"
 #include "nedcrossvalidator.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 //TODO collect errors in a NEDErrorStore?

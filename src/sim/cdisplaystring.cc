@@ -25,6 +25,8 @@
 #include "omnetpp/cdisplaystring.h"
 #include "omnetpp/cmodelchange.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

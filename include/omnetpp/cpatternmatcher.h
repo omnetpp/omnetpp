@@ -24,7 +24,7 @@
 
 NAMESPACE_BEGIN
 
-class PatternMatcher;
+namespace common { class PatternMatcher; };
 
 /**
  * Glob-style pattern matching class, adopted to special OMNeT++ requirements.
@@ -75,7 +75,7 @@ class PatternMatcher;
 class SIM_API cPatternMatcher
 {
   private:
-    PatternMatcher *impl;
+    OPP::common::PatternMatcher *impl;
 
   public:
     /**

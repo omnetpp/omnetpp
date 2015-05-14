@@ -46,6 +46,7 @@
 #include "exception.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 void yyerror (void *statePtr, const char *s);  // used by bison 3+
 void yyerror (const char *s);  // used by bison 2.x
@@ -163,4 +164,5 @@ void yyerror(const char *s)
     throw opp_runtime_error("Error parsing match expression: %s", buf);
 }
 
+} // namespace common
 NAMESPACE_END

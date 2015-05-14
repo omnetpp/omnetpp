@@ -21,6 +21,7 @@
 #include "stringutil.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 
 DisplayString::DisplayString()
@@ -440,5 +441,6 @@ void DisplayString::strcatEscaped(char *d, const char *s)
     *d = '\0';
 }
 
+} // namespace common
 NAMESPACE_END
 

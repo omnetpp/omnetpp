@@ -20,6 +20,7 @@
 #include "commonutil.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 
 opp_runtime_error::opp_runtime_error(const char *messagefmt, ...) : std::runtime_error("")
@@ -29,5 +30,6 @@ opp_runtime_error::opp_runtime_error(const char *messagefmt, ...) : std::runtime
     errormsg = buf;
 }
 
+} // namespace common
 NAMESPACE_END
 

@@ -26,6 +26,10 @@
 
 NAMESPACE_BEGIN
 
+using OPP::common::NaN;
+using OPP::common::POSITIVE_INFINITY;
+using OPP::common::NEGATIVE_INFINITY;
+
 class SIM_API WarmupPeriodFilter : public cResultFilter
 {
     private:
@@ -189,6 +193,8 @@ class SIM_API RemoveRepeatsFilter : public cNumericResultFilter
 
 class SIM_API ExpressionFilter : public cNumericResultFilter
 {
+    public:
+        typedef OPP::common::Expression Expression;
     protected:
         class ValueVariable : public Expression::Variable
         {
@@ -238,7 +244,7 @@ class SIM_API UnaryExpressionFilter : public ExpressionFilter
     public:
         UnaryExpressionFilter() {}
         virtual std::string str() const override {return expr.str()+" (UnaryExpressionFilter)";}
-        virtual Expression::Functor *makeValueVariable(int index, cResultFilter *prevFilter) override {Assert(index == 0); return new ValueVariable(this, &currentValue);}
+        virtual Expression::Functor *makeValueVariable(int index, cResultFilter *prevFilter) override {ASSERT(index == 0); return new ValueVariable(this, &currentValue);}
 };
 
 /**

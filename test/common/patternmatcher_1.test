@@ -10,8 +10,8 @@ Tests pattern matcher class used e.g. for ini file wildcard resolution.
 #include <common/patternmatcher.h>
 
 %global:
+using namespace OPP::common;
 
-// global vars
 static bool dottedpath;
 static bool fullstring;
 static bool casesensitive;

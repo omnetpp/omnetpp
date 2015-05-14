@@ -17,6 +17,8 @@
 #include "omnetpp/cstringpool.h"
 #include "omnetpp/cownedobject.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 cStringPool::cStringPool(const char *poolName)

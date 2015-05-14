@@ -21,6 +21,8 @@
 #include "channel.h"
 #include "filternodes.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

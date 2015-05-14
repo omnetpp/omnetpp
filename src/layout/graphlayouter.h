@@ -86,7 +86,7 @@ class LAYOUT_API BasicGraphLayouterEnvironment : public GraphLayouterEnvironment
 class LAYOUT_API GraphLayouter
 {
   protected:
-    LCGRandom lcgRandom;
+    OPP::common::LCGRandom lcgRandom;
 
     GraphLayouterEnvironment *environment;
 

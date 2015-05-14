@@ -22,6 +22,7 @@
 #include "omnetpp/platdep/platdefs.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 /**
  * Interface for reporting progress. Compatible with Eclipse's IProgressMonitor class.
@@ -94,6 +95,7 @@ class IProgressMonitor
     virtual void worked(int work) = 0;
 };
 
+} // namespace common
 NAMESPACE_END
 
 

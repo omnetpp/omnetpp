@@ -22,6 +22,8 @@
 #include "omnetpp/chistogram.h"
 #include "omnetpp/cstringtokenizer.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

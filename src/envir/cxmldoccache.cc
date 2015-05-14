@@ -22,6 +22,8 @@
 #include "omnetpp/cexception.h"
 #include "cxmldoccache.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

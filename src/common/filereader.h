@@ -25,6 +25,7 @@
 #include "commondefs.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 /**
  * Reads a file line by line. It has to be very efficient since
@@ -259,6 +260,7 @@ class COMMON_API FileChangedError : public opp_runtime_error
     virtual ~FileChangedError() throw() {}
 };
 
+} // namespace common
 NAMESPACE_END
 
 

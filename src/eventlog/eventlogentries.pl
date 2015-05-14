@@ -244,7 +244,9 @@ print ENTRIES_CC_FILE
 #include \"eventlogentries.h\"
 #include \"common/stringutil.h\"
 
-USING_NAMESPACE
+using namespace OPP::common;
+
+NAMESPACE_BEGIN
 
 ";
 
@@ -443,6 +445,7 @@ foreach $class (@classes)
    print ENTRIES_CC_FILE "}\n\n";
 }
 
+print ENTRIES_CC_FILE "NAMESPACE_END\n";
 close(ENTRIES_CC_FILE);
 
 
@@ -467,7 +470,7 @@ print FACTORY_CC_FILE
 #include \"event.h\"
 #include \"eventlogentryfactory.h\"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 EventLogTokenBasedEntry *EventLogEntryFactory::parseEntry(Event *event, int entryIndex, char **tokens, int numTokens)
 {
@@ -501,7 +504,8 @@ print FACTORY_CC_FILE "    else\n";
 print FACTORY_CC_FILE "        return nullptr;\n\n";
 print FACTORY_CC_FILE "    entry->parse(tokens, numTokens);\n";
 print FACTORY_CC_FILE "    return entry;\n";
-print FACTORY_CC_FILE "}\n";
+print FACTORY_CC_FILE "}\n\n";
+print FACTORY_CC_FILE "NAMESPACE_END\n";
 
 close(FACTORY_CC_FILE);
 
@@ -542,5 +546,6 @@ foreach $class (@classes)
       }
    }
 }
+
 
 close(ENTRIES_CSV_FILE);

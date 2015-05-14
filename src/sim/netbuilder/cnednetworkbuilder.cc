@@ -41,7 +41,7 @@
 #include "omnetpp/clongparimpl.h"
 #include "omnetpp/cboolparimpl.h"
 #include "omnetpp/cstringparimpl.h"
-#include "omnetpp/cdisplaystring.h"
+#include "common/displaystring.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cenvir.h"
@@ -49,6 +49,8 @@
 #include "cnednetworkbuilder.h"
 #include "cnedloader.h"
 #include "cexpressionbuilder.h"
+
+using namespace OPP::common;
 
 NAMESPACE_BEGIN
 

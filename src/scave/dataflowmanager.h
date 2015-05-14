@@ -85,7 +85,7 @@ class SCAVE_API DataflowManager
          * method). If none of them are ready but there are ones which
          * haven't finished yet, the method declares a deadlock.
          */
-        void execute(IProgressMonitor *monitor = nullptr);
+        void execute(OPP::common::IProgressMonitor *monitor = nullptr);
 
         /**
          * For debugging: dumps the data-flow network on the standard output.

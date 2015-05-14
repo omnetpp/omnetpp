@@ -19,6 +19,8 @@
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cproperty.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

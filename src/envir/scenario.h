@@ -37,6 +37,7 @@ NAMESPACE_BEGIN
 class ENVIR_API Scenario
 {
   public:
+    typedef OPP::common::Expression Expression;
     typedef SectionBasedConfiguration::IterationVariable IterationVariable;
 
   private:

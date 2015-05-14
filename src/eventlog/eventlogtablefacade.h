@@ -41,6 +41,7 @@ enum EventLogTableFilterMode {
  */
 class EVENTLOG_API EventLogTableFacade : public EventLogFacade
 {
+    typedef OPP::common::MatchExpression MatchExpression;
     protected:
         eventnumber_t approximateNumberOfEntries; // cached value, -1 means not yet calculated
         eventnumber_t lastMatchedEventNumber; // -1 means unused

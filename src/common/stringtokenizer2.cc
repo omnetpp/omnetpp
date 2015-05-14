@@ -26,6 +26,7 @@
 #include "stringtokenizer2.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 StringTokenizerException::StringTokenizerException(const char *messagefmt, ...) : opp_runtime_error("")
 {
@@ -176,5 +177,6 @@ const char *StringTokenizer2::nextToken()
     }
 }
 
+} // namespace common
 NAMESPACE_END
 

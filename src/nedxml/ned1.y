@@ -126,6 +126,8 @@ void yyerror (const char *s);
 
 USING_NAMESPACE
 
+using namespace OPP::common;
+
 static struct NED1ParserState
 {
     bool inLoop;

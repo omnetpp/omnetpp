@@ -24,6 +24,8 @@
 #include "scenario.h"
 #include "valueiterator.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

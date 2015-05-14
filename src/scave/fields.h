@@ -150,6 +150,7 @@ inline bool ResultItemField::equal(const ResultItem &d1, const ResultItem &d2) c
 
 inline int ResultItemField::compare(const ResultItem &d1, const ResultItem &d2) const
 {
+    using OPP::common::strdictcmp;
     switch (id)
     {
     case FILE_ID:

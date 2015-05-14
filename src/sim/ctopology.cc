@@ -37,6 +37,8 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 Register_Class(cTopology);

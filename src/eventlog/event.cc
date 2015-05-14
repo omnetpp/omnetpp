@@ -21,6 +21,8 @@
 #include "eventlog.h"
 #include "eventlogentry.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 Event::Event(EventLog *eventLog)

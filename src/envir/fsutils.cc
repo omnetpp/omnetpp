@@ -21,6 +21,8 @@
 #include "omnetpp/platdep/platmisc.h"
 #include "fsutils.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 std::string makeLibFileName(const char *libname, const char *prefix, const char *suffix)

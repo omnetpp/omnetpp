@@ -21,6 +21,8 @@
 #include "filternodes.h"
 #include "nodetyperegistry.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

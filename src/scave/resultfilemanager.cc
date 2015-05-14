@@ -47,6 +47,8 @@
 #define WRITER_MUTEX
 #endif
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 ResultItem& ResultItem::operator=(const ResultItem &rhs)

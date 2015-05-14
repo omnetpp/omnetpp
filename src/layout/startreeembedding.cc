@@ -18,6 +18,9 @@
 
 NAMESPACE_BEGIN
 
+using OPP::common::POSITIVE_INFINITY;
+
+
 StarTreeEmbedding::StarTreeEmbedding(GraphComponent *graphComponent, double vertexSpacing)
 {
     this->graphComponent = graphComponent;

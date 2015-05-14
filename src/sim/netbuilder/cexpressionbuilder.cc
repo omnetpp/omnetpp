@@ -31,6 +31,8 @@
 #include "omnetpp/nedsupport.h"
 #include "cexpressionbuilder.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 /* for debugging

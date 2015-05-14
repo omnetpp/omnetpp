@@ -24,6 +24,7 @@
 #include "stringtokenizer.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 
 StringTokenizer::StringTokenizer(const char *s, const char *delim)
@@ -86,5 +87,6 @@ std::vector<std::string> StringTokenizer::asVector()
     return v;
 }
 
+} // namespace common
 NAMESPACE_END
 

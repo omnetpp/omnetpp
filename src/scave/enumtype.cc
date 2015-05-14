@@ -21,6 +21,8 @@
 #include "scaveutils.h"
 #include "enumtype.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

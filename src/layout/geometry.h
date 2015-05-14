@@ -26,7 +26,6 @@
 
 NAMESPACE_BEGIN
 
-
 /**
  * A three dimensional point. Base plane means z = 0.
  */

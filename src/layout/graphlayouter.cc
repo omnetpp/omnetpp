@@ -19,6 +19,8 @@
 
 NAMESPACE_BEGIN
 
+using OPP::common::opp_runtime_error;
+
 BasicGraphLayouterEnvironment::BasicGraphLayouterEnvironment()
 {
     timeout = 0;

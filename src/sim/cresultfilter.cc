@@ -18,6 +18,8 @@
 #include "common/commonutil.h"
 #include "omnetpp/cresultfilter.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

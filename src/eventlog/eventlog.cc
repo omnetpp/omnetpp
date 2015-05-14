@@ -19,6 +19,8 @@
 #include "common/stringpool.h"
 #include "eventlog.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 CommonStringPool eventLogStringPool;

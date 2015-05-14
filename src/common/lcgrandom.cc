@@ -18,6 +18,7 @@
 #include "lcgrandom.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 
 LCGRandom::LCGRandom(int32_t seed)
@@ -67,5 +68,6 @@ void LCGRandom::selfTest()
         throw opp_runtime_error("LCGRandom: self test failed, please report this problem!");
 }
 
+} // namespace common
 NAMESPACE_END
 

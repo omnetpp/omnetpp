@@ -30,7 +30,7 @@ class cClassDescriptor;
  * Wrapper around a cObject field to make it matchable with MatchExpression.
  * The default attribute is the field name.
  */
-class ENVIR_API MatchableFieldAdapter : public MatchExpression::Matchable
+class ENVIR_API MatchableFieldAdapter : public OPP::common::MatchExpression::Matchable
 {
   protected:
     cObject *object;

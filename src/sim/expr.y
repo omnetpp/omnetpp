@@ -85,6 +85,8 @@ LineColumn xpos, xprevpos;
 
 USING_NAMESPACE
 
+using namespace OPP::common;
+
 static cDynamicExpression::Elem *e;
 
 static char *expryyconcat(char *s1, char *s2, char *s3=nullptr)
@@ -245,9 +247,9 @@ simple_expr
 funcname
         : NAME
         | XMLDOC_
-                { $$ = opp_strdup("xmldoc"); }
+                { $$ = OPP::opp_strdup("xmldoc"); }
         | XMLTYPE
-                { $$ = opp_strdup("xml"); }
+                { $$ = OPP::opp_strdup("xml"); }
         ;
 
 identifier

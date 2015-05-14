@@ -41,6 +41,8 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 using std::ostream;

@@ -19,6 +19,8 @@
 #include "omnetpp/cobjectfactory.h"
 #include "omnetpp/cexception.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

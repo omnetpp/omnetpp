@@ -22,6 +22,8 @@
 #include "ned1generator.h"
 #include "nedutil.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 using std::ostream;

@@ -20,6 +20,7 @@
 
 NAMESPACE_BEGIN
 
+using namespace OPP::common;  // Expression
 
 // note: we don't register WarmupPeriodFilter and ExpressionFilter
 Register_ResultFilter("count", CountFilter);

@@ -39,6 +39,8 @@
 #include "sim/parsim/cplaceholdermod.h"
 #endif
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 static const char *getSignalTypeName(SimsignalType type)

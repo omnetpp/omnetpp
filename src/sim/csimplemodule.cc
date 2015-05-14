@@ -36,6 +36,8 @@
 #include "omnetpp/cexception.h"
 #include "omnetpp/platdep/platmisc.h"  // for DEBUG_TRAP
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 #ifdef NDEBUG

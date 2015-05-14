@@ -28,6 +28,8 @@
 #include "nederror.h"
 #include "nedsyntaxvalidator.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

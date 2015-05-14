@@ -146,7 +146,7 @@ print H
 #include \"envirdefs.h\"
 #include \"omnetpp/simtime_t.h\"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 class EventLogWriter
 {
@@ -161,6 +161,8 @@ foreach $class (@classes)
 }
 
 print H "};
+
+NAMESPACE_END
 
 #endif
 ";
@@ -191,6 +193,10 @@ print CC "
 
 #define LL    INT64_PRINTF_FORMAT
 
+NAMESPACE_BEGIN
+
+using namespace OPP::common;
+
 void EventLogWriter::recordLogLine(FILE *f, const char *prefix, const char *line, int lineLength)
 {
     CHECK(fprintf(f, \"- %s\", prefix));
@@ -204,6 +210,8 @@ foreach $class (@classes)
    print CC makeMethodImpl($class,0);
    print CC makeMethodImpl($class,1) if (getEffectiveHasOpt($class));
 }
+
+print CC "NAMESPACE_END\n";
 
 close(CC);
 

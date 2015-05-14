@@ -21,6 +21,7 @@
 #include "commondefs.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 #ifdef _WIN32
 #define PATH_SEPARATOR   ";"
@@ -94,6 +95,7 @@ class COMMON_API PushDir
     ~PushDir();
 };
 
+} // namespace common
 NAMESPACE_END
 
 #endif

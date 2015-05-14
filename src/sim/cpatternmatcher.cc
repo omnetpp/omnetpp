@@ -17,6 +17,8 @@
 #include "common/patternmatcher.h"
 #include "omnetpp/cpatternmatcher.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 cPatternMatcher::cPatternMatcher()

@@ -30,6 +30,8 @@
 
 #include "omnetpp/simkerneldefs.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 using std::ostream;

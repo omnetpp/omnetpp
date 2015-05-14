@@ -33,6 +33,7 @@
 #include "exception.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 std::string fileNameToSlash(const char *fileName)
 {
@@ -277,5 +278,6 @@ PushDir::~PushDir()
     }
 }
 
+} // namespace common
 NAMESPACE_END
 

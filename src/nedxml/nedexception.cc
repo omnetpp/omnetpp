@@ -21,6 +21,8 @@
 #include "nedexception.h"
 #include "nedelement.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

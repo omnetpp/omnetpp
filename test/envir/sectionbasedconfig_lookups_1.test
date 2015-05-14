@@ -13,6 +13,7 @@ results as naive, linear lookups.
 #include <common/patternmatcher.h>
 
 %global:
+using namespace OPP::common;
 
 enum State {ALPHA, WILDCARD, DOT};
 

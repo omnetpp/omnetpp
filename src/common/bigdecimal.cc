@@ -24,7 +24,7 @@
 #include "commonutil.h"  //NaN & friends
 
 NAMESPACE_BEGIN
-USING_NAMESPACE
+namespace common {
 
 // helpers
 static inline int sgn(int64_t x) { return (x > 0 ? 1 : (x < 0 ? -1 : 0)); }
@@ -127,11 +127,11 @@ void BigDecimal::normalize()
 const BigDecimal& BigDecimal::operator=(double d)
 {
     // check NaN and infinity
-    if (OPP::isNaN(d))
+    if (OPP::common::isNaN(d))
         return *this = NaN;
-    else if (OPP::isPositiveInfinity(d))
+    else if (OPP::common::isPositiveInfinity(d))
         return *this = PositiveInfinity;
-    else if (OPP::isNegativeInfinity(d))
+    else if (OPP::common::isNegativeInfinity(d))
         return *this = NegativeInfinity;
 
     int sign = 1;
@@ -278,7 +278,7 @@ double BigDecimal::dbl() const
     if (isSpecial())
     {
         if (isNaN())
-            return OPP::NaN;
+            return OPP::common::NaN;
         else if (*this == PositiveInfinity)
             return POSITIVE_INFINITY;
         else if (*this == NegativeInfinity)
@@ -534,4 +534,5 @@ const BigDecimal operator-(const BigDecimal& x, const BigDecimal& y)
     return BigDecimal(x.dbl()-y.dbl());
 }
 
+} // namespace common
 NAMESPACE_END

@@ -22,6 +22,8 @@
 #include "omnetpp/ccomponent.h"
 #include "omnetpp/ctimestampedvalue.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

@@ -22,6 +22,7 @@
 #include "commondefs.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 class COMMON_API ILock
 {
@@ -113,6 +114,7 @@ class COMMON_API ReentrantReadWriteLock : public IReadWriteLock
         ILock& writeLock() { return _writeLock; }
 };
 
+} // namespace common
 NAMESPACE_END
 
 

@@ -526,6 +526,7 @@ $O/octaveexport.o: octaveexport.cc \
   ../../include/omnetpp/platdep/platdefs.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
+  ../common/commonutil.h \
   ../common/exception.h \
   ../common/opp_ctype.h \
   octaveexport.h \
@@ -563,6 +564,7 @@ $O/scaveexception.o: scaveexception.cc \
   ../../include/omnetpp/platdep/platmisc.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
+  ../common/commonutil.h \
   ../common/exception.h \
   scavedefs.h \
   scaveexception.h
@@ -774,6 +776,7 @@ $O/xyarray.o: xyarray.cc \
   ../../include/omnetpp/platdep/platdefs.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
+  ../common/commonutil.h \
   ../common/exception.h \
   scavedefs.h \
   xyarray.h

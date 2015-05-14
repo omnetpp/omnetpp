@@ -22,6 +22,7 @@
 #include "unitconversion.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 
 #define E_ESTKOFLOW   "Stack overflow"
@@ -690,5 +691,6 @@ Expression::Value MathFunction::evaluate(Expression::Value args[], int numargs)
     }
 }
 
+} // namespace common
 NAMESPACE_END
 

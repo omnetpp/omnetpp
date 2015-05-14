@@ -38,6 +38,8 @@
 #include "cfilecommbuffer.h"
 #include "parsimutil.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

@@ -45,6 +45,8 @@
 #include "tkenv.h"
 #include "tkutil.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 #define INSPECTORLISTBOX_MAX_ITEMS   100000

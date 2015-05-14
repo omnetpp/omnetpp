@@ -19,6 +19,7 @@
 
 #include <stdint.h> // for int64_t, our equivalent of Java's "long" type (note: <cstdint> is C++11)
 #include "common/bigdecimal.h"
+#include "common/commonutil.h"
 #include "omnetpp/platdep/platdefs.h"
 
 NAMESPACE_BEGIN
@@ -33,11 +34,16 @@ NAMESPACE_BEGIN
 
 #define DEFAULT_PRECISION  14
 
+using OPP::common::BigDecimal;
+using OPP::common::opp_runtime_error;
+using OPP::common::NaN;
+using OPP::common::POSITIVE_INFINITY;
+using OPP::common::NEGATIVE_INFINITY;
+
 // simulation time
 typedef BigDecimal simultime_t;
 #define SIMTIME_MIN BigDecimal::NegativeInfinity
 #define SIMTIME_MAX BigDecimal::PositiveInfinity
-
 typedef int64_t eventnumber_t;
 
 /**

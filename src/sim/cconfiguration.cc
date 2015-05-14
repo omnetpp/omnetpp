@@ -27,6 +27,8 @@
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

@@ -25,6 +25,8 @@
 #include "envirbase.h"
 #include "filesnapshotmgr.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 using std::ostream;

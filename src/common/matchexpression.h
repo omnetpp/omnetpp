@@ -24,6 +24,7 @@
 #include "exception.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 class PatternMatcher;
 
@@ -160,6 +161,7 @@ class COMMON_API MatchableString : public MatchExpression::Matchable
     virtual const char *getAsString(const char *attribute) const override {return nullptr;}
 };
 
+} // namespace common
 NAMESPACE_END
 
 

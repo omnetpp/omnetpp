@@ -23,6 +23,7 @@
 
 NAMESPACE_BEGIN
 
+using OPP::common::Expression;
 
 /**
  * Processing node which evaluates an arbitrary expression entered
@@ -40,6 +41,8 @@ NAMESPACE_BEGIN
  */
 class SCAVE_API ExpressionFilterNode : public FilterNode
 {
+    private:
+        typedef OPP::common::Expression Expression;
     public:
         /**
          * Implements a variable in the expression. Currently just delegates

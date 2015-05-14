@@ -23,7 +23,7 @@
 
 NAMESPACE_BEGIN
 
-class MatchExpression;
+namespace common { class MatchExpression; };
 
 
 /**
@@ -77,7 +77,7 @@ class SIM_API cMatchExpression
     };
 
   private:
-    MatchExpression *impl;
+    OPP::common::MatchExpression *impl;
 
   public:
     /**

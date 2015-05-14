@@ -25,6 +25,7 @@
 #include "commonutil.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 /**
  * Returns true if the string is nullptr or has zero length.
@@ -41,12 +42,6 @@ inline const char *opp_nulltoempty(const char *s)  {return s ? s : "";}
  * Returns true if the string only contains whitespace.
  */
 COMMON_API bool opp_isblank(const char *txt);
-
-//
-// The following few inline functions are present in the simkernel's utils.h too;
-// define them conditionally to prevent clashes.
-//
-#ifndef __OMNETPP_SIMUTIL_H
 
 /**
  * Same as the standard strlen() function, except that does not crash
@@ -89,7 +84,6 @@ inline int opp_strcmp(const char *s1, const char *s2)
     else
         return (s2 && *s2) ? -1 : 0;
 }
-#endif //__SIMUTIL_H
 
 /**
  * Removes any leading and trailing whitespace.
@@ -348,6 +342,7 @@ COMMON_API std::string opp_urldecode(const std::string& src);
  */
 COMMON_API const char *opp_strnistr(const char *haystack, const char *needle, int n, bool caseSensitive);
 
+} // namespace common
 NAMESPACE_END
 
 #endif

@@ -61,6 +61,7 @@
 #include "unitconversion.h"
 
 USING_NAMESPACE
+using namespace OPP::common;
 
 #define yyin expressionyyin
 #define yyout expressionyyout

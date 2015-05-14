@@ -20,6 +20,8 @@
 #include "envirbase.h"
 #include "intervals.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 Intervals::Intervals()

@@ -32,7 +32,7 @@
 
 NAMESPACE_BEGIN
 
-class PatternMatcher;
+namespace common { class PatternMatcher; };
 
 /**
  * Extends NEDTypeInfo with property and cached expression storage,
@@ -55,6 +55,7 @@ class PatternMatcher;
 class SIM_API cNEDDeclaration : public NEDTypeInfo
 {
   public:
+    typedef OPP::common::PatternMatcher PatternMatcher;
     struct PatternData {PatternMatcher *matcher; ParamElement *patternNode;};
   protected:
     // properties

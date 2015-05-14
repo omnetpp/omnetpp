@@ -38,7 +38,7 @@ class EVENTLOG_API EventLogIndex
 {
     protected:
         FileReader *reader;
-        LineTokenizer tokenizer;
+        OPP::common::LineTokenizer tokenizer;
 
         file_offset_t firstEventOffset;
         file_offset_t lastEventOffset;

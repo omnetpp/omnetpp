@@ -26,9 +26,10 @@
 #include "resultfilemanager.h"
 #include "datasorter.h"
 
-NAMESPACE_BEGIN
-
 using namespace std;
+using namespace OPP::common;
+
+NAMESPACE_BEGIN
 
 
 ResultFileManager *DataSorter::tmpResultFileMgr;

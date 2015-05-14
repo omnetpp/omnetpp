@@ -36,6 +36,9 @@ NAMESPACE_BEGIN
  */
 class EVENTLOG_API FilteredEventLog : public IEventLog
 {
+    typedef OPP::common::MatchExpression MatchExpression;
+    typedef OPP::common::PatternMatcher PatternMatcher;
+
     protected:
         IEventLog *eventLog; // this will not be destructed because might be shared among multiple filtered event logs
         eventnumber_t approximateNumberOfEvents;

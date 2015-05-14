@@ -18,6 +18,7 @@
 #include "enumstr.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 EnumStringIterator::EnumStringIterator(const char *s)
 {
@@ -91,5 +92,6 @@ int EnumStringIterator::operator++(int)
      return current;
 }
 
+} // namespace common
 NAMESPACE_END
 

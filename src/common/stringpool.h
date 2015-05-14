@@ -22,6 +22,7 @@
 #include "commondefs.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 /**
  * For saving memory on the storage of (largely) constant strings that occur in
@@ -51,6 +52,7 @@ class COMMON_API CommonStringPool
     void clear();
 };
 
+} // namespace common
 NAMESPACE_END
 
 

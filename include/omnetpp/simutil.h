@@ -208,10 +208,7 @@ class SIM_API cContextTypeSwitcher
     ~cContextTypeSwitcher();
 };
 
-//==========================================================================
-//=== Implementation of utility functions:
-
-#ifndef __OMNETPP_STRINGUTIL_H   // avoid clash with similar defs in common/stringutil.h
+// implementations:
 
 inline char *opp_strcpy(char *s1,const char *s2)
 {
@@ -248,8 +245,6 @@ inline int opp_strcmp(const char *s1, const char *s2)
         return (s2 && *s2) ? -1 : 0;
 }
 
-#endif //_STRINGUTIL_H_
-
 // internally used: appends [num] to the given string
 inline void opp_appendindex(char *s, unsigned int i)
 {
@@ -284,9 +279,7 @@ inline std::string double_to_str(double t)
 #endif
 }
 
-
 NAMESPACE_END
-
 
 #endif
 

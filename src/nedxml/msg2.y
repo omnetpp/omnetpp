@@ -88,6 +88,8 @@ void yyerror (const char *s);
 
 USING_NAMESPACE
 
+using namespace OPP::common;
+
 static struct MSG2ParserState
 {
     /* tmp flags, used with msg fields */

@@ -27,6 +27,8 @@
 #include "startreeembedding.h"
 #include "heapembedding.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

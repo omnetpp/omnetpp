@@ -23,6 +23,8 @@
 #include "omnetpp/simutil.h"
 #include "logformatter.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 LogFormatter::LogFormatter(const char *format)

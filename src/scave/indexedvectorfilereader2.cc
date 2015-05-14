@@ -21,9 +21,10 @@
 #include "vectorfilereader.h"
 #include "indexedvectorfilereader2.h"
 
-NAMESPACE_BEGIN
-
 using namespace std;
+using namespace OPP::common;
+
+NAMESPACE_BEGIN
 
 #define LL  INT64_PRINTF_FORMAT
 

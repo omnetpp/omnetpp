@@ -19,6 +19,8 @@
 #include "omnetpp/cclassdescriptor.h"
 #include "matchablefield.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 MatchableFieldAdapter::MatchableFieldAdapter(cObject *object, int fieldIndex)

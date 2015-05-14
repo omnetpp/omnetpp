@@ -35,6 +35,8 @@
 #include "stddev.h"
 #include "teenode.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 NodeTypeRegistry *NodeTypeRegistry::inst;

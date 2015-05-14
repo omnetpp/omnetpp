@@ -22,6 +22,7 @@
 #include "exception.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 /**
  * Unit conversion utilities. This class has built-in knowledge of some
@@ -109,6 +110,7 @@ class COMMON_API UnitConversion
     static std::vector<const char *> getAllUnits();
 };
 
+} // namespace common
 NAMESPACE_END
 
 #endif

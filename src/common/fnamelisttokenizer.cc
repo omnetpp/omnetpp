@@ -20,6 +20,7 @@
 #include "fnamelisttokenizer.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 
 FilenamesListTokenizer::FilenamesListTokenizer(const char *s)
@@ -86,5 +87,6 @@ std::vector<std::string> FilenamesListTokenizer::asVector()
     return v;
 }
 
+} // namespace common
 NAMESPACE_END
 

@@ -40,6 +40,8 @@
 #include "layouterenv.h"
 #include "canvasrenderer.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 #define UNKNOWNICON_WIDTH  32

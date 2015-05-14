@@ -25,6 +25,7 @@
 #endif
 
 NAMESPACE_BEGIN
+namespace common {
 
 
 static double zero = 0.0;
@@ -104,5 +105,6 @@ uint64_t readCPUTimeStampCounter()
 }
 #endif
 
+} // namespace common
 NAMESPACE_END
 

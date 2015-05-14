@@ -20,6 +20,7 @@
 #include "omnetpp/platdep/platdefs.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 #if defined(COMMON_EXPORT)
 #  define COMMON_API OPP_DLLEXPORT
@@ -29,6 +30,7 @@ NAMESPACE_BEGIN
 #  define COMMON_API
 #endif
 
+} // namespace common
 NAMESPACE_END
 
 

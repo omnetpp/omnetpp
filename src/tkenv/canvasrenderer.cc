@@ -25,6 +25,8 @@
 #include "tklib.h"
 #include "tkutil.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 CanvasRenderer::CanvasRenderer() : interp(nullptr), canvas(nullptr), enabledTagBits(0), exceptTagBits(0)

@@ -38,6 +38,7 @@ NAMESPACE_BEGIN
  */
 class SCAVE_API IndexedVectorFileReaderNode : public ReaderNode
 {
+    typedef OPP::common::LineTokenizer LineTokenizer;
     typedef std::vector<Port> PortVector;
 
     struct PortData

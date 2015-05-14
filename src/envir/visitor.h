@@ -76,6 +76,8 @@ class ENVIR_API cCollectObjectsVisitor : public cVisitor
  */
 class ENVIR_API cFilteredCollectObjectsVisitor : public cCollectObjectsVisitor
 {
+  protected:
+    typedef OPP::common::MatchExpression MatchExpression;
   private:
     unsigned int category;
     MatchExpression *classnamePattern;

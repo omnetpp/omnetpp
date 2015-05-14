@@ -22,6 +22,8 @@
 #include "commonnodes.h"
 #include "dataflowmanager.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

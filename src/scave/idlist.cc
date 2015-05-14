@@ -34,6 +34,8 @@
 #define READER_MUTEX
 #endif
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 IDList::IDList(const IDList& ids)

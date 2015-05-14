@@ -21,6 +21,8 @@
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/csimulation.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 cEnvir::cEnvir()

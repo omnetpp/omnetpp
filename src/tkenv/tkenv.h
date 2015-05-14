@@ -34,6 +34,8 @@ class GenericObjectInspector;
 class LogInspector;
 class ModuleInspector;
 
+namespace common { class MatchExpression; };
+
 #define MAX_CLASSNAME  100
 
 enum LayouterChoice
@@ -159,6 +161,7 @@ class TKENV_API Tkenv : public EnvirBase
       typedef std::map<std::string,std::string> StringMap;
       StringMap answers;           // key: <ModuleType>:<paramName>, value: <interactively-given-paramvalue>
 
+      typedef OPP::common::MatchExpression MatchExpression;
       typedef std::vector<MatchExpression*> MatchExpressions;
       std::string silentEventFilterLines; // match expressions, separated by newlines (\n)
       MatchExpressions silentEventFilters; // silent events: objects to hide from animation and the timeline

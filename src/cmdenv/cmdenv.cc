@@ -57,6 +57,8 @@
 #include "cmdenv.h"
 
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 Register_GlobalConfigOption(CFGID_CONFIG_NAME, "cmdenv-config-name", CFG_STRING, nullptr, "Specifies the name of the configuration to be run (for a value `Foo', section [Config Foo] will be used from the ini file). See also cmdenv-runs-to-execute=. The -c command line option overrides this setting.")

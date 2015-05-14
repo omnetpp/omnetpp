@@ -6,8 +6,8 @@ Tests MatchExpression class.
 #include <common/matchexpression.h>
 
 %global:
+using namespace OPP::common;
 
-// global vars
 static bool dottedpath;
 static bool fullstring;
 static bool casesensitive;

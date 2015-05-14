@@ -117,6 +117,8 @@ void yyerror (const char *s);
 
 USING_NAMESPACE
 
+using namespace OPP::common;
+
 static struct NED2ParserState
 {
     bool inTypes;

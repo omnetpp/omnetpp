@@ -31,7 +31,6 @@ NAMESPACE_BEGIN
 class cModule;
 class cGate;
 class cChannel;
-class PatternMatcher;
 
 #define MAX_LOOP_NESTING 32
 

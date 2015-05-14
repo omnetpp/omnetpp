@@ -75,7 +75,7 @@ class SCAVE_API ReaderNode : public Node
 {
     protected:
         std::string filename;
-        FileReader reader;
+        OPP::common::FileReader reader;
     public:
         ReaderNode(const char* filename, size_t bufferSize)
             : filename(filename), reader(filename, bufferSize) {}

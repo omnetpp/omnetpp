@@ -32,6 +32,8 @@
 #include "envirbase.h"
 #include "fileoutvectormgr.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 Register_Class(cFileOutputVectorManager);

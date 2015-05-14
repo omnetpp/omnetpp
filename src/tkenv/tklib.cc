@@ -29,6 +29,8 @@
 #include "tkutil.h"
 #include "tkenv.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 int exitOmnetpp;

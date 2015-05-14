@@ -18,6 +18,8 @@
 
 NAMESPACE_BEGIN
 
+using OPP::common::POSITIVE_INFINITY;
+
 HeapEmbedding::HeapEmbedding(GraphComponent *graphComponent, double vertexSpacing)
 {
     this->graphComponent = graphComponent;

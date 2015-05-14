@@ -22,6 +22,8 @@
 
 NAMESPACE_BEGIN
 
+using namespace OPP::common;
+
 /**
  * Resolves variables (x, y) and functions (sin, fabs, etc) in
  * ExpressionFilterNode expressions.

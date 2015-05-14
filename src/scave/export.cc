@@ -25,9 +25,10 @@
 #include "scaveutils.h"
 #include "export.h"
 
-NAMESPACE_BEGIN
-
 using namespace std;
+using namespace OPP::common;
+
+NAMESPACE_BEGIN
 
 //XXX unfortunately, VC8.0 doesn't like the following lines, so Column needs to be fully qualified in the source...
 //using DataTable::Column;

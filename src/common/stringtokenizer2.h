@@ -23,6 +23,7 @@
 #include "exception.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 /**
  * Exception thrown when a syntax error found while tokenizing a string.
@@ -171,6 +172,7 @@ inline void StringTokenizer2::skipDelimiters()
 }
 
 
+} // namespace common
 NAMESPACE_END
 
 

@@ -23,9 +23,10 @@
 #include "scaveexception.h"
 #include "vectorfilereader.h"
 
-NAMESPACE_BEGIN
-
 using namespace std;
+using namespace OPP::common;
+
+NAMESPACE_BEGIN
 
 
 VectorFileReaderNode::VectorFileReaderNode(const char *fileName, size_t bufferSize) :

@@ -23,6 +23,8 @@
 #include "nedutil.h"
 #include "nederror.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 using std::ostream;

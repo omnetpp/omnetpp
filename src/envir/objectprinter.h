@@ -21,10 +21,10 @@
 #include <vector>
 #include <iostream>
 #include "envirdefs.h"
+#include "common/matchexpression.h"
 
 NAMESPACE_BEGIN
 
-class MatchExpression;
 class cClassDescriptor;
 class cObject;
 
@@ -53,6 +53,9 @@ typedef ObjectPrinterRecursionControl (*ObjectPrinterRecursionPredicate)(void *,
  */
 class ENVIR_API ObjectPrinter
 {
+    public:
+        typedef OPP::common::MatchExpression MatchExpression;
+
     protected:
         int indentSize;
         char buffer[1024];

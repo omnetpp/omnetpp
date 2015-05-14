@@ -54,6 +54,7 @@ static std::string extendbuf;
 #include "stringutil.h"  // opp_strdup()
 
 USING_NAMESPACE
+using namespace OPP::common;
 %}
 
 %%

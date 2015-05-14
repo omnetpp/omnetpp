@@ -27,6 +27,8 @@
 #include "inspectorfactory.h"
 #include "canvasrenderer.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

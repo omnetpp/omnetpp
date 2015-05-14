@@ -20,6 +20,7 @@
 #include "matchexpressionlexer.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 MatchExpressionLexer::MatchExpressionLexer(const char *input)
     : ptr(input)
@@ -68,5 +69,6 @@ int MatchExpressionLexer::getNextToken(char **valuep) {
     }
 }
 
+} // namespace common
 NAMESPACE_END
 

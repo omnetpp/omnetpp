@@ -23,6 +23,8 @@
 #include "nedfilebuffer.h"
 #include "nedyydefs.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 // this global var is shared by all lexers

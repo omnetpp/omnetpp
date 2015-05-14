@@ -34,6 +34,8 @@
 #include "envirbase.h"
 #include "fileoutscalarmgr.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 #define SCALAR_FILE_VERSION 2
@@ -248,6 +250,18 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
     }
 }
 
+void cFileOutputScalarManager::writeStatisticField(const char *name, long value)
+{
+    if (fprintf(f, "field %s %ld\n", QUOTE(name), value) < 0)
+        throw cRuntimeError("Cannot write output scalar file `%s'", fname.c_str());
+}
+
+void cFileOutputScalarManager::writeStatisticField(const char *name, double value)
+{
+    if (fprintf(f, "field %s %.*g\n", QUOTE(name), prec, value) < 0)
+        throw cRuntimeError("Cannot write output scalar file `%s'", fname.c_str());
+}
+
 const char *cFileOutputScalarManager::getFileName() const
 {
     return fname.c_str();
@@ -258,6 +272,7 @@ void cFileOutputScalarManager::flush()
     if (f)
         fflush(f);
 }
+
 
 NAMESPACE_END
 

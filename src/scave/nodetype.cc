@@ -18,6 +18,8 @@
 #include "common/commonutil.h"
 #include "nodetype.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

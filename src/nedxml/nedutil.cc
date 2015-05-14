@@ -26,6 +26,8 @@
 #include "nedutil.h"
 #include "nedelements.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 static void renameTag(DisplayString& ds, const char *from, const char *to)

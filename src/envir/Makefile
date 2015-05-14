@@ -177,6 +177,8 @@ $O/akaroarng.o: akaroarng.cc \
   ../../include/omnetpp/simtime.h \
   ../../include/omnetpp/simtime_t.h \
   ../../include/omnetpp/simutil.h \
+  ../common/commondefs.h \
+  ../common/exception.h \
   akaroarng.h \
   envirdefs.h
 $O/akoutvectormgr.o: akoutvectormgr.cc \
@@ -224,6 +226,9 @@ $O/akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/omnetpp/simtime.h \
   ../../include/omnetpp/simtime_t.h \
   ../../include/omnetpp/simutil.h \
+  ../common/commondefs.h \
+  ../common/exception.h \
+  ../common/matchexpression.h \
   akoutvectormgr.h \
   args.h \
   envirbase.h \
@@ -258,6 +263,8 @@ $O/appreg.o: appreg.cc \
   ../../include/omnetpp/simtime.h \
   ../../include/omnetpp/simtime_t.h \
   ../../include/omnetpp/simutil.h \
+  ../common/commondefs.h \
+  ../common/exception.h \
   appreg.h \
   envirdefs.h
 $O/args.o: args.cc \
@@ -286,6 +293,7 @@ $O/cxmldoccache.o: cxmldoccache.cc \
   ../../include/omnetpp/simtime_t.h \
   ../../include/omnetpp/simutil.h \
   ../common/commondefs.h \
+  ../common/exception.h \
   ../common/fileutil.h \
   ../nedxml/nedxmldefs.h \
   ../nedxml/saxparser.h \
@@ -364,6 +372,7 @@ $O/envirbase.o: envirbase.cc \
   ../common/fileglobber.h \
   ../common/fileutil.h \
   ../common/fnamelisttokenizer.h \
+  ../common/matchexpression.h \
   ../common/opp_ctype.h \
   ../common/stringpool.h \
   ../common/stringtokenizer.h \
@@ -447,6 +456,7 @@ $O/eventlogfilemgr.o: eventlogfilemgr.cc \
   ../common/commonutil.h \
   ../common/exception.h \
   ../common/fileutil.h \
+  ../common/matchexpression.h \
   ../common/opp_ctype.h \
   args.h \
   envirbase.h \
@@ -516,6 +526,8 @@ $O/evmain.o: evmain.cc \
   ../../include/omnetpp/simtime.h \
   ../../include/omnetpp/simtime_t.h \
   ../../include/omnetpp/simutil.h \
+  ../common/commondefs.h \
+  ../common/exception.h \
   ../common/ver.h \
   envirdefs.h \
   startup.h
@@ -571,6 +583,7 @@ $O/fileoutscalarmgr.o: fileoutscalarmgr.cc \
   ../common/commonutil.h \
   ../common/exception.h \
   ../common/fileutil.h \
+  ../common/matchexpression.h \
   ../common/opp_ctype.h \
   ../common/stringutil.h \
   ../common/unitconversion.h \
@@ -631,6 +644,7 @@ $O/fileoutvectormgr.o: fileoutvectormgr.cc \
   ../common/commonutil.h \
   ../common/exception.h \
   ../common/fileutil.h \
+  ../common/matchexpression.h \
   ../common/opp_ctype.h \
   ../common/stringutil.h \
   args.h \
@@ -684,7 +698,9 @@ $O/filesnapshotmgr.o: filesnapshotmgr.cc \
   ../../include/omnetpp/simtime_t.h \
   ../../include/omnetpp/simutil.h \
   ../common/commondefs.h \
+  ../common/exception.h \
   ../common/fileutil.h \
+  ../common/matchexpression.h \
   args.h \
   envirbase.h \
   envirdefs.h \
@@ -712,6 +728,7 @@ $O/fsutils.o: fsutils.cc \
   ../../include/omnetpp/simtime_t.h \
   ../../include/omnetpp/simutil.h \
   ../common/commondefs.h \
+  ../common/exception.h \
   ../common/fileutil.h \
   envirdefs.h \
   fsutils.h
@@ -764,6 +781,7 @@ $O/indexedfileoutvectormgr.o: indexedfileoutvectormgr.cc \
   ../common/commonutil.h \
   ../common/exception.h \
   ../common/fileutil.h \
+  ../common/matchexpression.h \
   ../common/stringutil.h \
   ../common/unitconversion.h \
   args.h \
@@ -789,6 +807,7 @@ $O/inifilereader.o: inifilereader.cc \
   ../../include/omnetpp/simtime_t.h \
   ../../include/omnetpp/simutil.h \
   ../common/commondefs.h \
+  ../common/exception.h \
   ../common/fileutil.h \
   ../common/opp_ctype.h \
   envirdefs.h \
@@ -835,6 +854,8 @@ $O/intervals.o: intervals.cc \
   ../../include/omnetpp/simtime_t.h \
   ../../include/omnetpp/simutil.h \
   ../common/commondefs.h \
+  ../common/exception.h \
+  ../common/matchexpression.h \
   ../common/opp_ctype.h \
   ../common/stringtokenizer.h \
   args.h \
@@ -890,6 +911,8 @@ $O/logformatter.o: logformatter.cc \
   logformatter.h
 $O/main.o: main.cc \
   ../../include/omnetpp/platdep/platdefs.h \
+  ../common/commondefs.h \
+  ../common/exception.h \
   envirdefs.h
 $O/matchablefield.o: matchablefield.cc \
   ../../include/omnetpp/cclassdescriptor.h \
@@ -1034,6 +1057,7 @@ $O/runattributes.o: runattributes.cc \
   ../common/commondefs.h \
   ../common/commonutil.h \
   ../common/exception.h \
+  ../common/matchexpression.h \
   ../common/stringutil.h \
   args.h \
   envirbase.h \
@@ -1116,6 +1140,8 @@ $O/speedometer.o: speedometer.cc \
   ../../include/omnetpp/simkerneldefs.h \
   ../../include/omnetpp/simtime.h \
   ../../include/omnetpp/simtime_t.h \
+  ../common/commondefs.h \
+  ../common/exception.h \
   envirdefs.h \
   speedometer.h
 $O/startup.o: startup.cc \

@@ -20,8 +20,9 @@
 #include <cstring>
 #include <cstdio>
 #include "common/opp_ctype.h"
-#include "common/exception.h"
 #include "args.h"
+
+using namespace OPP::common;
 
 NAMESPACE_BEGIN
 

@@ -98,6 +98,8 @@
 #define CHECKSIGNALS_DEFAULT  "true"
 #endif
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

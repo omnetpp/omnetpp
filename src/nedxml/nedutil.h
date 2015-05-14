@@ -26,7 +26,8 @@
 
 NAMESPACE_BEGIN
 
-class DisplayString;
+namespace common { class DisplayString; };
+
 class PropertyElement;
 class LiteralElement;
 
@@ -36,6 +37,7 @@ class LiteralElement;
 class NEDXML_API DisplayStringUtil
 {
   private:
+    typedef OPP::common::DisplayString DisplayString;
     static void parseDisplayString(const char *s, DisplayString& ds);
   public:
     static std::string upgradeBackgroundDisplayString(const char *s);

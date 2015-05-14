@@ -26,6 +26,7 @@
 #include "commondefs.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 /**
  * String tokenizer class, modelled after strtok(). It considers the input
@@ -103,6 +104,7 @@ class COMMON_API StringTokenizer
     std::vector<std::string> asVector();
 };
 
+} // namespace common
 NAMESPACE_END
 
 

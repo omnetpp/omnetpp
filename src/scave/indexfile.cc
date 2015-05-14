@@ -28,6 +28,8 @@
 
 #define LL INT64_PRINTF_FORMAT
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 static bool serialLess(const Block &first, const Block &second)

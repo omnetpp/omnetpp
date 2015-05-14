@@ -50,6 +50,8 @@
 #include "sim/netbuilder/cnedloader.h"
 #endif
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 using std::ostream;

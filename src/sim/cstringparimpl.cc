@@ -20,6 +20,8 @@
 #include "omnetpp/cdynamicexpression.h"
 #include "omnetpp/ccomponent.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

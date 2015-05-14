@@ -34,6 +34,8 @@
 #include "common/patternmatcher.h"
 #include "visitor.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

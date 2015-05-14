@@ -66,6 +66,8 @@ void OSXTransformProcess();
 #endif
 
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 //

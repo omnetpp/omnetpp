@@ -35,9 +35,11 @@
 #include "fields.h"
 #include "scaveutils.h"
 
+using namespace std;
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
-using namespace std;
 
 void printUsage()
 {

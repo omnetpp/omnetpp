@@ -19,7 +19,6 @@
 #define __OMNETPP_FILEOUTPUTSCALARMGR_H
 
 #include <cstdio>
-#include "common/stringutil.h"
 #include "omnetpp/envirext.h"
 #include "omnetpp/simutil.h"
 #include "envirdefs.h"
@@ -101,18 +100,6 @@ class ENVIR_API cFileOutputScalarManager : public cIOutputScalarManager
     virtual void flush() override;
     //@}
 };
-
-inline void cFileOutputScalarManager::writeStatisticField(const char *name, long value)
-{
-    if (fprintf(f, "field %s %ld\n", QUOTE(name), value) < 0)
-        throw cRuntimeError("Cannot write output scalar file `%s'", fname.c_str());
-}
-
-inline void cFileOutputScalarManager::writeStatisticField(const char *name, double value)
-{
-    if (fprintf(f, "field %s %.*g\n", QUOTE(name), prec, value) < 0)
-        throw cRuntimeError("Cannot write output scalar file `%s'", fname.c_str());
-}
 
 NAMESPACE_END
 

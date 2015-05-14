@@ -26,6 +26,7 @@
 #include <cstdlib> // _MAX_PATH
 
 NAMESPACE_BEGIN
+namespace common {
 
 struct GlobPrivateData
 {
@@ -103,6 +104,7 @@ const char *FileGlobber::getNext()
     }
 }
 
+} // namespace common
 NAMESPACE_END
 
 #elif defined __ANDROID__
@@ -113,6 +115,7 @@ NAMESPACE_END
 #include <limits.h>
 
 NAMESPACE_BEGIN
+namespace common {
 
 struct GlobPrivateData
 {
@@ -208,6 +211,7 @@ const char *FileGlobber::getNext()
     }
 }
 
+} // namespace common
 NAMESPACE_END
 
 #else
@@ -215,6 +219,7 @@ NAMESPACE_END
 #include <glob.h>
 
 NAMESPACE_BEGIN
+namespace common {
 
 struct GlobPrivateData
 {
@@ -260,12 +265,14 @@ const char *FileGlobber::getNext()
     }
 }
 
+} // namespace common
 NAMESPACE_END
 
 #endif
 
 
 NAMESPACE_BEGIN
+namespace common {
 
 std::vector<std::string> FileGlobber::getFilenames()
 {
@@ -276,5 +283,6 @@ std::vector<std::string> FileGlobber::getFilenames()
     return v;
 }
 
+} // namespace common
 NAMESPACE_END
 

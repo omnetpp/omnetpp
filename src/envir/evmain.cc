@@ -24,6 +24,7 @@
 #include "startup.h"
 
 NAMESPACE_BEGIN
+
 //
 // The "main()" function of the simulation
 //

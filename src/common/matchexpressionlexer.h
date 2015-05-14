@@ -20,6 +20,7 @@
 
 
 NAMESPACE_BEGIN
+namespace common {
 
 /**
  * Handcoded lexer, because Flex-generated one was not reentrant.
@@ -33,6 +34,7 @@ class MatchExpressionLexer
         int getNextToken(char **valuep);
 };
 
+} // namespace common
 NAMESPACE_END
 
 

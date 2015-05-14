@@ -24,7 +24,7 @@
 NAMESPACE_BEGIN
 
 char EventLogEntry::buffer[128];
-LineTokenizer EventLogEntry::tokenizer(32768);
+OPP::common::LineTokenizer EventLogEntry::tokenizer(32768);
 static const char *currentLine;
 static int currentLineLength;
 

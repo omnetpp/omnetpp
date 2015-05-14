@@ -18,6 +18,8 @@
 #include "common/matchexpression.h"
 #include "omnetpp/cmatchexpression.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 cMatchExpression::cMatchExpression()

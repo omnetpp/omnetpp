@@ -42,6 +42,8 @@
 #include "xmlgenerator.h"
 #include "nedtools.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 using std::ofstream;

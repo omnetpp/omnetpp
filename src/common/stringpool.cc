@@ -17,6 +17,7 @@
 #include "stringpool.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 CommonStringPool::CommonStringPool()
 {
@@ -53,5 +54,6 @@ const char *CommonStringPool::get(const char *s)
     return str;
 }
 
+} // namespace common
 NAMESPACE_END
 

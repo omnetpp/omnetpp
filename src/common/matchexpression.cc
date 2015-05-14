@@ -19,6 +19,7 @@
 #include "commonutil.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 
 MatchExpression::Elem::Elem(PatternMatcher *pattern, const char *fieldname)
@@ -120,5 +121,6 @@ bool MatchExpression::matches(const Matchable *object)
     return stk[tos];
 }
 
+} // namespace common
 NAMESPACE_END
 

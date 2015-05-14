@@ -26,9 +26,11 @@
 #include "omnetpp/cexception.h"
 #include "valueiterator.h"
 
+using namespace std;
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
-using namespace std;
 
 inline const char* getTypeName(char type)
 {

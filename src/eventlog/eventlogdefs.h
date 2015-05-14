@@ -57,6 +57,12 @@ inline int64_t abs64(int64_t a)
    return a < 0 ? -a : a;
 }
 
+using OPP::common::opp_runtime_error;
+using OPP::common::BigDecimal;
+
+namespace common { class FileReader; };
+using OPP::common::FileReader;
+
 typedef BigDecimal simtime_t;
 #define simtime_nil BigDecimal::MinusOne
 

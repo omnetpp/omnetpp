@@ -25,6 +25,8 @@
 #include "messagedependency.h"
 #include "sequencechartfacade.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(eventLog)

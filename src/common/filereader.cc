@@ -28,6 +28,7 @@
 #include "stringutil.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 #define LL  INT64_PRINTF_FORMAT
 
@@ -672,5 +673,6 @@ int main(int argc, char **argv)
 }
 */
 
+} // namespace common
 NAMESPACE_END
 

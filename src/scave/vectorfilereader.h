@@ -42,6 +42,7 @@ Datum parseColumns(char **tokens, int numtokens, const std::string &columns, con
 class SCAVE_API VectorFileReaderNode : public ReaderNode
 {
     public:
+        typedef OPP::common::LineTokenizer LineTokenizer;
         typedef std::vector<Port> PortVector;
         typedef std::map<int,PortVector> Portmap;
         typedef std::string ColumnSpec;

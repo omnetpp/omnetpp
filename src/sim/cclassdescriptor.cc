@@ -28,6 +28,8 @@
 #include "omnetpp/cobjectfactory.h"  // createOne()
 #include "omnetpp/platdep/platmisc.h" // INT64_PRINTF_FORMAT
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

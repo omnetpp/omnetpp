@@ -23,6 +23,8 @@
 #include "nedresourcecache.h"
 #include "nedcrossvalidator.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

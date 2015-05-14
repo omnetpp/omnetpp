@@ -29,6 +29,8 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cmodule.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 //FIXME cDynamicExpression to add function name to exceptions thrown from functions

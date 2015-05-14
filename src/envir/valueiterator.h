@@ -52,6 +52,7 @@ NAMESPACE_BEGIN
 class ENVIR_API ValueIterator
 {
   public:
+    typedef OPP::common::Expression Expression;
     typedef std::map<std::string,ValueIterator*> VariableMap; // maps variable names to their iterators
 
     /**

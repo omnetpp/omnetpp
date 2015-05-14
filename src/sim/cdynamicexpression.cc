@@ -27,6 +27,8 @@
 #include "omnetpp/cmodule.h"
 #include "expryydefs.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 cStringPool cDynamicExpression::Elem::stringPool("cDynamicExpression::Elem::stringPool");

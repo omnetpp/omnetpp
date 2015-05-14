@@ -33,6 +33,8 @@
 #include "valueiterator.h"
 #include "scenario.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 //XXX error messages (exceptions) should contain file/line info!

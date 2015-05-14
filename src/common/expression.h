@@ -24,6 +24,7 @@
 #include "stringpool.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 /**
  * This is an extensible arithmetic expression evaluator class. Supports the
@@ -411,6 +412,7 @@ class COMMON_API MathFunction : public Expression::Function
     virtual Expression::Value evaluate(Expression::Value args[], int numargs) override;
 };
 
+} // namespace common
 NAMESPACE_END
 
 

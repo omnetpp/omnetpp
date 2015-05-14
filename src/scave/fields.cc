@@ -23,9 +23,10 @@
 #include "common/stringutil.h"
 #include "fields.h"
 
-NAMESPACE_BEGIN
-
 using namespace std;
+using namespace OPP::common;
+
+NAMESPACE_BEGIN
 
 /*----------------------------------------
  *            ResultItemAttribute

@@ -22,6 +22,7 @@
 #include "commondefs.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 /**
  * Tokenizes a line. Uses space as default separator, and also honors quoted substrings
@@ -74,6 +75,7 @@ class COMMON_API LineTokenizer
     char **tokens() {return vec;}
 };
 
+} // namespace common
 NAMESPACE_END
 
 

@@ -21,6 +21,8 @@
 #include "omnetpp/cmessageprinter.h"
 #include "omnetpp/regmacros.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 Register_MessagePrinter(cDefaultMessagePrinter);

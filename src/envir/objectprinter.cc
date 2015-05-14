@@ -18,7 +18,6 @@
 #include "common/stringutil.h"
 #include "common/commonutil.h"
 #include "common/stringtokenizer.h"
-#include "common/matchexpression.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/carray.h"
 #include "omnetpp/cmodule.h"
@@ -27,6 +26,8 @@
 #include "matchablefield.h"
 #include "matchableobject.h"
 #include "objectprinter.h"
+
+using namespace OPP::common;
 
 NAMESPACE_BEGIN
 

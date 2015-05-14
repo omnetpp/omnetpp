@@ -33,6 +33,8 @@
 #include "cdynamicmoduletype.h"
 #include "cdynamicchanneltype.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 cNEDLoader *cNEDLoader::inst;

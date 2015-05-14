@@ -29,7 +29,9 @@
 
 NAMESPACE_BEGIN
 
-extern EVENTLOG_API CommonStringPool eventLogStringPool;
+using OPP::common::FileReader;
+
+extern EVENTLOG_API OPP::common::StringPool eventLogStringPool;
 
 class Event;
 class EventLogEntry;

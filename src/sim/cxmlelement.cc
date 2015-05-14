@@ -28,6 +28,8 @@
 #include "omnetpp/platdep/platmisc.h"
 #include "minixpath.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 

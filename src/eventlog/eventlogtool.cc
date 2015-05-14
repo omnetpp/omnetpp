@@ -23,6 +23,8 @@
 #include "eventlog.h"
 #include "filteredeventlog.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 class Options

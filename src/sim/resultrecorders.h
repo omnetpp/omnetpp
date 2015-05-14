@@ -24,6 +24,10 @@
 
 NAMESPACE_BEGIN
 
+using OPP::common::NaN;
+using OPP::common::POSITIVE_INFINITY;
+using OPP::common::NEGATIVE_INFINITY;
+
 /**
  * Listener for recording a signal to an output vector
  */
@@ -183,6 +187,8 @@ class SIM_API HistogramRecorder : public StatisticsRecorder
 //TODO: make variants that eat 2 signals, and N signals
 class SIM_API ExpressionRecorder : public cNumericResultRecorder
 {
+    public:
+        typedef OPP::common::Expression Expression;
     protected:
         Expression expr;
     public:

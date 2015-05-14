@@ -28,6 +28,7 @@ NAMESPACE_BEGIN
  */
 class SCAVE_API VectorFileIndexer
 {
+    typedef OPP::common::IProgressMonitor IProgressMonitor;
     public:
         void generateIndex(const char *filename, IProgressMonitor *monitor = nullptr);
 

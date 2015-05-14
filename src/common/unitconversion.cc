@@ -25,6 +25,7 @@
 #include "unitconversion.h"
 
 NAMESPACE_BEGIN
+namespace common {
 
 const double K = 1024.0;
 
@@ -265,5 +266,6 @@ std::vector<const char *> UnitConversion::getAllUnits()
     return result;
 }
 
+} // namespace common
 NAMESPACE_END
 

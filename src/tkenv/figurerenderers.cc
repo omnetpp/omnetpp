@@ -21,6 +21,8 @@
 #include "figurerenderers.h"
 #include "tkenv.h"
 
+using namespace OPP::common;
+
 NAMESPACE_BEGIN
 
 std::map<std::string, FigureRenderer*> FigureRenderer::rendererCache;
