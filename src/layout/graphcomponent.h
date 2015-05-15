@@ -23,6 +23,7 @@
 #include "geometry.h"
 
 NAMESPACE_BEGIN
+namespace layout {
 
 class Edge;
 class GraphComponent;
@@ -223,6 +224,7 @@ class GraphComponent {
         void colorizeConnectedSubComponent(GraphComponent *childComponent, Vertex *vertex, int color);
 };
 
+} // namespace layout
 NAMESPACE_END
 
 

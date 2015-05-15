@@ -25,6 +25,7 @@
 #include "forcedirectedparametersbase.h"
 
 NAMESPACE_BEGIN
+namespace layout {
 
 class LAYOUT_API ForceDirectedEmbedding
 {
@@ -392,6 +393,7 @@ class LAYOUT_API ForceDirectedEmbedding
         }
 };
 
+} // namespace layout
 NAMESPACE_END
 
 #endif

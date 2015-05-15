@@ -41,6 +41,7 @@
 #include "canvasrenderer.h"
 
 using namespace OPP::common;
+using namespace OPP::layout;
 
 NAMESPACE_BEGIN
 

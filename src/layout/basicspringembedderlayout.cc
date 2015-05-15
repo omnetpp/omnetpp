@@ -31,6 +31,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace layout {
 
 
 static bool debug = false;
@@ -721,5 +722,6 @@ void BasicSpringEmbedderLayout::debugDraw(int step)
     environment->showGraphics(buf);
 }
 
+} // namespace layout
 NAMESPACE_END
 

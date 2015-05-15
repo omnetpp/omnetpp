@@ -24,6 +24,7 @@
 #include "layoutdefs.h"
 
 NAMESPACE_BEGIN
+namespace layout {
 
 //#define TRACE_LAYOUTER
 
@@ -183,6 +184,7 @@ class LAYOUT_API GraphLayouter
     virtual void getNodePosition(int nodeId, double& x, double& y) = 0;
 };
 
+} // namespace layout
 NAMESPACE_END
 
 

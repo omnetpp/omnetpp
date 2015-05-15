@@ -26,6 +26,7 @@
 #include "graphcomponent.h"
 
 NAMESPACE_BEGIN
+namespace layout {
 
 
 /**
@@ -227,6 +228,7 @@ class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
     void debugDraw();
 };
 
+} // namespace layout
 NAMESPACE_END
 
 

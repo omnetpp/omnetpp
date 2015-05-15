@@ -25,6 +25,7 @@
 #include "layoutdefs.h"
 
 NAMESPACE_BEGIN
+namespace layout {
 
 /**
  * A three dimensional point. Base plane means z = 0.
@@ -648,6 +649,7 @@ class Cc {
         }
 };
 
+} // namespace layout
 NAMESPACE_END
 
 

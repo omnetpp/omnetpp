@@ -24,6 +24,7 @@
 #include "graphlayouter.h"
 
 NAMESPACE_BEGIN
+namespace layout {
 
 
 /**
@@ -171,6 +172,7 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
     }
 };
 
+} // namespace layout
 NAMESPACE_END
 
 

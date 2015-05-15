@@ -17,6 +17,7 @@
 #include "startreeembedding.h"
 
 NAMESPACE_BEGIN
+namespace layout {
 
 using OPP::common::POSITIVE_INFINITY;
 
@@ -216,5 +217,6 @@ void StarTreeEmbedding::calculatePositionRecursive(Vertex *vertex, Pt pt)
     }
 }
 
+} // namespace layout
 NAMESPACE_END
 

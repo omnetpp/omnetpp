@@ -17,6 +17,8 @@
 #include "geometry.h"
 
 NAMESPACE_BEGIN
+namespace layout {
 
+} // namespace layout
 NAMESPACE_END
 

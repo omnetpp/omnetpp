@@ -21,6 +21,7 @@
 #include "common/commonutil.h"
 
 NAMESPACE_BEGIN
+namespace layout {
 
 #if defined(LAYOUT_EXPORT)
 #  define LAYOUT_API OPP_DLLEXPORT
@@ -36,6 +37,7 @@ using OPP::common::isNaN;
 using OPP::common::POSITIVE_INFINITY;
 using OPP::common::NEGATIVE_INFINITY;
 
+} // namespace layout
 NAMESPACE_END
 
 

@@ -23,6 +23,7 @@
 #include "forcedirectedembedding.h"
 
 NAMESPACE_BEGIN
+namespace layout {
 
 inline double signum(double val) {
     return val < 0 ? -1 : val == 0 ? 0 : 1;
@@ -818,6 +819,7 @@ class CircleConstraint : public BodyConstraint {
         }
 };
 
+} // namespace layout
 NAMESPACE_END
 
 

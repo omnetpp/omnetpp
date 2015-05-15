@@ -17,6 +17,7 @@
 #include "heapembedding.h"
 
 NAMESPACE_BEGIN
+namespace layout {
 
 using OPP::common::POSITIVE_INFINITY;
 
@@ -159,5 +160,6 @@ void HeapEmbedding::pushPtUnlessRcsContains(std::vector<Pt>& pts, const std::vec
     pts.push_back(pt);
 }
 
+} // namespace layout
 NAMESPACE_END
 

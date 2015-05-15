@@ -18,6 +18,7 @@
 #include "graphcomponent.h"
 
 NAMESPACE_BEGIN
+namespace layout {
 
 Vertex::Vertex(Pt pt, Rs rs, void *identity) {
     this->rc = Rc(pt, rs);
@@ -219,5 +220,6 @@ void GraphComponent::colorizeConnectedSubComponent(GraphComponent *childComponen
     }
 }
 
+} // namespace layout
 NAMESPACE_END
 

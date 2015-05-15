@@ -18,6 +18,7 @@
 #include "graphlayouter.h"
 
 NAMESPACE_BEGIN
+namespace layout {
 
 using OPP::common::opp_runtime_error;
 
@@ -75,5 +76,6 @@ void GraphLayouter::setSize(double w, double h, double bd)
         throw opp_runtime_error("GraphLayouter::setSize(): required width or height smaller than 2*border");
 }
 
+} // namespace layout
 NAMESPACE_END
 

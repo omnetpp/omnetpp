@@ -26,7 +26,7 @@ class cModule;
 class cDisplayString;
 
 
-class TkenvGraphLayouterEnvironment : public GraphLayouterEnvironment
+class TkenvGraphLayouterEnvironment : public OPP::layout::GraphLayouterEnvironment
 {
    protected:
       // configuration

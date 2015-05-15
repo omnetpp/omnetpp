@@ -30,6 +30,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace layout {
 
 
 ForceDirectedGraphLayouter::ForceDirectedGraphLayouter()
@@ -617,5 +618,6 @@ void ForceDirectedGraphLayouter::debugDraw()
     usleep((int)(debugWaitTime*1000));
 }
 
+} // namespace layout
 NAMESPACE_END
 

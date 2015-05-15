@@ -21,6 +21,7 @@
 #include "geometry.h"
 
 NAMESPACE_BEGIN
+namespace layout {
 
 class ForceDirectedEmbedding;
 
@@ -376,6 +377,7 @@ class IForceProvider {
         virtual double getPotentialEnergy() = 0;
 };
 
+} // namespace layout
 NAMESPACE_END
 
 

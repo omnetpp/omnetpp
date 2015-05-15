@@ -22,6 +22,7 @@
 #include "graphcomponent.h"
 
 NAMESPACE_BEGIN
+namespace layout {
 
 /**
  *
@@ -50,6 +51,7 @@ class ConcentricTreeEmbedding
         void calculateCenterRecursive(Vertex *vertex, int level);
 };
 
+} // namespace layout
 NAMESPACE_END
 
 
