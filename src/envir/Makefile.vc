@@ -170,6 +170,8 @@ $O/akaroarng.obj: akaroarng.cc \
   ../../include/omnetpp/simtime.h \
   ../../include/omnetpp/simtime_t.h \
   ../../include/omnetpp/simutil.h \
+  ../common/commondefs.h \
+  ../common/exception.h \
   akaroarng.h \
   envirdefs.h
 $O/akoutvectormgr.obj: akoutvectormgr.cc \
@@ -194,6 +196,7 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/omnetpp/cobjectfactory.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
   ../../include/omnetpp/crng.h \
@@ -216,6 +219,9 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/omnetpp/simtime.h \
   ../../include/omnetpp/simtime_t.h \
   ../../include/omnetpp/simutil.h \
+  ../common/commondefs.h \
+  ../common/exception.h \
+  ../common/matchexpression.h \
   akoutvectormgr.h \
   args.h \
   envirbase.h \
@@ -250,6 +256,8 @@ $O/appreg.obj: appreg.cc \
   ../../include/omnetpp/simtime.h \
   ../../include/omnetpp/simtime_t.h \
   ../../include/omnetpp/simutil.h \
+  ../common/commondefs.h \
+  ../common/exception.h \
   appreg.h \
   envirdefs.h
 $O/args.obj: args.cc \
@@ -278,6 +286,7 @@ $O/cxmldoccache.obj: cxmldoccache.cc \
   ../../include/omnetpp/simtime_t.h \
   ../../include/omnetpp/simutil.h \
   ../common/commondefs.h \
+  ../common/exception.h \
   ../common/fileutil.h \
   ../nedxml/nedxmldefs.h \
   ../nedxml/saxparser.h \
@@ -320,6 +329,7 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/omnetpp/cparsimcomm.h \
   ../../include/omnetpp/cproperties.h \
   ../../include/omnetpp/cproperty.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultfilter.h \
   ../../include/omnetpp/cresultlistener.h \
@@ -355,6 +365,7 @@ $O/envirbase.obj: envirbase.cc \
   ../common/fileglobber.h \
   ../common/fileutil.h \
   ../common/fnamelisttokenizer.h \
+  ../common/matchexpression.h \
   ../common/opp_ctype.h \
   ../common/stringpool.h \
   ../common/stringtokenizer.h \
@@ -438,6 +449,7 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   ../common/commonutil.h \
   ../common/exception.h \
   ../common/fileutil.h \
+  ../common/matchexpression.h \
   ../common/opp_ctype.h \
   args.h \
   envirbase.h \
@@ -507,6 +519,8 @@ $O/evmain.obj: evmain.cc \
   ../../include/omnetpp/simtime.h \
   ../../include/omnetpp/simtime_t.h \
   ../../include/omnetpp/simutil.h \
+  ../common/commondefs.h \
+  ../common/exception.h \
   ../common/ver.h \
   envirdefs.h \
   startup.h
@@ -534,6 +548,7 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   ../../include/omnetpp/cobjectfactory.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
   ../../include/omnetpp/crng.h \
@@ -561,6 +576,7 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   ../common/commonutil.h \
   ../common/exception.h \
   ../common/fileutil.h \
+  ../common/matchexpression.h \
   ../common/opp_ctype.h \
   ../common/stringutil.h \
   ../common/unitconversion.h \
@@ -621,6 +637,7 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   ../common/commonutil.h \
   ../common/exception.h \
   ../common/fileutil.h \
+  ../common/matchexpression.h \
   ../common/opp_ctype.h \
   ../common/stringutil.h \
   args.h \
@@ -674,7 +691,9 @@ $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   ../../include/omnetpp/simtime_t.h \
   ../../include/omnetpp/simutil.h \
   ../common/commondefs.h \
+  ../common/exception.h \
   ../common/fileutil.h \
+  ../common/matchexpression.h \
   args.h \
   envirbase.h \
   envirdefs.h \
@@ -702,6 +721,7 @@ $O/fsutils.obj: fsutils.cc \
   ../../include/omnetpp/simtime_t.h \
   ../../include/omnetpp/simutil.h \
   ../common/commondefs.h \
+  ../common/exception.h \
   ../common/fileutil.h \
   envirdefs.h \
   fsutils.h
@@ -727,6 +747,7 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../../include/omnetpp/cobjectfactory.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultlistener.h \
   ../../include/omnetpp/crng.h \
@@ -753,6 +774,7 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../common/commonutil.h \
   ../common/exception.h \
   ../common/fileutil.h \
+  ../common/matchexpression.h \
   ../common/stringutil.h \
   ../common/unitconversion.h \
   args.h \
@@ -778,6 +800,7 @@ $O/inifilereader.obj: inifilereader.cc \
   ../../include/omnetpp/simtime_t.h \
   ../../include/omnetpp/simutil.h \
   ../common/commondefs.h \
+  ../common/exception.h \
   ../common/fileutil.h \
   ../common/opp_ctype.h \
   envirdefs.h \
@@ -824,6 +847,8 @@ $O/intervals.obj: intervals.cc \
   ../../include/omnetpp/simtime_t.h \
   ../../include/omnetpp/simutil.h \
   ../common/commondefs.h \
+  ../common/exception.h \
+  ../common/matchexpression.h \
   ../common/opp_ctype.h \
   ../common/stringtokenizer.h \
   args.h \
@@ -879,6 +904,8 @@ $O/logformatter.obj: logformatter.cc \
   logformatter.h
 $O/main.obj: main.cc \
   ../../include/omnetpp/platdep/platdefs.h \
+  ../common/commondefs.h \
+  ../common/exception.h \
   envirdefs.h
 $O/matchablefield.obj: matchablefield.cc \
   ../../include/omnetpp/cclassdescriptor.h \
@@ -1023,6 +1050,7 @@ $O/runattributes.obj: runattributes.cc \
   ../common/commondefs.h \
   ../common/commonutil.h \
   ../common/exception.h \
+  ../common/matchexpression.h \
   ../common/stringutil.h \
   args.h \
   envirbase.h \
@@ -1105,6 +1133,8 @@ $O/speedometer.obj: speedometer.cc \
   ../../include/omnetpp/simkerneldefs.h \
   ../../include/omnetpp/simtime.h \
   ../../include/omnetpp/simtime_t.h \
+  ../common/commondefs.h \
+  ../common/exception.h \
   envirdefs.h \
   speedometer.h
 $O/startup.obj: startup.cc \
@@ -1190,6 +1220,7 @@ $O/statisticparser.obj: statisticparser.cc \
   ../../include/omnetpp/cobjectfactory.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cresultfilter.h \
   ../../include/omnetpp/cresultlistener.h \
@@ -1272,6 +1303,7 @@ $O/visitor.obj: visitor.cc \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cqueue.h \
+  ../../include/omnetpp/crandom.h \
   ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/crng.h \
   ../../include/omnetpp/csimulation.h \
