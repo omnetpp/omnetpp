@@ -227,45 +227,42 @@ inline std::ostream& operator<<(std::ostream& os, const BigDecimal& x)
     return os << BigDecimal::ttoa(buf, x, endp);
 }
 
-} // namespace common
-NAMESPACE_END
-
 /**
  * BigDecimal version of floor(double) from math.h.
  */
-inline const OPP::common::BigDecimal floor(const OPP::common::BigDecimal& x)
+inline const BigDecimal floor(const BigDecimal& x)
 {
-    return OPP::common::BigDecimal(floor(x.dbl()));
+    return BigDecimal(std::floor(x.dbl()));
 }
 
 /**
  * BigDecimal version of ceil(double) from math.h.
  */
-inline const OPP::common::BigDecimal ceil(const OPP::common::BigDecimal& x)
+inline const BigDecimal ceil(const BigDecimal& x)
 {
-    return OPP::common::BigDecimal(ceil(x.dbl()));
+    return BigDecimal(std::ceil(x.dbl()));
 }
 
 /**
  * BigDecimal version of fabs(double) from math.h.
  */
-inline const OPP::common::BigDecimal fabs(const OPP::common::BigDecimal& x)
+inline const BigDecimal fabs(const BigDecimal& x)
 {
-    return x.getIntValue()<0 ? OPP::common::BigDecimal(x).setIntValue(-x.getIntValue()) : x;
+    return x.getIntValue()<0 ? BigDecimal(x).setIntValue(-x.getIntValue()) : x;
 }
 
 /**
  * BigDecimal version of fmod(double,double) from math.h.
  */
-inline const OPP::common::BigDecimal fmod(const OPP::common::BigDecimal& x, const OPP::common::BigDecimal& y)
+inline const BigDecimal fmod(const BigDecimal& x, const BigDecimal& y)
 {
-    return OPP::common::BigDecimal(fmod(x.dbl(), y.dbl()));
+    return BigDecimal(std::fmod(x.dbl(), y.dbl()));
 }
 
 /**
  * Returns the greater of the two arguments.
  */
-inline const OPP::common::BigDecimal max(const OPP::common::BigDecimal& x, const OPP::common::BigDecimal& y)
+inline const BigDecimal max(const BigDecimal& x, const BigDecimal& y)
 {
     return x > y ? x : y;
 }
@@ -273,10 +270,13 @@ inline const OPP::common::BigDecimal max(const OPP::common::BigDecimal& x, const
 /**
  * Returns the smaller of the two arguments.
  */
-inline const OPP::common::BigDecimal min(const OPP::common::BigDecimal& x, const OPP::common::BigDecimal& y)
+inline const BigDecimal min(const BigDecimal& x, const BigDecimal& y)
 {
     return x < y ? x : y;
 }
+
+} // namespace common
+NAMESPACE_END
 
 #endif
 
