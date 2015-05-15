@@ -37,6 +37,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace scave {
 
 IDList::IDList(const IDList& ids)
 {
@@ -545,5 +546,6 @@ void IDList::fromByteArray(char *array, int n)
     std::copy(a, a+n/8, v->begin());
 }
 
+} // namespace scave
 NAMESPACE_END
 

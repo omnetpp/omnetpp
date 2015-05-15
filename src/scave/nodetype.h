@@ -24,6 +24,7 @@
 #include "dataflowmanager.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 class Node;
 class Port;
@@ -103,6 +104,7 @@ class SCAVE_API NodeType
 };
 
 
+} // namespace scave
 NAMESPACE_END
 
 

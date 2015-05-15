@@ -28,6 +28,7 @@
 #include "resultfilemanager.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 // read in 64K chunks (apparently it doesn't matter much if we use a bigger buffer)
 #define VECFILEREADER_BUFSIZE  (64*1024)
@@ -99,6 +100,7 @@ class SCAVE_API IndexedVectorFileReaderNodeType : public ReaderNodeType
 };
 
 
+} // namespace scave
 NAMESPACE_END
 
 

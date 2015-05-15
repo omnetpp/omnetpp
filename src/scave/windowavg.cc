@@ -21,6 +21,7 @@
 #include "windowavg.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 WindowAverageNode::WindowAverageNode(int windowSize)
@@ -188,5 +189,6 @@ void TimeWindowAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /
     attrs["type"] = "double";
 }
 
+} // namespace scave
 NAMESPACE_END
 

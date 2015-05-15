@@ -20,6 +20,7 @@
 #include "commonnodes.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 /**
@@ -48,6 +49,7 @@ class SCAVE_API DifferenceQuotientNodeType : public FilterNodeType
         virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const override;
 };
 
+} // namespace scave
 NAMESPACE_END
 
 

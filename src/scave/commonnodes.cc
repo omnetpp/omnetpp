@@ -20,6 +20,7 @@
 #include "channel.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 Port *SingleSourceNodeType::getPort(Node *node, const char *name) const
@@ -53,5 +54,6 @@ Port *FilterNodeType::getPort(Node *node, const char *name) const
     throw opp_runtime_error("no such port `%s'", name);
 }
 
+} // namespace scave
 NAMESPACE_END
 

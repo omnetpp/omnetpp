@@ -21,6 +21,7 @@
 #include "xyarray.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 using namespace std;
 
@@ -61,5 +62,6 @@ void XYArray::sortByX()
     }
 }
 
+} // namespace scave
 NAMESPACE_END
 

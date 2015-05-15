@@ -32,6 +32,7 @@
 #include "fields.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 typedef std::vector<ID> IDVector;
 typedef std::vector<IDVector> IDVectorVector;
@@ -218,6 +219,7 @@ class SCAVE_API DataSorter
     IDVectorVector prepareCopyToClipboard(const IDList& idlist);
 };
 
+} // namespace scave
 NAMESPACE_END
 
 

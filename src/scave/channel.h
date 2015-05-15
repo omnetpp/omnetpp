@@ -23,6 +23,7 @@
 #include "node.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 /**
@@ -101,6 +102,7 @@ class SCAVE_API Channel
         int length() {return buffer.size();}
 };
 
+} // namespace scave
 NAMESPACE_END
 
 

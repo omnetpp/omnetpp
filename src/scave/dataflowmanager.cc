@@ -25,6 +25,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 DataflowManager::DataflowManager()
@@ -290,5 +291,6 @@ void DataflowManager::dump()
     fflush(stdout);
 }
 
+} // namespace scave
 NAMESPACE_END
 

@@ -18,6 +18,7 @@
 #include "diffquot.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 DifferenceQuotientNode::DifferenceQuotientNode()
@@ -85,5 +86,6 @@ void DifferenceQuotientNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, 
     attrs["type"] = "double";
 }
 
+} // namespace scave
 NAMESPACE_END
 

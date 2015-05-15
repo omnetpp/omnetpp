@@ -20,6 +20,7 @@
 #include "slidingwinavg.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 SlidingWindowAverageNode::SlidingWindowAverageNode(int windowSize)
@@ -98,5 +99,6 @@ void SlidingWindowAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs
     attrs["type"] = "double";
 }
 
+} // namespace scave
 NAMESPACE_END
 

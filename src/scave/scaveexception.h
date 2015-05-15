@@ -26,6 +26,7 @@
 #include "scavedefs.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 /**
  * Exception thrown when a syntax error found while reading a result file.
@@ -64,6 +65,7 @@ class SCAVE_API ResultFileFormatException : public opp_runtime_error
     file_offset_t getFileOffset() const { return offset; }
 };
 
+} // namespace scave
 NAMESPACE_END
 
 

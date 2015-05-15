@@ -24,6 +24,7 @@
 #include "scavedefs.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 /**
  * Provides string representation for enums. The class basically implements
@@ -93,6 +94,7 @@ class SCAVE_API EnumType
     void parseFromString(const char *str);
 };
 
+} // namespace scave
 NAMESPACE_END
 
 

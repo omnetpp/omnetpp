@@ -24,6 +24,7 @@
 #include "channel.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 /**
@@ -93,6 +94,7 @@ class SCAVE_API DataflowManager
         void dump();
 };
 
+} // namespace scave
 NAMESPACE_END
 
 

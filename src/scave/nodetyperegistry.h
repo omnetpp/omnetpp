@@ -25,6 +25,7 @@
 #include "nodetype.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 class DataflowManager;
 
@@ -76,6 +77,7 @@ class SCAVE_API NodeTypeRegistry
 
 };
 
+} // namespace scave
 NAMESPACE_END
 
 

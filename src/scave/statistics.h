@@ -23,6 +23,7 @@
 #include "scaveutils.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 /**
  * Class for collecting statistical data of the result
@@ -85,6 +86,7 @@ inline void Statistics::adjoin(const Statistics &other)
     _sumSqr += other._sumSqr;
 }
 
+} // namespace scave
 NAMESPACE_END
 
 

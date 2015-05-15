@@ -23,6 +23,7 @@
 
 
 NAMESPACE_BEGIN
+namespace scave {
 
 bool parseInt(const char *s, int &dest)
 {
@@ -137,5 +138,6 @@ const std::string *ScaveStringPool::find(const std::string& str) const
         return it != pool.end() ? &(*it) : nullptr;
 }
 
+} // namespace scave
 NAMESPACE_END
 

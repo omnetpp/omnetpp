@@ -36,6 +36,7 @@ using namespace std;
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 static inline bool existsFile(const string fileName)
@@ -378,5 +379,6 @@ void VectorFileIndexer::rebuildVectorFile(const char *vectorFileName, IProgressM
     }
 }
 
+} // namespace scave
 NAMESPACE_END
 

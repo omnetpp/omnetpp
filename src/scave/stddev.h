@@ -22,6 +22,7 @@
 #include "xyarray.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 /**
@@ -65,6 +66,7 @@ class SCAVE_API StddevNodeType : public SingleSinkNodeType
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const override;
 };
 
+} // namespace scave
 NAMESPACE_END
 
 

@@ -39,6 +39,7 @@ using namespace std;
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 void printUsage()
@@ -784,9 +785,10 @@ int indexCommand(int argc, char **argv)
     return rc;
 }
 
+} // namespace scave
 NAMESPACE_END
 
-USING_NAMESPACE
+using namespace OPP::scave;
 
 int main(int argc, char **argv)
 {

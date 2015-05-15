@@ -22,6 +22,7 @@
 #include "commonnodes.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 using OPP::common::Expression;
 
@@ -85,6 +86,7 @@ class SCAVE_API ExpressionFilterNodeType : public FilterNodeType
         virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const override;
 };
 
+} // namespace scave
 NAMESPACE_END
 
 

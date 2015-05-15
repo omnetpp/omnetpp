@@ -30,6 +30,7 @@
 #include "resultfilemanager.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 struct OutputVectorEntry {
     long serial;
@@ -179,6 +180,7 @@ class SCAVE_API IndexedVectorFileWriterNodeType : public NodeType
         virtual Port *getPort(Node *node, const char *portname) const override;
 };
 
+} // namespace scave
 NAMESPACE_END
 
 #endif

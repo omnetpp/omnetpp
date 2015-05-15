@@ -21,6 +21,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 void NodeType::checkAttrNames(const StringMap& attrs) const
@@ -58,5 +59,6 @@ void NodeType::mapVectorAttributes(StringMap &attrs, /*out*/StringVector &warnin
     // identity map by default
 }
 
+} // namespace scave
 NAMESPACE_END
 

@@ -21,6 +21,7 @@
 #include "scavedefs.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 /**
  * ArrayBuilderNode returns the results in this class.
@@ -44,6 +45,7 @@ class SCAVE_API XYArray
         void sortByX();
 };
 
+} // namespace scave
 NAMESPACE_END
 
 

@@ -26,6 +26,7 @@
 #include "scavedefs.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 SCAVE_API bool parseInt(const char *str, int &dest);
 SCAVE_API bool parseLong(const char *str, long &dest);
@@ -79,6 +80,7 @@ class ScaveStringPool
         void clear() { lastInsertedPtr = nullptr; pool.clear(); }
 };
 
+} // namespace scave
 NAMESPACE_END
 
 

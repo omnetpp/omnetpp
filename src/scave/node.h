@@ -22,6 +22,7 @@
 #include "scavedefs.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 class Node;
@@ -151,6 +152,7 @@ class SCAVE_API Node
         bool getAlreadyFinished() {return alreadyFinished;}
 };
 
+} // namespace scave
 NAMESPACE_END
 
 

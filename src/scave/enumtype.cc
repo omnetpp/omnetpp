@@ -24,6 +24,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 EnumType::EnumType(const EnumType& list)
@@ -127,5 +128,6 @@ void EnumType::parseFromString(const char *str)
     }
 }
 
+} // namespace scave
 NAMESPACE_END
 

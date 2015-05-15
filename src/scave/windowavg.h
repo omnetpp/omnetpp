@@ -21,6 +21,7 @@
 #include "commonnodes.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 /**
@@ -112,6 +113,7 @@ class SCAVE_API TimeWindowAverageNodeType : public FilterNodeType
 };
 
 
+} // namespace scave
 NAMESPACE_END
 
 

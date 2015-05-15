@@ -25,6 +25,7 @@
 #include "nodetype.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 /**
@@ -66,6 +67,7 @@ class SCAVE_API XYPlotNodeType : public NodeType
         virtual Port *getPort(Node *node, const char *portname) const override;
 };
 
+} // namespace scave
 NAMESPACE_END
 
 

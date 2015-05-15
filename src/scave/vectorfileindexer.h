@@ -22,6 +22,7 @@
 #include "resultfilemanager.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 /**
  * Generate an index file (.vci) for an output vector file (.vec)
@@ -35,6 +36,7 @@ class SCAVE_API VectorFileIndexer
         void rebuildVectorFile(const char *filename, IProgressMonitor *monitor = nullptr);
 };
 
+} // namespace scave
 NAMESPACE_END
 
 

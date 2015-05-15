@@ -25,6 +25,7 @@
 #include "commonnodes.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 class CompoundFilterType;
@@ -148,6 +149,7 @@ class SCAVE_API CompoundFilterType : public FilterNodeType
 };
 
 
+} // namespace scave
 NAMESPACE_END
 
 

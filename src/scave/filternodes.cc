@@ -24,6 +24,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 bool NopNode::isReady() const
@@ -1169,5 +1170,6 @@ void SubtractFirstValueNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, 
         attrs["type"] = "double";
 }
 
+} // namespace scave
 NAMESPACE_END
 

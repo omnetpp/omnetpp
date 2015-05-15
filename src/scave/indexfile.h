@@ -26,6 +26,7 @@
 #include "statistics.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 /**
  * Data of one block stored in the index file.
@@ -339,6 +340,7 @@ class SCAVE_API IndexFileWriter
         void closeFile();
 };
 
+} // namespace scave
 NAMESPACE_END
 
 

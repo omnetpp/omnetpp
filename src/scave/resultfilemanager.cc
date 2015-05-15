@@ -50,6 +50,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace scave {
 
 ResultItem& ResultItem::operator=(const ResultItem &rhs)
 {
@@ -1662,5 +1663,6 @@ const char *ResultFileManager::getRunAttribute(ID id, const char *attribute) con
     return getItem(id).fileRunRef->runRef->getAttribute(attribute);
 }
 
+} // namespace scave
 NAMESPACE_END
 

@@ -31,6 +31,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace scave {
 
 static bool serialLess(const Block &first, const Block &second)
 {
@@ -586,5 +587,6 @@ void IndexFileWriter::closeFile()
     }
 }
 
+} // namespace scave
 NAMESPACE_END
 

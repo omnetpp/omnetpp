@@ -18,6 +18,7 @@
 #include "scaveexception.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 ResultFileFormatException::ResultFileFormatException(const char *message, const char *file, int64_t line, file_offset_t offset)
@@ -33,5 +34,6 @@ ResultFileFormatException::ResultFileFormatException(const char *message, const 
     errormsg = msg.str();
 }
 
+} // namespace scave
 NAMESPACE_END
 

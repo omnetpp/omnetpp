@@ -30,6 +30,7 @@ using namespace std;
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 ResultFileManager *DataSorter::tmpResultFileMgr;
@@ -598,5 +599,6 @@ IDVectorVector DataSorter::prepareCopyToClipboard(const IDList& idlist)
     return vv;
 }
 
+} // namespace scave
 NAMESPACE_END
 

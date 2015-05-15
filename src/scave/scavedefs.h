@@ -23,6 +23,7 @@
 #include "omnetpp/platdep/platdefs.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 #if defined(SCAVE_EXPORT)
 #  define SCAVE_API OPP_DLLEXPORT
@@ -52,6 +53,7 @@ typedef int64_t eventnumber_t;
 enum InterpolationMode { UNSPECIFIED, NONE, SAMPLE_HOLD, BACKWARD_SAMPLE_HOLD, LINEAR };
 
 
+} // namespace scave
 NAMESPACE_END
 
 

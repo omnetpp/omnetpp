@@ -21,6 +21,7 @@
 #include "scaveutils.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 using namespace OPP::common;
 
@@ -134,5 +135,6 @@ void ExpressionFilterNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*
     attrs["type"] = "double";
 }
 
+} // namespace scave
 NAMESPACE_END
 

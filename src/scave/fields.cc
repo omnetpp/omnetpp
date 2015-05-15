@@ -27,6 +27,7 @@ using namespace std;
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace scave {
 
 /*----------------------------------------
  *            ResultItemAttribute
@@ -215,5 +216,6 @@ bool ResultItemFields::less(const ResultItem &d1, const ResultItem &d2) const
     return false; // ==
 }
 
+} // namespace scave
 NAMESPACE_END
 

@@ -27,6 +27,7 @@ using namespace std;
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 VectorFileReaderNode::VectorFileReaderNode(const char *fileName, size_t bufferSize) :
@@ -212,4 +213,5 @@ Port *VectorFileReaderNodeType::getPort(Node *node, const char *portname) const
     return node1->addVector(vector);
 }
 
+} // namespace scave
 NAMESPACE_END

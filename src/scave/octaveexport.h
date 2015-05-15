@@ -25,6 +25,7 @@
 #include "xyarray.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 /**
  * Exports data in Octave's "save -text" format. This format can be loaded
@@ -81,6 +82,7 @@ class SCAVE_API OctaveExport
         void close();
 };
 
+} // namespace scave
 NAMESPACE_END
 
 

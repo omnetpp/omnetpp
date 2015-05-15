@@ -25,6 +25,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace scave {
 #define CHECK(fprintf)    if ((fprintf)<0) throw opp_runtime_error("Cannot write file `%s'", fileName.c_str())
 
 
@@ -168,5 +169,6 @@ void OctaveExport::saveVectorY(const char *name, const char *description,
         CHECK(fprintf(f," %.*g\n", prec, vec->getY(i)));
 }
 
+} // namespace scave
 NAMESPACE_END
 

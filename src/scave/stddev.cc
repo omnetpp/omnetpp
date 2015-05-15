@@ -21,6 +21,7 @@
 #include "stddev.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 StddevNode::StddevNode()
@@ -115,5 +116,6 @@ Node *StddevNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
+} // namespace scave
 NAMESPACE_END
 

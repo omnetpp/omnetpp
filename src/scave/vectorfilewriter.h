@@ -24,6 +24,7 @@
 #include "resultfilemanager.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 /**
  * Consumer node which writes an output vector file.
@@ -74,6 +75,7 @@ class SCAVE_API VectorFileWriterNodeType : public NodeType
         virtual Port *getPort(Node *node, const char *portname) const override;
 };
 
+} // namespace scave
 NAMESPACE_END
 
 

@@ -26,6 +26,7 @@ using namespace std;
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace scave {
 
 #define LL  INT64_PRINTF_FORMAT
 
@@ -198,5 +199,6 @@ Port *IndexedVectorFileReaderNodeType::getPort(Node *node, const char *portname)
     return node1->addVector(vector);
 }
 
+} // namespace scave
 NAMESPACE_END
 

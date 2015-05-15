@@ -30,6 +30,7 @@
 #include "datasorter.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 typedef std::vector<std::string> StringVector;
 
@@ -363,6 +364,7 @@ class SCAVE_API ExporterFactory
         static ScaveExport *createExporter(const std::string format);
 };
 
+} // namespace scave
 NAMESPACE_END
 
 

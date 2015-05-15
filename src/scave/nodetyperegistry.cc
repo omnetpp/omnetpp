@@ -38,6 +38,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace scave {
 
 NodeTypeRegistry *NodeTypeRegistry::inst;
 
@@ -187,5 +188,6 @@ void NodeTypeRegistry::parseFilterSpec(const char *filterSpec, std::string& name
         args.push_back(token);
 }
 
+} // namespace scave
 NAMESPACE_END
 

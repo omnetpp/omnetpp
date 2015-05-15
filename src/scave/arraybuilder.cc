@@ -21,6 +21,7 @@
 #include "arraybuilder.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 ArrayBuilderNode::ArrayBuilderNode()
@@ -162,5 +163,6 @@ Node *ArrayBuilderNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
+} // namespace scave
 NAMESPACE_END
 

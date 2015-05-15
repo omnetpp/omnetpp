@@ -18,6 +18,7 @@
 #include "channel.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 Channel::Channel()
@@ -57,5 +58,6 @@ void Channel::write(Datum *a, int n)
         buffer.push_back(a[i]);
 }
 
+} // namespace scave
 NAMESPACE_END
 

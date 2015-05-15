@@ -27,6 +27,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace scave {
 
 #define LL  INT64_PRINTF_FORMAT
 #define VECTOR_FILE_VERSION 2
@@ -523,5 +524,6 @@ Port *IndexedVectorFileWriterNodeType::getPort(Node *node, const char *portname)
     return node1->addVector(vectorId, moduleName, name, columns);
 }
 
+} // namespace scave
 NAMESPACE_END
 

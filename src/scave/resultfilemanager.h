@@ -38,6 +38,7 @@
 #endif
 
 NAMESPACE_BEGIN
+namespace scave {
 
 struct Run;
 struct ResultFile;
@@ -272,7 +273,7 @@ class SCAVE_API ResultFileManager
 
     ComputedIDCache computedIDCache;
 #ifdef THREADED
-    ReentrantReadWriteLock lock;
+    OPP::common::ReentrantReadWriteLock lock;
 #endif
 
     struct sParseContext
@@ -350,6 +351,7 @@ class SCAVE_API ResultFileManager
     ~ResultFileManager();
 
 #ifdef THREADED
+    typedef OPP::common::ILock ILock;
     ILock& getReadLock() { return lock.readLock(); }
     ILock& getWriteLock() { return lock.writeLock(); }
     ILock& getReadLock() const { return const_cast<ResultFileManager*>(this)->lock.readLock(); }
@@ -507,6 +509,7 @@ inline bool ResultFileManager::isStaleID(ID id) const
     return fileList.at(_fileid(id)) == nullptr;
 }
 
+} // namespace scave
 NAMESPACE_END
 
 

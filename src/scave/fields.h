@@ -29,6 +29,7 @@
 #include "scaveutils.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 class SCAVE_API ResultItemField
@@ -241,6 +242,7 @@ struct IDFieldsLess : public std::binary_function<ID,ID,bool>
 };
 #endif
 
+} // namespace scave
 NAMESPACE_END
 
 

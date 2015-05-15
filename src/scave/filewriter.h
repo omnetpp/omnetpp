@@ -22,6 +22,7 @@
 #include "commonnodes.h"
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 /**
@@ -54,6 +55,7 @@ class SCAVE_API FileWriterNodeType : public SingleSinkNodeType
 };
 
 
+} // namespace scave
 NAMESPACE_END
 
 

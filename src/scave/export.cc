@@ -29,6 +29,7 @@ using namespace std;
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace scave {
 
 //XXX unfortunately, VC8.0 doesn't like the following lines, so Column needs to be fully qualified in the source...
 //using DataTable::Column;
@@ -1031,5 +1032,6 @@ ScaveExport *ExporterFactory::createExporter(const string format)
         return nullptr;
 }
 
+} // namespace scave
 NAMESPACE_END
 

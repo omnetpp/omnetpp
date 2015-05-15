@@ -23,6 +23,7 @@
 #include "scavedefs.h" // int64_t
 
 NAMESPACE_BEGIN
+namespace scave {
 
 class ResultFileManager;
 
@@ -118,6 +119,7 @@ class SCAVE_API IDList
         void fromByteArray(char *array, int n);
 };
 
+} // namespace scave
 NAMESPACE_END
 
 

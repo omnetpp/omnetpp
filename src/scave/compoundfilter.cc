@@ -24,6 +24,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace scave {
 
 
 bool CompoundFilterType::Subfilter::operator==(const CompoundFilterType::Subfilter& other) const
@@ -212,5 +213,6 @@ void CompoundFilterType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/S
     }
 }
 
+} // namespace scave
 NAMESPACE_END
 
