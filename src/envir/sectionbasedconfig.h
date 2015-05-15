@@ -45,7 +45,7 @@ class Scenario;
 class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
 {
   private:
-    typedef OPP::common::CommonStringPool CommonStringPool;
+    typedef OPP::common::StringPool StringPool;
     typedef OPP::common::PatternMatcher PatternMatcher;
 
   private:

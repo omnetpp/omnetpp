@@ -32,7 +32,7 @@ namespace common {
 #define E_ECANTCAST   "Cannot cast to %s"
 #define E_DIMLESS     "Error in expression: `%s': argument(s) must be dimensionless"
 
-CommonStringPool Expression::Elem::stringPool/*("Expression::Elem::stringPool")*/;
+StringPool Expression::Elem::stringPool;
 
 // should be member of Elem, but the VC++ 9.0 linker disagrees
 void Expression::Elem_eq(Elem& e, const Elem& other)

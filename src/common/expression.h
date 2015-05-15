@@ -76,7 +76,7 @@ class COMMON_API Expression
         //  - functor
         //
         enum Type {UNDEF, BOOL, DBL, STR, FUNCTOR, OP};
-        static CommonStringPool stringPool;
+        static StringPool stringPool;
       private:
         Type type;
         union {

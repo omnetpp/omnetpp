@@ -96,7 +96,7 @@ double cNEDValue::parseQuantity(const char *str, std::string& outActualUnit)
 
 const char *cNEDValue::getPooled(const char *s)
 {
-    static CommonStringPool stringPool; // non-refcounted
+    static StringPool stringPool; // non-refcounted
     return stringPool.get(s);
 }
 

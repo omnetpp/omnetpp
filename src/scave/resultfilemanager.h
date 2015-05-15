@@ -262,13 +262,13 @@ class SCAVE_API ResultFileManager
     FileRunList fileRunList;
 
     // module names and variable names are stringpooled to conserve space
-    StringPool moduleNames;
-    StringPool names;
-    StringPool classNames; // currently not used
+    ScaveStringPool moduleNames;
+    ScaveStringPool names;
+    ScaveStringPool classNames; // currently not used
 
     ResultFile *computedScalarFile; // this computed file contains all computed scalars
-    StringPool computedModuleNames; // computed modules, cleared when the computed scalar file is unloaded
-    StringPool computedScalarNames; // computed scalar names, cleared when the computed scalar file is unloaded
+    ScaveStringPool computedModuleNames; // computed modules, cleared when the computed scalar file is unloaded
+    ScaveStringPool computedScalarNames; // computed scalar names, cleared when the computed scalar file is unloaded
 
     ComputedIDCache computedIDCache;
 #ifdef THREADED

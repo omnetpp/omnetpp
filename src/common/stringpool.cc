@@ -19,11 +19,11 @@
 NAMESPACE_BEGIN
 namespace common {
 
-CommonStringPool::CommonStringPool()
+StringPool::StringPool()
 {
 }
 
-CommonStringPool::~CommonStringPool()
+StringPool::~StringPool()
 {
     for (StringSet::iterator it = pool.begin(); it!=pool.end(); ++it)
         delete [] *it;
@@ -34,14 +34,14 @@ CommonStringPool::~CommonStringPool()
     //}
 }
 
-void CommonStringPool::clear()
+void StringPool::clear()
 {
     for (StringSet::iterator it = pool.begin(); it!=pool.end(); ++it)
         delete [] *it;
     pool.clear();
 }
 
-const char *CommonStringPool::get(const char *s)
+const char *StringPool::get(const char *s)
 {
     if (s==nullptr)
         return ""; // must not be nullptr because SWIG-generated code will crash!

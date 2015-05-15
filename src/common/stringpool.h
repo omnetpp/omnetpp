@@ -32,7 +32,7 @@ namespace common {
  * to be released. The downside is that they will only be deallocated in the
  * stringpool object's destructor.
  */
-class COMMON_API CommonStringPool
+class COMMON_API StringPool
 {
   protected:
     struct strless {
@@ -46,8 +46,8 @@ class COMMON_API CommonStringPool
     StringSet pool;
 
   public:
-    CommonStringPool();
-    ~CommonStringPool();
+    StringPool();
+    ~StringPool();
     const char *get(const char *s);
     void clear();
 };

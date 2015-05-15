@@ -40,7 +40,7 @@ void cResultListener::unsubscribedFrom(cResultFilter *prev)
 
 const char *cResultListener::getPooled(const char *s)
 {
-    static CommonStringPool namesPool;
+    static StringPool namesPool;
     return namesPool.get(s);
 }
 

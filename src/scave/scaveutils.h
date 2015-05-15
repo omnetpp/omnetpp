@@ -67,13 +67,13 @@ inline FlipArgs<Operation> flipArgs(const Operation& op)
     return FlipArgs<Operation>(op);
 }
 
-class StringPool
+class ScaveStringPool
 {
     private:
         std::set<std::string> pool;
         const std::string *lastInsertedPtr;
     public:
-        StringPool() : lastInsertedPtr(nullptr) {}
+        ScaveStringPool() : lastInsertedPtr(nullptr) {}
         const std::string *insert(const std::string& str);
         const std::string *find(const std::string& str) const;
         void clear() { lastInsertedPtr = nullptr; pool.clear(); }

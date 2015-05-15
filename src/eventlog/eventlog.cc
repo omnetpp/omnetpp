@@ -23,7 +23,7 @@ using namespace OPP::common;
 
 NAMESPACE_BEGIN
 
-CommonStringPool eventLogStringPool;
+StringPool eventLogStringPool;
 
 EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
 {

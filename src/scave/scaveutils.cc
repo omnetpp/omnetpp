@@ -118,7 +118,7 @@ std::string unquoteString(const char *str)
     return result;
 }
 
-const std::string *StringPool::insert(const std::string& str)
+const std::string *ScaveStringPool::insert(const std::string& str)
 {
         if (!lastInsertedPtr || *lastInsertedPtr!=str)
         {
@@ -128,7 +128,7 @@ const std::string *StringPool::insert(const std::string& str)
     return lastInsertedPtr;
 }
 
-const std::string *StringPool::find(const std::string& str) const
+const std::string *ScaveStringPool::find(const std::string& str) const
 {
         if (lastInsertedPtr && *lastInsertedPtr==str)
                 return lastInsertedPtr;
