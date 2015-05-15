@@ -25,6 +25,7 @@
 #include "ievent.h"
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 class IEventLog;
 
@@ -192,6 +193,7 @@ class EVENTLOG_API IEventLog
         void clearInternalState();
 };
 
+} // namespace eventlog
 NAMESPACE_END
 
 

@@ -24,6 +24,11 @@
 #include "omnetpp/platdep/platdefs.h"
 
 NAMESPACE_BEGIN
+namespace common { class FileReader; };
+NAMESPACE_END
+
+NAMESPACE_BEGIN
+namespace eventlog {
 
 
 #if defined(EVENTLOG_EXPORT)
@@ -59,8 +64,6 @@ inline int64_t abs64(int64_t a)
 
 using OPP::common::opp_runtime_error;
 using OPP::common::BigDecimal;
-
-namespace common { class FileReader; };
 using OPP::common::FileReader;
 
 typedef BigDecimal simtime_t;
@@ -112,6 +115,7 @@ enum TimelineMode {
     NONLINEAR
 };
 
+} // namespace eventlog
 NAMESPACE_END
 
 

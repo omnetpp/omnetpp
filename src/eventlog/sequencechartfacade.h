@@ -25,6 +25,7 @@
 #include "eventlogfacade.h"
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 /**
  * A class that makes it possible to extract info about events, without
@@ -104,7 +105,7 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
             simtime_t &simulationTimeDelta, double &timelineCoordinateDelta);
 };
 
+} // namespace eventlog
 NAMESPACE_END
-
 
 #endif

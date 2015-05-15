@@ -22,6 +22,7 @@
 #include "eventlogentryfactory.h"
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 char EventLogEntry::buffer[128];
 OPP::common::LineTokenizer EventLogEntry::tokenizer(32768);
@@ -262,4 +263,5 @@ const char *EventLogMessageEntry::getAsString(const char *attribute) const
         return nullptr;
 }
 
+} // namespace eventlog
 NAMESPACE_END

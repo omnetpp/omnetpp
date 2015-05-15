@@ -19,6 +19,7 @@
 #include "ieventlog.h"
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 
 IEventLog::IEventLog()
@@ -84,5 +85,6 @@ double IEventLog::getApproximatePercentageForEventNumber(eventnumber_t eventNumb
     }
 }
 
+} // namespace eventlog
 NAMESPACE_END
 

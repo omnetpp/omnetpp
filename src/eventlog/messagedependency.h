@@ -24,6 +24,7 @@
 #include "eventlogentries.h"
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 class IEvent;
 class IEventLog;
@@ -168,6 +169,7 @@ class EVENTLOG_API FilteredMessageDependency : public IMessageDependency
         virtual int getClassIndex() override { return 3; }
 };
 
+} // namespace eventlog
 NAMESPACE_END
 
 

@@ -24,6 +24,7 @@
 #include "messagedependency.h"
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 class FilteredEventLog;
 
@@ -113,6 +114,7 @@ class EVENTLOG_API FilteredEvent : public IEvent
         void pushNewFilteredMessageDependency(IMessageDependencyList *messageDependencies, FilteredMessageDependency::Kind kind, IMessageDependency *beginMessageDependency, IMessageDependency *endMessageDependency);
 };
 
+} // namespace eventlog
 NAMESPACE_END
 
 

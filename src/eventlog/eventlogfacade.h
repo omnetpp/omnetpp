@@ -21,6 +21,7 @@
 #include "ieventlog.h"
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 #define PTR(ptr) if (ptr == 0) throw opp_runtime_error("nullptr ptr exception");
 #define IEVENT_PTR(ptr) PTR(ptr) Assert(dynamic_cast<IEvent *>((IEvent *)ptr));
@@ -104,6 +105,7 @@ class EVENTLOG_API EventLogFacade
         FilteredMessageDependency::Kind FilteredMessageDependency_getKind(ptr_t ptr);
 };
 
+} // namespace eventlog
 NAMESPACE_END
 
 

@@ -28,6 +28,7 @@
 #include "eventlogdefs.h"
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 /**
  * Allows random access of an event log file, i.e. positioning on arbitrary event numbers and simulation times.
@@ -159,6 +160,7 @@ class EVENTLOG_API EventLogIndex
         void dump();
 };
 
+} // namespace eventlog
 NAMESPACE_END
 
 #endif

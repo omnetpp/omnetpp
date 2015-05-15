@@ -18,6 +18,7 @@
 #include "ievent.h"
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 IEvent::IEvent()
 {
@@ -72,5 +73,6 @@ void IEvent::unlinkNeighbourEvents(IEvent *event)
         unlinkEvents(event, event->nextEvent);
 }
 
+} // namespace eventlog
 NAMESPACE_END
 

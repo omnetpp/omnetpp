@@ -23,6 +23,7 @@
 #include "messagedependency.h"
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 /**************************************************/
 
@@ -323,5 +324,6 @@ void FilteredMessageDependency::print(FILE *file)
     endMessageDependency->print(file);
 }
 
+} // namespace eventlog
 NAMESPACE_END
 

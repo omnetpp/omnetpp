@@ -22,6 +22,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 StringPool eventLogStringPool;
 
@@ -550,4 +551,5 @@ std::vector<MessageEntry *> EventLog::getMessageEntriesWithPreviousEventNumber(e
     }
 }
 
+} // namespace eventlog
 NAMESPACE_END

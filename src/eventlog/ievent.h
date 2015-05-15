@@ -23,6 +23,7 @@
 #include "messagedependency.h"
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 class EVENTLOG_API IEvent
 {
@@ -140,6 +141,7 @@ class EVENTLOG_API IEvent
         void clearInternalState();
 };
 
+} // namespace eventlog
 NAMESPACE_END
 
 

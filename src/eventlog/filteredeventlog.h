@@ -27,6 +27,7 @@
 #include "filteredevent.h"
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 /**
  * This is a "view" of the EventLog, including only a subset of events and their dependencies. This class
@@ -210,6 +211,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         bool isAncestorModuleCreatedEntry(ModuleCreatedEntry *ancestor, ModuleCreatedEntry *descendant);
 };
 
+} // namespace eventlog
 NAMESPACE_END
 
 

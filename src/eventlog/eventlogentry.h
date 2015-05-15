@@ -26,6 +26,7 @@
 #include "eventlogdefs.h"
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 class Event;
 class EventLog;
@@ -108,6 +109,7 @@ class EVENTLOG_API EventLogMessageEntry : public EventLogEntry
         virtual const char *getAsString(const char *attribute) const override;
 };
 
+} // namespace eventlog
 NAMESPACE_END
 
 

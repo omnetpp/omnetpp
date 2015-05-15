@@ -20,6 +20,7 @@
 #include "eventlogentries.h"
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 class EVENTLOG_API EventLogEntryFactory
 {
@@ -27,6 +28,7 @@ class EVENTLOG_API EventLogEntryFactory
       EventLogTokenBasedEntry * parseEntry(Event *event, int index, char **tokens, int numTokens);
 };
 
+} // namespace eventlog
 NAMESPACE_END
 
 

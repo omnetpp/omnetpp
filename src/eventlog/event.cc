@@ -24,6 +24,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 Event::Event(EventLog *eventLog)
 {
@@ -371,5 +372,6 @@ IMessageDependencyList *Event::getConsequences()
     return consequences;
 }
 
+} // namespace eventlog
 NAMESPACE_END
 

@@ -19,6 +19,7 @@
 #include "filteredeventlog.h"
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
 {
@@ -733,5 +734,6 @@ bool FilteredEventLog::isAncestorModuleCreatedEntry(ModuleCreatedEntry *ancestor
     return false;
 }
 
+} // namespace eventlog
 NAMESPACE_END
 

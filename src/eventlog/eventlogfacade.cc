@@ -24,6 +24,7 @@
 #include "eventlogfacade.h"
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 EventLogFacade::EventLogFacade(IEventLog *eventLog)
 {
@@ -308,5 +309,6 @@ FilteredMessageDependency::Kind EventLogFacade::FilteredMessageDependency_getKin
     return ((FilteredMessageDependency*)ptr)->getKind();
 }
 
+} // namespace eventlog
 NAMESPACE_END
 

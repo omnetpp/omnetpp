@@ -27,6 +27,7 @@
 #include "messagedependency.h"
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 class EventLog;
 
@@ -110,6 +111,7 @@ class EVENTLOG_API Event : public IEvent
         void deleteAllocatedObjects();
 };
 
+} // namespace eventlog
 NAMESPACE_END
 
 

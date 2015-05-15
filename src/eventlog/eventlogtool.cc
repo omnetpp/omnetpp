@@ -26,6 +26,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 class Options
 {
@@ -449,9 +450,10 @@ void parseStringTokens(std::vector<std::string> &parameter, char *str)
         parameter.push_back((char *)eventLogStringPool.get(tokens[j]));
 }
 
+} // namespace eventlog
 NAMESPACE_END
 
-USING_NAMESPACE
+using namespace OPP::eventlog;
 
 int main(int argc, char **argv)
 {

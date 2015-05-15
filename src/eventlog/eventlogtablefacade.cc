@@ -21,6 +21,7 @@
 #include "eventlogtablefacade.h"
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 #define LL  INT64_PRINTF_FORMAT
 
@@ -386,5 +387,6 @@ eventnumber_t EventLogTableFacade::getApproximateNumberOfEntries()
     return approximateNumberOfEntries;
 }
 
+} // namespace eventlog
 NAMESPACE_END
 

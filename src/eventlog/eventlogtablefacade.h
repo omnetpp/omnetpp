@@ -23,6 +23,7 @@
 #include "eventlogfacade.h"
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 enum EventLogTableFilterMode {
     ALL_ENTRIES,
@@ -84,6 +85,7 @@ class EVENTLOG_API EventLogTableFacade : public EventLogFacade
         void clearInternalState();
 };
 
+} // namespace eventlog
 NAMESPACE_END
 
 

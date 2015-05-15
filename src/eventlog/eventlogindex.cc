@@ -23,6 +23,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 #define LL INT64_PRINTF_FORMAT
 
@@ -633,5 +634,6 @@ void EventLogIndex::dump()
         printf("  %.*g --> offset %" LL "d (0x%" LL "x)\n", 12, it->first.dbl(), it->second.beginOffset, it->second.beginOffset);
 }
 
+} // namespace eventlog
 NAMESPACE_END
 

@@ -28,6 +28,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(eventLog)
 {
@@ -627,5 +628,6 @@ std::vector<int> SequenceChartFacade::getApproximateMessageDependencyCountAdjace
     return adjacencyMatrix;
 }
 
+} // namespace eventlog
 NAMESPACE_END
 

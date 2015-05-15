@@ -28,6 +28,7 @@
 #include "eventlogindex.h"
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 using OPP::common::FileReader;
 
@@ -136,6 +137,7 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         void parseKeyframes();
 };
 
+} // namespace eventlog
 NAMESPACE_END
 
 

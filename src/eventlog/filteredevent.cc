@@ -20,6 +20,7 @@
 #include "filteredeventlog.h"
 
 NAMESPACE_BEGIN
+namespace eventlog {
 
 static FilteredMessageDependency::Kind getMessageDependencyKind(IMessageDependency *messageDependency)
 {
@@ -336,5 +337,6 @@ void FilteredEvent::pushNewFilteredMessageDependency(IMessageDependencyList *mes
     messageDependencies->push_back(newMessageDependency);
 }
 
+} // namespace eventlog
 NAMESPACE_END
 
