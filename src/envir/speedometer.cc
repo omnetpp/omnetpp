@@ -19,6 +19,7 @@
 #include "speedometer.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 
 Speedometer::Speedometer()
@@ -107,5 +108,6 @@ double Speedometer::getSimSecPerSec()
     return lastIntervalSimsecPerSec;
 }
 
+} // namespace envir
 NAMESPACE_END
 

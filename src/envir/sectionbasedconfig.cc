@@ -36,6 +36,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace envir {
 
 //XXX error messages (exceptions) should contain file/line info!
 //XXX make sure quoting "$\{" works!
@@ -1393,5 +1394,6 @@ void SectionBasedConfiguration::dump() const
         printf("  %s = %s\n", wildcardSuffixGroup.entries[i].key.c_str(), wildcardSuffixGroup.entries[i].value.c_str());
 }
 
+} // namespace envir
 NAMESPACE_END
 

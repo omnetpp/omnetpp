@@ -17,7 +17,6 @@
 #ifndef __OMNETPP_INSPECTOR_H
 #define __OMNETPP_INSPECTOR_H
 
-#include "envir/envirbase.h"
 #include "tkutil.h"
 
 NAMESPACE_BEGIN

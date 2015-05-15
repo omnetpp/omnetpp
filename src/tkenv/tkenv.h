@@ -34,6 +34,8 @@ class GenericObjectInspector;
 class LogInspector;
 class ModuleInspector;
 
+using namespace envir;
+
 namespace common { class MatchExpression; };
 
 #define MAX_CLASSNAME  100
@@ -52,7 +54,7 @@ enum StripNamespace
 	STRIPNAMESPACE_ALL
 };
 
-struct TkenvOptions : public EnvirOptions
+struct TkenvOptions : public OPP::envir::EnvirOptions
 {
     TkenvOptions();
     size_t extraStack;        // per-module extra stack for activity() modules
@@ -91,7 +93,7 @@ struct TkenvOptions : public EnvirOptions
 /**
  * A Tcl/Tk-based user interface.
  */
-class TKENV_API Tkenv : public EnvirBase
+class TKENV_API Tkenv : public OPP::envir::EnvirBase
 {
    public:
       //

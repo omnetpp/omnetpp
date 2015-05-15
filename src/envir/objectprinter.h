@@ -28,8 +28,10 @@ NAMESPACE_BEGIN
 class cClassDescriptor;
 class cObject;
 
+namespace envir {
+
 /**
- *
+ * Controls recursion depth in OpbjectPrinter.
  */
 enum ObjectPrinterRecursionControl {
     SKIP,      // don't print this field
@@ -110,6 +112,7 @@ class ENVIR_API ObjectPrinter
         bool matchesObjectField(cObject *object, int fieldIndex);
 };
 
+} // namespace envir
 NAMESPACE_END
 
 

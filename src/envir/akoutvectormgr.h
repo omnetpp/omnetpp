@@ -28,6 +28,7 @@
 #include "fileoutvectormgr.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 
 /**
@@ -83,6 +84,7 @@ class ENVIR_API cAkOutputVectorManager : public cFileOutputVectorManager
 };
 
 #endif
+} // namespace envir
 NAMESPACE_END
 
 

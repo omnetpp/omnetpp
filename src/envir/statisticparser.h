@@ -23,6 +23,7 @@
 #include "envirdefs.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 
 class FilterOrRecorderReference;
@@ -75,6 +76,7 @@ class ENVIR_API StatisticRecorderParser
     void parse(const SignalSource& source, const char *recordingMode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName, cProperty *attrsProperty);
 };
 
+} // namespace envir
 NAMESPACE_END
 
 #endif

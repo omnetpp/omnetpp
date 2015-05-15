@@ -22,6 +22,7 @@
 #include "envirdefs.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 /**
  * Collects and writes the run attributes and parameters.
@@ -40,6 +41,7 @@ struct RunData {
    void writeRunData(FILE *f, opp_string fname);
 };
 
+} // namespace envir
 NAMESPACE_END
 
 #endif

@@ -22,6 +22,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace envir {
 
 MatchableFieldAdapter::MatchableFieldAdapter(cObject *object, int fieldIndex)
 {
@@ -66,5 +67,6 @@ const char *MatchableFieldAdapter::getAsString(const char *attribute) const
         return nullptr;
 }
 
+} // namespace envir
 NAMESPACE_END
 

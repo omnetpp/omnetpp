@@ -46,6 +46,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace envir {
 
 Register_GlobalConfigOption(CFGID_LOAD_LIBS, "load-libs", CFG_FILENAMES, "", "A space-separated list of dynamic libraries to be loaded on startup. The libraries should be given without the `.dll' or `.so' suffix -- that will be automatically appended.");
 Register_GlobalConfigOption(CFGID_CONFIGURATION_CLASS, "configuration-class", CFG_STRING, "", "Part of the Envir plugin mechanism: selects the class from which all configuration information will be obtained. This option lets you replace omnetpp.ini with some other implementation, e.g. database input. The simulation program still has to bootstrap from an omnetpp.ini (which contains the configuration-class setting). The class should implement the cConfigurationEx interface.");
@@ -280,5 +281,6 @@ void env_dummy_function() {
 #endif
 }
 
+} // namespace envir
 NAMESPACE_END
 

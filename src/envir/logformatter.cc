@@ -26,6 +26,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace envir {
 
 LogFormatter::LogFormatter(const char *format)
 {
@@ -324,4 +325,5 @@ void LogFormatter::resetAdaptiveTabs()
         adaptiveTabColumns[i] = 0;
 }
 
+} // namespace envir
 NAMESPACE_END

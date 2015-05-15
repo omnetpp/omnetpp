@@ -35,6 +35,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace envir {
 
 Register_Class(cFileOutputVectorManager);
 
@@ -216,5 +217,6 @@ void cFileOutputVectorManager::flush()
         fflush(f);
 }
 
+} // namespace envir
 NAMESPACE_END
 

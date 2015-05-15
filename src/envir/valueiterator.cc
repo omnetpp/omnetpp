@@ -30,7 +30,7 @@ using namespace std;
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
-
+namespace envir {
 
 inline const char* getTypeName(char type)
 {
@@ -98,7 +98,7 @@ struct Resolver : public opp_substitutevariables_resolver
     const ValueIterator::VariableMap& map;
     Resolver(const ValueIterator::VariableMap& map) : map(map) {}
     virtual bool isVariableNameChar(char c) override {
-        return OPP::isVariableNameChar(c);
+        return OPP::envir::isVariableNameChar(c);
     }
     virtual std::string operator()(const std::string& name) override {
         ValueIterator::VariableMap::const_iterator it = map.find(name);
@@ -359,5 +359,6 @@ void ValueIterator::dump() const
     printf(".\n");
 }
 
+} // namespace envir
 NAMESPACE_END
 

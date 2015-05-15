@@ -18,6 +18,7 @@
 #include "appreg.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 cGlobalRegistrationList omnetapps("omnetapps");
 
@@ -37,5 +38,6 @@ cOmnetAppRegistration *cOmnetAppRegistration::chooseBest()
     return best;
 }
 
+} // namespace envir
 NAMESPACE_END
 

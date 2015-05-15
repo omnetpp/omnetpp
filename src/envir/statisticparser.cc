@@ -20,6 +20,7 @@
 #include "statisticparser.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 using namespace OPP::common;
 
@@ -510,5 +511,6 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
     return result; // if makeRecorder=true, we return a nullptr SignalSource (no chaining possible)
 }
 
+} // namespace envir
 NAMESPACE_END
 

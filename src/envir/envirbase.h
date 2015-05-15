@@ -40,7 +40,6 @@
 
 NAMESPACE_BEGIN
 
-class cXMLDocCache;
 class cScheduler;
 class cModuleType;
 class cIListener;
@@ -49,6 +48,10 @@ class cParsimCommunications;
 class cParsimPartition;
 class cParsimSynchronizer;
 class cResultRecorder;
+
+namespace envir {
+
+class cXMLDocCache;
 class SignalSource;
 
 // assumed maximum length for getFullPath() string.
@@ -321,6 +324,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     void stoppedWithException(std::exception& e);
 };
 
+} // namespace envir
 NAMESPACE_END
 
 #endif

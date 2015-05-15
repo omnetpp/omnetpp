@@ -20,11 +20,12 @@
 
 #include <map>
 #include "envir/envirbase.h"
+#include "envir/speedometer.h"
 #include "omnetpp/csimulation.h"
 
 NAMESPACE_BEGIN
 
-class Speedometer;
+using namespace OPP::envir;
 
 struct CMDENV_API CmdenvOptions : public EnvirOptions
 {

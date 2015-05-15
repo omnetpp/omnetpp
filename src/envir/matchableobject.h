@@ -26,6 +26,7 @@ NAMESPACE_BEGIN
 
 class cClassDescriptor;
 
+namespace envir {
 
 /**
  * Wrapper around a cObject to make it matchable with MatchExpression.
@@ -51,6 +52,7 @@ class ENVIR_API MatchableObjectAdapter : public OPP::common::MatchExpression::Ma
     virtual const char *getAsString(const char *attribute) const override;
 };
 
+} // namespace envir
 NAMESPACE_END
 
 

@@ -23,6 +23,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace envir {
 
 Intervals::Intervals()
 {
@@ -84,5 +85,6 @@ bool Intervals::empty() const
     return !intervals || (intervals[0].startTime==0 && intervals[0].stopTime==0);
 }
 
+} // namespace envir
 NAMESPACE_END
 

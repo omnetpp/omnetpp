@@ -20,12 +20,14 @@
 #include "envirdefs.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 extern "C" ENVIR_API int evMain(int argc, char *argv[]);
+} // namespace envir
 NAMESPACE_END
 
 int main(int argc, char *argv[])
 {
     // call the main function and start the simulation
-    return OPP::evMain(argc, argv);
+    return OPP::envir::evMain(argc, argv);
 }
 

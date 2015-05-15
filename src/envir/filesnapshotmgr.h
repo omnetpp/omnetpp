@@ -24,6 +24,7 @@
 #include "envirdefs.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 /**
  * The default cISnapshotManager.
@@ -83,6 +84,7 @@ class ENVIR_API cFileSnapshotManager : public cISnapshotManager
     //@}
 };
 
+} // namespace envir
 NAMESPACE_END
 
 

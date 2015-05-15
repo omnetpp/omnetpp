@@ -27,6 +27,7 @@
 #include "envirdefs.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 //
 // Register_OmnetApp() macro, omnetapps list, cOmnetAppRegistration class.
@@ -72,6 +73,7 @@ class ENVIR_API cOmnetAppRegistration : public cOwnedObject
     static cOmnetAppRegistration *chooseBest();
 };
 
+} // namespace envir
 NAMESPACE_END
 
 #endif

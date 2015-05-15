@@ -28,6 +28,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace envir {
 
 using std::ostream;
 using std::ofstream;
@@ -77,5 +78,6 @@ const char *cFileSnapshotManager::getFileName() const
     return fname.c_str();
 }
 
+} // namespace envir
 NAMESPACE_END
 

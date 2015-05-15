@@ -22,6 +22,7 @@
 #include "envirdefs.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 /**
  * This class prints log messages to a stream based on a format string. The format string
@@ -193,6 +194,7 @@ class ENVIR_API LogFormatter
     void addPart(FormatDirective directive, char *textBegin, char *textEnd, bool conditional);
 };
 
+} // namespace envir
 NAMESPACE_END
 
 #endif

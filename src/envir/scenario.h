@@ -28,7 +28,7 @@
 #include "valueiterator.h"
 
 NAMESPACE_BEGIN
-
+namespace envir {
 
 /**
  * Helper class for SectionBasedConfiguration: Resolves iterations in a scenario.
@@ -123,6 +123,7 @@ class ENVIR_API Scenario
     std::string str() const;
 };
 
+} // namespace envir
 NAMESPACE_END
 
 

@@ -25,6 +25,7 @@
 #include "envirdefs.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 /**
  * Low-level inifile reading, including the resolution of includes.
@@ -94,6 +95,7 @@ class ENVIR_API InifileReader : public cConfigurationReader
     //@}
 };
 
+} // namespace envir
 NAMESPACE_END
 
 

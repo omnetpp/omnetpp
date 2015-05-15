@@ -26,6 +26,8 @@ NAMESPACE_BEGIN
 
 class cClassDescriptor;
 
+namespace envir {
+
 /**
  * Wrapper around a cObject field to make it matchable with MatchExpression.
  * The default attribute is the field name.
@@ -45,6 +47,7 @@ class ENVIR_API MatchableFieldAdapter : public OPP::common::MatchExpression::Mat
     virtual const char *getAsString(const char *attribute) const override;
 };
 
+} // namespace envir
 NAMESPACE_END
 
 #endif

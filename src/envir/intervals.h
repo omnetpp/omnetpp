@@ -23,6 +23,7 @@
 #include "envirdefs.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 /**
  * A list of simulation time intervals represented as an array of (starttime, stoptime)
@@ -48,6 +49,7 @@ class ENVIR_API Intervals
         bool empty() const;
 };
 
+} // namespace envir
 NAMESPACE_END
 
 #endif

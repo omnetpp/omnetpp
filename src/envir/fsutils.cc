@@ -24,6 +24,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace envir {
 
 std::string makeLibFileName(const char *libname, const char *prefix, const char *suffix)
 {
@@ -76,4 +77,5 @@ void loadExtensionLibrary(const char *lib)
     }
 }
 
+} // namespace envir
 NAMESPACE_END

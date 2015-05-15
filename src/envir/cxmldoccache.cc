@@ -26,6 +26,7 @@ using namespace OPP::common;
 using namespace OPP::nedxml;
 
 NAMESPACE_BEGIN
+namespace envir {
 
 
 // We depend on WITH_NETBUILDER because it brings the nedxml library which
@@ -252,5 +253,6 @@ void cXMLDocCache::flushParsedContentCache()
     contentCache.clear();
 }
 
+} // namespace envir
 NAMESPACE_END
 

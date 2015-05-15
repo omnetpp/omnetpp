@@ -147,6 +147,7 @@ print H
 #include \"omnetpp/simtime_t.h\"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 class EventLogWriter
 {
@@ -162,6 +163,7 @@ foreach $class (@classes)
 
 print H "};
 
+} // namespace envir
 NAMESPACE_END
 
 #endif
@@ -194,6 +196,7 @@ print CC "
 #define LL    INT64_PRINTF_FORMAT
 
 NAMESPACE_BEGIN
+namespace envir {
 
 using namespace OPP::common;
 
@@ -211,7 +214,10 @@ foreach $class (@classes)
    print CC makeMethodImpl($class,1) if (getEffectiveHasOpt($class));
 }
 
-print CC "NAMESPACE_END\n";
+print CC "
+} // namespace envir\n
+NAMESPACE_END
+";
 
 close(CC);
 

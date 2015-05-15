@@ -34,6 +34,8 @@ class cEvent;
 class cMessage;
 class cGate;
 
+namespace envir {
+
 /**
  * Responsible for writing the eventlog file.
  */
@@ -173,6 +175,7 @@ class ENVIR_API EventlogFileManager : public cISimulationLifecycleListener
     //@}
 };
 
+} // namespace envir
 NAMESPACE_END
 
 #endif

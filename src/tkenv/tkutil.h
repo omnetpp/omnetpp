@@ -87,7 +87,7 @@ class TKENV_API TclQuotedString
 /**
  * Find objects by full path, and optionally also matching class name and/or Id.
  */
-class TKENV_API cFindByPathVisitor : public cCollectObjectsVisitor
+class TKENV_API cFindByPathVisitor : public OPP::envir::cCollectObjectsVisitor
 {
   private:
     const char *fullPath;
@@ -122,11 +122,11 @@ bool isAPL();
 
 std::string getObjectIcon(Tcl_Interp *interp, cObject *object);
 
-void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor);
+void setObjectListResult(Tcl_Interp *interp, OPP::envir::cCollectObjectsVisitor *visitor);
 
 void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath);
 
-void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath);
+void feedCollectionIntoInspectorListbox(OPP::envir::cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath);
 
 int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep);
 

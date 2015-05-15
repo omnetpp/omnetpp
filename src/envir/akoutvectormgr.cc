@@ -32,6 +32,7 @@
 #include "akoutvectormgr.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 
 Register_Class(cAkOutputVectorManager);
@@ -97,6 +98,7 @@ bool cAkOutputVectorManager::record(void *vectorhandle, simtime_t t, double valu
     return cFileOutputVectorManager::record(vectorhandle, t, value);
 }
 
+} // namespace envir
 NAMESPACE_END
 
 #endif

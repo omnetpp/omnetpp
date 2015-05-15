@@ -28,6 +28,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace envir {
 
 
 #ifdef CHECK
@@ -93,5 +94,6 @@ void RunData::writeRunData(FILE *f, opp_string fname)
     CHECK(fprintf(f, "\n"));
 }
 
+} // namespace envir
 NAMESPACE_END
 

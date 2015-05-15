@@ -37,6 +37,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace envir {
 
 
 
@@ -226,5 +227,6 @@ void sortObjectsByShortTypeName(cObject **objs, int n)
     qsort(objs, n, sizeof(cObject*), qsort_cmp_by_shorttypename);
 }
 
+} // namespace envir
 NAMESPACE_END
 

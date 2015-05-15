@@ -19,6 +19,7 @@
 #include "matchableobject.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 MatchableObjectAdapter::MatchableObjectAdapter(DefaultAttribute attr, cObject *obj)
 {
@@ -107,5 +108,6 @@ const char *MatchableObjectAdapter::getAsString(const char *attribute) const
     return tmp.c_str();
 }
 
+} // namespace envir
 NAMESPACE_END
 

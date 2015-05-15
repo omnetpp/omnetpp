@@ -25,6 +25,7 @@
 #include "runattributes.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 /**
  * A cIOutputScalarManager that uses a line-oriented text file as output.
@@ -101,6 +102,7 @@ class ENVIR_API cFileOutputScalarManager : public cIOutputScalarManager
     //@}
 };
 
+} // namespace envir
 NAMESPACE_END
 
 #endif

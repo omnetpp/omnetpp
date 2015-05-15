@@ -25,6 +25,7 @@
 #include "envirdefs.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 
 /**
@@ -56,6 +57,7 @@ class ENVIR_API Speedometer
     double getSimSecPerSec();
 };
 
+} // namespace envir
 NAMESPACE_END
 
 #endif

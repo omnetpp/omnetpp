@@ -30,6 +30,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace envir {
 
 #define MAXIMUM_OBJECT_PRINTER_LEVEL 20
 
@@ -237,5 +238,6 @@ bool ObjectPrinter::matchesObjectField(cObject *object, int fieldIndex)
     return false;
 }
 
+} // namespace envir
 NAMESPACE_END
 

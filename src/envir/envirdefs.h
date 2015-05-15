@@ -24,6 +24,7 @@
 #include "common/exception.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 #if defined(ENVIR_EXPORT)
 #  define ENVIR_API OPP_DLLEXPORT
@@ -35,6 +36,7 @@ NAMESPACE_BEGIN
 
 using OPP::common::opp_runtime_error;
 
+} // namespace envir
 NAMESPACE_END
 
 #endif

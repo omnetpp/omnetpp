@@ -31,8 +31,9 @@ NAMESPACE_BEGIN
 
 namespace common { class PatternMatcher; };
 
-class Scenario;
+namespace envir {
 
+class Scenario;
 
 /**
  * Wraps a cConfigurationReader (usually an InifileReader), and presents
@@ -254,6 +255,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     //@}
 };
 
+} // namespace envir
 NAMESPACE_END
 
 

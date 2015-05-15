@@ -26,6 +26,7 @@
 #include "envirdefs.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 /**
  * Somewhat similar to getopt(), this class stores and parses command-line
@@ -113,6 +114,7 @@ class ENVIR_API ArgList
     char **getArgVector() const  {return argv;}
 };
 
+} // namespace envir
 NAMESPACE_END
 
 #endif

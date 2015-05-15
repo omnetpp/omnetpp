@@ -27,7 +27,6 @@
 #include "common/opp_ctype.h"
 #include "common/patternmatcher.h"
 #include "common/ver.h"
-#include "envir/visitor.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cmessageheap.h"
 #include "omnetpp/cregistrationlist.h"

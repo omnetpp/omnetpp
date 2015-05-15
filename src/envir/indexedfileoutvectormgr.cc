@@ -43,6 +43,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace envir {
 
 #define INDEX_FILE_VERSION 2
 #define LL  INT64_PRINTF_FORMAT
@@ -317,5 +318,6 @@ void cIndexedFileOutputVectorManager::writeBlockToIndexFile(Vector *vp)
     }
 }
 
+} // namespace envir
 NAMESPACE_END
 

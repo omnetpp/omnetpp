@@ -29,6 +29,7 @@
 #include "envirdefs.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 
 /**
@@ -88,6 +89,7 @@ class ENVIR_API cAkaroaRNG : public cRNG
     virtual double doubleRandIncl1();
 };
 
+} // namespace envir
 NAMESPACE_END
 
 #endif

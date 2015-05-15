@@ -22,6 +22,7 @@
 #include "envirdefs.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 /**
  * Utility function: dynamically loads a DLL (Windows) or shared object
@@ -33,6 +34,7 @@ NAMESPACE_BEGIN
  */
 ENVIR_API void loadExtensionLibrary(const char *lib);
 
+} // namespace envir
 NAMESPACE_END
 
 

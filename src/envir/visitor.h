@@ -26,6 +26,7 @@
 #include "matchableobject.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 
 /**
@@ -146,6 +147,7 @@ void ENVIR_API sortObjectsByName(cObject **objs, int n);
 void ENVIR_API sortObjectsByFullPath(cObject **objs, int n);
 void ENVIR_API sortObjectsByShortTypeName(cObject **objs, int n);
 
+} // namespace envir
 NAMESPACE_END
 
 

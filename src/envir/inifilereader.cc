@@ -30,6 +30,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace envir {
 
 
 #define ERRPREFIX  "Error at `%s' line %d: "
@@ -309,5 +310,6 @@ void InifileReader::dump() const
     }
 }
 
+} // namespace envir
 NAMESPACE_END
 

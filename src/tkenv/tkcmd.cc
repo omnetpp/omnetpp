@@ -50,6 +50,7 @@
 #include "inspectorfactory.h"
 
 using namespace OPP::common;
+using namespace OPP::envir;
 
 NAMESPACE_BEGIN
 

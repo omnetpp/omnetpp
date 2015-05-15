@@ -25,6 +25,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace envir {
 
 
 ArgList::ArgList()
@@ -137,5 +138,6 @@ const char *ArgList::argument(int k) const
     return (k>=0 && k<(int)params.size()) ? params[k].c_str() : nullptr;
 }
 
+} // namespace envir
 NAMESPACE_END
 

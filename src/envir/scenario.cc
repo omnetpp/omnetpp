@@ -27,6 +27,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace envir {
 
 
 //----
@@ -307,5 +308,6 @@ std::string Scenario::str() const
     return out.str();
 }
 
+} // namespace envir
 NAMESPACE_END
 

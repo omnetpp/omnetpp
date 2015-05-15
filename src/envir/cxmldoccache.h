@@ -28,6 +28,7 @@
 #include "envirdefs.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 /**
  * Reads and caches XML config files.
@@ -96,6 +97,7 @@ class ENVIR_API cXMLDocCache : public cObject
     virtual void flushParsedContentCache();
 };
 
+} // namespace envir
 NAMESPACE_END
 
 

@@ -37,6 +37,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace envir {
 
 #define SCALAR_FILE_VERSION 2
 #define DEFAULT_PRECISION  "14"
@@ -274,5 +275,6 @@ void cFileOutputScalarManager::flush()
 }
 
 
+} // namespace envir
 NAMESPACE_END
 

@@ -25,6 +25,7 @@
 #include "envirdefs.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 /**
  * Support class for parsing simulation scenarios. Given a sequence of
@@ -207,6 +208,7 @@ class ENVIR_API ValueIterator
     void dump() const;
 };
 
+} // namespace envir
 NAMESPACE_END
 
 

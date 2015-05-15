@@ -82,7 +82,9 @@
 typedef int (*intfunc_t)();
 
 NAMESPACE_BEGIN
+namespace envir {
 extern "C" int evMain(int argc, char *argv[]);
+} // namespace envir
 NAMESPACE_END
 
 std::string lastLoadLibError;  // contains the error message after calling oppLoadLibrary()
@@ -295,7 +297,7 @@ bool needsDebugSimkernel(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
     if (needsDebugSimkernel(argc, argv))
-        return OPP::evMain(argc, argv);
+        return OPP::envir::evMain(argc, argv);
     else
     {
         // The libs specified on the command line were compiled with release-mode simulation libraries

@@ -30,6 +30,7 @@
 #include "fileoutvectormgr.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 #define MIN_BUFFER_MEMORY    (1024*1024)
 #define DEFAULT_MEMORY_LIMIT "16MiB"
@@ -143,6 +144,7 @@ class ENVIR_API cIndexedFileOutputVectorManager : public cFileOutputVectorManage
     //@}
 };
 
+} // namespace envir
 NAMESPACE_END
 
 

@@ -30,6 +30,7 @@
 #include "akaroarng.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 
 Register_Class(cAkaroaRNG);
@@ -87,6 +88,7 @@ double cAkaroaRNG::doubleRandIncl1()
     return AkRandomReal();
 }
 
+} // namespace envir
 NAMESPACE_END
 
 #endif

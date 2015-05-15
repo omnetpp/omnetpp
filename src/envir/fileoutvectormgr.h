@@ -26,6 +26,7 @@
 #include "intervals.h"
 
 NAMESPACE_BEGIN
+namespace envir {
 
 
 /**
@@ -133,6 +134,7 @@ class ENVIR_API cFileOutputVectorManager : public cIOutputVectorManager
     //@}
 };
 
+} // namespace envir
 NAMESPACE_END
 
 #endif
