@@ -21,6 +21,7 @@
 #include "nedxmlparser.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 NEDElement *parseXML(const char *filename, NEDErrorStore *errors)
 {
@@ -37,4 +38,5 @@ NEDElement *parseXML(const char *filename, NEDErrorStore *errors)
     return sh.getTree();
 }
 
+} // namespace nedxml
 NAMESPACE_END

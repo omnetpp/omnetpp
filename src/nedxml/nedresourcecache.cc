@@ -32,6 +32,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 //TODO collect errors in a NEDErrorStore?
 
@@ -527,5 +528,6 @@ const std::vector<std::string>& NEDResourceCache::getTypeNames() const
     return nedTypeNames;
 }
 
+} // namespace nedxml
 NAMESPACE_END
 

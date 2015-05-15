@@ -23,6 +23,7 @@
 #include "xmlgenerator.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 using std::ostream;
 using std::endl;
@@ -162,4 +163,5 @@ void NEDXMLGenerator::doGenerate(ostream& out, NEDElement *node, int level)
     out << "</" << node->getTagName() << ">" << endl;
 }
 
+} // namespace nedxml
 NAMESPACE_END

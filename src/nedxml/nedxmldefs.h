@@ -21,6 +21,7 @@
 #include "omnetpp/platdep/platdefs.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 #if defined(NEDXML_EXPORT)
 #  define NEDXML_API OPP_DLLEXPORT
@@ -30,6 +31,7 @@ NAMESPACE_BEGIN
 #  define NEDXML_API
 #endif
 
+} // namespace nedxml
 NAMESPACE_END
 
 

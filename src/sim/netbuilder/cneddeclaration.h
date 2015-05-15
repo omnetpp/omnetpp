@@ -34,6 +34,8 @@ NAMESPACE_BEGIN
 
 namespace common { class PatternMatcher; };
 
+using namespace OPP::nedxml;
+
 /**
  * Extends NEDTypeInfo with property and cached expression storage,
  * suitable for the sim kernel (cDynamicModuleType/cDynamicChannelType).

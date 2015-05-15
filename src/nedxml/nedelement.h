@@ -29,6 +29,7 @@
 #include "nedxmldefs.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 
 /**
@@ -411,6 +412,7 @@ class NEDXML_API NEDElement
     //@}
 };
 
+} // namespace nedxml
 NAMESPACE_END
 
 

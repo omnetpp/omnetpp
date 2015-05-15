@@ -34,6 +34,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 #define MAGIC_PREFIX   "@expr@"  // note: must agree with ned2.lex
 
@@ -275,4 +276,5 @@ void NEDParser::error(const char *msg, int line)
     errors->addError(os.str().c_str(), "%s", msg);
 }
 
+} // namespace nedxml
 NAMESPACE_END

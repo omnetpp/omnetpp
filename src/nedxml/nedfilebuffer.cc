@@ -27,6 +27,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 //-----------------------------------------------------------
 
@@ -461,5 +462,6 @@ void NEDFileBuffer::trimSpaceAndComments(YYLTYPE& pos)
     // YYLTYPEs with trailing spaces/comments.
 }
 
+} // namespace nedxml
 NAMESPACE_END
 

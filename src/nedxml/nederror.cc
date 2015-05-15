@@ -24,6 +24,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 
 void NEDErrorStore::doAdd(NEDElement *context, const char *loc, int severity, const char *message)
@@ -172,4 +173,5 @@ void NEDInternalError(const char *file, int line, NEDElement *context, const cha
     //__asm int 3; //FIXME this windows-only
 }
 
+} // namespace nedxml
 NAMESPACE_END

@@ -21,6 +21,7 @@
 #include "nedelements.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 /**
  * Misc NED utilities
@@ -43,6 +44,7 @@ class NEDXML_API NEDTools
     static void splitToFiles(FilesElement *tree);
 };
 
+} // namespace nedxml
 NAMESPACE_END
 
 

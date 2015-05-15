@@ -24,10 +24,12 @@
 // misc bison/flex related stuff, shared among *.lex, *.y and nedparser.cc/h files
 //
 NAMESPACE_BEGIN
+namespace nedxml {
 
 class NEDElement;
 class NEDParser;
 
+} // namespace nedxml
 NAMESPACE_END
 
 #ifdef YYLTYPE
@@ -41,18 +43,20 @@ struct my_yyltype {
    char *text;
 };
 #define YYLTYPE  struct my_yyltype
-#define YYSTYPE  OPP::NEDElement*
+#define YYSTYPE  OPP::nedxml::NEDElement*
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 typedef struct {int li; int co;} LineColumn;
 extern LineColumn pos, prevpos;
 
+} // namespace nedxml
 NAMESPACE_END
 
-OPP::NEDElement *doParseNED2(OPP::NEDParser *p, const char *nedtext);
-OPP::NEDElement *doParseNED1(OPP::NEDParser *p, const char *nedtext);
-OPP::NEDElement *doParseMSG2(OPP::NEDParser *p, const char *nedtext);
+OPP::nedxml::NEDElement *doParseNED2(OPP::nedxml::NEDParser *p, const char *nedtext);
+OPP::nedxml::NEDElement *doParseNED1(OPP::nedxml::NEDParser *p, const char *nedtext);
+OPP::nedxml::NEDElement *doParseMSG2(OPP::nedxml::NEDParser *p, const char *nedtext);
 
 #endif
 

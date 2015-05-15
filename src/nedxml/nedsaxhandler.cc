@@ -21,6 +21,7 @@
 #include "nedexception.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 
 NEDSAXHandler::NEDSAXHandler(const char *fname, NEDErrorStore *e)
@@ -113,5 +114,6 @@ void NEDSAXHandler::endCdataSection()
     // ignore
 }
 
+} // namespace nedxml
 NAMESPACE_END
 

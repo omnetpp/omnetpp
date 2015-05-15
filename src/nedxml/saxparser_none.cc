@@ -20,6 +20,7 @@
 #include "saxparser.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 
 SAXParser::SAXParser()
@@ -55,5 +56,6 @@ int SAXParser::getCurrentLineNumber()
     return 0;
 }
 
+} // namespace nedxml
 NAMESPACE_END
 

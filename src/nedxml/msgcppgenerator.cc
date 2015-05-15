@@ -33,6 +33,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 using std::ostream;
 
@@ -2254,5 +2255,6 @@ MsgCppGenerator::ClassType MsgCppGenerator::getClassType(const std::string& s)
     return it != classType.end() ? it->second : UNKNOWN;
 }
 
+} // namespace nedxml
 NAMESPACE_END
 

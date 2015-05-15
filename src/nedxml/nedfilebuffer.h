@@ -20,6 +20,7 @@
 #include "nedparser.h"   // for YYLTYPE
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 /**
  * Used internally by NEDParser. Stores the full text of a NED file,
@@ -133,6 +134,7 @@ class NEDXML_API NEDFileBuffer
     void trimSpaceAndComments(YYLTYPE& pos);
 };
 
+} // namespace nedxml
 NAMESPACE_END
 
 

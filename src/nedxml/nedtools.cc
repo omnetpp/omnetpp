@@ -22,6 +22,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 
 void NEDTools::repairNEDElementTree(NEDElement *tree)
@@ -103,5 +104,6 @@ void NEDTools::splitToFiles(FilesElement *tree)
         tree->appendChild(tmpTree->removeChild(tmpTree->getFirstChild()));
 }
 
+} // namespace nedxml
 NAMESPACE_END
 

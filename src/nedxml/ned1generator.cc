@@ -25,6 +25,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 using std::ostream;
 
@@ -1167,4 +1168,5 @@ void NED1Generator::generateNedItem(NEDElement *node, const char *indent, bool i
     }
 }
 
+} // namespace nedxml
 NAMESPACE_END

@@ -26,6 +26,8 @@
 
 NAMESPACE_BEGIN
 
+using namespace OPP::nedxml;
+
 class cParImpl;
 
 /**

@@ -23,6 +23,7 @@
 #include "saxparser.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 
 /**
@@ -78,6 +79,7 @@ class NEDXML_API NEDSAXHandler : public SAXHandler
     //@}
 };
 
+} // namespace nedxml
 NAMESPACE_END
 
 

@@ -23,6 +23,7 @@
 #include "nedelements.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 /**
  * Simple front-end to NEDXMLGenerator.
@@ -93,6 +94,7 @@ class NEDXML_API NEDXMLGenerator
 
 };
 
+} // namespace nedxml
 NAMESPACE_END
 
 

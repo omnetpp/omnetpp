@@ -28,6 +28,7 @@
 #include "nederror.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 struct MsgCppGeneratorOptions
 {
@@ -239,6 +240,7 @@ class NEDXML_API MsgCppGenerator
     void generate(MsgFileElement *fileElement, const char *hFile, const char *ccFile);
 };
 
+} // namespace nedxml
 NAMESPACE_END
 
 

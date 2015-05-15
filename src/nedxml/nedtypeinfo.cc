@@ -28,6 +28,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 
 NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isInnerType, NEDElement *tree)
@@ -475,5 +476,6 @@ void NEDTypeInfo::checkComplianceToInterface(NEDTypeInfo *idecl)
     }
 }
 
+} // namespace nedxml
 NAMESPACE_END
 

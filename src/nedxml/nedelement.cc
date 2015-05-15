@@ -25,6 +25,7 @@
 #include "nedexception.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 using std::ostream;
 
@@ -347,5 +348,6 @@ NEDElementUserData *NEDElement::getUserData() const
     return userData;
 }
 
+} // namespace nedxml
 NAMESPACE_END
 

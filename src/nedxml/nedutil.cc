@@ -29,6 +29,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 static void renameTag(DisplayString& ds, const char *from, const char *to)
 {
@@ -234,5 +235,6 @@ bool NEDElementUtil::isNEDType(NEDElement *node)
            tag==NED_CHANNEL_INTERFACE || tag==NED_CHANNEL;
 }
 
+} // namespace nedxml
 NAMESPACE_END
 

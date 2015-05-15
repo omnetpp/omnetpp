@@ -24,6 +24,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 
 #define BUFLEN 1024
@@ -49,4 +50,5 @@ NEDException::NEDException(NEDElement *context, const char *messagefmt...) : std
         msg = message;
 }
 
+} // namespace nedxml
 NAMESPACE_END

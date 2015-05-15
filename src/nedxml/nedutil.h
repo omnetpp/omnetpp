@@ -28,6 +28,9 @@ NAMESPACE_BEGIN
 
 namespace common { class DisplayString; };
 
+namespace nedxml {
+
+
 class PropertyElement;
 class LiteralElement;
 
@@ -75,6 +78,7 @@ class NEDXML_API NEDElementUtil
     //@}
 };
 
+} // namespace nedxml
 NAMESPACE_END
 
 

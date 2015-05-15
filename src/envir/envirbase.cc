@@ -99,6 +99,7 @@
 #endif
 
 using namespace OPP::common;
+using namespace OPP::nedxml;
 
 NAMESPACE_BEGIN
 

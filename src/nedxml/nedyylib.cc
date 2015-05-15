@@ -26,6 +26,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 // this global var is shared by all lexers
 LineColumn pos, prevpos;
@@ -503,4 +504,5 @@ NEDElement *unaryMinus(NEDElement *node)
     return node;
 }
 
+} // namespace nedxml
 NAMESPACE_END

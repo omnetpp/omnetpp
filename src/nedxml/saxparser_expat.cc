@@ -23,6 +23,7 @@
 #include "saxparser.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 
 static bool hasDTD;
@@ -196,5 +197,6 @@ int SAXParser::getCurrentLineNumber()
     return XML_GetCurrentLineNumber(*(XML_Parser *)currentparser);
 }
 
+} // namespace nedxml
 NAMESPACE_END
 

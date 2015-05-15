@@ -21,6 +21,7 @@
 #include "nedvalidator.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 /**
  * Adds utility methods for DTD validation to NEDValidatorBase.
@@ -53,6 +54,7 @@ class NEDXML_API NEDDTDValidatorBase : public NEDValidatorBase
     NEDDTDValidatorBase(NEDErrorStore *e) : NEDValidatorBase(e) {}
 };
 
+} // namespace nedxml
 NAMESPACE_END
 
 

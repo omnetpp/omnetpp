@@ -89,6 +89,7 @@ void yyerror (const char *s);
 USING_NAMESPACE
 
 using namespace OPP::common;
+using namespace OPP::nedxml;
 
 static struct MSG2ParserState
 {

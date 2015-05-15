@@ -23,6 +23,7 @@
 #include "nedparser.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 #define NONREENTRANT_NED_PARSER(p) \
     struct Guard { \
@@ -105,6 +106,7 @@ inline YYLTYPE makeEmptyYYLTYPE() {
     return makeYYLTYPE(1,0,1,0);
 }
 
+} // namespace nedxml
 NAMESPACE_END
 
 

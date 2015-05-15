@@ -24,6 +24,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 
 void NEDDTDValidatorBase::checkSequence(NEDElement *node, int tags[], char mult[])
@@ -182,5 +183,6 @@ void NEDDTDValidatorBase::checkCommentAttribute(NEDElement *node, const char *at
     }
 }
 
+} // namespace nedxml
 NAMESPACE_END
 

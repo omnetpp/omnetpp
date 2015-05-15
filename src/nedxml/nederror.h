@@ -24,6 +24,7 @@
 #include "nedxmldefs.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 class NEDElement;
 
@@ -146,6 +147,7 @@ class NEDXML_API NEDErrorStore
 void NEDInternalError(const char *file, int line, NEDElement *context, const char *messagefmt, ...);
 
 
+} // namespace nedxml
 NAMESPACE_END
 
 

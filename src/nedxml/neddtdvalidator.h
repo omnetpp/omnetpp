@@ -24,6 +24,7 @@
 #include "neddtdvalidatorbase.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 /**
  * GENERATED CLASS. Validates a NEDElement tree by the DTD.
@@ -91,6 +92,7 @@ class NEDXML_API NEDDTDValidator : public NEDDTDValidatorBase
     //@}
 };
 
+} // namespace nedxml
 NAMESPACE_END
 
 #endif

@@ -25,6 +25,7 @@
 #include "nedtypeinfo.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 
 /**
@@ -210,6 +211,7 @@ class NEDXML_API NEDResourceCache
 
 };
 
+} // namespace nedxml
 NAMESPACE_END
 
 

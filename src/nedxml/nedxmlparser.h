@@ -22,6 +22,7 @@
 #include "nederror.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 /**
  * Simple front-end to NED XML parsing: invokes SAXParser with NEDSAXHandler.
@@ -30,6 +31,7 @@ NAMESPACE_BEGIN
  */
 NEDXML_API NEDElement *parseXML(const char *filename, NEDErrorStore *errors);
 
+} // namespace nedxml
 NAMESPACE_END
 
 

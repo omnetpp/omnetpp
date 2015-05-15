@@ -28,6 +28,8 @@
 
 NAMESPACE_BEGIN
 
+using namespace OPP::nedxml;
+
 class cModule;
 class cGate;
 class cChannel;

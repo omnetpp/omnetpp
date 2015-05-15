@@ -45,6 +45,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 using std::ofstream;
 using std::ifstream;
@@ -432,9 +433,10 @@ bool processListFile(const char *listfilename, bool istemplistfile, NEDErrorStor
     return true;
 }
 
+} // namespace nedxml
 NAMESPACE_END
 
-USING_NAMESPACE
+using namespace OPP::nedxml;
 
 int main(int argc, char **argv)
 {

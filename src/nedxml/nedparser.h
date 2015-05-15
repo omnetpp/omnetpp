@@ -23,6 +23,7 @@
 #include "nederror.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 class NEDFileBuffer;
 class NEDParser;
@@ -153,6 +154,7 @@ class NEDXML_API NEDParser
     NEDElement *parseMSGText(const char *nedtext, const char *fname=nullptr);
 };
 
+} // namespace nedxml
 NAMESPACE_END
 
 

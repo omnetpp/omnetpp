@@ -22,6 +22,7 @@
 #include "nederror.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 
 /**
@@ -162,6 +163,7 @@ class NEDXML_API NED1Generator
     //@}
 };
 
+} // namespace nedxml
 NAMESPACE_END
 
 

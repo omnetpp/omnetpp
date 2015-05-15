@@ -22,6 +22,7 @@
 #include "neddtdvalidator.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 void NEDDTDValidator::validateElement(FilesElement *node)
 {
@@ -550,5 +551,6 @@ void NEDDTDValidator::validateElement(UnknownElement *node)
     checkRequiredAttribute(node, "element");
 }
 
+} // namespace nedxml
 NAMESPACE_END
 

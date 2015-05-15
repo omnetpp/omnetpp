@@ -26,6 +26,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 
 NEDCrossValidator::NEDCrossValidator(bool parsedExpr, NEDResourceCache *res, NEDErrorStore *e)
@@ -445,5 +446,6 @@ void NEDCrossValidator::validateElement(UnknownElement *node)
 {
 }
 
+} // namespace nedxml
 NAMESPACE_END
 

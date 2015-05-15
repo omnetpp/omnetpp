@@ -24,6 +24,7 @@
 #include "nedvalidator.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 
 /**
@@ -120,6 +121,7 @@ class NEDXML_API NEDSyntaxValidator : public NEDValidatorBase
     //@}
 };
 
+} // namespace nedxml
 NAMESPACE_END
 
 

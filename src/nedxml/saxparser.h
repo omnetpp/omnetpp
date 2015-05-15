@@ -22,6 +22,7 @@
 #include "nedxmldefs.h"
 
 NAMESPACE_BEGIN
+namespace nedxml {
 
 class SAXParser;
 
@@ -150,6 +151,7 @@ class NEDXML_API SAXParser
     const char *getErrorMessage()  {return errortext;}
 };
 
+} // namespace nedxml
 NAMESPACE_END
 
 

@@ -23,6 +23,7 @@
 #include "cxmldoccache.h"
 
 using namespace OPP::common;
+using namespace OPP::nedxml;
 
 NAMESPACE_BEGIN
 
