@@ -23,6 +23,7 @@
 #include "omnetpp/platdep/platdefs.h"
 
 NAMESPACE_BEGIN
+namespace cmdenv {
 
 #if defined(CMDENV_EXPORT)
 #  define CMDENV_API OPP_DLLEXPORT
@@ -32,7 +33,7 @@ NAMESPACE_BEGIN
 #  define CMDENV_API
 #endif
 
-
+} // namespace cmdenv
 NAMESPACE_END
 
 

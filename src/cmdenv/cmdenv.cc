@@ -60,6 +60,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace cmdenv {
 
 Register_GlobalConfigOption(CFGID_CONFIG_NAME, "cmdenv-config-name", CFG_STRING, nullptr, "Specifies the name of the configuration to be run (for a value `Foo', section [Config Foo] will be used from the ini file). See also cmdenv-runs-to-execute=. The -c command line option overrides this setting.")
 Register_GlobalConfigOption(CFGID_RUNS_TO_EXECUTE, "cmdenv-runs-to-execute", CFG_STRING, nullptr, "Specifies which runs to execute from the selected configuration (see cmdenv-config-name=). It accepts a comma-separated list of run numbers or run number ranges, e.g. 1,3..4,7..9. If the value is missing, Cmdenv executes all runs in the selected configuration. The -r command line option overrides this setting.")
@@ -787,5 +788,6 @@ unsigned Cmdenv::getExtraStackForEnvir() const
     return opt->extraStack;
 }
 
+} // namespace cmdenv
 NAMESPACE_END
 

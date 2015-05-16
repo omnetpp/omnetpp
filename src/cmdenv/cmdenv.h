@@ -24,6 +24,7 @@
 #include "omnetpp/csimulation.h"
 
 NAMESPACE_BEGIN
+namespace cmdenv {
 
 using namespace OPP::envir;
 
@@ -105,8 +106,8 @@ class CMDENV_API Cmdenv : public EnvirBase
      static void signalHandler(int signum);
 };
 
+} // namespace cmdenv
 NAMESPACE_END
-
 
 #endif
 
