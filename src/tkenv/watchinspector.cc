@@ -27,6 +27,7 @@
 #include "watchinspector.h"
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 
 void _dummy_for_watchinspector() {}
@@ -87,5 +88,6 @@ void WatchInspector::commit()
    Inspector::commit();    // must be there after all changes
 }
 
+} // namespace tkenv
 NAMESPACE_END
 

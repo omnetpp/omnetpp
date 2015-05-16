@@ -26,6 +26,9 @@ NAMESPACE_BEGIN
 class cModule;
 class cGate;
 class cFigure;
+
+namespace tkenv {
+
 class FigureRenderer;
 struct FigureRenderingHints;
 class CanvasRenderer;
@@ -123,6 +126,7 @@ class TKENV_API ModuleInspector : public Inspector
       static void performAnimations(Tcl_Interp *interp);
 };
 
+} // namespace tkenv
 NAMESPACE_END
 
 #endif

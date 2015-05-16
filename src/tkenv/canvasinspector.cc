@@ -30,6 +30,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 
 class CanvasInspectorFactory : public InspectorFactory
@@ -205,5 +206,6 @@ int CanvasInspector::inspectorCommand(int argc, const char **argv)
     return Inspector::inspectorCommand(argc, argv);
 }
 
+} // namespace tkenv
 NAMESPACE_END
 

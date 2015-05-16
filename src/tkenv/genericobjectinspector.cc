@@ -29,6 +29,7 @@
 
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 void _dummy_for_genericobjectinspector() {}
 
@@ -91,5 +92,6 @@ int GenericObjectInspector::inspectorCommand(int argc, const char **argv)
    return Inspector::inspectorCommand(argc, argv);
 }
 
+} // namespace tkenv
 NAMESPACE_END
 

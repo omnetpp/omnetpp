@@ -20,6 +20,7 @@
 #include "inspector.h"
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 
 class TKENV_API GenericObjectInspector : public Inspector
@@ -35,6 +36,7 @@ class TKENV_API GenericObjectInspector : public Inspector
       virtual int inspectorCommand(int argc, const char **argv) override;
 };
 
+} // namespace tkenv
 NAMESPACE_END
 
 #endif

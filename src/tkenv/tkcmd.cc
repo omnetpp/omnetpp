@@ -53,6 +53,7 @@ using namespace OPP::common;
 using namespace OPP::envir;
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 using std::string;
 
@@ -2698,5 +2699,6 @@ int setWindowProperty_cmd(ClientData clientData, Tcl_Interp *interp, int argc, c
    return TCL_OK;
 }
 
+} // namespace tkenv
 NAMESPACE_END
 

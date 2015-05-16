@@ -44,6 +44,7 @@ using namespace OPP::common;
 using namespace OPP::layout;
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 #define UNKNOWNICON_WIDTH  32
 #define UNKNOWNICON_HEIGHT 32
@@ -1042,5 +1043,6 @@ int ModuleInspector::getSubmodQLen(int argc, const char **argv)
 }
 
 
+} // namespace tkenv
 NAMESPACE_END
 

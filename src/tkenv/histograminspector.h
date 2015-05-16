@@ -20,6 +20,7 @@
 #include "inspector.h"
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 
 class TKENV_API HistogramInspector : public Inspector
@@ -40,6 +41,7 @@ class TKENV_API HistogramInspector : public Inspector
 };
 
 
+} // namespace tkenv
 NAMESPACE_END
 
 #endif

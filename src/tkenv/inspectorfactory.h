@@ -22,6 +22,7 @@
 #include "inspector.h"
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 #define Register_InspectorFactory(FACTORYNAME) \
   EXECUTE_ON_STARTUP(inspectorfactories.getInstance()->add(new FACTORYNAME(#FACTORYNAME));)
@@ -91,6 +92,7 @@ extern cGlobalRegistrationList inspectorfactories;
  */
 InspectorFactory *findInspectorFactoryFor(cObject *obj, int type);
 
+} // namespace tkenv
 NAMESPACE_END
 
 

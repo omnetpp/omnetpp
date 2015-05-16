@@ -23,6 +23,9 @@
 NAMESPACE_BEGIN
 
 class cFigure;
+
+namespace tkenv {
+
 class FigureRenderer;
 struct FigureRenderingHints;
 
@@ -59,6 +62,7 @@ class TKENV_API CanvasRenderer
         virtual void setExceptTags(const char* tags);
 };
 
+} // namespace tkenv
 NAMESPACE_END
 
 #endif

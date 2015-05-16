@@ -24,6 +24,7 @@
 #include "inspector.h"
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 
 class TKENV_API LogInspector : public Inspector, protected ILogBufferListener
@@ -91,6 +92,7 @@ class TKENV_API LogInspector : public Inspector, protected ILogBufferListener
       virtual int inspectorCommand(int argc, const char **argv) override;
 };
 
+} // namespace tkenv
 NAMESPACE_END
 
 

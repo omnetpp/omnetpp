@@ -28,6 +28,9 @@
 NAMESPACE_BEGIN
 
 class cModule;
+
+namespace tkenv {
+
 class LogBuffer;
 
 class ILogBufferListener
@@ -113,6 +116,7 @@ class TKENV_API LogBuffer
     void dump() const;
 };
 
+} // namespace tkenv
 NAMESPACE_END
 
 

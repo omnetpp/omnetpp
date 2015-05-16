@@ -28,6 +28,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 CanvasRenderer::CanvasRenderer() : interp(nullptr), canvas(nullptr), enabledTagBits(0), exceptTagBits(0)
 {
@@ -180,5 +181,6 @@ void CanvasRenderer::setExceptTags(const char* tags)
     exceptTagBits = canvas->parseTags(tags);
 }
 
+} // namespace tkenv
 NAMESPACE_END
 

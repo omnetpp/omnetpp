@@ -27,6 +27,8 @@ NAMESPACE_BEGIN
 class cPar;
 class cComponent;
 
+namespace tkenv {
+
 //
 // In some installations Tcl headers files have 'char*' without 'const char*'
 // in arg lists -- we have to cast away 'const char*' from args in our Tcl calls.
@@ -165,6 +167,7 @@ typedef int (*TclCmdProc)(ClientData clientData, Tcl_Interp *interp, int argc, c
 
 void invokeTclCommand(Tcl_Interp *interp, Tcl_CmdInfo *cmd, int argc, const char *argv[]);
 
+} // namespace tkenv
 NAMESPACE_END
 
 

@@ -20,6 +20,7 @@
 #include "inspector.h"
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 class TKENV_API WatchInspector: public Inspector
 {
@@ -31,6 +32,7 @@ class TKENV_API WatchInspector: public Inspector
       virtual void commit() override;
 };
 
+} // namespace tkenv
 NAMESPACE_END
 
 #endif

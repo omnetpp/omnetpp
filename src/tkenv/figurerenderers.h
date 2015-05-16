@@ -21,6 +21,7 @@
 #include "tkdefs.h"
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 struct TKENV_API FigureRenderingHints
 {
@@ -233,6 +234,7 @@ class TKENV_API PixmapFigureRenderer : public AbstractImageFigureRenderer
         virtual void ensureImage(Tcl_Interp *interp, const char *imageName, const cFigure::Pixmap& pixmap);
 };
 
+} // namespace tkenv
 NAMESPACE_END
 
 #endif

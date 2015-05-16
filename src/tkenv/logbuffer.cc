@@ -21,6 +21,7 @@
 #include "logbuffer.h"
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 LogBuffer::Entry::~Entry()
 {
@@ -255,5 +256,6 @@ void LogBuffer::dump() const
     }
 }
 
+} // namespace tkenv
 NAMESPACE_END
 

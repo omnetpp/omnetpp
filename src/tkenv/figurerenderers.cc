@@ -24,6 +24,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 std::map<std::string, FigureRenderer*> FigureRenderer::rendererCache;
 
@@ -914,5 +915,6 @@ void PixmapFigureRenderer::ensureImage(Tcl_Interp *interp, const char *imageName
     }
 }
 
+} // namespace tkenv
 NAMESPACE_END
 

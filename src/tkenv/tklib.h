@@ -20,6 +20,7 @@
 #include "tkdefs.h"
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 struct OmnetTclCommand {
     const char *namestr;
@@ -33,6 +34,7 @@ Tcl_Interp *initTk(int argc, char **argv);
 int createTkCommands(Tcl_Interp *interp, OmnetTclCommand *tcl_commands);
 int runTk(Tcl_Interp *interp);
 
+} // namespace tkenv
 NAMESPACE_END
 
 

@@ -29,6 +29,7 @@
 #include "tkutil.h"
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 
 TkenvGraphLayouterEnvironment::TkenvGraphLayouterEnvironment(Tcl_Interp *interp, cModule *parentModule, const cDisplayString& displayString)
@@ -159,5 +160,6 @@ void TkenvGraphLayouterEnvironment::cleanup()
     }
 }
 
+} // namespace tkenv
 NAMESPACE_END
 

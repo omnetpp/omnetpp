@@ -32,6 +32,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 int exitOmnetpp;
 #if TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION <6
@@ -119,4 +120,5 @@ int runTk(Tcl_Interp *)
     return TCL_OK;
 }
 
+} // namespace tkenv
 NAMESPACE_END

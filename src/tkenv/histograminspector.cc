@@ -23,6 +23,7 @@
 #include "histograminspector.h"
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 void _dummy_for_histograminspector() {}
 
@@ -187,5 +188,6 @@ int HistogramInspector::inspectorCommand(int argc, const char **argv)
    return Inspector::inspectorCommand(argc, argv);
 }
 
+} // namespace tkenv
 NAMESPACE_END
 

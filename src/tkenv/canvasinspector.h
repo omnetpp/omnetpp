@@ -24,6 +24,9 @@
 NAMESPACE_BEGIN
 
 class cFigure;
+
+namespace tkenv {
+
 class FigureRenderer;
 struct FigureRenderingHints;
 class CanvasRenderer;
@@ -51,6 +54,7 @@ class TKENV_API CanvasInspector : public Inspector
       virtual int inspectorCommand(int argc, const char **argv) override;
 };
 
+} // namespace tkenv
 NAMESPACE_END
 
 #endif

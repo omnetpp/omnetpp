@@ -28,6 +28,7 @@
 #include "componenthistory.h"
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 class Inspector;
 class GenericObjectInspector;
@@ -49,9 +50,9 @@ enum LayouterChoice
 
 enum StripNamespace
 {
-	STRIPNAMESPACE_NONE,
-	STRIPNAMESPACE_OMNETPP,
-	STRIPNAMESPACE_ALL
+    STRIPNAMESPACE_NONE,
+    STRIPNAMESPACE_OMNETPP,
+    STRIPNAMESPACE_ALL
 };
 
 struct TkenvOptions : public OPP::envir::EnvirOptions
@@ -306,6 +307,7 @@ inline Tkenv *getTkenv()
     return (Tkenv *)cSimulation::getActiveEnvir();
 }
 
+} // namespace tkenv
 NAMESPACE_END
 
 #endif

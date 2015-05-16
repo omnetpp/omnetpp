@@ -20,6 +20,7 @@
 #include "tkutil.h"
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 class InspectorFactory;
 
@@ -104,6 +105,7 @@ class TKENV_API Inspector
       virtual void objectDeleted(cObject *);
 };
 
+} // namespace tkenv
 NAMESPACE_END
 
 

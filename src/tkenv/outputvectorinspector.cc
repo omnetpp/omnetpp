@@ -23,6 +23,7 @@
 #include "outputvectorinspector.h"
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 void _dummy_for_outputvectorinspector() {}
 
@@ -412,5 +413,6 @@ int OutputVectorInspector::inspectorCommand(int argc, const char **argv)
    return Inspector::inspectorCommand(argc, argv);
 }
 
+} // namespace tkenv
 NAMESPACE_END
 

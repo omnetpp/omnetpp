@@ -22,6 +22,7 @@
 #include "inspectorfactory.h"
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 cGlobalRegistrationList inspectorfactories;
 
@@ -62,4 +63,5 @@ InspectorFactory *InspectorFactory::get(const char *className)
 }
 
 
+} // namespace tkenv
 NAMESPACE_END

@@ -22,9 +22,11 @@
 #include "tkdefs.h"
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 int arrowcoords(Tcl_Interp *interp, int argc, const char **argv);
 
+} // namespace tkenv
 NAMESPACE_END
 
 

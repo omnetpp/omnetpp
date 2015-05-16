@@ -20,6 +20,7 @@
 #include "inspector.h"
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 
 class CircBuffer
@@ -77,6 +78,7 @@ class TKENV_API OutputVectorInspector : public Inspector
       void setConfig( bool autoscale, double timef, double miny, double maxy, const char *mode);
 };
 
+} // namespace tkenv
 NAMESPACE_END
 
 

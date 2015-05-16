@@ -47,6 +47,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 #define INSPECTORLISTBOX_MAX_ITEMS   100000
 
@@ -537,4 +538,5 @@ void invokeTclCommand(Tcl_Interp *interp, Tcl_CmdInfo *cmd, int argc, const char
 }
 
 
+} // namespace tkenv
 NAMESPACE_END

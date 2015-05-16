@@ -25,6 +25,7 @@ NAMESPACE_BEGIN
 class cModule;
 class cDisplayString;
 
+namespace tkenv {
 
 class TkenvGraphLayouterEnvironment : public OPP::layout::GraphLayouterEnvironment
 {
@@ -63,6 +64,7 @@ class TkenvGraphLayouterEnvironment : public OPP::layout::GraphLayouterEnvironme
       virtual void drawRectangle(double x1, double y1, double x2, double y2, const char *tags, const char *color) override;
 };
 
+} // namespace tkenv
 NAMESPACE_END
 
 

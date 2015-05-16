@@ -21,6 +21,7 @@
 #include "omnetpp/simkerneldefs.h" // for ASSERT
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 /**
  * A limited STL-like circular buffer implementation.
@@ -88,6 +89,7 @@ class circular_buffer
         }
 };
 
+} // namespace tkenv
 NAMESPACE_END
 
 #endif

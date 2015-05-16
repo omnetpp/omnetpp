@@ -20,6 +20,7 @@
 #include "inspector.h"
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 
 class TKENV_API GateInspector : public Inspector
@@ -42,6 +43,7 @@ class TKENV_API GateInspector : public Inspector
       virtual void displayStringChanged(cGate *gate);
 };
 
+} // namespace tkenv
 NAMESPACE_END
 
 #endif

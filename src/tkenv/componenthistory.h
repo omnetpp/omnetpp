@@ -26,6 +26,8 @@ NAMESPACE_BEGIN
 
 class cComponentType;
 
+namespace tkenv {
+
 class TKENV_API ComponentHistory
 {
     private:
@@ -57,6 +59,7 @@ class TKENV_API ComponentHistory
         void clear();
 };
 
+} // namespace tkenv
 NAMESPACE_END
 
 #endif

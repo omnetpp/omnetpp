@@ -31,6 +31,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 
 const char *insptypeNameFromCode(int code)
@@ -262,5 +263,6 @@ const char *Inspector::getEntry( const char *entry )
    return Tcl_GetStringResult(interp);
 }
 
+} // namespace tkenv
 NAMESPACE_END
 

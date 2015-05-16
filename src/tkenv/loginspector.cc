@@ -29,6 +29,7 @@
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 #define LL  INT64_PRINTF_FORMAT
 
@@ -600,5 +601,6 @@ int LogInspector::inspectorCommand(int argc, const char **argv)
     return Inspector::inspectorCommand(argc, argv);
 }
 
+} // namespace tkenv
 NAMESPACE_END
 

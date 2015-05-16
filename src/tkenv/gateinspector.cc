@@ -31,6 +31,7 @@
 
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 void _dummy_for_gateinspector() {}
 
@@ -203,5 +204,6 @@ void GateInspector::displayStringChanged(cGate *gate)
    //XXX should defer redraw (via redraw_needed) to avoid "flickering"
 }
 
+} // namespace tkenv
 NAMESPACE_END
 

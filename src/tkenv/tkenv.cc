@@ -70,6 +70,7 @@ using namespace OPP::common;
 using namespace OPP::envir;
 
 NAMESPACE_BEGIN
+namespace tkenv {
 
 //
 // Register the Tkenv user interface
@@ -1963,5 +1964,6 @@ void _dummy_func() {
   _dummy_for_outputvectorinspector();
 }
 
+} // namespace tkenv
 NAMESPACE_END
 
