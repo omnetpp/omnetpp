@@ -128,18 +128,17 @@ SHARED_LIBS=yes
 #
 # Compiler and linker options for Qt
 #
-# You can explicitly tell 'configure' which compile switches (QT_CFLAGS)
-# and linker switches (QT_LIBS) are needed to build an application with Qt support.
-# Normally these settings are autodetected by 'configure', so you only need to
-# edit here if autodetection doesn't work.
+# You can explicitly tell 'configure' which linker switches (QT_LIBS) are 
+# needed to build an application with Qt support. Normally these settings 
+# are autodetected by 'configure', so you only need to edit here if 
+# autodetection doesn't work.
 #
-#QT_CFLAGS=
 #QT_LIBS=
 
 
-# If you don't have QT installed, uncommenting
-# below lets you build without Qtenv
-#NO_QT=true
+# Select which QT version you prefer to use.
+# Possible values: qt4, qt5 or leave it empty (comment out) to disable QT support
+QT_VERSION=qt4
 
 #
 # ZLib is a compression library needed by libxml2 and Tkenv's png support.

@@ -756,13 +756,24 @@ ALL_ENV_LIBS='$(CMDENV_LIBS)'
 #-----------------------------
 # Check for QT cflags and libs
 #-----------------------------
-if test -n "$NO_QT"; then
+if test -z "$QT_VERSION"; then
     # skip building QT
     QTENV_IF_POSSIBLE=missing-dependency
-else
-# FIXME not sure whether it's ok to depend on the presence of the pkg-config
-    QT_CFLAGS=`pkg-config --cflags Qt5Gui Qt5Widgets Qt5Core`
-    QT_LIBS=`pkg-config --libs Qt5Gui Qt5Widgets Qt5Core`
+else 
+    if test "$QT_VERSION" = "qt5"; then
+        QT_LIBS="-lQt5Gui -lQt5Core -lQt5Widgets"
+    else
+        QT_LIBS="-lQtGui -lQtCore"
+        # detect openscenegraph (requires libopenscenegraph-dev, openscenegraph-plugin-osgearth and libosgearth-dev)
+        # TODO: detecting with pkg-config will probably not work on Windows and MAC, better to test directly
+        # for the presence of the libraries with OPP_CHECK_LIB
+        OSG_LIBS=`pkg-config --silence-errors --libs openscenegraph`
+        if test -n "$OSG_LIBS"; then
+            QT_LIBS+=" -losgQt $OSG_LIBS -losgEarthUtil"
+            CFLAGS_RELEASE+=" -DWITH_OSG"
+            CFLAGS_DEBUG+=" -DWITH_OSG"
+        fi
+    fi
     ALL_ENV_LIBS+=' $(QTENV_LIBS)'
     QTENV_IF_POSSIBLE=qtenv
 fi
@@ -1207,7 +1218,7 @@ AC_SUBST(NO_TCL)
 AC_SUBST(HAVE_DLOPEN)
 AC_SUBST(TK_CFLAGS)
 AC_SUBST(TK_LIBS)
-AC_SUBST(QT_CFLAGS)
+AC_SUBST(QT_VERSION)
 AC_SUBST(QT_LIBS)
 AC_SUBST(ZLIB_CFLAGS)
 AC_SUBST(ZLIB_LIBS)

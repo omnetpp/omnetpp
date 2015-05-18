@@ -48,7 +48,8 @@ RunSelectionDialog::RunSelectionDialog(qtenv::Qtenv *env, QWidget *parent) :
         runNumber = 0;
     }
 
-    ui->configName->setCurrentText(configName.c_str());
+    int index = ui->configName->findText(configName.c_str());
+    ui->configName->setCurrentIndex(index);
     for(int i = 0; i <= runNumber; ++i)
         ui->runNumber->addItem(QString::number(i), QVariant(i));
 }
@@ -81,10 +82,12 @@ std::vector<std::string> RunSelectionDialog::groupAndSortConfigNames()
 
 std::string RunSelectionDialog::getConfigName()
 {
-    return ui->configName->currentData().value<QString>().toStdString();
+    int index = ui->configName->currentIndex();
+    return ui->configName->itemData(index).toString().toStdString();
 }
 
 int RunSelectionDialog::getRunNumber()
 {
-    return ui->runNumber->currentData().value<int>();
+    int index = ui->runNumber->currentIndex();
+    return ui->runNumber->itemData(index).toInt();
 }

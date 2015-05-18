@@ -80,13 +80,13 @@ void MainWindow::setGuiForRunmode(Mode mode, bool untilMode)
 
 bool MainWindow::checkRunning()
 {
-    if(env->getSimulationState() == Qtenv::eState::SIM_RUNNING)
+    if(env->getSimulationState() == Qtenv::SIM_RUNNING)
     {
         QMessageBox::warning(this, tr("Warning"), tr("Sorry, you cannot do this while the simulation is running. Please stop it first."),
                              QMessageBox::Ok);
         return true;
     }
-    if(env->getSimulationState() == Qtenv::eState::SIM_BUSY)
+    if(env->getSimulationState() == Qtenv::SIM_BUSY)
     {
         QMessageBox::warning(this, tr("Warning"), tr("The simulation is waiting for external synchronization -- press STOP to interrupt it."),
                              QMessageBox::Ok);
