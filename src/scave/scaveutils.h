@@ -20,7 +20,7 @@
 #include <string>
 #include <set>
 #include <functional>
-#include <cstdint>
+#include <stdint.h>  // <cstdint> is C++11
 #include "common/commonutil.h"
 #include "omnetpp/platdep/timeutil.h"
 #include "scavedefs.h"

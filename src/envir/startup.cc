@@ -19,7 +19,7 @@
 #include <cstdarg>
 #include <cstdio>
 #include <cstring>
-#include <cstdint>
+#include <stdint.h>  // <cstdint> is C++11
 
 #include "common/opp_ctype.h"
 #include "common/fnamelisttokenizer.h"

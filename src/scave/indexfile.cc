@@ -15,7 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include <sys/stat.h>
-#include <cstdint>
+#include <stdint.h> // <cstdint> is C++11
 #include <algorithm>
 #include <clocale>
 #include "common/exception.h"

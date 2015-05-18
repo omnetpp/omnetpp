@@ -19,7 +19,7 @@
 
 #include <vector>
 #include <string>
-#include <cstdint>  // int64_t
+#include <stdint.h> // <cstdint> is C++11
 #include "omnetpp/platdep/platmisc.h"
 #include "exception.h"
 #include "commondefs.h"

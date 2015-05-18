@@ -21,7 +21,7 @@
 #ifndef __OMNETPP_CCOMMBUFFER_H
 #define __OMNETPP_CCOMMBUFFER_H
 
-#include <cstdint>
+#include <stdint.h>  // <cstdint> is C++11
 #include "cobject.h"
 #include "simtime.h"
 

@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_PLATMISC_H
 #define __OMNETPP_PLATMISC_H
 
-#include <cstdint>   // int64_t
+#include <stdint.h>  // int64_t (Note: <cstdint> is C++11)
 #include <climits>   // __WORDSIZE
 
 //

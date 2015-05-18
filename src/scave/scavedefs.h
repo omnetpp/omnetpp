@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_SCAVEDEFS_H
 #define __OMNETPP_SCAVEDEFS_H
 
-#include <cstdint> // for int64_t, our equivalent of Java's "long" type
+#include <stdint.h> // for int64_t, our equivalent of Java's "long" type (note: <cstdint> is C++11)
 #include "common/bigdecimal.h"
 #include "omnetpp/platdep/platdefs.h"
 

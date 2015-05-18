@@ -18,7 +18,7 @@
 #ifndef __OMNETPP_CHASHER_H
 #define __OMNETPP_CHASHER_H
 
-#include <cstdint>
+#include <stdint.h> // <cstdint> is C++11
 #include <cstring>
 #include <cstdlib>
 #include "simkerneldefs.h"

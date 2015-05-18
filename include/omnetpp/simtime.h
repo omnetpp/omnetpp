@@ -18,7 +18,7 @@
 
 #include <string>
 #include <iostream>
-#include <cstdint>
+#include <stdint.h>  // <cstdint> is C++11
 #include "platdep/intlimits.h"
 #include "simkerneldefs.h"
 
