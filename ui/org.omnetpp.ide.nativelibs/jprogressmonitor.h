@@ -21,31 +21,29 @@
 
 NAMESPACE_BEGIN
 
-/*
+/**
  * Implementation of the IProgressMonitor interface
  * that delegates to an org.eclipse.core.runtime.IProgressMonitor
  * java object.
  */
-class JniProgressMonitor : public IProgressMonitor
+class JniProgressMonitor : public OPP::common::IProgressMonitor
 {
-	private:
-		jobject jProgressMonitor;
-		jmethodID beginTaskID, doneID, isCanceledID,
-					setCanceledID, subTaskID, workedID;
+    private:
+        JNIEnv *env;
+        jobject jProgressMonitor;
+        jmethodID beginTaskID, doneID, isCanceledID, setCanceledID, subTaskID, workedID;
 
-		JNIEnv *env;
-	public:
+    public:
+        JniProgressMonitor() : env(NULL) {}
+        JniProgressMonitor(jobject jProgressMonitor, JNIEnv *env);
+        virtual ~JniProgressMonitor();
 
-	JniProgressMonitor() : env(NULL) {}
-	JniProgressMonitor(jobject jProgressMonitor, JNIEnv *env);
-	virtual ~JniProgressMonitor();
-
-	virtual void beginTask(std::string name, int totalWork);
-	virtual void done();
-	virtual bool isCanceled();
-	virtual void setCanceled(bool value);
-	virtual void subTask(std::string name);
-	virtual void worked(int work);
+        virtual void beginTask(std::string name, int totalWork);
+        virtual void done();
+        virtual bool isCanceled();
+        virtual void setCanceled(bool value);
+        virtual void subTask(std::string name);
+        virtual void worked(int work);
 };
 
 NAMESPACE_END

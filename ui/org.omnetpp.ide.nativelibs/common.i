@@ -131,10 +131,10 @@ SWIG_JAVABODY_METHODS(public, public, ILock)
 class SimpleResolver;
 
 %extend Expression {
-	void parse(const char* text, std::set<std::string> vars) {
-	  SimpleResolver resolver(vars);
-	  self->parse(text, &resolver);
-	}
+    void parse(const char* text, std::set<std::string> vars) {
+        SimpleResolver resolver(vars);
+        self->parse(text, &resolver);
+    }
 }
 
 
@@ -152,7 +152,7 @@ class SimpleVar : public Expression::Variable {
 
 class SimpleResolver : public Expression::Resolver {
   private:
-	std::set<std::string> vars;
+    std::set<std::string> vars;
   public:
     SimpleResolver(const std::set<std::string> &vars) : vars(vars) {}
     virtual Expression::Functor *resolveVariable(const char *varname) {

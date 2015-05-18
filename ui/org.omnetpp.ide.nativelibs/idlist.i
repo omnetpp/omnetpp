@@ -1,3 +1,7 @@
+//
+// Include file for scave.i
+//
+
 %ignore IDList::IDList(unsigned int);
 %ignore IDList::IDList(const IDList&);
 
@@ -23,7 +27,7 @@ import java.util.EventListener;
 %typemap(javacode) IDList %{
 
   public static interface IChangeListener extends EventListener {
-	public void idlistChanged(IDList idlist);
+    public void idlistChanged(IDList idlist);
   }
 
   private ArrayList<IChangeListener> listeners = new ArrayList<IChangeListener>();
@@ -32,16 +36,16 @@ import java.util.EventListener;
   public static final IDList EMPTY = new IDList();
 
   public void addListener(IChangeListener listener) {
-  	listeners.add(listener);
+      listeners.add(listener);
   }
 
   public void removeListener(IChangeListener listener) {
-  	listeners.remove(listener);
+      listeners.remove(listener);
   }
 
   protected void notifyListeners() {
-  	for (IChangeListener listener : listeners.toArray(new IChangeListener[listeners.size()]))
-  		listener.idlistChanged(this);
+      for (IChangeListener listener : listeners.toArray(new IChangeListener[listeners.size()]))
+          listener.idlistChanged(this);
   }
 
   public void swigDisown() {

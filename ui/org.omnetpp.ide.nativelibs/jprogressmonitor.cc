@@ -18,7 +18,7 @@
 NAMESPACE_BEGIN
 
 JniProgressMonitor::JniProgressMonitor(jobject jProgressMonitor, JNIEnv *env)
-	: jProgressMonitor(jProgressMonitor), env(env)
+	: env(env), jProgressMonitor(jProgressMonitor)
 {
 	jclass clazz = env->FindClass("org/eclipse/core/runtime/IProgressMonitor");
 	if (clazz) {
