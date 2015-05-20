@@ -133,6 +133,11 @@
     <addaction name="actionSetUpConfiguration"/>
     <addaction name="separator"/>
     <addaction name="actionLoadNEDFile"/>
+    <addaction name="actionSetUpUnconfiguredNetwork"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpenPrimaryIniFile"/>
+    <addaction name="separator"/>
+    <addaction name="actionCreate_Snapshot"/>
     <addaction name="separator"/>
     <addaction name="actionPreferences"/>
     <addaction name="separator"/>
@@ -149,28 +154,58 @@
     <addaction name="actionExpressRun"/>
     <addaction name="actionRunUntil"/>
     <addaction name="separator"/>
+    <addaction name="actionDebugNextEvent"/>
+    <addaction name="separator"/>
     <addaction name="actionStop"/>
     <addaction name="separator"/>
     <addaction name="actionEventlogRecording"/>
     <addaction name="separator"/>
     <addaction name="actionConcludeSimulation"/>
+    <addaction name="actionRebuildNetwork"/>
    </widget>
    <widget class="QMenu" name="menuInspect">
     <property name="title">
      <string>Inspect</string>
     </property>
+    <widget class="QMenu" name="menuAvailable_Components">
+     <property name="title">
+      <string>Available Components</string>
+     </property>
+     <addaction name="actionNEDComponentTypes"/>
+     <addaction name="actionRegisteredClasses"/>
+     <addaction name="actionNED_Functions"/>
+     <addaction name="actionRegistered_Enums"/>
+     <addaction name="actionSupportedConfigurationOption"/>
+    </widget>
+    <addaction name="actionNetwork"/>
+    <addaction name="actionScheduledEvents"/>
+    <addaction name="actionSimulation"/>
+    <addaction name="separator"/>
+    <addaction name="menuAvailable_Components"/>
+    <addaction name="separator"/>
     <addaction name="actionFindInspectObjects"/>
+    <addaction name="actionInspectByPointer"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
      <string>View</string>
     </property>
+    <addaction name="actionStatusDetails"/>
     <addaction name="actionTimeline"/>
+    <addaction name="separator"/>
+    <addaction name="actionFlipWindowLayout"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout_OMNeT_Qtenv"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSimulate"/>
    <addaction name="menuInspect"/>
    <addaction name="menuView"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
@@ -242,6 +277,9 @@
    <property name="toolTip">
     <string>Run with full animation (F5)</string>
    </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
   </action>
   <action name="actionSetUpConfiguration">
    <property name="icon">
@@ -283,6 +321,9 @@
    </property>
    <property name="toolTip">
     <string>Run faster: no animation and rare inspector updates (F6)</string>
+   </property>
+   <property name="shortcut">
+    <string>F6</string>
    </property>
   </action>
   <action name="actionExpressRun">
@@ -331,9 +372,6 @@
    </property>
    <property name="toolTip">
     <string>Load NED file for compound module definitions</string>
-   </property>
-   <property name="shortcut">
-    <string>F5</string>
    </property>
   </action>
   <action name="actionConcludeSimulation">
@@ -454,6 +492,97 @@
    </property>
    <property name="text">
     <string>Preferences...</string>
+   </property>
+  </action>
+  <action name="actionSetUpUnconfiguredNetwork">
+   <property name="text">
+    <string>Set Up an Unconfigured Network...</string>
+   </property>
+  </action>
+  <action name="actionOpenPrimaryIniFile">
+   <property name="text">
+    <string>Open Primary Ini File</string>
+   </property>
+  </action>
+  <action name="actionCreate_Snapshot">
+   <property name="text">
+    <string>Create Snapshot...</string>
+   </property>
+  </action>
+  <action name="actionDebugNextEvent">
+   <property name="text">
+    <string>Debug Next Event</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F9</string>
+   </property>
+  </action>
+  <action name="actionRebuildNetwork">
+   <property name="text">
+    <string>Rebuild Network</string>
+   </property>
+  </action>
+  <action name="actionNetwork">
+   <property name="text">
+    <string>Network</string>
+   </property>
+  </action>
+  <action name="actionScheduledEvents">
+   <property name="text">
+    <string>Scheduled Events (FES)</string>
+   </property>
+  </action>
+  <action name="actionSimulation">
+   <property name="text">
+    <string>Simulation</string>
+   </property>
+  </action>
+  <action name="actionNEDComponentTypes">
+   <property name="text">
+    <string>NED Component Types</string>
+   </property>
+  </action>
+  <action name="actionRegisteredClasses">
+   <property name="text">
+    <string>Registered Classes</string>
+   </property>
+  </action>
+  <action name="actionNED_Functions">
+   <property name="text">
+    <string>NEDFunctions</string>
+   </property>
+  </action>
+  <action name="actionRegistered_Enums">
+   <property name="text">
+    <string>RegisteredEnums</string>
+   </property>
+  </action>
+  <action name="actionSupportedConfigurationOption">
+   <property name="text">
+    <string>Supported Configuration Options</string>
+   </property>
+  </action>
+  <action name="actionInspectByPointer">
+   <property name="text">
+    <string>Inspect by Pointer...</string>
+   </property>
+  </action>
+  <action name="actionStatusDetails">
+   <property name="text">
+    <string>Status Details</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="actionFlipWindowLayout">
+   <property name="text">
+    <string>Flip Window Layout</string>
+   </property>
+  </action>
+  <action name="actionAbout_OMNeT_Qtenv">
+   <property name="text">
+    <string>About OMNeT++/Qtenv</string>
    </property>
   </action>
  </widget>
