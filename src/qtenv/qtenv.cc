@@ -923,6 +923,7 @@ void Qtenv::refreshInspectors()
         (*it)->clearObjectChangeFlags();
 
     // update object tree
+    qDebug() << "UPDATE";
     mainwindow->getObjectTree()->reset();   //TODO keep nodes open
 
     // try opening "pending" inspectors

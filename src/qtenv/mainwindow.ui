@@ -131,6 +131,11 @@
      <string>File</string>
     </property>
     <addaction name="actionSetUpConfiguration"/>
+    <addaction name="separator"/>
+    <addaction name="actionLoadNEDFile"/>
+    <addaction name="separator"/>
+    <addaction name="actionPreferences"/>
+    <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuSimulate">
@@ -145,9 +150,27 @@
     <addaction name="actionRunUntil"/>
     <addaction name="separator"/>
     <addaction name="actionStop"/>
+    <addaction name="separator"/>
+    <addaction name="actionEventlogRecording"/>
+    <addaction name="separator"/>
+    <addaction name="actionConcludeSimulation"/>
+   </widget>
+   <widget class="QMenu" name="menuInspect">
+    <property name="title">
+     <string>Inspect</string>
+    </property>
+    <addaction name="actionFindInspectObjects"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionTimeline"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSimulate"/>
+   <addaction name="menuInspect"/>
+   <addaction name="menuView"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
@@ -160,6 +183,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionSetUpConfiguration"/>
+   <addaction name="actionLoadNEDFile"/>
    <addaction name="separator"/>
    <addaction name="actionOneStep"/>
    <addaction name="actionRun"/>
@@ -168,11 +192,22 @@
    <addaction name="actionRunUntil"/>
    <addaction name="actionStop"/>
    <addaction name="separator"/>
+   <addaction name="actionConcludeSimulation"/>
+   <addaction name="separator"/>
+   <addaction name="actionEventlogRecording"/>
+   <addaction name="separator"/>
+   <addaction name="actionFindInspectObjects"/>
+   <addaction name="actionFilterMainWindowContents"/>
+   <addaction name="separator"/>
+   <addaction name="actionVerticalLayout"/>
+   <addaction name="actionHorizontalLayout"/>
+   <addaction name="actionTimeline"/>
+   <addaction name="separator"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionQuit">
    <property name="text">
-    <string>Quit</string>
+    <string>Exit</string>
    </property>
   </action>
   <action name="actionOneStep">
@@ -186,6 +221,12 @@
    <property name="text">
     <string>One Step</string>
    </property>
+   <property name="toolTip">
+    <string>Execute one event (F4)</string>
+   </property>
+   <property name="shortcut">
+    <string>F4</string>
+   </property>
   </action>
   <action name="actionRun">
    <property name="checkable">
@@ -198,6 +239,9 @@
    <property name="text">
     <string>Run</string>
    </property>
+   <property name="toolTip">
+    <string>Run with full animation (F5)</string>
+   </property>
   </action>
   <action name="actionSetUpConfiguration">
    <property name="icon">
@@ -207,6 +251,9 @@
    <property name="text">
     <string>Set Up a Configuration...</string>
    </property>
+   <property name="toolTip">
+    <string>Set up an inifile configuration</string>
+   </property>
   </action>
   <action name="actionStop">
    <property name="icon">
@@ -215,6 +262,12 @@
    </property>
    <property name="text">
     <string>Stop Execution</string>
+   </property>
+   <property name="toolTip">
+    <string>Stop running simulation (F8)</string>
+   </property>
+   <property name="shortcut">
+    <string>F8</string>
    </property>
   </action>
   <action name="actionFastRun">
@@ -228,6 +281,9 @@
    <property name="text">
     <string>Fast Run (rare display updates)</string>
    </property>
+   <property name="toolTip">
+    <string>Run faster: no animation and rare inspector updates (F6)</string>
+   </property>
   </action>
   <action name="actionExpressRun">
    <property name="checkable">
@@ -240,6 +296,12 @@
    <property name="text">
     <string>Express Run (tracing off)</string>
    </property>
+   <property name="toolTip">
+    <string>Run at full speed: no text output, animation or inspector updates (F7)</string>
+   </property>
+   <property name="shortcut">
+    <string>F7</string>
+   </property>
   </action>
   <action name="actionRunUntil">
    <property name="checkable">
@@ -251,6 +313,147 @@
    </property>
    <property name="text">
     <string>Run Until...</string>
+   </property>
+   <property name="toolTip">
+    <string>Run until time or event number (Ctrl+F5)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F5</string>
+   </property>
+  </action>
+  <action name="actionLoadNEDFile">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/tools/icons/tools/loadned.png</normaloff>:/tools/icons/tools/loadned.png</iconset>
+   </property>
+   <property name="text">
+    <string>Load NED File...</string>
+   </property>
+   <property name="toolTip">
+    <string>Load NED file for compound module definitions</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
+  </action>
+  <action name="actionConcludeSimulation">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/tools/icons/tools/finish.png</normaloff>:/tools/icons/tools/finish.png</iconset>
+   </property>
+   <property name="text">
+    <string>Conclude Simulation</string>
+   </property>
+   <property name="toolTip">
+    <string>Conclude simulation</string>
+   </property>
+  </action>
+  <action name="actionEventlogRecording">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/tools/icons/tools/recordeventlog.png</normaloff>:/tools/icons/tools/recordeventlog.png</iconset>
+   </property>
+   <property name="text">
+    <string>Start/Stop Eventlog Recording</string>
+   </property>
+   <property name="toolTip">
+    <string>Eventlog recording on/off (Ctrl+G)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
+   </property>
+  </action>
+  <action name="actionFindInspectObjects">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/tools/icons/tools/findobj.png</normaloff>:/tools/icons/tools/findobj.png</iconset>
+   </property>
+   <property name="text">
+    <string>Find/Inspect Objects...</string>
+   </property>
+   <property name="toolTip">
+    <string>Find and inspect modules, messages, queues and other objects (Ctrl+S)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionFilterMainWindowContents">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/tools/icons/tools/filter.png</normaloff>:/tools/icons/tools/filter.png</iconset>
+   </property>
+   <property name="text">
+    <string>Filter Main Window Contents</string>
+   </property>
+   <property name="toolTip">
+    <string>Filter main window contents (Ctrl+H)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+H</string>
+   </property>
+  </action>
+  <action name="actionVerticalLayout">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/tools/icons/tools/vertical.png</normaloff>:/tools/icons/tools/vertical.png</iconset>
+   </property>
+   <property name="text">
+    <string>Vertical Main Window Layout</string>
+   </property>
+   <property name="toolTip">
+    <string>Vertical main window layout</string>
+   </property>
+  </action>
+  <action name="actionHorizontalLayout">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/tools/icons/tools/horizontal.png</normaloff>:/tools/icons/tools/horizontal.png</iconset>
+   </property>
+   <property name="text">
+    <string>Horizontal Main Window Layout</string>
+   </property>
+  </action>
+  <action name="actionTimeline">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/objects/icons/objects/fes.png</normaloff>:/objects/icons/objects/fes.png</iconset>
+   </property>
+   <property name="text">
+    <string>Timeline</string>
+   </property>
+   <property name="toolTip">
+    <string>Show/hide timeline (Ctrl+T)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/tools/icons/tools/config.png</normaloff>:/tools/icons/tools/config.png</iconset>
+   </property>
+   <property name="text">
+    <string>Preferences...</string>
    </property>
   </action>
  </widget>
