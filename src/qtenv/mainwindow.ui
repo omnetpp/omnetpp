@@ -31,6 +31,67 @@
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="labelConfigName">
+          <property name="text">
+           <string>(No network set up)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelEvent">
+          <property name="text">
+           <string>Event #0</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelTime">
+          <property name="text">
+           <string>t=0</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelMessageStats">
+          <property name="text">
+           <string>Msg stats: 0 scheduled / 0 existing / 0 created</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayoutDisplay">
+        <item>
+         <widget class="QLabel" name="labelDisplay1">
+          <property name="text">
+           <string>Next: n/a</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelDisplay2">
+          <property name="text">
+           <string>In: n/a</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelDisplay3">
+          <property name="text">
+           <string>At: last event + 0s</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item>
      <widget class="QSplitter" name="splitter_3">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">

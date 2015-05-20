@@ -5,6 +5,8 @@
 #include "qtenv.h"
 #include "runselectiondialog.h"
 #include "treeitemmodel.h"
+#include "omnetpp/csimplemodule.h"
+#include "common/stringutil.h"
 
 #include "qdebug.h"
 
@@ -25,6 +27,14 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     model->setRootObject(getSimulation());
     ui->treeView->setModel(model);
     ui->treeView->setHeaderHidden(true);
+
+    //TODO
+    //if($config(display-statusdetails)
+    //{
+//        ui->labelDisplay1->hide();
+//        ui->labelDisplay2->hide();
+//        ui->labelDisplay3->hide();
+    //}
 }
 
 MainWindow::~MainWindow()
@@ -228,4 +238,126 @@ void MainWindow::inspectObject(QModelIndex index)
     cObject **objs = visitor.getArray();
     if(visitor.getArraySize() > index.row())
         env->inspect(objs[index.row()], 0, true, "");
+}
+
+void MainWindow::updateStatusDisplay()
+{
+    updateSimtimeDisplay();
+
+    if(true)    //TODO $config(display-statusdetails)
+    {
+        int runMode = env->getSimulationRunMode();
+        if(env->getSimulationState() == Qtenv::SIM_RUNNING &&
+                (runMode == Qtenv::RUNMODE_FAST || runMode == Qtenv::RUNMODE_EXPRESS))
+            updatePerformanceDisplay();
+        else
+            updateNextModuleDisplay();
+    }
+}
+
+void MainWindow::updateSimtimeDisplay()
+{
+    ui->labelEvent->setText("Event #" + QString::number(getSimulation()->getEventNumber()));
+    ui->labelTime->setText("t=" + QString(getSimulation()->guessNextSimtime().str().c_str()) + "s");
+    ui->labelMessageStats->setText("Msg stats: " + QString::number(getSimulation()->msgQueue.getLength()) +
+                                " scheduled / " + QString::number(cMessage::getLiveMessageCount()) +
+                                " existing / " + QString::number(cMessage::getTotalMessageCount()) + " created");
+}
+
+void MainWindow::updatePerformanceDisplay()
+{
+    ui->labelDisplay2->setText("Simsec/sec: " + QString::number(env->getSpeedometer().getSimSecPerSec()));
+    ui->labelDisplay1->setText("Ev/sec: " + QString::number(env->getSpeedometer().getEventsPerSec()));
+    ui->labelDisplay3->setText("Ev/simsec: " + QString::number(env->getSpeedometer().getEventsPerSimSec()));
+}
+
+void MainWindow::updateNextModuleDisplay()
+{
+    cSimpleModule *modptr = nullptr;
+    cEvent *msgptr = nullptr;
+
+    int state = env->getSimulationState();
+    if(state == Qtenv::SIM_NEW || state == Qtenv::SIM_READY || state == Qtenv::SIM_RUNNING)
+    {
+        modptr = getSimulation()->guessNextModule();
+        msgptr = getSimulation()->guessNextEvent();
+    }
+
+    if(msgptr)
+    {
+        int objId = getObjectId(msgptr);
+        ui->labelDisplay1->setText(QString("Next: ") + msgptr->getName() + " (" + msgptr->getClassName() +
+                                   ", id=" + (objId == -1 ? "" : QString::number(objId)) + ")");
+        ui->labelDisplay3->setText(QString("At: last event + ") +
+                                   (getSimulation()->guessNextEvent()->getArrivalTime() - getSimulation()->getSimTime()).str().c_str() +
+                                   "s");
+    }
+    else {
+        ui->labelDisplay1->setText("Next: n/a");
+        ui->labelDisplay3->setText("At: n/a");
+    }
+
+    if(modptr)
+        ui->labelDisplay2->setText(QString("In: ") + modptr->getFullPath().c_str() +
+                                   " (" + getObjectShortTypeName(modptr) + ", id=" +
+                                   getObjectShortTypeName(modptr) + ")");
+    else
+        ui->labelDisplay2->setText("In: n/a");
+}
+
+int MainWindow::getObjectId(cEvent *object)
+{
+    if (dynamic_cast<cModule *>(object))
+        return dynamic_cast<cModule *>(object)->getId();
+    if (dynamic_cast<cMessage *>(object))
+        return dynamic_cast<cMessage *>(object)->getId();
+
+     return -1;
+}
+
+const char *MainWindow::getObjectShortTypeName(cObject *object)
+{
+    if (dynamic_cast<cComponent*>(object))
+    {
+        try
+        {
+            return static_cast<cComponent*>(object)->getComponentType()->getName();
+        }
+        catch(std::exception& e)
+        {
+            printf("<!> Warning: %s\n", e.what());
+        }
+    }
+    return stripNamespace(object->getClassName());
+}
+
+const char *MainWindow::stripNamespace(const char *className)
+{
+    switch (env->opt->stripNamespace) {
+        case STRIPNAMESPACE_ALL: {
+            const char *lastColon = strrchr(className, ':');
+            if (lastColon)
+                className = lastColon+1;
+            break;
+        }
+        case STRIPNAMESPACE_OMNETPP: {
+            if (className[0]=='o' && opp_stringbeginswith(className, "omnetpp::"))
+                className += sizeof("omnetpp::")-1;
+            break;
+        }
+        case STRIPNAMESPACE_NONE:
+            break;
+    }
+    return className;
+}
+
+void MainWindow::updateNetworkRunDisplay()
+{
+    const char *configname = opp_nulltoempty(env->getConfigEx()->getActiveConfigName());
+    const char *network = !getSimulation()->getNetworkType() ? "" : getSimulation()->getNetworkType()->getName();
+
+    //TODO
+//    if {$configname==""} {set configName "n/a"}
+//    if {$network==""} {set network "(no network)"}
+    ui->labelConfigName->setText(QString(configname) + " #" + QString::number(env->getConfigEx()->getActiveRunNumber()) + ": " + network);
 }

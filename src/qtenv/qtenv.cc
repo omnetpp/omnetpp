@@ -991,13 +991,13 @@ std::string Qtenv::getWindowTitle()
 
 void Qtenv::updateNetworkRunDisplay()
 {
-    CHK(Tcl_VarEval(interp, "mainWindow:updateNetworkRunDisplay", NULL));
-    CHK(Tcl_VarEval(interp, "wm title . ", TclQuotedString(getWindowTitle().c_str()).get(), NULL));
+    mainwindow->updateNetworkRunDisplay();
+    mainwindow->setWindowTitle(getWindowTitle().c_str());
 }
 
 void Qtenv::updateStatusDisplay()
 {
-    CHK(Tcl_VarEval(interp, "mainWindow:updateStatusDisplay", NULL));
+    mainwindow->updateStatusDisplay();
     CHK(Tcl_Eval(interp, "redrawTimeline"));
 }
 

@@ -11,6 +11,7 @@ class QGraphicsScene;
 class QStandardItem;
 class QTreeView;
 class cObject;
+class cEvent;
 
 NAMESPACE_BEGIN
 class cCanvas;
@@ -35,6 +36,8 @@ public:
 
     void displayText(const char* t);
     QTreeView *getObjectTree();
+    void updateStatusDisplay();
+    void updateNetworkRunDisplay();
 
     ~MainWindow();
 
@@ -58,6 +61,13 @@ private:
     bool checkRunning();
     void setGuiForRunmode(Mode mode, bool untilMode = false);
     void runSimulation(Mode mode);
+
+    void updateSimtimeDisplay();
+    void updatePerformanceDisplay();
+    void updateNextModuleDisplay();
+    int getObjectId(cEvent *object);
+    const char *getObjectShortTypeName(cObject *object);
+    const char *stripNamespace(const char *className);
 };
 
 #endif // MAINWINDOW_H
