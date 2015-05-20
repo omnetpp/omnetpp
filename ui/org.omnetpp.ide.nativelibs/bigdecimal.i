@@ -9,17 +9,20 @@
 #include "common/bigdecimal.h"
 %}
 
-// when passed by value:
-class BigDecimal;
-%typemap(jstype) BigDecimal "org.omnetpp.common.engine.BigDecimal";
-%typemap(javain) BigDecimal "org.omnetpp.common.engine.BigDecimal.getCPtr($javainput)"
+namespace omnetpp { namespace common {
+  class BigDecimal;
+}}
 
-%typemap(javaout) BigDecimal {
+// when passed by value:
+%typemap(jstype) omnetpp::common::BigDecimal "org.omnetpp.common.engine.BigDecimal";
+%typemap(javain) omnetpp::common::BigDecimal "org.omnetpp.common.engine.BigDecimal.getCPtr($javainput)"
+
+%typemap(javaout) omnetpp::common::BigDecimal {
     long cPtr = $jnicall;
     return (cPtr == 0) ? null : new org.omnetpp.common.engine.BigDecimal(cPtr, true);
 }
 
-%typemap(in) BigDecimal ($&1_type argp) %{
+%typemap(in) omnetpp::common::BigDecimal ($&1_type argp) %{
    argp = *($&1_ltype*)(void *)&$input;
    if (!argp) {
       $1 = BigDecimal::Nil;
@@ -29,7 +32,7 @@ class BigDecimal;
    }
 %}
 
-%typemap(out) BigDecimal %{
+%typemap(out) omnetpp::common::BigDecimal %{
    if ($1.isNil())
    {
       $result = 0;
@@ -41,15 +44,15 @@ class BigDecimal;
 %}
 
 // when passed by pointer:
-%typemap(jstype) BigDecimal* "org.omnetpp.common.engine.BigDecimal";
-%typemap(javain) BigDecimal* "org.omnetpp.common.engine.BigDecimal.getCPtr($javainput)"
+%typemap(jstype) omnetpp::common::BigDecimal* "org.omnetpp.common.engine.BigDecimal";
+%typemap(javain) omnetpp::common::BigDecimal* "org.omnetpp.common.engine.BigDecimal.getCPtr($javainput)"
 
-%typemap(javaout) BigDecimal* {
+%typemap(javaout) omnetpp::common::BigDecimal* {
     long cPtr = $jnicall;
     return (cPtr == 0) ? null : new org.omnetpp.common.engine.BigDecimal(cPtr, $owner);
 }
 
-%typemap(in) BigDecimal* %{
+%typemap(in) omnetpp::common::BigDecimal* %{
    if (!$input) {
       $1 = &BigDecimal::Nil;
    }
@@ -58,7 +61,7 @@ class BigDecimal;
    }
 %}
 
-%typemap(out) BigDecimal* %{
+%typemap(out) omnetpp::common::BigDecimal* %{
    if (!$1 || $1->isNil())
    {
       $result = 0;
@@ -70,15 +73,15 @@ class BigDecimal;
 %}
 
 // when passed by reference:
-%typemap(jstype) BigDecimal& "org.omnetpp.common.engine.BigDecimal";
-%typemap(javain) BigDecimal& "org.omnetpp.common.engine.BigDecimal.getCPtr($javainput)"
+%typemap(jstype) omnetpp::common::BigDecimal& "org.omnetpp.common.engine.BigDecimal";
+%typemap(javain) omnetpp::common::BigDecimal& "org.omnetpp.common.engine.BigDecimal.getCPtr($javainput)"
 
-%typemap(javaout) BigDecimal& {
+%typemap(javaout) omnetpp::common::BigDecimal& {
     long cPtr = $jnicall;
     return (cPtr == 0) ? null : new org.omnetpp.common.engine.BigDecimal(cPtr, false);
 }
 
-%typemap(in) BigDecimal& %{
+%typemap(in) omnetpp::common::BigDecimal& %{
    if (!$input) {
       $1 = ($1_ltype)(void *)&BigDecimal::Nil;
    }
@@ -87,7 +90,7 @@ class BigDecimal;
    }
 %}
 
-%typemap(out) BigDecimal& %{
+%typemap(out) omnetpp::common::BigDecimal& %{
    if ($1->isNil())
    {
       $result = 0;

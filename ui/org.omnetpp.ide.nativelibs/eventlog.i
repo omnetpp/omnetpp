@@ -27,7 +27,7 @@
 #include "eventlog/filteredeventlog.h"
 #include "common/filereader.h"
 
-USING_NAMESPACE
+using namespace omnetpp::eventlog;
 %}
 
 // hide export/import macros from swig
@@ -36,21 +36,57 @@ USING_NAMESPACE
 #define OPP_DLLEXPORT
 #define OPP_DLLIMPORT
 
-#define NAMESPACE_BEGIN
-#define NAMESPACE_END
-#define USING_NAMESPACE
+#define NAMESPACE_BEGIN  namespace omnetpp {
+#define NAMESPACE_END    }
+#define USING_NAMESPACE  using namespace omnetpp;
+#define OPP              omnetpp
 
-%include "eventlog/eventlogdefs.h"
+%typemap(javacode) omnetpp::common::FileReader %{
+    public FileReader(String fileName, boolean cMemoryOwn) {
+        this(fileName);
+        this.swigCMemOwn = cMemoryOwn;
+    }
+%}
+
+%include "common/filereader.h"
+
+namespace omnetpp { namespace eventlog {
+
+typedef OPP::common::BigDecimal BigDecimal;
+typedef OPP::common::FileReader FileReader;
+typedef OPP::common::opp_runtime_error opp_runtime_error;
+typedef omnetpp::common::BigDecimal BigDecimal;
+
+typedef unsigned long ptr_t;
+typedef int64_t eventnumber_t;
+typedef BigDecimal simtime_t;
+#define simtime_nil BigDecimal::MinusOne
+
+class BeginSendEntry;
+class EndSendEntry;
+class EventEntry;
+class EventLogEntry;
+class EventLogMessageEntry;
+class GateCreatedEntry;
+class MessageEntry;
+class MessageSendDependency;
+class ModuleCreatedEntry;
+class SimulationBeginEntry;
+class IEventLog;
+class IMessageDependency;
+typedef std::vector<IMessageDependency *> IMessageDependencyList;
+
+} } // namespaces
 
 /*--------------------------------------------------------------------------
  * ptr_t <--> long mapping
  *--------------------------------------------------------------------------*/
 
-%typemap(jni)    ptr_t "jlong"
-%typemap(jtype)  ptr_t "long"
-%typemap(jstype) ptr_t "long"
-%typemap(javain) ptr_t "$javainput"
-%typemap(javaout) ptr_t {
+%typemap(jni)    omnetpp::eventlog::ptr_t "jlong"
+%typemap(jtype)  omnetpp::eventlog::ptr_t "long"
+%typemap(jstype) omnetpp::eventlog::ptr_t "long"
+%typemap(javain) omnetpp::eventlog::ptr_t "$javainput"
+%typemap(javaout) omnetpp::eventlog::ptr_t {
    return $jnicall;
 }
 
@@ -123,22 +159,25 @@ namespace std {
    //specialize_std_map_on_both(string,,,,string,,,);
    //%template(StringMap) map<string,string>;
 
-   %template(ModuleCreatedEntryList) vector<ModuleCreatedEntry*>;
-   %template(IMessageDependencyList) vector<IMessageDependency*>;
-   %template(MessageSendDependencyList) vector<MessageSendDependency*>;
-   %template(MessageReuseDependencyList) vector<MessageReuseDependency*>;
-   %template(FilteredMessageDependencyList) vector<FilteredMessageDependency*>;
+   %template(ModuleCreatedEntryList) vector<omnetpp::eventlog::ModuleCreatedEntry*>;
+   %template(IMessageDependencyList) vector<omnetpp::eventlog::IMessageDependency*>;
+   %template(MessageSendDependencyList) vector<omnetpp::eventlog::MessageSendDependency*>;
+   %template(MessageReuseDependencyList) vector<omnetpp::eventlog::MessageReuseDependency*>;
+   %template(FilteredMessageDependencyList) vector<omnetpp::eventlog::FilteredMessageDependency*>;
+   %template(MessageEntryList) vector<omnetpp::eventlog::MessageEntry*>;
 
    %template(IntSet) set<int>;
-   %template(PtrSet) set<ptr_t>;
+   %template(PtrSet) set<omnetpp::eventlog::ptr_t>;
 
    specialize_std_map_on_both(int,,,,int,,,);
    %template(IntIntMap) map<int,int>;
 
    %template(IntVector) vector<int>;
    %template(LongVector) vector<long>;
-   %template(PtrVector) vector<ptr_t>;
+   %template(PtrVector) vector<omnetpp::eventlog::ptr_t>;
 };
+
+namespace omnetpp { namespace eventlog {
 
 %ignore EventLog::writeTrace;
 
@@ -325,13 +364,6 @@ import java.lang.reflect.Constructor;
     }
 %}
 
-%typemap(javacode) FileReader %{
-    public FileReader(String fileName, boolean cMemoryOwn) {
-        this(fileName);
-        this.swigCMemOwn = cMemoryOwn;
-    }
-%}
-
 %typemap(javacode) IEvent %{
     public long getCPtr() {
         return swigCPtr;
@@ -344,6 +376,9 @@ import java.lang.reflect.Constructor;
 
 %newobject SequenceChartFacade::getModuleMethodBeginEntries;
 %newobject SequenceChartFacade::getIntersectingMessageDependencies;
+
+} } // namespaces
+
 
 %ignore eventLogStringPool;
 %ignore FILE;
@@ -362,6 +397,12 @@ import java.lang.reflect.Constructor;
 %ignore *::printCause(FILE *);
 %ignore *::printConsequence(FILE *);
 %ignore *::printMiddle(FILE *);
+%ignore omnetpp::eventlog::ProgressMonitor::ProgressMonitor(MonitorFunction);
+%ignore omnetpp::eventlog::ProgressMonitor::ProgressMonitor(MonitorFunction, void *);
+%ignore omnetpp::eventlog::ProgressMonitor::monitorFunction;
+%ignore omnetpp::eventlog::ProgressMonitor::data;
+
+namespace omnetpp { namespace eventlog {
 
 FIX_CHARPTR_MEMBER(EventLogMessageEntry, text, Text);
 FIX_CHARPTR_MEMBER(SimulationBeginEntry, runId, RunId);
@@ -376,6 +417,9 @@ FIX_CHARPTR_MEMBER(BeginSendEntry, messageClassName, MessageClassName);
 FIX_CHARPTR_MEMBER(BeginSendEntry, messageName, MessageName);
 FIX_CHARPTR_MEMBER(BeginSendEntry, detail, Detail);
 
+} } // namespaces
+
+%include "eventlog/enums.h"
 %include "eventlog/ievent.h"
 %include "eventlog/ieventlog.h"
 %include "eventlog/event.h"
@@ -389,4 +433,3 @@ FIX_CHARPTR_MEMBER(BeginSendEntry, detail, Detail);
 %include "eventlog/eventlogtablefacade.h"
 %include "eventlog/sequencechartfacade.h"
 %include "eventlog/filteredeventlog.h"
-%include "common/filereader.h"

@@ -2,6 +2,8 @@
 // Include file for scave.i
 //
 
+namespace omnetpp { namespace scave {
+
 %ignore IDList::IDList(unsigned int);
 %ignore IDList::IDList(const IDList&);
 
@@ -69,7 +71,7 @@ import java.util.EventListener;
 %}
 
 %define ADD_NOTIFY(METHOD)
-%typemap(javaout) void IDList::METHOD {
+%typemap(javaout) void omnetpp::scave::IDList::METHOD {
     $jnicall;
     notifyListeners();
   }
@@ -94,5 +96,7 @@ ADD_NOTIFY(sortVectorsByMax);
 ADD_NOTIFY(sortVectorsByStartTime);
 ADD_NOTIFY(sortVectorsByEndTime);
 ADD_NOTIFY(sortByRunAttribute);
+
+} } // namespaces
 
 %include "scave/idlist.h"

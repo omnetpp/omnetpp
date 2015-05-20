@@ -29,10 +29,10 @@ namespace scave {
  */
 class SCAVE_API VectorFileIndexer
 {
-    typedef OPP::common::IProgressMonitor IProgressMonitor;
+    public:
+        typedef OPP::common::IProgressMonitor IProgressMonitor;
     public:
         void generateIndex(const char *filename, IProgressMonitor *monitor = nullptr);
-
         void rebuildVectorFile(const char *filename, IProgressMonitor *monitor = nullptr);
 };
 

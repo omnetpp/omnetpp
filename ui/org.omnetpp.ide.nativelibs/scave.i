@@ -25,7 +25,7 @@
 #include "scave/scaveexception.h"
 #include "scave/export.h"
 
-USING_NAMESPACE
+using namespace omnetpp::scave;
 %}
 
 #define THREADED
@@ -33,19 +33,35 @@ USING_NAMESPACE
 %include "defs.i"
 
 // hide export/import macros from swig
+#define SCAVE_API
 #define COMMON_API
-#define OPP_DLLEXPORT
-#define OPP_DLLIMPORT
 
-#define NAMESPACE_BEGIN
-#define NAMESPACE_END
-#define USING_NAMESPACE
+#define NAMESPACE_BEGIN  namespace omnetpp {
+#define NAMESPACE_END    }
+#define USING_NAMESPACE  using namespace omnetpp;
+#define OPP              omnetpp
 
-%include "scave/scavedefs.h"
+namespace omnetpp { namespace scave {
 
-%typemap(jni) ID "jlong";
+typedef omnetpp::common::BigDecimal BigDecimal;
+typedef omnetpp::common::opp_runtime_error opp_runtime_error;
+
+typedef BigDecimal simultime_t;
+#define SIMTIME_MIN BigDecimal::NegativeInfinity
+#define SIMTIME_MAX BigDecimal::PositiveInfinity
+typedef int64_t ID;
+typedef int64_t eventnumber_t;
+
+} } // namespaces
 
 %include "bigdecimal.i"
+
+namespace omnetpp { namespace scave {
+class ResultItemField;
+class ResultItemFields;
+class DataflowManager;
+class Node;
+} } // namespaces
 
 USE_COMMON_ENGINE_ILOCK();
 
@@ -85,7 +101,7 @@ namespace std {
 
    %}
 
-   %typemap(javacode) vector<Run*> %{
+   %typemap(javacode) vector<omnetpp::scave::Run*> %{
         public Run[] toArray() {
             int sz = (int)size();
             Run[] array = new Run[sz];
@@ -95,7 +111,7 @@ namespace std {
         }
    %}
 
-   %typemap(javacode) vector<ResultFile*> %{
+   %typemap(javacode) vector<omnetpp::scave::ResultFile*> %{
         public ResultFile[] toArray() {
             int sz = (int)size();
             ResultFile[] array = new ResultFile[sz];
@@ -105,7 +121,7 @@ namespace std {
         }
    %}
 
-   %typemap(javacode) vector<FileRun*> %{
+   %typemap(javacode) vector<omnetpp::scave::FileRun*> %{
         public FileRun[] toArray() {
             int sz = (int)size();
             FileRun[] array = new FileRun[sz];
@@ -115,7 +131,7 @@ namespace std {
         }
    %}
 
-   %typemap(javacode) vector<ID> %{
+   %typemap(javacode) vector<omnetpp::scave::ID> %{
         public Long[] toArray() {
             int sz = (int)size();
             Long[] array = new Long[sz];
@@ -152,22 +168,30 @@ namespace std {
 
    //%template(StringMap) map<string,string>;
 
-   %template(IDVector) vector<ID>;
-   %template(IDVectorVector) vector<vector<ID> >;
-   %template(RunList) vector<Run*>;
-   %template(ResultFileList) vector<ResultFile*>;
-   %template(FileRunList) vector<FileRun*>;
+   %template(IDVector) vector<omnetpp::scave::ID>;
+   %template(IDVectorVector) vector<vector<omnetpp::scave::ID> >;
+   %template(RunList) vector<omnetpp::scave::Run*>;
+   %template(ResultFileList) vector<omnetpp::scave::ResultFile*>;
+   %template(FileRunList) vector<omnetpp::scave::FileRun*>;
    %template(DoubleVector) vector<double>;
-   %template(XYDatasetVector) vector<XYDataset>;
+   %template(XYDatasetVector) vector<omnetpp::scave::XYDataset>;
 };
+
+//
+// enumtype.h
+//
+namespace omnetpp { namespace scave {
 
 %rename(toString) EnumType::str;
 %ignore EnumType::insert;
 %ignore EnumType::parseFromString;
 %ignore EnumType::operator=;
+
+} } // namespaces
+
 %include "scave/enumtype.h"
 
-
+%include "scave/enums.h"
 
 /*---------------------------------------------------------------------------
  *                    ResultFileManager
@@ -239,16 +263,16 @@ namespace std {
 // addComputedVector
 //
 
-%typemap(jni)    IComputation* "jobject"
-%typemap(jtype)  IComputation* "Object"
-%typemap(jstype) IComputation* "Object"
-%typemap(javain) IComputation* "$javainput"
-%typemap(javaout) IComputation* {
+%typemap(jni)     omnetpp::scave::IComputation* "jobject"
+%typemap(jtype)   omnetpp::scave::IComputation* "Object"
+%typemap(jstype)  omnetpp::scave::IComputation* "Object"
+%typemap(javain)  omnetpp::scave::IComputation* "$javainput"
+%typemap(javaout) omnetpp::scave::IComputation* {
    return $jnicall;
 }
 
 %{
-class Computation : public IComputation {
+class Computation : public omnetpp::scave::IComputation {
   JavaVM *jvm;
   jobject ref;
   private:
@@ -284,11 +308,11 @@ class Computation : public IComputation {
 };
 %}
 
-%typemap(in) IComputation* {
+%typemap(in) omnetpp::scave::IComputation* {
   $1 = (IComputation*)new Computation(jenv, $input);
 }
 
-%typemap(out) IComputation* {
+%typemap(out) omnetpp::scave::IComputation* {
   if (dynamic_cast<Computation*>($1))
     $result = dynamic_cast<Computation*>($1)->getJavaObject();
   else
@@ -317,18 +341,23 @@ class Computation : public IComputation {
 %enddef
 
 
-
 // Java doesn't appear to have dictionary sort, export it
+namespace omnetpp { namespace common {
 int strdictcmp(const char *s1, const char *s2);
+} } // namespaces
 
 /* ------------- statistics.h  ----------------- */
+namespace omnetpp { namespace scave {
 %ignore Statistics::operator=;
+} } // namespaces
+
 %include "scave/statistics.h"
 
 /* ------------- idlist.h  ----------------- */
 %include "idlist.i"
 
 /* ------------- resultfilemanager.h  ----------------- */
+namespace omnetpp { namespace scave {
 %ignore IComputation;
 %ignore ResultFileManager::dump;
 %ignore VectorResult::stat;
@@ -487,6 +516,7 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(ResultFileManager::loadFile)
 %newobject ResultFileManager::getResultItemAttributeFilterHints(const IDList&, const char*) const;
 %newobject ResultFileManager::getRunAttributeFilterHints(const RunList&, const char*) const;
 %newobject ResultFileManager::getModuleParamFilterHints(const RunList&, const char*) const;
+} } // namespaces
 
 %include "scave/resultfilemanager.h"
 
@@ -496,11 +526,15 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(ResultFileManager::loadFile)
 
 /* ------------- dataflownetwork.h  ----------------- */
 // wrap the data-flow engine as well
+namespace omnetpp { namespace scave {
 CHECK_RESULTFILE_FORMAT_EXCEPTION(DataflowManager::execute)
+} } // namespaces
 %include scave-plove.i
 
 /* ------------- indexfile.h  ----------------- */
 // %include "scave/indexfile.h"
+
+namespace omnetpp { namespace scave {
 
 %javamethodmodifiers IndexFile::isIndexFileUpToDate "protected";
 
@@ -514,14 +548,19 @@ class IndexFile
         static bool isIndexFileUpToDate(const char *fileName);
 };
 
+} } // namespaces
+
 /* ------------- vectorfileindexer.h  ----------------- */
+namespace omnetpp { namespace scave {
 CHECK_RESULTFILE_FORMAT_EXCEPTION(VectorFileIndexer::generateIndex)
+} } // namespaces
+
 %include "scave/vectorfileindexer.h"
 
 /* ------------- indexedvectorfile.h  ----------------- */
-%typemap(javainterfaces) OutputVectorEntry "Comparable<OutputVectorEntry>"
+%typemap(javainterfaces) omnetpp::scave::OutputVectorEntry "Comparable<OutputVectorEntry>"
 
-%typemap(javacode) OutputVectorEntry %{
+%typemap(javacode) omnetpp::scave::OutputVectorEntry %{
    public boolean equals(Object obj) {
       return (obj instanceof OutputVectorEntry) && getSerial() == ((OutputVectorEntry)obj).getSerial();
    }
@@ -535,14 +574,18 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(VectorFileIndexer::generateIndex)
    }
 %}
 
-namespace std {
-  %template(EntryVector) vector<OutputVectorEntry>;
-};
+namespace omnetpp { namespace scave {
+
+%template(EntryVector) ::std::vector<omnetpp::scave::OutputVectorEntry>;
+
 %ignore IndexedVectorFileWriterNode;
 %ignore IndexedVectorFileWriterNodeType;
+} } // namespaces
+
 %include "scave/indexedvectorfile.h"
 
 /* ------------- vectorfilereader.h  ----------------- */
+namespace omnetpp { namespace scave {
 %ignore SingleSourceNode;
 %ignore SingleSinkNode;
 %ignore FilterNode;
@@ -551,7 +594,11 @@ namespace std {
 %ignore SingleSinkNodeType;
 %ignore FilterNodeType;
 %ignore ReaderNodeType;
+} } // namespaces
+
 %include "scave/commonnodes.h"
+
+namespace omnetpp { namespace scave {
 
 %extend VectorFileReaderNode {
     static VectorFileReaderNode *cast(Node* node) { return dynamic_cast<VectorFileReaderNode*>(node); }
@@ -559,17 +606,22 @@ namespace std {
 
 %ignore VectorFileReaderNodeType;
 %ignore parseColumns;
+
+} } // namespaces
+
 %include "scave/vectorfilereader.h"
 
 /* ------------- indexedvectorfilereader.h  ----------------- */
 %include "scave/indexedvectorfilereader.h"
 
-
+namespace omnetpp { namespace scave {
 %extend IndexedVectorFileReaderNode {
     static IndexedVectorFileReaderNode *cast(Node* node) { return dynamic_cast<IndexedVectorFileReaderNode*>(node); }
 };
+} } // namespaces
 
 /* ------------------ fields.h --------------------- */
+namespace omnetpp { namespace scave {
 %ignore ResultItemFieldsEqual;
 %ignore ResultItemFieldsLess;
 %ignore IDFieldsEqual;
@@ -625,12 +677,15 @@ namespace std {
   }
 %}
 
+} } // namespaces
+
 %include "scave/fields.h"
 
 /* ------------------ datasorter.h --------------------- */
 %include "scave/datasorter.h"
 
 /* ------------------ export.h ----------------------- */
+namespace omnetpp { namespace scave {
 %ignore Column;
 %ignore DataTable;
 %ignore XYDataTable;
@@ -643,4 +698,7 @@ namespace std {
 %ignore ScaveExport::saveVectors;
 %rename(EOL)    CsvExport::eol;
 %newobject ExporterFactory::createExporter;
+} } // namespaces
+
 %include "scave/export.h"
+

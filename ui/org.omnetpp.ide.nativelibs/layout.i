@@ -17,7 +17,7 @@
 // #include "layout/forcedirectedparameters.h"
 // #include "layout/forcedirectedembedding.h"
 
-USING_NAMESPACE
+using namespace omnetpp::layout;
 %}
 
 // hide export/import macros from swig
@@ -26,9 +26,9 @@ USING_NAMESPACE
 #define OPP_DLLEXPORT
 #define OPP_DLLIMPORT
 
-#define NAMESPACE_BEGIN
-#define NAMESPACE_END
-#define USING_NAMESPACE
+#define NAMESPACE_BEGIN  namespace omnetpp {
+#define NAMESPACE_END    }
+#define USING_NAMESPACE  using namespace omnetpp;
 
 // %typemap(jni)    cModule* "jobject"
 // %typemap(jtype)  cModule* "Object"
@@ -166,9 +166,13 @@ USING_NAMESPACE
 }
 %enddef
 
+namespace omnetpp { namespace layout {
+
 FIXUP_GETNODEPOSITION(GraphLayouter);
 FIXUP_GETNODEPOSITION(BasicSpringEmbedderLayout);
 FIXUP_GETNODEPOSITION(ForceDirectedGraphLayouter);
+
+} } // namespaces
 
 ///*
 //XXX to ignore:

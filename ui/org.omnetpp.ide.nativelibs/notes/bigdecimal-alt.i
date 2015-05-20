@@ -13,15 +13,15 @@
 #include "common/bigdecimal.h"
 %}
 
-%typemap(jni) BigDecimal "jobject";
-%typemap(jtype) BigDecimal "java.math.BigDecimal";
-%typemap(jstype) BigDecimal "java.math.BigDecimal";
-%typemap(javain) BigDecimal "$javainput";
-%typemap(javaout) BigDecimal {
+%typemap(jni)     omnetpp::common::BigDecimal "jobject";
+%typemap(jtype)   omnetpp::common::BigDecimal "java.math.BigDecimal";
+%typemap(jstype)  omnetpp::common::BigDecimal "java.math.BigDecimal";
+%typemap(javain)  omnetpp::common::BigDecimal "$javainput";
+%typemap(javaout) omnetpp::common::BigDecimal {
    return $jnicall;
 }
 
-%typemap(in) BigDecimal {
+%typemap(in) omnetpp::common::BigDecimal {
    if ($input)
    {
       jclass cl = jenv->FindClass("java/math/BigDecimal");
@@ -37,7 +37,7 @@
    }
 }
 
-%typemap(out) BigDecimal {
+%typemap(out) omnetpp::common::BigDecimal {
    if ($1.isNil())
    {
       $result = NULL;

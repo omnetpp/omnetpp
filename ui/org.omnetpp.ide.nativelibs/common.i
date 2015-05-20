@@ -12,7 +12,7 @@
 #include "common/expression.h"
 #include "common/stringtokenizer2.h"
 
-USING_NAMESPACE
+using namespace omnetpp::common;
 %}
 
 %include "defs.i"
@@ -33,20 +33,21 @@ namespace std {
 #define OPP_DLLEXPORT
 #define OPP_DLLIMPORT
 
-#define NAMESPACE_BEGIN
-#define NAMESPACE_END
-#define USING_NAMESPACE
+#define NAMESPACE_BEGIN  namespace omnetpp {
+#define NAMESPACE_END    }
+#define USING_NAMESPACE  using namespace omnetpp;
 
 %include "std_set.i"     // our custom version
 namespace std {
    %template(StringSet) set<string>;
 };
 
+namespace omnetpp { namespace common {
 
-%rename(parseQuotedString)   ::opp_parsequotedstr;
-%rename(quoteString)         ::opp_quotestr;
-%rename(needsQuotes)         ::opp_needsquotes;
-%rename(quoteStringIfNeeded) ::opp_quotestr_ifneeded;
+%rename(parseQuotedString)   opp_parsequotedstr;
+%rename(quoteString)         opp_quotestr;
+%rename(needsQuotes)         opp_needsquotes;
+%rename(quoteStringIfNeeded) opp_quotestr_ifneeded;
 
 std::string opp_parsequotedstr(const char *txt);
 std::string opp_quotestr(const char *txt);
@@ -57,12 +58,21 @@ int strdictcmp(const char *s1, const char *s2);
 
 %ignore UnitConversion::parseQuantity(const char *, std::string&);
 
+} } // namespaces
+
 %include "common/patternmatcher.h"
 %include "common/unitconversion.h"
 
 
 /* -------------------- BigDecimal -------------------------- */
 
+namespace omnetpp { namespace common {
+
+%{
+// some shitty Windows header file defines min()/max() macros that conflict with us
+#undef min
+#undef max
+%}
 
 %ignore _I64_MAX_DIGITS;
 %ignore BigDecimal::BigDecimal();
@@ -94,6 +104,16 @@ int strdictcmp(const char *s1, const char *s2);
 %rename(toString) BigDecimal::str;
 %rename(doubleValue) BigDecimal::dbl;
 
+/*
+FIXME new swig errors:
+/home/andras/omnetpp/src/common/bigdecimal.h:120: Warning 503: Can't wrap 'operator +' unless renamed to a valid identifier.
+/home/andras/omnetpp/src/common/bigdecimal.h:121: Warning 503: Can't wrap 'operator -' unless renamed to a valid identifier.
+/home/andras/omnetpp/src/common/bigdecimal.h:123: Warning 503: Can't wrap 'operator *' unless renamed to a valid identifier.
+/home/andras/omnetpp/src/common/bigdecimal.h:124: Warning 503: Can't wrap 'operator *' unless renamed to a valid identifier.
+/home/andras/omnetpp/src/common/bigdecimal.h:125: Warning 503: Can't wrap 'operator /' unless renamed to a valid identifier.
+/home/andras/omnetpp/src/common/bigdecimal.h:126: Warning 503: Can't wrap 'operator /' unless renamed to a valid identifier.
+*/
+
 %extend BigDecimal {
    const BigDecimal add(const BigDecimal& x) {return *self + x;}
    const BigDecimal subtract(const BigDecimal& x) {return *self - x;}
@@ -118,15 +138,33 @@ SWIG_JAVABODY_METHODS(public, public, BigDecimal)
     }
 %}
 
+} } // namespaces
+
+const omnetpp::common::BigDecimal floor(const omnetpp::common::BigDecimal& x);
+const omnetpp::common::BigDecimal ceil(const omnetpp::common::BigDecimal& x);
+const omnetpp::common::BigDecimal fabs(const omnetpp::common::BigDecimal& x);
+const omnetpp::common::BigDecimal fmod(const omnetpp::common::BigDecimal& x, const omnetpp::common::BigDecimal& y);
+const omnetpp::common::BigDecimal max(const omnetpp::common::BigDecimal& x, const omnetpp::common::BigDecimal& y);
+const omnetpp::common::BigDecimal min(const omnetpp::common::BigDecimal& x, const omnetpp::common::BigDecimal& y);
+
 %include "common/bigdecimal.h"
 
 
 /* -------------------- rwlock.h -------------------------- */
+
+namespace omnetpp { namespace common {
+
 %ignore ReaderMutex;
 %ignore WriterMutex;
 SWIG_JAVABODY_METHODS(public, public, ILock)
 
+} } // namespaces
+
 %include "common/rwlock.h"
+
+/* -------------------- expression.h -------------------------- */
+
+namespace omnetpp { namespace common {
 
 class SimpleResolver;
 
@@ -136,7 +174,6 @@ class SimpleResolver;
         self->parse(text, &resolver);
     }
 }
-
 
 %{
 class SimpleVar : public Expression::Variable {
@@ -165,10 +202,20 @@ class SimpleResolver : public Expression::Resolver {
 %}
 
 %ignore MathFunction;
+%ignore Expression::Elem::stringPool;
 %ignore Expression::evaluate;  // swig does not support nested classes (Expression::Value)
+%ignore Expression::setExpression;
+%ignore Expression::getExpression;
+%ignore Expression::getExpressionLength;
+%ignore Expression::parse(const char *text, Resolver *resolver);
+} } // namespaces
+
 %include "common/expression.h"
 
 /* -------------------- stringtokenizer2.h -------------------------- */
+
+namespace omnetpp { namespace common {
+
 %define CHECK_STRINGTOKENIZER_EXCEPTION(METHOD)
 %exception METHOD {
     try {
@@ -192,4 +239,8 @@ CHECK_STRINGTOKENIZER_EXCEPTION(StringTokenizer2::nextToken)
 
 %ignore StringTokenizerException;
 
+} } // namespaces
+
 %include "common/stringtokenizer2.h"
+
+

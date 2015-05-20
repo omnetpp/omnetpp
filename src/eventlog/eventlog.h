@@ -30,8 +30,6 @@
 NAMESPACE_BEGIN
 namespace eventlog {
 
-using OPP::common::FileReader;
-
 extern EVENTLOG_API OPP::common::StringPool eventLogStringPool;
 
 class Event;

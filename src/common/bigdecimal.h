@@ -227,6 +227,8 @@ inline std::ostream& operator<<(std::ostream& os, const BigDecimal& x)
     return os << BigDecimal::ttoa(buf, x, endp);
 }
 
+#ifndef SWIG
+
 /**
  * BigDecimal version of floor(double) from math.h.
  */
@@ -274,6 +276,8 @@ inline const BigDecimal min(const BigDecimal& x, const BigDecimal& y)
 {
     return x < y ? x : y;
 }
+
+#endif // SWIG
 
 } // namespace common
 NAMESPACE_END

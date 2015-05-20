@@ -28,8 +28,10 @@ namespace std {
 
    // generate needed template specializations
    %template(StringMap) map<string,string>;
-   %template(NodeTypeVector) vector<NodeType*>;
+   %template(NodeTypeVector) vector<omnetpp::scave::NodeType*>;
 };
+
+namespace omnetpp { namespace scave {
 
 //
 // We publish very little of the Node and Port classes into Java,
@@ -72,6 +74,9 @@ class Node
 %ignore XYArray::XYArray;
 
 %ignore NodeTypeRegistry::parseFilterSpec;
+
+} } // namespaces
+
 //
 // NodeType, NodeTypeRegistry and DataflowManager are published in their entirety
 // to Java.
@@ -80,5 +85,4 @@ class Node
 %include "scave/nodetyperegistry.h"
 %include "scave/dataflowmanager.h"
 %include "scave/xyarray.h"
-
 

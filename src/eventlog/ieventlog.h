@@ -34,7 +34,7 @@ class EVENTLOG_API ProgressMonitor
     public:
         typedef void (*MonitorFunction)(IEventLog *, void *);
         MonitorFunction monitorFunction;
-        void *data;
+        void *data;  // needs to be public due to swig wrapper code
 
     public:
         ProgressMonitor(MonitorFunction monitorFunction=nullptr, void *data=nullptr) : monitorFunction(monitorFunction), data(data) {}

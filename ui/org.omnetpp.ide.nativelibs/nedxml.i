@@ -23,7 +23,7 @@
 #include "nedxml/nedsyntaxvalidator.h"
 #include "nedxml/nedfilebuffer.h"
 
-USING_NAMESPACE
+using namespace omnetpp::nedxml;
 %}
 
 // hide export/import macros from swig
@@ -32,13 +32,15 @@ USING_NAMESPACE
 #define OPP_DLLEXPORT
 #define OPP_DLLIMPORT
 
-#define NAMESPACE_BEGIN
-#define NAMESPACE_END
-#define USING_NAMESPACE
+#define NAMESPACE_BEGIN  namespace omnetpp {
+#define NAMESPACE_END    }
+#define USING_NAMESPACE  using namespace omnetpp;
 
 namespace std {
 //class ostream;
 };
+
+namespace omnetpp { namespace nedxml {
 
 // parse functions return new objects, supposed to be deleted from Java
 %newobject NEDParser::parseNEDText(const char *);
@@ -61,6 +63,16 @@ namespace std {
 %ignore generateNED2(std::ostream&, NEDElement *, NEDErrorStore *);
 %ignore generateXML(std::ostream&, NEDElement *, bool, int);
 %ignore NEDInternalError;
+
+%ignore NEDTools::splitToFiles;
+
+%ignore NamespaceElement::getFirstCommentChild;
+%ignore PackageElement::getFirstCommentChild;
+%ignore PacketDeclElement::getFirstCommentChild;
+%ignore PacketElement::getFirstCommentChild;
+%ignore PacketElement::getFirstPropertyChild;
+%ignore PacketElement::getFirstFieldChild;
+
 
 // XXX for some reason, SWIG doesn't give a s&%$# about the following ignores:
 %ignore NEDElementStore::add(NEDElement *, const char *, ...);
@@ -125,6 +137,7 @@ namespace std {
 %ignore  MsgpropertyElement;
 %ignore  UnknownElement;
 
+} } // namespaces
 
 /* Let's just grab the original header file here */
 %include "nedxml/nedxmldefs.h"
