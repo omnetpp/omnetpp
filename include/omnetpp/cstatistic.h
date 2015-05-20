@@ -38,7 +38,7 @@ class cAccuracyDetection;
  */
 class SIM_API cStatistic : public cRandom
 {
-  public:
+  private:
     cTransientDetection *td;    // ptr to associated object
     cAccuracyDetection *ra;     // ptr to associated object
 

@@ -213,7 +213,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
         FL_RECORD_EVENTS      = 1 << 11, // enables recording events in this module
     };
 
-  protected:
+  private:
     mutable char *fullpath; // cached fullPath string (caching is optional, so it may be NULL)
     mutable char *fullname; // buffer to store full name of object
     static bool cachefullpath; // whether to cache the fullPath string or not
