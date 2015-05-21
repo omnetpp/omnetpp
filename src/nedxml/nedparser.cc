@@ -101,7 +101,7 @@ const char *NEDParser::getBuiltInDeclarations()
 
 NEDParser::NEDParser(NEDErrorStore *e)
 {
-    nedsource = NULL;
+    nedsource = nullptr;
     parseexpr = true;
     storesrc = false;
     errors = e;
@@ -115,14 +115,14 @@ NEDParser::~NEDParser()
 NEDElement *NEDParser::parseNEDFile(const char *osfname, const char *fname)
 {
     if (!loadFile(osfname, fname))
-        return NULL;
+        return nullptr;
     return parseNED();
 }
 
 NEDElement *NEDParser::parseNEDText(const char *nedtext, const char *fname)
 {
     if (!loadText(nedtext, fname))
-        return NULL;
+        return nullptr;
     return parseNED();
 }
 
@@ -131,20 +131,20 @@ NEDElement *NEDParser::parseNEDExpression(const char *nedexpression)
     parseexpr = true;
     std::string source = std::string(MAGIC_PREFIX) + "\n" + nedexpression;
     NEDElement *tree = parseNEDText(source.c_str(), "buffer");
-    return tree ? tree->getFirstChild() : NULL; // unwrap from NedFileElement
+    return tree ? tree->getFirstChild() : nullptr; // unwrap from NedFileElement
 }
 
 NEDElement *NEDParser::parseMSGFile(const char *osfname, const char *fname)
 {
     if (!loadFile(osfname, fname))
-        return NULL;
+        return nullptr;
     return parseMSG();
 }
 
 NEDElement *NEDParser::parseMSGText(const char *nedtext, const char *fname)
 {
     if (!loadText(nedtext,fname))
-        return NULL;
+        return nullptr;
     return parseMSG();
 }
 
@@ -256,7 +256,7 @@ bool NEDParser::guessIsNEDInNewSyntax(const char *txt)
     //
     bool containsPackageKeyword=false;
     if (!containsNED2Chars)
-        for (const char *s = strstr(buf,"package"); s!=NULL; s = strstr(s+1,"package"))
+        for (const char *s = strstr(buf,"package"); s!=nullptr; s = strstr(s+1,"package"))
             if (opp_isspace(s[strlen("package")]) && (s==buf || opp_isspace(s[-1])))
                 {containsPackageKeyword=true; break;}
 

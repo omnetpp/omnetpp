@@ -41,7 +41,7 @@ Register_Class(cLinkDelayLookahead);
 cLinkDelayLookahead::cLinkDelayLookahead()
 {
     numSeg = 0;
-    segInfo = NULL;
+    segInfo = nullptr;
 }
 
 cLinkDelayLookahead::~cLinkDelayLookahead()
@@ -122,7 +122,7 @@ simtime_t cLinkDelayLookahead::collectPathDelay(cGate *g)
 void cLinkDelayLookahead::endRun()
 {
     delete [] segInfo;
-    segInfo = NULL;
+    segInfo = nullptr;
 }
 
 simtime_t cLinkDelayLookahead::getCurrentLookahead(cMessage *, int procId, void *)

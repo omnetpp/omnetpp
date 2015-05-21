@@ -215,7 +215,7 @@ void InifileReader::internalReadFile(const char *filename, int currentSectionInd
                 currentSectionIndex = getOrCreateSection("General");
             const char *endPos = findEndContent(line, filename, lineNumber);
             const char *equalSignPos = strchr(line, '=');
-            if (equalSignPos==NULL || equalSignPos > endPos)
+            if (equalSignPos==nullptr || equalSignPos > endPos)
                 throw cRuntimeError(ERRPREFIX "line must be in the form key=value", filename, lineNumber);
             std::string key = trim(line, equalSignPos);
             std::string value = trim(equalSignPos+1, endPos);
@@ -236,7 +236,7 @@ bool InifileReader::readLineInto(std::string& line, FILE *file)
         return false;
 
     char buffer[512+1];
-    while (fgets(buffer, 512, file)!=NULL)
+    while (fgets(buffer, 512, file)!=nullptr)
     {
         const char *endBuffer = buffer + strlen(buffer);
         if (buffer==endBuffer) break; // should not happen

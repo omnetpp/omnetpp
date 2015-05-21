@@ -24,8 +24,8 @@ Vertex::Vertex(Pt pt, Rs rs, void *identity) {
     this->identity = identity;
 
     color = 0;
-    connectedSubComponent = NULL;
-    spanningTreeParent = NULL;
+    connectedSubComponent = nullptr;
+    spanningTreeParent = nullptr;
     starTreeCenter = Pt::getNil();
     starTreeCircleCenter = Pt::getNil();
     starTreeRadius = -1;
@@ -37,12 +37,12 @@ Edge::Edge(Vertex *source, Vertex *target, void *identity) {
     this->identity = identity;
 
     color = 0;
-    connectedSubComponent = NULL;
+    connectedSubComponent = nullptr;
 }
 
 GraphComponent::GraphComponent() {
     owner = true;
-    spanningTreeRoot = NULL;
+    spanningTreeRoot = nullptr;
 }
 
 GraphComponent::~GraphComponent() {
@@ -90,7 +90,7 @@ Vertex *GraphComponent::findVertex(void *identity)
             return vertex;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 Rc GraphComponent::getBoundingRectangle() {
@@ -113,13 +113,13 @@ Rc GraphComponent::getBoundingRectangle() {
 }
 
 void GraphComponent::calculateSpanningTree() {
-    Vertex *rootVertex = NULL;
+    Vertex *rootVertex = nullptr;
     spanningTreeVertices.clear();
 
     for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++) {
         Vertex *vertex = *it;
 
-        if (rootVertex == NULL || rootVertex->neighbours.size() < vertex->neighbours.size())
+        if (rootVertex == nullptr || rootVertex->neighbours.size() < vertex->neighbours.size())
             rootVertex = vertex;
     }
 
@@ -133,11 +133,11 @@ void GraphComponent::calculateSpanningTree(Vertex *rootVertex) {
     for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++) {
         Vertex *vertex = *it;
         vertex->spanningTreeChildren.clear();
-        vertex->spanningTreeParent = NULL;
+        vertex->spanningTreeParent = nullptr;
         vertex->color = 0;
     }
 
-    addToSpanningTreeParent(NULL, rootVertex);
+    addToSpanningTreeParent(nullptr, rootVertex);
     std::deque<Vertex *> vertices;
     vertices.push_back(rootVertex);
     spanningTreeVertices.push_back(rootVertex);

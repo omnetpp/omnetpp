@@ -36,7 +36,7 @@ class EVENTLOG_API ProgressMonitor
         void *data;
 
     public:
-        ProgressMonitor(MonitorFunction monitorFunction=NULL, void *data=NULL) : monitorFunction(monitorFunction), data(data) {}
+        ProgressMonitor(MonitorFunction monitorFunction=nullptr, void *data=nullptr) : monitorFunction(monitorFunction), data(data) {}
         void progress(IEventLog *eventLog) { if (monitorFunction) monitorFunction(eventLog, data); }
 };
 
@@ -180,7 +180,7 @@ class EVENTLOG_API IEventLog
         /**
          * Returns true if the event with the given event number is included in the log.
          */
-        virtual bool isIncludedInLog(eventnumber_t eventNumber) { return getEventForEventNumber(eventNumber) != NULL; }
+        virtual bool isIncludedInLog(eventnumber_t eventNumber) { return getEventForEventNumber(eventNumber) != nullptr; }
         virtual IEvent *getFirstEventNotBeforeEventNumber(eventnumber_t eventNumber) { return getEventForEventNumber(eventNumber, LAST_OR_NEXT); }
         virtual IEvent *getLastEventNotAfterEventNumber(eventnumber_t eventNumber) { return getEventForEventNumber(eventNumber, FIRST_OR_PREVIOUS); }
         virtual IEvent *getFirstEventNotBeforeSimulationTime(simtime_t simulationTime) { return getEventForSimulationTime(simulationTime, LAST_OR_NEXT); }

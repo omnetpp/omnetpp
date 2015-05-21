@@ -69,7 +69,7 @@ class SIM_API cDisplayString
        char *name;
        int numArgs;
        char *args[MAXARGS];
-       Tag() {name=NULL; numArgs=0;}
+       Tag() {name=nullptr; numArgs=0;}
     };
 
     char *buffer;       // holds pieces of display string (sliced with zeroes)

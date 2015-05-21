@@ -84,12 +84,12 @@ class SIM_API cProperty : public cNamedObject
     /**
      * Constructor. The property name should be specified without the "@" mark.
      */
-    explicit cProperty(const char *name=NULL, const char *index=NULL);
+    explicit cProperty(const char *name=nullptr, const char *index=nullptr);
 
     /**
      * Copy constructor.
      */
-    cProperty(const cProperty& other) : cNamedObject(other) {setFlag(FL_ISLOCKED,false); propindex=propfullname=NULL; copy(other);}
+    cProperty(const cProperty& other) : cNamedObject(other) {setFlag(FL_ISLOCKED,false); propindex=propfullname=nullptr; copy(other);}
 
     /**
      * Destructor.

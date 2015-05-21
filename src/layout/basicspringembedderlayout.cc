@@ -67,7 +67,7 @@ void BasicSpringEmbedderLayout::setEnvironment(GraphLayouterEnvironment *environ
 BasicSpringEmbedderLayout::Node *BasicSpringEmbedderLayout::findNode(int nodeId)
 {
     NodeMap::iterator it = nodeMap.find(nodeId);
-    return it==nodeMap.end() ? NULL : it->second;
+    return it==nodeMap.end() ? nullptr : it->second;
 }
 
 void BasicSpringEmbedderLayout::addMovableNode(int nodeId, double width, double height)
@@ -75,14 +75,14 @@ void BasicSpringEmbedderLayout::addMovableNode(int nodeId, double width, double 
 #ifdef TRACE_LAYOUTER
     TRACE_CALL("BasicSpringEmbedderLayout::addMovableNode(nodeId: %d, width: %g, height: %g)", nodeId, width, height);
 #endif
-    Assert(findNode(nodeId)==NULL);
+    Assert(findNode(nodeId)==nullptr);
 
     allNodesAreFixed = false;
 
     Node *n = new Node();
     n->nodeId = nodeId;
     n->fixed = false;
-    n->anchor = NULL;
+    n->anchor = nullptr;
     n->sx = width/2;
     n->sy = height/2;
 
@@ -95,14 +95,14 @@ void BasicSpringEmbedderLayout::addFixedNode(int nodeId, double x, double y, dou
 #ifdef TRACE_LAYOUTER
     TRACE_CALL("BasicSpringEmbedderLayout::addFixedNode(nodeId: %d, x: %g, y: %g, width: %g, height: %g)", nodeId, x, y, width, height);
 #endif
-    Assert(findNode(nodeId)==NULL);
+    Assert(findNode(nodeId)==nullptr);
 
     haveFixedNode = true;
 
     Node *n = new Node();
     n->nodeId = nodeId;
     n->fixed = true;
-    n->anchor = NULL;
+    n->anchor = nullptr;
     n->x = x;
     n->y = y;
     n->sx = width/2;
@@ -118,7 +118,7 @@ void BasicSpringEmbedderLayout::addAnchoredNode(int nodeId, const char *anchorna
 #ifdef TRACE_LAYOUTER
     TRACE_CALL("BasicSpringEmbedderLayout::addAnchoredNode(nodeId: %d, anchorname: %s, offx: %g, offy: %g, width: %g, height: %g)", nodeId, anchorname, offy, offx, width, height);
 #endif
-    Assert(findNode(nodeId)==NULL);
+    Assert(findNode(nodeId)==nullptr);
 
     haveAnchoredNode = true;
     allNodesAreFixed = false;
@@ -157,7 +157,7 @@ void BasicSpringEmbedderLayout::addAnchoredNode(int nodeId, const char *anchorna
 
 void BasicSpringEmbedderLayout::addEdge(int srcNodeId, int destNodeId, double len)
 {
-    Assert(findNode(srcNodeId)!=NULL && findNode(destNodeId)!=NULL);
+    Assert(findNode(srcNodeId)!=nullptr && findNode(destNodeId)!=nullptr);
 
     Edge e;
     e.src = findNode(srcNodeId);
@@ -177,7 +177,7 @@ void BasicSpringEmbedderLayout::addEdgeToBorder(int, double)
 
 void BasicSpringEmbedderLayout::getNodePosition(int nodeId, double& x, double& y)
 {
-    Assert(findNode(nodeId)!=NULL);
+    Assert(findNode(nodeId)!=nullptr);
 
     Node *n = findNode(nodeId);
     x = n->x;
@@ -189,7 +189,7 @@ void BasicSpringEmbedderLayout::execute()
 #ifdef TRACE_LAYOUTER
     TRACE_CALL("BasicSpringEmbedderLayout::execute()");
 #endif
-    Assert(environment!=NULL);
+    Assert(environment!=nullptr);
 
     if (nodes.empty() || allNodesAreFixed)
         return;

@@ -28,7 +28,7 @@ using namespace std;
 #define LL  INT64_PRINTF_FORMAT
 
 IndexedVectorFileReaderNode2::IndexedVectorFileReaderNode2(const char *filename, size_t bufferSize) :
-  ReaderNode(filename, bufferSize), index(NULL), fFinished(false)
+  ReaderNode(filename, bufferSize), index(nullptr), fFinished(false)
 {
 
 }
@@ -37,7 +37,7 @@ IndexedVectorFileReaderNode2::~IndexedVectorFileReaderNode2()
 {
     if (index) {
         delete index;
-        index = NULL;
+        index = nullptr;
     }
 }
 
@@ -125,7 +125,7 @@ bool IndexedVectorFileReaderNode2::readNextBlock(PortData &portData)
     reader.seekTo(startOffset);
 
     char *line;
-    for (long k = 0; k < count && (line=reader.getNextLineBufferPointer())!=NULL; ++k)
+    for (long k = 0; k < count && (line=reader.getNextLineBufferPointer())!=nullptr; ++k)
     {
         offset = reader.getCurrentLineStartOffset();
         int length = reader.getCurrentLineLength();

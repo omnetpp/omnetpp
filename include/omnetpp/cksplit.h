@@ -198,7 +198,7 @@ class SIM_API cKSplit : public cDensityEstBase
     /**
      * Constructor.
      */
-    explicit cKSplit(const char *name=NULL);
+    explicit cKSplit(const char *name=nullptr);
 
     /**
      * Destructor.

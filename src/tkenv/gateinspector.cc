@@ -40,7 +40,7 @@ class GateInspectorFactory : public InspectorFactory
   public:
     GateInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) {return dynamic_cast<cGate *>(obj)!=NULL;}
+    bool supportsObject(cObject *obj) {return dynamic_cast<cGate *>(obj)!=nullptr;}
     int getInspectorType() {return INSP_GRAPHICAL;}
     double getQualityAsDefault(cObject *object) {return 3.0;}
     Inspector *createInspector() {return new GateInspector(this);}
@@ -92,7 +92,7 @@ void GateInspector::redraw()
    int xsiz = 0;
    char prevdir = ' ';
    cGate *g;
-   for (g = gate->getPathStartGate(); g!=NULL; g=g->getNextGate(),k++)
+   for (g = gate->getPathStartGate(); g!=nullptr; g=g->getNextGate(),k++)
    {
         if (g->getType()==prevdir)
              xsiz += (g->getType()==cGate::OUTPUT) ? 1 : -1;
@@ -119,7 +119,7 @@ void GateInspector::redraw()
    }
 
    // draw connections
-   for (g = gate->getPathStartGate(); g->getNextGate()!=NULL; g=g->getNextGate())
+   for (g = gate->getPathStartGate(); g->getNextGate()!=nullptr; g=g->getNextGate())
    {
         char srcgateptr[32], destgateptr[32], chanptr[32];
         ptrToStr(g,srcgateptr);

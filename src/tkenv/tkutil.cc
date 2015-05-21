@@ -52,7 +52,7 @@ NAMESPACE_BEGIN
 
 TclQuotedString::TclQuotedString()
 {
-    quotedstr = NULL;
+    quotedstr = nullptr;
     buf[0] = '\0';
 }
 
@@ -177,10 +177,10 @@ const char *getObjectFullTypeName(cObject *object)
 char *voidPtrToStr(void *ptr, char *buffer)
 {
     static char staticbuf[20];
-    if (buffer==NULL)
+    if (buffer==nullptr)
            buffer = staticbuf;
 
-    if (ptr==0)
+    if (ptr==nullptr)
            strcpy(buffer,"ptr0");  // GNU C++'s sprintf() says "nil"
     else
            sprintf(buffer,"ptr%p", ptr );
@@ -195,7 +195,7 @@ void *strToVoidPtr(const char *s)
     else if (s[0]=='0' && s[1]=='x')
         s += 2;
     else
-        return NULL;
+        return nullptr;
 
     void *ptr;
     sscanf(s, "%p", &ptr);
@@ -227,7 +227,7 @@ void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor)
 std::string getObjectIcon(Tcl_Interp *interp, cObject *object)
 {
     const char *iconName;
-    if (object == NULL)
+    if (object == nullptr)
         iconName = "none_vs";
     else if (dynamic_cast<cModule *>(object) && ((cModule *)object)->isPlaceholder())
         iconName = "placeholder_vs";
@@ -352,7 +352,7 @@ void resolveSendDirectHops(cModule *src, cModule *dest, std::vector<cModule*>& h
         hops.push_back(ancestor);
         ancestor = ancestor->getParentModule();
     }
-    ASSERT(ancestor!=NULL);
+    ASSERT(ancestor!=nullptr);
 
     if (src == ancestor)
         hops.push_back(src);
@@ -383,7 +383,7 @@ bool isAPL()
 cPar *displayStringPar(const char *parname, cComponent *component, bool searchparent)
 {
     // look up locally
-    cPar *par = NULL;
+    cPar *par = nullptr;
     int k = component->findPar(parname);
     if (k >= 0)
         par = &(component->par(k));
@@ -418,11 +418,11 @@ bool displayStringContainsParamRefs(const char *dispstr)
 cPar *resolveDisplayStringParamRef(const char *dispstr, cComponent *component, bool searchparent)
 {
     if (dispstr[0] != '$')
-        return NULL;
+        return nullptr;
     if (dispstr[1] != '{')
         return displayStringPar(dispstr+1, component, searchparent); // rest of string is assumed to be the param name
     else if (dispstr[strlen(dispstr)-1] != '}')
-        return NULL;  // unterminated brace (or close brace not the last char)
+        return nullptr;  // unterminated brace (or close brace not the last char)
     else
         // starts with "${" and ends with "}" -- everything in between is taken to be the parameter name
         return displayStringPar(std::string(dispstr+2, strlen(dispstr)-3).c_str(), component, searchparent);

@@ -160,7 +160,7 @@ NEDElement *NEDTypeInfo::getTree() const
 std::string NEDTypeInfo::getPackage() const
 {
     NEDElement *nedfile = getTree()->getParentWithTag(NED_NED_FILE);
-    PackageElement *packageDecl = nedfile ? (PackageElement *) nedfile->getFirstChildWithTag(NED_PACKAGE) : NULL;
+    PackageElement *packageDecl = nedfile ? (PackageElement *) nedfile->getFirstChildWithTag(NED_PACKAGE) : nullptr;
     return packageDecl ? packageDecl->getName() : "";
 }
 
@@ -168,7 +168,7 @@ std::string NEDTypeInfo::getPackageProperty(const char *propertyName) const
 {
     // find first such property in the current file, then in package.ned of this package and parent packages
     for (NedFileElement *nedfile = (NedFileElement *)getTree()->getParentWithTag(NED_NED_FILE);
-         nedfile != NULL;
+         nedfile != nullptr;
          nedfile = getResolver()->getParentPackageNedFile(nedfile))
     {
         const char *propertyValue = NEDElementUtil::getLocalStringProperty(nedfile, propertyName);
@@ -241,12 +241,12 @@ const char *NEDTypeInfo::extendsName(int k) const
 
 const char *NEDTypeInfo::getEnclosingTypeName() const
 {
-    return isInner ? enclosingTypeName.c_str() : NULL;
+    return isInner ? enclosingTypeName.c_str() : nullptr;
 }
 
 const char *NEDTypeInfo::getImplementationClassName() const
 {
-    return implClassName.empty() ? NULL : implClassName.c_str();
+    return implClassName.empty() ? nullptr : implClassName.c_str();
 }
 
 NEDTypeInfo *NEDTypeInfo::getSuperDecl() const
@@ -289,13 +289,13 @@ SubmoduleElement *NEDTypeInfo::getLocalSubmoduleElement(const char *subcomponent
         if (submoduleNode)
             return (SubmoduleElement *)submoduleNode;
     }
-    return NULL;
+    return nullptr;
 }
 
 ConnectionElement *NEDTypeInfo::getLocalConnectionElement(long id) const
 {
     if (id == -1)
-        return NULL;  // "not a NED connection"
+        return nullptr;  // "not a NED connection"
 
     ConnectionsElement *connectionsNode = getConnectionsElement();
     if (connectionsNode)
@@ -314,7 +314,7 @@ ConnectionElement *NEDTypeInfo::getLocalConnectionElement(long id) const
             }
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 SubmoduleElement *NEDTypeInfo::getSubmoduleElement(const char *name) const
@@ -323,9 +323,9 @@ SubmoduleElement *NEDTypeInfo::getSubmoduleElement(const char *name) const
     if (submodule)
         return submodule;
     for (int i=0; i<numExtendsNames(); i++)
-        if ((submodule = getResolver()->lookup(extendsName(i))->getSubmoduleElement(name))!=NULL)
+        if ((submodule = getResolver()->lookup(extendsName(i))->getSubmoduleElement(name))!=nullptr)
             return submodule;
-    return NULL;
+    return nullptr;
 }
 
 ConnectionElement *NEDTypeInfo::getConnectionElement(long id) const
@@ -334,9 +334,9 @@ ConnectionElement *NEDTypeInfo::getConnectionElement(long id) const
     if (conn)
         return conn;
     for (int i=0; i<numExtendsNames(); i++)
-        if ((conn = getResolver()->lookup(extendsName(i))->getConnectionElement(id))!=NULL)
+        if ((conn = getResolver()->lookup(extendsName(i))->getConnectionElement(id))!=nullptr)
             return conn;
-    return NULL;
+    return nullptr;
 }
 
 ParamElement *NEDTypeInfo::findLocalParamDecl(const char *name) const
@@ -346,7 +346,7 @@ ParamElement *NEDTypeInfo::findLocalParamDecl(const char *name) const
         for (ParamElement *param=params->getFirstParamChild(); param; param=param->getNextParamSibling())
             if (param->getType()!=NED_PARTYPE_NONE && opp_strcmp(param->getName(), name)==0)
                 return param;
-    return NULL;
+    return nullptr;
 }
 
 ParamElement *NEDTypeInfo::findParamDecl(const char *name) const
@@ -355,9 +355,9 @@ ParamElement *NEDTypeInfo::findParamDecl(const char *name) const
     if (param)
         return param;
     for (int i=0; i<numExtendsNames(); i++)
-        if ((param = getResolver()->lookup(extendsName(i))->findParamDecl(name))!=NULL)
+        if ((param = getResolver()->lookup(extendsName(i))->findParamDecl(name))!=nullptr)
             return param;
-    return NULL;
+    return nullptr;
 }
 
 GateElement *NEDTypeInfo::findLocalGateDecl(const char *name) const
@@ -367,7 +367,7 @@ GateElement *NEDTypeInfo::findLocalGateDecl(const char *name) const
         for (GateElement *gate=gates->getFirstGateChild(); gate; gate=gate->getNextGateSibling())
             if (gate->getType()!=NED_PARTYPE_NONE && opp_strcmp(gate->getName(), name)==0)
                 return gate;
-    return NULL;
+    return nullptr;
 }
 
 GateElement *NEDTypeInfo::findGateDecl(const char *name) const
@@ -376,9 +376,9 @@ GateElement *NEDTypeInfo::findGateDecl(const char *name) const
     if (gate)
         return gate;
     for (int i=0; i<numExtendsNames(); i++)
-        if ((gate = getResolver()->lookup(extendsName(i))->findGateDecl(name))!=NULL)
+        if ((gate = getResolver()->lookup(extendsName(i))->findGateDecl(name))!=nullptr)
             return gate;
-    return NULL;
+    return nullptr;
 }
 
 void NEDTypeInfo::checkComplianceToInterface(NEDTypeInfo *idecl)
@@ -445,8 +445,8 @@ void NEDTypeInfo::checkComplianceToInterface(NEDTypeInfo *idecl)
                 ExpressionElement *gatesizeExpr = (ExpressionElement *)gate->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size");
                 ExpressionElement *igatesizeExpr = (ExpressionElement *)igate->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size");
 
-                bool hasGatesize = !opp_isempty(gate->getVectorSize()) || gatesizeExpr!=NULL;
-                bool ihasGatesize = !opp_isempty(igate->getVectorSize()) || igatesizeExpr!=NULL;
+                bool hasGatesize = !opp_isempty(gate->getVectorSize()) || gatesizeExpr!=nullptr;
+                bool ihasGatesize = !opp_isempty(igate->getVectorSize()) || igatesizeExpr!=nullptr;
 
                 if (hasGatesize && !ihasGatesize)
                     throw NEDException(gate, "size of gate vector `%s' must be left unspecified, as required by interface `%s'",

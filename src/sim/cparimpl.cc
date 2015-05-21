@@ -41,7 +41,7 @@ cStringPool cParImpl::unitStringPool("cParImpl::unitStringPool");
 
 cParImpl::cParImpl()
 {
-    unitp = NULL;
+    unitp = nullptr;
     totalParimplObjs++;
     liveParimplObjs++;
 }
@@ -138,7 +138,7 @@ cNEDValue cParImpl::evaluate(cExpression *expr, cComponent *context) const
 bool cParImpl::containsConstSubexpressions() const
 {
     cExpression *expr = getExpression();
-    return expr==NULL ? false : expr->containsConstSubexpressions();
+    return expr==nullptr ? false : expr->containsConstSubexpressions();
 }
 
 void cParImpl::evaluateConstSubexpressions(cComponent *context)

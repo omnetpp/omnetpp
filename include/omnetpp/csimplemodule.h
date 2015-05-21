@@ -211,7 +211,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      *
      * See also class cWatch and the WATCH() macro.
      */
-    bool snapshot(cObject *obj=NULL, const char *label=NULL);
+    bool snapshot(cObject *obj=nullptr, const char *label=nullptr);
     //@}
 
     /** @name Message sending. */

@@ -354,7 +354,7 @@ void DataTableIterator::next()
 
 JoinedDataTable::JoinedDataTable(const string name, const string description,
                          const vector<DataTable*> &joinedTables, int joinOnColumn)
-    : DataTable(name, description), joinedTables(joinedTables), rowMap(NULL)
+    : DataTable(name, description), joinedTables(joinedTables), rowMap(nullptr)
 {
    tableCount = joinedTables.size();
    // checks
@@ -428,7 +428,7 @@ bool JoinedDataTable::isNull(int row, int col) const
     DataTable *table;
     int tableRow, tableCol;
     mapTableCell(row, col, table, tableRow, tableCol);
-    return table == NULL;
+    return table == nullptr;
 }
 
 string JoinedDataTable::getStringValue(int row, int col) const
@@ -468,7 +468,7 @@ void JoinedDataTable::mapTableCell(int row, int col, DataTable* &table, int &tab
     if (col == 0)
     {
         tableCol = columnMap[col].second;
-        table = NULL;
+        table = nullptr;
         for (int tableIndex = 0; tableIndex < tableCount; ++tableIndex) {
             tableRow = rowMap[row*tableCount+tableIndex];
             if (tableRow >= 0)
@@ -484,7 +484,7 @@ void JoinedDataTable::mapTableCell(int row, int col, DataTable* &table, int &tab
         int tableIndex = tableAndColumn.first;
         tableCol = tableAndColumn.second;
         tableRow = rowMap[row*tableCount+tableIndex];
-        table = tableRow >= 0 ? joinedTables[tableIndex] : NULL;
+        table = tableRow >= 0 ? joinedTables[tableIndex] : nullptr;
     }
 }
 
@@ -1027,7 +1027,7 @@ ScaveExport *ExporterFactory::createExporter(const string format)
     else if (format == "csv")
         return new CsvExport;
     else
-        return NULL;
+        return nullptr;
 }
 
 NAMESPACE_END

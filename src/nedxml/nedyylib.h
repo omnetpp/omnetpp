@@ -33,7 +33,7 @@ NAMESPACE_BEGIN
 std::string slashifyFilename(const char *fname);
 const char *currentLocation();
 
-NEDElement *createElementWithTag(int tagcode, NEDElement *parent=NULL);
+NEDElement *createElementWithTag(int tagcode, NEDElement *parent=nullptr);
 NEDElement *getOrCreateElementWithTag(int tagcode, NEDElement *parent);
 
 void storePos(NEDElement *node, YYLTYPE pos);
@@ -71,10 +71,10 @@ const char *toString(long);
 std::string removeSpaces(YYLTYPE pos);
 
 ExpressionElement *createExpression(NEDElement *expr);
-OperatorElement *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2=NULL, NEDElement *operand3=NULL);
-FunctionElement *createFunction(const char *funcname, NEDElement *arg1=NULL, NEDElement *arg2=NULL, NEDElement *arg3=NULL, NEDElement *arg4=NULL, NEDElement *arg5=NULL, NEDElement *arg6=NULL, NEDElement *arg7=NULL, NEDElement *arg8=NULL, NEDElement *arg9=NULL, NEDElement *arg10=NULL);
+OperatorElement *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2=nullptr, NEDElement *operand3=nullptr);
+FunctionElement *createFunction(const char *funcname, NEDElement *arg1=nullptr, NEDElement *arg2=nullptr, NEDElement *arg3=nullptr, NEDElement *arg4=nullptr, NEDElement *arg5=nullptr, NEDElement *arg6=nullptr, NEDElement *arg7=nullptr, NEDElement *arg8=nullptr, NEDElement *arg9=nullptr, NEDElement *arg10=nullptr);
 IdentElement *createIdent(YYLTYPE parampos);
-IdentElement *createIdent(YYLTYPE parampos, YYLTYPE modulepos, NEDElement *moduleindexoperand=NULL);
+IdentElement *createIdent(YYLTYPE parampos, YYLTYPE modulepos, NEDElement *moduleindexoperand=nullptr);
 LiteralElement *createPropertyValue(YYLTYPE textpos);
 LiteralElement *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos);
 LiteralElement *createLiteral(int type, const char *value, const char *text);

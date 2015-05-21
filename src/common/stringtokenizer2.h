@@ -111,7 +111,7 @@ class COMMON_API StringTokenizer2
      * it is default to "()".
      * The quotes default to the double quote character.
      */
-    StringTokenizer2(const char *str, const char *delimiters=NULL, const char *parens=NULL, const char *quotes=NULL);
+    StringTokenizer2(const char *str, const char *delimiters=nullptr, const char *parens=nullptr, const char *quotes=nullptr);
 
     /**
      * Destructor.

@@ -32,11 +32,11 @@ NAMESPACE_BEGIN
 
 cProxyGate::cProxyGate() : cGate()
 {
-    partition = NULL;
+    partition = nullptr;
     remoteProcId = -1;
     remoteModuleId = -1;
     remoteGateId = -1;
-    data = NULL;
+    data = nullptr;
 }
 
 std::string cProxyGate::info() const
@@ -49,8 +49,8 @@ std::string cProxyGate::info() const
 
 bool cProxyGate::deliver(cMessage *msg, simtime_t t)
 {
-    ASSERT(nextGate==NULL);
-    ASSERT(partition!=NULL);
+    ASSERT(nextGate==nullptr);
+    ASSERT(partition!=nullptr);
     if (remoteProcId==-1)
         throw cRuntimeError(this, "cannot deliver message '%s': not connected to remote gate", msg->getName());
 

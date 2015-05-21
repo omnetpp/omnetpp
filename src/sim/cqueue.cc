@@ -40,7 +40,7 @@ Register_Class(cQueue);
 
 cQueue::cQueue(const cQueue& queue) : cOwnedObject(queue)
 {
-    frontp = backp = NULL;
+    frontp = backp = nullptr;
     n = 0;
     copy(queue);
 }
@@ -48,7 +48,7 @@ cQueue::cQueue(const cQueue& queue) : cOwnedObject(queue)
 cQueue::cQueue(const char *name, CompareFunc cmp) : cOwnedObject(name)
 {
     takeOwnership = true;
-    frontp = backp = NULL;
+    frontp = backp = nullptr;
     n = 0;
     compare = cmp;
 }
@@ -70,7 +70,7 @@ std::string cQueue::info() const
 void cQueue::forEachChild(cVisitor *v)
 {
     // loop through elements
-    for (QElem *p=frontp; p!=NULL; p=p->next)
+    for (QElem *p=frontp; p!=nullptr; p=p->next)
          v->visit(p->obj);
 }
 
@@ -105,7 +105,7 @@ void cQueue::parsimUnpack(cCommBuffer *buffer)
     buffer->unpack(n);
 
     CompareFunc old_cmp = compare;
-    compare = NULL; // temporarily, so that insert() keeps the original order
+    compare = nullptr; // temporarily, so that insert() keeps the original order
     for (int i=0; i<n; i++)
     {
         cObject *obj = buffer->unpackObject();
@@ -128,13 +128,13 @@ void cQueue::clear()
         delete frontp;
         frontp = tmp;
     }
-    backp = NULL;
+    backp = nullptr;
     n = 0;
 }
 
 void cQueue::copy(const cQueue& queue)
 {
-    compare = NULL; // temporarily, so that insert() keeps the original order
+    compare = nullptr; // temporarily, so that insert() keeps the original order
     for (cQueue::Iterator iter(queue, false); !iter.end(); iter++)
     {
         cObject *obj = iter();
@@ -235,11 +235,11 @@ void cQueue::insert(cObject *obj)
         // insert as the only item
         QElem *e = new QElem;
         e->obj = obj;
-        e->next = e->prev = NULL;
+        e->next = e->prev = nullptr;
         frontp = backp = e;
         n = 1;
     }
-    else if (compare==NULL)
+    else if (compare==nullptr)
     {
         insafter_qelem(backp, obj);
     }
@@ -286,22 +286,22 @@ void cQueue::insertAfter(cObject *where, cObject *obj)
 
 cObject *cQueue::front() const
 {
-    return frontp ? frontp->obj : NULL;
+    return frontp ? frontp->obj : nullptr;
 }
 
 cObject *cQueue::back() const
 {
-    return backp ? backp->obj : NULL;
+    return backp ? backp->obj : nullptr;
 }
 
 cObject *cQueue::remove(cObject *obj)
 {
     if (!obj)
-        return NULL;
+        return nullptr;
     //FIXME: handle special cases faster: if obj==front() or ==back(), don't invoke find_qelem()
     QElem *p = find_qelem(obj);
     if (!p)
-        return NULL;
+        return nullptr;
     return remove_qelem(p);
 }
 
@@ -320,15 +320,15 @@ int cQueue::getLength() const
 
 bool cQueue::contains(cObject *obj) const
 {
-    return find_qelem(obj)!=NULL;
+    return find_qelem(obj)!=nullptr;
 }
 
 cObject *cQueue::get(int i) const
 {
     QElem *p = frontp;
-    while (p!=NULL && i>0)
+    while (p!=nullptr && i>0)
         p = p->next, i--;
-    return p ? p->obj : NULL;
+    return p ? p->obj : nullptr;
 }
 
 NAMESPACE_END

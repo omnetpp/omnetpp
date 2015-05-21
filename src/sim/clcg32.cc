@@ -29,7 +29,7 @@ NAMESPACE_BEGIN
 
 Register_Class(cLCG32);
 
-Register_PerRunConfigOption(CFGID_SEED_N_LCG32, "seed-%-lcg32", CFG_INT, NULL, "When cLCG32 is selected as random number generator: seed for the kth RNG. (Substitute k for '%' in the key.)");
+Register_PerRunConfigOption(CFGID_SEED_N_LCG32, "seed-%-lcg32", CFG_INT, nullptr, "When cLCG32 is selected as random number generator: seed for the kth RNG. (Substitute k for '%' in the key.)");
 
 
 void cLCG32::initialize(int seedSet, int rngId, int numRngs,
@@ -44,7 +44,7 @@ void cLCG32::initialize(int seedSet, int rngId, int numRngs,
     char key[32];
     sprintf(key,  "seed-%d-lcg32", rngId);
     const char *value = cfg->getConfigValue(key);
-    if (value==NULL)
+    if (value==nullptr)
     {
         int autoSeedIndex = seedSet*numRngs + rngId;
         if (autoSeedIndex>=256)
@@ -56,7 +56,7 @@ void cLCG32::initialize(int seedSet, int rngId, int numRngs,
     }
     else
     {
-        seed = cConfiguration::parseLong(value, 0);
+        seed = cConfiguration::parseLong(value, nullptr);
         if (seed==0)
             throw cRuntimeError("cLCG32: zero is not allowed as seed in %s config file entry", key);
     }

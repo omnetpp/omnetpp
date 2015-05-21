@@ -228,7 +228,7 @@ class TKENV_API Tkenv : public EnvirBase
 
       void rebuildSim();
       void doOneStep();
-      void runSimulation(int mode, simtime_t until_time=0, eventnumber_t until_eventnum=0, cMessage *until_msg=NULL, cModule *until_module=NULL);
+      void runSimulation(int mode, simtime_t until_time=0, eventnumber_t until_eventnum=0, cMessage *until_msg=nullptr, cModule *until_module=nullptr);
       void setSimulationRunMode(int runmode);
       int getSimulationRunMode() const {return runmode;}
       void setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg);
@@ -239,7 +239,7 @@ class TKENV_API Tkenv : public EnvirBase
       void startAll();
       void finishSimulation(); // wrapper around simulation.callFinish() and simulation.endRun()
 
-      void loadNedFile(const char *fname, const char *expectedPackage=NULL, bool isXML=false);
+      void loadNedFile(const char *fname, const char *expectedPackage=nullptr, bool isXML=false);
 
       void refreshInspectors();
       void redrawInspectors();

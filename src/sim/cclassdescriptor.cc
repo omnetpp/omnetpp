@@ -42,7 +42,7 @@ std::string cClassDescriptor::long2string(long l)
 
 long cClassDescriptor::string2long(const char *s)
 {
-    return strtol(s, NULL, 10);
+    return strtol(s, nullptr, 10);
 }
 
 std::string cClassDescriptor::ulong2string(unsigned long l)
@@ -54,7 +54,7 @@ std::string cClassDescriptor::ulong2string(unsigned long l)
 
 unsigned long cClassDescriptor::string2ulong(const char *s)
 {
-    return strtoul(s, NULL, 10);
+    return strtoul(s, nullptr, 10);
 }
 
 std::string cClassDescriptor::int642string(int64_t l)
@@ -66,7 +66,7 @@ std::string cClassDescriptor::int642string(int64_t l)
 
 int64_t cClassDescriptor::string2int64(const char *s)
 {
-    return strtoll(s, NULL, 10);
+    return strtoll(s, nullptr, 10);
 }
 
 std::string cClassDescriptor::uint642string(uint64_t l)
@@ -78,7 +78,7 @@ std::string cClassDescriptor::uint642string(uint64_t l)
 
 uint64_t cClassDescriptor::string2uint64(const char *s)
 {
-    return strtoull(s, NULL, 10);
+    return strtoull(s, nullptr, 10);
 }
 
 std::string cClassDescriptor::bool2string(bool b)
@@ -161,7 +161,7 @@ static bool listContains(const char **list, const char *s)
 const char **cClassDescriptor::mergeLists(const char **list1, const char **list2)
 {
     // args may be NULL
-    const char *emptylist[] = { NULL };
+    const char *emptylist[] = { nullptr };
     if (!list1) list1 = emptylist;
     if (!list2) list2 = emptylist;
 
@@ -180,7 +180,7 @@ const char **cClassDescriptor::mergeLists(const char **list1, const char **list2
     for (const char **p = list2; *p; p++)
         if (!listContains(list1, *p))
             *dest++ = *p;
-    *dest = NULL;
+    *dest = nullptr;
     return result;
 }
 
@@ -191,7 +191,7 @@ cClassDescriptor::cClassDescriptor(const char *classname, const char *_baseclass
 cNoncopyableOwnedObject(classname, false)
 {
     baseClassName = _baseclassname ? _baseclassname : "";
-    baseClassDesc = NULL;
+    baseClassDesc = nullptr;
     inheritanceChainLength = 1;
     extendscObject = -1;
 }
@@ -260,7 +260,7 @@ cClassDescriptor *cClassDescriptor::getDescriptorFor(cObject *object)
 
     // bad luck: no descriptor for exactly this class. Try to find one for some base class.
     //XXX we could even cache the result in a {classname->descriptor} hashtable.
-    cClassDescriptor *bestDesc = NULL;
+    cClassDescriptor *bestDesc = nullptr;
     int bestInheritanceChainLength = -1;
     cRegistrationList *array = classDescriptors.getInstance();
     for (int i=0; i<array->size(); i++)

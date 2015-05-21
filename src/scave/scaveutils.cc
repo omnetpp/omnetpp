@@ -134,7 +134,7 @@ const std::string *StringPool::find(const std::string& str) const
                 return lastInsertedPtr;
 
         std::set<std::string>::const_iterator it = pool.find(str);
-        return it != pool.end() ? &(*it) : NULL;
+        return it != pool.end() ? &(*it) : nullptr;
 }
 
 NAMESPACE_END

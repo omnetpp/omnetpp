@@ -47,7 +47,7 @@ class TKENV_API CanvasRenderer
         virtual ~CanvasRenderer();
         virtual void setTkCanvas(Tcl_Interp *interp, const char *canvas);
         virtual void setCanvas(cCanvas *canvas);
-        virtual bool hasCanvas() {return canvas != NULL;}
+        virtual bool hasCanvas() {return canvas != nullptr;}
         virtual void refresh(FigureRenderingHints *hints);
         virtual void redraw(FigureRenderingHints *hints);
 

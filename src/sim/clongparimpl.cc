@@ -137,7 +137,7 @@ cXMLElement *cLongParImpl::xmlValue(cComponent *) const
 
 cExpression *cLongParImpl::getExpression() const
 {
-    return (flags | FL_ISEXPR) ? expr : NULL;
+    return (flags | FL_ISEXPR) ? expr : nullptr;
 }
 
 void cLongParImpl::deleteOld()
@@ -191,7 +191,7 @@ void cLongParImpl::parse(const char *text)
 
     // simplify if possible: store as constant instead of expression
     if (dynexpr->isAConstant())
-        convertToConst(NULL);
+        convertToConst(nullptr);
 }
 
 int cLongParImpl::compare(const cParImpl *other) const

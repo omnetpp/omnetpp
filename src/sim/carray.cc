@@ -66,7 +66,7 @@ void cArray::Iterator::init(const cArray& a, bool athead)
 cObject *cArray::Iterator::operator++(int)
 {
     if (k<0 || k>=array->size())
-        return NULL;
+        return nullptr;
     cObject *obj = array->get(k);
 
     k++;
@@ -78,7 +78,7 @@ cObject *cArray::Iterator::operator++(int)
 cObject *cArray::Iterator::operator--(int)
 {
     if (k<0 || k>=array->size())
-        return NULL;
+        return nullptr;
     cObject *obj = array->get(k);
     k--;
     while (!array->get(k) && k>=0)
@@ -90,7 +90,7 @@ cObject *cArray::Iterator::operator--(int)
 
 cArray::cArray(const cArray& other) : cOwnedObject(other)
 {
-    vect = NULL;
+    vect = nullptr;
     last = -1;
     copy(other);
 }
@@ -104,7 +104,7 @@ cArray::cArray(const char *name, int cap, int dt) : cOwnedObject(name)
     last = -1;
     vect = new cObject *[capacity];
     for (int i=0; i<capacity; i++)
-        vect[i] = NULL;
+        vect[i] = nullptr;
 }
 
 cArray::~cArray()
@@ -174,7 +174,7 @@ void cArray::parsimPack(cCommBuffer *buffer) const
 
     for (int i = 0; i <= last; i++)
     {
-        if (buffer->packFlag(vect[i]!=NULL))
+        if (buffer->packFlag(vect[i]!=nullptr))
         {
             if (vect[i]->isOwnedObject() && vect[i]->getOwner() != this)
                 throw cRuntimeError(this,"parsimPack(): refusing to transmit an object not owned by the container");
@@ -202,7 +202,7 @@ void cArray::parsimUnpack(cCommBuffer *buffer)
     for (int i = 0; i <= last; i++)
     {
         if (!buffer->checkFlag())
-            vect[i] = NULL;
+            vect[i] = nullptr;
         else {
             vect[i] = buffer->unpackObject();
             if (vect[i]->isOwnedObject())
@@ -223,7 +223,7 @@ void cArray::clear()
                 delete obj;
             else if (obj->getOwner()==this)
                 dropAndDelete(static_cast<cOwnedObject *>(obj));
-            vect[i] = NULL;  // this is not strictly necessary
+            vect[i] = nullptr;  // this is not strictly necessary
         }
     }
     firstfree = 0;
@@ -239,7 +239,7 @@ void cArray::setCapacity(int newCapacity)
     for (int i=0; i<=last; i++)
         newVect[i] = vect[i];
     for (int i=last+1; i<capacity; i++)
-        newVect[i] = NULL;
+        newVect[i] = nullptr;
     delete [] vect;
     vect = newVect;
     capacity = newCapacity;
@@ -261,7 +261,7 @@ int cArray::add(cObject *obj)
         last = std::max(last,firstfree);
         do {
             firstfree++;
-        } while (firstfree<=last && vect[firstfree]!=NULL);
+        } while (firstfree<=last && vect[firstfree]!=nullptr);
     }
     else // must allocate bigger vector
     {
@@ -287,7 +287,7 @@ int cArray::addAt(int m, cObject *obj)
     {
         if (m<0)
             throw cRuntimeError(this,"addAt(): negative position %d",m);
-        if (vect[m]!=NULL)
+        if (vect[m]!=nullptr)
             throw cRuntimeError(this,"addAt(): position %d already used",m);
         vect[m] = obj;
         if (obj->isOwnedObject() && getTakeOwnership())
@@ -296,7 +296,7 @@ int cArray::addAt(int m, cObject *obj)
         if (firstfree==m)
             do {
                 firstfree++;
-            } while (firstfree<=last && vect[firstfree]!=NULL);
+            } while (firstfree<=last && vect[firstfree]!=nullptr);
     }
     else // must allocate bigger vector
     {
@@ -362,7 +362,7 @@ cObject *cArray::get(int m)
     if (m>=0 && m<=last)
         return vect[m];
     else
-        return NULL;
+        return nullptr;
 }
 
 const cObject *cArray::get(int m) const
@@ -370,14 +370,14 @@ const cObject *cArray::get(int m) const
     if (m>=0 && m<=last)
         return vect[m];
     else
-        return NULL;
+        return nullptr;
 }
 
 cObject *cArray::get(const char *objname)
 {
     int m = find( objname );
     if (m==-1)
-        return NULL;
+        return nullptr;
     return get(m);
 }
 
@@ -385,7 +385,7 @@ const cObject *cArray::get(const char *objname) const
 {
     int m = find( objname );
     if (m==-1)
-        return NULL;
+        return nullptr;
     return get(m);
 }
 
@@ -393,31 +393,31 @@ cObject *cArray::remove(const char *objname)
 {
     int m = find(objname);
     if (m==-1)
-        return NULL;
+        return nullptr;
     return remove(m);
 }
 
 cObject *cArray::remove(cObject *obj)
 {
-    if (!obj) return NULL;
+    if (!obj) return nullptr;
 
     int m = find( obj );
     if (m==-1)
-        return NULL;
+        return nullptr;
     return remove(m);
 }
 
 cObject *cArray::remove(int m)
 {
-    if (m<0 || m>last || vect[m]==NULL)
-        return NULL;
+    if (m<0 || m>last || vect[m]==nullptr)
+        return nullptr;
 
-    cObject *obj = vect[m]; vect[m] = NULL;
+    cObject *obj = vect[m]; vect[m] = nullptr;
     firstfree = std::min(firstfree, m);
     if (m==last)
         do {
             last--;
-        } while (last>=0 && vect[last]==NULL);
+        } while (last>=0 && vect[last]==nullptr);
     if (obj->isOwnedObject() && obj->getOwner()==this)
         drop(static_cast<cOwnedObject *>(obj));
     return obj;

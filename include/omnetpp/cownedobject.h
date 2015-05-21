@@ -255,7 +255,7 @@ class SIM_API cNoncopyableOwnedObject : public cOwnedObject, noncopyable
     /**
      * Constructor
      */
-    explicit cNoncopyableOwnedObject(const char *name=NULL, bool namepooling=true) :
+    explicit cNoncopyableOwnedObject(const char *name=nullptr, bool namepooling=true) :
         cOwnedObject(name, namepooling) {}
 
     /**

@@ -69,7 +69,7 @@ Tcl_Interp *initTk(int argc, char **argv)
     if (Tk_Init(interp) != TCL_OK)
         throw opp_runtime_error("Tkenv: Tk_Init failed: %s\n", Tcl_GetStringResult(interp));
 
-    Tcl_StaticPackage(interp, "Tk", Tk_Init, (Tcl_PackageInitProc *) NULL);
+    Tcl_StaticPackage(interp, "Tk", Tk_Init, (Tcl_PackageInitProc *) nullptr);
 
 #if TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION <6
     if (Tkpng_Init(interp) != TCL_OK)
@@ -94,12 +94,12 @@ Tcl_Interp *initTk(int argc, char **argv)
 // create custom commands (implemented in tkcmd.cc) in Tcl
 int createTkCommands(Tcl_Interp *interp, OmnetTclCommand *commands)
 {
-    for (; commands->namestr!=NULL; commands++)
+    for (; commands->namestr!=nullptr; commands++)
     {
         Tcl_CreateCommand( interp, TCLCONST(commands->namestr),
                                    (Tcl_CmdProc *)commands->func,
-                                   (ClientData)NULL,
-                                   (Tcl_CmdDeleteProc *)NULL);
+                                   (ClientData)nullptr,
+                                   (Tcl_CmdDeleteProc *)nullptr);
     }
     return TCL_OK;
 }

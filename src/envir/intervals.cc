@@ -24,7 +24,7 @@ NAMESPACE_BEGIN
 
 Intervals::Intervals()
 {
-    intervals = NULL;
+    intervals = nullptr;
 }
 
 Intervals::~Intervals()

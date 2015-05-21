@@ -29,7 +29,7 @@ using namespace std;
 #define LL  INT64_PRINTF_FORMAT
 
 IndexedVectorFileReaderNode::IndexedVectorFileReaderNode(const char *filename, size_t bufferSize) :
-  ReaderNode(filename, bufferSize), index(NULL), currentBlockIndex(0)
+  ReaderNode(filename, bufferSize), index(nullptr), currentBlockIndex(0)
 {
 
 }
@@ -38,7 +38,7 @@ IndexedVectorFileReaderNode::~IndexedVectorFileReaderNode()
 {
     if (index) {
         delete index;
-        index = NULL;
+        index = nullptr;
     }
 }
 

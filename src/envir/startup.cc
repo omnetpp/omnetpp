@@ -84,10 +84,10 @@ int setupUserInterface(int argc, char *argv[])
     //
     // SETUP
     //
-    cSimulation *simulationobject = NULL;
-    cRunnableEnvir *app = NULL;
-    SectionBasedConfiguration *bootconfig = NULL;
-    cConfigurationEx *configobject = NULL;
+    cSimulation *simulationobject = nullptr;
+    cRunnableEnvir *app = nullptr;
+    SectionBasedConfiguration *bootconfig = nullptr;
+    cConfigurationEx *configobject = nullptr;
     int exitcode = 0;
     try
     {
@@ -115,9 +115,9 @@ int setupUserInterface(int argc, char *argv[])
             inifile->readFile(fname);
 
         // process additional '-f filename' options or arguments if there are any
-        for (int k=1; (fname=args.optionValue('f',k))!=NULL; k++)
+        for (int k=1; (fname=args.optionValue('f',k))!=nullptr; k++)
             inifile->readFile(fname);
-        for (int k=(args.optionValue('f',0) ? 0 : 1); (fname=args.argument(k))!=NULL; k++)
+        for (int k=(args.optionValue('f',0) ? 0 : 1); (fname=args.argument(k))!=nullptr; k++)
             inifile->readFile(fname);
 
         // activate [General] section so that we can read global settings from it
@@ -132,7 +132,7 @@ int setupUserInterface(int argc, char *argv[])
         // (The user interface library also might be among them.)
         //
         const char *libname;
-        for (int k=0; (libname=args.optionValue('l',k))!=NULL; k++)
+        for (int k=0; (libname=args.optionValue('l',k))!=nullptr; k++)
             loadExtensionLibrary(libname);
         std::vector<std::string> libs = bootconfig->getAsFilenames(CFGID_LOAD_LIBS);
         for (int k=0; k<(int)libs.size(); k++)
@@ -153,7 +153,7 @@ int setupUserInterface(int argc, char *argv[])
             configobject->initializeFrom(bootconfig);
             configobject->activateConfig("General", 0);
             delete bootconfig;
-            bootconfig = NULL;
+            bootconfig = nullptr;
 
             // load libs from this config as well
             std::vector<std::string> libs = configobject->getAsFilenames(CFGID_LOAD_LIBS);
@@ -164,9 +164,9 @@ int setupUserInterface(int argc, char *argv[])
         // validate the configuration, but make sure we don't report cmdenv-* keys
         // as errors if Cmdenv is absent; same for Tkenv.
         std::string ignorablekeys;
-        if (omnetapps.getInstance()->lookup("Cmdenv")==NULL)
+        if (omnetapps.getInstance()->lookup("Cmdenv")==nullptr)
             ignorablekeys += " cmdenv-*";
-        if (omnetapps.getInstance()->lookup("Tkenv")==NULL)
+        if (omnetapps.getInstance()->lookup("Tkenv")==nullptr)
             ignorablekeys += " tkenv-*";
         configobject->validate(ignorablekeys.c_str());
 
@@ -180,7 +180,7 @@ int setupUserInterface(int argc, char *argv[])
         if (appname.empty())
             appname = configobject->getAsString(CFGID_USER_INTERFACE);
 
-        cOmnetAppRegistration *appreg = NULL;
+        cOmnetAppRegistration *appreg = nullptr;
         if (!appname.empty())
         {
             // look up specified user interface
@@ -217,7 +217,7 @@ int setupUserInterface(int argc, char *argv[])
         if (app)
         {
             delete app;
-            app = NULL;
+            app = nullptr;
         }
         else
         {
@@ -251,7 +251,7 @@ int setupUserInterface(int argc, char *argv[])
     //
     // SHUTDOWN
     //
-    cSimulation::setActiveSimulation(NULL);
+    cSimulation::setActiveSimulation(nullptr);
     delete simulationobject;  // will delete app as well
 
     CodeFragments::executeAll(CodeFragments::SHUTDOWN);
@@ -262,7 +262,7 @@ int setupUserInterface(int argc, char *argv[])
 //---------------------------------------------------------
 // A dummy function to force UNIX linkers collect all symbols we need
 void env_dummy_function() {
-    cRNG *rng = NULL;
+    cRNG *rng = nullptr;
     exponential(rng, 1.0);
     Speedometer a;
     cFileOutputVectorManager ovm;

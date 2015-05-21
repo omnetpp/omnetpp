@@ -45,7 +45,7 @@ class SCAVE_API IndexedVectorFileReaderNode : public ReaderNode
         VectorData *vector;
         PortVector ports;
 
-        PortData() : vector(NULL) {}
+        PortData() : vector(nullptr) {}
     };
 
     struct BlockAndPortData

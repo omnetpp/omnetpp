@@ -39,11 +39,11 @@ cXMLElement::cXMLElement(const char *tagname, const char *srclocation, cXMLEleme
     ename = tagname;
     srcloc = srclocation;
 
-    this->parent = 0;
-    firstChild = 0;
-    lastChild = 0;
-    prevSibling = 0;
-    nextSibling = 0;
+    this->parent = nullptr;
+    firstChild = nullptr;
+    lastChild = nullptr;
+    prevSibling = nullptr;
+    nextSibling = nullptr;
 
     if (parent)
         parent->appendChild(this);
@@ -90,7 +90,7 @@ const char *cXMLElement::getAttribute(const char *attr) const
 {
     cXMLAttributeMap::const_iterator it = attrs.find(std::string(attr));
     if (it==attrs.end())
-        return NULL;
+        return nullptr;
     return it->second.c_str();
 }
 
@@ -130,7 +130,7 @@ void cXMLElement::appendChild(cXMLElement *node)
         node->parent->removeChild(node);
     node->parent = this;
     node->prevSibling = lastChild;
-    node->nextSibling = 0;
+    node->nextSibling = nullptr;
     if (node->prevSibling)
         node->prevSibling->nextSibling = node;
     else
@@ -162,13 +162,13 @@ cXMLElement *cXMLElement::removeChild(cXMLElement *node)
         node->nextSibling->prevSibling = node->prevSibling;
     else
         lastChild = node->prevSibling;
-    node->parent = node->prevSibling = node->nextSibling = 0;
+    node->parent = node->prevSibling = node->nextSibling = nullptr;
     return node;
 }
 
 bool cXMLElement::hasChildren() const
 {
-    return firstChild!=NULL;
+    return firstChild!=nullptr;
 }
 
 bool cXMLElement::hasAttributes() const
@@ -190,7 +190,7 @@ cXMLElement *cXMLElement::getFirstChildWithTag(const char *tagname) const
             return node;
         node = node->getNextSibling();
     }
-    return NULL;
+    return nullptr;
 }
 
 cXMLElement *cXMLElement::getNextSiblingWithTag(const char *tagname) const
@@ -202,7 +202,7 @@ cXMLElement *cXMLElement::getNextSiblingWithTag(const char *tagname) const
             return node;
         node = node->getNextSibling();
     }
-    return NULL;
+    return nullptr;
 }
 
 cXMLElementList cXMLElement::getChildren() const
@@ -252,7 +252,7 @@ cXMLElement *cXMLElement::getFirstChildWithAttribute(const char *tagname, const 
                 return child;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 cXMLElement *cXMLElement::getElementById(const char *idattrvalue) const
@@ -266,7 +266,7 @@ cXMLElement *cXMLElement::getElementById(const char *idattrvalue) const
         if (res)
             return res;
     }
-    return NULL;
+    return nullptr;
 }
 
 cXMLElement *cXMLElement::getDocumentElementByPath(cXMLElement *documentnode, const char *pathexpr,
@@ -287,7 +287,7 @@ cXMLElement *cXMLElement::getElementByPath(const char *pathexpr, cXMLElement *ro
 
     return MiniXPath(resolver).matchPathExpression(const_cast<cXMLElement *>(this),
                                                    pathexpr,
-                                                   root ? root->getParentNode() : NULL);
+                                                   root ? root->getParentNode() : nullptr);
 }
 
 std::string cXMLElement::tostr(int depth) const
@@ -338,7 +338,7 @@ bool ModNameParamResolver::resolve(const char *paramname, std::string& value)
     if (!mod)
         return false;
     cModule *parentMod = mod->getParentModule();
-    cModule *grandparentMod = parentMod ? parentMod->getParentModule() : NULL;
+    cModule *grandparentMod = parentMod ? parentMod->getParentModule() : nullptr;
 
     if (!strcmp(paramname, "MODULE_FULLPATH"))
         value = mod->getFullPath();

@@ -95,7 +95,7 @@ class COMMON_API MatchExpression
         Elem(Type type=UNDEF)  {this->type = type;}
 
         /** The given field of the object must match pattern */
-        Elem(PatternMatcher *pattern, const char *fieldname=NULL);
+        Elem(PatternMatcher *pattern, const char *fieldname=nullptr);
 
         /** Copy ctor */
         Elem(const Elem& other)  {type=UNDEF; operator=(other);}
@@ -157,7 +157,7 @@ class COMMON_API MatchableString : public MatchExpression::Matchable
   public:
     MatchableString(const char *s) {str = s;}
     virtual const char *getAsString() const {return str.c_str();}
-    virtual const char *getAsString(const char *attribute) const {return NULL;}
+    virtual const char *getAsString(const char *attribute) const {return nullptr;}
 };
 
 NAMESPACE_END

@@ -45,7 +45,7 @@ void cChannel::MessageSentSignalValue::error() const
 
 cChannel::cChannel(const char *name) : cComponent(name)
 {
-    srcgatep = NULL;
+    srcgatep = nullptr;
     nedConnectionElementId = -1;
 }
 
@@ -143,7 +143,7 @@ bool cChannel::initializeChannel(int stage)
     if (!moreStages)
     {
         setFlag(FL_INITIALIZED, true);
-        handleParameterChange(NULL);
+        handleParameterChange(nullptr);
     }
     return moreStages;
 }
@@ -169,10 +169,10 @@ cModule *cChannel::getParentModule() const
 {
     // find which (compound) module contains this connection
     if (!srcgatep)
-        return NULL;
+        return nullptr;
     cModule *ownerMod = srcgatep->getOwnerModule();
     if (!ownerMod)
-        return NULL;
+        return nullptr;
     return srcgatep->getType()==cGate::INPUT ? ownerMod : ownerMod->getParentModule();
 }
 

@@ -61,7 +61,7 @@ Inspector::Inspector(InspectorFactory *f)
 {
    factory = f;
    interp = getTkenv()->getInterp();
-   object = NULL;
+   object = nullptr;
    type = f->getInspectorType();
    isToplevelWindow = false;
    closeRequested = false;
@@ -163,14 +163,14 @@ void Inspector::refreshTitle()
 void Inspector::objectDeleted(cObject *obj)
 {
     if (obj == object)
-        doSetObject(NULL);
+        doSetObject(nullptr);
     removeFromToHistory(obj);
 }
 
 void Inspector::setObject(cObject *obj)
 {
     if (obj != object) {
-        if (object != NULL) {
+        if (object != nullptr) {
             historyBack.push_back(object);
             historyForward.clear();
         }
@@ -205,7 +205,7 @@ void Inspector::goForward()
     if (!historyForward.empty()) {
         cObject *newObj = historyForward.back();
         historyForward.pop_back();
-        if (object != NULL)
+        if (object != nullptr)
             historyBack.push_back(object);
         doSetObject(newObj);
     }
@@ -216,7 +216,7 @@ void Inspector::goBack()
     if (!historyBack.empty()) {
         cObject *newObj = historyBack.back();
         historyBack.pop_back();
-        if (object != NULL)
+        if (object != nullptr)
             historyForward.push_back(object);
         doSetObject(newObj);
     }

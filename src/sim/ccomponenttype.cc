@@ -51,7 +51,7 @@ static const char *getSignalTypeName(SimsignalType type)
         case SIMSIGNAL_SIMTIME: return "simtime_t";
         case SIMSIGNAL_STRING: return "string";
         case SIMSIGNAL_OBJECT: return "object";
-        default: return NULL;
+        default: return nullptr;
     }
 };
 
@@ -104,7 +104,7 @@ cComponentType *cComponentType::get(const char *qname)
 cParImpl *cComponentType::getSharedParImpl(const char *key) const
 {
     StringToParMap::const_iterator it = sharedParMap.find(key);
-    return it==sharedParMap.end() ? NULL : it->second;
+    return it==sharedParMap.end() ? nullptr : it->second;
 }
 
 void cComponentType::putSharedParImpl(const char *key, cParImpl *value)
@@ -123,7 +123,7 @@ bool cComponentType::Less::operator()(cParImpl *a, cParImpl *b) const
 cParImpl *cComponentType::getSharedParImpl(cParImpl *value) const
 {
     ParImplSet::const_iterator it = sharedParSet.find(value);
-    return it==sharedParSet.end() ? NULL : *it;
+    return it==sharedParSet.end() ? nullptr : *it;
 }
 
 void cComponentType::putSharedParImpl(cParImpl *value)
@@ -138,7 +138,7 @@ bool cComponentType::isAvailable()
     if (!availabilityTested)
     {
         const char *className = getImplementationClassName();
-        available = classes.getInstance()->lookup(className) != NULL;
+        available = classes.getInstance()->lookup(className) != nullptr;
         availabilityTested = true;
     }
     return available;
@@ -174,7 +174,7 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
         const char *declaredType = prop->getValue("type");
         SignalDesc& desc = signalsSeen[signalID];
         desc.type = !declaredType ? SIMSIGNAL_UNDEF : getSignalType(declaredType, SIMSIGNAL_OBJECT);
-        desc.objectType = NULL;
+        desc.objectType = nullptr;
         desc.isNullable = false;
         if (desc.type == SIMSIGNAL_OBJECT) {
             // if declaredType ends in a question mark, the signal allows NULL to be emitted as well
@@ -216,7 +216,7 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
                 else if (timestampedValue->getValueType(signalID) != SIMSIGNAL_OBJECT)
                     throw cRuntimeError("Signal \"%s\" emitted as timestamped value with wrong type (%s, but object expected)",
                             cComponent::getSignalName(signalID), getSignalTypeName(timestampedValue->getValueType(signalID)));
-                else if ((innerObj = timestampedValue->objectValue(signalID)) == NULL) {
+                else if ((innerObj = timestampedValue->objectValue(signalID)) == nullptr) {
                     if (!desc.isNullable)
                         throw cRuntimeError("Signal \"%s\" emitted as timestamped value with NULL pointer in it (specify 'type=%s?' in @signal to allow NULLs)",
                                 cComponent::getSignalName(signalID), desc.objectType->getFullName());
@@ -361,7 +361,7 @@ cModule *cModuleType::instantiateModuleClass(const char *classname)
         throw cRuntimeError("incorrect module class %s: isModule() returns false", classname);
 
     if (isSimple()) {
-        if (dynamic_cast<cSimpleModule *>(mod)==NULL)
+        if (dynamic_cast<cSimpleModule *>(mod)==nullptr)
             throw cRuntimeError("incorrect simple module class %s: not subclassed from cSimpleModule", classname);
         if (mod->isSimple()==false)
             throw cRuntimeError("incorrect simple module class %s: isSimple() returns false", classname);

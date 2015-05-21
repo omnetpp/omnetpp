@@ -44,8 +44,8 @@ Register_Class(cPSquare);
 
 cPSquare::cPSquare(const cPSquare& r) : cDensityEstBase(r)
 {
-    n = NULL;
-    q = NULL;
+    n = nullptr;
+    q = nullptr;
     copy(r);
 }
 
@@ -83,9 +83,9 @@ void cPSquare::parsimPack(cCommBuffer *buffer) const
     buffer->pack(numCells);
     buffer->pack(numObs);
 
-    if (buffer->packFlag(n!=NULL))
+    if (buffer->packFlag(n!=nullptr))
         buffer->pack(n, numCells + 2);
-    if (buffer->packFlag(q!=NULL))
+    if (buffer->packFlag(q!=nullptr))
         buffer->pack(q, numCells + 2);
 #endif
 }

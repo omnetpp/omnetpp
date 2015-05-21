@@ -49,7 +49,7 @@ class TKENV_API LogInspector : public Inspector, protected ILogBufferListener
       bool bookmarkAdded;
 
    protected:
-      void textWidgetCommand(const char *arg1, const char *arg2=NULL, const char *arg3=NULL, const char *arg4=NULL, const char *arg5=NULL, const char *arg6=NULL);
+      void textWidgetCommand(const char *arg1, const char *arg2=nullptr, const char *arg3=nullptr, const char *arg4=nullptr, const char *arg5=nullptr, const char *arg6=nullptr);
       void textWidgetInsert(const char *text, const char *tags);
       void textWidgetSeeEnd();
       void textWidgetGotoBeginning();

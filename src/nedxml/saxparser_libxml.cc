@@ -36,7 +36,7 @@ NAMESPACE_BEGIN
 
 SAXParser::SAXParser()
 {
-    saxhandler = NULL;
+    saxhandler = nullptr;
 }
 
 void SAXParser::setHandler(SAXHandler *sh)
@@ -74,8 +74,8 @@ static void generateSAXEvents(xmlNode *node, SAXHandler *sh)
                 }
                 attrs[k+1] = (const char *) attr->children->content; // first text node within attr
             }
-            attrs[k] = NULL;
-            attrs[k+1] = NULL;
+            attrs[k] = nullptr;
+            attrs[k+1] = nullptr;
 
             // element name. ignore namespaces: pass "prefix:name" to SAX handler
             char *nodename;
@@ -135,17 +135,17 @@ static void generateSAXEvents(xmlNode *node, SAXHandler *sh)
 
 bool SAXParser::parse(const char *filename)
 {
-    return doParse(filename, NULL);
+    return doParse(filename, nullptr);
 }
 
 bool SAXParser::parseContent(const char *content)
 {
-    return doParse(NULL, content);
+    return doParse(nullptr, content);
 }
 
 bool SAXParser::doParse(const char *filename, const char *content)
 {
-    assert((filename==NULL) != (content==NULL));  // exactly one of them is non-NULL
+    assert((filename==nullptr) != (content==nullptr));  // exactly one of them is non-NULL
     strcpy(errortext, "<error msg unfilled>");
 
     //
@@ -175,9 +175,9 @@ bool SAXParser::doParse(const char *filename, const char *content)
 
     xmlDocPtr doc;
     if (filename)
-        doc = xmlCtxtReadFile(ctxt, filename, NULL, options);
+        doc = xmlCtxtReadFile(ctxt, filename, nullptr, options);
     else
-        doc = xmlCtxtReadMemory(ctxt, content, strlen(content), "string-literal", NULL, options);
+        doc = xmlCtxtReadMemory(ctxt, content, strlen(content), "string-literal", nullptr, options);
 
     // check if parsing succeeded
     if (!doc)

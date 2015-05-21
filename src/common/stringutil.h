@@ -63,7 +63,7 @@ inline int opp_strlen(const char *s)
  */
 inline char *opp_strdup(const char *s)
 {
-    if (!s || !s[0]) return NULL;
+    if (!s || !s[0]) return nullptr;
     char *p = new char[strlen(s)+1];
     strcpy(p,s);
     return p;
@@ -215,7 +215,7 @@ COMMON_API std::string opp_substringafter(const std::string& str, const std::str
  * Concatenates up to four strings. Returns a pointer to a static buffer
  * of length 256. If the result length would exceed 256, it is truncated.
  */
-COMMON_API char *opp_concat(const char *s1, const char *s2, const char *s3=NULL, const char *s4=NULL);
+COMMON_API char *opp_concat(const char *s1, const char *s2, const char *s3=nullptr, const char *s4=nullptr);
 
 /**
  * Converts the string to uppercase. Returns a pointer to  the argument.

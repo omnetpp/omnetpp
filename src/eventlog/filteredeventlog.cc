@@ -51,8 +51,8 @@ FilteredEventLog::~FilteredEventLog()
 
 void FilteredEventLog::clearInternalState()
 {
-    firstMatchingEvent = NULL;
-    lastMatchingEvent = NULL;
+    firstMatchingEvent = nullptr;
+    lastMatchingEvent = nullptr;
     approximateNumberOfEvents = -1;
     approximateMatchingEventRatio = -1;
     eventNumberToFilteredEventMap.clear();
@@ -91,9 +91,9 @@ void FilteredEventLog::synchronize(FileReader::FileChangedState change)
                     eventNumberToFilterMatchesFlagMap.erase(eventNumber);
                     eventNumberToTraceableEventFlagMap.erase(eventNumber);
                     if (firstMatchingEvent == lastMatchingEvent)
-                        firstMatchingEvent = NULL;
+                        firstMatchingEvent = nullptr;
                     delete lastMatchingEvent;
-                    lastMatchingEvent = NULL;
+                    lastMatchingEvent = nullptr;
                 }
                 break;
         }
@@ -118,10 +118,10 @@ void FilteredEventLog::print(FILE *file, eventnumber_t fromEventNumber, eventnum
         fprintf(file, "\n");
     }
 
-    while (event != NULL && (toEventNumber == -1 || event->getEventNumber() <= toEventNumber))
+    while (event != nullptr && (toEventNumber == -1 || event->getEventNumber() <= toEventNumber))
     {
         eventnumber_t eventNumber = event->getEventNumber();
-        KeyframeEntry *keyframeEntry = event->getNumEventLogEntries() > 1 ? dynamic_cast<KeyframeEntry *>(event->getEventLogEntry(1)) : NULL;
+        KeyframeEntry *keyframeEntry = event->getNumEventLogEntries() > 1 ? dynamic_cast<KeyframeEntry *>(event->getEventLogEntry(1)) : nullptr;
         if (keyframeEntry)
             keyframeEntry->previousKeyframeFileOffset = previousKeyframeFileOffset;
         for (int i = 0; i < event->getNumEventLogEntries(); i++) {
@@ -182,7 +182,7 @@ eventnumber_t FilteredEventLog::getApproximateNumberOfEvents()
             FilteredEvent *firstEvent = getFirstEvent();
             FilteredEvent *lastEvent = getLastEvent();
 
-            if (firstEvent == NULL)
+            if (firstEvent == nullptr)
                 approximateNumberOfEvents = 0;
             else
             {
@@ -239,7 +239,7 @@ double FilteredEventLog::getApproximatePercentageForEventNumber(eventnumber_t ev
 FilteredEvent *FilteredEventLog::getApproximateEventAt(double percentage)
 {
     if (isEmpty())
-        return NULL;
+        return nullptr;
     else {
         double firstEventPercentage = eventLog->getApproximatePercentageForEventNumber(getFirstEvent()->getEventNumber());
         double lastEventPercentage = eventLog->getApproximatePercentageForEventNumber(getLastEvent()->getEventNumber());
@@ -255,7 +255,7 @@ FilteredEvent *FilteredEventLog::getApproximateEventAt(double percentage)
             return filteredEvent;
 
         Assert(false);
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -482,7 +482,7 @@ FilteredEvent *FilteredEventLog::getEventForEventNumber(eventnumber_t eventNumbe
                 break;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind, bool useCacheOnly)
@@ -529,7 +529,7 @@ FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationT
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 EventLogEntry *FilteredEventLog::findEventLogEntry(EventLogEntry *start, const char *search, bool forward, bool caseSensitive)
@@ -560,7 +560,7 @@ FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool
     if (forward) {
         if (firstMatchingEvent && event->getEventNumber() < firstMatchingEvent->getEventNumber()) {
             if (stopEventNumber != -1 && stopEventNumber < firstMatchingEvent->getEventNumber())
-                return NULL;
+                return nullptr;
             else
                 return firstMatchingEvent;
         }
@@ -571,7 +571,7 @@ FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool
     else {
         if (lastMatchingEvent && lastMatchingEvent->getEventNumber() < event->getEventNumber()) {
             if (stopEventNumber != -1 && lastMatchingEvent->getEventNumber() < stopEventNumber)
-                return NULL;
+                return nullptr;
             else
                 return lastMatchingEvent;
         }
@@ -597,24 +597,24 @@ FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool
             event = event->getNextEvent();
 
             if (lastEventNumber != -1 && eventNumber > lastEventNumber)
-                return NULL;
+                return nullptr;
 
             if (stopEventNumber != -1 && eventNumber > stopEventNumber)
-                return NULL;
+                return nullptr;
         }
         else {
             eventNumber--;
             event = event->getPreviousEvent();
 
             if (firstEventNumber != -1 && eventNumber < firstEventNumber)
-                return NULL;
+                return nullptr;
 
             if (stopEventNumber != -1 && eventNumber < stopEventNumber)
-                return NULL;
+                return nullptr;
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void FilteredEventLog::setTracedEventNumber(eventnumber_t tracedEventNumber)

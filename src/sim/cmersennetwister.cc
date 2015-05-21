@@ -29,8 +29,8 @@ NAMESPACE_BEGIN
 
 Register_Class(cMersenneTwister);
 
-Register_PerRunConfigOption(CFGID_SEED_N_MT, "seed-%-mt", CFG_INT, NULL, "When Mersenne Twister is selected as random number generator (default): seed for RNG number k. (Substitute k for '%' in the key.)");
-Register_PerRunConfigOption(CFGID_SEED_N_MT_P, "seed-%-mt-p%", CFG_INT, NULL, "With parallel simulation: When Mersenne Twister is selected as random number generator (default): seed for RNG number k in partition number p. (Substitute k for the first '%' in the key, and p for the second.)");
+Register_PerRunConfigOption(CFGID_SEED_N_MT, "seed-%-mt", CFG_INT, nullptr, "When Mersenne Twister is selected as random number generator (default): seed for RNG number k. (Substitute k for '%' in the key.)");
+Register_PerRunConfigOption(CFGID_SEED_N_MT_P, "seed-%-mt-p%", CFG_INT, nullptr, "With parallel simulation: When Mersenne Twister is selected as random number generator (default): seed for RNG number k in partition number p. (Substitute k for the first '%' in the key, and p for the second.)");
 
 
 void cMersenneTwister::initialize(int seedSet, int rngId, int numRngs,
@@ -46,13 +46,13 @@ void cMersenneTwister::initialize(int seedSet, int rngId, int numRngs,
     {
         // with parallel simulation, every partition should get distinct streams
         const char *value = cfg->getConfigValue(key2);
-        if (value!=NULL)
+        if (value!=nullptr)
         {
-            seed = cConfiguration::parseLong(value, 0);
+            seed = cConfiguration::parseLong(value, nullptr);
         }
         else
         {
-            if (cfg->getConfigValue(key)!=NULL)
+            if (cfg->getConfigValue(key)!=nullptr)
                 EV << "Warning: cMersenneTwister: ignoring config key " << key << "=<seed>"
                    << " for parallel simulation -- please use partition-specific variant "
                    << key2 << "=<seed>\n";
@@ -62,8 +62,8 @@ void cMersenneTwister::initialize(int seedSet, int rngId, int numRngs,
     else
     {
         const char *value = cfg->getConfigValue(key);
-        if (value!=NULL)
-            seed = cConfiguration::parseLong(value, 0);
+        if (value!=nullptr)
+            seed = cConfiguration::parseLong(value, nullptr);
         else
             seed = seedSet*numRngs + rngId;
     }

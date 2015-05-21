@@ -82,13 +82,13 @@ class ENVIR_API cFileOutputScalarManager : public cIOutputScalarManager
     /**
      * Records a double scalar result into the scalar result file.
      */
-    void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL);
+    void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr);
 
     /**
      * Records a histogram or statistic object into the scalar result file.
      * This operation may invoke the transform() method on the histogram object.
      */
-    void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL);
+    void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr);
 
     /**
      * Returns the file name.

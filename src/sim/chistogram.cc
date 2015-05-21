@@ -51,7 +51,7 @@ Register_Class(cDoubleHistogram);
 cHistogramBase::cHistogramBase(const char *name, int numcells) :
 cDensityEstBase(name)
 {
-    cellv = NULL;
+    cellv = nullptr;
     numCells = numcells;
 }
 
@@ -68,7 +68,7 @@ void cHistogramBase::parsimPack(cCommBuffer *buffer) const
     cDensityEstBase::parsimPack(buffer);
     buffer->pack(numCells);
 
-    if (buffer->packFlag(cellv!=NULL))
+    if (buffer->packFlag(cellv!=nullptr))
         buffer->pack(cellv, numCells);
 #endif
 }
@@ -93,7 +93,7 @@ void cHistogramBase::copy(const cHistogramBase& res)
 {
     numCells = res.numCells;
     delete [] cellv;
-    cellv = NULL;
+    cellv = nullptr;
     if (res.cellv)
     {
         cellv = new unsigned[numCells];
@@ -119,7 +119,7 @@ void cHistogramBase::clearResult()
     cDensityEstBase::clearResult();
 
     delete [] cellv;
-    cellv = NULL;
+    cellv = nullptr;
 }
 
 void cHistogramBase::transform()
@@ -138,7 +138,7 @@ void cHistogramBase::transform()
         collectTransformed(precollectedValues[i]);
 
     delete [] precollectedValues;
-    precollectedValues = NULL;
+    precollectedValues = nullptr;
 
     transformed = true;
 }
@@ -154,7 +154,7 @@ void cHistogramBase::saveToFile(FILE *f) const
 {
     cDensityEstBase::saveToFile(f);
     fprintf(f, "%d\t #= num_cells\n", numCells);
-    fprintf(f, "%d\t #= cellv[] exists\n", cellv!=NULL);
+    fprintf(f, "%d\t #= cellv[] exists\n", cellv!=nullptr);
     if (cellv) for (int i=0; i<numCells; i++) fprintf(f, " %u\n", cellv[i]);
 }
 
@@ -165,7 +165,7 @@ void cHistogramBase::loadFromFile(FILE *f)
 
     int cellv_exists;
     freadvarsf(f, "%d\t #= cellv[] exists", &cellv_exists);
-    delete [] cellv; cellv = NULL;
+    delete [] cellv; cellv = nullptr;
     if (cellv_exists)
     {
         cellv = new unsigned[numCells];

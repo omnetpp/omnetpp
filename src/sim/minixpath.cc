@@ -80,7 +80,7 @@ bool MiniXPath::parseConstant(std::string& value, const char *s, int len)
         value.assign(s+1, end-s-2);
         return true;
     }
-    else if (*s=='$' && resolver!=NULL)
+    else if (*s=='$' && resolver!=nullptr)
     {
         return resolver->resolve(std::string(s+1,end-s-1).c_str(), value);
     }
@@ -120,7 +120,7 @@ cXMLElement *MiniXPath::getFirstSiblingWithAttribute(cXMLElement *firstsibling, 
                 return child;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 cXMLElement *MiniXPath::getNthSibling(cXMLElement *firstsibling, const char *tagname, int n)
@@ -129,7 +129,7 @@ cXMLElement *MiniXPath::getNthSibling(cXMLElement *firstsibling, const char *tag
         if (!tagname || !strcasecmp(child->getTagName(),tagname))
             if (n--==0)
                 return child;
-    return NULL;
+    return nullptr;
 }
 
 cXMLElement *MiniXPath::recursiveMatch(cXMLElement *node, const char *pathexpr)
@@ -143,7 +143,7 @@ cXMLElement *MiniXPath::recursiveMatch(cXMLElement *node, const char *pathexpr)
         if (res)
             return res;
     }
-    return NULL;
+    return nullptr;
 }
 
 // handle "/" or "//" at front of pattern
@@ -180,7 +180,7 @@ cXMLElement *MiniXPath::matchStep(cXMLElement *node, const char *pathexpr)
     {
         if (node->getParentNode() && node->getParentNode()!=docNode)
             return matchSeparator(node->getParentNode(), sep);
-        return NULL;
+        return nullptr;
     }
     else if (!strncmp(stepexpr,"*",steplen))
     {
@@ -190,26 +190,26 @@ cXMLElement *MiniXPath::matchStep(cXMLElement *node, const char *pathexpr)
             if (res)
                 return res;
         }
-        return NULL;
+        return nullptr;
     }
     else if (stepexpr[0]=='*' && parseBracketedNum(n, stepexpr+1, steplen-1))
     {
-        cXMLElement *nthnode = getNthSibling(node->getFirstChild(), NULL, n);
+        cXMLElement *nthnode = getNthSibling(node->getFirstChild(), nullptr, n);
         if (!nthnode)
-            return NULL;
+            return nullptr;
         return matchSeparator(nthnode, sep);
     }
     else if (stepexpr[0]=='*' && parseBracketedAttrEquals(attr, value, stepexpr+1, steplen-1))
     {
-        for (cXMLElement *child=getFirstSiblingWithAttribute(node->getFirstChild(), NULL, attr.c_str(), value.c_str());
+        for (cXMLElement *child=getFirstSiblingWithAttribute(node->getFirstChild(), nullptr, attr.c_str(), value.c_str());
              child;
-             child=getFirstSiblingWithAttribute(child->getNextSibling(), NULL, attr.c_str(), value.c_str()))
+             child=getFirstSiblingWithAttribute(child->getNextSibling(), nullptr, attr.c_str(), value.c_str()))
         {
             cXMLElement *res = matchSeparator(child, sep);
             if (res)
                 return res;
         }
-        return NULL;
+        return nullptr;
     }
     else if (parseTagNameFromStepExpr(tagname, stepexpr, steplen) && steplen==(int)tagname.length())
     {
@@ -221,13 +221,13 @@ cXMLElement *MiniXPath::matchStep(cXMLElement *node, const char *pathexpr)
             if (res)
                 return res;
         }
-        return NULL;
+        return nullptr;
     }
     else if (parseTagNameFromStepExpr(tagname, stepexpr, steplen) && parseBracketedNum(n, stepexpr+tagname.length(), steplen-tagname.length()))
     {
         cXMLElement *nthnode = getNthSibling(node->getFirstChild(), tagname.c_str(), n);
         if (!nthnode)
-            return NULL;
+            return nullptr;
         return matchSeparator(nthnode, sep);
     }
     else if (parseTagNameFromStepExpr(tagname, stepexpr, steplen) && parseBracketedAttrEquals(attr, value, stepexpr+tagname.length(), steplen-tagname.length()))
@@ -240,7 +240,7 @@ cXMLElement *MiniXPath::matchStep(cXMLElement *node, const char *pathexpr)
             if (res)
                 return res;
         }
-        return NULL;
+        return nullptr;
     }
     else
     {
@@ -302,7 +302,7 @@ cXMLElement *MiniXPath::matchPathExpression(cXMLElement *contextNode, const char
     if (pathexpr[0]=='/')
     {
         // we need the document node if path starts with "/"
-        if (documentNode==NULL)
+        if (documentNode==nullptr)
             throw cRuntimeError("Mini XPath engine: cannot evaluate a path starting with '/' "
                                 "if the documentNode optional parameter is not supplied");
 
@@ -310,7 +310,7 @@ cXMLElement *MiniXPath::matchPathExpression(cXMLElement *contextNode, const char
         while (pathexpr[0]=='/' && pathexpr[1]=='.' && pathexpr[2]=='/')
             pathexpr += 2;
         if (!pathexpr[0] || (pathexpr[0]=='/' && !pathexpr[1]) || (pathexpr[0]=='/' && pathexpr[1]=='.' && !pathexpr[2]))
-            return NULL;
+            return nullptr;
 
         // match
         return matchSeparator(docNode, pathexpr);
@@ -321,7 +321,7 @@ cXMLElement *MiniXPath::matchPathExpression(cXMLElement *contextNode, const char
         while (pathexpr[0]=='.' && pathexpr[1]=='/' && pathexpr[2]!='/')
             pathexpr += 2;
         if (!pathexpr[0])
-            return NULL;  // plain "./" is nothing
+            return nullptr;  // plain "./" is nothing
         if (pathexpr[0]=='.' && !pathexpr[1])
             return contextNode;
 

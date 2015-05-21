@@ -150,7 +150,7 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
 
             int size = isArray ? descriptor->getFieldArraySize(object, fieldIndex) : 1;
             for (int elementIndex = 0; elementIndex < size; elementIndex++) {
-                void *fieldValue = isCompound ? descriptor->getFieldStructValuePointer(object, fieldIndex, elementIndex) : NULL;
+                void *fieldValue = isCompound ? descriptor->getFieldStructValuePointer(object, fieldIndex, elementIndex) : nullptr;
 
                 ObjectPrinterRecursionControl result = RECURSE;
                 if (recursionPredicate)

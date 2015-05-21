@@ -27,10 +27,10 @@ ArrayBuilderNode::ArrayBuilderNode()
 {
     vecCapacity = 0;
     vecLength = 0;
-    xvec = NULL;
-    yvec = NULL;
-    xpvec = NULL;
-    evec = NULL;
+    xvec = nullptr;
+    yvec = nullptr;
+    xpvec = nullptr;
+    evec = nullptr;
     collectEvec = false;
 }
 
@@ -126,9 +126,9 @@ XYArray *ArrayBuilderNode::getArray()
 {
     // transfer ownership to XYArray
     XYArray *array = new XYArray(vecLength, xvec, yvec, xpvec, evec);
-    xvec = yvec = NULL;
-    xpvec = NULL;
-    evec = NULL;
+    xvec = yvec = nullptr;
+    xpvec = nullptr;
+    evec = nullptr;
     vecLength = 0;
     return array;
 }

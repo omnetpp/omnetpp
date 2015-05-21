@@ -34,7 +34,7 @@ EventLogEntry::EventLogEntry()
 {
     contextModuleId = -1;
     level = -1;
-    event = NULL;
+    event = nullptr;
     entryIndex = -1;
 }
 
@@ -90,7 +90,7 @@ char *EventLogTokenBasedEntry::getToken(char **tokens, int numTokens, const char
     if (mandatory)
         throw opp_runtime_error("Missing mandatory token %s in line: %.*s", sign, currentLineLength, currentLine);
 
-    return NULL;
+    return nullptr;
 }
 
 bool EventLogTokenBasedEntry::getBoolToken(char **tokens, int numTokens, const char *sign, bool mandatory, bool defaultValue)
@@ -215,7 +215,7 @@ EventLogMessageEntry::EventLogMessageEntry(Event *event, int entryIndex)
 {
     this->event = event;
     this->entryIndex = entryIndex;
-    text = NULL;
+    text = nullptr;
 }
 
 void EventLogMessageEntry::parse(char *line, int length)
@@ -259,7 +259,7 @@ const char *EventLogMessageEntry::getAsString(const char *attribute) const
     else if (!strcmp(attribute, "-"))
         return text;
     else
-        return NULL;
+        return nullptr;
 }
 
 NAMESPACE_END

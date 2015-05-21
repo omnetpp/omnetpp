@@ -44,16 +44,16 @@ Register_Enum(cOutVector::InterpolationMode, (cOutVector::NONE, cOutVector::SAMP
 cOutVector::cOutVector(const char *name) : cNoncopyableOwnedObject(name)
 {
     setFlag(FL_ENABLED, true);
-    handle = NULL;
+    handle = nullptr;
     numReceived = 0;
     numStored = 0;
-    recordInInspector = NULL;
+    recordInInspector = nullptr;
     lastTimestamp = 0;
 
     // register early if possible (only required by Akaroa)
     if (name) {
         handle = getEnvir()->registerOutputVector(getSimulation()->getContext()->getFullPath().c_str(), name);
-        ASSERT(handle!=NULL);
+        ASSERT(handle!=nullptr);
     }
 }
 
@@ -73,7 +73,7 @@ void cOutVector::setName(const char *nam)
     // register early (only needed for Akaroa...)
     if (nam) {
         handle = getEnvir()->registerOutputVector(getSimulation()->getContext()->getFullPath().c_str(), getName());
-        ASSERT(handle!=NULL);
+        ASSERT(handle!=nullptr);
     }
 }
 
@@ -124,7 +124,7 @@ void cOutVector::setType(Type type)
     if (!handle)
         throw cRuntimeError(this,"setType(): set the object name first, using setName()");
 
-    const char *typeString=NULL;
+    const char *typeString=nullptr;
     switch (type)
     {
         case TYPE_INT:    typeString = "int"; break;
@@ -142,7 +142,7 @@ void cOutVector::setInterpolationMode(InterpolationMode mode)
     if (!handle)
         throw cRuntimeError(this,"setInterpolationMode(): set the object name first, using setName()");
 
-    const char *modeString=NULL;
+    const char *modeString=nullptr;
     switch (mode)
     {
         case NONE:                 modeString = "none"; break;

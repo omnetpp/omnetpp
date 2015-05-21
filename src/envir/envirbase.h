@@ -194,16 +194,16 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual void undisposedObject(cObject *obj);
     virtual void log(cLogEntry *entry);
 
-    virtual const char *getCurrentEventName() { return logFormatUsesEventName ? currentEventName.c_str() : NULL; }
+    virtual const char *getCurrentEventName() { return logFormatUsesEventName ? currentEventName.c_str() : nullptr; }
     virtual const char *getCurrentEventClassName() { return currentEventClassName; }
-    virtual cModule *getCurrentEventModule() { return currentModuleId != -1 ? getSimulation()->getModule(currentModuleId) : NULL; }
+    virtual cModule *getCurrentEventModule() { return currentModuleId != -1 ? getSimulation()->getModule(currentModuleId) : nullptr; }
 
     // configuration, model parameters
     virtual void configure(cComponent *component);
     virtual void readParameter(cPar *parameter);
     virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index);
-    virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath=NULL);
-    virtual cXMLElement *getParsedXMLString(const char *content, const char *xpath=NULL);
+    virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath=nullptr);
+    virtual cXMLElement *getParsedXMLString(const char *content, const char *xpath=nullptr);
     virtual void forgetXMLDocument(const char *filename);
     virtual void forgetParsedXMLString(const char *content);
     virtual void flushXMLDocumentCache();
@@ -229,8 +229,8 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual bool recordInOutputVector(void *vechandle, simtime_t t, double value);
 
     // output scalars
-    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL);
-    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL);
+    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr);
+    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr);
 
     virtual void addResultRecorders(cComponent *component, simsignal_t signal, const char *statisticName, cProperty *statisticTemplateProperty);
 
@@ -249,7 +249,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
 
     virtual void addLifecycleListener(cISimulationLifecycleListener *listener);
     virtual void removeLifecycleListener(cISimulationLifecycleListener *listener);
-    virtual void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details=NULL);
+    virtual void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details=nullptr);
     //@}
 
   protected:

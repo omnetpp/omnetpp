@@ -70,7 +70,7 @@ class COMMON_API StringTokenizer
      * and of the delimiters string. The delimiters default to all whitespace
      * characters (space, tab, CR, LF, FF).
      */
-    StringTokenizer(const char *str, const char *delimiters=NULL);
+    StringTokenizer(const char *str, const char *delimiters=nullptr);
 
     /**
      * Destructor.

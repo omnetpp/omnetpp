@@ -83,10 +83,10 @@ class FunctionResolver : public Expression::Resolver
     FunctionResolver() {}
     virtual ~FunctionResolver() {};
     // Variables are substituted textually before parsing the expression
-    virtual Expression::Functor *resolveVariable(const char *varname) { Assert(false); return NULL; }
+    virtual Expression::Functor *resolveVariable(const char *varname) { Assert(false); return nullptr; }
     virtual Expression::Functor *resolveFunction(const char *funcname, int argcount)
     {
-        return MathFunction::supports(funcname) ? new MathFunction(funcname) : NULL;  // argcount will be checked by the caller afterwards
+        return MathFunction::supports(funcname) ? new MathFunction(funcname) : nullptr;  // argcount will be checked by the caller afterwards
     }
 };
 
@@ -143,7 +143,7 @@ void ValueIterator::Item::parse(const char *s)
     // parse the <from>[..<to> [step <step>]] syntax
     const char *fromPtr = s;
     const char *toPtr = strstr(fromPtr, "..");
-    const char *stepPtr = toPtr ? strstr(toPtr+2, "step") : NULL;
+    const char *stepPtr = toPtr ? strstr(toPtr+2, "step") : nullptr;
     while (stepPtr && (opp_isalnumext(*(stepPtr-1)) || opp_isalnumext(*(stepPtr+4))))
         stepPtr = strstr(stepPtr+4, "step");
 

@@ -59,11 +59,11 @@
 
 NAMESPACE_BEGIN
 
-Register_GlobalConfigOption(CFGID_CONFIG_NAME, "cmdenv-config-name", CFG_STRING, NULL, "Specifies the name of the configuration to be run (for a value `Foo', section [Config Foo] will be used from the ini file). See also cmdenv-runs-to-execute=. The -c command line option overrides this setting.")
-Register_GlobalConfigOption(CFGID_RUNS_TO_EXECUTE, "cmdenv-runs-to-execute", CFG_STRING, NULL, "Specifies which runs to execute from the selected configuration (see cmdenv-config-name=). It accepts a comma-separated list of run numbers or run number ranges, e.g. 1,3..4,7..9. If the value is missing, Cmdenv executes all runs in the selected configuration. The -r command line option overrides this setting.")
+Register_GlobalConfigOption(CFGID_CONFIG_NAME, "cmdenv-config-name", CFG_STRING, nullptr, "Specifies the name of the configuration to be run (for a value `Foo', section [Config Foo] will be used from the ini file). See also cmdenv-runs-to-execute=. The -c command line option overrides this setting.")
+Register_GlobalConfigOption(CFGID_RUNS_TO_EXECUTE, "cmdenv-runs-to-execute", CFG_STRING, nullptr, "Specifies which runs to execute from the selected configuration (see cmdenv-config-name=). It accepts a comma-separated list of run numbers or run number ranges, e.g. 1,3..4,7..9. If the value is missing, Cmdenv executes all runs in the selected configuration. The -r command line option overrides this setting.")
 Register_GlobalConfigOptionU(CFGID_CMDENV_EXTRA_STACK, "cmdenv-extra-stack", "B",  "8KiB", "Specifies the extra amount of stack that is reserved for each activity() simple module when the simulation is run under Cmdenv.")
 Register_GlobalConfigOption(CFGID_CMDENV_INTERACTIVE, "cmdenv-interactive", CFG_BOOL,  "false", "Defines what Cmdenv should do when the model contains unassigned parameters. In interactive mode, it asks the user. In non-interactive mode (which is more suitable for batch execution), Cmdenv stops with an error.")
-Register_GlobalConfigOption(CFGID_OUTPUT_FILE, "cmdenv-output-file", CFG_FILENAME, NULL, "When a filename is specified, Cmdenv redirects standard output into the given file. This is especially useful with parallel simulation. See the `fname-append-host' option as well.")
+Register_GlobalConfigOption(CFGID_OUTPUT_FILE, "cmdenv-output-file", CFG_FILENAME, nullptr, "When a filename is specified, Cmdenv redirects standard output into the given file. This is especially useful with parallel simulation. See the `fname-append-host' option as well.")
 Register_PerRunConfigOption(CFGID_EXPRESS_MODE, "cmdenv-express-mode", CFG_BOOL, "true", "Selects ``normal'' (debug/trace) or ``express'' mode.")
 Register_PerRunConfigOption(CFGID_AUTOFLUSH, "cmdenv-autoflush", CFG_BOOL, "false", "Call fflush(stdout) after each event banner or status update; affects both express and normal mode. Turning on autoflush may have a performance penalty, but it can be useful with printf-style debugging for tracking down program crashes.")
 Register_PerRunConfigOption(CFGID_MODULE_MESSAGES, "cmdenv-module-messages", CFG_BOOL, "true", "When cmdenv-express-mode=false: turns printing module EV<< output on/off.")
@@ -101,7 +101,7 @@ bool Cmdenv::sigintReceived;
 
 
 // utility function for printing elapsed time
-char *timeToStr(timeval t, char *buf=NULL)
+char *timeToStr(timeval t, char *buf=nullptr)
 {
    static char buf2[64];
    char *b = buf ? buf : buf2;
@@ -357,7 +357,7 @@ void Cmdenv::doRun()
 inline bool elapsed(long millis, struct timeval& since)
 {
     struct timeval now;
-    gettimeofday(&now, NULL);
+    gettimeofday(&now, nullptr);
     bool ret = timeval_diff_usec(now, since) > 1000*millis;
     if (ret)
         since = now;
@@ -415,7 +415,7 @@ void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesti
             speedometer.start(getSimulation()->getSimTime());
 
             struct timeval last_update;
-            gettimeofday(&last_update, NULL);
+            gettimeofday(&last_update, nullptr);
 
             doStatusUpdate(speedometer);
 
@@ -548,7 +548,7 @@ const char *Cmdenv::progressPercentage()
     double cputimeRatio = -1;
     if (opt->cpuTimeLimit!=0) {
         timeval now;
-        gettimeofday(&now, NULL);
+        gettimeofday(&now, nullptr);
         long elapsedsecs = now.tv_sec - lastStarted.tv_sec + elapsedTime.tv_sec;
         cputimeRatio = elapsedsecs / (double)opt->cpuTimeLimit;
     }
@@ -707,7 +707,7 @@ void Cmdenv::debug(const char *fmt,...)
         return;
 
     struct timeval tv;
-    gettimeofday(&tv, NULL);
+    gettimeofday(&tv, nullptr);
     time_t t = (time_t) tv.tv_sec;
     struct tm tm = *localtime(&t);
 

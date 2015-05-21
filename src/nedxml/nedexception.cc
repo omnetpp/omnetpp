@@ -38,7 +38,7 @@ NEDException::NEDException(NEDElement *context, const char *messagefmt...) : std
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
 
-    const char *loc = context ? context->getSourceLocation() : NULL;
+    const char *loc = context ? context->getSourceLocation() : nullptr;
     if (loc)
         msg = std::string(message) + ", at " + std::string(loc);
     else if (context)

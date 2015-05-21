@@ -215,7 +215,7 @@ class SIM_API cFSM : public cOwnedObject
     /**
      * Constructor.
      */
-    explicit cFSM(const char *name=NULL);
+    explicit cFSM(const char *name=nullptr);
 
     /**
      * Copy constructor.
@@ -287,7 +287,7 @@ class SIM_API cFSM : public cOwnedObject
      *
      * @see FSM_Goto
      */
-    void setState(int state, const char *stateName=NULL)  {this->state=state;this->stateName=stateName;}
+    void setState(int state, const char *stateName=nullptr)  {this->state=state;this->stateName=stateName;}
     //@}
 };
 

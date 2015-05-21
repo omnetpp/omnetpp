@@ -41,15 +41,15 @@ void EventLog::clearInternalState()
     approximateNumberOfEvents = -1;
     progressCallInterval = CLOCKS_PER_SEC;
     lastProgressCall = -1;
-    firstEvent = NULL;
-    lastEvent = NULL;
+    firstEvent = nullptr;
+    lastEvent = nullptr;
     messageNames.clear();
     messageClassNames.clear();
     moduleIdToModuleCreatedEntryMap.clear();
     moduleIdAndGateIdToGateCreatedEntryMap.clear();
     previousEventNumberToMessageEntriesMap.clear();
-    simulationBeginEntry = NULL;
-    simulationEndEntry = NULL;
+    simulationBeginEntry = nullptr;
+    simulationEndEntry = nullptr;
     eventNumberToEventMap.clear();
     beginOffsetToEventMap.clear();
     endOffsetToEventMap.clear();
@@ -86,11 +86,11 @@ void EventLog::synchronize(FileReader::FileChangedState change)
                     beginOffsetToEventMap.erase(lastEvent->getBeginOffset());
                     endOffsetToEventMap.erase(lastEvent->getEndOffset());
                     if (firstEvent == lastEvent) {
-                        firstEvent = NULL;
-                        simulationBeginEntry = NULL;
+                        firstEvent = nullptr;
+                        simulationBeginEntry = nullptr;
                     }
                     delete lastEvent;
-                    lastEvent = NULL;
+                    lastEvent = nullptr;
                 }
                 // TODO: we could do this incrementally
                 parseKeyframes();
@@ -103,7 +103,7 @@ void EventLog::print(FILE *file, eventnumber_t fromEventNumber, eventnumber_t to
 {
     IEvent *event = fromEventNumber == -1 ? getFirstEvent() : getFirstEventNotBeforeEventNumber(fromEventNumber);
 
-    while (event != NULL && (toEventNumber == -1 || event->getEventNumber() <= toEventNumber))
+    while (event != nullptr && (toEventNumber == -1 || event->getEventNumber() <= toEventNumber))
     {
         event->print(file, outputEventLogMessages);
         event = event->getNextEvent();
@@ -134,7 +134,7 @@ eventnumber_t EventLog::getApproximateNumberOfEvents()
         Event *firstEvent = getFirstEvent();
         Event *lastEvent = getLastEvent();
 
-        if (firstEvent == NULL)
+        if (firstEvent == nullptr)
             approximateNumberOfEvents = 0;
         else
         {
@@ -172,8 +172,8 @@ Event *EventLog::getApproximateEventAt(double percentage)
     Event *firstEvent = getFirstEvent();
     Event *lastEvent = getLastEvent();
 
-    if (firstEvent == NULL)
-        return NULL;
+    if (firstEvent == nullptr)
+        return nullptr;
     else {
         file_offset_t beginOffset = firstEvent->getBeginOffset();
         file_offset_t endOffset = lastEvent->getEndOffset();
@@ -184,7 +184,7 @@ Event *EventLog::getApproximateEventAt(double percentage)
         simtime_t simulationTime;
         readToEventLine(false, offset, eventNumber, simulationTime, lineStartOffset, lineEndOffset);
 
-        Event *event = NULL;
+        Event *event = nullptr;
 
         if (lineStartOffset == -1)
             event = getFirstEvent();
@@ -207,7 +207,7 @@ void EventLog::parseKeyframes()
         consequenceLookaheadLimits.resize(getLastEventNumber() / keyframeBlockSize + 1, 0);
         reader->seekTo(reader->getFileSize());
         while ((line = reader->getPreviousLineBufferPointer())) {
-            EventLogEntry *eventLogEntry = (EventLogEntry *)EventLogEntry::parseEntry(this, NULL, 0, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
+            EventLogEntry *eventLogEntry = (EventLogEntry *)EventLogEntry::parseEntry(this, nullptr, 0, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
             if (dynamic_cast<KeyframeEntry *>(eventLogEntry)) {
                 KeyframeEntry *keyframeEntry = (KeyframeEntry *)eventLogEntry;
                 // store consequenceLookaheadLimits from the keyframe
@@ -256,7 +256,7 @@ ModuleCreatedEntry *EventLog::getModuleCreatedEntry(int moduleId)
     ModuleIdToModuleCreatedEntryMap::iterator it = moduleIdToModuleCreatedEntryMap.find(moduleId);
 
     if (it == moduleIdToModuleCreatedEntryMap.end())
-        return NULL;
+        return nullptr;
     else
         return it->second;
 }
@@ -267,7 +267,7 @@ GateCreatedEntry *EventLog::getGateCreatedEntry(int moduleId, int gateId)
     ModuleIdAndGateIdToGateCreatedEntryMap::iterator it = moduleIdAndGateIdToGateCreatedEntryMap.find(key);
 
     if (it == moduleIdAndGateIdToGateCreatedEntryMap.end())
-        return NULL;
+        return nullptr;
     else
         return it->second;
 }
@@ -304,7 +304,7 @@ Event *EventLog::getEventForEventNumber(eventnumber_t eventNumber, MatchKind mat
         if (it != eventNumberToEventMap.end())
             return it->second;
         else if (useCacheOnly)
-            return NULL;
+            return nullptr;
         else {
             // the following two are still faster than binary searching
             // but this may access the disk
@@ -312,23 +312,23 @@ Event *EventLog::getEventForEventNumber(eventnumber_t eventNumber, MatchKind mat
             if (it != eventNumberToEventMap.end()) {
                 Event *event = it->second->getNextEvent();
                 // the file might be filtered
-                return event->getEventNumber() == eventNumber ? event : NULL;
+                return event->getEventNumber() == eventNumber ? event : nullptr;
             }
 
             it = eventNumberToEventMap.find(eventNumber + 1);
             if (it != eventNumberToEventMap.end()) {
                 Event *event = it->second->getPreviousEvent();
                 // the file might be filtered
-                return event->getEventNumber() == eventNumber ? event : NULL;
+                return event->getEventNumber() == eventNumber ? event : nullptr;
             }
         }
     }
     if (useCacheOnly)
-        return NULL;
+        return nullptr;
     else {
         file_offset_t offset = getOffsetForEventNumber(eventNumber, matchKind);
         if (offset == -1)
-            return NULL;
+            return nullptr;
         else
             return getEventForBeginOffset(offset);
     }
@@ -343,13 +343,13 @@ Event *EventLog::getNeighbourEvent(IEvent *event, eventnumber_t distance)
 Event *EventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind, bool useCacheOnly)
 {
     if (useCacheOnly)
-        return NULL;
+        return nullptr;
     else {
         Assert(simulationTime >= 0);
         file_offset_t offset = getOffsetForSimulationTime(simulationTime, matchKind);
 
         if (offset == -1)
-            return NULL;
+            return nullptr;
         else
             return getEventForBeginOffset(offset);
     }
@@ -384,7 +384,7 @@ EventLogEntry *EventLog::findEventLogEntry(EventLogEntry *start, const char *sea
         while ((line = reader->getPreviousLineBufferPointer()));
     }
 
-    return NULL;
+    return nullptr;
 }
 
 Event *EventLog::getEventForBeginOffset(file_offset_t beginOffset)
@@ -402,8 +402,8 @@ Event *EventLog::getEventForBeginOffset(file_offset_t beginOffset)
         return event;
     }
     else {
-        beginOffsetToEventMap[beginOffset] = NULL;
-        return NULL;
+        beginOffsetToEventMap[beginOffset] = nullptr;
+        return nullptr;
     }
 }
 
@@ -418,8 +418,8 @@ Event *EventLog::getEventForEndOffset(file_offset_t endOffset)
         file_offset_t beginOffset = getBeginOffsetForEndOffset(endOffset);
 
         if (beginOffset == -1) {
-            endOffsetToEventMap[endOffset] = NULL;
-            return NULL;
+            endOffsetToEventMap[endOffset] = nullptr;
+            return nullptr;
         }
         else
             return getEventForBeginOffset(beginOffset);

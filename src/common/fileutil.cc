@@ -56,7 +56,7 @@ void splitFileName(const char *pathname, std::string& dir, std::string& fnameonl
     const char *s = pathname + strlen(pathname) - 1;
     s--; // ignore potential trailing "/"
     while (s>pathname && *s!='\\' && *s!='/') s--;
-    const char *sep = s<=pathname ? NULL : s;
+    const char *sep = s<=pathname ? nullptr : s;
 
     // split along that
     if (!sep)
@@ -121,10 +121,10 @@ std::string tidyFilename(const char *pathname, bool slashes)
         if (!strcmp(segment, "."))
             continue; // ignore "."
         if (!strcmp(segment, "..")) {
-            const char *lastsegment = segments.empty() ? NULL : segments.back().c_str();
-            bool canPop = lastsegment!=NULL &&
+            const char *lastsegment = segments.empty() ? nullptr : segments.back().c_str();
+            bool canPop = lastsegment!=nullptr &&
                           strcmp(lastsegment, "..")!=0 &&  // don't pop ".."
-                          strchr(lastsegment, ':')==NULL;  // hostname prefix or something, don't pop
+                          strchr(lastsegment, ':')==nullptr;  // hostname prefix or something, don't pop
             if (canPop)
                 segments.pop_back();
             else

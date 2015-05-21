@@ -172,7 +172,7 @@ const char *StringTokenizer2::nextToken()
     {
         tokenStart = -1;
         tokenEnd = -1;
-        return NULL;
+        return nullptr;
     }
 }
 

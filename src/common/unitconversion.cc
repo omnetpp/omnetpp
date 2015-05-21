@@ -78,7 +78,7 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial unit
     { "mps",     1, "mps",  "meter/sec" },
     { "kmph",1/3.6, "mps",  "kilometer/hour" },
     // this many should be enough
-    { NULL,      0, NULL,   NULL }
+    { nullptr,      0, nullptr,   nullptr }
 };
 
 UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
@@ -100,7 +100,7 @@ UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
             if (!strcasecmp(unitTable[i].longName, tmp.c_str()))
                 return unitTable+i;
     }
-    return NULL;
+    return nullptr;
 }
 
 bool UnitConversion::readNumber(const char *&s, double& number)
@@ -211,7 +211,7 @@ double UnitConversion::getConversionFactor(const char *unit, const char *targetU
     // we'll need to convert
     UnitDesc *unitDesc = lookupUnit(unit);
     UnitDesc *targetUnitDesc = lookupUnit(targetUnit);
-    if (unitDesc==NULL || targetUnitDesc==NULL || strcmp(unitDesc->baseUnit, targetUnitDesc->baseUnit)!=0)
+    if (unitDesc==nullptr || targetUnitDesc==nullptr || strcmp(unitDesc->baseUnit, targetUnitDesc->baseUnit)!=0)
         return 0; // cannot convert
 
     // the solution
@@ -234,7 +234,7 @@ double UnitConversion::convertUnit(double d, const char *unit, const char *targe
             explanation = ": please use kbps instead of Kbps";
 
         // KB -> KiB, MB -> MiB, GB -> GiB, TB -> TiB (renamed in OMNeT++ 4.2)
-        if (unit && strlen(unit)==2 && unit[1]=='B' && strstr("kB KB MB GB TB", unit)!=NULL)
+        if (unit && strlen(unit)==2 && unit[1]=='B' && strstr("kB KB MB GB TB", unit)!=nullptr)
             explanation = ": please use IEC binary prefixes for byte multiples: KiB, MiB, GiB, TiB";
 
         throw opp_runtime_error("Cannot convert unit %s to %s%s",
@@ -248,13 +248,13 @@ double UnitConversion::convertUnit(double d, const char *unit, const char *targe
 const char *UnitConversion::getLongName(const char *unit)
 {
     UnitDesc *unitDesc = lookupUnit(unit);
-    return unitDesc ? unitDesc->longName : NULL;
+    return unitDesc ? unitDesc->longName : nullptr;
 }
 
 const char *UnitConversion::getBaseUnit(const char *unit)
 {
     UnitDesc *unitDesc = lookupUnit(unit);
-    return unitDesc ? unitDesc->baseUnit: NULL;
+    return unitDesc ? unitDesc->baseUnit: nullptr;
 }
 
 std::vector<const char *> UnitConversion::getAllUnits()

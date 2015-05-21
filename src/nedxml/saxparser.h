@@ -49,7 +49,7 @@ class NEDXML_API SAXHandler
     /**
      * Constructor
      */
-    SAXHandler() {parser=0;}
+    SAXHandler() {parser=nullptr;}
 
     /**
      * Destructor

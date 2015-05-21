@@ -120,7 +120,7 @@ class NEDXML_API NEDParser
      * The fname parameter will be used to fill in the source location
      * attributes; it defaults to osfname.
      */
-    NEDElement *parseNEDFile(const char *osfname, const char *fname=NULL);
+    NEDElement *parseNEDFile(const char *osfname, const char *fname=nullptr);
 
     /**
      * Parse the given NED source and return the result tree.
@@ -128,7 +128,7 @@ class NEDXML_API NEDParser
      * The fname parameter will be used to fill in the source location
      * attributes; it defaults to "buffer".
      */
-    NEDElement *parseNEDText(const char *nedtext, const char *fname=NULL);
+    NEDElement *parseNEDText(const char *nedtext, const char *fname=nullptr);
 
     /**
      * Parse the given text as a NED expression, and return the result tree.
@@ -142,7 +142,7 @@ class NEDXML_API NEDParser
      * The fname parameter will be used to fill in the source location
      * attributes; it defaults to osfname.
      */
-    NEDElement *parseMSGFile(const char *osfname, const char *fname=NULL);
+    NEDElement *parseMSGFile(const char *osfname, const char *fname=nullptr);
 
     /**
      * Parse the given MSG source and return the result tree.
@@ -150,7 +150,7 @@ class NEDXML_API NEDParser
      * The fname parameter will be used to fill in the source location
      * attributes; it defaults to osfname.
      */
-    NEDElement *parseMSGText(const char *nedtext, const char *fname=NULL);
+    NEDElement *parseMSGText(const char *nedtext, const char *fname=nullptr);
 };
 
 NAMESPACE_END

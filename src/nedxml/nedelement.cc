@@ -80,12 +80,12 @@ void NEDElement::validateEnum(int b, const char *vals[], int nums[], int n)
 
 NEDElement::NEDElement()
 {
-    parent = 0;
-    firstChild = 0;
-    lastChild = 0;
-    prevSibling = 0;
-    nextSibling = 0;
-    userData = 0;
+    parent = nullptr;
+    firstChild = nullptr;
+    lastChild = nullptr;
+    prevSibling = nullptr;
+    nextSibling = nullptr;
+    userData = nullptr;
 
     id = ++lastId;
     numCreated++;
@@ -94,12 +94,12 @@ NEDElement::NEDElement()
 
 NEDElement::NEDElement(NEDElement *parent)
 {
-    this->parent = 0;
-    firstChild = 0;
-    lastChild = 0;
-    prevSibling = 0;
-    nextSibling = 0;
-    userData = 0;
+    this->parent = nullptr;
+    firstChild = nullptr;
+    lastChild = nullptr;
+    prevSibling = nullptr;
+    nextSibling = nullptr;
+    userData = nullptr;
 
     id = ++lastId;
     numCreated++;
@@ -234,7 +234,7 @@ void NEDElement::appendChild(NEDElement *node)
         node->parent->removeChild(node);
     node->parent = this;
     node->prevSibling = lastChild;
-    node->nextSibling = 0;
+    node->nextSibling = nullptr;
     if (node->prevSibling)
         node->prevSibling->nextSibling = node;
     else
@@ -271,7 +271,7 @@ NEDElement *NEDElement::removeChild(NEDElement *node)
         node->nextSibling->prevSibling = node->prevSibling;
     else
         lastChild = node->prevSibling;
-    node->parent = node->prevSibling = node->nextSibling = 0;
+    node->parent = node->prevSibling = node->nextSibling = nullptr;
     return node;
 }
 
@@ -284,7 +284,7 @@ NEDElement *NEDElement::getFirstChildWithTag(int tagcode) const
             return node;
         node = node->getNextSibling();
     }
-    return 0;
+    return nullptr;
 }
 
 NEDElement *NEDElement::getNextSiblingWithTag(int tagcode) const
@@ -296,7 +296,7 @@ NEDElement *NEDElement::getNextSiblingWithTag(int tagcode) const
             return node;
         node = node->getNextSibling();
     }
-    return 0;
+    return nullptr;
 }
 
 
@@ -325,7 +325,7 @@ NEDElement *NEDElement::getFirstChildWithAttribute(int tagcode, const char *attr
         if (val && !strcmp(val,attrvalue))
             return child;
     }
-    return NULL;
+    return nullptr;
 }
 
 NEDElement *NEDElement::getParentWithTag(int tagcode)

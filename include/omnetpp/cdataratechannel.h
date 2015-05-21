@@ -74,7 +74,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
      * be used when creating channels dynamically; use the create()
      * factory method instead.
      */
-    explicit cDatarateChannel(const char *name=NULL);
+    explicit cDatarateChannel(const char *name=nullptr);
 
     /**
      * Destructor.

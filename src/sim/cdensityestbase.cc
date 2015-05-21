@@ -68,7 +68,7 @@ void cDensityEstBase::parsimPack(cCommBuffer *buffer) const
     buffer->pack(rangeMode);
     buffer->pack(transformed);
 
-    if (buffer->packFlag(precollectedValues!=NULL))
+    if (buffer->packFlag(precollectedValues!=nullptr))
         buffer->pack(precollectedValues, numValues); // pack the used positions only
 #endif
 }
@@ -92,7 +92,7 @@ void cDensityEstBase::parsimUnpack(cCommBuffer *buffer)
     buffer->unpack(transformed);
 
     delete[] precollectedValues;
-    precollectedValues = NULL;
+    precollectedValues = nullptr;
     if (buffer->checkFlag())
     {
         precollectedValues = new double[numPrecollected];
@@ -115,7 +115,7 @@ void cDensityEstBase::copy(const cDensityEstBase& res)
     transformed = res.transformed;
 
     delete [] precollectedValues;
-    precollectedValues = NULL;
+    precollectedValues = nullptr;
     if (res.precollectedValues)
     {
         precollectedValues = new double[numPrecollected];
@@ -132,7 +132,7 @@ cDensityEstBase& cDensityEstBase::operator=(const cDensityEstBase& res)
 
 void cDensityEstBase::merge(const cStatistic *other)
 {
-    if (dynamic_cast<const cDensityEstBase *>(other) == NULL)
+    if (dynamic_cast<const cDensityEstBase *>(other) == nullptr)
         throw cRuntimeError(this, "Cannot merge non-histogram (non-cDensityEstBase) statistics (%s)%s into a histogram type",
                                   other->getClassName(), other->getFullPath().c_str());
 
@@ -198,7 +198,7 @@ void cDensityEstBase::setRange(double lower, double upper)
     rangeMax = upper;
 
     delete [] precollectedValues;
-    precollectedValues = NULL;    // not needed with RANGE_FIXED
+    precollectedValues = nullptr;    // not needed with RANGE_FIXED
 }
 
 void cDensityEstBase::setRangeAuto(int num_fstvals, double range_ext_fct)
@@ -381,7 +381,7 @@ void cDensityEstBase::saveToFile(FILE *f) const
     fprintf(f, "%lu %lu\t #= cell_under, cell_over\n", cellUnder, cellOver);
     fprintf(f, "%d\t #= num_firstvals\n", numPrecollected);
 
-    fprintf(f, "%d\t #= firstvals[] exists\n", precollectedValues!=NULL);
+    fprintf(f, "%d\t #= firstvals[] exists\n", precollectedValues!=nullptr);
     if (precollectedValues)
         for (int i=0; i<numValues; i++)
             fprintf(f, " %g\n", precollectedValues[i]);
@@ -402,7 +402,7 @@ void cDensityEstBase::loadFromFile(FILE *f)
     freadvarsf(f, "%d\t #= firstvals[] exists", &firstvals_exists);
 
     delete [] precollectedValues;
-    precollectedValues = NULL;
+    precollectedValues = nullptr;
     if (firstvals_exists)
     {
         precollectedValues = new double[numPrecollected];

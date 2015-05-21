@@ -27,8 +27,8 @@ cStringPool cProperty::stringPool("cProperty::stringPool");
 
 cProperty::cProperty(const char *name, const char *index) : cNamedObject(name, true)
 {
-    ownerp = NULL;
-    propindex = propfullname = NULL;
+    ownerp = nullptr;
+    propindex = propfullname = nullptr;
     setIndex(index);
 }
 
@@ -56,7 +56,7 @@ void cProperty::releaseValues(CharPtrVector& vals)
 void cProperty::copy(const cProperty& other)
 {
     stringPool.release(propfullname);
-    propfullname = NULL;
+    propfullname = nullptr;
 
     setIndex(other.getIndex());
 
@@ -107,7 +107,7 @@ void cProperty::setName(const char *name)
     cNamedObject::setName(name);
 
     stringPool.release(propfullname);
-    propfullname = NULL;
+    propfullname = nullptr;
 }
 
 const char *cProperty::getFullName() const
@@ -169,7 +169,7 @@ void cProperty::setIndex(const char *index)
     propindex = stringPool.get(index);
 
     stringPool.release(propfullname);
-    propfullname = NULL;
+    propfullname = nullptr;
 }
 
 const char *cProperty::getIndex() const
@@ -266,10 +266,10 @@ const char *cProperty::getValue(const char *key, int index) const
         key = "";
     int k = findKey(key);
     if (k==-1)
-        return NULL;
+        return nullptr;
     const CharPtrVector& v = valuesv[k];
     if (index<0 || index>=(int)v.size())
-        return NULL;
+        return nullptr;
     return v[index];
 }
 

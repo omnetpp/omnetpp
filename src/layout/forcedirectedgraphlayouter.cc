@@ -37,10 +37,10 @@ ForceDirectedGraphLayouter::ForceDirectedGraphLayouter()
     hasAnchoredNode = false;
     hasEdgeToBorder = false;
 
-    topBorder = NULL;
-    bottomBorder = NULL;
-    leftBorder = NULL;
-    rightBorder = NULL;
+    topBorder = nullptr;
+    bottomBorder = nullptr;
+    leftBorder = nullptr;
+    rightBorder = nullptr;
 
     expectedEmbeddingWidth = -1;
     expectedEmbeddingHeight = -1;
@@ -97,7 +97,7 @@ IBody *ForceDirectedGraphLayouter::findBody(int nodeId)
     if (it != moduleToBodyMap.end())
         return it->second;
     else
-        return NULL;
+        return nullptr;
 }
 
 Variable *ForceDirectedGraphLayouter::ensureAnchorVariable(const char *anchorName)
@@ -411,7 +411,7 @@ void ForceDirectedGraphLayouter::addEdgeToBorder(int srcNodeId, double len)
 
 void ForceDirectedGraphLayouter::executePreEmbedding() {
     GraphComponent childrenComponentsStar;
-    Vertex *childrenComponentsStarRoot = NULL;
+    Vertex *childrenComponentsStarRoot = nullptr;
 
     // first pre embed all connected components, one by one
     for (std::vector<GraphComponent *>::iterator it = graphComponent.connectedSubComponents.begin(); it != graphComponent.connectedSubComponents.end(); it++) {
@@ -429,7 +429,7 @@ void ForceDirectedGraphLayouter::executePreEmbedding() {
         }
 
         // add a new vertex to component graph for each embedded sub component
-        Vertex *childComponentVertex = new Vertex(Pt::getNil(), childComponent->getBoundingRectangle().rs, NULL);
+        Vertex *childComponentVertex = new Vertex(Pt::getNil(), childComponent->getBoundingRectangle().rs, nullptr);
         if (!childrenComponentsStarRoot)
             childrenComponentsStarRoot = childComponentVertex;
 

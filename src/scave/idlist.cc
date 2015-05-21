@@ -40,7 +40,7 @@ IDList::IDList(const IDList& ids)
 {
     ids.checkV();
     v = ids.v;
-    const_cast<IDList&>(ids).v = NULL;
+    const_cast<IDList&>(ids).v = nullptr;
 }
 
 void IDList::set(const IDList& ids)
@@ -251,7 +251,7 @@ class RunAttributeLess : public CmpBase {
         bool operator()(ID a, ID b) {
             const char* aValue = uncheckedGetItem(a).fileRunRef->runRef->getAttribute(attrName);
             const char* bValue = uncheckedGetItem(b).fileRunRef->runRef->getAttribute(attrName);
-            return ((aValue && bValue) ? less(aValue, bValue) : aValue!=NULL);
+            return ((aValue && bValue) ? less(aValue, bValue) : aValue!=nullptr);
         }
 };
 

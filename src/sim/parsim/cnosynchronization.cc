@@ -60,7 +60,7 @@ cEvent *cNoSynchronization::takeNextEvent()
     {
         EV << "no local events, waiting for something to arrive from other partitions\n";
         if (!receiveBlocking())
-            return NULL;
+            return nullptr;
     }
     else
     {

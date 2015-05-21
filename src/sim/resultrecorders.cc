@@ -37,7 +37,7 @@ Register_ResultRecorder("histogram", HistogramRecorder);
 
 VectorRecorder::~VectorRecorder()
 {
-    if (handle != NULL)
+    if (handle != nullptr)
         getEnvir()->deregisterOutputVector(handle);
 }
 
@@ -49,7 +49,7 @@ void VectorRecorder::subscribedTo(cResultFilter *prev)
     opp_string_map attributes = getStatisticAttributes();
 
     handle = getEnvir()->registerOutputVector(getComponent()->getFullPath().c_str(), getResultName().c_str());
-    ASSERT(handle != NULL);
+    ASSERT(handle != nullptr);
     for (opp_string_map::iterator it = attributes.begin(); it != attributes.end(); ++it)
         getEnvir()->setVectorAttribute(handle, it->first.c_str(), it->second.c_str());
 }

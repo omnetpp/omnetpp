@@ -130,7 +130,7 @@ void cCoroutine::switchToMain()
 cCoroutine::cCoroutine()
 {
     stackSize = 0;
-    stackPtr = NULL;
+    stackPtr = nullptr;
 }
 
 cCoroutine::~cCoroutine()

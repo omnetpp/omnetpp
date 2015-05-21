@@ -35,7 +35,7 @@ Register_Class(cISPEventLogger);
 
 cISPEventLogger::cISPEventLogger() : cNullMessageProtocol()
 {
-    fout = NULL;
+    fout = nullptr;
 }
 
 cISPEventLogger::~cISPEventLogger()

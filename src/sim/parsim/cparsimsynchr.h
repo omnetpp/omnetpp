@@ -61,7 +61,7 @@ class SIM_API cParsimSynchronizer : public cScheduler
     /**
      * Constructor.
      */
-    cParsimSynchronizer() : cScheduler()  {partition = NULL; comm = NULL;}
+    cParsimSynchronizer() : cScheduler()  {partition = nullptr; comm = nullptr;}
 
     /**
      * Destructor.

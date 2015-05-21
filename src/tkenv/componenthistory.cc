@@ -88,7 +88,7 @@ std::string ComponentHistory::getComponentRelativePath(int componentId, int root
     cComponent *component = getSimulation()->getModule(componentId); //TODO change to getComponent in 5.0
     if (component) {
         cModule *parent = component->getParentModule();
-        return (parent == NULL || parent->getId()==rootComponentId) ? component->getFullName() :
+        return (parent == nullptr || parent->getId()==rootComponentId) ? component->getFullName() :
                 getComponentRelativePath(parent->getId(), rootComponentId) + "." + component->getFullName();
     }
     else {

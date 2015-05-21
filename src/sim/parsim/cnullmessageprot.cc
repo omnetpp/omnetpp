@@ -49,7 +49,7 @@ extern cConfigOption *CFGID_PARSIM_DEBUG; // registered in cparsimpartition.cc
 cNullMessageProtocol::cNullMessageProtocol() : cParsimProtocolBase()
 {
     numSeg = 0;
-    segInfo = NULL;
+    segInfo = nullptr;
 
     debug = getEnvir()->getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
     std::string lookhClass = getEnvir()->getConfig()->getAsString(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS);
@@ -89,8 +89,8 @@ void cNullMessageProtocol::startRun()
     // temporarily initialize everything to zero.
     for (i=0; i<numSeg; i++)
     {
-        segInfo[i].eotEvent = NULL;
-        segInfo[i].eitEvent = NULL;
+        segInfo[i].eotEvent = nullptr;
+        segInfo[i].eitEvent = nullptr;
         segInfo[i].lastEotSent = 0.0;
     }
 
@@ -235,7 +235,7 @@ cEvent *cNullMessageProtocol::takeNextEvent()
     // only be empty if there are no other partitions at all -- "no events" then
     // means we're finished.
     if (sim->msgQueue.isEmpty())
-        return NULL;
+        return nullptr;
 
     // we could do a receiveNonblocking() call here to look at our mailbox,
     // but for performance reasons we don't -- it's enough to read it
@@ -248,7 +248,7 @@ cEvent *cNullMessageProtocol::takeNextEvent()
     while (true)
     {
         event = sim->msgQueue.peekFirst();
-        cMessage *msg = event->isMessage() ? static_cast<cMessage *>(event) : NULL;
+        cMessage *msg = event->isMessage() ? static_cast<cMessage *>(event) : nullptr;
         if (msg && msg->getKind() == MK_PARSIM_RESENDEOT)
         {
             // send null messages if window closed for a partition
@@ -260,7 +260,7 @@ cEvent *cNullMessageProtocol::takeNextEvent()
             // wait until it gets out of the way (i.e. we get a higher EIT)
             {if (debug) EV << "blocking on EIT event `" << event->getName() << "'\n";}
             if (!receiveBlocking())
-                return NULL;
+                return nullptr;
         }
         else
         {

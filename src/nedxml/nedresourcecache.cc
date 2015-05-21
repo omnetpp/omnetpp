@@ -88,7 +88,7 @@ int NEDResourceCache::doLoadNedSourceFolder(const char *foldername, const char *
 
     FileGlobber globber("*");
     const char *filename;
-    while ((filename=globber.getNext())!=NULL)
+    while ((filename=globber.getNext())!=nullptr)
     {
         if (filename[0] == '.')
         {
@@ -96,11 +96,11 @@ int NEDResourceCache::doLoadNedSourceFolder(const char *foldername, const char *
         }
         if (isDirectory(filename))
         {
-            count += doLoadNedSourceFolder(filename, expectedPackage==NULL ? NULL : opp_join(".", expectedPackage, filename).c_str());
+            count += doLoadNedSourceFolder(filename, expectedPackage==nullptr ? nullptr : opp_join(".", expectedPackage, filename).c_str());
         }
         else if (opp_stringendswith(filename, ".ned"))
         {
-            doLoadNedFileOrText(filename, NULL, expectedPackage, false);
+            doLoadNedFileOrText(filename, nullptr, expectedPackage, false);
             count++;
         }
     }
@@ -121,7 +121,7 @@ void NEDResourceCache::doLoadNedFileOrText(const char *nedfname, const char *ned
     // check that declared package matches expected package
     PackageElement *packageDecl = (PackageElement *)tree->getFirstChildWithTag(NED_PACKAGE);
     std::string declaredPackage = packageDecl ? packageDecl->getName() : "";
-    if (expectedPackage!=NULL && declaredPackage != std::string(expectedPackage))
+    if (expectedPackage!=nullptr && declaredPackage != std::string(expectedPackage))
         throw NEDException("NED error in file `%s': declared package `%s' does not match expected package `%s'",
                            nedfname, declaredPackage.c_str(), expectedPackage);
 
@@ -139,7 +139,7 @@ void NEDResourceCache::doLoadNedFileOrText(const char *nedfname, const char *ned
 NEDElement *NEDResourceCache::parseAndValidateNedFileOrText(const char *fname, const char *nedtext, bool isXML)
 {
     // load file
-    NEDElement *tree = 0;
+    NEDElement *tree = nullptr;
     NEDErrorStore errors;
     errors.setPrintToStderr(true); //XXX
     if (isXML)
@@ -188,7 +188,7 @@ void NEDResourceCache::loadNedFile(const char *nedfname, const char *expectedPac
     if (!nedfname)
         throw NEDException("loadNedFile(): file name is NULL");
 
-    doLoadNedFileOrText(nedfname, NULL, expectedPackage, isXML);
+    doLoadNedFileOrText(nedfname, nullptr, expectedPackage, isXML);
     registerPendingNedTypes();
 }
 
@@ -314,7 +314,7 @@ NEDTypeInfo *NEDResourceCache::lookup(const char *qname) const
 {
     // hash table lookup
     NEDTypeInfoMap::const_iterator i = nedTypes.find(qname);
-    return i==nedTypes.end() ? NULL : i->second;
+    return i==nedTypes.end() ? nullptr : i->second;
 }
 
 NEDTypeInfo *NEDResourceCache::getDecl(const char *qname) const
@@ -330,7 +330,7 @@ NEDElement *NEDResourceCache::getFile(const char *fname) const
     // hash table lookup
     std::string key = tidyFilename(toAbsolutePath(fname).c_str());
     NEDFileMap::const_iterator i = files.find(key);
-    return i==files.end() ? NULL : i->second;
+    return i==files.end() ? nullptr : i->second;
 }
 
 NedFileElement *NEDResourceCache::getParentPackageNedFile(NedFileElement *nedfile) const
@@ -342,7 +342,7 @@ NedFileElement *NEDResourceCache::getParentPackageNedFile(NedFileElement *nedfil
 
     std::string topDir = getNedSourceFolderForFolder(dir.c_str());
     if (topDir.empty())
-        return NULL;
+        return nullptr;
 
     if (fname != "package.ned")
     {
@@ -368,7 +368,7 @@ NedFileElement *NEDResourceCache::getParentPackageNedFile(NedFileElement *nedfil
         if (e)
             return (NedFileElement *)e;
     }
-    return NULL;
+    return nullptr;
 }
 
 std::string NEDResourceCache::determineRootPackageName(const char *nedSourceFolderName)
@@ -381,7 +381,7 @@ std::string NEDResourceCache::determineRootPackageName(const char *nedSourceFold
     fclose(f);
 
     // read package declaration from it
-    NEDElement *tree = parseAndValidateNedFileOrText(packageNedFilename.c_str(), NULL, false);
+    NEDElement *tree = parseAndValidateNedFileOrText(packageNedFilename.c_str(), nullptr, false);
     Assert(tree);
     PackageElement *packageDecl = (PackageElement *)tree->getFirstChildWithTag(NED_PACKAGE);
     std::string result = packageDecl ? packageDecl->getName() : "";

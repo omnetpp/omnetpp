@@ -39,7 +39,7 @@ class LogInspectorFactory : public InspectorFactory
   public:
     LogInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
+    bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=nullptr;}
     int getInspectorType() {return INSP_MODULEOUTPUT;}
     double getQualityAsDefault(cObject *object) {return 0.5;}
     Inspector *createInspector() {return new LogInspector(this);}
@@ -335,7 +335,7 @@ void LogInspector::redisplay()
 
         // display in reverse order, so we can stop when scrollback limit is reached
         int numLinesPrinted = 0;
-        const LogBuffer::Entry *prevEntry = NULL;
+        const LogBuffer::Entry *prevEntry = nullptr;
         int prevMsgsendIndex = 0, prevHopIndex = 0;
         int inspectedModuleId = ((cModule*)object)->getId();
         for (int k = entries.size()-1; k >= 0 && numLinesPrinted <= scrollbackLimit; k--)
@@ -523,7 +523,7 @@ void LogInspector::printMessage(const LogBuffer::Entry *entry, int msgIndex, int
 cMessagePrinter *LogInspector::chooseMessagePrinter(cMessage *msg)
 {
     cRegistrationList *instance = messagePrinters.getInstance();
-    cMessagePrinter *bestPrinter = NULL;
+    cMessagePrinter *bestPrinter = nullptr;
     int bestScore = 0;
     for (int i=0; i<(int)instance->size(); i++) {
         cMessagePrinter *printer = (cMessagePrinter *)instance->get(i);
@@ -549,7 +549,7 @@ int LogInspector::inspectorCommand(int argc, const char **argv)
     else if (strcmp(argv[0],"getexcludedmoduleids")==0)
     {
        if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-       Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+       Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
        for (std::set<int>::iterator it=excludedModuleIds.begin(); it!=excludedModuleIds.end(); it++)
            Tcl_ListObjAppendElement(interp, listobj, Tcl_NewIntObj(*it));
        Tcl_SetObjResult(interp, listobj);
@@ -588,8 +588,8 @@ int LogInspector::inspectorCommand(int argc, const char **argv)
        eventnumber_t eventNumber = atol(argv[1]); //XXX atoi64?
        int msgsendIndex = atoi(argv[2]);
        LogBuffer::Entry *entry = logBuffer->getEntryByEventNumber(eventNumber);
-       cMessage *msg = NULL;
-       if (entry != NULL && msgsendIndex >=0 && msgsendIndex < (int)entry->msgs.size())
+       cMessage *msg = nullptr;
+       if (entry != nullptr && msgsendIndex >=0 && msgsendIndex < (int)entry->msgs.size())
            msg = entry->msgs[msgsendIndex].msg;
        Tcl_SetResult(interp, ptrToStr(msg), TCL_VOLATILE);
        return TCL_OK;

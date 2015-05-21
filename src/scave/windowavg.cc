@@ -25,7 +25,7 @@ NAMESPACE_BEGIN
 
 WindowAverageNode::WindowAverageNode(int windowSize)
 {
-    array = NULL;
+    array = nullptr;
     if (windowSize<1 || windowSize>100000)
         throw opp_runtime_error("winavg: invalid window size %d", windowSize);
     winsize = windowSize;

@@ -129,12 +129,12 @@ class SIM_API cDensityEstBase : public cStdDev
     /**
      * Copy constructor.
      */
-    cDensityEstBase(const cDensityEstBase& other) : cStdDev(other) {precollectedValues=NULL;copy(other);}
+    cDensityEstBase(const cDensityEstBase& other) : cStdDev(other) {precollectedValues=nullptr;copy(other);}
 
     /**
      * Constructor.
      */
-    explicit cDensityEstBase(const char *name=NULL);
+    explicit cDensityEstBase(const char *name=nullptr);
 
     /**
      * Destructor.

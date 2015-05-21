@@ -32,7 +32,7 @@ NEDElement *parseXML(const char *filename, NEDErrorStore *errors)
     if (!ok)
     {
         errors->addError("", "error reading `%s': %s", filename, parser.getErrorMessage());
-        return 0;
+        return nullptr;
     }
     return sh.getTree();
 }

@@ -53,7 +53,7 @@
 NAMESPACE_BEGIN
 
 Register_PerRunConfigOption(CFGID_MAX_MODULE_NESTING, "max-module-nesting", CFG_INT, "50", "The maximum allowed depth of submodule nesting. This is used to catch accidental infinite recursions in NED.");
-Register_PerObjectConfigOption(CFGID_TYPENAME, "typename", KIND_UNSPECIFIED_TYPE, CFG_STRING, NULL, "Specifies type for submodules and channels declared with 'like <>'.");
+Register_PerObjectConfigOption(CFGID_TYPENAME, "typename", KIND_UNSPECIFIED_TYPE, CFG_STRING, nullptr, "Specifies type for submodules and channels declared with 'like <>'.");
 
 
 #if 0
@@ -68,7 +68,7 @@ static void dump(NEDElement *node)
 // utility function for exception handling: adds NED file+line to the exception text
 static void updateOrRethrowException(std::exception& e, NEDElement *context)
 {
-    const char *loc = context ? context->getSourceLocation() : NULL;
+    const char *loc = context ? context->getSourceLocation() : nullptr;
     if (!opp_isempty(loc))
     {
         std::string msg = std::string(e.what()) + ", at " + loc;
@@ -153,7 +153,7 @@ cGate::Type cNEDNetworkBuilder::translateGateType(int t)
 
 void cNEDNetworkBuilder::doParams(cComponent *component, ParametersElement *paramsNode, bool isSubcomponent)
 {
-    ASSERT(paramsNode!=NULL);
+    ASSERT(paramsNode!=nullptr);
     for (ParamElement *paramNode=paramsNode->getFirstParamChild(); paramNode; paramNode=paramNode->getNextParamSibling())
         if (!paramNode->getIsPattern())
             doParam(component, paramNode, isSubcomponent);
@@ -189,7 +189,7 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
             return;
         }
 
-        ASSERT(impl==NULL);
+        ASSERT(impl==nullptr);
         if (isNewParam) {
             // adding parameter
             impl = cParImpl::createWithType(translateParamType(paramNode->getType()));
@@ -201,7 +201,7 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
 
             cProperties *paramProps = component->par(paramName).getProperties();
             cProperty *unitProp = paramProps->get("unit");
-            const char *declUnit = unitProp ? unitProp->getValue(cProperty::DEFAULTKEY) : NULL;
+            const char *declUnit = unitProp ? unitProp->getValue(cProperty::DEFAULTKEY) : nullptr;
             impl->setUnit(declUnit);
         }
         else {
@@ -245,7 +245,7 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
 
 void cNEDNetworkBuilder::doGates(cModule *module, GatesElement *gatesNode, bool isSubcomponent)
 {
-    ASSERT(gatesNode!=NULL);
+    ASSERT(gatesNode!=nullptr);
     for (NEDElement *child=gatesNode->getFirstChildWithTag(NED_GATE); child; child=child->getNextSiblingWithTag(NED_GATE))
         doGate(module, (GateElement *)child, isSubcomponent);
 }
@@ -367,18 +367,18 @@ cModule *cNEDNetworkBuilder::_submodule(cModule *, const char *submodName, int i
 {
     SubmodMap::iterator i = submodMap.find(std::string(submodName));
     if (i==submodMap.end())
-        return NULL;
+        return nullptr;
 
     ModulePtrVector& v = i->second;
     if (idx < 0)
-        return (v.size()!=1 || v[0]->isVector()) ? NULL : v[0];
+        return (v.size()!=1 || v[0]->isVector()) ? nullptr : v[0];
     else
-        return ((unsigned)idx>=v.size()) ? NULL : v[idx];
+        return ((unsigned)idx>=v.size()) ? nullptr : v[idx];
 }
 
 void cNEDNetworkBuilder::doGateSizes(cModule *module, GatesElement *gatesNode, bool isSubcomponent)
 {
-    ASSERT(gatesNode!=NULL);
+    ASSERT(gatesNode!=nullptr);
     for (NEDElement *child=gatesNode->getFirstChildWithTag(NED_GATE); child; child=child->getNextSiblingWithTag(NED_GATE))
         doGateSize(module, (GateElement *)child, isSubcomponent);
 }
@@ -547,7 +547,7 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleTypeLike(const char *modTypeN
     // resolve the interface
     NEDLookupContext context(currentDecl->getTree(), currentDecl->getFullName());
     std::string interfaceQName = cNEDLoader::getInstance()->resolveNedType(context, likeType);
-    cNEDDeclaration *interfaceDecl = interfaceQName.empty() ? NULL : (cNEDDeclaration *)cNEDLoader::getInstance()->lookup(interfaceQName.c_str());
+    cNEDDeclaration *interfaceDecl = interfaceQName.empty() ? nullptr : (cNEDDeclaration *)cNEDLoader::getInstance()->lookup(interfaceQName.c_str());
     if (!interfaceDecl)
         throw cRuntimeError(modp, "Submodule %s: cannot resolve module interface `%s'",
                             submodName, likeType);
@@ -755,7 +755,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
     // if there is a @dynamic or @dynamic(true), do not instantiate the submodule
     ParametersElement *paramsNode = submod->getFirstParametersChild();
     if (paramsNode)
-        for (PropertyElement *prop = paramsNode->getFirstPropertyChild(); prop!=NULL; prop = prop->getNextPropertySibling())
+        for (PropertyElement *prop = paramsNode->getFirstPropertyChild(); prop!=nullptr; prop = prop->getNextPropertySibling())
             if (opp_strcmp(prop->getName(), "dynamic")==0 && NEDElementUtil::propertyAsBool(prop)==true)
                 return;
 
@@ -799,7 +799,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
         // note: we don't try to resolve moduleType if vector size is zero
         int vectorsize = (int) evaluateAsLong(vectorSizeExpr, compoundModule, false);
         ModulePtrVector& v = submodMap[submodName];
-        cModuleType *submodType = NULL;
+        cModuleType *submodType = nullptr;
         for (int i=0; i<vectorsize; i++) {
             if (!submodType || usesLike) {
                 try {
@@ -936,7 +936,7 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *conn)
                                                 conn->getDestGateSubg(), conn->getDestGatePlusplus());
 
             // check directions
-            cGate *errorGate = NULL;
+            cGate *errorGate = nullptr;
             if (srcGate->getOwnerModule()==modp ? srcGate->getType()!=cGate::INPUT : srcGate->getType()!=cGate::OUTPUT)
                 errorGate = srcGate;
             if (destGate->getOwnerModule()==modp ? destGate->getType()!=cGate::OUTPUT : destGate->getType()!=cGate::INPUT)
@@ -1013,7 +1013,7 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *compoundModule,
     }
 
     // look up gate
-    cGate *gate = NULL;
+    cGate *gate = nullptr;
     if (!gateIndexExpr && !isPlusPlus)
     {
         gate = module->gate(gateName2);
@@ -1029,7 +1029,7 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *compoundModule,
         else
         {
             gate = module->getOrCreateFirstUnconnectedGate(gateName2, 0, false, true); // outside, expand
-            ASSERT(gate!=NULL);
+            ASSERT(gate!=nullptr);
         }
     }
     else // (gateIndexExpr)
@@ -1051,7 +1051,7 @@ void cNEDNetworkBuilder::resolveInoutGate(cModule *compoundModule,
 
     cModule *module = resolveModuleForConnection(compoundModule, moduleName, moduleIndexExpr);
 
-    outGate1 = outGate2 = NULL;
+    outGate1 = outGate2 = nullptr;
     if (!gateIndexExpr && !isPlusPlus)
     {
         // optimization possibility: add gatePair() method to cModule to spare one lookup
@@ -1187,7 +1187,7 @@ cChannel *cNEDNetworkBuilder::createChannel(ConnectionElement *conn, cModule *pa
     // resolve channel type
     const char *channelName = conn->getName();
     if (opp_isempty(channelName))
-		channelName = NULL; // use NULL to indicate "no name"
+		channelName = nullptr; // use NULL to indicate "no name"
 
     cChannelType *channelType;
     try {
@@ -1228,7 +1228,7 @@ cChannelType *cNEDNetworkBuilder::findAndCheckChannelTypeLike(const char *channe
     // resolve the interface
     NEDLookupContext context(currentDecl->getTree(), currentDecl->getFullName());
     std::string interfaceQName = cNEDLoader::getInstance()->resolveNedType(context, likeType);
-    cNEDDeclaration *interfaceDecl = interfaceQName.empty() ? NULL : (cNEDDeclaration *)cNEDLoader::getInstance()->lookup(interfaceQName.c_str());
+    cNEDDeclaration *interfaceDecl = interfaceQName.empty() ? nullptr : (cNEDDeclaration *)cNEDLoader::getInstance()->lookup(interfaceQName.c_str());
     if (!interfaceDecl)
         throw cRuntimeError(modp, "Cannot resolve channel interface `%s'", likeType);
     if (interfaceDecl->getTree()->getTagCode()!=NED_CHANNEL_INTERFACE)
@@ -1253,14 +1253,14 @@ ExpressionElement *cNEDNetworkBuilder::findExpression(NEDElement *node, const ch
 {
     // find expression with given name in node
     if (!node)
-        return NULL;
+        return nullptr;
     for (NEDElement *child=node->getFirstChildWithTag(NED_EXPRESSION); child; child = child->getNextSiblingWithTag(NED_EXPRESSION))
     {
         ExpressionElement *expr = (ExpressionElement *)child;
         if (!strcmp(expr->getTarget(),exprname))
             return expr;
     }
-    return NULL;
+    return nullptr;
 }
 
 cParImpl *cNEDNetworkBuilder::getOrCreateExpression(ExpressionElement *exprNode, cPar::Type type, const char *unit, bool inSubcomponentScope)
@@ -1281,7 +1281,7 @@ cParImpl *cNEDNetworkBuilder::getOrCreateExpression(ExpressionElement *exprNode,
 long cNEDNetworkBuilder::evaluateAsLong(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope)
 {
     try {
-        cParImpl *p = getOrCreateExpression(exprNode, cPar::LONG, NULL, inSubcomponentScope);
+        cParImpl *p = getOrCreateExpression(exprNode, cPar::LONG, nullptr, inSubcomponentScope);
         return p->longValue(context);
     }
     catch (std::exception& e) {
@@ -1292,7 +1292,7 @@ long cNEDNetworkBuilder::evaluateAsLong(ExpressionElement *exprNode, cComponent 
 bool cNEDNetworkBuilder::evaluateAsBool(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope)
 {
     try {
-        cParImpl *p = getOrCreateExpression(exprNode, cPar::BOOL, NULL, inSubcomponentScope);
+        cParImpl *p = getOrCreateExpression(exprNode, cPar::BOOL, nullptr, inSubcomponentScope);
         return p->boolValue(context);
     }
     catch (std::exception& e) {
@@ -1303,7 +1303,7 @@ bool cNEDNetworkBuilder::evaluateAsBool(ExpressionElement *exprNode, cComponent 
 std::string cNEDNetworkBuilder::evaluateAsString(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope)
 {
     try {
-        cParImpl *p = getOrCreateExpression(exprNode, cPar::STRING, NULL, inSubcomponentScope);
+        cParImpl *p = getOrCreateExpression(exprNode, cPar::STRING, nullptr, inSubcomponentScope);
         return p->stdstringValue(context);
     }
     catch (std::exception& e) {

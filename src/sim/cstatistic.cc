@@ -46,15 +46,15 @@ using std::ostream;
 
 cStatistic::cStatistic(const cStatistic& r) : cRandom(r)
 {
-    td = NULL;
-    ra = NULL;
+    td = nullptr;
+    ra = nullptr;
     copy(r);
 }
 
 cStatistic::cStatistic(const char *name) : cRandom(name)
 {
-    td = NULL;
-    ra = NULL;
+    td = nullptr;
+    ra = nullptr;
 }
 
 cStatistic::~cStatistic()
@@ -70,9 +70,9 @@ void cStatistic::parsimPack(cCommBuffer *buffer) const
 #else
     cRandom::parsimPack(buffer);
 
-    if (buffer->packFlag(td!=NULL))
+    if (buffer->packFlag(td!=nullptr))
         buffer->packObject(td);
-    if (buffer->packFlag(ra!=NULL))
+    if (buffer->packFlag(ra!=nullptr))
         buffer->packObject(ra);
 #endif
 }

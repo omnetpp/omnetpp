@@ -52,7 +52,7 @@ cException::cException(OppErrorCode errorcode...) : std::exception()
 {
     va_list va;
     va_start(va, errorcode);
-    init(NULL, errorcode, cErrorMessages::get(errorcode), va);
+    init(nullptr, errorcode, cErrorMessages::get(errorcode), va);
     va_end(va);
 }
 
@@ -60,7 +60,7 @@ cException::cException(const char *msgformat...) : std::exception()
 {
     va_list va;
     va_start(va, msgformat);
-    init(NULL, E_CUSTOM, msgformat, va);
+    init(nullptr, E_CUSTOM, msgformat, va);
     va_end(va);
 }
 
@@ -148,7 +148,7 @@ void cException::init(const cObject *where, OppErrorCode errorcode, const char *
     //  - if object is somewhere else: use getFullPath()
     buffer[0] = '\0';
     cSimulation *sim = cSimulation::getActiveSimulation();
-    cComponent *context = sim ? sim->getContext() : NULL;
+    cComponent *context = sim ? sim->getContext() : nullptr;
     if (where && where!=context)
     {
         // try: if context's fullpath is same as module fullpath + object fullname, no need to print path
@@ -222,7 +222,7 @@ cTerminationException::cTerminationException(OppErrorCode errorcode...)
 {
     va_list va;
     va_start(va, errorcode);
-    init(NULL, errorcode, cErrorMessages::get(errorcode), va);
+    init(nullptr, errorcode, cErrorMessages::get(errorcode), va);
     va_end(va);
 }
 
@@ -230,7 +230,7 @@ cTerminationException::cTerminationException(const char *msgformat...)
 {
     va_list va;
     va_start(va, msgformat);
-    init(NULL, E_CUSTOM, msgformat, va);
+    init(nullptr, E_CUSTOM, msgformat, va);
     va_end(va);
 }
 
@@ -240,7 +240,7 @@ cRuntimeError::cRuntimeError(OppErrorCode errorcode...)
 {
     va_list va;
     va_start(va, errorcode);
-    init(NULL, errorcode, cErrorMessages::get(errorcode), va);
+    init(nullptr, errorcode, cErrorMessages::get(errorcode), va);
     va_end(va);
     breakIntoDebuggerIfRequested();
 }
@@ -249,7 +249,7 @@ cRuntimeError::cRuntimeError(const char *msgformat...)
 {
     va_list va;
     va_start(va, msgformat);
-    init(NULL, E_CUSTOM, msgformat, va);
+    init(nullptr, E_CUSTOM, msgformat, va);
     va_end(va);
     breakIntoDebuggerIfRequested();
 }

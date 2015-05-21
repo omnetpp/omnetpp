@@ -94,7 +94,7 @@ int cDynamicExpression::Elem::compare(const Elem& other) const
 
 cDynamicExpression::cDynamicExpression()
 {
-    elems = NULL;
+    elems = nullptr;
     size = 0;
 }
 
@@ -463,7 +463,7 @@ cNEDValue cDynamicExpression::evaluate(cComponent *context) const
                            stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].dblunit, stk[tos-1].dblunit);
                        stk[tos-1].dbl = stk[tos-1].dbl / stk[tos].dbl;
                        if (!opp_isempty(stk[tos].dblunit))
-                           stk[tos-1].dblunit = NULL;
+                           stk[tos-1].dblunit = nullptr;
                        tos--;
                        break;
                    case MOD:

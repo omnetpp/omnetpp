@@ -48,7 +48,7 @@ class COMMON_API UnitConversion
      * If conversion is not possible (unrelated or unknown units), and error
      * is thrown.
      */
-    static double parseQuantity(const char *str, const char *expectedUnit=NULL);
+    static double parseQuantity(const char *str, const char *expectedUnit=nullptr);
 
     /**
      * Converts a quantity given as string to a double, and returns it, together
@@ -72,7 +72,7 @@ class COMMON_API UnitConversion
     /**
      * Returns a concatenation of the number and the unit.
      */
-    static std::string formatQuantity(double d, const char *unit=NULL);
+    static std::string formatQuantity(double d, const char *unit=nullptr);
 
     /**
      * Returns a descriptive name of the given unit; in the worst case

@@ -110,7 +110,7 @@ void cEnum::bulkInsert(const char *name1, ...)
 const char *cEnum::getStringFor(int value)
 {
     std::map<int,std::string>::const_iterator it = valueToNameMap.find(value);
-    return it==valueToNameMap.end() ? NULL : it->second.c_str();
+    return it==valueToNameMap.end() ? nullptr : it->second.c_str();
 }
 
 int cEnum::lookup(const char *name, int fallback)

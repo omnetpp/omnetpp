@@ -97,7 +97,7 @@ class TKENV_API cFindByPathVisitor : public cCollectObjectsVisitor
     virtual void visit(cObject *obj);
     bool idMatches(cObject *obj);
   public:
-    cFindByPathVisitor(const char *fullPath, const char *className=NULL, long objectId=-1) :
+    cFindByPathVisitor(const char *fullPath, const char *className=nullptr, long objectId=-1) :
         fullPath(fullPath), className(className), objectId(objectId) {}
     ~cFindByPathVisitor() {}
 };
@@ -108,10 +108,10 @@ class TKENV_API cFindByPathVisitor : public cCollectObjectsVisitor
 const char *getObjectShortTypeName(cObject *object);
 const char *getObjectFullTypeName(cObject *object);
 
-char *voidPtrToStr(void *ptr, char *buffer=NULL);
+char *voidPtrToStr(void *ptr, char *buffer=nullptr);
 void *strToVoidPtr(const char *s);
 
-inline char *ptrToStr(cObject *ptr, char *buffer=NULL) {return voidPtrToStr((void *)ptr, buffer);}
+inline char *ptrToStr(cObject *ptr, char *buffer=nullptr) {return voidPtrToStr((void *)ptr, buffer);}
 inline cObject *strToPtr(const char *s) {return (cObject *)strToVoidPtr(s);}
 
 cModule *findCommonAncestor(cModule *src, cModule *dest);

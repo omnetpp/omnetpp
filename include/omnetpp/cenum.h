@@ -55,7 +55,7 @@ class SIM_API cEnum : public cOwnedObject
     /**
      * Constructor.
      */
-    explicit cEnum(const char *name=NULL);
+    explicit cEnum(const char *name=nullptr);
 
     /**
      * FIXME document properly:

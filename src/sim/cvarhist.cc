@@ -51,7 +51,7 @@ cHistogramBase(name, -1) //--LG
     rangeMode = RANGE_NOTSET;
     transformType = transformtype;
     maxNumCells = maxnumcells;
-    cellLowerBounds = NULL;
+    cellLowerBounds = nullptr;
     ASSERT(precollectedValues); // base class must have allocated it for RANGE_AUTO
 
     if ((transformType == HIST_TR_AUTO_EPC_DBL ||
@@ -72,7 +72,7 @@ void cVarHistogram::parsimPack(cCommBuffer *buffer) const
     cHistogramBase::parsimPack(buffer);
 
     buffer->pack(maxNumCells);
-    if (buffer->packFlag(cellLowerBounds!=NULL))
+    if (buffer->packFlag(cellLowerBounds!=nullptr))
         buffer->pack(cellLowerBounds, maxNumCells + 1);
 #endif
 }
@@ -99,7 +99,7 @@ void cVarHistogram::addBinBound(double x) //--LG
         throw cRuntimeError(this, "cannot add bin bound after transform()");
 
     // create bin_bounds if not exists
-    if (cellLowerBounds == NULL)
+    if (cellLowerBounds == nullptr)
         cellLowerBounds = new double [maxNumCells+1];
 
     // expand if full
@@ -140,7 +140,7 @@ void cVarHistogram::copy(const cVarHistogram& res)
     transformType = res.transformType;
 
     delete [] cellLowerBounds;
-    cellLowerBounds = NULL;
+    cellLowerBounds = nullptr;
     if (res.cellLowerBounds)
     {
         cellLowerBounds = new double [maxNumCells+1];
@@ -303,7 +303,7 @@ void cVarHistogram::transform() //--LG
     }
 
     delete [] precollectedValues;
-    precollectedValues = NULL;
+    precollectedValues = nullptr;
 
     transformed = true;
 }
@@ -349,7 +349,7 @@ void cVarHistogram::clearResult() //--LG
     cHistogramBase::clearResult();
 
     delete [] cellLowerBounds;
-    cellLowerBounds = NULL;
+    cellLowerBounds = nullptr;
 }
 
 // return kth basepoint
@@ -444,7 +444,7 @@ void cVarHistogram::saveToFile(FILE *f) const //--LG
     fprintf(f, "%d\t #= transform_type\n", transformType);
     fprintf(f, "%u\t #= max_num_cells\n", maxNumCells);
 
-    fprintf(f, "%d\t #= bin_bounds[] exists\n", cellLowerBounds!=NULL);
+    fprintf(f, "%d\t #= bin_bounds[] exists\n", cellLowerBounds!=nullptr);
     if (cellLowerBounds) for (int i=0; i<maxNumCells+1; i++) fprintf(f, " %g\n", cellLowerBounds[i]);
 }
 
@@ -465,7 +465,7 @@ void cVarHistogram::loadFromFile(FILE *f)
 
     int binbounds_exists;
     freadvarsf(f, "%d\t #= bin_bounds[] exists", &binbounds_exists);
-    delete [] cellLowerBounds; cellLowerBounds = NULL;
+    delete [] cellLowerBounds; cellLowerBounds = nullptr;
     if (binbounds_exists)
     {
         cellLowerBounds = new double[maxNumCells+1];

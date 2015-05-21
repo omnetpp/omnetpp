@@ -75,7 +75,7 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
     /**
      * Constructor.
      */
-    explicit cOutVector(const char *name=NULL);
+    explicit cOutVector(const char *name=nullptr);
 
     /**
      * Destructor.

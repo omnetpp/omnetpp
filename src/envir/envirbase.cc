@@ -109,7 +109,7 @@ using std::ostream;
      if (!var) \
          throw cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
-Register_GlobalConfigOptionU(CFGID_TOTAL_STACK, "total-stack", "B", NULL, "Specifies the maximum memory for activity() simple module stacks. You need to increase this value if you get a ``Cannot allocate coroutine stack'' error.");
+Register_GlobalConfigOptionU(CFGID_TOTAL_STACK, "total-stack", "B", nullptr, "Specifies the maximum memory for activity() simple module stacks. You need to increase this value if you get a ``Cannot allocate coroutine stack'' error.");
 Register_GlobalConfigOption(CFGID_PARALLEL_SIMULATION, "parallel-simulation", CFG_BOOL, "false", "Enables parallel distributed simulation.");
 Register_GlobalConfigOption(CFGID_SCHEDULER_CLASS, "scheduler-class", CFG_STRING, OPP_PREFIX "cSequentialScheduler", "Part of the Envir plugin mechanism: selects the scheduler class. This plugin interface allows for implementing real-time, hardware-in-the-loop, distributed and distributed parallel simulation. The class has to implement the cScheduler interface.");
 Register_GlobalConfigOption(CFGID_PARSIM_COMMUNICATIONS_CLASS, "parsim-communications-class", CFG_STRING, OPP_PREFIX "cFileCommunications", "If parallel-simulation=true, it selects the class that implements communication between partitions. The class must implement the cParsimCommunications interface.");
@@ -117,7 +117,7 @@ Register_GlobalConfigOption(CFGID_PARSIM_SYNCHRONIZATION_CLASS, "parsim-synchron
 Register_GlobalConfigOption(CFGID_OUTPUTVECTORMANAGER_CLASS, "outputvectormanager-class", CFG_STRING, OPP_PREFIX "cIndexedFileOutputVectorManager", "Part of the Envir plugin mechanism: selects the output vector manager class to be used to record data from output vectors. The class has to implement the cOutputVectorManager interface.");
 Register_GlobalConfigOption(CFGID_OUTPUTSCALARMANAGER_CLASS, "outputscalarmanager-class", CFG_STRING, OPP_PREFIX "cFileOutputScalarManager", "Part of the Envir plugin mechanism: selects the output scalar manager class to be used to record data passed to recordScalar(). The class has to implement the cOutputScalarManager interface.");
 Register_GlobalConfigOption(CFGID_SNAPSHOTMANAGER_CLASS, "snapshotmanager-class", CFG_STRING, OPP_PREFIX "cFileSnapshotManager", "Part of the Envir plugin mechanism: selects the class to handle streams to which snapshot() writes its output. The class has to implement the cSnapshotManager interface.");
-Register_GlobalConfigOption(CFGID_FNAME_APPEND_HOST, "fname-append-host", CFG_BOOL, NULL, "Turning it on will cause the host name and process Id to be appended to the names of output files (e.g. omnetpp.vec, omnetpp.sca). This is especially useful with distributed simulation. The default value is true if parallel simulation is enabled, false otherwise.");
+Register_GlobalConfigOption(CFGID_FNAME_APPEND_HOST, "fname-append-host", CFG_BOOL, nullptr, "Turning it on will cause the host name and process Id to be appended to the names of output files (e.g. omnetpp.vec, omnetpp.sca). This is especially useful with distributed simulation. The default value is true if parallel simulation is enabled, false otherwise.");
 Register_GlobalConfigOption(CFGID_DEBUG_ON_ERRORS, "debug-on-errors", CFG_BOOL, "false", "When set to true, runtime errors will cause the simulation program to break into the C++ debugger (if the simulation is running under one, or just-in-time debugging is activated). Once in the debugger, you can view the stack trace or examine variables.");
 Register_GlobalConfigOption(CFGID_PRINT_UNDISPOSED, "print-undisposed", CFG_BOOL, "true", "Whether to report objects left (that is, not deallocated by simple module destructors) after network cleanup.");
 Register_GlobalConfigOption(CFGID_SIMTIME_SCALE, "simtime-scale", CFG_INT, "-12", "Sets the scale exponent, and thus the resolution of time for the 64-bit fixed-point simulation time representation. Accepted values are -18..0; for example, -6 selects microsecond resolution. -12 means picosecond resolution, with a maximum simtime of ~110 days.");
@@ -127,12 +127,12 @@ Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_ON_ERROR, "debugger-attach-on-
 Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_COMMAND, "debugger-attach-command", CFG_STRING, DEFAULT_DEBUGGER_COMMAND, "Command line to launch the debugger. It must contain exactly one percent sign, as '%u', which will be replaced by the PID of this process. The command must not block (i.e. it should end in '&' on Unix-like systems).");
 Register_GlobalConfigOptionU(CFGID_DEBUGGER_ATTACH_WAIT_TIME, "debugger-attach-wait-time", "s", "20s", "An interval to wait after launching the external debugger, to give the debugger time to start up and attach to the simulation process.");
 
-Register_PerRunConfigOption(CFGID_NETWORK, "network", CFG_STRING, NULL, "The name of the network to be simulated.  The package name can be omitted if the ini file is in the same directory as the NED file that contains the network.");
+Register_PerRunConfigOption(CFGID_NETWORK, "network", CFG_STRING, nullptr, "The name of the network to be simulated.  The package name can be omitted if the ini file is in the same directory as the NED file that contains the network.");
 Register_PerRunConfigOption(CFGID_WARNINGS, "warnings", CFG_BOOL, "true", "Enables warnings.");
-Register_PerRunConfigOptionU(CFGID_SIM_TIME_LIMIT, "sim-time-limit", "s", NULL, "Stops the simulation when simulation time reaches the given limit. The default is no limit.");
-Register_PerRunConfigOptionU(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", "s", NULL, "Stops the simulation when CPU usage has reached the given limit. The default is no limit.");
-Register_PerRunConfigOptionU(CFGID_WARMUP_PERIOD, "warmup-period", "s", NULL, "Length of the initial warm-up period. When set, results belonging to the first x seconds of the simulation will not be recorded into output vectors, and will not be counted into output scalars (see option **.result-recording-modes). This option is useful for steady-state simulations. The default is 0s (no warmup period). Note that models that compute and record scalar results manually (via recordScalar()) will not automatically obey this setting.");
-Register_PerRunConfigOption(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, NULL, "The expected fingerprint of the simulation. When provided, a fingerprint will be calculated from the simulation event times and other quantities during simulation, and checked against the given one. Fingerprints are suitable for crude regression tests. As fingerprints occasionally differ across platforms, more than one fingerprint values can be specified here, separated by spaces, and a match with any of them will be accepted. To obtain the initial fingerprint, enter a dummy value such as \"0000\"), and run the simulation.");
+Register_PerRunConfigOptionU(CFGID_SIM_TIME_LIMIT, "sim-time-limit", "s", nullptr, "Stops the simulation when simulation time reaches the given limit. The default is no limit.");
+Register_PerRunConfigOptionU(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", "s", nullptr, "Stops the simulation when CPU usage has reached the given limit. The default is no limit.");
+Register_PerRunConfigOptionU(CFGID_WARMUP_PERIOD, "warmup-period", "s", nullptr, "Length of the initial warm-up period. When set, results belonging to the first x seconds of the simulation will not be recorded into output vectors, and will not be counted into output scalars (see option **.result-recording-modes). This option is useful for steady-state simulations. The default is 0s (no warmup period). Note that models that compute and record scalar results manually (via recordScalar()) will not automatically obey this setting.");
+Register_PerRunConfigOption(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, nullptr, "The expected fingerprint of the simulation. When provided, a fingerprint will be calculated from the simulation event times and other quantities during simulation, and checked against the given one. Fingerprints are suitable for crude regression tests. As fingerprints occasionally differ across platforms, more than one fingerprint values can be specified here, separated by spaces, and a match with any of them will be accepted. To obtain the initial fingerprint, enter a dummy value such as \"0000\"), and run the simulation.");
 Register_PerRunConfigOption(CFGID_NUM_RNGS, "num-rngs", CFG_INT, "1", "The number of random number generators.");
 Register_PerRunConfigOption(CFGID_RNG_CLASS, "rng-class", CFG_STRING, OPP_PREFIX "cMersenneTwister", "The random number generator class to be used. It can be `cMersenneTwister', `cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be subclassed from cRNG).");
 Register_PerRunConfigOption(CFGID_SEED_SET, "seed-set", CFG_INT, "${runnumber}", "Selects the kth set of automatic random number seeds for the simulation. Meaningful values include ${repetition} which is the repeat loop counter (see repeat= key), and ${runnumber}.");
@@ -141,7 +141,7 @@ Register_PerRunConfigOption(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, 
 Register_PerRunConfigOption(CFGID_DEBUG_STATISTICS_RECORDING, "debug-statistics-recording", CFG_BOOL, "false", "Turns on the printing of debugging information related to statistics recording (@statistic properties)");
 Register_PerRunConfigOption(CFGID_CHECK_SIGNALS, "check-signals", CFG_BOOL, CHECKSIGNALS_DEFAULT, "Controls whether the simulation kernel will validate signals emitted by modules and channels against signal declarations (@signal properties) in NED files. The default setting depends on the build type: 'true' in DEBUG, and 'false' in RELEASE mode.");
 
-Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", KIND_MODULE, CFG_STRING, NULL, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (\"5..9\") and \"*\" (=all) are accepted too.");
+Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", KIND_MODULE, CFG_STRING, nullptr, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (\"5..9\") and \"*\" (=all) are accepted too.");
 Register_PerObjectConfigOption(CFGID_RNG_K, "rng-%", KIND_MODULE, CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The default is one-to-one mapping.");
 Register_PerObjectConfigOption(CFGID_RESULT_RECORDING_MODES, "result-recording-modes", KIND_STATISTIC, CFG_STRING, "default", "Defines how to calculate results from the @statistic property matched by the wildcard. Special values: default, all: they select the modes listed in the record= key of @statistic; all selects all of them, default selects the non-optional ones (i.e. excludes the ones that end in a question mark). Example values: vector, count, last, sum, mean, min, max, timeavg, stats, histogram. More than one values are accepted, separated by commas. Expressions are allowed. Items prefixed with '-' get removed from the list. Example: **.queueLength.result-recording-modes=default,-vector,+timeavg");
 
@@ -218,23 +218,23 @@ EnvirOptions::EnvirOptions()
 
 EnvirBase::EnvirBase()
 {
-    opt = NULL;
-    args = NULL;
-    cfg = NULL;
-    xmlCache = NULL;
+    opt = nullptr;
+    args = nullptr;
+    cfg = nullptr;
+    xmlCache = nullptr;
 
     recordEventlog = false;
-    eventlogManager = NULL;
-    outvectorManager = NULL;
-    outScalarManager = NULL;
-    snapshotManager = NULL;
+    eventlogManager = nullptr;
+    outvectorManager = nullptr;
+    outScalarManager = nullptr;
+    snapshotManager = nullptr;
 
     numRNGs = 0;
-    rngs = NULL;
+    rngs = nullptr;
 
 #ifdef WITH_PARSIM
-    parsimComm = NULL;
-    parsimPartition = NULL;
+    parsimComm = nullptr;
+    parsimPartition = nullptr;
 #endif
 
     exitCode = 0;
@@ -556,7 +556,7 @@ void EnvirBase::printHelp()
         // instantiate the ui, call printUISpecificHelp(), then dispose.
         // note: their ctors are not supposed to do anything but trivial member initializations
         cOmnetAppRegistration *appreg = dynamic_cast<cOmnetAppRegistration *>(table->get(i));
-        ASSERT(appreg != NULL);
+        ASSERT(appreg != nullptr);
         cEnvir *app = appreg->createOne();
         if (dynamic_cast<EnvirBase *>(app))
             ((EnvirBase *)app)->printUISpecificHelp();
@@ -909,7 +909,7 @@ void EnvirBase::shutdown()
 void EnvirBase::setupNetwork(cModuleType *network)
 {
     currentEventName = "";
-    currentEventClassName = NULL;
+    currentEventClassName = nullptr;
     currentModuleId = -1;
 
     getSimulation()->setupNetwork(network);
@@ -967,7 +967,7 @@ void EnvirBase::addResultRecorders(cComponent *component)
             componentFullPath = component->getFullPath();
         const char *statisticName = statisticNames[i];
         cProperty *statisticProperty = component->getProperties()->get("statistic", statisticName);
-        ASSERT(statisticProperty!=NULL);
+        ASSERT(statisticProperty!=nullptr);
         doAddResultRecorders(component, componentFullPath, statisticName, statisticProperty, SIMSIGNAL_NULL);
     }
 
@@ -1612,7 +1612,7 @@ void EnvirBase::readPerRunOptions()
     if (!opt->expectedFingerprint.empty())
         getSimulation()->setHasher(new cHasher());
     else
-        getSimulation()->setHasher(NULL);
+        getSimulation()->setHasher(nullptr);
 
     cComponent::setCheckSignals(opt->checkSignals);
 
@@ -1713,7 +1713,7 @@ void EnvirBase::getRNGMappingFor(cComponent *component)
     {
         const char *suffix = suffixes[i];  // contains "rng-1", "rng-4" or whichever has been found in the config for this module/channel
         const char *value = cfg->getPerObjectConfigValue(componentFullPath.c_str(), suffix);
-        ASSERT(value!=NULL);
+        ASSERT(value!=nullptr);
         char *s1, *s2;
         int modRng = strtol(suffix+strlen("rng-"), &s1, 10);
         int physRng = strtol(value, &s2, 10);
@@ -1856,8 +1856,8 @@ void EnvirBase::attachDebugger()
 
     // hold for a while to allow debugger to start up and attach to us
     int secondsToWait = (int)ceil(getConfig()->getAsDouble(CFGID_DEBUGGER_ATTACH_WAIT_TIME));
-    time_t startTime = time(NULL);
-    while (time(NULL)-startTime < secondsToWait)
+    time_t startTime = time(nullptr);
+    while (time(nullptr)-startTime < secondsToWait)
         for (int i=0; i<1000; i++); // DEBUGGER ATTACHED -- YOUR CODE IS A FEW FRAMES UP ON THE CALL STACK
 }
 
@@ -1931,19 +1931,19 @@ void EnvirBase::notifyLifecycleListeners(SimulationLifecycleEventType eventType,
 void EnvirBase::resetClock()
 {
     timeval now;
-    gettimeofday(&now, NULL);
+    gettimeofday(&now, nullptr);
     lastStarted = simEndTime = simBegTime = now;
     elapsedTime.tv_sec = elapsedTime.tv_usec = 0;
 }
 
 void EnvirBase::startClock()
 {
-    gettimeofday(&lastStarted, NULL);
+    gettimeofday(&lastStarted, nullptr);
 }
 
 void EnvirBase::stopClock()
 {
-    gettimeofday(&simEndTime, NULL);
+    gettimeofday(&simEndTime, nullptr);
     elapsedTime = elapsedTime + simEndTime - lastStarted;
     simulatedTime = getSimulation()->getSimTime();
 }
@@ -1951,7 +1951,7 @@ void EnvirBase::stopClock()
 timeval EnvirBase::totalElapsed()
 {
     timeval now;
-    gettimeofday(&now, NULL);
+    gettimeofday(&now, nullptr);
     return now - lastStarted + elapsedTime;
 }
 
@@ -1966,7 +1966,7 @@ void EnvirBase::checkTimeLimits()
     if (disableTracing && (getSimulation()->getEventNumber()&0xFF)!=0) // optimize: in Express mode, don't call gettimeofday() on every event
          return;
     timeval now;
-    gettimeofday(&now, NULL);
+    gettimeofday(&now, nullptr);
     long elapsedsecs = now.tv_sec - lastStarted.tv_sec + elapsedTime.tv_sec;
     if (elapsedsecs>=opt->cpuTimeLimit)
          throw cTerminationException(E_REALTIME);
@@ -2022,7 +2022,7 @@ void EnvirBase::checkFingerprint()
 
 cModuleType *EnvirBase::resolveNetwork(const char *networkname)
 {
-    cModuleType *network = NULL;
+    cModuleType *network = nullptr;
     std::string inifilePackage = getSimulation()->getNedPackageForFolder(opt->inifileNetworkDir.c_str());
 
     bool hasInifilePackage = !inifilePackage.empty() && strcmp(inifilePackage.c_str(),"-")!=0;

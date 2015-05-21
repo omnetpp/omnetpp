@@ -70,11 +70,11 @@ void XYPlotNode::process()
         Assert(ychan->eof() || ychan->length()>0);
         const Datum *yp;
         Datum d;
-        while ((yp=ychan->peek())!=NULL && yp->x < xd.x)
+        while ((yp=ychan->peek())!=nullptr && yp->x < xd.x)
         {
             ychan->read(&d,1);  // discard if timestamps not equal
         }
-        while ((yp=ychan->peek())!=NULL && yp->x == xd.x)
+        while ((yp=ychan->peek())!=nullptr && yp->x == xd.x)
         {
             ychan->read(&d,1);
             d.x = xd.y;

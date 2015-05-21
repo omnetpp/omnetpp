@@ -30,12 +30,12 @@ NAMESPACE_BEGIN
 
 NEDFileBuffer::NEDFileBuffer()
 {
-    wholeFile = NULL;
+    wholeFile = nullptr;
 
     numLines = 0;
-    lineBeg = NULL;
+    lineBeg = nullptr;
 
-    end = 0;
+    end = nullptr;
 
     commentBufLen = 1024;
     commentBuf = new char[commentBufLen];
@@ -110,7 +110,7 @@ bool NEDFileBuffer::indexLines()
     lineBeg = new char * [numLines+2];
 
     // fill in array
-    lineBeg[0] = NULL;
+    lineBeg[0] = nullptr;
     lineBeg[1] = wholeFile;
     int line = 2;
     for (s = wholeFile; *s; s++)
@@ -190,11 +190,11 @@ char *NEDFileBuffer::getPosition(int line, int column)
 
 const char *NEDFileBuffer::get(YYLTYPE pos)
 {
-    if (end) {*end = savedChar; end=NULL;}
+    if (end) {*end = savedChar; end=nullptr;}
 
     // return NULL
     if (pos.first_line==0 && pos.last_line==0)
-        return NULL;
+        return nullptr;
 
     if (isEmpty(pos))
         return "";
@@ -216,7 +216,7 @@ const char *NEDFileBuffer::getFileComment()
 // all subsequent comment and blank lines will be included, up to the _last blank_ line
 YYLTYPE NEDFileBuffer::getFileCommentPos()
 {
-    if (end) {*end = savedChar; end=NULL;}
+    if (end) {*end = savedChar; end=nullptr;}
 
     // seek end of comment block (that is, last blank line before a code line or eof)
     int lastBlank = 0;
@@ -261,7 +261,7 @@ const char *NEDFileBuffer::getBannerComment(YYLTYPE pos)
 YYLTYPE NEDFileBuffer::getBannerCommentPos(YYLTYPE pos)
 {
     trimSpaceAndComments(pos);
-    if (end) {*end = savedChar; end=NULL;}
+    if (end) {*end = savedChar; end=nullptr;}
 
     // there must be nothing before it on the same line
     char *beg = getPosition(pos.first_line, pos.first_column);
@@ -290,7 +290,7 @@ const char *NEDFileBuffer::getTrailingComment(YYLTYPE pos)
 YYLTYPE NEDFileBuffer::getTrailingCommentPos(YYLTYPE pos)
 {
     trimSpaceAndComments(pos);
-    if (end) {*end = savedChar; end=NULL;}
+    if (end) {*end = savedChar; end=nullptr;}
 
     // there must be no code after it on the same line
     char *endp = getPosition(pos.last_line, pos.last_column);
@@ -329,7 +329,7 @@ static const char *findCommentOnLine(const char *s)
     // find comment on this line
     while (*s!='\n' && (*s!='/' || *(s+1)!='/')) s++;
     if (*s!='/' || *(s+1)!='/')
-        return NULL;
+        return nullptr;
     return s;
 }
 
@@ -346,7 +346,7 @@ const char *NEDFileBuffer::getNextInnerComment(YYLTYPE& pos)
         {
             int commentColumn = pos.first_column + comment - s;
             if (pos.first_line==pos.last_line && commentColumn >= pos.last_column)
-                return NULL; // comment is past the end of "pos"
+                return nullptr; // comment is past the end of "pos"
 
             // seek fwd to next code line (or end of block)
             int lineAfter = pos.first_line+1;
@@ -370,7 +370,7 @@ const char *NEDFileBuffer::getNextInnerComment(YYLTYPE& pos)
         ++pos.first_line;
         pos.first_column = 0;
     }
-    return NULL;
+    return nullptr;
 }
 
 YYLTYPE NEDFileBuffer::getFullTextPos()
@@ -421,7 +421,7 @@ char *NEDFileBuffer::stripComment(const char *comment)
 
 void NEDFileBuffer::trimSpaceAndComments(YYLTYPE& pos)
 {
-    if (end) {*end = savedChar; end=NULL;}
+    if (end) {*end = savedChar; end=nullptr;}
 
     // skip space and comments with the beginning of the region
     const char *s = getPosition(pos.first_line, pos.first_column);

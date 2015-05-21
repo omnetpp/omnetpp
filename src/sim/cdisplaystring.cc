@@ -30,27 +30,27 @@ NAMESPACE_BEGIN
 
 cDisplayString::cDisplayString()
 {
-    assembledString = NULL;
-    buffer = NULL;
-    bufferEnd = NULL;
-    tags = NULL;
+    assembledString = nullptr;
+    buffer = nullptr;
+    bufferEnd = nullptr;
+    tags = nullptr;
     numTags = 0;
     assembledStringValid = false;
 
-    ownerComponent = NULL;
+    ownerComponent = nullptr;
 }
 
 
 cDisplayString::cDisplayString(const char *displaystr)
 {
     assembledString = opp_strdup(displaystr);
-    buffer = NULL;
-    bufferEnd = NULL;
-    tags = NULL;
+    buffer = nullptr;
+    bufferEnd = nullptr;
+    tags = nullptr;
     numTags = 0;
     assembledStringValid = false;
 
-    ownerComponent = NULL;
+    ownerComponent = nullptr;
 
     // doParse() should be the last one, as it may throw an error
     doParse();
@@ -58,14 +58,14 @@ cDisplayString::cDisplayString(const char *displaystr)
 
 cDisplayString::cDisplayString(const cDisplayString& ds)
 {
-    assembledString = NULL;
-    buffer = NULL;
-    bufferEnd = NULL;
-    tags = NULL;
+    assembledString = nullptr;
+    buffer = nullptr;
+    bufferEnd = nullptr;
+    tags = nullptr;
     numTags = 0;
     assembledStringValid = false;
 
-    ownerComponent = NULL;
+    ownerComponent = nullptr;
 
     copy(ds);
 }
@@ -226,7 +226,7 @@ int cDisplayString::getNumTags() const
 
 const char *cDisplayString::getTagName(int tagindex) const
 {
-    if (tagindex<0 || tagindex>=numTags) return NULL;
+    if (tagindex<0 || tagindex>=numTags) return nullptr;
     return tags[tagindex].name;
 }
 
@@ -273,7 +273,7 @@ bool cDisplayString::doSetTagArg(int tagindex, int index, const char *value)
     slot = opp_strdup(value);
 
     // get rid of possible empty trailing args, throw out tag if it became empty
-    while (tag.numArgs>0 && tag.args[tag.numArgs-1]==NULL)
+    while (tag.numArgs>0 && tag.args[tag.numArgs-1]==nullptr)
         tag.numArgs--;
     if (tag.numArgs==0)
         doRemoveTag(tagindex);
@@ -322,7 +322,7 @@ int cDisplayString::doInsertTag(const char *tagname, int atindex)
     // fill in new tag
     tags[atindex].name = opp_strdup(tagname);
     tags[atindex].numArgs = 0;
-    for (int i=0; i<MAXARGS; i++) tags[atindex].args[i] = NULL;
+    for (int i=0; i<MAXARGS; i++) tags[atindex].args[i] = nullptr;
 
     // success
     return atindex;
@@ -380,18 +380,18 @@ void cDisplayString::clearTags()
                 delete [] tags[t].args[i];
     }
     delete [] tags;
-    tags = NULL;
+    tags = nullptr;
     numTags = 0;
 
     // must be done after deleting tags[] because of pointsIntoBuffer()
     delete [] buffer;
-    buffer = bufferEnd = NULL;
+    buffer = bufferEnd = nullptr;
 }
 
 void cDisplayString::doParse()
 {
     clearTags();
-    if (assembledString==NULL)
+    if (assembledString==nullptr)
         return;
 
     buffer = new char[opp_strlen(assembledString)+1];
@@ -410,7 +410,7 @@ void cDisplayString::doParse()
     tags[0].name = buffer;
     tags[0].numArgs = 0;
     for (int i=0; i<MAXARGS; i++)
-        tags[0].args[i] = NULL;
+        tags[0].args[i] = nullptr;
 
     char *s, *d;
     for (s=assembledString,d=buffer; *s; s++,d++)
@@ -430,7 +430,7 @@ void cDisplayString::doParse()
             tags[numTags-1].name = d+1;
             tags[numTags-1].numArgs = 0;
             for (int i=0; i<MAXARGS; i++)
-                tags[numTags-1].args[i] = NULL;
+                tags[numTags-1].args[i] = nullptr;
         }
         else if (*s=='=')
         {

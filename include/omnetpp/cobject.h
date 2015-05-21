@@ -256,7 +256,7 @@ class SIM_API cObject
      * May be redefined to return an owner or parent object. This default
      * implementation just returns NULL.
      */
-    virtual cObject *getOwner() const {return NULL;}
+    virtual cObject *getOwner() const {return nullptr;}
 
     /**
      * Returns true if this class is a subclass of cOwnedObject.

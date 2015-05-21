@@ -111,7 +111,7 @@ DEF(nedf_dropUnit,
     "units",
     "Removes the unit of measurement from quantity x.",
 {
-    argv[0].setUnit(NULL);
+    argv[0].setUnit(nullptr);
     return argv[0];
 })
 
@@ -677,7 +677,7 @@ DEF(nedf_xmldoc,
     "matches the expression given in simplified XPath syntax.",
 {
     const char *filename = argv[0].stringValue();
-    const char *xpath = argc==1 ? NULL : argv[1].stringValue();
+    const char *xpath = argc==1 ? nullptr : argv[1].stringValue();
     cXMLElement *node = getEnvir()->getXMLDocument(filename, xpath);
     if (!node)
     {
@@ -699,7 +699,7 @@ DEF(nedf_xml,
     cXMLElement *node;
     if (argc==1)
     {
-        node = getEnvir()->getParsedXMLString(argv[0].stdstringValue().c_str(), NULL);
+        node = getEnvir()->getParsedXMLString(argv[0].stdstringValue().c_str(), nullptr);
         if (!node)
             throw cRuntimeError("xml(\"%s\"): element not found", argv[0].stdstringValue().c_str());
     }

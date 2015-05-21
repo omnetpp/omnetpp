@@ -86,7 +86,7 @@ cMessageHeap::cMessageHeap(const char *name, int siz) : cOwnedObject(name, false
 
 cMessageHeap::cMessageHeap(const cMessageHeap& heap) : cOwnedObject(heap)
 {
-    cb = NULL; h=NULL; n=0;
+    cb = nullptr; h=nullptr; n=0;
     copy(heap);
 }
 
@@ -161,7 +161,7 @@ cMessageHeap& cMessageHeap::operator=(const cMessageHeap& heap)
 cEvent *cMessageHeap::peek(int m)
 {
     if (m < 0)
-        return NULL;
+        return nullptr;
 
     // first few elements map into the circular buffer
     int cblen = cblength();
@@ -171,7 +171,7 @@ cEvent *cMessageHeap::peek(int m)
 
     // map the rest to h[1]..h[n] (h[] is 1-based)
     if (m >= n)
-        return NULL;
+        return nullptr;
     return h[m+1];
 }
 
@@ -263,7 +263,7 @@ void cMessageHeap::shiftup(int from)
 
 cEvent *cMessageHeap::peekFirst() const
 {
-    return cbhead!=cbtail ? cb[cbhead] : n!=0 ? h[1] : NULL;
+    return cbhead!=cbtail ? cb[cbhead] : n!=0 ? h[1] : nullptr;
 }
 
 cEvent *cMessageHeap::removeFirst()
@@ -287,14 +287,14 @@ cEvent *cMessageHeap::removeFirst()
         event->heapIndex=-1;
         return event;
     }
-    return NULL;
+    return nullptr;
 }
 
 cEvent *cMessageHeap::remove(cEvent *event)
 {
     // make sure it is really on the heap
     if (event->heapIndex==-1)
-        return NULL;
+        return nullptr;
 
     if (event->heapIndex<0)
     {

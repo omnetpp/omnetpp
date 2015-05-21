@@ -37,7 +37,7 @@ class SIM_API cRandom : public cOwnedObject
         /** @name Constructors, destructor, etc. */
         //@{
         cRandom(cRNG *rng);
-        cRandom(const char *name=NULL, cRNG *rng=NULL);
+        cRandom(const char *name=nullptr, cRNG *rng=nullptr);
         virtual ~cRandom() {}
         //@}
 
@@ -82,7 +82,7 @@ class SIM_API cUniform : public cRandom
         /** @name Constructors, destructor, etc. */
         //@{
         cUniform(cRNG *rng, double a, double b) : cRandom(rng), a(a), b(b) {}
-        cUniform(const char *name=NULL, cRNG *rng=NULL, double a=0, double b=1) : cRandom(name, rng), a(a), b(b) {}
+        cUniform(const char *name=nullptr, cRNG *rng=nullptr, double a=0, double b=1) : cRandom(name, rng), a(a), b(b) {}
         cUniform(const cUniform& other) : cRandom(other) {copy(other);}
         virtual cUniform *dup() const {return new cUniform(*this);}
         cUniform& operator =(const cUniform& other);
@@ -120,7 +120,7 @@ class SIM_API cExponential : public cRandom
         /** @name Constructors, destructor, etc. */
         //@{
         cExponential(cRNG *rng, double mean) : cRandom(rng), mean(mean) {}
-        cExponential(const char *name=NULL, cRNG *rng=NULL, double mean=1) : cRandom(rng), mean(mean) {}
+        cExponential(const char *name=nullptr, cRNG *rng=nullptr, double mean=1) : cRandom(rng), mean(mean) {}
         cExponential(const cExponential& other) : cRandom(other) {copy(other);}
         virtual cExponential *dup() const {return new cExponential(*this);}
         const cExponential& operator =(const cExponential& other);
@@ -158,7 +158,7 @@ class SIM_API cNormal : public cRandom
         /** @name Constructors, destructor, etc. */
         //@{
         cNormal(cRNG *rng, double mean, double stddev) : cRandom(rng), mean(mean), stddev(stddev) {}
-        cNormal(const char *name=NULL, cRNG *rng=NULL, double mean=0, double stddev=1) : cRandom(rng), mean(mean), stddev(stddev) {}
+        cNormal(const char *name=nullptr, cRNG *rng=nullptr, double mean=0, double stddev=1) : cRandom(rng), mean(mean), stddev(stddev) {}
         cNormal(const cNormal& other) : cRandom(other) {copy(other);}
         virtual cNormal *dup() const {return new cNormal(*this);}
         cNormal& operator =(const cNormal& other);
@@ -198,7 +198,7 @@ class SIM_API cTruncNormal : public cRandom
         /** @name Constructors, destructor, etc. */
         //@{
         cTruncNormal(cRNG *rng, double mean, double stddev) : cRandom(rng), mean(mean), stddev(stddev) {}
-        cTruncNormal(const char *name=NULL, cRNG *rng=NULL, double mean=0, double stddev=1) : cRandom(rng), mean(mean), stddev(stddev) {}
+        cTruncNormal(const char *name=nullptr, cRNG *rng=nullptr, double mean=0, double stddev=1) : cRandom(rng), mean(mean), stddev(stddev) {}
         cTruncNormal(const cTruncNormal& other) : cRandom(other) {copy(other);}
         virtual cTruncNormal *dup() const {return new cTruncNormal(*this);}
         cTruncNormal& operator =(const cTruncNormal& other);
@@ -238,7 +238,7 @@ class SIM_API cGamma : public cRandom
         /** @name Constructors, destructor, etc. */
         //@{
         cGamma(cRNG *rng, double alpha, double theta) : cRandom(rng), alpha(alpha), theta(theta) {}
-        cGamma(const char *name=NULL, cRNG *rng=NULL, double alpha=1, double theta=1) : cRandom(rng), alpha(alpha), theta(theta) {}
+        cGamma(const char *name=nullptr, cRNG *rng=nullptr, double alpha=1, double theta=1) : cRandom(rng), alpha(alpha), theta(theta) {}
         cGamma(const cGamma& other) : cRandom(other) {copy(other);}
         virtual cGamma *dup() const {return new cGamma(*this);}
         cGamma& operator =(const cGamma& other);
@@ -278,7 +278,7 @@ class SIM_API cBeta : public cRandom
         /** @name Constructors, destructor, etc. */
         //@{
         cBeta(cRNG *rng, double alpha1, double alpha2) : cRandom(rng), alpha1(alpha1), alpha2(alpha2) {}
-        cBeta(const char *name=NULL, cRNG *rng=NULL, double alpha1=1, double alpha2=1) : cRandom(rng), alpha1(alpha1), alpha2(alpha2) {}
+        cBeta(const char *name=nullptr, cRNG *rng=nullptr, double alpha1=1, double alpha2=1) : cRandom(rng), alpha1(alpha1), alpha2(alpha2) {}
         cBeta(const cBeta& other) : cRandom(other) {copy(other);}
         virtual cBeta *dup() const {return new cBeta(*this);}
         cBeta& operator =(const cBeta& other);
@@ -318,7 +318,7 @@ class SIM_API cErlang : public cRandom
         /** @name Constructors, destructor, etc. */
         //@{
         cErlang(cRNG *rng, unsigned int k, double mean) : cRandom(rng), k(k), mean(mean) {}
-        cErlang(const char *name=NULL, cRNG *rng=NULL, unsigned int k=1, double mean=1) : cRandom(rng), k(k), mean(mean) {}
+        cErlang(const char *name=nullptr, cRNG *rng=nullptr, unsigned int k=1, double mean=1) : cRandom(rng), k(k), mean(mean) {}
         cErlang(const cErlang& other) : cRandom(other) {copy(other);}
         virtual cErlang *dup() const {return new cErlang(*this);}
         cErlang& operator =(const cErlang& other);
@@ -357,7 +357,7 @@ class SIM_API cChiSquare : public cRandom
         /** @name Constructors, destructor, etc. */
         //@{
         cChiSquare(cRNG *rng, unsigned int k) : cRandom(rng), k(k) {}
-        cChiSquare(const char *name=NULL, cRNG *rng=NULL, unsigned int k=1) : cRandom(rng), k(k) {}
+        cChiSquare(const char *name=nullptr, cRNG *rng=nullptr, unsigned int k=1) : cRandom(rng), k(k) {}
         cChiSquare(const cChiSquare& other) : cRandom(other) {copy(other);}
         virtual cChiSquare *dup() const {return new cChiSquare(*this);}
         cChiSquare& operator =(const cChiSquare& other);
@@ -394,7 +394,7 @@ class SIM_API cStudentT : public cRandom
         /** @name Constructors, destructor, etc. */
         //@{
         cStudentT(cRNG *rng, unsigned int i) : cRandom(rng), i(i) {}
-        cStudentT(const char *name=NULL, cRNG *rng=NULL, unsigned int i=1) : cRandom(rng), i(i) {}
+        cStudentT(const char *name=nullptr, cRNG *rng=nullptr, unsigned int i=1) : cRandom(rng), i(i) {}
         cStudentT(const cStudentT& other) : cRandom(other) {copy(other);}
         virtual cStudentT *dup() const {return new cStudentT(*this);}
         cStudentT& operator =(const cStudentT& other);
@@ -432,7 +432,7 @@ class SIM_API cCauchy : public cRandom
         /** @name Constructors, destructor, etc. */
         //@{
         cCauchy(cRNG *rng, double a, double b) : cRandom(rng), a(a), b(b) {}
-        cCauchy(const char *name=NULL, cRNG *rng=NULL, double a=0, double b=1) : cRandom(rng), a(a), b(b) {}
+        cCauchy(const char *name=nullptr, cRNG *rng=nullptr, double a=0, double b=1) : cRandom(rng), a(a), b(b) {}
         cCauchy(const cCauchy& other) : cRandom(other) {copy(other);}
         virtual cCauchy *dup() const {return new cCauchy(*this);}
         cCauchy& operator =(const cCauchy& other);
@@ -473,7 +473,7 @@ class SIM_API cTriang : public cRandom
         /** @name Constructors, destructor, etc. */
         //@{
         cTriang(cRNG *rng, double a, double b, double c) : cRandom(rng), a(a), b(b), c(c) {}
-        cTriang(const char *name=NULL, cRNG *rng=NULL, double a=-1, double b=0, double c=1) : cRandom(rng), a(a), b(b), c(c) {}
+        cTriang(const char *name=nullptr, cRNG *rng=nullptr, double a=-1, double b=0, double c=1) : cRandom(rng), a(a), b(b), c(c) {}
         cTriang(const cTriang& other) : cRandom(other) {copy(other);}
         virtual cTriang *dup() const {return new cTriang(*this);}
         cTriang& operator =(const cTriang& other);
@@ -515,7 +515,7 @@ class SIM_API cWeibull : public cRandom
         /** @name Constructors, destructor, etc. */
         //@{
         cWeibull(cRNG *rng, double a, double b) : cRandom(rng), a(a), b(b) {}
-        cWeibull(const char *name=NULL, cRNG *rng=NULL, double a=1, double b=1) : cRandom(rng), a(a), b(b) {}
+        cWeibull(const char *name=nullptr, cRNG *rng=nullptr, double a=1, double b=1) : cRandom(rng), a(a), b(b) {}
         cWeibull(const cWeibull& other) : cRandom(other) {copy(other);}
         virtual cWeibull *dup() const {return new cWeibull(*this);}
         cWeibull& operator =(const cWeibull& other);
@@ -556,7 +556,7 @@ class SIM_API cParetoShifted : public cRandom
         /** @name Constructors, destructor, etc. */
         //@{
         cParetoShifted(cRNG *rng, double a, double b, double c) : cRandom(rng), a(a), b(b), c(c) {}
-        cParetoShifted(const char *name=NULL, cRNG *rng=NULL, double a=1, double b=1, double c=0) : cRandom(rng), a(a), b(b), c(c) {}
+        cParetoShifted(const char *name=nullptr, cRNG *rng=nullptr, double a=1, double b=1, double c=0) : cRandom(rng), a(a), b(b), c(c) {}
         cParetoShifted(const cParetoShifted& other) : cRandom(other) {copy(other);}
         virtual cParetoShifted *dup() const {return new cParetoShifted(*this);}
         cParetoShifted& operator =(const cParetoShifted& other);
@@ -600,7 +600,7 @@ class SIM_API cIntUniform : public cRandom
         /** @name Constructors, destructor, etc. */
         //@{
         cIntUniform(cRNG *rng, int a, int b) : cRandom(rng), a(a), b(b) {}
-        cIntUniform(const char *name=NULL, cRNG *rng=NULL, int a=0, int b=1) : cRandom(rng), a(a), b(b) {}
+        cIntUniform(const char *name=nullptr, cRNG *rng=nullptr, int a=0, int b=1) : cRandom(rng), a(a), b(b) {}
         cIntUniform(const cIntUniform& other) : cRandom(other) {copy(other);}
         virtual cIntUniform *dup() const {return new cIntUniform(*this);}
         cIntUniform& operator =(const cIntUniform& other);
@@ -639,7 +639,7 @@ class SIM_API cBernoulli : public cRandom
         /** @name Constructors, destructor, etc. */
         //@{
         cBernoulli(cRNG *rng, double p) : cRandom(rng), p(p) {}
-        cBernoulli(const char *name=NULL, cRNG *rng=NULL, double p=0.5) : cRandom(rng), p(p) {}
+        cBernoulli(const char *name=nullptr, cRNG *rng=nullptr, double p=0.5) : cRandom(rng), p(p) {}
         cBernoulli(const cBernoulli& other) : cRandom(other) {copy(other);}
         virtual cBernoulli *dup() const {return new cBernoulli(*this);}
         cBernoulli& operator =(const cBernoulli& other);
@@ -677,7 +677,7 @@ class SIM_API cBinomial : public cRandom
         /** @name Constructors, destructor, etc. */
         //@{
         cBinomial(cRNG *rng, int n, double p) : cRandom(rng), n(n), p(p) {}
-        cBinomial(const char *name=NULL, cRNG *rng=NULL, int n=1, double p=0.5) : cRandom(rng), n(n), p(p) {}
+        cBinomial(const char *name=nullptr, cRNG *rng=nullptr, int n=1, double p=0.5) : cRandom(rng), n(n), p(p) {}
         cBinomial(const cBinomial& other) : cRandom(other) {copy(other);}
         virtual cBinomial *dup() const {return new cBinomial(*this);}
         cBinomial& operator =(const cBinomial& other);
@@ -716,7 +716,7 @@ class SIM_API cGeometric : public cRandom
         /** @name Constructors, destructor, etc. */
         //@{
         cGeometric(cRNG *rng, double p) : cRandom(rng), p(p) {}
-        cGeometric(const char *name=NULL, cRNG *rng=NULL, double p=0.5) : cRandom(rng), p(p) {}
+        cGeometric(const char *name=nullptr, cRNG *rng=nullptr, double p=0.5) : cRandom(rng), p(p) {}
         cGeometric(const cGeometric& other) : cRandom(other) {copy(other);}
         virtual cGeometric *dup() const {return new cGeometric(*this);}
         cGeometric& operator =(const cGeometric& other);
@@ -754,7 +754,7 @@ class SIM_API cNegBinomial : public cRandom
         /** @name Constructors, destructor, etc. */
         //@{
         cNegBinomial(cRNG *rng, int n, double p) : cRandom(rng), n(n), p(p) {}
-        cNegBinomial(const char *name=NULL, cRNG *rng=NULL, int n=0, double p=0.5) : cRandom(rng), n(n), p(p) {}
+        cNegBinomial(const char *name=nullptr, cRNG *rng=nullptr, int n=0, double p=0.5) : cRandom(rng), n(n), p(p) {}
         cNegBinomial(const cNegBinomial& other) : cRandom(other) {copy(other);}
         virtual cNegBinomial *dup() const {return new cNegBinomial(*this);}
         cNegBinomial& operator =(const cNegBinomial& other);
@@ -793,7 +793,7 @@ class SIM_API cPoisson : public cRandom
         /** @name Constructors, destructor, etc. */
         //@{
         cPoisson(cRNG *rng, double lambda) : cRandom(rng), lambda(lambda) {}
-        cPoisson(const char *name=NULL, cRNG *rng=NULL, double lambda=1) : cRandom(rng), lambda(lambda) {}
+        cPoisson(const char *name=nullptr, cRNG *rng=nullptr, double lambda=1) : cRandom(rng), lambda(lambda) {}
         cPoisson(const cPoisson& other) : cRandom(other) {copy(other);}
         virtual cPoisson *dup() const {return new cPoisson(*this);}
         cPoisson& operator =(const cPoisson& other);

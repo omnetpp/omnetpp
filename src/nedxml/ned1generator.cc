@@ -43,7 +43,7 @@ void generateNED1(ostream& out, NEDElement *node, NEDErrorStore *e)
 
 NED1Generator::NED1Generator(NEDErrorStore *e)
 {
-    outp = NULL;
+    outp = nullptr;
     indentSize = 4;
     errors = e;
 }
@@ -61,7 +61,7 @@ void NED1Generator::generate(ostream& out, NEDElement *node, const char *indent)
 {
     outp = &out;
     generateNedItem(node, indent, false);
-    outp = NULL;
+    outp = nullptr;
 }
 
 std::string NED1Generator::generate(NEDElement *node, const char *indent)
@@ -109,7 +109,7 @@ void NED1Generator::generateChildren(NEDElement *node, const char *indent, const
 void NED1Generator::generateChildrenWithType(NEDElement *node, int tagcode, const char *indent, const char *arg)
 {
     // find last
-    NEDElement *lastWithTag = NULL;
+    NEDElement *lastWithTag = nullptr;
     for (NEDElement *child1=node->getFirstChild(); child1; child1=child1->getNextSibling())
         if (child1->getTagCode()==tagcode)
              lastWithTag = child1;
@@ -131,7 +131,7 @@ static int isInVector(int a, int v[])
 void NED1Generator::generateChildrenWithTypes(NEDElement *node, int tagcodes[], const char *indent, const char *arg)
 {
     // find last
-    NEDElement *lastWithTag = NULL;
+    NEDElement *lastWithTag = nullptr;
     for (NEDElement *child1=node->getFirstChild(); child1; child1=child1->getNextSibling())
         if (isInVector(child1->getTagCode(), tagcodes))
              lastWithTag = child1;
@@ -188,7 +188,7 @@ void NED1Generator::printExpression(NEDElement *node, const char *attr, const ch
     {
         for (ExpressionElement *expr=(ExpressionElement *)node->getFirstChildWithTag(NED_EXPRESSION); expr; expr=expr->getNextExpressionSibling())
             if (!opp_isempty(expr->getTarget()) && !strcmp(expr->getTarget(),attr))
-                generateNedItem(expr, indent, false, NULL);
+                generateNedItem(expr, indent, false, nullptr);
     }
 }
 
@@ -207,7 +207,7 @@ void NED1Generator::printOptVector(NEDElement *node, const char *attr, const cha
 static const char *getComment(NEDElement *node, const char *locId)
 {
     CommentElement *comment = (CommentElement *)node->getFirstChildWithAttribute(NED_COMMENT, "locid", locId);
-    return (comment && !opp_isempty(comment->getContent())) ? comment->getContent() : NULL;
+    return (comment && !opp_isempty(comment->getContent())) ? comment->getContent() : nullptr;
 }
 
 static std::string formatComment(const char *comment, const char *indent, const char *defaultValue)
@@ -260,19 +260,19 @@ std::string NED1Generator::getBannerComment(NEDElement *node, const char *indent
 std::string NED1Generator::getRightComment(NEDElement *node)
 {
     const char *comment = getComment(node, "right");
-    return formatComment(comment, NULL, "\n");
+    return formatComment(comment, nullptr, "\n");
 }
 
 std::string NED1Generator::getInlineRightComment(NEDElement *node)
 {
     const char *comment = getComment(node, "right");
-    return formatComment(comment, NULL, " ");
+    return formatComment(comment, nullptr, " ");
 }
 
 std::string NED1Generator::getTrailingComment(NEDElement *node)
 {
     const char *comment = getComment(node, "trailing");
-    return formatComment(comment, NULL, "\n");
+    return formatComment(comment, nullptr, "\n");
 }
 
 //---------------------------------------------------------------------------
@@ -415,9 +415,9 @@ void NED1Generator::doModuleParameters(ParametersElement *node, const char *inde
         if (childTag==NED_COMMENT)
             ; // ignore whitespace
         else if (childTag==NED_PROPERTY)
-            doProperty((PropertyElement *)child, increaseIndent(indent), false, NULL);
+            doProperty((PropertyElement *)child, increaseIndent(indent), false, nullptr);
         else if (childTag==NED_PARAM)
-            doModuleParam((ParamElement *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_PARAM)==NULL, NULL);
+            doModuleParam((ParamElement *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_PARAM)==nullptr, nullptr);
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
@@ -435,9 +435,9 @@ void NED1Generator::doSubstParameters(ParametersElement *node, const char *inden
         if (childTag==NED_COMMENT)
             ; //ignore
         else if (childTag==NED_PROPERTY)
-            doProperty((PropertyElement *)child, increaseIndent(indent), false, NULL);
+            doProperty((PropertyElement *)child, increaseIndent(indent), false, nullptr);
         else if (childTag==NED_PARAM)
-            doSubstParam((ParamElement *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_PARAM)==NULL, NULL);
+            doSubstParam((ParamElement *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_PARAM)==nullptr, nullptr);
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
@@ -452,7 +452,7 @@ void NED1Generator::doChannelParameters(ParametersElement *node, const char *ind
         if (childTag==NED_COMMENT)
             ; //ignore
         else if (childTag==NED_PROPERTY)
-            doProperty((PropertyElement *)child, indent, false, NULL);
+            doProperty((PropertyElement *)child, indent, false, nullptr);
         else if (childTag==NED_PARAM)
             doChannelParam((ParamElement *)child, indent);
         else
@@ -469,9 +469,9 @@ void NED1Generator::doConnectionAttributes(ParametersElement *node, const char *
         if (childTag==NED_COMMENT)
             ; //ignore
         else if (childTag==NED_PROPERTY)
-            doProperty((PropertyElement *)child, indent, false, NULL);
+            doProperty((PropertyElement *)child, indent, false, nullptr);
         else if (childTag==NED_PARAM)
-            doChannelParam((ParamElement *)child, NULL);
+            doChannelParam((ParamElement *)child, nullptr);
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
@@ -507,7 +507,7 @@ void NED1Generator::doParam(ParamElement *node, const char *indent, bool islast,
 
 void NED1Generator::doModuleParam(ParamElement *node, const char *indent, bool islast, const char *)
 {
-    const char *parType = NULL;
+    const char *parType = nullptr;
     switch (node->getType())
     {
         case NED_PARTYPE_NONE:   break;
@@ -521,7 +521,7 @@ void NED1Generator::doModuleParam(ParamElement *node, const char *indent, bool i
 
     OUT << getBannerComment(node, indent);
     OUT << indent << node->getName();
-    if (parType!=NULL)
+    if (parType!=nullptr)
         OUT << ": " << parType;
 
     if (node->getIsPattern())
@@ -540,13 +540,13 @@ const char *NED1Generator::getPromptTextOf(ParamElement *param)
 {
     PropertyElement *promptProp = (PropertyElement *)param->getFirstChildWithAttribute(NED_PROPERTY, "name", "prompt");
     if (!promptProp)
-        return NULL;
+        return nullptr;
     PropertyKeyElement *propKey = (PropertyKeyElement *)promptProp->getFirstChildWithAttribute(NED_PROPERTY_KEY, "name", "");
     if (!propKey)
-        return NULL;
+        return nullptr;
     LiteralElement *literal = (LiteralElement *)propKey->getFirstChildWithTag(NED_LITERAL);
     if (!literal)
-        return NULL;
+        return nullptr;
     return literal->getText(); //FIXME use value if text is not present!!!! (see doLiteral())
 }
 
@@ -594,7 +594,7 @@ void NED1Generator::doProperty(PropertyElement *node, const char *indent, bool i
     {
         // must be submodule->parameters->property, module->parameters->property or
         // connection->parameters->property
-        NEDElement *grandparent = node->getParent() ? node->getParent()->getParent() : NULL;
+        NEDElement *grandparent = node->getParent() ? node->getParent()->getParent() : nullptr;
         if (!grandparent || (grandparent->getTagCode()!=NED_SUBMODULE && grandparent->getTagCode()!=NED_COMPOUND_MODULE))
             errors->addWarning(node, NED2FEATURE "@display may occur on submodules, connections and compound modules only");
     }
@@ -637,7 +637,7 @@ void NED1Generator::doModuleGates(GatesElement *node, const char *indent)
         if (childTag==NED_COMMENT)
             ; // ignore whitespace
         else if (childTag==NED_GATE)
-            doModuleGate((GateElement *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_GATE)==NULL, NULL);
+            doModuleGate((GateElement *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_GATE)==nullptr, nullptr);
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
@@ -654,7 +654,7 @@ void NED1Generator::doSubmoduleGatesizes(GatesElement *node, const char *indent)
         if (childTag==NED_COMMENT)
             ; //ignore
         else if (childTag==NED_GATE)
-            doGatesize((GateElement *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_GATE)==NULL, NULL);
+            doGatesize((GateElement *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_GATE)==nullptr, nullptr);
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
@@ -756,7 +756,7 @@ void NED1Generator::doSubmodule(SubmoduleElement *node, const char *indent, bool
 std::string NED1Generator::getDisplayStringOf(NEDElement *node, PropertyElement *&outDisplayProp)
 {
     // node must be a module, submodule or a connection-spec
-    outDisplayProp = NULL;
+    outDisplayProp = nullptr;
     ParametersElement *parameters = (ParametersElement *)node->getFirstChildWithTag(NED_PARAMETERS);
     if (!parameters)
         return "";
@@ -844,7 +844,7 @@ void NED1Generator::doConnection(ConnectionElement *node, const char *indent, bo
 
     NEDElement *condition = node->getFirstChildWithTag(NED_CONDITION);
     if (condition)
-        doCondition((ConditionElement *)condition, indent, false, NULL);
+        doCondition((ConditionElement *)condition, indent, false, nullptr);
 
     // display string
     PropertyElement *dummy;
@@ -979,7 +979,7 @@ int NED1Generator::getOperatorPrecedence(const char *op, int args)
         if (!strcmp(op,"!"))  return 13;
         if (!strcmp(op,"~"))  return 13;
     }
-    INTERNAL_ERROR1(NULL, "getOperatorPrecedence(): unknown operator '%s'", op);
+    INTERNAL_ERROR1(nullptr, "getOperatorPrecedence(): unknown operator '%s'", op);
     return -1;
 }
 
@@ -993,14 +993,14 @@ bool NED1Generator::isOperatorLeftAssoc(const char *op)
 void NED1Generator::doOperator(OperatorElement *node, const char *indent, bool islast, const char *)
 {
     NEDElement *op1 = node->getFirstChild();
-    NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
-    NEDElement *op3 = op2 ? op2->getNextSibling() : NULL;
+    NEDElement *op2 = op1 ? op1->getNextSibling() : nullptr;
+    NEDElement *op3 = op2 ? op2->getNextSibling() : nullptr;
 
     if (!op2)
     {
         // unary
         OUT << node->getName();
-        generateNedItem(op1,indent,false,NULL);
+        generateNedItem(op1,indent,false,nullptr);
     }
     else if (!op3)
     {
@@ -1024,12 +1024,12 @@ void NED1Generator::doOperator(OperatorElement *node, const char *indent, bool i
         }
 
         if (needsParen) OUT << "(";
-        generateNedItem(op1,indent,false,NULL);
+        generateNedItem(op1,indent,false,nullptr);
         if (spacious)
             OUT << " " << node->getName() << " ";
         else
             OUT << node->getName();
-        generateNedItem(op2,indent,false,NULL);
+        generateNedItem(op2,indent,false,nullptr);
         if (needsParen) OUT << ")";
     }
     else
@@ -1039,11 +1039,11 @@ void NED1Generator::doOperator(OperatorElement *node, const char *indent, bool i
         bool spacious = true; // TBD can be refined
 
         if (needsParen) OUT << "(";
-        generateNedItem(op1,indent,false,NULL);
+        generateNedItem(op1,indent,false,nullptr);
         OUT << (spacious ? " ? " : "?");
-        generateNedItem(op2,indent,false,NULL);
+        generateNedItem(op2,indent,false,nullptr);
         OUT << (spacious ? " : " : ":");
-        generateNedItem(op3,indent,false,NULL);
+        generateNedItem(op3,indent,false,nullptr);
         if (needsParen) OUT << ")";
     }
 }
@@ -1060,7 +1060,7 @@ void NED1Generator::doFunction(FunctionElement *node, const char *indent, bool i
     {
         if (child != node->getFirstChild())
             OUT << ", ";
-        generateNedItem(child, indent, false, NULL);
+        generateNedItem(child, indent, false, nullptr);
     }
     OUT << ")";
 }

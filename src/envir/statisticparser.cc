@@ -181,7 +181,7 @@ SignalSource StatisticSourceParser::parse(cComponent *component, const char *sta
         // install it, and replace top 'len' elements with a SignalSourceReference
         // on the stack.
         // if top 'len' elements contain more than one signalsource/filterorrecorder elements --> throw error (not supported for now)
-        SignalSource signalSource = createFilter(NULL, stack, len);
+        SignalSource signalSource = createFilter(nullptr, stack, len);
         stack.erase(stack.end()-len, stack.end());
         stack.push_back(Expression::Elem());
         stack.back() = new SignalSourceReference(signalSource);
@@ -206,7 +206,7 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
     // count SignalSourceReferences (nested filter) - there must be exactly one;
     // i.e. the expression may refer to exactly one signal only
     int numSignalRefs = 0;
-    SignalSourceReference *signalSourceReference = NULL;
+    SignalSourceReference *signalSourceReference = nullptr;
     for (int i = stackSize-len; i < stackSize; i++)
     {
         const Expression::Elem& e = stack[i];
@@ -216,14 +216,14 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
     }
 
     // Note: filterRef==NULL is also valid input, need to be prepared for it!
-    cResultFilter *filter = NULL;
+    cResultFilter *filter = nullptr;
     if (filterRef)
     {
         const char *filterName = filterRef->getName();
         filter = cResultFilterDescriptor::get(filterName)->create();
     }
 
-    SignalSource result(NULL);
+    SignalSource result(nullptr);
 
     if (argLen == 1)
     {
@@ -263,7 +263,7 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
                 }
                 else if (numSignalRefs == 1) {
                     signalSource.subscribe(exprFilter);
-                    v[i] = exprFilter->makeValueVariable(index, NULL);
+                    v[i] = exprFilter->makeValueVariable(index, nullptr);
                 }
                 else {
                     IdentityFilter *identityFilter = new IdentityFilter();
@@ -369,7 +369,7 @@ void StatisticRecorderParser::parse(const SignalSource& source, const char *reco
         // install it, and replace top 'len' elements with a SignalSourceReference
         // on the stack.
         // if top 'len' elements contain more than one signalsource/filterorrecorder elements --> throw error (not supported for now)
-        SignalSource signalSource = createFilterOrRecorder(NULL, true, stack, len, source, component, statisticName, recordingMode, attrsProperty);
+        SignalSource signalSource = createFilterOrRecorder(nullptr, true, stack, len, source, component, statisticName, recordingMode, attrsProperty);
         stack.erase(stack.end()-len, stack.end());
         stack.push_back(Expression::Elem());
         stack.back() = new SignalSourceReference(signalSource);
@@ -396,7 +396,7 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
 
     // count embedded signal references, unless filter is arg-less (i.e. it has an
     // implicit source arg, like "record=timeavg" which means "record=timeavg($source)")
-    SignalSourceReference *signalSourceReference = NULL;
+    SignalSourceReference *signalSourceReference = nullptr;
     if (!filterOrRecorderRef || filterOrRecorderRef->getNumArgs()>0)
     {
         // count SignalSourceReferences (nested filter) - there must be exactly one;
@@ -421,7 +421,7 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
     }
 
     // Note: filterOrRecorderRef==NULL is also valid input, need to be prepared for it!
-    cResultListener *filterOrRecorder = NULL;
+    cResultListener *filterOrRecorder = nullptr;
     if (filterOrRecorderRef)
     {
         const char *name = filterOrRecorderRef->getName();
@@ -434,7 +434,7 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
             filterOrRecorder = cResultFilterDescriptor::get(name)->create();
     }
 
-    SignalSource result(NULL);
+    SignalSource result(nullptr);
 
     if (argLen <= 1)
     {

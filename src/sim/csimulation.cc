@@ -77,8 +77,8 @@ class SIM_API cEndSimulationEvent : public cEvent, public noncopyable
             setArrivalTime(simTimeLimit);
             setSchedulingPriority(SHRT_MAX);  // lowest priority
         }
-        virtual cEvent *dup() const {copyNotSupported(); return NULL;}
-        virtual cObject *getTargetObject() const {return NULL;}
+        virtual cEvent *dup() const {copyNotSupported(); return nullptr;}
+        virtual cObject *getTargetObject() const {return nullptr;}
         virtual void execute() {throw cTerminationException(E_SIMTIME);}
 };
 
@@ -88,14 +88,14 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
 
     envir = env;
 
-    currentActivityModule = NULL;
-    contextComponent = NULL;
+    currentActivityModule = nullptr;
+    contextComponent = nullptr;
 
     simulationStage = CTX_NONE;
     contextType = CTX_NONE;
 
-    systemModule = NULL;
-    scheduler = NULL;
+    systemModule = nullptr;
+    scheduler = nullptr;
 
     delta = 32;
     size = 0;
@@ -103,10 +103,10 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
 #ifdef USE_OMNETPP4x_FINGERPRINTS
     lastVersion4ModuleId = 0;
 #endif
-    componentv = NULL;
+    componentv = nullptr;
 
-    networkType = NULL;
-    hasher = NULL;
+    networkType = nullptr;
+    hasher = nullptr;
 
     currentSimtime = SIMTIME_ZERO;
     currentEventNumber = 0;
@@ -136,7 +136,7 @@ cSimulation::~cSimulation()
 void cSimulation::setActiveSimulation(cSimulation *sim)
 {
     activeSimulation = sim;
-    activeEnvir = sim==NULL ? staticEnvir : sim->envir;
+    activeEnvir = sim==nullptr ? staticEnvir : sim->envir;
 }
 
 void cSimulation::setStaticEnvir(cEnvir *env)
@@ -148,7 +148,7 @@ void cSimulation::setStaticEnvir(cEnvir *env)
 
 void cSimulation::forEachChild(cVisitor *v)
 {
-    if (systemModule!=NULL)
+    if (systemModule!=nullptr)
         v->visit(systemModule);
     v->visit(&msgQueue);
 }
@@ -315,7 +315,7 @@ int cSimulation::registerComponent(cComponent *component)
         // vector full, grow by delta
         cComponent **v = new cComponent *[size+delta];
         memcpy(v, componentv, sizeof(cComponent*)*size );
-        for (int i=size; i<size+delta; i++) v[i]=NULL;
+        for (int i=size; i<size+delta; i++) v[i]=nullptr;
         delete [] componentv;
         componentv = v;
         size += delta;
@@ -335,12 +335,12 @@ void cSimulation::deregisterComponent(cComponent *component)
 {
     int id = component->componentId;
     component->componentId = -1;
-    componentv[id] = NULL;
+    componentv[id] = nullptr;
 
     if (component==systemModule)
     {
         drop(systemModule);
-        systemModule = NULL;
+        systemModule = nullptr;
     }
 }
 
@@ -354,7 +354,7 @@ cModule *cSimulation::getModuleByPath(const char *path) const
 {
     cModule *modp = getSystemModule();
     if (!modp || !path || !path[0] || path[0] == '.' || path[0] == '^')
-        return NULL;
+        return nullptr;
     return modp->getModuleByPath(path);
 }
 
@@ -385,7 +385,7 @@ void cSimulation::setupNetwork(cModuleType *network)
         // set up the network by instantiating the toplevel module
         cContextTypeSwitcher tmp(CTX_BUILD);
         getEnvir()->notifyLifecycleListeners(LF_PRE_NETWORK_SETUP);
-        cModule *mod = networkType->create(networkType->getName(), NULL);
+        cModule *mod = networkType->create(networkType->getName(), nullptr);
         mod->finalizeParameters();
         mod->buildInside();
         getEnvir()->notifyLifecycleListeners(LF_POST_NETWORK_SETUP);
@@ -462,7 +462,7 @@ void cSimulation::deleteNetwork()
     if (cSimulation::getActiveSimulation() != this)
         throw cRuntimeError("cSimulation: cannot invoke deleteNetwork() on an instance that is not the active one (see cSimulation::getActiveSimulation())"); // because cModule::deleteModule() would crash
 
-    if (getContextModule()!=NULL)
+    if (getContextModule()!=nullptr)
         throw cRuntimeError("Attempt to delete network during simulation");
 
     simulationStage = CTX_CLEANUP;
@@ -474,18 +474,18 @@ void cSimulation::deleteNetwork()
 
     // make sure it was successful
     for (int i=1; i<size; i++)
-        ASSERT(componentv[i]==NULL);
+        ASSERT(componentv[i]==nullptr);
 
     // and clean up
     delete [] componentv;
-    componentv = NULL;
+    componentv = nullptr;
     size = 0;
     lastComponentId = 0;
 #ifdef USE_OMNETPP4x_FINGERPRINTS
     lastVersion4ModuleId = 0;
 #endif
 
-    networkType = NULL;
+    networkType = nullptr;
 
     //FIXME todo delete cParImpl caches too (cParImplCache, cParImplCache2)
     cModule::clearNamePools();
@@ -510,7 +510,7 @@ cEvent *cSimulation::takeNextEvent()
     // the scheduler just returns msgQueue->peekFirst().
     cEvent *event = scheduler->takeNextEvent();
     if (!event)
-        return NULL;
+        return nullptr;
 
     ASSERT(!event->isStale()); // it's the scheduler's task to discard stale events
 
@@ -533,7 +533,7 @@ cEvent *cSimulation::guessNextEvent()
 simtime_t cSimulation::guessNextSimtime()
 {
     cEvent *event = guessNextEvent();
-    return event==NULL ? -1 : event->getArrivalTime();
+    return event==nullptr ? -1 : event->getArrivalTime();
 }
 
 cSimpleModule *cSimulation::guessNextModule()
@@ -541,15 +541,15 @@ cSimpleModule *cSimulation::guessNextModule()
     cEvent *event = guessNextEvent();
     cMessage *msg = dynamic_cast<cMessage *>(event);
     if (!msg)
-        return NULL;
+        return nullptr;
 
     // check that destination module still exists and hasn't terminated yet
     if (msg->getArrivalModuleId()==-1)
-        return NULL;
+        return nullptr;
     cComponent *component = componentv[msg->getArrivalModuleId()];
     cSimpleModule *module = dynamic_cast<cSimpleModule *>(component);
     if (!module || module->isTerminated())
-        return NULL;
+        return nullptr;
     return module;
 }
 
@@ -559,7 +559,7 @@ void cSimulation::transferTo(cSimpleModule *module)
         throw cRuntimeError("transferTo(): attempt to transfer to NULL");
 
     // switch to activity() of the simple module
-    exception = NULL;
+    exception = nullptr;
     currentActivityModule = module;
     cCoroutine::switchTo(module->coroutine);
 
@@ -573,7 +573,7 @@ void cSimulation::transferTo(cSimpleModule *module)
     if (exception)
     {
         cException *e = exception;
-        exception = NULL;
+        exception = nullptr;
 
         // ok, so we have an exception *pointer*, but we have to throw further
         // by *value*, and possibly without leaking it. Hence the following magic...
@@ -620,7 +620,7 @@ void cSimulation::executeEvent(cEvent *event)
     // sent out again
     event->setPreviousEventNumber(currentEventNumber);
 
-    cSimpleModule *module = NULL;
+    cSimpleModule *module = nullptr;
     try
     {
         if (event->isMessage())
@@ -716,9 +716,9 @@ void cSimulation::doMessageEvent(cMessage *msg, cSimpleModule *module)
 
 void cSimulation::transferToMain()
 {
-    if (currentActivityModule!=NULL)
+    if (currentActivityModule!=nullptr)
     {
-        currentActivityModule = NULL;
+        currentActivityModule = nullptr;
         cCoroutine::switchToMain();     // stack switch
     }
 }
@@ -733,7 +733,7 @@ cModule *cSimulation::getContextModule() const
 {
     // cannot go inline (upward cast would require including cmodule.h in csimulation.h)
     if (!contextComponent || !contextComponent->isModule())
-        return NULL;
+        return nullptr;
     return (cModule *)contextComponent;
 }
 
@@ -741,7 +741,7 @@ cSimpleModule *cSimulation::getContextSimpleModule() const
 {
     // cannot go inline (upward cast would require including cmodule.h in csimulation.h)
     if (!contextComponent || !contextComponent->isModule() || !((cModule *)contextComponent)->isSimple())
-        return NULL;
+        return nullptr;
     return (cSimpleModule *)contextComponent;
 }
 
@@ -803,7 +803,7 @@ class StaticEnv : public cEnvir
     // eventlog callback interface
     virtual void objectDeleted(cObject *object) {}
     virtual void simulationEvent(cEvent *event)  {}
-    virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=NULL)  {}
+    virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=nullptr)  {}
     virtual void messageScheduled(cMessage *msg)  {}
     virtual void messageCancelled(cMessage *msg)  {}
     virtual void beginSend(cMessage *msg)  {}
@@ -831,45 +831,45 @@ class StaticEnv : public cEnvir
     virtual void configure(cComponent *component) {}
     virtual void readParameter(cPar *parameter)  {unsupported();}
     virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index)  {return true;}
-    virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath=NULL)  {unsupported(); return NULL;}
-    virtual cXMLElement *getParsedXMLString(const char *content, const char *xpath=NULL)  {unsupported(); return NULL;}
+    virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath=nullptr)  {unsupported(); return NULL;}
+    virtual cXMLElement *getParsedXMLString(const char *content, const char *xpath=nullptr)  {unsupported(); return NULL;}
     virtual void forgetXMLDocument(const char *filename) {}
     virtual void forgetParsedXMLString(const char *content) {}
     virtual void flushXMLDocumentCache() {}
     virtual void flushXMLParsedContentCache() {}
     virtual unsigned getExtraStackForEnvir() const  {return 0;}
-    virtual cConfiguration *getConfig()  {unsupported(); return NULL;}
+    virtual cConfiguration *getConfig()  {unsupported(); return nullptr;}
     virtual bool isGUI() const  {return false;}
 
     // UI functions (see also protected ones)
     virtual void bubble(cComponent *component, const char *text)  {}
-    virtual std::string gets(const char *prompt, const char *defaultreply=NULL)  {unsupported(); return "";}
+    virtual std::string gets(const char *prompt, const char *defaultreply=nullptr)  {unsupported(); return "";}
     virtual cEnvir& flush()  {::fflush(stdout); return *this;}
 
     // RNGs
     virtual int getNumRNGs() const {return 0;}
-    virtual cRNG *getRNG(int k)  {unsupported(); return NULL;}
-    virtual void getRNGMappingFor(cComponent *component)  {component->setRNGMap(0,NULL);}
+    virtual cRNG *getRNG(int k)  {unsupported(); return nullptr;}
+    virtual void getRNGMappingFor(cComponent *component)  {component->setRNGMap(0,nullptr);}
 
     // output vectors
-    virtual void *registerOutputVector(const char *modulename, const char *vectorname)  {return NULL;}
+    virtual void *registerOutputVector(const char *modulename, const char *vectorname)  {return nullptr;}
     virtual void deregisterOutputVector(void *vechandle)  {}
     virtual void setVectorAttribute(void *vechandle, const char *name, const char *value)  {}
     virtual bool recordInOutputVector(void *vechandle, simtime_t t, double value)  {return false;}
 
     // output scalars
-    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL)  {}
-    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL)  {}
+    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr)  {}
+    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr)  {}
 
     virtual void addResultRecorders(cComponent *component, simsignal_t signal, const char *statisticName, cProperty *statisticTemplateProperty) {}
 
     // snapshot file
-    virtual std::ostream *getStreamForSnapshot()  {unsupported(); return NULL;}
+    virtual std::ostream *getStreamForSnapshot()  {unsupported(); return nullptr;}
     virtual void releaseStreamForSnapshot(std::ostream *os)  {unsupported();}
 
     // misc
     virtual int getArgCount() const  {unsupported(); return 0;}
-    virtual char **getArgVector() const  {unsupported(); return NULL;}
+    virtual char **getArgVector() const  {unsupported(); return nullptr;}
     virtual int getParsimProcId() const {return 0;}
     virtual int getParsimNumPartitions() const {return 1;}
     virtual unsigned long getUniqueNumber()  {unsupported(); return 0;}
@@ -897,6 +897,6 @@ static StaticEnv staticEnv;
 cEnvir *cSimulation::activeEnvir = &staticEnv;
 cEnvir *cSimulation::staticEnvir = &staticEnv;
 
-cSimulation *cSimulation::activeSimulation = NULL;
+cSimulation *cSimulation::activeSimulation = nullptr;
 
 NAMESPACE_END

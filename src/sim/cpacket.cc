@@ -36,7 +36,7 @@ Register_Class(cPacket);
 
 cPacket::cPacket(const cPacket& pkt) : cMessage(pkt)
 {
-    encapsulatedPacket = NULL;
+    encapsulatedPacket = nullptr;
     shareCount = 0;
     copy(pkt);
 }
@@ -44,7 +44,7 @@ cPacket::cPacket(const cPacket& pkt) : cMessage(pkt)
 cPacket::cPacket(const char *name, short k, int64_t l) : cMessage(name, k)
 {
     bitLength = l;
-    encapsulatedPacket = NULL;
+    encapsulatedPacket = nullptr;
     duration = 0;
     shareCount = 0;
 }
@@ -134,7 +134,7 @@ void cPacket::parsimPack(cCommBuffer *buffer) const
     cMessage::parsimPack(buffer);
     buffer->pack(bitLength);
     buffer->pack(duration);
-    if (buffer->packFlag(encapsulatedPacket!=NULL))
+    if (buffer->packFlag(encapsulatedPacket!=nullptr))
         buffer->packObject(encapsulatedPacket);
 #endif
 }
@@ -198,13 +198,13 @@ void cPacket::_deleteEncapMsg()
     {
         encapsulatedPacket->shareCount--;
         if (encapsulatedPacket->owner == this)
-            encapsulatedPacket->owner = NULL;
+            encapsulatedPacket->owner = nullptr;
     }
     else
     {
         // note: dropAndDelete(encapmsg) cannot be used, because due to sharecounting
         // ownerp is not valid (may be any former owner, possibly deleted since then)
-        encapsulatedPacket->owner = NULL;
+        encapsulatedPacket->owner = nullptr;
         delete encapsulatedPacket;
     }
 }
@@ -218,7 +218,7 @@ void cPacket::_detachEncapMsg()
         // "de-share" object - create our own copy
         encapsulatedPacket->shareCount--;
         if (encapsulatedPacket->owner == this)
-            encapsulatedPacket->owner = NULL;
+            encapsulatedPacket->owner = nullptr;
         take(encapsulatedPacket = (cPacket *)encapsulatedPacket->dup());
     }
     else
@@ -265,7 +265,7 @@ void cPacket::encapsulate(cPacket *msg)
 cPacket *cPacket::decapsulate()
 {
     if (!encapsulatedPacket)
-        return NULL;
+        return nullptr;
     if (bitLength>0)
         bitLength -= encapsulatedPacket->bitLength;
     if (bitLength<0)
@@ -276,15 +276,15 @@ cPacket *cPacket::decapsulate()
     {
         encapsulatedPacket->shareCount--;
         if (encapsulatedPacket->owner == this)
-            encapsulatedPacket->owner = NULL;
+            encapsulatedPacket->owner = nullptr;
         cPacket *msg = encapsulatedPacket->dup();
-        encapsulatedPacket = NULL;
+        encapsulatedPacket = nullptr;
         return msg;
     }
     encapsulatedPacket->owner = this;
 #endif
     cPacket *msg = encapsulatedPacket;
-    encapsulatedPacket = NULL;
+    encapsulatedPacket = nullptr;
     if (msg) drop(msg);
     return msg;
 }
@@ -305,7 +305,7 @@ cPacket *cPacket::getEncapsulatedPacket() const
 
 bool cPacket::hasEncapsulatedPacket() const
 {
-    return encapsulatedPacket != NULL;
+    return encapsulatedPacket != nullptr;
 }
 
 long cPacket::getEncapsulationId() const

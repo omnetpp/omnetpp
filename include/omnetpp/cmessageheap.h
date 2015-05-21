@@ -68,7 +68,7 @@ class SIM_API cMessageHeap : public cOwnedObject
          * Returns the current object, then moves the iterator to the next item.
          * If the iterator has reached the end of the list, NULL is returned.
          */
-        cEvent *operator++(int)  {return end() ? NULL : q->peek(pos++);}
+        cEvent *operator++(int)  {return end() ? nullptr : q->peek(pos++);}
 
         /**
          * Returns true if the iterator has reached the end of the list.
@@ -112,7 +112,7 @@ class SIM_API cMessageHeap : public cOwnedObject
     /**
      * Constructor.
      */
-    cMessageHeap(const char *name=NULL, int size=128);
+    cMessageHeap(const char *name=nullptr, int size=128);
 
     /**
      * Destructor.

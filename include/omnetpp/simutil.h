@@ -225,7 +225,7 @@ inline int opp_strlen(const char *s)
 
 inline char *opp_strdup(const char *s)
 {
-    if (!s || !s[0]) return NULL;
+    if (!s || !s[0]) return nullptr;
     char *p = new char[strlen(s)+1];
     strcpy(p,s);
     return p;
@@ -233,7 +233,7 @@ inline char *opp_strdup(const char *s)
 
 inline char *opp_strdup(const char *s, int len)
 {
-    if (!s || !s[0]) return NULL;
+    if (!s || !s[0]) return nullptr;
     char *p = new char[len+1];
     strncpy(p,s,len);
     p[len] = 0;

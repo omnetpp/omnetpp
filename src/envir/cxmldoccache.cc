@@ -70,7 +70,7 @@ class cXMLSAXHandler : public SAXHandler
 
 cXMLSAXHandler::cXMLSAXHandler(const char *fname)
 {
-    root = current = new cXMLElement("/", "", NULL); // "Document node" (used as sort of a sentry)
+    root = current = new cXMLElement("/", "", nullptr); // "Document node" (used as sort of a sentry)
     sourcefilename = fname;
 }
 
@@ -82,7 +82,7 @@ cXMLSAXHandler::~cXMLSAXHandler()
 cXMLElement *cXMLSAXHandler::getTree()
 {
     cXMLElement *tree = root;
-    root = current = new cXMLElement("/", "", NULL);
+    root = current = new cXMLElement("/", "", nullptr);
     return tree;
 }
 

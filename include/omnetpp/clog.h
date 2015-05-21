@@ -152,10 +152,10 @@ class SIM_API cLogLevel
 
 
 // Returns NULL. Helper function for the logging macros.
-inline void *getThisPtr() {return NULL;}
+inline void *getThisPtr() {return nullptr;}
 
 // Returns NULL. Helper function for the logging macros.
-inline const char *getClassName() {return NULL;}
+inline const char *getClassName() {return nullptr;}
 
 /**
  * Use this macro when logging from static member functions.
@@ -277,7 +277,7 @@ class SIM_API cLogProxy
     // act likes /dev/null
     class nullstream : public std::ostream {
       public:
-        nullstream() : std::ostream(0) {}  // results in rdbuf==0 and badbit==true
+        nullstream() : std::ostream(nullptr) {}  // results in rdbuf==0 and badbit==true
     };
 
   public:

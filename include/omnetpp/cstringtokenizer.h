@@ -72,7 +72,7 @@ class SIM_API cStringTokenizer
      * and of the delimiters string. The delimiters default to all whitespace
      * characters (space, tab, CR, LF, FF).
      */
-    cStringTokenizer(const char *str, const char *delimiters=NULL);
+    cStringTokenizer(const char *str, const char *delimiters=nullptr);
 
     /**
      * Copy constructor. It copies the current state of the tokenizer

@@ -139,7 +139,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
         /**
          * Reinitializes the iterator.
          */
-        void init(const cModule *m)  {p = m ? const_cast<cModule *>(m->firstSubmodule) : NULL;}
+        void init(const cModule *m)  {p = m ? const_cast<cModule *>(m->firstSubmodule) : nullptr;}
 
         /**
          * Returns pointer to the current module. The pointer then
@@ -151,14 +151,14 @@ class SIM_API cModule : public cComponent //implies noncopyable
         /**
          * Returns true if the iterator reached the end of the list.
          */
-        bool end() const  {return (bool)(p==NULL);}
+        bool end() const  {return (bool)(p==nullptr);}
 
         /**
          * Returns the current module, then moves the iterator to the
          * next module. Returns NULL if the iterator has already reached
          * the end of the list.
          */
-        cModule *operator++(int)  {if (!p) return NULL; cModule *t=p; p=p->nextSibling; return t;}
+        cModule *operator++(int)  {if (!p) return nullptr; cModule *t=p; p=p->nextSibling; return t;}
     };
 
     /**
@@ -187,7 +187,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
          * Returns the current object, or NULL if the iterator is not
          * at a valid position.
          */
-        cChannel *operator()() const {return k < (int)channels.size() ? channels[k] : NULL;}
+        cChannel *operator()() const {return k < (int)channels.size() ? channels[k] : nullptr;}
 
         /**
          * Returns true if the iterator has reached the end.
@@ -200,7 +200,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
          * init() again to restart iterating. If modules, gates or channels
          * are added or removed during iteration, the behaviour is undefined.
          */
-        cChannel *operator++(int) {return end() ? NULL : channels[k++];}
+        cChannel *operator++(int) {return end() ? nullptr : channels[k++];}
     };
 
   private:
@@ -523,7 +523,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Returns true if the module has submodules, and false otherwise.
      * To enumerate the submodules use SubmoduleIterator.
      */
-    bool hasSubmodules() const {return firstSubmodule!=NULL;}
+    bool hasSubmodules() const {return firstSubmodule!=nullptr;}
 
     /**
      * Finds a direct submodule with the given name and index, and returns

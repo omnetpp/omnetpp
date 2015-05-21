@@ -32,7 +32,7 @@ class OutputVectorInspectorFactory : public InspectorFactory
   public:
     OutputVectorInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) {return dynamic_cast<cOutVector *>(obj)!=NULL;}
+    bool supportsObject(cObject *obj) {return dynamic_cast<cOutVector *>(obj)!=nullptr;}
     int getInspectorType() {return INSP_GRAPHICAL;}
     double getQualityAsDefault(cObject *object) {return 3.0;}
     Inspector *createInspector() {return new OutputVectorInspector(this);}
@@ -83,14 +83,14 @@ OutputVectorInspector::~OutputVectorInspector()
 {
    // cancel installed callback in inspected outvector
    cOutVector *ov = static_cast<cOutVector *>(object);
-   ov->setCallback(NULL, NULL);
+   ov->setCallback(nullptr, nullptr);
 }
 
 void OutputVectorInspector::doSetObject(cObject *obj)
 {
     if (object) {
         cOutVector *ov = static_cast<cOutVector *>(object);
-        ov->setCallback(NULL, NULL);
+        ov->setCallback(nullptr, nullptr);
     }
 
     Inspector::doSetObject(obj);
@@ -322,7 +322,7 @@ void OutputVectorInspector::refresh()
 }
 
 static const char *drawingmodes[] = {
-      "dots", "bars", "pins", "sample-hold", "lines", NULL
+      "dots", "bars", "pins", "sample-hold", "lines", nullptr
 };
 
 void OutputVectorInspector::generalInfo( char *buf )

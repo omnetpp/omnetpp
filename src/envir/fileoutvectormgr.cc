@@ -46,7 +46,7 @@ Register_PerRunConfigOption(CFGID_OUTPUT_VECTOR_PRECISION, "output-vector-precis
 
 Register_PerObjectConfigOption(CFGID_VECTOR_RECORDING, "vector-recording", KIND_VECTOR, CFG_BOOL, "true", "Whether data written into an output vector should be recorded.");
 Register_PerObjectConfigOption(CFGID_VECTOR_RECORD_EVENTNUMBERS, "vector-record-eventnumbers", KIND_VECTOR, CFG_BOOL, "true", "Whether to record event numbers for an output vector. Simulation time and value are always recorded. Event numbers are needed by the Sequence Chart Tool, for example.");
-Register_PerObjectConfigOption(CFGID_VECTOR_RECORDING_INTERVALS, "vector-recording-intervals", KIND_VECTOR, CFG_CUSTOM, NULL, "Recording interval(s) for an output vector. Syntax: [<from>]..[<to>],... That is, both start and end of an interval are optional, and intervals are separated by comma. Example: ..100, 200..400, 900..");
+Register_PerObjectConfigOption(CFGID_VECTOR_RECORDING_INTERVALS, "vector-recording-intervals", KIND_VECTOR, CFG_CUSTOM, nullptr, "Recording interval(s) for an output vector. Syntax: [<from>]..[<to>],... That is, both start and end of an interval are optional, and intervals are separated by comma. Example: ..100, 200..400, 900..");
 
 #ifdef CHECK
 #undef CHECK
@@ -57,7 +57,7 @@ Register_PerObjectConfigOption(CFGID_VECTOR_RECORDING_INTERVALS, "vector-recordi
 cFileOutputVectorManager::cFileOutputVectorManager()
 {
     nextid = 0;
-    f = NULL;
+    f = nullptr;
     prec = getEnvir()->getConfig()->getAsInt(CFGID_OUTPUT_VECTOR_PRECISION);
 }
 
@@ -70,7 +70,7 @@ void cFileOutputVectorManager::openFile()
 {
     mkPath(directoryOf(fname.c_str()).c_str());
     f = fopen(fname.c_str(),"a");
-    if (f==NULL)
+    if (f==nullptr)
         throw cRuntimeError("Cannot open output vector file `%s'",fname.c_str());
 }
 
@@ -79,7 +79,7 @@ void cFileOutputVectorManager::closeFile()
     if (f)
     {
         fclose(f);
-        f = NULL;
+        f = nullptr;
     }
 }
 
@@ -162,14 +162,14 @@ cFileOutputVectorManager::VectorData *cFileOutputVectorManager::createVectorData
 
 void cFileOutputVectorManager::deregisterVector(void *vectorhandle)
 {
-    ASSERT(vectorhandle!=NULL);
+    ASSERT(vectorhandle!=nullptr);
     VectorData *vp = (VectorData *)vectorhandle;
     delete vp;
 }
 
 void cFileOutputVectorManager::setVectorAttribute(void *vectorhandle, const char *name, const char *value)
 {
-    ASSERT(vectorhandle!=NULL);
+    ASSERT(vectorhandle!=nullptr);
     VectorData *vp = (VectorData *)vectorhandle;
     vp->attributes[name] = value;
 }
@@ -178,7 +178,7 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
 {
     static char buff[64];
 
-    ASSERT(vectorhandle!=NULL);
+    ASSERT(vectorhandle!=nullptr);
     VectorData *vp = (VectorData *)vectorhandle;
 
     if (!vp->enabled)
@@ -189,7 +189,7 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
         if (!vp->initialized)
             initVector(vp);
 
-        assert(f!=NULL);
+        assert(f!=nullptr);
         if (vp->recordEventNumbers)
         {
             CHECK(fprintf(f,"%d\t%" LL "d\t%s\t%.*g\n", vp->id, getSimulation()->getEventNumber(), SIMTIME_TTOA(buff, t), prec, value));

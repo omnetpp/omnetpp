@@ -141,7 +141,7 @@ Node *CompoundFilterType::create(DataflowManager *mgr, StringMap& attrs) const
         mgr->addNode(subnode);
         node->first = node->last = subnode;
     }
-    Node *prevsubnode = NULL;
+    Node *prevsubnode = nullptr;
     for (int i=0; i<n; i++)
     {
         Subfilter& subfilt = const_cast<CompoundFilterType *>(this)->getSubfilter(i);
@@ -193,7 +193,7 @@ Port *CompoundFilterType::getPort(Node *node, const char *name) const
     CompoundFilter *compound = dynamic_cast<CompoundFilter *>(node);
     Node *subnode = !strcmp(name,"in") ? compound->getFirstNode() :
                     !strcmp(name,"out") ? compound->getLastNode() :
-                    NULL;
+                    nullptr;
     if (!subnode)
         throw opp_runtime_error("no such port `%s'", name);
     return subnode->getNodeType()->getPort(subnode, name);

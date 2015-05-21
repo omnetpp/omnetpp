@@ -44,7 +44,7 @@ void MergerNode::process()
     // must maintain increasing time order in output, so:
     // always read from the port with smallest time value coming --
     // if port has reached EOF, skip it
-    Port *minPort = NULL;
+    Port *minPort = nullptr;
     const Datum *minDatum;
     for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
     {
@@ -176,7 +176,7 @@ bool AggregatorNode::isReady() const
 
 void AggregatorNode::process()
 {
-    const Datum *minDatum = NULL;
+    const Datum *minDatum = nullptr;
     for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
     {
         Channel *chan = (*it)();

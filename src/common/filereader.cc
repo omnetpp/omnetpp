@@ -51,16 +51,16 @@ FileReader::FileReader(const char *fileName, size_t bufferSize)
 	TRACE_CALL("FileReader::FileReader(%s, %d)", fileName, bufferSize);
 #endif
 	lastSavedSize = -1;
-    file = NULL;
+    file = nullptr;
     fileSize = -1;
     bufferFileOffset = -1;
     enableCheckFileForChanges = true;
     enableIgnoreAppendChanges = true;
     numReadLines = 0;
     numReadBytes = 0;
-    dataBegin = NULL;
-    dataEnd = NULL;
-    currentDataPointer = NULL;
+    dataBegin = nullptr;
+    dataEnd = nullptr;
+    currentDataPointer = nullptr;
     currentLineStartOffset = -1;
     currentLineEndOffset = -1;
 }
@@ -115,7 +115,7 @@ void FileReader::ensureFileClosed()
 {
     if (file) {
         fclose(file);
-        file = NULL;
+        file = nullptr;
     }
 }
 
@@ -148,7 +148,7 @@ FileReader::FileChangedState FileReader::checkFileForChanges()
         int readBytes =
 #endif
             readFileEnd((void *)bufferBegin);
-        dataBegin = dataEnd = NULL;
+        dataBegin = dataEnd = nullptr;
         FileChangedState change;
         if (newFileSize > fileSize && !memcmp(bufferBegin, lastSavedBufferBegin, lastSavedSize))
             change = APPENDED;
@@ -336,7 +336,7 @@ char *FileReader::findNextLineStart(char *start, bool bufferFilled)
         if (s != start && isLineStart(s)) // line just ends at the end of data buffer
             ; // void
         else if (fileOffset == getFileSize()) // searching from the end of the file
-            return NULL;
+            return nullptr;
         else if (!bufferFilled) { // refill buffer
             seekTo(fileOffset, maxLineSize);
 
@@ -348,7 +348,7 @@ char *FileReader::findNextLineStart(char *start, bool bufferFilled)
             s = findNextLineStart(fileOffsetToPointer(fileOffset), true);
         }
         else if (getDataEndFileOffset() == getFileSize()) // searching reached to the end of the file without CR/LF
-            return NULL;
+            return nullptr;
         else // line too long
             throw opp_runtime_error("Line too long, should be below %d in file `%s'", maxLineSize, fileName.c_str());
     }
@@ -392,7 +392,7 @@ char *FileReader::findPreviousLineStart(char *start, bool bufferFilled)
         if (s != start && isLineStart(s)) // line starts at the beginning of the data buffer
             ; // void
         else if (fileOffset == 0) // searching from the beginning of the file
-            return NULL;
+            return nullptr;
         else if (!bufferFilled) { // refill buffer
             seekTo(fileOffset, maxLineSize);
 
@@ -439,7 +439,7 @@ char *FileReader::getNextLineBufferPointer()
         else {
             currentLineStartOffset = currentLineEndOffset = -1;
 
-            return NULL;
+            return nullptr;
         }
     }
 
@@ -461,7 +461,7 @@ char *FileReader::getNextLineBufferPointer()
     }
     else {
         currentLineStartOffset = currentLineEndOffset = -1;
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -488,7 +488,7 @@ char *FileReader::getPreviousLineBufferPointer()
         else {
             currentLineStartOffset = currentLineEndOffset = -1;
 
-            return NULL;
+            return nullptr;
         }
     }
 
@@ -510,7 +510,7 @@ char *FileReader::getPreviousLineBufferPointer()
     }
     else {
         currentLineStartOffset = currentLineEndOffset = -1;
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -529,19 +529,19 @@ char *FileReader::getLastLineBufferPointer()
 char *FileReader::findNextLineBufferPointer(const char *search, bool caseSensitive)
 {
     char *line;
-    while ((line = getNextLineBufferPointer()) != NULL)
+    while ((line = getNextLineBufferPointer()) != nullptr)
         if (opp_strnistr(line, search, getCurrentLineLength(), caseSensitive))
             return line;
-    return NULL;
+    return nullptr;
 }
 
 char *FileReader::findPreviousLineBufferPointer(const char *search, bool caseSensitive)
 {
     char *line;
-    while ((line = getPreviousLineBufferPointer()) != NULL)
+    while ((line = getPreviousLineBufferPointer()) != nullptr)
         if (opp_strnistr(line, search, getCurrentLineLength(), caseSensitive))
             return line;
-    return NULL;
+    return nullptr;
 }
 
 int FileReader::getCurrentLineLength() const

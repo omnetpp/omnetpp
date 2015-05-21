@@ -83,7 +83,7 @@ NEDElement *getOrCreateElementWithTag(int tagcode, NEDElement *parent)
 {
     assert(parent);
     NEDElement *e = parent->getFirstChildWithTag(tagcode);
-    return e!=NULL ? e : createElementWithTag(tagcode, parent);
+    return e!=nullptr ? e : createElementWithTag(tagcode, parent);
 }
 
 void storePos(NEDElement *node, YYLTYPE pos)
@@ -128,7 +128,7 @@ PropertyElement *addComponentProperty(NEDElement *node, const char *name)
 
         // move parameters section in front of potential gates, types, etc sections
         NEDElement *prev;
-        while ((prev=params->getPrevSibling())!=NULL &&
+        while ((prev=params->getPrevSibling())!=nullptr &&
                  (prev->getTagCode()==NED_GATES || prev->getTagCode()==NED_TYPES ||
                   prev->getTagCode()==NED_SUBMODULES || prev->getTagCode()==NED_CONNECTIONS))
         {

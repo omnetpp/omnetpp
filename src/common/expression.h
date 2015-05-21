@@ -124,25 +124,25 @@ class COMMON_API Expression
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(int _i)  {type=DBL; d.d=_i; d.unit=NULL;}
+        void operator=(int _i)  {type=DBL; d.d=_i; d.unit=nullptr;}
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(short _i)  {type=DBL; d.d=_i; d.unit=NULL;}
+        void operator=(short _i)  {type=DBL; d.d=_i; d.unit=nullptr;}
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(long _l)  {type=DBL; d.d=_l; d.unit=NULL;}
+        void operator=(long _l)  {type=DBL; d.d=_l; d.unit=nullptr;}
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * to the evaluation stack.
          */
-        void operator=(double _d)  {type=DBL; d.d=_d; d.unit=NULL;}
+        void operator=(double _d)  {type=DBL; d.d=_d; d.unit=nullptr;}
 
         /**
          * Effect during evaluation of the expression: pushes the given string
@@ -202,8 +202,8 @@ class COMMON_API Expression
         Value(const char *s)  {*this=s;}
         Value(const std::string& s)  {*this=s;}
         void operator=(bool b)  {type=BOOL; bl=b;}
-        void operator=(long l)  {type=DBL; dbl=l; dblunit=NULL;}
-        void operator=(double d)  {type=DBL; dbl=d; dblunit=NULL;}
+        void operator=(long l)  {type=DBL; dbl=l; dblunit=nullptr;}
+        void operator=(double d)  {type=DBL; dbl=d; dblunit=nullptr;}
         void operator=(const char *s)  {type=STR; this->s=s?s:"";}
         void operator=(const std::string& s)  {type=STR; this->s=s;}
         void set(double d, const char *unit) {type=DBL; dbl=d; dblunit=unit;}
@@ -297,7 +297,7 @@ class COMMON_API Expression
     /**
      * Copy constructor.
      */
-    Expression(const Expression& other) {elems=NULL; copy(other);}
+    Expression(const Expression& other) {elems=nullptr; copy(other);}
 
     /**
      * Destructor.
@@ -348,13 +348,13 @@ class COMMON_API Expression
      * Evaluate the expression and convert the result to long if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual long longValue(const char *expectedUnit=NULL);
+    virtual long longValue(const char *expectedUnit=nullptr);
 
     /**
      * Evaluate the expression and convert the result to double if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual double doubleValue(const char *expectedUnit=NULL);
+    virtual double doubleValue(const char *expectedUnit=nullptr);
 
     /**
      * Evaluate the expression and convert the result to string if possible;
@@ -375,7 +375,7 @@ class COMMON_API Expression
      * is used for translating variable and function references during
      * parsing. Throws exception on parse errors.
      */
-    virtual void parse(const char *text, Resolver *resolver = NULL);
+    virtual void parse(const char *text, Resolver *resolver = nullptr);
 
     /**
      * Returns true if the expression is just a literal (or equivalent to one,

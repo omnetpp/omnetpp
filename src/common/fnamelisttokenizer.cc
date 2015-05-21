@@ -50,7 +50,7 @@ const char *FilenamesListTokenizer::nextToken()
     // skip spaces before token
     while (*s==' ' || *s=='\t') s++;
     if (!*s)
-        return NULL;
+        return nullptr;
 
     char *token;
     if (*s=='"')
@@ -81,7 +81,7 @@ std::vector<std::string> FilenamesListTokenizer::asVector()
 {
     const char *s;
     std::vector<std::string> v;
-    while ((s=nextToken())!=NULL)
+    while ((s=nextToken())!=nullptr)
         v.push_back(std::string(s));
     return v;
 }

@@ -37,7 +37,7 @@ NAMESPACE_BEGIN
 
 VectorFileWriterNode::VectorFileWriterNode(const char *fileName, const char *fileHeader)
 {
-    f = NULL;
+    f = nullptr;
     this->prec = DEFAULT_PRECISION;
     this->fileName = fileName;
     this->fileHeader = (fileHeader ? fileHeader : "");

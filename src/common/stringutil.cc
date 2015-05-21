@@ -31,7 +31,7 @@ NAMESPACE_BEGIN
 
 bool opp_isblank(const char *txt)
 {
-    if (txt!=NULL)
+    if (txt!=nullptr)
         for (const char *s = txt; *s; s++)
             if (!opp_isspace(*s))
                 return false;
@@ -628,7 +628,7 @@ double opp_atof(const char *s)
 
 std::string opp_makedatetimestring()
 {
-    time_t t = time(NULL);
+    time_t t = time(nullptr);
     struct tm tm = *localtime(&t);
     char timestr[32];
     sprintf(timestr, "%04d%02d%02d-%02d:%02d:%02d",
@@ -646,7 +646,7 @@ const char *opp_findmatchingquote(const char *s)
     for (; *s && *s!='"'; s++)
         if (*s=='\\')
             s++;
-    return *s ? s : NULL;
+    return *s ? s : nullptr;
 }
 
 const char *opp_findmatchingparen(const char *s)
@@ -666,11 +666,11 @@ const char *opp_findmatchingparen(const char *s)
         else if (*s == '"') {
             s = opp_findmatchingquote(s);
             if (!s)
-                return NULL;
+                return nullptr;
         }
         s++;
     }
-    return parens>0 ? NULL : s;
+    return parens>0 ? nullptr : s;
 }
 
 inline char hexToChar(char first, char second)
@@ -725,7 +725,7 @@ const char *opp_strnistr(const char *haystack, const char *needle, int n, bool c
     for (const char *s = haystack; slen>0 && *s; s++, slen--)
         if (!(caseSensitive ? strncmp(s, needle, needleLen) : strncasecmp(s, needle, needleLen)))
             return s;
-    return NULL;
+    return nullptr;
 }
 
 NAMESPACE_END

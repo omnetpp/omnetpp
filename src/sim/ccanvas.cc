@@ -353,29 +353,29 @@ std::string cFigure::Transform::str() const
 
 //----
 
-cFigure::Pixmap::Pixmap() : width(0), height(0), data(NULL)
+cFigure::Pixmap::Pixmap() : width(0), height(0), data(nullptr)
 {
 }
 
-cFigure::Pixmap::Pixmap(int width, int height) : width(width), height(height), data(NULL)
+cFigure::Pixmap::Pixmap(int width, int height) : width(width), height(height), data(nullptr)
 {
     allocate(width, height);
     fill(BLACK, 0);
 }
 
-cFigure::Pixmap::Pixmap(int width, int height, const RGBA& fill_) : width(width), height(height), data(NULL)
+cFigure::Pixmap::Pixmap(int width, int height, const RGBA& fill_) : width(width), height(height), data(nullptr)
 {
     allocate(width, height);
     fill(fill_);
 }
 
-cFigure::Pixmap::Pixmap(int width, int height, const Color& color, double opacity) : width(width), height(height), data(NULL)
+cFigure::Pixmap::Pixmap(int width, int height, const Color& color, double opacity) : width(width), height(height), data(nullptr)
 {
     allocate(width, height);
     fill(color, opacity);
 }
 
-cFigure::Pixmap::Pixmap(const Pixmap& other) : width(0), height(0), data(NULL)
+cFigure::Pixmap::Pixmap(const Pixmap& other) : width(0), height(0), data(nullptr)
 {
     *this = other;
 }
@@ -826,7 +826,7 @@ void cFigure::parse(cProperty *property)
     validatePropertyKeys(property);
 
     const char *s;
-    if ((s = property->getValue(PKEY_VISIBLE)) != NULL)
+    if ((s = property->getValue(PKEY_VISIBLE)) != nullptr)
         setVisible(parseBool(s));
     int numTags = property->getNumValues(PKEY_TAGS);
     if (numTags > 0) {
@@ -865,7 +865,7 @@ bool cFigure::isAllowedPropertyKey(const char *key) const
 
 const char **cFigure::getAllowedPropertyKeys() const
 {
-    static const char *keys[] = { PKEY_TYPE, PKEY_VISIBLE, PKEY_TAGS, PKEY_CHILDZ, PKEY_TRANSFORM, NULL};
+    static const char *keys[] = { PKEY_TYPE, PKEY_VISIBLE, PKEY_TAGS, PKEY_CHILDZ, PKEY_TRANSFORM, nullptr};
     return keys;
 }
 
@@ -875,7 +875,7 @@ void cFigure::concatArrays(const char **dest, const char **first, const char **s
         *dest++ = *first++;
     while (*second)
         *dest++ = *second++;
-    *dest = NULL;
+    *dest = nullptr;
 }
 
 cFigure *cFigure::dupTree() const
@@ -1040,7 +1040,7 @@ cFigure *cFigure::getFigure(const char *name) const
         if (figure->isName(name))
             return figure;
     }
-    return NULL;
+    return nullptr;
 }
 
 cFigure *cFigure::findFigureRecursively(const char *name) const
@@ -1052,7 +1052,7 @@ cFigure *cFigure::findFigureRecursively(const char *name) const
         if (figure)
             return figure;
     }
-    return NULL;
+    return nullptr;
 }
 
 cCanvas *cFigure::getCanvas() const
@@ -1062,7 +1062,7 @@ cCanvas *cFigure::getCanvas() const
 
 static char *nextToken(char *&rest)
 {
-    if (!rest) return NULL;
+    if (!rest) return nullptr;
     char *token = rest;
     rest = strchr(rest, '.');
     if (rest) *rest++ = '\0';
@@ -1073,7 +1073,7 @@ cFigure *cFigure::getRootFigure() const
 {
     cFigure *figure = const_cast<cFigure*>(this);
     cFigure *parent;
-    while ((parent = figure->getParentFigure()) != NULL)
+    while ((parent = figure->getParentFigure()) != nullptr)
         figure = parent;
     return figure;
 }
@@ -1081,11 +1081,11 @@ cFigure *cFigure::getRootFigure() const
 cFigure *cFigure::getFigureByPath(const char *path) const
 {
     if (!path || !path[0])
-        return NULL;
+        return nullptr;
 
     // determine starting point
     bool isRelative = (path[0] == '.' || path[0] == '^');
-    cFigure *rootFigure = isRelative ? NULL : getRootFigure();  // only needed when processing absolute paths
+    cFigure *rootFigure = isRelative ? nullptr : getRootFigure();  // only needed when processing absolute paths
     cFigure *figure = isRelative ? const_cast<cFigure*>(this) : rootFigure;
     if (path[0] == '.')
         path++; // skip initial dot
@@ -1121,7 +1121,7 @@ void cFigure::fire(uint8_t flags)
 {
     if ((localChanges & flags) == 0) {  // not yet set
         localChanges |= flags;
-        for (cFigure *figure = getParentFigure(); figure != NULL; figure = figure->getParentFigure())
+        for (cFigure *figure = getParentFigure(); figure != nullptr; figure = figure->getParentFigure())
             figure->subtreeChanges |= flags;
     }
 }
@@ -1239,7 +1239,7 @@ const char **cPanelFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_POS, NULL};
+        const char *localKeys[] = { PKEY_POS, nullptr};
         concatArrays(keys, cFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1286,21 +1286,21 @@ void cAbstractLineFigure::parse(cProperty *property)
 {
     cFigure::parse(property);
     const char *s;
-    if ((s = property->getValue(PKEY_LINECOLOR)) != NULL)
+    if ((s = property->getValue(PKEY_LINECOLOR)) != nullptr)
         setLineColor(parseColor(s));
-    if ((s = property->getValue(PKEY_LINESTYLE)) != NULL)
+    if ((s = property->getValue(PKEY_LINESTYLE)) != nullptr)
         setLineStyle(parseLineStyle(s));
-    if ((s = property->getValue(PKEY_LINEWIDTH)) != NULL)
+    if ((s = property->getValue(PKEY_LINEWIDTH)) != nullptr)
         setLineWidth(opp_atof(s));
-    if ((s = property->getValue(PKEY_LINEOPACITY)) != NULL)
+    if ((s = property->getValue(PKEY_LINEOPACITY)) != nullptr)
         setLineOpacity(opp_atof(s));
-    if ((s = property->getValue(PKEY_CAPSTYLE, 0)) != NULL)
+    if ((s = property->getValue(PKEY_CAPSTYLE, 0)) != nullptr)
         setCapStyle(parseCapStyle(s));
-    if ((s = property->getValue(PKEY_STARTARROWHEAD)) != NULL)
+    if ((s = property->getValue(PKEY_STARTARROWHEAD)) != nullptr)
         setStartArrowHead(parseArrowHead(s));
-    if ((s = property->getValue(PKEY_ENDARROWHEAD)) != NULL)
+    if ((s = property->getValue(PKEY_ENDARROWHEAD)) != nullptr)
         setEndArrowHead(parseArrowHead(s));
-    if ((s = property->getValue(PKEY_SCALELINEWIDTH)) != NULL)
+    if ((s = property->getValue(PKEY_SCALELINEWIDTH)) != nullptr)
         setScaleLineWidth(parseBool(s));
 }
 
@@ -1308,7 +1308,7 @@ const char **cAbstractLineFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_LINECOLOR, PKEY_LINESTYLE, PKEY_LINEWIDTH, PKEY_LINEOPACITY, PKEY_CAPSTYLE, PKEY_STARTARROWHEAD, PKEY_ENDARROWHEAD, PKEY_SCALELINEWIDTH, NULL};
+        const char *localKeys[] = { PKEY_LINECOLOR, PKEY_LINESTYLE, PKEY_LINEWIDTH, PKEY_LINEOPACITY, PKEY_CAPSTYLE, PKEY_STARTARROWHEAD, PKEY_ENDARROWHEAD, PKEY_SCALELINEWIDTH, nullptr};
         concatArrays(keys, cFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1349,7 +1349,7 @@ const char **cLineFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_POINTS, NULL};
+        const char *localKeys[] = { PKEY_POINTS, nullptr};
         concatArrays(keys, cAbstractLineFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1395,9 +1395,9 @@ void cArcFigure::parse(cProperty *property)
     setBounds(parseBounds(property));
 
     const char *s;
-    if ((s = property->getValue(PKEY_STARTANGLE)) != NULL)
+    if ((s = property->getValue(PKEY_STARTANGLE)) != nullptr)
         setStartAngle(deg2rad(opp_atof(s)));
-    if ((s = property->getValue(PKEY_ENDANGLE)) != NULL)
+    if ((s = property->getValue(PKEY_ENDANGLE)) != nullptr)
         setEndAngle(deg2rad(opp_atof(s)));
 }
 
@@ -1405,7 +1405,7 @@ const char **cArcFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, PKEY_STARTANGLE, PKEY_ENDANGLE, NULL};
+        const char *localKeys[] = { PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, PKEY_STARTANGLE, PKEY_ENDANGLE, nullptr};
         concatArrays(keys, cAbstractLineFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1461,9 +1461,9 @@ void cPolylineFigure::parse(cProperty *property)
 
     const char *s;
     setPoints(parsePoints(property, PKEY_POINTS));
-    if ((s = property->getValue(PKEY_SMOOTH, 0)) != NULL)
+    if ((s = property->getValue(PKEY_SMOOTH, 0)) != nullptr)
         setSmooth(parseBool(s));
-    if ((s = property->getValue(PKEY_JOINSTYLE, 0)) != NULL)
+    if ((s = property->getValue(PKEY_JOINSTYLE, 0)) != nullptr)
         setJoinStyle(parseJoinStyle(s));
 }
 
@@ -1471,7 +1471,7 @@ const char **cPolylineFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_POINTS, PKEY_SMOOTH, PKEY_JOINSTYLE, NULL};
+        const char *localKeys[] = { PKEY_POINTS, PKEY_SMOOTH, PKEY_JOINSTYLE, nullptr};
         concatArrays(keys, cAbstractLineFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1518,25 +1518,25 @@ void cAbstractShapeFigure::parse(cProperty *property)
     cFigure::parse(property);
 
     const char *s;
-    if ((s = property->getValue(PKEY_LINECOLOR)) != NULL) {
+    if ((s = property->getValue(PKEY_LINECOLOR)) != nullptr) {
         if (opp_isblank(s))
             setOutlined(false);
         else
             setLineColor(parseColor(s));
     }
-    if ((s = property->getValue(PKEY_FILLCOLOR)) != NULL) {
+    if ((s = property->getValue(PKEY_FILLCOLOR)) != nullptr) {
         setFillColor(parseColor(s));
         setFilled(true);
     }
-    if ((s = property->getValue(PKEY_LINESTYLE)) != NULL)
+    if ((s = property->getValue(PKEY_LINESTYLE)) != nullptr)
         setLineStyle(parseLineStyle(s));
-    if ((s = property->getValue(PKEY_LINEWIDTH)) != NULL)
+    if ((s = property->getValue(PKEY_LINEWIDTH)) != nullptr)
         setLineWidth(opp_atof(s));
-    if ((s = property->getValue(PKEY_LINEOPACITY)) != NULL)
+    if ((s = property->getValue(PKEY_LINEOPACITY)) != nullptr)
         setLineOpacity(opp_atof(s));
-    if ((s = property->getValue(PKEY_FILLOPACITY)) != NULL)
+    if ((s = property->getValue(PKEY_FILLOPACITY)) != nullptr)
         setFillOpacity(opp_atof(s));
-    if ((s = property->getValue(PKEY_SCALELINEWIDTH)) != NULL)
+    if ((s = property->getValue(PKEY_SCALELINEWIDTH)) != nullptr)
         setScaleLineWidth(parseBool(s));
 }
 
@@ -1544,7 +1544,7 @@ const char **cAbstractShapeFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_LINECOLOR, PKEY_FILLCOLOR, PKEY_LINESTYLE, PKEY_LINEWIDTH, PKEY_LINEOPACITY, PKEY_FILLOPACITY, PKEY_SCALELINEWIDTH, NULL};
+        const char *localKeys[] = { PKEY_LINECOLOR, PKEY_FILLCOLOR, PKEY_LINESTYLE, PKEY_LINEWIDTH, PKEY_LINEOPACITY, PKEY_FILLOPACITY, PKEY_SCALELINEWIDTH, nullptr};
         concatArrays(keys, cFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1580,11 +1580,11 @@ void cRectangleFigure::parse(cProperty *property)
 
     setBounds(parseBounds(property));
     const char *s;
-    if ((s = property->getValue(PKEY_CORNERRADIUS, 0)) != NULL) {
+    if ((s = property->getValue(PKEY_CORNERRADIUS, 0)) != nullptr) {
         setCornerRx(opp_atof(s));
         setCornerRy(opp_atof(s));  // as default
     }
-    if ((s = property->getValue(PKEY_CORNERRADIUS, 1)) != NULL)
+    if ((s = property->getValue(PKEY_CORNERRADIUS, 1)) != nullptr)
         setCornerRy(opp_atof(s));
 }
 
@@ -1592,7 +1592,7 @@ const char **cRectangleFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, PKEY_CORNERRADIUS, NULL};
+        const char *localKeys[] = { PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, PKEY_CORNERRADIUS, nullptr};
         concatArrays(keys, cAbstractShapeFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1638,7 +1638,7 @@ const char **cOvalFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, NULL};
+        const char *localKeys[] = { PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, nullptr};
         concatArrays(keys, cAbstractShapeFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1681,11 +1681,11 @@ void cRingFigure::parse(cProperty *property)
 
     setBounds(parseBounds(property));
     const char *s;
-    if ((s = property->getValue(PKEY_INNERSIZE, 0)) != NULL) {
+    if ((s = property->getValue(PKEY_INNERSIZE, 0)) != nullptr) {
         setInnerRx(opp_atof(s) / 2);
         setInnerRy(opp_atof(s) / 2);  // as default
     }
-    if ((s = property->getValue(PKEY_INNERSIZE, 1)) != NULL)
+    if ((s = property->getValue(PKEY_INNERSIZE, 1)) != nullptr)
         setInnerRy(opp_atof(s) / 2);
 }
 
@@ -1693,7 +1693,7 @@ const char **cRingFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, PKEY_INNERSIZE, NULL};
+        const char *localKeys[] = { PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, PKEY_INNERSIZE, nullptr};
         concatArrays(keys, cAbstractShapeFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1737,9 +1737,9 @@ void cPieSliceFigure::parse(cProperty *property)
     setBounds(parseBounds(property));
 
     const char *s;
-    if ((s = property->getValue(PKEY_STARTANGLE)) != NULL)
+    if ((s = property->getValue(PKEY_STARTANGLE)) != nullptr)
         setStartAngle(deg2rad(opp_atof(s)));
-    if ((s = property->getValue(PKEY_ENDANGLE)) != NULL)
+    if ((s = property->getValue(PKEY_ENDANGLE)) != nullptr)
         setEndAngle(deg2rad(opp_atof(s)));
 }
 
@@ -1747,7 +1747,7 @@ const char **cPieSliceFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, PKEY_STARTANGLE, PKEY_ENDANGLE, NULL};
+        const char *localKeys[] = { PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, PKEY_STARTANGLE, PKEY_ENDANGLE, nullptr};
         concatArrays(keys, cAbstractShapeFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1803,11 +1803,11 @@ void cPolygonFigure::parse(cProperty *property)
 
     const char *s;
     setPoints(parsePoints(property, PKEY_POINTS));
-    if ((s = property->getValue(PKEY_SMOOTH, 0)) != NULL)
+    if ((s = property->getValue(PKEY_SMOOTH, 0)) != nullptr)
         setSmooth(parseBool(s));
-    if ((s = property->getValue(PKEY_JOINSTYLE, 0)) != NULL)
+    if ((s = property->getValue(PKEY_JOINSTYLE, 0)) != nullptr)
         setJoinStyle(parseJoinStyle(s));
-    if ((s = property->getValue(PKEY_FILLRULE, 0)) != NULL)
+    if ((s = property->getValue(PKEY_FILLRULE, 0)) != nullptr)
         setFillRule(parseFillRule(s));
 }
 
@@ -1815,7 +1815,7 @@ const char **cPolygonFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_POINTS, PKEY_SMOOTH, PKEY_JOINSTYLE, PKEY_FILLRULE, NULL };
+        const char *localKeys[] = { PKEY_POINTS, PKEY_SMOOTH, PKEY_JOINSTYLE, PKEY_FILLRULE, nullptr };
         concatArrays(keys, cAbstractShapeFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1857,15 +1857,15 @@ void cPathFigure::parse(cProperty *property)
     cAbstractShapeFigure::parse(property);
 
     const char *s;
-    if ((s = property->getValue(PKEY_PATH, 0)) != NULL)
+    if ((s = property->getValue(PKEY_PATH, 0)) != nullptr)
         setPath(s);
-    if ((s = property->getValue(PKEY_OFFSET, 0)) != NULL)
+    if ((s = property->getValue(PKEY_OFFSET, 0)) != nullptr)
         setOffset(parsePoint(property, s, 0));
-    if ((s = property->getValue(PKEY_JOINSTYLE, 0)) != NULL)
+    if ((s = property->getValue(PKEY_JOINSTYLE, 0)) != nullptr)
         setJoinStyle(parseJoinStyle(s));
-    if ((s = property->getValue(PKEY_CAPSTYLE, 0)) != NULL)
+    if ((s = property->getValue(PKEY_CAPSTYLE, 0)) != nullptr)
         setCapStyle(parseCapStyle(s));
-    if ((s = property->getValue(PKEY_FILLRULE, 0)) != NULL)
+    if ((s = property->getValue(PKEY_FILLRULE, 0)) != nullptr)
         setFillRule(parseFillRule(s));
 }
 
@@ -1873,7 +1873,7 @@ const char **cPathFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_PATH, PKEY_OFFSET, PKEY_JOINSTYLE, PKEY_CAPSTYLE, PKEY_FILLRULE, NULL};
+        const char *localKeys[] = { PKEY_PATH, PKEY_OFFSET, PKEY_JOINSTYLE, PKEY_CAPSTYLE, PKEY_FILLRULE, nullptr};
         concatArrays(keys, cAbstractShapeFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -2059,13 +2059,13 @@ void cAbstractTextFigure::parse(cProperty *property)
     const char *s;
     setPosition(parsePoint(property, PKEY_POS, 0));
     setText(opp_nulltoempty(property->getValue(PKEY_TEXT)));
-    if ((s = property->getValue(PKEY_COLOR)) != NULL)
+    if ((s = property->getValue(PKEY_COLOR)) != nullptr)
         setColor(parseColor(s));
-    if ((s = property->getValue(PKEY_OPACITY)) != NULL)
+    if ((s = property->getValue(PKEY_OPACITY)) != nullptr)
         setOpacity(opp_atof(s));
     if (property->containsKey(PKEY_FONT))
         setFont(parseFont(property, PKEY_FONT));
-    if ((s = property->getValue(PKEY_ANCHOR)) != NULL)
+    if ((s = property->getValue(PKEY_ANCHOR)) != nullptr)
         setAnchor(parseAnchor(s));
 }
 
@@ -2073,7 +2073,7 @@ const char **cAbstractTextFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_POS, PKEY_TEXT, PKEY_COLOR, PKEY_OPACITY, PKEY_FONT, PKEY_ANCHOR, NULL};
+        const char *localKeys[] = { PKEY_POS, PKEY_TEXT, PKEY_COLOR, PKEY_OPACITY, PKEY_FONT, PKEY_ANCHOR, nullptr};
         concatArrays(keys, cFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -2134,20 +2134,20 @@ void cAbstractImageFigure::parse(cProperty *property)
 
     const char *s;
     setPosition(parsePoint(property, PKEY_POS, 0));
-    if ((s = property->getValue(PKEY_ANCHOR)) != NULL)
+    if ((s = property->getValue(PKEY_ANCHOR)) != nullptr)
         setAnchor(parseAnchor(s));
     Point size = parsePoint(property, PKEY_SIZE, 0);
     setWidth(size.x);
     setHeight(size.y);
-    if ((s = property->getValue(PKEY_INTERPOLATION)) != NULL)
+    if ((s = property->getValue(PKEY_INTERPOLATION)) != nullptr)
         setInterpolation(parseInterpolation(s));
-    if ((s = property->getValue(PKEY_OPACITY)) != NULL)
+    if ((s = property->getValue(PKEY_OPACITY)) != nullptr)
         setOpacity(opp_atof(s));
-    if ((s = property->getValue(PKEY_TINT, 0)) != NULL) {
+    if ((s = property->getValue(PKEY_TINT, 0)) != nullptr) {
         setTintColor(parseColor(s));
         setTintAmount(0.5);
     }
-    if ((s = property->getValue(PKEY_TINT, 1)) != NULL)
+    if ((s = property->getValue(PKEY_TINT, 1)) != nullptr)
         setTintAmount(opp_atof(s));
 }
 
@@ -2155,7 +2155,7 @@ const char **cAbstractImageFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_POS, PKEY_ANCHOR, PKEY_SIZE, PKEY_INTERPOLATION, PKEY_OPACITY, PKEY_TINT, NULL};
+        const char *localKeys[] = { PKEY_POS, PKEY_ANCHOR, PKEY_SIZE, PKEY_INTERPOLATION, PKEY_OPACITY, PKEY_TINT, nullptr};
         concatArrays(keys, cFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -2200,7 +2200,7 @@ const char **cImageFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_IMAGE, NULL};
+        const char *localKeys[] = { PKEY_IMAGE, nullptr};
         concatArrays(keys, cAbstractImageFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -2244,9 +2244,9 @@ void cPixmapFigure::parse(cProperty *property)
 
     int width = 0, height = 0;
     const char *s;
-    if ((s = property->getValue(PKEY_RESOLUTION, 0)) != NULL)
+    if ((s = property->getValue(PKEY_RESOLUTION, 0)) != nullptr)
         width = opp_atoul(s);
-    if ((s = property->getValue(PKEY_RESOLUTION, 1)) != NULL)
+    if ((s = property->getValue(PKEY_RESOLUTION, 1)) != nullptr)
         height = opp_atoul(s);
     if (width > 0 || height > 0)
         setPixmap(Pixmap(width, height));
@@ -2256,7 +2256,7 @@ const char **cPixmapFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_RESOLUTION, NULL };
+        const char *localKeys[] = { PKEY_RESOLUTION, nullptr };
         concatArrays(keys, cAbstractImageFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -2429,7 +2429,7 @@ void cCanvas::dumpSupportedPropertyKeys(std::ostream& out) const
 {
     const char *types[] = {
             "group", "line", "arc", "polyline", "rectangle", "oval", "ring", "pieslice",
-            "polygon", "path", "text", "label", "image", "pixmap", NULL
+            "polygon", "path", "text", "label", "image", "pixmap", nullptr
     };
 
     for (const char **p = types; *p; p++) {

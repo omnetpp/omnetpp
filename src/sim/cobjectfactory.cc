@@ -97,7 +97,7 @@ cObject *cObjectFactory::createOne(const char *classname)
 cObject *cObjectFactory::createOneIfClassIsKnown(const char *classname)
 {
     cObjectFactory *p = find(classname);
-    return p ? p->createOne() : NULL;
+    return p ? p->createOne() : nullptr;
 }
 
 NAMESPACE_END

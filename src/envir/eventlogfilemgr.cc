@@ -36,7 +36,7 @@ NAMESPACE_BEGIN
 
 
 Register_PerRunConfigOption(CFGID_EVENTLOG_FILE, "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.elog", "Name of the eventlog file to generate.");
-Register_PerRunConfigOption(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-message-detail-pattern", CFG_CUSTOM, NULL,
+Register_PerRunConfigOption(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-message-detail-pattern", CFG_CUSTOM, nullptr,
         "A list of patterns separated by '|' character which will be used to write "
         "message detail information into the eventlog for each message sent during "
         "the simulation. The message detail will be presented in the sequence chart "
@@ -54,7 +54,7 @@ Register_PerRunConfigOption(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-mes
         "  \"*Frame:*Address,*Id\": captures all fields named somethingAddress and somethingId from messages of any class named somethingFrame\n"
         "  \"MyMessage:declaredOn(MyMessage)\": captures instances of MyMessage recording the fields declared on the MyMessage class\n"
         "  \"*:(not declaredOn(cMessage) and not declaredOn(cNamedObject) and not declaredOn(cObject))\": records user-defined fields from all messages");
-Register_PerRunConfigOption(CFGID_EVENTLOG_RECORDING_INTERVALS, "eventlog-recording-intervals", CFG_CUSTOM, NULL, "Simulation time interval(s) when events should be recorded. Syntax: [<from>]..[<to>],... That is, both start and end of an interval are optional, and intervals are separated by comma. Example: ..10.2, 22.2..100, 233.3..");
+Register_PerRunConfigOption(CFGID_EVENTLOG_RECORDING_INTERVALS, "eventlog-recording-intervals", CFG_CUSTOM, nullptr, "Simulation time interval(s) when events should be recorded. Syntax: [<from>]..[<to>],... That is, both start and end of an interval are optional, and intervals are separated by comma. Example: ..10.2, 22.2..100, 233.3..");
 Register_PerObjectConfigOption(CFGID_MODULE_EVENTLOG_RECORDING, "module-eventlog-recording", KIND_SIMPLE_MODULE, CFG_BOOL, "true", "Enables recording events on a per module basis. This is meaningful for simple modules only. \nExample:\n **.router[10..20].**.module-eventlog-recording = true\n **.module-eventlog-recording = false");
 
 extern cConfigOption *CFGID_RECORD_EVENTLOG;
@@ -92,9 +92,9 @@ static ObjectPrinterRecursionControl recurseIntoMessageFields(void *object, cCla
 EventlogFileManager::EventlogFileManager()
 {
     recordEventlog = false;
-    feventlog = NULL;
-    objectPrinter = NULL;
-    recordingIntervals = NULL;
+    feventlog = nullptr;
+    objectPrinter = nullptr;
+    recordingIntervals = nullptr;
     keyframeBlockSize = 1000;
     clearInternalState();
 }
@@ -127,7 +127,7 @@ void EventlogFileManager::configure()
 
     // setup eventlog object printer
     delete objectPrinter;
-    objectPrinter = NULL;
+    objectPrinter = nullptr;
     const char *eventLogMessageDetailPattern = getEnvir()->getConfig()->getAsCustom(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN);
     if (eventLogMessageDetailPattern)
         objectPrinter = new ObjectPrinter(recurseIntoMessageFields, eventLogMessageDetailPattern, 3);
@@ -184,7 +184,7 @@ void EventlogFileManager::close()
 {
     if (feventlog) {
         fclose(feventlog);
-        feventlog = NULL;
+        feventlog = nullptr;
         isEventLogRecordingEnabled = false;
     }
 }
@@ -338,7 +338,7 @@ void EventlogFileManager::clearRecordingIntervals()
 {
     if (recordingIntervals) {
         delete recordingIntervals;
-        recordingIntervals = NULL;
+        recordingIntervals = nullptr;
     }
 }
 
@@ -395,7 +395,7 @@ void EventlogFileManager::beginSend(cMessage *msg)
                 pkt->getId(), pkt->getTreeId(), pkt->getEncapsulationId(), pkt->getEncapsulationTreeId(),
                 pkt->getClassName(), pkt->getFullName(),
                 pkt->getKind(), pkt->getSchedulingPriority(), pkt->getBitLength(), pkt->hasBitError(),
-                objectPrinter ? objectPrinter->printObjectToString(pkt).c_str() : NULL,
+                objectPrinter ? objectPrinter->printObjectToString(pkt).c_str() : nullptr,
                 pkt->getPreviousEventNumber());
         }
         else {
@@ -403,7 +403,7 @@ void EventlogFileManager::beginSend(cMessage *msg)
                 msg->getId(), msg->getTreeId(), msg->getId(), msg->getTreeId(),
                 msg->getClassName(), msg->getFullName(),
                 msg->getKind(), msg->getSchedulingPriority(), 0, false,
-                objectPrinter ? objectPrinter->printObjectToString(msg).c_str() : NULL,
+                objectPrinter ? objectPrinter->printObjectToString(msg).c_str() : nullptr,
                 msg->getPreviousEventNumber());
         }
         entryIndex++;
@@ -430,7 +430,7 @@ void EventlogFileManager::messageCancelled(cMessage *msg)
                 pkt->getId(), pkt->getTreeId(), pkt->getEncapsulationId(), pkt->getEncapsulationTreeId(),
                 pkt->getClassName(), pkt->getFullName(),
                 pkt->getKind(), pkt->getSchedulingPriority(), pkt->getBitLength(), pkt->hasBitError(),
-                objectPrinter ? objectPrinter->printObjectToString(pkt).c_str() : NULL,
+                objectPrinter ? objectPrinter->printObjectToString(pkt).c_str() : nullptr,
                 pkt->getPreviousEventNumber());
         }
         else {
@@ -438,7 +438,7 @@ void EventlogFileManager::messageCancelled(cMessage *msg)
                 msg->getId(), msg->getTreeId(), msg->getId(), msg->getTreeId(),
                 msg->getClassName(), msg->getFullName(),
                 msg->getKind(), msg->getSchedulingPriority(), 0, false,
-                objectPrinter ? objectPrinter->printObjectToString(msg).c_str() : NULL,
+                objectPrinter ? objectPrinter->printObjectToString(msg).c_str() : nullptr,
                 msg->getPreviousEventNumber());
         }
         entryIndex++;
@@ -489,7 +489,7 @@ void EventlogFileManager::messageCreated(cMessage *msg)
                 pkt->getId(), pkt->getTreeId(), pkt->getEncapsulationId(), pkt->getEncapsulationTreeId(),
                 pkt->getClassName(), pkt->getFullName(),
                 pkt->getKind(), pkt->getSchedulingPriority(), pkt->getBitLength(), pkt->hasBitError(),
-                objectPrinter ? objectPrinter->printObjectToString(pkt).c_str() : NULL,
+                objectPrinter ? objectPrinter->printObjectToString(pkt).c_str() : nullptr,
                 pkt->getPreviousEventNumber());
         }
         else {
@@ -497,7 +497,7 @@ void EventlogFileManager::messageCreated(cMessage *msg)
                 msg->getId(), msg->getTreeId(), msg->getId(), msg->getTreeId(),
                 msg->getClassName(), msg->getFullName(),
                 msg->getKind(), msg->getSchedulingPriority(), 0, false,
-                objectPrinter ? objectPrinter->printObjectToString(msg).c_str() : NULL,
+                objectPrinter ? objectPrinter->printObjectToString(msg).c_str() : nullptr,
                 msg->getPreviousEventNumber());
         }
         entryIndex++;
@@ -514,7 +514,7 @@ void EventlogFileManager::messageCloned(cMessage *msg, cMessage *clone)
                 pkt->getId(), pkt->getTreeId(), pkt->getEncapsulationId(), pkt->getEncapsulationTreeId(),
                 pkt->getClassName(), pkt->getFullName(),
                 pkt->getKind(), pkt->getSchedulingPriority(), pkt->getBitLength(), pkt->hasBitError(),
-                objectPrinter ? objectPrinter->printObjectToString(pkt).c_str() : NULL,
+                objectPrinter ? objectPrinter->printObjectToString(pkt).c_str() : nullptr,
                 pkt->getPreviousEventNumber(), clone->getId());
         }
         else {
@@ -522,7 +522,7 @@ void EventlogFileManager::messageCloned(cMessage *msg, cMessage *clone)
                 msg->getId(), msg->getTreeId(), msg->getId(), msg->getTreeId(),
                 msg->getClassName(), msg->getFullName(),
                 msg->getKind(), msg->getSchedulingPriority(), 0, false,
-                objectPrinter ? objectPrinter->printObjectToString(msg).c_str() : NULL,
+                objectPrinter ? objectPrinter->printObjectToString(msg).c_str() : nullptr,
                 msg->getPreviousEventNumber(), clone->getId());
         }
         entryIndex++;
@@ -539,7 +539,7 @@ void EventlogFileManager::messageDeleted(cMessage *msg)
                 pkt->getId(), pkt->getTreeId(), pkt->getEncapsulationId(), pkt->getEncapsulationTreeId(),
                 pkt->getClassName(), pkt->getFullName(),
                 pkt->getKind(), pkt->getSchedulingPriority(), pkt->getBitLength(), pkt->hasBitError(),
-                objectPrinter ? objectPrinter->printObjectToString(pkt).c_str() : NULL,
+                objectPrinter ? objectPrinter->printObjectToString(pkt).c_str() : nullptr,
                 pkt->getPreviousEventNumber());
         }
         else {
@@ -547,7 +547,7 @@ void EventlogFileManager::messageDeleted(cMessage *msg)
                 msg->getId(), msg->getTreeId(), msg->getId(), msg->getTreeId(),
                 msg->getClassName(), msg->getFullName(),
                 msg->getKind(), msg->getSchedulingPriority(), 0, false,
-                objectPrinter ? objectPrinter->printObjectToString(msg).c_str() : NULL,
+                objectPrinter ? objectPrinter->printObjectToString(msg).c_str() : nullptr,
                 msg->getPreviousEventNumber());
         }
         entryIndex++;

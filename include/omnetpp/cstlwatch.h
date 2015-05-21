@@ -39,7 +39,7 @@ class SIM_API cStdVectorWatcherBase : public cWatchBase
   private:
     cClassDescriptor *desc;
   public:
-    cStdVectorWatcherBase(const char *name) : cWatchBase(name) {desc = NULL;}
+    cStdVectorWatcherBase(const char *name) : cWatchBase(name) {desc = nullptr;}
 
     virtual std::string info() const;
     virtual std::string detailedInfo() const;

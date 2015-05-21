@@ -33,7 +33,7 @@ Scenario::Scenario(const std::vector<IterationVariable>& iterationVariables, con
         vars(iterationVariables)
 {
     // store the constraint
-    constraint = NULL;
+    constraint = nullptr;
     if (constraintText)
     {
         constraint = new ValueIterator::Expr(constraintText);

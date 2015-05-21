@@ -50,7 +50,7 @@ using std::ofstream;
 using std::ios;
 
 Register_PerRunConfigOptionU(CFGID_OUTPUTVECTOR_MEMORY_LIMIT, "output-vectors-memory-limit", "B", DEFAULT_MEMORY_LIMIT, "Total memory that can be used for buffering output vectors. Larger values produce less fragmented vector files (i.e. cause vector data to be grouped into larger chunks), and therefore allow more efficient processing later.");
-Register_PerObjectConfigOption(CFGID_VECTOR_MAX_BUFFERED_VALUES, "vector-max-buffered-values", KIND_VECTOR, CFG_INT, NULL, "For output vectors: the maximum number of values to buffer per vector, before writing out a block into the output vector file. The default is no per-vector limit (i.e. only the total memory limit is in effect)");
+Register_PerObjectConfigOption(CFGID_VECTOR_MAX_BUFFERED_VALUES, "vector-max-buffered-values", KIND_VECTOR, CFG_INT, nullptr, "For output vectors: the maximum number of values to buffer per vector, before writing out a block into the output vector file. The default is no per-vector limit (i.e. only the total memory limit is in effect)");
 
 
 #ifdef CHECK
@@ -66,7 +66,7 @@ Register_Class(cIndexedFileOutputVectorManager);
 cIndexedFileOutputVectorManager::cIndexedFileOutputVectorManager()
   : cFileOutputVectorManager()
 {
-    fi = NULL;
+    fi = nullptr;
     memoryUsed = 0;
 
     long d = (long) getEnvir()->getConfig()->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
@@ -77,7 +77,7 @@ void cIndexedFileOutputVectorManager::openIndexFile()
 {
     mkPath(directoryOf(ifname.c_str()).c_str());
     fi = fopen(ifname.c_str(),"w");
-    if (fi==NULL)
+    if (fi==nullptr)
         throw cRuntimeError("Cannot open index file `%s'",ifname.c_str());
 
     // leave blank space for fingerprint
@@ -97,7 +97,7 @@ void cIndexedFileOutputVectorManager::closeIndexFile()
         }
 
         fclose(fi);
-        fi = NULL;
+        fi = nullptr;
     }
 }
 
@@ -126,7 +126,7 @@ void cIndexedFileOutputVectorManager::startRun()
 
 void cIndexedFileOutputVectorManager::endRun()
 {
-    if (f!=NULL) {
+    if (f!=nullptr) {
         for (std::vector<Vector*>::iterator it=vectors.begin(); it!=vectors.end(); ++it)
             finalizeVector(*it);
     }
@@ -251,8 +251,8 @@ void cIndexedFileOutputVectorManager::writeRecords()
 
 void cIndexedFileOutputVectorManager::writeBlock(Vector *vp)
 {
-    assert(f!=NULL);
-    assert(vp!=NULL);
+    assert(f!=nullptr);
+    assert(vp!=nullptr);
     assert(!vp->buffer.empty());
 
     static char buff[64];
@@ -280,8 +280,8 @@ void cIndexedFileOutputVectorManager::writeBlock(Vector *vp)
 
 void cIndexedFileOutputVectorManager::writeBlockToIndexFile(Vector *vp)
 {
-    assert(f!=NULL);
-    assert(fi!=NULL);
+    assert(f!=nullptr);
+    assert(fi!=nullptr);
 
     static char buff1[64], buff2[64];
     Block &block = vp->currentBlock;

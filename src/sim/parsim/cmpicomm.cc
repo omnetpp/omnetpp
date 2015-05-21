@@ -37,7 +37,7 @@ NAMESPACE_BEGIN
 
 Register_Class(cMPICommunications);
 
-Register_GlobalConfigOption(CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER, "parsim-mpicommunications-mpibuffer", CFG_INT, NULL, "When cMPICommunications is selected as parsim communications class: specifies the size of the MPI communications buffer. The default is to calculate a buffer size based on the number of partitions.");
+Register_GlobalConfigOption(CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER, "parsim-mpicommunications-mpibuffer", CFG_INT, nullptr, "When cMPICommunications is selected as parsim communications class: specifies the size of the MPI communications buffer. The default is to calculate a buffer size based on the number of partitions.");
 
 // default is 256k. If too small, simulation can block in MPI send calls.
 #define MPI_SEND_BUFFER_PER_PARTITION (256*1024)
@@ -45,7 +45,7 @@ Register_GlobalConfigOption(CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER, "parsim-mp
 
 cMPICommunications::cMPICommunications()
 {
-    recycledBuffer = NULL;
+    recycledBuffer = nullptr;
 }
 
 cMPICommunications::~cMPICommunications()
@@ -113,7 +113,7 @@ cCommBuffer *cMPICommunications::createCommBuffer()
     {
         buffer = recycledBuffer;
         buffer->reset();
-        recycledBuffer = NULL;
+        recycledBuffer = nullptr;
     }
     else
     {

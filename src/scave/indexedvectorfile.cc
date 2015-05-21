@@ -32,7 +32,7 @@ NAMESPACE_BEGIN
 //=========================================================================
 
 IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, int vectorId)
-    : fname(filename), index(NULL), vector(NULL), currentBlock(NULL)
+    : fname(filename), index(nullptr), vector(nullptr), currentBlock(nullptr)
 {
     std::string ifname = IndexFile::getIndexFileName(filename);
     IndexFileReader indexReader(ifname.c_str());
@@ -46,7 +46,7 @@ IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, int vecto
 
 IndexedVectorFileReader::~IndexedVectorFileReader()
 {
-    if (index != NULL)
+    if (index != nullptr)
         delete index;
 }
 
@@ -68,8 +68,8 @@ void IndexedVectorFileReader::loadBlock(const Block &block)
     if (currentBlock == &block)
         return;
 
-    if (currentBlock != NULL) {
-        currentBlock = NULL;
+    if (currentBlock != nullptr) {
+        currentBlock = nullptr;
         currentEntries.clear();
     }
 
@@ -122,9 +122,9 @@ void IndexedVectorFileReader::loadBlock(const Block &block)
 OutputVectorEntry *IndexedVectorFileReader::getEntryBySerial(long serial)
 {
     if (serial<0 || serial>=vector->getCount())
-        return NULL;
+        return nullptr;
 
-    if (currentBlock == NULL || !currentBlock->contains(serial))
+    if (currentBlock == nullptr || !currentBlock->contains(serial))
     {
         loadBlock(*(vector->getBlockBySerial(serial)));
     }
@@ -151,7 +151,7 @@ OutputVectorEntry *IndexedVectorFileReader::getEntryBySimtime(simultime_t simtim
                     return &(*it);
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 OutputVectorEntry *IndexedVectorFileReader::getEntryByEventnum(eventnumber_t eventNum, bool after)
@@ -173,7 +173,7 @@ OutputVectorEntry *IndexedVectorFileReader::getEntryByEventnum(eventnumber_t eve
                     return &(*it);
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 long IndexedVectorFileReader::collectEntriesInSimtimeInterval(simultime_t startTime, simultime_t endTime, Entries &out)
@@ -240,7 +240,7 @@ long IndexedVectorFileReader::collectEntriesInEventnumInterval(eventnumber_t sta
 static FILE *openFile(const std::string fileName)
 {
     FILE *f = fopen(fileName.c_str(),"w");
-    if (f==NULL)
+    if (f==nullptr)
         throw opp_runtime_error("Cannot open vector file `%s'", fileName.c_str());
     setlocale(LC_NUMERIC, "C"); // write '.' as decimal marker
     return f;
@@ -248,8 +248,8 @@ static FILE *openFile(const std::string fileName)
 
 IndexedVectorFileWriterNode::IndexedVectorFileWriterNode(const char *fileName, const char *indexFileName, int blockSize, const char *fileHeader)
 {
-    f = NULL;
-    indexWriter = NULL;
+    f = nullptr;
+    indexWriter = nullptr;
     this->prec = DEFAULT_PRECISION;
     this->fileHeader = (fileHeader ? fileHeader : "");
     this->fileName = fileName;
@@ -342,9 +342,9 @@ bool IndexedVectorFileWriterNode::isFinished() const
     }
 
     // close output vector and index files
-    if (f != NULL)
+    if (f != nullptr)
         fclose(f);
-    if (indexWriter != NULL)
+    if (indexWriter != nullptr)
     {
         indexWriter->writeFingerprint(fileName);
         delete indexWriter;
@@ -437,7 +437,7 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
 
 void IndexedVectorFileWriterNode::writeBufferToFile(VectorInputPort *port)
 {
-    assert(f!=NULL);
+    assert(f!=nullptr);
     assert(port->vector.blocks.size() > 0);
 
     Block &currentBlock = port->vector.blocks.back();
@@ -452,7 +452,7 @@ void IndexedVectorFileWriterNode::writeBufferToFile(VectorInputPort *port)
 
 void IndexedVectorFileWriterNode::writeIndex(VectorInputPort *port)
 {
-    if (indexWriter == NULL)
+    if (indexWriter == nullptr)
     {
         indexWriter = new IndexFileWriter(indexFileName.c_str(), prec);
         indexWriter->writeRun(run);

@@ -90,7 +90,7 @@ void LogBuffer::addInitialize(cComponent *component, const char *banner)
     Entry *entry = entries.back();
     cComponent *contextComponent = getSimulation()->getContext();
     int contextComponentId =  contextComponent ? contextComponent->getId() : 0;
-    entry->lines.push_back(Line(contextComponentId, NULL, opp_strdup(banner)));
+    entry->lines.push_back(Line(contextComponentId, nullptr, opp_strdup(banner)));
 
     for (unsigned int i = 0; i < listeners.size(); i++)
         listeners[i]->logLineAdded();
@@ -107,7 +107,7 @@ void LogBuffer::addLogLine(const char *prefix, const char *text, int len)
     {
         Entry *entry = new Entry();
         entries.push_back(entry);
-        fillEntry(entry, 0, simTime(), NULL, NULL);
+        fillEntry(entry, 0, simTime(), nullptr, nullptr);
     }
 
     //FIXME if last line is "info" then we cannot append to it! create new entry with empty banner?
@@ -131,7 +131,7 @@ void LogBuffer::addInfo(const char *text, int len)
     //TODO ha inline info (contextmodule!=NULL), sima logline-kent adjuk hozza!!!!
     Entry *entry = new Entry();
     entries.push_back(entry);
-    fillEntry(entry, 0, simTime(), NULL, opp_strdup(text,len));
+    fillEntry(entry, 0, simTime(), nullptr, opp_strdup(text,len));
     discardEventsIfLimitExceeded();
 
     for (unsigned int i = 0; i < listeners.size(); i++)
@@ -143,7 +143,7 @@ void LogBuffer::beginSend(cMessage *msg)
     if (entries.empty())
     {
         // this is likely the initialize() phase -- hence no banner
-        addEvent(0, SIMTIME_ZERO, NULL, "{}");
+        addEvent(0, SIMTIME_ZERO, nullptr, "{}");
         Entry *entry = entries.back();
         entry->moduleId = -1;
     }
@@ -237,7 +237,7 @@ int LogBuffer::findEntryByEventNumber(eventnumber_t eventNumber)
 LogBuffer::Entry *LogBuffer::getEntryByEventNumber(eventnumber_t eventNumber)
 {
     int i = findEntryByEventNumber(eventNumber);
-    return i == -1 ? NULL : entries[i];
+    return i == -1 ? nullptr : entries[i];
 }
 
 #define LL  INT64_PRINTF_FORMAT

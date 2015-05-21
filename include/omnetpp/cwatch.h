@@ -231,7 +231,7 @@ class SIM_API cWatch_cObjectPtr : public cWatchBase
     virtual const char *getClassName() const {return rp? rp->getClassName() : "n/a";}
     virtual std::string info() const {return rp ? rp->info() : "<null>";}
     virtual bool supportsAssignment() const {return false;}
-    virtual cClassDescriptor *getDescriptor() {return rp ? rp->getDescriptor() : NULL;}
+    virtual cClassDescriptor *getDescriptor() {return rp ? rp->getDescriptor() : nullptr;}
 };
 
 

@@ -30,7 +30,7 @@ NAMESPACE_BEGIN
 
 FileWriterNode::FileWriterNode(const char *filename, const char *banner)
 {
-    f = NULL;
+    f = nullptr;
     this->fileName = filename;
     this->banner = (banner ? banner : "");
     this->prec = DEFAULT_PRECISION;

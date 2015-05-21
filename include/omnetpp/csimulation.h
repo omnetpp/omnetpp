@@ -212,19 +212,19 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Looks up a component (module or channel) by ID. If the ID does not identify
      * a component (e.g. invalid ID or component already deleted), it returns NULL.
      */
-    cComponent *getComponent(int id) const  {return id<0 || id>=size ? NULL : componentv[id];}
+    cComponent *getComponent(int id) const  {return id<0 || id>=size ? nullptr : componentv[id];}
 
     /**
      * Looks up a module by ID. If the ID does not identify a module (e.g. invalid ID,
      * module already deleted, or object is not a module), it returns NULL.
      */
-    cModule *getModule(int id) const  {return id<0 || id>=size || !componentv[id] ? NULL : componentv[id]->isModule() ? (cModule *)componentv[id] : NULL;}
+    cModule *getModule(int id) const  {return id<0 || id>=size || !componentv[id] ? nullptr : componentv[id]->isModule() ? (cModule *)componentv[id] : nullptr;}
 
     /**
      * Looks up a channel by ID. If the ID does not identify a channel (e.g. invalid ID,
      * channel already deleted, or object is not a channel), it returns NULL.
      */
-    cChannel *getChannel(int id) const  {return id<0 || id>=size || !componentv[id] ? NULL : componentv[id]->isChannel() ? (cChannel *)componentv[id] : NULL;}
+    cChannel *getChannel(int id) const  {return id<0 || id>=size || !componentv[id] ? nullptr : componentv[id]->isChannel() ? (cChannel *)componentv[id] : nullptr;}
 
     /**
      * Designates the system module, the top-level module in the model.
@@ -265,7 +265,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Note: doneLoadingNedFiles() must be called after the last
      * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
-    static void loadNedFile(const char *nedFilename, const char *expectedPackage=NULL, bool isXML=false);
+    static void loadNedFile(const char *nedFilename, const char *expectedPackage=nullptr, bool isXML=false);
 
     /**
      * Parses and loads the NED source code passed in the nedtext argument.
@@ -277,7 +277,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Note: doneLoadingNedFiles() must be called after the last
      * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
-    static void loadNedText(const char *name, const char *nedText, const char *expectedPackage=NULL, bool isXML=false);
+    static void loadNedText(const char *name, const char *nedText, const char *expectedPackage=nullptr, bool isXML=false);
 
     /**
      * To be called after all NED folders / files have been loaded
@@ -471,7 +471,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /**
      * Sets global context. Used internally.
      */
-    void setGlobalContext()  {contextComponent=NULL; cOwnedObject::setDefaultOwner(&defaultList);}
+    void setGlobalContext()  {contextComponent=nullptr; cOwnedObject::setDefaultOwner(&defaultList);}
 
     /**
      * Returns the module whose activity() method is currently active.

@@ -64,7 +64,7 @@ class SIM_API cExpression : public cObject
     /**
      * Duplication not supported, this method is redefined to throw an error.
      */
-    virtual cExpression *dup() const {copyNotSupported(); return NULL;}
+    virtual cExpression *dup() const {copyNotSupported(); return nullptr;}
 
     /**
      * Produces a one-line description of the object's contents.
@@ -89,39 +89,39 @@ class SIM_API cExpression : public cObject
     /**
      * TODO
      */
-    virtual cNEDValue evaluate(cComponent *context=NULL) const {return cNEDValue();} //TODO in 5.0: make this pure virtual, and remove type-specific getters (boolValue(), etc)
+    virtual cNEDValue evaluate(cComponent *context=nullptr) const {return cNEDValue();} //TODO in 5.0: make this pure virtual, and remove type-specific getters (boolValue(), etc)
 
     /**
      * Evaluate the expression and convert the result to bool if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual bool boolValue(cComponent *context=NULL) = 0;
+    virtual bool boolValue(cComponent *context=nullptr) = 0;
 
     /**
      * Evaluate the expression and convert the result to long if possible;
      * throw an error if conversion from that type is not supported.
      * Also throws an error if the actual unit does not match the expected unit.
      */
-    virtual long longValue(cComponent *context=NULL, const char *expectedUnit=NULL) = 0;
+    virtual long longValue(cComponent *context=nullptr, const char *expectedUnit=nullptr) = 0;
 
     /**
      * Evaluate the expression and convert the result to double if possible;
      * throw an error if conversion from that type is not supported.
      * Also throws an error if the actual unit does not match the expected unit.
      */
-    virtual double doubleValue(cComponent *context=NULL, const char *expectedUnit=NULL) = 0;
+    virtual double doubleValue(cComponent *context=nullptr, const char *expectedUnit=nullptr) = 0;
 
     /**
      * Evaluate the expression and convert the result to string if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual std::string stringValue(cComponent *context=NULL) = 0;
+    virtual std::string stringValue(cComponent *context=nullptr) = 0;
 
     /**
      * Evaluate the expression and convert the result to an XML tree if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual cXMLElement *xmlValue(cComponent *context=NULL) = 0;
+    virtual cXMLElement *xmlValue(cComponent *context=nullptr) = 0;
     //@}
 
     /** @name Miscellaneous utility functions. */

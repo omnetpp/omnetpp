@@ -370,7 +370,7 @@ class NEDXML_API NEDElement
      * Returns first child element with the given tagcode and the given
      * attribute (optionally) having the given value. Returns NULL if not found.
      */
-    NEDElement *getFirstChildWithAttribute(int tagcode, const char *attr, const char *attrvalue=NULL);
+    NEDElement *getFirstChildWithAttribute(int tagcode, const char *attr, const char *attrvalue=nullptr);
 
     /**
      * Climb up in the element tree until it finds an element with the given tagcode.

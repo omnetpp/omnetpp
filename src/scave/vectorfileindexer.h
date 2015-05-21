@@ -29,9 +29,9 @@ NAMESPACE_BEGIN
 class SCAVE_API VectorFileIndexer
 {
     public:
-        void generateIndex(const char *filename, IProgressMonitor *monitor = NULL);
+        void generateIndex(const char *filename, IProgressMonitor *monitor = nullptr);
 
-        void rebuildVectorFile(const char *filename, IProgressMonitor *monitor = NULL);
+        void rebuildVectorFile(const char *filename, IProgressMonitor *monitor = nullptr);
 };
 
 NAMESPACE_END

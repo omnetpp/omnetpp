@@ -30,11 +30,11 @@
 
 NAMESPACE_BEGIN
 
-Register_GlobalConfigOption(CFGID_REALTIMESCHEDULER_SCALING, "realtimescheduler-scaling", CFG_DOUBLE, NULL, "When cRealTimeScheduler is selected as scheduler class: ratio of simulation time to real time. For example, scaling=2 will cause simulation time to progress twice as fast as runtime.");
+Register_GlobalConfigOption(CFGID_REALTIMESCHEDULER_SCALING, "realtimescheduler-scaling", CFG_DOUBLE, nullptr, "When cRealTimeScheduler is selected as scheduler class: ratio of simulation time to real time. For example, scaling=2 will cause simulation time to progress twice as fast as runtime.");
 
 cScheduler::cScheduler()
 {
-    sim = NULL;
+    sim = nullptr;
 }
 
 cScheduler::~cScheduler()
@@ -103,12 +103,12 @@ void cRealTimeScheduler::startRun()
         factor = 1/factor;
     doScaling = (factor!=0);
 
-    gettimeofday(&baseTime, NULL);
+    gettimeofday(&baseTime, nullptr);
 }
 
 void cRealTimeScheduler::executionResumed()
 {
-    gettimeofday(&baseTime, NULL);
+    gettimeofday(&baseTime, nullptr);
     baseTime = timeval_subtract(baseTime, SIMTIME_DBL(doScaling ? factor*sim->getSimTime() : sim->getSimTime()));
 }
 
@@ -117,14 +117,14 @@ bool cRealTimeScheduler::waitUntil(const timeval& targetTime)
     // if there's more than 200ms to wait, wait in 100ms chunks
     // in order to keep UI responsiveness by invoking getEnvir()->idle()
     timeval curTime;
-    gettimeofday(&curTime, NULL);
+    gettimeofday(&curTime, nullptr);
     while (targetTime.tv_sec-curTime.tv_sec >=2 ||
            timeval_diff_usec(targetTime, curTime) >= 200000)
     {
         usleep(100000); // 100ms
         if (getEnvir()->idle())
             return false;
-        gettimeofday(&curTime, NULL);
+        gettimeofday(&curTime, nullptr);
     }
 
     // difference is now at most 100ms, do it at once
@@ -151,11 +151,11 @@ cEvent *cRealTimeScheduler::takeNextEvent()
 
     // if needed, wait until that time arrives
     timeval curTime;
-    gettimeofday(&curTime, NULL);
+    gettimeofday(&curTime, nullptr);
     if (timeval_greater(targetTime, curTime))
     {
         if (!waitUntil(targetTime))
-            return NULL; // user break
+            return nullptr; // user break
     }
     else
     {

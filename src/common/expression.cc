@@ -108,7 +108,7 @@ std::string Expression::Function_str(const char *name, std::string args[], int n
 
 Expression::Expression()
 {
-    elems = NULL;
+    elems = nullptr;
     nelems = 0;
 }
 
@@ -269,7 +269,7 @@ Expression::Value Expression::evaluate() const
                            stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].dblunit, stk[tos-1].dblunit);
                        stk[tos-1].dbl = stk[tos-1].dbl / stk[tos].dbl;
                        if (!opp_isempty(stk[tos].dblunit))
-                           stk[tos-1].dblunit = NULL;
+                           stk[tos-1].dblunit = nullptr;
                        tos--;
                        break;
                    case MOD:
@@ -623,7 +623,7 @@ MathFunction::FuncDesc MathFunction::functable[] = {
     F2(hypot),
     F1(log),
     F1(log10),
-    {NULL, NULL, 0}
+    {nullptr, nullptr, 0}
 };
 
 MathFunction::MathFunction(const char *name)
@@ -652,22 +652,22 @@ const char *MathFunction::getName() const
 
 MathFunction::FuncDesc *MathFunction::lookup(const char *name)
 {
-    for (FuncDesc *f = functable; f->name!=NULL; f++)
+    for (FuncDesc *f = functable; f->name!=nullptr; f++)
         if (strcmp(f->name, name)==0)
             return f;
-    return NULL;
+    return nullptr;
 }
 
 bool MathFunction::supports(const char *name)
 {
-    return lookup(name)!=NULL;
+    return lookup(name)!=nullptr;
 }
 
 const char *MathFunction::getArgTypes() const
 {
     Assert(Expression::Value::DBL == 'D');
     FuncDesc *fd = lookup(funcname.c_str());
-    int n = fd==NULL ? 0 : fd->argcount;
+    int n = fd==nullptr ? 0 : fd->argcount;
     const char *ddd = "DDDDDDDDDDDDDDDDDD";
     return ddd+strlen(ddd)-n;
 }

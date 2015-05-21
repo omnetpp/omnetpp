@@ -76,7 +76,7 @@ class SIM_API cNullEnvir : public cEnvir
     // eventlog callback interface
     virtual void objectDeleted(cObject *object) {}
     virtual void simulationEvent(cEvent *event)  {}
-    virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=NULL)  {}
+    virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=nullptr)  {}
     virtual void messageScheduled(cMessage *msg)  {}
     virtual void messageCancelled(cMessage *msg)  {}
     virtual void beginSend(cMessage *msg)  {}
@@ -104,8 +104,8 @@ class SIM_API cNullEnvir : public cEnvir
     virtual void configure(cComponent *component) {}
     virtual void readParameter(cPar *par)  {unsupported();}
     virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index)  {return true;}
-    virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath=NULL)  {unsupported(); return NULL;}
-    virtual cXMLElement *getParsedXMLString(const char *content, const char *xpath=NULL)  {unsupported(); return NULL;}
+    virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath=nullptr)  {unsupported(); return nullptr;}
+    virtual cXMLElement *getParsedXMLString(const char *content, const char *xpath=nullptr)  {unsupported(); return nullptr;}
     virtual void forgetXMLDocument(const char *filename) {}
     virtual void forgetParsedXMLString(const char *content) {}
     virtual void flushXMLDocumentCache() {}
@@ -116,13 +116,13 @@ class SIM_API cNullEnvir : public cEnvir
 
     // UI functions (see also protected ones)
     virtual void bubble(cComponent *component, const char *text)  {}
-    virtual std::string gets(const char *prompt, const char *defaultreply=NULL)  {unsupported(); return "";}
+    virtual std::string gets(const char *prompt, const char *defaultreply=nullptr)  {unsupported(); return "";}
     virtual cEnvir& flush()  {::fflush(stdout); return *this;}
 
     // RNGs
     virtual int getNumRNGs() const {return 1;}
     virtual cRNG *getRNG(int k)  {return rng;}
-    virtual void getRNGMappingFor(cComponent *component)  {component->setRNGMap(0,NULL);}
+    virtual void getRNGMappingFor(cComponent *component)  {component->setRNGMap(0,nullptr);}
 
     // output vectors
     virtual void *registerOutputVector(const char *modulename, const char *vectorname)  {return (void *)1;}
@@ -131,13 +131,13 @@ class SIM_API cNullEnvir : public cEnvir
     virtual bool recordInOutputVector(void *vechandle, simtime_t t, double value)  {return false;}
 
     // output scalars
-    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL)  {}
-    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL)  {}
+    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr)  {}
+    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr)  {}
 
     virtual void addResultRecorders(cComponent *component, simsignal_t signal, const char *statisticName, cProperty *statisticTemplateProperty) {}
 
     // snapshot file
-    virtual std::ostream *getStreamForSnapshot()  {unsupported(); return NULL;}
+    virtual std::ostream *getStreamForSnapshot()  {unsupported(); return nullptr;}
     virtual void releaseStreamForSnapshot(std::ostream *os)  {unsupported();}
 
     // misc

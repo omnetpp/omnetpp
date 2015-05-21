@@ -35,7 +35,7 @@ class SIM_API VectorRecorder : public cNumericResultRecorder
     protected:
         virtual void collect(simtime_t_cref t, double value);
     public:
-        VectorRecorder() {handle = NULL; lastTime = 0;}
+        VectorRecorder() {handle = nullptr; lastTime = 0;}
         virtual ~VectorRecorder();
         virtual void subscribedTo(cResultFilter *prev);
 };

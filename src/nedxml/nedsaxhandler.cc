@@ -25,7 +25,7 @@ NAMESPACE_BEGIN
 
 NEDSAXHandler::NEDSAXHandler(const char *fname, NEDErrorStore *e)
 {
-    root = current = 0;
+    root = current = nullptr;
     sourceFilename = fname;
     errors = e;
 }
@@ -38,7 +38,7 @@ NEDSAXHandler::~NEDSAXHandler()
 NEDElement *NEDSAXHandler::getTree()
 {
     NEDElement *tree = root;
-    root = current = 0;
+    root = current = nullptr;
     return tree;
 }
 

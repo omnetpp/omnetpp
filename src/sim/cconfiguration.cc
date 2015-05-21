@@ -92,7 +92,7 @@ std::vector<std::string> cConfiguration::parseFilenames(const char *s, const cha
     std::vector<std::string> result;
     FilenamesListTokenizer tokenizer(s);
     const char *fname;
-    while ((fname = tokenizer.nextToken())!=NULL)
+    while ((fname = tokenizer.nextToken())!=nullptr)
     {
         if (fname[0]=='@' && fname[1]=='@')
             result.push_back("@@" + tidyFilename(concatDirAndFile(baseDir, fname+2).c_str()));
@@ -113,7 +113,7 @@ std::string cConfiguration::adjustPath(const char *s, const char *baseDir, const
     std::string result;
     StringTokenizer tokenizer(s, PATH_SEPARATOR);
     const char *dirName;
-    while ((dirName = tokenizer.nextToken())!=NULL)
+    while ((dirName = tokenizer.nextToken())!=nullptr)
     {
         if (result.size()!=0)
             result += ";";
@@ -128,7 +128,7 @@ std::string cConfiguration::adjustPath(const char *s, const char *baseDir, const
 
 inline const char *fallback(const char *s, const char *defaultValue, const char *fallbackValue)
 {
-    return s!=NULL ? s : defaultValue!=NULL ? defaultValue : fallbackValue;
+    return s!=nullptr ? s : defaultValue!=nullptr ? defaultValue : fallbackValue;
 }
 
 static void assertType(cConfigOption *option, bool isPerObject, cConfigOption::Type requiredType)

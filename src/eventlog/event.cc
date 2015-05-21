@@ -40,11 +40,11 @@ void Event::clearInternalState()
     endOffset = -1;
     numEventLogMessages = -1;
     numBeginSendEntries = -1;
-    eventEntry = NULL;
-    moduleCreatedEntry = NULL;
-    cause = NULL;
-    causes = NULL;
-    consequences = NULL;
+    eventEntry = nullptr;
+    moduleCreatedEntry = nullptr;
+    cause = nullptr;
+    causes = nullptr;
+    consequences = nullptr;
     eventLogEntries.clear();
 }
 
@@ -54,7 +54,7 @@ void Event::deleteConsequences()
         for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
             delete *it;
         delete consequences;
-        consequences = NULL;
+        consequences = nullptr;
     }
 }
 
@@ -62,13 +62,13 @@ void Event::deleteAllocatedObjects()
 {
     if (cause && !causes) {
         delete cause;
-        cause = NULL;
+        cause = nullptr;
     }
     if (causes) {
         for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
             delete *it;
         delete causes;
-        causes = NULL;
+        causes = nullptr;
     }
     deleteConsequences();
     for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++)
@@ -242,7 +242,7 @@ EndSendEntry *Event::getEndSendEntry(BeginSendEntry *beginSendEntry)
         // message deleted on the channel (skip all deletes until the matching one is found)
         DeleteMessageEntry *deleteMessageEntry = dynamic_cast<DeleteMessageEntry *>(eventLogEntry);
         if (deleteMessageEntry && deleteMessageEntry->messageId == beginSendEntry->messageId)
-            return NULL;
+            return nullptr;
     }
 
     throw opp_runtime_error("neither EndSendEntry nor DeleteMessageEntry found");
@@ -302,7 +302,7 @@ Event *Event::getCauseEvent()
     if (causeEventNumber != -1)
         return eventLog->getEventForEventNumber(causeEventNumber);
     else
-        return NULL;
+        return nullptr;
 }
 
 BeginSendEntry *Event::getCauseBeginSendEntry()
@@ -311,7 +311,7 @@ BeginSendEntry *Event::getCauseBeginSendEntry()
     if (cause)
         return (BeginSendEntry *)cause->getMessageEntry();
     else
-        return NULL;
+        return nullptr;
 }
 
 MessageSendDependency *Event::getCause()

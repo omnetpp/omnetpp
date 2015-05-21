@@ -163,7 +163,7 @@ double SequenceChartFacade::getTimelineCoordinate(IEvent *event, double lowerTim
             case STEP:
             case NONLINEAR:
                 {
-                    IEvent *previousEvent = NULL;
+                    IEvent *previousEvent = nullptr;
                     // do we go forward from end or backward from start of known range
                     bool forward = event->getEventNumber() > timelineCoordinateRangeEndEventNumber;
                     IEvent *currentEvent = eventLog->getEventForEventNumber(forward ? timelineCoordinateRangeEndEventNumber : timelineCoordinateRangeStartEventNumber);
@@ -269,7 +269,7 @@ IEvent *SequenceChartFacade::getEventForNonLinearTimelineCoordinate(double timel
 IEvent *SequenceChartFacade::getLastEventNotAfterTimelineCoordinate(double timelineCoordinate)
 {
     if (eventLog->isEmpty())
-        return NULL;
+        return nullptr;
 
     switch (timelineMode) {
         case SIMULATION_TIME:
@@ -279,7 +279,7 @@ IEvent *SequenceChartFacade::getLastEventNotAfterTimelineCoordinate(double timel
                 eventnumber_t eventNumber = (eventnumber_t)floor(timelineCoordinate) + timelineCoordinateOriginEventNumber;
 
                 if (eventNumber < 0)
-                    return NULL;
+                    return nullptr;
                 else
                     return eventLog->getLastEventNotAfterEventNumber(eventNumber);
             }
@@ -301,7 +301,7 @@ IEvent *SequenceChartFacade::getLastEventNotAfterTimelineCoordinate(double timel
 IEvent *SequenceChartFacade::getFirstEventNotBeforeTimelineCoordinate(double timelineCoordinate)
 {
     if (eventLog->isEmpty())
-        return NULL;
+        return nullptr;
 
     switch (timelineMode) {
         case SIMULATION_TIME:

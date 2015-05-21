@@ -90,7 +90,7 @@ class ENVIR_API ObjectPrinter
          * not declaredOn(cObject))":
          *     records user-defined fields from all objects
          */
-        ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate=NULL, const char *pattern="*", int indentSize=4);
+        ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate=nullptr, const char *pattern="*", int indentSize=4);
 
         /**
          * Destructor.

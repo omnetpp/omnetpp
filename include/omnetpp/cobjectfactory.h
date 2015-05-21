@@ -47,7 +47,7 @@ class SIM_API cObjectFactory : public cNoncopyableOwnedObject
     /**
      * Constructor.
      */
-    cObjectFactory(const char *name, cObject *(*creatorfunc)(), void *(*castfunc)(cObject *), const char *description=NULL);
+    cObjectFactory(const char *name, cObject *(*creatorfunc)(), void *(*castfunc)(cObject *), const char *description=nullptr);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -65,7 +65,7 @@ class SIM_API cObjectFactory : public cNoncopyableOwnedObject
      * Returns true if the class this object stands for is abstract.
      * createOne() cannot be called for abstract classes.
      */
-    virtual bool isAbstract() const  {return creatorFunc==NULL;}
+    virtual bool isAbstract() const  {return creatorFunc==nullptr;}
 
     /**
      * Creates an instance of a particular class by calling the creator
@@ -79,7 +79,7 @@ class SIM_API cObjectFactory : public cNoncopyableOwnedObject
      * Returns true if the given object can be cast (via dynamic_cast) to the
      * class represented by this factory object, and false otherwise.
      */
-    virtual bool isInstance(cObject *obj) const  {return castFunc(obj)!=NULL;}
+    virtual bool isInstance(cObject *obj) const  {return castFunc(obj)!=nullptr;}
 
     /**
      * Returns a description string.
@@ -95,12 +95,12 @@ class SIM_API cObjectFactory : public cNoncopyableOwnedObject
      * potential namespace, enclosing class etc. The class must have been
      * registered previously with the Register_Class() macro.
      */
-    static cObjectFactory *find(const char *className, const char *contextNamespace=NULL, bool fallbackToOmnetpp=true);
+    static cObjectFactory *find(const char *className, const char *contextNamespace=nullptr, bool fallbackToOmnetpp=true);
 
     /**
      * Like find(), but throws an error if the object was not found.
      */
-    static cObjectFactory *get(const char *className, const char *contextNamespace=NULL, bool fallbackToOmnetpp=true);
+    static cObjectFactory *get(const char *className, const char *contextNamespace=nullptr, bool fallbackToOmnetpp=true);
 
     /**
      * Creates an instance of a particular class; the result has to be cast

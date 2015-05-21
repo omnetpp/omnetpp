@@ -90,7 +90,7 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
     /**
      * Constructor.
      */
-    explicit cDefaultList(const char *name=NULL);
+    explicit cDefaultList(const char *name=nullptr);
 
     /**
      * Destructor. The contained objects will be deleted.

@@ -128,7 +128,7 @@ class SIM_API cProperties : public cObject
      * <tt>\@propertyname[index](keys-and-values)</tt>, where "[index]"
      * is optional.
      */
-    virtual cProperty *get(const char *name, const char *index=NULL) const;
+    virtual cProperty *get(const char *name, const char *index=nullptr) const;
 
     /**
      * Returns the property as a boolean. If the property is missing,
@@ -146,7 +146,7 @@ class SIM_API cProperties : public cObject
      * <tt>\@foo(a=x,b=y,c=z)</tt>: true;
      * <tt>\@foo(somekey=false)</tt>: true (!)
      */
-    virtual bool getAsBool(const char *name, const char *index=NULL) const;
+    virtual bool getAsBool(const char *name, const char *index=nullptr) const;
 
     /**
      * Returns unique indices for a property. Name and index correspond to the

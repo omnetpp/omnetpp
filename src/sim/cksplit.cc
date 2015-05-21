@@ -76,7 +76,7 @@ double divfunc_babak(const cKSplit&, cKSplit::Grid& g, double mother, double *d)
 
 cKSplit::cKSplit(const cKSplit& r) : cDensityEstBase(r)
 {
-    gridv = NULL; iter = NULL;
+    gridv = nullptr; iter = nullptr;
     copy(r);
 }
 
@@ -93,11 +93,11 @@ cKSplit::cKSplit(const char *name) : cDensityEstBase(name)
     divData = divdata_default;
     rangeExtEnabled = true;
 
-    gridv = NULL;
+    gridv = nullptr;
     gridvSize = 0;
     rootGridIndex = lastGridIndex = -1;
 
-    iter = NULL;
+    iter = nullptr;
     iterNumValues = -1;
 }
 
@@ -127,7 +127,7 @@ void cKSplit::copy(const cKSplit& res)
 
     delete [] gridv;
     if (!res.gridv)
-       gridv = NULL;
+       gridv = nullptr;
     else
     {
        gridv = new Grid[gridvSize + 1];
@@ -142,7 +142,7 @@ void cKSplit::copy(const cKSplit& res)
     rangeExtEnabled = res.rangeExtEnabled;
 
     delete iter;
-    iter = NULL;
+    iter = nullptr;
     iterNumValues = -1;
 }
 
@@ -228,7 +228,7 @@ void cKSplit::transform()
          insertIntoGrids(precollectedValues[i], false);
 
     delete [] precollectedValues;
-    precollectedValues = NULL;
+    precollectedValues = nullptr;
 
     transformed = true;
 }
@@ -534,7 +534,7 @@ void cKSplit::printGrids() const
 void cKSplit::iteratorToCell(int cell_nr) const
 {
     // create iterator or reinit if it is stale
-    iter=0;
+    iter=nullptr;
     if (!iter)
         {iter = new Iterator(*this); iterNumValues = numValues;}
     else if (numValues!=iterNumValues)
@@ -718,7 +718,7 @@ void cKSplit::saveToFile(FILE *f) const
     fprintf(f, "%d\t #= rootgrid\n", rootGridIndex);
     fprintf(f, "%d\t #= lastgrid\n", lastGridIndex);
 
-    fprintf(f, "%d\t #= gridv_exists\n", gridv!=NULL);
+    fprintf(f, "%d\t #= gridv_exists\n", gridv!=nullptr);
     if (gridv)
     {
         for (int i = 1; i <= lastGridIndex; i++)
@@ -752,7 +752,7 @@ void cKSplit::loadFromFile(FILE *f)
     freadvarsf(f, "%d\t #= gridv_exists", &gridv_exists);
 
     delete [] gridv;
-    gridv = NULL;
+    gridv = nullptr;
     if (gridv_exists)
     {
         gridv = new Grid[gridvSize+1];

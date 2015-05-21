@@ -51,7 +51,7 @@ class SCAVE_API VectorFileWriterNode : public Node
         int prec;
 
     public:
-        VectorFileWriterNode(const char *filename, const char *fileHeader=NULL);
+        VectorFileWriterNode(const char *filename, const char *fileHeader=nullptr);
         virtual ~VectorFileWriterNode();
 
         Port *addVector(const VectorResult &vector);

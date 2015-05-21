@@ -73,10 +73,10 @@ class StringPool
         std::set<std::string> pool;
         const std::string *lastInsertedPtr;
     public:
-        StringPool() : lastInsertedPtr(NULL) {}
+        StringPool() : lastInsertedPtr(nullptr) {}
         const std::string *insert(const std::string& str);
         const std::string *find(const std::string& str) const;
-        void clear() { lastInsertedPtr = NULL; pool.clear(); }
+        void clear() { lastInsertedPtr = nullptr; pool.clear(); }
 };
 
 NAMESPACE_END

@@ -44,9 +44,9 @@ Register_GlobalConfigOption(CFGID_PARSIM_DEBUG, "parsim-debug", CFG_BOOL, "true"
 
 cParsimPartition::cParsimPartition()
 {
-    sim = NULL;
-    comm = NULL;
-    synch = NULL;
+    sim = nullptr;
+    comm = nullptr;
+    synch = nullptr;
     debug = getEnvir()->getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
 }
 
@@ -166,7 +166,7 @@ void cParsimPartition::connectRemoteGates()
             // find corresponding output gate (if we have it) and set remote
             // gate address to the received one
             cModule *m = sim->getModuleByPath(moduleFullPath);
-            cGate *g = !m ? NULL : gateIndex==-1 ? m->gate(gateName) : m->gate(gateName,gateIndex);
+            cGate *g = !m ? nullptr : gateIndex==-1 ? m->gate(gateName) : m->gate(gateName,gateIndex);
             cProxyGate *pg = dynamic_cast<cProxyGate *>(g);
 
             EV << "    gate: " << moduleFullPath << "." << gateName;

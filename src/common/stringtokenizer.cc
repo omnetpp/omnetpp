@@ -52,18 +52,18 @@ void StringTokenizer::setDelimiter(const char *delim)
 
 inline void skipDelimiters(char *&s, const char *delims)
 {
-    while (*s && strchr(delims, *s)!=NULL) s++;
+    while (*s && strchr(delims, *s)!=nullptr) s++;
 }
 
 inline void skipToken(char *&s, const char *delims)
 {
-    while (*s && strchr(delims, *s)==NULL) s++;
+    while (*s && strchr(delims, *s)==nullptr) s++;
 }
 
 const char *StringTokenizer::nextToken()
 {
     skipDelimiters(rest, delimiter.c_str());
-    if (!*rest) return NULL;
+    if (!*rest) return nullptr;
     const char *token = rest;
     skipToken(rest, delimiter.c_str());
     if (*rest)
@@ -81,7 +81,7 @@ std::vector<std::string> StringTokenizer::asVector()
 {
     const char *s;
     std::vector<std::string> v;
-    while ((s=nextToken())!=NULL)
+    while ((s=nextToken())!=nullptr)
         v.push_back(std::string(s));
     return v;
 }

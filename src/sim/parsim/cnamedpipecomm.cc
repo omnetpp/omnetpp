@@ -77,8 +77,8 @@ struct PipeHeader
 cNamedPipeCommunications::cNamedPipeCommunications()
 {
     prefix = getEnvir()->getConfig()->getAsString(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX);
-    rpipes = NULL;
-    wpipes = NULL;
+    rpipes = nullptr;
+    wpipes = nullptr;
     rrBase = 0;
 }
 
@@ -213,7 +213,7 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
     tv.tv_sec = blocking ? 1 : 0; // if blocking, wait 1 sec
     tv.tv_usec = 0;
 
-    int ret = select(maxFdPlus1, &fdset, NULL, NULL, &tv);
+    int ret = select(maxFdPlus1, &fdset, nullptr, nullptr, &tv);
     if (ret>0)
     {
         rrBase = (rrBase+1)%numPartitions;

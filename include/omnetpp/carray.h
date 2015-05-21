@@ -122,7 +122,7 @@ class SIM_API cArray : public cOwnedObject
      * Constructor. The initial capacity of the container and the delta
      * (by which the capacity will grow if it gets full) can be specified.
      */
-    explicit cArray(const char *name=NULL, int capacity=0, int delta=10);
+    explicit cArray(const char *name=nullptr, int capacity=0, int delta=10);
 
     /**
      * Destructor. The contained objects that were owned by the container
@@ -292,7 +292,7 @@ class SIM_API cArray : public cOwnedObject
     /**
      * Returns true if position m is used in the array, otherwise false.
      */
-    bool exist(int m) const  {return m>=0 && m<=last && vect[m]!=NULL;}
+    bool exist(int m) const  {return m>=0 && m<=last && vect[m]!=nullptr;}
 
     /**
      * Returns true if the array contains an object with the given name,

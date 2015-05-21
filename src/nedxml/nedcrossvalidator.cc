@@ -41,11 +41,11 @@ NEDElement *NEDCrossValidator::getXXXDeclaration(const char *name, int tagcode1,
 {
     NEDTypeInfo *component = resolver->lookup(name);
     if (!component)
-        return NULL;
+        return nullptr;
 
     int type = component->getTree()->getTagCode();
     if (type!=tagcode1 && type!=tagcode2)
-        return NULL;
+        return nullptr;
     return component->getTree();
 }
 
@@ -145,7 +145,7 @@ void NEDCrossValidator::validateElement(ParamElement *node)
     // make sure parameter exists in module type
     const char *paramName = node->getName();
     NEDElement *params = moduleTypeDecl->getFirstChildWithTag(NED_PARAMETERS);
-    if (!params || params->getFirstChildWithAttribute(NED_PARAM, "name", paramName)==NULL)
+    if (!params || params->getFirstChildWithAttribute(NED_PARAM, "name", paramName)==nullptr)
         {errors->addError(node, "module type '%s' has no parameter named '%s'", moduleTypeDecl->getAttribute("name"), paramName);return;}
 
     // TBD compile-time check for type mismatch
@@ -245,7 +245,7 @@ void NEDCrossValidator::validateConnGate(const char *submodName, bool hasSubmodI
         // connected to parent module: check such gate is declared
         NEDElement *gates = parent->getFirstChildWithTag(NED_GATES);
         GateElement *gate;
-        if (!gates || (gate=(GateElement*)gates->getFirstChildWithAttribute(NED_GATE, "name", gateName))==NULL)
+        if (!gates || (gate=(GateElement*)gates->getFirstChildWithAttribute(NED_GATE, "name", gateName))==nullptr)
             errors->addError(conn, "%s: compound module has no gate named '%s'", q, gateName);
         else
             checkGate(gate, hasGateIndex, isSrc, conn, isSrc);
@@ -254,14 +254,14 @@ void NEDCrossValidator::validateConnGate(const char *submodName, bool hasSubmodI
     {
         // check such submodule is declared
         NEDElement *submods = parent->getFirstChildWithTag(NED_SUBMODULES);
-        SubmoduleElement *submod = NULL;
-        if (!submods || (submod=(SubmoduleElement*)submods->getFirstChildWithAttribute(NED_SUBMODULE, "name", submodName))==NULL)
+        SubmoduleElement *submod = nullptr;
+        if (!submods || (submod=(SubmoduleElement*)submods->getFirstChildWithAttribute(NED_SUBMODULE, "name", submodName))==nullptr)
         {
             errors->addError(conn, "%s: compound module has no submodule named '%s'", q, submodName);
         }
         else
         {
-            bool isSubmodVector = submod->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size")!=NULL;
+            bool isSubmodVector = submod->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size")!=nullptr;
             if (hasSubmodIndex && !isSubmodVector)
                 errors->addError(conn, "%s: extra submodule index ('%s' is not a vector submodule)", q, submodName);
             else if (!hasSubmodIndex && isSubmodVector)
@@ -273,7 +273,7 @@ void NEDCrossValidator::validateConnGate(const char *submodName, bool hasSubmodI
                 return; // we gave error earlier if submod type is not present
             NEDElement *gates = submodType->getFirstChildWithTag(NED_GATES);
             GateElement *gate;
-            if (!gates || (gate=(GateElement*)gates->getFirstChildWithAttribute(NED_GATE, "name", gateName))==NULL)
+            if (!gates || (gate=(GateElement*)gates->getFirstChildWithAttribute(NED_GATE, "name", gateName))==nullptr)
                 errors->addError(conn, "%s: submodule '%s' has no gate named '%s'", q, submodName, gateName);
             else
                 checkGate(gate, hasGateIndex, !isSrc, conn, isSrc);
@@ -290,10 +290,10 @@ void NEDCrossValidator::validateElement(ConnectionElement *node)
     if (!compound)
         INTERNAL_ERROR0(node,"occurs outside a compound-module");
 
-    bool srcModIx =   node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "src-module-index")!=NULL;
-    bool srcGateIx =  node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "src-gate-index")!=NULL || node->getSrcGatePlusplus();
-    bool destModIx =  node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "dest-module-index")!=NULL;
-    bool destGateIx = node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "dest-gate-index")!=NULL || node->getDestGatePlusplus();
+    bool srcModIx =   node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "src-module-index")!=nullptr;
+    bool srcGateIx =  node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "src-gate-index")!=nullptr || node->getSrcGatePlusplus();
+    bool destModIx =  node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "dest-module-index")!=nullptr;
+    bool destGateIx = node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "dest-gate-index")!=nullptr || node->getDestGatePlusplus();
     validateConnGate(node->getSrcModule(), srcModIx, node->getSrcGate(), srcGateIx, compound, node, true);
     validateConnGate(node->getDestModule(), destModIx, node->getDestGate(), destGateIx, compound, node, false);
 }

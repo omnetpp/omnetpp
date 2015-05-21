@@ -60,7 +60,7 @@ cTopology::LinkOut *cTopology::Node::getLinkOut(int i)
 
 cTopology::cTopology(const char *name) : cOwnedObject(name)
 {
-    target = NULL;
+    target = nullptr;
 }
 
 cTopology::cTopology(const cTopology& topo) : cOwnedObject(topo)
@@ -143,7 +143,7 @@ static bool selectByParameter(cModule *mod, void *data)
 {
     struct PropertyData{const char *name; const char *value;};
     PropertyData *d = (PropertyData *)data;
-    return mod->hasPar(d->name) && (d->value==NULL || mod->par(d->name).str()==std::string(d->value));
+    return mod->hasPar(d->name) && (d->value==nullptr || mod->par(d->name).str()==std::string(d->value));
 }
 
 //---
@@ -365,7 +365,7 @@ cTopology::Node *cTopology::getNodeFor(cModule *mod)
     Node tmpNode(mod->getId());
     std::vector<Node*>::iterator it = std::lower_bound(nodes.begin(), nodes.end(), &tmpNode, lessByModuleId);
 //TODO: this does not compile with VC9 (VC10 is OK): std::vector<Node*>::iterator it = std::lower_bound(nodes.begin(), nodes.end(), mod->getId(), isModuleIdLess);
-    return it==nodes.end() || (*it)->moduleId != mod->getId() ? NULL : *it;
+    return it==nodes.end() || (*it)->moduleId != mod->getId() ? nullptr : *it;
 }
 
 void cTopology::calculateUnweightedSingleShortestPathsTo(Node *_target)
@@ -379,7 +379,7 @@ void cTopology::calculateUnweightedSingleShortestPathsTo(Node *_target)
     for (int i=0; i<(int)nodes.size(); i++)
     {
        nodes[i]->dist = INFINITY;
-       nodes[i]->outPath = NULL;
+       nodes[i]->outPath = nullptr;
     }
     target->dist = 0;
 
@@ -422,7 +422,7 @@ void cTopology::calculateWeightedSingleShortestPathsTo(Node *_target)
     for (int i=0; i<(int)nodes.size(); i++)
     {
        nodes[i]->dist = INFINITY;
-       nodes[i]->outPath = NULL;
+       nodes[i]->outPath = nullptr;
     }
 
     target->dist = 0;

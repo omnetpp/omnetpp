@@ -65,7 +65,7 @@ class TKENV_API LogBuffer
         std::vector<Line> lines;
         std::vector<MessageSend> msgs;
 
-        Entry() {eventNumber=0; simtime=0; moduleId=0; banner=NULL;}
+        Entry() {eventNumber=0; simtime=0; moduleId=0; banner=nullptr;}
         ~Entry();
     };
 

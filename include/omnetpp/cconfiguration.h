@@ -145,7 +145,7 @@ class SIM_API cConfiguration : public cObject
      * Returns a config value without any conversion.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual const char *getAsCustom(cConfigOption *option, const char *fallbackValue=NULL);
+    virtual const char *getAsCustom(cConfigOption *option, const char *fallbackValue=nullptr);
 
     /**
      * Returns a config value as bool.
@@ -201,7 +201,7 @@ class SIM_API cConfiguration : public cObject
      * Returns a per-object config value without any conversion.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual const char *getAsCustom(const char *objectFullPath, cConfigOption *option, const char *fallbackValue=NULL);
+    virtual const char *getAsCustom(const char *objectFullPath, cConfigOption *option, const char *fallbackValue=nullptr);
 
     /**
      * Returns a per-object config value as bool.
@@ -306,7 +306,7 @@ class SIM_API cConfigurationEx : public cConfiguration
      * Cmdenv is unavailable (not linked in), "tkenv-*" when Tkenv is unavailable,
      * etc, so that validate() does not report those keys in omnetpp.ini as errors.
      */
-    virtual void validate(const char *ignorableConfigKeys=NULL) const = 0;
+    virtual void validate(const char *ignorableConfigKeys=nullptr) const = 0;
 
     /** @name Activating a configuration */
     //@{

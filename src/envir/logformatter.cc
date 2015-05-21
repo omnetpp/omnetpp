@@ -62,12 +62,12 @@ void LogFormatter::parseFormat(const char *format)
                 conditional = false;
             }
             else if (ch == '|') {
-                addPart(ADAPTIVE_TAB, NULL, NULL, conditional);
+                addPart(ADAPTIVE_TAB, nullptr, nullptr, conditional);
                 adaptiveTabColumns.push_back(0);
                 conditional = false;
             }
             else if (ch == '>') {
-                addPart(INDENT, NULL, NULL, conditional);
+                addPart(INDENT, nullptr, nullptr, conditional);
                 conditional = false;
             }
             else if (ch == '?')
@@ -75,13 +75,13 @@ void LogFormatter::parseFormat(const char *format)
             else if ('0' <= ch && ch <= '9') {
                 char *tail;
                 int padding = strtol(current, &tail, 10);
-                addPart(PADDING, NULL, NULL, conditional);
+                addPart(PADDING, nullptr, nullptr, conditional);
                 formatParts[formatParts.size() - 1].padding = padding;
                 current = tail - 1;
                 conditional = false;
             }
             else {
-                addPart(getDirective(ch), NULL, NULL, conditional);
+                addPart(getDirective(ch), nullptr, nullptr, conditional);
                 conditional = false;
             }
             previous = current + 1;
@@ -92,7 +92,7 @@ void LogFormatter::parseFormat(const char *format)
 
 LogFormatter::FormatDirective LogFormatter::getDirective(char ch)
 {
-    if (strchr("lcetgvanmosqNMOSQGRXYZpbdzuxyfiwWHIEUCKJL", ch) == NULL)
+    if (strchr("lcetgvanmosqNMOSQGRXYZpbdzuxyfiwWHIEUCKJL", ch) == nullptr)
         throw cRuntimeError("Unknown log format character '%c'", ch);
     return (LogFormatter::FormatDirective) ch;
 }
@@ -245,7 +245,7 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
             case WALLTIME:
             {
                 // chop off newline at the end (no worries, this is slow anyway)
-                time_t now = time(NULL);
+                time_t now = time(nullptr);
                 std::string nowstr(ctime(&now));
                 stream << nowstr.substr(0, nowstr.length() - 1); break;
             }

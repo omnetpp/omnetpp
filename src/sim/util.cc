@@ -249,7 +249,7 @@ void cMethodCallContextSwitcher::methodCallSilent()
 {
     cComponent *newContext = getSimulation()->getContext();
     if (newContext!=callerContext)
-        EVCB.componentMethodBegin(callerContext, newContext, NULL, dummy_va, true);
+        EVCB.componentMethodBegin(callerContext, newContext, nullptr, dummy_va, true);
 }
 
 cMethodCallContextSwitcher::~cMethodCallContextSwitcher()
@@ -307,8 +307,8 @@ void nedfunctions_dummy();
 void _sim_dummy_func()
 {
       bool bb = false;
-      cRNG *rng = NULL;
-      cWatch_bool w(NULL,bb);
+      cRNG *rng = nullptr;
+      cWatch_bool w(nullptr,bb);
       std::vector<int> v;
       WATCH_VECTOR(v);
       w.supportsAssignment();
@@ -326,11 +326,11 @@ void _sim_dummy_func()
       cStringTokenizer tok("");
       tok.nextToken();
       std_sim_descriptor_dummy();
-      cXMLElement a(0,0,0);
+      cXMLElement a(nullptr,nullptr,nullptr);
       (void)a;
-      cDelayChannel dc(NULL);
+      cDelayChannel dc(nullptr);
       (void)dc;
-      cDatarateChannel c(NULL);
+      cDatarateChannel c(nullptr);
       (void)c;
       cPacketQueue pq;
       (void)pq;

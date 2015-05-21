@@ -226,7 +226,7 @@ struct GlobPrivateData
 FileGlobber::FileGlobber(const char *filenamepattern)
 {
     fnamepattern = filenamepattern;
-    data = NULL;
+    data = nullptr;
 }
 
 FileGlobber::~FileGlobber()
@@ -247,15 +247,15 @@ const char *FileGlobber::getNext()
         }
 
         data->nowildcard = false;
-        if (glob(fnamepattern.c_str(), 0, NULL, &data->globdata)!=0)
-            return NULL;
+        if (glob(fnamepattern.c_str(), 0, nullptr, &data->globdata)!=0)
+            return nullptr;
         data->globpos = 0;
         return data->globdata.gl_pathv[data->globpos++];
     }
     else
     {
         if (data->nowildcard)
-            return NULL;
+            return nullptr;
         return data->globdata.gl_pathv[data->globpos++];
     }
 }
@@ -271,7 +271,7 @@ std::vector<std::string> FileGlobber::getFilenames()
 {
     std::vector<std::string> v;
     const char *filename;
-    while ((filename=getNext())!=NULL)
+    while ((filename=getNext())!=nullptr)
         v.push_back(filename);
     return v;
 }

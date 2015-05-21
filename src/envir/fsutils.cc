@@ -25,10 +25,10 @@ NAMESPACE_BEGIN
 
 std::string makeLibFileName(const char *libname, const char *prefix, const char *suffix)
 {
-     bool hasDir = strchr(libname, '/')!=NULL || strchr(libname, '\\')!=NULL;
+     bool hasDir = strchr(libname, '/')!=nullptr || strchr(libname, '\\')!=nullptr;
      std::string dir, fileNameOnly;
      splitFileName(libname, dir, fileNameOnly);
-     bool hasExt = strchr(fileNameOnly.c_str(), '.')!=NULL;
+     bool hasExt = strchr(fileNameOnly.c_str(), '.')!=nullptr;
 
      std::string libFileName;
      if (hasExt)

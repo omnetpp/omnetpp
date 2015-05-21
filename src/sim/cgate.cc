@@ -92,10 +92,10 @@ bool cGate::Name::operator<(const Name& other) const
 
 cGate::cGate()
 {
-    desc = NULL;
+    desc = nullptr;
     pos = 0;
-    prevGate = nextGate = NULL;
-    channel = NULL;
+    prevGate = nextGate = nullptr;
+    channel = nullptr;
     connectionId = -1;
 }
 
@@ -157,13 +157,13 @@ const char *cGate::getFullName() const
 std::string cGate::info() const
 {
     const char *arrow;
-    cGate const *g = NULL;
+    cGate const *g = nullptr;
     cChannel const *chan;
 
     if (getType()==OUTPUT)
         {arrow = "--> "; g = nextGate; chan = channel; }
     else if (getType()==INPUT)
-        {arrow = "<-- "; g = prevGate; chan = prevGate ? prevGate->channel : NULL;}
+        {arrow = "<-- "; g = prevGate; chan = prevGate ? prevGate->channel : nullptr;}
     else
         ASSERT(0);  // a cGate is never INOUT
 
@@ -231,7 +231,7 @@ const char *cGate::getTypeName(Type t)
 cProperties *cGate::getProperties() const
 {
     cComponent *component = dynamic_cast<cComponent *>(getOwner());
-    ASSERT(component != NULL);
+    ASSERT(component != nullptr);
     cComponentType *componentType = component->getComponentType();
     cProperties *props = componentType->getGateProperties(getBaseName());
     return props;
@@ -319,7 +319,7 @@ cChannel *cGate::connectTo(cGate *g, cChannel *chan, bool leaveUninitialized)
 
 void cGate::installChannel(cChannel *chan)
 {
-    ASSERT(channel==NULL && chan!=NULL);
+    ASSERT(channel==nullptr && chan!=nullptr);
     channel = chan;
     channel->setSourceGate(this);
     take(channel);
@@ -358,12 +358,12 @@ void cGate::disconnect()
 
     // remove connection (but preserve channel object for the notification)
     cGate *oldnextgatep = nextGate;
-    nextGate->prevGate = NULL;
-    nextGate = NULL;
+    nextGate->prevGate = nullptr;
+    nextGate = nullptr;
     connectionId = -1;
 
     cChannel *oldchannelp = channel;
-    channel = NULL;
+    channel = nullptr;
 
 #ifdef SIMFRONTEND_SUPPORT
     mod->updateLastChangeSerial();
@@ -393,7 +393,7 @@ void cGate::disconnect()
 void cGate::checkChannels() const
 {
     int n = 0;
-    for (const cGate *g=getPathStartGate(); g->nextGate!=NULL; g=g->nextGate)
+    for (const cGate *g=getPathStartGate(); g->nextGate!=nullptr; g=g->nextGate)
         if (g->channel && g->channel->isTransmissionChannel())
             n++;
     if (n>1)
@@ -415,14 +415,14 @@ cChannel *cGate::reconnectWith(cChannel *channel, bool leaveUninitialized)
 cGate *cGate::getPathStartGate() const
 {
     const cGate *g;
-    for (g=this; g->prevGate!=NULL; g=g->prevGate);
+    for (g=this; g->prevGate!=nullptr; g=g->prevGate);
     return const_cast<cGate *>(g);
 }
 
 cGate *cGate::getPathEndGate() const
 {
     const cGate *g;
-    for (g=this; g->nextGate!=NULL; g=g->nextGate);
+    for (g=this; g->nextGate!=nullptr; g=g->nextGate);
     return const_cast<cGate *>(g);
 }
 
@@ -502,10 +502,10 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
 
 cChannel *cGate::findTransmissionChannel() const
 {
-    for (const cGate *g=this; g->nextGate!=NULL; g=g->nextGate)
+    for (const cGate *g=this; g->nextGate!=nullptr; g=g->nextGate)
         if (g->channel && g->channel->isTransmissionChannel())
             return g->channel;
-    return NULL;
+    return nullptr;
 }
 
 cChannel *cGate::getTransmissionChannel() const
@@ -531,10 +531,10 @@ cChannel *cGate::getTransmissionChannel() const
 
 cChannel *cGate::findIncomingTransmissionChannel() const
 {
-    for (const cGate *g=this->prevGate; g!=NULL; g=g->prevGate)
+    for (const cGate *g=this->prevGate; g!=nullptr; g=g->prevGate)
         if (g->channel && g->channel->isTransmissionChannel())
             return g->channel;
-    return NULL;
+    return nullptr;
 }
 
 cChannel *cGate::getIncomingTransmissionChannel() const
@@ -562,10 +562,10 @@ bool cGate::pathContains(cModule *mod, int gate)
 {
     cGate *g;
 
-    for (g=this; g!=NULL; g=g->prevGate)
+    for (g=this; g!=nullptr; g=g->prevGate)
         if (g->getOwnerModule()==mod && (gate==-1 || g->getId()==gate))
             return true;
-    for (g=nextGate; g!=NULL; g=g->nextGate)
+    for (g=nextGate; g!=nullptr; g=g->nextGate)
         if (g->getOwnerModule()==mod && (gate==-1 || g->getId()==gate))
             return true;
     return false;
@@ -574,17 +574,17 @@ bool cGate::pathContains(cModule *mod, int gate)
 bool cGate::isConnectedOutside() const
 {
     if (getType()==INPUT)
-        return prevGate!=NULL;
+        return prevGate!=nullptr;
     else
-        return nextGate!=NULL;
+        return nextGate!=nullptr;
 }
 
 bool cGate::isConnectedInside() const
 {
     if (getType()==INPUT)
-        return nextGate!=NULL;
+        return nextGate!=nullptr;
     else
-        return prevGate!=NULL;
+        return prevGate!=nullptr;
 }
 
 bool cGate::isConnected() const
@@ -592,7 +592,7 @@ bool cGate::isConnected() const
     // for compound modules, both inside and outside must be non-NULL,
     // for simple modules, only check outside.
     if (!getOwnerModule()->isSimple())
-        return prevGate!=NULL && nextGate!=NULL;
+        return prevGate!=nullptr && nextGate!=nullptr;
     else
         return isConnectedOutside();
 }

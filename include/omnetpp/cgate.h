@@ -107,8 +107,8 @@ class SIM_API cGate : public cObject, noncopyable
         Gates input;
         Gates output;
 
-        Desc() {owner=NULL; vectorSize=-1; name=NULL; input.gate=output.gate=NULL;}
-        bool inUse() const {return name!=NULL;}
+        Desc() {owner=nullptr; vectorSize=-1; name=nullptr; input.gate=output.gate=nullptr;}
+        bool inUse() const {return name!=nullptr;}
         Type getType() const {return name->type;}
         bool isVector() const {return vectorSize>=0;}
         const char *nameFor(Type t) const {return (t==INOUT||name->type!=INOUT) ? name->name.c_str() : t==INPUT ? name->namei.c_str() : name->nameo.c_str();}
@@ -222,7 +222,7 @@ class SIM_API cGate : public cObject, noncopyable
      * effect; i.e. the channel should either override and properly handle
      * handleParameterChange(), or should not cache any values from parameters.
      */
-    cChannel *connectTo(cGate *gate, cChannel *channel=NULL, bool leaveUninitialized=false);
+    cChannel *connectTo(cGate *gate, cChannel *channel=nullptr, bool leaveUninitialized=false);
 
     /**
      * Disconnects the gate, and also deletes the associated channel object

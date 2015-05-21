@@ -120,7 +120,7 @@ class SIM_API cMatchableString : public cMatchExpression::Matchable
   public:
     cMatchableString(const char *s) {str = s;}
     virtual const char *getAsString() const {return str.c_str();}
-    virtual const char *getAsString(const char *attribute) const {return NULL;}
+    virtual const char *getAsString(const char *attribute) const {return nullptr;}
 };
 
 NAMESPACE_END

@@ -153,7 +153,7 @@ class SIM_API cEnvir
      * the message will additionally travel through a series of connections
      * before it arrives in a simple module.)
      */
-    virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=NULL) = 0;
+    virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=nullptr) = 0;
 
     /**
      * Notifies the environment that a message was scheduled.
@@ -291,19 +291,19 @@ class SIM_API cEnvir
      * Returns the name of the event current being processed by the simulation
      * kernel or NULL if unknown.
      */
-    virtual const char *getCurrentEventName() { return NULL; }
+    virtual const char *getCurrentEventName() { return nullptr; }
 
     /**
      * Returns the class name of the event currently being processed by the
      * simulation kernel or NULL if unknown.
      */
-    virtual const char *getCurrentEventClassName() { return NULL; }
+    virtual const char *getCurrentEventClassName() { return nullptr; }
 
     /**
      * Returns the module that is processing the current event or NULL. Calling
      * this function after the module has been already deleted returns NULL.
      */
-    virtual cModule *getCurrentEventModule() { return NULL; }
+    virtual cModule *getCurrentEventModule() { return nullptr; }
     //@}
 
     /** @name Methods called by the simulation kernel to access configuration settings. */
@@ -356,7 +356,7 @@ class SIM_API cEnvir
      * The returned object tree should not be modified because cEnvir may
      * cache the file and return the same pointer to several callers.
      */
-    virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath=NULL) = 0;
+    virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath=nullptr) = 0;
 
     /**
      * Returns the parsed form of an XML content string. The first argument
@@ -379,7 +379,7 @@ class SIM_API cEnvir
      * The returned object tree should not be modified because cEnvir may
      * cache the tree and return the same pointer to several callers.
      */
-    virtual cXMLElement *getParsedXMLString(const char *content, const char *xpath=NULL) = 0;
+    virtual cXMLElement *getParsedXMLString(const char *content, const char *xpath=nullptr) = 0;
 
     /**
      * Removes the given document from the XML document cache (if cached), and
@@ -493,7 +493,7 @@ class SIM_API cEnvir
     /**
      * Interactively prompts the user to enter a string.
      */
-    virtual std::string gets(const char *prompt, const char *defaultreply=NULL) = 0;
+    virtual std::string gets(const char *prompt, const char *defaultreply=nullptr) = 0;
 
     /**
      * Asks the user a yes/no question. The question text is expected
@@ -575,13 +575,13 @@ class SIM_API cEnvir
     /**
      * Records a double scalar result, in a default configuration into the scalar result file.
      */
-    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL) = 0;
+    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr) = 0;
 
     /**
      * Records a statistic object (histogram, etc) into the scalar result file.
      * This operation may invoke the transform() method on the histogram object.
      */
-    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL) = 0;
+    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr) = 0;
     //@}
 
     /** @name Statistic recording. */
@@ -693,7 +693,7 @@ class SIM_API cEnvir
     virtual void removeLifecycleListener(cISimulationLifecycleListener *listener) = 0;
 
     // internal. FIXME it swallows exceptions, which is sometimes desirable, sometimes not!
-    virtual void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details=NULL) = 0;
+    virtual void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details=nullptr) = 0;
     //@}
 };
 

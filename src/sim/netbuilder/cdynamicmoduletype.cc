@@ -64,7 +64,7 @@ bool cDynamicModuleType::isSimple() const
 cModule *cDynamicModuleType::createModuleObject()
 {
     const char *classname = getDecl()->getImplementationClassName();
-    ASSERT(classname!=NULL);
+    ASSERT(classname!=nullptr);
     return instantiateModuleClass(classname);
 }
 

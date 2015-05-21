@@ -95,7 +95,7 @@ static struct { const char *fname; int args; } known_funcs[] =
    {"poisson",2},
 
    /* END */
-   {NULL,0}
+   {nullptr,0}
 };
 
 void NEDSyntaxValidator::checkExpressionAttributes(NEDElement *node, const char *attrs[], bool optional[], int n)
@@ -166,7 +166,7 @@ void NEDSyntaxValidator::checkPropertyNameAttribute(NEDElement *node, const char
     if (!*s)
         return;
     for (; *s; s++)
-        if (!opp_isalnumext(*s) && strchr("_-:.", *s)==NULL) // note: same rule as for XML attribute names
+        if (!opp_isalnumext(*s) && strchr("_-:.", *s)==nullptr) // note: same rule as for XML attribute names
             {errors->addError(node,"illegal character in %s '%s'", attr, node->getAttribute(attr)); return;}
 }
 
@@ -177,7 +177,7 @@ void NEDSyntaxValidator::checkPropertyIndexAttribute(NEDElement *node, const cha
     if (!*s)
         return;
     for (; *s; s++)
-        if (!opp_isalnumext(*s) && strchr("*?{}_-:.", *s)==NULL) // note: same rule as for XML attribute names, plus wildcards
+        if (!opp_isalnumext(*s) && strchr("*?{}_-:.", *s)==nullptr) // note: same rule as for XML attribute names, plus wildcards
             {errors->addError(node,"illegal character in %s '%s'", attr, node->getAttribute(attr)); return;}
 }
 
@@ -185,7 +185,7 @@ bool NEDSyntaxValidator::isWithinSubcomponent(NEDElement *node)
 {
     // only returns true if node is within the BODY of a submodule or a connection
     // (i.e. returns *false* for a submodule vector size)
-    for (; node!=NULL; node = node->getParent())
+    for (; node!=nullptr; node = node->getParent())
     {
         if (node->getTagCode() == NED_PARAMETERS || node->getTagCode() == NED_GATES) {
             int sectionOwnerType = node->getParent()->getTagCode();
@@ -197,7 +197,7 @@ bool NEDSyntaxValidator::isWithinSubcomponent(NEDElement *node)
 
 bool NEDSyntaxValidator::isWithinInnerType(NEDElement *node)
 {
-    for (; node!=NULL; node = node->getParent())
+    for (; node!=nullptr; node = node->getParent())
         if (node->getTagCode() == NED_TYPES)
             return true;
     return false;
@@ -275,7 +275,7 @@ void NEDSyntaxValidator::validateElement(ParamElement *node)
     }
 
     // check isPattern flag is consistent with 'name' attribute
-    bool containsDot = strchr(node->getName(), '.')!=NULL;
+    bool containsDot = strchr(node->getName(), '.')!=nullptr;
     if (!node->getIsPattern() && containsDot)
         errors->addError(node, "parameter names must not contain a dot");
     if (node->getIsPattern() && !containsDot)
@@ -425,8 +425,8 @@ void NEDSyntaxValidator::validateElement(ConnectionElement *node)
     checkExpressionAttributes(node, expr, opt, 6);
 
     // plusplus and gate index expression cannot be both there
-    bool srcGateIx =  node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "src-gate-index")!=NULL;
-    bool destGateIx = node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "dest-gate-index")!=NULL;
+    bool srcGateIx =  node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "src-gate-index")!=nullptr;
+    bool destGateIx = node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "dest-gate-index")!=nullptr;
     if (srcGateIx && node->getSrcGatePlusplus())
         errors->addError(node, "wrong source gate: cannot have both gate index and '++' operator specified");
     if (destGateIx && node->getDestGatePlusplus())
@@ -541,7 +541,7 @@ void NEDSyntaxValidator::validateElement(FunctionElement *node)
              parent = parent->getParent();
          NEDElement *submod = parent;
 
-         if (!submod || submod->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size")==NULL)
+         if (!submod || submod->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size")==nullptr)
              errors->addError(node, "'index' may only occur in a submodule vector's definition");
          if (expr->getParent()==submod)
              errors->addError(node, "'index' is not allowed here");
@@ -564,7 +564,7 @@ void NEDSyntaxValidator::validateElement(FunctionElement *node)
          if (args>2)
              errors->addError(node, "operator 'input' takes 0, 1 or 2 arguments");
          NEDElement *op1 = node->getFirstChild();
-         NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
+         NEDElement *op2 = op1 ? op1->getNextSibling() : nullptr;
          if (args==2)
              if (op2->getTagCode()!=NED_LITERAL || ((LiteralElement *)op2)->getType()!=NED_CONST_STRING)
                  errors->addError(node, "second argument to 'input()' must be a string literal (prompt text)");
@@ -578,7 +578,7 @@ void NEDSyntaxValidator::validateElement(FunctionElement *node)
          if (args!=1 && args!=2)
              {errors->addError(node, "'xmldoc()' takes 1 or 2 arguments");return;}
          NEDElement *op1 = node->getFirstChild();
-         NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
+         NEDElement *op2 = op1 ? op1->getNextSibling() : nullptr;
          if (op1->getTagCode()!=NED_LITERAL || ((LiteralElement *)op1)->getType()!=NED_CONST_STRING ||
              (op2 && (op2->getTagCode()!=NED_LITERAL || ((LiteralElement *)op2)->getType()!=NED_CONST_STRING)))
              errors->addError(node, "'xmldoc()' arguments must be string literals");
@@ -588,7 +588,7 @@ void NEDSyntaxValidator::validateElement(FunctionElement *node)
     // check if we know about it
     bool name_found = false;
     bool argc_matches = false;
-    for (int i=0; known_funcs[i].fname!=NULL;i++)
+    for (int i=0; known_funcs[i].fname!=nullptr;i++)
     {
         if (!strcmp(func,known_funcs[i].fname))
         {

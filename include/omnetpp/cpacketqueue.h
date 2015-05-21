@@ -54,7 +54,7 @@ class SIM_API cPacketQueue : public cQueue
     /**
      * Constructor.
      */
-    cPacketQueue(const char *name=NULL, CompareFunc cmp=NULL);
+    cPacketQueue(const char *name=nullptr, CompareFunc cmp=nullptr);
 
     /**
      * Copy constructor. Contained objects that are owned by the queue

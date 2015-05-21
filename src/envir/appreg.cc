@@ -26,7 +26,7 @@ EXECUTE_ON_SHUTDOWN( omnetapps.clear() );
 cOmnetAppRegistration *cOmnetAppRegistration::chooseBest()
 {
     // choose the one with highest score
-    cOmnetAppRegistration *best = NULL;
+    cOmnetAppRegistration *best = nullptr;
     cRegistrationList *list = omnetapps.getInstance();
     for (int i=0; i<list->size(); i++)
     {

@@ -38,7 +38,7 @@ cStringPool cNamedObject::stringPool("cNamedObject::stringPool");
 
 cNamedObject::cNamedObject()
 {
-    name = NULL;
+    name = nullptr;
     flags = FL_NAMEPOOLING;
 }
 
@@ -46,7 +46,7 @@ cNamedObject::cNamedObject(const char *s, bool namepooling)
 {
     flags = namepooling ? FL_NAMEPOOLING : 0;
     if (!s)
-        name = NULL;
+        name = nullptr;
     else if (namepooling)
         name = stringPool.get(s);
     else
@@ -55,7 +55,7 @@ cNamedObject::cNamedObject(const char *s, bool namepooling)
 
 cNamedObject::cNamedObject(const cNamedObject& obj) : cObject(obj)
 {
-    name = NULL;
+    name = nullptr;
     flags = obj.flags & FL_NAMEPOOLING;
     setName(obj.getName());
     copy(obj);
@@ -101,7 +101,7 @@ void cNamedObject::setName(const char *s)
 
     // set new string
     if (!s)
-        name = NULL;
+        name = nullptr;
     else if (flags & FL_NAMEPOOLING)
         name = stringPool.get(s);
     else

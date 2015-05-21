@@ -133,7 +133,7 @@ class SIM_API cXMLElement
     virtual cXMLElement *removeChild(cXMLElement *node);
 
     // internal: matches from root element
-    static cXMLElement *getDocumentElementByPath(cXMLElement *documentnode, const char *pathexpr, ParamResolver *resolver=NULL);
+    static cXMLElement *getDocumentElementByPath(cXMLElement *documentnode, const char *pathexpr, ParamResolver *resolver=nullptr);
 
     // internal
     std::string tostr(int level) const;
@@ -270,7 +270,7 @@ class SIM_API cXMLElement
      * tagname might be NULL -- then any element with the given attribute
      * will be accepted. Returns NULL if not found.
      */
-    cXMLElement *getFirstChildWithAttribute(const char *tagname, const char *attr, const char *attrvalue=NULL) const;
+    cXMLElement *getFirstChildWithAttribute(const char *tagname, const char *attr, const char *attrvalue=nullptr) const;
 
     /**
      * Returns the first element which has an "id" attribute with the given
@@ -308,7 +308,7 @@ class SIM_API cXMLElement
      * The method throws an exception if the path expression is invalid,
      * and returns NULL if the element is not found.
      */
-    cXMLElement *getElementByPath(const char *pathexpression, cXMLElement *root=NULL, ParamResolver *resolver=NULL) const;
+    cXMLElement *getElementByPath(const char *pathexpression, cXMLElement *root=nullptr, ParamResolver *resolver=nullptr) const;
 
     /**
      * Prints detailedInfo() on EV.

@@ -114,7 +114,7 @@ class SIM_API cPacket : public cMessage
      * Constructor. It takes the packet name, message kind value, and the
      * packet length in bits; all optional.
      */
-    explicit cPacket(const char *name=NULL, short kind=0, int64_t bitLength=0);
+    explicit cPacket(const char *name=nullptr, short kind=0, int64_t bitLength=0);
 
     /**
      * Destructor

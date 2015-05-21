@@ -43,7 +43,7 @@ static void dump(NEDElement *node)
 
 cExpressionBuilder::cExpressionBuilder()
 {
-    elems = NULL;
+    elems = nullptr;
 }
 
 cExpressionBuilder::~cExpressionBuilder()
@@ -79,8 +79,8 @@ void cExpressionBuilder::doOperator(OperatorElement *node)
     // determine name and arg count
     const char *name = node->getName();
     NEDElement *op1 = node->getFirstChild();
-    NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
-    NEDElement *op3 = op2 ? op2->getNextSibling() : NULL;
+    NEDElement *op2 = op1 ? op1->getNextSibling() : nullptr;
+    NEDElement *op3 = op2 ? op2->getNextSibling() : nullptr;
 
     if (!op2)
     {
@@ -227,7 +227,7 @@ void cExpressionBuilder::doIdent(IdentElement *node)
 {
     const char *parname = node->getName();
     const char *modulename = node->getModule();
-    bool hasChild = node->getFirstChild()!=NULL;
+    bool hasChild = node->getFirstChild()!=nullptr;
     if (hasChild)
         doNode(node->getFirstChild()); // push module index
 
@@ -271,7 +271,7 @@ cDynamicExpression *cExpressionBuilder::process(ExpressionElement *node,
     pos = 0;
     limit = 990;
 
-    ASSERT(node!=NULL);
+    ASSERT(node!=nullptr);
     doNode(node->getFirstChild());
 
     int n = pos;
@@ -283,7 +283,7 @@ cDynamicExpression *cExpressionBuilder::process(ExpressionElement *node,
     ret->setExpression(newElems, n);
 
     delete [] elems;
-    elems = NULL;
+    elems = nullptr;
 
     //XXX printf("    nedelement to expr returning: %s\n", ret->str().c_str());
 
@@ -296,7 +296,7 @@ void cExpressionBuilder::setExpression(cParImpl *par, cDynamicExpression *expr)
 
     // simplify if possible: store as constant instead of expression
     if (expr->isAConstant())
-        par->convertToConst(NULL);
+        par->convertToConst(nullptr);
 }
 
 NAMESPACE_END

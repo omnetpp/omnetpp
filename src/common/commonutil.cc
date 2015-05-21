@@ -50,7 +50,7 @@ const char *opp_gethostname()
     static char buf[128];
     if (gethostname(buf, sizeof(buf)) == 0)
         return buf;
-    else if (getenv("HOST") != NULL)
+    else if (getenv("HOST") != nullptr)
         return getenv("HOST");
     else
         return getenv("HOSTNAME");

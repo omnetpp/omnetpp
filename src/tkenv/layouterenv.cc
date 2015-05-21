@@ -36,12 +36,12 @@ TkenvGraphLayouterEnvironment::TkenvGraphLayouterEnvironment(Tcl_Interp *interp,
 {
     this->interp = interp;
     this->parentModule = parentModule;
-    widgetToGrab = NULL;
-    canvas = NULL;
-    interp = NULL;
+    widgetToGrab = nullptr;
+    canvas = nullptr;
+    interp = nullptr;
 
-    gettimeofday(&beginTime, NULL);
-    gettimeofday(&lastCheck, NULL);
+    gettimeofday(&beginTime, nullptr);
+    gettimeofday(&lastCheck, nullptr);
     grabActive = false;
 }
 
@@ -117,7 +117,7 @@ bool TkenvGraphLayouterEnvironment::okToProceed()
     // because Express mode's large STOP button already has one.
     //
     struct timeval now;
-    gettimeofday(&now, NULL);
+    gettimeofday(&now, nullptr);
     if (timeval_msec(now - beginTime) < 3000)
         return true;  // no UI interaction for up to 3 sec
 

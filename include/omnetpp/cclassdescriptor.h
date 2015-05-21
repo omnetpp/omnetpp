@@ -95,7 +95,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     /**
      * Constructor.
      */
-    cClassDescriptor(const char *classname, const char *_baseclassname=NULL);
+    cClassDescriptor(const char *classname, const char *_baseclassname=nullptr);
 
     /**
      * Destructor.

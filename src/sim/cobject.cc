@@ -54,7 +54,7 @@ bool cObject::hasChangedSince(int64_t lastRefreshSerial)
 
 std::string cObject::getFullPath() const
 {
-    if (getOwner()==NULL)
+    if (getOwner()==nullptr)
         return getFullName();
     else
         return getOwner()->getFullPath() + "." + getFullName();
@@ -120,7 +120,7 @@ void cObject::dropAndDelete(cOwnedObject *obj)
     if (obj->owner!=this)
         throw cRuntimeError(this, "dropAndDelete(): not owner of object (%s)%s",
                                   obj->getClassName(), obj->getFullPath().c_str());
-    obj->owner = NULL;
+    obj->owner = nullptr;
     delete obj;
 }
 
@@ -153,7 +153,7 @@ class cChildObjectFinderVisitor : public cVisitor
     cObject *result;
   public:
     cChildObjectFinderVisitor(const char *objname) {
-        name = objname; result = NULL;
+        name = objname; result = nullptr;
     }
     virtual void visit(cObject *obj) {
         if (obj->isName(name)) {
@@ -174,7 +174,7 @@ class cRecursiveObjectFinderVisitor : public cVisitor
     cObject *result;
   public:
     cRecursiveObjectFinderVisitor(const char *objname) {
-        name = objname; result = NULL;
+        name = objname; result = nullptr;
     }
     virtual void visit(cObject *obj) {
         if (obj->isName(name)) {

@@ -58,20 +58,20 @@ void cRegistrationList::add(cOwnedObject *obj)
 cOwnedObject *cRegistrationList::get(int i) const
 {
     if (i<0 || i>=(int)vec.size())
-        return NULL;
+        return nullptr;
     return vec[i];
 }
 
 cOwnedObject *cRegistrationList::find(const char *name) const
 {
     StringObjectMap::const_iterator it = nameMap.find(name);
-    return it==nameMap.end() ? NULL : it->second;
+    return it==nameMap.end() ? nullptr : it->second;
 }
 
 cOwnedObject *cRegistrationList::lookup(const char *qname) const
 {
     StringObjectMap::const_iterator it = fullnameMap.find(qname);
-    return it==fullnameMap.end() ? NULL : it->second;
+    return it==fullnameMap.end() ? nullptr : it->second;
 }
 
 inline bool less(cObject *a, cObject *b)
@@ -88,14 +88,14 @@ void cRegistrationList::sort()
 
 cGlobalRegistrationList::cGlobalRegistrationList()
 {
-    tmpname = NULL;
-    inst = NULL;
+    tmpname = nullptr;
+    inst = nullptr;
 }
 
 cGlobalRegistrationList::cGlobalRegistrationList(const char *name)
 {
     tmpname = name;
-    inst = NULL;
+    inst = nullptr;
 }
 
 cGlobalRegistrationList::~cGlobalRegistrationList()
@@ -115,7 +115,7 @@ cRegistrationList *cGlobalRegistrationList::getInstance()
 void cGlobalRegistrationList::clear()
 {
     delete inst;
-    inst = NULL;
+    inst = nullptr;
 }
 
 NAMESPACE_END

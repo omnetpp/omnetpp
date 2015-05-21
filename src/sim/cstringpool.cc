@@ -53,7 +53,7 @@ const char *cStringPool::get(const char *s)
     if (!cStaticFlag::isSet())
         {fprintf(stderr, "ERROR: cStringPool::get(\"%s\") invoked outside main() -- please do not use cStringPool from global objects", s); return opp_strdup(s);}
     if (!s)
-        return NULL;
+        return nullptr;
 
     StringIntMap::iterator it = pool.find(const_cast<char *>(s));
     if (it==pool.end())
@@ -75,12 +75,12 @@ const char *cStringPool::get(const char *s)
 const char *cStringPool::peek(const char *s) const
 {
     if (!cStaticFlag::isSet())
-        {fprintf(stderr, "ERROR: cStringPool::peek(\"%s\") invoked outside main() -- please do not use cStringPool from global objects", s); return NULL;}
+        {fprintf(stderr, "ERROR: cStringPool::peek(\"%s\") invoked outside main() -- please do not use cStringPool from global objects", s); return nullptr;}
     if (!s)
-        return NULL;
+        return nullptr;
 
     StringIntMap::const_iterator it = pool.find(const_cast<char *>(s));
-    return it==pool.end() ? NULL : it->first;
+    return it==pool.end() ? nullptr : it->first;
 }
 
 void cStringPool::release(const char *s)

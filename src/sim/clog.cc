@@ -30,7 +30,7 @@ std::ostream cLogProxy::globalStream(&cLogProxy::buffer);
 LogLevel cLogLevel::globalRuntimeLoglevel = LOGLEVEL_DEBUG;
 cLogEntry cLogProxy::currentEntry;
 LogLevel cLogProxy::previousLoglevel = (LogLevel)-1;
-const char *cLogProxy::previousCategory = NULL;
+const char *cLogProxy::previousCategory = nullptr;
 cLogProxy::nullstream cLogProxy::dummyStream;
 
 //----
@@ -120,14 +120,14 @@ cLogProxy::cLogProxy(const void *sourcePointer, const char *category, LogLevel l
 {
     fillEntry(category, loglevel, sourceFile, sourceLine, sourceClass, sourceFunction);
     currentEntry.sourcePointer = sourcePointer;
-    currentEntry.sourceObject = currentEntry.sourceComponent = NULL;
+    currentEntry.sourceObject = currentEntry.sourceComponent = nullptr;
 }
 
 cLogProxy::cLogProxy(const cObject *sourceObject, const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
 {
     fillEntry(category, loglevel, sourceFile, sourceLine, sourceClass, sourceFunction);
     currentEntry.sourcePointer = currentEntry.sourceObject = const_cast<cObject *>(sourceObject);
-    currentEntry.sourceComponent = NULL;
+    currentEntry.sourceComponent = nullptr;
 }
 
 cLogProxy::cLogProxy(const cComponent *sourceComponent, const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)

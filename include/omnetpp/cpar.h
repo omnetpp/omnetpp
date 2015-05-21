@@ -85,7 +85,7 @@ class SIM_API cPar : public cObject
 
   private:
     // private constructor -- only cComponent is allowed to create parameters
-    cPar() {ownerComponent = evalContext = NULL; p = NULL;}
+    cPar() {ownerComponent = evalContext = nullptr; p = nullptr;}
     // internal, called from cComponent
     void init(cComponent *ownercomponent, cParImpl *p);
     // internal
@@ -252,7 +252,7 @@ class SIM_API cPar : public cObject
      *
      * @see getOwner(), getEvaluationContext(), setEvaluationContext()
      */
-    cPar& setExpression(cExpression *e, cComponent *evalcontext=NULL);
+    cPar& setExpression(cExpression *e, cComponent *evalcontext=nullptr);
 
     /**
      * If the parameter contains an expression (see isExpression()), this method

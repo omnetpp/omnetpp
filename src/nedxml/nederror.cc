@@ -57,42 +57,42 @@ void NEDErrorStore::addError(NEDElement *context, const char *messagefmt, ...)
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
-    doAdd(context, NULL, NED_SEVERITY_ERROR, message);
+    doAdd(context, nullptr, NED_SEVERITY_ERROR, message);
 }
 
 void NEDErrorStore::addError(const char *location, const char *messagefmt, ...)
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
-    doAdd(NULL, location, NED_SEVERITY_ERROR, message);
+    doAdd(nullptr, location, NED_SEVERITY_ERROR, message);
 }
 
 void NEDErrorStore::addWarning(NEDElement *context, const char *messagefmt, ...)
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
-    doAdd(context, NULL, NED_SEVERITY_WARNING, message);
+    doAdd(context, nullptr, NED_SEVERITY_WARNING, message);
 }
 
 void NEDErrorStore::addWarning(const char *location, const char *messagefmt, ...)
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
-    doAdd(NULL, location, NED_SEVERITY_WARNING, message);
+    doAdd(nullptr, location, NED_SEVERITY_WARNING, message);
 }
 
 void NEDErrorStore::add(NEDElement *context, int severity, const char *messagefmt, ...)
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
-    doAdd(context, NULL, severity, message);
+    doAdd(context, nullptr, severity, message);
 }
 
 void NEDErrorStore::add(const char *location, int severity, const char *messagefmt, ...)
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
-    doAdd(NULL, location, severity, message);
+    doAdd(nullptr, location, severity, message);
 }
 
 bool NEDErrorStore::containsError() const
@@ -105,7 +105,7 @@ bool NEDErrorStore::containsError() const
 
 const char *NEDErrorStore::errorSeverity(int i) const
 {
-    if (i<0 || i>=(int)entries.size()) return NULL;
+    if (i<0 || i>=(int)entries.size()) return nullptr;
     return severityName(entries[i].severity);
 }
 
@@ -117,19 +117,19 @@ int NEDErrorStore::errorSeverityCode(int i) const
 
 const char *NEDErrorStore::errorLocation(int i) const
 {
-    if (i<0 || i>=(int)entries.size()) return NULL;
+    if (i<0 || i>=(int)entries.size()) return nullptr;
     return entries[i].location.c_str();
 }
 
 NEDElement *NEDErrorStore::errorContext(int i) const
 {
-    if (i<0 || i>=(int)entries.size()) return NULL;
+    if (i<0 || i>=(int)entries.size()) return nullptr;
     return entries[i].context;
 }
 
 const char *NEDErrorStore::errorText(int i) const
 {
-    if (i<0 || i>=(int)entries.size()) return NULL;
+    if (i<0 || i>=(int)entries.size()) return nullptr;
     return entries[i].message.c_str();
 }
 
@@ -159,7 +159,7 @@ void NEDInternalError(const char *file, int line, NEDElement *context, const cha
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
 
-    const char *loc = context ? context->getSourceLocation() : NULL;
+    const char *loc = context ? context->getSourceLocation() : nullptr;
     if (loc)
         fprintf(stderr, "INTERNAL ERROR: %s:%d: %s: %s\n", file, line, loc, message);
     else if (context)

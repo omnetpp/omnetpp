@@ -29,7 +29,7 @@ IEventLog::IEventLog()
 void IEventLog::clearInternalState()
 {
     lastNeighbourEventNumber = -1;
-    lastNeighbourEvent = NULL;
+    lastNeighbourEvent = nullptr;
 }
 
 void IEventLog::synchronize(FileReader::FileChangedState change)
@@ -46,7 +46,7 @@ IEvent *IEventLog::getNeighbourEvent(IEvent *event, eventnumber_t distance)
     if (lastNeighbourEvent && lastNeighbourEventNumber != -1 && abs64(neighbourEventNumber - lastNeighbourEventNumber) < abs64(distance))
         return getNeighbourEvent(lastNeighbourEvent, neighbourEventNumber - lastNeighbourEventNumber);
 
-    while (event != NULL && distance != 0)
+    while (event != nullptr && distance != 0)
     {
         if (distance > 0) {
             distance--;
@@ -70,9 +70,9 @@ double IEventLog::getApproximatePercentageForEventNumber(eventnumber_t eventNumb
     IEvent *lastEvent = getLastEvent();
     IEvent *event = getEventForEventNumber(eventNumber);
 
-    if (firstEvent == NULL || firstEvent == lastEvent)
+    if (firstEvent == nullptr || firstEvent == lastEvent)
         return 0.0;
-    else if (event == NULL)
+    else if (event == nullptr)
         return 0.5;
     else {
         file_offset_t beginOffset = firstEvent->getBeginOffset();

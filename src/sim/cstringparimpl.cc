@@ -141,7 +141,7 @@ cXMLElement *cStringParImpl::xmlValue(cComponent *) const
 
 cExpression *cStringParImpl::getExpression() const
 {
-    return (flags | FL_ISEXPR) ? expr : NULL;
+    return (flags | FL_ISEXPR) ? expr : nullptr;
 }
 
 void cStringParImpl::deleteOld()
@@ -193,7 +193,7 @@ void cStringParImpl::parse(const char *text)
 
     // simplify if possible: store as constant instead of expression
     if (dynexpr->isAConstant())
-        convertToConst(NULL);
+        convertToConst(nullptr);
 }
 
 int cStringParImpl::compare(const cParImpl *other) const

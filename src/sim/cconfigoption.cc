@@ -53,7 +53,7 @@ cConfigOption::cConfigOption(const char *name, ObjectKind kind, Type type, const
     this->description = description ? description : "";
 
     // per-object config option names must contain hyphen, except for "typename" (named so for consistency with NED)
-    if (strchr(name,'-')==NULL && strcmp(name, "typename")!=0)
+    if (strchr(name,'-')==nullptr && strcmp(name, "typename")!=0)
         throw opp_runtime_error("Per-object config option name must contain hyphen, check Register_PerObjectConfigOption() macros: %s", name);
 }
 

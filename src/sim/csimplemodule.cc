@@ -86,7 +86,7 @@ void cSimpleModule::activate(void *p)
     sprintf(buf,"timeout-%d", mod->getId());
     starter->setName(buf);
 
-    cException *exception = NULL;
+    cException *exception = nullptr;
     try
     {
         //
@@ -176,14 +176,14 @@ void cSimpleModule::activate(void *p)
 // legacy constructor, only for backwards compatiblity; first two args are unused
 cSimpleModule::cSimpleModule(const char *, cModule *, unsigned stackSize)
 {
-    coroutine = NULL;
+    coroutine = nullptr;
     setFlag(FL_USESACTIVITY, stackSize!=0);
     setFlag(FL_ISTERMINATED, false);
     setFlag(FL_STACKALREADYUNWOUND, false);
 
     // for an activity() module, timeoutmsg will be created in scheduleStart()
     // which must always be called
-    timeoutMessage = NULL;
+    timeoutMessage = nullptr;
 
     if (usesActivity())
     {
@@ -199,14 +199,14 @@ cSimpleModule::cSimpleModule(const char *, cModule *, unsigned stackSize)
 
 cSimpleModule::cSimpleModule(unsigned stackSize)
 {
-    coroutine = NULL;
+    coroutine = nullptr;
     setFlag(FL_USESACTIVITY, stackSize!=0);
     setFlag(FL_ISTERMINATED, false);
     setFlag(FL_STACKALREADYUNWOUND, false);
 
     // for an activity() module, timeoutmsg will be created in scheduleStart()
     // which must always be called
-    timeoutMessage = NULL;
+    timeoutMessage = nullptr;
 
     if (usesActivity())
     {
@@ -305,7 +305,7 @@ void cSimpleModule::scheduleStart(simtime_t t)
     // contains a call to scheduleStart()) can be used for both.
     if (usesActivity())
     {
-        if (timeoutMessage!=NULL)
+        if (timeoutMessage!=nullptr)
             throw cRuntimeError("scheduleStart(): module `%s' already started",getFullPath().c_str());
 
         Enter_Method_Silent("scheduleStart()");
@@ -316,7 +316,7 @@ void cSimpleModule::scheduleStart(simtime_t t)
         timeoutMessage = new cMessage(buf,MK_STARTER);
 
         // initialize message fields
-        timeoutMessage->setSentFrom(NULL, -1, SIMTIME_ZERO);
+        timeoutMessage->setSentFrom(nullptr, -1, SIMTIME_ZERO);
         timeoutMessage->setArrival(getId(), -1, t);
 
         // use timeoutmsg as the activation message; insert it into the FES
@@ -364,7 +364,7 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, int gateId)
 int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outGate)
 {
     // error checking:
-    if (outGate==NULL)
+    if (outGate==nullptr)
        throw cRuntimeError("send()/sendDelayed(): gate pointer is NULL");
     if (outGate->getType()==cGate::INPUT)
        throw cRuntimeError("send()/sendDelayed(): cannot send via an input gate (`%s')", outGate->getFullName());
@@ -373,11 +373,11 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outGate)
     if (outGate->getPreviousGate())
        throw cRuntimeError("send()/sendDelayed(): gate `%s' is not the start of a connection path (path starts at gate %s)",
                            outGate->getFullName(), outGate->getPathStartGate()->getFullPath().c_str());
-    if (msg==NULL)
+    if (msg==nullptr)
         throw cRuntimeError("send()/sendDelayed(): message pointer is NULL");
     if (msg->getOwner()!=this)
     {
-        if (this!=getSimulation()->getContextModule() && getSimulation()->getContextModule()!=NULL)
+        if (this!=getSimulation()->getContextModule() && getSimulation()->getContextModule()!=nullptr)
             throw cRuntimeError("send()/sendDelayed() of module (%s)%s called in the context of "
                                 "module (%s)%s: method called from the latter module "
                                 "lacks Enter_Method() or Enter_Method_Silent()? "
@@ -466,19 +466,19 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime
 {
     // Note: it is permitted to send to an output gate. It is especially useful
     // with several submodules sending to a single output gate of their parent module.
-    if (toGate==NULL)
+    if (toGate==nullptr)
         throw cRuntimeError("sendDirect(): destination gate pointer is NULL");
     if (toGate->getPreviousGate())
         throw cRuntimeError("sendDirect(): module must have dedicated gate(s) for receiving via sendDirect()"
                             " (\"from\" side of dest. gate `%s' should NOT be connected)",toGate->getFullPath().c_str());
     if (propagationDelay<SIMTIME_ZERO || duration<SIMTIME_ZERO)
         throw cRuntimeError("sendDirect(): the propagation time and duration parameters cannot be negative");
-    if (msg==NULL)
+    if (msg==nullptr)
         throw cRuntimeError("sendDirect(): message pointer is NULL");
     if (msg->getOwner()!=this)
     {
         // try to give a meaningful error message
-        if (this!=getSimulation()->getContextModule() && getSimulation()->getContextModule()!=NULL)
+        if (this!=getSimulation()->getContextModule() && getSimulation()->getContextModule()!=nullptr)
             throw cRuntimeError("sendDirect() of module (%s)%s called in the context of "
                                 "module (%s)%s: method called from the latter module "
                                 "lacks Enter_Method() or Enter_Method_Silent()? "
@@ -531,13 +531,13 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime
 
 int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
 {
-    if (msg==NULL)
+    if (msg==nullptr)
         throw cRuntimeError("scheduleAt(): message pointer is NULL");
     if (t<simTime())
         throw cRuntimeError(E_BACKSCHED, msg->getClassName(), msg->getName(), SIMTIME_DBL(t));
     if (msg->getOwner()!=this)
     {
-        if (this!=getSimulation()->getContextModule() && getSimulation()->getContextModule()!=NULL)
+        if (this!=getSimulation()->getContextModule() && getSimulation()->getContextModule()!=nullptr)
             throw cRuntimeError("scheduleAt() of module (%s)%s called in the context of "
                                 "module (%s)%s: method called from the latter module "
                                 "lacks Enter_Method() or Enter_Method_Silent()?",
@@ -576,7 +576,7 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
 cMessage *cSimpleModule::cancelEvent(cMessage *msg)
 {
     // make sure we really have the message and it is scheduled
-    if (msg==NULL)
+    if (msg==nullptr)
         throw cRuntimeError("cancelEvent(): message pointer is NULL");
 
     // now remove it from future events and return pointer
@@ -714,7 +714,7 @@ cMessage *cSimpleModule::receive(simtime_t t)
     {
         take(timeoutMessage);
         DEBUG_TRAP_IF_REQUESTED; // MODULE IS ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP" IN YOUR DEBUGGER
-        return NULL;
+        return nullptr;
     }
     else  // message received OK
     {

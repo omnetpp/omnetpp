@@ -137,7 +137,7 @@ class NEDXML_API MsgCppGenerator
             bool fopaque;         // @opaque(true)        // TODO: @opaque should rather be the attribute of the field's type, not the field itself
 
           public:
-            FieldInfo() : nedElement(NULL), fisabstract(false), fispointer(false), fisarray(false), classtype(UNKNOWN), fnopack(false), feditable(false),fopaque(false) {}
+            FieldInfo() : nedElement(nullptr), fisabstract(false), fispointer(false), fisarray(false), classtype(UNKNOWN), fnopack(false), feditable(false),fopaque(false) {}
         };
         typedef std::vector<FieldInfo> Fieldlist;
 
@@ -169,7 +169,7 @@ class NEDXML_API MsgCppGenerator
         StringVector implements;    //value vector from @implements
 
       public:
-        ClassInfo() : nedElement(NULL), gap(false), omitgetverb(false), classtype(UNKNOWN),
+        ClassInfo() : nedElement(nullptr), gap(false), omitgetverb(false), classtype(UNKNOWN),
               generate_class(true), generate_descriptor(true), generate_setters_in_descriptor(true) {}
     };
 
@@ -184,7 +184,7 @@ class NEDXML_API MsgCppGenerator
             std::string value;
             std::string comment;
           public:
-            EnumItem() : nedElement(NULL) {}
+            EnumItem() : nedElement(nullptr) {}
         };
 
         EnumElement *nedElement;
@@ -193,7 +193,7 @@ class NEDXML_API MsgCppGenerator
         typedef std::vector<EnumItem> FieldList;
         FieldList fieldlist;
       public:
-        EnumInfo() : nedElement(NULL) {}
+        EnumInfo() : nedElement(nullptr) {}
     };
 
   protected:

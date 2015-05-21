@@ -65,7 +65,7 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
      * be used when creating channels dynamically; use the create()
      * factory method instead.
      */
-    explicit cDelayChannel(const char *name=NULL) : cChannel(name) {}
+    explicit cDelayChannel(const char *name=nullptr) : cChannel(name) {}
 
     /**
      * Destructor.

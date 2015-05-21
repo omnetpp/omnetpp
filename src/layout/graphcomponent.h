@@ -92,7 +92,7 @@ class Vertex {
         double starTreeRadius;
 
     public:
-        Vertex(Pt pt, Rs rc, void *identity = NULL);
+        Vertex(Pt pt, Rs rc, void *identity = nullptr);
 };
 
 /**
@@ -127,7 +127,7 @@ class Edge {
         int color;
 
     public:
-        Edge(Vertex *source, Vertex *target, void *identity = NULL);
+        Edge(Vertex *source, Vertex *target, void *identity = nullptr);
 };
 
 /**

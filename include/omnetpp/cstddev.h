@@ -56,7 +56,7 @@ class SIM_API cStdDev : public cStatistic
     /**
      * Constructor.
      */
-    explicit cStdDev(const char *name=NULL);
+    explicit cStdDev(const char *name=nullptr);
 
     /**
      * Destructor.
@@ -251,7 +251,7 @@ class SIM_API cWeightedStdDev : public cStdDev
     /**
      * Constructors, destructor, duplication and assignment.
      */
-    explicit cWeightedStdDev(const char *name=NULL) : cStdDev(name)  {sumWeights=sumWeightedValues=sumSquaredWeights=sumWeightedSquaredValues=0.0;}
+    explicit cWeightedStdDev(const char *name=nullptr) : cStdDev(name)  {sumWeights=sumWeightedValues=sumSquaredWeights=sumWeightedSquaredValues=0.0;}
 
     /**
      * Constructors, destructor, duplication and assignment.

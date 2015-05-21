@@ -22,14 +22,14 @@ NAMESPACE_BEGIN
 
 Channel::Channel()
 {
-    consumerNode = producerNode = NULL;
+    consumerNode = producerNode = nullptr;
     consumerFinished = producerFinished = false;
 }
 
 const Datum *Channel::peek() const
 {
     if (buffer.empty())
-        return NULL;
+        return nullptr;
     return &(buffer.front());
 }
 

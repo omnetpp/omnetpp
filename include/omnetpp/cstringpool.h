@@ -48,7 +48,7 @@ class cStringPool
     bool alive; // useful when stringpool is a global variable
 
   public:
-    cStringPool(const char *poolName=NULL);
+    cStringPool(const char *poolName=nullptr);
     ~cStringPool();
 
     /**

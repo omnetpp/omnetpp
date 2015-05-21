@@ -133,7 +133,7 @@ IEvent *MessageSendDependency::getConsequenceEvent()
     eventnumber_t consequenceEventNumber = getConsequenceEventNumber();
 
     if (consequenceEventNumber < 0)
-        return NULL;
+        return nullptr;
     else
         return eventLog->getEventForEventNumber(consequenceEventNumber);
 }
@@ -216,7 +216,7 @@ IEvent *MessageReuseDependency::getCauseEvent()
     eventnumber_t causeEventNumber = getCauseEventNumber();
 
     if (causeEventNumber < 0)
-        return NULL;
+        return nullptr;
     else
         return eventLog->getEventForEventNumber(causeEventNumber);
 }
@@ -294,7 +294,7 @@ IEvent *FilteredMessageDependency::getCauseEvent()
     eventnumber_t causeEventNumber = beginMessageDependency->getCauseEventNumber();
 
     if (causeEventNumber < 0)
-        return NULL;
+        return nullptr;
     else
         return eventLog->getEventForEventNumber(causeEventNumber);
 }
@@ -304,7 +304,7 @@ IEvent *FilteredMessageDependency::getConsequenceEvent()
     eventnumber_t consequenceEventNumber = endMessageDependency->getConsequenceEventNumber();
 
     if (consequenceEventNumber < 0)
-        return NULL;
+        return nullptr;
     else
         return eventLog->getEventForEventNumber(consequenceEventNumber);
 }

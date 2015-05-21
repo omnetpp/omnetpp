@@ -48,7 +48,7 @@ extern cConfigOption *CFGID_PARSIM_DEBUG; // registered in cparsimpartition.cc
 
 cIdealSimulationProtocol::cIdealSimulationProtocol() : cParsimProtocolBase()
 {
-    fin = NULL;
+    fin = nullptr;
     debug = getEnvir()->getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
 
     tableSize = getEnvir()->getConfig()->getAsInt(CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE);
@@ -89,7 +89,7 @@ cEvent *cIdealSimulationProtocol::takeNextEvent()
     // if no more local events, wait for something to come from other partitions
     while (sim->msgQueue.isEmpty())
         if (!receiveBlocking())
-            return NULL;
+            return nullptr;
 
     cEvent *event = sim->msgQueue.peekFirst();
     simtime_t eventTime = event->getArrivalTime();
@@ -126,7 +126,7 @@ cEvent *cIdealSimulationProtocol::takeNextEvent()
     do
     {
         if (!receiveBlocking())
-            return NULL;
+            return nullptr;
         event = sim->msgQueue.peekFirst();
         eventTime = event->getArrivalTime();
     }

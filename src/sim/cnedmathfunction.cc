@@ -144,7 +144,7 @@ cNEDMathFunction *cNEDMathFunction::find(const char *name, int argcount)
         if (f && f->isName(name) && f->getNumArgs()==argcount)
             return f;
     }
-    return NULL;
+    return nullptr;
 }
 
 cNEDMathFunction *cNEDMathFunction::get(const char *name, int argcount)
@@ -166,7 +166,7 @@ cNEDMathFunction *cNEDMathFunction::findByPointer(MathFunc f)
         if (ff && ff->getMathFunc() == f)
             return ff;
     }
-    return NULL;
+    return nullptr;
 }
 
 NAMESPACE_END

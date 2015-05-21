@@ -86,7 +86,7 @@ class SIM_API cTopology : public cOwnedObject
         /**
          * Constructor
          */
-        Node(int moduleId=-1) {this->moduleId=moduleId; weight=0; enabled=true; dist=INFINITY; outPath=NULL;}
+        Node(int moduleId=-1) {this->moduleId=moduleId; weight=0; enabled=true; dist=INFINITY; outPath=nullptr;}
         virtual ~Node() {}
 
         /** @name Node attributes: weight, enabled state, correspondence to modules. */
@@ -200,7 +200,7 @@ class SIM_API cTopology : public cOwnedObject
         /**
          * Constructor.
          */
-        Link(double weight=1) {srcNode=destNode=NULL; srcGateId=destGateId=-1; this->weight=weight; enabled=true;}
+        Link(double weight=1) {srcNode=destNode=nullptr; srcGateId=destGateId=-1; this->weight=weight; enabled=true;}
         virtual ~Link() {}
 
         /**
@@ -350,7 +350,7 @@ class SIM_API cTopology : public cOwnedObject
     /**
      * Constructor.
      */
-    explicit cTopology(const char *name=NULL);
+    explicit cTopology(const char *name=nullptr);
 
     /**
      * Copy constructor.
@@ -413,7 +413,7 @@ class SIM_API cTopology : public cOwnedObject
      * parameter may take any value you like, and it is passed back to selfunc()
      * in its second argument.
      */
-    void extractFromNetwork(bool (*selfunc)(cModule *,void *), void *userdata=NULL);
+    void extractFromNetwork(bool (*selfunc)(cModule *,void *), void *userdata=nullptr);
 
     /**
      * The type safe, object-oriented equivalent of extractFromNetwork(selfunc, userdata).
@@ -461,7 +461,7 @@ class SIM_API cTopology : public cOwnedObject
      * </pre>
      *
      */
-    void extractByProperty(const char *propertyName, const char *value=NULL);
+    void extractByProperty(const char *propertyName, const char *value=nullptr);
 
     /**
      * Extracts model topology by a module parameter. All modules get included
@@ -469,7 +469,7 @@ class SIM_API cTopology : public cOwnedObject
      * method returns the paramValue string. If paramValue is NULL, only the
      * parameter's existence is checked but not its value.
      */
-    void extractByParameter(const char *paramName, const char *paramValue=NULL);
+    void extractByParameter(const char *paramName, const char *paramValue=nullptr);
 
     /**
      * Deletes the topology stored in the object.

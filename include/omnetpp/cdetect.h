@@ -66,7 +66,7 @@ class SIM_API cTransientDetection : public cOwnedObject
     /**
      * Constructor.
      */
-    explicit cTransientDetection(const char *name=NULL) : cOwnedObject(name) {hostObject=NULL; callback=NULL; callbackData=NULL;}
+    explicit cTransientDetection(const char *name=nullptr) : cOwnedObject(name) {hostObject=nullptr; callback=nullptr; callbackData=nullptr;}
 
     /**
      * Destructor.
@@ -76,7 +76,7 @@ class SIM_API cTransientDetection : public cOwnedObject
     /**
      * Duplication not supported, this method is redefined to throw an error.
      */
-    virtual cTransientDetection *dup() const {copyNotSupported(); return NULL;}
+    virtual cTransientDetection *dup() const {copyNotSupported(); return nullptr;}
     //@}
 
     /* Note: no dup() because this is an abstract class. */
@@ -155,7 +155,7 @@ class SIM_API cAccuracyDetection : public cOwnedObject
     /**
      * Constructor.
      */
-    explicit cAccuracyDetection(const char *name=NULL) : cOwnedObject(name)  {hostObject=NULL; callback=NULL; callbackData=NULL;}
+    explicit cAccuracyDetection(const char *name=nullptr) : cOwnedObject(name)  {hostObject=nullptr; callback=nullptr; callbackData=nullptr;}
 
     /**
      * Destructor.
@@ -165,7 +165,7 @@ class SIM_API cAccuracyDetection : public cOwnedObject
     /**
      * Duplication not supported, this method is redefined to throw an error.
      */
-    virtual cAccuracyDetection *dup() const {copyNotSupported(); return NULL;}
+    virtual cAccuracyDetection *dup() const {copyNotSupported(); return nullptr;}
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -268,9 +268,9 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
     /**
      * Constructor.
      */
-    explicit cTDExpandingWindows(const char *name=NULL,
+    explicit cTDExpandingWindows(const char *name=nullptr,
                         int reps=3, int minw=4, double wind=1.3, double acc=0.3,
-                        PostTDFunc f=NULL,void *p=NULL);
+                        PostTDFunc f=nullptr,void *p=nullptr);
 
     /**
      * Destructor.
@@ -375,9 +375,9 @@ class SIM_API cADByStddev : public cAccuracyDetection
     /**
      * Constructor.
      */
-    explicit cADByStddev(const char *name=NULL,
+    explicit cADByStddev(const char *name=nullptr,
                          double acc=0.01, int reps=3,
-                         PostADFunc f=NULL, void *p=NULL);
+                         PostADFunc f=nullptr, void *p=nullptr);
 
     /**
      * Destructor.

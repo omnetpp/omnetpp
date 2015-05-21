@@ -22,7 +22,7 @@
 NAMESPACE_BEGIN
 
 _Task main_task;
-_Task *current_task = NULL;
+_Task *current_task = nullptr;
 JMP_BUF tmp_jmpb;
 
 unsigned dist( _Task *from, _Task *to )
@@ -77,7 +77,7 @@ void eat( _Task *p, unsigned size, _Task *prevbeef )
         {
             if( SETJMP( t.jmpb ) == 0 )    // split block to free unused space
             {
-              eat( &t, t.stack_size, NULL ); // make free block
+              eat( &t, t.stack_size, nullptr ); // make free block
             }
         }
         t.used = true;                     // mark as used
@@ -107,10 +107,10 @@ void task_init( unsigned total_stack, unsigned main_stack )
     _Task tmp;
 
     tmp.size = total_stack;               // initialize total stack area
-    tmp.next = NULL;
+    tmp.next = nullptr;
     if( SETJMP( tmp.jmpb ) == 0 )
     {
-      eat( &tmp, main_stack, NULL );      // reserve main stack and create
+      eat( &tmp, main_stack, nullptr );      // reserve main stack and create
                                           //   first free task block
     }
     main_task = tmp;                      // copy to global variable
@@ -122,7 +122,7 @@ _Task *task_create( _Task_fn fnp, void *arg, unsigned stack_size )
 {
     _Task *p;
 
-    for( p = main_task.next; p != NULL; p = p->next )     // find free block
+    for( p = main_task.next; p != nullptr; p = p->next )     // find free block
     {
         if( !p->used && p->size >= stack_size )
         {
@@ -136,7 +136,7 @@ _Task *task_create( _Task_fn fnp, void *arg, unsigned stack_size )
             return p;
         }
     }
-    return NULL;                      // not enough stack
+    return nullptr;                      // not enough stack
 }
 
 
@@ -153,7 +153,7 @@ void task_switchto( _Task *p )
 void task_free( _Task *t )
 {
     t->used = false;                     // mark as free
-    if( t->next != NULL && !t->next->used )
+    if( t->next != nullptr && !t->next->used )
     {
         t->size += t->next->size;        // merge with following block
         t->next = t->next->next;
@@ -199,11 +199,11 @@ unsigned task_stackusage( _Task *t )
     _Task *p = t->next;
     if (p->guardbeef1!=DEADBEEF ||       // if overflow
         p->guardbeef2!=DEADBEEF ||
-        (p->prevbeef!=NULL && dist(p,p->prevbeef) > EATFRAME_MAX))
+        (p->prevbeef!=nullptr && dist(p,p->prevbeef) > EATFRAME_MAX))
        return t->size;                   // then return actual size
 
     /* walk backwards -- if the beef are still there, that area is untouched */
-    while (p->prevbeef!=NULL &&
+    while (p->prevbeef!=nullptr &&
            p->prevbeef->guardbeef1==DEADBEEF &&
            p->prevbeef->guardbeef2==DEADBEEF &&
            dist(p->prevbeef,p->prevbeef->prevbeef) <= EATFRAME_MAX)

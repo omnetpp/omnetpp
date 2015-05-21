@@ -301,7 +301,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_reducealpha",         imageReduceAlpha_cmd   },   // args: <image> <alphathreshold>
    { "opp_setwindowproperty",   setWindowProperty_cmd  },   // args: <window> <propertyname> <value>
    // end of list
-   { NULL, },
+   { nullptr, },
 };
 
 
@@ -353,7 +353,7 @@ int getConfigNames_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    cConfigurationEx *cfg = app->getConfigEx();
    std::vector<std::string> confignames = cfg->getConfigNames();
 
-   Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+   Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
    for (int i=0; i<(int)confignames.size(); i++)
        Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(const_cast<char *>(confignames[i].c_str()), -1));
    Tcl_SetObjResult(interp, listobj);
@@ -384,7 +384,7 @@ int getBaseConfigs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    cConfigurationEx *cfg = app->getConfigEx();
    std::vector<std::string> confignames = cfg->getBaseConfigs(configname);
 
-   Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+   Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
    for (int i=0; i<(int)confignames.size(); i++)
        Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(const_cast<char *>(confignames[i].c_str()), -1));
    Tcl_SetObjResult(interp, listobj);
@@ -446,7 +446,7 @@ int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
    simtime_t until_time = SIMTIME_ZERO;
    eventnumber_t until_eventnum = 0;
-   cMessage *until_msg = NULL;
+   cMessage *until_msg = nullptr;
    if (argc==5)
    {
        if (!opp_isblank(argv[2]))
@@ -484,7 +484,7 @@ int setRunUntil_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
    if (argc==1)
    {
-       app->setSimulationRunUntil(0,0,NULL);
+       app->setSimulationRunUntil(0,0,nullptr);
    }
    else
    {
@@ -495,7 +495,7 @@ int setRunUntil_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
        char *e;
        eventnumber_t until_eventnum = strtoll(argv[2], &e, 10);
 
-       cMessage *until_msg = NULL;
+       cMessage *until_msg = nullptr;
        if (!opp_isblank(argv[3])) {
            until_msg = dynamic_cast<cMessage *>(strToPtr(argv[3]));
            if (!until_msg) {Tcl_SetResult(interp, TCLCONST("until_msg object is NULL or not a cMessage"), TCL_STATIC); return TCL_ERROR;}
@@ -513,7 +513,7 @@ int setRunUntilModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 
    if (argc==1)
    {
-       app->setSimulationRunUntilModule(NULL);
+       app->setSimulationRunUntilModule(nullptr);
    }
    else
    {
@@ -546,7 +546,7 @@ int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    }
 
    // fast run until we get to that module
-   app->runSimulation(mode, 0, 0, NULL, mod);
+   app->runSimulation(mode, 0, 0, nullptr, mod);
 
    return TCL_OK;
 }
@@ -638,7 +638,7 @@ int getFileName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
-   const char *s = NULL;
+   const char *s = nullptr;
    if (0==strcmp(argv[1],"ini"))
         s = app->getIniFileName();
    else if (0==strcmp(argv[1],"outvector"))
@@ -657,7 +657,7 @@ int findObjectByFullPath_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
 {
     if (argc<2 || argc>4) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
     const char *fullPath = argv[1];
-    const char *className = argc>=3 ? argv[2] : NULL;
+    const char *className = argc>=3 ? argv[2] : nullptr;
     long objectId = argc>=4 ? atol(argv[3]) : -1;
 
     cFindByPathVisitor visitor(fullPath, className, objectId);
@@ -939,11 +939,11 @@ int instanceof_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    const char *classname = argv[2];
    bool result;
    if (!strcmp(classname, "cMessage"))
-       result = dynamic_cast<cMessage*>(object) != NULL;
+       result = dynamic_cast<cMessage*>(object) != nullptr;
    else if (!strcmp(classname, "cEvent"))
-       result = dynamic_cast<cEvent*>(object) != NULL;
+       result = dynamic_cast<cEvent*>(object) != nullptr;
    else if (!strcmp(classname, "cPacket"))
-       result = dynamic_cast<cPacket*>(object) != NULL;
+       result = dynamic_cast<cPacket*>(object) != nullptr;
    else
        {Tcl_SetResult(interp, TCLCONST("class unsupported by this function"), TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, TCLCONST(result ? "1" : "0"), TCL_STATIC);
@@ -998,7 +998,7 @@ int getSubmodules_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    cModule *mod = dynamic_cast<cModule *>(object);
    if (!mod) {Tcl_SetResult(interp, TCLCONST("object is not a module"), TCL_STATIC); return TCL_ERROR;}
 
-   Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+   Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
    for (cModule::SubmoduleIterator i(mod); !i.end(); i++)
        Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(ptrToStr(i()), -1));
    Tcl_SetObjResult(interp, listobj);
@@ -1138,7 +1138,7 @@ int getComponentTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    std::set<cComponentType*> types;
    collectTypes(mod, types);
 
-   Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+   Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
    for (std::set<cComponentType*>::iterator i=types.begin(); i!=types.end(); i++)
        Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(ptrToStr(*i), -1));
    Tcl_SetObjResult(interp, listobj);
@@ -1378,7 +1378,7 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 int getNetworkTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    cRegistrationList *types = componentTypes.getInstance();
-   Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+   Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
    for (int i=0; i<types->size(); i++)
    {
        cModuleType *t = dynamic_cast<cModuleType *>(types->get(i));
@@ -1421,7 +1421,7 @@ int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 
        for (int k=0; k<dp->getNumTags(); k++)
        {
-           Tcl_Obj *arglist = Tcl_NewListObj(0, NULL);
+           Tcl_Obj *arglist = Tcl_NewListObj(0, nullptr);
            for (int i=0; i<dp->getNumArgs(k); i++)
            {
                const char *s = dp->getTagArg(k,i);
@@ -1441,7 +1441,7 @@ int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
        cDisplayString dp(dispstr);
        for (int k=0; k<dp.getNumTags(); k++)
        {
-           Tcl_Obj *arglist = Tcl_NewListObj(0, NULL);
+           Tcl_Obj *arglist = Tcl_NewListObj(0, nullptr);
            for (int i=0; i<dp.getNumArgs(k); i++)
            {
                const char *s = dp.getTagArg(k,i);
@@ -1656,7 +1656,7 @@ int fesEvents_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    bool wantSilentMsgs = atoi(argv[5])!=0;
 
    Tkenv *app = getTkenv();
-   Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+   Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
    for (cMessageHeap::Iterator it(getSimulation()->msgQueue); maxNum>0 && !it.end(); it++, maxNum--)
    {
        cEvent *event = it();
@@ -1695,7 +1695,7 @@ int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    simtime_t tmax = getSimulation()->msgQueue.peek(len-1)->getArrivalTime();
 
    // return result
-   Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+   Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
    Tcl_ListObjAppendElement(interp, listobj, Tcl_NewDoubleObj(SIMTIME_DBL(tmin-now)));
    Tcl_ListObjAppendElement(interp, listobj, Tcl_NewDoubleObj(SIMTIME_DBL(tmax-now)));
    Tcl_SetObjResult(interp, listobj);
@@ -1751,7 +1751,7 @@ int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    cObject *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
 
-   const char *typestr = (argc>=3) ? argv[2] : NULL;
+   const char *typestr = (argc>=3) ? argv[2] : nullptr;
    int type;
    if (!typestr)
         type = INSP_DEFAULT;
@@ -1928,7 +1928,7 @@ int getInspectors_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    bool toplevelsOnly = atoi(argv[1])!=0;
    Tkenv *app = getTkenv();
-   Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+   Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
    const std::list<Inspector*>& inspectors = app->getInspectors();
    for (std::list<Inspector*>::const_iterator it = inspectors.begin(); it != inspectors.end(); ++it)
    {
@@ -1976,7 +1976,7 @@ int inspectorType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    {
         int type = atoi( argv[1] );
         const char *namestr = insptypeNameFromCode( type );
-        if (namestr==NULL)
+        if (namestr==nullptr)
            {Tcl_SetResult(interp, TCLCONST("unrecognized inspector type"), TCL_STATIC);return TCL_ERROR;}
         Tcl_SetResult(interp, TCLCONST(namestr), TCL_STATIC);
    }
@@ -2005,7 +2005,7 @@ int getClassDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
 
    cObject *object = strToPtr(argv[1]);
-   cClassDescriptor *sd = object ? object->getDescriptor() : NULL;
+   cClassDescriptor *sd = object ? object->getDescriptor() : nullptr;
    Tcl_SetResult(interp, ptrToStr(sd), TCL_VOLATILE);
    return TCL_OK;
 }
@@ -2014,21 +2014,21 @@ int getClassDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 int nullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr(NULL), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr(nullptr), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int isNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, TCLCONST(strToPtr(argv[1])==NULL ? "1" : "0"), TCL_STATIC);
+   Tcl_SetResult(interp, TCLCONST(strToPtr(argv[1])==nullptr ? "1" : "0"), TCL_STATIC);
    return TCL_OK;
 }
 
 int isNotNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, TCLCONST(strToPtr(argv[1])!=NULL ? "1" : "0"), TCL_STATIC);
+   Tcl_SetResult(interp, TCLCONST(strToPtr(argv[1])!=nullptr ? "1" : "0"), TCL_STATIC);
    return TCL_OK;
 }
 
@@ -2414,7 +2414,7 @@ int getClassDescriptorFor_cmd(ClientData, Tcl_Interp *interp, int argc, const ch
 {
    if (argc<2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
-   cClassDescriptor *sd = object ? object->getDescriptor() : NULL;
+   cClassDescriptor *sd = object ? object->getDescriptor() : nullptr;
    Tcl_SetResult(interp, ptrToStr(sd), TCL_VOLATILE);
    return TCL_OK;
 }

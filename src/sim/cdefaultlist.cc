@@ -61,7 +61,7 @@ void cDefaultList::construct()
     numObjs = 0;
     objs = new cOwnedObject *[capacity];
     for (int i=0; i<capacity; i++)
-        objs[i] = NULL;
+        objs[i] = nullptr;
 #ifdef SIMFRONTEND_SUPPORT
     lastChangeSerial = 0;
 #endif
@@ -214,7 +214,7 @@ void cDefaultList::drop(cOwnedObject *obj)
 cOwnedObject *cDefaultList::defaultListGet(int k)
 {
     if (k<0 || k>=numObjs)
-        return NULL;
+        return nullptr;
     return objs[k];
 }
 

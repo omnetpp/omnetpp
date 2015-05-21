@@ -36,7 +36,7 @@ class StartupChecker
         StartupChecker()
         {
             char *loaded = getenv("__OPPSIM_LOADED__");
-            if (loaded != NULL && strcmp(loaded, "yes") == 0 ) {
+            if (loaded != nullptr && strcmp(loaded, "yes") == 0 ) {
                 fprintf(stderr,
                        "\n<!> Error: Attempt to load the oppsim shared library more than once. "
                        "This usually happens when part of your simulation is using release libraries "
@@ -73,10 +73,10 @@ void CodeFragments::executeAll(Type type)
     CodeFragments *p = CodeFragments::head;
     while (p)
     {
-        if (p->type == type && p->code != NULL)
+        if (p->type == type && p->code != nullptr)
         {
             p->code();
-            p->code = NULL;  // do it only once (executeAll() may be called multiple times, e.g. after dlopen() / LoadLibrary() calls)
+            p->code = nullptr;  // do it only once (executeAll() may be called multiple times, e.g. after dlopen() / LoadLibrary() calls)
         }
         p = p->next;
     }

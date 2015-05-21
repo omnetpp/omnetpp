@@ -118,12 +118,12 @@ void cOwnedObject::removeFromOwnershipTree()
 {
     // set ownership of this object to null
     if (owner)
-        owner->yieldOwnership(this, NULL);
+        owner->yieldOwnership(this, nullptr);
 }
 
 void cOwnedObject::setDefaultOwner(cDefaultList *list)
 {
-    ASSERT(list!=NULL);
+    ASSERT(list!=nullptr);
     defaultOwner = list;
 }
 

@@ -25,10 +25,10 @@ NAMESPACE_BEGIN
 
 DisplayString::DisplayString()
 {
-    assembledString = NULL;
-    buffer = NULL;
-    bufferEnd = NULL;
-    tags = NULL;
+    assembledString = nullptr;
+    buffer = nullptr;
+    bufferEnd = nullptr;
+    tags = nullptr;
     numTags = 0;
     assembledStringValid = false;
 }
@@ -37,9 +37,9 @@ DisplayString::DisplayString()
 DisplayString::DisplayString(const char *displaystr)
 {
     assembledString = opp_strdup(displaystr);
-    buffer = NULL;
-    bufferEnd = NULL;
-    tags = NULL;
+    buffer = nullptr;
+    bufferEnd = nullptr;
+    tags = nullptr;
     numTags = 0;
     assembledStringValid = false;
 
@@ -48,10 +48,10 @@ DisplayString::DisplayString(const char *displaystr)
 
 DisplayString::DisplayString(const DisplayString& ds)
 {
-    assembledString = NULL;
-    buffer = NULL;
-    bufferEnd = NULL;
-    tags = NULL;
+    assembledString = nullptr;
+    buffer = nullptr;
+    bufferEnd = nullptr;
+    tags = nullptr;
     numTags = 0;
     assembledStringValid = false;
 
@@ -170,7 +170,7 @@ int DisplayString::getNumTags() const
 
 const char *DisplayString::getTagName(int tagindex) const
 {
-    if (tagindex<0 || tagindex>=numTags) return NULL;
+    if (tagindex<0 || tagindex>=numTags) return nullptr;
     return tags[tagindex].name;
 }
 
@@ -212,7 +212,7 @@ bool DisplayString::setTagArg(int tagindex, int index, const char *value)
     slot = opp_strdup(value);
 
     // get rid of possible empty trailing args
-    while (tag.numArgs>0 && tag.args[tag.numArgs-1]==NULL)
+    while (tag.numArgs>0 && tag.args[tag.numArgs-1]==nullptr)
         tag.numArgs--;
 
     assembledStringValid = true;
@@ -245,7 +245,7 @@ int DisplayString::insertTag(const char *tagname, int atindex)
     // fill in new tag
     tags[atindex].name = opp_strdup(tagname);
     tags[atindex].numArgs = 0;
-    for (int i=0; i<MAXARGS; i++) tags[atindex].args[i] = NULL;
+    for (int i=0; i<MAXARGS; i++) tags[atindex].args[i] = nullptr;
 
     // success
     assembledStringValid = true;
@@ -297,19 +297,19 @@ void DisplayString::clearTags()
                 delete [] tags[t].args[i];
     }
     delete [] tags;
-    tags = NULL;
+    tags = nullptr;
     numTags = 0;
 
     // must be done after deleting tags[] because of isinbuffer()
     delete [] buffer;
-    buffer = bufferEnd = NULL;
+    buffer = bufferEnd = nullptr;
     assembledStringValid = true;
 }
 
 bool DisplayString::parse()
 {
     clearTags();
-    if (assembledString==NULL)
+    if (assembledString==nullptr)
         return true;
 
     bool fully_ok = true;
@@ -330,7 +330,7 @@ bool DisplayString::parse()
     tags[0].name = buffer;
     tags[0].numArgs = 0;
     for (int i=0; i<MAXARGS; i++)
-        tags[0].args[i] = NULL;
+        tags[0].args[i] = nullptr;
 
     char *s, *d;
     for (s=assembledString,d=buffer; *s; s++,d++)
@@ -349,7 +349,7 @@ bool DisplayString::parse()
             numTags++;
             tags[numTags-1].name = d+1;
             tags[numTags-1].numArgs = 0;
-            for (int i=0; i<MAXARGS; i++) tags[numTags-1].args[i] = NULL;
+            for (int i=0; i<MAXARGS; i++) tags[numTags-1].args[i] = nullptr;
         }
         else if (*s=='=')
         {

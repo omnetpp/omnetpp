@@ -61,7 +61,7 @@ const char *MatchableFieldAdapter::getAsString(const char *attribute) const
     else if (!strcmp("declaredOn", attribute))
         return classDescriptor->getFieldDeclaredOn(fieldIndex);
     else
-        return NULL;
+        return nullptr;
 }
 
 NAMESPACE_END

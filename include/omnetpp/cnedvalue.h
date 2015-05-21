@@ -143,7 +143,7 @@ class SIM_API cNEDValue
      * If conversion is not possible (unrelated or unknown units), and error
      * is thrown.
      */
-    static double parseQuantity(const char *str, const char *expectedUnit=NULL);
+    static double parseQuantity(const char *str, const char *expectedUnit=nullptr);
 
     /**
      * Converts a quantity given as string to a double, and returns it, together
@@ -179,14 +179,14 @@ class SIM_API cNEDValue
     /**
      * Sets the value to the given long value.
      */
-    void set(long l) {type=DBL; dbl=l; dblunit=NULL;}
+    void set(long l) {type=DBL; dbl=l; dblunit=nullptr;}
 
     /**
      * Sets the value to the given double value and measurement unit.
      * The unit string pointer is expected to stay valid during the entire
      * duration of the simulation (see related class comment).
      */
-    void set(double d, const char *unit=NULL) {type=DBL; dbl=d; dblunit=unit;}
+    void set(double d, const char *unit=nullptr) {type=DBL; dbl=d; dblunit=unit;}
 
     /**
      * Sets the value to the given double value, preserving the current

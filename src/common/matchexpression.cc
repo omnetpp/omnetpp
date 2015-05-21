@@ -23,8 +23,8 @@ NAMESPACE_BEGIN
 
 MatchExpression::Elem::Elem(PatternMatcher *pattern, const char *fieldname)
 {
-    type = fieldname==NULL ? PATTERN : FIELDPATTERN;
-    this->fieldname = fieldname==NULL ? "" : fieldname;
+    type = fieldname==nullptr ? PATTERN : FIELDPATTERN;
+    this->fieldname = fieldname==nullptr ? "" : fieldname;
     this->pattern = pattern;
 }
 
@@ -85,13 +85,13 @@ bool MatchExpression::matches(const Matchable *object)
             if (tos>=stksize-1)
                 throw opp_runtime_error("MatchExpression: malformed expression: stack overflow");
             attr = object->getAsString();
-            stk[++tos] = attr==NULL ? false : e.pattern->matches(attr);
+            stk[++tos] = attr==nullptr ? false : e.pattern->matches(attr);
             break;
           case Elem::FIELDPATTERN:
             if (tos>=stksize-1)
                 throw opp_runtime_error("MatchExpression: malformed expression: stack overflow");
             attr = object->getAsString(e.fieldname.c_str());
-            stk[++tos] = attr==NULL ? false : e.pattern->matches(attr);
+            stk[++tos] = attr==nullptr ? false : e.pattern->matches(attr);
             break;
           case Elem::OR:
             if (tos<1)

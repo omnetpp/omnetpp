@@ -53,7 +53,7 @@ class SIM_API cStdVectorWatcherDescriptor : public cClassDescriptor //noncopyabl
 };
 
 cStdVectorWatcherDescriptor::cStdVectorWatcherDescriptor(const char *vecType, const char *elemType) :
-cClassDescriptor(vecType, NULL)
+cClassDescriptor(vecType, nullptr)
 {
     vectorTypeName = vecType;
     elementTypeName = elemType;
@@ -65,13 +65,13 @@ cStdVectorWatcherDescriptor::~cStdVectorWatcherDescriptor()
 
 const char **cStdVectorWatcherDescriptor::getPropertyNames() const
 {
-    static const char **names = { NULL };
+    static const char **names = { nullptr };
     return names;
 }
 
 const char *cStdVectorWatcherDescriptor::getProperty(const char *propertyname) const
 {
-    return NULL;
+    return nullptr;
 }
 
 int cStdVectorWatcherDescriptor::getFieldCount() const
@@ -96,13 +96,13 @@ const char *cStdVectorWatcherDescriptor::getFieldTypeString(int field) const
 
 const char **cStdVectorWatcherDescriptor::getFieldPropertyNames(int field) const
 {
-    static const char **names = { NULL };
+    static const char **names = { nullptr };
     return names;
 }
 
 const char *cStdVectorWatcherDescriptor::getFieldProperty(int field, const char *propertyname) const
 {
-    return NULL;
+    return nullptr;
 }
 
 int cStdVectorWatcherDescriptor::getFieldArraySize(void *object, int field) const
@@ -124,12 +124,12 @@ bool cStdVectorWatcherDescriptor::setFieldValueAsString(void *object, int field,
 
 const char *cStdVectorWatcherDescriptor::getFieldStructName(int field) const
 {
-    return NULL;  //TODO we could return elementTypeName (if it is a compound type; if it's a pointer, the '*' should be removed)
+    return nullptr;  //TODO we could return elementTypeName (if it is a compound type; if it's a pointer, the '*' should be removed)
 }
 
 void *cStdVectorWatcherDescriptor::getFieldStructValuePointer(void *object, int field, int i) const
 {
-    return NULL;  //TODO we could return a pointer to the given array element (if element is a compound type)
+    return nullptr;  //TODO we could return a pointer to the given array element (if element is a compound type)
 }
 
 

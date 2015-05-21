@@ -186,7 +186,7 @@ class SIM_API cMessage : public cEvent
     /**
      * Constructor.
      */
-    explicit cMessage(const char *name=NULL, short kind=0);
+    explicit cMessage(const char *name=nullptr, short kind=0);
 
     /**
      * Destructor.

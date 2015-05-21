@@ -144,7 +144,7 @@ MsgCppGenerator::TypeDesc MsgCppGenerator::_PRIMITIVE_TYPES[] =
         {"int64_t",         "int64_t",         "string2int64",    "int642string",     "0"},
         {"uint64",          "uint64_t",        "string2uint64",   "uint642string",    "0"},
         {"uint64_t",        "uint64_t",        "string2uint64",   "uint642string",    "0"},
-        {0,0,0,0,0}
+        {nullptr,nullptr,nullptr,nullptr,nullptr}
 };
 
 
@@ -155,7 +155,7 @@ const char *MsgCppGenerator::_RESERVED_WORDS[] =
         "true", "false", "for", "while", "if", "else", "do", "enum", "class", "struct",
         "typedef", "public", "private", "protected", "auto", "register", "sizeof", "void",
         "new", "delete", "explicit", "static", "extern", "return", "try", "catch",
-        0
+        nullptr
 };
 
 void MsgCppGenerator::initDescriptors()
@@ -176,7 +176,7 @@ MsgCppGenerator::MsgCppGenerator(NEDErrorStore *e, const MsgCppGeneratorOptions&
 
     opts = options;
 
-    hOutp = ccOutp = NULL;
+    hOutp = ccOutp = nullptr;
     errors = e;
 
     // pre-register some OMNeT++ classes so that one doesn't need to announce them

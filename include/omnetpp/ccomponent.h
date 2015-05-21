@@ -81,7 +81,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
         simsignal_t signalID;
         cIListener **listeners; // NULL-terminated array
 
-        SignalData() {signalID=SIMSIGNAL_NULL; listeners=NULL;}
+        SignalData() {signalID=SIMSIGNAL_NULL; listeners=nullptr;}
         void dispose() {delete [] listeners;}
         bool addListener(cIListener *l);
         bool removeListener(cIListener *l);
@@ -260,7 +260,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * an ID to the module, inserting it into the <tt>simulation</tt> object,
      * etc.).
      */
-    cComponent(const char *name = NULL);
+    cComponent(const char *name = nullptr);
 
     /**
      * Destructor.
@@ -983,26 +983,26 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     /**
      * Records a double into the scalar result file.
      */
-    void recordScalar(const char *name, double value, const char *unit=NULL);
+    void recordScalar(const char *name, double value, const char *unit=nullptr);
 
     /**
      * Convenience method, delegates to recordScalar(const char *, double).
      */
-    void recordScalar(const char *name, SimTime value, const char *unit=NULL) {recordScalar(name, value.dbl(), unit);}
+    void recordScalar(const char *name, SimTime value, const char *unit=nullptr) {recordScalar(name, value.dbl(), unit);}
 
     /**
      * Records the given statistics into the scalar result file. Delegates to
      * cStatistic::recordAs(). Note that if the statistics object is a histogram,
      * this operation may invoke its transform() method.
      */
-    void recordStatistic(cStatistic *stats, const char *unit=NULL);
+    void recordStatistic(cStatistic *stats, const char *unit=nullptr);
 
     /**
      * Records the given statistics into the scalar result file with the given name.
      * Delegates to cStatistic::recordAs().  Note that if the statistics object is
      * a histogram, this operation may invoke its transform() method.
      */
-    void recordStatistic(const char *name, cStatistic *stats, const char *unit=NULL);
+    void recordStatistic(const char *name, cStatistic *stats, const char *unit=nullptr);
     //@}
 };
 

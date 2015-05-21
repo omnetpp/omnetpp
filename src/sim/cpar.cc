@@ -61,8 +61,8 @@ void cPar::moveto(cPar& other)
     other.ownerComponent = ownerComponent;
     other.p = p;
     other.evalContext = evalContext;
-    p = NULL;
-    evalContext = NULL;
+    p = nullptr;
+    evalContext = nullptr;
 }
 
 const char *cPar::getName() const
@@ -122,7 +122,7 @@ void cPar::operator=(const cPar& other)
 cProperties *cPar::getProperties() const
 {
     cComponent *component = dynamic_cast<cComponent *>(getOwner());
-    ASSERT(component != NULL);
+    ASSERT(component != nullptr);
     cComponentType *componentType = component->getComponentType();
     cProperties *props = componentType->getParamProperties(getName());
     return props;
@@ -232,7 +232,7 @@ cPar& cPar::setBoolValue(bool b)
     beforeChange();
     copyIfShared();
     p->setBoolValue(b);
-    evalContext = NULL;
+    evalContext = nullptr;
     afterChange();
     return *this;
 }
@@ -242,7 +242,7 @@ cPar& cPar::setLongValue(long l)
     beforeChange();
     copyIfShared();
     p->setLongValue(l);
-    evalContext = NULL;
+    evalContext = nullptr;
     afterChange();
     return *this;
 }
@@ -252,7 +252,7 @@ cPar& cPar::setDoubleValue(double d)
     beforeChange();
     copyIfShared();
     p->setDoubleValue(d);
-    evalContext = NULL;
+    evalContext = nullptr;
     afterChange();
     return *this;
 }
@@ -262,7 +262,7 @@ cPar& cPar::setStringValue(const char *s)
     beforeChange();
     copyIfShared();
     p->setStringValue(s);
-    evalContext = NULL;
+    evalContext = nullptr;
     afterChange();
     return *this;
 }
@@ -272,7 +272,7 @@ cPar& cPar::setXMLValue(cXMLElement *node)
     beforeChange();
     copyIfShared();
     p->setXMLValue(node);
-    evalContext = NULL;
+    evalContext = nullptr;
     afterChange();
     return *this;
 }

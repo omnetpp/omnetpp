@@ -22,12 +22,12 @@ NAMESPACE_BEGIN
 BasicGraphLayouterEnvironment::BasicGraphLayouterEnvironment()
 {
     timeout = 0;
-    startTime = time(NULL);
+    startTime = time(nullptr);
 }
 
 bool BasicGraphLayouterEnvironment::okToProceed()
 {
-    return timeout == 0 || time(NULL)-startTime <= timeout;
+    return timeout == 0 || time(nullptr)-startTime <= timeout;
 }
 
 bool BasicGraphLayouterEnvironment::getBoolParameter(const char *name, int index, bool defaultValue)
@@ -59,7 +59,7 @@ double BasicGraphLayouterEnvironment::getDoubleParameter(const char *name, int i
 GraphLayouter::GraphLayouter()
 {
     width = height = border = 0;
-    environment = NULL;
+    environment = nullptr;
 }
 
 void GraphLayouter::setSize(double w, double h, double bd)

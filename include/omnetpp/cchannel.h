@@ -109,7 +109,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
         virtual unsigned long unsignedLongValue(simsignal_t signalID) const {error(); return 0;}
         virtual double doubleValue(simsignal_t signalID) const {error(); return 0;}
         virtual SimTime simtimeValue(simsignal_t signalID) const {error(); return timestamp;}
-        virtual const char *stringValue(simsignal_t signalID) const {error(); return NULL;}
+        virtual const char *stringValue(simsignal_t signalID) const {error(); return nullptr;}
         //@}
     };
 
@@ -119,7 +119,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     /**
      * Constructor.
      */
-    explicit cChannel(const char *name=NULL);
+    explicit cChannel(const char *name=nullptr);
 
     /**
      * Destructor.
@@ -339,7 +339,7 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
      * be used when creating channels dynamically; use the create()
      * factory method instead.
      */
-    explicit cIdealChannel(const char *name=NULL) : cChannel(name) {}
+    explicit cIdealChannel(const char *name=nullptr) : cChannel(name) {}
 
     /**
      * Destructor.

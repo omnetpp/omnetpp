@@ -29,7 +29,7 @@ NAMESPACE_BEGIN
 ArgList::ArgList()
 {
     argc = 0;
-    argv = NULL;
+    argv = nullptr;
 }
 
 void ArgList::parse(int argc, char *argv[], const char *spec)
@@ -98,7 +98,7 @@ void ArgList::parse(int argc, char *argv[], const char *spec)
 
 bool ArgList::isValidOption(char c) const
 {
-    return strchr(spec.c_str(), c) != NULL;
+    return strchr(spec.c_str(), c) != nullptr;
 }
 
 bool ArgList::hasArg(char c) const
@@ -126,14 +126,14 @@ bool ArgList::optionGiven(char c) const
 const char *ArgList::optionValue(char c, int k) const
 {
     if (shortOpts.find(c)==shortOpts.end())
-        return NULL;
+        return nullptr;
     const std::vector<std::string>& v = shortOpts.find(c)->second; // VC++ has problems with shortOpts[c]
-    return (k>=0 && k<(int)v.size()) ? v[k].c_str() : NULL;
+    return (k>=0 && k<(int)v.size()) ? v[k].c_str() : nullptr;
 }
 
 const char *ArgList::argument(int k) const
 {
-    return (k>=0 && k<(int)params.size()) ? params[k].c_str() : NULL;
+    return (k>=0 && k<(int)params.size()) ? params[k].c_str() : nullptr;
 }
 
 NAMESPACE_END

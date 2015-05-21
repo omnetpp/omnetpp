@@ -351,22 +351,22 @@ const char *PatternMatcher::patternPrefixMatches(const char *line, int suffixoff
     // pattern must end in a literal string...
     assert(pattern[pattern.size()-1].type==END);
     if (pattern.size()<2)
-        return NULL;
+        return nullptr;
     Elem& e = pattern[pattern.size()-2];
     if (e.type!=LITERALSTRING)
-        return NULL;
+        return nullptr;
 
     // ...with the suffixlen characters at the end of 'line'
     const char *pattstring  = e.literalString.c_str();
     const char *p = strstr(pattstring, line+suffixoffset);
     if (!p)
-        return NULL;
+        return nullptr;
     p += strlen(line+suffixoffset);
     rest = p;
     int pattsuffixlen = e.literalString.size() - (p-pattstring);
 
     // pattern, if we cut off the 'rest', must exactly match 'line'
-    return doMatch(line, 0, pattsuffixlen) ? rest.c_str() : NULL;
+    return doMatch(line, 0, pattsuffixlen) ? rest.c_str() : nullptr;
 }
 
 bool PatternMatcher::containsWildcards(const char *pattern)

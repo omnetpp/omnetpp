@@ -31,7 +31,7 @@ NAMESPACE_BEGIN
 
 cNEDDeclaration::cNEDDeclaration(NEDResourceCache *resolver, const char *qname, bool isInnerType, NEDElement *tree) : NEDTypeInfo(resolver, qname, isInnerType, tree)
 {
-    props = NULL;
+    props = nullptr;
     patternsValid = false;
 }
 
@@ -91,7 +91,7 @@ void cNEDDeclaration::putIntoPropsMap(StringPropsMap& propsMap, const std::strin
 cProperties *cNEDDeclaration::getFromPropsMap(const StringPropsMap& propsMap, const std::string& name) const
 {
     StringPropsMap::const_iterator it = propsMap.find(name);
-    return it==propsMap.end() ? NULL : it->second;
+    return it==propsMap.end() ? nullptr : it->second;
 }
 
 cProperties *cNEDDeclaration::getProperties() const
@@ -137,9 +137,9 @@ cProperties *cNEDDeclaration::doParamProperties(const char *paramName) const
 
     // update with local properties
     ParametersElement *paramsNode = getParametersElement();
-    NEDElement *paramNode = paramsNode ? paramsNode->getFirstChildWithAttribute(NED_PARAM, "name", paramName) : NULL;
+    NEDElement *paramNode = paramsNode ? paramsNode->getFirstChildWithAttribute(NED_PARAM, "name", paramName) : nullptr;
     if (!paramNode && !props)
-        return NULL;  // error: parameter not found anywhere
+        return nullptr;  // error: parameter not found anywhere
     props = mergeProperties(props, paramNode);
     putIntoPropsMap(paramPropsMap, paramName, props);
     return props;
@@ -165,9 +165,9 @@ cProperties *cNEDDeclaration::doGateProperties(const char *gateName) const
 
     // update with local properties
     GatesElement *gatesNode = getGatesElement();
-    NEDElement *gateNode = gatesNode ? gatesNode->getFirstChildWithAttribute(NED_GATE, "name", gateName) : NULL;
+    NEDElement *gateNode = gatesNode ? gatesNode->getFirstChildWithAttribute(NED_GATE, "name", gateName) : nullptr;
     if (!gateNode && !props)
-        return NULL;  // error: gate not found anywhere
+        return nullptr;  // error: gate not found anywhere
     props = mergeProperties(props, gateNode);
     putIntoPropsMap(gatePropsMap, gateName, props);
     return props;
@@ -198,8 +198,8 @@ cProperties *cNEDDeclaration::doSubmoduleProperties(const char *submoduleName, c
     // update with local properties
     NEDElement *subcomponentNode = getLocalSubmoduleElement(submoduleName);
     if (!subcomponentNode && !props)
-        return NULL; // error: no such submodule FIXME must not return NULL!
-    NEDElement *paramsNode = subcomponentNode ? subcomponentNode->getFirstChildWithTag(NED_PARAMETERS) : NULL;
+        return nullptr; // error: no such submodule FIXME must not return NULL!
+    NEDElement *paramsNode = subcomponentNode ? subcomponentNode->getFirstChildWithTag(NED_PARAMETERS) : nullptr;
     props = mergeProperties(props, paramsNode);
     putIntoPropsMap(submodulePropsMap, key.c_str(), props);
     return props;
@@ -230,9 +230,9 @@ cProperties *cNEDDeclaration::doConnectionProperties(int connectionId, const cha
     // update with local properties
     ConnectionElement *connectionNode = getLocalConnectionElement(connectionId);
     if (!connectionNode && !props)
-        return NULL; // error: no such connection
+        return nullptr; // error: no such connection
 
-    NEDElement *paramsNode = connectionNode ? connectionNode->getFirstChildWithTag(NED_PARAMETERS) : NULL;
+    NEDElement *paramsNode = connectionNode ? connectionNode->getFirstChildWithTag(NED_PARAMETERS) : nullptr;
     props = mergeProperties(props, paramsNode);
     putIntoPropsMap(connectionPropsMap, key.c_str(), props);
     return props;
@@ -257,7 +257,7 @@ cProperties *cNEDDeclaration::mergeProperties(const cProperties *baseprops, NEDE
         PropertyElement *propNode = (PropertyElement *)child;
         const char *propName = propNode->getName();
         const char *propIndex = propNode->getIndex();
-        if (!propIndex[0]) propIndex = NULL;  // no index is NULL not ""
+        if (!propIndex[0]) propIndex = nullptr;  // no index is NULL not ""
         cProperty *prop = props->get(propName, propIndex);
         if (!prop)
             props->add(prop = new cProperty(propName, propIndex));
@@ -330,7 +330,7 @@ cParImpl *cNEDDeclaration::getSharedParImplFor(NEDElement *node)
 {
     SharedParImplMap::const_iterator it = parimplMap.find(node->getId());
     //XXX printf("      getExpr: %ld -> %p\n", node->getId(), it==parimplMap.end() ? NULL : it->second);
-    return it==parimplMap.end() ? NULL : it->second;
+    return it==parimplMap.end() ? nullptr : it->second;
 }
 
 void cNEDDeclaration::putSharedParImplFor(NEDElement *node, cParImpl *value)
@@ -347,7 +347,7 @@ const std::vector<cNEDDeclaration::PatternData>& cNEDDeclaration::getParamPatter
     if (!patternsValid)
     {
         // collected param assignment patterns from all super classes
-        for (cNEDDeclaration *d = this; d; d = d->numExtendsNames()==0 ? NULL : d->getSuperDecl())
+        for (cNEDDeclaration *d = this; d; d = d->numExtendsNames()==0 ? nullptr : d->getSuperDecl())
         {
             ParametersElement *paramsNode = d->getParametersElement();
             if (paramsNode)
@@ -367,7 +367,7 @@ const std::vector<cNEDDeclaration::PatternData>& cNEDDeclaration::getSubmodulePa
         std::vector<PatternData>& v = submodulePatterns[submoduleName]; // create
 
         // collected param assignment patterns from all super classes
-        for (cNEDDeclaration *d = this; d; d = d->numExtendsNames()==0 ? NULL : d->getSuperDecl())
+        for (cNEDDeclaration *d = this; d; d = d->numExtendsNames()==0 ? nullptr : d->getSuperDecl())
         {
             SubmodulesElement *submodsNode = d->getSubmodulesElement();
             if (!submodsNode)

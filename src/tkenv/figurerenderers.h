@@ -73,7 +73,7 @@ class TKENV_API FigureRenderer : public cObject // for because Register_Class() 
         void removeItems(Tcl_Interp *interp, Tcl_CmdInfo *cmd, const char *tag);
 
     public:
-        FigureRenderer() : bufferFreePtr(NULL) {}
+        FigureRenderer() : bufferFreePtr(nullptr) {}
         virtual ~FigureRenderer() {}
         static FigureRenderer *getRendererFor(cFigure *figure);
         virtual void render(cFigure *figure, Tcl_Interp *interp, Tcl_CmdInfo *cmd, const cFigure::Transform& transform, FigureRenderingHints *hints) = 0;

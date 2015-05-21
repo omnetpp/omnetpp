@@ -27,7 +27,7 @@ NAMESPACE_BEGIN
 
 cCommBufferBase::cCommBufferBase()
 {
-    mBuffer = 0;
+    mBuffer = nullptr;
     mBufferSize = 0;
     mPosition = 0;
     mMsgSize = 0;

@@ -38,7 +38,7 @@ static bool serialLess(const Block &first, const Block &second)
 const Block* VectorData::getBlockBySerial(long serial) const
 {
     if (serial < 0 || serial >= getCount())
-        return NULL;
+        return nullptr;
 
     Block blockToFind;
     blockToFind.startSerial = serial;
@@ -50,7 +50,7 @@ const Block* VectorData::getBlockBySerial(long serial) const
         return &(*first);
     }
     else
-        return NULL;
+        return nullptr;
 }
 
 // ordering of blocks
@@ -75,12 +75,12 @@ const Block *VectorData::getBlockBySimtime(simultime_t simtime, bool after) cons
     if (after)
     {
         Blocks::const_iterator first = std::lower_bound(blocks.begin(), blocks.end(), blockToFind, simtimeLess);
-        return first != blocks.end() ? &(*first) : NULL;
+        return first != blocks.end() ? &(*first) : nullptr;
     }
     else
     {
         Blocks::const_reverse_iterator last = std::lower_bound(blocks.rbegin(), blocks.rend(), blockToFind, simtimeGreater);
-        return last != blocks.rend() ? &(*last) : NULL;
+        return last != blocks.rend() ? &(*last) : nullptr;
     }
 }
 
@@ -123,12 +123,12 @@ const Block *VectorData::getBlockByEventnum(eventnumber_t eventNum, bool after) 
     if (after)
     {
         Blocks::const_iterator first = std::lower_bound(blocks.begin(), blocks.end(), blockToFind, eventnumLess);
-        return first != blocks.end() ? &(*first) : NULL;
+        return first != blocks.end() ? &(*first) : nullptr;
     }
     else
     {
         Blocks::const_reverse_iterator last = std::lower_bound(blocks.rbegin(), blocks.rend(), blockToFind, eventnumGreater);
-        return last != blocks.rend() ? &(*last) : NULL;
+        return last != blocks.rend() ? &(*last) : nullptr;
     }
 }
 
@@ -207,9 +207,9 @@ void RunData::writeToFile(FILE *file, const char *filename) const
 static bool isFileReadable(const char *filename)
 {
     FILE *f = fopen(filename, "r");
-    if (f != NULL)
+    if (f != nullptr)
         fclose(f);
-    return f != NULL;
+    return f != nullptr;
 }
 
 bool IndexFile::isIndexFile(const char *filename)
@@ -323,7 +323,7 @@ VectorFileIndex *IndexFileReader::readAll()
 
     VectorFileIndex *index = new VectorFileIndex();
 	reader.setCheckFileForChanges(false);
-    while ((line=reader.getNextLineBufferPointer())!=NULL)
+    while ((line=reader.getNextLineBufferPointer())!=nullptr)
     {
         int64_t lineNum = reader.getNumReadLines();
         int len=reader.getCurrentLineLength();
@@ -341,9 +341,9 @@ VectorFileIndex *IndexFileReader::readFingerprint()
     int numTokens;
     char *line, **tokens;
 
-    VectorFileIndex *index = NULL;
+    VectorFileIndex *index = nullptr;
 	reader.setCheckFileForChanges(false);
-    while ((line=reader.getNextLineBufferPointer())!=NULL)
+    while ((line=reader.getNextLineBufferPointer())!=nullptr)
     {
         int64_t lineNum = reader.getNumReadLines();
         int len = reader.getCurrentLineLength();
@@ -461,13 +461,13 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
 #define INDEX_FILE_VERSION 2
 
 IndexFileWriter::IndexFileWriter(const char *filename, int precision)
-    : filename(filename), precision(precision), file(NULL)
+    : filename(filename), precision(precision), file(nullptr)
 {
 }
 
 IndexFileWriter::~IndexFileWriter()
 {
-    if (file != NULL)
+    if (file != nullptr)
     {
         closeFile();
     }
@@ -493,7 +493,7 @@ void IndexFileWriter::writeFingerprint(std::string vectorFileName)
 {
     FingerPrint fingerprint(vectorFileName.c_str());
 
-    if (file == NULL)
+    if (file == nullptr)
         openFile();
 
     file_offset_t saveOffset = opp_ftell(file);
@@ -504,14 +504,14 @@ void IndexFileWriter::writeFingerprint(std::string vectorFileName)
 
 void IndexFileWriter::writeRun(const RunData &run)
 {
-    if (file == NULL)
+    if (file == nullptr)
         openFile();
     run.writeToFile(file, filename.c_str());
 }
 
 void IndexFileWriter::writeVector(const VectorData &vector)
 {
-    if (file == NULL)
+    if (file == nullptr)
         openFile();
 
     int numBlocks = vector.blocks.size();
@@ -564,7 +564,7 @@ void IndexFileWriter::writeBlock(const VectorData &vector, const Block &block)
 void IndexFileWriter::openFile()
 {
     file = fopen(filename.c_str(), "w");
-    if (file == NULL)
+    if (file == nullptr)
         throw opp_runtime_error("Cannot open index file: %s", filename.c_str());
 
     setlocale(LC_NUMERIC, "C");
@@ -577,10 +577,10 @@ void IndexFileWriter::openFile()
 
 void IndexFileWriter::closeFile()
 {
-    if (file != NULL)
+    if (file != nullptr)
     {
         fclose(file);
-        file = NULL;
+        file = nullptr;
     }
 }
 

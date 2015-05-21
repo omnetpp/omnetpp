@@ -160,13 +160,13 @@ LiteralElement *NEDElementUtil::getTheOnlyValueFrom(PropertyElement *property)
 {
     // first (only?) value of the default (only?) key
     if (!property)
-        return NULL;
+        return nullptr;
     NEDElement *propertyKey = property->getFirstChildWithAttribute(NED_PROPERTY_KEY, "name", "");
     int count = property->getNumChildrenWithTag(NED_PROPERTY_KEY);
     if (count != (propertyKey ? 1 : 0))
         throw NEDException(property, "should contain a single value");
     if (!propertyKey)
-        return NULL;
+        return nullptr;
     if (propertyKey->getNumChildrenWithTag(NED_LITERAL) >= 2)
         throw NEDException(property, "should contain a single value");
     return (LiteralElement *)propertyKey->getFirstChildWithTag(NED_LITERAL);
@@ -188,10 +188,10 @@ bool NEDElementUtil::propertyAsBool(PropertyElement *property)
 const char *NEDElementUtil::propertyAsString(PropertyElement *property)
 {
     if (!property)
-        return NULL;
+        return nullptr;
     LiteralElement *literal = getTheOnlyValueFrom(property);
     if (!literal)
-        return NULL;
+        return nullptr;
     return literal->getValue(); // return anything as string
 }
 

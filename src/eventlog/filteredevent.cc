@@ -41,9 +41,9 @@ FilteredEvent::FilteredEvent(FilteredEventLog *filteredEventLog, eventnumber_t e
 void FilteredEvent::clearInternalState()
 {
     causeEventNumber = -1;
-    cause = NULL;
-    causes = NULL;
-    consequences = NULL;
+    cause = nullptr;
+    causes = nullptr;
+    consequences = nullptr;
 }
 
 FilteredEvent::~FilteredEvent()
@@ -57,7 +57,7 @@ void FilteredEvent::deleteConsequences()
         for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
             delete *it;
         delete consequences;
-        consequences = NULL;
+        consequences = nullptr;
     }
 }
 
@@ -65,13 +65,13 @@ void FilteredEvent::deleteAllocatedObjects()
 {
     if (cause && !causes) {
         delete cause;
-        cause = NULL;
+        cause = nullptr;
     }
     if (causes) {
         for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
             delete *it;
         delete causes;
-        causes = NULL;
+        causes = nullptr;
     }
     deleteConsequences();
 }
@@ -139,7 +139,7 @@ FilteredEvent *FilteredEvent::getCauseEvent()
             filteredEventLog->progress();
 
             if (causeEvent->getEventNumber() < filteredEventLog->getFirstEventNumber())
-                return NULL;
+                return nullptr;
 
             if (filteredEventLog->matchesFilter(causeEvent))
                 return filteredEventLog->getEventForEventNumber(causeEvent->getEventNumber());
@@ -159,15 +159,15 @@ BeginSendEntry *FilteredEvent::getCauseBeginSendEntry()
         if (dynamic_cast<BeginSendEntry *>(messageEntry))
             return (BeginSendEntry *)messageEntry;
         else
-            return NULL;
+            return nullptr;
     }
     else
-        return NULL;
+        return nullptr;
 }
 
 IMessageDependency *FilteredEvent::getCause()
 {
-    if (cause == NULL) {
+    if (cause == nullptr) {
         IEvent *causeEvent = getEvent();
         IMessageDependency *causeMessageDependency = causeEvent->getCause();
 
@@ -180,7 +180,7 @@ IMessageDependency *FilteredEvent::getCause()
                 filteredEventLog->progress();
 
                 if (causeEvent->getEventNumber() < filteredEventLog->getFirstEventNumber())
-                    return NULL;
+                    return nullptr;
 
                 if (filteredEventLog->matchesFilter(messageDependency->getCauseEvent())) {
                     if (messageDependency == causeMessageDependency)
@@ -202,14 +202,14 @@ IMessageDependency *FilteredEvent::getCause()
 
 IMessageDependencyList *FilteredEvent::getCauses()
 {
-    if (causes == NULL) {
+    if (causes == nullptr) {
         // returns a list of dependencies, where the consequence is this event,
         // and the other end is no further away than getMaximumCauseDepth() and
         // no events in between match the filter
         long begin = clock();
         causes = new IMessageDependencyList();
         std::list<BreadthSearchItem> todoList;
-        todoList.push_back(BreadthSearchItem(getEvent(), NULL, FilteredMessageDependency::UNDEFINED, 0));
+        todoList.push_back(BreadthSearchItem(getEvent(), nullptr, FilteredMessageDependency::UNDEFINED, 0));
 
         // TODO: LONG RUNNING OPERATION
         // this is recursive and might take some time
@@ -258,12 +258,12 @@ IMessageDependencyList *FilteredEvent::getCauses()
 
 IMessageDependencyList *FilteredEvent::getConsequences()
 {
-    if (consequences == NULL) {
+    if (consequences == nullptr) {
         // similar to getCause
         long begin = clock();
         consequences = new IMessageDependencyList();
         std::list<BreadthSearchItem> todoList;
-        todoList.push_back(BreadthSearchItem(getEvent(), NULL, FilteredMessageDependency::UNDEFINED, 0));
+        todoList.push_back(BreadthSearchItem(getEvent(), nullptr, FilteredMessageDependency::UNDEFINED, 0));
 
         // TODO: LONG RUNNING OPERATION
         // this is recursive and might take some time

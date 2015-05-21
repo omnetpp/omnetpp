@@ -119,7 +119,7 @@ void VectorFileReaderNode::process()
 {
     const char *file = filename.c_str();
     char *line;
-    for (int k=0; k<1000 && (line=reader.getNextLineBufferPointer())!=NULL; k++)
+    for (int k=0; k<1000 && (line=reader.getNextLineBufferPointer())!=nullptr; k++)
     {
         int64_t lineNo = reader.getNumReadLines();
         int length = reader.getCurrentLineLength();
@@ -168,7 +168,7 @@ void VectorFileReaderNode::process()
         }
     }
 
-    if (line == NULL) {
+    if (line == nullptr) {
         fFinished = true;
     }
 }

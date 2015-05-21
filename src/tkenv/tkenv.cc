@@ -87,7 +87,7 @@ extern "C" TKENV_API void _tkenv_lib() {}
 
 
 Register_GlobalConfigOptionU(CFGID_TKENV_EXTRA_STACK, "tkenv-extra-stack", "B", "48KiB", "Specifies the extra amount of stack that is reserved for each activity() simple module when the simulation is run under Tkenv.");
-Register_GlobalConfigOption(CFGID_TKENV_DEFAULT_CONFIG, "tkenv-default-config", CFG_STRING, NULL, "Specifies which config Tkenv should set up automatically on startup. The default is to ask the user.");
+Register_GlobalConfigOption(CFGID_TKENV_DEFAULT_CONFIG, "tkenv-default-config", CFG_STRING, nullptr, "Specifies which config Tkenv should set up automatically on startup. The default is to ask the user.");
 Register_GlobalConfigOption(CFGID_TKENV_DEFAULT_RUN, "tkenv-default-run", CFG_INT, "0", "Specifies which run (of the default config, see tkenv-default-config) Tkenv should set up automatically on startup. The default is to ask the user.");
 Register_GlobalConfigOption(CFGID_TKENV_IMAGE_PATH, "tkenv-image-path", CFG_PATH, "", "Specifies the path for loading module icons.");
 Register_GlobalConfigOption(CFGID_TKENV_PLUGIN_PATH, "tkenv-plugin-path", CFG_PATH, "", "Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files that get evaluated on startup.");
@@ -142,14 +142,14 @@ Tkenv::Tkenv() : opt((TkenvOptions *&)EnvirBase::opt)
     // the class may be instantiated only for the purpose of calling
     // printUISpecificHelp() on it
 
-    interp = NULL;  // Tcl/Tk not set up yet
-    ferrorlog = NULL;
+    interp = nullptr;  // Tcl/Tk not set up yet
+    ferrorlog = nullptr;
     simstate = SIM_NONET;
     stopsimulation_flag = false;
     animating = false;
     isconfigrun = false;
-    rununtil_msg = NULL; // deactivate corresponding checks in eventCancelled()/objectDeleted()
-    gettimeofday(&idleLastUICheck, NULL);
+    rununtil_msg = nullptr; // deactivate corresponding checks in eventCancelled()/objectDeleted()
+    gettimeofday(&idleLastUICheck, nullptr);
 
     // set the name here, to prevent warning from cStringPool on shutdown when Cmdenv runs
     inspectorfactories.getInstance()->setName("inspectorfactories");
@@ -190,7 +190,7 @@ void Tkenv::doRun()
 
         // path for icon directories
         const char *image_path_env = getenv("OMNETPP_IMAGE_PATH");
-        if (image_path_env==NULL && getenv("OMNETPP_BITMAP_PATH")!=NULL)
+        if (image_path_env==nullptr && getenv("OMNETPP_BITMAP_PATH")!=nullptr)
             fprintf(stderr, "\n<!> WARNING: Obsolete environment variable OMNETPP_BITMAP_PATH found -- "
                             "please change it to OMNETPP_IMAGE_PATH for " OMNETPP_PRODUCT " 4.0\n");
         std::string image_path = opp_isempty(image_path_env) ? OMNETPP_IMAGE_PATH : image_path_env;
@@ -282,7 +282,7 @@ void Tkenv::doRun()
     }
     catch (std::exception& e)
     {
-        interp = NULL;
+        interp = nullptr;
         throw;
     }
 
@@ -335,7 +335,7 @@ void Tkenv::rebuildSim()
 {
     if (isconfigrun)
          newRun(std::string(getConfigEx()->getActiveConfigName()).c_str(), getConfigEx()->getActiveRunNumber());
-    else if (getSimulation()->getNetworkType()!=NULL)
+    else if (getSimulation()->getNetworkType()!=nullptr)
          newNetwork(getSimulation()->getNetworkType()->getName());
     else
          confirm("Choose File|New Network or File|New Run.");
@@ -346,7 +346,7 @@ void Tkenv::doOneStep()
     ASSERT(simstate==SIM_NEW || simstate==SIM_READY);
 
     animating = true;
-    rununtil_msg = NULL; // deactivate corresponding checks in eventCancelled()/objectDeleted()
+    rununtil_msg = nullptr; // deactivate corresponding checks in eventCancelled()/objectDeleted()
     simstate = SIM_RUNNING;
 
     updateStatusDisplay();
@@ -448,7 +448,7 @@ void Tkenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
 
     animating = true;
     disableTracing = false;
-    rununtil_msg = NULL;
+    rununtil_msg = nullptr;
 
     if (simstate==SIM_TERMINATED)
     {
@@ -490,7 +490,7 @@ void Tkenv::setSimulationRunUntilModule(cModule *until_module)
 inline bool elapsed(long millis, struct timeval& since)
 {
     struct timeval now;
-    gettimeofday(&now, NULL);
+    gettimeofday(&now, nullptr);
     bool ret = timeval_diff_usec(now, since) > 1000*millis;
     if (ret)
         since = now;
@@ -499,7 +499,7 @@ inline bool elapsed(long millis, struct timeval& since)
 
 inline void resetElapsedTime(struct timeval& t)
 {
-    gettimeofday(&t, NULL);
+    gettimeofday(&t, nullptr);
 }
 
 bool Tkenv::doRunSimulation()
@@ -516,7 +516,7 @@ bool Tkenv::doRunSimulation()
     bool firstevent = true;
 
     struct timeval last_update;
-    gettimeofday(&last_update, NULL);
+    gettimeofday(&last_update, nullptr);
 
     while (true)
     {
@@ -537,7 +537,7 @@ bool Tkenv::doRunSimulation()
         // if stepping locally in module, we stop both immediately
         // *before* and *after* executing the event in that module,
         // but we always execute at least one event
-        cModule *mod = event->isMessage() ? static_cast<cMessage*>(event)->getArrivalModule() : NULL;
+        cModule *mod = event->isMessage() ? static_cast<cMessage*>(event)->getArrivalModule() : nullptr;
         bool untilmodule_reached = rununtil_module && moduleContains(rununtil_module,mod);
         if (untilmodule_reached && !firstevent) {
             getSimulation()->putBackEvent(event);
@@ -607,7 +607,7 @@ bool Tkenv::doRunSimulationExpress()
     animating = false;
 
     struct timeval last_update;
-    gettimeofday(&last_update, NULL);
+    gettimeofday(&last_update, nullptr);
 
     bool result = false;
     do
@@ -828,7 +828,7 @@ Inspector *Tkenv::inspect(cObject *obj, int type, bool ignoreEmbedded, const cha
     if (!p)
     {
         confirm(opp_stringf("Class `%s' has no associated inspectors.", obj->getClassName()).c_str());
-        return NULL;
+        return nullptr;
     }
 
     int actualtype = p->getInspectorType();
@@ -844,7 +844,7 @@ Inspector *Tkenv::inspect(cObject *obj, int type, bool ignoreEmbedded, const cha
     {
         // message: object has no such inspector
         confirm(opp_stringf("Class `%s' has no `%s' inspector.",obj->getClassName(),insptypeNameFromCode(type)).c_str());
-        return NULL;
+        return nullptr;
     }
 
     // everything ok, finish inspector
@@ -870,7 +870,7 @@ Inspector *Tkenv::findFirstInspector(cObject *obj, int type, bool ignoreEmbedded
         if (insp->getObject()==obj && insp->getType()==type && (!ignoreEmbedded || insp->isToplevel()))
             return insp;
     }
-    return NULL;
+    return nullptr;
 }
 
 Inspector *Tkenv::findInspector(const char *widget)
@@ -881,7 +881,7 @@ Inspector *Tkenv::findInspector(const char *widget)
         if (strcmp(insp->getWindowName(), widget) == 0)
             return insp;
     }
-    return NULL;
+    return nullptr;
 }
 
 void Tkenv::deleteInspector(Inspector *insp)
@@ -928,14 +928,14 @@ void Tkenv::redrawInspectors()
 inline LogInspector *isLogInspectorFor(cModule *mod, Inspector *insp)
 {
     if (insp->getObject() != mod || insp->getType() != INSP_MODULEOUTPUT)
-        return NULL;
+        return nullptr;
     return dynamic_cast<LogInspector *>(insp);
 }
 
 inline ModuleInspector *isModuleInspectorFor(cModule *mod, Inspector *insp)
 {
     if (insp->getObject() != mod || insp->getType() != INSP_GRAPHICAL)
-        return NULL;
+        return nullptr;
     return dynamic_cast<ModuleInspector *>(insp);
 }
 
@@ -989,8 +989,8 @@ void Tkenv::updateStatusDisplay()
 void Tkenv::printEventBanner(cEvent *event)
 {
     cObject *target = event->getTargetObject();
-    cMessage *msg = event->isMessage() ? static_cast<cMessage*>(event) : NULL;
-    cModule *module = msg ? msg->getArrivalModule() : NULL;
+    cMessage *msg = event->isMessage() ? static_cast<cMessage*>(event) : nullptr;
+    cModule *module = msg ? msg->getArrivalModule() : nullptr;
 
     // produce banner text
     char banner[2*MAX_OBJECTFULLPATH+2*MAX_CLASSNAME+60];
@@ -1183,7 +1183,7 @@ bool Tkenv::idle()
     {
         // updateInspectors() may be costly, so do not check the UI too often
         timeval now;
-        gettimeofday(&now, NULL);
+        gettimeofday(&now, nullptr);
         if (timeval_msec(now - idleLastUICheck) < 500)
             return false;
 
@@ -1202,7 +1202,7 @@ bool Tkenv::idle()
     stopsimulation_flag = false;
 
     if (runmode == RUNMODE_FAST)
-        gettimeofday(&idleLastUICheck, NULL);
+        gettimeofday(&idleLastUICheck, nullptr);
     return stop;
 }
 
@@ -1211,7 +1211,7 @@ void Tkenv::objectDeleted(cObject *object)
     if (object==rununtil_msg)
     {
         // message to "run until" deleted -- stop the simulation by other means
-        rununtil_msg = NULL;
+        rununtil_msg = nullptr;
         rununtil_eventnum = getSimulation()->getEventNumber();
         if (simstate==SIM_RUNNING || simstate==SIM_BUSY)
             confirm("Message to run until has just been deleted.");
@@ -1290,7 +1290,7 @@ void Tkenv::messageCancelled(cMessage *msg)
     {
         if (simstate==SIM_RUNNING || simstate==SIM_BUSY)
             confirm(opp_stringf("Run-until message `%s' got cancelled.", msg->getName()).c_str());
-        rununtil_msg = NULL;
+        rununtil_msg = nullptr;
         rununtil_eventnum = getSimulation()->getEventNumber(); // stop the simulation using the eventnumber limit
     }
     EnvirBase::messageCancelled(msg);
@@ -1374,7 +1374,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
     int numinsp = 0;
     for (i=pathvec.begin(); i!=pathvec.end(); i++)
     {
-        if (i->to==NULL)
+        if (i->to==nullptr)
         {
             // animate ascent from source module
             cModule *mod = i->from;
@@ -1389,7 +1389,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
                 }
             }
         }
-        else if (i->from==NULL)
+        else if (i->from==nullptr)
         {
             // animate descent towards destination module
             cModule *mod = i->to;
@@ -1503,7 +1503,7 @@ void Tkenv::connectionCreated(cGate *srcgate)
     EnvirBase::connectionCreated(srcgate);
 
     // notify compound module where the connection (whose source is this gate) is displayed
-    cModule *notifymodule = NULL;
+    cModule *notifymodule = nullptr;
     if (srcgate->getType()==cGate::OUTPUT)
         notifymodule = srcgate->getOwnerModule()->getParentModule();
     else
@@ -1629,7 +1629,7 @@ void Tkenv::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
 static cModule *findSubmoduleTowards(cModule *parentmod, cModule *towardsgrandchild)
 {
     if (parentmod==towardsgrandchild)
-       return NULL; // shortcut -- we don't have to go up to the top to see we missed
+       return nullptr; // shortcut -- we don't have to go up to the top to see we missed
 
     // search upwards from 'towardsgrandchild'
     cModule *m = towardsgrandchild;
@@ -1648,7 +1648,7 @@ void Tkenv::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pathvec)
 
     // first, find "lowest common ancestor" module
     cModule *commonparent = findCommonAncestor(srcmod, destmod);
-    Assert(commonparent!=NULL); // commonparent should exist, worst case it's the system module
+    Assert(commonparent!=nullptr); // commonparent should exist, worst case it's the system module
 
     // animate the ascent of the message until commonparent (excluding).
     // The second condition, destmod==commonparent covers case when we're sending
@@ -1656,7 +1656,7 @@ void Tkenv::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pathvec)
     cModule *mod = srcmod;
     while (mod!=commonparent && (mod->getParentModule()!=commonparent || destmod==commonparent))
     {
-        pathvec.push_back(sPathEntry(mod,NULL));
+        pathvec.push_back(sPathEntry(mod,nullptr));
         mod = mod->getParentModule();
     }
 
@@ -1675,7 +1675,7 @@ void Tkenv::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pathvec)
     while (mod)
     {
         // animate descent towards destmod
-        pathvec.push_back(sPathEntry(NULL,mod));
+        pathvec.push_back(sPathEntry(nullptr,mod));
         // find module 'under' mod, towards destmod (this will return NULL if mod==destmod)
         mod = findSubmoduleTowards(mod, destmod);
     }
@@ -1691,7 +1691,7 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
     PathVec::iterator i;
     for (i=pathvec.begin(); i!=pathvec.end(); i++)
     {
-        if (i->to==NULL)
+        if (i->to==nullptr)
         {
             // ascent
             cModule *mod = i->from;
@@ -1703,7 +1703,7 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
                     insp->animateSenddirectAscent(mod, msg);
             }
         }
-        else if (i->from==NULL)
+        else if (i->from==nullptr)
         {
             // descent
             cModule *mod = i->to;
@@ -1869,7 +1869,7 @@ bool Tkenv::inputDialog(const char *title, const char *prompt,
     CHK(Tcl_Eval(interp, "global opp"));
     Tcl_SetVar2(interp, "opp", "result", (char *)defaultValue, TCL_GLOBAL_ONLY);
     Tcl_SetVar2(interp, "opp", "check", (char *)(inoutCheckState ? "1" : "0"), TCL_GLOBAL_ONLY);
-    if (checkboxLabel==NULL)
+    if (checkboxLabel==nullptr)
         CHK(Tcl_VarEval(interp, "inputbox ",
                         TclQuotedString(title).get()," ",
                         TclQuotedString(prompt).get()," opp(result) ", NULL));
@@ -1895,7 +1895,7 @@ std::string Tkenv::gets(const char *promt, const char *defaultReply)
     std::string title = mod ? mod->getFullPath() : getSimulation()->getNetworkType()->getName();
     std::string result;
     bool dummy;
-    bool ok = inputDialog(title.c_str(), promt, NULL, defaultReply, result, dummy);
+    bool ok = inputDialog(title.c_str(), promt, nullptr, defaultReply, result, dummy);
     if (!ok)
         throw cRuntimeError(E_CANCEL);
     return result;

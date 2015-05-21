@@ -98,7 +98,7 @@ class SIM_API cVarHistogram : public cHistogramBase
     /**
      * Copy constructor.
      */
-    cVarHistogram(const cVarHistogram& r) : cHistogramBase(r) {cellLowerBounds=NULL;copy(r);}
+    cVarHistogram(const cVarHistogram& r) : cHistogramBase(r) {cellLowerBounds=nullptr;copy(r);}
 
     /**
      * Constructor. The third argument can be one of HIST_TR_NO_TRANSFORM,
@@ -106,7 +106,7 @@ class SIM_API cVarHistogram : public cHistogramBase
      * you can set up cells manually (see addBinBound()), in the other two
      * cases it tries to create equiprobably cells.
      */
-    explicit cVarHistogram(const char *name=NULL,
+    explicit cVarHistogram(const char *name=nullptr,
                            int numcells=11,
                            TransformType transformtype=HIST_TR_AUTO_EPC_DBL);
 

@@ -132,7 +132,7 @@ class SIM_API cMsgPar : public cOwnedObject
      * Constructor, creates a cMsgPar with the given name and long
      * ('L') as default type.
      */
-    explicit cMsgPar(const char *name=NULL);
+    explicit cMsgPar(const char *name=nullptr);
 
     /**
      * Constructor, creates a copy of the second argument with another

@@ -90,12 +90,12 @@ class SIM_API cQueue : public cOwnedObject
         /**
          * Returns the current object.
          */
-        cObject *operator()()  {return p ? p->obj : NULL;}
+        cObject *operator()()  {return p ? p->obj : nullptr;}
 
         /**
          * Returns true if the iterator has reached either end of the queue.
          */
-        bool end() const   {return (bool)(p==NULL);}
+        bool end() const   {return (bool)(p==nullptr);}
 
         /**
          * Returns the current object, then moves the iterator to the next item
@@ -103,7 +103,7 @@ class SIM_API cQueue : public cOwnedObject
          * reached either end of the queue, nothing happens, and one has to
          * call init() to restart iterating.
          */
-        cObject *operator++(int)  {if (!p) return NULL; cObject *r=p->obj; p=p->next; return r;}
+        cObject *operator++(int)  {if (!p) return nullptr; cObject *r=p->obj; p=p->next; return r;}
 
         /**
          * Returns the current object, then moves the iterator to the previous item
@@ -111,7 +111,7 @@ class SIM_API cQueue : public cOwnedObject
          * reached either end of the queue, nothing happens, and one has to
          * call init() to restart iterating.
          */
-        cObject *operator--(int)  {if (!p) return NULL; cObject *r=p->obj; p=p->prev; return r;}
+        cObject *operator--(int)  {if (!p) return nullptr; cObject *r=p->obj; p=p->prev; return r;}
     };
 
     friend class Iterator;
@@ -139,7 +139,7 @@ class SIM_API cQueue : public cOwnedObject
      * Constructor. When comparison function argument is NULL, the queue will
      * act as FIFO, otherwise as priority queue.
      */
-    cQueue(const char *name=NULL, CompareFunc cmp=NULL);
+    cQueue(const char *name=nullptr, CompareFunc cmp=nullptr);
 
     /**
      * Copy constructor. Contained objects that are owned by the queue

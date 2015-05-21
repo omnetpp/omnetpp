@@ -60,7 +60,7 @@ class SIM_API cPSquare : public cDensityEstBase
     /**
      * Constructor.
      */
-    explicit cPSquare(const char *name=NULL, int cells=10);
+    explicit cPSquare(const char *name=nullptr, int cells=10);
 
     /**
      * Destructor.

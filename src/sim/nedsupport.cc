@@ -36,7 +36,7 @@ ModuleIndex::ModuleIndex()
 
 cNEDValue ModuleIndex::evaluate(cComponent *context, cNEDValue args[], int numargs)
 {
-    ASSERT(numargs==0 && context!=NULL);
+    ASSERT(numargs==0 && context!=nullptr);
     cModule *module = dynamic_cast<cModule *>(context);
     if (!module)
         throw cRuntimeError(context,"cannot evaluate `index' operator in expression: context is not a module");
@@ -59,7 +59,7 @@ ParameterRef::ParameterRef(const char *paramName, bool ofParent, bool explicitKe
 
 cNEDValue ParameterRef::evaluate(cComponent *context, cNEDValue args[], int numargs)
 {
-    ASSERT(numargs==0 && context!=NULL);
+    ASSERT(numargs==0 && context!=nullptr);
     cComponent *component = ofParent ? context->getParentModule() : context;
     if (!component)
         throw cRuntimeError(context,E_ENOPARENT);
@@ -98,7 +98,7 @@ SiblingModuleParameterRef::SiblingModuleParameterRef(const char *moduleName, con
 
 cNEDValue SiblingModuleParameterRef::evaluate(cComponent *context, cNEDValue args[], int numargs)
 {
-    ASSERT(context!=NULL);
+    ASSERT(context!=nullptr);
     ASSERT(!withModuleIndex || (withModuleIndex && numargs==1 && args[0].type==cNEDValue::DBL));
     cModule *compoundModule = dynamic_cast<cModule *>(ofParent ? context->getParentModule() : context); // this works for channels too
     if (!compoundModule)
@@ -171,7 +171,7 @@ Sizeof::Sizeof(const char *ident, bool ofParent, bool explicitKeyword)
 
 cNEDValue Sizeof::evaluate(cComponent *context, cNEDValue args[], int numargs)
 {
-    ASSERT(numargs==0 && context!=NULL);
+    ASSERT(numargs==0 && context!=nullptr);
     cModule *module = dynamic_cast<cModule *>(ofParent ? context->getParentModule() : context);
     if (!module)
         throw cRuntimeError(context,E_ENOPARENT);

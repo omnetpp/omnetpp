@@ -231,7 +231,7 @@ void cMsgPar::parsimPack(cCommBuffer *buffer) const
 
     case 'F':
         ff = cNEDMathFunction::findByPointer(func.f);
-        if (ff == NULL)
+        if (ff == nullptr)
             throw cRuntimeError(this,"parsimPack(): cannot transmit unregistered function");
 
         buffer->pack(ff->getName());
@@ -245,7 +245,7 @@ void cMsgPar::parsimPack(cCommBuffer *buffer) const
     case 'T':
         if (dtr.res && dtr.res->getOwner() != this)
             throw cRuntimeError(this,"parsimPack(): cannot transmit pointer to \"external\" object");
-        if (buffer->packFlag(dtr.res!=NULL))
+        if (buffer->packFlag(dtr.res!=nullptr))
             buffer->packObject(dtr.res);
         break;
 
@@ -255,7 +255,7 @@ void cMsgPar::parsimPack(cCommBuffer *buffer) const
     case 'O':
         if (obj.obj && obj.obj->getOwner() != this)
             throw cRuntimeError(this,"parsimPack(): cannot transmit pointer to \"external\" object");
-        if (buffer->packFlag(obj.obj!=NULL))
+        if (buffer->packFlag(obj.obj!=nullptr))
             buffer->packObject(obj.obj);
         break;
 
@@ -302,7 +302,7 @@ void cMsgPar::parsimUnpack(cCommBuffer *buffer)
         buffer->unpack(funcname);
         buffer->unpack(argc);
         ff = cNEDMathFunction::find(funcname,argc);
-        if (ff == NULL)
+        if (ff == nullptr)
         {
             delete [] funcname;
             throw cRuntimeError(this,"parsimUnpack(): transmitted function `%s' with %d args not registered here",
@@ -319,7 +319,7 @@ void cMsgPar::parsimUnpack(cCommBuffer *buffer)
 
     case 'T':
         if (!buffer->checkFlag())
-            dtr.res = NULL;
+            dtr.res = nullptr;
         else
             take(dtr.res = (cStatistic *) buffer->unpackObject());
         break;
@@ -330,7 +330,7 @@ void cMsgPar::parsimUnpack(cCommBuffer *buffer)
 
     case 'O':
         if (!buffer->checkFlag())
-            obj.obj = NULL;
+            obj.obj = nullptr;
         else
             take(obj.obj = dynamic_cast<cOwnedObject *>(buffer->unpackObject()));
         break;
@@ -486,8 +486,8 @@ cMsgPar& cMsgPar::setPointerValue(void *_ptr)
     if (typeChar!='P')
     {
         deleteOld();
-        ptr.delfunc=NULL;
-        ptr.dupfunc=NULL;
+        ptr.delfunc=nullptr;
+        ptr.dupfunc=nullptr;
         ptr.itemsize=0;
         typeChar = 'P';
     }
@@ -813,7 +813,7 @@ bool cMsgPar::parse(const char *text, char tp)
         while (*s==' ' || *s=='\t') s++;
         if (*s) goto error;  // trailing rubbish
 
-        cXMLElement *node = getEnvir()->getXMLDocument(fname.c_str(), pathexpr.empty() ? NULL : pathexpr.c_str());
+        cXMLElement *node = getEnvir()->getXMLDocument(fname.c_str(), pathexpr.empty() ? nullptr : pathexpr.c_str());
         if (!node)
             throw cRuntimeError(this,"%s: element not found", tmp);
         setXMLValue(node);
@@ -877,7 +877,7 @@ bool cMsgPar::setfunction(char *text)
     *args = '\0';
     cNEDMathFunction *ff = cNEDMathFunction::find(text, argc);
     *args = '(';
-    if (ff==NULL) return false;
+    if (ff==nullptr) return false;
 
 
     // now `args' points to something like '(10,1.5E-3)', without spaces

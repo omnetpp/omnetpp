@@ -119,7 +119,7 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     virtual std::string getCxxNamespace() const {return "";}
 
     // internal: used by cComponent::emit() methods to validate signals
-    virtual void checkSignal(simsignal_t signalID, SimsignalType type, cObject *obj = NULL);
+    virtual void checkSignal(simsignal_t signalID, SimsignalType type, cObject *obj = nullptr);
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -127,7 +127,7 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     /**
      * Constructor. Takes the fully qualified component type name.
      */
-    cComponentType(const char *qname=NULL);
+    cComponentType(const char *qname=nullptr);
 
     /**
      * Destructor.
@@ -227,7 +227,7 @@ class SIM_API cModuleType : public cComponentType
     /**
      * Constructor.
      */
-    cModuleType(const char *qname=NULL);
+    cModuleType(const char *qname=nullptr);
     //@}
 
     /** @name Misc */
@@ -328,7 +328,7 @@ class SIM_API cChannelType : public cComponentType
     /**
      * Constructor.
      */
-    cChannelType(const char *qname=NULL);
+    cChannelType(const char *qname=nullptr);
 
     /** @name Channel object creation */
     //@{

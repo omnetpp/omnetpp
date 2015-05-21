@@ -95,28 +95,28 @@ class SIM_API cNEDMathFunction : public cNoncopyableOwnedObject
     /**
      * Constructor.
      */
-    cNEDMathFunction(const char *name, MathFuncNoArg f, int argc=-1, const char *category=NULL, const char *description=NULL);
+    cNEDMathFunction(const char *name, MathFuncNoArg f, int argc=-1, const char *category=nullptr, const char *description=nullptr);
 
     /**
      * Constructor.
      */
-    cNEDMathFunction(const char *name, MathFunc1Arg f, int argc=-1, const char *category=NULL, const char *description=NULL);
+    cNEDMathFunction(const char *name, MathFunc1Arg f, int argc=-1, const char *category=nullptr, const char *description=nullptr);
 
     /**
      * Constructor.
      */
 
-    cNEDMathFunction(const char *name, MathFunc2Args f, int argc=-1, const char *category=NULL, const char *description=NULL);
+    cNEDMathFunction(const char *name, MathFunc2Args f, int argc=-1, const char *category=nullptr, const char *description=nullptr);
 
     /**
      * Constructor.
      */
-    cNEDMathFunction(const char *name, MathFunc3Args f, int argc=-1, const char *category=NULL, const char *description=NULL);
+    cNEDMathFunction(const char *name, MathFunc3Args f, int argc=-1, const char *category=nullptr, const char *description=nullptr);
 
     /**
      * Constructor.
      */
-    cNEDMathFunction(const char *name, MathFunc4Args f, int argc=-1, const char *category=NULL, const char *description=NULL);
+    cNEDMathFunction(const char *name, MathFunc4Args f, int argc=-1, const char *category=nullptr, const char *description=nullptr);
 
     /**
      * Destructor.

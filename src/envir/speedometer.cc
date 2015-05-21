@@ -30,7 +30,7 @@ void Speedometer::start(simtime_t t)
 {
     // begin 1st interval
     numEvents = 0;
-    gettimeofday(&intervalStartWalltime, NULL);
+    gettimeofday(&intervalStartWalltime, nullptr);
     intervalStartSimtime = t;
 
     lastIntervalEventsPerSec = 0;
@@ -55,7 +55,7 @@ unsigned long Speedometer::getMillisSinceIntervalStart()
     assert(started);
 
     timeval now;
-    gettimeofday(&now, NULL);
+    gettimeofday(&now, nullptr);
     return timeval_msec(now - intervalStartWalltime);
 }
 
@@ -65,7 +65,7 @@ void Speedometer::beginNewInterval()
     assert(started);
 
     timeval now;
-    gettimeofday(&now, NULL);
+    gettimeofday(&now, nullptr);
     unsigned long elapsed_msecs = timeval_msec(now - intervalStartWalltime);
     if (elapsed_msecs<10 || numEvents==0)
     {

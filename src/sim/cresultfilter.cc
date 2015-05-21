@@ -24,18 +24,18 @@ NAMESPACE_BEGIN
 cResultFilter::cResultFilter()
 {
     delegates = new cResultListener*[1];
-    delegates[0] = NULL;
+    delegates[0] = nullptr;
 }
 
 void cResultFilter::addDelegate(cResultListener *delegate)
 {
     // reallocate each time
-    Assert(delegates!=NULL);
+    Assert(delegates!=nullptr);
     int n = getNumDelegates();
     cResultListener **v = new cResultListener*[n+2];
     memcpy(v, delegates, n*sizeof(cResultListener*));
     v[n] = delegate;
-    v[n+1] = NULL;
+    v[n+1] = nullptr;
     delete [] delegates;
     delegates = v;
     delegate->subscribeCount++;

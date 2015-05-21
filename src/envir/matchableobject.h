@@ -44,7 +44,7 @@ class ENVIR_API MatchableObjectAdapter : public MatchExpression::Matchable
     static void splitIndex(char *indexedName, int& index);
     static bool findDescriptorField(cClassDescriptor *desc, const char *attribute, int& fieldId, int& index);
   public:
-    MatchableObjectAdapter(DefaultAttribute attr=FULLPATH, cObject *obj=NULL);
+    MatchableObjectAdapter(DefaultAttribute attr=FULLPATH, cObject *obj=nullptr);
     void setObject(cObject *obj);
     void setDefaultAttribute(DefaultAttribute attr) {this->attr = attr;}
     virtual const char *getAsString() const;

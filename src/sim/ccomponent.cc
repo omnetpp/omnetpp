@@ -38,7 +38,7 @@ Register_PerObjectConfigOption(CFGID_PARAM_RECORD_AS_SCALAR, "param-record-as-sc
 
 #define SIGNALMASK_UNFILLED (~(uint64_t)0)
 
-cComponent::SignalNameMapping *cComponent::signalNameMapping = NULL;
+cComponent::SignalNameMapping *cComponent::signalNameMapping = nullptr;
 int cComponent::lastSignalID = -1;
 
 std::vector<uint64_t> cComponent::signalMasks;
@@ -58,18 +58,18 @@ EXECUTE_ON_SHUTDOWN( cComponent::clearSignalRegistrations() );
 
 cComponent::cComponent(const char *name) : cDefaultList(name)
 {
-    componentType = NULL;
+    componentType = nullptr;
     componentId = -1;
     rngMapSize = 0;
-    rngMap = 0;
+    rngMap = nullptr;
 
     parArraySize = numPars = 0;
-    parArray = NULL;
+    parArray = nullptr;
 
-    displayString = NULL;
+    displayString = nullptr;
     setEvEnabled(true);
 
-    signalTable = NULL;
+    signalTable = nullptr;
     signalHasLocalListeners = signalHasAncestorListeners = 0;
 }
 
@@ -78,7 +78,7 @@ cComponent::~cComponent()
     if (componentId!=-1)
         getSimulation()->deregisterComponent(this);
 
-    ASSERT(signalTable==NULL); // note: releaseLocalListeners() gets called in subclasses, ~cModule and ~cChannel
+    ASSERT(signalTable==nullptr); // note: releaseLocalListeners() gets called in subclasses, ~cModule and ~cChannel
     delete [] rngMap;
     delete [] parArray;
     delete displayString;
@@ -237,7 +237,7 @@ bool cComponent::hasDisplayString()
     // not yet checked: do it now
     cProperties *props = getProperties();
     cProperty *prop = props->get("display");
-    const char *propValue = prop ? prop->getValue(cProperty::DEFAULTKEY) : NULL;
+    const char *propValue = prop ? prop->getValue(cProperty::DEFAULTKEY) : nullptr;
     bool result = !opp_isempty(propValue);
 
     setFlag(FL_DISPSTR_CHECKED, true);
@@ -254,7 +254,7 @@ cDisplayString& cComponent::getDisplayString()
             throw cRuntimeError(this, "Cannot access display string yet: parameters not yet set up");
         cProperties *props = getProperties();
         cProperty *prop = props->get("display");
-        const char *propValue = prop ? prop->getValue(cProperty::DEFAULTKEY) : NULL;
+        const char *propValue = prop ? prop->getValue(cProperty::DEFAULTKEY) : nullptr;
         if (propValue)
             displayString = new cDisplayString(propValue);
         else
@@ -309,7 +309,7 @@ void cComponent::recordScalar(const char *name, double value, const char *unit)
 
 void cComponent::recordStatistic(cStatistic *stats, const char *unit)
 {
-    stats->recordAs(NULL, unit);
+    stats->recordAs(nullptr, unit);
 }
 
 void cComponent::recordStatistic(const char *name, cStatistic *stats, const char *unit)
@@ -329,7 +329,7 @@ bool cComponent::SignalData::addListener(cIListener *l)
     cIListener **v = new cIListener*[n+2];
     memcpy(v, listeners, n*sizeof(cIListener*));
     v[n] = l;
-    v[n+1] = NULL;
+    v[n+1] = nullptr;
     delete [] listeners;
     listeners = v;
     return true;
@@ -345,7 +345,7 @@ bool cComponent::SignalData::removeListener(cIListener *l)
     // because fire() relies on it not being NULL
     int n = countListeners();
     listeners[k] = listeners[n-1];
-    listeners[n-1] = NULL;
+    listeners[n-1] = nullptr;
     return true;
 }
 
@@ -371,7 +371,7 @@ int cComponent::SignalData::findListener(cIListener *l)
 
 simsignal_t cComponent::registerSignal(const char *name)
 {
-    if (signalNameMapping == NULL)
+    if (signalNameMapping == nullptr)
         signalNameMapping = new SignalNameMapping;
 
     if (signalNameMapping->signalNameToID.find(name) == signalNameMapping->signalNameToID.end())
@@ -392,7 +392,7 @@ const char *cComponent::getSignalName(simsignal_t signalID)
 {
     return (signalNameMapping && signalNameMapping->signalIDToName.find(signalID) !=
             signalNameMapping->signalIDToName.end()) ?
-                    signalNameMapping->signalIDToName[signalID].c_str() : NULL;
+                    signalNameMapping->signalIDToName[signalID].c_str() : nullptr;
 }
 
 void cComponent::clearSignalState()
@@ -412,7 +412,7 @@ void cComponent::clearSignalState()
 void cComponent::clearSignalRegistrations()
 {
     delete signalNameMapping;
-    signalNameMapping = NULL;
+    signalNameMapping = nullptr;
 }
 
 cComponent::SignalData *cComponent::findSignalData(simsignal_t signalID) const
@@ -427,7 +427,7 @@ cComponent::SignalData *cComponent::findSignalData(simsignal_t signalID) const
             if ((*signalTable)[i].signalID == signalID)
                 return &(*signalTable)[i];
     }
-    return NULL;
+    return nullptr;
 }
 
 cComponent::SignalData *cComponent::findOrCreateSignalData(simsignal_t signalID)
@@ -481,7 +481,7 @@ void cComponent::removeSignalData(simsignal_t signalID)
         }
         if (signalTable->empty()) {
             delete signalTable;
-            signalTable = NULL;
+            signalTable = nullptr;
         }
     }
 }
@@ -836,7 +836,7 @@ void cComponent::releaseLocalListeners()
                 unsubscribe(signalID, signalData.listeners[0]);
         }
         delete signalTable;
-        signalTable = NULL;
+        signalTable = nullptr;
     }
 
 /*

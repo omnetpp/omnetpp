@@ -97,7 +97,7 @@ void DataflowManager::execute(IProgressMonitor *monitor)
 
     while (true)
     {
-        ReaderNode *readerNode = NULL;
+        ReaderNode *readerNode = nullptr;
         int64_t readBefore = 0;
         Node *node = selectNode();
         if (!node)
@@ -240,7 +240,7 @@ Node *DataflowManager::selectNode()
     }
     while (i!=lastNode);
 
-    return NULL;
+    return nullptr;
 }
 
 bool DataflowManager::isReaderNode(Node *node)

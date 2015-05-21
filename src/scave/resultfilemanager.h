@@ -73,16 +73,16 @@ struct SCAVE_API ResultItem
     StringMap attributes; // metadata in key/value form
     IComputation *computation;
 
-    ResultItem() : fileRunRef(NULL), moduleNameRef(NULL), nameRef(NULL), computation(NULL) {}
+    ResultItem() : fileRunRef(nullptr), moduleNameRef(nullptr), nameRef(nullptr), computation(nullptr) {}
     ResultItem(const ResultItem &o)
         : fileRunRef(o.fileRunRef), moduleNameRef(o.moduleNameRef), nameRef(o.nameRef),
-          attributes(o.attributes), computation(o.computation ? o.computation->dup() : NULL) {}
+          attributes(o.attributes), computation(o.computation ? o.computation->dup() : nullptr) {}
     ResultItem& operator=(const ResultItem &rhs);
     virtual ~ResultItem() { delete computation; }
 
     const char *getAttribute(const char *attrName) const {
         StringMap::const_iterator it = attributes.find(attrName);
-        return it==attributes.end() ? NULL : it->second.c_str();
+        return it==attributes.end() ? nullptr : it->second.c_str();
     }
 
     /**
@@ -97,7 +97,7 @@ struct SCAVE_API ResultItem
      */
     EnumType* getEnum() const;
 
-    bool isComputed() const { return computation != NULL; }
+    bool isComputed() const { return computation != nullptr; }
 };
 
 /**
@@ -201,11 +201,11 @@ struct SCAVE_API Run
     // attributes["nonexisting-key"] would create a blank entry with that key!)
     const char *getAttribute(const char *attrName) const {
         StringMap::const_iterator it = attributes.find(attrName);
-        return it==attributes.end() ? NULL : it->second.c_str();
+        return it==attributes.end() ? nullptr : it->second.c_str();
     }
     const char *getModuleParam(const char *paramName) const {
         StringMap::const_iterator it = moduleParams.find(paramName);
-        return it==moduleParams.end() ? NULL : it->second.c_str();
+        return it==moduleParams.end() ? nullptr : it->second.c_str();
     }
 };
 
@@ -293,7 +293,7 @@ class SCAVE_API ResultFileManager
 
         sParseContext(ResultFile *fileRef)
             : fileRef(fileRef), fileName(fileRef->filePath.c_str()), lineNo(0),
-              fileRunRef(NULL), lastResultItemType(0), lastResultItemIndex(-1),
+              fileRunRef(nullptr), lastResultItemType(0), lastResultItemIndex(-1),
               count(0), min(POSITIVE_INFINITY), max(NEGATIVE_INFINITY), sum(0.0), sumSqr(0.0) {}
 
         void clearHistogram()
@@ -435,7 +435,7 @@ class SCAVE_API ResultFileManager
      * loading files. fileName is the file path in the Eclipse workspace;
      * the file is actually read from fileSystemFileName
      */
-    ResultFile *loadFile(const char *fileName, const char *fileSystemFileName=NULL, bool reload=false);
+    ResultFile *loadFile(const char *fileName, const char *fileSystemFileName=nullptr, bool reload=false);
     void unloadFile(ResultFile *file);
 
 
@@ -497,14 +497,14 @@ inline const HistogramResult& ResultFileManager::uncheckedGetHistogram(ID id) co
 inline ResultFile *ResultFileManager::getFileForID(ID id) const
 {
     ResultFile *fileRef = fileList.at(_fileid(id));
-    if (fileRef==NULL)
+    if (fileRef==nullptr)
         throw opp_runtime_error("ResultFileManager: stale ID: its file has already been unloaded");
     return fileRef;
 }
 
 inline bool ResultFileManager::isStaleID(ID id) const
 {
-    return fileList.at(_fileid(id)) == NULL;
+    return fileList.at(_fileid(id)) == nullptr;
 }
 
 NAMESPACE_END

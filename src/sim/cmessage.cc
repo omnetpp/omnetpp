@@ -41,8 +41,8 @@ long cMessage::liveMsgCount = 0;
 
 cMessage::cMessage(const cMessage& msg) : cEvent(msg)
 {
-    parList = NULL;
-    controlInfo = NULL;
+    parList = nullptr;
+    controlInfo = nullptr;
     heapIndex = -1;
     copy(msg);
 
@@ -61,9 +61,9 @@ cMessage::cMessage(const char *name, short k) : cEvent(name)
 {
     // name pooling is off for messages by default, as unique names are quite common
     messageKind = k;
-    parList = NULL;
-    contextPointer = NULL;
-    controlInfo = NULL;
+    parList = nullptr;
+    contextPointer = nullptr;
+    controlInfo = nullptr;
     srcProcId = -1;
 
     senderModuleId = senderGateId = -1;
@@ -181,7 +181,7 @@ void cMessage::parsimPack(cCommBuffer *buffer) const
     // note: do not pack msgid and treeid, because they'd conflict
     // with ids assigned at the destination partition
 
-    if (buffer->packFlag(parList!=NULL))
+    if (buffer->packFlag(parList!=nullptr))
         buffer->packObject(parList);
 #endif
 }
@@ -227,7 +227,7 @@ void cMessage::copy(const cMessage& msg)
     if (msg.parList)
         take(parList = (cArray *)msg.parList->dup());
     else
-        parList = NULL;
+        parList = nullptr;
 
     contextPointer = msg.contextPointer;
 
@@ -272,7 +272,7 @@ void cMessage::setControlInfo(cObject *p)
 cObject *cMessage::removeControlInfo()
 {
     cObject *p = controlInfo;
-    controlInfo = NULL;
+    controlInfo = nullptr;
     if (p && p->isOwnedObject())
         drop((cOwnedObject *)p);
     return p;
@@ -312,16 +312,16 @@ int cMessage::findPar(const char *name) const
 
 cGate *cMessage::getSenderGate() const
 {
-    if (senderModuleId<0 || senderGateId<0)  return NULL;
+    if (senderModuleId<0 || senderGateId<0)  return nullptr;
     cModule *mod = getSimulation()->getModule(senderModuleId);
-    return !mod ? NULL : mod->gate(senderGateId);
+    return !mod ? nullptr : mod->gate(senderGateId);
 }
 
 cGate *cMessage::getArrivalGate() const
 {
-    if (targetModuleId<0 || targetGateId<0)  return NULL;
+    if (targetModuleId<0 || targetGateId<0)  return nullptr;
     cModule *mod = getSimulation()->getModule(targetModuleId);
-    return !mod ? NULL : mod->gate(targetGateId);
+    return !mod ? nullptr : mod->gate(targetGateId);
 }
 
 bool cMessage::arrivedOn(const char *gateName) const

@@ -34,7 +34,7 @@ NAMESPACE_BEGIN
 
 cTDExpandingWindows::cTDExpandingWindows(const cTDExpandingWindows& r) : cTransientDetection(r)
 {
-    func=0;
+    func=nullptr;
     copy(r);
 }
 
@@ -45,7 +45,7 @@ cTDExpandingWindows::cTDExpandingWindows(const char *name,
 {
     callback = f; callbackData = p;
     setParameters(reps, minw, wind, acc);
-    func = NULL; size = 0;
+    func = nullptr; size = 0;
     go = true;
 }
 
@@ -70,9 +70,9 @@ void cTDExpandingWindows::copy(const cTDExpandingWindows& res)
 
     // copy actual contents  --VA
     size=res.size;
-    if (res.func==NULL)
+    if (res.func==nullptr)
     {
-        func = NULL;
+        func = nullptr;
     }
     else
     {
@@ -88,7 +88,7 @@ void cTDExpandingWindows::copy(const cTDExpandingWindows& res)
             p->x = res_p->x;
             p->y = res_p->y;
         }
-        p->next = NULL;
+        p->next = nullptr;
     }
 }
 
@@ -131,7 +131,7 @@ void cTDExpandingWindows::collect(double val)
      xy* pair = new xy;         //create new element
      pair->x = SIMTIME_DBL(getSimulation()->getSimTime());
      pair->y = val;
-     pair->next = NULL;
+     pair->next = nullptr;
      if (size == 0)
      {                          //and add it at the end
         func = pair;
@@ -168,7 +168,7 @@ void cTDExpandingWindows::detectTransient()
       xy *dum = func->next;
       double minval = func->y;
       //Get the minimum in order to move the axes
-      while ((dum=dum->next)!=NULL)  // chged from while(dum=dum->next) --VA
+      while ((dum=dum->next)!=nullptr)  // chged from while(dum=dum->next) --VA
          if (dum->y < minval) minval = dum->y;
 
       //Computation of the average of the values in the first window
@@ -205,7 +205,7 @@ void cTDExpandingWindows::detectTransient()
       transval = (detreps <= 0);
 
       // If the transient period over, call registered function
-      if (transval && (callback!=NULL))
+      if (transval && (callback!=nullptr))
       {
          (*callback)(this,callbackData);
       }
@@ -294,7 +294,7 @@ void cADByStddev::detectAccuracy()
    resaccval = (detreps <= 0);
 
    // If we have the accuracy, call registered function
-   if (resaccval && callback!=NULL)
+   if (resaccval && callback!=nullptr)
    {
       (*callback)(this, callbackData);
    }

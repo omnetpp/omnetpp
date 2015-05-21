@@ -26,8 +26,8 @@ IEvent::IEvent()
 
 void IEvent::clearInternalState()
 {
-    nextEvent = NULL;
-    previousEvent = NULL;
+    nextEvent = nullptr;
+    previousEvent = nullptr;
     cachedTimelineCoordinate = -1;
     cachedTimelineCoordinateSystemVersion = -1;
 }
@@ -60,8 +60,8 @@ void IEvent::linkEvents(IEvent *previousEvent, IEvent *nextEvent)
 
 void IEvent::unlinkEvents(IEvent *previousEvent, IEvent *nextEvent)
 {
-    previousEvent->nextEvent = NULL;
-    nextEvent->previousEvent = NULL;
+    previousEvent->nextEvent = nullptr;
+    nextEvent->previousEvent = nullptr;
 }
 
 void IEvent::unlinkNeighbourEvents(IEvent *event)

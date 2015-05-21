@@ -78,7 +78,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
         PatternMatcher *suffixPattern; // only filled in when this is a wildcard group
         PatternMatcher *fullPathPattern; // when present, match against this instead of ownerPattern & suffixPattern
 
-        KeyValue2(const KeyValue1& e) : KeyValue1(e) {ownerPattern = suffixPattern = fullPathPattern = NULL;}
+        KeyValue2(const KeyValue1& e) : KeyValue1(e) {ownerPattern = suffixPattern = fullPathPattern = nullptr;}
         KeyValue2(const KeyValue2& e);
         ~KeyValue2();
     };
@@ -125,8 +125,8 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
         std::string defaultBasedir;
       public:
         void setBaseDirectory(const char *s) {defaultBasedir = s;}
-        virtual const char *getKey() const   {return NULL;}
-        virtual const char *getValue() const {return NULL;}
+        virtual const char *getKey() const   {return nullptr;}
+        virtual const char *getValue() const {return nullptr;}
         virtual const char *getBaseDirectory() const {return defaultBasedir.c_str();}
     };
     NullKeyValue nullEntry;
@@ -171,7 +171,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     int internalFindSection(const char *section) const;
     int internalGetSectionId(const char *section) const;
     int internalFindEntry(int sectionId, const char *key) const;
-    const char *internalGetValue(const std::vector<int>& sectionChain, const char *key, const char *fallbackValue=NULL, int *sectionIdPtr=NULL, int *entryIdPtr=NULL) const;
+    const char *internalGetValue(const std::vector<int>& sectionChain, const char *key, const char *fallbackValue=nullptr, int *sectionIdPtr=nullptr, int *entryIdPtr=nullptr) const;
     int resolveConfigName(const char *configName) const;
     std::vector<int> resolveSectionChain(int sectionId) const;
     std::vector<int> resolveSectionChain(const char *configName) const;

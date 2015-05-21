@@ -53,7 +53,7 @@ class ModuleInspectorFactory : public InspectorFactory
   public:
     ModuleInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
+    bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=nullptr;}
     int getInspectorType() {return INSP_GRAPHICAL;}
     double getQualityAsDefault(cObject *object) {
         cModule *mod = dynamic_cast<cModule *>(object);
@@ -121,7 +121,7 @@ void ModuleInspector::useWindow(const char *window)
 cCanvas *ModuleInspector::getCanvas()
 {
     cModule *mod = static_cast<cModule*>(object);
-    cCanvas *canvas = mod ? mod->getCanvasIfExists() : NULL;
+    cCanvas *canvas = mod ? mod->getCanvasIfExists() : nullptr;
     return canvas;
 }
 
@@ -139,7 +139,7 @@ void ModuleInspector::refresh()
        return;
 
    cCanvas *canvas = getCanvas();
-   if (canvas != NULL && !canvasRenderer->hasCanvas())  // canvas was recently created
+   if (canvas != nullptr && !canvasRenderer->hasCanvas())  // canvas was recently created
        canvasRenderer->setCanvas(canvas);
 
    updateBackgroundColor();
@@ -162,7 +162,7 @@ void ModuleInspector::refresh()
 
 void ModuleInspector::relayoutAndRedrawAll()
 {
-   ASSERT(object != NULL);
+   ASSERT(object != nullptr);
 
    cModule *mod = (cModule *)object;
    int submoduleCount = 0;
@@ -206,7 +206,7 @@ void ModuleInspector::relayoutAndRedrawAll()
 
 void ModuleInspector::redraw()
 {
-   if (object == NULL) {
+   if (object == nullptr) {
        CHK(Tcl_VarEval(interp, canvas," delete all", NULL));
        return;
    }
@@ -271,7 +271,7 @@ void ModuleInspector::getSubmoduleCoords(cModule *submod, bool& explicitcoords, 
         else
         {
             CHK(Tcl_VarEval(interp, "lookupImage ", imgName, " ", imgSize, NULL));
-            Tk_Image img = Tk_GetImage(interp, Tk_MainWindow(interp), Tcl_GetStringResult(interp), NULL, NULL);
+            Tk_Image img = Tk_GetImage(interp, Tk_MainWindow(interp), Tcl_GetStringResult(interp), nullptr, nullptr);
             if (!img)
             {
                 iconsx = UNKNOWNICON_WIDTH;
@@ -519,7 +519,7 @@ void ModuleInspector::redrawModules()
         for (cModule::GateIterator i(mod); !i.end(); i++)
         {
             cGate *gate = i();
-            if (gate->getType()==(atParent ? cGate::INPUT: cGate::OUTPUT) && gate->getNextGate()!=NULL)
+            if (gate->getType()==(atParent ? cGate::INPUT: cGate::OUTPUT) && gate->getNextGate()!=nullptr)
             {
                 drawConnection(gate);
             }

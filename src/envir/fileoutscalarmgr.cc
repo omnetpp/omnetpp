@@ -55,7 +55,7 @@ Register_Class(cFileOutputScalarManager);
 
 cFileOutputScalarManager::cFileOutputScalarManager()
 {
-    f = NULL;
+    f = nullptr;
     prec = getEnvir()->getConfig()->getAsInt(CFGID_OUTPUT_SCALAR_PRECISION);
 }
 
@@ -68,7 +68,7 @@ void cFileOutputScalarManager::openFile()
 {
     mkPath(directoryOf(fname.c_str()).c_str());
     f = fopen(fname.c_str(),"a");
-    if (f==NULL)
+    if (f==nullptr)
         throw cRuntimeError("Cannot open output scalar file `%s'", fname.c_str());
 }
 
@@ -77,7 +77,7 @@ void cFileOutputScalarManager::closeFile()
     if (f)
     {
         fclose(f);
-        f = NULL;
+        f = nullptr;
     }
 }
 

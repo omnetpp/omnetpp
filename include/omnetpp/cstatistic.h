@@ -63,7 +63,7 @@ class SIM_API cStatistic : public cRandom
     /**
      * Constructor, creates an object with the given name
      */
-    explicit cStatistic(const char *name=NULL);
+    explicit cStatistic(const char *name=nullptr);
 
     /**
      * Destructor.
@@ -262,7 +262,7 @@ class SIM_API cStatistic : public cRandom
      * histogram, the method may invoke the transform() on the histogram
      * object, to force it set up histogram cells before recording.
      */
-    virtual void record()  {recordAs(NULL, NULL);}
+    virtual void record()  {recordAs(nullptr, nullptr);}
 
     /**
      * Records the statistics into the scalar result file, with the given
@@ -273,7 +273,7 @@ class SIM_API cStatistic : public cRandom
      * histogram, the method may invoke the transform() on the histogram
      * object, to force it set up histogram cells before recording.
      */
-    virtual void recordWithUnit(const char *unit)  {recordAs(NULL, unit);}
+    virtual void recordWithUnit(const char *unit)  {recordAs(nullptr, unit);}
 
     /**
      * Records the statistics into the scalar result file, with the given name,
@@ -283,7 +283,7 @@ class SIM_API cStatistic : public cRandom
      * histogram, the method may invoke the transform() on the histogram
      * object, to force it set up histogram cells before recording.
      */
-    virtual void recordAs(const char *name, const char *unit=NULL);
+    virtual void recordAs(const char *name, const char *unit=nullptr);
     //@}
 };
 

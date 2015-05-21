@@ -99,7 +99,7 @@ cProperty *cProperties::get(const char *name, const char *index) const
     for (int i = 0; i < (int)propv.size(); i++)
         if (!strcmp(propv[i]->getName(), name) && !opp_strcmp(index, propv[i]->getIndex()))
             return propv[i];
-    return NULL;
+    return nullptr;
 }
 
 bool cProperties::getAsBool(const char *name, const char *index) const

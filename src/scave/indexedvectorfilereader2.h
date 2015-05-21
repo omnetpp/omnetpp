@@ -45,7 +45,7 @@ class SCAVE_API IndexedVectorFileReaderNode2 : public ReaderNode
         int currentBlockIndex;
         PortVector ports;
 
-        PortData() : vector(NULL), currentBlockIndex(0) {}
+        PortData() : vector(nullptr), currentBlockIndex(0) {}
     };
 
     typedef std::map<int,PortData> PortMap;

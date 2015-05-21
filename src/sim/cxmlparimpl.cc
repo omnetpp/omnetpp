@@ -26,7 +26,7 @@ NAMESPACE_BEGIN
 
 cXMLParImpl::cXMLParImpl()
 {
-    val = NULL;
+    val = nullptr;
 }
 
 cXMLParImpl::~cXMLParImpl()
@@ -52,7 +52,7 @@ void cXMLParImpl::operator=(const cXMLParImpl& other)
 
 std::string cXMLParImpl::detailedInfo() const
 {
-    return (flags & FL_ISEXPR) ? "<expression>" : val==NULL ? "NULL" : val->detailedInfo();
+    return (flags & FL_ISEXPR) ? "<expression>" : val==nullptr ? "NULL" : val->detailedInfo();
 }
 
 void cXMLParImpl::parsimPack(cCommBuffer *buffer) const
@@ -141,7 +141,7 @@ cXMLElement *cXMLParImpl::xmlValue(cComponent *context) const
 
 cExpression *cXMLParImpl::getExpression() const
 {
-    return (flags | FL_ISEXPR) ? expr : NULL;
+    return (flags | FL_ISEXPR) ? expr : nullptr;
 }
 
 void cXMLParImpl::deleteOld()
@@ -196,7 +196,7 @@ void cXMLParImpl::parse(const char *text)
 
     // simplify if possible: store as constant instead of expression
     if (dynexpr->isAConstant())
-        convertToConst(NULL);
+        convertToConst(nullptr);
 }
 
 int cXMLParImpl::compare(const cParImpl *other) const

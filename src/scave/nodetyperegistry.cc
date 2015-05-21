@@ -181,7 +181,7 @@ void NodeTypeRegistry::parseFilterSpec(const char *filterSpec, std::string& name
     std::string arglist(paren+1, strlen(paren)-2);
     StringTokenizer tokenizer(arglist.c_str(), ",");
     const char *token;
-    while ((token = tokenizer.nextToken())!=NULL)
+    while ((token = tokenizer.nextToken())!=nullptr)
         args.push_back(token);
 }
 

@@ -43,7 +43,7 @@ Register_Class(cModule);
 
 // static members:
 std::string cModule::lastModuleFullPath;
-const cModule *cModule::lastModuleFullPathModule = NULL;
+const cModule *cModule::lastModuleFullPathModule = nullptr;
 
 #ifdef NDEBUG
 bool cModule::cacheFullPath = false; // in release mode keep memory usage low
@@ -56,18 +56,18 @@ cModule::cModule()
 {
     vectorIndex = 0;
     vectorSize = -1;
-    fullPath = NULL;
-    fullName = NULL;
+    fullPath = nullptr;
+    fullName = nullptr;
 
-    prevSibling = nextSibling = firstSubmodule = lastSubmodule = NULL;
+    prevSibling = nextSibling = firstSubmodule = lastSubmodule = nullptr;
 
     gateDescArraySize = 0;
-    gateDescArray = NULL;
+    gateDescArray = nullptr;
 #ifdef USE_OMNETPP4x_FINGERPRINTS
     version4ModuleId = -1;
 #endif
 
-    canvas = NULL;
+    canvas = nullptr;
 
     // gates and parameters will be added by cModuleType
 }
@@ -167,7 +167,7 @@ void cModule::insertSubmodule(cModule *mod)
     take(mod);
 
     // append at end of submodule list
-    mod->nextSibling = NULL;
+    mod->nextSibling = nullptr;
     mod->prevSibling = lastSubmodule;
     if (mod->prevSibling)
         mod->prevSibling->nextSibling = mod;
@@ -179,7 +179,7 @@ void cModule::insertSubmodule(cModule *mod)
     mod->repairSignalFlags();
 
     // cached module getFullPath() possibly became invalid
-    lastModuleFullPathModule = NULL;
+    lastModuleFullPathModule = nullptr;
 }
 
 void cModule::removeSubmodule(cModule *mod)
@@ -199,13 +199,13 @@ void cModule::removeSubmodule(cModule *mod)
          lastSubmodule = mod->prevSibling;
 
     // this is not strictly needed but makes it cleaner
-    mod->prevSibling = mod->nextSibling = NULL;
+    mod->prevSibling = mod->nextSibling = nullptr;
 
     // update cached signal state
     mod->repairSignalFlags();
 
     // cached module getFullPath() possibly became invalid
-    lastModuleFullPathModule = NULL;
+    lastModuleFullPathModule = nullptr;
 }
 
 cModule *cModule::getParentModule() const
@@ -224,7 +224,7 @@ void cModule::updateFullName()
     if (fullName)
     {
         delete [] fullName;
-        fullName = NULL;
+        fullName = nullptr;
     }
     if (isVector())
     {
@@ -234,7 +234,7 @@ void cModule::updateFullName()
     }
 
     if (lastModuleFullPathModule == this)
-        lastModuleFullPathModule = NULL;  // invalidate
+        lastModuleFullPathModule = nullptr;  // invalidate
 
     if (cacheFullPath)
         updateFullPathRec();
@@ -266,7 +266,7 @@ void cModule::reassignModuleIdRec()
 void cModule::updateFullPathRec()
 {
     delete [] fullPath;
-    fullPath = NULL; // for the next getFullPath() call
+    fullPath = nullptr; // for the next getFullPath() call
     fullPath = opp_strdup(getFullPath().c_str());
 
     for (cModule *child = firstSubmodule; child; child = child->nextSibling)
@@ -289,7 +289,7 @@ std::string cModule::getFullPath() const
     {
         // stop at the toplevel module (don't go up to cSimulation);
         // plus, cache the result, expecting more hits from this module
-        if (getParentModule()==NULL)
+        if (getParentModule()==nullptr)
             lastModuleFullPath = getFullName();
         else
             lastModuleFullPath = getParentModule()->getFullPath() + "." + getFullName();
@@ -300,7 +300,7 @@ std::string cModule::getFullPath() const
 
 bool cModule::isSimple() const
 {
-    return dynamic_cast<const cSimpleModule *>(this) != NULL;
+    return dynamic_cast<const cSimpleModule *>(this) != nullptr;
 }
 
 cProperties *cModule::getProperties() const
@@ -363,7 +363,7 @@ void cModule::disposeGateDesc(cGate::Desc *desc, bool checkConnected)
     }
     const char *gatename = desc->name->name.c_str();
     cGate::Type gatetype = desc->getType();
-    desc->name = NULL; // mark as deleted, but leave shared Name struct in the pool
+    desc->name = nullptr; // mark as deleted, but leave shared Name struct in the pool
 #ifdef SIMFRONTEND_SUPPORT
     updateLastChangeSerial();
 #endif
@@ -385,7 +385,7 @@ void cModule::clearGates()
     for (int i=0; i<gateDescArraySize; i++)
         disposeGateDesc(gateDescArray + i, false);
     delete [] gateDescArray;
-    gateDescArray = NULL;
+    gateDescArray = nullptr;
     gateDescArraySize = 0;
 }
 
@@ -565,7 +565,7 @@ cGate *cModule::addGate(const char *gatename, cGate::Type type, bool isVector)
     desc->owner = this;
 
     // if scalar gate, create gate object(s); gate vectors are created with size 0.
-    cGate *result = NULL;
+    cGate *result = nullptr;
     if (!isVector)
     {
         cGate *newGate;
@@ -671,11 +671,11 @@ void cModule::setGateSize(const char *gatename, int newSize)
             desc->vectorSize = i;
             if (type!=cGate::OUTPUT) {
                 delete desc->input.gatev[i];
-                desc->input.gatev[i] = NULL;
+                desc->input.gatev[i] = nullptr;
             }
             if (type!=cGate::INPUT) {
                 delete desc->output.gatev[i];
-                desc->output.gatev[i] = NULL;
+                desc->output.gatev[i] = nullptr;
             }
         }
 
@@ -940,8 +940,8 @@ cGate *cModule::getOrCreateFirstUnconnectedGate(const char *gatename, char suffi
     // "holes" (unconnected gates) and we expand the gate unnecessarily.
     // Note: NULL is used as a synonym for "any unconnected gate" (see less_* struct).
     cGate **it = inside ?
-        std::lower_bound(gatev, gatev+oldSize, (cGate *)NULL, less_gateConnectedInside()) :
-        std::lower_bound(gatev, gatev+oldSize, (cGate *)NULL, less_gateConnectedOutside());
+        std::lower_bound(gatev, gatev+oldSize, (cGate *)nullptr, less_gateConnectedInside()) :
+        std::lower_bound(gatev, gatev+oldSize, (cGate *)nullptr, less_gateConnectedOutside());
     if (it != gatev+oldSize)
         return *it;
 
@@ -958,7 +958,7 @@ cGate *cModule::getOrCreateFirstUnconnectedGate(const char *gatename, char suffi
         for (int i=0; i<oldSize; i++)
             if (inside ? !gatev[i]->isConnectedInside() : !gatev[i]->isConnectedOutside())
                 return gatev[i];
-        return NULL; // sorry
+        return nullptr; // sorry
     }
 }
 
@@ -981,8 +981,8 @@ void cModule::getOrCreateFirstUnconnectedGatePair(const char *gatename,
 
     // binary search for the first unconnected gate -- see explanation in method above
     cGate **it = inside ?
-        std::lower_bound(inputgatev, inputgatev+oldSize, (cGate *)NULL, less_gatePairConnectedInside(outputgatev)) :
-        std::lower_bound(inputgatev, inputgatev+oldSize, (cGate *)NULL, less_gatePairConnectedOutside(outputgatev));
+        std::lower_bound(inputgatev, inputgatev+oldSize, (cGate *)nullptr, less_gatePairConnectedInside(outputgatev)) :
+        std::lower_bound(inputgatev, inputgatev+oldSize, (cGate *)nullptr, less_gatePairConnectedOutside(outputgatev));
     if (it != inputgatev+oldSize) {
         gatein = *it;
         gateout = outputgatev[gatein->getIndex()];
@@ -1005,7 +1005,7 @@ void cModule::getOrCreateFirstUnconnectedGatePair(const char *gatename,
             if (inside ? !inputgatev[i]->isConnectedInside() : !inputgatev[i]->isConnectedOutside())
                 if (inside ? !outputgatev[i]->isConnectedInside() : !outputgatev[i]->isConnectedOutside())
                     {gatein = inputgatev[i]; gateout = outputgatev[i]; return;}
-        gatein = gateout = NULL; // sorry
+        gatein = gateout = nullptr; // sorry
     }
 }
 
@@ -1029,7 +1029,7 @@ cGate *cModule::gateByOrdinal(int k) const
 {
     GateIterator it(this);
     it += k;
-    return it.end() ? NULL : it();
+    return it.end() ? nullptr : it();
 }
 
 bool cModule::checkInternalConnections() const
@@ -1084,7 +1084,7 @@ cModule *cModule::getSubmodule(const char *submodname, int idx)
             ((idx==-1 && !i()->isVector()) || i()->getIndex()==idx)
            )
             return i();
-    return NULL;
+    return nullptr;
 }
 
 // Note: this is a less powerful version of getModuleByPath(), deprecated and waiting to be removed
@@ -1099,7 +1099,7 @@ cModule *cModule::getModuleByRelativePath(const char *path)
     while (token && modp)
     {
         char *lbracket;
-        if ((lbracket=strchr(token,'[')) == NULL)
+        if ((lbracket=strchr(token,'[')) == nullptr)
             modp = modp->getSubmodule(token);  // no index given
         else
         {
@@ -1109,7 +1109,7 @@ cModule *cModule::getModuleByRelativePath(const char *path)
             *lbracket = '\0'; // cut off [index]
             modp = modp->getSubmodule(token, index);
         }
-        token = strtok(NULL,".");
+        token = strtok(nullptr,".");
     }
 
     return modp;  // NULL if not found
@@ -1117,7 +1117,7 @@ cModule *cModule::getModuleByRelativePath(const char *path)
 
 inline char *nextToken(char *&rest)
 {
-    if (!rest) return NULL;
+    if (!rest) return nullptr;
     char *token = rest;
     rest = strchr(rest, '.');
     if (rest) *rest++ = '\0';
@@ -1127,7 +1127,7 @@ inline char *nextToken(char *&rest)
 cModule *cModule::getModuleByPath(const char *path)
 {
     if (!path || !path[0])
-        return NULL;
+        return nullptr;
 
     // determine starting point
     bool isrelative = (path[0] == '.' || path[0] == '^');
@@ -1149,7 +1149,7 @@ cModule *cModule::getModuleByPath(const char *path)
             /*ignore network name*/;
         else if (token[0] == '^' && token[1] == '\0')
             modp = modp->getParentModule(); // if modp is the root, return NULL
-        else if ((lbracket=strchr(token,'[')) == NULL)
+        else if ((lbracket=strchr(token,'[')) == nullptr)
             modp = modp->getSubmodule(token);
         else
         {
@@ -1416,7 +1416,7 @@ bool cModule::initializeModules(int stage)
         // a module is initialized when all init stages have been completed
         // (both its own and on all its submodules)
         setFlag(FL_INITIALIZED, true);
-        handleParameterChange(NULL);
+        handleParameterChange(nullptr);
     }
 
     return moreStages;
@@ -1467,7 +1467,7 @@ void cModule::GateIterator::init(const cModule *module)
     isOutput = false;
     index = 0;
 
-    while (!end() && current()==NULL)
+    while (!end() && current()==nullptr)
         advance();
 }
 
@@ -1508,16 +1508,16 @@ bool cModule::GateIterator::end() const
 cGate *cModule::GateIterator::current() const
 {
     if (descIndex >= module->gateDescArraySize)
-        return NULL;
+        return nullptr;
     cGate::Desc *desc = module->gateDescArray + descIndex;
     if (!desc->name)
-        return NULL; // deleted gate
+        return nullptr; // deleted gate
     if (isOutput==false && desc->getType()==cGate::OUTPUT)
-        return NULL; // isOutput still incorrect
+        return nullptr; // isOutput still incorrect
     if (!desc->isVector())
         return isOutput ? desc->output.gate : desc->input.gate;
     else if (desc->vectorSize==0)
-        return NULL;
+        return nullptr;
     else
         return isOutput ? desc->output.gatev[index] : desc->input.gatev[index];
 }
@@ -1525,11 +1525,11 @@ cGate *cModule::GateIterator::current() const
 cGate *cModule::GateIterator::operator++(int)
 {
     if (end())
-        return NULL;
-    cGate *gate = NULL;
+        return nullptr;
+    cGate *gate = nullptr;
     do {
         advance();
-    } while (!end() && (gate=current())==NULL);
+    } while (!end() && (gate=current())==nullptr);
     return gate;
 }
 

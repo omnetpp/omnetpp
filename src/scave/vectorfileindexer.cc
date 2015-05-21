@@ -66,8 +66,8 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
     char **tokens;
     int64_t lineNo;
     int numTokens, numOfUnrecognizedLines = 0;
-    VectorData *currentVectorRef = NULL;
-    VectorData *lastVectorDecl = NULL;
+    VectorData *currentVectorRef = nullptr;
+    VectorData *lastVectorDecl = nullptr;
     Block currentBlock;
 
     int64_t onePercentFileSize = reader.getFileSize() / 100;
@@ -79,7 +79,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
     try
     {
 
-        while ((line=reader.getNextLineBufferPointer())!=NULL)
+        while ((line=reader.getNextLineBufferPointer())!=nullptr)
         {
             if (monitor)
             {
@@ -114,7 +114,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
             }
             else if (tokens[0][0] == 'a' && strcmp(tokens[0], "attr") == 0)
             {
-                if (lastVectorDecl == NULL) // run attribute
+                if (lastVectorDecl == nullptr) // run attribute
                 {
                     index.run.parseLine(tokens, numTokens, vectorFileName, lineNo);
                 }
@@ -140,7 +140,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
 
                 index.addVector(vector);
                 lastVectorDecl = index.getVectorAt(index.getNumberOfVectors() - 1);
-                currentVectorRef = NULL;
+                currentVectorRef = nullptr;
             }
             else if (tokens[0][0] == 'v' && strcmp(tokens[0], "version") == 0)
             {
@@ -165,9 +165,9 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
                     continue;
                 }
 
-                if (currentVectorRef == NULL || vectorId != currentVectorRef->vectorId)
+                if (currentVectorRef == nullptr || vectorId != currentVectorRef->vectorId)
                 {
-                    if (currentVectorRef != NULL)
+                    if (currentVectorRef != nullptr)
                     {
                         currentBlock.size = (int64_t)(reader.getCurrentLineStartOffset() - currentBlock.startOffset);
                         if (currentBlock.size > currentVectorRef->blockSize)
@@ -178,7 +178,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
                     currentBlock = Block();
                     currentBlock.startOffset = reader.getCurrentLineStartOffset();
                     currentVectorRef = index.getVectorById(vectorId);
-                    if (currentVectorRef == NULL)
+                    if (currentVectorRef == nullptr)
                         throw ResultFileFormatException("vector file indexer: missing vector declaration", vectorFileName, lineNo);
                 }
 
@@ -213,7 +213,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
         // finish last block
         if (currentBlock.getCount() > 0)
         {
-            assert(currentVectorRef != NULL);
+            assert(currentVectorRef != nullptr);
             currentBlock.size = (int64_t)(reader.getFileSize() - currentBlock.startOffset);
             if (currentBlock.size > currentVectorRef->blockSize)
                 currentVectorRef->blockSize = currentBlock.size;

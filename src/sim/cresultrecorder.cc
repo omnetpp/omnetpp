@@ -87,7 +87,7 @@ static std::string getPart(const char *s, int k)
 {
     if (k >= 0) {
         cStringTokenizer tokenizer(s, ":");
-        for (const char *token; (token = tokenizer.nextToken()) != NULL; k--)
+        for (const char *token; (token = tokenizer.nextToken()) != nullptr; k--)
             if (k == 0)
                 return token;
     }
@@ -110,7 +110,7 @@ struct Resolver : public opp_substitutevariables_resolver
         else if (name == "component")
             return self->getComponent()->getFullPath();
         else if (opp_stringbeginswith(name.c_str(), "namePart") && opp_isdigit(name.c_str()[8]))
-            return getPart(self->getStatisticName(), strtol(name.c_str()+8, NULL, 10) - 1);
+            return getPart(self->getStatisticName(), strtol(name.c_str()+8, nullptr, 10) - 1);
         else
             throw cRuntimeError("unknown variable $%s", name.c_str());
     }

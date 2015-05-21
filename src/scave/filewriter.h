@@ -36,7 +36,7 @@ class SCAVE_API FileWriterNode : public SingleSinkNode
         FILE *f;
         int prec;
     public:
-        FileWriterNode(const char *filename, const char *banner=NULL);
+        FileWriterNode(const char *filename, const char *banner=nullptr);
         virtual ~FileWriterNode();
         void setPrecision(int prec) {this->prec = prec;}
         virtual bool isReady() const;

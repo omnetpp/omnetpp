@@ -47,7 +47,7 @@ class SIM_API opp_string
     /**
      * Constructor.
      */
-    opp_string()  {str = 0;}
+    opp_string()  {str = nullptr;}
 
     /**
      * Constructor.

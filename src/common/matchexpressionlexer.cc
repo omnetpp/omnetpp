@@ -29,7 +29,7 @@ MatchExpressionLexer::MatchExpressionLexer(const char *input)
 int MatchExpressionLexer::getNextToken(char **valuep) {
     const char *start;
 
-    *valuep = NULL;
+    *valuep = nullptr;
     while (true) {
         start = ptr;
         switch (*ptr++) {

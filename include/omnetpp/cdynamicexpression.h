@@ -115,25 +115,25 @@ class SIM_API cDynamicExpression : public cExpression
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(int _i)  {type=DBL; d.d=_i; d.unit=NULL;}
+        void operator=(int _i)  {type=DBL; d.d=_i; d.unit=nullptr;}
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(short _i)  {type=DBL; d.d=_i; d.unit=NULL;}
+        void operator=(short _i)  {type=DBL; d.d=_i; d.unit=nullptr;}
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(long _l)  {type=DBL; d.d=_l; d.unit=NULL;}
+        void operator=(long _l)  {type=DBL; d.d=_l; d.unit=nullptr;}
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * to the evaluation stack.
          */
-        void operator=(double _d)  {type=DBL; d.d=_d; d.unit=NULL;}
+        void operator=(double _d)  {type=DBL; d.d=_d; d.unit=nullptr;}
 
         /**
          * Sets the unit of an Elem previously set to a double value.
@@ -221,7 +221,7 @@ class SIM_API cDynamicExpression : public cExpression
     /**
      * Copy constructor.
      */
-    cDynamicExpression(const cDynamicExpression& other) : cExpression(other) {elems=NULL; copy(other);}
+    cDynamicExpression(const cDynamicExpression& other) : cExpression(other) {elems=nullptr; copy(other);}
 
     /**
      * Destructor.
@@ -277,13 +277,13 @@ class SIM_API cDynamicExpression : public cExpression
      * Evaluate the expression and convert the result to long if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual long longValue(cComponent *context, const char *expectedUnit=NULL);
+    virtual long longValue(cComponent *context, const char *expectedUnit=nullptr);
 
     /**
      * Evaluate the expression and convert the result to double if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual double doubleValue(cComponent *context, const char *expectedUnit=NULL);
+    virtual double doubleValue(cComponent *context, const char *expectedUnit=nullptr);
 
     /**
      * Evaluate the expression and convert the result to string if possible;

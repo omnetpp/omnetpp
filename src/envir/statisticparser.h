@@ -37,9 +37,9 @@ class ENVIR_API SignalSource
     cComponent *component;
     simsignal_t signalID;
   public:
-    SignalSource() {filter=NULL; component=NULL; signalID=-1;}
-    SignalSource(cResultFilter *prevFilter) {filter=prevFilter; component=NULL; signalID=-1;}
-    SignalSource(cComponent *comp, simsignal_t sigID) {filter=NULL; component=comp; signalID=sigID;}
+    SignalSource() {filter=nullptr; component=nullptr; signalID=-1;}
+    SignalSource(cResultFilter *prevFilter) {filter=prevFilter; component=nullptr; signalID=-1;}
+    SignalSource(cComponent *comp, simsignal_t sigID) {filter=nullptr; component=comp; signalID=sigID;}
     bool isNull() const {return !filter && !component;}
     void subscribe(cResultListener *listener) const;
     cResultFilter *getFilter() const {return filter;}

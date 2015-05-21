@@ -60,7 +60,7 @@ ResultItem& ResultItem::operator=(const ResultItem &rhs)
     attributes = rhs.attributes;
     if (computation)
         delete computation;
-    computation = rhs.computation ? rhs.computation->dup() : NULL;
+    computation = rhs.computation ? rhs.computation->dup() : nullptr;
     return *this;
 }
 
@@ -99,7 +99,7 @@ EnumType* ResultItem::getEnum() const
     }
     else
     {
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -136,7 +136,7 @@ void HistogramResult::addBin(double lower_bound, double value)
 
 ResultFileManager::ResultFileManager()
 {
-    computedScalarFile = NULL;
+    computedScalarFile = nullptr;
 }
 
 ResultFileManager::~ResultFileManager()
@@ -310,7 +310,7 @@ StringSet *ResultFileManager::getUniqueAttributeValues(const IDList &ids, const 
     for (int i = 0; i < ids.size(); ++i)
     {
         const char *value = getItem(ids.get(i)).getAttribute(attrName);
-        if (value != NULL)
+        if (value != nullptr)
             values->insert(value);
     }
     return values;
@@ -323,7 +323,7 @@ StringSet *ResultFileManager::getUniqueRunAttributeValues(const RunList& runList
     for (RunList::const_iterator runRef = runList.begin(); runRef != runList.end(); ++runRef)
     {
         const char *value = (*runRef)->getAttribute(attrName);
-        if (value!=NULL)
+        if (value!=nullptr)
             values->insert(value);
     }
 
@@ -337,7 +337,7 @@ StringSet *ResultFileManager::getUniqueModuleParamValues(const RunList& runList,
     for (RunList::const_iterator runRef = runList.begin(); runRef != runList.end(); ++runRef)
     {
         const char *value = (*runRef)->getModuleParam(paramName);
-        if (value != NULL)
+        if (value != nullptr)
             values->insert(value);
     }
 
@@ -373,7 +373,7 @@ void ResultFileManager::collectIDs(IDList &out, std::vector<T> ResultFile::* vec
 {
     for (int k=0; k<(int)fileList.size(); k++)
     {
-        if (fileList[k]!=NULL)
+        if (fileList[k]!=nullptr)
         {
             std::vector<T>& v = fileList[k]->*vec;
             for (int i=0; i<(int)v.size(); i++) {
@@ -459,31 +459,31 @@ IDList ResultFileManager::getHistogramsInFileRun(FileRun *fileRun) const
 
 bool ResultFileManager::isFileLoaded(const char *fileName) const
 {
-    return getFile(fileName)!=NULL;
+    return getFile(fileName)!=nullptr;
 }
 
 ResultFile *ResultFileManager::getFile(const char *fileName) const
 {
     if (!fileName)
-        return NULL;
+        return nullptr;
 
     READER_MUTEX
     for (int i=0; i<(int)fileList.size(); i++)
-        if (fileList[i]!=NULL && fileList[i]->filePath==fileName)
+        if (fileList[i]!=nullptr && fileList[i]->filePath==fileName)
             return fileList[i];
-    return NULL;
+    return nullptr;
 }
 
 Run *ResultFileManager::getRunByName(const char *runName) const
 {
     if (!runName)
-        return NULL;
+        return nullptr;
 
     READER_MUTEX
     for (int i=0; i<(int)runList.size(); i++)
         if (runList[i]->runName==runName)
             return runList[i];
-    return NULL;
+    return nullptr;
 }
 
 FileRun *ResultFileManager::getFileRun(ResultFile *file, Run *run) const
@@ -492,7 +492,7 @@ FileRun *ResultFileManager::getFileRun(ResultFile *file, Run *run) const
     for (int i=0; i<(int)fileRunList.size(); i++)
         if (fileRunList[i]->fileRef==file && fileRunList[i]->runRef==run)
             return fileRunList[i];
-    return NULL;
+    return nullptr;
 }
 
 // currently unused
@@ -568,7 +568,7 @@ RunList ResultFileManager::filterRunList(const RunList& runList,
         for (int j=0; j<(int)attrNames.size() && matches; j++)
         {
             const char *attrValue = run->getAttribute(attrNames[j].c_str());
-            if (attrValue == NULL)
+            if (attrValue == nullptr)
                 attrValue = "";
 
             if (!attrValues[j].matches(attrValue))
@@ -633,12 +633,12 @@ IDList ResultFileManager::filterIDList(const IDList& idlist,
     bool patMatchModule = PatternMatcher::containsWildcards(moduleFilter);
     bool patMatchName = PatternMatcher::containsWildcards(nameFilter);
 
-    PatternMatcher *modulePattern = NULL;
+    PatternMatcher *modulePattern = nullptr;
     if (patMatchModule)
     {
         modulePattern = new PatternMatcher(moduleFilter, false, true, true); // case-sensitive full-string match
     }
-    PatternMatcher *namePattern = NULL;
+    PatternMatcher *namePattern = nullptr;
     if (patMatchName)
     {
         namePattern = new PatternMatcher(nameFilter, false, true, true); // case-sensitive full-string match
@@ -651,7 +651,7 @@ IDList ResultFileManager::filterIDList(const IDList& idlist,
     // we can exploit the fact that ResultFileManager contains the data in the order
     // they were read from file, i.e. grouped by runs
     IDList out;
-    FileRun *lastFileRunRef = NULL;
+    FileRun *lastFileRunRef = nullptr;
     bool lastFileRunMatched = false;
     int sz = idlist.size();
     for (int i=0; i<sz; i++)
@@ -764,7 +764,7 @@ const char *MatchableResultItem::getAsString(const char *attribute) const
 
 IDList ResultFileManager::filterIDList(const IDList &idlist, const char *pattern) const
 {
-    if (pattern == NULL || pattern[0] == '\0') // no filter
+    if (pattern == nullptr || pattern[0] == '\0') // no filter
         pattern = "*";
 
     MatchExpression matchExpr(pattern, false /*dottedpath*/, true /*fullstring*/, true /*casesensitive*/);
@@ -785,7 +785,7 @@ IDList ResultFileManager::filterIDList(const IDList &idlist, const char *pattern
 
 void ResultFileManager::checkPattern(const char *pattern)
 {
-    if (pattern==NULL || pattern[0] == '\0') // no filter
+    if (pattern==nullptr || pattern[0] == '\0') // no filter
         return;
 
     // parse it
@@ -1027,7 +1027,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
             runRef->runName = vec[1];
         }
         // associate Run with this file
-        CHECK(getFileRun(ctx.fileRef, runRef)==NULL, "non-unique runId in the file");
+        CHECK(getFileRun(ctx.fileRef, runRef)==nullptr, "non-unique runId in the file");
         ctx.fileRunRef = addFileRun(ctx.fileRef, runRef);
 
         ctx.lastResultItemType = 0;
@@ -1046,7 +1046,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
 
 
     // if we haven't seen a "run" line yet (as with old vector files), add a default run
-    if (ctx.fileRunRef==NULL)
+    if (ctx.fileRunRef==nullptr)
     {
         // fake a new Run
         Run *runRef = addRun(false);
@@ -1227,7 +1227,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
 static bool isFileReadable(const char *fileName)
 {
     FILE *f = fopen(fileName, "r");
-    if (f!=NULL)
+    if (f!=nullptr)
     {
         fclose(f);
         return true;
@@ -1254,13 +1254,13 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
     }
 
     // try if file can be opened, before we add it to our database
-    if (fileSystemFileName==NULL)
+    if (fileSystemFileName==nullptr)
         fileSystemFileName = fileName;
     if (!isFileReadable(fileSystemFileName))
         throw opp_runtime_error("cannot open `%s' for read", fileSystemFileName);
 
     // add to fileList
-    fileRef = NULL;
+    fileRef = nullptr;
 
     try
     {
@@ -1279,7 +1279,7 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
             char *line;
             LineTokenizer tokenizer;
             sParseContext ctx(fileRef);
-            while ((line=freader.getNextLineBufferPointer())!=NULL)
+            while ((line=freader.getNextLineBufferPointer())!=nullptr)
             {
                 int len = freader.getCurrentLineLength();
                 int numTokens = tokenizer.tokenize(line, len);
@@ -1385,7 +1385,7 @@ void ResultFileManager::unloadFile(ResultFile *file)
     // Computed names only refered from computedScalarFile, so clear them now.
     if (file == computedScalarFile)
     {
-        computedScalarFile = NULL;
+        computedScalarFile = nullptr;
         computedScalarNames.clear();
         computedModuleNames.clear();
     }
@@ -1394,7 +1394,7 @@ void ResultFileManager::unloadFile(ResultFile *file)
     // It is not allowed to move another ResultFile into the hole, because
     // that would change its "id", and invalidate existing IDs (IDLists)
     // that use that file.
-    fileList[file->id] = NULL;
+    fileList[file->id] = nullptr;
     delete file;
 
     // remove Runs that don't appear in other loaded files

@@ -30,7 +30,7 @@ NAMESPACE_BEGIN
 
 cNEDFunction::cNEDFunction(NEDFunction f, const char *signature,
                            const char *category, const char *description) :
-  cNoncopyableOwnedObject(NULL,false)
+  cNoncopyableOwnedObject(nullptr,false)
 {
     ASSERT(f);
 
@@ -192,7 +192,7 @@ cNEDFunction *cNEDFunction::findByPointer(NEDFunction f)
         if (ff && ff->getFunctionPointer() == f)
             return ff;
     }
-    return NULL;
+    return nullptr;
 }
 
 NAMESPACE_END

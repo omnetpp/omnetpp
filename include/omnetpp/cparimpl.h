@@ -84,7 +84,7 @@ class SIM_API cParImpl : public cNamedObject
     /**
      * Copy constructor.
      */
-    cParImpl(const cParImpl& other) : cNamedObject(other) {unitp = NULL; copy(other);}
+    cParImpl(const cParImpl& other) : cNamedObject(other) {unitp = nullptr; copy(other);}
 
     /**
      * Destructor.

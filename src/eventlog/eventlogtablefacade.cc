@@ -136,7 +136,7 @@ EventLogEntry *EventLogTableFacade::getFirstEntry()
     IEvent *event = eventLog->getFirstEvent();
 
     if (!event)
-        return NULL;
+        return nullptr;
     else
         return getEntryInEvent(event, 0);
 }
@@ -146,7 +146,7 @@ EventLogEntry *EventLogTableFacade::getLastEntry()
     IEvent *event = eventLog->getLastEvent();
 
     if (!event)
-        return NULL;
+        return nullptr;
     else
         return getEntryInEvent(event, getNumMatchingEventLogEntries(event) - 1);
 }
@@ -207,7 +207,7 @@ EventLogEntry *EventLogTableFacade::getPreviousEntry(EventLogEntry *eventLogEntr
     }
 
     if (!event)
-        return NULL;
+        return nullptr;
     else
         return getEntryInEvent(event, index);
 }
@@ -223,7 +223,7 @@ EventLogEntry *EventLogTableFacade::getNextEntry(EventLogEntry *eventLogEntry, i
     }
 
     if (!event)
-        return NULL;
+        return nullptr;
     else
         return getEntryInEvent(event, index);
 }
@@ -298,7 +298,7 @@ eventnumber_t EventLogTableFacade::getDistanceToLastEntry(EventLogEntry *eventLo
 EventLogEntry *EventLogTableFacade::getNeighbourEntry(EventLogEntry *eventLogEntry, eventnumber_t distance)
 {
     eventnumber_t reachedDistance;
-    return getEntryAndDistance(eventLogEntry, NULL, distance, reachedDistance);
+    return getEntryAndDistance(eventLogEntry, nullptr, distance, reachedDistance);
 }
 
 double EventLogTableFacade::getApproximatePercentageForEntry(EventLogEntry *eventLogEntry)
@@ -319,7 +319,7 @@ EventLogEntry *EventLogTableFacade::getApproximateEventLogEntryAt(double percent
         IEvent* event = eventLog->getLastEvent();
 
         if (!event)
-            return NULL;
+            return nullptr;
         else
             return getEntryInEvent(event, getNumMatchingEventLogEntries(event) - 1);
     }
@@ -327,7 +327,7 @@ EventLogEntry *EventLogTableFacade::getApproximateEventLogEntryAt(double percent
         IEvent *beforeEvent = eventLog->getApproximateEventAt(percentage);
 
         if (!beforeEvent)
-            return NULL;
+            return nullptr;
         else {
             double beforePercentage = eventLog->getApproximatePercentageForEventNumber(beforeEvent->getEventNumber());
             double afterPercentage = 1;

@@ -55,7 +55,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
     /**
      * Copy constructor.
      */
-    cHistogramBase(const cHistogramBase& r) : cDensityEstBase(r) {cellv=NULL;copy(r);}
+    cHistogramBase(const cHistogramBase& r) : cDensityEstBase(r) {cellv=nullptr;copy(r);}
 
     /**
      * Constructor.
@@ -218,7 +218,7 @@ class SIM_API cHistogram : public cHistogramBase
     /**
      * Constructor.
      */
-    explicit cHistogram(const char *name=NULL, int numcells=-1, HistogramMode mode=MODE_AUTO);
+    explicit cHistogram(const char *name=nullptr, int numcells=-1, HistogramMode mode=MODE_AUTO);
 
     /**
      * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
@@ -355,7 +355,7 @@ class SIM_API cLongHistogram : public cHistogram
     /**
      * Constructor.
      */
-    explicit cLongHistogram(const char *name=NULL, int numcells=-1) :
+    explicit cLongHistogram(const char *name=nullptr, int numcells=-1) :
         cHistogram(name, numcells, MODE_INTEGERS) {}
 
     /**
@@ -419,7 +419,7 @@ class SIM_API cDoubleHistogram : public cHistogram
     /**
      * Constructor.
      */
-    explicit cDoubleHistogram(const char *name=NULL, int numcells=-1) :
+    explicit cDoubleHistogram(const char *name=nullptr, int numcells=-1) :
         cHistogram(name, numcells, MODE_DOUBLES) {}
 
     /**

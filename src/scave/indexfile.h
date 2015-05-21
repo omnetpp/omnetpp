@@ -230,7 +230,7 @@ public:
     VectorData *getVectorById(int vectorId)
     {
         VectorIdToIndexMap::const_iterator entry = map.find(vectorId);
-        return entry!=map.end() ? getVectorAt(entry->second) : NULL;
+        return entry!=map.end() ? getVectorAt(entry->second) : nullptr;
     }
 };
 

@@ -41,7 +41,7 @@ void generateNED2(ostream& out, NEDElement *node, NEDErrorStore *e)
 
 NED2Generator::NED2Generator(NEDErrorStore *e)
 {
-    outp = NULL;
+    outp = nullptr;
     indentSize = 4;
     errors = e;
 }
@@ -59,7 +59,7 @@ void NED2Generator::generate(ostream& out, NEDElement *node, const char *indent)
 {
     outp = &out;
     generateNedItem(node, indent, false);
-    outp = NULL;
+    outp = nullptr;
 }
 
 std::string NED2Generator::generate(NEDElement *node, const char *indent)
@@ -106,7 +106,7 @@ void NED2Generator::generateChildren(NEDElement *node, const char *indent, const
 void NED2Generator::generateChildrenWithType(NEDElement *node, int tagcode, const char *indent, const char *arg)
 {
     // find last
-    NEDElement *lastWithTag = NULL;
+    NEDElement *lastWithTag = nullptr;
     for (NEDElement *child1=node->getFirstChild(); child1; child1=child1->getNextSibling())
         if (child1->getTagCode()==tagcode)
              lastWithTag = child1;
@@ -128,7 +128,7 @@ static int isInVector(int a, int v[])
 void NED2Generator::generateChildrenWithTypes(NEDElement *node, int tagcodes[], const char *indent, const char *arg)
 {
     // find last
-    NEDElement *lastWithTag = NULL;
+    NEDElement *lastWithTag = nullptr;
     for (NEDElement *child1=node->getFirstChild(); child1; child1=child1->getNextSibling())
         if (isInVector(child1->getTagCode(), tagcodes))
              lastWithTag = child1;
@@ -181,7 +181,7 @@ void NED2Generator::printExpression(NEDElement *node, const char *attr, const ch
     {
         for (ExpressionElement *expr=(ExpressionElement *)node->getFirstChildWithTag(NED_EXPRESSION); expr; expr=expr->getNextExpressionSibling())
             if (!opp_isempty(expr->getTarget()) && !strcmp(expr->getTarget(),attr))
-                generateNedItem(expr, indent, false, NULL);
+                generateNedItem(expr, indent, false, nullptr);
     }
 }
 
@@ -200,7 +200,7 @@ void NED2Generator::printOptVector(NEDElement *node, const char *attr, const cha
 static const char *getComment(NEDElement *node, const char *locId)
 {
     CommentElement *comment = (CommentElement *)node->getFirstChildWithAttribute(NED_COMMENT, "locid", locId);
-    return (comment && !opp_isempty(comment->getContent())) ? comment->getContent() : NULL;
+    return (comment && !opp_isempty(comment->getContent())) ? comment->getContent() : nullptr;
 }
 
 static std::string formatComment(const char *comment, const char *indent, const char *defaultValue)
@@ -253,19 +253,19 @@ std::string NED2Generator::getBannerComment(NEDElement *node, const char *indent
 std::string NED2Generator::getRightComment(NEDElement *node)
 {
     const char *comment = getComment(node, "right");
-    return formatComment(comment, NULL, "\n");
+    return formatComment(comment, nullptr, "\n");
 }
 
 std::string NED2Generator::getInlineRightComment(NEDElement *node)
 {
     const char *comment = getComment(node, "right");
-    return formatComment(comment, NULL, " ");
+    return formatComment(comment, nullptr, " ");
 }
 
 std::string NED2Generator::getTrailingComment(NEDElement *node)
 {
     const char *comment = getComment(node, "trailing");
-    return formatComment(comment, NULL, "\n");
+    return formatComment(comment, nullptr, "\n");
 }
 
 //---------------------------------------------------------------------------
@@ -403,7 +403,7 @@ void NED2Generator::doParameters(ParametersElement *node, const char *indent, bo
     // inside a connection, everything has to be on one line except it'd be too long
     // (rule of thumb: if it contains a param group or "parameters:" keyword is explicit)
     bool inlineParams = node->getIsImplicit() && node->getParent() && node->getParent()->getTagCode()==NED_CONNECTION;
-    generateChildren(node, inlineParams ? NULL : node->getIsImplicit() ? indent : increaseIndent(indent));
+    generateChildren(node, inlineParams ? nullptr : node->getIsImplicit() ? indent : increaseIndent(indent));
 }
 
 void NED2Generator::doParam(ParamElement *node, const char *indent, bool islast, const char *)
@@ -560,7 +560,7 @@ void NED2Generator::doSubmodule(SubmoduleElement *node, const char *indent, bool
     if (condition)
     {
         OUT << " ";
-        doCondition(condition, NULL, true, NULL);
+        doCondition(condition, nullptr, true, nullptr);
     }
 
     if (!node->getFirstParametersChild() && !node->getFirstGatesChild())
@@ -729,7 +729,7 @@ int NED2Generator::getOperatorPrecedence(const char *op, int args)
     {
         // %left '?' ':'
         if (!strcmp(op,"?:")) return 1;
-        INTERNAL_ERROR1(NULL, "getOperatorPrecedence(): unknown tertiary operator '%s'", op);
+        INTERNAL_ERROR1(nullptr, "getOperatorPrecedence(): unknown tertiary operator '%s'", op);
     }
 
     if (args==2)
@@ -771,7 +771,7 @@ int NED2Generator::getOperatorPrecedence(const char *op, int args)
 
         // %right EXP
         if (!strcmp(op,"^"))  return 12;
-        INTERNAL_ERROR1(NULL, "getOperatorPrecedence(): unknown binary operator '%s'", op);
+        INTERNAL_ERROR1(nullptr, "getOperatorPrecedence(): unknown binary operator '%s'", op);
     }
 
     if (args==1)
@@ -780,10 +780,10 @@ int NED2Generator::getOperatorPrecedence(const char *op, int args)
         if (!strcmp(op,"-"))  return 13;
         if (!strcmp(op,"!"))  return 13;
         if (!strcmp(op,"~"))  return 13;
-        INTERNAL_ERROR1(NULL, "getOperatorPrecedence(): unknown unary operator '%s'", op);
+        INTERNAL_ERROR1(nullptr, "getOperatorPrecedence(): unknown unary operator '%s'", op);
     }
 
-    INTERNAL_ERROR1(NULL, "getOperatorPrecedence(): bad number of args: %d", args);
+    INTERNAL_ERROR1(nullptr, "getOperatorPrecedence(): bad number of args: %d", args);
     return -1;
 }
 
@@ -797,14 +797,14 @@ bool NED2Generator::isOperatorLeftAssoc(const char *op)
 void NED2Generator::doOperator(OperatorElement *node, const char *indent, bool islast, const char *)
 {
     NEDElement *op1 = node->getFirstChild();
-    NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
-    NEDElement *op3 = op2 ? op2->getNextSibling() : NULL;
+    NEDElement *op2 = op1 ? op1->getNextSibling() : nullptr;
+    NEDElement *op3 = op2 ? op2->getNextSibling() : nullptr;
 
     if (!op2)
     {
         // unary
         OUT << node->getName();
-        generateNedItem(op1,indent,false,NULL);
+        generateNedItem(op1,indent,false,nullptr);
     }
     else if (!op3)
     {
@@ -832,12 +832,12 @@ void NED2Generator::doOperator(OperatorElement *node, const char *indent, bool i
         }
 
         if (needsParen) OUT << "(";
-        generateNedItem(op1,indent,false,NULL);
+        generateNedItem(op1,indent,false,nullptr);
         if (spacious)
             OUT << " " << node->getName() << " ";
         else
             OUT << node->getName();
-        generateNedItem(op2,indent,false,NULL);
+        generateNedItem(op2,indent,false,nullptr);
         if (needsParen) OUT << ")";
     }
     else
@@ -847,11 +847,11 @@ void NED2Generator::doOperator(OperatorElement *node, const char *indent, bool i
         bool spacious = true; // TBD can be refined
 
         if (needsParen) OUT << "(";
-        generateNedItem(op1,indent,false,NULL);
+        generateNedItem(op1,indent,false,nullptr);
         OUT << (spacious ? " ? " : "?");
-        generateNedItem(op2,indent,false,NULL);
+        generateNedItem(op2,indent,false,nullptr);
         OUT << (spacious ? " : " : ":");
-        generateNedItem(op3,indent,false,NULL);
+        generateNedItem(op3,indent,false,nullptr);
         if (needsParen) OUT << ")";
     }
 }
@@ -868,7 +868,7 @@ void NED2Generator::doFunction(FunctionElement *node, const char *indent, bool i
     {
         if (child != node->getFirstChild())
             OUT << ", ";
-        generateNedItem(child, indent, false, NULL);
+        generateNedItem(child, indent, false, nullptr);
     }
     OUT << ")";
 }
@@ -879,7 +879,7 @@ void NED2Generator::doIdent(IdentElement *node, const char *indent, bool islast,
         OUT << node->getModule();
         if (node->getFirstChild()) {
             OUT << "[";
-            generateChildren(node,indent,NULL);
+            generateChildren(node,indent,nullptr);
             OUT << "]";
         }
         OUT << ".";

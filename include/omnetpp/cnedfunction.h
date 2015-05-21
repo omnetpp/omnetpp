@@ -76,7 +76,7 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
      *    "string sprintf(format, ...)"
      *    "any max(...)"
      */
-    cNEDFunction(NEDFunction f, const char *signature, const char *category=NULL, const char *description=NULL);
+    cNEDFunction(NEDFunction f, const char *signature, const char *category=nullptr, const char *description=nullptr);
 
     /**
      * Destructor.

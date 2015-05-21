@@ -51,7 +51,7 @@ cNEDLoader *cNEDLoader::getInstance()
 void cNEDLoader::clear()
 {
     delete inst;
-    inst = NULL;
+    inst = nullptr;
 }
 
 void cNEDLoader::registerNedType(const char *qname, bool isInnerType, NEDElement *node)
@@ -61,7 +61,7 @@ void cNEDLoader::registerNedType(const char *qname, bool isInnerType, NEDElement
     nedTypes[qname] = decl;
 
     // if module or channel, register corresponding object which can be used to instantiate it
-    cComponentType *type = NULL;
+    cComponentType *type = nullptr;
     if (node->getTagCode()==NED_SIMPLE_MODULE || node->getTagCode()==NED_COMPOUND_MODULE)
         type = new cDynamicModuleType(qname);
     else if (node->getTagCode()==NED_CHANNEL)

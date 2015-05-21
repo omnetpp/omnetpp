@@ -24,13 +24,13 @@ MatchableObjectAdapter::MatchableObjectAdapter(DefaultAttribute attr, cObject *o
 {
     this->attr = attr;
     this->obj = obj;
-    desc = NULL;
+    desc = nullptr;
 }
 
 void MatchableObjectAdapter::setObject(cObject *obj)
 {
     this->obj = obj;
-    desc = NULL;
+    desc = nullptr;
 }
 
 const char *MatchableObjectAdapter::getAsString() const
@@ -80,7 +80,7 @@ const char *MatchableObjectAdapter::getAsString(const char *attribute) const
     {
         desc = obj->getDescriptor();
         if (!desc)
-            return NULL;
+            return nullptr;
     }
 
 /*FIXME TBD
@@ -101,7 +101,7 @@ const char *MatchableObjectAdapter::getAsString(const char *attribute) const
     int index;
     bool found = findDescriptorField(desc, attribute, fieldId, index);
     if (!found)
-        return NULL;
+        return nullptr;
 
     tmp = desc->getFieldValueAsString(obj, fieldId, index);
     return tmp.c_str();

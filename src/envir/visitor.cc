@@ -88,8 +88,8 @@ void cCollectObjectsVisitor::visit(cObject *obj)
 cFilteredCollectObjectsVisitor::cFilteredCollectObjectsVisitor()
 {
     category = ~0U;
-    classnamePattern = NULL;
-    objFullpathPattern = NULL;
+    classnamePattern = nullptr;
+    objFullpathPattern = nullptr;
 }
 
 cFilteredCollectObjectsVisitor::~cFilteredCollectObjectsVisitor()

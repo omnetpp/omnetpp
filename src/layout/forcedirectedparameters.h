@@ -149,7 +149,7 @@ class WallBody : public Body {
         bool horizontal;
 
     public:
-		WallBody(bool horizontal, double position, bool fixed = false) : Body(NULL) {
+		WallBody(bool horizontal, double position, bool fixed = false) : Body(nullptr) {
             this->horizontal = horizontal;
 
             if (horizontal)
@@ -633,10 +633,10 @@ class LeastExpandedSpring : public AbstractForceProvider {
  */
 class BasePlaneSpring : public AbstractSpring {
     public:
-        BasePlaneSpring(IBody *body) : AbstractSpring(body, NULL) {
+        BasePlaneSpring(IBody *body) : AbstractSpring(body, nullptr) {
         }
 
-        BasePlaneSpring(IBody *body, double springCoefficient, double reposeLength) : AbstractSpring(body, NULL, springCoefficient, reposeLength, -1) {
+        BasePlaneSpring(IBody *body, double springCoefficient, double reposeLength) : AbstractSpring(body, nullptr, springCoefficient, reposeLength, -1) {
         }
 
         virtual double getSpringCoefficient() {
