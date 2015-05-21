@@ -780,7 +780,7 @@ void EnvirBase::dumpComponentList(const char *category)
             const char *u = units[i];
             const char *bu = UnitConversion::getBaseUnit(u);
             std::cout << "  " << u << "\t" << UnitConversion::getLongName(u);
-            if (opp_strcmp(u,bu)!=0)
+            if (OPP::opp_strcmp(u,bu)!=0)
                 std::cout << "\t" << UnitConversion::convertUnit(1,u,bu) << bu;
             std::cout << "\n";
         }
@@ -1226,12 +1226,12 @@ void EnvirBase::readParameter(cPar *par)
     }
 */
 
-    if (opp_strcmp(str, "default")==0)
+    if (OPP::opp_strcmp(str, "default")==0)
     {
         ASSERT(par->containsValue());  // cConfiguration should not return "=default" lines for params that have no default value
         par->acceptDefault();
     }
-    else if (opp_strcmp(str, "ask")==0)
+    else if (OPP::opp_strcmp(str, "ask")==0)
     {
         askParameter(par, false);
     }

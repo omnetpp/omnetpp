@@ -53,7 +53,7 @@ void cStringPool::dump() const
 const char *cStringPool::get(const char *s)
 {
     if (!cStaticFlag::isSet())
-        {fprintf(stderr, "ERROR: cStringPool::get(\"%s\") invoked outside main() -- please do not use cStringPool from global objects", s); return opp_strdup(s);}
+        {fprintf(stderr, "ERROR: cStringPool::get(\"%s\") invoked outside main() -- please do not use cStringPool from global objects", s); return OPP::opp_strdup(s);}
     if (!s)
         return nullptr;
 

@@ -48,7 +48,7 @@ void RunData::initRun()
 
         std::vector<const char *> keys1 = cfg->getPredefinedVariableNames();
         for (int i=0; i<(int)keys1.size(); i++)
-            if (opp_strcmp(keys1[i], CFGVAR_RUNID)!=0) // skip runId
+            if (OPP::opp_strcmp(keys1[i], CFGVAR_RUNID)!=0) // skip runId
                 attributes[keys1[i]] = cfg->getVariable(keys1[i]);
 
         std::vector<const char *> keys2 = cfg->getIterationVariableNames();

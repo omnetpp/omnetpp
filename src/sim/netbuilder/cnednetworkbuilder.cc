@@ -758,7 +758,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
     ParametersElement *paramsNode = submod->getFirstParametersChild();
     if (paramsNode)
         for (PropertyElement *prop = paramsNode->getFirstPropertyChild(); prop!=nullptr; prop = prop->getNextPropertySibling())
-            if (opp_strcmp(prop->getName(), "dynamic")==0 && NEDElementUtil::propertyAsBool(prop)==true)
+            if (OPP::opp_strcmp(prop->getName(), "dynamic")==0 && NEDElementUtil::propertyAsBool(prop)==true)
                 return;
 
     // handle conditional submodule

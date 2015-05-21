@@ -230,7 +230,7 @@ void cModule::updateFullName()
     }
     if (isVector())
     {
-        fullName = new char[opp_strlen(getName())+10];
+        fullName = new char[OPP::opp_strlen(getName())+10];
         strcpy(fullName, getName());
         opp_appendindex(fullName, getIndex());
     }
@@ -269,7 +269,7 @@ void cModule::updateFullPathRec()
 {
     delete [] fullPath;
     fullPath = nullptr; // for the next getFullPath() call
-    fullPath = opp_strdup(getFullPath().c_str());
+    fullPath = OPP::opp_strdup(getFullPath().c_str());
 
     for (cModule *child = firstSubmodule; child; child = child->nextSibling)
         child->updateFullPathRec();

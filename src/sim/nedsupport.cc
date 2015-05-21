@@ -91,7 +91,7 @@ std::string ParameterRef::str(std::string args[], int numargs)
 
 SiblingModuleParameterRef::SiblingModuleParameterRef(const char *moduleName, const char *paramName, bool ofParent, bool withModuleIndex)
 {
-    ASSERT(!opp_isempty(moduleName) && !opp_isempty(paramName) && opp_strcmp(moduleName,"this")!=0);
+    ASSERT(!opp_isempty(moduleName) && !opp_isempty(paramName) && OPP::opp_strcmp(moduleName,"this")!=0);
     this->moduleName = moduleName;
     this->paramName = paramName;
     this->ofParent = ofParent;

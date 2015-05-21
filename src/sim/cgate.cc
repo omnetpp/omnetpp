@@ -83,7 +83,7 @@ cGate::Name::Name(const char *name, Type type)
 
 bool cGate::Name::operator<(const Name& other) const
 {
-    int d = opp_strcmp(name.c_str(), other.name.c_str());
+    int d = OPP::opp_strcmp(name.c_str(), other.name.c_str());
     if (d<0)
         return true;
     else if (d>0)
@@ -147,7 +147,7 @@ const char *cGate::getFullName() const
     // otherwise, produce fullname in a temp buffer, and return its stringpooled copy
     // note: this implementation assumes that this method will be called infrequently
     // (ie. we reproduce the string every time).
-    if (opp_strlen(getName()) > 100)
+    if (OPP::opp_strlen(getName()) > 100)
         throw cRuntimeError(this, "getFullName(): gate name too long, should be under 100 characters");
 
     static char tmp[128];

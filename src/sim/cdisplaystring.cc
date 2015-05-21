@@ -45,7 +45,7 @@ cDisplayString::cDisplayString()
 
 cDisplayString::cDisplayString(const char *displaystr)
 {
-    assembledString = opp_strdup(displaystr);
+    assembledString = OPP::opp_strdup(displaystr);
     buffer = nullptr;
     bufferEnd = nullptr;
     tags = nullptr;
@@ -133,13 +133,13 @@ void cDisplayString::doParse(const char *displaystr)
     // if it's the same, nothing to do
     if (assembledStringValid)
         assemble();
-    if (!opp_strcmp(assembledString,displaystr))
+    if (!OPP::opp_strcmp(assembledString,displaystr))
         return;
 
     // parse and store new string
     delete [] assembledString;
     clearTags();
-    assembledString = opp_strdup(displaystr);
+    assembledString = OPP::opp_strdup(displaystr);
     doParse();
 }
 
@@ -266,13 +266,13 @@ bool cDisplayString::doSetTagArg(int tagindex, int index, const char *value)
 
     // if it's the same, nothing to do
     char *&slot = tag.args[index];
-    if (!opp_strcmp(slot,value))
+    if (!OPP::opp_strcmp(slot,value))
         return true;
 
     // set value
     if (slot && !pointsIntoBuffer(slot))
         delete [] slot;
-    slot = opp_strdup(value);
+    slot = OPP::opp_strdup(value);
 
     // get rid of possible empty trailing args, throw out tag if it became empty
     while (tag.numArgs>0 && tag.args[tag.numArgs-1]==nullptr)
@@ -322,7 +322,7 @@ int cDisplayString::doInsertTag(const char *tagname, int atindex)
     numTags++;
 
     // fill in new tag
-    tags[atindex].name = opp_strdup(tagname);
+    tags[atindex].name = OPP::opp_strdup(tagname);
     tags[atindex].numArgs = 0;
     for (int i=0; i<MAXARGS; i++) tags[atindex].args[i] = nullptr;
 
@@ -396,8 +396,8 @@ void cDisplayString::doParse()
     if (assembledString==nullptr)
         return;
 
-    buffer = new char[opp_strlen(assembledString)+1];
-    bufferEnd = buffer + opp_strlen(assembledString);
+    buffer = new char[OPP::opp_strlen(assembledString)+1];
+    bufferEnd = buffer + OPP::opp_strlen(assembledString);
 
     // count tags (#(';')+1) & allocate tags[] array
     int n = 1;
@@ -421,7 +421,7 @@ void cDisplayString::doParse()
         {
             // allow escaping display string special chars (=,;) with backslash.
             // No need to deal with "\t", "\n" etc here, since they already got
-            // interpreted by opp_parsequotedstr().
+            // interpreted by OPP::opp_parsequotedstr().
             *d = *++s;
         }
         else if (*s==';')
@@ -479,9 +479,9 @@ void cDisplayString::assemble() const
     int size = 0;
     for (int t0=0; t0<numTags; t0++)
     {
-        size += opp_strlen(tags[t0].name)+2;
+        size += OPP::opp_strlen(tags[t0].name)+2;
         for (int i=0; i<tags[t0].numArgs; i++)
-            size += opp_strlen(tags[t0].args[i])+1;
+            size += OPP::opp_strlen(tags[t0].args[i])+1;
     }
     size = 2*size+1;  // 2* for worst case if every char has to be escaped
 
@@ -514,7 +514,7 @@ void cDisplayString::strcatescaped(char *d, const char *s)
     d += strlen(d);
     while (*s)
     {
-        // quoting \t, \n etc is the job of opp_quotestr()
+        // quoting \t, \n etc is the job of OPP::opp_quotestr()
         if (*s==';' || *s==',' || *s=='=')
             *d++ = '\\';
         *d++ = *s++;
