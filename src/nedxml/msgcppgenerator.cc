@@ -960,9 +960,9 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         H << " *   public:\n";
         if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT) {
             if (info.keyword == "message" || info.keyword == "packet") {
-                H << " *     " << info.realmsgclass << "(const char *name=NULL, int kind=0) : " << info.msgclass << "(name,kind) {}\n";
+                H << " *     " << info.realmsgclass << "(const char *name=nullptr, int kind=0) : " << info.msgclass << "(name,kind) {}\n";
             } else {
-                H << " *     " << info.realmsgclass << "(const char *name=NULL) : " << info.msgclass << "(name) {}\n";
+                H << " *     " << info.realmsgclass << "(const char *name=nullptr) : " << info.msgclass << "(name) {}\n";
             }
         } else {
             H << " *     " << info.realmsgclass << "() : " << info.msgclass << "() {}\n";
@@ -1029,9 +1029,9 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     }
     if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT) {
         if (info.keyword == "message" || info.keyword == "packet") {
-            H << "    " << info.msgclass << "(const char *name=NULL, int kind=0);\n";
+            H << "    " << info.msgclass << "(const char *name=nullptr, int kind=0);\n";
         } else {
-            H << "    " << info.msgclass << "(const char *name=NULL);\n";
+            H << "    " << info.msgclass << "(const char *name=nullptr);\n";
         }
     } else {
         H << "    " << info.msgclass << "();\n";
@@ -1227,7 +1227,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 }
             } else if (it->fisarray && it->farraysize.empty()) {
                 CC << "    delete [] this->" << it->var << ";\n";
-                CC << "    this->" << it->var << " = (other." << it->varsize << "==0) ? NULL : new " << it->datatype << "[other." << it->varsize << "];\n";
+                CC << "    this->" << it->var << " = (other." << it->varsize << "==0) ? nullptr : new " << it->datatype << "[other." << it->varsize << "];\n";
                 CC << "    " << it->varsize << " = other." << it->varsize << ";\n";
                 CC << "    for (" << it->fsizetype << " i=0; i<" << it->varsize << "; i++)\n";
                 if (classType == COWNEDOBJECT) {
@@ -1341,7 +1341,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
             } else if (it->fisarray && it->farraysize.empty()) {
                 CC << "void " << info.msgclass << "::" << it->alloc << "(" << it->fsizetype << " size)\n";
                 CC << "{\n";
-                CC << "    " << it->datatype << " *" << it->var << "2 = (size==0) ? NULL : new " << it->datatype << "[size];\n";
+                CC << "    " << it->datatype << " *" << it->var << "2 = (size==0) ? nullptr : new " << it->datatype << "[size];\n";
                 CC << "    " << it->fsizetype << " sz = " << it->varsize << " < size ? " << it->varsize << " : size;\n";
                 CC << "    for (" << it->fsizetype << " i=0; i<sz; i++)\n";
                 CC << "        " << it->var << "2[i] = this->" << it->var << "[i];\n";
@@ -1518,7 +1518,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     std::string qualifiedrealmsgclass = prefixWithNamespace(info.realmsgclass);
     CC << "" << info.msgdescclass << "::" << info.msgdescclass << "() : " OPP_PREFIX "cClassDescriptor(\"" << qualifiedrealmsgclass << "\", \"" << info.msgbaseclass << "\")\n";
     CC << "{\n";
-    CC << "    propertynames = NULL;\n";
+    CC << "    propertynames = nullptr;\n";
     CC << "}\n";
     CC << "\n";
 
@@ -1531,7 +1531,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     // doesSupport()
     CC << "bool " << info.msgdescclass << "::doesSupport(" OPP_PREFIX "cObject *obj) const\n";
     CC << "{\n";
-    CC << "    return dynamic_cast<" << info.msgclass << " *>(obj)!=NULL;\n";
+    CC << "    return dynamic_cast<" << info.msgclass << " *>(obj)!=nullptr;\n";
     CC << "}\n";
     CC << "\n";
 
@@ -1543,9 +1543,9 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     for (Properties::const_iterator key = info.props.begin(); key != info.props.end(); ++key) {
         CC << opp_quotestr(key->first.c_str()) << ", ";
     }
-    CC << " NULL };\n";
+    CC << " nullptr };\n";
     CC << "        " OPP_PREFIX "cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
-    CC << "        const char **basenames = basedesc ? basedesc->getPropertyNames() : NULL;\n";
+    CC << "        const char **basenames = basedesc ? basedesc->getPropertyNames() : nullptr;\n";
     CC << "        propertynames = mergeLists(basenames, names);\n";
     CC << "    }\n";
     CC << "    return propertynames;\n";
@@ -1559,7 +1559,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
         CC << "    if (!strcmp(propertyname,"<< opp_quotestr(key->first.c_str()) << ")) return " << opp_quotestr(key->second.c_str()) << ";\n";
     }
     CC << "    " OPP_PREFIX "cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
-    CC << "    return basedesc ? basedesc->getProperty(propertyname) : NULL;\n";
+    CC << "    return basedesc ? basedesc->getProperty(propertyname) : nullptr;\n";
     CC << "}\n";
     CC << "\n";
 
@@ -1629,7 +1629,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
     if (fieldcount == 0) {
-        CC << "    return NULL;\n";
+        CC << "    return nullptr;\n";
     } else {
         CC << "    static const char *fieldNames[] = {\n";
         for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
@@ -1637,7 +1637,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
             CC << "        \"" << it->fname << "\",\n";
         }
         CC << "    };\n";
-        CC << "    return (field>=0 && field<" << fieldcount << ") ? fieldNames[field] : NULL;\n";
+        CC << "    return (field>=0 && field<" << fieldcount << ") ? fieldNames[field] : nullptr;\n";
     }
     CC << "}\n";
     CC << "\n";
@@ -1669,7 +1669,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
     if (fieldcount == 0) {
-        CC << "    return NULL;\n";
+        CC << "    return nullptr;\n";
     } else {
         CC << "    static const char *fieldTypeStrings[] = {\n";
         for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
@@ -1677,7 +1677,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
             CC << "        \"" << it->ftype << "\",\n"; // note: NOT $fieldtypeqname! that's getFieldStructName()
         }
         CC << "    };\n";
-        CC << "    return (field>=0 && field<" << fieldcount << ") ? fieldTypeStrings[field] : NULL;\n";
+        CC << "    return (field>=0 && field<" << fieldcount << ") ? fieldTypeStrings[field] : nullptr;\n";
     }
     CC << "}\n";
     CC << "\n";
@@ -1701,12 +1701,12 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
             for (Properties::const_iterator it = ref.begin(); it != ref.end(); ++it) {
                 CC << opp_quotestr(it->first.c_str()) << ", ";
             }
-            CC << " NULL };\n";
+            CC << " nullptr };\n";
             CC << "            return names;\n";
             CC << "        }\n";
         }
     }
-    CC << "        default: return NULL;\n";
+    CC << "        default: return nullptr;\n";
     CC << "    }\n";
     CC << "}\n";
     CC << "\n";
@@ -1733,11 +1733,11 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
                 std::string prop = opp_quotestr(it->second.c_str());
                 CC << "            if (!strcmp(propertyname,\"" << it->first << "\")) return " << prop << ";\n";
             }
-            CC << "            return NULL;\n";
+            CC << "            return nullptr;\n";
         }
     }
 
-    CC << "        default: return NULL;\n";
+    CC << "        default: return nullptr;\n";
     CC << "    }\n";
     CC << "}\n";
     CC << "\n";
@@ -1907,7 +1907,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
     if (fieldcount == 0) {
-        CC << "    return NULL;\n";
+        CC << "    return nullptr;\n";
     } else {
         CC << "    switch (field) {\n";
         for (size_t i=0; i < fieldcount; i++)
@@ -1918,7 +1918,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
                 CC << "        case " << i << ": return " OPP_PREFIX "opp_typename(typeid(" << field.ftype << "));\n";
             }
         }
-        CC << "        default: return NULL;\n";
+        CC << "        default: return nullptr;\n";
         CC << "    };\n";
     }
     CC << "}\n";
@@ -1966,7 +1966,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
             }
         }
     }
-    CC << "        default: return NULL;\n";
+    CC << "        default: return nullptr;\n";
     CC << "    }\n";
     CC << "}\n";
     CC << "\n";

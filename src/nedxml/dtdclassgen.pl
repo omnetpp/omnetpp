@@ -466,7 +466,7 @@ foreach $element (@elements)
         if ($attval eq "#IMPLIED") {
             print CC "        case $i: return \"\";\n";
         } elsif ($attval eq "#REQUIRED") {
-            print CC "        case $i: return NULL;\n";
+            print CC "        case $i: return nullptr;\n";
         } else {
             print CC "        case $i: return $attval;\n";
         }

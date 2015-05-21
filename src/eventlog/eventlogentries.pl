@@ -62,7 +62,7 @@ while (<FILE>)
       if ($fieldType eq "string")
       {
          $fieldPrintfType = "%s";
-         $fieldDefault = "NULL";
+         $fieldDefault = "nullptr";
       }
       elsif ($fieldType eq "bool")
       {
@@ -261,7 +261,7 @@ foreach $class (@classes)
    print ENTRIES_CC_FILE "{\n";
    if ($class->{SUPER} eq "EventLogTokenBasedEntry")
    {
-      print ENTRIES_CC_FILE "    this->event = NULL;\n";
+      print ENTRIES_CC_FILE "    this->event = nullptr;\n";
    }
    foreach $field (@{ $class->{FIELDS} })
    {
@@ -434,7 +434,7 @@ foreach $class (@classes)
    print ENTRIES_CC_FILE "    else\n";
    if ($class->{SUPER} eq "EventLogTokenBasedEntry")
    {
-      print ENTRIES_CC_FILE "        return NULL;\n";
+      print ENTRIES_CC_FILE "        return nullptr;\n";
    }
    else
    {
@@ -472,7 +472,7 @@ USING_NAMESPACE
 EventLogTokenBasedEntry *EventLogEntryFactory::parseEntry(Event *event, int entryIndex, char **tokens, int numTokens)
 {
     if (numTokens < 1)
-        return NULL;
+        return nullptr;
 
     char *code = tokens[0];
     EventLogTokenBasedEntry *entry;
@@ -498,7 +498,7 @@ foreach $class (@classes)
    }
 }
 print FACTORY_CC_FILE "    else\n";
-print FACTORY_CC_FILE "        return NULL;\n\n";
+print FACTORY_CC_FILE "        return nullptr;\n\n";
 print FACTORY_CC_FILE "    entry->parse(tokens, numTokens);\n";
 print FACTORY_CC_FILE "    return entry;\n";
 print FACTORY_CC_FILE "}\n";
