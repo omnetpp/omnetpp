@@ -1491,23 +1491,23 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    " << info.msgdescclass << "();\n";
     CC << "    virtual ~" << info.msgdescclass << "();\n";
     CC << "\n";
-    CC << "    virtual bool doesSupport(" OPP_PREFIX "cObject *obj) const;\n";
-    CC << "    virtual const char **getPropertyNames() const;\n";
-    CC << "    virtual const char *getProperty(const char *propertyname) const;\n";
-    CC << "    virtual int getFieldCount() const;\n";
-    CC << "    virtual const char *getFieldName(int field) const;\n";
-    CC << "    virtual int findField(const char *fieldName) const;\n";
-    CC << "    virtual unsigned int getFieldTypeFlags(int field) const;\n";
-    CC << "    virtual const char *getFieldTypeString(int field) const;\n";
-    CC << "    virtual const char **getFieldPropertyNames(int field) const;\n";
-    CC << "    virtual const char *getFieldProperty(int field, const char *propertyname) const;\n";
-    CC << "    virtual int getFieldArraySize(void *object, int field) const;\n";
+    CC << "    virtual bool doesSupport(" OPP_PREFIX "cObject *obj) const override;\n";
+    CC << "    virtual const char **getPropertyNames() const override;\n";
+    CC << "    virtual const char *getProperty(const char *propertyname) const override;\n";
+    CC << "    virtual int getFieldCount() const override;\n";
+    CC << "    virtual const char *getFieldName(int field) const override;\n";
+    CC << "    virtual int findField(const char *fieldName) const override;\n";
+    CC << "    virtual unsigned int getFieldTypeFlags(int field) const override;\n";
+    CC << "    virtual const char *getFieldTypeString(int field) const override;\n";
+    CC << "    virtual const char **getFieldPropertyNames(int field) const override;\n";
+    CC << "    virtual const char *getFieldProperty(int field, const char *propertyname) const override;\n";
+    CC << "    virtual int getFieldArraySize(void *object, int field) const override;\n";
     CC << "\n";
-    CC << "    virtual std::string getFieldValueAsString(void *object, int field, int i) const;\n";
-    CC << "    virtual bool setFieldValueAsString(void *object, int field, int i, const char *value) const;\n";
+    CC << "    virtual std::string getFieldValueAsString(void *object, int field, int i) const override;\n";
+    CC << "    virtual bool setFieldValueAsString(void *object, int field, int i, const char *value) const override;\n";
     CC << "\n";
-    CC << "    virtual const char *getFieldStructName(int field) const;\n";
-    CC << "    virtual void *getFieldStructValuePointer(void *object, int field, int i) const;\n";
+    CC << "    virtual const char *getFieldStructName(int field) const override;\n";
+    CC << "    virtual void *getFieldStructValuePointer(void *object, int field, int i) const override;\n";
     CC << "};\n\n";
 
     // register class

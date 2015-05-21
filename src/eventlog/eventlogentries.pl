@@ -200,13 +200,13 @@ class EVENTLOG_API $class->{NAME} : public $class->{SUPER}
    print ENTRIES_H_FILE "
 
    public:
-      virtual void parse(char **tokens, int numTokens);
-      virtual void print(FILE *file);
-      virtual int getClassIndex() { return $index; }
-      virtual const char *getAsString() const { return \"$class->{CODE}\"; }
-      virtual const std::vector<const char *> getAttributeNames() const;
-      virtual const char *getAsString(const char *attribute) const; // BEWARE: Returns pointer into a static buffer which gets overwritten with each call!
-      virtual const char *getClassName() { return \"$class->{NAME}\"; }
+      virtual void parse(char **tokens, int numTokens) override;
+      virtual void print(FILE *file) override;
+      virtual int getClassIndex() override { return $index; }
+      virtual const char *getAsString() const override { return \"$class->{CODE}\"; }
+      virtual const std::vector<const char *> getAttributeNames() const override;
+      virtual const char *getAsString(const char *attribute) const override; // BEWARE: Returns pointer into a static buffer which gets overwritten with each call!
+      virtual const char *getClassName() override { return \"$class->{NAME}\"; }
 };
 ";
 

@@ -338,16 +338,16 @@ foreach $element (@elements)
     print H "\n";
     print H "    /** \@name Redefined NEDElement methods, incl. generic access to attributes */\n";
     print H "    //\@{\n";
-    print H "    virtual const char *getTagName() const {return \"$element\";}\n";
-    print H "    virtual int getTagCode() const {return $enumname{$element};}\n";
-    print H "    virtual int getNumAttributes() const;\n";
-    print H "    virtual const char *getAttributeName(int k) const;\n";
-    print H "    virtual const char *getAttribute(int k) const;\n";
-    print H "    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk\n";
-    print H "    virtual void setAttribute(int k, const char *val);\n";
-    print H "    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto\n";
-    print H "    virtual const char *getAttributeDefault(int k) const;\n";
-    print H "    virtual $elementclass *dup() const;\n";
+    print H "    virtual const char *getTagName() const override {return \"$element\";}\n";
+    print H "    virtual int getTagCode() const override {return $enumname{$element};}\n";
+    print H "    virtual int getNumAttributes() const override;\n";
+    print H "    virtual const char *getAttributeName(int k) const override;\n";
+    print H "    virtual const char *getAttribute(int k) const override;\n";
+    print H "    virtual const char *getAttribute(const char *name) const override {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk\n";
+    print H "    virtual void setAttribute(int k, const char *val) override;\n";
+    print H "    virtual void setAttribute(const char *name, const char *val) override {NEDElement::setAttribute(name, val);} // ditto\n";
+    print H "    virtual const char *getAttributeDefault(int k) const override;\n";
+    print H "    virtual $elementclass *dup() const override;\n";
     print H "    //\@}\n";
 
     print H "\n";
@@ -674,7 +674,7 @@ print DTDVAL_H "    /** \@name Validation functions */\n";
 print DTDVAL_H "    //\@{\n";
 foreach $element (@elements)
 {
-    print DTDVAL_H "    virtual void validateElement($elementclass{$element} *node);\n";
+    print DTDVAL_H "    virtual void validateElement($elementclass{$element} *node) override;\n";
 }
 print DTDVAL_H "    //\@}\n";
 print DTDVAL_H "};\n\nNAMESPACE_END\n\n";
