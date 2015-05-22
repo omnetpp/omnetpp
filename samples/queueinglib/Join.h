@@ -27,8 +27,8 @@ class QUEUEING_API Join : public cSimpleModule
         Join();
         ~Join();
     protected:
-        virtual void initialize();
-        virtual void handleMessage(cMessage *msg);
+        virtual void initialize() override;
+        virtual void handleMessage(cMessage *msg) override;
 };
 
 }; // namespace

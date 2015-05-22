@@ -48,9 +48,9 @@ class QUEUEING_API Job: public Job_Base
     public:
         /**
          * Creates a job with the given name, message kind, and jobList. If
-         * jobList==NULL, the default one (or none if none exist) will be chosen.
+         * jobList==nullptr, the default one (or none if none exist) will be chosen.
          */
-        Job(const char *name=NULL, int kind=0, JobList *table=NULL);
+        Job(const char *name=nullptr, int kind=0, JobList *table=nullptr);
 
         /** Copy constructor */
         Job(const Job& job);
@@ -59,14 +59,14 @@ class QUEUEING_API Job: public Job_Base
         virtual ~Job();
 
         /** Duplicates this job */
-        virtual Job *dup() const {return new Job(*this);}
+        virtual Job *dup() const override {return new Job(*this);}
 
         /** Assignment operator. Does not affect parent, children and jobList. */
         Job& operator=(const Job& job);
 
         /** @name Parent-child relationships */
         //@{
-        /** Returns the parent job. Returns NULL if there's no parent or it no longer exists. */
+        /** Returns the parent job. Returns nullptr if there's no parent or it no longer exists. */
         virtual Job *getParent();
 
         /** Returns the number of children. Deleted children are automatically removed from this list. */

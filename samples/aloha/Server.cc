@@ -17,7 +17,7 @@ Define_Module(Server);
 
 Server::Server()
 {
-    endRxEvent = NULL;
+    endRxEvent = nullptr;
 }
 
 Server::~Server()

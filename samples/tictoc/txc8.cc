@@ -33,15 +33,15 @@ class Tic8 : public cSimpleModule
     virtual ~Tic8();
 
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 Define_Module(Tic8);
 
 Tic8::Tic8()
 {
-    timeoutEvent = NULL;
+    timeoutEvent = nullptr;
 }
 
 Tic8::~Tic8()
@@ -95,7 +95,7 @@ void Tic8::handleMessage(cMessage *msg)
 class Toc8 : public cSimpleModule
 {
   protected:
-    virtual void handleMessage(cMessage *msg);
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 Define_Module(Toc8);

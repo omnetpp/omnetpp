@@ -16,8 +16,8 @@ Define_Module(ResourceBasedQueue);
 
 ResourceBasedQueue::ResourceBasedQueue()
 {
-    jobServiced = NULL;
-    endServiceMsg = NULL;
+    jobServiced = nullptr;
+    endServiceMsg = nullptr;
     resourceAllocated = false;
 }
 
@@ -43,7 +43,7 @@ void ResourceBasedQueue::initialize()
 
     resourceAmount = par("resourceAmount");
     resourcePriority = par("resourcePriority");
-    resourcePool = NULL;
+    resourcePool = nullptr;
 
     const char *resourceName = par("resourceModuleName");
     cModule *tmpModule = getParentModule()->getModuleByPath(resourceName);
@@ -65,7 +65,7 @@ void ResourceBasedQueue::handleMessage(cMessage *msg)
         }
         else
         {
-            jobServiced = NULL;
+            jobServiced = nullptr;
             emit(busySignal, false);
         }
     }
@@ -157,7 +157,7 @@ void ResourceBasedQueue::endService(Job *job)
 
 bool ResourceBasedQueue::allocateResource(Job *job)
 {
-    if (resourcePool != NULL)
+    if (resourcePool != nullptr)
         return resourceAllocated = resourcePool->tryToAllocate(this, resourceAmount, resourcePriority + job->getPriority());
     else
         return true;
@@ -165,14 +165,14 @@ bool ResourceBasedQueue::allocateResource(Job *job)
 
 void ResourceBasedQueue::releaseResource()
 {
-    if (resourcePool != NULL) {
+    if (resourcePool != nullptr) {
         ASSERT2(resourceAllocated, "Attempt to release an unallocated resource");
         resourcePool->release(resourceAmount);
     }
 }
 
 bool ResourceBasedQueue::isResourceAllocated() {
-    return resourceAllocated || resourcePool == NULL;
+    return resourceAllocated || resourcePool == nullptr;
 }
 
 std::string ResourceBasedQueue::getFullPath() const

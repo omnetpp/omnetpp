@@ -36,15 +36,15 @@ class QUEUEING_API PassiveQueue : public cSimpleModule, public IPassiveQueue
         void queueLengthChanged();
 
     protected:
-        virtual void initialize();
-        virtual void handleMessage(cMessage *msg);
+        virtual void initialize() override;
+        virtual void handleMessage(cMessage *msg) override;
 
     public:
         PassiveQueue();
         virtual ~PassiveQueue();
         // The following methods are called from IServer:
-        virtual int length();
-        virtual void request(int gateIndex);
+        virtual int length() override;
+        virtual void request(int gateIndex) override;
 };
 
 }; //namespace

@@ -40,9 +40,9 @@ class ChannelController : public cSimpleModule, public IKmlFragmentProvider
     double playgroundLat;
     double playgroundLon;
 
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
-    virtual std::string getKmlFragment();
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
+    virtual std::string getKmlFragment() override;
     int findMobileNode(IMobileNode* p);
 
   public:

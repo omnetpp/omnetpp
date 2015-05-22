@@ -23,9 +23,9 @@ class Sink : public cSimpleModule
     cOutVector qtime;
 
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
-    virtual void finish();
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
+    virtual void finish() override;
 };
 
 Define_Module( Sink );

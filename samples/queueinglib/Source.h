@@ -26,9 +26,9 @@ class QUEUEING_API SourceBase : public cSimpleModule
         std::string jobName;
         simsignal_t createdSignal;
     protected:
-        virtual void initialize();
+        virtual void initialize() override;
         virtual Job *createJob();
-        virtual void finish();
+        virtual void finish() override;
 };
 
 
@@ -43,8 +43,8 @@ class QUEUEING_API Source : public SourceBase
         int numJobs;
 
     protected:
-        virtual void initialize();
-        virtual void handleMessage(cMessage *msg);
+        virtual void initialize() override;
+        virtual void handleMessage(cMessage *msg) override;
 };
 
 
@@ -54,8 +54,8 @@ class QUEUEING_API Source : public SourceBase
 class QUEUEING_API SourceOnce : public SourceBase
 {
     protected:
-        virtual void initialize();
-        virtual void handleMessage(cMessage *msg);
+        virtual void initialize() override;
+        virtual void handleMessage(cMessage *msg) override;
 };
 
 }; //namespace

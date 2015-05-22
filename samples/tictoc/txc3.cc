@@ -23,8 +23,8 @@ class Txc3 : public cSimpleModule
     int counter;  // Note the counter here
 
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 Define_Module(Txc3);

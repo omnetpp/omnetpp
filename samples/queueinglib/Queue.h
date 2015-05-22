@@ -41,9 +41,9 @@ class QUEUEING_API Queue : public cSimpleModule
         int length();
 
     protected:
-        virtual void initialize();
-        virtual void handleMessage(cMessage *msg);
-        virtual void finish();
+        virtual void initialize() override;
+        virtual void handleMessage(cMessage *msg) override;
+        virtual void finish() override;
 
         // hook functions to (re)define behaviour
         virtual void arrival(Job *job);

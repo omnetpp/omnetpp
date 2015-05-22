@@ -23,8 +23,8 @@ class QUEUEING_API Delay : public cSimpleModule
 		simsignal_t delayedJobsSignal;
         int currentlyStored;
     protected:
-        virtual void initialize();
-        virtual void handleMessage(cMessage *msg);
+        virtual void initialize() override;
+        virtual void handleMessage(cMessage *msg) override;
 };
 
 }; //namespace

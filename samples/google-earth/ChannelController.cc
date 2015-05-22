@@ -11,7 +11,7 @@
 
 Define_Module(ChannelController);
 
-ChannelController *ChannelController::instance = NULL;
+ChannelController *ChannelController::instance = nullptr;
 
 ChannelController::ChannelController()
 {
@@ -22,7 +22,7 @@ ChannelController::ChannelController()
 
 ChannelController::~ChannelController()
 {
-    instance = NULL;
+    instance = nullptr;
 }
 
 ChannelController *ChannelController::getInstance()
@@ -89,7 +89,7 @@ std::string ChannelController::getKmlFragment()
             }
         }
     }
-    fragment += KmlUtil::lines("connectivity_1", connections, "connectivity graph", NULL, "60FFFFFF");
+    fragment += KmlUtil::lines("connectivity_1", connections, "connectivity graph", nullptr, "60FFFFFF");
 
     return fragment;
 }

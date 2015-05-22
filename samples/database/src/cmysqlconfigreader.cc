@@ -56,7 +56,7 @@ void cMySQLConfigReader::initializeFrom(cConfiguration *cfg)
     if (cfgobj.empty())
         throw cRuntimeError("cMySQLConfigReader: config entry mysqlconfig-connectionname= must not be empty");
     EV << "cMySQLConfigReader connecting to MySQL database, using " << cfgobj << ".* config entries ...";
-    MYSQL *mysql = mysql_init(NULL);
+    MYSQL *mysql = mysql_init(nullptr);
     opp_mysql_connectToDB(mysql, cfg, cfgobj.c_str());
     EV << " OK\n";
 
@@ -92,13 +92,13 @@ void cMySQLConfigReader::readDB(MYSQL *mysql, const char *configName)
     // and add them to the config
     std::map<long,int> dbSectionId2index;
     MYSQL_RES *res = mysql_store_result(mysql);
-    if (res == NULL)
+    if (res == nullptr)
         throw cRuntimeError("MySQL error: mysql_store_result() failed: %s", mysql_error(mysql));
     if (mysql_num_rows(res) == 0)
         throw cRuntimeError("cMySQLConfigReader: configname='%s': no such config in the database, or it is empty", configName);
     ASSERT(mysql_num_fields(res) == 2);
     MYSQL_ROW row;
-    while ((row = mysql_fetch_row(res)) != NULL)
+    while ((row = mysql_fetch_row(res)) != nullptr)
     {
         long dbSectionId = atol(row[0]);
         const char *sectionName = row[1];
@@ -127,10 +127,10 @@ void cMySQLConfigReader::readDB(MYSQL *mysql, const char *configName)
 
     // and add them to the config
     res = mysql_store_result(mysql);
-    if (res == NULL)
+    if (res == nullptr)
         throw cRuntimeError("MySQL error: mysql_store_result() failed: %s", mysql_error(mysql));
     ASSERT(mysql_num_fields(res) == 4);
-    while ((row = mysql_fetch_row(res)) != NULL)
+    while ((row = mysql_fetch_row(res)) != nullptr)
     {
         long dbSectionId = atol(row[0]);
         const char *entryName = row[1];
@@ -147,7 +147,7 @@ void cMySQLConfigReader::readDB(MYSQL *mysql, const char *configName)
 
 const char *cMySQLConfigReader::getFileName() const
 {
-    return NULL;
+    return nullptr;
 }
 
 const char *cMySQLConfigReader::getDefaultBaseDirectory() const

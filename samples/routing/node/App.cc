@@ -44,8 +44,8 @@ class App : public cSimpleModule
     virtual ~App();
 
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 Define_Module(App);
@@ -53,7 +53,7 @@ Define_Module(App);
 
 App::App()
 {
-    generatePacket = NULL;
+    generatePacket = nullptr;
 }
 
 App::~App()
@@ -74,7 +74,7 @@ void App::initialize()
     const char *destAddressesPar = par("destAddresses");
     cStringTokenizer tokenizer(destAddressesPar);
     const char *token;
-    while ((token = tokenizer.nextToken())!=NULL)
+    while ((token = tokenizer.nextToken())!=nullptr)
         destAddresses.push_back(atoi(token));
 
     if (destAddresses.size() == 0)

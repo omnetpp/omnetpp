@@ -34,8 +34,8 @@ class AbstractFifo : public cSimpleModule
     virtual ~AbstractFifo();
 
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 
     // hook functions to (re)define behaviour
     virtual void arrival(cMessage *msg) {}

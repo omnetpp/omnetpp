@@ -36,8 +36,8 @@ class ExtHTTPClient : public cSimpleModule
     virtual ~ExtHTTPClient();
 
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
     void handleSocketEvent();
     void handleReply(HTTPMsg *httpReply);
 };
@@ -46,7 +46,7 @@ Define_Module(ExtHTTPClient);
 
 ExtHTTPClient::ExtHTTPClient()
 {
-    rtEvent = NULL;
+    rtEvent = nullptr;
 }
 
 ExtHTTPClient::~ExtHTTPClient()
@@ -75,7 +75,7 @@ void ExtHTTPClient::handleMessage(cMessage *msg)
 void ExtHTTPClient::handleSocketEvent()
 {
     // try to find a double line feed in the input -- that's the end of the HTTP header.
-    char *endHeader = NULL;
+    char *endHeader = nullptr;
     for (char *s=recvBuffer; s<=recvBuffer+numRecvBytes-4; s++)
         if (*s=='\r' && *(s+1)=='\n' && *(s+2)=='\r' && *(s+3)=='\n')
             {endHeader = s+4; break;}

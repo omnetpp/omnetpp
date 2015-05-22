@@ -55,8 +55,8 @@ class BurstyApp : public cSimpleModule
 
   protected:
     // redefined cSimpleModule methods
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 
     // new methods
     virtual void processTimer(cMessage *msg);
@@ -69,7 +69,7 @@ Define_Module(BurstyApp);
 
 BurstyApp::BurstyApp()
 {
-    startStopBurst = sendMessage = NULL;
+    startStopBurst = sendMessage = nullptr;
 }
 
 BurstyApp::~BurstyApp()

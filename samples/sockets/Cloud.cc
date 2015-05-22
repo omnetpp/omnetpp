@@ -23,8 +23,8 @@ class Cloud : public cSimpleModule
     simtime_t propDelay;
 
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 Define_Module(Cloud);

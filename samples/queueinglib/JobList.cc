@@ -14,21 +14,21 @@ namespace queueing {
 
 Define_Module(JobList);
 
-JobList *JobList::defaultInstance = NULL;
+JobList *JobList::defaultInstance = nullptr;
 
 
 JobList::JobList()
 {
-    if (defaultInstance == NULL)
+    if (defaultInstance == nullptr)
         defaultInstance = this;
 }
 
 JobList::~JobList()
 {
     if (defaultInstance == this)
-        defaultInstance = NULL;
+        defaultInstance = nullptr;
     for (std::set<Job*>::iterator it=jobs.begin(); it!=jobs.end(); ++it)
-        (*it)->jobList = NULL;
+        (*it)->jobList = nullptr;
 }
 
 void JobList::initialize()

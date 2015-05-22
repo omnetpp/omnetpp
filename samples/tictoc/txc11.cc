@@ -26,8 +26,8 @@ class Txc11 : public cSimpleModule
 {
   protected:
     virtual void forwardMessage(cMessage *msg);
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 Define_Module(Txc11);

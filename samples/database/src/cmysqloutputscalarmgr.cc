@@ -34,8 +34,8 @@ Register_GlobalConfigOption(CFGID_MYSQLOUTSCALARMGR_COMMIT_FREQ, "mysqloutputsca
 
 cMySQLOutputScalarManager::cMySQLOutputScalarManager()
 {
-    mysql = NULL;
-    insertScalarStmt = NULL;
+    mysql = nullptr;
+    insertScalarStmt = nullptr;
 }
 
 cMySQLOutputScalarManager::~cMySQLOutputScalarManager()
@@ -51,7 +51,7 @@ void cMySQLOutputScalarManager::openDB()
     std::string cfgobj = getEnvir()->getConfig()->getAsString(CFGID_MYSQLOUTSCALARMGR_CONNECTIONNAME);
     if (cfgobj.empty())
         cfgobj = "mysql";
-    mysql = mysql_init(NULL);
+    mysql = mysql_init(nullptr);
     opp_mysql_connectToDB(mysql, getEnvir()->getConfig(), cfgobj.c_str());
     EV << " OK\n";
 
@@ -78,10 +78,10 @@ void cMySQLOutputScalarManager::openDB()
 void cMySQLOutputScalarManager::closeDB()
 {
     if (insertScalarStmt) mysql_stmt_close(insertScalarStmt);
-    insertScalarStmt = NULL;
+    insertScalarStmt = nullptr;
 
     if (mysql) mysql_close(mysql);
-    mysql = NULL;
+    mysql = nullptr;
 }
 
 void cMySQLOutputScalarManager::commitDB()

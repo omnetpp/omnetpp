@@ -19,8 +19,8 @@
 class TelnetServer : public QueueBase
 {
   protected:
-    virtual simtime_t startService(cMessage *msg);
-    virtual void endService(cMessage *msg);
+    virtual simtime_t startService(cMessage *msg) override;
+    virtual void endService(cMessage *msg) override;
     virtual std::string processChars(const char *chars);
 };
 

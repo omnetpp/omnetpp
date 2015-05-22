@@ -16,7 +16,7 @@ USING_NAMESPACE
 
 QueueBase::QueueBase()
 {
-    msgServiced = endServiceMsg = NULL;
+    msgServiced = endServiceMsg = nullptr;
 }
 
 QueueBase::~QueueBase()
@@ -38,7 +38,7 @@ void QueueBase::handleMessage(cMessage *msg)
         endService( msgServiced );
         if (queue.empty())
         {
-            msgServiced = NULL;
+            msgServiced = nullptr;
         }
         else
         {

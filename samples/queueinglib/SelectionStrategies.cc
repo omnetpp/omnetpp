@@ -26,7 +26,7 @@ SelectionStrategy::~SelectionStrategy()
 
 SelectionStrategy *SelectionStrategy::create(const char *algName, cSimpleModule *module, bool selectOnInGate)
 {
-    SelectionStrategy *strategy = NULL;
+    SelectionStrategy *strategy = nullptr;
 
     if (strcmp(algName, "priority") == 0) {
         strategy = new PrioritySelectionStrategy(module, selectOnInGate);
@@ -54,11 +54,11 @@ cGate *SelectionStrategy::selectableGate(int i)
 bool SelectionStrategy::isSelectable(cModule *module)
 {
     IPassiveQueue *pqueue = dynamic_cast<IPassiveQueue *>(module);
-    if (pqueue != NULL)
+    if (pqueue != nullptr)
         return pqueue->length() > 0;
 
     IServer *server = dynamic_cast<IServer *>(module);
-    if (server != NULL)
+    if (server != nullptr)
         return server->isIdle();
 
     throw cRuntimeError("Only IPassiveQueue and IServer is supported by this Strategy");

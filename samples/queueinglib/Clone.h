@@ -24,8 +24,8 @@ class QUEUEING_API Clone : public cSimpleModule
     private:
         bool changeMsgNames;
     protected:
-        virtual void initialize();
-        virtual void handleMessage(cMessage *msg);
+        virtual void initialize() override;
+        virtual void handleMessage(cMessage *msg) override;
         virtual void updateJobName(Job *job, int i);
 };
 

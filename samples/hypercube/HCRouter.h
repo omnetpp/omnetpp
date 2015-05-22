@@ -24,7 +24,7 @@ class HCRouter : public cSimpleModule
 {
   public:
     HCRouter() : cSimpleModule(STACKSIZE) {}
-    virtual void activity();
+    virtual void activity() override;
 };
 
 #endif

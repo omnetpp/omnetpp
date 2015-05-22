@@ -14,7 +14,7 @@ namespace fifo {
 
 AbstractFifo::AbstractFifo()
 {
-    msgServiced = endServiceMsg = NULL;
+    msgServiced = endServiceMsg = nullptr;
 }
 
 AbstractFifo::~AbstractFifo()
@@ -42,7 +42,7 @@ void AbstractFifo::handleMessage(cMessage *msg)
         endService( msgServiced );
         if (queue.empty())
         {
-            msgServiced = NULL;
+            msgServiced = nullptr;
             emit(busySignal, false);
         }
         else

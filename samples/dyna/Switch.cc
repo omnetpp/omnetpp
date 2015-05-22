@@ -20,7 +20,7 @@ class Switch : public cSimpleModule
 {
   public:
     Switch() : cSimpleModule(STACKSIZE) {}
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(Switch);

@@ -14,11 +14,11 @@
 
 Define_Module(KmlHttpServer);
 
-KmlHttpServer *KmlHttpServer::instance = NULL;
+KmlHttpServer *KmlHttpServer::instance = nullptr;
 
 KmlHttpServer::KmlHttpServer()
 {
-    rtEvent = NULL;
+    rtEvent = nullptr;
     if (instance)
         throw cRuntimeError("There can be only one KmlHttpServer instance in the network");
     instance = this;
@@ -27,7 +27,7 @@ KmlHttpServer::KmlHttpServer()
 KmlHttpServer::~KmlHttpServer()
 {
     cancelAndDelete(rtEvent);
-    instance = NULL;
+    instance = nullptr;
 }
 
 void KmlHttpServer::initialize()
@@ -76,7 +76,7 @@ void KmlHttpServer::handleMessage(cMessage *msg)
 void KmlHttpServer::handleSocketEvent()
 {
     // try to find a double line feed in the input -- that's the end of the HTTP header.
-    char *endHeader = NULL;
+    char *endHeader = nullptr;
     for (char *s=recvBuffer; s<=recvBuffer+numRecvBytes-4; s++)
         if (*s=='\r' && *(s+1)=='\n' && *(s+2)=='\r' && *(s+3)=='\n')
             {endHeader = s+4; break;}

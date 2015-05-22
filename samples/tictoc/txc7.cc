@@ -30,15 +30,15 @@ class Txc7 : public cSimpleModule
     virtual ~Txc7();
 
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 Define_Module(Txc7);
 
 Txc7::Txc7()
 {
-    event = tictocMsg = NULL;
+    event = tictocMsg = nullptr;
 }
 
 Txc7::~Txc7()
@@ -50,7 +50,7 @@ Txc7::~Txc7()
 void Txc7::initialize()
 {
     event = new cMessage("event");
-    tictocMsg = NULL;
+    tictocMsg = nullptr;
 
     if (strcmp("tic", getName()) == 0)
     {
@@ -66,7 +66,7 @@ void Txc7::handleMessage(cMessage *msg)
     {
         EV << "Wait period is over, sending back message\n";
         send(tictocMsg, "out");
-        tictocMsg = NULL;
+        tictocMsg = nullptr;
     }
     else
     {

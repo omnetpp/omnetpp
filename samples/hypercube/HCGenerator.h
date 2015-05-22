@@ -24,7 +24,7 @@ class HCGenerator : public cSimpleModule
 {
   public:
     HCGenerator() : cSimpleModule(STACKSIZE) {}
-    virtual void activity();
+    virtual void activity() override;
 };
 
 #endif

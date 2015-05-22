@@ -62,11 +62,11 @@ class QUEUEING_API ResourceBasedQueue : public cSimpleModule, public IResourceAl
         int length();
 
         // call-back method called from any associated resource
-        virtual void resourceGranted(IResourcePool *provider);
-        virtual std::string getFullPath() const;
+        virtual void resourceGranted(IResourcePool *provider) override;
+        virtual std::string getFullPath() const override;
     protected:
-        virtual void initialize();
-        virtual void handleMessage(cMessage *msg);
+        virtual void initialize() override;
+        virtual void handleMessage(cMessage *msg) override;
 
         // hook functions to (re)define behavior
         virtual void arrival(Job *job);

@@ -22,7 +22,7 @@ class HistogramDemo : public cSimpleModule
 {
   public:
     HistogramDemo() : cSimpleModule(STACKSIZE) {}
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module( HistogramDemo );

@@ -40,8 +40,8 @@ class Txc13 : public cSimpleModule
   protected:
     virtual TicTocMsg13 *generateMessage();
     virtual void forwardMessage(TicTocMsg13 *msg);
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 Define_Module(Txc13);

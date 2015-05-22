@@ -28,25 +28,25 @@ class KmlUtil
     struct Pt3D {float lon, lat, alt;  Pt3D() {lon=lat=alt=0;}  Pt3D(float lo, float la, float al) {lon=lo; lat=la; alt=al;}};
 
     /** Generates the start of a KML folder; just add content and a close tag. */
-    static std::string folderHeader(const char *id=NULL, const char *name=NULL, const char *description=NULL);
+    static std::string folderHeader(const char *id=nullptr, const char *name=nullptr, const char *description=nullptr);
 
     /** Generates a floating placemark, displayed as a white arrow pointing downwards, with a label */
-    static std::string placemark(const char *id, float lon, float lat, float alt, const char *name=NULL, const char *description=NULL);
+    static std::string placemark(const char *id, float lon, float lat, float alt, const char *name=nullptr, const char *description=nullptr);
 
     /** Generates placemark containing a line of connected line segments */
-    static std::string lineString(const char *id, const std::vector<Pt2D>& pts, const char *name=NULL, const char *description=NULL, const char *color=NULL);
+    static std::string lineString(const char *id, const std::vector<Pt2D>& pts, const char *name=nullptr, const char *description=nullptr, const char *color=nullptr);
 
     /** Generates placemark containing several disjoint line segments */
-    static std::string lines(const char *id, const std::vector<Pt2D>& pts, const char *name=NULL, const char *description=NULL, const char *color=NULL);
+    static std::string lines(const char *id, const std::vector<Pt2D>& pts, const char *name=nullptr, const char *description=nullptr, const char *color=nullptr);
 
     /** Generates placemark containing a disc with the given radius (meters), approximated with a polygon */
-    static std::string disk(const char *id, float lon, float lat, float r, const char *name=NULL, const char *description=NULL, const char *color=NULL);
+    static std::string disk(const char *id, float lon, float lat, float r, const char *name=nullptr, const char *description=nullptr, const char *color=nullptr);
 
     /** Generates placemark containing a 3-D model */
-    static std::string model(const char *id, float lon, float lat, float heading, float scale, const char *link, const char *name=NULL, const char *description=NULL);
+    static std::string model(const char *id, float lon, float lat, float heading, float scale, const char *link, const char *name=nullptr, const char *description=nullptr);
 
     /** Generates placemark containing a track (gx:Track KML element) */
-    static std::string track(const char *id, const std::vector<Pt2D>& pts, float timeStep, float modelScale, const char *modelLink, const char *name=NULL, const char *description=NULL, const char *color=NULL);
+    static std::string track(const char *id, const std::vector<Pt2D>& pts, float timeStep, float modelScale, const char *modelLink, const char *name=nullptr, const char *description=nullptr, const char *color=nullptr);
 
     /**
      * Returns the latitude yoff meters to the north (or south if yoff<0) from latitude lat

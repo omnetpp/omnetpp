@@ -58,8 +58,8 @@ class KmlHttpServer : public cSimpleModule
     virtual void removeKmlFragmentProvider(IKmlFragmentProvider* p);
 
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
     virtual void handleSocketEvent();
     virtual std::string processHttpRequest(const char *request);
     virtual std::string getReplyFor(const char *uri);

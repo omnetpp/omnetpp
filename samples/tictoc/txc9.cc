@@ -35,15 +35,15 @@ class Tic9 : public cSimpleModule
   protected:
     virtual cMessage *generateNewMessage();
     virtual void sendCopyOf(cMessage *msg);
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 Define_Module(Tic9);
 
 Tic9::Tic9()
 {
-    timeoutEvent = message = NULL;
+    timeoutEvent = message = nullptr;
 }
 
 Tic9::~Tic9()
@@ -117,7 +117,7 @@ void Tic9::sendCopyOf(cMessage *msg)
 class Toc9 : public cSimpleModule
 {
   protected:
-    virtual void handleMessage(cMessage *msg);
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 Define_Module(Toc9);

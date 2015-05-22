@@ -25,9 +25,9 @@ class HTTPServer : public QueueBase
     StringMap htdocs;
 
   protected:
-    virtual void initialize();
-    virtual simtime_t startService(cMessage *msg);
-    virtual void endService(cMessage *msg);
+    virtual void initialize() override;
+    virtual simtime_t startService(cMessage *msg) override;
+    virtual void endService(cMessage *msg) override;
     std::string processHTTPCommand(const char *req);
     std::string getContentFor(const char *uri);
 };

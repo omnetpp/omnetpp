@@ -80,17 +80,17 @@ class cSocketRTScheduler : public cScheduler
     /**
      * Called at the beginning of a simulation run.
      */
-    virtual void startRun();
+    virtual void startRun() override;
 
     /**
      * Called at the end of a simulation run.
      */
-    virtual void endRun();
+    virtual void endRun() override;
 
     /**
      * Recalculates "base time" from current wall clock time.
      */
-    virtual void executionResumed();
+    virtual void executionResumed() override;
 
     /**
      * To be called from the module which wishes to receive data from the
@@ -103,17 +103,17 @@ class cSocketRTScheduler : public cScheduler
     /**
      * Returns the first event in the Future Event Set.
      */
-    virtual cEvent *guessNextEvent();
+    virtual cEvent *guessNextEvent() override;
 
     /**
      * Scheduler function -- it comes from the cScheduler interface.
      */
-    virtual cEvent *takeNextEvent();
+    virtual cEvent *takeNextEvent() override;
 
     /**
      * Undo takeNextEvent() -- it comes from the cScheduler interface.
      */
-    virtual void putBackEvent(cEvent *event);
+    virtual void putBackEvent(cEvent *event) override;
 
     /**
      * Send on the currently open connection

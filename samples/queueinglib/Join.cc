@@ -37,7 +37,7 @@ void Join::handleMessage(cMessage *msg)
     jobsHeld.push_back(job);
 
     Job *parent = job->getParent();
-    ASSERT(parent != NULL); // still exists
+    ASSERT(parent != nullptr); // still exists
 
     // count all sub-jobs with this parent
     int subJobsHeld = 0;

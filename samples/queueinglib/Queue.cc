@@ -16,8 +16,8 @@ Define_Module(Queue);
 
 Queue::Queue()
 {
-    jobServiced = NULL;
-    endServiceMsg = NULL;
+    jobServiced = nullptr;
+    endServiceMsg = nullptr;
 }
 
 Queue::~Queue()
@@ -48,7 +48,7 @@ void Queue::handleMessage(cMessage *msg)
         endService( jobServiced );
         if (queue.empty())
         {
-            jobServiced = NULL;
+            jobServiced = nullptr;
             emit(busySignal, false);
         }
         else

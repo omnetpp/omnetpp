@@ -28,14 +28,14 @@ class QUEUEING_API JobList : public cSimpleModule
         JobList();
         ~JobList();
     protected:
-        virtual void initialize();
-        virtual void handleMessage(cMessage *msg);
+        virtual void initialize() override;
+        virtual void handleMessage(cMessage *msg) override;
         void registerJob(Job *job);
         void deregisterJob(Job *job);
     public:
         /**
          * Returns pointer to the default instance of JobList, which is
-         * the first JobList module in the network. Returns NULL if
+         * the first JobList module in the network. Returns nullptr if
          * there's no JobList module.
          */
         static JobList *getDefaultInstance();

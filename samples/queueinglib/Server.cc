@@ -18,9 +18,9 @@ Define_Module(Server);
 
 Server::Server()
 {
-    selectionStrategy = NULL;
-    jobServiced = NULL;
-    endServiceMsg = NULL;
+    selectionStrategy = nullptr;
+    jobServiced = nullptr;
+    endServiceMsg = nullptr;
 }
 
 Server::~Server()
@@ -36,7 +36,7 @@ void Server::initialize()
     emit(busySignal, false);
 
     endServiceMsg = new cMessage("end-service");
-    jobServiced = NULL;
+    jobServiced = nullptr;
     selectionStrategy = SelectionStrategy::create(par("fetchingAlgorithm"), this, true);
     if (!selectionStrategy)
         throw cRuntimeError("invalid selection strategy");
@@ -46,11 +46,11 @@ void Server::handleMessage(cMessage *msg)
 {
     if (msg==endServiceMsg)
     {
-        ASSERT(jobServiced!=NULL);
+        ASSERT(jobServiced!=nullptr);
         simtime_t d = simTime() - endServiceMsg->getSendingTime();
         jobServiced->setTotalServiceTime(jobServiced->getTotalServiceTime() + d);
         send(jobServiced, "out");
-        jobServiced = NULL;
+        jobServiced = nullptr;
         emit(busySignal, false);
 
         if (hasGUI()) getDisplayString().setTagArg("i",1,"");
@@ -84,7 +84,7 @@ void Server::finish()
 
 bool Server::isIdle()
 {
-    return jobServiced == NULL;
+    return jobServiced == nullptr;
 }
 
 }; //namespace

@@ -16,7 +16,7 @@ Define_Module(PassiveQueue);
 
 PassiveQueue::PassiveQueue()
 {
-    selectionStrategy = NULL;
+    selectionStrategy = nullptr;
 }
 
 PassiveQueue::~PassiveQueue()

@@ -42,8 +42,8 @@ Register_GlobalConfigOption(CFGID_MYSQLOUTVECTORMGR_COMMIT_FREQ, "mysqloutputvec
 
 cMySQLOutputVectorManager::cMySQLOutputVectorManager()
 {
-    mysql = NULL;
-    insertVectorStmt = insertVecdataStmt = NULL;
+    mysql = nullptr;
+    insertVectorStmt = insertVecdataStmt = nullptr;
 }
 
 cMySQLOutputVectorManager::~cMySQLOutputVectorManager()
@@ -60,7 +60,7 @@ void cMySQLOutputVectorManager::openDB()
     std::string cfgobj = getEnvir()->getConfig()->getAsString(CFGID_MYSQLOUTVECTORMGR_CONNECTIONNAME);
     if (cfgobj.empty())
         cfgobj = "mysql";
-    mysql = mysql_init(NULL);
+    mysql = mysql_init(nullptr);
     opp_mysql_connectToDB(mysql, getEnvir()->getConfig(), cfgobj.c_str());
     EV << " OK\n";
 
@@ -118,10 +118,10 @@ void cMySQLOutputVectorManager::closeDB()
     if (insertVectorStmt) mysql_stmt_close(insertVectorStmt);
     if (insertVecAttrStmt) mysql_stmt_close(insertVecAttrStmt);
     if (insertVecdataStmt) mysql_stmt_close(insertVecdataStmt);
-    insertVectorStmt = insertVecdataStmt = insertVecAttrStmt = NULL;
+    insertVectorStmt = insertVecdataStmt = insertVecAttrStmt = nullptr;
 
     if (mysql) mysql_close(mysql);
-    mysql = NULL;
+    mysql = nullptr;
 }
 
 void cMySQLOutputVectorManager::commitDB()
@@ -224,7 +224,7 @@ void cMySQLOutputVectorManager::deregisterVector(void *vectorhandle)
 
 void cMySQLOutputVectorManager::setVectorAttribute(void *vectorhandle, const char *name, const char *value)
 {
-    ASSERT(vectorhandle != NULL);
+    ASSERT(vectorhandle != nullptr);
     sVectorData *vp = (sVectorData *)vectorhandle;
     vp->attributes[name] = value;
 }

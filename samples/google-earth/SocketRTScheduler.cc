@@ -41,13 +41,13 @@ void cSocketRTScheduler::startRun()
     if (initsocketlibonce()!=0)
         throw cRuntimeError("cSocketRTScheduler: Cannot initialize socket library");
 
-    gettimeofday(&baseTime, NULL);
+    gettimeofday(&baseTime, nullptr);
 
-    module = NULL;
-    notificationMsg = NULL;
-    recvBuffer = NULL;
+    module = nullptr;
+    notificationMsg = nullptr;
+    recvBuffer = nullptr;
     recvBufferSize = 0;
-    numBytesPtr = NULL;
+    numBytesPtr = nullptr;
 
     port = getEnvir()->getConfig()->getAsInt(CFGID_SOCKETRTSCHEDULER_PORT);
     setupListener();
@@ -75,7 +75,7 @@ void cSocketRTScheduler::endRun()
 
 void cSocketRTScheduler::executionResumed()
 {
-    gettimeofday(&baseTime, NULL);
+    gettimeofday(&baseTime, nullptr);
     baseTime = timeval_substract(baseTime, SIMTIME_DBL(simTime()));
 }
 
@@ -84,7 +84,7 @@ void cSocketRTScheduler::setInterfaceModule(cModule *mod, cMessage *notifMsg, ch
     if (module)
         throw cRuntimeError("cSocketRTScheduler: setInterfaceModule() already called");
     if (!mod || !notifMsg || !buf || !bufSize || !nBytesPtr)
-        throw cRuntimeError("cSocketRTScheduler: setInterfaceModule(): arguments must be non-NULL");
+        throw cRuntimeError("cSocketRTScheduler: setInterfaceModule(): arguments must be non-nullptr");
 
     module = mod;
     notificationMsg = notifMsg;
@@ -142,7 +142,7 @@ bool cSocketRTScheduler::receiveWithTimeout(long usec)
                 (*numBytesPtr) += nBytes;
 
                 timeval curTime;
-                gettimeofday(&curTime, NULL);
+                gettimeofday(&curTime, nullptr);
                 curTime = timeval_substract(curTime, baseTime);
                 simtime_t t = curTime.tv_sec + curTime.tv_usec*1e-6;
                 // TBD assert that it's somehow not smaller than previous event's time
@@ -170,7 +170,7 @@ int cSocketRTScheduler::receiveUntil(const timeval& targetTime)
     // if there's more than 200ms to wait, wait in 100ms chunks
     // in order to keep UI responsiveness by invoking getEnvir()->idle()
     timeval curTime;
-    gettimeofday(&curTime, NULL);
+    gettimeofday(&curTime, nullptr);
     while (targetTime.tv_sec-curTime.tv_sec >=2 ||
            timeval_diff_usec(targetTime, curTime) >= 200000)
     {
@@ -178,7 +178,7 @@ int cSocketRTScheduler::receiveUntil(const timeval& targetTime)
             return 1;
         if (getEnvir()->idle())
             return -1;
-        gettimeofday(&curTime, NULL);
+        gettimeofday(&curTime, nullptr);
     }
 
     // difference is now at most 100ms, do it at once
@@ -219,12 +219,12 @@ cEvent *cSocketRTScheduler::takeNextEvent()
 
     // if needed, wait until that time arrives
     timeval curTime;
-    gettimeofday(&curTime, NULL);
+    gettimeofday(&curTime, nullptr);
     if (timeval_greater(targetTime, curTime))
     {
         int status = receiveUntil(targetTime);
         if (status == -1)
-            return NULL; // interrupted by user
+            return nullptr; // interrupted by user
         if (status == 1)
             event = sim->msgQueue.peekFirst(); // received something
     }

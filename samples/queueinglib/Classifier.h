@@ -22,8 +22,8 @@ class QUEUEING_API Classifier : public cSimpleModule
     private:
         const char *dispatchField;   // the message's field or parameter we are dispatching on
     protected:
-        virtual void initialize();
-        virtual void handleMessage(cMessage *msg);
+        virtual void initialize() override;
+        virtual void handleMessage(cMessage *msg) override;
 };
 
 }; //namespace

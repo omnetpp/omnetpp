@@ -20,8 +20,8 @@ namespace queueing {
 class QUEUEING_API Fork : public cSimpleModule
 {
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 }; // namespace

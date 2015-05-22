@@ -36,11 +36,11 @@ class Txc15 : public cSimpleModule
   protected:
     virtual TicTocMsg15 *generateMessage();
     virtual void forwardMessage(TicTocMsg15 *msg);
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 
     // The finish() function is called by OMNeT++ at the end of the simulation:
-    virtual void finish();
+    virtual void finish() override;
 };
 
 Define_Module(Txc15);

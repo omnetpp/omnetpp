@@ -30,9 +30,9 @@ class QUEUEING_API Sink : public cSimpleModule
     bool keepJobs;
 
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
-    virtual void finish();
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
+    virtual void finish() override;
 };
 
 }; //namespace

@@ -20,7 +20,7 @@ namespace queueing {
 class QUEUEING_API Merge : public cSimpleModule
 {
     protected:
-        virtual void handleMessage(cMessage *msg);
+        virtual void handleMessage(cMessage *msg) override;
 };
 
 }; //namespace

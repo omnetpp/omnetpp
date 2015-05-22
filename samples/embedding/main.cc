@@ -20,20 +20,20 @@ class EmptyConfig : public cConfiguration
   protected:
     class NullKeyValue : public KeyValue {
       public:
-        virtual const char *getKey() const {return NULL;}
-        virtual const char *getValue() const {return NULL;}
-        virtual const char *getBaseDirectory() const {return NULL;}
+        virtual const char *getKey() const override {return nullptr;}
+        virtual const char *getValue() const override {return nullptr;}
+        virtual const char *getBaseDirectory() const override {return nullptr;}
     };
     NullKeyValue nullKeyValue;
 
   protected:
-    virtual const char *substituteVariables(const char *value) {return value;}
+    virtual const char *substituteVariables(const char *value) override {return value;}
 
   public:
-    virtual const char *getConfigValue(const char *key) const {return NULL;}
-    virtual const KeyValue& getConfigEntry(const char *key) const {return nullKeyValue;}
-    virtual const char *getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const {return NULL;}
-    virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const {return nullKeyValue;}
+    virtual const char *getConfigValue(const char *key) const override {return nullptr;}
+    virtual const KeyValue& getConfigEntry(const char *key) const override {return nullKeyValue;}
+    virtual const char *getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const override {return nullptr;}
+    virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const override {return nullKeyValue;}
 };
 
 /**
@@ -49,7 +49,7 @@ class MinimalEnv : public cNullEnvir
     MinimalEnv(int ac, char **av, cConfiguration *c) : cNullEnvir(ac, av, c) {}
 
     // model parameters
-    virtual void readParameter(cPar *par) {
+    virtual void readParameter(cPar *par) override {
         if (par->containsValue())
             par->acceptDefault();
         else
@@ -67,7 +67,7 @@ void simulate(const char *networkName, simtime_t limit)
 {
     // set up the network
     cModuleType *networkType = cModuleType::find(networkName);
-    if (networkType == NULL) {
+    if (networkType == nullptr) {
         printf("No such network: %s\n", networkName);
         return;
     }
@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
     simulate("Net", 1000);
 
     // exit
-    cSimulation::setActiveSimulation(NULL);
+    cSimulation::setActiveSimulation(nullptr);
     delete sim;
 
     // deallocate registration lists, loaded NED files, etc.

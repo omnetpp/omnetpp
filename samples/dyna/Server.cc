@@ -20,8 +20,8 @@ class Server : public cSimpleModule
     cModuleType *srvProcType;
 
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 Define_Module(Server);

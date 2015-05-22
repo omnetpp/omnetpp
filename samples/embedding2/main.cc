@@ -25,20 +25,20 @@ class EmptyConfig : public cConfiguration
   protected:
     class NullKeyValue : public KeyValue {
       public:
-        virtual const char *getKey() const {return NULL;}
-        virtual const char *getValue() const {return NULL;}
-        virtual const char *getBaseDirectory() const {return NULL;}
+        virtual const char *getKey() const override {return nullptr;}
+        virtual const char *getValue() const override {return nullptr;}
+        virtual const char *getBaseDirectory() const override {return nullptr;}
     };
     NullKeyValue nullKeyValue;
 
   protected:
-    virtual const char *substituteVariables(const char *value) {return value;}
+    virtual const char *substituteVariables(const char *value) override {return value;}
 
   public:
-    virtual const char *getConfigValue(const char *key) const {return NULL;}
-    virtual const KeyValue& getConfigEntry(const char *key) const {return nullKeyValue;}
-    virtual const char *getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const {return NULL;}
-    virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const {return nullKeyValue;}
+    virtual const char *getConfigValue(const char *key) const override {return nullptr;}
+    virtual const KeyValue& getConfigEntry(const char *key) const override {return nullKeyValue;}
+    virtual const char *getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const override {return nullptr;}
+    virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const override {return nullKeyValue;}
 };
 
 
@@ -65,7 +65,7 @@ class MinimalEnv : public cNullEnvir
     }
 
     // model parameters
-    virtual void readParameter(cPar *par)
+    virtual void readParameter(cPar *par) override
     {
         if (strcmp(par->getName(), "iaTime") == 0)
             par->parse(iaTime.c_str());
@@ -77,7 +77,7 @@ class MinimalEnv : public cNullEnvir
             throw cRuntimeError("no value for parameter %s", par->getFullPath().c_str());
     }
 
-    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL)
+    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr) override
     {
        // store all reported scalar results into a map for later use
        scalarResults[component->getFullPath()+"."+name] = value;
@@ -99,7 +99,7 @@ class MinimalEnv : public cNullEnvir
 double simulateAloha(simtime_t limit, int numHosts, double iaMean)
 {
     // set up an environment for the simulation
-    MinimalEnv *menv = new MinimalEnv(0, NULL, new EmptyConfig());
+    MinimalEnv *menv = new MinimalEnv(0, nullptr, new EmptyConfig());
     cSimulation *sim = new cSimulation("simulation", menv);
     cSimulation::setActiveSimulation(sim);
 
@@ -147,7 +147,7 @@ double simulateAloha(simtime_t limit, int numHosts, double iaMean)
     double result = menv->getStatistic("Aloha.server.channel utilization");
 
     // delete simulation
-    cSimulation::setActiveSimulation(NULL);
+    cSimulation::setActiveSimulation(nullptr);
     delete sim;  // deletes menv as well
 
     return result;

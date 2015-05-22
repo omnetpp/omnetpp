@@ -38,8 +38,8 @@ class L2Queue : public cSimpleModule
     virtual ~L2Queue();
 
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 
     virtual void startTransmitting(cMessage *msg);
 
@@ -50,7 +50,7 @@ Define_Module(L2Queue);
 
 L2Queue::L2Queue()
 {
-    endTransmissionEvent = NULL;
+    endTransmissionEvent = nullptr;
 }
 
 L2Queue::~L2Queue()

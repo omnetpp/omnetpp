@@ -31,8 +31,8 @@ class AbstractQueue : public cSimpleModule
     virtual ~AbstractQueue();
 
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 
     // hook functions to (re)define behaviour
     virtual void arrival(cMessage *msg) {}
@@ -42,7 +42,7 @@ class AbstractQueue : public cSimpleModule
 
 AbstractQueue::AbstractQueue()
 {
-    msgServiced = endServiceMsg = NULL;
+    msgServiced = endServiceMsg = nullptr;
 }
 
 AbstractQueue::~AbstractQueue()
@@ -66,7 +66,7 @@ void AbstractQueue::handleMessage(cMessage *msg)
         endService( msgServiced );
         if (queue.empty())
         {
-            msgServiced = NULL;
+            msgServiced = nullptr;
             if (hasGUI()) getDisplayString().setTagArg("i",1,"");
         }
         else
@@ -104,10 +104,10 @@ void AbstractQueue::handleMessage(cMessage *msg)
 class Queue: public AbstractQueue
 {
   public:
-    virtual void initialize();
+    virtual void initialize() override;
 
-    virtual simtime_t startService(cMessage *msg);
-    virtual void endService(cMessage *msg);
+    virtual simtime_t startService(cMessage *msg) override;
+    virtual void endService(cMessage *msg) override;
 };
 
 Define_Module(Queue);

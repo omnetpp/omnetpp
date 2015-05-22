@@ -48,7 +48,7 @@ class QUEUEING_API PrioritySelectionStrategy : public SelectionStrategy
 {
     public:
         PrioritySelectionStrategy(cSimpleModule *module, bool selectOnInGate);
-        virtual int select();
+        virtual int select() override;
 };
 
 /**
@@ -58,7 +58,7 @@ class QUEUEING_API RandomSelectionStrategy : public SelectionStrategy
 {
     public:
         RandomSelectionStrategy(cSimpleModule *module, bool selectOnInGate);
-        virtual int select();
+        virtual int select() override;
 };
 
 /**
@@ -70,7 +70,7 @@ class QUEUEING_API RoundRobinSelectionStrategy : public SelectionStrategy
         int lastIndex; // the index of the module last time used
     public:
         RoundRobinSelectionStrategy(cSimpleModule *module, bool selectOnInGate);
-        virtual int select();
+        virtual int select() override;
 };
 
 /**
@@ -82,7 +82,7 @@ class QUEUEING_API ShortestQueueSelectionStrategy : public SelectionStrategy
 {
     public:
         ShortestQueueSelectionStrategy(cSimpleModule *module, bool selectOnInGate);
-        virtual int select();
+        virtual int select() override;
 };
 
 /**
@@ -93,7 +93,7 @@ class QUEUEING_API LongestQueueSelectionStrategy : public SelectionStrategy
 {
     public:
         LongestQueueSelectionStrategy(cSimpleModule *module, bool selectOnInGate);
-        virtual int select();
+        virtual int select() override;
 };
 
 }; //namespace

@@ -23,8 +23,8 @@ class SinkExt : public queueing::Sink
   protected:
     int numJobsReceived;
 
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 #endif

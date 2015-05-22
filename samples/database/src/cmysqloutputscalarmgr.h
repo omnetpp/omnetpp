@@ -132,17 +132,17 @@ class cMySQLOutputScalarManager : public cIOutputScalarManager
     /**
      * Records a double scalar result into the scalar result file.
      */
-    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL);
+    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr);
 
     /**
      * Records a histogram or statistic object into the scalar result file.
      */
-    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL);
+    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr);
 
     /**
-     * Returns NULL, because this class doesn't use a file.
+     * Returns nullptr, because this class doesn't use a file.
      */
-    const char *getFileName() const {return NULL;}
+    const char *getFileName() const {return nullptr;}
 
     /**
      * Performs a database commit.

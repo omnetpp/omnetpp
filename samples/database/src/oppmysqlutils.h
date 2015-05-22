@@ -40,7 +40,7 @@ USING_NAMESPACE
  *
  * Please refer to the MySQL documentation about their meanings.
  *
- * If a cfgobj is given (not NULL or the empty string), then the above
+ * If a cfgobj is given (not nullptr or the empty string), then the above
  * config entries get from cfgobj instead 'mysql'. That is, with cfgobj="homepc",
  * the configuration is searched for the following entries:
  *

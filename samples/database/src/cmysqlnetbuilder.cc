@@ -108,7 +108,7 @@ void cMySQLNetBuilder::readAndBuild(const char *networkName)
     const char *cfgobj = par("mysqlConnectionName").stringValue();
     if (*cfgobj == '\0')
         cfgobj = "mysql";
-    MYSQL *mysql = mysql_init(NULL);
+    MYSQL *mysql = mysql_init(nullptr);
     opp_mysql_connectToDB(mysql, getEnvir()->getConfig(), cfgobj);
     EV << " OK\n";
 
@@ -129,13 +129,13 @@ void cMySQLNetBuilder::readAndBuild(const char *networkName)
     NodeId2StringMap nodeId2DispStr;
 
     MYSQL_RES *res = mysql_store_result(mysql);
-    if (res == NULL)
+    if (res == nullptr)
         throw cRuntimeError("MySQL error: mysql_store_result() failed: %s", mysql_error(mysql));
     if (mysql_num_rows(res) == 0)
         throw cRuntimeError("networkName='%s': no such network in the database, or it has no nodes", networkName);
     ASSERT(mysql_num_fields(res) == 4);
     MYSQL_ROW row;
-    while ((row = mysql_fetch_row(res)) != NULL)
+    while ((row = mysql_fetch_row(res)) != nullptr)
     {
         // get fields from row
         long nodeid = atol(row[0]);
@@ -162,10 +162,10 @@ void cMySQLNetBuilder::readAndBuild(const char *networkName)
     if (mysql_query(mysql, stmt.c_str()))
         throw cRuntimeError("MySQL error: SELECT failed: %s", mysql_error(mysql));
     res = mysql_store_result(mysql);
-    if (res == NULL)
+    if (res == nullptr)
         throw cRuntimeError("MySQL error: mysql_store_result() failed: %s", mysql_error(mysql));
     ASSERT(mysql_num_fields(res) == 3);
-    while ((row = mysql_fetch_row(res)) != NULL)
+    while ((row = mysql_fetch_row(res)) != nullptr)
     {
         // get fields from row
         long nodeid = atol(row[0]);
@@ -193,10 +193,10 @@ void cMySQLNetBuilder::readAndBuild(const char *networkName)
     if (mysql_query(mysql, stmt.c_str()))
         throw cRuntimeError("MySQL error: SELECT failed: %s", mysql_error(mysql));
     res = mysql_store_result(mysql);
-    if (res == NULL)
+    if (res == nullptr)
         throw cRuntimeError("MySQL error: mysql_store_result() failed: %s", mysql_error(mysql));
     ASSERT(mysql_num_fields(res) == 6);
-    while ((row = mysql_fetch_row(res)) != NULL)
+    while ((row = mysql_fetch_row(res)) != nullptr)
     {
         // get fields from row
         long linkId = atol(row[0]);
@@ -236,7 +236,7 @@ void cMySQLNetBuilder::readAndBuild(const char *networkName)
             cGate *destIn = destmod->getOrCreateFirstUnconnectedGate(destgatevector, 0, false, true);
             linkId2ChannelPair[linkId] = ChannelPair(
                     createLink(channeltype, linkId, srcOut, destIn),
-                    NULL);
+                    nullptr);
         }
         else
             throw cRuntimeError("Invalid gate type combination (%c --> %c) at linkId=%ld",
@@ -251,10 +251,10 @@ void cMySQLNetBuilder::readAndBuild(const char *networkName)
     if (mysql_query(mysql, stmt.c_str()))
         throw cRuntimeError("MySQL error: SELECT failed: %s", mysql_error(mysql));
     res = mysql_store_result(mysql);
-    if (res == NULL)
+    if (res == nullptr)
         throw cRuntimeError("MySQL error: mysql_store_result() failed: %s", mysql_error(mysql));
     ASSERT(mysql_num_fields(res) == 3);
-    while ((row = mysql_fetch_row(res)) != NULL)
+    while ((row = mysql_fetch_row(res)) != nullptr)
     {
         // get fields from row
         long linkid = atol(row[0]);
@@ -332,8 +332,8 @@ void cMySQLNetBuilder::readAndBuild(const char *networkName)
 
 cChannel *cMySQLNetBuilder::createLink(const char *channelTypeName, int linkId, cGate *srcGate, cGate *destGate)
 {
-    cChannelType *channelType = channelTypeName ? cChannelType::get(channelTypeName) : NULL;
-    cChannel *channel = channelType ? channelType->create("channel") : NULL;
+    cChannelType *channelType = channelTypeName ? cChannelType::get(channelTypeName) : nullptr;
+    cChannel *channel = channelType ? channelType->create("channel") : nullptr;
 
     // create connection
     srcGate->connectTo(destGate, channel);

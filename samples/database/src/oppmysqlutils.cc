@@ -35,12 +35,12 @@ void opp_mysql_connectToDB(MYSQL *mysql, cConfiguration *cfg, const char *cfgobj
     // read config file
     if (!cfgobj || !*cfgobj)
         cfgobj = "mysql";
-    std::string host = cfg->getAsString(cfgobj, CFGID_MYSQL_HOST, NULL);
-    std::string user = cfg->getAsString(cfgobj, CFGID_MYSQL_USER, NULL);
-    std::string passwd = cfg->getAsString(cfgobj, CFGID_MYSQL_PASSWD, NULL);
-    std::string db = cfg->getAsString(cfgobj, CFGID_MYSQL_DB, NULL);
+    std::string host = cfg->getAsString(cfgobj, CFGID_MYSQL_HOST, nullptr);
+    std::string user = cfg->getAsString(cfgobj, CFGID_MYSQL_USER, nullptr);
+    std::string passwd = cfg->getAsString(cfgobj, CFGID_MYSQL_PASSWD, nullptr);
+    std::string db = cfg->getAsString(cfgobj, CFGID_MYSQL_DB, nullptr);
     unsigned int port = (unsigned int) cfg->getAsInt(cfgobj, CFGID_MYSQL_PORT, 0);
-    std::string socket = cfg->getAsString(cfgobj, CFGID_MYSQL_SOCKET, NULL);
+    std::string socket = cfg->getAsString(cfgobj, CFGID_MYSQL_SOCKET, nullptr);
     unsigned int clientflag = (unsigned int) cfg->getAsInt(cfgobj, CFGID_MYSQL_CLIENTFLAG, 0);
     bool usepipe = cfg->getAsBool(cfgobj, CFGID_MYSQL_USE_PIPE, false);
     std::string optionsfile = cfg->getAsFilename(cfgobj, CFGID_MYSQL_OPT_FILE);
@@ -50,9 +50,9 @@ void opp_mysql_connectToDB(MYSQL *mysql, cConfiguration *cfg, const char *cfgobj
         mysql_options(mysql, MYSQL_READ_DEFAULT_FILE, optionsfile.c_str());
     if (usepipe)
         mysql_options(mysql, MYSQL_OPT_NAMED_PIPE, 0);
-    if (!mysql_real_connect(mysql, host.empty() ? NULL : host.c_str(),
+    if (!mysql_real_connect(mysql, host.empty() ? nullptr : host.c_str(),
                 user.c_str(), passwd.c_str(), db.c_str(), port,
-                socket.empty() ? NULL : socket.c_str(), clientflag))
+                socket.empty() ? nullptr : socket.c_str(), clientflag))
         throw cRuntimeError("MySQL error: Failed to connect to database: %s", mysql_error(mysql));
 }
 
@@ -97,7 +97,7 @@ void opp_mysql_assignSTRING(MYSQL_BIND& bind, char *buf, const char *s)
 int opp_mysql_substitute(std::string& query, const char *substring, const char *value, MYSQL *mysql)
 {
     if (!substring || !substring[0])
-        throw cRuntimeError("opp_mysql_substitute(): substring cannot be NULL or ''");
+        throw cRuntimeError("opp_mysql_substitute(): substring cannot be nullptr or ''");
     if (!value)
         value = "";
 

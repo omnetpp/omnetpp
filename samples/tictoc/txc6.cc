@@ -37,18 +37,18 @@ class Txc6 : public cSimpleModule
     virtual ~Txc6();
 
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 Define_Module(Txc6);
 
 Txc6::Txc6()
 {
-    // Set the pointer to NULL, so that the destructor won't crash
+    // Set the pointer to nullptr, so that the destructor won't crash
     // even if initialize() doesn't get called because of a runtime
     // error or user cancellation during the startup process.
-    event = tictocMsg = NULL;
+    event = tictocMsg = nullptr;
 }
 
 Txc6::~Txc6()
@@ -64,7 +64,7 @@ void Txc6::initialize()
     event = new cMessage("event");
 
     // No tictoc message yet.
-    tictocMsg = NULL;
+    tictocMsg = nullptr;
 
     if (strcmp("tic", getName()) == 0)
     {
@@ -86,11 +86,11 @@ void Txc6::handleMessage(cMessage *msg)
     // method.
     if (msg==event)
     {
-        // The self-message arrived, so we can send out tictocMsg and NULL out
+        // The self-message arrived, so we can send out tictocMsg and nullptr out
         // its pointer so that it doesn't confuse us later.
         EV << "Wait period is over, sending back message\n";
         send(tictocMsg, "out");
-        tictocMsg = NULL;
+        tictocMsg = nullptr;
     }
     else
     {

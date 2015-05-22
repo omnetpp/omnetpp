@@ -23,8 +23,8 @@ class Txc1 : public cSimpleModule
 {
   protected:
     // The following redefined virtual function holds the algorithm.
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 // The module class needs to be registered with OMNeT++

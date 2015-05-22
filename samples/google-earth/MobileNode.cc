@@ -49,14 +49,14 @@ class MobileNode : public cSimpleModule, public IKmlFragmentProvider, public IMo
      MobileNode();
      virtual ~MobileNode();
 
-     double getX() { return x; }
-     double getY() { return y; }
-     double getTxRange() { return txRange; }
+     double getX() override { return x; }
+     double getY() override { return y; }
+     double getTxRange() override { return txRange; }
 
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
-    virtual std::string getKmlFragment();
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
+    virtual std::string getKmlFragment() override;
 };
 
 Define_Module(MobileNode);
@@ -154,16 +154,16 @@ std::string MobileNode::getKmlFragment()
     fragment += KmlUtil::folderHeader((std::string("folder_")+buf).c_str(), getFullName());
 
 #ifdef USE_TRACK
-    fragment += KmlUtil::track((std::string("track_")+buf).c_str(), path, timeStep, modelScale, modelURL.c_str(), "movement trail", NULL, (std::string("ff")+color).c_str());
+    fragment += KmlUtil::track((std::string("track_")+buf).c_str(), path, timeStep, modelScale, modelURL.c_str(), "movement trail", nullptr, (std::string("ff")+color).c_str());
 #else
-    fragment += KmlUtil::placemark((std::string("placemark_")+buf).c_str(), longitude, latitude, 2*modelScale, getFullName(), NULL);
+    fragment += KmlUtil::placemark((std::string("placemark_")+buf).c_str(), longitude, latitude, 2*modelScale, getFullName(), nullptr);
     if (trailLength > 0)
-        fragment += KmlUtil::lineString((std::string("trail_")+buf).c_str(), path, "movement trail", NULL, (std::string("ff")+color).c_str());
+        fragment += KmlUtil::lineString((std::string("trail_")+buf).c_str(), path, "movement trail", nullptr, (std::string("ff")+color).c_str());
     if (showTxRange)
-        fragment += KmlUtil::disk((std::string("disk_")+buf).c_str(), longitude, latitude, txRange, "transmission range", NULL, (std::string("40")+color).c_str());
+        fragment += KmlUtil::disk((std::string("disk_")+buf).c_str(), longitude, latitude, txRange, "transmission range", nullptr, (std::string("40")+color).c_str());
     if (!modelURL.empty()) {
         double modelheading = fmod((360 + 90 + heading), 360);
-        fragment += KmlUtil::model((std::string("model_")+buf).c_str(), longitude, latitude, modelheading, modelScale, modelURL.c_str(), "3D model", NULL);
+        fragment += KmlUtil::model((std::string("model_")+buf).c_str(), longitude, latitude, modelheading, modelScale, modelURL.c_str(), "3D model", nullptr);
     }
 #endif
 

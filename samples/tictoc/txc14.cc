@@ -31,8 +31,8 @@ class Txc14 : public cSimpleModule
     virtual void forwardMessage(TicTocMsg14 *msg);
     virtual void updateDisplay();
 
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 Define_Module(Txc14);

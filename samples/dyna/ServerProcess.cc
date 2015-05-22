@@ -20,7 +20,7 @@ class ServerProcess : public cSimpleModule
 {
   public:
     ServerProcess() : cSimpleModule(STACKSIZE) {}
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module( ServerProcess );

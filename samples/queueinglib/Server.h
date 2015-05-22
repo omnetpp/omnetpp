@@ -38,13 +38,13 @@ class QUEUEING_API Server : public cSimpleModule, public IServer
         virtual ~Server();
 
     protected:
-        virtual void initialize();
-        virtual int numInitStages() const {return 2;}
-        virtual void handleMessage(cMessage *msg);
-        virtual void finish();
+        virtual void initialize() override;
+        virtual int numInitStages() const override {return 2;}
+        virtual void handleMessage(cMessage *msg) override;
+        virtual void finish() override;
 
     public:
-        virtual bool isIdle();
+        virtual bool isIdle() override;
 };
 
 }; //namespace

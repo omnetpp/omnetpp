@@ -39,13 +39,13 @@ class QUEUEING_API ResourcePool : public cSimpleModule, public IResourcePool
         void updateDisplayString();
 
     protected:
-        virtual void initialize();
+        virtual void initialize() override;
 
     public:
         ResourcePool();
         virtual ~ResourcePool();
-        virtual bool tryToAllocate(IResourceAllocator *allocator, long amountToAllocate, int priority);
-        virtual void release(long amountToRelease);
+        virtual bool tryToAllocate(IResourceAllocator *allocator, long amountToAllocate, int priority) override;
+        virtual void release(long amountToRelease) override;
 };
 
 }; // namespace

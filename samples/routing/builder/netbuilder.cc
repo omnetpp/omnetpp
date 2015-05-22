@@ -31,8 +31,8 @@ class NetBuilder : public cSimpleModule
   protected:
     void connect(cGate *src, cGate *dest, double delay, double ber, double datarate);
     void buildNetwork(cModule *parent);
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 Define_Module(NetBuilder);
@@ -57,7 +57,7 @@ void NetBuilder::handleMessage(cMessage *msg)
 
 void NetBuilder::connect(cGate *src, cGate *dest, double delay, double ber, double datarate)
 {
-    cDatarateChannel *channel = NULL;
+    cDatarateChannel *channel = nullptr;
     if (delay>0 || ber>0 || datarate>0)
     {
         channel = cDatarateChannel::create("channel");

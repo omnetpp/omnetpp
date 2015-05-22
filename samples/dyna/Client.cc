@@ -20,7 +20,7 @@ class Client : public cSimpleModule
 {
   public:
     Client() : cSimpleModule(STACKSIZE) {}
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module( Client );
@@ -62,7 +62,7 @@ void Client::activity()
 
         EV << "waiting for DYNA_CONN_ACK\n";
         connAck = (DynaPacket *) receive( timeout );
-        if (connAck==NULL)
+        if (connAck==nullptr)
             goto broken;
         serverprocId = connAck->getServerProcId();
         EV << "got DYNA_CONN_ACK, my server process is ID="
@@ -89,7 +89,7 @@ void Client::activity()
 
             EV << "waiting for DATA(result)\n";
             answer = (DynaDataPacket *) receive( timeout );
-            if (answer==NULL)
+            if (answer==nullptr)
                  goto broken;
             EV << "got DATA(result)\n";
             delete answer;
@@ -109,7 +109,7 @@ void Client::activity()
 
         EV << "waiting for DYNA_DISC_ACK\n";
         discAck = (DynaPacket *) receive( timeout );
-        if (discAck==NULL)
+        if (discAck==nullptr)
             goto broken;
         EV << "got DYNA_DISC_ACK\n";
         delete discAck;

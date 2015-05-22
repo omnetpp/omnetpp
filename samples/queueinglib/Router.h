@@ -32,8 +32,8 @@ class QUEUEING_API Router : public cSimpleModule
         int routingAlgorithm;  // the algorithm we are using for routing
         int rrCounter;         // msgCounter for round robin routing
     protected:
-        virtual void initialize();
-        virtual void handleMessage(cMessage *msg);
+        virtual void initialize() override;
+        virtual void handleMessage(cMessage *msg) override;
 };
 
 }; //namespace

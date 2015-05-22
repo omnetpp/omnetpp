@@ -15,11 +15,11 @@ namespace queueing {
 
 Job::Job(const char *name, int kind, JobList *jobList) : Job_Base(name, kind)
 {
-    parent = NULL;
-    if (jobList==NULL && JobList::getDefaultInstance()!=NULL)
+    parent = nullptr;
+    if (jobList==nullptr && JobList::getDefaultInstance()!=nullptr)
         jobList = JobList::getDefaultInstance();
     this->jobList = jobList;
-    if (jobList!=NULL)
+    if (jobList!=nullptr)
         jobList->registerJob(this);
 }
 
@@ -27,9 +27,9 @@ Job::Job(const Job& job)
 {
     setName(job.getName());
     operator=(job);
-    parent = NULL;
+    parent = nullptr;
     jobList = job.jobList;
-    if (jobList!=NULL)
+    if (jobList!=nullptr)
         jobList->registerJob(this);
 }
 
@@ -39,7 +39,7 @@ Job::~Job()
         parent->childDeleted(this);
     for (int i=0; i<(int)children.size(); i++)
         children[i]->parentDeleted();
-    if (jobList!=NULL)
+    if (jobList!=nullptr)
         jobList->deregisterJob(this);
 }
 
@@ -87,7 +87,7 @@ void Job::addChild(Job *child)
 
 void Job::parentDeleted()
 {
-    parent = NULL;
+    parent = nullptr;
 }
 
 void Job::childDeleted(Job *child)
