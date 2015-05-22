@@ -55,11 +55,17 @@
 #endif
 
 #if defined __GNUC__ && __GNUC__>=4
-#define _OPPDEPRECATED __attribute((__deprecated__))
+#  define _OPPDEPRECATED __attribute((__deprecated__))
 #elif defined _MSC_VER
-#define _OPPDEPRECATED __declspec(deprecated)
+#  define _OPPDEPRECATED __declspec(deprecated)
 #else
-#define _OPPDEPRECATED
+#  define _OPPDEPRECATED
+#endif
+
+// make the code compile with pre-C++11 compilers
+#if __cplusplus < 201103L
+#  define override
+#  define nullptr  0
 #endif
 
 #ifdef USE_NAMESPACE

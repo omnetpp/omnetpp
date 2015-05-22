@@ -1,6 +1,14 @@
+//
+// Definitions shared by all modules.
+//
+
 %{
 #include "jprogressmonitor.h"
 %}
+
+// Swig doesn't understand C++11 syntax
+#define override
+#define nullptr 0
 
 %exception {
     try {

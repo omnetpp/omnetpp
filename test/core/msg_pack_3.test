@@ -10,8 +10,8 @@ typedef std::vector<int> IntVector;
 typedef std::list<int> IntList;
 typedef std::set<int> IntSet;
 typedef std::map<int,double> IntDoubleMap;
-typedef std::list<std::vector<int>> IntVectorList;
-typedef std::vector<std::list<int>> IntListVector;
+typedef std::list<std::vector<int> > IntVectorList;
+typedef std::vector<std::list<int> > IntListVector;
 }}
 
 class noncobject IntVector;
@@ -59,14 +59,14 @@ msg.getM()[2] = 2.71;
 std::vector<int> v;
 v.push_back(5);
 v.push_back(7);
-std::list<std::vector<int>> vl;
+std::list<std::vector<int> > vl;
 vl.push_back(v);
 msg.setVl(vl);
 
 std::list<int> l;
 l.push_back(5);
 l.push_back(7);
-std::vector<std::list<int>> lv;
+std::vector<std::list<int> > lv;
 lv.push_back(l);
 msg.setLv(lv);
 
