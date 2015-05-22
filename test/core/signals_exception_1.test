@@ -23,7 +23,7 @@ namespace @TESTNAME@ {
 class BogusListener : public cListener
 {
   public:
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d) {
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d) override {
         throw std::runtime_error("problem!");
     }
 };
@@ -32,7 +32,7 @@ class Test : public cSimpleModule
 {
   public:
     Test() : cSimpleModule(16384) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(Test);

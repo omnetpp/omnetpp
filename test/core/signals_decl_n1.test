@@ -5,7 +5,7 @@ Negative test: trying to produce all error messages currently in the code, like:
 - Wrong type "%s" in the @signal[%s] property in the "%s" NED type, should be one of: long, unsigned long, double, simtime_t, string, or a registered class name
 - Signal "%s" emitted with wrong class (%s does not subclass from %s as declared)
 - Signal "%s" emitted as timestamped value with wrong type (%s, but object expected)
-- Signal "%s" emitted as timestamped value with NULL pointer in it (should be a %s as declared)
+- Signal "%s" emitted as timestamped value with nullptr pointer in it (should be a %s as declared)
 - Signal "%s" emitted as timestamped value with wrong class in it (%s does not subclass from %s as declared)
 - Signal "%s" emitted with wrong data type (expected=%s, actual=%s)
 - Signal "%s" emitted as a timestamped value with wrong data type (expected=%s, actual=%s)
@@ -38,12 +38,12 @@ simple Test extends testlib.SignalSource
        <e at='init' name='longSignal' type='unsigned long' value='153' timestamp='1'/> \
        <e at='init' name='longSignal' type='@TESTNAME@::Foo' value=''/> \
        <e at='init' name='longSignal' type='@TESTNAME@::Foo' value='' timestamp='1'/> \
-       <e at='init' name='longSignal' type='NULL' value=''/> \
-       <e at='init' name='longSignal' type='NULL' value='' timestamp='1'/> \
+       <e at='init' name='longSignal' type='nullptr' value=''/> \
+       <e at='init' name='longSignal' type='nullptr' value='' timestamp='1'/> \
        <e at='init' name='objectSignal' type='long' value='99'/> \
        <e at='init' name='objectSignal' type='long' value='99' timestamp='1'/> \
-       <e at='init' name='objectSignal' type='NULL' value=''/> \
-       <e at='init' name='objectSignal' type='NULL' value='' timestamp='1'/> \
+       <e at='init' name='objectSignal' type='nullptr' value=''/> \
+       <e at='init' name='objectSignal' type='nullptr' value='' timestamp='1'/> \
        <e at='init' name='objectSignal' type='@TESTNAME@::Bar' value=''/> \
        <e at='init' name='objectSignal' type='@TESTNAME@::Bar' value='' timestamp='1'/> \
        <e at='init' name='nullableSignal' type='@TESTNAME@::Bar' value=''/> \
@@ -71,18 +71,18 @@ t=0s: emit "longSignal" type=@TESTNAME@::Foo value=
 ERROR: Signal "longSignal" emitted with wrong data type (expected=long, actual=@TESTNAME@::Foo)
 t=0s: emit "longSignal" type=@TESTNAME@::Foo value= timestamp=1s
 ERROR: Signal "longSignal" emitted as timestamped value with wrong data type (expected=long, actual=object)
-t=0s: emit "longSignal" type=NULL value=
-ERROR: Signal "longSignal" emitted with wrong data type (expected=long, actual=NULL)
-t=0s: emit "longSignal" type=NULL value= timestamp=1s
+t=0s: emit "longSignal" type=nullptr value=
+ERROR: Signal "longSignal" emitted with wrong data type (expected=long, actual=nullptr)
+t=0s: emit "longSignal" type=nullptr value= timestamp=1s
 ERROR: Signal "longSignal" emitted as timestamped value with wrong data type (expected=long, actual=object)
 t=0s: emit "objectSignal" type=long value=99
 ERROR: Signal "objectSignal" emitted with wrong data type (expected=object, actual=long)
 t=0s: emit "objectSignal" type=long value=99 timestamp=1s
 ERROR: Signal "objectSignal" emitted as timestamped value with wrong type (long, but object expected)
-t=0s: emit "objectSignal" type=NULL value=
-ERROR: Signal "objectSignal" emitted a NULL pointer (specify 'type=@TESTNAME@::Foo?' in @signal to allow NULLs)
-t=0s: emit "objectSignal" type=NULL value= timestamp=1s
-ERROR: Signal "objectSignal" emitted as timestamped value with NULL pointer in it (specify 'type=@TESTNAME@::Foo?' in @signal to allow NULLs)
+t=0s: emit "objectSignal" type=nullptr value=
+ERROR: Signal "objectSignal" emitted a nullptr (specify 'type=@TESTNAME@::Foo?' in @signal to allow nullptr)
+t=0s: emit "objectSignal" type=nullptr value= timestamp=1s
+ERROR: Signal "objectSignal" emitted as timestamped value with nullptr in it (specify 'type=@TESTNAME@::Foo?' in @signal to allow nullptr)
 t=0s: emit "objectSignal" type=@TESTNAME@::Bar value=
 ERROR: Signal "objectSignal" emitted with wrong class (@TESTNAME@::Bar does not subclass from @TESTNAME@::Foo as declared)
 t=0s: emit "objectSignal" type=@TESTNAME@::Bar value= timestamp=1s

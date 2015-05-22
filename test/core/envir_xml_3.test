@@ -13,7 +13,7 @@ ev.getXMLDocument(): parse error (incomplete XML doc)
 
 cXMLElement *node = getEnvir()->getXMLDocument("test.xml");
 if (!node)
-    EV << "NULL\n";
+    EV << "nullptr\n";
 else
     EV << node->getTagName() << " from " << node->getSourceLocation() << "\n";
 

@@ -195,7 +195,7 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
                         }
                     }
                     else
-                        ostream << "NULL\n";
+                        ostream << "nullptr\n";
                 }
                 else {
                     std::string value = descriptor->getFieldValueAsString(object, fieldIndex, elementIndex);

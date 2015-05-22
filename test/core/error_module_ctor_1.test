@@ -9,7 +9,7 @@ class Foo : public cSimpleModule
 {
   public:
     Foo() {throw std::range_error("oops");}
-    virtual void handleMessage(cMessage *msg) { }
+    virtual void handleMessage(cMessage *msg) override { }
 };
 
 Define_Module(Foo);

@@ -7,7 +7,7 @@ and destructor must call drop().
 class Noisy : public cOwnedObject
 {
   public:
-    Noisy(const char *name=NULL) : cOwnedObject(name) {EV << "noisy born\n";}
+    Noisy(const char *name=nullptr) : cOwnedObject(name) {EV << "noisy born\n";}
     ~Noisy() {EV << "noisy died\n";}
 };
 

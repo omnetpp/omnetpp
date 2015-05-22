@@ -4,8 +4,8 @@ USING_NAMESPACE
 
 class Animator : public cSimpleModule
 {
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 Define_Module(Animator);

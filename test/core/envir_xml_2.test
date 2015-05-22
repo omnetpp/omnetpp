@@ -5,7 +5,7 @@ ev.getXMLDocument(): file not found
 
 cXMLElement *node = getEnvir()->getXMLDocument("@TESTNAME@qwerty.xml");
 if (!node)
-    EV << "NULL\n";
+    EV << "nullptr\n";
 else
     EV << node->getTagName() << " from " << node->getSourceLocation() << "\n";
 

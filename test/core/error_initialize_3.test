@@ -10,8 +10,8 @@ Exit codes: Windows: 3; Linux: 143
 class Foo : public cSimpleModule
 {
   public:
-    virtual void initialize() { raise(15); }  // ==SIGTERM
-    virtual void handleMessage(cMessage *msg) { }
+    virtual void initialize() override { raise(15); }  // ==SIGTERM
+    virtual void handleMessage(cMessage *msg) override { }
 };
 
 Define_Module(Foo);

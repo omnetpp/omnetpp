@@ -1,5 +1,5 @@
 %description:
-Test that dynamic_cast works and accepts NULL pointer as input.
+Test that dynamic_cast works and accepts nullptr as input.
 
 %global:
 
@@ -10,7 +10,7 @@ class B : public A { };
 
 A *a1 = new A();
 A *a2 = new B();
-A *a3 = NULL;
+A *a3 = nullptr;
 
 EV << (dynamic_cast<B *>(a1)!=0) << endl;
 EV << (dynamic_cast<B *>(a2)!=0) << endl;

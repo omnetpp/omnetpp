@@ -27,7 +27,7 @@ namespace @TESTNAME@ {
 class Node : public cSimpleModule {
     simsignal_t signal1, signal2;
 
-    virtual void initialize() {
+    virtual void initialize() override {
         signal1 = registerSignal("foo");
         signal2 = registerSignal("bar");
         cProperty *statisticTemplate = getProperties()->get("statisticTemplate", "qlen");
@@ -40,7 +40,7 @@ class Node : public cSimpleModule {
         emit(signal2, 2);
         scheduleAt(0.1, new cMessage());
     }
-    virtual void handleMessage(cMessage *msg) {
+    virtual void handleMessage(cMessage *msg) override {
         delete msg;
         emit(signal1, 13);
         emit(signal1, 14);

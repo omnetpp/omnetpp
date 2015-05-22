@@ -6,7 +6,7 @@ class Controller : public cSimpleModule
 {
   public:
     Controller() : cSimpleModule(16384) {}
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(Controller);

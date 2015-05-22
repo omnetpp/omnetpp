@@ -6,7 +6,7 @@ class Node : public cSimpleModule
 {
   public:
     Node() : cSimpleModule(16384) {}
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(Node);

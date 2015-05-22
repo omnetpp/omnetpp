@@ -39,12 +39,12 @@ class Sender : public cSimpleModule
 {
   public:
     Sender() : cSimpleModule(32768) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(Sender);
 
-#define PRINT(g)   EV << #g << ":" << ((g) ? (g)->getFullName() : "NULL") << endl
+#define PRINT(g)   EV << #g << ":" << ((g) ? (g)->getFullName() : "nullptr") << endl
 
 void Sender::activity()
 {
@@ -86,7 +86,7 @@ class Receiver : public cSimpleModule
 {
   public:
     Receiver() : cSimpleModule(32768) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(Receiver);
@@ -108,10 +108,10 @@ rcvin->getPreviousGate\(\):out
 .*
 arrived:hello
 .*
-out->getNextGate\(\):NULL
-rcvin->getPreviousGate\(\):NULL
-out->getNextGate\(\):NULL
-rcvin->getPreviousGate\(\):NULL
+out->getNextGate\(\):nullptr
+rcvin->getPreviousGate\(\):nullptr
+out->getNextGate\(\):nullptr
+rcvin->getPreviousGate\(\):nullptr
 out->getNextGate\(\):in
 rcvin->getPreviousGate\(\):out
 .*Error .*gate already connected

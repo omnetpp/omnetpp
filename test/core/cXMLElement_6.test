@@ -32,7 +32,7 @@ static void printNode(cXMLElement *node)
     for (cXMLAttributeMap::iterator i=map.begin(); i!=map.end(); i++)
         EV << " " << i->first << "=\"" << i->second << "\"/\""
            << node->getAttribute(i->first.c_str()) << "\"";
-    EV << " nothing=" << (!node->getAttribute("nothing") ? "NULL" : node->getAttribute("nothing"));
+    EV << " nothing=" << (!node->getAttribute("nothing") ? "nullptr" : node->getAttribute("nothing"));
     EV << ".\n";
 }
 
@@ -42,19 +42,19 @@ for (cXMLElement *child=root->getFirstChild(); child; child=child->getNextSiblin
     printNode(child);
 
 %contains: stdout
-bar:"",no attrs, nothing=NULL.
-bar:"some  text",no attrs, nothing=NULL.
-bar:"  some  text",no attrs, nothing=NULL.
-bar:"some  text  ",no attrs, nothing=NULL.
-bar:"  ",no attrs, nothing=NULL.
+bar:"",no attrs, nothing=nullptr.
+bar:"some  text",no attrs, nothing=nullptr.
+bar:"  some  text",no attrs, nothing=nullptr.
+bar:"some  text  ",no attrs, nothing=nullptr.
+bar:"  ",no attrs, nothing=nullptr.
 bar:"
-    ",no attrs, nothing=NULL.
-bar:"&><"",no attrs, nothing=NULL.
-bar:"",has attrs, id="15"/"15" nothing=NULL.
-bar:"",has attrs, color="red"/"red" weight="12"/"12" nothing=NULL.
-bar:"",has attrs, color="  red"/"  red" weight="12  "/"12  " nothing=NULL.
-bar:"",has attrs, att=""/"" nothing=NULL.
-bar:"",has attrs, att="  "/"  " nothing=NULL.
-bar:"",has attrs, att="&><""/"&><"" nothing=NULL.
+    ",no attrs, nothing=nullptr.
+bar:"&><"",no attrs, nothing=nullptr.
+bar:"",has attrs, id="15"/"15" nothing=nullptr.
+bar:"",has attrs, color="red"/"red" weight="12"/"12" nothing=nullptr.
+bar:"",has attrs, color="  red"/"  red" weight="12  "/"12  " nothing=nullptr.
+bar:"",has attrs, att=""/"" nothing=nullptr.
+bar:"",has attrs, att="  "/"  " nothing=nullptr.
+bar:"",has attrs, att="&><""/"&><"" nothing=nullptr.
 
 

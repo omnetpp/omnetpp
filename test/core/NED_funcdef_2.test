@@ -45,7 +45,7 @@ class Simple : public cSimpleModule
 {
   public:
     Simple() : cSimpleModule(16384) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(Simple);

@@ -28,7 +28,7 @@ class Simple : public cSimpleModule
 {
   public:
     Simple() : cSimpleModule(32768) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(Simple);
@@ -46,7 +46,7 @@ void Simple::activity()
 
     EV << "starting module\n";
 
-    cModule *offspring = NULL;
+    cModule *offspring = nullptr;
     ASSERT(getSimulation()->getActivityModule() == this);
     for (int i = 0; i < 10; i++)
     {

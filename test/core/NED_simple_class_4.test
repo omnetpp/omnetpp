@@ -33,7 +33,7 @@ class OverrideClass : public cSimpleModule
 {
   public:
     OverrideClass() : cSimpleModule(16384) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(OverrideClass);

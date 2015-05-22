@@ -43,7 +43,7 @@ class Node1 : public cSimpleModule
 {
   public:
     Node1() : cSimpleModule(16384) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(Node1);
@@ -68,7 +68,7 @@ void Node1::activity()
 class Node2 : public cSimpleModule
 {
   public:
-    virtual void handleMessage(cMessage *msg);
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 Define_Module(Node2);

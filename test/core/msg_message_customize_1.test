@@ -23,7 +23,7 @@ class SomePacket : public SomePacket_Base
   private:
     int ttl;
   public:
-    SomePacket(const char *name=NULL, int kind=0) : SomePacket_Base(name,kind) {ttl=0;}
+    SomePacket(const char *name=nullptr, int kind=0) : SomePacket_Base(name,kind) {ttl=0;}
     SomePacket(const SomePacket& other) : SomePacket_Base(other.getName()) {operator=(other);}
     SomePacket& operator=(const SomePacket& other) {SomePacket_Base::operator=(other); ttl=other.ttl;return *this;}
     virtual SomePacket *dup() const {return new SomePacket(*this);}
@@ -54,8 +54,8 @@ class @TESTNAME@::SomePacket {
     short kind = 99
     short schedulingPriority = 0
     string displayString = ""
-    cObject *controlInfo = NULL
-    cArray *parList = NULL
+    cObject *controlInfo = nullptr
+    cArray *parList = nullptr
     bool isScheduled = false
     bool isSelfMessage = true
     simtime_t creationTime = 0
@@ -64,12 +64,12 @@ class @TESTNAME@::SomePacket {
     simtime_t timestamp = 0
     int senderModuleId = -1
     int senderGateId = -1
-    cModule *senderModule = NULL
-    cGate *senderGate = NULL
+    cModule *senderModule = nullptr
+    cGate *senderGate = nullptr
     int arrivalModuleId = -1
     int arrivalGateId = -1
-    cModule *arrivalModule = NULL
-    cGate *arrivalGate = NULL
+    cModule *arrivalModule = nullptr
+    cGate *arrivalGate = nullptr
     int src = 0
     int dest = 0
     int ttl = 0

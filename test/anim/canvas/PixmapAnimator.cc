@@ -8,8 +8,8 @@ class PixmapAnimator : public cSimpleModule
         cPixmapFigure *pixmapFigure;
 
     protected:
-        virtual void initialize();
-        virtual void handleMessage(cMessage *msg);
+        virtual void initialize() override;
+        virtual void handleMessage(cMessage *msg) override;
         void fillPixmap(cFigure::Pixmap& pixmap);
         void changePixmap(cFigure::Pixmap& pixmap);
 };

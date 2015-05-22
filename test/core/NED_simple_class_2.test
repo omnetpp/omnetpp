@@ -31,7 +31,7 @@ class ClassWithNamespace : public cSimpleModule
 {
   public:
     ClassWithNamespace() : cSimpleModule(16384) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(ClassWithNamespace);

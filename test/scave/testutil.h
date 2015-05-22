@@ -20,16 +20,16 @@
 
 class MeasureTime
 {
-	timeval start, end;
+    timeval start, end;
 
 public:
-	MeasureTime() { gettimeofday(&start, NULL); }
-	~MeasureTime()
-	{
-		gettimeofday(&end, NULL);
-	    long elapsedTime = timeval_diff_usec(end, start);
-	    std::cout << "Time: " << elapsedTime/1000 << "ms" << std::endl;
-	}
+    MeasureTime() { gettimeofday(&start, nullptr); }
+    ~MeasureTime()
+    {
+        gettimeofday(&end, nullptr);
+        long elapsedTime = timeval_diff_usec(end, start);
+        std::cout << "Time: " << elapsedTime/1000 << "ms" << std::endl;
+    }
 };
 
 #endif

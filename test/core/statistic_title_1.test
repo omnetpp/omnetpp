@@ -27,7 +27,7 @@ namespace @TESTNAME@ {
 class Node : public cSimpleModule {
     simsignal_t signal1, signal2;
 
-    virtual void initialize() {
+    virtual void initialize() override {
         signal1 = registerSignal("foo");
         signal2 = registerSignal("bar");
         cProperty *statisticTemplate = getProperties()->get("statisticTemplate", "qlen");

@@ -7,28 +7,28 @@ const char *token;
 
 {
     cStringTokenizer tok("");
-    while ((token = tok.nextToken())!=NULL)
+    while ((token = tok.nextToken())!=nullptr)
         EV << ":" << token;
     EV << ".\n";
 }
 
 {
-    cStringTokenizer tok(NULL);
-    while ((token = tok.nextToken())!=NULL)
+    cStringTokenizer tok(nullptr);
+    while ((token = tok.nextToken())!=nullptr)
         EV << ":" << token;
     EV << ".\n";
 }
 
 {
     cStringTokenizer tok("bla bla", "");
-    while ((token = tok.nextToken())!=NULL)
+    while ((token = tok.nextToken())!=nullptr)
         EV << ":" << token;
     EV << ".\n";
 }
 
 {
-    cStringTokenizer tok("bla bla", NULL);
-    while ((token = tok.nextToken())!=NULL)
+    cStringTokenizer tok("bla bla", nullptr);
+    while ((token = tok.nextToken())!=nullptr)
         EV << ":" << token;
     EV << ".\n";
 }

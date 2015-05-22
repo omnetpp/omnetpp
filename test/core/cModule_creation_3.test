@@ -38,7 +38,7 @@ namespace @TESTNAME@ {
 class Creator : public cSimpleModule {
   public:
     Creator() : cSimpleModule(16384) { }
-    void activity();
+    void activity() override;
 };
 
 Define_Module(Creator);

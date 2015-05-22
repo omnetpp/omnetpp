@@ -12,7 +12,7 @@ prop->setValue("", 4, "vier");
 prop->addKey("fookey");
 prop->setValue("fookey", 1, "eins");
 prop->setValue("fookey", 0, "zero");
-prop->setValue("fookey", 2, NULL);
+prop->setValue("fookey", 2, nullptr);
 prop->addKey("barkey");
 prop->addKey("bazkey");
 

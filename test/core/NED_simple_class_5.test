@@ -31,7 +31,7 @@ class SimpleClass : public cSimpleModule
 {
   public:
     SimpleClass() : cSimpleModule(16384) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(SimpleClass);

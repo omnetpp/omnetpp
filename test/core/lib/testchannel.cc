@@ -9,9 +9,9 @@ class TestChannel : public cIdealChannel
   private:
     int numPackets;
   protected:
-    virtual void initialize();
-    virtual void processMessage(cMessage *msg, simtime_t at, result_t& result);
-    virtual void finish();
+    virtual void initialize() override;
+    virtual void processMessage(cMessage *msg, simtime_t at, result_t& result) override;
+    virtual void finish() override;
 };
 
 Define_Channel(TestChannel);

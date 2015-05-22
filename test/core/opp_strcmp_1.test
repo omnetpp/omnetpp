@@ -1,13 +1,13 @@
 %description:
-Test opp_strcmp(). NULL should be equivalent to "".
+Test opp_strcmp(). nullptr should be equivalent to "".
 
 %global:
 inline std::string tostr(const char *s) {
-    return s==NULL ? "NULL" : std::string("\"") + s + "\"";
+    return s==nullptr ? "nullptr" : std::string("\"") + s + "\"";
 }
 
 %activity:
-const char *a[] = {NULL, "", "alma", "banan"};
+const char *a[] = {nullptr, "", "alma", "banan"};
 for (int i=0; i<4; i++)
     for (int j=0; j<4; j++)
         EV << "opp_strcmp(" << tostr(a[i]) << ", " << tostr(a[j]) << ") ==> " << opp_strcmp(a[i], a[j]) << endl;
@@ -17,19 +17,19 @@ for (int i=0; i<4; i++)
 %subst: /97/1/
 
 %contains: stdout
-opp_strcmp(NULL, NULL) ==> 0
-opp_strcmp(NULL, "") ==> 0
-opp_strcmp(NULL, "alma") ==> -1
-opp_strcmp(NULL, "banan") ==> -1
-opp_strcmp("", NULL) ==> 0
+opp_strcmp(nullptr, nullptr) ==> 0
+opp_strcmp(nullptr, "") ==> 0
+opp_strcmp(nullptr, "alma") ==> -1
+opp_strcmp(nullptr, "banan") ==> -1
+opp_strcmp("", nullptr) ==> 0
 opp_strcmp("", "") ==> 0
 opp_strcmp("", "alma") ==> -1
 opp_strcmp("", "banan") ==> -1
-opp_strcmp("alma", NULL) ==> 1
+opp_strcmp("alma", nullptr) ==> 1
 opp_strcmp("alma", "") ==> 1
 opp_strcmp("alma", "alma") ==> 0
 opp_strcmp("alma", "banan") ==> -1
-opp_strcmp("banan", NULL) ==> 1
+opp_strcmp("banan", nullptr) ==> 1
 opp_strcmp("banan", "") ==> 1
 opp_strcmp("banan", "alma") ==> 1
 opp_strcmp("banan", "banan") ==> 0

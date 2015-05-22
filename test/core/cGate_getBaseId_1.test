@@ -32,8 +32,8 @@ class Tester : public cSimpleModule
 {
   public:
     Tester() {}
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg) {}
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override {}
     virtual void test(const char *name, int index=-1);
 };
 

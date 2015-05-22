@@ -29,7 +29,7 @@ namespace @TESTNAME@ {
 class BaseModuleClass : public cModule
 {
   protected:
-    void initialize() {EV << "Hello from " << getClassName() << "\n";}
+    void initialize() override {EV << "Hello from " << getClassName() << "\n";}
 };
 
 Define_Module(BaseModuleClass);

@@ -72,14 +72,14 @@ for (i=0; i<100; i++)
     CHECK(a.find(msg->getName())<0);
     CHECK(!a.exist(k));
     CHECK(!a.exist(msg->getName()));
-    CHECK(a.get(k)==NULL);
-    CHECK(a[k]==NULL);
-    CHECK(a.get(msg->getName())==NULL);
-    CHECK(a[msg->getName()]==NULL);
+    CHECK(a.get(k)==nullptr);
+    CHECK(a[k]==nullptr);
+    CHECK(a.get(msg->getName())==nullptr);
+    CHECK(a[msg->getName()]==nullptr);
     CHECK(msg->getOwner()!=&a);
-    CHECK(a.remove(k)==NULL);
-    CHECK(a.remove(msg->getName())==NULL);
-    CHECK(a.remove(msg)==NULL);
+    CHECK(a.remove(k)==nullptr);
+    CHECK(a.remove(msg->getName())==nullptr);
+    CHECK(a.remove(msg)==nullptr);
 }
 
 EV << "OK!\n";

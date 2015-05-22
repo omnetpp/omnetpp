@@ -8,7 +8,7 @@ class SomeModule : public cSimpleModule
 {
   public:
     SomeModule() : cSimpleModule(16384) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(SomeModule);

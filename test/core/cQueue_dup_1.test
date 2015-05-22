@@ -7,7 +7,7 @@ class Queues : public cSimpleModule
 {
   public:
     Queues() : cSimpleModule(16384) { }
-    virtual void activity();
+    virtual void activity() override;
     void fillQueue(cQueue& q);
     void output(cQueue& q, const char *label);
 };
@@ -16,7 +16,7 @@ Define_Module(Queues);
 
 void Queues::fillQueue(cQueue& q)
 {
-    cMsgPar *parm = NULL;
+    cMsgPar *parm = nullptr;
     parm = new cMsgPar("1");
     q.insert(parm);
     parm = new cMsgPar("3");

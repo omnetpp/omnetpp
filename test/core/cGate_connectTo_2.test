@@ -40,12 +40,12 @@ class Sender : public cSimpleModule
   public:
     Sender() : cSimpleModule(32768) { }
     cChannel *createChannel(double delay);
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(Sender);
 
-#define PRINT(g)   EV << #g << ":" << ((g) ? (g)->getFullName() : "NULL") << endl
+#define PRINT(g)   EV << #g << ":" << ((g) ? (g)->getFullName() : "nullptr") << endl
 
 cChannel *Sender::createChannel(double delay)
 {
@@ -97,7 +97,7 @@ void Sender::activity()
    wait(1);
 
    // remove channel
-   out->reconnectWith(NULL);
+   out->reconnectWith(nullptr);
    PRINT(out->getChannel());
 
    EV << "done\n";
@@ -107,7 +107,7 @@ class Receiver : public cSimpleModule
 {
   public:
     Receiver() : cSimpleModule(32768) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(Receiver);
@@ -131,7 +131,7 @@ out->getChannel\(\):chan
 .*
 hello1 arrived at 0.5
 .*
-out->getChannel\(\):NULL
+out->getChannel\(\):nullptr
 .*
 out->getChannel\(\):chan
 .*
@@ -139,7 +139,7 @@ hello2 arrived at 1.25
 .*
 hello3 arrived at 2.125
 .*
-out->getChannel\(\):NULL
+out->getChannel\(\):nullptr
 done
 
 

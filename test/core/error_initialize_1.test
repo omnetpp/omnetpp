@@ -8,8 +8,8 @@ Test that the simulation exits gracefully if there's an error during initializin
 class Foo : public cSimpleModule
 {
   public:
-    virtual void initialize() {throw std::range_error("oops");}
-    virtual void handleMessage(cMessage *msg) { }
+    virtual void initialize() override {throw std::range_error("oops");}
+    virtual void handleMessage(cMessage *msg) override { }
 };
 
 Define_Module(Foo);

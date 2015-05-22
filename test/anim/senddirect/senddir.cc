@@ -4,7 +4,7 @@ USING_NAMESPACE
 
 class Sink : public cSimpleModule
 {
-    virtual void handleMessage(cMessage *msg);
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 void Sink::handleMessage(cMessage *msg)
@@ -20,7 +20,7 @@ class Gen : public cSimpleModule
     int ctr;
   public:
     Gen() : cSimpleModule(16384) {}
-    virtual void activity();
+    virtual void activity() override;
     void sendTo(const char *modname, const char *gatename);
 };
 

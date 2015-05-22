@@ -31,14 +31,14 @@ namespace @TESTNAME@ {
 class Node : public cSimpleModule {
     simsignal_t signalID;
 
-    virtual void initialize() {
+    virtual void initialize() override {
         signalID = registerSignal("tenToFifteen");
         emit(signalID, 10);
         emit(signalID, 11);
         emit(signalID, 12);
         scheduleAt(0.1, new cMessage()); //so that we can exercise timeavg too
     }
-    virtual void handleMessage(cMessage *msg) {
+    virtual void handleMessage(cMessage *msg) override {
         delete msg;
         emit(signalID, 13);
         emit(signalID, 14);

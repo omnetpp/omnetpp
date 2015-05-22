@@ -33,7 +33,7 @@ Check cXMLElement::getElementByPath() basic functionality: absolute path; ".."
 
 static void getElement(cXMLElement *ctx, cXMLElement *root, const char *pathexpr)
 {
-    cXMLElement *node = ctx->getElementByPath(pathexpr, root, NULL);
+    cXMLElement *node = ctx->getElementByPath(pathexpr, root, nullptr);
     EV << (!pathexpr ? "''" : pathexpr) << ": " << (!node ? "null" : node->getAttribute("id")) << "\n";
 }
 

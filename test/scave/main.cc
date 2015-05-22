@@ -46,19 +46,19 @@ static void usage(char *message)
 
 static void parseIntList(const char *str, int *&result, int &len)
 {
-	result = NULL;
-	len = 0;
+    result = nullptr;
+    len = 0;
 
-	vector<int> ids;
+    vector<int> ids;
 
-	int start, end;
+    int start, end;
     int num = 0;
     const char *ptr = str;
 
     while (*ptr)
-	{
+    {
         if (!isdigit(*ptr))
-			throw exception("Malformed interval start");
+            throw exception("Malformed interval start");
 
         start = 0;
         while(isdigit(*ptr))
@@ -71,34 +71,34 @@ static void parseIntList(const char *str, int *&result, int &len)
         else if (*ptr == '-')
         {
             if (!isdigit(*(++ptr)))
-				throw exception("Missing interval end");
+                throw exception("Missing interval end");
 
             end = 0;
             while(isdigit(*ptr))
                 end = 10 * end + (*(ptr++) - '0');
         }
         else if (*ptr)
-			throw exception("Unexpected char in int list");
+            throw exception("Unexpected char in int list");
 
-		if (start <= end)
+        if (start <= end)
         {
             for (int id = start; id <= end; ++id)
-			    ids.push_back(id);
+                ids.push_back(id);
         }
         else
         {
             for (int id = start; id >= end; --id)
-			    ids.push_back(id);
+                ids.push_back(id);
         }
 
         if (*ptr == ',')
             ptr++;
-	}
+    }
 
-	result = new int[ids.size()];
-	for (int i = 0; i < ids.size(); ++i)
-		result[i] = ids[i];
-	len = ids.size();
+    result = new int[ids.size()];
+    for (int i = 0; i < ids.size(); ++i)
+        result[i] = ids[i];
+    len = ids.size();
 }
 
 int main(int argc, char **argv)
@@ -142,8 +142,8 @@ int main(int argc, char **argv)
                 testIndexer(argv[2]);
             }
             else if (strcmp(argv[1], "indexedvectorfilereader") == 0 ||
-            			strcmp(argv[1], "indexedvectorfilereader2") == 0 ||
-            			strcmp(argv[1], "vectorfilereader") == 0)
+                        strcmp(argv[1], "indexedvectorfilereader2") == 0 ||
+                        strcmp(argv[1], "vectorfilereader") == 0)
             {
                 if (argc < 4) {
                     usage("Not enough arguments specified");
@@ -153,11 +153,11 @@ int main(int argc, char **argv)
                 int *vectorIds, count;
                 parseIntList(argv[3], vectorIds, count);
                 if (count == 0) {
-                	usage("No vectors specified");
-                	return -1;
+                    usage("No vectors specified");
+                    return -1;
                 }
 
-               	testReader(argv[1], argv[2], vectorIds, count);
+                   testReader(argv[1], argv[2], vectorIds, count);
             }
 
             cout << "PASS\n";

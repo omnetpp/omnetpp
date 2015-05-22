@@ -13,19 +13,19 @@ class Variable : public Expression::Functor
   public:
     Variable(const char *name) {varname = name;}
     virtual ~Variable() { }
-    virtual Expression::Functor *dup() const {return new Variable(varname.c_str());}
-    virtual const char *getName() const {return varname.c_str();}
-    virtual const char *getArgTypes() const {return "";}
-    virtual char getReturnType() const {return Expression::Value::DBL;}
-    virtual Expression::Value evaluate(Expression::Value args[], int numargs) {return (double)(varname[1]-'0');}
-    virtual std::string str(std::string args[], int numargs) {return getName();}
+    virtual Expression::Functor *dup() const override {return new Variable(varname.c_str());}
+    virtual const char *getName() const override {return varname.c_str();}
+    virtual const char *getArgTypes() const override {return "";}
+    virtual char getReturnType() const override {return Expression::Value::DBL;}
+    virtual Expression::Value evaluate(Expression::Value args[], int numargs) override {return (double)(varname[1]-'0');}
+    virtual std::string str(std::string args[], int numargs) override {return getName();}
 };
 
 class Resolver : public Expression::Resolver
 {
   public:
-    virtual Expression::Functor *resolveVariable(const char *varname);
-    virtual Expression::Functor *resolveFunction(const char *funcname, int argcount);
+    virtual Expression::Functor *resolveVariable(const char *varname) override;
+    virtual Expression::Functor *resolveFunction(const char *funcname, int argcount) override;
 };
 
 Expression::Functor *Resolver::resolveVariable(const char *varname)

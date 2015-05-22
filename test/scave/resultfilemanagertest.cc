@@ -24,7 +24,7 @@ static void testUnload(const char *inputfile)
 {
     ResultFileManager manager;
     ResultFile *file = manager.loadFile(inputfile);
-    if (file == NULL)
+    if (file == nullptr)
         throw std::exception("Cannot load file.\n");
     manager.unloadFile(file);
     IDList vectors = manager.getAllVectors();

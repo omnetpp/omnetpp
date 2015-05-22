@@ -27,11 +27,11 @@ class Test : public cSimpleModule
     std::vector<cMessage*> future;  // future events
   public:
     Test() : fes(getSimulation()->getMessageQueue()) {}
-    virtual void initialize();
+    virtual void initialize() override;
     void verifyFES();
     void insertMessages(int n);
     void removeRandomMessages(int n);
-    virtual void handleMessage(cMessage *msg) {}
+    virtual void handleMessage(cMessage *msg) override {}
 };
 
 Define_Module(Test);
@@ -48,7 +48,7 @@ void Test::verifyFES()
     // verify
     ASSERT(fes.length()==(int)expected.size());
     ASSERT(fes.isEmpty()==expected.empty());
-    ASSERT(fes.peekFirst()==(expected.empty() ? NULL : expected[0]));
+    ASSERT(fes.peekFirst()==(expected.empty() ? nullptr : expected[0]));
 
     for (i=0; i<fes.length(); i++)
     {

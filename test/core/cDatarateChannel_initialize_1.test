@@ -42,8 +42,8 @@ namespace @TESTNAME@ {
 
 class Node1 : public cSimpleModule
 {
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 Define_Module(Node1);
@@ -62,7 +62,7 @@ void Node1::handleMessage(cMessage *msg)
 
 class Node2 : public cSimpleModule
 {
-    virtual void handleMessage(cMessage *msg);
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 Define_Module(Node2);

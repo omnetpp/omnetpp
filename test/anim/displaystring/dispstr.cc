@@ -7,7 +7,7 @@ class Gen : public cSimpleModule
   public:
     Gen() : cSimpleModule(16384) {}
 
-    virtual void activity();
+    virtual void activity() override;
 
     void show();
 
@@ -64,9 +64,9 @@ void Gen::icons()
 void Gen::boxes()
 {
     EV << "BOXES -- valid values only:\n";
-    const char *shape[] =  {"", "rect", "oval", NULL};
-    const char *width[] =  {"", "0", "1", "20", "40", "80", NULL};
-    const char *height[] = {"", "0", "1", "20", "40", "80", NULL};
+    const char *shape[] =  {"", "rect", "oval", nullptr};
+    const char *width[] =  {"", "0", "1", "20", "40", "80", nullptr};
+    const char *height[] = {"", "0", "1", "20", "40", "80", nullptr};
 
     for (const char **sh = shape; *sh; sh++)
     {
@@ -91,9 +91,9 @@ void Gen::options()
     getDisplayString().setTagArg("b",2,"oval");
     getDisplayString().setTagArg("i",0,"device/laptop");
 
-    const char *fill[] = {"", "-", "yellow", "#00ff00", "@2080ff", NULL};
-    const char *outline[] = {"", "-", "blue", "#ff0000", "@ff80a0", NULL};
-    const char *borderwidth[] = {"", "0", "1", "6", NULL};
+    const char *fill[] = {"", "-", "yellow", "#00ff00", "@2080ff", nullptr};
+    const char *outline[] = {"", "-", "blue", "#ff0000", "@ff80a0", nullptr};
+    const char *borderwidth[] = {"", "0", "1", "6", nullptr};
     for (const char **f = fill; *f; f++)
     {
         for (const char **o = outline; *o; o++)
@@ -154,7 +154,7 @@ void Gen::show()
 class Sink : public cSimpleModule
 {
   protected:
-    virtual void handleMessage(cMessage *msg);
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 void Sink::handleMessage(cMessage *msg)

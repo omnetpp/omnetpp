@@ -26,7 +26,7 @@ StressQueue::~StressQueue()
 
 void StressQueue::handleMessage(cMessage *msg)
 {
-    cMessage *sendOutMsg = NULL;
+    cMessage *sendOutMsg = nullptr;
 
     if (msg == timer) {
         if (!queue.empty()) {

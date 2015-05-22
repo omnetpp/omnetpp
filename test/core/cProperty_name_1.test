@@ -5,7 +5,7 @@ Tests cProperty name and index.
 #include <string.h>
 
 #define PRINTNAMES(p) EV << "name='" << (p)->getName() \
-                         << "' index='" << ((p)->getIndex() ? (p)->getIndex() : "NULL") \
+                         << "' index='" << ((p)->getIndex() ? (p)->getIndex() : "nullptr") \
                          << "' fullName='" << (p)->getFullName() \
                          << "' fullPath='" << (p)->getFullPath() << "'\n";
 
@@ -14,21 +14,21 @@ cProperty *prop;
 prop = new cProperty(); PRINTNAMES(prop);
 prop = new cProperty("foo"); PRINTNAMES(prop);
 prop = new cProperty("foo", "i"); PRINTNAMES(prop);
-prop->setName(NULL);  PRINTNAMES(prop);
+prop->setName(nullptr);  PRINTNAMES(prop);
 prop->setName("bar"); PRINTNAMES(prop);
 prop->setIndex("jk"); PRINTNAMES(prop);
-prop->setIndex(NULL); PRINTNAMES(prop);
+prop->setIndex(nullptr); PRINTNAMES(prop);
 prop->setIndex("lm"); PRINTNAMES(prop);
 
 EV << "." << endl;
 
 %contains: stdout
-name='' index='NULL' fullName='' fullPath=''
-name='foo' index='NULL' fullName='foo' fullPath='foo'
+name='' index='nullptr' fullName='' fullPath=''
+name='foo' index='nullptr' fullName='foo' fullPath='foo'
 name='foo' index='i' fullName='foo[i]' fullPath='foo[i]'
 name='' index='i' fullName='[i]' fullPath='[i]'
 name='bar' index='i' fullName='bar[i]' fullPath='bar[i]'
 name='bar' index='jk' fullName='bar[jk]' fullPath='bar[jk]'
-name='bar' index='NULL' fullName='bar' fullPath='bar'
+name='bar' index='nullptr' fullName='bar' fullPath='bar'
 name='bar' index='lm' fullName='bar[lm]' fullPath='bar[lm]'
 .

@@ -3,15 +3,15 @@
 USING_NAMESPACE
 
 namespace testlib {
-	
+
 class Dump : public cSimpleModule
 {
   protected:
     bool printClassNames;
 
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
     virtual void dump(cModule *mod, std::string currentIndent);
     virtual std::string props2str(cProperties *props);
 };
@@ -36,7 +36,7 @@ void Dump::handleMessage(cMessage *msg)
 std::string Dump::props2str(cProperties *props)
 {
     if (!props)
-        return " [props==NULL]"; // should not happen
+        return " [props==nullptr]"; // should not happen
     std::string result;
     for (int i=0; i<props->getNumProperties(); i++)
         result += " " + props->get(i)->info();
@@ -58,7 +58,7 @@ void Dump::dump(cModule *mod, std::string currentIndent)
     mod->getDisplayString().str(); //important side effect: parse @display into display string; some test cases rely on this taking place here!
 
     cProperties *props = mod->getProperties();
-    ASSERT(props != NULL);
+    ASSERT(props != nullptr);
     bool paramheadingprinted = false;
     for (int i=0; i<props->getNumProperties(); i++) {
         if (!paramheadingprinted) {printf("%s    parameters:\n", indent);paramheadingprinted=true;}
@@ -74,7 +74,7 @@ void Dump::dump(cModule *mod, std::string currentIndent)
         cGate *gate = i();
         if (!gateheadingprinted) {printf("%s    gates:\n", indent);gateheadingprinted=true;}
         printf("%s        %s%s: %s", indent, gate->getFullName(), props2str(gate->getProperties()).c_str(), gate->info().c_str());
-        if (printClassNames && gate->getChannel()!=NULL)
+        if (printClassNames && gate->getChannel()!=nullptr)
             printf(" (%s)", gate->getChannel()->getClassName());
         printf("\n");
     }

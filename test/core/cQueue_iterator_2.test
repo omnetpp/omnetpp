@@ -10,36 +10,36 @@ cQueue q("queue");
 
 cQueue::Iterator iter(q);
 CHECK(iter.end());
-CHECK(iter()==NULL);
+CHECK(iter()==nullptr);
 
 iter++;
 CHECK(iter.end());
-CHECK(iter()==NULL);
+CHECK(iter()==nullptr);
 
 iter++;
 CHECK(iter.end());
-CHECK(iter()==NULL);
+CHECK(iter()==nullptr);
 
 iter--;
 CHECK(iter.end());
-CHECK(iter()==NULL);
+CHECK(iter()==nullptr);
 
 iter--;
 CHECK(iter.end());
-CHECK(iter()==NULL);
+CHECK(iter()==nullptr);
 
 // now with reverse==true
 cQueue::Iterator iter2(q,true);
 CHECK(iter2.end());
-CHECK(iter2()==NULL);
+CHECK(iter2()==nullptr);
 
 iter2++;
 CHECK(iter2.end());
-CHECK(iter2()==NULL);
+CHECK(iter2()==nullptr);
 
 iter2--;
 CHECK(iter2.end());
-CHECK(iter2()==NULL);
+CHECK(iter2()==nullptr);
 
 EV << "OK!\n";
 

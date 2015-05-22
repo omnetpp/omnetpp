@@ -6,9 +6,9 @@ tests that endSimulation() works from handleMessage(), and finish() gets called
 class Module : public cSimpleModule
 {
   public:;
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
-    virtual void finish();
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
+    virtual void finish() override;
 };
 
 Define_Module(Module);

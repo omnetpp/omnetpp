@@ -31,27 +31,27 @@ USING_NAMESPACE
 namespace @TESTNAME@ {
 
 class PlainInit : public cSimpleModule {
-    virtual void initialize() {EV << "init " << getFullPath() << "\n";}
+    virtual void initialize() override {EV << "init " << getFullPath() << "\n";}
 };
 
 class StagedInit : public cSimpleModule {
-    virtual void initialize(int stage) {EV << "init " << getFullPath() << " stage " << stage << "\n";}
+    virtual void initialize(int stage) override {EV << "init " << getFullPath() << " stage " << stage << "\n";}
 };
 
 class ZeroStageInit : public StagedInit {
-    virtual int numInitStages() const {return 0;}
+    virtual int numInitStages() const override {return 0;}
 };
 
 class OneStageInit : public StagedInit {
-    virtual int numInitStages() const {return 1;}
+    virtual int numInitStages() const override {return 1;}
 };
 
 class TwoStageInit : public StagedInit {
-    virtual int numInitStages() const {return 2;}
+    virtual int numInitStages() const override {return 2;}
 };
 
 class ThreeStageInit : public StagedInit {
-    virtual int numInitStages() const {return 3;}
+    virtual int numInitStages() const override {return 3;}
 };
 
 Define_Module(PlainInit);

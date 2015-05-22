@@ -41,7 +41,7 @@ class Tester : public cSimpleModule
     Tester() : cSimpleModule(16384) { }
     void test(cModule *base, const char *path);
     void sep() {EV << "---\n";}
-    void activity();
+    void activity() override;
 };
 
 Define_Module(Tester);
@@ -49,7 +49,7 @@ Define_Module(Tester);
 void Tester::test(cModule *base, const char *path)
 {
     cModule *result = base->getModuleByPath(path);
-    EV << base->getFullPath() << " + " << (path ? path : "NULL") << " = " <<  (result ? result->getFullPath() : "NULL") << endl;
+    EV << base->getFullPath() << " + " << (path ? path : "nullptr") << " = " <<  (result ? result->getFullPath() : "nullptr") << endl;
 }
 
 void Tester::activity()
@@ -105,7 +105,7 @@ void Tester::activity()
     sep();
 
     // corner cases at root
-    test(root, NULL);
+    test(root, nullptr);
     test(root, "");
     test(root, ".");
     test(root, "^");
@@ -116,7 +116,7 @@ void Tester::activity()
     sep();
 
     // corner cases at host0
-    test(host0, NULL);
+    test(host0, nullptr);
     test(host0, "");
     test(host0, ".");
     test(host0, "^.");
@@ -142,23 +142,23 @@ Test + server = Test.server
 Test + host[2] = Test.host[2]
 Test + server.tcp = Test.server.tcp
 Test + host[2].nic[2] = Test.host[2].nic[2]
-Test + missing = NULL
-Test + host[2].missing = NULL
+Test + missing = nullptr
+Test + host[2].missing = nullptr
 ---
 Test + Test = Test
 Test + Test.server = Test.server
 Test + Test.host[2] = Test.host[2]
 Test + Test.server.tcp = Test.server.tcp
 Test + Test.host[2].nic[2] = Test.host[2].nic[2]
-Test + Test.missing = NULL
-Test + Test.host[2].missing = NULL
+Test + Test.missing = nullptr
+Test + Test.host[2].missing = nullptr
 ---
 Test + .server = Test.server
 Test + .host[2] = Test.host[2]
 Test + .server.tcp = Test.server.tcp
 Test + .host[2].nic[2] = Test.host[2].nic[2]
-Test + .missing = NULL
-Test + .host[2].missing = NULL
+Test + .missing = nullptr
+Test + .host[2].missing = nullptr
 ---
 Test.host[0] + server.tcp = Test.server.tcp
 Test.host[0] + Test.server.tcp = Test.server.tcp
@@ -171,21 +171,21 @@ Test.host[0] + ^.host[1].tcp = Test.host[1].tcp
 Test.host[0] + .^ = Test
 Test.host[0] + .^.host[1] = Test.host[1]
 Test.host[0] + .^.host[1].tcp = Test.host[1].tcp
-Test.host[0] + .missing = NULL
-Test.host[0] + .^.missing = NULL
-Test.host[0] + .^.host[1].missing = NULL
+Test.host[0] + .missing = nullptr
+Test.host[0] + .^.missing = nullptr
+Test.host[0] + .^.host[1].missing = nullptr
 ---
-Test + NULL = NULL
-Test +  = NULL
+Test + nullptr = nullptr
+Test +  = nullptr
 Test + . = Test
-Test + ^ = NULL
-Test + ^. = NULL
-Test + .^ = NULL
-Test + ^.^ = NULL
-Test + .^.^ = NULL
+Test + ^ = nullptr
+Test + ^. = nullptr
+Test + .^ = nullptr
+Test + ^.^ = nullptr
+Test + .^.^ = nullptr
 ---
-Test.host[0] + NULL = NULL
-Test.host[0] +  = NULL
+Test.host[0] + nullptr = nullptr
+Test.host[0] +  = nullptr
 Test.host[0] + . = Test.host[0]
 Test.host[0] + ^. = Test
 Test.host[0] + .tcp. = Test.host[0].tcp

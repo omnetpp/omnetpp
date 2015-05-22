@@ -10,9 +10,9 @@ class Module : public cSimpleModule
 {
   public:
     Module() : cSimpleModule(32768) { }
-    virtual void initialize();
-    virtual void activity();
-    virtual void finish();
+    virtual void initialize() override;
+    virtual void activity() override;
+    virtual void finish() override;
 };
 
 Define_Module(Module);

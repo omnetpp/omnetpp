@@ -25,7 +25,7 @@ EV << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
 
 PRINT(msg2.getName());
 PRINT(msg2.getBitLength());
-PRINT(msg2.getEncapsulatedPacket()==NULL);
+PRINT(msg2.getEncapsulatedPacket()==nullptr);
 
 cPacket *payload2 = msg2.decapsulate();
 PRINT(payload2->getName());
@@ -35,7 +35,7 @@ PRINT(payload2->getBitLength());
 isBufferEmpty:1
 msg2.getName():msg
 msg2.getBitLength():1623
-msg2.getEncapsulatedPacket()==NULL:0
+msg2.getEncapsulatedPacket()==nullptr:0
 payload2->getName():payload
 payload2->getBitLength():123
 

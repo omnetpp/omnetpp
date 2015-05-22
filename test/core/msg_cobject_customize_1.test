@@ -22,7 +22,7 @@ class MyClass : public MyClass_Base
   private:
     int m;
   public:
-    MyClass(const char *name=NULL) : MyClass_Base(name) {m=0;}
+    MyClass(const char *name=nullptr) : MyClass_Base(name) {m=0;}
     MyClass(const MyClass& other) : MyClass_Base() {operator=(other);setName(other.getName());}
     MyClass& operator=(const MyClass& other) {MyClass_Base::operator=(other); m=other.m; return *this;}
     virtual MyClass *dup() const {return new MyClass(*this);}

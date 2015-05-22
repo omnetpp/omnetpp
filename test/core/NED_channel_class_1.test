@@ -40,7 +40,7 @@ class ChannelWithoutNamespace: public cIdealChannel
 {
   public:
     ChannelWithoutNamespace() { }
-    virtual void processMessage(cMessage *msg, simtime_t t, result_t& result);
+    virtual void processMessage(cMessage *msg, simtime_t t, result_t& result) override;
 };
 
 Define_Channel(ChannelWithoutNamespace);
@@ -57,7 +57,7 @@ class Simple : public cSimpleModule
 {
   public:
     Simple() : cSimpleModule(16384) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(Simple);

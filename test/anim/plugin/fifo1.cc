@@ -9,7 +9,7 @@
 
 void FF1AbstractFifo::activity()
 {
-    msgServiced = NULL;
+    msgServiced = nullptr;
     endServiceMsg = new cMessage("end-service");
     queue.setName("queue");
 
@@ -21,7 +21,7 @@ void FF1AbstractFifo::activity()
             endService( msgServiced );
             if (queue.empty())
             {
-                msgServiced = NULL;
+                msgServiced = nullptr;
             }
             else
             {

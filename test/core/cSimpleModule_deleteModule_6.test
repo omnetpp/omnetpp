@@ -38,7 +38,7 @@ class NodeA : public cSimpleModule
 {
   public:
     NodeA() : cSimpleModule(16384) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(NodeA);
@@ -56,7 +56,7 @@ class NodeB : public cSimpleModule
 {
   public:
     NodeB() : cSimpleModule(16384) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(NodeB);
@@ -75,8 +75,8 @@ void NodeB::activity()
 class Deleter : public cSimpleModule
 {
   public:;
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 Define_Module(Deleter);

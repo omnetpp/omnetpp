@@ -42,7 +42,7 @@ TestMessage msg2("tmp");
 msg2.parsimUnpack(buffer);
 EV << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
 
-EV << ObjectPrinter(NULL, "*:declaredOn(@TESTNAME@::TestMessage)",4).printObjectToString(&msg2);
+EV << ObjectPrinter(nullptr, "*:declaredOn(@TESTNAME@::TestMessage)",4).printObjectToString(&msg2);
 
 %subst: /omnetpp:://
 %contains: stdout

@@ -43,7 +43,7 @@ class Node1 : public cSimpleModule
 {
   public:
     Node1() : cSimpleModule(16384) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(Node1);
@@ -93,7 +93,7 @@ class Node2 : public cSimpleModule
 {
   public:
     Node2() : cSimpleModule(16384) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(Node2);

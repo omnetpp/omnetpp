@@ -60,9 +60,9 @@ class Node : public cSimpleModule
     enum Kind {Default=0, Send, SendDirect, Schedule, Cancel, Bubble, MethodCalls, CreateModule, DeleteModule};
     cMessage *timer;
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
-    virtual void finish();
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
+    virtual void finish() override;
     Node *getPeer();
     void createSomeModule();
     void deleteSomeModule();
@@ -88,7 +88,7 @@ void Node::initialize()
         scheduleAt(simTime()+7, new cMessage("createModule", CreateModule));
         scheduleAt(simTime()+8, new cMessage("deleteModule", DeleteModule));
     }
-    timer = NULL;
+    timer = nullptr;
 }
 
 Node *Node::getPeer()
@@ -119,7 +119,7 @@ void Node::handleMessage(cMessage *msg)
         break;
     case Cancel:
         EV << "canceling timer\n";
-        ASSERT(timer!=NULL);
+        ASSERT(timer!=nullptr);
         delete cancelEvent(timer);
         break;
     case Bubble:

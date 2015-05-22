@@ -64,7 +64,7 @@ void Tester::activity()
     simsignal_t signalIDs[] = {10,63,64,70};
     int numSignalIDs = 4;
     for (int i=0; i<numSignalIDs; i++)
-        ASSERT(getSignalName(signalIDs[i]) != NULL); // make sure our test signals are all registered
+        ASSERT(getSignalName(signalIDs[i]) != nullptr); // make sure our test signals are all registered
 
     getSimulation()->getSystemModule()->subscribe(PRE_MODEL_CHANGE, this);
     getSimulation()->getSystemModule()->subscribe(POST_MODEL_CHANGE, this);
@@ -78,7 +78,7 @@ void Tester::activity()
             // create a node
             int k = intuniform(0, nodes.size());
             cModule *parent = k==(int)nodes.size() ? getSimulation()->getSystemModule() : nodes[k];
-            ASSERT(parent!=NULL);
+            ASSERT(parent!=nullptr);
             std::string name = stringf("node%d",i);
             EV << "CREATING NODE " << parent->getFullPath() << "." << name << "\n";
             cModule *node = type->createScheduleInit(name.c_str(), parent);

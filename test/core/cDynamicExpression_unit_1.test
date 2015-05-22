@@ -10,7 +10,7 @@ void test(const char *expr)
     e.parse(expr);
     std::string result;
     try {
-        cNEDValue v = e.evaluate(NULL);
+        cNEDValue v = e.evaluate(nullptr);
         result = v.str();
     } catch (std::exception& e) {
         result = e.what();

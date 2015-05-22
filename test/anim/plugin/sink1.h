@@ -17,8 +17,8 @@ class FF1Sink : public cSimpleModule
     cStdDev qstats; // needs to be accessed from finish() too
   public:
     FF1Sink() : cSimpleModule(16384) {}
-    virtual void activity();
-    virtual void finish();
+    virtual void activity() override;
+    virtual void finish() override;
 };
 
 #endif

@@ -5,7 +5,7 @@ USING_NAMESPACE
 class Target : public cSimpleModule
 {
   protected:
-    virtual void handleMessage(cMessage *msg);
+    virtual void handleMessage(cMessage *msg) override;
   public:
     virtual void doWhatever(int x);
 };
@@ -29,7 +29,7 @@ class Mod : public cSimpleModule
     int ctr;
   public:
     Mod() : cSimpleModule(16384) { }
-    virtual void activity();
+    virtual void activity() override;
     void callPrintX(const char *modname);
 };
 

@@ -4,7 +4,7 @@ USING_NAMESPACE
 
 class ArrangeFigures : public cModule
 {
-    virtual void initialize();
+    virtual void initialize() override;
 };
 
 Define_Module(ArrangeFigures);
@@ -24,7 +24,7 @@ void ArrangeFigures::initialize()
         if (property->isName("figure")) {
             const char *name = property->getIndex();
             cFigure *figure = canvas->getFigure(name);
-            ASSERT(figure!=NULL);
+            ASSERT(figure!=nullptr);
             figure->move(0.0, dy);
             cLabelFigure *label = new cLabelFigure();
             label->setText(property->info().c_str());

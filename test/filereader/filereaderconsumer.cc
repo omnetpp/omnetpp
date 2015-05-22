@@ -24,20 +24,20 @@ USING_NAMESPACE
 void runConsumer(const char *filename, double duration)
 {
     timeval start,end, now;
-    gettimeofday(&start,NULL);
+    gettimeofday(&start,nullptr);
     end = timeval_add(start, duration);
 
     while (true)
     {
         if (duration > 0) {
-            gettimeofday(&now, NULL);
+            gettimeofday(&now, nullptr);
             if (timeval_greater(now, end))
                 break;
         }
 
         FileReader reader(filename);
         char *line;
-        while ((line=reader.getNextLineBufferPointer())!=NULL)
+        while ((line=reader.getNextLineBufferPointer())!=nullptr)
         {
             //usleep(1);
             int len=reader.getCurrentLineLength();

@@ -15,8 +15,8 @@ class FF1Generator : public cSimpleModule
 {
   public:
     FF1Generator() : cSimpleModule(16384) {}
-    virtual void activity();
-    virtual void finish();
+    virtual void activity() override;
+    virtual void finish() override;
 };
 
 #endif

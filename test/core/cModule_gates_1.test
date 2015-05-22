@@ -44,7 +44,7 @@ class Node : public cSimpleModule
 
   public:
     Node() : cSimpleModule(16384) { }
-    virtual void activity();
+    virtual void activity() override;
     void createRandomGate();
     void deleteRandomGate();
     void setRandomGateSize();
@@ -98,7 +98,7 @@ void Node::checkOneGate(const char *gatename, cGate::Type type, int size, int in
     if (size!=0) {
         ASSERT(hasGate(gatename, index));
         cGate *g = gate(gatename, index);
-        ASSERT(g != NULL);
+        ASSERT(g != nullptr);
         int id = g->getId();
         ASSERT(findGate(gatename, index) == id);
         ASSERT(gate(id) == g);
@@ -197,7 +197,7 @@ void Node::testGateIterator()
     std::set<cGate *> visited;
     for (GateIterator i(this); !i.end(); i++) {
         cGate *g = i();
-        ASSERT(g!=NULL);
+        ASSERT(g!=nullptr);
         ASSERT(gate(g->getId()) == g);
         ASSERT(visited.count(g)==0);
         visited.insert(g);
@@ -224,7 +224,7 @@ void Node::checkAllGateIds()
 
         bool exists = hasGate(gatename);
 
-        cGate *g = NULL;
+        cGate *g = nullptr;
         try { g = gate(id); } catch(std::exception& e) { }
 
         if (g && id!=g->getId())
@@ -232,9 +232,9 @@ void Node::checkAllGateIds()
         if (g && !g->isName(gatename))
             throw cRuntimeError("found another gate under the same ID -- IDs get reused???");
 
-        if (exists && gateSize(gatename)!=0 && g==NULL)
+        if (exists && gateSize(gatename)!=0 && g==nullptr)
             throw cRuntimeError("gate not found by old ID -- IDs change???");
-        if (!exists && g!=NULL)
+        if (!exists && g!=nullptr)
             throw cRuntimeError("found a gate with the ID of a deleted gate -- IDs get reused???");
     }
 }

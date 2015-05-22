@@ -39,7 +39,7 @@ class Sender : public cSimpleModule
 {
   public:
     Sender() : cSimpleModule(32768) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(Sender);
@@ -54,7 +54,7 @@ class Receiver : public cSimpleModule
 {
   public:
     Receiver() : cSimpleModule(32768) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(Receiver);

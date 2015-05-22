@@ -68,7 +68,7 @@ class TestModule : public cSimpleModule {
         }
 
     protected:
-        virtual void activity() {
+        virtual void activity() override {
             setName("testModuleName");
             testNonClassFunction();
             testStaticMemberFunction();

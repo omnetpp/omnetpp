@@ -10,9 +10,9 @@ cOwnedObject *msg = new cMessage();
 cMessage *p1 = check_and_cast<cMessage *>(msg);
 cOwnedObject *p2 = check_and_cast<cOwnedObject *>(msg);
 cObject *p3 = check_and_cast<cObject *>(msg);
-EV << (p1!=NULL) << endl;
-EV << (p2!=NULL) << endl;
-EV << (p3!=NULL) << endl;
+EV << (p1!=nullptr) << endl;
+EV << (p2!=nullptr) << endl;
+EV << (p3!=nullptr) << endl;
 
 %contains: stdout
 1

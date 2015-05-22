@@ -30,7 +30,7 @@ class Controller2 : public cSimpleModule
 {
   public:
     Controller2() : cSimpleModule(16384) {}
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(Controller2);

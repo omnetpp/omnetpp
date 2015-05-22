@@ -38,7 +38,7 @@ void testFileEcho(const char *file, bool forward)
 
     char *line;
 
-    while ((line = (forward ? fileReader.getNextLineBufferPointer() : fileReader.getPreviousLineBufferPointer())) != NULL)
+    while ((line = (forward ? fileReader.getNextLineBufferPointer() : fileReader.getPreviousLineBufferPointer())) != nullptr)
         printf("%.*s", fileReader.getCurrentLineLength(), line);
 }
 

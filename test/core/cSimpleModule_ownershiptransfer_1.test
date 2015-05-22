@@ -32,7 +32,7 @@ class First : public cSimpleModule
 {
   public:
     First() : cSimpleModule(16384) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 
 class Second : public cSimpleModule
@@ -41,7 +41,7 @@ class Second : public cSimpleModule
     cMessage *receivedMsg;
   public:
     Second() : cSimpleModule(16384) { }
-    virtual void activity();
+    virtual void activity() override;
   public:
     void accept(cMessage *msg); // stores in 'receivedMsg' member
 };

@@ -29,8 +29,8 @@ class Node : public cSimpleModule
 {
   public:
     Node() : cSimpleModule() { }
-    virtual void handleMessage(cMessage *) { }
-    virtual void finish();
+    virtual void handleMessage(cMessage *) override { }
+    virtual void finish() override;
 };
 
 Define_Module(Node);

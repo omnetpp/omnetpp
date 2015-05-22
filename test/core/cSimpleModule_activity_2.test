@@ -1,5 +1,5 @@
 %description:
-Dynamically creates an activity based  module and tests whether the 
+Dynamically creates an activity based  module and tests whether the
 coroutine library works correctly.
 
 %file: test.ned
@@ -30,7 +30,7 @@ class Simple : public cSimpleModule
 {
   public:
     Simple() : cSimpleModule(16384) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 Define_Module(Simple);
 
@@ -50,7 +50,7 @@ class Shadow : public cSimpleModule
 {
   public:
     Shadow() : cSimpleModule(16384) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 Define_Module(Shadow);
 

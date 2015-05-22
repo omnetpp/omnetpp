@@ -9,9 +9,9 @@ class SignalSource : public cSimpleModule
   protected:
     int count;
     int numErrors;
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
-    virtual void finish();
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
+    virtual void finish() override;
     virtual void emitSignal(cXMLElement *elem);
 };
 
@@ -68,9 +68,9 @@ void SignalSource::emitSignal(cXMLElement *elem)
     const char *type = elem->getAttribute("type");
     const char *value = elem->getAttribute("value");
     const char *timestamp = elem->getAttribute("timestamp");
-    ASSERT(name!=NULL);
-    ASSERT(type!=NULL);
-    ASSERT(value!=NULL);
+    ASSERT(name!=nullptr);
+    ASSERT(type!=nullptr);
+    ASSERT(value!=nullptr);
 
     EV << "t=" << simTime() << "s: emit \"" << name << "\" type=" << type << " value=" << value;
     if (timestamp)
@@ -78,7 +78,7 @@ void SignalSource::emitSignal(cXMLElement *elem)
     EV << "\n";
 
     simsignal_t signalID = registerSignal(name);
-    cObject *obj = NULL;
+    cObject *obj = nullptr;
 
     try {
         if (!timestamp)
@@ -86,16 +86,16 @@ void SignalSource::emitSignal(cXMLElement *elem)
             if (strcmp(type, "bool")==0)
                 emit(signalID, value[0]=='t');
             else if (strcmp(type, "long")==0)
-                emit(signalID, strtol(value, NULL, 10));
+                emit(signalID, strtol(value, nullptr, 10));
             else if (strcmp(type, "unsigned long")==0)
-                emit(signalID, strtoul(value, NULL, 10));
+                emit(signalID, strtoul(value, nullptr, 10));
             else if (strcmp(type, "double")==0)
-                emit(signalID, strtod(value, NULL));
+                emit(signalID, strtod(value, nullptr));
             else if (strcmp(type, "simtime_t")==0)
                 emit(signalID, STR_SIMTIME(value));
             else if (strcmp(type, "string")==0)
                 emit(signalID, value);
-            else if (strcmp(type, "NULL")==0)
+            else if (strcmp(type, "nullptr")==0)
                 emit(signalID, (cObject*)0);
             else // interpret as class name
                 emit(signalID, obj = createOne(type));
@@ -107,17 +107,17 @@ void SignalSource::emitSignal(cXMLElement *elem)
             if (strcmp(type, "bool")==0)
                 tsval.set(t, value[0]=='t');
             else if (strcmp(type, "long")==0)
-                tsval.set(t, strtol(value, NULL, 10));
+                tsval.set(t, strtol(value, nullptr, 10));
             else if (strcmp(type, "unsigned long")==0)
-                tsval.set(t, strtoul(value, NULL, 10));
+                tsval.set(t, strtoul(value, nullptr, 10));
             else if (strcmp(type, "double")==0)
-                tsval.set(t, strtod(value, NULL));
+                tsval.set(t, strtod(value, nullptr));
             else if (strcmp(type, "simtime_t")==0)
                 tsval.set(t, STR_SIMTIME(value));
             else if (strcmp(type, "string")==0)
                 tsval.set(t, value);
-            else if (strcmp(type, "NULL")==0)
-                tsval.set(t, (cObject*)0);
+            else if (strcmp(type, "nullptr")==0)
+                tsval.set(t, (cObject*)nullptr);
             else // interpret as class name
                 tsval.set(t, obj = createOne(type));
             emit(signalID, &tsval);

@@ -31,8 +31,8 @@ message Derived2 extends OPP::cMessage { }  // extends OMNeT++ cMessage
 ::@TESTNAME@::Derived2 d2;
 
 // assest that the correct cMessage base class was generated for Derived1 and Derived2
-ASSERT(dynamic_cast< ::@TESTNAME@::cMessage*>(&d1) != NULL);
-ASSERT(dynamic_cast< ::@TESTNAME@::cMessage*>(&d2) == NULL);
+ASSERT(dynamic_cast< ::@TESTNAME@::cMessage*>(&d1) != nullptr);
+ASSERT(dynamic_cast< ::@TESTNAME@::cMessage*>(&d2) == nullptr);
 
 // check descriptor full name
 EV << x.getDescriptor()->getFullName() << "\n";

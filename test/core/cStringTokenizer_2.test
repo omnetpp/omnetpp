@@ -8,13 +8,13 @@ const char *str = "a b---c - /-- d/ e";
 const char *token;
 
 cStringTokenizer tok1(str, "- ");
-while ((token = tok1.nextToken())!=NULL)
+while ((token = tok1.nextToken())!=nullptr)
     EV << ":" << token;
 EV << ".\n";
 
 cStringTokenizer tok2(str);
 tok2.setDelimiter("- ");
-while ((token = tok2.nextToken())!=NULL)
+while ((token = tok2.nextToken())!=nullptr)
     EV << ":" << token;
 EV << ".\n";
 
@@ -24,7 +24,7 @@ tok3.setDelimiter("- ");
 tok3.nextToken();
 tok3.nextToken();
 tok3.setDelimiter("/");
-while ((token = tok3.nextToken())!=NULL)
+while ((token = tok3.nextToken())!=nullptr)
     EV << ":" << token;
 EV << ".\n";
 

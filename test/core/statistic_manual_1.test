@@ -10,7 +10,7 @@ cResultRecorder *vectorRecorder = cResultRecorderDescriptor::get("vector")->crea
 opp_string_map *attrs = new opp_string_map;
 (*attrs)["title"] = "Queue Length";
 (*attrs)["unit"] = "packets";
-vectorRecorder->init(this, "queueLength", "vector", NULL, attrs);
+vectorRecorder->init(this, "queueLength", "vector", nullptr, attrs);
 
 subscribe(signal, removeRepeatsFilter);
 removeRepeatsFilter->addDelegate(vectorRecorder);

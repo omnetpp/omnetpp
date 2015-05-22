@@ -15,7 +15,7 @@ Define_Module(StressDirect);
 
 RandomModuleSelector::RandomModuleSelector()
 {
-    selectedModule = NULL;
+    selectedModule = nullptr;
     numberOfVisitedModules = 0;
 }
 

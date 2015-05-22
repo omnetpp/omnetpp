@@ -36,7 +36,7 @@ class TestChannel: public cIdealChannel
   public:
     TestChannel() { }
 
-    virtual void initialize() {
+    virtual void initialize() override {
         ASSERT(getSimulation()->getContext() == this);
         ASSERT(getSimulation()->getContextType() == CTX_INITIALIZE);
         EV << "- " << getFullPath() << " initialize\n";
@@ -49,7 +49,7 @@ class TestChannel: public cIdealChannel
         cIdealChannel::processMessage(msg, t, result);
     }
 
-    virtual void finish() {
+    virtual void finish() override {
         ASSERT(getSimulation()->getContext() == this);
         ASSERT(getSimulation()->getContextType() == CTX_FINISH);
         EV << "- " << getFullPath() << " finish\n";
@@ -64,14 +64,14 @@ class Node : public cSimpleModule
   public:
     Node() { }
 
-    virtual void initialize() {
+    virtual void initialize() override {
         ASSERT(getSimulation()->getContext() == this);
         ASSERT(getSimulation()->getContextType() == CTX_INITIALIZE);
         EV << "- " << getFullPath() << " initialize\n";
         scheduleAt(1, new cMessage("timer"));
     }
 
-    virtual void handleMessage(cMessage *msg) {
+    virtual void handleMessage(cMessage *msg) override {
         ASSERT(getSimulation()->getContext() == this);
         ASSERT(getSimulation()->getContextType() == CTX_EVENT);
         EV << "- " << getFullPath() << " handleMessage: \"" << msg->getName() << "\"\n";
@@ -80,7 +80,7 @@ class Node : public cSimpleModule
         delete msg;
     }
 
-    virtual void finish() {
+    virtual void finish() override {
         ASSERT(getSimulation()->getContext() == this);
         ASSERT(getSimulation()->getContextType() == CTX_FINISH);
         EV << "- " << getFullPath() << " finish\n";

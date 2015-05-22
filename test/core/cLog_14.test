@@ -27,7 +27,7 @@ namespace @TESTNAME@ {
 
 class TestModule : public cSimpleModule {
     protected:
-        virtual void initialize() {
+        virtual void initialize() override {
 #ifdef USE_OMNETPP4x_FINGERPRINTS
             EV << "#UNRESOLVED: USE_OMNETPP4x_FINGERPRINTS mode produces different fingerprints from the expected ones\n";
 #endif
@@ -41,7 +41,7 @@ class TestModule : public cSimpleModule {
             scheduleAt(3.23, new cMessage("Foo"));
             scheduleAt(3.999, new cMessage("Bazz"));
         }
-        virtual void handleMessage(cMessage *msg) {
+        virtual void handleMessage(cMessage *msg) override {
             EV << "Received " << msg->getName() << endl;
             delete msg;
         }

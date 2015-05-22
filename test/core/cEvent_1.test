@@ -7,9 +7,9 @@ class SayHelloEvent : public cEvent
 {
   public:
     SayHelloEvent(const char *name, simtime_t t);
-    virtual cEvent *dup() const {copyNotSupported(); return NULL;}
-    virtual cObject *getTargetObject() const {return NULL;}
-    virtual void execute();
+    virtual cEvent *dup() const override {copyNotSupported(); return nullptr;}
+    virtual cObject *getTargetObject() const override {return nullptr;}
+    virtual void execute() override;
 };
 
 SayHelloEvent::SayHelloEvent(const char *name, simtime_t t) : cEvent(name)
@@ -26,9 +26,9 @@ void SayHelloEvent::execute()
 class Module : public cSimpleModule
 {
   public:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
-    virtual void finish();
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
+    virtual void finish() override;
 };
 
 Define_Module(Module);

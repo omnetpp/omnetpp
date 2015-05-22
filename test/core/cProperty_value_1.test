@@ -4,7 +4,7 @@ Tests cProperty keys and values
 %global:
 #include <string.h>
 #define PRINTINFO     EV << prop->info() << "\n";
-#define PRINTKEY(k)   EV << "key(" << k << "): has=" << (prop->containsKey(k)?"yes":"no") << " len=" << (prop->containsKey(k) ? prop->getNumValues(k) : -1) << "\n";
+#define PRINTKEY(k)   EV << "key(" << (k?k:"nullptr") << "): has=" << (prop->containsKey(k)?"yes":"no") << " len=" << (prop->containsKey(k) ? prop->getNumValues(k) : -1) << "\n";
 
 %activity:
 //__asm int 3;
@@ -20,7 +20,7 @@ PRINTKEY("");
 prop->addKey("fookey"); PRINTINFO;
 prop->setValue("fookey", 1, "eins"); PRINTINFO;
 prop->setValue("fookey", 0, "zero"); PRINTINFO;
-prop->setValue("fookey", 2, NULL); PRINTINFO;
+prop->setValue("fookey", 2, nullptr); PRINTINFO;
 prop->addKey("barkey"); PRINTINFO;
 prop->addKey("bazkey"); PRINTINFO;
 
@@ -32,7 +32,7 @@ PRINTKEY("");
 PRINTKEY("fookey");
 PRINTKEY("bazkey");
 PRINTKEY("nope");
-PRINTKEY(NULL);
+PRINTKEY(nullptr);
 
 prop->erase("barkey"); PRINTINFO;
 prop->erase("fookey"); PRINTINFO;
@@ -72,7 +72,7 @@ key(): has=yes len=5
 key(fookey): has=yes len=10
 key(bazkey): has=yes len=0
 key(nope): has=no len=-1
-key(0): has=yes len=5
+key(nullptr): has=yes len=5
 @foo(,,zwei,,vier;fookey=zero,eins,,,,,,,,neun;bazkey=)
 @foo(,,zwei,,vier;bazkey=)
 @foo(bazkey=)

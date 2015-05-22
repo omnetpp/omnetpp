@@ -32,7 +32,7 @@ class Node : public cSimpleModule
 {
   public:
     Node() : cSimpleModule(16384) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(Node);
@@ -41,7 +41,7 @@ void Node::activity()
 {
     for (int i=0; i<5; i++)
     {
-        bool exists = (getParentModule()->getSubmodule("suicide") != NULL);
+        bool exists = (getParentModule()->getSubmodule("suicide") != nullptr);
         EV << "t=" << simTime()  << ": exists=" << exists << endl;
         wait(1);
     }
@@ -50,8 +50,8 @@ void Node::activity()
 class Suicide : public cSimpleModule
 {
   public:;
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 Define_Module(Suicide);

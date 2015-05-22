@@ -7,9 +7,9 @@ and finish() doesn't get called.
 class Module : public cSimpleModule
 {
   public:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
-    virtual void finish();
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
+    virtual void finish() override;
 };
 
 Define_Module(Module);

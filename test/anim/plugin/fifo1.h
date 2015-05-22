@@ -23,8 +23,8 @@ class FF1AbstractFifo : public cSimpleModule
     cMessage *endServiceMsg;
     cQueue queue;
 
-    virtual void activity();
-    virtual void finish();
+    virtual void activity() override;
+    virtual void finish() override;
 
     // hook functions to (re)define behaviour
     virtual void arrival(cMessage *msg) {}
@@ -39,8 +39,8 @@ class FF1PacketFifo : public FF1AbstractFifo
 {
   public:
     FF1PacketFifo() {}
-    virtual simtime_t startService(cMessage *msg);
-    virtual void endService(cMessage *msg);
+    virtual simtime_t startService(cMessage *msg) override;
+    virtual void endService(cMessage *msg) override;
 };
 
 /**
@@ -50,8 +50,8 @@ class FF1BitFifo : public FF1AbstractFifo
 {
   public:
     FF1BitFifo() {}
-    virtual simtime_t startService(cMessage *msg);
-    virtual void endService(cMessage *msg);
+    virtual simtime_t startService(cMessage *msg) override;
+    virtual void endService(cMessage *msg) override;
 };
 
 #endif

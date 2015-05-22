@@ -28,7 +28,7 @@ PRINT(msg2.getSchedulingPriority());
 PRINT(msg2.getBitLength());
 PRINT(msg2.hasBitError());
 PRINT(msg2.getTimestamp());
-PRINT(msg2.getEncapsulatedPacket()==NULL);
+PRINT(msg2.getEncapsulatedPacket()==nullptr);
 
 %contains: stdout
 isBufferEmpty:1
@@ -37,5 +37,5 @@ msg2.getSchedulingPriority():8
 msg2.getBitLength():1500
 msg2.hasBitError():0
 msg2.getTimestamp():0.2234
-msg2.getEncapsulatedPacket()==NULL:1
+msg2.getEncapsulatedPacket()==nullptr:1
 

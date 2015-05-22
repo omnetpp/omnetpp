@@ -7,8 +7,8 @@ class WatchTest : public cSimpleModule
 {
   public:
     WatchTest() : cSimpleModule(16384) {}
-    virtual void activity();
-    virtual void handleParameterChange(const char *parname);
+    virtual void activity() override;
+    virtual void handleParameterChange(const char *parname) override;
 };
 
 Define_Module(WatchTest);
@@ -39,7 +39,7 @@ class APolygon : public cObject
     int n;
     int edgeLen;
     APolygon(int nsides, int edgeLength) {n=nsides; edgeLen=edgeLength;}
-    std::string info() const {
+    std::string info() const override {
         std::stringstream out;
         out << "n=" << n << ", edgeLen=" << edgeLen << " (printed by info())";
         return out.str();

@@ -51,7 +51,7 @@ class Gen : public cSimpleModule
 {
   public:
     Gen() : cSimpleModule(16384) { }
-    virtual void activity();
+    virtual void activity() override;
 };
 
 Define_Module(Gen);
@@ -87,7 +87,7 @@ void Gen::activity()
 class Sink : public cSimpleModule
 {
   public:
-    virtual void handleMessage(cMessage *msg);
+    virtual void handleMessage(cMessage *msg) override;
 };
 
 Define_Module(Sink);
