@@ -998,7 +998,7 @@ void Qtenv::updateNetworkRunDisplay()
 void Qtenv::updateStatusDisplay()
 {
     mainwindow->updateStatusDisplay();
-    CHK(Tcl_Eval(interp, "redrawTimeline"));
+    mainwindow->redrawTimeline();
 }
 
 void Qtenv::printEventBanner(cEvent *event)

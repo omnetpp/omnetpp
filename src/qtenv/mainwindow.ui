@@ -89,6 +89,31 @@
         </item>
        </layout>
       </item>
+      <item>
+       <widget class="QGraphicsView" name="timeLine">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>80</height>
+         </size>
+        </property>
+        <property name="backgroundBrush">
+         <brush brushstyle="NoBrush">
+          <color alpha="255">
+           <red>0</red>
+           <green>0</green>
+           <blue>0</blue>
+          </color>
+         </brush>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>
@@ -130,6 +155,9 @@
           <width>100</width>
           <height>100</height>
          </size>
+        </property>
+        <property name="contextMenuPolicy">
+         <enum>Qt::CustomContextMenu</enum>
         </property>
        </widget>
        <widget class="QTreeView" name="treeView_2">
@@ -668,8 +696,25 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>treeView</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>onTreeViewContextMenu(QPoint)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>123</x>
+     <y>288</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>276</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>inspectObject(QModelIndex)</slot>
+  <slot>onTreeViewContextMenu(QPoint)</slot>
  </slots>
 </ui>

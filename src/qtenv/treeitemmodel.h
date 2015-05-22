@@ -2,8 +2,15 @@
 #define TREEITEMMODEL_H
 
 #include <QAbstractItemModel>
+#include <QMenu>
 
+class QMainWindow;
 class cObject;
+
+typedef QPair<cObject*, int> ActionDataPair;
+
+Q_DECLARE_METATYPE(cObject*)
+Q_DECLARE_METATYPE(ActionDataPair)
 
 class TreeItemModel : public QAbstractItemModel
 {
@@ -26,6 +33,8 @@ public:
     virtual bool hasChildren(const QModelIndex &parent = QModelIndex()) const;
 
     void setRootObject(cObject *root);
+    QMenu *getContextMenu(QModelIndex &index, QMainWindow *mainWindow);
+    QVector<int> supportedInspTypes(cObject *object);
 };
 
 #endif // TREEITEMMODEL_H

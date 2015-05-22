@@ -17,6 +17,7 @@ NAMESPACE_BEGIN
 class cCanvas;
 namespace qtenv {
 class Qtenv;
+class Inspector;
 }
 
 NAMESPACE_END
@@ -38,6 +39,7 @@ public:
     QTreeView *getObjectTree();
     void updateStatusDisplay();
     void updateNetworkRunDisplay();
+    void redrawTimeline();
 
     ~MainWindow();
 
@@ -51,6 +53,11 @@ private slots:
     void on_actionExpressRun_triggered();
     void on_actionRunUntil_triggered();
     void inspectObject(QModelIndex index);
+    void onTreeViewContextMenu(QPoint point);
+
+public slots:
+    void onClickOpenInspector();
+    void onClickRun();
 
 private:
     enum Mode { STEP, NORMAL, FAST, EXPRESS, NOT_RUNNING};
@@ -59,7 +66,7 @@ private:
 
     bool isRunning();
     bool checkRunning();
-    void setGuiForRunmode(Mode mode, bool untilMode = false);
+    void setGuiForRunmode(Mode mode, qtenv::Inspector *insp = nullptr, bool untilMode = false);
     void runSimulation(Mode mode);
 
     void updateSimtimeDisplay();
@@ -68,6 +75,11 @@ private:
     int getObjectId(cEvent *object);
     const char *getObjectShortTypeName(cObject *object);
     const char *stripNamespace(const char *className);
+
+    void inspectObject(cObject *object, int type = 0, const char *geometry = "");
+    void runSimulationLocal(qtenv::Inspector *insp, int runMode, cObject *object = nullptr);
+    int modeToRunMode(Mode mode);
+    Mode runModeToMode(int runMode);
 };
 
 #endif // MAINWINDOW_H
