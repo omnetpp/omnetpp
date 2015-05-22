@@ -68,13 +68,13 @@ class NEDXML_API NEDSAXHandler : public SAXHandler
 
     /** @name SAX event handlers */
     //@{
-    virtual void startElement(const char *name, const char **atts);
-    virtual void endElement(const char *name);
-    virtual void characterData(const char *s, int len);
-    virtual void processingInstruction(const char *target, const char *data);
-    virtual void comment(const char *data);
-    virtual void startCdataSection();
-    virtual void endCdataSection();
+    virtual void startElement(const char *name, const char **atts) override;
+    virtual void endElement(const char *name) override;
+    virtual void characterData(const char *s, int len) override;
+    virtual void processingInstruction(const char *target, const char *data) override;
+    virtual void comment(const char *data) override;
+    virtual void startCdataSection() override;
+    virtual void endCdataSection() override;
     //@}
 };
 

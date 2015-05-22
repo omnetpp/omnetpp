@@ -66,41 +66,41 @@ class EVENTLOG_API FilteredEvent : public IEvent
         IEvent *getEvent();
 
         // IEvent interface
-        virtual void synchronize(FileReader::FileChangedState change);
-        virtual IEventLog *getEventLog();
+        virtual void synchronize(FileReader::FileChangedState change) override;
+        virtual IEventLog *getEventLog() override;
 
-        virtual ModuleCreatedEntry *getModuleCreatedEntry() { return getEvent()->getModuleCreatedEntry(); }
+        virtual ModuleCreatedEntry *getModuleCreatedEntry() override { return getEvent()->getModuleCreatedEntry(); }
 
-        virtual file_offset_t getBeginOffset() { return getEvent()->getBeginOffset(); }
-        virtual file_offset_t getEndOffset() { return getEvent()->getEndOffset(); }
+        virtual file_offset_t getBeginOffset() override { return getEvent()->getBeginOffset(); }
+        virtual file_offset_t getEndOffset() override { return getEvent()->getEndOffset(); }
 
-        virtual EventEntry *getEventEntry() { return getEvent()->getEventEntry(); }
-        virtual int getNumEventLogEntries() { return getEvent()->getNumEventLogEntries(); }
-        virtual EventLogEntry *getEventLogEntry(int index) { return getEvent()->getEventLogEntry(index); }
+        virtual EventEntry *getEventEntry() override { return getEvent()->getEventEntry(); }
+        virtual int getNumEventLogEntries() override { return getEvent()->getNumEventLogEntries(); }
+        virtual EventLogEntry *getEventLogEntry(int index) override { return getEvent()->getEventLogEntry(index); }
 
-        virtual int getNumEventLogMessages() { return getEvent()->getNumEventLogMessages(); }
-        virtual int getNumBeginSendEntries() { return getEvent()->getNumBeginSendEntries(); }
-        virtual EventLogMessageEntry *getEventLogMessage(int index) { return getEvent()->getEventLogMessage(index); }
+        virtual int getNumEventLogMessages() override { return getEvent()->getNumEventLogMessages(); }
+        virtual int getNumBeginSendEntries() override { return getEvent()->getNumBeginSendEntries(); }
+        virtual EventLogMessageEntry *getEventLogMessage(int index) override { return getEvent()->getEventLogMessage(index); }
 
-        virtual eventnumber_t getEventNumber() { return eventNumber; }
-        virtual simtime_t getSimulationTime() { return getEvent()->getSimulationTime(); }
-        virtual int getModuleId() { return getEvent()->getModuleId(); }
-        virtual long getMessageId() { return getEvent()->getMessageId(); }
-        virtual eventnumber_t getCauseEventNumber() { return getEvent()->getCauseEventNumber(); }
+        virtual eventnumber_t getEventNumber() override { return eventNumber; }
+        virtual simtime_t getSimulationTime() override { return getEvent()->getSimulationTime(); }
+        virtual int getModuleId() override { return getEvent()->getModuleId(); }
+        virtual long getMessageId() override { return getEvent()->getMessageId(); }
+        virtual eventnumber_t getCauseEventNumber() override { return getEvent()->getCauseEventNumber(); }
 
-        virtual bool isSelfMessage(BeginSendEntry *beginSendEntry) { return getEvent()->isSelfMessage(beginSendEntry); }
-        virtual bool isSelfMessageProcessingEvent() { return getEvent()->isSelfMessageProcessingEvent(); }
-        virtual EndSendEntry *getEndSendEntry(BeginSendEntry *beginSendEntry) { return getEvent()->getEndSendEntry(beginSendEntry); };
-        virtual FilteredEvent *getPreviousEvent();
-        virtual FilteredEvent *getNextEvent();
+        virtual bool isSelfMessage(BeginSendEntry *beginSendEntry) override { return getEvent()->isSelfMessage(beginSendEntry); }
+        virtual bool isSelfMessageProcessingEvent() override { return getEvent()->isSelfMessageProcessingEvent(); }
+        virtual EndSendEntry *getEndSendEntry(BeginSendEntry *beginSendEntry) override { return getEvent()->getEndSendEntry(beginSendEntry); };
+        virtual FilteredEvent *getPreviousEvent() override;
+        virtual FilteredEvent *getNextEvent() override;
 
-        virtual FilteredEvent *getCauseEvent();
-        virtual IMessageDependency *getCause();
-        virtual BeginSendEntry *getCauseBeginSendEntry();
-        virtual IMessageDependencyList *getCauses();
-        virtual IMessageDependencyList *getConsequences();
+        virtual FilteredEvent *getCauseEvent() override;
+        virtual IMessageDependency *getCause() override;
+        virtual BeginSendEntry *getCauseBeginSendEntry() override;
+        virtual IMessageDependencyList *getCauses() override;
+        virtual IMessageDependencyList *getConsequences() override;
 
-        virtual void print(FILE *file = stdout, bool outputEventLogMessages = true) { getEvent()->print(file, outputEventLogMessages); }
+        virtual void print(FILE *file = stdout, bool outputEventLogMessages = true) override { getEvent()->print(file, outputEventLogMessages); }
 
     protected:
         void clearInternalState();

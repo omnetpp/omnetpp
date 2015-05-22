@@ -37,15 +37,15 @@ class WatchInspectorFactory : public InspectorFactory
   public:
     WatchInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) {
+    bool supportsObject(cObject *obj) override {
         // Return true if it's a watch for a simple type (int, double, string etc).
         // For structures, we prefer the normal GenericObjectInspector.
         // Currently we're prepared for cStdVectorWatcherBase.
         return dynamic_cast<cWatchBase *>(obj) && !dynamic_cast<cStdVectorWatcherBase *>(obj);
     }
-    int getInspectorType() {return INSP_OBJECT;}
-    double getQualityAsDefault(cObject *object) {return 2.0;}
-    Inspector *createInspector() {return new WatchInspector(this);}
+    int getInspectorType() override {return INSP_OBJECT;}
+    double getQualityAsDefault(cObject *object) override {return 2.0;}
+    Inspector *createInspector() override {return new WatchInspector(this);}
 };
 
 Register_InspectorFactory(WatchInspectorFactory);

@@ -40,9 +40,9 @@ class SCAVE_API StddevNode : public SingleSinkNode
     public:
         StddevNode();
         virtual ~StddevNode();
-        virtual bool isReady() const;
-        virtual void process();
-        virtual bool isFinished() const;
+        virtual bool isReady() const override;
+        virtual void process() override;
+        virtual bool isFinished() const override;
 
         virtual long getCount() const     {return numValues;}
         virtual double getSum() const     {return sumValues;}
@@ -58,11 +58,11 @@ class SCAVE_API StddevNode : public SingleSinkNode
 class SCAVE_API StddevNodeType : public SingleSinkNodeType
 {
     public:
-        virtual const char *getName() const {return "stddev";}
-        virtual const char *getDescription() const;
-        virtual bool isHidden() const {return true;}
-        virtual void getAttributes(StringMap& attrs) const;
-        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+        virtual const char *getName() const override {return "stddev";}
+        virtual const char *getDescription() const override;
+        virtual bool isHidden() const override {return true;}
+        virtual void getAttributes(StringMap& attrs) const override;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const override;
 };
 
 NAMESPACE_END

@@ -49,7 +49,7 @@ class COMMON_API opp_runtime_error : public std::runtime_error
     /**
      * Returns the text of the error. Redefined from std::exception.
      */
-    virtual const char *what() const throw() {return errormsg.c_str();}
+    virtual const char *what() const throw() override {return errormsg.c_str();}
 };
 
 NAMESPACE_END

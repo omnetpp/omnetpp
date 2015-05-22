@@ -63,11 +63,11 @@ class TKENV_API OutputVectorInspector : public Inspector
    public:
       OutputVectorInspector(InspectorFactory *f);
       ~OutputVectorInspector();
-      virtual void doSetObject(cObject *obj);
-      virtual void createWindow(const char *window, const char *geometry);
-      virtual void useWindow(const char *window);
-      virtual void refresh();
-      virtual int inspectorCommand(int argc, const char **argv);
+      virtual void doSetObject(cObject *obj) override;
+      virtual void createWindow(const char *window, const char *geometry) override;
+      virtual void useWindow(const char *window) override;
+      virtual void refresh() override;
+      virtual int inspectorCommand(int argc, const char **argv) override;
 
       // return textual information in general or about a value/value pair
       void generalInfo( char *buf );

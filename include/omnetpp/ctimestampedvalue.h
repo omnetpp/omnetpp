@@ -101,20 +101,20 @@ class SIM_API cTimestampedValue : public cITimestampedValue, public cObject
         //@}
 
         /** Returns the stored timestamp. */
-        virtual simtime_t_cref getTimestamp(simsignal_t signalID) const {return timestamp;}
+        virtual simtime_t_cref getTimestamp(simsignal_t signalID) const override {return timestamp;}
 
         /** Returns the data type of the stored value. */
-        virtual SimsignalType getValueType(simsignal_t signalID) const {return type;}
+        virtual SimsignalType getValueType(simsignal_t signalID) const override {return type;}
 
         /** @name Getters. Call the one that corresponds to the stored type. */
         //@{
-        virtual bool boolValue(simsignal_t signalID) const {return b;}
-        virtual long longValue(simsignal_t signalID) const {return l;}
-        virtual unsigned long unsignedLongValue(simsignal_t signalID) const {return ul;}
-        virtual double doubleValue(simsignal_t signalID) const {return d;}
-        virtual SimTime simtimeValue(simsignal_t signalID) const {return t;}
-        virtual const char *stringValue(simsignal_t signalID) const {return s;}
-        virtual cObject *objectValue(simsignal_t signalID) const {return obj;}
+        virtual bool boolValue(simsignal_t signalID) const override {return b;}
+        virtual long longValue(simsignal_t signalID) const override {return l;}
+        virtual unsigned long unsignedLongValue(simsignal_t signalID) const override {return ul;}
+        virtual double doubleValue(simsignal_t signalID) const override {return d;}
+        virtual SimTime simtimeValue(simsignal_t signalID) const override {return t;}
+        virtual const char *stringValue(simsignal_t signalID) const override {return s;}
+        virtual cObject *objectValue(simsignal_t signalID) const override {return obj;}
         //@}
 };
 

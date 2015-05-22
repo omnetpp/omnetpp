@@ -85,7 +85,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
 
   protected:
     // internal use
-    virtual void arrived(cMessage *msg, cGate *ongate, simtime_t t);
+    virtual void arrived(cMessage *msg, cGate *ongate, simtime_t t) override;
 
   protected:
     /** @name Hooks for defining module behavior.
@@ -144,13 +144,13 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual std::string info() const;
+    virtual std::string info() const override;
 
     /**
      * Calls v->visit(this) for each contained object.
      * See cObject for more details.
      */
-    virtual void forEachChild(cVisitor *v);
+    virtual void forEachChild(cVisitor *v) override;
     //@}
 
     /** @name Redefined cModule functions. */
@@ -159,7 +159,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     /**
      * Creates a starting message for the module.
      */
-    virtual void scheduleStart(simtime_t t);
+    virtual void scheduleStart(simtime_t t) override;
 
     /**
      * Deletes the module and all its (dynamically created) submodules.
@@ -175,7 +175,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * access data members or functions of the deleted module, an should
      * return as soon as possible.
      */
-    virtual void deleteModule();
+    virtual void deleteModule() override;
     //@}
 
     /** @name Information about the module. */

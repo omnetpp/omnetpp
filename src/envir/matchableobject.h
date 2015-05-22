@@ -47,8 +47,8 @@ class ENVIR_API MatchableObjectAdapter : public MatchExpression::Matchable
     MatchableObjectAdapter(DefaultAttribute attr=FULLPATH, cObject *obj=nullptr);
     void setObject(cObject *obj);
     void setDefaultAttribute(DefaultAttribute attr) {this->attr = attr;}
-    virtual const char *getAsString() const;
-    virtual const char *getAsString(const char *attribute) const;
+    virtual const char *getAsString() const override;
+    virtual const char *getAsString(const char *attribute) const override;
 };
 
 NAMESPACE_END

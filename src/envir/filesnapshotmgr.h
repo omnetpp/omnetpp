@@ -56,12 +56,12 @@ class ENVIR_API cFileSnapshotManager : public cISnapshotManager
     /**
      * Called at the beginning of a simulation run.
      */
-    virtual void startRun();
+    virtual void startRun() override;
 
     /**
      * Called at the end of a simulation run.
      */
-    virtual void endRun();
+    virtual void endRun() override;
     //@}
 
     /** @name Snapshot management */
@@ -69,17 +69,17 @@ class ENVIR_API cFileSnapshotManager : public cISnapshotManager
     /**
      * Returns a stream where a snapshot can be written.
      */
-    virtual std::ostream *getStreamForSnapshot();
+    virtual std::ostream *getStreamForSnapshot() override;
 
     /**
      * Releases a stream after a snapshot was written.
      */
-    virtual void releaseStreamForSnapshot(std::ostream *os);
+    virtual void releaseStreamForSnapshot(std::ostream *os) override;
 
     /**
      * Returns the file name.
      */
-    const char *getFileName() const;
+    const char *getFileName() const override;
     //@}
 };
 

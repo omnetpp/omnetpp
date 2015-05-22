@@ -232,9 +232,9 @@ class COMMON_API Expression
     class COMMON_API Variable : public Functor
     {
       public:
-        virtual const char *getArgTypes() const {return "";}
-        virtual int getNumArgs() const {return 0;}
-        virtual std::string str(std::string args[], int numargs) {return getName();}
+        virtual const char *getArgTypes() const override {return "";}
+        virtual int getNumArgs() const override {return 0;}
+        virtual std::string str(std::string args[], int numargs) override {return getName();}
     };
 
     /**
@@ -244,7 +244,7 @@ class COMMON_API Expression
     {
       public:
         // returns name(arg1,arg2,...)
-        virtual std::string str(std::string args[], int numargs) {return Function_str(getName(), args, numargs);}
+        virtual std::string str(std::string args[], int numargs) override {return Function_str(getName(), args, numargs);}
     };
 
     /**
@@ -404,11 +404,11 @@ class COMMON_API MathFunction : public Expression::Function
     static bool supports(const char *name);
     MathFunction(const char *name);
     virtual ~MathFunction();
-    virtual Functor *dup() const;
-    virtual const char *getName() const;
-    virtual const char *getArgTypes() const;
-    virtual char getReturnType() const;
-    virtual Expression::Value evaluate(Expression::Value args[], int numargs);
+    virtual Functor *dup() const override;
+    virtual const char *getName() const override;
+    virtual const char *getArgTypes() const override;
+    virtual char getReturnType() const override;
+    virtual Expression::Value evaluate(Expression::Value args[], int numargs) override;
 };
 
 NAMESPACE_END

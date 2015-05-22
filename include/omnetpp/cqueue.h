@@ -171,33 +171,33 @@ class SIM_API cQueue : public cOwnedObject
      * Contained objects that are owned by the queue will be duplicated
      * so that the new queue will have its own copy of them.
      */
-    virtual cQueue *dup() const  {return new cQueue(*this);}
+    virtual cQueue *dup() const override  {return new cQueue(*this);}
 
     /**
      * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual std::string info() const;
+    virtual std::string info() const override;
 
     /**
      * Calls v->visit(this) for each contained object.
      * See cObject for more details.
      */
-    virtual void forEachChild(cVisitor *v);
+    virtual void forEachChild(cVisitor *v) override;
 
     /**
      * Serializes the object into an MPI send buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Deserializes the object from an MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Setup, insertion and removal functions. */

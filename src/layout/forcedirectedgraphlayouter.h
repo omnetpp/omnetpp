@@ -124,12 +124,12 @@ class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
     /**
      * Add node that can be moved.
      */
-    virtual void addMovableNode(int nodeId, double width, double height);
+    virtual void addMovableNode(int nodeId, double width, double height) override;
 
     /**
      * Add fixed node
      */
-    virtual void addFixedNode(int nodeId, double x, double y, double width, double height);
+    virtual void addFixedNode(int nodeId, double x, double y, double width, double height) override;
 
     /**
      * Add node that is anchored to a freely movable anchor point. Nodes anchored
@@ -139,27 +139,27 @@ class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
      *
      * offx, offy: offset to anchor point
      */
-    virtual void addAnchoredNode(int nodeId, const char *anchorname, double offx, double offy, double width, double height);
+    virtual void addAnchoredNode(int nodeId, const char *anchorname, double offx, double offy, double width, double height) override;
 
     /**
      * Add connection (graph edge)
      */
-    virtual void addEdge(int srcNodeId, int destNodeId, double preferredLength=0);
+    virtual void addEdge(int srcNodeId, int destNodeId, double preferredLength=0) override;
 
     /**
      * Add connection (graph edge) to enclosing (parent) module
      */
-    virtual void addEdgeToBorder(int srcNodeId, double preferredLength=0);
+    virtual void addEdgeToBorder(int srcNodeId, double preferredLength=0) override;
 
     /**
      * The layouting algorithm.
      */
-    virtual void execute();
+    virtual void execute() override;
 
     /**
      * Extracting the results
      */
-    virtual void getNodePosition(int nodeId, double& x, double& y);
+    virtual void getNodePosition(int nodeId, double& x, double& y) override;
 
   protected:
     void addBody(int nodeId, IBody *body);

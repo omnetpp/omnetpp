@@ -270,10 +270,10 @@ struct MapBasedResolver : public opp_substitutevariables_resolver
 {
     const std::map<std::string,std::string>& map;
     MapBasedResolver(const std::map<std::string,std::string>& map) : map(map) {}
-    virtual bool isVariableNameChar(char c) {
+    virtual bool isVariableNameChar(char c) override {
         return opp_isalnum(c) || c=='_';
     }
-    virtual std::string operator()(const std::string& name) {
+    virtual std::string operator()(const std::string& name) override {
         const std::map<std::string,std::string>::const_iterator it = map.find(name);
         if (it == map.end())
             throw opp_runtime_error("unknown variable: $%s", name.c_str());

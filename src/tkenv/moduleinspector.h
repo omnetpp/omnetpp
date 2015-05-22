@@ -60,12 +60,12 @@ class TKENV_API ModuleInspector : public Inspector
    public:
       ModuleInspector(InspectorFactory *f);
       ~ModuleInspector();
-      virtual void doSetObject(cObject *obj);
-      virtual void createWindow(const char *window, const char *geometry);
-      virtual void useWindow(const char *window);
-      virtual void refresh();
-      virtual void clearObjectChangeFlags();
-      virtual int inspectorCommand(int argc, const char **argv);
+      virtual void doSetObject(cObject *obj) override;
+      virtual void createWindow(const char *window, const char *geometry) override;
+      virtual void useWindow(const char *window) override;
+      virtual void refresh() override;
+      virtual void clearObjectChangeFlags() override;
+      virtual int inspectorCommand(int argc, const char **argv) override;
 
       bool needsRedraw() {return needs_redraw;}
 
@@ -89,7 +89,7 @@ class TKENV_API ModuleInspector : public Inspector
 
       // drawing methods:
       virtual void relayoutAndRedrawAll();
-      virtual void redraw();
+      virtual void redraw() override;
 
       virtual void redrawModules();
       virtual void redrawMessages();

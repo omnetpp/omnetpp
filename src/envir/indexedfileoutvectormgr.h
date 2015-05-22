@@ -91,12 +91,12 @@ class ENVIR_API cIndexedFileOutputVectorManager : public cFileOutputVectorManage
     Vectors vectors; // registered output vectors
 
   protected:
-    virtual VectorData *createVectorData();
+    virtual VectorData *createVectorData() override;
     void openIndexFile();
     void closeIndexFile();
-    virtual void initVector(VectorData *vp);
+    virtual void initVector(VectorData *vp) override;
     virtual void finalizeVector(Vector *vector);
-    virtual void writeRunData();
+    virtual void writeRunData() override;
     virtual void writeRecords();
     virtual void writeBlock(Vector *vector);
     virtual void writeBlockToIndexFile(Vector *vector);
@@ -117,29 +117,29 @@ class ENVIR_API cIndexedFileOutputVectorManager : public cFileOutputVectorManage
      * Deletes output vector  and index files if exists (left over from previous runs).
      * The file is not yet opened, it is done inside registerVector() on demand.
      */
-    virtual void startRun();
+    virtual void startRun() override;
 
     /**
      * Writes out last chunk of registered output vectors and generates index entries for them.
      * Closes the output and index files.
      */
-    virtual void endRun();
+    virtual void endRun() override;
 
     /**
      * Registers a vector and returns a handle.
      */
-    virtual void *registerVector(const char *modulename, const char *vectorname);
+    virtual void *registerVector(const char *modulename, const char *vectorname) override;
 
     /**
      * Deregisters the output vector.
      */
-    virtual void deregisterVector(void *vechandle);
+    virtual void deregisterVector(void *vechandle) override;
 
     /**
      * Writes the (time, value) pair into the buffer.
      * When the buffer is full, writes it out into the file.
      */
-    virtual bool record(void *vectorhandle, simtime_t t, double value);
+    virtual bool record(void *vectorhandle, simtime_t t, double value) override;
     //@}
 };
 

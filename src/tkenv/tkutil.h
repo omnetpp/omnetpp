@@ -94,7 +94,7 @@ class TKENV_API cFindByPathVisitor : public cCollectObjectsVisitor
     const char *className; // optional
     long objectId; // optional message or component Id; use -1 for none
   protected:
-    virtual void visit(cObject *obj);
+    virtual void visit(cObject *obj) override;
     bool idMatches(cObject *obj);
   public:
     cFindByPathVisitor(const char *fullPath, const char *className=nullptr, long objectId=-1) :

@@ -75,7 +75,7 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
      * A cISimulationLifecycleListener method. Delegates to startRun(), endRun() and
      * shutdown(); override if needed.
      */
-    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details);
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override;
 
   public:
     /**

@@ -54,8 +54,8 @@ class SIM_API cDefaultMessagePrinter : public cMessagePrinter
     public:
         cDefaultMessagePrinter() {}
         virtual ~cDefaultMessagePrinter() {}
-        virtual int getScoreFor(cMessage *msg) const;
-        virtual void printMessage(std::ostream& os, cMessage *msg) const;
+        virtual int getScoreFor(cMessage *msg) const override;
+        virtual void printMessage(std::ostream& os, cMessage *msg) const override;
 };
 
 NAMESPACE_END

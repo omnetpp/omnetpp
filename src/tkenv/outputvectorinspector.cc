@@ -32,10 +32,10 @@ class OutputVectorInspectorFactory : public InspectorFactory
   public:
     OutputVectorInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) {return dynamic_cast<cOutVector *>(obj)!=nullptr;}
-    int getInspectorType() {return INSP_GRAPHICAL;}
-    double getQualityAsDefault(cObject *object) {return 3.0;}
-    Inspector *createInspector() {return new OutputVectorInspector(this);}
+    bool supportsObject(cObject *obj) override {return dynamic_cast<cOutVector *>(obj)!=nullptr;}
+    int getInspectorType() override {return INSP_GRAPHICAL;}
+    double getQualityAsDefault(cObject *object) override {return 3.0;}
+    Inspector *createInspector() override {return new OutputVectorInspector(this);}
 };
 
 Register_InspectorFactory(OutputVectorInspectorFactory);

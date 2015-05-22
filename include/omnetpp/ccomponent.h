@@ -273,7 +273,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     /**
      * Redefined to include component parameters in the traversal as well.
      */
-    virtual void forEachChild(cVisitor *v);
+    virtual void forEachChild(cVisitor *v) override;
 
     /**
      * Returns the this pointer. Utility function for the logging macros.

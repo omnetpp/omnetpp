@@ -103,27 +103,27 @@ class SIM_API cParImpl : public cNamedObject
      * Returns a one-line description of the object.
      * @see detailedInfo()
      */
-    virtual std::string info() const;
+    virtual std::string info() const override;
 
     /**
      * Returns a long description of the object.
      */
-    virtual std::string detailedInfo() const;
+    virtual std::string detailedInfo() const override;
 
     /**
      * Redefined change return type to cParImpl.
      */
-    virtual cParImpl *dup() const;
+    virtual cParImpl *dup() const override;
 
     /**
      * Serializes the object into a buffer.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Deserializes the object from a buffer.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Owner component, type, flags. */

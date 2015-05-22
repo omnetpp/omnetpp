@@ -80,27 +80,27 @@ class SIM_API cProperties : public cObject
     /**
      * Creates and returns an exact copy of this object.
      */
-    virtual cProperties *dup() const  {return new cProperties(*this);}
+    virtual cProperties *dup() const override  {return new cProperties(*this);}
 
     /**
      * Returns object name.
      */
-    virtual const char *getName() const  {return "properties";}
+    virtual const char *getName() const override  {return "properties";}
 
     /**
      * Produces a one-line description of the object's contents.
      */
-    virtual std::string info() const;
+    virtual std::string info() const override;
 
     /**
      * Serializes the object into a buffer.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Deserializes the object from a buffer.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Properties */

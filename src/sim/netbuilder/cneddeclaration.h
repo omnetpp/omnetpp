@@ -114,7 +114,7 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     /**
      * Redefined to change return type (covariant return type)
      */
-    virtual cNEDDeclaration *getSuperDecl() const;
+    virtual cNEDDeclaration *getSuperDecl() const override;
 
     /**
      * Returns the pattern-based parameter assignments on the type (i.e. the

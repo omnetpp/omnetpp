@@ -39,10 +39,10 @@ class LogInspectorFactory : public InspectorFactory
   public:
     LogInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=nullptr;}
-    int getInspectorType() {return INSP_MODULEOUTPUT;}
-    double getQualityAsDefault(cObject *object) {return 0.5;}
-    Inspector *createInspector() {return new LogInspector(this);}
+    bool supportsObject(cObject *obj) override {return dynamic_cast<cModule *>(obj)!=nullptr;}
+    int getInspectorType() override {return INSP_MODULEOUTPUT;}
+    double getQualityAsDefault(cObject *object) override {return 0.5;}
+    Inspector *createInspector() override {return new LogInspector(this);}
 };
 
 Register_InspectorFactory(LogInspectorFactory);

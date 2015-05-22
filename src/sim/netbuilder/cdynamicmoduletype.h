@@ -32,33 +32,33 @@ class SIM_API cDynamicModuleType : public cModuleType
 {
   protected:
     /** Redefined from cModuleType */
-    virtual cModule *createModuleObject();
+    virtual cModule *createModuleObject() override;
 
     /** Redefined from cModuleType */
-    virtual void addParametersAndGatesTo(cModule *module);
+    virtual void addParametersAndGatesTo(cModule *module) override;
 
     /** Redefined from cComponentType */
-    virtual void applyPatternAssignments(cComponent *component);
+    virtual void applyPatternAssignments(cComponent *component) override;
 
     /** Redefined from cModuleType */
-    virtual void setupGateVectors(cModule *module);
+    virtual void setupGateVectors(cModule *module) override;
 
     /** Redefined from cModuleType */
-    virtual void buildInside(cModule *module);
+    virtual void buildInside(cModule *module) override;
 
     // internal utility function
     cNEDDeclaration *getDecl() const;
 
     // methods redefined from cComponentType
-    virtual cProperties *getProperties() const;
-    virtual cProperties *getParamProperties(const char *paramName) const;
-    virtual cProperties *getGateProperties(const char *gateName) const;
-    virtual cProperties *getSubmoduleProperties(const char *submoduleName, const char *submoduleType) const;
-    virtual cProperties *getConnectionProperties(int connectionId, const char *channelType) const;
-    virtual std::string getPackageProperty(const char *name) const;
-    virtual const char *getImplementationClassName() const;
-    virtual std::string getCxxNamespace() const;
-    virtual bool isInnerType() const;
+    virtual cProperties *getProperties() const override;
+    virtual cProperties *getParamProperties(const char *paramName) const override;
+    virtual cProperties *getGateProperties(const char *gateName) const override;
+    virtual cProperties *getSubmoduleProperties(const char *submoduleName, const char *submoduleType) const override;
+    virtual cProperties *getConnectionProperties(int connectionId, const char *channelType) const override;
+    virtual std::string getPackageProperty(const char *name) const override;
+    virtual const char *getImplementationClassName() const override;
+    virtual std::string getCxxNamespace() const override;
+    virtual bool isInnerType() const override;
 
   public:
     /**
@@ -69,22 +69,22 @@ class SIM_API cDynamicModuleType : public cModuleType
     /**
      * Produces a one-line description.
      */
-    virtual std::string info() const;
+    virtual std::string info() const override;
 
     /**
      * Produces a detailed, multi-line description.
      */
-    virtual std::string detailedInfo() const;
+    virtual std::string detailedInfo() const override;
 
     /**
      * Returns true if the module type was declared with the "network" keyword.
      */
-    virtual bool isNetwork() const;
+    virtual bool isNetwork() const override;
 
     /**
      * Returns true if this object represents a simple module type.
      */
-    virtual bool isSimple() const;
+    virtual bool isSimple() const override;
 };
 
 NAMESPACE_END

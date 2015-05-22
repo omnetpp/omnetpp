@@ -48,11 +48,11 @@ class ENVIR_API InifileReader : public cConfigurationReader
         }
 
         // virtual functions implementing the KeyValue interface
-        virtual const char *getKey() const   {return key.c_str();}
-        virtual const char *getValue() const {return value.c_str();}
-        virtual const char *getBaseDirectory() const  {return basedir->c_str();}
-        virtual const char *getFileName() const  {return filename->c_str();}
-        virtual int getLineNumber() const  {return lineNumber;}
+        virtual const char *getKey() const override   {return key.c_str();}
+        virtual const char *getValue() const override {return value.c_str();}
+        virtual const char *getBaseDirectory() const override  {return basedir->c_str();}
+        virtual const char *getFileName() const override  {return filename->c_str();}
+        virtual int getLineNumber() const override  {return lineNumber;}
     };
 
     std::string rootFilename;  // name of "root" ini file read
@@ -83,14 +83,14 @@ class ENVIR_API InifileReader : public cConfigurationReader
 
     /** @name Methods implementing cConfigurationReader */
     //@{
-    virtual void initializeFrom(cConfiguration *bootConfig);
-    virtual const char *getFileName() const;
-    virtual const char *getDefaultBaseDirectory() const;
-    virtual int getNumSections() const;
-    virtual const char *getSectionName(int sectionId) const;
-    virtual int getNumEntries(int sectionId) const;
-    virtual const KeyValue& getEntry(int sectionId, int entryId) const;
-    virtual void dump() const;
+    virtual void initializeFrom(cConfiguration *bootConfig) override;
+    virtual const char *getFileName() const override;
+    virtual const char *getDefaultBaseDirectory() const override;
+    virtual int getNumSections() const override;
+    virtual const char *getSectionName(int sectionId) const override;
+    virtual int getNumEntries(int sectionId) const override;
+    virtual const KeyValue& getEntry(int sectionId, int entryId) const override;
+    virtual void dump() const override;
     //@}
 };
 

@@ -38,10 +38,10 @@ class SIM_API cPlaceholderModule : public cModule // so, noncopyable
 {
   protected:
     // internal: "virtual ctor" for cGate: creates cProxyGate
-    virtual cGate *createGateObject(cGate::Type type);
+    virtual cGate *createGateObject(cGate::Type type) override;
 
     // placeholder modules have no submodules
-    virtual void doBuildInside() {}
+    virtual void doBuildInside() override {}
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -64,7 +64,7 @@ class SIM_API cPlaceholderModule : public cModule // so, noncopyable
      * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual std::string info() const;
+    virtual std::string info() const override;
     //@}
 
     /** @name Redefined cModule functions */
@@ -72,17 +72,17 @@ class SIM_API cPlaceholderModule : public cModule // so, noncopyable
     /**
      * Redefined to return true.
      */
-    virtual bool isPlaceholder() const  {return true;}
+    virtual bool isPlaceholder() const override  {return true;}
 
     /**
      * Not implemented: throws an exception when called.
      */
-    virtual void arrived(cMessage *msg, cGate *ongate, simtime_t t);
+    virtual void arrived(cMessage *msg, cGate *ongate, simtime_t t) override;
 
     /**
      * Does nothing.
      */
-    virtual void scheduleStart(simtime_t t);
+    virtual void scheduleStart(simtime_t t) override;
     //@}
 };
 

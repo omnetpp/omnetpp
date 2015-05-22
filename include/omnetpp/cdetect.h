@@ -76,7 +76,7 @@ class SIM_API cTransientDetection : public cOwnedObject
     /**
      * Duplication not supported, this method is redefined to throw an error.
      */
-    virtual cTransientDetection *dup() const {copyNotSupported(); return nullptr;}
+    virtual cTransientDetection *dup() const override {copyNotSupported(); return nullptr;}
     //@}
 
     /* Note: no dup() because this is an abstract class. */
@@ -165,7 +165,7 @@ class SIM_API cAccuracyDetection : public cOwnedObject
     /**
      * Duplication not supported, this method is redefined to throw an error.
      */
-    virtual cAccuracyDetection *dup() const {copyNotSupported(); return nullptr;}
+    virtual cAccuracyDetection *dup() const override {copyNotSupported(); return nullptr;}
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -291,7 +291,7 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
      * Dupping is not implemented for this class. This function
      * gives an error (throws cRuntimeError) when called.
      */
-    virtual cTDExpandingWindows *dup() const  {return new cTDExpandingWindows(*this);}
+    virtual cTDExpandingWindows *dup() const override  {return new cTDExpandingWindows(*this);}
     //@}
 
     /** @name Redefined cTransientDetection member functions. */
@@ -300,28 +300,28 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
     /**
      * Updates the detection algorithm with a value.
      */
-    virtual void collect(double val);
+    virtual void collect(double val) override;
 
     /**
      * Returns true if end of transient has been detected.
      */
-    virtual bool detected() const {return transval;}
+    virtual bool detected() const override {return transval;}
 
     /**
      * Resets detection algorithm.
      */
-    virtual void reset();
+    virtual void reset() override;
 
     /**
      * Stop detection; further calls to collect() will be ignored.
      */
-    virtual void stop()      {go = false;}
+    virtual void stop() override      {go = false;}
 
     /**
      * Start detection; further calls to collect() will update the
      * detection algorithm.
      */
-    virtual void start()     {go = true;}
+    virtual void start() override     {go = true;}
     //@}
 
     /** @name Setting up the detection object. */
@@ -398,7 +398,7 @@ class SIM_API cADByStddev : public cAccuracyDetection
      * Dupping is not implemented for this class. This function
      * gives an error (throws cRuntimeError) when called.
      */
-    virtual cADByStddev *dup() const  {return new cADByStddev(*this);}
+    virtual cADByStddev *dup() const override  {return new cADByStddev(*this);}
     //@}
 
     /** @name Redefined cAccuracyDetection functions. */
@@ -407,28 +407,28 @@ class SIM_API cADByStddev : public cAccuracyDetection
     /**
      * Updates the detection algorithm with a value.
      */
-    virtual void collect(double val);
+    virtual void collect(double val) override;
 
     /**
      * Returns true if required accuracy has been reached.
      */
-    virtual bool detected() const {return resaccval;}
+    virtual bool detected() const override {return resaccval;}
 
     /**
      * Resets detection algorithm.
      */
-    virtual void reset();
+    virtual void reset() override;
 
     /**
      * Stop detection; further calls to collect() will be ignored.
      */
-    virtual void stop()   {go=false;}
+    virtual void stop() override   {go=false;}
 
     /**
      * Start detection; further calls to collect() will update the
      * detection algorithm.
      */
-    virtual void start()  {go=true;}
+    virtual void start() override  {go=true;}
     //@}
 
     /** @name Setting up the detection object. */

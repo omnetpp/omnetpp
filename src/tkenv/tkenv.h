@@ -169,39 +169,39 @@ class TKENV_API Tkenv : public EnvirBase
       Tkenv();
       virtual ~Tkenv();
 
-      virtual void objectDeleted(cObject *object); // notify environment
-      virtual void componentInitBegin(cComponent *component, int stage);
-      virtual void simulationEvent(cEvent *event);
-      virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate);
-      virtual void messageScheduled(cMessage *msg);
-      virtual void messageCancelled(cMessage *msg);
-      virtual void beginSend(cMessage *msg);
-      virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay);
-      virtual void messageSendHop(cMessage *msg, cGate *srcGate);
-      virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
-      virtual void endSend(cMessage *msg);
-      virtual void messageDeleted(cMessage *msg);
-      virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent);
-      virtual void componentMethodEnd();
-      virtual void moduleCreated(cModule *newmodule);
-      virtual void moduleDeleted(cModule *module);
-      virtual void moduleReparented(cModule *module, cModule *oldparent, int oldId);
-      virtual void connectionCreated(cGate *srcgate);
-      virtual void connectionDeleted(cGate *srcgate);
-      virtual void displayStringChanged(cComponent *component);
+      virtual void objectDeleted(cObject *object) override; // notify environment
+      virtual void componentInitBegin(cComponent *component, int stage) override;
+      virtual void simulationEvent(cEvent *event) override;
+      virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate) override;
+      virtual void messageScheduled(cMessage *msg) override;
+      virtual void messageCancelled(cMessage *msg) override;
+      virtual void beginSend(cMessage *msg) override;
+      virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay) override;
+      virtual void messageSendHop(cMessage *msg, cGate *srcGate) override;
+      virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay) override;
+      virtual void endSend(cMessage *msg) override;
+      virtual void messageDeleted(cMessage *msg) override;
+      virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent) override;
+      virtual void componentMethodEnd() override;
+      virtual void moduleCreated(cModule *newmodule) override;
+      virtual void moduleDeleted(cModule *module) override;
+      virtual void moduleReparented(cModule *module, cModule *oldparent, int oldId) override;
+      virtual void connectionCreated(cGate *srcgate) override;
+      virtual void connectionDeleted(cGate *srcgate) override;
+      virtual void displayStringChanged(cComponent *component) override;
 
-      virtual bool isGUI() const {return true;}
-      virtual void bubble(cComponent *component, const char *text);
+      virtual bool isGUI() const override {return true;}
+      virtual void bubble(cComponent *component, const char *text) override;
 
-      virtual void log(cLogEntry *entry);
-      virtual void putsmsg(const char *s);
-      virtual std::string gets(const char *promt, const char *defaultReply);
-      virtual bool askyesno(const char *question);
+      virtual void log(cLogEntry *entry) override;
+      virtual void putsmsg(const char *s) override;
+      virtual std::string gets(const char *promt, const char *defaultReply) override;
+      virtual bool askyesno(const char *question) override;
 
-      virtual bool idle();
+      virtual bool idle() override;
 
       // with Tkenv, activity() modules need extra stack
-      virtual unsigned getExtraStackForEnvir() const;
+      virtual unsigned getExtraStackForEnvir() const override;
 
       virtual void logTclError(const char *file, int line, Tcl_Interp *interp);
       virtual void logTclError(const char *file, int line, const char *text);
@@ -209,15 +209,15 @@ class TKENV_API Tkenv : public EnvirBase
 
   protected:
       // redefined virtual functions from EnvirBase
-      virtual void doRun();
-      virtual void printUISpecificHelp();
+      virtual void doRun() override;
+      virtual void printUISpecificHelp() override;
 
-      virtual EnvirOptions *createOptions() {return new TkenvOptions();}
-      virtual void readOptions();
-      virtual void readPerRunOptions();
-      virtual void setupNetwork(cModuleType *network);
-      virtual void askParameter(cPar *par, bool unassigned);
-      virtual void displayException(std::exception& e);
+      virtual EnvirOptions *createOptions() override {return new TkenvOptions();}
+      virtual void readOptions() override;
+      virtual void readPerRunOptions() override;
+      virtual void setupNetwork(cModuleType *network) override;
+      virtual void askParameter(cPar *par, bool unassigned) override;
+      virtual void displayException(std::exception& e) override;
       virtual std::string getWindowTitle();
 
   public:

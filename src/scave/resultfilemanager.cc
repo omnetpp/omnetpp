@@ -727,8 +727,8 @@ class MatchableResultItem : public MatchExpression::Matchable
 
     public:
         MatchableResultItem(const ResultItem& item) : item(item) {}
-        virtual const char *getAsString() const;
-        virtual const char *getAsString(const char *attribute) const;
+        virtual const char *getAsString() const override;
+        virtual const char *getAsString(const char *attribute) const override;
     private:
         const char *getName() const { return item.nameRef->c_str(); }
         const char *getModuleName() const { return item.moduleNameRef->c_str(); }

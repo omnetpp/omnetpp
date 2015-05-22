@@ -94,42 +94,42 @@ class ENVIR_API cFileOutputVectorManager : public cIOutputVectorManager
      * Deletes output vector file if exists (left over from previous runs).
      * The file is not yet opened, it is done inside registerVector() on demand.
      */
-    virtual void startRun();
+    virtual void startRun() override;
 
     /**
      * Closes the output file.
      */
-    virtual void endRun();
+    virtual void endRun() override;
 
     /**
      * Registers a vector and returns a handle.
      */
-    virtual void *registerVector(const char *modulename, const char *vectorname);
+    virtual void *registerVector(const char *modulename, const char *vectorname) override;
 
     /**
      * Deregisters the output vector.
      */
-    virtual void deregisterVector(void *vechandle);
+    virtual void deregisterVector(void *vechandle) override;
 
     /**
      * Sets an attribute of an output vector.
      */
-    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value);
+    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value) override;
 
     /**
      * Writes the (time, value) pair into the output file.
      */
-    virtual bool record(void *vectorhandle, simtime_t t, double value);
+    virtual bool record(void *vectorhandle, simtime_t t, double value) override;
 
     /**
      * Returns the file name.
      */
-    const char *getFileName() const;
+    const char *getFileName() const override;
 
     /**
      * Calls fflush().
      */
-    virtual void flush();
+    virtual void flush() override;
     //@}
 };
 

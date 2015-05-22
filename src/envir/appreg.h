@@ -62,11 +62,11 @@ class ENVIR_API cOmnetAppRegistration : public cOwnedObject
     virtual ~cOmnetAppRegistration()  {}
 
     // redefined functions
-    virtual const char *getClassName() const {return "cOmnetAppRegistration";}
+    virtual const char *getClassName() const override {return "cOmnetAppRegistration";}
 
     // new functions
     cRunnableEnvir *createOne()  {return creatorfunc();}
-    std::string info() const {return desc;}
+    std::string info() const override {return desc;}
     int getScore()  {return scor;}
 
     static cOmnetAppRegistration *chooseBest();

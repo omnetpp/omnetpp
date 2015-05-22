@@ -53,13 +53,13 @@ class ModuleInspectorFactory : public InspectorFactory
   public:
     ModuleInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=nullptr;}
-    int getInspectorType() {return INSP_GRAPHICAL;}
-    double getQualityAsDefault(cObject *object) {
+    bool supportsObject(cObject *obj) override {return dynamic_cast<cModule *>(obj)!=nullptr;}
+    int getInspectorType() override {return INSP_GRAPHICAL;}
+    double getQualityAsDefault(cObject *object) override {
         cModule *mod = dynamic_cast<cModule *>(object);
         return mod && mod->hasSubmodules() ? 3.0 : 0.9;
     }
-    Inspector *createInspector() {return new ModuleInspector(this);}
+    Inspector *createInspector() override {return new ModuleInspector(this);}
 };
 
 Register_InspectorFactory(ModuleInspectorFactory);

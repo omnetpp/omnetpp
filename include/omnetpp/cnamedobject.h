@@ -95,12 +95,12 @@ class SIM_API cNamedObject : public cObject
     /**
      * Serializes the object into a buffer.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Deserializes the object from a buffer.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Handling the name string. */
@@ -116,7 +116,7 @@ class SIM_API cNamedObject : public cObject
      * Returns pointer to the object's name, a string stored in the object.
      * This function never returns NULL.
      */
-    virtual const char *getName() const  {return name ? name : "";}
+    virtual const char *getName() const override  {return name ? name : "";}
 
     /**
      * Turn name pooling on/off. Name pooling is an optimization technique that saves

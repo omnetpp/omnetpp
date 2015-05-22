@@ -61,23 +61,23 @@ class SIM_API cLinkDelayLookahead : public cNMPLookahead
     /**
      * Sets up algorithm for new simulation run.
      */
-    virtual void startRun();
+    virtual void startRun() override;
 
     /**
      * Called at end of simulation run.
      */
-    virtual void endRun();
+    virtual void endRun() override;
 
     /**
      * Updates lookahead information, based on the delay of the link
      * where message is sent out. Returns EOT.
      */
-    virtual simtime_t getCurrentLookahead(cMessage *msg, int procId, void *data);
+    virtual simtime_t getCurrentLookahead(cMessage *msg, int procId, void *data) override;
 
     /**
      * Returns minimum of link delays toward the given partition.
      */
-    virtual simtime_t getCurrentLookahead(int procId);
+    virtual simtime_t getCurrentLookahead(int procId) override;
 };
 
 NAMESPACE_END

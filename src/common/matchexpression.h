@@ -156,8 +156,8 @@ class COMMON_API MatchableString : public MatchExpression::Matchable
     std::string str;
   public:
     MatchableString(const char *s) {str = s;}
-    virtual const char *getAsString() const {return str.c_str();}
-    virtual const char *getAsString(const char *attribute) const {return nullptr;}
+    virtual const char *getAsString() const override {return str.c_str();}
+    virtual const char *getAsString(const char *attribute) const override {return nullptr;}
 };
 
 NAMESPACE_END

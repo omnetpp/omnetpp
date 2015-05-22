@@ -69,12 +69,12 @@ class ENVIR_API cFileOutputScalarManager : public cIOutputScalarManager
     /**
      * Opens collecting. Called at the beginning of a simulation run.
      */
-    virtual void startRun();
+    virtual void startRun() override;
 
     /**
      * Closes collecting. Called at the end of a simulation run.
      */
-    virtual void endRun();
+    virtual void endRun() override;
 
     /** @name Scalar statistics */
     //@{
@@ -82,23 +82,23 @@ class ENVIR_API cFileOutputScalarManager : public cIOutputScalarManager
     /**
      * Records a double scalar result into the scalar result file.
      */
-    void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr);
+    void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr) override;
 
     /**
      * Records a histogram or statistic object into the scalar result file.
      * This operation may invoke the transform() method on the histogram object.
      */
-    void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr);
+    void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr) override;
 
     /**
      * Returns the file name.
      */
-    const char *getFileName() const;
+    const char *getFileName() const override;
 
     /**
      * Calls fflush().
      */
-    virtual void flush();
+    virtual void flush() override;
     //@}
 };
 

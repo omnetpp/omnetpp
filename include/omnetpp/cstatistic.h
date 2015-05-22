@@ -87,14 +87,14 @@ class SIM_API cStatistic : public cRandom
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Deserializes the object from an MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Collecting values. */

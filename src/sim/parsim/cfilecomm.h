@@ -63,50 +63,50 @@ class SIM_API cFileCommunications : public cParsimCommunications
     /**
      * Init the library.
      */
-    virtual void init();
+    virtual void init() override;
 
     /**
      * Shutdown the communications library.
      */
-    virtual void shutdown();
+    virtual void shutdown() override;
 
     /**
      * Returns total number of partitions.
      */
-    virtual int getNumPartitions() const;
+    virtual int getNumPartitions() const override;
 
     /**
      * Returns the id of this partition.
      */
-    virtual int getProcId() const;
+    virtual int getProcId() const override;
 
     /**
      * Creates an empty buffer of type cFileCommBuffer.
      */
-    virtual cCommBuffer *createCommBuffer();
+    virtual cCommBuffer *createCommBuffer() override;
 
     /**
      * Recycle communication buffer after use.
      */
-    virtual void recycleCommBuffer(cCommBuffer *buffer);
+    virtual void recycleCommBuffer(cCommBuffer *buffer) override;
 
     /**
      * Sends packed data with given tag to destination.
      */
-    virtual void send(cCommBuffer *buffer, int tag, int destination);
+    virtual void send(cCommBuffer *buffer, int tag, int destination) override;
 
     /**
      * Receives packed data with given tag from given destination.
      * Normally returns true; false is returned if blocking was interrupted by the user.
      */
-    virtual bool receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId);
+    virtual bool receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId) override;
 
     /**
      * Receives packed data with given tag from given destination.
      * Call is non-blocking -- it returns true if something has been
      * received, false otherwise.
      */
-    virtual bool receiveNonblocking(int filtTag, cCommBuffer *buffer,  int& receivedTag, int& sourceProcId);
+    virtual bool receiveNonblocking(int filtTag, cCommBuffer *buffer,  int& receivedTag, int& sourceProcId) override;
     //@}
 };
 

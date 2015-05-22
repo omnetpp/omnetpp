@@ -162,20 +162,20 @@ class RecValueVariable : public Expression::Variable
     ExpressionRecorder *owner;
   public:
     RecValueVariable(ExpressionRecorder *recorder) {owner = recorder;}
-    virtual Functor *dup() const {return new RecValueVariable(owner);}
-    virtual const char *getName() const {return "<lastsignalvalue>";}
-    virtual char getReturnType() const {return Expression::Value::DBL;}
-    virtual Expression::Value evaluate(Expression::Value args[], int numargs) {return owner->lastValue;}
+    virtual Functor *dup() const override {return new RecValueVariable(owner);}
+    virtual const char *getName() const override {return "<lastsignalvalue>";}
+    virtual char getReturnType() const override {return Expression::Value::DBL;}
+    virtual Expression::Value evaluate(Expression::Value args[], int numargs) override {return owner->lastValue;}
 };
 
 //XXX currently unused
 class RecTimeVariable : public Expression::Variable
 {
   public:
-    virtual Functor *dup() const {return new RecTimeVariable();}
-    virtual const char *getName() const {return "<simtime>";}
-    virtual char getReturnType() const {return Expression::Value::DBL;}
-    virtual Expression::Value evaluate(Expression::Value args[], int numargs) {return SIMTIME_DBL(getSimulation()->getSimTime());}
+    virtual Functor *dup() const override {return new RecTimeVariable();}
+    virtual const char *getName() const override {return "<simtime>";}
+    virtual char getReturnType() const override {return Expression::Value::DBL;}
+    virtual Expression::Value evaluate(Expression::Value args[], int numargs) override {return SIMTIME_DBL(getSimulation()->getSimTime());}
 };
 
 Expression::Functor *ExpressionRecorder::makeValueVariable()

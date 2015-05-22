@@ -47,86 +47,86 @@ class SIM_API cMemCommBuffer : public cCommBufferBase
 
     /** @name Pack basic types */
     //@{
-    virtual void pack(char d);
-    virtual void pack(unsigned char d);
-    virtual void pack(bool d);
-    virtual void pack(short d);
-    virtual void pack(unsigned short d);
-    virtual void pack(int d);
-    virtual void pack(unsigned int d);
-    virtual void pack(long d);
-    virtual void pack(unsigned long d);
-    virtual void pack(long long d);
-    virtual void pack(unsigned long long d);
-    virtual void pack(float d);
-    virtual void pack(double d);
-    virtual void pack(long double d);
-    virtual void pack(const char *d);
-    virtual void pack(const opp_string& d);
-    virtual void pack(SimTime d);
+    virtual void pack(char d) override;
+    virtual void pack(unsigned char d) override;
+    virtual void pack(bool d) override;
+    virtual void pack(short d) override;
+    virtual void pack(unsigned short d) override;
+    virtual void pack(int d) override;
+    virtual void pack(unsigned int d) override;
+    virtual void pack(long d) override;
+    virtual void pack(unsigned long d) override;
+    virtual void pack(long long d) override;
+    virtual void pack(unsigned long long d) override;
+    virtual void pack(float d) override;
+    virtual void pack(double d) override;
+    virtual void pack(long double d) override;
+    virtual void pack(const char *d) override;
+    virtual void pack(const opp_string& d) override;
+    virtual void pack(SimTime d) override;
     //@}
 
     /** @name Pack arrays of basic types */
     //@{
-    virtual void pack(const char *d, int size);
-    virtual void pack(const unsigned char *d, int size);
-    virtual void pack(const bool *d, int size);
-    virtual void pack(const short *d, int size);
-    virtual void pack(const unsigned short *d, int size);
-    virtual void pack(const int *d, int size);
-    virtual void pack(const unsigned int *d, int size);
-    virtual void pack(const long *d, int size);
-    virtual void pack(const unsigned long *d, int size);
-    virtual void pack(const long long *d, int size);
-    virtual void pack(const unsigned long long *d, int size);
-    virtual void pack(const float *d, int size);
-    virtual void pack(const double *d, int size);
-    virtual void pack(const long double *d, int size);
-    virtual void pack(const char **d, int size);
-    virtual void pack(const opp_string *d, int size);
-    virtual void pack(const SimTime *d, int size);
+    virtual void pack(const char *d, int size) override;
+    virtual void pack(const unsigned char *d, int size) override;
+    virtual void pack(const bool *d, int size) override;
+    virtual void pack(const short *d, int size) override;
+    virtual void pack(const unsigned short *d, int size) override;
+    virtual void pack(const int *d, int size) override;
+    virtual void pack(const unsigned int *d, int size) override;
+    virtual void pack(const long *d, int size) override;
+    virtual void pack(const unsigned long *d, int size) override;
+    virtual void pack(const long long *d, int size) override;
+    virtual void pack(const unsigned long long *d, int size) override;
+    virtual void pack(const float *d, int size) override;
+    virtual void pack(const double *d, int size) override;
+    virtual void pack(const long double *d, int size) override;
+    virtual void pack(const char **d, int size) override;
+    virtual void pack(const opp_string *d, int size) override;
+    virtual void pack(const SimTime *d, int size) override;
     //@}
 
     /** @name Unpack basic types */
     //@{
-    virtual void unpack(char& d);
-    virtual void unpack(unsigned char& d);
-    virtual void unpack(bool& d);
-    virtual void unpack(short& d);
-    virtual void unpack(unsigned short& d);
-    virtual void unpack(int& d);
-    virtual void unpack(unsigned int& d);
-    virtual void unpack(long& d);
-    virtual void unpack(unsigned long& d);
-    virtual void unpack(long long& d);
-    virtual void unpack(unsigned long long& d);
-    virtual void unpack(float& d);
-    virtual void unpack(double& d);
-    virtual void unpack(long double& d);
-    virtual void unpack(const char *&d);
-    virtual void unpack(opp_string& d);
-    virtual void unpack(SimTime& d);
+    virtual void unpack(char& d) override;
+    virtual void unpack(unsigned char& d) override;
+    virtual void unpack(bool& d) override;
+    virtual void unpack(short& d) override;
+    virtual void unpack(unsigned short& d) override;
+    virtual void unpack(int& d) override;
+    virtual void unpack(unsigned int& d) override;
+    virtual void unpack(long& d) override;
+    virtual void unpack(unsigned long& d) override;
+    virtual void unpack(long long& d) override;
+    virtual void unpack(unsigned long long& d) override;
+    virtual void unpack(float& d) override;
+    virtual void unpack(double& d) override;
+    virtual void unpack(long double& d) override;
+    virtual void unpack(const char *&d) override;
+    virtual void unpack(opp_string& d) override;
+    virtual void unpack(SimTime& d) override;
     //@}
 
     /** @name Unpack arrays of basic types */
     //@{
-    virtual void unpack(char *d, int size);
-    virtual void unpack(unsigned char *d, int size);
-    virtual void unpack(bool *d, int size);
-    virtual void unpack(short *d, int size);
-    virtual void unpack(unsigned short *d, int size);
-    virtual void unpack(int *d, int size);
-    virtual void unpack(unsigned int *d, int size);
-    virtual void unpack(long *d, int size);
-    virtual void unpack(unsigned long *d, int size);
-    virtual void unpack(long long *d, int size);
-    virtual void unpack(unsigned long long *d, int size);
-    virtual void unpack(float *d, int size);
-    virtual void unpack(double *d, int size);
-    virtual void unpack(long double *d, int size);
-    virtual void unpack(const char **d, int size);
-    virtual void unpack(opp_string *d, int size);
-    virtual void unpack(SimTime *d, int size);
+    virtual void unpack(char *d, int size) override;
+    virtual void unpack(unsigned char *d, int size) override;
+    virtual void unpack(bool *d, int size) override;
+    virtual void unpack(short *d, int size) override;
+    virtual void unpack(unsigned short *d, int size) override;
+    virtual void unpack(int *d, int size) override;
+    virtual void unpack(unsigned int *d, int size) override;
+    virtual void unpack(long *d, int size) override;
+    virtual void unpack(unsigned long *d, int size) override;
+    virtual void unpack(long long *d, int size) override;
+    virtual void unpack(unsigned long long *d, int size) override;
+    virtual void unpack(float *d, int size) override;
+    virtual void unpack(double *d, int size) override;
+    virtual void unpack(long double *d, int size) override;
+    virtual void unpack(const char **d, int size) override;
+    virtual void unpack(opp_string *d, int size) override;
+    virtual void unpack(SimTime *d, int size) override;
     //@}
 };
 

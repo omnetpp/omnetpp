@@ -32,10 +32,10 @@ class HistogramInspectorFactory : public InspectorFactory
   public:
     HistogramInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) {return dynamic_cast<cDensityEstBase *>(obj)!=nullptr;}
-    int getInspectorType() {return INSP_GRAPHICAL;}
-    double getQualityAsDefault(cObject *object) {return 3.0;}
-    Inspector *createInspector() {return new HistogramInspector(this);}
+    bool supportsObject(cObject *obj) override {return dynamic_cast<cDensityEstBase *>(obj)!=nullptr;}
+    int getInspectorType() override {return INSP_GRAPHICAL;}
+    double getQualityAsDefault(cObject *object) override {return 3.0;}
+    Inspector *createInspector() override {return new HistogramInspector(this);}
 };
 
 Register_InspectorFactory(HistogramInspectorFactory);

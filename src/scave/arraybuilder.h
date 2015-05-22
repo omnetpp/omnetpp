@@ -44,9 +44,9 @@ class SCAVE_API ArrayBuilderNode : public SingleSinkNode
     public:
         ArrayBuilderNode();
         virtual ~ArrayBuilderNode();
-        virtual bool isReady() const;
-        virtual void process();
-        virtual bool isFinished() const;
+        virtual bool isReady() const override;
+        virtual void process() override;
+        virtual bool isFinished() const override;
 
         void sort();
         size_t length() {return vecLength;}
@@ -58,12 +58,12 @@ class SCAVE_API ArrayBuilderNodeType : public SingleSinkNodeType
 {
     friend class ArrayBuilderNode;
     public:
-        virtual const char *getName() const {return "arraybuilder";}
-        virtual const char *getDescription() const;
-        virtual bool isHidden() const {return true;}
-        virtual void getAttributes(StringMap& attrs) const;
-        virtual void getAttrDefaults(StringMap& attrs) const;
-        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+        virtual const char *getName() const override {return "arraybuilder";}
+        virtual const char *getDescription() const override;
+        virtual bool isHidden() const override {return true;}
+        virtual void getAttributes(StringMap& attrs) const override;
+        virtual void getAttrDefaults(StringMap& attrs) const override;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const override;
 };
 
 NAMESPACE_END

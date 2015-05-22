@@ -76,33 +76,33 @@ class SIM_API cStdDev : public cStatistic
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cStdDev *dup() const  {return new cStdDev(*this);}
+    virtual cStdDev *dup() const override  {return new cStdDev(*this);}
 
     /**
      * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual std::string info() const;
+    virtual std::string info() const override;
 
     /**
      * Produces a multi-line description of the object.
      * See cObject for more details.
      */
-    virtual std::string detailedInfo() const;
+    virtual std::string detailedInfo() const override;
 
     /**
      * Serializes the object into an MPI send buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Deserializes the object from an MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Redefined cStatistic functions. */
@@ -111,12 +111,12 @@ class SIM_API cStdDev : public cStatistic
     /**
      * Collects one value.
      */
-    virtual void collect(double value);
+    virtual void collect(double value) override;
 
     /**
      * Convenience method, delegates to collect(double).
      */
-    virtual void collect(SimTime value) {collect(value.dbl());}
+    virtual void collect(SimTime value) override {collect(value.dbl());}
 
     /**
      * Updates this object with data coming from another statistics
@@ -124,99 +124,99 @@ class SIM_API cStdDev : public cStatistic
      * into the other object as well. Throws an error if the other
      * object is weighted statistics (see isWeighted()).
      */
-    virtual void merge(const cStatistic *other);
+    virtual void merge(const cStatistic *other) override;
 
     /**
      * Returns false, because this class does not collect weighted statistics.
      */
-    virtual bool isWeighted() const  {return false;}
+    virtual bool isWeighted() const override  {return false;}
 
     /**
      * Returns the number of observations collected.
      */
-    virtual long getCount() const  {return numValues;}
+    virtual long getCount() const override  {return numValues;}
 
     /**
      * Returns the sum of the values.
      */
-    virtual double getSum() const  {return sumValues;}
+    virtual double getSum() const override  {return sumValues;}
 
     /**
      * Returns the squared sum of the collected values.
      */
-    virtual double getSqrSum() const  {return sumSquaredValues;}
+    virtual double getSqrSum() const override  {return sumSquaredValues;}
 
     /**
      * Returns the minimum of the collected values, or NaN if none have been collected yet.
      */
-    virtual double getMin() const;
+    virtual double getMin() const override;
 
     /**
      * Returns the maximum of the collected values, or NaN if none have been collected yet.
      */
-    virtual double getMax() const;
+    virtual double getMax() const override;
 
     /**
      * Returns the mean of the collected values, or NaN if none have been collected yet.
      */
-    virtual double getMean() const;
+    virtual double getMean() const override;
 
     /**
      * Returns the standard deviation of the observations, or NaN if less than
      * two observations have been collected.
      */
-    virtual double getStddev() const;
+    virtual double getStddev() const override;
 
     /**
      * Returns the variance of the observations collected, or NaN if less than
      * two observations have been collected.
      */
-    virtual double getVariance() const;
+    virtual double getVariance() const override;
 
     /**
      * Since this is unweighted statistics, the sum of weights is getCount().
      */
-    virtual double getWeights() const  {return getCount();}
+    virtual double getWeights() const override  {return getCount();}
 
     /**
      * Since this is unweighted statistics, the sum of weight*value products
      * is getSum().
      */
-    virtual double getWeightedSum() const  {return getSum();}
+    virtual double getWeightedSum() const override  {return getSum();}
 
     /**
      * Since this is unweighted statistics, the sum of squared weights
      * is getCount().
      */
-    virtual double getSqrSumWeights() const  {return getCount();}
+    virtual double getSqrSumWeights() const override  {return getCount();}
 
     /**
      * Since this is unweighted statistics, the sum of weight*value*value
      * products is getSqrSum().
      */
-    virtual double getWeightedSqrSum() const  {return getSqrSum();}
+    virtual double getWeightedSqrSum() const override  {return getSqrSum();}
 
     /**
      * Returns a number from a normal distribution with the current mean and
      * standard deviation.
      */
-    virtual double draw() const;
+    virtual double draw() const override;
 
     /**
      * Clears the results collected so far.
      */
-    virtual void clearResult();
+    virtual void clearResult() override;
 
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *) const;
+    virtual void saveToFile(FILE *) const override;
 
     /**
      * Reads the object data from a file written out by saveToFile()
      * (or written by hand)
      */
-    virtual void loadFromFile(FILE *);
+    virtual void loadFromFile(FILE *) override;
     //@}
 };
 
@@ -271,27 +271,27 @@ class SIM_API cWeightedStdDev : public cStdDev
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cWeightedStdDev *dup() const  {return new cWeightedStdDev(*this);}
+    virtual cWeightedStdDev *dup() const override  {return new cWeightedStdDev(*this);}
 
     /**
      * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual std::string info() const;
+    virtual std::string info() const override;
 
     /**
      * Serializes the object into an MPI send buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Deserializes the object from an MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Redefined cStatistic functions. */
@@ -300,22 +300,22 @@ class SIM_API cWeightedStdDev : public cStdDev
     /**
      * Collects one value.
      */
-    virtual void collect(double value)  {collect2(value,1.0);}
+    virtual void collect(double value) override  {collect2(value,1.0);}
 
     /**
      * Convenience method, delegates to collect(double).
      */
-    virtual void collect(SimTime value) {collect(value.dbl());}
+    virtual void collect(SimTime value) override {collect(value.dbl());}
 
     /**
      * Returns true, because this class collects weighted statistics.
      */
-    virtual bool isWeighted() const  {return true;}
+    virtual bool isWeighted() const override  {return true;}
 
     /**
      * Collects one value with a given weight. Negative weights will cause a runtime error.
      */
-    virtual void collect2(double value, double weight);
+    virtual void collect2(double value, double weight) override;
 
     /**
      * Convenience method, delegates to collect2(double, double).
@@ -337,54 +337,54 @@ class SIM_API cWeightedStdDev : public cStdDev
      * object -- as if this object had collected observations fed
      * into the other object as well.
      */
-    virtual void merge(const cStatistic *other);
+    virtual void merge(const cStatistic *other) override;
 
     /**
      * Clears the results collected so far.
      */
-    virtual void clearResult();
+    virtual void clearResult() override;
 
     /**
      * Returns the weighted mean of the observations collected, or NaN if
      * no observations have been collected (or their weights were 0).
      */
-    virtual double getMean() const;
+    virtual double getMean() const override;
 
     /**
      * Returns the variance of the observations collected, or NaN if
      * less than two observations have been collected.
      */
-    virtual double getVariance() const;
+    virtual double getVariance() const override;
 
     /**
      * Returns the sum of weights.
      */
-    virtual double getWeights() const  {return sumWeights;}
+    virtual double getWeights() const override  {return sumWeights;}
 
     /**
      * Returns the sum of weight*value products.
      */
-    virtual double getWeightedSum() const  {return sumWeightedValues;}
+    virtual double getWeightedSum() const override  {return sumWeightedValues;}
 
     /**
      * Returns the sum of squared weights.
      */
-    virtual double getSqrSumWeights() const  {return sumSquaredWeights;}
+    virtual double getSqrSumWeights() const override  {return sumSquaredWeights;}
 
     /**
      * Returns the sum of weight*value*value products.
      */
-    virtual double getWeightedSqrSum() const  {return sumWeightedSquaredValues;}
+    virtual double getWeightedSqrSum() const override  {return sumWeightedSquaredValues;}
 
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *) const;
+    virtual void saveToFile(FILE *) const override;
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().
      */
-    virtual void loadFromFile(FILE *);
+    virtual void loadFromFile(FILE *) override;
     //@}
 };
 

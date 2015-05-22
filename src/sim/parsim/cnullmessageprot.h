@@ -67,7 +67,7 @@ class SIM_API cNullMessageProtocol : public cParsimProtocolBase
 
   protected:
     // process buffers coming from other partitions
-    virtual void processReceivedBuffer(cCommBuffer *buffer, int tag, int sourceProcId);
+    virtual void processReceivedBuffer(cCommBuffer *buffer, int tag, int sourceProcId) override;
 
     // processes a received EIT: reschedule partition's EIT message
     virtual void processReceivedEIT(int sourceProcId, simtime_t eit);
@@ -93,7 +93,7 @@ class SIM_API cNullMessageProtocol : public cParsimProtocolBase
      * Redefined beacause we have to pass the same data to the lookahead calculator object
      * (cNMPLookahead) too.
      */
-    virtual void setContext(cSimulation *sim, cParsimPartition *seg, cParsimCommunications *co);
+    virtual void setContext(cSimulation *sim, cParsimPartition *seg, cParsimCommunications *co) override;
 
     /**
      * Sets null message resend laziness. Value is between 0 and 1 --
@@ -112,29 +112,29 @@ class SIM_API cNullMessageProtocol : public cParsimProtocolBase
     /**
      * Called at the beginning of a simulation run.
      */
-    virtual void startRun();
+    virtual void startRun() override;
 
     /**
      * Called at the end of a simulation run.
      */
-    virtual void endRun();
+    virtual void endRun() override;
 
     /**
      * Scheduler function. The null message algorithm is embedded here.
      */
-    virtual cEvent *takeNextEvent();
+    virtual cEvent *takeNextEvent() override;
 
     /**
      * Undo takeNextEvent() -- it comes from the cScheduler interface.
      */
-    virtual void putBackEvent(cEvent *event);
+    virtual void putBackEvent(cEvent *event) override;
 
     /**
      * In addition to its normal task (sending out the cMessage to the
      * given partition), it also does lookahead calculation and optional
      * piggybacking of null message on the cMessage.
      */
-    virtual void processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data);
+    virtual void processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data) override;
 };
 
 NAMESPACE_END

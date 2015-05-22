@@ -240,13 +240,13 @@ class SIM_API cDynamicExpression : public cExpression
     /**
      * Creates and returns an exact copy of this object.
      */
-    virtual cDynamicExpression *dup() const  {return new cDynamicExpression(*this);}
+    virtual cDynamicExpression *dup() const override  {return new cDynamicExpression(*this);}
 
     /**
      * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual std::string info() const;
+    virtual std::string info() const override;
 
     // Note: parsimPack()/parsimUnpack() de-inherited in cExpression.
     //@}
@@ -265,37 +265,37 @@ class SIM_API cDynamicExpression : public cExpression
      * Throws an error if the expression has some problem (i.e. stack
      * overflow/underflow, "cannot cast", "function not found", etc.)
      */
-    virtual cNEDValue evaluate(cComponent *context) const;
+    virtual cNEDValue evaluate(cComponent *context) const override;
 
     /**
      * Evaluate the expression and convert the result to bool if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual bool boolValue(cComponent *context);
+    virtual bool boolValue(cComponent *context) override;
 
     /**
      * Evaluate the expression and convert the result to long if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual long longValue(cComponent *context, const char *expectedUnit=nullptr);
+    virtual long longValue(cComponent *context, const char *expectedUnit=nullptr) override;
 
     /**
      * Evaluate the expression and convert the result to double if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual double doubleValue(cComponent *context, const char *expectedUnit=nullptr);
+    virtual double doubleValue(cComponent *context, const char *expectedUnit=nullptr) override;
 
     /**
      * Evaluate the expression and convert the result to string if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual std::string stringValue(cComponent *context);
+    virtual std::string stringValue(cComponent *context) override;
 
     /**
      * Evaluate the expression and convert the result to an XML tree if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual cXMLElement *xmlValue(cComponent *context);
+    virtual cXMLElement *xmlValue(cComponent *context) override;
     //@}
 
     /** @name Miscellaneous utility functions. */
@@ -303,17 +303,17 @@ class SIM_API cDynamicExpression : public cExpression
     /**
      * Converts the expression to string.
      */
-    virtual std::string str() const;
+    virtual std::string str() const override;
 
     /**
      * Interprets the string as an expression, and stores it.
      */
-    virtual void parse(const char *text);
+    virtual void parse(const char *text) override;
 
     /**
      * Compares two expressions.
      */
-    virtual int compare(const cExpression *other) const;
+    virtual int compare(const cExpression *other) const override;
 
     /**
      * Returns true if the expression is just a literal (or equivalent to one,
@@ -324,13 +324,13 @@ class SIM_API cDynamicExpression : public cExpression
     /**
      * Returns true if this expression contains const subexpressions.
      */
-    virtual bool containsConstSubexpressions() const;
+    virtual bool containsConstSubexpressions() const override;
 
     /**
      * Evaluates const subexpressions, and replaces them with their values.
      * See cDynamicExpression::Elem::CONSTSUBEXPR.
      */
-    virtual void evaluateConstSubexpressions(cComponent *context);
+    virtual void evaluateConstSubexpressions(cComponent *context) override;
 
     /**
      * Convert the given number into the target unit (e.g. milliwatt to watt).

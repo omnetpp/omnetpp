@@ -55,7 +55,7 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
     /**
      * Called back when a parameter changes. Redefined from cComponent.
      */
-    virtual void handleParameterChange(const char *parname);
+    virtual void handleParameterChange(const char *parname) override;
 
   public:
     /** @name Constructors, destructor */
@@ -84,32 +84,32 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
     /**
      * The cDelayChannel implementation of this method always returns false.
      */
-    virtual bool isTransmissionChannel() const {return false;}
+    virtual bool isTransmissionChannel() const override {return false;}
 
     /**
      * The cDelayChannel implementation of this method always returns zero.
      */
-    virtual double getNominalDatarate() const {return 0;}
+    virtual double getNominalDatarate() const override {return 0;}
 
     /**
      * The cDelayChannel implementation of this method always returns zero.
      */
-    virtual simtime_t calculateDuration(cMessage *msg) const {return 0;}
+    virtual simtime_t calculateDuration(cMessage *msg) const override {return 0;}
 
     /**
      * The cDelayChannel implementation of this method always returns zero.
      */
-    virtual simtime_t getTransmissionFinishTime() const {return SIMTIME_ZERO;}
+    virtual simtime_t getTransmissionFinishTime() const override {return SIMTIME_ZERO;}
 
     /**
      * The cDelayChannel implementation of this method always returns false.
      */
-    virtual bool isBusy() const {return false;}
+    virtual bool isBusy() const override {return false;}
 
     /**
      * The cDelayChannel implementation of this method does nothing.
      */
-    virtual void forceTransmissionFinishTime(simtime_t t) {}
+    virtual void forceTransmissionFinishTime(simtime_t t) override {}
     //@}
 
     /** @name Setting and getting channel parameters. */
@@ -143,13 +143,13 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
     /**
      * Initialization.
      */
-    virtual void initialize();
+    virtual void initialize() override;
 
     /**
      * This implementation delivers the message to the opposite gate
      * with a delay.
      */
-    virtual void processMessage(cMessage *msg, simtime_t t, result_t& result);
+    virtual void processMessage(cMessage *msg, simtime_t t, result_t& result) override;
     //@}
 };
 

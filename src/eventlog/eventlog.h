@@ -79,11 +79,11 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         EventLog(FileReader *index);
         virtual ~EventLog();
 
-        virtual ProgressMonitor setProgressMonitor(ProgressMonitor newProgressMonitor);
-        virtual void setProgressCallInterval(double seconds) { progressCallInterval = (long)(seconds * CLOCKS_PER_SEC); lastProgressCall = clock(); }
-        virtual void progress();
+        virtual ProgressMonitor setProgressMonitor(ProgressMonitor newProgressMonitor) override;
+        virtual void setProgressCallInterval(double seconds) override { progressCallInterval = (long)(seconds * CLOCKS_PER_SEC); lastProgressCall = clock(); }
+        virtual void progress() override;
 
-        int getKeyframeBlockSize() { return keyframeBlockSize; }
+        int getKeyframeBlockSize() override { return keyframeBlockSize; }
         eventnumber_t getConsequenceLookahead(eventnumber_t eventNumber) { return consequenceLookaheadLimits[eventNumber / keyframeBlockSize]; }
         std::vector<MessageEntry *> getMessageEntriesWithPreviousEventNumber(eventnumber_t eventNumber);
 
@@ -97,30 +97,30 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         Event *getEventForEndOffset(file_offset_t offset);
 
         // IEventLog interface
-        virtual void synchronize(FileReader::FileChangedState change);
-        virtual FileReader *getFileReader() { return reader; }
-        virtual eventnumber_t getNumParsedEvents() { return numParsedEvents; }
-        virtual std::set<const char *>& getMessageNames() { return messageNames; }
-        virtual std::set<const char *>& getMessageClassNames() { return messageClassNames; }
-        virtual int getNumModuleCreatedEntries() { return moduleIdToModuleCreatedEntryMap.size(); }
-        virtual std::vector<ModuleCreatedEntry *> getModuleCreatedEntries();
-        virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId);
-        virtual GateCreatedEntry *getGateCreatedEntry(int moduleId, int gateId);
-        virtual SimulationBeginEntry *getSimulationBeginEntry() { getFirstEvent(); return simulationBeginEntry; }
+        virtual void synchronize(FileReader::FileChangedState change) override;
+        virtual FileReader *getFileReader() override { return reader; }
+        virtual eventnumber_t getNumParsedEvents() override { return numParsedEvents; }
+        virtual std::set<const char *>& getMessageNames() override { return messageNames; }
+        virtual std::set<const char *>& getMessageClassNames() override { return messageClassNames; }
+        virtual int getNumModuleCreatedEntries() override { return moduleIdToModuleCreatedEntryMap.size(); }
+        virtual std::vector<ModuleCreatedEntry *> getModuleCreatedEntries() override;
+        virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId) override;
+        virtual GateCreatedEntry *getGateCreatedEntry(int moduleId, int gateId) override;
+        virtual SimulationBeginEntry *getSimulationBeginEntry() override { getFirstEvent(); return simulationBeginEntry; }
         virtual SimulationEndEntry *getSimulationEndEntry() { getLastEvent(); return simulationEndEntry; }
 
-        virtual Event *getFirstEvent();
-        virtual Event *getLastEvent();
-        virtual Event *getNeighbourEvent(IEvent *event, eventnumber_t distance = 1);
-        virtual Event *getEventForEventNumber(eventnumber_t eventNumber, MatchKind matchKind = EXACT, bool useCacheOnly = false);
-        virtual Event *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT, bool useCacheOnly = false);
+        virtual Event *getFirstEvent() override;
+        virtual Event *getLastEvent() override;
+        virtual Event *getNeighbourEvent(IEvent *event, eventnumber_t distance = 1) override;
+        virtual Event *getEventForEventNumber(eventnumber_t eventNumber, MatchKind matchKind = EXACT, bool useCacheOnly = false) override;
+        virtual Event *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT, bool useCacheOnly = false) override;
 
-        virtual EventLogEntry *findEventLogEntry(EventLogEntry *start, const char *search, bool forward, bool caseSensitive);
+        virtual EventLogEntry *findEventLogEntry(EventLogEntry *start, const char *search, bool forward, bool caseSensitive) override;
 
-        virtual eventnumber_t getApproximateNumberOfEvents();
-        virtual Event *getApproximateEventAt(double percentage);
+        virtual eventnumber_t getApproximateNumberOfEvents() override;
+        virtual Event *getApproximateEventAt(double percentage) override;
 
-        virtual void print(FILE *file = stdout, eventnumber_t fromEventNumber = -1, eventnumber_t toEventNumber = -1, bool outputEventLogMessages = true);
+        virtual void print(FILE *file = stdout, eventnumber_t fromEventNumber = -1, eventnumber_t toEventNumber = -1, bool outputEventLogMessages = true) override;
 
     protected:
         void parseEvent(Event *event, file_offset_t beginOffset);

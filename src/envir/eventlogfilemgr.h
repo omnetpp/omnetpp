@@ -105,7 +105,7 @@ class ENVIR_API EventlogFileManager : public cISimulationLifecycleListener
     /**
      * A cISimulationLifecycleListener method. Delegates to startRun() and endRun(); override if needed.
      */
-    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details);
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override;
 
   public:
     EventlogFileManager();

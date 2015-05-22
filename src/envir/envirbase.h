@@ -155,7 +155,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual ~EnvirBase();
 
     // life cycle
-    virtual int run(int argc, char *argv[], cConfiguration *config);
+    virtual int run(int argc, char *argv[], cConfiguration *config) override;
 
     // eventlog recording
     virtual void setEventlogRecording(bool enabled);
@@ -168,88 +168,88 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual void processFileName(opp_string& fname);
 
     // eventlog callback interface
-    virtual void objectDeleted(cObject *object);
-    virtual void simulationEvent(cEvent *event);
+    virtual void objectDeleted(cObject *object) override;
+    virtual void simulationEvent(cEvent *event) override;
     // leave to subclasses: virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=NULL);
-    virtual void messageScheduled(cMessage *msg);
-    virtual void messageCancelled(cMessage *msg);
-    virtual void beginSend(cMessage *msg);
-    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay);
-    virtual void messageSendHop(cMessage *msg, cGate *srcGate);
-    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
-    virtual void endSend(cMessage *msg);
-    virtual void messageCreated(cMessage *msg);
-    virtual void messageCloned(cMessage *msg, cMessage *clone);
-    virtual void messageDeleted(cMessage *msg);
-    virtual void moduleReparented(cModule *module, cModule *oldparent, int oldId);
-    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent);
-    virtual void componentMethodEnd();
-    virtual void moduleCreated(cModule *newmodule);
-    virtual void moduleDeleted(cModule *module);
-    virtual void gateCreated(cGate *newgate);
-    virtual void gateDeleted(cGate *gate);
-    virtual void connectionCreated(cGate *srcgate);
-    virtual void connectionDeleted(cGate *srcgate);
-    virtual void displayStringChanged(cComponent *component);
-    virtual void undisposedObject(cObject *obj);
-    virtual void log(cLogEntry *entry);
+    virtual void messageScheduled(cMessage *msg) override;
+    virtual void messageCancelled(cMessage *msg) override;
+    virtual void beginSend(cMessage *msg) override;
+    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay) override;
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate) override;
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay) override;
+    virtual void endSend(cMessage *msg) override;
+    virtual void messageCreated(cMessage *msg) override;
+    virtual void messageCloned(cMessage *msg, cMessage *clone) override;
+    virtual void messageDeleted(cMessage *msg) override;
+    virtual void moduleReparented(cModule *module, cModule *oldparent, int oldId) override;
+    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent) override;
+    virtual void componentMethodEnd() override;
+    virtual void moduleCreated(cModule *newmodule) override;
+    virtual void moduleDeleted(cModule *module) override;
+    virtual void gateCreated(cGate *newgate) override;
+    virtual void gateDeleted(cGate *gate) override;
+    virtual void connectionCreated(cGate *srcgate) override;
+    virtual void connectionDeleted(cGate *srcgate) override;
+    virtual void displayStringChanged(cComponent *component) override;
+    virtual void undisposedObject(cObject *obj) override;
+    virtual void log(cLogEntry *entry) override;
 
-    virtual const char *getCurrentEventName() { return logFormatUsesEventName ? currentEventName.c_str() : nullptr; }
-    virtual const char *getCurrentEventClassName() { return currentEventClassName; }
-    virtual cModule *getCurrentEventModule() { return currentModuleId != -1 ? getSimulation()->getModule(currentModuleId) : nullptr; }
+    virtual const char *getCurrentEventName() override { return logFormatUsesEventName ? currentEventName.c_str() : nullptr; }
+    virtual const char *getCurrentEventClassName() override { return currentEventClassName; }
+    virtual cModule *getCurrentEventModule() override { return currentModuleId != -1 ? getSimulation()->getModule(currentModuleId) : nullptr; }
 
     // configuration, model parameters
-    virtual void configure(cComponent *component);
-    virtual void readParameter(cPar *parameter);
-    virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index);
-    virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath=nullptr);
-    virtual cXMLElement *getParsedXMLString(const char *content, const char *xpath=nullptr);
-    virtual void forgetXMLDocument(const char *filename);
-    virtual void forgetParsedXMLString(const char *content);
-    virtual void flushXMLDocumentCache();
-    virtual void flushXMLParsedContentCache();
+    virtual void configure(cComponent *component) override;
+    virtual void readParameter(cPar *parameter) override;
+    virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index) override;
+    virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath=nullptr) override;
+    virtual cXMLElement *getParsedXMLString(const char *content, const char *xpath=nullptr) override;
+    virtual void forgetXMLDocument(const char *filename) override;
+    virtual void forgetParsedXMLString(const char *content) override;
+    virtual void flushXMLDocumentCache() override;
+    virtual void flushXMLParsedContentCache() override;
     // leave to subclasses: virtual unsigned getExtraStackForEnvir();
-    virtual cConfiguration *getConfig();
-    virtual cConfigurationEx *getConfigEx();
+    virtual cConfiguration *getConfig() override;
+    virtual cConfigurationEx *getConfigEx() override;
 
     // UI functions
-    virtual void bubble(cComponent *component, const char *text);
+    virtual void bubble(cComponent *component, const char *text) override;
     // leave to subclasses: virtual std::string gets(const char *prompt, const char *defaultreply=NULL);
     // leave to subclasses: virtual cEnvir& flush();
 
     // RNGs
-    virtual int getNumRNGs() const;
-    virtual cRNG *getRNG(int k);
-    virtual void getRNGMappingFor(cComponent *component);
+    virtual int getNumRNGs() const override;
+    virtual cRNG *getRNG(int k) override;
+    virtual void getRNGMappingFor(cComponent *component) override;
 
     // output vectors
-    virtual void *registerOutputVector(const char *modulename, const char *vectorname);
-    virtual void deregisterOutputVector(void *vechandle);
-    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value);
-    virtual bool recordInOutputVector(void *vechandle, simtime_t t, double value);
+    virtual void *registerOutputVector(const char *modulename, const char *vectorname) override;
+    virtual void deregisterOutputVector(void *vechandle) override;
+    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value) override;
+    virtual bool recordInOutputVector(void *vechandle, simtime_t t, double value) override;
 
     // output scalars
-    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr);
-    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr);
+    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr) override;
+    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr) override;
 
-    virtual void addResultRecorders(cComponent *component, simsignal_t signal, const char *statisticName, cProperty *statisticTemplateProperty);
+    virtual void addResultRecorders(cComponent *component, simsignal_t signal, const char *statisticName, cProperty *statisticTemplateProperty) override;
 
     // snapshot file
-    virtual std::ostream *getStreamForSnapshot();
-    virtual void releaseStreamForSnapshot(std::ostream *os);
+    virtual std::ostream *getStreamForSnapshot() override;
+    virtual void releaseStreamForSnapshot(std::ostream *os) override;
 
     // misc
-    virtual int getArgCount() const;
-    virtual char **getArgVector() const;
-    virtual int getParsimProcId() const;
-    virtual int getParsimNumPartitions() const;
-    virtual unsigned long getUniqueNumber();
-    virtual void attachDebugger();
-    virtual bool idle();
+    virtual int getArgCount() const override;
+    virtual char **getArgVector() const override;
+    virtual int getParsimProcId() const override;
+    virtual int getParsimNumPartitions() const override;
+    virtual unsigned long getUniqueNumber() override;
+    virtual void attachDebugger() override;
+    virtual bool idle() override;
 
-    virtual void addLifecycleListener(cISimulationLifecycleListener *listener);
-    virtual void removeLifecycleListener(cISimulationLifecycleListener *listener);
-    virtual void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details=nullptr);
+    virtual void addLifecycleListener(cISimulationLifecycleListener *listener) override;
+    virtual void removeLifecycleListener(cISimulationLifecycleListener *listener) override;
+    virtual void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details=nullptr) override;
     //@}
 
   protected:

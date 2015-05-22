@@ -155,21 +155,21 @@ class SIM_API cDensityEstBase : public cStdDev
     /**
      * Produces a multi-line description of the object's contents.
      */
-    virtual std::string detailedInfo() const;
+    virtual std::string detailedInfo() const override;
 
     /**
      * Serializes the object into an MPI send buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Deserializes the object from an MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Redefined cStatistic member functions. */
@@ -182,12 +182,12 @@ class SIM_API cDensityEstBase : public cStdDev
      * method is called. After transformation, it calls collectTransformed()
      * to update the stored statistics with this value.
      */
-    virtual void collect(double value);
+    virtual void collect(double value) override;
 
     /**
      * Convenience method, delegates to collect(double).
      */
-    virtual void collect(SimTime value) {collect(value.dbl());}
+    virtual void collect(SimTime value) override {collect(value.dbl());}
 
     /**
      * Updates this object with data coming from another statistics
@@ -195,22 +195,22 @@ class SIM_API cDensityEstBase : public cStdDev
      * into the other object as well. Throws an error if the other
      * object is not a cDensityEstBase.
      */
-    virtual void merge(const cStatistic *other);
+    virtual void merge(const cStatistic *other) override;
 
     /**
      * Clears the results collected so far.
      */
-    virtual void clearResult();
+    virtual void clearResult() override;
 
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *) const;
+    virtual void saveToFile(FILE *) const override;
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().
      */
-    virtual void loadFromFile(FILE *);
+    virtual void loadFromFile(FILE *) override;
     //@}
 
     /** @name Selecting the method of setting up the histogram range. */

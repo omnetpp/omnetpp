@@ -69,7 +69,7 @@ class SIM_API cProxyGate : public cGate // noncopyable
     /**
      * Redefined here to display remoteProcId, remoteModId and remoteGateId.
      */
-    virtual std::string info() const;
+    virtual std::string info() const override;
     //@}
 
     /** @name Redefined cGate member functions */
@@ -81,7 +81,7 @@ class SIM_API cProxyGate : public cGate // noncopyable
      * Invokes the cParsimPartition::processOutgoingMessage() method
      * to transmit the message, then deletes the message object.
      */
-    virtual bool deliver(cMessage *msg, simtime_t at);
+    virtual bool deliver(cMessage *msg, simtime_t at) override;
     //@}
 
     /** @name Address of remote gate */

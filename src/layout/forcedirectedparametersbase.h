@@ -291,15 +291,15 @@ class PointConstrainedVariable : public Variable {
         PointConstrainedVariable(Pt position) : Variable(position) {
         }
 
-        virtual void assignPosition(const Pt& position) {
+        virtual void assignPosition(const Pt& position) override {
             this->position.z = position.z;
         }
 
-        virtual void assignVelocity(const Pt& velocity) {
+        virtual void assignVelocity(const Pt& velocity) override {
             this->velocity.z = velocity.z;
         }
 
-        virtual const Pt& getAcceleration() {
+        virtual const Pt& getAcceleration() override {
             return acceleration.assign(0, 0, force.z).divide(mass);
         }
 };

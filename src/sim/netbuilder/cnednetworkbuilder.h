@@ -46,9 +46,9 @@ class SIM_API cNEDNetworkBuilder
   protected:
     class ComponentTypeNames : public NEDResourceCache::INEDTypeNames {
       public:
-        virtual bool contains(const char *qname) const  {return componentTypes.getInstance()->lookup(qname)!=nullptr;}
-        virtual int size() const  {return componentTypes.getInstance()->size();}
-        virtual const char *get(int k) const  {return componentTypes.getInstance()->get(k)->getFullName();}
+        virtual bool contains(const char *qname) const override  {return componentTypes.getInstance()->lookup(qname)!=nullptr;}
+        virtual int size() const override  {return componentTypes.getInstance()->size();}
+        virtual const char *get(int k) const override  {return componentTypes.getInstance()->get(k)->getFullName();}
     };
 
     typedef cNEDDeclaration::PatternData PatternData;  // abbreviation

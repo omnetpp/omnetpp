@@ -28,12 +28,12 @@ class ModuleIndex : public cDynamicExpression::Functor
 {
   public:
     ModuleIndex();
-    ModuleIndex *dup() const {return new ModuleIndex();}
-    virtual const char *getFullName() const {return "index";}
-    virtual const char *getArgTypes() const {return "";}
-    virtual char getReturnType() const {return 'L';}
-    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs);
-    virtual std::string str(std::string args[], int numargs);
+    ModuleIndex *dup() const override {return new ModuleIndex();}
+    virtual const char *getFullName() const override {return "index";}
+    virtual const char *getArgTypes() const override {return "";}
+    virtual char getReturnType() const override {return 'L';}
+    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs) override;
+    virtual std::string str(std::string args[], int numargs) override;
 };
 
 /**
@@ -47,12 +47,12 @@ class ParameterRef : public cDynamicExpression::Functor
     std::string paramName;
   public:
     ParameterRef(const char *paramName, bool ofParent, bool explicitKeyword);
-    ParameterRef *dup() const {return new ParameterRef(paramName.c_str(), ofParent, explicitKeyword);}
-    virtual const char *getFullName() const {return paramName.c_str();}
-    virtual const char *getArgTypes() const {return "";}
-    virtual char getReturnType() const {return '*';}
-    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs);
-    virtual std::string str(std::string args[], int numargs);
+    ParameterRef *dup() const override {return new ParameterRef(paramName.c_str(), ofParent, explicitKeyword);}
+    virtual const char *getFullName() const override {return paramName.c_str();}
+    virtual const char *getArgTypes() const override {return "";}
+    virtual char getReturnType() const override {return '*';}
+    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs) override;
+    virtual std::string str(std::string args[], int numargs) override;
 };
 
 /**
@@ -67,12 +67,12 @@ class SiblingModuleParameterRef : public cDynamicExpression::Functor
     std::string paramName;
   public:
     SiblingModuleParameterRef(const char *moduleName, const char *paramName, bool ofParent, bool withModuleIndex);
-    SiblingModuleParameterRef *dup() const {return new SiblingModuleParameterRef(moduleName.c_str(), paramName.c_str(), ofParent, withModuleIndex);}
-    virtual const char *getFullName() const {return paramName.c_str();}
-    virtual const char *getArgTypes() const {return withModuleIndex ? "L" : "";}
-    virtual char getReturnType() const {return '*';}
-    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs);
-    virtual std::string str(std::string args[], int numargs);
+    SiblingModuleParameterRef *dup() const override {return new SiblingModuleParameterRef(moduleName.c_str(), paramName.c_str(), ofParent, withModuleIndex);}
+    virtual const char *getFullName() const override {return paramName.c_str();}
+    virtual const char *getArgTypes() const override {return withModuleIndex ? "L" : "";}
+    virtual char getReturnType() const override {return '*';}
+    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs) override;
+    virtual std::string str(std::string args[], int numargs) override;
 };
 
 /**
@@ -96,12 +96,12 @@ class LoopVar : public cDynamicExpression::Functor
     std::string varName;
   public:
     LoopVar(const char *varName) {this->varName = varName;}
-    LoopVar *dup() const {return new LoopVar(varName.c_str());}
-    virtual const char *getFullName() const {return varName.c_str();}
-    virtual const char *getArgTypes() const {return "";}
-    virtual char getReturnType() const {return 'L';}
-    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs);
-    virtual std::string str(std::string args[], int numargs);
+    LoopVar *dup() const override {return new LoopVar(varName.c_str());}
+    virtual const char *getFullName() const override {return varName.c_str();}
+    virtual const char *getArgTypes() const override {return "";}
+    virtual char getReturnType() const override {return 'L';}
+    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs) override;
+    virtual std::string str(std::string args[], int numargs) override;
 };
 
 
@@ -116,12 +116,12 @@ class Sizeof : public cDynamicExpression::Functor
     std::string ident;
   public:
     Sizeof(const char *ident, bool ofParent, bool explicitKeyword);
-    Sizeof *dup() const {return new Sizeof(ident.c_str(), ofParent, explicitKeyword);}
-    virtual const char *getFullName() const {return ident.c_str();}
-    virtual const char *getArgTypes() const {return "";}
-    virtual char getReturnType() const {return 'L';}
-    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs);
-    virtual std::string str(std::string args[], int numargs);
+    Sizeof *dup() const override {return new Sizeof(ident.c_str(), ofParent, explicitKeyword);}
+    virtual const char *getFullName() const override {return ident.c_str();}
+    virtual const char *getArgTypes() const override {return "";}
+    virtual char getReturnType() const override {return 'L';}
+    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs) override;
+    virtual std::string str(std::string args[], int numargs) override;
 };
 
 /*XXX TODO

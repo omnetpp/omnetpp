@@ -33,8 +33,8 @@ class Resolver : public Expression::Resolver
   public:
     Resolver(ExpressionFilterNode *node) {hostnode = node;}
     virtual ~Resolver() {};
-    virtual Expression::Functor *resolveVariable(const char *varname);
-    virtual Expression::Functor *resolveFunction(const char *funcname, int argcount);
+    virtual Expression::Functor *resolveVariable(const char *varname) override;
+    virtual Expression::Functor *resolveFunction(const char *funcname, int argcount) override;
 };
 
 Expression::Functor *Resolver::resolveVariable(const char *varname)

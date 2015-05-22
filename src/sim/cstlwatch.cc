@@ -35,21 +35,21 @@ class SIM_API cStdVectorWatcherDescriptor : public cClassDescriptor //noncopyabl
     cStdVectorWatcherDescriptor(const char *vecTypeName, const char *elemTypeName);
     virtual ~cStdVectorWatcherDescriptor();
 
-    virtual const char **getPropertyNames() const;
-    virtual const char *getProperty(const char *propertyname) const;
-    virtual int getFieldCount() const;
-    virtual const char *getFieldName(int field) const;
-    virtual unsigned int getFieldTypeFlags(int field) const;
-    virtual const char *getFieldTypeString(int field) const;
-    virtual const char **getFieldPropertyNames(int field) const;
-    virtual const char *getFieldProperty(int field, const char *propertyname) const;
-    virtual int getFieldArraySize(void *object, int field) const;
+    virtual const char **getPropertyNames() const override;
+    virtual const char *getProperty(const char *propertyname) const override;
+    virtual int getFieldCount() const override;
+    virtual const char *getFieldName(int field) const override;
+    virtual unsigned int getFieldTypeFlags(int field) const override;
+    virtual const char *getFieldTypeString(int field) const override;
+    virtual const char **getFieldPropertyNames(int field) const override;
+    virtual const char *getFieldProperty(int field, const char *propertyname) const override;
+    virtual int getFieldArraySize(void *object, int field) const override;
 
-    virtual std::string getFieldValueAsString(void *object, int field, int i) const;
-    virtual bool setFieldValueAsString(void *object, int field, int i, const char *value) const;
+    virtual std::string getFieldValueAsString(void *object, int field, int i) const override;
+    virtual bool setFieldValueAsString(void *object, int field, int i, const char *value) const override;
 
-    virtual const char *getFieldStructName(int field) const;
-    virtual void *getFieldStructValuePointer(void *object, int field, int i) const;
+    virtual const char *getFieldStructName(int field) const override;
+    virtual void *getFieldStructValuePointer(void *object, int field, int i) const override;
 };
 
 cStdVectorWatcherDescriptor::cStdVectorWatcherDescriptor(const char *vecType, const char *elemType) :

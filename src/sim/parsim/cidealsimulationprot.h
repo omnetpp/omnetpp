@@ -61,7 +61,7 @@ class SIM_API cIdealSimulationProtocol : public cParsimProtocolBase
   protected:
     // process cMessages received from other partitions; see same method in2
     // cISPEventLogger for more explanation
-    virtual void processReceivedMessage(cMessage *msg, int destModuleId, int destGateId, int sourceProcId);
+    virtual void processReceivedMessage(cMessage *msg, int destModuleId, int destGateId, int sourceProcId) override;
 
     // read an event from event log file
     virtual void readNextRecordedEvent();
@@ -80,22 +80,22 @@ class SIM_API cIdealSimulationProtocol : public cParsimProtocolBase
     /**
      * Called at the beginning of a simulation run.
      */
-    virtual void startRun();
+    virtual void startRun() override;
 
     /**
      * Called at the end of a simulation run.
      */
-    virtual void endRun();
+    virtual void endRun() override;
 
     /**
      * Scheduler function.
      */
-    virtual cEvent *takeNextEvent();
+    virtual cEvent *takeNextEvent() override;
 
     /**
      * Undo takeNextEvent() -- it comes from the cScheduler interface.
      */
-    virtual void putBackEvent(cEvent *event);
+    virtual void putBackEvent(cEvent *event) override;
 };
 
 NAMESPACE_END

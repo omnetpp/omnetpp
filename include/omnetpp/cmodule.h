@@ -353,31 +353,31 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Calls v->visit(this) for each contained object.
      * See cObject for more details.
      */
-    virtual void forEachChild(cVisitor *v);
+    virtual void forEachChild(cVisitor *v) override;
 
     /**
      * Sets object's name. Redefined to update the stored fullName string.
      */
-    virtual void setName(const char *s);
+    virtual void setName(const char *s) override;
 
     /**
      * Returns the full name of the module, which is getName() plus the
      * index in square brackets (e.g. "module[4]"). Redefined to add the
      * index.
      */
-    virtual const char *getFullName() const;
+    virtual const char *getFullName() const override;
 
     /**
      * Returns the full path name of the module. Example: <tt>"net.node[12].gen"</tt>.
      * The original getFullPath() was redefined in order to hide the global cSimulation
      * instance from the path name.
      */
-    virtual std::string getFullPath() const;
+    virtual std::string getFullPath() const override;
 
     /**
      * Overridden to add the module ID.
      */
-    std::string info() const;
+    std::string info() const override;
     //@}
 
     /** @name Setting up the module. */
@@ -444,7 +444,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * The above sequence also explains why finalizeParameters() cannot by merged
      * into either create() or buildInside().
      */
-    virtual void finalizeParameters();
+    virtual void finalizeParameters() override;
 
     /**
      * In compound modules, this method should be called to create submodules
@@ -470,7 +470,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     /**
      * Redefined from cComponent to return KIND_MODULE.
      */
-    virtual ComponentKind getComponentKind() const  {return KIND_MODULE;}
+    virtual ComponentKind getComponentKind() const override  {return KIND_MODULE;}
 
     /**
      * Returns true if this module is a placeholder module, i.e.
@@ -482,7 +482,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Returns the module containing this module. For the system module,
      * it returns NULL.
      */
-    virtual cModule *getParentModule() const;
+    virtual cModule *getParentModule() const override;
 
     /**
      * Convenience method: casts the return value of getComponentType() to cModuleType.
@@ -493,7 +493,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Return the properties for this module. Properties cannot be changed
      * at runtime. Redefined from cComponent.
      */
-    virtual cProperties *getProperties() const;
+    virtual cProperties *getProperties() const override;
 
     /**
      * Returns true if this module is in a module vector.
@@ -735,18 +735,18 @@ class SIM_API cModule : public cComponent //implies noncopyable
     /**
      * Interface for calling initialize() from outside.
      */
-    virtual void callInitialize();
+    virtual void callInitialize() override;
 
     /**
      * Interface for calling initialize() from outside. It does a single stage
      * of initialization, and returns <tt>true</tt> if more stages are required.
      */
-    virtual bool callInitialize(int stage);
+    virtual bool callInitialize(int stage) override;
 
     /**
      * Interface for calling finish() from outside.
      */
-    virtual void callFinish();
+    virtual void callFinish() override;
     //@}
 
     /** @name Dynamic module creation. */

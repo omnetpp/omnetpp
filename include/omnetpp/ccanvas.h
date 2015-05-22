@@ -294,9 +294,9 @@ class SIM_API cFigure : public cOwnedObject
 
         /** @name Redefined cObject member functions. */
         //@{
-        virtual cFigure *dup() const {throw cRuntimeError(this, E_CANTDUP);}  // see also dupTree()
-        virtual void forEachChild(cVisitor *v);
-        virtual std::string info() const;
+        virtual cFigure *dup() const override {throw cRuntimeError(this, E_CANTDUP);}  // see also dupTree()
+        virtual void forEachChild(cVisitor *v) override;
+        virtual std::string info() const override;
         //@}
 
         /** @name Miscellaneous. */
@@ -403,10 +403,10 @@ class SIM_API cGroupFigure : public cFigure
 
         /** @name Redefined cObject and cFigure member functions. */
         //@{
-        virtual cGroupFigure *dup() const  {return new cGroupFigure(*this);}
-        virtual std::string info() const;
-        virtual const char *getClassNameForRenderer() const {return "";} // non-visual figure
-        virtual void move(double x, double y) {}
+        virtual cGroupFigure *dup() const override  {return new cGroupFigure(*this);}
+        virtual std::string info() const override;
+        virtual const char *getClassNameForRenderer() const override {return "";} // non-visual figure
+        virtual void move(double x, double y) override {}
         //@}
 };
 
@@ -427,8 +427,8 @@ class SIM_API cPanelFigure : public cFigure
     private:
         Point position;
     protected:
-        virtual const char **getAllowedPropertyKeys() const;
-        virtual void parse(cProperty *property);
+        virtual const char **getAllowedPropertyKeys() const override;
+        virtual void parse(cProperty *property) override;
     private:
         void copy(const cPanelFigure& other);
     public:
@@ -441,11 +441,11 @@ class SIM_API cPanelFigure : public cFigure
 
         /** @name Redefined cObject and cFigure member functions. */
         //@{
-        virtual cPanelFigure *dup() const  {return new cPanelFigure(*this);}
-        virtual std::string info() const;
-        virtual const char *getClassNameForRenderer() const {return "";} // non-visual figure
-        virtual void updateParentTransform(Transform& transform);
-        virtual void move(double x, double y) {position.translate(x,y); fireTransformChange();}
+        virtual cPanelFigure *dup() const override  {return new cPanelFigure(*this);}
+        virtual std::string info() const override;
+        virtual const char *getClassNameForRenderer() const override {return "";} // non-visual figure
+        virtual void updateParentTransform(Transform& transform) override;
+        virtual void move(double x, double y) override {position.translate(x,y); fireTransformChange();}
         //@}
 
         /** @name Figure attributes */
@@ -483,7 +483,7 @@ class SIM_API cAbstractLineFigure : public cFigure
     private:
         void copy(const cAbstractLineFigure& other);
     protected:
-        virtual const char **getAllowedPropertyKeys() const;
+        virtual const char **getAllowedPropertyKeys() const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -494,9 +494,9 @@ class SIM_API cAbstractLineFigure : public cFigure
 
         /** @name Redefined cObject and cFigure member functions. */
         //@{
-        virtual cAbstractLineFigure *dup() const {throw cRuntimeError(this, E_CANTDUP);}
-        virtual std::string info() const;
-        virtual void parse(cProperty *property);
+        virtual cAbstractLineFigure *dup() const override {throw cRuntimeError(this, E_CANTDUP);}
+        virtual std::string info() const override;
+        virtual void parse(cProperty *property) override;
         //@}
 
         /** @name Figure attributes */
@@ -534,7 +534,7 @@ class SIM_API cLineFigure : public cAbstractLineFigure
     private:
         void copy(const cLineFigure& other);
     protected:
-        virtual const char **getAllowedPropertyKeys() const;
+        virtual const char **getAllowedPropertyKeys() const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -545,10 +545,10 @@ class SIM_API cLineFigure : public cAbstractLineFigure
 
         /** @name Redefined cObject and cFigure member functions. */
         //@{
-        virtual cLineFigure *dup() const  {return new cLineFigure(*this);}
-        virtual std::string info() const;
-        virtual void parse(cProperty *property);
-        virtual void move(double x, double y);
+        virtual cLineFigure *dup() const override  {return new cLineFigure(*this);}
+        virtual std::string info() const override;
+        virtual void parse(cProperty *property) override;
+        virtual void move(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
@@ -576,7 +576,7 @@ class SIM_API cArcFigure : public cAbstractLineFigure
     private:
         void copy(const cArcFigure& other);
     protected:
-        virtual const char **getAllowedPropertyKeys() const;
+        virtual const char **getAllowedPropertyKeys() const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -587,10 +587,10 @@ class SIM_API cArcFigure : public cAbstractLineFigure
 
         /** @name Redefined cObject and cFigure member functions. */
         //@{
-        virtual cArcFigure *dup() const  {return new cArcFigure(*this);}
-        virtual std::string info() const;
-        virtual void parse(cProperty *property);
-        virtual void move(double x, double y);
+        virtual cArcFigure *dup() const override  {return new cArcFigure(*this);}
+        virtual std::string info() const override;
+        virtual void parse(cProperty *property) override;
+        virtual void move(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
@@ -630,7 +630,7 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
         void checkIndex(int i) const;
         void checkInsIndex(int i) const;
     protected:
-        virtual const char **getAllowedPropertyKeys() const;
+        virtual const char **getAllowedPropertyKeys() const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -641,10 +641,10 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
 
         /** @name Redefined cObject and cFigure member functions. */
         //@{
-        virtual cPolylineFigure *dup() const  {return new cPolylineFigure(*this);}
-        virtual std::string info() const;
-        virtual void parse(cProperty *property);
-        virtual void move(double x, double y);
+        virtual cPolylineFigure *dup() const override  {return new cPolylineFigure(*this);}
+        virtual std::string info() const override;
+        virtual void parse(cProperty *property) override;
+        virtual void move(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
@@ -698,7 +698,7 @@ class SIM_API cAbstractShapeFigure : public cFigure
     private:
         void copy(const cAbstractShapeFigure& other);
     protected:
-        virtual const char **getAllowedPropertyKeys() const;
+        virtual const char **getAllowedPropertyKeys() const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -709,9 +709,9 @@ class SIM_API cAbstractShapeFigure : public cFigure
 
         /** @name Redefined cObject and cFigure member functions. */
         //@{
-        virtual cAbstractShapeFigure *dup() const {throw cRuntimeError(this, E_CANTDUP);}
-        virtual std::string info() const;
-        virtual void parse(cProperty *property);
+        virtual cAbstractShapeFigure *dup() const override {throw cRuntimeError(this, E_CANTDUP);}
+        virtual std::string info() const override;
+        virtual void parse(cProperty *property) override;
         //@}
 
         /** @name Figure attributes */
@@ -751,7 +751,7 @@ class SIM_API cRectangleFigure : public cAbstractShapeFigure
         Rectangle bounds;
         double cornerRx, cornerRy;
     protected:
-        virtual const char **getAllowedPropertyKeys() const;
+        virtual const char **getAllowedPropertyKeys() const override;
     private:
         void copy(const cRectangleFigure& other);
     public:
@@ -764,13 +764,13 @@ class SIM_API cRectangleFigure : public cAbstractShapeFigure
 
         /** @name Redefined cObject and cFigure member functions. */
         //@{
-        virtual cRectangleFigure *dup() const  {return new cRectangleFigure(*this);}
-        virtual std::string info() const;
-        virtual void parse(cProperty *property);
+        virtual cRectangleFigure *dup() const override  {return new cRectangleFigure(*this);}
+        virtual std::string info() const override;
+        virtual void parse(cProperty *property) override;
         /**
          * Translates the bounding rectangle, see getBounds().
          */
-        virtual void move(double x, double y);
+        virtual void move(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
@@ -798,7 +798,7 @@ class SIM_API cOvalFigure : public cAbstractShapeFigure
     private:
         void copy(const cOvalFigure& other);
     protected:
-        virtual const char **getAllowedPropertyKeys() const;
+        virtual const char **getAllowedPropertyKeys() const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -809,10 +809,10 @@ class SIM_API cOvalFigure : public cAbstractShapeFigure
 
         /** @name Redefined cObject and cFigure member functions. */
         //@{
-        virtual cOvalFigure *dup() const  {return new cOvalFigure(*this);}
-        virtual std::string info() const;
-        virtual void parse(cProperty *property);
-        virtual void move(double x, double y);
+        virtual cOvalFigure *dup() const override  {return new cOvalFigure(*this);}
+        virtual std::string info() const override;
+        virtual void parse(cProperty *property) override;
+        virtual void move(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
@@ -839,7 +839,7 @@ class SIM_API cRingFigure : public cAbstractShapeFigure
     private:
         void copy(const cRingFigure& other);
     protected:
-        virtual const char **getAllowedPropertyKeys() const;
+        virtual const char **getAllowedPropertyKeys() const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -850,10 +850,10 @@ class SIM_API cRingFigure : public cAbstractShapeFigure
 
         /** @name Redefined cObject and cFigure member functions. */
         //@{
-        virtual cRingFigure *dup() const  {return new cRingFigure(*this);}
-        virtual std::string info() const;
-        virtual void parse(cProperty *property);
-        virtual void move(double x, double y);
+        virtual cRingFigure *dup() const override  {return new cRingFigure(*this);}
+        virtual std::string info() const override;
+        virtual void parse(cProperty *property) override;
+        virtual void move(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
@@ -885,7 +885,7 @@ class SIM_API cPieSliceFigure : public cAbstractShapeFigure
     private:
         void copy(const cPieSliceFigure& other);
     protected:
-        virtual const char **getAllowedPropertyKeys() const;
+        virtual const char **getAllowedPropertyKeys() const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -896,10 +896,10 @@ class SIM_API cPieSliceFigure : public cAbstractShapeFigure
 
         /** @name Redefined cObject and cFigure member functions. */
         //@{
-        virtual cPieSliceFigure *dup() const  {return new cPieSliceFigure(*this);}
-        virtual std::string info() const;
-        virtual void parse(cProperty *property);
-        virtual void move(double x, double y);
+        virtual cPieSliceFigure *dup() const override  {return new cPieSliceFigure(*this);}
+        virtual std::string info() const override;
+        virtual void parse(cProperty *property) override;
+        virtual void move(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
@@ -937,7 +937,7 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
         void checkIndex(int i) const;
         void checkInsIndex(int i) const;
     protected:
-        virtual const char **getAllowedPropertyKeys() const;
+        virtual const char **getAllowedPropertyKeys() const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -948,10 +948,10 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
 
         /** @name Redefined cObject and cFigure member functions. */
         //@{
-        virtual cPolygonFigure *dup() const  {return new cPolygonFigure(*this);}
-        virtual std::string info() const;
-        virtual void parse(cProperty *property);
-        virtual void move(double x, double y);
+        virtual cPolygonFigure *dup() const override  {return new cPolygonFigure(*this);}
+        virtual std::string info() const override;
+        virtual void parse(cProperty *property) override;
+        virtual void move(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
@@ -999,7 +999,7 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
         void copy(const cPathFigure& other);
         void appendPath(const std::string& s);
     protected:
-        virtual const char **getAllowedPropertyKeys() const;
+        virtual const char **getAllowedPropertyKeys() const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -1010,14 +1010,14 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
 
         /** @name Redefined cObject and cFigure member functions. */
         //@{
-        virtual cPathFigure *dup() const  {return new cPathFigure(*this);}
-        virtual std::string info() const;
-        virtual void parse(cProperty *property);
+        virtual cPathFigure *dup() const override  {return new cPathFigure(*this);}
+        virtual std::string info() const override;
+        virtual void parse(cProperty *property) override;
         /**
          * The move operation modifies the offset field (see getOffset()), in order to avoid having
          * to update potentially all path atoms in the string.
          */
-        virtual void move(double x, double y);
+        virtual void move(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
@@ -1071,7 +1071,7 @@ class SIM_API cAbstractTextFigure : public cFigure
     private:
         void copy(const cAbstractTextFigure& other);
     protected:
-        virtual const char **getAllowedPropertyKeys() const;
+        virtual const char **getAllowedPropertyKeys() const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -1082,13 +1082,13 @@ class SIM_API cAbstractTextFigure : public cFigure
 
         /** @name Redefined cObject and cFigure member functions. */
         //@{
-        virtual cAbstractTextFigure *dup() const {throw cRuntimeError(this, E_CANTDUP);}
-        virtual std::string info() const;
-        virtual void parse(cProperty *property);
+        virtual cAbstractTextFigure *dup() const override {throw cRuntimeError(this, E_CANTDUP);}
+        virtual std::string info() const override;
+        virtual void parse(cProperty *property) override;
         /**
          * Updates the position of the text, see getPosition().
          */
-        virtual void move(double x, double y);
+        virtual void move(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
@@ -1129,7 +1129,7 @@ class SIM_API cTextFigure : public cAbstractTextFigure
 
         /** @name Redefined cObject and cFigure member functions. */
         //@{
-        virtual cTextFigure *dup() const  {return new cTextFigure(*this);}
+        virtual cTextFigure *dup() const override  {return new cTextFigure(*this);}
         //@}
 };
 
@@ -1155,7 +1155,7 @@ class SIM_API cLabelFigure : public cAbstractTextFigure
 
         /** @name Redefined cObject and cFigure member functions. */
         //@{
-        virtual cLabelFigure *dup() const  {return new cLabelFigure(*this);}
+        virtual cLabelFigure *dup() const override  {return new cLabelFigure(*this);}
         //@}
 };
 
@@ -1197,7 +1197,7 @@ class SIM_API cAbstractImageFigure : public cFigure
     private:
         void copy(const cAbstractImageFigure& other);
     protected:
-        virtual const char **getAllowedPropertyKeys() const;
+        virtual const char **getAllowedPropertyKeys() const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -1208,12 +1208,12 @@ class SIM_API cAbstractImageFigure : public cFigure
 
         /** @name Redefined cObject and cFigure member functions. */
         //@{
-        virtual cAbstractImageFigure *dup() const {throw cRuntimeError(this, E_CANTDUP);}
-        virtual void parse(cProperty *property);
+        virtual cAbstractImageFigure *dup() const override {throw cRuntimeError(this, E_CANTDUP);}
+        virtual void parse(cProperty *property) override;
         /**
          * Updates the position of the image, see getPosition().
          */
-        virtual void move(double x, double y);
+        virtual void move(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
@@ -1252,7 +1252,7 @@ class SIM_API cImageFigure : public cAbstractImageFigure
     private:
         void copy(const cImageFigure& other);
     protected:
-        virtual const char **getAllowedPropertyKeys() const;
+        virtual const char **getAllowedPropertyKeys() const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -1263,9 +1263,9 @@ class SIM_API cImageFigure : public cAbstractImageFigure
 
         /** @name Redefined cObject and cFigure member functions. */
         //@{
-        virtual cImageFigure *dup() const  {return new cImageFigure(*this);}
-        virtual std::string info() const;
-        virtual void parse(cProperty *property);
+        virtual cImageFigure *dup() const override  {return new cImageFigure(*this);}
+        virtual std::string info() const override;
+        virtual void parse(cProperty *property) override;
         //@}
 
         /** @name Figure attributes */
@@ -1299,7 +1299,7 @@ class SIM_API cIconFigure : public cImageFigure
 
         /** @name Redefined cObject and cFigure member functions. */
         //@{
-        virtual cIconFigure *dup() const  {return new cIconFigure(*this);}
+        virtual cIconFigure *dup() const override  {return new cIconFigure(*this);}
         //@}
 };
 
@@ -1318,7 +1318,7 @@ class SIM_API cPixmapFigure : public cAbstractImageFigure
     private:
         void copy(const cPixmapFigure& other);
     protected:
-        virtual const char **getAllowedPropertyKeys() const;
+        virtual const char **getAllowedPropertyKeys() const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -1330,9 +1330,9 @@ class SIM_API cPixmapFigure : public cAbstractImageFigure
 
         /** @name Redefined cObject and cFigure member functions. */
         //@{
-        virtual cPixmapFigure *dup() const  {return new cPixmapFigure(*this);}
-        virtual std::string info() const;
-        virtual void parse(cProperty *property);
+        virtual cPixmapFigure *dup() const override  {return new cPixmapFigure(*this);}
+        virtual std::string info() const override;
+        virtual void parse(cProperty *property) override;
         //@}
 
         /** @name Figure attributes */
@@ -1402,9 +1402,9 @@ class SIM_API cCanvas : public cOwnedObject
 
         /** @name Redefined cObject member functions. */
         //@{
-        virtual cCanvas *dup() const  {return new cCanvas(*this);}
-        virtual void forEachChild(cVisitor *v);
-        virtual std::string info() const;
+        virtual cCanvas *dup() const override  {return new cCanvas(*this);}
+        virtual void forEachChild(cVisitor *v) override;
+        virtual std::string info() const override;
         //@}
 
         /** @name Canvas attributes. */

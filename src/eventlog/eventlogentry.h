@@ -82,7 +82,7 @@ class EVENTLOG_API EventLogTokenBasedEntry : public EventLogEntry
         static const char *getStringToken(char **tokens, int numTokens, const char *sign, bool mandatory, const char *defaultValue);
 
     public:
-        virtual void parse(char *line, int length);
+        virtual void parse(char *line, int length) override;
         virtual void parse(char **tokens, int numTokens) = 0;
 };
 
@@ -96,14 +96,14 @@ class EVENTLOG_API EventLogMessageEntry : public EventLogEntry
 
     public:
         EventLogMessageEntry(Event *event, int entryIndex);
-        virtual void parse(char *line, int length);
-        virtual void print(FILE *fout);
-        virtual int getClassIndex() { return 0; }
-        virtual const char *getClassName() { return "EventLogMessageEntry"; }
+        virtual void parse(char *line, int length) override;
+        virtual void print(FILE *fout) override;
+        virtual int getClassIndex() override { return 0; }
+        virtual const char *getClassName() override { return "EventLogMessageEntry"; }
 
-        virtual const std::vector<const char *> getAttributeNames() const;
-        virtual const char *getAsString() const { return "-"; }
-        virtual const char *getAsString(const char *attribute) const;
+        virtual const std::vector<const char *> getAttributeNames() const override;
+        virtual const char *getAsString() const override { return "-"; }
+        virtual const char *getAsString(const char *attribute) const override;
 };
 
 NAMESPACE_END

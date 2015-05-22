@@ -128,21 +128,21 @@ class SIM_API cVarHistogram : public cHistogramBase
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cVarHistogram *dup() const  {return new cVarHistogram(*this);}
+    virtual cVarHistogram *dup() const override  {return new cVarHistogram(*this);}
 
     /**
      * Serializes the object into an MPI send buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Deserializes the object from an MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Redefined member functions from cStatistic and its subclasses. */
@@ -151,54 +151,54 @@ class SIM_API cVarHistogram : public cHistogramBase
     /**
      * Clears the results collected so far.
      */
-    virtual void clearResult();
+    virtual void clearResult() override;
 
     /**
      * Transforms the table of precollected values into an internal
      * histogram structure.
      */
-    virtual void transform();
+    virtual void transform() override;
 
     /**
      * Called internally by collect(), this method collects a value
      * after the histogram has been transformed.
      */
-    virtual void collectTransformed(double val);
+    virtual void collectTransformed(double val) override;
 
     /**
      * Generates a random number based on the collected data.
      */
-    virtual double draw() const;
+    virtual double draw() const override;
 
     /**
      * Returns the value of the Probability Density Function at a given x.
      */
-    virtual double getPDF(double x) const;
+    virtual double getPDF(double x) const override;
 
     /**
      * Returns the value of the Cumulated Density Function at a given x.
      */
-    virtual double getCDF(double x) const;
+    virtual double getCDF(double x) const override;
 
     /**
      * Returns the kth cell boundary.
      */
-    virtual double getBasepoint(int k) const;
+    virtual double getBasepoint(int k) const override;
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      */
-    virtual double getCellValue(int k) const;
+    virtual double getCellValue(int k) const override;
 
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *) const;
+    virtual void saveToFile(FILE *) const override;
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().
      */
-    virtual void loadFromFile(FILE *);
+    virtual void loadFromFile(FILE *) override;
     //@}
 
     /** @name Setting up the histogram. */

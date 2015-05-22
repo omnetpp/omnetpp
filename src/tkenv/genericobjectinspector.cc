@@ -38,10 +38,10 @@ class GenericObjectInspectorFactory : public InspectorFactory
   public:
     GenericObjectInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) {return true;}
-    int getInspectorType() {return INSP_OBJECT;}
-    double getQualityAsDefault(cObject *object) {return 1.0;}
-    Inspector *createInspector() {return new GenericObjectInspector(this);}
+    bool supportsObject(cObject *obj) override {return true;}
+    int getInspectorType() override {return INSP_OBJECT;}
+    double getQualityAsDefault(cObject *object) override {return 1.0;}
+    Inspector *createInspector() override {return new GenericObjectInspector(this);}
 };
 
 Register_InspectorFactory(GenericObjectInspectorFactory);

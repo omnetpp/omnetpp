@@ -25,10 +25,10 @@ class TKENV_API WatchInspector: public Inspector
 {
    public:
       WatchInspector(InspectorFactory *f);
-      virtual void createWindow(const char *window, const char *geometry);
-      virtual void useWindow(const char *window);
-      virtual void refresh();
-      virtual void commit();
+      virtual void createWindow(const char *window, const char *geometry) override;
+      virtual void useWindow(const char *window) override;
+      virtual void refresh() override;
+      virtual void commit() override;
 };
 
 NAMESPACE_END

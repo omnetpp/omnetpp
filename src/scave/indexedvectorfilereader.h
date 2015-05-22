@@ -77,9 +77,9 @@ class SCAVE_API IndexedVectorFileReaderNode : public ReaderNode
 
         Port *addVector(const VectorResult &vector);
 
-        virtual bool isReady() const;
-        virtual void process();
-        virtual bool isFinished() const;
+        virtual bool isReady() const override;
+        virtual void process() override;
+        virtual bool isFinished() const override;
 
     private:
         void readIndexFile();
@@ -90,11 +90,11 @@ class SCAVE_API IndexedVectorFileReaderNode : public ReaderNode
 class SCAVE_API IndexedVectorFileReaderNodeType : public ReaderNodeType
 {
     public:
-        virtual const char *getName() const {return "indexedvectorfilereader";}
-        virtual const char *getDescription() const;
-        virtual void getAttributes(StringMap& attrs) const;
-        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
-        virtual Port *getPort(Node *node, const char *portname) const;
+        virtual const char *getName() const override {return "indexedvectorfilereader";}
+        virtual const char *getDescription() const override;
+        virtual void getAttributes(StringMap& attrs) const override;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const override;
+        virtual Port *getPort(Node *node, const char *portname) const override;
 };
 
 

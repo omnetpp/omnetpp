@@ -84,9 +84,9 @@ class SIM_API cUniform : public cRandom
         cUniform(cRNG *rng, double a, double b) : cRandom(rng), a(a), b(b) {}
         cUniform(const char *name=nullptr, cRNG *rng=nullptr, double a=0, double b=1) : cRandom(name, rng), a(a), b(b) {}
         cUniform(const cUniform& other) : cRandom(other) {copy(other);}
-        virtual cUniform *dup() const {return new cUniform(*this);}
+        virtual cUniform *dup() const override {return new cUniform(*this);}
         cUniform& operator =(const cUniform& other);
-        virtual std::string info() const;
+        virtual std::string info() const override;
         //@}
 
         /** @name Parameters. */
@@ -99,7 +99,7 @@ class SIM_API cUniform : public cRandom
 
         /** @name Random number generation. */
         //@{
-        virtual double draw() const;
+        virtual double draw() const override;
         //@}
 };
 
@@ -122,9 +122,9 @@ class SIM_API cExponential : public cRandom
         cExponential(cRNG *rng, double mean) : cRandom(rng), mean(mean) {}
         cExponential(const char *name=nullptr, cRNG *rng=nullptr, double mean=1) : cRandom(rng), mean(mean) {}
         cExponential(const cExponential& other) : cRandom(other) {copy(other);}
-        virtual cExponential *dup() const {return new cExponential(*this);}
+        virtual cExponential *dup() const override {return new cExponential(*this);}
         const cExponential& operator =(const cExponential& other);
-        virtual std::string info() const;
+        virtual std::string info() const override;
         //@}
 
         /** @name Parameters. */
@@ -135,7 +135,7 @@ class SIM_API cExponential : public cRandom
 
         /** @name Random number generation. */
         //@{
-        virtual double draw() const;
+        virtual double draw() const override;
         //@}
 };
 
@@ -160,9 +160,9 @@ class SIM_API cNormal : public cRandom
         cNormal(cRNG *rng, double mean, double stddev) : cRandom(rng), mean(mean), stddev(stddev) {}
         cNormal(const char *name=nullptr, cRNG *rng=nullptr, double mean=0, double stddev=1) : cRandom(rng), mean(mean), stddev(stddev) {}
         cNormal(const cNormal& other) : cRandom(other) {copy(other);}
-        virtual cNormal *dup() const {return new cNormal(*this);}
+        virtual cNormal *dup() const override {return new cNormal(*this);}
         cNormal& operator =(const cNormal& other);
-        virtual std::string info() const;
+        virtual std::string info() const override;
         //@}
 
         /** @name Parameters. */
@@ -175,7 +175,7 @@ class SIM_API cNormal : public cRandom
 
         /** @name Random number generation. */
         //@{
-        virtual double draw() const;
+        virtual double draw() const override;
         //@}
 };
 
@@ -200,9 +200,9 @@ class SIM_API cTruncNormal : public cRandom
         cTruncNormal(cRNG *rng, double mean, double stddev) : cRandom(rng), mean(mean), stddev(stddev) {}
         cTruncNormal(const char *name=nullptr, cRNG *rng=nullptr, double mean=0, double stddev=1) : cRandom(rng), mean(mean), stddev(stddev) {}
         cTruncNormal(const cTruncNormal& other) : cRandom(other) {copy(other);}
-        virtual cTruncNormal *dup() const {return new cTruncNormal(*this);}
+        virtual cTruncNormal *dup() const override {return new cTruncNormal(*this);}
         cTruncNormal& operator =(const cTruncNormal& other);
-        virtual std::string info() const;
+        virtual std::string info() const override;
         //@}
 
         /** @name Parameters. */
@@ -215,7 +215,7 @@ class SIM_API cTruncNormal : public cRandom
 
         /** @name Random number generation. */
         //@{
-        virtual double draw() const;
+        virtual double draw() const override;
         //@}
 };
 
@@ -240,9 +240,9 @@ class SIM_API cGamma : public cRandom
         cGamma(cRNG *rng, double alpha, double theta) : cRandom(rng), alpha(alpha), theta(theta) {}
         cGamma(const char *name=nullptr, cRNG *rng=nullptr, double alpha=1, double theta=1) : cRandom(rng), alpha(alpha), theta(theta) {}
         cGamma(const cGamma& other) : cRandom(other) {copy(other);}
-        virtual cGamma *dup() const {return new cGamma(*this);}
+        virtual cGamma *dup() const override {return new cGamma(*this);}
         cGamma& operator =(const cGamma& other);
-        virtual std::string info() const;
+        virtual std::string info() const override;
         //@}
 
         /** @name Parameters. */
@@ -255,7 +255,7 @@ class SIM_API cGamma : public cRandom
 
         /** @name Random number generation. */
         //@{
-        virtual double draw() const;
+        virtual double draw() const override;
         //@}
 };
 
@@ -280,9 +280,9 @@ class SIM_API cBeta : public cRandom
         cBeta(cRNG *rng, double alpha1, double alpha2) : cRandom(rng), alpha1(alpha1), alpha2(alpha2) {}
         cBeta(const char *name=nullptr, cRNG *rng=nullptr, double alpha1=1, double alpha2=1) : cRandom(rng), alpha1(alpha1), alpha2(alpha2) {}
         cBeta(const cBeta& other) : cRandom(other) {copy(other);}
-        virtual cBeta *dup() const {return new cBeta(*this);}
+        virtual cBeta *dup() const override {return new cBeta(*this);}
         cBeta& operator =(const cBeta& other);
-        virtual std::string info() const;
+        virtual std::string info() const override;
         //@}
 
         /** @name Parameters. */
@@ -295,7 +295,7 @@ class SIM_API cBeta : public cRandom
 
         /** @name Random number generation. */
         //@{
-        virtual double draw() const;
+        virtual double draw() const override;
         //@}
 };
 
@@ -320,9 +320,9 @@ class SIM_API cErlang : public cRandom
         cErlang(cRNG *rng, unsigned int k, double mean) : cRandom(rng), k(k), mean(mean) {}
         cErlang(const char *name=nullptr, cRNG *rng=nullptr, unsigned int k=1, double mean=1) : cRandom(rng), k(k), mean(mean) {}
         cErlang(const cErlang& other) : cRandom(other) {copy(other);}
-        virtual cErlang *dup() const {return new cErlang(*this);}
+        virtual cErlang *dup() const override {return new cErlang(*this);}
         cErlang& operator =(const cErlang& other);
-        virtual std::string info() const;
+        virtual std::string info() const override;
         //@}
 
         /** @name Parameters. */
@@ -335,7 +335,7 @@ class SIM_API cErlang : public cRandom
 
         /** @name Random number generation. */
         //@{
-        virtual double draw() const;
+        virtual double draw() const override;
         //@}
 };
 
@@ -359,9 +359,9 @@ class SIM_API cChiSquare : public cRandom
         cChiSquare(cRNG *rng, unsigned int k) : cRandom(rng), k(k) {}
         cChiSquare(const char *name=nullptr, cRNG *rng=nullptr, unsigned int k=1) : cRandom(rng), k(k) {}
         cChiSquare(const cChiSquare& other) : cRandom(other) {copy(other);}
-        virtual cChiSquare *dup() const {return new cChiSquare(*this);}
+        virtual cChiSquare *dup() const override {return new cChiSquare(*this);}
         cChiSquare& operator =(const cChiSquare& other);
-        virtual std::string info() const;
+        virtual std::string info() const override;
         //@}
 
         /** @name Parameters. */
@@ -372,7 +372,7 @@ class SIM_API cChiSquare : public cRandom
 
         /** @name Random number generation. */
         //@{
-        virtual double draw() const;
+        virtual double draw() const override;
         //@}
 };
 
@@ -396,9 +396,9 @@ class SIM_API cStudentT : public cRandom
         cStudentT(cRNG *rng, unsigned int i) : cRandom(rng), i(i) {}
         cStudentT(const char *name=nullptr, cRNG *rng=nullptr, unsigned int i=1) : cRandom(rng), i(i) {}
         cStudentT(const cStudentT& other) : cRandom(other) {copy(other);}
-        virtual cStudentT *dup() const {return new cStudentT(*this);}
+        virtual cStudentT *dup() const override {return new cStudentT(*this);}
         cStudentT& operator =(const cStudentT& other);
-        virtual std::string info() const;
+        virtual std::string info() const override;
         //@}
 
         /** @name Parameters. */
@@ -409,7 +409,7 @@ class SIM_API cStudentT : public cRandom
 
         /** @name Random number generation. */
         //@{
-        virtual double draw() const;
+        virtual double draw() const override;
         //@}
 };
 
@@ -434,9 +434,9 @@ class SIM_API cCauchy : public cRandom
         cCauchy(cRNG *rng, double a, double b) : cRandom(rng), a(a), b(b) {}
         cCauchy(const char *name=nullptr, cRNG *rng=nullptr, double a=0, double b=1) : cRandom(rng), a(a), b(b) {}
         cCauchy(const cCauchy& other) : cRandom(other) {copy(other);}
-        virtual cCauchy *dup() const {return new cCauchy(*this);}
+        virtual cCauchy *dup() const override {return new cCauchy(*this);}
         cCauchy& operator =(const cCauchy& other);
-        virtual std::string info() const;
+        virtual std::string info() const override;
         //@}
 
         /** @name Parameters. */
@@ -449,7 +449,7 @@ class SIM_API cCauchy : public cRandom
 
         /** @name Random number generation. */
         //@{
-        virtual double draw() const;
+        virtual double draw() const override;
         //@}
 };
 
@@ -475,9 +475,9 @@ class SIM_API cTriang : public cRandom
         cTriang(cRNG *rng, double a, double b, double c) : cRandom(rng), a(a), b(b), c(c) {}
         cTriang(const char *name=nullptr, cRNG *rng=nullptr, double a=-1, double b=0, double c=1) : cRandom(rng), a(a), b(b), c(c) {}
         cTriang(const cTriang& other) : cRandom(other) {copy(other);}
-        virtual cTriang *dup() const {return new cTriang(*this);}
+        virtual cTriang *dup() const override {return new cTriang(*this);}
         cTriang& operator =(const cTriang& other);
-        virtual std::string info() const;
+        virtual std::string info() const override;
         //@}
 
         /** @name Parameters. */
@@ -492,7 +492,7 @@ class SIM_API cTriang : public cRandom
 
         /** @name Random number generation. */
         //@{
-        virtual double draw() const;
+        virtual double draw() const override;
         //@}
 };
 
@@ -517,9 +517,9 @@ class SIM_API cWeibull : public cRandom
         cWeibull(cRNG *rng, double a, double b) : cRandom(rng), a(a), b(b) {}
         cWeibull(const char *name=nullptr, cRNG *rng=nullptr, double a=1, double b=1) : cRandom(rng), a(a), b(b) {}
         cWeibull(const cWeibull& other) : cRandom(other) {copy(other);}
-        virtual cWeibull *dup() const {return new cWeibull(*this);}
+        virtual cWeibull *dup() const override {return new cWeibull(*this);}
         cWeibull& operator =(const cWeibull& other);
-        virtual std::string info() const;
+        virtual std::string info() const override;
         //@}
 
         /** @name Parameters. */
@@ -532,7 +532,7 @@ class SIM_API cWeibull : public cRandom
 
         /** @name Random number generation. */
         //@{
-        virtual double draw() const;
+        virtual double draw() const override;
         //@}
 };
 
@@ -558,9 +558,9 @@ class SIM_API cParetoShifted : public cRandom
         cParetoShifted(cRNG *rng, double a, double b, double c) : cRandom(rng), a(a), b(b), c(c) {}
         cParetoShifted(const char *name=nullptr, cRNG *rng=nullptr, double a=1, double b=1, double c=0) : cRandom(rng), a(a), b(b), c(c) {}
         cParetoShifted(const cParetoShifted& other) : cRandom(other) {copy(other);}
-        virtual cParetoShifted *dup() const {return new cParetoShifted(*this);}
+        virtual cParetoShifted *dup() const override {return new cParetoShifted(*this);}
         cParetoShifted& operator =(const cParetoShifted& other);
-        virtual std::string info() const;
+        virtual std::string info() const override;
         //@}
 
         /** @name Parameters. */
@@ -575,7 +575,7 @@ class SIM_API cParetoShifted : public cRandom
 
         /** @name Random number generation. */
         //@{
-        virtual double draw() const;
+        virtual double draw() const override;
         //@}
 };
 
@@ -602,9 +602,9 @@ class SIM_API cIntUniform : public cRandom
         cIntUniform(cRNG *rng, int a, int b) : cRandom(rng), a(a), b(b) {}
         cIntUniform(const char *name=nullptr, cRNG *rng=nullptr, int a=0, int b=1) : cRandom(rng), a(a), b(b) {}
         cIntUniform(const cIntUniform& other) : cRandom(other) {copy(other);}
-        virtual cIntUniform *dup() const {return new cIntUniform(*this);}
+        virtual cIntUniform *dup() const override {return new cIntUniform(*this);}
         cIntUniform& operator =(const cIntUniform& other);
-        virtual std::string info() const;
+        virtual std::string info() const override;
         //@}
 
         /** @name Parameters. */
@@ -617,7 +617,7 @@ class SIM_API cIntUniform : public cRandom
 
         /** @name Random number generation. */
         //@{
-        virtual double draw() const;
+        virtual double draw() const override;
         //@}
 };
 
@@ -641,9 +641,9 @@ class SIM_API cBernoulli : public cRandom
         cBernoulli(cRNG *rng, double p) : cRandom(rng), p(p) {}
         cBernoulli(const char *name=nullptr, cRNG *rng=nullptr, double p=0.5) : cRandom(rng), p(p) {}
         cBernoulli(const cBernoulli& other) : cRandom(other) {copy(other);}
-        virtual cBernoulli *dup() const {return new cBernoulli(*this);}
+        virtual cBernoulli *dup() const override {return new cBernoulli(*this);}
         cBernoulli& operator =(const cBernoulli& other);
-        virtual std::string info() const;
+        virtual std::string info() const override;
         //@}
 
         /** @name Parameters. */
@@ -654,7 +654,7 @@ class SIM_API cBernoulli : public cRandom
 
         /** @name Random number generation. */
         //@{
-        virtual double draw() const;
+        virtual double draw() const override;
         //@}
 };
 
@@ -679,9 +679,9 @@ class SIM_API cBinomial : public cRandom
         cBinomial(cRNG *rng, int n, double p) : cRandom(rng), n(n), p(p) {}
         cBinomial(const char *name=nullptr, cRNG *rng=nullptr, int n=1, double p=0.5) : cRandom(rng), n(n), p(p) {}
         cBinomial(const cBinomial& other) : cRandom(other) {copy(other);}
-        virtual cBinomial *dup() const {return new cBinomial(*this);}
+        virtual cBinomial *dup() const override {return new cBinomial(*this);}
         cBinomial& operator =(const cBinomial& other);
-        virtual std::string info() const;
+        virtual std::string info() const override;
         //@}
 
         /** @name Parameters. */
@@ -694,7 +694,7 @@ class SIM_API cBinomial : public cRandom
 
         /** @name Random number generation. */
         //@{
-        virtual double draw() const;
+        virtual double draw() const override;
         //@}
 };
 
@@ -718,9 +718,9 @@ class SIM_API cGeometric : public cRandom
         cGeometric(cRNG *rng, double p) : cRandom(rng), p(p) {}
         cGeometric(const char *name=nullptr, cRNG *rng=nullptr, double p=0.5) : cRandom(rng), p(p) {}
         cGeometric(const cGeometric& other) : cRandom(other) {copy(other);}
-        virtual cGeometric *dup() const {return new cGeometric(*this);}
+        virtual cGeometric *dup() const override {return new cGeometric(*this);}
         cGeometric& operator =(const cGeometric& other);
-        virtual std::string info() const;
+        virtual std::string info() const override;
         //@}
 
         /** @name Parameters. */
@@ -731,7 +731,7 @@ class SIM_API cGeometric : public cRandom
 
         /** @name Random number generation. */
         //@{
-        virtual double draw() const;
+        virtual double draw() const override;
         //@}
 };
 
@@ -756,9 +756,9 @@ class SIM_API cNegBinomial : public cRandom
         cNegBinomial(cRNG *rng, int n, double p) : cRandom(rng), n(n), p(p) {}
         cNegBinomial(const char *name=nullptr, cRNG *rng=nullptr, int n=0, double p=0.5) : cRandom(rng), n(n), p(p) {}
         cNegBinomial(const cNegBinomial& other) : cRandom(other) {copy(other);}
-        virtual cNegBinomial *dup() const {return new cNegBinomial(*this);}
+        virtual cNegBinomial *dup() const override {return new cNegBinomial(*this);}
         cNegBinomial& operator =(const cNegBinomial& other);
-        virtual std::string info() const;
+        virtual std::string info() const override;
         //@}
 
         /** @name Parameters. */
@@ -771,7 +771,7 @@ class SIM_API cNegBinomial : public cRandom
 
         /** @name Random number generation. */
         //@{
-        virtual double draw() const;
+        virtual double draw() const override;
         //@}
 };
 
@@ -795,9 +795,9 @@ class SIM_API cPoisson : public cRandom
         cPoisson(cRNG *rng, double lambda) : cRandom(rng), lambda(lambda) {}
         cPoisson(const char *name=nullptr, cRNG *rng=nullptr, double lambda=1) : cRandom(rng), lambda(lambda) {}
         cPoisson(const cPoisson& other) : cRandom(other) {copy(other);}
-        virtual cPoisson *dup() const {return new cPoisson(*this);}
+        virtual cPoisson *dup() const override {return new cPoisson(*this);}
         cPoisson& operator =(const cPoisson& other);
-        virtual std::string info() const;
+        virtual std::string info() const override;
         //@}
 
         /** @name Parameters. */
@@ -808,7 +808,7 @@ class SIM_API cPoisson : public cRandom
 
         /** @name Random number generation. */
         //@{
-        virtual double draw() const;
+        virtual double draw() const override;
         //@}
 };
 

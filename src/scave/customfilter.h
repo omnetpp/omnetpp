@@ -54,10 +54,10 @@ class SCAVE_API ExpressionFilterNode : public FilterNode
             NodeVar(ExpressionFilterNode *node, const char *name)
                 {hostnode = node; varname = name; hostnode->skipFirstDatum |= (varname=="tprev" || varname=="yprev"); }
             virtual ~NodeVar() {}
-            virtual Expression::Functor *dup() const {return new NodeVar(hostnode, varname.c_str());}
-            virtual const char *getName() const {return varname.c_str();}
-            virtual char getReturnType() const {return Expression::Value::DBL;}
-            virtual Expression::Value evaluate(Expression::Value args[], int numargs)
+            virtual Expression::Functor *dup() const override {return new NodeVar(hostnode, varname.c_str());}
+            virtual const char *getName() const override {return varname.c_str();}
+            virtual char getReturnType() const override {return Expression::Value::DBL;}
+            virtual Expression::Value evaluate(Expression::Value args[], int numargs) override
                 {return hostnode->getVariable(varname.c_str());}
         };
     private:
@@ -67,19 +67,19 @@ class SCAVE_API ExpressionFilterNode : public FilterNode
     public:
         ExpressionFilterNode(const char *expression);
         virtual ~ExpressionFilterNode();
-        virtual bool isReady() const;
-        virtual void process();
+        virtual bool isReady() const override;
+        virtual void process() override;
         double getVariable(const char *varname);
 };
 
 class SCAVE_API ExpressionFilterNodeType : public FilterNodeType
 {
     public:
-        virtual const char *getName() const {return "expression";}
-        virtual const char *getDescription() const;
-        virtual void getAttributes(StringMap& attrs) const;
-        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
-        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
+        virtual const char *getName() const override {return "expression";}
+        virtual const char *getDescription() const override;
+        virtual void getAttributes(StringMap& attrs) const override;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const override;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const override;
 };
 
 NAMESPACE_END

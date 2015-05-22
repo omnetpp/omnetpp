@@ -55,9 +55,9 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
         KeyValue1(const std::string *bd, const char *k, const char *v) {basedirRef = bd; key = k; value = v;}
 
         // virtual functions implementing the KeyValue interface
-        virtual const char *getKey() const   {return key.c_str();}
-        virtual const char *getValue() const {return value.c_str();}
-        virtual const char *getBaseDirectory() const {return basedirRef->c_str();}
+        virtual const char *getKey() const override   {return key.c_str();}
+        virtual const char *getValue() const override {return value.c_str();}
+        virtual const char *getBaseDirectory() const override {return basedirRef->c_str();}
     };
 
     cConfigurationReader *ini;
@@ -125,9 +125,9 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
         std::string defaultBasedir;
       public:
         void setBaseDirectory(const char *s) {defaultBasedir = s;}
-        virtual const char *getKey() const   {return nullptr;}
-        virtual const char *getValue() const {return nullptr;}
-        virtual const char *getBaseDirectory() const {return defaultBasedir.c_str();}
+        virtual const char *getKey() const override   {return nullptr;}
+        virtual const char *getValue() const override {return nullptr;}
+        virtual const char *getBaseDirectory() const override {return defaultBasedir.c_str();}
     };
     NullKeyValue nullEntry;
 
@@ -218,34 +218,34 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
 
     /** @name Methods that implement the cConfiguration(Ex) interface. */
     //@{
-    virtual void initializeFrom(cConfiguration *bootConfig);
-    virtual const char *getFileName() const;
-    virtual void validate(const char *ignorableConfigKeys) const;
-    virtual std::vector<std::string> getConfigNames();
-    virtual void activateConfig(const char *configName, int runNumber=0);
-    virtual std::string getConfigDescription(const char *configName) const;
-    virtual std::vector<std::string> getBaseConfigs(const char *configName) const;
-    virtual std::vector<std::string> getConfigChain(const char *configName) const;
-    virtual int getNumRunsInConfig(const char *configName) const;
-    virtual std::vector<std::string> unrollConfig(const char *configName, bool detailed) const;
-    virtual const char *getActiveConfigName() const;
-    virtual int getActiveRunNumber() const;
-    virtual const char *getConfigValue(const char *key) const;
-    virtual const KeyValue& getConfigEntry(const char *key) const;
-    virtual std::vector<const char *> getMatchingConfigKeys(const char *pattern) const;
-    virtual const char *getParameterValue(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const;
-    virtual const KeyValue& getParameterEntry(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const;
-    virtual std::vector<const char *> getParameterKeyValuePairs() const;
-    virtual const char *getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const;
-    virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const;
-    virtual std::vector<const char *> getMatchingPerObjectConfigKeys(const char *objectFullPath, const char *keySuffixPattern) const;
-    virtual std::vector<const char *> getMatchingPerObjectConfigKeySuffixes(const char *objectFullPath, const char *keySuffixPattern) const;
-    virtual const char *getVariable(const char *varname) const;
-    virtual std::vector<const char *> getIterationVariableNames() const;
-    virtual std::vector<const char *> getPredefinedVariableNames() const;
-    virtual const char *getVariableDescription(const char *varname) const;
-    virtual const char *substituteVariables(const char *value);
-    virtual void dump() const;
+    virtual void initializeFrom(cConfiguration *bootConfig) override;
+    virtual const char *getFileName() const override;
+    virtual void validate(const char *ignorableConfigKeys) const override;
+    virtual std::vector<std::string> getConfigNames() override;
+    virtual void activateConfig(const char *configName, int runNumber=0) override;
+    virtual std::string getConfigDescription(const char *configName) const override;
+    virtual std::vector<std::string> getBaseConfigs(const char *configName) const override;
+    virtual std::vector<std::string> getConfigChain(const char *configName) const override;
+    virtual int getNumRunsInConfig(const char *configName) const override;
+    virtual std::vector<std::string> unrollConfig(const char *configName, bool detailed) const override;
+    virtual const char *getActiveConfigName() const override;
+    virtual int getActiveRunNumber() const override;
+    virtual const char *getConfigValue(const char *key) const override;
+    virtual const KeyValue& getConfigEntry(const char *key) const override;
+    virtual std::vector<const char *> getMatchingConfigKeys(const char *pattern) const override;
+    virtual const char *getParameterValue(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const override;
+    virtual const KeyValue& getParameterEntry(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const override;
+    virtual std::vector<const char *> getParameterKeyValuePairs() const override;
+    virtual const char *getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const override;
+    virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const override;
+    virtual std::vector<const char *> getMatchingPerObjectConfigKeys(const char *objectFullPath, const char *keySuffixPattern) const override;
+    virtual std::vector<const char *> getMatchingPerObjectConfigKeySuffixes(const char *objectFullPath, const char *keySuffixPattern) const override;
+    virtual const char *getVariable(const char *varname) const override;
+    virtual std::vector<const char *> getIterationVariableNames() const override;
+    virtual std::vector<const char *> getPredefinedVariableNames() const override;
+    virtual const char *getVariableDescription(const char *varname) const override;
+    virtual const char *substituteVariables(const char *value) override;
+    virtual void dump() const override;
     //@}
 };
 

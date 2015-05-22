@@ -134,12 +134,12 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Calls v->visit(this) for each contained object.
      * See cObject for more details.
      */
-    virtual void forEachChild(cVisitor *v);
+    virtual void forEachChild(cVisitor *v) override;
 
     /**
      * Redefined. (Reason: a C++ rule that overloaded virtual methods must be redefined together.)
      */
-    virtual std::string getFullPath() const;
+    virtual std::string getFullPath() const override;
     //@}
 
     /** @name Accessing and switching the active simulation object */

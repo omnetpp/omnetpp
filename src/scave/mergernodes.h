@@ -42,21 +42,21 @@ class SCAVE_API MergerNode : public Node
 
         Port *addPort();
 
-        virtual bool isReady() const;
-        virtual void process();
-        virtual bool isFinished() const;
+        virtual bool isReady() const override;
+        virtual void process() override;
+        virtual bool isFinished() const override;
 };
 
 class SCAVE_API MergerNodeType : public NodeType
 {
     public:
-        virtual const char *getName() const {return "merger";}
-        virtual const char *getCategory() const {return "merger";}
-        virtual const char *getDescription() const;
-        virtual bool isHidden() const {return true;}
-        virtual void getAttributes(StringMap& attrs) const;
-        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
-        virtual Port *getPort(Node *node, const char *portname) const;
+        virtual const char *getName() const override {return "merger";}
+        virtual const char *getCategory() const override {return "merger";}
+        virtual const char *getDescription() const override;
+        virtual bool isHidden() const override {return true;}
+        virtual void getAttributes(StringMap& attrs) const override;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const override;
+        virtual Port *getPort(Node *node, const char *portname) const override;
 };
 
 /**
@@ -91,23 +91,23 @@ class SCAVE_API AggregatorNode : public Node
 
         Port *addPort();
 
-        virtual bool isReady() const;
-        virtual void process();
-        virtual bool isFinished() const;
+        virtual bool isReady() const override;
+        virtual void process() override;
+        virtual bool isFinished() const override;
 };
 
 class SCAVE_API AggregatorNodeType : public NodeType
 {
     public:
-        virtual const char *getName() const {return "aggregator";}
-        virtual const char *getCategory() const {return "merger";}
-        virtual const char *getDescription() const;
-        virtual bool isHidden() const {return true;}
-        virtual void getAttributes(StringMap& attrs) const;
-        virtual void getAttrDefaults(StringMap& attrs) const;
-        virtual void validateAttrValues(const StringMap& attrs) const;
-        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
-        virtual Port *getPort(Node *node, const char *portname) const;
+        virtual const char *getName() const override {return "aggregator";}
+        virtual const char *getCategory() const override {return "merger";}
+        virtual const char *getDescription() const override;
+        virtual bool isHidden() const override {return true;}
+        virtual void getAttributes(StringMap& attrs) const override;
+        virtual void getAttrDefaults(StringMap& attrs) const override;
+        virtual void validateAttrValues(const StringMap& attrs) const override;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const override;
+        virtual Port *getPort(Node *node, const char *portname) const override;
 };
 
 NAMESPACE_END

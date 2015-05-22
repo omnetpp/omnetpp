@@ -54,7 +54,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     virtual bool initializeChannel(int stage);
 
     // internal: overridden to perform additional checks
-    virtual void finalizeParameters();
+    virtual void finalizeParameters() override;
 
   public:
     /**
@@ -87,13 +87,13 @@ class SIM_API cChannel : public cComponent //implies noncopyable
         /** @name cITimestampedValue methods */
         //@{
         /** Returns the timestamp; it represents the start of the transmission. */
-        virtual simtime_t_cref getTimestamp(simsignal_t signalID) const {return timestamp;}
+        virtual simtime_t_cref getTimestamp(simsignal_t signalID) const override {return timestamp;}
 
         /** Returns SIMSIGNAL_OBJECT. */
-        virtual SimsignalType getValueType(simsignal_t signalID) const {return SIMSIGNAL_OBJECT;}
+        virtual SimsignalType getValueType(simsignal_t signalID) const override {return SIMSIGNAL_OBJECT;}
 
         /** Returns the message (packet) as the stored object. */
-        virtual cObject *objectValue(simsignal_t signalID) const {return msg;}
+        virtual cObject *objectValue(simsignal_t signalID) const override {return msg;}
         //@}
 
         /** Returns the message (packet). */
@@ -104,12 +104,12 @@ class SIM_API cChannel : public cComponent //implies noncopyable
 
         /** @name Other (non-cObject) getters throw an exception. */
         //@{
-        virtual bool boolValue(simsignal_t signalID) const {error(); return false;}
-        virtual long longValue(simsignal_t signalID) const {error(); return 0;}
-        virtual unsigned long unsignedLongValue(simsignal_t signalID) const {error(); return 0;}
-        virtual double doubleValue(simsignal_t signalID) const {error(); return 0;}
-        virtual SimTime simtimeValue(simsignal_t signalID) const {error(); return timestamp;}
-        virtual const char *stringValue(simsignal_t signalID) const {error(); return nullptr;}
+        virtual bool boolValue(simsignal_t signalID) const override {error(); return false;}
+        virtual long longValue(simsignal_t signalID) const override {error(); return 0;}
+        virtual unsigned long unsignedLongValue(simsignal_t signalID) const override {error(); return 0;}
+        virtual double doubleValue(simsignal_t signalID) const override {error(); return 0;}
+        virtual SimTime simtimeValue(simsignal_t signalID) const override {error(); return timestamp;}
+        virtual const char *stringValue(simsignal_t signalID) const override {error(); return nullptr;}
         //@}
     };
 
@@ -133,23 +133,23 @@ class SIM_API cChannel : public cComponent //implies noncopyable
      * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual std::string info() const;
+    virtual std::string info() const override;
 
     /**
      * Calls v->visit(this) for each contained object.
      * See cObject for more details.
      */
-    virtual void forEachChild(cVisitor *v);
+    virtual void forEachChild(cVisitor *v) override;
 
     /**
      * Serializes the object into a buffer.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Deserializes the object from a buffer.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Public methods for invoking initialize()/finish(), redefined from cComponent.
@@ -162,18 +162,18 @@ class SIM_API cChannel : public cComponent //implies noncopyable
      * Interface for calling initialize() from outside. Implementation
      * performs multi-stage initialization for this channel object.
      */
-    virtual void callInitialize();
+    virtual void callInitialize() override;
 
     /**
      * Interface for calling initialize() from outside. It does a single stage
      * of initialization, and returns <tt>true</tt> if more stages are required.
      */
-    virtual bool callInitialize(int stage);
+    virtual bool callInitialize(int stage) override;
 
     /**
      * Interface for calling finish() from outside.
      */
-    virtual void callFinish();
+    virtual void callFinish() override;
     //@}
 
     /** @name Channel information. */
@@ -181,7 +181,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     /**
      * Redefined from cComponent to return KIND_CHANNEL.
      */
-    virtual ComponentKind getComponentKind() const  {return KIND_CHANNEL;}
+    virtual ComponentKind getComponentKind() const override  {return KIND_CHANNEL;}
 
     /**
      * Returns the compound module containing this channel. That is,
@@ -190,7 +190,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
      * (For completeness, it may also connect two gates of getParentModule()
      * on the inside).
      */
-    virtual cModule *getParentModule() const;
+    virtual cModule *getParentModule() const override;
 
     /**
      * Convenience method: casts the return value of getComponentType() to cChannelType.
@@ -201,7 +201,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
      * Return the properties for this channel. Properties cannot be changed
      * at runtime. Redefined from cComponent.
      */
-    virtual cProperties *getProperties() const;
+    virtual cProperties *getProperties() const override;
 
     /**
      * Returns the gate this channel is attached to.
@@ -358,37 +358,37 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
     /**
      * The cIdealChannel implementation of this method does nothing.
      */
-    virtual void processMessage(cMessage *msg, simtime_t t, result_t& result) {}
+    virtual void processMessage(cMessage *msg, simtime_t t, result_t& result) override {}
 
     /**
      * The cIdealChannel implementation of this method does nothing.
      */
-    virtual double getNominalDatarate() const {return 0;}
+    virtual double getNominalDatarate() const override {return 0;}
 
     /**
      * The cIdealChannel implementation of this method always returns false.
      */
-    virtual bool isTransmissionChannel() const {return false;}
+    virtual bool isTransmissionChannel() const override {return false;}
 
     /**
      * The cIdealChannel implementation of this method always returns zero.
      */
-    virtual simtime_t calculateDuration(cMessage *msg) const {return SIMTIME_ZERO;}
+    virtual simtime_t calculateDuration(cMessage *msg) const override {return SIMTIME_ZERO;}
 
     /**
      * The cIdealChannel implementation of this method always returns zero.
      */
-    virtual simtime_t getTransmissionFinishTime() const {return SIMTIME_ZERO;}
+    virtual simtime_t getTransmissionFinishTime() const override {return SIMTIME_ZERO;}
 
     /**
      * The cIdealChannel implementation of this method always returns false.
      */
-    virtual bool isBusy() const {return false;}
+    virtual bool isBusy() const override {return false;}
 
     /**
      * The cIdealChannel implementation of this method does nothing.
      */
-    virtual void forceTransmissionFinishTime(simtime_t t) {}
+    virtual void forceTransmissionFinishTime(simtime_t t) override {}
     //@}
 };
 

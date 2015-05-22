@@ -108,32 +108,32 @@ class SIM_API cProperty : public cNamedObject
      * Redefined.
      * @see setIndex()
      */
-    virtual void setName(const char *name);
+    virtual void setName(const char *name) override;
 
     /**
      * Redefined to return the property name plus optional index.
      */
-    virtual const char *getFullName() const;
+    virtual const char *getFullName() const override;
 
     /**
      * Creates and returns an exact copy of this object.
      */
-    virtual cProperty *dup() const   {return new cProperty(*this);}
+    virtual cProperty *dup() const override   {return new cProperty(*this);}
 
     /**
      * Produces a one-line description of the object's contents.
      */
-    virtual std::string info() const;
+    virtual std::string info() const override;
 
     /**
      * Serializes the object into a buffer.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Deserializes the object from a buffer.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Property getter/setter methods */

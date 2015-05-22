@@ -63,7 +63,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     /**
      * Called back when a parameter changes. Redefined from cComponent.
      */
-    virtual void handleParameterChange(const char *parname);
+    virtual void handleParameterChange(const char *parname) override;
 
   public:
     /** @name Constructors, destructor */
@@ -94,7 +94,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
      * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual std::string info() const;
+    virtual std::string info() const override;
     //@}
 
     /** @name Setting and getting channel parameters. */
@@ -102,7 +102,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     /**
      * Returns true.
      */
-    virtual bool isTransmissionChannel() const {return true;}
+    virtual bool isTransmissionChannel() const override {return true;}
 
     /**
      * Sets the propagation delay of the channel, in seconds.
@@ -178,7 +178,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     /**
      * Same as getDatarate().
      */
-    virtual double getNominalDatarate() const {return getDatarate();}
+    virtual double getNominalDatarate() const override {return getDatarate();}
 
     /**
      * Returns the message length in bits divided by the datarate.
@@ -187,7 +187,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
      * change the duration computation algorithm via subclassing you need
      * to redefine both this and processMessage().
      */
-    virtual simtime_t calculateDuration(cMessage *msg) const;
+    virtual simtime_t calculateDuration(cMessage *msg) const override;
 
     /**
      * Returns the simulation time the sender gate will finish transmitting.
@@ -197,13 +197,13 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
      * The transmission duration of a message depends on the message length
      * and the data rate assigned to the channel.
      */
-    virtual simtime_t getTransmissionFinishTime() const {return txFinishTime;}
+    virtual simtime_t getTransmissionFinishTime() const override {return txFinishTime;}
 
     /**
      * Returns whether the sender gate is currently transmitting, ie. whether
      * transmissionFinishTime() is greater than the current simulation time.
      */
-    virtual bool isBusy() const {return simTime() < txFinishTime;}
+    virtual bool isBusy() const override {return simTime() < txFinishTime;}
 
     /**
      * Forcibly overwrites the finish time of the current transmission in the
@@ -211,7 +211,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
      * implementing transmission abortion; see declaration in base class
      * (cChannel::forceTransmissionFinishTime()) for more information.
      */
-    virtual void forceTransmissionFinishTime(simtime_t t);
+    virtual void forceTransmissionFinishTime(simtime_t t) override;
     //@}
 
     /** @name Implementation methods */
@@ -219,12 +219,12 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     /**
      * Initialization.
      */
-    virtual void initialize();
+    virtual void initialize() override;
 
     /**
      * Performs bit error rate, delay and transmission time modelling.
      */
-    virtual void processMessage(cMessage *msg, simtime_t t, result_t& result);
+    virtual void processMessage(cMessage *msg, simtime_t t, result_t& result) override;
     //@}
 };
 

@@ -90,14 +90,14 @@ class SIM_API cCommBufferBase : public cCommBuffer
      * Returns false if there was underflow (too much data unpacked)
      * or still there are unpacked data in the buffer.
      */
-    virtual bool isBufferEmpty() const;
+    virtual bool isBufferEmpty() const override;
 
     /**
      * Utility function. To be called after unpacking a communication buffer,
      * it checks whether the buffer is empty. If it is not (i.e. an underflow
      * or overflow occurred), an exception is thrown.
      */
-    virtual void assertBufferEmpty();
+    virtual void assertBufferEmpty() override;
     //@}
 };
 

@@ -63,21 +63,21 @@ class LAYOUT_API BasicGraphLayouterEnvironment : public GraphLayouterEnvironment
     public:
         BasicGraphLayouterEnvironment();
         virtual ~BasicGraphLayouterEnvironment() {}
-        virtual bool inspected() {return false;}
-        virtual bool okToProceed();
+        virtual bool inspected() override {return false;}
+        virtual bool okToProceed() override;
 
         virtual void setTimeout(int seconds) {timeout = seconds;}
         virtual void addParameter(const char *name, double value) {parameters[name] = value;}
 
-        virtual bool getBoolParameter(const char *name, int index, bool defaultValue);
-        virtual long getLongParameter(const char *name, int index, long defaultValue);
-        virtual double getDoubleParameter(const char *name, int index, double defaultValue);
+        virtual bool getBoolParameter(const char *name, int index, bool defaultValue) override;
+        virtual long getLongParameter(const char *name, int index, long defaultValue) override;
+        virtual double getDoubleParameter(const char *name, int index, double defaultValue) override;
 
-        virtual void clearGraphics() {}
-        virtual void showGraphics(const char *text) {}
-        virtual void drawText(double x, double y, const char *text, const char *tags, const char *color) {}
-        virtual void drawLine(double x1, double y1, double x2, double y2, const char *tags, const char *color) {}
-        virtual void drawRectangle(double x1, double y1, double x2, double y2, const char *tags, const char *color) {}
+        virtual void clearGraphics() override {}
+        virtual void showGraphics(const char *text) override {}
+        virtual void drawText(double x, double y, const char *text, const char *tags, const char *color) override {}
+        virtual void drawLine(double x1, double y1, double x2, double y2, const char *tags, const char *color) override {}
+        virtual void drawRectangle(double x1, double y1, double x2, double y2, const char *tags, const char *color) override {}
 };
 
 /**

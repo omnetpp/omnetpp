@@ -46,7 +46,7 @@ class SIM_API cPSquare : public cDensityEstBase
 
   protected:
     // abstract method in cDensityEstBase
-    virtual void doMergeCellValues(const cDensityEstBase *other);
+    virtual void doMergeCellValues(const cDensityEstBase *other) override;
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -80,27 +80,27 @@ class SIM_API cPSquare : public cDensityEstBase
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cPSquare *dup() const  {return new cPSquare(*this);}
+    virtual cPSquare *dup() const override  {return new cPSquare(*this);}
 
     /**
      * Produces a multi-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual std::string detailedInfo() const;
+    virtual std::string detailedInfo() const override;
 
     /**
      * Serializes the object into an MPI send buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Deserializes the object from an MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
   private:
@@ -112,7 +112,7 @@ class SIM_API cPSquare : public cDensityEstBase
      * Called internally by collect(), this method updates the P2 data structure
      * with the new value.
      */
-    virtual void collectTransformed(double val);
+    virtual void collectTransformed(double val) override;
 
   public:
     /** @name Redefined member functions from cStatistic and its subclasses. */
@@ -121,84 +121,84 @@ class SIM_API cPSquare : public cDensityEstBase
     /**
      * This method is not used with cPSquare, but it could not remain pure virtual.
      */
-    virtual void transform() {}
+    virtual void transform() override {}
 
     /**
      * setRange() and setNumFirstVals() methods are not used with cPSquare
      * (the algorithm does not require them), but they could not remain pure virtual.
      */
-    virtual void setRange(double,double) {giveError();}
+    virtual void setRange(double,double) override {giveError();}
 
     /**
      * setRange() and setNumFirstVals() methods are not used with cPSquare
      * (the algorithm does not require them), but they could not remain pure virtual.
      */
-    virtual void setRangeAuto(int,double) {giveError();}
+    virtual void setRangeAuto(int,double) override {giveError();}
 
     /**
      * setRange() and setNumFirstVals() methods are not used with cPSquare
      * (the algorithm does not require them), but they could not remain pure virtual.
      */
-    virtual void setRangeAutoLower(double,int,double) {giveError();}
+    virtual void setRangeAutoLower(double,int,double) override {giveError();}
 
     /**
      * setRange() and setNumFirstVals() methods are not used with cPSquare
      * (the algorithm does not require them), but they could not remain pure virtual.
      */
-    virtual void setRangeAutoUpper(double,int,double) {giveError();}
+    virtual void setRangeAutoUpper(double,int,double) override {giveError();}
 
     /**
      * setRange() and setNumFirstVals() methods are not used with cPSquare
      * (the algorithm does not require them), but they could not remain pure virtual.
      */
-    virtual void setNumPrecollectedValues(int) {giveError();}
+    virtual void setNumPrecollectedValues(int) override {giveError();}
 
     /**
      * Returns the number of cells used.
      */
-    virtual int getNumCells() const;
+    virtual int getNumCells() const override;
 
     /**
      * Returns the kth cell boundary. Note that because of the P2 algorithm,
      * cell boundaries are shifting during data collection, thus getCellValue() and
      * other methods based on getCellValue() and getBasepoint() return approximate values.
      */
-    virtual double getBasepoint(int k) const;
+    virtual double getBasepoint(int k) const override;
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      */
-    virtual double getCellValue(int k) const;
+    virtual double getCellValue(int k) const override;
 
     /**
      * Returns the value of the Cumulated Density Function at a given x.
      */
-    virtual double getCDF(double x) const;
+    virtual double getCDF(double x) const override;
 
     /**
      * Returns the value of the Probability Density Function at a given x.
      */
-    virtual double getPDF(double x) const;
+    virtual double getPDF(double x) const override;
 
     /**
      * Generates a random number based on the collected data.
      */
-    virtual double draw() const;
+    virtual double draw() const override;
 
     /**
      * Merging is not supported by this class. This method throws an error.
      */
-    virtual void merge(const cStatistic *other);
+    virtual void merge(const cStatistic *other) override;
 
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *) const;
+    virtual void saveToFile(FILE *) const override;
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().
      */
-    virtual void loadFromFile(FILE *);
+    virtual void loadFromFile(FILE *) override;
     //@}
 };
 

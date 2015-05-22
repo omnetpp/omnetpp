@@ -33,19 +33,19 @@ class SCAVE_API DifferenceQuotientNode : public FilterNode
         Datum l;
     public:
         DifferenceQuotientNode();
-        virtual bool isReady() const;
-        virtual void process();
+        virtual bool isReady() const override;
+        virtual void process() override;
 };
 
 class SCAVE_API DifferenceQuotientNodeType : public FilterNodeType
 {
     public:
-        virtual const char *getName() const {return "diffquot";}
-        virtual const char *getDescription() const;
-        virtual void getAttributes(StringMap& attrs) const;
-        virtual void getAttrDefaults(StringMap& attrs) const;
-        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
-        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
+        virtual const char *getName() const override {return "diffquot";}
+        virtual const char *getDescription() const override;
+        virtual void getAttributes(StringMap& attrs) const override;
+        virtual void getAttrDefaults(StringMap& attrs) const override;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const override;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const override;
 };
 
 NAMESPACE_END

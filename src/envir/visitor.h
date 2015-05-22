@@ -46,7 +46,7 @@ class ENVIR_API cCollectObjectsVisitor : public cVisitor
 
   protected:
     // Used during visiting process
-    virtual void visit(cObject *obj);
+    virtual void visit(cObject *obj) override;
     void addPointer(cObject *obj);
 
   public:
@@ -81,7 +81,7 @@ class ENVIR_API cFilteredCollectObjectsVisitor : public cCollectObjectsVisitor
     MatchExpression *classnamePattern;
     MatchExpression *objFullpathPattern;
   protected:
-    virtual void visit(cObject *obj);
+    virtual void visit(cObject *obj) override;
   public:
     cFilteredCollectObjectsVisitor();
     ~cFilteredCollectObjectsVisitor();
@@ -102,7 +102,7 @@ class ENVIR_API cCollectChildrenVisitor : public cCollectObjectsVisitor
   private:
     cObject *parent;
   protected:
-    virtual void visit(cObject *obj);
+    virtual void visit(cObject *obj) override;
   public:
     cCollectChildrenVisitor(cObject *_parent) {parent = _parent;}
 };
@@ -116,7 +116,7 @@ class ENVIR_API cCountChildrenVisitor : public cVisitor
     cObject *parent;
     int count;
   protected:
-    virtual void visit(cObject *obj);
+    virtual void visit(cObject *obj) override;
   public:
     cCountChildrenVisitor(cObject *_parent) {parent = _parent; count=0;}
     int getCount() {return count;}
@@ -131,7 +131,7 @@ class ENVIR_API cHasChildrenVisitor : public cVisitor
     cObject *parent;
     bool hasChildren;
   protected:
-    virtual void visit(cObject *obj);
+    virtual void visit(cObject *obj) override;
   public:
     cHasChildrenVisitor(cObject *_parent) {parent = _parent; hasChildren=false;}
     bool getResult() {return hasChildren;}

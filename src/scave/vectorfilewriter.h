@@ -57,21 +57,21 @@ class SCAVE_API VectorFileWriterNode : public Node
         Port *addVector(const VectorResult &vector);
         void setPrecision(int prec) {this->prec = prec;}
 
-        virtual bool isReady() const;
-        virtual void process();
-        virtual bool isFinished() const;
+        virtual bool isReady() const override;
+        virtual void process() override;
+        virtual bool isFinished() const override;
 };
 
 class SCAVE_API VectorFileWriterNodeType : public NodeType
 {
     public:
-        virtual const char *getName() const {return "vectorfilewriter";}
-        virtual const char *getCategory() const {return "multi-port sink";}
-        virtual const char *getDescription() const;
-        virtual bool isHidden() const {return true;}
-        virtual void getAttributes(StringMap& attrs) const;
-        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
-        virtual Port *getPort(Node *node, const char *portname) const;
+        virtual const char *getName() const override {return "vectorfilewriter";}
+        virtual const char *getCategory() const override {return "multi-port sink";}
+        virtual const char *getDescription() const override;
+        virtual bool isHidden() const override {return true;}
+        virtual void getAttributes(StringMap& attrs) const override;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const override;
+        virtual Port *getPort(Node *node, const char *portname) const override;
 };
 
 NAMESPACE_END

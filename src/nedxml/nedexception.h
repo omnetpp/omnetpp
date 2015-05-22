@@ -53,7 +53,7 @@ class NEDXML_API NEDException : public std::runtime_error
     /**
      * Returns the text of the error. Redefined from std::exception.
      */
-    virtual const char *what() const throw() {return msg.c_str();}
+    virtual const char *what() const throw() override {return msg.c_str();}
 };
 
 

@@ -101,11 +101,11 @@ class SCAVE_API XYDataTable : public DataTable
     public:
         XYDataTable(const std::string &name, const std::string &description,
             const std::string &xColumnName, const std::string &yColumnName, const XYArray *vec);
-        virtual int getNumRows() const;
-        virtual bool isNull(int row, int col) const;
-        virtual double getDoubleValue(int row, int col) const;
-        virtual BigDecimal getBigDecimalValue(int row, int col) const;
-        virtual std::string getStringValue(int row, int col) const;
+        virtual int getNumRows() const override;
+        virtual bool isNull(int row, int col) const override;
+        virtual double getDoubleValue(int row, int col) const override;
+        virtual BigDecimal getBigDecimalValue(int row, int col) const override;
+        virtual std::string getStringValue(int row, int col) const override;
 };
 
 /**
@@ -117,11 +117,11 @@ class SCAVE_API ScatterDataTable : public DataTable
         const XYDataset &dataset;
     public:
         ScatterDataTable(const std::string &name, const std::string &description, const XYDataset &data);
-        virtual int getNumRows() const;
-        virtual bool isNull(int row, int col) const;
-        virtual double getDoubleValue(int row, int col) const;
-        virtual BigDecimal getBigDecimalValue(int row, int col) const;
-        virtual std::string getStringValue(int row, int col) const;
+        virtual int getNumRows() const override;
+        virtual bool isNull(int row, int col) const override;
+        virtual double getDoubleValue(int row, int col) const override;
+        virtual BigDecimal getBigDecimalValue(int row, int col) const override;
+        virtual std::string getStringValue(int row, int col) const override;
 };
 
 /**
@@ -136,11 +136,11 @@ class SCAVE_API ScalarDataTable : public DataTable
         ScalarDataTable(const std::string name, const std::string description,
             const IDList &idlist, ResultItemFields groupBy, ResultFileManager &manager);
 
-        virtual int getNumRows() const;
-        virtual bool isNull(int row, int col) const;
-        virtual double getDoubleValue(int row, int col) const;
-        virtual BigDecimal getBigDecimalValue(int row, int col) const;
-        virtual std::string getStringValue(int row, int col) const;
+        virtual int getNumRows() const override;
+        virtual bool isNull(int row, int col) const override;
+        virtual double getDoubleValue(int row, int col) const override;
+        virtual BigDecimal getBigDecimalValue(int row, int col) const override;
+        virtual std::string getStringValue(int row, int col) const override;
 };
 
 /**
@@ -152,11 +152,11 @@ class SCAVE_API HistogramDataTable : public DataTable
         const HistogramResult *histResult;
     public:
         HistogramDataTable(const std::string &name, const std::string &description, const HistogramResult *histogramResult);
-        virtual int getNumRows() const;
-        virtual bool isNull(int row, int col) const;
-        virtual double getDoubleValue(int row, int col) const;
-        virtual BigDecimal getBigDecimalValue(int row, int col) const;
-        virtual std::string getStringValue(int row, int col) const;
+        virtual int getNumRows() const override;
+        virtual bool isNull(int row, int col) const override;
+        virtual double getDoubleValue(int row, int col) const override;
+        virtual BigDecimal getBigDecimalValue(int row, int col) const override;
+        virtual std::string getStringValue(int row, int col) const override;
 };
 
 /**
@@ -176,11 +176,11 @@ class SCAVE_API JoinedDataTable : public DataTable
             const std::vector<DataTable*> &joinedTables, int joinOnColumn);
         virtual ~JoinedDataTable();
 
-        virtual int getNumRows() const;
-        virtual bool isNull(int row, int col) const;
-        virtual double getDoubleValue(int row, int col) const;
-        virtual BigDecimal getBigDecimalValue(int row, int col) const;
-        virtual std::string getStringValue(int row, int col) const;
+        virtual int getNumRows() const override;
+        virtual bool isNull(int row, int col) const override;
+        virtual double getDoubleValue(int row, int col) const override;
+        virtual BigDecimal getBigDecimalValue(int row, int col) const override;
+        virtual std::string getStringValue(int row, int col) const override;
     private:
         void addColumn(const Column &column, int tableIndex, int colIndex);
         void mapTableCell(int row, int column, DataTable *&table, int &tableRow, int &tableCol) const;
@@ -252,7 +252,7 @@ class MatlabStructExport : public ScaveExport
 {
     protected:
         void writeDouble(double value);
-        virtual std::string makeIdentifier(const std::string &name);
+        virtual std::string makeIdentifier(const std::string &name) override;
         static std::string quoteString(const std::string &str);
 };
 
@@ -272,8 +272,8 @@ class MatlabStructExport : public ScaveExport
 class SCAVE_API MatlabScriptExport : public MatlabStructExport
 {
     protected:
-        virtual std::string makeFileName(const std::string name);
-        virtual void saveTable(const DataTable &table, int startRow, int endRow);
+        virtual std::string makeFileName(const std::string name) override;
+        virtual void saveTable(const DataTable &table, int startRow, int endRow) override;
     private:
         void writeDescriptionField(const DataTable &rows, const std::string tableName);
         void writeColumnFields(const DataTable &rows, int startRow, int endRow, const std::string tableName);
@@ -311,8 +311,8 @@ class SCAVE_API MatlabScriptExport : public MatlabStructExport
 class SCAVE_API OctaveTextExport : public MatlabStructExport
 {
     protected:
-        virtual std::string makeFileName(const std::string name);
-        virtual void saveTable(const DataTable &table, int startRow, int endRow);
+        virtual std::string makeFileName(const std::string name) override;
+        virtual void saveTable(const DataTable &table, int startRow, int endRow) override;
     private:
         void writeStructHeader(const DataTable &table);
         void writeDescriptionField(const DataTable &table);
@@ -342,11 +342,11 @@ class SCAVE_API CsvExport : public ScaveExport
                         columnNames(true), fileNameSuffix(0) {}
         virtual void saveVector(const std::string &name, const std::string &description,
                         ID vectorID, bool computed, const XYArray *vec, ResultFileManager &manager,
-                        int startIndex=0, int endIndex=-1);
+                        int startIndex=0, int endIndex=-1) override;
     protected:
-        virtual std::string makeFileName(const std::string name);
-        virtual std::string makeIdentifier(const std::string &name);
-        virtual void saveTable(const DataTable &table, int startRow, int endRow);
+        virtual std::string makeFileName(const std::string name) override;
+        virtual std::string makeIdentifier(const std::string &name) override;
+        virtual void saveTable(const DataTable &table, int startRow, int endRow) override;
     private:
         void writeHeader(const DataTable &table);
         void writeRow(const DataTable &table, int row);

@@ -65,7 +65,7 @@ class Body : public IBody {
             constructor(variable, mass, charge, size);
         }
 
-        virtual void reinitialize() {
+        virtual void reinitialize() override {
             IBody::reinitialize();
             if (mass == -1)
                 mass = embedding->parameters.defaultBodyMass;
@@ -75,30 +75,30 @@ class Body : public IBody {
                 size = embedding->parameters.defaultBodySize;
         }
 
-        virtual const char *getClassName() {
+        virtual const char *getClassName() override {
             return "Body";
         }
 
         /**
          * Center of the body.
          */
-        virtual const Pt& getPosition() {
+        virtual const Pt& getPosition() override {
             return variable->getPosition();
         }
 
-        virtual Variable *getVariable() {
+        virtual Variable *getVariable() override {
             return variable;
         }
 
-        virtual double getMass() {
+        virtual double getMass() override {
             return mass;
         }
 
-        virtual double getCharge() {
+        virtual double getCharge() override {
             return charge;
         }
 
-        virtual const Rs& getSize() {
+        virtual const Rs& getSize() override {
             return size;
         }
 };
@@ -129,14 +129,14 @@ class RelativelyPositionedBody : public Body {
             constructor(variable, relativePosition);
         }
 
-        virtual const char *getClassName() {
+        virtual const char *getClassName() override {
             return "RelativelyPositionedBody";
         }
 
         /**
          * Center of the body.
          */
-        virtual const Pt& getPosition() {
+        virtual const Pt& getPosition() override {
             return position.assign(anchor->getPosition()).add(relativePosition);
         }
 };
@@ -167,7 +167,7 @@ class WallBody : public Body {
 			this->variable = variable;
 		}
 
-        virtual const char *getClassName() {
+        virtual const char *getClassName() override {
             return "WallBody";
         }
 };
@@ -200,7 +200,7 @@ class AbstractForceProvider : public IForceProvider {
             constructor(maxForce, -1, slippery);
         }
 
-        virtual void reinitialize() {
+        virtual void reinitialize() override {
             IForceProvider::reinitialize();
             if (maxForce == -1)
                 maxForce = embedding->parameters.defaultMaxForce;
@@ -321,7 +321,7 @@ class AbstractElectricRepulsion : public AbstractForceProvider {
             constructor(charge1, charge2, linearityDistance, maxDistance);
         }
 
-        virtual void reinitialize() {
+        virtual void reinitialize() override {
             AbstractForceProvider::reinitialize();
             if (linearityDistance == -1)
                 linearityDistance = embedding->parameters.defaultElectricRepulsionLinearityDistance;
@@ -343,7 +343,7 @@ class AbstractElectricRepulsion : public AbstractForceProvider {
             return distance;
         }
 
-        virtual void applyForces() {
+        virtual void applyForces() override {
             double distance;
             Pt force = getDistanceAndVector(distance);
             Assert(distance >= 0);
@@ -363,7 +363,7 @@ class AbstractElectricRepulsion : public AbstractForceProvider {
             charge2->getVariable()->subtractForce(force);
         }
 
-        virtual double getPotentialEnergy() {
+        virtual double getPotentialEnergy() override {
             return embedding->parameters.electricRepulsionCoefficient * charge1->getCharge() * charge2->getCharge() / getDistance();
         }
 
@@ -380,12 +380,12 @@ class ElectricRepulsion : public AbstractElectricRepulsion {
         ElectricRepulsion(IBody *charge1, IBody *charge2, double linearityDistance = -1, double maxDistance = -1, int slippery = -1) : AbstractElectricRepulsion(charge1, charge2, linearityDistance, maxDistance, slippery) {
         }
 
-        virtual const char *getClassName() {
+        virtual const char *getClassName() override {
             return "ElectricRepulsion";
         }
 
     protected:
-        virtual Pt getDistanceAndVector(double &distance) {
+        virtual Pt getDistanceAndVector(double &distance) override {
             return AbstractForceProvider::getDistanceAndVector(charge1, charge2, distance);
         }
 };
@@ -395,12 +395,12 @@ class VerticalElectricRepulsion : public AbstractElectricRepulsion {
         VerticalElectricRepulsion(IBody *charge1, IBody *charge2) : AbstractElectricRepulsion(charge1, charge2) {
         }
 
-        virtual const char *getClassName() {
+        virtual const char *getClassName() override {
             return "VerticalElectricRepulsion";
         }
 
     protected:
-        virtual Pt getDistanceAndVector(double &distance) {
+        virtual Pt getDistanceAndVector(double &distance) override {
             return getStandardVerticalDistanceAndVector(charge1, charge2, distance);
         }
 };
@@ -410,12 +410,12 @@ class HorizontalElectricRepulsion : public AbstractElectricRepulsion {
         HorizontalElectricRepulsion(IBody *charge1, IBody *charge2) : AbstractElectricRepulsion(charge1, charge2) {
         }
 
-        virtual const char *getClassName() {
+        virtual const char *getClassName() override {
             return "HorizontalElectricRepulsion";
         }
 
     protected:
-        virtual Pt getDistanceAndVector(double &distance) {
+        virtual Pt getDistanceAndVector(double &distance) override {
             return getStandardHorizontalDistanceAndVector(charge1, charge2, distance);
         }
 };
@@ -453,7 +453,7 @@ class AbstractSpring : public AbstractForceProvider {
             constructor(body1, body2, springCoefficient, reposeLength);
         }
 
-        virtual void reinitialize() {
+        virtual void reinitialize() override {
             AbstractForceProvider::reinitialize();
             if (springCoefficient == -1)
                 springCoefficient = embedding->parameters.defaultSpringCoefficient;
@@ -483,7 +483,7 @@ class AbstractSpring : public AbstractForceProvider {
             return distance;
         }
 
-        virtual void applyForces() {
+        virtual void applyForces() override {
             double distance;
             Pt force = getDistanceAndVector(distance);
             Assert(distance >= 0);
@@ -499,7 +499,7 @@ class AbstractSpring : public AbstractForceProvider {
                 body2->getVariable()->addForce(force);
         }
 
-        virtual double getPotentialEnergy() {
+        virtual double getPotentialEnergy() override {
             double expansion = getDistance() - reposeLength;
             return getSpringCoefficient() * expansion * expansion / 2;
         }
@@ -521,12 +521,12 @@ class Spring : public AbstractSpring {
             : AbstractSpring(body1, body2, springCoefficient, reposeLength, slippery) {
         }
 
-        virtual const char *getClassName() {
+        virtual const char *getClassName() override {
             return "Spring";
         }
 
     protected:
-        virtual Pt getDistanceAndVector(double &distance) {
+        virtual Pt getDistanceAndVector(double &distance) override {
             return AbstractForceProvider::getDistanceAndVector(body1, body2, distance);
         }
 };
@@ -539,12 +539,12 @@ class VerticalSpring : public AbstractSpring {
         VerticalSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) : AbstractSpring(body1, body2, springCoefficient, reposeLength, -1){
         }
 
-        virtual const char *getClassName() {
+        virtual const char *getClassName() override {
             return "VerticalSpring";
         }
 
     protected:
-        virtual Pt getDistanceAndVector(double &distance) {
+        virtual Pt getDistanceAndVector(double &distance) override {
             return getStandardVerticalDistanceAndVector(body1, body2, distance);
         }
 };
@@ -557,12 +557,12 @@ class HorizonalSpring : public AbstractSpring {
         HorizonalSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) : AbstractSpring(body1, body2, springCoefficient, reposeLength, -1) {
         }
 
-        virtual const char *getClassName() {
+        virtual const char *getClassName() override {
             return "HorizonalSpring";
         }
 
     protected:
-        virtual Pt getDistanceAndVector(double &distance) {
+        virtual Pt getDistanceAndVector(double &distance) override {
             return getStandardHorizontalDistanceAndVector(body1, body2, distance);
         }
 };
@@ -581,13 +581,13 @@ class LeastExpandedSpring : public AbstractForceProvider {
                 delete *it;
         }
 
-        virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
+        virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) override {
             AbstractForceProvider::setForceDirectedEmbedding(embedding);
             for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); it++)
                 (*it)->setForceDirectedEmbedding(embedding);
          }
 
-        virtual void reinitialize() {
+        virtual void reinitialize() override {
             AbstractForceProvider::reinitialize();
             for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); it++)
                 (*it)->reinitialize();
@@ -612,15 +612,15 @@ class LeastExpandedSpring : public AbstractForceProvider {
             return leastExpandedSpring;
         }
 
-        virtual void applyForces() {
+        virtual void applyForces() override {
             findLeastExpandedSpring()->applyForces();
         }
 
-        virtual double getPotentialEnergy() {
+        virtual double getPotentialEnergy() override {
             return findLeastExpandedSpring()->getPotentialEnergy();
         }
 
-        virtual const char *getClassName() {
+        virtual const char *getClassName() override {
             return "LeastExpandedSpring";
         }
 };
@@ -639,16 +639,16 @@ class BasePlaneSpring : public AbstractSpring {
         BasePlaneSpring(IBody *body, double springCoefficient, double reposeLength) : AbstractSpring(body, nullptr, springCoefficient, reposeLength, -1) {
         }
 
-        virtual double getSpringCoefficient() {
+        virtual double getSpringCoefficient() override {
             return springCoefficient * embedding->relaxFactor;
         }
 
-        virtual const char *getClassName() {
+        virtual const char *getClassName() override {
             return "BasePlaneSpring";
         }
 
     protected:
-        virtual Pt getDistanceAndVector(double &distance) {
+        virtual Pt getDistanceAndVector(double &distance) override {
             Pt vector(0, 0, body1->getPosition().z);
             distance = fabs(vector.z);
             return vector;
@@ -662,7 +662,7 @@ class AbstractVelocityBasedForceProvider : public AbstractForceProvider {
     public:
         virtual double getPower(Variable *variable, double vlen) = 0;
 
-        virtual void applyForces() {
+        virtual void applyForces() override {
             const std::vector<Variable *>& variables = embedding->getVariables();
 
             for (std::vector<Variable *>::const_iterator it = variables.begin(); it != variables.end(); it++) {
@@ -674,7 +674,7 @@ class AbstractVelocityBasedForceProvider : public AbstractForceProvider {
             }
         }
 
-        virtual double getPotentialEnergy() {
+        virtual double getPotentialEnergy() override {
             return 0;
         }
 };
@@ -684,11 +684,11 @@ class AbstractVelocityBasedForceProvider : public AbstractForceProvider {
  */
 class Friction : public AbstractVelocityBasedForceProvider {
     public:
-        virtual double getPower(Variable *variable, double vlen) {
+        virtual double getPower(Variable *variable, double vlen) override {
             return std::max(embedding->parameters.frictionCoefficient * 0.01, vlen / embedding->updatedTimeStep) * variable->getMass();
         }
 
-        virtual const char *getClassName() {
+        virtual const char *getClassName() override {
             return "Friction";
         }
 };
@@ -698,11 +698,11 @@ class Friction : public AbstractVelocityBasedForceProvider {
  */
 class Drag : public AbstractVelocityBasedForceProvider {
     public:
-        virtual double getPower(Variable *variable, double vlen) {
+        virtual double getPower(Variable *variable, double vlen) override {
             return embedding->parameters.frictionCoefficient * vlen;
         }
 
-        virtual const char *getClassName() {
+        virtual const char *getClassName() override {
             return "Drag";
         }
 };
@@ -745,7 +745,7 @@ class PointConstraint : public BodyConstraint {
             this->constraint = constraint;
         }
 
-        virtual void applyForces() {
+        virtual void applyForces() override {
             Pt vector(constraint);
             vector.subtract(body->getPosition());
             double power = coefficient * vector.getLength();
@@ -754,7 +754,7 @@ class PointConstraint : public BodyConstraint {
             body->getVariable()->addForce(vector);
         }
 
-        virtual const char *getClassName() {
+        virtual const char *getClassName() override {
             return "PointConstraint";
         }
 };
@@ -774,7 +774,7 @@ class LineConstraint : public BodyConstraint {
             this->constraint = constraint;
         }
 
-        virtual void applyForces() {
+        virtual void applyForces() override {
             const Pt& position = body->getPosition();
             Pt force(constraint.getClosestPoint(position));
             force.subtract(position);
@@ -783,7 +783,7 @@ class LineConstraint : public BodyConstraint {
             body->getVariable()->addForce(force);
         }
 
-        virtual const char *getClassName() {
+        virtual const char *getClassName() override {
             return "LineConstraint";
         }
 };
@@ -804,7 +804,7 @@ class CircleConstraint : public BodyConstraint {
             this->constraint = constraint;
         }
 
-        virtual void applyForces() {
+        virtual void applyForces() override {
             const Pt& position = body->getPosition();
             Pt vector(constraint.origin);
             vector.subtract(position);
@@ -813,7 +813,7 @@ class CircleConstraint : public BodyConstraint {
             body->getVariable()->addForce(vector);
         }
 
-        virtual const char *getClassName() {
+        virtual const char *getClassName() override {
             return "CircleConstraint";
         }
 };

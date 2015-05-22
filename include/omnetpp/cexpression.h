@@ -64,23 +64,23 @@ class SIM_API cExpression : public cObject
     /**
      * Duplication not supported, this method is redefined to throw an error.
      */
-    virtual cExpression *dup() const {copyNotSupported(); return nullptr;}
+    virtual cExpression *dup() const override {copyNotSupported(); return nullptr;}
 
     /**
      * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual std::string info() const {return "";}
+    virtual std::string info() const override {return "";}
 
     /**
      * Redefined to "de-inherit" it.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const  {throw cRuntimeError(this, E_CANTPACK);}
+    virtual void parsimPack(cCommBuffer *buffer) const override  {throw cRuntimeError(this, E_CANTPACK);}
 
     /**
      * Redefined to "de-inherit" it.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer)  {throw cRuntimeError(this, E_CANTPACK);}
+    virtual void parsimUnpack(cCommBuffer *buffer) override  {throw cRuntimeError(this, E_CANTPACK);}
     //@}
 
     /** @name Getter functions. Note that overloaded conversion operators also exist. */

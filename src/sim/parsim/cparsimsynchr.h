@@ -77,22 +77,22 @@ class SIM_API cParsimSynchronizer : public cScheduler
     /**
      * Called at the beginning of a simulation run.
      */
-    virtual void startRun() = 0;
+    virtual void startRun() override = 0;
 
     /**
      * Called at the end of a simulation run.
      */
-    virtual void endRun() = 0;
+    virtual void endRun() override = 0;
 
     /**
      * Returns the first event in the Future Event Set.
      */
-    virtual cEvent *guessNextEvent();
+    virtual cEvent *guessNextEvent() override;
 
     /**
      * Scheduler function -- it comes from cScheduler interface.
      */
-    virtual cEvent *takeNextEvent() = 0;
+    virtual cEvent *takeNextEvent() override = 0;
 
     /**
      * Hook, called when a cMessage is sent out of the partition.

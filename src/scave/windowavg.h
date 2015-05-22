@@ -36,19 +36,19 @@ class SCAVE_API WindowAverageNode : public FilterNode
     public:
         WindowAverageNode(int windowSize);
         virtual ~WindowAverageNode();
-        virtual bool isReady() const;
-        virtual void process();
+        virtual bool isReady() const override;
+        virtual void process() override;
 };
 
 class SCAVE_API WindowAverageNodeType : public FilterNodeType
 {
     public:
-        virtual const char *getName() const {return "winavg";}
-        virtual const char *getDescription() const;
-        virtual void getAttributes(StringMap& attrs) const;
-        virtual void getAttrDefaults(StringMap& attrs) const;
-        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
-        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
+        virtual const char *getName() const override {return "winavg";}
+        virtual const char *getDescription() const override;
+        virtual void getAttributes(StringMap& attrs) const override;
+        virtual void getAttrDefaults(StringMap& attrs) const override;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const override;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const override;
 };
 
 /**
@@ -69,9 +69,9 @@ class SCAVE_API TimeWindowAverageNode : public FilterNode
     public:
         TimeWindowAverageNode(simultime_t windowSize);
         virtual ~TimeWindowAverageNode();
-        virtual bool isFinished() const;
-        virtual bool isReady() const;
-        virtual void process();
+        virtual bool isFinished() const override;
+        virtual bool isReady() const override;
+        virtual void process() override;
 };
 
 inline void TimeWindowAverageNode::outputWindowAverage()
@@ -103,12 +103,12 @@ inline void TimeWindowAverageNode::moveWindow(const Datum &d)
 class SCAVE_API TimeWindowAverageNodeType : public FilterNodeType
 {
     public:
-        virtual const char *getName() const {return "timewinavg";}
-        virtual const char *getDescription() const;
-        virtual void getAttributes(StringMap& attrs) const;
-        virtual void getAttrDefaults(StringMap& attrs) const;
-        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
-        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
+        virtual const char *getName() const override {return "timewinavg";}
+        virtual const char *getDescription() const override;
+        virtual void getAttributes(StringMap& attrs) const override;
+        virtual void getAttrDefaults(StringMap& attrs) const override;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const override;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const override;
 };
 
 

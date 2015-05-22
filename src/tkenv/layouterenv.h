@@ -49,18 +49,18 @@ class TkenvGraphLayouterEnvironment : public GraphLayouterEnvironment
 
       void cleanup();
 
-      virtual bool inspected() { return canvas && interp; }
-      virtual bool okToProceed();
+      virtual bool inspected() override { return canvas && interp; }
+      virtual bool okToProceed() override;
 
-      virtual bool getBoolParameter(const char *tagName, int index, bool defaultValue);
-      virtual long getLongParameter(const char *tagName, int index, long defaultValue);
-      virtual double getDoubleParameter(const char *tagName, int index, double defaultValue);
+      virtual bool getBoolParameter(const char *tagName, int index, bool defaultValue) override;
+      virtual long getLongParameter(const char *tagName, int index, long defaultValue) override;
+      virtual double getDoubleParameter(const char *tagName, int index, double defaultValue) override;
 
-      virtual void clearGraphics();
-      virtual void showGraphics(const char *text);
-      virtual void drawText(double x, double y, const char *text, const char *tags, const char *color);
-      virtual void drawLine(double x1, double y1, double x2, double y2, const char *tags, const char *color);
-      virtual void drawRectangle(double x1, double y1, double x2, double y2, const char *tags, const char *color);
+      virtual void clearGraphics() override;
+      virtual void showGraphics(const char *text) override;
+      virtual void drawText(double x, double y, const char *text, const char *tags, const char *color) override;
+      virtual void drawLine(double x1, double y1, double x2, double y2, const char *tags, const char *color) override;
+      virtual void drawRectangle(double x1, double y1, double x2, double y2, const char *tags, const char *color) override;
 };
 
 NAMESPACE_END

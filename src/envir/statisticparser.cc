@@ -40,10 +40,10 @@ class SignalSourceReference : public Expression::Variable
     SignalSource signalSource;
   public:
     SignalSourceReference(const SignalSource& src) : signalSource(src) {}
-    virtual Functor *dup() const {return new SignalSourceReference(signalSource);}
-    virtual const char *getName() const {return "<signalsource>";}
-    virtual char getReturnType() const {return Expression::Value::DBL;}
-    virtual Expression::Value evaluate(Expression::Value args[], int numargs) {throw opp_runtime_error("unsupported");}
+    virtual Functor *dup() const override {return new SignalSourceReference(signalSource);}
+    virtual const char *getName() const override {return "<signalsource>";}
+    virtual char getReturnType() const override {return Expression::Value::DBL;}
+    virtual Expression::Value evaluate(Expression::Value args[], int numargs) override {throw opp_runtime_error("unsupported");}
     const SignalSource& getSignalSource() {return signalSource;}
 };
 
@@ -54,12 +54,12 @@ class FilterOrRecorderReference : public Expression::Function
     int argcount;
   public:
     FilterOrRecorderReference(const char *s, int argc) {name = s; argcount = argc;}
-    virtual Functor *dup() const {return new FilterOrRecorderReference(name.c_str(), argcount);}
-    virtual const char *getName() const {return name.c_str();}
-    virtual const char *getArgTypes() const {const char *ddd="DDDDDDDDDD"; Assert(argcount<10); return ddd+strlen(ddd)-argcount;}
-    virtual int getNumArgs() const {return argcount;}
-    virtual char getReturnType() const {return Expression::Value::DBL;}
-    virtual Expression::Value evaluate(Expression::Value args[], int numargs) {throw opp_runtime_error("unsupported");}
+    virtual Functor *dup() const override {return new FilterOrRecorderReference(name.c_str(), argcount);}
+    virtual const char *getName() const override {return name.c_str();}
+    virtual const char *getArgTypes() const override {const char *ddd="DDDDDDDDDD"; Assert(argcount<10); return ddd+strlen(ddd)-argcount;}
+    virtual int getNumArgs() const override {return argcount;}
+    virtual char getReturnType() const override {return Expression::Value::DBL;}
+    virtual Expression::Value evaluate(Expression::Value args[], int numargs) override {throw opp_runtime_error("unsupported");}
 };
 
 
@@ -76,7 +76,7 @@ class SourceExpressionResolver : public Expression::Resolver
         needWarmupPeriodFilter = needWarmupFilter;
     }
 
-    virtual Expression::Functor *resolveVariable(const char *varname)
+    virtual Expression::Functor *resolveVariable(const char *varname) override
     {
         // interpret varname as signal name
         simsignal_t signalID = cComponent::registerSignal(varname);
@@ -90,7 +90,7 @@ class SourceExpressionResolver : public Expression::Resolver
         }
     }
 
-    virtual Expression::Functor *resolveFunction(const char *funcname, int argcount)
+    virtual Expression::Functor *resolveFunction(const char *funcname, int argcount) override
     {
         if (MathFunction::supports(funcname))
             return new MathFunction(funcname);
@@ -296,7 +296,7 @@ class RecorderExpressionResolver : public Expression::Resolver
   public:
     RecorderExpressionResolver(const SignalSource& source) : signalSource(source) {}
 
-    virtual Expression::Functor *resolveVariable(const char *varname)
+    virtual Expression::Functor *resolveVariable(const char *varname) override
     {
         // "$source" to mean the source signal; "timeavg" to mean "timeavg($source)"
         if (strcmp(varname, "$source")==0)
@@ -307,7 +307,7 @@ class RecorderExpressionResolver : public Expression::Resolver
             return new FilterOrRecorderReference(varname, 0);
     }
 
-    virtual Expression::Functor *resolveFunction(const char *funcname, int argcount)
+    virtual Expression::Functor *resolveFunction(const char *funcname, int argcount) override
     {
         if (MathFunction::supports(funcname))
             return new MathFunction(funcname);

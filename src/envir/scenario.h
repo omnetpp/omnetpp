@@ -70,10 +70,10 @@ class ENVIR_API Scenario
       public:
         VariableReference(Scenario *node, const char *name) {hostnode = node; varname = name;}
         virtual ~VariableReference() {}
-        virtual Expression::Functor *dup() const {return new VariableReference(hostnode, varname.c_str());}
-        virtual const char *getName() const {return varname.c_str();}
-        virtual char getReturnType() const {return Expression::Value::DBL;}
-        virtual Expression::Value evaluate(Expression::Value args[], int numargs)
+        virtual Expression::Functor *dup() const override {return new VariableReference(hostnode, varname.c_str());}
+        virtual const char *getName() const override {return varname.c_str();}
+        virtual char getReturnType() const override {return Expression::Value::DBL;}
+        virtual Expression::Value evaluate(Expression::Value args[], int numargs) override
             {return hostnode->getIterationVariableValue(varname.c_str());}
     };
 

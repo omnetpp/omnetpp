@@ -60,7 +60,7 @@ class SCAVE_API SingleSinkNode : public Node
 class SCAVE_API FilterNode : public Node
 {
     protected:
-        virtual bool isFinished() const;
+        virtual bool isFinished() const override;
     public:
         Port in;
         Port out;
@@ -89,9 +89,9 @@ class SCAVE_API ReaderNode : public Node
 class SCAVE_API SingleSourceNodeType : public NodeType
 {
     public:
-        virtual const char *getCategory() const {return "single sources";}
-        virtual bool isHidden() const {return true;}
-        virtual Port *getPort(Node *node, const char *portname) const;
+        virtual const char *getCategory() const override {return "single sources";}
+        virtual bool isHidden() const override {return true;}
+        virtual Port *getPort(Node *node, const char *portname) const override;
 };
 
 
@@ -101,9 +101,9 @@ class SCAVE_API SingleSourceNodeType : public NodeType
 class SCAVE_API SingleSinkNodeType : public NodeType
 {
     public:
-        virtual const char *getCategory() const {return "single sinks";}
-        virtual bool isHidden() const {return true;}
-        virtual Port *getPort(Node *node, const char *portname) const;
+        virtual const char *getCategory() const override {return "single sinks";}
+        virtual bool isHidden() const override {return true;}
+        virtual Port *getPort(Node *node, const char *portname) const override;
 };
 
 
@@ -113,9 +113,9 @@ class SCAVE_API SingleSinkNodeType : public NodeType
 class SCAVE_API FilterNodeType : public NodeType
 {
     public:
-        virtual const char *getCategory() const {return "filter";}
-        virtual bool isHidden() const {return false;}
-        virtual Port *getPort(Node *node, const char *portname) const;
+        virtual const char *getCategory() const override {return "filter";}
+        virtual bool isHidden() const override {return false;}
+        virtual Port *getPort(Node *node, const char *portname) const override;
 };
 
 /**
@@ -124,8 +124,8 @@ class SCAVE_API FilterNodeType : public NodeType
 class SCAVE_API ReaderNodeType : public NodeType
 {
     public:
-        virtual const char *getCategory() const {return "reader-node";}
-        virtual bool isHidden() const {return true;}
+        virtual const char *getCategory() const override {return "reader-node";}
+        virtual bool isHidden() const override {return true;}
 };
 
 NAMESPACE_END

@@ -179,12 +179,12 @@ class SIM_API cOwnedObject : public cNamedObject
     /**
      * Serializes the object into a buffer.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Deserializes the object from a buffer.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Object ownership */
@@ -192,12 +192,12 @@ class SIM_API cOwnedObject : public cNamedObject
     /**
      * Returns pointer to the owner of the object.
      */
-    virtual cObject *getOwner() const {return owner;}
+    virtual cObject *getOwner() const override {return owner;}
 
     /**
      * Returns true.
      */
-    virtual bool isOwnedObject() const {return true;}
+    virtual bool isOwnedObject() const override {return true;}
 
     /**
      * Returns false in cOwnedObject and in all derived classes except cDefaultList.
@@ -261,17 +261,17 @@ class SIM_API cNoncopyableOwnedObject : public cOwnedObject, noncopyable
     /**
      * Duplication not supported, this method is redefined to throw an error.
      */
-    virtual cNoncopyableOwnedObject *dup() const;
+    virtual cNoncopyableOwnedObject *dup() const override;
 
     /**
      * Redefined to throw an error.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Redefined to throw an error.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
 };
 
 

@@ -38,19 +38,19 @@ class SCAVE_API SlidingWindowAverageNode : public FilterNode
     public:
         SlidingWindowAverageNode(int windowSize);
         virtual ~SlidingWindowAverageNode();
-        virtual bool isReady() const;
-        virtual void process();
+        virtual bool isReady() const override;
+        virtual void process() override;
 };
 
 class SCAVE_API SlidingWindowAverageNodeType : public FilterNodeType
 {
     public:
-        virtual const char *getName() const {return "slidingwinavg";}
-        virtual const char *getDescription() const;
-        virtual void getAttributes(StringMap& attrs) const;
-        virtual void getAttrDefaults(StringMap& attrs) const;
-        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
-        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
+        virtual const char *getName() const override {return "slidingwinavg";}
+        virtual const char *getDescription() const override;
+        virtual void getAttributes(StringMap& attrs) const override;
+        virtual void getAttrDefaults(StringMap& attrs) const override;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const override;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const override;
 };
 
 NAMESPACE_END

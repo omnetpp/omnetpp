@@ -57,9 +57,9 @@ class TKENV_API LogInspector : public Inspector, protected ILogBufferListener
       void textWidgetSetBookmark(const char *bookmark, const char *pos);
       void textWidgetDumpBookmarks(const char *label);
 
-      virtual void logEntryAdded();
-      virtual void logLineAdded();
-      virtual void messageSendAdded();
+      virtual void logEntryAdded() override;
+      virtual void logLineAdded() override;
+      virtual void messageSendAdded() override;
 
       bool isMatchingComponent(int componentId);
       bool isAncestorModule(int moduleId, int potentialAncestorModuleId);
@@ -78,17 +78,17 @@ class TKENV_API LogInspector : public Inspector, protected ILogBufferListener
    public:
       LogInspector(InspectorFactory *f);
       virtual ~LogInspector();
-      virtual void createWindow(const char *window, const char *geometry);
-      virtual void useWindow(const char *window);
-      virtual void doSetObject(cObject *obj);
-      virtual void refresh();
+      virtual void createWindow(const char *window, const char *geometry) override;
+      virtual void useWindow(const char *window) override;
+      virtual void doSetObject(cObject *obj) override;
+      virtual void refresh() override;
 
       virtual void redisplay();
 
       virtual Mode getMode() const {return mode;}
       virtual void setMode(Mode mode);
 
-      virtual int inspectorCommand(int argc, const char **argv);
+      virtual int inspectorCommand(int argc, const char **argv) override;
 };
 
 NAMESPACE_END

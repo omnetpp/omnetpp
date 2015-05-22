@@ -99,10 +99,10 @@ struct Resolver : public opp_substitutevariables_resolver
 {
     cResultRecorder *self;
     Resolver(cResultRecorder *self) : self(self) {}
-    virtual bool isVariableNameChar(char c) {
+    virtual bool isVariableNameChar(char c) override {
         return opp_isalnum(c) || c=='_';
     }
-    virtual std::string operator()(const std::string& name) {
+    virtual std::string operator()(const std::string& name) override {
         if (name == "name")
             return self->getStatisticName();
         else if (name == "mode")

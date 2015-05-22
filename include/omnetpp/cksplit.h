@@ -184,7 +184,7 @@ class SIM_API cKSplit : public cDensityEstBase
     void iteratorToCell(int cell_nr) const;
 
     // abstract method in cDensityEstBase
-    virtual void doMergeCellValues(const cDensityEstBase *other);
+    virtual void doMergeCellValues(const cDensityEstBase *other) override;
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -218,27 +218,27 @@ class SIM_API cKSplit : public cDensityEstBase
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cKSplit *dup() const  {return new cKSplit (*this);}
+    virtual cKSplit *dup() const override  {return new cKSplit (*this);}
 
     /**
      * Produces a multi-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual std::string detailedInfo() const;
+    virtual std::string detailedInfo() const override;
 
     /**
      * Serializes the object into an MPI send buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Deserializes the object from an MPI receive buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
   protected:
@@ -246,7 +246,7 @@ class SIM_API cKSplit : public cDensityEstBase
      * Called internally by collect(), this method updates the k-split
      * data structure with the new value.
      */
-    virtual void collectTransformed(double val);
+    virtual void collectTransformed(double val) override;
 
   public:
     /** @name Redefined member functions from cStatistic and its subclasses. */
@@ -255,52 +255,52 @@ class SIM_API cKSplit : public cDensityEstBase
     /**
      * Transforms the table of pre-collected values into the k-split data structure.
      */
-    virtual void transform();
+    virtual void transform() override;
 
     /**
      * Returns the number of histogram cells used.
      */
-    virtual int getNumCells() const;
+    virtual int getNumCells() const override;
 
     /**
      * Returns the kth cell boundary.
      */
-    virtual double getBasepoint(int k) const;
+    virtual double getBasepoint(int k) const override;
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      */
-    virtual double getCellValue(int k) const;
+    virtual double getCellValue(int k) const override;
 
     /**
      * Returns the value of the Probability Density Function at a given x.
      */
-    virtual double getPDF(double x) const;
+    virtual double getPDF(double x) const override;
 
     /**
      * Returns the value of the Cumulated Density Function at a given x.
      */
-    virtual double getCDF(double x) const;
+    virtual double getCDF(double x) const override;
 
     /**
      * Merging is not supported by this class. This method throws an error.
      */
-    virtual void merge(const cStatistic *other);
+    virtual void merge(const cStatistic *other) override;
 
     /**
      * Generates a random number based on the collected data.
      */
-    virtual double draw() const;
+    virtual double draw() const override;
 
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *) const;
+    virtual void saveToFile(FILE *) const override;
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().
      */
-    virtual void loadFromFile(FILE *);
+    virtual void loadFromFile(FILE *) override;
     //@}
 
     /** @name Configuring the k-split algorithm. */

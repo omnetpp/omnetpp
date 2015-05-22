@@ -65,8 +65,8 @@ class SIM_API cNullEnvir : public cEnvir
 
   protected:
     void unsupported() const {throw cRuntimeError("cNullEnvir: unsupported method called");}
-    virtual void putsmsg(const char *msg) {::printf("\n<!> %s\n\n", msg);}
-    virtual bool askyesno(const char *msg)  {unsupported(); return false;}
+    virtual void putsmsg(const char *msg) override {::printf("\n<!> %s\n\n", msg);}
+    virtual bool askyesno(const char *msg) override  {unsupported(); return false;}
 
   public:
     // constructor, destructor
@@ -74,85 +74,85 @@ class SIM_API cNullEnvir : public cEnvir
     virtual ~cNullEnvir();
 
     // eventlog callback interface
-    virtual void objectDeleted(cObject *object) {}
-    virtual void simulationEvent(cEvent *event)  {}
-    virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=nullptr)  {}
-    virtual void messageScheduled(cMessage *msg)  {}
-    virtual void messageCancelled(cMessage *msg)  {}
-    virtual void beginSend(cMessage *msg)  {}
-    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)  {}
-    virtual void messageSendHop(cMessage *msg, cGate *srcGate)  {}
-    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)  {}
-    virtual void endSend(cMessage *msg)  {}
-    virtual void messageCreated(cMessage *msg)  {}
-    virtual void messageCloned(cMessage *msg, cMessage *clone)  {}
-    virtual void messageDeleted(cMessage *msg)  {}
-    virtual void moduleReparented(cModule *module, cModule *oldparent, int oldId)  {}
-    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent)  {}
-    virtual void componentMethodEnd()  {}
-    virtual void moduleCreated(cModule *newmodule)  {}
-    virtual void moduleDeleted(cModule *module)  {}
-    virtual void gateCreated(cGate *newgate)  {}
-    virtual void gateDeleted(cGate *gate)  {}
-    virtual void connectionCreated(cGate *srcgate)  {}
-    virtual void connectionDeleted(cGate *srcgate)  {}
-    virtual void displayStringChanged(cComponent *component)  {}
-    virtual void undisposedObject(cObject *obj) {}
-    virtual void log(cLogEntry *entry) {}
+    virtual void objectDeleted(cObject *object) override {}
+    virtual void simulationEvent(cEvent *event) override  {}
+    virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=nullptr) override  {}
+    virtual void messageScheduled(cMessage *msg) override  {}
+    virtual void messageCancelled(cMessage *msg) override  {}
+    virtual void beginSend(cMessage *msg) override  {}
+    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay) override  {}
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate) override  {}
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay) override  {}
+    virtual void endSend(cMessage *msg) override  {}
+    virtual void messageCreated(cMessage *msg) override  {}
+    virtual void messageCloned(cMessage *msg, cMessage *clone) override  {}
+    virtual void messageDeleted(cMessage *msg) override  {}
+    virtual void moduleReparented(cModule *module, cModule *oldparent, int oldId) override  {}
+    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent) override  {}
+    virtual void componentMethodEnd() override  {}
+    virtual void moduleCreated(cModule *newmodule) override  {}
+    virtual void moduleDeleted(cModule *module) override  {}
+    virtual void gateCreated(cGate *newgate) override  {}
+    virtual void gateDeleted(cGate *gate) override  {}
+    virtual void connectionCreated(cGate *srcgate) override  {}
+    virtual void connectionDeleted(cGate *srcgate) override  {}
+    virtual void displayStringChanged(cComponent *component) override  {}
+    virtual void undisposedObject(cObject *obj) override {}
+    virtual void log(cLogEntry *entry) override {}
 
     // configuration, model parameters
-    virtual void configure(cComponent *component) {}
-    virtual void readParameter(cPar *par)  {unsupported();}
-    virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index)  {return true;}
-    virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath=nullptr)  {unsupported(); return nullptr;}
-    virtual cXMLElement *getParsedXMLString(const char *content, const char *xpath=nullptr)  {unsupported(); return nullptr;}
-    virtual void forgetXMLDocument(const char *filename) {}
-    virtual void forgetParsedXMLString(const char *content) {}
-    virtual void flushXMLDocumentCache() {}
-    virtual void flushXMLParsedContentCache() {}
-    virtual unsigned getExtraStackForEnvir() const  {return 0;}
-    virtual cConfiguration *getConfig()  {return cfg;}
-    virtual bool isGUI() const  {return false;}
+    virtual void configure(cComponent *component) override {}
+    virtual void readParameter(cPar *par) override  {unsupported();}
+    virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index) override  {return true;}
+    virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath=nullptr) override  {unsupported(); return nullptr;}
+    virtual cXMLElement *getParsedXMLString(const char *content, const char *xpath=nullptr) override  {unsupported(); return nullptr;}
+    virtual void forgetXMLDocument(const char *filename) override {}
+    virtual void forgetParsedXMLString(const char *content) override {}
+    virtual void flushXMLDocumentCache() override {}
+    virtual void flushXMLParsedContentCache() override {}
+    virtual unsigned getExtraStackForEnvir() const override  {return 0;}
+    virtual cConfiguration *getConfig() override  {return cfg;}
+    virtual bool isGUI() const override  {return false;}
 
     // UI functions (see also protected ones)
-    virtual void bubble(cComponent *component, const char *text)  {}
-    virtual std::string gets(const char *prompt, const char *defaultreply=nullptr)  {unsupported(); return "";}
+    virtual void bubble(cComponent *component, const char *text) override  {}
+    virtual std::string gets(const char *prompt, const char *defaultreply=nullptr) override  {unsupported(); return "";}
     virtual cEnvir& flush()  {::fflush(stdout); return *this;}
 
     // RNGs
-    virtual int getNumRNGs() const {return 1;}
-    virtual cRNG *getRNG(int k)  {return rng;}
-    virtual void getRNGMappingFor(cComponent *component)  {component->setRNGMap(0,nullptr);}
+    virtual int getNumRNGs() const override {return 1;}
+    virtual cRNG *getRNG(int k) override  {return rng;}
+    virtual void getRNGMappingFor(cComponent *component) override  {component->setRNGMap(0,nullptr);}
 
     // output vectors
-    virtual void *registerOutputVector(const char *modulename, const char *vectorname)  {return (void *)1;}
-    virtual void deregisterOutputVector(void *vechandle)  {}
-    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value)  {}
-    virtual bool recordInOutputVector(void *vechandle, simtime_t t, double value)  {return false;}
+    virtual void *registerOutputVector(const char *modulename, const char *vectorname) override  {return (void *)1;}
+    virtual void deregisterOutputVector(void *vechandle) override  {}
+    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value) override  {}
+    virtual bool recordInOutputVector(void *vechandle, simtime_t t, double value) override  {return false;}
 
     // output scalars
-    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr)  {}
-    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr)  {}
+    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr) override  {}
+    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr) override  {}
 
-    virtual void addResultRecorders(cComponent *component, simsignal_t signal, const char *statisticName, cProperty *statisticTemplateProperty) {}
+    virtual void addResultRecorders(cComponent *component, simsignal_t signal, const char *statisticName, cProperty *statisticTemplateProperty) override {}
 
     // snapshot file
-    virtual std::ostream *getStreamForSnapshot()  {unsupported(); return nullptr;}
-    virtual void releaseStreamForSnapshot(std::ostream *os)  {unsupported();}
+    virtual std::ostream *getStreamForSnapshot() override  {unsupported(); return nullptr;}
+    virtual void releaseStreamForSnapshot(std::ostream *os) override  {unsupported();}
 
     // misc
-    virtual int getArgCount() const  {return argc;}
-    virtual char **getArgVector() const  {return argv;}
-    virtual int getParsimProcId() const {return 0;}
-    virtual int getParsimNumPartitions() const {return 1;}
-    virtual unsigned long getUniqueNumber()  {return nextUniqueNumber++;}
-    virtual bool idle()  {return false;}
-    virtual void attachDebugger() {}
+    virtual int getArgCount() const override  {return argc;}
+    virtual char **getArgVector() const override  {return argv;}
+    virtual int getParsimProcId() const override {return 0;}
+    virtual int getParsimNumPartitions() const override {return 1;}
+    virtual unsigned long getUniqueNumber() override  {return nextUniqueNumber++;}
+    virtual bool idle() override  {return false;}
+    virtual void attachDebugger() override {}
 
     // lifecycle listeners
-    virtual void addLifecycleListener(cISimulationLifecycleListener *listener);
-    virtual void removeLifecycleListener(cISimulationLifecycleListener *listener);
-    virtual void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details);
+    virtual void addLifecycleListener(cISimulationLifecycleListener *listener) override;
+    virtual void removeLifecycleListener(cISimulationLifecycleListener *listener) override;
+    virtual void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details) override;
 };
 
 

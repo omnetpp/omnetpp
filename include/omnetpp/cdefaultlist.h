@@ -57,8 +57,8 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
   private:
     void construct();
     void doInsert(cOwnedObject *obj);
-    virtual void ownedObjectDeleted(cOwnedObject *obj);
-    virtual void yieldOwnership(cOwnedObject *obj, cObject *newOwner);
+    virtual void ownedObjectDeleted(cOwnedObject *obj) override;
+    virtual void yieldOwnership(cOwnedObject *obj, cObject *newOwner) override;
 
   public:
     // internal: called from module creation code in ctypes.cc
@@ -77,12 +77,12 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
     /**
      * Redefined.
      */
-    void take(cOwnedObject *obj);
+    void take(cOwnedObject *obj) override;
 
     /**
      * Redefined.
      */
-    void drop(cOwnedObject *obj);
+    void drop(cOwnedObject *obj) override;
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -103,31 +103,31 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
     /**
      * Returns true.
      */
-    virtual bool isSoftOwner() const {return true;}
+    virtual bool isSoftOwner() const override {return true;}
 
     /**
      * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual std::string info() const;
+    virtual std::string info() const override;
 
     /**
      * Calls v->visit(this) for each contained object.
      * See cObject for more details.
      */
-    virtual void forEachChild(cVisitor *v);
+    virtual void forEachChild(cVisitor *v) override;
 
     /**
      * Packing and unpacking cannot be supported with this class.
      * This method raises an error.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Packing and unpacking cannot be supported with this class.
      * This method raises an error.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Container functions. */

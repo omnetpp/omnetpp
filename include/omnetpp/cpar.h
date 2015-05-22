@@ -119,25 +119,25 @@ class SIM_API cPar : public cObject
     /**
      * Returns the parameter name.
      */
-    virtual const char *getName() const;
+    virtual const char *getName() const override;
 
     /**
      * Returns a one-line description of the object.
      * @see detailedInfo()
      */
-    virtual std::string info() const;
+    virtual std::string info() const override;
 
     /**
      * Returns a long description of the object.
      */
-    virtual std::string detailedInfo() const;
+    virtual std::string detailedInfo() const override;
 
     /**
      * Returns the component (module/channel) this parameter belongs to.
      * Note: return type is cObject only for technical reasons, it can be
      * safely cast to cComponent.
      */
-    virtual cObject *getOwner() const;
+    virtual cObject *getOwner() const override;
 
     /**
      * Assignment

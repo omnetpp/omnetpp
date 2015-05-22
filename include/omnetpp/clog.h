@@ -271,7 +271,7 @@ class SIM_API cLogProxy
         LogBuffer() { }
         bool isEmpty() { return pptr() == pbase(); }
       protected:
-        virtual int sync();  // invokes getEnvir()->log() for each log line
+        virtual int sync() override;  // invokes getEnvir()->log() for each log line
     };
 
     // act likes /dev/null

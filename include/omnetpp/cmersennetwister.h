@@ -52,28 +52,28 @@ class SIM_API cMersenneTwister : public cRNG
     /** Sets up the RNG. */
     virtual void initialize(int seedSet, int rngId, int numRngs,
                             int parsimProcId, int parsimNumPartitions,
-                            cConfiguration *cfg);
+                            cConfiguration *cfg) override;
 
     /** Tests correctness of the RNG */
-    virtual void selfTest();
+    virtual void selfTest() override;
 
     /** Random integer in the range [0,intRandMax()] */
-    virtual unsigned long intRand();
+    virtual unsigned long intRand() override;
 
     /** Maximum value that can be returned by intRand() */
-    virtual unsigned long intRandMax();
+    virtual unsigned long intRandMax() override;
 
     /** Random integer in [0,n), n < intRandMax() */
-    virtual unsigned long intRand(unsigned long n);
+    virtual unsigned long intRand(unsigned long n) override;
 
     /** Random double on the [0,1) interval */
-    virtual double doubleRand();
+    virtual double doubleRand() override;
 
     /** Random double on the (0,1) interval */
-    virtual double doubleRandNonz();
+    virtual double doubleRandNonz() override;
 
     /** Random double on the [0,1] interval */
-    virtual double doubleRandIncl1();
+    virtual double doubleRandIncl1() override;
 };
 
 NAMESPACE_END

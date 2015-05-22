@@ -52,12 +52,12 @@ class SIM_API cNoSynchronization : public cParsimProtocolBase
     /**
      * Called at the beginning of a simulation run.
      */
-    virtual void startRun();
+    virtual void startRun() override;
 
     /**
      * Called at the end of a simulation run.
      */
-    virtual void endRun();
+    virtual void endRun() override;
 
     /**
      * Scheduler function. It processes whatever comes from other partitions,
@@ -65,12 +65,12 @@ class SIM_API cNoSynchronization : public cParsimProtocolBase
      * with other partitions, so incausalities may occur which stop the
      * simulation with an error (see also class comment).
      */
-    virtual cEvent *takeNextEvent();
+    virtual cEvent *takeNextEvent() override;
 
     /**
      * Undo takeNextEvent() -- it comes from the cScheduler interface.
      */
-    virtual void putBackEvent(cEvent *event);
+    virtual void putBackEvent(cEvent *event) override;
 };
 
 NAMESPACE_END

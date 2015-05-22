@@ -44,7 +44,7 @@ class SIM_API cNEDLoader : public NEDResourceCache
     cNEDLoader()  {}
 
     // reimplemented so that we can add cModuleType/cChannelType
-    virtual void registerNedType(const char *qname, bool isInnerType, NEDElement *node);
+    virtual void registerNedType(const char *qname, bool isInnerType, NEDElement *node) override;
 
   public:
     /** Access to the singleton instance */
@@ -54,7 +54,7 @@ class SIM_API cNEDLoader : public NEDResourceCache
     static void clear();
 
     /** Redefined to make return type more specific. */
-    virtual cNEDDeclaration *getDecl(const char *qname) const;
+    virtual cNEDDeclaration *getDecl(const char *qname) const override;
 };
 
 NAMESPACE_END

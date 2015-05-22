@@ -153,7 +153,7 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
      * the network <tt>Network</tt> in a package named <tt>some.package</tt>, the
      * fully qualified name is <tt>"some.package.Network.Ch"</tt>.
      */
-    virtual const char *getFullName() const  {return qualifiedName.c_str();}
+    virtual const char *getFullName() const override  {return qualifiedName.c_str();}
     //@}
 
     /**

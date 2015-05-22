@@ -134,14 +134,14 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
 
     /** @name Redefined GraphLayouter methods */
     //@{
-    virtual void setEnvironment(GraphLayouterEnvironment *environment);
-    void addMovableNode(int nodeId, double width, double height);
-    void addFixedNode(int nodeId, double x, double y, double width, double height);
-    void addAnchoredNode(int nodeId, const char *anchorname, double offx, double offy, double width, double height);
-    void addEdge(int srcNodeId, int destNodeId, double preferredLength=0);
-    void addEdgeToBorder(int srcNodeId, double preferredLength=0);
-    virtual void execute();
-    void getNodePosition(int nodeId, double& x, double& y);
+    virtual void setEnvironment(GraphLayouterEnvironment *environment) override;
+    void addMovableNode(int nodeId, double width, double height) override;
+    void addFixedNode(int nodeId, double x, double y, double width, double height) override;
+    void addAnchoredNode(int nodeId, const char *anchorname, double offx, double offy, double width, double height) override;
+    void addEdge(int srcNodeId, int destNodeId, double preferredLength=0) override;
+    void addEdgeToBorder(int srcNodeId, double preferredLength=0) override;
+    virtual void execute() override;
+    void getNodePosition(int nodeId, double& x, double& y) override;
     //@}
 
     // set layouter paramaters

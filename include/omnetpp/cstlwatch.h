@@ -41,14 +41,14 @@ class SIM_API cStdVectorWatcherBase : public cWatchBase
   public:
     cStdVectorWatcherBase(const char *name) : cWatchBase(name) {desc = nullptr;}
 
-    virtual std::string info() const;
-    virtual std::string detailedInfo() const;
-    virtual bool supportsAssignment() const {return false;}
+    virtual std::string info() const override;
+    virtual std::string detailedInfo() const override;
+    virtual bool supportsAssignment() const override {return false;}
 
     virtual const char *getElemTypeName() const = 0;
     virtual int size() const = 0;
     virtual std::string at(int i) const = 0;
-    virtual cClassDescriptor *getDescriptor();
+    virtual cClassDescriptor *getDescriptor() override;
 };
 
 
@@ -65,10 +65,10 @@ class cStdVectorWatcher : public cStdVectorWatcherBase
     cStdVectorWatcher(const char *name, std::vector<T>& var) : cStdVectorWatcherBase(name), v(var) {
         classname = std::string("std::vector<")+opp_typename(typeid(T))+">";
     }
-    const char *getClassName() const {return classname.c_str();}
-    virtual const char *getElemTypeName() const {return opp_typename(typeid(T));}
-    virtual int size() const {return v.size();}
-    virtual std::string at(int i) const {std::stringstream out; out << v[i]; return out.str();}
+    const char *getClassName() const override {return classname.c_str();}
+    virtual const char *getElemTypeName() const override {return opp_typename(typeid(T));}
+    virtual int size() const override {return v.size();}
+    virtual std::string at(int i) const override {std::stringstream out; out << v[i]; return out.str();}
 };
 
 template <class T>
@@ -111,10 +111,10 @@ class cStdListWatcher : public cStdVectorWatcherBase
         itPos=-1;
         classname = std::string("std::list<")+opp_typename(typeid(T))+">";
     }
-    const char *getClassName() const {return classname.c_str();}
-    virtual const char *getElemTypeName() const {return opp_typename(typeid(T));}
-    virtual int size() const {return v.size();}
-    virtual std::string at(int i) const {
+    const char *getClassName() const override {return classname.c_str();}
+    virtual const char *getElemTypeName() const override {return opp_typename(typeid(T));}
+    virtual int size() const override {return v.size();}
+    virtual std::string at(int i) const override {
         // std::list doesn't support random access iterator and iteration is slow,
         // so we have to use a trick, knowing that Tkenv will call this function with
         // i=0, i=1, etc...
@@ -184,10 +184,10 @@ class cStdSetWatcher : public cStdVectorWatcherBase
         itPos=-1;
         classname = std::string("std::set<")+opp_typename(typeid(T))+">";
     }
-    const char *getClassName() const {return classname.c_str();}
-    virtual const char *getElemTypeName() const {return opp_typename(typeid(T));}
-    virtual int size() const {return v.size();}
-    virtual std::string at(int i) const {
+    const char *getClassName() const override {return classname.c_str();}
+    virtual const char *getElemTypeName() const override {return opp_typename(typeid(T));}
+    virtual int size() const override {return v.size();}
+    virtual std::string at(int i) const override {
         // std::set doesn't support random access iterator and iteration is slow,
         // so we have to use a trick, knowing that Tkenv will call this function with
         // i=0, i=1, etc...
@@ -257,10 +257,10 @@ class cStdMapWatcher : public cStdVectorWatcherBase
         itPos=-1;
         classname = std::string("std::map<")+opp_typename(typeid(KeyT))+","+opp_typename(typeid(ValueT))+">";
     }
-    const char *getClassName() const {return classname.c_str();}
-    virtual const char *getElemTypeName() const {return "pair<,>";}
-    virtual int size() const {return m.size();}
-    virtual std::string at(int i) const {
+    const char *getClassName() const override {return classname.c_str();}
+    virtual const char *getElemTypeName() const override {return "pair<,>";}
+    virtual int size() const override {return m.size();}
+    virtual std::string at(int i) const override {
         // std::map doesn't support random access iterator and iteration is slow,
         // so we have to use a trick, knowing that Tkenv will call this function with
         // i=0, i=1, etc...

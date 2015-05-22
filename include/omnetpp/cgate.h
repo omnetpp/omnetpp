@@ -164,31 +164,31 @@ class SIM_API cGate : public cObject, noncopyable
     /**
      * Returns the name of the the gate without the gate index in brackets.
      */
-    virtual const char *getName() const;
+    virtual const char *getName() const override;
 
     /**
      * Returns the full name of the gate, which is getName() plus the
      * index in square brackets (e.g. "out[4]"). Redefined to add the
      * index.
      */
-    virtual const char *getFullName() const;
+    virtual const char *getFullName() const override;
 
     /**
      * Calls v->visit(this) for each contained object.
      * See cObject for more details.
      */
-    virtual void forEachChild(cVisitor *v);
+    virtual void forEachChild(cVisitor *v) override;
 
     /**
      * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual std::string info() const;
+    virtual std::string info() const override;
 
     /**
      * Returns the owner module of this gate.
      */
-    virtual cObject *getOwner() const;
+    virtual cObject *getOwner() const override;
     //@}
 
     /**

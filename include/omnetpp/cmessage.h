@@ -155,7 +155,7 @@ class SIM_API cMessage : public cEvent
     void setSrcProcId(int procId) {srcProcId = (short)procId;}
 
     // internal: used by the parallel simulation kernel.
-    virtual int getSrcProcId() const {return srcProcId;}
+    virtual int getSrcProcId() const override {return srcProcId;}
 
     // internal: returns the parameter list object, or NULL if it hasn't been used yet
     cArray *getParListPtr()  {return parList;}
@@ -163,16 +163,16 @@ class SIM_API cMessage : public cEvent
   private: // hide cEvent methods from the cMessage API
 
     // overridden from cEvent: return true
-    virtual bool isMessage() const {return true;}
+    virtual bool isMessage() const override {return true;}
 
     // overridden from cEvent: return true of the target module is still alive and well
-    virtual bool isStale();
+    virtual bool isStale() override;
 
     // overridden from cEvent: return the arrival module
-    virtual cObject *getTargetObject() const;
+    virtual cObject *getTargetObject() const override;
 
     // overridden from cEvent
-    virtual void execute();
+    virtual void execute() override;
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -217,39 +217,39 @@ class SIM_API cMessage : public cEvent
      * creation time is also copied, so clones of the same message object
      * have the same creation time. See cObject for more details.
      */
-    virtual cMessage *dup() const  {return new cMessage(*this);}
+    virtual cMessage *dup() const override  {return new cMessage(*this);}
 
     /**
      * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual std::string info() const;
+    virtual std::string info() const override;
 
     /**
      * Produces a multi-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual std::string detailedInfo() const;
+    virtual std::string detailedInfo() const override;
 
     /**
      * Calls v->visit(this) for each contained object.
      * See cObject for more details.
      */
-    virtual void forEachChild(cVisitor *v);
+    virtual void forEachChild(cVisitor *v) override;
 
     /**
      * Serializes the object into an MPI send buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Deserializes the object from an MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Message attributes. */

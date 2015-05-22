@@ -42,21 +42,21 @@ class SCAVE_API TeeNode : public Node
 
         Port *addPort();
 
-        virtual bool isReady() const;
-        virtual void process();
-        virtual bool isFinished() const;
+        virtual bool isReady() const override;
+        virtual void process() override;
+        virtual bool isFinished() const override;
 };
 
 class SCAVE_API TeeNodeType : public NodeType
 {
     public:
-        virtual const char *getName() const {return "tee";}
-        virtual const char *getCategory() const {return "tee";}
-        virtual const char *getDescription() const;
-        virtual bool isHidden() const {return true;}
-        virtual void getAttributes(StringMap& attrs) const;
-        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
-        virtual Port *getPort(Node *node, const char *portname) const;
+        virtual const char *getName() const override {return "tee";}
+        virtual const char *getCategory() const override {return "tee";}
+        virtual const char *getDescription() const override;
+        virtual bool isHidden() const override {return true;}
+        virtual void getAttributes(StringMap& attrs) const override;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const override;
+        virtual Port *getPort(Node *node, const char *portname) const override;
 };
 
 NAMESPACE_END

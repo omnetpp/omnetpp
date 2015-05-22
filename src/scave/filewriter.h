@@ -39,18 +39,18 @@ class SCAVE_API FileWriterNode : public SingleSinkNode
         FileWriterNode(const char *filename, const char *banner=nullptr);
         virtual ~FileWriterNode();
         void setPrecision(int prec) {this->prec = prec;}
-        virtual bool isReady() const;
-        virtual void process();
-        virtual bool isFinished() const;
+        virtual bool isReady() const override;
+        virtual void process() override;
+        virtual bool isFinished() const override;
 };
 
 class SCAVE_API FileWriterNodeType : public SingleSinkNodeType
 {
     public:
-        virtual const char *getName() const {return "filewriter";}
-        virtual const char *getDescription() const;
-        virtual void getAttributes(StringMap& attrs) const;
-        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+        virtual const char *getName() const override {return "filewriter";}
+        virtual const char *getDescription() const override;
+        virtual void getAttributes(StringMap& attrs) const override;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const override;
 };
 
 

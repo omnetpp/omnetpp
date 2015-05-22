@@ -338,7 +338,7 @@ class SIM_API ModNameParamResolver : public cXMLElement::ParamResolver
     cModule *mod;
   public:
     ModNameParamResolver(cModule *mod)  {this->mod = mod;}
-    virtual bool resolve(const char *paramname, std::string& value);
+    virtual bool resolve(const char *paramname, std::string& value) override;
 };
 
 /**
@@ -354,7 +354,7 @@ class SIM_API StringMapParamResolver : public cXMLElement::ParamResolver
     StringMap params;
   public:
     StringMapParamResolver(const StringMap& m)  {params = m;}
-    virtual bool resolve(const char *paramname, std::string& value);
+    virtual bool resolve(const char *paramname, std::string& value) override;
 };
 
 NAMESPACE_END

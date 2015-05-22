@@ -155,7 +155,7 @@ class cChildObjectFinderVisitor : public cVisitor
     cChildObjectFinderVisitor(const char *objname) {
         name = objname; result = nullptr;
     }
-    virtual void visit(cObject *obj) {
+    virtual void visit(cObject *obj) override {
         if (obj->isName(name)) {
             result = obj;
             throw EndTraversalException();
@@ -176,7 +176,7 @@ class cRecursiveObjectFinderVisitor : public cVisitor
     cRecursiveObjectFinderVisitor(const char *objname) {
         name = objname; result = nullptr;
     }
-    virtual void visit(cObject *obj) {
+    virtual void visit(cObject *obj) override {
         if (obj->isName(name)) {
             result = obj;
             throw EndTraversalException();

@@ -38,10 +38,10 @@ class SIM_API cPacketQueue : public cQueue
 
   private:
     void copy(const cPacketQueue& other);
-    virtual void insert(cObject *obj);
-    virtual void insertBefore(cObject *where, cObject *obj);
-    virtual void insertAfter(cObject *where, cObject *obj);
-    virtual cObject *remove(cObject *obj);
+    virtual void insert(cObject *obj) override;
+    virtual void insertBefore(cObject *where, cObject *obj) override;
+    virtual void insertAfter(cObject *where, cObject *obj) override;
+    virtual cObject *remove(cObject *obj) override;
 
   protected:
     // internal
@@ -81,27 +81,27 @@ class SIM_API cPacketQueue : public cQueue
      * Contained objects that are owned by the queue will be duplicated
      * so that the new queue will have its own copy of them.
      */
-    virtual cPacketQueue *dup() const  {return new cPacketQueue(*this);}
+    virtual cPacketQueue *dup() const override  {return new cPacketQueue(*this);}
 
     /**
      * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual std::string info() const;
+    virtual std::string info() const override;
 
     /**
      * Serializes the object into an MPI send buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Deserializes the object from an MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Setup, insertion and removal functions. */
@@ -140,13 +140,13 @@ class SIM_API cPacketQueue : public cQueue
      * Unlinks and returns the front element in the queue. If the queue
      * is empty, cRuntimeError is thrown.
      */
-    virtual cPacket *pop();
+    virtual cPacket *pop() override;
 
     /**
      * Empties the container. Contained objects that were owned by the
      * queue (see getTakeOwnership()) will be deleted.
      */
-    virtual void clear();
+    virtual void clear() override;
     //@}
 
     /** @name Query functions. */
@@ -168,14 +168,14 @@ class SIM_API cPacketQueue : public cQueue
      * This is the element to be return by pop().
      * Returns NULL if the queue is empty.
      */
-    virtual cPacket *front() const  {return (cPacket *)cQueue::front();}
+    virtual cPacket *front() const override  {return (cPacket *)cQueue::front();}
 
     /**
      * Returns pointer to the last (back) element in the queue.
      * This is the element most recently added by insert().
      * Returns NULL if the queue is empty.
      */
-    virtual cPacket *back() const  {return (cPacket *)cQueue::back();}
+    virtual cPacket *back() const override  {return (cPacket *)cQueue::back();}
 
     /**
      * Returns the ith element in the queue, or NULL if i is out of range.

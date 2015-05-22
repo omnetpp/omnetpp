@@ -66,7 +66,7 @@ class SIM_API cIOutputVectorManager : public cObject, public cISimulationLifecyc
     /**
      * A cISimulationLifecycleListener method. Delegates to startRun(), endRun() and flush(); override if needed.
      */
-    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details);
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override;
 
   public:
     /** @name Constructor, destructor */
@@ -170,7 +170,7 @@ class SIM_API cIOutputScalarManager : public cObject, public cISimulationLifecyc
     /**
      * A cISimulationLifecycleListener method. Delegates to startRun(), endRun() and flush(); override if needed.
      */
-    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details);
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override;
 
   public:
     /** @name Constructor, destructor */
@@ -259,7 +259,7 @@ class SIM_API cISnapshotManager : public cObject, public cISimulationLifecycleLi
     /**
      * A cISimulationLifecycleListener method. Delegates to startRun() and endRun(); override if needed.
      */
-    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details);
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override;
 
   public:
     /** @name Constructor, destructor */

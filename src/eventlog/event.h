@@ -67,42 +67,42 @@ class EVENTLOG_API Event : public IEvent
         file_offset_t parse(FileReader *reader, file_offset_t offset);
 
         // IEvent interface
-        virtual void synchronize(FileReader::FileChangedState change);
-        virtual IEventLog *getEventLog();
+        virtual void synchronize(FileReader::FileChangedState change) override;
+        virtual IEventLog *getEventLog() override;
 
-        virtual ModuleCreatedEntry *getModuleCreatedEntry();
+        virtual ModuleCreatedEntry *getModuleCreatedEntry() override;
 
-        virtual file_offset_t getBeginOffset() { return beginOffset; }
-        virtual file_offset_t getEndOffset() { return endOffset; }
+        virtual file_offset_t getBeginOffset() override { return beginOffset; }
+        virtual file_offset_t getEndOffset() override { return endOffset; }
 
-        virtual EventEntry *getEventEntry() { return eventEntry; }
-        virtual int getNumEventLogEntries() { return eventLogEntries.size(); }
-        virtual EventLogEntry *getEventLogEntry(int index) { return eventLogEntries[index]; }
+        virtual EventEntry *getEventEntry() override { return eventEntry; }
+        virtual int getNumEventLogEntries() override { return eventLogEntries.size(); }
+        virtual EventLogEntry *getEventLogEntry(int index) override { return eventLogEntries[index]; }
 
-        virtual int getNumEventLogMessages() { return numEventLogMessages; }
-        virtual int getNumBeginSendEntries() { return numBeginSendEntries; }
-        virtual EventLogMessageEntry *getEventLogMessage(int index);
+        virtual int getNumEventLogMessages() override { return numEventLogMessages; }
+        virtual int getNumBeginSendEntries() override { return numBeginSendEntries; }
+        virtual EventLogMessageEntry *getEventLogMessage(int index) override;
 
-        virtual eventnumber_t getEventNumber() { return eventEntry->eventNumber; }
-        virtual simtime_t getSimulationTime() { return eventEntry->simulationTime; }
-        virtual int getModuleId() { return eventEntry->moduleId; }
-        virtual long getMessageId() { return eventEntry->messageId; }
-        virtual eventnumber_t getCauseEventNumber() { return eventEntry->causeEventNumber; }
+        virtual eventnumber_t getEventNumber() override { return eventEntry->eventNumber; }
+        virtual simtime_t getSimulationTime() override { return eventEntry->simulationTime; }
+        virtual int getModuleId() override { return eventEntry->moduleId; }
+        virtual long getMessageId() override { return eventEntry->messageId; }
+        virtual eventnumber_t getCauseEventNumber() override { return eventEntry->causeEventNumber; }
 
-        virtual bool isSelfMessage(BeginSendEntry *beginSendEntry);
-        virtual bool isSelfMessageProcessingEvent();
-        virtual EndSendEntry *getEndSendEntry(BeginSendEntry *beginSendEntry);
+        virtual bool isSelfMessage(BeginSendEntry *beginSendEntry) override;
+        virtual bool isSelfMessageProcessingEvent() override;
+        virtual EndSendEntry *getEndSendEntry(BeginSendEntry *beginSendEntry) override;
         simtime_t getTransmissionDelay(BeginSendEntry *beginSendEntry);
-        virtual Event *getPreviousEvent();
-        virtual Event *getNextEvent();
+        virtual Event *getPreviousEvent() override;
+        virtual Event *getNextEvent() override;
 
-        virtual Event *getCauseEvent();
-        virtual BeginSendEntry *getCauseBeginSendEntry();
-        virtual MessageSendDependency *getCause();
-        virtual IMessageDependencyList *getCauses();
-        virtual IMessageDependencyList *getConsequences();
+        virtual Event *getCauseEvent() override;
+        virtual BeginSendEntry *getCauseBeginSendEntry() override;
+        virtual MessageSendDependency *getCause() override;
+        virtual IMessageDependencyList *getCauses() override;
+        virtual IMessageDependencyList *getConsequences() override;
 
-        virtual void print(FILE *file = stdout, bool outputEventLogMessages = true);
+        virtual void print(FILE *file = stdout, bool outputEventLogMessages = true) override;
 
     protected:
         void clearInternalState();

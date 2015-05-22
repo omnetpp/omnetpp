@@ -47,8 +47,8 @@ class SIM_API cRegistrationList : public cNamedObject, noncopyable
 
     /** @name cObject methods */
     //@{
-    virtual std::string info() const;
-    virtual void forEachChild(cVisitor *v);
+    virtual std::string info() const override;
+    virtual void forEachChild(cVisitor *v) override;
     //@}
 
     /**

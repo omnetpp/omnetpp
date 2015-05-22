@@ -155,7 +155,7 @@ class SIM_API cException : public std::exception
     /**
      * Returns the text of the error. Redefined from std::exception.
      */
-    virtual const char *what() const throw() {return msg.c_str();}
+    virtual const char *what() const throw() override {return msg.c_str();}
 
     /**
      * Returns a formatted message that includes the "Error" word, context
@@ -250,13 +250,13 @@ class SIM_API cTerminationException : public cException
      * Virtual copy constructor. We unfortunately need to copy exception objects
      * when handing them back from an activity().
      */
-    virtual cTerminationException *dup() const {return new cTerminationException(*this);}
+    virtual cTerminationException *dup() const override {return new cTerminationException(*this);}
 
     /**
      * Termination exceptions are generally not errors, but messages like
      * "Simulation completed".
      */
-    virtual bool isError() const {return false;}
+    virtual bool isError() const override {return false;}
 };
 
 /**
@@ -312,7 +312,7 @@ class SIM_API cRuntimeError : public cException
      * Virtual copy constructor. We unfortunately need to copy exception objects
      * when handing them back from an activity().
      */
-    virtual cRuntimeError *dup() const {return new cRuntimeError(*this);}
+    virtual cRuntimeError *dup() const override {return new cRuntimeError(*this);}
 };
 
 /**
@@ -340,12 +340,12 @@ class SIM_API cDeleteModuleException : public cException
      * Virtual copy constructor. We unfortunately need to copy exception objects
      * when handing them back from an activity().
      */
-    virtual cDeleteModuleException *dup() const {return new cDeleteModuleException(*this);}
+    virtual cDeleteModuleException *dup() const override {return new cDeleteModuleException(*this);}
 
     /**
      * This exception type does not represent an error condition.
      */
-    virtual bool isError() const {return false;}
+    virtual bool isError() const override {return false;}
 };
 
 /**
@@ -374,12 +374,12 @@ class SIM_API cStackCleanupException : public cException
      * Virtual copy constructor. We unfortunately need to copy exception objects
      * when handing them back from an activity().
      */
-    virtual cStackCleanupException *dup() const {return new cStackCleanupException(*this);}
+    virtual cStackCleanupException *dup() const override {return new cStackCleanupException(*this);}
 
     /**
      * This exception type does not represent an error condition.
      */
-    virtual bool isError() const {return false;}
+    virtual bool isError() const override {return false;}
 };
 
 NAMESPACE_END

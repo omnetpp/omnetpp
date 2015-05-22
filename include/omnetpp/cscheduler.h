@@ -59,7 +59,7 @@ class SIM_API cScheduler : public cObject, public cISimulationLifecycleListener
      * A cISimulationLifecycleListener method. Delegates to startRun(), endRun() and
      * executionResumed(); override if needed.
      */
-    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details);
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override;
 
   public:
     /**
@@ -164,17 +164,17 @@ class SIM_API cSequentialScheduler : public cScheduler
     /**
      * Returns the first event in the Future Event Set.
      */
-    virtual cEvent *guessNextEvent();
+    virtual cEvent *guessNextEvent() override;
 
     /**
      * Removes the first event from the Future Event Set, and returns it.
      */
-    virtual cEvent *takeNextEvent();
+    virtual cEvent *takeNextEvent() override;
 
     /**
      * Puts back the event into the Future Event Set.
      */
-    virtual void putBackEvent(cEvent *event);
+    virtual void putBackEvent(cEvent *event) override;
 };
 
 
@@ -208,7 +208,7 @@ class SIM_API cRealTimeScheduler : public cScheduler
     timeval baseTime;
 
   protected:
-    virtual void startRun();
+    virtual void startRun() override;
     bool waitUntil(const timeval& targetTime);
 
   public:
@@ -225,12 +225,12 @@ class SIM_API cRealTimeScheduler : public cScheduler
     /**
      * Recalculates "base time" from current wall clock time.
      */
-    virtual void executionResumed();
+    virtual void executionResumed() override;
 
     /**
      * Returns the first event in the Future Event Set.
      */
-    virtual cEvent *guessNextEvent();
+    virtual cEvent *guessNextEvent() override;
 
     /**
      * Scheduler function -- it comes from cScheduler interface.
@@ -238,12 +238,12 @@ class SIM_API cRealTimeScheduler : public cScheduler
      * first event from the FES, it waits (using usleep()) until
      * the real time reaches the time of that simulation event.
      */
-    virtual cEvent *takeNextEvent();
+    virtual cEvent *takeNextEvent() override;
 
     /**
      * Puts back the event into the Future Event Set.
      */
-    virtual void putBackEvent(cEvent *event);
+    virtual void putBackEvent(cEvent *event) override;
 };
 
 NAMESPACE_END

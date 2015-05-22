@@ -53,16 +53,16 @@ class SIM_API cResultListener : public cIListener
         virtual void finish(cResultFilter *prev) {}
 
         // original listener API delegates to simplified API:
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b);
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l);
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l);
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d);
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& v);
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s);
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
-        virtual void subscribedTo(cComponent *component, simsignal_t signalID);
-        virtual void unsubscribedFrom(cComponent *component, simsignal_t signalID);
-        virtual void finish(cComponent *component, simsignal_t signalID);
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b) override;
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l) override;
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l) override;
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d) override;
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& v) override;
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s) override;
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj) override;
+        virtual void subscribedTo(cComponent *component, simsignal_t signalID) override;
+        virtual void unsubscribedFrom(cComponent *component, simsignal_t signalID) override;
+        virtual void finish(cComponent *component, simsignal_t signalID) override;
 };
 
 NAMESPACE_END

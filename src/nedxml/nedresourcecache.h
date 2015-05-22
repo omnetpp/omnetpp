@@ -68,9 +68,9 @@ class NEDXML_API NEDResourceCache
           NEDResourceCache *p;
         public:
           CachedTypeNames(NEDResourceCache *p) {this->p=p;}
-          virtual bool contains(const char *qname) const {return p->lookup(qname)!=nullptr;}
-          virtual int size() const {return p->getTypeNames().size();}
-          virtual const char *get(int k) const {return p->getTypeNames()[k].c_str();}
+          virtual bool contains(const char *qname) const override {return p->lookup(qname)!=nullptr;}
+          virtual int size() const override {return p->getTypeNames().size();}
+          virtual const char *get(int k) const override {return p->getTypeNames()[k].c_str();}
       };
 
   protected:

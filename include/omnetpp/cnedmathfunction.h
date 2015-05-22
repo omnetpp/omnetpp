@@ -129,7 +129,7 @@ class SIM_API cNEDMathFunction : public cNoncopyableOwnedObject
     /**
      * Produces a one-line description of the object's contents.
      */
-    virtual std::string info() const;
+    virtual std::string info() const override;
     //@}
 
     /** @name Member access. */

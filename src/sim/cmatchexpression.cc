@@ -46,8 +46,8 @@ class Wrapper : public MatchExpression::Matchable
     const cMatchExpression::Matchable *impl;
   public:
     Wrapper(const cMatchExpression::Matchable *p) {impl = p;}
-    virtual const char *getAsString() const {return impl->getAsString();}
-    virtual const char *getAsString(const char *attribute) const {return impl->getAsString(attribute);}
+    virtual const char *getAsString() const override {return impl->getAsString();}
+    virtual const char *getAsString(const char *attribute) const override {return impl->getAsString(attribute);}
 };
 
 bool cMatchExpression::matches(const Matchable *object)

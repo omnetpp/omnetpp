@@ -90,25 +90,25 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
      * Sets the name of the object. It is not possible to call this method after the
      * first call to record().
      */
-    virtual void setName(const char *name);
+    virtual void setName(const char *name) override;
 
     /**
      * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual std::string info() const;
+    virtual std::string info() const override;
 
     /**
      * Packing and unpacking cannot be supported with this class.
      * This methods raises an error.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Packing and unpacking cannot be supported with this class.
      * This methods raises an error.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Metadata annotations. */

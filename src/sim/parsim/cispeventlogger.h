@@ -46,7 +46,7 @@ class SIM_API cISPEventLogger : public cNullMessageProtocol
     // cIdealSimulationProtocol. This ensures that messages with equal
     // timestamps will get processed in the same order in both protocols,
     // whatever the concrete timing conditions.
-    void processReceivedMessage(cMessage *msg, int destModuleId, int destGateId, int sourceProcId);
+    void processReceivedMessage(cMessage *msg, int destModuleId, int destGateId, int sourceProcId) override;
 
   public:
     /**
@@ -63,30 +63,30 @@ class SIM_API cISPEventLogger : public cNullMessageProtocol
      * Called at the beginning of a simulation run.
      * The addition to the base class is opening the file.
      */
-    virtual void startRun();
+    virtual void startRun() override;
 
     /**
      * Called at the end of a simulation run.
      * The addition to the base class is closing the file.
      */
-    virtual void endRun();
+    virtual void endRun() override;
 
     /**
      * Overridden to check that the model doesn't set message priority which
      * we need for our own purposes.
      */
-    void processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data);
+    void processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data) override;
 
     /**
      * Scheduler function. The addition to the base class is
      * recording the event to the file.
      */
-    virtual cEvent *takeNextEvent();
+    virtual cEvent *takeNextEvent() override;
 
     /**
      * Undo takeNextEvent() -- it comes from the cScheduler interface.
      */
-    virtual void putBackEvent(cEvent *event);
+    virtual void putBackEvent(cEvent *event) override;
 };
 
 NAMESPACE_END

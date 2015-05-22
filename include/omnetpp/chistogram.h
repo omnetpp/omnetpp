@@ -46,7 +46,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
 
   protected:
     // abstract method in cDensityEstBase
-    virtual void doMergeCellValues(const cDensityEstBase *other);
+    virtual void doMergeCellValues(const cDensityEstBase *other) override;
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -83,14 +83,14 @@ class SIM_API cHistogramBase : public cDensityEstBase
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Deserializes the object from an MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Redefined member functions from cStatistic and its subclasses. */
@@ -99,28 +99,28 @@ class SIM_API cHistogramBase : public cDensityEstBase
     /**
      * Clears the results collected so far.
      */
-    virtual void clearResult();
+    virtual void clearResult() override;
 
     /**
      * Transforms the table of pre-collected values into an internal
      * histogram structure.
      */
-    virtual void transform();
+    virtual void transform() override;
 
     /**
      * Returns the number of histogram cells used.
      */
-    virtual int getNumCells() const;
+    virtual int getNumCells() const override;
 
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *) const;
+    virtual void saveToFile(FILE *) const override;
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().
      */
-    virtual void loadFromFile(FILE *);
+    virtual void loadFromFile(FILE *) override;
     //@}
 
     /** @name New member functions. */
@@ -204,7 +204,7 @@ class SIM_API cHistogram : public cHistogramBase
   protected:
     virtual void setupRangeInteger();
     virtual void setupRangeDouble();
-    virtual void getAttributesToRecord(opp_string_map& attributes);
+    virtual void getAttributesToRecord(opp_string_map& attributes) override;
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -236,14 +236,14 @@ class SIM_API cHistogram : public cHistogramBase
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Deserializes the object from an MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
   protected:
@@ -251,13 +251,13 @@ class SIM_API cHistogram : public cHistogramBase
      * Called internally by collect(), this method collects a value
      * after the histogram has been transformed.
      */
-    virtual void collectTransformed(double value);
+    virtual void collectTransformed(double value) override;
 
     /**
      * Called internally by transform(), this method should determine and set up
      * the histogram range. It also calculates the cell size.
      */
-    virtual void setupRange();
+    virtual void setupRange() override;
 
   public:
     /** @name Redefined member functions from cStatistic and its subclasses. */
@@ -266,22 +266,22 @@ class SIM_API cHistogram : public cHistogramBase
     /**
      * Returns the kth cell boundary.
      */
-    virtual double getBasepoint(int k) const;
+    virtual double getBasepoint(int k) const override;
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      */
-    virtual double getCellValue(int k) const;
+    virtual double getCellValue(int k) const override;
 
     /**
      * Returns the value of the Probability Density Function at a given x.
      */
-    virtual double getPDF(double x) const;
+    virtual double getPDF(double x) const override;
 
     /**
      * Returns the value of the Cumulated Density Function at a given x.
      */
-    virtual double getCDF(double x) const;
+    virtual double getCDF(double x) const override;
 
     /**
      * Returns a random number based on the distribution collected. If
@@ -290,17 +290,17 @@ class SIM_API cHistogram : public cHistogramBase
      * has been set up, a random integer or double is returned, depending on
      * mode.
      */
-    virtual double draw() const;
+    virtual double draw() const override;
 
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *) const;
+    virtual void saveToFile(FILE *) const override;
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().
      */
-    virtual void loadFromFile(FILE *);
+    virtual void loadFromFile(FILE *) override;
     //@}
 
     /** @name Misc. */
@@ -376,7 +376,7 @@ class SIM_API cLongHistogram : public cHistogram
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cLongHistogram *dup() const  {return new cLongHistogram(*this);}
+    virtual cLongHistogram *dup() const override  {return new cLongHistogram(*this);}
     //@}
 
   public:
@@ -387,12 +387,12 @@ class SIM_API cLongHistogram : public cHistogram
      * Collects one value. Internally, the double value is converted to an
      * integer using floor() before any processing.
      */
-    virtual void collect(double value) {cHistogram::collect(floor(value));}
+    virtual void collect(double value) override {cHistogram::collect(floor(value));}
 
     /**
      * Convenience method, delegates to collect(double).
      */
-    virtual void collect(SimTime value) {collect(value.dbl());}
+    virtual void collect(SimTime value) override {collect(value.dbl());}
 };
 
 
@@ -440,7 +440,7 @@ class SIM_API cDoubleHistogram : public cHistogram
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cDoubleHistogram *dup() const  {return new cDoubleHistogram(*this);}
+    virtual cDoubleHistogram *dup() const override  {return new cDoubleHistogram(*this);}
     //@}
 };
 

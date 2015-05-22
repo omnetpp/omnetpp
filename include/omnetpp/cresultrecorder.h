@@ -77,7 +77,7 @@ class SIM_API cResultRecorder : public cResultListener
         virtual const char *getStatisticName() const {return statisticName;}
         virtual const char *getRecordingMode() const {return recordingMode;}
         virtual std::string getResultName() const {return std::string(getStatisticName())+":"+getRecordingMode();}
-        virtual void callFinish(cResultFilter *prev);
+        virtual void callFinish(cResultFilter *prev) override;
 };
 
 /**
@@ -93,13 +93,13 @@ class SIM_API cNumericResultRecorder : public cResultRecorder
         // all receiveSignal() methods either throw error or delegate here.
         virtual void collect(simtime_t_cref t, double value) = 0;
     public:
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b);
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l);
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l);
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d);
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v);
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s);
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj);
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b) override;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l) override;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l) override;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d) override;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v) override;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s) override;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj) override;
 };
 
 /**

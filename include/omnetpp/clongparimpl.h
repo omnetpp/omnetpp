@@ -74,17 +74,17 @@ class SIM_API cLongParImpl : public cParImpl
     /**
      * Creates and returns an exact copy of this object.
      */
-    virtual cLongParImpl *dup() const  {return new cLongParImpl(*this);}
+    virtual cLongParImpl *dup() const override  {return new cLongParImpl(*this);}
 
     /**
      * Serializes the object into a buffer.
      */
-    virtual void parsimPack(cCommBuffer *buffer) const;
+    virtual void parsimPack(cCommBuffer *buffer) const override;
 
     /**
      * Deserializes the object from a buffer.
      */
-    virtual void parsimUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
     /** @name Redefined cParImpl setter functions. */
@@ -93,33 +93,33 @@ class SIM_API cLongParImpl : public cParImpl
     /**
      * Raises an error: cannot convert bool to long.
      */
-    virtual void setBoolValue(bool b);
+    virtual void setBoolValue(bool b) override;
 
     /**
      * Sets the value to the given constant.
      */
-    virtual void setLongValue(long l);
+    virtual void setLongValue(long l) override;
 
     /**
      * Converts from double.
      */
-    virtual void setDoubleValue(double d);
+    virtual void setDoubleValue(double d) override;
 
     /**
      * Raises an error: cannot convert string to long.
      */
-    virtual void setStringValue(const char *s);
+    virtual void setStringValue(const char *s) override;
 
     /**
      * Raises an error: cannot convert XML to long.
      */
-    virtual void setXMLValue(cXMLElement *node);
+    virtual void setXMLValue(cXMLElement *node) override;
 
     /**
      * Sets the value to the given expression. This object will
      * assume the responsibility to delete the expression object.
      */
-    virtual void setExpression(cExpression *e);
+    virtual void setExpression(cExpression *e) override;
     //@}
 
     /** @name Redefined cParImpl getter functions. */
@@ -128,37 +128,37 @@ class SIM_API cLongParImpl : public cParImpl
     /**
      * Raises an error: cannot convert long to bool.
      */
-    virtual bool boolValue(cComponent *context) const;
+    virtual bool boolValue(cComponent *context) const override;
 
     /**
      * Returns the value of the parameter.
      */
-    virtual long longValue(cComponent *context) const;
+    virtual long longValue(cComponent *context) const override;
 
     /**
      * Converts the value to double.
      */
-    virtual double doubleValue(cComponent *context) const;
+    virtual double doubleValue(cComponent *context) const override;
 
     /**
      * Raises an error: cannot convert long to string.
      */
-    virtual const char *stringValue(cComponent *context) const;
+    virtual const char *stringValue(cComponent *context) const override;
 
     /**
      * Raises an error: cannot convert long to string.
      */
-    virtual std::string stdstringValue(cComponent *context) const;
+    virtual std::string stdstringValue(cComponent *context) const override;
 
     /**
      * Raises an error: cannot convert long to XML.
      */
-    virtual cXMLElement *xmlValue(cComponent *context) const;
+    virtual cXMLElement *xmlValue(cComponent *context) const override;
 
     /**
      * Returns pointer to the expression stored by the object, or NULL.
      */
-    virtual cExpression *getExpression() const;
+    virtual cExpression *getExpression() const override;
     //@}
 
     /** @name Type, prompt text, input flag, change flag. */
@@ -167,12 +167,12 @@ class SIM_API cLongParImpl : public cParImpl
     /**
      * Returns LONG.
      */
-    virtual Type getType() const;
+    virtual Type getType() const override;
 
     /**
      * Returns true.
      */
-    virtual bool isNumeric() const;
+    virtual bool isNumeric() const override;
     //@}
 
     /** @name Redefined cParImpl misc functions. */
@@ -182,22 +182,22 @@ class SIM_API cLongParImpl : public cParImpl
      * Replaces for non-const values, replaces the stored expression with its
      * evaluation.
      */
-    virtual void convertToConst(cComponent *context);
+    virtual void convertToConst(cComponent *context) override;
 
     /**
      * Returns the value in text form.
      */
-    virtual std::string str() const;
+    virtual std::string str() const override;
 
     /**
      * Converts from text.
      */
-    virtual void parse(const char *text);
+    virtual void parse(const char *text) override;
 
     /**
      * Object comparison.
      */
-    virtual int compare(const cParImpl *other) const;
+    virtual int compare(const cParImpl *other) const override;
     //@}
 };
 

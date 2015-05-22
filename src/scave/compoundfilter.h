@@ -46,9 +46,9 @@ class SCAVE_API CompoundFilter : public FilterNode
         FilterNode *getFirstNode() {return first;}
         FilterNode *getLastNode() {return last;}
 
-        virtual bool isReady() const  {return false;}
-        virtual void process()  {}
-        virtual bool isFinished() const {return true;}
+        virtual bool isReady() const override  {return false;}
+        virtual void process() override  {}
+        virtual bool isFinished() const override {return true;}
 };
 
 
@@ -93,10 +93,10 @@ class SCAVE_API CompoundFilterType : public FilterNodeType
 
         /** @name Name, description etc. */
         //@{
-        virtual const char *getName() const;
-        virtual const char *getCategory() const  {return "custom filter";}
-        virtual const char *getDescription() const;
-        virtual bool isHidden() const {return _hidden;}
+        virtual const char *getName() const override;
+        virtual const char *getCategory() const override  {return "custom filter";}
+        virtual const char *getDescription() const override;
+        virtual bool isHidden() const override {return _hidden;}
         virtual void setName(const char *);
         virtual void setDescription(const char *);
         virtual void setHidden(bool hidden) {_hidden=hidden;}
@@ -104,14 +104,14 @@ class SCAVE_API CompoundFilterType : public FilterNodeType
 
         /** @name Creation */
         //@{
-        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
-        virtual Port *getPort(Node *node, const char *portname) const;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const override;
+        virtual Port *getPort(Node *node, const char *portname) const override;
         //@}
 
         /** @name Attributes, ports */
         //@{
-        virtual void getAttributes(StringMap& attrs) const;
-        virtual void getAttrDefaults(StringMap& attrs) const;
+        virtual void getAttributes(StringMap& attrs) const override;
+        virtual void getAttrDefaults(StringMap& attrs) const override;
         virtual void setAttr(const char *name, const char *desc, const char *defaultvalue);
         virtual void removeAttr(const char *name);
         //@}
@@ -143,7 +143,7 @@ class SCAVE_API CompoundFilterType : public FilterNodeType
         /**
          * Maps attributes of the input vector to attributes of the output vector.
          */
-        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const override;
         //@}
 };
 

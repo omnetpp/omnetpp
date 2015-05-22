@@ -63,9 +63,9 @@ class CMDENV_API Cmdenv : public EnvirBase
      FILE *logStream;
 
    protected:
-     virtual void log(cLogEntry *entry);
-     virtual void putsmsg(const char *s);
-     virtual bool askyesno(const char *question);
+     virtual void log(cLogEntry *entry) override;
+     virtual void putsmsg(const char *s) override;
+     virtual bool askyesno(const char *question) override;
      virtual void printEventBanner(cEvent *event);
      virtual void doStatusUpdate(Speedometer& speedometer);
 
@@ -74,26 +74,26 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual ~Cmdenv();
 
      // redefined virtual funcs:
-     virtual void componentInitBegin(cComponent *component, int stage);
-     virtual void moduleCreated(cModule *newmodule);
-     virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate);
-     virtual void simulationEvent(cEvent *event);
+     virtual void componentInitBegin(cComponent *component, int stage) override;
+     virtual void moduleCreated(cModule *newmodule) override;
+     virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate) override;
+     virtual void simulationEvent(cEvent *event) override;
 
-     virtual bool isGUI() const;
-     virtual std::string gets(const char *prompt, const char *defaultReply);
-     virtual bool idle();
-     virtual unsigned getExtraStackForEnvir() const;
+     virtual bool isGUI() const override;
+     virtual std::string gets(const char *prompt, const char *defaultReply) override;
+     virtual bool idle() override;
+     virtual unsigned getExtraStackForEnvir() const override;
      virtual void debug(const char *fmt,...);
 
    protected:
-     virtual void displayException(std::exception& ex);
-     virtual void doRun();
-     virtual void printUISpecificHelp();
+     virtual void displayException(std::exception& ex) override;
+     virtual void doRun() override;
+     virtual void printUISpecificHelp() override;
 
-     virtual EnvirOptions *createOptions() {return new CmdenvOptions();}
-     virtual void readOptions();
-     virtual void readPerRunOptions();
-     virtual void askParameter(cPar *par, bool unassigned);
+     virtual EnvirOptions *createOptions() override {return new CmdenvOptions();}
+     virtual void readOptions() override;
+     virtual void readPerRunOptions() override;
+     virtual void askParameter(cPar *par, bool unassigned) override;
 
      void help();
      void simulate();

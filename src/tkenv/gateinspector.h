@@ -28,15 +28,15 @@ class TKENV_API GateInspector : public Inspector
       char canvas[128];
 
    protected:
-      virtual void doSetObject(cObject *obj);
+      virtual void doSetObject(cObject *obj) override;
 
    public:
       GateInspector(InspectorFactory *f);
-      virtual void createWindow(const char *window, const char *geometry);
-      virtual void useWindow(const char *window);
-      virtual void refresh();
-      virtual void redraw();
-      virtual int inspectorCommand(int argc, const char **argv);
+      virtual void createWindow(const char *window, const char *geometry) override;
+      virtual void useWindow(const char *window) override;
+      virtual void refresh() override;
+      virtual void redraw() override;
+      virtual int inspectorCommand(int argc, const char **argv) override;
 
       // notifications from envir:
       virtual void displayStringChanged(cGate *gate);

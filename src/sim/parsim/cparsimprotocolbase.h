@@ -63,7 +63,7 @@ class SIM_API cParsimProtocolBase : public cParsimSynchronizer
     /**
      * Performs no optimization, just sends out the cMessage to the given partition.
      */
-    virtual void processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data);
+    virtual void processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data) override;
 };
 
 NAMESPACE_END

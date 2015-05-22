@@ -161,13 +161,13 @@ class SIM_API cListener : public cIListener
     /** Utility function, throws a "data type not supported" error. */
     virtual void unsupportedType(simsignal_t signalID, const char *dataType);
   public:
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b);
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l);
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l);
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d);
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t);
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s);
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b) override;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l) override;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l) override;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d) override;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t) override;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s) override;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj) override;
 };
 
 NAMESPACE_END

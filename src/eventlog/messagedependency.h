@@ -73,22 +73,22 @@ class EVENTLOG_API MessageSendDependency : public IMessageDependency
         MessageSendDependency(IEventLog *eventLog, eventnumber_t eventNumber, int eventLogEntryIndex);
         virtual ~MessageSendDependency() {}
 
-        virtual eventnumber_t getCauseEventNumber() { return causeEventNumber; }
-        virtual IEvent *getCauseEvent();
-        virtual simtime_t getCauseSimulationTime();
+        virtual eventnumber_t getCauseEventNumber() override { return causeEventNumber; }
+        virtual IEvent *getCauseEvent() override;
+        virtual simtime_t getCauseSimulationTime() override;
 
-        virtual eventnumber_t getConsequenceEventNumber();
-        virtual IEvent *getConsequenceEvent();
-        virtual simtime_t getConsequenceSimulationTime();
+        virtual eventnumber_t getConsequenceEventNumber() override;
+        virtual IEvent *getConsequenceEvent() override;
+        virtual simtime_t getConsequenceSimulationTime() override;
 
-        virtual MessageEntry *getMessageEntry();
+        virtual MessageEntry *getMessageEntry() override;
 
-        virtual MessageSendDependency *duplicate(IEventLog *eventLog);
-        virtual bool equals(IMessageDependency *other);
+        virtual MessageSendDependency *duplicate(IEventLog *eventLog) override;
+        virtual bool equals(IMessageDependency *other) override;
 
-        virtual void print(FILE *file = stdout);
-        virtual const char *getClassName() { return "MessageSendDependency"; }
-        virtual int getClassIndex() { return 0; }
+        virtual void print(FILE *file = stdout) override;
+        virtual const char *getClassName() override { return "MessageSendDependency"; }
+        virtual int getClassIndex() override { return 0; }
 };
 
 /**
@@ -105,22 +105,22 @@ class EVENTLOG_API MessageReuseDependency : public IMessageDependency
         MessageReuseDependency(IEventLog *eventLog, eventnumber_t eventNumber, int eventLogEntryIndex);
         virtual ~MessageReuseDependency() {}
 
-        virtual eventnumber_t getCauseEventNumber();
-        virtual IEvent *getCauseEvent();
-        virtual simtime_t getCauseSimulationTime();
+        virtual eventnumber_t getCauseEventNumber() override;
+        virtual IEvent *getCauseEvent() override;
+        virtual simtime_t getCauseSimulationTime() override;
 
-        virtual eventnumber_t getConsequenceEventNumber() { return consequenceEventNumber; }
-        virtual IEvent *getConsequenceEvent();
-        virtual simtime_t getConsequenceSimulationTime();
+        virtual eventnumber_t getConsequenceEventNumber() override { return consequenceEventNumber; }
+        virtual IEvent *getConsequenceEvent() override;
+        virtual simtime_t getConsequenceSimulationTime() override;
 
-        virtual MessageEntry *getMessageEntry();
+        virtual MessageEntry *getMessageEntry() override;
 
-        virtual MessageReuseDependency *duplicate(IEventLog *eventLog);
-        virtual bool equals(IMessageDependency *other);
+        virtual MessageReuseDependency *duplicate(IEventLog *eventLog) override;
+        virtual bool equals(IMessageDependency *other) override;
 
-        virtual void print(FILE *file = stdout);
-        virtual const char *getClassName() { return "MessageReuseDependency"; }
-        virtual int getClassIndex() { return 1; }
+        virtual void print(FILE *file = stdout) override;
+        virtual const char *getClassName() override { return "MessageReuseDependency"; }
+        virtual int getClassIndex() override { return 1; }
 };
 
 /**
@@ -149,23 +149,23 @@ class EVENTLOG_API FilteredMessageDependency : public IMessageDependency
         IMessageDependency *getBeginMessageDependency() { return beginMessageDependency; }
         IMessageDependency *getEndMessageDependency() { return endMessageDependency; }
 
-        virtual eventnumber_t getCauseEventNumber() { return beginMessageDependency->getCauseEventNumber(); }
-        virtual IEvent *getCauseEvent();
-        virtual simtime_t getCauseSimulationTime() { return beginMessageDependency->getCauseSimulationTime(); };
+        virtual eventnumber_t getCauseEventNumber() override { return beginMessageDependency->getCauseEventNumber(); }
+        virtual IEvent *getCauseEvent() override;
+        virtual simtime_t getCauseSimulationTime() override { return beginMessageDependency->getCauseSimulationTime(); };
 
-        virtual eventnumber_t getConsequenceEventNumber() { return endMessageDependency->getConsequenceEventNumber(); }
-        virtual IEvent *getConsequenceEvent();
-        virtual simtime_t getConsequenceSimulationTime() { return endMessageDependency->getConsequenceSimulationTime(); };
+        virtual eventnumber_t getConsequenceEventNumber() override { return endMessageDependency->getConsequenceEventNumber(); }
+        virtual IEvent *getConsequenceEvent() override;
+        virtual simtime_t getConsequenceSimulationTime() override { return endMessageDependency->getConsequenceSimulationTime(); };
 
-        virtual MessageEntry *getMessageEntry() { return beginMessageDependency->getMessageEntry(); }
+        virtual MessageEntry *getMessageEntry() override { return beginMessageDependency->getMessageEntry(); }
         Kind getKind() { return kind; }
 
-        virtual FilteredMessageDependency *duplicate(IEventLog *eventLog);
-        virtual bool equals(IMessageDependency *other);
+        virtual FilteredMessageDependency *duplicate(IEventLog *eventLog) override;
+        virtual bool equals(IMessageDependency *other) override;
 
-        virtual void print(FILE *file);
-        virtual const char *getClassName() { return "FilteredMessageDependency"; }
-        virtual int getClassIndex() { return 3; }
+        virtual void print(FILE *file) override;
+        virtual const char *getClassName() override { return "FilteredMessageDependency"; }
+        virtual int getClassIndex() override { return 3; }
 };
 
 NAMESPACE_END
