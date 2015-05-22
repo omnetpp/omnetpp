@@ -36,7 +36,7 @@ cLongParImpl::~cLongParImpl()
 void cLongParImpl::copy(const cLongParImpl& other)
 {
     if (flags & FL_ISEXPR)
-        expr = (cExpression *) other.expr->dup();
+        expr = other.expr->dup();
     else
         val = other.val;
 }

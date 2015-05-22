@@ -36,7 +36,7 @@ cDoubleParImpl::~cDoubleParImpl()
 void cDoubleParImpl::copy(const cDoubleParImpl& other)
 {
     if (flags & FL_ISEXPR)
-        expr = (cExpression *) other.expr->dup();
+        expr = other.expr->dup();
     else
         val = other.val;
 }

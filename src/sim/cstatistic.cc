@@ -97,10 +97,10 @@ void cStatistic::copy(const cStatistic& res)
     dropAndDelete(ra);
     td = res.td;
     if (td)
-        take(td = (cTransientDetection *)td->dup());
+        take(td = td->dup());
     ra = res.ra;
     if (ra)
-        take(ra = (cAccuracyDetection *)ra->dup());
+        take(ra = ra->dup());
 }
 
 cStatistic& cStatistic::operator=(const cStatistic& res)
