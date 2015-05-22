@@ -200,7 +200,7 @@ QMenu *TreeItemModel::getContextMenu(QModelIndex &index, QMainWindow *mainWindow
             case qtenv::INSP_GRAPHICAL: label = "Open Graphical View"; break;
             case qtenv::INSP_MODULEOUTPUT: label = "Open Component Log"; break;
         }
-        label += QString(" for ") + name;
+        label += QString(" for '") + name + "'";
         QAction *action = menu->addAction(label, mainWindow, SLOT(onClickOpenInspector()));
         action->setData(QVariant::fromValue(ActionDataPair(object, type)));
     }
@@ -211,7 +211,8 @@ QMenu *TreeItemModel::getContextMenu(QModelIndex &index, QMainWindow *mainWindow
         menu->addSeparator();
         QAction *action = menu->addAction(QString("Run Until Next Event in Module '") + name + "'", mainWindow, SLOT(onClickRun()));
         action->setData(QVariant::fromValue(ActionDataPair(object, qtenv::Qtenv::RUNMODE_NORMAL)));
-        //$menu add command -label "Fast Run Until Next Event in Module '$name'" -command "runSimulationLocal $insp fast $ptr"
+        action = menu->addAction(QString("Fast Run Until Next Event in Module '") + name + "'", mainWindow, SLOT(onClickRun()));
+        action->setData(QVariant::fromValue(ActionDataPair(object, qtenv::Qtenv::RUNMODE_FAST)));
     }
 
 //    if {$baseclass=="cMessage"} {
