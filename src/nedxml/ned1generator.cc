@@ -1104,65 +1104,65 @@ void NED1Generator::generateNedItem(NEDElement *node, const char *indent, bool i
     switch (tagcode)
     {
         case NED_FILES:
-            doNedfiles((FilesElement *)node, indent, islast, arg); break;
+            doNedfiles(static_cast<FilesElement *>(node), indent, islast, arg); break;
         case NED_NED_FILE:
-            doNedfile((NedFileElement *)node, indent, islast, arg); break;
+            doNedfile(static_cast<NedFileElement *>(node), indent, islast, arg); break;
         case NED_IMPORT:
-            doImport((ImportElement *)node, indent, islast, arg); break;
+            doImport(static_cast<ImportElement *>(node), indent, islast, arg); break;
         case NED_PROPERTY_DECL:
-            doPropertyDecl((PropertyDeclElement *)node, indent, islast, arg); break;
+            doPropertyDecl(static_cast<PropertyDeclElement *>(node), indent, islast, arg); break;
         case NED_EXTENDS:
-            doExtends((ExtendsElement *)node, indent, islast, arg); break;
+            doExtends(static_cast<ExtendsElement *>(node), indent, islast, arg); break;
         case NED_INTERFACE_NAME:
-            doInterfaceName((InterfaceNameElement *)node, indent, islast, arg); break;
+            doInterfaceName(static_cast<InterfaceNameElement *>(node), indent, islast, arg); break;
         case NED_SIMPLE_MODULE:
-            doSimpleModule((SimpleModuleElement *)node, indent, islast, arg); break;
+            doSimpleModule(static_cast<SimpleModuleElement *>(node), indent, islast, arg); break;
         case NED_MODULE_INTERFACE:
-            doModuleInterface((ModuleInterfaceElement *)node, indent, islast, arg); break;
+            doModuleInterface(static_cast<ModuleInterfaceElement *>(node), indent, islast, arg); break;
         case NED_COMPOUND_MODULE:
-            doCompoundModule((CompoundModuleElement *)node, indent, islast, arg); break;
+            doCompoundModule(static_cast<CompoundModuleElement *>(node), indent, islast, arg); break;
         case NED_CHANNEL_INTERFACE:
-            doChannelInterface((ChannelInterfaceElement *)node, indent, islast, arg); break;
+            doChannelInterface(static_cast<ChannelInterfaceElement *>(node), indent, islast, arg); break;
         case NED_CHANNEL:
-            doChannel((ChannelElement *)node, indent, islast, arg); break;
+            doChannel(static_cast<ChannelElement *>(node), indent, islast, arg); break;
         case NED_PARAMETERS:
-            doParameters((ParametersElement *)node, indent, islast, arg); break;
+            doParameters(static_cast<ParametersElement *>(node), indent, islast, arg); break;
         case NED_PARAM:
-            doParam((ParamElement *)node, indent, islast, arg); break;
+            doParam(static_cast<ParamElement *>(node), indent, islast, arg); break;
         case NED_PROPERTY:
-            doProperty((PropertyElement *)node, indent, islast, arg); break;
+            doProperty(static_cast<PropertyElement *>(node), indent, islast, arg); break;
         case NED_PROPERTY_KEY:
-            doPropertyKey((PropertyKeyElement *)node, indent, islast, arg); break;
+            doPropertyKey(static_cast<PropertyKeyElement *>(node), indent, islast, arg); break;
         case NED_GATES:
-            doGates((GatesElement *)node, indent, islast, arg); break;
+            doGates(static_cast<GatesElement *>(node), indent, islast, arg); break;
         case NED_GATE:
-            doGate((GateElement *)node, indent, islast, arg); break;
+            doGate(static_cast<GateElement *>(node), indent, islast, arg); break;
         case NED_TYPES:
-            doTypes((TypesElement *)node, indent, islast, arg); break;
+            doTypes(static_cast<TypesElement *>(node), indent, islast, arg); break;
         case NED_SUBMODULES:
-            doSubmodules((SubmodulesElement *)node, indent, islast, arg); break;
+            doSubmodules(static_cast<SubmodulesElement *>(node), indent, islast, arg); break;
         case NED_SUBMODULE:
-            doSubmodule((SubmoduleElement *)node, indent, islast, arg); break;
+            doSubmodule(static_cast<SubmoduleElement *>(node), indent, islast, arg); break;
         case NED_CONNECTIONS:
-            doConnections((ConnectionsElement *)node, indent, islast, arg); break;
+            doConnections(static_cast<ConnectionsElement *>(node), indent, islast, arg); break;
         case NED_CONNECTION:
-            doConnection((ConnectionElement *)node, indent, islast, arg); break;
+            doConnection(static_cast<ConnectionElement *>(node), indent, islast, arg); break;
         case NED_CONNECTION_GROUP:
-            doConnectionGroup((ConnectionGroupElement *)node, indent, islast, arg); break;
+            doConnectionGroup(static_cast<ConnectionGroupElement *>(node), indent, islast, arg); break;
         case NED_LOOP:
-            doLoop((LoopElement *)node, indent, islast, arg); break;
+            doLoop(static_cast<LoopElement *>(node), indent, islast, arg); break;
         case NED_CONDITION:
-            doCondition((ConditionElement *)node, indent, islast, arg); break;
+            doCondition(static_cast<ConditionElement *>(node), indent, islast, arg); break;
         case NED_EXPRESSION:
-            doExpression((ExpressionElement *)node, indent, islast, arg); break;
+            doExpression(static_cast<ExpressionElement *>(node), indent, islast, arg); break;
         case NED_OPERATOR:
-            doOperator((OperatorElement *)node, indent, islast, arg); break;
+            doOperator(static_cast<OperatorElement *>(node), indent, islast, arg); break;
         case NED_FUNCTION:
-            doFunction((FunctionElement *)node, indent, islast, arg); break;
+            doFunction(static_cast<FunctionElement *>(node), indent, islast, arg); break;
         case NED_IDENT:
-            doIdent((IdentElement *)node, indent, islast, arg); break;
+            doIdent(static_cast<IdentElement *>(node), indent, islast, arg); break;
         case NED_LITERAL:
-            doLiteral((LiteralElement *)node, indent, islast, arg); break;
+            doLiteral(static_cast<LiteralElement *>(node), indent, islast, arg); break;
         default:
             ;//XXX: add back this line: INTERNAL_ERROR1(node, "generateNedItem(): unknown tag '%s'", node->getTagName());
     }

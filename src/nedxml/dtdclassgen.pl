@@ -489,7 +489,7 @@ foreach $element (@elements)
 
     print CC "$elementclass *$elementclass\:\:getNext${shortelementclass}Sibling() const\n";
     print CC "{\n";
-    print CC "    return ($elementclass *)getNextSiblingWithTag($enumname{$element});\n";
+    print CC "    return static_cast<$elementclass *>(getNextSiblingWithTag($enumname{$element}));\n";
     print CC "}\n\n";
 
     for ($i=0; $i<$childcount; $i++)
@@ -497,7 +497,7 @@ foreach $element (@elements)
         $childclass = $elementclass{$children[$i]};
         print CC "$childclass *$elementclass\:\:getFirst$childvars[$i]Child() const\n";
         print CC "{\n";
-        print CC "    return ($childclass *)getFirstChildWithTag($enumname{$children[$i]});\n";
+        print CC "    return static_cast<$childclass *>(getFirstChildWithTag($enumname{$children[$i]}));\n";
         print CC "}\n\n";
     }
 }
@@ -633,7 +633,7 @@ foreach $element (@elements)
 {
     $element =~ /^(.)/;
     $startletter = $1;
-    print VAL_CC "            case $enumname{$element}: validateElement(($elementclass{$element} *) node); break;\n";
+    print VAL_CC "            case $enumname{$element}: validateElement(static_cast<$elementclass{$element} *>(node)); break;\n";
 }
 print VAL_CC "            default: INTERNAL_ERROR1(node,\"validateElement(): unknown tag '%s'\", node->getTagName());\n";
 print VAL_CC "        }\n";
