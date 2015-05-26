@@ -23,7 +23,7 @@ L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
 O=$(OMNETPP_OUT_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)-$(MODE)/ui
 
 JDK="$(TOOLS_DIR)\jdk"
-SWIG="$(TOOLS_DIR)\SWIGWIN-1.3.31\swig.exe"
+SWIG="$(TOOLS_DIR)\SWIGWIN-3.0.5\swig.exe"
 
 COMMON_JAVAPKG = org.omnetpp.common.engine
 NEDXML_JAVAPKG = org.omnetpp.ned.engine

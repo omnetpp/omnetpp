@@ -6,7 +6,7 @@
 %include "loadlib.i"
 %include "std_string.i"
 %include "enums.swg"
-%include "commondefs.i"
+%include "defs.i"
 
 %javaconst(1);
 

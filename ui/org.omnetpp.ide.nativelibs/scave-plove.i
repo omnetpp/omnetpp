@@ -10,7 +10,7 @@
 // covariant return type warning disabled
 #pragma SWIG nowarn=822
 
-%include "commondefs.i"
+%include "defs.i"
 %include "std_common.i"
 %include "std_string.i"
 %include "std_map.i"

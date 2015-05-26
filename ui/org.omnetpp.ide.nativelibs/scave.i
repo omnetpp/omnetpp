@@ -30,7 +30,7 @@ USING_NAMESPACE
 
 #define THREADED
 
-%include "commondefs.i"
+%include "defs.i"
 
 // hide export/import macros from swig
 #define COMMON_API

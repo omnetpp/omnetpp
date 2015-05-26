@@ -5,7 +5,7 @@
 
 %include "loadlib.i"
 %include "enumtypeunsafe.swg"
-%include "commondefs.i"
+%include "defs.i"
 %include "stacktrace.i"
 %javaconst(1);
 

@@ -15,7 +15,7 @@
 USING_NAMESPACE
 %}
 
-%include "commondefs.i"
+%include "defs.i"
 %include "loadlib.i"
 %include "pefileversion.i"
 %include "std_string.i"
@@ -133,7 +133,7 @@ class SimpleResolver;
 %extend Expression {
 	void parse(const char* text, std::set<std::string> vars) {
 	  SimpleResolver resolver(vars);
-	  self->parse(text, &resolver); 
+	  self->parse(text, &resolver);
 	}
 }
 
@@ -158,7 +158,7 @@ class SimpleResolver : public Expression::Resolver {
     virtual Expression::Functor *resolveVariable(const char *varname) {
        if (vars.find(varname) == vars.end())
          throw opp_runtime_error("Undefined variable: %s", varname);
-       return new SimpleVar(varname); 
+       return new SimpleVar(varname);
     }
     virtual Expression::Functor *resolveFunction(const char *funcname, int argcount) { return new MathFunction(funcname); }
 };
