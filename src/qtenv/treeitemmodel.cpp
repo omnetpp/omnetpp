@@ -186,7 +186,7 @@ QString TreeItemModel::getObjectIcon(cObject *object) const
 //fillInspectorContextMenu without insp
 QMenu *TreeItemModel::getContextMenu(QModelIndex &index, QMainWindow *mainWindow)
 {
-    //global contextmenurules
+    //TODO global contextmenurules
     QMenu *menu = new QMenu();
 
     cObject *object = getObjectFromIndex(index);
@@ -249,7 +249,7 @@ QMenu *TreeItemModel::getContextMenu(QModelIndex &index, QMainWindow *mainWindow
     // add further menu items
     name = object->getFullPath().c_str();
     QString allcategories = "mqsgvo";
-    int first = 1;
+    bool first = true;
     //TODO
 //    foreach key $contextmenurules(keys) {
 //       #debug "trying $contextmenurules($key,label): opp_getsubobjectsfilt $ptr $allcategories $contextmenurules($key,class) $name.$contextmenurules($key,name) 1"

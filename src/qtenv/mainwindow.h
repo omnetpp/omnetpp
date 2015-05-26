@@ -85,7 +85,7 @@ private:
 
     void inspectObject(cObject *object, int type = 0, const char *geometry = "");
     void runSimulationLocal(qtenv::Inspector *insp, int runMode, cObject *object = nullptr);
-    void setRunUntilModule(qtenv::Inspector *insp);
+    void setRunUntilModule(qtenv::Inspector *insp = nullptr);
     int modeToRunMode(Mode mode);
     Mode runModeToMode(int runMode);
 

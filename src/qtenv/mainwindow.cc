@@ -132,8 +132,11 @@ bool MainWindow::checkRunning()
     return false;
 }
 
+//oneStep
 void MainWindow::on_actionOneStep_triggered()
 {
+    // implements Simulate|One step
+
     if(isRunning())
     {
         setGuiForRunmode(STEP);
@@ -141,15 +144,54 @@ void MainWindow::on_actionOneStep_triggered()
     }
     else
     {
-        //TODO Network Ready
+        if(!networkReady())
+            return;
         setGuiForRunmode(STEP);
         env->doOneStep();
         setGuiForRunmode(NOT_RUNNING);
     }
 }
 
+//exitOmnetpp
 void MainWindow::on_actionQuit_triggered()
 {
+    //TODO
+//    global config
+
+//    set isrunning [isRunning]
+//    set state [opp_getsimulationstate]
+
+//    if {$config(confirm-exit)} {
+//        if [opp_isnotnull [opp_object_systemmodule]] {
+//            if {$isrunning} {
+//                set ans [messagebox {Warning} {The simulation is currently running. Do you really want to quit?} warning yesno]
+//                if {$ans == "no"} {
+//                    return
+//                }
+//            } elseif {$state == "SIM_READY"} {
+//                set ans [messagebox {Warning} {Do you want to conclude the simulation by invoking finish() before exiting?} warning yesnocancel]
+//                if {$ans == "yes"} {
+//                    # no catch{}: exceptions are handled inside
+//                    opp_finish_simulation
+//                } elseif {$ans == "no"} {
+//                    # nothing to do
+//                } elseif {$ans == "cancel"} {
+//                    return
+//                }
+//            } else {
+//                #set ans [messagebox {Warning} {Do you really want to quit?} warning yesno]
+//            }
+//        }
+//    }
+
+//    if {$isrunning} {
+//       opp_stopsimulation
+//    }
+
+//    # save settings (fonts etc) globally, and inspector list locally
+//    saveTkenvrc "~/.tkenvrc" 1 1 "# Global OMNeT++/Tkenv config file"
+//    saveTkenvrc ".tkenvrc"   0 1 "# Partial OMNeT++/Tkenv config file -- see \$HOME/.tkenvrc as well"
+
     close();
 }
 
@@ -161,80 +203,132 @@ void MainWindow::runSimulation(Mode mode)
     {
         setGuiForRunmode(mode);
         env->setSimulationRunMode(runMode);
-        //TODO Set Run Until Module
+        setRunUntilModule();
     }
     else
     {
-        //TODO Network Ready
+        if(!networkReady())
+            return;
         setGuiForRunmode(mode);
-        //TODO opp_run
         env->runSimulation(mode);
         setGuiForRunmode(NOT_RUNNING);
     }
 }
 
+//runNormal
 void MainWindow::on_actionRun_triggered()
 {
+    // implements Simulate|Run
     runSimulation(NORMAL);
 }
 
+//newRun
 void MainWindow::on_actionSetUpConfiguration_triggered()
 {
+    // implements File|Set Up a Configuration...
     if(checkRunning())
         return;
 
     RunSelectionDialog *dialog = new RunSelectionDialog(env, this);
     dialog->exec();
-//    debug "selected $configname $runnumber"
-//    busy "Setting up network..."
-//    inspectorList:addAll 1
+    //TODO debug "selected $configname $runnumber"
+    busy("Setting up network...");
+    //TODO inspectorList:addAll 1
     env->newRun(dialog->getConfigName().c_str(), dialog->getRunNumber());
-//    reflectRecordEventlog
-//    busy
+    //TODO reflectRecordEventlog
+    busy();
 
     if(getSimulation()->getSystemModule() != nullptr)
     {
-//        # tell plugins about it
-//        busy "Notifying Tcl plugins..."
-//        notifyPlugins newNetwork
-//        busy
+        // tell plugins about it
+        busy("Notifying Tcl plugins...");
+        //TODO notifyPlugins newNetwork
+        busy();
     }
 
     delete dialog;
 }
 
+//stopSimulation
 void MainWindow::on_actionStop_triggered()
 {
-//    proc stopSimulation {} {
-//        # implements Simulate|Stop
-//        if {[opp_getsimulationstate] == "SIM_RUNNING" || [opp_getsimulationstate] == "SIM_BUSY"} {
-//           # "opp_stopsimulation" just *asks* the simulation to stop, causing it to return
-//           # from the "opp_run" command.
-//           # "setGuiForRunmode notrunning" will be called after "opp_run" has returned.
-//           opp_stopsimulation
-//        }
-//
-//        # this proc doubles as "stop layouting", when in graphical module inspectors
-//        global stoplayouting
-//        set stoplayouting 1
-//    }
+    // implements Simulate|Stop
+    if(env->getSimulationState() == Qtenv::SIM_RUNNING || env->getSimulationState() == Qtenv::SIM_BUSY)
+    {
+        // "opp_stopsimulation" just *asks* the simulation to stop, causing it to return
+        // from the "opp_run" command.
+        // "setGuiForRunmode notrunning" will be called after "opp_run" has returned.
+        env->setStopSimulationFlag();
+    }
 
-    env->setStopSimulationFlag();
+    // this proc doubles as "stop layouting", when in graphical module inspectors
+    //TODO
+    //global stoplayouting
+    //set stoplayouting 1
 }
 
+//runFast
 void MainWindow::on_actionFastRun_triggered()
 {
+    // implements Simulate|Fast Run
     runSimulation(FAST);
 }
 
+//runExpress
 void MainWindow::on_actionExpressRun_triggered()
 {
+    // implements Simulate|Express Run
     runSimulation(EXPRESS);
 }
 
+//runUntil
 void MainWindow::on_actionRunUntil_triggered()
 {
+    // implements Simulate|Run until...
+//TODO
+//    if {[networkReady] == 0} {
+//       return
+//    }
 
+//    set time ""
+//    set event ""
+//    set msg ""
+//    set mode ""    ;# will be set to Normal, Fast or Express
+
+//    set ok [runUntilDialog time event msg mode]
+//    if {$ok==0} return
+
+//    if {$mode=="Normal"} {
+//        set mode "normal"
+//    } elseif {$mode=="Fast"} {
+//        set mode "fast"
+//    } elseif {$mode=="Express"} {
+//        set mode "express"
+//    } else {
+//        set mode "normal"
+//    }
+
+//    set untilmode "until_on"
+//    if {$time=="" && $event=="" && $msg==""} {set until_on "until_off"}
+
+//    if [isRunning] {
+//        if [catch {
+//            setGuiForRunmode $mode "" $untilmode
+//            opp_set_run_mode $mode
+//            opp_set_run_until $time $event $msg
+//        } err] {
+//            messagebox {Error} "Error: $err" error ok
+//        }
+//    } else {
+//        if {![networkReady]} {return}
+//        if [catch {
+//            setGuiForRunmode $mode "" $untilmode
+//            opp_run $mode $time $event $msg
+//        } err] {
+//            messagebox {Error} "Error: $err" error ok
+//        }
+//        setGuiForRunmode notrunning
+//    }
 }
 
 void MainWindow::inspectObject(QModelIndex index)
@@ -673,14 +767,14 @@ void MainWindow::setRunUntilModule(Inspector *insp)
     cObject *object = insp->getObject();
     if (!object)
     {
-        //"inspector has no object"
+        //TODO log "inspector has no object"
         return;
     }
 
     cModule *mod = dynamic_cast<cModule *>(object);
     if (!mod)
     {
-        //"object is not a module"
+        //TODO log "object is not a module"
         return;
     }
 
@@ -689,6 +783,8 @@ void MainWindow::setRunUntilModule(Inspector *insp)
 
 bool MainWindow::networkReady()
 {
+    //TODO networkPresent always return false
+    /*
     if(!networkPresent())
         return false;
 
@@ -706,6 +802,8 @@ bool MainWindow::networkReady()
         else
             return false;
     }
+    */
+    return true;
 }
 
 bool MainWindow::isSimulationOk()
@@ -744,7 +842,7 @@ void MainWindow::runSimulationLocal(Inspector *insp, int runMode, cObject *objec
         cModule *mod = dynamic_cast<cModule *>(object);
         if (!mod)
         {
-            //"object is not a module"
+            //TODO log "object is not a module"
             return ;
         }
         env->runSimulation(runMode, 0, 0, nullptr, mod);
