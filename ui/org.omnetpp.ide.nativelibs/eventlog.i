@@ -6,11 +6,10 @@
 %include "loadlib.i"
 %include "enumtypeunsafe.swg"
 %include "commondefs.i"
-%include "bigdecimal.i"
 %include "stacktrace.i"
 %javaconst(1);
 
-COMMON_ENGINE_BIGDECIMAL();
+%include "bigdecimal.i"
 
 %{
 #include "eventlog/ievent.h"

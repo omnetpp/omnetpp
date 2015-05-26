@@ -31,7 +31,6 @@ USING_NAMESPACE
 #define THREADED
 
 %include "commondefs.i"
-%include "bigdecimal.i"
 
 // hide export/import macros from swig
 #define COMMON_API
@@ -46,7 +45,7 @@ USING_NAMESPACE
 
 %typemap(jni) ID "jlong";
 
-COMMON_ENGINE_BIGDECIMAL();
+%include "bigdecimal.i"
 
 USE_COMMON_ENGINE_ILOCK();
 
