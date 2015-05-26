@@ -564,30 +564,30 @@ void MainWindow::onClickExcludeMessage()
 {
     QVariant variant = static_cast<QAction*>(QObject::sender())->data();
     if(variant.isValid())
-        (variant.value<cObject*>());
+        excludeMessageFromAnimation(variant.value<cObject*>());
 }
 
 void MainWindow::excludeMessageFromAnimation(cObject *msg)
 {
-//    proc excludeMessageFromAnimation {msg} {
-    const char *name = msg->getFullName();
     const char *cl = getObjectShortTypeName(msg);
-    //TODO
-    //set namepattern [regsub -all -- {[0-9]+} $name {*}]
-    //set namepattern [regsub -all -- {[^[:print:]]} $namepattern {?}]  ;# sanitize: replace nonprintable chars with '?'
-    //set namepattern [regsub -all -- {["\\]} $namepattern {?}] ;# sanitize: replace quotes (") and backslashes with '?'
-    //if {[regexp " " $namepattern]} {   # must be quoted if contains spaces
-        //set namepattern "\"$namepattern\""
-    //}
 
-//        set filters [string trim [opp_getsimoption silent_event_filters]]
-//        if {$filters != ""} {append filters "\n"}
-//        append filters "$namepattern and className($class)\n"
-//        opp_setsimoption silent_event_filters $filters
+    //TODO must be reviewed
+    QString namePattern = msg->getFullName();
+    namePattern.replace(QRegExp("[0-9]+"), "*");
+    namePattern.replace(QRegExp("(?!\\c)"), "?");   // sanitize: replace nonprintable chars with '?'
+    namePattern.replace(QRegExp("[\"\\]"), "?");    // sanitize: replace quotes (") and backslashes with '?'
+    if(namePattern.contains(' '))                   // must be quoted if contains spaces
+        namePattern = "\"" + namePattern + "\"";
 
-//        redrawTimeline
-//        opp_refreshinspectors
-//    }
+    QString filters = env->getSilentEventFilters();
+    filters.trimmed();
+    if(!filters.isEmpty())
+        filters += "\n";
+    filters += namePattern +" and className(" + cl +")\n";
+    env->setSilentEventFilters(filters.toStdString().c_str());
+
+    redrawTimeline();
+    env->refreshInspectors();
 }
 
 void MainWindow::runUntilMsg(cMessage *msg, int runMode)
@@ -750,7 +750,7 @@ void MainWindow::on_actionRebuildNetwork_triggered()
 
 void MainWindow::busy(QString msg)
 {
-    if(msg != "")
+    if(!msg.isEmpty())
     {
         ui->statusBar->showMessage(msg);
         this->setCursor(QCursor(Qt::WaitCursor));
