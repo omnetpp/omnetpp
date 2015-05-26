@@ -555,10 +555,11 @@ void MainWindow::onClickRunMessage()
     if(variant.isValid())
     {
         QPair<cObject*, int> objTypePair = variant.value<QPair<cObject*, int>>();
-        runUntilMsg(objTypePair.first, objTypePair.second);
+        runUntilMsg(static_cast<cMessage*>(objTypePair.first), objTypePair.second);
     }
 }
 
+//Handle object tree's context menu QAction's triggerd event.
 void MainWindow::onClickExcludeMessage()
 {
     QVariant variant = static_cast<QAction*>(QObject::sender())->data();
@@ -589,27 +590,87 @@ void MainWindow::excludeMessageFromAnimation(cObject *msg)
 //    }
 }
 
-void MainWindow::runUntilMsg(cObject *msg, int runMode)
+void MainWindow::runUntilMsg(cMessage *msg, int runMode)
 {
-//    proc runUntilMsg {msg mode} {
-    //TODO
-    //if {[networkReady] == 0} {
-    //    return
-    //}
+    if(!networkReady())
+        return;
+
     //mode must be "normal", "fast" or "express"
     if(isRunning())
     {
         setGuiForRunmode(runModeToMode(runMode), nullptr, true);
         env->setSimulationRunMode(runMode);
-        //TODO opp_set_run_until "" "" $msg
+        env->setSimulationRunUntil(SIMTIME_ZERO, 0, msg);
     }
     else
     {
         setGuiForRunmode(runModeToMode(runMode), nullptr, true);
-        //TODO opp_run $mode "" "" $msg
+        env->runSimulation(runMode, SIMTIME_ZERO, 0, msg);
         setGuiForRunmode(NOT_RUNNING);
     }
-//    }
+}
+
+//opp_set_run_until_module
+void MainWindow::setRunUntilModule(Inspector *insp)
+{
+    if (insp == nullptr)
+    {
+        env->setSimulationRunUntilModule(NULL);
+        return;
+    }
+
+    cObject *object = insp->getObject();
+    if (!object)
+    {
+        //"inspector has no object"
+        return;
+    }
+
+    cModule *mod = dynamic_cast<cModule *>(object);
+    if (!mod)
+    {
+        //"object is not a module"
+        return;
+    }
+
+    env->setSimulationRunUntilModule(mod);
+}
+
+bool MainWindow::networkReady()
+{
+    if(!networkPresent())
+        return false;
+
+    if(isSimulationOk())
+        return true;
+    else
+    {
+        int ans = QMessageBox::warning(this, tr("Warning"), tr("Cannot continue this simulation. Rebuild network?"),
+                                       QMessageBox::Yes | QMessageBox::No);
+        if(ans == QMessageBox::Yes)
+        {
+            on_actionRebuildNetwork_triggered();
+            return isSimulationOk();
+        }
+        else
+            return false;
+    }
+}
+
+bool MainWindow::isSimulationOk()
+{
+    int state = env->getSimulationState();
+    return state == Qtenv::SIM_NEW || state == Qtenv::SIM_RUNNING || state == Qtenv::SIM_READY;
+}
+
+bool MainWindow::networkPresent()
+{
+    if(getSimulation()->getSystemModule())
+    {
+        QMessageBox::warning(this, tr("Error"), tr("No network has been set up yet."), QMessageBox::Ok);
+        return false;
+    }
+    return true;
 }
 
 void MainWindow::runSimulationLocal(Inspector *insp, int runMode, cObject *object)
@@ -619,15 +680,23 @@ void MainWindow::runSimulationLocal(Inspector *insp, int runMode, cObject *objec
     {
         setGuiForRunmode(mode);
         env->setSimulationRunMode(runMode);
-        //TODO opp_set_run_until_module $insp
+        setRunUntilModule(insp);
     }
     else
     {
-        //TODO if {![networkReady]} {return}
+        if(!networkReady())
+            return;
         setGuiForRunmode(mode, insp);
-        //TODO
-        //if {$ptr==""} {set ptr [opp_inspector_getobject $insp]}
-        //opp_onestepinmodule $ptr $mode
+        if(object == nullptr)
+            object = insp->getObject();
+
+        cModule *mod = dynamic_cast<cModule *>(object);
+        if (!mod)
+        {
+            //"object is not a module"
+            return ;
+        }
+        env->runSimulation(runMode, 0, 0, nullptr, mod);
         setGuiForRunmode(NOT_RUNNING);
     }
 }
@@ -658,5 +727,37 @@ MainWindow::Mode MainWindow::runModeToMode(int runMode)
             return FAST;
         case Qtenv::RUNMODE_EXPRESS:
             return EXPRESS;
+    }
+}
+
+//rebuild
+void MainWindow::on_actionRebuildNetwork_triggered()
+{
+    //implements Simulate|Rebuild
+
+    if(checkRunning())
+        return;
+
+    if(!networkPresent())
+        return;
+
+    busy("Rebuilding network...");
+    //TODO inspectorList:addAll 1
+    env->rebuildSim();
+    //TODO reflectRecordEventlog
+    busy();
+}
+
+void MainWindow::busy(QString msg)
+{
+    if(msg != "")
+    {
+        ui->statusBar->showMessage(msg);
+        this->setCursor(QCursor(Qt::WaitCursor));
+    }
+    else
+    {
+        ui->statusBar->showMessage("Ready");
+        this->setCursor(QCursor(Qt::ArrowCursor));
     }
 }

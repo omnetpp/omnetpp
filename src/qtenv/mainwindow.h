@@ -15,6 +15,7 @@ class cEvent;
 
 NAMESPACE_BEGIN
 class cCanvas;
+class cMessage;
 namespace qtenv {
 class Qtenv;
 class Inspector;
@@ -54,6 +55,7 @@ private slots:
     void on_actionRunUntil_triggered();
     void inspectObject(QModelIndex index);
     void onTreeViewContextMenu(QPoint point);
+    void on_actionRebuildNetwork_triggered();
 
 public slots:
     void onClickOpenInspector();
@@ -79,11 +81,18 @@ private:
 
     void inspectObject(cObject *object, int type = 0, const char *geometry = "");
     void runSimulationLocal(qtenv::Inspector *insp, int runMode, cObject *object = nullptr);
+    void setRunUntilModule(qtenv::Inspector *insp);
     int modeToRunMode(Mode mode);
     Mode runModeToMode(int runMode);
 
-    void runUntilMsg(cObject *msg, int runMode);
+    void runUntilMsg(cMessage *msg, int runMode);
     void excludeMessageFromAnimation(cObject *msg);
+
+    bool networkReady();
+    bool networkPresent();
+    bool isSimulationOk();
+
+    void busy(QString msg = "");
 };
 
 #endif // MAINWINDOW_H
