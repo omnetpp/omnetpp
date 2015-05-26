@@ -548,6 +548,70 @@ void MainWindow::onClickRun()
     }
 }
 
+//Handle object tree's context menu QAction's triggerd event.
+void MainWindow::onClickRunMessage()
+{
+    QVariant variant = static_cast<QAction*>(QObject::sender())->data();
+    if(variant.isValid())
+    {
+        QPair<cObject*, int> objTypePair = variant.value<QPair<cObject*, int>>();
+        runUntilMsg(objTypePair.first, objTypePair.second);
+    }
+}
+
+void MainWindow::onClickExcludeMessage()
+{
+    QVariant variant = static_cast<QAction*>(QObject::sender())->data();
+    if(variant.isValid())
+        (variant.value<cObject*>());
+}
+
+void MainWindow::excludeMessageFromAnimation(cObject *msg)
+{
+//    proc excludeMessageFromAnimation {msg} {
+    const char *name = msg->getFullName();
+    const char *cl = getObjectShortTypeName(msg);
+    //TODO
+    //set namepattern [regsub -all -- {[0-9]+} $name {*}]
+    //set namepattern [regsub -all -- {[^[:print:]]} $namepattern {?}]  ;# sanitize: replace nonprintable chars with '?'
+    //set namepattern [regsub -all -- {["\\]} $namepattern {?}] ;# sanitize: replace quotes (") and backslashes with '?'
+    //if {[regexp " " $namepattern]} {   # must be quoted if contains spaces
+        //set namepattern "\"$namepattern\""
+    //}
+
+//        set filters [string trim [opp_getsimoption silent_event_filters]]
+//        if {$filters != ""} {append filters "\n"}
+//        append filters "$namepattern and className($class)\n"
+//        opp_setsimoption silent_event_filters $filters
+
+//        redrawTimeline
+//        opp_refreshinspectors
+//    }
+}
+
+void MainWindow::runUntilMsg(cObject *msg, int runMode)
+{
+//    proc runUntilMsg {msg mode} {
+    //TODO
+    //if {[networkReady] == 0} {
+    //    return
+    //}
+    //mode must be "normal", "fast" or "express"
+    if(isRunning())
+    {
+        setGuiForRunmode(runModeToMode(runMode), nullptr, true);
+        env->setSimulationRunMode(runMode);
+        //TODO opp_set_run_until "" "" $msg
+    }
+    else
+    {
+        setGuiForRunmode(runModeToMode(runMode), nullptr, true);
+        //TODO opp_run $mode "" "" $msg
+        setGuiForRunmode(NOT_RUNNING);
+    }
+//    }
+}
+
 void MainWindow::runSimulationLocal(Inspector *insp, int runMode, cObject *object)
 {
     Mode mode = runModeToMode(runMode);

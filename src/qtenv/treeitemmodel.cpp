@@ -181,6 +181,8 @@ QString TreeItemModel::getObjectIcon(cObject *object) const
     return iconName;
 }
 
+
+//fillInspectorContextMenu without insp
 QMenu *TreeItemModel::getContextMenu(QModelIndex &index, QMainWindow *mainWindow)
 {
     //global contextmenurules
@@ -215,32 +217,37 @@ QMenu *TreeItemModel::getContextMenu(QModelIndex &index, QMainWindow *mainWindow
         action->setData(QVariant::fromValue(ActionDataPair(object, qtenv::Qtenv::RUNMODE_FAST)));
     }
 
-//    if {$baseclass=="cMessage"} {
-//        $menu add separator
-//        $menu add command -label "Run Until Delivery of Message '$name'" -command "runUntilMsg $ptr normal"
-//        $menu add command -label "Fast Run Until Delivery of Message '$name'" -command "runUntilMsg $ptr fast"
-//        $menu add command -label "Express Run Until Delivery of Message '$name'" -command "runUntilMsg $ptr express"
-//        $menu add separator
-//        $menu add command -label "Exclude Messages Like '$name' From Animation" -command "excludeMessageFromAnimation $ptr"
-//    }
+    if (dynamic_cast<cMessage*>(object))
+    {
+        menu->addSeparator();
+        QAction *action = menu->addAction(QString("Run Until Delivery of Message '") + name + "'", mainWindow, SLOT(onClickRunMessage()));
+        action->setData(QVariant::fromValue(ActionDataPair(object, qtenv::Qtenv::RUNMODE_NORMAL)));
+        action = menu->addAction(QString("Fast Run Until Delivery of Message '") + name + "'", mainWindow, SLOT(onClickRunMessage()));
+        action->setData(QVariant::fromValue(ActionDataPair(object, qtenv::Qtenv::RUNMODE_FAST)));
+        action = menu->addAction(QString("Express Run Until Delivery of Message '") + name + "'", mainWindow, SLOT(onClickRunMessage()));
+        menu->addSeparator();
+        action = menu->addAction(QString("Exclude Messages Like '") + name + "' From Animation", mainWindow, SLOT(onClickExcludeMessage()));
+        action->setData(QVariant::fromValue(object));
+    }
 
-//    # add utilities menu
+    // add utilities menu
 //    set submenu .copymenu$ptr
 //    catch {destroy $submenu}
 //    menu $submenu -tearoff 0
-//    $menu add separator
-//    $menu add cascade -label "Utilities for '$name'" -menu $submenu
-//    $submenu add command -label "Copy Pointer With Cast (for Debugger)" -command [list copyToClipboard $ptr ptrWithCast]
-//    $submenu add command -label "Copy Pointer Value (for Debugger)" -command [list copyToClipboard $ptr ptr]
-//    $submenu add separator
-//    $submenu add command -label "Copy Full Path" -command [list copyToClipboard $ptr fullPath]
-//    $submenu add command -label "Copy Name" -command [list copyToClipboard $ptr fullName]
-//    $submenu add command -label "Copy Class Name" -command [list copyToClipboard $ptr className]
+    menu->addSeparator();
+    QMenu *subMenu = menu->addMenu(QString("Utilities for '") + name + "'");
+    subMenu->addAction("Copy Pointer With Cast (for Debugger)");    //TODO -command [list copyToClipboard $ptr ptrWithCast]
+    subMenu->addAction("Copy Pointer Value (for Debugger)"); //TODO -command [list copyToClipboard $ptr ptr]
+    subMenu->addSeparator();
+    subMenu->addAction("Copy Full Path");   //TODO -command [list copyToClipboard $ptr fullPath]
+    subMenu->addAction("Copy Name");    //TODO -command [list copyToClipboard $ptr fullName]
+    subMenu->addAction("Copy Class Name");  //TODO -command [list copyToClipboard $ptr className]
 
-//    # add further menu items
-//    set name [opp_getobjectfullpath $ptr]
-//    set allcategories "mqsgvo"
-//    set first 1
+    // add further menu items
+    name = object->getFullPath().c_str();
+    QString allcategories = "mqsgvo";
+    int first = 1;
+    //TODO
 //    foreach key $contextmenurules(keys) {
 //       #debug "trying $contextmenurules($key,label): opp_getsubobjectsfilt $ptr $allcategories $contextmenurules($key,class) $name.$contextmenurules($key,name) 1"
 //       # check context matches

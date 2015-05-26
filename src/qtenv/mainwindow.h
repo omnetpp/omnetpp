@@ -58,7 +58,8 @@ private slots:
 public slots:
     void onClickOpenInspector();
     void onClickRun();
-
+    void onClickRunMessage();
+    void onClickExcludeMessage();
 private:
     enum Mode { STEP, NORMAL, FAST, EXPRESS, NOT_RUNNING};
     Ui::MainWindow *ui;
@@ -80,6 +81,9 @@ private:
     void runSimulationLocal(qtenv::Inspector *insp, int runMode, cObject *object = nullptr);
     int modeToRunMode(Mode mode);
     Mode runModeToMode(int runMode);
+
+    void runUntilMsg(cObject *msg, int runMode);
+    void excludeMessageFromAnimation(cObject *msg);
 };
 
 #endif // MAINWINDOW_H
