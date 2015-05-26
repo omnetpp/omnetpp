@@ -13,6 +13,7 @@
 #include "inspectorfactory.h"
 #include "qtenv.h"
 #include "tkutil.h"
+#include "mainwindow.h"
 #include <QIcon>
 #include <QMainWindow>
 
@@ -231,17 +232,19 @@ QMenu *TreeItemModel::getContextMenu(QModelIndex &index, QMainWindow *mainWindow
     }
 
     // add utilities menu
-//    set submenu .copymenu$ptr
-//    catch {destroy $submenu}
-//    menu $submenu -tearoff 0
     menu->addSeparator();
     QMenu *subMenu = menu->addMenu(QString("Utilities for '") + name + "'");
-    subMenu->addAction("Copy Pointer With Cast (for Debugger)");    //TODO -command [list copyToClipboard $ptr ptrWithCast]
-    subMenu->addAction("Copy Pointer Value (for Debugger)"); //TODO -command [list copyToClipboard $ptr ptr]
+    QAction *action = subMenu->addAction("Copy Pointer With Cast (for Debugger)", mainWindow, SLOT(onClickUtilitiesSubMenu()));
+    action->setData(QVariant::fromValue(ActionDataPair(object, MainWindow::COPY_PTRWITHCAST)));
+    action = subMenu->addAction("Copy Pointer Value (for Debugger)", mainWindow, SLOT(onClickUtilitiesSubMenu()));
+    action->setData(QVariant::fromValue(ActionDataPair(object, MainWindow::COPY_PTR)));
     subMenu->addSeparator();
-    subMenu->addAction("Copy Full Path");   //TODO -command [list copyToClipboard $ptr fullPath]
-    subMenu->addAction("Copy Name");    //TODO -command [list copyToClipboard $ptr fullName]
-    subMenu->addAction("Copy Class Name");  //TODO -command [list copyToClipboard $ptr className]
+    action = subMenu->addAction("Copy Full Path", mainWindow, SLOT(onClickUtilitiesSubMenu()));
+    action->setData(QVariant::fromValue(ActionDataPair(object, MainWindow::COPY_FULLPATH)));
+    action = subMenu->addAction("Copy Name", mainWindow, SLOT(onClickUtilitiesSubMenu()));
+    action->setData(QVariant::fromValue(ActionDataPair(object, MainWindow::COPY_FULLNAME)));
+    action = subMenu->addAction("Copy Class Name", mainWindow, SLOT(onClickUtilitiesSubMenu()));
+    action->setData(QVariant::fromValue(ActionDataPair(object, MainWindow::COPY_CLASSNAME)));
 
     // add further menu items
     name = object->getFullPath().c_str();

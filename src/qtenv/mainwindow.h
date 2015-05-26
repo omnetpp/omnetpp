@@ -32,6 +32,8 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    enum eCopy { COPY_PTR, COPY_PTRWITHCAST, COPY_FULLPATH, COPY_FULLNAME, COPY_CLASSNAME };
+
     QGraphicsScene *scene;
 
     explicit MainWindow(qtenv::Qtenv *env, QWidget *parent = 0);
@@ -62,6 +64,8 @@ public slots:
     void onClickRun();
     void onClickRunMessage();
     void onClickExcludeMessage();
+    void onClickUtilitiesSubMenu();
+
 private:
     enum Mode { STEP, NORMAL, FAST, EXPRESS, NOT_RUNNING};
     Ui::MainWindow *ui;
@@ -93,6 +97,8 @@ private:
     bool isSimulationOk();
 
     void busy(QString msg = "");
+    void copyToClipboard(cObject *object, int what);
+    void setClipboard(QString str);
 };
 
 #endif // MAINWINDOW_H

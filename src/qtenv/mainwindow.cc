@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QGraphicsItem>
 #include <QMessageBox>
+#include <QClipboard>
 #include "qtenv.h"
 #include "runselectiondialog.h"
 #include "treeitemmodel.h"
@@ -565,6 +566,56 @@ void MainWindow::onClickExcludeMessage()
     QVariant variant = static_cast<QAction*>(QObject::sender())->data();
     if(variant.isValid())
         excludeMessageFromAnimation(variant.value<cObject*>());
+}
+
+//Handle object tree's context menu QAction's triggerd event.
+void MainWindow::onClickUtilitiesSubMenu()
+{
+    QVariant variant = static_cast<QAction*>(QObject::sender())->data();
+    if(variant.isValid())
+    {
+        QPair<cObject*, int> objTypePair = variant.value<QPair<cObject*, int>>();
+        copyToClipboard(static_cast<cMessage*>(objTypePair.first), objTypePair.second);
+    }
+}
+
+void MainWindow::copyToClipboard(cObject *object, int what)
+{
+    switch(what)
+    {
+        case COPY_PTR:
+        {
+            void *address = static_cast<void*>(object);
+            std::stringstream ss;
+            ss << address;
+            setClipboard(QString(ss.str().c_str()));
+            break;
+        }
+        case COPY_PTRWITHCAST:
+        {
+            void *address = static_cast<void*>(object);
+            std::stringstream ss;
+            ss << address;
+            setClipboard(QString("((") + object->getClassName() + " *)" + ss.str().c_str() + ")");
+            break;
+        }
+        case COPY_FULLPATH:
+            setClipboard(object->getFullPath().c_str());
+            break;
+        case COPY_FULLNAME:
+            setClipboard(object->getFullName());
+            break;
+        case COPY_CLASSNAME:
+            setClipboard(object->getClassName());
+            break;
+    }
+}
+
+void MainWindow::setClipboard(QString str)
+{
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->clear();
+    clipboard->setText(str);
 }
 
 void MainWindow::excludeMessageFromAnimation(cObject *msg)
