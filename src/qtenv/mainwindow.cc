@@ -783,8 +783,6 @@ void MainWindow::setRunUntilModule(Inspector *insp)
 
 bool MainWindow::networkReady()
 {
-    //TODO networkPresent always return false
-    /*
     if(!networkPresent())
         return false;
 
@@ -802,7 +800,7 @@ bool MainWindow::networkReady()
         else
             return false;
     }
-    */
+
     return true;
 }
 
@@ -814,7 +812,7 @@ bool MainWindow::isSimulationOk()
 
 bool MainWindow::networkPresent()
 {
-    if(getSimulation()->getSystemModule())
+    if(!getSimulation()->getSystemModule())
     {
         QMessageBox::warning(this, tr("Error"), tr("No network has been set up yet."), QMessageBox::Ok);
         return false;

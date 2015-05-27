@@ -246,29 +246,6 @@ QMenu *TreeItemModel::getContextMenu(QModelIndex &index, QMainWindow *mainWindow
     action = subMenu->addAction("Copy Class Name", mainWindow, SLOT(onClickUtilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, MainWindow::COPY_CLASSNAME)));
 
-    // add further menu items
-    name = object->getFullPath().c_str();
-    QString allcategories = "mqsgvo";
-    bool first = true;
-    //TODO
-//    foreach key $contextmenurules(keys) {
-//       #debug "trying $contextmenurules($key,label): opp_getsubobjectsfilt $ptr $allcategories $contextmenurules($key,class) $name.$contextmenurules($key,name) 1"
-//       # check context matches
-//       if ![opp_patmatch $name $contextmenurules($key,context)] {
-//           continue
-//       }
-//       # check we have such object
-//       # Note: we have to quote the pattern for the object matcher, because $name might contain spaces
-//       set objlist [opp_getsubobjectsfilt $ptr $allcategories $contextmenurules($key,class) "\"$name.$contextmenurules($key,name)\"" 1 ""]
-//       if {$objlist!={}} {
-//           if {$first} {
-//               set first 0
-//               $menu add separator
-//           }
-//           $menu add command -label "$contextmenurules($key,label)..." -command "inspectContextMenuRules $ptr $key"
-//       }
-//    }
-
     return menu;
 }
 

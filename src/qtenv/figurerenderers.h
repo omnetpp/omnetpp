@@ -90,7 +90,7 @@ public:
     static FigureRenderer *getRendererFor(cFigure *figure);
     static void deleteItems() { items.clear(); }
     void render(cFigure *figure, QGraphicsScene *scene, const cFigure::Transform &transform, FigureRenderingHints *hints);
-    void refresh(cFigure *figure, int8_t what, const cFigure::Transform &transform, FigureRenderingHints *hints);
+    virtual void refresh(cFigure *figure, int8_t what, const cFigure::Transform &transform, FigureRenderingHints *hints);
 };
 
 class AbstractShapeFigureRenderer : public FigureRenderer
@@ -102,11 +102,14 @@ class AbstractShapeFigureRenderer : public FigureRenderer
 class AbstractTextFigureRenderer : public FigureRenderer
 {
 protected:
+    virtual void refresh(cFigure *figure, int8_t what, const cFigure::Transform &transform, FigureRenderingHints *hints);
     virtual void refreshTransform(cFigure *figure, const cFigure::Transform &transform);
 };
 
 class AbstractImageFigureRenderer : public FigureRenderer
 {
+protected:
+    virtual void refresh(cFigure *figure, int8_t what, const cFigure::Transform &transform, FigureRenderingHints *hints);
     virtual void refreshTransform(cFigure *figure, const cFigure::Transform &transform);
 };
 

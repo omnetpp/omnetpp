@@ -488,14 +488,7 @@ void FigureRenderer::refresh(cFigure *figure, int8_t what, const cFigure::Transf
     if(what & cFigure::CHANGE_VISUAL)
         refreshVisual(figure);
     if(what & (cFigure::CHANGE_GEOMETRY | cFigure::CHANGE_INPUTDATA))
-    {
         refreshGeometry(figure);
-        if(dynamic_cast<cAbstractTextFigure*>(figure) || dynamic_cast<cAbstractTextFigure*>(figure))
-        {
-            refreshTransform(figure, transform);
-            return;
-        }
-    }
     if(what & cFigure::CHANGE_TRANSFORM)
         refreshTransform(figure, transform);
 }
@@ -528,6 +521,17 @@ void AbstractShapeFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *i
     QAbstractGraphicsShapeItem *shapeItem = static_cast<QAbstractGraphicsShapeItem*>(item);
     shapeItem->setPen(createPen(shapeFigure));
     shapeItem->setBrush(createBrush(shapeFigure));
+}
+
+void AbstractTextFigureRenderer::refresh(cFigure *figure, int8_t what, const cFigure::Transform &transform, FigureRenderingHints *hints)
+{
+    if(what & cFigure::CHANGE_VISUAL)
+        refreshVisual(figure);
+    if(what & (cFigure::CHANGE_GEOMETRY | cFigure::CHANGE_INPUTDATA | cFigure::CHANGE_TRANSFORM))
+    {
+        refreshGeometry(figure);
+        refreshTransform(figure, transform);
+    }
 }
 
 void AbstractTextFigureRenderer::refreshTransform(cFigure *figure, const cFigure::Transform &transform)
@@ -581,6 +585,17 @@ void AbstractTextFigureRenderer::refreshTransform(cFigure *figure, const cFigure
     }
 
     setTransform(transform, items[figure->getId()], &anchor);
+}
+
+void AbstractImageFigureRenderer::refresh(cFigure *figure, int8_t what, const cFigure::Transform &transform, FigureRenderingHints *hints)
+{
+    if(what & cFigure::CHANGE_VISUAL)
+        refreshVisual(figure);
+    if(what & (cFigure::CHANGE_GEOMETRY | cFigure::CHANGE_INPUTDATA | cFigure::CHANGE_TRANSFORM))
+    {
+        refreshGeometry(figure);
+        refreshTransform(figure, transform);
+    }
 }
 
 void AbstractImageFigureRenderer::refreshTransform(cFigure *figure, const cFigure::Transform &transform)
