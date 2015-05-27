@@ -82,7 +82,7 @@ The \cclass{cMessage} constructor accepts an \textit{object name}
 and a \textit{message kind}, both optional:
 
 \begin{cpp}
-cMessage(const char *name=NULL, short kind=0);
+cMessage(const char *name=nullptr, short kind=0);
 \end{cpp}
 
 Descriptive message names can be very useful when tracing, debugging or
@@ -358,7 +358,7 @@ The \cclass{cPacket} constructor is similar to the \cclass{cMessage}
 constructor, but it accepts an additional \textit{bit length} argument:
 
 \begin{cpp}
-cPacket(const char *name=NULL, short kind=0, int64 bitLength=0);
+cPacket(const char *name=nullptr, short kind=0, int64 bitLength=0);
 \end{cpp}
 
 The most important field \cclass{cPacket} has over \cclass{cMessage} is
@@ -396,7 +396,7 @@ An example:
 
 \begin{cpp}
 cMessage *msg = receive();
-if (dynamic_cast<IPv6Datagram *>(msg) != NULL)
+if (dynamic_cast<IPv6Datagram *>(msg) != nullptr)
 {
     IPv6Datagram *datagram = (IPv6Datagram *)msg;
     ...
@@ -446,7 +446,7 @@ except if it was zero. If the length would become negative, an error
 occurs.
 
 The \ffunc{getEncapsulatedPacket()} function returns a pointer to the
-encapsulated packet, or \ttt{NULL} if no packet is encapsulated.
+encapsulated packet, or \ttt{nullptr} if no packet is encapsulated.
 
 Example usage:
 
@@ -583,7 +583,7 @@ of \cclass{cMsgPar}). An example:
 \begin{cpp}
 struct conn_t *conn = new conn_t; // conn_t is a C struct
 msg->addPar("conn") = (void *) conn;
-msg->par("conn").configPointer(NULL,NULL,sizeof(struct conn_t));
+msg->par("conn").configPointer(nullptr, nullptr, sizeof(struct conn_t));
 \end{cpp}
 
 

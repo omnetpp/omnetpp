@@ -116,7 +116,7 @@ generated.
 class FooPacket : public cPacket
 {
   public:
-    FooPacket(const char *name=NULL, int kind=0);
+    FooPacket(const char *name=nullptr, int kind=0);
     FooPacket(const FooPacket& other);
     FooPacket& operator=(const FooPacket& other);
     virtual FooPacket *dup() const;
@@ -185,7 +185,7 @@ Data types for fields are not limited to \fkeyword{int} and
       shortened type names must be defined in a header file you include.}
    \item {\opp} simulation time: \fkeyword{simtime\_t}
    \item \fkeyword{string}. Getters and setters use the \ttt{const char*} data type;
-      \ttt{NULL} is not allowed. The object will store a copy of the string,
+      \ttt{nullptr} is not allowed. The object will store a copy of the string,
       not just the pointer.
    \item structs and classes, defined in message files or elsewhere (see
       in later sections \ref{sec:ch-msg-defs:other-types-as-fields}
@@ -894,7 +894,7 @@ class FooPacket_Base : public cPacket
   protected:
     int src;
     // make constructors protected to avoid instantiation
-    FooPacket_Base(const char *name=NULL);
+    FooPacket_Base(const char *name=nullptr);
     FooPacket_Base(const FooPacket_Base& other);
   public:
     ...
@@ -914,7 +914,7 @@ too, as a comment):
 class FooPacket : public FooPacket_Base
 {
   public:
-    FooPacket(const char *name=NULL) : FooPacket_Base(name) {}
+    FooPacket(const char *name=nullptr) : FooPacket_Base(name) {}
     FooPacket(const FooPacket& other) : FooPacket_Base(other) {}
     FooPacket& operator=(const FooPacket& other)
         {FooPacket_Base::operator=(other); return *this;}
@@ -1127,7 +1127,7 @@ Some additional boilerplate code is needed so that the class conforms
 to conventions, and duplication and copying works properly:
 
 \begin{cpp}
-    FooPacket(const char *name=NULL, int kind=0) : FooPacket_Base(name,kind) {
+    FooPacket(const char *name=nullptr, int kind=0) : FooPacket_Base(name,kind) {
     }
     FooPacket(const FooPacket& other) : FooPacket_Base(other.getName()) {
         operator=(other);

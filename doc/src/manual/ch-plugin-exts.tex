@@ -272,7 +272,7 @@ The macro arguments are as follows:
   \item \textit{UNIT} is a string that names the measurement unit in which
         the option's value is to be interpreted; it implies type \ttt{CFG\_DOUBLE}.
   \item \textit{DEFAULTVALUE} is the default value in textual form (string);
-        this should be \ttt{NULL} if the option has no default value.
+        this should be \ttt{nullptr} if the option has no default value.
   \item \textit{DESCRIPTION} is an arbitrarily long string that describes
         the purpose and and operation of the option. It will be used in
         help texts etc.
@@ -313,7 +313,7 @@ in the INI file.
 \end{note}
 
 \begin{cpp}
-const char *getAsCustom(cConfigOption *entry, const char *fallbackValue=NULL);
+const char *getAsCustom(cConfigOption *entry, const char *fallbackValue=nullptr);
 bool getAsBool(cConfigOption *entry, bool fallbackValue=false);
 long getAsInt(cConfigOption *entry, long fallbackValue=0);
 double getAsDouble(cConfigOption *entry, double fallbackValue=0);

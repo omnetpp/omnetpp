@@ -115,7 +115,7 @@ For example, you can get the name of a message object like this:
 const char *name = msg->getName();
 \end{cpp}
 
-The \ffunc{getName()} method will never return \ttt{NULL}, the absence
+The \ffunc{getName()} method will never return \ttt{nullptr}, the absence
 of name string is always returned as the empty string (\ttt{""}).
 
 By convention, the object name is the first argument to the constructor
@@ -143,14 +143,14 @@ instead of just storing the pointer passed to them.
   also compares favorably to the cost of allocation and copying.}
 
 For convenience and efficiency reasons, the empty string \ttt{""}
-and \ttt{NULL} are treated as interchangeable by library objects.
-That is, \ttt{""} is stored as \ttt{NULL} but returned as \ttt{""}.
-If you create a message object with either \ttt{NULL}
-or \ttt{""} as its name string, it will be stored as \ttt{NULL}
+and \ttt{nullptr} are treated as interchangeable by library objects.
+That is, \ttt{""} is stored as \ttt{nullptr} but returned as \ttt{""}.
+If you create a message object with either \ttt{nullptr}
+or \ttt{""} as its name string, it will be stored as \ttt{nullptr}
 and \ffunc{getName()} will return a pointer to a static \ttt{""}.
 
 \begin{cpp}
-cMessage *msg = new cMessage(NULL, <additional args>);
+cMessage *msg = new cMessage(nullptr, <additional args>);
 const char *str = msg->getName(); // --> returns ""
 \end{cpp}
 
@@ -270,7 +270,7 @@ filled in using subsequent arguments.
 An example:
 
 \begin{cpp}
-if (msg->getControlInfo()==NULL)
+if (msg->getControlInfo()==nullptr)
     opp_error("message (%s)%s has no control info attached",
               msg->getClassName(), msg->getName());
 \end{cpp}
@@ -343,7 +343,7 @@ to a printable string (\ttt{"3s 130ms 230us"}) and vica versa.
 The \ffunc{simtimeToStr()} function converts a \cclass{simtime\_t}
 (passed in the first argument) to textual form. The result is placed into
 the \ttt{char} array pointed to by the second argument. If the second argument is omitted
-or it is \ttt{NULL}, \ffunc{simtimeToStr()} will place the result into a
+or it is \ttt{nullptr}, \ffunc{simtimeToStr()} will place the result into a
 static buffer which is overwritten with each call. An example:
 
 \begin{cpp}
@@ -859,13 +859,13 @@ following code extracts all modules of type \ttt{Router} or \ttt{Host}.
 
 \begin{cpp}
 cTopology topo;
-topo.extractByModuleType("Router", "Host", NULL);
+topo.extractByModuleType("Router", "Host", nullptr);
 \end{cpp}
 
-Any number of module types can be supplied; the list must be terminated by \ttt{NULL}.
+Any number of module types can be supplied; the list must be terminated by \ttt{nullptr}.
 
 A dynamically assembled list of module types can be passed as a
-\ttt{NULL}-terminated array of \ttt{const char*} pointers, or
+\ttt{nullptr}-terminated array of \ttt{const char*} pointers, or
 in an STL string vector \ttt{std::vector<std::string>}.
 An example for the former:
 
@@ -874,7 +874,7 @@ cTopology topo;
 const char *typeNames[3];
 typeNames[0] = "Router";
 typeNames[1] = "Host";
-typeNames[2] = NULL;
+typeNames[2] = nullptr;
 topo.extractByModuleType(typeNames);
 \end{cpp}
 
@@ -904,7 +904,7 @@ int selectFunction(cModule *mod, void *)
   return mod->getParentModule() == simulation.getSystemModule();
 }
 
-topo.extractFromNetwork( selectFunction, NULL );
+topo.extractFromNetwork( selectFunction, nullptr );
 \end{cpp}
 
 %
@@ -954,7 +954,7 @@ cModule *module = node->getModule();
 
 The \ffunc{getNodeFor()} member function returns a pointer to the graph
 node for a given module. (If the module is not in the graph, it
-returns \ttt{NULL}). \ffunc{getNodeFor()} uses binary search within the
+returns \ttt{nullptr}). \ffunc{getNodeFor()} uses binary search within the
 \cclass{cTopology} object so it is relatively fast.
 
 
@@ -1010,7 +1010,7 @@ Walking along the path from our module to the target node:
 \begin{cpp}
 cTopology::Node *node = topo.getNodeFor( this );
 
-if (node == NULL)
+if (node == nullptr)
 {
   ev < "We (" << getFullPath() << ") are not included in the topology.\n";
 }
@@ -1263,7 +1263,7 @@ class SIM_API Matchable
     virtual const char *getAsString() const = 0;
 
     /**
-     * Return the string value of the given attribute, or NULL if the object
+     * Return the string value of the given attribute, or nullptr if the object
      * doesn't have an attribute with that name. The returned pointer will not
      * be cached by the caller, so it is OK to return a pointer to a static buffer.
      */
@@ -1293,7 +1293,7 @@ class cMatchableString : public cMatchExpression::Matchable
   public:
     cMatchableString(const char *s) {str = s;}
     virtual const char *getAsString() const {return str.c_str();}
-    virtual const char *getAsString(const char *name) const {return NULL;}
+    virtual const char *getAsString(const char *name) const {return nullptr;}
 };
 \end{cpp}
 
@@ -1576,7 +1576,7 @@ Modes are selected with a \textit{transform-type} parameter:
 Creating an object:
 
 \begin{cpp}
-cVarHistogram(const char *s=NULL,
+cVarHistogram(const char *s=nullptr,
               int numcells=11,
               int transformtype=HIST_TR_AUTO_EPC_DBL);
 \end{cpp}
@@ -2107,14 +2107,14 @@ WATCH_PTR(hdrPtr);
 \end{cpp}
 
 CAUTION: With \fmac{WATCH\_PTR()}, the pointer variable must point to a valid
-object or be \ttt{NULL} at all times, otherwise the GUI may crash
+object or be \ttt{nullptr} at all times, otherwise the GUI may crash
 while trying to display the object. This practically means that
-the pointer should be initialized to \ttt{NULL} even if not used, and
-should be set to \ttt{NULL} when the object to which it points is deleted.
+the pointer should be initialized to \ttt{nullptr} even if not used, and
+should be set to \ttt{nullptr} when the object to which it points is deleted.
 
 \begin{cpp}
 delete watchedPtr;
-watchedPtr = NULL;  // set to NULL when object gets deleted
+watchedPtr = nullptr;  // set to nullptr when object gets deleted
 \end{cpp}
 
 
@@ -2157,7 +2157,7 @@ or selected objects of the simulation (including the objects created
 in module functions by the user) into the snapshot file\index{snapshot file}.
 
 \begin{cpp}
-bool snapshot(cObject *obj = &simulation, const char *label = NULL);
+bool snapshot(cObject *obj = &simulation, const char *label = nullptr);
 \end{cpp}
 
 The function can be called from module functions, like this:
@@ -2255,7 +2255,7 @@ network="FifoNet">
 %
 % Some container classes and functions suspend the simulation and issue
 % warning messages in potentially bogus/dangerous situations, for
-% example when an object is not found and \ttt{NULL} pointer/reference is
+% example when an object is not found and \ttt{nullptr} pointer/reference is
 % about to be returned. Very often this is useful, but sometimes it is
 % more trouble. You can turn warnings on/off from the ini file
 % (warnings=yes/no)\index{ini file!warnings}.
@@ -2556,7 +2556,7 @@ call the \ttt{uniform()} C++ function to actually generate a random number,
 and return it in a temporary object with \ttt{a}'s measurement unit.
 Alternatively, we could have overwritten the numeric part of \ttt{a} with
 the result using \ffunc{setPreservingUnit()}, and returned just that. If
-there is no measurement unit, \ffunc{getUnit()} will return \ttt{NULL},
+there is no measurement unit, \ffunc{getUnit()} will return \ttt{nullptr},
 which is understood by both \ffunc{doubleValueInUnit()} and the
 \cclass{cNEDValue} constructor.
 
@@ -2647,7 +2647,7 @@ value = 300.0;                // ==> 300 (clears the unit!)
 value.set(500,"ms");          // ==> 500ms
 value.setUnit("s");           // ==> 500s (overwrites the unit)
 value.setPreservingUnit(180); // ==> 180s (overwrites the number)
-value.setUnit(NULL);          // ==> 180 (clears the unit)
+value.setUnit(nullptr);       // ==> 180 (clears the unit)
 
 // unit conversion
 value.set(500, "ms");         // ==> 500ms
@@ -2780,7 +2780,7 @@ The following methods \textbf{must} be implemented:
         one that takes the object name string as \ttt{const char *}
         (recommended by convention), and another one with no arguments
         (must be present). The two are usually implemented as a single
-        method, with \ttt{NULL} as default name string.}
+        method, with \ttt{nullptr} as default name string.}
   \item{\textit{Copy constructor}, which must have the following signature
         for a class \ttt{X}: \ttt{X(const X\&)}.}
   \item{\textit{Destructor}.}
@@ -2891,7 +2891,7 @@ class NewClass : public cOwnedObject
   private:
     void copy(const NewClass& other); // local utility function
   public:
-    NewClass(const char *name=NULL, int d=0);
+    NewClass(const char *name=nullptr, int d=0);
     NewClass(const NewClass& other);
     virtual ~NewClass();
     virtual NewClass *dup() const;
@@ -2922,7 +2922,7 @@ NewClass::NewClass(const char *name, int sz) : cOwnedObject(name)
     size = sz;
     array = new double[size];
     take(&queue);
-    msg = NULL;
+    msg = nullptr;
 }
 \end{cpp}
 
@@ -2934,15 +2934,15 @@ You need to call \ffunc{take()} for \cclass{cOwnedObject}-based data members.
 NewClass::NewClass(const NewClass& other) : cOwnedObject(other)
 {
     size = -1; // needed by copy()
-    array = NULL;
-    msg = NULL;
+    array = nullptr;
+    msg = nullptr;
     take(&queue);
     copy(other);
 }
 \end{cpp}
 
 The copy constructor relies on the private \ffunc{copy()} function.
-Note that pointer members have to be initialized (to \ttt{NULL} or to an
+Note that pointer members have to be initialized (to \ttt{nullptr} or to an
 allocated object/memory) before calling the \ffunc{copy()} function.
 
 You need to call \ffunc{take()} for \cclass{cOwnedObject}-based data members.

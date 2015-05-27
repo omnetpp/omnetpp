@@ -136,7 +136,7 @@ The first few lines of the code initialize the simulation library. The
 purpose of \cclass{cStaticFlag} is to set a global variable to \ttt{true}
 for the duration of the \ttt{main()} function, to help the simulation
 library handle exceptions correctly in extreme cases.
-\ttt{CodeFragment::executeAll(CodeFragment::STARTUP)} performs various startup 
+\ttt{CodeFragment::executeAll(CodeFragment::STARTUP)} performs various startup
 tasks, such as building registration tables out of the \fmac{Define\_Module()},
 \fmac{Register\_Class()} and similar entries throughout the code.
 \ttt{SimTime::setScaleExp(-12)} sets the simulation time resolution to
@@ -166,7 +166,7 @@ void simulate(const char *networkName, simtime_t limit)
 {
     // look up network type
     cModuleType *networkType = cModuleType::find(networkName);
-    if (networkType == NULL) {
+    if (networkType == nullptr) {
         printf("No such network: %s\n", networkName);
         return;
     }
@@ -206,7 +206,7 @@ void simulate(const char *networkName, simtime_t limit)
     sim->endRun();  //E!
     sim->deleteNetwork();  //E!
 
-    cSimulation::setActiveSimulation(NULL);
+    cSimulation::setActiveSimulation(nullptr);
     delete sim; // deletes env as well
 }
 \end{cpp}
@@ -259,7 +259,7 @@ called, and the network is shut down using
 
 Finally, the simulation manager object is deallocated, but the active
 simulation manager is not allowed to be deleted; therefore it is deactivated
-using \ffunc{setActiveSimulation(NULL)}.
+using \ffunc{setActiveSimulation(nullptr)}.
 
 
 \subsection{Providing an Environment Object}
@@ -325,9 +325,9 @@ class EmptyConfig : public cConfiguration
   protected:
     class NullKeyValue : public KeyValue {
       public:
-        virtual const char *getKey() const {return NULL;}
-        virtual const char *getValue() const {return NULL;}
-        virtual const char *getBaseDirectory() const {return NULL;}
+        virtual const char *getKey() const {return nullptr;}
+        virtual const char *getValue() const {return nullptr;}
+        virtual const char *getBaseDirectory() const {return nullptr;}
     };
     NullKeyValue nullKeyValue;
 
@@ -336,11 +336,11 @@ class EmptyConfig : public cConfiguration
 
   public:
     virtual const char *getConfigValue(const char *key) const
-        {return NULL;}
+        {return nullptr;}
     virtual const KeyValue& getConfigEntry(const char *key) const
         {return nullKeyValue;}
     virtual const char *getPerObjectConfigValue(const char *objectFullPath,
-        const char *keySuffix) const {return NULL;}
+        const char *keySuffix) const {return nullptr;}
     virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath,
         const char *keySuffix) const {return nullKeyValue;}
 };
@@ -478,7 +478,7 @@ class CustomSimulationEnv : public cNullEnvir
     std::map<std::string, double> results;
   public:
     virtual void recordScalar(cComponent *component, const char *name,
-                              double value, opp_string_map *attributes=NULL)
+                              double value, opp_string_map *attributes=nullptr)
     {
        results[component->getFullPath()+"."+name] = value;
     }
@@ -513,8 +513,8 @@ while (sim->getSimTime() < limit)
 \end{cpp}
 
 Depending on the concrete scheduler class, the
-\ffunc{selectNextModule()} may return \ttt{NULL}. The default
-\cclass{cSequentialScheduler} never returns \ttt{NULL}.
+\ffunc{selectNextModule()} may return \ttt{nullptr}. The default
+\cclass{cSequentialScheduler} never returns \ttt{nullptr}.
 
 The execution may terminate in various ways. Runtime errors cause a
 \cclass{cRuntimeError} (or other kind of \cclass{std::exception}) to be

@@ -482,7 +482,7 @@ for these four methods:
 
 \item Constructor:
 
-Set pointer members of the module class to \ttt{NULL}; postpone all other
+Set pointer members of the module class to \ttt{nullptr}; postpone all other
 initialization tasks to \ffunc{initialize()}.
 
 \item \ffunc{initialize()}:
@@ -1635,7 +1635,7 @@ initialization of the given module}.
   of modules, which generally cannot be relied upon. After the last
   stage of the initialization of the component is finished,
   \ffunc{handleParameterChange()} is called by the simulation kernel
-  with \ttt{NULL} as a parameter name. This allows the component
+  with \ttt{nullptr} as a parameter name. This allows the component
   to react to parameter changes that occurred during the initialization phase.
 \end{note}
 
@@ -1755,7 +1755,7 @@ for (int i=0; i<gateSize("out"); i++) {
 \end{cpp}
 
 A gate vector cannot have ``holes'' in it; that is, \ffunc{gate()}
-never returns \ttt{NULL} or throws an error if the gate vector exists
+never returns \ttt{nullptr} or throws an error if the gate vector exists
 and the index is within bounds.
 
 For inout gates, \ffunc{gateSize()} may be called with or without
@@ -1842,10 +1842,10 @@ Where \ttt{this} denotes the module whose gates are being enumerated
 \begin{note}
     In earlier {\opp} versions, gate IDs used to be small integers, so
     it made sense to iterate over all gates of a module by enumerating
-    all IDs from zero to a maximum, skipping the holes (\ttt{NULL}s).
+    all IDs from zero to a maximum, skipping the holes (\ttt{nullptr}s).
     This is no longer the case with {\opp} 4.0 and later versions.
     Moreover, the \ffunc{gate()} method now throws an error when called
-    with an invalid ID, and not just returns \ttt{NULL}.
+    with an invalid ID, and not just returns \ttt{nullptr}.
 \end{note}
 
 
@@ -1957,13 +1957,13 @@ with various gate types is illustrated on figure
 
 The start and end gates of the path can be found with the \ffunc{getPathStartGate()}
 and \ffunc{getPathEndGate()} methods, which simply follow the \textit{previous gate} and
-\textit{next gate} pointers, respectively, until they are \ttt{NULL}.
+\textit{next gate} pointers, respectively, until they are \ttt{nullptr}.
 
 The \ffunc{isConnectedOutside()} and \ffunc{isConnectedInside()} methods
 return whether a gate is connected on the outside or on the inside. They
 examine either the \textit{previous} or the \textit{next} pointer, depending on the
 gate type (input or output). For example, an output gate is \textit{connected outside}
-if the \textit{next} pointer is non-\ttt{NULL}; the same function for an input gate
+if the \textit{next} pointer is non-\ttt{nullptr}; the same function for an input gate
 checks the \textit{previous} pointer. Again, see figure \ref{fig:ch-simple-modules:gates}
 for an illustration.
 
@@ -1995,7 +1995,7 @@ is returned by the \ffunc{getChannel()} method of the gate:
 cChannel *channel = gate->getChannel();
 \end{cpp}
 
-The result may be \ttt{NULL}, that is, a connection may not have
+The result may be \ttt{nullptr}, that is, a connection may not have
 an associated channel object.
 
 If you have a channel pointer, you can get back its source gate
@@ -2040,7 +2040,7 @@ cChannel *incomingTxChan = gate("ppp$i")->getIncomingTransmissionChannel();
 Both methods throw an error if no transmission channel is found. If this
 is not suitable, use the similar \ffunc{findTransmissionChannel()} and
 \ffunc{findIncomingTransmissionChannel()} methods that simply return
-\ttt{NULL} in that case.
+\ttt{nullptr} in that case.
 
 Channels are covered in more detail in section \ref{sec:simple-modules:channels}.
 
@@ -2131,7 +2131,7 @@ cancelled, you may delete the message or reuse it in subsequent
 the message is not scheduled at that time.
 
 There is also a convenience method called \ffunc{cancelAndDelete()}
-implemented as \ttt{if (msg!=NULL) delete cancelEvent(msg)};
+implemented as \ttt{if (msg!=nullptr) delete cancelEvent(msg)};
 this method is primarily useful for writing destructors.
 
 The following example shows how to implement a timeout in a simple
@@ -2625,7 +2625,7 @@ cMessage *msg = receive();
 The \ffunc{receive()} function accepts an optional \textit{timeout}
 parameter\index{receive!timeout}. (This is a \textit{delta}, not an
 absolute simulation time.) If no message arrives within the timeout
-period, the function returns a \ttt{NULL} pointer.
+period, the function returns \ttt{nullptr}.
     \footnote{Putaside-queue and the functions \ttt{receiveOn()},
     \ttt{receiveNew()}, and \ttt{receiveNewOn()} were deprecated
     in {\opp} 2.3 and removed in {\opp} 3.0.}
@@ -2634,7 +2634,7 @@ period, the function returns a \ttt{NULL} pointer.
 simtime_t timeout = 3.0;
 cMessage *msg = receive(timeout);
 
-if (msg==NULL)
+if (msg==nullptr)
 {
     ...   // handle timeout
 }
@@ -3322,7 +3322,7 @@ member functions make it possible to look up the module's submodules
 by name\index{module!submodule!lookup} (or name+index if the submodule
 is in a module vector). The first one returns the numeric module ID of
 the submodule, and the latter returns the module pointer.  If the
-submodule is not found, they return -1 or NULL, respectively.
+submodule is not found, they return -1 or nullptr, respectively.
 
 \begin{cpp}
 int submodID = compoundmod->findSubmodule("child",5);
@@ -3344,8 +3344,8 @@ compoundmod->getSubmodule("child",5)->getSubmodule("grandchild");
 \end{cpp}
 
 (Provided that \ttt{child[5]} does exist, because otherwise the second
-version would crash with an access violation because of the NULL
-pointer dereference.)
+version would crash with an access violation because of \ttt{nullptr}
+dereference.)
 
 
 The \cclass{cSimulation}::\ffunc{getModuleByPath()} function is similar
@@ -3437,10 +3437,10 @@ callee->doSomething();
 \end{cpp}
 
 The \ffunc{check\_and\_cast<>()} template function on the second line
-is part of {\opp}. It performs a standard C++ \ttt{dynamic\_cast},
-and checks the result: if it is NULL, \ttt{check\_and\_cast} raises an {\opp} error.
+is part of {\opp}. It performs a standard C++ \ttt{dynamic\_cast}, and checks
+the result: if it is \ttt{nullptr}, \ttt{check\_and\_cast} raises an {\opp} error.
 Using \ttt{check\_and\_cast} saves you from writing error checking
-code: if \ttt{calleeModule} from the first line is NULL because
+code: if \ttt{calleeModule} from the first line is \ttt{nullptr} because
 the submodule named \ttt{"callee"} was not found, or if that
 module is actually not of type \ttt{Callee}, an error is thrown
 from \ttt{check\_and\_cast}.
@@ -3559,10 +3559,10 @@ object:
 cModuleType *moduleType = cModuleType::get("foo.nodes.WirelessNode");
 \end{cpp}
 
-The return value does not need to be checked for \ttt{NULL}, because
+The return value does not need to be checked for \ttt{nullptr}, because
 the function raises an error if the requested NED type was not found.
 (If this behavior is not what you need, you can use the similar
-\ttt{cModuleType::find()} function, which returns \ttt{NULL} if the type
+\ttt{cModuleType::find()} function, which returns \ttt{nullptr} if the type
 was not found.)
 
 \subsubsection{The All-in-One Method}
@@ -3850,7 +3850,7 @@ These goals have been achieved in the 4.1 version with the following
 implementation. First, the data structure that used to store listeners in
 components is dynamically allocated, so if there are no listeners, the
 per-component overhead is only the size of the pointer (which will be
-\ttt{NULL} then).
+\ttt{nullptr} then).
 
 Second, additionally there are two bitfields in every component that store
 which one of the first 64 signals (IDs 0..63) have local listeners and
@@ -3886,7 +3886,7 @@ simsignal_t lengthSignalId = registerSignal("length");
 
 The \ffunc{getSignalName()} method (also static) does the reverse:
 it accepts a \ttt{simsignal\_t}, and returns the name of the signal as
-\ttt{const char *} (or \ttt{NULL} for invalid signal handles):
+\ttt{const char *} (or \ttt{nullptr} for invalid signal handles):
 
 \begin{cpp}
 const char *signalName = getSignalName(lengthSignalId); // --> "length"
@@ -3976,15 +3976,15 @@ emitted object is really a subclass of the declared class.
 \ffunc{isInstance()} just wraps a C++ \ttt{dynamic\_cast}.)
 
 A question mark after the class name means that the signal is allowed to
-emit \ttt{NULL} pointers. For example, a module named \ttt{PPP} may emit
+emit \ttt{nullptr} pointers. For example, a module named \ttt{PPP} may emit
 the frame (packet) object every time it starts transmiting, and emit
-\ttt{NULL} when the transmission is completed:
+\ttt{nullptr} when the transmission is completed:
 
 \begin{ned}
 simple PPP
 {
     parameters:
-        @signal[txFrame](type=PPPFrame?);  // a PPPFrame or NULL
+        @signal[txFrame](type=PPPFrame?);  // a PPPFrame or nullptr
         ...
 }
 \end{ned}
@@ -4747,7 +4747,7 @@ cResultRecorder *vectorRecorder =
 opp_string_map *attrs = new opp_string_map;
 (*attrs)["title"] = "Queue Length";
 (*attrs)["unit"] = "packets";
-vectorRecorder->init(this, "queueLength", "vector", NULL, attrs);
+vectorRecorder->init(this, "queueLength", "vector", nullptr, attrs);
 
 subscribe(signal, removeRepeatsFilter);
 removeRepeatsFilter->addDelegate(vectorRecorder);
@@ -4814,12 +4814,11 @@ numbers, the following rules are used by the built-in result recording
 listeners:
 
 \begin{itemize}
-  \item Strings are recorded as 1.0, except for \ttt{NULL} which is recorded as 0.0;
+  \item Strings are recorded as 1.0, except for \ttt{nullptr} which is recorded as 0.0;
   \item Objects that can be cast to \cclass{cITimestampedValue} are recorded
      using the \ffunc{getSignalTime()} and \ffunc{getSignalValue()}
      methods of the class;
-  \item Other objects are recorded as 1.0, except for \ttt{NULL} pointers which
-     are recorded as 0.0.
+  \item Other objects are recorded as 1.0, except for \ttt{nullptr} which is recorded as 0.0.
 \end{itemize}
 
 \cclass{cITimestampedValue} is a C++ interface that may be used as an additional
