@@ -12,6 +12,7 @@ class QStandardItem;
 class QTreeView;
 class cObject;
 class cEvent;
+class StopDialog;
 
 NAMESPACE_BEGIN
 class cCanvas;
@@ -70,6 +71,7 @@ private:
     enum Mode { STEP, NORMAL, FAST, EXPRESS, NOT_RUNNING};
     Ui::MainWindow *ui;
     qtenv::Qtenv *env;
+    StopDialog *stopDialog;
 
     bool isRunning();
     bool checkRunning();

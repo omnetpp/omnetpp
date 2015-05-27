@@ -9,6 +9,7 @@
 #include "omnetpp/csimplemodule.h"
 #include "inspector.h"
 #include "common/stringutil.h"
+#include "stopdialog.h"
 
 #include "qdebug.h"
 
@@ -30,6 +31,8 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     ui->treeView->setModel(model);
     ui->treeView->setHeaderHidden(true);
 
+    stopDialog = new StopDialog();
+
     //TODO
     //if($config(display-statusdetails)
     //{
@@ -42,6 +45,7 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete stopDialog;
 }
 
 void MainWindow::displayText(const char *t) {
@@ -67,7 +71,6 @@ void MainWindow::setGuiForRunmode(Mode mode, Inspector *insp, bool untilMode)
     ui->actionExpressRun->setChecked(false);
     //TODO
     //catch {toolbutton:setsunken $opp(sunken-run-button) 0}
-    //removeStopDialog
 
     if(insp == nullptr)
         switch(mode)
@@ -83,7 +86,8 @@ void MainWindow::setGuiForRunmode(Mode mode, Inspector *insp, bool untilMode)
                 break;
             case EXPRESS:
                 ui->actionExpressRun->setChecked(true);
-                //TODO displayStopDialog
+                //TODO disabled mainwindow
+                stopDialog->show();
                 break;
             case NOT_RUNNING:
                 ui->actionRunUntil->setChecked(false);
@@ -103,7 +107,8 @@ void MainWindow::setGuiForRunmode(Mode mode, Inspector *insp, bool untilMode)
                 //set opp(sunken-run-button) $insp.toolbar.mfast
                 break;
             case EXPRESS:
-                //TODO displayStopDialog
+                //TODO disabled mainwindow
+                stopDialog->show();
                 break;
             case NOT_RUNNING:
                 //TODO toolbutton:setsunken .toolbar.until 0

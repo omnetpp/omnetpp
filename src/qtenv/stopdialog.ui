@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>StopDialog</class>
+ <widget class="QDialog" name="StopDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>206</width>
+    <height>152</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Running...</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QPushButton" name="stopButton">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>188</width>
+       <height>73</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>20</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(248, 48, 48);</string>
+     </property>
+     <property name="text">
+      <string>STOP!</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="checkBox">
+     <property name="text">
+      <string>auto-update inspectors</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="updateButton">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text">
+      <string>Update now</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>stopButton</sender>
+   <signal>clicked()</signal>
+   <receiver>StopDialog</receiver>
+   <slot>onClickStop()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>70</x>
+     <y>43</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>45</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox</sender>
+   <signal>clicked()</signal>
+   <receiver>StopDialog</receiver>
+   <slot>stopDialogAutoupdate()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>57</x>
+     <y>98</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>102</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>updateButton</sender>
+   <signal>clicked()</signal>
+   <receiver>StopDialog</receiver>
+   <slot>onClickUpdate()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>90</x>
+     <y>130</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>143</x>
+     <y>134</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>onClickStop()</slot>
+  <slot>stopDialogAutoupdate()</slot>
+  <slot>onClickUpdate()</slot>
+ </slots>
+</ui>
