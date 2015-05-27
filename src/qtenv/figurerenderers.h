@@ -89,7 +89,7 @@ public:
 
     static FigureRenderer *getRendererFor(cFigure *figure);
     static void deleteItems() { items.clear(); }
-    virtual void render(cFigure *figure, QGraphicsScene *scene, const cFigure::Transform &transform, FigureRenderingHints *hints);
+    void render(cFigure *figure, QGraphicsScene *scene, const cFigure::Transform &transform, FigureRenderingHints *hints);
     void refresh(cFigure *figure, int8_t what, const cFigure::Transform &transform, FigureRenderingHints *hints);
 };
 

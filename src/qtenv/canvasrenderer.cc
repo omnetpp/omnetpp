@@ -41,7 +41,8 @@ void CanvasRenderer::redraw(FigureRenderingHints *hints)
     if (canvas)
     {
         cFigure::Transform transform;
-        transform.scale(hints->zoom);
+        //TODO fillFigureRenderingHints in ModuleInspector class
+        //transform.scale(hints->zoom);
         drawFigureRec(canvas->getRootFigure(), transform, hints);
     }
 }
@@ -116,7 +117,8 @@ void CanvasRenderer::refresh(FigureRenderingHints *hints)
         else if (changes != 0)
         {
             cFigure::Transform transform;
-            transform.scale(hints->zoom);
+            //TODO fillFigureRenderingHints in ModuleInspector class
+            //transform.scale(hints->zoom);
             refreshFigureRec(rootFigure, transform, hints);
             // note: no rootFigure->clearChangeFlags() here, as there might be others inspecting the same canvas object
         }

@@ -488,7 +488,14 @@ void FigureRenderer::refresh(cFigure *figure, int8_t what, const cFigure::Transf
     if(what & cFigure::CHANGE_VISUAL)
         refreshVisual(figure);
     if(what & (cFigure::CHANGE_GEOMETRY | cFigure::CHANGE_INPUTDATA))
+    {
         refreshGeometry(figure);
+        if(dynamic_cast<cAbstractTextFigure*>(figure) || dynamic_cast<cAbstractTextFigure*>(figure))
+        {
+            refreshTransform(figure, transform);
+            return;
+        }
+    }
     if(what & cFigure::CHANGE_TRANSFORM)
         refreshTransform(figure, transform);
 }
@@ -1087,9 +1094,8 @@ void TextFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
 {
     cAbstractTextFigure *textFigure = static_cast<cAbstractTextFigure*>(figure);
     QGraphicsSimpleTextItem *textItem = static_cast<QGraphicsSimpleTextItem*>(item);
-    textItem->setText(textFigure->getText());
+    textItem->setText(QObject::trUtf8(textFigure->getText()));
 
-    cFigure::Point pos = textFigure->getPosition();
     cFigure::Font font = textFigure->getFont();
     QFont qFont(font.typeface.c_str());
 
@@ -1099,53 +1105,6 @@ void TextFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
     qFont.setPixelSize(font.pointSize <= 0 ? 16 : font.pointSize);
 
     textItem->setFont(qFont);
-
-    QRectF bounds = textItem->boundingRect();
-
-    QFontMetrics fontMetric(qFont);
-    textItem->setPos(0,0);
-    QPointF anchor;
-
-    switch(textFigure->getAnchor())
-    {
-        case cFigure::ANCHOR_CENTER:
-            anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height()/2);
-            break;
-        case cFigure::ANCHOR_N:
-            anchor = QPointF(pos.x - bounds.width()/2, pos.y);
-            break;
-        case cFigure::ANCHOR_E:
-            anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height()/2);
-            break;
-        case cFigure::ANCHOR_S:
-            anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height());
-            break;
-        case cFigure::ANCHOR_W:
-            anchor = QPointF(pos.x, pos.y - bounds.height()/2);
-            break;
-        case cFigure::ANCHOR_NE:
-            anchor = QPointF(pos.x - bounds.width(), pos.y);
-            break;
-        case cFigure::ANCHOR_SE:
-            anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height());
-            break;
-        case cFigure::ANCHOR_SW:
-            anchor = QPointF(pos.x, pos.y - bounds.height());
-            break;
-        case cFigure::ANCHOR_NW:
-            anchor = QPointF(pos.x, pos.y);
-            break;
-        case cFigure::ANCHOR_BASELINE_START:
-            anchor = QPointF(pos.x, pos.y - fontMetric.ascent());
-            break;
-        case cFigure::ANCHOR_BASELINE_MIDDLE:
-            anchor = QPointF(pos.x - bounds.width()/2, pos.y - fontMetric.ascent());
-            break;
-        case cFigure::ANCHOR_BASELINE_END:
-            anchor = QPointF(pos.x - bounds.width(), pos.y - fontMetric.ascent());
-            break;
-    }
-    textItem->setTransform(QTransform().translate(anchor.x(), anchor.y()));
 }
 
 void TextFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
@@ -1230,48 +1189,6 @@ void ImageFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIt
         imageItem->setPixmap(QPixmap::fromImage(image.scaled(imageFigure->getWidth(), imageFigure->getHeight())));
     else
         imageItem->setPixmap(QPixmap::fromImage(image));
-
-    QRectF bounds = imageItem->boundingRect();
-    cFigure::Point pos = imageFigure->getPosition();
-    QPointF anchor;
-
-    imageItem->setPos(0,0);
-
-    switch(imageFigure->getAnchor())
-    {
-        case cFigure::ANCHOR_CENTER:
-            anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height()/2);
-            break;
-        case cFigure::ANCHOR_N:
-            anchor = QPointF(pos.x - bounds.width()/2, pos.y);
-            break;
-        case cFigure::ANCHOR_E:
-            anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height()/2);
-            break;
-        case cFigure::ANCHOR_S:
-            anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height());
-            break;
-        case cFigure::ANCHOR_W:
-            anchor = QPointF(pos.x, pos.y - bounds.height()/2);
-            break;
-        case cFigure::ANCHOR_NE:
-            anchor = QPointF(pos.x - bounds.width(), pos.y);
-            break;
-        case cFigure::ANCHOR_SE:
-            anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height());
-            break;
-        case cFigure::ANCHOR_SW:
-            anchor = QPointF(pos.x, pos.y - bounds.height());
-            break;
-        case cFigure::ANCHOR_NW:
-            anchor = QPointF(pos.x, pos.y);
-            break;
-        case cFigure::ANCHOR_BASELINE_START:
-        case cFigure::ANCHOR_BASELINE_MIDDLE:
-        case cFigure::ANCHOR_BASELINE_END:
-            break;
-    }
-    imageItem->setTransform(QTransform().translate(anchor.x(), anchor.y()));
 }
 
 void ImageFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
