@@ -17,6 +17,8 @@ message SomePacket
 #include <envir/objectprinter.h>   // from src/envir
 #include "test_m.h"
 
+using OPP::envir::ObjectPrinter;
+
 %global:
 class SomePacket : public SomePacket_Base
 {

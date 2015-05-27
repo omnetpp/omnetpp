@@ -57,6 +57,7 @@ class Msg3 extends Base {
 %includes:
 #include "test_m.h"
 #include <envir/objectprinter.h>   // from src/envir
+using OPP::envir::ObjectPrinter;
 
 %activity:
 

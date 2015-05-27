@@ -21,6 +21,7 @@ message TestMessage {
 #include <sim/parsim/cfilecommbuffer.h> // from src/sim/parsim
 #include <envir/objectprinter.h>   // from src/envir
 #include "test_m.h"
+using OPP::envir::ObjectPrinter;
 
 %activity:
 

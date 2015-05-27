@@ -15,6 +15,7 @@ class MyClass extends cOwnedObject
 %includes:
 #include <envir/objectprinter.h>   // from src/envir
 #include "test_m.h"
+using OPP::envir::ObjectPrinter;
 
 %global:
 class MyClass : public MyClass_Base
