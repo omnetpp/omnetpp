@@ -107,23 +107,22 @@ class SIM_API cPacketQueue : public cQueue
     /** @name Setup, insertion and removal functions. */
     //@{
     /**
-     * Adds an element to the back of the queue. Trying to insert a
-     * NULL pointer is an error (throws cRuntimeError). The given
+     * Adds an element to the back of the queue. Trying to insert
+     * nullptr is an error (throws cRuntimeError). The given
      * object must be an instance of cPacket.
      */
     virtual void insert(cPacket *pkt);
 
     /**
      * Inserts exactly before the given object. If the given position
-     * does not exist or if you try to insert a NULL pointer,
-     * cRuntimeError is thrown. The given object must be an instance
-     * of cPacket.
+     * does not exist or if you try to insert nullptr, cRuntimeError
+     * is thrown. The given object must be an instance of cPacket.
      */
     virtual void insertBefore(cPacket *where, cPacket *pkt);
 
     /**
      * Inserts exactly after the given object. If the given position
-     * does not exist or if you try to insert a NULL pointer,
+     * does not exist or if you try to insert nullptr,
      * cRuntimeError is thrown. The given object must be an instance
      * of cPacket.
      */
@@ -131,7 +130,7 @@ class SIM_API cPacketQueue : public cQueue
 
     /**
      * Unlinks and returns the object given. If the object is not in the
-     * queue, NULL pointer is returned. The given object must be an instance
+     * queue, nullptr is returned. The given object must be an instance
      * of cPacket.
      */
     virtual cPacket *remove(cPacket *pkt);
@@ -166,19 +165,19 @@ class SIM_API cPacketQueue : public cQueue
     /**
      * Returns pointer to the object at the front of the queue.
      * This is the element to be return by pop().
-     * Returns NULL if the queue is empty.
+     * Returns nullptr if the queue is empty.
      */
     virtual cPacket *front() const override  {return (cPacket *)cQueue::front();}
 
     /**
      * Returns pointer to the last (back) element in the queue.
      * This is the element most recently added by insert().
-     * Returns NULL if the queue is empty.
+     * Returns nullptr if the queue is empty.
      */
     virtual cPacket *back() const override  {return (cPacket *)cQueue::back();}
 
     /**
-     * Returns the ith element in the queue, or NULL if i is out of range.
+     * Returns the ith element in the queue, or nullptr if i is out of range.
      * get(0) returns the front element. This method performs linear
      * search.
      */

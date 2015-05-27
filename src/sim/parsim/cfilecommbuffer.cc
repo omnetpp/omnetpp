@@ -83,7 +83,7 @@ void cFileCommBuffer::setMessageSize(int size)
     mMsgSize = size;
     mPosition = 0;
 
-    // add a terminating NULL character
+    // add a terminating NUL character
     ASSERT(mBufferSize>mMsgSize);
     mBuffer[size] = '\0';
 }

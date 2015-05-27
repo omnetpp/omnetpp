@@ -1215,7 +1215,7 @@ void EnvirBase::readParameter(cPar *par)
         if (!endQuote)
             return std::string(str);
         std::string fname(begQuote+1, endQuote-begQuote-1);
-        const char *baseDir = getConfig()->getBaseDirectoryFor(NULL, "Parameters", parname);
+        const char *baseDir = getConfig()->getBaseDirectoryFor(nullptr, "Parameters", parname);
         fname = tidyFilename(concatDirAndFile(baseDir, fname.c_str()).c_str(),true);
         std::string ret = std::string(str, begQuote-str+1) + fname + endQuote;
         //XXX use "ret" further!!!
@@ -1653,7 +1653,7 @@ void EnvirBase::readPerRunOptions()
 
 void EnvirBase::setEventlogRecording(bool enabled)
 {
-    // NOTE: eventlogmgr must be non-NULL when record_eventlog is true
+    // NOTE: eventlogmgr must be non-nullptr when record_eventlog is true
     if (enabled && !recordEventlog) {   //FIXME not good!!!!
         eventlogManager->open();
         eventlogManager->recordSimulation();

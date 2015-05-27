@@ -924,7 +924,7 @@ void cFigure::setTags(const char *tags)
 void cFigure::addFigure(cFigure *figure)
 {
     if (!figure)
-        throw cRuntimeError(this, "addFigure(): cannot insert NULL pointer");
+        throw cRuntimeError(this, "addFigure(): cannot insert nullptr");
     take(figure);
     children.push_back(figure);
     refreshTagBits();
@@ -935,7 +935,7 @@ void cFigure::addFigure(cFigure *figure)
 void cFigure::addFigure(cFigure *figure, int pos)
 {
     if (!figure)
-        throw cRuntimeError(this, "addFigure(): cannot insert NULL pointer");
+        throw cRuntimeError(this, "addFigure(): cannot insert nullptr");
     if (pos < 0 || pos > (int)children.size())
         throw cRuntimeError(this,"addFigure(): insert position %d out of bounds", pos);
     take(figure);
@@ -1104,7 +1104,7 @@ cFigure *cFigure::getFigureByPath(const char *path) const
             figure = figure->getFigure(token);
         token = nextToken(rest);
     }
-    return figure;  // NULL if not found
+    return figure;  // nullptr if not found
 }
 
 void cFigure::refreshTagBits()

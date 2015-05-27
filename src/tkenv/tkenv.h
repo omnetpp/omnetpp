@@ -116,8 +116,8 @@ class TKENV_API Tkenv : public EnvirBase
       };
 
       struct sPathEntry {
-         cModule *from; // NULL if descent
-         cModule *to;   // NULL if ascent
+         cModule *from; // nullptr if descent
+         cModule *to;   // nullptr if ascent
          sPathEntry(cModule *f, cModule *t) {from=f; to=t;}
       };
       typedef std::vector<sPathEntry> PathVec;
@@ -163,7 +163,7 @@ class TKENV_API Tkenv : public EnvirBase
       std::string silentEventFilterLines; // match expressions, separated by newlines (\n)
       MatchExpressions silentEventFilters; // silent events: objects to hide from animation and the timeline
 
-      FILE *ferrorlog;             // .tkenvlog file; NULL if not yet open
+      FILE *ferrorlog;             // .tkenvlog file; nullptr if not yet open
 
    public:
       Tkenv();

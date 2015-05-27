@@ -147,14 +147,14 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     int getInheritanceChainLength() const;
 
     /**
-     * Returns a NULL-terminated string array with the names of properties on this
+     * Returns a NUL-terminated string array with the names of properties on this
      * class. The list includes the properties of the ancestor classes as well.
      */
     virtual const char **getPropertyNames() const = 0;
 
     /**
      * Returns the value of the given property of the descriptor as a single string.
-     * Returns NULL if there is no such property. For structured property values
+     * Returns nullptr if there is no such property. For structured property values
      * (with multiple keys and/or list(s) inside), the value is returned as a
      * single unparsed string. If a property appears in a base class and its
      * subclass too, the subclass's property will be returned.
@@ -209,14 +209,14 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     virtual const char *getFieldTypeString(int field) const = 0;
 
     /**
-     * Returns a NULL-terminated string array with the names of the given
+     * Returns a NUL-terminated string array with the names of the given
      * field's properties.
      */
     virtual const char **getFieldPropertyNames(int field) const = 0;
 
     /**
      * Returns the value of the given property of the given field in the
-     * described class as a single string. Returns NULL if there is no such
+     * described class as a single string. Returns nullptr if there is no such
      * property. For structured property values (with multiple keys and/or
      * list(s) inside), the value is returned as a single unparsed string.
      */

@@ -127,7 +127,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     int currentModuleId;
 
     // Output file managers
-    EventlogFileManager *eventlogManager;  // NULL if no eventlog is being written, must be non NULL if record_eventlog is true
+    EventlogFileManager *eventlogManager;  // nullptr if no eventlog is being written, must be non nullptr if record_eventlog is true
     cIOutputVectorManager *outvectorManager;
     cIOutputScalarManager *outScalarManager;
     cISnapshotManager *snapshotManager;
@@ -170,7 +170,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     // eventlog callback interface
     virtual void objectDeleted(cObject *object) override;
     virtual void simulationEvent(cEvent *event) override;
-    // leave to subclasses: virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=NULL);
+    // leave to subclasses: virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=nullptr);
     virtual void messageScheduled(cMessage *msg) override;
     virtual void messageCancelled(cMessage *msg) override;
     virtual void beginSend(cMessage *msg) override;
@@ -214,7 +214,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
 
     // UI functions
     virtual void bubble(cComponent *component, const char *text) override;
-    // leave to subclasses: virtual std::string gets(const char *prompt, const char *defaultreply=NULL);
+    // leave to subclasses: virtual std::string gets(const char *prompt, const char *defaultreply=nullptr);
     // leave to subclasses: virtual cEnvir& flush();
 
     // RNGs
@@ -274,7 +274,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual void readOptions();
     virtual void readPerRunOptions();
 
-    // Utility function; never returns NULL
+    // Utility function; never returns nullptr
     cModuleType *resolveNetwork(const char *networkname);
 
     // Called internally from readParameter(), to interactively prompt the

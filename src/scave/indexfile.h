@@ -127,21 +127,21 @@ struct VectorData {
 
     /**
      * Returns a pointer to the block containing the entry with the given serial,
-     * or NULL if no such entry.
+     * or nullptr if no such entry.
      */
     const Block *getBlockBySerial(long serial) const;
 
     /**
      * Returns the first block which endTime >= simtime (when after == true)
      * or the last block whose startTime <= simtime (when after == false).
-     * Returns NULL if no such block.
+     * Returns nullptr if no such block.
      */
     const Block *getBlockBySimtime(simultime_t simtime, bool after) const;
 
     /**
      * Returns the first block which endEventNum >= eventNum (when after == true)
      * or the last block whose startEventNum <= eventNum (when after == false).
-     * Returns NULL if no such block.
+     * Returns nullptr if no such block.
      */
     const Block *getBlockByEventnum(eventnumber_t eventNum, bool after) const;
 

@@ -190,7 +190,7 @@ cNEDValue Sizeof::evaluate(cComponent *context, cNEDValue args[], int numargs)
         // Find ident among submodules. If there's no such submodule, it may
         // be that such submodule vector never existed, or can be that it's zero
         // size -- we cannot tell, so we have to return 0 (and cannot throw error).
-        cModule *siblingModule = module->getSubmodule(ident.c_str(), 0); // returns NULL if submodule is not a vector
+        cModule *siblingModule = module->getSubmodule(ident.c_str(), 0); // returns nullptr if submodule is not a vector
         if (!siblingModule && module->getSubmodule(ident.c_str()))
             return 1L; // return 1 if submodule exists but not a vector
         return (long) siblingModule ? siblingModule->size() : 0L;
@@ -235,7 +235,7 @@ cNEDValue cDynamicExpression::getSizeofIdent(cComponent *context, cNEDValue args
         // Find ident among submodules. If there's no such submodule, it may
         // be that such submodule vector never existed, or can be that it's zero
         // size -- we cannot tell, so we have to return 0.
-        cModule *siblingModule = parentModule->getSubmodule(ident, 0); // returns NULL if submodule is not a vector
+        cModule *siblingModule = parentModule->getSubmodule(ident, 0); // returns nullptr if submodule is not a vector
         if (!siblingModule && parentModule->getSubmodule(ident))
             return 1L; // return 1 if submodule exists but not a vector
         return (long) siblingModule ? siblingModule->size() : 0L;
@@ -282,7 +282,7 @@ cNEDValue cDynamicExpression::getSizeofSiblingModuleGate(cComponent *context, cN
     cModule *parentModule = dynamic_cast<cModule *>(context->getParentModule()); // this works for channels too
     if (!parentModule)
         throw cRuntimeError(context, "sizeof() occurs in wrong context", gateName);
-    cModule *siblingModule = parentModule->getSubmodule(siblingModuleName); // returns NULL if submodule is not a vector
+    cModule *siblingModule = parentModule->getSubmodule(siblingModuleName); // returns nullptr if submodule is not a vector
     if (!siblingModule->hasGate(gateName))
         throw cRuntimeError(context, "error evaluating sizeof(): no such gate: `%s'", gateName);
     return (long) siblingModule->gateSize(gateName); // returns 1 if it's not a vector
@@ -298,7 +298,7 @@ cNEDValue cDynamicExpression::getSizeofIndexedSiblingModuleGate(cComponent *cont
     const char *siblingModuleName = args[1].s.c_str();
     int siblingModuleIndex = (int)args[2].dbl;
     cModule *parentModule = dynamic_cast<cModule *>(context->getParentModule()); // this works for channels too
-    cModule *siblingModule = parentModule ? parentModule->getSubmodule(siblingModuleName, siblingModuleIndex) : NULL;
+    cModule *siblingModule = parentModule ? parentModule->getSubmodule(siblingModuleName, siblingModuleIndex) : nullptr;
     if (!siblingModule)
         throw cRuntimeError(context,"sizeof(): cannot find submodule %[%d]",
                                 siblingModuleName, siblingModuleIndex,

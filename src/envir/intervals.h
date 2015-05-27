@@ -26,7 +26,7 @@ NAMESPACE_BEGIN
 
 /**
  * A list of simulation time intervals represented as an array of (starttime, stoptime)
- * pairs terminated with (0,0), or NULL
+ * pairs terminated with (0,0), or nullptr
  */
 class ENVIR_API Intervals
 {

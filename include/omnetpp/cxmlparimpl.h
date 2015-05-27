@@ -158,7 +158,7 @@ class SIM_API cXMLParImpl : public cParImpl
     virtual cXMLElement *xmlValue(cComponent *context) const override;
 
     /**
-     * Returns pointer to the expression stored by the object, or NULL.
+     * Returns pointer to the expression stored by the object, or nullptr.
      */
     virtual cExpression *getExpression() const override;
     //@}

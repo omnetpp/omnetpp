@@ -83,7 +83,7 @@ static void expatStartDoctypeDeclHandler(void *userData,
 static XML_Parser expatCreateParser(void *userData)
 {
     // note: XML_Parser is actually a pointer to a dynamically allocated struct
-    XML_Parser parser = XML_ParserCreate(NULL);
+    XML_Parser parser = XML_ParserCreate(nullptr);
     XML_SetUserData(parser, userData);
     XML_SetStartElementHandler(parser, expatStartElementHandler);
     XML_SetEndElementHandler(parser, expatEndElementHandler);
@@ -98,7 +98,7 @@ static XML_Parser expatCreateParser(void *userData)
 
 SAXParser::SAXParser()
 {
-    saxhandler = NULL;
+    saxhandler = nullptr;
 }
 
 void SAXParser::setHandler(SAXHandler *sh)

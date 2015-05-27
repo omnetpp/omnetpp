@@ -151,10 +151,10 @@ class SIM_API cLogLevel
          OPP::cLogProxy::dummyStream : OPP::cLogProxy(object, category, loglevel, __FILE__, __LINE__, classname, __FUNCTION__)
 
 
-// Returns NULL. Helper function for the logging macros.
+// Returns nullptr. Helper function for the logging macros.
 inline void *getThisPtr() {return nullptr;}
 
-// Returns NULL. Helper function for the logging macros.
+// Returns nullptr. Helper function for the logging macros.
 inline const char *getClassName() {return nullptr;}
 
 /**
@@ -194,13 +194,13 @@ inline const char *getClassName() {return nullptr;}
  */
 //@{
 #define EV        EV_INFO                        ///< Short for EV_INFO
-#define EV_FATAL  OPP_LOG(LOGLEVEL_FATAL, NULL)  ///< Log local fatal errors
-#define EV_ERROR  OPP_LOG(LOGLEVEL_ERROR, NULL)  ///< Log local but recoverable errors
-#define EV_WARN   OPP_LOG(LOGLEVEL_WARN, NULL)   ///< Log warnings
-#define EV_INFO   OPP_LOG(LOGLEVEL_INFO, NULL)   ///< Log information (default log level)
-#define EV_DETAIL OPP_LOG(LOGLEVEL_DETAIL, NULL) ///< Log state variables and other low-level information
-#define EV_DEBUG  OPP_LOG(LOGLEVEL_DEBUG, NULL)  ///< Log state variables and other low-level information
-#define EV_TRACE  OPP_LOG(LOGLEVEL_TRACE, NULL)  ///< Log control flow information (entering/exiting functions, etc)
+#define EV_FATAL  OPP_LOG(LOGLEVEL_FATAL, nullptr)  ///< Log local fatal errors
+#define EV_ERROR  OPP_LOG(LOGLEVEL_ERROR, nullptr)  ///< Log local but recoverable errors
+#define EV_WARN   OPP_LOG(LOGLEVEL_WARN, nullptr)   ///< Log warnings
+#define EV_INFO   OPP_LOG(LOGLEVEL_INFO, nullptr)   ///< Log information (default log level)
+#define EV_DETAIL OPP_LOG(LOGLEVEL_DETAIL, nullptr) ///< Log state variables and other low-level information
+#define EV_DEBUG  OPP_LOG(LOGLEVEL_DEBUG, nullptr)  ///< Log state variables and other low-level information
+#define EV_TRACE  OPP_LOG(LOGLEVEL_TRACE, nullptr)  ///< Log control flow information (entering/exiting functions, etc)
 //@}
 
 /**

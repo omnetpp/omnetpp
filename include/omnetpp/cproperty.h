@@ -147,7 +147,7 @@ class SIM_API cProperty : public cNamedObject
     /**
      * Returns the index of this property; see NED syntax
      * <tt>\@propname[index](keys-and-values)</tt>.
-     * Returns NULL if the property has no index
+     * Returns nullptr if the property has no index
      * (<tt>\@propname(keys-and-values)</tt>).
      */
     virtual const char *getIndex() const;
@@ -203,7 +203,7 @@ class SIM_API cProperty : public cNamedObject
     /**
      * Returns the indexth value for the given key in the property.
      * Specify "" or DEFAULTKEY for the default key. If the key
-     * does not exist or the index is out of bounds, NULL is returned.
+     * does not exist or the index is out of bounds, nullptr is returned.
      */
     virtual const char *getValue(const char *key, int index=0) const;
 

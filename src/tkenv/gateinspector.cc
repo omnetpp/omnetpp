@@ -60,7 +60,7 @@ void GateInspector::createWindow(const char *window, const char *geometry)
    strcpy(canvas,windowName);
    strcat(canvas,".c");
 
-   CHK(Tcl_VarEval(interp, "createGateInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL ));
+   CHK(Tcl_VarEval(interp, "createGateInspector ", windowName, " ", TclQuotedString(geometry).get(), nullptr));
 }
 
 void GateInspector::useWindow(const char *window)
@@ -85,7 +85,7 @@ void GateInspector::redraw()
 {
    cGate *gate = (cGate *)object;
 
-   CHK(Tcl_VarEval(interp, canvas, " delete all",NULL));
+   CHK(Tcl_VarEval(interp, canvas, " delete all", nullptr));
 
    // draw modules
    int k = 0;
@@ -115,7 +115,7 @@ void GateInspector::redraw()
                       xstr," ",
                       dir, " ",
                       g==gate?"1":"0",
-                      NULL ));
+                      nullptr));
    }
 
    // draw connections
@@ -134,7 +134,7 @@ void GateInspector::redraw()
                       chanptr, " ",
                       TclQuotedString(chan?chan->info().c_str():"").get(), " ",
                       TclQuotedString(dispstr).get(), " ",
-                      NULL ));
+                      nullptr));
    }
 
    // loop through all messages in the event queue
@@ -147,7 +147,7 @@ void GateInspector::refresh()
 
    if (!object)
    {
-       CHK(Tcl_VarEval(interp, canvas," delete all", NULL));
+       CHK(Tcl_VarEval(interp, canvas," delete all", nullptr));
        return;
    }
 
@@ -156,7 +156,7 @@ void GateInspector::refresh()
    // redraw modules only on explicit request
 
    // loop through all messages in the event queue
-   CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", NULL));
+   CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", nullptr));
    cGate *destGate = gate->getPathEndGate();
 
    for (cMessageHeap::Iterator it(getSimulation()->msgQueue); !it.end(); it++)
@@ -179,7 +179,7 @@ void GateInspector::refresh()
                              canvas, " ",
                              gateptr, " ",
                              msgptr,
-                             NULL));
+                             nullptr));
          }
       }
    }

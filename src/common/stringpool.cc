@@ -43,7 +43,7 @@ void CommonStringPool::clear()
 const char *CommonStringPool::get(const char *s)
 {
     if (s==nullptr)
-        return ""; // must not be NULL because SWIG-generated code will crash!
+        return ""; // must not be nullptr because SWIG-generated code will crash!
     StringSet::iterator it = pool.find(const_cast<char *>(s));
     if (it!=pool.end())
         return *it;

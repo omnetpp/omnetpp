@@ -262,7 +262,7 @@ int vectorCommand(int argc, char **argv)
         }
 
         // create writer node, if each vector is written into the same file
-        VectorFileWriterNode *vectorFileWriterNode = NULL;
+        VectorFileWriterNode *vectorFileWriterNode = nullptr;
 
         vector<ArrayBuilderNode*> arrayBuilders; // for exporting
 
@@ -629,7 +629,7 @@ int listCommand(int argc, char **argv)
     ResultFileManager manager;
     loadFiles(manager, opt_fileNames, false);
 
-    StringSet *result = NULL;
+    StringSet *result = nullptr;
     if (opt_name)
     {
         IDList ids = manager.getAllItems();
@@ -655,7 +655,7 @@ int listCommand(int argc, char **argv)
         result = manager.getUniqueRunAttributeValues(runs, RunAttribute::CONFIGNAME);
     }
 
-    if (result != NULL)
+    if (result != nullptr)
     {
         for (StringSet::iterator it=result->begin(); it != result->end(); ++it)
         {

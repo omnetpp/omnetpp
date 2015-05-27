@@ -697,13 +697,13 @@ string cMsgPar::str() const
                  default: sprintf(bb,"() with %d args",func.argc); break;
                  };
                  return string(fn)+bb;
-       case 'T': return string("distribution ")+(dtr.res?dtr.res->getFullPath().c_str():"NULL");
+       case 'T': return string("distribution ")+(dtr.res?dtr.res->getFullPath().c_str():"nullptr");
        case 'P': sprintf(bb,"pointer %p", ptr.ptr); return string(bb);
-       case 'O': return string("object ")+(obj.obj?obj.obj->getFullPath().c_str():"NULL");
+       case 'O': return string("object ")+(obj.obj?obj.obj->getFullPath().c_str():"nullptr");
        case 'M': if (xmlp.node)
                      return string("<")+xmlp.node->getTagName()+"> from "+xmlp.node->getSourceLocation();
                  else
-                     return string("NULL");
+                     return string("nullptr");
                  break;
        default : return string("???");
     }

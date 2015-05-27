@@ -66,7 +66,7 @@ class SIM_API cMessageHeap : public cOwnedObject
 
         /**
          * Returns the current object, then moves the iterator to the next item.
-         * If the iterator has reached the end of the list, NULL is returned.
+         * If the iterator has reached the end of the list, nullptr is returned.
          */
         cEvent *operator++(int)  {return end() ? nullptr : q->peek(pos++);}
 
@@ -160,12 +160,12 @@ class SIM_API cMessageHeap : public cOwnedObject
 
     /**
      * Peek the first event in the heap (the one with the smallest timestamp.)
-     * If the heap is empty, it returns NULL.
+     * If the heap is empty, it returns nullptr.
      */
     cEvent *peekFirst() const;
 
     /**
-     * Returns the mth event in the heap if 0 <= m < getLength(), and NULL
+     * Returns the mth event in the heap if 0 <= m < getLength(), and nullptr
      * otherwise. Note that iteration does not necessarily return events
      * in increasing timestamp (getArrivalTime()) order unless you called
      * sort() before.
@@ -174,7 +174,7 @@ class SIM_API cMessageHeap : public cOwnedObject
 
     /**
      * Removes and return the first event in the heap (the one with the
-     * smallest timestamp.) If the heap is empty, it returns NULL.
+     * smallest timestamp.) If the heap is empty, it returns nullptr.
      */
     cEvent *removeFirst();
 
@@ -185,7 +185,7 @@ class SIM_API cMessageHeap : public cOwnedObject
 
     /**
      * Removes and returns the given event in the heap. If the event is
-     * not in the heap, returns NULL.
+     * not in the heap, returns nullptr.
      */
     cEvent *remove(cEvent *event);
 

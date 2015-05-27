@@ -35,7 +35,7 @@ int _tmain(int argc, _TCHAR* argv[])
         free(pData);
         return 0;
     }
-    VS_FIXEDFILEINFO* pVerInfo = NULL;
+    VS_FIXEDFILEINFO* pVerInfo = nullptr;
     UINT nLen = 0;
     result = VerQueryValue(pData, _T("\\"), /*out*/ (void**)&pVerInfo, /*out*/ &nLen);
     if (!result)

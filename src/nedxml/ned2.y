@@ -182,8 +182,8 @@ static void assertNonEmpty(std::stack<NEDElement *>& somescope)
     // for error recovery: STL stack::top() crashes if stack is empty
     if (somescope.empty())
     {
-        INTERNAL_ERROR0(NULL, "error during parsing: scope stack empty");
-        somescope.push(NULL);
+        INTERNAL_ERROR0(nullptr, "error during parsing: scope stack empty");
+        somescope.push(nullptr);
     }
 }
 
@@ -677,7 +677,7 @@ param_typenamevalue
         | param_typename opt_inline_properties '=' paramvalue opt_inline_properties ';'
                 {
                   ps.propertyscope.pop();
-                  if (!isEmpty(ps.exprPos))  // note: $4 cannot be checked, as it's always NULL when expression parsing is off
+                  if (!isEmpty(ps.exprPos))  // note: $4 cannot be checked, as it's always nullptr when expression parsing is off
                       addExpression(ps.param, "value",ps.exprPos,$4);
                   else {
                       // Note: "=default" is currently not accepted in NED files, because
@@ -714,7 +714,7 @@ pattern_value
                   const char *patt = ps.param->getName();
                   if (strchr(patt,' ') || strchr(patt,'\t') || strchr(patt,'\n'))
                       np->getErrors()->addError(ps.param,"parameter name patterns may not contain whitespace");
-                  if (!isEmpty(ps.exprPos))  // note: $3 cannot be checked, as it's always NULL when expression parsing is off
+                  if (!isEmpty(ps.exprPos))  // note: $3 cannot be checked, as it's always nullptr when expression parsing is off
                       addExpression(ps.param, "value",ps.exprPos,$3);
                   else {
                       // Note: "=default" is currently not accepted in NED files, because
@@ -755,12 +755,12 @@ paramvalue
                 { $$ = $3; ps.exprPos = @3; ps.isDefault = true; }
         | DEFAULT
                 {
-                  $$ = NULL; ps.exprPos = makeEmptyYYLTYPE(); ps.isDefault = true;
+                  $$ = nullptr; ps.exprPos = makeEmptyYYLTYPE(); ps.isDefault = true;
                 }
         | ASK
                 {
                   np->getErrors()->addError(ps.parameters,"interactive prompting (\"=ask\" syntax) is not supported in NED files");
-                  $$ = NULL; ps.exprPos = makeEmptyYYLTYPE(); ps.isDefault = false;
+                  $$ = nullptr; ps.exprPos = makeEmptyYYLTYPE(); ps.isDefault = false;
                 }
         ;
 
@@ -1128,7 +1128,7 @@ submodulename
 
 likeexpr
         : '<' '>'
-                { $$ = NULL; ps.exprPos = makeEmptyYYLTYPE(); ps.isDefault = false; }
+                { $$ = nullptr; ps.exprPos = makeEmptyYYLTYPE(); ps.isDefault = false; }
         | '<' expression '>' /* XXX this expression is the source of one shift-reduce conflict because it may contain '>' */
                 { $$ = $2; ps.exprPos = @2; ps.isDefault = false; }
         | '<' DEFAULT '(' expression ')' '>'
@@ -1139,7 +1139,7 @@ opt_condition
         : condition
                 { $$ = $1; }
         |
-                { $$ = NULL; }
+                { $$ = nullptr; }
         ;
 
 /*
@@ -1223,7 +1223,7 @@ opt_loops_and_conditions
         : loops_and_conditions
                 { $$ = $1; }
         |
-                { $$ = NULL; }
+                { $$ = nullptr; }
         ;
 
 loops_and_conditions
@@ -1687,13 +1687,13 @@ NEDElement *doParseNED2(NEDParser *p, const char *nedtext)
     pos.li = 1;
     prevpos = pos;
 
-    yyin = NULL;
+    yyin = nullptr;
     yyout = stderr; // not used anyway
 
     // alloc buffer
     struct yy_buffer_state *handle = yy_scan_string(nedtext);
     if (!handle)
-        {np->getErrors()->addError("", "unable to allocate work memory"); return NULL;}
+        {np->getErrors()->addError("", "unable to allocate work memory"); return nullptr;}
 
     // create parser state and NEDFileElement
     resetParserState();
@@ -1733,16 +1733,16 @@ NEDElement *doParseNED2(NEDParser *p, const char *nedtext)
     {
         yyerror((std::string("error during parsing: ")+e.what()).c_str());
         yy_delete_buffer(handle);
-        return NULL;
+        return nullptr;
     }
 
     if (np->getErrors()->empty())
     {
         // more sanity checks
         if (ps.propertyscope.size()!=1 || ps.propertyscope.top()!=ps.nedfile)
-            INTERNAL_ERROR0(NULL, "error during parsing: imbalanced propertyscope");
+            INTERNAL_ERROR0(nullptr, "error during parsing: imbalanced propertyscope");
         if (!ps.blockscope.empty() || !ps.typescope.empty())
-            INTERNAL_ERROR0(NULL, "error during parsing: imbalanced blockscope or typescope");
+            INTERNAL_ERROR0(nullptr, "error during parsing: imbalanced blockscope or typescope");
     }
     yy_delete_buffer(handle);
 

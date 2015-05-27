@@ -24,7 +24,7 @@ NAMESPACE_BEGIN
 
 SAXParser::SAXParser()
 {
-    saxhandler = NULL;
+    saxhandler = nullptr;
 }
 
 void SAXParser::setHandler(SAXHandler *sh)
@@ -35,12 +35,12 @@ void SAXParser::setHandler(SAXHandler *sh)
 
 bool SAXParser::parse(const char *filename)
 {
-    return doParse(filename, NULL);
+    return doParse(filename, nullptr);
 }
 
 bool SAXParser::parseContent(const char *content)
 {
-    return doParse(NULL, content);
+    return doParse(nullptr, content);
 }
 
 bool SAXParser::doParse(const char *filename, const char *content)

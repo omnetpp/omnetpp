@@ -661,7 +661,7 @@ int main(int argc, char **argv)
     try {
         FileReader freader(argv[1],200);
         char *line;
-        while ((line = freader.getNextLineBufferPointer()) != NULL)
+        while ((line = freader.getNextLineBufferPointer()) != nullptr)
             cout << line << "\n";
     }
     catch (std::exception& e) {

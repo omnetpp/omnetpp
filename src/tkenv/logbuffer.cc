@@ -128,7 +128,7 @@ void LogBuffer::addInfo(const char *text)
 
 void LogBuffer::addInfo(const char *text, int len)
 {
-    //TODO ha inline info (contextmodule!=NULL), sima logline-kent adjuk hozza!!!!
+    //TODO ha inline info (contextmodule!=nullptr), sima logline-kent adjuk hozza!!!!
     Entry *entry = new Entry();
     entries.push_back(entry);
     fillEntry(entry, 0, simTime(), nullptr, opp_strdup(text,len));

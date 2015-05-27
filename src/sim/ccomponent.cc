@@ -342,7 +342,7 @@ bool cComponent::SignalData::removeListener(cIListener *l)
         return false; // not there
 
     // remove listener. note: don't delete listeners[] even if empty,
-    // because fire() relies on it not being NULL
+    // because fire() relies on it not being nullptr
     int n = countListeners();
     listeners[k] = listeners[n-1];
     listeners[n-1] = nullptr;
@@ -854,7 +854,7 @@ void cComponent::releaseLocalListeners()
         }
         signalHasLocalListeners = 0;
         delete signalTable;
-        signalTable = NULL;
+        signalTable = nullptr;
     }
     cModule *parent = getParentModule();
     signalHasAncestorListeners = parent ? (parent->signalHasLocalListeners | parent->signalHasAncestorListeners) : 0; // this only works if releaseLocalListeners() is called top-down

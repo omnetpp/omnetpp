@@ -45,7 +45,7 @@ InspectorFactory *findInspectorFactoryFor(cObject *obj, int type)
             best = ifc;
         }
     }
-    return best; // may be NULL too
+    return best; // may be nullptr too
 }
 
 InspectorFactory *InspectorFactory::find(const char *className)

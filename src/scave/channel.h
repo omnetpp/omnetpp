@@ -52,7 +52,7 @@ class SCAVE_API Channel
         Node *getConsumerNode() const {return consumerNode;}
 
         /**
-         * Returns ptr to the first buffered data item (next one to be read), or NULL
+         * Returns ptr to the first buffered data item (next one to be read), or nullptr
          */
         const Datum *peek() const;
 

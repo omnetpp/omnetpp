@@ -46,7 +46,7 @@ class SIM_API cFileCommBuffer : public cCommBufferBase
     virtual ~cFileCommBuffer();
 
     /**
-     * Redefined because we need to NULL-terminate the buffer.
+     * Redefined because we need to NUL-terminate the buffer.
      */
     void setMessageSize(int size);
 

@@ -73,7 +73,7 @@ class TKENV_API InspectorFactory : public cNoncopyableOwnedObject
     //@}
 
     /**
-     * Finds an inspector factory by name. Returns NULL if not found.
+     * Finds an inspector factory by name. Returns nullptr if not found.
      */
     static InspectorFactory *find(const char *className);
 

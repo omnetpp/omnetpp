@@ -189,7 +189,7 @@ char *voidPtrToStr(void *ptr, char *buffer)
 
 void *strToVoidPtr(const char *s)
 {
-    // accept "" and malformed strings too, and return them as NULL
+    // accept "" and malformed strings too, and return them as nullptr
     if (s[0]=='p' && s[1]=='t' && s[2]=='r')
         s += 3;
     else if (s[0]=='0' && s[1]=='x')
@@ -283,7 +283,7 @@ void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject
                     TclQuotedString(fullpath ? obj->getFullPath().c_str() : obj->getFullName()).get(), " ",
                     TclQuotedString(obj->info().c_str()).get(), " ", ptr,
                     "}",
-                    NULL));
+                    nullptr));
 }
 
 void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath)
@@ -430,7 +430,7 @@ cPar *resolveDisplayStringParamRef(const char *dispstr, cComponent *component, b
 
 const char *substituteDisplayStringParamRefs(const char *src, std::string& buffer, cComponent *component, bool searchparent)
 {
-    if (!strchr(src, '$') || !component)  // cannot resolve args if component==NULL
+    if (!strchr(src, '$') || !component)  // cannot resolve args if component==nullptr
         return src;
 
     // recognize "$param" and "${param}" syntax inside the string

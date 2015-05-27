@@ -109,12 +109,12 @@ inline std::string opp_getWindowsError(DWORD errorCode)
      FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER |
                     FORMAT_MESSAGE_FROM_SYSTEM |
                     FORMAT_MESSAGE_IGNORE_INSERTS,
-                    NULL,
+                    nullptr,
                     errorCode,
                     MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                     (LPTSTR) &lpMsgBuf,
                     0,
-                    NULL );
+                    nullptr );
      int len = strlen((const char *)lpMsgBuf);
      std::string ret((const char *)lpMsgBuf, 0, len>3 ? len-3 : len); // chop ".\r\n"
      LocalFree( lpMsgBuf );

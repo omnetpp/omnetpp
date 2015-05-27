@@ -65,7 +65,7 @@ class SIM_API cArray : public cOwnedObject
         void init(const cArray& a, bool athead=true);
 
         /**
-         * Returns the current object, or NULL if the iterator is not
+         * Returns the current object, or nullptr if the iterator is not
          * at a valid position.
          */
         cObject *operator()()  {return array->get(k);}
@@ -182,7 +182,7 @@ class SIM_API cArray : public cOwnedObject
 
     /**
      * Returns the index of last used position+1. This only equals the
-     * number of contained objects if there are no "holes" (NULL elements)
+     * number of contained objects if there are no "holes" (nullptr elements)
      * in the array.
      */
     int size() const {return last+1;}
@@ -242,26 +242,26 @@ class SIM_API cArray : public cOwnedObject
     int find(const char *objname) const;
 
     /**
-     * Returns reference to the mth object in the array. Returns NULL
+     * Returns reference to the mth object in the array. Returns nullptr
      * if the mth position is not used.
      */
     cObject *get(int m);
 
     /**
      * Returns reference to the first object in the array with name s.
-     * Returns NULL if no object with the given name was found.
+     * Returns nullptr if no object with the given name was found.
      */
     cObject *get(const char *objname);
 
     /**
-     * Returns reference to the mth object in the array. Returns NULL
+     * Returns reference to the mth object in the array. Returns nullptr
      * if the mth position is not used.
      */
     const cObject *get(int m) const;
 
     /**
      * Returns reference to the first object in the array with name s.
-     * Returns NULL if no object with the given name was found.
+     * Returns nullptr if no object with the given name was found.
      */
     const cObject *get(const char *objname) const;
 
@@ -317,7 +317,7 @@ class SIM_API cArray : public cOwnedObject
     /**
      * Removes the object given with its index/name/pointer from the
      * container, and returns the same pointer. If the object was not
-     * found, NULL is returned. (If the object was owned by the container, drop()
+     * found, nullptr is returned. (If the object was owned by the container, drop()
      * is called.)
      */
     cObject *remove(cObject *obj);

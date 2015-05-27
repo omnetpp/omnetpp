@@ -261,7 +261,7 @@ cMessage *cMessage::privateDup() const
 void cMessage::setControlInfo(cObject *p)
 {
     if (!p)
-        throw cRuntimeError(this,"setControlInfo(): pointer is NULL");
+        throw cRuntimeError(this,"setControlInfo(): pointer is nullptr");
     if (controlInfo)
         throw cRuntimeError(this,"setControlInfo(): message already has control info attached");
     if (p->isOwnedObject())

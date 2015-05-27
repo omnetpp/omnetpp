@@ -106,7 +106,7 @@ class SIM_API cStringParImpl : public cParImpl
     virtual void setDoubleValue(double d) override;
 
     /**
-     * Sets the value to the given string. NULL is accepted as "".
+     * Sets the value to the given string. nullptr is accepted as "".
      */
     virtual void setStringValue(const char *s) override;
 
@@ -156,7 +156,7 @@ class SIM_API cStringParImpl : public cParImpl
     virtual cXMLElement *xmlValue(cComponent *context) const override;
 
     /**
-     * Returns pointer to the expression stored by the object, or NULL.
+     * Returns pointer to the expression stored by the object, or nullptr.
      */
     virtual cExpression *getExpression() const override;
     //@}

@@ -217,7 +217,7 @@ class SIM_API cParImpl : public cNamedObject
 
     /**
      * Sets the value to the given string value.
-     * The cParImpl will make its own copy of the string. NULL is also accepted
+     * The cParImpl will make its own copy of the string. nullptr is also accepted
      * and treated as an empty string.
      */
     virtual void setStringValue(const char *s) = 0;
@@ -282,7 +282,7 @@ class SIM_API cParImpl : public cNamedObject
     virtual cXMLElement *xmlValue(cComponent *context) const = 0;
 
     /**
-     * Returns pointer to the expression stored by the object, or NULL.
+     * Returns pointer to the expression stored by the object, or nullptr.
      */
     virtual cExpression *getExpression() const = 0;
     //@}

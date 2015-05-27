@@ -107,14 +107,14 @@ class SIM_API cNamedObject : public cObject
     //@{
     /**
      * Sets object's name. The object creates its own copy of the string.
-     * NULL pointer may also be passed, which will be interpreted as an
+     * nullptr may also be passed, which will be interpreted as an
      * empty string ("").
      */
     virtual void setName(const char *s);
 
     /**
      * Returns pointer to the object's name, a string stored in the object.
-     * This function never returns NULL.
+     * This function never returns nullptr.
      */
     virtual const char *getName() const override  {return name ? name : "";}
 

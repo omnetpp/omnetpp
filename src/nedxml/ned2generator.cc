@@ -209,7 +209,7 @@ static std::string formatComment(const char *comment, const char *indent, const 
         return defaultValue;
 
     // indent each line of comment; also ensure that if last line contains
-    // a comment (//), it gets terminated by newline. If indent==NULL,
+    // a comment (//), it gets terminated by newline. If indent==nullptr,
     // keep original indent
     std::string ret;
     const char *curLine = comment;
@@ -455,7 +455,7 @@ void NED2Generator::doProperty(PropertyElement *node, const char *indent, bool i
 {
     if (!node->getIsImplicit())
     {
-        // if sep==NULL, print as standalone property (with indent and ";"), otherwise as inline property
+        // if sep==nullptr, print as standalone property (with indent and ";"), otherwise as inline property
         OUT << getBannerComment(node, indent);
         if (!sep && indent)
             OUT << indent;

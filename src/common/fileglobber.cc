@@ -39,7 +39,7 @@ struct GlobPrivateData
 FileGlobber::FileGlobber(const char *filenamepattern)
 {
     fnamepattern = filenamepattern;
-    data = NULL;
+    data = nullptr;
 }
 
 FileGlobber::~FileGlobber()
@@ -77,7 +77,7 @@ const char *FileGlobber::getNext()
         if (data->handle<0)
         {
             _findclose(data->handle);
-            return NULL;
+            return nullptr;
         }
 
         // concat file name on directory
@@ -89,12 +89,12 @@ const char *FileGlobber::getNext()
     {
         // subsequent calls
         if (data->nowildcard)
-            return NULL;
+            return nullptr;
         int done=_findnext(data->handle, &data->fdata);
         if (done)
         {
             _findclose(data->handle);
-            return NULL;
+            return nullptr;
         }
         // concat file name on directory
         strcpy(data->tmpfname,data->dir);
@@ -126,7 +126,7 @@ struct GlobPrivateData
 FileGlobber::FileGlobber(const char *filenamepattern)
 {
     fnamepattern = filenamepattern;
-    data = NULL;
+    data = nullptr;
 }
 
 FileGlobber::~FileGlobber()
@@ -176,7 +176,7 @@ const char *FileGlobber::getNext()
 	    throw std::runtime_error(std::string(data->dir)+": cannot read directory");
 
 	if (!data->pent)
-	    return NULL;
+	    return nullptr;
 
 	if (fnmatch( fnamepattern.c_str(), data->pent->d_name, 0 ) != 0)
 	    return getNext();
@@ -188,14 +188,14 @@ const char *FileGlobber::getNext()
     } else {
         // subsequent calls
         if (data->nowildcard)
-            return NULL;
+            return nullptr;
 
 	data->pent = readdir(data->pdir);
 	if (errno)
 	    throw std::runtime_error(std::string(data->dir)+": cannot read directory");
 
 	if (!data->pent) {
-	    return NULL;
+	    return nullptr;
 	}
 
 	if (fnmatch(fnamepattern.c_str(), data->pent->d_name, 0 ) != 0)

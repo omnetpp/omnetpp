@@ -223,7 +223,7 @@ class SIM_API cPar : public cObject
 
     /**
      * Sets the value to the given string value.
-     * The cPar will make its own copy of the string. NULL is also accepted
+     * The cPar will make its own copy of the string. nullptr is also accepted
      * and treated as an empty string.
      */
     cPar& setStringValue(const char *s);
@@ -244,7 +244,7 @@ class SIM_API cPar : public cObject
      *
      * The evalcontext parameter determines the module or channel in the
      * context of which the expression will be evaluated. If evalcontext
-     * is NULL, the owner of this parameter will be used.
+     * is nullptr, the owner of this parameter will be used.
      *
      * Note: if the parameter is marked as non-volatile (isVolatile()==false),
      * one should not set an expression as value. This is not enforced
@@ -285,7 +285,7 @@ class SIM_API cPar : public cObject
     /**
      * Returns the parameter's unit ("s", "mW", "Hz", "bps", etc),
      * as declared with the \@unit property of the parameter in NED,
-     * or NULL if no unit was specified. Unit is only valid for LONG and DOUBLE
+     * or nullptr if no unit was specified. Unit is only valid for LONG and DOUBLE
      * types.
      */
     const char *getUnit() const;
@@ -322,7 +322,7 @@ class SIM_API cPar : public cObject
     cXMLElement *xmlValue() const;
 
     /**
-     * Returns pointer to the expression stored by the object, or NULL.
+     * Returns pointer to the expression stored by the object, or nullptr.
      */
     cExpression *getExpression() const;
 

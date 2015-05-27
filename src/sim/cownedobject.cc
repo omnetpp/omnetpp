@@ -192,7 +192,7 @@ void cNoncopyableOwnedObject::parsimUnpack(cCommBuffer *buffer)
 ostream& operator<< (ostream& os, const cOwnedObject *p)
 {
     if (!p)
-        return os << "(NULL)";
+        return os << "(nullptr)";
     return os << "(" << p->getClassName() << ")" << p->getFullName();
 }
 

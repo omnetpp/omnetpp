@@ -59,12 +59,12 @@ class SIM_API cEnum : public cOwnedObject
 
     /**
      * FIXME document properly:
-     * arglist: (enumname, string1, value1, string2, value2, ..., NULL)
+     * arglist: (enumname, string1, value1, string2, value2, ..., nullptr)
      *
      * Example:
      * <pre>
      * enum State { IDLE=0, BUSY };
-     * cEnum stateEnum("state", "IDLE", IDLE, "BUSY", BUSY, NULL);
+     * cEnum stateEnum("state", "IDLE", IDLE, "BUSY", BUSY, nullptr);
      * </pre>
      */
     cEnum(const char *name, const char *str, ...);
@@ -111,20 +111,20 @@ class SIM_API cEnum : public cOwnedObject
 
     /**
      * Adds several values to the enum. The argument list should be an
-     * alternating list of names and values, terminated by a NULL:
-     * name1, value1, name2, value2, ..., NULL.
+     * alternating list of names and values, terminated by a nullptr:
+     * name1, value1, name2, value2, ..., nullptr.
      *
      * Example:
      * <pre>
      * cEnum stateEnum("state");
-     * stateEnum.bulkInsert("IDLE", IDLE, "BUSY", BUSY, NULL);
+     * stateEnum.bulkInsert("IDLE", IDLE, "BUSY", BUSY, nullptr);
      * </pre>
      */
     void bulkInsert(const char *name1, ...);
 
     /**
      * Look up value and return string representation. Return
-     * NULL if not found.
+     * nullptr if not found.
      */
     const char *getStringFor(int value);
 
@@ -146,7 +146,7 @@ class SIM_API cEnum : public cOwnedObject
     std::string str() const;
 
     /**
-     * Finds a registered enum by name. Returns NULL if not found.
+     * Finds a registered enum by name. Returns nullptr if not found.
      */
     static cEnum *find(const char *name);
 

@@ -52,7 +52,7 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
     {
         int nodeId;        // node "handle"
         bool fixed;        // allowed to move?
-        Anchor *anchor;    // non-NULL for anchored nodes
+        Anchor *anchor;    // non-nullptr for anchored nodes
         double x, y;       // position (of the center of the shape)
         double offx, offy; // anchored nodes: offset to anchor point (and x,y are calculated)
         double sx, sy;     // half width/height

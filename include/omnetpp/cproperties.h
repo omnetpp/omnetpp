@@ -123,7 +123,7 @@ class SIM_API cProperties : public cObject
     virtual cProperty *get(int k) const;
 
     /**
-     * Returns the given property, or NULL if it does not exist.
+     * Returns the given property, or nullptr if it does not exist.
      * Name and index correspond to the the NED syntax
      * <tt>\@propertyname[index](keys-and-values)</tt>, where "[index]"
      * is optional.

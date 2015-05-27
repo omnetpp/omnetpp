@@ -233,7 +233,7 @@ class SIM_API cFigure : public cOwnedObject
         static std::map<std::string, Color> colors;
         int id;
         bool visible; // treated as structural change, for simpler handling
-        Transform transform;  // TODO make it optional (NULL = identity transform)
+        Transform transform;  // TODO make it optional (nullptr = identity transform)
         std::vector<cFigure*> children;
         const char *tags; // stringpool'd
         uint64_t tagBits;  // bit-to-tagname mapping is stored in cCanvas. Note: change to std::bitset if 64 tags are not enough
@@ -1432,7 +1432,7 @@ class SIM_API cCanvas : public cOwnedObject
 
         /** @name Accessing the figure tree. */
         //@{
-        virtual cFigure *getSubmodulesLayer() const; // may return NULL (extra canvases don't have submodules)
+        virtual cFigure *getSubmodulesLayer() const; // may return nullptr (extra canvases don't have submodules)
         virtual cFigure *findFigureRecursively(const char *name) const {return rootFigure->findFigureRecursively(name);}
         virtual cFigure *getFigureByPath(const char *path) const {return rootFigure->getFigureByPath(path);}
         //@}

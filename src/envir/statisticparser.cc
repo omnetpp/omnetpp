@@ -215,7 +215,7 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
                 {numSignalRefs++; signalSourceReference = (SignalSourceReference*)e.getFunctor();}
     }
 
-    // Note: filterRef==NULL is also valid input, need to be prepared for it!
+    // Note: filterRef==nullptr is also valid input, need to be prepared for it!
     cResultFilter *filter = nullptr;
     if (filterRef)
     {
@@ -376,7 +376,7 @@ void StatisticRecorderParser::parse(const SignalSource& source, const char *reco
     }
 
     // the whole expression must have evaluated to a single SignalSourceReference
-    // containing a SignalSource(NULL), because the outer element must be a recorder
+    // containing a SignalSource(nullptr), because the outer element must be a recorder
     // that does not support further chaining (see markRecorders())
     if (stack.size() != 1)
         throw opp_runtime_error("malformed expression"); // something wrong
@@ -412,7 +412,7 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
 
         if (numSignalRefs != 1)
         {
-            // note: filterOrRecorderRef can be NULL, so cannot use its name in the error msg
+            // note: filterOrRecorderRef can be nullptr, so cannot use its name in the error msg
             if (numSignalRefs == 0)
                 throw cRuntimeError("expression does not refer to any signal");
             else
@@ -420,7 +420,7 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
         }
     }
 
-    // Note: filterOrRecorderRef==NULL is also valid input, need to be prepared for it!
+    // Note: filterOrRecorderRef==nullptr is also valid input, need to be prepared for it!
     cResultListener *filterOrRecorder = nullptr;
     if (filterOrRecorderRef)
     {
@@ -506,7 +506,7 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
                 result = SignalSource((cResultFilter*)filterOrRecorder);
         }
     }
-    return result; // if makeRecorder=true, we return a NULL SignalSource (no chaining possible)
+    return result; // if makeRecorder=true, we return a nullptr SignalSource (no chaining possible)
 }
 
 NAMESPACE_END

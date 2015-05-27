@@ -138,7 +138,7 @@ class COMMON_API StringTokenizer2
 
     /**
      * Returns true if there're more tokens (i.e. the next nextToken()
-     * call won't return NULL).
+     * call won't return nullptr).
      */
     bool hasMoreTokens();
 
@@ -147,7 +147,7 @@ class COMMON_API StringTokenizer2
      * The returned pointer will point to the beginning
      * of the next token in the original input string, 'end' will be set
      * to the end of the token (exclusive).
-     * If there're no more tokens, a NULL pointer will be returned and 'end'
+     * If there're no more tokens, nullptr will be returned and 'end'
      * will not be set.
      */
     const char *nextToken();

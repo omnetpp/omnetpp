@@ -92,13 +92,13 @@ class COMMON_API UnitConversion
     static double convertUnit(double d, const char *unit, const char *targetUnit);
 
     /**
-     * Returns the long name for the given unit, or NULL if it is unrecognized.
+     * Returns the long name for the given unit, or nullptr if it is unrecognized.
      * See getAllUnits().
      */
     static const char *getLongName(const char *unit);
 
     /**
-     * Returns the base unit for the given unit, or NULL if the unit is unrecognized.
+     * Returns the base unit for the given unit, or nullptr if the unit is unrecognized.
      * See getAllUnits().
      */
     static const char *getBaseUnit(const char *unit);

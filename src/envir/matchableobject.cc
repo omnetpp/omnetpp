@@ -90,10 +90,10 @@ const char *MatchableObjectAdapter::getAsString(const char *attribute) const
     void *currentObj = obj;
     cClassDescriptor *currentDesc = desc;
     int currentFieldId = id
-    while ((token = tokenizer.nextToken())!=NULL)
+    while ((token = tokenizer.nextToken())!=nullptr)
     {
         bool found = findDescriptorField(d, token, fid, index);
-        if (!found) return NULL;
+        if (!found) return nullptr;
     }
 */
 

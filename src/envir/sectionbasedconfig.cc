@@ -144,7 +144,7 @@ void SectionBasedConfiguration::setCommandLineConfigOptions(const std::map<std::
 
 void SectionBasedConfiguration::clear()
 {
-    // note: this gets called between activateConfig() calls, so "ini" must NOT be NULL'ed out here
+    // note: this gets called between activateConfig() calls, so "ini" must NOT be nullptr'ed out here
     activeConfig = "";
     activeRunNumber = 0;
     config.clear();
@@ -1345,7 +1345,7 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
         if (suffixMatcher.matches(suffix))
         {
             // find all matching entries from this suffix group.
-            // We'll have a little problem where key ends in wildcard (i.e. entry.suffixPattern!=NULL);
+            // We'll have a little problem where key ends in wildcard (i.e. entry.suffixPattern!=nullptr);
             // there we'd have to determine whether two *patterns* match. We resolve this
             // by checking whether one pattern matches the other one as string, and vica versa.
             const SuffixGroup& group = it->second;

@@ -45,7 +45,7 @@ void check_and_cast_failure(T *p, P ret)
 /**
  * Cast a pointer to the given pointer type P, and throw exception if fails.
  * The method calls dynamic_cast\<P\>(p) where P is a type you supplied;
- * if the result is NULL (which indicates incompatible types), an exception
+ * if the result is nullptr (which indicates incompatible types), an exception
  * is thrown.
  *
  * In the following example, DHCPPacket is a subclass of cMessage, and we want
@@ -62,7 +62,7 @@ template<class P, class T>
 P check_and_cast(T *p)
 {
     if (!p)
-        throw cRuntimeError("check_and_cast(): cannot cast NULL pointer to type '%s'",opp_typename(typeid(P)));
+        throw cRuntimeError("check_and_cast(): cannot cast nullptr to type '%s'",opp_typename(typeid(P)));
     P ret = dynamic_cast<P>(p);
     if (!ret)
         check_and_cast_failure(p, ret);
@@ -70,7 +70,7 @@ P check_and_cast(T *p)
 }
 
 /**
- * A variant of check_and_cast\<\>() that also allows NULL pointer as input.
+ * A variant of check_and_cast\<\>() that also allows nullptr as input.
  *
  * @ingroup Functions
  */
@@ -78,7 +78,7 @@ template<class P, class T>
 P check_and_cast_nullable(T *p)
 {
     if (!p)
-        return NULL;
+        return nullptr;
     P ret = dynamic_cast<P>(p);
     if (!ret)
         check_and_cast_failure(p, ret);

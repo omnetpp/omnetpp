@@ -107,7 +107,7 @@ void OutputVectorInspector::createWindow(const char *window, const char *geometr
    strcpy(canvas,windowName);
    strcat(canvas,".main.canvas");
 
-   CHK(Tcl_VarEval(interp, "createOutputVectorInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL ));
+   CHK(Tcl_VarEval(interp, "createOutputVectorInspector ", windowName, " ", TclQuotedString(geometry).get(), nullptr));
 }
 
 void OutputVectorInspector::useWindow(const char *window)
@@ -124,7 +124,7 @@ void OutputVectorInspector::refresh()
 
    if (!object)
    {
-       CHK(Tcl_VarEval(interp, canvas," delete all", NULL));
+       CHK(Tcl_VarEval(interp, canvas," delete all", nullptr));
        setLabel(".bot.info", "");
        return;
    }
@@ -136,10 +136,10 @@ void OutputVectorInspector::refresh()
    if (circbuf.items()==0) return;
 
    // get canvas size
-   CHK(Tcl_VarEval(interp, "winfo width ",canvas, NULL));
+   CHK(Tcl_VarEval(interp, "winfo width ",canvas, nullptr));
    int canvasWidth = atoi( Tcl_GetStringResult(interp) );
    if (!canvasWidth)  canvasWidth=1;
-   CHK(Tcl_VarEval(interp, "winfo height ", canvas, NULL));
+   CHK(Tcl_VarEval(interp, "winfo height ", canvas, nullptr));
    int canvasHeight = atoi( Tcl_GetStringResult(interp) );
    if (!canvasHeight) canvasHeight=1;
 
@@ -192,7 +192,7 @@ void OutputVectorInspector::refresh()
    //        canvaswidth, canvasheight,tbase,trange, miny, maxy, rangey);
 
    // delete previous drawing
-   CHK(Tcl_VarEval(interp, canvas," delete all", NULL));
+   CHK(Tcl_VarEval(interp, canvas," delete all", nullptr));
 
    // now scan through the whole buffer in time-increasing order
    // and draw in the meanwhile
@@ -236,31 +236,31 @@ void OutputVectorInspector::refresh()
                 // draw rectangle 1
                 sprintf(coords,"%d %d %d %d", x-d, y1-d, x+d, y1+d);
                 CHK(Tcl_VarEval(interp, canvas," create rect ",coords,
-                                    " -tag ",tag," -outline red -fill red", NULL));
+                                    " -tag ",tag," -outline red -fill red", nullptr));
                 break;
              case DRAW_PINS:
                 // draw rectangle 1
                 sprintf(coords,"%d %d %d %d", x, y_zero, x, y1);
                 CHK(Tcl_VarEval(interp, canvas," create line ",coords,
-                                    " -tag ",tag," -fill red", NULL));
+                                    " -tag ",tag," -fill red", nullptr));
                 break;
              case DRAW_LINES:
                 // draw rectangle 1
                 sprintf(coords,"%d %d %d %d", x, y1, next_x, next_y1);
                 CHK(Tcl_VarEval(interp, canvas," create line ",coords,
-                                    " -tag ",tag," -fill red", NULL));
+                                    " -tag ",tag," -fill red", nullptr));
                 break;
              case DRAW_SAMPLEHOLD:
                 // draw rectangle 1
                 sprintf(coords,"%d %d %d %d", x, y1, next_x, y1);
                 CHK(Tcl_VarEval(interp, canvas," create line ",coords,
-                                    " -tag ",tag," -fill red", NULL));
+                                    " -tag ",tag," -fill red", nullptr));
                 break;
              case DRAW_BARS:
                 // draw rectangle 1
                 sprintf(coords,"%d %d %d %d", x, y_zero, next_x, y1);
                 CHK(Tcl_VarEval(interp, canvas," create rect ",coords,
-                                    " -tag ",tag," -outline red -fill red", NULL));
+                                    " -tag ",tag," -outline red -fill red", nullptr));
                 break;
            }
        }
@@ -276,46 +276,46 @@ void OutputVectorInspector::refresh()
    // add some basic labeling
    char coords[64], value[64];
    sprintf(coords,"%d %d %d %d", X(tmin)-2, Y(miny), X(tbase)+2, Y(miny));
-   CHK(Tcl_VarEval(interp, canvas," create line ",coords," -fill black", NULL));
+   CHK(Tcl_VarEval(interp, canvas," create line ",coords," -fill black", nullptr));
 
    sprintf(coords,"%d %d %d %d", X(tmin)-2, Y(maxy), X(tbase)+2, Y(maxy));
-   CHK(Tcl_VarEval(interp, canvas," create line ",coords," -fill black", NULL));
+   CHK(Tcl_VarEval(interp, canvas," create line ",coords," -fill black", nullptr));
 
    sprintf(coords,"%d %d %d %d", X(tbase)-2, Y(midy), X(tbase)+2, Y(midy));
-   CHK(Tcl_VarEval(interp, canvas," create line ",coords," -fill black", NULL));
+   CHK(Tcl_VarEval(interp, canvas," create line ",coords," -fill black", nullptr));
 
    sprintf(coords,"%d %d %d %d", X(tbase), Y(maxy)-2, X(tbase), Y(miny)+2);
-   CHK(Tcl_VarEval(interp, canvas," create line ",coords," -fill black", NULL));
+   CHK(Tcl_VarEval(interp, canvas," create line ",coords," -fill black", nullptr));
 
    sprintf(coords,"%d %d %d %d", X(tmin), Y(maxy)-2, X(tmin), Y(miny)+2);
-   CHK(Tcl_VarEval(interp, canvas," create line ",coords," -fill black", NULL));
+   CHK(Tcl_VarEval(interp, canvas," create line ",coords," -fill black", nullptr));
 
    sprintf(coords,"%d %d %d %d", X(hairlineTime), Y(maxy)-2, X(hairlineTime), Y(miny)+2);
-   CHK(Tcl_VarEval(interp, canvas," create line ",coords," -fill black", NULL));
+   CHK(Tcl_VarEval(interp, canvas," create line ",coords," -fill black", nullptr));
 
    sprintf(coords,"%d %d", X(tbase)-3, Y(miny));
    sprintf(value,"%.9g", miny);
-   CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor se", NULL));
+   CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor se", nullptr));
 
    sprintf(coords,"%d %d", X(tbase)-3, Y(maxy));
    sprintf(value,"%.9g", maxy);
-   CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor ne", NULL));
+   CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor ne", nullptr));
 
    sprintf(coords,"%d %d", X(tbase)-3, Y(midy));
    sprintf(value,"%.9g", midy);
-   CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor e", NULL));
+   CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor e", nullptr));
 
    sprintf(coords,"%d %d", X(tbase)+3, Y(miny));
    sprintf(value,"%s", SIMTIME_STR(tbase));
-   CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor ne", NULL));
+   CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor ne", nullptr));
 
    sprintf(coords,"%d %d", X(tmin)-3, Y(miny));
    sprintf(value,"%s", SIMTIME_STR(tmin));
-   CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor nw", NULL));
+   CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor nw", nullptr));
 
    sprintf(coords,"%d %d", X(hairlineTime)-3, Y(miny));
    sprintf(value,"%s", SIMTIME_STR(hairlineTime));
-   CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor n", NULL));
+   CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor n", nullptr));
 
 #undef X
 #undef Y

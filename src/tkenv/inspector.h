@@ -49,7 +49,7 @@ class TKENV_API Inspector
    protected:
       InspectorFactory *factory; // meta-object that describes this inspector class
       Tcl_Interp *interp;     // Tcl interpreter
-      cObject *object;        // the inspected object or NULL if inspector is empty
+      cObject *object;        // the inspected object or nullptr if inspector is empty
       int type;               // INSP_OBJECT, etc.
       char windowName[24];    // Tk widget path   --FIXME use std::string here! (and for canvas etc)
       std::string windowTitle;// window title string

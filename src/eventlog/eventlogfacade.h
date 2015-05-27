@@ -22,7 +22,7 @@
 
 NAMESPACE_BEGIN
 
-#define PTR(ptr) if (ptr == 0) throw opp_runtime_error("NULL ptr exception");
+#define PTR(ptr) if (ptr == 0) throw opp_runtime_error("nullptr ptr exception");
 #define IEVENT_PTR(ptr) PTR(ptr) Assert(dynamic_cast<IEvent *>((IEvent *)ptr));
 #define EVENT_LOG_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<EventLogEntry *>((EventLogEntry *)ptr));
 #define MESSAGE_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<BeginSendEntry *>((BeginSendEntry *)ptr));

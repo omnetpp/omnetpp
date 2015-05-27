@@ -92,7 +92,7 @@ class SIM_API cConfiguration : public cObject
     //@{
     /**
      * Returns a configuration value. Valid keys do not contain dots or wildcard characters.
-     * Returns NULL if key is not found.
+     * Returns nullptr if key is not found.
      */
     virtual const char *getConfigValue(const char *key) const = 0;
 
@@ -100,7 +100,7 @@ class SIM_API cConfiguration : public cObject
      * Like getConfigValue(), but this one returns information about the
      * whole inifile entry, not just the value string.
      * If the key is not found, a special KeyValue object is returned
-     * where both key and value are NULL.
+     * where both key and value are nullptr.
      *
      * Lifetime of the returned object might be limited, so clients
      * should not store references to it. Copying the object is not allowed
@@ -110,7 +110,7 @@ class SIM_API cConfiguration : public cObject
 
     /**
      * Returns a per-object configuration value. Valid keysuffixes do not contain
-     * dots or wildcard characters. Returns NULL if key is not found.
+     * dots or wildcard characters. Returns nullptr if key is not found.
      * keySuffix is something like "vector-recording-intervals", "ev-output", etc.
      */
     virtual const char *getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const = 0;
@@ -119,7 +119,7 @@ class SIM_API cConfiguration : public cObject
      * Like getPerObjectConfigValue(), but this one returns information about the
      * whole inifile entry, not just the value string.
      * If the key is not found, a special KeyValue object is returned
-     * where both key and value are NULL.
+     * where both key and value are nullptr.
      *
      * Lifetime of the returned object might be limited, so clients
      * should not store references to it. Copying the object is not allowed
@@ -289,7 +289,7 @@ class SIM_API cConfigurationEx : public cConfiguration
     virtual void initializeFrom(cConfiguration *bootConfig) = 0;
 
     /**
-     * Returns the name of the configuration file. Returns NULL if this object is
+     * Returns the name of the configuration file. Returns nullptr if this object is
      * not using a configuration file.
      */
     virtual const char *getFileName() const = 0;
@@ -374,7 +374,7 @@ class SIM_API cConfigurationEx : public cConfiguration
      * After activating a configuration, this method can be used to query
      * iteration variables and predefined variables. These are the variables
      * that can be referred to using the "${...}" syntax in the configuration.
-     * If the variable does not exist, NULL is returned.
+     * If the variable does not exist, nullptr is returned.
      *
      * Some of the predefined variables are: "configname", "runnumber", "network",
      * "processid", "datetime", "runid", "repetition", "iterationvars";
@@ -396,7 +396,7 @@ class SIM_API cConfigurationEx : public cConfiguration
 
     /**
      * Returns the description of the given variable in the activated configuration.
-     * Returns NULL if the variable does not exist or no description is available.
+     * Returns nullptr if the variable does not exist or no description is available.
      */
     virtual const char *getVariableDescription(const char *varname) const = 0;
 
@@ -418,7 +418,7 @@ class SIM_API cConfigurationEx : public cConfiguration
     /**
      * Looks up the value of the given parameter in the inifile. The argument
      * hasDefaultValue controls whether "=default" entries need to be considered.
-     * Return value is NULL if the parameter is not specified in the inifile,
+     * Return value is nullptr if the parameter is not specified in the inifile,
      * otherwise returns the string after the equal sign.
      */
     virtual const char *getParameterValue(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const = 0;
@@ -427,7 +427,7 @@ class SIM_API cConfigurationEx : public cConfiguration
      * Like getParameterValue(), but this one returns information about the
      * whole inifile entry, not just the value string.
      * If the key is not found, a special KeyValue object is returned
-     * where both key and value are NULL.
+     * where both key and value are nullptr.
      *
      * Lifetime of the returned object might be limited, so clients
      * should not store references to it. Copying the object is not allowed

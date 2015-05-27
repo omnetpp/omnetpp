@@ -64,7 +64,7 @@ class SIM_API cMatchExpression
         virtual const char *getAsString() const = 0;
 
         /**
-         * Return the string value of the given attribute, or NULL if the object
+         * Return the string value of the given attribute, or nullptr if the object
          * doesn't have an attribute with that name. The returned pointer will not
          * be cached by the caller, so it is OK to return a pointer to a static buffer.
          */

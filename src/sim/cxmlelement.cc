@@ -334,7 +334,7 @@ static std::string my_itostr(int d)
 
 bool ModNameParamResolver::resolve(const char *paramname, std::string& value)
 {
-    //printf("resolving $%s in context=%s\n", paramname, mod ? mod->getFullPath().c_str() : "NULL");
+    //printf("resolving $%s in context=%s\n", paramname, mod ? mod->getFullPath().c_str() : "nullptr");
     if (!mod)
         return false;
     cModule *parentMod = mod->getParentModule();

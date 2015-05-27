@@ -68,7 +68,7 @@ class SIM_API cResultRecorder : public cResultListener
          * Sets contextual information on the result recorder: it will record a (scalar, vector, etc)
          * result for the given component, with a name composed of statisticName and recordingMode,
          * result attributes taken either from the keys and values of the attrsProperty NED property,
-         * or from the manualAttrs string map (exactly one of the two must be non-NULL). manualAttrs,
+         * or from the manualAttrs string map (exactly one of the two must be non-nullptr). manualAttrs,
          * when specified, will be owned (i.e. deleted) by the result recorder object.
          */
         virtual void init(cComponent *component, const char *statisticName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs=nullptr);

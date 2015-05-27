@@ -172,7 +172,7 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
     /**
      * Get the element at the given position. k must be between 0 and
      * defaultListSize()-1 (inclusive). If the index is out of bounds,
-     * NULL is returned.
+     * nullptr is returned.
      */
     cOwnedObject *defaultListGet(int k);
 

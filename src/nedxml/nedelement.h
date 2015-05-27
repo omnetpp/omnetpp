@@ -197,7 +197,7 @@ class NEDXML_API NEDElement
      * Pure virtual method, it should be redefined in subclasses to return
      * the name of the kth attribute as defined in the DTD.
      *
-     * It should return NULL if k is out of range (i.e. negative or greater than
+     * It should return nullptr if k is out of range (i.e. negative or greater than
      * getNumAttributes()).
      */
     virtual const char *getAttributeName(int k) const = 0;
@@ -213,7 +213,7 @@ class NEDXML_API NEDElement
      * the value of the kth attribute (i.e. the attribute with the name
      * getAttributeName(k)).
      *
-     * It should return NULL if k is out of range (i.e. negative or greater than
+     * It should return nullptr if k is out of range (i.e. negative or greater than
      * getNumAttributes()).
      */
     virtual const char *getAttribute(int k) const = 0;
@@ -222,7 +222,7 @@ class NEDXML_API NEDElement
      * Returns the value of the attribute with the given name.
      * Relies on lookupAttribute() and getAttribute().
      *
-     * It returns NULL if the given attribute is not found.
+     * It returns nullptr if the given attribute is not found.
      */
     virtual const char *getAttribute(const char *attr) const;
 
@@ -248,7 +248,7 @@ class NEDXML_API NEDElement
      * Pure virtual method, it should be redefined in subclasses to return
      * the default value of the kth attribute, as defined in the DTD.
      *
-     * It should return NULL if k is out of range (i.e. negative or greater than
+     * It should return nullptr if k is out of range (i.e. negative or greater than
      * getNumAttributes()), or if the attribute is \#REQUIRED; and return ""
      * if the attribute is \#IMPLIED.
      */
@@ -258,7 +258,7 @@ class NEDXML_API NEDElement
      * Returns the default value of the given attribute, as defined in the DTD.
      * Relies on lookupAttribute() and getAttributeDefault().
      *
-     * It returns NULL if the given attribute is not found.
+     * It returns nullptr if the given attribute is not found.
      */
     virtual const char *getAttributeDefault(const char *attr) const;
     //@}
@@ -267,25 +267,25 @@ class NEDXML_API NEDElement
     //@{
 
     /**
-     * Returns the parent element, or NULL if this element has no parent.
+     * Returns the parent element, or nullptr if this element has no parent.
      */
     virtual NEDElement *getParent() const;
 
     /**
-     * Returns pointer to the first child element, or NULL if this element
+     * Returns pointer to the first child element, or nullptr if this element
      * has no children.
      */
     virtual NEDElement *getFirstChild() const;
 
     /**
-     * Returns pointer to the last child element, or NULL if this element
+     * Returns pointer to the last child element, or nullptr if this element
      * has no children.
      */
     virtual NEDElement *getLastChild() const;
 
     /**
      * Returns pointer to the next sibling of this element (i.e. the next child
-     * in the parent element). Returns NULL if there're no subsequent elements.
+     * in the parent element). Returns nullptr if there're no subsequent elements.
      *
      * getFirstChild() and getNextSibling() can be used to loop through
      * the child list:
@@ -302,24 +302,24 @@ class NEDXML_API NEDElement
 
     /**
      * Returns pointer to the previous sibling of this element (i.e. the previous child
-     * in the parent element). Returns NULL if there're no elements before this one.
+     * in the parent element). Returns nullptr if there're no elements before this one.
      */
     virtual NEDElement *getPrevSibling() const;
 
     /**
      * Appends the given element at the end of the child element list.
      *
-     * The node pointer passed should not be NULL.
+     * The node pointer passed should not be nullptr.
      */
     virtual void appendChild(NEDElement *node);
 
     /**
      * Inserts the given element just before the specified child element
      * in the child element list, or at the end of the child list if
-     * NULL is specified as the insert position.
+     * nullptr is specified as the insert position.
      *
-     * The where element must be a child of this element, or NULL.
-     * The node pointer passed should not be NULL.
+     * The where element must be a child of this element, or nullptr.
+     * The node pointer passed should not be nullptr.
      */
     virtual void insertChildBefore(NEDElement *where, NEDElement *newnode);
 
@@ -332,13 +332,13 @@ class NEDXML_API NEDElement
 
     /**
      * Returns pointer to the first child element with the given tag code,
-     * or NULL if this element has no such children.
+     * or nullptr if this element has no such children.
      */
     virtual NEDElement *getFirstChildWithTag(int tagcode) const;
 
     /**
      * Returns pointer to the next sibling of this element with the given
-     * tag code. Return NULL if there're no such subsequent elements.
+     * tag code. Return nullptr if there're no such subsequent elements.
      *
      * getFirstChildWithTag() and getNextSiblingWithTag() are a convient way
      * to loop through elements with a certain tag code in the child list:
@@ -368,13 +368,13 @@ class NEDXML_API NEDElement
     //@{
     /**
      * Returns first child element with the given tagcode and the given
-     * attribute (optionally) having the given value. Returns NULL if not found.
+     * attribute (optionally) having the given value. Returns nullptr if not found.
      */
     NEDElement *getFirstChildWithAttribute(int tagcode, const char *attr, const char *attrvalue=nullptr);
 
     /**
      * Climb up in the element tree until it finds an element with the given tagcode.
-     * Returns "this" if its tagcode already matches. Returns NULL if not found.
+     * Returns "this" if its tagcode already matches. Returns nullptr if not found.
      */
     NEDElement *getParentWithTag(int tagcode);
     //@}
@@ -404,7 +404,7 @@ class NEDXML_API NEDElement
     virtual void setUserData(NEDElementUserData *data);
 
     /**
-     * Return pointer to the user data object, or NULL if
+     * Return pointer to the user data object, or nullptr if
      * setUserData() has not been called yet.
      */
     virtual NEDElementUserData *getUserData() const;

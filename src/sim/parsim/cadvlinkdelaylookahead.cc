@@ -41,7 +41,7 @@ Register_Class(cAdvancedLinkDelayLookahead);
 cAdvancedLinkDelayLookahead::cAdvancedLinkDelayLookahead()
 {
     numSeg = 0;
-    segInfo = NULL;
+    segInfo = nullptr;
 }
 
 cAdvancedLinkDelayLookahead::~cAdvancedLinkDelayLookahead()
@@ -62,7 +62,7 @@ void cAdvancedLinkDelayLookahead::startRun()
     for (int i=0; i<numSeg; i++)
     {
         segInfo[i].numLinks = 0;
-        segInfo[i].links = NULL;
+        segInfo[i].links = nullptr;
     }
 
     // fill numLinks and links[]
@@ -90,7 +90,7 @@ void cAdvancedLinkDelayLookahead::startRun()
         int numLinks = segInfo[i].numLinks;
         segInfo[i].links = new LinkOut *[numLinks];
         for (int k=0; k<numLinks; k++)
-            segInfo[i].links[k] = NULL;
+            segInfo[i].links[k] = nullptr;
     }
 
     // step 3: fill in
@@ -109,9 +109,9 @@ void cAdvancedLinkDelayLookahead::startRun()
                 {
                     // check we have a delay on this link (it gives us lookahead)
                     cGate *fromg  = pg->getPreviousGate();
-                    cChannel *chan = fromg ? fromg->getChannel() : NULL;
+                    cChannel *chan = fromg ? fromg->getChannel() : nullptr;
                     cDatarateChannel *datarateChan = dynamic_cast<cDatarateChannel *>(chan);
-                    cPar *delaypar = datarateChan ? datarateChan->getDelay() : NULL;
+                    cPar *delaypar = datarateChan ? datarateChan->getDelay() : nullptr;
                     double linkDelay = delaypar ? delaypar->doubleValue() : 0;
                     if (linkDelay<=0.0)
                         throw cRuntimeError("cAdvancedLinkDelayLookahead: zero delay on link from gate `%s', no lookahead for parallel simulation", fromg->getFullPath().c_str());

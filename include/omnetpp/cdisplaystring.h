@@ -210,7 +210,7 @@ class SIM_API cDisplayString
     const char *getTagArg(const char *tagname, int index) const;
 
     /**
-     * Sets an argument for the given tag. The value may be NULL pointer.
+     * Sets an argument for the given tag. The value may be nullptr.
      * If index points beyond the last argument, the list of arguments will
      * be extended by inserting intervening empty arguments if necessary.
      *
@@ -245,7 +245,7 @@ class SIM_API cDisplayString
 
     /**
      * Returns the name of the tag given with its index.
-     * If the tag index is out of range, NULL is returned.
+     * If the tag index is out of range, nullptr is returned.
      */
     const char *getTagName(int tagindex) const;
 
@@ -267,12 +267,12 @@ class SIM_API cDisplayString
     /**
      * Returns pointer to the indexth argument of the given tag.
      * If the tag doesn't exist or the index is out of range,
-     * NULL is returned.
+     * nullptr is returned.
      */
     const char *getTagArg(int tagindex, int index) const;
 
     /**
-     * Sets an argument for the given tag. The value may be NULL pointer.
+     * Sets an argument for the given tag. The value may be nullptr.
      * If index points beyond the last argument, the list of arguments will
      * be extended by inserting intervening empty arguments if necessary.
      *

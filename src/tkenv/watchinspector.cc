@@ -59,7 +59,7 @@ void WatchInspector::createWindow(const char *window, const char *geometry)
 {
    Inspector::createWindow(window, geometry);
 
-   CHK(Tcl_VarEval(interp, "createWatchInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL ));
+   CHK(Tcl_VarEval(interp, "createWatchInspector ", windowName, " ", TclQuotedString(geometry).get(), nullptr));
 }
 
 void WatchInspector::useWindow(const char *window)
@@ -83,7 +83,7 @@ void WatchInspector::commit()
    if (watch->supportsAssignment())
        watch->assign(s);
    else
-      CHK(Tcl_VarEval(interp,"messagebox {Warning} {This inspector doesn't support changing the value.} warning ok", NULL));
+      CHK(Tcl_VarEval(interp,"messagebox {Warning} {This inspector doesn't support changing the value.} warning ok", nullptr));
    Inspector::commit();    // must be there after all changes
 }
 

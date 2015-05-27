@@ -77,7 +77,7 @@ bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stack_size)
     // it appears to have the same limit for the number of fibers that can be created.
     // lpFiber = CreateFiberEx(stackSize, stackSize, 0, (LPFIBER_START_ROUTINE)fnp, arg);
     lpFiber = CreateFiber(stack_size, (LPFIBER_START_ROUTINE)fnp, arg);
-    return lpFiber!=NULL;
+    return lpFiber!=nullptr;
 }
 
 bool cCoroutine::hasStackOverflow() const
@@ -199,7 +199,7 @@ void cCoroutine::switchToMain()
 
 cCoroutine::cCoroutine()
 {
-    task = NULL;
+    task = nullptr;
 }
 
 cCoroutine::~cCoroutine()
@@ -210,22 +210,22 @@ cCoroutine::~cCoroutine()
 bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stack_size)
 {
     task = task_create( fnp, arg, stack_size );
-    return task!=NULL;
+    return task!=nullptr;
 }
 
 bool cCoroutine::hasStackOverflow() const
 {
-    return task==NULL ? false : task_testoverflow( task );
+    return task==nullptr ? false : task_testoverflow( task );
 }
 
 unsigned cCoroutine::getStackSize() const
 {
-    return task==NULL ? 0 : task->size;
+    return task==nullptr ? 0 : task->size;
 }
 
 unsigned cCoroutine::getStackUsage() const
 {
-    return task==NULL ? 0 : task_stackusage( task );
+    return task==nullptr ? 0 : task_stackusage( task );
 }
 
 #endif

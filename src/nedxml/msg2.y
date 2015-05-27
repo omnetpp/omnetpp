@@ -403,7 +403,7 @@ body
           opt_propertiesblock_old
           opt_fieldsblock_old
           '}' opt_semicolon
-                { ps.msgclassorstruct = NULL; }
+                { ps.msgclassorstruct = nullptr; }
         ;
 
 opt_fields_and_properties
@@ -425,13 +425,13 @@ field
         :  fieldtypename opt_fieldvector opt_inline_properties ';'
                 {
                   storeBannerAndRightComments(ps.field,@1,@4);
-                  ps.field = NULL; // important! see addProperty() calls
+                  ps.field = nullptr; // important! see addProperty() calls
                 }
         |  fieldtypename opt_fieldvector opt_inline_properties '=' fieldvalue opt_inline_properties ';'
                 {
                   ps.field->setDefaultValue(toString(@5));
                   storeBannerAndRightComments(ps.field,@1,@7);
-                  ps.field = NULL; // important! see addProperty() calls
+                  ps.field = nullptr; // important! see addProperty() calls
                 }
         ;
 
@@ -718,13 +718,13 @@ NEDElement *doParseMSG2(NEDParser *p, const char *nedtext)
     pos.li = 1;
     prevpos = pos;
 
-    yyin = NULL;
+    yyin = nullptr;
     yyout = stderr; // not used anyway
 
     // alloc buffer
     struct yy_buffer_state *handle = yy_scan_string(nedtext);
     if (!handle)
-        {np->getErrors()->addError("", "unable to allocate work memory"); return NULL;}
+        {np->getErrors()->addError("", "unable to allocate work memory"); return nullptr;}
 
     // create parser state and NEDFileElement
     resetParserState();

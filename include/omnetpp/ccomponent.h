@@ -68,7 +68,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     int componentId;   // id in cSimulation
 
     short rngMapSize;  // size of the rngMap array (RNGs with index >= rngMapSize are mapped one-to-one to global RNGs)
-    int *rngMap;       // maps local RNG numbers (may be NULL if rngMapSize==0)
+    int *rngMap;       // maps local RNG numbers (may be nullptr if rngMapSize==0)
 
     short numPars;
     short parArraySize;
@@ -79,7 +79,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     struct SignalData
     {
         simsignal_t signalID;
-        cIListener **listeners; // NULL-terminated array
+        cIListener **listeners; // nullptr-terminated array
 
         SignalData() {signalID=SIMSIGNAL_NULL; listeners=nullptr;}
         void dispose() {delete [] listeners;}
@@ -236,11 +236,11 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * parameter changes, for example by re-reading the value.
      * This default implementation does nothing.
      *
-     * The parameter name can be NULL if more than one parameter has changed.
+     * The parameter name can be nullptr if more than one parameter has changed.
      *
      * To make it easier to write predictable components, the function does
      * NOT get called on uninitialized components (i.e. when initialized() returns
-     * false). For each component the function is called (with NULL as a parname)
+     * false). For each component the function is called (with nullptr as a parname)
      * after the last stage of the initialization so the module gets a chance to
      * update its cached parameters.
      *
@@ -300,7 +300,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     virtual cProperties *getProperties() const = 0;
 
     /**
-     * Returns the associated component type. Guaranteed to be non-NULL.
+     * Returns the associated component type. Guaranteed to be non-nullptr.
      */
     cComponentType *getComponentType() const;
 
@@ -347,7 +347,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     /**
      * Returns the module containing this module/channel. This is not necessarily
      * the same object as getOwner(), especially for channel objects. For the system
-     * module, it returns NULL.
+     * module, it returns nullptr.
      */
     virtual cModule *getParentModule() const = 0;
 
@@ -790,7 +790,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
 
     /**
      * The inverse of registerSignal(): returns the name of the given signal,
-     * or NULL for invalid signal handles.
+     * or nullptr for invalid signal handles.
      */
     static const char *getSignalName(simsignal_t signalID);
 

@@ -71,7 +71,7 @@ class COMMON_API FileGlobber
     ~FileGlobber();
 
     /**
-     * Returns a file names, one at each call, and finally it returns NULL.
+     * Returns a file names, one at each call, and finally it returns nullptr.
      * Caution: may throw std::runtime_exception!
      */
     const char *getNext();

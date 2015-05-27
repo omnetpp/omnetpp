@@ -62,19 +62,19 @@ class SIM_API cRegistrationList : public cNamedObject, noncopyable
     virtual int size() const {return vec.size();}
 
     /**
-     * Returns the ith element, or NULL.
+     * Returns the ith element, or nullptr.
      */
     virtual cOwnedObject *get(int i) const;
 
     /**
      * Returns (one of) the object(s) with the given name (not fullName!).
-     * Returns NULL if not found.
+     * Returns nullptr if not found.
      */
     virtual cOwnedObject *find(const char *name) const;
 
     /**
      * Returns the object with exactly the given qualified name (getFullName()).
-     * Returns NULL if not found.
+     * Returns nullptr if not found.
      */
     virtual cOwnedObject *lookup(const char *qualifiedName) const;
 

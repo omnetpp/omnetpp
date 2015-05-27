@@ -191,7 +191,7 @@ class COMMON_API Expression
         enum {UNDEF=0, BOOL='B', DBL='D', STR='S'} type;
         bool bl;
         double dbl;
-        const char *dblunit; // stringpooled, may be NULL
+        const char *dblunit; // stringpooled, may be nullptr
         std::string s;
 
         Value()  {type=UNDEF;}
@@ -251,7 +251,7 @@ class COMMON_API Expression
      * Abstract base class for variable and function resolvers. A resolver
      * is used during parsing, and tells the parser how to convert variable
      * references and functions into Functor objects for the stored expression.
-     * Methods should return NULL or throw an exception with a human-readable
+     * Methods should return nullptr or throw an exception with a human-readable
      * description when the variable or function cannot be resolved; this will
      * be converted to an error message.
      */
@@ -260,11 +260,11 @@ class COMMON_API Expression
       public:
         virtual ~Resolver() {}
         /**
-         * Should return NULL or throw exception if variable is not found
+         * Should return nullptr or throw exception if variable is not found
          */
         virtual Functor *resolveVariable(const char *varname) = 0;
         /**
-         * Should return NULL or throw exception if variable is not found.
+         * Should return nullptr or throw exception if variable is not found.
          * Does not need to check the argcount, because it is also done by the caller.
          */
         virtual Functor *resolveFunction(const char *funcname, int argcount) = 0;

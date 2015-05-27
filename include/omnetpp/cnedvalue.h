@@ -72,7 +72,7 @@ class SIM_API cNEDValue
   private:
     bool bl;
     double dbl;
-    const char *dblunit; // string constants or pooled strings; may be NULL
+    const char *dblunit; // string constants or pooled strings; may be nullptr
     std::string s;
     cXMLElement *xml;
 
@@ -215,7 +215,7 @@ class SIM_API cNEDValue
 
     /**
      * Sets the value to the given string value. The string itself will be
-     * copied. NULL is also accepted and treated as an empty string.
+     * copied. nullptr is also accepted and treated as an empty string.
      */
     void set(const char *s) {type=STR; this->s=s?s:"";}
 
@@ -261,7 +261,7 @@ class SIM_API cNEDValue
     double doubleValueInUnit(const char *unit) const {return convertUnit(dbl, dblunit, unit);}
 
     /**
-     * Returns the unit ("s", "mW", "Hz", "bps", etc), or NULL if there was no
+     * Returns the unit ("s", "mW", "Hz", "bps", etc), or nullptr if there was no
      * unit was specified. Unit is only valid for the DBL type.
      */
     const char *getUnit() const {assertType(DBL); return dblunit;}

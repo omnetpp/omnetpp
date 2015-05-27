@@ -75,12 +75,12 @@ class Options
 
 Options::Options()
 {
-    inputFileName = NULL;
-    outputFileName = NULL;
-    outputFile = NULL;
+    inputFileName = nullptr;
+    outputFileName = nullptr;
+    outputFile = nullptr;
 
-    moduleExpression = NULL;
-    messageExpression = NULL;
+    moduleExpression = nullptr;
+    messageExpression = nullptr;
 
     firstEventNumber = -2;
     lastEventNumber = -2;

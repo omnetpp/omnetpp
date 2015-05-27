@@ -88,11 +88,11 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         std::vector<MessageEntry *> getMessageEntriesWithPreviousEventNumber(eventnumber_t eventNumber);
 
         /**
-         * Returns the event exactly starting at the given offset or NULL if there is no such event.
+         * Returns the event exactly starting at the given offset or nullptr if there is no such event.
          */
         Event *getEventForBeginOffset(file_offset_t offset);
         /**
-         * Returns the event exactly ending at the given offset or NULL if there is no such event.
+         * Returns the event exactly ending at the given offset or nullptr if there is no such event.
          */
         Event *getEventForEndOffset(file_offset_t offset);
 

@@ -192,7 +192,7 @@ const char *NEDFileBuffer::get(YYLTYPE pos)
 {
     if (end) {*end = savedChar; end=nullptr;}
 
-    // return NULL
+    // return nullptr
     if (pos.first_line==0 && pos.last_line==0)
         return nullptr;
 

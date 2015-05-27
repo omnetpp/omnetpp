@@ -82,7 +82,7 @@ COMMON_API void mkPath(const char *pathname);
 
 /**
  * Utility class for temporary change of directory. Changes back to
- * original dir when goes out of scope. Does nothing if NULL is passed
+ * original dir when goes out of scope. Does nothing if nullptr is passed
  * to the constructor.
  */
 class COMMON_API PushDir

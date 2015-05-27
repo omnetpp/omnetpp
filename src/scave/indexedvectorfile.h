@@ -71,7 +71,7 @@ class SCAVE_API IndexedVectorFileReader
         int getNumberOfEntries() const { return vector->getCount(); };
         /**
          * Returns the entry with the specified serial,
-         * or NULL if the serial is out of range.
+         * or nullptr if the serial is out of range.
          * The pointer will be valid until the next call to getEntryBySerial().
          */
         OutputVectorEntry *getEntryBySerial(long serial);
@@ -79,14 +79,14 @@ class SCAVE_API IndexedVectorFileReader
         /**
          * Returns the first entry whose simtime is >= than the given simtime (when after is true),
          * or the last entry whose simtime is <= than the given simtime (when after is false).
-         * Returns NULL when no entry after/before.
+         * Returns nullptr when no entry after/before.
          */
         OutputVectorEntry *getEntryBySimtime(simultime_t simtime, bool after);
 
         /**
          * Returns the first entry whose simtime is >= than the given simtime (when after is true),
          * or the last entry whose simtime is <= than the given simtime (when after is false).
-         * Returns NULL when no entry after/before.
+         * Returns nullptr when no entry after/before.
          */
         OutputVectorEntry *getEntryByEventnum(eventnumber_t eventNum, bool after);
 

@@ -188,7 +188,7 @@ class SIM_API cNEDMathFunction : public cNoncopyableOwnedObject
     //@}
 
     /**
-     * Finds a registered function by name. Returns NULL if not found.
+     * Finds a registered function by name. Returns nullptr if not found.
      */
     static cNEDMathFunction *find(const char *name, int numArgs);
 

@@ -67,7 +67,7 @@ class SCAVE_API EnumType
 
     /**
      * Look up value and return string representation. Return
-     * NULL if not found.
+     * nullptr if not found.
      */
     const char *nameOf(int value) const;
 

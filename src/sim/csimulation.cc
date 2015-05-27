@@ -142,7 +142,7 @@ void cSimulation::setActiveSimulation(cSimulation *sim)
 void cSimulation::setStaticEnvir(cEnvir *env)
 {
     if (!env)
-         throw cRuntimeError("cSimulation::setStaticEnvir(): argument cannot be NULL");
+         throw cRuntimeError("cSimulation::setStaticEnvir(): argument cannot be nullptr");
     staticEnvir = env;
 }
 
@@ -205,7 +205,7 @@ class cSnapshotWriterVisitor : public cVisitor
 bool cSimulation::snapshot(cObject *object, const char *label)
 {
     if (!object)
-        throw cRuntimeError("snapshot(): object pointer is NULL");
+        throw cRuntimeError("snapshot(): object pointer is nullptr");
 
     ostream *osptr = getEnvir()->getStreamForSnapshot();
     if (!osptr)
@@ -239,7 +239,7 @@ void cSimulation::setScheduler(cScheduler *sch)
     if (systemModule)
         throw cRuntimeError(this, "setScheduler(): cannot switch schedulers when a network is already set up");
     if (!sch)
-        throw cRuntimeError(this, "setScheduler(): scheduler pointer is NULL");
+        throw cRuntimeError(this, "setScheduler(): scheduler pointer is nullptr");
 
     if (scheduler) {
         getEnvir()->removeLifecycleListener(scheduler);
@@ -556,7 +556,7 @@ cSimpleModule *cSimulation::guessNextModule()
 void cSimulation::transferTo(cSimpleModule *module)
 {
     if (!module)
-        throw cRuntimeError("transferTo(): attempt to transfer to NULL");
+        throw cRuntimeError("transferTo(): attempt to transfer to nullptr");
 
     // switch to activity() of the simple module
     exception = nullptr;
@@ -774,7 +774,7 @@ void cSimulation::insertEvent(cEvent *event)
  * etc. libraries.
  *
  * Many simulation library classes make calls to <i>ev</i> methods,
- * which would crash if <tt>evPtr</tt> was NULL; one example is
+ * which would crash if <tt>evPtr</tt> was nullptr; one example is
  * cObject's destructor which contains an <tt>getEnvir()->objectDeleted()</tt>.
  * The solution provided here is that <tt>evPtr</tt> is initialized
  * to point to a StaticEnv instance, thus enabling library classes to work.

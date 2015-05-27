@@ -186,7 +186,7 @@ NEDElement *NEDResourceCache::parseAndValidateNedFileOrText(const char *fname, c
 void NEDResourceCache::loadNedFile(const char *nedfname, const char *expectedPackage, bool isXML)
 {
     if (!nedfname)
-        throw NEDException("loadNedFile(): file name is NULL");
+        throw NEDException("loadNedFile(): file name is nullptr");
 
     doLoadNedFileOrText(nedfname, nullptr, expectedPackage, isXML);
     registerPendingNedTypes();
@@ -195,7 +195,7 @@ void NEDResourceCache::loadNedFile(const char *nedfname, const char *expectedPac
 void NEDResourceCache::loadNedText(const char *name, const char *nedtext, const char *expectedPackage, bool isXML)
 {
     if (!name)
-        throw NEDException("loadNedText(): name is NULL");
+        throw NEDException("loadNedText(): name is nullptr");
     if (getFile(name))
         throw NEDException("loadNedText(): name `%s' already used", name);
 

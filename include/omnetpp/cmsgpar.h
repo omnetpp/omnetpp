@@ -216,7 +216,7 @@ class SIM_API cMsgPar : public cOwnedObject
 
     /**
      * Sets the value to the given string value.
-     * The cMsgPar will make its own copy of the string. NULL is also accepted
+     * The cMsgPar will make its own copy of the string. nullptr is also accepted
      * and treated as an empty string.
      */
     cMsgPar& setStringValue(const char *s);
@@ -295,13 +295,13 @@ class SIM_API cMsgPar : public cOwnedObject
      *     <TD><b>delfunc</b></TD><TD><b>dupfunc.</b></TD><TD><b>itemsize</b></TD><TD><b>behavior</b></TD>
      *   </TR>
      *   <TR>
-     *     <TD>NULL</TD><TD>NULL</TD><TD>0</TD><TD>Pointer is treated as mere pointer - no memory management. Duplication copies the pointer, and deletion does nothing.</TD>
+     *     <TD>nullptr</TD><TD>nullptr</TD><TD>0</TD><TD>Pointer is treated as mere pointer - no memory management. Duplication copies the pointer, and deletion does nothing.</TD>
      *   </TR>
      *   <TR>
-     *     <TD>NULL</TD><TD>NULL</TD><TD>!=0</TD><TD>Plain memory management. Duplication is done with new char[size]+memcpy(), and deletion is done via delete.</TD>
+     *     <TD>nullptr</TD><TD>nullptr</TD><TD>!=0</TD><TD>Plain memory management. Duplication is done with new char[size]+memcpy(), and deletion is done via delete.</TD>
      *   </TR>
      *   <TR>
-     *     <TD>NULL or user's delete func.</TD><TD>user's dupfunc.</TD><TD>indifferent</TD><TD WIDTH=317>Sophisticated memory management. Duplication is done by calling the user-supplied duplication function, which should do the allocation and the appropriate copying. Deletion is done by calling the user-supplied delete function, or the delete operator if it is not supplied.</TD>
+     *     <TD>nullptr or user's delete func.</TD><TD>user's dupfunc.</TD><TD>indifferent</TD><TD WIDTH=317>Sophisticated memory management. Duplication is done by calling the user-supplied duplication function, which should do the allocation and the appropriate copying. Deletion is done by calling the user-supplied delete function, or the delete operator if it is not supplied.</TD>
      *   </TR>
      * </TABLE>
      */

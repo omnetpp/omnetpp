@@ -84,11 +84,11 @@ class EVENTLOG_API IEvent
         virtual eventnumber_t getCauseEventNumber() = 0;
 
         /**
-         * Returns the immediately preceding event or NULL if there is no such event.
+         * Returns the immediately preceding event or nullptr if there is no such event.
          */
         virtual IEvent *getPreviousEvent() = 0;
         /**
-         * Returns the immediately following event or NULL if there is no such event.
+         * Returns the immediately following event or nullptr if there is no such event.
          */
         virtual IEvent *getNextEvent() = 0;
 
@@ -125,7 +125,7 @@ class EVENTLOG_API IEvent
          */
         virtual bool isSelfMessageProcessingEvent() = 0;
         /**
-         * Retuns the corresponding end send or NULL if the message got deleted.
+         * Retuns the corresponding end send or nullptr if the message got deleted.
          */
         virtual EndSendEntry *getEndSendEntry(BeginSendEntry *beginSendEntry) = 0;
 

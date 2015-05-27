@@ -54,7 +54,7 @@ class cResultFilter;
 class SIM_API cResultFilter : public cResultListener
 {
     private:
-        cResultListener **delegates; // NULL-terminated array
+        cResultListener **delegates; // nullptr-terminated array
     protected:
         // methods for invoking the delegates
         void fire(cResultFilter *prev, simtime_t_cref t, bool b);

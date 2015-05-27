@@ -289,7 +289,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     /**
      * Send a message directly to another module.
      *
-     * If the target gate is further connected (i.e. getNextGate()!=NULL),
+     * If the target gate is further connected (i.e. getNextGate()!=nullptr),
      * the message will follow the connections that start at that gate.
      * For example, when sending to an input gate of a compound module,
      * the message will follow the connections inside the compound module.
@@ -300,11 +300,11 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * to a single output gate of their parent module.
      *
      * It is not permitted to send to a gate of a compound module which is not
-     * further connected (i.e. getNextGate()==NULL), as this would cause the message
+     * further connected (i.e. getNextGate()==nullptr), as this would cause the message
      * to arrive at a compound module.
      *
      * Also, it is not permitted to send to a gate which is otherwise connected
-     * i.e. where getPreviousGate()!=NULL. This means that modules MUST have
+     * i.e. where getPreviousGate()!=nullptr. This means that modules MUST have
      * dedicated gates for receiving via sendDirect(). You cannot have a gate
      * which receives messages via both connections and sendDirect().
      *
@@ -369,7 +369,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
 
     /**
      * Invokes cancelEvent() on the message (in case it is scheduled), then
-     * deletes it. A NULL pointer is also accepted, then the method does nothing.
+     * deletes it. nullptr is also accepted, then the method does nothing.
      * This method is especially useful in simple module destructors, to dispose
      * of self-messages that the module has allocated.
      */
@@ -393,7 +393,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * to it. If there is no message in the event
      * queue, the function waits with t timeout until a message will be
      * available. If the timeout expires and there is still no message
-     * in the queue, the function returns NULL.
+     * in the queue, the function returns nullptr.
      */
     cMessage *receive(simtime_t timeout);
     //@}

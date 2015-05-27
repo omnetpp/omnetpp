@@ -198,7 +198,7 @@ cProperties *cNEDDeclaration::doSubmoduleProperties(const char *submoduleName, c
     // update with local properties
     NEDElement *subcomponentNode = getLocalSubmoduleElement(submoduleName);
     if (!subcomponentNode && !props)
-        return nullptr; // error: no such submodule FIXME must not return NULL!
+        return nullptr; // error: no such submodule FIXME must not return nullptr!
     NEDElement *paramsNode = subcomponentNode ? subcomponentNode->getFirstChildWithTag(NED_PARAMETERS) : nullptr;
     props = mergeProperties(props, paramsNode);
     putIntoPropsMap(submodulePropsMap, key.c_str(), props);
@@ -240,8 +240,8 @@ cProperties *cNEDDeclaration::doConnectionProperties(int connectionId, const cha
 
 cProperties *cNEDDeclaration::mergeProperties(const cProperties *baseprops, NEDElement *parent)
 {
-    // returns parent's properties merged with props; both can be NULL.
-    // retval is never NULL but can be an empty cProperties.
+    // returns parent's properties merged with props; both can be nullptr.
+    // retval is never nullptr but can be an empty cProperties.
     // the props object doesn't get modified -- if it would have to be modified,
     // it gets dupped first.
     cProperties *props = const_cast<cProperties *>(baseprops);
@@ -257,7 +257,7 @@ cProperties *cNEDDeclaration::mergeProperties(const cProperties *baseprops, NEDE
         PropertyElement *propNode = (PropertyElement *)child;
         const char *propName = propNode->getName();
         const char *propIndex = propNode->getIndex();
-        if (!propIndex[0]) propIndex = nullptr;  // no index is NULL not ""
+        if (!propIndex[0]) propIndex = nullptr;  // no index is nullptr not ""
         cProperty *prop = props->get(propName, propIndex);
         if (!prop)
             props->add(prop = new cProperty(propName, propIndex));
@@ -329,7 +329,7 @@ void cNEDDeclaration::updateDisplayProperty(PropertyElement *propNode, cProperty
 cParImpl *cNEDDeclaration::getSharedParImplFor(NEDElement *node)
 {
     SharedParImplMap::const_iterator it = parimplMap.find(node->getId());
-    //XXX printf("      getExpr: %ld -> %p\n", node->getId(), it==parimplMap.end() ? NULL : it->second);
+    //XXX printf("      getExpr: %ld -> %p\n", node->getId(), it==parimplMap.end() ? nullptr : it->second);
     return it==parimplMap.end() ? nullptr : it->second;
 }
 

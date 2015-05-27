@@ -27,12 +27,12 @@
 NAMESPACE_BEGIN
 
 /**
- * Returns true if the string is NULL or has zero length.
+ * Returns true if the string is nullptr or has zero length.
  */
 inline bool opp_isempty(const char *s)  {return !s || !s[0];}
 
 /**
- * Returns the pointer passed as argument unchanged, except that if it was NULL,
+ * Returns the pointer passed as argument unchanged, except that if it was nullptr,
  * it returns a pointer to a null string ("").
  */
 inline const char *opp_nulltoempty(const char *s)  {return s ? s : "";}
@@ -50,7 +50,7 @@ COMMON_API bool opp_isblank(const char *txt);
 
 /**
  * Same as the standard strlen() function, except that does not crash
- * on NULL pointers but returns 0.
+ * on nullptr but returns 0.
  */
 inline int opp_strlen(const char *s)
 {
@@ -58,8 +58,8 @@ inline int opp_strlen(const char *s)
 }
 
 /**
- * Duplicates the string, using <tt>new char[]</tt>. For NULLs and empty
- * strings it returns NULL.
+ * Duplicates the string, using <tt>new char[]</tt>. For nullptr and empty
+ * strings it returns nullptr.
  */
 inline char *opp_strdup(const char *s)
 {
@@ -70,8 +70,8 @@ inline char *opp_strdup(const char *s)
 }
 
 /**
- * Same as the standard strcpy() function, except that NULL pointers
- * in the second argument are treated like pointers to a null string ("").
+ * Same as the standard strcpy() function, except that nullptr
+ * in the second argument is treated as a pointer to an empty string ("").
  */
 inline char *opp_strcpy(char *s1, const char *s2)
 {
@@ -79,8 +79,8 @@ inline char *opp_strcpy(char *s1, const char *s2)
 }
 
 /**
- * Same as the standard strcmp() function, except that NULL pointers
- * are treated exactly as empty strings ("").
+ * Same as the standard strcmp() function, except that nullptr
+ * is treated exactly as an empty string ("").
  */
 inline int opp_strcmp(const char *s1, const char *s2)
 {
@@ -234,7 +234,7 @@ COMMON_API char *opp_strlwr(char *s);
 COMMON_API std::string opp_join(const char *separator, const char *s1, const char *s2);
 
 /**
- * Concatenate the strings passed in the NULL-terminated const char * array, using
+ * Concatenate the strings passed in the nullptr-terminated const char * array, using
  * the given separator.
  */
 COMMON_API std::string opp_join(const char **strings, const char *separator);
@@ -321,7 +321,7 @@ COMMON_API std::string opp_makedatetimestring();
 
 /**
  * s should point to a double quote '"'. The function returns a pointer to
- * the matching quote (i.e. the end of the string literal), or NULL if
+ * the matching quote (i.e. the end of the string literal), or nullptr if
  * not found. It recognizes escaping embedded quotes with backslashes
  * (C-style string literals).
  */
@@ -329,9 +329,9 @@ COMMON_API const char *opp_findmatchingquote(const char *s);
 
 /**
  * s should point to an open parenthesis. The function returns the matching
- * paren, or NULL if not found. It does not search inside string constants
+ * paren, or nullptr if not found. It does not search inside string constants
  * delimited by double quotes ('"'); it uses opp_findmatchingquote() to
- * parse them. Note: a NULL return value (unmatched left paren) may also
+ * parse them. Note: a nullptr return value (unmatched left paren) may also
  * be caused by an unterminated string constant.
  */
 COMMON_API const char *opp_findmatchingparen(const char *s);

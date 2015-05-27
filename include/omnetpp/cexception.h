@@ -55,7 +55,7 @@ class SIM_API cException : public std::exception
 
     /**
      * Helper function for constructors: assembles and stores the message text.
-     * If the first arg is non-NULL, the message text will be prepended (if needed)
+     * If the first arg is non-nullptr, the message text will be prepended (if needed)
      * with the object type and name, like this: "(cArray)array: ..."
      */
     void init(const cObject *obj, OppErrorCode errorcode, const char *fmt, va_list va);
@@ -263,7 +263,7 @@ class SIM_API cTerminationException : public cException
  * Thrown when the simulation kernel or other components detect a runtime
  * error. For example, cSimpleModule::scheduleAt() throws this exception when
  * the specified simulation time is in the past, or the message pointer
- * is NULL.
+ * is nullptr.
  *
  * @ingroup Internals
  */

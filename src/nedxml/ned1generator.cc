@@ -216,7 +216,7 @@ static std::string formatComment(const char *comment, const char *indent, const 
         return defaultValue;
 
     // indent each line of comment; also ensure that if last line contains
-    // a comment (//), it gets terminated by newline. If indent==NULL,
+    // a comment (//), it gets terminated by newline. If indent==nullptr,
     // keep original indent
     std::string ret;
     const char *curLine = comment;
@@ -484,7 +484,7 @@ void NED1Generator::doChannelParam(ParamElement *node, const char *indent)
     const char *name = node->getName();
     if (strcmp(name, "delay")==0 || strcmp(name, "ber")==0 || strcmp(name, "datarate")==0)
     {
-        // indent==NULL means no indent and no new line at end (but a space at front)
+        // indent==nullptr means no indent and no new line at end (but a space at front)
         if (strcmp(name, "ber")==0) name="error";  // "error" got renamed to "ber" in 4.0
         OUT << (indent ? indent : " ");
         OUT << name << " ";

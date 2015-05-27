@@ -369,7 +369,7 @@ void NEDSyntaxValidator::validateElement(SubmoduleElement *node)
 //        if (!compound)
 //            INTERNAL_ERROR0(node,"occurs outside a compound-module");
 //        NEDElement *params = compound->getFirstChildWithTag(NED_PARAMETERS);
-//        if (!params || params->getFirstChildWithAttribute(NED_PARAM, "name", paramName)==NULL)
+//        if (!params || params->getFirstChildWithAttribute(NED_PARAM, "name", paramName)==nullptr)
 //            {errors->addError(node, "compound module has no parameter named '%s'", paramName);return;}
 //    }
 }

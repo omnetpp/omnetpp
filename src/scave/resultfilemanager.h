@@ -93,7 +93,7 @@ struct SCAVE_API ResultItem
 
     /**
      * Returns a pointer to the enum type described by the "enum" attribute
-     * or NULL if no "enum" attribute.
+     * or nullptr if no "enum" attribute.
      */
     EnumType* getEnum() const;
 
@@ -333,7 +333,7 @@ class SCAVE_API ResultFileManager
     int addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const char *columns);
     int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, Statistics stat, const StringMap &attrs);
 
-    ResultFile *getFileForID(ID id) const; // checks for NULL
+    ResultFile *getFileForID(ID id) const; // checks for nullptr
     void loadVectorsFromIndex(const char *filename, ResultFile *fileRef);
 
     template <class T>
@@ -450,7 +450,7 @@ class SCAVE_API ResultFileManager
                                                   const StringMap& attrFilter) const;
     ResultFileList filterFileList(const ResultFileList& fileList, const char *filePathPattern) const;
 
-    // select FileRuns which are both in file list and run list (both can be NULL, meaning '*')
+    // select FileRuns which are both in file list and run list (both can be nullptr, meaning '*')
     FileRunList getFileRuns(const ResultFileList *fileList, const RunList *runList) const;
 
     // utility

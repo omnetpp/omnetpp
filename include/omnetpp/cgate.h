@@ -214,7 +214,7 @@ class SIM_API cGate : public cObject, noncopyable
      * uninitialized, specify true for the leaveUninitialized parameter.
      *
      * If the gate is already connected, an error will occur. The gate
-     * argument cannot be NULL, that is, you cannot use this function
+     * argument cannot be nullptr, that is, you cannot use this function
      * to disconnect a gate; use disconnect() for that.
      *
      * Note: When you set channel parameters after channel initialization,
@@ -235,7 +235,7 @@ class SIM_API cGate : public cObject, noncopyable
 
     /**
      * Disconnects the gate, then connects it again to the same gate, with the
-     * given channel object (if not NULL). The gate must be connected.
+     * given channel object (if not nullptr). The gate must be connected.
      *
      * @see connectTo()
      */
@@ -328,7 +328,7 @@ class SIM_API cGate : public cObject, noncopyable
     int size() const  {return getVectorSize();}
 
     /**
-     * Returns the channel object attached to this gate, or NULL if there is
+     * Returns the channel object attached to this gate, or nullptr if there is
      * no channel. This is the channel between this gate and this->getNextGate(),
      * that is, channels are stored on the "from" side of the connections.
      */
@@ -379,7 +379,7 @@ class SIM_API cGate : public cObject, noncopyable
     cChannel *getTransmissionChannel() const;
 
     /**
-     * Like getTransmissionChannel(), but returns NULL instead of throwing
+     * Like getTransmissionChannel(), but returns nullptr instead of throwing
      * an error if there is no transmission channel in the path.
      */
     cChannel *findTransmissionChannel() const;
@@ -395,7 +395,7 @@ class SIM_API cGate : public cObject, noncopyable
     cChannel *getIncomingTransmissionChannel() const;
 
     /**
-     * Like getIncomingTransmissionChannel(), but returns NULL instead of
+     * Like getIncomingTransmissionChannel(), but returns nullptr instead of
      * throwing an error if there is no transmission channel in the reverse
      * path.
      */
@@ -407,15 +407,15 @@ class SIM_API cGate : public cObject, noncopyable
 
     /**
      * Returns the previous gate in the series of connections (the path) that
-     * contains this gate, or a NULL pointer if this gate is the first one in the path.
-     * (E.g. for a simple module output gate, this function will return NULL.)
+     * contains this gate, or nullptr if this gate is the first one in the path.
+     * (E.g. for a simple module output gate, this function will return nullptr.)
      */
     cGate *getPreviousGate() const {return prevGate;}
 
     /**
      * Returns the next gate in the series of connections (the path) that
-     * contains this gate, or a NULL pointer if this gate is the last one in the path.
-     * (E.g. for a simple module input gate, this function will return NULL.)
+     * contains this gate, or nullptr if this gate is the last one in the path.
+     * (E.g. for a simple module input gate, this function will return nullptr.)
      */
     cGate *getNextGate() const   {return nextGate;}
 
@@ -449,8 +449,8 @@ class SIM_API cGate : public cObject, noncopyable
      * Returns true if the gate is connected outside (i.e. to one of its
      * sibling modules or to the parent module).
      *
-     * This means that for an input gate, getPreviousGate() must be non-NULL; for an output
-     * gate, getNextGate() must be non-NULL.
+     * This means that for an input gate, getPreviousGate() must be non-nullptr; for an output
+     * gate, getNextGate() must be non-nullptr.
      */
     bool isConnectedOutside() const;
 
@@ -458,8 +458,8 @@ class SIM_API cGate : public cObject, noncopyable
      * Returns true if the gate (of a compound module) is connected inside
      * (i.e. to one of its submodules).
      *
-     * This means that for an input gate, getNextGate() must be non-NULL; for an output
-     * gate, getPreviousGate() must be non-NULL.
+     * This means that for an input gate, getNextGate() must be non-nullptr; for an output
+     * gate, getPreviousGate() must be non-nullptr.
      */
     bool isConnectedInside() const;
 

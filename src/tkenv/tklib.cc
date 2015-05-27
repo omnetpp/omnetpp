@@ -57,7 +57,7 @@ Tcl_Interp *initTk(int argc, char **argv)
     Tcl_FindExecutable(argv[0]);
 
     // Tcl/Tk args interfere with OMNeT++'s own command-line args
-    //if (Tk_ParseArgv(interp, (Tk_Window)NULL, &argc, argv, argTable, 0)!=TCL_OK)
+    //if (Tk_ParseArgv(interp, (Tk_Window)nullptr, &argc, argv, argTable, 0)!=TCL_OK)
     //{
     //    fprintf(stderr, "%s\n", Tcl_GetStringResult(interp));
     //    return TCL_ERROR;

@@ -225,7 +225,7 @@ cObject *cQueue::remove_qelem(QElem *p)
 void cQueue::insert(cObject *obj)
 {
     if (!obj)
-        throw cRuntimeError(this, "cannot insert NULL pointer");
+        throw cRuntimeError(this, "cannot insert nullptr");
 
     if (obj->isOwnedObject() && getTakeOwnership())
         take(static_cast<cOwnedObject *>(obj));
@@ -259,7 +259,7 @@ void cQueue::insert(cObject *obj)
 void cQueue::insertBefore(cObject *where, cObject *obj)
 {
     if (!obj)
-        throw cRuntimeError(this, "cannot insert NULL pointer");
+        throw cRuntimeError(this, "cannot insert nullptr");
 
     QElem *p = find_qelem(where);
     if (!p)
@@ -273,7 +273,7 @@ void cQueue::insertBefore(cObject *where, cObject *obj)
 void cQueue::insertAfter(cObject *where, cObject *obj)
 {
     if (!obj)
-        throw cRuntimeError(this,"cannot insert NULL pointer");
+        throw cRuntimeError(this,"cannot insert nullptr");
 
     QElem *p = find_qelem(where);
     if (!p)

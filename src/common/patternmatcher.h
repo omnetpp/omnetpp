@@ -142,7 +142,7 @@ class COMMON_API PatternMatcher
     bool matches(const char *line);
 
     /**
-     * Similar to matches(): it returns non-NULL iif (1) the pattern ends in
+     * Similar to matches(): it returns non-nullptr iif (1) the pattern ends in
      * a string literal (and not, say, '*' or '**') which contains the line suffix
      * (which begins at suffixoffset characters of line) and (2) pattern matches
      * the whole line, except that (3) in matching the pattern's last string literal,

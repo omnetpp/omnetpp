@@ -72,7 +72,7 @@ inline bool isNegativeInfinity(double d) { return d==NEGATIVE_INFINITY; }
 COMMON_API void setPosixLocale();
 
 /**
- * A more convenient gethostname(). Does its best, but when it fails the result will be NULL.
+ * A more convenient gethostname(). Does its best, but when it fails the result will be nullptr.
  */
 COMMON_API const char *opp_gethostname();
 

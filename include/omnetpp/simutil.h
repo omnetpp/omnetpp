@@ -39,7 +39,7 @@ enum {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH, CTX_CLEANUP};
 
 /**
  * Some of these functions are similar to \<string.h\> functions, with the
- * exception that they also accept NULL pointers as empty strings (""),
+ * exception that they also accept nullptr to mean empty strings (""),
  * and use operator new instead of malloc(). It is recommended to use these
  * functions instead of the original \<string.h\> functions.
  *
@@ -49,25 +49,25 @@ enum {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH, CTX_CLEANUP};
 //@{
 /**
  * Same as the standard strlen() function, except that does not crash
- * on NULL pointers but returns 0.
+ * on nullptr but returns 0.
  */
 inline int opp_strlen(const char *);
 
 /**
  * Duplicates the string, using <tt>new char[]</tt>. For NULLs and empty
- * strings it returns NULL.
+ * strings it returns nullptr.
  */
 inline char *opp_strdup(const char *);
 
 /**
- * Same as the standard strcpy() function, except that NULL pointers
- * in the second argument are treated like pointers to a null string ("").
+ * Same as the standard strcpy() function, except that nullptr as the
+ * second argument is treated as an empty string ("").
  */
 inline char *opp_strcpy(char *,const char *);
 
 /**
- * Same as the standard strcmp() function, except that NULL pointers
- * are treated exactly as empty strings ("").
+ * Same as the standard strcmp() function, except that nullptr is treated
+ * exactly as an empty string ("").
  */
 inline int opp_strcmp(const char *, const char *);
 

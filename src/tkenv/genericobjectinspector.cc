@@ -59,14 +59,14 @@ void GenericObjectInspector::doSetObject(cObject *obj)
 {
     Inspector::doSetObject(obj);
 
-    CHK(Tcl_VarEval(interp, "GenericObjectInspector:onSetObject ", windowName, NULL));
+    CHK(Tcl_VarEval(interp, "GenericObjectInspector:onSetObject ", windowName, nullptr));
 }
 
 void GenericObjectInspector::createWindow(const char *window, const char *geometry)
 {
    Inspector::createWindow(window, geometry);
 
-   CHK(Tcl_VarEval(interp, "createGenericObjectInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL));
+   CHK(Tcl_VarEval(interp, "createGenericObjectInspector ", windowName, " ", TclQuotedString(geometry).get(), nullptr));
 }
 
 void GenericObjectInspector::useWindow(const char *window)
@@ -78,7 +78,7 @@ void GenericObjectInspector::refresh()
 {
    Inspector::refresh();
 
-   CHK(Tcl_VarEval(interp, "GenericObjectInspector:refresh ", windowName, NULL));
+   CHK(Tcl_VarEval(interp, "GenericObjectInspector:refresh ", windowName, nullptr));
 }
 
 void GenericObjectInspector::commit()

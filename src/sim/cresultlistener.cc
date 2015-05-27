@@ -146,7 +146,7 @@ void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, cO
     }
     catch (std::exception& e)
     {
-        THROW(source, signalID, (obj ? obj->getClassName() : "cObject* (NULL)"), e);
+        THROW(source, signalID, (obj ? obj->getClassName() : "cObject* (nullptr)"), e);
     }
 }
 

@@ -91,7 +91,7 @@ class SIM_API cObjectFactory : public cNoncopyableOwnedObject
     //@{
     /**
      * Finds the factory object for the class given in the classname parameter,
-     * or NULL if not found. The class name string should be given with any
+     * or nullptr if not found. The class name string should be given with any
      * potential namespace, enclosing class etc. The class must have been
      * registered previously with the Register_Class() macro.
      */
@@ -109,7 +109,7 @@ class SIM_API cObjectFactory : public cNoncopyableOwnedObject
      * should be given with any potential namespace, enclosing class etc.
      *
      * If the class is not registered, this function throws an exception.
-     * If you'd prefer having a NULL pointer returned instead, use the
+     * If you'd prefer having nullptr returned instead, use the
      * createOneIfClassIsKnown() function.
      *
      * Example:
@@ -127,7 +127,7 @@ class SIM_API cObjectFactory : public cNoncopyableOwnedObject
 
     /**
      * A variant of the createOne() function; this function doesn't throw an
-     * exception if the class is not registered, but returns a NULL pointer
+     * exception if the class is not registered, but returns nullptr
      * instead.
      *
      * @see createOne()

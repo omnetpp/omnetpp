@@ -32,7 +32,7 @@ class TKENV_API CanvasRenderer
         Tcl_Interp *interp;
         std::string canvasWidget;
         Tcl_CmdInfo canvasCmdInfo;
-        cCanvas *canvas; // NULL is allowed
+        cCanvas *canvas; // nullptr is allowed
         uint64_t enabledTagBits, exceptTagBits;
 
     protected:

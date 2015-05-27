@@ -178,7 +178,7 @@ void cPacket::copy(const cPacket& msg)
     if (msg.encapsulatedPacket)
         take(encapsulatedPacket = (cPacket *)msg.encapsulatedPacket->dup());
     else
-        encapsulatedPacket = NULL;
+        encapsulatedPacket = nullptr;
 #else
     if (encapsulatedPacket)
         _deleteEncapMsg();

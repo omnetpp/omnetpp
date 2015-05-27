@@ -51,7 +51,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         std::vector<PatternMatcher> moduleNames;
         std::vector<PatternMatcher> moduleClassNames;
         std::vector<PatternMatcher> moduleNEDTypeNames;
-        std::vector<int> moduleIds; // events outside these modules will be filtered out, NULL means include all
+        std::vector<int> moduleIds; // events outside these modules will be filtered out, nullptr means include all
 
         // message filter
         bool enableMessageFilter;

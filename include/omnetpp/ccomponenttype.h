@@ -158,7 +158,7 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
 
     /**
      * Finds a component type by fully qualified NED type name.
-     * Returns NULL if not found.
+     * Returns nullptr if not found.
      */
     static cComponentType *find(const char *qname);
 
@@ -279,7 +279,7 @@ class SIM_API cModuleType : public cComponentType
 
     /**
      * Finds a module type by fully qualified NED type name.
-     * Returns NULL if not found.
+     * Returns nullptr if not found.
      */
     static cModuleType *find(const char *qname);
 
@@ -335,7 +335,7 @@ class SIM_API cChannelType : public cComponentType
     /**
      * Factory method to create a channel object with the given name.
      *
-     * If the name is NULL, a default name will be taken from the
+     * If the name is nullptr, a default name will be taken from the
      * \@defaultname NED property of the channel type; or if there is no
      * such property, "channel" will be used.
      *
@@ -348,7 +348,7 @@ class SIM_API cChannelType : public cComponentType
 
     /**
      * Finds a channel type by fully qualified NED type name.
-     * Returns NULL if not found.
+     * Returns nullptr if not found.
      */
     static cChannelType *find(const char *qname);
 

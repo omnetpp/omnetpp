@@ -401,10 +401,10 @@ const char *FigureRenderer::resolveIcon(Tcl_Interp *interp, const char* iconName
         imageName = Tcl_GetVar2(interp, "icons", "unknown", TCL_GLOBAL_ONLY);
     ASSERT(imageName);
 
-    CHK(Tcl_VarEval(interp, "image width ", imageName, NULL));
+    CHK(Tcl_VarEval(interp, "image width ", imageName, nullptr));
     outWidth = opp_atol(Tcl_GetStringResult(interp));
 
-    CHK(Tcl_VarEval(interp, "image height ", imageName, NULL));
+    CHK(Tcl_VarEval(interp, "image height ", imageName, nullptr));
     outHeight = opp_atol(Tcl_GetStringResult(interp));
 
     return imageName;

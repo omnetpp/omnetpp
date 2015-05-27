@@ -126,7 +126,7 @@ class SIM_API cIOutputVectorManager : public cObject, public cISimulationLifecyc
     virtual bool record(void *vechandle, simtime_t t, double value) = 0;
 
     /**
-     * Returns the output vector file name. Returns NULL if this object is not
+     * Returns the output vector file name. Returns nullptr if this object is not
      * producing file output.
      */
     virtual const char *getFileName() const = 0;
@@ -216,7 +216,7 @@ class SIM_API cIOutputScalarManager : public cObject, public cISimulationLifecyc
     virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr) = 0;
 
     /**
-     * Returns the output scalar file name. Returns NULL if this object is not
+     * Returns the output scalar file name. Returns nullptr if this object is not
      * producing file output.
      */
     virtual const char *getFileName() const = 0;
@@ -303,7 +303,7 @@ class SIM_API cISnapshotManager : public cObject, public cISimulationLifecycleLi
     virtual void releaseStreamForSnapshot(std::ostream *os) = 0;
 
     /**
-     * Returns the snapshot file name. Returns NULL if this object is not
+     * Returns the snapshot file name. Returns nullptr if this object is not
      * producing file output.
      */
     virtual const char *getFileName() const = 0;

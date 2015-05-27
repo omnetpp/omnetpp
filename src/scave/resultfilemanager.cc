@@ -979,7 +979,7 @@ void ResultFileManager::clearComputedScalars()
 /*
 void ResultFileManager::dump(ResultFile *fileRef, std::ostream& out) const
 {
-    Run *prevRunRef = NULL;
+    Run *prevRunRef = nullptr;
     for (ScalarResults::const_iterator i = scalars.begin(); i!=scalars.end(); i++)
     {
         const ScalarResult& d = *i;

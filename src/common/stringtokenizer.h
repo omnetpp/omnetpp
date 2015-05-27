@@ -31,7 +31,7 @@ NAMESPACE_BEGIN
  * String tokenizer class, modelled after strtok(). It considers the input
  * string to consist of tokens, separated by one or more delimiter characters.
  * Repeated calls to nextToken() will enumerate the tokens in the string,
- * returning NULL after the last token. The function hasMoreTokens() can be
+ * returning nullptr after the last token. The function hasMoreTokens() can be
  * used to find out whether there are more tokens without consuming one.
  *
  * Limitations: this class does not honor quotes, apostrophes or backslash
@@ -85,14 +85,14 @@ class COMMON_API StringTokenizer
 
     /**
      * Returns true if there're more tokens (i.e. the next nextToken()
-     * call won't return NULL).
+     * call won't return nullptr).
      */
     bool hasMoreTokens();
 
     /**
      * Returns the next token. The returned pointers will stay valid as long
-     * as the tokenizer object exists. If there're no more tokens,
-     * a NULL pointer will be returned.
+     * as the tokenizer object exists. If there're no more tokens, nullptr
+     * will be returned.
      */
     const char *nextToken();
 

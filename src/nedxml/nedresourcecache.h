@@ -134,7 +134,7 @@ class NEDXML_API NEDResourceCache
     virtual int loadNedSourceFolder(const char *foldername);
 
     /**
-     * Load a single NED file. If the expected package is given (non-NULL),
+     * Load a single NED file. If the expected package is given (non-nullptr),
      * it should match the package declaration inside the NED file.
      *
      * Note: doneLoadingNedFiles() must be called after the last
@@ -146,7 +146,7 @@ class NEDXML_API NEDResourceCache
      * Parses and loads the NED source code passed in the nedtext argument.
      * The name argument will be used as filename in error messages, and
      * and should be unique among the files loaded. If the expected package
-     * is given (non-NULL), it should match the package declaration inside
+     * is given (non-nullptr), it should match the package declaration inside
      * the NED file.
      *
      * Note: doneLoadingNedFiles() must be called after the last
@@ -174,15 +174,15 @@ class NEDXML_API NEDResourceCache
     /**
      * Given a NED file, returns the package.ned file from the same folder,
      * or the nearest ancestor package.ned file. If the file is a package.ned
-     * file itself, returns the nearest ancestor package.ned file. Returns NULL
+     * file itself, returns the nearest ancestor package.ned file. Returns nullptr
      * if there is no parent package.ned file.
      */
     virtual NedFileElement *getParentPackageNedFile(NedFileElement *nedfile) const;
 
-    /** Look up a fully qualified NED type name from the cache. Returns NULL if not found. */
+    /** Look up a fully qualified NED type name from the cache. Returns nullptr if not found. */
     virtual NEDTypeInfo *lookup(const char *qname) const;
 
-    /** Like lookup(), but asserts non-NULL return value */
+    /** Like lookup(), but asserts non-nullptr return value */
     virtual NEDTypeInfo *getDecl(const char *qname) const;
 
     /** Resolves the given NED type name in the given context, among the given type names. Returns "" if not found. */

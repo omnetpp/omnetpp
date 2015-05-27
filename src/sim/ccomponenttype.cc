@@ -177,7 +177,7 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
         desc.objectType = nullptr;
         desc.isNullable = false;
         if (desc.type == SIMSIGNAL_OBJECT) {
-            // if declaredType ends in a question mark, the signal allows NULL to be emitted as well
+            // if declaredType ends in a question mark, the signal allows nullptr to be emitted as well
             if (declaredType[strlen(declaredType)-1] == '?') {
                 std::string netDeclaredType = std::string(declaredType, strlen(declaredType)-1);
                 desc.objectType = lookupClass(netDeclaredType.c_str());
@@ -210,7 +210,7 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
                         throw cRuntimeError("Signal \"%s\" emitted with wrong class (%s does not subclass from %s as declared)",
                                 cComponent::getSignalName(signalID), obj->getClassName(), desc.objectType->getFullName());
                     else if (!desc.isNullable)
-                        throw cRuntimeError("Signal \"%s\" emitted a NULL pointer (specify 'type=%s?' in @signal to allow NULLs)",
+                        throw cRuntimeError("Signal \"%s\" emitted a nullptr (specify 'type=%s?' in @signal to allow nullptr)",
                                 cComponent::getSignalName(signalID), desc.objectType->getFullName());
                 }
                 else if (timestampedValue->getValueType(signalID) != SIMSIGNAL_OBJECT)
@@ -218,7 +218,7 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
                             cComponent::getSignalName(signalID), getSignalTypeName(timestampedValue->getValueType(signalID)));
                 else if ((innerObj = timestampedValue->objectValue(signalID)) == nullptr) {
                     if (!desc.isNullable)
-                        throw cRuntimeError("Signal \"%s\" emitted as timestamped value with NULL pointer in it (specify 'type=%s?' in @signal to allow NULLs)",
+                        throw cRuntimeError("Signal \"%s\" emitted as timestamped value with nullptr in it (specify 'type=%s?' in @signal to allow nullptr)",
                                 cComponent::getSignalName(signalID), desc.objectType->getFullName());
                 }
                 else if (!desc.objectType->isInstance(innerObj))
@@ -232,7 +232,7 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
             cITimestampedValue *timestampedValue = dynamic_cast<cITimestampedValue*>(obj);
             if (!timestampedValue)
                 throw cRuntimeError("Signal \"%s\" emitted with wrong data type (expected=%s, actual=%s)",
-                        cComponent::getSignalName(signalID), getSignalTypeName(desc.type), obj ? obj->getClassName() : "NULL");
+                        cComponent::getSignalName(signalID), getSignalTypeName(desc.type), obj ? obj->getClassName() : "nullptr");
             SimsignalType actualType = timestampedValue->getValueType(signalID);
             if (timestampedValue->getValueType(signalID) != desc.type)
                 throw cRuntimeError("Signal \"%s\" emitted as timestamped value with wrong data type (expected=%s, actual=%s)",
@@ -308,7 +308,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
         mod->setNameAndIndex(modname, index, vectorsize);
 
     // set system module (must be done before takeAllObjectsFrom(tmplist) because
-    // if parentmod==NULL, mod itself is on tmplist)
+    // if parentmod==nullptr, mod itself is on tmplist)
     if (!parentmod)
          getSimulation()->setSystemModule(mod);
 
@@ -351,7 +351,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
 
 cModule *cModuleType::instantiateModuleClass(const char *classname)
 {
-    cObject *obj = cObjectFactory::createOne(classname); // this won't return NULL
+    cObject *obj = cObjectFactory::createOne(classname); // this won't return nullptr
     cModule *mod = dynamic_cast<cModule *>(obj);
     if (!mod)
         throw cRuntimeError("incorrect module class %s: not subclassed from cModule", classname);
@@ -373,7 +373,7 @@ cModule *cModuleType::instantiateModuleClass(const char *classname)
 cModule *cModuleType::createScheduleInit(const char *modname, cModule *parentmod)
 {
     if (!parentmod)
-        throw cRuntimeError("createScheduleInit(): parent module pointer cannot be NULL "
+        throw cRuntimeError("createScheduleInit(): parent module pointer cannot be nullptr "
                             "when creating module named '%s' of type %s", modname, getFullName());
     cModule *mod = create(modname, parentmod);
     mod->finalizeParameters();
@@ -410,7 +410,7 @@ cChannelType::cChannelType(const char *name) : cComponentType(name)
 
 cChannel *cChannelType::instantiateChannelClass(const char *classname)
 {
-    cObject *obj = cObjectFactory::createOne(classname); // this won't return NULL
+    cObject *obj = cObjectFactory::createOne(classname); // this won't return nullptr
     cChannel *channel = dynamic_cast<cChannel *>(obj);
     if (!channel)
         throw cRuntimeError("class %s is not a channel type", classname); //FIXME better msg

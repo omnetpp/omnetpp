@@ -96,7 +96,7 @@ class SIM_API cPacket : public cMessage
     // method dangerous.
     void _detachEncapMsg();
 
-    // internal: delete encapmsg, paying attention to its sharecount (assumes encapmsg!=NULL)
+    // internal: delete encapmsg, paying attention to its sharecount (assumes encapmsg!=nullptr)
     void _deleteEncapMsg();
 
     // internal: only to be used by test cases
@@ -256,12 +256,12 @@ class SIM_API cPacket : public cMessage
      * this packet will be decreased by the length of the encapsulated
      * packet, except if it was zero. If the length would become
      * negative, cRuntimeError is thrown. If there is no encapsulated
-     * packet, the method returns NULL.
+     * packet, the method returns nullptr.
      */
     virtual cPacket *decapsulate();
 
     /**
-     * Returns a pointer to the encapsulated packet, or NULL if there
+     * Returns a pointer to the encapsulated packet, or nullptr if there
      * is no encapsulated packet.
      *
      * IMPORTANT: see notes at encapsulate() about reference counting
@@ -278,7 +278,7 @@ class SIM_API cPacket : public cMessage
     /**
      * Returns true if the packet contains an encapsulated packet, and false
      * otherwise. This method is potentially more efficient than
-     * <tt>getEncapsulatedPacket()!=NULL</tt>, because it does not need to
+     * <tt>getEncapsulatedPacket()!=nullptr</tt>, because it does not need to
      * unshare a shared encapsulated packet (see note at encapsulate()).
      */
     virtual bool hasEncapsulatedPacket() const;

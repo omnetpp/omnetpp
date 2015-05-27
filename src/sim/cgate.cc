@@ -249,7 +249,7 @@ cChannel *cGate::connectTo(cGate *g, cChannel *chan, bool leaveUninitialized)
     if (nextGate)
         throw cRuntimeError(this, "connectTo(): gate already connected");
     if (!g)
-        throw cRuntimeError(this, "connectTo(): destination gate cannot be NULL pointer");
+        throw cRuntimeError(this, "connectTo(): destination gate cannot be nullptr");
     if (g->prevGate)
         throw cRuntimeError(this, "connectTo(): destination gate already connected");
 
@@ -589,7 +589,7 @@ bool cGate::isConnectedInside() const
 
 bool cGate::isConnected() const
 {
-    // for compound modules, both inside and outside must be non-NULL,
+    // for compound modules, both inside and outside must be non-nullptr,
     // for simple modules, only check outside.
     if (!getOwnerModule()->isSimple())
         return prevGate!=nullptr && nextGate!=nullptr;

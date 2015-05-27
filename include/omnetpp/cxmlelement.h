@@ -153,14 +153,14 @@ class SIM_API cXMLElement
     virtual const char *getSourceLocation() const;
 
     /**
-     * Returns text node in the element, or NULL otherwise.
+     * Returns text node in the element, or nullptr otherwise.
      * (Mixing text and child elements is not supported.)
      */
     virtual const char *getNodeValue() const;
 
     /**
      * Returns the value of the attribute with the given name.
-     * It returns NULL if the given attribute is not found.
+     * It returns nullptr if the given attribute is not found.
      */
     virtual const char *getAttribute(const char *attr) const;
 
@@ -178,7 +178,7 @@ class SIM_API cXMLElement
     /** @name Generic access to children and siblings */
     //@{
     /**
-     * Returns the parent element, or NULL if this element has no parent.
+     * Returns the parent element, or nullptr if this element has no parent.
      */
     virtual cXMLElement *getParentNode() const;
 
@@ -188,20 +188,20 @@ class SIM_API cXMLElement
     virtual bool hasChildren() const;
 
     /**
-     * Returns pointer to the first child element, or NULL if this element
+     * Returns pointer to the first child element, or nullptr if this element
      * has no children.
      */
     virtual cXMLElement *getFirstChild() const;
 
     /**
-     * Returns pointer to the last child element, or NULL if this element
+     * Returns pointer to the last child element, or nullptr if this element
      * has no children.
      */
     virtual cXMLElement *getLastChild() const;
 
     /**
      * Returns pointer to the next sibling of this element (i.e. the next child
-     * in the parent element). Returns NULL if there're no subsequent elements.
+     * in the parent element). Returns nullptr if there're no subsequent elements.
      *
      * getFirstChild() and getNextSibling() can be used to loop through
      * the child list:
@@ -218,20 +218,20 @@ class SIM_API cXMLElement
 
     /**
      * Returns pointer to the previous sibling of this element (i.e. the
-     * previous child in the parent element). Returns NULL if there're no
+     * previous child in the parent element). Returns nullptr if there're no
      * elements before this one.
      */
     virtual cXMLElement *getPreviousSibling() const;
 
     /**
      * Returns pointer to the first child element with the given tag name,
-     * or NULL if this element has no such children.
+     * or nullptr if this element has no such children.
      */
     virtual cXMLElement *getFirstChildWithTag(const char *tagname) const;
 
     /**
      * Returns pointer to the next sibling of this element with the given
-     * tag name. Return NULL if there're no such subsequent elements.
+     * tag name. Return nullptr if there're no such subsequent elements.
      *
      * getFirstChildWithTag() and getNextSiblingWithTag() are a convient way
      * to loop through elements with a certain tag name in the child list:
@@ -267,15 +267,15 @@ class SIM_API cXMLElement
     /**
      * Returns find first child element with the given tagname and the given
      * attribute present, and (optionally) having the given value.
-     * tagname might be NULL -- then any element with the given attribute
-     * will be accepted. Returns NULL if not found.
+     * tagname might be nullptr -- then any element with the given attribute
+     * will be accepted. Returns nullptr if not found.
      */
     cXMLElement *getFirstChildWithAttribute(const char *tagname, const char *attr, const char *attrvalue=nullptr) const;
 
     /**
      * Returns the first element which has an "id" attribute with the given
      * value. ("id" attributes are supposed to be unique in an XML document.)
-     * Returns NULL if not found.
+     * Returns nullptr if not found.
      */
     cXMLElement *getElementById(const char *idattrvalue) const;
 
@@ -306,7 +306,7 @@ class SIM_API cXMLElement
      *  - <tt>.// * [\@color='yellow']/foo/bar</tt> -- first "bar" child of first "foo" child of a "yellow-colored" node (remove the spaces!)
      *
      * The method throws an exception if the path expression is invalid,
-     * and returns NULL if the element is not found.
+     * and returns nullptr if the element is not found.
      */
     cXMLElement *getElementByPath(const char *pathexpression, cXMLElement *root=nullptr, ParamResolver *resolver=nullptr) const;
 

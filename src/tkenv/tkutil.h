@@ -143,7 +143,7 @@ bool displayStringContainsParamRefs(const char *dispstr);
 
 /**
  * If the given string is a single parameter reference in the syntax "$name" or
- * "${name}", returns the parameter, otherwise returns NULL.
+ * "${name}", returns the parameter, otherwise returns nullptr.
  */
 cPar *resolveDisplayStringParamRef(const char *dispstr, cComponent *component, bool searchparent);
 

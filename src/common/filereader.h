@@ -166,16 +166,16 @@ class COMMON_API FileReader
 
     /**
      * Reads the next line from the file starting from the current position, and returns a pointer to its first character.
-     * It returns NULL after EOF. Incomplete last line gets ignored (returns NULL)
+     * It returns nullptr after EOF. Incomplete last line gets ignored (returns nullptr)
      * as it is possible that the file is currently being written into. When new lines are appended to the file subsequent
-     * calls will return non NULL and continue reading lines from that on.
+     * calls will return non nullptr and continue reading lines from that on.
      * Moves the current position to the end of the line just returned.
      */
     char *getNextLineBufferPointer();
 
     /**
      * Reads the previous line from the file ending at the current position, and returns a pointer to its first character.
-     * It returns NULL when the beginning of file reached.
+     * It returns nullptr when the beginning of file reached.
      * Moves the current position to the beginning of the line just returned.
      */
     char *getPreviousLineBufferPointer();

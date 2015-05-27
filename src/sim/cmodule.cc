@@ -374,7 +374,7 @@ void cModule::disposeGateDesc(cGate::Desc *desc, bool checkConnected)
         tmp.module = this;
         tmp.gateName = gatename;  // points into namePool
         tmp.gateType = gatetype;
-        tmp.isVector = desc->isVector(); // desc still exists, only namep was NULL'd
+        tmp.isVector = desc->isVector(); // desc still exists, only namep was nullptr'd
         tmp.vectorSize = desc->gateSize();
         emit(POST_MODEL_CHANGE, &tmp);
     }
@@ -690,7 +690,7 @@ void cModule::setGateSize(const char *gatename, int newSize)
     // expand?
     if (newSize > oldSize)
     {
-        // expand container (slots newSize..newCapacity will stay unused NULL for now)
+        // expand container (slots newSize..newCapacity will stay unused nullptr for now)
         if (type!=cGate::OUTPUT)
             reallocGatev(desc->input.gatev, oldCapacity, newCapacity);
         if (type!=cGate::INPUT)
@@ -868,7 +868,7 @@ bool cModule::isGateVector(const char *gatename) const
 
 //XXX test code:
 //    bool operator()(cGate *a, cGate *b) {
-//        printf("   comparing %s, %s ==> ", (a?a->getFullName():NULL), (b?b->getFullName():NULL) );
+//        printf("   comparing %s, %s ==> ", (a?a->getFullName():nullptr), (b?b->getFullName():nullptr) );
 //        bool x = (a && a->isConnectedInside()) > (b && b->isConnectedInside());
 //        printf("%d > %d : ", (a && a->isConnectedInside()), (b && b->isConnectedInside()));
 //        printf("%d\n", x);
@@ -938,7 +938,7 @@ cGate *cModule::getOrCreateFirstUnconnectedGate(const char *gatename, char suffi
     // gates are not connected in order (i.e. some high gate indices get
     // connected before lower ones), binary search may not be able to find the
     // "holes" (unconnected gates) and we expand the gate unnecessarily.
-    // Note: NULL is used as a synonym for "any unconnected gate" (see less_* struct).
+    // Note: nullptr is used as a synonym for "any unconnected gate" (see less_* struct).
     cGate **it = inside ?
         std::lower_bound(gatev, gatev+oldSize, (cGate *)nullptr, less_gateConnectedInside()) :
         std::lower_bound(gatev, gatev+oldSize, (cGate *)nullptr, less_gateConnectedOutside());
@@ -1112,7 +1112,7 @@ cModule *cModule::getModuleByRelativePath(const char *path)
         token = strtok(nullptr,".");
     }
 
-    return modp;  // NULL if not found
+    return modp;  // nullptr if not found
 }
 
 inline char *nextToken(char *&rest)
@@ -1148,7 +1148,7 @@ cModule *cModule::getModuleByPath(const char *path)
         else if (!isrelative && isfirst && modp->isName(token))
             /*ignore network name*/;
         else if (token[0] == '^' && token[1] == '\0')
-            modp = modp->getParentModule(); // if modp is the root, return NULL
+            modp = modp->getParentModule(); // if modp is the root, return nullptr
         else if ((lbracket=strchr(token,'[')) == nullptr)
             modp = modp->getSubmodule(token);
         else
@@ -1163,7 +1163,7 @@ cModule *cModule::getModuleByPath(const char *path)
         isfirst = false;
     }
 
-    return modp;  // NULL if not found
+    return modp;  // nullptr if not found
 }
 
 cPar& cModule::getAncestorPar(const char *name)
@@ -1266,7 +1266,7 @@ void cModule::deleteModule()
 void cModule::changeParentTo(cModule *mod)
 {
     if (!mod)
-        throw cRuntimeError(this, "changeParentTo(): got NULL pointer");
+        throw cRuntimeError(this, "changeParentTo(): got nullptr");
 
     // gates must be unconnected to avoid connections breaking module hierarchy rules
     cGate *g;

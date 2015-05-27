@@ -146,7 +146,7 @@ class SIM_API cEnvir
      * implementation may use the notification to animate the message on a
      * network diagram, to write a log entry, etc.
      *
-     * The second argument is non-NULL only when sendDirect() was used, and
+     * The second argument is non-nullptr only when sendDirect() was used, and
      * identifies the target gate that was passed to the sendDirect() call.
      * (This information is necessary for proper animation: the target gate
      * might belong to a compound module and be further connected, and then
@@ -216,7 +216,7 @@ class SIM_API cEnvir
      * Notifies the environment that one component (module) called a member
      * function of another component. This hook enables a graphical user
      * interface to animate the method call in the network diagram.
-     * Pass methodFmt==NULL for Enter_Method_Silent.
+     * Pass methodFmt==nullptr for Enter_Method_Silent.
      */
     virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent) = 0;
 
@@ -289,19 +289,19 @@ class SIM_API cEnvir
     //@{
     /**
      * Returns the name of the event current being processed by the simulation
-     * kernel or NULL if unknown.
+     * kernel or nullptr if unknown.
      */
     virtual const char *getCurrentEventName() { return nullptr; }
 
     /**
      * Returns the class name of the event currently being processed by the
-     * simulation kernel or NULL if unknown.
+     * simulation kernel or nullptr if unknown.
      */
     virtual const char *getCurrentEventClassName() { return nullptr; }
 
     /**
-     * Returns the module that is processing the current event or NULL. Calling
-     * this function after the module has been already deleted returns NULL.
+     * Returns the module that is processing the current event or nullptr. Calling
+     * this function after the module has been already deleted returns nullptr.
      */
     virtual cModule *getCurrentEventModule() { return nullptr; }
     //@}
@@ -350,7 +350,7 @@ class SIM_API cEnvir
      *
      * The method throws an exception if the document cannot be found, there
      * was a parse error, or the given path expression is invalid. It returns
-     * NULL if the element denoted by the path expression does not exist in the
+     * nullptr if the element denoted by the path expression does not exist in the
      * document.
      *
      * The returned object tree should not be modified because cEnvir may
@@ -373,7 +373,7 @@ class SIM_API cEnvir
      * there.
      *
      * The method throws an exception if there was a parse error or if the given
-     * path expression is invalid. It returns NULL if the element denoted
+     * path expression is invalid. It returns nullptr if the element denoted
      * by the path expression does not exist in the document.
      *
      * The returned object tree should not be modified because cEnvir may
@@ -540,7 +540,7 @@ class SIM_API cEnvir
      * themselves. The returned value is a handle that identifies the vector
      * in subsequent recordInOutputVector() and deregisterOutputVector()
      * calls. The handle may have any value (it does not have to be a valid
-     * pointer), but it should NOT be NULL.
+     * pointer), but it should NOT be nullptr.
      */
     virtual void *registerOutputVector(const char *modulename, const char *vectorname) = 0;
 

@@ -160,7 +160,7 @@ static bool listContains(const char **list, const char *s)
 
 const char **cClassDescriptor::mergeLists(const char **list1, const char **list2)
 {
-    // args may be NULL
+    // args may be nullptr
     const char *emptylist[] = { nullptr };
     if (!list1) list1 = emptylist;
     if (!list2) list2 = emptylist;

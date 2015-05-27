@@ -120,7 +120,7 @@ class SIM_API cQueue : public cOwnedObject
     bool takeOwnership; //FIXME move it info flags
     QElem *frontp, *backp;  // inserting at back(), removal at front()
     int n;  // number of items in the queue
-    CompareFunc compare;   // comparison function; NULL for FIFO
+    CompareFunc compare;   // comparison function; nullptr for FIFO
 
   private:
     void copy(const cQueue& other);
@@ -136,7 +136,7 @@ class SIM_API cQueue : public cOwnedObject
     /** @name Constructors, destructor, assignment. */
     //@{
     /**
-     * Constructor. When comparison function argument is NULL, the queue will
+     * Constructor. When comparison function argument is nullptr, the queue will
      * act as FIFO, otherwise as priority queue.
      */
     cQueue(const char *name=nullptr, CompareFunc cmp=nullptr);
@@ -209,28 +209,28 @@ class SIM_API cQueue : public cOwnedObject
     virtual void setup(CompareFunc cmp);
 
     /**
-     * Adds an element to the back of the queue. Trying to insert a
-     * NULL pointer is an error (throws cRuntimeError).
+     * Adds an element to the back of the queue. Trying to insert nullptr
+     * is an error (throws cRuntimeError).
      */
     virtual void insert(cObject *obj);
 
     /**
      * Inserts exactly before the given object. If the given position
-     * does not exist or if you try to insert a NULL pointer,
-     * cRuntimeError is thrown.
+     * does not exist or if you try to insert nullptr, a cRuntimeError
+     * is thrown.
      */
     virtual void insertBefore(cObject *where, cObject *obj);
 
     /**
      * Inserts exactly after the given object. If the given position
-     * does not exist or if you try to insert a NULL pointer,
-     * cRuntimeError is thrown.
+     * does not exist or if you try to insert nullptr, a cRuntimeError
+     * is thrown.
      */
     virtual void insertAfter(cObject *where, cObject *obj);
 
     /**
      * Unlinks and returns the object given. If the object is not in the
-     * queue, NULL pointer is returned.
+     * queue, nullptr is returned.
      */
     virtual cObject *remove(cObject *obj);
 
@@ -252,14 +252,14 @@ class SIM_API cQueue : public cOwnedObject
     /**
      * Returns pointer to the object at the front of the queue.
      * This is the element to be returned by pop().
-     * Returns NULL if the queue is empty.
+     * Returns nullptr if the queue is empty.
      */
     virtual cObject *front() const;
 
     /**
      * Returns pointer to the last (back) element in the queue.
      * This is the element most recently added by insert().
-     * Returns NULL if the queue is empty.
+     * Returns nullptr if the queue is empty.
      */
     virtual cObject *back() const;
 
@@ -284,7 +284,7 @@ class SIM_API cQueue : public cOwnedObject
     bool empty() const {return isEmpty();}
 
     /**
-     * Returns the ith element in the queue, or NULL if i is out of range.
+     * Returns the ith element in the queue, or nullptr if i is out of range.
      * get(0) returns the front element. This method performs linear
      * search.
      */

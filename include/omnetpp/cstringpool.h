@@ -54,20 +54,20 @@ class cStringPool
     /**
      * Returns pointer to the pooled copy of the given string, and increments
      * its reference count. get() and release() must occur in pairs.
-     * Passing NULL is OK.
+     * Passing nullptr is OK.
      */
     const char *get(const char *s);
 
     /**
-     * Returns pointer to the pooled copy of the given string, or NULL.
-     * Reference count is not incremented. Passing NULL is OK.
+     * Returns pointer to the pooled copy of the given string, or nullptr.
+     * Reference count is not incremented. Passing nullptr is OK.
      */
     const char *peek(const char *s) const;
 
     /**
      * The parameter must a pointer returned by get(). It decrements the
      * reference count and frees the pooled string if it reaches zero.
-     * Passing NULL is OK.
+     * Passing nullptr is OK.
      */
     void release(const char *s);
 

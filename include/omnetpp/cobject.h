@@ -126,7 +126,7 @@ class SIM_API cObject
     /** @name Empty virtual functions which can be redefined in subclasses */
     //@{
     /**
-     * Returns pointer to the object's name. It should never return NULL.
+     * Returns pointer to the object's name. It should never return nullptr.
      * This default implementation just returns an empty string ("").
      */
     virtual const char *getName() const  {return "";}
@@ -201,7 +201,7 @@ class SIM_API cObject
      * The function called by the container object when it takes ownership
      * of the obj object that is inserted into it.
      *
-     * The obj pointer should not be NULL.
+     * The obj pointer should not be nullptr.
      */
     virtual void take(cOwnedObject *obj);
 
@@ -211,7 +211,7 @@ class SIM_API cObject
      * from the container -- releases the ownership of the object and
      * hands it over to its default owner.
      *
-     * The obj pointer should not be NULL.
+     * The obj pointer should not be nullptr.
      */
     virtual void drop(cOwnedObject *obj);
 
@@ -224,7 +224,7 @@ class SIM_API cObject
      *
      * It is especially useful when writing destructors and assignment operators.
      *
-     * Passing NULL is allowed.
+     * Passing nullptr is allowed.
      *
      * @see drop()
      */
@@ -254,7 +254,7 @@ class SIM_API cObject
     //@{
     /**
      * May be redefined to return an owner or parent object. This default
-     * implementation just returns NULL.
+     * implementation just returns nullptr.
      */
     virtual cObject *getOwner() const {return nullptr;}
 
@@ -281,7 +281,7 @@ class SIM_API cObject
      * Finds the object with the given name. This function is useful when called
      * on subclasses that are containers. This method
      * finds the object with the given name in a container object and
-     * returns a pointer to it or NULL if the object has not
+     * returns a pointer to it or nullptr if the object has not
      * been found. If deep is false, only objects directly
      * contained will be searched, otherwise the function searches the
      * whole subtree for the object. It uses the forEachChild() mechanism.
@@ -309,7 +309,7 @@ class SIM_API cObject
  * Utility class, to make it impossible to call the operator= and copy
  * constructor of any class derived from it.
  *
- * NOTE: <tt>dup()</tt> must be redefined as <tt>{copyNotSupported(); return NULL;}</tt>
+ * NOTE: <tt>dup()</tt> must be redefined as <tt>{copyNotSupported(); return nullptr;}</tt>
  * in classes directly subclassing from noncopyable, but this is not needed
  * in classes derived from them. For example, cDefaultList is noncopyable,
  * so cModule and cSimpleModule no longer need to redefine <tt>dup()</tt>.

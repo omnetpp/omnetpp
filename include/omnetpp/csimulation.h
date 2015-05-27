@@ -70,7 +70,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     // global variables
     static cSimulation *activeSimulation;
     static cEnvir *activeEnvir;
-    static cEnvir *staticEnvir; // the environment to activate when activeSimulation becomes NULL
+    static cEnvir *staticEnvir; // the environment to activate when activeSimulation becomes nullptr
 
     // variables of the module vector
     int size;                 // size of componentv[]
@@ -84,8 +84,8 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     // simulation vars
     cEnvir *envir;            // the environment that belongs to this simulation object
     cModule *systemModule;    // pointer to system (root) module
-    cSimpleModule *currentActivityModule; // the module currently executing activity() (NULL if handleMessage() or in main)
-    cComponent *contextComponent;  // component in context (or NULL)
+    cSimpleModule *currentActivityModule; // the module currently executing activity() (nullptr if handleMessage() or in main)
+    cComponent *contextComponent;  // component in context (or nullptr)
     int contextType;          // the innermost context type (one of CTX_BUILD, CTX_EVENT, CTX_INITIALIZE, CTX_FINISH)
     cModuleType *networkType; // network type
     cScheduler *scheduler;    // event scheduler
@@ -145,26 +145,26 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /** @name Accessing and switching the active simulation object */
     //@{
     /**
-     * Returns the active simulation object. May be NULL.
+     * Returns the active simulation object. May be nullptr.
      */
     static cSimulation *getActiveSimulation()  {return activeSimulation;}
 
     /**
-     * Returns the environment object for the active simulation. Never returns NULL;
-     * setActiveSimulation(NULL) will cause a static "do-nothing" instance to step in.
+     * Returns the environment object for the active simulation. Never returns nullptr;
+     * setActiveSimulation(nullptr) will cause a static "do-nothing" instance to step in.
      */
     static cEnvir *getActiveEnvir()  {return activeEnvir;}
 
     /**
      * Activate the given simulation object, and its associated environment
-     * object. NULL is also accepted; it will cause the static environment
+     * object. nullptr is also accepted; it will cause the static environment
      * object to step in (see getStaticEnvir()).
      */
     static void setActiveSimulation(cSimulation *sim);
 
     /**
      * Sets the environment object to use when there is no active simulation object.
-     * The argument cannot be NULL.
+     * The argument cannot be nullptr.
      */
     static void setStaticEnvir(cEnvir *env);
 
@@ -204,25 +204,25 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /**
      * Finds a module by its path. The path is a string of module names
      * separated by dots. Inclusion of the toplevel module's name in the
-     * path is optional. Returns NULL if the module is not found.
+     * path is optional. Returns nullptr if the module is not found.
      */
     cModule *getModuleByPath(const char *modulePath) const;
 
     /**
      * Looks up a component (module or channel) by ID. If the ID does not identify
-     * a component (e.g. invalid ID or component already deleted), it returns NULL.
+     * a component (e.g. invalid ID or component already deleted), it returns nullptr.
      */
     cComponent *getComponent(int id) const  {return id<0 || id>=size ? nullptr : componentv[id];}
 
     /**
      * Looks up a module by ID. If the ID does not identify a module (e.g. invalid ID,
-     * module already deleted, or object is not a module), it returns NULL.
+     * module already deleted, or object is not a module), it returns nullptr.
      */
     cModule *getModule(int id) const  {return id<0 || id>=size || !componentv[id] ? nullptr : componentv[id]->isModule() ? (cModule *)componentv[id] : nullptr;}
 
     /**
      * Looks up a channel by ID. If the ID does not identify a channel (e.g. invalid ID,
-     * channel already deleted, or object is not a channel), it returns NULL.
+     * channel already deleted, or object is not a channel), it returns nullptr.
      */
     cChannel *getChannel(int id) const  {return id<0 || id>=size || !componentv[id] ? nullptr : componentv[id]->isChannel() ? (cChannel *)componentv[id] : nullptr;}
 
@@ -259,7 +259,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     static int loadNedSourceFolder(const char *folderName);
 
     /**
-     * Load a single NED file. If the expected package is given (non-NULL),
+     * Load a single NED file. If the expected package is given (non-nullptr),
      * it should match the package declaration inside the NED file.
      *
      * Note: doneLoadingNedFiles() must be called after the last
@@ -271,7 +271,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Parses and loads the NED source code passed in the nedtext argument.
      * The name argument will be used as filename in error messages, and
      * and should be unique among the files loaded. If the expected package
-     * is given (non-NULL), it should match the package declaration inside
+     * is given (non-nullptr), it should match the package declaration inside
      * the NED file.
      *
      * Note: doneLoadingNedFiles() must be called after the last
@@ -403,7 +403,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cEvent *guessNextEvent();
 
     /**
-     * Returns the module associated with the likely next event, or NULL if
+     * Returns the module associated with the likely next event, or nullptr if
      * there is no such module. Based on guessNextEvent(); see further
      * comments there.
      */
@@ -421,7 +421,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      *
      * If there is no more event (FES is empty), it throws cTerminationException.
      *
-     * A NULL return value means that there is no error but execution
+     * A nullptr return value means that there is no error but execution
      * was stopped by the user (e.g. with STOP button on the GUI)
      * while the scheduler object was waiting for external synchronization.
      *
@@ -475,7 +475,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
     /**
      * Returns the module whose activity() method is currently active.
-     * Returns NULL if no module is running, or the current module uses
+     * Returns nullptr if no module is running, or the current module uses
      * handleMessage().
      */
     cSimpleModule *getActivityModule() const {return currentActivityModule;}
@@ -486,7 +486,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cComponent *getContext() const {return contextComponent;}
 
     /**
-     * Returns value only valid if getContextModule()!=NULL. Returns one of:
+     * Returns value only valid if getContextModule()!=nullptr. Returns one of:
      * CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH, depending on
      * what the module in context is doing. In case of nested contexts
      * (e.g. when a module is dynamically created, initialized or manually
@@ -496,13 +496,13 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
     /**
      * If the current context is a module, returns its pointer,
-     * otherwise returns NULL.
+     * otherwise returns nullptr.
      */
     cModule *getContextModule() const;
 
     /**
      * Returns the module currently in context as a simple module.
-     * If the module in context is not a simple module, returns NULL.
+     * If the module in context is not a simple module, returns nullptr.
      * This is a convenience function which simply calls getContextModule().
      */
     cSimpleModule *getContextSimpleModule() const;
@@ -544,7 +544,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     bool snapshot(cObject *obj, const char *label);
 
     /**
-     * Returns the object used for fingerprint calculation. It returns NULL
+     * Returns the object used for fingerprint calculation. It returns nullptr
      * if no fingerprint is being calculated during this simulation run.
      */
     cHasher *getHasher() {return hasher;}

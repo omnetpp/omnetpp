@@ -28,7 +28,7 @@ NAMESPACE_BEGIN
 
 OctaveExport::OctaveExport(const char *fileName)
 {
-    f = NULL;
+    f = nullptr;
     this->prec = DEFAULT_PRECISION;
     this->fileName = fileName;
 }
@@ -60,7 +60,7 @@ void OctaveExport::close()
     {
         // close the file
         fclose(f);
-        f = NULL;
+        f = nullptr;
     }
 }
 

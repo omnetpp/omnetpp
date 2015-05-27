@@ -276,7 +276,7 @@ void cNEDNetworkBuilder::assignParametersFromPatterns(cComponent *component)
 
         // check patterns in compound module "parent"
 
-        // find NED declaration. Note that decl may be NULL (if parent was not defined via NED but created dynamically)
+        // find NED declaration. Note that decl may be nullptr (if parent was not defined via NED but created dynamically)
         const char *nedTypeName = parent->getNedTypeName();
         cNEDDeclaration *decl = cNEDLoader::getInstance()->getDecl(nedTypeName);
 
@@ -1187,7 +1187,7 @@ cChannel *cNEDNetworkBuilder::createChannel(ConnectionElement *conn, cModule *pa
     // resolve channel type
     const char *channelName = conn->getName();
     if (opp_isempty(channelName))
-		channelName = nullptr; // use NULL to indicate "no name"
+		channelName = nullptr; // use nullptr to indicate "no name"
 
     cChannelType *channelType;
     try {
@@ -1203,7 +1203,7 @@ cChannel *cNEDNetworkBuilder::createChannel(ConnectionElement *conn, cModule *pa
     }
 
     // create channel object
-    cChannel *channelp = channelType->create(channelName); // it will choose a name if it's NULL
+    cChannel *channelp = channelType->create(channelName); // it will choose a name if it's nullptr
     return channelp;
 }
 

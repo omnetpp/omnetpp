@@ -86,7 +86,7 @@ class ENVIR_API ArgList
 
     /**
      * Returns the value of the given option. If there are more than one
-     * occurrences, k specifies which one to return. Returns NULL if not
+     * occurrences, k specifies which one to return. Returns nullptr if not
      * found.
      */
     const char *optionValue(char c, int k=0) const;
@@ -98,7 +98,7 @@ class ENVIR_API ArgList
     std::map<std::string,std::string> getLongOptions() const;
 
     /**
-     * Returns the kth non-option argument. Returns NULL if k is out of range.
+     * Returns the kth non-option argument. Returns nullptr if k is out of range.
      */
     const char *argument(int k) const;
 

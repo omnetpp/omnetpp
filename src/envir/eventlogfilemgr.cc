@@ -576,7 +576,7 @@ void EventlogFileManager::componentMethodEnd()
 {
     if (isEventLogRecordingEnabled) {
         // TODO: problem when channel method is called: we'll emit an "End" entry but no "Begin"
-        // TODO: same problem when the caller is not a module or is NULL
+        // TODO: same problem when the caller is not a module or is nullptr
         EventLogWriter::recordModuleMethodEndEntry(feventlog);
         entryIndex++;
     }

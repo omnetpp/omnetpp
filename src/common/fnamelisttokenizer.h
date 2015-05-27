@@ -56,14 +56,14 @@ class COMMON_API FilenamesListTokenizer
 
     /**
      * Returns true if there're more tokens (i.e. the next nextToken()
-     * call won't return NULL).
+     * call won't return nullptr).
      */
     bool hasMoreTokens();
 
     /**
      * Returns the next token. The returned pointers will stay valid as long
-     * as the tokenizer object exists. If there're no more tokens,
-     * a NULL pointer will be returned.
+     * as the tokenizer object exists. If there're no more tokens, nullptr
+     * will be returned.
      */
     const char *nextToken();
 

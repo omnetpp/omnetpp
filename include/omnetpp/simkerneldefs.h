@@ -42,9 +42,9 @@
 #  define SIM_API
 #endif
 
-// NULL
-#ifndef NULL
-#define NULL 0
+// nullptr
+#ifndef nullptr
+#define nullptr 0
 #endif
 
 //

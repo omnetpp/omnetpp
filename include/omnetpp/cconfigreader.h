@@ -61,7 +61,7 @@ class cConfigurationReader
     virtual void initializeFrom(cConfiguration *bootConfig) = 0;
 
     /**
-     * Returns the name of the configuration file. Returns NULL if this object is
+     * Returns the name of the configuration file. Returns nullptr if this object is
      * not using a configuration file.
      */
     virtual const char *getFileName() const = 0;

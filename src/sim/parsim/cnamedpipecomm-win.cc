@@ -59,12 +59,12 @@ static std::string getWindowsError()
     FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER |
                    FORMAT_MESSAGE_FROM_SYSTEM |
                    FORMAT_MESSAGE_IGNORE_INSERTS,
-                   NULL,
+                   nullptr,
                    errorcode,
                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                    (LPTSTR) &lpMsgBuf,
                    0,
-                   NULL );
+                   nullptr );
     ((char *)lpMsgBuf)[strlen((char *)lpMsgBuf)-3] = '\0';  // chop ".\r\n"
 
     std::stringstream out;
@@ -82,8 +82,8 @@ struct PipeHeader
 cNamedPipeCommunications::cNamedPipeCommunications()
 {
     prefix = getEnvir()->getConfig()->getAsString(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX);
-    rpipes = NULL;
-    wpipes = NULL;
+    rpipes = nullptr;
+    wpipes = nullptr;
     rrBase = 0;
 }
 
@@ -116,7 +116,7 @@ void cNamedPipeCommunications::init()
 
         int openMode = PIPE_ACCESS_INBOUND;
         int pipeMode = PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT;
-        rpipes[i] = CreateNamedPipe(fname, openMode, pipeMode, 1, 0, PIPE_INBUFFERSIZE, ~0UL, NULL);
+        rpipes[i] = CreateNamedPipe(fname, openMode, pipeMode, 1, 0, PIPE_INBUFFERSIZE, ~0UL, nullptr);
         if (rpipes[i] == INVALID_HANDLE_VALUE)
             throw cRuntimeError("cNamedPipeCommunications: CreateNamedPipe operation failed: %s", getWindowsError().c_str());
     }
@@ -137,7 +137,7 @@ void cNamedPipeCommunications::init()
         for (int k=0; k<60; k++)
         {
             if (k>0 && k%5==0) EV << "retry " << k << " of 60...\n";
-            wpipes[i] = CreateFile(fname, GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+            wpipes[i] = CreateFile(fname, GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (wpipes[i]!=INVALID_HANDLE_VALUE)
                 break;
             usleep(1000000); //1s
@@ -152,7 +152,7 @@ void cNamedPipeCommunications::init()
         if (i==myProcId)
             continue;
         EV << "cNamedPipeCommunications: opening pipe from procId=" << i << " for read...\n";
-        if (!ConnectNamedPipe(rpipes[i], NULL) && GetLastError()!=ERROR_PIPE_CONNECTED)
+        if (!ConnectNamedPipe(rpipes[i], nullptr) && GetLastError()!=ERROR_PIPE_CONNECTED)
             throw cRuntimeError("cNamedPipeCommunications: ConnectNamedPipe operation failed: %s", getWindowsError().c_str());
     }
 
@@ -222,7 +222,7 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
         if (i==myProcId)
             continue;
         unsigned long bytesAvail, bytesLeft;
-        if (!PeekNamedPipe(rpipes[i], NULL, 0, NULL, &bytesAvail, &bytesLeft))
+        if (!PeekNamedPipe(rpipes[i], nullptr, 0, nullptr, &bytesAvail, &bytesLeft))
             throw cRuntimeError("cNamedPipeCommunications: cannot peek pipe to procId=%d: %s",
                                     i, getWindowsError().c_str());
         if (bytesAvail>0)
@@ -238,7 +238,7 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
     // read message from selected pipe (handle h)
     unsigned long bytesRead;
     struct PipeHeader ph;
-    if (!ReadFile(h, &ph, sizeof(ph), &bytesRead, NULL))
+    if (!ReadFile(h, &ph, sizeof(ph), &bytesRead, nullptr))
         throw cRuntimeError("cNamedPipeCommunications: cannot read from pipe to procId=%d: %s",
                                 sourceProcId, getWindowsError().c_str());
     if (bytesRead<sizeof(ph))
@@ -248,7 +248,7 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
     b->allocateAtLeast(ph.contentLength);
     b->setMessageSize(ph.contentLength);
 
-    if (!ReadFile(h, b->getBuffer(), ph.contentLength, &bytesRead, NULL))
+    if (!ReadFile(h, b->getBuffer(), ph.contentLength, &bytesRead, nullptr))
         throw cRuntimeError("cNamedPipeCommunications: cannot read from pipe to procId=%d: %s",
                                 sourceProcId, getWindowsError().c_str());
     if (bytesRead<ph.contentLength)

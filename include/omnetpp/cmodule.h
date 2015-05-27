@@ -89,7 +89,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
         void init(const cModule *m);
 
         /**
-         * Returns a pointer to the current gate. Only returns NULL if the
+         * Returns a pointer to the current gate. Only returns nullptr if the
          * iterator has reached the end of the list.
          */
         cGate *operator()() const {cGate *result=current(); ASSERT(result||end()); return result;}
@@ -101,7 +101,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
         /**
          * Returns the current gate, then moves the iterator to the next gate.
-         * Only returns NULL if the iterator has already reached the end of
+         * Only returns nullptr if the iterator has already reached the end of
          * the list.
          */
         cGate *operator++(int);
@@ -144,7 +144,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
         /**
          * Returns pointer to the current module. The pointer then
          * may be cast to the appropriate cModule subclass.
-         * Returns NULL if the iterator has reached the end of the list.
+         * Returns nullptr if the iterator has reached the end of the list.
          */
         cModule *operator()() const {return p;}
 
@@ -155,7 +155,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
         /**
          * Returns the current module, then moves the iterator to the
-         * next module. Returns NULL if the iterator has already reached
+         * next module. Returns nullptr if the iterator has already reached
          * the end of the list.
          */
         cModule *operator++(int)  {if (!p) return nullptr; cModule *t=p; p=p->nextSibling; return t;}
@@ -184,7 +184,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
         void init(const cModule *parentmodule);
 
         /**
-         * Returns the current object, or NULL if the iterator is not
+         * Returns the current object, or nullptr if the iterator is not
          * at a valid position.
          */
         cChannel *operator()() const {return k < (int)channels.size() ? channels[k] : nullptr;}
@@ -214,7 +214,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     };
 
   private:
-    mutable char *fullPath; // cached fullPath string (caching is optional, so it may be NULL)
+    mutable char *fullPath; // cached fullPath string (caching is optional, so it may be nullptr)
     mutable char *fullName; // buffer to store full name of object
     static bool cacheFullPath; // whether to cache the fullPath string or not
 
@@ -236,7 +236,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     int version4ModuleId;   // OMNeT++ V4.x compatible module ID
 #endif
 
-    cCanvas *canvas;  // NULL when unused
+    cCanvas *canvas;  // nullptr when unused
 
   public:
     // internal: currently used by init
@@ -259,7 +259,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual bool initializeChannels(int stage);
 
     // internal: called when a message arrives at a gate which is no further
-    // connected (that is, getNextGate() is NULL)
+    // connected (that is, getNextGate() is nullptr)
     virtual void arrived(cMessage *msg, cGate *ongate, simtime_t t);
 
     // internal: sets module name and its index within vector (if module is
@@ -325,7 +325,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     // internal utility function. Takes O(n) time as it iterates on the gates
     cGate *gateByOrdinal(int k) const;
 
-    // internal: return the canvas if exists, or NULL if not (i.e. no create-on-demand)
+    // internal: return the canvas if exists, or nullptr if not (i.e. no create-on-demand)
     cCanvas *getCanvasIfExists() {return canvas;}
 
   public:
@@ -391,7 +391,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * suffix itself.
      *
      * CAUTION: The return value is only valid when a non-vector INPUT or OUTPUT
-     * gate was requested. NULL gets returned for INOUT gates and gate vectors.
+     * gate was requested. nullptr gets returned for INOUT gates and gate vectors.
      */
     virtual cGate *addGate(const char *gatename, cGate::Type type, bool isvector=false);
 
@@ -480,7 +480,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     /**
      * Returns the module containing this module. For the system module,
-     * it returns NULL.
+     * it returns nullptr.
      */
     virtual cModule *getParentModule() const override;
 
@@ -534,14 +534,14 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     /**
      * Finds a direct submodule with the given name and index, and returns
-     * its pointer. If the submodule was not found, returns NULL.
+     * its pointer. If the submodule was not found, returns nullptr.
      * Index must be specified exactly if the module is member of a module vector.
      */
     cModule *getSubmodule(const char *submodname, int idx=-1);
 
     /**
      * Finds a module in this module's subtree, given with its relative path.
-     * The path is a string of module names separated by dots. Returns NULL
+     * The path is a string of module names separated by dots. Returns nullptr
      * if the module was not found.
      *
      * Deprecated: please use the more powerful getModuleByPath() instead.
@@ -555,7 +555,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * with a dot or caret, it is understood as relative to this module,
      * otherwise it is taken to mean an absolute path. For absolute paths,
      * inclusion of the toplevel module's name in the path is optional.
-     * Returns NULL if the module was not found.
+     * Returns nullptr if the module was not found.
      *
      * Examples:
      *   ".sink" means the sink submodule;

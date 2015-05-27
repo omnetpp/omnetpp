@@ -149,7 +149,7 @@ class NEDXML_API NEDTypeInfo
 
     /**
      * If this type is an inner type, returns fully qualified name of its
-     * enclosing type, otherwise returns NULL.
+     * enclosing type, otherwise returns nullptr.
      */
     virtual const char *getEnclosingTypeName() const;
 
@@ -162,7 +162,7 @@ class NEDXML_API NEDTypeInfo
     /**
      * For modules and channels, it returns the name of the C++ class that
      * has to be instantiated (for compound modules this defaults to
-     * "cModule"); for interface types it returns NULL.
+     * "cModule"); for interface types it returns nullptr.
      */
     virtual const char *getImplementationClassName() const;
 
@@ -178,7 +178,7 @@ class NEDXML_API NEDTypeInfo
     /** The C++ namespace for this NED type; implemented as getPackageProperty("namespace"). */
     virtual std::string getCxxNamespace() const;
 
-    /** Returns the first "extends" clause, or NULL */
+    /** Returns the first "extends" clause, or nullptr */
     virtual NEDTypeInfo *getSuperDecl() const;
 
     /** @name Convenience method to query the tree */
@@ -188,28 +188,28 @@ class NEDXML_API NEDTypeInfo
     SubmodulesElement *getSubmodulesElement() const;
     ConnectionsElement *getConnectionsElement() const;
 
-    /** Returns the submodule element with the given name from the local type, or NULL if not found */
+    /** Returns the submodule element with the given name from the local type, or nullptr if not found */
     SubmoduleElement *getLocalSubmoduleElement(const char *submoduleName) const;
 
-    /** Returns the connection element with the given id from the local type, or NULL if not found */
+    /** Returns the connection element with the given id from the local type, or nullptr if not found */
     ConnectionElement *getLocalConnectionElement(long id) const;
 
-    /** Returns the submodule element with the given name from the local type and "extends" types, or NULL if not found */
+    /** Returns the submodule element with the given name from the local type and "extends" types, or nullptr if not found */
     SubmoduleElement *getSubmoduleElement(const char *submoduleName) const;
 
-    /** Returns the connection element with the given id from the local type and "extends" types, or NULL if not found */
+    /** Returns the connection element with the given id from the local type and "extends" types, or nullptr if not found */
     ConnectionElement *getConnectionElement(long id) const;
 
-    /** Searches local type; NULL if not found */
+    /** Searches local type; nullptr if not found */
     ParamElement *findLocalParamDecl(const char *name) const;
 
-    /** Searches local type and "extends" types; NULL if not found */
+    /** Searches local type and "extends" types; nullptr if not found */
     ParamElement *findParamDecl(const char *name) const;
 
-    /** Searches local type; NULL if not found */
+    /** Searches local type; nullptr if not found */
     GateElement *findLocalGateDecl(const char *name) const;
 
-    /** Searches local type and "extends" types; NULL if not found */
+    /** Searches local type and "extends" types; nullptr if not found */
     GateElement *findGateDecl(const char *name) const;
     //@}
 };

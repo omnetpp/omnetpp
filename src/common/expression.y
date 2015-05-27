@@ -81,7 +81,7 @@ LineColumn xpos, xprevpos;
 static Expression::Elem *e;
 static Expression::Resolver *resolver;
 
-static char *expryyconcat(char *s1, char *s2, char *s3=NULL)
+static char *expryyconcat(char *s1, char *s2, char *s3=nullptr)
 {
     char *d = new char[strlen(s1)+strlen(s2)+strlen(s3?s3:"")+4];
     strcpy(d, s1);
@@ -282,7 +282,7 @@ void doParseExpression(const char *text, Expression::Resolver *res, Expression::
 {
     NONREENTRANT_PARSER();
 
-    elems = NULL;
+    elems = nullptr;
     nelems = 0;
 
     // reset the lexer
@@ -290,7 +290,7 @@ void doParseExpression(const char *text, Expression::Resolver *res, Expression::
     xpos.li = 1;
     xprevpos = xpos;
 
-    yyin = NULL;
+    yyin = nullptr;
     yyout = stderr; // not used anyway
 
     // alloc buffer

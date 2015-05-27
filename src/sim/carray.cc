@@ -36,8 +36,8 @@ Register_Class(cArray);
 
 
 //XXX this needs to be tested (test suite!) with:
-// 1) non-cOwnedObject objects, where getOwner() returns NULL
-// 2) non-cOwnedObject objects, where getOwner()!=NULL (and possible the array)
+// 1) non-cOwnedObject objects, where getOwner() returns nullptr
+// 2) non-cOwnedObject objects, where getOwner()!=nullptr (and possible the array)
 // 3) cOwnedObject objects with takeownership==false
 // 4) cOwnedObject objects with takeownership==true
 
@@ -48,7 +48,7 @@ void cArray::Iterator::init(const cArray& a, bool athead)
     if (athead)
     {
         // fast-forward to first non-empty slot
-        // (Note: we exploit that get(k) just returns NULL when k is out of bounds)
+        // (Note: we exploit that get(k) just returns nullptr when k is out of bounds)
         k = 0;
         while (!array->get(k) && k<array->size())
             k++;
@@ -248,7 +248,7 @@ void cArray::setCapacity(int newCapacity)
 int cArray::add(cObject *obj)
 {
     if (!obj)
-        throw cRuntimeError(this,"cannot insert NULL pointer");
+        throw cRuntimeError(this,"cannot insert nullptr");
 
     if (obj->isOwnedObject() && getTakeOwnership())
         take(static_cast<cOwnedObject *>(obj));
@@ -281,7 +281,7 @@ int cArray::add(cObject *obj)
 int cArray::addAt(int m, cObject *obj)
 {
     if (!obj)
-        throw cRuntimeError(this,"cannot insert NULL pointer");
+        throw cRuntimeError(this,"cannot insert nullptr");
 
     if (m<capacity)  // fits in current vector
     {
@@ -319,7 +319,7 @@ int cArray::addAt(int m, cObject *obj)
 int cArray::set(cObject *obj)
 {
     if (!obj)
-        throw cRuntimeError(this,"cannot insert NULL pointer");
+        throw cRuntimeError(this,"cannot insert nullptr");
 
     int i = find(obj->getName());
     if (i<0)

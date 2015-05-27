@@ -457,7 +457,7 @@ int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
        if (!opp_isblank(argv[4])) {
            until_msg = dynamic_cast<cMessage *>(strToPtr(argv[4]));
-           if (!until_msg) {Tcl_SetResult(interp, TCLCONST("until_msg object is NULL or not a cMessage"), TCL_STATIC); return TCL_ERROR;}
+           if (!until_msg) {Tcl_SetResult(interp, TCLCONST("until_msg object is nullptr or not a cMessage"), TCL_STATIC); return TCL_ERROR;}
        }
    }
 
@@ -484,7 +484,7 @@ int setRunUntil_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
    if (argc==1)
    {
-       app->setSimulationRunUntil(0,0,nullptr);
+       app->setSimulationRunUntil(0,0, nullptr);
    }
    else
    {
@@ -498,7 +498,7 @@ int setRunUntil_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
        cMessage *until_msg = nullptr;
        if (!opp_isblank(argv[3])) {
            until_msg = dynamic_cast<cMessage *>(strToPtr(argv[3]));
-           if (!until_msg) {Tcl_SetResult(interp, TCLCONST("until_msg object is NULL or not a cMessage"), TCL_STATIC); return TCL_ERROR;}
+           if (!until_msg) {Tcl_SetResult(interp, TCLCONST("until_msg object is nullptr or not a cMessage"), TCL_STATIC); return TCL_ERROR;}
        }
 
        app->setSimulationRunUntil(until_time, until_eventnum, until_msg);
@@ -2674,7 +2674,7 @@ int setWindowProperty_cmd(ClientData clientData, Tcl_Interp *interp, int argc, c
        return TCL_ERROR;
    }
    if (!Tk_IsTopLevel(winPtr)) {
-       Tcl_AppendResult(interp, "window \"", winPtr->pathName, "\" isn't a top-level window", (char *) NULL);
+       Tcl_AppendResult(interp, "window \"", winPtr->pathName, "\" isn't a top-level window", (char *) nullptr);
        return TCL_ERROR;
    }
 
@@ -2683,7 +2683,7 @@ int setWindowProperty_cmd(ClientData clientData, Tcl_Interp *interp, int argc, c
    Atom XA_UTF8_STRING = Tk_InternAtom((Tk_Window) winPtr, "UTF8_STRING");
    Tcl_DString ds;
 
-   Tcl_UtfToExternalDString(NULL, value, -1, &ds);
+   Tcl_UtfToExternalDString(nullptr, value, -1, &ds);
    XStoreName(winPtr->display, wmPtr->wrapperPtr->window, Tcl_DStringValue(&ds));
    Tcl_DStringFree(&ds);
 

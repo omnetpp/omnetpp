@@ -447,7 +447,7 @@ class SIM_API cTopology : public cOwnedObject
      * Extracts model topology by a module property. All modules get included
      * that have a property with the given name and the given value
      * (more precisely, the first value of its default key being the specified
-     * value). If value is NULL, the property's value may be anything except
+     * value). If value is nullptr, the property's value may be anything except
      * "false" (i.e. the first value of the default key may not be "false").
      *
      * For example, <tt>topo.extractByProperty("node");</tt> would extract
@@ -466,7 +466,7 @@ class SIM_API cTopology : public cOwnedObject
     /**
      * Extracts model topology by a module parameter. All modules get included
      * that have a parameter with the given name, and the parameter's str()
-     * method returns the paramValue string. If paramValue is NULL, only the
+     * method returns the paramValue string. If paramValue is nullptr, only the
      * parameter's existence is checked but not its value.
      */
     void extractByParameter(const char *paramName, const char *paramValue=nullptr);
@@ -537,7 +537,7 @@ class SIM_API cTopology : public cOwnedObject
     /**
      * Returns the graph node which corresponds to the given module in the
      * network. If no graph node corresponds to the module, the method returns
-     * NULL. This method assumes that the topology corresponds to the
+     * nullptr. This method assumes that the topology corresponds to the
      * network, that is, it was probably created with one of the
      * extract...() functions.
      */

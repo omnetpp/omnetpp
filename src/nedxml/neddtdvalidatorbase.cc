@@ -67,7 +67,7 @@ static int isInVector(int a, int v[])
 
 void NEDDTDValidatorBase::tryCheckChoice(NEDElement *node, NEDElement *&curchild, int tags[], char mult)
 {
-    // note: 'node' argument is solely used by errors->addError() (when curchild==NULL)
+    // note: 'node' argument is solely used by errors->addError() (when curchild==nullptr)
     if (mult=='?')
     {
         // skip optional matching element

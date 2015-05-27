@@ -169,7 +169,7 @@ class SIM_API cEvent : public cOwnedObject
 
     /**
      * Return the object that this event will be delivered to or act upon,
-     * or NULL if there is no such object. For messages and packets this will
+     * or nullptr if there is no such object. For messages and packets this will
      * be the destination module. This method is not used by the simulation
      * kernel for other than informational purposes, e.g. logging.
      *

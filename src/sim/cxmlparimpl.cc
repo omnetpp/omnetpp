@@ -52,7 +52,7 @@ void cXMLParImpl::operator=(const cXMLParImpl& other)
 
 std::string cXMLParImpl::detailedInfo() const
 {
-    return (flags & FL_ISEXPR) ? "<expression>" : val==nullptr ? "NULL" : val->detailedInfo();
+    return (flags & FL_ISEXPR) ? "<expression>" : val==nullptr ? "nullptr" : val->detailedInfo();
 }
 
 void cXMLParImpl::parsimPack(cCommBuffer *buffer) const
@@ -176,7 +176,7 @@ std::string cXMLParImpl::str() const
     if (val)
         return std::string("<")+val->getTagName()+"> from "+val->getSourceLocation();
     else
-        return std::string("NULL");
+        return std::string("nullptr");
 }
 
 void cXMLParImpl::parse(const char *text)

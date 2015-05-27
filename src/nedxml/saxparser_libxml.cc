@@ -145,7 +145,7 @@ bool SAXParser::parseContent(const char *content)
 
 bool SAXParser::doParse(const char *filename, const char *content)
 {
-    assert((filename==nullptr) != (content==nullptr));  // exactly one of them is non-NULL
+    assert((filename==nullptr) != (content==nullptr));  // exactly one of them is non-nullptr
     strcpy(errortext, "<error msg unfilled>");
 
     //
@@ -322,7 +322,7 @@ static void libxmlFatalErrorHandler(void *userData, const char *msg, ...) {
 
 SAXParser::SAXParser()
 {
-    saxhandler = NULL;
+    saxhandler = nullptr;
 }
 
 void SAXParser::setHandler(SAXHandler *sh)
@@ -375,7 +375,7 @@ bool SAXParser::parse(const char *filename)
         return false;
     }
 
-    ctxt = xmlCreatePushParserCtxt(&libxmlSAXParser, saxhandler, NULL, 0, NULL);
+    ctxt = xmlCreatePushParserCtxt(&libxmlSAXParser, saxhandler, nullptr, 0, nullptr);
 
     int n;
     char Buffer[512];
@@ -403,7 +403,7 @@ bool SAXParser::parse(const char *filename)
                 ctxt->input->line);
     }
 
-    ctxt->sax = NULL;
+    ctxt->sax = nullptr;
 
     xmlFreeParserCtxt(ctxt);
     fclose(f);

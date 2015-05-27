@@ -128,12 +128,12 @@ class SIM_API cConfigOption : public cNoncopyableOwnedObject
 
     /**
      * Returns the unit of the option (e.g. "s" for seconds, "b" for bytes, etc),
-     * or NULL if the option does not have a unit.
+     * or nullptr if the option does not have a unit.
      */
     const char *getUnit() const  {return unit.empty() ? nullptr : unit.c_str();}
 
     /**
-     * Returns the default value in string form, or NULL if there is no default.
+     * Returns the default value in string form, or nullptr if there is no default.
      */
     const char *getDefaultValue() const  {return defaultValue.empty() ? nullptr : defaultValue.c_str();}
 

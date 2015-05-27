@@ -365,7 +365,7 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outGate)
 {
     // error checking:
     if (outGate==nullptr)
-       throw cRuntimeError("send()/sendDelayed(): gate pointer is NULL");
+       throw cRuntimeError("send()/sendDelayed(): gate pointer is nullptr");
     if (outGate->getType()==cGate::INPUT)
        throw cRuntimeError("send()/sendDelayed(): cannot send via an input gate (`%s')", outGate->getFullName());
     if (!outGate->getNextGate())  // NOTE: without this error check, msg would become self-message
@@ -374,7 +374,7 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outGate)
        throw cRuntimeError("send()/sendDelayed(): gate `%s' is not the start of a connection path (path starts at gate %s)",
                            outGate->getFullName(), outGate->getPathStartGate()->getFullPath().c_str());
     if (msg==nullptr)
-        throw cRuntimeError("send()/sendDelayed(): message pointer is NULL");
+        throw cRuntimeError("send()/sendDelayed(): message pointer is nullptr");
     if (msg->getOwner()!=this)
     {
         if (this!=getSimulation()->getContextModule() && getSimulation()->getContextModule()!=nullptr)
@@ -446,7 +446,7 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t dura
                               cModule *mod, const char *gateName, int gateIndex)
 {
     if (!mod)
-        throw cRuntimeError("sendDirect(): destination module pointer is NULL");
+        throw cRuntimeError("sendDirect(): destination module pointer is nullptr");
     cGate *toGate;
     TRY(toGate = mod->gate(gateName, gateIndex), "sendDirect()");
     return sendDirect(msg, propdelay, duration, toGate);
@@ -455,7 +455,7 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t dura
 int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t duration, cModule *mod, int gateId)
 {
     if (!mod)
-        throw cRuntimeError("sendDirect(): destination module pointer is NULL");
+        throw cRuntimeError("sendDirect(): destination module pointer is nullptr");
     cGate *togate;
     TRY(togate = mod->gate(gateId), "sendDirect()");
     return sendDirect(msg, propdelay, duration, togate);
@@ -467,14 +467,14 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime
     // Note: it is permitted to send to an output gate. It is especially useful
     // with several submodules sending to a single output gate of their parent module.
     if (toGate==nullptr)
-        throw cRuntimeError("sendDirect(): destination gate pointer is NULL");
+        throw cRuntimeError("sendDirect(): destination gate pointer is nullptr");
     if (toGate->getPreviousGate())
         throw cRuntimeError("sendDirect(): module must have dedicated gate(s) for receiving via sendDirect()"
                             " (\"from\" side of dest. gate `%s' should NOT be connected)",toGate->getFullPath().c_str());
     if (propagationDelay<SIMTIME_ZERO || duration<SIMTIME_ZERO)
         throw cRuntimeError("sendDirect(): the propagation time and duration parameters cannot be negative");
     if (msg==nullptr)
-        throw cRuntimeError("sendDirect(): message pointer is NULL");
+        throw cRuntimeError("sendDirect(): message pointer is nullptr");
     if (msg->getOwner()!=this)
     {
         // try to give a meaningful error message
@@ -532,7 +532,7 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime
 int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
 {
     if (msg==nullptr)
-        throw cRuntimeError("scheduleAt(): message pointer is NULL");
+        throw cRuntimeError("scheduleAt(): message pointer is nullptr");
     if (t<simTime())
         throw cRuntimeError(E_BACKSCHED, msg->getClassName(), msg->getName(), SIMTIME_DBL(t));
     if (msg->getOwner()!=this)
@@ -577,7 +577,7 @@ cMessage *cSimpleModule::cancelEvent(cMessage *msg)
 {
     // make sure we really have the message and it is scheduled
     if (msg==nullptr)
-        throw cRuntimeError("cancelEvent(): message pointer is NULL");
+        throw cRuntimeError("cancelEvent(): message pointer is nullptr");
 
     // now remove it from future events and return pointer
     if (msg->isScheduled())
@@ -654,7 +654,7 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
     if (t<SIMTIME_ZERO)
         throw cRuntimeError(E_NEGTIME);
     if (!queue)
-        throw cRuntimeError("waitAndEnqueue(): queue pointer is NULL");
+        throw cRuntimeError("waitAndEnqueue(): queue pointer is nullptr");
 
     timeoutMessage->setArrival(getId(), -1, simTime()+t);
     EVCB.messageScheduled(timeoutMessage);

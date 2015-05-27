@@ -157,7 +157,7 @@ class SIM_API cMessage : public cEvent
     // internal: used by the parallel simulation kernel.
     virtual int getSrcProcId() const override {return srcProcId;}
 
-    // internal: returns the parameter list object, or NULL if it hasn't been used yet
+    // internal: returns the parameter list object, or nullptr if it hasn't been used yet
     cArray *getParListPtr()  {return parList;}
 
   private: // hide cEvent methods from the cMessage API
@@ -292,7 +292,7 @@ class SIM_API cMessage : public cEvent
      * setControlInfo() call throws an error).
      *
      * When the message is duplicated or copied, copies will have their
-     * control info set to NULL because the cObject interface
+     * control info set to nullptr because the cObject interface
      * does not define dup/copy operations.
      * The assignment operator does not change control info.
      */
@@ -300,7 +300,7 @@ class SIM_API cMessage : public cEvent
 
     /**
      * Removes the "control info" structure (object) from the message
-     * and returns its pointer. Returns NULL if there was no control info
+     * and returns its pointer. Returns nullptr if there was no control info
      * in the message.
      */
     cObject *removeControlInfo();
@@ -436,7 +436,7 @@ class SIM_API cMessage : public cEvent
 
     /**
      * Returns the object with the given name in the message's object list.
-     * If the object is not found, it returns NULL.
+     * If the object is not found, it returns nullptr.
      *
      * <i>NOTE: This is a convenience function: one may use getParList() and
      * cArray::get() instead. See also class description for discussion about
@@ -459,7 +459,7 @@ class SIM_API cMessage : public cEvent
 
     /**
      * Remove the object with the given name from the message's object list, and
-     * return its pointer. If the object does not exist, NULL is returned.
+     * return its pointer. If the object does not exist, nullptr is returned.
      *
      * <i>NOTE: This is a convenience function: one may use getParList() and
      * cArray::remove() instead. See also class description for discussion about
@@ -471,7 +471,7 @@ class SIM_API cMessage : public cEvent
 
     /**
      * Remove the object with the given name from the message's object list, and
-     * return its pointer. If the object does not exist, NULL is returned.
+     * return its pointer. If the object does not exist, nullptr is returned.
      *
      * <i>NOTE: This is a convenience function: one may use getParList() and
      * cArray::remove() instead. See also class description for discussion about
@@ -491,7 +491,7 @@ class SIM_API cMessage : public cEvent
     bool isSelfMessage() const {return targetGateId==-1;}
 
     /**
-     * Returns a pointer to the sender module. It returns NULL if the message
+     * Returns a pointer to the sender module. It returns nullptr if the message
      * has not been sent/scheduled yet, or if the sender module got deleted
      * in the meantime.
      */
@@ -499,13 +499,13 @@ class SIM_API cMessage : public cEvent
 
     /**
      * Returns pointers to the gate from which the message was sent and
-     * on which gate it arrived. A NULL pointer is returned
-     * for new (unsent) messages and messages sent via scheduleAt().
+     * on which gate it arrived. nullptr is returned for new (unsent) messages
+     * and messages sent via scheduleAt().
      */
     cGate *getSenderGate() const;
 
     /**
-     * Returns a pointer to the arrival module. It returns NULL if the message
+     * Returns a pointer to the arrival module. It returns nullptr if the message
      * has not been sent/scheduled yet, or if the module was deleted
      * in the meantime.
      */
@@ -513,8 +513,8 @@ class SIM_API cMessage : public cEvent
 
     /**
      * Returns pointers to the gate from which the message was sent and
-     * on which gate it arrived. A NULL pointer is returned
-     * for new (unsent) messages and messages sent via scheduleAt().
+     * on which gate it arrived. nullptr is returned for new (unsent) messages
+     * and messages sent via scheduleAt().
      */
     cGate *getArrivalGate() const;
 

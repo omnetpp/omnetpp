@@ -73,7 +73,7 @@ Inspector::~Inspector()
 {
    if (isToplevelWindow && windowName[0])
    {
-      CHK(Tcl_VarEval(interp, "inspector:destroy ", windowName, NULL ));
+      CHK(Tcl_VarEval(interp, "inspector:destroy ", windowName, nullptr));
    }
 }
 
@@ -116,7 +116,7 @@ void Inspector::doSetObject(cObject *obj)
         if (obj && !supportsObject(obj))
             throw cRuntimeError("Inspector %s doesn't support objects of class %s", getClassName(), obj->getClassName());
         object = obj;
-        CHK(Tcl_VarEval(interp, "inspector:onSetObject ", windowName, NULL));
+        CHK(Tcl_VarEval(interp, "inspector:onSetObject ", windowName, nullptr));
         refresh();
     }
 }
@@ -124,14 +124,14 @@ void Inspector::doSetObject(cObject *obj)
 void Inspector::showWindow()
 {
     if (isToplevelWindow)
-        CHK(Tcl_VarEval(interp, "inspector:show ", windowName, NULL ));
+        CHK(Tcl_VarEval(interp, "inspector:show ", windowName, nullptr));
 }
 
 void Inspector::refresh()
 {
     if (isToplevelWindow)
         refreshTitle();
-    CHK(Tcl_VarEval(interp, "inspector:refresh ", windowName, NULL));
+    CHK(Tcl_VarEval(interp, "inspector:refresh ", windowName, nullptr));
 }
 
 void Inspector::refreshTitle()
@@ -156,7 +156,7 @@ void Inspector::refreshTitle()
     if (windowTitle != newTitle)
     {
         windowTitle = newTitle;
-        CHK(Tcl_VarEval(interp, "wm title ",windowName," {",windowTitle.c_str(),"}",NULL));
+        CHK(Tcl_VarEval(interp, "wm title ",windowName," {",windowTitle.c_str(),"}", nullptr));
     }
 }
 
@@ -245,18 +245,18 @@ void Inspector::setEntry(const char *entry, const char *val)
 {
     if (!val) val="";
     CHK(Tcl_VarEval(interp, windowName,entry," delete 0 end;",
-            windowName,entry," insert 0 {",val,"}",NULL));
+            windowName,entry," insert 0 {",val,"}", nullptr));
 }
 
 void Inspector::setLabel( const char *label, const char *val )
 {
    if (!val) val="";
-   CHK(Tcl_VarEval(interp, windowName,label," config -text {",val,"}",NULL));
+   CHK(Tcl_VarEval(interp, windowName,label," config -text {",val,"}", nullptr));
 }
 
 const char *Inspector::getEntry( const char *entry )
 {
-   CHK(Tcl_VarEval(interp, windowName,entry," get",NULL));
+   CHK(Tcl_VarEval(interp, windowName,entry," get", nullptr));
    return Tcl_GetStringResult(interp);
 }
 

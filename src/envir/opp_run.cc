@@ -100,7 +100,7 @@ static void splitFileName(const char *pathname, std::string& dir, std::string& f
     const char *s = pathname + strlen(pathname) - 1;
     s--; // ignore potential trailing "/"
     while (s>pathname && *s!='\\' && *s!='/') s--;
-    const char *sep = s<=pathname ? NULL : s;
+    const char *sep = s<=pathname ? nullptr : s;
 
     // split along that
     if (!sep)
@@ -126,10 +126,10 @@ static void splitFileName(const char *pathname, std::string& dir, std::string& f
 
 static std::string makeLibFileName(const char *libname, const char *prefix, const char *suffix)
 {
-     bool hasDir = strchr(libname, '/')!=NULL || strchr(libname, '\\')!=NULL;
+     bool hasDir = strchr(libname, '/')!=nullptr || strchr(libname, '\\')!=nullptr;
      std::string dir, fileNameOnly;
      splitFileName(libname, dir, fileNameOnly);
-     bool hasExt = strchr(fileNameOnly.c_str(), '.')!=NULL;
+     bool hasExt = strchr(fileNameOnly.c_str(), '.')!=nullptr;
 
      std::string libFileName;
      if (hasExt)
@@ -158,7 +158,7 @@ static libhandle_t oppLoadLibrary(const char *libname)
 # endif
     HMODULE handle = LoadLibrary((char *)libFileName.c_str());
     lastLoadLibError = "";
-    if (handle == NULL)
+    if (handle == nullptr)
         lastLoadLibError = opp_getWindowsError(GetLastError());
     return handle;
 }
@@ -168,7 +168,7 @@ static void *getSymbol(libhandle_t handle, const char *symbol)
     // note: GetProcAddress(), unlike dlsym(), does not look into modules
     // loaded indirectly; we have to emulate that with additional code.
     void *result = (void *)GetProcAddress(handle, symbol);
-    if (result != NULL)
+    if (result != nullptr)
         return result;
 
     // look up among all loaded modules
@@ -190,7 +190,7 @@ static void *getSymbol(libhandle_t handle, const char *symbol)
 
     for (int i = 0; i < numModules; i++)
     {
-        if ((result = (void *)GetProcAddress(handles[i], symbol)) != NULL)
+        if ((result = (void *)GetProcAddress(handles[i], symbol)) != nullptr)
             return result;
     }
 
@@ -218,7 +218,7 @@ static libhandle_t oppLoadLibrary(const char *libname)
     std::string libFileName = makeLibFileName(libname, "lib", SHARED_LIB_SUFFIX);
     libhandle_t handle = dlopen(libFileName.c_str(), RTLD_NOW|RTLD_GLOBAL);
     lastLoadLibError = "";
-    if (handle == NULL)
+    if (handle == nullptr)
         lastLoadLibError = dlerror();
     return handle;
 }

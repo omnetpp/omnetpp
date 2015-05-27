@@ -128,23 +128,23 @@ class EVENTLOG_API IEventLog
         virtual bool isEmpty() { return !getFirstEvent(); }
 
         /**
-         * Returns the first event or NULL if the log is empty.
+         * Returns the first event or nullptr if the log is empty.
          */
         virtual IEvent *getFirstEvent() = 0;
 
         /**
-         * Returns the last event or NULL if the log is empty.
+         * Returns the last event or nullptr if the log is empty.
          */
         virtual IEvent *getLastEvent() = 0;
 
         /**
-         * Returns the requested event or NULL if there is no such event included in the log.
+         * Returns the requested event or nullptr if there is no such event included in the log.
          * The given event number may not be included in the log.
          */
         virtual IEvent *getEventForEventNumber(eventnumber_t eventNumber, MatchKind matchKind = EXACT, bool useCacheOnly = false) = 0;
 
         /**
-         * Returns the requested event or NULL if there is no such event included in the log.
+         * Returns the requested event or nullptr if there is no such event included in the log.
          * The given simulation time may not be included in the log.
          */
         virtual IEvent *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT, bool useCacheOnly = false) = 0;

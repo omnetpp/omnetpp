@@ -52,7 +52,7 @@ void HistogramInspector::createWindow(const char *window, const char *geometry)
    strcpy(canvas,windowName);
    strcat(canvas,".main.canvas");
 
-   CHK(Tcl_VarEval(interp, "createHistogramInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL ));
+   CHK(Tcl_VarEval(interp, "createHistogramInspector ", windowName, " ", TclQuotedString(geometry).get(), nullptr));
 }
 
 void HistogramInspector::useWindow(const char *window)
@@ -69,7 +69,7 @@ void HistogramInspector::refresh()
 
    if (!object)
    {
-       CHK(Tcl_VarEval(interp, canvas," delete all", NULL));
+       CHK(Tcl_VarEval(interp, canvas," delete all", nullptr));
        return;
    }
 
@@ -77,7 +77,7 @@ void HistogramInspector::refresh()
 
    char buf[80];
    generalInfo( buf );
-   CHK(Tcl_VarEval(interp, windowName,".bot.info config -text {",buf,"}",NULL));
+   CHK(Tcl_VarEval(interp, windowName,".bot.info config -text {",buf,"}", nullptr));
 
    // can we draw anything at all?
    if (!distr->isTransformed() || distr->getNumCells()==0) return;
@@ -104,9 +104,9 @@ void HistogramInspector::refresh()
    }
 
    // get canvas size
-   CHK(Tcl_VarEval(interp, "winfo width ",canvas, NULL));
+   CHK(Tcl_VarEval(interp, "winfo width ",canvas, nullptr));
    int canvaswidth = atoi( Tcl_GetStringResult(interp) );
-   CHK(Tcl_VarEval(interp, "winfo height ", canvas, NULL));
+   CHK(Tcl_VarEval(interp, "winfo height ", canvas, nullptr));
    int canvasheight = atoi( Tcl_GetStringResult(interp) );
 
    // temporarily define X() and Y() coordinate translation macros
@@ -114,7 +114,7 @@ void HistogramInspector::refresh()
 #define Y(y)   (int)(canvasheight-10-(y)*((long)canvasheight-20)/ymax)
 
    // delete previous drawing
-   CHK(Tcl_VarEval(interp, canvas," delete all", NULL));
+   CHK(Tcl_VarEval(interp, canvas," delete all", nullptr));
 
    // draw the histogram
    cell_upper = distr->getBasepoint(0);
@@ -134,7 +134,7 @@ void HistogramInspector::refresh()
        // draw rectangle
        CHK(Tcl_VarEval(interp, canvas,
                                " create rect ", coords," -tag ",tag,
-                               " -fill black -outline black", NULL));
+                               " -fill black -outline black", nullptr));
    }
 #undef X
 #undef Y

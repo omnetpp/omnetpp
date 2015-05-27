@@ -151,7 +151,7 @@ NAMESPACE_BEGIN
 // internal
 #define __REGISTER_ABSTRACT_CLASS(CLASSNAME, BASECLASS /*unused*/, DESC) \
   static void *MAKE_UNIQUE_WITHIN_FILE(__castfunc_)(OPP::cObject *obj) {return (void*)dynamic_cast<CLASSNAME*>(obj);} \
-  EXECUTE_ON_STARTUP(OPP::classes.getInstance()->add(new OPP::cObjectFactory(OPP::opp_typename(typeid(CLASSNAME)), NULL, MAKE_UNIQUE_WITHIN_FILE(__castfunc_), DESC));)
+  EXECUTE_ON_STARTUP(OPP::classes.getInstance()->add(new OPP::cObjectFactory(OPP::opp_typename(typeid(CLASSNAME)), nullptr, MAKE_UNIQUE_WITHIN_FILE(__castfunc_), DESC));)
 
 /**
  * Internal. Registers a class descriptor which provides reflection information.
@@ -172,7 +172,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Register_GlobalConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
-  __REGISTER_CONFIGOPTION(ID, (NAME, true, OPP::cConfigOption::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGOPTION(ID, (NAME, true, OPP::cConfigOption::TYPE, nullptr, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * Registers a per-run configuration option.
@@ -180,7 +180,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Register_PerRunConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
-  __REGISTER_CONFIGOPTION(ID, (NAME, false, OPP::cConfigOption::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGOPTION(ID, (NAME, false, OPP::cConfigOption::TYPE, nullptr, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * Registers a global configuration option with type==CFG_DOUBLE and an
@@ -206,7 +206,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Register_PerObjectConfigOption(ID, NAME, KIND, TYPE, DEFAULTVALUE, DESCRIPTION) \
-  __REGISTER_CONFIGOPTION(ID, (NAME, OPP::cConfigOption::KIND, OPP::cConfigOption::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGOPTION(ID, (NAME, OPP::cConfigOption::KIND, OPP::cConfigOption::TYPE, nullptr, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * Registers a per-object configuration option with type==CFG_DOUBLE and an
@@ -235,7 +235,7 @@ NAMESPACE_BEGIN
  *    "idle",     State::IDLE,
  *    "busy",     State::BUSY,
  *    "sleeping", State::SLEEPING,
- *    NULL));
+ *    nullptr));
  * </pre>
  *
  * @see cEnum
@@ -254,7 +254,7 @@ NAMESPACE_BEGIN
  *    "idle",     State::IDLE,
  *    "busy",     State::BUSY,
  *    "sleeping", State::SLEEPING,
- *    NULL));
+ *    nullptr));
  * </pre>
  *
  * @see cEnum

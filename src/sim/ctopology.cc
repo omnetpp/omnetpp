@@ -373,7 +373,7 @@ void cTopology::calculateUnweightedSingleShortestPathsTo(Node *_target)
     // multiple paths not supported :-(
 
     if (!_target)
-        throw cRuntimeError(this,"..ShortestPathTo(): target node is NULL");
+        throw cRuntimeError(this,"..ShortestPathTo(): target node is nullptr");
     target = _target;
 
     for (int i=0; i<(int)nodes.size(); i++)
@@ -415,7 +415,7 @@ void cTopology::calculateUnweightedSingleShortestPathsTo(Node *_target)
 void cTopology::calculateWeightedSingleShortestPathsTo(Node *_target)
 {
     if (!_target)
-        throw cRuntimeError(this,"..ShortestPathTo(): target node is NULL");
+        throw cRuntimeError(this,"..ShortestPathTo(): target node is nullptr");
     target = _target;
 
     // clean path infos
