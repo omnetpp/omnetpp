@@ -23,8 +23,8 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     ui->setupUi(this);
 
     scene = new QGraphicsScene(this);
-    ui->graphicsView->setScene(scene);
-    ui->graphicsView->setRenderHints(QPainter::Antialiasing);
+    ui->moduleGraphicsView->setScene(scene);
+    ui->moduleGraphicsView->setRenderHints(QPainter::Antialiasing);
 
     TreeItemModel *model = new TreeItemModel();
     model->setRootObject(getSimulation());
@@ -912,4 +912,35 @@ void MainWindow::busy(QString msg)
         ui->statusBar->showMessage("Ready");
         this->setCursor(QCursor(Qt::ArrowCursor));
     }
+}
+
+QGraphicsView *MainWindow::getModuleGraphicsView()
+{
+    return ui->moduleGraphicsView;
+}
+
+QGraphicsScene *MainWindow::getScene()
+{
+    return ui->moduleGraphicsView->scene();
+}
+
+void MainWindow::onSetObject(Inspector *insp)
+{
+//TODO
+//proc ModuleInspector:onSetObject {insp} {
+//    #update idletasks
+//    update
+
+//    ModuleInspector:recallPreferences $insp
+
+//    if [catch {
+//       opp_inspectorcommand $insp relayout
+//    } errmsg] {
+//       tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focusOrRoot]] \
+//                     -message "Error displaying network graphics: $errmsg"
+//    }
+
+//    ModuleInspector:updateZoomLabel $insp
+//    ModuleInspector:adjustWindowSizeAndZoom $insp
+//}
 }

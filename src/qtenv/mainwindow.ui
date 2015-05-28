@@ -185,7 +185,7 @@
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
-       <widget class="QGraphicsView" name="graphicsView">
+       <widget class="QGraphicsView" name="moduleGraphicsView">
         <property name="minimumSize">
          <size>
           <width>100</width>
@@ -682,33 +682,33 @@
  <connections>
   <connection>
    <sender>treeView</sender>
-   <signal>doubleClicked(QModelIndex)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>inspectObject(QModelIndex)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>170</x>
-     <y>241</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>4</x>
-     <y>157</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>treeView</sender>
    <signal>customContextMenuRequested(QPoint)</signal>
    <receiver>MainWindow</receiver>
    <slot>onTreeViewContextMenu(QPoint)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>123</x>
-     <y>288</y>
+     <x>132</x>
+     <y>245</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
      <y>276</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>treeView</sender>
+   <signal>doubleClicked(QModelIndex)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>inspectObject(QModelIndex)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>179</x>
+     <y>245</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>157</y>
     </hint>
    </hints>
   </connection>

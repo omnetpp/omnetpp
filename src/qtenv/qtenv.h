@@ -295,6 +295,7 @@ class TKENV_API Qtenv : public EnvirBase
       const char *getOutScalarFileName() {return outscalarmgr->getFileName();}
       const char *getSnapshotFileName()  {return snapshotmgr->getFileName();}
       const char *getWindowTitlePrefix() {return windowtitleprefix.c_str();}
+      MainWindow *getWindow() {return mainwindow;}
 };
 
 

@@ -10,6 +10,7 @@
 class QGraphicsScene;
 class QStandardItem;
 class QTreeView;
+class QGraphicsView;
 class cObject;
 class cEvent;
 class StopDialog;
@@ -35,8 +36,6 @@ class MainWindow : public QMainWindow
 public:
     enum eCopy { COPY_PTR, COPY_PTRWITHCAST, COPY_FULLPATH, COPY_FULLNAME, COPY_CLASSNAME };
 
-    QGraphicsScene *scene;
-
     explicit MainWindow(qtenv::Qtenv *env, QWidget *parent = 0);
 
     void displayText(const char* t);
@@ -44,6 +43,10 @@ public:
     void updateStatusDisplay();
     void updateNetworkRunDisplay();
     void redrawTimeline();
+
+    QGraphicsView *getModuleGraphicsView();
+    QGraphicsScene *getScene();
+    void onSetObject(qtenv::Inspector *insp);
 
     ~MainWindow();
 
@@ -71,6 +74,7 @@ private:
     enum Mode { STEP, NORMAL, FAST, EXPRESS, NOT_RUNNING};
     Ui::MainWindow *ui;
     qtenv::Qtenv *env;
+    QGraphicsScene *scene;
     StopDialog *stopDialog;
 
     bool isRunning();

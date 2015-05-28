@@ -39,6 +39,7 @@
 #include "arrow.h"
 #include "layouterenv.h"
 #include "canvasrenderer.h"
+#include "mainwindow.h"
 
 NAMESPACE_BEGIN
 namespace qtenv {
@@ -88,7 +89,7 @@ void ModuleInspector::doSetObject(cObject *obj)
 
     canvasRenderer->setCanvas(getCanvas());
 
-    CHK(Tcl_VarEval(interp, canvas, " delete all",NULL));
+    static_cast<MainWindow*>(window)->getScene()->clear();
 
     if (object)
     {
@@ -116,7 +117,8 @@ void ModuleInspector::useWindow(const char *window)
     strcpy(canvas,windowName);
     strcat(canvas,".c");
 
-    //TODO canvasRenderer->setTkCanvas(interp, canvas);
+    this->window = getTkenv()->getWindow();
+    canvasRenderer->setQtCanvas(static_cast<MainWindow*>(this->window)->getScene(), getCanvas());
 }
 
 cCanvas *ModuleInspector::getCanvas()
