@@ -25,7 +25,7 @@
 #include "common/filereader.h"
 #include "common/linetokenizer.h"
 #include "eventlogdefs.h"
-#include "eventlogdefs.h"
+#include "enums.h"
 
 NAMESPACE_BEGIN
 namespace eventlog {

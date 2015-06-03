@@ -24,6 +24,7 @@
 #include "omnetpp/platdep/platmisc.h"
 #include "omnetpp/platdep/platmisc.h" // INT64_PRINTF_FORMAT
 #include "eventlogdefs.h"
+#include "enums.h"
 
 NAMESPACE_BEGIN
 namespace eventlog {

@@ -18,6 +18,7 @@
 #define __OMNETPP_IEVENT_H
 
 #include <sstream>
+#include "enums.h"
 #include "eventlogentry.h"
 #include "eventlogentries.h"
 #include "messagedependency.h"
