@@ -19,6 +19,7 @@
 #define __OMNETPP_FILTERNODES_H
 
 #include "commonnodes.h"
+#include "enums.h"
 
 NAMESPACE_BEGIN
 namespace scave {

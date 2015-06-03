@@ -47,11 +47,6 @@ typedef BigDecimal simultime_t;
 #define SIMTIME_MAX BigDecimal::PositiveInfinity
 typedef int64_t eventnumber_t;
 
-/**
- * Used by VectorResult as well as filter nodes e.g. Integrate
- */
-enum InterpolationMode { UNSPECIFIED, NONE, SAMPLE_HOLD, BACKWARD_SAMPLE_HOLD, LINEAR };
-
 
 } // namespace scave
 NAMESPACE_END

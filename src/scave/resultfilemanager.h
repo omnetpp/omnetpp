@@ -32,6 +32,7 @@
 #include "enumtype.h"
 #include "statistics.h"
 #include "scaveutils.h"
+#include "enums.h"
 
 #ifdef THREADED
 #include "common/rwlock.h"
