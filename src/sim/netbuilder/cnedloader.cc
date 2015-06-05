@@ -39,7 +39,7 @@ NAMESPACE_BEGIN
 
 cNEDLoader *cNEDLoader::inst;
 
-EXECUTE_ON_SHUTDOWN( cNEDLoader::clear() );
+EXECUTE_ON_SHUTDOWN(cNEDLoader::clear());
 
 cNEDLoader *cNEDLoader::getInstance()
 {
@@ -64,9 +64,9 @@ void cNEDLoader::registerNedType(const char *qname, bool isInnerType, NEDElement
 
     // if module or channel, register corresponding object which can be used to instantiate it
     cComponentType *type = nullptr;
-    if (node->getTagCode()==NED_SIMPLE_MODULE || node->getTagCode()==NED_COMPOUND_MODULE)
+    if (node->getTagCode() == NED_SIMPLE_MODULE || node->getTagCode() == NED_COMPOUND_MODULE)
         type = new cDynamicModuleType(qname);
-    else if (node->getTagCode()==NED_CHANNEL)
+    else if (node->getTagCode() == NED_CHANNEL)
         type = new cDynamicChannelType(qname);
     if (type)
         componentTypes.getInstance()->add(type);

@@ -26,7 +26,6 @@
 
 NAMESPACE_BEGIN
 
-
 cDynamicChannelType::cDynamicChannelType(const char *name) : cChannelType(name)
 {
 }
@@ -36,7 +35,7 @@ cNEDDeclaration *cDynamicChannelType::getDecl() const
     // do not store the pointer, because the declaration object may have been
     // thrown out of cNEDLoader to conserve memory
     cNEDDeclaration *decl = cNEDLoader::getInstance()->getDecl(getFullName());
-    ASSERT(decl->getType()==cNEDDeclaration::CHANNEL);
+    ASSERT(decl->getType() == cNEDDeclaration::CHANNEL);
     return decl;
 }
 
@@ -59,7 +58,7 @@ cChannel *cDynamicChannelType::createChannelObject()
 void cDynamicChannelType::addParametersTo(cChannel *channel)
 {
     cNEDDeclaration *decl = getDecl();
-    cNEDNetworkBuilder().addParametersAndGatesTo(channel, decl); // adds only parameters, because channels have no gates
+    cNEDNetworkBuilder().addParametersAndGatesTo(channel, decl);  // adds only parameters, because channels have no gates
 }
 
 void cDynamicChannelType::applyPatternAssignments(cComponent *component)

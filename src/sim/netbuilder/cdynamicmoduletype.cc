@@ -14,7 +14,6 @@
   `terms' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include <cstring>
 #include <cstdio>
 #include <ctime>
@@ -26,7 +25,6 @@
 #include "cnednetworkbuilder.h"
 
 NAMESPACE_BEGIN
-
 
 cDynamicModuleType::cDynamicModuleType(const char *name) : cModuleType(name)
 {
@@ -47,7 +45,7 @@ cNEDDeclaration *cDynamicModuleType::getDecl() const
     // do not store the pointer, because the declaration object may have been
     // thrown out of cNEDLoader to conserve memory
     cNEDDeclaration *decl = cNEDLoader::getInstance()->getDecl(getFullName());
-    ASSERT(decl->getType()==cNEDDeclaration::SIMPLE_MODULE || decl->getType()==cNEDDeclaration::COMPOUND_MODULE);
+    ASSERT(decl->getType() == cNEDDeclaration::SIMPLE_MODULE || decl->getType() == cNEDDeclaration::COMPOUND_MODULE);
     return decl;
 }
 
@@ -58,13 +56,13 @@ bool cDynamicModuleType::isNetwork() const
 
 bool cDynamicModuleType::isSimple() const
 {
-    return getDecl()->getType()==cNEDDeclaration::SIMPLE_MODULE;
+    return getDecl()->getType() == cNEDDeclaration::SIMPLE_MODULE;
 }
 
 cModule *cDynamicModuleType::createModuleObject()
 {
     const char *classname = getDecl()->getImplementationClassName();
-    ASSERT(classname!=nullptr);
+    ASSERT(classname != nullptr);
     return instantiateModuleClass(classname);
 }
 
